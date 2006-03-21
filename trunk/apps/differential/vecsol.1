@@ -1,0 +1,111 @@
+.TH VECSOL "1" "August 2005" "vecsol (GPStk) 0.8" "User Commands"
+.SH NAME
+vecsol \- GPS Vector Solver, computes a 3D vector from RINEX input
+.SH SYNOPSIS
+.B vecsol
+[\fIRINEX obs file 1\fR] [\fIRINEX obs file 2\fR]
+.SH DESCRIPTION
+.\" Add any additional description here
+.PP
+Computes a 3D vector solution using dual-frequency carrier phases. A double
+difference algorithm is applied with properly computed weights
+(elevation sine weighting) and correlations. The program iterates to
+convergence and attempts to resolve ambiguities to integer values if
+close enough.  Crude outlier rejection is provided based on a
+triple-difference test. Ephemeris used are either broadcast or precise
+(SP3). Alternatively, also P code processing is provided.
+.PP
+The solution is computed using the ionosphere-free linear combination.
+The ionospheric model included in broadcast ephemeris may be used. A
+standard tropospheric correction is applied, or tropospheric parameters
+(zenith delays) may be estimated.
+.SH FILES
+.TP
+\fBRINEX obs files 1 and 2\fR
+contain the observations collected at the two end points 1 and 2 of the
+baseline. They \fImust\fR contain a sufficient set of simultaneous
+observations to the same satellites.
+.TP
+\fBvecsol.conf\fR
+contains the input options for the program, one per line.
+.PP
+.SS 	Options
+.TP 10
+	\fBphase\fR [1/0] 
+Process carrier phase data (instead of P code data)
+.TP
+	\fBtruecov\fR [1/0] 
+If 1, use true double difference covariances. If 0, ignore any possible
+correlations
+.TP
+	\fBprecise\fR [1/0] 
+If 1, use precise ephemeris, if 0, use broadcast ephemeris
+.TP
+	\fBiono\fR [1/0] 
+If 1, use the 8-parameter ionospheric model that comes with the
+broadcast ephemeris (.nav) files
+.TP
+	\fBtropo\fR [1/0] 
+Estimate troposphere parameters (zenith delays relative to the standard
+value, which is always applied)
+.TP
+	\fBvecmode\fR [1/0] 
+If 1, solve the \fIvector\fR, i.e. the three co-ordinate differences
+between the baseline end points. If 0, solve for the absolute
+co-ordinates of both end points
+.TP
+	\fBdebug\fR [1/0] 
+If 1, produce lots of gory debugging output. See the source for what it
+all means
+.TP
+	\fBrefsat_elev\fR 
+Minimum elevation of the reference satellite used for computing
+inter-satellite differences.  Good initial choice: 30.0
+.TP
+	\fBcutoff_elev\fR 
+cut-off elevation. Good initial choice: 10.0 \- 20.0
+.PP
+.TP
+\fBvecsol.nav\fR 
+contains the names of the navigation RINEX files ("nav files", extension
+.yyN) to be used, one per line.
+.PP
+Good navigation RINEX files that are globally valid can be found from the CORS website at 
+.B http://www.ngs.noaa.gov/CORS/
+.
+.TP
+\fBvecsol.eph\fR 
+contains the names of the precise ephemeris SP3 files (extension .sp3)
+to be used. These should cover the time span of the observations, with
+time to spare on both ends. 
+.PP
+Note that the date in the filenames of the SP3 files is given as GPS
+week + weekday, not year + day of year, as in the observation and nav
+files.
+.PP
+In the .nav and .eph files, comment lines have # in the first position.
+
+.SH AUTHOR
+Written by Martin Vermeer and others.
+.SH BUGS
+Doesn't currently recover \fIat all\fR from cycle slips, so the RINEX
+observation files used have to be fairly clean already.
+.PP
+Report bugs to <gpstk-devel@lists.sourceforge.net>.
+.SH COPYRIGHT
+Copyright \(co 2005 The Authors.
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.SH "SEE ALSO"
+The full documentation for the 
+.B GPStk
+package of which 
+.B vecsol
+is a part can be found on the website of
+.B GPStk
+at
+.IP
+.B http://gpstk.sourceforge.net
+.
+

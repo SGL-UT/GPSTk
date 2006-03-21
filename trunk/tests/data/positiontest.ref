@@ -1,0 +1,84 @@
+Position()  Unknown system! : 0 0 0
+Test set...() and transformTo
+Position.set        to Cartesian  -1575232.0141 m -4707872.2332 m 3993198.4383 m
+Transform Cartesian to Geodetic   39.00000419 degN 251.50000000 degE 1400.0091 m  Error : 4.36397e-007 m
+Transform Cartesian to Geocentric 38.81195851 degN 251.50000000 degE 6371110.6277 m  Error : 3.38708e-007 m
+Transform Cartesian to Spherical  51.18804149 deg 251.50000000 deg 6371110.6277 M  Error : 3.38708e-007 m
+Position.set         to Geodetic  39.00000419 degN 251.50000000 degE 1400.0091 m
+Transform Geodetic to Cartesian   -1575232.0141 m -4707872.2332 m 3993198.4383 m  Error : 0 m
+Transform Geodetic to Geocentric  38.81195851 degN 251.50000000 degE 6371110.6277 m  Error : 1.29053e-007 m
+Transform Geodetic to Spherical   51.18804149 deg 251.50000000 deg 6371110.6277 M  Error : 1.29053e-007 m
+Position.set        to Geocentric 38.81195851 degN 251.50000000 degE 6371110.6277 m
+Transform Geocentric to Cartesian -1575232.0141 m -4707872.2332 m 3993198.4383 m  Error : 0 m
+Transform Geocentric to Geodetic  39.00000419 degN 251.50000000 degE 1400.0091 m  Error : 1.18945e-007 m
+Transform Geocentric to Spherical 51.18804149 deg 251.50000000 deg 6371110.6277 M  Error : 0 m
+Position.set      to Spherical    51.18804149 deg 251.50000000 deg 6371110.6277 M
+Transform Spherical to Cartesian  -1575232.0141 m -4707872.2332 m 3993198.4383 m  Error : 0 m
+Transform Spherical to Geocentric 38.81195851 degN 251.50000000 degE 6371110.6277 m  Error : 0 m
+Transform Spherical to Geodetic   39.00000419 degN 251.50000000 degE 1400.0091 m  Error : 1.18945e-007 m
+
+Test printf and the indicated 'get()' functions
+-1575232.0141     X() (meters)
+-4707872.2332     Y() (meters)
+ 3993198.4383     Z() (meters)
+   -1575.2320     X()/1000 (kilometers)
+   -4707.8722     Y()/1000 (kilometers)
+    3993.1984     Z()/1000 (kilometers)
+      39.000004   geodeticLatitude() (degrees North)
+      38.811959   geocentricLatitude() (degrees North)
+     251.500000   longitude() (degrees East)
+     251.500000   longitude() (degrees East)
+     108.500000   longitude() (degrees West)
+     108.500000   longitude() (degrees West)
+      51.188041   theta() (degrees)
+       0.893400   theta() (radians)
+     251.500000   phi() (degrees)
+       4.389503   phi() (radians)
+ 6371110.6277     radius() meters
+    6371.1106     radius()/1000 kilometers
+    1400.0091     height() meters
+       1.4000     height()/1000 kilometers
+
+Test setToString and equality operators
+System: Geodetic
+Original    39.00000419 degN 251.50000000 degE 1400.0091 m
+string      39.00000419 degN 251.50000000 degE 1400.0091 m
+setToString 39.00000419 degN 251.50000000 degE 1400.0091 m Error 0.00036341 m
+ equality: == but not !=
+
+System: Geocentric
+Original    38.81195851 degN 251.50000000 degE 6371110.6277 m
+string      38.81195851 degN 251.50000000 degE 6371110.6277 m
+setToString 38.81195851 degN 251.50000000 degE 6371110.6277 m Error 0.000431592 m
+ equality: == but not !=
+
+System: Cartesian
+Original    -1575232.0141 m -4707872.2332 m 3993198.4383 m
+string      -1575232.0141 m -4707872.2332 m 3993198.4383 m
+setToString -1575232.0141 m -4707872.2332 m 3993198.4383 m Error 0 m
+ equality: == but not !=
+
+System: Spherical
+Original    51.18804149 deg 251.50000000 deg 6371110.6277 M
+string      51.18804149 deg 251.50000000 deg 6371110.6277 M
+setToString 51.18804149 deg 251.50000000 deg 6371110.6277 M Error 0.000431592 m
+ equality: == but not !=
+
+The IPP at 38.81195851 degN 251.50000000 degE 6371110.6277 m (90,0,350000) is
+           38.81195851 degN 251.50000000 degE 6728137.0000 m Geocentric
+
+Try to break it at the pole
+The pole 0.0000 m 0.0000 m 6371110.6277 m
+The pole in geodetic   90.00000000 degN 0.00000000 degE 14358.3135 m
+The pole in geocentric 90.00000000 degN 0.00000000 degE 6371110.6277 m
+The pole in spherical  0.00000000 deg 0.00000000 deg 6371110.6277 M
+The pole in cartesian  0.0000 m 0.0000 m 6371110.6277 m
+The pole in geocentric 90.00000000 degN 0.00000000 degE 6371110.6277 m
+The pole in geodetic   90.00000000 degN 0.00000000 degE 14358.3135 m
+The pole in cartesian  0.0000 m 0.0000 m 6371110.6277 m
+The pole in spherical  0.00000000 deg 0.00000000 deg 6371110.6277 M
+The pole in geodetic   90.00000000 degN 0.00000000 degE 14358.3135 m
+The pole in spherical  0.00000000 deg 0.00000000 deg 6371110.6277 M
+The pole in geocentric 90.00000000 degN 0.00000000 degE 6371110.6277 m
+The pole in cartesian  0.0000 m 0.0000 m 6371110.6277 m
+Tests complete.

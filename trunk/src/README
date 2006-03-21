@@ -1,0 +1,201 @@
+// this is for Doxygen to parse and add to the documentation
+
+/**
+ * @file README
+ * Documentation for Doxygen
+ */
+
+/** @mainpage
+ * This documentation describes the architecture and design of the
+ * GPS ToolKit (GPSTk), produced by the Space and Geophysics Laboratory (SGL)
+ * of Applied Research Laboratories, The University of Texas at Austin (ARL:UT).
+ *
+ * \section intro Introduction
+ * GPSTK is a library of support routines designed for use by programmers
+ * developing applications that read and write (particularly in RINEX format),
+ * process and otherwise manipulate GPS data. It is characterized by the following:
+ * - Modern, ANSI C++; highly object oriented
+ * - Uses templates, the Standard Template Library (STL) and iostreams classes
+ * - Portable and platform independent
+ * - Includes full implementation of the RINEX (Receiver Independent Exchange Format) I/O
+ *
+ * \section codedesign Code Design
+ * \subsection namesp Namespaces
+ * All GPSTK code is placed within the gpstk namespace. Within the gpstk namespace, other
+ * namespaces are defined for certain specialized functionality; these include
+ * - gpstk::BinUtils in the Binary utilities module
+ * - gpstk::FileUtils in the File utilities module
+ * - gpstk::StringUtils in the String utilities module
+ *
+ * Namespace std is also used throughout the GPSTK.
+ *
+ * \subsection other Other
+ * [Other high level code design things...]
+ *
+ * \section content Library Content
+ * The library consists of several modules, which are more or less dependent upon each
+ * other. These include
+ * - Exceptions for use throughout the library
+ * - Binary utilities
+ * - STL "helpers"
+ * - String utilities
+ * - Command line options
+ * - Date and time conversions
+ * - Formatted file I/O
+ * - File utilities, including file filters and filter hunter
+ * - Vector and Matrix algorithms
+ * - Mathematical algorithms
+ * - Geodetic coordinates, conversions, etc
+ * - Complete RINEX implementation (including Glonass and other data),
+ *    with extensions that allow user-defined observation types
+ *   -# Rinex Meterological file I/O
+ *   -# Rinex Navigation file I/O
+ *   -# Rinex Observation file I/O
+ * - Ephemeris calculations, including almanac and ICD-GPS-200 algorithms
+ * - Ephemeris I/O and storage
+ * - SP3 format file ("precise ephemeris") I/O and storage
+ * - GPS navigation solution algorithms
+ * - Basic application frameworks
+ * - P-Code generator
+ *
+ * \section applic Applications
+ * This distribution also includes several stand-alone application programs which
+ * also serve as examples of how to use the GPSTK. These include
+ * - Rinex summary
+ * - Rinex editor
+ * - Discontinuity Correction (i.e. cycle slip fixing)
+ * - Residual and correction generator
+ *
+ */
+
+/** @namespace gpstk Namespace for entire GPSTK library. */
+
+// These are all the example and test files we have and a brief description
+// of each.
+
+/**
+ * @example AnotherFileFilterTest.cpp
+ */
+
+/**
+ * @example EphComp.cpp
+ */
+
+/**
+ * @example FileSpecTest.cpp
+ */
+
+/**
+ * @example MatrixTest.cpp
+ */
+
+/**
+ * @example NavMerge.cpp
+ */
+
+/**
+ * @example RungeKuttaTest.cpp
+ * The full, nonlinear equation of motion for a simple pendulum.
+ * Tests the RungeKutta4 integrator class.
+ *
+ */
+
+/**
+ * @example Xbegweek.cpp
+ */
+
+/**
+ * @example Xendweek.cpp
+ */
+
+/**
+ * @example daytimetest.cpp
+ * Tests the DayTime class.
+ */
+
+/**
+ * @example exceptiontest.cpp
+ * Tests exceptions.
+ */
+
+/**
+ * @example petest.cpp
+ */
+
+/**
+ * @example rinex_met_read_write.cpp
+ * Reads an input RINEX Met file, writes out the same data. The input and 
+ * output files should diff without error if everything is working right.
+ */
+
+/**
+ * @example rinex_met_test.cpp
+ * Reads an input RINEX Met file to test file data processing.
+ */
+
+/**
+ * @example rinex_nav_read_write.cpp
+ * Reads an input RINEX Nav file, writes out the same data. The input and 
+ * output files should diff without error if everything is working right.
+ */
+
+/**
+ * @example rinex_nav_test.cpp
+ * Reads an input RINEX Nav file to test file data processing.
+ */
+
+/**
+ * @example rinex_obs_read_write.cpp
+ * Reads an input RINEX Obs file, writes out the same data. The input and 
+ * output files should diff without error if everything is working right.
+ */
+
+/**
+ * @example rinex_obs_test.cpp
+ * Reads an input RINEX Obs file to test file data processing.
+ */
+
+/**
+ * @example stringutiltest.cpp
+ * Tests the string utilities.
+ */
+
+/**
+ * @example example1.cpp
+ * Demonstrates the most basic properties of DayTime.
+ */
+
+/**
+ * @example example2.cpp
+ * Demonstrates the most basic properties of RINEX input and output.
+ */
+
+/**
+ * @example example3.cpp
+ * Demonstrates simple manipulation of RINEX observables.
+ */
+
+/**
+ * @example example4.cpp
+ * Demonstrates the position solutions.
+ */
+
+/**
+ * @example DayTimeToleranceTest.cpp
+ * Tests DayTime for user-defined comparison tolerances.
+ */
+
+/**
+ * @example DayTimeIncrementTest.cpp
+ * Tests DayTime's ability to reject accumulation of floating point error
+ * when incremented or decremented.
+ */
+
+/** EMACS **
+ * Local variables:
+ * mode: c++
+ * End:
+ */
+
+
+

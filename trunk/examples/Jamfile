@@ -1,0 +1,7 @@
+#
+# $Id: //depot/sgl/gpstk/dev/examples/Jamfile#1 $
+#
+
+SubDir TOP examples ;
+
+# SubInclude TOP examples foo ;

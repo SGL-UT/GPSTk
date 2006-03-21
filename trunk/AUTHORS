@@ -1,0 +1,32 @@
+$Id: //depot/sgl/gpstk/dev/AUTHORS#1 $
+
+GPS Toolkit Authorship
+------------------------------------------------------------------------------
+    The GPSTk is sponsored by the Space and Geophysics Laboratory, within the
+    Applied Research Laboratories at the University of Texas at Austin (ARL:UT).
+    GPSTk is the by-product of GPS research conducted at ARL:UT since before
+    the first GPS satellite launched in 1978; it is the combined effort
+    of many software engineers and scientists. In 2003 the research staff
+    at ARL:UT decided to open source much of their basic GPS processing
+    software as the GPSTk.
+
+Contact Information
+------------------------------------------------------------------------------
+   GPSTk Homepage
+   ----------------------------
+   http://gpstk.sourceforge.net
+
+   SGL:ARL:UT Homepage
+   ----------------------------
+   http://sgl.arlut.utexas.edu
+
+   Mailing Lists                         Subscribe/Unsubscribe/Archive URL
+   ------------------------------------  -------------------------------------
+   gpstk-users@lists.sourceforge.net     http://lists.sourceforge.net/lists/listinfo/gpstk-users
+   gpstk-devel@lists.sourceforge.net     http://lists.sourceforge.net/lists/listinfo/gpstk-devel
+   gpstk-announce@lists.sourceforge.net  http://lists.sourceforge.net/lists/listinfo/gpstk-announce
+   gpstk-admin@lists.sourceforge.net     http://lists.sourceforge.net/lists/listinfo/gpstk-admin
+  
+   Email
+   ----------------------------
+   Please send general GPSTk comments to gpstk@arlut.utexas.edu .

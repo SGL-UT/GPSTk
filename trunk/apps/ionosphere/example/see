@@ -1,0 +1,1 @@
+perl plotall.pl out/%1 %2 %3 %4

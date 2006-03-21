@@ -1,0 +1,159 @@
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/NavProc.cpp#5 $"
+
+/*
+  Think, navdmp for mdp, with bonus output that you get data from all code/carrier
+  combos.
+*/
+
+#include "Geodetic.hpp"
+#include "NavProc.hpp"
+
+#include "FormatConversionFunctions.hpp"
+
+using namespace std;
+using namespace gpstk;
+using namespace gpstk::StringUtils;
+
+
+//-----------------------------------------------------------------------------
+MDPNavProcessor::MDPNavProcessor(gpstk::MDPStream& in, std::ofstream& out)
+   : MDPProcessor(in, out),
+     firstNav(true), almOut(false), ephOut(false)
+{
+   timeFormat = "%4Y/%03j/%02H:%02M:%02S";
+}
+
+
+//-----------------------------------------------------------------------------
+MDPNavProcessor::~MDPNavProcessor()
+{
+   using gpstk::RangeCode;
+   using gpstk::CarrierCode;
+   using gpstk::StringUtils::asString;
+   
+   out << "Done processing data." << endl << endl;
+
+   out << endl << "Navigation Subframe message summary:" << endl;
+   if (firstNav)
+      out << "  No Navigation Subframe messages processed." << endl;
+   else
+   {
+      out << "  TBD." << endl;
+   }
+      
+   out << endl;
+}
+
+
+//-----------------------------------------------------------------------------
+void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
+{
+   if (firstNav)
+   {
+      firstNav = false;
+      if (verboseLevel)
+         out << msg.time.printf(timeFormat)
+             << "  Received first Navigation Subframe message"
+             << endl;
+   }
+
+   short sfid = msg.getSFID();
+   short svid = msg.getSVID();
+   bool isAlm = sfid > 3;
+   long sow = msg.getHOWTime();
+   short page = ((sow-6) / 30) % 25 + 1;
+
+   if ((isAlm && !almOut) || (!isAlm && !ephOut))
+      return;
+
+   if (verboseLevel>2)
+   {
+      out << msg.time.printf(timeFormat)
+          << "  prn:" << setw(2) << msg.prn
+          << " " << asString(msg.carrier)
+          << ":" << setw(6) << left << asString(msg.range)
+          << " nav:" << static_cast<int>(msg.nav)
+          << " SOW:" << setw(6) << sow
+          << " SFID:" << sfid;
+      if (isAlm)
+         out << " SVID:" << svid
+             << " Page:" << page;
+      out << endl;
+   }
+
+   // Sanity check on the header time versus the HOW time
+   short week = msg.time.GPSfullweek();
+   DayTime howTime(week, msg.getHOWTime());
+   if (howTime == msg.time)
+   {
+      // Move this back down to verboseLevel>0 when ITT fixes their code...
+      if (verboseLevel>2)
+         out << msg.time.printf(timeFormat) << "  header time is HOW time" << endl;
+   }
+   else if (howTime != msg.time+6)
+      out << msg.time.printf(timeFormat)
+          << "  HOW/header time miscompare " << howTime.printf(timeFormat)
+          << endl;
+
+   NavIndex ni(RangeCarrierPair(msg.range, msg.carrier), msg.prn);
+   prev[ni] = curr[ni];
+   curr[ni] = msg;
+
+   long sfa[10];
+   msg.fillArray(sfa);
+   long long_sfa[10];
+   for( int j = 0; j < 10; j++ )
+      long_sfa[j] = static_cast<long>( sfa[j] );
+   if (gpstk::EngNav::subframeParity(long_sfa))
+   {
+      if (isAlm)
+      {
+         AlmanacPages& almPages = almPageStore[ni];
+         EngAlmanac& engAlm = almStore[ni];
+         SubframePage sp(sfid, page);
+         almPages[sp] = msg;
+         almPages.insert(make_pair(sp, msg));
+         
+         if (makeEngAlmanac(engAlm, almPages))
+         {
+            out << msg.time.printf(timeFormat)
+                << "  Built complete alm from prn " << ni.second
+                << " " << asString(ni.first.second)
+                 << " " << asString(ni.first.first)
+                << endl;
+            if (verboseLevel>1)
+               engAlm.dump(out);
+            almPages.clear();
+            engAlm = EngAlmanac();
+         }            
+      }
+      else
+      {
+         EphemerisPages& ephPages = ephPageStore[ni];
+         ephPages[sfid] = msg;
+         EngEphemeris engEph;
+
+         if (makeEngEphemeris(engEph, ephPages))
+         {
+            out << msg.time.printf(timeFormat)
+                << "  Built complete eph from prn " << ni.second
+                << " " << asString(ni.first.second)
+                << " " << asString(ni.first.first)
+                << endl;
+            if (verboseLevel>1)
+               out << engEph;
+            ephStore[ni] = engEph;
+         }
+      }
+   }
+   else
+   {
+      out << msg.time.printf(timeFormat)
+          << "  Parity error on prn:" << setw(2) << msg.prn
+          << " " << asString(msg.carrier)
+             << ":" << setw(6) << left << asString(msg.range)
+          << " TOW:" << setw(6) << msg.getHOWTime()
+          << " SFID:" << sfid
+          << endl;
+   }
+}  // end of process()

@@ -1,0 +1,22 @@
+# $Id: //depot/sgl/gpstk/dev/apps/reszilla/Jamfile#7 $
+
+SubDir TOP apps reszilla ;
+
+# It seems that if I explicity add the src directory, things are much happier.
+SEARCH_SOURCE += $(TOP)/src ;
+
+if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
+{
+  CCFLAGS += -Xc ;
+  C++FLAGS += -compat=5 ;
+}
+
+Library rlib : util.cpp readers.cpp ordUtils.cpp DDEpoch.cpp PhaseCleaner.cpp
+  PhaseResidual.cpp ;
+
+LinkLibraries reszilla : rlib ;
+
+GPSLinkLibraries reszilla : gpstk rlib ;
+
+GPSMain reszilla : reszilla.cpp ;
+

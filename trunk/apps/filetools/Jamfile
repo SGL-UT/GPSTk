@@ -1,0 +1,14 @@
+#
+# $Id: //depot/sgl/gpstk/apps/filetools/Jamfile#3 $
+#
+
+SubDir TOP apps filetools ;
+
+GPSLinkLibraries ficafic ficfica navdmp fic2rin rinexthin : gpstk ;
+
+GPSMain navdmp : navdmp.cpp ;
+GPSMain ficfica : ficfica.cpp ;
+GPSMain ficafic : ficafic.cpp ;
+GPSMain fic2rin : fic2rin.cpp ;
+GPSMain rinexthin : RinexThin.cpp ;
+

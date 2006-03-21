@@ -1,0 +1,3 @@
+# use this ls command, or make up your own list.files
+#ls processed/*.obs > list.files
+/home/btolman/gpstk/dev/apps/ionosphere/IonoBias -fbias.inp

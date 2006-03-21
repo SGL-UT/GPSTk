@@ -1,0 +1,15 @@
+apps/ionosphere
+
+   Program IonoBias reads Rinex data files containing extended Rinex 
+observation types EL, LA, LO and SR or SS (see preprocessing, below) from 
+several sites and estimates biases in the ionospheric total electron content (TEC) measurements imposed by the hardware: either by satellite (the satellite + receiver combined bias) or by receiver alone (average over satellites to get the receiver bias). IonoBias does this by assuming a simple model of the ionosphere and simultaneously estimating biases and model parameters.
+
+   Program TECMaps reads Rinex data files containing extended Rinex observation
+types EL, AZ and SR or VR from several sites and at each epoch fits the ver-
+tical TEC data to a model of the ionosphere on a two-dimensional grid surface.
+Hardware TEC measurement biases are corrected, using input from the program
+IonoBias. The user can specify the type of grid, the type of TEC data and the
+model to be used. Output is in the form of files, one per epoch, which can be
+used to plot the 2D ionospheric TEC surface.
+
+   Run these programs at the command prompt with no options to see a summary of the input options.

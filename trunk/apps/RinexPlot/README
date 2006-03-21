@@ -1,0 +1,31 @@
+RinexPlot (/apps/RinexPlot)
+
+   This directory contains a Perl script which uses the Perl::Tk module to
+provide a menu-driven GUI that will plot the data in Rinex observation files.
+It makes use of the Rinex tools, found in /apps/Rinextools, by calling them on
+the command line from within Perl.
+
+   RinexPlot will run under Unix, Linux and Windows. For Windows, you must
+have Perl and Perl::Tk installed on your system; the best place to get these 
+(free) is at ActiveState:
+
+http://www.activestate.com/Products/ActivePerl/ 
+
+Be sure to get Perl::Tk. Normally the Tk module will come with ActivePerl;
+you also get a Perl Package Manager which allows you to update your perl,
+or you can do this with CPAN. Under Windows you can use the
+batch file RinexPlot.bat.
+
+   Two examples are included here, using scripts goRP and goRP1 (Unix), or
+goRP.bat and goRP1.bat (Windows).
+
+   Getting started is easy. Run the example scripts (batch files) first. The
+GUI is menu and mouse driven, and you can get some brief instructions from the
+Help/Topics menu item. You can also provide options on the command line; see
+under Help/Topics again, or just look in the example scripts.
+
+   RinexPlot is young; some menu items are yet to be implemented, and it still
+has a few rough edges. I expect to it be improved greatly in the near future.
+
+Brian Tolman
+btolman@arlut.utexas.edu

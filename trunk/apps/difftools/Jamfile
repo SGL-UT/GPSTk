@@ -1,0 +1,12 @@
+# $Id: //depot/sgl/gpstk/dev/apps/difftools/Jamfile#2 $
+
+SubDir TOP apps difftools ;
+
+GPSLinkLibraries rowdiff rnwdiff rmwdiff ephdiff ficdiff : gpstk ;
+BonkForte ; # bleah.
+
+GPSMain rowdiff : rowdiff.cpp ;
+GPSMain rnwdiff : rnwdiff.cpp ;
+GPSMain rmwdiff : rmwdiff.cpp ;
+GPSMain ephdiff : ephdiff.cpp ;
+GPSMain ficdiff : ficdiff.cpp ;

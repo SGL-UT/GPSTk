@@ -1,0 +1,9 @@
+#
+# $Id: //depot/sgl/gpstk/dev/apps/cycleslips/Jamfile#1 $
+#
+
+SubDir TOP apps cycleslips ;
+
+GPSLinkLibraries DiscFix : gpstk ;
+
+GPSMain DiscFix : DiscFix.cpp DiscCorr.cpp ;

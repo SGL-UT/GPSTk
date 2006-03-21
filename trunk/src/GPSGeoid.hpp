@@ -1,0 +1,87 @@
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/GPSGeoid.hpp#2 $"
+
+/**
+ * @file GPSGeoid.hpp
+ * The GPS geoid defined in ICD-GPS-200
+ */
+
+#ifndef GPSTK_GPSGEOID_HPP
+#define GPSTK_GPSGEOID_HPP
+
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+#include "WGS84Geoid.hpp"
+#include "icd_200_constants.hpp"
+
+namespace gpstk
+{
+       /** @addtogroup geodeticgroup */
+       //@{ 
+
+      /**
+       * This class represents the geodetic model defined in
+       * ICD-GPS-200.  This geodetic model was based on the WGS 84
+       * model, which has changed since the ICD-GPS-200 was written.
+       * To save the cost of having to update all of the fielded
+       * receivers, these constants were kept for GPS purposes.
+       *
+       * Only some of the WGS 84 geodetic model parameters are defined
+       * as part of the 200.  These parameters are explicitly defined
+       * here.  Other parameters are inherited from the WGS84Geoid
+       * definition.
+       */
+   class GPSGeoid : public WGS84Geoid
+   {
+   public:
+         /// defined in ICD-GPS-200C, 20.3.3.4.3.3 and Table 20-IV
+         /// @return angular velocity of Earth in radians/sec.
+      virtual double angVelocity() const throw()
+      { return 7.2921151467e-5; }
+
+         /// defined in ICD-GPS-200C, 20.3.3.4.3.3 and Table 20-IV
+         /// @return geocentric gravitational constant in m**3 / s**2
+      virtual double gm() const throw()
+      { return 3.986005e14; }
+
+         /// derived from ICD-GPS-200C, 20.3.3.4.3.3 and Table 20-IV
+         /// @return geocentric gravitational constant in km**3 / s**2
+      virtual double gm_km() const throw()
+      { return 3.9860034e5; }
+
+         /// defined in ICD-GPS-200C, 20.3.4.3
+         /// @return Speed of light in m/s.
+      virtual double c() const throw()
+      { return C_GPS_M; }
+
+         /// derived from ICD-GPS-200C, 20.3.4.3
+         /// @return Speed of light in km/s
+      virtual double c_km() const throw()
+      { return (C_GPS_M / 1000); }
+
+   }; // class GPSGeoid
+
+   //@}
+
+} // namespace
+
+#endif

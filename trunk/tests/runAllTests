@@ -1,0 +1,40 @@
+#!/bin/sh
+
+data="./data"
+
+echo "rinex_met_test"
+rinex_met_test $data/405_077A.02M
+
+echo "daytimetest:"
+daytimetest
+
+echo "exceptiontest:"
+exceptiontest
+
+echo "petest:"
+petest $data/nga12600.apc
+
+echo "stringutiltest:"
+stringutiltest >stringutiltest.out
+diff stringutiltest.out $data/stringutiltest.ref
+
+echo "ephemeris comparison test:"
+echo "first merge RINEX navigation files into merged.n"
+../apps/Rinextools/NavMerge -omerged.n $data/s011061a.04n $data/s021061a.04n $data/s031061a.04n
+echo "EphComp will throw an exception here when it can't find PRN 13 .. this is normal"
+EphComp -p $data/nga12600.apc -p $data/nga12601.apc -b merged.n > EphComp.out
+gnuplot -persist EphComp.gp
+
+echo "MatrixTest"
+MatrixTest $data/anotsym.dat  $data/cov.dat $data/dia.dat $data/lt.dat \
+           $data/partials.dat $data/squ.dat $data/sym.dat $data/tmatrix.dat \
+           $data/ut.dat >MatrixTest.out
+diff MatrixTest.out $data/MatrixTest.ref
+
+echo "Generating directory for FileSpecTest"
+genFileSpecTestDirs.pl
+FileSpecTest
+
+echo "PositionTest"
+positiontest > positiontest.out
+diff positiontest.out data/positiontest.ref

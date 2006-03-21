@@ -1,0 +1,12 @@
+# $Id: //depot/sgl/gpstk/dev/apps/checktools/Jamfile#1 $
+
+SubDir TOP apps checktools ;
+
+GPSLinkLibraries rowcheck rmwcheck rnwcheck ficcheck ficacheck : gpstk ;
+BonkForte ; # bleah.
+
+GPSMain rowcheck : rowcheck.cpp ;
+GPSMain rmwcheck : rmwcheck.cpp ;
+GPSMain rnwcheck : rnwcheck.cpp ;
+GPSMain ficcheck : ficcheck.cpp ;
+GPSMain ficacheck : ficacheck.cpp ;

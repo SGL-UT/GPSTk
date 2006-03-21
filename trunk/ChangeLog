@@ -1,0 +1,131 @@
+Version 1.1   Friday, January 7, 2005
+
+	General modifications
+        ---------------------
+
+	- Added patches to support more compilers:
+	     GNU compiler version 3.4
+	     GNU compiler under AIX
+	     Sun ONE Studio 8
+
+	- GNU make/configure capabilities have been added. Since this
+	  is a new feature, your mileage may vary. The makefiles
+	  work on systems with newer autoconf toolchain versions.
+
+	- More examples were added to gpstk/examples.
+	  These examples are described in the website.
+
+	- Major revamp of the website.
+	
+	Library modifications
+	---------------------
+
+	- P code generator was allocating over 20 megabytes in
+	  processes that use the shared library. Now the 20 megabytes
+	  are not allocated until the P code generator is initialized
+	  by the user.
+	
+	- Bug fix: FileSpec::extractDayTime() now initializes
+	  DayTimes generated from file name to have zero hours,
+	  zero minutes, zero seconds, etc.
+	
+	- Bug fix: DayTime::setGPS now more robust when accepting
+	  a year number as a hint to disambiguate which full GPS
+	  week to use.
+	
+	- Added more DayTime tests.
+	
+	- Bug fix: DayTime user-defined tolerance for comparisons now is
+	  working.
+
+	- Bug fix: DayTime::setGPS(short week, long zcount, short year)
+	  now works across a year rollover.
+	
+        - Renamed WxObsData::find(...) to getWxObservation(...) to remove
+          any confusion that might develop over having the same method
+          name as the STL.
+	
+	- Bug fix: satellite combinations in RAIM sometimes incorrect when 
+	  a user-marked satellite was present.
+
+	- Some Vector routines were throwing Exception instead of 
+	  VectorException.
+
+	- Added Vector-Matrix concatentation operators.
+
+	- Added a sub-Vector constructor.
+
+	- Modification to Householder decomposition routine.
+	
+	- Various fixes to MatrixOperators.
+
+	- Updates to FIC routines.
+
+	- Implemented azimuth and elevation functions in Position, making 
+	  use of the functions inherited from Triple. Modified EphemerisRange
+	  to use Position, as well as TropModel and ResCor; this eliminated 
+	  a bug in the azimuth() in EphemerisRange and means that now there 
+	  is only one implementation of az and el. Added a test of the new 
+	  routines in positiontest. Also added a Position constructor from Xvt.
+
+	- Bugs in DayTime::setToString() - %f was missing (!) and %S 
+	  was acting as %f should; date was trashed when time was set, 
+	  and vice versa, and year input was not properly handled.
+
+        - Implemented ionospheric model types other than linear.
+
+	- Cleaned up weather data handling (e.g., error checks).
+
+	
+	Application modifications
+        -------------------------
+	
+	apps/difftools
+
+	- Unified code using a common class.
+
+
+	apps/filetools
+
+	- Improvments to navdmp.
+
+	- New utility called rinexthin for subsampling RINEX observation
+	  files.
+
+	
+	apps/binding
+	
+	- This  new project provides GPSTk bindings in other languages
+	  has been added. This capability is in an alpha state.
+	  Currently there are a limited set of bindings for
+	  Tcl/Tk, Python and Octave.
+
+	
+	apps/RinexEditor
+
+	-  Bug fix: 'delete all' command was being deleted prematurely.
+
+
+	apps/RinexPlot
+
+	- Improved documentation.
+        
+	- Various tweaks.
+
+	- Plotting improvements.
+
+
+	apps/ionosphere
+
+	- Various improvements.
+
+
+
+
+
+
+
+
+
+
+	

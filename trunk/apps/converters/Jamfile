@@ -1,0 +1,9 @@
+#
+# $Id: //depot/sgl/gpstk/dev/apps/converters/Jamfile#1 $
+#
+
+SubDir TOP apps converters ;
+
+GPSLinkLibraries novaRinex : gpstk ;
+
+GPSMain novaRinex : novaRinex.cpp NovatelData.cpp ;

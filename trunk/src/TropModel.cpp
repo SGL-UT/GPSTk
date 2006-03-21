@@ -1,0 +1,1700 @@
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/TropModel.cpp#8 $"
+
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
+
+
+
+
+
+/**
+ * @file TropModel.cpp
+ * Base class for tropospheric models, plus implementations of several
+ * published models
+ */
+
+#include "TropModel.hpp"
+#include "EphemerisRange.hpp"             // for Elevation()
+#include "MathBase.hpp"                   // SQRT
+#include "geometry.hpp"                   // DEG_TO_RAD
+#include "GPSGeoid.hpp"                   // geoid.a() = R earth
+#include "icd_200_constants.hpp"          // TWO_PI
+#include "Geodetic.hpp"
+#include "ECEF.hpp"
+#include "WGS84Geoid.hpp"
+
+namespace gpstk
+{
+      // for temperature conversion from Celcius to Kelvin
+   static const double CELSIUS_TO_KELVIN = 273.15;
+
+      // for Geodetic coordinate conversion
+   WGS84Geoid WGS84;
+
+      // Compute and return the full tropospheric delay. Typically call
+      // setWeather(T,P,H) before making this call.
+      // @param elevation Elevation of satellite as seen at receiver, in degrees
+   double TropModel::correction(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid)
+         GPSTK_THROW(InvalidTropModel("Invalid model"));
+
+      if(elevation < 0.0)
+         return 0.0;
+
+      return (dry_zenith_delay() * dry_mapping_function(elevation)
+            + wet_zenith_delay() * wet_mapping_function(elevation));
+
+   }  // end TropModel::correction(elevation)
+
+      // Compute and return the full tropospheric delay, given the positions of
+      // receiver and satellite and the time tag. This version is most useful
+      // within positioning algorithms, where the receiver position and timetag may
+      // vary; it computes the elevation (and other receiver location information)
+      // and passes them to appropriate set...() routines and the
+      // correction(elevation) routine.
+      // @param RX  Receiver position in ECEF cartesian coordinates (meters)
+      // @param SV  Satellite position in ECEF cartesian coordinates (meters)
+      // @param tt  Time tag of the signal 
+   double TropModel::correction(const Position& RX,
+                                const Position& SV,
+                                const DayTime& tt)
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid)
+         GPSTK_THROW(InvalidTropModel("Invalid model"));
+
+      double c;
+      try
+      {
+         c = correction(RX.elevation(SV));
+      }
+      catch(InvalidTropModel& e)
+      {
+         GPSTK_RETHROW(e);
+      }
+      return c;
+   }  // end TropModel::correction(RX,SV,TT)
+
+      // Re-define the tropospheric model with explicit weather data.
+      // Typically called just before correction().
+      // @param T temperature in degrees Celsius
+      // @param P atmospheric pressure in millibars
+      // @param H relative humidity in percent
+   void TropModel::setWeather(const double& T,
+                              const double& P,
+                              const double& H)
+      throw(InvalidParameter)
+   {
+      temp = T + CELSIUS_TO_KELVIN;
+      press = P;
+      humid = H;
+      if (temp < 0.0)
+      {
+         valid = false;
+         GPSTK_THROW(InvalidParameter("Invalid temperature parameter."));
+      }
+      if (press < 0.0)
+      {
+         valid = false;
+         GPSTK_THROW(InvalidParameter("Invalid pressure parameter."));
+      }
+      if (humid < 0.0 || humid > 100.0)
+      {
+         valid = false;
+         GPSTK_THROW(InvalidParameter("Invalid humidity parameter."));
+      }         
+   }  // end TropModel::setWeather(T,P,H)
+   
+      // Re-define the tropospheric model with explicit weather data.
+      // Typically called just before correction().
+      // @param wx the weather to use for this correction       
+   void TropModel::setWeather(const WxObservation& wx)
+      throw(InvalidParameter)
+   {
+      if (wx.isAllValid())
+      {
+         try
+         {
+            setWeather(wx.temperature, wx.pressure, wx.humidity);
+            valid = true;
+         }
+         catch(InvalidParameter& e)
+         {
+            valid = false;
+            GPSTK_RETHROW(e);
+         }
+      }
+      else
+      {
+         valid = false;
+         GPSTK_THROW(InvalidParameter("Invalid weather data"));
+      }
+   }
+         
+   // -------------------------------------------------------------------------------
+   // Simple Black model. This has been used as the 'default' for many years.
+
+      // Default constructor
+   SimpleTropModel::SimpleTropModel(void)
+   {
+      setWeather(20.0, 980.0, 50.0);
+      Cwetdelay = 0.122382715318184;
+      Cdrydelay = 2.235486646978727;
+      Cwetmap = 1.000282213715744;
+      Cdrymap = 1.001012704615527;
+      valid = true;
+   }
+
+      // Creates a trop model from a weather observation
+      // @param wx the weather to use for this correction.
+   SimpleTropModel::SimpleTropModel(const WxObservation& wx)
+      throw(InvalidParameter)
+   {
+      setWeather(wx);
+      valid = true;
+   }
+
+      // Create a tropospheric model from explicit weather data
+      // @param T temperature in degrees Celsius
+      // @param P atmospheric pressure in millibars
+      // @param H relative humidity in percent
+   SimpleTropModel::SimpleTropModel(const double& T,
+                                    const double& P,
+                                    const double& H)
+      throw(InvalidParameter)
+   {
+      setWeather(T,P,H);
+      valid = true;
+   }
+
+      // Re-define the tropospheric model with explicit weather data.
+      // Typically called just before correction().
+      // @param T temperature in degrees Celsius
+      // @param P atmospheric pressure in millibars
+      // @param H relative humidity in percent
+   void SimpleTropModel::setWeather(const double& T,
+                                    const double& P,
+                                    const double& H)
+      throw(InvalidParameter)
+   {
+      TropModel::setWeather(T,P,H);
+      GPSGeoid geoid;
+      Cdrydelay = 2.343*(press/1013.25)*(temp-3.96)/temp;
+      double tks = temp * temp;
+      Cwetdelay = 8.952/tks*humid*exp(-37.2465+0.213166*temp-(0.256908e-3)*tks);
+      Cdrymap =1.0+(0.15)*148.98*(temp-3.96)/geoid.a();
+      Cwetmap =1.0+(0.15)*12000.0/geoid.a();
+      valid = true;
+   }  // end SimpleTropModel::setWeather(T,P,H)
+
+      // Re-define the tropospheric model with explicit weather data.
+      // Typically called just before correction().
+      // @param wx the weather to use for this correction       
+   void SimpleTropModel::setWeather(const WxObservation& wx)
+      throw(InvalidParameter)
+   {
+      TropModel::setWeather(wx);
+   }
+
+      // Compute and return the zenith delay for dry component of the troposphere
+   double SimpleTropModel::dry_zenith_delay(void) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid)
+         GPSTK_THROW(InvalidTropModel("Invalid model"));
+
+      return Cdrydelay;
+   }
+
+      // Compute and return the zenith delay for wet component of the troposphere
+   double SimpleTropModel::wet_zenith_delay(void) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid)
+         GPSTK_THROW(InvalidTropModel("Invalid model"));
+
+      return Cwetdelay;
+   }
+
+      // Compute and return the mapping function for dry component
+      // of the troposphere
+      // @param elevation is the Elevation of satellite as seen at receiver,
+      //                  in degrees
+   double SimpleTropModel::dry_mapping_function(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid)
+         GPSTK_THROW(InvalidTropModel("Invalid model"));
+
+      if(elevation < 0.0) return 0.0;
+
+      double d = cos(elevation*DEG_TO_RAD);
+      d /= Cdrymap;
+      return (1.0/SQRT(1.0-d*d));
+   }
+
+      // Compute and return the mapping function for wet component
+      // of the troposphere
+      // @param elevation is the Elevation of satellite as seen at receiver,
+      //                  in degrees
+   double SimpleTropModel::wet_mapping_function(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid)
+         GPSTK_THROW(InvalidTropModel("Invalid model"));
+
+      if(elevation < 0.0) return 0.0;
+
+      double d = cos(elevation*DEG_TO_RAD);
+      d /= Cwetmap;
+      return (1.0/SQRT(1.0-d*d));
+   }
+
+   // -------------------------------------------------------------------------------
+   // Tropospheric model based on Goad and Goodman(1974),
+   // "A Modified Hopfield Tropospheric Refraction Correction Model," Paper
+   // presented at the Fall Annual Meeting of the American Geophysical Union,
+   // San Francisco, December 1974.
+   // See Leick, "GPS Satellite Surveying," Wiley, NY, 1990, Chapter 9,
+   // particularly Table 9.1.
+   // -------------------------------------------------------------------------------
+ 
+   static const double GGdryscale = 8594.777388436570600;
+   static const double GGwetscale = 2540.042008403690900;
+
+      // Default constructor
+   GGTropModel::GGTropModel(void)
+   {
+      TropModel::setWeather(20.0, 980.0, 50.0);
+      Cdrydelay = 2.59629761092150147e-4;    // zenith delay, dry
+      Cwetdelay = 4.9982784999977412e-5;     // zenith delay, wet
+      Cdrymap = 42973.886942182834900;       // height for mapping, dry
+      Cwetmap = 12700.210042018454260;       // height for mapping, wet
+      valid = true;
+   }  // end GGTropModel::GGTropModel()
+
+      // Creates a trop model from a weather observation
+      // @param wx the weather to use for this correction.
+   GGTropModel::GGTropModel(const WxObservation& wx)
+      throw(InvalidParameter)
+   {
+      setWeather(wx);
+      valid = true;
+   }  // end GGTropModel::GGTropModel(weather)
+
+      // Create a tropospheric model from explicit weather data
+      // @param T temperature in degrees Celsius
+      // @param P atmospheric pressure in millibars
+      // @param H relative humidity in percent
+   GGTropModel::GGTropModel(const double& T,
+                            const double& P,
+                            const double& H)
+      throw(InvalidParameter)
+   {
+      setWeather(T,P,H);
+      valid = true;
+   } // end GGTropModel::GGTropModel()
+
+   double GGTropModel::dry_zenith_delay(void) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid)
+         GPSTK_THROW(InvalidTropModel("Invalid model"));
+
+      return (Cdrydelay * GGdryscale);
+   }  // end GGTropModel::dry_zenith_delay()
+
+   double GGTropModel::wet_zenith_delay(void) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid)
+         GPSTK_THROW(InvalidTropModel("Invalid model"));
+
+      return (Cwetdelay * GGwetscale);
+   }  // end GGTropModel::wet_zenith_delay()
+
+   double GGTropModel::dry_mapping_function(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid)
+         GPSTK_THROW(InvalidTropModel("Invalid model"));
+
+      if(elevation < 0.0) return 0.0;
+
+      GPSGeoid geoid;
+      double ce=cos(elevation*DEG_TO_RAD), se=sin(elevation*DEG_TO_RAD);
+      double ad = -se/Cdrymap;
+      double bd = -ce*ce/(2.0*geoid.a()*Cdrymap);
+      double Rd = SQRT((geoid.a()+Cdrymap)*(geoid.a()+Cdrymap)
+                - geoid.a()*geoid.a()*ce*ce) - geoid.a()*se;
+
+      double Ad[9], ad2=ad*ad, bd2=bd*bd;
+      Ad[0] = 1.0;
+      Ad[1] = 4.0*ad;
+      Ad[2] = 6.0*ad2 + 4.0*bd;
+      Ad[3] = 4.0*ad*(ad2+3.0*bd);
+      Ad[4] = ad2*ad2 + 12.0*ad2*bd + 6.0*bd2;
+      Ad[5] = 4.0*ad*bd*(ad2+3.0*bd);
+      Ad[6] = bd2*(6.0*ad2+4.0*bd);
+      Ad[7] = 4.0*ad*bd*bd2;
+      Ad[8] = bd2*bd2;
+
+         // compute dry component of the mapping function
+      double sumd=0.0;
+      for(int j=9; j>=1; j--) {
+         sumd += Ad[j-1]/double(j);
+         sumd *= Rd;
+      }
+      return sumd/GGdryscale;
+
+   }  // end GGTropModel::dry_mapping_function(elev)
+
+      // compute wet component of the mapping function
+   double GGTropModel::wet_mapping_function(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid)
+         GPSTK_THROW(InvalidTropModel("Invalid model"));
+
+      if(elevation < 0.0) return 0.0;
+
+      GPSGeoid geoid;
+      double ce = cos(elevation*DEG_TO_RAD), se = sin(elevation*DEG_TO_RAD);
+      double aw = -se/Cwetmap;
+      double bw = -ce*ce/(2.0*geoid.a()*Cwetmap);
+      double Rw = SQRT((geoid.a()+Cwetmap)*(geoid.a()+Cwetmap)
+                - geoid.a()*geoid.a()*ce*ce) - geoid.a()*se;
+
+      double Aw[9], aw2=aw*aw, bw2=bw*bw;
+      Aw[0] = 1.0;
+      Aw[1] = 4.0*aw;
+      Aw[2] = 6.0*aw2 + 4.0*bw;
+      Aw[3] = 4.0*aw*(aw2+3.0*bw);
+      Aw[4] = aw2*aw2 + 12.0*aw2*bw + 6.0*bw2;
+      Aw[5] = 4.0*aw*bw*(aw2+3.0*bw);
+      Aw[6] = bw2*(6.0*aw2+4.0*bw);
+      Aw[7] = 4.0*aw*bw*bw2;
+      Aw[8] = bw2*bw2;
+
+      double sumw=0.0;
+      for(int j=9; j>=1; j--) {
+         sumw += Aw[j-1]/double(j);
+         sumw *= Rw;
+      }
+      return sumw/GGwetscale;
+
+   }  // end GGTropModel::wet_mapping_function(elev)
+
+   void GGTropModel::setWeather(const double& T,
+                                const double& P,
+                                const double& H)
+      throw(InvalidParameter)
+   {
+      TropModel::setWeather(T,P,H);
+      double th=300./temp;
+         // water vapor partial pressure (mb)
+         // this comes from Leick and is not good.
+         // double wvpp=6.108*(RHum*0.01)*exp((17.15*Tk-4684.0)/(Tk-38.45));
+      double wvpp=2.409e9*humid*th*th*th*th*exp(-22.64*th);
+      Cdrydelay = 7.7624e-5*press/temp;
+      Cwetdelay = 1.0e-6*(-12.92+3.719e+05/temp)*(wvpp/temp);
+      Cdrymap = (5.0*0.002277*press)/Cdrydelay;
+      Cwetmap = (5.0*0.002277/Cwetdelay)*(1255.0/temp+0.5)*wvpp;
+      valid = true;
+   }  // end GGTropModel::setWeather(T,P,H)
+
+      // Re-define the tropospheric model with explicit weather data.
+      // Typically called just before correction().
+      // @param wx the weather to use for this correction       
+   void GGTropModel::setWeather(const WxObservation& wx)
+      throw(InvalidParameter)
+   {
+      TropModel::setWeather(wx);
+   }
+
+   // -------------------------------------------------------------------------------
+   // Tropospheric model with heights based on Goad and Goodman(1974),
+   // "A Modified Hopfield Tropospheric Refraction Correction Model," Paper
+   // presented at the Fall Annual Meeting of the American Geophysical Union,
+   // San Francisco, December 1974.
+   // (Not the same as GGTropModel because this has height dependence,
+   // and the computation of this model does not break cleanly into
+   // wet and dry components.)
+
+      // Default constructor
+   GGHeightTropModel::GGHeightTropModel(void)
+   {
+      validWeather = false; //setWeather(20.0,980.0,50.0);
+      validHeights = false; //setHeights(0.0,0.0,0.0);
+      validRxHeight = false;
+   }
+
+      // Creates a trop model from a weather observation
+      // @param wx the weather to use for this correction.
+   GGHeightTropModel::GGHeightTropModel(const WxObservation& wx)
+      throw(InvalidParameter)
+   {
+      valid = validRxHeight = validHeights = false;
+      setWeather(wx);
+   }
+
+      // Create a tropospheric model from explicit weather data
+      // @param T temperature in degrees Celsius
+      // @param P atmospheric pressure in millibars
+      // @param H relative humidity in percent
+   GGHeightTropModel::GGHeightTropModel(const double& T,
+                                        const double& P,
+                                        const double& H)
+      throw(InvalidParameter)
+   {
+      validRxHeight = validHeights = false;
+      setWeather(T,P,H);
+   }
+
+      // Create a valid model from explicit input.
+      // @param T temperature in degrees Celsius
+      // @param P atmospheric pressure in millibars
+      // @param H relative humidity in percent
+      // @param hT height at which temperature applies in meters.
+      // @param hP height at which atmospheric pressure applies in meters.
+      // @param hH height at which relative humidity applies in meters.
+   GGHeightTropModel::GGHeightTropModel(const double& T,
+                                        const double& P,
+                                        const double& H,
+                                        const double hT,
+                                        const double hP,
+                                        const double hH)
+      throw(InvalidParameter)
+   {
+      validRxHeight = false;
+      setWeather(T,P,H);
+      setHeights(hT,hP,hH);
+   }
+
+      // re-define this to get the throws
+   double GGHeightTropModel::correction(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid)
+      {
+         if(!validWeather)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Weather"));
+         if(!validHeights)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Heights"));
+         if(!validRxHeight)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Rx Height"));
+      }
+      if(elevation < 0.0) return 0.0;
+
+      return (dry_zenith_delay() * dry_mapping_function(elevation)
+            + wet_zenith_delay() * wet_mapping_function(elevation));
+
+   }  // end GGHeightTropModel::correction(elevation)
+
+      // Compute and return the full tropospheric delay, given the positions of
+      // receiver and satellite and the time tag. This version is most useful
+      // within positioning algorithms, where the receiver position and timetag
+      // may vary; it computes the elevation (and other receiver location
+      // information) and passes them to appropriate set...() routines and
+      // the correction(elevation) routine.
+      // @param RX  Receiver position
+      // @param SV  Satellite position
+      // @param tt  Time tag of the signal 
+   double GGHeightTropModel::correction(const Position& RX,
+                                        const Position& SV,
+                                        const DayTime& tt)
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid)
+      {
+         if(!validWeather)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Weather"));
+         if(!validHeights)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Heights"));
+         if(!validRxHeight)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Rx Height"));
+      }
+
+      // compute height from RX
+      setReceiverHeight(RX.getHeight());
+
+      return TropModel::correction(RX.elevation(SV));
+
+   }  // end GGHeightTropModel::correction(RX,SV,TT)
+
+      // Compute and return the full tropospheric delay, given the positions of
+      // receiver and satellite and the time tag. This version is most useful
+      // within positioning algorithms, where the receiver position and timetag
+      // may vary; it computes the elevation (and other receiver location
+      // information) and passes them to appropriate set...() routines and
+      // the correction(elevation) routine.
+      // @param RX  Receiver position in ECEF cartesian coordinates (meters)
+      // @param SV  Satellite position in ECEF cartesian coordinates (meters)
+      // @param tt  Time tag of the signal 
+      // This function is deprecated; use the Position version
+   double GGHeightTropModel::correction(const Xvt& RX,
+                                        const Xvt& SV,
+                                        const DayTime& tt)
+      throw(TropModel::InvalidTropModel)
+   {
+      Position R(RX),S(SV);
+      return GGHeightTropModel::correction(R,S,tt);
+   }
+
+      // Compute and return the zenith delay for dry component of the troposphere
+   double GGHeightTropModel::dry_zenith_delay(void) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Weather"));
+         if(!validHeights)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Heights"));
+         if(!validRxHeight)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Rx Height"));
+      }
+      double hrate=6.5e-3;
+      double Ts=temp+hrate*height;
+      double em=978.77/(2.8704e4*hrate);
+      double Tp=Ts-hrate*hpress;
+      double ps=press*pow(Ts/Tp,em)/1000.0;
+      double rs=77.624e-3/Ts;
+      double ho=11.385/rs;
+      rs *= ps;
+      double zen=(ho-height)/ho;
+      zen = rs*zen*zen*zen*zen;
+         // normalize
+      zen *= (ho-height)/5;
+      return zen;
+
+   }  // end GGHeightTropModel::dry_zenith_delay()
+
+      // Compute and return the zenith delay for wet component of the troposphere
+   double GGHeightTropModel::wet_zenith_delay(void) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Weather"));
+         if(!validHeights)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Heights"));
+         if(!validRxHeight)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Rx Height"));
+      }
+      double hrate=6.5e-3; //   deg K / m
+      double Th=temp-273.15-hrate*(hhumid-htemp);
+      double Ta=7.5*Th/(237.3+Th);
+         // water vapor partial pressure
+      double e0=6.11e-5*humid*pow(10.0,Ta);
+      double Ts=temp+hrate*htemp;
+      double em=978.77/(2.8704e4*hrate);
+      double Tk=Ts-hrate*hhumid;
+      double es=e0*pow(Ts/Tk,4.0*em);
+      double rs=(371900.0e-3/Ts-12.92e-3)/Ts;
+      double ho=11.385*(1255/Ts+0.05)/rs;
+      double zen=(ho-height)/ho;
+      zen = rs*es*zen*zen*zen*zen;
+         //normalize
+      zen *= (ho-height)/5;
+      return zen;
+      
+   }  // end GGHeightTropModel::wet_zenith_delay()
+
+      // Compute and return the mapping function for dry component
+      // of the troposphere
+      // @param elevation Elevation of satellite as seen at receiver,
+      //                  in degrees
+   double GGHeightTropModel::dry_mapping_function(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Weather"));
+         if(!validHeights)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Heights"));
+         if(!validRxHeight)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Rx Height"));
+      }
+      if(elevation < 0.0) return 0.0;
+
+      double hrate=6.5e-3;
+      double Ts=temp+hrate*htemp;
+      double ho=(11.385/77.624e-3)*Ts;
+      double se=sin(elevation*DEG_TO_RAD);
+      if(se < 0.0) se=0.0;
+
+      GPSGeoid geoid;
+      double rt,a,b,rn[8],al[8],er=geoid.a();
+      rt = (er+ho)/(er+height);
+      rt = rt*rt - (1.0-se*se);
+      if(rt < 0) rt=0.0;
+      rt = (er+height)*(SQRT(rt)-se);
+      a = -se/(ho-height);
+      b = -(1.0-se*se)/(2.0*er*(ho-height));
+      rn[0] = rt*rt;
+      for(int j=1; j<8; j++) rn[j]=rn[j-1]*rt;
+      al[0] = 2*a;
+      al[1] = 2*a*a+4*b/3;
+      al[2] = a*(a*a+3*b);
+      al[3] = a*a*a*a/5+2.4*a*a*b+1.2*b*b;
+      al[4] = 2*a*b*(a*a+3*b)/3;
+      al[5] = b*b*(6*a*a+4*b)*0.1428571;
+      if(b*b > 1.0e-35) {
+         al[6] = a*b*b*b/2;
+         al[7] = b*b*b*b/9;
+      } else {
+         al[6] = 0.0;
+         al[7] = 0.0;
+      }
+      double map=rt;
+      for(int k=0; k<8; k++) map += al[k]*rn[k];
+         // normalize
+      double norm=(ho-height)/5;
+      return map/norm;
+
+   }  // end GGHeightTropModel::dry_mapping_function(elevation)
+
+      // Compute and return the mapping function for wet component
+      // of the troposphere
+      // @param elevation Elevation of satellite as seen at receiver,
+      //                  in degrees
+   double GGHeightTropModel::wet_mapping_function(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Weather"));
+         if(!validHeights)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Heights"));
+         if(!validRxHeight)
+            GPSTK_THROW(InvalidTropModel("Invalid GGH trop model: Rx Height"));
+      }
+      if(elevation < 0.0) return 0.0;
+
+      double hrate=6.5e-3;
+      double Ts=temp+hrate*htemp;
+      double rs=(371900.0e-3/Ts-12.92e-3)/Ts;
+      double ho=11.385*(1255/Ts+0.05)/rs;
+      double se=sin(elevation*DEG_TO_RAD);
+      if(se < 0.0) se=0.0;
+
+      GPSGeoid geoid;
+      double rt,a,b,rn[8],al[8],er=geoid.a();
+      rt = (er+ho)/(er+height);
+      rt = rt*rt - (1.0-se*se);
+      if(rt < 0) rt=0.0;
+      rt = (er+height)*(SQRT(rt)-se);
+      a = -se/(ho-height);
+      b = -(1.0-se*se)/(2.0*er*(ho-height));
+      rn[0] = rt*rt;
+      for(int i=1; i<8; i++) rn[i]=rn[i-1]*rt;
+      al[0] = 2*a;
+      al[1] = 2*a*a+4*b/3;
+      al[2] = a*(a*a+3*b);
+      al[3] = a*a*a*a/5+2.4*a*a*b+1.2*b*b;
+      al[4] = 2*a*b*(a*a+3*b)/3;
+      al[5] = b*b*(6*a*a+4*b)*0.1428571;
+      if(b*b > 1.0e-35) {
+         al[6] = a*b*b*b/2;
+         al[7] = b*b*b*b/9;
+      } else {
+         al[6] = 0.0;
+         al[7] = 0.0;
+      }
+      double map=rt;
+      for(int j=0; j<8; j++) map += al[j]*rn[j];
+         // normalize map function
+      double norm=(ho-height)/5;
+      return map/norm;
+
+   }  // end GGHeightTropModel::wet_mapping_function(elevation)
+
+      // Re-define the weather data.
+      // Typically called just before correction().
+      // @param T temperature in degrees Celsius
+      // @param P atmospheric pressure in millibars
+      // @param H relative humidity in percent
+   void GGHeightTropModel::setWeather(const double& T,
+                                      const double& P,
+                                      const double& H)
+      throw(InvalidParameter)
+   {
+      try
+      {
+         TropModel::setWeather(T,P,H);
+         validWeather = true;
+         valid = validWeather && validHeights && validRxHeight;
+      }
+      catch(InvalidParameter& e)
+      {
+         valid = validWeather = false;
+         GPSTK_RETHROW(e);
+      }
+   }  // end GGHeightTropModel::setWeather(T,P,H)
+
+      // Re-define the tropospheric model with explicit weather data.
+      // Typically called just before correction().
+      // @param wx the weather to use for this correction       
+   void GGHeightTropModel::setWeather(const WxObservation& wx)
+      throw(InvalidParameter)
+   {
+      try
+      {
+         TropModel::setWeather(wx);
+         validWeather = true;         
+         valid = validWeather && validHeights && validRxHeight;
+      }
+      catch(InvalidParameter& e)
+      {
+         valid = validWeather = false;
+         GPSTK_RETHROW(e);
+      }
+   }
+   
+
+      // Re-define the heights at which the weather parameters apply.
+      // Typically called just before correction().
+      // @param hT height (m) at which temperature applies
+      // @param hP height (m) at which atmospheric pressure applies
+      // @param hH height (m) at which relative humidity applies
+   void GGHeightTropModel::setHeights(const double& hT,
+                                      const double& hP,
+                                      const double& hH)
+   {
+      htemp = hT;                 // height (m) at which temp applies
+      hpress = hP;                // height (m) at which press applies
+      hhumid = hH;                // height (m) at which humid applies
+      validHeights = true;
+      valid = validWeather && validHeights && validRxHeight;
+   }  // end GGHeightTropModel::setHeights(hT,hP,hH)
+
+      // Define the receiver height; this required before calling
+      // correction() or any of the zenith_delay or mapping_function routines.
+   void GGHeightTropModel::setReceiverHeight(const double& ht)
+   {
+      height = ht;
+      validRxHeight = true;
+      if(!validHeights) {
+         htemp = hpress = hhumid = ht;
+         validHeights = true;
+      }
+      valid = validWeather && validHeights && validRxHeight;
+   }  // end GGHeightTropModel::setReceiverHeight(const double& ht)
+
+   // -------------------------------------------------------------------------------
+   // Tropospheric model developed by University of New Brunswick and described in
+   // "A Tropospheric Delay Model for the User of the Wide Area Augmentation
+   // System," J. Paul Collins and Richard B. Langley, Technical Report No. 187,
+   // Dept. of Geodesy and Geomatics Engineering, University of New Brunswick,
+   // 1997. See particularly Appendix C.
+   //
+   // This model includes a wet and dry component, and was designed for the user
+   // without access to measurements of temperature, pressure and relative humidity
+   // at ground level. It requires input of the latitude, day of year and height
+   // above the ellipsoid, and it interpolates a table of values, using these
+   // inputs, to get the ground level weather parameters plus other parameters and
+   // the mapping function constants.
+   //
+   // NB in this model, units of temp are degrees Celsius, and humid is the water
+   // vapor partial pressure.
+
+   static const double NBRd=287.054;   // J/kg/K = m*m*K/s*s
+   static const double NBg=9.80665;    // m/s*s
+   static const double NBk1=77.604;    // K/mbar
+   static const double NBk3p=382000;   // K*K/mbar
+
+   static const double NBLat[5]={   15.0,   30.0,   45.0,   60.0,   75.0};
+
+   // zenith delays, averages
+   static const double NBZP0[5]={1013.25,1017.25,1015.75,1011.75,1013.00};
+   static const double NBZT0[5]={ 299.65, 294.15, 283.15, 272.15, 263.65};
+   static const double NBZW0[5]={  26.31,  21.79,  11.66,   6.78,   4.11};
+   static const double NBZB0[5]={6.30e-3,6.05e-3,5.58e-3,5.39e-3,4.53e-3};
+   static const double NBZL0[5]={   2.77,   3.15,   2.57,   1.81,   1.55};
+
+   // zenith delays, amplitudes
+   static const double NBZPa[5]={    0.0,  -3.75,  -2.25,  -1.75,  -0.50};
+   static const double NBZTa[5]={    0.0,    7.0,   11.0,   15.0,   14.5};
+   static const double NBZWa[5]={    0.0,   8.85,   7.24,   5.36,   3.39};
+   static const double NBZBa[5]={    0.0,0.25e-3,0.32e-3,0.81e-3,0.62e-3};
+   static const double NBZLa[5]={    0.0,   0.33,   0.46,   0.74,   0.30};
+
+   // mapping function, dry, averages
+   static const double NBMad[5]={1.2769934e-3,1.2683230e-3,1.2465397e-3,1.2196049e-3,
+                                 1.2045996e-3};
+   static const double NBMbd[5]={2.9153695e-3,2.9152299e-3,2.9288445e-3,2.9022565e-3,
+                                 2.9024912e-3};
+   static const double NBMcd[5]={62.610505e-3,62.837393e-3,63.721774e-3,63.824265e-3,
+                                 64.258455e-3};
+
+   // mapping function, dry, amplitudes
+   static const double NBMaa[5]={0.0,1.2709626e-5,2.6523662e-5,3.4000452e-5,
+                                 4.1202191e-5};
+   static const double NBMba[5]={0.0,2.1414979e-5,3.0160779e-5,7.2562722e-5,
+                                 11.723375e-5};
+   static const double NBMca[5]={0.0,9.0128400e-5,4.3497037e-5,84.795348e-5,
+                                 170.37206e-5};
+
+   // mapping function, wet, averages (there are no amplitudes for wet)
+   static const double NBMaw[5]={5.8021897e-4,5.6794847e-4,5.8118019e-4,5.9727542e-4,
+                           6.1641693e-4};
+   static const double NBMbw[5]={1.4275268e-3,1.5138625e-3,1.4572752e-3,1.5007428e-3,
+                           1.7599082e-3};
+   static const double NBMcw[5]={4.3472961e-2,4.6729510e-2,4.3908931e-2,4.4626982e-2,
+                           5.4736038e-2};
+
+   // labels for use with the interpolation routine
+   enum TableEntry { ZP=1, ZT, ZW, ZB, ZL, Mad, Mbd, Mcd, Maw, Mbw, Mcw };
+
+   // the interpolation routine
+   static double NB_Interpolate(double lat, int doy, TableEntry entry)
+   {
+      const double *pave, *pamp;
+      double ret, day=double(doy);
+
+         // assign pointer to the right array
+      switch(entry) {
+         case ZP:  pave=&NBZP0[0]; pamp=&NBZPa[0]; break;
+         case ZT:  pave=&NBZT0[0]; pamp=&NBZTa[0]; break;
+         case ZW:  pave=&NBZW0[0]; pamp=&NBZWa[0]; break;
+         case ZB:  pave=&NBZB0[0]; pamp=&NBZBa[0]; break;
+         case ZL:  pave=&NBZL0[0]; pamp=&NBZLa[0]; break;
+         case Mad: pave=&NBMad[0]; pamp=&NBMaa[0]; break;
+         case Mbd: pave=&NBMbd[0]; pamp=&NBMba[0]; break;
+         case Mcd: pave=&NBMcd[0]; pamp=&NBMca[0]; break;
+         case Maw: pave=&NBMaw[0];                 break;
+         case Mbw: pave=&NBMbw[0];                 break;
+         case Mcw: pave=&NBMcw[0];                 break;
+      }
+   
+         // find the index i such that NBLat[i] <= lat < NBLat[i+1]
+      int i = int(ABS(lat)/15.0)-1;
+   
+      if(i>=0 && i<=3) {               // mid-latitude -> regular interpolation
+         double m=(ABS(lat)-NBLat[i])/(NBLat[i+1]-NBLat[i]);
+         ret = pave[i]+m*(pave[i+1]-pave[i]);
+         if(entry < Maw)
+            ret -= (pamp[i]+m*(pamp[i+1]-pamp[i]))
+               * cos(TWO_PI*(day-28.0)/365.25);
+      }
+      else {                           // < 15 or > 75 -> simpler interpolation
+         if(i<0) i=0; else i=4;
+         ret = pave[i];
+         if(entry < Maw)
+            ret -= pamp[i]*cos(TWO_PI*(day-28.0)/365.25);
+      }
+   
+      return ret;
+
+   }  // end double NB_Interpolate(lat,doy,entry)
+
+      // Default constructor
+   NBTropModel::NBTropModel(void)
+   {
+      validWeather = false;
+      validRxLatitude = false;
+      validDOY = false;
+      validRxHeight = false;
+   } // end NBTropModel::NBTropModel()
+
+      // Create a trop model using the minimum information: latitude and doy.
+      // Interpolate the weather unless setWeather (optional) is called.
+      // @param lat Latitude of the receiver in degrees.
+      // @param day Day of year.
+   NBTropModel::NBTropModel(const double& lat,
+                            const int& day)
+   {
+      validRxHeight = false;
+      setReceiverLatitude(lat);
+      setDayOfYear(day);
+      setWeather();
+   }  // end NBTropModel::NBTropModel(lat, day);
+
+      // Create a trop model with weather.
+      // @param lat Latitude of the receiver in degrees.
+      // @param day Day of year.
+      // @param wx the weather to use for this correction.
+   NBTropModel::NBTropModel(const double& lat,
+                            const int& day,
+                            const WxObservation& wx)
+      throw(InvalidParameter)
+   {
+      validRxHeight = false;
+      setReceiverLatitude(lat);
+      setDayOfYear(day);
+      setWeather(wx);
+   }  // end NBTropModel::NBTropModel(weather)
+
+      // Create a tropospheric model from explicit weather data
+      // @param lat Latitude of the receiver in degrees.
+      // @param day Day of year.
+      // @param T temperature in degrees Celsius
+      // @param P atmospheric pressure in millibars
+      // @param H relative humidity in percent
+   NBTropModel::NBTropModel(const double& lat,
+                            const int& day,
+                            const double& T,
+                            const double& P,
+                            const double& H)
+      throw(InvalidParameter)
+   {
+      validRxHeight = false;
+      setReceiverLatitude(lat);
+      setDayOfYear(day);
+      setWeather(T,P,H);
+   } // end NBTropModel::NBTropModel()
+
+      // Create a valid model from explicit input (weather will be estimated
+      // internally by this model).
+      // @param ht Height of the receiver in meters.
+      // @param lat Latitude of the receiver in degrees.
+      // @param d Day of year.
+   NBTropModel::NBTropModel(const double& ht,
+                            const double& lat,
+                            const int& day)
+   {
+      setReceiverHeight(ht);
+      setReceiverLatitude(lat);
+      setDayOfYear(day);
+      setWeather();
+   }
+
+      // re-define this to get the throws
+   double NBTropModel::correction(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: weather"));
+         if(!validRxLatitude)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Latitude"));
+         if(!validRxHeight)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Height"));
+         if(!validDOY)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: day of year"));
+      }
+
+      if(elevation < 0.0) return 0.0;
+
+      return (dry_zenith_delay() * dry_mapping_function(elevation)
+            + wet_zenith_delay() * wet_mapping_function(elevation));
+   }  // end NBTropModel::correction(elevation)
+
+      // Compute and return the full tropospheric delay, given the positions of
+      // receiver and satellite and the time tag. This version is most useful
+      // within positioning algorithms, where the receiver position and timetag
+      // may vary; it computes the elevation (and other receiver location
+      // information) and passes them to appropriate set...() routines
+      // and the correction(elevation) routine.
+      // @param RX  Receiver position
+      // @param SV  Satellite position
+      // @param tt  Time tag of the signal 
+   double NBTropModel::correction(const Position& RX,
+                                  const Position& SV,
+                                  const DayTime& tt)
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather)
+            
+         if(!validRxLatitude)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Latitude"));
+         if(!validRxHeight)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Height"));
+         if(!validDOY)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: day of year"));
+      }
+
+         // compute height and latitude from RX
+      setReceiverHeight(RX.getHeight());
+      setReceiverLatitude(RX.getGeodeticLatitude());
+
+         // compute day of year from tt
+      setDayOfYear(int(tt.DOYday()));
+
+      return TropModel::correction(RX.elevation(SV));
+
+   }  // end NBTropModel::correction(RX,SV,TT)
+
+      // Compute and return the full tropospheric delay, given the positions of
+      // receiver and satellite and the time tag. This version is most useful
+      // within positioning algorithms, where the receiver position and timetag
+      // may vary; it computes the elevation (and other receiver location
+      // information) and passes them to appropriate set...() routines
+      // and the correction(elevation) routine.
+      // @param RX  Receiver position in ECEF cartesian coordinates (meters)
+      // @param SV  Satellite position in ECEF cartesian coordinates (meters)
+      // @param tt  Time tag of the signal 
+      // This function is deprecated; use the Position version
+   double NBTropModel::correction(const Xvt& RX,
+                                  const Xvt& SV,
+                                  const DayTime& tt)
+      throw(TropModel::InvalidTropModel)
+   {
+      Position R(RX),S(SV);
+      return NBTropModel::correction(R,S,tt);
+   }
+
+      // Compute and return the zenith delay for dry component of the troposphere
+   double NBTropModel::dry_zenith_delay(void) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: weather"));
+         if(!validRxLatitude)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Latitude"));
+         if(!validRxHeight)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Height"));
+         if(!validDOY)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: day of year"));
+      }
+      double beta = NB_Interpolate(latitude,doy,ZB);
+      double gm = 9.784*(1.0-2.66e-3*cos(2.0*latitude*DEG_TO_RAD)-2.8e-7*height);
+
+         // scale factors for height above mean sea level
+         // if weather is given, assume it's measured at ht -> kw=kd=1
+      double kd=1, base=log(1.0-beta*height/temp);
+      if(interpolateWeather)
+         kd = exp(base*NBg/(NBRd*beta));
+
+         // compute the zenith delay for dry component
+      return ((1.0e-6*NBk1*NBRd/gm) * kd * press);
+
+   }  // end NBTropModel::dry_zenith_delay()
+
+      // Compute and return the zenith delay for wet component of the troposphere
+   double NBTropModel::wet_zenith_delay(void) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: weather"));
+         if(!validRxLatitude)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Latitude"));
+         if(!validRxHeight)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Height"));
+         if(!validDOY)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: day of year"));
+      }
+      double beta = NB_Interpolate(latitude,doy,ZB);
+      double lam = NB_Interpolate(latitude,doy,ZL);
+      double gm = 9.784*(1.0-2.66e-3*cos(2.0*latitude*DEG_TO_RAD)-2.8e-7*height);
+
+         // scale factors for height above mean sea level
+         // if weather is given, assume it's measured at ht -> kw=kd=1
+      double kw=1, base=log(1.0-beta*height/temp);
+      if(interpolateWeather)
+         kw = exp(base*(-1.0+(lam+1)*NBg/(NBRd*beta)));
+
+         // compute the zenith delay for wet component
+      return ((1.0e-6*NBk3p*NBRd/(gm*(lam+1)-beta*NBRd)) * kw * humid/temp);
+
+   }  // end NBTropModel::wet_zenith_delay()
+
+      // Compute and return the mapping function for dry component
+      // of the troposphere
+      // @param elevation Elevation of satellite as seen at receiver,
+      //                  in degrees
+   double NBTropModel::dry_mapping_function(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: weather"));
+         if(!validRxLatitude)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Latitude"));
+         if(!validRxHeight)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Height"));
+         if(!validDOY)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: day of year"));
+      }
+      if(elevation < 0.0) return 0.0;
+
+      double a,b,c,se,map;
+      se = sin(elevation*DEG_TO_RAD);
+
+      a = NB_Interpolate(latitude,doy,Mad);
+      b = NB_Interpolate(latitude,doy,Mbd);
+      c = NB_Interpolate(latitude,doy,Mcd);
+      map = (1.0+a/(1.0+b/(1.0+c))) / (se+a/(se+b/(se+c)));
+
+      a = 2.53e-5;
+      b = 5.49e-3;
+      c = 1.14e-3;
+      if(ABS(elevation)<=0.001) se=0.001;
+      map += ((1.0/se)-(1.0+a/(1.0+b/(1.0+c)))/(se+a/(se+b/(se+c))))*height/1000.0;
+
+      return map;
+
+   }  // end NBTropModel::dry_mapping_function()
+
+      // Compute and return the mapping function for wet component
+      // of the troposphere
+      // @param elevation Elevation of satellite as seen at receiver,
+      //                  in degrees
+   double NBTropModel::wet_mapping_function(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: weather"));
+         if(!validRxLatitude)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Latitude"));
+         if(!validRxHeight)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Height"));
+         if(!validDOY)
+            GPSTK_THROW(InvalidTropModel("Invalid NB trop model: day of year"));
+      }
+      if(elevation < 0.0) return 0.0;
+
+      double a,b,c,se;
+      se = sin(elevation*DEG_TO_RAD);
+      a = NB_Interpolate(latitude,doy,Maw);
+      b = NB_Interpolate(latitude,doy,Mbw);
+      c = NB_Interpolate(latitude,doy,Mcw);
+
+      return ( (1.0+a/(1.0+b/(1.0+c))) / (se+a/(se+b/(se+c))) );
+
+   }  // end NBTropModel::wet_mapping_function()
+
+      // Re-define the weather data.
+      // If called, typically called before any calls to correction().
+      // @param T temperature in degrees Celsius
+      // @param P atmospheric pressure in millibars
+      // @param H relative humidity in percent
+   void NBTropModel::setWeather(const double& T,
+                                const double& P,
+                                const double& H)
+      throw(InvalidParameter)
+   {
+      interpolateWeather=false;
+      TropModel::setWeather(T,P,H);
+            // humid actually stores water vapor partial pressure
+      double th=300./temp;
+      humid = 2.409e9*H*th*th*th*th*exp(-22.64*th);
+      validWeather = true;
+      valid = validWeather && validRxHeight && validRxLatitude && validDOY;
+
+   }  // end NBTropModel::setWeather()
+   
+      // Re-define the tropospheric model with explicit weather data.
+      // Typically called just before correction().
+      // @param wx the weather to use for this correction       
+   void NBTropModel::setWeather(const WxObservation& wx)
+      throw(InvalidParameter)
+   {
+      interpolateWeather = false;
+      try
+      {
+         TropModel::setWeather(wx);
+            // humid actually stores vapor partial pressure
+         double th=300./temp;
+         humid = 2.409e9*humid*th*th*th*th*exp(-22.64*th);
+         validWeather = true;         
+         valid = validWeather && validRxHeight && validRxLatitude && validDOY;
+      }
+      catch(InvalidParameter& e)
+      {
+         valid = validWeather = false;
+         GPSTK_RETHROW(e);
+      }
+   }
+   
+      // configure the model to estimate the weather from the internal model,
+      // using lat and doy
+   void NBTropModel::setWeather()
+      throw(TropModel::InvalidTropModel)
+   {
+      interpolateWeather = true;
+      if(!validRxLatitude)
+      {
+         valid = validWeather = false;
+         GPSTK_THROW(InvalidTropModel(
+            "NBTropModel must have Rx latitude before interpolating weather"));
+      }
+      if(!validDOY)
+      {
+         valid = validWeather = false;
+         GPSTK_THROW(InvalidTropModel(
+            "NBTropModel must have day of year before interpolating weather"));
+      }
+      temp = NB_Interpolate(latitude,doy,ZT);
+      press = NB_Interpolate(latitude,doy,ZP);
+      humid = NB_Interpolate(latitude,doy,ZW);
+      validWeather = true;
+      valid = validWeather && validRxHeight && validRxLatitude && validDOY;
+   }
+
+      // Define the receiver height; this required before calling
+      // correction() or any of the zenith_delay or mapping_function routines.
+   void NBTropModel::setReceiverHeight(const double& ht)
+   {
+      height = ht;
+      validRxHeight = true;
+      valid = validWeather && validRxHeight && validRxLatitude && validDOY;
+      if(!validWeather && validRxLatitude && validDOY)
+         setWeather();
+   }  // end NBTropModel::setReceiverHeight()
+
+      // Define the latitude of the receiver; this is required before calling
+      // correction() or any of the zenith_delay or mapping_function routines.
+   void NBTropModel::setReceiverLatitude(const double& lat)
+   {
+      latitude = lat;
+      validRxLatitude = true;
+      valid = validWeather && validRxHeight && validRxLatitude && validDOY;
+      if(!validWeather && validRxLatitude && validDOY)
+         setWeather();
+   }  // end NBTropModel::setReceiverLatitude(lat)
+
+      // Define the day of year; this is required before calling
+      // correction() or any of the zenith_delay or mapping_function routines.
+   void NBTropModel::setDayOfYear(const int& d)
+   {
+      doy = d;
+      if(doy > 0 && doy < 367) validDOY=true; else validDOY = false;
+      valid = validWeather && validRxHeight && validRxLatitude && validDOY;
+      if(!validWeather && validRxLatitude && validDOY)
+         setWeather();
+   }  // end NBTropModel::setDayOfYear(doy)
+
+   // -------------------------------------------------------------------------------
+   // Saastamoinen tropospheric model based on Saastamoinen, J., 'Atmospheric
+   // Correction for the Troposphere and Stratosphere in Radio Ranging of
+   // Satellites,' Geophysical Monograph 15, American Geophysical Union, 1972,
+   // and Ch. 9 of McCarthy, D. and Petit, G., IERS Conventions (2003), IERS
+   // Technical Note 32, IERS, 2004. The mapping functions are from
+   // Neill, A.E., 1996, 'Global Mapping Functions for the Atmosphere Delay of
+   // Radio Wavelengths,' J. Geophys. Res., 101, pp. 3227-3246 (also see IERS TN 32).
+   //
+   // This model includes a wet and dry component, and requires input of the
+   // geodetic latitude, day of year and height above the ellipsoid of the receiver.
+   //
+   // Usually, the caller will set the latitude and day of year at the same
+   // time the weather is set
+   //   SaasTropModel stm;
+   //   stm.setReceiverLatitude(lat);
+   //   stm.setDayOfYear(doy);
+   //   stm.setWeather(T,P,H);
+   // Then, when the correction (and/or delay and map) is computed, receiver height
+   // should be set before the call to correction(elevation):
+   //   stm.setReceiverHeight(height);
+   //   trop_corr = stm.correction(elevation);
+   //
+   // NB in this model, units of 'temp' are degrees Celcius and
+   // humid actually stores water vapor partial pressure in mbars
+   //
+
+   // constants for wet mapping function
+   static const double SaasWetA[5]=
+     { 0.00058021897, 0.00056794847, 0.00058118019, 0.00059727542, 0.00061641693 };
+   static const double SaasWetB[5]=
+     { 0.0014275268, 0.0015138625, 0.0014572752, 0.0015007428, 0.0017599082 };
+   static const double SaasWetC[5]=
+     { 0.043472961, 0.046729510, 0.043908931, 0.044626982, 0.054736038 };
+
+   // constants for dry mapping function
+   static const double SaasDryA[5]=
+     { 0.0012769934, 0.0012683230, 0.0012465397, 0.0012196049, 0.0012045996 };
+   static const double SaasDryB[5]=
+     { 0.0029153695, 0.0029152299, 0.0029288445, 0.0029022565, 0.0029024912 };
+   static const double SaasDryC[5]=
+     { 0.062610505, 0.062837393, 0.063721774, 0.063824265, 0.064258455 };
+
+   static const double SaasDryA1[5]=
+     { 0.0, 0.000012709626, 0.000026523662, 0.000034000452, 0.000041202191 };
+   static const double SaasDryB1[5]=
+     { 0.0, 0.000021414979, 0.000030160779, 0.000072562722, 0.00011723375 };
+   static const double SaasDryC1[5]=
+     { 0.0, 0.000090128400, 0.000043497037, 0.00084795348, 0.0017037206 };
+
+      // Default constructor
+   SaasTropModel::SaasTropModel(void)
+   {
+      validWeather = false;
+      validRxLatitude = false;
+      validDOY = false;
+      validRxHeight = false;
+   } // end SaasTropModel::SaasTropModel()
+
+      // Create a trop model using the minimum information: latitude and doy.
+      // Interpolate the weather unless setWeather (optional) is called.
+      // @param lat Latitude of the receiver in degrees.
+      // @param day Day of year.
+   SaasTropModel::SaasTropModel(const double& lat,
+                                const int& day)
+   {
+      validWeather = false;
+      validRxHeight = false;
+      SaasTropModel::setReceiverLatitude(lat);
+      SaasTropModel::setDayOfYear(day);
+   } // end SaasTropModel::SaasTropModel
+
+      // Create a trop model with weather.
+      // @param lat Latitude of the receiver in degrees.
+      // @param day Day of year.
+      // @param wx the weather to use for this correction.
+   SaasTropModel::SaasTropModel(const double& lat,
+                                const int& day,
+                                const WxObservation& wx)
+      throw(InvalidParameter)
+   {
+      validRxHeight = false;
+      SaasTropModel::setReceiverLatitude(lat);
+      SaasTropModel::setDayOfYear(day);
+      SaasTropModel::setWeather(wx);
+   }  // end SaasTropModel::SaasTropModel(weather)
+
+      // Create a tropospheric model from explicit weather data
+      // @param lat Latitude of the receiver in degrees.
+      // @param day Day of year.
+      // @param T temperature in degrees Celsius
+      // @param P atmospheric pressure in millibars
+      // @param H relative humidity in percent
+   SaasTropModel::SaasTropModel(const double& lat,
+                                const int& day,
+                                const double& T,
+                                const double& P,
+                                const double& H)
+      throw(InvalidParameter)
+   {
+      validRxHeight = false;
+      SaasTropModel::setReceiverLatitude(lat);
+      SaasTropModel::setDayOfYear(day);
+      SaasTropModel::setWeather(T,P,H);
+   } // end SaasTropModel::SaasTropModel()
+
+      // re-define this to get the throws correct
+   double SaasTropModel::correction(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: weather"));
+         if(!validRxLatitude) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: Rx Latitude"));
+         if(!validRxHeight) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: Rx Height"));
+         if(!validDOY) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: day of year"));
+         GPSTK_THROW(
+            InvalidTropModel("Valid flag corrupted in Saastamoinen trop model"));
+      }
+
+      if(elevation < 0.0) return 0.0;
+
+      double corr=0.0;
+      try {
+         corr = (dry_zenith_delay() * dry_mapping_function(elevation)
+            + wet_zenith_delay() * wet_mapping_function(elevation));
+      }
+      catch(Exception& e) { GPSTK_RETHROW(e); }
+
+      return corr;
+
+   }  // end SaasTropModel::correction(elevation)
+
+      // Compute and return the full tropospheric delay, given the positions of
+      // receiver and satellite and the time tag. This version is most useful
+      // within positioning algorithms, where the receiver position and timetag
+      // may vary; it computes the elevation (and other receiver location
+      // information) and passes them to appropriate set...() routines
+      // and the correction(elevation) routine.
+      // @param RX  Receiver position
+      // @param SV  Satellite position
+      // @param tt  Time tag of the signal 
+   double SaasTropModel::correction(const Position& RX,
+                                    const Position& SV,
+                                    const DayTime& tt)
+      throw(TropModel::InvalidTropModel)
+   {
+      SaasTropModel::setReceiverHeight(RX.getHeight());
+      SaasTropModel::setReceiverLatitude(RX.getGeodeticLatitude());
+      SaasTropModel::setDayOfYear(int(tt.DOYday()));
+
+      if(!valid) {
+         if(!validWeather) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: weather"));
+         if(!validRxLatitude) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: Rx Latitude"));
+         if(!validRxHeight) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: Rx Height"));
+         if(!validDOY) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: day of year"));
+         valid = true;
+      }
+
+      double corr=0.0;
+      try {
+         corr = SaasTropModel::correction(RX.elevation(SV));
+      }
+      catch(Exception& e) { GPSTK_RETHROW(e); }
+
+      return corr;
+
+   }  // end SaasTropModel::correction(RX,SV,TT)
+
+      // Compute and return the zenith delay for dry component of the troposphere
+   double SaasTropModel::dry_zenith_delay(void) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: weather"));
+         if(!validRxLatitude) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: Rx Latitude"));
+         if(!validRxHeight) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: Rx Height"));
+         if(!validDOY) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: day of year"));
+         GPSTK_THROW(   
+            InvalidTropModel("Valid flag corrupted in Saastamoinen trop model"));
+      }
+
+      // correct pressure for height
+      double press_at_h =
+         press * pow((temp+273.16-4.5*height/1000.0)/(temp+273.16),34.1/4.5);
+      // humid is zero for the dry component
+      double delay = 0.0022768 * press_at_h
+            / (1 - 0.00266 * ::cos(2*latitude*DEG_TO_RAD) - 0.00028 * height/1000.);
+
+      return delay;
+
+   }  // end SaasTropModel::dry_zenith_delay()
+
+      // Compute and return the zenith delay for wet component of the troposphere
+   double SaasTropModel::wet_zenith_delay(void) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: weather"));
+         if(!validRxLatitude) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: Rx Latitude"));
+         if(!validRxHeight) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: Rx Height"));
+         if(!validDOY) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: day of year"));
+         GPSTK_THROW(
+            InvalidTropModel("Valid flag corrupted in Saastamoinen trop model"));
+      }
+
+      // press is zero for the wet component
+      double delay = 0.0022768 * humid * 1255/(temp+273.20)
+            / (1 - 0.00266 * ::cos(2*latitude*DEG_TO_RAD) - 0.00028 * height/1000.);
+
+      return delay;
+
+   }  // end SaasTropModel::wet_zenith_delay()
+
+      // Compute and return the mapping function for dry component of the troposphere
+      // @param elevation Elevation of satellite as seen at receiver, in degrees
+   double SaasTropModel::dry_mapping_function(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: weather"));
+         if(!validRxLatitude) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: Rx Latitude"));
+         if(!validRxHeight) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: Rx Height"));
+         if(!validDOY) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: day of year"));
+         GPSTK_THROW(
+            InvalidTropModel("Valid flag corrupted in Saastamoinen trop model"));
+      }
+      if(elevation < 0.0) return 0.0;
+
+      double lat,t,ct;
+      lat = fabs(latitude);         // degrees
+      t = doy - 28.;                // mid-winter
+      if(latitude < 0)              // southern hemisphere
+         t += 365.25/2.;
+      t *= 360.0/365.25;            // convert to degrees
+      ct = ::cos(t*DEG_TO_RAD);
+
+      double a,b,c;
+      if(lat < 15.) {
+         a = SaasDryA[0];
+         b = SaasDryB[0];
+         c = SaasDryC[0];
+      }
+      else if(lat < 75.) {          // coefficients are for 15,30,45,60,75 deg
+         int i=int(lat/15.0)-1;
+         double frac=(lat-15.*(i+1))/15.;
+         a = SaasDryA[i] + frac*(SaasDryA[i+1]-SaasDryA[i]);
+         b = SaasDryB[i] + frac*(SaasDryB[i+1]-SaasDryB[i]);
+         c = SaasDryC[i] + frac*(SaasDryC[i+1]-SaasDryC[i]);
+
+         a -= ct * (SaasDryA1[i] + frac*(SaasDryA1[i+1]-SaasDryA1[i]));
+         b -= ct * (SaasDryB1[i] + frac*(SaasDryB1[i+1]-SaasDryB1[i]));
+         c -= ct * (SaasDryC1[i] + frac*(SaasDryC1[i+1]-SaasDryC1[i]));
+      }
+      else {
+         a = SaasDryA[4] - ct * SaasDryA1[4];
+         b = SaasDryB[4] - ct * SaasDryB1[4];
+         c = SaasDryC[4] - ct * SaasDryC1[4];
+      }
+
+      double se = ::sin(elevation*DEG_TO_RAD);
+      double map = (1.+a/(1.+b/(1.+c)))/(se+a/(se+b/(se+c)));
+
+      a = 0.0000253;
+      b = 0.00549;
+      c = 0.00114;
+      map += (height/1000.0)*(1./se-(1+a/(1.+b/(1.+c)))/(se+a/(se+b/(se+c))));
+
+      return map;
+
+   }  // end SaasTropModel::dry_mapping_function()
+
+      // Compute and return the mapping function for wet component of the troposphere
+      // @param elevation Elevation of satellite as seen at receiver, in degrees.
+   double SaasTropModel::wet_mapping_function(double elevation) const
+      throw(TropModel::InvalidTropModel)
+   {
+      if(!valid) {
+         if(!validWeather) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: weather"));
+         if(!validRxLatitude) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: Rx Latitude"));
+         if(!validRxHeight) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: Rx Height"));
+         if(!validDOY) GPSTK_THROW(
+            InvalidTropModel("Invalid Saastamoinen trop model: day of year"));
+         GPSTK_THROW(
+            InvalidTropModel("Valid flag corrupted in Saastamoinen trop model"));
+      }
+      if(elevation < 0.0) return 0.0;
+
+      double a,b,c,lat;
+      lat = fabs(latitude);         // degrees
+      if(lat < 15.) {
+         a = SaasWetA[0];
+         b = SaasWetB[0];
+         c = SaasWetC[0];
+      }
+      else if(lat < 75.) {          // coefficients are for 15,30,45,60,75 deg
+         int i=int(lat/15.0)-1;
+         double frac=(lat-15.*(i+1))/15.;
+         a = SaasWetA[i] + frac*(SaasWetA[i+1]-SaasWetA[i]);
+         b = SaasWetB[i] + frac*(SaasWetB[i+1]-SaasWetB[i]);
+         c = SaasWetC[i] + frac*(SaasWetC[i+1]-SaasWetC[i]);
+      }
+      else {
+         a = SaasWetA[4];
+         b = SaasWetB[4];
+         c = SaasWetC[4];
+      }
+
+      double se = ::sin(elevation*DEG_TO_RAD);
+      double map = (1.+a/(1.+b/(1.+c)))/(se+a/(se+b/(se+c)));
+
+      return map;
+
+   }  // end SaasTropModel::wet_mapping_function()
+
+      // Re-define the weather data.
+      // If called, typically called before any calls to correction().
+      // @param T temperature in degrees Celsius
+      // @param P atmospheric pressure in millibars
+      // @param H relative humidity in percent
+   void SaasTropModel::setWeather(const double& T,
+                                  const double& P,
+                                  const double& H)
+      throw(InvalidParameter)
+   {
+      temp = T;
+      press = P;
+         // humid actually stores water vapor partial pressure
+      double exp=7.5*T/(T+237.3);
+      humid = 6.11 * (H/100.) * pow(10.0,exp);
+
+      validWeather = true;
+      valid = (validWeather && validRxHeight && validRxLatitude && validDOY);
+
+   }  // end SaasTropModel::setWeather()
+   
+      // Re-define the tropospheric model with explicit weather data.
+      // Typically called just before correction().
+      // @param wx the weather to use for this correction       
+   void SaasTropModel::setWeather(const WxObservation& wx)
+      throw(InvalidParameter)
+   {
+      try
+      {
+         SaasTropModel::setWeather(wx.temperature,wx.pressure,wx.humidity);
+      }
+      catch(InvalidParameter& e)
+      {
+         valid = validWeather = false;
+         GPSTK_RETHROW(e);
+      }
+   }
+   
+      // Define the receiver height; this required before calling
+      // correction() or any of the zenith_delay or mapping_function routines.
+   void SaasTropModel::setReceiverHeight(const double& ht)
+   {
+      height = ht;
+      validRxHeight = true;
+      valid = (validWeather && validRxHeight && validRxLatitude && validDOY);
+   }  // end SaasTropModel::setReceiverHeight()
+
+      // Define the latitude of the receiver; this is required before calling
+      // correction() or any of the zenith_delay or mapping_function routines.
+   void SaasTropModel::setReceiverLatitude(const double& lat)
+   {
+      latitude = lat;
+      validRxLatitude = true;
+      valid = (validWeather && validRxHeight && validRxLatitude && validDOY);
+   }  // end SaasTropModel::setReceiverLatitude(lat)
+
+      // Define the day of year; this is required before calling
+      // correction() or any of the zenith_delay or mapping_function routines.
+   void SaasTropModel::setDayOfYear(const int& d)
+   {
+      doy = d;
+      if(doy > 0 && doy < 367) validDOY=true; else validDOY = false;
+      valid = (validWeather && validRxHeight && validRxLatitude && validDOY);
+   }  // end SaasTropModel::setDayOfYear(doy)
+
+} // end namespace gpstk

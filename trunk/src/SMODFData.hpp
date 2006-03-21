@@ -1,0 +1,140 @@
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/SMODFData.hpp#2 $"
+
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
+
+
+
+
+
+/**
+ * @file SMODFData.hpp
+ * smoothed measurement data file data
+ */
+
+#ifndef SMODFDATA_HPP
+#define SMODFDATA_HPP
+
+#include "StringUtils.hpp"
+#include "FFData.hpp"
+#include "DayTime.hpp"
+#include "ObservationStore.hpp"
+
+#include <vector>
+
+namespace gpstk
+{
+   /** @addtogroup icd211group ICD-GPS-211 Classes */
+   //@{
+
+   /**
+    * Model for a Smoothed Measurement Data File Data Record.
+    */
+   class SMODFData : public gpstk::FFData
+   {
+   public:
+      /// constructor
+      SMODFData() : PRNID(0), time(gpstk::DayTime::BEGINNING_OF_TIME) 
+      {}
+
+      /// destructor
+      virtual ~SMODFData() {}
+
+      gpstk::DayTime time;  ///< the date of this data (from year DOY, SOD)
+      short PRNID;        ///< PRN number
+      long  station;      ///< NIMA Monitor Station number (85408, etc.)
+      short channel;      ///< receiver channel
+      short type;         ///< Data type ( 0 = range, 9 = delta/doppler range )
+      short lol;          ///< Loss of lock flag.  0 = OK, 1 = loss
+                          ///<  ( only used for type = 9 )
+      long double obs;    ///< Observed data (range or delta range meas)
+      double stdDev;      ///< standard deviation of observation
+      short tempSource;   ///< temperature source flag 
+                          ///< (0 = not available, 1 = measured value, 2 = default value)
+      short pressSource;  ///< pressure source flag
+                          ///< (0 = not available, 1 = measured value, 2 = default value)
+      short humidSource;  ///< humidity source flag
+                          ///< (0 = not available, 1 = measured value, 2 = default value)
+      double temp;        ///< temperature (degrees C)
+      double pressure;    ///< pressure (mb)
+      double humidity;    ///< relative humidity (%)
+
+      /// SMODFData is data, so this function always returns true.
+      virtual bool isData() const {return true;}
+
+      /// This function does \b nothing.
+      virtual void dump(std::ostream& s) const;
+      
+      /**
+       * Translate *this to an ObservationPlus.
+       * @return *this translated to an ObservationPlus
+       */
+      virtual gpstk::ObservationPlus getObservationPlus() const;
+      
+      /** 
+       * Translate *this to a WxObservation.
+       * @return *this translated to a WxObservation
+       */
+      virtual gpstk::WxObservation getWxObservation() const;
+      
+   protected:
+      /// Writes a smodfdata object in the format specified
+      /// by the stream to the stream.
+      virtual void reallyPutRecord(gpstk::FFStream& s) const
+         throw(std::exception, gpstk::FFStreamError,
+               gpstk::StringUtils::StringException);
+
+      /**
+       * Retrieve a SMODFData record from the given gpstk::FFStream.
+       * If there is a problem with reading from the stream, it
+       * is reset to its original position and its fail-bit is set.
+       * @throws StringException when a gpstk::StringUtils function fails
+       * @throws gpstk::FFStreamError when exceptions(failbit) is set and
+       *  a read or formatting error occurs.  This also resets the
+       *  stream to its pre-read position.
+       */
+      virtual void reallyGetRecord(gpstk::FFStream& s) 
+         throw(std::exception, gpstk::FFStreamError,
+               gpstk::StringUtils::StringException);
+     
+   }; // class SMODFData
+
+      //@}
+
+} // namespace gpstk
+
+#endif

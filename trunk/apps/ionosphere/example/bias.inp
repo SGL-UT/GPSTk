@@ -1,0 +1,18 @@
+--verbose
+--log bias.log
+--input @list.files
+--navdir alldata
+--nav brdc2100.04n
+--datafile ATtest.fil
+--MinPoints 24
+--MinTimeSpan 12
+--MinElevation 6
+--MinLatitude 40
+--MaxLatitude 60
+--MinLongitude 250
+--MaxLongitude 290
+--TimeSector night
+--TermOffset 20 
+--IonoHeight 350
+#--NoSatBiases
+--biasout satbias.txt

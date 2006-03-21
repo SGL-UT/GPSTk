@@ -1,0 +1,91 @@
+$Id: //depot/sgl/gpstk/dev/README#5 $
+
+The following is excerpted from the GPSTk web site at http://www.gpstk.org/ :
+
+What is GPSTk?
+--------------
+
+The goal of the GPSTk project is to provide a world class, open source 
+computing suite to the satellite navigation community. It is our hope that the
+GPSTk will empower its users to perform new research and create new 
+applications.
+
+GPS users employ practically every computational architecture and operating 
+system. Therefore the design of the GPSTk suite is as platform-independent as 
+possible. Platform independence is achieved through use of the ANSI-standard 
+C++ programming language. The principles of object-oriented programming are 
+used throughout the GPSTk code base in order to ensure that the code is 
+modular, extensible and maintainable.
+
+The GPSTk suite consists of a core ibrary and a set of applications. The 
+library provides a wide array of functions that solve processing problems 
+associated with GPS such as processing or using RINEX. The library is the 
+basis for the more advanced applications distributed as part of the GPSTk 
+suite.
+
+The GPSTk is sponsored by Space and Geophysics Laboratory, within the Applied 
+Research Laboratories at the University of Texas at Austin (ARL:UT). GPSTk is
+the by-product of GPS research conducted at ARL:UT since before the first 
+satellite launched in 1978; it is the combined effort of many software 
+engineers and scientists. In 2003 the research staff at ARL:UT decided to 
+open source much of their basic GPS processing software as the GPSTk.
+
+
+GPSTk Library
+-------------
+
+The GPSTk library provides a number of models and algorithms found in GPS 
+textbooks and classic papers, such as solving for the user position, or 
+estimating atmospheric refraction. Common formats are supported as well, such 
+as RINEX or SP-3. There are several categories of functions in the GPSTk 
+library:
+
+   1. GPS time. Conversion among time representations such as MJD, GPS week 
+      and seconds of week, and many others.
+
+   2. Ephemeris calculations. Position and clock interpolation for both
+      broadcast and precise ephemerides.
+
+   3. Atmospheric delay models. Includes ionosphere and troposphere models.
+
+   4. Position solution. Includes an implementation of a Receiver Autonomous 
+      Integrity Monitoring algorithm.
+
+   5. Mathematics. Includes Matrix and Vector implementations, as well as 
+      interpolation and numerical integration.
+
+   6. Application framework. Includes processing command lines options, 
+      providing interactive help and working with file systems.
+
+A more detailed description of the functionality provided by the GPSTk library can be found in the Doxygen documentation.
+
+
+GPSTk Applications
+------------------
+
+The library is the foundation for applications within the GPSTk suite. Many 
+such applications are utilities necessary for advanced research and 
+development. For example the GPSTk utility DiscFix fixes cycle slips. Some 
+applications implement algorithms described in research papers. The TECMap 
+application is an example of an application that creates models of the 
+ionosphere, based on models published by a number of researchers. To date 
+GPSTk applications fall into the following categories.
+
+   1. Ionosphere modeling. TEC calculation, receiver bias estimation.
+
+   2. Residual analysis. Computation of pseudorange observations residuals, 
+      and comparison between the precise and broadcast ephemerides.
+
+   3. RINEX file manipulation. Differencing, mergins and clipping RINEX files.
+
+   4. Interactive analysis. Bindings to Octave, an open source alternative to 
+      MATLAB.
+
+
+License
+-------
+
+The source code provided by the GPSTk is distributed under the GNU LGPL. 
+This license gives all users the right to use and redistribute the code. 
+Users of the GPSTk are not required to open their source, according to the 
+LGPL. This makes the GPSTk a practical choice for commercial projects.

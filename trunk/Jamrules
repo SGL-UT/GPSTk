@@ -1,0 +1,276 @@
+#
+# $Id: //depot/sgl/gpstk/dev/Jamrules#7 $
+#
+
+# not much here... just use defaults as much as possible
+
+NotFile install ;
+
+KEEPOBJS = true ;
+
+# where to install the .hpp files
+INCDIR = /usr/local/include ;
+
+# override the built-in EXEMODE
+EXEMODE = 755 ;
+
+# Used to prevent mixing static and dynamic library objects.
+# This was, once upon a time, .lo, but forte's C compiler prevents, stupidly,
+# any attempt to use any extension other than .o
+SUFOBJ2      ?= -l.o ;
+
+# some OS specific stuff
+if $(UNIX)
+{
+   LIBPREFIX     = lib ;
+   LDSHARE_FLAGS = -shared ;
+   LINKLIBS += -lm ;
+   switch $(OS)
+   {
+      case CYGWIN :
+         LINKLIBS += -lstdc++ ;
+
+      case LINUX :
+         LINKLIBS += -lstdc++ ;
+         CCSHARE_FLAGS = -fPIC ;
+
+      case SOLARIS :
+         LINKLIBS += -lgen ;
+         # for solaris forte
+         if ( $(C++) = CC )
+         {
+            LDSHARE_FLAGS = -G -mt ;
+            CCSHARE_FLAGS = -KPIC ;
+            CCFLAGS += -Xc ;
+            C++FLAGS += -compat=5 ;
+            AR = "CC -xar -o" ;
+            NOARSCAN = true ;
+            RM = "rm -rf" ;
+         }
+	 else # for solaris gcc
+         {
+            LINKLIBS += -lstdc++ ;
+            CCSHARE_FLAGS = -fPIC ;  
+         }
+
+      case AIX :
+         LINKLIBS += -lstdc++ ;
+   }
+   SUFLIBSHR      ?= .so ;
+}
+else if $(NT)
+{
+   LIBPREFIX       = "" ;
+   #LDSHARE_FLAGS  ?= /MAP /DLL ;
+   #SUFLIBSHR       = .dll ;
+   # for reference, VC++6 defines _MSC_VER=12xx.xx, VS.NET2003 _MSC_VER=13xx.xx
+   # do NOT define __STDC__ here
+   CCFLAGS        += /ML -wd4274 ;
+   C++FLAGS       += /ML -DWIN32 /GX /GR -wd4274 ;
+   NEED_REGEX      = true ;
+}
+
+# compiler specific stuff - this is probably actually pretty clumsy
+if ( $(CC) != gcc )
+{
+   NEED_GETOPT = true ;
+}
+
+if $(PREFIX)
+{
+# fix does this need to be forward/backslash independent? darn windows.
+   BINDIR = [ FDirName $(PREFIX) bin ] ;
+   LIBDIR = [ FDirName $(PREFIX) lib ] ;
+   INCDIR = [ FDirName $(PREFIX) include ] ;
+}
+
+# debug - edit this as needed.
+if $(DEBUG)
+{
+      # forte
+   if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
+   {
+      OPTIM = -g -xs ;
+   }
+      # gcc-ish rules
+   else if ( $(C++) = cc ) || ( $(C++) = g++ ) || ( $(C++) = c++ )
+   {
+      OPTIM = -ggdb ;
+   }
+   else if $(MSVC) || $(MSVCNT)
+   {
+      OPTIM = /DEBUG ;
+   }
+}
+
+rule BonkForte
+{
+   # forte for solaris...
+   if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
+   {
+      # we need the explicit /usr/include to make sure the regex.h there
+      # is included instead of the one in the gpstk/dev/src directory
+      CCFLAGS += -I/usr/include ;
+      C++FLAGS += -I/usr/include ;
+   }
+}
+
+rule LibObjects
+{
+   local _i ;
+
+   for _i in [ FGristFiles $(<) ]
+   {
+      Object $(_i:S=$(SUFOBJ2)) : $(_i) ;
+      Depends obj : $(_i:S=$(SUFOBJ2)) ;
+   }
+}
+
+rule GPSSetupLibrary
+{
+   local lib = [ FGristFiles $(LIBPREFIX)$(<:S=$(SUFLIB)) ] ;
+   MakeLocate $(lib) : $(LOCATE_SOURCE) ;
+   $(1)_DIR = $(SUBDIR) ;
+   $(1)_GRIST = $(lib) ;
+   $(1)_DEPENDENCIES = $(2) ;
+}
+
+rule GPSBuildLibrary
+{
+   # $(<) is short name of lib to build.
+   # $(>) is the list of sources that build lib.
+
+   local shlib arlib ;
+   local statobjs shrobjs ;
+   local dependencies = [ Uniqueify [ GetDependencies $(<) ] ] ;
+
+   if $(dependencies)
+   {
+      local thisDependency ;
+      for thisDependency in $(dependencies)
+      {
+         SubDirHdrs $($(thisDependency)_DIR) ;
+      }
+   }
+
+   arlib = $(LIBPREFIX)$(<:S=$(SUFLIB)) ;
+   statobjs = $(>:S=$(SUFOBJ)) ;
+
+   Depends lib : $(arlib) ;
+   Objects $(>) ;
+   LibraryFromObjects $(arlib) : $(statobjs) ;
+   InstallLib $(LIBDIR) : $(arlib) ;
+
+   # Windows is limited to 1024 character command lines.  This goes over that.
+   # Until we can figure out how to properly split our library, we just can't
+   # build DLLs for Windows.
+   if $(UNIX)
+   {
+      shlib = $(LIBPREFIX)$(<:S=$(SUFLIBSHR)) ;
+      shrobjs = $(>:S=$(SUFOBJ2)) ;
+      ObjectCcFlags $(shrobjs) : $(CCSHARE_FLAGS) ;
+      ObjectC++Flags $(shrobjs) : $(CCSHARE_FLAGS) ;
+      LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM) ;
+      Depends lib : $(shlib) ;
+      LibObjects $(>) ;
+      MainFromObjects $(shlib) : $(shrobjs) ;
+      InstallLib $(LIBDIR) : $(shlib) ;
+   }
+}
+
+rule GPSLinkLibraries
+{
+   local dependencies = [ Uniqueify [ GetDependencies $(>) ] ] ;
+   dependencies = [ Uniqueify $(>) $(dependencies) ] ;
+
+   if $(dependencies)
+   {
+      local thisDependency ;
+      local thisDir thisLib ;
+      for thisDependency in $(dependencies)
+      {
+         thisDir = $($(thisDependency)_DIR) ;
+         SubDirHdrs $(thisDir) ;
+         thisLib = $($(thisDependency)_GRIST) ;
+         LinkLibraries $(<) : $(thisLib) ;
+      }
+#      LinkLibraries $(<) : $(dependencies) ;
+   }
+}
+
+# a rule to replace Main that includes the functionality of GPSFile.
+rule GPSMain
+{
+   Main $(<) : $(>) ;
+   InstallBin $(BINDIR) : $(<:S=$(SUFEXE)) ;
+}
+
+# a rule to replace File that also cleans it when "jam clean" is run.
+# $(1) is the target, $(2) is the source, $(3) is the mode.
+# $(3) is optional - it will default to 644.
+#
+#  GPSFile $(TARGETETCDIR)/moo : moo : $(EXEMODE) ;
+#  GPSFile $(TARGETETCDIR)/moo2 : moo2 ;
+#
+rule GPSFile
+{
+   File $(1) : $(2) ;
+   if $(3)
+   {
+      MODE on $(1) = $(3) ;
+   }
+   Clean clean : $(1) ;
+}
+
+PREPROCESSING = yes ;
+SubInclude TOP src ;
+PREPROCESSING = ;
+
+rule TestFiles
+{
+   Depends test : $(<) ;
+   if $(TESTCODE)
+   {
+      ReallyTestFiles $(<) : $(>) ;
+   }
+}
+
+actions ReallyTestFiles
+{
+   $(<) $(>)
+}
+
+
+rule GetDependencies
+{
+   local thisDepends itr ;
+
+   if $($(1)_DEPENDENCIES)
+   {
+      thisDepends += $($(1)_DEPENDENCIES) ;
+      thisDepends += [ GetDependencies $($(1)_DEPENDENCIES) ] ;
+   }
+   return $(thisDepends) ;
+}
+
+rule Uniqueify
+{
+   local thisList thisItem thatItem found newList ;
+
+   for thatItem in $(1)
+   {
+      found = 0 ;
+      newList = ;
+      for thisItem in $(thisList)
+      {
+         if $(thatItem) != $(thisItem)
+         {
+             newList += $(thisItem) ;
+         }
+      }
+      newList += $(thatItem) ;
+      thisList = $(newList) ;
+   }
+   return $(thisList) ;
+}
+

@@ -1,0 +1,7 @@
+SubDir TOP apps visibility ;
+
+GPSLinkLibraries wheresat : gpstk ;
+BonkForte ; 
+
+GPSMain wheresat : WhereSat.cpp ;
+

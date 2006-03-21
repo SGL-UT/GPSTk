@@ -1,0 +1,69 @@
+This directory contains all the files of an example run of the programs
+IonoBias and TECMaps, including scripts and output.
+
+Program descriptions
+
+   Program IonoBias reads Rinex data files containing extended Rinex observation
+types EL, LA, LO and SR or SS (see preprocessing, below) from several sites and
+estimates biases in the ionospheric total electron content (TEC) measurements
+imposed by the hardware: either by satellite (the satellite + receiver combined
+bias) or by receiver alone (average over satellites to get the receiver bias).
+IonoBias does this by assuming a simple model of the ionosphere and
+simultaneously estimating biases and model parameters.
+
+   Program TECMaps reads Rinex data files containing extended Rinex observation
+types EL, AZ and SR or VR from several sites and at each epoch fits the vertical
+TEC data to a model of the ionosphere on a two-dimensional grid surface.
+Hardware TEC measurement biases are corrected, using input from the program
+IonoBias. The user can specify the type of grid, the type of TEC data and the
+model to be used. Output is in the form of files, one per epoch, which can be
+used to plot the 2D ionospheric TEC surface.
+
+   Here is a description of the steps needed to go from raw data to plots using
+these programs. You may have to change some directories or other small things in
+the scripts, particularly the perl scripts, but this should be straightforward.
+(Scripts may be used on Windows by renaming with .bat extension; you will need
+perl and maybe wget and gnuplot under Windows -- get them free on the web!)
+
+   0. Create subdirectories 'alldata', 'processed' and 'out'.
+
+   1. The raw data is IGS data downloaded from the web for day 210 of 2004;
+the script 'getigs' shows one way to do this using wget. Note the last 'wget' call
+is different - it gets the broadcast ephemeris. These stations were
+chosen because they lie near or within a rectangle bounded by latitude 40 - 60 and
+longitude 250 - 290, which is where the map is going to be made. The raw data
+files, including the broadcast ephemeris file, are placed in subdirectory 'alldata'.
+
+   2. Preprocess the data by computing EL (elevation), AZ (azimuth),
+LA (latitude of the ionospheric pierce point or IPP), LO (longitude of IPP), and
+SR (slant TEC derived from pseudorange), using the Rinex tool ResCor
+(see apps/Rinextools in the GPSTK distribution). A perl script, preprocess.pl
+and a script which runs this for each data file, 'gopre', are provided here.
+The ResCor run does several important things: it defines the data interval,
+which for this data is 30 seconds, in the header, and it defines the 'MARKER NAME'
+header record to be the 4-character station id in the file name (e.g. algo, chur,
+etc.), it pulls out the receiver position from the input Rinex header and passes
+that into ResCor, and finally it allows C1 to be used when P1 is not available.
+It also summarizes the output file using program RinSum and puts this summary,
+along with all the processed data, in subdirectory 'processed'.
+
+   3. Run program IonoBias to compute the satellite+receiver biases for this
+data; see the script 'gobias' which simply makes a file containing the names of
+all the preprocessed data files (or you can make it by hand), and then runs
+IonoBias with the input file bias.inp. Output of this program is in bias.log,
+and the biases are also put in the file satbias.txt that will be input to TECMaps.
+
+   4. Run TECMaps using the script 'gomaps', which simply runs TECMaps using the
+input file maps.inp, which chooses the grid type, the model type and the output
+format. Output is placed in subdirectory 'out' with base name 'igs' (i.e. all
+the files are of the form 'igs.N' where N is the epoch number: 1-2880 (an entire
+day of 30 second intervals).
+
+   5. View the output using gnuplot. The perl script plotall.pl will generate an
+input file for gnuplot and run it, or use the script 'see'. Again, you may have to
+change directories inside plotall.pl; there are other options that fix how the
+plot is done, including output to a file (.png) instead of to the screen.
+For example, type
+      ./see igs 1 2880 30 
+to see plots of the VTEC map every 15 minutes (30 x 30sec) from the first to the
+last. Press 'return' in your terminal window to advance to the next plot.

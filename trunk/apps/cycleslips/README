@@ -1,0 +1,67 @@
+The GPSTk disconituity corrector (DC), or 'cycle slip fixer' (/apps/cycleslips).
+
+   DiscFix.cpp is a standalone program that reads a Rinex observation file containing
+dual frequency pseudorange and carrier phase data, and finds and estimates
+discontinuities in the phase. The output of DiscFix is a set of editing commands,
+which are input to the program EditRinex (see apps/Rinextools). The user also has the
+option of giving a (new) output Rinex file name to which DiscFix will write the data
+with cycleslips fixed as well as (optionally) bad points deleted and smoothing.
+
+   DiscFix is actually just an interface to the discontinuity correction; it 
+includes the header file DiscCorr.hpp and calls the functions in DiscCorr.cpp,
+which is where an interface is defined and the code that actually does the detection
+and correction of cycleslips is. These files implement an algorithm based on (but not
+exactly the same as) that described in the paper by Geoffrey Blewitt,
+"An Automatic Editing Algorithm for GPS Data", Geophysical Research Letters, Vol. 17,
+No. 3, pp 199-202, 1990. There is considerable documentation of the algorithm with
+the code in DiscCorr.cpp.
+
+   The DC requires that several tolerances and limits be set on input. These values
+and their default values are listed in the syntax page (run DiscFix --DChelp --help).
+The default values are pretty good for 30 second, static data on a good receiver, but
+most likely these should be fine-tuned for any other application. The limits, such as
+the minimum length of a pass, or the maximum size of a gap in the data, are
+straightforward and can easily be changed. However, changing the tolerances
+intelligently requires a good understanding of the algorithm; unfortunately I know
+of no systematic (i.e. easy) way of doing this -- use trial and error.
+
+   DiscFix (also EditRinex) is run from the command line, and input and outputs are
+all flat files. To see the command line syntax, run DiscFix or EditRinex with either
+no arguments, or with arguments but including --help. To see the DC commands in
+DiscFix, add the command --DChelp as well.
+
+   Two examples are included in the subdirectory 'examples' here. They may be run
+with the scripts goDF1 and goDF2 (unix) or batch files goDF1.bat and goDF2.bat
+(Windows). The first example is 30 second data at a static site; this is taken as
+typical data, and is the type used to develop and tune the DC. The second example
+is very different, it is data collected on a low-earth orbiting (LEO) satellite,
+in fact it is only the data for the period when the LEO satellite see the GPS
+satellite at negative elevation angles. Note that the data consists of very short
+segments separated by large gaps (data is collected only 2% of the time - run
+RinSum on it). Also note the difference in DC parameters for the two cases. (Both
+files contain data from just one satellite, in order to reduce storage requirements.)
+
+   If you have awk, sed and gnuplot, (even on Windows) the scripts will
+produce plots showing the wide lane bias and the geometry free phase and range; see
+the documentation in DiscCorr.cpp for more information. These plots are included in
+GIF format for users without these utilities; there is also a plot of the wide lane
+bias and geometry free phase computed from data in the corrected Rinex observation
+files.
+
+The quantities in the plots are as follows:
+   "WL Small Slip Detection"
+      WLbias  Raw wide lane bias data (note the discontinuity in this)
+      P Ave   Average wide lane bias for points in the past
+      F Ave   Average wide lane bias for points in the future
+      P Sig   Sigma on the wide lane bias points in the past
+      F Sig   Sigma on the wide lane bias points in the future
+      |dAve|  absolute value of difference of P Ave and F Ave
+      limit   threshold -- when |dAve| > limit, there is a slip (basically)
+   "DC GFRF GFP fit GFR"
+      GFP       geometry-free phase (with a bias removed) (note the discontinuity)
+      GFR       geometry-free range
+      Fit       a polynomial fit to the GFR (a new fit in each segment)
+      Residual  the residuals of fit (GFR - fit)
+
+Brian Tolman
+btolman@arlut.utexas.edu

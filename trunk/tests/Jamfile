@@ -1,0 +1,63 @@
+#
+# $Id: //depot/sgl/gpstk/dev/tests/Jamfile#12 $
+#
+
+SubDir TOP tests ;
+
+GPSLinkLibraries rinex_obs_test rinex_met_test rinex_met_read_write
+   rinex_nav_read_write rinex_obs_read_write rinex_nav_test 
+   EphComp AnotherFileFilterTest FileSpecTest MatrixTest 
+   exceptiontest petest stringutiltest daytimetest rktest gpszcounttest
+   positiontest DayTimeToleranceTest DayTimeIncrementTest
+   DayTimeConversionTest DayTimeIncrementTest2 MinSfTest TimeTest 
+   Xbegweek Xendweek
+
+   : gpstk ;
+
+Main rinex_obs_test : rinex_obs_test.cpp ;
+Main rinex_nav_test : rinex_nav_test.cpp ;
+Main rinex_met_test : rinex_met_test.cpp ;
+
+Main rinex_met_read_write : rinex_met_read_write.cpp ;
+Main rinex_nav_read_write : rinex_nav_read_write.cpp ;
+Main rinex_obs_read_write : rinex_obs_read_write.cpp ;
+
+Main AnotherFileFilterTest : AnotherFileFilterTest.cpp ;
+
+Main EphComp : EphComp.cpp ;
+
+Main FileSpecTest : FileSpecTest.cpp ;
+
+Main MatrixTest : MatrixTest.cpp ;
+
+Main exceptiontest : exceptiontest.cpp ;
+
+Main petest : petest.cpp ;
+
+Main stringutiltest : stringutiltest.cpp ;
+
+Main daytimetest : daytimetest.cpp ;
+
+Main rktest : RungeKuttaTest.cpp ;
+
+Main gpszcounttest : gpszcounttest.cpp ;
+
+Main positiontest : positiontest.cpp ;
+
+Main DayTimeToleranceTest : DayTimeToleranceTest.cpp ;
+
+Main DayTimeIncrementTest : DayTimeIncrementTest.cpp ;
+
+Main DayTimeIncrementTest2 : DayTimeIncrementTest2.cpp ;
+
+Main DayTimeConversionTest : DayTimeConversionTest.cpp ;
+
+Main TimeTest : TimeTest.cpp ;
+
+Main MinSfTest : MinSfTest.cpp ;
+
+Main Xbegweek : Xbegweek.cpp ;
+
+Main Xendweek : Xendweek.cpp ;
+
+

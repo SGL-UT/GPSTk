@@ -1,0 +1,21 @@
+#
+# $Id: //depot/sgl/gpstk/dev/apps/Jamfile#11 $
+#
+
+SubDir TOP apps ;
+
+SubInclude TOP apps checktools ;
+SubInclude TOP apps converters ;
+SubInclude TOP apps cycleslips ;
+SubInclude TOP apps differential ;
+SubInclude TOP apps difftools ;
+SubInclude TOP apps filetools ;
+SubInclude TOP apps ionosphere ;
+SubInclude TOP apps mergetools ;
+#Need to make this not require everything else to have curses
+#SubInclude TOP apps MDPtools ; 
+SubInclude TOP apps positioning ;
+SubInclude TOP apps reszilla ;
+SubInclude TOP apps Rinextools ;
+SubInclude TOP apps time ;
+SubInclude TOP apps visibility ;
