@@ -1,4 +1,4 @@
-.TH VECSOL "1" "August 2005" "vecsol (GPStk) 0.8" "User Commands"
+.TH VECSOL "1" "September 2005" "vecsol (GPStk) 0.9" "User Commands"
 .SH NAME
 vecsol \- GPS Vector Solver, computes a 3D vector from RINEX input
 .SH SYNOPSIS
@@ -64,11 +64,18 @@ inter-satellite differences.  Good initial choice: 30.0
 .TP
 	\fBcutoff_elev\fR 
 cut-off elevation. Good initial choice: 10.0 \- 20.0
+.TP
+	\fBPTDRej, CTDRej\fR 
+Rejection limits for phase and code observations on triple
+difference level. Good choice: 0.001 0.1
+.TP
+	\fBreduce\fR 
+Reduce out dependencies between DD biases
+
 .PP
 .TP
 \fBvecsol.nav\fR 
-contains the names of the navigation RINEX files ("nav files", extension
-.yyN) to be used, one per line.
+contains the names of the navigation RINEX files ("nav files", extension .yyN) to be used, one per line.
 .PP
 Good navigation RINEX files that are globally valid can be found from the CORS website at 
 .B http://www.ngs.noaa.gov/CORS/

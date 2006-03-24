@@ -1,7 +1,15 @@
 # The sp3 precise ephemeris file. Use # in first pos for comment
+igs11172.sp3
+igs11173.sp3
+igs11174.sp3
+igs11175.sp3
+igs11176.sp3
 # Day 6 of GPS week 1323 is May 21, 2005
 igs13235.sp3
 igs13236.sp3
 #gfz13236.sp3
 igs13240.sp3
-
+# rapid orbits 7-8 sep 2005
+igr13393.sp3
+igr13394.sp3
+igs13250.sp3
