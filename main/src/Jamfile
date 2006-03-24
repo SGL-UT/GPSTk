@@ -97,6 +97,8 @@ else
       CommonTime.hpp TimeTag.hpp ANSITime.hpp CivilTime.hpp 
       GPSEpochWeekSecond.hpp GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount32.hpp
       GPSZcount29.hpp JulianDate.hpp MJD.hpp UnixTime.hpp YDSTime.hpp 
+      gpstkplatform.h mergePCodeWords.h
+
 
       ;
 
