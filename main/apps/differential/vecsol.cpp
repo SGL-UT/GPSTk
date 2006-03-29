@@ -380,7 +380,9 @@ Triple permanentTide(double const phi)
 
 	// receiver provided offset to be re-subtracted (WinPrism's Ashtech
 	// rinexer seems to need this, and doesn't harm otherwise)
-	bool apply_clockOffset1(true), apply_clockOffset2(true);
+	//use here (below) roh1.receiverOffset, roh2.receiverOffset
+	//together with receiverOffsetValid
+	// bool apply_clockOffset1(true), apply_clockOffset2(true);
 	
 	char s[80];
 	std::ifstream conf;
@@ -524,7 +526,14 @@ Triple permanentTide(double const phi)
 
 	    cout << "Geocentric      : " << AO1 << endl 
 		 << "antenna offsets : " << AO2 << endl << endl;
-	    
+
+	    // receiver provided offset to be re-subtracted (WinPrism's
+	    // Ashtech rinexer seems to need this),
+	    bool apply_clockOffset1(roh1.receiverOffsetValid &&
+				    roh1.receiverOffset);
+	    bool apply_clockOffset2(roh2.receiverOffsetValid &&
+				    roh2.receiverOffset);
+
 #if 0
 	    // Low hanging fruit
 	    Triple PT1 =
@@ -603,11 +612,11 @@ Triple permanentTide(double const phi)
 
 		// Output bench mark (not: antenna) positions: (Published
 		// GPS positions are always reduced for solid Earth tides)
-		cout << name1 << ": " << t1 - AO1 - PT1 << endl 
-		     << name2 << ": " << t2 - AO2 - PT2 << endl << endl;
+		cout << name1 << ": " << Position(Triple(t1) - AO1 - PT1) << endl 
+		     << name2 << ": " << Position(Triple(t2) - AO2 - PT2) << endl << endl;
 		// Print also geographic coords:
-		Position t1g(t1 - AO1 - PT1);
-		Position t2g(t2 - AO2 - PT2);
+		Position t1g(Triple(t1) - AO1 - PT1);
+		Position t2g(Triple(t2) - AO2 - PT2);
 		cout << name1 << ": " << t1g.asGeodetic() << endl 
 		     << name2 << ": " << t2g.asGeodetic() << endl;
 
@@ -1064,7 +1073,7 @@ Triple permanentTide(double const phi)
 		Triple PosCorr2 = Triple(sol(0,2), sol(1,2), sol(2,2));
 		if (!vecmode) {
 		    Pos2 = Triple(sol(3,0), sol(4,0), sol(5,0));
-		    PosCorr0 = PosCorr0 - Pos2;
+		    PosCorr0 = PosCorr0 - Triple(Pos2);
 		    PosCorr1 = PosCorr1 - Triple(sol(3,1), sol(4,1), sol(5,1));
 		    PosCorr2 = PosCorr2 - Triple(sol(3,2), sol(4,2), sol(5,2));
 		}
@@ -1085,11 +1094,15 @@ Triple permanentTide(double const phi)
 		// Again: published vectors must be conventionally 
 		// reduced for tide.
 		// And published vector must be inter-benchmark:
-		Position vec = (t1 - AO1 - PT1) - (t2 - AO2 - PT2);
+		Position vec = Position(Triple(t1) - AO1 - PT1) 
+		    	     - Position(Triple(t2) - AO2 - PT2);
 		cout << "A priori vector:" << endl << vec << endl;
-		cout << "A posteriori vector:" << endl << vec + PosCorr0 
+		cout << "A posteriori vector:" << endl 
+		     << Position(Triple(vec) + PosCorr0)
 		     << " (Iono free)" << endl;
-		cout << vec + 0.5 * (PosCorr1 + PosCorr2)
+		Triple PosCorrMean(PosCorr1 + PosCorr2);
+		PosCorrMean = 0.5 * PosCorrMean;
+		cout << Position(Triple(vec) + PosCorrMean) 
 		     << " (L1 + L2)" << endl;
 		cout << endl;
 
