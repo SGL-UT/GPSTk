@@ -194,10 +194,12 @@ void Solve(gpstk::Matrix <double> N, gpstk::Matrix <double> const b,
 	    N(k,k) += 1.0E8; // Keep only coordinates fixed (to iono free values)
 	}
     }
-    // Soft-constrain tropo params to +/- 20%:
+    // Soft-constrain tropo params. This is tricky, as this has to be scaled
+    // with the standard error of unit weight for the GPS observations. Use
+    // conservative values:
     if (tropo) {
-	N(MaxUnkn - 1, MaxUnkn - 1) += 25.0;
-	N(MaxUnkn - 2, MaxUnkn - 2) += 25.0;
+	N(MaxUnkn - 1, MaxUnkn - 1) += 0.1;
+	N(MaxUnkn - 2, MaxUnkn - 2) += 0.1;
     }
 
     // Copy over to correctly sized matrices
@@ -378,12 +380,6 @@ Triple permanentTide(double const phi)
 	double PTDrej, CTDrej, DDrej = 1.0; 
 	bool reduce;	// Reduce out dependencies between DD biases
 
-	// receiver provided offset to be re-subtracted (WinPrism's Ashtech
-	// rinexer seems to need this, and doesn't harm otherwise)
-	//use here (below) roh1.receiverOffset, roh2.receiverOffset
-	//together with receiverOffsetValid
-	// bool apply_clockOffset1(true), apply_clockOffset2(true);
-	
 	char s[80];
 	std::ifstream conf;
 	conf.open("vecsol.conf", ios::in);
@@ -527,12 +523,17 @@ Triple permanentTide(double const phi)
 	    cout << "Geocentric      : " << AO1 << endl 
 		 << "antenna offsets : " << AO2 << endl << endl;
 
-	    // receiver provided offset to be re-subtracted (WinPrism's
-	    // Ashtech rinexer seems to need this),
+	    // Receiver provided offset to be re-subtracted 
 	    bool apply_clockOffset1(roh1.receiverOffsetValid &&
 				    roh1.receiverOffset);
 	    bool apply_clockOffset2(roh2.receiverOffsetValid &&
 				    roh2.receiverOffset);
+	    // However, sometimes the header record is missing and yet the
+	    // data contains valid offsets (Huh? Ask Werner).
+	    // (WinPrism's Ashtech rinexer seems to need this, and
+	    // doesn't seem to harm otherwise)
+	    apply_clockOffset1 = true;
+	    apply_clockOffset2 = true;
 
 #if 0
 	    // Low hanging fruit
