@@ -15,6 +15,7 @@ SubInclude TOP apps mergetools ;
 #Need to make this not require everything else to have curses
 #SubInclude TOP apps MDPtools ; 
 SubInclude TOP apps positioning ;
+SubInclude TOP apps receiver ;
 SubInclude TOP apps reszilla ;
 SubInclude TOP apps Rinextools ;
 SubInclude TOP apps time ;
