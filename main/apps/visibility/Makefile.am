@@ -3,4 +3,4 @@ LDADD = ../../src/libgpstk.la
 
 noinst_PROGRAMS = wheresat
 
-vecsol_SOURCES = WhereSat.cpp
+wheresat_SOURCES = WhereSat.cpp

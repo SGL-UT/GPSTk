@@ -41,14 +41,18 @@ AC_CONFIG_FILES([Makefile
                  apps/Makefile
                  apps/Rinextools/Makefile
                  apps/checktools/Makefile
+                 apps/converters/Makefile
                  apps/cycleslips/Makefile
                  apps/difftools/Makefile
                  apps/filetools/Makefile
                  apps/ionosphere/Makefile
+                 apps/MDPtools/Makefile
                  apps/mergetools/Makefile
                  apps/reszilla/Makefile
                  apps/time/Makefile
-		 apps/positioning/Makefile
-		 apps/differential/Makefile
+                 apps/positioning/Makefile
+                 apps/differential/Makefile
+                 apps/visibility/Makefile
+                 tests/Makefile
                  examples/Makefile])
 AC_OUTPUT
