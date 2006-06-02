@@ -3,4 +3,4 @@ LDADD = ../../src/libgpstk.la
 
 noinst_PROGRAMS = novaRinex
 
-novaRinex_SOURCES = novaRinex.cpp NovatelData.cpp NovatelStream.cpp
+novaRinex_SOURCES = novaRinex.cpp NovatelData.cpp 
