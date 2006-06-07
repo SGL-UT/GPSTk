@@ -298,7 +298,8 @@ void RINEXPVTSolution::process()
             vector<double> rangeVec;
             Xvt svpos;
             double ionocorr;
-	    
+
+	    try {	
 	    RinexObsData::RinexPrnMap::const_iterator it;
             for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
             {
@@ -381,9 +382,9 @@ void RINEXPVTSolution::process()
                 } // If above elevation mask
                 
             }   
-	    
 
-            try {	
+
+
                prSolver.RAIMCompute(rod.time,prnVec,rangeVec, *virtualEphStore, \
 			            &ggTropModel);
 	    }
