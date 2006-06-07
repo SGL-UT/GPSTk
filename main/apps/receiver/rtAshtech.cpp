@@ -260,9 +260,6 @@ int main(int argc, char *argv[])
       log("Requesting iono, trop info");
       port.write("$PASHQ,ION\r\n",12);
 
-      log("Requesting ephemeris from all PRNs in track.");
-      port.write("$PASHQ,EPB\r\n",12);
-
 
          // Define loop variables *********************************************
       ssize_t readSize=-333;
@@ -271,6 +268,8 @@ int main(int argc, char *argv[])
       const size_t buff2size=400;
       char buff2[buff2size]="";
       string msgBuffer;
+      DayTime pollEphTime;
+      bool firstPollDone=false;
 
       bool readStream=true;
       ssize_t count=0;
@@ -403,6 +402,7 @@ int main(int argc, char *argv[])
 
 	    }
 
+
             // Stuff away data for later  
             switch (thisType) 
             {
@@ -445,6 +445,15 @@ int main(int argc, char *argv[])
                currentEpoch = msg.getEpoch(currentEpoch);
 	       gotGPSEpoch= true;
 	    }
+
+            if ((!firstPollDone)||(currentEpoch>pollEphTime))
+            { 
+              log("Requesting ephemeris from all PRNs in track.");
+              port.write("$PASHQ,EPB\r\n",12);
+	      firstPollDone=true;
+              pollEphTime = currentEpoch+30*60; // Wait 30 minutes
+            }
+
 
             // Trigger the writing of nav data
             if ((thisType==AshtechMessage::EPB)&&(gotION))
