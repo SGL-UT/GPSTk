@@ -1,0 +1,53 @@
+\chapter{Frequenty Asked Questions}
+
+
+\section{Windows}
+
+\subsection{How do I get to the command line where I can run, for example, wheresat -h?}
+
+You can get a command line in one of two ways:
+
+\begin{enumerate}
+\item Press the start button then select "Run". Then you will get a dialogue box asking you what to run. Into that enter "cmd.exe" or "command.exe"
+
+\item Press the start button, then select "All Programs", then select "Accessories," thenu select the Dos prompt.
+\end{enumerate}
+
+\subsection{What is the meaning of ``./DayTime''?}
+
+This is an attempt to reproduce what you see on a command prompt, both what the computer prints out and what you the user would type. Under UNIX system, the prompt usually prints out your user name and what server you are using. Under Windows systems, the prompt is usually the name of the current working directory.
+
+\subsection{How do I install a GPSTk program?}
+
+Installation under Windows is currently a manual process. Follow these steps.
+
+\begin{enumerate}
+
+\item Create an installation directory. This can be done graphically or using a DOS prompt. Using a DOS prompt, use the following commands:
+
+\begin{verbatim}
+c:
+cd c:\
+mkdir gpstk
+cd gpstk
+mkdir bin
+\end{verbatim}
+
+This creates a bin subdirectory of gpstk on the C: drive.
+
+\item Copy your GPSTk program(s) to that directory. If you are performing the copy graphically, the c:\ drive should be under the "My Computer" folder.
+
+\item Add the GPSTk executable directory to your environment variable PATH. The following link describes how to change PATH for all processes. It requires administration privileges on your computer.
+
+The value of your new PATH must be appended to the current value. TODO: give an example.
+
+\item Validate your modification to the PATH.
+
+The current programs and command lines do not have access to the new PATH. To validate the GPSTk executables, open a new command prompt and try to execute help on a GPSTk command of interest. For example you should be able to just type
+
+\begin{verbatim}
+wheresat -h
+\end{verbatim}
+
+to get the help for the wheresat program
+\end{enumerate}

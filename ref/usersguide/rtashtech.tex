@@ -1,0 +1,292 @@
+\chapter{Using rtAshtech}
+
+By R. Benjamin Harris
+
+\section{Overview}
+
+\texttt{rtAshtech} is an application based on the GPSTk [1] that logs 
+observations from the Ashtech Z-XII receiver. It records observations and 
+navigation messages in the RINEX 2.1 format. [2] It can also 
+generate observation files in a space delimited formated 
+that can be directly loaded into numerical programs
+such as Excel, MATLAB and Octave. The raw messages from the receiver 
+interface can optionally be captured. Finally, \texttt{rtAshtech} 
+can produce a log file to give the user insight into its operation.
+
+
+\section{Background}
+
+Modern, survey-grade GNSS receiverscan store observations internally
+for a number of days. Then those observations can be extracted from the
+receiver using software provided by the receiver manufacturer or using
+open source tools[3]
+
+Sometimes it is necessary to collect more observations for a period longer
+than a receiver can store. In those cases, a data logging program must be
+employed. Most receiver manufacturers provide such a program for their 
+receivers. However, in the case of older such as the Ashtech Z-XII,
+those programs are no longer supported. Furthermore, those programs
+cannot function under Linux. It is possible to use the program 
+\texttt{teqc} to convert
+Ashtech observations in real time, however the output stream must
+be managed by the user. 
+
+
+\subsection{The Ashtech Z-XII Receiver}
+
+The Z-XII is a survey grade receiver introduced by Ashtech in the early 1990's.
+It is able to track both frequencies of GPS using what is referred to as a 
+``codeless'' tracking scheme. That is, the Z-XII track the military signals on
+L2 based on correlation of the received signal with P-code, and without 
+specific knowledge of Y-code. This mode of tracking is fully documented in
+a series of U.S. patents.[4]
+
+\subsection{Ashtech Receiver Message Structure}
+
+The Ashtech Z-XII communicates over a serial port using a proprietary
+format. That format is defined partially in the Z-XII reference manual. [5]
+Some details, such as the interpretation of signal-to-noise messages--have been
+shared only in memos. [6] Finally, Ashtech has documented the interface
+for not only the Ashtech but also a related family of receivers in a 2002
+publication [7] 
+
+
+\section{Detailed Description}
+
+\subsection{Setting up the Receiver}
+
+In the current version of \texttt{rtAshtech}, the receiver must be configured 
+by hand to transmit observations and ephemerides. Specifically the following 
+messages must be enabled from the receiver front panel.
+ 
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\multicolumn{2}{|c|}{Manually Enabled Messages} \\
+\hline
+ASCII PBEN   & Text formatted position and clock solutions \\
+ASCII MBEN   & Text formatted observations \\
+EPB          & Binary ephmerides \\
+\hline
+\end{tabular}
+\end{center}
+
+Note that the ASCII, not BINARY, encoding is required for this version of
+\texttt{rtAshtech}. 
+
+The user will need to manually set other interface options. The data rate 
+must be set. The communication speed must be set to 115200 baud. Because
+the data rate is not checked or enforced by \texttt{rtAshtech}, then
+it is possible for the user to change the data rate while logging 
+data without restarting the program.
+
+\subsection{Setting up the Software}
+
+The serial port on the data collection computer does not need to be 
+configured. However it is suggested that a terminal program like
+\texttt{minicom} be used to verify that the serial communication is 
+receiving data.
+
+The contents of the headers is under the direct control of the user. 
+Header templates files are read when \texttt{rtAshtech} starts. If additional
+comments or site information should be added to the header, then the
+templates can be edited with a basic text editor. Note that it not
+necessary to correct header entries associated with timestamps, e.g., 
+``TIME OF FIRST OBS'' . Because \texttt{rtAshtech} must read these
+files on startup, those files must be in the current working directory
+when the application is started.
+
+
+\section{Execution}
+
+The user executes \texttt{rtAshtech} from the command line. The processing
+performed by the \texttt{rtAshtech} is specified through command line
+arguments. The full set of arguments is defined below. This list can be
+duplicated by running \texttt{rtAshtech -h} on the command line.
+
+\small
+\begin{singlespace}
+\begin{verbatim}
+user@host:~$ /rtAshtech -h
+Usage: rtAshtech [OPTION] ...
+Records observations from an Ashtech Z-XII receiver.
+
+Optional arguments:
+  -h, --help          Print help usage
+  -v, --verbose       Increased diagnostic messages
+  -r, --raw           Record raw observations
+  -l, --log           Record log entries
+  -t, --text          Record observations as simple text files
+  -p, --port=ARG      Serial port to use
+  -o, --rinex-obs=ARG Naming convention for RINEX obs files
+  -n, --rinex-nav=ARG Naming convention for RINEX nav message files
+  -T, --text-obs=ARG  Naming convention for obs in simple text files
+\end{verbatim}
+\end{singlespace}
+\normalsize
+
+The serial port argument is a text string describing the full
+path to the serial device. For example, in Linux, the argument could 
+be \texttt{-p /dev/ttyS0} to connect to the first serial port.
+
+The options that describe the file naming convention all work similarly.
+The file naming convention is precisely the time specification used 
+throughout the GPSTk. For example, ``surv\%03d.\%02yo'' creates file with names that start with
+``surv,'' followed by a three digit day of the year, then a period, then a
+two digit year number, then by the character ``o.''  Every item to be 
+recorded--either observation or navigation message--
+is mapped to a file name based on the associated epoch.
+If that file does not exist, a new output file is created. 
+
+Files are written to the current working directory by convention. The
+user can specify another output directory by embedding that directory
+into the filenaming convention. For example, to output RINEX observation
+files to the directory \texttt{/opt/website/data/rinex/obs}, then the
+file specification could be 
+\texttt{-o ``/opt/website/data/rinex/obs/surv\%03d.\%02yo''}.
+
+By altering the filenaming convention, the user effectively controls the time
+span of data contained in the output files. For example, the filenaming 
+convention ``obs\%G.txt'' could be used to create observation files that 
+contain a full weeks worth of observations.
+
+Note that the observations can be written into a simple text file. Such
+files can be directly loaded into numerical software such as Excel, MATLAB
+or Octave. 
+\subsection{Display}
+
+The output of \texttt{rtAshtech} is text based. Three kinds of information
+are presented to the user. First, the tracking status printed by channel.
+Second, the status of communications buffers are listed. Then, log
+messages are printed. If the \texttt{-l} log option is used, then the
+log messages are captured to a file. 
+
+Here is an example output
+
+\small
+\begin{singlespace}
+\begin{verbatim}
+GPSTk Real-Time Data Collection for the Ashtech Z-XII ver. 1.0
+
+Channel    1    2    3    4    5    6    7    8    9   10   11   12
+PRN        5   22   25   18   30    9   21   15   19    3   14    1
+
+Number of unprocessed characters in buffer: 358
+Today's message count:                      49
+Number of unproceseed obs:                  11
+
+Log Messages
+-----------------------------------------------------------------------------
+ 05/04/2006 20:59:10.6 - Got ephemeris for PRN 3
+ 05/04/2006 20:59:10.6 - Converted a nav message
+ 05/04/2006 20:59:10.6 - Wrote nav message
+ 05/04/2006 20:59:10.6 - Got ephemeris for PRN 14
+ 05/04/2006 20:59:10.6 - Converted a nav message
+ 05/04/2006 20:59:10.6 - Wrote nav message
+ 05/04/2006 20:59:11.2 - Got ephemeris for PRN 1
+ 05/04/2006 20:59:11.2 - Converted a nav message
+ 05/04/2006 20:59:11.2 - Wrote nav message
+ 05/04/2006 20:59:11.2 - Opened output file: site124.06o
+-----------------------------------------------------------------------------
+\end{verbatim}
+\end{singlespace}
+\normalsize
+
+The time associated with the log files is the UTC time realized by the host
+machine.
+
+Note that more information is output if the \texttt{-v} verbose option
+is used. In fact, more information is printed than can be contained in 
+the default 80x25 consoles used by most Linux-based machines. However this
+is not a problem for the resizeable pseudo-terminals provided by most
+X windows environments.
+
+\section{Examples and Usage Notes}
+
+This section contains a number of practical examples in the use of
+\texttt{rtAshtech}. In each subsection there is a brief description of the
+resulting processing.
+
+\subsection{Basic recording of RINEX files}
+
+By default, \texttt{rtAshtech} records just RINEX obs and nav files.
+The following example demonstrates this
+most basic processing mode of \texttt{rtAshtech}.
+
+\small
+\begin{singlespace}
+\begin{verbatim}
+user@host:~$ ./rtAshtech
+\end{verbatim}
+\end{singlespace}
+\normalsize
+
+In this case the output is written to the current terminal. For long
+term recording, the user may want to enable rtAshtech to continue
+running after the user has logged out. In Linux the following command
+meets that need.
+
+\small
+\begin{singlespace}
+\begin{verbatim}
+user@host:~$ nohup ./rtAshtech > /dev/null &
+\end{verbatim}
+\end{singlespace}
+\normalsize
+
+
+\subsection{Recording RINEX using a non-Default Serial Port}
+
+By default, \texttt{rtAshtech} connect to the first serial port. It is
+possible to specify another serial port with the \texttt{-p} option. 
+The following example demonstrates how to the second serial port.
+
+\small
+\begin{singlespace}
+\begin{verbatim}
+user@host:~$ ./rtAshtech -p /dev/ttyS1
+\end{verbatim}
+\end{singlespace}
+\normalsize
+
+\subsection{Recording Files to User-Defined Locations}
+
+Recall that the output files are defined using a user-defined specification.
+That specification uses the naming convention used through all GPSTk
+applications. If the input data maps to a new filename, then the current
+file is closed and the new file is opened. If a new obs file is desired 
+every minute, then the user could start the application as follows:
+
+\small
+\begin{singlespace}
+\begin{verbatim}
+./rtAshtech -o "minute%03j%02H%02M.%02yo"
+\end{verbatim}
+\end{singlespace}
+\normalsize
+
+If the time when the application was start was May 4, 2006, at 20:16 UTC, then
+a series of observation files would be created: minute1242016.06o, 
+minute1242017.06o, minute1242018.06o, etc. 
+
+\section{References}
+
+\begin{enumerate}
+
+  \item Brian Tolman, R. Benjamin Harris, Tom Gaussiran, David Munton, Jon Little, Richard Mach, Scot Nelsen, Brent Renfro, ARL:UT; David Schlossberg, University of California Berkeley. ``The GPS Toolkit -- Open Source GPS Software.'' Proceedings of the 16th International Technical Meeting of the Satellite Division of the Institute of Navigation (ION GNSS 2004). Long Beach, California. September 2002.
+
+  \item RINEX: The Receiver Independent Exchange Format Version 2.10.
+  Available on the web at http://www.ngs.noaa.gov/CORS/Rinex2.html.
+
+  \item The Sharc project. http://sharc.sourceforge.net/
+
+  \item United States Patent and Trademark Office: http://www.uspto.gov/, Patents 5293170, 5134407, and 4928106, owned by Ashtech Telesis, Inc.
+
+  \item Ashtech XII GPS Receiver Operating Manual.
+  
+  \item Various memos from Ashtech to ARL:UT.
+
+  \item Z-Family GPS Receivers Technical Reference Manual. Thales Navigation. 2002.
+  
+\end{enumerate}
+
