@@ -195,11 +195,11 @@ void Solve(gpstk::Matrix <double> N, gpstk::Matrix <double> const b,
 	}
     }
     // Soft-constrain tropo params. This is tricky, as this has to be scaled
-    // with the standard error of unit weight for the GPS observations. Use
+    // with the variance of unit weight for the GPS observations. Use
     // conservative values:
     if (tropo) {
-	N(MaxUnkn - 1, MaxUnkn - 1) += 0.1;
-	N(MaxUnkn - 2, MaxUnkn - 2) += 0.1;
+	N(MaxUnkn - 1, MaxUnkn - 1) += 0.01;
+	N(MaxUnkn - 2, MaxUnkn - 2) += 0.01;
     }
 
     // Copy over to correctly sized matrices
