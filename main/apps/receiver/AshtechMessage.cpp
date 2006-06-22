@@ -205,7 +205,7 @@ namespace gpstk
 
       rod.time = epoch;
       rod.numSvs = 0;
-      rod.epochFlag = 1;
+      rod.epochFlag = 0;
 
       std::list<AshtechMessage>::const_iterator i;
       for (i=obsMsgs.begin(); i!=obsMsgs.end(); i++)
