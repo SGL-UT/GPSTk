@@ -1,0 +1,20 @@
+\section{\emph{timeconvert}}
+\subsection{Usage}
+\getuse{timeconvert --help}
+\subsection{Examples}
+\begin{verbatim}
+> timeconvert -r "05 06 2006 13:50:02"
+\end{verbatim}
+\getuse{timeconvert -r "05 06 1985 13:50:02"}
+\pagebreak
+\begin{verbatim}
+> timeconvert -o "1379 500 2006"
+\end{verbatim}
+\getuse{timeconvert -o "1379 500 2006"}
+\begin{verbatim}
+> timeconvert -o "1379 500 2006 -a 86400"
+\end{verbatim}
+\getuse{timeconvert -o "1379 500 2006 -a 86400"}
+\subsection{Notes}
+Satellite time is kept by Z-counts, which incriment once every 1.5 seconds.
+

@@ -1,0 +1,305 @@
+#!/usr/bin/perl
+
+# refTeX works in conjuction with LaTeX and BibTeX to create
+#  a reference section at the end of a file lisiting the appropriate
+#  sources. It is needed because BibTeX will create only one reference
+#  section at the end of the compiled work, and not references sections
+#  at the end of each chapter.
+
+my $len = @ARGV;
+print "Usage: reftex TeX-file bib-file\n" if $len < 2;
+chomp($ARGV[0]); chomp($ARGV[1]); chomp($ARGV[2]);
+&main($ARGV[0], $ARGV[1], $ARGV[2]) if $len >= 2;
+
+@keys=();
+
+# Controlls the operations necesary in generating a properly references
+#  TeX section.
+sub main
+{
+	# local variables
+	my $tex = $_[0];
+	my $bib = $_[1];
+	
+	# generate proper filenames
+	my $root = $tex; $root =~ s/.tex//;
+	my $bbl = $root.".g.bbl";
+
+	&genbbl($root,$bib);
+	&findcite($tex, $bib); # parse TeX file
+	&genref($tex, $bbl); # generate .ref.tex file
+}
+
+# I am considering generating the bbl first
+sub genbbl
+{
+	my $lroot = $_[0];
+	my $lbib = $_[1];
+	my $lroot = $lroot.".g.tex";
+	open(output,">".$lroot);
+	print output "\\documentclass{article}\n";
+	print output "\\begin{document}\n";
+	print output "\\bibliographystyle{plain}\n";
+	print output "\\nocite{*}\n";
+	print output "\\bibliography{".$lbib."}\n";
+	print output "\\end{document}\n";
+	close(output);
+	$lroot =~ s/.tex//;
+	system("latex $lroot");
+	system("bibtex $lroot");
+	$lroot =~ s/.g/.tex/;
+	
+}
+
+# Reads input TeX file generating a list of reference keys and appending
+#  the section specific code to keys that appear in the TeX. Generates
+#  a .ref.tex file which contains a series of bibliography and \nocite
+#  commands that will be parsed appropriately by BIBTeX and a statement
+#  to include this file at the end of the input TeX file.
+sub findcite
+{
+	# local variables
+	my $ltex = $_[0];
+	my $lbib = $_[1];
+	my $lsec = $ltex; $lsec =~ s/.tex//;
+	my $rname = $ltex; $rname =~ s/.tex/.ref.tex/;
+	my @r_file, @file;
+	my $line, $modline, $eof, $ap, $opt;
+	my $rkey, $stripped, $relabel;
+	my $key, $logged, $newArgList;
+	my @ckeys=();
+	my @skeys=();
+	my @rlkeys=();
+	my @mlines=();
+	
+	# open input TeX file
+	open(input,"<".$ltex);
+
+	# read the TeX file one line at a time
+	while($line = <input>)
+	{
+		$modline=$line; # a copy of line on which to perform editing operations
+		
+		# search line for \cite[]{} commands
+		while($line =~ m/\\cite([^\{]*)\{([^\}]*)\}/g)
+		{
+			$opt = $1; # store optional command
+			$arglist = $2; # store argument list
+			
+			# clear variables
+			@ckeys = ();
+			@skeys = ();
+			@rlkeys = ();
+
+			# extract the cite keys from arg list
+			push(@ckeys, $+) while $arglist =~ m{"([^\"\\]*(?:\\.[^\"\\]*)*)",? |  ([^,]+),? | ,}gx;
+			push(@ckeys, undef) if substr($text, -1,1) eq ',';
+
+			# run through keys and strip them of $labels
+			foreach(@ckeys)
+			{
+				$rkey = $_;
+				$rkey =~ s/ //g;
+				if($rkey =~ m/([^\$]*)\$/){$stripped = $1;}
+				else{$stripped = $rkey}
+				push(@skeys,$stripped);
+			}
+			
+			# run through stripped keys and re-label
+			foreach(@skeys)
+			{
+				$stripped = $_;
+				$relabel = $stripped."\$".$lsec;
+				push(@rlkeys,$relabel);
+			}
+			
+			# run through stripped keys and log them
+			foreach(@skeys)
+			{
+				$stripped = $_;
+				$logged = 0;
+				foreach(@keys){ $logged = 1 if $_ eq $stripped; }
+				push(@keys,$stripped) if $logged == 0;
+			}
+
+			# create argument list of labeled keys
+			$begin = 0;
+			foreach(sort(@rlkeys))
+			{
+				if($begin == 0)
+				{
+					$begin = 1;
+					$newArgList = $_;
+				}
+				else { $newArgList = $newArgList.",".$_ }
+			}
+
+			# create new citation
+			$relabel = "\\cite".$opt."{".$newArgList."}";
+			
+			# used to quote . ^ $ * + ? { [ ] | ( )
+			$arglist =~ s/(\.|\^|\$|\*|\+|\?|\{|\}|\[|\]|\\|\||\(|\))/\\$1/g;
+			$opt =~ s/(\.|\^|\$|\*|\+|\?|\{|\}|\[|\]|\\|\||\(|\))/\\$1/g; #PI
+			
+			# replace old citation with labeled citation
+			$search = "\\\\cite".$opt."\\{".$arglist."\\}";
+			$modline =~ s/$search/$relabel/g;
+		}
+		
+		# search line for \nocite{} commands
+		while($line =~ m/\\nocite\{([^\}]*)\}/g)
+		{
+			$arglist = $1; # store argument list
+			
+			#clear variables
+			@ckeys = ();
+			@skeys = ();
+			@rlkeys = ();
+			
+			# extract citation keys from argument list
+			push(@ckeys, $+) while $arglist =~ m{"([^\"\\]*(?:\\.[^\"\\]*)*)",? |  ([^,]+),? | ,}gx;
+			push(@ckeys, undef) if substr($text, -1,1) eq ',';
+			
+			# run through keys and strip them of $labels
+			foreach(@ckeys)
+			{
+				$rkey = $_;
+				$rkey =~ s/ //g;
+				if($rkey =~ m/([^\$]*)\$/){$stripped = $1;}
+				else{$stripped = $rkey}
+				push(@skeys,$stripped);
+			}
+			
+			# run through stripped keys and re-label
+			foreach(@skeys)
+			{
+				$stripped = $_;
+				$relabel = $stripped."\$".$lsec;
+				push(@rlkeys,$relabel);
+			}
+			
+			# run through stripped keys and log them
+			foreach(@skeys)
+			{
+				$stripped = $_;
+				$logged = 0;
+				foreach(@keys){ $logged = 1 if $_ eq $stripped; }
+				push(@keys,$stripped) if $logged == 0;
+			}
+			
+			# create new argument list from labeled keys
+			$begin = 0;
+			foreach(sort(@rlkeys))
+			{
+				if($begin == 0)
+				{
+					$begin = 1;
+					$newArgList = $_;
+				}
+				else { $newArgList = $newArgList.",".$_ }
+			}
+
+			# create new nocite command
+			$relabel = "\\nocite".$opt."{".$newArgList."}";
+			
+			# Used to quote . ^ $ * + ? { [ ] | ( )
+			$arglist =~ s/(\.|\^|\$|\*|\+|\?|\{|\}|\[|\]|\\|\||\(|\))/\\$1/g;
+			$opt =~ s/(\.|\^|\$|\*|\+|\?|\{|\}|\[|\]|\\|\||\(|\))/\\$1/g; #PI
+			
+			# replace old nocite with new labelled nocite
+			$search = "\\\\nocite\\{".$arglist."\\}";
+			$modline =~ s/$search/$relabel/g; #failing again
+		}
+
+		push(@r_file,$modline); # saves parsed line for generating edited file
+	}
+
+	while(@r_file){ push(@file,pop(@r_file)); } # orders output file
+	close(input);
+	open(output,">".$ltex); # open TeX file for re-write
+
+	# writes output file, the complication comes from inserting proper
+	#  \include command only once	
+	$eof = 0;
+	$ap = 0;
+	while(@file)
+	{
+		# gets line and checks to see if it is an include line
+		$line = pop(@file);
+		$ap = 1 if $line =~ m/\\input{$rname}/; # if the line is the reference include mark that we have already added it to TeX
+		
+		# if we have reached the end of the file
+		if($line =~ m/\\end{document}/)
+		{
+			print output "\\input{$rname}\n" if $ap == 0; # write the include before the end
+			$eof = 1; # mark that there was an \end command
+		}
+
+		print output $line; # write parsed file to TeX
+	}
+	if($eof == 0){ print output "\\input{$rname}\n" if $ap == 0; } # if there was no \end command write the \input at the very end of the file
+	close(output);
+}
+
+# Parses .bib file generated by BibTeX and generates a hash of
+#  cite keys to the actual citation text. Re-writes .ref.tex file
+#  in the form of a Reference section with the sources listed in an
+#  enumarated environment and labeled with the section specific
+#  reference keys.
+sub genref
+{
+	# local variables
+	my $ltex = $_[0];
+	my $lbbl = $_[1];
+	my $lsec = $ltex; $lsec =~ s/.tex//;
+	my $begin, $prev;
+	my %kc_list=();
+	my $phrase, $line, $src, $onlist;
+
+	open(input,"<".$lbbl); # open .bbl file
+	$ltex =~ s/.tex/.ref.tex/; # generate .ref.tex file name
+
+	# get .bbl file input one line at a time
+	$begin = 0;
+	while($line = <input>)
+	{
+		if($line =~ m/\\begin{/) { print "...\n"; } # do nothing if it is a \begin
+		elsif($line =~ m/\\end{/){ $kc_list{ $prev } = $phrase; } # add last reference key to the hash if it is a \end
+		elsif($line =~ m/^\\bibitem{([^}]*)/) # appropriately parse \bibitem commands
+		{
+			# to deal with the $prev issue
+			if($begin == 0)
+			{
+				$phrase = ""; # clear phrase
+				$prev = $1; # set previous
+				$begin = 1; # log that initialization is done
+			}
+			else
+			{
+				$kc_list{ $prev } = $phrase; # hash citation text with key
+				$prev = $1; # set the new previous key
+			}
+   
+			$phrase=""; # clear the citation text
+		}
+		else { $phrase = $phrase.$line; } # if the line is not a command it is citation text, append it to current citation
+	}
+
+	close(input);
+	open(output,">".$ltex); # open .ref.tex file for re-write
+
+	# output proper formatting
+	print output "\\begin{thebibliography}{99}\n";
+
+	# run through all keys in alphabetical order
+	foreach(sort(@keys))
+	{
+		$key = $_;
+		$src = $kc_list{$key};
+		print output "\\bibitem{$key\$$lsec} $src\n"; # output citation text and properly label it
+	}
+
+	# close out reference section
+	print output "\\end{thebibliography}\n";
+	close(output);
+}

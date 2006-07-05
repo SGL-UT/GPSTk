@@ -1,0 +1,17 @@
+\perlnewcommand{\getuse}[1]
+{
+        my $command = $_[0];
+        $command =~ s/"//g;
+        $command = $command." > temp 2>&1";
+        system("$command");
+
+	my $output = "";
+        open(input,"temp");
+        while(my $line = <input>){$output = $output.$line;}
+        close(input);
+
+        return "\\begin{verbatim}\n" .
+                $output .
+                "\\end{verbatim}\n";
+}
+
