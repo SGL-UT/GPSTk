@@ -67,6 +67,20 @@ namespace gpstk
 
    }; // end class BinOpNode
 
+   class Token
+   {
+      public:
+
+         Token(std::string value, int relPriority);
+         std::string getValue(void) {return value;}
+         int getPriority(void) {return priority;}
+
+      private:
+         std::string value;
+         int priority;
+
+   };
+
    class Expression 
    {
       public:
@@ -79,7 +93,9 @@ namespace gpstk
       private:
 
          void tokenize(const std::string& str);
+         void buildExpressionTree(void);
       
+         std::list<Token> tList;
          std::list<ExpNode *> eList;
          ExpNode *root;      
    }; // End class expression

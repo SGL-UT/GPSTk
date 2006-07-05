@@ -46,8 +46,8 @@ int main(int argc, char* argv[])
    }
    cout << endl << "Unit Test #4 -----------------------------------" << endl;
    {
-      const string inputStr(" 1 + (cos 2) * 3.2 ");
-      Expression xpr(inputStr);
+      Expression xpr1(string(" 1 + (6 - 2) * 3.2 "));
+         //Expression xpr2(string(" 1 + (cos 2) * 3.2 "));
    }
    
    exit(0);   

@@ -8,13 +8,14 @@
 
 #include <sstream>
 #include <map>
+#include <list>
 #include <vector>
 #include <string>
 #include <ctype.h>
 
 #include "Expression.hpp"
 
-static const int DEBUG=2;
+static const int DEBUG=1;
 
 namespace gpstk 
 {
@@ -45,17 +46,23 @@ namespace gpstk
       return ostr;
    }
 
+   Token::Token(std::string iValue, int iPriority):
+      value(iValue), priority(iPriority)
+   {
+   }
+
    Expression::Expression(const std::string& istr)
          : root(0)
    {
       tokenize(istr);
+      buildExpressionTree();
    }
    
    void Expression::tokenize(const std::string& istr)
    {
       using namespace std;
 
-      if (DEBUG>1) cout << "Received: " << istr << endl;      
+      if (DEBUG>=1) cout << "Received: " << istr << endl;      
 
       // Remove spaces and parenthesis from the input string
       // Must store informatin from parenthesis in another list
@@ -88,14 +95,14 @@ namespace gpstk
          }
       }
       
-      if (DEBUG>2)
+      if (DEBUG>=2)
       {
          for (int kk=0; kk<baseOrder.size(); kk++)
             cout << kk << " : " << str[kk] << " :  parenlvl "  << baseOrder[kk] << endl;
       }
       
          
-      if (DEBUG>1) cout << "Whitespace eliminated: " << str << endl;
+      if (DEBUG>=1) cout << "Whitespace eliminated: " << str << endl;
       
       map<string, int> opPrecMap;
       opPrecMap["+"]=0;
@@ -119,17 +126,17 @@ namespace gpstk
 
       for (it=opPrecMap.begin(); it!=opPrecMap.end(); it++)
       {
-         if (DEBUG>2) cout << "Looking fer " << it->first << endl;
+         if (DEBUG>=2) cout << "Looking fer " << it->first << endl;
          int position = 0;
          while ((position=str.find(it->first,position+1))!=string::npos)
          {
-            if (DEBUG>2) cout << "found at : " << position << endl;
+            if (DEBUG>=2) cout << "found at : " << position << endl;
             breaks.push_back(position);
             opPriority[position] = it->second + baseOrder[position];
 
             int opPosition = position+(it->first.size());
             breaks.push_back(opPosition);
-            opPriority[opPosition] = it->second  + baseOrder[position];
+            opPriority[opPosition] = it->second  + baseOrder[opPosition];
             
          }
          
@@ -147,15 +154,19 @@ namespace gpstk
 
       for (rs++ ;rs!=breaks.end(); rs++, ls++)
       {
-         if (DEBUG>2) cout << "(" << *ls << ", " << *rs << ")" << endl;
+         if (DEBUG>=2) cout << "(" << *ls << ", " << *rs << ")" << endl;
 
          if (*rs!=*ls) // If not two operators in a row
          {
             string thisToken = str.substr(*ls,(*rs)-(*ls));
             int thisOop = opPriority[*ls];
-            tokens.push_back(thisToken);
-            if (DEBUG>1) cout << thisToken << " - " << thisOop << endl;
+            Token tok(string("asfa"),2);
+		      //tList.push_back(Token(thisToken, thisOop));
+	    // tList.push_back(tok);
 
+            if (DEBUG>=1) cout << thisToken << " - " << thisOop << endl;
+
+           
                /// !!!!!!!!!!!!!!!TODO
                // create one token with (thisToken, thisOop) per entry
                // and return the Token. gotta make a new class.
@@ -169,12 +180,35 @@ namespace gpstk
          
       }
 
-      int count=0;
-      for (list<string>::iterator is=tokens.begin(); is!=tokens.end(); is++)
-         if (DEBUG>2) cout << count++ << ": '" << *is << "' " << endl;
-      
+      if (DEBUG>=1) {
+         int count=0;
+         for (list<Token>::iterator is=tList.begin(); is!=tList.end(); is++)
+         {
+            cout << count++ << ": '" << is->getValue();
+            cout << "' " << is->getPriority() << endl;
+	 }
+      }      
       
    } // end tokenize function
+   
+   void Expression::buildExpressionTree(void)
+   {
+      using namespace std;
+      
+      list<Token>::iterator itt;
+
+      // Find the value for the highest priority
+      itt=tList.begin();
+      int highestP = itt->getPriority();
+      for (itt++; itt !=tList.end(); itt++)
+      {
+         if (itt->getPriority()>highestP) 
+            highestP=itt->getPriority();
+      }
+
+      if (DEBUG>=1) cout << "Highest priority is " << highestP << endl;
+      
+   }
    
 } // end namespace gpstk
  
