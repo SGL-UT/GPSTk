@@ -1,12 +1,10 @@
-all: firstprototype userref
+all: firstprototype gpstk-user-reference
 
-userref: chap2.pdf
+gpstk-user-reference: gpstk-user-reference.pdf
 
-chap2.pdf: chap2.tex  
-	src/reftex5 chap2.tex src/gpstk.bib
-	latex chap2.tex
-	latex chap2.tex
-	dvipdf chap2.dvi
+gpstk-user-reference.pdf: gpstk-user-reference.tex chap2.tex sec2.tex calgps.tex poscvt.tex timeconvert.tex src/gpstk.bib
+	./makescr
+	dvipdf gpstk-user-reference
 
 firstprototype: firstprototype.pdf firstprototype.ps
 
@@ -28,6 +26,11 @@ clean:
 	rm -f *.log
 	rm -f *.aux
 	rm -f *.toc
+	rm -f *.bbl
+	rm -f *.blg
+	rm -f *.lgpl
 	rm -f *.dvi	
 	rm -f *.pdf
+	rm -f *.ps
 	rm -f *~
+	rm -f temp
