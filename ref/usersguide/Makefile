@@ -1,21 +1,28 @@
-all: gpstkusersguide
+all: firstprototype userref
 
+userref: chap2.pdf
 
-gpstkusersguide: gpstkusersguide.pdf gpstkusersguide.ps
+chap2.pdf: chap2.tex  
+	src/reftex5 chap2.tex src/gpstk.bib
+	latex chap2.tex
+	latex chap2.tex
+	dvipdf chap2.dvi
 
-gpstkusersguide.pdf: gpstkusersguide.dvi
-	dvipdf gpstkusersguide.dvi
+firstprototype: firstprototype.pdf firstprototype.ps
 
-gpstkusersguide.ps: gpstkusersguide.dvi
-	dvips gpstkusersguide.dvi
+firstprototype.pdf: firstprototype.dvi
+	dvipdf firstprototype.dvi
+
+firstprototype.ps: firstprototype.dvi
+	dvips -o firstprototype.ps firstprototype.dvi
 
 # Note latex is call twice. 
 # This provides table of contents information, references, etc.
-gpstkusersguide.dvi: gpstkusersguide.tex faq.tex gpsoverview.tex \
-	gpstkusersguide.tex introduction.tex notices.tex rinexpvt.tex \
+firstprototype.dvi: firstprototype.tex faq.tex gpsoverview.tex \
+	firstprototype.tex introduction.tex notices.tex rinexpvt.tex \
 	rtashtech.tex titlepg.tex vecsol.tex wheresat.tex
-	latex gpstkusersguide.tex
-	latex gpstkusersguide.tex
+	latex firstprototype.tex
+	latex firstprototype.tex
 
 clean:
 	rm -f *.log
