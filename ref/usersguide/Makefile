@@ -2,7 +2,7 @@ all: firstprototype gpstk-user-reference
 
 gpstk-user-reference: gpstk-user-reference.pdf
 
-gpstk-user-reference.pdf: gpstk-user-reference.tex chap2.tex sec2.tex calgps.tex poscvt.tex timeconvert.tex src/gpstk.bib
+gpstk-user-reference.pdf: gpstk-user-reference.tex chap2.tex sec2.tex calgps.tex poscvt.tex timeconvert.tex gpstk.bib
 	./makescr
 	dvipdf gpstk-user-reference
 
@@ -34,3 +34,4 @@ clean:
 	rm -f *.ps
 	rm -f *~
 	rm -f temp
+	rm -f .log
