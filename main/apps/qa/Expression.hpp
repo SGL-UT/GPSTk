@@ -98,7 +98,7 @@ namespace gpstk
       public:
 
          Token(std::string value, int relPriority, 
-               bool isUnaryOperator, bool isBinaryOperator);
+               bool isOperator);
 
          std::string getValue(void) {return value;}
 
@@ -113,26 +113,24 @@ namespace gpstk
          void setResolved(bool value) {resolved=value;}
          bool getResolved(void) {return resolved;}
 
-         bool isOperator(void) 
-         {return isBinaryOperator || isUnaryOperator;}
-      
-         bool getBinaryOperator(void) {return isBinaryOperator;}
-         void setBinaryOperator(bool value) {isBinaryOperator = value;}
-      
-         bool getUnaryOperator(void) {return isUnaryOperator;}
-         void setUnaryOperator(bool value) {isUnaryOperator = value;}
+         bool getOperator(void) {return isOperator;}
+         void setOperator(bool value) {isOperator = value;}
+
+         std::string getArgumentPattern(void) {return argumentPattern;}
+         void setArgumentPattern(std::string value) {argumentPattern = value;}
       
          void print(std::ostream& ostr);
       
       private:
          std::string value;
-         bool isBinaryOperator, isUnaryOperator;
+         bool isOperator;
          bool resolved;
       
          int priority;
          ExpNode *expNode;
          bool used; // has the node of this token been used (linked to?)
       
+         std::string argumentPattern;       
    };
 
    class Expression 
@@ -153,9 +151,9 @@ namespace gpstk
 
          void tokenize(const std::string& str);
          void buildExpressionTree(void);
-    
-         std::map<std::string,int> binaryOperatorMap;
-         std::map<std::string,int> functionMap;
+      
+         std::map<std::string,int> operatorMap;
+         std::map<std::string,std::string> argumentPatternMap;
       
          std::list<Token> tList;
          std::list<ExpNode *> eList;

@@ -92,7 +92,11 @@ int main(int argc, char* argv[])
    
    cout << endl << "Unit Test #" << setw(2) << test++ << " -----------------------------------" << endl;
    {
-//      Expression xpr3(string(" 1 + 2*cos(3.14)"));
+      string istr(" 1 + 2*cos(3.141592647)"); 
+      Expression xpr(istr);
+      cout << "Input string: \"" << istr << "\"" << endl;
+      xpr.print(cout);
+      cout << "=" << xpr.evaluate() << endl;
    }
    
    exit(0);   

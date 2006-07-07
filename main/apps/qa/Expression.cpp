@@ -24,8 +24,9 @@ namespace gpstk
    
    double BinOpNode::getValue() 
    {
-                   // To get the value, compute the value of the left and
-                   // right operands, and combine them with the operator.
+
+      // To get the value, compute the value of the left and
+      // right operands, and combine them with the operator.
       double leftVal = left->getValue();
       double rightVal = right->getValue();
 
@@ -44,9 +45,9 @@ namespace gpstk
       if (op=="cos") return cos(rightVal);
       if (op=="sin") return sin(rightVal);
       if (op=="tan") return tan(rightVal);
-      if (op=="arccos") return acos(rightVal);
-      if (op=="arcsin") return asin(rightVal);
-      if (op=="arctan") return atan(rightVal);
+      if (op=="acos") return acos(rightVal);
+      if (op=="asin") return asin(rightVal);
+      if (op=="atan") return atan(rightVal);
       if (op=="exp") return exp(rightVal);
       if (op=="abs") return fabs(rightVal);
       if (op=="sqrt") return sqrt(rightVal);
@@ -73,10 +74,10 @@ namespace gpstk
    }
 
    Token::Token(std::string iValue, int iPriority, 
-                bool isBinary=false, bool isUnary=false)
+                bool isOp=false)
          :
          value(iValue), priority(iPriority), used(false), resolved(false),
-         expNode(0), isUnaryOperator(isBinary), isBinaryOperator(isUnary)
+         expNode(0), isOperator(isOp)
    {
    }
 
@@ -85,7 +86,7 @@ namespace gpstk
       ostr <<" Value '" << value;
       ostr << "', operation priority " << priority << ", ";
     
-      if (isUnaryOperator || isBinaryOperator) ostr << "operator";
+      if (isOperator) ostr << "operator";
       else ostr << "not operator";
 
       ostr << ", ";
@@ -103,17 +104,40 @@ namespace gpstk
    Expression::Expression(const std::string& istr)
          : root(0)
    {
-      binaryOperatorMap["+"]=0;
-      binaryOperatorMap["-"]=0;
-      binaryOperatorMap["cos"]=1;
-      binaryOperatorMap["sin"]=1;
-      binaryOperatorMap["tan"]=1;
-      binaryOperatorMap["*"]=1;
-      binaryOperatorMap["/"]=1;
-      binaryOperatorMap["^"]=2;
+      operatorMap["+"]=1; 
+      operatorMap["-"]=1;
+      operatorMap["*"]=2;
+      operatorMap["/"]=2;
+      operatorMap["^"]=3;
+      operatorMap["cos"]=4;
+      operatorMap["sin"]=4;
+      operatorMap["tan"]=4;
+      operatorMap["acos"]=4;
+      operatorMap["asin"]=4;
+      operatorMap["atan"]=4;
+      operatorMap["exp"]=4;
+      operatorMap["abs"]=4;
+      operatorMap["sqrt"]=4;
+      operatorMap["log"]=4;
+      operatorMap["log10"]=4;
 
-      functionMap["cos"]=1;
-
+      argumentPatternMap["+"]="RL";
+      argumentPatternMap["-"]="RL";
+      argumentPatternMap["*"]="RL";
+      argumentPatternMap["/"]="RL";
+      argumentPatternMap["^"]="RL";
+      argumentPatternMap["cos"]="R";
+      argumentPatternMap["sin"]="R";
+      argumentPatternMap["tan"]="R";
+      argumentPatternMap["acos"]="R";
+      argumentPatternMap["asin"]="R";
+      argumentPatternMap["atan"]="R";
+      argumentPatternMap["exp"]="R";
+      argumentPatternMap["abs"]="R";
+      argumentPatternMap["sqrt"]="R";
+      argumentPatternMap["log"]="R";
+      argumentPatternMap["log10"]="R";
+      
       tokenize(istr);
       buildExpressionTree();
    }
@@ -169,16 +193,18 @@ namespace gpstk
       breaks.push_back(0);
 
       
-      // Break the expression up by operators          
+      // Break the expression into candidates for tokens. First known operators and functions
+      // are found and marked with as a "break" in the the string.        
       // Note the location and compute the order of operation of each.
       // key is location in string. value is ord. of op.
-      map<int,int> opPriority;
+      map<int,int> breakPriority;
 
-      // Note when the breaks are due to an operator (as opposed to the operand).
-      // Key is location in the string, value is boolean, true for operators
-      map<int, bool> isBinaryOperator;
+      // Note when the breaks are due to an operator or to an operand.
+      // Each break can become a token but not all othem do. 
+      // Key is location in the string, value is boolean, true for operators and functions.
+      map<int, bool> breakType;
 
-      for (it=binaryOperatorMap.begin(); it!=binaryOperatorMap.end(); it++)
+      for (it=operatorMap.begin(); it!=operatorMap.end(); it++)
       {
          if (DEBUG>=2) cout << "Looking fer " << it->first << endl;
          int position = 0;
@@ -186,13 +212,13 @@ namespace gpstk
          {
             if (DEBUG>=2) cout << "found at : " << position << endl;
             breaks.push_back(position);
-            opPriority[position] = it->second + baseOrder[position];
-            isBinaryOperator[position] = true;
+            breakPriority[position] = it->second + baseOrder[position];
+            breakType[position] = true;
 
             int operandPos = position+(it->first.size());
             breaks.push_back(operandPos);
-            opPriority[operandPos] = baseOrder[operandPos];
-            isBinaryOperator[operandPos] = false;
+            breakPriority[operandPos] = baseOrder[operandPos];
+            breakType[operandPos] = false;
          }
          
       }
@@ -214,18 +240,20 @@ namespace gpstk
          if (*rs!=*ls) // If not two operators in a row
          {
             string thisToken = str.substr(*ls,(*rs)-(*ls));
-            int thisOop = opPriority[*ls];
-            bool isUnOp = false;
-            bool isBinOp = isBinaryOperator[*ls];
+            int thisOop = breakPriority[*ls];
+            bool isOp = breakType[*ls];
 
                // Create the token
-            Token tok(thisToken,thisOop, isUnOp, isBinOp);
+            Token tok(thisToken,thisOop, isOp);
+
+            if ( tok.getOperator() ) 
+               tok.setArgumentPattern( argumentPatternMap[thisToken] );
             
             // Create an expression node, save it, and link it to the token
             ExpNode *expNode;
             
 
-            if ((!isUnOp) && (!isBinOp)) 
+            if (!isOp) 
             {
                expNode = new ConstNode(StringUtils::asDouble(thisToken));
                eList.push_back(expNode);
@@ -298,12 +326,13 @@ namespace gpstk
 
          for (itt = tList.begin(); itt !=tList.end(); itt++)
          {
-            if ( (itt->isOperator()) &&
-                 (!(itt->getResolved())) &&
-                  (itt->getPriority()>highestP) )
+            if ( itt->getOperator() && !itt->getResolved() )
             {
-               targetToken = itt;
-               highestP=itt->getPriority();
+               if (itt->getPriority()>highestP) 
+               {
+                  targetToken = itt;
+                  highestP=itt->getPriority();
+               }
             }
          }
           
@@ -314,57 +343,94 @@ namespace gpstk
             cout << targetToken->getValue() << " of priority "  << flush;;
             cout << targetToken->getPriority() <<  flush << endl;
          }
- 
+
+         if ( targetToken->getOperator() )
+         {
             // Find the arg(s) for this operator.
-         list<Token>::iterator leftArg=targetToken, rightArg=leftArg;
+            list<Token>::iterator leftArg=targetToken, rightArg=leftArg;
 
-         if ( targetToken->getBinaryOperator() || 
-              targetToken->getUnaryOperator() )
-         {
-            bool searching = true;
 
-            while (searching)
+            stringstream argstr(targetToken->getArgumentPattern());
+            char thisArg;
+            bool searching;
+            
+            while (argstr >> thisArg)
             {
-               if (rightArg==tList.end())// TODO throw exception
-                  cout << "Mistake, no right arg for " << targetToken->getValue() << endl;
-               else
-                  rightArg++;
+               switch (thisArg) {
+                  case 'R': 
+                     searching = true;
 
-               searching = (rightArg->getUsed());
-            }
-         }
+                     while (searching)
+                     {
+                        if (rightArg==tList.end())// TODO throw exception
+                           cout << "Mistake, no right arg for " << targetToken->getValue() << endl;
+                        else
+                        rightArg++;
 
-            // resolve left argument
-         if ( targetToken->getBinaryOperator() )
+                        searching = (rightArg->getUsed());
+                     }
+                     
+                     break;
+
+                  case 'L':
+               
+                        // Resolve left arg
+                     searching=true;
+
+                     while (searching)
+                     {
+                        if (leftArg == tList.begin()) // TODO throw
+                           cout << "Mistake - no right argument for operator?!" << endl;
+                        else
+                           leftArg--;
+
+                        searching = (leftArg->getUsed());
+                     }
+                     
+                     break;
+               } // end of argumentPattern cases
+            } // done processing argument list
+            
+            
+           if (targetToken->getArgumentPattern()=="RL")
+           {
+              ExpNode *opNode = 
+              new BinOpNode(targetToken->getValue(),leftArg->getNode(), rightArg->getNode());
+              targetToken->setNode(opNode);
+              eList.push_back(opNode);
+
+              targetToken->setResolved(true);
+              root = targetToken->getNode();
+
+              leftArg->setUsed();
+              rightArg->setUsed();
+           }
+
+           if (targetToken->getArgumentPattern()=="R")
+           {
+              ExpNode *opNode = 
+              new FuncOpNode(targetToken->getValue(),rightArg->getNode());
+              targetToken->setNode(opNode);
+
+              eList.push_back(opNode);
+
+              targetToken->setResolved(true);
+              root = targetToken->getNode();
+
+              rightArg->setUsed();
+           }
+            
+         } // If this is an operator
+
+            /**************
+       else // This be a constant or a variable
          {
-            bool searching=true;
-            
-            while (searching)
-            {
-               if (leftArg == tList.begin()) // TODO throw
-                  cout << "Mistake - no right argument for binary operator?!" << endl;
-               else
-                  leftArg--;
-           
-               searching = (leftArg->getUsed());
-            }
-         }
-
-            // Create nodes for operators, assign const/variable nodes
-         if (targetToken->getBinaryOperator())
-         {
-            ExpNode *opNode = new BinOpNode(targetToken->getValue(),leftArg->getNode(), rightArg->getNode());
-            targetToken->setNode(opNode);
-            
-            eList.push_back(opNode);
-            
             targetToken->setResolved(true);
+            targetToken->setUsed();
             root = targetToken->getNode();
-            
-            leftArg->setUsed();
-            rightArg->setUsed();
          }
-
+         
+            ***********8*/
         if (DEBUG>=1) 
         {
            int count=0;
@@ -374,7 +440,8 @@ namespace gpstk
               is->print(cout);
               cout << endl;
 	   }
-        }      
+        }
+        
 
             // Are we done yet?
          totalResolved = countResolvedTokens();
@@ -383,6 +450,7 @@ namespace gpstk
          if (DEBUG>=1) 
             cout << "Total processed is " << totalResolved << endl;
       }
+      
       
    } // end buildExpressionTree
    
