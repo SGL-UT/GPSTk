@@ -12,10 +12,12 @@
 #include <vector>
 #include <string>
 #include <ctype.h>
+#include <math.h>
 
+#include "StringUtils.hpp"
 #include "Expression.hpp"
 
-static const int DEBUG=1;
+static const int DEBUG=0;
 
 namespace gpstk 
 {
@@ -27,14 +29,38 @@ namespace gpstk
       double leftVal = left->getValue();
       double rightVal = right->getValue();
 
-      switch ( op ) {
-         case '+':  return leftVal + rightVal;
-         case '-':  return leftVal - rightVal;
-         case '*':  return leftVal * rightVal;
-         case '/':  return leftVal / rightVal;
-      }
+      if (op=="+") return leftVal + rightVal;
+      if (op=="-") return leftVal - rightVal;
+      if (op=="*") return leftVal * rightVal;
+      if (op=="//") return leftVal / rightVal;
+
    }
 
+   double FuncOpNode::getValue() 
+   {
+      // To get the value, compute the value of the right first
+      double rightVal = right->getValue();
+
+      if (op=="cos") return cos(rightVal);
+      if (op=="sin") return sin(rightVal);
+      if (op=="tan") return tan(rightVal);
+      if (op=="arccos") return acos(rightVal);
+      if (op=="arcsin") return asin(rightVal);
+      if (op=="arctan") return atan(rightVal);
+      if (op=="exp") return exp(rightVal);
+      if (op=="abs") return fabs(rightVal);
+      if (op=="sqrt") return sqrt(rightVal);
+      if (op=="log") return log(rightVal);
+      if (op=="log10") return log10(rightVal);
+// else THROW exception
+   }
+
+   std::ostream& FuncOpNode::print(std::ostream& ostr) {
+      ostr << op;
+      right->print(ostr);
+
+      return ostr;
+   }
 
    std::ostream& BinOpNode::print(std::ostream& ostr) {
       ostr << "(";
@@ -46,14 +72,48 @@ namespace gpstk
       return ostr;
    }
 
-   Token::Token(std::string iValue, int iPriority):
-      value(iValue), priority(iPriority)
+   Token::Token(std::string iValue, int iPriority, 
+                bool isBinary=false, bool isUnary=false)
+         :
+         value(iValue), priority(iPriority), used(false), resolved(false),
+         expNode(0), isUnaryOperator(isBinary), isBinaryOperator(isUnary)
    {
    }
+
+   void Token::print(std::ostream& ostr)
+   {
+      ostr <<" Value '" << value;
+      ostr << "', operation priority " << priority << ", ";
+    
+      if (isUnaryOperator || isBinaryOperator) ostr << "operator";
+      else ostr << "not operator";
+
+      ostr << ", ";
+      
+      if (used) ostr << "used,";
+      else ostr << "not used,";
+
+      if (resolved) ostr << "resolved";
+      else ostr << "not resolved ";
+
+      return;
+   }
+   
 
    Expression::Expression(const std::string& istr)
          : root(0)
    {
+      binaryOperatorMap["+"]=0;
+      binaryOperatorMap["-"]=0;
+      binaryOperatorMap["cos"]=1;
+      binaryOperatorMap["sin"]=1;
+      binaryOperatorMap["tan"]=1;
+      binaryOperatorMap["*"]=1;
+      binaryOperatorMap["/"]=1;
+      binaryOperatorMap["^"]=2;
+
+      functionMap["cos"]=1;
+
       tokenize(istr);
       buildExpressionTree();
    }
@@ -102,17 +162,7 @@ namespace gpstk
       }
       
          
-      if (DEBUG>=1) cout << "Whitespace eliminated: " << str << endl;
-      
-      map<string, int> opPrecMap;
-      opPrecMap["+"]=0;
-      opPrecMap["-"]=0;
-      opPrecMap["cos"]=1;
-      opPrecMap["sin"]=1;
-      opPrecMap["tan"]=1;
-      opPrecMap["*"]=2;
-      opPrecMap["/"]=2;
-      opPrecMap["^"]=3;
+      if (DEBUG>=3) cout << "Whitespace, parntheses eliminated: " << str << endl;
 
       map<string, int>::iterator it;
       list<int> breaks;
@@ -124,7 +174,11 @@ namespace gpstk
       // key is location in string. value is ord. of op.
       map<int,int> opPriority;
 
-      for (it=opPrecMap.begin(); it!=opPrecMap.end(); it++)
+      // Note when the breaks are due to an operator (as opposed to the operand).
+      // Key is location in the string, value is boolean, true for operators
+      map<int, bool> isBinaryOperator;
+
+      for (it=binaryOperatorMap.begin(); it!=binaryOperatorMap.end(); it++)
       {
          if (DEBUG>=2) cout << "Looking fer " << it->first << endl;
          int position = 0;
@@ -133,11 +187,12 @@ namespace gpstk
             if (DEBUG>=2) cout << "found at : " << position << endl;
             breaks.push_back(position);
             opPriority[position] = it->second + baseOrder[position];
+            isBinaryOperator[position] = true;
 
-            int opPosition = position+(it->first.size());
-            breaks.push_back(opPosition);
-            opPriority[opPosition] = it->second  + baseOrder[opPosition];
-            
+            int operandPos = position+(it->first.size());
+            breaks.push_back(operandPos);
+            opPriority[operandPos] = baseOrder[operandPos];
+            isBinaryOperator[operandPos] = false;
          }
          
       }
@@ -160,55 +215,177 @@ namespace gpstk
          {
             string thisToken = str.substr(*ls,(*rs)-(*ls));
             int thisOop = opPriority[*ls];
-            Token tok(string("asfa"),2);
-		      //tList.push_back(Token(thisToken, thisOop));
-	    // tList.push_back(tok);
+            bool isUnOp = false;
+            bool isBinOp = isBinaryOperator[*ls];
 
-            if (DEBUG>=1) cout << thisToken << " - " << thisOop << endl;
+               // Create the token
+            Token tok(thisToken,thisOop, isUnOp, isBinOp);
+            
+            // Create an expression node, save it, and link it to the token
+            ExpNode *expNode;
+            
 
-           
-               /// !!!!!!!!!!!!!!!TODO
-               // create one token with (thisToken, thisOop) per entry
-               // and return the Token. gotta make a new class.
-               // then create one opnode per token.
-               // need to create unary op node for trig funcs
-               // and var opnodes for user vars
-               // and then RinexExpression (inherits from Expression) to overload 
-               // az, el, P1, P2, etc.
-               ///////////////////////
+            if ((!isUnOp) && (!isBinOp)) 
+            {
+               expNode = new ConstNode(StringUtils::asDouble(thisToken));
+               eList.push_back(expNode);
+               tok.setNode(expNode);
+               tok.setResolved(true);
+            }     
+
+            if (DEBUG>=3) cout << thisToken << " - " << thisOop << endl;
+
+            // Now that the token has the best possible state, save it
+            tList.push_back(tok);
          }
-         
       }
 
       if (DEBUG>=1) {
          int count=0;
+         cout << "Initial set of tokens:" << endl;         
          for (list<Token>::iterator is=tList.begin(); is!=tList.end(); is++)
          {
-            cout << count++ << ": '" << is->getValue();
-            cout << "' " << is->getPriority() << endl;
+            cout << count++ << ": " ;
+            is->print(cout);
+            cout << endl;
 	 }
       }      
       
    } // end tokenize function
-   
-   void Expression::buildExpressionTree(void)
+
+
+   int Expression::countResolvedTokens(void)
    {
       using namespace std;
       
       list<Token>::iterator itt;
-
-      // Find the value for the highest priority
-      itt=tList.begin();
-      int highestP = itt->getPriority();
-      for (itt++; itt !=tList.end(); itt++)
+   
+      // How many have already been processed? Are we done yet?
+      int totalResolved=0;
+      for (itt = tList.begin(); itt!=tList.end(); itt++)
       {
-         if (itt->getPriority()>highestP) 
-            highestP=itt->getPriority();
+         if (itt->getResolved()) totalResolved++;
       }
-
-      if (DEBUG>=1) cout << "Highest priority is " << highestP << endl;
-      
+      return totalResolved;
    }
+   
+   
+   void Expression::buildExpressionTree(void)
+   {
+      using namespace std;
+       
+      list<Token>::iterator itt, targetToken;
+
+      if ((tList.size()==1)&&(tList.begin()->getResolved()))
+      {
+         root = tList.begin()->getNode();
+         return;
+      }
+      
+      int totalResolved = countResolvedTokens();
+
+      while (totalResolved<tList.size())
+      {
+         
+         // 
+         // Step through tokens to find the value for the highest priority
+         // that doesn not yet have an expression node ExpNode assigned to it.
+         // A subtle but important sideeffect of this traversal is taht
+         // operators with the same priority get evaluated from right to
+         // left.
+         itt=tList.begin();
+         int highestP = -1;
+
+         for (itt = tList.begin(); itt !=tList.end(); itt++)
+         {
+            if ( (itt->isOperator()) &&
+                 (!(itt->getResolved())) &&
+                  (itt->getPriority()>highestP) )
+            {
+               targetToken = itt;
+               highestP=itt->getPriority();
+            }
+         }
+          
+         if (DEBUG>=1) 
+         {
+            cout << "Highest unprocessed priority is " << flush;
+            
+            cout << targetToken->getValue() << " of priority "  << flush;;
+            cout << targetToken->getPriority() <<  flush << endl;
+         }
+ 
+            // Find the arg(s) for this operator.
+         list<Token>::iterator leftArg=targetToken, rightArg=leftArg;
+
+         if ( targetToken->getBinaryOperator() || 
+              targetToken->getUnaryOperator() )
+         {
+            bool searching = true;
+
+            while (searching)
+            {
+               if (rightArg==tList.end())// TODO throw exception
+                  cout << "Mistake, no right arg for " << targetToken->getValue() << endl;
+               else
+                  rightArg++;
+
+               searching = (rightArg->getUsed());
+            }
+         }
+
+            // resolve left argument
+         if ( targetToken->getBinaryOperator() )
+         {
+            bool searching=true;
+            
+            while (searching)
+            {
+               if (leftArg == tList.begin()) // TODO throw
+                  cout << "Mistake - no right argument for binary operator?!" << endl;
+               else
+                  leftArg--;
+           
+               searching = (leftArg->getUsed());
+            }
+         }
+
+            // Create nodes for operators, assign const/variable nodes
+         if (targetToken->getBinaryOperator())
+         {
+            ExpNode *opNode = new BinOpNode(targetToken->getValue(),leftArg->getNode(), rightArg->getNode());
+            targetToken->setNode(opNode);
+            
+            eList.push_back(opNode);
+            
+            targetToken->setResolved(true);
+            root = targetToken->getNode();
+            
+            leftArg->setUsed();
+            rightArg->setUsed();
+         }
+
+        if (DEBUG>=1) 
+        {
+           int count=0;
+           for (list<Token>::iterator is=tList.begin(); is!=tList.end(); is++)
+           {
+              cout << count++ << ": " ;
+              is->print(cout);
+              cout << endl;
+	   }
+        }      
+
+            // Are we done yet?
+         totalResolved = countResolvedTokens();
+
+
+         if (DEBUG>=1) 
+            cout << "Total processed is " << totalResolved << endl;
+      }
+      
+   } // end buildExpressionTree
+   
    
 } // end namespace gpstk
  

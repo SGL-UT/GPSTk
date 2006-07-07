@@ -2,9 +2,17 @@
 
 /**
  * @file Expression.hpp
- * Provides ability to resolve complex mathematical functions at runtime.
+ * Provides ability to resolve mathematical functions at runtime.
  * Class declarations.
  */
+
+/* TO DO:
+ 1. Add variable node, add setvar 
+ 2. Add Unitary Operators node type. Implement trig funcs.
+ 3. move all classes to internal to Expression
+ 4. Add expression exception type, throw it when parsing user input.
+ 5. Make accessors const. Use const iterators w/in accessors, etc.
+*/
 
 #ifndef EXPRESSION__HPP
 #define EXPRESSION__HPP
@@ -12,8 +20,9 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <map>
  
-// Classes based on notes and code found at
+// Expression node classes based on material found at
 // http://math.hws.edu/orr/s04/cpsc225/btrees/index.html
 
 namespace gpstk
@@ -54,31 +63,76 @@ namespace gpstk
       public:
 
          // Constructor.  Create a node to hold the given data.
-         BinOpNode( char theOp, ExpNode *theLeft, ExpNode *theRight ):
+         BinOpNode( const std::string& theOp, ExpNode *theLeft, ExpNode *theRight ):
                  op(theOp), left(theLeft), right(theRight){}
 
          double getValue();
         
          std::ostream& print(std::ostream& ostr);
 
-         char op;        // The operator.
+         std::string op;        // The operator.
          ExpNode *left;   // The left operand.
          ExpNode *right;  // The right operand.
 
    }; // end class BinOpNode
 
+   // Represents a node that holds a function of a signle variable
+   class FuncOpNode : public ExpNode {
+      public:
+
+         // Constructor.  Create a node to hold the given data.
+         FuncOpNode( const std::string& theOp, ExpNode *theRight ):
+                 op(theOp), right(theRight){}
+
+         double getValue();
+        
+         std::ostream& print(std::ostream& ostr);
+
+         std::string op;        // The operator.
+         ExpNode *right;  // The right operand.
+
+   }; // end class FuncOpNode
+
    class Token
    {
       public:
 
-         Token(std::string value, int relPriority);
+         Token(std::string value, int relPriority, 
+               bool isUnaryOperator, bool isBinaryOperator);
+
          std::string getValue(void) {return value;}
+
          int getPriority(void) {return priority;}
 
+         void setUsed(void) {used=true;}
+         bool getUsed(void) {return used;}
+
+         ExpNode * getNode(void) {return expNode;}
+         void setNode(ExpNode *newNode) {expNode = newNode; }
+
+         void setResolved(bool value) {resolved=value;}
+         bool getResolved(void) {return resolved;}
+
+         bool isOperator(void) 
+         {return isBinaryOperator || isUnaryOperator;}
+      
+         bool getBinaryOperator(void) {return isBinaryOperator;}
+         void setBinaryOperator(bool value) {isBinaryOperator = value;}
+      
+         bool getUnaryOperator(void) {return isUnaryOperator;}
+         void setUnaryOperator(bool value) {isUnaryOperator = value;}
+      
+         void print(std::ostream& ostr);
+      
       private:
          std::string value;
+         bool isBinaryOperator, isUnaryOperator;
+         bool resolved;
+      
          int priority;
-
+         ExpNode *expNode;
+         bool used; // has the node of this token been used (linked to?)
+      
    };
 
    class Expression 
@@ -88,12 +142,20 @@ namespace gpstk
          Expression(const std::string& str);
          bool canEvaluate();
          void setVariable(const std::string& name, double value);
-         double evaluate(void);
+         double evaluate(void) { return root->getValue(); }
+         void print(std::ostream& ostr) {root->print(ostr);}
+      
+
+//         int isOperator(Token);
+         int countResolvedTokens(void);
       
       private:
 
          void tokenize(const std::string& str);
          void buildExpressionTree(void);
+    
+         std::map<std::string,int> binaryOperatorMap;
+         std::map<std::string,int> functionMap;
       
          std::list<Token> tList;
          std::list<ExpNode *> eList;
