@@ -1,8 +1,8 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/receiver/RinexObsRoller.hpp#1 $"
+#pragma ident "$Id:$"
 
 /**
  * @file Expression.cpp
- * Provides ability to resolve complex mathematical functions at runtime.
+ * Provides ability to resolve mathematical functions at runtime.
  * Class definitions.
  */
 
@@ -17,12 +17,11 @@
 #include "StringUtils.hpp"
 #include "Expression.hpp"
 
-static const int DEBUG=0;
-
 namespace gpstk 
 {
    
-   double BinOpNode::getValue() 
+   double Expression::BinOpNode::getValue() 
+      throw (gpstk::Expression::ExpressionException) 
    {
 
       // To get the value, compute the value of the left and
@@ -37,7 +36,8 @@ namespace gpstk
 
    }
 
-   double FuncOpNode::getValue() 
+   double Expression::FuncOpNode::getValue()
+      throw (gpstk::Expression::ExpressionException) 
    {
       // To get the value, compute the value of the right first
       double rightVal = right->getValue();
@@ -56,14 +56,14 @@ namespace gpstk
 // else THROW exception
    }
 
-   std::ostream& FuncOpNode::print(std::ostream& ostr) {
+   std::ostream& Expression::FuncOpNode::print(std::ostream& ostr) {
       ostr << op;
       right->print(ostr);
 
       return ostr;
    }
 
-   std::ostream& BinOpNode::print(std::ostream& ostr) {
+   std::ostream& Expression::BinOpNode::print(std::ostream& ostr) {
       ostr << "(";
       left->print(ostr);
       ostr << op;
@@ -73,15 +73,34 @@ namespace gpstk
       return ostr;
    }
 
-   Token::Token(std::string iValue, int iPriority, 
-                bool isOp=false)
+   void Expression::VarNode::setValue(double newValue)         
+   {
+      value=newValue;
+      hasValue=true;
+   };
+         
+   double Expression::VarNode::getValue(void) 
+      throw (gpstk::Expression::ExpressionException)
+   {
+      if (!hasValue) 
+      { 
+         Expression::ExpressionException 
+            ee("Variable " + name + " undefined."); 
+         GPSTK_THROW(ee);
+      }
+      
+      return value;
+   }
+   
+   Expression::Token::Token(std::string iValue, int iPriority, 
+                            bool isOp=false)
          :
          value(iValue), priority(iPriority), used(false), resolved(false),
          expNode(0), isOperator(isOp)
    {
    }
 
-   void Token::print(std::ostream& ostr)
+   void Expression::Token::print(std::ostream& ostr)
    {
       ostr <<" Value '" << value;
       ostr << "', operation priority " << priority << ", ";
@@ -142,11 +161,16 @@ namespace gpstk
       buildExpressionTree();
    }
    
+   Expression::~Expression(void)
+   {
+      std::list<ExpNode *>::iterator i;      
+      for (i=eList.begin(); i!=eList.end(); i++)
+         delete (*i);
+   }
+   
    void Expression::tokenize(const std::string& istr)
    {
       using namespace std;
-
-      if (DEBUG>=1) cout << "Received: " << istr << endl;      
 
       // Remove spaces and parenthesis from the input string
       // Must store informatin from parenthesis in another list
@@ -179,21 +203,12 @@ namespace gpstk
          }
       }
       
-      if (DEBUG>=2)
-      {
-         for (int kk=0; kk<baseOrder.size(); kk++)
-            cout << kk << " : " << str[kk] << " :  parenlvl "  << baseOrder[kk] << endl;
-      }
-      
-         
-      if (DEBUG>=3) cout << "Whitespace, parntheses eliminated: " << str << endl;
-
       map<string, int>::iterator it;
       list<int> breaks;
       breaks.push_back(0);
-
       
-      // Break the expression into candidates for tokens. First known operators and functions
+      // Break the expression into candidates for tokens. First known 
+      // operators and functions
       // are found and marked with as a "break" in the the string.        
       // Note the location and compute the order of operation of each.
       // key is location in string. value is ord. of op.
@@ -206,19 +221,31 @@ namespace gpstk
 
       for (it=operatorMap.begin(); it!=operatorMap.end(); it++)
       {
-         if (DEBUG>=2) cout << "Looking fer " << it->first << endl;
          int position = 0;
          while ((position=str.find(it->first,position+1))!=string::npos)
          {
-            if (DEBUG>=2) cout << "found at : " << position << endl;
-            breaks.push_back(position);
-            breakPriority[position] = it->second + baseOrder[position];
-            breakType[position] = true;
+            // Account for scientific notation
+            bool sciNotation=false;
+            if ((it->first=="+") || (it->first=="-")) 
+            {
+               sciNotation =
+                  ( ( (str.substr(position-1,1)=="E") || 
+                      (str.substr(position-1,1)=="e")    )         &&
+                    (isdigit(str.substr(position-2,1).c_str()[0])) &&
+                    (isdigit(str.substr(position+1,1).c_str()[0]))      );
+            }
+            
+            if (!sciNotation)
+            {
+               breaks.push_back(position);
+               breakPriority[position] = it->second + baseOrder[position];
+               breakType[position] = true;
 
-            int operandPos = position+(it->first.size());
-            breaks.push_back(operandPos);
-            breakPriority[operandPos] = baseOrder[operandPos];
-            breakType[operandPos] = false;
+               int operandPos = position+(it->first.size());
+               breaks.push_back(operandPos);
+               breakPriority[operandPos] = baseOrder[operandPos];
+               breakType[operandPos] = false;
+            }
          }
          
       }
@@ -235,8 +262,6 @@ namespace gpstk
 
       for (rs++ ;rs!=breaks.end(); rs++, ls++)
       {
-         if (DEBUG>=2) cout << "(" << *ls << ", " << *rs << ")" << endl;
-
          if (*rs!=*ls) // If not two operators in a row
          {
             string thisToken = str.substr(*ls,(*rs)-(*ls));
@@ -255,30 +280,20 @@ namespace gpstk
 
             if (!isOp) 
             {
-               expNode = new ConstNode(StringUtils::asDouble(thisToken));
+               char testChar = thisToken.c_str()[0];
+               if (isalpha(testChar))
+                  expNode = new VarNode(thisToken);
+               else
+                  expNode = new ConstNode(StringUtils::asDouble(thisToken));
                eList.push_back(expNode);
                tok.setNode(expNode);
                tok.setResolved(true);
             }     
 
-            if (DEBUG>=3) cout << thisToken << " - " << thisOop << endl;
-
             // Now that the token has the best possible state, save it
             tList.push_back(tok);
          }
-      }
-
-      if (DEBUG>=1) {
-         int count=0;
-         cout << "Initial set of tokens:" << endl;         
-         for (list<Token>::iterator is=tList.begin(); is!=tList.end(); is++)
-         {
-            cout << count++ << ": " ;
-            is->print(cout);
-            cout << endl;
-	 }
       }      
-      
    } // end tokenize function
 
 
@@ -335,20 +350,11 @@ namespace gpstk
                }
             }
          }
-          
-         if (DEBUG>=1) 
-         {
-            cout << "Highest unprocessed priority is " << flush;
-            
-            cout << targetToken->getValue() << " of priority "  << flush;;
-            cout << targetToken->getPriority() <<  flush << endl;
-         }
 
          if ( targetToken->getOperator() )
          {
             // Find the arg(s) for this operator.
             list<Token>::iterator leftArg=targetToken, rightArg=leftArg;
-
 
             stringstream argstr(targetToken->getArgumentPattern());
             char thisArg;
@@ -422,38 +428,31 @@ namespace gpstk
             
          } // If this is an operator
 
-            /**************
-       else // This be a constant or a variable
-         {
-            targetToken->setResolved(true);
-            targetToken->setUsed();
-            root = targetToken->getNode();
-         }
-         
-            ***********8*/
-        if (DEBUG>=1) 
-        {
-           int count=0;
-           for (list<Token>::iterator is=tList.begin(); is!=tList.end(); is++)
-           {
-              cout << count++ << ": " ;
-              is->print(cout);
-              cout << endl;
-	   }
-        }
-        
-
             // Are we done yet?
          totalResolved = countResolvedTokens();
-
-
-         if (DEBUG>=1) 
-            cout << "Total processed is " << totalResolved << endl;
-      }
-      
+      }      
       
    } // end buildExpressionTree
    
-   
+
+   void Expression::set(const std::string name, double value)
+   {
+      using namespace std;
+      
+      std::list<ExpNode *>::iterator i;
+      int t;
+      
+      for (t=0, i=eList.begin(); i!=eList.end(); t++, i++)
+      {
+         VarNode *vnode = dynamic_cast<VarNode *> (*i);
+         if (vnode!=0) 
+         {
+            if (vnode->name == name)
+               vnode->setValue(value);
+         }
+      }
+   }
+    
+      
 } // end namespace gpstk
  
