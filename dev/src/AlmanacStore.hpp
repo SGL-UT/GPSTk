@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/AlmanacStore.hpp#1 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/AlmanacStore.hpp#2 $"
 
 #ifndef GPSTK_ALMANACSTORE_HPP
 #define GPSTK_ALMANACSTORE_HPP
@@ -89,6 +89,9 @@ namespace gpstk
          /// returns all almanacs closest to t for all prns
       AlmOrbits findAlmanacs(const gpstk::DayTime& t) const;
 
+         /// returns earliest Toa found in the set
+      gpstk::DayTime getInitialTime() const;
+      
          /// this isn't accurate, but the 0 case is all that's really important
       size_t size() const { return uba.size(); }
 

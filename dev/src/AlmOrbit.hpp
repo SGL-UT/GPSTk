@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/AlmOrbit.hpp#2 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/AlmOrbit.hpp#3 $"
 
 #ifndef GPSTK_ALMORBIT_HPP
 #define GPSTK_ALMORBIT_HPP
@@ -86,6 +86,20 @@ namespace gpstk
 
       void dump(std::ostream& s = std::cout, int verbosity=1) const;
 
+      short getPRN() const;
+      double getecc() const;
+      double geti_offset() const;
+      double getOMEGAdot() const;
+      double getAhalf() const;
+      double getOMEGA0() const;
+      double getw() const;
+      double getM0() const;
+      double getAF0() const;
+      double getAF1() const;
+      long   getToaSOW() const;
+      long   getxmit_time() const;
+      short  getToaWeek() const;
+      
    protected:
       short PRN;              /**< PRN identifier for this SV */
       double ecc;             /**< eccentricity  */
@@ -110,6 +124,20 @@ namespace gpstk
    typedef std::map<short, AlmOrbit> AlmOrbits;
 
    std::ostream& operator<<(std::ostream& s, const AlmOrbit& ao);
+
+   inline short  AlmOrbit::getPRN() const {return(PRN);}
+   inline double AlmOrbit::getecc() const {return(ecc);}
+   inline double AlmOrbit::geti_offset() const {return(i_offset);}
+   inline double AlmOrbit::getOMEGAdot() const {return(OMEGAdot);}
+   inline double AlmOrbit::getAhalf() const {return(Ahalf);}
+   inline double AlmOrbit::getOMEGA0() const {return(OMEGA0);}
+   inline double AlmOrbit::getw() const {return(w);}
+   inline double AlmOrbit::getM0() const {return(M0);}
+   inline double AlmOrbit::getAF0() const {return(AF0);}
+   inline double AlmOrbit::getAF1() const {return(AF1);}
+   inline long   AlmOrbit::getToaSOW() const {return(Toa);}
+   inline long   AlmOrbit::getxmit_time() const {return(xmit_time);}
+   inline short  AlmOrbit::getToaWeek() const {return(week);}
 
    //@}
   

@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/EngNav.hpp#5 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/EngNav.hpp#8 $"
 
 /**
  * @file EngNav.hpp
@@ -52,6 +52,7 @@
 #include <sys/types.h>
 
 #include "gpstkplatform.h"
+#include "BinUtils.hpp"
 
 namespace gpstk
 {
@@ -69,17 +70,71 @@ namespace gpstk
    class EngNav
    {
    public:
+         /// This enumeration is used by the convertXBit() method.
+      enum BitConvertType
+      {
+         BITS8 = 0,
+         BITS10 = 1
+      };
+
          /// default constructor
       EngNav() throw();
 
          /// destructor
       virtual ~EngNav() {}
 
+
+         /**
+          * Compute and return the parity of the given subframe word,
+          * based on the algorihm defined in Section 20.3.5 of
+          * IS-GPS-200D.
+          * @param sfword The subframe word to compute the parity of.
+          * @param psfword The previous word in the subframe (use 0
+          *   when sfword is word 1)
+          * @return the 6-bit parity (or, if zeroBits is set, the
+          *   6-bit parity along with the two t-bits, the
+          *   non-information bits used for parity computation).
+          * @todo Move this code into the gpstk (see gpstk::EngNav).
+          */
+      static uint32_t computeParity(uint32_t sfword,
+                                    uint32_t psfword);
+
+         /**
+          * Compute the parity for the given subframe using the prior
+          * subframe and a flag to handle the "non-information bits"
+          * that appear in certain words of each subframe.
+          * @param sfword The subframe word to compute the parity of.
+          * @param psfword The previous word in the subframe (use 0
+          *   when sfword is word 1)
+          * @param nib if true, sfword is one of the words with the
+          *   non-information bearing bits (word 2 or 10), and the
+          *   parity will be computed as appropriate for that situation.
+          * @return sfword with the proper parity bits.
+          * @todo Move this code into the gpstk (see gpstk::EngNav).
+          */
+      static uint32_t fixParity(uint32_t sfword,
+                                uint32_t psfword, bool nib);
+            
          /**
           * Perform a parity check on a navigation message subframe.
           * @return true if the parity check is successful.
+          * @todo Move this code into the gpstk (see gpstk::EngNav).
           */
       static bool subframeParity(const long input[10]);
+      static bool checkParity(const uint32_t input[10]);
+      
+         /// Following two used by checkParity
+         /// Get bit 30 from the given subframe word
+      static inline uint32_t getd30(uint32_t sfword)
+      {
+         return (sfword & 0x01);
+      }
+
+         /// Get bit 29 from the given subframe word
+      static inline uint32_t getd29(uint32_t sfword)
+      {
+         return ((sfword & 0x02) >> 1);
+      }
 
          /**
           * Given 10 words of a navigation message subframe (as
@@ -87,16 +142,34 @@ namespace gpstk
           * FIC floating point values.
           * @param input array of ten 30-bit words (stored in the 30
           * least-significant bits of each long.
-          * @param gpsWeek full (>10 bits) GPS week number.
+          * @param gpsWeek full (>10 bits) GPS week number associated 
+          * with almanac reference time.
           * @param output 60 FIC floating point values as defined in
           * the documentation for FIC blocks 9 and 62.
           * @return true if successful.
           */
       static bool subframeConvert(const long input[10], 
-                                  const int gpsWeek,
+                                  int gpsWeek,
                                   double output[60])
          throw();
 
+         /**
+          * Given 10 words of a navigation message subframe (as
+          * defined in ICD-GPS-200), convert to the "appropriate" 60
+          * FIC floating point values.
+          * @param input array of ten 30-bit words (stored in the 30
+          * least-significant bits of each long.
+          * @param gpsWeek full (>10 bits) GPS week number associated 
+          * with almanac reference time.
+          * @param output 60 FIC floating point values as defined in
+          * the documentation for FIC blocks 9 and 62.
+          * @return true if successful.
+          */
+      static bool subframeConvert(const uint32_t input[10], 
+                                  short gpsWeek,
+                                  double output[60])
+         throw();
+         
          /** Convert the week number in \c out from 8-bit to full
           * using the full week number \c gpsWeek.
           * @param gpsWeek source full week number.
@@ -104,7 +177,7 @@ namespace gpstk
           * @return true if source and target are within 127 weeks of
           * each other.
           */
-      static bool convert8bit(const int gpsWeek, double *out)
+      static bool convert8bit(int gpsWeek, double *out)
          throw();
 
          /** Convert the week number in \c out from 10-bit to full
@@ -114,9 +187,22 @@ namespace gpstk
           * @return true if source and target are within 511 weeks of
           * each other.
           */
-      static bool convert10bit(const int gpsWeek, double *out)
+      static bool convert10bit(int gpsWeek, double *out)
          throw();
 
+         /** Convert the week number in \c out from 8 or 10-bit to full
+          * using the full week number \c fullGPSWeek.
+          * @param fullGPSWeek source full week number.
+          * @param incompleteGPSWeek week number to convert to full
+          * @param type BITS8 (0) or BITS10 (1)
+          * @return Full GPS week corresponding to incompleteGPSWeek
+          * assuming incompleteGPSWeek is within half the 8/10 bit
+          * distance from fullGPSWeek.
+          */
+      static short convertXBit( short fullGPSWeek, 
+                                short incompleteGPSWeek,
+                                BitConvertType type);
+         
          /**
           * Given a navigation message subframe, return the
           * pattern number to be used in converting the
@@ -143,6 +229,8 @@ namespace gpstk
           */
       static short getSubframePattern(const long input[10])
          throw();
+      static short getSubframePattern(const uint32_t input[10])
+         throw();
 
    private:
 
@@ -164,7 +252,8 @@ namespace gpstk
           * @param p pointer to structure defining conversion to be
           * performed.
           */
-      static void convertQuant(const long input[10], double output[60],
+      static void convertQuant(const uint32_t input[10], 
+                               double output[60],
                                DecodeQuant *p)
          throw();
    }; // class EngNav

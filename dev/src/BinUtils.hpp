@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/BinUtils.hpp#8 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/BinUtils.hpp#10 $"
 
 /**
  * @file BinUtils.hpp
@@ -48,6 +48,8 @@
 
 
 
+
+#include "gpstkplatform.h"
 
 #ifdef __sun
 #include <arpa/nameser_compat.h>
@@ -381,6 +383,31 @@ namespace gpstk
          return xc;
       }
          //@}
+
+         /**
+          * Count the set bits in an 32-bit unsigned integer.
+          * Originated due to need in EngNav::checkParity
+          */
+      static unsigned short countBits(uint32_t v)
+      {
+            // Stolen from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+         uint32_t c; // store the total here
+         const int S[] = {1, 2, 4, 8, 16}; // Magic Binary Numbers
+         const uint32_t B[] = {0x55555555, 0x33333333, 0x0F0F0F0F, 0x00FF00FF,
+                               0x0000FFFF};
+
+            // ...and if we were to turn this into a loop, it would
+            // totally defeat the purpose.  The point here is to be
+            // FAST.
+         c = v;
+         c = ((c >> S[0]) & B[0]) + (c & B[0]);
+         c = ((c >> S[1]) & B[1]) + (c & B[1]);
+         c = ((c >> S[2]) & B[2]) + (c & B[2]);
+         c = ((c >> S[3]) & B[3]) + (c & B[3]);
+         c = ((c >> S[4]) & B[4]) + (c & B[4]);
+
+         return c;
+      }
 
    } // end namespace BinUtils
 } // end namespace gpstk

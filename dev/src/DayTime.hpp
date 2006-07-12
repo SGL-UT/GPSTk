@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/DayTime.hpp#9 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/DayTime.hpp#10 $"
 
 /**
  * @file DayTime.hpp
@@ -65,6 +65,7 @@ struct timeval {
 #include "Exception.hpp"
 #include "StringUtils.hpp"
 #include "GPSZcount.hpp"
+#include "CommonTime.hpp"
 
 namespace gpstk
 {
@@ -336,6 +337,15 @@ namespace gpstk
           * @param f Time frame (see #TimeFrame)
           */
       DayTime(const GPSZcount& z,
+              TimeFrame f = Unknown)
+         throw(DayTimeException);
+
+         /**
+          * CommonTime constructor.
+          * @param c CommonTime object to set to
+          * @param f Time frame (see #TimeFrame)
+          */
+      DayTime(const CommonTime& c,
               TimeFrame f = Unknown)
          throw(DayTimeException);
 
@@ -670,11 +680,16 @@ namespace gpstk
          throw();
 
          /// Convert this object to a GPSZcount object.
-         /// @throws InvalidParameter if this DayTime's current state
+         /// @throws DayTimeException if this DayTime's current state
          ///  doesn't constitute a valid GPS Z-count.
       operator GPSZcount() const
          throw(DayTimeException) ;
 
+         /// Convert this object to a CommonTime object.
+         /// @throws DayTimeException if this DayTime's current state
+         ///  doesn't constitute a valid CommonTime.
+      operator CommonTime() const
+         throw(DayTimeException);
 
          // ----------- Part  9: member functions: set ------------
          //
@@ -812,6 +827,16 @@ namespace gpstk
       DayTime& setGPSZcount(const GPSZcount& z,
                             TimeFrame f = Unknown)
          throw(DayTimeException);
+
+         /**
+          * Set the object's time using the give CommonTime.
+          * @param c the CommonTime object to set to
+          * @param f Time frame (see #TimeFrame))
+          * @return a reference to this object.
+          */
+      DayTime& setCommonTime(const CommonTime& c,
+                             TimeFrame f = Unknown)
+         throw();
 
          /**
           * Set the object's time using day of year.

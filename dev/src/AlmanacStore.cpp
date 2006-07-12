@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/AlmanacStore.cpp#2 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/AlmanacStore.cpp#3 $"
 
 //============================================================================
 //
@@ -161,4 +161,32 @@ namespace gpstk
       }
       return ao;
    }
+   
+   gpstk::DayTime AlmanacStore::getInitialTime() 
+      const
+   {
+      DayTime retDT = DayTime::END_OF_TIME;
+      UBAMap::const_iterator prnItr = uba.begin();
+      while (prnItr != uba.end())
+      {
+         const EngAlmMap& eam = (*prnItr).second;
+
+         EngAlmMap::const_iterator nextItr;
+         for (nextItr=eam.begin(); nextItr!=eam.end(); ++nextItr)
+         {
+            const AlmOrbit& ao = (*nextItr).second;
+            try 
+            {
+               DayTime testT = ao.getToaTime();
+               if (testT<retDT) retDT = testT;
+            }
+               // Not to worry, worst case method return 'END_OF_TIME'
+            catch(...)
+            {}
+         }
+         prnItr++;
+      }
+      return(retDT);
+   }
+   
 }

@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/DayTime.cpp#23 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/DayTime.cpp#24 $"
 
 //============================================================================
 //
@@ -237,6 +237,17 @@ namespace gpstk
       setGPSZcount(z, f);
    }
 
+      // CommonTime constructor.
+      // @param c CommonTime object to set to
+      // @param f Time frame (see #TimeFrame)
+   DayTime::DayTime(const CommonTime& c,
+                    TimeFrame f)
+      throw(DayTime::DayTimeException)
+   {
+      init();
+      setCommonTime(c, f);
+   }   
+   
       // Calendar time constructor.
       // @param yy four-digit year.
       // @param mm month of year (1-based).
@@ -676,6 +687,21 @@ namespace gpstk
       }
    }
 
+   DayTime::operator CommonTime() const
+      throw(DayTime::DayTimeException)
+   {
+      try
+      {
+            // Multiply by .001 to convert mSec from milliseconds to seconds.
+         return CommonTime(jday, mSod, mSec * .001);
+      }
+      catch (gpstk::InvalidParameter& ip)
+      {
+         DayTime::DayTimeException de(ip);
+         GPSTK_THROW(de);
+      }
+   }
+
       // ----------- Part  9: member functions: set -------------
       //
       // Set the object's time using calendar (Y/M/D) date and ordinary (H:M:S)
@@ -890,6 +916,20 @@ namespace gpstk
       return *this ;
    }
 
+      // Set the object's time using the give CommonTime.
+      // @param c the CommonTime object to set to
+      // @param f Time frame (see #TimeFrame))
+      // @return a reference to this object.
+   DayTime& DayTime::setCommonTime(const CommonTime& c,
+                                   TimeFrame f)
+      throw()
+   {
+      c.get(jday, mSod, mSec);
+         // Convert mSec from seconds to milliseconds by multiplying by 1000.
+      mSec *= 1000;
+      return *this;
+   }
+   
       // Set the object's time using day of year.
       // @param year Four-digit year.
       // @param day_of_year Day of year.

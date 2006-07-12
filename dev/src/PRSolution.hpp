@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/PRSolution.hpp#1 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/PRSolution.hpp#2 $"
 
 /**
  * @file PRSolution.hpp
@@ -44,9 +44,12 @@ namespace gpstk
    /** @defgroup GPSsolutions GPS solution algorithms and Tropospheric models */
    //@{
  
-   /** This class define an interface to routines which compute a position
+   /** This class defines an interface to routines which compute a position
     * and time solution from pseudorange data, with a data editing algorithm
     * based on Receiver Autonomous Integrity Monitoring (RAIM) concepts.
+    * RAIM ref. "A Baseline GPS RAIM Scheme and a Note on the Equivalence of
+    * Three RAIM Methods," by R. Grover Brown, Journal of the Institute of
+    * Navigation, Vol. 39, No. 3, Fall 1992, pg 301.
     */
    class PRSolution
    {

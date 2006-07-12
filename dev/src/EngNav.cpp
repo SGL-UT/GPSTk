@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/EngNav.cpp#4 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/EngNav.cpp#9 $"
 
 //============================================================================
 //
@@ -330,8 +330,6 @@ namespace gpstk
    };
 
 
-
-
    EngNav::EngNav()
       throw()
    {
@@ -365,8 +363,21 @@ namespace gpstk
       initialized = 1;
    }
 
+      // Retained for backward compatibility
    bool EngNav :: subframeConvert(const long input[10], 
-                                  const int gpsWeek,
+                                  int gpsWeek,
+                                  double output[60])
+      throw()
+   {
+      uint32_t tinput[10];
+      for (int n=0;n<10;++n) 
+         tinput[n] = static_cast<uint32_t>( input[n] );
+      short tgpsWeek = gpsWeek;
+      return( subframeConvert( tinput, tgpsWeek, output ));
+   }
+   
+   bool EngNav :: subframeConvert(const uint32_t input[10], 
+                                  short gpsWeek,
                                   double output[60])
       throw()
    {
@@ -411,64 +422,66 @@ namespace gpstk
          // Change the 10 bit week number in subframe 1 to full weeks
       if (patId == 1)
       {
-         if (!convert10bit(gpsWeek, &output[5]))
-            return false;
+         short week10Bit = static_cast<uint32_t>( output[5] );
+         output[5] = 
+             static_cast<double>( convertXBit(gpsWeek, week10Bit, BITS10) );
       }
-
       return true;
    }
 
-   bool EngNav :: convert8bit(const int gpsWeek, double *output)
+      // Retained for backward compatibility
+   bool EngNav :: convert8bit(int gpsWeek, double *output)
       throw()
    {
-      long high8bits, low8bits;
-      long target, diff;
-
-      high8bits = gpsWeek & 0xFFFFFF00L;
-      low8bits = gpsWeek & 0x000000FFL;
-
-      target = static_cast<long>( *output ) | high8bits;
- 
-      diff = static_cast<long>( *output ) - low8bits;  
-      if (diff > 127)
-         target -= 256;
-      else if (diff < -127)
-         target += 256;
-
-      *output = static_cast<double>( target );
-
-      if ((target - gpsWeek > 127) || (target - gpsWeek < -127))
-         return false;
-
+      short tgpsWeek = static_cast<short>( gpsWeek );
+      short toutput = static_cast<short> ( *output );
+      short retArg = convertXBit( tgpsWeek, toutput, BITS8 );
+      *output = static_cast<double>(retArg);
+      
       return true;
    }
 
-   bool EngNav :: convert10bit(const int gpsWeek, double *output)
+      // Retained for backward compatibility
+   bool EngNav :: convert10bit(int gpsWeek, double *output)
       throw()
    {
-      long high10bits, low10bits;
-      long target, diff;
-
-      high10bits = gpsWeek & 0xFFFFFC00L;
-      low10bits  = gpsWeek & 0x000003FFL;
-
-      target = static_cast<long>( *output ) | high10bits;
- 
-      diff = static_cast<long>( *output ) - low10bits;  
-      if (diff > 511)
-         target -= 1024;
-      else if (diff < -511)
-         target += 1024;
-
-      *output = static_cast<double>( target );
-
-      if ((target - gpsWeek > 511) || (target - gpsWeek < -511))
-         return false;
-
+      short tgpsWeek = static_cast<short>( gpsWeek );
+      short toutput = static_cast<short> ( *output );
+      short retArg = convertXBit( tgpsWeek, toutput, BITS10 );
+      *output = static_cast<double>(retArg);
       return true;
    }
+   
+   static short LIMIT[] = { 127,  511 };
+   static short RANGE[] = { 256, 1024 };
+   
+   short EngNav :: convertXBit(short fullGPSWeek, 
+                               short incompleteGPSWeek,
+                               BitConvertType type)
+   {
+      short extension = fullGPSWeek - (fullGPSWeek % RANGE[type]);
+      short target = extension + incompleteGPSWeek;
+      
+      short diff = target - fullGPSWeek;
+      if (diff>LIMIT[type]) 
+         target -= RANGE[type];
+      else if (diff< -LIMIT[type])
+         target += RANGE[type];
 
+      return( target );
+   }
+
+      // Retained for backward compatibility
    short EngNav :: getSubframePattern(const long input[10])
+      throw()
+   {
+      uint32_t tinput[10];
+      for (int n=0;n<10;++n) 
+         tinput[n] = static_cast<uint32_t>( input[n] );
+      return( getSubframePattern( tinput ));      
+   }
+   
+   short EngNav :: getSubframePattern(const uint32_t input[10])
       throw()
    {
       short iret, svid;
@@ -504,32 +517,20 @@ namespace gpstk
       return iret;
    }
 
-   static short countSubframeOnes(long bits)
-   {
-      short i;
-      short count = 0;
-      long mask = 0x00000001;
-      
-      for (i=0;i < 30;i++)
-      {
-         if (bits&mask) count++;
-         mask <<= 1;
-      }
-      return count;
-   }
-
-   bool EngNav :: subframeParity(const long input[10])
+   uint32_t EngNav :: computeParity(uint32_t sfword,
+                                    uint32_t psfword)
    {
          /*
-           This function is largely table-driven.  The first table is bmask.
-           There is one element in bmask for each of the six parity bits.
-           Each element is a bit mask with bits set corresponding to the bits
-           which are to be exclusive-OR'd together to form the parity check
-           bit.  The following bit maps define the bmask array.  They were
-           drawn from table 20-XIV of ICD-GPS-200C (10 OCT 1993).
-           
+           This function is somewhat table-driven.  There is one
+           element in bmask for each of the six parity bits.  Each
+           element is a bit mask with bits set corresponding to the
+           bits which are to be exclusive-OR'd together to form the
+           parity check bit.  The following bit maps define the bmask
+           array.  They were drawn from table 20-XIV of ICD-GPS-200C
+           (10 OCT 1993).
+        
            Bit in navigation message
-      bit1                             bit 30
+                 bit1                             bit 30
            bit    12 3456 789. 1234 5678 9.12 3456 789.
            ---    -------------------------------------
            D25    11 1011 0001 1111 0011 0100 1000 0000
@@ -539,76 +540,86 @@ namespace gpstk
            D29    10 1011 1011 0001 1111 0011 0100 0000
            D30    00 1011 0111 1010 1000 1001 1100 0000
          */
-      long bmask[6] = { 0x3B1F3480L, 0x1D8F9A40L, 0x2EC7CD00L,
-                        0x1763E680L, 0x2BB1F340L, 0x0B7A89C0L };
-         /*
-           the pmask array defines whether bit 29 or bit 30 of the
-           previous word is used in determining a given parity bit.
-           As with bmask, pmask is ordered from D25 to D30 and drawn
-           from Table 20-XIV of ICD-GPS-200C (10 OCT 1993).
-         */
-      long pmask[6] = {0x00000002, 0x00000001, 0x00000002,
-                           0x00000001, 0x00000001, 0x00000002 };
-      
-      long parity_bits;
-      long test_bits,temp;
-      short i,j,k,count;
-      
-         /*
-           Test word 1 for proper preamble
-         */
-      if ( (input[0] & 0x22C00000L) !=0x22C00000L )
-         return false;
+      uint32_t bmask[6] = { 0x3B1F3480L, 0x1D8F9A40L, 0x2EC7CD00L,
+                            0x1763E680L, 0x2BB1F340L, 0x0B7A89C0L };
+   
+      uint32_t D = 0;
+      uint32_t d = sfword;
+      uint32_t D29 = getd29(psfword);
+      uint32_t D30 = getd30(psfword);
 
-         /*
-           For each nav message word from 2-10.
+         // If D30 of the previous subframe was set, complement the word
+         // to get the source data bits.  This will also complement the
+         // parity, but we don't need the original parity to compute the
+         // new.
+         /* This would be necessary if the receiver being used output
+          * nav subframes with the hamming code removed.  Is there any
+          * such receiver?
+            if (D30)
+            d = ~d;
          */
-      for (i=1;i < 10;i++)
-      {
-         test_bits = 0x0L;        /* Clear the test parity word */
-            /* For each parity bit...     */
-         for (j=25;j<=30;j++)
-         {
-            k = j-25;
-               /* Build a single word which contains all
-                  bits which are to be XOR's together to
-                  determine this parity bit */
-            temp = input[i] & bmask[k];
-            
-               /* Then add in the state of *D29 or *D30
-                  as appropriate.  (Note that this info
-                  may be stored in bits 29/30 of temp
-                  since the parity bits (25-30) are never
-                  used in the parity calculation */
-            temp |=input[i-1] & pmask[k];
-            
-               /* Count the number of bits set in temp */
-            count = countSubframeOnes(temp);
-               /* Shift the test word left 1 bit  and add 
-                  in the status of the new bit.
-                  If count is odd, new bit is one.  If
-                  count is even, new bit is zero. */
-            test_bits <<= 1;
-            if (count%2) test_bits |= 0x00000001;
-         }
-            /* At this point, the six lsbs of test_bits are equal
-               to D25-D30 as determined by the parity algorithm.
-               Move D25-D30 as received into parity_bits.  Compare
-               the determined to the received.  If they do not match,
-               a parity failure has occurred.   */
-         parity_bits = input[i] & 0x0000003F;
 
-         if (parity_bits != test_bits)
-            return false;
-      }
-         /*
-           If words 2-10 have all passed parity check, return indicating
-           success.
-         */
-      return true;
+      D |= ((D29 + BinUtils::countBits(bmask[0] & d)) % 2) << 5;
+      D |= ((D30 + BinUtils::countBits(bmask[1] & d)) % 2) << 4;
+      D |= ((D29 + BinUtils::countBits(bmask[2] & d)) % 2) << 3;
+      D |= ((D30 + BinUtils::countBits(bmask[3] & d)) % 2) << 2;
+      D |= ((D30 + BinUtils::countBits(bmask[4] & d)) % 2) << 1;
+      D |= ((D29 + BinUtils::countBits(bmask[5] & d)) % 2);
+
+      return D;
    }
 
-   void EngNav :: convertQuant(const long input[10], double output[60],
+   uint32_t EngNav :: fixParity(uint32_t sfword,
+                                uint32_t psfword,
+                                bool nib)
+   {
+      uint32_t bmask[6] = { 0x3B1F3480L, 0x1D8F9A40L, 0x2EC7CD00L,
+                                 0x1763E680L, 0x2BB1F340L, 0x0B7A89C0L };
+
+      uint32_t D = 0;
+      uint32_t d = sfword;
+      uint32_t D29 = getd29(psfword);
+      uint32_t D30 = getd30(psfword);
+
+      if (nib)
+      {
+            // make sure the non-information bits are zero to start with.
+         d &= 0xffffff00;
+         if ((D30 + BinUtils::countBits(bmask[4] & d)) % 2)
+            d |= 0x00000040;
+         if ((D29 + BinUtils::countBits(bmask[5] & d)) % 2)
+            d |= 0x00000080;
+      }
+
+      D = computeParity(d, psfword);
+
+      return D | d;
+   }
+
+      /// This is the OLD GPSTk method, left here for compatibility
+   bool EngNav :: subframeParity(const long input[10])
+   {
+      uint32_t temp[10];
+      for (int n=0;n<10;++n) temp[n] = input[n];
+      return(checkParity( temp ));
+   }
+
+   bool EngNav :: checkParity(const uint32_t sf[10])
+   {
+      return (((sf[0] & 0x0000003f) == computeParity(sf[0], 0)) &&
+              ((sf[1] & 0x0000003f) == computeParity(sf[1], sf[0])) &&
+              ((sf[2] & 0x0000003f) == computeParity(sf[2], sf[1])) &&
+              ((sf[3] & 0x0000003f) == computeParity(sf[3], sf[2])) &&
+              ((sf[4] & 0x0000003f) == computeParity(sf[4], sf[3])) &&
+              ((sf[5] & 0x0000003f) == computeParity(sf[5], sf[4])) &&
+              ((sf[6] & 0x0000003f) == computeParity(sf[6], sf[5])) &&
+              ((sf[7] & 0x0000003f) == computeParity(sf[7], sf[6])) &&
+              ((sf[8] & 0x0000003f) == computeParity(sf[8], sf[7])) &&
+              ((sf[9] & 0x0000003f) == computeParity(sf[9], sf[8])));
+   }
+
+   void EngNav :: convertQuant(const uint32_t input[10], 
+                               double output[60],
                                DecodeQuant *p)
       throw()
    {
@@ -616,11 +627,11 @@ namespace gpstk
       short i, n, bit1, nword, nbit, lsb;
       union equ
       {
-         unsigned long u;
-         long s;
+         uint32_t u;
+         int32_t s;
       } temp;
-      long *b;
-      long mask;
+      uint32_t *b;
+      uint32_t mask;
 
          // Convert starting bit number to word/bit pair
       temp.u = 0x0L;
@@ -632,7 +643,7 @@ namespace gpstk
          nword = (bit1-1) / 30;
          nbit  = (bit1 % 30) + 1;
 
-         b = const_cast<long *>( input ) + nword;
+         b = const_cast<uint32_t *>( input ) + nword;
          for (i=0;i<p->fmt[n].numBits;i++)
          {
             temp.u <<= 1;
@@ -657,16 +668,7 @@ namespace gpstk
       }
       else
       {
-         if (temp.s >= 0)
-            dval = temp.u; // msb = 0
-         else              // msb = 1
-         {                 // This is a special case due to an Alliant bug
-            lsb = temp.u & 0x00000001L; // Store lsb value
-            temp.u >>= 1;               // Right shift 1 bit to clear msb
-            dval = temp.u;              // Move value to double
-            dval = LDEXP(dval,1);       // Multiply by 2 (left shift 1 bit)
-            dval = dval + lsb;          // Add lsb value back in
-         }
+         dval = temp.u; // msb = 0
       }
       dval = dval * p->scale;             // Scale by scalar
       dval = dval * PItab[ p->powPI+3 ];  // Scale by power of PI

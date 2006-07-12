@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/CommonTime.cpp#1 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/CommonTime.cpp#2 $"
 
 #include "CommonTime.hpp"
 #include "TimeConstants.hpp"
@@ -303,7 +303,7 @@ namespace gpstk
       
       if( m_msod < 0 )
       {
-         m_msod += MS_PER_DAY;
+         m_msod = m_msod + MS_PER_DAY;
          --m_day;
       }
       

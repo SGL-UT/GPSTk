@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/SVExclusionList.cpp#1 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/SVExclusionList.cpp#2 $"
 //
 //
 #include <stdio.h>
@@ -194,7 +194,12 @@ namespace gpstk
 
    void SVExclusionList::addExclusion( const SVExclusion svx )
    {
-      exclusionMap.insert( make_pair( svx.getPRNID(), svx ) );
+         // The sun compiler's *really* picky about its consts and says this doesn't work:
+         //exclusionMap.insert( make_pair( svx.getPRNID(), svx ) );
+
+         // Here's some tedium to make it happy:
+      pair<const int, gpstk::SVExclusion> temp( svx.getPRNID(), svx );
+      exclusionMap.insert( temp );
       
          // Update the earliest/latest info
       if (svx.getBeginTime() < earliestTime) earliestTime = svx.getBeginTime();
@@ -284,7 +289,7 @@ namespace gpstk
    {
       string outString = s;
       outString += " at line "; 
-      outString += StringUtils::asString<int>(lineCount);
+      outString += StringUtils::asString(lineCount);
       outString += " of file "; 
       outString += filename;
       outString += ".";

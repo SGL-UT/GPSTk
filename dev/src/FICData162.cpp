@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/ORDEpoch.hpp#3 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/FICData162.cpp#1 $"
 
 //============================================================================
 //
@@ -42,67 +42,39 @@
 
 
 /**
- * @file ORDEpoch.hpp
- * A set of observed range deviations for a single point in time from
- * a single receiver.
+ * @file FICData162.cpp
+ * Ephemeris data encapsulated in engineering terms
  */
+#include "StringUtils.hpp"
+#include "icd_200_constants.hpp"
+#include "DayTime.hpp"
+#include "FICData162.hpp"
 
-#ifndef ORDEPOCH_HPP
-#define ORDEPOCH_HPP
-
-#include <map>
-#include "Exception.hpp"
-#include "ObsRngDev.hpp"
-#include "ClockModel.hpp"
-
+#include <cmath>
 
 namespace gpstk
 {
-   class ORDEpoch
+   using namespace std;
+   using namespace gpstk;
+
+      //
+      //  Note: the subframes are assumed to be 11 elements long so
+      //  elements 1-10 are used.
+   FICData162::FICData162(const short xmitPRN,
+                          const short SVID,
+                          const short xmitWeek,
+                          const short toaWeek,
+                          const std::vector<uint32_t> subframe )
    {
-   public:
+      blockNum = 162;
 
-      /// defines a store for eachs SV's ord, indexed by prn
-      typedef std::map<short, ObsRngDev> ORDMap;
-
-      ORDEpoch& removeORD(short prn) throw()
-      {
-         ORDMap::iterator i = ords.find(prn);
-         if(i != ords.end())
-            ords.erase(i);
-         return *this;
-      }
+      i.push_back( (long) SVID );
+      for (int wndx=1;wndx<11;++wndx) i.push_back( (long) subframe[wndx] );
+      long dummy = 0;
+      i.push_back( (long) xmitPRN );
+      i.push_back( dummy );
+      i.push_back( (long) toaWeek );
+      i.push_back( (long) xmitWeek );
+   }
    
-      ORDEpoch& applyClockModel(const ClockModel& cm) throw()
-      {
-         clockOffset = cm.getOffset(time);
-         validClock = cm.isOffsetValid(time);
-         if (validClock)
-         {
-            ORDMap::iterator i;
-            for (i = ords.begin(); i != ords.end(); i++)
-               i->second.applyClockOffset(clockOffset);
-         }
-         return *this;
-      }
-
-      double clockOffset;                     ///< clock bias value (in seconds)
-      bool validClock;
-      ORDMap ords;           ///< map of ORDs in epoch
-      gpstk::DayTime time;
-
-      friend std::ostream& operator<<(std::ostream& s, 
-                                      const ORDEpoch& oe)
-         throw()
-      {
-         s << "t=" << oe.time
-           << " clk=" << oe.clockOffset << std::endl;
-         ORDMap::const_iterator i;
-         for (i=oe.ords.begin(); i!=oe.ords.end(); i++)
-            s << i->second << std::endl;
-         return s;
-      }
-   
-   };
-}
-#endif
+}   // namespace

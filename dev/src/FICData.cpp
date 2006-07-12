@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/FICData.cpp#10 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/FICData.cpp#11 $"
 
 /**
  * @file FICData.cpp
@@ -979,28 +979,12 @@ namespace gpstk
             char blkHdr[FICBlkHdrSize + 1];
             unsigned location = strm.tellg();
 
-            try
+            strm.getData(blkHdr, FICBlkHdrSize);
+            if ((string(blkHdr, FICBlkHdrSize) != blockString))
             {
-               strm.get(blkHdr, FICBlkHdrSize+1);
-            }
-            catch(std::exception &e)
-            {
-                  // process as an end-of-file if it is one.
-               if (strm.gcount() == 0 && strm.eof())
-               {
-                  EndOfFile err("EOF encountered");
-                  GPSTK_THROW(err);
-               }
-                  // rethrow the exception if it's something else
-               throw e;
-            }
-
-            if (strm.gcount() != FICBlkHdrSize || 
-                (string(blkHdr) != blockString))
-            {
-               FFStreamError e("Bad block header, record=" + 
-                               asString(strm.recordNumber) + 
-                               " location=" + asString(location));
+               FFStreamError e("Bad block header, record="
+                               + asString(strm.recordNumber)
+                               + " location=" + asString(location));
                e.addText(string("blkHdr=[")+string(blkHdr)+string("]"));
                GPSTK_THROW(e);
             }

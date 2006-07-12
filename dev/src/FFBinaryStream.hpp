@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/FFBinaryStream.hpp#1 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/src/FFBinaryStream.hpp#3 $"
 
 /**
  * @file FFBinaryStream.hpp
@@ -90,31 +90,39 @@ namespace gpstk
           * from this stream doesn't match the size of a T-object.
           * @return a T-object
           */
-      template <class T> T getData() throw(FFStreamError)
+      template <class T> T getData() throw(FFStreamError, EndOfFile)
       {
          T data;
+         getData((char*)&data, sizeof(T));
+         return data;
+      } // end of getData(FFStream& strm)
+
+      void getData(char* buff, size_t length) throw(FFStreamError, EndOfFile)
+      {
          try
          {
-            read((char*)&data, sizeof(T));
+            read(buff, length);
          }
          catch(std::exception& exc)
          {
-            FFStreamError err(exc.what());
-            GPSTK_THROW(err);
+            if (gcount() != length && eof())
+            {
+               EndOfFile err("EOF encountered");
+               GPSTK_THROW(err);
+            }
+            else
+            {
+               FFStreamError err(exc.what());
+               std::cout << err << std::endl;
+               GPSTK_THROW(err);
+            }
          }
          catch(...)
          {
             FFStreamError err("Unknown exception");
             GPSTK_THROW(err);
          }
-      
-         if (gcount() != sizeof(T))
-         {
-            FFStreamError err("Error reading data");
-            GPSTK_THROW(err);
-         }
-         return data;
-      } // end of getData(FFStream& strm)
+      } // end of getData(char*, size_t))
 
          /**
           * Writes a T-object directly from the stream
@@ -128,9 +136,16 @@ namespace gpstk
          throw(FFStreamError)
       {
          T temp = data;
+         writeData((char*)&data, sizeof(T));
+         return;
+      } // end of writeData(FFStream& strm, const T& data)
+
+      void writeData(const char* buff, size_t length)
+         throw(FFStreamError)
+      {
          try
          {
-            write((char*)&temp, sizeof(T));
+            write(buff, length);
          }
          catch(std::exception& exc)
          {
@@ -149,71 +164,9 @@ namespace gpstk
             GPSTK_THROW(err);
          }
          return;
-      } // end of writeData(FFStream& strm, const T& data)
+      } // end of writeData(const char*, size_t)
+
    };
-
    //@}
-
 }
-
-/*
-namespace gpstk
-{
-   template <class T> 
-   T FFBinaryStream::getData() throw(FFStreamError)
-   {
-      T data;
-      try
-      {
-         read((char*)&data, sizeof(T));
-      }
-      catch(std::exception& exc)
-      {
-         FFStreamError err(exc.what());
-         GPSTK_THROW(err);
-      }
-      catch(...)
-      {
-         FFStreamError err("Unknown exception");
-         GPSTK_THROW(err);
-      }
-      
-      if (gcount() != sizeof(T))
-      {
-         FFStreamError err("Error reading data");
-         GPSTK_THROW(err);
-      }
-      return data;
-   } // end of getData(FFStream& strm)
-
-   template <class T> 
-   void FFBinaryStream::writeData(const T& data)
-      throw(FFStreamError)
-   {
-      T temp = data;
-      try
-      {
-         write((char*)&temp, sizeof(T));
-      }
-      catch(std::exception& exc)
-      {
-         FFStreamError err(exc.what());
-         GPSTK_THROW(err);
-      }
-      catch(...)
-      {
-         FFStreamError err("Unknown exception");
-         GPSTK_THROW(err);
-      }
-      
-      if (fail() || bad())
-      {
-         FFStreamError err("Error writing data");
-         GPSTK_THROW(err);
-      }
-      return;
-   } // end of writeData(FFStream& strm, const T& data)
-}
-*/
-
 #endif

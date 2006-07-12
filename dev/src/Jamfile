@@ -1,5 +1,5 @@
 #
-# $Id: //depot/sgl/gpstk/dev/src/Jamfile#18 $
+# $Id: //depot/sgl/gpstk/dev/src/Jamfile#24 $
 #
 
 SubDir TOP src ;
@@ -46,7 +46,8 @@ else
       RinexEphemerisStore.cpp RungeKutta4.cpp
       MSCData.cpp SMODFData.cpp LinearClockModel.cpp
       ObsClockModel.cpp ObsRngDev.cpp
-      FICData.cpp FICHeader.cpp
+      FICData.cpp FICHeader.cpp 
+      FICData109.cpp FICData9.cpp FICData162.cpp FICData62.cpp
       CodeBuffer.cpp GenXSequence.cpp SVPCodeGen.cpp X1Sequence.cpp
       X2Sequence.cpp GPSZcount.cpp Position.cpp
       CommandOptionWithPositionArg.cpp
@@ -86,7 +87,8 @@ else
       MSCData.hpp MSCStream.hpp SMODFData.hpp SMODFStream.hpp
       ClockModel.hpp EpochClockModel.hpp LinearClockModel.hpp
       ObsClockModel.hpp ObsRngDev.hpp ValidType.hpp ORDEpoch.hpp
-      FICAStream.hpp FICBase.hpp FICData.hpp FICFilterOperators.hpp
+      FICAStream.hpp FICBase.hpp FICData.hpp FICData9.hpp 
+      FICData109.hpp FICData162.hpp FICData62.hpp FICFilterOperators.hpp
       FICHeader.hpp FICStream.hpp FICStreamBase.hpp
       CodeBuffer.hpp GenXSequence.hpp PCodeConst.hpp SVPCodeGen.hpp
       X1Sequence.hpp X2Sequence.hpp GPSZcount.hpp Position.hpp
@@ -97,10 +99,7 @@ else
       CommonTime.hpp TimeTag.hpp ANSITime.hpp CivilTime.hpp 
       GPSEpochWeekSecond.hpp GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount32.hpp
       GPSZcount29.hpp JulianDate.hpp MJD.hpp UnixTime.hpp YDSTime.hpp 
-      gpstkplatform.h mergePCodeWords.h
-
-
+      gpstkplatform.h mergePCodeWords.h BivarStats.hpp
       ;
-
 }
 
