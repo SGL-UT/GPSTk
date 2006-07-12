@@ -1,7 +1,7 @@
 INCLUDES = -I../../src
 LDADD = ../../src/libgpstk.la
 
-noinst_PROGRAMS = timcvt calgps
+noinst_PROGRAMS = timeconvert calgps
 
-timcvt_SOURCES = timcvt.cpp
+timeconvert_SOURCES = timeconvert.cpp
 calgps_SOURCES = calgps.cpp

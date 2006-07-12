@@ -1,11 +1,11 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/ScreenProc.cpp#5 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/mdpscreen/ScreenProc.cpp#6 $"
 
 #include "Geodetic.hpp"
 #include "GPSGeoid.hpp"
 #include "StringUtils.hpp"
 
-
 #include "ScreenProc.hpp"
+#include "FormatConversionFunctions.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -16,38 +16,42 @@ extern "C" void wench(int sig);
 /*           1         2         3         4         5         6         7
    01234567890123456789012345678901234567890123456789012345678901234567890123456789
   |--------------------------------------------------------------------------------
- 0|hostname:port                                        02:43:12  7/7/05 GPS
+ 0|hostname:port                                        02:43:12  7/7/06 GPS
  1|                   
  2|PVT: 02:43:23.5   Offset: 234,456.1 ns  Drift: 13.235 ns/d
  3|Lon: -179.122345   Lat: 30.12345 N   Ht: 230.0 m      Rate: 1.0 s
- 4| Vx:  0.0 cm/s     Vy:  0.0 cm/s    Vz: 0.00 cm/s    PDOP: 12.2
- 5|
- 6|Obs Rate: 1.5 s
- 7|                   C1    P1      C2    P2      lock             res   
- 8|Ch Prn   Az  El    SNR   SNR     SNR   SNR     count  iodc  h   (m)
- 9|-- ---  ---  ---  ----  ------  ----  ------  ------  ----  -  -----
-10| 1   8  133  22+  41.2  33.8 Y  38.1  39.2 Y  432000   2ba  0  
-11| 2  31
-12| 3  23
-13| 4  27
-14| 5  28
-15| 6   3
-16| 7  11
-17| 8  13
-18| 9   7
-19|10  19
-20|11  --
-21|12  --
-22|
-23|
+ 4| Vx:  0.0 cm/s      Vy:  0.0 cm/s    Vz:  0.00 cm/s    FOM: 12.2
+ 5| Trx: 28 C   ExtFreq: Unlocked    StartTime: 12:34 6/2/06   SSW: 311
+ 6|Tant: 39 C  Selftest: 0x000001     TestTime: 02:30 7/7/06
+ 7|
+ 8|Obs Rate: 1.5 s
+ 9|                   C1    P1      C2    P2      lock             res   
+10|Ch Prn   Az  El    SNR   SNR     SNR   SNR     count  iodc  h   (m)
+11|-- ---  ---  ---  ----  ------  ----  ------  ------  ----  -  -----
+12| 1   8  133  22+  41.2  33.8 Y  38.1  39.2 Y  432000   2ba  0  
+13| 2  31
+14| 3  23
+15| 4  27
+16| 5  28
+17| 6   3
+18| 7  11
+19| 8  13
+20| 9   7
+21|10  19
+22|11  --
+23|12  --
   |-------------------------------------------------------------------------------
 */
-int tCol=5, offCol=26, driftCol=47, lonCol=5, latCol=23, altCol=40, prateCol=59;
+int pvtRow=2;
+int tCol=5, offCol=26, driftCol=47;
+int lonCol=5, latCol=23, altCol=40, prateCol=59;
 
-int prnCol=3, azCol=8, elCol=13, c1snrCol=18, p1snrCol=24, c2snrCol=32, 
-   p2snrCol=38, resCol=63, lockCol=46, iodcCol=54, healthCol=60, orateCol=10;
+int stsRow=5;
+int trxCol=6, freqCol=22, stsTimeCol=44, stsSSWCol=65;
 
-int chanRow=9, pvtRow=2;
+int chanRow=11;
+int prnCol=3, azCol=8, elCol=13, c1snrCol=18, p1snrCol=24, c2snrCol=32;
+int p2snrCol=38, resCol=63, lockCol=46, iodcCol=54, healthCol=60, orateCol=10;
 
 bool MDPScreenProcessor::gotWench;
 
@@ -55,6 +59,7 @@ MDPScreenProcessor::MDPScreenProcessor(gpstk::MDPStream& in, std::ofstream& out)
    MDPProcessor(in, out),
    updateRate(0.5), obsRate(-1), pvtRate(-1), die(false)
 {
+
    // First set up curses
    signal(SIGWINCH, wench);
    win = initscr();
@@ -66,6 +71,8 @@ MDPScreenProcessor::MDPScreenProcessor(gpstk::MDPStream& in, std::ofstream& out)
    keypad(win, true);
    prev_curs = ::curs_set(0);   // we want an invisible cursor. 
    gotWench=false;
+
+   host=in.filename;
 
    drawBase();
 
@@ -114,7 +121,6 @@ void MDPScreenProcessor::process(const MDPObsEpoch& oe)
 
    drawChan(chan);
    redraw();
-
 }
 
 //-----------------------------------------------------------------------------
@@ -135,11 +141,40 @@ void MDPScreenProcessor::process(const MDPPVTSolution& pvt)
 }
 
 
-
 void MDPScreenProcessor::process(const gpstk::MDPNavSubframe& sf)
 {
+   short sfid = sf.getSFID();
+ 
+   NavIndex ni(RangeCarrierPair(sf.range, sf.carrier), sf.prn);
+   prev[ni] = curr[ni];
+   curr[ni] = sf;
+
+   long sfa[10];
+   sf.fillArray(sfa);
+   if (gpstk::EngNav::subframeParity(sfa))
+   {
+      if (sfid > 3)
+         return;
+      
+      EphemerisPages& ephPages = ephPageStore[ni];
+      ephPages[sfid] = sf;
+      EngEphemeris engEph;
+      
+      if (makeEngEphemeris(engEph, ephPages))
+         ephStore[ni] = engEph;
+   }
+   else
+   {
+      parErrCnt[ni]++;
+   }
 }
 
+void MDPScreenProcessor::process(const gpstk::MDPSelftestStatus& sts)
+{
+   currentSts = sts;
+   drawSTS();
+   redraw();
+}
 
 // Yes, one would think that sun would have a working curses but NO!!
 // They require a non-const string to be passed to mvwaddstr()
@@ -167,18 +202,45 @@ void MDPScreenProcessor::redraw()
          in.setstate(ios_base::failbit);
       }
 
-      if (gotWench)
+      /* should consider doing endwin(), initscr() and redrawing the window */
+      if (gotWench || tolower(ch)=='r')
       {
          char buff[30];
          sprintf(buff, "%2d x %2d (wench)", LINES, COLS);
          writeAt(win, 0, COLS/2-15, buff);
          gotWench=false;
          clearok(win,true);
+         drawBase();
       }
    }
    wrefresh(win);
 }
 
+void MDPScreenProcessor::drawSTS()
+{
+   string firstTime=currentSts.firstPVTTime.printf("%02H:%02M %m/%d/%2Y  ");
+   writeAt(win, stsRow, stsTimeCol, firstTime.c_str());
+
+   string testTime=currentSts.selfTestTime.printf("%02H:%02M %m/%d/%2Y  ");
+   writeAt(win, stsRow+1, stsTimeCol, testTime.c_str());
+
+   if (currentSts.extFreqStatus)
+      writeAt(win, stsRow, freqCol, "Locked  ");
+   else
+      writeAt(win, stsRow, freqCol, "UnLocked");
+
+   string sts=leftJustify(int2x(currentSts.status), 8);
+   writeAt(win, stsRow+1, freqCol, sts.c_str());
+
+   string trx=leftJustify(asString(currentSts.receiverTemp, 0), 2) + "C";
+   writeAt(win, stsRow, trxCol, trx.c_str());
+   
+   string tant=leftJustify(asString(currentSts.antennaTemp, 0), 2) + "C";
+   writeAt(win, stsRow+1, trxCol, tant.c_str());
+
+   string ssw=leftJustify(int2x(currentSts.saasmStatusWord), 3);
+   writeAt(win, stsRow, stsSSWCol, ssw.c_str());
+}
 
 void MDPScreenProcessor::drawPVT()
 {
@@ -207,19 +269,22 @@ void MDPScreenProcessor::drawPVT()
    writeAt(win, pvtRow+1, lonCol, lon.c_str());
    writeAt(win, pvtRow+1, altCol, alt.c_str());
 
-   // These items are of questionable value, so make the user ask for them.
-   if (verboseLevel)
-   {
-      string drift=rightJustify(asString(currentPvt.ddtime*1e9*86400, 2), 9) + " ns/d";
-      writeAt(win, pvtRow, driftCol, drift.c_str());
-      string vx, vy, vz;
-      vx=leftJustify(asString(currentPvt.v[0] * 100, 2)+" cm/s", 11);
-      vy=leftJustify(asString(currentPvt.v[1] * 100, 2)+" cm/s", 11);
-      vz=leftJustify(asString(currentPvt.v[2] * 100, 2)+" cm/s", 11);
-      writeAt(win, pvtRow+2, lonCol, vx.c_str());
-      writeAt(win, pvtRow+2, latCol, vy.c_str());
-      writeAt(win, pvtRow+2, altCol, vz.c_str());
-   }
+   string drift=rightJustify(asString(currentPvt.ddtime*1e9*86400, 2), 9) + " ns/d";
+   writeAt(win, pvtRow, driftCol, drift.c_str());
+   string vx, vy, vz;
+   vx=leftJustify(asString(currentPvt.v[0] * 100, 2)+" cm/s", 11);
+   vy=leftJustify(asString(currentPvt.v[1] * 100, 2)+" cm/s", 11);
+   vz=leftJustify(asString(currentPvt.v[2] * 100, 2)+" cm/s", 11);
+   writeAt(win, pvtRow+2, lonCol, vx.c_str());
+   writeAt(win, pvtRow+2, latCol, vy.c_str());
+   writeAt(win, pvtRow+2, altCol, vz.c_str());
+
+   string fom = leftJustify(asString((int)currentPvt.fom), 3);
+   writeAt(win, pvtRow+2, prateCol, fom.c_str());
+   fom = leftJustify(asString((int)currentPvt.pvtMode), 2);
+   writeAt(win, pvtRow+2, prateCol+4, fom.c_str());
+   fom = leftJustify(asString((int)currentPvt.corrections), 2);
+   writeAt(win, pvtRow+2, prateCol+6, fom.c_str());
 }
 
 void MDPScreenProcessor::drawChan(int chan)
@@ -239,7 +304,7 @@ void MDPScreenProcessor::drawChan(int chan)
    if (obs.prn == 0)
       return;
 
-   string orate=rightJustify(asString(obsRate,1)+" s", 5);
+   string orate = leftJustify(asString(obsRate,1)+" s", 7);
    writeAt(win, chanRow-3 , orateCol, orate.c_str());
 
    string prn=rightJustify(asString((int)obs.prn), 3);
@@ -290,29 +355,45 @@ void MDPScreenProcessor::drawChan(int chan)
    }
    else if (obs.haveObservation(ccL1, rcCodeless))
    {
-      MDPObsEpoch::Observation o=obs.getObservation(ccL1, rcYcode);
+      MDPObsEpoch::Observation o=obs.getObservation(ccL1, rcCodeless);
       string snr = rightJustify(asString(o.snr, 1), 4) + " Z";
       writeAt(win, row, p1snrCol, snr.c_str());
    }
 
    if (obs.haveObservation(ccL2, rcYcode))
    {
-      MDPObsEpoch::Observation o=obs.getObservation(ccL2, rcPcode);
+      MDPObsEpoch::Observation o=obs.getObservation(ccL2, rcYcode);
       string snr = rightJustify(asString(o.snr, 1), 4) + " Y";
       writeAt(win, row, p2snrCol, snr.c_str());
    }
    else if (obs.haveObservation(ccL2, rcPcode))
    {
-      MDPObsEpoch::Observation o=obs.getObservation(ccL2, rcYcode);
+      MDPObsEpoch::Observation o=obs.getObservation(ccL2, rcPcode);
       string snr = rightJustify(asString(o.snr, 1), 4) + " P";
       writeAt(win, row, p2snrCol, snr.c_str());
    }
    else if (obs.haveObservation(ccL2, rcCodeless))
    {
-      MDPObsEpoch::Observation o=obs.getObservation(ccL2, rcYcode);
+      MDPObsEpoch::Observation o=obs.getObservation(ccL2, rcCodeless);
       string snr = rightJustify(asString(o.snr, 1), 4) + " Z";
       writeAt(win, row, p2snrCol, snr.c_str());
    }
+
+   EphStore::const_iterator es_itr;
+   for (es_itr=ephStore.begin(); es_itr != ephStore.end(); es_itr++)
+      if (es_itr->first.second == obs.prn)
+         break;
+
+   if (es_itr == ephStore.end())
+      return;
+
+   const NavIndex& ni = es_itr->first;
+   const gpstk::EngEphemeris& eph=es_itr->second;
+   const gpstk::RangeCode rc = ni.first.first;
+   const gpstk::CarrierCode cc = ni.first.second;
+
+   string iodc=rightJustify(int2x(eph.getIODC()), 4);
+   writeAt(win, row, iodcCol, iodc);
 }
 
 void MDPScreenProcessor::drawBase()
@@ -327,11 +408,11 @@ void MDPScreenProcessor::drawBase()
 
    writeAt(win, pvtRow,   0, "PVT:              Offset:");
    writeAt(win, pvtRow+1, 0, "Lon:              Lat:              Ht:              Rate:");
-   if (verboseLevel)
-   {
-       writeAt(win, pvtRow,   0, "PVT:              Offset:               Drift:");
-       writeAt(win, pvtRow+2, 0, " Vx:               Vy:              Vz:");
-   }
+   writeAt(win, pvtRow,   0, "PVT:              Offset:               Drift:");
+   writeAt(win, pvtRow+2, 0, " Vx:               Vy:              Vz:              FOM:");
+
+   writeAt(win, stsRow,   0, " Trx:        ExtFreq:            StartTime:                  SSW:");
+   writeAt(win, stsRow+1, 0, "Tant:       Selftest:             TestTime:              ");
 
    writeAt(win, chanRow-3, 0, "Obs Rate:");
    writeAt(win, chanRow-2, 0, "                   C1    P1      C2    P2      lock           ");

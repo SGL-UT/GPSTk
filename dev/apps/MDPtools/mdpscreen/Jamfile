@@ -1,0 +1,19 @@
+# $Id: //depot/sgl/gpstk/dev/apps/MDPtools/mdpscreen/Jamfile#3 $
+
+SubDir TOP apps MDPtools mdpscreen ;
+
+SEARCH_SOURCE += $(TOP)/src ;
+
+SEARCH_SOURCE += .. ;
+
+LINKLIBS += -lncurses ;
+
+GPSLinkLibraries mdpscreen : gpstk ;
+
+# Yea, I should be clever and make this use the .a file built in MDPtools
+
+GPSMain mdpscreen : mdpscreen.cpp ScreenProc.cpp
+   ../MDPHeader.cpp ../MDPPVTSolution.cpp 
+   ../MDPNavSubframe.cpp ../MDPObsEpoch.cpp 
+   ../MDPSelftestStatus.cpp ../TCPStream.cpp 
+   ../MDPProcessors.cpp ../FormatConversionFunctions.cpp ;

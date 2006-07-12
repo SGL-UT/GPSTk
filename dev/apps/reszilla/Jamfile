@@ -1,9 +1,10 @@
-# $Id: //depot/sgl/gpstk/dev/apps/reszilla/Jamfile#7 $
+# $Id: //depot/sgl/gpstk/dev/apps/reszilla/Jamfile#12 $
 
 SubDir TOP apps reszilla ;
 
 # It seems that if I explicity add the src directory, things are much happier.
 SEARCH_SOURCE += $(TOP)/src ;
+SEARCH_SOURCE += $(TOP)/apps/MDPtools ;
 
 if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
 {
@@ -12,11 +13,14 @@ if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
 }
 
 Library rlib : util.cpp readers.cpp ordUtils.cpp DDEpoch.cpp PhaseCleaner.cpp
-  PhaseResidual.cpp ;
+  PhaseResidual.cpp MDPHeader.cpp MDPObsEpoch.cpp MDPNavSubframe.cpp 
+  FormatConversionFunctions.cpp RobustLinearEstimator.cpp ;
 
 LinkLibraries reszilla : rlib ;
 
 GPSLinkLibraries reszilla : gpstk rlib ;
 
 GPSMain reszilla : reszilla.cpp ;
+
+InstallBin $(BINDIR) : resplot ;
 
