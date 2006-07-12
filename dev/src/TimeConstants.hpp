@@ -35,9 +35,9 @@ namespace gpstk
    const double SEC_PER_MS = 1.0/MS_PER_SEC;
    
       /// Milliseconds in a day.
-   const long MS_PER_DAY = MS_PER_DAY * SEC_PER_DAY;
+   const long MS_PER_DAY = MS_PER_SEC * SEC_PER_DAY;
       /// Days per milliseconds.
-   const double DAY_PER_MS = 1.0/DAY_PER_MS;
+   const double DAY_PER_MS = 1.0/MS_PER_DAY;
 
       /// Zcounts in a  day.
    const long ZCOUNT_PER_DAY = 57600L;
