@@ -1,0 +1,134 @@
+\section{\emph{navdmp}}
+\subsection{Usage}
+\getuse{navdmp --help}
+\subsection{Examples}
+\begin{verbatim}
+> navdmp -i algo1720.06n -o summary --RINEX
+
+Current filtering options:
+        Start time:     01/06/1980 00:00:00
+        End time:       01/01/4713 00:00:00
+        PRNs:           using all PRNs
+        FIC blocks:     using all blocks
+
+Choose an option by number then push enter:
+        1) Change the start time
+        2) Change the end time
+        3) Select specific PRNs
+        4) Select specific FIC block numbers
+        5) Process the file
+use ctrl-c to exit
+? 1
+
+Entering a new start time...
+ Enter full GPS week: 1380
+ Enter GPS seconds of week: 259200.000000
+
+Current filtering options:
+        Start time:     06/21/2006 00:00:00
+        End time:       01/01/4713 00:00:00
+        PRNs:           using all PRNs
+        FIC blocks:     using all blocks
+
+Choose an option by number then push enter:
+        1) Change the start time
+        2) Change the end time
+        3) Select specific PRNs
+        4) Select specific FIC block numbers
+        5) Process the file
+use ctrl-c to exit
+? 2
+
+Entering a new end time...
+ Enter full GPS week: 1380
+ Enter GPS seconds of week: 340000
+
+Current filtering options:
+        Start time:     06/21/2006 00:00:00
+        End time:       06/21/2006 22:26:40
+        PRNs:           using all PRNs
+        FIC blocks:     using all blocks
+
+Choose an option by number then push enter:
+        1) Change the start time
+        2) Change the end time
+        3) Select specific PRNs
+        4) Select specific FIC block numbers
+        5) Process the file
+use ctrl-c to exit
+? 3
+
+Enter a list of PRNs separated by spaces to search for.
+The old list will be discarded.
+Enter '0' for all PRNs - any other PRNs listed will be ignored.
+? 2 4 5 8
+
+Current filtering options:
+        Start time:     06/21/2006 00:10:00
+        End time:       06/21/2006 22:26:40
+        PRNs:           2 4 5 8
+        FIC blocks:     using all blocks
+
+Choose an option by number then push enter:
+        1) Change the start time
+        2) Change the end time
+        3) Select specific PRNs
+        4) Select specific FIC block numbers
+        5) Process the file
+use ctrl-c to exit
+? 5
+
+processing...
+\end{verbatim}
+\begin{verbatim}
+Output File Sample
+****************************************************************************
+Broadcast Ephemeris (Engineering Units)
+
+PRN :  2
+
+              Week(10bt)     SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
+Clock Epoch:  1380( 356)  259200   Wed-3   172       0   06/21/2006   00:00:00
+Eph Epoch:    1380( 356)  259200   Wed-3   172       0   06/21/2006   00:00:00
+Transmit Week:1380
+Fit interval flag :  0
+
+          SUBFRAME OVERHEAD
+
+               SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
+SF1 HOW:    259140  Tue-2:23:59:00   0x1C7      0     off
+SF2 HOW:    259140  Tue-2:23:59:00    0xC7      0     off
+SF3 HOW:    259140  Tue-2:23:59:00    0xC7      0     off
+
+           CLOCK
+
+Bias T0:       6.67711720E-06 sec
+Drift:         3.29691829E-12 sec/sec
+Drift rate:    0.00000000E+00 sec/(sec**2)
+Group delay:  -1.72294676E-08 sec
+
+           ORBIT PARAMETERS
+
+Semi-major axis:         5.15369497E+03 m**.5
+Motion correction:       4.82591530E-09 rad/sec
+Eccentricity:            8.99635826E-03
+Arg of perigee:          2.08978447E+00 rad
+Mean anomaly at epoch:   3.30690945E-01 rad
+Right ascension:        -7.28361281E-02 rad     -8.46642409E-09 rad/sec
+Inclination:             9.50302779E-01 rad      8.85751181E-11 rad/sec
+
+           HARMONIC CORRECTIONS
+
+Radial        Sine:   1.09656250E+02 m    Cosine:   2.53281250E+02 m
+Inclination   Sine:  -2.06753612E-07 rad  Cosine:   5.02914190E-08 rad
+In-track      Sine:   6.54533505E-06 rad  Cosine:   5.60097396E-06 rad
+
+           SV STATUS
+
+Health bits:   0x00      URA index:    1
+Code on L2:   reserved     L2 P Nav data:          on
+
+****************************************************************************
+\end{verbatim}
+\subsection{Notes}
+

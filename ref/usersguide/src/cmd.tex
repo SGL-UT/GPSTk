@@ -1,7 +1,6 @@
 \perlnewcommand{\getuse}[1]
 {
         my $command = $_[0];
-        $command =~ s/"//g;
         $command = $command." > temp 2>&1";
         system("$command");
 

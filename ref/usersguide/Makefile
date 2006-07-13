@@ -2,7 +2,7 @@ all: firstprototype gpstk-user-reference
 
 gpstk-user-reference: gpstk-user-reference.pdf
 
-gpstk-user-reference.pdf: gpstk-user-reference.tex chap2.tex sec2.tex calgps.tex poscvt.tex timeconvert.tex gpstk.bib
+gpstk-user-reference.pdf: gpstk-user-reference.tex chap2.tex sec2.tex calgps.tex poscvt.tex timeconvert.tex gpstk.bib apps/wheresat.tex apps/RinexDump.tex apps/navdmp.tex
 	./makescr
 	dvipdf gpstk-user-reference
 
@@ -35,3 +35,5 @@ clean:
 	rm -f *~
 	rm -f temp
 	rm -f .log
+	cd apps
+	rm -f *.aux
