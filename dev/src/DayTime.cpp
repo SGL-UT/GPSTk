@@ -693,7 +693,7 @@ namespace gpstk
       try
       {
             // Multiply by .001 to convert mSec from milliseconds to seconds.
-         return CommonTime(jday, mSod, mSec * .001);
+         return CommonTime().setInternal(jday, mSod, mSec * .001);
       }
       catch (gpstk::InvalidParameter& ip)
       {
@@ -927,6 +927,7 @@ namespace gpstk
       c.get(jday, mSod, mSec);
          // Convert mSec from seconds to milliseconds by multiplying by 1000.
       mSec *= 1000;
+      timeFrame = f;
       return *this;
    }
    
