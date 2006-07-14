@@ -1,28 +1,44 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/ordUtils.hpp#1 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/ordUtils.hpp#4 $"
 
 #include <iostream>
 #include <string>
 
 #include "util.hpp"
+#include "RobustLinearEstimator.hpp"
 
-void compute_ords(ORDEpochMap& oem,
-                  const RODEpochMap& rem,
-                  const gpstk::RinexObsHeader& roh,
-                  const gpstk::EphemerisStore& bce,
-                  const gpstk::WxObsData& wod,
-                  bool svTime,
-                  const std::string& ordModeStr,
-                  const std::string& clkModelStr);
+void computeOrds(
+   ORDEpochMap& oem,
+   const RODEpochMap& rem,
+   const gpstk::RinexObsHeader& roh,
+   const gpstk::EphemerisStore& bce,
+   const gpstk::WxObsData& wod,
+   bool svTime,
+   const std::string& ordModeStr);
 
-void dump(std::ostream& s, const ORDEpochMap& oem);
+void estimateClock(
+   const ORDEpochMap& oem,
+   RobustLinearEstimator& rle);
 
-void dumpStats(const ORDEpochMap& oem, 
-               const std::string& ordMode,
-               const double sigmam=5);
+void dumpOrds(
+   std::ostream& s, 
+   const ORDEpochMap& oem);
 
-void computeStats(const std::string desc,
-                  const ORDEpochMap& oem,
-                  const ElevationRange er, 
-                  const double sigmam);
+void dumpClock(
+   std::ostream& s,
+   const ORDEpochMap& oem, 
+   const RobustLinearEstimator& rle);
+
+void dumpStats(
+   const ORDEpochMap& oem, 
+   const std::string& ordMode,
+   const double sigmam=5,
+   const bool keepUnhealthy=false);
+
+void computeStats(
+   const std::string desc,
+   const ORDEpochMap& oem,
+   const ElevationRange er, 
+   const double sigmam=5,
+   const bool keepUnhealthy=false);
 
 

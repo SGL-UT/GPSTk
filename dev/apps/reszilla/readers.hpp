@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/readers.hpp#7 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/readers.hpp#9 $"
 //
 // Utilitiy functions for reading in various types of data
 //
@@ -15,27 +15,14 @@
 void read_obs_data(gpstk::CommandOption& files,
                    unsigned long msid,
                    RODEpochMap& rem,
-                   gpstk::RinexObsHeader& roh);
-
-void read_rinex_data(std::string& fn, 
-                     RODEpochMap& rem, 
-                     gpstk::RinexObsHeader& roh);
+                   gpstk::RinexObsHeader& roh,
+                   const gpstk::DayTime& startTime,
+                   const gpstk::DayTime& stopTime);
 
 void read_msc_data(std::string& fn, 
                    unsigned long msid,
                    gpstk::RinexObsHeader& roh);
 
-void read_smo_data(std::string& fn,
-                   unsigned long msid,
-                   RODEpochMap& rem, 
-                   gpstk::RinexObsHeader& roh);
-
-void read_pec_data(std::string& fn,
-                   unsigned long msid,
-                   RODEpochMap& rem);
-
 gpstk::EphemerisStore& read_eph_data(gpstk::CommandOption& files);
 
 gpstk::WxObsData& read_met_data(gpstk::CommandOption& files);
-
-

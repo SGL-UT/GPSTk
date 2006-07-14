@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/readers.cpp#10 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/readers.cpp#16 $"
 
 #include <iostream>
 #include <iomanip>
@@ -31,17 +31,43 @@
 #include "MSCData.hpp"
 #include "MSCStream.hpp"
 
+#include "MDPObsEpoch.cpp"
+#include "MDPStream.hpp"
 
 #include "readers.hpp"
 
+#include "FormatConversionFunctions.hpp"
+
+void read_rinex_data(
+   std::string& fn, 
+   RODEpochMap& rem, 
+   gpstk::RinexObsHeader& roh,
+   const gpstk::DayTime& startTime,
+   const gpstk::DayTime& stopTime);
+
+void read_smo_data(
+   std::string& fn,
+   unsigned long msid,
+   RODEpochMap& rem, 
+   gpstk::RinexObsHeader& roh,
+   const gpstk::DayTime& startTime,
+   const gpstk::DayTime& stopTime);
+
+void read_mdp_data(
+   std::string& fn,
+   RODEpochMap& rem, 
+   gpstk::RinexObsHeader& roh,
+   const gpstk::DayTime& startTime,
+   const gpstk::DayTime& stopTime);
 
 using namespace std;
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-void read_msc_data(std::string& fn, 
-                   unsigned long msid,
-                   gpstk::RinexObsHeader& roh)
+void read_msc_data(
+   std::string& fn, 
+   unsigned long msid,
+   gpstk::RinexObsHeader& roh)
 {
    gpstk::MSCStream msc(fn.c_str(), ios::in);
    gpstk::MSCData mscd;
@@ -61,10 +87,13 @@ void read_msc_data(std::string& fn,
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-void read_obs_data(gpstk::CommandOption& files, //string& fn, 
-                   unsigned long msid, 
-                   RODEpochMap& rem, 
-                   gpstk::RinexObsHeader& roh)
+void read_obs_data(
+   gpstk::CommandOption& files, //string& fn, 
+   unsigned long msid, 
+   RODEpochMap& rem, 
+   gpstk::RinexObsHeader& roh,
+   const gpstk::DayTime& startTime,
+   const gpstk::DayTime& stopTime)
 {
    string fn;
    try
@@ -72,38 +101,60 @@ void read_obs_data(gpstk::CommandOption& files, //string& fn,
       for (int i=0; i<files.getCount(); i++)
       {
          fn = (files.getValue())[i];
-         try {
-            read_rinex_data(fn, rem, roh);
+         try
+         {
+            read_rinex_data(fn, rem, roh, startTime, stopTime);
          }
-         catch (gpstk::FFStreamError& e) {
+         catch (gpstk::FFStreamError& e)
+         {
             if (verbosity > 3)
                cout << e << endl;
-            try {
-               read_smo_data(fn, msid, rem, roh);
-            } 
-            catch (gpstk::FFStreamError& e) {
-               if (verbosity > 3) 
+            try
+            {
+               read_smo_data(fn, msid, rem, roh, startTime, stopTime);
+            }
+            catch (gpstk::FFStreamError& e)
+            {
+               if (verbosity > 3)
                   cout << e << endl;
-               cout << "Could not determine the type of obs data files" << endl;
+               try
+               {
+                  read_mdp_data(fn, rem, roh, startTime, stopTime);
+               }
+               catch (gpstk::FFStreamError& e)
+               {
+                  if (verbosity > 1) 
+                     cout << e << endl;
+                  cout << "Could not determine the type of obs data file " << fn << endl;
+               }
             }
          }
       }
    }
    catch (std::exception e)
    {
-      cout << "Error opening obs data file " << fn << endl;
-      exit(-1);
+      cout << "Error reading obs data file " << fn << endl;
    }
-
+   
+   if (verbosity>1)
+      cout << "Have obs data from " << roh.firstObs.printf(timeFormat)
+           << " to " << roh.lastObs.printf(timeFormat) << endl;
 } // end of read_obs_data()
 
 
 
-void read_rinex_data(string& fn, RODEpochMap& rem, gpstk::RinexObsHeader& roh)
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+void read_rinex_data(
+   string& fn, RODEpochMap& rem, 
+   gpstk::RinexObsHeader& roh,
+   const gpstk::DayTime& startTime,
+   const gpstk::DayTime& stopTime)
 {
    gpstk::RinexObsStream ros(fn.c_str(), ios::in);
    ros.exceptions(std::fstream::failbit);
-   ros >> roh;
+   gpstk::RinexObsHeader temp_roh;
+   ros >> temp_roh;
 
    if (verbosity>1)
       cout << "Reading RINEX obs data from " << fn << "." << endl;
@@ -114,11 +165,14 @@ void read_rinex_data(string& fn, RODEpochMap& rem, gpstk::RinexObsHeader& roh)
    gpstk::DayTime t0(gpstk::DayTime::END_OF_TIME);
    gpstk::DayTime t1(gpstk::DayTime::BEGINNING_OF_TIME);
    gpstk::DayTime t2(gpstk::DayTime::BEGINNING_OF_TIME);
-      
+
    gpstk::RinexObsData rod;
    while(ros >> rod)
    {
       const gpstk::DayTime& t = rod.time;
+      if (t<startTime || t>stopTime)
+         continue;
+
       if (t<t0) t0=t;
       if (t>t1) t1=t;
       if (t<=t2 && verbosity>1)
@@ -128,6 +182,75 @@ void read_rinex_data(string& fn, RODEpochMap& rem, gpstk::RinexObsHeader& roh)
       rem[t] = rod;
    }
 
+   if (roh.valid & gpstk::RinexObsHeader::firstTimeValid)
+   {
+      if (t0<roh.firstObs)
+         roh.firstObs = t0;
+   }
+   else
+   {
+      roh = temp_roh;
+      roh.valid |= gpstk::RinexObsHeader::firstTimeValid;
+      roh.firstObs = t0;
+   }
+
+   if (roh.valid & gpstk::RinexObsHeader::lastTimeValid)
+   {
+      if (t1>roh.lastObs)
+         roh.lastObs = t1;
+   }
+   else
+   {
+      roh.valid |= gpstk::RinexObsHeader::lastTimeValid;
+      roh.lastObs = t1;
+   }
+} // end of read_rinex_data()
+
+
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+void read_mdp_data(
+   string& fn, RODEpochMap& rem, 
+   gpstk::RinexObsHeader& roh,
+   const gpstk::DayTime& startTime,
+   const gpstk::DayTime& stopTime)
+{
+   gpstk::MDPStream mdps(fn.c_str(), ios::in);
+   mdps.exceptions(std::fstream::failbit);
+
+   if (verbosity>1)
+      cout << "Reading MDP observations from " << fn << "." << endl;
+
+   gpstk::DayTime t0(gpstk::DayTime::END_OF_TIME);
+   gpstk::DayTime t1(gpstk::DayTime::BEGINNING_OF_TIME);
+   gpstk::DayTime t2(gpstk::DayTime::BEGINNING_OF_TIME);
+      
+   gpstk::MDPObsEpoch obs;
+   gpstk::MDPHeader header;
+
+   if (verbosity>1)
+      header.debugLevel = 1;
+
+   while (mdps >> header)
+   {
+      switch (header.id)
+      {
+         case gpstk::MDPObsEpoch::myId:
+            mdps >> obs;
+
+            const gpstk::DayTime& t = obs.time;
+            if (t<startTime || t>stopTime)
+               continue;
+            if (t<t0) t0=t;
+            if (t>t1) t1=t;
+            t2=t;
+            gpstk::RinexPrn prn(obs.prn, gpstk::systemGPS);
+            gpstk::RinexObsData& rod = rem[t];
+            rod.obs[prn] = gpstk::makeRinexObsTypeMap(obs);
+            break;
+      }
+   }
+
    roh.firstObs = t0;
    roh.valid |= gpstk::RinexObsHeader::firstTimeValid;
    roh.lastObs = t1;
@@ -135,30 +258,15 @@ void read_rinex_data(string& fn, RODEpochMap& rem, gpstk::RinexObsHeader& roh)
 } // end of read_rinex_data()
 
 
-
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-short snr2ssi(float x)
-{
-   // These values were obtained from the comments in a RINEX obs file that was
-   // generated from a TurboBinary file recorded on an AOA Benchmark  receiver
-   if (x>316) return 9;
-   if (x>100) return 8;
-   if (x>31.6) return 7;
-   if (x>10) return 6;
-   if (x>3.2) return 5;
-   if (x>0) return 4;
-   return 0;
-}
-
-
-
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-void read_smo_data(string& fn,
-                   unsigned long msid,
-                   RODEpochMap& rem,
-                   gpstk::RinexObsHeader& roh)
+void read_smo_data(
+   string& fn,
+   unsigned long msid,
+   RODEpochMap& rem,
+   gpstk::RinexObsHeader& roh,
+   const gpstk::DayTime& startTime,
+   const gpstk::DayTime& stopTime)
 {
    roh.valid |= gpstk::RinexObsHeader::allValid21;
    roh.fileType = "unk";
@@ -176,7 +284,7 @@ void read_smo_data(string& fn,
    roh.obsTypeList.push_back(gpstk::RinexObsHeader::P1);
    roh.obsTypeList.push_back(gpstk::RinexObsHeader::L1);
 
-   gpstk::DayTime startTime(gpstk::DayTime::END_OF_TIME);
+   gpstk::DayTime beginTime(gpstk::DayTime::END_OF_TIME);
    gpstk::DayTime endTime(gpstk::DayTime::BEGINNING_OF_TIME);
    gpstk::DayTime thisTime=endTime;
    gpstk::DayTime lastTime=endTime;
@@ -203,7 +311,10 @@ void read_smo_data(string& fn,
 
       rod.numSvs++;
       const gpstk::DayTime& thisTime = smodata.time;
-      startTime = min(thisTime, startTime);
+      if (thisTime<startTime || thisTime>stopTime)
+         continue;
+
+      beginTime = min(thisTime, beginTime);
       endTime = max(thisTime, endTime);
 
       if (thisTime != lastTime)
@@ -234,9 +345,9 @@ void read_smo_data(string& fn,
 
       gpstk::RinexPrn p(smodata.PRNID, gpstk::systemGPS);
       rod.obs[p] = rotm;
-      }
+   }
 
-   roh.firstObs = startTime;
+   roh.firstObs = beginTime;
    roh.valid |= gpstk::RinexObsHeader::firstTimeValid;
    roh.lastObs = endTime;
    roh.valid |= gpstk::RinexObsHeader::lastTimeValid;
@@ -362,7 +473,7 @@ gpstk::EphemerisStore& read_eph_data(gpstk::CommandOption& files)
       {
          string fn = (files.getValue())[i];
          if (verbosity>2 && i==0)
-            cout << "Attempting to read " << fn << "as FIC." << endl;
+            cout << "Attempting to read " << fn << " as FIC." << endl;
          
          gpstk::FICStream fs(fn.c_str());
          // Note that we don't want to set the stream failbit since the binary
@@ -398,102 +509,12 @@ gpstk::EphemerisStore& read_eph_data(gpstk::CommandOption& files)
    {
       if (verbosity>1)
          if (eph->getInitialTime() < eph->getFinalTime())
-            cout << "Have ephemeris data from " << eph->getInitialTime()
-                 << " to " << eph->getFinalTime() << endl;
+            cout << "Have ephemeris data from "
+                 << eph->getInitialTime().printf(timeFormat)
+                 << " to " << eph->getFinalTime().printf(timeFormat) << endl;
          else
             cout << "Do not have any ephemeris data" << endl;
    }
 
    return *eph;
 } // end of read_eph_data()
-
-
-std::string myGetLine(std::ifstream& s, unsigned long& lineNumber, unsigned long target=0)
-{
-   std::string line;
-
-   while (true)
-   {
-      std::getline(s, line);
-      lineNumber++;
-      if (lineNumber>=target) 
-         break;
-   }
-
-   return line;
-}
-
-
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-void read_pec_data(string& fn, unsigned long msid, RODEpochMap& rem)
-{
-   std::ifstream input(fn.c_str(), ios::in);
-   input.exceptions(std::fstream::failbit);
-
-   unsigned long lineNumber=0;
-
-   try
-   {
-      std::istringstream p2(myGetLine(input, lineNumber, 6));
-      unsigned year, doy;
-      string master;
-      p2 >> master >> year >> doy;
-      cout << master << ", " << year << ", " << doy;
-
-      std::istringstream parser(myGetLine(input, lineNumber, 7));
-      int n;
-      parser >> n;
-      unsigned long msIndex;
-      for (int j=1; j<=n; j++)
-      {
-         unsigned long i;
-         parser >> i;
-         if (i==msid) 
-         { 
-            msIndex=i;
-            if (verbosity)
-               cout << "msIndex: " << msIndex << endl;
-               continue;
-         }
-      }
-      if (msIndex>n)
-         cout << "uh, we are borked.";
-      
-      gpstk::DayTime startTime(gpstk::DayTime::END_OF_TIME);
-      gpstk::DayTime endTime(gpstk::DayTime::BEGINNING_OF_TIME);
-      gpstk::DayTime thisTime=endTime;
-      gpstk::DayTime lastTime=endTime;
-      gpstk::RinexObsData rod;
-      gpstk::RinexObsData::RinexObsTypeMap rotm;
-      unsigned long epochNumber=0;
-      myGetLine(input, lineNumber, 10);
-
-      while (input)
-      {
-         std::istringstream parser(myGetLine(input, lineNumber));
-         string w[10];
-         parser >> w[0] >> w[1] >> w[2];
-         if (w[0] == "DATA" && w[1]=="RECORD")
-         {
-            std::istringstream parser(myGetLine(input, lineNumber));
-            long double epochOffset;
-            parser >> epochOffset;
-            thisTime.setYDoySod(year, doy, 0);
-            thisTime+= epochOffset;
-            cout << "epoch : " << thisTime;
-         }
-         if (w[0]=="STATION" && w[1]=="TIME" && w[2]=="OFFSET")
-         {
-            cout << "Rx offset: " << endl;
-         }
-      }
-      if (verbosity>1)
-         cout << "Have clock data from " << startTime << " to " << endTime << "." << endl;
-   }
-   catch (...)
-   {
-      cout << "caught one!" << endl;
-   }
-
-} // end of read_pec_data()

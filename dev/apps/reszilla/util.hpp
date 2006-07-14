@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/util.hpp#12 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/util.hpp#17 $"
 
 #ifndef RESZILLA_UTIL_HPP
 #define RESZILLA_UTIL_HPP
@@ -18,6 +18,7 @@
 #include "GPSGeoid.hpp"
 #include "TropModel.hpp"
 #include "Geodetic.hpp"
+
 #include "Stats.hpp"
 
 #include "RinexObsData.hpp"
@@ -42,6 +43,8 @@ extern const RinexObsType& L1;
 extern const RinexObsType& L2;
 extern const RinexObsType& P1;
 extern const RinexObsType& P2;
+extern const RinexObsType& S1;
+extern const RinexObsType& S2;
 
 extern ElevationRangeList elr;
 
@@ -52,10 +55,14 @@ typedef std::map<gpstk::DayTime, gpstk::RinexObsData> RODEpochMap;
 typedef std::map<gpstk::DayTime, gpstk::ORDEpoch> ORDEpochMap;
 
 
+typedef std::map<gpstk::DayTime, double> TimeDoubleMap;
+
 // The key for this map is the prn of the SV
 //  PrnElevationMap pem;
 //  pem[time][prn] = elevation;
-typedef std::map<gpstk::DayTime, std::map<gpstk::RinexPrn, float> > PrnElevationMap;
+
+typedef std::map<gpstk::RinexPrn, double> PrnDoubleMap;
+typedef std::map<gpstk::DayTime, PrnDoubleMap > PrnElevationMap;
 PrnElevationMap elevation_map(const ORDEpochMap& oem);
 PrnElevationMap elevation_map(const RODEpochMap& rem,
                   const gpstk::RinexObsHeader& roh,
@@ -66,12 +73,11 @@ PrnElevationMap elevation_map(const RODEpochMap& rem,
 typedef std::map<RinexObsType, double> ROTDM;
 
 typedef std::map< gpstk::RinexPrn, ROTDM> PrnROTDM;
+typedef std::map< gpstk::RinexPrn, short> PrnShortMap;
 
 void add_clock_to_rinex(RODEpochMap& rem, const ORDEpochMap& oem);
 
 void check_data(const gpstk::RinexObsHeader& roh, const RODEpochMap& rem);
-
-
 
 struct CycleSlipRecord
 {
@@ -83,6 +89,9 @@ struct CycleSlipRecord
    long preCount;  // for How many epochs had the bias been stable
    double preGap;  // time between the end of the previous arc and this point
    long postCount; // how long the arc after the slip is
+
+   bool operator<(const CycleSlipRecord& right)
+   { return t < right.t; }
 };
 
 typedef std::list<CycleSlipRecord> CycleSlipList;
@@ -122,5 +131,6 @@ void computeStats(DD2EpochMap& ddem,
 void computeDD2(const RODEpochMap& rx1,
                const RODEpochMap& rx2,
                DD2EpochMap& ddem);
+
 
 #endif

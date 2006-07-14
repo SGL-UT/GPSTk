@@ -1,4 +1,8 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/DDEpoch.cpp#1 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/DDEpoch.cpp#8 $"
+
+#include <limits>
+
+#include "BCEphemerisStore.hpp"
 
 #include "DDEpoch.hpp"
 
@@ -7,11 +11,11 @@ using namespace std;
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-std::map<RinexObsType, double> DDEpoch::singleDifference(
+ROTDM DDEpoch::singleDifference(
    const gpstk::RinexObsData::RinexObsTypeMap& rx1obs,
    const gpstk::RinexObsData::RinexObsTypeMap& rx2obs)
 {
-   map<RinexObsType, double> diff;
+   ROTDM diff;
 
    gpstk::RinexObsData::RinexObsTypeMap::const_iterator d1_itr = rx1obs.find(D1);
    if (d1_itr == rx1obs.end())
@@ -57,26 +61,35 @@ void DDEpoch::doubleDifference(
    if (masterPrn.prn < 0)
    {
       if (verbosity>2)
-         cout << rx1.time.printf(timeFormat) << " No master SV selected.  Skipping epoch." << endl;
+         cout << rx1.time.printf(timeFormat)
+              << " No master SV selected. Skipping epoch." << endl;
       return;
    }
 
-   clockOffset = rx1.clockOffset - rx2.clockOffset;
-   if (std::abs(clockOffset)>2.1e-3 || std::abs(clockOffset)<1e-10)
+   double c1 = rx1.clockOffset;
+   double c2 = rx2.clockOffset;
+   clockOffset = c1 - c2;
+   double eps = 10*std::numeric_limits<double>().epsilon();
+   if (std::abs(clockOffset) > 2.1e-3 ||
+       std::abs(c1) < eps || std::abs(c2) < eps)
    {
       if (verbosity>2)
          cout << rx1.time.printf(timeFormat)
-              << " Rx1-Rx2 clock offset is " << 1e3*clockOffset << " ms. Skipping epoch."
-              << endl;
+              << " Insane clock offset (" << 1e3*clockOffset
+              << " ms). Skipping epoch." << endl;
       return;
    }
 
    gpstk::RinexObsData::RinexPrnMap::const_iterator oi1, oi2;
    oi1 = rx1.obs.find(masterPrn);
    oi2 = rx2.obs.find(masterPrn);
+
+   if (oi1 == rx1.obs.end() || oi2 == rx2.obs.end())
+      return;
+
    const gpstk::RinexObsData::RinexObsTypeMap& rx1obs = oi1->second;
    const gpstk::RinexObsData::RinexObsTypeMap& rx2obs = oi2->second;
-
+   
    ROTDM masterDiff = singleDifference(rx1obs, rx2obs);
    if (masterDiff.size() == 0)
       return;
@@ -115,7 +128,7 @@ void DDEpoch::selectMasterPrn(
    const gpstk::RinexObsData& rx2,
    PrnElevationMap& pem)
 {
-   double minElevation = 15.0;
+   const double minElevation = 15.0;
 
    // If there is already one selected, try to keep using that one...
    if (masterPrn.prn >0)
@@ -143,36 +156,6 @@ void DDEpoch::selectMasterPrn(
 }
 
 
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-bool phaseDisc(const ROTDM& curr, const ROTDM& prev)
-{
-   typedef std::set<RinexObsType> RinexObsTypeSet;
-   RinexObsTypeSet phaseObsTypes;
-   phaseObsTypes.insert(L1);
-   phaseObsTypes.insert(L2);
-
-   for (ROTDM::const_iterator i=curr.begin(); i != curr.end(); i++)
-   {
-      const RinexObsType& rot = i->first;
-      if (phaseObsTypes.find(rot) == phaseObsTypes.end())
-         continue;
-      
-      ROTDM::const_iterator j = prev.find(rot);
-      if (j == prev.end())
-         continue;
-
-      // Replace with double lamda = rot.lamda();
-      double lamda = ((rot==L1) ? gpstk::C_GPS_M/gpstk::L1_FREQ : gpstk::C_GPS_M/gpstk::L2_FREQ);
-      double td = (i->second - j->second) / lamda;
-      if (std::abs(td) > 0.9)
-         return true;
-   }
-
-   // No problems were found.
-   return false;
-}
-
 //-----------------------------------------------------------------------------
 // Similiar to computeDD but does a triple difference to look for cycle slips
 //-----------------------------------------------------------------------------
@@ -180,17 +163,12 @@ void computeDDEpochMap(
    RODEpochMap& rx1,
    RODEpochMap& rx2,
    PrnElevationMap& pem,
+   const gpstk::EphemerisStore& eph,
    DDEpochMap& ddem)
 {
-   if (verbosity)
-      cout << "Computing 2nd differences residuals with new SV master selection using a" << endl
-           << "3rd difference cycle slip detection." << endl;
-
-   float minMasterElevation = 15;
    if (verbosity>1)
-      cout << "Using a minimum master SV elevation of "
-           << minMasterElevation << " degrees." << std::endl;
- 
+      cout << "Computing 2nd differences residuals." << endl;
+
    DDEpoch prev;
 
    // We use the data from rx1 walk us through the data
@@ -216,88 +194,84 @@ void computeDDEpochMap(
          curr.masterPrn = prev.masterPrn;
 
       curr.selectMasterPrn(ei1->second, ei2->second, pem);
-
       curr.doubleDifference(ei1->second, ei2->second);
 
-      if (!curr.valid)
-         continue;
-
-      if (prev.valid && 
-          phaseDisc(curr.dd[curr.masterPrn], prev.dd[curr.masterPrn]))
+      if (curr.valid)
       {
-         // since it appears that there is a cycle slip on the current master,
-         // we want to back up 7 epochs, select a new master, and reprocess
-         // the those epochs. if we can't back up, then skip this epoch
-         if (verbosity)
-            cout << t.printf(timeFormat)
-                 << " Possible cycle slip on the master ("
-                 << curr.masterPrn.prn << "). Backing up 7 epochs." << endl;
-
-         int n;
-         for (n=0; n<7 && ei1 != rx1.begin(); n++)
-            ei1--;
-
-         if (n!=7 && verbosity)
-            cout << t.printf(timeFormat) 
-                 << " Failed to back up 7 epochs." << endl;
-            
-         gpstk::DayTime prevTime = ei1->first;
-         ei1++;
-         t = ei1->first;
-         ei2 = rx2.find(t);
-            
-         gpstk::RinexPrn prn, badPrn = curr.masterPrn;
-         for (RinexPrnMap::const_iterator i=ei1->second.obs.begin(); i != ei1->second.obs.end(); i++)
-         {
-            prn = i->first;
-            RinexPrnMap::const_iterator j = ei2->second.obs.find(prn);
-            RinexObsTypeMap obs = i->second;
-            if (j != ei2->second.obs.end() && obs[D1].data >= 0 &&
-                pem[t][prn] > minMasterElevation &&
-                prn != badPrn)
-               break;
-         }
-         // Now recompute the double differences
-         curr = DDEpoch(); // cheap way to clear this out...
-         curr.masterPrn = prn;
-         curr.doubleDifference(ei1->second, ei2->second);
-         if (!curr.valid)
-            continue;
-      } // end dealing with a slip on the master SV
-
-      ddem[t] = curr;
-      prev = curr;
+         ddem[t] = curr;
+         prev = curr;
+      }
    } // end of looping over all epochs in the first set.
+
+   // Here we need to remove the double differences for the master PRN
+   for (DDEpochMap::iterator i = ddem.begin(); i != ddem.end(); i++)
+   {
+      DDEpoch& dde = i->second;
+      PrnROTDM::iterator j = dde.dd.find(dde.masterPrn);
+      if (j != dde.dd.end())
+         dde.dd.erase(j);
+   }
+
+   // Here we add the SV health info to the DDEpochs
+   if (typeid(eph) == typeid(gpstk::BCEphemerisStore))
+   {
+      const gpstk::BCEphemerisStore& bce = 
+         dynamic_cast<const gpstk::BCEphemerisStore&>(eph);
+
+      for (DDEpochMap::iterator i = ddem.begin(); i != ddem.end(); i++)
+      {
+         const gpstk::DayTime& t=i->first;
+         DDEpoch& dde = i->second;
+         for (PrnROTDM::iterator j = dde.dd.begin(); j != dde.dd.end(); j++)
+         {
+            const gpstk::RinexPrn prn=j->first;
+            try
+            {
+               const gpstk::EngEphemeris& prn_eph = bce.findEphemeris(prn.prn, t);
+               dde.health[prn] = prn_eph.getHealth();
+            } 
+            catch (gpstk::EphemerisStore::NoEphemerisFound& e)
+            {
+               if (verbosity>1)
+                  cout << t.printf(timeFormat) << " prn " << prn.prn << " no eph " << endl;
+            }
+         }
+      }
+   }
 }  // end of computeDDEpochMap()
 
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-void dumpStats(DDEpochMap& ddem,
-               const CycleSlipList& csl,
-               PrnElevationMap& pem)
+void dumpStats(
+   DDEpochMap& ddem,
+   const CycleSlipList& csl,
+   PrnElevationMap& pem,
+   bool keepUnhealthy)
 {
    cout << endl
-        << "ord        elev   stddev    mean    z   #obs  #del   max   strip   slips" << endl
-        << "---------- -----  -------  ----------  ------ ----  ------ ------  -----" << endl;
+        << "ord        elev   stddev    mean      # obs    # bad   # unk  max good  slips" << endl
+        << "---------- -----  --------  --------  -------  ------  ------  --------  -----" << endl;
 
    for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
    {
-      cout << "c1 dd res " << computeStats(C1, ddem,  *i, pem) << "   " << endl;
-      cout << "p1 dd res " << computeStats(P1, ddem,  *i, pem) << "   " << endl;
-      cout << "l1 dd res " << computeStats(L1, ddem,  *i, pem) << "  " 
+      cout << "c1 dd res  " << computeStats(C1, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
+      cout << "p1 dd res  " << computeStats(P1, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
+      cout << "l1 dd res  " << computeStats(L1, ddem,  *i, pem, keepUnhealthy) << "    " 
            << computeStats(csl, *i, L1) << endl;
-      cout << "d1 dd res " << computeStats(D1, ddem,  *i, pem) << "   " << endl;
+      cout << "d1 dd res  " << computeStats(D1, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
+      cout << "s1 dd res  " << computeStats(S1, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
       cout << endl;
    }
    cout << "------------------------------------------------------------------------ " << endl;
 
    for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
    {
-      cout << "p2 dd res " << computeStats(P2, ddem,  *i, pem) << "   " << endl;
-      cout << "l2 dd res " << computeStats(L2, ddem,  *i, pem) << "  " 
+      cout << "p2 dd res  " << computeStats(P2, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
+      cout << "l2 dd res  " << computeStats(L2, ddem,  *i, pem, keepUnhealthy) << "    " 
            << computeStats(csl, *i, L2) << endl;
-      cout << "d2 dd res " << computeStats(D2, ddem,  *i, pem) << "   " << endl;
+      cout << "d2 dd res  " << computeStats(D2, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
+      cout << "s1 dd res  " << computeStats(S2, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
       cout << endl;
    }
    cout << "------------------------------------------------------------------------ " << endl;
@@ -312,11 +286,14 @@ string computeStats(
    const RinexObsType rot,
    DDEpochMap& ddem,
    const ElevationRange er,
-   PrnElevationMap& pem)
+   PrnElevationMap& pem,
+   bool keepUnhealthy)
 {
    ostringstream oss;
    float minElevation = er.first;
    float maxElevation = er.second;
+   double strip=1000;
+   int zeroCount=0;
 
    gpstk::Stats<double> good, bad;
    DDEpochMap::iterator ei;
@@ -328,9 +305,17 @@ string computeStats(
       {
          const gpstk::RinexPrn& prn = pi->first;
          ROTDM& ddr = pi->second;
-         if (pem[t][prn]>minElevation && pem[t][prn]<maxElevation)
+
+         if (ei->second.health[prn] && !keepUnhealthy)
+            continue;
+         if (pem[t][prn]<minElevation || pem[t][prn]>maxElevation)
+            continue;
+         if (ddr.find(rot) == ddr.end())
+            zeroCount++;
+         else
          {
-            if (abs(ddr[rot]) < 1000 )
+            double mag=std::abs(ddr[rot]);
+            if (mag < strip)
                good.Add(ddr[rot]);
             else
                bad.Add(ddr[rot]);
@@ -338,15 +323,13 @@ string computeStats(
       }
    }
    
-   oss << right << " " << setprecision(2) << setw(2) <<  minElevation
-        << "-" << setw(2) << maxElevation << " ";
-
    char b1[200];
    char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
-   double maxDD = max(abs(good.Minimum()), abs(good.Maximum()));
-   sprintf(b1, "%8.5f  %8.4f %c %7d %4d  %6.2f %6.2f",
-           good.StdDev()/sqrt(2), good.Average(), zero,
-           good.N(), bad.N(), maxDD, 1000.0);
+   double maxDD = std::max(std::abs(good.Minimum()), std::abs(good.Maximum()));
+   sprintf(b1, "%2d-%2d  %8.5f  %8.3f  %7d  %6d  %6d  %6.2f",
+           (int)minElevation, (int)maxElevation,
+           good.StdDev()/sqrt(2), good.Average(),
+           good.N(), bad.N(), zeroCount, maxDD);
 
    oss << b1;
    return oss.str();
@@ -354,13 +337,13 @@ string computeStats(
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-void dump(std::ostream& s,
-          DDEpochMap& ddem,
-          PrnElevationMap& pem)
+void dump(std::ostream& s, DDEpochMap& ddem, PrnElevationMap& pem)
 {
+   if (verbosity>1)
+      cout << "Writing raw double differences." << endl;
+
    s.setf(ios::fixed, ios::floatfield);
-   s << "# time              PRN type  elev      clk(m)"
-     << "    2nd diff(m)"
+   s << "# time              PRN type  elev      ddr/clk(m)       health"
      << endl;
 
    DDEpochMap::iterator ei;
@@ -375,26 +358,38 @@ void dump(std::ostream& s,
       {
          const gpstk::RinexPrn& prn = pi->first;
          ROTDM& ddr = pi->second;
+         for (ROTDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
+         {
+            const RinexObsType& rot = ti->first;
+            double dd = ti->second;
+            
+            if (std::abs(dd) < 1e-9)
+               continue;
 
-         s << left << setw(20) << time << right
-           << setfill(' ')
-           << " " << setw(2) << prn.prn
-           << " " << setw(4) << 1
-           << " " << setprecision(1) << setw(5)  << pem[t][prn]
-           << " " << setprecision(3) << setw(12)  << clk
+            int type=0;
+            if      (rot == C1) type=10;
+            else if (rot == P1) type=11;
+            else if (rot == L1) type=12;
+            else if (rot == D1) type=13;
+            else if (rot == S1) type=14;
+            else if (rot == C2) type=20;
+            else if (rot == P2) type=21;
+            else if (rot == L2) type=22;
+            else if (rot == D2) type=23;
+            else if (rot == S2) type=24;
 
-           << " " << setprecision(6) << setw(14) << ddr[L1]
-           << endl;
-
-         s << left << setw(20) << time << right
-           << setfill(' ')
-           << " " << setw(2) << prn.prn
-           << " " << setw(4) << 2
-           << " " << setprecision(1) << setw(5)  << pem[t][prn]
-           << " " << setprecision(3) << setw(12)  << clk
-
-           << " " << setprecision(6) << setw(14) << ddr[L2]
-           << endl;
+            s << left << setw(20) << time << right
+              << setfill(' ')
+              << " " << setw(2) << prn.prn
+              << " " << setw(4) << type
+              << " " << setprecision(1) << setw(5)  << pem[t][prn]
+              << " " << setprecision(6) << setw(14) << dd
+              << hex
+              << " " << setw(5) << 0
+              << " " << setw(7) << ei->second.health[prn]
+              << dec 
+              << endl;
+         }
       }
    }
    s << endl;

@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/util.cpp#18 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/util.cpp#22 $"
 
 #include "util.hpp"
 
@@ -12,6 +12,8 @@ const RinexObsType& C1=gpstk::RinexObsHeader::C1;
 const RinexObsType& C2=gpstk::RinexObsHeader::C2;
 const RinexObsType& D1=gpstk::RinexObsHeader::D1;
 const RinexObsType& D2=gpstk::RinexObsHeader::D2;
+const RinexObsType& S1=gpstk::RinexObsHeader::S1;
+const RinexObsType& S2=gpstk::RinexObsHeader::S2;
 
 
 // ---------------------------------------------------------------------
@@ -150,7 +152,7 @@ void add_clock_to_rinex(RODEpochMap& rem, const ORDEpochMap& oem)
       ORDEpochMap::const_iterator j = oem.find(rod.time);
       if (j==oem.end() || !j->second.validClock)
       {
-         if (verbosity)
+         if (verbosity>2)
             cout << "Epoch has no clock " << rod.time << endl;
          continue;
       }
@@ -163,49 +165,47 @@ void add_clock_to_rinex(RODEpochMap& rem, const ORDEpochMap& oem)
 // ---------------------------------------------------------------------
 void check_data(const gpstk::RinexObsHeader& roh, const RODEpochMap& rem)
 {
-   if (verbosity>1)
+   double rate=-1;
+   int gapCount(0), rateCount(0);
+
+   RODEpochMap::const_iterator i = rem.begin();
+   while (i != rem.end())
    {
-      cout << "First obs data is at " << roh.firstObs << endl;
-      cout << "Last obs data is at  " << roh.lastObs << endl;
-   }
-
-   RODEpochMap::const_iterator i=rem.begin();
-   gpstk::DayTime t1 = i->second.time; i++;
-   gpstk::DayTime t =  i->second.time; i++;
-   double rate=t-t1;
-   long rateChanges=0;
-   long n=0;
-
-   for (; i!=rem.end();i++)
-   {
-      gpstk::RinexObsData rod = i->second;
-      t1 = t;
-      t = i->second.time;
-      // Check for how many obs are in this epoch
-
-      if (std::abs(t-t1-rate) > 1e-3)
+      const gpstk::RinexObsData& prev = i->second;
+      i++;
+      if (i == rem.end())
+         break;
+      const gpstk::RinexObsData& curr = i->second;
+      double dt = curr.time - prev.time;
+      if (rate < 0)
       {
-         if (verbosity>2)
-            cout << "Data rate change at " 
-                 << t <<".  Was " << rate
-                 << " now is " << t-t1 << " seconds." << endl;
-         rate = t - t1;
-         rateChanges++;
-         n=0;
+         rate = dt;
+         cout << "Data rate at " 
+              << curr.time << " is " << rate << " seconds." << endl;
       }
-      else
-         n++;
+      else if (std::abs(rate - dt) > 1e-3 && dt > 0 && dt < 300)
+      {
+         rateCount++;
+         cout << "Data rate change at "
+              << curr.time <<" from " << rate
+              << " to " << dt << " seconds." << endl;
+      }
+      else if (dt >= 300)
+      {
+         gapCount++;
+         cout << "Data gap from "
+              << prev.time <<" to " << curr.time << endl;
+      }
+      else if (dt < 0)
+      {
+         gapCount++;
+         cout << "Data time backed up from " 
+              << prev.time <<" to " << curr.time << endl;
+      }
    }
-
-   if (verbosity>1)
-   {
-      if (n > rem.size()/2)
-         cout << "Data rate appears to be " << rate << " seconds after "
-              << n << " epochs." << endl;
-      else
-         cout << "Coulnd not estimate data rate after " << n
-              << " epochs." << endl;
-   }
+   
+   cout << "Data had " << gapCount << " gaps." << endl;
+   cout << "Data had " << rateCount << " rate changes." << endl;
 }
 
 
@@ -302,26 +302,37 @@ string computeStats(
 // ---------------------------------------------------------------------
 void dump(std::ostream& s, const CycleSlipList& csl)
 {
-   s << "Cycle slips:" << endl;
-   if (csl.size() == 0)
-   {
-      s << "  No cycle slips detected." << endl << endl;
-      return;
-   }
+   s << "Total Cycle slips: " << csl.size() << endl;
 
-   s << "# time                obs           cyles      elev    pre   post" << endl;
-   s.setf(ios::fixed, ios::floatfield);
    CycleSlipList::const_iterator i;
+   long l1=0, l2=0;
+   for (i=csl.begin(); i!=csl.end(); i++)
+      if (i->rot == L1)
+         l1++;
+      else if (i->rot == L2)
+         l2++;
+
+   s << "Cycle slips on L1: " << l1 << endl;
+   s << "Cycle slips on L2: " << l2 << endl;
+
+   if (csl.size() == 0 || verbosity<1)
+      return;
+
+   s << endl
+     << "# time                 prn        cyles     elev     pre   post   gap mstr " << endl;
+   s.setf(ios::fixed, ios::floatfield);
    for (i=csl.begin(); i!=csl.end(); i++)
    {
       const CycleSlipRecord& cs=*i;
       s << left << setw(20) << cs.t.printf(timeFormat)
-        << "  " << right << setw(2) << cs.masterPrn.prn << ":" << setw(2) << cs.prn.prn
+        << "  " << right << setw(2) << cs.prn.prn
         << " " << cs.rot.type
         << " " << setprecision(3) << setw(14) << cs.cycles
         << "  " << std::setprecision(2) << setw(5) << cs.elevation
         << "  " << setw(5) << cs.preCount
         << "  " << setw(5) << cs.postCount
+        << "  " << setw(5) << setprecision(1) << cs.preGap
+        << "  " << setw(2) << cs.masterPrn.prn
         << endl;
    }
    s << endl;

@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/DDEpoch.hpp#1 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/DDEpoch.hpp#2 $"
 
 #ifndef DDEPOCH_HPP
 #define DDEPOCH_HPP
@@ -14,6 +14,9 @@ struct DDEpoch
 {
    DDEpoch() : valid(false){};
    PrnROTDM dd;
+
+   PrnShortMap health;
+
    double clockOffset;
    gpstk::RinexPrn masterPrn;
    bool valid;
@@ -41,6 +44,7 @@ void computeDDEpochMap(
    RODEpochMap& rx1,
    RODEpochMap& rx2,
    PrnElevationMap& pem,
+   const gpstk::EphemerisStore& eph,
    DDEpochMap& ddem);
 
 void dump(std::ostream& s,
@@ -50,12 +54,14 @@ void dump(std::ostream& s,
 void dumpStats(
    DDEpochMap& oem,
    const CycleSlipList& csl,
-   PrnElevationMap& pem);
+   PrnElevationMap& pem,
+   bool keepUnhealthy);
 
 std::string computeStats(
    const RinexObsType rot,
    DDEpochMap& oem,
    const ElevationRange er,
-   PrnElevationMap& pem);
+   PrnElevationMap& pem,
+   bool keepUnhealthy);
 
 #endif

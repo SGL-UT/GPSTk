@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/ordUtils.cpp#1 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/ordUtils.cpp#8 $"
 
 #include "util.hpp"
 
@@ -6,19 +6,21 @@
 
 #include "LinearClockModel.cpp"
 
+#include "RobustLinearEstimator.hpp"
+#include "BivarStats.hpp"
+
 using namespace std;
 
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-void compute_ords(ORDEpochMap& oem,
+void computeOrds(ORDEpochMap& oem,
                   const RODEpochMap& rem,
                   const gpstk::RinexObsHeader& roh,
                   const gpstk::EphemerisStore& eph,
                   const gpstk::WxObsData& wod,
                   bool svTime,
-                  const string& ordModeStr,
-                  const std::string& clkModelStr)
+                  const string& ordModeStr)
 {
    bool dualFreq=false;
    RinexObsType p1,p2;
@@ -36,15 +38,8 @@ void compute_ords(ORDEpochMap& oem,
       return;
    }
 
-   if (verbosity)
-      cout << "Computing observed range deviations." << endl;
-
    if (verbosity>1)
-      if (svTime)
-         cout << "Assuming data is tagged in SV time (time of emission)." << endl;
-      else
-         cout << "Assuming data is taged in Receiver time (gps time)." << endl;
-
+      cout << "Computing observed range deviations." << endl;
 
    if (gpstk::RSS(roh.antennaPosition[0],
            roh.antennaPosition[1],
@@ -58,25 +53,13 @@ void compute_ords(ORDEpochMap& oem,
            << "no longer in the best of operating condition." << endl;
       return;
    }
-   
+
+   // This is obviously planning for the future.
    gpstk::ObsClockModel* cm;
-   if (clkModelStr=="epoch")
-   {
-      if (verbosity)
-         cout << "Using an epoch clock model." << endl;
+   if (true)
       cm = new(gpstk::EpochClockModel);
-   }
-   else if (clkModelStr=="linear")
-   {
-      if (verbosity)
-         cout << "Using a linear clock model." << endl;
-      cm = new(gpstk::LinearClockModel);
-   }
    else
-   {
-      cout << "Unknown clock model requestd, model=" << clkModelStr << endl;
-      return;
-   }
+      cm = new(gpstk::LinearClockModel);
 
    if (verbosity>4)
       gpstk::ObsRngDev::debug = true;
@@ -147,23 +130,20 @@ void compute_ords(ORDEpochMap& oem,
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-void dumpStats(const ORDEpochMap& oem, 
-               const string& ordMode, 
-               const double sigmam)
+void dumpStats(
+   const ORDEpochMap& oem, 
+   const string& ordMode, 
+   const double sigmam,
+   const bool keepUnhealthy)
 {
    cout << endl
-        << "ord        elev   stddev    mean    z   #obs  #del   max   strip" << endl
-        << "---------- -----  -------  ----------  ------ ----  ------ ------" << endl;
+        << "ord        elev   stddev    mean      # obs    # bad    max    strip" << endl
+        << "---------- -----  --------  --------  -------  ------  ------  ------" << endl;
 
    string desc = ordMode + " ord  ";
 
    for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
-      computeStats(desc, oem, *i, sigmam);
-
-   if (verbosity>1)
-      cout << endl
-           << "stddev, mean, max, and strip in meters" << endl
-           << "z: 0 if mean < stddev/sqrt(n)" << endl;
+      computeStats(desc, oem, *i, sigmam, keepUnhealthy);
 }
 
 // ---------------------------------------------------------------------
@@ -172,10 +152,12 @@ void computeStats(
    const string desc,
    const ORDEpochMap& oem,
    const ElevationRange er,
-   const double sigmam)
+   const double sigmam,
+   const bool keepUnhealthy)
 {
    float minElevation = er.first;
    float maxElevation = er.second;
+   int zeroCount=0;
 
    gpstk::Stats<double> fp;
    ORDEpochMap::const_iterator ei;
@@ -187,7 +169,11 @@ void computeStats(
       {
          const float el = pi->second.getElevation();
          const double ord = pi->second.getORD();
-         if (el>minElevation && el<maxElevation && abs(ord) < 1e6)
+         short prn = pi->first;
+         if (pi->second.getHealth().is_valid() && 
+             pi->second.getHealth() && !keepUnhealthy)
+            continue;
+         if (el>minElevation && el<maxElevation && std::abs(ord) < 1e6)
             fp.Add(ord);
       }
    }
@@ -200,43 +186,83 @@ void computeStats(
       gpstk::ORDEpoch::ORDMap::const_iterator pi;
       for (pi = ei->second.ords.begin(); pi != ei->second.ords.end(); pi++)
       {
+         if (pi->second.getHealth().is_valid() && 
+             pi->second.getHealth() && !keepUnhealthy)
+            continue;
          const float el = pi->second.getElevation();
          const double ord = pi->second.getORD();
          if (el>minElevation && el<maxElevation)
          {
-            if (abs(ord) < strip)
+            double mag=std::abs(ord);
+            if (mag < strip && mag>1e-6)
                good.Add(ord);
-            else
+            else if (mag>=strip)
                bad.Add(ord);
+            else
+               zeroCount++;
          }
       }
    }
 
-   cout << left << setw(10) << desc << right
-        << " "
-        << setprecision(2) << setw(2) <<  minElevation
-        << "-"
-        << setw(2) << maxElevation
-        << " ";
-
    char b1[200];
    char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
-   double maxOrd = max(abs(good.Minimum()), abs(good.Maximum()));
-   sprintf(b1, "%8.5f  %8.4f %c %7d %4d  %6.2f %6.2f",
-           good.StdDev(), good.Average(), zero,
-           good.N(), bad.N(), maxOrd, strip);
-   
+   double max = std::max(std::abs(good.Maximum()), std::abs(good.Minimum()));
+   sprintf(b1, "c1p2 ord   %2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
+           (int)minElevation, (int)maxElevation,
+           good.StdDev()/sqrt(2), good.Average(),
+           good.N(), bad.N(), max, strip);
+
    cout << b1 << endl;
 }
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-void dump(std::ostream& s, const ORDEpochMap& oem)
+void estimateClock(const ORDEpochMap& oem, RobustLinearEstimator& rle)
 {
+   if (verbosity>1)
+      cout << "Estimating linear clock" << endl;
+
+   DoubleDoubleVec clocks;
+   ORDEpochMap::const_iterator ei;
+   for (ei = oem.begin(); ei != oem.end(); ei++)
+   {
+      double mjd = ei->first.MJDdate();
+      double clk = ei->second.clockOffset;
+      if (std::abs(clk) < 1e-6 || !ei->second.validClock)
+         continue;
+      std::pair<double, double> pr(mjd, clk);
+      clocks.push_back(pr);
+   }
+
+   rle.process(clocks);
+   gpstk::DayTime t0(clocks.begin()->first);
+   gpstk::DayTime t1(clocks.rbegin()->first);
+   cout << fixed << setprecision(3);
+   if (verbosity)
+      cout << "RLE clock offset at " << t0.printf(timeFormat)
+           << " is "  << rle.eval(t0.MJDdate()) << " meters." << endl
+           << "RLE clock offset at " << t1.printf(timeFormat)
+           << " is "  << rle.eval(t1.MJDdate()) << " meters." << endl;
+   if (verbosity>1)
+      cout << "RLE intercept is "  << rle.a << " meters." << endl
+           << "RLE stripped Y data at " << rle.medianY << " +/- " << rle.stripY << endl;
+
+   cout << "RLE clock drift rate is " << rle.b << " meters/day." << endl
+        << "RLE clock deviation is " << rle.abdev << " meters." << endl;
+}
+
+
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+void dumpOrds(std::ostream& s, const ORDEpochMap& oem)
+{
+   if (verbosity>1)
+      cout << "Writing raw observed ranges deviations." << endl;
+
    s.setf(ios::fixed, ios::floatfield);
-   s << "# time              PRN type  elev      clk(m)"
-     << "        ord(m)    iodc  health"
+   s << "# time              PRN type  elev     ord/clk(m)  iodc  health"
      << endl;
+   s << setfill(' ');
 
    ORDEpochMap::const_iterator ei;
    for (ei = oem.begin(); ei != oem.end(); ei++)
@@ -245,24 +271,81 @@ void dump(std::ostream& s, const ORDEpochMap& oem)
       string time=t.printf(timeFormat);
       gpstk::ORDEpoch::ORDMap::const_iterator pi;
       const gpstk::ORDEpoch& e = ei->second;
+      
       for (pi = e.ords.begin(); pi != e.ords.end(); pi++)
       {
          const short& prn = pi->first;
          const gpstk::ObsRngDev& ord = pi->second;
          
          s << left << setw(20) << time << right
-           << setfill(' ')
            << " " << setw(2) << prn
-           << " " << setw(4) << 0
+           << " " << setw(4) << 0 // type
            << " " << setprecision(1) << setw(5)  << ord.getElevation()
-           << " " << setprecision(3) << setw(12)  << e.clockOffset
-
-           << "  " << setw(14) << setprecision(5) << ord.getORD()
+           << " " << setprecision(5) << setw(14) << ord.getORD()
            << hex
-           << " " << setw(4) << ord.getIODC()
+           << " " << setw(5) << ord.getIODC()
            << " " << setw(7) << ord.getHealth()
            << dec
            << endl;
       }
    }
-}  // end dump()
+}  // end dumpOrds()
+
+
+void dumpClock(
+   std::ostream& s, 
+   const ORDEpochMap& oem,
+   const RobustLinearEstimator& clock)
+{
+   bool gotEstimate = clock.a != 0;
+
+   ORDEpochMap::const_iterator ei;
+   s << setfill(' ');
+   for (ei = oem.begin(); ei != oem.end(); ei++)
+   {
+      const gpstk::DayTime& t = ei->first;
+      const gpstk::ORDEpoch& e = ei->second;
+      if (!e.validClock)
+         continue;
+      double clk = e.clockOffset;
+      double err = 0;
+      bool strip = false;
+      if (gotEstimate)
+      {
+         err = clk - clock.eval(t.MJDdate());
+         strip = std::abs(err) > 5*clock.stripY;
+      }
+      else
+         strip = std::abs(clk) > 300000 || std::abs(clk) < 1e-3;
+
+      s << left << setw(20) << t.printf(timeFormat) << right
+        << setfill(' ')
+        << " " << setw(2) << 0
+        << " " << setw(4) << 50 //type
+        << " " << setprecision(1) << setw(5)  << 0
+        << " " << setprecision(3) << setw(14)  << clk
+        << " " << setprecision(3) << setw(8) << err
+        << " " << strip
+        << endl;
+   }
+
+   if (!gotEstimate)
+      return;
+
+   gpstk::DayTime t0(oem.begin()->first);
+   gpstk::DayTime t1(oem.rbegin()->first);
+
+   const int N=8;
+   for (int i=0; i<=N; i++)
+   {
+      gpstk::DayTime t = t0 + i*(t1-t0)/N;
+      s << left << setw(20) << t.printf(timeFormat) << right
+        << " " << setw(2) << 0 // prn
+        << " " << setw(4) << 51 //type
+        << " " << setprecision(1) << setw(5)  << 0 // elevation
+        << " " << setprecision(3) << setw(14)  << clock.eval(t.MJDdate())
+        << " " << setprecision(3) << setw(8)  << clock.abdev
+        << " " << 0
+        << endl;
+   }
+}
