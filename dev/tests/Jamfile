@@ -11,6 +11,7 @@ GPSLinkLibraries rinex_obs_test rinex_met_test rinex_met_read_write
    positiontest DayTimeToleranceTest DayTimeIncrementTest
    DayTimeConversionTest DayTimeIncrementTest2 MinSfTest TimeTest 
    Xbegweek Xendweek
+   testExpression
 
    : gpstk ;
 
@@ -60,4 +61,4 @@ Main Xbegweek : Xbegweek.cpp ;
 
 Main Xendweek : Xendweek.cpp ;
 
-
+Main testExpression : testExpression.cpp ;

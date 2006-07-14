@@ -55,8 +55,10 @@ else
       RACRotation.cpp SVExclusionList.cpp
       TimeConverters.cpp TimeString.cpp 
       CommonTime.cpp TimeTag.cpp ANSITime.cpp CivilTime.cpp 
-      GPSEpochWeekSecond.cpp GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount32.cpp
+      GPSEpochWeekSecond.cpp GPSWeekSecond.cpp 
+      GPSWeekZcount.cpp GPSZcount32.cpp
       GPSZcount29.cpp JulianDate.cpp MJD.cpp UnixTime.cpp YDSTime.cpp
+      Expression.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp AlmanacStore.hpp BCEphemerisStore.hpp
@@ -100,6 +102,7 @@ else
       GPSEpochWeekSecond.hpp GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount32.hpp
       GPSZcount29.hpp JulianDate.hpp MJD.hpp UnixTime.hpp YDSTime.hpp 
       gpstkplatform.h mergePCodeWords.h BivarStats.hpp
+      Expression.hpp
       ;
 }
 

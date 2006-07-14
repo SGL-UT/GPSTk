@@ -1,5 +1,7 @@
 #include <iostream>
 #include <iomanip>
+
+#include "RinexObsStream.hpp"
 #include "Expression.hpp"
 
 using namespace std;
@@ -7,70 +9,8 @@ using namespace gpstk;
 
 int main(int argc, char* argv[])
 {
-   Expression::ExpNode *root;
    short test=1;
    
-   cout << endl << "Unit Test #" << setw(2) << test++ << " -----------------------------------" << endl;
-   {
-      root = new Expression::ConstNode(12);
-      root->print(cout);
-      delete(root);
-      cout << endl;
-   }
-   
-   cout << endl << "Unit Test #" << setw(2) << test++ << " -----------------------------------" << endl;
-   {
-      Expression::ConstNode *node1 = new Expression::ConstNode(1);
-      Expression::ConstNode *node2 = new Expression::ConstNode(3);
-      root = new Expression::BinOpNode(string("+"),node1, node2);
-
-      root->print(cout);
-      cout << "=" << root->getValue();
-
-      delete node1, node2, root;
-      cout << endl;
-   }
-   
-   cout << endl << "Unit Test #" << setw(2) << test++ << " -----------------------------------" << endl;
-   {
-      // Goal: 7+ (8-2)/3 = 9
-      Expression::ConstNode *node1 = new Expression::ConstNode(2);
-      Expression::ConstNode *node2 = new Expression::ConstNode(8);
-      Expression::ConstNode *node3 = new Expression::ConstNode(3);
-      Expression::ConstNode *node4 = new Expression::ConstNode(7);
-      Expression::BinOpNode *op1   = new Expression::BinOpNode(string(" -"),node2, node1);
-      Expression::BinOpNode *op2   = new Expression::BinOpNode(string("//"),op1,node3);
-      root = new Expression::BinOpNode(string("+"),node4,op2);
-
-      root->print(cout);
-      cout << "=" << root->getValue() << endl;
-
-      delete node1, node2, node3, node4, op1, op2, root;
-   }
-
-   cout << endl << "Unit Test #" << setw(2) << test++ << " -----------------------------------" << endl;
-   {
-         // Goal: compute cos(2pi)=-1
-      Expression::ConstNode *node1 = new Expression::ConstNode(2);
-      Expression::ConstNode *node2 = new Expression::ConstNode(3.141592647);
-      Expression::BinOpNode *op1 = new Expression::BinOpNode(string("*"), node1, node2);
-      root = new Expression::FuncOpNode(string("cos"), op1);
-      root->print(cout);
-      cout << "=" << root->getValue() << endl;
-
-      delete node1, node2, op1, root;
-      
-   }
-   
-   cout << endl << "Unit Test #" << setw(2) << test++ << " -----------------------------------" << endl;
-   {
-      string istr("19");
-      Expression xpr(istr);
-      cout << "Input string: \"" << istr << "\"" << endl;
-      xpr.print(cout);
-      cout << "=" << xpr.evaluate() << endl;
-   }
-
    cout << endl << "Unit Test #" << setw(2) << test++ << " -----------------------------------" << endl;
    {  
       string istr(" 1   + (6 - 2 ) * 3.2");
@@ -135,6 +75,42 @@ int main(int argc, char* argv[])
       cout << "Input string: \"" << istr << "\"" << endl;
       xpr.print(cout);
       cout << "=" << xpr.evaluate() << endl;
+   }
+
+   cout << endl << "Unit Test #" << setw(2) << test++ << " -----------------------------------" << endl;
+   {
+      string istr("C/L1"); 
+      Expression xpr(istr);
+      xpr.setGPSConstants();
+      cout << "Input string: \"" << istr << "\"" << endl;
+      xpr.print(cout);
+      cout << "=" << xpr.evaluate() << endl;
+   }
+
+   cout << endl << "Unit Test #" << setw(2) << test++ << " -----------------------------------" << endl;
+   {
+      string istr("1/(1-gamma)*(P1 - P2)"); 
+      cout << "Input string: \"" << istr << "\"" << endl;
+      Expression xpr(istr);
+      xpr.print(cout);
+      cout << endl;
+      xpr.setGPSConstants();
+      
+      RinexObsStream ros("../examples/bahr1620.04o");
+      RinexObsData rod;
+      for (int i=0;i<3;i++)
+         //while (ros >> rod)
+      {
+         ros >> rod;
+
+         RinexObsData::RinexPrnMap::const_iterator it;
+         for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
+         {
+            xpr.setRinexObs(it->second);
+            cout << rod.time << " " << it->first.prn << " ";
+            cout << xpr.evaluate() << endl;
+         } // end step through PRNs in an epoch
+      } // end step through input obs file epoch by epoch
    }
    
    exit(0);   
