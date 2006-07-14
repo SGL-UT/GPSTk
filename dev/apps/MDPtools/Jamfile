@@ -16,7 +16,7 @@ if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
 Library mdplib : MDPHeader.cpp MDPPVTSolution.cpp MDPNavSubframe.cpp 
    MDPObsEpoch.cpp MDPSelftestStatus.cpp FormatConversionFunctions.cpp 
    TCPStream.cpp 
-   ScreenProc.cpp MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp
+   MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp
    ;
 
 LinkLibraries mdptool mdp2rinex tcptest : mdplib ;

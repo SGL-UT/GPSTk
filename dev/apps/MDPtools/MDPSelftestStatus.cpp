@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPSelftestStatus.cpp#4 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPSelftestStatus.cpp#5 $"
 
 #include <sstream>
 #include <StringUtils.hpp>
@@ -58,17 +58,18 @@ namespace gpstk
       long sow100;
       int week;
 
-      antennaTemp  = decodeVar<float>(str);
-      receiverTemp = decodeVar<float>(str);
-      status       = decodeVar<uint32_t>(str);
-      cpuLoad      = decodeVar<float>(str);
-      sow100       = decodeVar<uint32_t>(str);
-      week         = decodeVar<uint16_t>(str);
+      antennaTemp   = decodeVar<float>(str);
+      receiverTemp  = decodeVar<float>(str);
+      status        = decodeVar<uint32_t>(str);
+      cpuLoad       = decodeVar<float>(str);
+      sow100        = decodeVar<uint32_t>(str);
+      week          = decodeVar<uint16_t>(str);
       selfTestTime.setGPSfullweek(week, double(sow100)*0.01);
-      week         = decodeVar<uint16_t>(str);
-      sow100       = decodeVar<uint32_t>(str);
+      week          = decodeVar<uint16_t>(str);
+      sow100        = decodeVar<uint32_t>(str);
       firstPVTTime.setGPSfullweek(week, double(sow100)*0.01);
       extFreqStatus = decodeVar<uint16_t>(str);
+      saasmStatusWord  = decodeVar<uint16_t>(str);
       
       clearstate(fmtbit);
    } // MDPSelftestStatus::decode()
@@ -91,6 +92,7 @@ namespace gpstk
           << " status:" << hex << status << dec
           << " cpuLoad:" << cpuLoad
           << " extFreq:" << hex << extFreqStatus << dec
+          << " ssw:" << hex << saasmStatusWord << dec
           << endl;
       out << oss.str() << flush;
    } // MDPSelftestStatus::dump()

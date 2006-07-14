@@ -1,28 +1,9 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/FormatConversionFunctions.cpp#7 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/FormatConversionFunctions.cpp#9 $"
 
 /** @file Translates between various similiar objects */
 
-//============================================================================
-//
-//  This file is part of GPSTk, the GPS Toolkit.
-//
-//  The GPSTk is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
-//  any later version.
-//
-//  The GPSTk is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//lgpl-license START
+//lgpl-license END
 
 #include "StringUtils.hpp"
 
@@ -45,6 +26,93 @@ namespace gpstk
       return 0;
    }
 
+   gpstk::RinexObsData::RinexObsTypeMap makeRinexObsTypeMap(
+      const MDPObsEpoch& moe)
+   {
+      gpstk::RinexObsData::RinexObsTypeMap rotm;
+      MDPObsEpoch::ObsMap ol=moe.obs;
+      MDPObsEpoch::ObsMap::const_iterator j;
+
+      // The C1 Rinex obs is easy
+      j = ol.find(MDPObsEpoch::ObsKey(ccL1,rcCA));
+      if (j!=ol.end())
+      {
+         rotm[gpstk::RinexObsHeader::C1].data = j->second.pseudorange;
+         rotm[gpstk::RinexObsHeader::C1].lli = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::C1].ssi = snr2ssi(j->second.snr);
+
+         rotm[gpstk::RinexObsHeader::L1].data = j->second.phase;
+         rotm[gpstk::RinexObsHeader::L1].lli = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::L1].ssi = snr2ssi(j->second.snr);
+
+         rotm[gpstk::RinexObsHeader::D1].data = j->second.doppler;
+         rotm[gpstk::RinexObsHeader::D1].lli = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::D1].ssi = snr2ssi(j->second.snr);
+
+         rotm[gpstk::RinexObsHeader::S1].data = j->second.snr;
+      }
+
+      // Now get the P1, L1, D1, S1 obs
+      j = ol.find(MDPObsEpoch::ObsKey(ccL1, rcYcode));
+      if (j == ol.end())
+         j = ol.find(MDPObsEpoch::ObsKey(ccL1, rcPcode));
+      if (j == ol.end())
+         j = ol.find(MDPObsEpoch::ObsKey(ccL1, rcCodeless));
+      if (j != ol.end())
+      {
+         rotm[gpstk::RinexObsHeader::P1].data = j->second.pseudorange;
+         rotm[gpstk::RinexObsHeader::P1].lli = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::P1].ssi = snr2ssi(j->second.snr);
+
+         rotm[gpstk::RinexObsHeader::L1].data = j->second.phase;
+         rotm[gpstk::RinexObsHeader::L1].lli = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::L1].ssi = snr2ssi(j->second.snr);
+
+         rotm[gpstk::RinexObsHeader::D1].data = j->second.doppler;
+         rotm[gpstk::RinexObsHeader::D1].lli = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::D1].ssi = snr2ssi(j->second.snr);
+
+         rotm[gpstk::RinexObsHeader::S1].data = j->second.snr;
+      }
+      
+      // Now get the P2, L2, D2, S2 obs
+      j = ol.find(MDPObsEpoch::ObsKey(ccL2, rcYcode));
+      if (j == ol.end())
+         j = ol.find(MDPObsEpoch::ObsKey(ccL2, rcPcode));
+      if (j == ol.end())
+         j = ol.find(MDPObsEpoch::ObsKey(ccL2, rcCodeless));
+      if (j != ol.end())
+      {
+         rotm[gpstk::RinexObsHeader::P2].data = j->second.pseudorange;
+         rotm[gpstk::RinexObsHeader::P2].lli = j->second.lockCount ? 0 : 1;
+         rotm[gpstk::RinexObsHeader::P2].ssi = snr2ssi(j->second.snr);
+
+         rotm[gpstk::RinexObsHeader::L2].data = j->second.phase;
+         rotm[gpstk::RinexObsHeader::L2].lli = j->second.lockCount ? 0 : 1;
+         rotm[gpstk::RinexObsHeader::L2].ssi = snr2ssi(j->second.snr);
+
+         rotm[gpstk::RinexObsHeader::D2].data = j->second.doppler;
+         rotm[gpstk::RinexObsHeader::D2].lli = j->second.lockCount ? 0 : 1;
+         rotm[gpstk::RinexObsHeader::D2].ssi = snr2ssi(j->second.snr);
+
+         rotm[gpstk::RinexObsHeader::S2].data = j->second.snr;
+      }
+
+      // Now get the C2
+      j = ol.find(MDPObsEpoch::ObsKey(ccL2, rcCM));
+      if (j == ol.end())
+         j = ol.find(MDPObsEpoch::ObsKey(ccL2, rcCL));
+      if (j == ol.end())
+         j = ol.find(MDPObsEpoch::ObsKey(ccL2, rcCMCL));
+      if (j != ol.end())
+      {
+         rotm[gpstk::RinexObsHeader::C2].data = j->second.pseudorange;
+         rotm[gpstk::RinexObsHeader::C2].lli = j->second.lockCount ? 0 : 1;
+         rotm[gpstk::RinexObsHeader::C2].ssi = snr2ssi(j->second.snr);
+      }
+      return rotm;
+   }
+
    void makeRinexObsData(
       gpstk::RinexObsHeader& roh,
       gpstk::RinexObsData& rod,
@@ -55,83 +123,12 @@ namespace gpstk
       rod.numSvs = mdp.size();
       rod.epochFlag = 0;
       rod.time = mdp.begin()->second.time;
+
       for (MDPEpoch::const_iterator i=mdp.begin(); i!=mdp.end(); i++)
       {
          const MDPObsEpoch& moe = i->second;
-         MDPObsEpoch::ObsMap ol=moe.obs;
-         gpstk::RinexObsData::RinexObsTypeMap rotm;
          gpstk::RinexPrn prn(moe.prn, gpstk::systemGPS);
-         MDPObsEpoch::ObsMap::const_iterator j;
-
-         // The C1 Rinex obs is easy
-         j = ol.find(MDPObsEpoch::ObsKey(ccL1,rcCA));
-         if (j!=ol.end())
-         {
-            rotm[gpstk::RinexObsHeader::C1].data = j->second.pseudorange;
-            rotm[gpstk::RinexObsHeader::C1].lli = j->second.lockCount ? 1 : 0;
-            rotm[gpstk::RinexObsHeader::C1].ssi = snr2ssi(j->second.snr);
-            rotm[gpstk::RinexObsHeader::L1].data = j->second.phase;
-            rotm[gpstk::RinexObsHeader::D1].data = j->second.doppler;
-         }
-
-         // Now get the P1, L1, D1, S1 obs
-         j = ol.find(MDPObsEpoch::ObsKey(ccL1, rcYcode));
-         if (j == ol.end())
-            j = ol.find(MDPObsEpoch::ObsKey(ccL1, rcPcode));
-         if (j == ol.end())
-            j = ol.find(MDPObsEpoch::ObsKey(ccL1, rcCodeless));
-         if (j != ol.end())
-         {
-            rotm[gpstk::RinexObsHeader::P1].data = j->second.pseudorange;
-            rotm[gpstk::RinexObsHeader::L1].data = j->second.phase;
-            rotm[gpstk::RinexObsHeader::D1].data = j->second.doppler;
-
-            rotm[gpstk::RinexObsHeader::P1].lli = j->second.lockCount ? 1 : 0;
-            rotm[gpstk::RinexObsHeader::P1].ssi = snr2ssi(j->second.snr);
-
-            rotm[gpstk::RinexObsHeader::L1].lli = j->second.lockCount ? 1 : 0;
-            rotm[gpstk::RinexObsHeader::L1].ssi = snr2ssi(j->second.snr);
-
-            rotm[gpstk::RinexObsHeader::D1].lli = j->second.lockCount ? 1 : 0;
-            rotm[gpstk::RinexObsHeader::D1].ssi = snr2ssi(j->second.snr);
-         }
-      
-         // Now get the P2, L2, D2, S2 obs
-         j = ol.find(MDPObsEpoch::ObsKey(ccL2, rcYcode));
-         if (j == ol.end())
-            j = ol.find(MDPObsEpoch::ObsKey(ccL2, rcPcode));
-         if (j == ol.end())
-            j = ol.find(MDPObsEpoch::ObsKey(ccL2, rcCodeless));
-         if (j != ol.end())
-         {
-            rotm[gpstk::RinexObsHeader::P2].data = j->second.pseudorange;
-            rotm[gpstk::RinexObsHeader::L2].data = j->second.phase;
-            rotm[gpstk::RinexObsHeader::D2].data = j->second.doppler;
-
-            rotm[gpstk::RinexObsHeader::P2].lli = j->second.lockCount ? 0 : 1;
-            rotm[gpstk::RinexObsHeader::P2].ssi = snr2ssi(j->second.snr);
-
-            rotm[gpstk::RinexObsHeader::L2].lli = j->second.lockCount ? 0 : 1;
-            rotm[gpstk::RinexObsHeader::L2].ssi = snr2ssi(j->second.snr);
-
-            rotm[gpstk::RinexObsHeader::D2].lli = j->second.lockCount ? 0 : 1;
-            rotm[gpstk::RinexObsHeader::D2].ssi = snr2ssi(j->second.snr);
-         }
-
-         // Now get the C2
-         j = ol.find(MDPObsEpoch::ObsKey(ccL2, rcCM));
-         if (j == ol.end())
-            j = ol.find(MDPObsEpoch::ObsKey(ccL2, rcCL));
-         if (j == ol.end())
-            j = ol.find(MDPObsEpoch::ObsKey(ccL2, rcCMCL));
-         if (j != ol.end())
-         {
-            rotm[gpstk::RinexObsHeader::C2].data = j->second.pseudorange;
-            rotm[gpstk::RinexObsHeader::C2].lli = j->second.lockCount ? 0 : 1;
-            rotm[gpstk::RinexObsHeader::C2].ssi = snr2ssi(j->second.snr);
-         }
-
-         rod.obs[prn] = rotm;
+         rod.obs[prn] = makeRinexObsTypeMap(moe);
       }
    }
 
@@ -164,8 +161,7 @@ namespace gpstk
       for (i = pages.begin(); i != pages.end(); i++)
       {
          i->second.fillArray(sfa);
-         for( long j = 0; j < 10; j++ )
-            long_sfa[j] = static_cast<long>( sfa[j] );
+         copy( &sfa[0], &sfa[10], long_sfa);
          if (!alm.addSubframe(long_sfa, week))
             return false;
       }

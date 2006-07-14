@@ -1,28 +1,9 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPProcessors.cpp#7 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPProcessors.cpp#10 $"
 
 /** @file Various presentations/analysis on MDP streams */
 
-//============================================================================
-//
-//  This file is part of GPSTk, the GPS Toolkit.
-//
-//  The GPSTk is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
-//  any later version.
-//
-//  The GPSTk is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//lgpl-license START
+//lgpl-license END
 
 #include "MDPProcessors.hpp"
 
@@ -34,18 +15,18 @@ std::ofstream d2;
 
 
 MDPProcessor::MDPProcessor() :
-      timeFormat("%4Y/%03j/%02H:%02M:%05.2f"),
+      timeFormat("%4Y/%03j/%02H:%02M:%04.1f"),
       stopTime(gpstk::DayTime::END_OF_TIME),
       startTime(gpstk::DayTime::BEGINNING_OF_TIME),
-      timeSpan(-1), processBad(false),
+      timeSpan(-1), processBad(false), bugMask(0),
       debugLevel(0), verboseLevel(0), in(d1), out(d2)
 {}
 
 MDPProcessor::MDPProcessor(gpstk::MDPStream& in, std::ofstream& out) :
-      timeFormat("%4Y/%03j/%02H:%02M:%05.2f"),
+      timeFormat("%4Y/%03j/%02H:%02M:%04.1f"),
       stopTime(gpstk::DayTime::END_OF_TIME),
       startTime(gpstk::DayTime::BEGINNING_OF_TIME),
-      timeSpan(-1), processBad(false),
+      timeSpan(-1), processBad(false), bugMask(0),
       debugLevel(0), verboseLevel(0), in(in), out(out)
 {}
 
@@ -53,35 +34,52 @@ void MDPProcessor::process()
 {
    MDPHeader header;
 
-   while (in)
+   msgCount=0;
+   firstFC=0;
+   lastFC=0;
+   fcErrorCount=0;
+
+   while (in >> header)
    {
-      in >> header;
+      if (startTime == DayTime(DayTime::BEGINNING_OF_TIME))
+      {
+         startTime = header.time;
+         if (debugLevel)
+            cout << "startTime: " << startTime << endl;
+      }
+      
+      if (stopTime == DayTime(DayTime::END_OF_TIME) && timeSpan>0)
+      {
+         stopTime = startTime + timeSpan;
+         if (debugLevel)
+            cout << "stopTime: " << stopTime << endl;
+      }
+
+      if (header.time > stopTime)
+         return;
+            
+      if (header.time < startTime)
+         continue;
+
+      msgCount++;
 
       if (verboseLevel>3)
-         out << "Record: " << in.recordNumber << endl;
+         out << "Record: " << in.recordNumber
+             << ", message: " << msgCount << endl;
 
-      if (in.header.id == gpstk::MDPObsEpoch::myId ||
-          in.header.id == gpstk::MDPPVTSolution::myId)
+      if (msgCount == 1)
+         firstFC = lastFC = in.header.freshnessCount;
+      else
       {
-         if (startTime == DayTime(DayTime::BEGINNING_OF_TIME))
+         if (in.header.freshnessCount != static_cast<unsigned short>(lastFC+1))
          {
-            startTime = header.time;
-            if (debugLevel)
-               cout << "startTime: " << startTime << endl;
+            fcErrorCount++;
+            if (verboseLevel)
+               cout << header.time.printf(timeFormat)
+                    <<" Freshness count error.  Previous was " << lastFC
+                    << " current is " << in.header.freshnessCount << endl;
          }
-
-         if (stopTime == DayTime(DayTime::END_OF_TIME) && timeSpan>0)
-         {
-            stopTime = startTime + timeSpan;
-            if (debugLevel)
-               cout << "stopTime: " << stopTime << endl;
-         }
-
-         if (header.time > stopTime)
-            return;
-            
-         if (header.time < startTime)
-            continue;
+         lastFC = in.header.freshnessCount;
       }
 
       switch (in.header.id)
@@ -132,18 +130,33 @@ void MDPProcessor::process()
 
 //-----------------------------------------------------------------------------
 MDPTableProcessor::MDPTableProcessor(gpstk::MDPStream& in, std::ofstream& out) :
-   MDPProcessor(in, out)
+   MDPProcessor(in, out), headerDone(false)
+{}
+
+
+//-----------------------------------------------------------------------------
+void MDPTableProcessor::outputHeader()
 {
-   out << "# time, 300, prn, chan, hlth, ele, az, code, carrier, LC, SNR, range, phase, doppler" << endl;
-   out << "# time, 301, #SV, dtime, ddtime, x, y, z, vx, vy, vz" << endl;
-   out << "# time, 310, prn, carrier_code, range_code, nav_code, word1, word2, ..." << endl;
-   out << "# time, 400, tstTime, startTime, Tant, Trx, status, cpu, freq" << endl;
+   if (headerDone)
+      return;
+
+   if (obsOut)
+      out << "# time, 300, prn, chan, hlth, #SVs, ele, az, code, carrier, LC, SNR, range, phase, doppler" << endl;
+   if (pvtOut)
+      out << "# time, 301, #SV, dtime, ddtime, x, y, z, vx, vy, vz" << endl;
+   if (navOut)
+      out << "# time, 310, prn, carrier_code, range_code, nav_code, word1, word2, ..." << endl;
+   if (tstOut)
+      out << "# time, 400, tstTime, startTime, Tant, Trx, status, cpu, freq, ssw" << endl;
+
+   headerDone=true;
 }
 
 
 //-----------------------------------------------------------------------------
 void MDPTableProcessor::process(const gpstk::MDPObsEpoch& oe)
 {
+   outputHeader();
    MDPObsEpoch::ObsMap::const_iterator i;
    for (i = oe.obs.begin(); i != oe.obs.end(); i++)
    {
@@ -154,6 +167,7 @@ void MDPTableProcessor::process(const gpstk::MDPObsEpoch& oe)
           << ", " << setw(2) << (int) oe.prn
           << ", " << setw(2) << (int) oe.channel
           << ", " << setw(2) << hex << (int) oe.status << dec
+          << ", " << setw(2) << (int) oe.numSVs
           << setprecision(1)
           << ", " << setw(2) << (int) oe.elevation
           << ", " << setw(3) << (int) oe.azimuth
@@ -174,6 +188,7 @@ void MDPTableProcessor::process(const gpstk::MDPObsEpoch& oe)
 //-----------------------------------------------------------------------------
 void MDPTableProcessor::process(const gpstk::MDPPVTSolution& pvt)
 {
+   outputHeader();
    out << pvt.time.printf(timeFormat)
        << fixed
        << ", " << setw(3) << pvt.id
@@ -197,6 +212,7 @@ void MDPTableProcessor::process(const gpstk::MDPPVTSolution& pvt)
 //-----------------------------------------------------------------------------
 void MDPTableProcessor::process(const gpstk::MDPNavSubframe& sf)
 {
+   outputHeader();
    out << sf.time.printf(timeFormat)
        << fixed
        << ", " << setw(3) << sf.id
@@ -219,14 +235,18 @@ void MDPTableProcessor::process(const gpstk::MDPNavSubframe& sf)
 //-----------------------------------------------------------------------------
 void MDPTableProcessor::process(const gpstk::MDPSelftestStatus& sts)
 {
+   outputHeader();
    out << sts.time.printf(timeFormat)
+       << fixed
+       << ", " << setw(3) << sts.id
        << ", " << sts.selfTestTime.printf("%4F/%9.2g")
        << ", " << sts.firstPVTTime.printf("%4F/%9.2g")
-       << ", " << sts.antennaTemp
-       << ", " << sts.receiverTemp
+       << ", " << setprecision(1) << sts.antennaTemp
+       << ", " << setprecision(1) << sts.receiverTemp
        << ", " << hex << sts.status << dec
-       << ", " << sts.cpuLoad
+       << ", " << setprecision(1) << sts.cpuLoad
        << ", " << hex << sts.extFreqStatus << dec
+       << ", " << hex << sts.saasmStatusWord << dec
        << endl;
 }
 

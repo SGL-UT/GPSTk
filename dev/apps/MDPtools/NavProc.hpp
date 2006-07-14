@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/NavProc.hpp#2 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/NavProc.hpp#3 $"
 
 #ifndef MDPNAV_HPP
 #define MDPNAV_HPP
@@ -51,5 +51,8 @@ public:
 
    std::map<NavIndex, gpstk::EphemerisPages> ephPageStore;
    std::map<NavIndex, gpstk::EngEphemeris> ephStore;
+
+   std::list<gpstk::MDPNavSubframe> badList;
+   unsigned long badNavSubframeCount, navSubframeCount;
 };
 #endif

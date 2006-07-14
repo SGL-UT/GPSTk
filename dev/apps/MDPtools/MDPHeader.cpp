@@ -1,26 +1,7 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPHeader.cpp#12 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPHeader.cpp#14 $"
 
-//============================================================================
-//
-//  This file is part of GPSTk, the GPS Toolkit.
-//
-//  The GPSTk is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
-//  any later version.
-//
-//  The GPSTk is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//lgpl-license START
+//lgpl-license END
 
 #include <StringUtils.hpp>
 #include <BinUtils.hpp>
@@ -176,7 +157,6 @@ namespace gpstk
               << " computed " << ccrc1
               << " and " << ccrc2
               << ". Message ID=" << dec << id << endl;
-      
    } // MDPHeader::checkCRC()
 
 
@@ -213,12 +193,10 @@ namespace gpstk
    //---------------------------------------------------------------------------
    void MDPHeader::reallyGetRecord(FFStream& ffs)
       throw(std::exception, gpstk::StringUtils::StringException, 
-            gpstk::FFStreamError)
+            gpstk::FFStreamError, gpstk::EndOfFile)
    {
       // Note that this will generate a bad_cast exception if it don't work.
       MDPStream& stream=dynamic_cast<MDPStream&>(ffs);
-
-      gpstk::FFStreamError e("MDP read() returned to few bytes.");
 
       // first, make sure the data is flagged bad.
       clear(fmtbit | lenbit | crcbit);
@@ -234,12 +212,14 @@ namespace gpstk
          {
             unsigned bodyLen = length-myLength;
             char *trash = new char[bodyLen];
-            stream.read(trash, bodyLen);
+            if (debugLevel>2)
+               cout << "Reading to toss " << bodyLen << endl;
+            stream.getData(trash, bodyLen);
             string body(trash, stream.gcount());
             delete trash;
 
-            if (stream.gcount() != bodyLen)
-               GPSTK_THROW(e);
+            if (stream.fail())
+               return;
 
             stream.streamState = MDPStream::gotBody;
             if (hexDump || debugLevel>2)
@@ -253,35 +233,40 @@ namespace gpstk
          if (stream.streamState == MDPStream::outOfSync ||
              stream.streamState == MDPStream::gotBody)
          {
-            uint16_t fw;
-            while (stream)
+            stream.streamState = MDPStream::outOfSync;
+
+            if (debugLevel>2)
+               cout << "Reading frame word" << endl;;
+            uint16_t fw=0;
+            for (int i=0; stream && i<128; i++)
             {
-               stream.read(buff, sizeof(fw));
-               memcpy(&fw, buff, sizeof(fw));
+               fw = stream.getData<uint16_t>();
                fw = netToHost(fw);
-               if (stream.gcount() != 2)
-                  GPSTK_THROW(e);
+               memcpy(buff, &fw, sizeof(fw));
                if (fw==frameWord)
                   break;
             }
-            if (stream)
+
+            if (fw!=frameWord)
             {
-               // then read in the rest of a header
-               stream.read(buff+2, myLength-2);
-               if (stream.gcount() != myLength-2)
-               {
-                  GPSTK_THROW(e);
-               }
-               else
-               {
-                  stream.rawHeader = string(buff, myLength);
-                  stream.streamState = MDPStream::outOfSync;
-                  decode(stream.rawHeader);
-                  stream.streamState = MDPStream::gotHeader;
-                  stream.header = *this;
-               }
+               FFStreamError err("Failed to find frame word.");
+               GPSTK_THROW(err);
             }
-         } 
+            else if (stream)
+            {
+               if (debugLevel>2)
+                  cout << "Reading header" << endl;
+               // then read in the rest of a header
+               stream.getData(buff+2, myLength-2);
+               if (stream.fail())
+                  return;
+
+               stream.rawHeader = string(buff, myLength);
+               decode(stream.rawHeader);
+               stream.streamState = MDPStream::gotHeader;
+               stream.header = *this;
+            }
+         }
       }
       else
       {
@@ -299,20 +284,22 @@ namespace gpstk
 
          // Read in the body of the message
          char *buff = new char[myLen];
-         stream.read(buff, myLen);
+         if (debugLevel>2)
+            cout << "Reading body " << myLen << endl;
+         stream.getData(buff, myLen);
          string me(buff, stream.gcount());
          delete buff;
+         if (stream.fail())
+            return;
 
-         if (stream.gcount() != myLen)
-            GPSTK_THROW(e);
          stream.streamState = MDPStream::gotBody;
 
          setstate(crcbit);
          checkCRC(stream.rawHeader+me);
 
          decode(me);
-
-         if (debugLevel && rdstate())
+         
+         if (debugLevel && (rdstate() || stream.rdstate()))
             MDPHeader::dump(cout);
 
          if (hexDump || (debugLevel>1 && rdstate()))
@@ -337,12 +324,14 @@ namespace gpstk
           << " crc:" << setw(4) << crc
           << " rdstate:" << rdstate();
 
-      if (rdstate() & crcbit)
+      if (crcerr())
          oss << "-crc";
-      if (rdstate() & fmtbit)
+      if (fmterr())
          oss << "-fmt";
-      if (rdstate() & lenbit)
+      if (lenerr())
          oss << "-len";
+      if (parerr())
+         oss << "-par";
 
       out << oss.str() << endl;
    }  // MDPHeader::dump()

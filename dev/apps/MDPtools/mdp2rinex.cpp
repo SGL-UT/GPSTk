@@ -1,28 +1,9 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/mdp2rinex.cpp#8 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/mdp2rinex.cpp#13 $"
 
 /** @file Converts an MDP stream into RINEX obs/nav files */
 
-//============================================================================
-//
-//  This file is part of GPSTk, the GPS Toolkit.
-//
-//  The GPSTk is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
-//  any later version.
-//
-//  The GPSTk is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//lgpl-license START
+//lgpl-license END
 
 #include "StringUtils.hpp"
 #include "LoopedFramework.hpp"
@@ -48,8 +29,8 @@ public:
    MDP2Rinex(const std::string& applName)
       throw()
       : LoopedFramework(applName, "Converts an MDP stream to RINEX."),
-        navFileOpt('n', "nav",   "Filename to write RINEX nav data to."),
         obsFileOpt('o', "obs",   "Filename to write RINEX obs data to. The filename of '-' means to use stdout.", true),
+        navFileOpt('n', "nav",   "Filename to write RINEX nav data to."),
         mdpFileOpt('i', "mdp-input", "Filename to read MDP data from. The filename of '-' means to use stdin.", true),
         c2Opt('c', "l2c", "Enable output of L2C data in C2"),
         thinningOpt('t', "thinning", "A thinning factor for the data, specified in seconds between points. Default: none.")
@@ -57,7 +38,7 @@ public:
       navFileOpt.setMaxCount(1);
       obsFileOpt.setMaxCount(1);
       mdpFileOpt.setMaxCount(1);
-   }
+   } //MDP2Rinex::MDP2Rinex()
 
    bool initialize(int argc, char *argv[]) throw()
    {
@@ -68,7 +49,6 @@ public:
             mdpInput.open(mdpFileOpt.getValue()[0].c_str());
          else
          {
-            
             if (debugLevel)
                cout << "Taking input from stdin." << endl;
             mdpInput.copyfmt(std::cin);
@@ -104,9 +84,13 @@ public:
       else
          thin = false;
 
-      firstObs = true;
+      firstObs = true;;
+      firstEph = true;
+
+      MDPHeader::debugLevel = debugLevel;
+
       return true;
-   }
+   } // MDP2Rinex::initialize()
    
 protected:
    virtual void spinUp()
@@ -119,7 +103,6 @@ protected:
 
       mdpInput.exceptions(fstream::failbit);
       rinexObsOutput.exceptions(fstream::failbit);
-
       if (rinexNavOutput)
          rinexNavOutput.exceptions(fstream::failbit);
       
@@ -142,9 +125,11 @@ protected:
       roh.obsTypeList.push_back(gpstk::RinexObsHeader::P1);
       roh.obsTypeList.push_back(gpstk::RinexObsHeader::L1);
       roh.obsTypeList.push_back(gpstk::RinexObsHeader::D1);
+      roh.obsTypeList.push_back(gpstk::RinexObsHeader::S1);
       roh.obsTypeList.push_back(gpstk::RinexObsHeader::P2);
       roh.obsTypeList.push_back(gpstk::RinexObsHeader::L2);
       roh.obsTypeList.push_back(gpstk::RinexObsHeader::D2);
+      roh.obsTypeList.push_back(gpstk::RinexObsHeader::S2);
       if (c2Opt.getCount())
          roh.obsTypeList.push_back(gpstk::RinexObsHeader::C2);
 
@@ -153,13 +138,22 @@ protected:
       rnh.fileProgram = "mdp2rinex";
       rnh.fileAgency = "Unknown";
       rnh.version = 2.1;
+   } // MDP2Rinex::spinUp()
 
-      if (rinexNavOutput)
-         rinexNavOutput << rnh;
-   }
 
    virtual void process(MDPNavSubframe& nav)
    {
+      if (!rinexNavOutput)
+         return;
+
+      if (firstEph)
+      {
+         rinexNavOutput << rnh;
+         cout << "Got first nav SF" << endl;
+      }
+
+      firstEph=false;
+
       short sfid = nav.getSFID();
       if (sfid > 3)
          return;
@@ -195,11 +189,14 @@ protected:
             ephPageStore[ni].clear();
          }
       }
-   } // end of process(MDPNavSubframe)
+   } // MDP2Rinex::process(MDPNavSubframe)
 
 
    virtual void process(MDPObsEpoch& obs)
    {
+      if (!rinexObsOutput)
+         return;
+
       const DayTime& t=epoch.begin()->second.time;
 
       if (!firstObs && t<prevTime)
@@ -218,6 +215,7 @@ protected:
                roh.firstObs = t;
                rinexObsOutput << roh;
                firstObs=false;
+               cout << "Got first obs" << endl;
             }
 
             RinexObsData rod;
@@ -228,7 +226,7 @@ protected:
          prevTime = t;
       }
       epoch[obs.prn] = obs;
-   } // end of process(MDPObsEpoch)
+   } // MDP2Rinex::process(MDPObsEpoch)
 
 
    virtual void process()
@@ -237,21 +235,36 @@ protected:
       MDPNavSubframe nav;
       MDPObsEpoch obs;
 
-      mdpInput >> header;
-      switch (header.id)
+      try 
       {
-         case MDPNavSubframe::myId :
-            mdpInput >> nav;
-            process(nav);
-            break;
+         mdpInput >> header;
+         switch (header.id)
+         {
+            case MDPNavSubframe::myId :
+               mdpInput >> nav;
+               if (nav.rdstate())
+                  cout << "Error decoding nav " << nav.rdstate() << endl;
+               else
+                  process(nav);
+               break;
             
-         case MDPObsEpoch::myId :
-            mdpInput >> obs;
-            process(obs);
-            break;
+            case MDPObsEpoch::myId :
+               mdpInput >> obs;
+               if (obs.rdstate())
+                  cout << "Error decoding obs " << obs.rdstate() << endl;
+               else
+                  process(obs);
+               break;
+         }
       }
-      timeToDie = !mdpInput;
-   }
+      catch (EndOfFile& e)
+      {
+         if (debugLevel)
+            cout << e << endl;
+         timeToDie = true;
+      }
+      timeToDie |= !mdpInput;
+   } // MDP2Rinex::process()
 
    virtual void shutDown()
    {}
@@ -273,7 +286,7 @@ private:
 
    bool thin;
    int thinning;
-   bool firstObs;
+   bool firstObs, firstEph;
    gpstk::DayTime prevTime;
    gpstk::CommandOptionWithAnyArg mdpFileOpt, navFileOpt, obsFileOpt;
    gpstk::CommandOptionWithAnyArg thinningOpt;

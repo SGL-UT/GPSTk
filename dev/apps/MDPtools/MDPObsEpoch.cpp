@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPObsEpoch.cpp#7 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPObsEpoch.cpp#8 $"
 
 #include <sstream>
 #include <StringUtils.hpp>
@@ -82,20 +82,30 @@ namespace gpstk
          if (str.length() < myObsLength)
          {
             clear(lenbit);
-            std::string msg("MDP Obs block decode requires at least " + 
-                       asString(myObsLength) +" bytes.  Received " +
-                       asString(str.length()) + " bytes");
-            if (debugLevel>1)
-               cout << msg << endl;
+            if (debugLevel)
+               cout << "MDP Obs block decode requires at least " << myObsLength
+                    << " bytes.  Received " << str.length() << " bytes" << endl;
             return;
          }
          MDPObsEpoch::Observation o;      
          o.decode(str);
-         if (o.carrier >= ccMax || o.range >= rcMax || o.snr > 60 || o.bw > 100)
-         {
+
+         if (o.carrier >= ccMax || o.range >= rcMax || o.snr > 65 || o.bw > 100)
             obsError=true;
+
+         if (obsError && debugLevel)
+         {            
+            if (o.carrier >= ccMax)
+               cout << "Carrier code out of range: " << o.carrier << endl;
+            if (o.range >= rcMax)
+               cout << "Range code out of range: " << o.range << endl;
+            if (o.snr > 65)
+               cout << "SNR out of range: " << o.snr << endl;
+            if (o.bw > 100)
+               cout << "BW out of range: " << o.snr << endl;
          }
-         else
+  
+         if (o.carrier < ccMax && o.range < rcMax)
          {
             ObsKey key(o.carrier, o.range);
             obs[key] = o;
@@ -103,7 +113,18 @@ namespace gpstk
       }
 
       if (prn > gpstk::MAX_PRN || elevation>90 || azimuth > 360 || obsError)
+      {
+         if (debugLevel)
+         {
+            if (prn > gpstk::MAX_PRN)
+               cout << "PRN of range: " << prn << endl;
+            if (elevation > 90)
+               cout << "Elevation of range: " << elevation << endl;
+            if (azimuth > 360)
+               cout << "Azimuth of range: " << azimuth << endl;
+         }
          return;
+      }
 
       clearstate(fmtbit);
    } // MDPObsEpoch::decode()

@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/SummaryProc.cpp#6 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/SummaryProc.cpp#9 $"
 
 /*
   This intended to perform a quick summary/analysis of the data in a MDP file
@@ -18,6 +18,7 @@
 */
 
 #include "Geodetic.hpp"
+#include "EngEphemeris.hpp"
 #include "SummaryProc.hpp"
 
 using namespace std;
@@ -30,12 +31,15 @@ MDPSummaryProcessor::MDPSummaryProcessor(gpstk::MDPStream& in, std::ofstream& ou
    : MDPProcessor(in, out),
      numEpochs(0), numObsEpochMsg(0),
      firstObs(true), firstPvt(true), firstNav(true), firstSelftest(true),
-     firstEpochTime(gpstk::DayTime::END_OF_TIME),
-     lastEpochTime(gpstk::DayTime::BEGINNING_OF_TIME),
+     firstObsTime(gpstk::DayTime::END_OF_TIME),
+     lastObsTime(gpstk::DayTime::BEGINNING_OF_TIME),
+     firstNavTime(gpstk::DayTime::END_OF_TIME),
+     lastNavTime(gpstk::DayTime::BEGINNING_OF_TIME),
      prevEpochTime(gpstk::DayTime::BEGINNING_OF_TIME),
      obsRateEst(0), pvtRateEst(0),
      prevObs(maxChannel+1),
-     chanGapList(maxChannel+1)
+     chanGapList(maxChannel+1),
+     svCountErrorCount(0)
 {
    elevBins.push_back(elevationPair(10,90));
    elevBins.push_back(elevationPair( 0, 5));
@@ -56,33 +60,38 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
    
    out << "Done processing data." << endl << endl;
 
+   out << endl << "Header summary:" << endl;
+   cout << "  Processed "<< msgCount << " headers." << endl
+        << "  First freshness count was " << hex << firstFC << dec << endl
+        << "  Last freshness count was  " << hex << lastFC << dec << endl
+        << "  Encountered " << fcErrorCount << " breaks in the freshness count" << endl;
+
    out << endl << "Observation Epoch message summary:" << endl;
 
    if (firstObs)
       out << "No Observation Epoch messages processed." << endl;
    else
    {
-
-      double dt = lastEpochTime - firstEpochTime;
+      double dt = lastObsTime - firstObsTime;
       out << "  Processed " << numObsEpochMsg
           << " observation epoch messages spanning "
           << numEpochs << " epochs."
           << endl
-          << "  Obs data spans " << firstEpochTime.printf(timeFormat) 
-          << " to " << lastEpochTime.printf(timeFormat)
+          << "  Obs data spans " << firstObsTime.printf(timeFormat) 
+          << " to " << lastObsTime.printf(timeFormat)
           << " (" << secondsAsHMS(dt) << ")"
           << endl
-          << "  Obs output rate is " << obsRateEst
+          << "  Obs output rate is " << setprecision(2) << obsRateEst
           << " sec."
-          << endl << endl;
+          << endl;
 
-      if (epochGapList.size())
-         for (DayTimePairList::const_iterator i=epochGapList.begin(); i!=epochGapList.end(); i++)
-            out << "  Data gap from " << i->first.printf(timeFormat)
-                << " to " << i->second .printf(timeFormat)
+      for (DayTimePairList::const_iterator i=epochGapList.begin(); i!=epochGapList.end(); i++)
+         if (std::abs(i->first - i->second - obsRateEst) > 1e-3)
+            out << "  Data gap from " << i->second.printf(timeFormat)
+                << " to " << i->first.printf(timeFormat)
                 << " ( " << secondsAsHMS(i->first - i->second) << " )."
                 << endl;
-
+      
       for (elevBinList::const_iterator i=elevBins.begin(); i!=elevBins.end(); i++)
       {
          const ocm &oc = whack[*i];
@@ -104,6 +113,8 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
             break;
          out << endl;
       }
+      
+      cout << "Encountered " << svCountErrorCount << " SV count errors." << endl;
    }
 
    out << endl << "PVT Solution message summary:" << endl;
@@ -111,7 +122,13 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
       out << "  No PVT Solution messages processed." << endl;
    else
    {
-      out << "  PVT output rate is " << pvtRateEst << " sec." << endl;
+      double dt = lastPvtTime - firstPvtTime;
+      out << "  Pvt data spans " << firstPvtTime.printf(timeFormat) 
+          << " to " << lastPvtTime.printf(timeFormat)
+          << " (" << secondsAsHMS(dt) << ")"
+          << endl
+          << "  PVT output rate is " << setprecision(2) << pvtRateEst << " sec."
+          << endl << endl;
    }
 
 
@@ -120,7 +137,11 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
       out << "  No Navigation Subframe messages processed." << endl;
    else
    {
-      out << "  TBD." << endl;
+      double dt = lastNavTime - firstNavTime;
+      out << "  Nav data spans " << firstNavTime.printf(timeFormat) 
+          << " to " << lastNavTime.printf(timeFormat)
+          << " (" << secondsAsHMS(dt) << ")"
+          << endl << endl;
    }
       
    out << endl;
@@ -128,8 +149,11 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
    {
       out << "Received " << badMessages.size() << " messages with an error." << endl;
       if (verboseLevel)
+      {
+         out << "Headers from the bad messages:" << endl;
          for (MDPList::const_iterator i=badMessages.begin(); i!=badMessages.end(); i++)
             i->dump(out);
+      }
    }
 }
 
@@ -146,7 +170,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
    // First, do gross accounting on the rate the obs are coming in
    if (firstObs)
    {
-      firstEpochTime = msg.time;
+      firstObsTime = msg.time;
       firstObs = false;
       if (verboseLevel)
          out << msg.time.printf(timeFormat)
@@ -158,24 +182,25 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
       double dt = msg.time - prevEpochTime;
       if (std::abs(dt - obsRateEst) > 1e-3 && dt>0)
       {
-         gpstk::DayTime first =  prevEpochTime + dt;
-         gpstk::DayTime second = msg.time - dt;
-         epochGapList.push_back(DayTimePair(first, second));
-         if (verboseLevel)
+         if (obsRateEst > 0)
          {
-            out << msg.time.printf(timeFormat)
-                << "  Obs output rate " << dt << " sec";
-            if (obsRateEst != 0)
-               out << "was " << obsRateEst << " sec).";
-            out << endl;
+            gpstk::DayTime first =  prevEpochTime + dt;
+            gpstk::DayTime second = msg.time - dt;
+            epochGapList.push_back(DayTimePair(first, second));
+            if (verboseLevel)
+            {
+               out << msg.time.printf(timeFormat)
+                   << "  Obs output rate " << dt << " sec";
+               if (obsRateEst != 0)
+                  out << " (was " << obsRateEst << " sec).";
+               out << endl;
+            }
          }
          obsRateEst = dt;
       }
    }
-   lastEpochTime=msg.time;
-   // Keep track of the number of epochs we have processed
-   if (prevEpochTime != msg.time)
-      numEpochs++;
+
+   lastObsTime=msg.time;
 
    // Next, make a set of the obs that this epoch has and add 
    // this to a list in the appropriate elevation bin
@@ -225,7 +250,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
          gpstk::DayTime first =  prevObs[chan].time + dt;
          gpstk::DayTime second = msg.time - dt;
          chanGapList[chan].push_back(DayTimePair(first, second));
-         if (verboseLevel)
+         if (verboseLevel>1)
             out << msg.time.printf(timeFormat)
                 << "  Data gap on channel " << chan
                 << ", " << secondsAsHMS(dt)
@@ -254,7 +279,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
                {
                   // The current ash2mdp has periods where it outputs every
                   // message with a lock count of zero 
-                  if ((prev.lockCount > 0 && verboseLevel) || verboseLevel>1)
+                  if ((prev.lockCount > 0 && verboseLevel>1) || verboseLevel>2)
                      out << msg.time.printf(timeFormat)
                          << "  Lock count reset prn " << prn
                          << ", chan " << chan
@@ -266,6 +291,33 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
                }
             }
          }
+      }
+   }
+
+   // Keep track of the number of epochs we have processed and check the
+   // numSVs field.
+   if (prevEpochTime != msg.time)
+   {
+      numEpochs++;
+
+      int prevActual=0;
+      int prevReported=0;
+      for (size_t i = 1; i<=maxChannel; i++)
+      {
+         if (prevObs[i].time == prevEpochTime)
+         {
+            prevActual++;
+            if (prevReported==0)
+               prevReported = prevObs[i].numSVs;
+         }
+      }
+      if (prevActual != prevReported)
+      {
+         svCountErrorCount++;
+         if (! (bugMask & 0x01))
+         cout << prevEpochTime.printf(timeFormat)
+              << "  Epoch claimed " << prevReported
+              << " SVs but only received " << prevActual << endl;
       }
    }
 
@@ -287,6 +339,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPPVTSolution& msg)
    if (firstPvt)
    {
       firstPvt = false;
+      firstPvtTime = msg.time;
       if (verboseLevel)
          out << msg.time.printf(timeFormat)
              << "  Received first PVT Solution message"
@@ -306,29 +359,59 @@ void MDPSummaryProcessor::process(const gpstk::MDPPVTSolution& msg)
             out << endl;
          }
          pvtRateEst = dt;
-      }
+
+         // flag when there is a gap
+         double dt = msg.time - prevPvt.time;
+         if (std::abs(dt) < 1e-3)
+         {
+            out << msg.time.printf(timeFormat)
+                << "  Got two consecutive PVT messages with the same time." << endl;
+            if (verboseLevel)
+               msg.dump(out), prevPvt.dump(out);
+         }
+         else if (pvtRateEst == 0)
+         {
+            // do nothing
+         }
+         else if ( std::abs(dt - pvtRateEst) > 1e-3 )
+         {
+            gpstk::DayTime first =  prevPvt.time + dt;
+            gpstk::DayTime second = msg.time - dt;
+            if (verboseLevel)
+               out << msg.time.printf(timeFormat)
+                   << "  Gap in PVT messages: "  << secondsAsHMS(dt)
+                   << endl;
+            if (verboseLevel>2)
+            {
+               out << "  prev pvt:" << endl;
+               prevPvt.dump(out);
+               out << "  curr obs:" << endl;
+               msg.dump(out);
+            }
+         }
       
-      // Look for discontinuities in the recevier clock estimate
-      double ddt = msg.dtime - prevPvt.dtime;
-      double dtdt = ddt/(msg.time - prevPvt.time);
-      double dtdtErr = std::abs(dtdt - msg.ddtime);
-      if (dtdt > 1e-6)
-         out << msg.time.printf(timeFormat)
-             << "  Clock jump: " << setprecision(3) << scientific << ddt
-             << " sec, (" << dtdt << " vs " << msg.ddtime
-             << " sec/sec)"
-             << fixed << endl;
-      else if (dtdtErr > 1e-8 && verboseLevel)
-         out << msg.time.printf(timeFormat)
-             << "  Clock error: " << setprecision(3) << scientific << ddt
-             << " sec, (" << dtdt << " vs " << msg.ddtime
-             << " sec/sec)"
-             << fixed << endl;
+         // Look for discontinuities in the recevier clock estimate
+         double ddt = msg.dtime - prevPvt.dtime;
+         double dtdt = ddt/(msg.time - prevPvt.time);
+         double dtdtErr = std::abs(dtdt - msg.ddtime);
+         if (dtdt > 1e-6)
+            out << msg.time.printf(timeFormat)
+                << "  Clock jump: " << setprecision(3) << scientific << ddt
+                << " sec, (" << dtdt << " vs " << msg.ddtime
+                << " sec/sec)"
+                << fixed << endl;
+         else if (dtdtErr > 1e-8 && verboseLevel)
+            out << msg.time.printf(timeFormat)
+                << "  Clock error: " << setprecision(3) << scientific << ddt
+                << " sec, (" << dtdt << " vs " << msg.ddtime
+                << " sec/sec)"
+                << fixed << endl;
+      }
+
+      prevPvt = msg;
+      lastPvtTime = msg.time;
    }
-
-   prevPvt = msg;
 }
-
 
 //-----------------------------------------------------------------------------
 void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
@@ -339,14 +422,56 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
       return;
    }
 
-   if (firstNav)
+   long sfa[10];
+   msg.fillArray(sfa);
+
+   if (!(bugMask & 0x2) && !gpstk::EngNav::subframeParity(sfa))
+   {
+      MDPNavSubframe tmp(msg);
+      tmp.setstate(parbit);
+      badMessages.push_back(tmp);
+      return;
+   }
+
+   long how_sow = msg.getHOWTime();
+   long hdr_sow = static_cast<long>(msg.time.GPSsow());
+   if (how_sow < 0 || how_sow >= 604800)
+   {
+      if (verboseLevel)
+         out << msg.time.printf(timeFormat)
+             << "  Bogus HOW SOW (" << how_sow << ")"
+             << endl;
+      MDPNavSubframe tmp(msg);
+      tmp.setstate(fmtbit);
+      badMessages.push_back(tmp);
+      return;
+   }
+
+   if ( (how_sow != hdr_sow+6 && how_sow != hdr_sow) ||
+        (how_sow == hdr_sow && !(bugMask & 0x4))        )
+   {
+      if (verboseLevel)
+         out << msg.time.printf(timeFormat)
+             << "  Navigation Subframe HOW/header time mismatch ("
+             << how_sow << " vs " << hdr_sow << ")"
+             << endl;
+      MDPNavSubframe tmp(msg);
+      tmp.setstate(fmtbit);
+      badMessages.push_back(tmp);
+      return;
+   }
+
+   if (msg && firstNav)
    {
       firstNav = false;
+      firstNavTime = msg.time;
       if (verboseLevel)
          out << msg.time.printf(timeFormat)
              << "  Received first Navigation Subframe message"
              << endl;
    }
+
+   lastNavTime = msg.time;
 }
 
 
@@ -390,13 +515,9 @@ std::string MDPSummaryProcessor::secondsAsHMS(double seconds) const
    if (h) oss << setw(2) << h << ":";
    if (m) oss << setw(2) << m << ":";
    if (h || m)
-      oss << setw(2);
-   oss << s;
+      oss << fixed << setprecision(1) << setw(4) << seconds+s;
+   else
+      oss << setfill(' ') << fixed << setprecision(1) << seconds+s << " s";
 
-   if (seconds >1e-3)
-      oss << "." << setw(3) << seconds*1e3;
-
-   if (h==0 && m==0)
-      oss << " s";
    return oss.str();
 }

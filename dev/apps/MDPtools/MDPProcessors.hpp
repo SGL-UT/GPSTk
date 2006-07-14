@@ -1,28 +1,9 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPProcessors.hpp#4 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPProcessors.hpp#6 $"
 
 /** @file Various presentations/analysis on MDP streams */
 
-//============================================================================
-//
-//  This file is part of GPSTk, the GPS Toolkit.
-//
-//  The GPSTk is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
-//  any later version.
-//
-//  The GPSTk is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//lgpl-license START
+//lgpl-license END
 
 #ifndef MDPPROCESSORS_HPP
 #define MDPPROCESSORS_HPP
@@ -65,6 +46,14 @@ public:
    gpstk::DayTime startTime, stopTime;
    double timeSpan;
 
+   unsigned long msgCount, fcErrorCount;
+   unsigned short firstFC, lastFC;
+
+   // A bitmask of bugs to not report
+   // bit 0: SV count mismatch
+   // 
+   unsigned long bugMask;
+
 private:
    /// All processors are defined so that subclasses don't have to
    /// define process methods for messages they don't care about.
@@ -82,6 +71,9 @@ class MDPTableProcessor : public MDPProcessor
    void process(const gpstk::MDPPVTSolution& pvt);
    void process(const gpstk::MDPNavSubframe& sts);
    void process(const gpstk::MDPSelftestStatus& sts);
+
+   bool headerDone;
+   void outputHeader();
 
 public:
    MDPTableProcessor(gpstk::MDPStream& in, std::ofstream& out);

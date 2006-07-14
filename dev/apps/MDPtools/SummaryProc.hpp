@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/SummaryProc.hpp#4 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/SummaryProc.hpp#6 $"
 
 #ifndef MDPSUMMARY_HPP
 #define MDPSUMMARY_HPP
@@ -33,8 +33,13 @@ public:
    typedef std::map<elevationPair, ocm> ebocm;
    ebocm whack;
 
+   // How many epochs that have the incorrect number of SVs in them.
+   unsigned long svCountErrorCount;
+
    // the time of the first epoch processed and the last epoch processed
-   gpstk::DayTime firstEpochTime, lastEpochTime;
+   gpstk::DayTime firstObsTime, lastObsTime;
+   gpstk::DayTime firstPvtTime, lastPvtTime;
+   gpstk::DayTime firstNavTime, lastNavTime;
 
    bool firstObs, firstPvt, firstNav, firstSelftest;
    double obsRateEst, pvtRateEst;
@@ -58,5 +63,6 @@ public:
    // A list of all messages that had an error decoding them...
    typedef std::list<gpstk::MDPHeader> MDPList;
    MDPList badMessages;
+
 };
 #endif

@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPNavSubframe.cpp#9 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPNavSubframe.cpp#12 $"
 
 #include <sstream>
 #include <BinUtils.hpp>
@@ -60,7 +60,7 @@ namespace gpstk
 
       for (int i=1; i<11; i++)
          subframe[i] = decodeVar<uint32_t>(str);
-
+      
       if (prn > gpstk::MAX_PRN ||
           carrier >= ccMax ||
           range >= rcMax ||

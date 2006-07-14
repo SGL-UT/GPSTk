@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPSelftestStatus.hpp#3 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPSelftestStatus.hpp#4 $"
 
 #ifndef MDPSELFTESTSTATUS_HPP
 #define MDPSELFTESTSTATUS_HPP
@@ -41,8 +41,9 @@ namespace gpstk
       gpstk::DayTime selfTestTime; ///< SelfTest SOW & week
       gpstk::DayTime firstPVTTime; ///< First PVT SOW & week
       short extFreqStatus;
+      short saasmStatusWord;
 
-      static const unsigned myLength = 30;
+      static const unsigned myLength = 32;
       static const unsigned myId = 400;
 
    }; // class MDPSelftestStatus

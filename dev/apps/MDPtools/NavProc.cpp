@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/NavProc.cpp#5 $"
+#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/NavProc.cpp#7 $"
 
 /*
   Think, navdmp for mdp, with bonus output that you get data from all code/carrier
@@ -18,7 +18,8 @@ using namespace gpstk::StringUtils;
 //-----------------------------------------------------------------------------
 MDPNavProcessor::MDPNavProcessor(gpstk::MDPStream& in, std::ofstream& out)
    : MDPProcessor(in, out),
-     firstNav(true), almOut(false), ephOut(false)
+     firstNav(true), almOut(false), ephOut(false),
+     badNavSubframeCount(0), navSubframeCount(0)
 {
    timeFormat = "%4Y/%03j/%02H:%02M:%02S";
 }
@@ -38,7 +39,8 @@ MDPNavProcessor::~MDPNavProcessor()
       out << "  No Navigation Subframe messages processed." << endl;
    else
    {
-      out << "  TBD." << endl;
+      out << "  navSubframeCount: " << navSubframeCount << endl;
+      out << "  badNavSubframeCount: " << badNavSubframeCount << endl;
    }
       
    out << endl;
@@ -57,14 +59,12 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
              << endl;
    }
 
+   navSubframeCount++;
    short sfid = msg.getSFID();
    short svid = msg.getSVID();
    bool isAlm = sfid > 3;
    long sow = msg.getHOWTime();
    short page = ((sow-6) / 30) % 25 + 1;
-
-   if ((isAlm && !almOut) || (!isAlm && !ephOut))
-      return;
 
    if (verboseLevel>2)
    {
@@ -83,6 +83,16 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
 
    // Sanity check on the header time versus the HOW time
    short week = msg.time.GPSfullweek();
+   if (sow <0 || sow>=604800)
+   {
+      badNavSubframeCount++;
+      if (verboseLevel>1)
+         out << msg.time.printf(timeFormat)
+             << "  SOW bad: " << sow
+             << endl;
+      return;
+   }
+      
    DayTime howTime(week, msg.getHOWTime());
    if (howTime == msg.time)
    {
@@ -91,9 +101,17 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
          out << msg.time.printf(timeFormat) << "  header time is HOW time" << endl;
    }
    else if (howTime != msg.time+6)
-      out << msg.time.printf(timeFormat)
-          << "  HOW/header time miscompare " << howTime.printf(timeFormat)
-          << endl;
+   {
+      badNavSubframeCount++;
+      if (verboseLevel>1)
+         out << msg.time.printf(timeFormat)
+             << "  HOW/header time miscompare " << howTime.printf(timeFormat)
+             << endl;
+      return;
+   }
+
+   if ((isAlm && !almOut) || (!isAlm && !ephOut))
+      return;
 
    NavIndex ni(RangeCarrierPair(msg.range, msg.carrier), msg.prn);
    prev[ni] = curr[ni];
@@ -104,6 +122,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    long long_sfa[10];
    for( int j = 0; j < 10; j++ )
       long_sfa[j] = static_cast<long>( sfa[j] );
+
    if (gpstk::EngNav::subframeParity(long_sfa))
    {
       if (isAlm)
@@ -117,9 +136,9 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
          if (makeEngAlmanac(engAlm, almPages))
          {
             out << msg.time.printf(timeFormat)
-                << "  Built complete alm from prn " << ni.second
-                << " " << asString(ni.first.second)
-                 << " " << asString(ni.first.first)
+                << "  Built complete alm from prn " << setw(2) << ni.second
+                << " " << setw(2) << asString(ni.first.second)
+                << " " << left << setw(6) <<  asString(ni.first.first)
                 << endl;
             if (verboseLevel>1)
                engAlm.dump(out);
@@ -136,9 +155,10 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
          if (makeEngEphemeris(engEph, ephPages))
          {
             out << msg.time.printf(timeFormat)
-                << "  Built complete eph from prn " << ni.second
-                << " " << asString(ni.first.second)
-                << " " << asString(ni.first.first)
+                << "  Built complete eph from prn " << setw(2) << ni.second
+                << " " << setw(2) << asString(ni.first.second)
+                << " " << left << setw(6) << asString(ni.first.first)
+                << " iocd:0x" << hex << setw(3) << engEph.getIODC() << dec
                 << endl;
             if (verboseLevel>1)
                out << engEph;
@@ -148,6 +168,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    }
    else
    {
+      badNavSubframeCount++;
       out << msg.time.printf(timeFormat)
           << "  Parity error on prn:" << setw(2) << msg.prn
           << " " << asString(msg.carrier)
