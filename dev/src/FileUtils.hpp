@@ -122,6 +122,22 @@ namespace gpstk
          return makeDir(std::string(path), mode);
       }
 
+         /**
+          * Returns true if the file exists. Only readability is
+          * verified unless the user inputs the openmode of interest.
+          * @param fname Name of the file to check
+          * @param mode  Mode of access to check (default is readable, std::ios::in)
+          * @return true if the file can be accessed
+          */
+      inline bool fileAccessCheck(const char* fname, 
+                                  std::ios::openmode mode=std::ios::in)
+      {
+        std::fstream test(fname, mode);
+        return !test.fail();
+      }
+
+
+
    } // namespace FileUtils
 
    //@}
