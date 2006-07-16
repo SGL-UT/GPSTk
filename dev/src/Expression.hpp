@@ -69,8 +69,9 @@ namespace gpstk
          * the expression contains variables.
          * @param name Name of the variable to set
          * @param value Value to set the variable to.
+         * @return True if the variable was found.
          */
-      void set(const std::string name, double value);
+      bool set(const std::string name, double value);
 
         /**
          * Sets a variable in the expression to the input value.
@@ -80,26 +81,35 @@ namespace gpstk
          * is not important (e.g., "c" and "C" would be a match).
          * @param name Name of the variable to set
          * @param value Value to set the variable to.
+         * @return True if the variable was found.
          */
-      void set(const char* name, double value) 
-         { set (std::string(name),value); }
+      bool set(const char* name, double value) 
+         { return set (std::string(name),value); }
 
         /**
          * Sets multiple variables in the expression to constants associated
          * with GPS. Predefined variables include: PI; C (meters per 
          * second); L1 and L2, carrier frequencies in cycles per second; 
          * WL1 and WL2, carrier 
-         * wavelengths. As with other variables, the case is insensitive. 
+         * wavelengths. As with other variables, the case is insensitive.
+         * @return True if any GPS related constants were found 
          */
-      void setGPSConstants(void);
+      bool setGPSConstants(void);
 
          /**
           * Sets multiple variables in the expression using values stored
           * in a RinexObsType stucture. This structure is nested within the
           * RinexObsData class.
           * @param rotm Map of RinexObsType to RinexObsDatum
+          * @return True if an obs variable was found.
           */  
-      void setRinexObs(const RinexObsData::RinexObsTypeMap& rotm);
+      bool setRinexObs(const RinexObsData::RinexObsTypeMap& rotm);
+      
+         /**
+          * Checks in advance if all variables have been set.
+          * @return True if all variables are set.
+          */
+      bool canEvaluate(void);
       
          /**
           * Returns the numerical value of the expression. Note that

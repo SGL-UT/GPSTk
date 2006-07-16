@@ -438,10 +438,12 @@ namespace gpstk
    } // end buildExpressionTree
    
 
-   void Expression::set(const std::string name, double value)
+   bool Expression::set(const std::string name, double value)
    {
       using namespace std;
       
+      bool gotSet;
+
       std::list<ExpNode *>::iterator i;
       int t;
       
@@ -452,32 +454,66 @@ namespace gpstk
          {
             if (StringUtils::upperCase(vnode->name) == 
                 StringUtils::upperCase(name))
+            {
                vnode->setValue(value);
+               gotSet = true;
+            }
          }
       }
+
+      return gotSet;
+   }
+
+
+   bool Expression::canEvaluate(void)
+   {
+      using namespace std;
+      
+      bool areSet=true;
+
+      std::list<ExpNode *>::iterator i;
+      int t;
+      
+      for (t=0, i=eList.begin(); i!=eList.end(); t++, i++)
+      {
+         VarNode *vnode = dynamic_cast<VarNode *> (*i);
+         if (vnode!=0) 
+         {
+            areSet &= vnode->hasValue;
+         }
+      }
+
+      return areSet;
    }
     
-   void Expression::setGPSConstants(void)
+   bool Expression::setGPSConstants(void)
    {
-      set("gamma",(L1_FREQ / L2_FREQ)*(L1_FREQ / L2_FREQ));
-      set("pi",PI);
-      set("c",C_GPS_M);
-      set("c_gps_m",C_GPS_M);
-      set("f1",L1_FREQ);
-      set("f2",L2_FREQ);
-      set("l1",L1_FREQ);
-      set("l2",L2_FREQ);
-      set("wl1",C_GPS_M/L1_FREQ);
-      set("wl2",C_GPS_M/L2_FREQ);
+      bool gotSet = false;
+      
+      gotSet |= set("gamma",(L1_FREQ / L2_FREQ)*(L1_FREQ / L2_FREQ));
+      gotSet |= set("pi",PI);
+      gotSet |= set("c",C_GPS_M);
+      gotSet |= set("c_gps_m",C_GPS_M);
+      gotSet |= set("f1",L1_FREQ);
+      gotSet |= set("f2",L2_FREQ);
+      gotSet |= set("l1",L1_FREQ);
+      gotSet |= set("l2",L2_FREQ);
+      gotSet |= set("wl1",C_GPS_M/L1_FREQ);
+      gotSet |= set("wl2",C_GPS_M/L2_FREQ);
+      return gotSet;
    }
    
-   void Expression::setRinexObs(const RinexObsData::RinexObsTypeMap& rotm)
+   bool Expression::setRinexObs(const RinexObsData::RinexObsTypeMap& rotm)
    {
+      bool gotSet = false;
+      
       RinexObsData::RinexObsTypeMap::const_iterator i;
       for (i=rotm.begin(); i!=rotm.end(); i++)
       {
-         set(i->first.type, i->second.data);
+         gotSet |= set(i->first.type, i->second.data);
       }
+
+      return gotSet;
    }
    
       

@@ -56,6 +56,7 @@
 #include <sys/types.h>
 #endif
 
+#include <fstream>
 #include <string>
 #include "StringUtils.hpp"
 
