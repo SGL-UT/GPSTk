@@ -13,9 +13,10 @@ collected at the two end points 1 and 2 of the baseline.  They
 must contain a sufficient set of simultaneous observations to the same satellites.
 
 \subsection{Configuration File vecsol.conf}
-The file vescol.conf contains the input options for the program, one per line.
+The file vescol.conf contains the input options for the program, one per line. 
+The four rejection limits are experimental; see the source for precise meaning and usage (if any).
 
-\begin{tabular}{|l|c|l|} \hline
+\begin{tabular}{|l|c|p{3.0in}|} \hline
 
 Options & Value & Meaning \\
 phase   & 1/0   & If 1, process carrier phase data (instead of P code data) \\
@@ -25,8 +26,15 @@ iono    & 1/0   & If 1, use the 8-parameter ionospheric model that comes with th
 tropo   & 1/0   & If 1, estimate troposphere parameters (zenith delays relative to the standard value, which is always applied) \\
 vecmode & 1/0   & If 1, solve the vector, i.e. the three co-ordinate differences between the  baseline end points. If 0, solve for the absolute co-ordinates of both end points \\
 debug   & 1/0   & If 1, produce lots of gory debugging output. See the source for what it all means \\
-refsat elev & number & Minimum elevation of the reference satellite used for computing inter-satellite differences.  Good initial choice: 30.0 \\
-cutoff elev & number & cut-off elevation. Good initial choice: 10.0 - 20.0 \\
+refsat elev & number & Minimum elevation (degs) of the reference satellite used for computing inter-satellite differences.  Good initial choice: 30.0 \\
+cutoff elev & number & cut-off elevation (degs). Good initial choice: 10.0 - 20.0 \\
+\hline
+rej TP & number & Phase triple differences rejection limit (m) \\
+rej TC & number & Code triple differences rejection limit (m) \\
+rej DP & number & Phase double differences rejection limit (m) \\
+rej DC & number & Code double differences rejection limit (m) \\
+\hline
+reduce & 1/0 & Apply post-reduction to combine dependent unknowns \\
 \hline
 \end{tabular}
 
