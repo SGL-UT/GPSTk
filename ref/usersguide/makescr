@@ -1,5 +1,3 @@
-!#/bin/bash
-
 perl src/perltex --nosafe gpstk-user-reference
 perl src/bibtexall
 perl src/perltex --nosafe gpstk-user-reference
