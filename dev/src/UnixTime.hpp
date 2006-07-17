@@ -147,17 +147,17 @@ namespace gpstk
           *  and false on failure.
           */
          //@{
-      bool operator==( const UnixTime& right ) const
+      virtual bool operator==( const UnixTime& right ) const
          throw();
-      bool operator!=( const UnixTime& right ) const
+      virtual bool operator!=( const UnixTime& right ) const
          throw();
-      bool operator<( const UnixTime& right ) const
+      virtual bool operator<( const UnixTime& right ) const
          throw();
-      bool operator>( const UnixTime& right ) const
+      virtual bool operator>( const UnixTime& right ) const
          throw();
-      bool operator<=( const UnixTime& right ) const
+      virtual bool operator<=( const UnixTime& right ) const
          throw();
-      bool operator>=( const UnixTime& right ) const
+      virtual bool operator>=( const UnixTime& right ) const
          throw();
          //@}
 

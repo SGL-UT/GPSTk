@@ -80,7 +80,7 @@ namespace gpstk
           * @param right a const reference to the CivilTime object to copy
           * @return a reference to this CivilTime object
           */
-      CivilTime& operator=( CivilTime& right )
+      CivilTime& operator=( const CivilTime& right )
          throw();
 
          /// Virtual Destructor.

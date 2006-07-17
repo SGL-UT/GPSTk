@@ -128,7 +128,11 @@ namespace gpstk
    bool UnixTime::operator<( const UnixTime& right ) const
       throw()
    {
-      if( tv.tv_sec < right.tv.tv_sec &&
+      if( tv.tv_sec < right.tv.tv_sec )
+      {
+         return true;
+      }
+      if( tv.tv_sec == right.tv.tv_sec &&
           tv.tv_usec < right.tv.tv_usec )
       {
          return true;

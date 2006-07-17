@@ -58,6 +58,7 @@ else
       GPSEpochWeekSecond.cpp GPSWeekSecond.cpp 
       GPSWeekZcount.cpp GPSZcount32.cpp
       GPSZcount29.cpp JulianDate.cpp MJD.cpp UnixTime.cpp YDSTime.cpp
+      SystemTime.cpp
       Expression.cpp
       ;
 
@@ -99,8 +100,10 @@ else
       RACRotation.hpp SVExclusionList.hpp
       TimeConstants.hpp TimeConverters.hpp TimeString.hpp
       CommonTime.hpp TimeTag.hpp ANSITime.hpp CivilTime.hpp 
-      GPSEpochWeekSecond.hpp GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount32.hpp
+      GPSEpochWeekSecond.hpp GPSWeekSecond.hpp
+      GPSWeekZcount.hpp GPSZcount32.hpp
       GPSZcount29.hpp JulianDate.hpp MJD.hpp UnixTime.hpp YDSTime.hpp 
+      SystemTime.hpp
       gpstkplatform.h mergePCodeWords.h BivarStats.hpp
       Expression.hpp
       ;

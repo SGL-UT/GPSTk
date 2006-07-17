@@ -18,6 +18,7 @@
 #include <MJD.hpp>
 #include <UnixTime.hpp>
 #include <YDSTime.hpp>
+#include <SystemTime.hpp>
 
 using namespace std;
 using namespace gpstk;
@@ -93,12 +94,13 @@ public:
    MJD mjd;
    UnixTime ut;
    YDSTime yds;
+   SystemTime st;
    
 protected:
    virtual void process();
 
-   void dumpCommonTime( const BaseTime& t );
-      
+   void dumpCommonTime( const TimeTag& t );
+   
    bool simpleCopyTest();
    template<class T>
    bool isCopySuccess( T& t );
@@ -111,6 +113,10 @@ protected:
    template<class T>
    bool isEqual( T& t );
 
+   bool systemTimeTest();
+
+   bool simpleLessThanTest();
+
    bool otherTest();
 
 };
@@ -120,12 +126,14 @@ void Test::process()
    simpleCopyTest();
    simpleEqualityTest();
    conversionTest();
+   systemTimeTest();
+   simpleLessThanTest();
 //   otherTest();
 
    cout << "Test Processing Complete." << endl;
 }
 
-void Test::dumpCommonTime( const BaseTime& t )
+void Test::dumpCommonTime( const TimeTag& t )
 {
    long day, sod;
    double fsod;
@@ -267,6 +275,54 @@ bool Test::isEqual( T& t )
    return true;
 }   
 
+bool Test::systemTimeTest()
+{
+   cout << "SystemTime:  " << st << endl
+        << "  to ANSI:   " << ANSITime( st ) << endl
+        << "  to Civil:  " << CivilTime( st ) << endl
+        << "  to GPSEWS: " << GPSEpochWeekSecond( st ) << endl
+        << "  to GPSWS:  " << GPSWeekSecond( st ) << endl
+        << "  to GPSWZ:  " << GPSWeekZcount( st ) << endl
+        << "  to GZ29:   " << GPSZcount29( st ) << endl
+        << "  to GZ32:   " << GPSZcount32( st ) << endl
+        << "  to JD:     " << JulianDate( st ) << endl
+        << "  to MJD:    " << MJD( st ) << endl
+        << "  to Unix:   " << UnixTime( st ) << endl
+        << "  to YDS:    " << YDSTime( st ) << endl;
+   
+}
+
+bool Test::simpleLessThanTest()
+{
+   ansi = ANSITime( st );
+   civil = CivilTime( st );
+   gews = GPSEpochWeekSecond( st );
+   gws = GPSWeekSecond( st );
+   gwz = GPSWeekZcount( st );
+   gz29 = GPSZcount29( st );
+   gz32 = GPSZcount32( st );
+   jd = JulianDate( st );
+   mjd = MJD( st );
+   ut = UnixTime( st );
+   yds = YDSTime( st );
+   
+   CommonTime ct( st );
+   ct += 5.0; // add five seconds
+
+   cout << "SimpleLessThanTest: " << endl
+        << " ANSI:   " << ( ansi < ct ? "PASS" : "FAIL" ) << endl
+        << " Civil:  " << ( civil < ct ? "PASS" : "FAIL" ) << endl
+        << " GPSEWS: " << ( gews < ct ? "PASS" : "FAIL" ) << endl
+        << " GPSWS:  " << ( gws < ct ? "PASS" : "FAIL" ) << endl
+        << " GPSWZ:  " << ( gwz < ct ? "PASS" : "FAIL" ) << endl
+        << " GZ29:   " << ( gz29 < ct ? "PASS" : "FAIL" ) << endl
+        << " GZ32:   " << ( gz32 < ct ? "PASS" : "FAIL" ) << endl
+        << " JD:     " << ( jd < ct ? "PASS" : "FAIL" ) << endl
+        << " MJD:    " << ( mjd < ct ? "PASS" : "FAIL" ) << endl
+        << " Unix:   " << ( ut < ct ? "PASS" : "FAIL" ) << endl
+        << " YDS:    " << ( yds < ct ? "PASS" : "FAIL" ) << endl;
+}
+
 bool Test::otherTest()
 {
    try
@@ -298,11 +354,11 @@ bool Test::otherTest()
       cout << "str: " << str << endl
            << "fmt: " << fmt << endl;
       
-      BaseTime::IdToValue info;
-      BaseTime::getInfo( str, fmt, info );
+      TimeTag::IdToValue info;
+      TimeTag::getInfo( str, fmt, info );
       cout << "parsed info:" << endl;
       
-      for( BaseTime::IdToValue::iterator i = info.begin(); 
+      for( TimeTag::IdToValue::iterator i = info.begin(); 
            i != info.end(); i++ )
       {
          cout << "info[" << i->first << "] = <" << i->second << ">" << endl

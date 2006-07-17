@@ -25,7 +25,7 @@ namespace gpstk
       "Aug", "Sep", "Oct", "Nov", "Dec"
    };
    
-   CivilTime& CivilTime::operator=( CivilTime& right )
+   CivilTime& CivilTime::operator=( const CivilTime& right )
       throw()
    {
       year = right.year;

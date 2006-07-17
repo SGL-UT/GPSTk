@@ -97,11 +97,7 @@ namespace gpstk
    bool ANSITime::operator<( const ANSITime& right ) const
       throw()
    {
-      if( time < right.time )
-      {
-         return true;
-      }
-      return false;
+      return ( time < right.time );
    }
 
    bool ANSITime::operator>( const ANSITime& right ) const
