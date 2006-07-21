@@ -5,9 +5,6 @@
 
 namespace gpstk
 {
-   const std::string GPSZcount32::printChars( "C" );
-   const std::string GPSZcount32::defaultFormat( "%C" );
-   
    GPSZcount32& GPSZcount32::operator=( const GPSZcount32& right )
       throw()
    {

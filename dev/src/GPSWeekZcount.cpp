@@ -6,9 +6,6 @@
 
 namespace gpstk
 {
-   const std::string GPSWeekZcount::printChars( "FzZ" );
-   const std::string GPSWeekZcount::defaultFormat( "%04F %06Z" );
-
    GPSWeekZcount& GPSWeekZcount::operator=( const GPSWeekZcount& right )
       throw()
    {

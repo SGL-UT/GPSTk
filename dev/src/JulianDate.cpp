@@ -5,9 +5,6 @@
 
 namespace gpstk
 {
-   const std::string JulianDate::printChars( "J" );
-   const std::string JulianDate::defaultFormat( "%J" );
-   
    JulianDate& JulianDate::operator=( const JulianDate& right )
       throw()
    {

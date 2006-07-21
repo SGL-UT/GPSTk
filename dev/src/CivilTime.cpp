@@ -5,10 +5,6 @@
 
 namespace gpstk
 {
-   const std::string CivilTime::printChars( "YymbBdHMSf" );
-   const std::string 
-   CivilTime::defaultFormat( "%02m/%02d/%04Y %02H:%02M:%02.9f");
-   
       /// Long month names for converstion from numbers to strings
    const char * CivilTime::MonthNames[] = 
    {

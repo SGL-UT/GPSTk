@@ -15,9 +15,6 @@ namespace gpstk
    class ANSITime : public TimeTag
    {
    public:
-      static const std::string printChars;
-      static const std::string defaultFormat;
-      
          /**
           * @defgroup utbo ANSITime Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
@@ -107,14 +104,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return printChars;
+         return "K";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return defaultFormat;
+         return "%K";
       }
 
       virtual bool isValid() const

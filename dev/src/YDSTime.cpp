@@ -5,9 +5,6 @@
 
 namespace gpstk
 {
-   const std::string YDSTime::printChars( "Yyjs" );
-   const std::string YDSTime::defaultFormat( "%04Y/%03j %s" );
-
    YDSTime& YDSTime::operator=( const YDSTime& right )
       throw()
    {

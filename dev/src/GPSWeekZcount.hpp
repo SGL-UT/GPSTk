@@ -14,9 +14,6 @@ namespace gpstk
    class GPSWeekZcount : public TimeTag
    {
    public:
-      static const std::string printChars;
-      static const std::string defaultFormat;
-      
          /**
           * @defgroup gwzbo GPSWeekZcount Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
@@ -105,14 +102,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return printChars;
+         return "FzZ";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return defaultFormat;
+         return "%04F %06Z";
       }
 
       virtual bool isValid() const

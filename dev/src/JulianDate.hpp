@@ -13,9 +13,6 @@ namespace gpstk
    class JulianDate : public TimeTag
    {
    public:
-      static const std::string printChars;
-      static const std::string defaultFormat;
-      
          /**
           * @defgroup jdbo JulianDate Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
@@ -103,14 +100,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return printChars;
+         return "J";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return defaultFormat;
+         return "%J";
       }
 
       virtual bool isValid() const

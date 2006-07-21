@@ -6,9 +6,6 @@
 
 namespace gpstk
 {
-   const std::string GPSEpochWeekSecond::printChars( "EGg" );
-   const std::string GPSEpochWeekSecond::defaultFormat( "%E %04G %g" );
-   
    GPSEpochWeekSecond& 
    GPSEpochWeekSecond::operator=( const GPSEpochWeekSecond& right )
       throw()

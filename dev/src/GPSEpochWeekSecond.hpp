@@ -14,9 +14,6 @@ namespace gpstk
    class GPSEpochWeekSecond : public TimeTag
    {
    public:
-      static const std::string printChars;
-      static const std::string defaultFormat;
-
          /** 
           * @defgroup gewsbo GPSEpochWeekSecond Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
@@ -106,14 +103,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return printChars;
+         return "EGg";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return defaultFormat;
+         return "%E %04G %g";
       }
 
       virtual bool isValid() const

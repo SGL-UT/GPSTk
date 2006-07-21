@@ -14,10 +14,6 @@ namespace gpstk
    class YDSTime : public TimeTag
    {
    public:
-      
-      static const std::string printChars;
-      static const std::string defaultFormat;
-
          /**
           * @defgroup ydstbo YDSTime Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
@@ -106,14 +102,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return printChars; 
+         return "Yyjs";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return defaultFormat;
+         return "%04Y/%03j %s";
       }
 
       virtual bool isValid() const

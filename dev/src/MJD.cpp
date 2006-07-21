@@ -5,9 +5,6 @@
 
 namespace gpstk
 {
-   const std::string MJD::printChars( "Q" );
-   const std::string MJD::defaultFormat( "%.9Q" );
-   
    MJD& MJD::operator=( const MJD& right )
       throw()
    {

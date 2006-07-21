@@ -24,9 +24,6 @@ namespace gpstk
    class UnixTime : public TimeTag
    {
    public:
-      static const std::string printChars;
-      static const std::string defaultFormat;
-      
          /**
           * @defgroup utbo UnixTime Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
@@ -126,14 +123,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return printChars;
+         return "Uu";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return defaultFormat;
+         return "%U %u";
       }
 
       virtual bool isValid() const

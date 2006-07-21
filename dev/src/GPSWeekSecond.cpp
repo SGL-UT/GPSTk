@@ -6,9 +6,6 @@
 
 namespace gpstk
 {
-   const std::string GPSWeekSecond::printChars( "Fg" );
-   const std::string GPSWeekSecond::defaultFormat( "%04F %g" );
-   
    GPSWeekSecond& 
    GPSWeekSecond::operator=( const GPSWeekSecond& right )
       throw()

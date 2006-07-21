@@ -15,10 +15,6 @@ namespace gpstk
    class CivilTime : public TimeTag
    {
    public:
-      
-      static const std::string printChars;
-      static const std::string defaultFormat;
-      
          /**
           * @defgroup caltbo CivilTime Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
@@ -119,14 +115,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return printChars;
+         return "YymbBdHMSf";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return defaultFormat;
+         return "%02m/%02d/%04Y %02H:%02M:%02.9f";
       }
 
       virtual bool isValid() const

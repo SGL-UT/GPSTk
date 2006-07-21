@@ -5,9 +5,6 @@
 
 namespace gpstk
 {
-   const std::string UnixTime::printChars( "Uu" );
-   const std::string UnixTime::defaultFormat( "%U %u" );
-   
    UnixTime& UnixTime::operator=( const UnixTime& right )
       throw()
    {

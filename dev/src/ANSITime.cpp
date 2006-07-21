@@ -5,9 +5,6 @@
 
 namespace gpstk
 {
-   const std::string ANSITime::printChars( "K" );
-   const std::string ANSITime::defaultFormat( "%K" );
-   
    ANSITime& ANSITime::operator=( const ANSITime& right )
       throw()
    {
