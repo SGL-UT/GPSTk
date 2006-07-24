@@ -44,7 +44,7 @@ namespace gpstk
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
          
-         rv = formattedPrint( rv, formatPrefixFloat + "J",
+         rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
                               "JLf", jd );
          return rv;         
       }

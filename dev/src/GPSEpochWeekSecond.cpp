@@ -53,11 +53,11 @@ namespace gpstk
             using gpstk::StringUtils::formattedPrint;
             std::string rv = fmt;
                
-            rv = formattedPrint( rv, formatPrefixInt + "E",
+            rv = formattedPrint( rv, getFormatPrefixInt() + "E",
                                  "Ehd", epoch );
-            rv = formattedPrint( rv, formatPrefixInt + "G", 
+            rv = formattedPrint( rv, getFormatPrefixInt() + "G", 
                                  "Ghd", week );
-            rv = formattedPrint( rv, formatPrefixFloat + "g",
+            rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
                                  "gf", sow);
             return rv;
          }

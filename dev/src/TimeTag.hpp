@@ -18,13 +18,6 @@ namespace gpstk
    {
    public:
       
-         /// This is the regular expression prefix that is used when 
-         /// searching for integer specifiers.
-      static const std::string formatPrefixInt;
-         /// This is the regular expression prefix that is used when
-         /// searching for float specifiers.
-      static const std::string formatPrefixFloat;
-
          /// Virtual Destructor.
       virtual ~TimeTag() 
          throw()
@@ -96,6 +89,10 @@ namespace gpstk
       virtual std::string getDefaultFormat() const
          throw() = 0;
 
+         /// Returns true if this object's members are valid, false otherwise.
+      virtual bool isValid() const
+         throw() = 0;
+
          /// Format this time as a string using a format specified by the 
          /// inheriting class.
       virtual std::string asString() const
@@ -107,9 +104,15 @@ namespace gpstk
       operator CommonTime() const
       { return convertToCommonTime(); }
 
-         /// Returns true if this object's members are valid, false otherwise.
-      virtual bool isValid() const
-         throw() = 0;
+         /// This returns the regular expression prefix that is used when 
+         /// searching for integer specifiers.
+      static std::string getFormatPrefixInt()
+      { return "%[ 0-]?[[:digit:]]*"; }
+      
+         /// This returns the regular expression prefix that is used when
+         /// searching for float specifiers.
+      static std::string getFormatPrefixFloat()
+      { return getFormatPrefixInt() + "(\\.[[:digit:]]+)?"; }
 
    };
 

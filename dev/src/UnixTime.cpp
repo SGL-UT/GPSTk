@@ -47,9 +47,9 @@ namespace gpstk
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
 
-         rv = formattedPrint(rv, formatPrefixInt + "U",
+         rv = formattedPrint(rv, getFormatPrefixInt() + "U",
                              "Ud", tv.tv_sec);
-         rv = formattedPrint(rv, formatPrefixInt + "u",
+         rv = formattedPrint(rv, getFormatPrefixInt() + "u",
                              "ud", tv.tv_usec);         
 
          return rv;         

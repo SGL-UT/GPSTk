@@ -60,9 +60,9 @@ namespace gpstk
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
          
-         rv = formattedPrint( rv, formatPrefixInt + "E",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "E",
                               "Ehd", epoch );
-         rv = formattedPrint( rv, formatPrefixInt + "c",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "c",
                               "chd", zcount );
          return rv;         
       }

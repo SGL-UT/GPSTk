@@ -53,7 +53,7 @@ namespace gpstk
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
          
-         rv = formattedPrint( rv, formatPrefixInt + "C",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "C",
                               "Cd", zcount );
 
          return rv;         

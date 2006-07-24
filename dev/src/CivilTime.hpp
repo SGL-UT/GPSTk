@@ -29,7 +29,7 @@ namespace gpstk
                  int dy = 0,
                  int hr = 0,
                  int mn = 0,
-                 double s = 0. )
+                 double s = 0.0 )
          throw()
             : year(yr), month(mo), day(dy), hour(hr), minute(mn), second(s) 
       {}

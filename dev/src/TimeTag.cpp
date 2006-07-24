@@ -5,10 +5,6 @@
 
 namespace gpstk
 {
-   const std::string TimeTag::formatPrefixInt( "%[ 0-]?[[:digit:]]*" );
-   const std::string TimeTag::formatPrefixFloat( TimeTag::formatPrefixInt + 
-                                                 "(\\.[[:digit:]]+)?" );
-   
    void TimeTag::scanf( const std::string& str,
                         const std::string& fmt )
       throw( gpstk::InvalidRequest,

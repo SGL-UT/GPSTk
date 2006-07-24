@@ -66,25 +66,25 @@ namespace gpstk
          using gpstk::StringUtils::formattedPrint;
          std::string rv = fmt;
          
-         rv = formattedPrint( rv, formatPrefixInt + "Y",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
                               "Yhd", year );
-         rv = formattedPrint( rv, formatPrefixInt + "y",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "y",
                               "yhd", static_cast<short>( year % 100 ) );
-         rv = formattedPrint( rv, formatPrefixInt + "m",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "m",
                               "mhd", month );
-         rv = formattedPrint( rv, formatPrefixInt + "b",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "b",
                               "bs", MonthAbbrevNames[month] );
-         rv = formattedPrint( rv, formatPrefixInt + "B",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "B",
                               "Bs", MonthNames[month] );
-         rv = formattedPrint( rv, formatPrefixInt + "d",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "d",
                               "dhd", day );
-         rv = formattedPrint( rv, formatPrefixInt + "H",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "H",
                               "Hhd", hour );
-         rv = formattedPrint( rv, formatPrefixInt + "M",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "M",
                               "Mhd", minute );
-         rv = formattedPrint( rv, formatPrefixInt + "S", 
+         rv = formattedPrint( rv, getFormatPrefixInt() + "S", 
                               "Sd", static_cast<short>( second ) );
-         rv = formattedPrint( rv, formatPrefixFloat + "f",
+         rv = formattedPrint( rv, getFormatPrefixFloat() + "f",
                               "ff", second );
          return rv;
       }

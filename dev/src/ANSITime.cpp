@@ -37,7 +37,7 @@ namespace gpstk
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
 
-         rv = formattedPrint( rv, formatPrefixInt + "K",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "K",
                               "Kd", time );
 
          return rv;         

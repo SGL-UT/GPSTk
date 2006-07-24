@@ -49,9 +49,9 @@ namespace gpstk
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
 
-         rv = formattedPrint( rv, formatPrefixInt + "F", "Fhd", week );
-         rv = formattedPrint( rv, formatPrefixInt + "z", "zd", zcount );
-         rv = formattedPrint( rv, formatPrefixInt + "Z", "Zd", zcount );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "F", "Fhd", week );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "z", "zd", zcount );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "Z", "Zd", zcount );
          
          return rv;         
       }

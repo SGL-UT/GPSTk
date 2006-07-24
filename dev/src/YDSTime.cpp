@@ -40,13 +40,13 @@ namespace gpstk
          using gpstk::StringUtils::formattedPrint;
          std::string rv = fmt;
          
-         rv = formattedPrint( rv, formatPrefixInt + "Y",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
                               "Yhd", year);
-         rv = formattedPrint(rv, formatPrefixInt + "y",
+         rv = formattedPrint(rv, getFormatPrefixInt() + "y",
                              "yhd", static_cast<short>(year % 100));
-         rv = formattedPrint( rv, formatPrefixInt + "j",
+         rv = formattedPrint( rv, getFormatPrefixInt() + "j",
                               "jhd", doy);
-         rv = formattedPrint( rv, formatPrefixFloat + "s",
+         rv = formattedPrint( rv, getFormatPrefixFloat() + "s",
                               "sf", sod);
          return rv;
       }
