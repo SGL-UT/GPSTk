@@ -1,0 +1,7 @@
+This is meaningless text.
+$LastChangedDate$
+$LastChangedRevision$
+$LastChangedBy$
+$HeadURL$
+$Id$
+This is more meaningless text.
