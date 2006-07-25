@@ -9,8 +9,8 @@
         while(my $line = <input>){$output = $output.$line;}
         close(input);
 
-        return "\\begin{verbatim}\n" .
-                $output .
-                "\\end{verbatim}\n";
+        return $output; #"\\begin{Verbatim}\n" .
+                #$output .
+                #"\\end{Verbatim}\n";
 }
 

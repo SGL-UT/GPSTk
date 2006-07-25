@@ -5,15 +5,11 @@
 \usepackage[sectionbib]{src/bibunits}
 \usepackage{src/perltex}
 \input{src/cmd}
-\usepackage[ansinew]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{src/xcolor,fancyvrb}
-
+\usepackage{fancyvrb}
 \begin{document}
 
-\renewcommand\FancyVerbFormatLine[1]
-{\colorbox{red}{\makebox[\linewidth][l]{
-#1}}}
+\RecustomVerbatimEnvironment{Verbatim}{Verbatim}{frame=single}
+
 
 \bibliographyunit[\chapter]
 \input{titlepg}

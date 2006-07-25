@@ -1,0 +1,182 @@
+%%
+%% This is file `xcolor1.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% xcolor.dtx  (with options: `test1')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from xcolor1.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file xcolor.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+\ProvidesFile{xcolor1}
+ [2005/12/21 v2.09 Color conversion test (UK)]
+%%
+%% ----------------------------------------------------------------
+%% Copyright (C) 2003-2005 by Dr. Uwe Kern <xcolor at ukern dot de>
+%% ----------------------------------------------------------------
+%%
+\def\XCfileversion{v2.09}%
+\def\XCfiledate{2005/12/21}%
+\documentclass[a4paper]{article}
+
+\usepackage{array,multicol,multido,textcomp}
+\usepackage{xcolor}[2005/03/24]
+\usepackage[hmargin={1.25cm,.75cm},vmargin=1.25cm,footskip=.5cm,nohead]{geometry}
+
+\newdimen\Argwd
+\newdimen\Errsum
+\newdimen\Errmax
+\newcount\Colors
+\newcount\Errors
+\newcount\Loops
+\newif\ifColor
+
+\makeatletter
+
+\def\DisplayColor#1#2#3%
+ {\global\advance\Loops\@ne
+  \@tempdima=#1\p@ \edef\@tempa{\the\@tempdima}%
+  \edef\Colori{\strip@pt\@tempdima}%
+  \ifColor
+    \@tempdimb=#2\p@ \edef\@tempb{\the\@tempdimb}%
+    \@tempdimc=#3\p@ \edef\@tempc{\the\@tempdimc}%
+    \edef\Colori{\Colori,\strip@pt\@tempdimb,\strip@pt\@tempdimc}%
+  \fi
+  \Make12\Make23\Make34\Make45\Make56\Make67%
+  \begin{tabular}{@{}ll*4{@{ }p{\Argwd}}@{}}
+  \Row1\Row2\Row3\Row4\Row5\Row6\noalign{\medskip}
+  \end{tabular}
+  \global\advance\Colors1 \relax\ifnum\Colors=30 \newpage\global\Colors=0 \fi}
+
+\def\Make#1#2%
+ {\edef\@@tmp
+   {\noexpand\definecolor{Color\romannumeral#1}%
+     {\@nameuse{Model\romannumeral#1}}{\@nameuse{Color\romannumeral#1}}%
+   }\@@tmp
+  \relax\ifnum#1<6
+    \convertcolorspec
+     {\@nameuse{Model\romannumeral#1}}{\@nameuse{Color\romannumeral#1}}%
+     {\@nameuse{Model\romannumeral#2}}\@@tmp
+    \XC@let@cN{Color\romannumeral#2}\@@tmp
+  \fi}
+\def\Row#1%
+ {\edef\@@tmp{\@nameuse{Color\romannumeral#1}\@nameuse{Row\romannumeral#1}}%
+  \expandafter\@Row\@@tmp}
+
+\def\@Row#1,#2,#3,#4,#5#6%
+ {\fcolorbox{black}{Color\romannumeral#5}{\phantom{000}}&
+  \csname Model\romannumeral#5\endcsname &
+  \ifodd#6 \@Error{#1}\@tempa \else #1\fi &
+  \ifColor\ifodd#6 \@Error{#2}\@tempb \else #2\fi\else #2\fi &
+  \ifColor\ifodd#6 \@Error{#3}\@tempc \else #3\fi\else #3\fi &
+  #4\\}
+
+\def\defModel#1#2#3#4% number, name, commas, check
+ {\@namedef{Model\romannumeral#1}{#2}\@namedef{Row\romannumeral#1}{#3#1#4}}
+
+\def\@Error#1#2%
+ {\ifdim#1\p@=#2\relax #1\else
+    \textcolor{red}{#1}\global\advance\Errors\@ne
+    \dimen@#2\advance\dimen@-#1\p@ \ifdim\dimen@<\z@\dimen@-\dimen@\fi
+    \global\advance\Errsum\dimen@
+    \ifdim\dimen@>\Errmax \global\Errmax\dimen@
+      \dimen@\@tempa \edef\@@tempa{\strip@pt\dimen@}%
+      \ifColor
+        \dimen@\@tempb \edef\@@tempb{\strip@pt\dimen@}%
+        \dimen@\@tempc \edef\@@tempc{\strip@pt\dimen@}%
+        \xdef\Errcase{\@@tempa\noexpand~\@@tempb\noexpand~\@@tempc}%
+      \else
+        \xdef\Errcase{\@@tempa}%
+      \fi
+    \fi
+  \fi}
+
+\newenvironment{ColorTest}[1]%
+ {\addcontentsline{toc}{section}{Color conversion chain: #1}
+  \Colors\z@ \Errors\z@ \Loops\z@ \Errsum\z@ \Errmax\z@
+  \begin{multicols}{3}\centering}%
+ {\end{multicols}\bigskip
+  \begin{tabular}{@{}l@{ = }l@{}}
+  \multicolumn2{@{}l@{}}{Rounding error statistics of color conversion test}\\
+  \multicolumn2{@{}l@{}}%
+   {$\textbf\Modeli\rightarrow \textbf\Modelii\rightarrow \textbf\Modeliii\rightarrow
+     \textbf\Modeliv\rightarrow \textbf\Modelv\rightarrow \textbf\Modelvi$:}\\[1ex]
+  number of examples& \number\Loops\\
+  number of errors& \number\Errors\\
+  sum of absolute errors& \strip@pt\Errsum\\
+  \ifnum\Errors>\z@
+    average error& \Errsum100\Errsum \dimen@\Errors\p@ \divide\dimen@\@m
+    \rdivide\Errsum\dimen@ \strip@pt\Errsum\textperiodcentered10\textsuperscript{-5}\\
+    maximum error& \strip@pt\Errmax{} @ \Modeli~\Errcase\\
+  \fi
+  \end{tabular}\newpage}
+
+\def\thepage{\sffamily\footnotesize\@nameuse{@arabic}\c@page}
+
+\makeatother
+
+\parindent0pt
+\setcounter{secnumdepth}{-1}
+
+\begin{document}
+
+\title{Color conversion with the \textsf{xcolor} package --- Examples}
+\author{Dr. Uwe Kern\thanks{This file is part of the \textsf{xcolor} distribution which can be downloaded from the CTAN mirrors (\texttt{macros/latex/contrib/xcolor/}) or the homepage \texttt{www.ukern.de/tex/xcolor.html}. Please send error reports and suggestions for improvements to \texttt{xcolor@ukern.de}.}}
+\date{\XCfileversion{} (\XCfiledate)}
+\maketitle
+
+\begin{center}
+\begin{minipage}{.75\textwidth}
+\tableofcontents
+\end{minipage}
+\end{center}
+\newpage
+
+\sffamily\footnotesize
+\fboxrule.25pt
+\settowidth\Argwd{0.00000}
+
+\defModel1{rgb}{,,}0
+\defModel2{cmy}{,,}0
+\defModel3{cmyk}{,}0
+\defModel4{hsb}{,,}0
+\defModel5{rgb}{,,}1
+\defModel6{gray}{,,,,}0
+\Colortrue
+
+\begin{ColorTest}{rgb, cmy, cmyk, hsb, rgb, gray}
+\multido{\nR=1+-.1}{11}%
+ {\multido{\nG=1+-.1}{11}%
+  {\multido{\nB=1+-.1}{11}%
+   {\DisplayColor{\nR}{\nG}{\nB}}}}%
+\end{ColorTest}
+
+\defModel1{gray}{,,,,}0
+\defModel2{rgb}{,,}0
+\defModel3{cmy}{,,}0
+\defModel4{cmyk}{,}0
+\defModel5{hsb}{,,}0
+\defModel6{gray}{,,,,}1
+\Colorfalse
+
+\begin{ColorTest}{gray, rgb, cmy, cmyk, hsb, gray}
+\multido{\nG=1+-.01}{101}{\DisplayColor{\nG}{}{}}%
+\end{ColorTest}
+
+\end{document}
+\endinput
+%%
+%% End of file `xcolor1.tex'.

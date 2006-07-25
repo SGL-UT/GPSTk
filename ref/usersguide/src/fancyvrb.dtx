@@ -1,0 +1,4474 @@
+% \iffalse meta-comment, etc.
+%%
+%% Package `fancyvrb'
+%%
+%% COPYING:
+%%   The files of this package "fancyvrb" are released under the Artistic
+%%   License Version 2. A copy of that license is included in the file
+%%   artistic2.txt. The package consists of the following files:
+%%     README artistic2.txt fancyvrb.cb fancyvrb.dtx fancyvrb.ins
+%%
+%% Timothy Van Zandt <tvz@zandtwerk.kellogg.nwu.edu>
+%% July 17, 1998
+%%
+% \fi
+%
+% \changes{v2.6}{1998/07/17}{. Three bug corrected, options numberblanklines,
+%                            label, labelposition and leftline added and few
+%                            precisions.}
+% \changes{v2.5}{1998/01/28}{First public release.}
+% \changes{v2.0 Beta}{1994/03/30}{First version personally shown by Timothy
+%                                 \textsc{van Zandt}.}
+%
+% \CheckSum{3107}
+%
+% \newif\ifPostScriptFonts
+% \IfFileExists{times.sty}{\PostScriptFontstrue}{}
+%
+% \DoNotIndex{\\,\^}
+% \DoNotIndex{\@@nil,\@M,\@MM,\@auxout,\@beginparpenalty,\@bsphack}
+% \DoNotIndex{\@currentlabel,\@currenvir,\@currenvline,\@currsize}
+% \DoNotIndex{\@defpar,\@doendpe,\@eha,\@empty,\@endparenv,\@endpefalse}
+% \DoNotIndex{\@endpetrue,\@esphack,\@fooA,\@fooB,\@footnotetext,\@gobble}
+% \DoNotIndex{\@height,\@ifnextchar,\@ifstar,\@ifundefined,\@ignorefalse}
+% \DoNotIndex{\@inlabelfalse}
+% \DoNotIndex{\@input,\@labels,\@listdepth,\@makefntext,\@makeother,}
+% \DoNotIndex{\@minipagefalse,\@namedef,\@nameuse,\@ne,\@newlistfalse,}
+% \DoNotIndex{\@nil,\@nobreakfalse,\@noparlistfalse,\@noparlisttrue}
+% \DoNotIndex{\@parboxrestore,\@sanitize,\@spaces,\@tempa,\@tempb,\@tempboxa}
+% \DoNotIndex{\@tempc,\@tempcnta,\@tempcntb,\@tempdima,\@tempdimb,\@tempdimc}
+% \DoNotIndex{\@tempg,\@temph,\@temptokena,\@thefnmark,\@toodeep}
+% \DoNotIndex{\@topsep,\@topsepadd,\@totalleftmargin,\@warning,\@width}
+% \DoNotIndex{\active,\addpenalty,\addvspace,\advance}
+% \DoNotIndex{\afterassignment,\aftergroup,\arabic}
+% \DoNotIndex{\baselineskip,\baselinestretch,\begin,\begingroup,\bf,\bgroup}
+% \DoNotIndex{\box,\c@FancyVerbLine,\catcode,\ChangeBartrue,\closein}
+% \DoNotIndex{\closeout,\clubpenalty,\CodelineIndex,\columnwidth,\cr,\csname}
+% \DoNotIndex{\date,\DeclareOption,\def,\define@booleankey,\define@key}
+% \DoNotIndex{\divide,\do,\do@noligs,\DocInput,\documentclass,\dp,\dospecials}
+% \DoNotIndex{\edef,\egroup,\else,\EnableCrossrefs,\end,\endcenter}
+% \DoNotIndex{\endcsname,\endgroup,\endinput,\endlrbox,\endpspicture}
+% \DoNotIndex{\enspace,\errhelp,\errmessage,\expandafter}
+% \DoNotIndex{\fancyvrb@loaded,\fboxrule,\fboxsep,\fi,\filedate,\fileversion}
+% \DoNotIndex{\floatingpenalty,\font,\fontdimen,\fontfamily,\fontseries}
+% \DoNotIndex{\fontshape,\footins,\footnote,\footnotesep,\footnotesize}
+% \DoNotIndex{\frenchspacing,\fvset}
+% \DoNotIndex{\gdef,\GetFileInfo,\global,\hbadness,\hbox,\hfil,\hfuzz}
+% \DoNotIndex{\hrule,\hsize,\hss,\ht,\iden,\if,\if@FV@ResetMargins,\if@filesw}
+% \DoNotIndex{\if@inlabel,\if@nobreak,\if@noparlist,\if@noskipsec,\ifcase}
+% \DoNotIndex{\ifChangeBar,\ifeof,\IfFileExists,\ifmmode,\iffalse,\ifnum}
+% \DoNotIndex{\iftrue,\ifvmode,\ifvoid,\ifx,\ignorespaces,\immediate,\input}
+% \DoNotIndex{\insert,\interfootnotelinepenalty,\interlinepenalty,\jobname}
+% \DoNotIndex{\kern,\large,\lccode,\leaders,\leavevmode,\leftmargin,\let}
+% \DoNotIndex{\lineskip,\linewidth,\long,\loop,\lowercase,\lrbox}
+% \DoNotIndex{\m@ne,\m@th,\maketitle,\mathbf,\mathit,\mathnormal}
+% \DoNotIndex{\mathsl,\mathtt,\mbox,\meaning,\message,\mid,\mskip}
+% \DoNotIndex{\multiply,\NeedsTeXFormat,\newbox,\newcommand,\newcount}
+% \DoNotIndex{\newcounter,\newenvironment,\newif,\newpsobject,\newread}
+% \DoNotIndex{\newwrite,\next,\noexpand,\normalsize,\number}
+% \DoNotIndex{\Oldmakeindex,\on@line,\OnlyDescription,\openin,\openout,\or}
+% \DoNotIndex{\outer,\pUseMVerb,\par,\parindent,\parskip,\partopsep}
+% \DoNotIndex{\penalty,\PrintChanges,\PrintIndex,\ProcessOptions,\protect}
+% \DoNotIndex{\protected@edef,\ProvidesPackage,\raise,\rangle,\read}
+% \DoNotIndex{\RecordChanges,\refstepcounter,\relax,\renewcommand}
+% \DoNotIndex{\renewenvironment,\repeat,\RequirePackage,\rightmargin,\rm}
+% \DoNotIndex{\rmfamily,\romannumeral,\rule}
+% \DoNotIndex{\scriptscriptstyle,\scriptstyle,\section,\selectfont,\setbox}
+% \DoNotIndex{\setcounter,\setkeys,\setlength,\small,\smallskip,\space}
+% \DoNotIndex{\splitmaxdepth,\splittopskip,\stepcounter,\string,\strip,\strut}
+% \DoNotIndex{\strutbox,\textbf,\textcolor,\textit,\textsc,\textsf,\textsl}
+% \DoNotIndex{\texttt,\textwidth,\the,\theFancyVerbLine,\tiny,\title,\topsep}
+% \DoNotIndex{\tt,\ttfamily,\ttyin,\tw@,\underline,\unhbox,\unitlength}
+% \DoNotIndex{\unskip,\usepackage,\valign,\vbox,\vcenter}
+% \DoNotIndex{\verbatim@nolig@list,\vfil,\voidb@x,\vrule,\vspace,\vskip}
+% \DoNotIndex{\vtop,\wd,\widowpenalty,\write,\xdef,\z@,\z@skip}
+%
+% \setcounter{IndexColumns}{2}
+%
+% \newcommand{\FBoxPackage}{`\textsf{fancybox}'}
+% \newcommand{\FVrbPackage}{`\textsf{fancyvrb}'}
+%
+% ^^A From ltugboat.cls
+%
+% ^^A Typeset the name of an environment
+% \providecommand\env[1]{\textsf{#1}}
+% \providecommand\clsname[1]{\textsf{#1}}
+% \providecommand\pkgname[1]{\textsf{#1}}
+% \providecommand\optname[1]{\textsf{#1}}
+% \providecommand\progname[1]{\textsf{#1}}
+%
+% ^^A A list of options for a package/class
+% \newenvironment{optlist}{\begin{description}%
+%   \renewcommand\makelabel[1]{%
+%     \descriptionlabel{\mdseries\optname{##1}}}%
+%   \itemsep0.25\itemsep}%
+%  {\end{description}}
+%
+% ^^A Utility macros
+%
+% ^^A Special dashes
+% \def\thinskip{\hskip 0.16667em\relax}
+% \def\endash{--}
+% \def\emdash{\endash-}
+% \def\d@sh#1#2{\unskip#1\thinskip#2\thinskip\ignorespaces}
+% \def\dash{\d@sh\nobreak\endash}
+% \def\Dash{\d@sh\nobreak\emdash}
+%
+% ^^A Example macros - adapted from the `fvrb-ex' package
+% ^^A ---------------------------------------------------
+%
+% ^^A Take care that we use here the "Z" character as comment character,
+% ^^A to avoid to use an 8 bit one which can cause portability problems.
+% ^^A But we can't use any more the "Z" into the example environments
+% ^^A of this documentation.
+%
+% \makeatletter
+% \newcommand{\BeginExample}[1][0]{%
+% \parindent=0pt
+% \multiply\topsep by 2
+% \VerbatimEnvironment
+% \begin{VerbatimOut}[gobble=#1]{\jobname.tmp}}
+%
+% \newcommand{\BelowExample}[1]{%
+% \VerbatimInput[gobble=4,commentchar=Z,numbersep=3pt,frame=single,
+%                numbers=left]{\jobname.tmp}
+% \catcode`\Z=9\relax%
+% #1\par}
+%
+% \newcommand{\SideBySide@Example}[1]{%
+% \@tempdimb=\FV@XRightMargin
+% \advance\@tempdimb -5mm
+% \vspace{2mm}
+% \begin{minipage}[c]{\@tempdimb}
+%   \fvset{xrightmargin=0pt}
+%   \catcode`\Z=9\relax%
+%   #1
+% \end{minipage}%
+% \@tempdimb=\textwidth
+% \advance\@tempdimb -\FV@XRightMargin
+% \advance\@tempdimb 5mm
+% \begin{minipage}[c]{\@tempdimb}
+%   \VerbatimInput[commentchar=Z,numbersep=3pt,frame=single,
+%                  numbers=left,xleftmargin=5mm,xrightmargin=0pt]{\jobname.tmp}
+% \end{minipage}
+% \vspace{2mm}}
+%
+% \def\Example{%
+% \catcode`\^^M=\active
+% \@ifnextchar[{\catcode`\^^M=5\Example@}{\catcode`\^^M=5\Example@@}}
+% \def\Example@[#1]{\fvset{#1}\Example@@}
+% \def\Example@@{\BeginExample}
+% \def\endExample{%
+% \end{VerbatimOut}%
+% \BelowExample{\input{\jobname.tmp}}}
+%
+% \def\CenterExample{%
+% \catcode`\^^M=\active
+% \@ifnextchar[{\catcode`\^^M=5\CenterExample@}
+%              {\catcode`\^^M=5\CenterExample@@}}
+% \def\CenterExample@[#1]{\fvset{#1}\CenterExample@@}
+% \def\CenterExample@@{\BeginExample}
+% \def\endCenterExample{%
+% \end{VerbatimOut}%
+% \center
+% \BelowExample{\input{\jobname.tmp}}
+% \endcenter}
+% 
+% \def\SideBySideExample{%
+% \catcode`\^^M=\active
+% \@ifnextchar[{\catcode`\^^M=5\SideBySideExample@}%
+%              {\catcode`\^^M=5\SideBySideExample@@}}
+% \def\SideBySideExample@[#1]{\fvset{#1}\SideBySideExample@@}
+% \def\SideBySideExample@@{\BeginExample[4]}
+% \def\endSideBySideExample{%
+% \end{VerbatimOut}%
+% \SideBySide@Example{\input{\jobname.tmp}}}
+% \makeatother
+%
+% ^^A End of example macros from `fvrb-ex'
+%
+% ^^A For the possible index and changes log
+% \setlength{\columnseprule}{0.6pt}
+%
+% ^^A Beginning of the documentation itself
+%
+% \title{The `\textsf{fancyvrb}' package\\Fancy Verbatims in \LaTeX}
+% \author{Timothy Van Zandt\\Princeton University\\Princeton -- USA\\
+%         {\footnotesize email: tvz@Princeton.EDU}\\[5mm]
+%         {Packaging, documentation and support}\\
+%         {\footnotesize Denis Girou (CNRS/IDRIS -- France) -- %
+%                        Denis.Girou@idris.fr}\\[-2mm]
+%         {\footnotesize and}\\[-2mm]
+%         {\footnotesize Sebastian Rahtz (Elsevier -- GB) -- %
+%                        s.rahtz@elsevier.co.uk}}
+% \date{Version 2.6\\July 17, 1998\\
+%       {\small Documentation revised July 17, 1998}}
+%
+% \maketitle
+%
+% \begin{abstract}
+%     This package provides very sophisticated facilities for reading and
+%   writing verbatim \TeX{} code. Users can perform common tasks like changing
+%   font family and size, numbering lines, framing code examples, colouring
+%   text and conditionally processing text.
+% \end{abstract}
+%
+% \tableofcontents
+%
+% \section{Introduction}
+%
+%   \FVrbPackage{} is the development of the \emph{verbatim} macros of the
+% \FBoxPackage{} package,  Section 11 of \cite{FancyBox}. It offers six kinds
+% of extended functionality, compared to the standard \LaTeX{}
+% \textsf{verbatim} environment:
+%
+% \begin{enumerate}
+%   \item verbatim commands can be used in footnotes,
+%   \item several verbatim commands are enhanced,
+%   \item a variety of verbatim environments are provided, with many
+%   parameters to change the way the contents are printed; it is also possible
+%   to define new customized verbatim environments,
+%   \item a way is provided to save and restore verbatim text and environments,
+%   \item there are macros to write and read files in verbatim mode, with the
+%   usual versatility,
+%   \item you can build \emph{example} environments (showing both result and
+%   verbatim text), with the same versatility as normal verbatim.
+% \end{enumerate}
+%
+%   The package works by scanning a line at a time from an environment or a
+% file. This allows it to pre-process each line, rejecting it, removing
+% spaces, numbering it, etc, before going on to execute the body of the line
+% with the appropriate catcodes set.
+%
+% \section{Verbatim material in footnotes}
+%
+% \ifChangeBar\begin{changebar}\fi
+%   After a \cs{VerbatimFootnotes} macro declaration (to use after the
+% preamble), it is possible to put verbatim commands and environments
+% (the \LaTeX{} or \FVrbPackage{} ones) in footnotes, unlike in standard
+% \LaTeX:
+% \ifChangeBar\end{changebar}\fi
+%
+% \begin{Example}
+%   \VerbatimFootnotes
+%   We can put verbatim\footnote{\verb+_Yes!_+} text in footnotes.
+% \end{Example}
+%
+% \section{Improved verbatim commands}
+%
+%   The \cs{DefineShortVerb} macro allows us to define a special character as
+% an abbreviation to enclose verbatim text and the \cs{UndefineShortVerb}
+% macro suppresses the special meaning of the specified character (the same
+% \ifChangeBar\begin{changebar}\fi
+% functionalities are provided in the \LaTeX{} `\textsf{shortvrb}' package):
+% \ifChangeBar\end{changebar}\fi
+%
+% \fvset{xrightmargin=4.8cm}
+%
+% \begin{SideBySideExample}
+%   \DefineShortVerb{\|}
+%   We can simply write \Verb+_verbatim_+
+%   material using a single |_delimiter_|
+%   \UndefineShortVerb{\|}
+%   \DefineShortVerb{\+}
+%   And we can +_change_+ the character.
+% \end{SideBySideExample}
+%
+%   To make matters more versatile, we can nominate \emph{escape} characters
+% in verbatim text (using the \cs{Verb} macro or with a `shortverb' character
+% defined), to perform formatting or similar tasks, using the
+% \texttt{commandchars} parameter as shown for environments in paragraph
+% \ref{sec:commandchars}.
+%
+% \section{Verbatim environments}
+%
+% Several verbatim environments are available, each with a lot of
+% parameters to customize them. In the following examples we use the
+% \texttt{Verbatim} environment, which is the equivalent of the standard
+% \texttt{verbatim}. The parameters can be set globally using the \cs{fvset}
+% macro or in an optional argument after the start of the
+% environment\footnote{For clarification in this paper, note that we
+% generally indent each verbatim line with two
+% spaces.}$^,$\footnote{This mechanism uses the
+% `\textbf{keyval}' package from the standard \LaTeX{} graphics
+% distribution, written by David \textsc{Carlisle}.}.
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \subsection{Customization of verbatim environments}
+%
+% \ifChangeBar\begin{changebar}\fi
+%   The appearance of verbatim environments can be changed in many and
+% varied ways; here we list the keys that can be set. 
+% \ifChangeBar\end{changebar}\fi
+%
+% \subsubsection{Comments}
+%
+% \begin{optlist}
+%   \item[commentchar (character)]: character to define comments in the
+%   verbatim code, so that lines starting with this character will not be
+%   printed (\emph{Default: empty}).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[commentchar=!]
+%     % A comment
+%     Verbatim line.
+%     ! A comment that you will not see
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \ifChangeBar\begin{changebar}\fi
+%   Take care to a special effect if the comment character is not the first
+% non blank one: it is because this character is in fact managed as the \TeX{}
+% comment one, that is to say that it gobble the newline character too. So, in
+% this case, the current line will be joined with the next one and, more, the
+% last one will be lost if it contain a comment, as \FVrbPackage{} print a
+% line only after finding it end character, which will never occured in this
+% case...
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[commentchar=\%]
+%     First line. % First line
+%     Second.
+%     Third line. % Third line lost...
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% \ifChangeBar\end{changebar}\fi
+%
+% \subsubsection{Initial characters to suppress}
+%
+% \begin{optlist}
+%   \item[gobble (integer)]: number of characters to suppress at the beginning
+%   of each line (up to a maximum of 9), mainly useful when environments are
+%   indented
+%   (\emph{Default: empty} \Dash no character suppressed).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}
+%     Verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[gobble=2]
+%     Verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[gobble=8]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \subsubsection{Customization of formatting}
+%
+% \begin{optlist}
+%   \item[formatcom (command)]: command to execute before printing verbatim
+%   text
+%   (\emph{Default: empty}).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[formatcom=\color{red}]
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \subsubsection{Changing individual line formatting}
+%
+% \ifChangeBar\begin{changebar}\fi
+%   The macro \cs{FancyVerbFormatLine} defines the way each line is formatted.
+% Its default value is \verb+\def\FancyVerbFormatLine#1{#1}+, but we can
+% redefine it at our convenience (\texttt{FancyVerbLine} is the name of the
+% line counter):
+% \ifChangeBar\end{changebar}\fi
+%
+% {\fvset{fontsize=\small}
+% \begin{SideBySideExample}
+%   Z\fvset{fontsize=\normalsize}
+%   \renewcommand{\FancyVerbFormatLine}[1]{%
+%     \makebox[0cm][l]{$\Rightarrow$}#1}
+%   \begin{Verbatim}
+%     First verbatim line.
+%     Second verbatim line.
+%     Third verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \begin{SideBySideExample}
+%   \renewcommand{\FancyVerbFormatLine}[1]{%
+%     \ifodd\value{FancyVerbLine}%
+%       \MakeUppercase{#1}\else#1\fi}
+%   \begin{Verbatim}
+%     First verbatim line.
+%     Second verbatim line.
+%     Third verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% }
+%
+% \subsubsection{Fonts}
+%
+% \begin{optlist}
+%   \item[fontfamily (family name)]: font family to use.
+%   \texttt{tt}, \texttt{courier} and \texttt{helvetica} are pre-defined
+%   (\emph{Default:~tt}).
+% \end{optlist}
+%
+% \ifPostScriptFonts ^^A We can guess that PostScript fonts are available
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[fontfamily=helvetica]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% \else
+% \begin{quote}
+%     \textbf{\large Warning!} PostScript fonts seems not available on your
+%   platform (we are looking for the file \texttt{times.sty}, so we will
+%   not show the examplaes using such PostScript fonts.
+% \end{quote}
+% \fi
+%
+% \ifChangeBar\begin{changebar}\fi
+% \begin{optlist}
+%   \item[fontsize (font size)]: size of the font to use
+%   (\emph{Default: auto} \Dash the same as the current font). If you use the
+%   `\textsf{relsize}' package too, you can require a change of the size
+%   proportional to the current one (for instance:
+%   \verb+fontsize=\relsize{-2}+).
+% \end{optlist}
+% \ifChangeBar\end{changebar}\fi
+%
+% \ifPostScriptFonts ^^A We can guess that PostScript fonts are available
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[fontsize=\small]
+%     Verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[fontfamily=courier,
+%                    fontsize=\large]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% \else
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[fontsize=\small]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% \fi
+%
+% \begin{optlist}
+%   \item[fontshape (font shape)]: font shape to use
+%   (\emph{Default: auto} \Dash the same as the current font).
+% \end{optlist}
+%
+% \ifPostScriptFonts ^^A We can guess that PostScript fonts are available
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[fontfamily=courier,
+%                    fontshape=it]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% \else
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[fontshape=it]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% \fi
+%
+% \begin{optlist}
+%   \item[fontseries (series name)]: \LaTeX{} font `series' to use
+%   (\emph{Default: auto} \Dash the same as the current font).
+% \end{optlist}
+%
+% \ifPostScriptFonts ^^A We can guess that PostScript fonts are available
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[fontfamily=courier,
+%                    fontseries=b]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% \else
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[fontseries=b]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% \fi
+%
+% \subsubsection{Types and characteristics of frames}
+%
+% \ifChangeBar\begin{changebar}\fi
+% \begin{optlist}
+%   \item[frame 
+%   (none$\mid$leftline$\mid$topline$\mid$bottomline$\mid$lines$\mid$single)]:
+%   type of frame around the verbatim environment
+%   (\emph{Default: none} \Dash no frame). With \textsf{leftline} and
+%   \textsf{single} modes, a space of a length  given by the \LaTeX{}
+%   \cs{fboxsep} macro is added between the left vertical line and the text.
+% \end{optlist}
+% \ifChangeBar\end{changebar}\fi
+%
+% ^^A Problem at the top of a page...
+% \ifChangeBar\leavevmode\mbox{}\begin{changebar}\fi
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[frame=leftline]
+%     Verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[frame=topline]
+%     Verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[frame=bottomline]
+%     Verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[frame=lines]
+%     Verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[frame=single]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% \ifChangeBar\end{changebar}\fi
+%
+% \begin{optlist}
+%   \item[framerule (dimension)]: width of the rule of the frame
+%   (\emph{Default: 0.4pt if framing specified}).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[frame=single,
+%                    framerule=1mm]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \begin{optlist}
+%   \item[framesep (dimension)]: width of the gap between the frame and
+%   the text (\emph{Default: \cs{fboxsep}}).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[frame=single,
+%                    framesep=5mm]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \begin{optlist}
+%   \item[rulecolor (color command)]: color of the frame rule, expressed
+%   in the standard \LaTeX{} way
+%   (\emph{Default: black}).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[frame=single,
+%                    rulecolor=\color{red}]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \begin{optlist}
+%   \item[fillcolor (color command)]: color used to fill the space
+%   between the frame and the text (its thickness is given by
+%   \texttt{framesep})
+%   (\emph{Default: none} \Dash no color).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[frame=single,
+%          framerule=1mm,framesep=3mm,
+%          rulecolor=\color{red},
+%          fillcolor=\color{yellow}]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \ifChangeBar\leavevmode\mbox{}\begin{changebar}\fi
+% \subsubsection{Label for the environment}
+%
+% \begingroup
+% \newcommand{\Vitem}{\SaveVerb[aftersave={\item[\UseVerb{Vitem}]}]{Vitem}}
+% \DefineShortVerb{\|}
+% \begin{optlist}
+%   \Vitem|label ({[string]string})|: label(s) to print on top, bottom or
+%   both frame lines of the environment to describe it content
+%   (\emph{Default: empty} \Dash no label). 
+%   If the label(s) contains special characters, as a comma or an equal sign,
+%   it must be put inside a group. If only one string is given, it will be
+%   used for both top and bottom lines (if the two are printed), but if an
+%   optional first label is given too, this one will be used for the top line 
+%   and the second  one for the bottom line. Note also that, if another value
+%   than \textsf{topline}, \textsf{bottomline}, \textsf{lines} or
+%   \textsf{single} is used for the \textsf{frame} parameter, the label(s)
+%   will not be printed.
+% \end{optlist}
+% \endgroup
+% \ifChangeBar\end{changebar}\fi
+%
+% ^^A Problem at the top of a page...
+% \ifChangeBar\leavevmode\mbox{}\begin{changebar}\fi
+% \begin{SideBySideExample}
+%   \fvset{gobble=2}
+%   \begin{Verbatim}[frame=single,
+%                    label=My text]
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[frame=topline,
+%       framesep=4mm,
+%       label=\fbox{\Large\emph{The code}}]
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \begin{optlist}
+%   \item[labelposition (none$\mid$topline$\mid$bottomline$\mid$all)]:
+%   position where to print the label if one is defined, which must be
+%   coherent with the kind of frame chosen
+%   (\emph{Default: none if the label is empty, topline if one label is
+%   defined and all if two are defined}).
+%   Of course, some incompatible options (like
+%   \textsf{frame=topline,labelposition=bottomline}) will not print the
+%   label.
+% \end{optlist}
+% \ifChangeBar\end{changebar}\fi
+%
+% ^^A Problem at the top of a page...
+% \ifChangeBar\leavevmode\mbox{}\begin{changebar}\fi
+% \begin{SideBySideExample}
+%   \fvset{gobble=2}
+%   \begin{Verbatim}[frame=single,
+%          framesep=2mm,
+%          label=Text,labelposition=all]
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[frame=lines,
+%          label=Text,labelposition=topline]
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[frame=bottomline,
+%          framesep=3mm,
+%          label=\textit{Code included},
+%          labelposition=bottomline]
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[frame=lines,
+%                    framesep=3mm,
+%    label={[Beginning of code]End of code}]
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% \ifChangeBar\end{changebar}\fi
+%
+% \subsubsection{Line numbering}
+%
+% \begin{optlist}
+%   \item[numbers (none$\mid$left$\mid$right)]: numbering of the verbatim lines
+%   (\emph{Default: none} \Dash no numbering). If requested, this numbering is
+%   done \emph{outside} the verbatim environment.
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[gobble=2,numbers=left]
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[gobble=2,
+%          numbers=right,numbersep=0pt]
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \begin{optlist}
+%   \item[numbersep (dimension)]: gap between numbers and verbatim lines
+%   (\emph{Default: 12pt}).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[gobble=2,
+%          numbers=left,numbersep=2pt]
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \begin{optlist}
+%   \item[firstnumber (auto$\mid$last$\mid$integer)]: number of the first line
+%   (\emph{Default: auto} \Dash numbering starts from 1). \textsf{last} means
+%   that the numbering is continued from the previous verbatim environment. If
+%   an integer is given, its value will be used to start the numbering.
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \fvset{gobble=2,
+%          numbers=left,numbersep=3pt}
+%   \begin{Verbatim}
+%     Verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[firstnumber=last]
+%     Verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[firstnumber=100]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \begin{optlist}
+%   \item[stepnumber (integer)]: interval at which line numbers are printed
+%   (\emph{Default:~1} \Dash all lines are numbered).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[gobble=2,numbers=left,
+%          numbersep=3pt,stepnumber=2]
+%     First verbatim line.
+%     Second verbatim line.
+%     Third verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+%   The macro \cs{theFancyVerbLine} defines the typesetting style of the
+% numbering, and the counter used is \texttt{FancyVerbLine}:
+%
+% \begin{SideBySideExample}
+%   \renewcommand{\theFancyVerbLine}{%
+%     \textcolor{red}{\small
+%       8.\alph{FancyVerbLine}}}
+%   \begin{Verbatim}[gobble=2,
+%          numbers=left,numbersep=2pt]
+%     First verbatim line.
+%     Second verbatim line.
+%     Third verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \ifChangeBar\begin{changebar}\fi
+% \begin{optlist}
+%   \item[numberblanklines (boolean)]: to number or not the empty lines
+%   (really empty or containing blank characters only)
+%   (\emph{Default: true} \Dash all lines are numbered).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[gobble=2,numbers=left,
+%          numbersep=3pt,
+%          numberblanklines=false]
+%     First verbatim line.
+%
+%
+%     Second verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% \ifChangeBar\end{changebar}\fi
+%
+% \subsubsection{Selection of lines to print}
+%
+% \begin{optlist}
+%   \item[firstline (integer)]: first line to print
+%   (\emph{Default: empty} \Dash all lines from the first are printed).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[gobble=2,firstline=2,
+%          numbers=left,numbersep=2pt]
+%     First verbatim line.
+%     Second verbatim line.
+%     Third verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \begin{optlist}
+%   \item[lastline (integer)]: last line to print
+%   (\emph{Default: empty} \Dash all lines until the last one are printed).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[gobble=2,lastline=1,
+%          numbers=left,numbersep=2pt]
+%     First verbatim line.
+%     Second verbatim line.
+%     Third verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \subsubsection{Spaces and tab characters}
+%
+% \begin{optlist}
+%   \item[showspaces (boolean)]: print a special character representing each
+%   space
+%   (\emph{Default: false} \Dash spaces not shown).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[showspaces=true]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+%   In practice, all verbatim environments have a~\texttt{*} variant, which
+% sets \texttt{showspaces=true}:
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim*}
+%     Verbatim line.
+%   \end{Verbatim*}
+% \end{SideBySideExample}
+%
+%   There are also some parameters to determine the way tab characters are
+% interpreted (using tabs is in fact a rather old-fashioned style of coding):
+%
+% \begin{optlist}
+%   \item[showtabs (boolean)]: explicitly show tab characters
+%   (\emph{Default: false} \Dash tab characters not shown).
+% \end{optlist}
+%
+% \begin{optlist}
+%   \item[obeytabs (boolean)]: position characters according to the tabs
+%   (\emph{Default: false} \Dash tab characters are added to the current
+%   position).
+% \end{optlist}
+%
+% \begin{optlist}
+%   \item[tabsize (integer)]: number of spaces given by a tab character
+%   (\emph{Default:~8}).
+% \end{optlist}
+%
+% \subsubsection{Space between lines}
+%
+% \begin{optlist}
+%   \item[baselinestretch (auto$\mid$dimension)]: value to give to the usual
+%   `baselinestretch' \LaTeX{} parameter
+%   (\emph{Default: auto} \Dash its current value just before the verbatim
+%   command).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[baselinestretch=2]
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \subsubsection{Escape characters for inserting commands}
+%
+% \begin{optlist}
+%   \item[commandchars (three characters)]: characters which define the
+%   character which starts a macro and marks the beginning and end of a group;
+%   thus lets us introduce \emph{escape} sequences in verbatim code. Of
+%   course, it is better to choose special characters which are not used in
+%   the verbatim text! (\emph{Default: empty}).
+%   \label{sec:commandchars}
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[commandchars=\\\{\}]
+%     \textit{% This is a comment}
+%     First verbatim line.
+%     \fbox{Second} verbatim line.
+%     \textcolor{red}{Third} verbatim line.
+%   \end{Verbatim}
+%
+%   \begin{Verbatim}[commandchars=+\[\]]
+%     +textit[\textbf{Verbatim} line].
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \ifChangeBar\begin{changebar}\fi
+%   Using this way, it is also possible to put labels to be able, later, to
+% make reference to some lines of the verbatim environments:
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[commandchars=\\\{\},
+%          numbers=left,numbersep=2pt]
+%     First verbatim line.
+%     Second line.\label{vrb:Important}
+%     Third verbatim line.
+%   \end{Verbatim}
+%
+%     As I previously shown
+%   line~\ref{vrb:Important}, it is...
+% \end{SideBySideExample}
+% \ifChangeBar\end{changebar}\fi
+%
+% \subsubsection{Margins}
+%
+% \begin{optlist}
+%   \item[xleftmargin (dimension)]: indentation to add at the start of each
+%   line
+%   (\emph{Default:~0pt} \Dash no left margin).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[frame=single,
+%                    xleftmargin=5mm]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \begin{optlist}
+%   \item[xrightmargin (dimension)]: right margin to add after each line
+%   (\emph{Default:~0pt} \Dash no right margin).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \begin{Verbatim}[frame=single,
+%                    xrightmargin=1cm]
+%     Verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+%
+% \begin{optlist}
+%   \item[resetmargins (boolean)]: reset the left margin, which is useful if
+%   we are inside other indented environments (\emph{Default: false} \Dash no
+%   reset of the margin).
+% \end{optlist}
+%
+% {%
+% \DefineVerbatimEnvironment{Verbatim}{Verbatim}{gobble=0,numbers=none}
+% \begin{SideBySideExample}
+%   \begin{itemize}
+%     \item First item
+%     \begin{Verbatim}[frame=single]
+%   Verbatim line.
+%     \end{Verbatim}
+%     \item Second item
+%     \begin{Verbatim}[frame=single,
+%                      resetmargins=true]
+%   Verbatim line.
+%     \end{Verbatim}
+%   \end{itemize}
+% \end{SideBySideExample}
+% }
+%
+% \subsubsection{Overfull box messages}
+%
+% \begin{optlist}
+%   \item[hfuzz (dimension)]: value to give to the \TeX{} \cs{hfuzz} dimension
+%   for text to format. This can be used to avoid seeing some unimportant
+%   \emph{Overfull box} messages (\emph{Default:~2pt}).
+% \end{optlist}
+%
+% \subsubsection{Page breaks}
+%
+% \begin{optlist}
+%   \item[samepage (boolean)]: in very special circumstances, we may want to
+%   make sure that a verbatim environment is not broken, even if it does not
+%   fit on the current page. To avoid a page break, we can set the
+%   \texttt{samepage} parameter to \emph{true} (\emph{Default: false}).
+% \end{optlist}
+%
+% \subsubsection{Catcode characters}
+%
+% \begin{optlist}
+%   \item[codes (macro)]: to specify \emph{catcode} changes (\emph{Default:
+%   empty}).
+% \end{optlist}
+%
+%   For instance, this allows us to include formatted mathematics in verbatim
+% text:
+%
+% {\fvset{fontsize=\small}
+% \begin{SideBySideExample}
+%   Z\fvset{fontsize=\normalsize}
+%   \begin{Verbatim}[commandchars=\\\{\},
+%          codes={\catcode`$=3\catcode`^=7}]
+%     x=1/sqrt(z**2) ! $\frac{1}{\sqrt{z^2}}$
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% }
+%
+% \subsubsection{Active characters}
+%
+% \begin{optlist}
+%   \item[defineactive (macro)]: to define the effect of \emph{active}
+%   characters
+%   (\emph{Default: empty}).
+% \end{optlist}
+%
+%   This allows us to do some devious tricks: see the example in Section
+% \ref{sec:VerbatimInclude} on page~\pageref{sec:VerbatimInclude}.
+%
+% \subsection{Different kinds of verbatim environments}
+%
+% \subsubsection{Verbatim environment}
+%
+%   This is the `normal' verbatim environment which we have been using up to
+% now.
+%
+% \subsubsection{BVerbatim environment}
+%
+%   This environment puts the verbatim material in a \TeX{} box. Some
+% parameters do not work inside this environment (notably the framing ones),
+% but two new ones are available:
+%
+% \begin{optlist}
+%   \item[boxwidth (auto$\mid$dimension)]: size of the box used
+%   (\emph{Default: auto} \Dash the width of the longest line is used).
+% \end{optlist}
+%
+% \begin{optlist}
+%   \item[baseline (b$\mid$c$\mid$t)]: position of the baseline (on the
+%   \texttt{baseline}, the \texttt{center} or the \texttt{top} of the box)
+%   (\emph{Default: b}).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \fvset{gobble=2}
+%   \begin{BVerbatim}
+%     First
+%     Second
+%   \end{BVerbatim}
+%   \begin{BVerbatim}[baseline=c]
+%     First
+%     Second
+%   \end{BVerbatim}
+% \end{SideBySideExample}
+%
+% \begin{SideBySideExample}
+%   \begin{BVerbatim}[boxwidth=2cm]
+%     First
+%     Second
+%   \end{BVerbatim}
+%   \begin{BVerbatim}[boxwidth=2cm,
+%                     baseline=t]
+%     First
+%     Second
+%   \end{BVerbatim}
+% \end{SideBySideExample}
+%
+% \subsubsection{LVerbatim environment}
+%
+%   This environment puts verbatim material into \LaTeX{} `LR' mode (the
+% so-called \emph{left-to-right} mode, which in fact is the same thing that
+% \TeX{} itself calls \emph{restricted horizontal mode}).
+%
+% \subsubsection{Personalized environments}
+%
+% \ifChangeBar\begin{changebar}\fi
+% \VerbatimFootnotes%
+%   It is easy to define personal customized environments. You can redefine
+% the existing ones using the \cs{RecustomVerbatimEnvironment} macro or create
+% your own ones, using the \cs{DefineVerbatimEnvironment} macro\footnote{%
+% \ifChangeBar\begin{changebar}\fi
+% For verbatim commands, the \cs{CustomVerbatimCommand} and
+% \cs{RecustomVerbatimCommand} macros also exist; for instance:
+%
+% \noindent%
+% \verb+\RecustomVerbatimCommand{\VerbatimInput}{VerbatimInput}{frame=lines}+
+% \ifChangeBar\end{changebar}\fi}.
+% In each case, you specify the name of the new environment, the type of
+% environment on which it is based, and a set of initial option values. The
+% options can be overridden with an optional argument in the normal way:
+%
+% \begin{SideBySideExample}
+%   \RecustomVerbatimEnvironment
+%     {Verbatim}{Verbatim}
+%     {gobble=2,frame=single}
+%   \begin{Verbatim}
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{Verbatim}
+% \end{SideBySideExample}
+% \ifChangeBar\end{changebar}\fi
+%
+% \begin{SideBySideExample}
+%   \DefineVerbatimEnvironment%
+%     {MyVerbatim}{Verbatim}
+%     {gobble=2,numbers=left,numbersep=2mm,
+%      frame=lines,framerule=0.8mm}
+%   \begin{MyVerbatim}
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{MyVerbatim}
+%
+%   \begin{MyVerbatim}[numbers=none,
+%                      framerule=1pt]
+%     First verbatim line.
+%     Second verbatim line.
+%   \end{MyVerbatim}
+% \end{SideBySideExample}
+%
+% \section{Saving and restoring verbatim text and environments}
+%
+%   The \cs{SaveVerb} and \cs{UseVerb} macros allow us to save and restore
+% verbatim material.
+%
+% \begin{SideBySideExample}
+%   \DefineShortVerb{\|}
+%   \SaveVerb{Verb}|_verbatim_|
+%   I have saved \UseVerb{Verb} and reuse 
+%   it later as many times as I want
+%   \UseVerb{Verb}.
+% \end{SideBySideExample}
+%
+%   This also provides a solution to putting verbatim text inside \LaTeX{}
+% commands which do not normally permit it:
+%
+% {\fvset{frame=single,xrightmargin=0cm}
+% \begin{Example}
+%   \DefineShortVerb{\|}
+%   \SaveVerb{Verb}|_OK^|
+%   \marginpar{\UseVerb{Verb}}
+% \end{Example}
+% }
+%
+%   There is a useful ability to use verbatim text as the item text in a
+% description list (something not normally permitted in \LaTeX), using the
+% \texttt{aftersave} parameter:
+%
+% \begin{optlist}
+%   \item[aftersave (macro)]: macro to dynamically save some verbatim material
+%   (\emph{Default: empty}).
+% \end{optlist}
+%
+% \begin{SideBySideExample}
+%   \newcommand{\Vitem}{%
+%     \SaveVerb[aftersave={%
+%       \item[\UseVerb{Vitem}]}]{Vitem}}
+%   \DefineShortVerb{\|}
+%   \begin{description}
+%     \Vitem|\MyCommand|: my command
+%   \end{description}
+% \end{SideBySideExample}
+%
+%   In the same way, we can use and restore (in normal, boxed and LR mode,
+% using \cs{UseVerbatim}, \cs{BUseVerbatim} and \cs{LUseVerbatim} respectively)
+% entire verbatim environments:
+%
+% \begin{SideBySideExample}
+%   Z\fvset{gobble=0,numbers=none}
+%   \begin{SaveVerbatim}{VerbEnv}
+%     Verbatim line.
+%   \end{SaveVerbatim}
+%   \UseVerbatim{VerbEnv}
+%   and \UseVerbatim{VerbEnv}
+% \end{SideBySideExample}
+%
+% \begin{SideBySideExample}
+%   Z\fvset{gobble=0,numbers=none}
+%   \begin{SaveVerbatim}[gobble=5]{VerbEnv}
+%     First
+%     Second
+%   \end{SaveVerbatim}
+%
+%   \fbox{\BUseVerbatim{VerbEnv}}
+%   and \BUseVerbatim{VerbEnv}.
+%
+%   \LUseVerbatim{VerbEnv} and
+%   \LUseVerbatim{VerbEnv}
+% \end{SideBySideExample}
+%
+% \section{Writing and reading verbatim files}
+% \label{sec:VerbatimInclude}
+%
+%   The command \cs{VerbatimInput} (the variants \cs{BVerbatimInput} and
+% \cs{LVerbatimInput} also exist) allows inclusion of the contents of a file
+% with verbatim formatting. Of course, the various parameters which we have
+% described for customizing can still be used:
+%
+% ^^A The file we will use for \VerbatimInput
+%
+% \typeout{*************************************}
+% \typeout{* Created files: hello.f90, file.txt}
+% \typeout{* See fancyhdr.dvi for an explanation}
+% \typeout{*************************************}
+%
+% \begin{VerbatimOut}{hello.f90}
+%   ! A "hello" program
+%
+%   program hello
+%     print *,"Hello world"
+%   end program hello
+% \end{VerbatimOut}
+% 
+% \begin{SideBySideExample}
+%   Z\RecustomVerbatimCommand{\VerbatimInput}{VerbatimInput}{gobble=4}
+%   \fvset{fontsize=\small}
+%   \VerbatimInput{hello.f90}
+%
+%   \fvset{frame=single,numbers=left,
+%          numbersep=3pt}
+%   \VerbatimInput{hello.f90}
+%
+%   \VerbatimInput[firstline=3,
+%       rulecolor=\color{green}]
+%     {hello.f90}
+%
+%   \VerbatimInput[frame=lines,
+%       fontshape=sl,fontsize=\footnotesize]
+%     {hello.f90}
+% \end{SideBySideExample}
+%
+%   We can make use of the `defineactive' parameter to set the comment lines
+%   in the program text in a different style:
+%
+% \begin{SideBySideExample}
+%   Z\RecustomVerbatimCommand{\VerbatimInput}{VerbatimInput}{gobble=4}
+%   \def\ExclamationPoint{\char33}
+%   \catcode`!=\active
+%   \VerbatimInput%
+%     [defineactive=%
+%       \def!{\color{cyan}\itshape
+%         \ExclamationPoint}]
+%     {hello.f90}
+% \end{SideBySideExample}
+%
+%   It is important to note that if the contents of the file does not fit on
+% the page, it will be automatically broken across pages as needed (unless the
+% \texttt{samepage} parameter has been set to \texttt{true}).
+%
+%   There is also a \verb+VerbatimOut+ environment to write verbatim text to an
+% output file, in the same way:
+%
+% \begin{SideBySideExample}
+%   \begin{VerbatimOut}{file.txt}
+%     I write that.
+%     And that too.
+%   \end{VerbatimOut}
+%
+%   \VerbatimInput[frame=single,
+%     numbers=left,numbersep=6pt]{file.txt}
+% \end{SideBySideExample}
+%
+% \ifChangeBar\begin{changebar}\fi
+% \section{Automatic pretty printing}
+%
+%    Obviously, automatic \emph{pretty printing} is outside the scope of this
+% package. Nevertheless, this is specially interesting for verbatim
+% inclusion of programming code files or fragments. In the \LaTeX{} world
+% (not speaking of the \emph{literate programming} way), there are software
+% for some special languages, as the `\textsf{C++2LaTeX}' package from Norbert
+% \textsc{Kiesel}, but mainly two generic ones, which use completely different 
+% modes (an external preprocessor written in C and a \TeX{} based solution):
+% the `\textsf{LGrind}'~\cite{LGrind} system, currently maintened by Michael
+% \textsc{Piefel}, and the `\textsf{listings}'~\cite{Listings} package from
+% Carsten \textsc{Heinz}.
+%
+%    Future versions of \FVrbPackage{} and `\textsf{listings}' packages are
+% planned to cooperate, which will offer great advantages to both users of the
+% two actual packages, and will allow \FVrbPackage{} users to have automatic
+% pretty printing of programming codes.
+%
+% \section{Known problems}
+%   
+% \begin{itemize}
+%   \item Vladimir \textsc{Volovich} \verb+<vvv@vvv.vsu.ru>+ reported that the
+%   special character \verb+\th+, available with T1 encoding, can't be
+%   included as verbatim with \FVrbPackage. It can be true for other special
+%   characters too.
+% \end{itemize}
+%
+% \section{Thanks}
+%
+%   For interesting comments and suggestions, we would like to thank specially
+% (alphabetic order): Philippe \textsc{Esperet}
+% \texttt{<esperet@marie.polytechnique.fr>}, Michael \textsc{Friendly}
+% \texttt{<friendly@hotspur.psych.yorku.ca>}, Rolf \textsc{Niepraschk}
+% \texttt{<niepraschk@ptb.de>} and for bug reports Mario \textsc{Hassler}
+% \relax\unskip\break
+% \texttt{<HASSLER@ippnv2.ipp.kfa-juelich.de>}, Mikhail \textsc{Kolodin}
+% \relax\unskip\break
+% \texttt{<myke@morrigan.spb.su>} and Vladimir \textsc{Volovich}
+% \verb+<vvv@vvv.vsu.ru>+.
+% \ifChangeBar\end{changebar}\fi
+%
+% \section{Conclusion}
+%
+% \ifChangeBar\begin{changebar}\fi
+%   There are a few other possibilities that we have not described here.
+% Note specially that it is possible to define a customization file
+% (\texttt{fancyvrb.cfg}) loaded at the end of the package, to store
+% definitions of your customized commands and environments and to redefine
+% the attributes of existing ones.
+% \ifChangeBar\end{changebar}\fi
+%
+% \begin{thebibliography}{1}
+%   \bibitem{FancyBox} Timothy \textsc{van Zandt},
+%   \textit{Documentation for `fancybox': Box tips and tricks for \LaTeX}.
+%   Available from \texttt{CTAN:}
+%   \texttt{macros/latex/contrib/supported/fancybox}, 1993.
+%
+%   \bibitem{FancyVrb} Timothy \textsc{van Zandt},
+%   \textit{`fancyvrb': Fancy Verbatims in \LaTeX}.
+%   Available from \texttt{CTAN:}
+%   \texttt{macros/latex/contrib/supported/fancyvrb}, 1998.
+%
+%   \bibitem{LGrind} Various authors (current maintainer: Michael
+%   \textsc{Piefel}),
+%   \textit{The `LGrind' package}.
+%   Available from \texttt{CTAN:} \texttt{support/lgrind}, 1998.
+%
+%   \bibitem{Listings} Carsten \textsc{Heinz},
+%   \textit{The `Listings' package}.
+%   Available from \texttt{CTAN:}
+%   \texttt{macros/latex/contrib/supported/listings}, 1996-1997.
+%\end{thebibliography}
+%
+% \StopEventually{}
+%
+% ^^A .................... End of the documentation part ....................
+%
+% \section{Driver file}
+%
+%   The next bit of code contains the documentation driver file for \TeX{},
+% i.e., the file that will produce the documentation you are currently
+% reading. It will be extracted from this file by the \texttt{docstrip}
+% program.
+%
+%    \begin{macrocode}
+%<*driver>
+\documentclass{ltxdoc}
+\GetFileInfo{fancyvrb.dtx}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newif\ifChangeBar
+\IfFileExists{changebar.sty}%
+             {\ChangeBartrue\usepackage[dvips,rightbars]{changebar}}{}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\OnlyDescription                % Comment it for implementation details
+%\Oldmakeindex                   % Uncomment if your MakeIndex is pre-0.9
+\hbadness=7000                  % Over and under full box warnings
+\hfuzz=3pt
+\begin{document}
+  \DocInput{fancyvrb.dtx}
+\end{document}
+%</driver>
+%    \end{macrocode}
+%
+% \section{\FVrbPackage{} code}
+%
+%<*fancyvrb>
+%
+% \iffalse meta-comment, etc.
+%% COPYRIGHT 1992-1999, by Timothy Van Zandt <tvz@zandtwerk.kellogg.nwu.edu>
+%%
+%% This package may be distributed under the terms of the LaTeX Project Public
+%% License, as described in lppl.txt in the base LaTeX distribution.
+%% Either version 1.0 or, at your option, any later version.
+%%
+%% DESCRIPTION:
+%%   fancyvrb.sty is a LaTeX style option, containing flexible
+%%   verbatim environments and commands and extensive documentation.
+%%
+%%   This is a companion to the `fancybox' package.
+%%
+% \fi
+%
+% \begin{quote}
+%     \emph{\textbf{\large Disclaimer (D.G./S.R.)}: This is the original
+%   comments of the code by Timothy \textsc{van Zandt}. We have not change
+%   them.}
+% \end{quote}
+%
+% \subsection{Preambule}
+%
+% What we need.
+%    \begin{macrocode}
+\NeedsTeXFormat{LaTeX2e}
+%    \end{macrocode}
+%
+% Who we are.
+%    \begin{macrocode}
+\def\fileversion{2.6, with DG/SPQR fixes}
+\def\filedate{1998/07/17}
+\ProvidesPackage{fancyvrb}[\filedate]
+\message{Style option: `fancyvrb' v\fileversion \space  <\filedate> (tvz)}
+\csname fancyvrb@loaded\endcsname
+\let\fancyvrb@loaded\endinput
+%    \end{macrocode}
+%
+% \subsection{Errors}
+%
+%    \begin{macrocode}
+\def\FV@Error#1#2{%
+  \edef\@tempc{#2}\expandafter\errhelp\expandafter{\@tempc}%
+  \errmessage{FancyVerb Error:^^J\space\space #1^^J}}
+
+\def\FV@eha{Your command was ignored. Type <return> to continue.}
+%    \end{macrocode}
+%
+% \subsection{Verbatim footnotes}
+%
+% Color has to be protected.
+%
+% \noindent Won't work for some definitions of \cs{@makefntext}.
+% If it weren't for \cs{@makefntext}, I would do this properly by defining a
+% footnote environment.
+%
+% \begin{macro}{\VerbatimFootnotes}
+%    \begin{macrocode}
+%% DG/SR modification begin - Jan. 21, 1998
+%% Suggested by Bernard Gaulle to solve a compatibility problem with `french'
+%% (it introduce the restriction to put \VerbatimFootnotes AFTER the preambule)
+%%\def\VerbatimFootnotes{\let\@footnotetext\V@footnotetext}
+\let\V@footnote\footnote
+\def\VerbatimFootnotes{%
+\let\@footnotetext\V@footnotetext%
+\let\footnote\V@footnote}
+%% DG/SR modification end
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\V@footnotetext}
+%    \begin{macrocode}
+\long\def\V@footnotetext{%
+  \afterassignment\V@@footnotetext
+  \let\@tempa}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\V@@footnotetext}
+%    \begin{macrocode}
+\def\V@@footnotetext{%
+  \insert\footins\bgroup
+  \csname reset@font\endcsname
+  \footnotesize
+  \interlinepenalty\interfootnotelinepenalty
+  \splittopskip\footnotesep
+  \splitmaxdepth\dp\strutbox
+  \floatingpenalty \@MM
+  \hsize\columnwidth
+  \@parboxrestore
+  \edef\@currentlabel{\csname p@footnote\endcsname\@thefnmark}%
+  \@makefntext{}%
+  \rule{\z@}{\footnotesep}%
+  \bgroup
+  \aftergroup\V@@@footnotetext
+  \ignorespaces}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\V@@@footnotetext}
+%    \begin{macrocode}
+\def\V@@@footnotetext{\strut\egroup}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{key=value}
+%
+%    \begin{macrocode}
+\RequirePackage{keyval}
+%    \end{macrocode}
+%
+% Extensions to keyval.sty:
+%
+% \verb+\define@booleankey{<family>}{<key>}{<iftrue>}{<iffalse>}+
+%
+% Defines a \verb+<key>+ for \verb+<family>+ that executes:
+%
+%   \verb+<iftrue>+ clause when value begins with `t' or `T', or is omitted.
+%
+%   \verb+<iffalse>+ clause otherwise.
+%
+% \begin{macro}{\define@booleankey}
+%    \begin{macrocode}
+\def\define@booleankey#1#2#3#4{%
+  \@namedef{KV@#1@#2@default}{#3}%
+  \@namedef{KV@#1@#2@false}{#4}%
+  \@namedef{KV@#1@#2}##1{\KV@booleankey{##1}{#1}{#2}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\KV@booleankey}
+%    \begin{macrocode}
+\def\KV@booleankey#1#2#3{%
+  \edef\@tempa{#1}\expandafter\KV@@booleankey\@tempa\relax\@nil{#2}{#3}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\KV@@booleankey}
+%    \begin{macrocode}
+\def\KV@@booleankey#1#2\@nil#3#4{%
+  \@nameuse{KV@#3@#4@\if t#1default\else\if T#1default\else false\fi\fi}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@None}
+%    \begin{macrocode}
+\def\FV@None{none}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@Auto}
+%    \begin{macrocode}
+\def\FV@Auto{auto}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\fvset}
+%    \begin{macrocode}
+\def\fvset#1{\setkeys{FV}{#1}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \cs{FV@Command} is for verbatim commands. Example:
+%
+%   \verb+\def\VerbatimInput{\FV@Command{}{VerbatimInput}}+
+%
+% \verb+\FV@Command{<key=value>}{<name>}+:
+%
+% \begin{enumerate}
+%   \item Defines \cs{FV@KeyValues} to be \verb+<key=value>+.
+%   \item Looks for $*$, and adds `showspaces' to \cs{FV@KeyValues} if found.
+%   \item Looks for \verb+[<key=value>]+ argument, and adds it to
+%         \cs{FV@KeyValues} if found.
+%   \item Executes \verb+\FVC@<name>+.
+% \end{enumerate}
+%
+% \begin{macro}{\FV@Command}
+%    \begin{macrocode}
+\def\FV@Command#1#2{%
+  \@ifstar
+    {\def\FV@KeyValues{#1,showspaces}\FV@@Command{#2}}%
+    {\def\FV@KeyValues{#1}\FV@@Command{#2}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@@Command}
+%    \begin{macrocode}
+\def\FV@@Command#1{%
+  \@ifnextchar[%
+    {\FV@GetKeyValues{\@nameuse{FVC@#1}}}%
+    {\@nameuse{FVC@#1}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@GetKeyValues}
+%    \begin{macrocode}
+\def\FV@GetKeyValues#1[#2]{%
+  \expandafter\def\expandafter\FV@KeyValues\expandafter{\FV@KeyValues,#2}#1}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@CustomVerbatimCommand}
+%    \begin{macrocode}
+\def\@CustomVerbatimCommand#1#2#3#4{%
+  \begingroup\fvset{#4}\endgroup  % If there are errors, it easier to locate.
+%% DG/SR modification begin - Jan. 13, 1998
+%%  \def\@tempa##1##2\@nil{\def\@tempa{##2}}%
+%%  \expandafter\@tempa\string#3\@empty\@nil
+%%  \@ifundefined{FVC@\@tempa}%
+  \@ifundefined{FVC@#3}%
+%% DG/SR modification end
+    {\FV@Error{Command `\string#3' is not a FancyVerb command.}\@eha}%
+    {#1{#2}{\FV@Command{#4}{#3}}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\CustomVerbatimCommand}
+%    \begin{macrocode}
+\def\CustomVerbatimCommand{\@CustomVerbatimCommand\newcommand}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\RecustomVerbatimCommand}
+%    \begin{macrocode}
+\def\RecustomVerbatimCommand{\@CustomVerbatimCommand\renewcommand}
+%    \end{macrocode}
+% \end{macro}
+%
+% \cs{FV@Environment} is for verbatim environments. Example:
+%
+%          \verb+\def\Verbatim{\FV@Environment{}{Verbatim}}+
+%
+%          \verb+\@namedef{Verbatim*}{\FV@Environment{showspaces}{Verbatim}}+
+%
+% \verb+\FV@Environment{<key=value>}{<name>}+:
+%
+% \begin{enumerate}
+%   \item Defines \cs{FV@KeyValues} to be \verb+<key=value>+.
+%   \item Sets \verb+\catcode`\^^M=13+, checks for `[', and resets
+%         \verb+\catcode``^^M=5+.
+%   \item Reads \verb+[<key=value>]+ and adds it to \cs{FV@KeyValues} if `['
+%         was found.
+%   \item Executes \verb+\FVB@<name>+.
+% \end{enumerate}
+%
+% \cs{FV@Environment} is like \cs{FV@Command}, except:
+%
+% \begin{itemize}
+%   \item It omits step 2 (looking for $*$), and
+%   \item It sets \verb+\catcode`\^^M=13+ when checking for the `[' of the
+%         optional argument, so that it does not skip over \verb+^^M+ if there
+%         is no `['.
+% \end{itemize}
+%
+% \begin{macro}{\FV@Environment}
+%    \begin{macrocode}
+\def\FV@Environment#1#2{%
+  \def\FV@KeyValues{#1}%
+  \catcode`\^^M=\active
+  \@ifnextchar[%
+    {\catcode`\^^M=5 \FV@GetKeyValues{\@nameuse{FVB@#2}}}%
+    {\catcode`\^^M=5 \@nameuse{FVB@#2}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\CustomVerbatimEnvironment}
+%    \begin{macrocode}
+\def\CustomVerbatimEnvironment{\@CustomVerbatimEnvironment\newenvironment}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\RecustomVerbatimEnvironment}
+%    \begin{macrocode}
+\def\RecustomVerbatimEnvironment{\@CustomVerbatimEnvironment\renewenvironment}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\@CustomVerbatimEnvironment}
+%    \begin{macrocode}
+\def\@CustomVerbatimEnvironment#1#2#3#4{%
+  \begingroup\fvset{#4}\endgroup  % If there are errors, it easier to locate.
+  \@ifundefined{FVB@#3}%
+    {\FV@Error{`#3' is not a FancyVerb environment.}\@eha}%
+    {#1{#2}{\FV@Environment{#4}{#3}}{\@nameuse{FVE@#3}}%
+     #1{#2*}{\FV@Environment{#4,showspaces}{#3}}{\@nameuse{FVE@#3}}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\DefineVerbatimEnvironment}
+%    \begin{macrocode}
+\def\DefineVerbatimEnvironment#1#2#3{%
+  \@namedef{#1}{\FV@Environment{#3}{#2}}%
+  \@namedef{end#1}{\@nameuse{FVE@#2}}%
+  \@namedef{#1*}{\FV@Environment{#3,showspaces}{#2}}%
+  \@namedef{end#1*}{\@nameuse{FVE@#2}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% Then commands or environments set key values with \cs{FV@UseKeyValues},
+% within a group.
+%
+% \begin{macro}{\FV@UseKeyValues}
+%    \begin{macrocode}
+\def\FV@UseKeyValues{%
+  \ifx\FV@KeyValues\@empty\else
+    \def\KV@prefix{KV@FV@}%
+    \expandafter\KV@do\FV@KeyValues,\relax,%
+    \def\FV@KeyValues{}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{Scanning}
+%
+% Scanning macros:
+%
+% \begin{itemize}
+%   \item read a line at a time from an environment or a file,
+%   \item save the line in \cs{FV@Line}, and
+%   \item execute \cs{FV@PreProcessLine}.
+% \end{itemize}
+%
+% \noindent\cs{FV@PreProcessLine}:
+%
+% \begin{itemize}
+%   \item Determines whether line is in a user-specified ranges, and if so,
+%   \item Strips the line of a user-specified no. of tokens, and
+%   \item Executes \verb+\FV@ProcessLine{<line>}+.
+% \end{itemize}
+%
+% Two things are common to scanning an environment or reading a file:
+%
+% \begin{itemize}
+%   \item \cs{FV@CatCodes} $\Longrightarrow$ Change \verb+\catcode+'s.
+%   \item \cs{FV@PreProcessLine} $\Longrightarrow$ See above.
+% \end{itemize}
+%
+% \subsection{Codes}
+%
+% \begin{macro}{\FV@CatCodes}
+%    \begin{macrocode}
+\def\FV@CatCodes{%
+  \let\do\@makeother\dospecials  % The usual stuff.
+  \FV@ActiveWhiteSpace           % See below.
+  \FV@FontScanPrep               % See below.
+  \FV@CatCodesHook               % A style hook.
+  \FancyVerbCodes}               % A user-defined hook.
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@ActiveWhiteSpace}
+%    \begin{macrocode}
+\def\FV@ActiveWhiteSpace{%
+  \catcode`\^^M=\active          % End of line
+  \catcode`\ =\active            % Space
+  \catcode`\^^I=\active}         % Tab
+%    \end{macrocode}
+% \end{macro}
+%
+% CM Ligatures:
+%
+% \begin{tabbing}
+%   Left-quote: \= \verb+--+ \= \verb+---+ \= fl \= ffi \= ffl \kill
+%   Left-quote: \> `` \> !` \> ?` \\
+%   Letter f:   \> ff \> fi \> fl \> ffi \> ffl \\
+%   Hyphen:     \> \verb+--+ \> \verb+---+
+% \end{tabbing}
+%
+% \begin{macro}{\FV@CatCodesHook}
+%    \begin{macrocode}
+\def\FV@CatCodesHook{}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@AddToHook}
+%    \begin{macrocode}
+\def\FV@AddToHook#1#2{%
+  \expandafter\def\expandafter#1\expandafter{#1#2\relax}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FancyVerbCodes}
+%    \begin{macrocode}
+\define@key{FV}{codes}[]{\def\FancyVerbCodes{#1\relax}}
+\define@key{FV}{codes*}{%
+  \expandafter\def\expandafter\FancyVerbCodes\expandafter{%
+    \FancyVerbCodes#1\relax}}
+\fvset{codes}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\define@key{FV}{commandchars}[\\\{\}]%
+  {\def\@tempa{#1}%
+    \ifx\@tempa\FV@None
+      \let\FV@CommandChars\relax
+    \else
+      \FV@DefineCommandChars#1\relax\relax\relax
+    \fi}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@DefineCommandChars}
+%    \begin{macrocode}
+\def\FV@DefineCommandChars#1#2#3{%
+  \def\FV@CommandChars{%
+    \catcode`#1=0\relax\catcode`#2=1\relax\catcode`#3=2\relax}}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\FV@AddToHook\FV@CatCodesHook\FV@CommandChars
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@CommentChar}
+%    \begin{macrocode}
+\define@key{FV}{commentchar}[\%]{%
+  \def\@tempa{#1}%
+  \ifx\@tempa\FV@None
+    \let\FV@CommentChar\relax
+  \else
+    \def\FV@CommentChar{\catcode`#1=14}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\FV@AddToHook\FV@CatCodesHook\FV@CommentChar
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\fvset{commandchars=none,commentchar=none}
+%    \end{macrocode}
+%
+% \subsection{Preprocess line}
+%
+% These is tedious and takes up macro space, but it doesn't slow things
+% down much when the parameters are not used.
+%
+% \noindent\texttt{start}, \texttt{stop} and \texttt{gobble} parameters:
+%
+% \noindent if value is a number, then after the assignment the next token is
+% \cs{relax}.
+%
+%    \begin{macrocode}
+\define@key{FV}{firstline}{%
+  \afterassignment\FV@ParseStart\@tempcnta=0#1\relax\@nil{#1}}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@ParseStart}
+%    \begin{macrocode}
+\def\FV@ParseStart#1\relax\@nil#2{%
+  \ifx\@nil#1\@nil
+    \edef\FancyVerbStartNum{\the\@tempcnta}%
+    \let\FancyVerbStartString\relax
+  \else
+    \edef\FancyVerbStartString{#2}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\KV@FV@firstline@default}
+%    \begin{macrocode}
+\def\KV@FV@firstline@default{%
+  \let\FancyVerbStartNum\z@
+  \let\FancyVerbStartString\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\define@key{FV}{lastline}{%
+  \afterassignment\FV@ParseStop\@tempcnta=0#1\relax\@nil{#1}}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@ParseStop}
+%    \begin{macrocode}
+\def\FV@ParseStop#1\relax\@nil#2{%
+  \ifx\@nil#1\@nil
+    \edef\FancyVerbStopNum{\the\@tempcnta}%
+    \let\FancyVerbStopString\relax
+  \else
+    \edef\FancyVerbStopString{#2}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\KV@FV@lastline@default}
+%    \begin{macrocode}
+\def\KV@FV@lastline@default{%
+  \let\FancyVerbStopNum\z@
+  \let\FancyVerbStopString\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{firstline,lastline}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\newcount\FV@CodeLineNo
+%    \end{macrocode}
+%
+% If \cs{FV@FindStartStop} determines the line should be printed, it
+% executes \cs{FV@@PreProcessLine}
+%
+% \begin{macro}{\FV@PreProcessLine}
+%    \begin{macrocode}
+\def\FV@PreProcessLine{%
+  \global\advance\FV@CodeLineNo\@ne
+  \FV@FindStartStop}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@@PreProcessLine}
+%    \begin{macrocode}
+\def\FV@@PreProcessLine{%
+  \FV@StepLineNo
+  \FV@Gobble
+  \expandafter\FV@ProcessLine\expandafter{\FV@Line}}
+%    \end{macrocode}
+% \end{macro}
+%
+% The definition of \cs{FV@FindStartStop} changes, so that we don't
+% have to check irrelevant conditions with each line.
+%
+% \begin{macro}{\FV@FindStartStop}
+%    \begin{macrocode}
+\def\FV@FindStartStop{\FV@DefineFindStart\FV@FindStartStop}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+%% \def\FV@DefinePreProcessLine{%
+%%   \setcounter{FancyVerbLine}{0}%
+%%   \FV@DefineFindStart}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@DefineFindStart}
+%    \begin{macrocode}
+\def\FV@DefineFindStart{%
+  \ifx\FancyVerbStartString\relax
+    \ifnum\FancyVerbStartNum<\tw@
+      \FV@DefineFindStop
+    \else
+      \let\FV@FindStartStop\FV@FindStartNum
+    \fi
+  \else
+    \let\FV@FindStartStop\FV@FindStartString
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@FindStartNum}
+%    \begin{macrocode}
+\def\FV@FindStartNum{%
+  \ifnum\FancyVerbStartNum>\FV@CodeLineNo\else
+    \FV@DefineFindStop
+    \expandafter\FV@@PreProcessLine
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@FindStartString}
+%    \begin{macrocode}
+%% SR modification begin - 1996
+\def\FV@FindStartString{%
+ \expandafter\FV@@FindStartString
+{\meaning\FV@Line}%
+{\meaning\FancyVerbStartString}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@@FindStartString}
+%    \begin{macrocode}
+\def\FV@@FindStartString#1#2{%
+\edef\@fooA{#1}\edef\@fooB{#2}%
+  \ifx\@fooA\@fooB
+    \FV@DefineFindStop
+  \fi
+}
+%% SR modification end
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@DefineFindStop}
+%    \begin{macrocode}
+\def\FV@DefineFindStop{%
+  \ifx\FancyVerbStopString\relax
+    \ifnum\FancyVerbStopNum<\@ne
+      \let\FV@FindStartStop\FV@@PreProcessLine
+    \else
+      \let\FV@FindStartStop\FV@FindStopNum
+    \fi
+  \else
+    \let\FV@FindStartStop\FV@FindStopString
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@FindStopNum}
+%    \begin{macrocode}
+\def\FV@FindStopNum{%
+  \ifnum\FancyVerbStopNum=\FV@CodeLineNo
+    \let\FV@FindStartStop\relax
+    \ifeof\FV@InFile\else
+      \immediate\closein\FV@InFile
+    \fi
+  \fi
+  \FV@@PreProcessLine}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@FindStopString}
+%    \begin{macrocode}
+%% SR modification begin - 1996
+\def\FV@FindStopString{%
+ \expandafter\FV@@FindStopString
+{\meaning\FV@Line}%
+{\meaning\FancyVerbStopString}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@@FindStopString}
+%    \begin{macrocode}
+\def\FV@@FindStopString#1#2{%
+\edef\@fooA{#1}\edef\@fooB{#2}%
+  \ifx\@fooA\@fooB
+    \let\FV@FindStartStop\relax
+    \ifeof\FV@InFile\else
+      \immediate\closein\FV@InFile
+    \fi
+  \else
+    \expandafter\FV@@PreProcessLine
+  \fi}
+%% SR modification end
+%    \end{macrocode}
+% \end{macro}
+%
+% Gobblings. \cs{FV@Gobble} does nothing, or strips some tokens from
+% the line and stores the result in \cs{FV@Line} again. We use
+% \LaTeX's \verb+\renewcommand+ to define a command for gobbling up to
+% 9 arguments. This is not the same as removing 9 tokens, but is easier.
+%
+% \begin{macro}{\FV@@Gobble}
+%    \begin{macrocode}
+\def\FV@@Gobble{%
+  \expandafter\expandafter\expandafter\FV@@@Gobble
+  \expandafter\FV@@@@Gobble\FV@Line
+    \@nil\@nil\@nil\@nil\@nil\@nil\@nil\@nil\@nil\@nil\@@nil}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@@@Gobble}
+%    \begin{macrocode}
+\def\FV@@@Gobble#1\@nil#2\@@nil{\def\FV@Line{#1}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@Gobble}
+%    \begin{macrocode}
+\define@key{FV}{gobble}{%
+  \@tempcnta=#1\relax
+  \ifnum\@tempcnta<\@ne
+    \let\FV@Gobble\relax
+  \else
+    \ifnum\@tempcnta>9
+      \FV@Error{gobble parameter must be less than 10}\FV@eha
+    \else
+      \renewcommand{\FV@@@@Gobble}[\@tempcnta]{}%
+      \let\FV@Gobble\FV@@Gobble
+    \fi
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@@@@Gobble}
+%    \begin{macrocode}
+\def\FV@@@@Gobble{}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\KV@FV@gobble@default}
+%    \begin{macrocode}
+\def\KV@FV@gobble@default{\let\FV@Gobble\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{gobble}
+%    \end{macrocode}
+%
+% \subsection{Scanning environments}
+%
+% \begin{macro}{\FV@Scan}
+%    \begin{macrocode}
+\def\FV@Scan{%
+    \FV@CatCodes
+    \VerbatimEnvironment
+    \FV@DefineCheckEnd
+    \FV@BeginScanning}
+%    \end{macrocode}
+% \end{macro}
+%
+% \cs{VerbatimEnvironment}:
+%
+% This saves the name of the current environment as
+% \cs{FV@EnvironName}, if the latter is not already defined.
+% Then \cs{FV@CheckEnd} knows how to find the end as long as either:
+% \begin{itemize}
+%   \item \verb+\begin+ and \verb+\end+ are not used within the definition of
+%         the environment, OR
+%   \item \cs{VerbatimEnvironment} is used in the definition before the first
+%         \verb+\begin+.
+%  \end{itemize}
+%
+% \begin{macro}{\VerbatimEnvironment}
+%    \begin{macrocode}
+\def\VerbatimEnvironment{%
+  \ifx\FV@EnvironName\relax\xdef\FV@EnvironName{\@currenvir}\fi}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\let\FV@EnvironName\relax
+%    \end{macrocode}
+%
+%\subsection{Check end}
+%
+% We have to check the argument of the first \verb+\end{}+ in each line,
+% compare it with \cs{FV@EnvironName}, and return \verb+\iftrue+ if it matches
+% and \verb+\iffalse+ otherwise.
+%
+% There are four cases (R=regular):
+%
+% \begin{tabbing}
+%   catcode of \verb+{}+  \= : \= R \= 12 \= 12  \= 12 \kill
+%                   case  \> : \> i \> ii \> iii \> iv \\
+%    catcode of \verb+\+  \> : \> R \> 12 \> 12  \> R  \\
+%    catcode of \verb+{}+ \> : \> R \> R  \> 12  \> 12
+% \end{tabbing}
+%
+% For uniformity, we use \verb+![]+ instead of \verb+\{}+ in all the
+% definitions.
+%
+% We first set the catcodes of \verb+\{}+ to those in effect in the
+% verbatim environment. Then we define:
+%
+%   \verb+!def!FV@CheckEnd#1[!FV@@CheckEnd#1\end{}!@nil]+
+%
+% \noindent If {} have their usual catcodes, we define:
+%
+%   \verb+!def!FV@@CheckEnd#1\end#2#3!@nil[!def!@tempa[#2]]+
+%
+% \noindent If {} have catcode 12, we define:
+%
+%   \verb+!def!FV@@CheckEnd#1\end{#2}#3!@nil[!def!@tempa[#2]]+
+%
+%    \begin{macrocode}
+\begingroup
+\catcode`\!=0
+\catcode`\[=1
+\catcode`\]=2
+%    \end{macrocode}
+%
+% Case i:
+%
+%    \begin{macrocode}
+!gdef!FV@CheckEnd@i#1[!FV@@CheckEnd#1\end{}!@nil]
+!gdef!FV@@CheckEnd@i#1\end#2#3!@nil[!def!@tempa[#2]!def!@tempb[#3]]
+!gdef!FV@@@CheckEnd@i[\end{}]
+%    \end{macrocode}
+%
+% Case ii:
+%
+%    \begin{macrocode}
+\catcode`!\=12
+
+!gdef!FV@CheckEnd@ii#1[!FV@@CheckEnd#1\end{}!@nil]
+!gdef!FV@@CheckEnd@ii#1\end#2#3!@nil[!def!@tempa[#2]!def!@tempb[#3]]
+!gdef!FV@@@CheckEnd@ii[\end{}]
+%    \end{macrocode}
+%
+% Case iii:
+%
+%    \begin{macrocode}
+!catcode`!{=12
+!catcode`!}=12
+
+!gdef!FV@CheckEnd@iii#1[!FV@@CheckEnd#1\end{}!@nil]
+!gdef!FV@@CheckEnd@iii#1\end{#2}#3!@nil[!def!@tempa[#2]!def!@tempb[#3]]
+!gdef!FV@@@CheckEnd@iii[\end{}]
+%    \end{macrocode}
+%
+% Case iv:
+%
+%    \begin{macrocode}
+!catcode`!\=0
+
+!gdef!FV@CheckEnd@iv#1[!FV@@CheckEnd#1\end{}!@nil]
+!gdef!FV@@CheckEnd@iv#1\end{#2}#3!@nil[!def!@tempa[#2]!def!@tempb[#3]]
+!gdef!FV@@@CheckEnd@iv[\end{}]
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\endgroup
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@BadCodes}
+%    \begin{macrocode}
+\def\FV@BadCodes#1{%
+  \FV@Error
+    {\string\catcode\space of \expandafter\@gobble\string#1 is wrong:
+    \the\catcode`#1}%
+    {Only the following catcode values are allowed:
+    ^^J\@spaces \expandafter\@gobble\string\\ \space\space --> 0 or 12.
+    ^^J\@spaces \string{ \string} --> 1 and 2, resp., or both 12.
+    ^^JTo get this error, either you are a hacker or you got bad advice.}%
+  \def\FV@CheckEnd##1{\iftrue}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@DefineCheckEnd}
+%    \begin{macrocode}
+\def\FV@DefineCheckEnd{%
+  \ifnum\catcode`\\=\z@
+    \ifnum\catcode`\{=\@ne
+      \let\FV@CheckEnd\FV@CheckEnd@i
+      \let\FV@@CheckEnd\FV@@CheckEnd@i
+      \let\FV@@@CheckEnd\FV@@@CheckEnd@i
+    \else
+      \ifnum\catcode`\{=12
+        \let\FV@CheckEnd\FV@CheckEnd@iv
+        \let\FV@@CheckEnd\FV@@CheckEnd@iv
+        \let\FV@@@CheckEnd\FV@@@CheckEnd@iv
+      \else
+        \FV@BadCodes\{%
+      \fi
+    \fi
+  \else
+    \ifnum\catcode`\\=12
+      \ifnum\catcode`\{=\@ne
+        \let\FV@CheckEnd\FV@CheckEnd@ii
+        \let\FV@@CheckEnd\FV@@CheckEnd@ii
+        \let\FV@@@CheckEnd\FV@@@CheckEnd@ii
+      \else
+        \ifnum\catcode`\{=12
+          \let\FV@CheckEnd\FV@CheckEnd@iii
+          \let\FV@@CheckEnd\FV@@CheckEnd@iii
+          \let\FV@@@CheckEnd\FV@@@CheckEnd@iii
+        \else
+          \FV@BadCodes\{%
+        \fi
+      \fi
+    \else
+      \FV@BadCodes\\%
+    \fi
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{Line-by-line scanning}
+%
+% We first skip everything after the beginning of the environment.
+%
+% \begin{macro}{\FV@BeginScanning}
+%    \begin{macrocode}
+\begingroup
+\catcode`\^^M=\active
+  \gdef\FV@BeginScanning#1^^M{%
+    \def\@tempa{#1}\ifx\@tempa\@empty\else\FV@BadBeginError\fi%
+    \FV@GetLine}%
+\endgroup
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@BadBeginError}
+%    \begin{macrocode}
+\def\FV@BadBeginError#1{%
+  \expandafter\@temptokena\expandafter{\@tempa}%
+  \FV@Error
+    {Extraneous input `\the\@temptokena' between
+      \string\begin{\FV@EnvironName}[<key=value>] and line end}%
+   {This input will be discarded. Hit <return> to continue.}}
+%    \end{macrocode}
+% \end{macro}
+%
+% If \cs{FancyVerbGetLine} does not find a \verb+^^M+, then we are at
+% the end of the file, and \cs{FV@EOF} attempts to terminate the document.
+% Otherwise, \cs{FV@EOF} is gobbled by \cs{FancyVerbGetLine}.
+%
+% \ifChangeBar\begin{changebar}\fi
+% \begin{macro}{\FV@GetLine}
+%    \begin{macrocode}
+%% DG/SR modification begin - May. 18, 1998 (added code to turn off ligatures)
+%% \def\FV@GetLine{\expandafter\FV@CheckScan\FancyVerbGetLine}
+\def\FV@GetLine{\@noligs\expandafter\FV@CheckScan\FancyVerbGetLine}
+%% DG/SR modification end
+%    \end{macrocode}
+% \end{macro}
+% \ifChangeBar\end{changebar}\fi
+%
+% \begin{macro}{\FancyVerbGetLine}
+%    \begin{macrocode}
+\begingroup
+\catcode`\^^M=\active
+\gdef\FancyVerbGetLine#1^^M{%
+  \@nil
+  \FV@CheckEnd{#1}%
+  \ifx\@tempa\FV@EnvironName%            % True if end is found
+    \ifx\@tempb\FV@@@CheckEnd\else\FV@BadEndError\fi%
+    \let\next\FV@EndScanning%
+  \else%
+    \def\FV@Line{#1}%
+    \def\next{\FV@PreProcessLine\FV@GetLine}%
+  \fi%
+  \next}%
+\endgroup
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@BadEndError}
+%    \begin{macrocode}
+\def\FV@BadEndError{%
+  \expandafter\@temptokena\expandafter{\@tempb}%
+  \FV@Error
+      {Extraneous input `\the\@temptokena' between
+        \string\end{\FV@EnvironName} and line end}%
+      {This input will be discarded. Type <return> to continue.}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@EndScanning}
+%    \begin{macrocode}
+\def\FV@EndScanning{%
+  \edef\next{\noexpand\end{\FV@EnvironName}}%
+  \global\let\FV@EnvironName\relax
+  \next}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\@ifundefined{@currenvline}{\let\@currenvline\@empty}{}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@CheckScan}
+%    \begin{macrocode}
+\def\FV@CheckScan#1{\@ifnextchar\@nil{\@gobble}{\FV@EOF}}
+\def\FV@CheckScan#1{\ifx\@nil#1\@empty\else\expandafter\FV@EOF\fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@EOF}
+%    \begin{macrocode}
+\def\FV@EOF{%
+  \FV@Error{Couldn't find `\string\end{\FV@EnvironName}' to end
+    a verbatim environment\@currenvline.}%
+    {Probably you mistyped the environment name or included an extraneous
+    ^^Jspace, or are using an improperly defined verbatim environment.
+    ^^JHit return and I will try to terminate this job.}%
+  \FV@EndScanning
+  \end{document}}
+%    \end{macrocode}
+% \end{macro}
+%
+                                % \subsection{Input}
+%
+%    \begin{macrocode}
+\newread\FV@InFile
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@Input}
+%    \begin{macrocode}
+\def\FV@Input#1{%
+  \immediate\openin\FV@InFile #1\relax
+  \ifeof\FV@InFile
+    \FV@Error{No verbatim file #1}\FV@eha
+    \immediate\closein\FV@InFile
+  \else
+    \FV@CatCodes
+    \expandafter\FV@@Input
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \noindent\TeX{} reports EOF when reading after the last newline character.
+%
+% \noindent Thus, we read to InLine, and if \TeX{} reports EOF:
+% \begin{itemize}
+%   \item If InLine=Empty, previous line was last line in file (file ends nl).
+%   \item Otherwise, InLine holds last line in file (file doesn't end in nl).
+% \end{itemize}
+% \cs{FV@@Input} handles both cases correctly.
+%
+% \begin{macro}{\FV@@Input}
+%    \begin{macrocode}
+\def\FV@@Input{%
+  \def\FV@Line{}%
+  \FV@ReadLine
+  \ifeof\FV@InFile
+    \ifx\FV@Line\@empty\else
+      \FV@PreProcessLine
+    \fi
+    \immediate\closein\FV@InFile
+  \else
+    \FV@PreProcessLine
+    \expandafter\FV@@Input
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% We also want to handle true comment characters correctly. This means that
+% we keep accumulating text in InLine until we find a \verb+^^M+ (indicating
+% that the line did not contain a comment character).
+%
+% \begin{macro}{\FV@ReadLine}
+%    \begin{macrocode}
+\begingroup
+\catcode`\^^M=\active
+\gdef\FV@ReadLine{%
+  \ifeof\FV@InFile\else
+    \immediate\read\FV@InFile to\@tempa%
+    \expandafter\FV@@ReadLine\@tempa^^M\relax^^M\@nil%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \verb+#2+ is empty if line ends in \verb+^^M+, \verb+#2=\relax+ otherwise
+%
+% \begin{macro}{\FV@@ReadLine}
+%    \begin{macrocode}
+\gdef\FV@@ReadLine#1^^M#2^^M#3\@nil{%
+  \expandafter\def\expandafter\FV@Line\expandafter{%
+    \FV@Line#1}%
+  \ifx\relax#2\@empty\expandafter\FV@ReadLine\fi}%
+\endgroup
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{Formatting -- Common components}
+%
+% Some things that are common to all verbatim formatting:
+%
+% \begin{macro}{\FV@FormattingPrep}
+%    \begin{macrocode}
+\def\FV@FormattingPrep{%
+  \global\FV@CodeLineNo\z@
+  \frenchspacing             % Cancels special punctuation spacing.
+  \FV@SetupFont              % See below.
+  \FV@DefineWhiteSpace       % See below.
+  \FancyVerbDefineActive
+  \FancyVerbFormatCom}       % A user-defined hook (formatcom parameter).
+%    \end{macrocode}
+% \end{macro}
+%
+% Fonts
+%
+% \changes{v2.6}{1998/07/17}{Correct a bug for the -- ligature in T1 encoding
+%                            (reported by Mario Hassler on May 12, 1998).}
+%
+%    \begin{macrocode}
+\expandafter\ifx\csname selectfont\endcsname\relax
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@SetupFont}
+%    \begin{macrocode}
+\def\FV@SetupFont{%
+  \FV@BaseLineStretch
+  \ifx\@currsize\small\normalsize\else\small\fi\@currsize
+  \FV@FontSize
+  \FV@FontFamily}
+
+\else
+
+\def\FV@SetupFont{%
+  \FV@BaseLineStretch
+  \FV@FontSize
+  \FV@FontFamily
+  \FV@FontSeries
+  \FV@FontShape
+  \selectfont
+%% DG/SR modification begin - May. 18, 1998 (added code to turn off ligatures)
+  \@noligs}
+%% DG/SR modification end
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@FontSize}
+%    \begin{macrocode}
+\define@key{FV}{fontsize}{%
+  \def\@tempa{#1}%
+  \ifx\@tempa\FV@Auto
+    \let\FV@FontSize\relax
+  \else
+    \def\FV@FontSize{#1}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\KV@FV@fontsize@default}
+%    \begin{macrocode}
+\def\KV@FV@fontsize@default{\let\FV@FontSize\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@BaseLineStretch}
+%    \begin{macrocode}
+\define@key{FV}{baselinestretch}[auto]{%
+  \def\@tempa{#1}%
+  \ifx\@tempa\FV@Auto
+    \let\FV@BaseLineStretch\relax
+  \else
+    \def\FV@BaseLineStretch{\def\baselinestretch{#1}}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\KV@FV@baselinestretch@default}
+%    \begin{macrocode}
+\def\KV@FV@baselinestretch@default{\let\FV@BaseLineStretch\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\define@key{FV}{fontfamily}{%
+  \@ifundefined{FV@fontfamily@#1}%
+    {\def\FV@FontScanPrep{}\def\FV@FontFamily{\fontfamily{#1}}}
+    {\csname FV@fontfamily@#1\endcsname}}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@FontSeries}
+%    \begin{macrocode}
+\define@key{FV}{fontseries}{%
+  \def\@tempa{#1}%
+  \ifx\@tempa\FV@Auto
+    \let\FV@FontSeries\relax
+  \else
+    \def\FV@FontSeries{\fontseries{#1}}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@FontShape}
+%    \begin{macrocode}
+\define@key{FV}{fontshape}{%
+  \def\@tempa{#1}%
+  \ifx\@tempa\FV@Auto
+    \let\FV@FontShape\relax
+  \else
+    \def\FV@FontShape{\fontshape{#1}}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% Font family styles have to define \cs{FV@FontScanPrep} and
+% \cs{FV@FontFamily}.
+%
+% \begin{macro}{\FV@MakeActive}
+%    \begin{macrocode}
+\def\FV@MakeActive#1{%
+  \catcode`#1=\active
+  \def\next##1{\expandafter\def\expandafter\FV@MakeUnActive\expandafter{%
+    \FV@MakeUnActive\def##1{\string##1}}}%
+  \begingroup\lccode`~=`#1\relax\expandafter\next\expandafter~\endgroup}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@MakeUnActive}
+%    \begin{macrocode}
+\def\FV@MakeUnActive{}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\begingroup
+\catcode`\`=\active
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@fontfamily@tt}
+%    \begin{macrocode}
+\gdef\FV@fontfamily@tt{%
+  \def\FV@FontScanPrep{\FV@MakeActive\`}%
+%% SR modification begin - 1995
+%%  \def\FV@FontFamily{\tt`{{\string`}}}}
+  \def\FV@FontFamily{\ttfamily\edef`{{\string`}}}}
+%% SR modification end
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@fontfamily@cmtt}
+%    \begin{macrocode}
+\gdef\FV@fontfamily@cmtt{%
+  \def\FV@FontScanPrep{\FV@MakeActive\`}%
+  \def\FV@FontFamily{\edef`{{\string`}}\fontfamily{cmtt}}}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\endgroup
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@fontfamily@cmtt-spanish}
+%    \begin{macrocode}
+\@namedef{FV@fontfamily@cmtt-spanish}{%
+  \def\FV@FontScanPrep{}%
+  \def\FV@FontFamily{\fontfamily{cmtt}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% Fix me
+%
+% \begin{macro}{\FV@fontfamily@courier}
+%    \begin{macrocode}
+\@namedef{FV@fontfamily@courier}{%
+  \def\FV@FontScanPrep{}%
+%% SR modification begin - 1995
+%%  \def\FV@FontFamily{\fontfamily{rpcr}}}
+  \def\FV@FontFamily{\fontfamily{pcr}}}
+%% SR modification end
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@fontfamily@helvetica}
+%    \begin{macrocode}
+\@namedef{FV@fontfamily@helvetica}{%
+  \def\FV@FontScanPrep{}%
+%% SR modification begin - 1995
+%%  \def\FV@FontFamily{\fontfamily{rphv}}}
+  \def\FV@FontFamily{\fontfamily{phv}}}
+%% SR modification end
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{fontfamily=tt,fontsize=auto,fontshape=auto,fontseries=auto,
+  baselinestretch=auto}
+%    \end{macrocode}
+%
+% \cs{FV@DefineWhiteSpace}
+%
+% We just define the active characters to be ordinary commands, which
+% are easier to redefine. We do with any macros that use verbatim text.
+%
+%    \begin{macrocode}
+\begingroup
+\catcode`\ =\active
+\catcode`\^^I=\active
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@DefineWhiteSpace}
+%    \begin{macrocode}
+\gdef\FV@DefineWhiteSpace{\def {\FV@Space}\def^^I{\FV@Tab}}%
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\endgroup
+%    \end{macrocode}
+%
+% \begin{macro}{\FancyVerbDefineActive}
+%    \begin{macrocode}
+\define@key{FV}{defineactive}[]{\def\FancyVerbDefineActive{#1\relax}}
+\define@key{FV}{defineactive*}{%
+  \expandafter\def\expandafter\FancyVerbDefineActive\expandafter{%
+    \FancyVerbDefineActive#1\relax}}
+\fvset{defineactive}
+%    \end{macrocode}
+% \end{macro}
+%
+% \cs{FV@Space}:
+%
+% \begin{macro}{\FV@Space}
+%    \begin{macrocode}
+\define@booleankey{FV}{showspaces}%
+  {\def\FV@Space{{\FancyVerbSpace}}}%
+  {\def\FV@Space{\ }}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+{\catcode`\ =12 \gdef\FancyVerbSpace{\tt }}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\fvset{showspaces=false}
+%    \end{macrocode}
+%
+% \cs{FV@Tab}:
+%
+% \begin{macro}{\FV@Tab}
+%    \begin{macrocode}
+\def\FV@Tab{\hbox to\FancyVerbTabSize\fontdimen2\font{\hss\FV@TabChar}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FancyVerbTabSize}
+%    \begin{macrocode}
+\define@key{FV}{tabsize}{%
+  \@tempcnta=#1\relax
+  \ifnum\@tempcnta>100
+    \FV@Error{Tab size too large: `\the\@tempcnta'. (Max size = 100)}\FV@eha
+  \else
+    \edef\FancyVerbTabSize{\the\@tempcnta}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@TabChar}
+%    \begin{macrocode}
+\define@booleankey{FV}{showtabs}%
+  {\def\FV@TabChar{\FancyVerbTab}}%
+  {\let\FV@TabChar\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{tabsize=8,showtabs=false}
+%    \end{macrocode}
+%
+% Here is a weak attempt at a tab character. It may exceed the width
+% of a space character when the verbatim font is small. The only proper way
+% to do this is making it part of the verbatim font.
+%
+% \begin{macro}{\FancyVerbTab}
+%    \begin{macrocode}
+\def\FancyVerbTab{%
+    \valign{%
+      \vfil##\vfil\cr
+      \hbox{$\scriptscriptstyle-$}\cr
+      \hbox to 0pt{\hss$\scriptscriptstyle\rangle\mskip -.8mu$}\cr
+      \hbox{$\scriptstyle\mskip -3mu\mid\mskip -1.4mu$}\cr}}
+%    \end{macrocode}
+% \end{macro}
+%
+% Obey Tabs:
+%
+%    \begin{macrocode}
+\newbox\FV@TabBox
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@@ObeyTabsInit}
+%    \begin{macrocode}
+\def\FV@@ObeyTabsInit{%
+  \@tempdimb=\FancyVerbTabSize\fontdimen\tw@\font
+  \edef\FV@ObeyTabSize{\number\@tempdimb}%
+  \advance\@tempdimb\fontdimen\tw@\font
+  \advance\@tempdimb-\FancyVerbTabSize sp  % Allow for rounding errors.
+  \edef\FV@@ObeyTabSize{\number\@tempdimb}%
+  \let\FV@ObeyTabs\FV@@ObeyTabs
+  \let\FV@Tab\FV@TrueTab}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@@ObeyTabs}
+%    \begin{macrocode}
+\def\FV@@ObeyTabs#1{\setbox\FV@TabBox=\hbox{#1}\box\FV@TabBox}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\let\FV@ObeyTabs\relax
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@TrueTab}
+%    \begin{macrocode}
+\def\FV@TrueTab{%
+  \egroup
+  \@tempdima=\FV@ObeyTabSize sp\relax
+  \@tempcnta=\wd\FV@TabBox
+  \advance\@tempcnta\FV@@ObeyTabSize\relax
+  \divide\@tempcnta\@tempdima
+  \multiply\@tempdima\@tempcnta
+  \advance\@tempdima-\wd\FV@TabBox
+  \setbox\FV@TabBox=\hbox\bgroup
+    \unhbox\FV@TabBox\kern\@tempdima\hbox to\z@{\hss\FV@TabChar}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@ObeyTabsInit}
+%    \begin{macrocode}
+\define@booleankey{FV}{obeytabs}%
+  {\let\FV@ObeyTabsInit\FV@@ObeyTabsInit}%
+  {\let\FV@ObeyTabsInit\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{obeytabs=false}
+%    \end{macrocode}
+%
+% \cs{FancyVerbFormatCom}
+%
+% \begin{macro}{\FancyVerbFormatCom}
+%    \begin{macrocode}
+\define@key{FV}{formatcom}[]{\def\FancyVerbFormatCom{#1\relax}}
+\define@key{FV}{formatcom*}{%
+  \expandafter\def\expandafter\FancyVerbFormatCom\expandafter{%
+    \FancyVerbFormatCom#1\relax}}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{formatcom}
+%    \end{macrocode}
+%
+% \begin{macro}{\FancyVerbFormatLine}
+%    \begin{macrocode}
+\def\FancyVerbFormatLine#1{\FV@ObeyTabs{#1}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{List environments}
+%
+% Some parameters:
+%
+% \begin{macro}{\FV@XLeftMargin}
+%    \begin{macrocode}
+\define@key{FV}{xleftmargin}{\def\FV@XLeftMargin{#1}}
+\let\FV@XLeftMargin\z@
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@XRightMargin}
+%    \begin{macrocode}
+\define@key{FV}{xrightmargin}{\def\FV@XRightMargin{#1}}
+\let\FV@XRightMargin\z@
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\if@FV@ResetMargins}
+%    \begin{macrocode}
+\define@booleankey{FV}{resetmargins}%
+  {\let\if@FV@ResetMargins\iftrue}
+  {\let\if@FV@ResetMargins\iffalse}
+\fvset{resetmargins=false}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@ListParameterHook}
+%    \begin{macrocode}
+\define@key{FV}{listparameters}{\def\FV@ListParameterHook{#1}}
+\def\FV@ListParameterHook{}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FancyVerbHFuzz}
+%    \begin{macrocode}
+\define@key{FV}{hfuzz}{%
+  \@tempdima=#1\relax
+  \edef\FancyVerbHFuzz{\number\@tempdima sp}}
+\fvset{hfuzz=2pt}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@InterLinePenalty}
+%    \begin{macrocode}
+\define@booleankey{FV}{samepage}%
+  {\def\FV@InterLinePenalty{\interlinepenalty\@M}}%
+  {\let\FV@InterLinePenalty\relax}
+\fvset{samepage=false}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \noindent Lists:
+%
+% \verb+\FV@List{}+ is a rewriting of \verb+\list{}{}\item[]+.
+% The rewrite gives me more control.
+% I might not get the vertical spacing exactly the same, but it
+% is more likely that it will get better than worse.
+%
+% The verbatim environment consists of a series of \verb+\hbox+'s inserted in
+% vertical mode.
+%
+% \noindent We need to take care of the following:
+% \begin{itemize}
+%   \item leftmargin
+%   \item rightmargin
+%   \item topskip
+%   \item botskip
+%   \item toppenalty
+%   \item botpenalty
+%   \item interlinepenalties
+% \end{itemize}
+%
+% Note: A verbatim environment immediately after an \verb+\item+ starts on
+%       the same line as the \verb+\item+'s label, unless we reset margins.
+%       The user can instead have the environment start on a new
+%       line by inserting \verb+`\ '+ between \verb+\item+ and the environment.
+%
+% \begin{macro}{\FV@List}
+%    \begin{macrocode}
+\def\FV@List#1{%
+  \begingroup
+  \FV@UseKeyValues
+  \FV@LeaveVMode
+  \if@inlabel\else\setbox\@labels=\box\voidb@x\fi
+  \FV@ListNesting{#1}%
+  \FV@ListParameterHook
+  \FV@ListVSpace
+  \FV@SetLineWidth
+  \FV@InterLinePenalty
+  \let\FV@ProcessLine\FV@ListProcessLine@i
+  \FV@CatCodes
+  \FV@FormattingPrep
+  \FV@ObeyTabsInit
+  \FV@BeginListFrame}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \noindent Cases where we need to leave vmode:
+% \begin{itemize}
+%   \item After an in-line section (\verb+\if@noskipsec=T+).
+%   \item After an \verb+\item+ command, if we reset margins.
+% \end{itemize}
+%
+% Then we end \verb+\vmode+, using \verb+@noparlist+ as a flag if in vmode.
+% (Not the usual meaning of \verb+@noparlist+.)
+%
+% \begin{macro}{\FV@LeaveVMode}
+%    \begin{macrocode}
+\def\FV@LeaveVMode{%
+  \if@noskipsec
+    \leavevmode
+  \else
+    \if@FV@ResetMargins\if@inlabel\leavevmode\fi\fi
+  \fi
+  \ifvmode\@noparlisttrue\else\@noparlistfalse\unskip\par\fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@ListNesting}
+%    \begin{macrocode}
+\def\FV@ListNesting#1{%
+  \if@FV@ResetMargins
+    \@listdepth=\z@
+  \else
+    \ifnum\@listdepth>5\relax
+      \@toodeep
+    \else
+      \advance\@listdepth\@ne
+    \fi
+  \fi
+  \rightmargin\z@
+  \csname @list\romannumeral\the\@listdepth\endcsname
+  \ifnum#1=\z@
+    \rightmargin\z@
+    \leftmargin\z@
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \noindent \cs{FV@ListVSpace} contains selected parts of \cs{@trivlist} and
+% \cs{@item}.
+%
+% \noindent Here are the cases:
+%
+% \noindent Vmode not in label or after \verb+@NOBREAK+:
+% \begin{tabbing}
+%   \verb+<toppenalty>+ \= = \kill
+%   \verb+<topskip>+    \> = \verb!\topsep + \partopsep + \parskip! \\
+%   \verb+<botskip>+    \> = \verb!\topsep + \partopsep! \\
+%   \verb+<toppenalty>+ \> = \verb+\@beginparpenalty+ \\
+%   \verb+<botpenalty>+ \> = \verb+\@endparpenalty+
+% \end{tabbing}
+%
+% \noindent Vmode in label:
+% \begin{tabbing}
+%   \verb+<toppenalty>+ \= = \verb!\topsep + \partopsep! \= \% \kill
+%   \verb+<topskip>+    \> = \verb+\parskip+             \> \% Expected
+%                                                             anyway. \\
+%   \verb+<botskip>+    \> = \verb!\topsep + \partopsep! \> \% Omitted
+%                                              in \LaTeX{} -- a bug? \\
+%   \verb+<toppenalty>+ \> = None \\
+%   \verb+<botpenalty>+ \> = \verb+\@endparpenalty+      \> \% Ditto.
+% \end{tabbing}
+%
+% \noindent Vmode after \verb+@nobreak+:
+% \begin{tabbing}
+%   \verb+<toppenalty>+ \= = \kill
+%   \verb+<topskip>+    \> = \verb+\parskip+ \\
+%   \verb+<botskip>+    \> = \verb!\topsep + \partopsep! \\
+%   \verb+<toppenalty>+ \> = \verb+None+ \\
+%   \verb+<botpenatly>+ \> = \verb+\@endparpenalty+
+% \end{tabbing}
+%
+% \noindent Hmode:
+% \begin{tabbing}
+%   \verb+<toppenalty>+ \= = \kill
+%   \verb+<topskip>+    \> = \verb!\topsep + \parskip! \\
+%   \verb+<botskip>+    \> = \verb+\topsep+ \\
+%   \verb+<toppenalty>+ \> = \verb+\@beginparpenalty+ \\
+%   \verb+<botpenatly>+ \> = \verb+\@endparpenalty+
+% \end{tabbing}
+%
+% \noindent Notes:
+% \begin{itemize}
+%   \item Except when in label or after nobreak, \verb+\parskip+ is added with
+%         \verb+\addvspace+, so that net space is:
+%
+%         \verb!MAX{\topsep (+\partopsep) + \parskip , \lastskip }!
+%
+%         (The usual \verb+\@item+ works the same way.)
+%   \item \verb+\parskip+ is added afterwards by a new paragraph, if any.
+%   \item \verb+<botskip> == \@topsepadd+
+% \end{itemize}
+%
+% \begin{macro}{\FV@ListVSpace}
+%    \begin{macrocode}
+\def\FV@ListVSpace{%
+  \@topsepadd\topsep
+  \if@noparlist\advance\@topsepadd\partopsep\fi
+  \if@inlabel
+    \vskip\parskip
+  \else
+    \if@nobreak
+      \vskip\parskip
+      \clubpenalty\@M
+    \else
+      \addpenalty\@beginparpenalty
+      \@topsep\@topsepadd
+      \advance\@topsep\parskip
+      \addvspace\@topsep
+    \fi
+  \fi
+  \global\@nobreakfalse
+  \global\@inlabelfalse
+  \global\@minipagefalse
+  \global\@newlistfalse}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{tabbing}
+%   \verb+\@totalleftmargin+ \= := \kill
+%   \verb+\leftmargin+       \> := totalleftmargin \\
+%   \verb+\rightmargin+      \> := totalrightmargin \\
+%   \verb+\@totalleftmargin+ \> := totalleftmargin of enclosing environment.
+% \end{tabbing}
+%
+% \begin{macro}{\FV@SetLineWidth}
+%    \begin{macrocode}
+\def\FV@SetLineWidth{%
+  \if@FV@ResetMargins\else
+    \advance\leftmargin\@totalleftmargin
+  \fi
+  \advance\leftmargin\FV@XLeftMargin\relax
+  \advance\rightmargin\FV@XRightMargin\relax
+  \linewidth\hsize
+  \advance\linewidth-\leftmargin
+  \advance\linewidth-\rightmargin
+  \hfuzz\FancyVerbHFuzz\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% We have to insert the right interline penalties (\verb+\interlinepenalty+,
+% \verb+\clubpenalty+, \verb+\widowpenalty+). We could process the environment
+% as one long paragraph and let \TeX{} insert the penalties, but this
+% might cause problems for a very long environment.
+%
+% \begin{description}
+%   \item[Line 1] : Insert \verb+\@labels+ (maybe) plus current\_line
+%   \item[Line 2] : Save current line
+%   \item[Line 3] : penalty = interline + club ; Insert last line ;
+%                   Save current line.
+%   \item[Line 4] : penalty = interline ; Insert last line ; Save current line.
+% \end{description}
+%
+% \noindent Then at the end:
+% \begin{description}
+%   \item[Next line = 1] :  Add null line.
+%   \item[Next line = 2] :  Nothing.
+%   \item[Next line = 3] :  penalty = interline + club + widow ;
+%                           Insert last line.
+%   \item[Next line = 4] :  penalty = interline + widow ; Insert last line.
+% \end{description}
+%
+% \begin{macro}{\FV@ListProcessLine}
+%    \begin{macrocode}
+\def\FV@ListProcessLine#1{%
+  \hbox to \hsize{%
+    \kern\leftmargin
+    \hbox to \linewidth{%
+      \FV@LeftListNumber
+      \FV@LeftListFrame
+      \FancyVerbFormatLine{#1}\hss
+%% DG/SR modification begin - Jan. 28, 1998 (for numbers=right add-on)
+%%      \FV@RightListFrame}%
+      \FV@RightListFrame
+      \FV@RightListNumber}%
+%% DG/SR modification end
+    \hss}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@ListProcessLine@i}
+%    \begin{macrocode}
+\def\FV@ListProcessLine@i#1{%
+  \hbox{%
+    \ifvoid\@labels\else
+      \hbox to \z@{\kern\@totalleftmargin\box\@labels\hss}%
+    \fi
+    \FV@ListProcessLine{#1}}%
+  \let\FV@ProcessLine\FV@ListProcessLine@ii}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@ListProcessLine@ii}
+%    \begin{macrocode}
+\def\FV@ListProcessLine@ii#1{%
+  \setbox\@tempboxa=\FV@ListProcessLine{#1}%
+  \let\FV@ProcessLine\FV@ListProcessLine@iii}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@ListProcessLine@iii}
+%    \begin{macrocode}
+\def\FV@ListProcessLine@iii#1{%
+  {\advance\interlinepenalty\clubpenalty\penalty\interlinepenalty}%
+  \box\@tempboxa
+  \setbox\@tempboxa=\FV@ListProcessLine{#1}%
+  \let\FV@ProcessLine\FV@ListProcessLine@iv}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@ListProcessLine@iv}
+%    \begin{macrocode}
+\def\FV@ListProcessLine@iv#1{%
+  \penalty\interlinepenalty
+  \box\@tempboxa
+  \setbox\@tempboxa=\FV@ListProcessLine{#1}}%
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@EndList}
+%    \begin{macrocode}
+\def\FV@EndList{%
+  \FV@ListProcessLastLine
+  \FV@EndListFrame
+  \@endparenv
+  \endgroup
+  \@endpetrue}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@ListProcessLastLine}
+%    \begin{macrocode}
+\def\FV@ListProcessLastLine{%
+  \ifx\FV@ProcessLine\FV@ListProcessLine@iv
+    {\advance\interlinepenalty\widowpenalty\penalty\interlinepenalty}%
+    \box\@tempboxa
+  \else
+    \ifx\FV@ProcessLine\FV@ListProcessLine@iii
+      {\advance\interlinepenalty\widowpenalty
+        \advance\interlinepenalty\clubpenalty
+        \penalty\interlinepenalty}%
+      \box\@tempboxa
+    \else
+      \ifx\FV@ProcessLine\FV@ListProcessLine@i
+        \FV@Error{Empty verbatim environment}{}%
+        \FV@ProcessLine{}%
+      \fi
+    \fi
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% Verbatim environment:
+%
+% \DescribeEnv{Verbatim}
+%    \begin{macrocode}
+\def\FV@VerbatimBegin{\FV@List\z@}
+\def\FV@VerbatimEnd{\FV@EndList}
+%    \end{macrocode}
+%
+% \begin{macro}{\FVB@Verbatim}
+%    \begin{macrocode}
+\def\FVB@Verbatim{\FV@VerbatimBegin\FV@Scan}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVE@Verbatim}
+%    \begin{macrocode}
+\def\FVE@Verbatim{\FV@VerbatimEnd}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\DefineVerbatimEnvironment{Verbatim}{Verbatim}{}
+%    \end{macrocode}
+%
+% With \cs{UseVerbatim}, we have to take care of some of the things
+% \verb+\end{}+ would do.
+%
+% \begin{macro}{\FV@UseVerbatim}
+%    \begin{macrocode}
+\def\FV@UseVerbatim#1{%
+  \FV@VerbatimBegin#1\FV@VerbatimEnd
+  \@doendpe\global\@ignorefalse\ignorespaces}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\VerbatimInput}
+%    \begin{macrocode}
+\def\VerbatimInput{\FV@Command{}{VerbatimInput}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@VerbatimInput}
+%    \begin{macrocode}
+\def\FVC@VerbatimInput#1{\FV@UseVerbatim{\FV@Input{#1}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% LVerbatim environment:
+%
+% \DescribeEnv{LVerbatim}
+%    \begin{macrocode}
+\def\FV@LVerbatimBegin{\FV@List\@ne}
+\def\FV@LVerbatimEnd{\FV@EndList}
+%    \end{macrocode}
+%
+% \begin{macro}{\FVB@LVerbatim}
+%    \begin{macrocode}
+\def\FVB@LVerbatim{\FV@LVerbatimBegin\FV@Scan}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVE@LVerbatim}
+%    \begin{macrocode}
+\def\FVE@LVerbatim{\FV@LVerbatimEnd}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\DefineVerbatimEnvironment{LVerbatim}{LVerbatim}{}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@LUseVerbatim}
+%    \begin{macrocode}
+\def\FV@LUseVerbatim#1{%
+  \FV@LVerbatimBegin#1\FV@LVerbatimEnd
+  \@doendpe\global\@ignorefalse\ignorespaces}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\LVerbatimInput}
+%    \begin{macrocode}
+\def\LVerbatimInput{\FV@Command{}{LVerbatimInput}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@LVerbatimInput}
+%    \begin{macrocode}
+\def\FVC@LVerbatimInput#1{\FV@LUseVerbatim{\FV@Input{#1}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% Frames:
+%
+% \begin{macro}{\FV@Frame@none}
+%    \begin{macrocode}
+\def\FV@Frame@none{%
+  \let\FV@BeginListFrame\relax
+  \let\FV@LeftListFrame\relax
+  \let\FV@RightListFrame\relax
+  \let\FV@EndListFrame\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@Frame@single}
+%    \begin{macrocode}
+\def\FV@Frame@single{%
+  \let\FV@BeginListFrame\FV@BeginListFrame@Single
+  \let\FV@LeftListFrame\FV@LeftListFrame@Single
+  \let\FV@RightListFrame\FV@RightListFrame@Single
+  \let\FV@EndListFrame\FV@EndListFrame@Single}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@Frame@lines}
+%    \begin{macrocode}
+\def\FV@Frame@lines{%
+  \let\FV@BeginListFrame\FV@BeginListFrame@Lines
+  \let\FV@LeftListFrame\relax
+  \let\FV@RightListFrame\relax
+  \let\FV@EndListFrame\FV@EndListFrame@Lines}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@Frame@topline}
+%    \begin{macrocode}
+\def\FV@Frame@topline{%
+  \let\FV@BeginListFrame\FV@BeginListFrame@Lines
+  \let\FV@LeftListFrame\relax
+  \let\FV@RightListFrame\relax
+  \let\FV@EndListFrame\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@Frame@bottomline}
+%    \begin{macrocode}
+\def\FV@Frame@bottomline{%
+  \let\FV@BeginListFrame\relax
+  \let\FV@LeftListFrame\relax
+  \let\FV@RightListFrame\relax
+  \let\FV@EndListFrame\FV@EndListFrame@Lines}
+%    \end{macrocode}
+% \end{macro}
+%
+% \changes{v2.6}{1998/07/17}{Add ``leftline'' value for the ``frame'' parameter
+%                            (idea taken from a requirement of
+%                            Christophe Roudet on June 9, 1998).}
+%
+% \ifChangeBar\begin{changebar}\fi
+% \begin{macro}{\FV@Frame@leftline}
+%    \begin{macrocode}
+%% To define a frame with only a left line
+\def\FV@Frame@leftline{%
+  % To define the \FV@FrameFillLine macro (from \FV@BeginListFrame)
+  \ifx\FancyVerbFillColor\relax
+    \let\FV@FrameFillLine\relax
+  \else
+    \@tempdima\FV@FrameRule\relax
+    \multiply\@tempdima-\tw@
+    \edef\FV@FrameFillLine{%
+      {\noexpand\FancyVerbFillColor{\vrule\@width\number\@tempdima sp}%
+      \kern-\number\@tempdima sp}}%
+  \fi
+  \let\FV@BeginListFrame\relax
+  \let\FV@LeftListFrame\FV@LeftListFrame@Single
+  \let\FV@RightListFrame\relax
+  \let\FV@EndListFrame\relax}
+%    \end{macrocode}
+% \end{macro}
+% \ifChangeBar\end{changebar}\fi
+%
+% \changes{v2.6}{1998/07/17}{Add the ``label'' and ``labelposition'' parameters
+%                            (suggested by Michael Friendly on May 15, 1998).}
+%
+% \ifChangeBar\begin{changebar}\fi
+% \begin{macro}{\FV@BeginListFrame@Single}
+%    \begin{macrocode}
+\def\FV@BeginListFrame@Single{%
+  \lineskip\z@
+  \baselineskip\z@
+  \ifx\FancyVerbFillColor\relax
+    \let\FV@FrameFillLine\relax
+  \else
+    \@tempdima\FV@FrameRule\relax
+    \multiply\@tempdima-\tw@
+    \edef\FV@FrameFillLine{%
+      {\noexpand\FancyVerbFillColor{\vrule\@width\number\@tempdima sp}%
+      \kern-\number\@tempdima sp}}%
+  \fi
+%% DG/SR modification begin - May. 19, 1998
+%%  \FV@SingleFrameLine
+  \FV@SingleFrameLine{\z@}%
+%% DG/SR modification end
+  \penalty\@M
+  \FV@SingleFrameSep
+  \penalty\@M}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@Label}
+%    \begin{macrocode}
+%% DG/SR modification begin - May. 19, 1998
+\define@key{FV}{label}{%
+  \def\@tempa{#1}%
+  \ifx\@tempa\FV@None
+    \let\FV@LabelBegin\relax
+    \let\FV@LabelEnd\relax
+  \else
+    \FV@Label@i#1\@nil%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@Label@i}
+%    \begin{macrocode}
+\def\FV@Label@i{\@ifnextchar[{\FV@Label@ii}{\FV@Label@ii[]}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@Label@ii}
+%    \begin{macrocode}
+\def\FV@Label@ii[#1]#2\@nil{%
+  \def\@tempa{#1}%
+  \ifx\@tempa\empty
+    \def\FV@LabelBegin{#2}%
+  \else
+    \def\FV@LabelBegin{#1}%
+    \def\FV@LabelPositionBottomLine{\@ne}%
+  \fi
+  \def\FV@LabelEnd{#2}}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{label=none}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@LabelPosition}
+%    \begin{macrocode}
+\define@key{FV}{labelposition}[none]{%
+  \@ifundefined{FV@LabelPosition@#1}%
+    {\FV@Error{Label position `#1' not defined.}\FV@eha}%
+    {\@nameuse{FV@LabelPosition@#1}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@LabelPosition@none}
+%    \begin{macrocode}
+\def\FV@LabelPosition@none{%
+  \let\FV@LabelPositionTopLine\relax%
+  \let\FV@LabelPositionBottomLine\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@LabelPosition@topline}
+%    \begin{macrocode}
+\def\FV@LabelPosition@topline{%
+  \def\FV@LabelPositionTopLine{\@ne}%
+  \let\FV@LabelPositionBottomLine\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@LabelPosition@bottomline}
+%    \begin{macrocode}
+\def\FV@LabelPosition@bottomline{%
+  \let\FV@LabelPositionTopLine\relax%
+  \def\FV@LabelPositionBottomLine{\@ne}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@LabelPosition@all}
+%    \begin{macrocode}
+\def\FV@LabelPosition@all{%
+  \def\FV@LabelPositionTopLine{\@ne}%
+  \def\FV@LabelPositionBottomLine{\@ne}}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{labelposition=topline}
+%% DG/SR modification end
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@SingleFrameLine}
+%    \begin{macrocode}
+%% DG/SR modification begin - May. 19, 1998
+%% \def\FV@SingleFrameLine{%
+\def\FV@SingleFrameLine#1{%
+%% DG/SR modification end
+  \hbox to\z@{%
+    \kern\leftmargin
+%% DG/SR modification begin - Jun. 22, 1998
+    \ifnum#1=\z@
+      \let\FV@Label\FV@LabelBegin
+    \else
+      \let\FV@Label\FV@LabelEnd
+    \fi
+    \ifx\FV@Label\relax
+%% DG/SR modification end
+      \FancyVerbRuleColor{\vrule \@width\linewidth \@height\FV@FrameRule}%
+%% DG/SR modification begin - Jun. 22, 1998
+    \else
+      \ifnum#1=\z@
+        \setbox\z@\hbox{\strut\enspace\FV@LabelBegin\enspace\strut}%
+      \else
+        \setbox\z@\hbox{\strut\enspace\FV@LabelEnd\enspace\strut}%
+      \fi
+      \@tempdimb=\dp\z@
+      \advance\@tempdimb -.5\ht\z@
+      \@tempdimc=\linewidth
+      \advance\@tempdimc -\wd\z@
+      \divide\@tempdimc\tw@
+      \ifnum#1=\z@              % Top line
+        \ifx\FV@LabelPositionTopLine\relax
+          \FancyVerbRuleColor{\vrule \@width\linewidth \@height\FV@FrameRule}%
+        \else
+          \FV@FrameLineWithLabel
+        \fi
+      \else                     % Bottom line
+        \ifx\FV@LabelPositionBottomLine\relax
+          \FancyVerbRuleColor{\vrule \@width\linewidth \@height\FV@FrameRule}%
+        \else
+          \FV@FrameLineWithLabel
+        \fi
+      \fi
+    \fi
+%% DG/SR modification end
+    \hss}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@FrameLineWithLabel}
+%    \begin{macrocode}
+%% DG/SR modification begin - May. 19, 1998
+\def\FV@FrameLineWithLabel{%
+  \ht\z@\@tempdimb\dp\z@\@tempdimb%
+  \FancyVerbRuleColor{%
+    \vrule \@width\@tempdimc \@height\FV@FrameRule
+    \raise\@tempdimb\box\z@
+    \vrule \@width\@tempdimc \@height\FV@FrameRule}}
+%% DG/SR modification end
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@BeginListFrame@Lines}
+%    \begin{macrocode}
+\def\FV@BeginListFrame@Lines{%
+  \begingroup
+    \lineskip\z@skip
+%% DG modification begin - June 18, 1997 (effect of \baselineskip too earlier)
+%%    \baselineskip\z@skip
+%%    \FV@SingleFrameLine
+%% DG/SR modification begin - May. 19, 1998
+%%    \FV@SingleFrameLine
+    \FV@SingleFrameLine{\z@}%
+%% DG/SR modification end
+    \kern-0.5\baselineskip\relax
+    \baselineskip\z@skip
+%% DG modification end
+    \kern\FV@FrameSep\relax
+  \endgroup}%
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@EndListFrame@Lines}
+%    \begin{macrocode}
+\def\FV@EndListFrame@Lines{%
+  \begingroup
+    \baselineskip\z@skip
+    \kern\FV@FrameSep\relax
+%% DG/SR modification begin - May. 19, 1998
+%%    \FV@SingleFrameLine
+    \FV@SingleFrameLine{\@ne}%
+%% DG/SR modification end
+  \endgroup}
+%    \end{macrocode}
+% \end{macro}
+% \ifChangeBar\end{changebar}\fi
+%
+% \begin{macro}{\FV@SingleFrameSep}
+%    \begin{macrocode}
+\def\FV@SingleFrameSep{%
+  \hbox to \z@{%
+    \kern\leftmargin
+    \hbox to\linewidth{%
+      \FancyVerbRuleColor{%
+%% DG modification begin - June 18, 1997 (\FV@FrameSep missing)
+        \ifx\FancyVerbFillColor\relax
+          \vrule\@width 0pt\@height\FV@FrameSep\relax
+        \fi
+%% DG modification end
+        \vrule\@width\FV@FrameRule\relax
+        \ifx\FancyVerbFillColor\relax
+          \hfil
+        \else
+          {\FancyVerbFillColor\leaders\hrule\@height\FV@FrameSep\hfil}%
+        \fi
+%% DG modification begin - June 18, 1997 (\FV@FrameSep missing)
+        \ifx\FancyVerbFillColor\relax
+          \vrule\@width 0pt\@height\FV@FrameSep\relax
+        \fi
+%% DG modification end
+        \vrule\@width\FV@FrameRule\relax}}%
+    \hss}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@LeftListFrame@Single}
+%    \begin{macrocode}
+\def\FV@LeftListFrame@Single{%
+  \strut
+  {\FancyVerbRuleColor{\vrule \@width\FV@FrameRule}}%
+  \FV@FrameFillLine
+%% DG modification begin - June 18, 1997 (to fill color on left side)
+%%  \kern\FV@FrameSep}
+  \ifx\FancyVerbFillColor\relax
+    \kern\FV@FrameSep
+  \else
+    {\noexpand\leavevmode\FancyVerbFillColor{\vrule\@width\FV@FrameSep}}%
+  \fi}
+%% DG modification end
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@RightListFrame@Single}
+%    \begin{macrocode}
+\def\FV@RightListFrame@Single{%
+%% DG modification begin - June 18, 1997 (to fill color on right side)
+%%  \kern\FV@FrameSep
+  \ifx\FancyVerbFillColor\relax
+    \kern\FV@FrameSep
+  \else
+    {\noexpand\leavevmode\FancyVerbFillColor{\vrule\@width\FV@FrameSep}}%
+  \fi
+  {\noexpand\leavevmode\FancyVerbRuleColor{\vrule\@width\FV@FrameRule}}}
+%% DG modification end
+%    \end{macrocode}
+% \end{macro}
+%
+% \ifChangeBar\begin{changebar}\fi
+% \begin{macro}{\FV@EndListFrame@Single}
+%    \begin{macrocode}
+\def\FV@EndListFrame@Single{%
+  \penalty\@M
+  \FV@SingleFrameSep
+  \penalty\@M
+%% DG/SR modification begin - May. 19, 1998
+%%  \FV@SingleFrameLine}
+  \FV@SingleFrameLine{\@ne}}
+%% DG/SR modification end
+%    \end{macrocode}
+% \end{macro}
+% \ifChangeBar\end{changebar}\fi
+%
+% \begin{macro}{\FV@FrameRule}
+%    \begin{macrocode}
+\define@key{FV}{framerule}{%
+  \@tempdima=#1\relax
+  \edef\FV@FrameRule{\number\@tempdima sp\relax}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\KV@FV@framerule@default}
+%    \begin{macrocode}
+\def\KV@FV@framerule@default{\let\FV@FrameRule\fboxrule}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@FrameSep}
+%    \begin{macrocode}
+\define@key{FV}{framesep}{%
+  \@tempdima=#1\relax
+  \edef\FV@FrameSep{\number\@tempdima sp\relax}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\KV@FV@framesep@default}
+%    \begin{macrocode}
+\def\KV@FV@framesep@default{\let\FV@FrameSep\fboxsep}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{framerule,framesep}
+%    \end{macrocode}
+%
+% \begin{macro}{\FancyVerbRuleColor}
+%    \begin{macrocode}
+\define@key{FV}{rulecolor}{%
+  \def\@tempa{#1}%
+  \ifx\@tempa\FV@None
+    \let\FancyVerbRuleColor\relax
+  \else
+    \let\FancyVerbRuleColor\@tempa
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FancyVerbFillColor}
+%    \begin{macrocode}
+\define@key{FV}{fillcolor}{%
+  \def\@tempa{#1}%
+  \ifx\@tempa\FV@None
+    \let\FancyVerbFillColor\relax
+  \else
+    \let\FancyVerbFillColor\@tempa
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{rulecolor=none,fillcolor=none}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@Frame@double}
+%    \begin{macrocode}
+\def\FV@Frame@double{%
+  \let\FV@FrameBegin\FV@FrameBegin@double
+  \let\FV@FrameLine\FV@FrameLine@double
+  \let\FV@FrameEnd\FV@FrameEnd@double}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\define@key{FV}{frame}[none]{%
+  \@ifundefined{FV@Frame@#1}%
+    {\FV@Error{Frame style `#1' not defined.}\FV@eha}%
+    {\@nameuse{FV@Frame@#1}}}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\fvset{frame=none}
+%    \end{macrocode}
+%
+%
+% Code line numbers:
+%
+%    \begin{macrocode}
+\newcounter{FancyVerbLine}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@SetLineNo}
+%    \begin{macrocode}
+\define@key{FV}{firstnumber}[auto]{%
+  \def\@tempa{#1}\def\@tempb{auto}%
+  \ifx\@tempa\@tempb
+    \def\FV@SetLineNo{%
+      \c@FancyVerbLine\FV@CodeLineNo
+      \advance\c@FancyVerbLine\m@ne}%
+  \else
+    \def\@tempb{last}%
+    \ifx\@tempa\@tempb
+      \let\FV@SetLineNo\relax
+    \else
+%% DG/SR modification begin - Jan. 19, 1998
+%%      \def\FV@SetLineNo{\c@FancyVerbLine#1}%
+      \def\FV@SetLineNo{%
+        \c@FancyVerbLine#1
+        \advance\c@FancyVerbLine\m@ne}%
+%% DG/SR modification end
+    \fi
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \changes{v2.6}{1998/07/17}{Add the ``numberblanklines'' parameter to allow
+%                            to don't number empty lines (suggested by
+%                            Philippe Esperet on April 25, 1998).}
+%
+% \ifChangeBar\begin{changebar}\fi
+% \begin{macro}{\if@FV@NumberBlankLines}
+%    \begin{macrocode}
+\define@booleankey{FV}{numberblanklines}%
+  {\let\if@FV@NumberBlankLines\iftrue}
+  {\let\if@FV@NumberBlankLines\iffalse}
+\fvset{numberblanklines=true}
+%    \end{macrocode}
+% \end{macro}
+% \ifChangeBar\end{changebar}\fi
+%
+% \changes{v2.6}{1998/07/17}{Correct a bug which didn't allow to use the label
+%                            macro in verbatim env.
+%                            (reported by Philippe Esperet on May 20, 1998).}
+%
+% \ifChangeBar\mbox{}\begin{changebar}\fi
+% \begin{macro}{\FV@refstepcounter}
+%    \begin{macrocode}
+%% DG/SR modification begin - May. 20, 1998
+%%\def\refstepcounter#1{% Adapted from latex.ltx
+\def\FV@refstepcounter#1{%
+%% DG/SR modification end
+  \stepcounter{#1}%
+  \protected@edef\@currentlabel
+    {\csname p@#1\endcsname\arabic{FancyVerbLine}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@StepLineNo}
+%    \begin{macrocode}
+\def\FV@StepLineNo{%
+  \FV@SetLineNo
+%% DG/SR modification begin - Apr. 28, 1998 and May 20, 1998
+%%  \def\FV@StepLineNo{\refstepcounter{FancyVerbLine}}%
+  \def\FV@StepLineNo{%
+    \if@FV@NumberBlankLines
+      \FV@refstepcounter{FancyVerbLine}
+    \else
+      \ifx\FV@Line\empty
+      \else
+        \FV@refstepcounter{FancyVerbLine}
+      \fi
+    \fi}%
+%% DG/SR modification end
+  \FV@StepLineNo}
+%    \end{macrocode}
+% \end{macro}
+% \ifChangeBar\end{changebar}\mbox{}\fi
+%
+% \begin{macro}{\theFancyVerbLine}
+%    \begin{macrocode}
+%% DG/SR modification begin - 1995
+%%\def\theFancyVerbLine{\rm\tiny\arabic{FancyVerbLine}}
+\def\theFancyVerbLine{\rmfamily\tiny\arabic{FancyVerbLine}}
+%% DG/SR modification end
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\define@key{FV}{numbers}[none]{%
+  \@ifundefined{FV@Numbers@#1}%
+    {\FV@Error{Numbers style `#1' not defined.}\FV@eha}%
+    {\@nameuse{FV@Numbers@#1}}}
+%    \end{macrocode}
+%
+% (D.G. -- Dec. 20, 1995 and Jan. 28, 1998):
+%
+% Add-on to allow a step when printing the lines counter
+% (``\texttt{stepnumber''} keyword)
+%
+% Add-on to allow the counter to be printed on right side
+% (\texttt{numbers=right})
+%
+% \begin{macro}{\FV@Numbers@none}
+%    \begin{macrocode}
+%% DG modification begin - Dec. 20, 1995 and Jan. 28, 1998
+%%\def\FV@Numbers@none{\let\FV@LeftListNumber\relax}
+\def\FV@Numbers@none{%
+\let\FV@LeftListNumber\relax
+\let\FV@RightListNumber\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\newcount\FV@StepNumber
+\define@key{FV}{stepnumber}{\FV@StepNumber#1}
+%    \end{macrocode}
+%
+% \begin{macro}{\KV@FV@stepnumber@default}
+%    \begin{macrocode}
+\def\KV@FV@stepnumber@default{\FV@StepNumber\@ne}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{stepnumber}
+%    \end{macrocode}
+%
+% ^^A `changebar' bug... \ifChangeBar\mbox{}\begin{changebar}\fi
+% \begin{macro}{\FV@Numbers@left}
+%    \begin{macrocode}
+%% DG modification begin - Dec. 20, 1995
+%%\def\FV@Numbers@left{%
+%%  \def\FV@LeftListNumber{\hbox to\z@{%
+%%    \hss\theFancyVerbLine\kern\FV@NumberSep}}}
+\def\FV@Numbers@left{%
+%% DG/SR modification begin - Apr. 28, 1998
+  \let\FV@RightListNumber\relax
+%% DG/SR modification end
+  \def\FV@LeftListNumber{%
+  \@tempcnta=\FV@CodeLineNo
+  \@tempcntb=\FV@CodeLineNo
+  \divide\@tempcntb\FV@StepNumber
+  \multiply\@tempcntb\FV@StepNumber
+  \ifnum\@tempcnta=\@tempcntb
+%% DG/SR modification begin - Apr. 28, 1998
+%%    \hbox to\z@{\hss\theFancyVerbLine\kern\FV@NumberSep}%
+      \if@FV@NumberBlankLines
+        \hbox to\z@{\hss\theFancyVerbLine\kern\FV@NumberSep}%
+      \else
+        \ifx\FV@Line\empty
+        \else
+          \hbox to\z@{\hss\theFancyVerbLine\kern\FV@NumberSep}%
+        \fi
+      \fi
+%% DG/SR modification end
+  \fi}}
+%    \end{macrocode}
+% \end{macro}
+% ^^A `changebar' bug... \ifChangeBar\end{changebar}\fi
+%
+% \ifChangeBar\begin{changebar}\fi
+% \begin{macro}{\FV@Numbers@right}
+%    \begin{macrocode}
+\def\FV@Numbers@right{%
+%% DG/SR modification begin - Apr. 28, 1998
+  \let\FV@LeftListNumber\relax
+%% DG/SR modification end
+  \def\FV@RightListNumber{%
+  \@tempcnta=\FV@CodeLineNo
+  \@tempcntb=\FV@CodeLineNo
+  \divide\@tempcntb\FV@StepNumber
+  \multiply\@tempcntb\FV@StepNumber
+  \ifnum\@tempcnta=\@tempcntb
+%% DG/SR modification begin - Apr. 28, 1998
+%%    \hbox to \z@{\kern\FV@NumberSep\theFancyVerbLine\hss}%
+      \if@FV@NumberBlankLines
+        \hbox to\z@{\kern\FV@NumberSep\theFancyVerbLine\hss}%
+      \else
+        \ifx\FV@Line\empty
+        \else
+          \hbox to\z@{\kern\FV@NumberSep\theFancyVerbLine\hss}%
+        \fi
+      \fi
+%% DG/SR modification end
+  \fi}}
+%% DG modification end
+%    \end{macrocode}
+% \end{macro}
+% \ifChangeBar\end{changebar}\fi
+%
+% \begin{macro}{\FV@NumberSep}
+%    \begin{macrocode}
+\define@key{FV}{numbersep}{%
+  \@tempdima=#1\relax
+  \edef\FV@NumberSep{\number\@tempdima sp\relax}}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{numbers=none,numbersep=12pt,firstnumber=auto}
+%    \end{macrocode}
+%
+% \subsection{BVerbatim}
+%
+% \DescribeEnv{BVerbatim}
+%    \begin{macrocode}
+\def\FV@BVerbatimBegin{%
+  \begingroup
+    \FV@UseKeyValues
+    \FV@BeginVBox
+    \let\FV@ProcessLine\FV@BProcessLine
+    \FV@FormattingPrep
+    \FV@ObeyTabsInit}%
+\def\FV@BVerbatimEnd{\FV@EndVBox\endgroup}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@BeginVBox}
+%    \begin{macrocode}
+\def\FV@BeginVBox{%
+  \leavevmode
+  \hbox\ifx\FV@boxwidth\relax\else to\FV@boxwidth\fi\bgroup
+  \ifcase\FV@baseline\vbox\or\vtop\or$\vcenter\fi\bgroup}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@EndVBox}
+%    \begin{macrocode}
+\def\FV@EndVBox{\egroup\ifmmode$\fi\hfil\egroup}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@boxwidth}
+%    \begin{macrocode}
+\define@key{FV}{boxwidth}{%
+  \def\@tempa{#1}\def\@tempb{auto}%
+  \ifx\@tempa\@tempb
+    \let\FV@boxwidth\relax
+  \else
+    \@tempdima=#1\relax
+    \edef\FV@boxwidth{\number\@tempdima sp}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\KV@FV@boxwidth@default}
+%    \begin{macrocode}
+\def\KV@FV@boxwidth@default{\let\FV@boxwidth\relax}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@baseline}
+%    \begin{macrocode}
+\define@key{FV}{baseline}{%
+  \if t#1\@empty\let\FV@baseline\@ne\else
+    \if c#1\@empty\let\FV@baseline\tw@\else\let\FV@baseline\z@\fi
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\fvset{baseline=b,boxwidth}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@BProcessLine}
+%    \begin{macrocode}
+\def\FV@BProcessLine#1{\hbox{\FancyVerbFormatLine{#1}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVB@BVerbatim}
+%    \begin{macrocode}
+\def\FVB@BVerbatim{\FV@BVerbatimBegin\FV@Scan}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVE@BVerbatim}
+%    \begin{macrocode}
+\def\FVE@BVerbatim{\FV@BVerbatimEnd}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\DefineVerbatimEnvironment{BVerbatim}{BVerbatim}{}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@BUseVerbatim}
+%    \begin{macrocode}
+\def\FV@BUseVerbatim#1{\FV@BVerbatimBegin#1\FV@BVerbatimEnd}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\BVerbatimInput}
+%    \begin{macrocode}
+\def\BVerbatimInput{\FV@Command{}{BVerbatimInput}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@BVerbatimInput}
+%    \begin{macrocode}
+\def\FVC@BVerbatimInput#1{\FV@BUseVerbatim{\FV@Input{#1}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{Save verbatim}
+%
+% \DescribeEnv{SaveVerbatim}
+%    \begin{macrocode}
+\def\SaveVerbatim{\FV@Environment{}{SaveVerbatim}}
+%    \end{macrocode}
+%
+% \begin{macro}{\FVB@SaveVerbatim}
+%    \begin{macrocode}
+\def\FVB@SaveVerbatim#1{%
+  \@bsphack
+  \begingroup
+    \FV@UseKeyValues
+%%    \FV@BeginVBox
+%%    \let\FV@ProcessLine\FV@BProcessLine
+%%    \FV@FormattingPrep
+%%    \FV@ObeyTabsInit%
+%%
+    \def\SaveVerbatim@Name{#1}%
+    \gdef\FV@TheVerbatim{}%
+    \def\FV@ProcessLine##1{%
+      \expandafter\gdef\expandafter\FV@TheVerbatim\expandafter{%
+        \FV@TheVerbatim\FV@ProcessLine{##1}}}%
+    \gdef\FV@TheVerbatim{}%
+    \FV@Scan}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVE@SaveVerbatim}
+%    \begin{macrocode}
+\def\FVE@SaveVerbatim{%
+  \expandafter\global\expandafter\let
+  \csname FV@SV@\SaveVerbatim@Name\endcsname\FV@TheVerbatim
+%%  \expandafter\gdef
+%%    \csname FV@SV@\SaveVerbatim@Name\endcsname{\FV@TheVerbatim}
+%%    \FV@EndVBox
+%%  \endgroup}
+  \endgroup\@esphack}
+%    \end{macrocode}
+% \end{macro}
+%
+% \DescribeEnv{SaveVerbatim}
+%    \begin{macrocode}
+\DefineVerbatimEnvironment{SaveVerbatim}{SaveVerbatim}{}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@CheckIfSaved}
+%    \begin{macrocode}
+\def\FV@CheckIfSaved#1#2{%
+  \@ifundefined{FV@SV@#1}%
+  {\FV@Error{No verbatim text has been saved under name `#1'}\FV@eha}%
+  {#2{\csname FV@SV@#1\endcsname}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\UseVerbatim}
+%    \begin{macrocode}
+\def\UseVerbatim{\FV@Command{}{UseVerbatim}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@UseVerbatim}
+%    \begin{macrocode}
+\def\FVC@UseVerbatim#1{\FV@CheckIfSaved{#1}{\FV@UseVerbatim}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\LUseVerbatim}
+%    \begin{macrocode}
+\def\LUseVerbatim{\FV@Command{}{LUseVerbatim}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@LUseVerbatim}
+%    \begin{macrocode}
+\def\FVC@LUseVerbatim#1{\FV@CheckIfSaved{#1}{\FV@LUseVerbatim}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\BUseVerbatim}
+%    \begin{macrocode}
+\def\BUseVerbatim{\FV@Command{}{BUseVerbatim}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@BUseVerbatim}
+%    \begin{macrocode}
+\def\FVC@BUseVerbatim#1{\FV@CheckIfSaved{#1}{\FV@BUseVerbatim}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{Verbatim out}
+%
+%    \begin{macrocode}
+\newwrite\FV@OutFile
+%    \end{macrocode}
+%
+% \begin{macro}{\VerbatimOut}
+%    \begin{macrocode}
+\def\VerbatimOut{\FV@Environment{}{VerbatimOut}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \ifChangeBar\begin{changebar}\fi
+% \begin{macro}{\FVB@VerbatimOut}
+%    \begin{macrocode}
+\def\FVB@VerbatimOut#1{%
+  \@bsphack
+  \begingroup
+    \FV@UseKeyValues
+    \FV@DefineWhiteSpace
+    \def\FV@Space{\space}%
+    \FV@DefineTabOut
+    \def\FV@ProcessLine{\immediate\write\FV@OutFile}%
+    \immediate\openout\FV@OutFile #1\relax
+    \let\FV@FontScanPrep\relax
+%% DG/SR modification begin - May. 18, 1998 (to avoid problems with ligatures)
+    \let\@noligs\relax
+%% DG/SR modification end
+    \FV@Scan}
+%    \end{macrocode}
+% \end{macro}
+% \ifChangeBar\end{changebar}\fi
+%
+% \begin{macro}{\FVE@VerbatimOut}
+%    \begin{macrocode}
+\def\FVE@VerbatimOut{\immediate\closeout\FV@OutFile\endgroup\@esphack}
+%    \end{macrocode}
+% \end{macro}
+%
+% \DescribeEnv{VerbatimOut}
+%    \begin{macrocode}
+\DefineVerbatimEnvironment{VerbatimOut}{VerbatimOut}{}
+%    \end{macrocode}
+%
+% \begin{macro}{\FV@DefineTabOut}
+%    \begin{macrocode}
+\def\FV@DefineTabOut{%
+  \def\FV@Tab{}%
+  \@tempcnta=\FancyVerbTabSize\relax
+  \loop\ifnum\@tempcnta>\z@
+    \edef\FV@Tab{\FV@Tab\space}%
+    \advance\@tempcnta\m@ne
+  \repeat}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{Short verbatim}
+%
+% \cs{SaveVerb}
+%
+% Note ``\verb+\outer\def^^M{}+''. This is so that verbatim commands report an
+% error when encountering an end-of-line, rather than scanning to
+% the end of the file each time there is a missing verbatim delimiter.
+%
+% If scanning fails (and thus \TeX{} ignores \cs{FV@GetVerb}), \verb+#1+ is
+% defined to be empty, a group is ended, but \cs{FancyVerbAfterSave} is not
+% invoked.
+%
+% \begin{macro}{\FV@Command}
+%    \begin{macrocode}
+\def\SaveVerb{\FV@Command{}{SaveVerb}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@SaveVerb}
+%    \begin{macrocode}
+\begingroup
+\catcode`\^^M=\active%
+\gdef\FVC@SaveVerb#1#2{%
+  \@namedef{FV@SV@#1}{}%
+  \begingroup%
+    \FV@UseKeyValues%
+    \FV@CatCodes%
+    \outer\def^^M{\FV@EOL}%
+    \global\let\@tempg\FancyVerbAfterSave%
+    \catcode`#2=12%
+    \def\@tempa{\def\FancyVerbGetVerb####1####2}%
+    \expandafter\@tempa\string#2{\endgroup\@namedef{FV@SV@#1}{##2}\@tempg}%
+    \FancyVerbGetVerb\FV@EOL}%
+\endgroup
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@EOL}
+%    \begin{macrocode}
+\def\FV@EOL{%
+  \endgroup
+  \FV@Error%
+    {Could not find the end delimiter of a short verb command}%
+    {You probably just forget the end delimiter of a \string\Verb\space or
+      \string\SaveVerb^^J%
+      command, or you broke the literal text across input lines.^^J%
+      Hit <return> to procede.}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FancyVerbAfterSave}
+%    \begin{macrocode}
+\define@key{FV}{aftersave}{\def\FancyVerbAfterSave{#1}}
+\fvset{aftersave=}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FV@UseVerb}
+%    \begin{macrocode}
+\def\FV@UseVerb#1{\mbox{\FV@UseKeyValues\FV@FormattingPrep#1}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\UseVerb}
+%    \begin{macrocode}
+\def\UseVerb{\FV@Command{}{UseVerb}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@UseVerb}
+%    \begin{macrocode}
+\def\FVC@UseVerb#1{%
+  \@ifundefined{FV@SV@#1}%
+    {\FV@Error{Short verbatim text never saved to name `#1'}\FV@eha}%
+    {\FV@UseVerb{\@nameuse{FV@SV@#1}}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\Verb}
+%    \begin{macrocode}
+\def\Verb{\FV@Command{}{Verb}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@Verb}
+%    \begin{macrocode}
+\begingroup
+\catcode`\^^M=\active%
+\gdef\FVC@Verb#1{%
+  \begingroup%
+    \FV@UseKeyValues%
+    \FV@FormattingPrep%
+    \FV@CatCodes%
+    \outer\def^^M{}%
+    \catcode`#1=12%
+    \def\@tempa{\def\FancyVerbGetVerb####1####2}%
+    \expandafter\@tempa\string#1{\mbox{##2}\endgroup}%
+    \FancyVerbGetVerb\FV@EOL}%
+\endgroup
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\DefineShortVerb}
+%    \begin{macrocode}
+\def\DefineShortVerb{\FV@Command{}{DefineShortVerb}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@DefineShortVerb}
+%    \begin{macrocode}
+\def\FVC@DefineShortVerb#1{%
+  \@ifundefined{FV@CC@\string#1}%
+    {\FVC@@DefineShortVerb#1}%
+    {\FV@Error{`\expandafter\@gobble\string#1' is already a short
+      verb character.}\FV@eha}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@@DefineShortVerb}
+%    \begin{macrocode}
+\def\FVC@@DefineShortVerb#1{%
+  \begingroup
+    \lccode`\~=`#1%
+    \lowercase{\gdef\@tempg{\edef~}\global\let\@temph~}%
+  \endgroup
+  \expandafter\let\csname FV@AC@\string#1\endcsname\@temph
+  \expandafter\edef\csname FV@CC@\string#1\endcsname{\the\catcode`#1}%
+  \expandafter\let\csname FV@KV@\string#1\endcsname\FV@KeyValues
+  \@tempg{%
+    \let\noexpand\FV@KeyValues\expandafter\noexpand
+      \csname FV@KV@\string#1\endcsname
+    \noexpand\FVC@Verb\expandafter\@gobble\string#1}%
+  \expandafter\def\expandafter\dospecials\expandafter{\dospecials\do#1}%
+  \expandafter\def\expandafter\@sanitize\expandafter{\@sanitize\@makeother#1}%
+  \catcode`#1=\active}%
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\UndefineShortVerb}
+%    \begin{macrocode}
+\def\UndefineShortVerb#1{%
+  \@ifundefined{FV@CC@\string#1}%
+    {\FV@Error{`\expandafter\@gobble\string#1' is not a short
+      verb character}\FV@eha}%
+    {\FV@UndefineShortVerb#1}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \changes{v2.6}{1998/07/17}{Correct a bug to undefine the macro associated
+%                            to short verbatim character
+%                            (reported by Mikhail Kolodin on June 12, 1998).}
+%
+% \ifChangeBar\begin{changebar}\fi
+% \begin{macro}{\FV@UndefineShortVerb}
+%    \begin{macrocode}
+\def\FV@UndefineShortVerb#1{%
+  \catcode`#1=\csname FV@CC@\string#1\endcsname
+%% DG/SR modification begin - Jun. 12, 1998
+  \expandafter\let\csname FV@CC@\string#1\endcsname\relax
+%% DG/SR modification end
+  \begingroup
+    \lccode`\~=`#1%
+    \lowercase{\gdef\@tempg{\let~}}%
+  \endgroup
+  \expandafter\@tempg\csname FV@AC@\string#1\endcsname
+  \def\@tempa##1\do#1##2\@nil##3\@nil##4\@@nil{##3\def\dospecials{##1##2}\fi}%
+  \expandafter\@tempa\dospecials\@nil\iftrue\@nil\do#1\@nil\iffalse\@nil\@@nil
+  \def\@tempa##1\@makeother#1##2\@nil##3\@nil##4\@@nil{%
+    ##3\def\@sanitize{##1##2}\fi}%
+  \expandafter\@tempa\@sanitize\@nil\iftrue\@nil\do#1\@nil\iffalse\@nil\@@nil}
+%    \end{macrocode}
+% \end{macro}
+% \ifChangeBar\end{changebar}\fi
+%
+% Moving verbatim. Need to worry about using separate identifier
+% for this class of verbatim, and
+%
+% \begin{macro}{\SaveMVerb}
+%    \begin{macrocode}
+\def\SaveMVerb{\FV@Command{}{SaveMVerb}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@SaveMVerb}
+%    \begin{macrocode}
+\begingroup
+\catcode`\^^M=\active%
+\gdef\FVC@SaveMVerb#1#2{%
+  \@ifundefined{FV@SVM@#1}{}%
+    {\FV@Error{Moving verbatim name `#1' already used}%
+      {I will overwrite the old definition. Hit <return> to continue.}}%
+  \global\@namedef{FV@SVM@#1}{}%
+  \begingroup%
+    \let\FV@SavedKeyValues\FV@KeyValues%
+    \FV@UseKeyValues%
+    \FV@CatCodes%
+    \outer\def^^M{}%
+    \global\let\@tempg\FancyVerbAfterSave%
+    \catcode`#2=12%
+    \def\@tempa{\def\FancyVerbGetVerb####1####2}%
+    \expandafter\@tempa\string#2{%
+      \if@filesw
+        \FV@DefineWhiteSpace%
+        \let\FV@Space\space%
+        \let\FV@Tab\space%
+        \FV@MakeUnActive%
+        \let\protect\string
+        \immediate\write\@auxout{%
+          \noexpand\SaveGVerb[\FV@SavedKeyValues]{#1}\string#2##2\string#2}%
+      \fi
+      \endgroup%
+      \@namedef{FV@SV@#1}{##2}%
+      \@tempg}%
+    \FancyVerbGetVerb\FV@EOL}%
+\endgroup
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\SaveGVerb}
+%    \begin{macrocode}
+\def\SaveGVerb{\FV@Command{}{SaveGVerb}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@SaveGVerb}
+%    \begin{macrocode}
+\begingroup
+\catcode`\^^M=\active%
+\gdef\FVC@SaveGVerb#1#2{%
+  \global\@namedef{FV@SVG@#1}{}%
+  \begingroup%
+    \FV@UseKeyValues%
+    \FV@CatCodes%
+    \outer\def^^M{}%
+    \catcode`#2=12%
+    \def\@tempa{\def\FancyVerbGetVerb####1####2}%
+    \expandafter\@tempa\string#2{\endgroup\global\@namedef{FV@SVG@#1}{##2}}%
+    \FancyVerbGetVerb\FV@EOL}%
+\endgroup
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\UseMVerb}
+%    \begin{macrocode}
+\def\UseMVerb{\protect\pUseMVerb}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\pUseMVerb}
+%    \begin{macrocode}
+\def\pUseMVerb{\FV@Command{}{pUseMVerb}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\FVC@pUseMVerb}
+%    \begin{macrocode}
+\def\FVC@pUseMVerb#1{%
+  \expandafter\ifx \csname FV@SVM@#1\endcsname\relax
+    \expandafter\ifx \csname FV@SVG@#1\endcsname\relax
+      \@warning{Moving verbatim text not defined for name `#1'}\FV@eha
+      {\bf ??}%
+    \else
+      \FV@UseVerb{\@nameuse{FV@SVG@#1}}%
+    \fi
+  \else
+    \FV@UseVerb{\@nameuse{FV@SVM@#1}}%
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\expandafter\ifx\csname documentclass\endcsname\relax
+%    \end{macrocode}
+%
+% \DescribeEnv{lrbox}
+%    \begin{macrocode}
+  \def\lrbox#1{%
+    \edef\@tempa{%
+      \endgroup
+      \setbox#1\hbox{%
+        \begingroup\aftergroup}%
+          \def\noexpand\@currenvir{\@currenvir}}%
+          %\def\noexpand\@currenvline{\on@line}}%
+    \@tempa
+      \@endpefalse
+      \bgroup
+        \ignorespaces}
+  \def\endlrbox{\unskip\egroup}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\fi
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+%% DG/SR modification begin - Jan. 22, 1998
+%%\@input{fancyvrb.rc}
+\@input{fancyvrb.cfg}
+%% DG/SR modification end
+%    \end{macrocode}
+%
+% \noindent Unused code - don't take care! (DG/SR)
+%
+% \noindent Error messages to void:
+%
+% \begin{verbatim}
+% \FV@CheckBadBegin
+% \FV@CheckBadEnd
+%
+% \define@key{FV}{noligs}{%
+%   \def\FV@ActiveLigs{}%
+%   \def\FV@DefineLigs{}%
+%   \@tfor\@tempa:=#1\do{%
+%     {\lccode`\~=`#1\relax\lowercase{\gdef\@tempg{~}}}%
+%     \expandafter\FV@addtonoligs\@tempg}}
+% \def\FV@addtonoligs#1{%
+%   \expandafter\def\expandafter\FV@ActiveLigs\expandafter{%
+%     \FV@ActiveLigs\catcode`#1=\active}%
+%   \expandafter\def\expandafter\FV@DefineLigs\expandafter{%
+%     \FV@DefineLigs\edef#1{{\string#1}}}}
+%
+% \fvset{suppressligs=\'}
+%
+% \fvset{noligs={>,-}}
+% \fvset{suppressligs=\>}
+% \fvset{suppressligs=\<}
+%
+% \def\FV@Error#1#2{%
+%   \edef\@tempc{#2}\expandafter\errhelp\expandafter{\@tempc}%
+%   \typeout{%
+%     ^^J** FancyVerb Error:\space\space
+%     Type \space H <return> \space for immediate help. **}%
+%   \errmessage{#1^^J}}
+% \end{verbatim}
+%
+%</fancyvrb>
+%
+% \Finale
+% \PrintIndex
+% \PrintChanges
+%
+\endinput
+%% 
+%% End of file `fancyvrb.dtx'

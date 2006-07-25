@@ -1,0 +1,157 @@
+%%
+%% This is file `xcolor2.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% xcolor.dtx  (with options: `test2')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from xcolor2.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file xcolor.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+\ProvidesFile{xcolor2}
+ [2005/12/21 v2.09 Pstricks color test (UK)]
+%%
+%% ----------------------------------------------------------------
+%% Copyright (C) 2003-2005 by Dr. Uwe Kern <xcolor at ukern dot de>
+%% ----------------------------------------------------------------
+%%
+\def\XCfileversion{v2.09}%
+\def\XCfiledate{2005/12/21}%
+\listfiles
+\documentclass{article}
+
+\usepackage{pstricks,pst-tree,pst-slpe,multido}
+\makeatletter
+\@ifpackagelater{pstricks}{2004/05/12}{}{\usepackage[pst]{xcolor}}
+\makeatother
+\usepackage{fvrb-ex}
+
+\def\textfraction{0.01}
+\def\topfraction{0.99}
+\def\bottomfraction{0.99}
+\def\floatpagefraction{0.70}
+\setlength\abovecaptionskip{12pt}
+\setlength\belowcaptionskip{10pt}
+\parindent0pt
+
+\begin{document}
+\title{Color extensions with the \textsf{xcolor} package --- \textsf{pstricks} examples}
+\author{Dr. Uwe Kern\thanks{This file is part of the \textsf{xcolor} distribution which can be downloaded from the CTAN mirrors (\texttt{macros/latex/contrib/xcolor/}) or the homepage \texttt{www.ukern.de/tex/xcolor.html}. Please send error reports and suggestions for improvements to \texttt{xcolor@ukern.de}.}}
+\date{\XCfileversion{} (\XCfiledate)}
+\maketitle
+
+\centerline{\fcolorbox{red}{yellow!50}{This document is not suitable for pdf\LaTeX! Please use \LaTeX{} + \texttt{dvips} etc.}}
+
+\begin{figure}[htb]\caption{Modified version of an example from the \textsf{pstricks} manual; requires \textsf{pst-tree}}
+\begin{SideBySideExample}[fontsize=\footnotesize,xrightmargin=.45\textwidth]
+  \begin{pspicture}(-0.5,-2)(3,2)
+  \cnode(0,0){.5cm}{root}
+  \cnode*[linecolor=red](3,1.5){4pt}{A}
+  \cnode*[linecolor=red!72.5375!blue](3,0){4pt}{B}
+  \cnode*[linecolor=-red](3,-1.5){4pt}{C}
+  \psset{nodesep=3pt}
+  \ncline[linecolor=green!50!red]{root}{A}
+  \ncline[linecolor=blue]{root}{B}
+  \ncline[linecolor=-green!50!red]{root}{C}
+  \end{pspicture}
+\end{SideBySideExample}
+\end{figure}
+
+\begin{figure}[htb]\caption{Moving from one color to its complement; requires \textsf{pst-slpe}}
+\begin{SideBySideExample}[fontsize=\footnotesize,xrightmargin=.45\textwidth]
+  \begin{pspicture}(4,1)
+  \psframe[fillstyle=slope,
+           slopeangle=30,
+           slopebegin=red!72.5375!blue,
+           slopeend=-red!72.5375!blue](4,1)
+  \end{pspicture}
+\end{SideBySideExample}
+\end{figure}
+
+\begin{figure}[htb]\caption{Explicit color specification via a loop command; requires \textsf{multido}}
+\begin{SideBySideExample}[fontsize=\footnotesize,xrightmargin=.45\textwidth]
+  \psset{unit=1.75}%
+  \begin{pspicture}(0,-1)(2,1)
+  \multido{\rHue=0.00+0.01}{100}%
+   {\pscircle[linewidth=0.01,
+              linecolor={[hsb]{\rHue,1,1}}](1,0){\rHue}}
+  \end{pspicture}
+\end{SideBySideExample}
+\end{figure}
+
+\begin{figure}[htb]\caption{Color series --- modified version of an example from the \textsf{pst-fill} manual; note that the \texttt{\string\multirput} command does not give the desired result here}
+\begin{SideBySideExample}[fontsize=\footnotesize,xrightmargin=.45\textwidth]
+  \newcommand*\Sheep
+   {\begin{pspicture}(3,1.5)
+    \pscustom[liftpen=2,fillstyle=solid,fillcolor=sheep!!+]%
+     {\pscurve(0.5,-0.2)(0.6,0.5)(0.2,1.3)(0,1.5)(0,1.5)
+       (0.4,1.3)(0.8,1.5)(2.2,1.9)(3,1.5)(3,1.5)(3.2,1.3)
+       (3.6,0.5)(3.4,-0.3)(3,0)(2.2,0.4)(0.5,-0.2)}
+    \pscircle*(2.65,1.25){0.12\psunit}% Eye
+    \psccurve*(3.5,0.3)(3.35,0.45)(3.5,0.6)(3.6,0.4)% Muzzle
+    \pscurve(3,0.35)(3.3,0.1)(3.6,0.05)% Mouth
+    \pscurve(2.3,1.3)(2.1,1.5)(2.15,1.7)
+    \pscurve(2.1,1.7)(2.35,1.6)(2.45,1.4)% Ear
+    \end{pspicture}}
+  \definecolorseries
+   {sheep}{rgb}{step}[rgb]{.95,.85,.55}{.17,.47,.37}
+  \resetcolorseries{sheep}
+  \psset{unit=0.4}
+  \begin{pspicture}(-3,-6)(0,7.5)
+  \Multido{\ry=6.0+-1.5}{5}%
+   {\rput(0,\ry){\Multido{}{5}{\Sheep}}}
+  \resetcolorseries{sheep}%
+  \multirput(-6,-6)(3,0)5{\Sheep}
+  \end{pspicture}
+\end{SideBySideExample}
+\end{figure}
+
+\begin{figure}[htb]\caption{Interaction with native PostScript code --- $\gamma$-corrected wavelengths}
+\begin{Example}[fontsize=\footnotesize,xrightmargin=.45\textwidth]
+  \newcount\WL \unitlength.75pt
+  \def\WaveToPS#1%
+   {\definecolor{tmp}{rgb:wave}{#1}\extractcolorspecs{tmp}\tmpm\tmpc
+    \expandafter\WaveToPSi\tmpc,}
+  \def\WaveToPSi#1,#2,#3,{\pstVerb{/Red{#1}def /Green{#2}def /Blue{#3}def}}
+  \def\DisplayBar#1#2%
+   {\linethickness{1.25\unitlength}\WL=360
+    \pstVerb{/Gamma{#1}def}%
+    \multiput(360,#2)(1,0){456}%
+     {\WaveToPS{\the\WL}{\color{lambda}\line(0,1){50}}\global\advance\WL1}%
+    \linethickness{0.25\unitlength}\WL=360
+    \multiput(360,#2)(20,0){23}%
+     {\picture(0,0)
+      \line(0,-1){5}\multiput(5,0)(5,0){3}{\line(0,-1){2.5}}%
+      \put(0,-10){\makebox(0,0){\the\WL}}\global\advance\WL20
+      \endpicture}%
+    \put(350,#2){\makebox(0,50)[r]{\small$\gamma$\,=\,#1}}}
+  \pstVerb{/Corr{dup 0 gt {Gamma exp}if}def}
+  \definecolor[ps]{lambda}{rgb}{Red Corr Green Corr Blue Corr}%
+  \begin{picture}(510,345)(310,-10)
+  \sffamily\tiny
+  \DisplayBar{0.4}{0}%
+  \DisplayBar{0.6}{70}%
+  \DisplayBar{0.8}{140}%
+  \DisplayBar{1.0}{210}%
+  \DisplayBar{1.2}{280}%
+  \end{picture}
+\end{Example}
+\end{figure}
+
+\end{document}
+\endinput
+%%
+%% End of file `xcolor2.tex'.
