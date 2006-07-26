@@ -9,8 +9,10 @@
         while(my $line = <input>){$output = $output.$line;}
         close(input);
 
-        return $output; #"\\begin{Verbatim}\n" .
-                #$output .
-                #"\\end{Verbatim}\n";
+        return  "\\begin{small}\n"."\\begin{Verbatim}\n" .
+                $output .
+                "\\end{Verbatim}\n"."\\end{small}\n";
 }
+
+\RecustomVerbatimEnvironment{Verbatim}{Verbatim}{frame=single}
 
