@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/NavProc.cpp#7 $"
+#pragma ident "$Id: NavProc.cpp,v 1.1 2006/07/28 14:31:42 littlej Exp $"
 
 /*
   Think, navdmp for mdp, with bonus output that you get data from all code/carrier
@@ -110,8 +110,8 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
       return;
    }
 
-   if ((isAlm && !almOut) || (!isAlm && !ephOut))
-      return;
+//   if ((isAlm && !almOut) || (!isAlm && !ephOut))
+//      return;
 
    NavIndex ni(RangeCarrierPair(msg.range, msg.carrier), msg.prn);
    prev[ni] = curr[ni];
@@ -125,7 +125,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
 
    if (gpstk::EngNav::subframeParity(long_sfa))
    {
-      if (isAlm)
+      if (isAlm && almOut)
       {
          AlmanacPages& almPages = almPageStore[ni];
          EngAlmanac& engAlm = almStore[ni];
@@ -146,7 +146,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
             engAlm = EngAlmanac();
          }            
       }
-      else
+      if (!isAlm && ephOut)
       {
          EphemerisPages& ephPages = ephPageStore[ni];
          ephPages[sfid] = msg;
