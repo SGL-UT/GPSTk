@@ -1,0 +1,22 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\input{src/cmd}
+%\begin{document}
+
+\section{\emph{PRSolve}}
+\subsection{Usage}
+\getuse{PRSolve --help}
+
+\subsection{Examples}
+\printexec{> PRSolve -o arl2800.06o -n arl2800.06n}
+\getuse{PRSolve -o arl2800.06o -n arl2800.06n}
+
+\printexec{> PRSolve -o arl2800.06o -n arl2800.06n --EpochBeg 2006,6,7,00,00,00 --EpochEnd 2006,6,7,00,00,00}
+\getuse{PRSolve -o arl2800.06o -n arl2800.06n --EpochBeg 2006,6,7,00,00,00 --EpochEnd 2006,6,7,00,00,00}
+
+\subsection{Notes}
+Though not stated in the required options lists either a RINEX navigation file or an SP3 Precise Ephemeris File is needed, using the -n or -p option respectively.
+
+%\end{document}
+

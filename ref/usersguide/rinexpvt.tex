@@ -1,0 +1,31 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\input{src/cmd}
+%\begin{document}
+
+\section{\emph{rinexpvt}}
+\subsection{Usage}
+\getuse{rinexpvt --help}
+
+\subsection{Examples}
+\printexec{> rinexpvt -o arl2800.06o -n arl2800.06n}
+%\getuse{rinexpvt -o arl2800.06o -n arl2800.06n}
+\begin{\outputsize}
+\begin{Verbatim}
+2006 6 7 00 00 0.000000 918127.643398 -4346069.74169 4561980.95915 802.025776147
+2006 6 7 00 00 30.000000 918127.603144 -4346069.71791 4561980.96257 802.059738502
+2006 6 7 00 01 0.000000 918127.618356 -4346069.74264 4561981.09022 802.133327164
+2006 6 7 00 01 30.000000 918127.625246 -4346069.81145 4561981.30363 802.274834271
+2006 6 7 00 02 0.000000 918127.623579 -4346069.83144 4561981.39838 802.340406661
+\end{Verbatim}
+\end{\outputsize}
+
+\printexec{> rinexpvt -o arl2800.06o -n arl2800.06n -m arl2800.06m -l 15 -s}
+%\getuse{rinexpvt -o arl2800.06o -n arl2800.06n -m arl2800.06m }
+
+\subsection{Notes}
+Though not stated in the required options lists either a RINEX navigation file or an SP3 Precise Ephemeris File is needed, using the -n or -p option respectively. When using precise ephemeris 3 files must be included, the previous day's, the current day's and the next day's. 
+
+%\end{document}
+

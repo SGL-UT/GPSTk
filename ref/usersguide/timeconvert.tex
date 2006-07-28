@@ -1,29 +1,28 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\input{src/cmd}
+%\begin{document}
+
 \section{\emph{timeconvert}}
 \subsection{Usage}
 \getuse{timeconvert --help}
-\subsection{Examples}
 
-\begin{Verbatim}
-> timeconvert -r "05 06 2006 13:50:02"
-\end{Verbatim}
+\subsection{Examples}
+\printexec{> timeconvert -r "05 06 2006 13:50:02"}
 \getuse{timeconvert -r "05 06 1985 13:50:02"}
 
-
-\begin{Verbatim}
-> timeconvert -o "1379 500 2006"
-\end{Verbatim}
+printexec{> timeconvert -o "1379 500 2006"}
 \getuse{timeconvert -o "1379 500 2006"}
 
-\begin{Verbatim}
-> timeconvert -o "1379 500 2006 -a 86400"
-\end{Verbatim}
+\printexec{> timeconvert -o "1379 500 2006 -a 86400"}
 \getuse{timeconvert -o "1379 500 2006 -a 86400"}
 
-\begin{Verbatim}
-> timeconvert -w "1381 500" -s 200
-\end{Verbatim}
+\printexec{> timeconvert -w "1381 500" -s 200}
 \getuse{timeconvert -w "1381 500" -s 200}
 
 \subsection{Notes}
 Satellite time is kept by Z-counts, which incriment once every 1.5 seconds.
+
+%\end{document}
 

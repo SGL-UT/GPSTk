@@ -1,10 +1,17 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\input{src/cmd}
+%\begin{document}
+
 \section{\emph{ficfica}}
 \subsection{Usage}
 \getuse{ficfica --help}
-\subsection{Examples}
-\begin{Verbatim}
-> ficfica fic06.187 fica06.187
 
+\subsection{Examples}
+\printexec{> ficfica fic06.187 fica06.187}
+\begin{\outputsize}
+\begin{Verbatim}
 input - binary FIC file
 
 ... ureadable ...
@@ -36,7 +43,10 @@ BLK      9   60    0    0
  .00000000000000D+00 .00000000000000D+00 .00000000000000D+00 .00000000000000D+
 
  . . .
-
 \end{Verbatim}
+\end{\outputsize}
+
 \subsection{Notes}
+
+%\end{document}
 

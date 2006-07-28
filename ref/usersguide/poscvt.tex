@@ -1,20 +1,24 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\input{src/cmd}
+%\begin{document}
+
 \section{\emph{poscvt}}
 \subsection{Usage}
 \getuse{poscvt --help}
-\subsection{Examples}
-\begin{Verbatim}
-> poscvt --ecef="-4346070.69263 4561978.26297 803.498856837"
-\end{Verbatim}
-\getuse{poscvt --ecef="-4346070.69263 4561978.26297 803.498856837"}
-\begin{Verbatim}
-> poscvt -l
-\end{Verbatim}
-\getuse{poscvt -l}
-\begin{Verbatim}
-> poscvt --ecef="-4346070.69263 4561978.26297 803.498856837" -F "%A %L %h"
 
-  0.007356 133.611574 -77345.241247
-\end{Verbatim}
+\subsection{Examples}
+\printexec{> poscvt --ecef="-4346070.69263 4561978.26297 803.498856837"}
+\getuse{poscvt --ecef="-4346070.69263 4561978.26297 803.498856837"}
+
+\printexec{> poscvt -l}
+\getuse{poscvt -l}
+
+\printexec{> poscvt --ecef="-4346070.69263 4561978.26297 803.498856837" -F "\%A \%L \%h"}
+\printexec{0.007356 133.611574 -77345.241247}
+
 \subsection{Notes}
-%Satellite time is kept by Z-counts, which incriment once every 1.5 seconds.
+
+%\end{document}
 

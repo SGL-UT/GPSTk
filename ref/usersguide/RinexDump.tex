@@ -1,9 +1,17 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\input{src/cmd}
+%\begin{document}
+
 \section{\emph{RinexDump}}
 \subsection{Usage}
 \getuse{RinexDump}
+
 \subsection{Examples}
+\printexec{> RinexDump algo1580.06o 3 4 5}
+\begin{\outputsize}
 \begin{Verbatim}
-> RinexDump algo1580.06o 3 4 5
 # Rinexdump file: algo1580.06o Satellites: G03 G04 G05 Observations: ALL
 # Week  GPS_sow Sat            L1 L S            L2 L S            C1 L S
 1378 259200.000 G03  -3843024.647 0 3  -2994560.443 0 1  23796436.087 0 0
@@ -25,5 +33,10 @@
 
  . . .
 \end{Verbatim}
+\end{\outputsize}
+
 \subsection{Notes}
 WHAT DOES OBSTYPES OPTION DO
+
+%\end{document}
+

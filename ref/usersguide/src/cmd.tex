@@ -1,3 +1,7 @@
+\RecustomVerbatimEnvironment{Verbatim}{Verbatim}{frame=single}
+
+\newcommand{\outputsize}{footnotesize}
+
 \perlnewcommand{\getuse}[1]
 {
         my $command = $_[0];
@@ -9,10 +13,17 @@
         while(my $line = <input>){$output = $output.$line;}
         close(input);
 
-        return  "\\begin{small}\n"."\\begin{Verbatim}\n" .
+        return  "\\begin{\\outputsize}\n" . "\\begin{Verbatim}\n" .
                 $output .
-                "\\end{Verbatim}\n"."\\end{small}\n";
+                "\\end{Verbatim}\n" . "\\end{\\outputsize}\n";
 }
 
-\RecustomVerbatimEnvironment{Verbatim}{Verbatim}{frame=single}
+\perlnewcommand{\printexec}[1]
+{
+	my $exec = $_[0];
+
+	return "\\begin{\\outputsize}\n" . "\\begin{Verbatim}\n" .
+		$exec . "\n" .
+		"\\end{Verbatim}\n" . "\\end{\\outputsize}\n";
+}
 

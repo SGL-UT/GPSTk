@@ -1,12 +1,17 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\input{src/cmd}
+%\begin{document}
+
 \section{\emph{ficafic}}
 \subsection{Usage}
 \getuse{ficafic --help}
+
 \subsection{Examples}
-
-\begin{small}
+\printexec{> ficafic fic06.187 fica06.187}
+\begin{\outputsize}
 \begin{Verbatim}
-> ficafic fic06.187 fica06.187
-
 input - ASCII FIC file
 
 BLK    109    0   32    0
@@ -38,8 +43,10 @@ BLK      9   60    0    0
 output - binary FIC file
 
 ... ureadable ...
-
-
 \end{Verbatim}
-\end{small}
+\end{\outputsize}
+
 \subsection{Notes}
+
+%\end{document}
+
