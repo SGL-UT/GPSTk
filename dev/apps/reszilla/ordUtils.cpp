@@ -209,7 +209,7 @@ void computeStats(
    double max = std::max(std::abs(good.Maximum()), std::abs(good.Minimum()));
    sprintf(b1, "c1p2 ord   %2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
            (int)minElevation, (int)maxElevation,
-           good.StdDev()/sqrt(2), good.Average(),
+           good.StdDev()/sqrt((float)2), good.Average(),
            good.N(), bad.N(), max, strip);
 
    cout << b1 << endl;

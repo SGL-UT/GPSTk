@@ -328,7 +328,7 @@ string computeStats(
    double maxDD = std::max(std::abs(good.Minimum()), std::abs(good.Maximum()));
    sprintf(b1, "%2d-%2d  %8.5f  %8.3f  %7d  %6d  %6d  %6.2f",
            (int)minElevation, (int)maxElevation,
-           good.StdDev()/sqrt(2), good.Average(),
+           good.StdDev()/sqrt((float)2), good.Average(),
            good.N(), bad.N(), zeroCount, maxDD);
 
    oss << b1;

@@ -15,7 +15,8 @@ namespace PhaseResidual
         << " td:" << td;
    }
 
-   std::ostream& operator << (std::ostream& s, const Obs& pr) { pr.dump(s); }
+   std::ostream& operator << (std::ostream& s, const Obs& pr) 
+   { pr.dump(s); return s; }
 
 
 //------------------------------------------------------------------------------
@@ -89,7 +90,8 @@ namespace PhaseResidual
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-   std::ostream& operator <<(std::ostream& s, const Arc& arc) { arc.dump(s); }
+   std::ostream& operator <<(std::ostream& s, const Arc& arc)
+   { arc.dump(s); return s; }
 
 
 //------------------------------------------------------------------------------
@@ -284,5 +286,7 @@ namespace PhaseResidual
       s << std::endl;
    }
 
-   std::ostream& operator <<(std::ostream& s, const ArcList& al) { al.dump(s); }
+   std::ostream& operator <<(std::ostream& s, const ArcList& al) 
+   { al.dump(s); return s; }
+
 } // end of PhaseResidual namespace
