@@ -27,3 +27,8 @@
 		"\\end{Verbatim}\n" . "\\end{\\outputsize}\n";
 }
 
+\perlnewcommand{\application}[1]
+{
+	my $app = $_[0];
+	return "\\emph{" . $app . "}";
+}

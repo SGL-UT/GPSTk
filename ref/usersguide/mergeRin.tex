@@ -1,0 +1,37 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\input{src/cmd}
+%\begin{document}
+
+\section{\emph{mergeRinObs mergeRinNav mergeRinMet mergeFic}}
+\subsection{Usage}
+\getuse{mergeRinObs --help}
+The usage for mergeRiObs, mergeRinNav, mergeRinMet, and mergeFIC are identicle.
+
+\subsection{Examples}
+\printexec{mergeRinObs -i arl280.06o -i arl2810.06o -o arl280-10.06o}
+\begin{\outputsize}
+\begin{Verbatim}
+mergeRinObs         gpstk               07/31/2006 10:20:59 PGM / RUN BY / DATE
+\end{Verbatim}
+\end{\outputsize}
+
+\printexec{mergeRinNav -i arl280.06n -i arl2810.06n -o arl280-10.06n}
+\begin{\outputsize}
+\begin{Verbatim}
+mergeRinObs         gpstk               07/31/2006 10:20:59 PGM / RUN BY / DATE
+\end{Verbatim}
+\end{\outputsize}
+
+\printexec{mergeRinMet -i arl280.06m -i arl2810.06m -o arl280-10.06m}
+\begin{\outputsize}
+\begin{Verbatim}
+mergeRinObs         gpstk               07/31/2006 10:20:59 PGM / RUN BY / DATE
+\end{Verbatim}
+\end{\outputsize}
+
+\subsection{Notes}
+
+%\end{document}
+

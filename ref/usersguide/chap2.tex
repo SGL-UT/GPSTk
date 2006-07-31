@@ -35,7 +35,7 @@ The second is now defined by an atomic standard that is based on the resonance f
 We are used to dealing with months, days, years, hours, minutes, and seconds, but such a time format makes for difficult epoch calculations over long periods. To solve this problem Julian Date (JD) was introduced. JD consists of a day count (days since noon UT on January $1^{\mbox{st}}$ 4713 B.C.) and a fraction of the current day. This makes for easy time differencing, but the length of the date can become cumbersome and the fact that a new day starts at noon confusing. To make things even easier Modified Julian Date (MJD) was created whos origin is midnight November $17^{\mbox{th}}$, 1858.
 \[ \mbox{MJD}=\mbox{JD}-2400000.5\]
 
-In order to make Julian Date useful we need an easy was to go between calendar dates and JD. \emph{timeconvert} does this and more with ease. The equations to convert from calendar date to JD are
+In order to make Julian Date useful we need an easy was to go between calendar dates and JD. \application{timeconvert}\index{timeconvert!theory} does this and more with ease. The equations to convert from calendar date to JD are
 \[ \mbox{JD}=\mbox{INT}[365.25y]+\mbox{INT}[30.6001(m+1)]+D+\mbox{UT}/24+1720981.5\]
 \[ \begin{array}{lll}
 y=Y-1 & \mbox{and}~m=M+12 & \mbox{if}~M \leq2 \\
@@ -57,7 +57,7 @@ GPS Time (GPST) is a continuously running composite time kept by cesium and rubi
 \[ \mbox{SOW}=\mbox{FRAC[(JD}-2444244.5)/7]\times 604800 \]
 where INT[$x$] returns the integer part of a real number, FRAC[$x$] returns the fractional part, and SOW stands for Second of Week.
 
-Other useful quantities such as Day of Week and  Second of Day can be found using \emph{timeconvert} or the following equations.
+Other useful quantities such as Day of Week and  Second of Day can be found using \application{timeconvert}\index{timeconvert!theory} or the following equations.
 \[\mbox{DOW}=\mbox{modulo\{INT[JD}+0.5],7\}\]
 \[\mbox{SOD}=\mbox{modulo\{FRAC[JD}+0.5],7\}\times 86400\]
 where DOW=0 corresponds to Monday, DOW=1 corresponds to Tuesday, and so on.
@@ -87,8 +87,8 @@ The World Geodetic System 1984 (WGS-84) is fixed physical model of Earth produce
 \[e'=\sqrt{\frac{a^{2}}{b^{2}}-1}=\frac{a}{b}e\]
 where $a$, the semimajor axis, is the value of the mean equatorial radius of Earth (6,378.137 km) and $b$, the semiminor axis, is the value of the polar radius of Earth (6,356.7523142 km) \cite[pp. 25-26]{kaplan:ugpspa}.
 \subsection{Coordinate Systems}
-Now that WGS-84 is defined it is important to understand what coordinate systems can be attached to the ellipsoid and how to move between these different systems. The GPS Toolkit comes with \emph{poscvt}, an application that gives users the ability to easily convert coordinates in one reference frame to another. The coordinate 
-systems that \emph{poscvt} recognizes are Cartesian (or XYZ), geodetic, geocentric, and spherical coordinates. These systems and the formulas to convert between them are discussed below.
+Now that WGS-84 is defined it is important to understand what coordinate systems can be attached to the ellipsoid and how to move between these different systems. The GPS Toolkit comes with \application{poscvt}\index{poscvt!theory}, an application that gives users the ability to easily convert coordinates in one reference frame to another. The coordinate 
+systems that \application{poscvt}\index{poscvt!theory} recognizes are Cartesian (or XYZ), geodetic, geocentric, and spherical coordinates. These systems and the formulas to convert between them are discussed below.
 \subsubsection{Cartesian (XYZ) Coordinates}
 The Earth Centered Earth Fixed (ECEF) Cartesian coordinate system is fixed to the WGS-84 ellipsoid and is the common ground that makes going between the Earth Centered Inertial (ECI) reference frame used by the satellites and the systems we are used to (such as latitude, longitude, and height) manageable. The equatorial plane makes the $xy$-plane with the $+x$-axis pointing toward $0^{\circ}$ longitude and the $+y$-axis pointing toward $90^{\circ}$ E longitude. The $z$-axis is normal to the equatorial plane and points to the geographical north pole. The conversion formulas presented in the next sections will convert to and from this Cartesian reference frame, and so to convert between two non-Cartesian coordinate systems the XYZ system will be used as an intermediary~\cite[p. 24]{kaplan:ugpspa}.
 \subsubsection{Geodetic Coordinates}

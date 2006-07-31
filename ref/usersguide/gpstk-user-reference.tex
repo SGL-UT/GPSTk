@@ -1,11 +1,22 @@
 \listfiles
 \documentclass{src/manual}
+\usepackage{makeidx}
 \usepackage{epsfig}
 \usepackage{graphics}
 \usepackage[sectionbib]{src/bibunits}
 \usepackage{src/perltex}
 \usepackage{fancyvrb}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{colortbl}
+\usepackage{xcolor}
 \input{src/cmd}
+
+\paperwidth = 8.5in
+\paperheight = 11in
+
+\makeindex
+
 \begin{document}
 
 
@@ -13,9 +24,13 @@
 \bibliographyunit[\chapter]
 \input{titlepg}
 \tableofcontents
-\part{Toolkit Theory}
+\part{Theory}
+\input{gpsnutshell}
 \input{chap2}
 %Section II, Usage
+\part{Usage, Examples \& Notes}
+\input{toolkitportrait}
 \input{sec2}
+\printindex
 \end{document}
 

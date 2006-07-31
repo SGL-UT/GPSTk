@@ -4,6 +4,7 @@
 %\input{src/cmd}
 %\begin{document}
 
+\index{timeconvert!application writeup}
 \section{\emph{timeconvert}}
 \subsection{Usage}
 \getuse{timeconvert --help}
@@ -12,7 +13,7 @@
 \printexec{> timeconvert -r "05 06 2006 13:50:02"}
 \getuse{timeconvert -r "05 06 1985 13:50:02"}
 
-printexec{> timeconvert -o "1379 500 2006"}
+\printexec{> timeconvert -o "1379 500 2006"}
 \getuse{timeconvert -o "1379 500 2006"}
 
 \printexec{> timeconvert -o "1379 500 2006 -a 86400"}
@@ -22,7 +23,6 @@ printexec{> timeconvert -o "1379 500 2006"}
 \getuse{timeconvert -w "1381 500" -s 200}
 
 \subsection{Notes}
-Satellite time is kept by Z-counts, which incriment once every 1.5 seconds.
 
 %\end{document}
 

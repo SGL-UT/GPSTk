@@ -25,3 +25,6 @@ clean:
 	rm -f *.frpl
 	rm -f *.topl
 	rm -f *.tfpl
+	rm -f *.ind
+	rm -f *.ilg
+	rm -f *.idx
