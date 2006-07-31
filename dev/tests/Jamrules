@@ -1,0 +1,32 @@
+#PATH_TO_TOP = /home/user/Cpptests/GoodTests  ; #Current directory; Main testing directory
+#GPSTK_SRC = /home/user/gpstk/src ; #Directory which holds the GPSTK Source
+#CPPUNIT_LIB = /home/user/lib ; #Directory which holds the CppUnit Libraries
+#GPSTK_LIB = /home/user/lib ; #Directory which holds the GPSTK libraries
+
+STD_LINK_LIBS = -ldl -lstdc++ ; 
+LINKFLAGS = -fprofile-arcs -ftest-coverage ; #Gcov required flags
+SEARCH = $(CPPUNIT_LIB) $(GPSTK_LIB) $(GPSTK_SRC) ;
+
+rule Clean
+{
+	RM = rm */*.g* ;
+
+}
+
+rule TestMain
+{
+	#File $(SUBDIR)/$(SUBDIR).hpp : $(GPSTK_SRC)/$(SUBDIR).hpp ;
+	#File $(SUBDIR)/$(SUBDIR).cpp : $(SUBDIR)/$(SUBDIR).hpp ;
+	#File $(SUBDIR)/$(SUBDIR).cpp : $(GPSTK_SRC)/$(SUBDIR).cpp ;
+	
+	Main $(PATH_TO_TOP)/$(<) : $(PATH_TO_TOP)/$(>) ;
+	ObjectHdrs $(PATH_TO_TOP)/$(<) $(PATH_TO_TOP)/$(>) : $(GPSTK_INC) ;
+	ObjectC++Flags $(PATH_TO_TOP)/$(>) : -fprofile-arcs -ftest-coverage ;
+	LINKLIBS on $(PATH_TO_TOP)/$(<) = $(STD_LINK_LIBS) ;
+	LinkLibraries $(PATH_TO_TOP)/$(<) : libcppunit libgpstk ;
+}
+
+#if $(UPDATE)
+#{
+#	RmTemps DayTime.tst: DayTime/DayTime.cpp ;
+#}

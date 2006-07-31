@@ -1,0 +1,4 @@
+SubDir TOP DayTime ;
+
+TestMain DayTime/xDayTimeConv.tst : DayTime/xDayTimeM.cpp DayTime/xDayTimeConv.cpp DayTime/DayTime.cpp ;
+TestMain DayTime/xDayTimeInc.tst : DayTime/xDayTimeM.cpp DayTime/xDayTimeInc.cpp DayTime/DayTime.cpp ;

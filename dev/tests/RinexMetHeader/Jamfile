@@ -1,0 +1,3 @@
+SubDir TOP RinexMetHeader ;
+
+TestMain RinexMetHeader/xRinexMetHeader.tst : RinexMetHeader/xRinexMetHeaderM.cpp RinexMetHeader/xRinexMetHeader.cpp RinexMetHeader/RinexMetHeader.cpp ;

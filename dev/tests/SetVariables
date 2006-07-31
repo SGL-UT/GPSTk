@@ -1,0 +1,47 @@
+#!/bin/sh
+
+echo "This script will help you set up the variables to compile and run the GPSTk"
+echo "test suite.\n"
+
+echo "Please enter the path to the current directory.\n"
+echo "e.g. /home/user/GPSTk/tests"
+
+read PATH_TO_TOP
+echo ""
+
+export PATH_TO_TOP
+
+echo "Please enter the directory which holds the GPSTk source.\n"
+echo "e.g. /home/user/GPSTk/src"
+
+read Src
+echo ""
+
+export GPSTK_SRC=$Src
+
+echo "Please enter the directory which holds the CppUnit Libraries"
+echo "e.g. /home/user/lib"
+
+read CppLib
+echo ""
+
+export CPPUNIT_LIB=$CppLib
+
+echo "Please enter the directory which holds the GPSTk Libraries"
+echo "e.g. /home/user/lib"
+
+read GPSTkLib
+echo ""
+
+export GPSTK_LIB=$GPSTkLib
+
+echo "Please enter the directory which holds the GPSTk Includes"
+echo "e.g. /home/user/lib"
+
+read GPSTkInc
+echo ""
+export GPSTK_INC=$GPSTkInc
+
+
+
+
