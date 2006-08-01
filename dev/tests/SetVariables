@@ -1,15 +1,15 @@
 #!/bin/sh
 
 echo "This script will help you set up the variables to compile and run the GPSTk"
-echo "test suite.\n"
+echo "test suite."
 
-echo "Please enter the path to the current directory.\n"
+echo "Please enter the path to the current directory."
 echo "e.g. /home/user/GPSTk/tests"
 
-read PATH_TO_TOP
+read PATH_TO_CURRENT
 echo ""
 
-export PATH_TO_TOP
+export PATH_TO_CURRENT
 
 echo "Please enter the directory which holds the GPSTk source.\n"
 echo "e.g. /home/user/GPSTk/src"
@@ -36,7 +36,7 @@ echo ""
 export GPSTK_LIB=$GPSTkLib
 
 echo "Please enter the directory which holds the GPSTk Includes"
-echo "e.g. /home/user/lib"
+echo "e.g. /home/user/include"
 
 read GPSTkInc
 echo ""

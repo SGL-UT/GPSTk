@@ -16,8 +16,8 @@ chomp(my $dirn = <STDIN>);                              #User Input for Director
 print "\n\n\n\n\n\n\nPLEASE WAIT THIS MAY TAKE SOME TIME\n\n\n\n\n\n\n\n";
 
 system("rm $dirn/TestResults.log");
-system("rm $dirn/TestResults2.log"); #Gcov results
-open (DATA,">>TestResults2.log");                         #Open file to which the output will go
+system("rm $dirn/CovResults.log"); #Gcov results
+open (DATA,">>CovResults.log");                         #Open file to which the output will go
 chdir "$dirn";
 system("jam clean");
 print ("Jamming!\n\n");
@@ -37,6 +37,7 @@ sub dirz {
 	next if "$fname" =~ /^\./;			#As long as the file is not a . or .. file
 	next if "$dir/$fname" =~ /Checks/;
 	next if "$dir/$fname" =~ /Logs/;
+	next if "$dir/$fname" =~ /Examples/;
 	dirz("$dir/$fname",$fname) if -d "$dir/$fname";        #Recursion to find the files in sub directories
 	opendir D, "$dir/$fname" if -d "$dir/$fname";   #Reopen the old directory from before recursion
 	if ($fname =~ /x(.*)\.tst$/) {
@@ -61,12 +62,12 @@ sub gcov {
 		open FILE, "<$dirn/GcovStuff";
 		while(defined(my $linez = <FILE>)) { 
 			if ($linez =~ /\b$filename.[ch]pp\b/) {
-				print DATA "\t$linez";
-				$linez = <FILE>;
-				print DATA "\t$linez";
-				$linez = <FILE>;
-				print DATA "\t$linez";
 				print DATA "$filename\n";
+				print DATA "\t$linez";
+				$linez = <FILE>;
+				print DATA "\t$linez";
+				$linez = <FILE>;
+				print DATA "\t$linez";
 			}
 		}
 	}
