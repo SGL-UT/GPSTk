@@ -8,8 +8,8 @@
 \usepackage{fancyvrb}
 \usepackage{multirow}
 \usepackage{rotating}
-\usepackage{colortbl}
-\usepackage{xcolor}
+\usepackage{src/colortbl}
+\usepackage{src/xcolor}
 \input{src/cmd}
 
 \paperwidth = 8.5in
@@ -19,18 +19,19 @@
 
 \begin{document}
 
-
-
 \bibliographyunit[\chapter]
 \input{titlepg}
+\include{notices}
 \tableofcontents
+\include{introduction}
 \part{Theory}
 \input{gpsnutshell}
-\input{chap2}
-%Section II, Usage
+\input{gpsfileforms}
+\input{convcoordtime}
 \part{Usage, Examples \& Notes}
 \input{toolkitportrait}
 \input{sec2}
 \printindex
+
 \end{document}
 
