@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/tests/positiontest.cpp#4 $"
+#pragma ident "$Id$"
+
 /**
  * @file positiontest.cpp  Test the Position module
  *

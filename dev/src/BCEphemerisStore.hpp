@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/BCEphemerisStore.hpp#5 $"
+#pragma ident "$Id$"
+
 
 //============================================================================
 //

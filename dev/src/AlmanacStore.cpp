@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/AlmanacStore.cpp#3 $"
+#pragma ident "$Id$"
+
 
 //============================================================================
 //

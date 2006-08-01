@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/RACRotation.hpp#1 $"
+#pragma ident "$Id$"
+
 //
 //
 #ifndef GPSTK_RACROTATION_HPP

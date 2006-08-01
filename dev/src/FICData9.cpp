@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/FICData9.cpp#2 $"
+#pragma ident "$Id$"
+
 
 //============================================================================
 //

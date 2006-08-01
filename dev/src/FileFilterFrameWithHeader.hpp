@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/FileFilterFrameWithHeader.hpp#3 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file FileFilterFrameWithHeader.hpp

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/iono/Position.hpp#1 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file Position.hpp

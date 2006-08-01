@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/tests/MinSfTest.cpp#1 $"
+#pragma ident "$Id$"
+
 
 // gpstk
 #include "FileFilterFrame.hpp"

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/TimeTag.hpp#2 $"
+#pragma ident "$Id$"
+
 
 #ifndef GPSTK_TIMETAG_HPP
 #define GPSTK_TIMETAG_HPP

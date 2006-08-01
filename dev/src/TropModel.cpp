@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/TropModel.cpp#8 $"
+#pragma ident "$Id$"
+
 
 //============================================================================
 //

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/CommandOptionWithPositionArg.hpp#1 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file CommandOptionWithPositionArg.hpp

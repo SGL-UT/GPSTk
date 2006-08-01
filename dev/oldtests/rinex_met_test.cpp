@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/tests/rinex_met_test.cpp#1 $"
+#pragma ident "$Id$"
+
 
 #include "RinexMetBase.hpp"
 #include "RinexMetData.hpp"

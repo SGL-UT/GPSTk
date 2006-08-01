@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/MathBase.hpp#3 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file MathBase.hpp

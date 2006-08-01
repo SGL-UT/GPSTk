@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: //depot/sgl/gpstk/dev/tests/testscript.pl#6 $
+# $Id$
 
 #            Ryan Mire ARL SGL 
 #                June 2005 

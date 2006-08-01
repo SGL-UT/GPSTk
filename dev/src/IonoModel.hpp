@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/IonoModel.hpp#3 $"
+#pragma ident "$Id$"
+
 
 #ifndef GPSTK_IONOMODEL_HPP
 #define GPSTK_IONOMODEL_HPP

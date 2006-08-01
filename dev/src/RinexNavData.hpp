@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/RinexNavData.hpp#1 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file RinexNavData.hpp

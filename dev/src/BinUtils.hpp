@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/BinUtils.hpp#10 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file BinUtils.hpp

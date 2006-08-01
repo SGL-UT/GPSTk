@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/SVPCodeGen.cpp#2 $"
+#pragma ident "$Id$"
+
 /* 
 *  SVPCodeGen.cpp
 *     SV P-code Generator.

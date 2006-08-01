@@ -1,5 +1,5 @@
 #
-# $Id: //depot/sgl/gpstk/dev/tests/Jamfile#12 $
+# $Id$
 #
 
 SubDir TOP tests ;

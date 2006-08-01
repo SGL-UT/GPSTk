@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/AlmanacStore.hpp#2 $"
+#pragma ident "$Id$"
+
 
 #ifndef GPSTK_ALMANACSTORE_HPP
 #define GPSTK_ALMANACSTORE_HPP

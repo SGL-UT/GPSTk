@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/tests/exceptiontest.cpp#2 $"
+#pragma ident "$Id$"
+
 
 #include <iostream>
 #include <string>

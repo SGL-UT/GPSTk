@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/tests/DayTimeConversionTest.cpp#1 $"
+#pragma ident "$Id$"
+
 
 /* \example DayTimeToleranceTest.cpp
  * This test evaluates user defined comparison tolerance feature of DayTime.

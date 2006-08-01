@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/AlmOrbit.hpp#3 $"
+#pragma ident "$Id$"
+
 
 #ifndef GPSTK_ALMORBIT_HPP
 #define GPSTK_ALMORBIT_HPP

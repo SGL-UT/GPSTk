@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/tests/AnotherFileFilterTest.cpp#2 $"
+#pragma ident "$Id$"
+
 
 #include "FileFilter.hpp"
 #include "FFData.hpp"

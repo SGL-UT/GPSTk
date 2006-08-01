@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/CodeBuffer.hpp#1 $"
+#pragma ident "$Id$"
+
 //  CodeBuffer.hpp  
 
 #ifndef CODEBUFFER_HPP

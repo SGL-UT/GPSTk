@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/SVPCodeGen.hpp#1 $"
+#pragma ident "$Id$"
+
 //  SVPCodeGen.hpp
 
 #ifndef SVPCODEGEN_HPP

@@ -1,4 +1,4 @@
-/* $Id: //depot/sgl/gpstk/dev/tests/Xendweek.cpp#4 $
+/* $Id$
 *  Xendweek.c - Test scaffold for demonstrating correctness of the 
 *  SVPCodeGen class.  In this case, the test is to correctly generate
 *  the P-code for the last 6 seconds of the week for each possible

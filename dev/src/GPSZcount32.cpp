@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/GPSZcount32.cpp#2 $"
+#pragma ident "$Id$"
+
 
 //============================================================================
 //

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/icd_200_constants.hpp#1 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file icd_200_constants.hpp

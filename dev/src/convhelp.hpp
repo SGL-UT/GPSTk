@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/convhelp.hpp#1 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file convhelp.hpp

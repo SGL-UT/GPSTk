@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/SP3EphemerisStore.cpp#1 $"
+#pragma ident "$Id$"
+
 
 //============================================================================
 //

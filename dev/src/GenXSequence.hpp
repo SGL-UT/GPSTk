@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/GenXSequence.hpp#2 $"
+#pragma ident "$Id$"
+
 
 //  GenXSequence.hpp -  Generate X Sequence class.
 

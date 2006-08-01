@@ -1,4 +1,4 @@
-# $Id: //depot/sgl/gpstk/dev/tests/configfile.txt#6 $
+# $Id$
 # Configuration file for GPSTk regression test script
 #
 AnotherFileFilterTest;

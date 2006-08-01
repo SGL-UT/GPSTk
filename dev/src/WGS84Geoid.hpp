@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/WGS84Geoid.hpp#1 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file WGS84Geoid.hpp

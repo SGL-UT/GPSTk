@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/SVExclusionList.cpp#2 $"
+#pragma ident "$Id$"
+
 //
 //
 #include <stdio.h>

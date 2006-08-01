@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/tests/daytimetest.cpp#3 $"
+#pragma ident "$Id$"
+
 //
 // test the daytime implementation
 //

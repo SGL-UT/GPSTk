@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 #
-# "$Id: //depot/sgl/gpstk/dev/tests/genFileSpecTestDirs.pl#1 $"
+# "$Id$"
+
 #
 # This script generates a set of dummy files and directories for
 # running FileSpecTest. They are in the form of 

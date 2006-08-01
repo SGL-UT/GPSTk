@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/YDSTime.cpp#4 $"
+#pragma ident "$Id$"
+
 
 //============================================================================
 //

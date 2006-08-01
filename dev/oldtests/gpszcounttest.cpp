@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/tests/gpszcounttest.cpp#5 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file gpszcounttest.cpp

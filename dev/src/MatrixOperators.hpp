@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/MatrixOperators.hpp#6 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file MatrixOperators.hpp

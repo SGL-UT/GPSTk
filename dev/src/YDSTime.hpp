@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/YDSTime.hpp#4 $"
+#pragma ident "$Id$"
+
 
 #ifndef GPSTK_YDSTIME_HPP
 #define GPSTK_YDSTIME_HPP

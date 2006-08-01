@@ -1,4 +1,4 @@
-/* $Id: //depot/sgl/gpstk/dev/tests/Xbegweek.cpp#5 $
+/* $Id$
 *  Xbegweek.cpp - Test scaffold for demonstrating correctness of the 
 *  SVPCodeGen class.
 *

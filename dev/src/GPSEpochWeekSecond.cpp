@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/GPSEpochWeekSecond.cpp#5 $"
+#pragma ident "$Id$"
+
 
 //============================================================================
 //

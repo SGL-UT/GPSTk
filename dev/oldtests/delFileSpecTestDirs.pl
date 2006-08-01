@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Id: //depot/sgl/gpstk/dev/tests/delFileSpecTestDirs.pl#1 $
+# $Id$
 #
 #
 # This script eliminates the set of dummy files and directories created

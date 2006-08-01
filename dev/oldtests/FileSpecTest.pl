@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: //depot/sgl/gpstk/dev/tests/FileSpecTest.pl#1 $
+# $Id$
 #
 #
 #

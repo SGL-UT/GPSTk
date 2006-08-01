@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: //depot/sgl/gpstk/dev/tests/Rinex_dl.pl#9 $
+# $Id$
 
 #                                         Ryan Mire ARL SGL 
 #                                           July 2005

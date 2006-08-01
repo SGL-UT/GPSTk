@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/RinexMetHeader.hpp#1 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file RinexMetHeader.hpp

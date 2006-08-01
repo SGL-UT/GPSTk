@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/DayTime.cpp#24 $"
+#pragma ident "$Id$"
+
 
 //============================================================================
 //

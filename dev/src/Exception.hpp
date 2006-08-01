@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/Exception.hpp#4 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file Exception.hpp

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/tests/TimeTest.cpp#1 $"
+#pragma ident "$Id$"
+
 
 #include <iostream>
 

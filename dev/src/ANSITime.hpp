@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/ANSITime.hpp#2 $"
+#pragma ident "$Id$"
+
 
 #ifndef GPSTK_ANSITIME_HPP
 #define GPSTK_ANSITIME_HPP

@@ -1,5 +1,5 @@
 #
-# $Id: //depot/sgl/gpstk/dev/src/Jamfile#24 $
+# $Id$
 #
 
 SubDir TOP src ;

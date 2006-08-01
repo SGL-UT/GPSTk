@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/EngEphemeris.hpp#7 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file EngEphemeris.hpp

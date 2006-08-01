@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/PCodeConst.hpp#1 $"
+#pragma ident "$Id$"
+
 //  PCodeConst.hpp - Constants for GPS X-register manipulation
 
 //============================================================================

@@ -1,6 +1,6 @@
 echo off
 REM Run all tests in the tests directory
-REM $Id:$
+REM $Id$
 
 echo.
 echo.

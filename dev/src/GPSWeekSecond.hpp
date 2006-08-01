@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/GPSWeekSecond.hpp#3 $"
+#pragma ident "$Id$"
+
 
 #ifndef GPSTK_GPSWEEKSECOND_HPP
 #define GPSTK_GPSWEEKSECOND_HPP

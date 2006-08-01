@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/gpstkplatform.h#2 $"
+#pragma ident "$Id$"
+
 
 /* This is where all platform specific includes, defines and crud should go.
    Unless, of course, it has to go somewhere else. :-)

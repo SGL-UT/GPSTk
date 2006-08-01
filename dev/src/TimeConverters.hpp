@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/TimeConverters.hpp#1 $"
+#pragma ident "$Id$"
+
 
 #ifndef GPSTK_TIMECONVERTERS_HPP
 #define GPSTK_TIMECONVERTERS_HPP

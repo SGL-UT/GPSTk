@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/X2Sequence.hpp#2 $"
+#pragma ident "$Id$"
+
 //  X2Sequence.hpp - GPS X2 Sequencer
 
 #ifndef X2SEQUENCE_HPP

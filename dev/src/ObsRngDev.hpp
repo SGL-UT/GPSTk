@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/ObsRngDev.hpp#5 $"
+#pragma ident "$Id$"
+
 
 //============================================================================
 //

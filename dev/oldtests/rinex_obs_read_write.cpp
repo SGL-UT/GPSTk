@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/tests/rinex_obs_read_write.cpp#1 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file rinex_obs_read_write.cpp
