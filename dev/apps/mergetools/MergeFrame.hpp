@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/mergetools/MergeFrame.hpp#3 $"
+#pragma ident "$Id$"
+
 
 #ifndef MERGEFRAME_HPP
 #define MERGEFRAME_HPP

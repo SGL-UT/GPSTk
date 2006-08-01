@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPPVTSolution.hpp#5 $"
+#pragma ident "$Id$"
+
 
 #ifndef MDPPVTSOLUTION_HPP
 #define MDPPVTSOLUTION_HPP

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/checktools/rowcheck.cpp#1 $"
+#pragma ident "$Id$"
+
 
 #include "CheckFrame.hpp"
 

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/PolyFit.hpp#3 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file PolyFit.hpp

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/BELogEntry.hpp#3 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file BELogEntry.hpp

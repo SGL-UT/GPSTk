@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPSelftestStatus.hpp#4 $"
+#pragma ident "$Id$"
+
 
 #ifndef MDPSELFTESTSTATUS_HPP
 #define MDPSELFTESTSTATUS_HPP

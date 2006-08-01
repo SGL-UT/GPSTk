@@ -1,4 +1,4 @@
-# $Id: //depot/sgl/gpstk/dev/apps/reszilla/Jamfile#12 $
+# $Id$
 
 SubDir TOP apps reszilla ;
 

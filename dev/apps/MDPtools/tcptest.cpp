@@ -1,4 +1,5 @@
-#pragma ident "$Id"
+#pragma ident "$Id$"
+
 
 #include <iostream>
 #include <string>

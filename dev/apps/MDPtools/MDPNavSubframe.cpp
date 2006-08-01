@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPNavSubframe.cpp#12 $"
+#pragma ident "$Id$"
+
 
 #include <sstream>
 #include <BinUtils.hpp>

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/TrackProc.hpp#2 $"
+#pragma ident "$Id$"
+
 
 #ifndef MDPTRACK_HPP
 #define MDPTRACK_HPP

@@ -1,5 +1,5 @@
 #
-# $Id: //depot/sgl/gpstk/dev/apps/Rinextools/Jamfile#3 $
+# $Id$
 #
 
 SubDir TOP apps Rinextools ;

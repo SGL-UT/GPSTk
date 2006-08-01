@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/readers.cpp#16 $"
+#pragma ident "$Id$"
+
 
 #include <iostream>
 #include <iomanip>

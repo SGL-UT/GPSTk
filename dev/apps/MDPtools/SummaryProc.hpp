@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/SummaryProc.hpp#6 $"
+#pragma ident "$Id$"
+
 
 #ifndef MDPSUMMARY_HPP
 #define MDPSUMMARY_HPP

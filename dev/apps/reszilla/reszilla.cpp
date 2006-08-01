@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/reszilla.cpp#24 $"
+#pragma ident "$Id$"
+
 //
 // Compute observed range deviations (ORDs) and double
 // difference residuals from rinex obs files.

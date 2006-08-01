@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/ionosphere/VTECMap.hpp#2 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file VTECMap.hpp

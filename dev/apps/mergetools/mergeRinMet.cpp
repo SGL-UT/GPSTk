@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/mergetools/mergeRinMet.cpp#3 $"
+#pragma ident "$Id$"
+
 
 // mergeRinMet
 // Merge and sort rinex metrological files

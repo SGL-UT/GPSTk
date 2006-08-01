@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/mergetools/mergeFIC.cpp#1 $"
+#pragma ident "$Id$"
+
 
 // mergeFIC
 // Merge and sort FIC files

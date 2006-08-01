@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/ElevationRange.hpp#1 $"
+#pragma ident "$Id$"
+
 
 #ifndef ELEVATIONRANGE_HPP
 #define ELEVATIONRANGE_HPP

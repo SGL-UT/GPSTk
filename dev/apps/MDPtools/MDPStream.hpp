@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPStream.hpp#4 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file MDPStream.hpp

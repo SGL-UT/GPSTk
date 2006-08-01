@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/RobustLinearEstimator.cpp#3 $"
+#pragma ident "$Id$"
+
 
 #include <math.h>
 #include <algorithm>

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPNavSubframe.hpp#8 $"
+#pragma ident "$Id$"
+
 
 #ifndef MDPNAVSUBFRAME_HPP
 #define MDPNAVSUBFRAME_HPP

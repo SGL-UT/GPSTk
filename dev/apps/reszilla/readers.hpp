@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/readers.hpp#9 $"
+#pragma ident "$Id$"
+
 //
 // Utilitiy functions for reading in various types of data
 //

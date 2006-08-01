@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/checktools/CheckFrame.hpp#3 $"
+#pragma ident "$Id$"
+
 
 #ifndef CHECKFRAME_HPP
 #define CHECKFRAME_HPP

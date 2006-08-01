@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/mergetools/mergeRinObs.cpp#3 $"
+#pragma ident "$Id$"
+
 
 // mergeRinObs
 // Merge and sort rinex observation files

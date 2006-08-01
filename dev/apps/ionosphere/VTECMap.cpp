@@ -2,7 +2,8 @@
 // VTECMap.cpp
 //------------------------------------------------------------------------------------
 
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/ionosphere/VTECMap.cpp#4 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file VTECMap.cpp

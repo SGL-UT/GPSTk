@@ -1,5 +1,5 @@
 #
-# $Id: //depot/sgl/gpstk/dev/apps/bindings/java/Makefile#1 $
+# $Id$
 #
 # This simple makefile builds a Java interface to the GPSTk from code
 # generated the SWIG utility (http://www.swig.org/). 

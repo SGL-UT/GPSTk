@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/PhaseCleaner.cpp#6 $"
+#pragma ident "$Id$"
+
 
 #include "PhaseCleaner.hpp"
 

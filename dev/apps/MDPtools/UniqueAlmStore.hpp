@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/UniqueAlmStore.hpp#4 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file UniqueAlmStore.hpp

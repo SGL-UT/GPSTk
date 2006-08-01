@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Id: //depot/sgl/gpstk/dev/apps/reszilla/resplot#10 $
+# $Id$
 # A script for plotting the output of reszilla
 #
 

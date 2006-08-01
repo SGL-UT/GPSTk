@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/src/DayTime.hpp#9 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file DayTime.hpp

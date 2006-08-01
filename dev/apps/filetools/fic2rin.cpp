@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/filetools/fic2rin.cpp#2 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file fic2rin.cpp Convert FIC files to RINEX.

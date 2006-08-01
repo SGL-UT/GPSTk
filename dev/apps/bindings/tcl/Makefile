@@ -1,5 +1,5 @@
 #
-# $Id:$
+# $Id$
 #
 # This simple makefile builds a Tcl/Tk interface to the GPSTk from code
 # generated the SWIG utility (http://www.swig.org/). 

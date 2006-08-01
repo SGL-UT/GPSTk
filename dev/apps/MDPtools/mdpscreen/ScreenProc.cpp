@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/mdpscreen/ScreenProc.cpp#6 $"
+#pragma ident "$Id$"
+
 
 #include "Geodetic.hpp"
 #include "GPSGeoid.hpp"

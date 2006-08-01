@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPObsEpoch.hpp#6 $"
+#pragma ident "$Id$"
+
 
 #ifndef MDPOBSEPOCH_HPP
 #define MDPOBSEPOCH_HPP

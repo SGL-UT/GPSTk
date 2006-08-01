@@ -1,4 +1,4 @@
-# $Id: //depot/sgl/gpstk/dev/apps/MDPtools/mdpscreen/Jamfile#3 $
+# $Id$
 
 SubDir TOP apps MDPtools mdpscreen ;
 

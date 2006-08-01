@@ -2,7 +2,7 @@
 #
 # RinexPlot - plot Rinex data
 # 
-# $Id: //depot/sgl/gpstk/dev/apps/RinexPlot/RinexPlot.pl#7 $
+# $Id$
 #
 #============================================================================
 #

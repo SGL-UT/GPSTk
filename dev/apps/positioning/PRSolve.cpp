@@ -1,6 +1,6 @@
 // PRSolve.cpp  Read a Rinex observation file and compute an autonomous
 // pseudorange position solution, using a RAIM-like algorithm to eliminate outliers.
-// $Id: //depot/sgl/gpstk/dev/apps/positioning/PRSolve.cpp#7 $
+// $Id$
 
 #define RANGECHECK 1        // make Matrix and Vector check limits
 #include "Exception.hpp"

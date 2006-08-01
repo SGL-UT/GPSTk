@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/FormatConversionFunctions.cpp#9 $"
+#pragma ident "$Id$"
+
 
 /** @file Translates between various similiar objects */
 

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/PhaseResidual.hpp#5 $"
+#pragma ident "$Id$"
+
 
 #ifndef PHASERESIDUAL_HPP
 #define PHASERESIDUAL_HPP

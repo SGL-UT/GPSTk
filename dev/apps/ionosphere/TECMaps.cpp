@@ -6,7 +6,8 @@
  *    model, and the type of data (VTEC, MUF or F0F2) to be used. TD ...
  */
 
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/ionosphere/TECMaps.cpp#4 $"
+#pragma ident "$Id$"
+
 
 //------------------------------------------------------------------------------------
 //============================================================================

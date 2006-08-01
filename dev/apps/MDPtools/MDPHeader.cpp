@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPHeader.cpp#14 $"
+#pragma ident "$Id$"
+
 
 //lgpl-license START
 //lgpl-license END

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/receiver/RinexObsRoller.hpp#1 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file RinexObsRoller.hpp

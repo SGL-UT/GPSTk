@@ -1,4 +1,5 @@
-#pragma ident "$Id $"
+#pragma ident "$Id$"
+
 
 #ifndef DIFFFRAME_HPP
 #define DIFFFRAME_HPP

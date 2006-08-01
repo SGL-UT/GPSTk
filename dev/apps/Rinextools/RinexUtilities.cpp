@@ -5,7 +5,8 @@
 // The University of Texas at Austin (ARL:UT), and was written by Dr. Brian Tolman.
 //
 //------------------------------------------------------------------------------------
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/Rinextools/RinexUtilities.cpp#4 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file RinexUtilities.cpp

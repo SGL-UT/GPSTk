@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/TCPStream.hpp#4 $"
+#pragma ident "$Id$"
+
 
 #ifndef TCPSTREAM_HPP
 #define TCPSTREAM_HPP

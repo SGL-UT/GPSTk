@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/visibility/WhereSat.cpp#1 $"
+#pragma ident "$Id$"
+
 //
 //   Computes SV position (Earth-fixed) and SV clock
 //   correction.  If given a user position, computes 

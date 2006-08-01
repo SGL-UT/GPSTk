@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/util.cpp#22 $"
+#pragma ident "$Id$"
+
 
 #include "util.hpp"
 

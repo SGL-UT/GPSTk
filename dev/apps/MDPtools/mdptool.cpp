@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/mdptool.cpp#15 $"
+#pragma ident "$Id$"
+
 
 /** @file Various utility functions on MDP streams/files */
 

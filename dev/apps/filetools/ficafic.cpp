@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/filetools/ficafic.cpp#1 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file ficafic.cpp Convert FICA files to FIC.

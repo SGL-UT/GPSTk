@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/time/calgps.cpp#1 $"
+#pragma ident "$Id$"
+
 
 // FIXME. This calendar app should simplify by updating it 
 //        to use the new TimeTag class. Not sure which one to user now tho..

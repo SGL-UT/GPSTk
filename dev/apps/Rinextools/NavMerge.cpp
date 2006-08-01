@@ -3,7 +3,8 @@
 // or write a summary of the data to the screen. NavMerge also finds
 // and fixes full week number when it is inconsistent with epoch.
 //------------------------------------------------------------------------------------
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/Rinextools/NavMerge.cpp#3 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file NavMerge.cpp

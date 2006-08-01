@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/mdp2fic.cpp#5 $"
+#pragma ident "$Id$"
+
 
 /** @file Converts an MDP stream into FIC nav file */
 

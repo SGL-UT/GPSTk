@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/NavProc.hpp#3 $"
+#pragma ident "$Id$"
+
 
 #ifndef MDPNAV_HPP
 #define MDPNAV_HPP

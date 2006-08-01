@@ -1,4 +1,4 @@
-#pragma ident * $Id: //depot/sgl/gpstk/dev/apps/MDPtools/TCPStream.cpp#3 $
+#pragma ident * $Id$
 
 #include <sstream>
 #include <errno.h>

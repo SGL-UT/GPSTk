@@ -1,4 +1,4 @@
-# $Id: //depot/sgl/gpstk/dev/apps/difftools/Jamfile#2 $
+# $Id$
 
 SubDir TOP apps difftools ;
 

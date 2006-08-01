@@ -14,7 +14,8 @@
 //    Satellite Geophysics Group at Applied Research Laboratories,
 //    The University of Texas at Austin (ARL:UT), and was written by Dr. Brian Tolman.
 //------------------------------------------------------------------------------------
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/Rinextools/ResCor.cpp#6 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file ResCor.cpp

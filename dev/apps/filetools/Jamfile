@@ -1,5 +1,5 @@
 #
-# $Id: //depot/sgl/gpstk/apps/filetools/Jamfile#3 $
+# $Id$
 #
 
 SubDir TOP apps filetools ;

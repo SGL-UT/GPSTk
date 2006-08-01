@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/miscdefs.hpp#1 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file miscdefs.hpp

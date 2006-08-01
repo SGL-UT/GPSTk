@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/receiver/UnixSerialPort.hpp#1 $"
+#pragma ident "$Id$"
+
 
 //============================================================================
 //

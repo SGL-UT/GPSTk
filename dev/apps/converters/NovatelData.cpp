@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/converters/NovatelData.cpp#1 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file NovatelData.cpp

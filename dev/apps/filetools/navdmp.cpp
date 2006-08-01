@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/filetools/navdmp.cpp#3 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file navdmp.cpp - print a human readable file from a binary FIC file

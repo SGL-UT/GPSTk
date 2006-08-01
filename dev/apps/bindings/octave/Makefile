@@ -1,5 +1,5 @@
 #
-# $Id: //depot/sgl/gpstk/dev/apps/bindings/octave/Makefile#1 $
+# $Id$
 #
 # To use these routines the GPSTk shared library either needs to be
 # installed as a system shared library, or the environment variable

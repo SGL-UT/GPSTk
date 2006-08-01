@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/mdp2rinex.cpp#13 $"
+#pragma ident "$Id$"
+
 
 /** @file Converts an MDP stream into RINEX obs/nav files */
 

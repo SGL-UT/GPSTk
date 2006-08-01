@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/util.hpp#17 $"
+#pragma ident "$Id$"
+
 
 #ifndef RESZILLA_UTIL_HPP
 #define RESZILLA_UTIL_HPP

@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/DataStatus.hpp#4 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file DataStatus.hpp

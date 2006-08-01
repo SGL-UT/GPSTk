@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPHeader.hpp#10 $"
+#pragma ident "$Id$"
+
 
 /**
  * @file MDPHeader.hpp

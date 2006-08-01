@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/MDPPVTSolution.cpp#8 $"
+#pragma ident "$Id$"
+
 
 #include <sstream>
 #include <StringUtils.hpp>

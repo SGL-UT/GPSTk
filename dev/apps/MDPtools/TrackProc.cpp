@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/TrackProc.cpp#5 $"
+#pragma ident "$Id$"
+
 
 /*
   This intended to perform a quick summary/analysis of the data in a MDP file

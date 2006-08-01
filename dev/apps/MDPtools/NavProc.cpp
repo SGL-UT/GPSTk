@@ -1,4 +1,5 @@
-#pragma ident "$Id: NavProc.cpp,v 1.1 2006/07/28 14:31:42 littlej Exp $"
+#pragma ident "$Id$"
+
 
 /*
   Think, navdmp for mdp, with bonus output that you get data from all code/carrier

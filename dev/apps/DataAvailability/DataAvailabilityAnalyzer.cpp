@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/DataAvailability/DataAvailabilityAnalyzer.cpp#2 $"
+#pragma ident "$Id$"
+
 /** @file Performs a data availability analysis of the input data. In general,
     availability is determined by station and satellite position.
 

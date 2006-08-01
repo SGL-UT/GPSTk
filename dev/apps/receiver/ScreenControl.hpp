@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/receiver/ScreenControl.hpp#1 $"
+#pragma ident "$Id$"
+
 
 #ifndef GPSTK_SCREEN_CONTROL_HPP
 #define GPSTK_SCREEN_CONTROL_HPP

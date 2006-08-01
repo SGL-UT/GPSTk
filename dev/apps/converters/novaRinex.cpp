@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/converters/novaRinex.cpp#3 $"
+#pragma ident "$Id$"
+
 
 //============================================================================
 //

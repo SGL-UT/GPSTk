@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/DDEpoch.hpp#2 $"
+#pragma ident "$Id$"
+
 
 #ifndef DDEPOCH_HPP
 #define DDEPOCH_HPP

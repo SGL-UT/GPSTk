@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/PhaseCleaner.hpp#4 $"
+#pragma ident "$Id$"
+
 
 #ifndef PHASECLEANER_HPP
 #define PHASECLEANER_HPP

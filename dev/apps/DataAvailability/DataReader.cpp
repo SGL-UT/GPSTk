@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/DataAvailability/DataReader.cpp#1 $"
+#pragma ident "$Id$"
+
 
 //lgpl-license START
 //lgpl-license END

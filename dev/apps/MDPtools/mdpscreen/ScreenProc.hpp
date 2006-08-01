@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/MDPtools/mdpscreen/ScreenProc.hpp#3 $"
+#pragma ident "$Id$"
+
 
 #ifndef MDPSCREEN_HPP
 #define MDPSCREEN_HPP

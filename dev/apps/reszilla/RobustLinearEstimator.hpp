@@ -1,4 +1,5 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/reszilla/RobustLinearEstimator.hpp#3 $"
+#pragma ident "$Id$"
+
 
 #ifndef ROBUSTLINEARESTIMATOR_HPP
 #define ROBUSTLINEARESTIMATOR_HPP
