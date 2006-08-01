@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file SP3Data.hpp
  * Encapsulate SP3 file data, including I/O

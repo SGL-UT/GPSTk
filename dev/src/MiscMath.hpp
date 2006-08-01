@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file MiscMath.hpp
  * Miscellaneous mathematical algorithms

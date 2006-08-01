@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 #ifndef GPSTK_JULIANDATE_HPP
 #define GPSTK_JULIANDATE_HPP
 

@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FileHunter.hpp
  * Find all files matching a specification.

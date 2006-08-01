@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file SP3Stream.hpp
  * File stream for SP3 format files

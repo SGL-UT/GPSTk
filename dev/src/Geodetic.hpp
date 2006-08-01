@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file Geodetic.hpp
  * Geodetic coordinates (lat, lon, alt)

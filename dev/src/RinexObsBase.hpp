@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexObsBase.hpp
  * Base class for RINEX observation file data

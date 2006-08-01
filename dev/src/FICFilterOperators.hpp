@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FICFilterOperators.hpp
  * gpstk::FICFilterOperators - FIC filter operators.

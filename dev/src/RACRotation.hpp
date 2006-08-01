@@ -1,5 +1,6 @@
 #pragma ident "$Id$"
 
+
 //
 //
 #ifndef GPSTK_RACROTATION_HPP

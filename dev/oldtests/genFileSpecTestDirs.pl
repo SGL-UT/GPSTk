@@ -2,6 +2,7 @@
 #
 # "$Id$"
 
+
 #
 # This script generates a set of dummy files and directories for
 # running FileSpecTest. They are in the form of 

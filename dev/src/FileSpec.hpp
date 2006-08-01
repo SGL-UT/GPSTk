@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FileSpec.hpp
  * Define the specification of a file.

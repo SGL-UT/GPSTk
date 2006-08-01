@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FileFilterFrame.hpp
  * Wrapper for gpstk::FileHunter and gpstk::FileFilter

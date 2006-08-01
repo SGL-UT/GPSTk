@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexObsData.hpp
  * Encapsulate RINEX observation file data, including I/O

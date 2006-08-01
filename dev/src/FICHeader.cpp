@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FICHeader.cpp
  * gpstk::FICHeader - container for the FIC file header data.

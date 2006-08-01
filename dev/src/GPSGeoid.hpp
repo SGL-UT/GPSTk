@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file GPSGeoid.hpp
  * The GPS geoid defined in ICD-GPS-200

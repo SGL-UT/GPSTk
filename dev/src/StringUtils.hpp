@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file StringUtils.hpp
  * StringUtils namespace and GPSTK string utility functions

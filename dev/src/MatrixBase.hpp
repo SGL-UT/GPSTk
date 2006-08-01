@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file MatrixBase.hpp
  * Base classes (const and ref) for Matrix

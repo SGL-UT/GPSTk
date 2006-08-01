@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file MatrixBaseOperators.hpp
  * Matrix operators for the base class

@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file VectorOperators.hpp
  * Vector operators, including arithmetic, trig, cross, RMS, etc

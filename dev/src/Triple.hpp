@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file Triple.hpp
  * Three element double vectors, for use with geodetic coordinates

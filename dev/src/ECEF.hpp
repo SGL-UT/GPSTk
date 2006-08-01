@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file ECEF.hpp
  * Encapsulate Earth-centered, Earth-fixed Cartesian coordinates

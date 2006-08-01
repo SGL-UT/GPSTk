@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file GeoidModel.hpp
  * Abstract base class modeling a geoid

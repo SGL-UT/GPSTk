@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file GPSZcount.hpp
  * gpstk::GPSZcount - encapsulates time according to full GPS Week and Z-count.

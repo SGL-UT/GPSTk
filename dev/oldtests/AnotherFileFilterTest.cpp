@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 #include "FileFilter.hpp"
 #include "FFData.hpp"
 #include "FFStream.hpp"

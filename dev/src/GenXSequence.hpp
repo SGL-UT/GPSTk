@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 //  GenXSequence.hpp -  Generate X Sequence class.
 
 #ifndef GENXSEQUENCE_HPP

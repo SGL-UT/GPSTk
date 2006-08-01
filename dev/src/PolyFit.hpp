@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file PolyFit.hpp
  * Least squares fit of a polynomial to data

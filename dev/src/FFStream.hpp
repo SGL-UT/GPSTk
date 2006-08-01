@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FFStream.hpp
  * Formatted File Stream, root class to provide formatted I/O operators ('<<' & '>>')

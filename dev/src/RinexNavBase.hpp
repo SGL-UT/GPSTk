@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexNavBase.hpp
  * Base class for RINEX Navigation data

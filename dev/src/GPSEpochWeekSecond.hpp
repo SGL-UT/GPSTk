@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 #ifndef GPSTK_GPSEPOCHWEEKSECOND_HPP
 #define GPSTK_GPSEPOCHWEEKSECOND_HPP
 

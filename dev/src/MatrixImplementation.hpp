@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file MatrixImplementation.hpp
  * Implementation of Matrix algorithms

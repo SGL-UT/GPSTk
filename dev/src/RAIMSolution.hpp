@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RAIMSolution.hpp
  * Autonomous pseudorange navigation solution, including RAIM algorithm

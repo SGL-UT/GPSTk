@@ -1,5 +1,6 @@
 #pragma ident "$Id$"
 
+
 // X1Sequence.cpp - GPS X1 Seqeuncer
 
 #ifndef X1SEQUENCE_HPP

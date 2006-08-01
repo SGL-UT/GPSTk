@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexObsFilterOperators.hpp
  * Operators for FileFilter using Rinex observation data

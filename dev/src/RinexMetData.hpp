@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexMetData.hpp
  * Encapsulate RINEX meterological file data, including I/O

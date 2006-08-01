@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FileFilterFrameWithHeader.hpp
  * Wrapper for gpstk::FileHunter and gpstk::FileFilter that also handles header data

@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file WGS84Geoid.hpp
  * WGS 1984 model of the geoid

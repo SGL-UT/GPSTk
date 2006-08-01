@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FFStreamError.hpp
  * Exceptions for FFStream

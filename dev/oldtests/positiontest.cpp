@@ -1,5 +1,6 @@
 #pragma ident "$Id$"
 
+
 /**
  * @file positiontest.cpp  Test the Position module
  *

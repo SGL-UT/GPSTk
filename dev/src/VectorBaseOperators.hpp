@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file VectorBaseOperators.hpp
  * Vector base class operators, including I/O, min(), dot(), comparisons, etc

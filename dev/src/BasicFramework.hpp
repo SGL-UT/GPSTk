@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file BasicFramework.hpp
  * Basic framework for programs in the GPS toolkit

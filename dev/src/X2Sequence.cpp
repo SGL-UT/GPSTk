@@ -1,5 +1,6 @@
 #pragma ident "$Id$"
 
+
 /*
 *  X2Sequence.cpp
 *     GPS X2 Sequencer.

@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexMetStream.hpp
  * File stream for RINEX meterological files

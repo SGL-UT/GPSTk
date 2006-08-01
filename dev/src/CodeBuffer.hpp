@@ -1,5 +1,6 @@
 #pragma ident "$Id$"
 
+
 //  CodeBuffer.hpp  
 
 #ifndef CODEBUFFER_HPP

@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file EngNav.hpp
  * Engineering units navigation message abstraction.

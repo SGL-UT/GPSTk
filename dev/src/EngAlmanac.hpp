@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file EngAlmanac.hpp
  * Almanac data encapsulated in engineering terms

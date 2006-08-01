@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FICStream.hpp
  * gpstk::FICStream - binary FIC file stream container.

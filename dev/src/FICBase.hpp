@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FICBase.hpp
  * gpstk::FICBase - base class for FIC FFData.

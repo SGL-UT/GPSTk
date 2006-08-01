@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 #ifndef GPSTK_ALMORBIT_HPP
 #define GPSTK_ALMORBIT_HPP
 

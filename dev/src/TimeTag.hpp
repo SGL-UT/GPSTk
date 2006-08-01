@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 #ifndef GPSTK_TIMETAG_HPP
 #define GPSTK_TIMETAG_HPP
 

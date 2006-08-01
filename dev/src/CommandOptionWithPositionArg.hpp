@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file CommandOptionWithPositionArg.hpp
  * Command line options with position (class Position) arguments.

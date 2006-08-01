@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file Position.hpp
  * class gpstk::Position encapsulates 3-D positions, including geographic positions,

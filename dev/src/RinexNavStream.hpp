@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexNavStream.hpp
  * File stream for Rinex navigation file data

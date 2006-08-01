@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file PRSolution.hpp
  * Autonomous pseudorange navigation solution, including RAIM algorithm

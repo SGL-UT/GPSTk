@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file DayTime.hpp
  * gpstk::DayTime - encapsulates date and time-of-day in many formats

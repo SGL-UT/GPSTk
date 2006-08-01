@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FICStreamBase.hpp
  * gpstk::FICStreamBase stores common FIC stream data.

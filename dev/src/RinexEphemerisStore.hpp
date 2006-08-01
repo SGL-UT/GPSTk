@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexEphemerisStore.hpp
  * Read and store Rinex formated ephemeris data

@@ -1,5 +1,6 @@
 #pragma ident "$Id$"
 
+
 //  X2Sequence.hpp - GPS X2 Sequencer
 
 #ifndef X2SEQUENCE_HPP

@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file SP3Base.hpp
  * Base class for SP3 file data

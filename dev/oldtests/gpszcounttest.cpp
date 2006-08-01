@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file gpszcounttest.cpp
  * A set of tests for the GPSZcount class.

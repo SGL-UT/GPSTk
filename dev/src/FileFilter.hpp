@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FileFilter.hpp
  * A framework for sorting and filtering file data.

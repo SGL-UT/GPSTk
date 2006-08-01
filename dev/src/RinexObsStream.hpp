@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexObsStream.hpp
  * File stream for Rinex observation file data

@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file EphemerisRange.hpp
  * Computation of range and associated quantities from EphemerisStore

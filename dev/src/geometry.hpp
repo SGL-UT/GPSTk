@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file geometry.hpp
  * Geometric constants (radian-degree conversion)

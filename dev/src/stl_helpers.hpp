@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file stl_helpers.hpp
  * Useful functions that take advantage of STL containers

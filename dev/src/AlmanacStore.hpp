@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 #ifndef GPSTK_ALMANACSTORE_HPP
 #define GPSTK_ALMANACSTORE_HPP
 

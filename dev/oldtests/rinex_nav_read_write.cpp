@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file rinex_nav_read_write.cpp
  * tests gpslib::RinexNavStream, gpslib::RinexNavData, gpslib::RinexNavHeader.

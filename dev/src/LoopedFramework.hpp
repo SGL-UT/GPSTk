@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  *  @file LoopedFramework.hpp
  *  Basic framework for programs processing loops in the GPS toolkit

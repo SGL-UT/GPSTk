@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexNavHeader.hpp
  * Encapsulate header of Rinex navigation file

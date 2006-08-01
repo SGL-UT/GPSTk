@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FFTextStream.hpp
  * An FFStream for text files

@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file ObservationStore.hpp
  * A class encapsulating observation data (roughly standard RINEX obs and met files).

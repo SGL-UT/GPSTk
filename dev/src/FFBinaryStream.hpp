@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file FFBinaryStream.hpp
  * An FFStream for binary file reading

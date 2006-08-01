@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexNavFilterOperators.hpp
  * Operators for FileFilter using Rinex navigation data

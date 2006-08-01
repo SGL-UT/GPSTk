@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file MathBase.hpp
  * Basic math #defines (ABS, SQRT, etc)

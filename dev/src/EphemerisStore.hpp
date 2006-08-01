@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file EphemerisStore.hpp
  * Base for ephemeris storage classes

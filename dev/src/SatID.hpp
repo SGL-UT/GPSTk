@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 #ifndef GPSTK_SATID_HPP
 #define GPSTK_SATID_HPP
 

@@ -1,6 +1,7 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file CommandOptionWithTimeArg.hpp
  * Command line options with time (class DayTime) arguments
