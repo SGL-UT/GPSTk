@@ -1,19 +1,79 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
 %\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
 %\input{src/cmd}
 %\begin{document}
 
 \index{PRSolve!application writeup}
 \section{\emph{PRSolve}}
+\subsection{Overview}
+The application reads one or more Rinex observation files, plus one or more
+   navigation (ephemeris) files, and computes an autonomous pseudorange
+   position solution, using a RAIM-like algorithm to eliminate outliers.
+   Output is to the log file, and also optionally to a Rinex obs file with
+   the position solutions in auxiliary header blocks.
+
 \subsection{Usage}
-\getuse{PRSolve --help}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{navdmp}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-o}{--obs}{Input Rinex observation file(s)}{1}
+\entry{-n}{--nav}{Input navigation (ephemeris) file(s) (Rinex or SP3)}{1}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments: Input}} \\
+\entry{-f}{}{File containing more options}{1}
+\entry{}{--obsdir}{Directory of input observation file(s)}{1}
+\entry{}{--navdir}{Directory of input navigation file(s)}{1}
+\entry{}{--decimate}{Decimate data to time interval dt}{1}
+\entry{}{--EpochBeg}{Start time, arg is of the form YYYY,MM,DD,HH,Min,Sec}{2}
+\entry{}{--GPSBeg}{Start time, arg is of the form GPSweek,GPSsow}{1}
+\entry{}{--EpochEnd}{End time, arg is of the form YYYY,MM,DD,HH,Min,Sec}{2}
+\entry{}{--GPSEnd}{End time, arg is of the form GPSweek,GPSsow}{1}
+\entry{}{--CA}{Use C/A code pseudorange if P1 is not available}{1}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments: Configuration}} \\
+\entry{}{--RMSlimit}{Upper limit on RMS post-fit residuals (m) for a good solution}{2}
+\entry{}{--SlopeLimit}{Upper limit on RAIM 'slope' for a good solution}{1}
+\entry{}{--Algebra}{Use algebraic algorithm (otherwise linearized LS)}{2}
+\entry{}{--DistanceCriterion}{Use distance from a priori as convergence criterion (else RMS)}{2}
+\entry{}{--ReturnAtOnce}{Return as soon as a good solution is found}{1}
+\entry{}{--NReject}{Maximum number of satellites to reject}{1}
+\entry{}{--NIter}{Maximum iteration count (linearized LS algorithm)}{2}
+\entry{}{--Conv}{Minimum convergence criterion (m) (LLS algorithm)}{2}
+\entry{}{--MinElev}{Minimum elevation angle (deg) (only if --PosXYZ)}{2}
+\entry{}{--XPRN}{Exclude this satellite.}{1}
+\entry{}{--Trop $<$model,T,P,H$>$}{Trop model (one of BL,SA,NB,GG,GGH (cf.GPSTk)), with OPTIONAL weather Temp(C),Press(mb),RH(\%)}{2}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments: Output}} \\
+\entry{}{--Log}{Output log file name (prs.log).}{1}
+\entry{}{--PosXYZ $<$X,Y,Z$>$}{Known position (ECEF,m), used to compute output residuals.}{2}
+\entry{}{--APSout}{Output autonomous pseudorange solution (APS - no RAIM)}{2}
+\entry{}{--TimeFormat}{Output time format (ala DayTime) (default: \%4F \%10.3g)}{2}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments: RINEX Output}} \\
+\entry{}{--RinexFile}{Output Rinex obs file name}{1}
+\entry{}{--RunBy}{Output Rinex header 'RUN BY' string}{1}
+\entry{}{--Observer}{Output Rinex header 'OBSERVER' string}{1}
+\entry{}{--Agency}{Output Rinex header 'AGENCY' string}{1}
+\entry{}{--Marker}{Output Rinex header 'MARKER' string}{1}
+\entry{}{--Number}{Output Rinex header 'NUMBER' string}{1}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments: Help}} \\
+\entry{}{--verbose}{Print extended output.}{1}
+\entry{}{--debug}{Print very extended output.}{1}
+\entry{-h}{--help}{Print syntax and quit.}{1}
+\end{longtable}
+\end{\outputsize}
 
 \subsection{Examples}
-\printexec{> PRSolve -o arl2800.06o -n arl2800.06n}
 \getuse{PRSolve -o arl2800.06o -n arl2800.06n}
 
-\printexec{> PRSolve -o arl2800.06o -n arl2800.06n --EpochBeg 2006,6,7,00,00,00 --EpochEnd 2006,6,7,00,00,00}
 \getuse{PRSolve -o arl2800.06o -n arl2800.06n --EpochBeg 2006,6,7,00,00,00 --EpochEnd 2006,6,7,00,00,00}
 
 \subsection{Notes}

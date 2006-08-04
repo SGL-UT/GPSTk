@@ -1,21 +1,40 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
 %\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
 %\input{src/cmd}
 %\begin{document}
 
 \index{calgps!application writeup}
 \section{\emph{calgps}}
+\subsection{Overview}
+This application generates a dual GPS and Julian calendar. The arguments and 
+format are inspired by the UNIX 'cal' utility. With no arguments, the current 
+argument is printed. The last and next month can also be printed. Also, the 
+current or any given year can be printed.
 \subsection{Usage}
-\getuse{calgps --help}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+Short Arg. & Long Arg. & Description \\
+-h & --help & Generates help output. \\ 
+-3 & --three-months & Prints a GPS calendar for the previous, current, and next month. \\
+-y & --year & Prints a GPS calendar for the entire current year. \\
+-Y year & --specific-year=NUM & Prints a GPS calendar for the entire specified year.
+\end{longtable}
+\end{\outputsize}
+
 \subsection{Examples}
-\printexec{> calgps -3}
+
 \getuse{calgps -3}
 
-\printexec{calgps -Y 1998}
 \getuse{calgps -Y 1998}
+
 \subsection{Notes}
-The -Y option will print the calendar for the entire year specified, you cannot specify a month.
+If multiple options are given only the first is considered.
 
 %\end{document}
 

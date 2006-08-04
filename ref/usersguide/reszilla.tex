@@ -1,0 +1,85 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{multirow}
+%\usepackage{longtable}
+%\input{src/cmd}
+%\begin{document}
+
+\index{reszilla!application writeup}
+\section{\emph{reszilla}}
+\subsection{Overview}
+
+\subsection{Usage}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-o}{--obs1=ARG}{Observation data file name. If this option is specified more than once the contents of all files will be used.}{3}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-h}{--help}{Generates help and usage.}{1}
+\entry{-2}{--position=ARG}{Second receiver's observation data file name. Only used when computing a double difference. If this option is specified more than once the contents of all the files will be used.}{4}
+\entry{}{--msc=ARG}{Station coordinate file.}{1}
+\entry{-e}{--ephemeris=ARG}{Ephemeris data file name (either broadcast in RINEX nav, broadcast in FIC, or precise in SP3).}{3}
+\entry{-w}{--weather}{Weather data file name (RINEX met format only).}{2}
+\entry{-n}{--search-near}{Use BCEphemeris.searchNear()}{1}
+\entry{-c}{--clock-from-rinex}{Use the receiver clock offset from the rinex obs data.}{2}
+\entry{}{--svtime}{Observation data is in SV time  frame. The default is RX time frame.}{2}
+\entry{}{--check-obs}{Report data rate, order of data, data present, data gaps.}{2}
+\entry{}{--keep-unhealthy}{Keeps unhealthy SVs in the statistics, default is to toss.}{2}
+\entry{-s}{--no-stats}{Don't compute \& output the statistics.}{1}
+\entry{}{--cycle-slips}{Output a list of cycle slips.}{1}
+\entry{-r}{--raw-output=ARG}{Dump the computed residuals/ords into specified file. If '-' is given as the file name, the output is sent to standard output. The default is to not otput the raw residuals.}{4}
+\entry{}{--start-time=TIME}{Ignore obs data prior to this time in the analysis. The time is specified using the format \%4Y/\%03j/\%02H:\%02M:\%05.2f. The default value is to start with the first data found.}{4}
+\entry{}{--stop-time=TIME}{Ignore obs data after to this time in the analysis. The time is specified using the format \%4Y/\%03j/\%02H:\%02M:\%05.2f. The default value is to process all data.}{4}
+\entry{-t}{--time-format=ARG}{Daytime format specifier used for the timestamps in the raw output. The default is "\%Y \%3j \%02H:\%02M:\%04.1f". If this option is specified with the format as "s", the format "\%Y \%3j \%7.1s" is used. If this option is specified with the format as "s", the format "\%Y \%3j \%02H:\%02M:\%02S" is used.}{7}
+\entry{}{--omode=ARG}{ORD mode: P1P2, C1P2, C1, P1, P2. The default is p1p2}{2}
+\entry{}{--clock-est}{Compute a linear clock estimate.}{1}
+\entry{}{--ddmode=ARG}{Double difference residual mode: none, sv, or c1p2. The default is sv.}{2}
+\entry{}{--min-arc-time=ARG}{The minimum length of time (in seconds) that a sequence of observations must span to be considered as an arc. The default value is 60.0 seconds.}{4}
+\entry{}{--min-arc-gap=ARG}{The minimum length of time (in seconds) between two arcs for them to be considered separate arcs. The default value is 60.0 seconds.}{3}
+\entry{}{--min-arc-length=NUM}{The minimum number of epochs that can be considered an arc. The default value is 5 epochs.}{2}
+\entry{-b}{--elev-bin=ARG}{A range of elevations, used in computing the statistical summaries. Repeat to specify multiple bins. The default is "-b 0-10 -b 10-20 -b 20-60 -b 10-90".}{4}
+\entry{}{--sigma=NUM}{ Multiplier for sigma stripping used in computation of statistics on the raw residuals. The default value is 6.}{3}
+\entry{-v}{--verbosity=NUM}{How much detail to provide about intermediate steps.}{2}
+\entry{}{0}{nothing but the results}{1}
+\entry{}{1}{Output status before potentially time consuming operations (default)}{2}
+\entry{}{2}{more details about each step and the options chosen}{2}
+\entry{}{3}{add the reasons for editing data}{1}
+\entry{}{4}{dump intermediate values for each epoch (can be QUITE verbose)}{1}
+
+\end{longtable}
+\begin{verbatim}
+Types in the raw output files:
+   0 - c1p2 observed range deviation
+   50 - computed clock, difference from estimate, strip
+   51 - linear clock estimate, abdev
+Double difference types:
+   10 - c1     20 - c2
+   11 - p1     21 - p2
+   12 - l1     22 - l2
+   13 - d1     23 - d2
+   14 - s1     24 - s2
+\end{verbatim}
+\end{\outputsize}
+
+\subsection{Examples}
+
+\begin{\outputsize}
+\begin{lstlisting}
+reszilla --omode=p1 --svtime --msc=mscoords.cfg -m 85401 -o asm2004.138 -e s011138a.04n
+\end{lstlisting}
+\end{\outputsize}
+
+\subsection{Notes}
+The criteria min-arc-time and min-arc-length are both required to be met
+for a arc to be valid in double difference mode.
+All output quantities (stddev, min, max, ord, clock, double differnce, ...)
+are in meters.
+
+%\end{document}
+

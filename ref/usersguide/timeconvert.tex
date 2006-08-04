@@ -1,25 +1,52 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
 %\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
 %\input{src/cmd}
 %\begin{document}
 
 \index{timeconvert!application writeup}
 \section{\emph{timeconvert}}
+\subsection{Overview}
+This application allows the user to convert among time formats associated with 
+GPS. Time formats include: civilian time, Julian day of year and year, GPS week 
+and seconds of week, Z counts, and Modified Julian Date (MJD).
+
 \subsection{Usage}
-\getuse{timeconvert --help}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level}{1}
+\entry{-v}{--verbose}{Increase verbosity}{1}
+\entry{-h}{--help}{Print help usage}{1}
+\entry{-c}{--calendar=TIME}{``Month(numeric) DayOfMonth Year"}{1}
+\entry{-r}{--rinex=TIME}{"Month(numeric) DayOfMonth Year Hour:Minute:Second"}{2}
+\entry{-R}{--rinex-file=TIME}{"Year(2-digit) Month(numeric) DayOfMonth Hour Minute Second"}{2}
+\entry{-y}{--doy=TIME}{"Year DayOfYear SecondsOfDay"}{1}
+\entry{-m}{--mjd=TIME}{"ModifiedJulianDate"}{1}
+\entry{-o}{--shortweekandsow=TIME}{"10bitGPSweek SecondsOfWeek Year"}{1}
+\entry{-z}{--shortweekandzcounts=TIME}{"10bitGPSweek ZCounts Year"}{1}
+\entry{-f}{--fullweekandsow=TIME}{"FullGPSweek SecondsOfWeek"}{1}
+\entry{-w}{--fullweekandzcounts=TIMEo}{"FullGPSweek ZCounts"}{1}
+\entry{-u}{--unixtime=TIME}{"UnixSeconds UnixMicroseconds"}{1}
+\entry{-Z}{--fullZcounts=TIME}{"fullZcounts"}{1}
+\entry{-F}{--format=ARG}{Time format to use on output}{1}
+\entry{-a}{--add-offset=NUM}{add NUM seconds to specified time}{1}
+\entry{-s}{--sub-offset=NUM}{subtract NUM seconds from specified time}{1}
+\end{longtable}
+\end{\outputsize}
 
 \subsection{Examples}
-\printexec{> timeconvert -r "05 06 2006 13:50:02"}
 \getuse{timeconvert -r "05 06 1985 13:50:02"}
 
-\printexec{> timeconvert -o "1379 500 2006"}
 \getuse{timeconvert -o "1379 500 2006"}
 
-\printexec{> timeconvert -o "1379 500 2006 -a 86400"}
 \getuse{timeconvert -o "1379 500 2006 -a 86400"}
 
-\printexec{> timeconvert -w "1381 500" -s 200}
 \getuse{timeconvert -w "1381 500" -s 200}
 
 \subsection{Notes}

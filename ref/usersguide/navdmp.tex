@@ -1,95 +1,68 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
 %\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
 %\input{src/cmd}
 %\begin{document}
 
 \index{navdmp!application writeup}
 \section{\emph{navdmp}}
+\subsection{Overview}
+The application prints the contents of an FIC or RINEX file into a human readable file and allows filtering of the data.
+
 \subsection{Usage}
-\getuse{navdmp --help}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{navdmp}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-i}{--input=ARG}{Name of an input navigation message file}{1}
+\entry{-o}{--output=ARG}{Name of an output file}{1}
+& & \\
+
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level}{1}
+\entry{-v}{--verbose}{Increase verbosity}{1}
+\entry{-h}{--help}{Print help usage}{1}
+\entry{-a}{--all-records}{Unless otherwise specified, use default values for record filtration.}{2}
+\entry{-t}{--time=TIME}{Start time (of data) for processing}{1}
+\entry{-e}{--end-time=TIME}{End time (of data) for processing}{1}
+\entry{-p}{--prn=NUM}{PRN(s) to include}{1}
+\entry{-b}{--block=NUM}{FIC block number(s) to process ((9)109 (Engineering) ephemerides, (62)162 (engineering) almanacs)}{3}
+\entry{-r}{--RINEX}{Assume input file is a RINEX navigation message file}{2}
+\end{longtable}
+\end{\outputsize}
 
 \subsection{Examples}
-\printexec{> navdmp -i algo1720.06n -o summary --RINEX}
 \begin{\outputsize}
-\begin{Verbatim}
+\begin{lstlisting}
+> bash-3.00$ navdmp -i algo1720.06n -o summary !!!!!WHAT ON EARTH-t "06/25/2006 10:30:00"!!!!! -p 1 -p 2 -r
+
 Current filtering options:
-        Start time:     01/06/1980 00:00:00
+        Start time:     01/10/0006 16:09:24
         End time:       01/01/4713 00:00:00
-        PRNs:           using all PRNs
-        FIC blocks:     using all blocks
+        PRNs:           1 2
 
 Choose an option by number then push enter:
         1) Change the start time
         2) Change the end time
         3) Select specific PRNs
-        4) Select specific FIC block numbers
-        5) Process the file
-use ctrl-c to exit
-? 1
-
-Entering a new start time...
- Enter full GPS week: 1380
- Enter GPS seconds of week: 259200.000000
-
-Current filtering options:
-        Start time:     06/21/2006 00:00:00
-        End time:       01/01/4713 00:00:00
-        PRNs:           using all PRNs
-        FIC blocks:     using all blocks
-
-Choose an option by number then push enter:
-        1) Change the start time
-        2) Change the end time
-        3) Select specific PRNs
-        4) Select specific FIC block numbers
-        5) Process the file
-use ctrl-c to exit
-? 2
-
-Entering a new end time...
- Enter full GPS week: 1380
- Enter GPS seconds of week: 340000
-
-Current filtering options:
-        Start time:     06/21/2006 00:00:00
-        End time:       06/21/2006 22:26:40
-        PRNs:           using all PRNs
-        FIC blocks:     using all blocks
-
-Choose an option by number then push enter:
-        1) Change the start time
-        2) Change the end time
-        3) Select specific PRNs
-        4) Select specific FIC block numbers
-        5) Process the file
-use ctrl-c to exit
-? 3
-
-Enter a list of PRNs separated by spaces to search for.
-The old list will be discarded.
-Enter '0' for all PRNs - any other PRNs listed will be ignored.
-? 2 4 5 8
-
-Current filtering options:
-        Start time:     06/21/2006 00:10:00
-        End time:       06/21/2006 22:26:40
-        PRNs:           2 4 5 8
-        FIC blocks:     using all blocks
-
-Choose an option by number then push enter:
-        1) Change the start time
-        2) Change the end time
-        3) Select specific PRNs
-        4) Select specific FIC block numbers
         5) Process the file
 use ctrl-c to exit
 ? 5
 
 processing...
-\end{Verbatim}
-\begin{Verbatim}
-Output File Sample
+\end{lstlisting}
+\end{\outputsize}
+
+\begin{\outputsize}
+\begin{verbatim}
+Summary File Snippet
+
 ****************************************************************************
 Broadcast Ephemeris (Engineering Units)
 
@@ -137,9 +110,8 @@ Health bits:   0x00      URA index:    1
 Code on L2:   reserved     L2 P Nav data:          on
 
 ****************************************************************************
-\end{Verbatim}
+\end{verbatim}
 \end{\outputsize}
 \subsection{Notes}
 
 %\end{document}
-

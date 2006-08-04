@@ -1,23 +1,46 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
 %\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
 %\input{src/cmd}
 %\begin{document}
 
+\index{ficafic!application writeup}
+\index{ficfica!application writeup}
 \section{\emph{ficafic ficfica}}
+\subsection{Overview}
+These applications convert navigation message data between variations of the FICformat, a format for GPS observations established by ARL:UT.
+
 \subsection{Usage}
-\getuse{ficafica --help}
-ficfica is used in the same manner.
+\begin{\outputsize}
+\begin{verbatim}
+ ficafic usage: ficafic <input fica file> <output fic file name>
+ ficfica usage: ficfica <input fic file> <output fica file name>
+\end{verbatim}
+\end{\outputsize}
 
 \subsection{Examples}
-\printexec{> ficfica fic06.187 fica06.187}
+\getuse{ficfica fic06.187 fica06.187}
+
 \begin{\outputsize}
-\begin{Verbatim}
-input - binary FIC file
+\begin{verbatim}
+File Snippets
 
-... ureadable ...
+Binary FIC File
 
-output - ASCII FIC file
+0000000
+*
+0000020                                   B   L   K       m  \0  \0  \0
+0000030  \0  \0  \0  \0      \0  \0  \0  \0  \0  \0  \0   f 005  \0  \0
+0000040 022  \0  \0  \0   >   f 301   " 260   i   {   !   f  \0   d 026
+0000050 335 344   8  \t 002   b   C 035 205   7   4 027 241 372 210 006
+0000060 006   }   Y   / 301 374   ?  \0   \   S 021   8   >   f 301   "
+ . . .
+
+ASCII FIC File
 
 BLK    109    0   32    0
         1382          18   583099966   561736112   375652454   154723549
@@ -32,19 +55,8 @@ BLK      9   60    0    0
  .00000000000000D+00 .91136000000000D+06 .00000000000000D+00-.10244548320770D-07
  .41760000000000D+06 .00000000000000D+00-.14779288903810D-11-.24207541719079D-03
  .00000000000000D+00 .00000000000000D+00 .00000000000000D+00 .18000000000000D+02
- .13900000000000D+03 .35800000000000D+03 .41143200000000D+06 .10000000000000D+01
- .20000000000000D+01 .38707200000000D+06 .27218750000000D+02 .47694843824545D-08
- .73006046361728D+00 .13653188943863D-05 .73035506065935D-02 .16111880540848D-05
- .51536964130402D+04 .41760000000000D+06 .00000000000000D+00 .00000000000000D+00
- .00000000000000D+00 .00000000000000D+00 .00000000000000D+00 .00000000000000D+00
- .13900000000000D+03 .35800000000000D+03 .41143800000000D+06 .10000000000000D+01
- .30000000000000D+01-.61467289924622D-07 .76791938203319D+00 .15087425708771D-06
- .95755118111879D+00 .34728125000000D+03-.26830302072519D+01-.85146403832347D-08
- .38707200000000D+06 .20715148583373D-10 .00000000000000D+00 .00000000000000D+00
- .00000000000000D+00 .00000000000000D+00 .00000000000000D+00 .00000000000000D+
-
  . . .
-\end{Verbatim}
+\end{verbatim}
 \end{\outputsize}
 
 \subsection{Notes}

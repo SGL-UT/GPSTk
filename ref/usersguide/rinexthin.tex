@@ -1,15 +1,30 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
 %\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
 %\input{src/cmd}
 %\begin{document}
 
 \section{\emph{rinexthin}}
+\subsection{Overview}
+This application decimates an input RINEX observation file to a specified data rate.
+
 \subsection{Usage}
-\getuse{rinexthin --help}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{navdmp}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-f}{--filename=ARG}{RINEX obs file to be thinned.}{1}
+\entry{-s}{--Seconds=NUM}{The desired data rate.}{1}
+\entry{-o}{--filename=ARG}{RINEX obs file with thinned obs.}{1}
+\end{longtable}
+\end{\outputsize}
 
 \subsection{Examples}
-\printexec{rinexthin -f arl2800.06o -s 60 -o arl2800thin.06o}
 \getuse{rinexthin -f arl2800.06o -s 60 -o arl2800thin.06o}
 
 \subsection{Notes}

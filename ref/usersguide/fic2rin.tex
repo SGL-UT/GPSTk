@@ -1,23 +1,45 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
 %\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
 %\input{src/cmd}
 %\begin{document}
 
 \index{fic2rin!application writeup}
 \section{\emph{fic2rin}}
+\subsection{Overview}
+This application converts navigation messages between the FIC format, a format for GPS observations established by ARL:UT, and
+the RINEX format.
+
 \subsection{Usage}
-\getuse{fic2rin --help}
+\begin{\outputsize}
+\begin{verbatim}
+ fic2rin usage: fic2rin <input FIC file> <output RINEX file name>
+\end{verbatim}
+\end{\outputsize}
 
 \subsection{Examples}
-\printexec{> fic2rin fic06.187 rin06.187}
+\getuse{fic2rin fic06.187 rin1870.06}
+
 \begin{\outputsize}
-\begin{Verbatim}
-input - binary FIC file
+\begin{verbatim}
+File Snippets
 
-... ureadable ...
+Binary FIC File
 
-output - RINEX file
+0000000
+*
+0000020                                   B   L   K       m  \0  \0  \0
+0000030  \0  \0  \0  \0      \0  \0  \0  \0  \0  \0  \0   f 005  \0  \0
+0000040 022  \0  \0  \0   >   f 301   " 260   i   {   !   f  \0   d 026
+0000050 335 344   8  \t 002   b   C 035 205   7   4 027 241 372 210 006
+0000060 006   }   Y   / 301 374   ?  \0   \   S 021   8   >   f 301   "
+ . . .
+
+RINEX NAV File
 
      2.10           NAVIGATION                              RINEX VERSION / TYPE
 fic2rin                                 07/13/2006 11:48:58 PGM / RUN BY / DATE
@@ -30,22 +52,12 @@ fic2rin                                 07/13/2006 11:48:58 PGM / RUN BY / DATE
      .600024993449D-10  .100000000000D+01  .138200000000D+04  .000000000000D+00
      .240000000000D+01  .000000000000D+00 -.419095158577D-08  .118000000000D+03
      .411426000000D+06  .400000000000D+01
-22 06  7  6 19 59 44.0  .113723333925D-03  .352429196937D-11  .000000000000D+00
-     .185000000000D+03  .263437500000D+02  .482305804258D-08 -.909844515545D+00
-     .142492353916D-05  .471908890177D-02  .161118805408D-05  .515368170738D+04
-     .417584000000D+06 -.100582838058D-06  .775947923266D+00  .856816768646D-07
-     .955084363303D+00  .347062500000D+03 -.164862797492D+01 -.854428447517D-08
-     .975040614355D-10  .100000000000D+01  .138200000000D+04  .000000000000D+00
-     .240000000000D+01  .000000000000D+00 -.181607902050D-07  .185000000000D+03
-     .411426000000D+06  .400000000000D+01
-
  . . .
 
-\end{Verbatim}
+\end{verbatim}
 \end{\outputsize}
 
 \subsection{Notes}
-
 
 %\end{document}
 

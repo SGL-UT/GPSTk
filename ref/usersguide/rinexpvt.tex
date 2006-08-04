@@ -1,29 +1,50 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
 %\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
 %\input{src/cmd}
 %\begin{document}
 
 \index{rinexpvt!application writeup}
 \section{\emph{rinexpvt}}
-\subsection{Usage}
-\getuse{rinexpvt --help}
+\subsection{Overview}
+The application generates a user position based on RINEX observation data with the option of including navigation and meteriological data to aid error correction.
 
-\subsection{Examples}
-\printexec{> rinexpvt -o arl2800.06o -n arl2800.06n}
-%\getuse{rinexpvt -o arl2800.06o -n arl2800.06n}
+\subsection{Usage}
 \begin{\outputsize}
-\begin{Verbatim}
-2006 6 7 00 00 0.000000 918127.643398 -4346069.74169 4561980.95915 802.025776147
-2006 6 7 00 00 30.000000 918127.603144 -4346069.71791 4561980.96257 802.059738502
-2006 6 7 00 01 0.000000 918127.618356 -4346069.74264 4561981.09022 802.133327164
-2006 6 7 00 01 30.000000 918127.625246 -4346069.81145 4561981.30363 802.274834271
-2006 6 7 00 02 0.000000 918127.623579 -4346069.83144 4561981.39838 802.340406661
-\end{Verbatim}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{navdmp}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-o}{--obs-file=ARG}{RINEX obs file}{1}
+& & \\
+
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level}{1}
+\entry{-v}{--verbose}{Increase verbosity}{1}
+\entry{-h}{--help}{Print help usage}{1}
+\entry{-n}{--nav-file=ARG}{RINEX Nav file. Required for single frequency ionosphere correction.}{2}
+\entry{-p}{--pe-file=ARG}{SP3 Precise Ephemeris File. Repeat this for each input file.}{2}
+\entry{-m}{--met-file=ARG}{RINEX Met File}{1}
+\entry{-t}{--time-format=ARG}{Alternate time format string.}{1}
+\entry{-e}{--enu=ARG}{Use the following as origin to solve for East/North/Up coordinates, formatted as a string: "X Y Z"}{3}
+\entry{-l}{--elevation-mask=ARG}{Elevation mask (degrees)}{1}
+\entry{-s}{--single-frequency}{Use only C1 (SPS)}{1}
+\entry{-f}{--dual-frequency}{Use only P1 and P2 (PPS)}{1}
+\entry{-i}{--no-ionosphere}{Do NOT correct for ionosphere delay.}{1}
+\entry{-x}{--no-closest-ephemeris}{Allow ephemeris use outside of fit interval.}{1}
+\entry{-c}{--no-carrier-smoothing}{Do NOT use carrier phase smoothing.}{1}
+\end{longtable}
 \end{\outputsize}
 
-\printexec{> rinexpvt -o arl2800.06o -n arl2800.06n -m arl2800.06m -l 15 -s}
-%\getuse{rinexpvt -o arl2800.06o -n arl2800.06n -m arl2800.06m }
+\subsection{Examples}
+\getuse{rinexpvt -o arl2800.06o -n arl2800.06n}
+
+\getuse{rinexpvt -o arl2800.06o -n arl2800.06n -m arl2800.06m}
 
 \subsection{Notes}
 Though not stated in the required options lists either a RINEX navigation file or an SP3 Precise Ephemeris File is needed, using the -n or -p option respectively. When using precise ephemeris 3 files must be included, the previous day's, the current day's and the next day's. 

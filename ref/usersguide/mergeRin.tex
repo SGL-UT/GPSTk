@@ -1,35 +1,47 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
 %\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
 %\input{src/cmd}
 %\begin{document}
 
+\index{mergeRinObs!application writeup}
+\index{mergeRinNav!application writeup}
+\index{mergeRinMet!application writeup}
+\index{mergeRinFic!application writeup}
 \section{\emph{mergeRinObs mergeRinNav mergeRinMet mergeFic}}
+\subsection{Overview}
+The applications merge multiple RINEX observation, navigation, or meteroligical data files into a single coherent RINEX obs/nav/met file. 
+
 \subsection{Usage}
-\getuse{mergeRinObs --help}
-The usage for mergeRiObs, mergeRinNav, mergeRinMet, and mergeFIC are identicle.
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{mergeRinObs}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-i}{--input=ARG}{An input RINEX Obs file, can be repeated as many times as needed.}{2}
+\entry{-o}{--output=ARG}{Name for the merged output RINEX Obs file. Any existing file with that name will be overwritten.}{2}
+& & \\
+
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level}{1}
+\entry{-v}{--verbose}{Increase verbosity}{1}
+\entry{-h}{--help}{Print help usage}{1}
+\end{longtable}
+\end{\outputsize}
+\application{mergeRinNav} and \application{mergeRinNav} have the same usage.
 
 \subsection{Examples}
-\printexec{mergeRinObs -i arl280.06o -i arl2810.06o -o arl280-10.06o}
-\begin{\outputsize}
-\begin{Verbatim}
-mergeRinObs         gpstk               07/31/2006 10:20:59 PGM / RUN BY / DATE
-\end{Verbatim}
-\end{\outputsize}
 
-\printexec{mergeRinNav -i arl280.06n -i arl2810.06n -o arl280-10.06n}
-\begin{\outputsize}
-\begin{Verbatim}
-mergeRinObs         gpstk               07/31/2006 10:20:59 PGM / RUN BY / DATE
-\end{Verbatim}
-\end{\outputsize}
+\getuse{mergeRinObs -i arl280.06o -i arl2810.06o -o arl280-10.06o}
 
-\printexec{mergeRinMet -i arl280.06m -i arl2810.06m -o arl280-10.06m}
-\begin{\outputsize}
-\begin{Verbatim}
-mergeRinObs         gpstk               07/31/2006 10:20:59 PGM / RUN BY / DATE
-\end{Verbatim}
-\end{\outputsize}
+\getuse{mergeRinNav -i arl280.06n -i arl2810.06n -o arl280-10.06n}
+
+\getuse{mergeRinMet -i arl280.06m -i arl2810.06m -o arl280-10.06m}
 
 \subsection{Notes}
 
