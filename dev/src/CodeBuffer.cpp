@@ -1,4 +1,5 @@
-/* $ID: $
+#pragma ident "$Id: $"
+/*
 *  CodeBuffer.cpp
 *     P(Y)-code Buffer class.
 *     Applied Research Laboratories, The University of Texas at Austin
