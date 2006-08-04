@@ -24,6 +24,9 @@ using gpstk::BinUtils::decodeVar;
 
 namespace gpstk
 {
+   const unsigned MDPHeader::myLength = 16;
+   const unsigned MDPHeader::frameWord = 0x9c9c;
+
    // Set to zero for no debugging output
    // set to 1 to output text messages about decode/format/range errors
    // set to 2 to add a hex dump of those messages
