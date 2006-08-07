@@ -1,0 +1,8 @@
+SubDir TOP apps multipath ;
+
+GPSLinkLibraries testoa : gpstk ;
+BonkForte ; # bleah.
+
+GPSMain testoa : testObsArray.cpp ObsArray.cpp ;
+
+
