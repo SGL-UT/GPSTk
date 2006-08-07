@@ -16,7 +16,6 @@ clean:
 	rm -f *.blg
 	rm -f *.lgpl
 	rm -f *.dvi	
-	rm -f *.pdf
 	rm -f *.ps
 	rm -f *~
 	rm -f temp
