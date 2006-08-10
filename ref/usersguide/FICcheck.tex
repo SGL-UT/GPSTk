@@ -1,0 +1,45 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{ficacheck!application writeup}
+\index{ficcheck!application writeup}
+
+\section{\emph{ficacheck ficcheck}}
+\subsection{Overview}
+The application reads input FIC files and checks them for errors.
+
+\subsection{Usage}
+\begin{\outputsize}
+
+\begin{longtable}{lll}
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level}{1}
+\entry{-v}{--verbose}{Increase verbosity}{1}
+\entry{-h}{--help}{Print help usage}{1}
+\entry{-t}{--time=TIME}{Time of first record to count (default = "beginning of time")}{2}
+\entry{-e}{--end-time=TIME}{End of time range to compare (default = "end of time")}{2}
+\end{longtable}
+
+\begin{verbatim}
+ficacheck usage: ficacheck [options] <FICA file>
+ficcheck usage: ficcheck [options] <FIC file>
+\end{verbatim}
+
+\end{\outputsize}
+
+\subsection{Examples}
+\getuse{ficcheck fic06.187}
+\getuse{ficacheck brokenfica}
+
+\subsection{Notes}
+Only the first error in each file is reported. The entire file is always checked regardless of time options.
+
+%\end{document}

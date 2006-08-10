@@ -1,0 +1,59 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{mdptool!application writeup}
+
+\section{\emph{mdptool}}
+\subsection{Overview}
+The application performs verious functions on a stream of MDP data.
+
+\subsection{Usage}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{mdptool}} \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level}{1}
+\entry{-v}{--verbose}{Increase verbosity}{1}
+\entry{-h}{--help}{Print help usage}{1}
+\entry{-i}{--input=ARG}{Where to get the MDP data from. The default is to use
+                         stdin. If the file name begins with "tcp:" the
+                         remainder is assumed to be a hostname[:port] and the
+                         source is taken from a tcp socket at this address. If
+                         the port number is not specified a default of 8910 is
+                         used.}{6}
+\entry{}{--output=ARG}{Where to send the output. The default is stdout.}{2}
+\entry{-p}{--pvt}{Enable pvt output}{1}
+\entry{-o}{--obs}{Enable obs output}{1}
+\entry{-n}{--nav}{Enable nav output}{1}
+\entry{-t}{--test}{Enable selftest output}{1}
+\entry{-x}{--hex}{Dump all messages in hex}{1}
+\entry{-b}{--bad}{Try to process bad messages also.}{1}
+\entry{-a}{--almanac}{Build and process almanacs. Only applies to the nav style}{2}
+\entry{-e}{--ephemeris}{Build and process engineering ephemerides. Only applies to the nav style}{2}
+\entry{-s}{--output-style=ARG}{What type of output to produce from the MDP stream.
+                         Valid styles are: brief, verbose, table, track, null,
+                         mdp, nav, and summary. The default is summary. Some
+                         modes aren't quite complete. Sorry.}{5}
+\entry{-l}{--timeSpan=NUM}{How much data to process, in seconds}{1}
+\entry{}{--startTime=TIME}{Ignore data before this time. (\%4Y/\%03j/\%02H:\%02M:\%05.2f)}{2}
+\entry{}{--stopTime=TIME}{Ignore any data after this time}{1}
+
+\end{longtable}
+\end{\outputsize}
+
+\subsection{Examples}
+
+\subsection{Notes}
+In the summary mode, the
+default is to only summarize the obs data above 10 degrees. Increasing the
+verbosity level will also summarize the data below 10 degrees.
+
+%\end{document}

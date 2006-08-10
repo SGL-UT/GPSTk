@@ -1,0 +1,43 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{rmwcheck!application writeup}
+\index{rnwcheck!application writeup}
+\index{rowcheck!application writeup}
+
+\section{\emph{rmwcheck rnwcheck rowcheck}}
+\subsection{Overview}
+The applications read a RINEX observation, navigation, or meteorological data file and check it for errors.
+
+\subsection{Usage}
+\begin{\outputsize}
+
+\begin{longtable}{lll}
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level}{1}
+\entry{-v}{--verbose}{Increase verbosity}{1}
+\entry{-h}{--help}{Print help usage}{1}
+\entry{-t}{--time=TIME}{Time of first record to count (default = "beginning of time")}{2}
+\entry{-e}{--end-time=TIME}{End of time range to compare (default = "end of time")}{2}
+& & \\
+\multicolumn{3}{l}{rmwcheck usage: rmwcheck [options] $<$RINEX Met file$>$} \\
+\multicolumn{3}{l}{rnwcheck usage: rnwcheck [options] $<$RINEX Nav file$>$} \\
+\multicolumn{3}{l}{rowcheck usage: rowcheck [options] $<$RINEX Obs file$>$} \\
+\end{longtable}
+\end{\outputsize}
+
+\subsection{Examples}
+
+\subsection{Notes}
+Only the first error in each file is reported. The entire file is always checked regardless of time options.
+
+%\end{document}
+

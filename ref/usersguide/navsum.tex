@@ -1,0 +1,45 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{navsum!application writeup}
+
+\section{\emph{navsum}}
+\subsection{Overview}
+The application prints the contents of an FIC or RINEX file into a human readable format and allows for the filtering of the data.
+
+\subsection{Usage}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{navsum}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-i}{--input=ARG}{Name of an input navigation message file}{1}
+\entry{-o}{--output=ARG}{Name of an output file}{1}
+& & \\
+
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level}{1}
+\entry{-v}{--verbose}{Increase verbosity}{1}
+\entry{-h}{--help}{Print help usage}{1}
+\entry{-a}{--all-records}{Unless otherwise specified, use default values for record filtration}{2}
+\entry{-t}{--time=TIME}{Start time (of data) for processing}{1}
+\entry{-e}{--end-time=TIME}{End time (of data) for processing}{1}
+\entry{-p}{--prn=NUM}{PRN(s) to include}{1}
+\entry{-b}{--block=NUM}{FIC block number(s) to process ((9)109 (Engineering) ephemerides, (62)162 (engineering) almanacs)}{3}
+\entry{-r}{--RINEX}{Assume input file is a RINEX navigation message file}{2}
+\end{longtable}
+\end{\outputsize}
+
+\subsection{Examples}
+
+\subsection{Notes}
+
+%\end{document}

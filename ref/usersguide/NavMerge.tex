@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{fancyvrb}
+\usepackage{src/perltex}
+\usepackage{src/xcolor}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{multirow}
+\input{src/cmd}
+\begin{document}
+
+\index{NavMerge!application writeup}
+
+\section{\emph{NavMerge}}
+\subsection{Overview}
+The application merges RINEX Nav files into a single file.
+
+\subsection{Usage}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{NavMerge}} \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-o}{}{Write all data to an output Rinex nav file. If omitted, a data summary is written to the screen.}{3}
+\entry{-tb}{}{Output only if epoch is within 4 hours of the interval (tb,te).}{2}
+\entry{-te}{}{If te or tb is missing, they are made equal. Timetags have the form year,mon,day,HH,min,sec OR GPSweek,sow}{3}
+\end{longtable}
+\end{\outputsize}
+
+\subsection{Examples}
+
+\subsection{Notes}
+NavMerge will also correct the output data when the GPS full week number is inconsistent with the epoch time.
+
+\end{document}

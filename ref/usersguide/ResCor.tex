@@ -1,0 +1,197 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{multirow}
+%\usepackage{longtable}
+%\input{src/cmd}
+%\begin{document}
+
+\index{ResCor!application writeup}
+\section{\emph{ResCor}}
+\subsection{Overview}
+The application will open and read a single Rinex observation file, apply editing commands
+   using the RinexEditor package, compute any of several residuals and corrections and
+   register extended Rinex observation types for them, and then write the edited data,
+   along with the new extended observation types, to an output Rinex observation file.
+
+\subsection{Usage}
+
+\begin{\outputsize}
+\begin{verbatim}
+
+Required arguments:
+ -IF and -OF (RinexEditor commands, see below) are required arguments.
+
+Optional arguments:
+
+Configuration input:
+ -f<file>        File containing more options
+ --nav <file>    Navigation (Rinex Nav OR SP3) file(s)
+ --navdir <dir>  Directory of navigation file(s)
+Reference position input: (there are six ways to input the reference position(s):
+ --RxLLH <l,l,h> 1.Receiver position (static) in geodetic lat, lon(E), ht (deg,deg,m)
+ --RxXYZ <x,y,z> 2.Receiver position (static) in ECEF coordinates (m)
+ --Rxhere        3.Reference site positions(time) from this file (i.e. -IF<RinexFile>)
+ --RxRinex <fn>  4.Reference site positions(time) from another Rinex file named <fn>
+ --RxFlat <fn>   5.Reference site positions and times given in a flat file named <fn>
+ --Rxhelp        (Enter --Rxhelp for a description of the -RxFlat file format)
+ --RAIM          6.Reference site positions computed via RAIM (requires P1,P2,EP)
+  (NB the following two options apply only if --RAIM is found)
+ --noRAIMedit    Do not edit data based on RAIM solution
+ --RAIMhead      Output average RAIM solution to Rinex header (if -HDf also appears)
+ --noRefout      Do not output reference solution to Rinex
+Residual/Correction computation:
+ --debias <OT,l> Debias new output type <OT>; trigger a bias reset with limit <l>
+ --Callow        Allow C1 to replace P1 when P1 is not available
+ --Cforce        Force C/A code pseudorange C1 to replace P1
+ --IonoHt <ht>   Height of ionosphere in km (default 400) (needed for LA,LO,VR,VP)
+ --SVonly <prn>  Process this satellite ONLY
+Output files:
+ --Log <file>    Output log file name (rc.log)
+ --Err <file>    Output error file name (rc.err)
+Help:
+ --verbose       Print extended output
+ --debug         Print debugging information.
+ --help [or -h]  Print syntax and quit.
+
+
+Rinex Editor commands:
+ ==============================================================================
+ Commands begin with a '-' or '/', followed by an identifier, then data fields.
+ Fields beyond the initial 2- or 3-character identifier are comma delimited.
+ <SV> gives a satellite; SV=<PRN><System(optional)> eg. 19G or 19 = PRN 19 GPS.
+ <System> is a single character (G=GPS, R=GLONASS, T=Transit, S=Geosynchronous).
+ <OT> gives a Rinex observation type, e.g. L1 or P2 (case sensitive).
+ <time> gives a time; time=<week,sow> OR time=<year,mon,day,hour,min,second>.
+
+ File I/O:
+ =========
+ -IF<file>       Input Rinex observation file name (required)
+ -ID<dir>        Directory in which to find input file
+ -OF<file>       Output Rinex file name (required, or -OF<file>,<time>)
+ -OF<f>,<time>   At time=<time>, close output file and open another named <f>
+ -OD<dir>        Directory in which to put output file(s)
+
+ Output Rinex header fields:
+ ===========================
+ -HDf            If present, fill optional records in the output Rinex header
+                  (NB EditObs() and EditFile() will do this, but NOT EditHeader().)
+ -HDp<program>   Set output Rinex header 'program' field
+ -HDr<run_by>    Set output Rinex header 'run by' field
+ -HDo<observer>  Set output Rinex header 'observer' field
+ -HDa<agency>    Set output Rinex header 'agency' field
+ -HDm<marker>    Set output Rinex header 'marker' field
+ -HDn<number>    Set output Rinex header 'number' field
+ -HDc<comment>   Add comment to output Rinex header (more than one allowed).
+ -HDdc           Delete all comments in output Rinex header
+     (NB -HDdc cannot delete comments created by *subsequent* -HDc commands)
+
+ -AO<OT>         Add observation type OT to header and observation data
+
+ General edit commands:
+ ======================
+ -TB<time>       Begin time: reject data before this time (also used for decimation)
+ -TE<time>       End   time: reject data after this time
+ -TT<dt>         Tolerance in comparing times, in seconds (default=1ms)
+ -TN<dt>         Decimate data to epochs = Begin + integer*dt (within tolerance)
+
+ Specific edit commands:
+ =======================
+ (Generally each '+' command (e.g DA+,<time>) has a corresponding '-' command,
+  and vice-versa; if not, End-of-file or Begin-of-file is assumed.
+  Note commands at one time are applied AFTER other commands of the same type.)
+
+     Delete commands:
+ -DA+<time>      Delete all data beginning at this time
+ -DA-<time>      Stop deleting data at this time
+ -DO<OT>         Delete observation type OT entirely (including in header)
+ -DS<SV>         Delete all data for satellite SV entirely (SV may be system only)
+ -DS<SV>,<time>  Delete all data for satellite SV at this single time (only)
+ -DS+<SV>,<time> Delete all data for satellite SV beginning at this time
+ -DS-<SV>,<time> Stop deleting all data for satellite SV at this time
+     (NB DS commands with SV=system (only) delete all satellites of that system.)
+ -DD<SV,OT,t>    Delete a single Rinex data(SV,OT,t) at time <t>
+ -DD+<SV,OT,t>   Delete all (SV,OT) data, beginning at time <t>
+ -DD-<SV,OT,t>   Stop deleting all (SV,OT) data at time <t>
+     (NB deleting data for one OT means setting it to zero - here and in Rinex)
+
+     Set commands:
+ -SD<SV,OT,t,d>  Set data(SV,OT,t) to <d> at time <t>
+ -SS<SV,OT,t,s>  Set ssi(SV,OT,t) to <s> at time <t>
+ -SL+<SV,OT,t,l> Set all lli(SV,OT,t) to <l> at time <t>
+ -SL-<SV,OT,t,l> Stop setting lli(SV,OT,t) to <l> at time <t> (',<l>' is optional)
+ -SL<SV,OT,t,l>  Set lli(SV,OT,t) to <l> at the single time <t> (only)
+     (NB SL commands with SV=system (only) modify all satellites of that system.)
+
+     Bias commands:
+   (NB. BD commands apply only when data is non-zero, unless -BZ appears)
+ -BZ             Apply bias data commands (BD) even when data is zero
+ -BD<SV,OT,t,d>  Add the value of <d> to data(SV,OT,t) at time <t>
+ -BD+<SV,OT,t,d> Add value of <d> to data(SV,OT) beginning at time <t>
+ -BD-<SV,OT,t,d> Stop adding <d> to data(SV,OT) at time <t> (',<d>' optional)
+ -BS<SV,OT,t,s>  Add the value of <s> to ssi(SV,OT,t) at time <t>
+ -BL<SV,OT,t,l>  Add the value of <l> to lli(SV,OT,t) at time <t>
+
+ End of Rinex Editor commands.
+ ==============================================================================
+
+The list of available extended Rinex obs types:
+  OT Description          Units     Required input (EP=ephemeris,PS=Rx Position)
+  -- -------------------- --------- ------------------
+  ER Ephemeris range      meters                 EP PS
+  RI Iono Delay, Range    meters              P1
+  PI Iono Delay, Phase    meters     L1 L2
+  TR Tropospheric Delay   meters                 EP PS
+  RL Relativity Correct.  meters                 EP
+  SC SV Clock Bias        meters                 EP
+  EL Elevation Angle      degrees                EP PS
+  AZ Azimuth Angle        degrees                EP PS
+  SR Slant TEC (PR)       TECU                P1
+  SP Slant TEC (Ph)       TECU       L1 L2
+  VR Vertical TEC (PR)    TECU                P1 EP PS
+  VP Vertical TEC (Ph)    TECU       L1 L2       EP PS
+  LA Lat Iono Intercept   degrees                EP PS
+  LO Lon Iono Intercept   degrees                EP PS
+  P3 TFC(IF) Pseudorange  meters              P1
+  L3 TFC(IF) Phase        meters     L1 L2
+  P4 GeoFree Pseudorange  meters              P1
+  L4 GeoFree Phase        meters     L1 L2
+  P5 WideLane Pseudorange meters              P1
+  L5 WideLane Phase       meters     L1 L2
+  MP Multipath (=M3)      meters     L1 L2    P1
+  M1 L1 Range minus Phase meters     L1       P1
+  M2 L2 Range minus Phase meters        L2
+  M3 IF Range minus Phase meters     L1 L2    P1
+  M4 GF Range minus Phase meters     L1 L2    P1
+  M5 WL Range minus Phase meters     L1 L2    P1
+  XR Non-dispersive Range meters     L1 L2    P1
+  XI Ionospheric delay    meters     L1 L2    P1
+  X1 Range Error L1       meters     L1 L2    P1
+  X2 Range Error L2       meters     L1 L2    P1
+  SX Satellite ECEF-X     meters                 EP
+  SY Satellite ECEF-Y     meters                 EP
+  SZ Satellite ECEF-Z     meters                 EP
+End of list of extended observation types
+End ResCor
+
+\end{verbatim}
+\end{\outputsize}
+
+\subsection{Examples}
+
+\begin{\outputsize}
+\begin{lstlisting}
+reszilla --omode=p1 --svtime --msc=mscoords.cfg -m 85401 -o asm2004.138 -e s011138a.04n
+\end{lstlisting}
+\end{\outputsize}
+
+\subsection{Notes}
+The criteria min-arc-time and min-arc-length are both required to be met
+for a arc to be valid in double difference mode.
+All output quantities (stddev, min, max, ord, clock, double differnce, ...)
+are in meters.
+
+%\end{document}
+

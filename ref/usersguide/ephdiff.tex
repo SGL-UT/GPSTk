@@ -1,0 +1,38 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{ephdiff!application writeup}
+\section{\emph{ephdiff}}
+\subsection{Overview}
+The application compares the contents of two files containing ephemeris data.
+
+\subsection{Usage}
+\begin{\outputsize}
+
+\begin{longtable}{lll}
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level}{1}
+\entry{-v}{--verbose}{Increase verbosity}{1}
+\entry{-h}{--help}{Print help usage}{1}
+\entry{-f}{--fic=ARG}{Name of an input FIC file}{1}
+\entry{-r}{--rinex=ARG}{Name of an input RINEX NAV file}{1}
+
+\end{longtable}
+
+\end{\outputsize}
+
+\subsection{Examples}
+\getuse{ephdiff -f fic06.187 -r arl2800.06n}
+
+\subsection{Notes}
+Either file can be a RINEX or FIC file.
+
+%\end{document}

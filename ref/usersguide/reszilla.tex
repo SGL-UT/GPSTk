@@ -1,18 +1,161 @@
-%\documentclass{article}
-%\usepackage{fancyvrb}
-%\usepackage{src/perltex}
-%\usepackage{src/xcolor}
-%\usepackage{listings}
-%\usepackage{multirow}
-%\usepackage{longtable}
-%\input{src/cmd}
-%\begin{document}
+\documentclass{article}
+\usepackage{fancyvrb}
+\usepackage{src/perltex}
+\usepackage{src/xcolor}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{longtable}
+\input{src/cmd}
+\begin{document}
 
-\index{reszilla!application writeup}
+%\index{reszilla!application writeup}
 \section{\emph{reszilla}}
 \subsection{Overview}
+Reszilla is an application that computes various residuals from GPS
+pseudorange, phase and doppler data. These data are often refered to
+as raw observations. The two types of residuals that are currently
+computed are an Observed Range Deviation (ORD), and a double
+difference (DD). Once these residuals are computed, statistical
+summaries of these differences are computed and output to the
+user. Optionally, the residuals themselves may be output.
+
+\subsection{Observed Range Deviations}
+An ORD is basically the observed range to an SV differenced from the
+estimated range to that SV. There are many terms that go into
+computing the estimated range and/or correcting the observed range for
+known effects. When all of these effects are accounted for (as
+reszilla is capable of doing) ORDs can be in the 10-30 cm range for a
+geodetic quality GPS receiver. Pretty impressive when you consider
+that the range to the SV is somewhere between 20 to 26 million meters.
+
+For many GPS receivers, the most significant effect to account for is the receiver
+clock offset. This is the difference between the receivers internal time and true
+GPS time. This parameter is often computed as part of a PVT solution. This is not
+how reszilla works. Reszilla is provided a surveyed position of the receiver
+antenna, and it makes a more accurate estimate of the receiver clock offset by
+averaging the residuals of all SVs in track.
+
+%ToDo:
+%   discuss of the need for an accurate antenna position
+%   discuss of the relative errors in the broadcast versus a precise ephemeris
+%   discuss the difference between SV time and RX time
+
+The ORD Options:
+
+\begin{verbatim}
+\item -n, --search-near
+\item --svtime
+\item --check-obs
+\item --omode
+\end{verbatim}
+
+\subsection{Double Difference Residuals}
+While many double differences exist, reszilla computes an the first
+difference to a master SV and the second difference to a second
+receiver.  This double difference removes receiver clock error, iono,
+trop, and SV clock errors. When the two receivers are connected to a
+common antenna (often referred to as a zero-baseline setup) and are of
+the same type, even the multipath is differenced out. What is left is
+basically receiver tracking noise and receiver tracking errors.
+
+One complicating factor in computing this DD is that while the clock
+errors in the receivers cancel out, there is still an error associated
+with the motion of the satellite during the interval between when the
+two receivers computing their observation. To remove this error, an
+estimate of the clock offset between the two receivers is
+need. Reszilla can get this estimate in one of two ways; estimates
+this by computing a clock estimate for each receiver as described
+under the ORD section or reading the estimates from the rinex obs data
+files. These two estimates are then differenced to get the offset
+between the two receivers.
+
+Another complicating factor is that the phase observations normally
+have an "integer ambiguity" associated with them. When the DD phase
+observation is computed, it will have the difference between the two
+receivers ambiguity. Often this number can be quite big. Removing this
+ambiguity is often referred to as debiasing the data. This process
+involves much black magic and slight of hand. Do not delve into this
+or even look too closely at the details or you will be sullied.
+
+DD Options:
+
+\begin{verbatim}
+\item --ddmode
+\item --min-arc-time
+\item --min-arc-gap
+\item --min-arg-length
+\end{verbatim}
+
+\subsection{Data Input}
+
+Several different types of data are required to compute these
+residuals; the raw observations, the receiver antenna position, the
+satellite position, and optionally  weather observations. The raw
+observations may be supplied to reszilla in one of several formats;
+rinex obs (see RinexObsData class), smodf (see SMODFData class), and
+MDP (see MDPObsEpoch class in apps/MDPtools). The reciever antenna
+postion may be specified in the rinex obs header or via a station
+coordinates file (see MSCData class).
+
+Options:
+
+\begin{verbatim}
+\item -o, --obs1
+\item -2, --obs2
+\item -e, --eph
+\item -w, --weather
+\item -c, --clock-from-rinex
+\item -m, --msid
+\item --msc
+\end{verbatim}
+
+\subsection{Output}
+There are two general types of output that reszilla produces -
+statistical summaries and the raw residuals.  The mean, standard 
+deviation, and maximum value of the residuals are calculated 
+as a function of specified elevation ranges and are output in a 
+statistics table. Looking at the results for each elevation bin 
+is useful as ORDs tend to be much a higher when satellites are 
+lower on the horizon. For a more thorough analysis, the ORD or DD 
+residuals calculated by reszilla may be output in a matrix format 
+to a file with columns for time, PRN, elevation, ORD or clock residual, 
+IODC, satellite health, and a flag for the residual type.  The flag 
+specifies exactly which of the 13 possible residual types the data 
+on that row represent, depending on the method used for calculation. 
+
+One benefit of this output feature is that residuals can be looked at 
+for particular time periods or PRNs. Fortunately there is a companion 
+plotting tool that makes this simple. Given a reszilla output file, 
+the dplot program will plot residuals and, if specified, receiver clock 
+estimates versus time using gnuplot. A user may specify the time 
+range, stripping value, and PRN(s) to use in the plot, as well as a
+filename for saving the result. 
+
+Output Options:
+
+\begin{verbatim}
+\item --keep-unhealthy
+\item -s, --no-stats
+\item --cycle-slips
+\item -r, --raw-output
+\item -t, --time-format
+\item --clock-est
+\item -b, --elev-bin
+\item --sigma
+\item -v, --verbosity
+\end{verbatim}
+
+%Examples:
+
+ %  < to be added later >
+ %  smodf with met and sp3
+ %  rinex-30 with met and sp3
+ %  rinex-30 without met with sp3
+ %  rinex-30 with met and fic
+ %  rinex-30 without met with fic
 
 \subsection{Usage}
+
 \begin{\outputsize}
 \begin{longtable}{lll}
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
@@ -31,7 +174,7 @@
 \entry{}{--svtime}{Observation data is in SV time  frame. The default is RX time frame.}{2}
 \entry{}{--check-obs}{Report data rate, order of data, data present, data gaps.}{2}
 \entry{}{--keep-unhealthy}{Keeps unhealthy SVs in the statistics, default is to toss.}{2}
-\entry{-s}{--no-stats}{Don't compute \& output the statistics.}{1}
+\entry{-s}{--no-stats}{Don't compute output the statistics.}{1}
 \entry{}{--cycle-slips}{Output a list of cycle slips.}{1}
 \entry{-r}{--raw-output=ARG}{Dump the computed residuals/ords into specified file. If '-' is given as the file name, the output is sent to standard output. The default is to not otput the raw residuals.}{4}
 \entry{}{--start-time=TIME}{Ignore obs data prior to this time in the analysis. The time is specified using the format \%4Y/\%03j/\%02H:\%02M:\%05.2f. The default value is to start with the first data found.}{4}
@@ -53,6 +196,7 @@
 \entry{}{4}{dump intermediate values for each epoch (can be QUITE verbose)}{1}
 
 \end{longtable}
+
 \begin{verbatim}
 Types in the raw output files:
    0 - c1p2 observed range deviation
@@ -81,5 +225,5 @@ for a arc to be valid in double difference mode.
 All output quantities (stddev, min, max, ord, clock, double differnce, ...)
 are in meters.
 
-%\end{document}
+\end{document}
 
