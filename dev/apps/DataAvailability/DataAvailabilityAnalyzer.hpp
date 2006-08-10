@@ -20,7 +20,7 @@
 #include "MiscMath.hpp"
 #include "ObsRngDev.hpp"
 
-#include "DataReader.hpp" 
+#include "DataReader.hpp"
 
 
 class DataAvailabilityAnalyzer : public gpstk::BasicFramework
