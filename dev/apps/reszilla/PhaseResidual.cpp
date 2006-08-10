@@ -1,5 +1,6 @@
 #pragma ident "$Id$"
 
+#include <algorithm>
 
 #include "Stats.hpp"
 
