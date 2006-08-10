@@ -242,7 +242,7 @@ namespace gpstk
             if (debugLevel>2)
                cout << "Reading frame word" << endl;;
             uint16_t fw=0;
-            for (int i=0; stream && i<128; i++)
+            for (int i=0; i<128; i++)
             {
                fw = stream.getData<uint16_t>();
                fw = netToHost(fw);
@@ -256,7 +256,7 @@ namespace gpstk
                FFStreamError err("Failed to find frame word.");
                GPSTK_THROW(err);
             }
-            else if (stream)
+            else
             {
                if (debugLevel>2)
                   cout << "Reading header" << endl;
@@ -277,7 +277,7 @@ namespace gpstk
          // This object is not a header
          // Before reading this body in, we need to make sure that
          // we have received a header with the right message ID
-         while (stream.header.id != id && stream)
+         while (stream.header.id != id)
             MDPHeader::reallyGetRecord(stream);
 
          // Now get the header values from the most recently

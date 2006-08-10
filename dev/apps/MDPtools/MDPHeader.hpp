@@ -26,7 +26,8 @@
 
 #include <RinexObsData.hpp>
 
-#ifndef __SUNPRO_CC
+
+#if !defined( __SUNPRO_CC ) && !defined( _MSC_VER )
 #include <stdint.h>
 #endif
 
