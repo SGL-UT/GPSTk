@@ -24,6 +24,7 @@
 //
 //============================================================================
 
+#include "gpstkplatform.h"
 #include "SystemTime.hpp"
 #include "ANSITime.hpp"
 

@@ -139,7 +139,12 @@ namespace gpstk
         return !test.fail();
       }
 
-
+      inline bool fileAccessCheck(const std::string& fname, 
+                                  std::ios::openmode mode=std::ios::in)
+      {
+         return fileAccessCheck(fname.c_str(), mode);
+      }
+      
 
    } // namespace FileUtils
 

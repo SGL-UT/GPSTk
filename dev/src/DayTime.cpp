@@ -53,11 +53,7 @@
 #include <string>
 #include <ctime>
 
-#if _MSC_VER
-#include <sys/types.h>
-#include <sys/timeb.h>
-#endif
-
+#include "gpstkplatform.h"
 #include "DayTime.hpp"
 
 namespace gpstk

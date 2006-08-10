@@ -56,13 +56,28 @@ namespace gpstk
 
         
          /**
+          * Empty constructor
+          */
+      Expression(void);
+
+         /**
           * Constructor.
           * @param str Expression to be evaluated. 
           */
       Expression(const std::string& str);
 
+         /**
+          * Copy constructor.
+          * @param expr Expression to be copied. Note that variable values are not copied. 
+          */
+      Expression(const Expression& rhs);
+
          /// Destructor
       ~Expression(void);
+
+         /// Assignment operator.
+      Expression& operator=(const Expression& rhs);
+      
       
         /**
          * Sets a variable in the expression to the input value.
@@ -124,7 +139,7 @@ namespace gpstk
          /**
           * Writes the expression out to a stream.
           */
-      void print(std::ostream& ostr) {root->print(ostr);}
+      void print(std::ostream& ostr) const {root->print(ostr);} 
 
       private:
       // Represents a node of any type in an expression tree.
@@ -255,6 +270,7 @@ namespace gpstk
             void print(std::ostream& ostr);
 
          private:
+
             std::string value;
             bool isOperator;
             bool resolved;
@@ -266,15 +282,19 @@ namespace gpstk
             std::string argumentPattern;       
       };
 
+         void setExpression(const std::string& newExpression);
+         void dumpLists(void);
 
+         void defineOperators(void);
          void tokenize(const std::string& str);
          void buildExpressionTree(void);
 
          int countResolvedTokens(void);   
       
-         std::map<std::string,int> operatorMap;
-         std::map<std::string,std::string> argumentPatternMap;
-      
+         static std::map<std::string,int> operatorMap;
+         static std::map<std::string,std::string> argumentPatternMap;
+         static bool operatorsDefined;   
+
          std::list<Token> tList;
          std::list<ExpNode *> eList;
          ExpNode *root;      

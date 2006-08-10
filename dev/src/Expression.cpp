@@ -123,47 +123,107 @@ namespace gpstk
 
       return;
    }
-   
 
+   bool Expression::operatorsDefined = false;
+   std::map<std::string,int> Expression::operatorMap;
+   std::map<std::string,std::string> Expression::argumentPatternMap;
+   
    Expression::Expression(const std::string& istr)
          : root(0)
    {
-      operatorMap["+"]=1; 
-      operatorMap["-"]=1;
-      operatorMap["*"]=2;
-      operatorMap["/"]=2;
-      operatorMap["^"]=3;
-      operatorMap["cos"]=4;
-      operatorMap["sin"]=4;
-      operatorMap["tan"]=4;
-      operatorMap["acos"]=4;
-      operatorMap["asin"]=4;
-      operatorMap["atan"]=4;
-      operatorMap["exp"]=4;
-      operatorMap["abs"]=4;
-      operatorMap["sqrt"]=4;
-      operatorMap["log"]=4;
-      operatorMap["log10"]=4;
-
-      argumentPatternMap["+"]="RL";
-      argumentPatternMap["-"]="RL";
-      argumentPatternMap["*"]="RL";
-      argumentPatternMap["/"]="RL";
-      argumentPatternMap["^"]="RL";
-      argumentPatternMap["cos"]="R";
-      argumentPatternMap["sin"]="R";
-      argumentPatternMap["tan"]="R";
-      argumentPatternMap["acos"]="R";
-      argumentPatternMap["asin"]="R";
-      argumentPatternMap["atan"]="R";
-      argumentPatternMap["exp"]="R";
-      argumentPatternMap["abs"]="R";
-      argumentPatternMap["sqrt"]="R";
-      argumentPatternMap["log"]="R";
-      argumentPatternMap["log10"]="R";
-      
+      defineOperators();
+      setExpression(istr);
+   }
+   
+   void Expression::setExpression(const std::string& istr)
+   {
+      dumpLists();
       tokenize(istr);
       buildExpressionTree();
+   }
+
+   Expression::Expression(void)
+         : root(0)
+   {
+      defineOperators();
+      setExpression("0");
+   }
+
+   Expression::Expression(const Expression& rhs)
+   {
+      defineOperators();
+      std::ostringstream ostr;
+      rhs.print(ostr);
+      setExpression(ostr.str());
+   }
+
+   Expression& Expression::operator=(const Expression& rhs)
+   {
+      std::ostringstream ostr;
+      rhs.print(ostr);
+      setExpression(ostr.str());
+      return (*this);      
+   }
+   
+   void Expression::dumpLists(void)
+   {   
+      // first release the points tracked by this Expression
+      std::list<ExpNode *>::iterator i= eList.begin(), itemp;
+      while (i!= eList.end())
+      {
+         itemp=i;
+         itemp++;
+         delete(*i);
+         i=itemp;
+      }
+      std::list<ExpNode *> emptyENodeList;
+      eList = emptyENodeList;
+      std::list<Token> emptyTokenList;
+      tList = emptyTokenList;
+      root =0;
+   }
+      
+
+   void Expression::defineOperators(void)
+   {
+      if (!operatorsDefined)
+      {
+         operatorMap["+"]=1; 
+         operatorMap["-"]=1;
+         operatorMap["*"]=2;
+         operatorMap["/"]=2;
+         operatorMap["^"]=3;
+         operatorMap["cos"]=4;
+         operatorMap["sin"]=4;
+         operatorMap["tan"]=4;
+         operatorMap["acos"]=4;
+         operatorMap["asin"]=4;
+         operatorMap["atan"]=4;
+         operatorMap["exp"]=4;
+         operatorMap["abs"]=4;
+         operatorMap["sqrt"]=4;
+         operatorMap["log"]=4;
+         operatorMap["log10"]=4;
+
+         argumentPatternMap["+"]="RL";
+         argumentPatternMap["-"]="RL";
+         argumentPatternMap["*"]="RL";
+         argumentPatternMap["/"]="RL";
+         argumentPatternMap["^"]="RL";
+         argumentPatternMap["cos"]="R";
+         argumentPatternMap["sin"]="R";
+         argumentPatternMap["tan"]="R";
+         argumentPatternMap["acos"]="R";
+         argumentPatternMap["asin"]="R";
+         argumentPatternMap["atan"]="R";
+         argumentPatternMap["exp"]="R";
+         argumentPatternMap["abs"]="R";
+         argumentPatternMap["sqrt"]="R";
+         argumentPatternMap["log"]="R";
+         argumentPatternMap["log10"]="R";
+
+         operatorsDefined = true;
+      }
    }
    
    Expression::~Expression(void)
