@@ -237,6 +237,13 @@ namespace gpstk
       return tmp;
    }
 
+   Triple operator*(double scale, const Triple& rhs)
+   {
+      Triple tmp; 
+      tmp.theArray = rhs.theArray * scale; 
+      return tmp;
+   }
+
    std::ostream& operator<<(std::ostream& s, 
                             const gpstk::Triple& v)
    {
