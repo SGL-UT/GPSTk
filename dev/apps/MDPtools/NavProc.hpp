@@ -1,13 +1,17 @@
 #pragma ident "$Id$"
 
-
 #ifndef MDPNAV_HPP
 #define MDPNAV_HPP
+
+#include <map>
 
 #include "EngEphemeris.hpp"
 #include "EngAlmanac.hpp"
 
+#include "Histogram.hpp"
+
 #include "MDPProcessors.hpp"
+
 
 //-----------------------------------------------------------------------------
 class MDPNavProcessor : public MDPProcessor
@@ -17,6 +21,7 @@ public:
    ~MDPNavProcessor();
 
    virtual void process(const gpstk::MDPNavSubframe& msg);
+   virtual void process(const gpstk::MDPObsEpoch& msg);
    
    bool firstNav;
 
@@ -31,7 +36,7 @@ public:
    bool ephOut;
    bool almOut;
 
-   // This is really a triple: prn, RangeCode, CarrierCode
+   // This is really a triple: RangeCode, CarrierCode, prn
    typedef std::pair<gpstk::RangeCode, gpstk::CarrierCode> RangeCarrierPair;
    typedef std::pair<RangeCarrierPair, short> NavIndex;
 
@@ -55,5 +60,12 @@ public:
 
    std::list<gpstk::MDPNavSubframe> badList;
    unsigned long badNavSubframeCount, navSubframeCount;
+
+   std::map<NavIndex, double> snr; // 'current' SNR
+   std::map<NavIndex, double> el;  // 'current' elevation
+
+   bool binByElevation;
+   std::map<RangeCarrierPair, gpstk::Histogram> peHist;
+   gpstk::Histogram::BinRangeList bins;
 };
 #endif

@@ -70,7 +70,7 @@ namespace gpstk
       status    = decodeVar<uint8_t>(str);
       elevation = decodeVar<uint16_t>(str) * 0.01 ;
       azimuth   = decodeVar<uint16_t>(str) * 0.01;
-         
+
       numSVs = obsSVs >> 4;
       numSVs &= 0x0f;
       obsSVs &= 0x0f;

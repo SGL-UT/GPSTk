@@ -46,7 +46,6 @@ public:
    WINDOW *win;
    int prev_curs;
 
-   bool die;
    static bool gotWench;
 
    int elDir[13];

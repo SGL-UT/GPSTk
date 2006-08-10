@@ -86,13 +86,13 @@ namespace gpstk
          switch(rc)
          {
             case rcCA:       return "CA";
-            case rcPcode:    return "P-code";
-            case rcYcode:    return "Y-code";
-            case rcCodeless: return "Codeless";
+            case rcPcode:    return "P";
+            case rcYcode:    return "Y";
+            case rcCodeless: return "Z";
             case rcCM:       return "CM";
             case rcCL:       return "CL";
-            case rcMcode1:   return "M-code1";
-            case rcMcode2:   return "M-code2";
+            case rcMcode1:   return "M1";
+            case rcMcode2:   return "M2";
             case rcCMCL:     return "CMCL";
          }
          return "BadRangeCode";

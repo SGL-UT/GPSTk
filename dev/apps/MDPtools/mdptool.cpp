@@ -54,7 +54,7 @@ public:
         obsOpt('o', "obs",  "Enable obs output"),
         hexOpt('x', "hex",  "Dump all messages in hex"),
         badOpt('b', "bad",  "Try to process bad messages also."),
-        bugMaskOpt('m', "bug-mask", "What RX bugs to be quite about."
+        bugMaskOpt('m', "bug-mask", "What RX bugs to be quite about. "
                    "1 SV count, 2 nav parity/fmt, 4 HOW/hdr time equal."),
         almOpt(
            'a', "almanac",
@@ -188,6 +188,7 @@ public:
       if (style == "nav")
       {
          processor->navOut = true;
+         processor->obsOut = true; // needed to know elevation/SNR of SVs
          MDPNavProcessor& np=dynamic_cast<MDPNavProcessor&>(*processor);
          np.almOut = almOpt;
          np.ephOut = ephOpt;

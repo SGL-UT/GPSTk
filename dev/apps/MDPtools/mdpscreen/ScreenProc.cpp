@@ -58,7 +58,7 @@ bool MDPScreenProcessor::gotWench;
 
 MDPScreenProcessor::MDPScreenProcessor(gpstk::MDPStream& in, std::ofstream& out):
    MDPProcessor(in, out),
-   updateRate(0.5), obsRate(-1), pvtRate(-1), die(false)
+   updateRate(0.5), obsRate(-1), pvtRate(-1)
 {
 
    // First set up curses

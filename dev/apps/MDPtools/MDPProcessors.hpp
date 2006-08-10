@@ -37,6 +37,7 @@ public:
    std::string timeFormat;
    int debugLevel;
    int verboseLevel;
+   bool die;
 
    bool processBad;
    bool pvtOut, obsOut, navOut, tstOut;
