@@ -13,6 +13,7 @@
 #include<string>
 #include<valarray>
 
+#include "DayTime.hpp"
 #include "RinexEphemerisStore.hpp"
 #include "Exception.hpp" 
 #include "Expression.hpp"
@@ -67,9 +68,12 @@ namespace gpstk
           * before loading observations from a file.
           */
       ObsIndex add(const std::string& expression);
-      
+
       ObsIndex getIndexCount(void) const 
          { return indexCount; }
+
+      size_t getNumObsRows(void) const
+         { return numObsRows; } 
 
          /** 
           * This functions loads a RINEX obs and nav file. Both files
@@ -83,14 +87,16 @@ namespace gpstk
          load(std::string(obsfilename),std::string(navfilename));
       }
 
-      double& operator() (size_t i, size_t j)
-      {  return data[j*numObsRows + i]; }
- 
-            
-      std::valarray<double> data;
-      std::valarray<double> azimuth;
-      std::valarray<double> elevation;
-      std::valarray<bool>   validAzEl;
+
+      double& operator() (size_t r, size_t c)
+      {  return data[r*indexCount + c]; }
+
+      std::valarray<double>   data;
+      std::valarray<DayTime>  time;
+      std::valarray<RinexPrn> prn;
+      std::valarray<double>   azimuth;
+      std::valarray<double>   elevation;
+      std::valarray<bool>     validAzEl;
 
    private:
 
@@ -99,7 +105,7 @@ namespace gpstk
       std::map<ObsIndex, bool> isBasic;
       std::map<ObsIndex, Expression > expressionMap;      
 
-      long numObsRows;
+      size_t numObsRows;
 
       RinexEphemerisStore ephStore;
 

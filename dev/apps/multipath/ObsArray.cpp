@@ -35,6 +35,7 @@ namespace gpstk
    {
       isBasic[indexCount]=false;
       expressionMap[indexCount] = Expression(expression);
+      expressionMap[indexCount].setGPSConstants();
       return ++indexCount;
    }
 
@@ -87,8 +88,10 @@ namespace gpstk
 
       int i=0;
 
-      int theWholeShebang=numObsRows*indexCount;      
+      int theWholeShebang=numObsRows*indexCount;
       data.resize(theWholeShebang);
+      time.resize(theWholeShebang);
+      prn.resize(theWholeShebang);	
       azimuth.resize(theWholeShebang);
       elevation.resize(theWholeShebang);
       validAzEl.resize(theWholeShebang);
@@ -149,6 +152,9 @@ namespace gpstk
                   expressionMap[idx].setRinexObs(rod.obs[it->first]);
                   data[i] = expressionMap[idx].evaluate();
                }
+
+               time[i] = rod.time;
+               prn[i]  = it->first;
 
                   // Get topocentric coords for given sat
                try
