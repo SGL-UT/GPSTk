@@ -1,0 +1,75 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{src/perltex}
+%\usepackage{src/xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{novaRinex!application writeup}
+\section{\emph{novaRinex}}
+\subsection{Overview}
+The application will open and read a binary Novatel file
+  (OEM2 and OEM4 receivers are supported), and convert the data to Rinex format
+  observation and navigation files. The Rinex header is filled using user input
+  (see below), and optional records are filled.
+
+\subsection{Usage}
+
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{NavMerge}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--input}{Novatel binary input file}{1}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{-f}{}{Name of file containing more options ('\#' to EOL : comment)}{2}
+\entry{}{--dir}{Directory in which to find input file (defaults to ./)}{2}
+\entry{}{--obs}{Rinex observation output file (RnovaRinex.obs)}{1}
+\entry{}{--nav}{Rinex navigation output file (RnovaRinex.nav)}{1}
+& & \\
+\multicolumn{3}{l}{\textbf{Output RINEX Header Fields}} \\
+\entry{}{--noHDopt}{If present, do not fill optional records in the output Rinex header}{2}
+\entry{}{--HDp}{Set output Rinex header 'program' field ('novaRinex v1.1 2/06')}{2}
+\entry{}{--HDr}{Set output Rinex header 'run by' field ('ARL:UT/GPSTk')}{2}
+\entry{}{--HDo $<$obser$>$}{Set output Rinex header 'observer' field (' ')}{1}
+\entry{}{--HDa $<$agency$>$}{Set output Rinex header 'agency' field ('ARL:UT/GPSTk')}{2}
+\entry{}{--HDm $<$marker$>$}{Set output Rinex header 'marker' field (' ')}{1}
+\entry{}{--HDn $<$number$>$}{Set output Rinex header 'number' field (' ')}{1}
+\entry{}{--HDrn $<$number$>$}{Set output Rinex header 'Rx number' field (' ')}{1}
+\entry{}{--HDrt $<$type$>$}{Set output Rinex header 'Rx type' field ('Novatel')}{2}
+\entry{}{--HDrv $<$vers$>$}{Set output Rinex header 'Rx version' field ('OEM2/4')}{2}
+\entry{}{--HDan $<$number$>$}{Set output Rinex header 'antenna number' field (' ')}{2}
+\entry{}{--HDat $<$type$>$}{Set output Rinex header 'antenna type' field (' ')}{1}
+\entry{}{--HDc $<$comment$>$}{Add comment to output Rinex header (>1 allowed).}{2}
+& & \\
+\multicolumn{3}{l}{\textbf{Output RINEX Observation Data}} \\
+\entry{}{--obstype $<$OT$>$}{    Output this Rinex (standard) obs type (i.e. $<$OT$>$ is one of
+                     L1,L2,C1,P1,P2,D1,D2,S1,or S2); repeat for each type.
+                     NB default is ALL std. types that have data.}{4}
+& & \\
+\multicolumn{3}{l}{\textbf{Output Configuration}} \\
+\entry{}{--begin $<$arg$>$}{Start time, arg is of the form YYYY,MM,DD,HH,Min,Sec}{2}
+\entry{}{--beginGPS $<$arg$>$}{Start time, arg is of the form GPSweek,GPSsow}{1}
+\entry{}{--end $<$arg$>$}{End time, arg is of the form YYYY,MM,DD,HH,Min,Sec}{2}
+\entry{}{--endGPS $<$arg$>$}{End time, arg is of the form GPSweek,GPSsow}{1}
+\entry{}{--week $<$week$>$}{ GPS Week number of this data, NB: this is for OEM2;
+                     this command serves two functions, resolving the ambiguity
+                     in the 10-bit week (default uses --begin, --end, or the
+                     current system time) and ensuring that ephemeris records
+                     that precede any obs records are not lost.}{6}
+\entry{}{--debias}{Remove an initial bias from the phase}{1}
+\entry{-h}{--help}{print this message and quit}{1}
+\entry{-d}{--debug}{print extended output info}{1}
+\end{longtable}
+\end{\outputsize}
+
+\subsection{Examples}
+
+\subsection{Notes}
+Input is on the command line, or of the same format in a file (-f$<$file$>$).
+
+%\end{document}
