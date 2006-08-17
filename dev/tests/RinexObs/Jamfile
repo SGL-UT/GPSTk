@@ -1,0 +1,2 @@
+SubDir TOP RinexObs ;
+TestMain RinexObs/xRinexObs.tst : RinexObs/xRinexObsM.cpp RinexObs/xRinexObs.cpp RinexObs/RinexObsBase.cpp RinexObs/RinexObsData.cpp RinexObs/RinexObsFilterOperators.cpp RinexObs/RinexObsHeader.cpp RinexObs/RinexObsStream.cpp ;
