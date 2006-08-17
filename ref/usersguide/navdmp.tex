@@ -40,12 +40,12 @@ The application prints the contents of an FIC or RINEX file into a human readabl
 \subsection{Examples}
 \begin{\outputsize}
 \begin{lstlisting}
-> bash-3.00$ navdmp -i algo1720.06n -o summary !!!!!WHAT ON EARTH-t "06/25/2006 10:30:00"!!!!! -p 1 -p 2 -r
+> navdmp -i data_set/s081213a.99n -o summary --RINEX
 
 Current filtering options:
-        Start time:     01/10/0006 16:09:24
+        Start time:     01/06/1980 00:00:00
         End time:       01/01/4713 00:00:00
-        PRNs:           1 2
+        PRNs:           using all PRNs
 
 Choose an option by number then push enter:
         1) Change the start time
@@ -66,48 +66,48 @@ Summary File Snippet
 ****************************************************************************
 Broadcast Ephemeris (Engineering Units)
 
-PRN :  2
+PRN : 14
 
               Week(10bt)     SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
-Clock Epoch:  1380( 356)  259200   Wed-3   172       0   06/21/2006   00:00:00
-Eph Epoch:    1380( 356)  259200   Wed-3   172       0   06/21/2006   00:00:00
-Transmit Week:1380
+Clock Epoch:  1021(1021)    7200   Sun-0   213    7200   08/01/1999   02:00:00
+Eph Epoch:    1021(1021)    7200   Sun-0   213    7200   08/01/1999   02:00:00
+Transmit Week:1021
 Fit interval flag :  0
 
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    259140  Tue-2:23:59:00   0x1C7      0     off
-SF2 HOW:    259140  Tue-2:23:59:00    0xC7      0     off
-SF3 HOW:    259140  Tue-2:23:59:00    0xC7      0     off
+SF1 HOW:         6  Sun-0:00:00:06   0x023      0     off
+SF2 HOW:         6  Sun-0:00:00:06    0x23      0     off
+SF3 HOW:         6  Sun-0:00:00:06    0x23      0     off
 
            CLOCK
 
-Bias T0:       6.67711720E-06 sec
-Drift:         3.29691829E-12 sec/sec
+Bias T0:       2.82567926E-05 sec
+Drift:         1.02318154E-12 sec/sec
 Drift rate:    0.00000000E+00 sec/(sec**2)
-Group delay:  -1.72294676E-08 sec
+Group delay:  -2.32830644E-09 sec
 
            ORBIT PARAMETERS
 
-Semi-major axis:         5.15369497E+03 m**.5
-Motion correction:       4.82591530E-09 rad/sec
-Eccentricity:            8.99635826E-03
-Arg of perigee:          2.08978447E+00 rad
-Mean anomaly at epoch:   3.30690945E-01 rad
-Right ascension:        -7.28361281E-02 rad     -8.46642409E-09 rad/sec
-Inclination:             9.50302779E-01 rad      8.85751181E-11 rad/sec
+Semi-major axis:         5.15359685E+03 m**.5
+Motion correction:       4.44732811E-09 rad/sec
+Eccentricity:            8.10711295E-04
+Arg of perigee:          2.16661714E+00 rad
+Mean anomaly at epoch:   1.75307843E-01 rad
+Right ascension:         2.02857661E+00 rad     -8.31963226E-09 rad/sec
+Inclination:             9.77089255E-01 rad      2.20723480E-10 rad/sec
 
            HARMONIC CORRECTIONS
 
-Radial        Sine:   1.09656250E+02 m    Cosine:   2.53281250E+02 m
-Inclination   Sine:  -2.06753612E-07 rad  Cosine:   5.02914190E-08 rad
-In-track      Sine:   6.54533505E-06 rad  Cosine:   5.60097396E-06 rad
+Radial        Sine:   1.31875000E+01 m    Cosine:   3.31593750E+02 m
+Inclination   Sine:   5.77419996E-08 rad  Cosine:  -1.86264515E-08 rad
+In-track      Sine:   2.74367630E-06 rad  Cosine:   6.27711415E-07 rad
 
            SV STATUS
 
-Health bits:   0x00      URA index:    1
-Code on L2:   reserved     L2 P Nav data:          on
+Health bits:   0x00      URA index:    7
+Code on L2:    P only      L2 P Nav data:          on
 
 ****************************************************************************
 \end{verbatim}

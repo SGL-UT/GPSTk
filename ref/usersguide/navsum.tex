@@ -39,6 +39,49 @@ The application prints the contents of an FIC or RINEX file into a human readabl
 \end{\outputsize}
 
 \subsection{Examples}
+\begin{\outputsize}
+\begin{lstlisting}
+> navsum -i s081213a.99n -o summary --RINEX
+
+Current filtering options:
+        Start time:     01/06/1980 00:00:00
+        End time:       01/01/4713 00:00:00
+        PRNs:           using all PRNs
+
+Choose an option by number then push enter:
+        1) Change the start time
+        2) Change the end time
+        3) Select specific PRNs
+        5) Process the file
+use ctrl-c to exit
+? 5
+
+processing...
+\end{lstlisting}
+\begin{verbatim}
+Summary of data processed
+Block Type Summary
+Type   # Blocks Found
+   9              0
+ 109              0
+  62              0
+ 162              0
+
+Ephemeris Blocks by PRN
+PRN Block      Num
+ 01     9          0
+ 01   109          0
+ 02     9          0
+ 02   109          0
+ 03     9          0
+ 03   109          0
+ 04     9          0
+ 04   109          0
+ 05     9          0
+ . . .
+\end{verbatim}
+
+\end{\outputsize}
 
 \subsection{Notes}
 
