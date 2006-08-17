@@ -7,4 +7,6 @@ SubInclude TOP DayTime ;
 SubInclude TOP IonoModel ;
 SubInclude TOP PolyFit ;
 SubInclude TOP RinexEphemerisStore ;
-SubInclude TOP RinexMetHeader ;
+SubInclude TOP RinexMet ;
+SubInclude TOP RinexObs ;
+SubInclude TOP RinexNav ;
