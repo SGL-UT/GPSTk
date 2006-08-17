@@ -51,6 +51,7 @@
 #include <algorithm>       // for find
 
 #include "StringUtils.hpp"
+#include "DayTime.hpp"
 #include "RinexMetHeader.hpp"
 #include "RinexMetStream.hpp"
 
@@ -71,6 +72,8 @@ namespace gpstk
    const string RinexMetHeader::sensorPosString = "SENSOR POS XYZ/H";
    const string RinexMetHeader::endOfHeader = "END OF HEADER";
 
+
+   
    std::string RinexMetHeader::bitString(unsigned long vb, char quote,
                                          std::string sep)
    {
@@ -104,6 +107,8 @@ namespace gpstk
       
          // i'm casting out const here to set the correct required valid bits.
          // deal with it =P
+	 
+
       unsigned long allValid;
       if (version == 2.0)        allValid = allValid20;
       else if (version == 2.1)   allValid = allValid21;
@@ -138,7 +143,10 @@ namespace gpstk
       {
          line  = leftJustify(fileProgram,20);
          line += leftJustify(fileAgency,20);
-         line += leftJustify(date, 20);
+         DayTime dt;
+         dt.setLocalTime();
+         string dat = dt.printf("%02m/%02d/%04Y %02H:%02M:%02S");
+         line += leftJustify(dat, 20);
          line += runByString;
          strm << line << endl;
          strm.lineNumber++;
@@ -178,7 +186,7 @@ namespace gpstk
          {
             numWritten++;
                // stupid continuation lines =P
-            if ((numWritten % maxObsPerLine) == 0)
+            if ((numWritten % (maxObsPerLine+1)) == 0)
             {
                line += obsTypeString;
                strm << line << endl;
@@ -256,8 +264,8 @@ namespace gpstk
       throw(std::exception, FFStreamError, 
             gpstk::StringUtils::StringException)
    {
+
       RinexMetStream& strm = dynamic_cast<RinexMetStream&>(ffs);
-      
          // if already read, just return
       if (strm.headerRead == true)
          return;
@@ -355,7 +363,6 @@ namespace gpstk
                                      obsTypeString);
                      GPSTK_THROW(e);
                   }
-                  
                   obsTypeList.push_back(convertObsType(line.substr(currPos + 4, 2)));
                }
             }
@@ -469,6 +476,10 @@ namespace gpstk
       else if (oneObs == "ZW") return ZW;
       else if (oneObs == "ZD") return ZD;
       else if (oneObs == "ZT") return ZT;
+      else if (oneObs == "WD") return WD;
+      else if (oneObs == "WS") return WS;
+      else if (oneObs == "RI") return RI;
+      else if (oneObs == "HI") return HI;
       else
       {
          FFStreamError e("Bad obs type:" + oneObs);
@@ -485,6 +496,10 @@ namespace gpstk
       else if (oneObs == ZW) return "ZW";
       else if (oneObs == ZD) return "ZD";
       else if (oneObs == ZT) return "ZT";
+      else if (oneObs == WD) return "WD";
+      else if (oneObs == WS) return "WS";
+      else if (oneObs == RI) return "RI";
+      else if (oneObs == HI) return "HI";
       else
       {
          FFStreamError e("Bad obs type:" + oneObs);

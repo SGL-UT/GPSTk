@@ -83,7 +83,11 @@ namespace gpstk
          HR,        ///< Relative humidity (percent)
          ZW,        ///< Wet zenith path delay (mm)
          ZD,        ///< Dry component of zenith path delay (mm)
-         ZT         ///< Total zenith path delay (mm)
+         ZT,        ///< Total zenith path delay (mm)
+	 WD,        ///< Wind azmiuth from where the wind blows (deg)
+	 WS,        ///< Wind speed (m/s)
+	 RI,        ///< "Rain increment": Rain accumulation since last measurement (1/10 mm)
+	 HI         ///< Hail indicator non-zero: Hail detected since last mesaurement
       };
 
          /// Constructor

@@ -66,7 +66,7 @@ namespace gpstk
       throw(std::exception, FFStreamError, 
             gpstk::StringUtils::StringException)
    {
-      const int maxObsPerOutputLine = 7;
+      const int maxObsPerOutputLine = 8;
       const int maxObsPerOutputContLine = 10;
 
       RinexMetStream& strm = dynamic_cast<RinexMetStream&>(ffs);
@@ -114,7 +114,7 @@ namespace gpstk
             {
                ffs << line << endl;
                strm.lineNumber++;
-               line.empty();
+               line.clear();
                line += string(4,' ');
             }
             RinexMetHeader::RinexMetType thistype = strm.header.obsTypeList[i];
@@ -145,6 +145,7 @@ namespace gpstk
       RinexMetHeader& hdr = strm.header;
       
       string line;
+      data.clear();
       
          // this is to see whether or not we expect an EOF
          // when we read this next line
@@ -152,7 +153,7 @@ namespace gpstk
          strm.formattedGetLine(line); 
       else
          strm.formattedGetLine(line, true); 
-      
+
       processFirstLine(line, hdr);
       
       time = parseTime(line);
@@ -163,7 +164,7 @@ namespace gpstk
             strm.formattedGetLine(line, true); 
          else
             strm.formattedGetLine(line);
-         processContinuationLine(line, hdr);
+	 processContinuationLine(line, hdr);
       }
       
       if (data.size() != hdr.obsTypeList.size())
@@ -179,12 +180,12 @@ namespace gpstk
    {
       try
       {
-         for (int i = 0; 
+          for (int i = 0; 
               (i < maxObsPerLine) && (i < hdr.obsTypeList.size());
               i++)
          {
             int currPos = i * 7 + 18;
-            data[hdr.obsTypeList[i]] = asDouble(line.substr(currPos,7));
+	    data[hdr.obsTypeList[i]] = asDouble(line.substr(currPos,7));
          }
       }
       catch (std::exception &e)
@@ -206,7 +207,7 @@ namespace gpstk
                  (i < hdr.obsTypeList.size());
               i++)
          {
-            int currPos = ((i - maxObsPerLine) % maxObsPerContinuationLine) * 7 
+	    int currPos = ((i - maxObsPerLine) % maxObsPerContinuationLine) * 7 
                + 4;
             data[hdr.obsTypeList[i]] = asDouble(line.substr(currPos,7));
          }

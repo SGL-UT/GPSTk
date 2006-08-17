@@ -1,3 +1,4 @@
+
 #pragma ident "$Id$"
 
 
@@ -105,7 +106,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & runByValid)
+      if (valid & runByValid) 
       {
          line  = leftJustify(fileProgram,20);
          line += leftJustify(fileAgency,20);
@@ -134,7 +135,7 @@ namespace gpstk
          line  = string(2, ' ');
          for (int i = 0; i < 4; i++)
          {
-            line += doub2for(ionAlpha[i], 12, 2);  // should be 12.4
+            line += rightJustify(doub2for(ionAlpha[i], 12, 2),12);  // should be 12.4
          }
          line += string(10, ' ');
          line += ionAlphaString;
@@ -146,7 +147,7 @@ namespace gpstk
          line  = string(2, ' ');
          for (int i = 0; i < 4; i++)
          {
-            line += doub2for(ionBeta[i], 12, 2);
+            line += rightJustify(doub2for(ionBeta[i], 12, 2),12);
          }
          line += string(10, ' ');
          line += ionBetaString;
@@ -156,9 +157,9 @@ namespace gpstk
       if (valid & deltaUTCValid)
       {
          line  = string(3, ' ');
-         line += string(2, ' ');
-         line += doub2for(A0, 18, 2);
-         line += doub2for(A1, 18, 2);
+         //line += string(2, ' ');
+         line += doub2for(A0, 19, 2);
+         line += doub2for(A1, 19, 2);
          line += rightJustify(asString(UTCRefTime),9);
          line += rightJustify(asString(UTCRefWeek),9);               
          line += string(1, ' ');

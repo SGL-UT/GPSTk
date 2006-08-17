@@ -27,6 +27,14 @@ echo ""
 
 export CPPUNIT_LIB=$CppLib
 
+echo "Please enter the directory which holds the CppUnit Includes"
+echo "e.g. /home/user/include"
+
+read CppInc
+echo ""
+
+export CPPUNIT_INCLUDE=$CppInc
+
 echo "Please enter the directory which holds the GPSTk Libraries"
 echo "e.g. /home/user/lib"
 

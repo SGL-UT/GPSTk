@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -123,8 +121,13 @@ namespace gpstk
    }
 
    Triple Triple::unitVector() const
+       throw(GeometryException)
    {
       double mag = sqrt(dot(*this));
+      
+      if (mag <= 1e-14)
+      	GPSTK_THROW(GeometryException("Divide by Zero Error"));
+      
       Triple retArg;
       retArg[0] = (*this)[0] / mag;
       retArg[1] = (*this)[1] / mag;
@@ -134,12 +137,16 @@ namespace gpstk
 
       // function that returns the cosine of angle between this and right
    double Triple :: cosVector(const Triple& right) const
-      throw()
+      throw(GeometryException)
    {
       double rx, ry, cosvects;
    
       rx = dot(*this);
       ry = right.dot(right);
+      
+      if (rx <= 1e-14 ||  ry <= 1e-14)
+      	GPSTK_THROW(GeometryException("Divide by Zero Error"));
+      
       cosvects = dot(right) / ::sqrt(rx * ry);
 
       /* this if checks for and corrects round off error */
@@ -166,7 +173,7 @@ namespace gpstk
       // Finds the elevation angle of the second point with respect to
       // the first point
    double Triple :: elvAngle(const Triple& right) const
-      throw()
+      throw(GeometryException)
    {
       Triple z;
       z = right.theArray - this->theArray;
@@ -187,6 +194,9 @@ namespace gpstk
       xy = ::sqrt(xy);
       xyz = ::sqrt(xyz);
 
+      if (xy <= 1e-14 || xyz <=1e-14)
+      	 GPSTK_THROW(GeometryException("Divide by Zero Error"))
+      
       cosl = (*this)[0] / xy;
       sinl = (*this)[1] / xy;
       sint = (*this)[2] / xyz;
@@ -222,7 +232,12 @@ namespace gpstk
          return alpha;
       }
    }
-
+   
+   bool Triple :: operator== (const Triple& right) const
+   {
+     return (*this)[0]==right[0] && (*this)[1]==right[1] && (*this)[2]==right[2];
+   }
+     
    Triple Triple :: operator-(const Triple& right) const
    { 
       Triple tmp;

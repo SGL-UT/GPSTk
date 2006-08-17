@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file Triple.hpp
  * Three element double vectors, for use with geodetic coordinates
@@ -119,7 +117,8 @@ namespace gpstk
          /**
           * Returns the unit vector of this vector
           */
-      Triple unitVector() const;
+      Triple unitVector() const
+      	 throw(GeometryException);
       
          /**
           * Computes the Cosine of the Angle Between this vector and another.
@@ -127,7 +126,7 @@ namespace gpstk
           * @return The cosine of the angle between \c this and \c right
           */
       double cosVector(const Triple& right) const 
-         throw();
+         throw(GeometryException);
       
          /**
           * Computes the slant range between this vector and another
@@ -144,7 +143,7 @@ namespace gpstk
           * @return The elevation of \c right relative to \c this
           */
       double elvAngle(const Triple& right) const 
-         throw();
+         throw(GeometryException);
       
          /**
           * Computes an azimuth from this point.
@@ -169,6 +168,15 @@ namespace gpstk
           */
       double operator[](const size_t index) const
          { return theArray[index]; }
+
+     
+         /**
+          * Equality Operator.
+          * @param right the Triple to test equality against
+          * @return true if left is equal to right
+        */
+      bool operator== (const Triple& right) const ;
+     
 
          /**
           * Difference Operator.
