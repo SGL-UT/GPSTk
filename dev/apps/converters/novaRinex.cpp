@@ -69,9 +69,14 @@ using namespace gpstk;
 
 // -----------------------------------------------------------------------------------
 string Prgm("novaRinex");                 // name of this program
-string Vers("v1.1 2/06");                 // version - keep to 10 char
+string Vers("v1.5 7/06");                 // version - keep to 10 char
 // 1.0 8/05
 // 1.1 2/06 process obs only when datasize > 4 - empty records were setting FirstEpoch
+// 1.2 6/06 catch exceptions, and allow blanks on cmd line and in input file
+// 1.3 7/06 correctly open files in other than current directory, don't print input
+//          errors when help is the only option
+// 1.4 7/06 handle exceptions
+// 1.5 7/06 correct handling of header inputs
 
 // -----------------------------------------------------------------------------------
 // global data, mostly to save information to go in the final Rinex header
@@ -84,7 +89,7 @@ DayTime CurrEpoch,PrevEpoch,FirstEpoch;
 map<RinexPrn,vector<int> > table;
 vector<int> totals;
 // Command line input
-bool help,Debug;
+bool help,Debug,verbose;
 DayTime BegTime,EndTime;
 string NovatelFile, RinexObsFile, RinexNavFile;
 string InputDirectory;
@@ -133,7 +138,7 @@ int main(int argc, char **argv)
 {
    try {
 
-      int i,j,k;
+      int i,n,nobs,nnav;
       double dt;
 
       // get the current system time
@@ -141,13 +146,14 @@ int main(int argc, char **argv)
       struct tm *tblock;
       timer = time(NULL);
       tblock = localtime(&timer);
-      //CurrEpoch.setYMDHMS(1900+tblock->tm_year,1+tblock->tm_mon,
-      //         tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
       CurrEpoch.setLocalTime();
 
       i = GetCommandInput(argc, argv);
       if(i) return 0;
-      if(Debug) DumpCommandLine();
+      if(verbose) {
+         cout << Prgm << " version " << Vers << " run " << CurrEpoch << endl;
+         DumpCommandLine();
+      }
 
       i = OpenFiles();
       if(i) return i;
@@ -172,59 +178,85 @@ int main(int argc, char **argv)
       FirstEpoch = DayTime::BEGINNING_OF_TIME;
       for(i=0; i<9; i++) ndt[i] = -1;
 
+      // show a counter
+      nobs = nnav = n = 0;
       // loop over data in the Novatel file
-      while(instr >> novad) {
-         if(Debug) cout << "Read " << NovatelData::RecNames[novad.rectype]
-            << " size " << novad.headersize << " + " << novad.datasize
-            << " number " << novad.recnum;
-         if(novad.isOEM2()) {
-            if(roh.recVers == string("OEM2/4")) roh.recVers = "OEM2";
-            if(Debug) cout << " OEM2";
-         }
-         if(novad.isOEM4()) {
-            if(Debug) cout << " OEM4";
-            if(roh.recVers == string("OEM2/4")) roh.recVers = "OEM4";
-         }
-         if(Debug) {
-            if(novad.isObs()) cout << " obs";
-            if(novad.isNav()) cout << " nav";
-            if(novad.isAux()) cout << " aux";
-            cout << endl;
-         }
+      try{
+         while(instr >> novad) {
+            if(Debug) cout << "Read " << NovatelData::RecNames[novad.rectype]
+               << " size " << novad.headersize << " + " << novad.datasize
+               << " number " << novad.recnum;
 
-         bytesread += novad.datasize + novad.headersize;
-         if(novad.isOEM2()) bytesread += 1;      // CRC byte
-         if(novad.isOEM4()) bytesread += 4;      // CRC bytes
+            if(novad.isOEM2()) {
+               if(roh.recVers == string("OEM2/4")) roh.recVers = "OEM2";
+               if(Debug) cout << " OEM2";
+            }
 
-         if(novad.isObs() && novad.datasize > 4) {   // obs only, with data
-            rod = RinexObsData(novad);    // convert
-            if(rod.time < BegTime) continue;
-            if(rod.time > EndTime) break;
-            if(Debug) rod.dump(cout);     // dump
-            rostr << rod;                 // write out
+            if(novad.isOEM4()) {
+               if(Debug) cout << " OEM4";
+               if(roh.recVers == string("OEM2/4")) roh.recVers = "OEM4";
+            }
 
-            UpdateInformation(rod);
-         }
-         else if(novad.isNav()) {                                 // nav only
-            rnd = RinexNavData(novad);    // convert
-            if(Debug) rnd.dump(cout);     // dump
-            rnstr << rnd;                 // write out
-         }
+            if(Debug) {
+               if(novad.isObs()) cout << " obs";
+               if(novad.isNav()) cout << " nav";
+               if(novad.isAux()) cout << " aux";
+               cout << endl;
+            }
 
-      }  // end while loop over data
+            bytesread += novad.datasize + novad.headersize;
+            if(novad.isOEM2()) bytesread += 1;      // CRC byte
+            if(novad.isOEM4()) bytesread += 4;      // CRC bytes
 
-      if(Debug) cout << "Total bytes read = " << bytesread << endl;
+            if(novad.isObs() && novad.datasize > 4) {   // obs only, with data
+               rod = RinexObsData(novad);    // convert
+               if(rod.time < BegTime) continue;
+               if(rod.time > EndTime) break;
+               if(Debug) rod.dump(cout);     // dump
+
+               rostr << rod;                 // write out
+               nobs++;
+
+               UpdateInformation(rod);
+            }
+            else if(novad.isNav()) {                                 // nav only
+               rnd = RinexNavData(novad);    // convert
+               if(Debug) rnd.dump(cout);     // dump
+               rnstr << rnd;                 // write out
+               nnav++;
+            }
+
+            n++;
+            if(verbose && !Debug) {
+               if(n == 100) cout << "Reading Novatel records: (100 per .)\n";
+               if(!(n % 100)) { cout << "."; cout.flush(); }
+               if(!(n % 8000)) cout << endl;
+            }
+
+         }  // end while loop over data
+      }
+      catch(Exception& e) { GPSTK_RETHROW(e); }
+
+      if(verbose && !Debug) cout << "\n";
 
       //instr.clear();
-      //instr.close();
+      instr.close();
       //rostr.clear();
       rostr.close();
       //rnstr.clear();
-      //rnstr.close();
+      rnstr.close();
 
       // now update the header and (re)write it to the file
-      return UpdateHeader(TempFileName, RinexObsFile, roh);
+      i = UpdateHeader(TempFileName, RinexObsFile, roh);
 
+      if(verbose) {
+         cout << "novaRinex read " << n
+            << " records, and wrote " << nobs
+            << " observations and " << nnav << " ephemerides\n";
+         cout << "Total bytes read = " << bytesread << endl;
+      }
+
+      return i;
    }
    catch(Exception& e) {
       cerr << "Caught exception\n" << e << endl;
@@ -236,14 +268,17 @@ int main(int argc, char **argv)
 int OpenFiles(void)
 {
    string filename;
-   filename = InputDirectory + string("/") + NovatelFile;
+   if(InputDirectory.empty())
+      filename = NovatelFile;
+   else
+      filename = InputDirectory + string("/") + NovatelFile;
    instr.open(filename.c_str(),ios::in | ios::binary);
    if(!instr) {
       cerr << "Failed to open input file " << NovatelFile << endl;
       return -1;
    }
-   if(Debug) cout << "Opened input file " << NovatelFile << endl;
-   //instr.exceptions(fstream::failbit);
+   if(verbose) cout << "Opened input file " << NovatelFile << endl;
+   instr.exceptions(fstream::failbit);
 
    TempFileName = GetTempFileName();
    rostr.open(TempFileName.c_str(),ios::out);
@@ -258,7 +293,7 @@ int OpenFiles(void)
       cerr << "Failed to open output nav file " << RinexNavFile << endl;
       return -3;
    }
-   if(Debug) cout << "Opened output nav file " << RinexNavFile << endl;
+   if(verbose) cout << "Opened output nav file " << RinexNavFile << endl;
    rnstr.exceptions(fstream::failbit);
 
    return 0;
@@ -267,6 +302,7 @@ int OpenFiles(void)
 //------------------------------------------------------------------------------------
 void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh)
 {
+   int i;
    // observation header
    roh.version = 2.1;
    roh.fileType = "Observation";
@@ -280,7 +316,7 @@ void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh)
    // must keep track of indexes - for use in table
    if(Debug) cout << "Output obs types and indexes:";
    inC1 = inP1 = inL1 = inD1 = inS1 = inP2 = inL2 = inD2 = inS2 = -1;
-   for(int i=0; i<OutputTypes.size(); i++) {
+   for(i=0; i<OutputTypes.size(); i++) {
       if(OutputTypes[i] == RinexObsHeader::C1) inC1=i;
       if(OutputTypes[i] == RinexObsHeader::P1) inP1=i;
       if(OutputTypes[i] == RinexObsHeader::L1) inL1=i;
@@ -300,8 +336,10 @@ void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh)
    roh.firstObs = CurrEpoch; // defined later by data
    roh.firstSystem = systemGPS;
    roh.lastObs = CurrEpoch; // defined later by data
-   //roh.commentList.push_back("Created by GPSTK program " + Prgm + " " + Vers
-      //+ CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S"));
+   roh.commentList.push_back("Created by GPSTK program " + Prgm + " " + Vers
+      + CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S"));
+   for(i=0; i<HDcomments.size(); i++)
+      roh.commentList.push_back(HDcomments[i]);
 
    roh.valid = RinexObsHeader::allValid21;
    roh.valid |= RinexObsHeader::commentValid;
@@ -310,9 +348,12 @@ void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh)
    rnh.version = 2.1;
    rnh.fileType = "Observation";
    rnh.fileProgram = roh.fileProgram;
+   rnh.fileAgency = roh.fileAgency;
    rnh.date = CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
-   //rnh.commentList.push_back("Created by GPSTK program " + Prgm + " " + Vers
-      //+ CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S"));
+   rnh.commentList.push_back("Created by GPSTK program " + Prgm + " " + Vers
+      + CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S"));
+   for(i=0; i<HDcomments.size(); i++)
+      rnh.commentList.push_back(HDcomments[i]);
 
    rnh.valid = RinexNavHeader::allValid21;
    rnh.valid |= RinexNavHeader::commentValid;
@@ -327,7 +368,7 @@ void UpdateInformation(RinexObsData& rod)
 
    if(fabs(FirstEpoch - DayTime::BEGINNING_OF_TIME) < 1)  {
       PrevEpoch = FirstEpoch = rod.time;
-      if(Debug) cout << "Set First Epoch to "
+      if(verbose) cout << "Set First Epoch to "
          << rod.time.printf("%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
    }
    else
@@ -350,6 +391,10 @@ void UpdateInformation(RinexObsData& rod)
          }
       }
    }
+   else if(dt < 0.0)
+      cout << "Warning! observation records out of time order (previous > current) : "
+         << PrevEpoch.printf("%F %.3g") << " > " << CurrEpoch.printf("%F %.3g")
+         << endl;
 
    RinexObsData::RinexPrnMap::iterator jt;
    map<RinexPrn,vector<int> >::iterator it;
@@ -481,7 +526,7 @@ int UpdateHeader(string& TempFile, string& OutputFile, RinexObsHeader& rh)
    InAgain.exceptions(fstream::failbit);
    ROutStr.exceptions(fstream::failbit);
 
-   if(Debug) cout << "Opened " << OutputFile << " for output." << endl;
+   if(verbose) cout << "Opened file " << OutputFile << " for output." << endl;
    InAgain >> rhjunk;
    ROutStr << rh;
 
@@ -514,13 +559,13 @@ try {
 
    // --------------------------------------------------------------------------------
    // set all the defaults
-   Debug = help = false;
+   Debug = help = verbose = false;
    BegTime = DayTime::BEGINNING_OF_TIME;
    EndTime = DayTime::END_OF_TIME;
    //NovatelFile,
    RinexObsFile = string("RnovaRinex.obs");
    RinexNavFile = string("RnovaRinex.nav");
-   InputDirectory = string(".");
+   InputDirectory = string("");
    // header fields
    FillOptionalHeader = true;
    roh.fileProgram = Prgm+" "+Vers;
@@ -572,12 +617,12 @@ try {
    dashNHF.setMaxCount(1);
 
    CommandOption dashHDp(CommandOption::hasArgument, CommandOption::stdType,0,"HDp",
-      " --HDp <program>   Set output Rinex header 'program' field ('"
+      " --HDp <program>   Set output Rinex headers 'program' field ('"
       + roh.fileProgram + "')");
    dashHDp.setMaxCount(1);
 
    CommandOption dashHDr(CommandOption::hasArgument, CommandOption::stdType,0,"HDr",
-      " --HDr <run_by>    Set output Rinex header 'run by' field ('"
+      " --HDr <run_by>    Set output Rinex headers 'run by' field ('"
       + roh.fileAgency + "')");
    dashHDr.setMaxCount(1);
 
@@ -627,7 +672,7 @@ try {
    dashHDat.setMaxCount(1);
 
    CommandOption dashHDc(CommandOption::hasArgument, CommandOption::stdType,0,"HDc",
-      " --HDc <comment>   Add comment to output Rinex header (>1 allowed).");
+      " --HDc <comment>   Add comment to output Rinex headers (>1 allowed).");
    //dashHDc.setMaxCount(1);
 
    CommandOption dashobstype(CommandOption::hasArgument, CommandOption::stdType,
@@ -666,18 +711,21 @@ try {
    "                     that precede any obs records are not lost.");
    dashweek.setMaxCount(1);
 
-   CommandOption dashdebias(CommandOption::hasArgument, CommandOption::stdType,
-      0,"debias", " --debias          Remove an initial bias from the phase");
+   CommandOptionNoArg dashdebias(0,"debias",
+      " --debias          Remove an initial bias from the phase");
    dashdebias.setMaxCount(1);
 
-   CommandOption dashhelp(CommandOption::hasArgument, CommandOption::stdType,
-      'h',"help", " [-h|--help]       print this message and quit");
+   CommandOptionNoArg dashhelp('h',"help",
+      " [-h|--help]       print this message and quit");
    dashhelp.setMaxCount(1);
 
-   CommandOption dashDebug(CommandOption::hasArgument, CommandOption::stdType,
-      'd',"debug", " [-d|--debug]      print extended output info");
-   dashDebug.setMaxCount(1);
+   CommandOptionNoArg dashVerbose('v', "verbose",
+      " --verbose             print some output info.");
+   dashVerbose.setMaxCount(1);
 
+   CommandOptionNoArg dashDebug('d',"debug",
+      " [-d|--debug]      print extended output info");
+   dashDebug.setMaxCount(1);
 
    // ... other options
    CommandOptionRest Rest("");
@@ -724,6 +772,7 @@ try {
    if(help) {
       Par.displayUsage(cout,false);
       cout << endl;
+      if(argc <= 2) return 1;
    }
 
    // check for errors on the command line
@@ -740,10 +789,6 @@ try {
 
    // --------------------------------------------------------------------------------
    // pull out the parsed input
-
-   // these already parsed by PreProcessArgs
-   //if(dashhelp.getCount()) help
-   //if(dashDebug.getCount()) Debug
 
    if(dashinput.getCount()) {
       values = dashinput.getValue();
@@ -827,8 +872,10 @@ try {
    }
    if(dashHDc.getCount()) {
       values = dashHDc.getValue();
-      if(help) cout << " Input comment for header " << values[0] << endl;
-      NovatelFile = values[0];
+      for(i=0; i<values.size(); i++) {
+         if(help) cout << " Input comment for headers " << values[i] << endl;
+         HDcomments.push_back(values[i]);
+      }
    }
    if(dashobstype.getCount()) {
       values = dashobstype.getValue();
@@ -868,16 +915,18 @@ try {
       gpsWeek = StringUtils::asInt(values[0]);
    }
    if(dashdebias.getCount()) {
-      values = dashdebias.getValue();
-      if(help) cout << " Turn on debiasing of the phase " << values[0] << endl;
+      if(help) cout << " Turn on debiasing of the phase " << endl;
       debias = true;
    }
+   // help and Debug are pulled out by PreProcessArgs
    //if(dashhelp.getCount()) {
    //   help = true;
    //}
    //if(dashDebug.getCount()) {
    //   Debug = true;
    //}
+   if(dashVerbose.getCount() || Debug) verbose = true;
+
 
    // process input
    if(gpsWeek == -1) gpsWeek = CurrEpoch.GPSfullweek();
@@ -905,33 +954,43 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 void PreProcessArgs(const char *arg, vector<string>& Args)
 {
 try {
+   if(string(arg) == string()) return;
    if(arg[0]=='-' && arg[1]=='f') {
       string filename(arg);
       filename.erase(0,2);
       if(Debug) cout << "Found a file of options: " << filename << endl;
       ifstream infile(filename.c_str());
-      if(!infile) {
-         cerr << "Error: could not open options file "
-            << filename << endl;
-      }
+      if(!infile)
+         cerr << "Error: could not open options file " << filename << endl;
       else {
          char c;
-         string buffer;
-         while( infile >> buffer) {
-            if(buffer[0] == '#') {         // skip to end of line
-               while(infile.get(c)) { if(c=='\n') break; }
+         string buffer,word;
+         while(1) {
+            getline(infile,buffer);
+            if(infile.eof() || !infile.good()) break;
+            StringUtils::stripTrailing(buffer,'\r');
+
+            while(1) {
+               word = StringUtils::firstWord(buffer);
+               if(word[0] == '#')           // skip to end of line
+                  break;
+               else if(word[0] == '"')
+                  word = StringUtils::stripFirstWord(buffer,'"');
+               else
+                  word = StringUtils::stripFirstWord(buffer);
+               PreProcessArgs(word.c_str(),Args);
+               if(buffer.empty()) break;
             }
-            else PreProcessArgs(buffer.c_str(),Args);
          }
       }
    }
-   else if((arg[0]=='-' && arg[1]=='h') || string(arg)==string("--help")) {
+   else if(string(arg)==string("-h") || string(arg)==string("--help")) {
       help = true;
       if(Debug) cout << "Found the help switch" << endl;
    }
    else if((arg[0]=='-' && arg[1]=='d') || string(arg)==string("--debug")) {
       Debug = true;
-      cout << "Found the debug switch" << endl;
+      //cout << "Found the debug switch" << endl;
    }
    else Args.push_back(arg);
 }
@@ -946,6 +1005,7 @@ try {
 
    ofs << "Summary of command line input:" << endl;
    ofs << " Debug is " << (Debug ? "on":"off") << endl;
+   ofs << " Verbose is " << (verbose ? "on":"off") << endl;
    if(!InputDirectory.empty()) ofs << " Path for input Novatel file is "
       << InputDirectory << endl;
    ofs << " Input Novatel file is: " << NovatelFile << endl;

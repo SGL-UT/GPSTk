@@ -235,6 +235,7 @@ my $CmdText =
 "# create new obs types:\n" .
 " --AO <ExOT>         add extended obs types (can repeat) ()\n" .
 " --create [on|off]   run ResCor to create any new (AO) obs types (on)\n" .
+" --debias <limit>    limit that triggers bias reset in ResCor (100)\n" .
 "# plot datasets\n" .
 " --sat <sat>         select satellite for plot (can repeat) ()\n" .
 " --obs <OT>          select obs type for plot (can repeat) ()\n" .
@@ -973,9 +974,33 @@ sub SetDTL {
 
 #-------------------------------------------------------------------------------------
 sub DataConf {
-   PopNotice("DataSet/Configure","DataSet/Configure is not yet implemented");
+   #PopNotice("DataSet/Configure","DataSet/Configure is not yet implemented");
    # Iono height
    # debiasing
+   # $CFG{'debias'}
+   my ($db,$ih)=($CFG{'debias'},$CFG{'ionoht'});
+   Status("Modify data settings");
+   my $DCdb = $w_top->DialogBox(
+      -title =>  "Data configuration",
+      -buttons => ['Ok','Cancel'],
+      -default_button => 'Ok',
+      -popover => $w_top,
+      -overanchor => 'c',
+      -popanchor => 'c',
+   );
+   $DCdb->add('Label',-text => "Data Settings:")->pack(-anchor => 'w');
+   # debias limit for ResCor
+   my $f1=$DCdb->Frame(-borderwidth => 2, -relief => 'groove')->pack(-anchor => 'w');
+   $f1->Label(-text => " Limit on ResCor debias reset :"
+      )->pack(-side => 'top', -anchor => 'w');
+   $f1->Label(-text => " ")->pack(-side => 'left');
+   my $e1=$f1->Entry(-textvariable => \$db, -width => '20')->pack(-side => 'left');
+
+   # put it up
+   $ans = $DCdb->Show();
+   if($ans eq 'Ok') {
+      $CFG{'debias'} = $db;
+   }
 }
 
 #-------------------------------------------------------------------------------------
@@ -1504,7 +1529,7 @@ sub CompCrea {
    foreach $i (0..$#ExtOT) { if($ExtSelect[$i] != 0) {
       push @opt, "-AO$ExtOT[$i]";
       if($MayDebias{$ExtOT[$i]}) {
-         push @opt, "--debias $ExtOT[$i],100";
+         push @opt, "--debias $ExtOT[$i],$CFG{'debias'}";
       }
    } }
    # use C1 when P1 is not there

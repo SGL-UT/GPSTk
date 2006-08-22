@@ -1,14 +1,13 @@
-// NavMerge will merge any number of Rinex nav files into a unique superset,
-// and either write them out to a new Rinex file (if an output file is given),
-// or write a summary of the data to the screen. NavMerge also finds
-// and fixes full week number when it is inconsistent with epoch.
-//------------------------------------------------------------------------------------
 #pragma ident "$Id$"
 
 
 /**
  * @file NavMerge.cpp
  * Read, summarize and optionally merge, Rinex navigation files.
+ * NavMerge will merge any number of Rinex nav files into a unique superset,
+ * and either write them out to a new Rinex file (if an output file is given),
+ * or write a summary of the data to the screen. NavMerge also finds
+ * and fixes full week number when it is inconsistent with epoch.
  */
 
 //------------------------------------------------------------------------------------

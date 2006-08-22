@@ -1,49 +1,21 @@
-//------------------------------------------------------------------------------------
-// ResCor.cpp  'Residuals and Corrections'
-//    Open and read a single Rinex observation file, apply editing commands
-//    using the RinexEditor package, compute any of several residuals and corrections
-//    and register extended Rinex observation types for them, and then write
-//    the edited data, along with the new extended observation types,
-//    to an output Rinex observation file. Input is all on the command line.
-//
-//    ResCor is implemented by deriving a special class from class RinexEditor and
-//    using its virtual functions to implement all the changes necessary to define
-//    and compute the residuals and corrections.
-//
-//    ResCor is part of the GPS Tool Kit (GPSTK) developed in the
-//    Satellite Geophysics Group at Applied Research Laboratories,
-//    The University of Texas at Austin (ARL:UT), and was written by Dr. Brian Tolman.
-//------------------------------------------------------------------------------------
 #pragma ident "$Id$"
-
 
 /**
  * @file ResCor.cpp
- * Compute residuals and corrections to Rinex observation data.
+ * 'Residuals and Corrections'
+ * Open and read a single Rinex observation file, apply editing commands
+ * using the RinexEditor package, compute any of several residuals and corrections
+ * and register extended Rinex observation types for them, and then write
+ * the edited data, along with the new extended observation types,
+ * to an output Rinex observation file. Input is all on the command line.
+ * ResCor is implemented by deriving a special class from class RinexEditor and
+ * using its virtual functions to implement all the changes necessary to define
+ * and compute the residuals and corrections.
  */
 
 //------------------------------------------------------------------------------------
-//============================================================================
-//
-//  This file is part of GPSTk, the GPS Toolkit.
-//
-//  The GPSTk is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
-//  any later version.
-//
-//  The GPSTk is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//lgpl-license START
+//lgpl-license END
 
 //------------------------------------------------------------------------------------
 // ToDo
@@ -67,7 +39,8 @@
 #include "BCEphemerisStore.hpp"
 #include "EphemerisRange.hpp"
 #include "TropModel.hpp"
-#include "RAIMSolution.hpp"
+//#include "RAIMSolution.hpp"
+#include "PRSolution.hpp"
 #include "WGS84Geoid.hpp"           // for obliquity
 #include "Stats.hpp"
 #include "geometry.hpp"             // DEG_TO_RAD
@@ -139,6 +112,7 @@ SimpleTropModel ggtm;
    // for use with current position and in RefPosMap (RAIM and/or RefPosFile)
 typedef struct ReferencePositionFileData {
    Position RxPos;              // XYZT
+   bool valid;
    int NPRN;
    double clk,PDOP,GDOP,RMS;
 } RefPosData;
@@ -147,9 +121,11 @@ RefPosData CurrRef;        // current reference position
 string RefPosFile,KnownPos;
 bool doRAIM,editRAIM,outRef,headRAIM,HaveRAIM;
 bool RefPosInput,KnownPosInput,KnownLLH,RefPosFlat;
+double minElev;
 vector<RinexPrn> Sats;
 vector<double> PRange;
-RAIMSolution RAIMSol;
+//RAIMSolution RAIMSol;
+PRSolution prsol;
 Stats<double> ARSX,ARSY,ARSZ;      // average solution, for header output
    // computation
 int inC1,inP1,inP2,inL1,inL2;      // indexes in rhead of C1, C1/P1, P2, L1 and L2
@@ -324,6 +300,7 @@ try {
    outRef = true;
    editRAIM = true;
    headRAIM = false;
+   minElev = 0.0;
    
    IonoHt = 400.0;      // km
 
@@ -386,7 +363,7 @@ try {
    dashRx6.setMaxCount(1);
 
    CommandOptionNoArg dashred(0,"noRAIMedit",
-      "  (NB the following two options apply only if --RAIM is found)\n"
+      "  (NB the following four options apply only if --RAIM is found)\n"
       " --noRAIMedit    Do not edit data based on RAIM solution");
    dashred.setMaxCount(1);
 
@@ -398,6 +375,11 @@ try {
    CommandOptionNoArg dashro(0,"noRefout",
       " --noRefout      Do not output reference solution to Rinex");
    dashro.setMaxCount(1);
+
+   CommandOption dashelev(CommandOption::hasArgument,CommandOption::stdType,
+      0,"MinElev",
+      " --MinElev <el>  Minimum satellite elevation (deg) for output");
+   dashelev.setMaxCount(1);
 
    // residual and correction computation, processing options
    CommandOption dashdb(CommandOption::hasArgument, CommandOption::stdType,0,"debias",
@@ -624,6 +606,12 @@ try {
       outRef = false;
       if(help) cout << "Do not output Reference solution to Rinex" << endl;
    }
+   if(dashelev.getCount()) {
+      values = dashelev.getValue();
+      minElev = StringUtils::asDouble(values[0]);
+      if(help) cout << "Set minimum elevation angle "
+         << fixed << setprecision(2) << minElev << endl;
+   }
    if(dashrh.getCount()) {
       if(doRAIM) {
          headRAIM = true;
@@ -775,6 +763,8 @@ try {
       if(KnownPosInput) logof << "Get reference position from explicit input ("
          << (KnownLLH ? "LLH" : "XYZ") << ") : " << KnownPos << endl;
       if(doRAIM) logof << "Compute a RAIM solution" << endl;
+      if(minElev > 0.0) logof << "Minimum elevation angle limit "
+         << fixed << setprecision(2) << minElev << " degrees." << endl;
       if(RefPosInput) logof << "Get reference position from in-line headers in "
          << "the input Rinex file" << endl;
       if(!RefPosFile.empty())
@@ -869,6 +859,7 @@ try {
          KnownPos.erase(0,pos+1);
       };
 
+      CurrRef.valid = true;
       CurrRef.clk = 0;
       CurrRef.NPRN = 0;
       CurrRef.PDOP = 0;
@@ -933,6 +924,7 @@ try {
                // But if it has XYZT and DIAG, then GPSTk probably wrote it....
                timetag = robs.time;
                CurrRef.NPRN = 0;
+               CurrRef.valid = true;
                CurrRef.clk = CurrRef.PDOP = CurrRef.GDOP = CurrRef.RMS = 0.0;
                for(i=0; i<robs.auxHeader.commentList.size(); i++) {
                   string s=robs.auxHeader.commentList[i];
@@ -1039,11 +1031,13 @@ try {
                if(ok) {
                   if(Debug)logof << "Result: t= " << timetag << " p= " << pos << endl;
                   RefPosMap[timetag] = CurrRef;
+                  CurrRef.valid = true;
                }
                break;
             }
             if(!ok) break;
             getline(inf,line);
+            StringUtils::stripTrailing(line,'\r');
          }
          inf.close();
          if(!have) {
@@ -1064,10 +1058,10 @@ try {
       }  // end flat file input
    }
    else if(doRAIM) {
-      // if(Debug) RAIMSol.Debug = true; // write to cout ...
-      RAIMSol.Algebraic = false;
-      //RAIMSol.MaxNIterations = PIC.NIter;    // TD add to command line?
-      //RAIMSol.Convergence = PIC.Conv;
+      // if(Debug) prsol.Debug = true; // write to cout ...
+      prsol.Algebraic = false;
+      //prsol.MaxNIterations = PIC.NIter;    // TD add to command line?
+      //prsol.Convergence = PIC.Conv;
       // set inPS below, when you know you can do RAIM
       logof << "Reference position will come from RAIM\n";
    }
@@ -1117,6 +1111,7 @@ try {
       }
    }
 
+   CurrRef.valid = false;
    if(Debug) logof << "Return from PrepareInput" << endl;
 
    return 0;
@@ -1310,6 +1305,7 @@ int RCRinexEditor::BeforeEditObs(const RinexObsData& roin)
                CurrRef.PDOP = asDouble(stripFirstWord(s));
                CurrRef.GDOP = asDouble(stripFirstWord(s));
                CurrRef.RMS = asDouble(stripFirstWord(s));
+               CurrRef.valid = true;
 //logof << "Found position:\n" << CurrRef.RxPos.printf("%.4x %.4y %.4z\n");
             }
          }
@@ -1408,10 +1404,10 @@ int RCRinexEditor::BeforeWritingObs(RinexObsData& roout)
          logof << "RAIM output: " << roout.time.printf("%02M:%04.1f ") << stst1.str();
 
       //for(Nsvs=0,i=0; i<Sats.size(); i++) if(Sats[i].prn > 0) Nsvs++;
-      //PDOP = RSS(RAIMSol.Covariance(0,0),
-      //      RAIMSol.Covariance(1,1),RAIMSol.Covariance(2,2));
-      //GDOP = RSS(PDOP, RAIMSol.Covariance(3,3));
-      //rms = RAIMSol.RMSResidual;
+      //PDOP = RSS(prsol.Covariance(0,0),
+      //      prsol.Covariance(1,1),prsol.Covariance(2,2));
+      //GDOP = RSS(PDOP, prsol.Covariance(3,3));
+      //rms = prsol.RMSResidual;
       stst2 << "DIAG";
       stst2 << " " << setw(2) << CurrRef.NPRN
          << " " << fixed << setw(5) << setprecision(2) << CurrRef.PDOP
@@ -1469,23 +1465,44 @@ void SaveData(const RinexObsData& rod, const RinexObsHeader& rhd,
 int UpdateRxPosition(void)
 {
    int iret,i;
+   double rho;
+   Xvt xvt;
+   RinexPrn sat;
+   CorrectedEphemerisRange CER;
+
       // compute a RAIM solution, add it to average
    HaveRAIM = false;
    map<RinexPrn,RCData>::const_iterator kt;
    if(doRAIM) {
       Sats.clear();
       PRange.clear();
+
          //map<RinexPrn,RCData> DataStoreMap;
       for(kt=DataStoreMap.begin(); kt != DataStoreMap.end(); kt++) {
          if(kt->second.P1 == 0 || kt->second.P2 == 0) continue;
-         Sats.push_back(kt->first);
+         sat = kt->first;
+         if(minElev > 0.0 && CurrRef.valid) {
+            try {
+               if(SP3EphList.size() > 0)
+                  rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat.prn,
+                        SP3EphList);
+               else if(BCEphList.size() > 0)
+                  rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat.prn,
+                        BCEphList);
+               else continue;
+            }
+            catch(gpstk::EphemerisStore::NoEphemerisFound& e) {
+               continue;
+            }
+         }
+         Sats.push_back(sat);
          PRange.push_back(if1r*kt->second.P1+if2r*kt->second.P2);
       }
 
       if(SP3EphList.size() > 0)
-         iret = RAIMSol.Compute(CurrentTime, Sats, PRange, SP3EphList, &ggtm);
+         iret = prsol.RAIMCompute(CurrentTime, Sats, PRange, SP3EphList, &ggtm);
       else if(BCEphList.size() > 0)
-         iret = RAIMSol.Compute(CurrentTime, Sats, PRange, BCEphList, &ggtm);
+         iret = prsol.RAIMCompute(CurrentTime, Sats, PRange, BCEphList, &ggtm);
       else iret = -4;
          //  2  failed to find a good solution (RMS residual or slope exceed limits)
          //  1  solution is suspect (slope is large)
@@ -1504,27 +1521,28 @@ int UpdateRxPosition(void)
                << " " << setw(4) << CurrentTime.GPSfullweek() << fixed
                << " " << setw(10) << setprecision(3) << CurrentTime.GPSsecond()
                << " " << setw(2) << Nsvs
-               << " " << setw(16) << setprecision(6) << RAIMSol.Solution(0)
-               << " " << setw(16) << setprecision(6) << RAIMSol.Solution(1)
-               << " " << setw(16) << setprecision(6) << RAIMSol.Solution(2)
-               << " " << setw(16) << setprecision(6) << RAIMSol.Solution(3)
-               << " " << setw(16) << setprecision(6) << RAIMSol.RMSResidual
-               << " " << fixed << setw(7) << setprecision(1) << RAIMSol.MaxSlope
-               << " " << RAIMSol.NIterations
+               << " " << setw(16) << setprecision(6) << prsol.Solution(0)
+               << " " << setw(16) << setprecision(6) << prsol.Solution(1)
+               << " " << setw(16) << setprecision(6) << prsol.Solution(2)
+               << " " << setw(16) << setprecision(6) << prsol.Solution(3)
+               << " " << setw(16) << setprecision(6) << prsol.RMSResidual
+               << " " << fixed << setw(7) << setprecision(1) << prsol.MaxSlope
+               << " " << prsol.NIterations
                << " " << scientific
-               << setw(8) << setprecision(2) << RAIMSol.Convergence;
+               << setw(8) << setprecision(2) << prsol.Convergence;
             for(i=0; i<Sats.size(); i++) logof << " " << setw(3) << Sats[i].prn;
-            logof << " (" << iret << ")" << (RAIMSol.isValid() ? " V":" NV") << endl;
+            logof << " (" << iret << ")" << (prsol.isValid() ? " V":" NV") << endl;
          }
 
-         CurrRef.RxPos.setECEF(RAIMSol.Solution(0),RAIMSol.Solution(1),
-            RAIMSol.Solution(2));
-         CurrRef.clk = RAIMSol.Solution(3);
-         CurrRef.NPRN = RAIMSol.Nsvs;
-         CurrRef.PDOP = RSS(RAIMSol.Covariance(0,0),RAIMSol.Covariance(1,1),
-            RAIMSol.Covariance(2,2));
-         CurrRef.GDOP = RSS(CurrRef.PDOP, RAIMSol.Covariance(3,3));
-         CurrRef.RMS = RAIMSol.RMSResidual;
+         CurrRef.RxPos.setECEF(prsol.Solution(0),prsol.Solution(1),
+            prsol.Solution(2));
+         CurrRef.valid = true;
+         CurrRef.clk = prsol.Solution(3);
+         CurrRef.NPRN = prsol.Nsvs;
+         CurrRef.PDOP = RSS(prsol.Covariance(0,0),prsol.Covariance(1,1),
+            prsol.Covariance(2,2));
+         CurrRef.GDOP = RSS(CurrRef.PDOP, prsol.Covariance(3,3));
+         CurrRef.RMS = prsol.RMSResidual;
          if(headRAIM) {       // add to average
             ARSX.Add(CurrRef.RxPos.X());
             ARSY.Add(CurrRef.RxPos.Y());
@@ -1559,16 +1577,17 @@ int UpdateRxPosition(void)
       ite = RefPosMap.lower_bound(CurrentTime);
       if(ite == RefPosMap.end()) {
          if(Verbose) logof << "No Rx position found at " << CurrentTime << endl;
+         CurrRef.valid = false;
          inPS = -1;
       }
       else {
-         //CurrRef = ite->second;
          CurrRef.RxPos = ite->second.RxPos;
          CurrRef.clk = ite->second.clk;
          CurrRef.NPRN = ite->second.NPRN;
          CurrRef.PDOP = ite->second.PDOP;
          CurrRef.GDOP = ite->second.GDOP;
          CurrRef.RMS = ite->second.RMS;
+         CurrRef.valid = true;
          inPS = 1;
       }
    }
@@ -1652,6 +1671,11 @@ void ComputeNewOTs(RinexObsData& rod)
             HaveEphRange = false;
          }
          if(HaveEphRange) {
+            if(minElev > 0.0 && CER.elevation < minElev) {
+               HaveEphRange = HaveEphThisSat = false;
+               SVDelete.push_back(sat);
+            }
+            else {
             Position IPP=CurrRef.RxPos.getIonosphericPiercePoint(
                   CER.elevation,CER.azimuth, IonoHt);
             IPPLat = IPP.geodeticLatitude();
@@ -1668,6 +1692,7 @@ void ComputeNewOTs(RinexObsData& rod)
             if(BCEphList.size() > 0) {
                const EngEphemeris& eph = BCEphList.findEphemeris(sat.prn,CurrentTime);
                Tgd = C_GPS_M * eph.getTgd();
+            }
             }
          }
       }

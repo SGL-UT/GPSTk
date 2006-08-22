@@ -1,10 +1,3 @@
-//------------------------------------------------------------------------------------
-// EditRinex.cpp  Edit a Rinex observation file using the RinexEditor in gpstk.
-//
-// EditRinex is part of the GPS Tool Kit (GPSTK) developed in the
-// Satellite Geophysics Group at Applied Research Laboratories,
-// The University of Texas at Austin (ARL:UT), and was written by Dr. Brian Tolman.
-//------------------------------------------------------------------------------------
 #pragma ident "$Id$"
 
 

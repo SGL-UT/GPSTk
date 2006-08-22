@@ -502,8 +502,8 @@ try {
                if(C.ExSV[i]==sat) continue;
       
             // NB 2 is not yet implemented
-            if(C.Freq != 2 && P1<=0) continue;
-            if(C.Freq != 1 && P2<=0) continue;
+            //if(C.Freq != 2 && P1<=0) continue;
+            //if(C.Freq != 1 && P2<=0) continue;
 
             // if position known and elevation limit given, apply elevation mask
             if(C.knownpos.getCoordinateSystem() != Position::Unknown
@@ -1033,7 +1033,7 @@ void PrintStats(Stats<double> S[3], Matrix<double> &P, Vector<double> &z, string
 //------------------------------------------------------------------------------------
 int GetCommandLine(int argc, char **argv)
 {
-   bool help=false;
+   bool ok,help=false;
    int i,j;
 try {
       // defaults
@@ -1080,7 +1080,7 @@ try {
       'o',"obs"," [-o|--obs]<file>     Input Rinex observation file(s)");
 
    RequiredOption dashn(CommandOption::hasArgument, CommandOption::stdType,'n',"nav",
-      " [-n|--nav]<file>     Input navigation (ephemeris) file(s) (Rinex or SP3)");
+      " [-n|--nav]<file>     Input navigation file(s) (RINEX or SP3)");
 
       // optional options
    // this only so it will show up in help page...
@@ -1100,23 +1100,32 @@ try {
    dashith.setMaxCount(1);
 
    // time
-   CommandOptionWithTimeArg dasheb(0,"EpochBeg","%Y,%m,%d,%H,%M,%f",
-      " --EpochBeg <arg>     Start time, arg is of the form YYYY,MM,DD,HH,Min,Sec");
-   CommandOptionWithTimeArg dashgb(0,"GPSBeg","%F,%g",
-      " --GPSBeg <arg>       Start time, arg is of the form GPSweek,GPSsow");
+   // times - don't use CommandOptionWithTimeArg
+   CommandOption dashbt(CommandOption::hasArgument, CommandOption::stdType,
+      0,"BeginTime", " --BeginTime <arg>    Start time: arg is "
+      "'GPSweek,sow' OR 'YYYY,MM,DD,HH,Min,Sec'");
+   dashbt.setMaxCount(1);
 
-   CommandOptionWithTimeArg dashee(0,"EpochEnd","%Y,%m,%d,%H,%M,%f",
-      " --EpochEnd <arg>     End time, arg is of the form YYYY,MM,DD,HH,Min,Sec");
-   CommandOptionWithTimeArg dashge(0,"GPSEnd","%F,%g",
-      " --GPSEnd <arg>       End time, arg is of the form GPSweek,GPSsow");
+   CommandOption dashet(CommandOption::hasArgument, CommandOption::stdType,
+      0,"EndTime", " --EndTime <arg>      End time: arg is 'GPSweek,sow' OR "
+      "'YYYY,MM,DD,HH,Min,Sec'");
+   dashet.setMaxCount(1);
 
+   //CommandOptionWithTimeArg dasheb(0,"EpochBeg","%Y,%m,%d,%H,%M,%f",
+   //   " --EpochBeg <arg>     Start time, arg is of the form YYYY,MM,DD,HH,Min,Sec");
+   //CommandOptionWithTimeArg dashgb(0,"GPSBeg","%F,%g",
+   //   " --GPSBeg <arg>       Start time, arg is of the form GPSweek,GPSsow");
+   //CommandOptionWithTimeArg dashee(0,"EpochEnd","%Y,%m,%d,%H,%M,%f",
+   //   " --EpochEnd <arg>     End time, arg is of the form YYYY,MM,DD,HH,Min,Sec");
+   //CommandOptionWithTimeArg dashge(0,"GPSEnd","%F,%g",
+   //   " --GPSEnd <arg>       End time, arg is of the form GPSweek,GPSsow");
    // allow ONLY one start time (use startmutex(true) if one is required)
-   CommandOptionMutex startmutex(false);
-   startmutex.addOption(&dasheb);
-   startmutex.addOption(&dashgb);
-   CommandOptionMutex stopmutex(false);
-   stopmutex.addOption(&dashee);
-   stopmutex.addOption(&dashge);
+   //CommandOptionMutex startmutex(false);
+   //startmutex.addOption(&dasheb);
+   //startmutex.addOption(&dashgb);
+   //CommandOptionMutex stopmutex(false);
+   //stopmutex.addOption(&dashee);
+   //stopmutex.addOption(&dashge);
 
    CommandOptionNoArg dashCA(0,"CA",
       " --CA                 Use C/A code pseudorange if P1 is not available");
@@ -1130,12 +1139,14 @@ try {
 
    CommandOption dashrms(CommandOption::hasArgument, CommandOption::stdType,
       0,"RMSlimit", "# Configuration:\n --RMSlimit <rms>     "
-      "Upper limit on RMS post-fit residuals (m) for a good solution");
+      "Upper limit on RMS post-fit residuals ("
+      + StringUtils::asString(prsol.RMSLimit,2) + "m)");
    dashrms.setMaxCount(1);
 
    CommandOption dashslop(CommandOption::hasArgument, CommandOption::stdType,
       0,"SlopeLimit",
-      " --SlopeLimit <s>     Upper limit on RAIM 'slope' for a good solution");
+      " --SlopeLimit <s>     Upper limit on RAIM 'slope' ("
+      + StringUtils::asString(int(prsol.SlopeLimit)) + ")");
    dashslop.setMaxCount(1);
 
    CommandOptionNoArg dashAlge(0,"Algebra",
@@ -1143,7 +1154,7 @@ try {
    dashAlge.setMaxCount(1);
 
    CommandOptionNoArg dashrcrt(0,"DistanceCriterion", " --DistanceCriterion  "
-      "Use distance from a priori as convergence criterion (else RMS)");
+      "Use dist. from given pos. as convergence crit. (else RMS)");
    dashrcrt.setMaxCount(1);
 
    CommandOptionNoArg dashrone(0,"ReturnAtOnce"," --ReturnAtOnce       "
@@ -1151,15 +1162,18 @@ try {
    dashrone.setMaxCount(1);
 
    CommandOption dashnrej(CommandOption::hasArgument, CommandOption::stdType,
-      0,"NReject", " --NReject <n>        Maximum number of satellites to reject");
+      0,"NReject", " --NReject <n>        "
+      "Maximum number of satellites to reject (no limit)");
    dashnrej.setMaxCount(1);
 
    CommandOption dashNit(CommandOption::hasArgument, CommandOption::stdType,0,"NIter",
-      " --NIter <n>          Maximum iteration count (linearized LS algorithm)");
+      " --NIter <n>          Maximum iteration count in linearized LS ("
+      + StringUtils::asString(prsol.MaxNIterations) + ")");
    dashNit.setMaxCount(1);
 
    CommandOption dashConv(CommandOption::hasArgument, CommandOption::stdType,0,"Conv",
-      " --Conv <c>           Minimum convergence criterion (m) (LLS algorithm)");
+      " --Conv <c>           Minimum convergence criterion in linearized LS ("
+      + StringUtils::doub2sci(prsol.ConvergenceLimit,8,2,false) + ")");
    dashConv.setMaxCount(1);
 
    CommandOption dashElev(CommandOption::hasArgument, CommandOption::stdType,
@@ -1191,7 +1205,7 @@ try {
    dashAPSout.setMaxCount(1);
 
    CommandOption dashForm(CommandOption::hasArgument, CommandOption::stdType,
-      0,"TimeFormat", " --TimeFormat <fmt> "
+      0,"TimeFormat", " --TimeFormat <fmt>   "
       "Output time format (ala DayTime) (default: " + C.timeFormat + ")");
    dashForm.setMaxCount(1);
 
@@ -1239,7 +1253,7 @@ try {
    "   navigation (ephemeris) files, and computes an autonomous pseudorange\n"
    "   position solution, using a RAIM-like algorithm to eliminate outliers.\n"
    "   Output is to the log file, and also optionally to a Rinex obs file with\n"
-   "   the position solutions in auxiliary header blocks.\n");
+   "   the position solutions in comments in auxiliary header blocks.\n");
 
       // -------------------------------------------------
       // allow user to put all options in a file
@@ -1282,7 +1296,8 @@ try {
    
       // -------------------------------------------------
       // get values found on command line
-   vector<string> values;
+   string stemp;
+   vector<string> values,field;
       // f never appears because we intercept it above
    //if(dashf.getCount()) { cout << "Option f "; dashf.dumpValue(cout); }
       // do help first
@@ -1328,28 +1343,80 @@ try {
       C.ith = StringUtils::asDouble(values[0]);
       if(help) cout << "Ithing values is " << C.ith << endl;
    }
-   if(dasheb.getCount()) {
-      values = dasheb.getValue();
-      C.Tbeg.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
-      if(help) cout << "Begin time is "
-         << C.Tbeg.printf("%04Y/%02m/%02d %02H:%02M:%.3f") << endl;
+   // times
+   // TD put try {} around setToString and catch invalid formats...
+   if(dashbt.getCount()) {
+      ok = true;
+      values = dashbt.getValue();
+      stemp = values[0];
+      field.clear();
+      while(stemp.size() > 0)
+         field.push_back(StringUtils::stripFirstWord(stemp,','));
+      if(field.size() == 2) {
+         try { C.Tbeg.setToString(field[0]+","+field[1], "%F,%g"); }
+         catch(Exception& e) { ok=false; }
+      }
+      else if(field.size() == 6) {
+         try {
+            C.Tbeg.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
+            +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
+         }
+         catch(Exception& e) { ok=false; }
+      }
+      else { ok = false; }
+      if(!ok) {
+         cerr << "Error: invalid --BeginTime input: " << values[0] << endl;
+      }
+      else if(help) cout << " Input: begin time " << values[0] << " = "
+         << C.Tbeg.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
-   if(dashgb.getCount()) {
-      values = dashgb.getValue();
-      C.Tbeg.setToString(values[0], "%F,%g");
-      if(help) cout << "Begin time is " << C.Tbeg.printf("%04F/%10.3g") << endl;
+   if(dashet.getCount()) {
+      ok = true;
+      values = dashet.getValue();
+      field.clear();
+      stemp = values[0];
+      while(stemp.size() > 0)
+         field.push_back(StringUtils::stripFirstWord(stemp,','));
+      if(field.size() == 2) {
+         try { C.Tend.setToString(field[0]+","+field[1], "%F,%g"); }
+         catch(Exception& e) { ok=false; }
+      }
+      else if(field.size() == 6) {
+         try {
+            C.Tend.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
+            +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
+         }
+         catch(Exception& e) { ok=false; }
+      }
+      else { ok = false; }
+      if(!ok) {
+         cerr << "Error: invalid --EndTime input: " << values[0] << endl;
+      }
+      else if(help) cout << " Input: end time " << values[0] << " = "
+         << C.Tend.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
-   if(dashee.getCount()) {
-      values = dashee.getValue();
-      C.Tend.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
-      if(help) cout << "End time is "
-         << C.Tend.printf("%04Y/%02m/%02d %02H:%02M:%.3f") << endl;
-   }
-   if(dashge.getCount()) {
-      values = dashge.getValue();
-      C.Tend.setToString(values[0], "%F,%g");
-      if(help) cout << "End time is " << C.Tend.printf("%04F/%10.3g") << endl;
-   }
+   //if(dasheb.getCount()) {
+   //   values = dasheb.getValue();
+   //   C.Tbeg.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
+   //   if(help) cout << "Begin time is "
+   //      << C.Tbeg.printf("%04Y/%02m/%02d %02H:%02M:%.3f") << endl;
+   //}
+   //if(dashgb.getCount()) {
+   //   values = dashgb.getValue();
+   //   C.Tbeg.setToString(values[0], "%F,%g");
+   //   if(help) cout << "Begin time is " << C.Tbeg.printf("%04F/%10.3g") << endl;
+   //}
+   //if(dashee.getCount()) {
+   //   values = dashee.getValue();
+   //   C.Tend.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
+   //   if(help) cout << "End time is "
+   //      << C.Tend.printf("%04Y/%02m/%02d %02H:%02M:%.3f") << endl;
+   //}
+   //if(dashge.getCount()) {
+   //   values = dashge.getValue();
+   //   C.Tend.setToString(values[0], "%F,%g");
+   //   if(help) cout << "End time is " << C.Tend.printf("%04F/%10.3g") << endl;
+   //}
    if(dashCA.getCount()) {
       C.UseCA = true;
       if(help) cout << "'Use C/A' flag is set\n";
@@ -1405,14 +1472,11 @@ try {
 
    if(dashXYZ.getCount()) {
       values = dashXYZ.getValue();
-      vector<string> field;
       for(i=0; i<values.size(); i++) {
          field.clear();
          while(values[i].size() > 0)
             field.push_back(StringUtils::stripFirstWord(values[i],','));
          if(field.size() < 3) {
-            C.oflog << "Error: less than four fields in --PosXYZ input: "
-               << values[i] << endl;
             cerr << "Error: less than four fields in --PosXYZ input: "
                << values[i] << endl;
             continue;
@@ -1441,12 +1505,9 @@ try {
    }
    if(dashTrop.getCount()) {
       values = dashTrop.getValue();
-      vector<string> field;
       while(values[0].size() > 0)
          field.push_back(StringUtils::stripFirstWord(values[0],','));
       if(field.size() != 1 && field.size() != 4) {
-         C.oflog << "Error: invalid fields after --Trop input: "
-            << values[0] << endl;
          cerr << "Error: invalid fields after --Trop input: "
             << values[0] << endl;
       }
@@ -1614,6 +1675,7 @@ try {
          while(1) {
             getline(infile,buffer);
             if(infile.eof() || !infile.good()) break;
+            StringUtils::stripTrailing(buffer,'\r');
 
             while(1) {
                word = StringUtils::firstWord(buffer);
@@ -1636,6 +1698,10 @@ try {
       ver = true;
       cout << "Found the verbose switch" << endl;
    }
+   else if(string(arg)==string("--EpochBeg")) { Args.push_back("--BeginTime"); }
+   else if(string(arg)==string("--GPSBeg")) { Args.push_back("--BeginTime"); }
+   else if(string(arg)==string("--EpochEnd")) { Args.push_back("--EndTime"); }
+   else if(string(arg)==string("--GPSEnd")) { Args.push_back("--EndTime"); }
    else Args.push_back(arg);
 }
 catch(gpstk::Exception& e) {

@@ -503,7 +503,7 @@ namespace gpstk
          x=w[(v.size()+1)/2-1];
       else
          x=(w[v.size()/2-1]+w[v.size()/2])/T(2);
-      delete[] w;
+
       return x;
    }  // end median(Vector)
 

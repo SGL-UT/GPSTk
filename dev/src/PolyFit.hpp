@@ -4,7 +4,7 @@
 
 /**
  * @file PolyFit.hpp
- * Least squares fit of a polynomial to data
+ * Least squares fit using a polynomial model.
  */
  
 #ifndef GPSTK_POLYFIT_HPP
@@ -60,17 +60,19 @@ namespace gpstk
 
 /**
  * Compute a polynomial fit of the form sum[X(i)*t**i] = d, that is solve for
- * coefficients X given a set of pairs (t,d). The dimension of X is n, the
+ * coefficients X given a set of data pairs (t,d). The dimension of X is n, the
  * degree of the polynomial.
  * @code
- * unsigned int n=4;
+ * unsigned int i,n=4;
  * double dat[17]={...}, times[17]={...};
  * PolyFit<double> PF(n);
- * for(int i=0; i<17; i++)
+ * for(i=0; i<17; i++)
  *    PF.Add(dat[i],times[i]);
  * 
- * d(m);
- * cout << d.U << endl << d.V << endl << d.S << endl;
+ * cout << "Solution vector: " << PF.Solution() << endl;
+ * cout << "Covariance matrix: " << PF.Covariance() << endl;
+ * for(i=0; i<17; i++)
+ *    cout << times[i] << " " << dat[i] << " " << PF.Evaluate(times[i]) << endl;
  * @endcode
  */
    template <class T>

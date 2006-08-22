@@ -1,50 +1,22 @@
-//------------------------------------------------------------------------------------
-// RinexDump.cpp Read a RINEX file and dump the observation data for the given
-// satellite(s), one satellite per file.
-// Input is on the command line, of the form
-//    RinexDump <file> <satellite> <obstype(s)>
-// Any number of obstypes may appear; if none appear, all are dumped.
-// One satellite ID (e.g. G27) may appear; if none appears, all satellites are
-// dumped (lots of output!).
-// The output file(s) are ASCII column-delimited with week and seconds-of-week
-// in the first two columns, followed by 'observation LLI SSI' for each
-// observation type. The name of the output file(s) is of the form RDump<sat>.dat
-//
-// RinexDump is part of the GPS Tool Kit (GPSTK) developed in the
-// Satellite Geophysics Group at Applied Research Laboratories,
-// The University of Texas at Austin (ARL:UT), and was written by Dr. Brian Tolman.
-//
-//------------------------------------------------------------------------------------
 #pragma ident "$Id$"
-
 
 /**
  * @file RinexDump.cpp
  * Dump Rinex observation data to a flat file.
+ * Read a RINEX file and dump the observation data for the given
+ * satellite(s), one satellite per file.
+ * Input is on the command line, of the form
+ *    RinexDump <file> <satellite> <obstype(s)>
+ * Any number of obstypes may appear; if none appear, all are dumped.
+ * One satellite ID (e.g. G27) may appear; if none appears, all satellites are dumped.
+ * The output file(s) are ASCII column-delimited with week and seconds-of-week
+ * in the first two columns, followed by 'observation LLI SSI' for each
+ * observation type. The name of the output file(s) is of the form RDump<sat>.dat
  */
 
 //------------------------------------------------------------------------------------
-//============================================================================
-//
-//  This file is part of GPSTk, the GPS Toolkit.
-//
-//  The GPSTk is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
-//  any later version.
-//
-//  The GPSTk is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Copyright 2004, The University of Texas at Austin
-//
-//============================================================================
+//lgpl-license START
+//lgpl-license END
 
 //------------------------------------------------------------------------------------
 #include "RinexObsBase.hpp"
@@ -52,10 +24,12 @@
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
 #include "DayTime.hpp"
+#include "StringUtils.hpp"
 
 #include "RinexUtilities.hpp"
 
 #include <vector>
+#include <string>
 //#include <time.h>
 
 using namespace std;
@@ -78,30 +52,34 @@ int main(int argc, char *argv[])
 {
    //clock_t totaltime=clock();
 
-   if (argc < 2) {
+   if(argc < 2 || string(argv[1]) == "--help" || string(argv[1]) == "-h") {
       cout << "Read a Rinex file and dump the observation data\n"
          "    for the given satellite(s).\n"
-         " Usage: RinexDump [-n] <file> [<satellite(s)> <obstype(s)>]\n"
+         " Usage: RinexDump [-n] <file> [<satellite(s)> <obstype(s)> | pos]\n"
          "    Output is to the screen with one line per satellite/epoch,\n"
          "    columns <week> <sow> <sat> <obs LLI SSI> for each obs type\n"
          "    (1st line echos input, 2nd is column labels).\n"
-         "    If <satellite> and/or <obstype> are missing, all are dumped.\n"
-         "    Option -n make output purely numeric.\n";
+         "    If pos appears, position info from aux. headers in dumped.\n"
+         "    If <satellite> and/or <obstype> and pos are missing, all obs are dumped.\n"
+         "    -n   make output purely numeric.\n";
       return -1;
    }
 
    bool AllNumeric = false;
-   int j0=1;
-   if(string(argv[1]) == "-n") {
-      j0 = 2;
-      AllNumeric = true;
+   bool DumpPos = false;
+   int i,j0=1;
+   for(i=0; i<argc; i++) {
+      if(string(argv[i]) == "-n") { j0++; AllNumeric = true; }
+      //if(string(argv[i]) == "-pos") { j0++; DumpPos = true; }
    }
 
 try {
    int j;
    bool DumpAll=(argc-j0+1==2),DumpAllObs=false,DumpAllSat=false,lineout;
+   string X,Y,Z,T,rms,pdop,gdop,N;
    RinexObsHeader::RinexObsType ot;
    RinexPrn sat;
+   string line, word;
    vector<RinexObsHeader::RinexObsType> otlist;
    vector<RinexPrn> satlist;
    RinexObsStream RinFile(argv[j0]);
@@ -118,6 +96,10 @@ try {
    // parse command line input
    if(!DumpAll) {
       for(j=j0+1; j<argc; j++) {
+         if(string(argv[j]) == "pos") {
+            DumpPos = true;
+            break;
+         }
          sat = StringUtils::asData<RinexPrn>(string(argv[j]));
          ot = RinexObsHeader::convertObsType(argv[j]);
          if(RinexObsHeader::convertObsType(ot) == string("UN")) {
@@ -155,22 +137,32 @@ try {
       otlist.push_back(header.obsTypeList[j]);
 
    // echo input
-   cout << "# Rinexdump file: " << argv[j0];
-   cout << " Satellites:";
-   if(satlist.size()>0) for(j=0; j<satlist.size(); j++) {
-      cout << " " << satlist[j];
+   cout << "# Rinexdump File: " << argv[j0] << "  Data:";
+   if(DumpPos) {
+      cout << " Positions (in auxiliary header comments)";
    }
-   else cout << " ALL";
-   cout << " Observations:";
-   if(!DumpAllObs) for(j=0; j<otlist.size(); j++)
-      cout << " " << RinexObsHeader::convertObsType(otlist[j]);
-   else cout << " ALL";
+   else {
+      cout << " Satellites:";
+      if(satlist.size()>0) for(j=0; j<satlist.size(); j++) {
+         cout << " " << satlist[j];
+      }
+      else cout << " ALL";
+      cout << " Observations:";
+      if(!DumpAllObs) for(j=0; j<otlist.size(); j++)
+         cout << " " << RinexObsHeader::convertObsType(otlist[j]);
+      else cout << " ALL";
+   }
    cout << endl;
 
    // dump the column headers
-   cout << "# Week  GPS_sow Sat";
-   for(j=0; j<otlist.size(); j++) {
-      cout << "            " << RinexObsHeader::convertObsType(otlist[j]) << " L S";
+   cout << "# Week  GPS_sow";
+   if(DumpPos)
+      cout << " NSVs        X (m)         Y (m)         Z (m)       Clk (m)"
+            << "  PDOP  GDOP   RMS (m)";
+   else {
+      cout << " Sat";
+      for(j=0; j<otlist.size(); j++) cout << "            "
+         << RinexObsHeader::convertObsType(otlist[j]) << " L S";
    }
    cout << endl;
 
@@ -179,11 +171,52 @@ try {
    {
       RinexObsData::RinexPrnMap::const_iterator it;
       RinexObsData::RinexObsTypeMap::const_iterator jt;
-      if(obsdata.epochFlag != 0 && obsdata.epochFlag != 1)        // not regular data
+
+      // if dumping regular data, skip auxiliary header, etc
+      if(!DumpPos && obsdata.epochFlag != 0 && obsdata.epochFlag != 1)
          continue;
-      //else if(obsdata.epochFlag > 1 && obsdata.epochFlag < 6) {    // header records
-      //   obsdata.auxHeader.dump(cout);
-      //}
+
+      // dump position data
+      if(DumpPos && obsdata.epochFlag == 4) {
+         // loop over comments in the header data
+         X=Y=Z=T=pdop=gdop=rms=N=string();
+         for(j=0,i=0; i<obsdata.auxHeader.commentList.size(); i++) {
+            line = StringUtils::stripTrailing(obsdata.auxHeader.commentList[i],
+                                 string("COMMENT"),1);
+            word = StringUtils::stripFirstWord(line);
+            if(word == "XYZT") {
+               X = StringUtils::stripFirstWord(line);
+               Y = StringUtils::stripFirstWord(line);
+               Z = StringUtils::stripFirstWord(line);
+               T = StringUtils::stripFirstWord(line);
+               j++;
+            }
+            else if(word == "DIAG") {
+               N = StringUtils::stripFirstWord(line);
+               pdop = StringUtils::stripFirstWord(line);
+               gdop = StringUtils::stripFirstWord(line);
+               rms = StringUtils::stripFirstWord(line);
+               j++;
+            }
+            else { // ignore
+            }
+         }
+
+         // print it
+         if(j==2) cout << setw(4) << obsdata.time.GPSfullweek()
+            << setw(11) << setprecision(3) << obsdata.time.GPSsecond()
+            << setw(4) << N
+            << setw(14) << X
+            << setw(14) << Y
+            << setw(14) << Z
+            << setw(14) << T
+            << setw(6) << pdop
+            << setw(6) << gdop
+            << setw(10) << rms
+            << endl;
+      }
+
+      if(DumpPos) continue;
 
       // loop over satellites
       for(it=obsdata.obs.begin(); it != obsdata.obs.end(); ++it) {

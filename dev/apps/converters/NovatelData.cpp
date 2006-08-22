@@ -72,16 +72,16 @@ namespace gpstk
    const double PhaseRollover=8388608;
 
    // --------------------------------------------------------------------------------
-   const std::string NovatelData::RecNames[] = {
-         std::string("Unknown"),
-         std::string("RGEB obs"),
-         std::string("RGEC obs"),
-         std::string("POSB pos"),
-         std::string("REPB nav"),
-         std::string("RCSB sts"),
-         std::string("RANGE obs"),
-         std::string("RANGECMP obs"),
-         std::string("RAWEPHEM nav")
+   const string NovatelData::RecNames[] = {
+         string("Unknown"),
+         string("RGEB obs"),
+         string("RGEC obs"),
+         string("POSB pos"),
+         string("REPB nav"),
+         string("RCSB sts"),
+         string("RANGE obs"),
+         string("RANGECMP obs"),
+         string("RAWEPHEM nav")
       };
 
    // --------------------------------------------------------------------------------
@@ -208,15 +208,14 @@ namespace gpstk
    }
 
    // --------------------------------------------------------------------------------
-   void NovatelData::dump(std::ostream& str) const
+   void NovatelData::dump(ostream& str) const
    {
       str << "Record type is " << rectype << endl;
    }
 
    // --------------------------------------------------------------------------------
    void NovatelData::reallyPutRecord(FFStream& s) const 
-      throw(std::exception, gpstk::StringUtils::StringException, 
-            gpstk::FFStreamError)
+      throw(exception, StringUtils::StringException, FFStreamError)
    {
       FFStreamError e("Novatel::reallyPutRecord() is not implemented");
       GPSTK_THROW(e);
@@ -225,9 +224,9 @@ namespace gpstk
 
    // --------------------------------------------------------------------------------
    void NovatelData::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, gpstk::StringUtils::StringException, 
-            gpstk::FFStreamError)
+      throw(exception, StringUtils::StringException, FFStreamError)
    {
+   try {
       if(dynamic_cast<NovatelStream*>(&ffs)) {
 
          NovatelStream& strm = dynamic_cast<NovatelStream&>(ffs);
@@ -237,9 +236,10 @@ namespace gpstk
          unsigned char *p2 = &buffer[2];
          unsigned char *p3 = &buffer[3];
          unsigned char *p4 = &buffer[4];
-         int i,j,k;
+         int i,j,k,failure;
          long filepos;
 
+         if(debug) cout << "Entered NovatelData::reallyGetRecord()" << endl;
             // read loop
          do {
 
@@ -248,7 +248,15 @@ namespace gpstk
             *p1 = *p2;
 
             // get another character
-            strm.read((char *)p2, 1);
+            try {
+               strm.read((char *)p2, 1);
+            }
+            catch(exception& e) {
+               if(debug) cout << "read 1 threw std exception: " << e.what() << endl;
+               //FFStreamError fe(string("std exception: ")+e.what());
+               //GPSTK_THROW(fe);
+            }
+
             if(strm.bad()) {
                FFStreamError fe("Read error");
                GPSTK_THROW(fe);
@@ -257,6 +265,7 @@ namespace gpstk
                if(debug) cout << "Reached EOF" << endl;
                break;
             }
+
             if(debug) cout << "got char 0x" << hex << uppercase << int(buffer[2])
                << dec << endl;
 
@@ -267,6 +276,7 @@ namespace gpstk
 
                   // save position in case of failure
                filepos = strm.tellg();
+               if(debug) cout << "File position " << filepos << endl;
 
                   // read 9 more characters into buffer, giving total of 12
                strm.read((char *)p3,9);
@@ -290,6 +300,7 @@ namespace gpstk
                intelToHost(recnum);
 
                   // read the rest of the record
+               failure = 0;
                if(rectype != Unknown) {
 
                      // get the size of the record
@@ -297,29 +308,48 @@ namespace gpstk
                   intelToHost(datasize);
 
                      // read the rest of the record
-                  strm.read((char *)&buffer[12],datasize-12);
-                  if(strm.bad()) {
-                     FFStreamError fe("Read error");
-                     GPSTK_THROW(fe);
+                  if(datasize-12 >= 1024) {
+                     //FFStreamError fe("Read error - buffer overflow");
+                     //GPSTK_THROW(fe);
+                     failure = 1;
                   }
-                  if(strm.eof()) {
-                     if(debug) cout << "Reached EOF" << endl;
-                     break;
-                  }
-                  headersize = 3;             // just the sync bytes
+                  else {
+                     strm.read((char *)&buffer[12],datasize-12);
+                     if(strm.bad()) {
+                        FFStreamError fe("Read error");
+                        GPSTK_THROW(fe);
+                     }
+                     if(strm.eof()) {
+                        if(debug) cout << "Reached EOF" << endl;
+                        break;
+                     }
+                     headersize = 3;             // just the sync bytes
 
-                     // compute the checksum
-                     // Ref OEM2 manual
-                  unsigned char checksum = 0;
-                  checksum ^= buffer[0];
-                  checksum ^= buffer[1];
-                  checksum ^= buffer[2];
-                  for(i=4; i<datasize; i++) checksum ^= buffer[i];
+                        // compute the checksum
+                        // Ref OEM2 manual
+                     unsigned char checksum = 0;
+                     checksum ^= buffer[0];
+                     checksum ^= buffer[1];
+                     checksum ^= buffer[2];
+                     for(i=4; i<datasize; i++) checksum ^= buffer[i];
 
-                  if(checksum == buffer[3]) break;    // sucess
+                     if(checksum == buffer[3]) break;    // sucess
+                     failure = 2;
+
+                  }  // end if datasize fits into buffer
+               }  // end if record type != unknown
+
+                  // failure - either type unknown, buffer overflow or failed checksum
+               if(debug) {
+                  cout << "Failure - ";
+                  if(failure == 0) cout << "type unknown";
+                  else if(failure == 1) cout << "buffer overflow";
+                  else if(failure == 2) cout << "failed checksum";
+                  cout << " for recnum " << recnum
+                     << " with headersize " << headersize
+                     << " and message size " << datasize << endl;
                }
 
-                  // failure - either record type unknown or checksum failed
                strm.seekg(filepos);          // rewind to just after the sync bytes
                datasize = headersize = 0;
 
@@ -333,6 +363,7 @@ namespace gpstk
 
                   // save position in case of failure
                filepos = strm.tellg();
+               if(debug) cout << "File position " << filepos << endl;
 
                   // ---------------------------------------
                   // read header, 25 characters, into buffer
@@ -402,52 +433,72 @@ namespace gpstk
                else if(recnum ==  41) rectype = RAWEPHEM;
                else                   rectype = Unknown;
 
+               failure=0;
                if(rectype != Unknown) {
 
                      // ---------------------------------------
                      // read the data message, but don't overwrite the header
-                  strm.read((char *)&(buffer[28]),datasize);
-                  if(strm.bad()) {
-                     FFStreamError fe("Read error");
-                     GPSTK_THROW(fe);
+                     // first check against buffer overflow
+                  if(datasize-28 >= 1024) {
+                     //FFStreamError fe("Read error - buffer overflow");
+                     //GPSTK_THROW(fe);
+                     failure = 1;
                   }
-                  if(strm.eof()) {
-                     datasize = 0;         //mark a bad record
-                     if(debug) cout << "Reached EOF" << endl;
-                     break;
-                  }
-                  if(debug) cout << "read message" << endl;
-
-                     // ---------------------------------------
-                     // validate with 32-bit CRC
-                     // cf. Ref OEM4 manual pg 21.
-
-                     // get the checksum at the end
-                  unsigned long checksum = intelToHost(strm.getData<unsigned long>());
-
-                     // calculate the checksum of the header(even sync)+data
-                  unsigned long check=0,ultemp1,ultemp2;
-                  for(i=0; i<datasize+28; i++) {
-                     ultemp1 = (check >> 8) & 0x00FFFFFFL;
-                     j = ((int)check ^ buffer[i]) & 0xFF;
-                     ultemp2 = j;
-                     for(k=8; k>0; k--) {
-                        if(ultemp2 & 1)
-                           ultemp2 = (ultemp2 >> 1) ^ 0xEDB88320L;
-                        else
-                           ultemp2 >>= 1;
+                  else {
+                     strm.read((char *)&(buffer[28]),datasize);
+                     if(strm.bad()) {
+                        FFStreamError fe("Read error");
+                        GPSTK_THROW(fe);
                      }
-                     check = ultemp1 ^ ultemp2;
-                  }
+                     if(strm.eof()) {
+                        datasize = 0;         // mark a bad record
+                        if(debug) cout << "Reached EOF" << endl;
+                        break;
+                     }
+                     if(debug) cout << "Successfully read message" << endl;
 
-                  if(check == checksum) {
-                     if(debug) cout << "checksum ok" << endl;
-                     break;
-                  }
+                        // ---------------------------------------
+                        // validate with 32-bit CRC
+                        // cf. Ref OEM4 manual pg 21.
 
+                        // get the checksum at the end
+                     unsigned long checksum =
+                        intelToHost(strm.getData<unsigned long>());
+
+                        // calculate the checksum of the header(even sync)+data
+                     unsigned long check=0,ultemp1,ultemp2;
+                     for(i=0; i<datasize+28; i++) {
+                        ultemp1 = (check >> 8) & 0x00FFFFFFL;
+                        j = ((int)check ^ buffer[i]) & 0xFF;
+                        ultemp2 = j;
+                        for(k=8; k>0; k--) {
+                           if(ultemp2 & 1)
+                              ultemp2 = (ultemp2 >> 1) ^ 0xEDB88320L;
+                           else
+                              ultemp2 >>= 1;
+                        }
+                        check = ultemp1 ^ ultemp2;
+                     }
+
+                     if(check == checksum) {
+                        if(debug) cout << "checksum ok" << endl;
+                        break;
+                     }
+                     else failure = 2;
+
+                  }  // end if datasize-28 < buffersize
+               }  // end if rectype != Unknown
+
+                  // failure - either type unknown, buffer overflow or failed checksum
+               if(debug) {
+                  cout << "Failure - ";
+                  if(failure == 0) cout << "type unknown";
+                  else if(failure == 1) cout << "buffer overflow";
+                  else if(failure == 2) cout << "failed checksum";
+                  cout << " for recnum " << recnum
+                     << " with headersize " << headersize
+                     << " and message size " << datasize << endl;
                }
-
-                  // failure - either type unknown, or failed checksum
                strm.seekg(filepos);
                datasize = headersize = 0;               // marks an invalid object
 
@@ -471,6 +522,17 @@ namespace gpstk
          FFStreamError e("Read an invalid Novatel record");
          GPSTK_THROW(e);
       }
+
+   }
+   catch(Exception e) {
+      if(debug) cout << "reallyGetRecord caught GPSTK exception " << e << endl;
+   }
+   catch(exception e) {
+      if(debug) cout << "reallyGetRecord caught std exception " << e.what() << endl;
+   }
+   catch(...) {
+      if(debug) cout << "reallyGetRecord caught an unknown exception" << endl;
+   }
 
    }  // end NovatelData::reallyGetRecord
 
@@ -550,8 +612,9 @@ namespace gpstk
                k += 3;
             }
             if(!eeph.addSubframe(subframe,gpsWeek,prn,track)){
-               cerr << "Failed to convert RAWEPH subframe " << j+1 << ", prn " << prn
-                  << " at time " << gpsWeek << " " << gpsSOW << endl;
+               if(debug) cout << "Failed to convert RAWEPH subframe " << j+1
+                  << ", prn " << prn << " at time " << gpsWeek << " " << gpsSOW
+                  << endl;
             }
          }
       }  // end RAWEPH record
@@ -588,7 +651,7 @@ namespace gpstk
                k += 3;
             }
             if(!eeph.addSubframe(subframe,gpsWeek,short(prn),track)){
-               cerr << "Failed to convert REPB subframe " << j+1
+               if(debug) cout << "Failed to convert REPB subframe " << j+1
                      << ", prn " << prn << endl;
             }
          }

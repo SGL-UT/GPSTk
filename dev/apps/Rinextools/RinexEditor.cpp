@@ -1,16 +1,9 @@
-//------------------------------------------------------------------------------------
-// RinexEditor.cpp
-//
-// RinexEditor is part of the GPS Tool Kit (GPSTK) developed in the
-// Satellite Geophysics Group at Applied Research Laboratories,
-// The University of Texas at Austin (ARL:UT), and was written by Dr. Brian Tolman.
-//------------------------------------------------------------------------------------
 #pragma ident "$Id$"
-
 
 /**
  * @file RinexEditor.cpp
  * Edit Rinex observation files.
+ * class REditCmd encapsulates commands passed to the Rinex Editor
  */
 
 //------------------------------------------------------------------------------------

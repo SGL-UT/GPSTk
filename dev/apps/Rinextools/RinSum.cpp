@@ -1,14 +1,8 @@
-// RinSum.cpp  Read and summarize Rinex obs files
-//  RinSum is part of the GPS Tool Kit (GPSTK) developed in the
-//  Satellite Geophysics Group at Applied Research Laboratories,
-//  The University of Texas at Austin (ARL:UT), and was written by Dr. Brian Tolman.
-//------------------------------------------------------------------------------------
 #pragma ident "$Id$"
-
 
 /**
  * @file RinSum.cpp
- * Read and summarize Rinex observation files.
+ * Read and summarize Rinex observation files, optionally fill header in-place.
  */
 
 //------------------------------------------------------------------------------------
@@ -60,6 +54,8 @@ using namespace gpstk;
 using namespace std;
 
 //------------------------------------------------------------------------------------
+string version("2.1 6/2/06");
+
 // data input from command line
 vector<string> InputFiles;
 string InputDirectory;
@@ -71,6 +67,7 @@ bool ReplaceHeader=false;
 bool TimeSortTable=false;
 bool GPSTimeOutput=false;
 bool Debug=false;
+bool brief=false;
 
 //------------------------------------------------------------------------------------
 // data used for computation
@@ -114,12 +111,12 @@ bool isRinexNavFile(const string& file);
 int main(int argc, char **argv)
 {
 try {
-   int iret,i,j,k,n;
-   DayTime last,prev(DayTime::BEGINNING_OF_TIME),ftime(DayTime::BEGINNING_OF_TIME);
+   int iret,i,j,k,n,ifile;
+   DayTime last,prev,ftime;
 
       // Title and description
    string Title;
-   Title = "RINSUM, part of the GPS ToolKit, Ver 2.0 9/2/03, Run ";
+   Title = "RINSUM, part of the GPS ToolKit, Ver " + version + ", Run ";
    time_t timer;
    struct tm *tblock;
    timer = time(NULL);
@@ -145,6 +142,7 @@ try {
       else {
          pout->exceptions(ios::failbit);
          *pout << Title;
+         cout << "Writing summary to file " << OutputFile << endl;
       }
    }
    else pout = &cout;
@@ -152,10 +150,10 @@ try {
       // now open the input files, read the headers and data
    RinexObsHeader rheader;
    RinexObsData robs;
-   for(i=0; i<InputFiles.size(); i++) {
+   for(ifile=0; ifile<InputFiles.size(); ifile++) {
       string filename;
       if(!InputDirectory.empty()) filename = InputDirectory + "/";
-      filename += InputFiles[i];
+      filename += InputFiles[ifile];
       RinexObsStream InStream(filename.c_str());
       if(!InStream) {
          *pout << "File " << filename << " could not be opened.\n";
@@ -164,15 +162,17 @@ try {
       InStream.exceptions(ios::failbit);
       if(!isRinexObsFile(filename)) {
          *pout << "File " << filename << " is not a Rinex observation file\n";
-         if(isRinexNavFile(filename)) {
-            *pout << "File " << filename << " is a Rinex navigation file\n";
-         }
+         if(isRinexNavFile(filename)) *pout << "File "
+            << filename << " is a Rinex navigation file - try NavMerge\n";
          continue;
       }
 
-      // obs file
-      *pout << "+++++++++++++ RinSum summary of Rinex obs file "
+      prev = DayTime::BEGINNING_OF_TIME;
+      ftime = DayTime::BEGINNING_OF_TIME;
+
+      if(!brief) *pout << "+++++++++++++ RinSum summary of Rinex obs file "
          << filename << " +++++++++++++\n";
+      else *pout << "\nFile name: " << filename << endl;
       
          // input header
       try {
@@ -187,12 +187,20 @@ try {
             << e.getText(0) << endl;
       }
 
-      *pout << "Rinex header:\n";
-      rheader.dump(*pout);
+      if(!brief) {
+         *pout << "Rinex header:\n";
+         rheader.dump(*pout);
+      }
+      // move below else {
+      //   *pout << "Obs types(" << rheader.obsTypeList.size() << "): ";
+      //   for(i=0; i<rheader.obsTypeList.size(); i++)
+      //      *pout << " " << rheader.obsTypeList[i].type;
+      //   *pout << endl;
+      //}
 
       if(!rheader.isValid()) {
          *pout << "Abort: header is invalid\n";
-         *pout << "\n+++++++++++++ End of RinSum summary of "
+         if(!brief) *pout << "\n+++++++++++++ End of RinSum summary of "
             << filename << " +++++++++++++\n";
          continue;
       }
@@ -204,6 +212,8 @@ try {
       n = rheader.obsTypeList.size();
       vector<TableData> table;
       vector<int> totals(n);
+
+      if(pout == &cout) *pout << "Reading the observation data..." << endl;
 
          // input obs
       while(InStream >> robs)
@@ -250,19 +260,29 @@ try {
 
          //out << robs;
 
-         if(prev.year() != 1) {
+         if(prev != DayTime::BEGINNING_OF_TIME) {
             dt = last-prev;
-            for(i=0; i<ndtmax; i++) {
-               if(ndt[i] <= 0) { bestdt[i]=dt; ndt[i]=1; break; }
-               if(ABS(dt-bestdt[i]) < 0.0001) { ndt[i]++; break; }
-               if(i == ndtmax-1) {
-                  k = 0;
-                  int nleast=ndt[k];
-                  for(j=1; j<ndtmax; j++) if(ndt[j] <= nleast) {
-                     k=j; nleast=ndt[j];
+            if(dt > 0.0) {
+               for(i=0; i<ndtmax; i++) {
+                  if(ndt[i] <= 0) { bestdt[i]=dt; ndt[i]=1; break; }
+                  if(fabs(dt-bestdt[i]) < 0.0001) { ndt[i]++; break; }
+                  if(i == ndtmax-1) {
+                     k = 0;
+                     int nleast=ndt[k];
+                     for(j=1; j<ndtmax; j++) if(ndt[j] <= nleast) {
+                        k=j; nleast=ndt[j];
+                     }
+                     ndt[k]=1; bestdt[k]=dt;
                   }
-                  ndt[k]=1; bestdt[k]=dt;
                }
+            }
+            else {
+               cerr << " WARNING time tags out of order: "
+                  << " prev > curr : "
+                  << prev.printf("%F/%.0g = %04Y/%02m/%02d %02H:%02M:%02S")
+                  << " > "
+                  << last.printf("%F/%.0g = %04Y/%02m/%02d %02H:%02M:%02S")
+                  << endl;
             }
          }
          prev = last;
@@ -275,31 +295,37 @@ try {
 
          // warnings
       if((rheader.valid & RinexObsHeader::intervalValid)
-            && ABS(dt-rheader.interval) > 1.e-3)
-         *pout << "\n WARNING: Computed interval is " << setprecision(2)
+            && fabs(dt-rheader.interval) > 1.e-3)
+         *pout << " WARNING: Computed interval is " << setprecision(2)
             << dt << " sec, while input header has " << setprecision(2)
             << rheader.interval << " sec.\n";
-      if(ABS(ftime-rheader.firstObs) > 1.e-8)
-         *pout << "\n WARNING: Computed first time does not agree with header\n";
+      if(fabs(ftime-rheader.firstObs) > 1.e-8)
+         *pout << " WARNING: Computed first time does not agree with header\n";
       if((rheader.valid & RinexObsHeader::lastTimeValid)
-            && ABS(last-rheader.lastObs) > 1.e-8)
-         *pout << "\n WARNING: Computed last time does not agree with header\n";
+            && fabs(last-rheader.lastObs) > 1.e-8)
+         *pout << " WARNING: Computed last time does not agree with header\n";
 
          // summary info
-      *pout << "\n Computed interval is "
-         << fixed << setw(5) << setprecision(2) << dt << endl;
-      if(GPSTimeOutput) {
-         *pout << " Computed first epoch is " << ftime.printf("%4F %14.7g") << endl;
-         *pout << " Computed last epoch is " << last.printf("%4F %14.7g") << endl;
-      }
-      else {
-         *pout << " Computed first epoch is "
+      *pout << "Computed interval "
+         << fixed << setw(5) << setprecision(2) << dt << " seconds." << endl;
+      *pout << "Computed first epoch: " << ftime.printf("%4F %14.7g") << " = "
             << ftime.printf("%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
-         *pout << " Computed last epoch is "
+      *pout << "Computed last  epoch: " << last.printf("%4F %14.7g") << " = "
             << last.printf("%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
-      }
+
+      *pout << "Computed time span:";
+      double secs=last-ftime;
+      int iday = int(secs/86400.0);
+      if(iday > 0) *pout << " " << iday << "d";
+      DayTime delta;
+      delta.setSecOfDay(secs - iday*86400);
+      *pout << " " << delta.hour() << "h "
+         << delta.minute() << "m "
+         << delta.second() << "s = "
+         << secs << " seconds." << endl;
+
       i = 1+int(0.5+(last-ftime)/dt);
-      *pout << " There were " << nepochs << " epochs ("
+      if(!brief) *pout << "There were " << nepochs << " epochs ("
          << setprecision(2) << double(nepochs*100)/i
          << "% of " << i << " possible epochs in this timespan) and "
          << ncommentblocks << " inline header blocks.\n";
@@ -310,35 +336,50 @@ try {
 
          // output table
          // header
-      *pout << "\n          Summary of data available in this file: "
-         << "(Totals are based on times and interval)\n";
-      *pout << "PRN/OT: ";
-      for(k=0; k<n; k++)
-         *pout << setw(6) << RinexObsHeader::convertObsType(rheader.obsTypeList[k]);
-      *pout << " Total  Begin - End time\n";
-      table.begin()->prn.setfill('0');
-         // loop
       vector<TableData>::iterator tit;
-      for(tit=table.begin(); tit!=table.end(); ++tit) {
-         *pout << "PRN " << tit->prn << " ";
-         for(k=0; k<n; k++) *pout << setw(6) << tit->nobs[k];
-         // compute total based on times
-         *pout << setw(6) << 1+int(0.5+(tit->end-tit->begin)/dt);
-         if(GPSTimeOutput) {
-            *pout << "  " << tit->begin.printf("%4F %10.3g")
-               << " - " << tit->end.printf("%4F %10.3g") << endl;
+      if(table.size() > 0) table.begin()->prn.setfill('0');
+      if(!brief) {
+         *pout << "\n          Summary of data available in this file: "
+            << "(Totals are based on times and interval)\n";
+         *pout << "PRN  OT:";
+         for(k=0; k<n; k++)
+            *pout << setw(7) << rheader.obsTypeList[k].type;
+         *pout << "  Total             Begin time - End time\n";
+            // loop
+         for(tit=table.begin(); tit!=table.end(); ++tit) {
+            *pout << "PRN " << tit->prn << " ";
+            for(k=0; k<n; k++) *pout << setw(7) << tit->nobs[k];
+            // compute total based on times
+            *pout << setw(7) << 1+int(0.5+(tit->end-tit->begin)/dt);
+            if(GPSTimeOutput) {
+               *pout << "  " << tit->begin.printf("%4F %10.3g")
+                  << " - " << tit->end.printf("%4F %10.3g") << endl;
+            }
+            else {
+               *pout
+                  << "  " << tit->begin.printf("%04Y/%02m/%02d %02H:%02M:%04.1f")
+                  << " - " << tit->end.printf("%04Y/%02m/%02d %02H:%02M:%04.1f")
+                  << endl;
+            }
          }
-         else {
-            *pout << "  " << tit->begin.printf("%04Y/%02m/%02d %02H:%02M:%06.3f")
-               << " - " << tit->end.printf("%04Y/%02m/%02d %02H:%02M:%06.3f") << endl;
-         }
+         *pout << "TOTAL   "; for(k=0; k<n; k++) *pout << setw(7) << totals[k];
+         *pout << endl;
       }
-      *pout << "TOTAL   "; for(k=0; k<n; k++) *pout << setw(6) << totals[k];
-      *pout << endl;
+      else {
+         *pout << "PRNs(" << table.size() << "):";
+         for(tit=table.begin(); tit!=table.end(); ++tit)
+            *pout << " " << tit->prn;
+         *pout << endl;
+
+         *pout << "Obs types(" << rheader.obsTypeList.size() << "): ";
+         for(i=0; i<rheader.obsTypeList.size(); i++)
+            *pout << " " << rheader.obsTypeList[i].type;
+         *pout << endl;
+      }
 
          // look for 'empty' obs types
       for(k=0; k<n; k++) {
-         if(totals[k] <= 0) *pout << "\n WARNING: ObsType "
+         if(totals[k] <= 0) *pout << " WARNING: ObsType "
             << rheader.obsTypeList[k].type
             << " should be deleted from header.\n";
       }
@@ -395,7 +436,7 @@ try {
             << filename << endl;
          else {
             iret = rename(newname,filename.c_str());
-            if(iret) *pout << "RinSum: ERROR!! Could not rename new file " << newname
+            if(iret) *pout << "RinSum: Error: Could not rename new file " << newname
                << " using old name " << filename << endl;
             else *pout << "\nRinSum: Replaced original header with complete one,"
                << " using temporary file name "
@@ -403,24 +444,27 @@ try {
          }
       }
 
-      *pout << "\n+++++++++++++ End of RinSum summary of " << filename
+      if(!brief) *pout << "\n+++++++++++++ End of RinSum summary of " << filename
          << " +++++++++++++\n";
    }
 
-   if(pout != &cout) delete pout;
+   if(pout != &cout) {
+      ((ofstream *)pout)->close();
+      delete pout;
+   }
 
    return 0;
 }
 catch(gpstk::FFStreamError& e) {
-   cerr << e;
+   cerr << "RinSum caught an FFStreamError: " << e;
    return 1;
 }
 catch(gpstk::Exception& e) {
-   cerr << e;
+   cerr << "RinSum caught an Exception: " << e;
    return 1;
 }
 catch (...) {
-   cerr << "Unknown error.  Abort." << endl;
+   cerr << "RinSum caught an unknown exception.  Abort." << endl;
    return 1;
 }
    return 0;
@@ -433,9 +477,10 @@ int GetCommandLine(int argc, char **argv)
    int j;
 try {
       // required options
-   //RequiredOption dashi(CommandOption::hasArgument, CommandOption::stdType,
+
+      // optional
    CommandOption dashi(CommandOption::hasArgument, CommandOption::stdType,
-      'i',"input"," [-i|--input] <file>  Input file name(s)");
+      'i',"input"," [-i|--input] <file>  Input RINEX observation file name(s)");
    //dashi.setMaxCount(1);
 
       // optional options
@@ -444,17 +489,16 @@ try {
       'f',""," -f<file>             file containing more options");
 
    CommandOption dasho(CommandOption::hasArgument, CommandOption::stdType,
-      'o',"output"," [-o|--output] <file> Output file name");
+      'o',"output"," [-o|--output] <file> Output the summary to a file named <file>");
    dasho.setMaxCount(1);
    
    CommandOption dashp(CommandOption::hasArgument, CommandOption::stdType,
-      'p',"path"," [-p|--path] <path>   Path for input file(s)");
+      'p',"path"," [-p|--path] <path>   Find the input file(s) in this directory");
    dashp.setMaxCount(1);
 
    CommandOptionNoArg dashr('R', "Replace",
-      " [-R|--Replace]       Replace header with full one.");
-      //"\n   *** NB the preceding option DELETES the original file.");
-   //dashr.setMaxCount(1);
+      " [-R|--Replace]       Replace input file header with a full one, in place.");
+   dashr.setMaxCount(1);
 
    CommandOptionNoArg dashs('s', "sort",
       " [-s|--sort]          Sort the PRN/Obs table on begin time.");
@@ -463,35 +507,34 @@ try {
       " [-g|--gps]           Print times in the PRN/Obs table as GPS times.");
 
    // time
-   CommandOptionWithTimeArg dasheb(0,"EpochBeg","%Y,%m,%d,%H,%M,%f",
-      " --EpochBeg <arg>     Start time, arg is of the form YYYY,MM,DD,HH,Min,Sec");
-   CommandOptionWithTimeArg dashgb(0,"GPSBeg","%F,%g",
-      " --GPSBeg <arg>       Start time, arg is of the form GPSweek,GPSsow");
+   // times - don't use CommandOptionWithTimeArg
+   CommandOption dashbt(CommandOption::hasArgument, CommandOption::stdType,
+      0,"start", " --start <time>       Start time: <time> is 'GPSweek,sow' OR "
+      "'YYYY,MM,DD,HH,Min,Sec'");
+   dashbt.setMaxCount(1);
 
-   CommandOptionWithTimeArg dashee(0,"EpochEnd","%Y,%m,%d,%H,%M,%f",
-      " --EpochEnd <arg>     End time, arg is of the form YYYY,MM,DD,HH,Min,Sec");
-   CommandOptionWithTimeArg dashge(0,"GPSEnd","%F,%g",
-      " --GPSEnd <arg>       End time, arg is of the form GPSweek,GPSsow\n");
+   CommandOption dashet(CommandOption::hasArgument, CommandOption::stdType,
+      0,"stop", " --stop <time>        Stop time: <time> is 'GPSweek,sow' OR "
+      "'YYYY,MM,DD,HH,Min,Sec'");
+   dashet.setMaxCount(1);
 
-   // allow ONLY one start time (use startmutex(true) if one is required)
-   CommandOptionMutex startmutex(false);
-   startmutex.addOption(&dasheb);
-   startmutex.addOption(&dashgb);
-   CommandOptionMutex stopmutex(false);
-   stopmutex.addOption(&dashee);
-   stopmutex.addOption(&dashge);
+   CommandOptionNoArg dashb('b', "brief",
+      " [-b|--brief]         produce a brief (6-line) summary.");
 
    // help and debug
    CommandOptionNoArg dashh('h', "help",
-      " [-h|--help]          print syntax and quit.");
+      " [-h|--help]          print this help page and quit.");
    CommandOptionNoArg dashd('d', "debug",
       " [-d|--debug]         print debugging info.");
 
    // ... other options
-   CommandOptionRest Rest("filename(s)");
+   CommandOptionRest Rest("<filename(s)>");
 
    CommandOptionParser Par(
-      "    Prgm RINSUM reads a Rinex file and summarizes it content.\n");
+      "Prgm RINSUM reads a Rinex file and summarizes it content.\n"
+      " It can optionally fill the header of the input file.\n"
+      " [either <filenames> or --input required; put <filenames> after options].\n"
+      );
 
    // allow user to put all options in a file
    // could also scan for debug here
@@ -517,6 +560,11 @@ try {
             }
          }
       }
+      // old versions of args -- deprecated
+      else if(string(argv[j])==string("--EpochBeg")) { Args.push_back("--start"); }
+      else if(string(argv[j])==string("--GPSBeg")) { Args.push_back("--start"); }
+      else if(string(argv[j])==string("--EpochEnd")) { Args.push_back("--stop"); }
+      else if(string(argv[j])==string("--GPSEnd")) { Args.push_back("--stop"); }
       else Args.push_back(argv[j]);
    }
 
@@ -550,14 +598,16 @@ try {
    }
    
       // get values found on command line
-   vector<string> values;
+   string msg;
+   vector<string> values,field;
+
       // f never appears because we intercept it above
    //if(dashf.getCount()) { cout << "Option f "; dashf.dumpValue(cout); }
 
    if(dashi.getCount()) {
       InputFiles = dashi.getValue();
       if(help) {
-         cout << "Input files are:\n";
+         cout << "Input: input files (--input) are:\n";
          for(int i=0; i<InputFiles.size(); i++)
             cout << "   " << InputFiles[i] << endl;
       }
@@ -565,76 +615,113 @@ try {
    if(dasho.getCount()) {
       values = dasho.getValue();
       OutputFile = values[0];
-      if(help) cout << "Output file is " << OutputFile << endl;
+      if(help) cout << "Input: output file is " << OutputFile << endl;
    }
    if(dashp.getCount()) {
       values = dashp.getValue();
       InputDirectory = values[0];
-      if(help) {
-         cout << "Path options are:\n";
-         for(int i=0; i<values.size(); i++) cout << "   " << values[i] << endl;
-      }
+      if(help) cout << "Input: set path to " << InputDirectory << endl;
    }
 
    if(dashr.getCount()) {
       ReplaceHeader=true;
-      if(help) cout << "Option R appears " << dashr.getCount() << " times\n";
+      if(help) cout << "Input: replace header in output" << endl;
    }
    if(dashs.getCount()) {
       TimeSortTable=true;
-      if(help) cout << "Option s appears " << dashs.getCount() << " times\n";
+      if(help) cout << "Input: sort the PRN/Obs table" << endl;
    }
    if(dashg.getCount()) {
       GPSTimeOutput=true;
-      if(help) cout << "Print times in PRN/Obs table as GPS times\n";
+      if(help) cout << "Input: output in GPS time" << endl;
    }
-   if(dasheb.getCount()) {
-      values = dasheb.getValue();
-      BegTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
-      if(help) {
-         cout << "EpochBeg options are:\n";
-         for(int i=0; i<values.size(); i++) cout << values[i] << endl;
-         cout << "BegTime is " << BegTime << endl;
+   // times
+   // TD put try  {} around setToString and catch invalid formats...
+   if(dashbt.getCount()) {
+      values = dashbt.getValue();
+      msg = values[0];
+      field.clear();
+      while(msg.size() > 0)
+         field.push_back(StringUtils::stripFirstWord(msg,','));
+      if(field.size() == 2)
+         BegTime.setToString(field[0]+","+field[1], "%F,%g");
+      else if(field.size() == 6)
+         BegTime.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
+            +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
+      else {
+         cerr << "Error: invalid --start input: " << values[0] << endl;
       }
+      if(help) cout << " Input: begin time " << values[0] << " = "
+         << BegTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
-   if(dashee.getCount()) {
-      values = dashee.getValue();
-      EndTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
-      if(help) {
-         cout << "EpochEnd options are:\n";
-         for(int i=0; i<values.size(); i++) cout << values[i] << endl;
-         cout << "EndTime is " << EndTime << endl;
+   if(dashet.getCount()) {
+      values = dashet.getValue();
+      msg = values[0];
+      field.clear();
+      while(msg.size() > 0)
+         field.push_back(StringUtils::stripFirstWord(msg,','));
+      if(field.size() == 2)
+         EndTime.setToString(field[0]+","+field[1], "%F,%g");
+      else if(field.size() == 6)
+         EndTime.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
+            +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
+      else {
+         cerr << "Error: invalid --stop input: " << values[0] << endl;
       }
+      if(help) cout << " Input: end time " << values[0] << " = "
+         << EndTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
-   if(dashgb.getCount()) {
-      values = dashgb.getValue();
-      BegTime.setToString(values[0], "%F,%g");
-      if(help) {
-         cout << "GPSBeg options are:\n";
-         for(int i=0; i<values.size(); i++) cout << values[i] << endl;
-         cout << "BegTime is " << BegTime << endl;
-      }
+   //if(dasheb.getCount()) {
+   //   values = dasheb.getValue();
+   //   BegTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
+   //   if(help) {
+   //      cout << "EpochBeg options are:\n";
+   //      for(int i=0; i<values.size(); i++) cout << values[i] << endl;
+   //      cout << "BegTime is " << BegTime << endl;
+   //   }
+   //}
+   //if(dashee.getCount()) {
+   //   values = dashee.getValue();
+   //   EndTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
+   //   if(help) {
+   //      cout << "EpochEnd options are:\n";
+   //      for(int i=0; i<values.size(); i++) cout << values[i] << endl;
+   //      cout << "EndTime is " << EndTime << endl;
+   //   }
+   //}
+   //if(dashgb.getCount()) {
+   //   values = dashgb.getValue();
+   //   BegTime.setToString(values[0], "%F,%g");
+   //   if(help) {
+   //      cout << "GPSBeg options are:\n";
+   //      for(int i=0; i<values.size(); i++) cout << values[i] << endl;
+   //      cout << "BegTime is " << BegTime << endl;
+   //   }
+   //}
+   //if(dashge.getCount()) {
+   //   values = dashge.getValue();
+   //   EndTime.setToString(values[0], "%F,%g");
+   //   if(help) {
+   //      cout << "GPSEnd options are:\n";
+   //      for(int i=0; i<values.size(); i++) cout << values[i] << endl;
+   //      cout << "EndTime is " << EndTime << endl;
+   //   }
+   //}
+
+   if(dashb.getCount()) {
+      brief = true;
+      if(help) cout << "Input: found the brief flag" << endl;
    }
-   if(dashge.getCount()) {
-      values = dashge.getValue();
-      EndTime.setToString(values[0], "%F,%g");
-      if(help) {
-         cout << "GPSEnd options are:\n";
-         for(int i=0; i<values.size(); i++) cout << values[i] << endl;
-         cout << "EndTime is " << EndTime << endl;
-      }
-   }
-   if(dashh.getCount() && help)
-      cout << "Option h appears " << dashh.getCount() << " times\n";
+
    if(dashd.getCount()) {
       Debug = true;
-      if(help) cout << "Option d appears " << dashd.getCount() << " times\n";
+      if(help) cout << "Input: found the debug flag" << endl;
    }
 
    if(Rest.getCount())
    {
       values = Rest.getValue();
-      if(help) cout << "Input files (w/o -i) are:\n";
+      if(help) cout << "Input: input files are:\n";
       for (int i=0; i<values.size(); i++) {
          if(help) cout << "  " << values[i] << endl;
          InputFiles.push_back(values[i]);
@@ -650,11 +737,11 @@ try {
    return 0;
 }
 catch(gpstk::Exception& e) {
-      cerr << "RinSum:GetCommandLine caught an exception\n" << e;
-      GPSTK_RETHROW(e);
+   GPSTK_RETHROW(e);
 }
 catch (...) {
-      cerr << "RinSum:GetCommandLine caught an unknown exception\n";
+   Exception e("unknown exception");
+   GPSTK_RETHROW(e);
 }
    return -1;
 }
