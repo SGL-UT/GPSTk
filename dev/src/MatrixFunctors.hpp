@@ -342,7 +342,9 @@ namespace gpstk
          for(i=0; i<S.size(); i++) W(i,i)=(S(i)==T(0)?T(0):T(1)/S(i));
          Vector<T> Y;
          Y = V*W*transpose(U)*b;
-         //b = Y; this fails because operator= is not defined for the base class (op= not inherited)
+         //b = Y;
+         // this fails because operator= is not defined for the base class
+         // (op= not inherited); use assignFrom instead
          b.assignFrom(Y);
 
       }  // end SVD::backSub
@@ -351,7 +353,8 @@ namespace gpstk
       void sort(bool descending)
          throw(MatrixException)
       {
-         size_t i,j;
+         size_t i;
+         int j;         // j must be allowed to go negative
          for(i=1; i<S.size(); i++) {
             T sv=S(i),svj;
             j = i - 1;
