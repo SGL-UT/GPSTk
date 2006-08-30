@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 #ifndef GPSTK_SATID_HPP
 #define GPSTK_SATID_HPP
 
@@ -41,13 +39,9 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 
 /**
  * @file SatID.hpp
@@ -56,36 +50,68 @@
 
 namespace gpstk
 {
+      // forward declarations
+   class SatID;
+   std::istream& operator>>(std::istream& s, SatID& p);
+
       /// Satellite identifier = satellite number (PRN, etc.) and system
    class SatID
    {
    public:
          /// Supported satellite systems
-      enum System
+      enum SatelliteSystem
       {
          systemGPS = 1,
+         systemGalileo,
          systemGlonass,
-         systemTransit,
          systemGeosync,
-         systemMixed
+         systemLEO,
+         systemTransit
       };
 
+         /// empty constructor, creates an invalid object
       SatID() { id=-1; system=systemGPS; }
-      SatID(int p, System s) { id=p; system=s; }
+
+         /// explicit constructor, defaults to GPS
+      SatID(int p, SatelliteSystem s=systemGPS) { id=p; system=s; }
+
+         /// constructor from string
+      SatID(std::string s) { fromString(s); }
+
+         /// set the fill character used in output
       void setfill(char c) { fillchar=c; }
+
+         /// get the fill character used in output
       char getfill() { return fillchar; }
+
          // operator=, copy constructor and destructor built by compiler
+
          /// return the single-character system descriptor
-      char systemCode() const
+         /// @note this list is the combination of RINEX and SP3c file types (other
+         /// than 'Mixed'); keep it consistent with RinexObsHeader.hpp and SP3*.hpp
+      char systemChar() const
       {
          switch(system) {
             case systemGPS: return 'G';
-            case systemMixed: return 'M';
+            case systemGalileo: return 'E';
             case systemGlonass: return 'R';
-            case systemTransit: return 'T';
             case systemGeosync: return 'S';
+            case systemLEO: return 'L';
+            case systemTransit: return 'T';
          }
-         return 0;
+         return ' ';
+      };
+         /// return a string with system description (no whitespace)
+      std::string systemString() const
+      {
+         switch(system) {
+            case systemGPS: return "GPS";
+            case systemGalileo: return "Galileo";
+            case systemGlonass: return "GLONASS";
+            case systemGeosync: return "Geostationary";
+            case systemLEO: return "LEO";
+            case systemTransit: return "Transit";
+         }
       };
 
          /// operator == for SatID
@@ -94,9 +120,9 @@ namespace gpstk
 
          /// operator != for SatID
       bool operator!=(const SatID& right) const
-      { return ((system != right.system) || (id != right.id)); }
+      { return !(operator==(right)); }
 
-         /// order by system, then number
+         /// operator < for SatID : order by system, then number
       bool operator<(const SatID& right) const
       {
          if (system==right.system)
@@ -104,45 +130,73 @@ namespace gpstk
          return (system<right.system);
       }
 
-         // the following allow you to use, respectively,
-         // std::string gpstk::StringUtils::asString<SatID>(const SatID p)
-         // SatID gpstk::StringUtils::asData<SatID>(const std::string& s)
+         /// operator > for SatID
+      bool operator>(const SatID& right) const
+      {  return (!operator<(right) && !operator==(right)); }
+
+         /// operator <= for SatID
+      bool operator<=(const SatID& right) const
+      { return (operator<(right) || operator==(right)); }
+
+         /// operator >= for SatID
+      bool operator>=(const SatID& right) const
+      { return !(operator<(right)); }
+
+         /// convert to string
+      std::string toString() const
+      {
+         std::ostringstream oss;
+         char savechar=oss.fill(fillchar);
+         oss << systemChar()
+             << std::setw(2) << id
+             << std::setfill(savechar);
+          return oss.str();
+      }
+
+         /// read from string
+         /// @note GPS is default system (no or unknown system char)
+      void fromString(const std::string s)
+      {
+         std::istringstream iss(s);
+         iss >> *this;
+      }
+
+         /// answer the question 'is this SatID valid?'
+         /// @note assumes all id's are positive and less than 100;
+         ///     plus GPS id's are less than 33.
+         /// @note this is not used internally in the gpstk
+      bool isValid() const
+      {
+         switch(system) {
+            case systemGPS: return (id > 0 && id < 33);
+            //case systemGalileo:
+            //case systemGlonass:
+            //case systemGeosync:
+            //case systemLEO:
+            //case systemTransit:
+            default: return (id > 0 && id < 100);
+         }
+      }
 
       int id;                ///< satellite identifier.
-      System system;         ///< system this satellite is part of.
+      SatelliteSystem system;///< system for this satellite
       static char fillchar;  ///< fill character used during stream output
+
    }; // class SatID
 
       /// stream output for SatID
    inline std::ostream& operator<<(std::ostream& s, const SatID& p)
    {
-      switch(p.system)
-      {
-         case SatID::systemGPS:
-            s << "G";
-            break;
-         case SatID::systemMixed:
-            s << "G";
-            break; // this is an error ... assume GPS
-         case SatID::systemGlonass:
-            s << "R";
-            break;
-         case SatID::systemTransit:
-            s << "T";
-            break;
-         case SatID::systemGeosync:
-            s << "S";
-            break;
-      }
-      s << std::setw(2) << std::setfill(p.fillchar) << p.id << std::setfill(' ');
+      s << p.toString();
       return s;
    }
 
       /// stream input for SatID
+      /// @note GPS is default system (no or unknown system char)
    inline std::istream& operator>>(std::istream& s, SatID& p)
    {
       char c;
-      s.unsetf(std::ios_base::skipws);
+      p = SatID();
       s >> c;
       switch(c)
       {
@@ -161,13 +215,19 @@ namespace gpstk
          case 'S': case 's':
             p.system = SatID::systemGeosync;
             break;
-         case 'G': case 'g': case ' ':
-         default: // error
+         case 'E': case 'e':
+            p.system = SatID::systemGalileo;
+            break;
+         case 'L': case 'l':
+            p.system = SatID::systemLEO;
+            break;
+         case 'G': case 'g':
+         default: // or should this throw an exception? would disallow string c'tor
             p.system = SatID::systemGPS;
             break;
       }
-      s.setf(std::ios_base::skipws);
       s >> p.id;
+      if(p.id <= 0) p.id = -1;
       return s;
    }
 
