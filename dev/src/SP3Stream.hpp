@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file SP3Stream.hpp
  * File stream for SP3 format files
@@ -46,11 +44,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #include "DayTime.hpp"
 #include "FFTextStream.hpp"
 
@@ -68,7 +61,7 @@ namespace gpstk
    class SP3Stream : public FFTextStream
    {
    public:
-      SP3Stream() {}
+      SP3Stream() : buffer(std::string()) {}
       
          /** Constructor
           * Opens file \a fn using ios::openmode \a mode.
@@ -80,6 +73,7 @@ namespace gpstk
       virtual ~SP3Stream() {}
       
       DayTime currentEpoch;   ///< Time from last epoch record read
+      std::string buffer;     ///< Last line read, not yet processed
    };
 
    //@}

@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file SP3Data.hpp
  * Encapsulate SP3 file data, including I/O
@@ -46,12 +44,7 @@
 //
 //=============================================================================
 
-
-
-
-
-
-#include "Triple.hpp"
+#include "SatID.hpp"
 #include "SP3Base.hpp"
 
 namespace gpstk
@@ -69,7 +62,9 @@ namespace gpstk
    {
    public:
          /// Constructor.
-      SP3Data() : flag('\000'), time(gpstk::DayTime::BEGINNING_OF_TIME) 
+      SP3Data() : version('a'),flag('\000'), time(gpstk::DayTime::BEGINNING_OF_TIME),
+                  clockEventFlag(false),clockPredFlag(false),orbitManeuverFlag(false),
+                  orbitPredFlag(false),correlationFlag(false)
          {}
      
          /// Destructor
@@ -84,14 +79,29 @@ namespace gpstk
 
          ///@name data members
          //@{
-      char flag;  ///< Data type indicator.  P for position, V for velocity.
-      short id;   ///< Satellite ID (usually prn)
-      Triple x;   ///< The three-vector for position or velocity. @see flag
-      double  clk; ///< The time bias (clock bias) for P, or clock drift for V. @see x
+      char version; ///< Version of SP3, 'a' or 'c' ONLY
+      char flag;    ///< Data type indicator. P for position or V for velocity ONLY
+      SatID sat;    ///< Satellite ID
       DayTime time; ///< Time of epoch for this record
+      double x[3];  ///< The three-vector for position | velocity (m | dm/s).
+      double clk;   ///< The clock bias or drift for P|V (microsec|1).
+      int sig[4];   ///< (c) Four-vector of integer exponents for estimated sigma of
+                    ///< position,clock | velocity,clock rate; sigma = base**n
+                    ///< (mm,psec | 10^-4 mm/sec,psec/sec); base in header
+      bool clockEventFlag; ///< clock event flag, 'E' in file, version c only
+      bool clockPredFlag;  ///< clock prediction flag, 'P' in file, version c only
+      bool orbitManeuverFlag; ///< orbit maneuver flag, 'M' in file, version c only
+      bool orbitPredFlag;  ///< orbit prediction flag, 'P' in file, version c only
+      /// data for optional P|V Correlation record, version c only
+      bool correlationFlag; ///< If true, on input: a correlation record was read;
+                            ///< on output: stream should output correlation.
+      unsigned sdev[4];  ///< std dev of 3 positions (XYZ,mm) and clock (psec)
+                         ///< or velocities(10^-4 mm/sec) and clock rate (10^-4 ps/s)
+      int correlation[6];///< elements of correlation matrix: xy,xz,xc,yz,yc,zc
          //@}
       
    protected:
+
          /// Writes the formatted record to the FFStream \a s.
          /// @warning This function is currently unimplemented
       virtual void reallyPutRecord(FFStream& s) const 

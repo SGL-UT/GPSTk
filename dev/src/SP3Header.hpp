@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file SP3Header.hpp
  * Encapsulate header of SP3 file data, including I/O
@@ -46,16 +44,12 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #include <string>
 #include <map>
 #include <vector>
 #include "DayTime.hpp"
 #include "SP3Base.hpp"
+#include "SatID.hpp"
 
 namespace gpstk
 {
@@ -75,11 +69,65 @@ namespace gpstk
    class SP3Header : public SP3Base
    {
    public:
+         /// Supported file types == satellite system(s) in file (version 'c');
+         /// NB this is a subset of enum SatelliteSystem in gpstk::SatID, plus 'Mixed'
+      enum SP3System
+      {
+         systemGPS=1,
+         systemGlonass,
+         systemGalileo,
+         systemLEO,
+         systemMixed   // used when more than one sat. system is found in the file
+      };
+
+         /// Supported time systems (version 'c')
+      enum TimeSystem
+      {
+         timeGPS=1,
+         timeUTC
+      };
+
          /// constructor
-      SP3Header() : version(0), numberOfEpochs(0) {}
+      SP3Header() : version('a'), numberOfEpochs(0),
+                    system(systemGPS), timeSystem(timeGPS),
+                    basePV(0.0), baseClk(0.0)
+                    {}
 
          /// destructor
       virtual ~SP3Header() {}
+
+         /// return the single character file system descriptor
+      char systemChar() const
+      {
+         switch(system) {
+            case systemGPS: return 'G';
+            case systemGlonass: return 'R';
+            case systemGalileo: return 'E';
+            case systemLEO: return 'L';
+            case systemMixed: return 'M';
+         }
+      }
+
+         /// return a string with file type description (no whitespace)
+      std::string systemString() const
+      {
+         switch(system) {
+            case systemGPS: return "GPS";
+            case systemGalileo: return "Galileo";
+            case systemGlonass: return "GLONASS";
+            case systemLEO: return "LEO";
+            case systemMixed: return "Mixed";
+         }
+      };
+
+         /// return a string with time system name
+      std::string timeSystemString() const
+      {
+         switch(timeSystem) {
+            case timeGPS: return "GPS";
+            case timeUTC: return "UTC";
+         }
+      };
 
          // The next four lines is our common interface
          /// SP3Header is a "header" so this function always returns true.
@@ -88,25 +136,33 @@ namespace gpstk
          /// Debug output operator.
       virtual void dump(std::ostream& s) const;
 
-      char   version;           ///< Version of the SP3 File.
-      char   pvFlag;            ///< File contains positions (P) or positions and velocities (V)
-      DayTime time;             ///< Time in header (year, month, dom, hour, min, sec, week, sow)
+      char version;             ///< Version of the SP3 File, 'a' or 'c'
+      char pvFlag;              ///< P or V: File contains positions only (P)
+                                ///<         or positions and velocities (V)
+      DayTime time;             ///< Time of first Epoch in file
       double epochInterval;     ///< Duration of Epoch in seconds
-      int    numberOfEpochs;    ///< Number of Epochs in this file
+      int numberOfEpochs;       ///< Number of Epochs in this file
       std::string dataUsed;     ///< Types of data input into the positions
       std::string coordSystem;  ///< Coordinate System of the data
       std::string orbitType;    ///< Type of Orbit Estimate
       std::string agency;       ///< Agency generating the Orbit
+      // the following four are specific to version 'c'
+      SP3System system;         ///< File type (system of satellites in file)
+      TimeSystem timeSystem;    ///< Time system used
+      double basePV;            ///< Base used in Pos or Vel (mm or 10**-4mm/sec)
+      double baseClk;           ///< Base used in Clk or rate (psec or 10**-4psec/sec)
 
-      std::map<short, short> svList;     ///< Which SVs are present in the data and their accuracy flags
+      std::map<SatID, short> satList;  ///< Map<SatID,accuracy flag> (all SVs in file)
       std::vector<std::string> comments; ///< vector of 4 comment lines
+
+      friend class SP3Data;
 
    protected:
          /// Writes the record formatted to the FFStream \a s.
-         /// @warning This function is currently unimplemented.
+         /// @throws StringException when a StringUtils function fails
       virtual void reallyPutRecord(FFStream& s) const 
          throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+               StringUtils::StringException);
 
          /** 
           * This function retrieves the SP3 header from the given FFStream.
@@ -119,7 +175,16 @@ namespace gpstk
           */
       virtual void reallyGetRecord(FFStream& s) 
          throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+               StringUtils::StringException);
+
+         /// convert string found in the SP3 file to SatID
+      static SatID SatIDfromString(const std::string& str)
+         throw(FFStreamError);
+
+         /// convert SatID to string for output to SP3 file
+      static std::string SatIDtoString(const SatID& sat)
+         throw(FFStreamError);
+
    };
 
    //@}

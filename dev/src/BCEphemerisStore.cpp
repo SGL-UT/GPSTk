@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -46,13 +44,13 @@ namespace gpstk
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    const EngEphemeris&
-   BCEphemerisStore::findEphemeris(short prn, const DayTime& t) 
+   BCEphemerisStore::findEphemeris(SatID sat, const DayTime& t) 
       const throw(EphemerisStore::NoEphemerisFound)
    {
       try 
       {
          const EngEphemeris& eph
-            = (method==0 ? findUserEphemeris(prn, t) : findNearEphemeris(prn,t) );
+            = (method==0 ? findUserEphemeris(sat, t) : findNearEphemeris(sat,t) );
          return eph;
       }
       catch(NoEphemerisFound& nef)
@@ -67,20 +65,21 @@ namespace gpstk
    }
 
 
-   Xvt BCEphemerisStore::getPrnXvt(short prn, const DayTime& t)
+   Xvt BCEphemerisStore::getSatXvt(SatID sat, const DayTime& t)
       const throw(EphemerisStore::NoEphemerisFound)
    {
       short ref;
-      return getPrnXvt(prn, t, ref);
-   } // end of BCEphemerisStore::getPrnXvt()
+      return getSatXvt(sat, t, ref);
+   } // end of BCEphemerisStore::getSatXvt()
 
 
-   Xvt BCEphemerisStore::getPrnXvt(short prn, const DayTime& t, short& ref)
+   Xvt BCEphemerisStore::getSatXvt(SatID sat, const DayTime& t, short& ref)
       const throw(EphemerisStore::NoEphemerisFound)
    {
       try
       {
-         const EngEphemeris& eph = findEphemeris(prn,t);
+         // test for GPS satellite system in sat?
+         const EngEphemeris& eph = findEphemeris(sat,t);
          ref = eph.getIODC();
          Xvt sv = eph.svXvt(t);
          return sv;
@@ -94,17 +93,18 @@ namespace gpstk
          NoEphemerisFound nef(ir);
          GPSTK_THROW(nef);
       }
-   } // end of BCEphemerisStore::getPrnXvt()
+   } // end of BCEphemerisStore::getSatXvt()
 
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   short BCEphemerisStore::getPrnHealth(short prn, const gpstk::DayTime& t)
+   short BCEphemerisStore::getSatHealth(SatID sat, const DayTime& t)
       const throw(EphemerisStore::NoEphemerisFound)
    {
       try
       {
-         const EngEphemeris& eph = findEphemeris(prn, t);
+         // test for GPS satellite system in sat?
+         const EngEphemeris& eph = findEphemeris(sat, t);
          short health = eph.getHealth();
          return health;
       }
@@ -123,14 +123,14 @@ namespace gpstk
    //--------------------------------------------------------------------------
    void BCEphemerisStore::dump(short detail, std::ostream& s) const
    {
-      UBEMap::const_iterator prn_i;
+      UBEMap::const_iterator it;
 
       s << "Dump of BCEphemerisStore:\n";
       if (detail==0)
       {
          unsigned bce_count=0;
-         for (prn_i = ube.begin(); prn_i != ube.end(); prn_i++)
-            bce_count += prn_i->second.size();
+         for (it = ube.begin(); it != ube.end(); it++)
+            bce_count += it->second.size();
 
          s << " Span is " << initialTime
               << " to " << finalTime
@@ -139,16 +139,16 @@ namespace gpstk
       }
       else
       {
-         for (prn_i = ube.begin(); prn_i != ube.end(); prn_i++)
+         for (it = ube.begin(); it != ube.end(); it++)
          {
-            const EngEphMap& em = prn_i->second;
-            s << "  BCE map for prn " << prn_i->first
+            const EngEphMap& em = it->second;
+            s << "  BCE map for satellite " << it->first
                  << " has " << em.size() << " entries." << std::endl;
       
             EngEphMap::const_iterator ei;
             for (ei=em.begin(); ei != em.end(); ei++)
                if (detail==1)
-                  s << "PRN " << setw(2) << prn_i->first
+                  s << "PRN " << setw(2) << it->first
                      << " TOE " << ei->second.getEpochTime()
                      << " TOC " << fixed << setw(10) << setprecision(3) << ei->second.getToc()
                      << " HOW " << setw(10) << ei->second.getHOWTime(2)
@@ -168,7 +168,7 @@ namespace gpstk
    // It should keep the one with the latest transmit time
    //--------------------------------------------------------------------------
    bool BCEphemerisStore::addEphemeris(const EngEphemeris& eph)
-      throw(gpstk::InvalidRequest)
+      throw(InvalidRequest)
    {
       bool rc = false;
       DayTime t(0.L);
@@ -217,7 +217,7 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-  unsigned BCEphemerisStore::wiper(const DayTime& t) throw(gpstk::InvalidRequest)
+  unsigned BCEphemerisStore::wiper(const DayTime& t) throw(InvalidRequest)
   {
      unsigned counter = 0;
      DayTime test;
@@ -233,7 +233,7 @@ namespace gpstk
            {
               test = foo.getEphemerisEpoch();
            }
-           catch (gpstk::InvalidRequest& exc)
+           catch (InvalidRequest& exc)
            {
               exc.addText("In wiping ephemerides for PRN " +
                           asString(i->first));
@@ -305,14 +305,14 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
    const EngEphemeris&
-   BCEphemerisStore::findUserEphemeris(short prn, const DayTime& t) 
+   BCEphemerisStore::findUserEphemeris(SatID sat, const DayTime& t) 
       const throw(EphemerisStore::NoEphemerisFound)
    {
       DayTime test;
-      UBEMap::const_iterator prn_i = ube.find(prn);
+      UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
       {
-          NoEphemerisFound nef("No ephemeris for prn " + asString(prn));
+          NoEphemerisFound nef("No ephemeris for satellite " + sat.toString());
           GPSTK_THROW(nef);
       }
 
@@ -363,8 +363,8 @@ namespace gpstk
 
       if (it == em.end())
       {
-         string mess = "No eph found for prn "
-            + asString(prn) + " at " + t.printf("%03j %02H:%02M:%02S");
+         string mess = "No eph found for satellite "
+            + sat.toString() + " at " + t.printf("%03j %02H:%02M:%02S");
          NoEphemerisFound e(mess);
          GPSTK_THROW(e);
       }
@@ -375,14 +375,14 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
    const EngEphemeris&
-   BCEphemerisStore::findNearEphemeris(short prn, const DayTime& t) 
+   BCEphemerisStore::findNearEphemeris(SatID sat, const DayTime& t) 
       const throw(EphemerisStore::NoEphemerisFound)
    {
       DayTime test;
-      UBEMap::const_iterator prn_i = ube.find(prn);
+      UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
       {
-          NoEphemerisFound nef("No ephemeris for prn " + asString(prn));
+          NoEphemerisFound nef("No ephemeris for satellite " + sat.toString());
           GPSTK_THROW(nef);
       }
 
@@ -430,8 +430,8 @@ namespace gpstk
 
       if (it == em.end())
       {
-         string mess = "No eph found for prn "
-            + asString(prn) + " at " + t.printf("%03j %02H:%02M:%02S");
+         string mess = "No eph found for satellite "
+            + sat.toString() + " at " + t.printf("%03j %02H:%02M:%02S");
          NoEphemerisFound e(mess);
          GPSTK_THROW(e);
       }

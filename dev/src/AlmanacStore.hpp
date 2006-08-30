@@ -1,10 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-#ifndef GPSTK_ALMANACSTORE_HPP
-#define GPSTK_ALMANACSTORE_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -26,7 +21,6 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
-
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
@@ -41,22 +35,21 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file AlmanacStore.hpp
  * Store almanac information, and access by satellite and time
  */
  
+#ifndef GPSTK_ALMANACSTORE_HPP
+#define GPSTK_ALMANACSTORE_HPP
+
 #include <iostream>
 #include <string>
 #include <map>
 
 #include "Exception.hpp"
 #include "DayTime.hpp"
+#include "SatID.hpp"
 #include "AlmOrbit.hpp"
 #include "EngAlmanac.hpp"
 
@@ -74,22 +67,45 @@ namespace gpstk
          /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(NoAlmanacFound, gpstk::Exception);
 
-      Xvt getPrnXvt(short prn, const gpstk::DayTime& t)
+         /// return the PVT of the satellite in ECEF coordinates
+         /// @param sat the satellite's SatID
+         /// @param t the time of interest
+      Xvt getSatXvt(SatID sat, const gpstk::DayTime& t)
          const throw(NoAlmanacFound);
 
-      short getPrnHealth(short prn, const gpstk::DayTime& t)
+         /// \deprecated use the SatID version
+      Xvt getPrnXvt(short prn, const gpstk::DayTime& t)
+         const throw(NoAlmanacFound)
+         { SatID sat(prn); return getSatXvt(sat,t); }
+
+         /// return the health of the satellite at a particular time
+         /// @param sat the satellite's SatID
+         /// @param t the time of interest
+      short getSatHealth(SatID sat, const gpstk::DayTime& t)
          const throw(NoAlmanacFound);
+
+         /// \deprecated use the SatID version
+      short getPrnHealth(short prn, const gpstk::DayTime& t)
+         const throw(NoAlmanacFound)
+         { SatID sat(prn); return getSatHealth(sat,t); }
 
       bool addAlmanac(const AlmOrbit& alm) throw();
       bool addAlmanac(const EngAlmanac& alm) throw();
 
-         /// gets the closest almanac for the given time and prn,
+         /// gets the closest almanac for the given time and satellite id,
          /// closest being in the past or future.
-      AlmOrbit findAlmanac(short prn, const gpstk::DayTime& t) 
+         /// @param sat the satellite's SatID
+         /// @param t the time of interest
+      AlmOrbit findAlmanac(SatID sat, const DayTime& t) 
          const throw(NoAlmanacFound);
 
-         /// returns all almanacs closest to t for all prns
-      AlmOrbits findAlmanacs(const gpstk::DayTime& t) const;
+         /// \deprecated use the SatID version
+      AlmOrbit findAlmanac(short prn, const DayTime& t) 
+         const throw(NoAlmanacFound)
+         { SatID sat(prn); return findAlmanac(sat,t); }
+
+         /// returns all almanacs closest to t for all satellites
+      AlmOrbits findAlmanacs(const DayTime& t) const;
 
          /// returns earliest Toa found in the set
       gpstk::DayTime getInitialTime() const;
@@ -104,9 +120,9 @@ namespace gpstk
       typedef std::map<gpstk::DayTime, AlmOrbit> EngAlmMap;
 
          /** This is intended to hold all unique EngEphemerises for each SV
-          * The key is the prn of the SV.
+          * The key is the SatID of the SV.
           */
-      typedef std::map<short, EngAlmMap> UBAMap;
+      typedef std::map<SatID, EngAlmMap> UBAMap;
 
          /// The map where all EngAlmanacs are stored.
       UBAMap uba;

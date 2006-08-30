@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -37,11 +35,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-
-
-
-
 
 /**
  * @file TabularEphemerisStore.cpp
@@ -118,12 +111,13 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt TabularEphemerisStore::getPrnXvt(short prn, const gpstk::DayTime& t)
+   Xvt TabularEphemerisStore::getSatXvt(SatID sat, const gpstk::DayTime& t)
       const throw(EphemerisStore::NoEphemerisFound)
    {
-      EphMap::const_iterator svmap = pe.find(prn);
+      EphMap::const_iterator svmap = pe.find(sat);
       if (svmap==pe.end()) {
-         NoEphemerisFound e("Ephemeris for PRN  " + asString(prn) + " not found.");
+         NoEphemerisFound e("Ephemeris for satellite  " + sat.toString()
+            + " not found.");
          GPSTK_THROW(e);
       }
    
@@ -156,18 +150,21 @@ namespace gpstk
       i = sem.lower_bound(t);
       SvEphMap::const_iterator j=i;
       if(i == sem.begin() || --i == sem.begin()) {
-         NoEphemerisFound e("Inadequate data before requested time, PRN " + asString(prn));
+         NoEphemerisFound e("Inadequate data before requested time, satellite "
+            + sat.toString());
          GPSTK_THROW(e);
       }
       for(int k=0; k<half-1; k++) {
          i--;
          if(i == sem.begin() && k<half-2) {
-            NoEphemerisFound e("Inadequate data before requested time, PRN " + asString(prn));
+            NoEphemerisFound e("Inadequate data before requested time, satellite "
+               + sat.toString());
             GPSTK_THROW(e);
          }
          j++;
          if(j == sem.end()) {
-            NoEphemerisFound e("Inadequate data after requested time, PRN " + asString(prn));
+            NoEphemerisFound e("Inadequate data after requested time, satellite "
+               + sat.toString());
             GPSTK_THROW(e);
          }
       }
@@ -225,7 +222,7 @@ namespace gpstk
       sv.ddtime *= 1.e-10; // sec/sec
 
       // add relativity correction to dtime
-      // this only for consistency with BCEphemerisStore::getPrnXvt ....
+      // this only for consistency with BCEphemerisStore::getSatXvt ....
       // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10 * ecc * sqrt(A(m))*sinE
       // (do it this way for numerical reasons)
       sv.dtime += -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)
@@ -234,7 +231,7 @@ namespace gpstk
 
       return sv;
 
-   }  // end Xvt TabularEphemerisStore::getPrnXvt
+   }  // end Xvt TabularEphemerisStore::getSatXvt
 
    //-----------------------------------------------------------------------------
    //-----------------------------------------------------------------------------
@@ -242,8 +239,8 @@ namespace gpstk
       throw()
    {
       DayTime t = data.time;
-      short prn = data.id;
-      Xvt&  xvt = pe[prn][t];
+      SatID sat = data.sat;
+      Xvt&  xvt = pe[sat][t];
 
       if (data.flag=='P')
       {
@@ -253,7 +250,7 @@ namespace gpstk
       }
       else if (data.flag=='V')
       {
-         xvt.v = data.x;
+         xvt.v = Triple(data.x[0],data.x[1],data.x[2]);
          xvt.ddtime = data.clk;
          haveVelocity=true;
       }

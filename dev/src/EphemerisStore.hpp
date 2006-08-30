@@ -1,15 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file EphemerisStore.hpp
- * Base for ephemeris storage classes
- */
- 
-#ifndef GPSTK_EPHEMERISSTORE_HPP
-#define GPSTK_EPHEMERISSTORE_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -46,10 +36,13 @@
 //
 //=============================================================================
 
-
-
-
-
+/**
+ * @file EphemerisStore.hpp
+ * Base for ephemeris storage classes
+ */
+ 
+#ifndef GPSTK_EPHEMERISSTORE_HPP
+#define GPSTK_EPHEMERISSTORE_HPP
 
 #include <iostream>
 #include <string>
@@ -57,6 +50,7 @@
 #include <map>
 
 #include "Exception.hpp"
+#include "SatID.hpp"
 #include "DayTime.hpp"
 #include "Xvt.hpp"
 
@@ -79,10 +73,15 @@ namespace gpstk
       
          /** This returns the PVT of the SV in ECEF coordinates at the 
           * indicated time.
-          * @param prn the SV's PRN
+          * @param sat the SV's SatID
           * @param t the time to look up
           * @return the Xvt of the SV at time t
           */
+      virtual Xvt getSatXvt(SatID sat,
+                            const gpstk::DayTime& t) const
+         throw(NoEphemerisFound) = 0;
+
+         /// \deprecated use the SatID version getSatXvt
       virtual Xvt getPrnXvt(short prn, 
                             const gpstk::DayTime& t) const
          throw(NoEphemerisFound) = 0;

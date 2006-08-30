@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -23,7 +21,6 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
-
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
@@ -38,11 +35,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file AlmanacStore.cpp
  * Store almanac information, and access by satellite and time
@@ -55,17 +47,17 @@
 
 namespace gpstk
 {
-   Xvt AlmanacStore::getPrnXvt(short prn, const gpstk::DayTime& t)
+   Xvt AlmanacStore::getSatXvt(SatID sat, const gpstk::DayTime& t)
       const throw(AlmanacStore::NoAlmanacFound)
    {
-      AlmOrbit a = findAlmanac(prn, t);
+      AlmOrbit a = findAlmanac(sat, t);
       return a.svXvt(t);
    }
 
-   short AlmanacStore::getPrnHealth(short prn, const gpstk::DayTime& t)
+   short AlmanacStore::getSatHealth(SatID sat, const gpstk::DayTime& t)
       const throw(AlmanacStore::NoAlmanacFound)
    {
-      AlmOrbit a = findAlmanac(prn, t);
+      AlmOrbit a = findAlmanac(sat, t);
       return a.getSVHealth();
    }
 
@@ -92,20 +84,19 @@ namespace gpstk
       return true;
    }
 
-      /// gets the closest almanac for the given time and prn,
+      /// gets the closest almanac for the given time and satellite,
       /// closest being in the past or future.
-   AlmOrbit AlmanacStore::findAlmanac(short prn, const gpstk::DayTime& t) 
+   AlmOrbit AlmanacStore::findAlmanac(SatID sat, const gpstk::DayTime& t) 
       const throw(AlmanacStore::NoAlmanacFound)
    {
-      UBAMap::const_iterator prnItr = uba.find(prn);
-      if (prnItr == uba.end())
+      UBAMap::const_iterator satItr = uba.find(sat);
+      if (satItr == uba.end())
       {
-         NoAlmanacFound nef("No almanacs for prn " + 
-                            gpstk::StringUtils::asString(prn));
+         NoAlmanacFound nef("No almanacs for satellite " + sat.toString());
          GPSTK_THROW(nef);
       }
          
-      const EngAlmMap& eam = (*prnItr).second;
+      const EngAlmMap& eam = (*satItr).second;
 
          // find the closest almanac BEFORE t, if any.
       EngAlmMap::const_iterator nextItr = eam.begin(),
@@ -146,20 +137,20 @@ namespace gpstk
       const
    {
       AlmOrbits ao;
-      UBAMap::const_iterator prnItr = uba.begin();
-      while (prnItr != uba.end())
+      UBAMap::const_iterator satItr = uba.begin();
+      while (satItr != uba.end())
       {
          try
          {
-            AlmOrbit a = findAlmanac((*prnItr).first, t);
-            ao[(*prnItr).first] = a;
+            AlmOrbit a = findAlmanac((*satItr).first, t);
+            ao[(*satItr).first] = a;
          }
             /// who cares about exceptions - the map will
             /// be empty if there are no alms...
          catch(...)
          {}
 
-         prnItr++;
+         satItr++;
       }
       return ao;
    }
@@ -168,10 +159,10 @@ namespace gpstk
       const
    {
       DayTime retDT = DayTime::END_OF_TIME;
-      UBAMap::const_iterator prnItr = uba.begin();
-      while (prnItr != uba.end())
+      UBAMap::const_iterator satItr = uba.begin();
+      while (satItr != uba.end())
       {
-         const EngAlmMap& eam = (*prnItr).second;
+         const EngAlmMap& eam = (*satItr).second;
 
          EngAlmMap::const_iterator nextItr;
          for (nextItr=eam.begin(); nextItr!=eam.end(); ++nextItr)
@@ -186,7 +177,7 @@ namespace gpstk
             catch(...)
             {}
          }
-         prnItr++;
+         satItr++;
       }
       return(retDT);
    }

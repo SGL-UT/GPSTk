@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file SP3Header.cpp
  * Encapsulate header of SP3 file data, including I/O
@@ -43,28 +41,117 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #include "StringUtils.hpp"
 #include "SP3Stream.hpp"
 #include "SP3Header.hpp"
 
 namespace gpstk
 {
-   using namespace gpstk::StringUtils;
+   using namespace StringUtils;
    using namespace std;
 
-      /// @todo Implement this function.
    void SP3Header::reallyPutRecord(FFStream& ffs) const
       throw(exception, FFStreamError, StringException)
    {
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);
-      
-      FFStreamError err("Writing is not supported for this file format");
-      GPSTK_THROW(err);
+      int i,j,k;
+      string line;
+      SatID SVid;
+      SVid.setfill('0');
+
+      if(version != 'a' && version != 'c') {
+         Exception e(string("SP3 version must be 'a' or 'c' : ") + version);
+         GPSTK_THROW(e);
+      }
+      if(pvFlag != 'P' && pvFlag != 'V') {
+         Exception e(string("SP3 pv flag must be 'P' or 'V' : ") + pvFlag);
+         GPSTK_THROW(e);
+      }
+
+      // line 1
+      line = "#";
+      line += version;
+      line += pvFlag;
+      line += time.printf("%4Y %2m %2d %2H %2M");
+      line += " " + rightJustify(time.printf("%f"),11);
+      line += " " + rightJustify(asString(numberOfEpochs),7);
+      line += " " + rightJustify(dataUsed,5);
+      line += " " + rightJustify(coordSystem,5);
+      line += " " + rightJustify(orbitType,3);
+      line += " " + rightJustify(agency,4);
+      strm << line << endl;
+
+      // line 2
+      line = "##";
+      line += rightJustify(time.printf("%F"),5);
+      line += rightJustify(time.printf("%g"),16);
+      line += " " + rightJustify(asString(epochInterval,8),14);
+      line += " " + time.printf("%5.0Q");
+      line += " " + rightJustify(asString(time.DOYsecond()/86400.,13),15);
+      strm << line << endl;
+
+      // lines 3-7 and 8-12
+      //Map<SV,accuracy flag> (all SVs in data)
+      std::map<SatID, short>::const_iterator it;
+      for(i=3; i<=12; i++) {                 // loop over the lines
+         if(i==3) line = "+   " + rightJustify(asString(satList.size()),2) + "   ";
+         else if(i < 8) line = "+        ";
+         else           line = "++       ";
+         k = 0;
+         if(i == 3 || i == 8)                // start the iteration
+            it = satList.begin();
+         while(k < 17) {                     // there are 17 per line
+            if(it != satList.end()) {
+               if(i < 8) {                   // lines 3-7 - sat id
+                  if(version == 'c') {
+                     // a satellite in version c -> let j be -1 to mark it
+                     SVid = it->first;
+                     j = -1;
+                  }
+                  else j = it->first.id;
+               }
+               else                          // lines 8-12 - accuracy
+                  j = it->second;
+               it++;
+            }
+            else j=0;            // no more
+
+            if(j == -1)          // sat version c
+               line += rightJustify(SatIDtoString(SVid),3);
+            else                 // sat version a, accuracy, or 0
+               line += rightJustify(asString(j),3);
+            k++;
+         }
+         strm << line << endl;
+      }
+
+      // line 13
+      string ft(" cc");
+      if(version == 'c') { ft[1] = systemChar(); ft[2] = ' '; }
+      strm << "%c" << ft << " cc"
+           << " " << (version == 'c' ? timeSystemString() : "ccc")
+           << " ccc cccc cccc cccc cccc ccccc ccccc ccccc ccccc" << endl;
+      // line 14
+      strm << "%c cc cc ccc ccc cccc cccc cccc cccc ccccc ccccc ccccc ccccc" << endl;
+      // line 15
+      strm << "%f "
+           << (version == 'c' ? rightJustify(asString(basePV,7),10) : " 0.0000000")
+           << " "
+           << (version == 'c' ? rightJustify(asString(baseClk,9),12) : " 0.000000000")
+           << "  0.00000000000  0.000000000000000" << endl;
+      // lines 16-18
+      strm << "%f  0.0000000  0.000000000  0.00000000000  0.000000000000000" << endl;
+      strm << "%i    0    0    0    0      0      0      0      0         0" << endl;
+      strm << "%i    0    0    0    0      0      0      0      0         0" << endl;
+
+      // lines 19-22
+      //std::vector<std::string> comments; ///< vector of 4 comment lines
+      for(j=0,i=19; i<=22; i++) {
+         line = "/* ";
+         if(j < comments.size()) line += leftJustify(comments[j++],57);
+         else line += string(57,'C');
+         strm << line << endl;
+      }
    }
 
    void SP3Header::dump(ostream& s) const
@@ -80,12 +167,21 @@ namespace gpstk
       s << " Coordinate system : " << coordSystem << endl;
       s << " Orbit estimate type : " << orbitType << endl;
       s << " Agency : " << agency << endl;
+      if(version == 'c') {
+         s << " File type: '" << systemChar() << "' which is "
+           << systemString() << endl;
+         s << " Time System: " << timeSystemString() << endl;
+         s << " Base for Pos/Vel =" << fixed << setw(10) << setprecision(7)
+           << basePV << endl;
+         s << " Base for Clk/Rate =" << setw(12) << setprecision(9)
+           << baseClk << endl;
+      }
       
-      s << " List of satellite PRN/acc (" << svList.size() << " total) :\n";
+      s << " List of satellite PRN/acc (" << satList.size() << " total) :\n";
       int i=0;
-      std::map<short,short>::const_iterator it=svList.begin();
-      while(it != svList.end()) {
-         s << "  " << setw(2) << it->first << "/" << it->second;
+      std::map<SatID,short>::const_iterator it=satList.begin();
+      while(it != satList.end()) {
+         s << " " << it->first << "/" << it->second;
          if(!(++i % 8)) s << endl;
          it++;
       }
@@ -95,10 +191,11 @@ namespace gpstk
       for(size_t j=0; j<comments.size(); j++) s << "    " << comments[j] << endl;
 
       s << "End of SP3 header" << endl;
-   }
+
+   }  // end SP3Header::reallyPutRecord()
 
    void SP3Header::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, gpstk::StringUtils::StringException)
+      throw(exception, FFStreamError, StringException)
    {
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);
       
@@ -144,7 +241,8 @@ namespace gpstk
 
          // the map stores them sorted, so use svsAsWritten to determine
          // which SV each accuracy corresponds to.
-      vector<short> svsAsWritten;
+      vector<SatID> svsAsWritten;
+      SatID sat;
 
             // read in the SV list
       for(i = 3; i <= 7; i++)
@@ -162,9 +260,9 @@ namespace gpstk
             {
                if (readSVs < numSVs)
                {
-                  short sv = asInt(line.substr(index, 3));
-                  svsAsWritten[readSVs] = sv;
-                  svList[sv] = 0;
+                  sat = SatIDfromString(line.substr(index,3));
+                  svsAsWritten[readSVs] = sat;
+                  satList[sat] = 0;
                   readSVs++;
                }
             }
@@ -188,7 +286,7 @@ namespace gpstk
             {
                if (readSVs < numSVs)
                {
-                  svList[svsAsWritten[readSVs]] = asInt(line.substr(index,3));
+                  satList[svsAsWritten[readSVs]] = asInt(line.substr(index,3));
                   readSVs++;
                }
             }
@@ -213,5 +311,64 @@ namespace gpstk
             // and add to the comment vector
          comments.push_back(line);
       }
+   }  // end SP3Header::reallyGetRecord()
+
+      SatID SP3Header::SatIDfromString(const string& str)
+      throw(FFStreamError)
+   {
+      char c;
+      SatID sat;
+      istringstream iss(str);
+      iss >> c;
+      switch(c)
+      {
+         case '0': case '1': case '2': case '3':
+         case '4': case '5': case '6':
+         case '7': case '8': case '9':
+            iss.putback(c);
+            // fall through
+         case 'G': case 'g':
+            sat.system = SatID::systemGPS;
+            break;
+         case 'R': case 'r':
+            sat.system = SatID::systemGlonass;
+            break;
+         case 'E': case 'e':
+            sat.system = SatID::systemGalileo;
+            break;
+         case 'L': case 'l':
+            sat.system = SatID::systemLEO;
+            break;
+         default:
+            FFStreamError ffse("Invalid system character in input stream: "+c);
+            GPSTK_THROW(ffse);
+      }
+      iss >> sat.id;
+      return sat;
    }
+
+   string SP3Header::SatIDtoString(const SatID& sat)
+      throw(FFStreamError)
+   {
+      ostringstream oss;
+      char savechar = oss.fill(SatID::fillchar);
+      switch(sat.systemChar())
+      {
+         case 'G': case 'g':
+         case 'R': case 'r':
+         case 'E': case 'e':
+         case 'L': case 'l':
+            oss << sat.systemChar();
+            break;
+         default:
+            FFStreamError ffse("Invalid system character in output stream: "
+               + sat.systemChar());
+            GPSTK_THROW(ffse);
+            break;
+      }
+      oss << setw(2) << sat.id
+          << setfill(savechar);
+      return oss.str();
+   }
+
 }  // namespace

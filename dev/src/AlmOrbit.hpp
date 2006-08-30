@@ -1,10 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-#ifndef GPSTK_ALMORBIT_HPP
-#define GPSTK_ALMORBIT_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -41,10 +36,8 @@
 //
 //=============================================================================
 
-
-
-
-
+#ifndef GPSTK_ALMORBIT_HPP
+#define GPSTK_ALMORBIT_HPP
 
 /**
  * @file AlmOrbit.hpp
@@ -53,6 +46,7 @@
 
 #include <map>
 #include "DayTime.hpp"
+#include "SatID.hpp"
 #include "Xvt.hpp"
 
 namespace gpstk
@@ -122,8 +116,8 @@ namespace gpstk
       friend class EngAlmanac;
    }; // class AlmOrbit
 
-      /// Map from PRN to AlmOrbit.
-   typedef std::map<short, AlmOrbit> AlmOrbits;
+      /// Map from SatID to AlmOrbit.
+   typedef std::map<SatID, AlmOrbit> AlmOrbits;
 
    std::ostream& operator<<(std::ostream& s, const AlmOrbit& ao);
 

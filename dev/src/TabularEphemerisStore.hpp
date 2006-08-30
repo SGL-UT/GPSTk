@@ -1,15 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file TabularEphemerisStore.hpp
- * Store & access a list of SV pvts
- */
-
-#ifndef GPSTK_TABULAR_EPHEMERIS_STORE_HPP
-#define GPSTK_TABULAR_EPHEMERIS_STORE_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -46,13 +36,17 @@
 //
 //=============================================================================
 
+/**
+ * @file TabularEphemerisStore.hpp
+ * Store & access a list of SV pvts
+ */
 
-
-
-
+#ifndef GPSTK_TABULAR_EPHEMERIS_STORE_HPP
+#define GPSTK_TABULAR_EPHEMERIS_STORE_HPP
 
 #include <iostream>
 
+#include "SatID.hpp"
 #include "EphemerisStore.hpp"
 #include "SP3Data.hpp"
 
@@ -76,14 +70,19 @@ namespace gpstk
       /// destructor
       virtual ~TabularEphemerisStore() {}
       
-      /**  Return the position, velocity and clock model of the sv in ecef coordinates
-       * (units m, s, m/s, s/s) at the indicated time.
-       * @param prn the SV's PRN
+      /** Return the position, velocity and clock model of the sv in Cartesian
+       * ECEF coordinates (units m, s, m/s, s/s) at the indicated time.
+       * @param sat the satellite's SatID
        * @param t the time to look up
        * @return the Xvt of the SV at time t
        */
-      virtual Xvt getPrnXvt(short prn, const gpstk::DayTime& t)
+      virtual Xvt getSatXvt(SatID sat, const gpstk::DayTime& t)
          const throw(EphemerisStore::NoEphemerisFound);
+
+      ///  \deprecated
+      virtual Xvt getPrnXvt(short prn, const gpstk::DayTime& t)
+         const throw(EphemerisStore::NoEphemerisFound)
+         { SatID sat(prn); return TabularEphemerisStore::getSatXvt(sat,t); }
 
       /** Dump the store to given stream.
        * @param detail specifies the level of detail to include in the output:
@@ -120,7 +119,7 @@ namespace gpstk
       typedef std::map<DayTime, Xvt> SvEphMap;
 
       /// The key to this map is the svid of the satellite (usually the prn)
-      typedef std::map<short, SvEphMap> EphMap;
+      typedef std::map<SatID, SvEphMap> EphMap;
 
       /// the map of SVs and XVTs
       EphMap pe;
