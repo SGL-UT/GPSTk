@@ -1,15 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file RinexObsHeader.hpp
- * Encapsulate header of Rinex observation file, including I/O
- */
-
-#ifndef GPSTK_RINEXOBSHEADER_HPP
-#define GPSTK_RINEXOBSHEADER_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -46,10 +36,13 @@
 //
 //=============================================================================
 
+/**
+ * @file RinexObsHeader.hpp
+ * Encapsulate header of Rinex observation file, including I/O
+ */
 
-
-
-
+#ifndef GPSTK_RINEXOBSHEADER_HPP
+#define GPSTK_RINEXOBSHEADER_HPP
 
 #include <vector>
 #include <list>
@@ -72,8 +65,9 @@ namespace gpstk
       {
          systemGPS = 1,
          systemGlonass,
-         systemTransit,
+         systemGalileo,
          systemGeosync,
+         systemTransit,
          systemMixed       // not for RinexPrn
       };
 
@@ -94,6 +88,7 @@ namespace gpstk
                switch(system) {
                   case systemGPS: return 'G';
                   case systemMixed: return 'M';
+                  case systemGalileo: return 'E';
                   case systemGlonass: return 'R';
                   case systemTransit: return 'T';
                   case systemGeosync: return 'S';
@@ -104,7 +99,6 @@ namespace gpstk
 
       /**
        * This class models the header for a RINEX Observation File.
-       *
        * @sa gpstk::RinexObsData and gpstk::RinexObsStream.
        * @sa rinex_obs_test.cpp and rinex_obs_read_write.cpp for examples.
        */
@@ -118,7 +112,7 @@ namespace gpstk
          /// Clear (empty out) header
       inline void clear()
       {
-         version = 2.1;
+         version = 2.11;
          valid = 0;
          commentList.clear();
          wavelengthFactor[0] = wavelengthFactor[1] = 1;
@@ -184,7 +178,9 @@ namespace gpstk
             /// This mask is for all required valid fields for RINEX 2.0
          allValid20 = 0x080002FEB,
             /// This mask is for all required valid fields for RINEX 2.1
-         allValid21 = 0x080002FEB
+         allValid21 = 0x080002FEB,
+            /// This mask is for all required valid fields for RINEX 2.11
+         allValid211 = 0x080002FEB
       };
 
          /// RINEX Observation Types
@@ -223,6 +219,24 @@ namespace gpstk
       static const RinexObsType S2;
       static const RinexObsType T1;
       static const RinexObsType T2;
+      static const RinexObsType C5;
+      static const RinexObsType L5;
+      static const RinexObsType D5;
+      static const RinexObsType S5;
+      // Galileo only
+      static const RinexObsType C6;
+      static const RinexObsType L6;
+      static const RinexObsType D6;
+      static const RinexObsType S6;
+      static const RinexObsType C7;
+      static const RinexObsType L7;
+      static const RinexObsType D7;
+      static const RinexObsType S7;
+      static const RinexObsType C8;
+      static const RinexObsType L8;
+      static const RinexObsType D8;
+      static const RinexObsType S8;
+
          //@}
 
       static const std::vector<RinexObsType> StandardRinexObsTypes;
@@ -260,7 +274,7 @@ namespace gpstk
       gpstk::Triple antennaPosition;        ///< APPROXIMATE POSITION XYZ
       gpstk::Triple antennaOffset;          ///< ANTENNA: DELTA H/E/N
       short wavelengthFactor[2];             ///< default WAVELENGTH FACTORS
-      std::vector<ExtraWaveFact> extraWaveFactList; ///< extra (per PRN) PPWAVELENGTH FACTORS
+      std::vector<ExtraWaveFact> extraWaveFactList; ///< extra (per PRN) WAVELENGTH FACTORS
       std::vector<RinexObsType> obsTypeList; ///< NUMBER & TYPES OF OBSERV
       double interval;                       ///< INTERVAL (optional)
       gpstk::DayTime firstObs ;             ///< TIME OF FIRST OBS
@@ -399,6 +413,7 @@ namespace gpstk
             case systemGPS: s << "G"; break;
             case systemMixed: s << "G"; break; // this is an error ... assume GPS
             case systemGlonass: s << "R"; break;
+            case systemGalileo: s << "E"; break;
             case systemTransit: s << "T"; break;
             case systemGeosync: s << "S"; break;
          }
@@ -421,6 +436,8 @@ namespace gpstk
             break;
          case 'R': case 'r':
             p.system = systemGlonass; break;
+         case 'E': case 'e':
+            p.system = systemGalileo; break;
          case 'T': case 't':
             p.system = systemTransit; break;
          case 'S': case 's':

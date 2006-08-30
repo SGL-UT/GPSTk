@@ -107,13 +107,13 @@ int RegisterARLUTExtendedTypes(void)
    if(j) return j;
    j = RegisterExtendedRinexObsType("L3","TFC(IF) Phase",       "meters", L1L2);
    if(j) return j;
-   j = RegisterExtendedRinexObsType("P4","GeoFree Pseudorange", "meters", P1P2);
+   j = RegisterExtendedRinexObsType("PF","GeoFree Pseudorange", "meters", P1P2);
    if(j) return j;
-   j = RegisterExtendedRinexObsType("L4","GeoFree Phase",       "meters", L1L2);
+   j = RegisterExtendedRinexObsType("LF","GeoFree Phase",       "meters", L1L2);
    if(j) return j;
-   j = RegisterExtendedRinexObsType("P5","WideLane Pseudorange","meters", P1P2);
+   j = RegisterExtendedRinexObsType("PW","WideLane Pseudorange","meters", P1P2);
    if(j) return j;
-   j = RegisterExtendedRinexObsType("L5","WideLane Phase",      "meters", L1L2);
+   j = RegisterExtendedRinexObsType("LW","WideLane Phase",      "meters", L1L2);
    if(j) return j;
    j = RegisterExtendedRinexObsType("MP","Multipath (=M3)",     "meters", PsLs);
    if(j) return j;

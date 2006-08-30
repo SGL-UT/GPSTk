@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -37,11 +35,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-
-
-
-
 
 /**
  * @file RinexObsHeader.cpp
@@ -89,20 +82,45 @@ namespace gpstk
    char RinexPrn::fillchar=' ';
 
    const RinexObsHeader::RinexObsType RinexObsHeader::UN("UN", "Unknown or Invalid",   "unknown", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L1("L1", "L1 Carrier Phase",     "L1 cycles", RinexObsHeader::RinexObsType::L1depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L2("L2", "L2 Carrier Phase",     "L2 cycles", RinexObsHeader::RinexObsType::L2depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::C1("C1", "C/A-code pseudorange", "meters", RinexObsHeader::RinexObsType::C1depend);
+   const RinexObsHeader::RinexObsType RinexObsHeader::L1("L1", "L1 Carrier Phase",     "L1 cycles",
+      RinexObsHeader::RinexObsType::L1depend);
+   const RinexObsHeader::RinexObsType RinexObsHeader::L2("L2", "L2 Carrier Phase",     "L2 cycles",
+      RinexObsHeader::RinexObsType::L2depend);
+   const RinexObsHeader::RinexObsType RinexObsHeader::C1("C1", "C/A-code pseudorange", "meters",
+      RinexObsHeader::RinexObsType::C1depend);
    const RinexObsHeader::RinexObsType RinexObsHeader::C2("C2", "L2C-code pseudorange", "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::P1("P1", "Pcode L1 pseudorange", "meters", RinexObsHeader::RinexObsType::P1depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::P2("P2", "Pcode L2 pseudorange", "meters", RinexObsHeader::RinexObsType::P2depend);
+   const RinexObsHeader::RinexObsType RinexObsHeader::P1("P1", "Pcode L1 pseudorange", "meters",
+      RinexObsHeader::RinexObsType::P1depend);
+   const RinexObsHeader::RinexObsType RinexObsHeader::P2("P2", "Pcode L2 pseudorange", "meters",
+      RinexObsHeader::RinexObsType::P2depend);
    const RinexObsHeader::RinexObsType RinexObsHeader::D1("D1", "Doppler Frequency L1", "Hz", 0);
    const RinexObsHeader::RinexObsType RinexObsHeader::D2("D2", "Doppler Frequency L2", "Hz", 0);
    const RinexObsHeader::RinexObsType RinexObsHeader::S1("S1", "Signal-to-Noise L1",   "dB-Hz", 0);
    const RinexObsHeader::RinexObsType RinexObsHeader::S2("S2", "Signal-to-Noise L2",   "dB-Hz", 0);
    const RinexObsHeader::RinexObsType RinexObsHeader::T1("T1", "Transit 150 MHz",      "meters", 0);
    const RinexObsHeader::RinexObsType RinexObsHeader::T2("T2", "Transit 400 MHz",      "meters", 0);
+   // v 2.11
+   const RinexObsHeader::RinexObsType RinexObsHeader::C5("C5", "L5C-code pseudorange", "meters", 0);
+   const RinexObsHeader::RinexObsType RinexObsHeader::L5("L5", "L5 Carrier Phase",     "L5 cycles", 0);
+   const RinexObsHeader::RinexObsType RinexObsHeader::D5("D5", "Doppler Frequency L5", "Hz", 0);
+   const RinexObsHeader::RinexObsType RinexObsHeader::S5("S5", "Signal-to-Noise L5",   "dB-Hz", 0);
+   // Galileo only
+   const RinexObsHeader::RinexObsType RinexObsHeader::C6("C6", "E6-code pseudorange",  "meters", 0);
+   const RinexObsHeader::RinexObsType RinexObsHeader::L6("L6", "E6 Carrier Phase",     "L6 cycles", 0);
+   const RinexObsHeader::RinexObsType RinexObsHeader::D6("D6", "Doppler Frequency E6", "Hz", 0);
+   const RinexObsHeader::RinexObsType RinexObsHeader::S6("S6", "Signal-to-Noise E6",   "dB-Hz", 0);
 
-   RinexObsHeader::RinexObsType sot[13] =
+   const RinexObsHeader::RinexObsType RinexObsHeader::C7("C7", "E5b-code pseudorange",  "meters", 0);
+   const RinexObsHeader::RinexObsType RinexObsHeader::L7("L7", "E5b Carrier Phase",     "L7 cycles", 0);
+   const RinexObsHeader::RinexObsType RinexObsHeader::D7("D7", "Doppler Frequency E5b", "Hz", 0);
+   const RinexObsHeader::RinexObsType RinexObsHeader::S7("S7", "Signal-to-Noise E5b",   "dB-Hz", 0);
+
+   const RinexObsHeader::RinexObsType RinexObsHeader::C8("C8", "E5a+b-code pseudorange", "meters", 0);
+   const RinexObsHeader::RinexObsType RinexObsHeader::L8("L8", "E5a+b Carrier Phase",    "L8 cycles", 0);
+   const RinexObsHeader::RinexObsType RinexObsHeader::D8("D8", "Doppler Frequency E5a+b","Hz", 0);
+   const RinexObsHeader::RinexObsType RinexObsHeader::S8("S8", "Signal-to-Noise E5a+b",  "dB-Hz", 0);
+
+   RinexObsHeader::RinexObsType sot[29] =
    { 
       RinexObsHeader::UN,
       RinexObsHeader::L1, RinexObsHeader::L2,
@@ -110,13 +128,16 @@ namespace gpstk
       RinexObsHeader::P1, RinexObsHeader::P2,
       RinexObsHeader::D1, RinexObsHeader::D2,
       RinexObsHeader::S1, RinexObsHeader::S2,
-      RinexObsHeader::T1, RinexObsHeader::T2
+      RinexObsHeader::T1, RinexObsHeader::T2,
+      RinexObsHeader::C5, RinexObsHeader::L5, RinexObsHeader::D5, RinexObsHeader::S5,
+      RinexObsHeader::C6, RinexObsHeader::L6, RinexObsHeader::D6, RinexObsHeader::S6,
+      RinexObsHeader::C7, RinexObsHeader::L7, RinexObsHeader::D7, RinexObsHeader::S7,
+      RinexObsHeader::C8, RinexObsHeader::L8, RinexObsHeader::D8, RinexObsHeader::S8
    };
 
-   // Big warnging. The size of the above sot array, needs to be put
+   // Warning: the size of the above sot array needs to be put
    // in this initializer.
-   const std::vector<RinexObsHeader::RinexObsType> 
-   RinexObsHeader::StandardRinexObsTypes(sot,sot+13);
+   const std::vector<RinexObsHeader::RinexObsType> RinexObsHeader::StandardRinexObsTypes(sot,sot+29);
 
    std::vector<RinexObsHeader::RinexObsType> RinexObsHeader::RegisteredRinexObsTypes
       = RinexObsHeader::StandardRinexObsTypes;
@@ -131,6 +152,7 @@ namespace gpstk
       unsigned long allValid;
       if (version == 2.0)        allValid = allValid20;
       else if (version == 2.1)   allValid = allValid21;
+      else if (version == 2.11)  allValid = allValid211;
       else
       {
          FFStreamError err("Unknown RINEX version: " + asString(version,2));
@@ -212,9 +234,10 @@ namespace gpstk
          std::string str;
          if (system == systemGPS) str = "G (GPS)";
          else if(system == systemGlonass) str = "R (GLONASS)";
-         else if(system == systemTransit) str = "T (TRANSIT)";
-         else if(system == systemGeosync) str = "S (GEOSYNC)";
-         else if(system == systemMixed) str = "M (MIXED)";
+         else if(system == systemTransit) str = "T (Transit)";
+         else if(system == systemGeosync) str = "S (Geosync)";
+         else if(system == systemGalileo) str = "E (Galileo)";
+         else if(system == systemMixed) str = "M (Mixed)";
          line += leftJustify(str, 20);
          line += versionString;
          strm << line << endl;
@@ -372,6 +395,7 @@ namespace gpstk
          line += string(48-line.size(),' ');
          if(firstSystem == systemGPS) line += "GPS";
          if(firstSystem == systemGlonass) line += "GLO";
+         if(firstSystem == systemGalileo) line += "GAL";
          line += string(60 - line.size(), ' ');
          line += firstTimeString;
          strm << line << endl;
@@ -383,6 +407,7 @@ namespace gpstk
          line += string(48-line.size(),' ');
          if(lastSystem == systemGPS) line += "GPS";
          if(lastSystem == systemGlonass) line += "GLO";
+         if(lastSystem == systemGalileo) line += "GAL";
          line += string(60 - line.size(), ' ');
          line += lastTimeString;
          strm << line << endl;
@@ -497,6 +522,7 @@ namespace gpstk
          else if(c=='R' || c=='r') system = systemGlonass;
          else if(c=='T' || c=='t') system = systemTransit;
          else if(c=='S' || c=='s') system = systemGeosync;
+         else if(c=='E' || c=='e') system = systemGalileo;
          else if(c=='M' || c=='m') system = systemMixed;
          else
          {
@@ -632,6 +658,7 @@ namespace gpstk
          firstObs = parseTime(line);
          firstSystem = systemGPS;
          if(line.substr(48,3)=="GLO") firstSystem=systemGlonass;
+         if(line.substr(48,3)=="GAL") firstSystem=systemGalileo;
          valid |= firstTimeValid;
       }
       else if (label == lastTimeString)
@@ -639,6 +666,7 @@ namespace gpstk
          lastObs = parseTime(line);
          lastSystem = systemGPS;
          if(line.substr(48,3)=="GLO") lastSystem=systemGlonass;
+         if(line.substr(48,3)=="GAL") lastSystem=systemGalileo;
          valid |= lastTimeValid;
       }
       else if (label == receiverOffsetString)
@@ -751,6 +779,7 @@ namespace gpstk
       unsigned long allValid;
       if      (version == 2.0)      allValid = allValid20;
       else if (version == 2.1)      allValid = allValid21;
+      else if (version == 2.11)     allValid = allValid211;
       else
       {
          FFStreamError e("Unknown or unsupported RINEX version " + 
@@ -826,11 +855,12 @@ namespace gpstk
       int i,j;
       s << "---------------------------------- REQUIRED ----------------------------------\n";
       string str;
-         if (system == systemGPS) str = "G (GPS)";
-         else if(system == systemGlonass) str = "R (GLONASS)";
-         else if(system == systemTransit) str = "T (TRANSIT)";
-         else if(system == systemGeosync) str = "S (GEOSYNC)";
-         else if(system == systemMixed) str = "M (MIXED)";
+      if (system == systemGPS) str = "G (GPS)";
+      else if(system == systemGlonass) str = "R (GLONASS)";
+      else if(system == systemTransit) str = "T (Transit)";
+      else if(system == systemGeosync) str = "S (Geosync)";
+      else if(system == systemGalileo) str = "E (Galileo)";
+      else if(system == systemMixed) str = "M (Mixed)";
       s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
          << ",  File type " << fileType << ",  System " << str << ".\n";
       s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: " << fileAgency << endl;
@@ -858,9 +888,11 @@ namespace gpstk
             << " " << obsTypeList[i].description
             << " (" << obsTypeList[i].units << ")." << endl;
       s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (firstSystem==systemGlonass?"GLO":"GPS") << endl;
+         << " " << (firstSystem==systemGlonass ? "GLO" :
+                   (firstSystem==systemGalileo ? "GAL" : "GPS")) << endl;
       s << "(This header is ";
-      if((valid & allValid21) == allValid21) s << "VALID 2.1";
+      if((valid & allValid211) == allValid211) s << "VALID 2.11";
+      else if((valid & allValid21) == allValid21) s << "VALID 2.1";
       else if((valid & allValid20) == allValid20) s << "VALID 2.0";
       else s << "NOT VALID";
       s << " Rinex.)\n";
@@ -884,7 +916,8 @@ namespace gpstk
          << fixed << setw(7) << setprecision(3) << interval << endl;
       if(valid & lastTimeValid) s << "Time of last obs "
          << lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (lastSystem==systemGlonass?"GLO":"GPS") << endl;
+         << " " << (lastSystem==systemGlonass ? "GLO":
+                   (lastSystem==systemGalileo ? "GAL" : "GPS")) << endl;
       if(valid & leapSecondsValid) s << "Leap seconds: " << leapSeconds << endl;
       if(valid & receiverOffsetValid) s << "Clock offset record is present and offsets "
          << (receiverOffset?"ARE":"are NOT") << " applied." << endl;
@@ -913,7 +946,7 @@ namespace gpstk
    // return 1 if type already defined,
    //        0 if successful
    //       -1 if not successful - invalid input
-   int RegisterExtendedRinexObsType(std::string t, std::string d, std::string u, unsigned int dep)
+   int RegisterExtendedRinexObsType(string t, string d, string u, unsigned int dep)
    {
       if(t.empty()) return -1;
       // throw if t="UN" ?
@@ -922,16 +955,16 @@ namespace gpstk
          if(RinexObsHeader::RegisteredRinexObsTypes[i].type == t) { return 1; }
       }
       RinexObsHeader::RinexObsType ot;
-      if(t.size()>2) t.resize(2,' '); ot.type = gpstk::StringUtils::stripTrailing(t);
-      if(d.size()>20) d.resize(20,' '); ot.description = gpstk::StringUtils::stripTrailing(d);
-      if(u.size()>10) u.resize(10,' '); ot.units = gpstk::StringUtils::stripTrailing(u);
+      if(t.size()>2) t.resize(2,' '); ot.type = stripTrailing(t);
+      if(d.size()>20) d.resize(20,' '); ot.description = stripTrailing(d);
+      if(u.size()>10) u.resize(10,' '); ot.units = stripTrailing(u);
       ot.depend = dep;
       RinexObsHeader::RegisteredRinexObsTypes.push_back(ot);
       return 0;
    }
 
       // Pretty print a list of registered extended Rinex observation types
-   void DisplayExtendedRinexObsTypes(std::ostream& s)
+   void DisplayExtendedRinexObsTypes(ostream& s)
    {
       s << "The list of available extended Rinex obs types:\n";
       s << "  OT Description          Units     Required input (EP=ephemeris,PS=Rx Position)\n";
@@ -957,4 +990,4 @@ namespace gpstk
       }
    }
 
-} // namespace
+} // namespace gpstk
