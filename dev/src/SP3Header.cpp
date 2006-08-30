@@ -346,6 +346,7 @@ namespace gpstk
             GPSTK_THROW(ffse);
       }
       iss >> sat.id;
+      if(sat.id <= 0) sat.id = -1;
       return sat;
    }
 

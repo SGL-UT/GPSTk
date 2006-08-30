@@ -1,15 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file EngAlmanac.hpp
- * Almanac data encapsulated in engineering terms
- */
-
-#ifndef GPSTK_ENGALMANAC_HPP
-#define GPSTK_ENGALMANAC_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -31,7 +21,6 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
-
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
@@ -46,10 +35,13 @@
 //
 //=============================================================================
 
+/**
+ * @file EngAlmanac.hpp
+ * Almanac data encapsulated in engineering terms
+ */
 
-
-
-
+#ifndef GPSTK_ENGALMANAC_HPP
+#define GPSTK_ENGALMANAC_HPP
 
 #include "Exception.hpp"
 #include "EngNav.hpp"
@@ -98,21 +90,21 @@ namespace gpstk
          /** This function returns true if data is available for a given
           * PRN.  This data is accessed by the below accesser methods
           */
-      bool isData(short prn) const throw();
+      bool isData(SatID sat) const throw();
       
          /** This function returns the value of the eccentricity for
           * the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      double getEcc(short prn) const throw(SVNotPresentException);
+      double getEcc(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the value of the offset of the
           * inclination from 54 degrees in radians for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      double getIOffset(short prn) const throw(SVNotPresentException);
+      double getIOffset(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the value of the rate of the right
           * ascension of the ascending node in radians/second for the
@@ -120,7 +112,7 @@ namespace gpstk
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      double getOmegadot(short prn) const throw(SVNotPresentException);
+      double getOmegadot(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the value of the health of the given
           * PRN from the general pages in the almanac.  It return the
@@ -128,7 +120,7 @@ namespace gpstk
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      short get6bitHealth(short prn) const throw();
+      short get6bitHealth(SatID sat) const throw();
       
          /** This function returns the value of the health of the given
           * PRN from the PRN specific page which might not be present.
@@ -136,7 +128,7 @@ namespace gpstk
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      short getSVHealth(short prn) const throw(SVNotPresentException);
+      short getSVHealth(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the value of the square root of the
           * semi-major axis in square root of meters for the given
@@ -144,49 +136,49 @@ namespace gpstk
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      double getAhalf(short prn) const throw(SVNotPresentException);
+      double getAhalf(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the value of the semi-major axis in
           * meters for the specified PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      double getA(short prn) const throw(SVNotPresentException);
+      double getA(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the value of the right ascension of
           * the ascending node in radians for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      double getOmega0(short prn) const throw(SVNotPresentException);
+      double getOmega0(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the value of the argument of perigee
           * in radians for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      double getW(short prn) const throw(SVNotPresentException);
+      double getW(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the value of the mean anomaly in
           * radians for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      double getM0(short prn) const throw(SVNotPresentException);
+      double getM0(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the SV clock error in seconds for
           * the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      double getAf0(short prn) const throw(SVNotPresentException);
+      double getAf0(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the SV clock drift in
           * seconds/seconds for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      double getAf1(short prn) const throw(SVNotPresentException);
+      double getAf1(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the value of the time of the almanac
           * (from page 51) in GPS seconds of week.
@@ -200,21 +192,21 @@ namespace gpstk
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      double getToa(short prn) const throw(SVNotPresentException);
+      double getToa(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the value of the transmit time for
           * this almanac data in seconds of week for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      double getXmitTime(short prn) const throw(SVNotPresentException);
+      double getXmitTime(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the value of the week of the page
           * transmission for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      short getFullWeek(short prn) const throw(SVNotPresentException);
+      short getFullWeek(SatID sat) const throw(SVNotPresentException);
       
          /** 
           * Get the ionospheric parameters.
@@ -246,7 +238,7 @@ namespace gpstk
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      AlmOrbit getAlmOrbElem(short prn) const
+      AlmOrbit getAlmOrbElem(SatID sat) const
          throw(SVNotPresentException);
 
          /** This function returns an object containing all of the
@@ -257,12 +249,17 @@ namespace gpstk
       
          /** Compute satellite velocity/position at the given time
           * using this almanac.
-          * @param prn PRN ID of satellite to get velocity/position of.
+          * @param sat SatID of satellite to get velocity/position of.
           * @param t time at which to compute SV position.
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      Xvt svXvt(short prn, const DayTime& t) const
+      Xvt svXvt(SatID sat, const DayTime& t) const
          throw(SVNotPresentException);
+
+         /// \deprecated use the SatID version
+      Xvt svXvt(short prn, const DayTime& t) const
+         throw(SVNotPresentException)
+         { SatID sat(prn,SatID::systemGPS); return svXvt(sat,t); }
 
       void dump(std::ostream& s = std::cout) const;
 
@@ -270,7 +267,7 @@ namespace gpstk
          /** This function is used to make sure data is present before
           * accessing it.
           */
-      void checkSVHere(short prn) const throw(SVNotPresentException);
+      void checkSVHere(SatID sat) const throw(SVNotPresentException);
       
       
          /** ionosphere parameters */

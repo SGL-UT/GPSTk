@@ -65,7 +65,8 @@ namespace gpstk
    {
       if ((alm.getPRNID() >= 1) && (alm.getPRNID() <= MAX_PRN))
       {
-         uba[alm.getPRNID()][alm.getToaTime()] = alm;
+         SatID sat(alm.getPRNID(),SatID::systemGPS);
+         uba[sat][alm.getToaTime()] = alm;
          return true;
       }
       return false;

@@ -82,7 +82,10 @@ namespace gpstk
       ///  \deprecated
       virtual Xvt getPrnXvt(short prn, const gpstk::DayTime& t)
          const throw(EphemerisStore::NoEphemerisFound)
-         { SatID sat(prn); return TabularEphemerisStore::getSatXvt(sat,t); }
+         {
+            SatID sat(prn,SatID::systemGPS);
+            return TabularEphemerisStore::getSatXvt(sat,t);
+         }
 
       /** Dump the store to given stream.
        * @param detail specifies the level of detail to include in the output:

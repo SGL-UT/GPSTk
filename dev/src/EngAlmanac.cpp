@@ -125,13 +125,15 @@ namespace gpstk
             }
             {
                int prn = static_cast<short>( ficked[19] );
-               if (prn)
-                  almPRN[prn] = AlmOrbit(prn, ficked[7], ficked[9], ficked[10],
+               if (prn) {
+                  SatID sat(prn,SatID::systemGPS);
+                  almPRN[sat] = AlmOrbit(prn, ficked[7], ficked[9], ficked[10],
                                       ficked[12], ficked[13], ficked[14],
                                          ficked[15], ficked[16], ficked[17],
                                          static_cast<long>( ficked[8] ),
                                          static_cast<long>( ficked[2] ), gpsWeek,
                                          static_cast<short>( ficked[11] ));
+               }
             }
             break;
 
@@ -190,114 +192,114 @@ namespace gpstk
       return true;
    }
 
-   double EngAlmanac::getEcc(short prn) const
+   double EngAlmanac::getEcc(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of the ecc for the given PRN
       return (*i).second.ecc;
    }
    
-   double EngAlmanac::getIOffset(short prn) const
+   double EngAlmanac::getIOffset(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of the iOffset for the given PRN
       return (*i).second.i_offset;
    }
 
-   double EngAlmanac::getOmegadot(short prn) const
+   double EngAlmanac::getOmegadot(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
       
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of OMEGAdot for the given PRN
       return (*i).second.OMEGAdot;
    }
 
-   short EngAlmanac::getSVHealth(short prn) const
+   short EngAlmanac::getSVHealth(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of SV_health for the given PRN
       return (*i).second.SV_health;
    }
 
-   double EngAlmanac::getAhalf(short prn) const
+   double EngAlmanac::getAhalf(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of Ahalf for the given PRN
       return (*i).second.Ahalf;
    }
 
-   double EngAlmanac::getA(short prn) const
+   double EngAlmanac::getA(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of A for the given PRN
       return (*i).second.Ahalf * (*i).second.Ahalf;
    }
 
-   double EngAlmanac::getOmega0(short prn) const
+   double EngAlmanac::getOmega0(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
       
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of OMEGA0 for the given PRN
       return (*i).second.OMEGA0;
    }
 
-   double EngAlmanac::getW(short prn) const
+   double EngAlmanac::getW(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of w for the given PRN
       return (*i).second.w;
    }
 
-   double EngAlmanac::getM0(short prn) const
+   double EngAlmanac::getM0(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of M0 for the given PRN
       return (*i).second.M0;
    }
 
-   double EngAlmanac::getAf0(short prn) const
+   double EngAlmanac::getAf0(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of the af0 for the given PRN
       return (*i).second.AF0;
    }
    
    
-   double EngAlmanac::getAf1(short prn) const
+   double EngAlmanac::getAf1(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of af1 for the given PRN
       return (*i).second.AF1;
@@ -309,33 +311,33 @@ namespace gpstk
       return static_cast<double>( t_oa );
    }
    
-   double EngAlmanac::getToa(short prn) const
+   double EngAlmanac::getToa(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of the Toa for the given PRN
       return static_cast<double>( (*i).second.Toa );
    }
    
    
-   double EngAlmanac::getXmitTime(short prn) const
+   double EngAlmanac::getXmitTime(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of the xmit_time for the given PRN
       return static_cast<double>( (*i).second.xmit_time );
    }
    
    
-   short EngAlmanac::getFullWeek(short prn) const
+   short EngAlmanac::getFullWeek(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
       return (*i).second.getFullWeek();
    }
@@ -382,29 +384,29 @@ namespace gpstk
       return alm_wk;
    }
    
-   AlmOrbit EngAlmanac::getAlmOrbElem(short prn) const
+   AlmOrbit EngAlmanac::getAlmOrbElem(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of the orbit elm. for the given PRN
       return (*i).second;
    }
 
-   Xvt EngAlmanac::svXvt(short prn, const DayTime& t) const
+   Xvt EngAlmanac::svXvt(SatID sat, const DayTime& t) const
       throw(EngAlmanac::SVNotPresentException)
    {
-      AlmOrbits::const_iterator i = almPRN.find(prn);
-      CHECK_SV_HERE(i, prn);
+      AlmOrbits::const_iterator i = almPRN.find(sat);
+      CHECK_SV_HERE(i, sat);
       
          // return value of the orbit elm. for the given PRN
       return (*i).second.svXvt(t);
    }
 
-   bool EngAlmanac::isData(short prn) const throw()
+   bool EngAlmanac::isData(SatID sat) const throw()
    {
-      return (almPRN.find(prn) != almPRN.end());
+      return (almPRN.find(sat) != almPRN.end());
    }
 
    string int2bin(unsigned int v, int len=8)

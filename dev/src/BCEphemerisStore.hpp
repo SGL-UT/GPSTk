@@ -76,7 +76,7 @@ namespace gpstk
       virtual Xvt getPrnXvt(short prn, 
                             const gpstk::DayTime& t) const 
          throw(NoEphemerisFound)
-         { SatID sat(prn); return getSatXvt(sat,t); }
+         { SatID sat(prn,SatID::systemGPS); return getSatXvt(sat,t); }
       
          /** This returns the pvt of the sv in ecef coordinates
           * (units m, s, m/s, s/s) at the indicated time.
@@ -92,7 +92,7 @@ namespace gpstk
       virtual short getPrnHealth(short prn,
                                  const gpstk::DayTime& t) const 
          throw(NoEphemerisFound)
-         { SatID sat(prn); return getSatHealth(sat,t); }
+         { SatID sat(prn,SatID::systemGPS); return getSatHealth(sat,t); }
       
          /** Return the health of an SV for a particular time
           * @param sat the satellite's SatID
@@ -154,7 +154,7 @@ namespace gpstk
                     const gpstk::DayTime& t,
                     short& ref) const
          throw(NoEphemerisFound)
-         { SatID sat(prn); return getSatXvt(sat,t,ref); }
+         { SatID sat(prn,SatID::systemGPS); return getSatXvt(sat,t,ref); }
       
          /** This returns the pvt of the sv in ecef coordinates
           * (units m, s, m/s, s/s) at the indicated time.
@@ -181,7 +181,7 @@ namespace gpstk
       const EngEphemeris& findEphemeris(short prn, 
                                         const gpstk::DayTime& t) const 
          throw(NoEphemerisFound)
-         { SatID sat(prn); return findEphemeris(sat,t); }
+         { SatID sat(prn,SatID::systemGPS); return findEphemeris(sat,t); }
       
          /** Find an ephemeris based upon the search method configured
           * by SearchNear/SearchPast
@@ -196,7 +196,7 @@ namespace gpstk
       const EngEphemeris& findUserEphemeris(short prn,
                                             const gpstk::DayTime& t) const 
          throw(NoEphemerisFound)
-         { SatID sat(prn); return findUserEphemeris(sat,t); }
+         { SatID sat(prn,SatID::systemGPS); return findUserEphemeris(sat,t); }
       
          /** Find the EngEphemeris for prn at time t.  The ephemeris
           * is chosen to be the one that 1) is within the fit interval
@@ -216,7 +216,7 @@ namespace gpstk
       const EngEphemeris& findNearEphemeris(short prn, 
                                             const gpstk::DayTime& t) const
          throw(NoEphemerisFound)
-         { SatID sat(prn); return findNearEphemeris(sat,t); }
+         { SatID sat(prn,SatID::systemGPS); return findNearEphemeris(sat,t); }
       
          /** Find the EngEphemeris for satellite prn at time t. The
           * ephemeris chosen is the one with HOW time closest to the

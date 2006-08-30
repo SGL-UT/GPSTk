@@ -72,8 +72,10 @@ namespace gpstk
          /// empty constructor, creates an invalid object
       SatID() { id=-1; system=systemGPS; }
 
-         /// explicit constructor, defaults to GPS
-      SatID(int p, SatelliteSystem s=systemGPS) { id=p; system=s; }
+         /// explicit constructor, no defaults
+         /// @note if s is given a default value here,
+         /// some compilers will silently cast int to SatID.
+      SatID(int p, SatelliteSystem s) { id=p; system=s; }
 
          /// constructor from string
       SatID(std::string s) { fromString(s); }

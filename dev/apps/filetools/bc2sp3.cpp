@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
       while(tt < endTime) {
          bool foundSome = false;
          for(i=1; i<33; i++) {            // for each PRN ...
-            SatID sat(i);
+            SatID sat(i,SatID::systemGPS);
             try { EngEphemeris ee = BCEph.findEphemeris(sat, tt); }
             catch(EphemerisStore::NoEphemerisFound& nef) { continue; }
 
@@ -220,7 +220,7 @@ int main(int argc, char *argv[])
 
          for(i=1; i<33; i++) {
             long iode;
-            SatID sat(i);
+            SatID sat(i,SatID::systemGPS);
             Xvt xvt;
             EngEphemeris ee;
 

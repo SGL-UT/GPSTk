@@ -224,7 +224,7 @@ namespace gpstk
 
             // parse the line
             if(version == 'a')
-               sat = SatID(asInt(strm.buffer.substr(1, 3)));   // GPS assumed
+               sat = SatID(asInt(strm.buffer.substr(1, 3)),SatID::systemGPS);
             else
                sat = SP3Header::SatIDfromString(strm.buffer.substr(1,3));
 

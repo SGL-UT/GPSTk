@@ -76,7 +76,7 @@ namespace gpstk
          /// \deprecated use the SatID version
       Xvt getPrnXvt(short prn, const gpstk::DayTime& t)
          const throw(NoAlmanacFound)
-         { SatID sat(prn); return getSatXvt(sat,t); }
+         { SatID sat(prn,SatID::systemGPS); return getSatXvt(sat,t); }
 
          /// return the health of the satellite at a particular time
          /// @param sat the satellite's SatID
@@ -87,7 +87,7 @@ namespace gpstk
          /// \deprecated use the SatID version
       short getPrnHealth(short prn, const gpstk::DayTime& t)
          const throw(NoAlmanacFound)
-         { SatID sat(prn); return getSatHealth(sat,t); }
+         { SatID sat(prn,SatID::systemGPS); return getSatHealth(sat,t); }
 
       bool addAlmanac(const AlmOrbit& alm) throw();
       bool addAlmanac(const EngAlmanac& alm) throw();
@@ -102,7 +102,7 @@ namespace gpstk
          /// \deprecated use the SatID version
       AlmOrbit findAlmanac(short prn, const DayTime& t) 
          const throw(NoAlmanacFound)
-         { SatID sat(prn); return findAlmanac(sat,t); }
+         { SatID sat(prn,SatID::systemGPS); return findAlmanac(sat,t); }
 
          /// returns all almanacs closest to t for all satellites
       AlmOrbits findAlmanacs(const DayTime& t) const;
