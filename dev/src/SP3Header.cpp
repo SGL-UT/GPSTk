@@ -117,7 +117,8 @@ namespace gpstk
             else j=0;            // no more
 
             if(j == -1)          // sat version c
-               line += rightJustify(SatIDtoString(SVid),3);
+               try { line += rightJustify(SatIDtoString(SVid),3); }
+               catch(FFStreamError& ffse) { GPSTK_RETHROW(ffse); }
             else                 // sat version a, accuracy, or 0
                line += rightJustify(asString(j),3);
             k++;
@@ -260,7 +261,8 @@ namespace gpstk
             {
                if (readSVs < numSVs)
                {
-                  sat = SatIDfromString(line.substr(index,3));
+                  try { sat = SatIDfromString(line.substr(index,3)); }
+                  catch(FFStreamError& ffse) { GPSTK_RETHROW(ffse); }
                   svsAsWritten[readSVs] = sat;
                   satList[sat] = 0;
                   readSVs++;
