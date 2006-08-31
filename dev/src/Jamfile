@@ -34,7 +34,7 @@ else
    GPSBuildLibrary gpstk : $(REGEX_SOURCE) Exception.cpp BinUtils.cpp
       VectorBase.cpp DayTime.cpp Triple.cpp Geodetic.cpp
       ECEF.cpp Xvt.cpp EngNav.cpp EngEphemeris.cpp EngAlmanac.cpp
-      AlmOrbit.cpp ObservationStore.cpp BCEphemerisStore.cpp SatID.cpp
+      AlmOrbit.cpp ObservationStore.cpp BCEphemerisStore.cpp
       SP3EphemerisStore.cpp AlmanacStore.cpp TropModel.cpp
       IonoModel.cpp IonoModelStore.cpp
       FFStream.cpp FFData.cpp RinexMetData.cpp RinexMetHeader.cpp

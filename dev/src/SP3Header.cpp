@@ -57,7 +57,6 @@ namespace gpstk
       int i,j,k;
       string line;
       SatID SVid;
-      SVid.setfill('0');
 
       if(version != 'a' && version != 'c') {
          Exception e(string("SP3 version must be 'a' or 'c' : ") + version);
@@ -328,7 +327,7 @@ namespace gpstk
          case '4': case '5': case '6':
          case '7': case '8': case '9':
             iss.putback(c);
-            // fall through
+            // fall through to defalut to GPS
          case 'G': case 'g':
             sat.system = SatID::systemGPS;
             break;
@@ -346,31 +345,29 @@ namespace gpstk
             GPSTK_THROW(ffse);
       }
       iss >> sat.id;
-      if(sat.id <= 0) sat.id = -1;
+      if (sat.id <= 0) sat.id = -1;
       return sat;
    }
 
    string SP3Header::SatIDtoString(const SatID& sat)
       throw(FFStreamError)
    {
-      ostringstream oss;
-      char savechar = oss.fill(SatID::fillchar);
-      switch(sat.systemChar())
+      char sysChar=' ';
+      switch (sat.system)
       {
-         case 'G': case 'g':
-         case 'R': case 'r':
-         case 'E': case 'e':
-         case 'L': case 'l':
-            oss << sat.systemChar();
-            break;
+         case SatID::systemGPS:     sysChar = 'G'; break;
+         case SatID::systemGalileo: sysChar = 'E'; break;
+         case SatID::systemGlonass: sysChar = 'R'; break;
+         case SatID::systemGeosync: sysChar = 'S'; break;
+         case SatID::systemLEO:     sysChar = 'L'; break;
+         case SatID::systemTransit: sysChar = 'T'; break;
          default:
-            FFStreamError ffse("Invalid system character in output stream: "
-               + sat.systemChar());
+            FFStreamError ffse("Invalid system specified in SatID");
             GPSTK_THROW(ffse);
             break;
       }
-      oss << setw(2) << sat.id
-          << setfill(savechar);
+      std::ostringstream oss;
+      oss << sysChar << setw(2) << sat.id;
       return oss.str();
    }
 

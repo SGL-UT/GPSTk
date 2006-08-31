@@ -40,8 +40,9 @@
 //=============================================================================
 
 #include <iostream>
-#include <iomanip>
 #include <sstream>
+#include <iomanip>
+#include <gps_constants.hpp>
 
 /**
  * @file SatID.hpp
@@ -50,11 +51,11 @@
 
 namespace gpstk
 {
-      // forward declarations
+   // forward declarations
    class SatID;
    std::istream& operator>>(std::istream& s, SatID& p);
 
-      /// Satellite identifier = satellite number (PRN, etc.) and system
+   /// Satellite identifier = satellite number (PRN, etc.) and system
    class SatID
    {
    public:
@@ -69,41 +70,17 @@ namespace gpstk
          systemTransit
       };
 
-         /// empty constructor, creates an invalid object
+      /// empty constructor, creates an invalid object
       SatID() { id=-1; system=systemGPS; }
 
-         /// explicit constructor, no defaults
-         /// @note if s is given a default value here,
-         /// some compilers will silently cast int to SatID.
+      /// explicit constructor, no defaults
+      /// @note if s is given a default value here,
+      /// some compilers will silently cast int to SatID.
       SatID(int p, SatelliteSystem s) { id=p; system=s; }
 
-         /// constructor from string
-      SatID(std::string s) { fromString(s); }
+      // operator=, copy constructor and destructor built by compiler
 
-         /// set the fill character used in output
-      void setfill(char c) { fillchar=c; }
-
-         /// get the fill character used in output
-      char getfill() { return fillchar; }
-
-         // operator=, copy constructor and destructor built by compiler
-
-         /// return the single-character system descriptor
-         /// @note this list is the combination of RINEX and SP3c file types (other
-         /// than 'Mixed'); keep it consistent with RinexObsHeader.hpp and SP3*.hpp
-      char systemChar() const
-      {
-         switch(system) {
-            case systemGPS: return 'G';
-            case systemGalileo: return 'E';
-            case systemGlonass: return 'R';
-            case systemGeosync: return 'S';
-            case systemLEO: return 'L';
-            case systemTransit: return 'T';
-         }
-         return ' ';
-      };
-         /// return a string with system description (no whitespace)
+      /// return a string with system description (no whitespace)
       std::string systemString() const
       {
          switch(system) {
@@ -116,15 +93,15 @@ namespace gpstk
          }
       };
 
-         /// operator == for SatID
+      /// operator == for SatID
       bool operator==(const SatID& right) const
       { return ((system == right.system) && (id == right.id)); }
 
-         /// operator != for SatID
+      /// operator != for SatID
       bool operator!=(const SatID& right) const
       { return !(operator==(right)); }
 
-         /// operator < for SatID : order by system, then number
+      /// operator < for SatID : order by system, then number
       bool operator<(const SatID& right) const
       {
          if (system==right.system)
@@ -132,44 +109,45 @@ namespace gpstk
          return (system<right.system);
       }
 
-         /// operator > for SatID
+      /// operator > for SatID
       bool operator>(const SatID& right) const
       {  return (!operator<(right) && !operator==(right)); }
 
-         /// operator <= for SatID
+      /// operator <= for SatID
       bool operator<=(const SatID& right) const
       { return (operator<(right) || operator==(right)); }
 
-         /// operator >= for SatID
+      /// operator >= for SatID
       bool operator>=(const SatID& right) const
       { return !(operator<(right)); }
 
-         /// convert to string
+      /// convert to string
       std::string toString() const
       {
+         char ch=' ';
+         switch (system)
+         {
+            case systemGPS:     ch = 'G'; break;
+            case systemGalileo: ch = 'E'; break;
+            case systemGlonass: ch = 'R'; break;
+            case systemGeosync: ch = 'S'; break;
+            case systemLEO:     ch = 'L'; break;
+            case systemTransit: ch = 'T'; break;
+            default:            ch = '?';
+         }
          std::ostringstream oss;
-         char savechar=oss.fill(fillchar);
-         oss << systemChar()
-             << std::setw(2) << id
-             << std::setfill(savechar);
-          return oss.str();
+         oss << ch << std::setw(2) << id;
+         return oss.str();
       }
 
-         /// read from string
-         /// @note GPS is default system (no or unknown system char)
-      void fromString(const std::string s)
-      {
-         std::istringstream iss(s);
-         iss >> *this;
-      }
-
-         /// answer the question 'is this SatID valid?'
-         /// @note assumes all id's are positive and less than 100;
-         ///     plus GPS id's are less than 33.
-         /// @note this is not used internally in the gpstk
+      /// answer the question 'is this SatID valid?'
+      /// @note assumes all id's are positive and less than 100;
+      ///     plus GPS id's are less than 33.
+      /// @note this is not used internally in the gpstk
       bool isValid() const
       {
-         switch(system) {
+         switch(system)
+         {
             case systemGPS: return (id > 0 && id < 33);
             //case systemGalileo:
             //case systemGlonass:
@@ -182,54 +160,12 @@ namespace gpstk
 
       int id;                ///< satellite identifier.
       SatelliteSystem system;///< system for this satellite
-      static char fillchar;  ///< fill character used during stream output
-
    }; // class SatID
 
       /// stream output for SatID
    inline std::ostream& operator<<(std::ostream& s, const SatID& p)
    {
       s << p.toString();
-      return s;
-   }
-
-      /// stream input for SatID
-      /// @note GPS is default system (no or unknown system char)
-   inline std::istream& operator>>(std::istream& s, SatID& p)
-   {
-      char c;
-      p = SatID();
-      s >> c;
-      switch(c)
-      {
-         case '0': case '1': case '2': case '3':
-         case '4': case '5': case '6':
-         case '7': case '8': case '9':
-            s.putback(c);
-            p.system = SatID::systemGPS;
-            break;
-         case 'R': case 'r':
-            p.system = SatID::systemGlonass;
-            break;
-         case 'T': case 't':
-            p.system = SatID::systemTransit;
-            break;
-         case 'S': case 's':
-            p.system = SatID::systemGeosync;
-            break;
-         case 'E': case 'e':
-            p.system = SatID::systemGalileo;
-            break;
-         case 'L': case 'l':
-            p.system = SatID::systemLEO;
-            break;
-         case 'G': case 'g':
-         default: // or should this throw an exception? would disallow string c'tor
-            p.system = SatID::systemGPS;
-            break;
-      }
-      s >> p.id;
-      if(p.id <= 0) p.id = -1;
       return s;
    }
 
