@@ -173,7 +173,7 @@ namespace gpstk
       for (int prn=1; prn<=32; prn++)
       {
          try {
-            svToa = alm.getToa(prn);
+            svToa = alm.getToa(gpstk::SatID(prn, SatID::systemGPS));
             if (svToa != p51Toa)
                return false;
          }
