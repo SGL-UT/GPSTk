@@ -14,33 +14,39 @@ int main(int argc, char* argv[])
       cout << oa.add(RinexObsHeader::C1) << endl;
       cout << oa.add(RinexObsHeader::P2) << endl;
       cout << oa.add("C1-P2") << endl;
-      cout << oa.add("C1-1/(gamma-1)*(wl1*L1-wl2*L2)");
-      cout << "There are " << oa.getIndexCount() << " obs indices." << endl;
+      cout << oa.add("P1-wl1*L1-1/(1-gamma)*(wl1*L1-wl2*L2)");
+      
+      cout << "There are " << oa.getNumObsTypes() << " obs indices." << endl;
 
       cout << "Reading input files." << endl;
-      oa.load("netrs027.06o.30s","netrs027.06n");
+//      oa.load("netrs027.06o.30s","netrs027.06n");
+      oa.load("arl2810.06o","arl2810.06n");
       cout << "Done reading." << endl;
 
       cout << "Values directly using operator(size_t, size_t): " << endl;
-      for (int i=0; i<12; i++)
-         cout << setprecision(12) << oa(i,3) << endl;
+      for (int j=0; j <oa.getNumObsTypes(); j++)
+         for (int i=0; i<12; i++)
+         {
+            cout << "(" << i << "," << j << ")";
+            cout << setprecision(12) << oa(i,j) << endl;
+         }
 
       cout << "Getting values with a slice: " << endl;
-      slice myslice(3,20,oa.getIndexCount()); // This slice corresponds to all P1-C2 
-      valarray <double> copyObs = oa.data[myslice];
-      slice_array <double> obsSample = oa.data[myslice];
+      slice myslice(0,20,1);  
+      valarray <double> copyObs = oa.observation[myslice];
+      slice_array <double> obsSample = oa.observation[myslice];
       cout << "There are " << copyObs.size() << " elements in this slice." << endl;
-      for (int i=0; i<12; i++)
+      for (int i=0; i<20; i++)
          cout << copyObs[i] << endl;
 
       cout << "Operations on a slice: " << endl;
       cout << "Mean value is: " << copyObs.sum() / copyObs.size() << endl;
-      //cout << "Mean value is: " << oa.data[myslice].sum() / oa.data[myslice].size() << endl;
+      //cout << "Mean value is: " << oa.observation[myslice].sum() / oa.observation[myslice].size() << endl;
 
       RinexPrn thisPrn(9,systemGPS);
-      valarray<bool> prnIdx = (oa.prn==thisPrn);
-      valarray<double> prnObs = oa.data[prnIdx];
-      valarray<DayTime> prnTime = oa.time[prnIdx];
+      valarray<bool> prnIdx = (oa.satellite==thisPrn);
+      valarray<double> prnObs = oa.observation[prnIdx];
+      valarray<DayTime> prnTime = oa.epoch[prnIdx];
       cout << "Data for PRN 9:" << endl;
       for (int i=0; i<12; i++)
       {
@@ -48,7 +54,7 @@ int main(int argc, char* argv[])
          cout << prnTime[i].GPSsow() << " ";
          cout << prnObs[i] << endl;
       }
-
+  
       exit(0);
    }
    catch(Exception& ex)

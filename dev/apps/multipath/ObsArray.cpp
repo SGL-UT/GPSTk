@@ -7,7 +7,7 @@
  */
 
 #include <vector>
-
+#include "ValarrayUtils.hpp"
 #include "PRSolution.hpp"
 
 #include "RinexObsStream.hpp"
@@ -20,23 +20,23 @@ namespace gpstk
 {
    
    ObsArray::ObsArray(void) 
-         : indexCount(0), passNumber(0)
+         : numObsTypes(0)
    {
    }
 
    ObsIndex ObsArray::add(RinexObsHeader::RinexObsType type)
    {
-      isBasic[indexCount]=true;
-      basicTypeMap[indexCount]=type;
-      return ++indexCount;
+      isBasic[numObsTypes]=true;
+      basicTypeMap[numObsTypes]=type;
+      return numObsTypes++;
    }
    
    ObsIndex ObsArray::add(const std::string& expression)
    {
-      isBasic[indexCount]=false;
-      expressionMap[indexCount] = Expression(expression);
-      expressionMap[indexCount].setGPSConstants();
-      return ++indexCount;
+      isBasic[numObsTypes]=false;
+      expressionMap[numObsTypes] = Expression(expression);
+      expressionMap[numObsTypes].setGPSConstants();
+      return numObsTypes++;
    }
 
    void ObsArray::load(const std::string& obsfilename, 
@@ -78,24 +78,25 @@ namespace gpstk
       
       RinexObsData rod;
       RinexObsData::RinexPrnMap::const_iterator it;
-       std::map<RinexPrn, PassInfo> currPasses;
       
-      numObsRows = 0; 
+      numSatEpochs = 0; 
       while ( robs >> rod )
       { 
-         numObsRows += rod.obs.size();
+         numSatEpochs += rod.obs.size();
       }
 
       int i=0;
 
-      int theWholeShebang=numObsRows*indexCount;
-      data.resize(theWholeShebang);
-      time.resize(theWholeShebang);
-      prn.resize(theWholeShebang);	
-      azimuth.resize(theWholeShebang);
-      elevation.resize(theWholeShebang);
-      validAzEl.resize(theWholeShebang);
-      
+         // Size the storage valarrays. 
+      observation.resize(numSatEpochs*numObsTypes);
+      epoch.resize(numSatEpochs);
+      satellite.resize(numSatEpochs);
+      epoch.resize(numSatEpochs);
+      azimuth.resize(numSatEpochs);
+      elevation.resize(numSatEpochs);
+      validAzEl.resize(numSatEpochs);
+      pass.resize(numSatEpochs);
+
       validAzEl = true;
       
       while (robsAgain >> rod)
@@ -137,43 +138,51 @@ namespace gpstk
                staticPositionDefined = true;
             }
          }
+
+         size_t satEpochIdx=0;
          
          for (it = rod.obs.begin(); it!=rod.obs.end(); it++)
          {
-            for (int idx=0; idx<indexCount; idx++)
+            for (int idx=0; idx<numObsTypes; idx++)
             {
-               
                if (isBasic[idx])
                {
-                  data[i] = rod.obs[it->first][basicTypeMap[idx]].data;
+                  observation[i] = rod.obs[it->first][basicTypeMap[idx]].data;
                }
                else 
                {
                   expressionMap[idx].setRinexObs(rod.obs[it->first]);
-                  data[i] = expressionMap[idx].evaluate();
+                  observation[i] = expressionMap[idx].evaluate();
                }
 
-               time[i] = rod.time;
-               prn[i]  = it->first;
-
-                  // Get topocentric coords for given sat
-               try
-               {
-                  Xvt svPos = ephStore.getPrnXvt(it->first.prn, rod.time);
- 
-                  elevation[i]= antennaPos.elvAngle(svPos.x);
-                  azimuth[i]  = antennaPos.azAngle( svPos.x);
-               }
-               catch(EphemerisStore::NoEphemerisFound)
-               {
-                  validAzEl[i]=false;
-               } 
-               
+               satellite[i]  = it->first;               
                i++;
             } // end of walk through observations to record
+
+            // Get topocentric coords for given sat
+            try
+            {
+               Xvt svPos = ephStore.getPrnXvt(it->first.prn, rod.time);
+               elevation[satEpochIdx]= antennaPos.elvAngle(svPos.x);
+               azimuth[satEpochIdx]  = antennaPos.azAngle( svPos.x);
+            }
+            catch(EphemerisStore::NoEphemerisFound)
+            {
+               validAzEl[satEpochIdx]=false;
+            }
+            std::cout << rod.time << std::endl;
+            
+
+            epoch[satEpochIdx]=rod.time;
+
+            satEpochIdx++;
          } // end of walk through prns at this epoch
       } // end of walk through obs file
+
+
+
    } // end of ObsArray::load(...)
    
 } // end namespace gpstk
  
+

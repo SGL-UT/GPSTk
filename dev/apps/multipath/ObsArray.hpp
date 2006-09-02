@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+ #pragma ident "$Id:$"
 
 /**
  * @file ObsArray.hpp
@@ -33,8 +33,8 @@ namespace gpstk
        * observations can be accessed by pass, by PRN, by time, or via
        * as user-defined mask. 
        *
-       * Access to observations is provided via std::valarray& .
-       * Therefore, no memory allocation is necessary, and indexing
+       * Access to observations is provided via std::valarray .
+       * Therefore indexing
        * can be performed by the user using standard mechanisms: operator[],
        * slice_array, gslice_array, mask_array and indirect_array. Valarray
        * which was designed "specifically for speed of the usual numeric
@@ -69,11 +69,11 @@ namespace gpstk
           */
       ObsIndex add(const std::string& expression);
 
-      ObsIndex getIndexCount(void) const 
-         { return indexCount; }
+      ObsIndex getNumObsTypes(void) const 
+         { return numObsTypes; }
 
-      size_t getNumObsRows(void) const
-         { return numObsRows; } 
+      size_t getNumSatEpochs(void) const
+         { return numSatEpochs; } 
 
          /** 
           * This functions loads a RINEX obs and nav file. Both files
@@ -89,35 +89,31 @@ namespace gpstk
 
 
       double& operator() (size_t r, size_t c)
-      {  return data[r*indexCount + c]; }
+      {  return observation[r*numObsTypes + c]; }
 
-      std::valarray<double>   data;
-      std::valarray<DayTime>  time;
-      std::valarray<RinexPrn> prn;
+      std::valarray<double>   observation;
+      std::valarray<DayTime>  epoch;
+      std::valarray<RinexPrn> satellite;
       std::valarray<double>   azimuth;
       std::valarray<double>   elevation;
+      std::valarray<long>     pass;
       std::valarray<bool>     validAzEl;
 
    private:
 
-      ObsIndex indexCount;
+      ObsIndex numObsTypes;
       std::map<ObsIndex, RinexObsHeader::RinexObsType > basicTypeMap;
       std::map<ObsIndex, bool> isBasic;
       std::map<ObsIndex, Expression > expressionMap;      
 
-      size_t numObsRows;
+         /**
+          *  The number observation sets stored. Each set is derived
+          *  from unique combination of satellite and nominal epoch.
+          */ 
+      size_t numSatEpochs;
 
       RinexEphemerisStore ephStore;
-
-      struct PassInfo 
-      {
-         RinexPrn prn;
-         DayTime firstEpoch, lastEpoch;
-         long passNumber;
-      };
-      long passNumber;
-      std::map<long, PassInfo*> passByNumber;
-      
+       
    }; // End class ObsArray
    
       //@}   
