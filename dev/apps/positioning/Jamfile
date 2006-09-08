@@ -1,8 +1,9 @@
 SubDir TOP apps positioning ;
 
-GPSLinkLibraries rinexpvt poscvt PRSolve : gpstk ;
+GPSLinkLibraries rinexpvt poscvt PRSolve posInterp : gpstk ;
 BonkForte ; # bleah.
 
 GPSMain rinexpvt : rinexpvt.cpp ;
 GPSMain poscvt : poscvt.cpp ;
 GPSMain PRSolve : PRSolve.cpp ;
+GPSMain posInterp : posInterp.cpp ;
