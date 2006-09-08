@@ -26,14 +26,14 @@ int main(int argc, char* argv[])
 
       EpochCombination c=lc1.evaluate(rod);
 
-      RinexObsData::RinexPrnMap::const_iterator it;
+      RinexObsData::RinexSatMap::const_iterator it;
 
       for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
       {
           RinexObsData::RinexObsTypeMap otmap;
 
           cout << rod.time.printf("%F %g ");
-          cout << it->first.prn << " ";
+          cout << it->first << " ";
           cout << setprecision(5) << c[it->first];
           cout << endl;  
       }

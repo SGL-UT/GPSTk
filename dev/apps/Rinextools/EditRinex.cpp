@@ -1,12 +1,5 @@
 #pragma ident "$Id$"
 
-
-/**
- * @file EditRinex.cpp
- * Edit a Rinex observation file using the RinexEditor in gpstk.
- */
-
-//------------------------------------------------------------------------------------
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -29,7 +22,11 @@
 //
 //============================================================================
 
-//------------------------------------------------------------------------------------
+/**
+ * @file EditRinex.cpp
+ * Edit a Rinex observation file using the RinexEditor in gpstk.
+ */
+
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
@@ -79,7 +76,7 @@ try {
    DayTime last;
 
       // Title and description
-   Title = "EditRinex, part of the GPSTK ToolKit, Ver 3.0 9/4/03, Run ";
+   Title = "EditRinex, part of the GPSTK ToolKit, Ver 3.1 8/28/06 Run ";
    time_t timer;
    struct tm *tblock;
 

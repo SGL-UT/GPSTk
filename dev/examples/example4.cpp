@@ -18,7 +18,7 @@
 
 #include "TropModel.hpp" 
 #include "BCEphemerisStore.hpp"
-#include "RAIMSolution.hpp"
+#include "PRSolution.hpp"
 #include "icd_200_constants.hpp"
 
 using namespace std;
@@ -27,7 +27,7 @@ using namespace gpstk;
 main(int argc, char *argv[])
 {
    BCEphemerisStore bcestore;
-   RAIMSolution raimSolver;
+   PRSolution raimSolver;
    ZeroTropModel noTropModel;
    GGTropModel ggTropModel;
    TropModel *tropModelPtr=&noTropModel;
@@ -99,10 +99,10 @@ main(int argc, char *argv[])
          // Apply editing criteria 
          if  (rod.epochFlag == 0 || rod.epochFlag == 1) // Begin usable data
 	 {
-	    vector<RinexPrn> prnVec;
+	    vector<SatID> prnVec;
             vector<double> rangeVec;
 
-	    RinexObsData::RinexPrnMap::const_iterator it;
+	    RinexObsData::RinexSatMap::const_iterator it;
             for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
 	    {
 	       RinexObsData::RinexObsTypeMap otmap;
@@ -124,7 +124,7 @@ main(int argc, char *argv[])
             }
 
             raimSolver.RMSLimit = 3e6;
-	    raimSolver.Compute(rod.time,prnVec,rangeVec, bcestore, \
+	    raimSolver.RAIMCompute(rod.time,prnVec,rangeVec, bcestore, \
 			       tropModelPtr);
 
            if (raimSolver.isValid())

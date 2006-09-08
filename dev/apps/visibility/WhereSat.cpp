@@ -150,11 +150,12 @@ CommandOptionNoArg
 
  t = tStart;
 
+ SatID sat(myprn,SatID::systemGPS);
  while (t < tEnd)
  {
 	try
      	{
-		BCPVT = BCEphList.getPrnXvt(myprn, t);
+		BCPVT = BCEphList.getSatXvt(sat, t);
      		cout 	<< " "  << left << setw(20) << t
           		<< fixed
 			<< " "  << left << setw(20) << BCPVT.x[0]
@@ -193,7 +194,7 @@ CommandOptionNoArg
      	{
      		try 
      		{
-       		BCPVT = BCEphList.getPrnXvt(myprn, t);
+       		BCPVT = BCEphList.getSatXvt(sat, t);
 			correction = (BCPVT.dtime) * (geoid.c());
        		cout 	<< fixed
 				<< " "  << left << setw(20) <<t
@@ -219,7 +220,7 @@ CommandOptionNoArg
      	{
      		try 
      		{   
-       		BCPVT = BCEphList.getPrnXvt(myprn, t);
+       		BCPVT = BCEphList.getSatXvt(sat, t);
 			correction = (BCPVT.dtime) * (geoid.c());
                 
       		ofs 	<< fixed

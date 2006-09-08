@@ -1,15 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file RinexObsData.hpp
- * Encapsulate RINEX observation file data, including I/O
- */
-
-#ifndef RINEXOBSDATA_HPP
-#define RINEXOBSDATA_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -46,15 +36,13 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file RinexObsData.hpp
- * gpstk::RinexObsData - storage, reading, and writing RINEX Obs data.
+ * Encapsulate RINEX observation file data, including I/O
  */
+
+#ifndef RINEXOBSDATA_HPP
+#define RINEXOBSDATA_HPP
 
 #include <vector>
 #include <list>
@@ -91,8 +79,8 @@ namespace gpstk
       
          /// map from RinexObsType to RinexDatum.
       typedef std::map<RinexObsHeader::RinexObsType, RinexDatum> RinexObsTypeMap;
-         /// map from RinexPrn to RinexObsTypeMap.
-      typedef std::map<RinexPrn, RinexObsTypeMap> RinexPrnMap;
+         /// map from SatID to RinexObsTypeMap.
+      typedef std::map<SatID, RinexObsTypeMap> RinexSatMap;
 
       gpstk::DayTime time;    ///< the time corresponding to the observations
         /** Epoch flag has the following values
@@ -112,7 +100,7 @@ namespace gpstk
           */
       short numSvs;
       double clockOffset;      ///< optional clock offset
-      RinexPrnMap obs;         ///< the map of observations
+      RinexSatMap obs;         ///< the map of observations
       RinexObsHeader auxHeader;///< auxiliary header records (epochFlag 2-5)
 
          /// Constructor.
@@ -127,7 +115,7 @@ namespace gpstk
 
          /**
           * A Debug output function.
-          * Dumps the time of observations and the IDs of the PRNs
+          * Dumps the time of observations and the IDs of the Sats
           * in the map.
           */
       virtual void dump(std::ostream& s) const;
@@ -151,7 +139,7 @@ namespace gpstk
           * If there is an error in reading from the stream, it is reset
           * to its original position and its fail-bit is set.
           * Because of the Rinex Obs format, a RinexObsData record returned
-          * might not have data in it.  Check the RinexPrnMap for empty()
+          * might not have data in it.  Check the RinexSatMap for empty()
           * before using any data in it.
           * @throws StringException when a StringUtils function fails
           * @throws FFStreamError when exceptions(failbit) is set and

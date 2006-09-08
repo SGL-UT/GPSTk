@@ -120,7 +120,7 @@ void ROWDiff::process()
       {
          if (firstitr->time == seconditr->time)
          {
-            RinexObsData::RinexPrnMap::iterator fpoi, spoi;
+            RinexObsData::RinexSatMap::iterator fpoi, spoi;
             for (fpoi = firstitr->obs.begin(); fpoi != firstitr->obs.end();
                  fpoi++)
             {

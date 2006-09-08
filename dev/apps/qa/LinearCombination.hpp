@@ -62,7 +62,7 @@ namespace gpstk
    /** @defgroup MeasurementQuality */
    //@{
 
-   typedef std::map<RinexPrn,double> EpochCombination;
+   typedef std::map<SatID,double> EpochCombination;
    
    class LinearCombination
    {

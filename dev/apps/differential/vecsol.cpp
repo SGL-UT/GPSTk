@@ -76,10 +76,10 @@ using gpstk::transpose;
 
     void
 stationData(RinexObsData const & rod, bool const phase, 
-	vector < RinexPrn > &prnVec,
+	vector < SatID > &prnVec,
 	vector < double >&rangeVecL1, vector < double >&rangeVecL2)
 {
-    RinexObsData::RinexPrnMap::const_iterator it;
+    RinexObsData::RinexSatMap::const_iterator it;
     for (it = rod.obs.begin(); it != rod.obs.end(); it++) {
 	RinexObsData::RinexObsTypeMap otmap;
 	RinexObsData::RinexObsTypeMap::const_iterator itL1, itL2;
@@ -344,8 +344,8 @@ Triple permanentTide(double const phi)
     main(int argc, char *argv[])
     {
 #define EPH_RANGE(C,T,X,S) ((precise ? \
-	    C.ComputeAtReceiveTime(T.time,X,S.prn,sp3store) : \
-	    C.ComputeAtReceiveTime(T.time,X,S.prn,bcestore)))
+	    C.ComputeAtReceiveTime(T.time,X,S,sp3store) : \
+	    C.ComputeAtReceiveTime(T.time,X,S,bcestore)))
 
 	BCEphemerisStore bcestore;
 	SP3EphemerisStore sp3store;
@@ -499,7 +499,7 @@ Triple permanentTide(double const phi)
 	    
 	    gpstk::Matrix <double> x0(MaxDim, 3, 0.0);
 	    gpstk::Vector <FixType> fixed(MaxDim, FIX_NONE);
-	    gpstk::Vector <RinexPrn> FromSat(MaxDim), ToSat(MaxDim);
+	    gpstk::Vector <SatID> FromSat(MaxDim), ToSat(MaxDim);
 	    
 	    // Get station positions from RINEX headers:
 	    RinexObsHeader roh1, roh2;
@@ -582,12 +582,12 @@ Triple permanentTide(double const phi)
 		cout << "Iteration: " << l << endl;
 		
 		// Map pointing from PRN to obs. eq. element position
-		map <RinexPrn, int> CommonSatsPrev;
+		map <SatID, int> CommonSatsPrev;
 
-		RinexPrn OldRefSat;
+		SatID OldRefSat;
 
-		map <RinexPrn, vector<double> > DDobsPrev;
-		map <RinexPrn, double> SecsPrev;
+		map <SatID, vector<double> > DDobsPrev;
+		map <SatID, double> SecsPrev;
 		
 		// Open and read the observation files one epoch at a time.
 		// Compute a contribution to normal matrix and right hand
@@ -648,9 +648,9 @@ Triple permanentTide(double const phi)
 		    if (rod1.epochFlag < 2 && rod2.epochFlag < 2)
 			// Observations are good
 		    {
-			map <RinexPrn, int> CommonSats;
+			map <SatID, int> CommonSats;
 			CommonSats.clear();
-			vector <RinexPrn> prnVec_1, prnVec_2;
+			vector <SatID> prnVec_1, prnVec_2;
 			vector <double> rangeVecL1_1, rangeVecL2_1;
 			vector <double> rangeVecL1_2, rangeVecL2_2;
 
@@ -664,7 +664,7 @@ Triple permanentTide(double const phi)
 			/// Process station pairs
 
 			// for construction of double diffs
-			RinexPrn RefSat;
+			SatID RefSat;
 			bool hasRefSat(false);
 
 			double ref_rdiffL1, ref_rdiffL2;
@@ -682,7 +682,7 @@ Triple permanentTide(double const phi)
 			int bestIdx(0);
 			bool stickWithOld = false;
 			for (int i = 0; i != prnVec_2.size(); i++)
-			    if (prnVec_2[i].prn > 0) {
+			    if (prnVec_2[i].id > 0) {
 
 				// Invariant over iterations! Uses t10, t20
 				double dummy = EPH_RANGE(CER2, rod2, t10,
@@ -720,7 +720,7 @@ Triple permanentTide(double const phi)
 			for (int ii = 0; ii != prnVec_2.size(); ii++) {
 			    // Reshuffle... 
 			    int i = (ii + bestIdx) % prnVec_2.size();
-			    if (prnVec_2[i].prn > 0 
+			    if (prnVec_2[i].id > 0 
 				    && Elev10[i] > cutoff_elev
 				    && Elev20[i] > cutoff_elev) {
 				double r2 = EPH_RANGE(CER2, rod2, t2,
@@ -730,8 +730,8 @@ Triple permanentTide(double const phi)
 				r2 += trop2;
 				
 				for (int j = 0; j != prnVec_1.size(); j++) {
-				    if (prnVec_1[j].prn > 0
-					&& prnVec_1[j].prn == prnVec_2[i].prn)
+				    if (prnVec_1[j].id > 0
+					&& prnVec_1[j].id == prnVec_2[i].id)
 				    {
 					// This sat is visible from both
 					// stations
@@ -846,7 +846,7 @@ Triple permanentTide(double const phi)
 					    for (int k = 0; k < MaxUnkn; k++)
 						A_[k] -= ref_A[k];
 
-					    RinexPrn ThisSat = prnVec_1[j];
+					    SatID ThisSat = prnVec_1[j];
 					    if (CommonSatsPrev.find(ThisSat) ==
 						CommonSatsPrev.end()) {
 						// New satellite
@@ -1130,7 +1130,7 @@ Triple permanentTide(double const phi)
 		    // for a condition equation adjustment on NN, bb
 		    int k, j, l, dir1, dir2, dir3;
 		    int closures = 0;
-		    RinexPrn Free1, Free2;
+		    SatID Free1, Free2;
 		    for (k = MaxUnkn; k < unknowns; k++)
 			for (j = k + 1; j < unknowns; j++) {
 			    dir1 = 0;

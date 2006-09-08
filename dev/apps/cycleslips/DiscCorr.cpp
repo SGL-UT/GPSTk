@@ -1,17 +1,5 @@
-// DiscCorr.cpp  GPS carrier phase discontinuity correction. Given arrays containing
-//    dual-frequency pseudorange and phase, detect discontinuities in the phase
-//    and if possible estimate their size. Output is in the form of Rinex
-//    editing commands (see PRGM RinexEdit) that delete bad data and remove the
-//      discontinuities.
-//------------------------------------------------------------------------------------
-// DiscCorr is part of the GPS Tool Kit (GPSTK) developed in the
-// Satellite Geophysics Group at Applied Research Laboratories,
-// The University of Texas at Austin (ARL:UT), and was written by Dr. Brian Tolman.
-//------------------------------------------------------------------------------------
 #pragma ident "$Id$"
 
-
-//------------------------------------------------------------------------------------
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -34,7 +22,6 @@
 //
 //============================================================================
 
-//------------------------------------------------------------------------------------
 /**
  * @file DiscCorr.cpp
  * Discontinuity correction of GPS carrier phase data.

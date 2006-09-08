@@ -113,15 +113,15 @@ namespace gpstk
 
                // then check that each PRN has the same data for each of the 
                // shared fields
-            gpstk::RinexObsData::RinexPrnMap::const_iterator lItr = 
+            gpstk::RinexObsData::RinexSatMap::const_iterator lItr = 
                l.obs.begin(), rItr;
          
-            gpstk::RinexPrn prn;
+            gpstk::SatID sat;
 
             while (lItr != l.obs.end())
             {
-               prn = (*lItr).first;
-               rItr = r.obs.find(prn);
+               sat = (*lItr).first;
+               rItr = r.obs.find(sat);
                if (rItr == r.obs.end())
                   return false;
          

@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
       if(outfile != string("")) {
          RNFileOut.open(outfile.c_str(),ios::out);
          RNFileOut.exceptions(fstream::failbit);
-         rnhout.version = 2.1;
+         rnhout.version = 2.11;
          rnhout.valid |= gpstk::RinexNavHeader::versionValid;
          rnhout.fileType = string("NAVIGATION");
          rnhout.fileProgram = string("NavMerge");

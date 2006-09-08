@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,11 +36,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file RinexObsData.cpp
  * Encapsulate RINEX observation file data, including I/O
@@ -77,13 +70,13 @@ namespace gpstk
          
       // write satellite ids to 'line'
       const int maxPrnsPerLine = 12;
-      int prnsWritten = 0;
-      RinexPrnMap::const_iterator obsItr = obs.begin();
+      int satsWritten = 0;
+      RinexSatMap::const_iterator obsItr = obs.begin();
       if(epochFlag==0 || epochFlag==1 || epochFlag==6) {
-         while ((obsItr != obs.end()) && (prnsWritten < maxPrnsPerLine))
+         while ((obsItr != obs.end()) && (satsWritten < maxPrnsPerLine))
          {
-            line += asString((*obsItr).first);
-            prnsWritten++;
+            line += RinexObsHeader::SatIDtoString((*obsItr).first);
+            satsWritten++;
             obsItr++;
          }
 
@@ -94,16 +87,16 @@ namespace gpstk
          }
       
         // continuation lines
-         while (prnsWritten != obs.size())
+         while (satsWritten != obs.size())
          {
-            if ((prnsWritten % maxPrnsPerLine) == 0)
+            if ((satsWritten % maxPrnsPerLine) == 0)
             {
                strm << line << endl;
                strm.lineNumber++;
                line  = string(32, ' ');
             }
             line += asString((*obsItr).first);
-            prnsWritten++;
+            satsWritten++;
             obsItr++;
          }
       }
@@ -220,7 +213,7 @@ namespace gpstk
          // Now read the observations ...
       if(epochFlag==0 || epochFlag==1 || epochFlag==6) {
          int isv, ndx, line_ndx;
-         vector<RinexPrn> prnIndex(numSvs);
+         vector<SatID> satIndex(numSvs);
          int col=30;
          for (isv=1, ndx=0; ndx<numSvs; isv++, ndx++) {
             if(! (isv % 13)) {
@@ -231,7 +224,11 @@ namespace gpstk
                   GPSTK_THROW(err);
                }
             }
-            prnIndex[ndx] = asData<RinexPrn>(line.substr(col+isv*3-1, 3));
+            try {
+               satIndex[ndx] =
+                  RinexObsHeader::SatIDfromString(line.substr(col+isv*3-1, 3));
+            }
+            catch(FFStreamError& ffse) { GPSTK_RETHROW(ffse); }
          }
       
          for (isv=0; isv < numSvs; isv++)
@@ -239,7 +236,7 @@ namespace gpstk
             short numObs = hdr.obsTypeList.size();
             for (ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++)
             {
-               RinexPrn prn = prnIndex[isv];
+               SatID sat = satIndex[isv];
                RinexObsHeader::RinexObsType obs_type = hdr.obsTypeList[ndx];
                if (! (line_ndx % 5))
                {
@@ -254,9 +251,9 @@ namespace gpstk
                
                line.resize(80, ' ');
                
-               obs[prn][obs_type].data = asDouble(line.substr(line_ndx*16,   14));
-               obs[prn][obs_type].lli = asInt(    line.substr(line_ndx*16+14, 1));
-               obs[prn][obs_type].ssi = asInt(    line.substr(line_ndx*16+15, 1));
+               obs[sat][obs_type].data = asDouble(line.substr(line_ndx*16,   14));
+               obs[sat][obs_type].lli = asInt(    line.substr(line_ndx*16+14, 1));
+               obs[sat][obs_type].ssi = asInt(    line.substr(line_ndx*16+15, 1));
             }
          }
       }
@@ -377,8 +374,8 @@ namespace gpstk
          return;
       /*
       s << "Time:" << time
-        << ", prns: ";
-      RinexPrnMap::const_iterator i;
+        << ", sats: ";
+      RinexSatMap::const_iterator i;
       for(i=obs.begin(); i!=obs.end(); i++)
          s << i->first << " ";
       s << endl;
@@ -387,7 +384,7 @@ namespace gpstk
       s << writeTime(time);
       s << " " << epochFlag << " " << numSvs << " " << fixed << setprecision(6) << clockOffset << endl;
       if(epochFlag == 0 || epochFlag == 1) {
-         RinexPrnMap::const_iterator it;
+         RinexSatMap::const_iterator it;
          for(it=obs.begin(); it!=obs.end(); it++) {
             s << "PRN " << setw(2) << it->first;
             RinexObsTypeMap::const_iterator jt;

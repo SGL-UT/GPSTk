@@ -1,17 +1,4 @@
-// DiscFix.cpp Read a Rinex observation file containing dual frequency
-//    pseudorange and phase, and find and estimate discontinuities in the phase.
-//
-//    DiscFix is part of the GPS Tool Kit (GPSTK) developed in the
-//    Satellite Geophysics Group at Applied Research Laboratories,
-//    The University of Texas at Austin (ARL:UT), and was written by Dr. Brian Tolman.
-//------------------------------------------------------------------------------------
 #pragma ident "$Id$"
-
-
-/**
- * @file DiscFix.cpp
- * Program to apply discontinuity correction to a Rinex observation file
- */
 
 //============================================================================
 //
@@ -35,18 +22,22 @@
 //
 //============================================================================
 
+/**
+ * @file DiscFix.cpp
+ * Program to apply discontinuity correction to a Rinex observation file
+ */
+
 //------------------------------------------------------------------------------------
 // TD
 // Does it correctly delete and/or not output segments that are too small,
 // esp when Smooth=T ?
 //
-//------------------------------------------------------------------------------------
+
 #include "MathBase.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
-#include "DayTime.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
@@ -100,8 +91,8 @@ typedef struct DiscFixConfiguration {
       // processing
    double DataInt;
    bool UseCA;
-   vector<RinexPrn> ExSV;
-   RinexPrn SVonly;
+   vector<RinexSatID> ExSV;
+   RinexSatID SVonly;
       // estimate DT from data
    double estdt[9];
    int ndt[9];
@@ -131,16 +122,16 @@ DayTime CurrEpoch(DayTime::BEGINNING_OF_TIME), PrgmEpoch;
 // this contains all the SVPass's defined so far
 vector<SVPass> SVPList;
 // this is a map relating a satellite to the index in SVPList of the current pass
-map<RinexPrn,int> CurrentSVP;
+map<RinexSatID,int> CurrentSVP;
 
 //------------------------------------------------------------------------------------
 // prototypes
 int ReadFile(int nfile, int reading);
 int ProcessOneEntireEpoch(RinexObsData& ro, int reading);
-int ProcessOneSatOneEpoch(RinexObsData::RinexPrnMap::iterator& it, int reading);
-int FindSatInCurrentSVPList(const RinexPrn& sat, const DayTime& ttag,
+int ProcessOneSatOneEpoch(RinexObsData::RinexSatMap::iterator& it, int reading);
+int FindSatInCurrentSVPList(const RinexSatID& sat, const DayTime& ttag,
   const int reading);
-int CreateNewSVPass(RinexPrn& sat, int in);
+int CreateNewSVPass(RinexSatID& sat, int in);
 
 void ProcessEntireSVPass(int read, int index);
 int AfterReadingFiles(int reading);
@@ -169,7 +160,7 @@ try {
    Title += PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
    cout << Title;
 
-      // set fill char in RinexPrn
+      // set fill char in RinexSatID
    DFC.SVonly.setfill('0');
    DFC.LastEpoch = DayTime::BEGINNING_OF_TIME;
 
@@ -368,7 +359,7 @@ try {
       // decimate data
       // if Tbeg is still undefined, set it to begin of week
    if(DFC.ith > 0.0) {
-      if(fabs(DFC.Tbeg-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.e-8)
+      if(fabs(DFC.Tbeg-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.0e-8)
          DFC.Tbeg = DFC.Tbeg.setGPSfullweek(roe.time.GPSfullweek(),0.0);
       double dt=fabs(roe.time - DFC.Tbeg);
       dt -= DFC.ith*long(0.5+dt/DFC.ith);
@@ -376,13 +367,13 @@ try {
    }
       // save current time
    CurrEpoch = roe.time;
-   if(fabs(DFC.FirstEpoch-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.e-8)
+   if(fabs(DFC.FirstEpoch-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.0e-8)
       DFC.FirstEpoch=CurrEpoch;
 
       // loop over satellites
-   RinexPrn sat;
+   RinexSatID sat;
    //RinexObsData::RinexObsTypeMap otmap;
-   RinexObsData::RinexPrnMap::iterator it;
+   RinexObsData::RinexSatMap::iterator it;
       // loop over sat=it->first, ObsTypeMap=it->second
    for(it=roe.obs.begin(); it != roe.obs.end(); ++it) {
          // Is this satellite excluded ?
@@ -390,11 +381,11 @@ try {
       for(i=0,k=-1; i<DFC.ExSV.size(); i++) {
          if(DFC.ExSV[i] == sat) { k=i; break; }
             // whole system is excluded
-         if(DFC.ExSV[i].prn==-1 && DFC.ExSV[i].system==sat.system) { k=0; break; }
+         if(DFC.ExSV[i].id==-1 && DFC.ExSV[i].system==sat.system) { k=0; break; }
       }
       if(k != -1) continue;
          // if only one satellite is included, skip all the rest
-      if(DFC.SVonly.prn != -1 && !(sat == DFC.SVonly)) continue;
+      if(DFC.SVonly.id != -1 && !(sat == DFC.SVonly)) continue;
 
          // process this sat
       //otmap = it->second;
@@ -434,17 +425,17 @@ catch (...) {
 }
 
 //------------------------------------------------------------------------------------
-int ProcessOneSatOneEpoch(RinexObsData::RinexPrnMap::iterator& it, int reading)
+int ProcessOneSatOneEpoch(RinexObsData::RinexSatMap::iterator& it, int reading)
 {
 try {
    bool good;
-   int in,n,k;
+   int in,n,j,k;
    double P1,P2,L1,L2,dt;
-   RinexPrn sat=it->first;
+   RinexSatID sat=it->first;
    RinexObsData::RinexObsTypeMap otmap=it->second;
 
       // ignore non-GPS satellites
-   if(sat.system != systemGPS) return 0;
+   if(sat.system != SatID::systemGPS) return 0;
 
       // pull out the data
    RinexObsData::RinexObsTypeMap::const_iterator jt;
@@ -456,7 +447,8 @@ try {
       // find this sat in the map of sats,int
    in = FindSatInCurrentSVPList(sat,CurrEpoch,reading);
 
-   if(reading==1) {         // update or create a new pass ---------------------------
+   // update or create a new pass : reading 1 only ---------------------------
+   if(reading==1) {
       dt = 0.0;
       good = true;
       if(L1==0 || L2==0 || P1==0 || P2==0) good=false; //only create pass on good data
@@ -471,64 +463,82 @@ try {
          // should a new pass be created?
       if(good) {
          if(in==-1 || dt>DFC.MaxGap || SVPList[in].Npts*DFC.DT>DFC.MaxGap) {
-            if(in > -1) CurrentSVP.erase(sat);
+            if(in > -1) {
+               if(GDC.Debug > 2)
+                  PrintSVPList(DFC.oflog, in, string("Remove this pass 1"));
+               CurrentSVP.erase(sat);
+            }
             in = CreateNewSVPass(sat, in);
+            PrintSVPList(DFC.oflog, in, string("Create this pass"));
          }
          SVPList[in].EndTime = CurrEpoch;
       }
       return 0;
-   }   // end of reading==1
+   }   // end of reading 1  --------------------------------------------------
 
-   // reading > 1 after this
- 
-   if(in==-1) {
+   // failed to find a current pass for sat, because:
+   // 1) this is the first point in the pass, or
+   // 2) this point is bad, and does not lie inside any pass
+   while(in == -1) {
          // search the list for the right SVPass
-      for(int j=0; j<SVPList.size(); j++) {
-         if(SVPList[j].SV==sat && fabs(CurrEpoch-SVPList[j].BegTime)<1.e-6) {
+      for(j=0; j<SVPList.size(); j++) {
+         //DFC.oflog << "Searching for pass: " << j
+         //   << " : " << SVPList[j].SV << " ? " << sat
+         //   << " , " << SVPList[j].BegTime.printf("%04Y/%02m/%02d %02H:%02M:%02S")
+         //   << " ? " << CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S")
+         //   << endl;
+         if(SVPList[j].SV==sat && fabs(CurrEpoch-SVPList[j].BegTime)<1.0e-8) {
+               // found a pass
             in = j;
-            CurrentSVP.insert(map<RinexPrn,int>::value_type(sat,in));
+            if(SVPList[in].Npts <= 0) {
+               in = -1;
+            }
+            else {
+                  // make this the current pass for this satellite
+               CurrentSVP.insert(map<RinexSatID,int>::value_type(sat,in));
+                  // Resize the arrays in this pass
+               if(reading==2) SVPList[in].Resize(SVPList[in].Npts);
+                  // print
+               if(GDC.Debug > 2) PrintSVPList(DFC.oflog, in,
+                     string(reading==2?"Fill":"Read"),true,false);
+            }
             break;
          }
       }
 
-         // found a pass - and this is its first epoch
-      if(in != -1) {
-         if(SVPList[in].Npts <= 0) in=-1;
-         else {
-               // Resize the arrays in this pass
-            if(reading==2) SVPList[in].Resize(SVPList[in].Npts);
-               // print
-            if(GDC.Debug > 2) PrintSVPList(DFC.oflog, in,
-                  string(reading==2?"Fill":"Read"),true,false);
+      if(in == -1) {
+         // still did not find pass - data did not get into an SVPass
+         // - must be bad data inside a gap
+         if(reading==3) {      // mark the data bad for output
+            it->second[rhead.obsTypeList[inP1]].data = 0;
+            it->second[rhead.obsTypeList[inP2]].data = 0;
+            it->second[rhead.obsTypeList[inL1]].data = 0;
+            it->second[rhead.obsTypeList[inL2]].data = 0;
+         }
+         return 0;
+      }
+
+      else if(SVPList[in].Length <= 0) {
+         // found a pass but its empty - do nothing, but remove if in past
+         if(CurrEpoch-SVPList[in].EndTime > -1.0e-8) {
+            if(GDC.Debug > 2)
+               PrintSVPList(DFC.oflog, in, string("Remove this pass (empty)"));
+            CurrentSVP.erase(sat);
+            in = -1;
          }
       }
-   }
 
-      // still did not find pass - data did not get into an SVPass
-      // - must be bad data inside a gap
-      // mark it and quit
-   if(in==-1) {
-      if(reading==3) {      // mark the data bad for output
-         it->second[rhead.obsTypeList[inP1]].data = 0;
-         it->second[rhead.obsTypeList[inP2]].data = 0;
-         it->second[rhead.obsTypeList[inL1]].data = 0;
-         it->second[rhead.obsTypeList[inL2]].data = 0;
-      }
-      return 0;
-   }
+      else break;
 
-      // empty pass - ignore
-   if(in>-1 && SVPList[in].Length <= 0) {
-      if(CurrEpoch-SVPList[in].EndTime > -1.0e-8) CurrentSVP.erase(sat);
-      return 0;
-   }
+   } // end while(in == -1)
 
-      // At this point we have a good pass with data and reading > 1 --------------
+      // At this point we have a good pass with good data and reading > 1 ----
 
       // find the index for this epoch's data
    dt = CurrEpoch - SVPList[in].BegTime;
    n = int(0.5+dt/DFC.DT);
 
+      // reading 2 -----------------------------------------------------------
       // add this data to the SVPass (editing could be done here)
    if(reading==2) {
       SVPList[in].L1[n] = L1;
@@ -545,8 +555,23 @@ try {
          SVPList[in].Flag[n] = SVPass::OK;
          SVPList[in].Npts++;
       }
+
+      // this point is at the end time of the current pass : process it
+      if(CurrEpoch-SVPList[in].EndTime > -1.0e-8) {
+            // process the entire pass - this is where GDC and phase smoothing are ...
+         ProcessEntireSVPass(reading,in);
+            // remove from the CurrentSVP map
+         if(GDC.Debug > 2) {
+            PrintSVPList(DFC.oflog, in, string("Remove this pass 2"));
+         }
+         CurrentSVP.erase(SVPList[in].SV);
+            // if no output file, there will be no reading 3, so gut the pass
+         if(DFC.OutRinexObs.empty()) SVPList[in].Resize(0);
+      }
+
    }  // end if reading==2
 
+      // reading 3 -----------------------------------------------------------
       // if there is data, store it in RinexObsData for output to Rinex
    if(reading==3) {
       if(SVPList[in].Flag[n] >= SVPass::OK) {
@@ -596,21 +621,11 @@ try {
          if(it->second[rhead.obsTypeList[inL2]].lli & onec)
             it->second[rhead.obsTypeList[inL2]].lli ^= onec;
       }
-   }      // end if reading==3
 
-      // have reached end of pass - process it and then (perhaps) delete contents
-   if(CurrEpoch-SVPList[in].EndTime > -1.0e-8) {
-         // process the entire pass - this is where GDC and phase smoothing are ...
-      if(reading==2) ProcessEntireSVPass(reading,in);
+         // if reached end of pass, gut the structure
+      if(CurrEpoch-SVPList[in].EndTime > -1.0e-8) SVPList[in].Resize(0);
 
-         // remove from the CurrentSVP map
-      //PrintSVPList(DFC.oflog, in, string("Remove this pass"));
-      CurrentSVP.erase(SVPList[in].SV);
-
-         // gut the structure if: 1) no output Rinex, hence no third reading,
-         // 2) this is third reading
-      if(reading==3 || DFC.OutRinexObs.empty()) SVPList[in].Resize(0);
-   }
+   } // end if reading==3
 
    return 0;
 }
@@ -625,15 +640,14 @@ catch (...) {
 }
 
 //------------------------------------------------------------------------------------
-int FindSatInCurrentSVPList(const RinexPrn& sat, const DayTime& ttag,
+int FindSatInCurrentSVPList(const RinexSatID& sat, const DayTime& ttag,
       const int reading)
 {
 try {
-   map<RinexPrn,int>::const_iterator kt=CurrentSVP.find(sat);
-   if(kt != CurrentSVP.end())
-      return kt->second;
-   else
+   map<RinexSatID,int>::const_iterator kt=CurrentSVP.find(sat);
+   if(kt == CurrentSVP.end())
       return -1;
+   return kt->second;
 }
 catch(gpstk::Exception& e) {
    DFC.oferr << "DiscFix:FindSatInCurrentSVPList caught an exception " << e << endl;
@@ -646,7 +660,7 @@ catch (...) {
 }
 
 //------------------------------------------------------------------------------------
-int CreateNewSVPass(RinexPrn& sat, int in)
+int CreateNewSVPass(RinexSatID& sat, int in)
 {
 try {
    int inew;
@@ -657,8 +671,8 @@ try {
    if(DFC.Smooth) SVP.Extra=true;
    SVPList.push_back(SVP);
    inew = SVPList.size()-1;
-   CurrentSVP.insert(map<RinexPrn, int>::value_type(sat,inew));
-   map<RinexPrn,int>::iterator kt= CurrentSVP.find(sat);
+   CurrentSVP.insert(map<RinexSatID, int>::value_type(sat,inew));
+   map<RinexSatID,int>::iterator kt= CurrentSVP.find(sat);
    if(kt == CurrentSVP.end()) {
       gpstk::Exception e("Failed to create new pass");
       GPSTK_THROW(e);
@@ -685,18 +699,21 @@ try {
 
       // not enough data
    if(SVPList[in].Npts < DFC.MinPts) {
-      SVPList[in].P1[2] = SVPList[in].P2[2] = -1.0;
+      if(SVPList[in].Length > 2) SVPList[in].P1[2] = SVPList[in].P2[2] = -1.0;
       return;
    }
 
       // call the GDC
    vector<string> EditCmds;         // GDC will clear this
    k = GPSTKDiscontinuityCorrector(SVPList[in], GDC, EditCmds);
-   if(k) return;
+   // 2/24/06 if(k) return;
 
       // output the results
    for(i=0; i<EditCmds.size(); i++) DFC.ofout << EditCmds[i] << endl;
    EditCmds.clear();
+
+   // 2/24/06
+   if(k) return;
 
       // if smoothing, compute stats on range - phase
       // compute initial bias and average on these 2 quantities:
@@ -964,12 +981,12 @@ try {
       "process a pass");
    dashPts.setMaxCount(1);
    
-   CommandOption dashXprn(CommandOption::hasArgument, CommandOption::stdType,
-      0,"XPRN"," --XPRN <prn>           Exclude this satellite "
-      "(prn may be only <system>)");
+   CommandOption dashXsat(CommandOption::hasArgument, CommandOption::stdType,
+      0,"XPRN"," --XPRN <sat>           Exclude this satellite "
+      "(sat may be only <system>)");
    
    CommandOption dashSV(CommandOption::hasArgument, CommandOption::stdType,
-      0,"SVonly"," --SVonly <prn>         Process this satellite ONLY");
+      0,"SVonly"," --SVonly <sat>         Process this satellite ONLY");
    dashSV.setMaxCount(1);
    
    CommandOption dashLog(CommandOption::hasArgument, CommandOption::stdType,
@@ -1181,17 +1198,17 @@ try {
       DFC.MinPts = StringUtils::asInt(values[0]);
       if(help) DFC.oflog << "Minimum points is " << DFC.MinPts << endl;
    }
-   if(dashXprn.getCount()) {
-      values = dashXprn.getValue();
+   if(dashXsat.getCount()) {
+      values = dashXsat.getValue();
       for(i=0; i<values.size(); i++) {
-         RinexPrn p=StringUtils::asData<RinexPrn>(values[i]);
+         RinexSatID p(values[i]);
          if(help) DFC.oflog << "Exclude satellite " << p << endl;
          DFC.ExSV.push_back(p);
       }
    }
    if(dashSV.getCount()) {
       values = dashSV.getValue();
-      RinexPrn p=StringUtils::asData<RinexPrn>(values[0]);
+      RinexSatID p(values[0]);
       DFC.SVonly = p;
       if(help) DFC.oflog << "Process only satellite : " << p << endl;
    }
@@ -1322,17 +1339,19 @@ try {
       if(DFC.ExSV.size()) {
          DFC.oflog << "Exclude satellites";
          for(i=0; i<DFC.ExSV.size(); i++) {
-            if(DFC.ExSV[i].prn == -1) DFC.oflog << " (all "
-               << (DFC.ExSV[i].system == systemGPS ? "GPS" :
-                  (DFC.ExSV[i].system == systemGlonass ? "Glonass" :
-                  (DFC.ExSV[i].system == systemTransit ? "Transit" :
-                  (DFC.ExSV[i].system == systemGeosync ? "Geosync" : "Mixed"))))
+            if(DFC.ExSV[i].id == -1) DFC.oflog << " (all "
+               << (DFC.ExSV[i].system == SatID::systemGPS ? "GPS" :
+                  (DFC.ExSV[i].system == SatID::systemGlonass ? "Glonass" :
+                  (DFC.ExSV[i].system == SatID::systemTransit ? "Transit" :
+                  (DFC.ExSV[i].system == SatID::systemGalileo ? "Galileo" :
+                  (DFC.ExSV[i].system == SatID::systemGeosync ? "Geosync" :
+                  "Mixed")))))
                << ")";
             else DFC.oflog << " " << DFC.ExSV[i];
          }
          DFC.oflog << endl;
       }
-      if(DFC.SVonly.prn > 0)
+      if(DFC.SVonly.id > 0)
          DFC.oflog << "Process only satellite : " << DFC.SVonly << endl;
       DFC.oflog << "Log file is " << DFC.LogFile << endl;
       DFC.oflog << "Err file is " << DFC.ErrFile << endl;

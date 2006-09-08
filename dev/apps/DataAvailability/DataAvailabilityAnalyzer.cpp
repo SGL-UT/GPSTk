@@ -447,8 +447,8 @@ void DataAvailabilityAnalyzer::process()
 
       for (int prn=1; prn<=32; prn++)
       {
-         gpstk::RinexObsData::RinexPrnMap::const_iterator rpi;
-         rpi = rod.obs.find(gpstk::RinexPrn(prn, systemGPS));
+         gpstk::RinexObsData::RinexSatMap::const_iterator rpi;
+         rpi = rod.obs.find(gpstk::SatID(prn, SatID::systemGPS));
          InView& iv=inView[prn];
          iv.inTrack = rod.obs.size();
 

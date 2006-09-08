@@ -266,9 +266,9 @@ namespace gpstk
                if (t<t0) t0=t;
                if (t>t1) t1=t;
                t2=t;
-               RinexPrn prn(obs.prn, systemGPS);
+               SatID sat(obs.prn, SatID::systemGPS);
                RinexObsData& rod = rem[t];
-               rod.obs[prn] = makeRinexObsTypeMap(obs);
+               rod.obs[sat] = makeRinexObsTypeMap(obs);
                break;
          }
       }
@@ -356,7 +356,7 @@ namespace gpstk
             rotm[RinexObsHeader::L1].ssi = 9;
          }
 
-         RinexPrn p(smodata.PRNID, systemGPS);
+         SatID p(smodata.PRNID, SatID::systemGPS);
          rod.obs[p] = rotm;
       }
 

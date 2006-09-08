@@ -1,13 +1,5 @@
 #pragma ident "$Id$"
 
-
-/**
- * @file VTECMap.hpp
- * VTECMap implements a simple ionospheric model using least squares
- * and slant TEC values from multiple stations.
- */
-
-//------------------------------------------------------------------------------------
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -30,7 +22,12 @@
 //
 //============================================================================
 
-//------------------------------------------------------------------------------------
+/**
+ * @file VTECMap.hpp
+ * VTECMap implements a simple ionospheric model using least squares
+ * and slant TEC values from multiple stations.
+ */
+
 #ifndef GPSTK_VTECMAP_INCLUDE
 #define GPSTK_VTECMAP_INCLUDE
 
@@ -73,7 +70,7 @@ public:
    //int inC1,inL1,inL2,inP1,inP2,inD1,inD2,inS1,inS2;        // indexes in header
    Position xyz;                         // cartesian position (ECEF)
    Position llr;                         // geocentric position in LLR
-   std::map<RinexPrn,DayTime> InitTime;  // time of start of this (cont) phase seg
+   std::map<SatID,DayTime> InitTime;     // time of start of this (cont) phase seg
 
    friend std::ostream& operator<<(std::ostream& os, const Station& f);
 };

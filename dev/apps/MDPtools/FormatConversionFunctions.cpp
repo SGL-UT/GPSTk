@@ -128,7 +128,7 @@ namespace gpstk
       for (MDPEpoch::const_iterator i=mdp.begin(); i!=mdp.end(); i++)
       {
          const MDPObsEpoch& moe = i->second;
-         gpstk::RinexPrn prn(moe.prn, gpstk::systemGPS);
+         gpstk::SatID prn(moe.prn, gpstk::SatID::systemGPS);
          rod.obs[prn] = makeRinexObsTypeMap(moe);
       }
    }

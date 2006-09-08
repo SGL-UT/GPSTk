@@ -1,6 +1,5 @@
 #pragma ident "$Id$"
 
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -37,13 +36,10 @@
 //
 //=============================================================================
 
-
-
-
-
-
-// novaRinex.cpp
-// TD test on Solaris : temp files, intelToHost
+/**
+ * @file novaRinex.cpp
+ * gpstk::novaRinex - convert Novatel binary data files to Rinex
+ */
 
 #include <iostream>
 #include <iomanip>
@@ -86,7 +82,7 @@ double bestdt[9];
 // epochs
 DayTime CurrEpoch,PrevEpoch,FirstEpoch;
 // table of PRN/#obs
-map<RinexPrn,vector<int> > table;
+map<SatID,vector<int> > table;
 vector<int> totals;
 // Command line input
 bool help,Debug,verbose;
@@ -306,7 +302,7 @@ void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh)
    // observation header
    roh.version = 2.1;
    roh.fileType = "Observation";
-   roh.system = systemGPS;
+   roh.system = RinexObsHeader::systemGPS;
    roh.date = CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
    roh.antennaPosition = Triple(0.0,0.0,0.0);
    roh.antennaOffset = Triple(0.0,0.0,0.0);
@@ -334,7 +330,7 @@ void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh)
 
    roh.interval = 10.; // defined later by data
    roh.firstObs = CurrEpoch; // defined later by data
-   roh.firstSystem = systemGPS;
+   roh.firstSystem = RinexObsHeader::systemGPS;
    roh.lastObs = CurrEpoch; // defined later by data
    roh.commentList.push_back("Created by GPSTK program " + Prgm + " " + Vers
       + CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S"));
@@ -364,7 +360,7 @@ void UpdateInformation(RinexObsData& rod)
 {
    int i,j,k;
    double dt;
-   RinexPrn sat;
+   SatID sat;
 
    if(fabs(FirstEpoch - DayTime::BEGINNING_OF_TIME) < 1)  {
       PrevEpoch = FirstEpoch = rod.time;
@@ -396,8 +392,8 @@ void UpdateInformation(RinexObsData& rod)
          << PrevEpoch.printf("%F %.3g") << " > " << CurrEpoch.printf("%F %.3g")
          << endl;
 
-   RinexObsData::RinexPrnMap::iterator jt;
-   map<RinexPrn,vector<int> >::iterator it;
+   RinexObsData::RinexSatMap::iterator jt;
+   map<SatID,vector<int> >::iterator it;
    for(jt=rod.obs.begin(); jt != rod.obs.end(); jt++) {
       // find this satellite in the table
       sat = jt->first;
@@ -502,7 +498,7 @@ int UpdateHeader(string& TempFile, string& OutputFile, RinexObsHeader& rh)
       }
    }
    // now edit the table
-   map<RinexPrn,vector<int> >::iterator jt;
+   map<SatID,vector<int> >::iterator jt;
    for(jt=table.begin(); jt != table.end(); jt++) {      // for each sat..
       for(j=0,i=0; i<indexes.size(); i++,j++)
          if(j != indexes[i]) jt->second[j] = jt->second[indexes[i]];
@@ -514,8 +510,8 @@ int UpdateHeader(string& TempFile, string& OutputFile, RinexObsHeader& rh)
    if(FillOptionalHeader && table.size() > 0) {
       rh.numSVs = table.size();
       rh.valid |= RinexObsHeader::numSatsValid;
-      rh.numObsForPrn.clear();
-      rh.numObsForPrn = table;
+      rh.numObsForSat.clear();
+      rh.numObsForSat = table;
       rh.valid |= RinexObsHeader::prnObsValid;
    }
 

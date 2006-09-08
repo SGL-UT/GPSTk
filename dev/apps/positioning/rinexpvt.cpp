@@ -4,14 +4,14 @@
 using namespace std;
 using namespace gpstk;
 
-double carrierPhaseSmooth(RinexPrn prn, double range, double phase,
+double carrierPhaseSmooth(SatID sat, double range, double phase,
 			  DayTime t, double maxAge=86400,
 			  double datarate=30)
 {
-    static map<RinexPrn,double> smoothedRange;
-    static map<RinexPrn,DayTime> lastEpoch;
-    static map<RinexPrn,double> lastPhase;
-    static map<RinexPrn,DayTime> firstEpoch;
+    static map<SatID,double> smoothedRange;
+    static map<SatID,DayTime> lastEpoch;
+    static map<SatID,double> lastPhase;
+    static map<SatID,DayTime> firstEpoch;
 
     bool debug = true;
     const double teps = .1; // fudge factor for missed epochs 
@@ -25,9 +25,9 @@ double carrierPhaseSmooth(RinexPrn prn, double range, double phase,
     smootherState thisState = NORMAL;
 
     // Yes, if we are just beginning to see data for this PRN
-    map<RinexPrn,double>::iterator i, j;
-    i = smoothedRange.find(prn);
-    j = lastPhase.find(prn);
+    map<SatID,double>::iterator i, j;
+    i = smoothedRange.find(sat);
+    j = lastPhase.find(sat);
 
     initialize = ((i==smoothedRange.end())||(j==lastPhase.end())); 
     if (initialize) thisState = NODATA;
@@ -35,51 +35,51 @@ double carrierPhaseSmooth(RinexPrn prn, double range, double phase,
     // Yes, if we skipped an epoch
     if (!initialize)
     {
-	if (initialize = ( fabs(t - lastEpoch[prn] - datarate) > teps ))
+	if (initialize = ( fabs(t - lastEpoch[sat] - datarate) > teps ))
            thisState = SKIPPEDEPOCH;
     }
 
     // Yes, if the filter is too old
     if (!initialize)
     {
-        if (initialize = ( fabs( t - firstEpoch[prn]) > maxAge))
+        if (initialize = ( fabs( t - firstEpoch[sat]) > maxAge))
            thisState = AGE;
     }
 
     if (initialize)
     {
-	smoothedRange[prn]=range;
-        firstEpoch[prn]=t;
+	smoothedRange[sat]=range;
+        firstEpoch[sat]=t;
     }
     else
-	smoothedRange[prn] = 
-	    (range + (k-1)*(smoothedRange[prn] + phase - lastPhase[prn]))/k;
+	smoothedRange[sat] = 
+	    (range + (k-1)*(smoothedRange[sat] + phase - lastPhase[sat]))/k;
 
-    if (fabs((smoothedRange[prn] - range)) > 20)
+    if (fabs((smoothedRange[sat] - range)) > 20)
     { 
        initialize = true;
-       smoothedRange[prn]=range;
-       firstEpoch[prn]=t; 
+       smoothedRange[sat]=range;
+       firstEpoch[sat]=t; 
        thisState = SLIP;
     }
 
-    lastPhase[prn] = phase;
-    lastEpoch[prn] = t;
+    lastPhase[sat] = phase;
+    lastEpoch[sat] = t;
 
     if (debug)
     {
        static ofstream debugStream("smootherdebug.txt");
        debugStream << t.printf("%F %g ");
        //debugStream << t.printf("%Y %m %d %02H %02M %f ");
-       debugStream << prn.prn << " "; 
-       debugStream << setprecision(12) << smoothedRange[prn] << " ";
+       debugStream << sat.id << " "; 
+       debugStream << setprecision(12) << smoothedRange[sat] << " ";
        debugStream << range << " " << phase << " ";
        debugStream << thisState << " ";
-//       debugStream << lastPhase[prn];
+//       debugStream << lastPhase[sat];
        debugStream << endl;
     }
 
-    return smoothedRange[prn];
+    return smoothedRange[sat];
 
 }
 
@@ -294,25 +294,25 @@ void RINEXPVTSolution::process()
 	// Apply editing criteria 
 	if  (rod.epochFlag == 0 || rod.epochFlag == 1) // Begin usable data
         {
-	    vector<RinexPrn> prnVec;
+	    vector<SatID> satVec;
             vector<double> rangeVec;
             Xvt svpos;
             double ionocorr;
 
 	    try {	
-	    RinexObsData::RinexPrnMap::const_iterator it;
+	    RinexObsData::RinexSatMap::const_iterator it;
             for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
             {
 		RinexObsData::RinexObsTypeMap otmap = (*it).second;
 
-                svpos = virtualEphStore->getPrnXvt((*it).first.prn,rod.time);
+                svpos = virtualEphStore->getSatXvt((*it).first,rod.time);
                 double elevation = aprioriPosition.elvAngle(svpos.x);
                 double azimuth =  aprioriPosition.azAngle(svpos.x);
                 
                 bool healthy=true;
                 if (hasBCEstore)
                 {
-                   if (bcestore.getPrnHealth((*it).first.prn,rod.time)!=0)
+                   if (bcestore.getSatHealth((*it).first,rod.time)!=0)
                       healthy=false;
                 }
                 
@@ -334,7 +334,7 @@ void RINEXPVTSolution::process()
                       ionocorr = spsIonoCorr.getCorrection(rod.time, 
                                                            aprioriPosition,
                                                            elevation, azimuth);
-                  prnVec.push_back((*it).first);
+                  satVec.push_back((*it).first);
                   double range  = (*itCA).second.data-ionocorr;
 
                   if ((useSmoother) && (itL1 != otmap.end()))
@@ -363,7 +363,7 @@ void RINEXPVTSolution::process()
                       
                    if (fabs(ionocorr) < maxIonoDelay)
                    {
-                      prnVec.push_back((*it).first);
+                      satVec.push_back((*it).first);
                       double range = (*itP1).second.data-ionocorr;
                        
                       if ( (useSmoother) && (itL1!=otmap.end()) && (itL2!=otmap.end()) )
@@ -385,7 +385,7 @@ void RINEXPVTSolution::process()
 
 
 
-               prSolver.RAIMCompute(rod.time,prnVec,rangeVec, *virtualEphStore, \
+               prSolver.RAIMCompute(rod.time,satVec,rangeVec, *virtualEphStore, \
 			            &ggTropModel);
 	    }
             catch (Exception e) {

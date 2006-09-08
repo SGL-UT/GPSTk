@@ -1,11 +1,5 @@
 #pragma ident "$Id$"
 
-/**
- * @file RinexEditor.hpp
- * Edit Rinex observation files.
- */
-
-//------------------------------------------------------------------------------------
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -28,6 +22,11 @@
 //
 //============================================================================
 
+/**
+ * @file RinexEditor.hpp
+ * Edit Rinex observation files.
+ */
+
 #ifndef RINEX_EDITING_COMMANDS_INCLUDE
 #define RINEX_EDITING_COMMANDS_INCLUDE
 
@@ -36,6 +35,7 @@
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "DayTime.hpp"
+#include "RinexSatID.hpp"
 
 #include <fstream>
 #include <string>
@@ -70,7 +70,7 @@ private:
    /// The type of this command
    TYPE type;
    /// Satellite identifier for data to which this command will apply.
-   RinexPrn SV;
+   RinexSatID SV;
    /// Time associated with this command.
    DayTime time;
    /// Sign associated with this command.
@@ -130,7 +130,7 @@ private:
    /// vector of Rinex observation types in header.
    std::vector<RinexObsHeader::RinexObsType> ObsTypes;
    /// vector of satellites to be deleted.
-   std::vector<RinexPrn> DelSV;
+   std::vector<RinexSatID> DelSV;
    /// input and output Rinex headers.
    RinexObsHeader RHIn,RHOut;
    /// flag for editing the Rinex header.
@@ -251,11 +251,11 @@ public:
 class TableData {                      // class used to store PRN/Obs table
 public:
    /// satellite identifier.
-   RinexPrn prn;
+   RinexSatID prn;
    /// vector of the number of observations, parallel to the obs types in the header.
    std::vector<int> nobs;
    /// constructor, given a satellite id and the number of observation types.
-   TableData(const RinexPrn& p, const int& n) { prn=p; nobs=std::vector<int>(n); };
+   TableData(const RinexSatID& p, const int& n) { prn=p; nobs=std::vector<int>(n); };
    /// operator==(), needed for find() (compares prn only).
    inline bool operator==(const TableData& d) {return d.prn == prn;}
 };

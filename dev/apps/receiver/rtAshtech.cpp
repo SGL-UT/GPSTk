@@ -53,7 +53,7 @@ void matlabify(const RinexObsData& rod)
 {
    string time=rod.time.printf("%F %9.2g ");
    
-   RinexObsData::RinexPrnMap::const_iterator i_sat;
+   RinexObsData::RinexSatMap::const_iterator i_sat;
    RinexObsData::RinexObsTypeMap::const_iterator i_obs;
    
    for (i_sat=rod.obs.begin(); i_sat!=rod.obs.end(); i_sat++)
@@ -65,7 +65,7 @@ void matlabify(const RinexObsData& rod)
       }
 
       
-      short PRNID = i_sat->first.prn;
+      short PRNID = i_sat->first.id;
 
       i_obs = i_sat->second.find(RinexObsHeader::C1);      
       double C1 = i_obs->second.data;

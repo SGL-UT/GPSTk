@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "icd_200_constants.hpp"
+#include "RinexSatID.hpp"
 
 #include "RinexObsBase.hpp"
 #include "RinexObsHeader.hpp"

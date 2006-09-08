@@ -1,10 +1,36 @@
-// PRSolve.cpp  Read a Rinex observation file and compute an autonomous
-// pseudorange position solution, using a RAIM-like algorithm to eliminate outliers.
 // $Id$
+
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+/**
+ * @file PRSolve.cpp  Read a Rinex observation file and compute an autonomous GPS
+ * pseudorange position solution, using a RAIM-like algorithm to eliminate outliers.
+ */
 
 #define RANGECHECK 1        // make Matrix and Vector check limits
 #include "Exception.hpp"
 #include "DayTime.hpp"
+#include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
@@ -38,7 +64,7 @@ using namespace std;
 
    // prgm data
 string PrgmName("PRSolve");
-string PrgmVers("1.7 3/06");
+string PrgmVers("1.9 9/06");
 
 typedef struct Configuration {
       // input files
@@ -81,7 +107,7 @@ typedef struct Configuration {
    double DataInt;
    int Freq;
    bool UseCA;
-   vector<RinexPrn> ExSV;
+   vector<SatID> ExSV;
    string TropType;
    double T,Pr,RH;
    TropModel *pTropModel;
@@ -138,7 +164,7 @@ Vector<double> zAPR,zRPR,zANE,zRNE,zzAPR,zzRPR,zzANE,zzRNE;
 //------------------------------------------------------------------------------------
 // prototypes
 int ReadFile(int nfile);
-int SolutionAlgorithm(vector<RinexPrn>& Sats,
+int SolutionAlgorithm(vector<SatID>& Sats,
                       vector<double>& PRanges,
                       double& RMSresid);
 int AfterReadingFiles(void);
@@ -406,7 +432,7 @@ try {
    while(1) {
          // read next obs
       double RMSrof;
-      vector<RinexPrn> Satellites;
+      vector<SatID> Satellites;
       vector<double> Ranges;
       Matrix<double> inform;
       RinexObsData robsd,auxPosData;
@@ -442,7 +468,8 @@ try {
          iret = 0;
 
          if(C.Debug) C.oflog << "process: " << robsd.time
-            << ", Flag " << robsd.epochFlag << ", clk " << robsd.clockOffset << endl;
+            << ", Flag " << robsd.epochFlag << ", clk " << robsd.clockOffset
+            << endl;
 
             // stay within time limits
          if(robsd.time < C.Tbeg) { iret = 1; break; }
@@ -470,12 +497,12 @@ try {
          Nsvs = 0;
          Satellites.clear();
          Ranges.clear();
-         RinexObsData::RinexPrnMap::const_iterator it;
+         RinexObsData::RinexSatMap::const_iterator it;
          for(it=robsd.obs.begin(); it != robsd.obs.end(); ++it) {
             // loop over sat=it->first, ObsTypeMap=it->second
             int in,n;
             double P1=0,P2=0,L1,L2,D1,D2,S1,S2;
-            RinexPrn sat=it->first;
+            SatID sat=it->first;
             RinexObsData::RinexObsTypeMap otmap=it->second;
 
                // pull out the data
@@ -498,12 +525,15 @@ try {
                S2=jt->second.data;
       
             // is the satellite excluded?
+            if(sat.system != SatID::systemGPS) continue;     // GPS only
+            bool ok=true;
             for(i=0; i<C.ExSV.size(); i++)
-               if(C.ExSV[i]==sat) continue;
+               if(C.ExSV[i] == sat) { ok=false; break; }
+            if(!ok) continue;
       
-            // NB 2 is not yet implemented
-            //if(C.Freq != 2 && P1<=0) continue;
-            //if(C.Freq != 1 && P2<=0) continue;
+            // NB do not exclude negative P, as some clocks can go far
+            if(C.Freq != 2 && P1==0.0) continue;
+            if(C.Freq != 1 && P2==0.0) continue;
 
             // if position known and elevation limit given, apply elevation mask
             if(C.knownpos.getCoordinateSystem() != Position::Unknown
@@ -512,7 +542,7 @@ try {
                CorrectedEphemerisRange CER;
                try {
                   //double ER =
-                  CER.ComputeAtReceiveTime(CurrEpoch, C.knownpos, sat.prn, *pEph);
+                  CER.ComputeAtReceiveTime(CurrEpoch, C.knownpos, sat, *pEph);
                   if(CER.elevation < C.elevLimit) ok=false;
                   if(C.Debug) C.oflog << "Ephemeris range is "
                      << setprecision(4) << CER.rawrange << endl;
@@ -689,7 +719,7 @@ catch (...) {
 //        1 skip this epoch,
 //        2 output to Rinex,
 //        3 output position also
-int SolutionAlgorithm(vector<RinexPrn>& Sats,
+int SolutionAlgorithm(vector<SatID>& Sats,
                       vector<double>& PRanges,
                       double& RMSresid)
 {
@@ -751,12 +781,12 @@ try {
       if(C.Debug) {
          C.oflog << "Satellites after  Prepare(" << iret << "):";
          for(i=0; i<Sats.size(); i++)
-            C.oflog << " " << setw(2) << Sats[i].prn; C.oflog << endl;
+            C.oflog << " " << setw(2) << Sats[i].id; C.oflog << endl;
          C.oflog << "Matrix SVP(" << SVP.rows() << "," << SVP.cols() << "):\n"
             << fixed << setw(13) << setprecision(3) << SVP << endl;
       }
 
-      for(i=0; i<Sats.size(); i++) UseSats[i] = (Sats[i].prn > 0 ? true : false);
+      for(i=0; i<Sats.size(); i++) UseSats[i] = (Sats[i].id > 0 ? true : false);
 
       iret = PRSolution::AutonomousPRSolution(CurrEpoch, UseSats, SVP, C.pTropModel,
          C.algebra, niter, conv, Solution, Covariance, Residual, Slope,
@@ -774,7 +804,7 @@ try {
          << " " << fixed << setw(5) << setprecision(1) << max(Slope);
       C.oflog << " " << niter
             << " " << scientific << setw(8) << setprecision(2) << conv;
-      for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].prn;
+      for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
       C.oflog << endl;
 
       // compute residuals using known position, and output
@@ -799,7 +829,7 @@ try {
             << " " << fixed << setw(5) << setprecision(1) << max(Slope)
             << " " << niter
             << " " << scientific << setw(8) << setprecision(2) << conv;
-         for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].prn;
+         for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
          C.oflog << endl;
 
          // accumulate statistis
@@ -826,7 +856,7 @@ try {
             << " " << fixed << setw(5) << setprecision(1) << max(Slope)
             << " " << niter
             << " " << scientific << setw(8) << setprecision(2) << conv;
-         for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].prn;
+         for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
          C.oflog << endl;
 
          // accumulate statistis
@@ -852,7 +882,7 @@ try {
       return iret;
    }
    for(Nsvs=0,i=0; i<Sats.size(); i++)
-      if(Sats[i].prn > 0)
+      if(Sats[i].id > 0)
          Nsvs++;
    RMSresid = prsol.RMSResidual;
 
@@ -864,10 +894,10 @@ try {
       << " " << setw(16) << setprecision(6) << prsol.Solution(2)
       << " " << setw(14) << setprecision(6) << prsol.Solution(3)
       << " " << setw(12) << setprecision(6) << prsol.RMSResidual
-      << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
+      << " " << setw(5) << setprecision(1) << prsol.MaxSlope
       << " " << prsol.NIterations
       << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
-   for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].prn;
+   for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
    C.oflog << " (" << iret << ")" << (prsol.isValid() ? " V" : " NV")
       << endl;
    //C.oflog << "prsol Sol. returned " << iret << " at " << CurrEpoch << endl;
@@ -894,7 +924,7 @@ try {
          << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
          << " " << prsol.NIterations
          << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
-      for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].prn;
+      for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
       C.oflog << " (" << iret << ")" << (prsol.isValid() ? " V" : " NV")
          << endl;
 
@@ -922,7 +952,7 @@ try {
          << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
          << " " << prsol.NIterations
          << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
-      for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].prn;
+      for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
       C.oflog << " (" << iret << ")" << (prsol.isValid() ? " V" : " NV")
          << endl;
 
@@ -1181,8 +1211,8 @@ try {
       " --MinElev <el>       Minimum elevation angle (deg) (only if --PosXYZ)");
    dashElev.setMaxCount(1);
 
-   CommandOption dashXprn(CommandOption::hasArgument, CommandOption::stdType,
-      0,"XPRN"," --XPRN <prn>         Exclude this satellite.");
+   CommandOption dashXsat(CommandOption::hasArgument, CommandOption::stdType,
+      0,"exSat"," --exSat <sat>        Exclude this satellite.");
 
    CommandOption dashTrop(CommandOption::hasArgument, CommandOption::stdType,
       0,"Trop"," --Trop <model,T,P,H> Trop model (one of BL,SA,NB,GG,GGH (cf.GPSTk)),"
@@ -1210,8 +1240,8 @@ try {
    dashForm.setMaxCount(1);
 
    CommandOption dashRfile(CommandOption::hasArgument, CommandOption::stdType,
-      0,"RinexFile","# Rinex output:\n"
-      " --RinexFile <file>   Output Rinex obs file name");
+      0,"outRinex","# Rinex output:\n"
+      " --outRinex <file>    Output Rinex obs file name");
    dashRfile.setMaxCount(1);
    
    CommandOption dashRrun(CommandOption::hasArgument, CommandOption::stdType,
@@ -1250,7 +1280,7 @@ try {
 
    CommandOptionParser Par(
    "Prgm PRSolve reads one or more Rinex observation files, plus one or more\n"
-   "   navigation (ephemeris) files, and computes an autonomous pseudorange\n"
+   "   navigation (ephemeris) files, and computes an autonomous GPS pseudorange\n"
    "   position solution, using a RAIM-like algorithm to eliminate outliers.\n"
    "   Output is to the log file, and also optionally to a Rinex obs file with\n"
    "   the position solutions in comments in auxiliary header blocks.\n");
@@ -1495,12 +1525,12 @@ try {
       C.timeFormat = values[0];
       if(help) cout << " Input: time format " << C.timeFormat << endl;
    }
-   if(dashXprn.getCount()) {
-      values = dashXprn.getValue();
+   if(dashXsat.getCount()) {
+      values = dashXsat.getValue();
       for(i=0; i<values.size(); i++) {
-         RinexPrn p=StringUtils::asData<RinexPrn>(values[i]);
+         RinexSatID p(values[i]);
+         C.ExSV.push_back(SatID(p));
          if(help) cout << "Exclude satellite " << p << endl;
-         C.ExSV.push_back(p);
       }
    }
    if(dashTrop.getCount()) {
@@ -1601,8 +1631,13 @@ try {
    if(C.UseCA) C.oflog << " 'Use C/A' flag is set\n";
    //C.oflog << " DT is set to " << C.DT << endl;
    if(C.ExSV.size()) {
+      RinexSatID p;
+      p.setfill('0');
       C.oflog << " Exclude satellites";
-      for(i=0; i<C.ExSV.size(); i++) C.oflog << " " << C.ExSV[i];
+      for(i=0; i<C.ExSV.size(); i++) {
+         p = C.ExSV[i];
+         C.oflog << " " << p;
+      }
       C.oflog << endl;
    }
    C.oflog << " Trop model: " << C.TropType
@@ -1698,10 +1733,13 @@ try {
       ver = true;
       cout << "Found the verbose switch" << endl;
    }
+   // deprecated args
    else if(string(arg)==string("--EpochBeg")) { Args.push_back("--BeginTime"); }
    else if(string(arg)==string("--GPSBeg")) { Args.push_back("--BeginTime"); }
    else if(string(arg)==string("--EpochEnd")) { Args.push_back("--EndTime"); }
    else if(string(arg)==string("--GPSEnd")) { Args.push_back("--EndTime"); }
+   else if(string(arg)==string("--RinexFile")) { Args.push_back("--outRinex"); }
+   else if(string(arg)==string("--XPRN")) { Args.push_back("--exSat"); }
    else Args.push_back(arg);
 }
 catch(gpstk::Exception& e) {

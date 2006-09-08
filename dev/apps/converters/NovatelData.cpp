@@ -1,12 +1,5 @@
 #pragma ident "$Id$"
 
-
-/**
- * @file NovatelData.cpp
- * gpstk::NovatelData - container for Novatel data, with methods to convert
- * binary data files to Rinex
- */
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -43,10 +36,11 @@
 //
 //=============================================================================
 
-
-
-
-
+/**
+ * @file NovatelData.cpp
+ * gpstk::NovatelData - container for Novatel data, with methods to convert
+ * binary data files to Rinex
+ */
 
 #include "BinUtils.hpp"
 #include "StringUtils.hpp"
@@ -678,10 +672,10 @@ namespace gpstk
       int i,j;
       short temps;
       long nobs;            // number of observation records (may be 2/PRN: L1 and L2)
-      RinexPrn sat;
+      SatID sat;
       RinexObsData rod;     // this will be returned
       RinexObsData::RinexDatum rd;
-      RinexObsData::RinexPrnMap::iterator satit;
+      RinexObsData::RinexSatMap::iterator satit;
       RinexObsData::RinexObsTypeMap::iterator obsit;
 
       if(     rectype == RGEB) {             // OEM2
@@ -807,7 +801,7 @@ namespace gpstk
             //ignore if(!ParityKnown) Ph = 0.0;
 
             // fill RinexObsData rod
-            sat = RinexPrn(prn,systemGPS);
+            sat = SatID(prn,SatID::systemGPS);
             satit = rod.obs.find(sat);          // find the sat
             if(satit == rod.obs.end()) {        // not there - add this sat
                RinexObsData::RinexObsTypeMap rotm;
@@ -935,7 +929,7 @@ namespace gpstk
                if(!PhaseLock || !CodeLock) continue;        // data is not reliable
 
                // fill RinexObsData rod
-               sat = RinexPrn(prn,systemGPS);
+               sat = SatID(prn,SatID::systemGPS);
                satit = rod.obs.find(sat);          // find the sat
                if(satit == rod.obs.end()) {        // not there - add this sat
                   RinexObsData::RinexObsTypeMap rotm;
@@ -1077,7 +1071,7 @@ namespace gpstk
                // what to do with HalfCycle?
 
                // fill RinexObsData rod
-               sat = RinexPrn(prn,systemGPS);
+               sat = SatID(prn,SatID::systemGPS);
                satit = rod.obs.find(sat);          // find the sat
                if(satit == rod.obs.end()) {        // not there - add this sat
                   RinexObsData::RinexObsTypeMap rotm;

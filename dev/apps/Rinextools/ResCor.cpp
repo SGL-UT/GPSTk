@@ -1,5 +1,27 @@
 #pragma ident "$Id$"
 
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
 /**
  * @file ResCor.cpp
  * 'Residuals and Corrections'
@@ -14,17 +36,14 @@
  */
 
 //------------------------------------------------------------------------------------
-//lgpl-license START
-//lgpl-license END
-
-//------------------------------------------------------------------------------------
 // ToDo
 // catch exceptions -- elsewhere and on reading header and obs
 // allow user to specify trop model, both for RAIM and for TR output
 //
-//------------------------------------------------------------------------------------
+
 #include "StringUtils.hpp"
 #include "DayTime.hpp"
+#include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
@@ -39,7 +58,6 @@
 #include "BCEphemerisStore.hpp"
 #include "EphemerisRange.hpp"
 #include "TropModel.hpp"
-//#include "RAIMSolution.hpp"
 #include "PRSolution.hpp"
 #include "WGS84Geoid.hpp"           // for obliquity
 #include "Stats.hpp"
@@ -67,7 +85,7 @@ using namespace gpstk::StringUtils;
 //------------------------------------------------------------------------------------
    // prgm data
 string PrgmName("ResCor");
-string PrgmVers("3.5 8/16/04");
+string PrgmVers("3.6 8/28/06");
 
 // data used in program
 const double CFF=C_GPS_M/OSC_FREQ;
@@ -98,7 +116,7 @@ string Title;
    // input flags and data
 bool Debug,Verbose,Callow,Cforce;
 double IonoHt;
-RinexPrn SVonly;
+RinexSatID SVonly;
 string ErrFile,LogFile;
 ofstream logof,oferr;         // don't call it oflog - RinexEditor has that
    // Rinex headers, input and output, saved
@@ -122,7 +140,7 @@ string RefPosFile,KnownPos;
 bool doRAIM,editRAIM,outRef,headRAIM,HaveRAIM;
 bool RefPosInput,KnownPosInput,KnownLLH,RefPosFlat;
 double minElev;
-vector<RinexPrn> Sats;
+vector<SatID> Sats;
 vector<double> PRange;
 //RAIMSolution RAIMSol;
 PRSolution prsol;
@@ -152,9 +170,9 @@ typedef struct range_and_phase_data {
 } RCData;
    // map of <sat,RCData>
 RCData DataStore;
-map<RinexPrn,RCData> DataStoreMap;
+map<RinexSatID,RCData> DataStoreMap;
    // debiasing output data
-map<RinexObsHeader::RinexObsType,map<RinexPrn,double> > AllBiases; // (OT,SV)
+map<RinexObsHeader::RinexObsType,map<RinexSatID,double> > AllBiases; // (OT,SV)
    // reference position as function of time (from input)
 map<DayTime,RefPosData> RefPosMap;
 
@@ -222,7 +240,7 @@ void ComputeNewOTs(RinexObsData& rod);
 void CloseOutputFile(void);
 void PreProcessArgs(const char *arg, vector<string>& Args);
 int setBiasLimit(RinexObsHeader::RinexObsType& ot, double lim);
-double removeBias(const RinexObsHeader::RinexObsType& ot, const RinexPrn& prn,
+double removeBias(const RinexObsHeader::RinexObsType& ot, const RinexSatID& sat,
    bool& reset, DayTime& tt, double delta);
 
 //------------------------------------------------------------------------------------
@@ -401,7 +419,7 @@ try {
    dashih.setMaxCount(1);
 
    CommandOption dashSV(CommandOption::hasArgument, CommandOption::stdType,
-      0,"SVonly"," --SVonly <prn>  Process this satellite ONLY");
+      0,"SVonly"," --SVonly <sat>  Process this satellite ONLY");
    dashSV.setMaxCount(1);
 
    // output files
@@ -666,9 +684,8 @@ try {
    }
    if(dashSV.getCount()) {
       values = dashSV.getValue();
-      RinexPrn p=StringUtils::asData<RinexPrn>(values[0]);
-      SVonly = p;
-      if(help) cout << "Process only satellite : " << p << endl;
+      SVonly.fromString(values[0]);
+      if(help) cout << "Process only satellite : " << SVonly << endl;
    }
    if(dashLog.getCount()) {
       values = dashLog.getValue();
@@ -752,7 +769,7 @@ try {
          << REC.Tolerance() << " seconds." << endl;
       logof << "Log file name is " << LogFile << " (this file)" << endl;
       logof << "Err file name is " << ErrFile << endl;
-      if(SVonly.prn > 0) logof << "Process only satellite : " << SVonly << endl;
+      if(SVonly.id > 0) logof << "Process only satellite : " << SVonly << endl;
 
       if(!NavDir.empty()) logof << "Nav Directory is " << NavDir  << endl;
       if(NavFiles.size()) {
@@ -781,9 +798,9 @@ try {
       logof << "Ionosphere height is " << IonoHt << " km" << endl;
       if(AllBiases.size()) {
          logof << "The list of de-biasing limits is:\n";
-         map<RinexObsHeader::RinexObsType,map<RinexPrn,double> >::iterator it;
+         map<RinexObsHeader::RinexObsType,map<RinexSatID,double> >::iterator it;
          for(it=AllBiases.begin(); it!=AllBiases.end(); it++) {
-            map<RinexPrn,double>::iterator jt;
+            map<RinexSatID,double>::iterator jt;
             for(jt=it->second.begin(); jt!=it->second.end(); jt++) {
                logof << "  Bias limit(" << RinexObsHeader::convertObsType(it->first)
                   << ") = " << fixed << setprecision(3) << jt->second << endl;
@@ -1403,7 +1420,7 @@ int RCRinexEditor::BeforeWritingObs(RinexObsData& roout)
       if(Verbose)
          logof << "RAIM output: " << roout.time.printf("%02M:%04.1f ") << stst1.str();
 
-      //for(Nsvs=0,i=0; i<Sats.size(); i++) if(Sats[i].prn > 0) Nsvs++;
+      //for(Nsvs=0,i=0; i<Sats.size(); i++) if(Sats[i].sat > 0) Nsvs++;
       //PDOP = RSS(prsol.Covariance(0,0),
       //      prsol.Covariance(1,1),prsol.Covariance(2,2));
       //GDOP = RSS(PDOP, prsol.Covariance(3,3));
@@ -1429,14 +1446,14 @@ int RCRinexEditor::BeforeWritingObs(RinexObsData& roout)
 void SaveData(const RinexObsData& rod, const RinexObsHeader& rhd,
    int xL1, int xL2, int xP1, int xP2)
 {
-   RinexPrn sat;
+   RinexSatID sat;
    RinexObsData::RinexObsTypeMap otmap;
-   RinexObsData::RinexPrnMap::const_iterator it;
+   RinexObsData::RinexSatMap::const_iterator it;
    RinexObsData::RinexObsTypeMap::const_iterator jt;
-   map<RinexPrn,RCData>::const_iterator kt;
+   map<RinexSatID,RCData>::const_iterator kt;
 
    for(it=rod.obs.begin(); it != rod.obs.end(); ++it) { // loop over satellites
-      sat = it->first;
+      sat = RinexSatID(it->first.id,SatID::systemGPS);
       otmap = it->second;
       // find the saved input data for this sat, if any
       kt = DataStoreMap.find(sat);
@@ -1467,27 +1484,27 @@ int UpdateRxPosition(void)
    int iret,i;
    double rho;
    Xvt xvt;
-   RinexPrn sat;
+   RinexSatID sat;
    CorrectedEphemerisRange CER;
 
       // compute a RAIM solution, add it to average
    HaveRAIM = false;
-   map<RinexPrn,RCData>::const_iterator kt;
+   map<RinexSatID,RCData>::const_iterator kt;
    if(doRAIM) {
       Sats.clear();
       PRange.clear();
 
-         //map<RinexPrn,RCData> DataStoreMap;
+         //map<RinexSatID,RCData> DataStoreMap;
       for(kt=DataStoreMap.begin(); kt != DataStoreMap.end(); kt++) {
          if(kt->second.P1 == 0 || kt->second.P2 == 0) continue;
          sat = kt->first;
          if(minElev > 0.0 && CurrRef.valid) {
             try {
                if(SP3EphList.size() > 0)
-                  rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat.prn,
+                  rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat,
                         SP3EphList);
                else if(BCEphList.size() > 0)
-                  rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat.prn,
+                  rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat,
                         BCEphList);
                else continue;
             }
@@ -1516,7 +1533,7 @@ int UpdateRxPosition(void)
       if(HaveRAIM) {
          if(Verbose) {                          // output results and return value
             int Nsvs;
-            for(Nsvs=0,i=0; i<Sats.size(); i++) if(Sats[i].prn > 0) Nsvs++;
+            for(Nsvs=0,i=0; i<Sats.size(); i++) if(Sats[i].id > 0) Nsvs++;
             logof << "RPF " << setw(2) << Sats.size()-Nsvs
                << " " << setw(4) << CurrentTime.GPSfullweek() << fixed
                << " " << setw(10) << setprecision(3) << CurrentTime.GPSsecond()
@@ -1530,7 +1547,7 @@ int UpdateRxPosition(void)
                << " " << prsol.NIterations
                << " " << scientific
                << setw(8) << setprecision(2) << prsol.Convergence;
-            for(i=0; i<Sats.size(); i++) logof << " " << setw(3) << Sats[i].prn;
+            for(i=0; i<Sats.size(); i++) logof << " " << setw(3) << Sats[i].id;
             logof << " (" << iret << ")" << (prsol.isValid() ? " V":" NV") << endl;
          }
 
@@ -1561,8 +1578,8 @@ int UpdateRxPosition(void)
             if(iret == -4) {
                logof << "ephemeris not found for satellite'";
                for(i=0; i<Sats.size(); i++) {
-                  if(Sats[i].prn < 0) {
-                     Sats[i].prn *= -1;
+                  if(Sats[i].id < 0) {
+                     Sats[i].id *= -1;
                      logof << " " << Sats[i];
                   }
                }
@@ -1609,10 +1626,10 @@ void ComputeNewOTs(RinexObsData& rod)
 {
    bool HaveR,HaveP,HaveEphRange,ok,reset,HaveEphThisSat;
    double rho,IPPLat,IPPLon,Obliq,Trop,Tgd;
-   RinexObsData::RinexPrnMap::iterator it;         // for loop over sats
-   map<RinexPrn,RCData>::const_iterator kt;        // for DataStoreMap
-   vector<RinexPrn> SVDelete;
-   RinexPrn sat;
+   RinexObsData::RinexSatMap::iterator it;         // for loop over sats
+   map<RinexSatID,RCData>::const_iterator kt;        // for DataStoreMap
+   vector<RinexSatID> SVDelete;
+   RinexSatID sat;
    //RinexObsData::RinexObsTypeMap otmap;
    CorrectedEphemerisRange CER;
 
@@ -1623,12 +1640,12 @@ void ComputeNewOTs(RinexObsData& rod)
 
       // loop over sats
    for(it=rod.obs.begin(); it != rod.obs.end(); ++it) {
-      sat = it->first;
+      sat = RinexSatID(it->first.id,SatID::systemGPS);
       //otmap = it->second; 
 
          // delete this satellite if it is excluded, or if RAIM has marked it
-      if( (SVonly.prn > 0 && sat != SVonly) || (editRAIM && HaveRAIM &&
-         find(Sats.begin(),Sats.end(),RinexPrn(-sat.prn,sat.system)) != Sats.end())) {
+      if( (SVonly.id > 0 && sat != SVonly) || (editRAIM && HaveRAIM &&
+         find(Sats.begin(),Sats.end(),RinexSatID(-sat.id,sat.system))!=Sats.end())) {
          SVDelete.push_back(sat);
          continue;
       }
@@ -1655,10 +1672,10 @@ void ComputeNewOTs(RinexObsData& rod)
          xvt.x[2] = CurrRef.RxPos.Z();
          try {
             if(SP3EphList.size() > 0)
-               rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat.prn,
+               rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat,
                      SP3EphList);
             else if(BCEphList.size() > 0)
-               rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat.prn,
+               rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat,
                      BCEphList);
             else
                throw gpstk::EphemerisStore::NoEphemerisFound("No ephemeris in store");
@@ -1690,7 +1707,7 @@ void ComputeNewOTs(RinexObsData& rod)
                // and will throw(InvalidTropModel) here
             Trop = ggtm.correction(CER.elevation);
             if(BCEphList.size() > 0) {
-               const EngEphemeris& eph = BCEphList.findEphemeris(sat.prn,CurrentTime);
+               const EngEphemeris& eph = BCEphList.findEphemeris(sat,CurrentTime);
                Tgd = C_GPS_M * eph.getTgd();
             }
             }
@@ -1718,9 +1735,9 @@ void ComputeNewOTs(RinexObsData& rod)
          unsigned long ref;
          try {
             if(SP3EphList.size())
-               CER.svPosVel = SP3EphList.getPrnXvt(sat.prn,CurrentTime);
+               CER.svPosVel = SP3EphList.getSatXvt(sat,CurrentTime);
             else
-               CER.svPosVel = BCEphList.getPrnXvt(sat.prn,CurrentTime);
+               CER.svPosVel = BCEphList.getSatXvt(sat,CurrentTime);
          }
          catch(EphemerisStore::NoEphemerisFound& e) {
             HaveEphThisSat = false;
@@ -1813,11 +1830,11 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("PF")) {
+         else if(OTlist[i] == string("P4")) {
             ok = HaveR;
             if(ok) jt->second.data = gf1r*kt->second.P1 + gf2r*kt->second.P2;
          }
-         else if(OTlist[i] == string("LF")) {
+         else if(OTlist[i] == string("L4")) {
             ok = HaveP;
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
@@ -1825,11 +1842,11 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("PW")) {
+         else if(OTlist[i] == string("P5")) {
             ok = HaveR;
             if(ok) jt->second.data = wl1r*kt->second.P1 + wl2r*kt->second.P2;
          }
-         else if(OTlist[i] == string("LW")) {
+         else if(OTlist[i] == string("L5")) {
             ok = HaveP;
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
@@ -1953,7 +1970,7 @@ void ComputeNewOTs(RinexObsData& rod)
 
       // delete satellites
    for(int i=0; i<SVDelete.size(); i++) {
-      rod.obs.erase(SVDelete[i]);
+      rod.obs.erase(RinexSatID(SVDelete[i].id,SatID::systemGPS));
       rod.numSvs--;
    }
 
@@ -2018,10 +2035,10 @@ catch (...) {
 int setBiasLimit(RinexObsHeader::RinexObsType& ot, double lim)
 {
    if(RinexObsHeader::convertObsType(ot)==string("UN") || lim <= 0.0) return -1;
-   RinexPrn p;          // invalid: -1,GPS ... let this hold the LIMIT in the map
-   map<RinexObsHeader::RinexObsType,map<RinexPrn,double> >::iterator it;
+   RinexSatID p;          // invalid: -1,GPS ... let this hold the LIMIT in the map
+   map<RinexObsHeader::RinexObsType,map<RinexSatID,double> >::iterator it;
    if( (it=AllBiases.find(ot)) == AllBiases.end()) {     // not found
-      map<RinexPrn,double> bm;
+      map<RinexSatID,double> bm;
       bm[p] = lim;
       AllBiases[ot] = bm;
       if(Verbose) logof << "Set bias for " << RinexObsHeader::convertObsType(ot)
@@ -2037,21 +2054,21 @@ int setBiasLimit(RinexObsHeader::RinexObsType& ot, double lim)
 
 //------------------------------------------------------------------------------------
 // set bias, if necessary, and return raw-bias
-double removeBias(const RinexObsHeader::RinexObsType& ot, const RinexPrn& sv,
+double removeBias(const RinexObsHeader::RinexObsType& ot, const RinexSatID& sv,
    bool& rset, DayTime& tt, double raw)
 {
    rset = false;
    // is the input valid?
-   if(RinexObsHeader::convertObsType(ot)==string("UN") || sv.prn==-1) return raw;
+   if(RinexObsHeader::convertObsType(ot)==string("UN") || sv.id==-1) return raw;
 
-   // get the map<RinexPrn,double> for this OT
-   map<RinexObsHeader::RinexObsType,map<RinexPrn,double> >::iterator it;
+   // get the map<RinexSatID,double> for this OT
+   map<RinexObsHeader::RinexObsType,map<RinexSatID,double> >::iterator it;
    if( (it=AllBiases.find(ot)) == AllBiases.end()) return raw; // did not find OT
-   // it->second is the right map<RinexPrn,double>
+   // it->second is the right map<RinexSatID,double>
 
    // get the limit
-   RinexPrn p;
-   map<RinexPrn,double>::iterator jt;
+   RinexSatID p;
+   map<RinexSatID,double>::iterator jt;
    jt = it->second.find(p);                  // p is (-1,GPS) here, so bias=limit
    if(jt == it->second.end()) return raw;    // should never happen - throw?
    double limit=jt->second;

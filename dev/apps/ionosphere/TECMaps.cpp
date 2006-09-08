@@ -1,15 +1,5 @@
-/**
- * @file TECMaps.cpp
- * Program TECMaps reads a set of Rinex files containing observation types
- *    EL, AZ, and VR or SR and fits the ionospheric vertical TEC data to a model
- *    of the ionosphere. There are input options for the type of grid, the type of
- *    model, and the type of data (VTEC, MUF or F0F2) to be used. TD ...
- */
-
 #pragma ident "$Id$"
 
-
-//------------------------------------------------------------------------------------
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -32,9 +22,17 @@
 //
 //============================================================================
 
-//------------------------------------------------------------------------------------
+/**
+ * @file TECMaps.cpp
+ * Program TECMaps reads a set of Rinex files containing observation types
+ *    EL, AZ, and VR or SR and fits the ionospheric vertical TEC data to a model
+ *    of the ionosphere. There are input options for the type of grid, the type of
+ *    model, and the type of data (VTEC, MUF or F0F2) to be used. TD ...
+ */
+
 #include "StringUtils.hpp"
 #include "DayTime.hpp"
+#include "RinexSatID.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 #include "CommandOptionParser.hpp"
@@ -78,7 +76,7 @@ bool KnownLLH;           // if true, KnownPos is l,l,h
 bool GridOut;            // if true, write grid to file 'basename.LL'
 bool GnuplotFormat;      // if true, write grid in format for gnuplot
    // excluded satellites
-vector<RinexPrn> ExSV;
+vector<RinexSatID> ExSV;
    // ephemeris
 string NavDir;
 vector<string> NavFiles;
@@ -99,7 +97,7 @@ VTECMap vtecmap;
 MUFMap mufmap;
 F0F2Map f0f2map;
    // map of input sat+rx biases
-map<string,map<RinexPrn,double> > BiasMap;
+map<string,map<RinexSatID,double> > BiasMap;
    // Data structures for all receivers
 vector<Station> Stations;
 RinexObsStream *instream; // array of streams, parallell to Stations
@@ -232,8 +230,8 @@ int GetCommandLine(int argc, char **argv)
 try {
    bool help=false;
    int i,j;
-   RinexPrn prn;
-   prn.setfill('0');
+   RinexSatID sat;
+   sat.setfill('0');
 
       // required options
 
@@ -387,7 +385,7 @@ try {
       0,"DeltaLon", " --DeltaLon <del>     Grid spacing in longitude (1.0 deg)");
    dashDeltaLon.setMaxCount(1);
 
-   CommandOption dashXprn(CommandOption::hasArgument, CommandOption::stdType,
+   CommandOption dashXsat(CommandOption::hasArgument, CommandOption::stdType,
       '0', "XSat", "Other options:\n --XSat <sat>         Exclude this satellite "
       "(<sat> may be <system> only)");
    
@@ -725,12 +723,12 @@ try {
       IonoHt = StringUtils::asDouble(values[0]);
       if(help) cout << "Ionosphere height = " << IonoHt << " km" << endl;
    }
-   if(dashXprn.getCount()) {
-      values = dashXprn.getValue();
+   if(dashXsat.getCount()) {
+      values = dashXsat.getValue();
       for(i=0; i<values.size(); i++) {
-         prn = StringUtils::asData<RinexPrn>(values[i]);
-         if(help) cout << "Input: exclude satellite " << prn << endl;
-         ExSV.push_back(prn);
+         sat.fromString(values[i]);
+         if(help) cout << "Input: exclude satellite " << sat << endl;
+         ExSV.push_back(sat);
       }
    }
 
@@ -916,7 +914,7 @@ try {
       else {
          int nbiases,n=0;
          double bias;
-         RinexPrn sat;
+         RinexSatID sat;
          string line,station;
          vector<string> words;
          while(!inf.eof() && inf.good()) {
@@ -939,7 +937,7 @@ try {
                   break;
                }
                station = words[1];
-               sat = StringUtils::asData<RinexPrn>(words[2]);
+               sat.fromString(words[2]);
                bias = StringUtils::asDouble(words[3]);
                BiasMap[station][sat] = bias;
                n++;
@@ -952,8 +950,8 @@ try {
             oflog << "Read sat+rx biases file " << BiasFile << ":" << endl;
             oflog << " Expected " << nbiases << " biases, read " << n << "." << endl;
             oflog << " Here is the biases map:" << endl;
-            map<string,map<RinexPrn,double> >::const_iterator it;
-            map<RinexPrn,double>::const_iterator jt;
+            map<string,map<RinexSatID,double> >::const_iterator it;
+            map<RinexSatID,double>::const_iterator jt;
             for(it=BiasMap.begin(); it!=BiasMap.end(); it++) {
                for(jt=it->second.begin(); jt!=it->second.end(); jt++) {
                   oflog << "  " << it->first
@@ -1195,7 +1193,7 @@ try {
    Station s;
    s.filename = name;
    for(int i=1; i<33; i++) {
-      RinexPrn p(i,systemGPS);
+      RinexSatID p(i,SatID::systemGPS);
       s.InitTime[p] = DayTime::BEGINNING_OF_TIME;
    }
    Stations.push_back(s);
@@ -1260,10 +1258,14 @@ try {
       oflog << endl;
       oflog << "Time of first obs "
          << S.header.firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (S.header.firstSystem==systemGlonass?"GLO":"GPS") << endl;
+         << " " << (S.header.firstSystem==RinexObsHeader::systemGlonass?"GLO":
+                   (S.header.firstSystem==RinexObsHeader::systemGalileo?"GAL":"GPS"))
+         << endl;
       oflog << "Time of  last obs "
          << S.header.lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (S.header.lastSystem==systemGlonass?"GLO":"GPS") << endl;
+         << " " << (S.header.lastSystem==RinexObsHeader::systemGlonass?"GLO":
+                   (S.header.lastSystem==RinexObsHeader::systemGalileo?"GAL":"GPS"))
+         << endl;
    }
 
    return 0;
@@ -1342,8 +1344,8 @@ try {
    int i,k,n;
    double EL,AZ,LA,LO,SR,VR,TP,bias,obliq;
    double la,lo;     // TEMP
-   RinexPrn sat;
-   RinexObsData::RinexPrnMap::const_iterator it;
+   RinexSatID sat;
+   RinexObsData::RinexSatMap::const_iterator it;
    RinexObsData::RinexObsTypeMap::const_iterator jt;
    Position IPP;
 
@@ -1352,11 +1354,11 @@ try {
    for(n=0,it=S.robs.obs.begin(); it!=S.robs.obs.end(); ++it) {
       ObsData od;
       sat = it->first;
-      if(sat.system != systemGPS) continue; // ignore non-GPS satellites
+      if(sat.system != SatID::systemGPS) continue; // ignore non-GPS satellites
       k = -1;
       for(i=0; i<ExSV.size(); i++) {   // Is this satellite excluded ?
          if(ExSV[i] == sat ||                                 // sat is excluded
-           (ExSV[i].prn==-1 && ExSV[i].system==sat.system) ) {// system excluded
+           (ExSV[i].id==-1 && ExSV[i].system==sat.system) ) {// system excluded
             k=i;
             break;
          }
@@ -1421,11 +1423,11 @@ try {
       if(od.AcqTime < MinAcqTime) continue;
 
          // get the bias
-      map<string,map<RinexPrn,double> >::const_iterator jt;
+      map<string,map<RinexSatID,double> >::const_iterator jt;
       jt = BiasMap.find(S.header.markerName);
          // skip sat+rx for which there are no biases
       if(jt == BiasMap.end()) continue;
-      map<RinexPrn,double>::const_iterator kt;
+      map<RinexSatID,double>::const_iterator kt;
       kt = jt->second.find(sat);
       if(kt == jt->second.end()) continue;
       bias = kt->second;
@@ -1459,7 +1461,7 @@ try {
       oflog << " " << setw(4) << setprecision(2) << obliq; // obliquity
       oflog << " " << setw(8) << setprecision(3) << od.VTEC; // vertical TEC
       oflog << " " << setw(8) << setprecision(3) << od.AcqTime; // acquisition time
-      oflog << " " << setw(2) << sat.prn; // PRN
+      oflog << " " << setw(2) << sat.id; // PRN
       oflog << " " << setw(3) << S.nfile+1; // file number
       oflog << endl;
       /* */

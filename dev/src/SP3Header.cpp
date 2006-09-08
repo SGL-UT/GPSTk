@@ -314,7 +314,7 @@ namespace gpstk
       }
    }  // end SP3Header::reallyGetRecord()
 
-      SatID SP3Header::SatIDfromString(const string& str)
+   SatID SP3Header::SatIDfromString(const string& str)
       throw(FFStreamError)
    {
       char c;
@@ -327,21 +327,13 @@ namespace gpstk
          case '4': case '5': case '6':
          case '7': case '8': case '9':
             iss.putback(c);
-            // fall through to defalut to GPS
-         case 'G': case 'g':
-            sat.system = SatID::systemGPS;
-            break;
-         case 'R': case 'r':
-            sat.system = SatID::systemGlonass;
-            break;
-         case 'E': case 'e':
-            sat.system = SatID::systemGalileo;
-            break;
-         case 'L': case 'l':
-            sat.system = SatID::systemLEO;
-            break;
+            // fall through - blank system char defaults to GPS
+         case 'G': case 'g': sat.system = SatID::systemGPS; break;
+         case 'R': case 'r': sat.system = SatID::systemGlonass; break;
+         case 'L': case 'l': sat.system = SatID::systemLEO; break;
+         case 'E': case 'e': sat.system = SatID::systemGalileo; break;
          default:
-            FFStreamError ffse("Invalid system character in input stream: "+c);
+            FFStreamError ffse("Non-SP3 system in string: "+c);
             GPSTK_THROW(ffse);
       }
       iss >> sat.id;
@@ -352,17 +344,15 @@ namespace gpstk
    string SP3Header::SatIDtoString(const SatID& sat)
       throw(FFStreamError)
    {
-      char sysChar=' ';
+      char sysChar;
       switch (sat.system)
       {
          case SatID::systemGPS:     sysChar = 'G'; break;
-         case SatID::systemGalileo: sysChar = 'E'; break;
          case SatID::systemGlonass: sysChar = 'R'; break;
-         case SatID::systemGeosync: sysChar = 'S'; break;
          case SatID::systemLEO:     sysChar = 'L'; break;
-         case SatID::systemTransit: sysChar = 'T'; break;
+         case SatID::systemGalileo: sysChar = 'E'; break;
          default:
-            FFStreamError ffse("Invalid system specified in SatID");
+            FFStreamError ffse("Non-SP3 system in SatID");
             GPSTK_THROW(ffse);
             break;
       }

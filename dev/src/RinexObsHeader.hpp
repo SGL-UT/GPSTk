@@ -54,48 +54,12 @@
 #include "FFStream.hpp"
 #include "RinexObsBase.hpp"
 #include "Triple.hpp"
+#include "SatID.hpp"
 
 namespace gpstk
 {
    /** @addtogroup RinexObs */
    //@{
-
-         /// Supported satellite systems, for use by RinexPrn and file headers
-      enum RinexSystem
-      {
-         systemGPS = 1,
-         systemGlonass,
-         systemGalileo,
-         systemGeosync,
-         systemTransit,
-         systemMixed       // not for RinexPrn
-      };
-
-         /// RINEX satellite identifier = PRN and system
-      struct RinexPrn
-      {
-         int prn;
-         RinexSystem system;
-         static char fillchar;
-         RinexPrn() { prn=-1; system=systemGPS; }
-         RinexPrn(int p, RinexSystem s) { prn=p; system=s; }
-         void setfill(char c) { fillchar=c; }
-         char getfill() { return fillchar; }
-         // operator=, copy constructor and destructor built by compiler
-         /// return the single-character system descriptor
-         inline char System() const
-            {
-               switch(system) {
-                  case systemGPS: return 'G';
-                  case systemMixed: return 'M';
-                  case systemGalileo: return 'E';
-                  case systemGlonass: return 'R';
-                  case systemTransit: return 'T';
-                  case systemGeosync: return 'S';
-               }
-               return 0;
-            };
-      };
 
       /**
        * This class models the header for a RINEX Observation File.
@@ -105,6 +69,19 @@ namespace gpstk
    class RinexObsHeader : public RinexObsBase
    {
    public:
+         /// Supported satellite systems, for use in file headers
+         /// @note must be kept consistent with private functions
+         /// SatIDfromString() and SatIDtoString() and class SatID.
+      enum RinexSystem
+      {
+         systemGPS = 1,
+         systemGlonass,
+         systemGalileo,
+         systemGeosync,
+         systemTransit,
+         systemMixed       // not in SatID
+      };
+
          /// A Simple Constructor.
       RinexObsHeader() : valid(), version(2.1)
          {}
@@ -118,9 +95,9 @@ namespace gpstk
          wavelengthFactor[0] = wavelengthFactor[1] = 1;
          extraWaveFactList.clear();
          obsTypeList.clear();
-         numObsForPrn.clear();
+         numObsForSat.clear();
          numObs = 0;
-         lastPRN.prn = -1;
+         lastPRN.id = -1;
       }
 
          /**
@@ -246,7 +223,7 @@ namespace gpstk
       struct ExtraWaveFact
       {
             /// List of PRNs with this wavelength factor.
-         std::vector<RinexPrn> prnList;
+         std::vector<SatID> satList;
             /// The vector of wavelength factor values.
          short wavelengthFactor[2];
       };
@@ -284,10 +261,10 @@ namespace gpstk
       int receiverOffset;                    ///< RCV CLOCK OFFS APPL (optional)
       int leapSeconds;                       ///< LEAP SECONDS (optional)
       short numSVs;                          ///< NUMBER OF SATELLITES in following map (optional)
-      std::map<RinexPrn, std::vector<int> > numObsForPrn; ///<  PRN / # OF OBS (optional)
+      std::map<SatID, std::vector<int> > numObsForSat; ///<  PRN / # OF OBS (optional)
       unsigned long valid; ///< Bits set when individual header members are present and valid
       int numObs; ///< used to save the number of obs on # / TYPES continuation lines.
-      RinexPrn lastPRN; ///< used to save the current PRN while reading PRN/OBS continuation lines.
+      SatID lastPRN; ///< used to save the current PRN while reading PRN/OBS continuation lines.
          //@}
      
          /// Destructor
@@ -357,7 +334,18 @@ namespace gpstk
          throw(std::exception, FFStreamError,
                gpstk::StringUtils::StringException);
 
+      friend class RinexObsData;
+
    private:
+
+         /// convert string found in the RINEX file to SatID
+      static gpstk::SatID SatIDfromString(const std::string& str)
+         throw(gpstk::FFStreamError);
+
+         /// convert SatID to string for output to RINEX file
+      static std::string SatIDtoString(const gpstk::SatID& sat)
+         throw(FFStreamError);
+
          /// Converts the daytime \a dt into a Rinex Obs time
          /// string for the header
       std::string writeTime(const DayTime& dt) const;
@@ -379,7 +367,8 @@ namespace gpstk
       const RinexObsHeader::RinexObsType& y) { return (x.type < y.type); }
 
       /// operator << for RinexObsHeader::RinexObsType
-   inline std::ostream& operator<<(std::ostream& s, const RinexObsHeader::RinexObsType rot)
+   inline std::ostream& operator<<(std::ostream& s,
+                                   const RinexObsHeader::RinexObsType rot)
       {
          return s << "Type=" << rot.type
             << ", Description=" << rot.description
@@ -387,69 +376,10 @@ namespace gpstk
       }
 
       /// Function to allow user to define a new RINEX observation type
-   int RegisterExtendedRinexObsType(std::string t,std::string d=std::string("(undefined)"),
-      std::string u=std::string("undefined"),unsigned int dep=0);
-
-      /// operator == for RinexPrn
-   inline bool operator==(const RinexPrn& x, const RinexPrn& y)
-      { return ((x.system == y.system) && (x.prn == y.prn)); }
-
-      /// operator != for RinexPrn
-   inline bool operator!=(const RinexPrn& x, const RinexPrn& y)
-      { return ((x.system != y.system) || (x.prn != y.prn)); }
-
-      /// operator < for RinexPrn
-   inline bool operator<(const RinexPrn& x, const RinexPrn& y)
-      { if(x.system==y.system) return (x.prn<y.prn); return (x.system<y.system); }
-
-      // the following allow you to use, respectively,
-      // std::string gpstk::StringUtils::asString<RinexPrn>(const RinexPrn p)
-      // RinexPrn gpstk::StringUtils::asData<RinexPrn>(const std::string& s)
-
-      /// operator << for RinexPrn
-   inline std::ostream& operator<<(std::ostream& s, const RinexPrn& p)
-      {
-         switch(p.system) {
-            case systemGPS: s << "G"; break;
-            case systemMixed: s << "G"; break; // this is an error ... assume GPS
-            case systemGlonass: s << "R"; break;
-            case systemGalileo: s << "E"; break;
-            case systemTransit: s << "T"; break;
-            case systemGeosync: s << "S"; break;
-         }
-         s << std::setw(2) << std::setfill(p.fillchar) << p.prn << std::setfill(' ');
-         return s;
-      }
-
-      /// operator >> for RinexPrn
-   inline std::istream& operator>>(std::istream& s, RinexPrn& p)
-      {
-         char c;
-         s.unsetf(std::ios_base::skipws);
-         s >> c;
-         switch(c) {
-         case '0': case '1': case '2': case '3':
-         case '4': case '5': case '6':
-         case '7': case '8': case '9':
-            s.putback(c);
-            p.system = systemGPS;
-            break;
-         case 'R': case 'r':
-            p.system = systemGlonass; break;
-         case 'E': case 'e':
-            p.system = systemGalileo; break;
-         case 'T': case 't':
-            p.system = systemTransit; break;
-         case 'S': case 's':
-            p.system = systemGeosync; break;
-         case 'G': case 'g': case ' ':
-         default: // error
-            p.system = systemGPS; break;
-         }
-         s.setf(std::ios_base::skipws);
-         s >> p.prn;
-         return s;
-      }
+   int RegisterExtendedRinexObsType(std::string t,
+                                    std::string d=std::string("(undefined)"),
+                                    std::string u=std::string("undefined"),
+                                    unsigned int dep=0);
 
       /// Pretty print a list of registered extended Rinex observation types
    void DisplayExtendedRinexObsTypes(std::ostream& s);

@@ -1,12 +1,5 @@
 #pragma ident "$Id$"
 
-/**
- * @file RinexEditor.cpp
- * Edit Rinex observation files.
- * class REditCmd encapsulates commands passed to the Rinex Editor
- */
-
-//------------------------------------------------------------------------------------
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -29,6 +22,12 @@
 //
 //============================================================================
 
+/**
+ * @file RinexEditor.cpp
+ * Edit Rinex observation files.
+ * class REditCmd encapsulates commands passed to the Rinex Editor
+ */
+
 //------------------------------------------------------------------------------------
 // TD Do better at catching exceptions
 
@@ -37,18 +36,17 @@
 #include <algorithm>
 #include <time.h>
 
+#include "RinexEditor.hpp"
+
 #include "MathBase.hpp"
-#include "DayTime.hpp"
 #include "StringUtils.hpp"
 #include "RinexObsStream.hpp"
-
-#include "RinexEditor.hpp"
 
 using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
-string RinexEditVersion("3.0 9/8/2003");
+string RinexEditVersion("3.1 8/29/2006");
 
 //------------------------------------------------------------------------------------
 // find the index of first occurance of item t (of type T) in vector<T> v;
@@ -105,7 +103,7 @@ REditCmd::REditCmd(string s)
 
       // defaults
    bias = -99.99;
-   SV = RinexPrn(33,systemGPS);
+   SV = RinexSatID(33,SatID::systemGPS);
    sign = 0;
    inOT = -1;
    time = DayTime::BEGINNING_OF_TIME;
@@ -176,12 +174,12 @@ REditCmd::REditCmd(string s)
 
       // get an SV
    if(type >= DS) {
-      SV = StringUtils::asData<RinexPrn>(subfield[0]);
+      SV.fromString(subfield[0]);
       //if(REDebug) *oflog << "REC: PRN is " << SV << endl;
          // default (incl. error) is GPS
          // let prn==-1 denote 'delete all SV of this system'
-      if((type==DS || type==SL) && SV.prn == -1) ;   // ok
-      else if(SV.system == systemGPS && (SV.prn<=0 || SV.prn>32))
+      if((type==DS || type==SL) && SV.id == -1) ;   // ok
+      else if(SV.system == SatID::systemGPS && (SV.id<=0 || SV.id>32))
          { type=INVALID; return; }
       if(type==DS && subfield.size()==1) return;
       subfield.erase(subfield.begin());
@@ -520,18 +518,18 @@ int RinexEditor::EditHeader(RinexObsHeader& RHInput, RinexObsHeader& RHOutput)
    RHOutput.date = currtime.printf("%04Y/%02m/%02d %02H:%02M:%02S");
    { // figure out system -- anything else will be up to caller
       bool gps,glo,tra,geo;
-      if(find(DelSV.begin(),DelSV.end(),RinexPrn(-1,systemGPS)) != DelSV.end())
+      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGPS)) != DelSV.end())
          gps=false; else gps=true;
-      if(find(DelSV.begin(),DelSV.end(),RinexPrn(-1,systemGlonass)) != DelSV.end())
+      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGlonass)) != DelSV.end())
          glo=false; else glo=true;
-      if(find(DelSV.begin(),DelSV.end(),RinexPrn(-1,systemTransit)) != DelSV.end())
+      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemTransit)) != DelSV.end())
          tra=false; else tra=true;
-      if(find(DelSV.begin(),DelSV.end(),RinexPrn(-1,systemGeosync)) != DelSV.end())
+      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGeosync)) != DelSV.end())
          geo=false; else geo=true;
-      if(!glo && !tra && !geo) RHOutput.system = systemGPS;
-      if(!gps && !tra && !geo) RHOutput.system = systemGlonass;
-      if(!gps && !glo && !geo) RHOutput.system = systemTransit;
-      if(!gps && !glo && !tra) RHOutput.system = systemGeosync;
+      if(!glo && !tra && !geo) RHOutput.system = RinexObsHeader::systemGPS;
+      if(!gps && !tra && !geo) RHOutput.system = RinexObsHeader::systemGlonass;
+      if(!gps && !glo && !geo) RHOutput.system = RinexObsHeader::systemTransit;
+      if(!gps && !glo && !tra) RHOutput.system = RinexObsHeader::systemGeosync;
    }
    if(HDDeleteOldComments) {
       RHOutput.commentList.clear();
@@ -682,7 +680,7 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
 
       // loop over prns, create otmap and then insert it with the correct prn
    int nsvs=0;
-   RinexObsData::RinexPrnMap::iterator it;
+   RinexObsData::RinexSatMap::iterator it;
    RinexObsData::RinexObsTypeMap::iterator jt,kt;
    for(it=ROIn.obs.begin(); it != ROIn.obs.end(); ++it) {
       // loop over prn=it->first, ObsTypeMap=it->second
@@ -691,7 +689,7 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
             << " at " << ROIn.time << endl;
          continue;
       }
-      RinexPrn p(-1,it->first.system);
+      RinexSatID p(-1,it->first.system);
       if(find(DelSV.begin(),DelSV.end(),p) != DelSV.end()) continue;
       for(int j=0; j<RHOut.obsTypeList.size(); j++) { // loop over obstypes
          jt = otmap.find(RHOut.obsTypeList[j]);  // jt points to ObsTypeMap output
@@ -702,7 +700,7 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
             jt->second = kt->second;
       }
       // TD should test for all zero data -> delete this SV.
-      ROOut.obs.insert(std::map<RinexPrn,
+      ROOut.obs.insert(std::map<RinexSatID,
          RinexObsData::RinexObsTypeMap>::value_type(it->first,otmap) );
    }
 
@@ -716,11 +714,11 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
 
       // apply current commands
    vector<REditCmd>::iterator cit;
-   RinexObsData::RinexPrnMap::reverse_iterator roit;
+   RinexObsData::RinexSatMap::reverse_iterator roit;
    for(cit=CurrentCmds.begin(); cit != CurrentCmds.end(); cit++) {
       if(REDebug) cit->Dump(*oflog,string("Current : "));
          // modify all satellites in this system
-      if(cit->type == REditCmd::SL && cit->SV.prn == -1) {
+      if(cit->type == REditCmd::SL && cit->SV.id == -1) {
          for(roit=ROOut.obs.rbegin(); roit!=ROOut.obs.rend(); roit++) {
             if(cit->SV.system == roit->first.system) {
                jt = (roit->second).find(RinexObsHeader::convertObsType(cit->field));
@@ -748,7 +746,7 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
       if(REDebug) irt->Dump(*oflog,string("1-time : "));
          // delete all satellites in this system
       if((irt->type == REditCmd::DS || irt->type == REditCmd::SL)
-            && irt->SV.prn == -1) {
+            && irt->SV.id == -1) {
          for(roit=ROOut.obs.rbegin(); roit!=ROOut.obs.rend(); roit++) {
             if(irt->SV.system == roit->first.system) {
                if(irt->type == REditCmd::DS) ROOut.obs.erase(roit->first);
@@ -840,10 +838,10 @@ int RinexEditor::FillHeaderAndReplaceFile(string& TempFile, string& TrueOutputFi
    RHOut.lastObs = CurrEpoch; RHOut.valid |= RinexObsHeader::lastTimeValid;
       // now the table
    RHOut.numSVs = table.size(); RHOut.valid |= RinexObsHeader::numSatsValid;
-   RHOut.numObsForPrn.clear();
+   RHOut.numObsForSat.clear();
    vector<TableData>::iterator tit;
    for(tit=table.begin(); tit!=table.end(); ++tit) {
-      RHOut.numObsForPrn.insert(map<RinexPrn,
+      RHOut.numObsForSat.insert(map<RinexSatID,
             vector<int> >::value_type(tit->prn,tit->nobs));
    }
    RHOut.valid |= RinexObsHeader::prnObsValid;
@@ -1141,7 +1139,7 @@ int RinexEditor::EditFile(void)
             // -- have to do it here b/c BeforeWritingObs has just filled it
          if(FillOptionalHeader) {
             int k,n=RHOut.obsTypeList.size();
-            RinexObsData::RinexPrnMap::const_iterator pit;
+            RinexObsData::RinexSatMap::const_iterator pit;
             RinexObsData::RinexObsTypeMap::const_iterator pjt;
             for(pit=roout.obs.begin(); pit != roout.obs.end(); ++pit) {
                vector<TableData>::iterator ptab;

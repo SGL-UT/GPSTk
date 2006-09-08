@@ -234,7 +234,7 @@ namespace gpstk
                // std::cout << prn << " " << D1 << " " << D2 << " " << L1 << " " << L2 << std::endl;
                // exit(0);
 
-            RinexPrn thisSat(prn, systemGPS);
+            SatID thisSat(prn, SatID::systemGPS);
             RinexObsData::RinexObsTypeMap datamap;
 
             datamap[RinexObsHeader::C1].data = C1; 

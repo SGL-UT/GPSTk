@@ -7,7 +7,7 @@
  */
 
 #include <vector>
-#include "ValarrayUtils.hpp"
+
 #include "PRSolution.hpp"
 
 #include "RinexObsStream.hpp"
@@ -77,7 +77,7 @@ namespace gpstk
       }
       
       RinexObsData rod;
-      RinexObsData::RinexPrnMap::const_iterator it;
+      RinexObsData::RinexSatMap::const_iterator it;
       
       numSatEpochs = 0; 
       while ( robs >> rod )
@@ -106,9 +106,9 @@ namespace gpstk
             PRSolution prEst;
             ZeroTropModel nullTropModel;
             
-            std::vector<RinexPrn> sats;
+            std::vector<SatID> sats;
             std::vector<double> ranges;
-            RinexObsData::RinexPrnMap::const_iterator it;
+            RinexObsData::RinexSatMap::const_iterator it;
 
             for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
             {
@@ -162,7 +162,7 @@ namespace gpstk
             // Get topocentric coords for given sat
             try
             {
-               Xvt svPos = ephStore.getPrnXvt(it->first.prn, rod.time);
+               Xvt svPos = ephStore.getSatXvt(it->first, rod.time);
                elevation[satEpochIdx]= antennaPos.elvAngle(svPos.x);
                azimuth[satEpochIdx]  = antennaPos.azAngle( svPos.x);
             }

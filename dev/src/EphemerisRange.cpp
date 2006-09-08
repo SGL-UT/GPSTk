@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -23,7 +21,6 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
-
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
@@ -37,11 +34,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-
-
-
-
 
 /**
  * @file EphemerisRange.cpp
@@ -61,11 +53,11 @@ using namespace gpstk;
 namespace gpstk
 {
       // Compute the corrected range at RECEIVE time, from receiver at position Rx,
-      // to the GPS satellite given by PRN prn, as well as all the CER quantities,
+      // to the GPS satellite given by SatID sat, as well as all the CER quantities,
       // given the nominal receive time tr_nom and an EphemerisStore.
    double CorrectedEphemerisRange::ComputeAtReceiveTime(const DayTime& tr_nom,
                                                         const Position& Rx,
-                                                        const int prn,
+                                                        const SatID sat,
                                                         const EphemerisStore& Eph)
    {
    try {
@@ -82,7 +74,7 @@ namespace gpstk
          tof_old = tof;
             // get SV position
          try {
-            svPosVel = Eph.getPrnXvt(prn,transmit);
+            svPosVel = Eph.getSatXvt(sat,transmit);
          }
          catch(EphemerisStore::NoEphemerisFound& e)
          {
@@ -118,7 +110,7 @@ namespace gpstk
 
       relativity = RelativityCorrection(svPosVel) * C_GPS_M;
       // relativity correction is added to dtime by the
-      // EphemerisStore::getPrnXvt routines...
+      // EphemerisStore::getSatXvt routines...
 
       svclkbias = svPosVel.dtime*C_GPS_M - relativity;
       svclkdrift = svPosVel.ddtime * C_GPS_M;
@@ -139,13 +131,13 @@ namespace gpstk
    }  // end CorrectedEphemerisRange::ComputeAtReceiveTime
 
       // Compute the corrected range at TRANSMIT time, from receiver at position Rx,
-      // to the GPS satellite given by PRN prn, as well as all the CER quantities,
+      // to the GPS satellite given by SatID sat, as well as all the CER quantities,
       // given the nominal receive time tr_nom and an EphemerisStore, as well as
       // the raw measured pseudorange.
    double CorrectedEphemerisRange::ComputeAtTransmitTime(const DayTime& tr_nom,
                                                          const double& pr,
                                                          const Position& Rx,
-                                                         const int prn,
+                                                         const SatID sat,
                                                          const EphemerisStore& Eph)
    {
    try {
@@ -162,7 +154,7 @@ namespace gpstk
       for(int i=0; i<2; i++) {
          // get SV position
          try {
-            svPosVel = Eph.getPrnXvt(prn,tt);
+            svPosVel = Eph.getSatXvt(sat,tt);
          }
          catch(EphemerisStore::NoEphemerisFound& e)
          {
@@ -197,7 +189,7 @@ namespace gpstk
 
       relativity = RelativityCorrection(svPosVel) * C_GPS_M;
       // relativity correction is added to dtime by the
-      // EphemerisStore::getPrnXvt routines...
+      // EphemerisStore::getSatXvt routines...
 
       svclkbias = svPosVel.dtime*C_GPS_M - relativity;
       svclkdrift = svPosVel.ddtime * C_GPS_M;
@@ -220,7 +212,7 @@ namespace gpstk
    double RelativityCorrection(const Xvt& svPosVel)
    {
       // relativity correction is added to dtime by the
-      // EphemerisStore::getPrnXvt routines...
+      // EphemerisStore::getSatXvt routines...
       // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10(s/sqrt(m)) * ecc * sqrt(A(m)) * sinE
       // compute it separately here, in units seconds.
       double dtr = -2*(svPosVel.x[0]/C_GPS_M)*(svPosVel.v[0]/C_GPS_M)

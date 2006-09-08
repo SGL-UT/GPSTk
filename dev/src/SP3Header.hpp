@@ -105,6 +105,7 @@ namespace gpstk
             case systemGalileo: return 'E';
             case systemLEO: return 'L';
             case systemMixed: return 'M';
+            default: return '?';
          }
       }
 
@@ -117,6 +118,7 @@ namespace gpstk
             case systemGlonass: return "GLONASS";
             case systemLEO: return "LEO";
             case systemMixed: return "Mixed";
+            default: return "??";
          }
       };
 
@@ -126,6 +128,7 @@ namespace gpstk
          switch(timeSystem) {
             case timeGPS: return "GPS";
             case timeUTC: return "UTC";
+            default: return "??";
          }
       };
 

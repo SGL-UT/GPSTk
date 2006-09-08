@@ -60,12 +60,14 @@ else
       GPSZcount29.cpp JulianDate.cpp MJD.cpp UnixTime.cpp YDSTime.cpp
       SystemTime.cpp
       Expression.cpp
+      RinexSatID.cpp SP3SatID.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp AlmanacStore.hpp BCEphemerisStore.hpp
       BinUtils.hpp DayTime.hpp ECEF.hpp EngAlmanac.hpp EngEphemeris.hpp 
       EngNav.hpp EphemerisStore.hpp Exception.hpp FFBinaryStream.hpp 
-      FFData.hpp FFStream.hpp FFStreamError.hpp FFTextStream.hpp SatID.hpp
+      FFData.hpp FFStream.hpp FFStreamError.hpp FFTextStream.hpp
+      SatID.hpp RinexSatID.hpp SP3SatID.hpp
       FileFilter.hpp FileFilterFrame.hpp FileFilterFrameWithHeader.hpp 
       FileHunter.hpp FileSpec.hpp FileUtils.hpp GPSGeoid.hpp Geodetic.hpp
       GeoidModel.hpp MathBase.hpp Matrix.hpp MatrixBase.hpp 

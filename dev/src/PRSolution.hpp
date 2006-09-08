@@ -36,6 +36,7 @@
 #include <ostream>
 #include "icd_200_constants.hpp"
 #include "DayTime.hpp"
+#include "SatID.hpp"
 #include "Matrix.hpp"
 #include "RinexObsHeader.hpp"
 #include "EphemerisStore.hpp"
@@ -65,7 +66,7 @@ namespace gpstk
       /** Compute a position/time solution, given satellite PRNs and pseudoranges
        *  using a RAIM algorithm.
        * @param Tr          Measured time of reception of the data.
-       * @param Satellite   std::vector<RinexPrn> of satellites; on successful
+       * @param Satellite   std::vector<SatID> of satellites; on successful
        *                    return, satellites that were excluded by the algorithm
        *                    are marked by a negative 'prn' member.
        * @param Pseudorange std::vector<double> of raw pseudoranges (parallel to
@@ -84,7 +85,7 @@ namespace gpstk
        * -4  ephemeris is not found for one or more satellites
        */
       int RAIMCompute(const DayTime& Tr,
-                      std::vector<RinexPrn>& Satellite,
+                      std::vector<SatID>& Satellite,
                       std::vector<double>& Pseudorange,
                       const EphemerisStore& Eph,
                       TropModel *pTropModel)
@@ -177,10 +178,10 @@ namespace gpstk
       /** Compute the satellite position / corrected range matrix (SVP) which is used
        * by AutonomousPRSolution(). SVP is output, dimensioned (N,4) where N is the
        * number of satellites and the length of both Satellite and Pseudorange.
-       * Data is ignored whenever Sats[i].prn is < 0. NB caller should verify that the
+       * Data is ignored whenever Sats[i].id is < 0. NB caller should verify that the
        * number of good entries (Satellite[.] > 0) is > 4 before proceeding.
        * @param Tr          Measured time of reception of the data.
-       * @param Sats        std::vector<RinexPrn> of satellites; satellites that are
+       * @param Sats        std::vector<SatID> of satellites; satellites that are
        *                    to be excluded by the algorithm are marked by a
        *                    negative 'prn' member.
        * @param Pseudorange std::vector<double> of raw pseudoranges (parallel to
@@ -197,7 +198,7 @@ namespace gpstk
        * -4  ephemeris not found for all the satellites
        */
       static int PrepareAutonomousSolution(const DayTime& Tr,
-                                           std::vector<RinexPrn>& Sats,
+                                           std::vector<SatID>& Sats,
                                            std::vector<double>& Pseudorange,
                                            const EphemerisStore& Eph,
                                            Matrix<double>& SVP,

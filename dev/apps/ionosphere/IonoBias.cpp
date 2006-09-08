@@ -1,10 +1,5 @@
-//------------------------------------------------------------------------------------
-// IonoBias.cpp
-//------------------------------------------------------------------------------------
 #pragma ident "$Id$"
 
-
-//------------------------------------------------------------------------------------
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -37,6 +32,7 @@
 //------------------------------------------------------------------------------------
 #include "StringUtils.hpp"
 #include "DayTime.hpp"
+#include "RinexSatID.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 #include "CommandOptionParser.hpp"
@@ -81,7 +77,7 @@ ios::pos_type current_header_pos;
 string InputPath;
 vector<string> Filenames;
    // excluded satellites
-vector<RinexPrn> ExSV;
+vector<RinexSatID> ExSV;
    // ephemeris
 string NavDir;
 vector<string> NavFiles;
@@ -291,8 +287,8 @@ int GetCommandLine(int argc, char **argv)
 try {
    bool help=false;
    int i,j;
-   RinexPrn prn;
-   prn.setfill('0');
+   RinexSatID sat;
+   sat.setfill('0');
 
       // required options
 
@@ -408,7 +404,7 @@ try {
       0,"IonoHeight", " --IonoHeight <n>     Ionosphere height (km)");
    dashIonoHt.setMaxCount(1);
 
-   CommandOption dashXprn(CommandOption::hasArgument, CommandOption::stdType,
+   CommandOption dashXsat(CommandOption::hasArgument, CommandOption::stdType,
       '0', "XSat", " Other options:\n --XSat <sat>         Exclude this satellite "
       "(<sat> may be <system> only)");
    
@@ -682,12 +678,12 @@ try {
       if(help) cout << "Ionosphere height = " << IonoHt << " km" << endl;
    }
 
-   if(dashXprn.getCount()) {
-      values = dashXprn.getValue();
+   if(dashXsat.getCount()) {
+      values = dashXsat.getValue();
       for(i=0; i<values.size(); i++) {
-         prn = StringUtils::asData<RinexPrn>(values[i]);
-         if(help) cout << "Input: exclude satellite " << prn << endl;
-         ExSV.push_back(prn);
+         sat.fromString(values[i]);
+         if(help) cout << "Input: exclude satellite " << sat << endl;
+         ExSV.push_back(sat);
       }
    }
 
@@ -1004,10 +1000,14 @@ try {
       oflog << endl;
       oflog << "Time of first obs "
          << head.firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (head.firstSystem==systemGlonass?"GLO":"GPS") << endl;
+         << " " << (head.firstSystem==RinexObsHeader::systemGlonass?"GLO":
+                   (head.firstSystem==RinexObsHeader::systemGalileo?"GAL":"GPS"))
+         << endl;
       oflog << "Time of  last obs "
          << head.lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (head.lastSystem==systemGlonass?"GLO":"GPS") << endl;
+         << " " << (head.lastSystem==RinexObsHeader::systemGlonass?"GLO":
+                   (head.lastSystem==RinexObsHeader::systemGalileo?"GAL":"GPS"))
+         << endl;
       oflog << "DOY = " << head.firstObs.DOY() << endl;
       oflog << "Sunrise = " << setprecision(2) << sunrise;
       oflog << "  Sunset  = " << setprecision(2) << sunset << endl;
@@ -1112,9 +1112,9 @@ try {
    Position LLI;
    DayTime begin[MAXPRN+1],end[MAXPRN+1];
    RinexObsData robs;
-   RinexPrn sat;
+   RinexSatID sat;
    //RinexObsData::RinexObsTypeMap otmap;
-   RinexObsData::RinexPrnMap::const_iterator it;
+   RinexObsData::RinexSatMap::const_iterator it;
    RinexObsData::RinexObsTypeMap::const_iterator jt;
 
    if(!ins.good()) return -6;
@@ -1159,11 +1159,11 @@ try {
          // loop over sat=it->first, ObsTypeMap=it->second
       for(it=robs.obs.begin(); it != robs.obs.end(); ++it) {
          sat = it->first;
-         if(sat.system != systemGPS) continue; // ignore non-GPS satellites
-         if(sat.prn <= 0 || sat.prn > MAXPRN) continue; // just in case...
+         if(sat.system != SatID::systemGPS) continue; // ignore non-GPS satellites
+         if(sat.id <= 0 || sat.id > MAXPRN) continue; // just in case...
          for(i=0,k=-1; i<ExSV.size(); i++) {   // Is this satellite excluded ?
             if( ExSV[i] == sat ||                                 // sat is excluded
-               (ExSV[i].prn==-1 && ExSV[i].system==sat.system) ) {// system excluded
+               (ExSV[i].id==-1 && ExSV[i].system==sat.system) ) {// system excluded
                k=i;
                break;
             }
@@ -1209,15 +1209,15 @@ try {
          fout << " " << setw(4) << setprecision(2) << ob; // obliquity
          fout << " " << setw(8) << setprecision(3) << SR; // slant TEC
          fout << " " << setw(6) << setprecision(2) << 1;  // sigma ?? TD
-         fout << " " << setw(2) << sat.prn; // PRN
+         fout << " " << setw(2) << sat.id; // PRN
          fout << " " << setw(3) << nfile+1; // file number
          fout << endl;
 
-         EstimationFlag[nfile][sat.prn] = true;
+         EstimationFlag[nfile][sat.id] = true;
          NgoodPoints++;
-         npts[sat.prn]++; // Npts for this sat
-         if(npts[sat.prn]==1) begin[sat.prn] = robs.time;
-         end[sat.prn] = robs.time;
+         npts[sat.id]++; // Npts for this sat
+         if(npts[sat.id]==1) begin[sat.id] = robs.time;
+         end[sat.id] = robs.time;
 
       }  // end for loop over sats
 

@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -39,7 +37,6 @@
 // Find all the combinations of n things taken k at a time.
 
 #include "Exception.hpp"
-#include "StringUtils.hpp"
 
 /// Class Combinations will compute C(n,k), all the combinations of n things
 /// taken k at a time (where k <= n).
@@ -185,7 +182,7 @@ using namespace gpstk;
 namespace gpstk
 {
    int PRSolution::RAIMCompute(const DayTime& Tr,
-                               vector<RinexPrn>& Satellite,
+                               vector<SatID>& Satellite,
                                vector<double>& Pseudorange,
                                const EphemerisStore& Eph,
                                TropModel *pTropModel)
@@ -232,7 +229,7 @@ namespace gpstk
          // Let GoodIndexes be all the indexes of Satellites that are good:
          // UseSat[GoodIndexes[.]] == true by definition
          for(N=0,i=0; i<Satellite.size(); i++) {
-            if(Satellite[i].prn > 0) {
+            if(Satellite[i].id > 0) {
                N++;
                UseSat.push_back(true);
                GoodIndexes.push_back(i);
@@ -249,7 +246,6 @@ namespace gpstk
 
          // don't even try if there are not 4 good satellites
          if(N < 4) return -3;
-         Satellite[0].setfill('0');
 
          // minimum number of sats needed for algorithm
          MinSV = 5;   // this would be RAIM
@@ -331,12 +327,12 @@ namespace gpstk
                      << " " << fixed << setw(5) << setprecision(1) << MaxSlope
                      << " " << NIterations
                      << " " << scientific << setw(8) << setprecision(2)<< Convergence;
-                     // print the RinexPrn for good sats
+                     // print the SatID for good sats
                   for(i=0; i<UseSat.size(); i++) {
                      if(UseSat[i])
-                        *pDebugStream << " " << setw(3)<< Satellite[i].prn;
+                        *pDebugStream << " " << setw(3)<< Satellite[i].id;
                      else
-                        *pDebugStream << " " << setw(3) << -::abs(Satellite[i].prn);
+                        *pDebugStream << " " << setw(3) << -::abs(Satellite[i].id);
                   }
                      // also print the return value
                   *pDebugStream << " (" << iret << ")" << endl;
@@ -386,7 +382,7 @@ namespace gpstk
          Solution = BestSol;
          MaxSlope = BestSL;
          for(Nsvs=0,i=0; i<BestUse.size(); i++) {
-            if(!BestUse[i]) Satellite[i].prn = -::abs(Satellite[i].prn);
+            if(!BestUse[i]) Satellite[i].id = -::abs(Satellite[i].id);
             else Nsvs++;
          }
 
@@ -406,7 +402,7 @@ namespace gpstk
 
 
    int PRSolution::PrepareAutonomousSolution(const DayTime& Tr,
-                                             vector<RinexPrn>& Satellite,
+                                             vector<SatID>& Satellite,
                                              vector<double>& Pseudorange,
                                              const EphemerisStore& Eph,
                                              Matrix<double>& SVP,
@@ -423,27 +419,27 @@ namespace gpstk
 
          for(nsvs=0,i=0; i<N; i++) {
                // skip marked satellites
-            if(Satellite[i].prn <= 0) continue;
+            if(Satellite[i].id <= 0) continue;
 
                // first estimate of transmit time
             tx = Tr;
             tx -= Pseudorange[i]/C_GPS_M;
                // get ephemeris range, etc
             try {
-               PVT = Eph.getPrnXvt(short(Satellite[i].prn), tx);
+               PVT = Eph.getSatXvt(Satellite[i], tx);
             }
             catch(EphemerisStore::NoEphemerisFound& e) {
-               Satellite[i].prn = -::abs(Satellite[i].prn);
+               Satellite[i].id = -::abs(Satellite[i].id);
                continue;
             }
 
                // update transmit time and get ephemeris range again
             tx -= PVT.dtime;     // clk+rel
             try {
-               PVT = Eph.getPrnXvt(short(Satellite[i].prn), tx);
+               PVT = Eph.getSatXvt(Satellite[i], tx);
             }
             catch(EphemerisStore::NoEphemerisFound& e) {
-               Satellite[i].prn = -::abs(Satellite[i].prn);
+               Satellite[i].id = -::abs(Satellite[i].id);
                continue;
             }
 

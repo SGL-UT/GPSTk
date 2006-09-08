@@ -65,7 +65,7 @@ namespace gpstk
    {
       EpochCombination result;
 
-      RinexObsData::RinexPrnMap::const_iterator it;
+      RinexObsData::RinexSatMap::const_iterator it;
       for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
       {
          RinexObsData::RinexObsTypeMap otmap = it->second;

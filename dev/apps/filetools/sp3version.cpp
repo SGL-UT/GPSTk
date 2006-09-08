@@ -26,7 +26,8 @@
  * @file sp3version.cpp
  * Read an SP3 format file (any version) and write the data out to another,
  * specifying the SP3 version. This code is intended for testing and as a pattern
- * for SP3 I/O and analysis programs.
+ * for SP3 I/O and analysis programs; currently in converting SP3a to SP3c it
+ * inserts random data.
  */
 
 #include <iostream>

@@ -49,13 +49,13 @@ main(int argc, char *argv[])
 
             cout << roe.time  << " ";
 
-//Make a GPSTK RinexPrn object for your PRN so you can search for it.
+//Make a GPSTK SatID object for your PRN so you can search for it.
 //-----------------------------------------------------------------
-            RinexPrn prn(myprn, (RinexSystem) systemGPS);
+            SatID prn(myprn, SatID::systemGPS);
 
 //Check to see if your PRN is in view at this epoch (ie. search for the PRN).
 //-------------------------------------------------------------------------
-            RinexObsData::RinexPrnMap::iterator pointer = roe.obs.find(prn);
+            RinexObsData::RinexSatMap::iterator pointer = roe.obs.find(prn);
             if( pointer == roe.obs.end() ) cout << "PRN " << myprn << " not in view " << endl;
             else
             {

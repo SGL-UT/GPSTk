@@ -14,6 +14,7 @@
 #include<valarray>
 
 #include "DayTime.hpp"
+#include "SatID.hpp"
 #include "RinexEphemerisStore.hpp"
 #include "Exception.hpp" 
 #include "Expression.hpp"
@@ -93,7 +94,7 @@ namespace gpstk
 
       std::valarray<double>   observation;
       std::valarray<DayTime>  epoch;
-      std::valarray<RinexPrn> satellite;
+      std::valarray<SatID> satellite;
       std::valarray<double>   azimuth;
       std::valarray<double>   elevation;
       std::valarray<long>     pass;

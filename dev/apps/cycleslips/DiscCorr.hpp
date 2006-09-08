@@ -1,22 +1,5 @@
-//------------------------------------------------------------------------------------
-// DiscCorr.hpp  GPS phase discontinuity correction. Given arrays containing
-//    dual-frequency pseudorange and phase (see class SVPass herein),
-//    detect discontinuities in the phase and if possible estimate their size.
-//    Output is in the form of Rinex editing commands (see class RinexEditor).
-//
-// DiscCorr is part of the GPS Tool Kit (GPSTK) developed in the
-// Satellite Geophysics Group at Applied Research Laboratories,
-// The University of Texas at Austin (ARL:UT), and was written by Dr. Brian Tolman.
-//------------------------------------------------------------------------------------
 #pragma ident "$Id$"
 
-
-/**
- * @file DiscCorr.hpp
- * GPS phase discontinuity correction.
- */
-
-//------------------------------------------------------------------------------------
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -39,10 +22,16 @@
 //
 //============================================================================
 
+/**
+ * @file DiscCorr.hpp
+ * GPS phase discontinuity correction.
+ */
+
 #ifndef GPSTK_DISCONTINUITY_CORRECTOR_INCLUDE
 #define GPSTK_DISCONTINUITY_CORRECTOR_INCLUDE
 
 #include "DayTime.hpp"
+#include "RinexSatID.hpp"
 #include "RinexObsHeader.hpp"
 
 #include <iostream>
@@ -185,7 +174,7 @@ public:
    /// biases removed from the data.
    double bias1,bias2;
    /// Satellite identifier for this data.
-   RinexPrn SV;
+   RinexSatID SV;
    /// Start time of this data.
    DayTime BegTime;
    /// End time of this data.

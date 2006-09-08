@@ -1,4 +1,6 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: $"
+
+#include "SP3SatID.hpp"
 
 //============================================================================
 //
@@ -21,6 +23,7 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
+
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
@@ -35,57 +38,14 @@
 //
 //=============================================================================
 
+
 /**
- * @file SP3EphemerisStore.hpp
- * Read and store SP3 formated ephemeris data
+ * @file SP3SatID.cpp
+ * gpstk::SP3SatID - navigation system-independent representation of a satellite
+ * as defined by the SP3 specification.
  */
-
-#ifndef GPSTK_SP3_EPHEMERIS_STORE_HPP
-#define GPSTK_SP3_EPHEMERIS_STORE_HPP
-
-#include <iostream>
-
-#include "TabularEphemerisStore.hpp"
-#include "FileStore.hpp"
-
-#include "SP3Stream.hpp"
-#include "SP3Data.hpp"
-#include "SP3Header.hpp"
 
 namespace gpstk
 {
-   /** @addtogroup ephemstore */
-   //@{
-
-      /**
-       * This adds the interface to read SP3 files into a TabularEphemerisStore
-       */
-   class SP3EphemerisStore : public TabularEphemerisStore, 
-                             public FileStore<SP3Header>
-   {
-   public:
-      /// Constructor.
-      SP3EphemerisStore() throw() {TabularEphemerisStore();}
-
-      /// destructor
-      virtual ~SP3EphemerisStore() {}
-      
-      /** Dump the store to cout.
-       * @param detail determines how much detail to include in the output
-       *   0 list of filenames with their start, stop times.
-       *   1 list of filenames with their start, stop times,
-       *     other header information and prns/accuracy.
-       *   2 above, plus dump all the PVT data (use judiciously).
-       */
-      virtual void dump(short detail=0, std::ostream& s=std::cout) const;
-
-      /// load the given SP3 file
-      virtual void loadFile(const std::string& filename) 
-         throw(FileMissingException);
-   };
-
-   //@}
-
-}  // namespace
-
-#endif
+   char SP3SatID::fillchar = '0';
+}

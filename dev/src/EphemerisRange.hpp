@@ -1,15 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file EphemerisRange.hpp
- * Computation of range and associated quantities from EphemerisStore
- */
- 
-#ifndef EPHEMERIS_RANGE_HPP
-#define EPHEMERIS_RANGE_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -31,7 +21,6 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
-
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
@@ -46,12 +35,16 @@
 //
 //=============================================================================
 
-
-
-
-
+/**
+ * @file EphemerisRange.hpp
+ * Computation of range and associated quantities from EphemerisStore
+ */
+ 
+#ifndef EPHEMERIS_RANGE_HPP
+#define EPHEMERIS_RANGE_HPP
 
 #include "DayTime.hpp"
+#include "SatID.hpp"
 #include "Position.hpp"
 #include "EphemerisStore.hpp"
 #include "Xvt.hpp"
@@ -62,7 +55,7 @@ namespace gpstk
    //@{
 
    /** class CorrectedEphemerisRange. Compute the corrected range from receiver
-    * at position Rx, to the GPS satellite given by PRN prn, as well as azimuth,
+    * at position Rx, to the GPS satellite given by SatID sat, as well as azimuth,
     * elevation, etc., given a nominal timetag (either received or transmitted
     * time) and an EphemerisStore.
     */
@@ -73,18 +66,18 @@ namespace gpstk
       CorrectedEphemerisRange() {}
 
       /// Compute the corrected range at RECEIVE time, from receiver at
-      /// position Rx, to the GPS satellite given by PRN prn, as well as all
+      /// position Rx, to the GPS satellite given by SatID sat, as well as all
       /// the CER quantities, given the nominal receive time tr_nom and
       /// an EphemerisStore.
       double ComputeAtReceiveTime(const DayTime& tr_nom,
-            const Position& Rx, const int prn, const EphemerisStore& Eph);
+            const Position& Rx, const SatID sat, const EphemerisStore& Eph);
 
       /// Compute the corrected range at TRANSMIT time, from receiver at
-      /// position Rx, to the GPS satellite given by PRN prn, as well as all
+      /// position Rx, to the GPS satellite given by SatID sat, as well as all
       /// the CER quantities, given the nominal receive time tr_nom and
       /// an EphemerisStore.
       double ComputeAtTransmitTime(const DayTime& tr_nom, const double& pr,
-            const Position& Rx, const int prn, const EphemerisStore& Eph);
+            const Position& Rx, const SatID sat, const EphemerisStore& Eph);
 
       /// The computed raw (geometric) range in meters.
       double rawrange;

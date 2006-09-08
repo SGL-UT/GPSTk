@@ -1,16 +1,4 @@
-//------------------------------------------------------------------------------------
-// VTECMap.cpp
-//------------------------------------------------------------------------------------
-
 #pragma ident "$Id$"
-
-
-/**
- * @file VTECMap.cpp
- * Program VTECMap will TD...
- *   a simple ionospheric model using least squares and slant TEC values
- *   from multiple stations.
- */
 
 //============================================================================
 //
@@ -34,7 +22,13 @@
 //
 //============================================================================
 
-//------------------------------------------------------------------------------------
+/**
+ * @file VTECMap.cpp
+ * Program VTECMap will TD...
+ *   a simple ionospheric model using least squares and slant TEC values
+ *   from multiple stations.
+ */
+
 #include "Exception.hpp"
 #include "Position.hpp"
 #include "geometry.hpp"              // for DEG_TO_RAD and RAD_TO_DEG

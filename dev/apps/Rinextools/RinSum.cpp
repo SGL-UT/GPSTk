@@ -1,11 +1,5 @@
 #pragma ident "$Id$"
 
-/**
- * @file RinSum.cpp
- * Read and summarize Rinex observation files, optionally fill header in-place.
- */
-
-//------------------------------------------------------------------------------------
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -28,7 +22,11 @@
 //
 //============================================================================
 
-//------------------------------------------------------------------------------------
+/**
+ * @file RinSum.cpp
+ * Read and summarize Rinex observation files, optionally fill header in-place.
+ */
+
 #include "MathBase.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
@@ -39,6 +37,7 @@
 #include "RinexNavData.hpp"
 #include "RinexNavStream.hpp"
 #include "DayTime.hpp"
+#include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
@@ -54,7 +53,7 @@ using namespace gpstk;
 using namespace std;
 
 //------------------------------------------------------------------------------------
-string version("2.1 6/2/06");
+string version("2.2 8/29/06");
 
 // data input from command line
 vector<string> InputFiles;
@@ -80,19 +79,19 @@ int nepochs,ncommentblocks;
 // class used to store PRN/Obs table
 class TableData {
 public:
-   RinexPrn prn;
+   RinexSatID sat;
    vector<int> nobs;
    DayTime begin,end;
-   TableData(const RinexPrn& p, const int& n)
-      { prn=p; nobs=vector<int>(n); };
+   TableData(const RinexSatID& p, const int& n)
+      { sat=p; nobs=vector<int>(n); };
       // needed for find()
-   inline bool operator==(const TableData& d) {return d.prn == prn;}
+   inline bool operator==(const TableData& d) {return d.sat == sat;}
 };
    // for sort()
 class TablePRNLessThan  {      
 public:
    bool operator()(const TableData& d1, const TableData& d2)
-      { return d1.prn < d2.prn; }
+      { return d1.sat < d2.sat; }
 };
 class TableBegLessThan  {
 public:
@@ -220,7 +219,7 @@ try {
       {
          if(Debug) *pout << "Epoch: " << robs.time
             << ", Flag " << robs.epochFlag
-            << ", Nprn " << robs.obs.size()
+            << ", Nsat " << robs.obs.size()
             << ", clk " << robs.clockOffset << endl;
          if(robs.epochFlag > 1) {
             ncommentblocks++;
@@ -233,7 +232,7 @@ try {
          if(last > EndTime) break;
          if(ftime == DayTime::BEGINNING_OF_TIME) ftime=last;
          nepochs++;
-         RinexObsData::RinexPrnMap::const_iterator it;
+         RinexObsData::RinexSatMap::const_iterator it;
          RinexObsData::RinexObsTypeMap::const_iterator jt;
          for(it=robs.obs.begin(); it != robs.obs.end(); ++it) {
             vector<TableData>::iterator ptab;
@@ -244,7 +243,7 @@ try {
                ptab->begin = last;
             }
             ptab->end = last;
-            if(Debug) *pout << "Prn " << setw(2) << it->first;
+            if(Debug) *pout << "Sat " << setw(2) << it->first;
             for(jt=it->second.begin(); jt!=it->second.end(); jt++) {
                for(k=0; k<n; k++) if(rheader.obsTypeList[k] == jt->first) break;
                if(jt->second.data != 0) {
@@ -337,17 +336,17 @@ try {
          // output table
          // header
       vector<TableData>::iterator tit;
-      if(table.size() > 0) table.begin()->prn.setfill('0');
+      if(table.size() > 0) table.begin()->sat.setfill('0');
       if(!brief) {
          *pout << "\n          Summary of data available in this file: "
             << "(Totals are based on times and interval)\n";
-         *pout << "PRN  OT:";
+         *pout << "Sat  OT:";
          for(k=0; k<n; k++)
             *pout << setw(7) << rheader.obsTypeList[k].type;
          *pout << "  Total             Begin time - End time\n";
             // loop
          for(tit=table.begin(); tit!=table.end(); ++tit) {
-            *pout << "PRN " << tit->prn << " ";
+            *pout << "Sat " << tit->sat << " ";
             for(k=0; k<n; k++) *pout << setw(7) << tit->nobs[k];
             // compute total based on times
             *pout << setw(7) << 1+int(0.5+(tit->end-tit->begin)/dt);
@@ -366,9 +365,9 @@ try {
          *pout << endl;
       }
       else {
-         *pout << "PRNs(" << table.size() << "):";
+         *pout << "SATs(" << table.size() << "):";
          for(tit=table.begin(); tit!=table.end(); ++tit)
-            *pout << " " << tit->prn;
+            *pout << " " << tit->sat;
          *pout << endl;
 
          *pout << "Obs types(" << rheader.obsTypeList.size() << "): ";
@@ -391,10 +390,10 @@ try {
          rheader.lastObs = last; rheader.valid |= RinexObsHeader::lastTimeValid;
             // now the table
          rheader.numSVs = table.size(); rheader.valid |= RinexObsHeader::numSatsValid;
-         rheader.numObsForPrn.clear();
+         rheader.numObsForSat.clear();
          for(tit=table.begin(); tit!=table.end(); ++tit) {      // tit defined above
-            rheader.numObsForPrn.insert(
-               map<RinexPrn, vector<int> >::value_type(tit->prn,tit->nobs) );
+            rheader.numObsForSat.insert(
+               map<RinexSatID, vector<int> >::value_type(tit->sat,tit->nobs) );
          }
          rheader.valid |= RinexObsHeader::prnObsValid;
          //*pout << "\nNew header\n";

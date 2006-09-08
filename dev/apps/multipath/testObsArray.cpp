@@ -43,8 +43,8 @@ int main(int argc, char* argv[])
       cout << "Mean value is: " << copyObs.sum() / copyObs.size() << endl;
       //cout << "Mean value is: " << oa.observation[myslice].sum() / oa.observation[myslice].size() << endl;
 
-      RinexPrn thisPrn(9,systemGPS);
-      valarray<bool> prnIdx = (oa.satellite==thisPrn);
+      SatID thisSat(9,SatID::systemGPS);
+      valarray<bool> prnIdx = (oa.satellite==thisSat);
       valarray<double> prnObs = oa.observation[prnIdx];
       valarray<DayTime> prnTime = oa.epoch[prnIdx];
       cout << "Data for PRN 9:" << endl;

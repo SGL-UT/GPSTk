@@ -1,7 +1,15 @@
 #
-# $Id$
+# $Id: //depot/sgl/gpstk/dev/examples/Jamfile#1 $
 #
 
 SubDir TOP examples ;
 
+GPSLinkLibraries RungeKuttaTest example1 example2 example3 example4 : gpstk ;
+
+GPSMain example1 : example1.cpp ;
+GPSMain example2 : example2.cpp ;
+GPSMain example3 : example3.cpp ;
+GPSMain example4 : example4.cpp ;
+
 # SubInclude TOP examples foo ;
+

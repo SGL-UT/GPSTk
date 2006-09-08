@@ -79,8 +79,6 @@ namespace gpstk
    const unsigned int RinexObsHeader::RinexObsType::EPdepend=0x20;
    const unsigned int RinexObsHeader::RinexObsType::PSdepend=0x40;
 
-   char RinexPrn::fillchar=' ';
-
    const RinexObsHeader::RinexObsType RinexObsHeader::UN("UN", "Unknown or Invalid",   "unknown", 0);
    const RinexObsHeader::RinexObsType RinexObsHeader::L1("L1", "L1 Carrier Phase",     "L1 cycles",
       RinexObsHeader::RinexObsType::L1depend);
@@ -209,7 +207,7 @@ namespace gpstk
       if(valid & RinexObsHeader::commentValid) n += commentList.size();
       if(valid & RinexObsHeader::numSatsValid) n++;
       if(valid & RinexObsHeader::prnObsValid)
-         n += numObsForPrn.size() * (1+numObsForPrn.begin()->second.size()/9);
+         n += numObsForSat.size() * (1+numObsForSat.begin()->second.size()/9);
       if(valid & RinexObsHeader::endValid) n++;
       return n;
    }
@@ -325,25 +323,26 @@ namespace gpstk
             while (itr != extraWaveFactList.end())
             {
                const int maxPRNsPerLine = 7;
-               short prnsWritten = 0, prnsLeft = (*itr).prnList.size(), prnsThisLine;
-               vector<RinexPrn>::const_iterator vecItr = (*itr).prnList.begin();
+               short satsWritten = 0, satsLeft = (*itr).satList.size(), satsThisLine;
+               vector<SatID>::const_iterator vecItr = (*itr).satList.begin();
 
-               while ((vecItr != (*itr).prnList.end())) {
-                  if(prnsWritten == 0) {
+               while ((vecItr != (*itr).satList.end())) {
+                  if(satsWritten == 0) {
                      line  = rightJustify(asString<short>((*itr).wavelengthFactor[0]),6);
                      line += rightJustify(asString<short>((*itr).wavelengthFactor[1]),6);
-                     prnsThisLine = (prnsLeft > maxPRNsPerLine ? maxPRNsPerLine : prnsLeft);
-                     line += rightJustify(asString<short>(prnsThisLine),6);
+                     satsThisLine = (satsLeft > maxPRNsPerLine ? maxPRNsPerLine : satsLeft);
+                     line += rightJustify(asString<short>(satsThisLine),6);
                   }
-                  line += string(3, ' ') + asString<RinexPrn>(*vecItr);
-                  prnsWritten++;
-                  prnsLeft--;
-                  if(prnsWritten==maxPRNsPerLine || prnsLeft==0) {      // output a complete line
+                  try { line += string(3, ' ') + SatIDtoString(*vecItr); }
+                  catch(FFStreamError& ffse) { GPSTK_RETHROW(ffse); }
+                  satsWritten++;
+                  satsLeft--;
+                  if(satsWritten==maxPRNsPerLine || satsLeft==0) {      // output a complete line
                      line += string(60 - line.size(), ' ');
                      line += waveFactString;
                      strm << line << endl;
                      strm.lineNumber++;
-                     prnsWritten = 0;
+                     satsWritten = 0;
                   }
                   vecItr++;
                }
@@ -460,8 +459,8 @@ namespace gpstk
       if (valid & prnObsValid)
       {
          const int maxObsPerLine = 9;
-         map<RinexPrn, vector<int> >::const_iterator itr = numObsForPrn.begin();
-         while (itr != numObsForPrn.end())
+         map<SatID, vector<int> >::const_iterator itr = numObsForSat.begin();
+         while (itr != numObsForSat.end())
          {
             int numObsWritten = 0;
             
@@ -470,7 +469,8 @@ namespace gpstk
             {
                if (numObsWritten == 0)
                {
-                  line  = string(3, ' ') + asString((*itr).first);
+                  try { line  = string(3, ' ') + SatIDtoString((*itr).first); }
+                  catch(FFStreamError& ffse) { GPSTK_RETHROW(ffse); }
                }
                else if ((numObsWritten % maxObsPerLine)  == 0)
                {
@@ -600,21 +600,22 @@ namespace gpstk
          else
          {
             const int maxPRNsPerLine = 7;
-            int Nprns;
+            int Nsats;
             ExtraWaveFact ewf;
             ewf.wavelengthFactor[0] = asInt(line.substr(0,6));
             ewf.wavelengthFactor[1] = asInt(line.substr(6,6));
-            Nprns = asInt(line.substr(12,6));
+            Nsats = asInt(line.substr(12,6));
                
-            if (Nprns > maxPRNsPerLine)   // > not >=
+            if (Nsats > maxPRNsPerLine)   // > not >=
             {
                FFStreamError e("Invalid number of PRNs for " + waveFactString);
                GPSTK_THROW(e);
             }
                
-            for (int i = 0; i < Nprns; i++)
+            for (int i = 0; i < Nsats; i++)
             {
-               ewf.prnList.push_back(asData<RinexPrn>(line.substr(21+i*6,3)));
+               try { ewf.satList.push_back(SatIDfromString(line.substr(21+i*6,3))); }
+               catch(FFStreamError& ffse) { GPSTK_RETHROW(ffse); }
             }
                
             extraWaveFactList.push_back(ewf);
@@ -689,19 +690,20 @@ namespace gpstk
          const int maxObsPerLine = 9;
             // continuation lines... you have to know what PRN
             // this is continuing for, hence lastPRN
-         if ((lastPRN.prn != -1) &&
-             (numObsForPrn[lastPRN].size() != obsTypeList.size()))
+         if ((lastPRN.id != -1) &&
+             (numObsForSat[lastPRN].size() != obsTypeList.size()))
          {
-            for(int i = numObsForPrn[lastPRN].size(); 
+            for(int i = numObsForSat[lastPRN].size(); 
                 (i < obsTypeList.size()) && 
                    ( (i % maxObsPerLine) < maxObsPerLine); i++)
             {
-               numObsForPrn[lastPRN].push_back(asInt(line.substr((i%maxObsPerLine)*6+6,6)));
+               numObsForSat[lastPRN].push_back(asInt(line.substr((i%maxObsPerLine)*6+6,6)));
             }
          }
          else
          {
-            lastPRN = asData<RinexPrn>(line.substr(3,3));
+            try { lastPRN = SatIDfromString(line.substr(3,3)); }
+            catch(FFStreamError& ffse) { GPSTK_RETHROW(ffse); }
             vector<int> numObsList;
             for(int i = 0; 
                    (i < obsTypeList.size()) && (i < maxObsPerLine); i++)
@@ -709,7 +711,7 @@ namespace gpstk
                numObsList.push_back(asInt(line.substr(i*6+6,6)));
             }
 
-            numObsForPrn[lastPRN] = numObsList;
+            numObsForSat[lastPRN] = numObsList;
          }
          valid |= prnObsValid;
       }
@@ -745,10 +747,10 @@ namespace gpstk
       wavelengthFactor[0] = wavelengthFactor[1] = 1;
       extraWaveFactList.clear();
       obsTypeList.clear();
-      numObsForPrn.clear();
+      numObsForSat.clear();
       valid = 0;
       numObs = 0;
-      lastPRN.prn = -1;
+      lastPRN.id = -1;
       
       string line;
       
@@ -877,8 +879,8 @@ namespace gpstk
             << extraWaveFactList[i].wavelengthFactor[0]
             << ", L2: " << extraWaveFactList[i].wavelengthFactor[1]
             << ", for PRNs";
-         for(j=0; j<extraWaveFactList[i].prnList.size(); j++)
-            s << " " << extraWaveFactList[i].prnList[j];
+         for(j=0; j<extraWaveFactList[i].satList.size(); j++)
+            s << " " << extraWaveFactList[i].satList[j];
          s << endl;
       }
       s << "Observation types (" << obsTypeList.size() << ") :\n";
@@ -923,17 +925,17 @@ namespace gpstk
          << (receiverOffset?"ARE":"are NOT") << " applied." << endl;
       if(valid & numSatsValid) s << "Number of Satellites with data : " << numSVs << endl;
       if(valid & prnObsValid) {
-         s << "PRN  ";
+         s << "SAT  ";
          for(i=0; i<obsTypeList.size(); i++)
             s << setw(7) << convertObsType(obsTypeList[i]);
          s << endl;
-         map<RinexPrn, vector<int> >::const_iterator prn_itr = numObsForPrn.begin();
-         while (prn_itr != numObsForPrn.end()) {
-            vector<int> obsvec=(*prn_itr).second;
-            s << " " << (*prn_itr).first << " ";
+         map<SatID, vector<int> >::const_iterator sat_itr = numObsForSat.begin();
+         while (sat_itr != numObsForSat.end()) {
+            vector<int> obsvec=(*sat_itr).second;
+            s << " " << (*sat_itr).first << " ";
             for(i=0; i<obsvec.size(); i++) s << " " << setw(6) << obsvec[i];
             s << endl;
-            prn_itr++;
+            sat_itr++;
          }
       }
       if(commentList.size() && !(valid & commentValid)) s << " Comment is NOT valid\n";
@@ -941,6 +943,53 @@ namespace gpstk
       for(i=0; i<commentList.size(); i++)
          s << commentList[i] << endl;
       s << "-------------------------------- END OF HEADER -------------------------------\n";
+   }
+
+   SatID RinexObsHeader::SatIDfromString(const string& str)
+      throw(FFStreamError)
+   {
+      char c;
+      SatID sat;
+      istringstream iss(str);
+
+      iss >> c;
+      switch(c)
+      {
+         case '0': case '1': case '2': case '3': case '4':
+         case '5': case '6': case '7': case '8': case '9':
+            iss.putback(c);
+            // fall through - blank system char defaults to GPS
+         case 'G': case 'g': sat.system = SatID::systemGPS; break;
+         case 'R': case 'r': sat.system = SatID::systemGlonass; break;
+         case 'S': case 's': sat.system = SatID::systemGeosync; break;
+         case 'E': case 'e': sat.system = SatID::systemGalileo; break;
+         case 'T': case 't': sat.system = SatID::systemTransit; break;
+         default:
+            FFStreamError ffse("Non-RINEX system in string: " + c);
+            GPSTK_THROW(ffse);
+      }
+      iss >> sat.id;
+      if(sat.id <= 0) sat.id = -1;
+      return sat;
+   }
+
+   string RinexObsHeader::SatIDtoString(const SatID& sat)
+      throw(FFStreamError)
+   {
+      ostringstream oss;
+      switch(sat.system)
+      {
+         case SatID::systemGPS:     oss << 'G'; break;
+         case SatID::systemGlonass: oss << 'R'; break;
+         case SatID::systemGeosync: oss << 'S'; break;
+         case SatID::systemGalileo: oss << 'E'; break;
+         case SatID::systemTransit: oss << 'T'; break;
+         default:
+            FFStreamError ffse("Non-RINEX system in SatID: " + sat.systemString());
+            GPSTK_THROW(ffse);
+      }
+      oss << setw(2) << sat.id;
+      return oss.str();
    }
 
    // return 1 if type already defined,

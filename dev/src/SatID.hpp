@@ -40,8 +40,8 @@
 //=============================================================================
 
 #include <iostream>
-#include <sstream>
 #include <iomanip>
+#include <sstream>
 #include <gps_constants.hpp>
 
 /**
@@ -55,11 +55,12 @@ namespace gpstk
    class SatID;
    std::istream& operator>>(std::istream& s, SatID& p);
 
-   /// Satellite identifier = satellite number (PRN, etc.) and system
+   /// Satellite identifier consisting of a satellite number (PRN, etc.)
+   /// and a satellite system
    class SatID
    {
    public:
-         /// Supported satellite systems
+      /// Supported satellite systems
       enum SatelliteSystem
       {
          systemGPS = 1,
@@ -90,6 +91,7 @@ namespace gpstk
             case systemGeosync: return "Geostationary";
             case systemLEO: return "LEO";
             case systemTransit: return "Transit";
+            default: return "??";
          }
       };
 
@@ -136,19 +138,20 @@ namespace gpstk
             default:            ch = '?';
          }
          std::ostringstream oss;
-         oss << ch << std::setw(2) << id;
+         char savechar=oss.fill('0');
+         oss << ch << std::setw(2) << id << std::setfill(savechar);
          return oss.str();
       }
 
-      /// answer the question 'is this SatID valid?'
+      /// return true if this is a valid SatID
       /// @note assumes all id's are positive and less than 100;
-      ///     plus GPS id's are less than 33.
-      /// @note this is not used internally in the gpstk
+      ///     plus GPS id's are less than or equal to MAX_PRN (32).
+      /// @note this is not used internally in the gpstk library
       bool isValid() const
       {
          switch(system)
          {
-            case systemGPS: return (id > 0 && id < 33);
+            case systemGPS: return (id > 0 && id <= MAX_PRN);
             //case systemGalileo:
             //case systemGlonass:
             //case systemGeosync:
@@ -158,8 +161,45 @@ namespace gpstk
          }
       }
 
-      int id;                ///< satellite identifier.
-      SatelliteSystem system;///< system for this satellite
+      /// return true if this is a valid SatID in the RINEX specification
+      /// @note assumes all id's are positive and less than 100;
+      ///     plus GPS id's are less than or equal to MAX_PRN (32).
+      /// @note this is not used internally in the gpstk library
+      bool isValidRinex() const
+      {
+         switch(system)
+         {
+            case systemGPS:
+            case systemGalileo:
+            case systemGlonass:
+            case systemGeosync:
+            case systemTransit:
+               return isValid();
+            default:
+               return false;
+         }
+      }
+
+      /// return true if this is a valid SatID in the SP3 specification
+      /// @note assumes all id's are positive and less than 100
+      /// @note this is not used internally in the gpstk library
+      bool isValidSP3() const
+      {
+         switch(system)
+         {
+            case systemGPS:
+            case systemGalileo:
+            case systemGlonass:
+            case systemLEO:
+               return isValid();
+            default:
+               return false;
+         }
+      }
+
+      int id;                   ///< satellite identifier, e.g. PRN
+      SatelliteSystem system;   ///< system for this satellite
+
    }; // class SatID
 
       /// stream output for SatID
