@@ -7,7 +7,9 @@
  */
 
 #include <vector>
+#include <set>
 
+#include "ValarrayUtils.hpp"
 #include "PRSolution.hpp"
 
 #include "RinexObsStream.hpp"
@@ -69,46 +71,68 @@ namespace gpstk
       bool staticPositionDefined=false;
       Triple antennaPos;
       
-      if ( (roh.valid && RinexObsHeader::antennaPositionValid) == 
+      if ( (roh.valid & RinexObsHeader::antennaPositionValid) == 
            RinexObsHeader::antennaPositionValid)
       {
          antennaPos = roh.antennaPosition;
          staticPositionDefined=true;
       }
       
-      RinexObsData rod;
-      RinexObsData::RinexSatMap::const_iterator it;
+         // Remember the data collection rate. If not available, note that.
+      bool intervalDefined=false;
+      double interval;
       
-      numSatEpochs = 0; 
-      while ( robs >> rod )
-      { 
-         numSatEpochs += rod.obs.size();
+      if ( (roh.valid & RinexObsHeader::intervalValid) == 
+           RinexObsHeader::intervalValid)
+      {
+         interval = roh.interval;
+         intervalDefined=true;
       }
 
-      int i=0;
-
-         // Size the storage valarrays. 
-      observation.resize(numSatEpochs*numObsTypes);
-      epoch.resize(numSatEpochs);
-      satellite.resize(numSatEpochs);
-      epoch.resize(numSatEpochs);
-      azimuth.resize(numSatEpochs);
-      elevation.resize(numSatEpochs);
-      validAzEl.resize(numSatEpochs);
-      pass.resize(numSatEpochs);
-
-      validAzEl = true;
+      RinexObsData rod;
+      RinexObsData::RinexPrnMap::const_iterator it;
       
-      while (robsAgain >> rod)
-      {
+         // Read through file the first time.
+         // In this pass, get the "size" of the data
+         // Calculate if needed an approximate user positoin,
+         // and data collection interval.
+
+      numSatEpochs = 0;
+
+      bool firstEpochCompleted = false;
+      DayTime lastEpochValue;
+      std::set<double> intervalDifferences;
+      
+      while ( robs >> rod )
+      { 
+            // Account for total amount of obs data in this file
+         numSatEpochs += rod.obs.size();
+
+            // Record the interval differences
+         if (!intervalDefined)
+         {
+            if (!firstEpochCompleted)
+            {
+               lastEpochValue = rod.time;
+               firstEpochCompleted = true;
+            }
+            else
+            {
+               intervalDifferences.insert(ceil(rod.time - lastEpochValue));
+               lastEpochValue = rod.time;
+            }
+         }
+         
+
+            // If necessary, determine the initial user position
          if (!staticPositionDefined)
          {
             PRSolution prEst;
             ZeroTropModel nullTropModel;
             
-            std::vector<SatID> sats;
+            std::vector<RinexPrn> sats;
             std::vector<double> ranges;
-            RinexObsData::RinexSatMap::const_iterator it;
+            RinexObsData::RinexPrnMap::const_iterator it;
 
             for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
             {
@@ -137,12 +161,74 @@ namespace gpstk
                antennaPos[2] = prEst.Solution[2];
                staticPositionDefined = true;
             }
-         }
+         } // End first blush estimate of static or initial position
 
-         size_t satEpochIdx=0;
+      } // Finish first run through file
+
+      if (!intervalDefined)
+      {
+         
+         using namespace ValarrayUtils;   
+         std::cout << "intervals were: " << intervalDifferences << std::endl;
+         std::set<double>::iterator itEpochDiff = intervalDifferences.begin();
+         interval = *itEpochDiff;
+         intervalDefined = true;
+      }
+      
+      if (!intervalDefined)
+      {
+         ObsArrayException oae("Cannot determine data interval for " + obsfilename);
+         GPSTK_THROW(oae);
+      }
+
+      int i=0;
+
+         // Size the storage valarrays. 
+      observation.resize(numSatEpochs*numObsTypes);
+      epoch.resize(numSatEpochs);
+      satellite.resize(numSatEpochs);
+      epoch.resize(numSatEpochs);
+      azimuth.resize(numSatEpochs);
+      elevation.resize(numSatEpochs);
+      validAzEl.resize(numSatEpochs);
+      pass.resize(numSatEpochs);
+      pass = -1;
+      
+      validAzEl = true;
+      size_t satEpochIdx=0;
+         
+      std::map<RinexPrn, DayTime> lastObsTime;
+      std::map<RinexPrn, DayTime>::const_iterator it2;
+      std::map<RinexPrn, long> currPass;
+     
+      long highestPass = 0;
+      long thisPassNo;
+      
+         // Second time through, fill in observations and pass numbers      
+         // First step through each epoch of observation
+      while (robsAgain >> rod)
+      {
+            // Second step through the obs for each SV 
          
          for (it = rod.obs.begin(); it!=rod.obs.end(); it++)
          {
+            it2 = lastObsTime.find((*it).first);
+               //std::cout << (*it).first << std::endl;
+ 
+             if (  (it2==lastObsTime.end()) || 
+                   ( (rod.time-lastObsTime[(*it).first]) > 1.1*interval) )
+            {
+               thisPassNo = highestPass;
+               lastObsTime[(*it).first]=rod.time;
+               currPass[(*it).first]=highestPass++;
+            }
+            else
+            { 
+               thisPassNo = currPass[(*it).first];
+               lastObsTime[(*it).first]=rod.time;
+            }
+            pass[satEpochIdx]=thisPassNo;
+
             for (int idx=0; idx<numObsTypes; idx++)
             {
                if (isBasic[idx])
@@ -155,14 +241,14 @@ namespace gpstk
                   observation[i] = expressionMap[idx].evaluate();
                }
 
-               satellite[i]  = it->first;               
+               satellite[satEpochIdx]  = it->first;               
                i++;
             } // end of walk through observations to record
-
+ 
             // Get topocentric coords for given sat
             try
             {
-               Xvt svPos = ephStore.getSatXvt(it->first, rod.time);
+               Xvt svPos = ephStore.getPrnXvt(it->first.prn, rod.time);
                elevation[satEpochIdx]= antennaPos.elvAngle(svPos.x);
                azimuth[satEpochIdx]  = antennaPos.azAngle( svPos.x);
             }
@@ -170,7 +256,7 @@ namespace gpstk
             {
                validAzEl[satEpochIdx]=false;
             }
-            std::cout << rod.time << std::endl;
+               //std::cout << "i: (" << satEpochIdx << ")" << rod.time << std::endl;
             
 
             epoch[satEpochIdx]=rod.time;

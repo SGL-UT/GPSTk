@@ -1,9 +1,14 @@
 #include <iostream>
+#include <set>
 
+#include "DayTime.hpp"
 #include "ObsArray.hpp"
+#include "ValarrayUtils.hpp"
+
 
 using namespace std;
 using namespace gpstk;
+using namespace ValarrayUtils;
 
 int main(int argc, char* argv[])
 {
@@ -43,8 +48,8 @@ int main(int argc, char* argv[])
       cout << "Mean value is: " << copyObs.sum() / copyObs.size() << endl;
       //cout << "Mean value is: " << oa.observation[myslice].sum() / oa.observation[myslice].size() << endl;
 
-      SatID thisSat(9,SatID::systemGPS);
-      valarray<bool> prnIdx = (oa.satellite==thisSat);
+      RinexPrn thisPrn(9,systemGPS);
+      valarray<bool> prnIdx = (oa.satellite==thisPrn);
       valarray<double> prnObs = oa.observation[prnIdx];
       valarray<DayTime> prnTime = oa.epoch[prnIdx];
       cout << "Data for PRN 9:" << endl;
@@ -54,7 +59,16 @@ int main(int argc, char* argv[])
          cout << prnTime[i].GPSsow() << " ";
          cout << prnObs[i] << endl;
       }
-  
+      
+      set<DayTime> allepochs = unique(oa.epoch);  
+      cout << "Unique epochs:" << endl << allepochs << endl;
+      
+      set<RinexPrn> allprns = unique(oa.satellite);
+      cout << "Unique satellites: " << endl << allprns << endl;
+
+      set<long> allpasses = unique(oa.pass);
+      cout << "Unique passes: " << endl << allpasses << endl;
+      
       exit(0);
    }
    catch(Exception& ex)
