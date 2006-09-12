@@ -194,7 +194,7 @@ namespace gpstk
          vector<int> GoodIndexes;
          // Use these to save the 'best' solution within the loop.
          int BestNIter;
-         double BestRMS,BestSL,BestConv;
+         double BestRMS=0.0,BestSL=0.0,BestConv=0.0;
          Vector<double> BestSol;
          vector<bool> BestUse;
          BestRMS = -1.0;      // this marks the 'Best' set as unused.

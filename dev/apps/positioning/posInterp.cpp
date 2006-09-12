@@ -496,7 +496,7 @@ try {
    if(ite == TimePositionMap.end())
       return 0;    // no position; get it next time
    if(ite->first - LastInterpolated < 0)
-      return 0;   // already done
+      return 0;    // already done
 
    itb = ite;
    if(itb == TimePositionMap.begin()) {
@@ -594,11 +594,12 @@ try {
          << ": not enough data" << endl;
       return 0;              // not enough data
    }
-   Lagrange = (ipts==2?false:true);
+   Lagrange = (ipts == 2 ? false : true);
 
    // number of interpolations needed to cover Dt, plus 1 endpt
    ipts = int(0.5+Dt/dt);
-   //PIC.oflog << "Dt dt and ipts are " << Dt << " " << dt << " " << ipts << endl;
+   PIC.oflog << "Dt dt and ipts are " << Dt << " " << dt << " " << ipts
+      << CurrEpoch.printf(" at %04Y/%02m/%02d %02H:%02M:%6.3f = %4F %.3g") << endl;
 
       // loop over the interpolation times you want
    delt = itb->first - t0;          // time since first data point
@@ -671,7 +672,7 @@ try {
       PIC.oflog << "Estimated data interval is " << PIC.DT << " seconds.\n";
       PIC.oflog << "Interpolate to " << PIC.irate << " times the input data rate\n";
       PIC.oflog << "Last data epoch is "
-         << PIC.LastEpoch.printf("%04Y/%02m/%02d %02H:%02M:%6.3f = %4F %.3g") << endl;
+         << PIC.LastEpoch.printf("%04Y/%02m/%02d %02H:%02M:%06.3f = %4F %.3g") << endl;
 
       if(TimePositionMap.size() == 0) {
          cout << "No position information was found in the input file! Abort.\n";
@@ -687,9 +688,10 @@ try {
          itr = TimePositionMap.begin();
          i = 0;
          while(itr != TimePositionMap.end()) {
-            PIC.oflog << setw(4) << i
-               << " " << itr->first.printf("%04Y/%02m/%02d %02H:%02M:%6.3f")
-               << setprecision(3)
+            PIC.oflog << setw(4) << i << " "
+               << itr->first.printf("%04Y/%02m/%02d %02H:%02M:%6.3f %4F %10.3g")
+               << fixed << setprecision(3)
+               << " " << setw(2) << itr->second.N
                << " " << setw(13) << itr->second.X
                << " " << setw(13) << itr->second.Y
                << " " << setw(13) << itr->second.Z

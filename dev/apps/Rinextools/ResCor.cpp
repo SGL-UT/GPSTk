@@ -175,6 +175,7 @@ map<RinexSatID,RCData> DataStoreMap;
 map<RinexObsHeader::RinexObsType,map<RinexSatID,double> > AllBiases; // (OT,SV)
    // reference position as function of time (from input)
 map<DayTime,RefPosData> RefPosMap;
+double RefPosMapDT;
 
 string Rxhelp=
 "\n --RxFlat <fn> : fn is a file with reference receiver positions and times:\n"
@@ -964,18 +965,6 @@ try {
             }
          }
          rostream.close();
-
-         if(Debug) {
-            logof << "Here is the reference position map\n";
-            map<DayTime,RefPosData>::const_iterator it;
-            for(it=RefPosMap.begin(); it != RefPosMap.end(); it++) {
-               logof << "   " << it->first << " " << fixed
-                  << " " << setw(13) << setprecision(3) << it->second.RxPos.X()
-                  << " " << setw(13) << setprecision(3) << it->second.RxPos.Y()
-                  << " " << setw(13) << setprecision(3) << it->second.RxPos.Z()
-                  << endl;
-            }
-         }
          inPS = 1;
       }
       else {            // flat file input
@@ -1073,7 +1062,44 @@ try {
          }
          inPS = 1;
       }  // end flat file input
-   }
+
+      // compute the nominal time spacing of the map
+      {
+         const int ndtmax=15;
+         double dt,bestdt[ndtmax];
+         int j,k,nleast,ndt[ndtmax]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+         DayTime prev(DayTime::BEGINNING_OF_TIME);
+         map<DayTime,RefPosData>::const_iterator it;
+
+         if(Debug) logof << "Here is the reference position map\n";
+         for(it=RefPosMap.begin(); it != RefPosMap.end(); it++) {
+            if(Debug) logof << "   " << it->first << " " << fixed
+                  << " " << setw(13) << setprecision(3) << it->second.RxPos.X()
+                  << " " << setw(13) << setprecision(3) << it->second.RxPos.Y()
+                  << " " << setw(13) << setprecision(3) << it->second.RxPos.Z()
+                  << endl;
+            if(prev != DayTime::BEGINNING_OF_TIME) {
+               dt = it->first - prev;
+               for(i=0; i<ndtmax; i++) {
+                  if(ndt[i] <= 0) { bestdt[i]=dt; ndt[i]=1; break; }
+                  if(fabs(dt-bestdt[i]) < 0.0001) { ndt[i]++; break; }
+                  if(i == ndtmax-1) {
+                     k = 0; nleast = ndt[k];
+                     for(j=1; j<ndtmax; j++) if(ndt[j] <= nleast) {
+                        k=j; nleast=ndt[j];
+                     }
+                     ndt[k]=1; bestdt[k]=dt;
+                  }
+               }
+            }
+            prev = it->first;
+         }
+         for(i=1,j=0; i<ndtmax; i++) if(ndt[i] > ndt[j]) j=i;
+         RefPosMapDT = bestdt[j];
+      }
+
+   }  // end non-empty RefPosFile name
+
    else if(doRAIM) {
       // if(Debug) prsol.Debug = true; // write to cout ...
       prsol.Algebraic = false;
@@ -1571,12 +1597,12 @@ int UpdateRxPosition(void)
          if(Verbose) {
             logof << "RAIM failed at " << CurrentTime << " : returned '";
             if(iret == 2) logof << "failed to find a good solution "
-               << "(RMS residual or slope exceed limits)'";
-            if(iret == -1) logof << "failed to converge'";
-            if(iret == -2) logof << "singular problem'";
-            if(iret == -3) logof << "not enough good data to form a RAIM solution'";
+               << "(RMS residual or slope exceed limits)";
+            if(iret == -1) logof << "failed to converge";
+            if(iret == -2) logof << "singular problem";
+            if(iret == -3) logof << "not enough good data to form a RAIM solution";
             if(iret == -4) {
-               logof << "ephemeris not found for satellite'";
+               logof << "ephemeris not found for satellite";
                for(i=0; i<Sats.size(); i++) {
                   if(Sats[i].id < 0) {
                      Sats[i].id *= -1;
@@ -1592,7 +1618,8 @@ int UpdateRxPosition(void)
    else if(!RefPosFile.empty()) { // update RxPos from map
       map<DayTime,RefPosData>::iterator ite;
       ite = RefPosMap.lower_bound(CurrentTime);
-      if(ite == RefPosMap.end()) {
+      // ite points to first element with value >= CurrentTime
+      if(ite == RefPosMap.end() || fabs(ite->first - CurrentTime) > 0.1*RefPosMapDT) {
          if(Verbose) logof << "No Rx position found at " << CurrentTime << endl;
          CurrRef.valid = false;
          inPS = -1;
@@ -1611,10 +1638,10 @@ int UpdateRxPosition(void)
 
    if(Verbose && inPS > -1) {
       logof << "RxPos " << CurrentTime
-         << " " << CurrentTime.printf("%04F %10.3g") << fixed
-         << " " << setw(13) << setprecision(3) << CurrRef.RxPos.X()
-         << " " << setw(13) << setprecision(3) << CurrRef.RxPos.Y()
-         << " " << setw(13) << setprecision(3) << CurrRef.RxPos.Z()
+         << " " << CurrentTime.printf("%04F %10.3g") << fixed << setprecision(3)
+         << " " << setw(13) << CurrRef.RxPos.X()
+         << " " << setw(13) << CurrRef.RxPos.Y()
+         << " " << setw(13) << CurrRef.RxPos.Z()
          << endl;
    }
 

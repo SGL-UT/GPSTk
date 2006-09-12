@@ -253,13 +253,13 @@ try {
          if(j==2) cout << setw(4) << obsdata.time.GPSfullweek()
             << setw(11) << setprecision(3) << obsdata.time.GPSsecond()
             << setw(4) << N
-            << setw(14) << X
-            << setw(14) << Y
-            << setw(14) << Z
-            << setw(14) << T
-            << setw(6) << pdop
-            << setw(6) << gdop
-            << setw(10) << rms
+            << " " << setw(13) << X
+            << " " << setw(13) << Y
+            << " " << setw(13) << Z
+            << " " << setw(13) << T
+            << " " << setw(5) << pdop
+            << " " << setw(5) << gdop
+            << " " << setw(9) << rms
             << endl;
       }
 
