@@ -93,7 +93,7 @@ namespace gpstk
       UBAMap::const_iterator satItr = uba.find(sat);
       if (satItr == uba.end())
       {
-         NoAlmanacFound nef("No almanacs for satellite " + sat.toString());
+         NoAlmanacFound nef("No almanacs for satellite " + StringUtils::asString(sat));
          GPSTK_THROW(nef);
       }
          

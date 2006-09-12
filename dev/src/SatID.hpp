@@ -68,7 +68,9 @@ namespace gpstk
          systemGlonass,
          systemGeosync,
          systemLEO,
-         systemTransit
+         systemTransit,
+         systemMixed,
+         systemUnknown
       };
 
       /// empty constructor, creates an invalid object
@@ -81,19 +83,23 @@ namespace gpstk
 
       // operator=, copy constructor and destructor built by compiler
 
-      /// return a string with system description (no whitespace)
-      std::string systemString() const
+      // Convienance output method
+      void dump(std::ostream& s) const
       {
-         switch(system) {
-            case systemGPS: return "GPS";
-            case systemGalileo: return "Galileo";
-            case systemGlonass: return "GLONASS";
-            case systemGeosync: return "Geostationary";
-            case systemLEO: return "LEO";
-            case systemTransit: return "Transit";
-            default: return "??";
+         switch(system)
+         {
+            case systemGPS:     s << "GPS";           break;
+            case systemGalileo: s << "Galileo";       break;
+            case systemGlonass: s << "GLONASS";       break;
+            case systemGeosync: s << "Geostationary"; break;
+            case systemLEO:     s << "LEO";           break;
+            case systemTransit: s << "Transit";       break;
+            case systemMixed:   s << "Mixed";         break;
+            case systemUnknown: s << "Unknown";       break;
+            default:            s << "??";            break;
          }
-      };
+         s << " " << id;
+      }
 
       /// operator == for SatID
       bool operator==(const SatID& right) const
@@ -123,26 +129,6 @@ namespace gpstk
       bool operator>=(const SatID& right) const
       { return !(operator<(right)); }
 
-      /// convert to string
-      std::string toString() const
-      {
-         char ch=' ';
-         switch (system)
-         {
-            case systemGPS:     ch = 'G'; break;
-            case systemGalileo: ch = 'E'; break;
-            case systemGlonass: ch = 'R'; break;
-            case systemGeosync: ch = 'S'; break;
-            case systemLEO:     ch = 'L'; break;
-            case systemTransit: ch = 'T'; break;
-            default:            ch = '?';
-         }
-         std::ostringstream oss;
-         char savechar=oss.fill('0');
-         oss << ch << std::setw(2) << id << std::setfill(savechar);
-         return oss.str();
-      }
-
       /// return true if this is a valid SatID
       /// @note assumes all id's are positive and less than 100;
       ///     plus GPS id's are less than or equal to MAX_PRN (32).
@@ -161,51 +147,25 @@ namespace gpstk
          }
       }
 
-      /// return true if this is a valid SatID in the RINEX specification
-      /// @note assumes all id's are positive and less than 100;
-      ///     plus GPS id's are less than or equal to MAX_PRN (32).
-      /// @note this is not used internally in the gpstk library
-      bool isValidRinex() const
-      {
-         switch(system)
-         {
-            case systemGPS:
-            case systemGalileo:
-            case systemGlonass:
-            case systemGeosync:
-            case systemTransit:
-               return isValid();
-            default:
-               return false;
-         }
-      }
-
-      /// return true if this is a valid SatID in the SP3 specification
-      /// @note assumes all id's are positive and less than 100
-      /// @note this is not used internally in the gpstk library
-      bool isValidSP3() const
-      {
-         switch(system)
-         {
-            case systemGPS:
-            case systemGalileo:
-            case systemGlonass:
-            case systemLEO:
-               return isValid();
-            default:
-               return false;
-         }
-      }
-
       int id;                   ///< satellite identifier, e.g. PRN
       SatelliteSystem system;   ///< system for this satellite
 
    }; // class SatID
 
+   namespace StringUtils
+   {
+      inline std::string asString(const SatID& p)
+      {
+         std::ostringstream oss;
+         p.dump(oss);
+         return oss.str();
+      }
+   }
+
       /// stream output for SatID
    inline std::ostream& operator<<(std::ostream& s, const SatID& p)
    {
-      s << p.toString();
+      p.dump(s);
       return s;
    }
 

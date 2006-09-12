@@ -65,22 +65,23 @@ namespace gpstk
       RinexSatID(int p, SatelliteSystem s) throw()
       {
          id = p; system = s;
-         switch(system) {
+         switch(s) {
             case systemGPS:
             case systemGalileo:
             case systemGlonass:
             case systemGeosync:
-            case systemTransit: break;
+            case systemTransit:
+            case systemMixed: break;
             // invalidate anything non-RINEX
             default:
-               system = systemGPS;
+               system = systemUnknown;
                id = -1;
          }
       }
 
       /// constructor from string
       RinexSatID(std::string& str) throw(Exception)
-         try { this->fromString(str); }
+         try { fromString(str); }
          catch(Exception& e) { GPSTK_RETHROW(e); }
 
       /// cast SatID to RinexSatID
@@ -104,12 +105,26 @@ namespace gpstk
       char systemChar() const throw()
       {
          switch(system) {
-            case systemGPS: return 'G';
+            case systemGPS:     return 'G';
             case systemGalileo: return 'E';
             case systemGlonass: return 'R';
             case systemGeosync: return 'S';
             case systemTransit: return 'T';
-            default: return '?';
+            case systemMixed:   return 'M';
+            default:            return '?';
+         }
+      };
+
+      std::string systemString() const throw()
+      {
+         switch(system) {
+            case systemGPS:     return "GPS";
+            case systemGalileo: return "Galileo";
+            case systemGlonass: return "Glonass";
+            case systemGeosync: return "Geosync";
+            case systemTransit: return "Transit";
+            case systemMixed:   return "Mixed";
+            default:            return "Unknown";
          }
       };
 
@@ -145,9 +160,6 @@ namespace gpstk
             case 'E': case 'e':
                system = SatID::systemGalileo;
                break;
-            //case 'L': case 'l':      // not in RINEX specification
-               //system = SatID::systemLEO;
-               //break;
             case ' ': case 'G': case 'g':
                system = SatID::systemGPS;
                break;
@@ -164,10 +176,9 @@ namespace gpstk
       std::string toString() const throw()
       {
          std::ostringstream oss;
-         char savechar=oss.fill(fillchar);
+         oss.fill(fillchar);
          oss << systemChar()
-             << std::setw(2) << id
-             << std::setfill(savechar);
+             << std::setw(2) << id;
           return oss.str();
       }
 

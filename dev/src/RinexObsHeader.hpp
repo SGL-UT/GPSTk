@@ -54,7 +54,7 @@
 #include "FFStream.hpp"
 #include "RinexObsBase.hpp"
 #include "Triple.hpp"
-#include "SatID.hpp"
+#include "RinexSatID.hpp"
 
 namespace gpstk
 {
@@ -69,18 +69,6 @@ namespace gpstk
    class RinexObsHeader : public RinexObsBase
    {
    public:
-         /// Supported satellite systems, for use in file headers
-         /// @note must be kept consistent with private functions
-         /// SatIDfromString() and SatIDtoString() and class SatID.
-      enum RinexSystem
-      {
-         systemGPS = 1,
-         systemGlonass,
-         systemGalileo,
-         systemGeosync,
-         systemTransit,
-         systemMixed       // not in SatID
-      };
 
          /// A Simple Constructor.
       RinexObsHeader() : valid(), version(2.1)
@@ -234,7 +222,7 @@ namespace gpstk
       double version;                        ///< RINEX VERSION & TYPE
       std::string fileType;                  ///< RINEX FILETYPE (Observation Navigation etc)
       //std::string system_str;                ///< The string (for file i/o) giving the RINEX system 
-      RinexSystem system;                    ///< The RINEX satellite system
+      gpstk::RinexSatID::SatelliteSystem system;    ///< The RINEX satellite system
       std::string fileProgram,               ///< The program used to generate this file
          fileAgency,                         ///< Who ran the program.
          date;                               ///< When the program was run.
@@ -255,9 +243,9 @@ namespace gpstk
       std::vector<RinexObsType> obsTypeList; ///< NUMBER & TYPES OF OBSERV
       double interval;                       ///< INTERVAL (optional)
       gpstk::DayTime firstObs ;             ///< TIME OF FIRST OBS
-      RinexSystem firstSystem;               ///< RINEX satellite system of FIRST OBS timetag
+      gpstk::RinexSatID::SatelliteSystem firstSystem; ///< RINEX satellite system of FIRST OBS timetag
       gpstk::DayTime lastObs ;              ///< TIME OF LAST OBS (optional)
-      RinexSystem lastSystem;                ///< RINEX satellite system of LAST OBS timetag
+      gpstk::RinexSatID::SatelliteSystem lastSystem; ///< RINEX satellite system of LAST OBS timetag
       int receiverOffset;                    ///< RCV CLOCK OFFS APPL (optional)
       int leapSeconds;                       ///< LEAP SECONDS (optional)
       short numSVs;                          ///< NUMBER OF SATELLITES in following map (optional)

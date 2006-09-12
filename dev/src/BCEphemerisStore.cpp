@@ -312,7 +312,7 @@ namespace gpstk
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
       {
-          NoEphemerisFound nef("No ephemeris for satellite " + sat.toString());
+          NoEphemerisFound nef("No ephemeris for satellite " + asString(sat));
           GPSTK_THROW(nef);
       }
 
@@ -364,7 +364,7 @@ namespace gpstk
       if (it == em.end())
       {
          string mess = "No eph found for satellite "
-            + sat.toString() + " at " + t.printf("%03j %02H:%02M:%02S");
+            + asString(sat) + " at " + t.printf("%03j %02H:%02M:%02S");
          NoEphemerisFound e(mess);
          GPSTK_THROW(e);
       }
@@ -382,7 +382,7 @@ namespace gpstk
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
       {
-          NoEphemerisFound nef("No ephemeris for satellite " + sat.toString());
+          NoEphemerisFound nef("No ephemeris for satellite " + asString(sat));
           GPSTK_THROW(nef);
       }
 
@@ -431,7 +431,7 @@ namespace gpstk
       if (it == em.end())
       {
          string mess = "No eph found for satellite "
-            + sat.toString() + " at " + t.printf("%03j %02H:%02M:%02S");
+            + asString(sat) + " at " + t.printf("%03j %02H:%02M:%02S");
          NoEphemerisFound e(mess);
          GPSTK_THROW(e);
       }

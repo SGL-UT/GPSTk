@@ -72,14 +72,14 @@ namespace gpstk
             case systemLEO: break;
             // invalidate anything non-SP3
             default:
-               system = systemGPS;
+               system = systemUnknown;
                id = -1;
          }
       }
 
       /// constructor from string
       SP3SatID(std::string& str) throw(Exception)
-         try { this->fromString(str); }
+         try { fromString(str); }
          catch(Exception& e) { GPSTK_RETHROW(e); }
 
       /// cast SatID to SP3SatID
@@ -102,7 +102,7 @@ namespace gpstk
       /// @note return only SP3 types, for non-SP3 systems return '?'
       char systemChar() const throw()
       {
-         switch(system) {
+         switch (system) {
             case systemGPS: return 'G';
             case systemGalileo: return 'E';
             case systemGlonass: return 'R';
@@ -163,10 +163,9 @@ namespace gpstk
       std::string toString() const throw()
       {
          std::ostringstream oss;
-         char savechar=oss.fill(fillchar);
+         oss.fill(fillchar);
          oss << systemChar()
-             << std::setw(2) << id
-             << std::setfill(savechar);
+             << std::setw(2) << id;
           return oss.str();
       }
 

@@ -230,12 +230,14 @@ namespace gpstk
          }
          line += leftJustify(string("Observation"), 20);
          std::string str;
-         if (system == systemGPS) str = "G (GPS)";
-         else if(system == systemGlonass) str = "R (GLONASS)";
-         else if(system == systemTransit) str = "T (Transit)";
-         else if(system == systemGeosync) str = "S (Geosync)";
-         else if(system == systemGalileo) str = "E (Galileo)";
-         else if(system == systemMixed) str = "M (Mixed)";
+
+         RinexSatID prn(1, system);
+         if (prn.system == RinexSatID::systemUnknown)
+         {
+            FFStreamError err("Invalid GNSS system");
+            GPSTK_THROW(err);
+         }
+         str = prn.systemChar() + " (" + prn.systemString() + ")";
          line += leftJustify(str, 20);
          line += versionString;
          strm << line << endl;
@@ -392,9 +394,9 @@ namespace gpstk
       {
          line  = writeTime(firstObs);
          line += string(48-line.size(),' ');
-         if(firstSystem == systemGPS) line += "GPS";
-         if(firstSystem == systemGlonass) line += "GLO";
-         if(firstSystem == systemGalileo) line += "GAL";
+         if(firstSystem == RinexSatID::systemGPS) line += "GPS";
+         if(firstSystem == RinexSatID::systemGlonass) line += "GLO";
+         if(firstSystem == RinexSatID::systemGalileo) line += "GAL";
          line += string(60 - line.size(), ' ');
          line += firstTimeString;
          strm << line << endl;
@@ -404,9 +406,9 @@ namespace gpstk
       {
          line  = writeTime(lastObs);
          line += string(48-line.size(),' ');
-         if(lastSystem == systemGPS) line += "GPS";
-         if(lastSystem == systemGlonass) line += "GLO";
-         if(lastSystem == systemGalileo) line += "GAL";
+         if(lastSystem == RinexSatID::systemGPS) line += "GPS";
+         if(lastSystem == RinexSatID::systemGlonass) line += "GLO";
+         if(lastSystem == RinexSatID::systemGalileo) line += "GAL";
          line += string(60 - line.size(), ' ');
          line += lastTimeString;
          strm << line << endl;
@@ -517,18 +519,13 @@ namespace gpstk
             GPSTK_THROW(e);
          }
          string system_str = strip(line.substr(40, 20));
-         char c=system_str[0];
-         if (system_str.empty() || c=='G' || c=='g' || c==' ') system = systemGPS;
-         else if(c=='R' || c=='r') system = systemGlonass;
-         else if(c=='T' || c=='t') system = systemTransit;
-         else if(c=='S' || c=='s') system = systemGeosync;
-         else if(c=='E' || c=='e') system = systemGalileo;
-         else if(c=='M' || c=='m') system = systemMixed;
-         else
+         RinexSatID prn(system_str);
+         if (prn.system = RinexSatID::systemUnknown)
          {
             FFStreamError e("Input satellite system is unsupported: " + system_str);
             GPSTK_THROW(e);
          }
+         system = prn.system;
          valid |= versionValid;
       }
       else if (label == runByString )
@@ -657,17 +654,17 @@ namespace gpstk
       else if (label == firstTimeString)
       {
          firstObs = parseTime(line);
-         firstSystem = systemGPS;
-         if(line.substr(48,3)=="GLO") firstSystem=systemGlonass;
-         if(line.substr(48,3)=="GAL") firstSystem=systemGalileo;
+         firstSystem = RinexSatID::systemGPS;
+         if(line.substr(48,3)=="GLO") firstSystem=RinexSatID::systemGlonass;
+         if(line.substr(48,3)=="GAL") firstSystem=RinexSatID::systemGalileo;
          valid |= firstTimeValid;
       }
       else if (label == lastTimeString)
       {
          lastObs = parseTime(line);
-         lastSystem = systemGPS;
-         if(line.substr(48,3)=="GLO") lastSystem=systemGlonass;
-         if(line.substr(48,3)=="GAL") lastSystem=systemGalileo;
+         lastSystem = RinexSatID::systemGPS;
+         if(line.substr(48,3)=="GLO") lastSystem=RinexSatID::systemGlonass;
+         if(line.substr(48,3)=="GAL") lastSystem=RinexSatID::systemGalileo;
          valid |= lastTimeValid;
       }
       else if (label == receiverOffsetString)
@@ -857,12 +854,8 @@ namespace gpstk
       int i,j;
       s << "---------------------------------- REQUIRED ----------------------------------\n";
       string str;
-      if (system == systemGPS) str = "G (GPS)";
-      else if(system == systemGlonass) str = "R (GLONASS)";
-      else if(system == systemTransit) str = "T (Transit)";
-      else if(system == systemGeosync) str = "S (Geosync)";
-      else if(system == systemGalileo) str = "E (Galileo)";
-      else if(system == systemMixed) str = "M (Mixed)";
+      RinexSatID prn(1, system);
+      str = prn.systemChar() + " (" + prn.systemString() + ")";
       s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
          << ",  File type " << fileType << ",  System " << str << ".\n";
       s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: " << fileAgency << endl;
@@ -890,8 +883,8 @@ namespace gpstk
             << " " << obsTypeList[i].description
             << " (" << obsTypeList[i].units << ")." << endl;
       s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (firstSystem==systemGlonass ? "GLO" :
-                   (firstSystem==systemGalileo ? "GAL" : "GPS")) << endl;
+         << " " << (firstSystem==RinexSatID::systemGlonass ? "GLO" :
+                   (firstSystem==RinexSatID::systemGalileo ? "GAL" : "GPS")) << endl;
       s << "(This header is ";
       if((valid & allValid211) == allValid211) s << "VALID 2.11";
       else if((valid & allValid21) == allValid21) s << "VALID 2.1";
@@ -918,8 +911,8 @@ namespace gpstk
          << fixed << setw(7) << setprecision(3) << interval << endl;
       if(valid & lastTimeValid) s << "Time of last obs "
          << lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (lastSystem==systemGlonass ? "GLO":
-                   (lastSystem==systemGalileo ? "GAL" : "GPS")) << endl;
+         << " " << (lastSystem==RinexSatID::systemGlonass ? "GLO":
+                   (lastSystem==RinexSatID::systemGalileo ? "GAL" : "GPS")) << endl;
       if(valid & leapSecondsValid) s << "Leap seconds: " << leapSeconds << endl;
       if(valid & receiverOffsetValid) s << "Clock offset record is present and offsets "
          << (receiverOffset?"ARE":"are NOT") << " applied." << endl;
@@ -985,8 +978,12 @@ namespace gpstk
          case SatID::systemGalileo: oss << 'E'; break;
          case SatID::systemTransit: oss << 'T'; break;
          default:
-            FFStreamError ffse("Non-RINEX system in SatID: " + sat.systemString());
+         {
+            ostringstream s;
+            s << sat;
+            FFStreamError ffse("Non-RINEX system in SatID: " + s.str());
             GPSTK_THROW(ffse);
+         }
       }
       oss << setw(2) << sat.id;
       return oss.str();
