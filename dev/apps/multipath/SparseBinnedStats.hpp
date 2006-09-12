@@ -1,13 +1,13 @@
 #pragma ident "$Id:$"
 
 /**
- * @file BinnedStats.hpp
+ * @file SparseBinnedStats.hpp
  * Generates statistics over a discrete set of conditions. 
  * Class declarations.
  */
 
-#ifndef BINNED_STATS_HPP
-#define BINNED_STATS_HPP
+#ifndef SPARSE_BINNED_STATS_HPP
+#define SPARSE_BINNED_STATS_HPP
 
 #include <map>
 
@@ -27,17 +27,17 @@ namespace gpstk
        */  
 
    template <class T>
-   class BinnedStats
+   class SparseBinnedStats
    {
    public:
 
-      NEW_EXCEPTION_CLASS(BinnedStatsException, gpstk::Exception);
+      NEW_EXCEPTION_CLASS(SparseBinnedStatsException, gpstk::Exception);
 
          /**
           * Constructor.
           * @param boundaryList defines the lower and upper bounds of each bin
           */
-      BinnedStats(const std::valarray<T> boundaryList)
+      SparseBinnedStats(const std::valarray<T> boundaryList)
             : binBoundaries(boundaryList), rejectedCount(0) 
          {}
 
@@ -52,9 +52,9 @@ namespace gpstk
       int computeBin( const T& entry );      
       std::valarray<T> binBoundaries;
 
-   }; // End class BinnedStats
+   }; // End class SparseBinnedStats
    
       //@}   
 } // End namespace gpstk
 
-#endif // BINNED_STATS_HPP 
+#endif // SPARSE_BINNED_STATS_HPP 

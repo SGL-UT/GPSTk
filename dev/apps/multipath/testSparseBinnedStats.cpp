@@ -2,7 +2,7 @@
 #include <set>
 
 #include "ValarrayUtils.hpp"
-#include "BinnedStats.hpp"
+#include "SparseBinnedStats.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -29,7 +29,7 @@ int main(void)
    cout << "Bin boundaries: " << endl;
    cout << elevationBinBoundaries << endl;
 
-   BinnedStats<double> mstats(elevationBinBoundaries);
+   SparseBinnedStats<double> mstats(elevationBinBoundaries);
 
    mstats.add(mpVals, elVals);
    

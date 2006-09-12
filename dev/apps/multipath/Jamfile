@@ -5,4 +5,4 @@ BonkForte ; # bleah.
 
 GPSMain testoa : testObsArray.cpp ObsArray.cpp ;
 GPSMain testva : testValarrayUtils.cpp ;
-GPSMain testbs : testBinnedStats.cpp ;
+GPSMain testsbs : testSparseBinnedStats.cpp ;
