@@ -49,7 +49,7 @@
 #include <vector>
 #include "DayTime.hpp"
 #include "SP3Base.hpp"
-#include "SatID.hpp"
+#include "SP3SatID.hpp"
 
 namespace gpstk
 {
@@ -69,16 +69,6 @@ namespace gpstk
    class SP3Header : public SP3Base
    {
    public:
-         /// Supported file types == satellite system(s) in file (version 'c');
-         /// NB this is a subset of enum SatelliteSystem in gpstk::SatID, plus 'Mixed'
-      enum SP3System
-      {
-         systemGPS=1,
-         systemGlonass,
-         systemGalileo,
-         systemLEO,
-         systemMixed   // used when more than one sat. system is found in the file
-      };
 
          /// Supported time systems (version 'c')
       enum TimeSystem
@@ -89,38 +79,12 @@ namespace gpstk
 
          /// constructor
       SP3Header() : version('a'), numberOfEpochs(0),
-                    system(systemGPS), timeSystem(timeGPS),
+                    system(1, SP3SatID::systemGPS), timeSystem(timeGPS),
                     basePV(0.0), baseClk(0.0)
                     {}
 
          /// destructor
       virtual ~SP3Header() {}
-
-         /// return the single character file system descriptor
-      char systemChar() const
-      {
-         switch(system) {
-            case systemGPS: return 'G';
-            case systemGlonass: return 'R';
-            case systemGalileo: return 'E';
-            case systemLEO: return 'L';
-            case systemMixed: return 'M';
-            default: return '?';
-         }
-      }
-
-         /// return a string with file type description (no whitespace)
-      std::string systemString() const
-      {
-         switch(system) {
-            case systemGPS: return "GPS";
-            case systemGalileo: return "Galileo";
-            case systemGlonass: return "GLONASS";
-            case systemLEO: return "LEO";
-            case systemMixed: return "Mixed";
-            default: return "??";
-         }
-      };
 
          /// return a string with time system name
       std::string timeSystemString() const
@@ -150,7 +114,7 @@ namespace gpstk
       std::string orbitType;    ///< Type of Orbit Estimate
       std::string agency;       ///< Agency generating the Orbit
       // the following four are specific to version 'c'
-      SP3System system;         ///< File type (system of satellites in file)
+      SP3SatID system;          ///< File type (system of satellites in file)
       TimeSystem timeSystem;    ///< Time system used
       double basePV;            ///< Base used in Pos or Vel (mm or 10**-4mm/sec)
       double baseClk;           ///< Base used in Clk or rate (psec or 10**-4psec/sec)
@@ -179,15 +143,6 @@ namespace gpstk
       virtual void reallyGetRecord(FFStream& s) 
          throw(std::exception, FFStreamError,
                StringUtils::StringException);
-
-         /// convert string found in the SP3 file to SatID
-      static SatID SatIDfromString(const std::string& str)
-         throw(FFStreamError);
-
-         /// convert SatID to string for output to SP3 file
-      static std::string SatIDtoString(const SatID& sat)
-         throw(FFStreamError);
-
    };
 
    //@}

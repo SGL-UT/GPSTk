@@ -83,7 +83,7 @@ namespace gpstk
 
       // operator=, copy constructor and destructor built by compiler
 
-      // Convienance output method
+      /// Convenience output method
       void dump(std::ostream& s) const
       {
          switch(system)

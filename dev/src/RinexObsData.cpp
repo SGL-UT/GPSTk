@@ -75,7 +75,8 @@ namespace gpstk
       if(epochFlag==0 || epochFlag==1 || epochFlag==6) {
          while ((obsItr != obs.end()) && (satsWritten < maxPrnsPerLine))
          {
-            line += RinexObsHeader::SatIDtoString((*obsItr).first);
+            RinexSatID prn((*obsItr).first);
+            line += prn.toString();
             satsWritten++;
             obsItr++;
          }
@@ -225,10 +226,13 @@ namespace gpstk
                }
             }
             try {
-               satIndex[ndx] =
-                  RinexObsHeader::SatIDfromString(line.substr(col+isv*3-1, 3));
+               satIndex[ndx] = RinexSatID(line.substr(col+isv*3-1, 3));
             }
-            catch(FFStreamError& ffse) { GPSTK_RETHROW(ffse); }
+            catch (Exception& e)
+            { 
+               FFStreamError ffse(e);
+               GPSTK_THROW(ffse);
+            }
          }
       
          for (isv=0; isv < numSvs; isv++)

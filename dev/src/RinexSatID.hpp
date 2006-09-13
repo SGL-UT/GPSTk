@@ -80,22 +80,24 @@ namespace gpstk
       }
 
       /// constructor from string
-      RinexSatID(std::string& str) throw(Exception)
+      RinexSatID(const std::string& str) throw(Exception)
+      {
          try { fromString(str); }
          catch(Exception& e) { GPSTK_RETHROW(e); }
+      }
 
       /// cast SatID to RinexSatID
       RinexSatID(const SatID& sat) throw()
-         { *this = RinexSatID(sat.id,sat.system); }
+      { *this = RinexSatID(sat.id,sat.system); }
 
       /// set the fill character used in output
       /// return the current fill character
       char setfill(char c) throw()
-         { char csave=fillchar; fillchar=c; return csave; }
+      { char csave=fillchar; fillchar=c; return csave; }
 
       /// get the fill character used in output
       char getfill() throw()
-         { return fillchar; }
+      { return fillchar; }
 
       // operator=, copy constructor and destructor built by compiler
 

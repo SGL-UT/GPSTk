@@ -67,7 +67,7 @@ namespace gpstk
       else {           // output Position and Clock OR Velocity and Clock Rate Record
          line = flag;
          if(version == 'c')
-            line += SP3Header::SatIDtoString(sat);
+            line += SP3SatID(sat).toString();
          else
             line += rightJustify(asString(sat.id),3);
          line += rightJustify(asString(x[0],6),14);
@@ -224,9 +224,9 @@ namespace gpstk
 
             // parse the line
             if(version == 'a')
-               sat = SatID(asInt(strm.buffer.substr(1, 3)),SatID::systemGPS);
+               sat = SatID(asInt(strm.buffer.substr(1, 3)), SP3SatID::systemGPS);
             else
-               sat = SP3Header::SatIDfromString(strm.buffer.substr(1,3));
+               sat = SP3SatID(strm.buffer.substr(1,3));
 
             x[0] = asDouble(strm.buffer.substr(5,14));
             x[1] = asDouble(strm.buffer.substr(19,14));

@@ -78,22 +78,24 @@ namespace gpstk
       }
 
       /// constructor from string
-      SP3SatID(std::string& str) throw(Exception)
+      SP3SatID(const std::string& str) throw(Exception)
+      {
          try { fromString(str); }
          catch(Exception& e) { GPSTK_RETHROW(e); }
+      }
 
       /// cast SatID to SP3SatID
       SP3SatID(const SatID& sat) throw()
-         { *this = SP3SatID(sat.id,sat.system); }
+      { *this = SP3SatID(sat.id,sat.system); }
 
       /// set the fill character used in output
       /// return the current fill character
       char setfill(char c) throw()
-         { char csave=fillchar; fillchar=c; return csave; }
+      { char csave=fillchar; fillchar=c; return csave; }
 
       /// get the fill character used in output
       char getfill() throw()
-         { return fillchar; }
+      { return fillchar; }
 
       // operator=, copy constructor and destructor built by compiler
 
@@ -103,14 +105,26 @@ namespace gpstk
       char systemChar() const throw()
       {
          switch (system) {
-            case systemGPS: return 'G';
+            case systemGPS:     return 'G';
             case systemGalileo: return 'E';
             case systemGlonass: return 'R';
-            case systemLEO: return 'L';
+            case systemLEO:     return 'L';
             // non-SP3
             default: return '?';
          }
       };
+
+      std::string systemString() const throw()
+      {
+         switch (system) {
+            case systemGPS:     return "GPS";
+            case systemGalileo: return "Galileo";
+            case systemGlonass: return "Glonass";
+            case systemLEO:     return "LEO";
+            default:            return "Unknown";
+         }
+      };
+
 
       /// read from string
       /// @note GPS is default system (no or unknown system char)
@@ -138,12 +152,6 @@ namespace gpstk
             case 'R': case 'r':
                system = SatID::systemGlonass;
                break;
-            //case 'T': case 't':        // not in SP3 specification
-               //system = SatID::systemTransit;
-               //break;
-            //case 'S': case 's':        // not in SP3 specification
-               //system = SatID::systemGeosync;
-               //break;
             case 'E': case 'e':
                system = SatID::systemGalileo;
                break;

@@ -116,8 +116,14 @@ namespace gpstk
             else j=0;            // no more
 
             if(j == -1)          // sat version c
-               try { line += rightJustify(SatIDtoString(SVid),3); }
-               catch(FFStreamError& ffse) { GPSTK_RETHROW(ffse); }
+               try {
+                  line += rightJustify(SP3SatID(SVid).toString(),3);
+               }
+               catch (Exception& e)
+               {
+                  FFStreamError ffse(e);
+                  GPSTK_THROW(ffse);
+               }
             else                 // sat version a, accuracy, or 0
                line += rightJustify(asString(j),3);
             k++;
@@ -127,7 +133,9 @@ namespace gpstk
 
       // line 13
       string ft(" cc");
-      if(version == 'c') { ft[1] = systemChar(); ft[2] = ' '; }
+      if (version == 'c')
+      {
+         ft[1] = system.systemChar(); ft[2] = ' '; }
       strm << "%c" << ft << " cc"
            << " " << (version == 'c' ? timeSystemString() : "ccc")
            << " ccc cccc cccc cccc cccc ccccc ccccc ccccc ccccc" << endl;
@@ -168,8 +176,8 @@ namespace gpstk
       s << " Orbit estimate type : " << orbitType << endl;
       s << " Agency : " << agency << endl;
       if(version == 'c') {
-         s << " File type: '" << systemChar() << "' which is "
-           << systemString() << endl;
+         s << " File type: '" << system.systemChar() << "' which is "
+           << system.systemString() << endl;
          s << " Time System: " << timeSystemString() << endl;
          s << " Base for Pos/Vel =" << fixed << setw(10) << setprecision(7)
            << basePV << endl;
@@ -260,8 +268,13 @@ namespace gpstk
             {
                if (readSVs < numSVs)
                {
-                  try { sat = SatIDfromString(line.substr(index,3)); }
-                  catch(FFStreamError& ffse) { GPSTK_RETHROW(ffse); }
+                  try { 
+                     sat = SP3SatID(line.substr(index,3));
+                  }
+                  catch (Exception& e) {
+                     FFStreamError ffse(e);
+                     GPSTK_THROW(ffse);
+                  }
                   svsAsWritten[readSVs] = sat;
                   satList[sat] = 0;
                   readSVs++;
@@ -313,52 +326,5 @@ namespace gpstk
          comments.push_back(line);
       }
    }  // end SP3Header::reallyGetRecord()
-
-   SatID SP3Header::SatIDfromString(const string& str)
-      throw(FFStreamError)
-   {
-      char c;
-      SatID sat;
-      istringstream iss(str);
-      iss >> c;
-      switch(c)
-      {
-         case '0': case '1': case '2': case '3':
-         case '4': case '5': case '6':
-         case '7': case '8': case '9':
-            iss.putback(c);
-            // fall through - blank system char defaults to GPS
-         case 'G': case 'g': sat.system = SatID::systemGPS; break;
-         case 'R': case 'r': sat.system = SatID::systemGlonass; break;
-         case 'L': case 'l': sat.system = SatID::systemLEO; break;
-         case 'E': case 'e': sat.system = SatID::systemGalileo; break;
-         default:
-            FFStreamError ffse("Non-SP3 system in string: "+c);
-            GPSTK_THROW(ffse);
-      }
-      iss >> sat.id;
-      if (sat.id <= 0) sat.id = -1;
-      return sat;
-   }
-
-   string SP3Header::SatIDtoString(const SatID& sat)
-      throw(FFStreamError)
-   {
-      char sysChar;
-      switch (sat.system)
-      {
-         case SatID::systemGPS:     sysChar = 'G'; break;
-         case SatID::systemGlonass: sysChar = 'R'; break;
-         case SatID::systemLEO:     sysChar = 'L'; break;
-         case SatID::systemGalileo: sysChar = 'E'; break;
-         default:
-            FFStreamError ffse("Non-SP3 system in SatID");
-            GPSTK_THROW(ffse);
-            break;
-      }
-      std::ostringstream oss;
-      oss << sysChar << setw(2) << sat.id;
-      return oss.str();
-   }
 
 }  // namespace

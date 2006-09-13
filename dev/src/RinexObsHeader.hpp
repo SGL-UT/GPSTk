@@ -221,8 +221,8 @@ namespace gpstk
          //@{
       double version;                        ///< RINEX VERSION & TYPE
       std::string fileType;                  ///< RINEX FILETYPE (Observation Navigation etc)
-      //std::string system_str;                ///< The string (for file i/o) giving the RINEX system 
-      gpstk::RinexSatID::SatelliteSystem system;    ///< The RINEX satellite system
+      //std::string system_str;              ///< The string (for file i/o) giving the RINEX system 
+      RinexSatID system;                     ///< The RINEX satellite system
       std::string fileProgram,               ///< The program used to generate this file
          fileAgency,                         ///< Who ran the program.
          date;                               ///< When the program was run.
@@ -236,23 +236,23 @@ namespace gpstk
          recVers;                            ///< RECEIVER VERSION
       std::string antNo,                     ///< ANTENNA NUMBER
          antType;                            ///< ANTENNA TYPE
-      gpstk::Triple antennaPosition;        ///< APPROXIMATE POSITION XYZ
-      gpstk::Triple antennaOffset;          ///< ANTENNA: DELTA H/E/N
+      gpstk::Triple antennaPosition;         ///< APPROXIMATE POSITION XYZ
+      gpstk::Triple antennaOffset;           ///< ANTENNA: DELTA H/E/N
       short wavelengthFactor[2];             ///< default WAVELENGTH FACTORS
       std::vector<ExtraWaveFact> extraWaveFactList; ///< extra (per PRN) WAVELENGTH FACTORS
       std::vector<RinexObsType> obsTypeList; ///< NUMBER & TYPES OF OBSERV
       double interval;                       ///< INTERVAL (optional)
-      gpstk::DayTime firstObs ;             ///< TIME OF FIRST OBS
-      gpstk::RinexSatID::SatelliteSystem firstSystem; ///< RINEX satellite system of FIRST OBS timetag
-      gpstk::DayTime lastObs ;              ///< TIME OF LAST OBS (optional)
-      gpstk::RinexSatID::SatelliteSystem lastSystem; ///< RINEX satellite system of LAST OBS timetag
+      DayTime firstObs ;                     ///< TIME OF FIRST OBS
+      RinexSatID firstSystem;                ///< RINEX satellite system of FIRST OBS timetag
+      DayTime lastObs ;                      ///< TIME OF LAST OBS (optional)
+      RinexSatID lastSystem;                 ///< RINEX satellite system of LAST OBS timetag
       int receiverOffset;                    ///< RCV CLOCK OFFS APPL (optional)
       int leapSeconds;                       ///< LEAP SECONDS (optional)
       short numSVs;                          ///< NUMBER OF SATELLITES in following map (optional)
       std::map<SatID, std::vector<int> > numObsForSat; ///<  PRN / # OF OBS (optional)
       unsigned long valid; ///< Bits set when individual header members are present and valid
       int numObs; ///< used to save the number of obs on # / TYPES continuation lines.
-      SatID lastPRN; ///< used to save the current PRN while reading PRN/OBS continuation lines.
+      RinexSatID lastPRN; ///< used to save the current PRN while reading PRN/OBS continuation lines.
          //@}
      
          /// Destructor
@@ -325,15 +325,6 @@ namespace gpstk
       friend class RinexObsData;
 
    private:
-
-         /// convert string found in the RINEX file to SatID
-      static gpstk::SatID SatIDfromString(const std::string& str)
-         throw(gpstk::FFStreamError);
-
-         /// convert SatID to string for output to RINEX file
-      static std::string SatIDtoString(const gpstk::SatID& sat)
-         throw(FFStreamError);
-
          /// Converts the daytime \a dt into a Rinex Obs time
          /// string for the header
       std::string writeTime(const DayTime& dt) const;
