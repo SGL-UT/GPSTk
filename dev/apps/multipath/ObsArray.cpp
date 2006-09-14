@@ -44,22 +44,47 @@ namespace gpstk
    void ObsArray::load(const std::string& obsfilename, 
                        const std::string& navfilename)
    {
-         // First check for existance of input files
-      if (!FileUtils::fileAccessCheck(obsfilename))
-      {
-         ObsArrayException oae("Cannot read obs file " + obsfilename);
-         GPSTK_THROW(oae);
-      }
+      std::vector<std::string> obsList(1), navList(1);
+      obsList[0]=obsfilename;
+      navList[0]=navfilename;
+      load(obsList, navList);
+   }
 
-      if (!FileUtils::fileAccessCheck(navfilename))
+   void ObsArray::load(const std::vector<std::string>& obsList, 
+                       const std::vector<std::string>& navList)
+   {
+         // First check for existance of input files
+      for (int i=0; i< obsList.size(); i++)
+         if (!FileUtils::fileAccessCheck(obsList[i]))
+         {
+            ObsArrayException oae("Cannot read obs file " + obsList[i]);
+            GPSTK_THROW(oae);
+         }
+
+      for (int i=0; i< navList.size(); i++)
       {
-         ObsArrayException oae("Cannot read nav file " + navfilename);
-         GPSTK_THROW(oae);
-      }
+         
+         if (!FileUtils::fileAccessCheck(navList[i]))
+         {
+            ObsArrayException oae("Cannot read nav file " + navList[i]);
+            GPSTK_THROW(oae);
+         }
+         else
 
          // Load the ephemeris information from the named NAV file.
-      ephStore.loadFile(navfilename);
+         ephStore.loadFile(navList[i]);
+      }
+   
+      for (int i=0; i< obsList.size(); i++)
+      {
+         loadObsFile(obsList[i]);
+      }
+      
+   }
+   
 
+   void ObsArray::loadObsFile(const std::string& obsfilename)
+   {
          // Load the obs file header
       RinexObsStream robs(obsfilename.c_str());
       RinexObsStream robsAgain(obsfilename.c_str());
@@ -90,7 +115,7 @@ namespace gpstk
       }
 
       RinexObsData rod;
-      RinexObsData::RinexPrnMap::const_iterator it;
+      RinexObsData::RinexSatMap::const_iterator it;
       
          // Read through file the first time.
          // In this pass, get the "size" of the data
@@ -130,9 +155,9 @@ namespace gpstk
             PRSolution prEst;
             ZeroTropModel nullTropModel;
             
-            std::vector<RinexPrn> sats;
+            std::vector<SatID> sats;
             std::vector<double> ranges;
-            RinexObsData::RinexPrnMap::const_iterator it;
+            RinexObsData::RinexSatMap::const_iterator it;
 
             for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
             {
@@ -169,7 +194,7 @@ namespace gpstk
       {
          
          using namespace ValarrayUtils;   
-         std::cout << "intervals were: " << intervalDifferences << std::endl;
+            //std::cout << "intervals were: " << intervalDifferences << std::endl;
          std::set<double>::iterator itEpochDiff = intervalDifferences.begin();
          interval = *itEpochDiff;
          intervalDefined = true;
@@ -197,9 +222,9 @@ namespace gpstk
       validAzEl = true;
       size_t satEpochIdx=0;
          
-      std::map<RinexPrn, DayTime> lastObsTime;
-      std::map<RinexPrn, DayTime>::const_iterator it2;
-      std::map<RinexPrn, long> currPass;
+      std::map<SatID, DayTime> lastObsTime;
+      std::map<SatID, DayTime>::const_iterator it2;
+      std::map<SatID, long> currPass;
      
       long highestPass = 0;
       long thisPassNo;
@@ -248,7 +273,7 @@ namespace gpstk
             // Get topocentric coords for given sat
             try
             {
-               Xvt svPos = ephStore.getPrnXvt(it->first.prn, rod.time);
+               Xvt svPos = ephStore.getPrnXvt(it->first.id, rod.time);
                elevation[satEpochIdx]= antennaPos.elvAngle(svPos.x);
                azimuth[satEpochIdx]  = antennaPos.azAngle( svPos.x);
             }

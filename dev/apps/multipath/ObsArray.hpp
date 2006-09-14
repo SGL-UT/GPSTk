@@ -10,6 +10,7 @@
 #define OBSARRAY_HPP
 
 #include<map>
+#include<vector>
 #include<string>
 #include<valarray>
 
@@ -18,6 +19,7 @@
 #include "Exception.hpp" 
 #include "Expression.hpp"
 #include "RinexObsHeader.hpp"
+#include "SatID.hpp"
 
 namespace gpstk
 {
@@ -86,20 +88,23 @@ namespace gpstk
       {   
          load(std::string(obsfilename),std::string(navfilename));
       }
-
+      void load(const std::vector<std::string>& obsList, 
+                const std::vector<std::string>& navList);
 
       double& operator() (size_t r, size_t c)
       {  return observation[r*numObsTypes + c]; }
 
       std::valarray<double>   observation;
       std::valarray<DayTime>  epoch;
-      std::valarray<RinexPrn> satellite;
+      std::valarray<SatID>    satellite;
       std::valarray<double>   azimuth;
       std::valarray<double>   elevation;
       std::valarray<long>     pass;
       std::valarray<bool>     validAzEl;
 
    private:
+
+      void loadObsFile(const std::string& obsfilename);
 
       ObsIndex numObsTypes;
       std::map<ObsIndex, RinexObsHeader::RinexObsType > basicTypeMap;

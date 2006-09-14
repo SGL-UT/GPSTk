@@ -36,9 +36,12 @@
 #ifndef GPSTK_VALARRAYUTILS_HPP
 #define GPSTK_VALARRAYUTILS_HPP
 
-#include <valarray>
 #include <iostream>
+
+#include <valarray>
 #include <set>
+#include <vector>
+
 #include "Exception.hpp"
 
 namespace gpstk
@@ -59,7 +62,7 @@ namespace gpstk
          //@}
 
       template<class T> std::ostream& operator<<(std::ostream& ostr, 
-                                                 std::valarray<T>& x)
+                                                 const std::valarray<T>& x)
       {
             for (size_t i=0; i<x.size(); i++)
             ostr << x[i] << " ";
@@ -68,10 +71,20 @@ namespace gpstk
       }
 
       template<class T> std::ostream& operator<<(std::ostream& ostr, 
-                                                 std::set<T>& x)
+                                                 const std::set<T>& x)
       {
          using namespace std;
-         for (typename set<T>::iterator i = x.begin(); i!=x.end(); i++)
+         for (typename set<T>::const_iterator i = x.begin(); i!=x.end(); i++)
+            ostr << *i << " ";
+         return ostr;
+            // return copy(x.begin(), x.end(), std::ostream_iterator<T>(ostr));
+      }
+
+      template<class T> std::ostream& operator<<(std::ostream& ostr, 
+                                                 const std::vector<T>& x)
+      {
+         using namespace std;
+         for (typename vector<T>::const_iterator i = x.begin(); i!=x.end(); i++)
             ostr << *i << " ";
          return ostr;
             // return copy(x.begin(), x.end(), std::ostream_iterator<T>(ostr));

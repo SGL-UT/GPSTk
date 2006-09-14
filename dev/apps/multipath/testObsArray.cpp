@@ -1,6 +1,7 @@
 #include <iostream>
 #include <set>
 
+#include "SatID.hpp"
 #include "DayTime.hpp"
 #include "ObsArray.hpp"
 #include "ValarrayUtils.hpp"
@@ -25,7 +26,7 @@ int main(int argc, char* argv[])
 
       cout << "Reading input files." << endl;
 //      oa.load("netrs027.06o.30s","netrs027.06n");
-      oa.load("arl2810.06o","arl2810.06n");
+      oa.load("arl_256.06o","arl_256.06n");
       cout << "Done reading." << endl;
 
       cout << "Values directly using operator(size_t, size_t): " << endl;
@@ -48,7 +49,7 @@ int main(int argc, char* argv[])
       cout << "Mean value is: " << copyObs.sum() / copyObs.size() << endl;
       //cout << "Mean value is: " << oa.observation[myslice].sum() / oa.observation[myslice].size() << endl;
 
-      RinexPrn thisPrn(9,systemGPS);
+      SatID thisPrn(9,SatID::systemGPS);
       valarray<bool> prnIdx = (oa.satellite==thisPrn);
       valarray<double> prnObs = oa.observation[prnIdx];
       valarray<DayTime> prnTime = oa.epoch[prnIdx];
@@ -63,7 +64,7 @@ int main(int argc, char* argv[])
       set<DayTime> allepochs = unique(oa.epoch);  
       cout << "Unique epochs:" << endl << allepochs << endl;
       
-      set<RinexPrn> allprns = unique(oa.satellite);
+      set<SatID> allprns = unique(oa.satellite);
       cout << "Unique satellites: " << endl << allprns << endl;
 
       set<long> allpasses = unique(oa.pass);
