@@ -20,12 +20,12 @@ public:
 
    void selectMasters(
       const RinexObsType& rot, 
-      const gpstk::RinexPrn& prn,
+      const gpstk::SatID& prn,
       PrnElevationMap& pem);
 
    void doubleDifference(
       const RinexObsType& rot, 
-      const gpstk::RinexPrn& prn,
+      const gpstk::SatID& prn,
       PrnElevationMap& pem);
 
    void getSlips(CycleSlipList& csl,
@@ -41,7 +41,7 @@ public:
    mutable ROTDM lamda;
 
    // And an set of arcs for each PRN
-   typedef std::map<gpstk::RinexPrn, PhaseResidual::ArcList> PraPrn;
+   typedef std::map<gpstk::SatID, PhaseResidual::ArcList> PraPrn;
 
    // And a set of those for each obs type
    typedef std::map<gpstk::RinexObsHeader::RinexObsType, PraPrn> PraPrnOt;
@@ -50,7 +50,7 @@ public:
    TimeDoubleMap clockOffset;
    
    // SV line-of-sight motion, in meters/second
-   typedef std::map<gpstk::RinexPrn, TimeDoubleMap> PrnTimeDoubleMap;
+   typedef std::map<gpstk::SatID, TimeDoubleMap> PrnTimeDoubleMap;
    PrnTimeDoubleMap rangeRate;
 
    PraPrnOt pot;
@@ -58,21 +58,21 @@ public:
    long minArcLen;
    double minArcTime, maxGapTime;
 
-   typedef std::map<gpstk::DayTime, gpstk::RinexPrn> TimePrnMap;
+   typedef std::map<gpstk::DayTime, gpstk::SatID> TimePrnMap;
 
    class goodMaster
    {
    public:
-      goodMaster(double v, const gpstk::RinexPrn& p, const gpstk::DayTime& t, PrnTimeDoubleMap& rr)
+      goodMaster(double v, const gpstk::SatID& p, const gpstk::DayTime& t, PrnTimeDoubleMap& rr)
          : minVal(v), prn(p), time(t), rangeRate(rr){};
 
       const double minVal; // Above this elevation
-      const gpstk::RinexPrn& prn;  // Not this prn
+      const gpstk::SatID& prn;  // Not this prn
       const gpstk::DayTime& time;  // time to evaluate range rate
       PrnTimeDoubleMap& rangeRate;
 
       double bestElev;
-      gpstk::RinexPrn bestPrn;
+      gpstk::SatID bestPrn;
       bool operator()(const PrnDoubleMap::value_type& pdm);
    };
 };

@@ -50,7 +50,7 @@ void PhaseCleaner::addData(const RODEpochMap& rx1, const RODEpochMap& rx2)
 
       for (RinexPrnMap::const_iterator pi1=rod1.obs.begin(); pi1 != rod1.obs.end(); pi1++)
       {
-         const gpstk::RinexPrn& prn = pi1->first;
+         const gpstk::SatID& prn = pi1->first;
          const gpstk::RinexObsData::RinexObsTypeMap& rotm1 = pi1->second;
 
          // Make sure the other receiver saw this SV
@@ -124,7 +124,7 @@ bool PhaseCleaner::goodMaster::operator()(const PrnDoubleMap::value_type& pdm)
    if (!good)
       return false;
 
-   if (bestPrn.prn < 1 || pdm.second < bestElev)
+   if (bestPrn.id < 1 || pdm.second < bestElev)
    {
       bestPrn = pdm.first;
       bestElev = pdm.second;
@@ -140,7 +140,7 @@ bool PhaseCleaner::goodMaster::operator()(const PrnDoubleMap::value_type& pdm)
 //-----------------------------------------------------------------------------
 void PhaseCleaner::selectMasters(
    const RinexObsType& rot, 
-   const gpstk::RinexPrn& prn, 
+   const gpstk::SatID& prn, 
    PrnElevationMap& pem)
 {
    PhaseResidual::ArcList& pral = pot[rot][prn];
@@ -162,7 +162,7 @@ void PhaseCleaner::selectMasters(
 
          bool haveMasterObs = false;
 
-         if (arc->master.prn > 0)
+         if (arc->master.id > 0)
          {
             PhaseResidual::Arc::const_iterator k;
             if (pot[rot][arc->master].findObs(t, k))
@@ -172,21 +172,21 @@ void PhaseCleaner::selectMasters(
          // See if we need a new master...
          if (!haveMasterObs || pdm[arc->master] < 10)
          {
-            gpstk::RinexPrn newMaster;
+            gpstk::SatID newMaster;
             goodMaster gm = for_each(pdm.begin(), pdm.end(), goodMaster(15, prn, t, rangeRate));
-            if (gm.bestPrn.prn > 0)
+            if (gm.bestPrn.id > 0)
                newMaster = gm.bestPrn;
             else
             {
                if (verbosity>2)
                {
-                  cout << "Could not find a suitable master for prn " << prn.prn
+                  cout << "Could not find a suitable master for prn " << prn.id
                        << " " << rot.type
                        << " at " << t.printf(timeFormat)
                        << endl;
                   PrnDoubleMap::const_iterator e;
                   for (e = pdm.begin(); e != pdm.end(); e++)
-                     cout << " prn: " << e->first.prn
+                     cout << " prn: " << e->first.id
                           << ", elev:" << e->second
                           << ", rate:" << rangeRate[e->first][t]
                           << endl;
@@ -202,10 +202,10 @@ void PhaseCleaner::selectMasters(
             }
 
             if (verbosity>3)
-               cout << "Using prn " << newMaster.prn
+               cout << "Using prn " << newMaster.id
                     << " as master." << endl;
             
-            if (arc->master.prn < 1)
+            if (arc->master.id < 1)
             {
                arc->master = newMaster;
             }
@@ -231,14 +231,14 @@ void PhaseCleaner::selectMasters(
 //-----------------------------------------------------------------------------
 void PhaseCleaner::doubleDifference(
    const RinexObsType& rot, 
-   const gpstk::RinexPrn& prn, 
+   const gpstk::SatID& prn,
    PrnElevationMap& pem)
 {
    PhaseResidual::ArcList& pral = pot[rot][prn];
 
    for (PhaseResidual::ArcList::iterator arc = pral.begin(); arc != pral.end(); arc++)
    {
-      if (arc->master.prn <1)
+      if (arc->master.id <1)
          continue;
 
       for (PhaseResidual::Arc::iterator i = arc->begin(); i != arc->end(); i++)
@@ -286,7 +286,7 @@ void PhaseCleaner::debias(PrnElevationMap& pem)
       PraPrn& praPrn = i->second;
       for (PraPrn::iterator j = praPrn.begin(); j != praPrn.end(); j++)
       {
-         const gpstk::RinexPrn& prn = j->first;
+         const gpstk::SatID& prn = j->first;
          PhaseResidual::ArcList& pral = j->second;
 
          if (verbosity>2)
@@ -307,7 +307,7 @@ void PhaseCleaner::debias(PrnElevationMap& pem)
          pral.mergeArcs(minArcLen, minArcTime, maxGapTime);
 
          if (verbosity>2)
-            cout << "Done cleaning " << prn.prn << " on " << rot.type << endl
+            cout << "Done cleaning " << prn.id << " on " << rot.type << endl
                  << pral;
       }
    }   
@@ -331,7 +331,7 @@ void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
  
       for (PraPrn::const_iterator j = pp.begin(); j != pp.end(); j++)
       {
-         const gpstk::RinexPrn& prn = j->first;
+         const gpstk::SatID& prn = j->first;
          const PhaseResidual::ArcList& al = j->second;
 
          for (PhaseResidual::ArcList::const_iterator k = al.begin(); k != al.end(); k++)
@@ -370,7 +370,7 @@ void PhaseCleaner::getSlips(
 
       for (PraPrn::const_iterator j = praPrn.begin(); j != praPrn.end(); j++)
       {
-         const gpstk::RinexPrn& prn = j->first;
+         const gpstk::SatID& prn = j->first;
          const PhaseResidual::ArcList& al = j->second;
 
          PhaseResidual::ArcList::const_iterator k = al.begin();
@@ -439,7 +439,7 @@ void PhaseCleaner::dump(std::ostream& s) const
  
       for (PraPrn::const_iterator j = pp.begin(); j != pp.end(); j++)
       {
-         const gpstk::RinexPrn& prn = j->first;
+         const gpstk::SatID& prn = j->first;
          const PhaseResidual::ArcList& al = j->second;
 
          for (PhaseResidual::ArcList::const_iterator k = al.begin(); k != al.end(); k++)
@@ -454,7 +454,7 @@ void PhaseCleaner::dump(std::ostream& s) const
                s.setf(ios::fixed, ios::floatfield);
                s << left << setw(20) << t.printf(timeFormat) << right
                  << setfill(' ')
-                 << " " << setw(2) << prn.prn
+                 << " " << setw(2) << prn.id
                  << " " << setw(4) << (int)(rot==L1 ? 1 : 2)
                  << " " << setprecision(1) << setw(5)  << 0  // elevation
                  << " " << setprecision(3) << setw(12)  << 0 // clock

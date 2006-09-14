@@ -33,7 +33,7 @@ extern int verbosity;
 extern std::string timeFormat;
 
 typedef gpstk::RinexObsHeader::RinexObsType  RinexObsType;
-typedef gpstk::RinexObsData::RinexPrnMap     RinexPrnMap;
+typedef gpstk::RinexObsData::RinexSatMap     RinexPrnMap;
 typedef gpstk::RinexObsData::RinexObsTypeMap RinexObsTypeMap;
 
 extern const RinexObsType& C1;
@@ -62,7 +62,7 @@ typedef std::map<gpstk::DayTime, double> TimeDoubleMap;
 //  PrnElevationMap pem;
 //  pem[time][prn] = elevation;
 
-typedef std::map<gpstk::RinexPrn, double> PrnDoubleMap;
+typedef std::map<gpstk::SatID, double> PrnDoubleMap;
 typedef std::map<gpstk::DayTime, PrnDoubleMap > PrnElevationMap;
 PrnElevationMap elevation_map(const ORDEpochMap& oem);
 PrnElevationMap elevation_map(const RODEpochMap& rem,
@@ -73,8 +73,8 @@ PrnElevationMap elevation_map(const RODEpochMap& rem,
  // Rinex Obs Type Double Map => ROTM
 typedef std::map<RinexObsType, double> ROTDM;
 
-typedef std::map< gpstk::RinexPrn, ROTDM> PrnROTDM;
-typedef std::map< gpstk::RinexPrn, short> PrnShortMap;
+typedef std::map< gpstk::SatID, ROTDM> PrnROTDM;
+typedef std::map< gpstk::SatID, short> PrnShortMap;
 
 void add_clock_to_rinex(RODEpochMap& rem, const ORDEpochMap& oem);
 
@@ -84,7 +84,7 @@ struct CycleSlipRecord
 {
    gpstk::DayTime t;
    double cycles;
-   gpstk::RinexPrn  prn, masterPrn;
+   gpstk::SatID prn, masterPrn;
    RinexObsType rot;
    double elevation;
    long preCount;  // for How many epochs had the bias been stable
@@ -108,7 +108,7 @@ std::string computeStats(
 // these still need to be re-factored.
 struct DD2Epoch
 {
-   typedef std::map<gpstk::RinexPrn, double> DD2ResidualMap;
+   typedef std::map<gpstk::SatID, double> DD2ResidualMap;
    DD2ResidualMap res;
 
    // Returns true if successfull

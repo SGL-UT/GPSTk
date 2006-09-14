@@ -245,7 +245,7 @@ void read_mdp_data(
             if (t<t0) t0=t;
             if (t>t1) t1=t;
             t2=t;
-            gpstk::RinexPrn prn(obs.prn, gpstk::systemGPS);
+            gpstk::SatID prn(obs.id, gpstk::SatID::systemGPS);
             gpstk::RinexObsData& rod = rem[t];
             rod.obs[prn] = gpstk::makeRinexObsTypeMap(obs);
             break;
@@ -344,7 +344,7 @@ void read_smo_data(
          rotm[gpstk::RinexObsHeader::L1].ssi = 9;
       }
 
-      gpstk::RinexPrn p(smodata.PRNID, gpstk::systemGPS);
+      gpstk::SatID p(smodata.PRNID, gpstk::SatID::systemGPS);
       rod.obs[p] = rotm;
    }
 

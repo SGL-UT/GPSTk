@@ -19,7 +19,7 @@ struct DDEpoch
    PrnShortMap health;
 
    double clockOffset;
-   gpstk::RinexPrn masterPrn;
+   gpstk::SatID masterPrn;
    bool valid;
 
    // Computes a single difference between two sets of obs

@@ -59,7 +59,7 @@ void DDEpoch::doubleDifference(
 {
    valid = false;
    dd.clear();
-   if (masterPrn.prn < 0)
+   if (masterPrn.id < 0)
    {
       if (verbosity>2)
          cout << rx1.time.printf(timeFormat)
@@ -81,7 +81,7 @@ void DDEpoch::doubleDifference(
       return;
    }
 
-   gpstk::RinexObsData::RinexPrnMap::const_iterator oi1, oi2;
+   gpstk::RinexObsData::RinexSatMap::const_iterator oi1, oi2;
    oi1 = rx1.obs.find(masterPrn);
    oi2 = rx2.obs.find(masterPrn);
 
@@ -98,7 +98,7 @@ void DDEpoch::doubleDifference(
    // Now walk through all prns in track
    for (oi1=rx1.obs.begin(); oi1!=rx1.obs.end(); oi1++)
    {
-      gpstk::RinexPrn prn = oi1->first;
+      gpstk::SatID prn = oi1->first;
       oi2 = rx2.obs.find(prn);
       if (oi2 == rx2.obs.end())
          continue;
@@ -132,7 +132,7 @@ void DDEpoch::selectMasterPrn(
    const double minElevation = 15.0;
 
    // If there is already one selected, try to keep using that one...
-   if (masterPrn.prn >0)
+   if (masterPrn.id >0)
    {
       RinexPrnMap::const_iterator i = rx1.obs.find(masterPrn);
       RinexPrnMap::const_iterator j = rx2.obs.find(masterPrn);
@@ -141,7 +141,7 @@ void DDEpoch::selectMasterPrn(
          return;
    }
 
-   gpstk::RinexPrn prn;
+   gpstk::SatID prn;
    for (RinexPrnMap::const_iterator i=rx1.obs.begin(); i != rx1.obs.end(); i++)
    {
       prn = i->first;
@@ -225,16 +225,16 @@ void computeDDEpochMap(
          DDEpoch& dde = i->second;
          for (PrnROTDM::iterator j = dde.dd.begin(); j != dde.dd.end(); j++)
          {
-            const gpstk::RinexPrn prn=j->first;
+            const gpstk::SatID prn=j->first;
             try
             {
-               const gpstk::EngEphemeris& prn_eph = bce.findEphemeris(prn.prn, t);
+               const gpstk::EngEphemeris& prn_eph = bce.findEphemeris(prn.id, t);
                dde.health[prn] = prn_eph.getHealth();
             } 
             catch (gpstk::EphemerisStore::NoEphemerisFound& e)
             {
                if (verbosity>1)
-                  cout << t.printf(timeFormat) << " prn " << prn.prn << " no eph " << endl;
+                  cout << t.printf(timeFormat) << " prn " << prn.id << " no eph " << endl;
             }
          }
       }
@@ -304,7 +304,7 @@ string computeStats(
       PrnROTDM::iterator pi;
       for (pi = ei->second.dd.begin(); pi != ei->second.dd.end(); pi++)
       {
-         const gpstk::RinexPrn& prn = pi->first;
+         const gpstk::SatID& prn = pi->first;
          ROTDM& ddr = pi->second;
 
          if (ei->second.health[prn] && !keepUnhealthy)
@@ -354,10 +354,10 @@ void dump(std::ostream& s, DDEpochMap& ddem, PrnElevationMap& pem)
       const gpstk::DayTime& t = ei->first;
       double clk = ei->second.clockOffset;
       string time=t.printf(timeFormat);
-      gpstk::RinexPrn& masterPrn = ei->second.masterPrn;
+      gpstk::SatID& masterPrn = ei->second.masterPrn;
       for (pi = ei->second.dd.begin(); pi != ei->second.dd.end(); pi++)
       {
-         const gpstk::RinexPrn& prn = pi->first;
+         const gpstk::SatID& prn = pi->first;
          ROTDM& ddr = pi->second;
          for (ROTDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
          {
@@ -381,7 +381,7 @@ void dump(std::ostream& s, DDEpochMap& ddem, PrnElevationMap& pem)
 
             s << left << setw(20) << time << right
               << setfill(' ')
-              << " " << setw(2) << prn.prn
+              << " " << setw(2) << prn.id
               << " " << setw(4) << type
               << " " << setprecision(1) << setw(5)  << pem[t][prn]
               << " " << setprecision(6) << setw(14) << dd

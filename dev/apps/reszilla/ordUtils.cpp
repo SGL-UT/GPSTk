@@ -88,10 +88,10 @@ void computeOrds(ORDEpochMap& oem,
          tm.setWeather(wx.temperature, wx.pressure, wx.humidity);
 
       // Walk over all prns in this epoch
-      gpstk::RinexObsData::RinexPrnMap::const_iterator rpi;
+      gpstk::RinexObsData::RinexSatMap::const_iterator rpi;
       for (rpi=rod.obs.begin(); rpi!=rod.obs.end(); rpi++)
       {
-         short prn = rpi->first.prn;
+         short prn = rpi->first.id;
 
          gpstk::RinexObsData::RinexObsTypeMap rotm = rpi->second;
 

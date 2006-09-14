@@ -59,10 +59,10 @@ void computeDD2(const RODEpochMap& rx1,
 bool DD2Epoch::compute(gpstk::RinexObsData rx1,
                        gpstk::RinexObsData rx2)
 {
-   gpstk::RinexObsData::RinexPrnMap::iterator oi1, oi2;
+   gpstk::RinexObsData::RinexSatMap::iterator oi1, oi2;
    for (oi1=rx1.obs.begin(); oi1!=rx1.obs.end(); oi1++)
    {
-      gpstk::RinexPrn prn = oi1->first;
+      gpstk::SatID prn = oi1->first;
       oi2 = rx2.obs.find(prn);
       if (oi2 == rx2.obs.end())
          continue;
@@ -99,11 +99,11 @@ PrnElevationMap elevation_map(const RODEpochMap& rem,
    {
       const gpstk::DayTime& t = i->first;
       const gpstk::RinexObsData& rod = i->second;
-      gpstk::RinexObsData::RinexPrnMap::const_iterator rpi;
+      gpstk::RinexObsData::RinexSatMap::const_iterator rpi;
       for (rpi=rod.obs.begin(); rpi!=rod.obs.end(); rpi++)
          try
          {
-            short prn = rpi->first.prn;
+            short prn = rpi->first.id;
             gpstk::Xvt svpos = eph.getPrnXvt(prn, t);
             pem[t][rpi->first] = rxpos.elvAngle(svpos.x);
          }
@@ -133,7 +133,7 @@ PrnElevationMap elevation_map(const ORDEpochMap& oem)
       for (j=epoch.ords.begin(); j!=epoch.ords.end(); j++)
       {
          gpstk::ObsRngDev ord = j->second;
-         gpstk::RinexPrn prn(j->first, gpstk::systemGPS);
+         gpstk::SatID prn(j->first, gpstk::SatID::systemGPS);
          pem[t][prn] = ord.getElevation();
       }
    }
@@ -247,7 +247,7 @@ void computeStats(
       DD2Epoch::DD2ResidualMap::iterator pi;
       for (pi = ei->second.res.begin(); pi != ei->second.res.end(); pi++)
       {
-         const gpstk::RinexPrn& prn = pi->first;
+         const gpstk::SatID& prn = pi->first;
          double ddr = pi->second;
          if (pem[t][prn]>minElevation && pem[t][prn]<maxElevation)
          {
@@ -326,14 +326,14 @@ void dump(std::ostream& s, const CycleSlipList& csl)
    {
       const CycleSlipRecord& cs=*i;
       s << left << setw(20) << cs.t.printf(timeFormat)
-        << "  " << right << setw(2) << cs.prn.prn
+        << "  " << right << setw(2) << cs.prn.id
         << " " << cs.rot.type
         << " " << setprecision(3) << setw(14) << cs.cycles
         << "  " << std::setprecision(2) << setw(5) << cs.elevation
         << "  " << setw(5) << cs.preCount
         << "  " << setw(5) << cs.postCount
         << "  " << setw(5) << setprecision(1) << cs.preGap
-        << "  " << setw(2) << cs.masterPrn.prn
+        << "  " << setw(2) << cs.masterPrn.id
         << endl;
    }
    s << endl;
@@ -357,11 +357,11 @@ void dump(std::ostream& s,
       string time=t.printf(timeFormat);
       for (pi = ei->second.res.begin(); pi != ei->second.res.end(); pi++)
       {
-         const gpstk::RinexPrn& prn = pi->first;
+         const gpstk::SatID& prn = pi->first;
          double ddr = pi->second;
          s << time
            << setfill(' ')
-           << " " << setw(2)  << prn.prn
+           << " " << setw(2)  << prn.id
            << setprecision(6)
            << " " << setw(11) << ddr
            << setprecision(1)

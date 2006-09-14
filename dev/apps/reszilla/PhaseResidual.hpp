@@ -43,7 +43,7 @@ namespace PhaseResidual
       void dump(std::ostream& s) const;
 
       double ddBias;
-      gpstk::RinexPrn master;
+      gpstk::SatID master;
 
       bool garbage;
 

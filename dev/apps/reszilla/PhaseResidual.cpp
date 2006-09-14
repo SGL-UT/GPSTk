@@ -76,7 +76,7 @@ namespace PhaseResidual
       
       if (!garbage)
       {
-         s << " master:" << std::setw(2) << master.prn
+         s << " master:" << std::setw(2) << master.id
            << " sdev:"  << std::setprecision(3) << std::setw(8)  << stats.StdDev()
            << " ddBias:"  << std::setprecision(12) << ddBias;
          if (stats.Average() > stats.StdDev()/sqrt((float)stats.N()))
