@@ -302,7 +302,7 @@ void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh)
    // observation header
    roh.version = 2.1;
    roh.fileType = "Observation";
-   roh.system = RinexObsHeader::systemGPS;
+   roh.system = RinexSatID();
    roh.date = CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
    roh.antennaPosition = Triple(0.0,0.0,0.0);
    roh.antennaOffset = Triple(0.0,0.0,0.0);
@@ -330,7 +330,7 @@ void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh)
 
    roh.interval = 10.; // defined later by data
    roh.firstObs = CurrEpoch; // defined later by data
-   roh.firstSystem = RinexObsHeader::systemGPS;
+   roh.firstSystem = RinexSatID();
    roh.lastObs = CurrEpoch; // defined later by data
    roh.commentList.push_back("Created by GPSTK program " + Prgm + " " + Vers
       + CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S"));

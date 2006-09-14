@@ -526,10 +526,10 @@ int RinexEditor::EditHeader(RinexObsHeader& RHInput, RinexObsHeader& RHOutput)
          tra=false; else tra=true;
       if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGeosync)) != DelSV.end())
          geo=false; else geo=true;
-      if(!glo && !tra && !geo) RHOutput.system = RinexObsHeader::systemGPS;
-      if(!gps && !tra && !geo) RHOutput.system = RinexObsHeader::systemGlonass;
-      if(!gps && !glo && !geo) RHOutput.system = RinexObsHeader::systemTransit;
-      if(!gps && !glo && !tra) RHOutput.system = RinexObsHeader::systemGeosync;
+      if(!glo && !tra && !geo) RHOutput.system.system = RinexSatID::systemGPS;
+      if(!gps && !tra && !geo) RHOutput.system.system = RinexSatID::systemGlonass;
+      if(!gps && !glo && !geo) RHOutput.system.system = RinexSatID::systemTransit;
+      if(!gps && !glo && !tra) RHOutput.system.system = RinexSatID::systemGeosync;
    }
    if(HDDeleteOldComments) {
       RHOutput.commentList.clear();

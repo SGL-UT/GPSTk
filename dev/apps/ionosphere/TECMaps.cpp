@@ -1258,13 +1258,13 @@ try {
       oflog << endl;
       oflog << "Time of first obs "
          << S.header.firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (S.header.firstSystem==RinexObsHeader::systemGlonass?"GLO":
-                   (S.header.firstSystem==RinexObsHeader::systemGalileo?"GAL":"GPS"))
+         << " " << (S.header.firstSystem.system==RinexSatID::systemGlonass?"GLO":
+                   (S.header.firstSystem.system==RinexSatID::systemGalileo?"GAL":"GPS"))
          << endl;
       oflog << "Time of  last obs "
          << S.header.lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (S.header.lastSystem==RinexObsHeader::systemGlonass?"GLO":
-                   (S.header.lastSystem==RinexObsHeader::systemGalileo?"GAL":"GPS"))
+         << " " << (S.header.lastSystem.system==RinexSatID::systemGlonass?"GLO":
+                   (S.header.lastSystem.system==RinexSatID::systemGalileo?"GAL":"GPS"))
          << endl;
    }
 

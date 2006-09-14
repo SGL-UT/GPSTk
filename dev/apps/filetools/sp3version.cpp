@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
       // prepare to write the header
       if(version_out == 'c') {
          sp3header.version = 'c';
-         sp3header.system = SP3Header::systemGPS;
+         sp3header.system = SP3SatID();
          sp3header.timeSystem = SP3Header::timeGPS;
          sp3header.basePV = 1.25;     // make these up ... a real app would
          sp3header.baseClk = 1.025;   // assign them based on what SP3Data will hold

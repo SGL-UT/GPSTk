@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
          // data and header must have the correct version
          sp3data.version = sp3header.version = 'c';
 
-         sp3header.system = SP3Header::systemGPS;
+         sp3header.system = SP3SatID();
          sp3header.timeSystem = SP3Header::timeGPS;
          sp3header.basePV = 0.0;
          sp3header.baseClk = 0.0;

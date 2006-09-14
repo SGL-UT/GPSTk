@@ -1000,13 +1000,13 @@ try {
       oflog << endl;
       oflog << "Time of first obs "
          << head.firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (head.firstSystem==RinexObsHeader::systemGlonass?"GLO":
-                   (head.firstSystem==RinexObsHeader::systemGalileo?"GAL":"GPS"))
+         << " " << (head.firstSystem.system==RinexSatID::systemGlonass?"GLO":
+                   (head.firstSystem.system==RinexSatID::systemGalileo?"GAL":"GPS"))
          << endl;
       oflog << "Time of  last obs "
          << head.lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (head.lastSystem==RinexObsHeader::systemGlonass?"GLO":
-                   (head.lastSystem==RinexObsHeader::systemGalileo?"GAL":"GPS"))
+         << " " << (head.lastSystem.system==RinexSatID::systemGlonass?"GLO":
+                   (head.lastSystem.system==RinexSatID::systemGalileo?"GAL":"GPS"))
          << endl;
       oflog << "DOY = " << head.firstObs.DOY() << endl;
       oflog << "Sunrise = " << setprecision(2) << sunrise;
