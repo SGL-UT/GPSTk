@@ -91,16 +91,35 @@ namespace gpstk
       void load(const std::vector<std::string>& obsList, 
                 const std::vector<std::string>& navList);
 
+         /**
+          * This function removes observations which the input
+          * vallarray is "true".
+          */
+      void edit(const std::valarray<bool> strikeList)
+         throw(ObsArrayException);
+      
+      double getPassLength(long passNo);
+      
       double& operator() (size_t r, size_t c)
       {  return observation[r*numObsTypes + c]; }
 
-      std::valarray<double>   observation;
       std::valarray<DayTime>  epoch;
       std::valarray<SatID>    satellite;
+      std::valarray<double>   observation;
+      std::valarray<bool>     lli;
       std::valarray<double>   azimuth;
       std::valarray<double>   elevation;
       std::valarray<long>     pass;
       std::valarray<bool>     validAzEl;
+
+         /// The rate in second which observations were recorded
+      double interval;
+
+         /**
+          *  This is true if the interval was not read from the header but 
+          *  instead calculated from the data.
+          */
+      bool intervalInferred;
 
    private:
 

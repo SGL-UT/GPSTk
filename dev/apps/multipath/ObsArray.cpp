@@ -105,13 +105,13 @@ namespace gpstk
       
          // Remember the data collection rate. If not available, note that.
       bool intervalDefined=false;
-      double interval;
       
       if ( (roh.valid & RinexObsHeader::intervalValid) == 
            RinexObsHeader::intervalValid)
       {
          interval = roh.interval;
          intervalDefined=true;
+         intervalInferred=false;
       }
 
       RinexObsData rod;
@@ -198,6 +198,7 @@ namespace gpstk
          std::set<double>::iterator itEpochDiff = intervalDifferences.begin();
          interval = *itEpochDiff;
          intervalDefined = true;
+         intervalInferred = true;
       }
       
       if (!intervalDefined)
@@ -212,7 +213,7 @@ namespace gpstk
       observation.resize(numSatEpochs*numObsTypes);
       epoch.resize(numSatEpochs);
       satellite.resize(numSatEpochs);
-      epoch.resize(numSatEpochs);
+      lli.resize(numSatEpochs);
       azimuth.resize(numSatEpochs);
       elevation.resize(numSatEpochs);
       validAzEl.resize(numSatEpochs);
@@ -238,9 +239,19 @@ namespace gpstk
          for (it = rod.obs.begin(); it!=rod.obs.end(); it++)
          {
             it2 = lastObsTime.find((*it).first);
-               //std::cout << (*it).first << std::endl;
- 
-             if (  (it2==lastObsTime.end()) || 
+
+                // Step through obs to see if loss of lock is true
+            bool thislli=false;
+            RinexObsData::RinexObsTypeMap::const_iterator i_rotm;
+            for (i_rotm = it->second.begin(); 
+                 i_rotm!= it->second.end(); i_rotm++)
+            {
+               thislli = thislli || (i_rotm->second.lli > 0);
+            }
+            lli[satEpochIdx]=thislli;
+             
+            
+            if (  (it2==lastObsTime.end()) || (thislli) ||  
                    ( (rod.time-lastObsTime[(*it).first]) > 1.1*interval) )
             {
                thisPassNo = highestPass;
@@ -252,6 +263,8 @@ namespace gpstk
                thisPassNo = currPass[(*it).first];
                lastObsTime[(*it).first]=rod.time;
             }
+
+
             pass[satEpochIdx]=thisPassNo;
 
             for (int idx=0; idx<numObsTypes; idx++)
@@ -292,7 +305,80 @@ namespace gpstk
 
 
 
-   } // end of ObsArray::load(...)
+   } // end of ObsArray::loadObsFile(...)
+
+   void ObsArray::edit(const std::valarray<bool> strikeList)
+     throw(ObsArrayException)
+   {
+      using namespace std;
+ 
+      if (epoch.size() != strikeList.size())
+      {
+         ObsArrayException e("Edit request has wrong size.");
+         GPSTK_THROW(e);
+      }
+
+      valarray<bool> keepList = !strikeList;
+
+      valarray<DayTime> newEpoch = epoch[keepList];
+      size_t newObsEpochCount = newEpoch.size();
+      
+      epoch.resize(newObsEpochCount);
+      epoch = newEpoch;
+     
+      valarray<SatID> newSatellite = satellite[keepList];
+      satellite.resize(newObsEpochCount);
+      satellite = newSatellite;
+      
+      valarray<bool> newLLI = lli[keepList];
+      lli.resize(newObsEpochCount);
+      lli = newLLI;
+      
+      valarray<double> newAz = azimuth[keepList];
+      azimuth.resize(newObsEpochCount);
+      azimuth = newAz;
+      
+      valarray<double> newEl = elevation[keepList];
+      elevation.resize(newObsEpochCount);
+      elevation = newEl;
+      
+      valarray<bool> newValidAzEl = validAzEl[keepList];
+      validAzEl.resize(newObsEpochCount);
+      validAzEl   = newValidAzEl;
+      
+      valarray<long> newPass = pass[keepList];
+      pass.resize(newObsEpochCount);
+      pass = newPass;
+      
+      valarray<bool> keepObs;
+      keepObs.resize(numObsTypes*numSatEpochs);
+      for (size_t i=0; i<(numObsTypes*numSatEpochs); i+=numSatEpochs)
+      {
+         slice thisObsTypeSlice(i,i+numSatEpochs,1);
+         keepObs[thisObsTypeSlice]=keepList;
+      }
+      valarray<double> newObs =observation[keepObs];
+      observation.resize(newObs.size());
+      observation = newObs;
+
+         // Update public attributes
+      numSatEpochs = newObsEpochCount;
+      
+   }
+   
+   double ObsArray::getPassLength(long passNo)
+   {
+         // TODO: use find_first_of to smartly search over pass number.
+         // it doesn't seem to be working at least in gcc. :-(
+         // Again we must allocate space just to do a search!!
+
+      using namespace std;
+      
+      valarray<bool> ptest = (pass==passNo);
+      valarray<DayTime> pepochs = epoch[ptest];
+      double length =  pepochs[pepochs.size()-1] - pepochs[0];
+      return length;
+   }
    
 } // end namespace gpstk
  

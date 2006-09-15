@@ -12,6 +12,7 @@
 #include <map>
 
 #include "Stats.hpp"
+#include "Exception.hpp"
 
 namespace gpstk
 {
@@ -19,11 +20,8 @@ namespace gpstk
    //@{
  
       /**
-       * This class provides the ability to compute statistics that
-       * are sorted conditionally. The simplest application would be
-       * to compute stats for only points that meet an editing criteria.
-       * A more advanced application would be to compute stats binned
-       * w.r.t. to a single variable. 
+       * This class provides the ability to compute statistics for
+       * data sorted into one or more bins.
        */  
 
    template <class T>
@@ -33,24 +31,72 @@ namespace gpstk
 
       NEW_EXCEPTION_CLASS(SparseBinnedStatsException, gpstk::Exception);
 
+      struct binLimits
+      {
+         double lowerBound;
+         double upperBound;
+         bool within(double var)
+            {return ((var>=lowerBound)&&(var<upperBound)); }
+      };
+
          /**
           * Constructor.
           * @param boundaryList defines the lower and upper bounds of each bin
           */
-      SparseBinnedStats(const std::valarray<T> boundaryList)
-            : binBoundaries(boundaryList), rejectedCount(0) 
+      SparseBinnedStats(void)
+            : rejectedCount(0), usedCount(0)
          {}
 
-      void add(const std::valarray<T>& statData, const std::valarray<T> binData)
-         {};
+      size_t addBin( double lower, double upper)
+      {
+         binLimits newBin;
+         newBin.lowerBound = lower;
+         newBin.upperBound = upper;
+         size_t entryNo = bins.size();
+         bins.push_back(newBin);
+         stats.push_back(Stats<T>());
+         return entryNo;
+      } 
+      
 
-      std::map<int, Stats< T > > bin;
-      int rejectedCount;
+      void addData(const std::valarray<T>& statData, 
+                   const std::valarray<T> binData)
+      {
+         size_t s = statData.size();
+         
+         if (s!=binData.size())
+         {
+            SparseBinnedStatsException e("Input arrays not the same length.");
+            GPSTK_THROW(e);
+         }
 
-   protected:
+         bool thisRejected;
+         
+         for (size_t i=0; i<s; i++)
+         {
+            thisRejected=true;
+            for (size_t j=0; j<bins.size(); j++)
+            {
+               if ( bins[j].within(binData[i]) )
+               {
+                  stats[j].Add(statData[i]);
+                  thisRejected = false;
+               }
+               
+            }
+            if (thisRejected)
+               rejectedCount++;
+            else 
+               usedCount++;
+         }
+         
+         
+      };
 
-      int computeBin( const T& entry );      
-      std::valarray<T> binBoundaries;
+      int rejectedCount, usedCount;
+
+      std::vector<binLimits> bins;
+      std::vector< Stats< T > > stats;
 
    }; // End class SparseBinnedStats
    
