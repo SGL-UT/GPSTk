@@ -490,6 +490,7 @@ Triple permanentTide(double const phi)
 			    sp3store.loadFile(filename.c_str());
 			}
 		    }
+		sp3store.dump(1 + debug, cout);
 		}
 		catch(...) {
 		    cerr << "Something wrong with SP3 files." << endl << endl;
