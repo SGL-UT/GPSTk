@@ -5,3 +5,9 @@ BonkForte ;
 
 GPSMain wheresat : WhereSat.cpp ;
 
+GPSLinkLibraries findMoreThan12 : gpstk ;
+BonkForte ; 
+
+GPSMain findMoreThan12 : findMoreThan12.cpp ;
+
+
