@@ -162,6 +162,9 @@ namespace gpstk
             case 'E': case 'e':
                system = SatID::systemGalileo;
                break;
+            case 'M': case 'm':
+               system = SatID::systemMixed;
+               break;
             case ' ': case 'G': case 'g':
                system = SatID::systemGPS;
                break;
