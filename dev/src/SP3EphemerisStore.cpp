@@ -82,8 +82,10 @@ namespace gpstk
             setHaveVelocity(false);
 
          SP3Data rec;
-         while(strm >> rec)
+         while(strm >> rec) {
+            rec.version = header.version;
             addEphemeris(rec);
+         }
       }
       catch (gpstk::Exception& e)
       {
