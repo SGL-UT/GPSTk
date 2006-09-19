@@ -109,6 +109,7 @@ namespace gpstk
             case systemGalileo: return 'E';
             case systemGlonass: return 'R';
             case systemLEO:     return 'L';
+            case systemMixed:   return 'M';
             // non-SP3
             default: return '?';
          }
@@ -121,6 +122,7 @@ namespace gpstk
             case systemGalileo: return "Galileo";
             case systemGlonass: return "Glonass";
             case systemLEO:     return "LEO";
+            case systemMixed:   return "Mixed";
             default:            return "Unknown";
          }
       };
@@ -157,6 +159,9 @@ namespace gpstk
                break;
             case 'L': case 'l':
                system = SatID::systemLEO;
+               break;
+            case 'M': case 'm':
+               system = SatID::systemMixed;
                break;
             default:                   // non-SP3 system character
                Exception e(std::string("Invalid system character \"")
