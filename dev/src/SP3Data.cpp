@@ -228,10 +228,10 @@ namespace gpstk
             else
                sat = SP3SatID(strm.buffer.substr(1,3));
 
-            x[0] = asDouble(strm.buffer.substr(5,14));
-            x[1] = asDouble(strm.buffer.substr(19,14));
-            x[2] = asDouble(strm.buffer.substr(33,14));
-            clk = asDouble(strm.buffer.substr(47,14));
+            x[0] = asDouble(strm.buffer.substr(4,14));
+            x[1] = asDouble(strm.buffer.substr(18,14));
+            x[2] = asDouble(strm.buffer.substr(32,14));
+            clk = asDouble(strm.buffer.substr(46,14));
 
             if(version == 'c') {
                // get sigmas from P|V record
