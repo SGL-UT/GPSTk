@@ -1857,11 +1857,11 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("P4")) {
+         else if(OTlist[i] == string("PF")) {
             ok = HaveR;
             if(ok) jt->second.data = gf1r*kt->second.P1 + gf2r*kt->second.P2;
          }
-         else if(OTlist[i] == string("L4")) {
+         else if(OTlist[i] == string("LF")) {
             ok = HaveP;
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
@@ -1869,11 +1869,11 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("P5")) {
+         else if(OTlist[i] == string("PW")) {
             ok = HaveR;
             if(ok) jt->second.data = wl1r*kt->second.P1 + wl2r*kt->second.P2;
          }
-         else if(OTlist[i] == string("L5")) {
+         else if(OTlist[i] == string("LW")) {
             ok = HaveP;
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,

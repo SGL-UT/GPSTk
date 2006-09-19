@@ -161,8 +161,8 @@ try {
       InStream.exceptions(ios::failbit);
       if(!isRinexObsFile(filename)) {
          *pout << "File " << filename << " is not a Rinex observation file\n";
-         if(isRinexNavFile(filename)) *pout << "File "
-            << filename << " is a Rinex navigation file - try NavMerge\n";
+         if(isRinexNavFile(filename))
+            *pout << "This file is a Rinex navigation file - try NavMerge\n";
          continue;
       }
 

@@ -93,6 +93,7 @@ try {
    // parse command line input
    for(i=1; i<argc; i++) {
       word = string(argv[i]);
+      //cout << "arg = " << word << endl;
       if(word == "pos") DumpPos = true;
       else if(word == "-h" || word == "--help") help = true;
       else if(word == "-file") filename = string(argv[++i]);
@@ -113,15 +114,19 @@ try {
             otlist.push_back(ot);
       }
       else {
+         //cout << " try making it an obs type: " << word << endl;
          ot = RinexObsHeader::convertObsType(argv[i]);
          if(RinexObsHeader::convertObsType(ot) != string("UN"))
             otlist.push_back(ot);
          else {
-            sat.fromString(string(argv[i]));
-            if(sat.isValid())
-               satlist.push_back(sat);
-            else
-               filename = string(argv[i]);
+            //cout << " try making it a sat : " << word << endl;
+            try {
+               sat.fromString(string(argv[i]));
+               if(sat.isValid()) { satlist.push_back(sat); continue; }
+            }
+            catch(Exception& e) { ; }
+            //cout << " make it a filename : " << word << endl;
+            filename = string(argv[i]);
          }
       }
    }
