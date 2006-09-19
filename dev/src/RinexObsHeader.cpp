@@ -228,15 +228,17 @@ namespace gpstk
                               fileType.substr(0,1));
             GPSTK_THROW(err);
          }
-         line += leftJustify(string("Observation"), 20);
-         std::string str;
 
          if (system.system == RinexSatID::systemUnknown)
          {
             FFStreamError err("Invalid satellite system");
             GPSTK_THROW(err);
          }
-         str = system.systemChar() + " (" + system.systemString() + ")";
+
+         line += leftJustify(string("Observation"), 20);
+         std::string str;
+         str = system.systemChar();
+         str = str + " (" + system.systemString() + ")";
          line += leftJustify(str, 20);
          line += versionString;
          strm << line << endl;
@@ -876,7 +878,8 @@ namespace gpstk
       int i,j;
       s << "---------------------------------- REQUIRED ----------------------------------\n";
       string str;
-      str = system.systemChar() + " (" + system.systemString() + ")";
+      str = system.systemChar();
+      str = str + " (" + system.systemString() + ")";
       s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
          << ",  File type " << fileType << ",  System " << str << ".\n";
       s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: " << fileAgency << endl;
