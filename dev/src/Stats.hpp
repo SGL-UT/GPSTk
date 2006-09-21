@@ -47,6 +47,7 @@ namespace gpstk
  * Average(), Variance() and StdDev().
  */
    template <class T>
+
    class Stats
    {
    public:
@@ -162,12 +163,8 @@ namespace gpstk
          T dn=T(n);
          if(n > 2) var=(var*(dn-T(1))-dn*(x-ave)*(x-ave)/(dn-T(1)))/(dn-T(2));
          else var=T();
-	
-         if(n > 1)
-	 { 
-	 	ave=(ave*dn-x)/(dn-T(1));
-		W--;
-	 }
+        
+	 if(n > 1) ave=(ave*dn-x)/(dn-T(1));
          else if(n==1) ave=x;
          else ave=T();
 
