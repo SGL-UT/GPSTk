@@ -704,7 +704,7 @@ sub DataGather {
          push @obsselect, 0;
       }
       # following condition (..eq "G") means only GPS satellites get picked up
-      if($EOH==1 && $opt[0] eq "PRN" && substr($opt[1], 0, 1) eq "G") {
+      if($EOH==1 && $opt[0] eq "Sat" && substr($opt[1], 0, 1) eq "G") {
          $numobs = $#obslist + 1;
          push @svlist, $opt[1];
          push @svselect, 0;
@@ -1449,7 +1449,7 @@ sub CompCrea {
    my @opt = ();  # options passed to ResCor
    $dummy = 0;    # count the number of selected ExtOT
    for($i=0; $i <= $#ExtOT; $i++) {
-      if($ExtSelect[$i] != 0) { $dummy++; $depend |= $ExtDep[$i]; };
+      if($ExtSelect[$i] != 0) { $dummy++; $depend |= $ExtDep[$i]; }
    }
    if($dummy == 0) {
       $msg = "There are no extended obs types defined.\n"
@@ -1476,6 +1476,10 @@ sub CompCrea {
    #}
    $ok = $depend & $have;   # those we need AND have
    $need = $ok ^ $depend;   # those we need but do NOT have
+   #print "Have $have\n";
+   #print "Depend $depend\n";
+   #print "Need and have $ok\n";
+   #print "Need and don't have $need\n";
    # can C1 substitute for P1?
    if(($need & $DepP1) && ($have & $DepC1)
       && ($CFG{'Callow'} eq 'on' || $CFG{'Cforce'} eq 'off')) {

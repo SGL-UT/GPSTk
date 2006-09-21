@@ -994,8 +994,8 @@ namespace gpstk
          line = string("  ")+RinexObsHeader::RegisteredRinexObsTypes[i].type;
          line += leftJustify(string(" ")+RinexObsHeader::RegisteredRinexObsTypes[i].description,21);
          line += leftJustify(string(" ")+RinexObsHeader::RegisteredRinexObsTypes[i].units,11);
-         for(int j=1; j<6; j++) {
-            if(j==3) continue;
+         for(int j=1; j<=6; j++) {
+            if(j==3 || j==4) continue;
             if(RinexObsHeader::RegisteredRinexObsTypes[i].depend &
                RinexObsHeader::StandardRinexObsTypes[j].depend)
                   line += string(" ")+RinexObsHeader::StandardRinexObsTypes[j].type;

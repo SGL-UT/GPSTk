@@ -96,7 +96,8 @@ namespace gpstk
                strm.lineNumber++;
                line  = string(32, ' ');
             }
-            line += asString((*obsItr).first);
+            RinexSatID prn(obsItr->first);
+            line += prn.toString();
             satsWritten++;
             obsItr++;
          }
