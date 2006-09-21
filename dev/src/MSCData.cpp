@@ -74,17 +74,26 @@ namespace gpstk
       double repoch = refepoch.DOYyear() 
          + (refepoch.DOYday() * gpstk::DayTime::SEC_DAY
             + refepoch.DOYsecond()) / SEC_YEAR;
-      line += rightJustify(asString(repoch, 6), 7);
+      line += rightJustify(asString(repoch, 2), 7);
       double eepoch = effepoch.DOYyear() 
          + (effepoch.DOYday() * gpstk::DayTime::SEC_DAY
             + effepoch.DOYsecond()) / SEC_YEAR;
-      line += rightJustify(asString(eepoch, 6), 7);
-      line += rightJustify(asString(coordinates[0], 10), 12);
-      line += rightJustify(asString(coordinates[1], 10), 12);
-      line += rightJustify(asString(coordinates[2], 10), 12);
-      line += rightJustify(asString(velocities[0], 5), 7);            
-      line += rightJustify(asString(velocities[1], 5), 7);
-      line += rightJustify(asString(velocities[2], 5), 7);
+      line += rightJustify(asString(eepoch, 2), 7);
+      line += rightJustify(asString(coordinates[0], 3), 12);
+      line += rightJustify(asString(coordinates[1], 3), 12);
+      line += rightJustify(asString(coordinates[2], 3), 12);
+      if (velocities[0] >= 0)
+      	line += rightJustify(change(asString(velocities[0], 4),"0.","."), 7); 
+      else
+      	line += rightJustify(change(asString(velocities[0], 4),"-0.","-."), 7);            
+      if (velocities[1] >= 0)
+      	line += rightJustify(change(asString(velocities[1], 4),"0.","."), 7); 
+      else
+      	line += rightJustify(change(asString(velocities[1], 4),"-0.","-."), 7); 
+      if (velocities[2] >= 0)
+      	line += rightJustify(change(asString(velocities[2], 4),"0.","."), 7); 
+      else
+      	line += rightJustify(change(asString(velocities[2], 4),"-0.","-."), 7);
       
       ffs << line << endl;
       strm.lineNumber++;

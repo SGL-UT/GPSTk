@@ -26,8 +26,8 @@ void xRinexObs :: headerExceptionTest (void)
 		gpstk::RinexObsStream unsupv("Logs/UnSupVersion.06o");
 		gpstk::RinexObsStream contdata("Logs/RinexContData.06o");
 		
-		gpstk::RinexObsStream out("Logs/TestOutput.06n",ios::out);
-		gpstk::RinexObsStream out2("Logs/TestOutput3.06n",ios::out);
+		gpstk::RinexObsStream out("Logs/TestOutput.06o",ios::out);
+		gpstk::RinexObsStream out2("Logs/TestOutput3.06o",ios::out);
 		gpstk::RinexObsStream dump("Logs/ObsDump",ios::out);
 		
 		gpstk::RinexObsHeader RinexObsFileh;
@@ -95,8 +95,10 @@ void xRinexObs :: headerExceptionTest (void)
 */
 void xRinexObs :: hardCodeTest (void)
 {
+	try
+	{
 	gpstk::RinexObsStream RinexObsFile("Logs/RinexObsFile.06o");
-	gpstk::RinexObsStream out("Logs/TestOutput2.06n",ios::out);
+	gpstk::RinexObsStream out("Logs/TestOutput2.06o",ios::out);
 	gpstk::RinexObsStream dump("Logs/ObsDump",ios::out);
 	gpstk::RinexObsHeader RinexObsFileh;	
 	gpstk::RinexObsData RinexObsFiled;			
@@ -108,7 +110,12 @@ void xRinexObs :: hardCodeTest (void)
 	}
 	RinexObsFiled.dump(dump);
 	RinexObsFileh.dump(dump);
-	CPPUNIT_ASSERT(fileEqualTest("Logs/RinexObsFile.06o","Logs/TestOutput2.06n"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/RinexObsFile.06o","Logs/TestOutput2.06o"));
+	}
+	catch (gpstk::Exception& e)
+	{
+		cout << e;
+	}
 }
 
 /*
@@ -116,7 +123,7 @@ void xRinexObs :: hardCodeTest (void)
 */
 void xRinexObs :: dataExceptionsTest (void)
 {	
-	gpstk::RinexObsStream BadEpochLine("Logs/BadEpochLine.06o");
+	gpstk::RinexObsStream BadEpochLine("Logs/BadEpochLine.");
 	gpstk::RinexObsStream BadEpochFlag("Logs/BadEpochFlag.06o");
 	gpstk::RinexObsStream BadLineSize("Logs/BadLineSize.06o");
 	gpstk::RinexObsStream InvalidTimeFormat("Logs/InvalidTimeFormat.06o");
@@ -230,7 +237,7 @@ void xRinexObs :: filterOperatorsTest (void)
 bool xRinexObs :: fileEqualTest (char* handle1, char* handle2)
 {
 	bool isEqual = false;
-	int counter = 0;
+	int counter = 2;
 	ifstream File1;
 	ifstream File2;
 	
@@ -247,15 +254,24 @@ bool xRinexObs :: fileEqualTest (char* handle1, char* handle2)
 	while (!File1.eof())
 	{
 		if (File2.eof()) 
+			{
+			cout << counter << "ONE" << endl;
 			return isEqual;
+			}
 		getline (File1, File1Line);
 		getline (File2, File2Line);
-
+		counter++;
 		if (File1Line != File2Line)
+		{
+			cout << counter << "TWO" << endl;
 			return isEqual;
+		}
 	}
 	if (!File2.eof())
+		{
+		cout << counter << "THREE" << endl;
 		return isEqual;
+		}
 	else
 		return isEqual = true;
 }

@@ -1,11 +1,11 @@
 Dump of RinexEphemerisStore:
 TestRinex06.031
 Dump of BCEphemerisStore:
-  BCE map for prn 1 has 1 entries.
+  BCE map for satellite 1 has 1 entries.
 PRN  1 TOE 01/31/2006 14:00:00 TOC 223200.000 HOW 216006.000 KEY 01/31/2006 12:00:00
-  BCE map for prn 15 has 1 entries.
+  BCE map for satellite 15 has 1 entries.
 PRN 15 TOE 01/31/2006 14:00:00 TOC 223200.000 HOW 216006.000 KEY 01/31/2006 12:00:00
-  BCE map for prn 32 has 1 entries.
+  BCE map for satellite 32 has 1 entries.
 PRN 32 TOE 01/31/2006 14:00:00 TOC 223200.000 HOW 216006.000 KEY 01/31/2006 12:00:00
   End of BCE maps.
 

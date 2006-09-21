@@ -58,9 +58,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    180006  Tue-2:02:00:06   0x044      0     off
-SF2 HOW:    180006  Tue-2:02:00:06    0x44      0     off
-SF3 HOW:    180006  Tue-2:02:00:06    0x44      0     off
+SF1 HOW:    181806  Tue-2:02:30:06   0x044      0     off
+SF2 HOW:    181806  Tue-2:02:30:06    0x44      0     off
+SF3 HOW:    181806  Tue-2:02:30:06    0x44      0     off
 
            CLOCK
 

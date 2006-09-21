@@ -165,7 +165,7 @@ namespace gpstk
       {
          return false;
       }
-      if( week < right.zcount )
+      if( zcount < right.zcount )
       {
          return true;
       }

@@ -210,7 +210,7 @@ void xRinexNav :: filterOperatorsTest (void)
 		list.push_front(6);
 		gpstk::RinexNavDataFilterPRN FilterPRN(list);
 		CPPUNIT_ASSERT_EQUAL(true,FilterPRN(FilterData3));
-		cout << FilterPRN(FilterData3) << endl;
+		//cout << FilterPRN(FilterData3) << endl;
 	}
 	catch(gpstk::Exception& e)
 	{

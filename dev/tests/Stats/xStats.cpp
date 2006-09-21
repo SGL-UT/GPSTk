@@ -114,11 +114,6 @@ void xStats :: resetTest (void)
 **** Test to assess the quality of the Subtract member of the Stats
 **** class which, according to comments by the coder, is designed to
 **** "remove a sample from the computation of statistics"
-
-**** PLEASE NOTE: As of June 28, 2006, Stats.hpp is potentially flawed for this member
-**** Subtract does directly subtract what you want it to but then does its
-**** calculations based on the old number of elements!  This leads to wrong
-**** averages and any other calculation which depends on the number of elements
 */
 void xStats :: subtractTest (void)
 {
@@ -149,24 +144,20 @@ void xStats :: subtractTest (void)
 **** Test to assess the quality of the LoadTest member of the Stats
 **** class which, according to comments by the coder, is designed to
 **** "define private members directly"
-
-**** PLEASE NOTE: As of June 28, 2006, Stats.hpp is potentially flawed for this member
-**** I directly set the average to be 10, yet when I do an assert to make sure,
-**** I get a very different result for the average (35350).
-**** I don't know if changing the internal private members externally is a good
-**** idea anyway... they are private for a reason.
 */
 void xStats :: loadTest (void)
 {
 	gpstk::Stats<int> loadTest;
-	loadTest.Load((unsigned) 7070, 0,20,10,10,true,2);
-	CPPUNIT_ASSERT_EQUAL((unsigned) 7070, loadTest.N());
+	loadTest.Load((unsigned) 4, 0,20,1,2,true,4);
+	CPPUNIT_ASSERT_EQUAL((unsigned) 4, loadTest.N());
 	CPPUNIT_ASSERT_EQUAL(0, loadTest.Minimum());
 	CPPUNIT_ASSERT_EQUAL(20, loadTest.Maximum());
 	CPPUNIT_ASSERT_EQUAL(true, loadTest.Weighted());
-	CPPUNIT_ASSERT_EQUAL(2, loadTest.Normalization());
-	CPPUNIT_ASSERT_EQUAL(10, loadTest.Average());
-	CPPUNIT_ASSERT_EQUAL(10000, loadTest.Variance());
+	CPPUNIT_ASSERT_EQUAL(4, loadTest.Normalization());
+	//30*10/2
+	CPPUNIT_ASSERT_EQUAL(1, loadTest.Average());
+	//var*10^4/2^4
+	CPPUNIT_ASSERT_EQUAL(2, loadTest.Variance());
 	
 	
 }
@@ -445,10 +436,6 @@ void xStats :: addEquals2Test (void)
 /*
 **** Test to assess the quality of the median function for finding the median
 **** of a gpstk::Vector  
-
-**** PLEASE NOTE: As of June 28, 2006, Stats.hpp is potentially flawed for this member
-**** I can't get the member median to even compile.  There is a delete[] that is not pointed
-**** to a pointer in the Stats.hpp file (line 504) and I think that is the issue.
 */
 void xStats :: medianTest (void)
 {

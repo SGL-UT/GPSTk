@@ -62,7 +62,7 @@ namespace gpstk
       }
 
       /// reset, i.e. ignore earlier data and restart sampling
-      inline void Reset(void) { n=0; weighted=false; }
+      inline void Reset(void) { n=0; weighted=false; W = 0; }
 
       /// access the sample size
       inline unsigned int N(void) const { return n; }
@@ -162,8 +162,12 @@ namespace gpstk
          T dn=T(n);
          if(n > 2) var=(var*(dn-T(1))-dn*(x-ave)*(x-ave)/(dn-T(1)))/(dn-T(2));
          else var=T();
-
-         if(n > 1) ave=(ave*dn-x)/(dn-T(1));
+	
+         if(n > 1)
+	 { 
+	 	ave=(ave*dn-x)/(dn-T(1));
+		W--;
+	 }
          else if(n==1) ave=x;
          else ave=T();
 

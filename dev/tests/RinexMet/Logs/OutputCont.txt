@@ -1,5 +1,5 @@
      2.10           Meteorological                          RINEX VERSION / TYPE
-GFW - RMW           NIMA                08/17/2006 10:33:33 PGM / RUN BY / DATE
+GFW - RMW           NIMA                09/14/2006 14:46:31 PGM / RUN BY / DATE
 Some weather data may have corrected values                 COMMENT
 85408                                                       MARKER NAME
 85408                                                       MARKER NUMBER
