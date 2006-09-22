@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file Stats.hpp
  * One and two-sample statistics
@@ -63,7 +61,7 @@ namespace gpstk
       }
 
       /// reset, i.e. ignore earlier data and restart sampling
-      inline void Reset(void) { n=0; weighted=false; W = 0; }
+      inline void Reset(void) { n=0; weighted=false; W=T(); }
 
       /// access the sample size
       inline unsigned int N(void) const { return n; }
@@ -164,7 +162,7 @@ namespace gpstk
          if(n > 2) var=(var*(dn-T(1))-dn*(x-ave)*(x-ave)/(dn-T(1)))/(dn-T(2));
          else var=T();
         
-	 if(n > 1) ave=(ave*dn-x)/(dn-T(1));
+         if(n > 1) ave=(ave*dn-x)/(dn-T(1));
          else if(n==1) ave=x;
          else ave=T();
 
