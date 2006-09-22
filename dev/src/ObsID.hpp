@@ -44,8 +44,6 @@
 #include <string>
 #include <map>
 
-#include <SatID.hpp>
-
 /**
  * @file ObsID.hpp
  * gpstk::ObsID - navigation system, receiver, and file specification 
@@ -54,7 +52,6 @@
    is used to represent the observation codes in a RINEX file. It is
    intended to support at least everything in section 5.1 of the RINEX 3
    specifications.
-   One primary intent of this class is to support
  */
 
 namespace gpstk
@@ -69,6 +66,7 @@ namespace gpstk
          cbL1,   /// GPS L1, Galileo E2-L1-E1, SBAS L1
          cbL2,   /// GPS L2
          cbL5,   /// GPS L5, Galileo E5a, SBAS L5
+         cbL1L2, /// Combined L1L2 (like an ionosphere free obs)
          cbG1,   /// Glonass G1
          cbG2,   /// Glonass G2
          cbE5b,  /// Galileo E5b
@@ -86,6 +84,7 @@ namespace gpstk
          otPhase,   /// accumulated phase
          otDoppler, /// Doppler
          otSNR,     /// Signal strength 
+         otSSI,     /// Signal strength indicator/inded (kinda a rinex thing)
          otLast,    /// used to extend this...
          otPlaceholder = otLast+1000
       };
@@ -123,8 +122,8 @@ namespace gpstk
          : type(otUnknown), band(cbUnknown), code(tcUnknown) {};
 
       /// Explicit constructior
-      ObsID(ObservationType ot, CarrierBand cb, TrackingCode tc, SatID sv)
-         : type(ot), band(cb), code(tc), svid(sv) {};
+      ObsID(ObservationType ot, CarrierBand cb, TrackingCode tc)
+         : type(ot), band(cb), code(tc) {};
 
       /// Equality requires all fields to be the same
       virtual bool operator==(const ObsID& right) const;
@@ -150,8 +149,7 @@ namespace gpstk
       virtual std::ostream& dump(std::ostream& s) const;
 
       /// Return true if this is a valid ObsID. Basically just
-      /// checks that this type/band/code/svid is in table 5 of
-      /// the RINEX 3 spec.
+      /// checks that none of the enums are undefined
       virtual bool isValid() const;
 
       static ObservationType newObservationType(const std::string& s);
@@ -161,7 +159,6 @@ namespace gpstk
       ObservationType  type;
       CarrierBand      band;
       TrackingCode     code;
-      SatID            svid;
 
    private:
       static std::map< TrackingCode,    std::string > tcStrings;

@@ -52,47 +52,48 @@ namespace gpstk
 
    ObsID::Initializer::Initializer()
    {
-      ObsID::cbStrings[cbUnknown] = "UnknownBand";
-      ObsID::cbStrings[cbL1]      = "L1";
-      ObsID::cbStrings[cbL2]      = "L2";
-      ObsID::cbStrings[cbL5]      = "L5";
-      ObsID::cbStrings[cbG1]      = "G1";
-      ObsID::cbStrings[cbG2]      = "G2";
-      ObsID::cbStrings[cbE5b]     = "E5b";
-      ObsID::cbStrings[cbE5ab]    = "L5a+b";
-      ObsID::cbStrings[cbE6]      = "E6";
+      cbStrings[cbUnknown] = "UnknownBand";
+      cbStrings[cbL1]      = "L1";
+      cbStrings[cbL2]      = "L2";
+      cbStrings[cbL5]      = "L5";
+      cbStrings[cbL1L2]    = "L1+L2";
+      cbStrings[cbG1]      = "G1";
+      cbStrings[cbG2]      = "G2";
+      cbStrings[cbE5b]     = "E5b";
+      cbStrings[cbE5ab]    = "L5a+b";
+      cbStrings[cbE6]      = "E6";
 
-      ObsID::otStrings[otUnknown] = "UnknownType";
-      ObsID::otStrings[otRange]   = "range";
-      ObsID::otStrings[otPhase]   = "phase";
-      ObsID::otStrings[otDoppler] = "doppler";
-      ObsID::otStrings[otSNR]     = "snr";
+      otStrings[otUnknown] = "UnknownType";
+      otStrings[otRange]   = "range";
+      otStrings[otPhase]   = "phase";
+      otStrings[otDoppler] = "doppler";
+      otStrings[otSNR]     = "snr";
+      otStrings[otSSI]     = "ssi";
 
-      ObsID::tcStrings[tcUnknown] = "UnknownCode";
-      ObsID::tcStrings[tcCA]      = "C/A";
-      ObsID::tcStrings[tcP]       = "P";
-      ObsID::tcStrings[tcY]       = "Y";
-      ObsID::tcStrings[tcW]       = "W";
-      ObsID::tcStrings[tcN]       = "N";
-      ObsID::tcStrings[tcM]       = "M";
-      ObsID::tcStrings[tcC2M]     = "C2M";
-      ObsID::tcStrings[tcC2L]     = "C2L";
-      ObsID::tcStrings[tcC2LM]    = "C2L+M";
-      ObsID::tcStrings[tcI5]      = "I5";
-      ObsID::tcStrings[tcQ5]      = "Q5";
-      ObsID::tcStrings[tcIQ5]     = "I+Q";
-      ObsID::tcStrings[tcA]       = "A";
-      ObsID::tcStrings[tcB]       = "B";
-      ObsID::tcStrings[tcC]       = "C";
-      ObsID::tcStrings[tcBC]      = "B+C";
-      ObsID::tcStrings[tcABC]     = "A+B+C";
+      tcStrings[tcUnknown] = "UnknownCode";
+      tcStrings[tcCA]      = "C/A";
+      tcStrings[tcP]       = "P";
+      tcStrings[tcY]       = "Y";
+      tcStrings[tcW]       = "W";
+      tcStrings[tcN]       = "N";
+      tcStrings[tcM]       = "M";
+      tcStrings[tcC2M]     = "C2M";
+      tcStrings[tcC2L]     = "C2L";
+      tcStrings[tcC2LM]    = "C2L+M";
+      tcStrings[tcI5]      = "I5";
+      tcStrings[tcQ5]      = "Q5";
+      tcStrings[tcIQ5]     = "I+Q";
+      tcStrings[tcA]       = "A";
+      tcStrings[tcB]       = "B";
+      tcStrings[tcC]       = "C";
+      tcStrings[tcBC]      = "B+C";
+      tcStrings[tcABC]     = "A+B+C";
    }
 
 
    std::ostream& ObsID::dump(std::ostream& s) const
    {
-      s << svid
-        << " " << ObsID::cbStrings[band]
+      s << " " << ObsID::cbStrings[band]
         << " " << ObsID::tcStrings[code]
         << " " << ObsID::otStrings[type];
 
@@ -131,24 +132,17 @@ namespace gpstk
    }
 
    bool ObsID::operator==(const ObsID& right) const
-   {
-      return svid==right.svid && type==right.type
-         && band==right.band && code==right.code 
-         && svid==right.svid;
-   }
+   { return type==right.type &&  band==right.band && code==right.code; }
 
    bool ObsID::operator<(const ObsID& right) const
    {
-      if (svid == right.svid)
-         if (band == right.band)
-            if (code == right.code)
-               return type < right.type;
-            else
-               return code < right.code;
+      if (band == right.band)
+         if (code == right.code)
+            return type < right.type;
          else
-            return band < right.band;
+            return code < right.code;
       else
-         return svid < right.svid;
+         return band < right.band;
 
       // This should never be reached...
       return false;
