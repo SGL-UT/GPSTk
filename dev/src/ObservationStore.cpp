@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,11 +36,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file ObservationStore.cpp
  * A class encapsulating observation data (roughly standard RINEX obs and met files).
@@ -55,49 +48,6 @@ using namespace gpstk;
 
 namespace gpstk
 {
-   void ObsEpoch::insertObservation( const Observation& inobs, 
-                                     const short svId )
-      throw()
-   {
-      obs[svId] = inobs;
-   }
-  
-   void ObsEpoch::insertObservation( const ObservationPlus& op )
-      throw()
-   {
-      insertObservation(op.obs, op.svId);
-   }
-
-   void RxObsData::insertObservation( const Observation& obs, 
-                                      const DayTime& t, 
-                                      const short svId )
-      throw()
-   {
-      epochs[t].insertObservation(obs, svId);
-      epochs[t].t = t;
-      if (t > lastTime)  lastTime=t;
-      if (t < firstTime) firstTime=t;
-      prnList.insert(svId);
-   }
-
-   void RxObsData::insertObservation( const ObservationPlus& op )
-      throw()
-   {
-      insertObservation(op.obs, op.time, op.svId);
-   }
-
-   void RxObsData::insertEpoch( const ObsEpoch& epoch )
-      throw()
-   {
-      epochs[epoch.t] = epoch;
-      epochs[epoch.t].t = epoch.t;
-      if (epoch.t > lastTime)  lastTime  = epoch.t;
-      if (epoch.t < firstTime) firstTime = epoch.t;
-
-      ObsMap::const_iterator i;
-      for(i=epoch.obs.begin(); i!=epoch.obs.end(); i++)
-         prnList.insert(i->first);
-   }
 
    WxObservation WxObsData::getMostRecent( const DayTime& t ) const
       throw()
@@ -279,54 +229,31 @@ namespace gpstk
    }
 
       // These are just to facilitate debugging.
-   std::ostream& operator<<(std::ostream& s, 
-                            const gpstk::Observation& obs)
+   std::ostream& operator<<(std::ostream& s, const gpstk::Observation& obs)
       throw()
    {
-      s << obs.range << ", " << obs.phase << ", " << obs.doppler
-        << ", " << obs.SNR << ", " << obs.channel << ", ";
-      switch (obs.carrier) {
-         case gpstk::Observation::cfL1:    s << "L1 ";    break;
-         case gpstk::Observation::cfL2:    s << "L2 ";    break;
-         case gpstk::Observation::cfL5:    s << "L5 ";    break;
-         case gpstk::Observation::cfOther: s << "Other "; break;
+      Observation::const_iterator i;
+      for (i=obs.begin(); i != obs.end(); i++)
+      {
+         if (i != obs.begin())
+            s << ", ";
+         s << i->first << ": " << i->second;
       }
-      switch (obs.code) {
-         case gpstk::Observation::rcCA:    s << "CA";    break;
-         case gpstk::Observation::rcPY:    s << "PY";    break;
-         case gpstk::Observation::rcZ:     s << "Z";     break;
-         case gpstk::Observation::rcRC:    s << "RC";    break;
-         case gpstk::Observation::rcOther: s << "Other"; break;
-      }
-      s << std::endl;
       return s;
    }
 
-   std::ostream& operator<<(std::ostream& s, 
-                            const gpstk::ObsEpoch& oe)
+   std::ostream& operator<<(std::ostream& s, const gpstk::ObsEpoch& oe)
       throw()
    {
-      s << "epoch t=" << oe.t << ", dt=" << oe.dt << std::endl;
-      gpstk::ObsMap::const_iterator i;
-      for (i=oe.obs.begin(); i!=oe.obs.end(); i++)
-         s << "prn " <<  i->first << ", " << i->second;
+      gpstk::ObsEpoch::const_iterator i;
+      for (i=oe.begin(); i!=oe.end(); i++)
+         s << i->first << ": " << i->second << endl;
+
       return s;
    }
 
-   std::ostream& operator<<(std::ostream& s, 
-                            const gpstk::RxObsData& rod)
-      throw()
-   {
-      s << rod.rxId << " data spans " << rod.firstTime << " to " 
-        << rod.lastTime << std::endl;
-      gpstk::ObsEpochMap::const_iterator i;
-      for (i=rod.epochs.begin(); i!=rod.epochs.end(); i++)
-         s << "map t=" <<  i->first << ", " << i->second;
-      return s;
-   }
 
-   std::ostream& operator<<(std::ostream& s, 
-                            const gpstk::WxObservation& obs)
+   std::ostream& operator<<(std::ostream& s, const gpstk::WxObservation& obs)
       throw()
    {
          // Note that this does not flag where the wx data came from
