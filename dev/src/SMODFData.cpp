@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,11 +36,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file SMODFData.cpp
  * smoothed measurement data file data
@@ -57,15 +50,9 @@ using namespace std;
 
 namespace gpstk
 {
-      /**
-       * @name SMODF-Specific Definitions
-       * \note These should probably be moved into the SMODFData class.
-       */
-      //@{
-   const int SMO_LEN_ICD211 = 85;  ///< Length of an ICD-GPS-211 SMODF record
-   const int SMO_LEN_LEGACY = 80;  ///< Length of a Legacy SMODF record
-   const int BEGINGPS2DYEAR = 80;  ///< Beginning of the GPS Two Digit Year
-      //@}
+   const int SMODFData::SMO_LEN_ICD211 = 85;  ///< Length of an ICD-GPS-211 SMODF record
+   const int SMODFData::SMO_LEN_LEGACY = 80;  ///< Length of a Legacy SMODF record
+   const int SMODFData::BEGINGPS2DYEAR = 80;  ///< Beginning of the GPS Two Digit Year
 
    void SMODFData::reallyPutRecord(gpstk::FFStream& ffs) const 
       throw(std::exception, gpstk::FFStreamError,
@@ -73,7 +60,7 @@ namespace gpstk
    {
       SMODFStream& strm = dynamic_cast<SMODFStream&>(ffs);
       
-         // here's a hack - if you dont know what to write, assume ICD211
+      // here's a hack - if you dont know what to write, assume ICD211
       if (strm.format == SMODFStream::undefined)
          strm.format = SMODFStream::icd211;
       
@@ -237,19 +224,19 @@ namespace gpstk
             currentLine[31]='0';
          
             // Parse line and load apropriate values into ODBIF structure
-         short year =           asInt(currentLine.substr( 0,  4));
-         short DOY  =           asInt(currentLine.substr( 4,  3));
-         double SOD =         asDouble(currentLine.substr( 7, 13));
+         short year =     asInt(currentLine.substr( 0,  4));
+         short DOY  =     asInt(currentLine.substr( 4,  3));
+         double SOD =  asDouble(currentLine.substr( 7, 13));
          PRNID =          asInt(currentLine.substr(21,  2));
          station =        asInt(currentLine.substr(23,  5));
          channel =        asInt(currentLine.substr(28,  2));
          type =           asInt(currentLine.substr(30,  1));
          lol  =           asInt(currentLine.substr(31,  1));
-         obs  =    for2doub(currentLine.substr(32, 21), 21);
-         stdDev =     for2doub(currentLine.substr(53, 12), 12);
-         tempSource =    asInt(currentLine.substr(66,  1));
-         pressSource =   asInt(currentLine.substr(67,  1));
-         humidSource =   asInt(currentLine.substr(68,  1));
+         obs  =        for2doub(currentLine.substr(32, 21), 21);
+         stdDev =      for2doub(currentLine.substr(53, 12), 12);
+         tempSource =     asInt(currentLine.substr(66,  1));
+         pressSource =    asInt(currentLine.substr(67,  1));
+         humidSource =    asInt(currentLine.substr(68,  1));
          temp =        asDouble(currentLine.substr(69,  5));
          pressure =    asDouble(currentLine.substr(74,  6));
          humidity =    asDouble(currentLine.substr(80,  5));
@@ -274,17 +261,17 @@ namespace gpstk
             currentLine[28]='0';
          
             // Parse line and load apropriate values into ODBIF structure
-         short year =           asInt(currentLine.substr( 0,  2));
-         short DOY  =           asInt(currentLine.substr( 2,  3));
-         double SOD =         asDouble(currentLine.substr( 5, 12));
+         short year =     asInt(currentLine.substr( 0,  2));
+         short DOY  =     asInt(currentLine.substr( 2,  3));
+         double SOD =  asDouble(currentLine.substr( 5, 12));
          PRNID =          asInt(currentLine.substr(17,  3));
          station =        asInt(currentLine.substr(20,  5));
          channel =        asInt(currentLine.substr(25,  2));
          type =           asInt(currentLine.substr(27,  1));
          lol  =           asInt(currentLine.substr(28,  1));
-         obs  =    for2doub(currentLine.substr(29, 21), 21);// len ??
-         stdDev =     for2doub(currentLine.substr(50, 12), 12);//start & 
-         short src =          asInt(currentLine.substr(63,  1));
+         obs  =        for2doub(currentLine.substr(29, 21), 21);// len ??
+         stdDev =      for2doub(currentLine.substr(50, 12), 12);//start & 
+         short src =      asInt(currentLine.substr(63,  1));
          temp =        asDouble(currentLine.substr(64,  5));
          pressure =    asDouble(currentLine.substr(69,  6));
          humidity =    asDouble(currentLine.substr(75,  5));
@@ -316,56 +303,5 @@ namespace gpstk
             tempSource = pressSource = humidSource = 0;   
       }
    }   // end reallyGetRecord()
-
-   gpstk::ObservationPlus SMODFData::getObservationPlus() const
-   {
-      gpstk::ObservationPlus op;
-      
-      op.obs.channel = channel;
-      op.svId = PRNID;
-      op.rxId = station;
-      op.time = time;
-      op.obs.SNR = (float)(stdDev);
-
-      if (type==0)
-         op.obs.range = obs * 1000;  // yea, smdf is in KM
-      else if (type==9)
-         op.obs.phase = obs * 1000;
-
-      return op;
-   }
-      
-   gpstk::WxObservation SMODFData::getWxObservation() const
-   {
-      gpstk::WxObservation wx;
-
-      wx.t = time;
-
-      if (tempSource)
-      {
-         wx.temperature = temp;
-         wx.temperatureSource = WxObservation::obsWx;
-      }
-      else 
-         wx.temperatureSource = WxObservation::noWx;;
-
-      if (pressSource)
-      {
-         wx.pressure = pressure;
-         wx.pressureSource = WxObservation::obsWx;
-      }
-      else 
-         wx.pressureSource = WxObservation::noWx;;
-
-      if (humidSource)
-      {
-         wx.humidity = humidity;
-         wx.humiditySource = WxObservation::obsWx;
-      }
-      else 
-         wx.humiditySource = WxObservation::noWx;
-         
-      return wx;
-   }
 
 } // end namespace gpstk

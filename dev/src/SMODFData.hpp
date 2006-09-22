@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,25 +36,19 @@
 //
 //=============================================================================
 
-
-
-
-
+#ifndef SMODFDATA_HPP
+#define SMODFDATA_HPP
 
 /**
  * @file SMODFData.hpp
  * smoothed measurement data file data
  */
 
-#ifndef SMODFDATA_HPP
-#define SMODFDATA_HPP
+#include <vector>
 
 #include "StringUtils.hpp"
 #include "FFData.hpp"
 #include "DayTime.hpp"
-#include "ObservationStore.hpp"
-
-#include <vector>
 
 namespace gpstk
 {
@@ -101,18 +93,6 @@ namespace gpstk
       /// This function does \b nothing.
       virtual void dump(std::ostream& s) const;
       
-      /**
-       * Translate *this to an ObservationPlus.
-       * @return *this translated to an ObservationPlus
-       */
-      virtual gpstk::ObservationPlus getObservationPlus() const;
-      
-      /** 
-       * Translate *this to a WxObservation.
-       * @return *this translated to a WxObservation
-       */
-      virtual gpstk::WxObservation getWxObservation() const;
-      
    protected:
       /// Writes a smodfdata object in the format specified
       /// by the stream to the stream.
@@ -133,6 +113,10 @@ namespace gpstk
          throw(std::exception, gpstk::FFStreamError,
                gpstk::StringUtils::StringException);
      
+   private:
+      static const int SMO_LEN_ICD211;  ///< Length of an ICD-GPS-211 SMODF record
+      static const int SMO_LEN_LEGACY;  ///< Length of a Legacy SMODF record
+      static const int BEGINGPS2DYEAR;  ///< Beginning of the GPS Two Digit Year
    }; // class SMODFData
 
       //@}
