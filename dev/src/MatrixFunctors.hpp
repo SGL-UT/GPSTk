@@ -642,6 +642,51 @@ namespace gpstk
 
    }; // end class Cholesky
 
+   /**
+    * Compute the Cholesky decomposition using the Cholesky-Crout algorithm,
+    * which is very fast; if A is the given matrix we will get L, where A = L*LT. 
+    * A must be symetric and positive definite. This is the usual case when
+    * A comes from applying a Least Mean-Square (LMS) or Weighted Least 
+    * Mean-Square (WLMS) method.
+    */
+   template <class T> 
+   class CholeskyCrout : public Cholesky<T>
+   {
+   public:
+       template <class BaseClass>
+       void operator() (const ConstMatrixBase<T, BaseClass>& m) throw (MatrixException)
+       {
+           if(!m.isSquare()) {
+               MatrixException e("CholeskyCrout requires a square matrix");
+               GPSTK_THROW(e);
+           }
+
+           int N = m.rows(), i, j, k;
+           double sum;
+           (*this).L = Matrix<T>(N,N, 0.0);
+
+           for(j=0; j<N; j++) {
+               sum = m(j,j);
+               for(k=0; k<j; k++ ) sum -= (*this).L(j,k)*(*this).L(j,k);
+               if(sum > 0.0) {
+                   (*this).L(j,j) = SQRT(sum);
+               } else {
+                   MatrixException e("CholeskyCrout fails - eigenvalue <= 0");
+                   GPSTK_THROW(e);          
+               }
+
+               for(i=j+1; i<N; i++){
+                   sum = m(i,j);
+                   for(k=0; k<j; k++) sum -= (*this).L(i,k)*(*this).L(j,k);
+                   (*this).L(i,j) = sum/(*this).L(j,j);
+               }
+           }
+
+           (*this).U = transpose((*this).L);
+       }
+
+   }; // end class CholeskyCrout
+
 
 
 /**
