@@ -37,11 +37,11 @@
 //=============================================================================
 
 /**
- * @file ObservationStore.cpp
- * A class encapsulating observation data (roughly standard RINEX obs and met files).
+ * @file WxObsMap.cpp
+ * A class encapsulating wx data.
  */
 
-#include "ObservationStore.hpp"
+#include "WxObsMap.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -81,9 +81,9 @@ namespace gpstk
 
    void WxObsData::flush(const DayTime& t) throw()
    {
-         // remove data from the WxObsMap
-         // map is sorted by time, stop removing data at
-         // first point after t
+      // remove data from the WxObsMap
+      // map is sorted by time, stop removing data at
+      // first point after t
       WxObsMap::iterator i = obs.begin();
       while (i != obs.end())
       {
@@ -110,7 +110,7 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-         // get the first object after time t;
+      // get the first object after time t;
       WxObsMap::const_iterator after = obs.upper_bound(t);
       
       if (after == obs.begin())
@@ -118,7 +118,7 @@ namespace gpstk
          const WxObservation& wxa = after->second;
          if ((wxa.t >= (t - iv)) && (wxa.t <= (t + iv)))
          {
-               // only after point fits
+            // only after point fits
             return wxa;
          }
          else
@@ -130,7 +130,7 @@ namespace gpstk
       }
       
 
-         // get the first object at or before time t;
+      // get the first object at or before time t;
       WxObsMap::const_iterator before = after;
       before--;
 
@@ -139,7 +139,7 @@ namespace gpstk
          const WxObservation& wxb = before->second;
          if((wxb.t >= (t - iv)) && (wxb.t <= (t + iv)))
          {
-               // only before point fits
+            // only before point fits
             return wxb;
          }
          else
@@ -160,8 +160,8 @@ namespace gpstk
             {
                if ((wxa.t >= (t - iv)) && (wxa.t <= (t + iv)))
                {
-                     // both points fit, linearly interpolate and create
-                     // a WeatherData object with those values
+                  // both points fit, linearly interpolate and create
+                  // a WeatherData object with those values
                   double dtw = wxa.t - wxb.t;
                   double dt = t - wxb.t;
 
@@ -179,13 +179,13 @@ namespace gpstk
                }
                else
                {
-                     // only before point fits
+                  // only before point fits
                   return wxb;
                }
             }
             else if ((wxa.t >= (t - iv)) && (wxa.t <= (t + iv)))
             {
-                  // only after point fits
+               // only after point fits
                return wxa;
             }
             else
@@ -201,21 +201,21 @@ namespace gpstk
             {
                if ((wxa.t >= (t - iv)) && (wxa.t <= (t + iv)))
                {
-                     // both points fit, return closer point, or
-                     // before point if at same distance
+                  // both points fit, return closer point, or
+                  // before point if at same distance
                   double diffa = wxa.t - t;
                   double diffb = t - wxb.t;
                   return(diffa < diffb ? wxa : wxb);
                }
                else
                {
-                     // only before point fits
+                  // only before point fits
                   return wxb;
                }
             }
             else if ((wxa.t >= (t - iv)) && (wxa.t <= (t + iv)))
             {
-                  // only after point fits
+               // only after point fits
                return wxa;
             }
             else
@@ -228,35 +228,11 @@ namespace gpstk
       }
    }
 
-      // These are just to facilitate debugging.
-   std::ostream& operator<<(std::ostream& s, const gpstk::Observation& obs)
-      throw()
-   {
-      Observation::const_iterator i;
-      for (i=obs.begin(); i != obs.end(); i++)
-      {
-         if (i != obs.begin())
-            s << ", ";
-         s << i->first << ": " << i->second;
-      }
-      return s;
-   }
-
-   std::ostream& operator<<(std::ostream& s, const gpstk::ObsEpoch& oe)
-      throw()
-   {
-      gpstk::ObsEpoch::const_iterator i;
-      for (i=oe.begin(); i!=oe.end(); i++)
-         s << i->first << ": " << i->second << endl;
-
-      return s;
-   }
-
-
+   // These are just to facilitate debugging.
    std::ostream& operator<<(std::ostream& s, const gpstk::WxObservation& obs)
       throw()
    {
-         // Note that this does not flag where the wx data came from
+      // Note that this does not flag where the wx data came from
       s << obs.t << ", t=" << obs.temperature
         << ", p=" << obs.pressure
         << ", rh=" << obs.humidity;

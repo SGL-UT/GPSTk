@@ -34,7 +34,7 @@ else
    GPSBuildLibrary gpstk : $(REGEX_SOURCE) Exception.cpp BinUtils.cpp
       VectorBase.cpp DayTime.cpp Triple.cpp Geodetic.cpp
       ECEF.cpp Xvt.cpp EngNav.cpp EngEphemeris.cpp EngAlmanac.cpp
-      AlmOrbit.cpp ObservationStore.cpp BCEphemerisStore.cpp
+      AlmOrbit.cpp BCEphemerisStore.cpp ObsEpochMap.cpp WxObsMap.cpp
       SP3EphemerisStore.cpp AlmanacStore.cpp TropModel.cpp
       IonoModel.cpp IonoModelStore.cpp
       FFStream.cpp FFData.cpp RinexMetData.cpp RinexMetHeader.cpp
@@ -73,7 +73,7 @@ else
       FileHunter.hpp FileSpec.hpp FileUtils.hpp GPSGeoid.hpp Geodetic.hpp
       GeoidModel.hpp MathBase.hpp Matrix.hpp MatrixBase.hpp 
       MatrixBaseOperators.hpp MatrixFunctors.hpp MatrixImplementation.hpp
-      MatrixOperators.hpp MiscMath.hpp ObservationStore.hpp PolyFit.hpp 
+      MatrixOperators.hpp MiscMath.hpp ObsEpochMap.hpp WxObsMap.hpp PolyFit.hpp 
       RTFileFrame.hpp RinexMetBase.hpp RinexMetData.hpp 
       RinexMetFilterOperators.hpp RinexMetHeader.hpp RinexMetStream.hpp
       RinexNavBase.hpp RinexNavData.hpp RinexNavFilterOperators.hpp
