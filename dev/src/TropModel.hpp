@@ -47,13 +47,9 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #include "Exception.hpp"
-#include "ObservationStore.hpp"
+//#include "ObservationStore.hpp"
+#include "WxObsMap.hpp"
 #include "Xvt.hpp"
 #include "Position.hpp"
 
