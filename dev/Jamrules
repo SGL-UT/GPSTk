@@ -66,7 +66,7 @@ else if $(NT)
    # for reference, VC++6 defines _MSC_VER=12xx.xx, VS.NET2003 _MSC_VER=13xx.xx
    # do NOT define __STDC__ here
    CCFLAGS        += /ML -wd4274 ;
-   C++FLAGS       += /ML -DWIN32 /GX /GR -wd4274 ;
+   C++FLAGS       += /ML -DWIN32 /GX /GR -wd4274 -wd4675 ;
    NEED_REGEX      = true ;
 }
 
