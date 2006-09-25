@@ -3,7 +3,8 @@
 #include <vector>
 #include <map>
 
-#include <values.h>
+#include <limits.h>
+#include <float.h>
 
 #include "geometry.hpp"
 
