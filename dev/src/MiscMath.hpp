@@ -195,6 +195,24 @@ namespace gpstk
 
       return T(0);
    }
+ 
+   /// Perform the root sum square of aa, bb, cc and dd
+   template <class T>
+   T RSS (T aa, T bb, T cc, T dd)
+   {
+#define swapValues(x,y) \
+   { T temporalStorage; \
+   temporalStorage = x; x = y; y = temporalStorage; }
+
+      T a(ABS(aa)), b(ABS(bb)), c(ABS(cc)), d(ABS(dd));
+
+      // For numerical reason, let's just put the biggest in "a" (we are not sorting)
+      if (a < b) swapValues(a,b);
+      if (a < c) swapValues(a,c);
+      if (a < d) swapValues(a,d);
+
+      return a * SQRT(1 + (b/a)*(b/a) + (c/a)*(c/a) + (d/a)*(d/a));
+   }
 
    //@}
 
