@@ -119,6 +119,9 @@ namespace gpstk
       virtual double c_km() const throw()
       { return c()/1000.0; }
 
+      /// Destructor.
+      virtual ~WGS84Geoid() throw() {};
+
    }; // class WGS84Geoid
 
    //@}
