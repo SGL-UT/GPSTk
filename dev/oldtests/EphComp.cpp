@@ -54,7 +54,6 @@ int main(int argc, char *argv[])
       int prn=13;
       if (prnOption.getCount())
          prn = gpstk::StringUtils::asInt((prnOption.getValue())[0]);
-      unsigned long ref;
 
       // choose a time range within the data....
       gpstk::DayTime te(BCEphList.getFinalTime());
