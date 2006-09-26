@@ -94,6 +94,9 @@ namespace gpstk
          /// @return Speed of light in km/s
       virtual double c_km() const throw() = 0;
 
+      /// Destructor.
+      virtual ~GeoidModel() throw() {};
+
    }; // class GeoidModel
 
    //@}
