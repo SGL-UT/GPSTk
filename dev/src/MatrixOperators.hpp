@@ -531,6 +531,41 @@ namespace gpstk
 
    }  // end inverseSVD
 
+
+   /**
+    * Inverts the square symetrix positive definite matrix M using Cholesky-Crout
+    * algorithm. Very fast and useful when M comes from using a Least Mean-Square 
+    * (LMS) or Weighted Least Mean-Square (WLMS) method.
+    */
+   template <class T, class BaseClass>
+   inline Matrix<T> inverseChol(const ConstMatrixBase<T, BaseClass>& m)
+       throw (MatrixException)
+   {
+       int N = m.rows(), i, j, k;
+       double sum;
+       Matrix<T> LI(N,N, 0.0);      // Here we will first store L^-1, and later m^-1
+
+       // Let's call CholeskyCrout class to decompose matrix "m" in L*LT
+       gpstk::CholeskyCrout<double> CC;
+       CC(m);
+
+       // Let's find the inverse of L (the LI from above)
+       for(i=0; i<N; i++) {
+           LI(i,i) = 1.0 / CC.L(i,i);
+           for(j=0; j<i; j++) {
+               sum = 0.0;
+               for(k=i; k>=0; k-- ) sum += CC.L(i,k)*LI(k,j);
+               LI(i,j) = -sum*LI(i,i);
+           }
+       }
+
+       // Now, let's remember that m^-1 = transpose(LI)*LI
+       LI = transpose(LI) * LI;
+       return LI;
+
+   }  // end inverseChol
+
+
 /**
  *  Matrix * Matrix : row by column multiplication of two matricies.
  */
