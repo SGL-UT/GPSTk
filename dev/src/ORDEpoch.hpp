@@ -64,7 +64,7 @@ namespace gpstk
    {
    public:
 
-      /// defines a store for eachs SV's ord, indexed by prn
+      /// defines a store for each SV's ord, indexed by prn
       typedef std::map<short, ObsRngDev> ORDMap;
 
       ORDEpoch& removeORD(short prn) throw()
