@@ -63,7 +63,7 @@ namespace gpstk
       //@{
 
       /**
-       * Earth ceneted, earth fixed geodetic coordinates in meters.
+       * Earth centered, earth fixed geodetic coordinates in meters.
        */
    class ECEF : public Triple
    {
