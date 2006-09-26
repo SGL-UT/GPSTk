@@ -54,7 +54,7 @@ namespace gpstk
    //@{
 
       /**
-       * Alamanc information for the GPS constellation.  This class
+       * Almanac information for the GPS constellation.  This class
        * encapsulates the almanac navigation message (subframes 4 & 5)
        * and provides functions to decode the as-broadcast almanac.
        * It is possible for an EngAlmanac to not contain a complete
