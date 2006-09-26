@@ -61,7 +61,7 @@ else
       SystemTime.cpp
       Expression.cpp
       RinexSatID.cpp SP3SatID.cpp
-      ObsID.cpp
+      ObsID.cpp Bancroft.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp AlmanacStore.hpp BCEphemerisStore.hpp
@@ -108,7 +108,7 @@ else
       GPSZcount29.hpp JulianDate.hpp MJD.hpp UnixTime.hpp YDSTime.hpp 
       SystemTime.hpp
       gpstkplatform.h mergePCodeWords.h BivarStats.hpp
-      Expression.hpp ObsID.hpp
+      Expression.hpp ObsID.hpp Bancroft.hpp
       ;
 }
 
