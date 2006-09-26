@@ -226,7 +226,7 @@ REditCmd::~REditCmd(void)
 //------------------------------------------------------------------------------------
 void REditCmd::Dump(ostream& os, string msg)
 {
-   string label[]={"INVALID","IF","OF","ID","OD","HD","TN","TB","TT","TE","AO",
+   string label[]={"INVALID","IF","OF","ID","OD","HD","TN","TB","TE","TT","AO",
       "DA","DO","DS","DD","SD","SS","SL","BD","BS","BL","BZ" };
    if(msg.size()) os << msg;
    os << " type=" << label[type] << ", sign=" << sign << ", SV="
