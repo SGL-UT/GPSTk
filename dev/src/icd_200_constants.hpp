@@ -75,19 +75,31 @@ namespace gpstk
    const double RSVCLK    = 10.22999999545e6;
       /// L1 carrier frequency in Hz.
    const double L1_FREQ   = 1575.42e6;
+      /// L1 carrier wavelength in meters.
+   const double L1_WAVELENGTH  = 0.190293672798;
       /// L2 carrier frequency in Hz.
    const double L2_FREQ   = 1227.60e6;
+      /// L2 carrier wavelength in meters.
+   const double L2_WAVELENGTH  = 0.244210213425;
       /// L1 multiplier.
    const double L1_MULT   = 154.0;
       /// L2 multiplier.
    const double L2_MULT   = 120.0;
+      /// Gamma multiplier.
+   const double GAMMA_GPS = 1.646944444;
       /// constant for the max array index in sv accuracy table
    const int SV_ACCURACY_MAX_INDEX_VALUE = 15;
       /// map from SV accuracy/URA flag to minimum accuracy values in m
-   const double SV_ACCURACY_MIN_INDEX[] = {0, 2.4, 3.4, 4.85, 6.85, 9.65,
+   const double SV_ACCURACY_MIN_INDEX[] = {0.0, 2.4, 3.4, 4.85, 6.85, 9.65,
                                            13.65, 24.0, 48.0, 96.0, 192.0,
                                            384.0, 768.0, 1536.0, 3072.0,
                                            6144.0};
+      /// Map from SV accuracy/URA flag to NOMINAL accuracy values in m
+      /// Further details in ICD-GPS-200C, section 20.3.3.3.1.3
+   const double SV_ACCURACY_NOMINAL_INDEX[] = {2.0, 2.8, 4.0, 5.7, 8.0,
+                                           11.3, 16.0, 32.0, 64.0, 128.0,
+                                           256.0, 512.0, 1024.0, 2048.0,
+                                           4096.0, 9.999999999999e99};
       /// map from SV accuracy/URA flag to maximum accuracy values in m
    const double SV_ACCURACY_MAX_INDEX[] = {2.4, 3.4, 4.85, 6.85, 9.65,
                                            13.65, 24.0, 48.0, 96.0, 192.0,
@@ -115,6 +127,29 @@ namespace gpstk
          return SV_ACCURACY_MAX_INDEX[SV_ACCURACY_MAX_INDEX_VALUE];
       return SV_ACCURACY_MAX_INDEX[ura];
    }
+
+   inline
+   short nominalAccuracy2ura(const double& acc) throw()
+   {
+      short ura = 0;
+      while ( (ura <= SV_ACCURACY_MAX_INDEX_VALUE) &&
+              (acc > SV_ACCURACY_NOMINAL_INDEX[ura]))
+         ura++;
+      if (ura > SV_ACCURACY_MAX_INDEX_VALUE)
+         ura = SV_ACCURACY_MAX_INDEX_VALUE;
+      return ura;
+   }
+   
+   inline
+   double ura2nominalAccuracy(const short& ura) throw()
+   {
+      if(ura < 0)
+         return SV_ACCURACY_NOMINAL_INDEX[0];
+      if(ura > SV_ACCURACY_MAX_INDEX_VALUE)
+         return SV_ACCURACY_NOMINAL_INDEX[SV_ACCURACY_MAX_INDEX_VALUE];
+      return SV_ACCURACY_NOMINAL_INDEX[ura];
+   }
+
       //@}
    
 } // namespace
