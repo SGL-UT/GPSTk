@@ -113,6 +113,13 @@ namespace gpstk
           */
       IonoModel(const EngAlmanac& engalm) throw();
       
+         /** Method to feed the model with satellite transmitted alpha
+          * and beta parameters provided from almanac.
+          * \param a an array containing the four alpha terms
+          * \param b an array containing the four beta terms
+          */
+      void setModel(const double a[4], const double b[4]) throw();
+      
          /**
           * returns the validity of the model.
           * \return model validity

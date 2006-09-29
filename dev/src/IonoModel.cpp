@@ -51,18 +51,13 @@
 #include <math.h>
 #include "icd_200_constants.hpp"
 #include "IonoModel.hpp"
+#include "geometry.hpp"
 
 namespace gpstk
 {
-   IonoModel::IonoModel(const double a[4], const double b[4])
-      throw()
-         : valid(true)
+   IonoModel::IonoModel(const double a[4], const double b[4]) throw()
    {
-      for (int n = 0; n < 4; n++)
-      {
-         alpha[n] = a[n];
-         beta[n] = b[n];
-      }
+        setModel(a, b);
    }
 
    IonoModel::IonoModel(const EngAlmanac& engalm)
@@ -79,6 +74,18 @@ namespace gpstk
       }
    }
    
+
+   void IonoModel::setModel(const double a[4], const double b[4]) throw()
+   {
+      for (int n = 0; n < 4; n++)
+      {
+         alpha[n] = a[n];
+         beta[n] = b[n];
+      }
+      valid = true;
+   }
+
+
    double IonoModel::getCorrection(const DayTime& time,
                                    const Geodetic& rxgeo,
                                    double svel,
@@ -97,31 +104,29 @@ namespace gpstk
          // Note: math functions (cos, sin, etc.) require arguments in
          // radians so all semi-circles must be multiplied by TWO_PI
 
-      double svE = svel / 360.0;
-      double svA = svaz / 360.0;
+      double azRad = svaz * DEG_TO_RAD;
+      double svE = svel / 180.0;
 
-      double phi_u = rxgeo.getLatitude() / 360.0;
-      double lambda_u = rxgeo.getLongitude() / 360.0;
+      double phi_u = rxgeo.getLatitude() / 180.0;
+      double lambda_u = rxgeo.getLongitude() / 180.0;
       
-      double psi = 0.0137 / (svE + 0.11) - 0.022;
+      double psi = (0.0137 / (svE + 0.11)) - 0.022;
       
-      double phi_i = phi_u + psi * cos(svA*TWO_PI);
+      double phi_i = phi_u + psi * cos(azRad);
       if (phi_i > 0.416)
          phi_i = 0.416;
       if (phi_i < -0.416)
          phi_i = -0.416;
 
-      double lambda_i = lambda_u + psi * sin(svA*TWO_PI) / cos(phi_i*TWO_PI);
+      double lambda_i = lambda_u + psi * sin(azRad) / cos(phi_i*PI);
       
-      double phi_m = phi_i + 0.064 * cos((lambda_i - 1.617)*TWO_PI);
+      double phi_m = phi_i + 0.064 * cos((lambda_i - 1.617)*PI);
       
       double iAMP = 0.0;
       double iPER = 0.0;
-      for (int n = 0; n < 4; n++)
-      {
-         iAMP += alpha[n] * pow(phi_m, n);
-         iPER += beta[n] * pow(phi_m, n);
-      }
+      iAMP = alpha[0]+phi_m*(alpha[1]+phi_m*(alpha[2]+phi_m*alpha[3]));
+      iPER =  beta[0]+phi_m*( beta[1]+phi_m*( beta[2]+phi_m* beta[3]));
+
       if (iAMP < 0.0)
          iAMP = 0.0;
       if (iPER < 72000.0)
@@ -135,19 +140,18 @@ namespace gpstk
 
       double x = TWO_PI * (t - 50400.0) / iPER; // x is in radians
       
-      double iF = 1.0 + 16.0 * pow(0.53 - svE, 3);
+      double iF = 1.0 + 16.0 * (0.53 - svE)*(0.53 - svE)*(0.53 - svE);
 
       double t_iono = 0.0;
       if (fabs(x) < 1.57)
-         t_iono = iF * (5.0e-9 + iAMP * (1 - pow(x, 2)/2 + pow(x, 4)/24));
+         t_iono = iF * (5.0e-9 + iAMP * (1 + x*x * (-0.5 + x*x/24.0)));
       else
          t_iono = iF * 5.0e-9;
       
       if (freq == L2)
       {
             // see ICD-GPS-200 20.3.3.3.3.2
-         double gamma = pow(1575.42 / 1227.6, 2); //  (fL1 / fL2)^2
-         t_iono *= gamma;
+         t_iono *= GAMMA_GPS;  //  GAMMA_GPS = (fL1 / fL2)^2
       }
       
       double correction = t_iono * C_GPS_M;
