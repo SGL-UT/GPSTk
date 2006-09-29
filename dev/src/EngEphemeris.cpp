@@ -380,10 +380,10 @@ namespace gpstk
       } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
 
          // Compute clock corrections
-      dtc = getAf0() + elaptc * getAf1() + elaptc * elaptc * getAf2();
+      sv.ddtime = getAf1() + elaptc * getAf2();
+      dtc = getAf0() + elaptc * ( sv.ddtime );
       dtr = REL_CONST * lecc * getAhalf() * sin(ea);
       sv.dtime = dtc + dtr;
-      sv.ddtime = getAf1() + elaptc * getAf2();
    
          // Compute true anomaly
       q = sqrt ( 1.0e0 - lecc*lecc);
@@ -504,7 +504,8 @@ namespace gpstk
    {
       double dtc,elaptc;
       elaptc = t - getEpochTime();
-      dtc = getAf0() + elaptc * getAf1() + elaptc * elaptc * getAf2();
+      dtc = getAf0() + elaptc * ( getAf1() + elaptc * getAf2() );
+
       return dtc;
    }
 
