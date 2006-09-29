@@ -108,7 +108,7 @@ else
       GPSZcount29.hpp JulianDate.hpp MJD.hpp UnixTime.hpp YDSTime.hpp 
       SystemTime.hpp
       gpstkplatform.h mergePCodeWords.h BivarStats.hpp
-      Expression.hpp ObsID.hpp Bancroft.hpp
+      Expression.hpp ObsID.hpp Bancroft.hpp CheckPRData.hpp
       ;
 }
 
