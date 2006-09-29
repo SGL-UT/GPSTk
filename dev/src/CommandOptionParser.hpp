@@ -105,8 +105,9 @@ namespace gpstk
       CommandOptionParser(const std::string& description,
                           const CommandOptionVec optList = 
                           defaultCommandOptionList)
-         : hasRequiredArguments(false), hasOptionalArguments(false),
-           optionVec(optList), text(description)
+         : optionVec(optList), hasRequiredArguments(false), 
+           hasOptionalArguments(false), text(description)
+
          {}
 
          /// Adds the CommandOption to the list for parsing.
