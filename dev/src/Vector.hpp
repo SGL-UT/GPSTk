@@ -214,6 +214,19 @@ namespace gpstk
       Vector& operator=(const T* x)
          { return assignFrom(x); }
 
+      /// *this will be cleared and resized as necessary
+      inline Vector& operator=(const std::vector<T>& x)
+      {
+          size_t i;
+          size_t vs = x.size();
+          (*this).resize(vs);
+
+          for (i = 0; i < vs; i++) 
+              (*this)[i] = x[i];
+
+          return (*this); 
+      }
+
          /// Resizes the vector.  if index > size, the vector will be
          /// erased and the contents destroyed.
       Vector& resize(const size_t index)
@@ -241,6 +254,40 @@ namespace gpstk
                v[i] = defaultValue;
             return *this;
          }
+
+    /// Returns the concatenation of this Vector and Vector b
+    inline Vector operator&&(const Vector &b) 
+    {
+        size_t i;
+        size_t vs = this->size();
+        size_t bs = b.size();
+        size_t rows = vs + bs;
+        Vector<T> toReturn(rows);
+
+        for (i = 0; i < vs; i++)
+            toReturn[i] = (*this)[i];
+
+        for (i = 0; i < bs; i++)
+            toReturn[i+vs] = b[i];
+
+        return toReturn;
+    }
+
+    /// Returns the concatenation of this Vector and a scalar of type T
+    inline Vector operator&&(const T &b) 
+    {
+        size_t i;
+        size_t vs = this->size();
+        size_t rows = vs + 1;
+        Vector<T> toReturn(rows);
+
+        for (i = 0; i < vs; i++)
+            toReturn[i] = (*this)[i];
+
+        toReturn[rows - 1] = b;
+
+        return toReturn;
+    }
 
    private:
 
