@@ -1520,7 +1520,7 @@ namespace gpstk
          int count = 0;
          std::string::size_type opos = startPos;
 
-         while (count < numChanges)
+         while (count < (int)numChanges)
          {
             std::string::size_type pos = aString.find(inputString, opos);
             if (pos != std::string::npos)
@@ -1740,7 +1740,7 @@ namespace gpstk
 
             s.resize(n * 2, 0);
 
-            for (int i = 0; i < n * 2;)
+            for (int i = 0; i < (int)n * 2;)
             {
                unsigned char c = *pSource++;
                s[i++] = hexDigits[ c / 16 ];
@@ -1863,7 +1863,7 @@ namespace gpstk
          try
          {
             int spot = s.find(oldString, 0);
-            while (spot != std::string::npos)
+            while (spot != (int)std::string::npos)
             {
                s.replace(spot, oldString.length(), newString);
                spot += newString.length();
@@ -2074,7 +2074,7 @@ namespace gpstk
       {
          unsigned char* q = (unsigned char*)p;
          std::string s(size,'\0');
-         for (int i=0; i<size; i++)
+         for (int i=0; i<(int)size; i++)
          {
             s[i] = (unsigned char)(*q++);
          }
@@ -2169,7 +2169,7 @@ namespace gpstk
                   startPos = pos;
                   // get first delimter after word wordNum
                pos = s.find(delimiter, pos);
-               if ((numWords != -1) && (wordNum == (firstWord + (numWords-1))))
+               if (((int)numWords != -1) && ((int)wordNum == (int)(firstWord + (numWords-1))))
                   break;
                pos = s.find_first_not_of(delimiter, pos);
                wordNum++;
@@ -2311,7 +2311,6 @@ namespace gpstk
             int expAdd = 0;
             std::string exp;
             long iexp;
-            char tmpbuf[10], format[10];
             bool redoexp=false;
             
                // Check for decimal place within specified boundaries
@@ -2462,7 +2461,7 @@ namespace gpstk
          {
             std::string rv(aStr);
 
-            for (int i = 0; i < rv.length(); i++)
+            for (int i = 0; i < (int)rv.length(); i++)
             {
                char c = rv[i];
                if (!isprint(c))
