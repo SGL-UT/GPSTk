@@ -137,7 +137,22 @@ int main(int argc, char *argv[])
               << 100.*(originalLength-editedLength)/originalLength;
          cout << "%)." << endl;
       }
-      
+
+      if (!numeric)
+      {
+         cout << "Removing mean of each pass." << endl;
+         
+         for (set<long>::iterator iPass=allpasses.begin();
+              iPass!=allpasses.end() ; iPass++)
+         {
+            valarray<bool> passMask = (oa.pass==*iPass);
+            valarray<double> mpVals = oa.observation[passMask];
+            valarray<double> binVals(mpVals.size());
+            double mean = mpVals.sum() / mpVals.size();
+            mpVals -= mean;
+            oa.observation[passMask]=mpVals;
+         }
+      }
 
       allpasses = unique(oa.pass);
       if (!numeric)
@@ -216,8 +231,6 @@ int main(int argc, char *argv[])
             else
                binVals = oa.azimuth[passMask];
             
-            double mean = mpVals.sum() / mpVals.size();
-            mpVals -= mean;
             sbs.addData(mpVals, binVals);
          }
 
@@ -246,7 +259,7 @@ void dumpRaw(std::ostream& ostr, const ObsArray& oa, bool numeric)
    if (numeric)
    { 
       ostr << "# GPS Week, Seconds of week, Sat. id, Sat. system, Pass, ";
-      ostr << "Multipath value, LLI indicator " << endl;
+      ostr << "Multipath value, LLI indicator, Azimuth, Elevation " << endl;
    }
 
    for (size_t i=0; i<oa.observation.size(); i++)
@@ -256,8 +269,15 @@ void dumpRaw(std::ostream& ostr, const ObsArray& oa, bool numeric)
          ostr << oa.epoch[i] << " " << oa.satellite[i] << " ";
          ostr << "Pass " << oa.pass[i] << " ";
          ostr << setprecision(12) << oa.observation[i];
+         if (oa.validAzEl[i])
+         {
+            ostr << setprecision(5);
+            ostr << " Az " << oa.azimuth[i];
+            ostr << " El " << oa.elevation[i];
+         }
          if (oa.lli[i])
-            ostr << " loss of lock";
+            ostr << " <- Loss of lock";
+
          ostr << std::endl;
       }
       else
@@ -268,7 +288,15 @@ void dumpRaw(std::ostream& ostr, const ObsArray& oa, bool numeric)
          ostr << (int) oa.satellite[i].system << " ";
          ostr << oa.pass[i] << " ";
          ostr << setprecision(12) << oa.observation[i] << " ";
-         ostr << (int) oa.lli[i] << std::endl;
+         ostr << (int) oa.lli[i];
+         if (oa.validAzEl[i])
+         {  
+            ostr << setprecision(5);
+            ostr << " " << oa.azimuth[i];
+            ostr << " " << oa.elevation[i];
+         }
+         
+         ostr << std::endl;
       }  
    }
 }
