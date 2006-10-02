@@ -220,7 +220,7 @@ protected:
             }
 
             RinexObsData rod;
-            makeRinexObsData(roh, rod, epoch);
+            rod = makeRinexObsData(epoch);
             rinexObsOutput << rod;
          }
          epoch.clear();
