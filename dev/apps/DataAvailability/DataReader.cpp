@@ -1,8 +1,40 @@
 #pragma ident "$Id$"
 
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
 
-//lgpl-license START
-//lgpl-license END
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 
 #include <iostream>
 #include <iomanip>
@@ -33,6 +65,7 @@
 #include "MDPStream.hpp"
 
 #include "DataReader.hpp"
+#include "FFIdentifier.hpp"
 
 #include "FormatConversionFunctions.hpp"
 
@@ -46,8 +79,7 @@ namespace gpstk
         startTime(DayTime::BEGINNING_OF_TIME),
         stopTime(DayTime::END_OF_TIME),
         msid(0), eph(NULL), 
-        haveEphData(false), haveObsData(false), havePosData(false),
-        firstHeader(true)
+        haveEphData(false), haveObsData(false), havePosData(false)
    {}
 
 
@@ -61,58 +93,19 @@ namespace gpstk
          for (int i=0; i<files.getCount(); i++)
          {
             fn = (files.getValue())[i];
-            while(true)
+            FFIdentifier ffid(fn);
+            switch (ffid)
             {
-               try {
-                  read_rinex_obs_data(fn); 
-                  break;
-               } catch (FFStreamError& e) {
-                  if (verbosity > 3) 
-                     cout << e << endl;
-               }
-
-               try {
-                  read_smo_data(fn);
-                  break;
-               } catch (FFStreamError& e) {
-                  if (verbosity > 3)
-                     cout << e << endl;
-               }
-
-               try {
-                  read_mdp_data(fn);
-                  break;
-               } catch (FFStreamError& e) {
-                  if (verbosity > 3)
-                     cout << e << endl;
-               }
-
-               try {
-                  read_rinex_nav_data(fn);
-                  break;
-               } catch (FFStreamError& e) {
-                  if (verbosity > 3)
-                     cout << e << endl;
-               }
-
-               try {
-                  read_fic_data(fn);
-                  break;
-               } catch (FFStreamError& e) {
-                  if (verbosity > 3)
-                     cout << e << endl;
-               }
-
-               try {
-                  read_sp3_data(fn);
-                  break;
-               } catch (FFStreamError& e) {
-                  if (verbosity > 3)
-                     cout << e << endl;
-               }
-
-               if (verbosity > 1) 
-                  cout << "Could not determine the format of " << fn << endl;
+               case FFIdentifier::tRinexObs: read_rinex_obs_data(fn); break;
+               case FFIdentifier::tRinexNav: break;
+               case FFIdentifier::tRinexMet: break;
+               case FFIdentifier::tSMODF:    read_smo_data(fn); break;
+               case FFIdentifier::tFIC:      read_fic_data(fn); break;
+               case FFIdentifier::tMDP:      read_mdp_data(fn); break;
+               case FFIdentifier::tSP3:      read_sp3_data(fn); break;
+               default:
+                  if (verbosity) 
+                     cout << "Could not determine the format of " << fn << endl;
             }
             filesRead.push_back(fn);
          }
@@ -140,43 +133,11 @@ namespace gpstk
       {
          if (mscd.station == msid)
          {
-            roh.antennaPosition = mscd.coordinates;
+            antennaPosition = mscd.coordinates;
             if (verbosity>1)
                cout << "Station " << msid
-                    << " location: " << mscd.coordinates << endl;
+                    << " location: " << antennaPosition << endl;
             break;
-         }
-      }
-   }
-
-
-   // ---------------------------------------------------------------------
-   // ---------------------------------------------------------------------
-   void DataReader::merge_rinex_obs_header(const RinexObsHeader& newHeader)
-   {
-      if (firstHeader)
-      {
-         roh = newHeader;
-         firstHeader=false;
-      }
-
-      if (newHeader.valid & RinexObsHeader::firstTimeValid)
-      {
-         if (!(roh.valid & RinexObsHeader::firstTimeValid &&
-               newHeader.firstObs>roh.firstObs ))
-         {
-            roh.firstObs = newHeader.firstObs;
-            roh.valid |= RinexObsHeader::firstTimeValid;
-         }
-      }
-
-      if (newHeader.valid & RinexObsHeader::lastTimeValid)
-      {
-         if (!(roh.valid & RinexObsHeader::lastTimeValid &&
-               newHeader.lastObs>roh.lastObs ))
-         {
-            roh.lastObs = newHeader.lastObs;
-            roh.valid |= RinexObsHeader::lastTimeValid;
          }
       }
    }
@@ -189,14 +150,17 @@ namespace gpstk
       RinexObsStream ros(fn.c_str(), ios::in);
       ros.exceptions(fstream::failbit);
       if (verbosity>2)
-         cout << "Trying " << fn << " as RINEX obs."<< endl;
+         cout << "Reading " << fn << " as RINEX obs."<< endl;
 
-      RinexObsHeader temp_roh;
-      ros >> temp_roh;
+      RinexObsHeader roh;
+      ros >> roh;
 
       DayTime t0(DayTime::END_OF_TIME);
       DayTime t1(DayTime::BEGINNING_OF_TIME);
       DayTime t2(DayTime::BEGINNING_OF_TIME);
+
+      if (roh.valid && RinexObsHeader::antennaTypeValid)
+         antennaPosition = roh.antennaPosition;
 
       RinexObsData rod;
       while (ros >> rod)
@@ -205,30 +169,13 @@ namespace gpstk
          if (t<startTime || t>stopTime)
             continue;
 
-         if (t<t0) t0=t;
-         if (t>t1) t1=t;
-         if (t<=t2 && verbosity>1)
-            cout << "Out of order obs data in rinex input ("
-                 << t2 << " -> " << t << ")" << endl;
-         t2=t;
-         rem[t] = rod;
+         oem[t] = makeObsEpoch(rod);
       }
 
       haveObsData = true;
-
-      temp_roh.valid |= RinexObsHeader::firstTimeValid;
-      temp_roh.firstObs = t0;
-
-      temp_roh.valid |= RinexObsHeader::lastTimeValid;
-      temp_roh.lastObs = t1;
-
-      merge_rinex_obs_header(temp_roh);
-
-      if (verbosity > 2)
-         roh.dump(cout);
-
       if (verbosity>1)
          cout << "Read " << fn << " as RINEX obs."<< endl;
+
    } // end of read_rinex_data()
 
 
@@ -241,12 +188,8 @@ namespace gpstk
       mdps.exceptions(fstream::failbit);
 
       if (verbosity>2)
-         cout << "Trying " << fn << " as MDP."<< endl;
+         cout << "Reading " << fn << " as MDP."<< endl;
 
-      DayTime t0(DayTime::END_OF_TIME);
-      DayTime t1(DayTime::BEGINNING_OF_TIME);
-      DayTime t2(DayTime::BEGINNING_OF_TIME);
-      
       MDPObsEpoch obs;
       MDPHeader header;
 
@@ -263,24 +206,20 @@ namespace gpstk
                const DayTime& t = obs.time;
                if (t<startTime || t>stopTime)
                   continue;
-               if (t<t0) t0=t;
-               if (t>t1) t1=t;
-               t2=t;
-               SatID sat(obs.prn, SatID::systemGPS);
-               RinexObsData& rod = rem[t];
-               rod.obs[sat] = makeRinexObsTypeMap(obs);
+
+               SatID svid(obs.prn, SatID::systemGPS);
+               ObsEpoch& oe = oem[t];
+               oe.time = t;
+               oe[svid] = makeSvObsEpoch(obs);
                break;
          }
       }
 
       haveObsData = true;
-      roh.firstObs = t0;
-      roh.valid |= RinexObsHeader::firstTimeValid;
-      roh.lastObs = t1;
-      roh.valid |= RinexObsHeader::lastTimeValid;
       if (verbosity>1)
          cout << "Read " << fn << " as MDP."<< endl;
-   } // end of read_rinex_data()
+
+   } // end of read_mdp_data()
 
 
    // ---------------------------------------------------------------------
@@ -290,83 +229,33 @@ namespace gpstk
       SMODFStream smo(fn.c_str(), ios::in);
       smo.exceptions(fstream::failbit);
       if (verbosity>2)
-         cout << "Trying " << fn << " as SMODF."<< endl;
+         cout << "Reading " << fn << " as SMODF."<< endl;
 
-      roh.valid |= RinexObsHeader::allValid21;
-      roh.fileType = "unk";
-      roh.markerName = StringUtils::asString(msid);
-      roh.observer = "unk";
-      roh.agency = "unk";
-      roh.antennaOffset = Triple(0,0,0);
-      roh.wavelengthFactor[0] = 1;
-      roh.wavelengthFactor[1] = 1;
-      roh.recType = "unk";
-      roh.recVers = "unk";
-      roh.recNo = "1";
-      roh.antType = "unk";
-      roh.antNo = "1";
-      roh.obsTypeList.push_back(RinexObsHeader::P1);
-      roh.obsTypeList.push_back(RinexObsHeader::L1);
-
-      DayTime beginTime(DayTime::END_OF_TIME);
-      DayTime endTime(DayTime::BEGINNING_OF_TIME);
-      DayTime thisTime=endTime;
-      DayTime lastTime=endTime;
-   
       SMODFData smodata;
-      RinexObsData rod;
-      RinexObsData::RinexObsTypeMap rotm;
 
       while (smo >> smodata)
       {
          if (smodata.station != msid)
             continue;
 
-         rod.numSvs++;
-         const DayTime& thisTime = smodata.time;
-         if (thisTime<startTime || thisTime>stopTime)
+         const DayTime& t = smodata.time;
+         if (t<startTime || t>stopTime)
             continue;
 
-         beginTime = min(thisTime, beginTime);
-         endTime = max(thisTime, endTime);
+         ObsEpoch& oe = oem[t];
+         oe.time = t;
 
-         if (thisTime != lastTime)
-         {
-            if (rod.obs.size())
-               rem[rod.time]=rod;
+         SatID svid(smodata.PRNID, SatID::systemGPS);
+         SvObsEpoch& soe = oe[svid];
+         soe.svid=svid;
 
-            lastTime=thisTime;
-            rod.time = thisTime;
-            rod.clockOffset = 0;
-            rod.obs.clear();
-            rod.epochFlag = 0;
-            rod.numSvs = 0;
-         }
-
-         if (smodata.type==0)
-         {
-            rotm[RinexObsHeader::P1].data = smodata.obs*1000;
-            rotm[RinexObsHeader::P1].lli = 0;
-            rotm[RinexObsHeader::P1].ssi = 9;
-         }
-         else if (smodata.type==9)
-         {
-            rotm[RinexObsHeader::L1].data = smodata.obs;
-            rotm[RinexObsHeader::L1].lli = 0;
-            rotm[RinexObsHeader::L1].ssi = 9;
-         }
-
-         SatID p(smodata.PRNID, SatID::systemGPS);
-         rod.obs[p] = rotm;
+         soe[getObsID(smodata)] = smodata.obs * 1000;
       }
 
       haveObsData = true;
-      roh.firstObs = beginTime;
-      roh.valid |= RinexObsHeader::firstTimeValid;
-      roh.lastObs = endTime;
-      roh.valid |= RinexObsHeader::lastTimeValid;
       if (verbosity>1)
          cout << "Read " << fn << " as SMODF obs."<< endl;
+
    } // end of read_smo_data()
 
 
@@ -387,7 +276,7 @@ namespace gpstk
          bce = dynamic_cast<BCEphemerisStore*>(eph);
       }
       if (verbosity>2)
-         cout << "Trying " << fn << " as RINEX nav."<< endl;
+         cout << "Reading " << fn << " as RINEX nav."<< endl;
          
       RinexNavStream rns(fn.c_str(), ios::in);
       rns.exceptions(ifstream::failbit);
@@ -418,7 +307,7 @@ namespace gpstk
          bce = dynamic_cast<BCEphemerisStore*>(eph);
       }
       if (verbosity>2)
-         cout << "Trying " << fn << " as FIC nav."<< endl;
+         cout << "Reading " << fn << " as FIC nav."<< endl;
       
       FICStream fs(fn.c_str(), ios::in);
       FICHeader header;
@@ -451,7 +340,7 @@ namespace gpstk
          pe = dynamic_cast<SP3EphemerisStore*>(eph);
       }
       if (verbosity>2)
-         cout << "Trying " << fn << " as SP3 ephemeris."<< endl;
+         cout << "Reading " << fn << " as SP3 ephemeris."<< endl;
 
       SP3Stream pefile(fn.c_str(),ios::in);
       pefile.exceptions(ifstream::failbit);

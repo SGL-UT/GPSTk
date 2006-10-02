@@ -12,11 +12,11 @@ if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
   C++FLAGS += -compat=5 ;
 }
 
-Library mdplib : MDPHeader.cpp MDPObsEpoch.cpp MDPNavSubframe.cpp 
-   FormatConversionFunctions.cpp ;
+Library mdplib : MDPHeader.cpp MDPObsEpoch.cpp MDPNavSubframe.cpp ;
 
 LinkLibraries daa : mdplib ;
 
-GPSLinkLibraries daa : gpstk ;
+GPSLinkLibraries daa oid-test : gpstk ;
 
-GPSMain daa : daa.cpp DataReader.cpp DataAvailabilityAnalyzer.cpp ;
+GPSMain daa : daa.cpp DataReader.cpp DataAvailabilityAnalyzer.cpp
+  FormatConversionFunctions.cpp FFIdentifier.cpp ;

@@ -1,5 +1,41 @@
 #pragma ident "$Id$"
 
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 /** @file Performs a data availability analysis of the input data. In general,
     availability is determined by station and satellite position.
 
@@ -23,15 +59,17 @@
     tama    Time above mask angle
 */
 
-//lgpl-license START
-//lgpl-license END
-
 #include <map>
 
 #include "StringUtils.hpp"
 
 #include "DataAvailabilityAnalyzer.hpp"
-
+#include "RinexObsID.hpp"
+#include "RinexObsStream.hpp"
+#include "RinexObsData.hpp"
+#include "FFIdentifier.hpp"
+#include "DataReader.hpp"
+#include "FormatConversionFunctions.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -80,16 +118,17 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
      maskAngleOpt('a', "mask-angle",
                   "Ignore anomalies on SVs below this elevation. The default is 10 degrees."),
      
-     timeMaskOpt('c', "time-mask",
+     timeMaskOpt('d', "time-mask",
                  "Ignore anomalies on SVs that haven't been above the mask angle for this number of seconds. The default is 0 seconds."),
 
      badHealthMaskOpt('b', "bad-health",
                       "Ignore anomalies associated with SVs that are marked unhealthy."),
 
      smashAdjacentOpt('s', "smash-adjacent",
-                      "Don't adjacent lines from the same PRN."),
+                      "Combine adjacent lines from the same PRN."),
 
-     maskAngle(10), badHealthMask(false), timeMask(0), smashAdjacent(false)
+     maskAngle(10), badHealthMask(false), timeMask(0), smashAdjacent(false),
+     epochRate(0), epochCount(0)
 {
    // Set up a couple of helper arrays to map from enum <-> string
    obsItemName[oiUnknown] = "unk";
@@ -215,45 +254,63 @@ void DataAvailabilityAnalyzer::spinUp()
       return;
    }
 
-   obsData.verbosity = verboseLevel;
-   obsData.read(inputOpt);
-   if (obsData.haveEphData && verboseLevel)
-      cout << "Got eph data from the obs files." << endl;
-   if (obsData.haveObsData && verboseLevel)
-      cout << "Got obs data from the obs files." << endl;
-
+   mscData.verbosity = verboseLevel;
    if (msidOpt.getCount())
-      obsData.msid = StringUtils::asUnsigned(msidOpt.getValue()[0]);
+      mscData.msid = StringUtils::asUnsigned(msidOpt.getValue()[0]);
 
    if (msidOpt.getCount() && mscFileOpt.getCount())
-      obsData.read_msc_file(mscFileOpt.getValue()[0]);
+      mscData.read_msc_file(mscFileOpt.getValue()[0]);
 
-   if (RSS(obsData.roh.antennaPosition[0],
-           obsData.roh.antennaPosition[1],
-           obsData.roh.antennaPosition[2]) < 1)
-      cout << "Warning! The antenna appears to be within one meter of the" << endl
-           << "center of the geoid. Please go check it." << endl;
 
-   // Time of the first & last epochs in the obs data
-   const DayTime firstEpochTime = obsData.rem.begin()->first;
-   const DayTime lastEpochTime  = obsData.rem.rbegin()->first;
+   const string fn=inputOpt.getValue()[0];
+   FFIdentifier inputType(fn);
 
-   // Check these against the header values, if the header values are present
-   // tbd...
+   if (inputType == FFIdentifier::tRinexObs)
+   {
+      // Read first few epochs to see what the data rate appears to be
+      gpstk::RinexObsStream ros(fn.c_str(), ios::in);
+      ros.exceptions(fstream::failbit);
+      cout << "Trying " << fn << " as RINEX obs."<< endl;
 
-   // Clean up the start/stop times
-   startTime = firstEpochTime > startTime ? firstEpochTime : startTime;
-   stopTime  = lastEpochTime  < stopTime  ? lastEpochTime  : stopTime;
-   if (stopTime - startTime > timeSpan)
-      stopTime = startTime + timeSpan;
-
-   if (verboseLevel)
-      cout << "Start time: " << startTime.printf(timeFormat) << endl
-           << "Stop time:  " << stopTime.printf(timeFormat) << endl;
+      gpstk::RinexObsData rod, prev_rod;
+      gpstk::RinexObsHeader roh;
+      ros >> roh;
+      ros >> rod;
+      DayTime t0 = rod.time;
+      int i,j;
+      for (i=j=0; i<100 && j<10 && ros >> rod; i++)
+      {
+         double dt = rod.time - t0;
+         if (std::abs(dt - epochRate) > 0.1)
+         {
+            epochRate = dt;
+            cout << "dt:" << dt << endl;
+            j = 0;
+         }
+         else
+            j++;
+         t0 = rod.time;
+      }
+      
+      if (j>=10)
+      {
+         if (verboseLevel)
+            cout << "Data rate is " << epochRate << " after " << i << " epochs." << endl;
+      }
+      else
+      {
+         cout << "Could not determine data rate after " << i << " epochs. Sorry. This program is really\nwritten to just work with data that is being collected at a fixed data rate.\nI guess it could be re-written to work for changing data rates but I am too\nlazy to do that right now. I'm not, however, too lazy to write needlessly long\ndiagnostic messages." << endl;
+         return;
+      }
+   }
+   else if (inputType == FFIdentifier::tMDP)
+   {
+      cout<< " gotta figure out how to handle mdp" << endl;
+   }
 }
 
 
-std::string secAsHMS(double seconds)
+std::string secAsHMS(double seconds, bool frac=false)
 {
    std::ostringstream oss;
    oss << setfill('0');
@@ -281,7 +338,7 @@ std::string secAsHMS(double seconds)
 
    oss << setw(2) << s;
 
-   if (seconds>=0.1)
+   if (seconds>=0.1 && frac)
       oss << "." << static_cast<int>(seconds*10);
    else
       oss << "  ";
@@ -307,6 +364,7 @@ void DataAvailabilityAnalyzer::InView::update(
       // elevation, health, iodc, 
       ObsRngDev ord(0, prn, time, rxpos, eph, gm);
       vfloat el=ord.getElevation();
+
       if (el.is_valid() && el > 0)
       {
          if (!up)
@@ -327,25 +385,30 @@ void DataAvailabilityAnalyzer::InView::update(
             aboveMask = true;
             firstEpochAboveMask = time;
          }
-         elevation = ord.getElevation();
-         azimuth = ord.getAzimuth();
-         iodc = ord.getIODC();
-         health = ord.getHealth();
       }
       else
       {
          up = false;
          aboveMask = false;
       }
+      elevation = ord.getElevation();
+      azimuth = ord.getAzimuth();
+      iodc = ord.getIODC();
+      health = ord.getHealth();
    }
    catch (EphemerisStore::NoEphemerisFound& e)
    {
+      up = false;
+      aboveMask = false;
+      elevation = 0;
+      azimuth = 0;
+      iodc = 0;
+      health = 0;
    }
 } // end of InView::update()
 
 
 //------------------------------------------------------------------------------
-// The main logic of the program.
 //------------------------------------------------------------------------------
 DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::smash(
    const MissingList& ml) const
@@ -380,44 +443,82 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::smash(
 
 
 //------------------------------------------------------------------------------
-// The main logic of the program.
 //------------------------------------------------------------------------------
 void DataAvailabilityAnalyzer::process()
-{      
-   static GPSGeoid gm;
-   EphemerisStore& eph = *ephData.eph;
-   ECEF rxpos(obsData.roh.antennaPosition);
-   map<int, InView> inView;
+{
+   const string fn=inputOpt.getValue()[0];
+   gpstk::RinexObsStream ros(fn.c_str(), ios::in);
+   ros.exceptions(fstream::failbit);
+   gpstk::RinexObsHeader roh;
+   ros >> roh;
 
-   // Compute an estimate of the data rate.
-   epochRate=-1;
-   unsigned dtCount=0;
-   DayTime t0; // time of the previous epoch
-   DataReader::RODEpochMap::const_iterator i;
-   for (i=obsData.rem.begin(); i!=obsData.rem.end(); i++)
+   Triple ap;
+   if (msidOpt.getCount() && mscFileOpt.getCount())
+      ap = mscData.antennaPosition;
+   else
+      ap = roh.antennaPosition;
+
+   double x=RSS(ap[0], ap[1], ap[2]);
+   
+   if (x<1)
    {
-      const DayTime& t = i->first;
-      if (i != obsData.rem.begin())
-      {
-         if (epochRate<=0 || (std::abs(epochRate - (t-t0)) > 1e-4))
-         {
-            epochRate = t-t0;
-            dtCount = 0;
-         }
-         else
-         {
-            dtCount++;
-         }
-      }
-      if (dtCount>10)
+      cout << "Warning! The antenna appears to be within one meter of the" << endl
+           << "center of the geoid. Please go check it." << endl;
+      return;
+   }
+
+   if (verboseLevel>1)
+      cout << "Antenna position:" << ap << endl;
+   
+   ObsEpoch oe, prev_oe;
+
+   gpstk::RinexObsData rod;
+   DayTime firstEpochTime, lastEpochTime;
+   while (ros >> rod)
+   {
+      if (startTime > rod.time)
+         continue;
+      if (stopTime < rod.time)
          break;
-      t0 = t;
+      
+      epochCount++;
+
+      if (epochCount==1)
+      {
+         firstEpochTime = rod.time;
+         if (verboseLevel)
+            cout << "Start time: " << firstEpochTime.printf(timeFormat) << endl;
+      }
+      else
+      {
+         lastEpochTime = rod.time;
+         if (lastEpochTime - firstEpochTime > timeSpan)
+            break;
+         
+         oe = makeObsEpoch(rod);
+         processEpoch(ap, oe, prev_oe);
+      }
+      prev_oe = oe;
    }
 
    if (verboseLevel)
-      cout << "Data rate: " << epochRate << " sec/epoch" << endl;
-   
-   for (DayTime t = startTime; t < stopTime; t += epochRate)
+      cout << "Stop time: " << lastEpochTime.printf(timeFormat) << endl;
+}
+
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void DataAvailabilityAnalyzer::processEpoch(
+   const Triple& ap, 
+   const ObsEpoch& oe,
+   const ObsEpoch& prev_oe)
+{
+   EphemerisStore& eph = *ephData.eph;
+   ECEF rxpos(ap);
+   InView::dump ivdumper(cout, timeFormat);
+
+
+   for (DayTime t = prev_oe.time + epochRate; t <= oe.time; t += epochRate)
    {
       for (int prn=1; prn<=32; prn++)
          inView[prn].update(prn, t, rxpos, eph, gm, maskAngle);
@@ -426,15 +527,13 @@ void DataAvailabilityAnalyzer::process()
       {
          cout << t.printf(timeFormat) << "  SVs in view: ";
          for (int prn=1; prn<=32; prn++)
-            if (inView[prn].up) 
-               cout << prn << "(" << inView[prn].elevation << ") ";
+            if (inView[prn].up)
+               cout << prn << "(" << setprecision(3)
+                    << inView[prn].elevation << ") ";
          cout << endl;
       }
 
-      i = obsData.rem.find(t);
-
-      // This is when there are no obs for the entire epoch
-      if (i == obsData.rem.end())
+      if (t != oe.time)
       {
          InView iv;
          iv.prn = 0;
@@ -442,26 +541,30 @@ void DataAvailabilityAnalyzer::process()
          missingList.push_back(iv);
          continue;
       }
-      
-      const gpstk::RinexObsData& rod = i->second;
 
       for (int prn=1; prn<=32; prn++)
       {
-         gpstk::RinexObsData::RinexSatMap::const_iterator rpi;
-         rpi = rod.obs.find(gpstk::SatID(prn, SatID::systemGPS));
+         ObsEpoch::const_iterator oei;
+         SatID svid(prn, SatID::systemGPS);
+         
+         oei = oe.find(svid);
          InView& iv=inView[prn];
-         iv.inTrack = rod.obs.size();
+         iv.inTrack = oe.size();
 
-         if (rpi == rod.obs.end())
+         if (oei == oe.end())  // No data from this SV
          {
-            if (rod.obs.size()<12 && iv.elevation>maskAngle && 
+            if (oe.size()<12 && iv.elevation>maskAngle && 
                 (!iv.health || !badHealthMask))
             {
                missingList.push_back(iv);
             }
          }
-         else
+         else // There is data from this SV
          {
+            if (verboseLevel>3)
+               cout << oei->first << " " << oei->second << endl;
+            if (verboseLevel>3)
+               ivdumper(iv);
             if (!iv.up)
             {
                missingList.push_back(iv);
@@ -469,17 +572,17 @@ void DataAvailabilityAnalyzer::process()
             else
             {
                iv.epochCount++;
-               const gpstk::RinexObsData::RinexObsTypeMap& rotm = rpi->second;
-               gpstk::RinexObsData::RinexObsTypeMap::const_iterator q;
-               q = rotm.find(gpstk::RinexObsHeader::S1);     
-               if (q != rotm.end())
-                  iv.snr = q->second.data;
+               const SvObsEpoch& soe = oei->second;
+               SvObsEpoch::const_iterator q;
+               
+               q = soe.find(RinexObsID(RinexObsHeader::S1));
+               if (q != soe.end())
+                  iv.snr = q->second;
             }
          }
       }
    }
 }
-
 
 void DataAvailabilityAnalyzer::shutDown()
 {
@@ -493,7 +596,11 @@ bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
 {
    double timeUp     = iv.time - iv.firstEpoch;
    double timeUpMask = iv.time - iv.firstEpochAboveMask;
-   char dir = iv.rising ? '+' : '-';
+   char dir;
+   if (iv.elevation > 0)
+      dir = iv.rising ? '^' : 'v';
+   else
+      dir = ' ';
 
    string ccid="all";
    
@@ -505,8 +612,8 @@ bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
    {
       cout << setw(3) << iv.prn
            << " ccid:" << ccid
-           << fixed
-           << " el:" << setprecision(2) << setw(5) << iv.elevation
+           << fixed << right
+           << " el:" << setprecision(2) << setw(6) << iv.elevation
            << dir
            << " az:" << setprecision(0) << setw(3) << iv.azimuth
            << " hlth:" << hex << setw(2) << iv.health << dec;
@@ -514,7 +621,6 @@ bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
       if (iv.up)
          cout << " snr:" << setprecision(1) << setw(4) << iv.snr
               << " tama:" << right << setw(11) <<  secAsHMS(timeUpMask);
-
    }
    else
       cout << "all";
