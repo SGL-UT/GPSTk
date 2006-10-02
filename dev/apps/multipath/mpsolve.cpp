@@ -141,17 +141,17 @@ int main(int argc, char *argv[])
       if (!numeric)
       {
          cout << "Removing mean of each pass." << endl;
-         
-         for (set<long>::iterator iPass=allpasses.begin();
-              iPass!=allpasses.end() ; iPass++)
-         {
-            valarray<bool> passMask = (oa.pass==*iPass);
-            valarray<double> mpVals = oa.observation[passMask];
-            valarray<double> binVals(mpVals.size());
-            double mean = mpVals.sum() / mpVals.size();
-            mpVals -= mean;
-            oa.observation[passMask]=mpVals;
-         }
+      }
+      
+      for (set<long>::iterator iPass=allpasses.begin();
+          iPass!=allpasses.end() ; iPass++)
+      {
+        valarray<bool> passMask = (oa.pass==*iPass);
+        valarray<double> mpVals = oa.observation[passMask];
+        valarray<double> binVals(mpVals.size());
+        double mean = mpVals.sum() / mpVals.size();
+         mpVals -= mean;
+         oa.observation[passMask]=mpVals;
       }
 
       allpasses = unique(oa.pass);
@@ -282,8 +282,8 @@ void dumpRaw(std::ostream& ostr, const ObsArray& oa, bool numeric)
       }
       else
       {
-         ostr << oa.epoch[i].GPSfullweek() << " ";
-         ostr << oa.epoch[i].GPSsow() << " ";
+         ostr << setprecision(4) << oa.epoch[i].GPSfullweek() << " ";
+         ostr << setprecision(6) << oa.epoch[i].GPSsow() << " ";
          ostr << oa.satellite[i].id << " ";
          ostr << (int) oa.satellite[i].system << " ";
          ostr << oa.pass[i] << " ";
