@@ -61,7 +61,8 @@ else
       SystemTime.cpp
       Expression.cpp
       RinexSatID.cpp SP3SatID.cpp
-      ObsID.cpp Bancroft.cpp SolverLMS.cpp SolverWMS.cpp DOP.cpp
+      ObsID.cpp RinexObsID.cpp
+      Bancroft.cpp SolverLMS.cpp SolverWMS.cpp DOP.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp AlmanacStore.hpp BCEphemerisStore.hpp
@@ -108,8 +109,9 @@ else
       GPSZcount29.hpp JulianDate.hpp MJD.hpp UnixTime.hpp YDSTime.hpp 
       SystemTime.hpp
       gpstkplatform.h mergePCodeWords.h BivarStats.hpp
-      Expression.hpp ObsID.hpp Bancroft.hpp CheckPRData.hpp
-      SolverBase.hpp SolverLMS.hpp SolverWMS.hpp DOP.hpp
+      Expression.hpp ObsID.hpp RinexObsID.hpp
+      Bancroft.hpp CheckPRData.hpp SolverBase.hpp SolverLMS.hpp SolverWMS.hpp
+      DOP.hpp
       ;
 }
 

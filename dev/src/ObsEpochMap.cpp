@@ -37,7 +37,7 @@
 //=============================================================================
 
 /**
- * @file ObservationStore.cpp
+ * @file ObsEpochMap.cpp
  * A class encapsulating observation data (roughly standard RINEX obs and met files).
  */
 
@@ -50,10 +50,10 @@ namespace gpstk
 {
    // These are just to facilitate debugging. The format of the data output
    // is quite ad-hoc and may change.
-   std::ostream& operator<<(std::ostream& s, const gpstk::Observation& obs)
+   std::ostream& operator<<(std::ostream& s, const SvObsEpoch& obs)
       throw()
    {
-      Observation::const_iterator i;
+      SvObsEpoch::const_iterator i;
       for (i=obs.begin(); i != obs.end(); i++)
       {
          if (i != obs.begin())
@@ -63,10 +63,10 @@ namespace gpstk
       return s;
    }
 
-   std::ostream& operator<<(std::ostream& s, const gpstk::ObsEpoch& oe)
+   std::ostream& operator<<(std::ostream& s, const ObsEpoch& oe)
       throw()
    {
-      gpstk::ObsEpoch::const_iterator i;
+      ObsEpoch::const_iterator i;
       for (i=oe.begin(); i!=oe.end(); i++)
          s << i->first << ": " << i->second << endl;
 

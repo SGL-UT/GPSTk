@@ -1,5 +1,4 @@
 #pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -36,45 +35,30 @@
 //
 //=============================================================================
 
-#ifndef GPSTK_OBSEPOCHMAP_HPP
-#define GPSTK_OBSEPOCHMAP_HPP
-
 /**
- * @file ObsEpochMap.hpp
- * A class encapsulating observation data
+ * @file RinexObsID.cpp
+ * gpstk::RinexObsID - Identifies types of observations
  */
 
-
-#include <map>
-#include <iostream>
-
-#include "DayTime.hpp"
-#include "SatID.hpp"
-#include "ObsID.hpp"
-#include "ValidType.hpp"
+#include "RinexObsID.hpp"
 
 namespace gpstk
 {
-   // All the observations collected from a single SV at a single epoch
-   struct SvObsEpoch : public std::map<ObsID, double>
+   RinexObsID::RinexObsID(const RinexObsHeader::RinexObsType& rot)
+      : ObsID()
    {
-      gpstk::SatID svid;
-      vfloat azimuth, elevation;
-   };
+      // Note that the choice of tracking code for L1, L2, S1, S2 are arbitrary 
+      // since they are ambiguous in the rinex 2 specifications
+      if      (rot == RinexObsHeader::L1) {type=otPhase;   band=cbL1; code=tcP;}
+      else if (rot == RinexObsHeader::P1) {type=otRange;   band=cbL1; code=tcP;}
+      else if (rot == RinexObsHeader::C1) {type=otRange;   band=cbL1; code=tcCA;}
+      else if (rot == RinexObsHeader::S1) {type=otSNR;     band=cbL1; code=tcP;}
+      else if (rot == RinexObsHeader::D1) {type=otDoppler; band=cbL1; code=tcP;}
 
-   /// All the observations collected from a single receiver at a single epoch
-   struct ObsEpoch :  std::map<SatID, SvObsEpoch>
-   {
-      gpstk::DayTime time;
-      vdouble rxClock;
-   };
-
-   /// A time history of the observations collected from a single receiver.
-   typedef std::map<DayTime, ObsEpoch> ObsEpochMap;
-
-   std::ostream& operator<<(std::ostream& s, const SvObsEpoch& obs) throw();
-   std::ostream& operator<<(std::ostream& s, const ObsEpoch& oe) throw();
-
-} // namespace 
-
-#endif 
+      else if (rot == RinexObsHeader::L2) {type=otPhase;   band=cbL2; code=tcP;}
+      else if (rot == RinexObsHeader::P2) {type=otRange;   band=cbL1; code=tcP;}
+      else if (rot == RinexObsHeader::C2) {type=otRange;   band=cbL2; code=tcC2LM;}
+      else if (rot == RinexObsHeader::S2) {type=otSNR;     band=cbL2; code=tcP;}
+      else if (rot == RinexObsHeader::D2) {type=otDoppler; band=cbL1; code=tcP;}
+   }
+}

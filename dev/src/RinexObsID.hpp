@@ -1,5 +1,4 @@
 #pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -36,45 +35,36 @@
 //
 //=============================================================================
 
-#ifndef GPSTK_OBSEPOCHMAP_HPP
-#define GPSTK_OBSEPOCHMAP_HPP
+#ifndef GPSTK_RINEXOBSID_HPP
+#define GPSTK_RINEXOBSID_HPP
 
 /**
- * @file ObsEpochMap.hpp
- * A class encapsulating observation data
+ * @file RinexObsID.hpp
+ * gpstk::RinexObsID - A specialization of ObsID that has Rinex unique
+   stuff. The intent is to migrate the RinexObs classes to use this in lieu
+   of the RinexObsType subclass of RinexObsHeader. That probably won't happen
+   until the code to support rinex 3 is written.
  */
-
-
-#include <map>
-#include <iostream>
-
-#include "DayTime.hpp"
-#include "SatID.hpp"
 #include "ObsID.hpp"
-#include "ValidType.hpp"
+#include "RinexObsHeader.hpp"
 
 namespace gpstk
 {
-   // All the observations collected from a single SV at a single epoch
-   struct SvObsEpoch : public std::map<ObsID, double>
+   class RinexObsID : public ObsID
    {
-      gpstk::SatID svid;
-      vfloat azimuth, elevation;
+   public:
+      /// empty constructor, creates an invalid object
+      RinexObsID()
+         : ObsID() {};
+
+      /// Explicit constructior
+      RinexObsID(ObservationType ot, CarrierBand cb, TrackingCode tc)
+         : ObsID(ot, cb, tc) {};
+      
+      /// a conversion constructor
+      RinexObsID(const RinexObsHeader::RinexObsType& rot);
+
    };
 
-   /// All the observations collected from a single receiver at a single epoch
-   struct ObsEpoch :  std::map<SatID, SvObsEpoch>
-   {
-      gpstk::DayTime time;
-      vdouble rxClock;
-   };
-
-   /// A time history of the observations collected from a single receiver.
-   typedef std::map<DayTime, ObsEpoch> ObsEpochMap;
-
-   std::ostream& operator<<(std::ostream& s, const SvObsEpoch& obs) throw();
-   std::ostream& operator<<(std::ostream& s, const ObsEpoch& oe) throw();
-
-} // namespace 
-
-#endif 
+} // namespace gpstk
+#endif

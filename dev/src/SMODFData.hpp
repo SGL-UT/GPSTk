@@ -90,7 +90,6 @@ namespace gpstk
       /// SMODFData is data, so this function always returns true.
       virtual bool isData() const {return true;}
 
-      /// This function does \b nothing.
       virtual void dump(std::ostream& s) const;
       
    protected:

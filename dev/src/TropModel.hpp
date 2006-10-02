@@ -1,16 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file TropModel.hpp
- * Base class for tropospheric models, plus implementations
- * of several published models
- */
-
-#ifndef TROPOSPHERIC_MODELS_GPSTK
-#define TROPOSPHERIC_MODELS_GPSTK
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -47,8 +36,17 @@
 //
 //=============================================================================
 
+#ifndef TROPOSPHERIC_MODELS_GPSTK
+#define TROPOSPHERIC_MODELS_GPSTK
+
+/**
+ * @file TropModel.hpp
+ * Base class for tropospheric models, plus implementations
+ * of several published models
+ */
+
 #include "Exception.hpp"
-//#include "ObservationStore.hpp"
+#include "ObsEpochMap.hpp"
 #include "WxObsMap.hpp"
 #include "Xvt.hpp"
 #include "Position.hpp"

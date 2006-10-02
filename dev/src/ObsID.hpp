@@ -59,6 +59,20 @@ namespace gpstk
    class ObsID
    {
    public:
+      /// The type of observation.
+      enum ObservationType
+      {
+         otUnknown,
+         otRange,     /// pseudorange, in meters
+         otPhase,     /// accumulated phase, in meters
+         otDoppler,   /// Doppler, in Hz
+         otSNR,       /// Signal strength, in dB-Hz
+         otSSI,       /// Signal strength indicator/inded (kinda a rinex thing)
+         otLLI,       /// loss of lock indicator/ lock count
+         otLast,      /// used to extend this...
+         otPlaceholder = otLast+1000
+      };
+
       /// The frequency band this obs was collected from.
       enum CarrierBand
       {
@@ -74,19 +88,6 @@ namespace gpstk
          cbE6,   /// Galileo E6
          cbLast, /// Used to extend this...
          ccPlaceholder = cbLast+1000
-      };
-
-      /// The type of observation.
-      enum ObservationType
-      {
-         otUnknown,
-         otRange,   /// pseudorange
-         otPhase,   /// accumulated phase
-         otDoppler, /// Doppler
-         otSNR,     /// Signal strength 
-         otSSI,     /// Signal strength indicator/inded (kinda a rinex thing)
-         otLast,    /// used to extend this...
-         otPlaceholder = otLast+1000
       };
 
       /// The code used to collect the observation. This generally follows
