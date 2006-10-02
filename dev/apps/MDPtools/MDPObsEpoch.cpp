@@ -172,6 +172,7 @@ namespace gpstk
    }  // MDPObservation::decode()
 
 
+   //---------------------------------------------------------------------------
    bool MDPObsEpoch::haveObservation(
       const CarrierCode cc,
       const RangeCode rc) const
@@ -179,6 +180,8 @@ namespace gpstk
       return (obs.find(ObsKey(cc,rc)) != obs.end());
    }
 
+
+   //---------------------------------------------------------------------------
    MDPObsEpoch::Observation MDPObsEpoch::getObservation(
       const CarrierCode cc, 
       const RangeCode rc) const
@@ -187,6 +190,35 @@ namespace gpstk
          return obs.find(ObsKey(cc,rc))->second;
       else
          return Observation();
+   }
+
+
+   //---------------------------------------------------------------------------
+   FFStream& operator>>(FFStream& s, MDPEpoch& oe)
+   {
+      MDPStream& mdps = dynamic_cast<MDPStream&>(s);
+      MDPObsEpoch me;
+      oe.clear();
+      while ( mdps >> me)
+      {
+         if (oe.size()>0 && me.time != oe[0].time )
+            oe.clear();
+         oe[me.prn] = me;
+         if (me.numSVs == oe.size())
+            break;
+      }
+      return s;
+   }
+
+
+   //---------------------------------------------------------------------------
+   FFStream& operator<<(FFStream& s, const MDPEpoch& oe)
+   {
+      MDPStream& mdps = dynamic_cast<MDPStream&>(s);
+      MDPEpoch::const_iterator i;
+      for (i=oe.begin(); i != oe.end(); i++)
+         mdps << i->second;
+      return s;
    }
 
 
@@ -216,7 +248,6 @@ namespace gpstk
       }
       
       out << oss.str();
-
    } // MDPObsEpoch::dump()
 
 
@@ -236,6 +267,6 @@ namespace gpstk
           << " PH:"  << asString(phase, 3)
           << " Dop:" << asString(doppler, 3);      
       out << oss.str();
-   } // MDPObservation::dump()
+   } // MDPObsEpoch::Observation::dump()
 
 } // namespace sglmsn
