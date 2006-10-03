@@ -99,8 +99,11 @@ private:
 
    bool badHealthMask, smashAdjacent;
 
-   gpstk::DataReader ephData, mscData;
+   gpstk::DataReader ephData;
    gpstk::GPSGeoid gm;
+
+   gpstk::Triple antennaPos;
+   long msid;
 
    float maskAngle;
 

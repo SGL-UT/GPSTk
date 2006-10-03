@@ -71,6 +71,11 @@
 #include "DataReader.hpp"
 #include "FormatConversionFunctions.hpp"
 
+#include "MSCData.hpp"
+#include "MSCStream.hpp"
+
+#include "MDPStream.hpp"
+
 using namespace std;
 using namespace gpstk;
 
@@ -237,6 +242,60 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
    return true;
 }
 
+class ObsReader
+{
+public:
+   const string fn;
+   FFIdentifier inputType;
+   RinexObsStream ros;
+   MDPStream mdps;
+   RinexObsHeader roh;
+   int verboseLevel;
+
+   ObsReader(const string& str): fn(str), inputType(str), verboseLevel(0)
+   {
+      if (inputType == FFIdentifier::tRinexObs)
+      {
+         ros.open(fn.c_str(), ios::in);
+         cout << "Reading " << fn << " as RINEX obs data." << endl;
+         ros.exceptions(fstream::failbit);
+         ros >> roh;
+      }
+      else if (inputType == FFIdentifier::tMDP)
+      {
+         MDPObsEpoch::debugLevel = verboseLevel;
+         mdps.open(fn.c_str(), ios::in);
+         cout << "Reading " << fn << " as MDP data." << endl;
+      }
+   };
+
+   ObsEpoch getObsEpoch()
+   {
+      ObsEpoch oe;
+      if (inputType == FFIdentifier::tRinexObs)
+      {
+         RinexObsData rod;
+         ros >> rod;
+         oe = makeObsEpoch(rod);
+      }
+      else if (inputType == FFIdentifier::tMDP)
+      {
+         MDPEpoch moe;
+         mdps >> moe;
+         oe = makeObsEpoch(moe);
+      }
+      return oe;
+   }
+
+   bool operator()()
+   {
+      if (inputType == FFIdentifier::tRinexObs)
+         return ros;
+      else if (inputType == FFIdentifier::tMDP)
+         return mdps;
+      return false;
+   }
+};
 
 
 //------------------------------------------------------------------------------
@@ -254,59 +313,71 @@ void DataAvailabilityAnalyzer::spinUp()
       return;
    }
 
-   mscData.verbosity = verboseLevel;
+   msid = 0;
+   bool haveAntennaPos=false;
    if (msidOpt.getCount())
-      mscData.msid = StringUtils::asUnsigned(msidOpt.getValue()[0]);
+      msid = StringUtils::asUnsigned(msidOpt.getValue()[0]);
 
-   if (msidOpt.getCount() && mscFileOpt.getCount())
-      mscData.read_msc_file(mscFileOpt.getValue()[0]);
-
+   if (msid && mscFileOpt.getCount())
+   {
+      string fn = mscFileOpt.getValue()[0];
+      if (verboseLevel)
+         cout << "Reading " << fn << " as MSC data." << endl;
+      MSCStream mscs(fn.c_str(), ios::in);
+      MSCData mscd;
+      while (mscs >> mscd)
+      {
+         if (mscd.station == msid)
+         {
+            antennaPos = mscd.coordinates;
+            if (verboseLevel>1)
+               cout << "Antenna position read from MSC file:"
+                    << antennaPos << " (msid: "
+                    << msid << ")" << endl;
+            haveAntennaPos=true;
+            break;
+         }
+      }
+      if (!haveAntennaPos)
+         cout << "Did not find station " << msid << " in " << fn << "." << endl;
+   }
 
    const string fn=inputOpt.getValue()[0];
-   FFIdentifier inputType(fn);
+   ObsReader obsReader(fn);
 
-   if (inputType == FFIdentifier::tRinexObs)
+   if (obsReader.inputType == FFIdentifier::tRinexObs && !haveAntennaPos)
    {
-      // Read first few epochs to see what the data rate appears to be
-      gpstk::RinexObsStream ros(fn.c_str(), ios::in);
-      ros.exceptions(fstream::failbit);
-      cout << "Trying " << fn << " as RINEX obs."<< endl;
+      antennaPos = obsReader.roh.antennaPosition;
+      if (verboseLevel>1)
+         cout << "Antenna position read from RINEX obs file:"
+              << antennaPos << endl;
+   }
 
-      gpstk::RinexObsData rod, prev_rod;
-      gpstk::RinexObsHeader roh;
-      ros >> roh;
-      ros >> rod;
-      DayTime t0 = rod.time;
-      int i,j;
-      for (i=j=0; i<100 && j<10 && ros >> rod; i++)
+   DayTime t0;
+   ObsEpoch oe;
+   int i,j;
+   for (i=j=0; i<100 && j<10 && obsReader(); i++)
+   {
+      oe = obsReader.getObsEpoch();
+      double dt = oe.time - t0;
+      if (std::abs(dt - epochRate) > 0.1)
       {
-         double dt = rod.time - t0;
-         if (std::abs(dt - epochRate) > 0.1)
-         {
-            epochRate = dt;
-            cout << "dt:" << dt << endl;
-            j = 0;
-         }
-         else
-            j++;
-         t0 = rod.time;
-      }
-      
-      if (j>=10)
-      {
-         if (verboseLevel)
-            cout << "Data rate is " << epochRate << " after " << i << " epochs." << endl;
+         epochRate = dt;
+         j = 0;
       }
       else
-      {
-         cout << "Could not determine data rate after " << i << " epochs. Sorry. This program is really\nwritten to just work with data that is being collected at a fixed data rate.\nI guess it could be re-written to work for changing data rates but I am too\nlazy to do that right now. I'm not, however, too lazy to write needlessly long\ndiagnostic messages." << endl;
-         return;
-      }
+         j++;
+      t0 = oe.time;
    }
-   else if (inputType == FFIdentifier::tMDP)
+      
+   if (j<10)
    {
-      cout<< " gotta figure out how to handle mdp" << endl;
+      cout << "Could not determine data rate after " << i << " epochs. Sorry. This program is really\nwritten to just work with data that is being collected at a fixed data rate.\nI guess it could be re-written to work for changing data rates but I am too\nlazy to do that right now. I'm not, however, too lazy to write needlessly long\ndiagnostic messages." << endl;
+      exit(-1);
    }
+
+   if (verboseLevel)
+      cout << "Data rate is " << epochRate << " after " << i << " epochs." << endl;
 }
 
 
@@ -447,18 +518,9 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::smash(
 void DataAvailabilityAnalyzer::process()
 {
    const string fn=inputOpt.getValue()[0];
-   gpstk::RinexObsStream ros(fn.c_str(), ios::in);
-   ros.exceptions(fstream::failbit);
-   gpstk::RinexObsHeader roh;
-   ros >> roh;
+   ObsReader obsReader(fn);
 
-   Triple ap;
-   if (msidOpt.getCount() && mscFileOpt.getCount())
-      ap = mscData.antennaPosition;
-   else
-      ap = roh.antennaPosition;
-
-   double x=RSS(ap[0], ap[1], ap[2]);
+   double x=RSS(antennaPos[0], antennaPos[1], antennaPos[2]);
    
    if (x<1)
    {
@@ -467,36 +529,32 @@ void DataAvailabilityAnalyzer::process()
       return;
    }
 
-   if (verboseLevel>1)
-      cout << "Antenna position:" << ap << endl;
-   
    ObsEpoch oe, prev_oe;
 
-   gpstk::RinexObsData rod;
    DayTime firstEpochTime, lastEpochTime;
-   while (ros >> rod)
+   while (obsReader())
    {
-      if (startTime > rod.time)
+      oe = obsReader.getObsEpoch();
+      if (startTime > oe.time)
          continue;
-      if (stopTime < rod.time)
+      if (stopTime < oe.time)
          break;
       
       epochCount++;
 
       if (epochCount==1)
       {
-         firstEpochTime = rod.time;
+         firstEpochTime = oe.time;
          if (verboseLevel)
             cout << "Start time: " << firstEpochTime.printf(timeFormat) << endl;
       }
       else
       {
-         lastEpochTime = rod.time;
+         lastEpochTime = oe.time;
          if (lastEpochTime - firstEpochTime > timeSpan)
             break;
          
-         oe = makeObsEpoch(rod);
-         processEpoch(ap, oe, prev_oe);
+         processEpoch(antennaPos, oe, prev_oe);
       }
       prev_oe = oe;
    }
