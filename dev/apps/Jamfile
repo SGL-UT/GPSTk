@@ -10,6 +10,7 @@ SubInclude TOP apps cycleslips ;
 SubInclude TOP apps differential ;
 SubInclude TOP apps difftools ;
 SubInclude TOP apps filetools ;
+SubInclude TOP apps geomatics ;
 SubInclude TOP apps ionosphere ;
 SubInclude TOP apps mergetools ;
 #Need to make this not require everything else to have curses

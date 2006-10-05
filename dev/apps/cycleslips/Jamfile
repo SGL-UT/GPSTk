@@ -1,9 +1,0 @@
-#
-# $Id$
-#
-
-SubDir TOP apps cycleslips ;
-
-GPSLinkLibraries DiscFix : gpstk ;
-
-GPSMain DiscFix : DiscFix.cpp DiscCorr.cpp ;

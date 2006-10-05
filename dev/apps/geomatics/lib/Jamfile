@@ -1,0 +1,39 @@
+#
+# $Id: Jamfile 71 2006-08-01 18:46:39Z ehagen $
+#
+
+SubDir TOP apps geomatics lib ;
+
+SEARCH_SOURCE += $(TOP)/src ;
+
+if $(PREPROCESSING)
+{
+   GPSSetupLibrary geomatic ;
+}
+else
+{
+   GPSBuildLibrary geomatic : 
+      SRI.cpp Namelist.cpp SRIFilter.cpp
+      RobustStats.cpp
+      EarthOrientation.cpp GeodeticFrames.cpp PreciseRange.cpp
+      PhaseWindup.cpp
+      SatPass.cpp
+      DiscCorr.cpp GDCconfiguration.cpp
+      GSatID.cpp DDid.cpp
+      RinexUtilities.cpp
+      random.cpp format.cpp
+      ;
+
+   InstallFile $(INCDIR) : 
+      SRI.hpp Namelist.hpp SRIFilter.hpp
+      RobustStats.hpp
+      EarthOrientation.hpp GeodeticFrames.hpp PreciseRange.hpp
+      PhaseWindup.hpp
+      SatPass.hpp
+      DiscCorr.hpp GDCconfiguration.hpp
+      GSatID.hpp DDid.hpp
+      RinexUtilities.hpp
+      random.hpp format.hpp index.hpp
+      ;
+}
+

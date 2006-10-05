@@ -1,0 +1,12 @@
+#
+# $Id: Jamfile 71 2006-08-01 18:46:39Z ehagen $
+#
+
+SubDir TOP apps geomatics ;
+
+SubInclude TOP apps geomatics lib ;
+
+SubInclude TOP apps geomatics cycleslips ;
+SubInclude TOP apps geomatics kalman ;
+#SubInclude TOP apps geomatics relposition ;
+SubInclude TOP apps geomatics robust ;

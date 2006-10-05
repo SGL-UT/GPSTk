@@ -1,0 +1,16 @@
+#
+# $Id: Jamfile 71 2006-08-01 18:46:39Z ehagen $
+#
+
+SubDir TOP apps geomatics cycleslips ;
+
+SEARCH_SOURCE += $(TOP)/src ;
+SEARCH_SOURCE += $(TOP)/apps/geomatics/lib ;
+
+# link apps to libraries
+# must have the prefix here ... why, and why not with others?
+LinkLibraries DiscFix : $(LIBPREFIX)geomatic ;
+# gpstk must be last
+GPSLinkLibraries DiscFix : gpstk ;
+
+GPSMain DiscFix : DiscFix.cpp ;
