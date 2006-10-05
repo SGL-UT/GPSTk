@@ -1,5 +1,5 @@
      2.10           Observation         S (Geosync)         RINEX VERSION / TYPE
-row                 Dataflow Processing 09/21/2006 12:58:25 PGM / RUN BY / DATE
+row                 Dataflow Processing 10/05/2006 12:29:23 PGM / RUN BY / DATE
 85408                                                       MARKER NAME
 Monitor Station     NGA                                     OBSERVER / AGENCY
 1                   ZY12                                    REC # / TYPE / VERS
@@ -39,7 +39,7 @@ TEST                                                        COMMENT
            6                                                PRN / # OF OBS
                                                             END OF HEADER
  06  4 12  0  0  0.0000000  0 13G01G02G03G04G05G06G07G08G09G10G11G12 0.000010000
-                                GPS 15
+                                G15
  -20513506.842 8 -15969234.484 8  21665483.802    21665483.747    21665487.640  
        515.647         401.788          47.700          46.660    21665483.802  
   -3691532.645 7  -2863805.580 7  24634539.994    24634539.174    24634543.837  

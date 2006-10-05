@@ -3,21 +3,7 @@
 echo "This script will help you set up the variables to compile and run the GPSTk"
 echo "test suite."
 
-echo "Please enter the path to the current directory."
-echo "e.g. /home/user/GPSTk/tests"
-
-read PATH_TO_CURRENT
-echo ""
-
-export PATH_TO_CURRENT
-
-echo "Please enter the directory which holds the GPSTk source.\n"
-echo "e.g. /home/user/GPSTk/src"
-
-read Src
-echo ""
-
-export GPSTK_SRC=$Src
+export PATH_TO_CURRENT=`pwd`
 
 echo "Please enter the directory which holds the CppUnit Libraries"
 echo "e.g. /home/user/lib"
@@ -33,22 +19,8 @@ echo "e.g. /home/user/include"
 read CppInc
 echo ""
 
-export CPPUNIT_INCLUDE=$CppInc
+export CPPUNIT_INC=$CppInc
 
-echo "Please enter the directory which holds the GPSTk Libraries"
-echo "e.g. /home/user/lib"
-
-read GPSTkLib
-echo ""
-
-export GPSTK_LIB=$GPSTkLib
-
-echo "Please enter the directory which holds the GPSTk Includes"
-echo "e.g. /home/user/include"
-
-read GPSTkInc
-echo ""
-export GPSTK_INC=$GPSTkInc
 
 
 

@@ -1,11 +1,10 @@
 #PATH_TO_CURRENT = /home/user/Cpptests/GoodTests  ; #Current directory; Main testing directory
-#GPSTK_SRC = /home/user/gpstk/src ; #Directory which holds the GPSTK Source
 #CPPUNIT_LIB = /home/user/lib ; #Directory which holds the CppUnit Libraries
-#GPSTK_LIB = /home/user/lib ; #Directory which holds the GPSTK libraries
+#CPPUNIT_INC = /home/user/include ; #Directory which holds the CppUnit 
 
 STD_LINK_LIBS = -ldl -lstdc++ ; 
 LINKFLAGS = -fprofile-arcs -ftest-coverage ; #Gcov required flags
-SEARCH = $(CPPUNIT_LIB) $(GPSTK_SRC) ;
+SEARCH = $(CPPUNIT_LIB) $(PATH_TO_CURRENT)/../src ;
 
 rule Clean
 {
@@ -15,7 +14,7 @@ rule Clean
 rule TestMain
 {
 	Main $(PATH_TO_CURRENT)/$(<) : $(PATH_TO_CURRENT)/$(>) ;
-	ObjectHdrs $(PATH_TO_CURRENT)/$(<) $(PATH_TO_CURRENT)/$(>) : $(CPPUNIT_INC) $(GPSTK_SRC) ;
+	ObjectHdrs $(PATH_TO_CURRENT)/$(<) $(PATH_TO_CURRENT)/$(>) : $(CPPUNIT_INC) $(PATH_TO_CURRENT)/../src ;
 	ObjectC++Flags $(PATH_TO_CURRENT)/$(>) : -fprofile-arcs -ftest-coverage ;
 	LINKLIBS on $(PATH_TO_CURRENT)/$(<) = $(STD_LINK_LIBS) ;
 	LinkLibraries $(PATH_TO_CURRENT)/$(<) : libcppunit libgpstk ;

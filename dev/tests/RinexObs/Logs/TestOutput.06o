@@ -1,5 +1,5 @@
      2.10           Observation         S (Geosync)         RINEX VERSION / TYPE
-row                 Dataflow Processing 09/21/2006 12:58:25 PGM / RUN BY / DATE
+row                 Dataflow Processing 10/05/2006 12:29:23 PGM / RUN BY / DATE
 85408                                                       MARKER NAME
 Monitor Station     NGA                                     OBSERVER / AGENCY
 1                   ZY12                                    REC # / TYPE / VERS
@@ -39,7 +39,7 @@ THIS IS AN EXAMPLE RINEX OBS FILE                           COMMENT
            6                                                PRN / # OF OBS
                                                             END OF HEADER
      2.10           Observation         S (Geosync)         RINEX VERSION / TYPE
-row                 Dataflow Processing 09/21/2006 12:58:25 PGM / RUN BY / DATE
+row                 Dataflow Processing 10/05/2006 12:29:23 PGM / RUN BY / DATE
 85408                                                       MARKER NAME
 Monitor Station     NGA                                     OBSERVER / AGENCY
 1                   ZY12                                    REC # / TYPE / VERS
@@ -79,7 +79,7 @@ THIS IS AN EXAMPLE RINEX OBS FILE                           COMMENT
            6                                                PRN / # OF OBS
                                                             END OF HEADER
      2.10           Observation         M (Mixed)           RINEX VERSION / TYPE
-row                 Dataflow Processing 09/21/2006 12:58:25 PGM / RUN BY / DATE
+row                 Dataflow Processing 10/05/2006 12:29:23 PGM / RUN BY / DATE
 85408                                                       MARKER NAME
 Monitor Station     NGA                                     OBSERVER / AGENCY
 1                   ZY12                                    REC # / TYPE / VERS

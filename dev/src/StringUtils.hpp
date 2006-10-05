@@ -69,6 +69,8 @@
 #include <regex.h>
 #include <cctype>
 
+#include <limits>
+
 #include "Exception.hpp"
 
 namespace gpstk
@@ -574,7 +576,7 @@ namespace gpstk
                                 const std::string& inputString,
                                 const std::string& outputString,
                                 std::string::size_type startPos = 0,
-                                unsigned numChanges = (unsigned)-1);
+                                unsigned numChanges = std::numeric_limits<unsigned>::max());
 
          /**
           * Changes occurrences of a specified pattern to a specified
@@ -599,7 +601,7 @@ namespace gpstk
                                  const std::string& inputString,
                                  const std::string& outputString,
                                  std::string::size_type startPos = 0,
-                                 unsigned numChanges = (unsigned)-1);
+                                 unsigned numChanges = std::numeric_limits<unsigned>::max());
 
          /**
           * Right-justifies the receiver in a string of the specified
@@ -1516,11 +1518,11 @@ namespace gpstk
       inline std::string& change(std::string& aString, const std::string& inputString,
                             const std::string& outputString,
                             std::string::size_type startPos, unsigned numChanges)
-      {
-         int count = 0;
+      { 
+	 unsigned count = 0;
          std::string::size_type opos = startPos;
 
-         while (count < (int)numChanges)
+         while (count < numChanges)
          {
             std::string::size_type pos = aString.find(inputString, opos);
             if (pos != std::string::npos)
