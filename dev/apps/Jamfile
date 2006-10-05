@@ -1,12 +1,11 @@
 #
-# $Id: Jamfile $
+# $Id$
 #
 
 SubDir TOP apps ;
 
 SubInclude TOP apps checktools ;
 SubInclude TOP apps converters ;
-SubInclude TOP apps cycleslips ;
 SubInclude TOP apps differential ;
 SubInclude TOP apps difftools ;
 SubInclude TOP apps filetools ;
