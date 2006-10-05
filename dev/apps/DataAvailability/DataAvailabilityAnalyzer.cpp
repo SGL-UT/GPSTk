@@ -120,10 +120,10 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
      
      timeSpanOpt('l', "time-span", "How much data to process, in seconds"),
 
-     maskAngleOpt('a', "mask-angle",
+     maskAngleOpt('\0', "mask-angle",
                   "Ignore anomalies on SVs below this elevation. The default is 10 degrees."),
      
-     timeMaskOpt('d', "time-mask",
+     timeMaskOpt('\0', "time-mask",
                  "Ignore anomalies on SVs that haven't been above the mask angle for this number of seconds. The default is 0 seconds."),
 
      badHealthMaskOpt('b', "bad-health",
@@ -237,6 +237,7 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
          cout << "Ignore anomalies associated with SVs marked unhealthy." << endl;
       else
          cout << "Including anomalies associated with SVs marked unhealthy." << endl;
+      MDPHeader::debugLevel = debugLevel;
    }
 
    return true;
@@ -251,8 +252,10 @@ public:
    MDPStream mdps;
    RinexObsHeader roh;
    int verboseLevel;
+   unsigned long epochCount;
 
-   ObsReader(const string& str): fn(str), inputType(str), verboseLevel(0)
+   ObsReader(const string& str)
+      : fn(str), inputType(str), verboseLevel(0), epochCount(0)
    {
       if (inputType == FFIdentifier::tRinexObs)
       {
@@ -263,7 +266,6 @@ public:
       }
       else if (inputType == FFIdentifier::tMDP)
       {
-         MDPObsEpoch::debugLevel = verboseLevel;
          mdps.open(fn.c_str(), ios::in);
          cout << "Reading " << fn << " as MDP data." << endl;
       }
@@ -284,6 +286,7 @@ public:
          mdps >> moe;
          oe = makeObsEpoch(moe);
       }
+      epochCount++;
       return oe;
    }
 
@@ -540,9 +543,7 @@ void DataAvailabilityAnalyzer::process()
       if (stopTime < oe.time)
          break;
       
-      epochCount++;
-
-      if (epochCount==1)
+      if (obsReader.epochCount==1)
       {
          firstEpochTime = oe.time;
          if (verboseLevel)
