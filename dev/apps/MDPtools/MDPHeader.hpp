@@ -58,7 +58,6 @@
 
 #include <RinexObsData.hpp>
 
-
 #if !defined( __SUNPRO_CC ) && !defined( _MSC_VER )
 #include <stdint.h>
 #endif
@@ -124,8 +123,12 @@ namespace gpstk
                FFStreamError);
 
       virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, gpstk::StringUtils::StringException, 
+         throw(std::exception, StringUtils::StringException, 
                FFStreamError, EndOfFile);
+   private:
+      void readHeader(FFStream& s)
+         throw(FFStreamError, EndOfFile);
+
    }; // class MDPHeader
 
 } // namespace gpstk

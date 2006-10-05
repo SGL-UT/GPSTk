@@ -118,11 +118,11 @@ namespace gpstk
          if (debugLevel)
          {
             if (prn > gpstk::MAX_PRN)
-               cout << "PRN of range: " << prn << endl;
+               cout << "PRN out of range: " << prn << endl;
             if (elevation > 90)
-               cout << "Elevation of range: " << elevation << endl;
+               cout << "Elevation out of range: " << elevation << endl;
             if (azimuth > 360)
-               cout << "Azimuth of range: " << azimuth << endl;
+               cout << "Azimuth out of range: " << azimuth << endl;
          }
          return;
       }
@@ -198,15 +198,28 @@ namespace gpstk
    {
       MDPStream& mdps = dynamic_cast<MDPStream&>(s);
       MDPObsEpoch me;
-      oe.clear();
-      while ( mdps >> me)
+      DayTime t;
+      int i=0;
+      for (int i=0; i<10000 && mdps >> me; i++)
       {
-         if (oe.size()>0 && me.time != oe[0].time )
+         i++;
+         if (me.time != t)
+         {
+            if (oe.size() > 0 && MDPHeader::debugLevel>2)
+               cout << "Tossing partial epoch at " << me.time
+                    << ".  Expected " << me.numSVs
+                    << " SVs but received only " << oe.size()
+                    << endl;
             oe.clear();
+         }
          oe[me.prn] = me;
+         t = me.time;
+
          if (me.numSVs == oe.size())
             break;
       }
+      if (i>1000)
+         cout << "didn't find an obs epoch after 10000 reads." << endl;
       return s;
    }
 

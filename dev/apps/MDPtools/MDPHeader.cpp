@@ -1,9 +1,6 @@
 #pragma ident "$Id$"
 
 
-//lgpl-license START
-//lgpl-license END
-
 #include <StringUtils.hpp>
 #include <BinUtils.hpp>
 
@@ -194,123 +191,139 @@ namespace gpstk
    } // MDPHeader::reallyPutRecord()
 
 
+   void MDPHeader::readHeader(FFStream& ffs)
+      throw(FFStreamError, EndOfFile)
+   {
+      MDPStream& stream=dynamic_cast<MDPStream&>(ffs);
+
+      // first reset the data status
+      setstate(fmtbit | lenbit);
+         
+      // If a header has been read in but the corresponding body hasn't been
+      // read, read and toss the body
+      if (stream.streamState == MDPStream::gotHeader)
+      {
+         unsigned bodyLen = length-myLength;
+         char *trash = new char[bodyLen];
+         if (debugLevel>2)
+            cout << "Reading to toss " << bodyLen << endl;
+         stream.getData(trash, bodyLen);
+         string body(trash, stream.gcount());
+         delete trash;
+
+         if (stream.fail())
+            return;
+
+         stream.streamState = MDPStream::gotBody;
+         if (hexDump || debugLevel>3)
+         {
+            cout << "Tossing Record Number:" << stream.recordNumber << endl;
+            StringUtils::hexDumpData(cout, stream.rawHeader+body);
+         }
+      }
+
+      char buff[myLength];
+      if (stream.streamState == MDPStream::outOfSync ||
+          stream.streamState == MDPStream::gotBody)
+      {
+         stream.streamState = MDPStream::outOfSync;
+
+         if (debugLevel>2)
+            cout << "Reading frame word" << endl;;
+         uint16_t fw=0;
+         for (int i=0; i<128; i++)
+         {
+            fw = stream.getData<uint16_t>();
+            fw = netToHost(fw);
+            memcpy(buff, &fw, sizeof(fw));
+            if (fw==frameWord)
+               break;
+         }
+
+         if (fw!=frameWord)
+         {
+            FFStreamError err("Failed to find frame word.");
+            GPSTK_THROW(err);
+         }
+         else
+         {
+            if (debugLevel>2)
+               cout << "Reading header" << endl;
+            // then read in the rest of a header
+            stream.getData(buff+2, myLength-2);
+            if (stream.fail())
+               return;
+
+            stream.rawHeader = string(buff, myLength);
+            MDPHeader::decode(stream.rawHeader);
+            stream.streamState = MDPStream::gotHeader;
+            stream.header = *this;
+         }
+      }
+   }
+
+
    //---------------------------------------------------------------------------
    void MDPHeader::reallyGetRecord(FFStream& ffs)
       throw(std::exception, gpstk::StringUtils::StringException, 
             gpstk::FFStreamError, gpstk::EndOfFile)
    {
-      // Note that this will generate a bad_cast exception if it don't work.
+      // Note that this will generate a bad_cast exception if it doesn't work.
       MDPStream& stream=dynamic_cast<MDPStream&>(ffs);
 
       // first, make sure the data is flagged bad.
       clear(fmtbit | lenbit | crcbit);
 
+      // If this object is a header, just read in a new header
       if (typeid(*this) == typeid(MDPHeader))
       {
-         // first reset the data status
-         setstate(fmtbit | lenbit);
-         
-         // If a header has been read in but the corresponding body hasn't been
-         // read, read and toss the body
-         if (stream.streamState == MDPStream::gotHeader)
-         {
-            unsigned bodyLen = length-myLength;
-            char *trash = new char[bodyLen];
-            if (debugLevel>2)
-               cout << "Reading to toss " << bodyLen << endl;
-            stream.getData(trash, bodyLen);
-            string body(trash, stream.gcount());
-            delete trash;
-
-            if (stream.fail())
-               return;
-
-            stream.streamState = MDPStream::gotBody;
-            if (hexDump || debugLevel>2)
-            {
-               cout << "Tossing Record Number:" << stream.recordNumber << endl;
-               StringUtils::hexDumpData(cout, stream.rawHeader+body);
-            }
-         }
-
-         char buff[myLength];
-         if (stream.streamState == MDPStream::outOfSync ||
-             stream.streamState == MDPStream::gotBody)
-         {
-            stream.streamState = MDPStream::outOfSync;
-
-            if (debugLevel>2)
-               cout << "Reading frame word" << endl;;
-            uint16_t fw=0;
-            for (int i=0; i<128; i++)
-            {
-               fw = stream.getData<uint16_t>();
-               fw = netToHost(fw);
-               memcpy(buff, &fw, sizeof(fw));
-               if (fw==frameWord)
-                  break;
-            }
-
-            if (fw!=frameWord)
-            {
-               FFStreamError err("Failed to find frame word.");
-               GPSTK_THROW(err);
-            }
-            else
-            {
-               if (debugLevel>2)
-                  cout << "Reading header" << endl;
-               // then read in the rest of a header
-               stream.getData(buff+2, myLength-2);
-               if (stream.fail())
-                  return;
-
-               stream.rawHeader = string(buff, myLength);
-               decode(stream.rawHeader);
-               stream.streamState = MDPStream::gotHeader;
-               stream.header = *this;
-            }
-         }
+         readHeader(stream);
+         return;
       }
-      else
-      {
-         // This object is not a header
-         // Before reading this body in, we need to make sure that
-         // we have received a header with the right message ID
-         while (stream.header.id != id)
-            MDPHeader::reallyGetRecord(stream);
 
-         // Now get the header values from the most recently
-         // read header
-         MDPHeader& myHeader = dynamic_cast<MDPHeader&>(*this);
-         myHeader = stream.header;
-         const unsigned myLen = length - MDPHeader::myLength;
+      unsigned reqId = id;
+      
+      // Get a new header if the last read was a body
+      if (stream.streamState == MDPStream::gotBody)
+         readHeader(stream);
+      if (!stream)
+         return;
 
-         // Read in the body of the message
-         char *buff = new char[myLen];
-         if (debugLevel>2)
-            cout << "Reading body " << myLen << endl;
-         stream.getData(buff, myLen);
-         string me(buff, stream.gcount());
-         delete buff;
-         if (stream.fail())
-            return;
+      // Make sure that we have a header for this correct message.
+      while (stream.header.id != reqId && stream)
+         readHeader(stream);
 
-         stream.streamState = MDPStream::gotBody;
+      // Now get the header values from the most recently read header
+      MDPHeader& myHeader = dynamic_cast<MDPHeader&>(*this);
+      myHeader = stream.header;
+      const unsigned myLen = length - MDPHeader::myLength;
 
-         setstate(crcbit);
-         checkCRC(stream.rawHeader+me);
+      // Read in the body of the message
+      char *buff = new char[myLen];
+      if (debugLevel>2)
+         cout << "Reading " << myLen 
+              << " bytes for message id " << id
+              << " body." << endl;
+      stream.getData(buff, myLen);
+      string me(buff, stream.gcount());
+      delete buff;
+      if (stream.fail())
+         return;
 
-         decode(me);
+      stream.streamState = MDPStream::gotBody;
+
+      setstate(crcbit);
+      checkCRC(stream.rawHeader+me);
+
+      decode(me);
          
-         if (debugLevel && (rdstate() || stream.rdstate()))
-            MDPHeader::dump(cout);
+      if (debugLevel && (rdstate() || stream.rdstate()))
+         MDPHeader::dump(cout);
 
-         if (hexDump || (debugLevel>1 && rdstate()))
-         {
-            cout << "Record Number:" << stream.recordNumber << endl;
-            StringUtils::hexDumpData(cout, stream.rawHeader+me);
-         }
+      if (hexDump || (debugLevel>1 && rdstate()))
+      {
+         cout << "Record Number:" << stream.recordNumber << endl;
+         StringUtils::hexDumpData(cout, stream.rawHeader+me);
       }
    } // MDPHeader::reallyGetRecord()
 
