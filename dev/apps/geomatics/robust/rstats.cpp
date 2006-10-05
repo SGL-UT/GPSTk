@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 
       if(argc <= 1) {
          // TD add filter on value (string)
-         cout << "Usage: Rstats <file> --col <col> --plot "
+         cout << "Usage: rstats <file> --col <col> --plot "
             << "--qplot --xcol <xcol> --fit <N> --nostats\n";
          cout << "   Compute standard and robust statistics on numbers "
             << "in column <col> (default 1)\n"
@@ -264,7 +264,7 @@ int main(int argc, char **argv)
       if(plot) {
          try {
             Robust::StemLeafPlot(cout, &data[0], data.size(),
-               string("Rstats for column ") + StringUtils::asString(col) +
+               string("Robust stats for column ") + StringUtils::asString(col) +
                (filename.empty() ? string(" of input")
                                  : string(" of file ") + filename)
                );
