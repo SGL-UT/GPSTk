@@ -21,11 +21,7 @@ LinkLibraries DDBase : baselib ;
 # must have the prefix here ... why, and why not with others?
 LinkLibraries DDBase dprgm : $(LIBPREFIX)geomatic ;
 # gpstk must be last
-GPSLinkLibraries DDBase dprgm ddmerge bases sunrise tDDid : gpstk ;
+GPSLinkLibraries DDBase ddmerge : gpstk ;
 
 GPSMain DDBase : DDBase.cpp ;
-GPSMain dprgm : dprgm.cpp ;
 GPSMain ddmerge : ddmerge.cpp ;
-GPSMain bases : bases.cpp ;
-GPSMain sunrise : sunrise.cpp ;
-#GPSMain tDDid : tDDid.cpp DDid.cpp ;
