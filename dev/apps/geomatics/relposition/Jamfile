@@ -1,0 +1,31 @@
+#
+# $Id: Jamfile 71 2006-08-01 18:46:39Z ehagen $
+#
+
+SubDir TOP apps geomatics relposition ;
+
+SEARCH_SOURCE += $(TOP)/src ;
+SEARCH_SOURCE += $(TOP)/apps/geomatics/lib ;
+
+# this is necessary for Windows b/c the linker command line gets too long!
+Library baselib : DataStructures.cpp CommandInput.cpp Configure.cpp
+                  ReadRawData.cpp ReadObsFiles.cpp
+                  EphemerisImprovement.cpp ClockModel.cpp Synchronization.cpp
+                  DoubleDifference.cpp EditDDs.cpp DataOutput.cpp
+                  Estimation.cpp Timetable.cpp ElevationMask.cpp
+                  ProcessRawData.cpp ComputeRAIMSolution.cpp EditRawDataBuffers.cpp
+                  ;
+
+#link prgms to libraries
+LinkLibraries DDBase : baselib ;
+# must have the prefix here ... why, and why not with others?
+LinkLibraries DDBase dprgm : $(LIBPREFIX)geomatic ;
+# gpstk must be last
+GPSLinkLibraries DDBase dprgm ddmerge bases sunrise tDDid : gpstk ;
+
+GPSMain DDBase : DDBase.cpp ;
+GPSMain dprgm : dprgm.cpp ;
+GPSMain ddmerge : ddmerge.cpp ;
+GPSMain bases : bases.cpp ;
+GPSMain sunrise : sunrise.cpp ;
+#GPSMain tDDid : tDDid.cpp DDid.cpp ;

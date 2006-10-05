@@ -8,5 +8,5 @@ SubInclude TOP apps geomatics lib ;
 
 SubInclude TOP apps geomatics cycleslips ;
 SubInclude TOP apps geomatics kalman ;
-#SubInclude TOP apps geomatics relposition ;
+SubInclude TOP apps geomatics relposition ;
 SubInclude TOP apps geomatics robust ;
