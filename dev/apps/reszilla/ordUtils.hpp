@@ -13,7 +13,7 @@ void computeOrds(
    const gpstk::RinexObsHeader& roh,
    const gpstk::EphemerisStore& bce,
    const gpstk::WxObsData& wod,
-   bool svTime,
+   bool svTime, bool keepUnhealty,
    const std::string& ordModeStr);
 
 void estimateClock(

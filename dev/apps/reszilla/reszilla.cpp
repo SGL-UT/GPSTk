@@ -126,8 +126,9 @@ int main(int argc, char *argv[])
                         "data present, data gaps");
 
       gpstk::CommandOptionNoArg
-         keepUnhealthyOption('\0',"keep-unhealthy", "Keep unhealthy SVs in the "
-                             "statistics, default is to toss.");
+         keepUnhealthyOption('\0',"keep-unhealthy", "Use unhealthy SVs in the "
+                             "clock computition and statistics, the default "
+                             "is to toss.");
 
       gpstk::CommandOptionNoArg
          statsOption('s', "no-stats", "Don't compute & output the statistics");
@@ -198,10 +199,11 @@ int main(int argc, char *argv[])
                         "specify multiple bins. The default is \"-b 0-10 "
                         "-b 10-20 -b 20-60 -b 10-90\".");
 
-      gpstk::CommandOptionWithNumberArg
+      gpstk::CommandOptionWithAnyArg
          sigmaOption('\0', "sigma", "Multiplier for sigma stripping used "
-                     "in computation of statistics on the raw residuals. "
-                     "The default value is " + asString((int)sigmaMask) + ".");
+                     "in computation of the the statistics "
+                     "on the raw residuals. The default value is "
+                     + asString((int)sigmaMask) + ".");
 
       gpstk::CommandOptionNoArg
          helpOption('h', "help", "Print usage. Repeat for more info. ");
@@ -400,7 +402,8 @@ int main(int argc, char *argv[])
       {
          // Compute the ords
          ORDEpochMap oem1;
-         computeOrds(oem1, rem1, roh1, eph, wod, svTimeOption, ordMode);
+         computeOrds(oem1, rem1, roh1, eph, wod, svTimeOption, 
+                     keepUnhealthy, ordMode);
 
          // Now, output statistics to stdout
          if (statsOption.getCount()==0)
@@ -442,8 +445,8 @@ int main(int argc, char *argv[])
          if (ddMode != "c1p2" && !clkOption.getCount())
          {
             ORDEpochMap oem1,oem2;
-            computeOrds(oem1, rem1, roh1, eph, wod, svTimeOption, ordMode);
-            computeOrds(oem2, rem2, roh2, eph, wod, svTimeOption, ordMode);
+            computeOrds(oem1, rem1, roh1, eph, wod, svTimeOption, keepUnhealthy, ordMode);
+            computeOrds(oem2, rem2, roh2, eph, wod, svTimeOption, keepUnhealthy, ordMode);
             add_clock_to_rinex(rem1, oem1);
             add_clock_to_rinex(rem2, oem2);
          }

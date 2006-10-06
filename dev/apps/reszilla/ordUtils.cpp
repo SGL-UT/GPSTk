@@ -16,12 +16,12 @@ using namespace std;
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 void computeOrds(ORDEpochMap& oem,
-                  const RODEpochMap& rem,
-                  const gpstk::RinexObsHeader& roh,
-                  const gpstk::EphemerisStore& eph,
-                  const gpstk::WxObsData& wod,
-                  bool svTime,
-                  const string& ordModeStr)
+                 const RODEpochMap& rem,
+                 const gpstk::RinexObsHeader& roh,
+                 const gpstk::EphemerisStore& eph,
+                 const gpstk::WxObsData& wod,
+                 bool svTime, bool keepUnhealthy,
+                 const string& ordModeStr)
 {
    bool dualFreq=false;
    RinexObsType p1,p2;
@@ -61,11 +61,13 @@ void computeOrds(ORDEpochMap& oem,
       cm = new(gpstk::EpochClockModel);
    else
       cm = new(gpstk::LinearClockModel);
+   cm->setSigmaMultiplier(1.5);
+   if (!keepUnhealthy)
+      cm->setPRNMode(gpstk::ObsClockModel::HEALTHY);
 
    if (verbosity>4)
       gpstk::ObsRngDev::debug = true;
 
-   cm->setElevationMask(5);
    gpstk::GPSGeoid gm;
    gpstk::ECEF ap(roh.antennaPosition);
    gpstk::Geodetic geo(ap, &gm);
