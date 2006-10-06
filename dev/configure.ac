@@ -42,9 +42,14 @@ AC_CONFIG_FILES([Makefile
                  apps/Rinextools/Makefile
                  apps/checktools/Makefile
                  apps/converters/Makefile
-                 apps/cycleslips/Makefile
                  apps/difftools/Makefile
                  apps/filetools/Makefile
+                 apps/geomatics/Makefile
+                 apps/geomatics/cycleslips/Makefile
+                 apps/geomatics/kalman/Makefile
+                 apps/geomatics/lib/Makefile
+                 apps/geomatics/relposition/Makefile
+                 apps/geomatics/robust/Makefile
                  apps/ionosphere/Makefile
                  apps/MDPtools/Makefile
                  apps/mergetools/Makefile
