@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: FormatConversionFunctions.hpp 171 2006-10-02 02:24:10Z ocibu $"
 
 //============================================================================
 //
@@ -36,39 +36,33 @@
 //
 //=============================================================================
 
-#ifndef FFIDENTIFIER_HPP
-#define FFIDENTIFIER_HPP
+#ifndef RINEX2MDP_HPP
+#define RINEX2MDP_HPP
 
-/** @file This is a class that reads in GPS data obs or nav data without the
-    caller needing to know the format the data is suppllied in. The
-    observation data formats that are are supported: rinex, smoothmdf, mdp. The 
-    navigation data formats that are supported: rinex nav, fic, sp3, mdp
-*/
+/** @file Translates between various similiar objects */
 
-#include <string>
+#include "RinexObsData.hpp"
+#include "RinexNavData.hpp"
+
+#include "EngAlmanac.hpp"
+
+#include "MDPNavSubframe.hpp"
+#include "MDPObsEpoch.hpp"
 
 namespace gpstk
 {
-   // A function object to figure out what format a file is
-   class FFIdentifier
-   {
-   public:
-      enum FFType
-      {
-         tUnknown,
-         tRinexObs,
-         tRinexNav,
-         tRinexMet,
-         tSMODF,
-         tFIC,
-         tMDP,
-         tSP3,
-         tMSC
-      };
-      
-      FFIdentifier(const std::string& fn);
-      FFType fileType;
-      operator FFType();
-   };
+   /// A translation from SNR in dB-Hz to the rinex signal strength indicator
+   /// values were taken from a header written by teqc
+   short snr2ssi(float x);
+
+   /// Convert the given pages to an EngAlmanac. Returns true upon success.
+   bool makeEngAlmanac(EngAlmanac& alm, const AlmanacPages& pages);
+
+   /// Convert the given pages to an EngEphemeris. Returns true upon success.
+   bool makeEngEphemeris(EngEphemeris& eph, const EphemerisPages& pages);
+
+   /// Conversion Function from MDP data
+   RinexObsData::RinexObsTypeMap makeRinexObsTypeMap(const MDPObsEpoch& moe) throw();
+   RinexObsData makeRinexObsData(const MDPEpoch& me);
 }
 #endif

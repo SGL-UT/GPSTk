@@ -62,19 +62,15 @@
 #include <map>
 
 #include "StringUtils.hpp"
+#include "ObsID.hpp"
 
 #include "DataAvailabilityAnalyzer.hpp"
-#include "RinexObsID.hpp"
-#include "RinexObsStream.hpp"
-#include "RinexObsData.hpp"
-#include "FFIdentifier.hpp"
-#include "DataReader.hpp"
-#include "FormatConversionFunctions.hpp"
+
+#include "EphReader.hpp"
+#include "ObsReader.hpp"
 
 #include "MSCData.hpp"
 #include "MSCStream.hpp"
-
-#include "MDPStream.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -243,78 +239,24 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
    return true;
 }
 
-class ObsReader
-{
-public:
-   const string fn;
-   FFIdentifier inputType;
-   RinexObsStream ros;
-   MDPStream mdps;
-   RinexObsHeader roh;
-   int verboseLevel;
-   unsigned long epochCount;
-
-   ObsReader(const string& str)
-      : fn(str), inputType(str), verboseLevel(0), epochCount(0)
-   {
-      if (inputType == FFIdentifier::tRinexObs)
-      {
-         ros.open(fn.c_str(), ios::in);
-         cout << "Reading " << fn << " as RINEX obs data." << endl;
-         ros.exceptions(fstream::failbit);
-         ros >> roh;
-      }
-      else if (inputType == FFIdentifier::tMDP)
-      {
-         mdps.open(fn.c_str(), ios::in);
-         cout << "Reading " << fn << " as MDP data." << endl;
-      }
-   };
-
-   ObsEpoch getObsEpoch()
-   {
-      ObsEpoch oe;
-      if (inputType == FFIdentifier::tRinexObs)
-      {
-         RinexObsData rod;
-         ros >> rod;
-         oe = makeObsEpoch(rod);
-      }
-      else if (inputType == FFIdentifier::tMDP)
-      {
-         MDPEpoch moe;
-         mdps >> moe;
-         oe = makeObsEpoch(moe);
-      }
-      epochCount++;
-      return oe;
-   }
-
-   bool operator()()
-   {
-      if (inputType == FFIdentifier::tRinexObs)
-         return ros;
-      else if (inputType == FFIdentifier::tMDP)
-         return mdps;
-      return false;
-   }
-};
-
 
 //------------------------------------------------------------------------------
 // Load all the data to analyze.
 //------------------------------------------------------------------------------
 void DataAvailabilityAnalyzer::spinUp()
 {      
-   ephData.verbosity = verboseLevel;
-   ephData.read(ephFileOpt);
+   gpstk::EphReader ephData;
+   ephData.verboseLevel = verboseLevel;
+   for (int i=0; i < ephFileOpt.getCount(); i++)
+      ephData.read(ephFileOpt.getValue()[i]);
 
-   if (!ephData.haveEphData)
+   if (ephData.eph == NULL)
    {
       cout << "Didn't get any ephemeris data from the eph files. "
            << "Exiting." << endl;
-      return;
+      exit(-1);
    }
+   eph = ephData.eph;
 
    msid = 0;
    bool haveAntennaPos=false;
@@ -380,7 +322,7 @@ void DataAvailabilityAnalyzer::spinUp()
    }
 
    if (verboseLevel)
-      cout << "Data rate is " << epochRate << " after " << i << " epochs." << endl;
+      cout << "Data rate is " << epochRate << " seconds after " << i << " epochs." << endl;
 }
 
 
@@ -547,7 +489,7 @@ void DataAvailabilityAnalyzer::process()
       {
          firstEpochTime = oe.time;
          if (verboseLevel)
-            cout << "Start time: " << firstEpochTime.printf(timeFormat) << endl;
+            cout << "First observation is at " << firstEpochTime.printf(timeFormat) << endl;
       }
       else
       {
@@ -561,7 +503,7 @@ void DataAvailabilityAnalyzer::process()
    }
 
    if (verboseLevel)
-      cout << "Stop time: " << lastEpochTime.printf(timeFormat) << endl;
+      cout << "Last observation is at " << lastEpochTime.printf(timeFormat) << endl;
 }
 
 
@@ -572,15 +514,13 @@ void DataAvailabilityAnalyzer::processEpoch(
    const ObsEpoch& oe,
    const ObsEpoch& prev_oe)
 {
-   EphemerisStore& eph = *ephData.eph;
    ECEF rxpos(ap);
    InView::dump ivdumper(cout, timeFormat);
-
 
    for (DayTime t = prev_oe.time + epochRate; t <= oe.time; t += epochRate)
    {
       for (int prn=1; prn<=32; prn++)
-         inView[prn].update(prn, t, rxpos, eph, gm, maskAngle);
+         inView[prn].update(prn, t, rxpos, *eph, gm, maskAngle);
 
       if (verboseLevel>2)
       {
@@ -634,7 +574,7 @@ void DataAvailabilityAnalyzer::processEpoch(
                const SvObsEpoch& soe = oei->second;
                SvObsEpoch::const_iterator q;
                
-               q = soe.find(RinexObsID(RinexObsHeader::S1));
+               q = soe.find(ObsID(ObsID::otSNR, ObsID::cbL1, ObsID::tcCA));
                if (q != soe.end())
                   iv.snr = q->second;
             }

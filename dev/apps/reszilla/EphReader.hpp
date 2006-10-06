@@ -36,48 +36,44 @@
 //
 //=============================================================================
 
-#ifndef FORMATCONVERSIONFUNCTIONS_HPP
-#define FORMATCONVERSIONFUNCTIONS_HPP
+#ifndef DATAREADER_HPP
+#define DATAREADER_HPP
 
-/** @file Translates between various similiar objects */
+/** @file This is a class that reads in ephemeris data without the
+    caller needing to know the format the data is suppllied in. The 
+    navigation data formats that are (to be) supported: rinex nav, fic,
+    sp3, mdp. Unlike the ObsReader, this reads in the entire file at once.
+**/
 
-#include "RinexObsData.hpp"
-#include "RinexNavData.hpp"
-#include "RinexMetData.hpp"
+#include <string>
+#include <vector>
 
-#include "EngAlmanac.hpp"
-#include "ObsEpochMap.hpp"
-#include "WxObsMap.hpp"
-#include "SMODFData.hpp"
-
-#include "MDPNavSubframe.hpp"
-#include "MDPObsEpoch.hpp"
+#include "EphemerisStore.hpp"
+#include "FFIdentifier.hpp"
 
 namespace gpstk
 {
-   /// A translation from SNR in dB-Hz to the rinex signal strength indicator
-   /// values were taken from a header written by teqc
-   short snr2ssi(float x);
+   class EphReader
+   {
+   public:
+      EphReader()
+         : verboseLevel(0), eph(NULL) {};
 
-   /// Convert the given pages to an EngAlmanac. Returns true upon success.
-   bool makeEngAlmanac(EngAlmanac& alm, const AlmanacPages& pages);
+      EphReader(const std::string& fn)
+         : verboseLevel(0), eph(NULL) { read(fn); };
 
-   /// Convert the given pages to an EngEphemeris. Returns true upon success.
-   bool makeEngEphemeris(EngEphemeris& eph, const EphemerisPages& pages);
+      int verboseLevel;
 
-   /// Conversion Function from MDP data
-   SvObsEpoch makeSvObsEpoch(const MDPObsEpoch& mdp) throw();
-   ObsEpoch makeObsEpoch(const MDPEpoch& mdp) throw();
-   RinexObsData::RinexObsTypeMap makeRinexObsTypeMap(const MDPObsEpoch& moe) throw();
-   RinexObsData makeRinexObsData(const MDPEpoch& me);
+      void read(const std::string& fn);
 
-   /// Conversion functions from Rinex data
-   SvObsEpoch makeSvObsEpoch(const RinexObsData::RinexObsTypeMap& rotm) throw();
-   ObsEpoch makeObsEpoch(const RinexObsData& rod) throw();
-   WxObservation makeWxObs(const RinexMetData& rmd) throw();
-   
-   /// Conversion functions from SMODFData objects
-   WxObservation makeWxObs(const SMODFData& smod) throw();
-   ObsID getObsID(const SMODFData& smod) throw(); 
+      std::vector<std::string> filesRead;
+
+      EphemerisStore* eph;
+
+   private:
+      void read_rinex_nav_data(const std::string& fn);
+      void read_fic_data(const std::string& fn);
+      void read_sp3_data(const std::string& fn);
+   };
 }
 #endif

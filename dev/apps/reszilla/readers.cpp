@@ -37,7 +37,7 @@
 
 #include "readers.hpp"
 
-#include "FormatConversionFunctions.hpp"
+#include "MDP2Rinex.hpp"
 
 void read_rinex_data(
    std::string& fn, 

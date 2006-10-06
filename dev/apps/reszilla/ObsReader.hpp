@@ -1,4 +1,5 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: DataAvailabilityAnalyzer.cpp 179 2006-10-05 14:22:48Z ocibu $"
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -35,58 +36,42 @@
 //
 //=============================================================================
 
-#ifndef DATAREADER_HPP
-#define DATAREADER_HPP
 
-/** @file This is a class that reads in GPS data obs or nav data without the
-    caller needing to know the format the data is suppllied in. The
-    observation data formats that are are supported: rinex, smoothmdf, mdp. The 
-    navigation data formats that are supported: rinex nav, fic, sp3, mdp
-**/
+/** @file Read various file formats and output a stream of ObsEpoch objects.
+*/
 
-#include <string>
-#include <vector>
+#ifndef OBSREADER_HPP
+#define OBSREADER_HPP
 
-#include "CommandOption.hpp"
-#include "EphemerisStore.hpp"
-#include "DayTime.hpp"
 #include "ObsEpochMap.hpp"
+#include "RinexObsHeader.hpp"
+#include "RinexObsStream.hpp"
+#include "MDPStream.hpp"
+#include "SMODFStream.hpp"
+#include "FFIdentifier.hpp"
 
 namespace gpstk
 {
-   class DataReader
+   class ObsReader
    {
    public:
-      DataReader();
+      const std::string fn;
+      gpstk::FFIdentifier inputType;
 
-      int verbosity;
-      std::string timeFormat;
+      gpstk::RinexObsStream ros;
+      gpstk::MDPStream mdps;
+      gpstk::SMODFStream smos;
 
-      void read(CommandOption& files);
-      double estimate_data_rate(const std::string& fn);
-      void read_msc_file(const std::string& fn);
+      unsigned msid;
+      gpstk::RinexObsHeader roh;
+      int verboseLevel;
+      unsigned long epochCount;
 
-      unsigned long msid;
-      DayTime startTime;
-      DayTime stopTime;
+      ObsReader(const std::string& str);
+   
+      ObsEpoch getObsEpoch();
 
-      std::vector<std::string> filesRead;
-
-      ObsEpochMap oem;
-      gpstk::Triple antennaPosition;
-      EphemerisStore* eph;
-
-      bool haveEphData;
-      bool haveObsData;
-      bool havePosData;
-
-   private:
-      void read_rinex_obs_data(const std::string& fn);
-      void read_smo_data(const std::string& fn);
-      void read_mdp_data(const std::string& fn);
-      void read_rinex_nav_data(const std::string& fn);
-      void read_fic_data(const std::string& fn);
-      void read_sp3_data(const std::string& fn);
+      bool operator()();
    };
-}
+} // end of namespace gpstk
 #endif

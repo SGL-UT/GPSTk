@@ -5,6 +5,7 @@ SubDir TOP apps DataAvailability ;
 # It seems that if I explicity add the src directory, things are much happier.
 SEARCH_SOURCE += $(TOP)/src ;
 SEARCH_SOURCE += $(TOP)/apps/MDPtools ;
+SEARCH_SOURCE += $(TOP)/apps/reszilla ;
 
 if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
 {
@@ -14,9 +15,10 @@ if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
 
 Library mdplib : MDPHeader.cpp MDPObsEpoch.cpp MDPNavSubframe.cpp ;
 
-LinkLibraries daa : mdplib ;
+Library datalib : ObsUtils.cpp FFIdentifier.cpp ObsReader.cpp EphReader.cpp ;
+
+LinkLibraries daa : datalib mdplib ;
 
 GPSLinkLibraries daa oid-test : gpstk ;
 
-GPSMain daa : daa.cpp DataReader.cpp DataAvailabilityAnalyzer.cpp
-  FormatConversionFunctions.cpp FFIdentifier.cpp ;
+GPSMain daa : daa.cpp DataAvailabilityAnalyzer.cpp ;

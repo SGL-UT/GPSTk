@@ -14,11 +14,14 @@ if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
 
 Library rlib : util.cpp readers.cpp ordUtils.cpp DDEpoch.cpp PhaseCleaner.cpp
   PhaseResidual.cpp MDPHeader.cpp MDPObsEpoch.cpp MDPNavSubframe.cpp 
-  FormatConversionFunctions.cpp RobustLinearEstimator.cpp ;
+  RobustLinearEstimator.cpp ;
 
-LinkLibraries reszilla : rlib ;
+Library datalib : ObsUtils.cpp FFIdentifier.cpp ObsReader.cpp EphReader.cpp 
+  MDP2Rinex.cpp ;
 
-GPSLinkLibraries reszilla : gpstk rlib ;
+LinkLibraries reszilla : datalib rlib datalib rlib ;
+
+GPSLinkLibraries reszilla : gpstk datalib rlib datalib rlib ;
 
 GPSMain reszilla : reszilla.cpp ;
 

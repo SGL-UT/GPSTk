@@ -51,8 +51,7 @@
 #include "GPSGeoid.hpp"
 #include "MiscMath.hpp"
 #include "ObsRngDev.hpp"
-
-#include "DataReader.hpp"
+#include "EphemerisStore.hpp"
 
 class DataAvailabilityAnalyzer : public gpstk::BasicFramework
 {
@@ -99,7 +98,7 @@ private:
 
    bool badHealthMask, smashAdjacent;
 
-   gpstk::DataReader ephData;
+   gpstk::EphemerisStore* eph;
    gpstk::GPSGeoid gm;
 
    gpstk::Triple antennaPos;
@@ -111,7 +110,7 @@ private:
    // and when there is a obs that is missing. 
    struct InView
    {
-      InView():up(false),aboveMask(false),smashCount(0){};
+      InView() : up(false), aboveMask(false), smashCount(0){};
 
       void update(
          short prn,

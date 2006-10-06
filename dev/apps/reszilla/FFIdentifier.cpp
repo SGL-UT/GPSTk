@@ -81,10 +81,10 @@ namespace gpstk
       {
          try
          {
-            RinexObsStream ros(fn.c_str(), std::ios::in);
-            ros.exceptions(std::fstream::failbit);
             if (verbosity>2)
                std::cout << "Trying " << fn << " as RINEX obs."<< std::endl;
+            RinexObsStream ros(fn.c_str(), std::ios::in);
+            ros.exceptions(std::fstream::failbit);
 
             RinexObsHeader temp_roh;
             ros >> temp_roh;
@@ -101,10 +101,10 @@ namespace gpstk
 
          try
          {
-            SMODFStream smo(fn.c_str(), std::ios::in);
-            smo.exceptions(std::fstream::failbit);
             if (verbosity>2)
                std::cout << "Trying " << fn << " as SMODF."<< std::endl;
+            SMODFStream smo(fn.c_str(), std::ios::in);
+            smo.exceptions(std::fstream::failbit);
          
             SMODFData smodata;       
             smo >> smodata;
@@ -120,10 +120,10 @@ namespace gpstk
 
          try
          {
-            MDPStream mdps(fn.c_str(), std::ios::in);
-            mdps.exceptions(std::fstream::failbit);
             if (verbosity>2)
                std::cout << "Trying " << fn << " as MDP."<< std::endl;
+            MDPStream mdps(fn.c_str(), std::ios::in);
+            mdps.exceptions(std::fstream::failbit);
 
             MDPHeader header;
             mdps >> header;
@@ -139,10 +139,10 @@ namespace gpstk
 
          try
          {
-            RinexNavStream rns(fn.c_str(), std::ios::in);
-            rns.exceptions(std::ifstream::failbit);
             if (verbosity>2)
                std::cout << "Trying " << fn << " as RINEX nav."<< std::endl;
+            RinexNavStream rns(fn.c_str(), std::ios::in);
+            rns.exceptions(std::ifstream::failbit);
 
             RinexNavData rnd;
             rns >> rnd;
@@ -158,9 +158,9 @@ namespace gpstk
 
          try
          {
-            FICStream fs(fn.c_str(), std::ios::in);
             if (verbosity>2)
                std::cout << "Trying " << fn << " as FIC nav."<< std::endl;
+            FICStream fs(fn.c_str(), std::ios::in);
       
             FICHeader header;
             fs >> header;      
@@ -177,11 +177,10 @@ namespace gpstk
 
          try
          {
-
-            SP3Stream pefile(fn.c_str(), std::ios::in);
-            pefile.exceptions(std::ifstream::failbit);
             if (verbosity>2)
                std::cout << "Trying " << fn << " as SP3 ephemeris."<<std:: endl;
+            SP3Stream pefile(fn.c_str(), std::ios::in);
+            pefile.exceptions(std::ifstream::failbit);
             
             SP3Header header;
             pefile >> header;
@@ -198,10 +197,10 @@ namespace gpstk
 
          try
          {
-            MSCStream msc(fn.c_str(), std::ios::in);
-            msc.exceptions(std::ifstream::failbit);
             if (verbosity>2)
                std::cout << "Trying " << fn << " as MSC."<<std:: endl;
+            MSCStream msc(fn.c_str(), std::ios::in);
+            msc.exceptions(std::ifstream::failbit);
 
             MSCData mscd;
             msc >> mscd;
@@ -214,7 +213,6 @@ namespace gpstk
                std::cout << e << std::endl;
          }
          
-
          break;
       } // end of while (true)
    }
