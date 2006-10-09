@@ -1300,6 +1300,35 @@ namespace gpstk
       return R.elvAngle(S);
    }
 
+      // A member function that computes the elevation of the input
+      // (Target) position as seen from this Position, using a Geodetic
+      // (i.e. ellipsoidal) system.
+      // @param Target the Position which is observed to have the
+      //        computed elevation, as seen from this Position.
+      // @return the elevation in degrees
+   double Position::elevationGeodetic(const Position& Target) const
+      throw()
+   {
+      Position R(*this),S(Target);
+      double latGeodetic = R.getGeodeticLatitude()*DEG_TO_RAD;
+      double longGeodetic = R.getLongitude()*DEG_TO_RAD;
+      double localUp;
+      double cosUp;
+      R.transformTo(Cartesian);
+      S.transformTo(Cartesian);
+      Triple z;
+      // Let's get the slant vector
+      z = S.theArray - R.theArray;
+      // Compute k vector in local North-East-Up (NEU) system
+      Triple kVector(cos(latGeodetic)*cos(longGeodetic), cos(latGeodetic)*sin(longGeodetic), sin(latGeodetic));
+      // Take advantage of dot method to get Up coordinate in local NEU system
+      localUp = z.dot(kVector);
+      // Let's get cos(z), being z the angle with respect to local vertical (Up);
+      cosUp = localUp/z.mag();
+
+      return 90.0 - ((::acos(cosUp))*RAD_TO_DEG);
+   }
+
       // A member function that computes the azimuth of the input
       // (Target) position as seen from this Position.
       // @param Target the Position which is observed to have the
@@ -1313,6 +1342,50 @@ namespace gpstk
       S.transformTo(Cartesian);
       // use Triple:: functions in cartesian coordinates (only)
       return R.azAngle(S);
+   }
+
+      // A member function that computes the azimuth of the input
+      // (Target) position as seen from this Position, using a Geodetic
+      // (i.e. ellipsoidal) system.
+      // @param Target the Position which is observed to have the
+      //        computed azimuth, as seen from this Position.
+      // @return the azimuth in degrees
+   double Position::azimuthGeodetic(const Position& Target) const
+      throw()
+   {
+      Position R(*this),S(Target);
+      double latGeodetic = R.getGeodeticLatitude()*DEG_TO_RAD;
+      double longGeodetic = R.getLongitude()*DEG_TO_RAD;
+      double localN, localE;
+      R.transformTo(Cartesian);
+      S.transformTo(Cartesian);
+      Triple z;
+      // Let's get the slant vector
+      z = S.theArray - R.theArray;
+      // Compute i vector in local North-East-Up (NEU) system
+      Triple iVector(-sin(latGeodetic)*cos(longGeodetic), -sin(latGeodetic)*sin(longGeodetic), cos(latGeodetic));
+      // Compute j vector in local North-East-Up (NEU) system
+      Triple jVector(-sin(longGeodetic), cos(longGeodetic), 0);
+
+      // Now, let's use dot product to get localN and localE unitary vectors
+      localN = (z.dot(iVector))/z.mag();
+      localE = (z.dot(jVector))/z.mag();
+
+      // Let's test if computing azimuth has any sense
+      double test = fabs(localN) + fabs(localE);
+
+      // Warning: If elevation is very close to 90 degrees, we will return azimuth = 0.0
+      if (test < 1.0e-16) return 0.0;
+
+      double alpha = ((::atan2(localE, localN)) * RAD_TO_DEG);
+      if (alpha < 0.0)
+      {
+         return alpha + 360.0;
+      }
+      else 
+      {
+         return alpha;
+      }
    }
 
      // A member function that computes the point at which a signal, which

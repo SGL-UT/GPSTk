@@ -814,6 +814,17 @@ namespace gpstk
          throw();
 
          /**
+         * A member function that computes the elevation of the input
+         * (Target) position as seen from this Position, using a Geodetic
+         * (ellipsoidal) system.
+         * @param Target the Position which is observed to have the
+         *        computed elevation, as seen from this Position.
+         * @return the elevation in degrees
+         */
+      double elevationGeodetic(const Position& Target) const
+         throw();
+
+         /**
          * A member function that computes the azimuth of the input
          * (Target) position as seen from this Position.
          * @param Target the Position which is observed to have the
@@ -821,6 +832,17 @@ namespace gpstk
          * @return the azimuth in degrees
          */
       double azimuth(const Position& Target) const
+         throw();
+
+         /**
+         * A member function that computes the azimuth of the input
+         * (Target) position as seen from this Position, using a Geodetic
+         * (ellipsoidal) system.
+         * @param Target the Position which is observed to have the
+         *        computed azimuth, as seen from this Position.
+         * @return the azimuth in degrees
+         */
+      double azimuthGeodetic(const Position& Target) const
          throw();
 
          /**
