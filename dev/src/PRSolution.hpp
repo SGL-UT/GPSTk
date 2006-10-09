@@ -58,10 +58,10 @@ namespace gpstk
    {
    public:
          /// Constructor
-      PRSolution() throw() : Valid(false), Algebraic(false),
-         ResidualCriterion(true), RMSLimit(6.5), SlopeLimit(100.),
-         NSatsReject(-1), ReturnAtOnce(false), MaxNIterations(10),
-         ConvergenceLimit(3.e-7), Debug(false), pDebugStream(&std::cout) {};
+      PRSolution() throw() : RMSLimit(6.5), SlopeLimit(100.), 
+         Algebraic(false), ResidualCriterion(true), ReturnAtOnce(false),
+         NSatsReject(-1), Debug(false), pDebugStream(&std::cout),
+         MaxNIterations(10),  ConvergenceLimit(3.e-7), Valid(false) {};
 
       /** Compute a position/time solution, given satellite PRNs and pseudoranges
        *  using a RAIM algorithm.
