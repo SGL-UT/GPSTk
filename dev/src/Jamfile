@@ -111,7 +111,7 @@ else
       gpstkplatform.h mergePCodeWords.h BivarStats.hpp
       Expression.hpp ObsID.hpp RinexObsID.hpp
       Bancroft.hpp CheckPRData.hpp SolverBase.hpp SolverLMS.hpp SolverWMS.hpp
-      DOP.hpp WeightBase.hpp
+      DOP.hpp WeightBase.hpp ModeledPseudorangeBase.hpp
       ;
 }
 
