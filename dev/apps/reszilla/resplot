@@ -203,19 +203,19 @@ sub config_output
     }
     elsif ($ofn)
     {
-	if ($oft == "png")
+	if ($oft eq "png")
 	{
 	    print "Saving graph to $ofn.png\n" if ($debug);
 	    print GP "set output \"$ofn.png\" \n";
 	    print GP "set term png small crop size 800,600\n"; 
 	}
-	elsif ($oft == "eps")
+	elsif ($oft eq "eps")
 	{
 	    print "Saving graph to $ofn.eps\n" if ($debug);
 	    print GP "set output \"$ofn.eps\" \n";
 	    print GP "set term postscript eps noenhanced color solid defaultplex \"Time-Roman\" 18\n"; 
 	}
-	elsif ($oft == "pdf")
+	elsif ($oft eq "pdf")
 	{
 	    print "Saving graph to $ofn.pdf\n" if ($debug);
 	    print GP "set output \"$ofn.pdf\" \n";
