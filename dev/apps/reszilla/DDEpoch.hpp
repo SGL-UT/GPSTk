@@ -55,14 +55,12 @@ void dump(std::ostream& s,
 void dumpStats(
    DDEpochMap& oem,
    const CycleSlipList& csl,
-   PrnElevationMap& pem,
-   bool keepUnhealthy);
+   PrnElevationMap& pem);
 
 std::string computeStats(
    const RinexObsType rot,
    DDEpochMap& oem,
    const ElevationRange er,
-   PrnElevationMap& pem,
-   bool keepUnhealthy);
+   PrnElevationMap& pem);
 
 #endif

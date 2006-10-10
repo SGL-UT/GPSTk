@@ -247,8 +247,7 @@ void computeDDEpochMap(
 void dumpStats(
    DDEpochMap& ddem,
    const CycleSlipList& csl,
-   PrnElevationMap& pem,
-   bool keepUnhealthy)
+   PrnElevationMap& pem)
 {
    cout << endl
         << "ord        elev   stddev    mean      # obs    # bad   # unk  max good  slips" << endl
@@ -256,23 +255,23 @@ void dumpStats(
 
    for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
    {
-      cout << "c1 dd res  " << computeStats(C1, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
-      cout << "p1 dd res  " << computeStats(P1, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
-      cout << "l1 dd res  " << computeStats(L1, ddem,  *i, pem, keepUnhealthy) << "    " 
+      cout << "c1 dd res  " << computeStats(C1, ddem,  *i, pem) << "    " << endl;
+      cout << "p1 dd res  " << computeStats(P1, ddem,  *i, pem) << "    " << endl;
+      cout << "l1 dd res  " << computeStats(L1, ddem,  *i, pem) << "    " 
            << computeStats(csl, *i, L1) << endl;
-      cout << "d1 dd res  " << computeStats(D1, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
-      cout << "s1 dd res  " << computeStats(S1, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
+      cout << "d1 dd res  " << computeStats(D1, ddem,  *i, pem) << "    " << endl;
+      cout << "s1 dd res  " << computeStats(S1, ddem,  *i, pem) << "    " << endl;
       cout << endl;
    }
    cout << "------------------------------------------------------------------------ " << endl;
 
    for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
    {
-      cout << "p2 dd res  " << computeStats(P2, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
-      cout << "l2 dd res  " << computeStats(L2, ddem,  *i, pem, keepUnhealthy) << "    " 
+      cout << "p2 dd res  " << computeStats(P2, ddem,  *i, pem) << "    " << endl;
+      cout << "l2 dd res  " << computeStats(L2, ddem,  *i, pem) << "    " 
            << computeStats(csl, *i, L2) << endl;
-      cout << "d2 dd res  " << computeStats(D2, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
-      cout << "s1 dd res  " << computeStats(S2, ddem,  *i, pem, keepUnhealthy) << "    " << endl;
+      cout << "d2 dd res  " << computeStats(D2, ddem,  *i, pem) << "    " << endl;
+      cout << "s1 dd res  " << computeStats(S2, ddem,  *i, pem) << "    " << endl;
       cout << endl;
    }
    cout << "------------------------------------------------------------------------ " << endl;
@@ -287,8 +286,7 @@ string computeStats(
    const RinexObsType rot,
    DDEpochMap& ddem,
    const ElevationRange er,
-   PrnElevationMap& pem,
-   bool keepUnhealthy)
+   PrnElevationMap& pem)
 {
    ostringstream oss;
    float minElevation = er.first;
@@ -307,8 +305,6 @@ string computeStats(
          const gpstk::SatID& prn = pi->first;
          ROTDM& ddr = pi->second;
 
-         if (ei->second.health[prn] && !keepUnhealthy)
-            continue;
          if (pem[t][prn]<minElevation || pem[t][prn]>maxElevation)
             continue;
          if (ddr.find(rot) == ddr.end())

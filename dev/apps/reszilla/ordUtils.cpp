@@ -1,5 +1,42 @@
 #pragma ident "$Id$"
 
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
+#include "BCEphemerisStore.hpp"
 
 #include "util.hpp"
 
@@ -12,7 +49,6 @@
 
 using namespace std;
 
-
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 void computeOrds(ORDEpochMap& oem,
@@ -20,7 +56,9 @@ void computeOrds(ORDEpochMap& oem,
                  const gpstk::RinexObsHeader& roh,
                  const gpstk::EphemerisStore& eph,
                  const gpstk::WxObsData& wod,
-                 bool svTime, bool keepUnhealthy,
+                 bool svTime,
+                 bool keepUnhealthy,
+                 bool keepWarts,
                  const string& ordModeStr)
 {
    bool dualFreq=false;
@@ -62,7 +100,11 @@ void computeOrds(ORDEpochMap& oem,
    else
       cm = new(gpstk::LinearClockModel);
    cm->setSigmaMultiplier(1.5);
-   if (!keepUnhealthy)
+   cm->setElevationMask(10);
+
+   if (keepUnhealthy)
+      cm->setPRNMode(gpstk::ObsClockModel::ALWAYS);
+   else
       cm->setPRNMode(gpstk::ObsClockModel::HEALTHY);
 
    if (verbosity>4)
@@ -95,36 +137,109 @@ void computeOrds(ORDEpochMap& oem,
       {
          short prn = rpi->first.id;
 
-         gpstk::RinexObsData::RinexObsTypeMap rotm = rpi->second;
+         const gpstk::RinexObsData::RinexObsTypeMap& rotm = rpi->second;
+         gpstk::RinexObsData::RinexObsTypeMap::const_iterator itr;
+         double obs1, obs2;
+
+         // first we need to make sure the observation data (in rotm) has
+         // the data we require.
+         itr = rotm.find(p1);
+         if (itr == rotm.end())
+            continue;
+         else
+            obs1 = itr->second.data;
+
+         if (dualFreq)
+         {
+            itr = rotm.find(p2);
+            if (itr == rotm.end())
+               continue;
+            else
+               obs2 = itr->second.data;
+         }
+
+         // Now to look for indications that this data is suspect
+         if (!keepWarts)
+         {
+            // A gross check on the pseudorange
+            if (obs1 < 15e6 || (dualFreq && obs2 < 15e6))
+                continue;
+            
+            itr = rotm.find(p1);
+            if (itr->second.lli)
+               continue;
+
+            itr = rotm.find(p2);
+            if (itr->second.lli)
+               continue;
+
+            // Now make sure we have a valid C/A pseudorange
+            itr = rotm.find(C1);
+            if (itr == rotm.end() || itr->second.data < 15e6 || itr->second.lli)
+               continue;
+         }
 
          try
          {
             if (dualFreq)
-            {
-               gpstk::ObsRngDev ord(rotm[p1].data, rotm[p2].data,
-                                    prn, t, ap, eph, gm, tm, svTime);
-               oe.ords[prn] = ord;
-            }
+               oe.ords[prn] = gpstk::ObsRngDev(obs1, obs2, prn, t, ap, eph, gm, tm, svTime);
             else
-            {
-               gpstk::ObsRngDev ord(rotm[p1].data, 
-                                    prn, t, ap, eph, gm, tm, svTime);
-               oe.ords[prn] = ord;
-            }
+               oe.ords[prn] = gpstk::ObsRngDev(obs1, prn, t, ap, eph, gm, tm, svTime);
          }
          catch (gpstk::EphemerisStore::NoEphemerisFound& e)
          {
             if (verbosity>2)
                cout << e.getText() << endl;
          }
-      }
+      } // end looping over each SV in this epoch
 
       cm->addEpoch(oe);
       if (verbosity>3)
          cout << "clk: " << *cm << endl;
-      oe.applyClockModel(*cm);
-      if (verbosity>3)
-         cout << "oe: " << oe;
+
+      if (verbosity>1 && !cm->isOffsetValid(t))
+      {
+         cout << "Could not estimate clock for epoch at " << t << endl;
+         oem.erase(oem.find(t));
+      }
+      else
+      {
+         oe.applyClockModel(*cm);
+
+         gpstk::ORDEpoch::ORDMap::const_iterator pi;
+         bool wonky=false;
+         for (pi = oe.ords.begin(); pi != oe.ords.end(); pi++)
+         {
+            const double ord = pi->second.getORD();
+            short prn = pi->first;
+            if (pi->second.getHealth().is_valid() && 
+                pi->second.getHealth() && !keepUnhealthy)
+               continue;
+
+            if (std::abs(ord) > 1e3)
+               wonky = true;
+         }
+
+         if (wonky && verbosity)
+         {
+            cout << "wonky stuff found." << endl;
+            rod.dump(cout);
+            cout << oe  << endl
+                 << *cm << endl;
+         }
+         else if (verbosity>3)
+            cout << "oe: " << oe;
+      }
+   } // end looping over all epochs
+
+   // Now go through and delete all the epochs with invalid clocks
+   ORDEpochMap::iterator itr;
+   for (itr=oem.begin(); itr != oem.end();)
+   {
+      ORDEpochMap::iterator j=itr;
+      itr++;
+      if (!j->second.validClock)
+         oem.erase(j);
    }
 
    delete cm;
@@ -136,8 +251,7 @@ void computeOrds(ORDEpochMap& oem,
 void dumpStats(
    const ORDEpochMap& oem, 
    const string& ordMode, 
-   const double sigmam,
-   const bool keepUnhealthy)
+   const double sigmam)
 {
    cout << endl
         << "ord        elev   stddev    mean      # obs    # bad    max    strip" << endl
@@ -146,7 +260,7 @@ void dumpStats(
    string desc = ordMode + " ord  ";
 
    for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
-      computeStats(desc, oem, *i, sigmam, keepUnhealthy);
+      computeStats(desc, oem, *i, sigmam);
 }
 
 // ---------------------------------------------------------------------
@@ -155,8 +269,7 @@ void computeStats(
    const string desc,
    const ORDEpochMap& oem,
    const ElevationRange er,
-   const double sigmam,
-   const bool keepUnhealthy)
+   const double sigmam)
 {
    float minElevation = er.first;
    float maxElevation = er.second;
@@ -168,15 +281,12 @@ void computeStats(
    {
       const gpstk::DayTime& t = ei->first;
       gpstk::ORDEpoch::ORDMap::const_iterator pi;
+      bool wonky=false;
       for (pi = ei->second.ords.begin(); pi != ei->second.ords.end(); pi++)
       {
          const float el = pi->second.getElevation();
          const double ord = pi->second.getORD();
-         short prn = pi->first;
-         if (pi->second.getHealth().is_valid() && 
-             pi->second.getHealth() && !keepUnhealthy)
-            continue;
-         if (el>minElevation && el<maxElevation && std::abs(ord) < 1e6)
+         if (el>minElevation && el<maxElevation)
             fp.Add(ord);
       }
    }
@@ -189,9 +299,6 @@ void computeStats(
       gpstk::ORDEpoch::ORDMap::const_iterator pi;
       for (pi = ei->second.ords.begin(); pi != ei->second.ords.end(); pi++)
       {
-         if (pi->second.getHealth().is_valid() && 
-             pi->second.getHealth() && !keepUnhealthy)
-            continue;
          const float el = pi->second.getElevation();
          const double ord = pi->second.getORD();
          if (el>minElevation && el<maxElevation)

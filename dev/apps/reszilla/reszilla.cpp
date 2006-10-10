@@ -73,6 +73,7 @@ int main(int argc, char *argv[])
 
    bool rawOutput=false;
    bool keepUnhealthy=false;
+   bool keepWarts=false;
 
 
    gpstk::DayTime startTime(gpstk::DayTime::BEGINNING_OF_TIME);
@@ -120,6 +121,10 @@ int main(int argc, char *argv[])
       gpstk::CommandOptionNoArg
          svTimeOption('\0', "svtime", "Observation data is in SV time frame. "
                       "The default is RX time frame.");
+
+      gpstk::CommandOptionNoArg
+         keepWartsOption('\0', "keep-warts", "Keep any warts that are in "
+                         "the data. The defailt is to remove them.");
 
       gpstk::CommandOptionNoArg
          checkObsOption('\0',"check-obs", "Report data rate, order of data, "
@@ -261,6 +266,9 @@ int main(int argc, char *argv[])
 
       if (keepUnhealthyOption.getCount())
          keepUnhealthy=true;
+      
+      if (keepWartsOption.getCount())
+         keepWarts=true;
 
       if (timeFmtOption.getCount())
       {
@@ -403,11 +411,11 @@ int main(int argc, char *argv[])
          // Compute the ords
          ORDEpochMap oem1;
          computeOrds(oem1, rem1, roh1, eph, wod, svTimeOption, 
-                     keepUnhealthy, ordMode);
+                     keepUnhealthy, keepWarts, ordMode);
 
          // Now, output statistics to stdout
          if (statsOption.getCount()==0)
-            dumpStats(oem1, ordMode, sigmaMask, keepUnhealthy);
+            dumpStats(oem1, ordMode, sigmaMask);
 
          // Save the raw ORDs to a file
          if (rawOutput)
@@ -445,8 +453,8 @@ int main(int argc, char *argv[])
          if (ddMode != "c1p2" && !clkOption.getCount())
          {
             ORDEpochMap oem1,oem2;
-            computeOrds(oem1, rem1, roh1, eph, wod, svTimeOption, keepUnhealthy, ordMode);
-            computeOrds(oem2, rem2, roh2, eph, wod, svTimeOption, keepUnhealthy, ordMode);
+            computeOrds(oem1, rem1, roh1, eph, wod, svTimeOption, keepUnhealthy, keepWarts, ordMode);
+            computeOrds(oem2, rem2, roh2, eph, wod, svTimeOption, keepUnhealthy, keepWarts, ordMode);
             add_clock_to_rinex(rem1, oem1);
             add_clock_to_rinex(rem2, oem2);
          }
@@ -467,7 +475,7 @@ int main(int argc, char *argv[])
             pc.getSlips(sl, pem);
             
             if (statsOption.getCount()==0)
-               dumpStats(ddem, sl, pem, keepUnhealthy);
+               dumpStats(ddem, sl, pem);
 
             if (cycleSlipOption.getCount())
                dump(cout, sl);
