@@ -11,6 +11,7 @@ my $point_size = 0.5;
 my $obs_type = 0;
 my $key = 0;
 my $suppressTitle;
+my $min_el = 0;
 
 # prn: 1..32 or 0 for all or -1 for all with each using a separate color
 my $prn=0;
@@ -37,7 +38,8 @@ GetOptions(
     'eps'          => \$eps,
     'debug|d+'     => \$debug,
     'clock|c+'     => \$clock,
-    'clock-est|e+' => \$clock_est,
+    'clock-est|e'  => \$clock_est,
+    'minel=s'      => \$min_el,
     'clock-res'    => \$clock_residual,
     'key|k+'       => \$key,
     'zoom|z+'      => \$zoom,
@@ -66,6 +68,7 @@ if ($debug)
     print "Saving plot to $ofn\n" if ($ofn);
     print "Sending plot to printer $lpr\n" if ($lpr);
     print "Supressing title (the key actually)." if ($suppressTitle);
+    print "Minimum elevation of $min_el\n" if ($min_el);
     print "\n"; 
 }
 
@@ -89,8 +92,9 @@ set timefmt "%Y %j %H:%M:%S";
 set format x "%2H:%02M\\n%j";
 prn=$prn;
 otype=$obs_type
+min_el=$min_el
 #         (     desired prn   ) && (       desired type      ) && ( non zero )
-res(p1)=( ((p1==\$4)||(p1==-1)) && ((otype==\$5)||(otype==-1)) && (abs(\$7)>0) ) ? \$7 : 1/0;
+res(p1)=( ((p1==\$4)||(p1==-1)) && (\$6 > min_el) && ((otype==\$5)||(otype==-1)) && (abs(\$7)>0) ) ? \$7 : 1/0;
 #
 clk(type)  = ((type==\$5) && (abs(\$7)>0) && (\$9!=1) ) ? \$7 : 1/0;
 #
@@ -285,6 +289,11 @@ An additional line to the title of the plot. The default is blank.
 
 Limit the y range to +/- this value. The default is to let gnuplot autorange
 the y axis.
+
+=item B<--minel>=I<elev>
+
+Only plot data from SVs with elevations above this angle. The default value
+is 0 degrees.
 
 =item B<-y> I<type>, B<--type>=I<type>
 
