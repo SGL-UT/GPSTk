@@ -128,8 +128,10 @@ namespace gpstk
                // SV Health bits are defined in ICD-GPS-200C-IRN4 20.3.3.3.1.4
                // It is a 6-bit value where the MSB (0x20) indicates a summary of
                // of NAV data health where 0 = OK, 1 = some or all BAD
-               if (ord.getHealth() & 0x20) 
+               if (ord.getHealth().is_valid() && (ord.getHealth() & 0x20)) 
                   status[prn] = SVHEALTH;
+               else
+                  status[prn] = USED;
                break;
          }
       

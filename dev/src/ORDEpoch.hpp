@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,11 +36,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file ORDEpoch.hpp
  * A set of observed range deviations for a single point in time from
@@ -56,7 +49,6 @@
 #include "Exception.hpp"
 #include "ObsRngDev.hpp"
 #include "ClockModel.hpp"
-
 
 namespace gpstk
 {
@@ -88,7 +80,7 @@ namespace gpstk
          return *this;
       }
 
-      double clockOffset;                     ///< clock bias value (in seconds)
+      double clockOffset;    ///< clock bias value (in seconds)
       bool validClock;
       ORDMap ords;           ///< map of ORDs in epoch
       gpstk::DayTime time;

@@ -118,131 +118,138 @@ void computeOrds(ORDEpochMap& oem,
    RODEpochMap::const_iterator i;
    for (i=rem.begin(); i!=rem.end(); i++)
    {
-      const gpstk::DayTime& t = i->first;
-      const gpstk::RinexObsData& rod = i->second;
-
-      gpstk::ORDEpoch& oe = oem[t];
-      oe.time = t;
-
-      // Now set up our trop model for this epoch
-      const gpstk::WxObservation wx = wod.getMostRecent(t);
-      if (verbosity>3)
-         cout << "wx: " << wx << endl;
-      if (wx.isAllValid())
-         tm.setWeather(wx.temperature, wx.pressure, wx.humidity);
-
-      // Walk over all prns in this epoch
-      gpstk::RinexObsData::RinexSatMap::const_iterator rpi;
-      for (rpi=rod.obs.begin(); rpi!=rod.obs.end(); rpi++)
+      try
       {
-         short prn = rpi->first.id;
+         const gpstk::DayTime& t = i->first;
+         const gpstk::RinexObsData& rod = i->second;
 
-         const gpstk::RinexObsData::RinexObsTypeMap& rotm = rpi->second;
-         gpstk::RinexObsData::RinexObsTypeMap::const_iterator itr;
-         double obs1, obs2;
+         gpstk::ORDEpoch& oe = oem[t];
+         oe.time = t;
 
-         // first we need to make sure the observation data (in rotm) has
-         // the data we require.
-         itr = rotm.find(p1);
-         if (itr == rotm.end())
-            continue;
-         else
-            obs1 = itr->second.data;
+         // Now set up our trop model for this epoch
+         const gpstk::WxObservation wx = wod.getMostRecent(t);
+         if (verbosity>3)
+            cout << "wx: " << wx << endl;
+         if (wx.isAllValid())
+            tm.setWeather(wx.temperature, wx.pressure, wx.humidity);
 
-         if (dualFreq)
+         // Walk over all prns in this epoch
+         gpstk::RinexObsData::RinexSatMap::const_iterator rpi;
+         for (rpi=rod.obs.begin(); rpi!=rod.obs.end(); rpi++)
          {
-            itr = rotm.find(p2);
+            short prn = rpi->first.id;
+
+            const gpstk::RinexObsData::RinexObsTypeMap& rotm = rpi->second;
+            gpstk::RinexObsData::RinexObsTypeMap::const_iterator itr;
+            gpstk::RinexObsData::RinexDatum obs1, obs2;
+
+            // first we need to make sure the observation data (in rotm) has
+            // the data we require.
+            itr = rotm.find(p1);
             if (itr == rotm.end())
                continue;
             else
-               obs2 = itr->second.data;
-         }
+               obs1 = itr->second;
 
-         // Now to look for indications that this data is suspect
-         if (!keepWarts)
-         {
-            // A gross check on the pseudorange
-            if (obs1 < 15e6 || (dualFreq && obs2 < 15e6))
-                continue;
-            
-            itr = rotm.find(p1);
-            if (itr->second.lli)
-               continue;
-
-            itr = rotm.find(p2);
-            if (itr->second.lli)
-               continue;
-
-            // Now make sure we have a valid C/A pseudorange
-            itr = rotm.find(C1);
-            if (itr == rotm.end() || itr->second.data < 15e6 || itr->second.lli)
-               continue;
-         }
-
-         try
-         {
             if (dualFreq)
-               oe.ords[prn] = gpstk::ObsRngDev(obs1, obs2, prn, t, ap, eph, gm, tm, svTime);
-            else
-               oe.ords[prn] = gpstk::ObsRngDev(obs1, prn, t, ap, eph, gm, tm, svTime);
-         }
-         catch (gpstk::EphemerisStore::NoEphemerisFound& e)
+            {
+               itr = rotm.find(p2);
+               if (itr == rotm.end())
+                  continue;
+               else
+                  obs2 = itr->second;
+            }
+
+            // Now to look for indications that this data is suspect
+            if (!keepWarts)
+            {
+               // A gross check on the pseudorange
+               if (obs1.data < 15e6 || obs1.lli)
+                  continue;
+
+               if (dualFreq)
+               {
+                  if (obs2.data < 15e6 || obs2.lli)
+                     continue;
+
+                  // Now make sure we have a valid C/A pseudorange
+                  itr = rotm.find(C1);
+                  if (itr == rotm.end() || itr->second.data < 15e6 ||
+                      itr->second.lli)
+                     continue;
+               }
+            }
+
+            try
+            {
+               if (dualFreq)
+                  oe.ords[prn] = gpstk::ObsRngDev(
+                     obs1.data, obs2.data, prn, t, ap, eph, gm, tm, svTime);
+               else
+                  oe.ords[prn] = gpstk::ObsRngDev(
+                     obs1.data, prn, t, ap, eph, gm, tm, svTime);
+            }
+            catch (gpstk::EphemerisStore::NoEphemerisFound& e)
+            {
+               if (verbosity>2)
+                  cout << e << endl;
+            }
+         } // end looping over each SV in this epoch
+
+         cm->addEpoch(oe);
+         if (verbosity>3)
+            cout << "clk: " << *cm << endl;
+
+         if (!cm->isOffsetValid(t))
          {
             if (verbosity>2)
-               cout << e.getText() << endl;
+               cout << "Could not estimate clock for epoch at " << t << endl;
+            oem.erase(oem.find(t));
          }
-      } // end looping over each SV in this epoch
-
-      cm->addEpoch(oe);
-      if (verbosity>3)
-         cout << "clk: " << *cm << endl;
-
-      if (verbosity>1 && !cm->isOffsetValid(t))
-      {
-         cout << "Could not estimate clock for epoch at " << t << endl;
-         oem.erase(oem.find(t));
-      }
-      else
-      {
-         oe.applyClockModel(*cm);
-
-         gpstk::ORDEpoch::ORDMap::const_iterator pi;
-         bool wonky=false;
-         for (pi = oe.ords.begin(); pi != oe.ords.end(); pi++)
+         else
          {
-            const double ord = pi->second.getORD();
-            short prn = pi->first;
-            if (pi->second.getHealth().is_valid() && 
-                pi->second.getHealth() && !keepUnhealthy)
-               continue;
+            oe.applyClockModel(*cm);
 
-            if (std::abs(ord) > 1e3)
-               wonky = true;
-         }
+            gpstk::ORDEpoch::ORDMap::iterator pi;
+            for (pi = oe.ords.begin(); pi != oe.ords.end();)
+            {
+               const gpstk::ObsRngDev& ord = pi->second;
+               gpstk::ORDEpoch::ORDMap::iterator pi2=pi;
+               pi++;
 
-         if (wonky && verbosity)
-         {
-            cout << "wonky stuff found." << endl;
-            rod.dump(cout);
-            cout << oe  << endl
-                 << *cm << endl;
-         }
-         else if (verbosity>3)
-            cout << "oe: " << oe;
+               if (!keepUnhealthy && ord.getHealth().is_valid() && ord.getHealth())
+               {
+                  oe.ords.erase(pi2);
+                  if (verbosity>3)
+                     cout << "Tossing ord from an unhealty SV." << endl;
+                  continue;
+               }
+               if (keepWarts)
+                  continue;
+               if (std::abs(ord.getTrop()) > 100 || 
+                   ord.getElevation() <= 0.05)
+               {
+                  oe.ords.erase(pi2);
+                  if (verbosity>1)
+                     cout << "Tossing wonky ord: " << ord << endl;
+                  continue;
+               }
+            } // end deleting bad stuff
+
+         } // end check for valid clock offset 
       }
+      catch (gpstk::Exception& e)
+      {
+         if (verbosity)
+            cout << e;
+      }
+
    } // end looping over all epochs
 
-   // Now go through and delete all the epochs with invalid clocks
-   ORDEpochMap::iterator itr;
-   for (itr=oem.begin(); itr != oem.end();)
-   {
-      ORDEpochMap::iterator j=itr;
-      itr++;
-      if (!j->second.validClock)
-         oem.erase(j);
-   }
-
    delete cm;
+
+   if (verbosity>1)
+      cout << "Done computing observed range deviations." << endl;
 } // end of compute_ords()
 
 
