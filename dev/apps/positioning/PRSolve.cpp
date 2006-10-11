@@ -1293,8 +1293,8 @@ try {
 
    argc = Args.size();
    if(argc==0) Args.push_back(string("-h"));
-//cout << "List after PreProcessArgs\n";
-//for(i=0; i<argc; i++) cout << i << " " << Args[i] << endl;
+   //cout << "List after PreProcessArgs\n";
+   //for(i=0; i<argc; i++) cout << i << " " << Args[i] << endl;
 
       // pass the rest
    argc = Args.size()+1;
@@ -1306,8 +1306,9 @@ try {
       if(!CArgs[j]) { cout << "Failed to allocate CArgs[j]\n"; return -1; }
       strcpy(CArgs[j],Args[j-1].c_str());
    }
-//cout << "List passed to parser\n";
-//for(i=0; i<argc; i++) cout << i << " " << CArgs[i] << endl;
+   //cout << "List passed to parser\n";
+   //for(i=0; i<argc; i++) cout << i << " " << CArgs[i] << endl;
+
    Par.parseOptions(argc, CArgs);
 
       // -------------------------------------------------
@@ -1535,6 +1536,7 @@ try {
    }
    if(dashTrop.getCount()) {
       values = dashTrop.getValue();
+      field.clear();
       while(values[0].size() > 0)
          field.push_back(StringUtils::stripFirstWord(values[0],','));
       if(field.size() != 1 && field.size() != 4) {
