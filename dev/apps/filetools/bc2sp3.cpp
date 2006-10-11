@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -43,6 +43,7 @@
 #include "SP3Data.hpp"
 #include "DayTime.hpp"
 #include "SatID.hpp"
+#include "StringUtils.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -55,8 +56,8 @@ int main(int argc, char *argv[])
       " Options (defaults):\n"
       "  --in <file>   Read the input file <file> (--in is optional, repeatable) ()\n"
       "  --out <file>  Name the output file <file> (sp3.out)\n"
-      "  --tb <time>   Output beginning epoch (earliest in input)\n"
-      "  --te <time>   Output ending epoch (latest in input)\n"
+      "  --tb <time>   Output beginning epoch; <time> = week,sec-of-week (earliest in input)\n"
+      "  --te <time>   Output ending epoch; <time> = week,sec-of-week (latest in input)\n"
       "  --outputC     Output version c (no correlation) (otherwise a)\n"
       "  --msg \"...\"   Add ... as a comment to the output header (repeatable)\n"
       "  --verbose     Output to screen: dump headers, data, etc\n"
@@ -83,14 +84,42 @@ int main(int argc, char *argv[])
       for(i=1; i<argc; i++) {
          if(argv[i][0] == '-') {
             string arg(argv[i]);
-            if(arg == string("--outputC"))
+            if(arg == string("--outputC")) {
                version_out = 'c';
-            else if(arg == string("--in"))
+               if(verbose) cout << " Output version c\n";
+            }
+            else if(arg == string("--in")) {
                inputFiles.push_back(string(argv[++i]));
-            else if(arg == string("--out"))
+               if(verbose) cout << " Input file name "
+                  << inputFiles[inputFiles.size()-1] << endl;
+            }
+            else if(arg == string("--out")) {
                fileout = string(argv[++i]);
-            else if(arg == string("--msg"))
+               if(verbose) cout << " Output file name " << fileout << endl;
+            }
+            else if(arg == string("--tb")) {
+               arg = string(argv[++i]);
+               int wk=StringUtils::asInt(StringUtils::stripFirstWord(arg,','));
+               double sow=StringUtils::asDouble(StringUtils::stripFirstWord(arg,','));
+               begTime.setGPSfullweek(wk,sow);
+               if(verbose) cout << " Begin time "
+                  << begTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
+                  << endl;
+            }
+            else if(arg == string("--te")) {
+               arg = string(argv[++i]);
+               int wk=StringUtils::asInt(StringUtils::stripFirstWord(arg,','));
+               double sow=StringUtils::asDouble(StringUtils::stripFirstWord(arg,','));
+               endTime.setGPSfullweek(wk,sow);
+               if(verbose) cout << " End time   "
+                  << endTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
+                  << endl;
+            }
+            else if(arg == string("--msg")) {
                comments.push_back(string(argv[++i]));
+               if(verbose) cout << " Add comment " << comments[comments.size()-1]
+                  << endl;
+            }
             else if(arg == string("--help")) {
                cout << Usage;
                return -1;
@@ -102,6 +131,8 @@ int main(int argc, char *argv[])
          }
          else {
             inputFiles.push_back(string(argv[i]));
+            if(verbose) cout << " Input file name "
+               << inputFiles[inputFiles.size()-1] << endl;
          }
       }
 
@@ -242,7 +273,10 @@ int main(int argc, char *argv[])
             // Position
             sp3data.flag = 'P';
             for(j=0; j<3; j++) sp3data.x[j] = xvt.x[j]/1000.0;       // km
-            sp3data.clk = xvt.dtime * 1000000.0;                     // microsec
+            // must remove the relativity correction from Xvt::dtime
+            // see EngEphemeris::svXvt() - also convert to microsec
+            sp3data.clk = (xvt.dtime - ee.svRelativity(tt)) * 1000000.0;
+
             //if(version_out == 'c') for(j=0; j<4; j++) sp3data.sig[j]=...
             iode = ee.getIODE();
             if(IODEmap[sat] == -1) IODEmap[sat] = iode;

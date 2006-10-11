@@ -474,7 +474,7 @@ namespace gpstk
       s << " with uncertainty = "; s.copyfmt(savefmt); s << TSS.SigmaSlope() << "\n";
       s << " Conditional uncertainty (sigma y given x) = ";
       s.copyfmt(savefmt); s << TSS.SigmaYX();
-      s << "  Correlation = "; s.copyfmt(savefmt); s << TSS.Correlation() << "\n";
+      s << "  Correlation = "; s.copyfmt(savefmt); s << TSS.Correlation();
       return s;
    }
 
