@@ -3,8 +3,6 @@
 # A script for plotting the output of reszilla
 #
 
-my $time="";
-my $strip=1000;
 my $label="";
 my $zoom=0;
 my $clock=0;
@@ -27,19 +25,20 @@ sub config_output;
 use Getopt::Long;
 use Pod::Usage;
 GetOptions(
-    'help|?'       => sub { pod2usage(-verbose => 1);exit } ,
+    'help|?'       => sub { pod2usage(-verbose => 1)} ,
+    'man|'         => sub { pod2usage(-verbose => 2)} ,
     'label|l=s'    => \$label,
     'prn|p=i'      => \$prn,
-    'strip|s=s'    => \$strip,
+    'yrange|s=s'   => \$yrange,
     'size|x=s'     => \$point_size,
-    'time|t=s'     => \$time,
     'ofn|o=s'      => \$ofn,
     'lpr=s'        => \$lpr,
     'oft=s'        => \$oft,
     'eps'          => \$eps,
     'debug|d+'     => \$debug,
     'clock|c+'     => \$clock,
-    'clock_est|e+' => \$clock_est,
+    'clock-est|e+' => \$clock_est,
+    'clock-res'    => \$clock_residual,
     'key|k+'       => \$key,
     'zoom|z+'      => \$zoom,
     'notitle|n+'   => \$suppressTitle,
@@ -54,9 +53,8 @@ if ($debug)
     print "prn: all\n" if ($prn==0);
     print "prn: all, unique color for each prn\n" if ($prn == -1);
     print "point size: $point_size\n";
-    print "Time: $time\n" if ($time);
-    print "Stripping: $strip\n" if ($strip > 0);
-    print "No data stripping.\n" if ($strip == 0);
+    print "Y axis: +/- $yrange meters\n" if ($yrange);
+    print "Y axis: autoscaled\n" if ($yrange == 0);
     print "msid: $msid\n" if ($msid);
     print "obs_type: $obs_type ";
     print "(ords)\n" if ($obs_type == 0);
@@ -80,7 +78,6 @@ if ($zoom)
 
 $cmds1 = << "gnuplot_commands1"
 set title "Residuals from $ARGV[0]\\n$label";
-set label 1 "Stripping data at $strip meters" at graph 1,1.02 right front;
 set ylabel "Residual\\n(meters)";
 set grid ytics;
 set xlabel "Time";
@@ -90,13 +87,14 @@ set pointsize $point_size;
 set xdata time;
 set timefmt "%Y %j %H:%M:%S";
 set format x "%2H:%02M\\n%j";
-strip=$strip;
 prn=$prn;
 otype=$obs_type
-#         (     desired prn   ) && (        not stripped       ) && (       desired type      ) && ( non zero )
-res(p1)=( ((p1==\$4)||(p1==-1)) && (abs(\$7)<strip || strip==0 ) && ((otype==\$5)||(otype==-1)) && (abs(\$7)>0) ) ? \$7 : 1/0;
+#         (     desired prn   ) && (       desired type      ) && ( non zero )
+res(p1)=( ((p1==\$4)||(p1==-1)) && ((otype==\$5)||(otype==-1)) && (abs(\$7)>0) ) ? \$7 : 1/0;
 #
-clk(type)  = ((type==\$5) && (abs(\$7)>0) && (\$9!=1) && (abs(\$8)<strip || strip==0)) ? \$7 : 1/0;
+clk(type)  = ((type==\$5) && (abs(\$7)>0) && (\$9!=1) ) ? \$7 : 1/0;
+#
+clk_res(type)  = ((type==\$5) && (abs(\$8)>0) && (\$9!=1)) ? \$8 : 1/0;
 gnuplot_commands1
 ;
 
@@ -119,60 +117,81 @@ config_output if (!$zoom);
 print GP $cmds1;
 print GP $cmds2 if ($clock == 1);
 print GP $cmds3 if ($clock > 1);
-print GP "set xrange [".$time."] \n" if ($time);
+
+if ($yrange)
+{
+    print GP "set yrange [-".$yrange.":".$yrange."] \n" if ($yrange);
+    print GP "set label 1 \"Y axis: +/- ".$yrange." meters\" at graph 1,1.02 right front \n";
+}
+else
+{
+    print GP "set label 1 \"Y axis: autoscaled\" at graph 1,1.02 right front \n";
+}
 
 $title="notitle";
 
 while ($fn = $ARGV[0])
 {
     shift;
-    if ($clock<2)
+    if ($clock_residual)
     {
-	if ($prn==-1)
-	{
-	    print GP "plot \"$fn\" using 1:(res(0)) notitle with points";
-	    for ($p=1; $p<=32; $p++)
-	    {
-		if ($suppressTitle)
-		{
-		    print GP ", \"\" using 1:(res($p)) notitle with points";
-		}
-		else 
-		{
-		    print GP ", \"\" using 1:(res($p)) title \"PRN $p\" with points";
-		}
-	    }
-	}
-	else
-	{
-	    if (!$suppressTitle)
-	    {
-		$tmp = "All SVs";
-		$tmp = "PRN $prn" if ($prn>0);
-		$title = "title \"$fn $tmp\"";
-	    }
-	    print GP "plot \"$fn\" using 1:(res(prn)) $title" if ($prn);
-	    print GP "plot \"$fn\" using 1:(res(-1)) $title" if (!$prn);
-	}
-    }
-
-    if ($clock)
-    {
-
-	print GP "plot" if ($clock>1);
-	print GP "," if ($clock==1);
-
-	$title = "title \"$fn clock obs\"" if (!$suppressTitle);
-	print GP " \"$fn\" using 1:(clk(50)) with points ";
+	print GP "plot";
+	$title = "title \"$fn clock residual\"" if (!$suppressTitle);
+	print GP " \"$fn\" using 1:(clk_res(50)) with points ";
 	print GP " axis x1y2 " if ($clock==1);
 	print GP " $title";
 
-	if ($clock_est)
+    }
+    else
+    {
+	if ($clock<2)
 	{
-	    $title = "title \"$fn clock est\"" if (!$suppressTitle);
-	    print GP ", \"$fn\" using 1:(clk(51)):8 with errorlines";
-	    print GP " axis x1y2" if ($clock==1);
+	    if ($prn==-1)
+	    {
+		print GP "plot \"$fn\" using 1:(res(0)) notitle with points";
+		for ($p=1; $p<=32; $p++)
+		{
+		    if ($suppressTitle)
+		    {
+			print GP ", \"\" using 1:(res($p)) notitle with points";
+		    }
+		    else 
+		    {
+			print GP ", \"\" using 1:(res($p)) title \"PRN $p\" with points";
+		    }
+		}
+	    }
+	    else
+	    {
+		if (!$suppressTitle)
+		{
+		    $tmp = "All SVs";
+		    $tmp = "PRN $prn" if ($prn>0);
+		    $title = "title \"$fn $tmp\"";
+		}
+		print GP "plot \"$fn\" using 1:(res(prn)) $title" if ($prn);
+		print GP "plot \"$fn\" using 1:(res(-1)) $title" if (!$prn);
+	    }
+	}
+
+	if ($clock)
+	{
+
+	    print GP "plot" if ($clock>1);
+	    print GP "," if ($clock==1);
+
+	    $title = "title \"$fn clock obs\"" if (!$suppressTitle);
+	    print GP " \"$fn\" using 1:(clk(50)) with points ";
+	    print GP " axis x1y2 " if ($clock==1);
 	    print GP " $title";
+
+	    if ($clock_est)
+	    {
+		$title = "title \"$fn clock est\"" if (!$suppressTitle);
+		print GP ", \"$fn\" using 1:(clk(51)):8 with errorlines";
+		print GP " axis x1y2" if ($clock==1);
+		print GP " $title";
+	    }
 	}
     }
     print GP "\n";
@@ -231,72 +250,93 @@ sub config_output
 }
 
 __END__
-
+=pod
 =head1 NAME
 
-dplot - plot the raw output of reszilla
+B<resplot> - plot the raw output of reszilla using gnuplot
 
 =head1 SYNOPSIS
 
-B<dplot> [options] <residuals-file>
+B<resplot> I<[options]> F<residuals-file>
 
-Options:
+=head1 OPTIONS
 
-  -p, --prn <prn>     What prn to plot. 0 means all, -1 means to plot all
-                      but use a unique color for each prn. The default is 0.
-  -c, --clock         Plot the receiver clock estimate along with the 
-                      residuals. Specify it twice and only the clock will be
-                      plotted. (type 50)
-  -e. --clock_est     plot the clock estimate along with the clock (type 51)
-  -l, --label <str>   An additional line to the title of the plot. The 
-                      default is blank.
-  -s, --strip <m>     Strip all points that are larger than this value. The
-                      defalut is 1000 meters. Specifying 0 means don't 
-                      strip any data.
-  -y, --type <type>   What obs type from the file to plot. The default is 0.
-                      See the help on reszilla for more details on what the
-                      various types mean.
-  -t, --time <range>  What time range to plot. (see code for details)
-  -x, --size <pt>     Specify the size of the plotting symbol to use.
+=over
 
-  -o, --ofn <fn>      Save the plot in the specified file. The default
-                      is to not generate a file.
-  -oft <type>         The format to to save the above file as. Valid formats 
-                      are pdf, ps, eps, and png. The default is ps
-                      (postscript).
-      --lpr <printer> Send the plot to the indicated printer as postscript.
-      --eps           Use the eps format for the output file. Same as
-                      specifying "-oft eps".
+=item B<-p> I<prn>, B<--prn>=I<prn>
 
-  -d                  Increase the debug level.
-  -?, --help          Print this message.
+What prn to plot. 0 means all, -1 means to plot all but use a unique 
+color for each prn. The default is 0.
+
+=item B<-c, B<--clock>
+
+Plot the receiver clock estimate along with the residuals. Specify
+it twice and only the clock will be plotted. (type 50)
+
+=item B<-e>, B<--clock_est>
+
+Plot the clock estimate along with the clock (type 51)
+
+=item B<-l> I<str>, B<--label>=I<str>
+
+An additional line to the title of the plot. The default is blank.
+
+=item B<-s> I<y>, B<--yrange>=I<y>
+
+Limit the y range to +/- this value. The default is to let gnuplot autorange
+the y axis.
+
+=item B<-y> I<type>, B<--type>=I<type>
+
+What obs type from the file to plot. The default is 0 (observed range
+deviations). See the help on reszilla for more details on what the various
+types mean.
+
+=item B<-x> I<pt>, B<--size>=I<pt>
+
+Specify the size of the plotting symbol to use. Usefull when generating hardcopy.
+
+=item B<-o> I<fn>, B<--ofn>=I<fn>
+
+Save the plot in the specified file. The default is to not generate a file.
+
+=item B<--oft> <type>
+
+The format to to save the above file as. Valid formats are C<pdf>, C<ps>, 
+C<eps>, and C<png>. The default is C<ps> (postscript).
+
+=item B<--lpr>=I<printer>
+
+Send the plot to the indicated printer as postscript.
+
+=item B<--eps>
+
+Use the eps format for the output file. Same as specifying "-oft eps".
+
+=item B<-d>
+
+Increase the debug level.
+
+=item B<-?>, B<-help>
+
+Print this message.
+
+=item B<--man>
+
+Print a manpage for this program.
+
+=item undocumented features
+
+    'lpr=s'        => \$lpr,
+    'clock|c+'     => \$clock,
+    'clock-est|e+' => \$clock_est,
+    'clock-res'    => \$clock_residual,
+    'key|k+'       => \$key,
+    'zoom|z+'      => \$zoom,
+    'notitle|n+'   => \$suppressTitle,
+
 
 =head1 DESCRIPTION
 
-B<dplot>
-is a command line tool to plot the raw output (-r option) of reszilla using
-gnuplot.
-
-The raw output of reszilla has the form:
-# time              PRN type  elev      clk(m)    2nd diff(m)    3rd diff(m)  count
-2006  20 00:00:00     6    1  71.2   192801.903       0.000413       0.002157     1
-
-or
-
-# time              PRN type  elev      clk(m)        ord(m)    iodc  health
-2006  20 00:00:00     6    0  71.2   192801.903        -0.49143   1c       0
-
-Using a the set timefmt "%Y %j %H:%M:%S" specifier in gnuplot yields the following fields
-in gnuplot:
- 1 time
- 4 prn
- 5 type (0=c1p2 ord, 1=L1 double difference, 2=L2 double difference)
- 6 elevation
- 7 clock
- 8 ord or 2nd difference residual
- 9 iodc or 3rd difference
-10 health or count
-
-=head1 EXAMPLES
-
-When I get time...
+B<resplot> is a command line tool to plot the raw output (-r option) of 
+reszilla using the gnuplot program.
