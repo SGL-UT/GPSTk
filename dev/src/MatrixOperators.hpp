@@ -1,15 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file MatrixOperators.hpp
- * Matrix operators (arithmetic, transpose(), inverse(), etc)
- */
-
-#ifndef GPSTK_MATRIX_OPERATORS_HPP
-#define GPSTK_MATRIX_OPERATORS_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -32,6 +22,14 @@
 //
 //============================================================================
 
+/**
+ * @file MatrixOperators.hpp
+ * Matrix operators (arithmetic, transpose(), inverse(), etc)
+ */
+
+#ifndef GPSTK_MATRIX_OPERATORS_HPP
+#define GPSTK_MATRIX_OPERATORS_HPP
+
 #include "MiscMath.hpp"
 #include "MatrixFunctors.hpp"
 
@@ -51,7 +49,7 @@ namespace gpstk
    {
       if (l.cols() != r.cols())
       {
-         MatrixException e("Incompatible dimensions for matrixConcatTP");
+         MatrixException e("Incompatible dimensions for Matrix && Matrix");
          GPSTK_THROW(e);
       }
 
@@ -81,7 +79,7 @@ namespace gpstk
    {
       if (t.cols() != b.size())
       {
-         MatrixException e("Incompatible dimensions for matrixConcatTP");
+         MatrixException e("Incompatible dimensions for Matrix && Vector");
          GPSTK_THROW(e);
       }
 
@@ -110,7 +108,7 @@ namespace gpstk
    {
       if (t.size() != b.cols())
       {
-         MatrixException e("Incompatible dimensions for matrixConcatTP");
+         MatrixException e("Incompatible dimensions for Vector && Matrix");
          GPSTK_THROW(e);
       }
 
@@ -139,7 +137,7 @@ namespace gpstk
    {
       if (l.rows() != r.rows())
       {
-         MatrixException e("Incompatible dimensions for matrixConcatLR");
+         MatrixException e("Incompatible dimensions for Matrix || Matrix");
          GPSTK_THROW(e);
       }
 
@@ -169,7 +167,7 @@ namespace gpstk
    {
       if (l.rows() != r.size())
       {
-         MatrixException e("Incompatible dimensions for matrixVectorConcatLR");
+         MatrixException e("Incompatible dimensions for Matrix || Vector");
          GPSTK_THROW(e);
       }
 
@@ -198,7 +196,7 @@ namespace gpstk
    {
       if (l.size() != r.rows())
       {
-         MatrixException e("Incompatible dimensions for vectorMatrixConcatLR");
+         MatrixException e("Incompatible dimensions for Vector || Matrix");
          GPSTK_THROW(e);
       }
 
@@ -227,7 +225,7 @@ namespace gpstk
    {
       if ((row >= l.rows()) || (col >= l.cols()))
       {
-         MatrixException e("invalid row or column for minor()");
+         MatrixException e("Invalid row or column for minorMatrix()");
          GPSTK_THROW(e);
       }
          // handle special cases
@@ -331,14 +329,14 @@ namespace gpstk
  */
    template <class T, class BaseClass>
    inline T condNum(const ConstMatrixBase<T, BaseClass>& m, T& big, T& small) 
-      throw (MatrixException)
+      throw ()
    {
       SVD<T> svd;
       svd(m);
       // SVD will sort singular values in descending order
       big = svd.S(0);
       small = svd.S(svd.S.size()-1);
-      if(fabs(small) <= T(1.e-15)) return T(0);    // TD replace with ~ machine precision
+      if(fabs(small) <= T(1.e-15)) return T(0);// TD replace with ~ machine precision
       return big/small;
    }
 
@@ -347,7 +345,7 @@ namespace gpstk
  */
    template <class T, class BaseClass>
    inline T condNum(const ConstMatrixBase<T, BaseClass>& m) 
-      throw (MatrixException)
+      throw ()
    {
       T big, small;
       return condNum(m, big, small);
@@ -357,11 +355,12 @@ namespace gpstk
  * Returns a new \c dim * \c dim matrix that's an identity matrix.
  */
    template <class T>
-   inline Matrix<T> ident(size_t dim) throw(MatrixException)
+   inline Matrix<T> ident(size_t dim)
+      throw(MatrixException)
    {
       if (dim == 0)
       {
-         MatrixException e("invalid matrix dimensions for ident()");
+         MatrixException e("Invalid (0) dimension for ident()");
          GPSTK_THROW(e);
       }
       Matrix<T> toReturn(dim, dim, T(0));
@@ -438,7 +437,7 @@ namespace gpstk
 
             if (t == m.rows())
             {
-               SingularMatrixException e("Singular matrix - cant invert");
+               SingularMatrixException e("Singular matrix");
                GPSTK_THROW(e);
             }
 
@@ -576,7 +575,7 @@ namespace gpstk
    {
       if (l.cols() != r.rows())
       {
-         MatrixException e("Incompatible dimensions for Matrix*Matrix");
+         MatrixException e("Incompatible dimensions for Matrix * Matrix");
          GPSTK_THROW(e);
       }
    
@@ -600,7 +599,7 @@ namespace gpstk
    {
       if (v.size() != m.cols())
       {
-         gpstk::Exception e("Incompatible dimensions for valarray*Matrix");
+         gpstk::MatrixException e("Incompatible dimensions for Vector * Matrix");
          GPSTK_THROW(e);
       }
    
@@ -620,11 +619,11 @@ namespace gpstk
    template <class T, class BaseClass1, class BaseClass2>
    inline Vector<T> operator* (const ConstVectorBase<T, BaseClass1>& v, 
                             const ConstMatrixBase<T, BaseClass2>& m)
-      throw (gpstk::Exception)
+      throw (gpstk::MatrixException)
    {
       if (v.size() != m.rows())
       {
-         gpstk::Exception e("Incompatible dimensions for valarray*Matrix");
+         gpstk::MatrixException e("Incompatible dimensions for Vector * Matrix");
          GPSTK_THROW(e);
       }
    
@@ -649,7 +648,7 @@ namespace gpstk
    {
       if (l.cols() != r.cols() || l.rows() != r.rows())
       {
-         MatrixException e("Incompatible dimensions for Matrix+Matrix");
+         MatrixException e("Incompatible dimensions for Matrix + Matrix");
          GPSTK_THROW(e);
       }
 
@@ -672,7 +671,7 @@ namespace gpstk
    {
       if (l.cols() != r.cols() || l.rows() != r.rows())
       {
-         MatrixException e("Incompatible dimensions for Matrix-Matrix");
+         MatrixException e("Incompatible dimensions for Matrix - Matrix");
          GPSTK_THROW(e);
       }
 
@@ -689,7 +688,8 @@ namespace gpstk
  * Compute the outer product of two vectors.
  */
    template <class T, class BaseClass>
-   inline Matrix<T> outer(const ConstVectorBase<T, BaseClass>& v, const ConstVectorBase<T, BaseClass>& w)
+   inline Matrix<T> outer(const ConstVectorBase<T, BaseClass>& v,
+                        const ConstVectorBase<T, BaseClass>& w)
       throw (MatrixException)
    {
       if(v.size()*w.size() == 0) {
