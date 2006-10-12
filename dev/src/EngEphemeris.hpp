@@ -333,7 +333,7 @@ namespace gpstk
           */
       Xvt svXvt(const DayTime& t) const throw(gpstk::InvalidRequest);
 
-         /** Compute satellite relativity correction (m) at the given time
+         /** Compute satellite relativity correction (sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
       double svRelativity(const DayTime& t) const throw(gpstk::InvalidRequest);
