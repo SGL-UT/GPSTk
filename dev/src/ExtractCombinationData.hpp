@@ -73,9 +73,9 @@ namespace gpstk
             CheckPRData checker(minPRange, maxPRange);
 
             // Let's define the "it" iterator to visit the observations PRN map
-            // RinexPrnMap is a map from RinexPrn to RinexObsTypeMap: 
-            //      std::map<RinexPrn, RinexObsTypeMap>
-            RinexObsData::RinexPrnMap::const_iterator it;
+            // RinexSatMap is a map from SatID to RinexObsTypeMap: 
+            //      std::map<SatID, RinexObsTypeMap>
+            RinexObsData::RinexSatMap::const_iterator it;
             for (it = rinexData.obs.begin(); it!= rinexData.obs.end(); it++) 
             {
                 // RinexObsTypeMap is a map from RinexObsType to RinexDatum:
@@ -83,7 +83,7 @@ namespace gpstk
                 RinexObsData::RinexObsTypeMap otmap;
                 // Let's define a iterator to visit the observations type map
                 RinexObsData::RinexObsTypeMap::const_iterator itObs1;
-                // The "second" field of a RinexPrnMap (it) is a RinexObsTypeMap (otmap)
+                // The "second" field of a RinexSatMap (it) is a RinexObsTypeMap (otmap)
                 otmap = (*it).second;
 
                 // Let's find the observation type inside the RinexObsTypeMap that is "otmap"
