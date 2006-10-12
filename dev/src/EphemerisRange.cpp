@@ -170,9 +170,6 @@ namespace gpstk
          tt -= svPosVel.dtime;      // clock and relativity
       }
 
-      transmit = tt;
-      svPosVel = Eph.getSatXvt(sat,tt);
-
       // correct for Earth rotation
       double tof = RSS(svPosVel.x[0]-Rx.X(),
                        svPosVel.x[1]-Rx.Y(),
