@@ -64,7 +64,7 @@ namespace gpstk
 
 
         /// Vector with the PRN of satellites with available data.
-        Vector<RinexPrn> availableSV;
+        Vector<SatID> availableSV;
 
 
         /// Vector holding the available data
