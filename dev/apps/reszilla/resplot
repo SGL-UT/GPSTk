@@ -3,6 +3,7 @@
 # A script for plotting the output of reszilla
 #
 
+my $time="";
 my $label="";
 my $zoom=0;
 my $clock=0;
@@ -32,6 +33,7 @@ GetOptions(
     'prn|p=i'      => \$prn,
     'yrange|s=s'   => \$yrange,
     'size|x=s'     => \$point_size,
+    'time|t=s'     => \$time,
     'ofn|o=s'      => \$ofn,
     'lpr=s'        => \$lpr,
     'oft=s'        => \$oft,
@@ -55,6 +57,7 @@ if ($debug)
     print "prn: all\n" if ($prn==0);
     print "prn: all, unique color for each prn\n" if ($prn == -1);
     print "point size: $point_size\n";
+    print "Time: $time\n" if ($time);
     print "Y axis: +/- $yrange meters\n" if ($yrange);
     print "Y axis: autoscaled\n" if ($yrange == 0);
     print "msid: $msid\n" if ($msid);
@@ -121,6 +124,7 @@ config_output if (!$zoom);
 print GP $cmds1;
 print GP $cmds2 if ($clock == 1);
 print GP $cmds3 if ($clock > 1);
+print GP "set xrange [".$time."] \n" if ($time);
 
 if ($yrange)
 {
@@ -337,6 +341,7 @@ Print a manpage for this program.
 =item undocumented features
 
     'lpr=s'        => \$lpr,
+    'time|t=s'     => \$time,
     'clock|c+'     => \$clock,
     'clock-est|e+' => \$clock_est,
     'clock-res'    => \$clock_residual,
