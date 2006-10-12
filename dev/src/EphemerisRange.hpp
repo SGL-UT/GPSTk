@@ -87,10 +87,14 @@ namespace gpstk
       double svclkdrift;
       /// The relativity correction in meters.
       double relativity;
-      /// The satellite elevation, as seen at the receiver, in degrees.
+      /// The satellite elevation (spheroidal), as seen at the receiver, in degrees.
       double elevation;
-      /// The satellite azimuth, as seen at the receiver, in degrees.
+      /// The satellite azimuth (spheroidal), as seen at the receiver, in degrees.
       double azimuth;
+      /// The satellite elevation (geodetic), as seen at the receiver, in degrees.
+      double elevationGeodetic;
+      /// The satellite azimuth (geodetic), as seen at the receiver, in degrees.
+      double azimuthGeodetic;
       /// The computed transmit time of the signal.
       DayTime transmit;
       /// The direction cosines of the satellite, as seen at the receiver (XYZ).
@@ -100,7 +104,7 @@ namespace gpstk
 
    }; // end class CorrectedEphemerisRange
 
-   /// Compute relativity correction (meters) from the satellite position and velocity
+   /// Compute relativity correction (seconds) from the satellite position and velocity
    double RelativityCorrection(const Xvt& svPosVel);
 
    //@}

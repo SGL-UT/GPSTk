@@ -122,6 +122,8 @@ namespace gpstk
       Position SV(svPosVel);
       elevation = Rx.elevation(SV);
       azimuth = Rx.azimuth(SV);
+      elevationGeodetic = Rx.elevationGeodetic(SV);
+      azimuthGeodetic = Rx.azimuthGeodetic(SV);
 
       return (rawrange-svclkbias-relativity);
    }
@@ -141,7 +143,6 @@ namespace gpstk
                                                          const EphemerisStore& Eph)
    {
    try {
-      unsigned long ref;
       DayTime tt;
       GPSGeoid geoid;
 
@@ -168,6 +169,9 @@ namespace gpstk
          tt = transmit;
          tt -= svPosVel.dtime;      // clock and relativity
       }
+
+      transmit = tt;
+      svPosVel = Eph.getSatXvt(sat,tt);
 
       // correct for Earth rotation
       double tof = RSS(svPosVel.x[0]-Rx.X(),
@@ -201,6 +205,8 @@ namespace gpstk
       Position SV(svPosVel);
       elevation = Rx.elevation(SV);
       azimuth = Rx.azimuth(SV);
+      elevationGeodetic = Rx.elevationGeodetic(SV);
+      azimuthGeodetic = Rx.azimuthGeodetic(SV);
 
       return (rawrange-svclkbias-relativity);
    }
@@ -215,9 +221,9 @@ namespace gpstk
       // EphemerisStore::getSatXvt routines...
       // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10(s/sqrt(m)) * ecc * sqrt(A(m)) * sinE
       // compute it separately here, in units seconds.
-      double dtr = -2*(svPosVel.x[0]/C_GPS_M)*(svPosVel.v[0]/C_GPS_M)
-                  -2*(svPosVel.x[1]/C_GPS_M)*(svPosVel.v[1]/C_GPS_M)
-                  -2*(svPosVel.x[2]/C_GPS_M)*(svPosVel.v[2]/C_GPS_M);
+      double dtr = ( -2.0 *( svPosVel.x[0] * svPosVel.v[0]
+                           + svPosVel.x[1] * svPosVel.v[1]
+                           + svPosVel.x[2] * svPosVel.v[2] ) / C_GPS_M ) / C_GPS_M;
       return dtr;
    }
 
