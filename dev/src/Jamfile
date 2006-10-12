@@ -63,6 +63,7 @@ else
       RinexSatID.cpp SP3SatID.cpp
       ObsID.cpp RinexObsID.cpp
       Bancroft.cpp SolverLMS.cpp SolverWMS.cpp DOP.cpp
+      ModeledReferencePR.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp AlmanacStore.hpp BCEphemerisStore.hpp
@@ -114,7 +115,7 @@ else
       DOP.hpp WeightBase.hpp ModeledPseudorangeBase.hpp ExtractData.hpp
       ExtractCombinationData.hpp ExtractC1.hpp ExtractP1.hpp ExtractP2.hpp
       ExtractPC.hpp ExtractL1.hpp ExtractL2.hpp ExtractLC.hpp ExtractD1.hpp
-      ExtractD2.hpp
+      ExtractD2.hpp ModeledReferencePR.hpp
       ;
 }
 

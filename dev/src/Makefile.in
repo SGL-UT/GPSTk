@@ -64,7 +64,8 @@ am_libgpstk_la_OBJECTS = Exception.lo BinUtils.lo VectorBase.lo \
 	LinearClockModel.lo ObsClockModel.lo ObsRngDev.lo FICData.lo \
 	FICHeader.lo CodeBuffer.lo GenXSequence.lo SVPCodeGen.lo \
 	X1Sequence.lo X2Sequence.lo GPSZcount.lo Position.lo \
-	PRSolution.lo Expression.lo Bancroft.lo DOP.lo WxObsMap.lo
+	PRSolution.lo Expression.lo Bancroft.lo DOP.lo WxObsMap.lo \
+	ModeledReferencePR.lo
 libgpstk_la_OBJECTS = $(am_libgpstk_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -207,7 +208,7 @@ libgpstk_la_SOURCES = Exception.cpp BinUtils.cpp VectorBase.cpp \
 	ObsRngDev.cpp FICData.cpp FICHeader.cpp CodeBuffer.cpp \
 	GenXSequence.cpp SVPCodeGen.cpp X1Sequence.cpp X2Sequence.cpp \
 	GPSZcount.cpp Position.cpp PRSolution.cpp Expression.cpp \
-	Bancroft.cpp DOP.cpp /WxObsMap.cpp
+	Bancroft.cpp DOP.cpp /WxObsMap.cpp ModeledReferencePR.cpp
 all: all-am
 
 .SUFFIXES:
