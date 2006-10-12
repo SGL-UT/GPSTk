@@ -98,10 +98,10 @@ namespace gpstk
         bool validData;
 
         /// Vector with the PRN of satellites available for computing.
-        Vector<RinexPrn> availableSV;
+        Vector<SatID> availableSV;
 
         /// Vector with the PRN of satellites rejected or not used in computing.
-        Vector<RinexPrn> rejectedSV;
+        Vector<SatID> rejectedSV;
 
         /// Vector with the geodetic elevation of satellites from the receiver point of view.
         Vector<double> elevationSV;
