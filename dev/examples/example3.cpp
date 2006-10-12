@@ -8,7 +8,8 @@
 using namespace std;
 using namespace gpstk;
 
-main(int argc, char *argv[])
+// ISO C++ forbids declaration of `main' with no type
+int main(int argc, char *argv[])
 {
     int myprn;
 
@@ -30,6 +31,8 @@ main(int argc, char *argv[])
 //Declare RINEX observation file streams and data objects
 //-------------------------------------------------------
        RinexObsStream roffs(argv[1]);
+       // It is necessary to set the failbit in order to throw exceptions 
+       roffs.exceptions(ios::failbit);
        RinexObsHeader roh;
        RinexObsData roe;
        RinexObsData::RinexDatum dataobj;
@@ -67,7 +70,10 @@ main(int argc, char *argv[])
 
                 RinexObsData::RinexDatum dataobj2 = (*pointer).second[RinexObsHeader::P1];  //The more efficient STL way
 
-                if( dataobj.data != dataobj.data) cout << "STL has a bug! (Type crtl-C now or else orcs will crawl from you ears!)" << endl;
+                // Another way to do the same that above
+                //RinexObsData::RinexDatum dataobj2 = pointer->second[RinexObsHeader::P1];
+
+                if( dataobj.data != dataobj2.data) cout << "STL has a bug! (Type crtl-C now or else orcs will crawl from you ears!)" << endl;
 
                 double P1 = dataobj.data;
 
@@ -83,6 +89,10 @@ main(int argc, char *argv[])
 //Compute multipath
 //-----------------
                 double mu = P1 -L1*(C_GPS_M/L1_FREQ) -2*(P1 -P2)/(1-gamma);
+ 
+                // The following line makes sure that you get a proper output format
+                // The line above with "roh.dump" sets this, but just in case...               
+                cout << fixed << setw(7) << setprecision(3);
 
                 cout << " PRN " << myprn << " biased multipath " <<  mu << endl;
             }
