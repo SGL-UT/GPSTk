@@ -37,7 +37,7 @@ namespace gpstk
      * @param Tr            Measured time of reception of the data.
      * @param Satellite     Vector of satellites; on successful return, satellites that
      *                      were excluded by the algorithm are marked by a negative
-     *                      Satellite[i].prn
+     *                      Satellite[i].id
      * @param Pseudorange   Vector of raw pseudoranges (parallel to satellite), in meters.
      * @param Eph           EphemerisStore to be used.
      * @param pTropModel    Pointer to tropospheric model to be used (@sa TropModel.hpp). By
