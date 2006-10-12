@@ -98,6 +98,31 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
+   double BCEphemerisStore::getTGD(SatID sat, const DayTime& t)
+      const throw(EphemerisStore::NoEphemerisFound)
+   {
+      try
+      {
+         double tgdValue;
+         const EngEphemeris& eph 
+            = ( method==0 ? findEphemeris(sat,t) : findNearEphemeris(sat,t) );
+         tgdValue = eph.getTgd() * C_GPS_M;
+         return tgdValue;
+      }
+      catch(NoEphemerisFound& nef)
+      {
+         GPSTK_RETHROW(nef);
+      }
+      catch(InvalidRequest& ir)
+      {
+         NoEphemerisFound nef(ir);
+         GPSTK_THROW(nef);
+      }
+   } // end of BCEphemerisStore::getTGD()
+
+
+   //--------------------------------------------------------------------------
+   //--------------------------------------------------------------------------
    short BCEphemerisStore::getSatHealth(SatID sat, const DayTime& t)
       const throw(EphemerisStore::NoEphemerisFound)
    {

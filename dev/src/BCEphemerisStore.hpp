@@ -50,6 +50,7 @@
 
 #include "EphemerisStore.hpp"
 #include "EngEphemeris.hpp"
+#include "icd_200_constants.hpp"
 
 namespace gpstk
 {
@@ -88,6 +89,15 @@ namespace gpstk
                             const gpstk::DayTime& t) const 
          throw(NoEphemerisFound);
       
+        /** This method returns the Total Group Delay of the SV (in meters) at the 
+         * indicated time.
+         * @param sat    the satellite's SatID
+         * @param t      the time to look up
+         * @return       the TGD (in meters) of the SV at time t
+         */
+      virtual double getTGD(SatID sat, const gpstk::DayTime& t) const
+         throw(NoEphemerisFound);
+
          /// \deprecated use the SatID version
       virtual short getPrnHealth(short prn,
                                  const gpstk::DayTime& t) const 
