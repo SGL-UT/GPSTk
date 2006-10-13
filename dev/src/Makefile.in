@@ -65,7 +65,7 @@ am_libgpstk_la_OBJECTS = Exception.lo BinUtils.lo VectorBase.lo \
 	FICHeader.lo CodeBuffer.lo GenXSequence.lo SVPCodeGen.lo \
 	X1Sequence.lo X2Sequence.lo GPSZcount.lo Position.lo \
 	PRSolution.lo Expression.lo Bancroft.lo DOP.lo WxObsMap.lo \
-	ModeledReferencePR.lo ModeledPR.lo
+	ModeledReferencePR.lo ModeledPR.lo SimpleIURAWeight.lo
 libgpstk_la_OBJECTS = $(am_libgpstk_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -209,7 +209,7 @@ libgpstk_la_SOURCES = Exception.cpp BinUtils.cpp VectorBase.cpp \
 	GenXSequence.cpp SVPCodeGen.cpp X1Sequence.cpp X2Sequence.cpp \
 	GPSZcount.cpp Position.cpp PRSolution.cpp Expression.cpp \
 	Bancroft.cpp DOP.cpp /WxObsMap.cpp ModeledReferencePR.cpp \
-	ModeledPR.cpp
+	ModeledPR.cpp SimpleIURAWeight.cpp
 all: all-am
 
 .SUFFIXES:
@@ -311,6 +311,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexObsHeader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexSatID.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RungeKutta4.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SimpleIURAWeight.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SMODFData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SP3Data.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SP3EphemerisStore.Plo@am__quote@
