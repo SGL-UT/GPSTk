@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,11 +36,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file ObsRngDev.hpp
  * Observed range deviation computation & storage.
@@ -62,6 +55,7 @@
 #include "IonoModelStore.hpp"
 #include "TropModel.hpp"
 #include "ValidType.hpp"
+#include "SatID.hpp"
 
 namespace gpstk
 {
@@ -87,7 +81,7 @@ namespace gpstk
        * Creates an ORD, with no ionospheric correction and a default
        * trop correction.
        * \param prange the observed pseudorange
-       * \param prn the PRN number of the observed SV
+       * \param svid the SV being observed
        * \param time the time of the observation
        * \param rxpos the earth-centered, earth-fixed receiver position
        * \param eph a store of either broadcast or precise ephemerides
@@ -96,8 +90,8 @@ namespace gpstk
        * \param fq the GPS frequency (L1 or L2) from which the obs was made
        * \param svTime true if prange is in SV time, false for RX time.
        */ 
-      ObsRngDev(double prange,
-                short prn,
+      ObsRngDev(const double prange,
+                const SatID& svid,
                 const DayTime& time,
                 const ECEF& rxpos,
                 const EphemerisStore& eph,
@@ -117,8 +111,8 @@ namespace gpstk
        * \param fq the GPS frequency (L1 or L2) from which the obs was made
        * \param svTime true if prange is in SV time, false for RX time.
        */ 
-      ObsRngDev(double prange,
-                short prn,
+      ObsRngDev(const double prange,
+                const SatID& svid,
                 const DayTime& time,
                 const ECEF& rxpos,
                 const EphemerisStore& eph,
@@ -141,8 +135,8 @@ namespace gpstk
        * \param fq the GPS frequency (L1 or L2) from which the obs was made
        * \param svTime true if prange is in SV time, false for RX time.
        */ 
-      ObsRngDev(double prange,
-                short prn,
+      ObsRngDev(const double prange,
+                const SatID& svid,
                 const DayTime& time,
                 const ECEF& rxpos,
                 const EphemerisStore& eph,
@@ -165,8 +159,8 @@ namespace gpstk
        * \param fq the GPS frequency (L1 or L2) from which the obs was made
        * \param svTime true if prange is in SV time, false for RX time.
        */ 
-      ObsRngDev(double prange,
-                short prn,
+      ObsRngDev(const double prange,
+                const SatID& svid,
                 const DayTime& time,
                 const ECEF& rxpos,
                 const EphemerisStore& eph,
@@ -188,8 +182,9 @@ namespace gpstk
        * \param gm a GeoidModel for performing range calculations
        * \param svTime true if prange is in SV time, false for RX time.
        */ 
-      ObsRngDev(double prange1, double prange2,
-                short prn,
+      ObsRngDev(const double prange1,
+                const double prange2,
+                const SatID& svid,
                 const DayTime& time,
                 const ECEF& rxpos,
                 const EphemerisStore& eph,
@@ -209,8 +204,9 @@ namespace gpstk
        * \param tm a TropModel for performing trop calculations
        * \param svTime true if prange is in SV time, false for RX time.
        */ 
-      ObsRngDev(double prange1, double prange2,
-                short prn,
+      ObsRngDev(const double prange1,
+                const double prange2,
+                const SatID& svid,
                 const DayTime& time,
                 const ECEF& rxpos,
                 const EphemerisStore& eph,
@@ -229,10 +225,10 @@ namespace gpstk
       const DayTime& getTime() const throw() { return obstime; }
 
       /**
-       * returns the PRN number of the observed SV
-       * \return PRN number
+       * returns the observed SV's identifier
+       * \return svid
        */
-      short getPRN() const throw() { return prn; }
+      SatID getSvID() const throw() { return svid; }
 
       /**
        * returns the SV azimuth angle (in degrees) in relation to the rx
@@ -291,8 +287,10 @@ namespace gpstk
                       const GeoidModel& gm,
                       bool svTime)
       {
-         if (svTime) computeOrdTx(obs, rxpos, eph, gm);
-         else computeOrdRx(obs, rxpos, eph, gm);
+         if (svTime) 
+            computeOrdTx(obs, rxpos, eph, gm);
+         else 
+            computeOrdRx(obs, rxpos, eph, gm);
          return;
       }
 
@@ -313,7 +311,7 @@ namespace gpstk
 
    protected:
       DayTime obstime;           ///< time of SV observation
-      short prn;                 ///< PRN number of observed SV
+      SatID svid;                ///< PRN number of observed SV
       double ord;                ///< difference between expected and observed range
 
       vfloat azimuth;            ///< SV azimuth

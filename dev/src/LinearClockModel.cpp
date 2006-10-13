@@ -38,11 +38,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file LinearClockModel.cpp
  * This model is just a moving average of clock models over time. It
@@ -77,7 +72,7 @@ namespace gpstk
       // Start off by getting an estimate of this epoch's clock
       // note that this also sets the prn status map
       gpstk::Stats<double> stat = simpleOrdClock(oe);
-      PRNStatusMap& statusMap = prnStatus[t];
+      SvStatusMap& statusMap = prnStatus[t];
       statusMap = status;
 
       double mean;
@@ -120,7 +115,7 @@ namespace gpstk
       {
          tossCount=0;
          for (itr = oe.ords.begin(); itr != oe.ords.end(); itr++)
-            if (statusMap[itr->second.getPRN()] == USED)
+            if (statusMap[itr->second.getSvID()] == USED)
             {
                const double ord = itr->second.getORD();
                clockModel.Add(deltaT, ord);
@@ -167,9 +162,9 @@ namespace gpstk
            << ", max sigma: " << sigmam
            << endl;
 
-         map<DayTime,PRNStatusMap>::const_iterator e = prnStatus.find(endTime);
-         const PRNStatusMap& statusMap = e->second;
-         PRNStatusMap::const_iterator i;
+         map<DayTime,SvStatusMap>::const_iterator e = prnStatus.find(endTime);
+         const SvStatusMap& statusMap = e->second;
+         SvStatusMap::const_iterator i;
          for ( i=statusMap.begin(); i!= statusMap.end(); i++)
             s << i->first << "/" << i->second << " ";
          s << endl;

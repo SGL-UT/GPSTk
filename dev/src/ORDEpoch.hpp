@@ -49,6 +49,7 @@
 #include "Exception.hpp"
 #include "ObsRngDev.hpp"
 #include "ClockModel.hpp"
+#include "SatID.hpp"
 
 namespace gpstk
 {
@@ -57,11 +58,11 @@ namespace gpstk
    public:
 
       /// defines a store for each SV's ord, indexed by prn
-      typedef std::map<short, ObsRngDev> ORDMap;
+      typedef std::map<SatID, ObsRngDev> ORDMap;
 
-      ORDEpoch& removeORD(short prn) throw()
+      ORDEpoch& removeORD(const SatID& svid) throw()
       {
-         ORDMap::iterator i = ords.find(prn);
+         ORDMap::iterator i = ords.find(svid);
          if(i != ords.end())
             ords.erase(i);
          return *this;

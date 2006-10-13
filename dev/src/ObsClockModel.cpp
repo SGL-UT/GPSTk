@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,11 +36,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file ObsClockModel.cpp
  * Yet another abstract class used to define an interface to a model that
@@ -61,14 +54,15 @@ namespace gpstk
 {
    using namespace std;
 
-   ObsClockModel::PRNStatus ObsClockModel::getPRNStatus(short prn) const
+
+   ObsClockModel::SvStatus ObsClockModel::getSvStatus(const SatID& svid) const
       throw(gpstk::ObjectNotFound)
    {
-      PRNStatusMap::const_iterator i = status.find(prn);
+      SvStatusMap::const_iterator i = status.find(svid);
       if(i == status.end())
       {
-         gpstk::ObjectNotFound e("No status for PRN " +
-                                 gpstk::StringUtils::asString(prn) +
+         gpstk::ObjectNotFound e("No status for SV " +
+                                 StringUtils::asString(svid) +
                                  " available.");
          GPSTK_THROW(e);
       }
@@ -76,26 +70,28 @@ namespace gpstk
          return i->second;
    }
 
-   ObsClockModel& ObsClockModel::setPRNModeMap(const PRNModeMap& right)
+
+   ObsClockModel& ObsClockModel::setSvModeMap(const SvModeMap& right)
       throw()
    {
       for(int prn = 1; prn <= gpstk::MAX_PRN; prn++)
-         modes[prn] = IGNORE;
+         modes[SatID(prn, SatID::systemGPS)] = IGNORE;
 
-      for(PRNModeMap::const_iterator i = right.begin(); i != right.end(); i++)
+      for(SvModeMap::const_iterator i = right.begin(); i != right.end(); i++)
          modes[i->first] = i->second;
 
       return *this;
    }
 
-   ObsClockModel::PRNMode ObsClockModel::getPRNMode(short prn) const
+
+   ObsClockModel::SvMode ObsClockModel::getSvMode(const SatID& svid) const
       throw(gpstk::ObjectNotFound)
    {
-      PRNModeMap::const_iterator i = modes.find(prn);
+      SvModeMap::const_iterator i = modes.find(svid);
       if(i == modes.end())
       {
-         gpstk::ObjectNotFound e("No status for PRN " +
-                                 gpstk::StringUtils::asString(prn) +
+         gpstk::ObjectNotFound e("No status for SV " +
+                                 StringUtils::asString(svid) +
                                  " available.");
          GPSTK_THROW(e);
       }
@@ -114,31 +110,31 @@ namespace gpstk
       ORDEpoch::ORDMap::const_iterator itr;
       for(itr = oe.ords.begin(); itr != oe.ords.end(); itr++)
       {
-         short prn = itr->first;
+         const SatID& svid = itr->first;
          const ObsRngDev& ord=itr->second;
-         switch (modes[prn])
+         switch (modes[svid])
          {
             case IGNORE: 
-               status[prn] = MANUAL;
+               status[svid] = MANUAL;
                break;
             case ALWAYS:
-               status[prn] = USED;
+               status[svid] = USED;
                break;
             case HEALTHY:
                // SV Health bits are defined in ICD-GPS-200C-IRN4 20.3.3.3.1.4
                // It is a 6-bit value where the MSB (0x20) indicates a summary of
                // of NAV data health where 0 = OK, 1 = some or all BAD
                if (ord.getHealth().is_valid() && (ord.getHealth() & 0x20)) 
-                  status[prn] = SVHEALTH;
+                  status[svid] = SVHEALTH;
                else
-                  status[prn] = USED;
+                  status[svid] = USED;
                break;
          }
       
          if (ord.getElevation() < elvmask)
-            status[prn] = ELEVATION;
+            status[svid] = ELEVATION;
 
-         if (status[prn] == USED)
+         if (status[svid] == USED)
             stat.Add(ord.getORD());
       }
    
@@ -146,16 +142,16 @@ namespace gpstk
       {
          for (itr = oe.ords.begin(); itr != oe.ords.end(); itr++)
          {
-            short prn = itr->first;
+            const SatID& svid = itr->first;
 
             // don't override other types of stripping
-            if (status[prn] == USED)
+            if (status[svid] == USED)
             {
                // get absolute distance of residual from mean
                double res = itr->second.getORD();
                double dist = res - stat.Average();
                if(fabs(dist) > (sigmam * stat.StdDev()))
-                  status[prn] = SIGMA;
+                  status[svid] = SIGMA;
             }
          }
    
@@ -163,7 +159,7 @@ namespace gpstk
          // the clock bias value
          stat.Reset();
          for (itr = oe.ords.begin(); itr != oe.ords.end(); itr++)
-            if (status[itr->second.getPRN()] == USED)
+            if (status[itr->second.getSvID()] == USED)
                stat.Add(itr->second.getORD());
       
       }
@@ -176,7 +172,7 @@ namespace gpstk
         << ", max sigma:" << sigmam
         << ", prn/status: ";
       
-      ObsClockModel::PRNStatusMap::const_iterator i;
+      ObsClockModel::SvStatusMap::const_iterator i;
       for ( i=status.begin(); i!= status.end(); i++)
          s << i->first << "/" << i->second << " ";
    }

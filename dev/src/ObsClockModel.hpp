@@ -63,14 +63,14 @@ namespace gpstk
    class ObsClockModel : public ClockModel
    {
    public:
-      enum PRNMode
+      enum SvMode
       {
          IGNORE,   ///< do not include ORDs from this SV
          HEALTHY,  ///< include ORDs from this SV if it is healthy
          ALWAYS    ///< always include ORDs from this SV
       };
       
-      enum PRNStatus
+      enum SvStatus
       {
          USED,      ///< ORD used in the clock bias computation
          MANUAL,    ///< ORD removed from computation by user request 
@@ -79,17 +79,17 @@ namespace gpstk
          SIGMA      ///< ORD removed from computation because it was outlier
       };
 
-      /// defines a store for each SV's #PRNMode
-      typedef std::map<short, PRNMode> PRNModeMap;
+      /// defines a store for each SV's #SvMode
+      typedef std::map<SatID, SvMode> SvModeMap;
 
-      /// defines a store for each SV's #PRNStatus
-      typedef std::map<short, PRNStatus> PRNStatusMap;
+      /// defines a store for each SV's #SvStatus
+      typedef std::map<SatID, SvStatus> SvStatusMap;
 
-      ObsClockModel(double sigma = 2, double elmask = 0, PRNMode mode = ALWAYS)
+      ObsClockModel(double sigma = 2, double elmask = 0, SvMode mode = ALWAYS)
          : sigmam(sigma), elvmask(elmask)
       {
          status.clear();
-         setPRNMode(mode);
+         setSvMode(mode);
       }
 
       virtual void addEpoch(const ORDEpoch& re) throw(gpstk::InvalidValue) = 0;
@@ -97,30 +97,33 @@ namespace gpstk
       // set accessor methods ----------------------------------------------   
 
       /**
-       * set a PRNMode for all SVs.
-       * \param right #PRNModeMap
+       * set a SvMode for all SVs.
+       * \param right #SvModeMap
        * \return a reference to this object
        */
-      ObsClockModel& setPRNModeMap(const PRNModeMap& right) throw();
+      ObsClockModel& setSvModeMap(const SvModeMap& right) throw();
 
       /** 
-       * set the PRNMode for a particular SV.
-       * \param prn PRN number of the SV
-       * \param mode #PRNMode for the SV
+       * set the SvMode for a particular SV.
+       * \param prn Sv number of the SV
+       * \param mode #SvMode for the SV
        * \return a reference to this object
        */
-      ObsClockModel& setPRNMode(short prn, PRNMode mode) throw()
-      { modes[prn] = mode; return *this; }
+      ObsClockModel& setSvMode(const SatID& svid, const SvMode& mode) throw()
+      { modes[svid] = mode; return *this; }
       
       /** 
-       * set the PRNMode for all SVs
-       * \param mode #PRNMode for the SVs
+       * set the SvMode for all SVs
+       * \param mode #SvMode for the SVs
        * \return a reference to this object
        */
-      ObsClockModel& setPRNMode(PRNMode mode) throw()
+      ObsClockModel& setSvMode(const SvMode& mode) throw()
       {
          for(int prn = 1; prn <= gpstk::MAX_PRN; prn++)
-            modes[prn] = mode;
+         {
+            SatID svid(prn, SatID::systemGPS);
+            modes[svid] = mode;
+         }
          return *this;
       }
 
@@ -144,32 +147,32 @@ namespace gpstk
    
       /**
        * get the map indicating how each ORD was used in the bias computation.
-       * \return a const reference to the #PRNStatusMap
+       * \return a const reference to the #SvStatusMap
        */
-      const PRNStatusMap& getPRNStatusMap() const throw()
+      const SvStatusMap& getSvStatusMap() const throw()
       { return status; };
 
       /**
        * get the status of a particular ORD in the bias computation.
        * \param prn the PRN number indicating the ORD of interest
-       * \return #PRNStatus
+       * \return #SvStatus
        * \exception ObjectNotFound an ORD for that SV is not in the map
        */
-      PRNStatus getPRNStatus(short prn) const throw(gpstk::ObjectNotFound);
+      SvStatus getSvStatus(const SatID& svid) const throw(ObjectNotFound);
 
       /**
        * get the map indicating how to use each ORD in the bias computation.
-       * \return a const reference to the #PRNModeMap
+       * \return a const reference to the #SvModeMap
        */
-      const PRNModeMap& getPRNModeMap() const throw() { return modes; }
+      const SvModeMap& getSvModeMap() const throw() { return modes; }
 
       /**
        * get how a particular ORD is to be used in the bias computation.
-       * \param prn the PRN number indicating the mode of interest
-       * \return #PRNMode
+       * \param prn the Sv number indicating the mode of interest
+       * \return #SvMode
        * \exception ObjectNotFound a mode for that SV is not in the map
        */
-      PRNMode getPRNMode(short prn) const throw(gpstk::ObjectNotFound);
+      SvMode getSvMode(const SatID& svid) const throw(ObjectNotFound);
 
       /**
        * returns the sigma multiple value used for ORD stripping.
@@ -184,11 +187,11 @@ namespace gpstk
       double getElevationMask() const throw() { return elvmask; }
 
       /// Computes an average of all ORD in the epoch that pass the elevation
-      /// mask, and PRNModeMap tests, removes those ORDS that exceede the sigmam
+      /// mask, and SvModeMap tests, removes those ORDS that exceede the sigmam
       /// value and returns the resulting statistics. This is effectivly a simple
       /// single epoch clock model.
       Stats<double> simpleOrdClock(const ORDEpoch& oe)
-         throw(gpstk::InvalidValue);
+         throw(InvalidValue);
 
       virtual void dump(std::ostream& s, short detail=1) const throw();
 
@@ -199,8 +202,8 @@ namespace gpstk
 
       double sigmam;         ///< sigma multiple value for ORD stripping
       double elvmask;        ///< elevation mask angle for ORD stripping
-      PRNStatusMap status;   ///< map of ORD usage in bias computation
-      PRNModeMap modes;      ///< map of modes to use ORDs in bias computation
+      SvStatusMap status;   ///< map of ORD usage in bias computation
+      SvModeMap modes;      ///< map of modes to use ORDs in bias computation
    };
 }
 #endif

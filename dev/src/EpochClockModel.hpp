@@ -59,8 +59,8 @@ namespace gpstk
    public:
       EpochClockModel(double sigma = 2, 
                       double elmask = 0, 
-                      PRNMode mode = ALWAYS)
-         :ObsClockModel(sigma, elmask, mode){}
+                      SvMode mode = ALWAYS)
+         : ObsClockModel(sigma, elmask, mode){}
 
       virtual double EpochClockModel::getOffset(const gpstk::DayTime& t) const
          throw(gpstk::InvalidArgumentException) 

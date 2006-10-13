@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,11 +36,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #ifndef LINEARCLOCKMODEL_HPP
 #define LINEARCLOCKMODEL_HPP
 
@@ -64,7 +57,7 @@ namespace gpstk
    class LinearClockModel : public ObsClockModel
    {
    public:
-      LinearClockModel(double sigma = 2, double elmask = 0, PRNMode mode = ALWAYS)
+      LinearClockModel(double sigma = 2, double elmask = 0, SvMode mode = ALWAYS)
          :ObsClockModel(sigma, elmask, mode) {reset();};
 
       virtual double getOffset(const gpstk::DayTime& t) const 
@@ -98,9 +91,9 @@ namespace gpstk
 
       unsigned long tossCount;
    
-      // This is were we store what PRNs were used to compute the individual
+      // This is were we store what SVs were used to compute the individual
       // clock observations
-      std::map<gpstk::DayTime, PRNStatusMap> prnStatus;
+      std::map<gpstk::DayTime, SvStatusMap> prnStatus;
 
       // This is a store of the clock observations that were added into the
       // clockModel object

@@ -63,7 +63,7 @@ namespace gpstk
    };
 
    /// All the observations collected from a single receiver at a single epoch
-   struct ObsEpoch :  std::map<SatID, SvObsEpoch>
+   struct ObsEpoch : public std::map<SatID, SvObsEpoch>
    {
       gpstk::DayTime time;
       vdouble rxClock;
