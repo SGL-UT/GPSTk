@@ -56,9 +56,9 @@ namespace gpstk
       else if (rot == RinexObsHeader::D1) {type=otDoppler; band=cbL1; code=tcP;}
 
       else if (rot == RinexObsHeader::L2) {type=otPhase;   band=cbL2; code=tcP;}
-      else if (rot == RinexObsHeader::P2) {type=otRange;   band=cbL1; code=tcP;}
+      else if (rot == RinexObsHeader::P2) {type=otRange;   band=cbL2; code=tcP;}
       else if (rot == RinexObsHeader::C2) {type=otRange;   band=cbL2; code=tcC2LM;}
       else if (rot == RinexObsHeader::S2) {type=otSNR;     band=cbL2; code=tcP;}
-      else if (rot == RinexObsHeader::D2) {type=otDoppler; band=cbL1; code=tcP;}
+      else if (rot == RinexObsHeader::D2) {type=otDoppler; band=cbL2; code=tcP;}
    }
 }
