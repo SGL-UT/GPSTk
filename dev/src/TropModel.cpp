@@ -215,7 +215,7 @@ namespace gpstk
       GPSGeoid geoid;
       Cdrydelay = 2.343*(press/1013.25)*(temp-3.96)/temp;
       double tks = temp * temp;
-      Cwetdelay = 8.952/tks*humid*exp(-37.2465+0.213166*temp-(0.256908e-3)*tks);
+      Cwetdelay = 8.952/tks*humid*std::exp(-37.2465+0.213166*temp-(0.256908e-3)*tks);
       Cdrymap =1.0+(0.15)*148.98*(temp-3.96)/geoid.a();
       Cwetmap =1.0+(0.15)*12000.0/geoid.a();
       valid = true;
@@ -262,7 +262,7 @@ namespace gpstk
 
       if(elevation < 0.0) return 0.0;
 
-      double d = cos(elevation*DEG_TO_RAD);
+      double d = std::cos(elevation*DEG_TO_RAD);
       d /= Cdrymap;
       return (1.0/SQRT(1.0-d*d));
    }
@@ -279,7 +279,7 @@ namespace gpstk
 
       if(elevation < 0.0) return 0.0;
 
-      double d = cos(elevation*DEG_TO_RAD);
+      double d = std::cos(elevation*DEG_TO_RAD);
       d /= Cwetmap;
       return (1.0/SQRT(1.0-d*d));
    }
@@ -356,7 +356,7 @@ namespace gpstk
       if(elevation < 0.0) return 0.0;
 
       GPSGeoid geoid;
-      double ce=cos(elevation*DEG_TO_RAD), se=sin(elevation*DEG_TO_RAD);
+      double ce=std::cos(elevation*DEG_TO_RAD), se=std::sin(elevation*DEG_TO_RAD);
       double ad = -se/Cdrymap;
       double bd = -ce*ce/(2.0*geoid.a()*Cdrymap);
       double Rd = SQRT((geoid.a()+Cdrymap)*(geoid.a()+Cdrymap)
@@ -393,7 +393,7 @@ namespace gpstk
       if(elevation < 0.0) return 0.0;
 
       GPSGeoid geoid;
-      double ce = cos(elevation*DEG_TO_RAD), se = sin(elevation*DEG_TO_RAD);
+      double ce = std::cos(elevation*DEG_TO_RAD), se = std::sin(elevation*DEG_TO_RAD);
       double aw = -se/Cwetmap;
       double bw = -ce*ce/(2.0*geoid.a()*Cwetmap);
       double Rw = SQRT((geoid.a()+Cwetmap)*(geoid.a()+Cwetmap)
@@ -429,7 +429,7 @@ namespace gpstk
          // water vapor partial pressure (mb)
          // this comes from Leick and is not good.
          // double wvpp=6.108*(RHum*0.01)*exp((17.15*Tk-4684.0)/(Tk-38.45));
-      double wvpp=2.409e9*humid*th*th*th*th*exp(-22.64*th);
+      double wvpp=2.409e9*humid*th*th*th*th*std::exp(-22.64*th);
       Cdrydelay = 7.7624e-5*press/temp;
       Cwetdelay = 1.0e-6*(-12.92+3.719e+05/temp)*(wvpp/temp);
       Cdrymap = (5.0*0.002277*press)/Cdrydelay;
@@ -591,7 +591,7 @@ namespace gpstk
       double Ts=temp+hrate*height;
       double em=978.77/(2.8704e4*hrate);
       double Tp=Ts-hrate*hpress;
-      double ps=press*pow(Ts/Tp,em)/1000.0;
+      double ps=press*std::pow(Ts/Tp,em)/1000.0;
       double rs=77.624e-3/Ts;
       double ho=11.385/rs;
       rs *= ps;
@@ -619,11 +619,11 @@ namespace gpstk
       double Th=temp-273.15-hrate*(hhumid-htemp);
       double Ta=7.5*Th/(237.3+Th);
          // water vapor partial pressure
-      double e0=6.11e-5*humid*pow(10.0,Ta);
+      double e0=6.11e-5*humid*std::pow(10.0,Ta);
       double Ts=temp+hrate*htemp;
       double em=978.77/(2.8704e4*hrate);
       double Tk=Ts-hrate*hhumid;
-      double es=e0*pow(Ts/Tk,4.0*em);
+      double es=e0*std::pow(Ts/Tk,4.0*em);
       double rs=(371900.0e-3/Ts-12.92e-3)/Ts;
       double ho=11.385*(1255/Ts+0.05)/rs;
       double zen=(ho-height)/ho;
@@ -654,7 +654,7 @@ namespace gpstk
       double hrate=6.5e-3;
       double Ts=temp+hrate*htemp;
       double ho=(11.385/77.624e-3)*Ts;
-      double se=sin(elevation*DEG_TO_RAD);
+      double se=std::sin(elevation*DEG_TO_RAD);
       if(se < 0.0) se=0.0;
 
       GPSGeoid geoid;
@@ -709,7 +709,7 @@ namespace gpstk
       double Ts=temp+hrate*htemp;
       double rs=(371900.0e-3/Ts-12.92e-3)/Ts;
       double ho=11.385*(1255/Ts+0.05)/rs;
-      double se=sin(elevation*DEG_TO_RAD);
+      double se=std::sin(elevation*DEG_TO_RAD);
       if(se < 0.0) se=0.0;
 
       GPSGeoid geoid;
@@ -909,13 +909,13 @@ namespace gpstk
          ret = pave[i]+m*(pave[i+1]-pave[i]);
          if(entry < Maw)
             ret -= (pamp[i]+m*(pamp[i+1]-pamp[i]))
-               * cos(TWO_PI*(day-28.0)/365.25);
+               * std::cos(TWO_PI*(day-28.0)/365.25);
       }
       else {                           // < 15 or > 75 -> simpler interpolation
          if(i<0) i=0; else i=4;
          ret = pave[i];
          if(entry < Maw)
-            ret -= pamp[i]*cos(TWO_PI*(day-28.0)/365.25);
+            ret -= pamp[i]*std::cos(TWO_PI*(day-28.0)/365.25);
       }
    
       return ret;
@@ -1084,13 +1084,13 @@ namespace gpstk
             GPSTK_THROW(InvalidTropModel("Invalid NB trop model: day of year"));
       }
       double beta = NB_Interpolate(latitude,doy,ZB);
-      double gm = 9.784*(1.0-2.66e-3*cos(2.0*latitude*DEG_TO_RAD)-2.8e-7*height);
+      double gm = 9.784*(1.0-2.66e-3*std::cos(2.0*latitude*DEG_TO_RAD)-2.8e-7*height);
 
          // scale factors for height above mean sea level
          // if weather is given, assume it's measured at ht -> kw=kd=1
-      double kd=1, base=log(1.0-beta*height/temp);
+      double kd=1, base=std::log(1.0-beta*height/temp);
       if(interpolateWeather)
-         kd = exp(base*NBg/(NBRd*beta));
+         kd = std::exp(base*NBg/(NBRd*beta));
 
          // compute the zenith delay for dry component
       return ((1.0e-6*NBk1*NBRd/gm) * kd * press);
@@ -1113,13 +1113,13 @@ namespace gpstk
       }
       double beta = NB_Interpolate(latitude,doy,ZB);
       double lam = NB_Interpolate(latitude,doy,ZL);
-      double gm = 9.784*(1.0-2.66e-3*cos(2.0*latitude*DEG_TO_RAD)-2.8e-7*height);
+      double gm = 9.784*(1.0-2.66e-3*std::cos(2.0*latitude*DEG_TO_RAD)-2.8e-7*height);
 
          // scale factors for height above mean sea level
          // if weather is given, assume it's measured at ht -> kw=kd=1
-      double kw=1, base=log(1.0-beta*height/temp);
+      double kw=1, base=std::log(1.0-beta*height/temp);
       if(interpolateWeather)
-         kw = exp(base*(-1.0+(lam+1)*NBg/(NBRd*beta)));
+         kw = std::exp(base*(-1.0+(lam+1)*NBg/(NBRd*beta)));
 
          // compute the zenith delay for wet component
       return ((1.0e-6*NBk3p*NBRd/(gm*(lam+1)-beta*NBRd)) * kw * humid/temp);
@@ -1146,7 +1146,7 @@ namespace gpstk
       if(elevation < 0.0) return 0.0;
 
       double a,b,c,se,map;
-      se = sin(elevation*DEG_TO_RAD);
+      se = std::sin(elevation*DEG_TO_RAD);
 
       a = NB_Interpolate(latitude,doy,Mad);
       b = NB_Interpolate(latitude,doy,Mbd);
@@ -1183,7 +1183,7 @@ namespace gpstk
       if(elevation < 0.0) return 0.0;
 
       double a,b,c,se;
-      se = sin(elevation*DEG_TO_RAD);
+      se = std::sin(elevation*DEG_TO_RAD);
       a = NB_Interpolate(latitude,doy,Maw);
       b = NB_Interpolate(latitude,doy,Mbw);
       c = NB_Interpolate(latitude,doy,Mcw);
@@ -1206,7 +1206,7 @@ namespace gpstk
       TropModel::setWeather(T,P,H);
             // humid actually stores water vapor partial pressure
       double th=300./temp;
-      humid = 2.409e9*H*th*th*th*th*exp(-22.64*th);
+      humid = 2.409e9*H*th*th*th*th*std::exp(-22.64*th);
       validWeather = true;
       valid = validWeather && validRxHeight && validRxLatitude && validDOY;
 
@@ -1224,7 +1224,7 @@ namespace gpstk
          TropModel::setWeather(wx);
             // humid actually stores vapor partial pressure
          double th=300./temp;
-         humid = 2.409e9*humid*th*th*th*th*exp(-22.64*th);
+         humid = 2.409e9*humid*th*th*th*th*std::exp(-22.64*th);
          validWeather = true;         
          valid = validWeather && validRxHeight && validRxLatitude && validDOY;
       }
@@ -1488,7 +1488,7 @@ namespace gpstk
 
       // correct pressure for height
       double press_at_h =
-         press * pow((temp+273.16-4.5*height/1000.0)/(temp+273.16),34.1/4.5);
+         press * std::pow((temp+273.16-4.5*height/1000.0)/(temp+273.16),34.1/4.5);
       // humid is zero for the dry component
       double delay = 0.0022768 * press_at_h
             / (1 - 0.00266 * ::cos(2*latitude*DEG_TO_RAD) - 0.00028 * height/1000.);
@@ -1644,7 +1644,7 @@ namespace gpstk
       press = P;
          // humid actually stores water vapor partial pressure
       double exp=7.5*T/(T+237.3);
-      humid = 6.11 * (H/100.) * pow(10.0,exp);
+      humid = 6.11 * (H/100.) * std::pow(10.0,exp);
 
       validWeather = true;
       valid = (validWeather && validRxHeight && validRxLatitude && validDOY);
@@ -1783,7 +1783,7 @@ namespace gpstk
     {
         if(!valid) throw InvalidTropModel("Invalid model");
         double ddry;
-        ddry = pow(2.3, (-0.000116 * gcatHeight) );
+        ddry = std::pow(2.3, (-0.000116 * gcatHeight) );
         return ddry;
     }  // end GCATTropModel::dry_zenith_delay()
 
@@ -1797,7 +1797,7 @@ namespace gpstk
         if(!valid) throw InvalidTropModel("Invalid model");
         if(elevation < 5.0) return 0.0;
 
-        double d = sin(elevation*DEG_TO_RAD);
+        double d = std::sin(elevation*DEG_TO_RAD);
         d = SQRT(0.002001+(d*d));
         return (1.001/d);
     }  // end GCATTropModel::mapping_function(elevation)
@@ -1813,5 +1813,350 @@ namespace gpstk
     }
 
     //----------------------------------------------------------------------------
+    // MOPS model.
+
+    // Some specific constants
+    static const double MOPSg=9.80665;
+    static const double MOPSgm=9.784;
+    static const double MOPSk1=77.604;
+    static const double MOPSk2=382000.0;
+    static const double MOPSRd=287.054;
+
+    // Compute and return the full tropospheric delay. The receiver height, 
+    // latitude and Day oy Year must has been set before using the 
+    // appropriate constructor or the provided methods.
+    // @param elevation Elevation of satellite as seen at receiver, in degrees
+    double MOPSTropModel::correction(double elevation) const        throw(TropModel::InvalidTropModel)
+    {
+        if(!valid) {
+            if(!validLat)
+                throw InvalidTropModel("Invalid MOPS trop model: Rx Latitude");
+            if(!validHeight)
+                throw InvalidTropModel("Invalid MOPS trop model: Rx Height");
+            if(!validTime)
+                throw InvalidTropModel("Invalid MOPS trop model: day of year");
+        }
+
+        if(elevation < 5.0) return 0.0;
+
+        double map = MOPSTropModel::mapping_function(elevation);
+
+        // Compute tropospheric delay
+        double tropDelay = (MOPSTropModel::dry_zenith_delay() + MOPSTropModel::wet_zenith_delay()) * map;
+
+        return tropDelay;
+
+    }  // end MOPSTropModel::correction(elevation)
+
+
+    // Compute and return the full tropospheric delay, given the positions of
+    // receiver and satellite. This version is most useful within positioning 
+    // algorithms, where the receiver position may vary; it computes the elevation
+    // (and other receiver location information as height and latitude) and passes
+    // them to appropriate methods. You must set time using method setDayOfYear()
+    // before calling this method.
+    // @param RX  Receiver position
+    // @param SV  Satellite position
+    double MOPSTropModel::correction(const Position& RX, 
+                                     const Position& SV)
+    throw(TropModel::InvalidTropModel)
+    {
+        try
+        {
+            setReceiverHeight( RX.getAltitude() );
+            setReceiverLatitude(RX.getGeodeticLatitude());
+            setWeather();
+        }
+        catch(GeometryException& e)
+        {
+            valid = false;
+        }
+
+        if(!valid) throw InvalidTropModel("Invalid model");
+        double c;
+        try
+        {
+            c = MOPSTropModel::correction(RX.elevationGeodetic(SV));
+        }
+        catch(InvalidTropModel& e)
+        {
+            GPSTK_RETHROW(e);
+        }
+        return c;
+    }  // end MOPSTropModel::correction(RX,SV)
+
+
+    // Compute and return the full tropospheric delay, given the positions of
+    // receiver and satellite and the time tag. This version is most useful 
+    // within positioning algorithms, where the receiver position may vary; it
+    // computes the elevation (and other receiver location information as height 
+    // and latitude) and passes them to appropriate methods.
+    // @param RX  Receiver position in ECEF cartesian coordinates (meters)
+    // @param SV  Satellite position in ECEF cartesian coordinates (meters)
+    // @param tt  Time (DayTime object).
+    double MOPSTropModel::correction(const Position& RX, 
+                                     const Position& SV,
+                                     const DayTime& tt)
+    throw(TropModel::InvalidTropModel)
+    {
+        setDayOfYear(tt);
+        return MOPSTropModel::correction(RX,SV);
+    }  // end MOPSTropModel::correction(RX,SV,TT)
+
+
+    // Compute and return the full tropospheric delay, given the positions of
+    // receiver and satellite and the day of the year. This version is most useful 
+    // within positioning algorithms, where the receiver position may vary; it
+    // computes the elevation (and other receiver location information as height 
+    // and latitude) and passes them to appropriate methods.
+    // @param RX  Receiver position in ECEF cartesian coordinates (meters)
+    // @param SV  Satellite position in ECEF cartesian coordinates (meters)
+    // @param doy Day of year.
+    double MOPSTropModel::correction(const Position& RX, 
+                                     const Position& SV,
+                                     const int& doy)
+    throw(TropModel::InvalidTropModel)
+    {
+        setDayOfYear(doy);
+        return MOPSTropModel::correction(RX,SV);
+    }  // end MOPSTropModel::correction(RX,SV,doy)
+
+
+
+    // deprecated
+    // Compute and return the full tropospheric delay, given the positions of
+    // receiver and satellite. . You must set time using method setDayOfYear()
+    // before calling this method.
+    // @param RX  Receiver position in ECEF cartesian coordinates (meters)
+    // @param SV  Satellite position in ECEF cartesian coordinates (meters)
+    // This function is deprecated; use the Position version
+    double MOPSTropModel::correction(const Xvt& RX,
+                                     const Xvt& SV)
+    throw(TropModel::InvalidTropModel)
+    {
+        Position R(RX),S(SV);
+        return MOPSTropModel::correction(R,S);
+    }  // end MOPSTropModel::correction(RX,SV)
+
+
+    // deprecated
+    // Compute and return the full tropospheric delay, given the positions of
+    // receiver and satellite and the time tag. This version is most useful 
+    // within positioning algorithms, where the receiver position may vary; it
+    // computes the elevation (and other receiver location information as height 
+    // and latitude) and passes them to appropriate methods.
+    // @param RX  Receiver position in ECEF cartesian coordinates (meters)
+    // @param SV  Satellite position in ECEF cartesian coordinates (meters)
+    // @param tt  Time (DayTime object).
+    // This function is deprecated; use the Position version
+    double MOPSTropModel::correction(const Xvt& RX,
+                                     const Xvt& SV,
+                                     const DayTime& tt)
+    throw(TropModel::InvalidTropModel)
+    {
+        setDayOfYear(tt);
+        Position R(RX),S(SV);
+        return MOPSTropModel::correction(R,S);
+    }  // end MOPSTropModel::correction(RX,SV,tt)
+
+
+    // deprecated
+    // Compute and return the full tropospheric delay, given the positions of
+    // receiver and satellite and the day of the year. This version is most useful 
+    // within positioning algorithms, where the receiver position may vary; it
+    // computes the elevation (and other receiver location information as height 
+    // and latitude) and passes them to appropriate methods.
+    // @param RX  Receiver position in ECEF cartesian coordinates (meters)
+    // @param SV  Satellite position in ECEF cartesian coordinates (meters)
+    // @param doy Day of year.
+    // This function is deprecated; use the Position version
+    double MOPSTropModel::correction(const Xvt& RX,
+                                     const Xvt& SV,
+                                     const int& doy)
+    throw(TropModel::InvalidTropModel)
+    {
+        setDayOfYear(doy);
+        Position R(RX),S(SV);
+        return MOPSTropModel::correction(R,S);
+    }  // end MOPSTropModel::correction(RX,SV,doy)
+
+
+    // Compute and return the zenith delay for the dry component of the troposphere
+    double MOPSTropModel::dry_zenith_delay(void) const
+    throw(TropModel::InvalidTropModel)
+    {
+
+        if(!valid) throw InvalidTropModel("Invalid model");
+        double ddry, zh_dry, exponent;
+
+        // Set the extra parameters
+        double P = MOPSParameters(0);
+        double T = MOPSParameters(1);
+        double beta = MOPSParameters(3);
+
+        // Zero-altitude dry zenith delay:
+        zh_dry = 0.000001*(MOPSk1*MOPSRd)*P/MOPSgm;
+
+        // Zenith delay terms at MOPSHeight meters of height above mean sea level
+        exponent = MOPSg/MOPSRd/beta;
+        ddry = zh_dry * std::pow( (1.0 - beta*MOPSHeight/T), exponent );
+
+        return ddry;
+    }  // end MOPSTropModel::dry_zenith_delay()
+
+
+    // Compute and return the zenith delay for the wet component of the troposphere
+    double MOPSTropModel::wet_zenith_delay(void) const
+    throw(TropModel::InvalidTropModel)
+    {
+
+        if(!valid) throw InvalidTropModel("Invalid model");
+        double dwet, zh_wet, exponent;
+
+        // Set the extra parameters
+        double T = MOPSParameters(1);
+        double e = MOPSParameters(2);
+        double beta = MOPSParameters(3);
+        double lambda = MOPSParameters(4);
+
+        // Zero-altitude wet zenith delay:
+        zh_wet = (0.000001*MOPSk2)*MOPSRd/(MOPSgm*(lambda+1.0)-beta*MOPSRd)*e/T;
+
+        // Zenith delay terms at MOPSHeight meters of height above mean sea level
+        exponent = ( (lambda+1.0)*MOPSg/MOPSRd/beta)-1.0;
+        dwet= zh_wet * std::pow( (1.0 - beta*MOPSHeight/T), exponent );
+
+        return dwet;
+    }  // end MOPSTropModel::wet_zenith_delay()
+
+
+    // This method configure the model to estimate the weather using height,
+    // latitude and day of year (DOY). It is called automatically when setting
+    // those parameters.
+    void MOPSTropModel::setWeather()
+        throw(TropModel::InvalidTropModel)
+    {
+        if(!validLat)
+        {
+            valid = false;
+            throw InvalidTropModel(
+                "MOPSTropModel must have Rx latitude before computing weather");
+        }
+        if(!validTime)
+        {
+            valid = false;
+            throw InvalidTropModel(
+                "MOPSTropModel must have day of year before computing weather");
+        }
+
+        // In order to compute tropospheric delay we need to compute some extra parameters
+        try
+        {
+            prepareParameters();
+        }
+        catch(InvalidTropModel& e)
+        {
+            GPSTK_RETHROW(e);
+        }
+
+        valid = validHeight && validLat && validTime;
+    }
+
+
+    // Compute and return the sigma-squared value of tropospheric delay residual 
+    // error (meters^2)
+    // @param elevation is the Elevation of satellite as seen at receiver,
+    //                  in degrees
+    double MOPSTropModel::MOPSsigma2(double elevation) 
+    throw(TropModel::InvalidTropModel)
+    {
+
+        double map_f;
+
+        // If elevation is below bounds, fail in a sensible way returning a 
+        // very big sigma value
+        if(elevation < 5.0)
+        {       
+            return 9.9e9;
+        }
+        else
+        {
+            map_f = MOPSTropModel::mapping_function(elevation);
+        }
+
+        // Compute residual error for tropospheric delay
+        double MOPSsigma2trop = (0.12*map_f)*(0.12*map_f);
+
+        return MOPSsigma2trop;
+    }  // end MOPSTropModel::MOPSsigma(elevation)
+
+
+
+
+
+    // The MOPS tropospheric model needs to compute several extra parameters
+    void MOPSTropModel::prepareParameters(void) 
+    throw(TropModel::InvalidTropModel)
+    {
+
+        if(!valid) throw InvalidTropModel("Invalid model");
+
+        try
+        {
+            // We need to read some data
+            prepareTables();
+
+            // Declare some variables
+            int idmin, j, index;
+            double fact, axfi;
+            Vector<double> avr0(5);
+            Vector<double> svr0(5);
+
+            // Resize MOPSParameters as appropriate
+            MOPSParameters.resize(5);
+
+            if (MOPSLat >= 0.0) {
+                idmin = 28;
+            } else {
+                idmin = 211;
+            }
+
+            // Fraction of the year in radians
+            fact = 2.0*PI*((double)(MOPSTime-idmin))/365.25;
+
+            axfi = ABS(MOPSLat);
+
+            if  (axfi <= 15.0) index=0;
+            if ((axfi > 15.0) && (axfi <= 30.0)) index=1;
+            if ((axfi > 30.0) && (axfi <= 45.0)) index=2;
+            if ((axfi > 45.0) && (axfi <= 60.0)) index=3;
+            if ((axfi > 60.0) && (axfi <= 75.0)) index=4;
+            if  (axfi > 75.0) index=5;
+
+            for (j=0; j<5; j++)
+            {
+                if (index == 0) {
+                    avr0(j)=avr(index,j);
+                    svr0(j)=svr(index,j);
+                } else {
+                    if (index < 5) {
+                        avr0(j)=avr(index-1,j)+(avr(index,j)-avr(index-1,j))*(axfi-fi0(index-1))/(fi0(index)-fi0(index-1));
+                        svr0(j)=svr(index-1,j)+(svr(index,j)-svr(index-1,j))*(axfi-fi0(index-1))/(fi0(index)-fi0(index-1));
+                    } else {
+                        avr0(j)=avr(index-1,j);
+                        svr0(j)=svr(index-1,j);
+                    }
+                }
+                MOPSParameters(j) = avr0(j)-svr0(j)*std::cos(fact);
+            }
+
+        } // end try
+        catch (...) 
+        {
+            InvalidTropModel e("Problem computing extra MOPS parameters.");
+            GPSTK_RETHROW(e);
+        }
+    }  // end MOPSTropModel::prepareParameters()
+
 
 } // end namespace gpstk
