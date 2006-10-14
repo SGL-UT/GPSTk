@@ -57,15 +57,11 @@
 #include "icd_200_constants.hpp"          // TWO_PI
 #include "Geodetic.hpp"
 #include "ECEF.hpp"
-#include "WGS84Geoid.hpp"
 
 namespace gpstk
 {
       // for temperature conversion from Celcius to Kelvin
    static const double CELSIUS_TO_KELVIN = 273.15;
-
-      // for Geodetic coordinate conversion
-   WGS84Geoid WGS84;
 
       // Compute and return the full tropospheric delay. Typically call
       // setWeather(T,P,H) before making this call.
@@ -1698,5 +1694,124 @@ namespace gpstk
       if(doy > 0 && doy < 367) validDOY=true; else validDOY = false;
       valid = (validWeather && validRxHeight && validRxLatitude && validDOY);
    }  // end SaasTropModel::setDayOfYear(doy)
+
+
+    //-----------------------------------------------------------------------------
+    // GCAT model.
+
+    // Constructor to create a GCAT trop model providing  the height of the receiver
+    // above mean sea level (as defined by ellipsoid model).
+    // 
+    // @param ht Height of the receiver above mean sea level, in meters.
+    GCATTropModel::GCATTropModel(const double& ht)
+    {
+        setReceiverHeight(ht);
+        valid = true;
+    }
+
+
+    // Compute and return the full tropospheric delay. The receiver height must
+    // has been provided before, whether using the appropriate constructor of
+    // with the setReceiverHeight() method
+    // @param elevation Elevation of satellite as seen at receiver, in degrees
+    double GCATTropModel::correction(double elevation) const
+        throw(TropModel::InvalidTropModel)
+    {
+        if(!valid) throw InvalidTropModel("Invalid model");
+        if(elevation < 5.0) return 0.0;
+        return ((dry_zenith_delay() + wet_zenith_delay()) * mapping_function(elevation));
+    }  // end GCATTropModel::correction(elevation)
+
+
+    // Compute and return the full tropospheric delay, given the positions of
+    // receiver and satellite. This version is most useful within positioning algorithms,
+    // where the receiver position may vary; it computes the elevation and the receiver 
+    // height and passes them to appropriate set...() routines and the
+    // correction(elevation) routine.
+    // @param RX  Receiver position in ECEF cartesian coordinates (meters)
+    // @param SV  Satellite position in ECEF cartesian coordinates (meters)
+    double GCATTropModel::correction(const Position& RX, 
+                                     const Position& SV)
+    throw(TropModel::InvalidTropModel)
+    {
+        try
+        {
+            setReceiverHeight( RX.getAltitude() );
+        }
+        catch(GeometryException& e)
+        {
+            valid = false;
+        }
+        
+        if(!valid) throw InvalidTropModel("Invalid model");
+        double c;
+        try
+        {
+            c = correction(RX.elevationGeodetic(SV));
+        }
+        catch(InvalidTropModel& e)
+        {
+            GPSTK_RETHROW(e);
+        }
+        return c;
+    }  // end GCATTropModel::correction(RX,SV,TT)
+
+
+    // Compute and return the full tropospheric delay, given the positions of
+    // receiver and satellite and the time tag. This version is most useful
+    // within positioning algorithms, where the receiver position and timetag
+    // may vary; it computes the elevation (and other receiver location information)
+    // and passes them to appropriate set...() routines and the
+    // correction(elevation) routine.
+    // @param RX  Receiver position in ECEF cartesian coordinates (meters)
+    // @param SV  Satellite position in ECEF cartesian coordinates (meters)
+    // @param tt  Time. In this model, tt is a dummy parameter kept only for consistency
+    // This function is deprecated; use the Position version
+    double GCATTropModel::correction(const Xvt& RX,
+                                     const Xvt& SV,
+                                     const DayTime& tt)
+    throw(TropModel::InvalidTropModel)
+    {
+        Position R(RX),S(SV);
+        return GCATTropModel::correction(R,S);
+    }  // end GCATTropModel::correction(RX,SV,tt)
+
+
+    // Compute and return the zenith delay for the dry component of the troposphere
+    double GCATTropModel::dry_zenith_delay(void) const
+    throw(TropModel::InvalidTropModel)
+    {
+        if(!valid) throw InvalidTropModel("Invalid model");
+        double ddry;
+        ddry = pow(2.3, (-0.000116 * gcatHeight) );
+        return ddry;
+    }  // end GCATTropModel::dry_zenith_delay()
+
+
+    // Compute and return the mapping function of the troposphere
+    // @param elevation is the Elevation of satellite as seen at receiver,
+    //                  in degrees
+    double GCATTropModel::mapping_function(double elevation) const
+    throw(TropModel::InvalidTropModel)
+    {
+        if(!valid) throw InvalidTropModel("Invalid model");
+        if(elevation < 5.0) return 0.0;
+
+        double d = sin(elevation*DEG_TO_RAD);
+        d = SQRT(0.002001+(d*d));
+        return (1.001/d);
+    }  // end GCATTropModel::mapping_function(elevation)
+
+
+    // Define the receiver height; this is required before calling
+    // correction() or any of the zenith_delay or mapping_function routines.
+    // @param ht Height of the receiver above mean sea level, in meters.
+    void GCATTropModel::setReceiverHeight(const double& ht)
+    {
+        gcatHeight = ht;
+        valid = true;
+    }
+
+    //----------------------------------------------------------------------------
 
 } // end namespace gpstk
