@@ -133,7 +133,7 @@ PrnElevationMap elevation_map(const ORDEpochMap& oem)
       for (j=epoch.ords.begin(); j!=epoch.ords.end(); j++)
       {
          gpstk::ObsRngDev ord = j->second;
-         gpstk::SatID prn(j->first, gpstk::SatID::systemGPS);
+         gpstk::SatID prn(j->first.id, gpstk::SatID::systemGPS);
          pem[t][prn] = ord.getElevation();
       }
    }

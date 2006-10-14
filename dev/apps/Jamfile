@@ -16,7 +16,7 @@ SubInclude TOP apps mergetools ;
 #SubInclude TOP apps MDPtools ; 
 SubInclude TOP apps positioning ;
 SubInclude TOP apps receiver ;
-SubInclude TOP apps reszilla ;
+#SubInclude TOP apps reszilla ;
 SubInclude TOP apps Rinextools ;
 SubInclude TOP apps time ;
 SubInclude TOP apps visibility ;
