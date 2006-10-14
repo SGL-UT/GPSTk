@@ -65,7 +65,8 @@ am_libgpstk_la_OBJECTS = Exception.lo BinUtils.lo VectorBase.lo \
 	FICHeader.lo CodeBuffer.lo GenXSequence.lo SVPCodeGen.lo \
 	X1Sequence.lo X2Sequence.lo GPSZcount.lo Position.lo \
 	PRSolution.lo Expression.lo Bancroft.lo DOP.lo WxObsMap.lo \
-	ModeledReferencePR.lo ModeledPR.lo SimpleIURAWeight.lo
+	ModeledReferencePR.lo ModeledPR.lo SimpleIURAWeight.lo \
+	MOPSWeight.lo
 libgpstk_la_OBJECTS = $(am_libgpstk_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -209,7 +210,7 @@ libgpstk_la_SOURCES = Exception.cpp BinUtils.cpp VectorBase.cpp \
 	GenXSequence.cpp SVPCodeGen.cpp X1Sequence.cpp X2Sequence.cpp \
 	GPSZcount.cpp Position.cpp PRSolution.cpp Expression.cpp \
 	Bancroft.cpp DOP.cpp /WxObsMap.cpp ModeledReferencePR.cpp \
-	ModeledPR.cpp SimpleIURAWeight.cpp
+	ModeledPR.cpp SimpleIURAWeight.cpp MOPSWeight.cpp
 all: all-am
 
 .SUFFIXES:
@@ -298,6 +299,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MSCData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ModeledPR.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ModeledReferencePR.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MOPSWeight.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObsClockModel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObsRngDev.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PRSolution.Plo@am__quote@

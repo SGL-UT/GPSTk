@@ -64,6 +64,7 @@ else
       ObsID.cpp RinexObsID.cpp
       Bancroft.cpp SolverLMS.cpp SolverWMS.cpp DOP.cpp
       ModeledReferencePR.cpp ModeledPR.cpp SimpleIURAWeight.cpp
+      MOPSWeight.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp AlmanacStore.hpp BCEphemerisStore.hpp
@@ -116,6 +117,7 @@ else
       ExtractCombinationData.hpp ExtractC1.hpp ExtractP1.hpp ExtractP2.hpp
       ExtractPC.hpp ExtractL1.hpp ExtractL2.hpp ExtractLC.hpp ExtractD1.hpp
       ExtractD2.hpp ModeledReferencePR.hpp ModeledPR.hpp SimpleIURAWeight.hpp
+      MOPSWeight.hpp
       ;
 }
 
