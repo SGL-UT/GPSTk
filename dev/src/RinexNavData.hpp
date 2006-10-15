@@ -79,8 +79,7 @@ namespace gpstk
           *  VALID BEFORE USING!!
           */
       RinexNavData(void)
-            : PRNID(-1), fitint(4),
-         time(gpstk::DayTime::BEGINNING_OF_TIME)
+            : time(gpstk::DayTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
          {}
 
          /// Initializes the nav data with an EngEphemeris
