@@ -73,9 +73,9 @@ namespace gpstk
                     double humid)
          throw()
          :t(t),
-          temperature(temp), temperatureSource(obsWx),
-          pressure(pres), pressureSource(obsWx), 
-          humidity(humid), humiditySource(obsWx)
+          temperature(temp), pressure(pres),
+          humidity(humid), temperatureSource(obsWx),
+          pressureSource(obsWx),  humiditySource(obsWx)
       {}
 
 
