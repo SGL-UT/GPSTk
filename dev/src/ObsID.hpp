@@ -153,6 +153,10 @@ namespace gpstk
       /// checks that none of the enums are undefined
       virtual bool isValid() const;
 
+      /// Destructor
+      virtual ~ObsID() {}
+
+
       static ObservationType newObservationType(const std::string& s);
       static CarrierBand newCarrierBand(const std::string& s);
       static TrackingCode newTrackingCode(const std::string& s);
