@@ -134,7 +134,7 @@ namespace gpstk
           * @param track tracker number (typically receiver channel number).
           * @return true if successful.
           */
-      bool EngEphemeris::addIncompleteSF1Thru3(
+      bool addIncompleteSF1Thru3(
          const long sf1[8], const long sf2[8], const long sf3[8], 
          const long sf1TransmitSOW, const int gpsWeek,
          const short PRN, const short track);
