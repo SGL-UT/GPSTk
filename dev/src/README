@@ -181,6 +181,11 @@
  */
 
 /**
+ * @example example5.cpp
+ * Demonstrates how to use some very useful high-level GPSTk classes for positioning.
+ */
+
+/**
  * @example DayTimeToleranceTest.cpp
  * Tests DayTime for user-defined comparison tolerances.
  */
