@@ -296,7 +296,7 @@ namespace gpstk
 
          if (crc && params.direct)
          {
-            for (i = 0; i < params.order; i++)
+            for (i = 0; i < (unsigned long)params.order; i++)
             {
                bit = crc & 1;
                if (bit)
@@ -335,7 +335,7 @@ namespace gpstk
             }
          }
 
-         for (i = 0; i < params.order; i++)
+         for (i = 0; i < (unsigned long)params.order; i++)
          {
             bit = crc & crchighbit;
             crc <<= 1;
