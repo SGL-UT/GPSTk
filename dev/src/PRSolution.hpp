@@ -268,7 +268,7 @@ namespace gpstk
       Vector<double> APrioriSolution;
 
       /** Function used internally to handle the details of the Algebraic solution */
-      static int PRSolution::AlgebraicSolution(Matrix<double>& A,
+      static int AlgebraicSolution(Matrix<double>& A,
                                                Vector<double>& Q,
                                                Vector<double>& X,
                                                Vector<double>& R);
