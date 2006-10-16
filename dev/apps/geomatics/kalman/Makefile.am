@@ -2,7 +2,7 @@ INCLUDES = -I../../../src -I../lib
 # In this order!
 LDADD = ../lib/libgeomatics.la ../../../src/libgpstk.la
 
-noinst_PROGRAMS = mergeSRI tnl tsrif tsrifsu tsriftu tnl
+noinst_PROGRAMS = mergeSRI tsrif tsrifsu tsriftu tnl
 
 mergeSRI_SOURCES = mergeSRI.cpp  
 tsrif_SOURCES = tsrif.cpp
