@@ -273,11 +273,13 @@ namespace gpstk
 
             double TGDCorr = 0.0;
 
-            try {
-                TGDCorr = (Eph.getTGD(sat, Tr));
-            }
-            catch(EphemerisStore::NoEphemerisFound& e) {
-                TGDCorr = 0.0;
+            if ( Eph.hasTGD() ) {
+                try {
+                    TGDCorr = (Eph.getTGD(sat, Tr));
+                }
+                catch(EphemerisStore::NoTGDFound& e) {
+                    TGDCorr = 0.0;
+                }
             }
             return TGDCorr;
         };

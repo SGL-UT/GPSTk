@@ -234,15 +234,6 @@ namespace gpstk
    }  // end Xvt TabularEphemerisStore::getSatXvt
 
 
-   //--------------------------------------------------------------------------
-   //--------------------------------------------------------------------------
-   // This method is only for consistency with BCEphemerisStore::getTGD
-   double TabularEphemerisStore::getTGD(SatID sat, const gpstk::DayTime& t)
-      const throw(EphemerisStore::NoEphemerisFound)
-   {
-        return 0.0;
-   }
-
    //-----------------------------------------------------------------------------
    //-----------------------------------------------------------------------------
    void TabularEphemerisStore::addEphemeris(const SP3Data& data)

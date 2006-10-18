@@ -89,6 +89,10 @@ namespace gpstk
                             const gpstk::DayTime& t) const 
          throw(NoEphemerisFound);
       
+         /// This method always returns true because BCephemeris provides Total Group Delay.
+      virtual bool hasTGD() const throw()
+         { return true; }
+
         /** This method returns the Total Group Delay of the SV (in meters) at the 
          * indicated time.
          * @param sat    the satellite's SatID
@@ -96,7 +100,7 @@ namespace gpstk
          * @return       the TGD (in meters) of the SV at time t
          */
       virtual double getTGD(SatID sat, const gpstk::DayTime& t) const
-         throw(NoEphemerisFound);
+         throw(NoTGDFound);
 
          /// \deprecated use the SatID version
       virtual short getPrnHealth(short prn,

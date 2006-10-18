@@ -99,7 +99,7 @@ namespace gpstk
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    double BCEphemerisStore::getTGD(SatID sat, const DayTime& t)
-      const throw(EphemerisStore::NoEphemerisFound)
+      const throw(EphemerisStore::NoTGDFound)
    {
       try
       {
@@ -109,13 +109,13 @@ namespace gpstk
          tgdValue = eph.getTgd() * C_GPS_M;
          return tgdValue;
       }
-      catch(NoEphemerisFound& nef)
+      catch(NoTGDFound& nef)
       {
          GPSTK_RETHROW(nef);
       }
       catch(InvalidRequest& ir)
       {
-         NoEphemerisFound nef(ir);
+         NoTGDFound nef(ir);
          GPSTK_THROW(nef);
       }
    } // end of BCEphemerisStore::getTGD()

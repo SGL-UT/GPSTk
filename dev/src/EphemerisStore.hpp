@@ -68,6 +68,10 @@ namespace gpstk
          /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(NoEphemerisFound, gpstk::Exception);
 
+         /// Thrown when attempting to read TGD from an ephemeris that doesn't have it.
+         /// @ingroup exceptiongroup
+      NEW_EXCEPTION_CLASS(NoTGDFound, gpstk::Exception);
+
          /// destructor.
       virtual ~EphemerisStore() {}
       
@@ -86,14 +90,18 @@ namespace gpstk
                             const gpstk::DayTime& t) const
          throw(NoEphemerisFound) = 0;
 
-       /** This method returns the Total Group Delay of the SV (in meters) at the 
-        * indicated time.
-        * @param sat    the SV's SatID
-        * @param t      the time to look up
-        * @return       the TGD (in meters) of the SV at time t
-        */
+         /// This method checks if this ephemeris provides Total Group Delay. By default returns false.
+      virtual bool hasTGD() const throw() { return false; }
+;
+
+         /** This method returns the Total Group Delay of the SV (in meters) at the 
+          * indicated time.
+          * @param sat    the SV's SatID
+          * @param t      the time to look up
+          * @return       the TGD (in meters) of the SV at time t
+          */
       virtual double getTGD(SatID sat, const gpstk::DayTime& t) const
-         throw(NoEphemerisFound) = 0;
+         throw(NoTGDFound) { return 0.0; };
 
          /** Dumps all the ephemeris data stored in this object.
           * @param detail the level of detail to provide

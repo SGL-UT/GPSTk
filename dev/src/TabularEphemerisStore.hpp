@@ -87,21 +87,6 @@ namespace gpstk
             return TabularEphemerisStore::getSatXvt(sat,t);
          }
 
-      /** This method returns the Total Group Delay of the SV (in meters) at the 
-       * indicated time.
-       *
-       * NOTE: This method has no sense when using Precise Ephemeris, but it is 
-       * implemented here to keep consistency with BCEphemerisStore::getTGD.
-       * Therefore, it always returns zero (0) meters.
-       *
-       * @param sat    the satellite's SatID
-       * @param t      the time to look up
-       * @return       the TGD (in meters) of the SV at time t
-       */
-     virtual double getTGD(SatID sat, const gpstk::DayTime& t) const
-        throw(NoEphemerisFound);
-
-
       /** Dump the store to given stream.
        * @param detail specifies the level of detail to include in the output:
        *   0: number of satellites, 1: records per satellite, >1 all data.
