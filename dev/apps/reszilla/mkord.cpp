@@ -42,6 +42,7 @@
 //
 
 #include <fstream>
+
 #include <BCEphemerisStore.hpp>
 #include <CommandOptionWithTimeArg.hpp>
 #include <TropModel.hpp>
@@ -128,6 +129,10 @@ int main(int argc, char *argv[])
                        "in SP3).", false);
 
       gpstk::CommandOptionWithAnyArg
+         antennaPosOption('p', "pos", "Location of the antenna in meters ECEF."
+                          , false);
+
+      gpstk::CommandOptionWithAnyArg
          metFileOption('w', "weather", "Weather data file name (RINEX met "
                        "format only).");
 
@@ -143,16 +148,12 @@ int main(int argc, char *argv[])
                          "the data. The defailt is to remove them.");
 
       gpstk::CommandOptionNoArg
-         checkObsOption('\0',"check-obs", "Report data rate, order of data, "
-                        "data present, data gaps");
-
-      gpstk::CommandOptionNoArg
          keepUnhealthyOption('\0',"keep-unhealthy", "Use unhealthy SVs in the "
                              "clock computition and statistics, the default "
                              "is to toss.");
 
       gpstk::CommandOptionNoArg
-         statsOption('s', "no-stats", "Don't compute & output the statistics");
+         statsOption('s', "stats", "Compute & output the statistics");
 
       gpstk::CommandOptionWithAnyArg
          rawOutputOption('r', "raw-output", "Dump the computed residuals/ords "
@@ -160,20 +161,6 @@ int main(int argc, char *argv[])
                          "name, the output is sent to standard output. The "
                          "default is to not otput the raw residuals.");
 
-      gpstk::CommandOptionWithTimeArg
-         startTimeOption('\0', "start-time", "%4Y/%03j/%02H:%02M:%05.2f",
-                         "Ignore obs data prior to this time in the "
-                         "analysis. The time is specified using the format "
-                         "%4Y/%03j/%02H:%02M:%05.2f. The default value is to "
-                         "start with the first data found.");
-      
-      gpstk::CommandOptionWithTimeArg
-         stopTimeOption('\0', "stop-time",  "%4Y/%03j/%02H:%02M:%05.2f",
-                        "Ignore obs data after to this time in the "
-                        "analysis. The time is specified using the format "
-                        "%4Y/%03j/%02H:%02M:%05.2f. The default value is to "
-                        "process all data.");
-      
       gpstk::CommandOptionWithAnyArg
          timeFmtOption('t', "time-format", "Daytime format specifier used for "
                        "the timestamps in the raw output. The default is \"" 
@@ -258,11 +245,6 @@ int main(int argc, char *argv[])
          else
             timeFormat = (timeFmtOption.getValue())[0];
       }
-
-      if (startTimeOption.getCount())
-         startTime = startTimeOption.getTime()[0];
-      if (stopTimeOption.getCount())
-         stopTime = stopTimeOption.getTime()[0];
 
       // set up where the raw data will be written
       ofstream ofs;
@@ -357,7 +339,16 @@ int main(int argc, char *argv[])
 
       // Get the station position
       gpstk::Triple ap;
-      if (msid && mscFileOption.getCount()>0)
+      if (antennaPosOption.getCount() > 0)
+      {
+         string aps = antennaPosOption.getValue()[0];
+         if (numWords(aps) != 3)
+            cout << "Please specify three coordinates in the antenna postion." << endl;
+         else
+            for (int i=0; i<3; i++)
+               ap[i] = asDouble(word(aps, i));
+      }
+      else if (msid && mscFileOption.getCount() > 0)
       {
          string mscfn = (mscFileOption.getValue())[0];
          read_msc_data(mscfn, msid, ap);
@@ -367,17 +358,18 @@ int main(int argc, char *argv[])
          string fn = (obsFileOption.getValue())[0];
          gpstk::ObsReader obsReader(fn, verbosity);
          if (obsReader.inputType == gpstk::FFIdentifier::tRinexObs)
-         {
             ap = obsReader.roh.antennaPosition;
-            if (verbosity>1)
-                  cout << "Antenna position read from RINEX obs file:"
-                       << ap << endl;
-         }
-         else
-         {
-            cout << "Station position not specified" << endl;
-            exit(-1);
-         }
+      }
+      
+      if (gpstk::RSS(ap[0], ap[1], ap[2]) < 1)
+      {
+         cout << "Warning! The antenna appears to be within one meter of the" << endl
+              << "center of the geoid. This program is not capable of" << endl
+              << "accurately estimating the propigation of GNSS signals" << endl
+              << "through solids such as a planetary crust or magma. Also," << endl
+              << "if this location is correct, your antenna is probally" << endl
+              << "no longer in the best of operating condition." << endl;
+         exit(-1);
       }
 
       // Set up our clock model
@@ -441,9 +433,7 @@ int main(int argc, char *argv[])
    }
    catch (gpstk::Exception& e)
    {
-      cerr << "Caught Excption: " << typeid(e).name() << endl
+      cout << "Caught Excption: " << typeid(e).name() << endl
            << "Terminating." << endl;
-      exit(0);
    }
-   exit(0);
 }
