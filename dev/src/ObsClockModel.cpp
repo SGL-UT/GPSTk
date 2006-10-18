@@ -161,8 +161,8 @@ namespace gpstk
          for (itr = oe.ords.begin(); itr != oe.ords.end(); itr++)
             if (status[itr->second.getSvID()] == USED)
                stat.Add(itr->second.getORD());
-      
       }
+         
       return stat;
    }
 

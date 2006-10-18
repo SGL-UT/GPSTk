@@ -39,10 +39,6 @@
 #ifndef OBSUTILS_HPP
 #define OBSUTILS_HPP
 
-/** @file Translates between ObsEpoch/ObsSvEpoch/Observation objects and
-    other representations of that data (rinex, smodf, mdp, ...)
-*/
-
 #include "RinexObsData.hpp"
 #include "RinexNavData.hpp"
 #include "RinexMetData.hpp"
@@ -55,19 +51,27 @@
 #include "MDPNavSubframe.hpp"
 #include "MDPObsEpoch.hpp"
 
-namespace gpstk
-{
-   /// Conversion Function from MDP data
-   SvObsEpoch makeSvObsEpoch(const MDPObsEpoch& mdp) throw();
-   ObsEpoch makeObsEpoch(const MDPEpoch& mdp) throw();
+/// Conversion Function from MDP data
+gpstk::SvObsEpoch makeSvObsEpoch(
+   const gpstk::MDPObsEpoch& mdp) throw();
 
-   /// Conversion functions from Rinex data
-   SvObsEpoch makeSvObsEpoch(const RinexObsData::RinexObsTypeMap& rotm) throw();
-   ObsEpoch makeObsEpoch(const RinexObsData& rod) throw();
-   WxObservation makeWxObs(const RinexMetData& rmd) throw();
-   
-   /// Conversion functions from SMODFData objects
-   WxObservation makeWxObs(const SMODFData& smod) throw();
-   ObsID getObsID(const SMODFData& smod) throw(); 
-}
+gpstk::ObsEpoch makeObsEpoch(
+   const gpstk::MDPEpoch& mdp) throw();
+
+/// Conversion functions from Rinex data
+gpstk::SvObsEpoch makeSvObsEpoch(
+   const gpstk::RinexObsData::RinexObsTypeMap& rotm) throw();
+
+gpstk::ObsEpoch makeObsEpoch(
+   const gpstk::RinexObsData& rod) throw();
+
+gpstk::WxObservation makeWxObs(
+   const gpstk::RinexMetData& rmd) throw();
+
+/// Conversion functions from SMODFData objects
+/// Note that there is no makeObsEpoch since each SMODFData object just
+/// has a single observation to a single sv.
+gpstk::WxObservation makeWxObs(
+   const gpstk::SMODFData& smod) throw();
+
 #endif

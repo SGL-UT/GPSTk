@@ -1,5 +1,40 @@
 #pragma ident "$Id$"
 
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 
 #include "PhaseCleaner.hpp"
 
@@ -29,80 +64,79 @@ PhaseCleaner::PhaseCleaner(long al, double at, double gt)
 //-----------------------------------------------------------------------------
 // Pulls the phase data data into arcs.
 //-----------------------------------------------------------------------------
-void PhaseCleaner::addData(const RODEpochMap& rx1, const RODEpochMap& rx2)
+void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1, const gpstk::ObsEpochMap& rx2)
 {
    if (verbosity>1)
       cout << "Pulling phase data into arcs." << endl;
    
    // Now loop over all the epochs, pulling the data into the arcs
-   for (RODEpochMap::const_iterator ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
+   for (gpstk::ObsEpochMap::const_iterator ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
    {
       gpstk::DayTime t = ei1->first;
-      const gpstk::RinexObsData& rod1 = ei1->second;
-      RODEpochMap::const_iterator ei2 = rx2.find(t);
+      const gpstk::ObsEpoch& rod1 = ei1->second;
+      gpstk::ObsEpochMap::const_iterator ei2 = rx2.find(t);
 
       // Gotta have data from the other receiver
       if (ei2 == rx2.end())
          continue;
-      const gpstk::RinexObsData& rod2 = ei2->second;
+      const gpstk::ObsEpoch& rod2 = ei2->second;
       
-      clockOffset[t] = rod1.clockOffset - rod2.clockOffset;
+      clockOffset[t] = rod1.rxClock - rod2.rxClock;
 
-      for (RinexPrnMap::const_iterator pi1=rod1.obs.begin(); pi1 != rod1.obs.end(); pi1++)
+      for (gpstk::ObsEpoch::const_iterator pi1=rod1.begin(); pi1 != rod1.end(); pi1++)
       {
          const gpstk::SatID& prn = pi1->first;
-         const gpstk::RinexObsData::RinexObsTypeMap& rotm1 = pi1->second;
+         const gpstk::SvObsEpoch& rotm1 = pi1->second;
 
          // Make sure the other receiver saw this SV
-         const RinexPrnMap::const_iterator pi2 = rod2.obs.find(prn);
-         if (pi2 == rod2.obs.end())
+         const gpstk::ObsEpoch::const_iterator pi2 = rod2.find(prn);
+         if (pi2 == rod2.end())
             continue;
-         const gpstk::RinexObsData::RinexObsTypeMap& rotm2 = pi2->second;
+         const gpstk::SvObsEpoch& rotm2 = pi2->second;
 
          // For now we also have to have doppler for this SV.
-         gpstk::RinexObsData::RinexObsTypeMap::const_iterator d1_itr
-            = rotm1.find(D1);
+         gpstk::SvObsEpoch::const_iterator d1_itr = rotm1.find(D1);
          if (d1_itr == rotm1.end())
             continue;
 
          // get the range rate in meters per second...
-         rangeRate[prn][t] = d1_itr->second.data *  gpstk::C_GPS_M/gpstk::L1_FREQ;
+         rangeRate[prn][t] = d1_itr->second *  gpstk::C_GPS_M/gpstk::L1_FREQ;
 
-         RinexObsTypeSet::const_iterator rot_itr;
+         ObsIDSet::const_iterator rot_itr;
          for (rot_itr = phaseObsTypes.begin(); rot_itr != phaseObsTypes.end(); rot_itr++)
          {
-            const RinexObsType& rot = *rot_itr;
-            RinexObsTypeMap::const_iterator phase1 = rotm1.find(rot);
+            const gpstk::ObsID& rot = *rot_itr;
+            gpstk::SvObsEpoch::const_iterator phase1 = rotm1.find(rot);
             if (phase1 == rotm1.end())
                continue;
 
-            RinexObsTypeMap::const_iterator phase2 = rotm2.find(rot);
+            gpstk::SvObsEpoch::const_iterator phase2 = rotm2.find(rot);
             if (phase1 == rotm2.end())
                continue;
 
             // Don't use the data if we have an SN in the data and it looks
             // bogus.
             double snr=-1;
-            RinexObsType srot;
+            gpstk::ObsID srot;
             if (rot == L1)
                srot = S1;
             if (rot == L2)
                srot = S2;
-            RinexObsTypeMap::const_iterator snr1_itr = rotm1.find(srot);
-            RinexObsTypeMap::const_iterator snr2_itr = rotm2.find(srot);
+            gpstk::SvObsEpoch::const_iterator snr1_itr = rotm1.find(srot);
+            gpstk::SvObsEpoch::const_iterator snr2_itr = rotm2.find(srot);
 
             if (snr1_itr != rotm1.end() && snr2_itr != rotm2.end() )
             {
-               snr = snr1_itr->second.data;
-               if (std::abs(snr) < 1 || std::abs(snr2_itr->second.data) < 1)
+               snr = snr1_itr->second;
+               if (std::abs(snr) < 1 || std::abs(snr2_itr->second) < 1)
                   continue;
             }
 
             // Note that we need the phase in cycles to make the PhaseResidual
             // class work right.
             PhaseResidual::Arc& arc = pot[rot][prn].front();
-            arc[t].phase1 = phase1->second.data;
-            arc[t].phase2 = phase2->second.data;
+            arc[t].phase1 = phase1->second;
+            arc[t].phase2 = phase2->second;
             arc[t].snr = snr;
          }
       }
@@ -115,7 +149,7 @@ void PhaseCleaner::addData(const RODEpochMap& rx1, const RODEpochMap& rx2)
 // find the SV above indicated elevation with the lowest elevation, that is
 // rising, and not equal to prn (the 'current' SV)
 //-----------------------------------------------------------------------------
-bool PhaseCleaner::goodMaster::operator()(const PrnDoubleMap::value_type& pdm)
+bool PhaseCleaner::goodMaster::operator()(const SvDoubleMap::value_type& pdm)
 {
    bool good = (pdm.second > minVal)
       && (pdm.first != prn)
@@ -134,14 +168,14 @@ bool PhaseCleaner::goodMaster::operator()(const PrnDoubleMap::value_type& pdm)
 
 
 //-----------------------------------------------------------------------------
-// This function isn't be moved to PhaseResidual since it needs access to all
+// This function can't be moved to PhaseResidual since it needs access to all
 // the other PRN's data. Not that this should guarantee that the data exists
 // from both the SVs.
 //-----------------------------------------------------------------------------
 void PhaseCleaner::selectMasters(
-   const RinexObsType& rot, 
+   const gpstk::ObsID& rot, 
    const gpstk::SatID& prn, 
-   PrnElevationMap& pem)
+   SvElevationMap& pem)
 {
    PhaseResidual::ArcList& pral = pot[rot][prn];
 
@@ -152,13 +186,13 @@ void PhaseCleaner::selectMasters(
          const gpstk::DayTime& t = i->first;
          PhaseResidual::Obs& obs = i->second;
 
-         PrnElevationMap::iterator j = pem.find(t);
+         SvElevationMap::iterator j = pem.find(t);
          if (j == pem.end())
          {
             cout << "No elevation available. Returning." << t.printf(timeFormat) << endl;
             return;
          }
-         PrnDoubleMap& pdm = j->second;
+         SvDoubleMap& pdm = j->second;
 
          bool haveMasterObs = false;
 
@@ -184,7 +218,7 @@ void PhaseCleaner::selectMasters(
                        << " " << rot.type
                        << " at " << t.printf(timeFormat)
                        << endl;
-                  PrnDoubleMap::const_iterator e;
+                  SvDoubleMap::const_iterator e;
                   for (e = pdm.begin(); e != pdm.end(); e++)
                      cout << " prn: " << e->first.id
                           << ", elev:" << e->second
@@ -230,9 +264,9 @@ void PhaseCleaner::selectMasters(
 // for the master SV.
 //-----------------------------------------------------------------------------
 void PhaseCleaner::doubleDifference(
-   const RinexObsType& rot, 
+   const gpstk::ObsID& rot, 
    const gpstk::SatID& prn,
-   PrnElevationMap& pem)
+   SvElevationMap& pem)
 {
    PhaseResidual::ArcList& pral = pot[rot][prn];
 
@@ -275,14 +309,14 @@ void PhaseCleaner::doubleDifference(
 // This is one call to do all the work. All the other functions should be
 // call by this one.
 //-----------------------------------------------------------------------------
-void PhaseCleaner::debias(PrnElevationMap& pem)
+void PhaseCleaner::debias(SvElevationMap& pem)
 {
    // At this point, the pot has only phase1 & phase2 set.
    // Also only one arc exists for each prn; and that arc doesn't even
    // have the master prn set.
    for (PraPrnOt::iterator i = pot.begin(); i != pot.end(); i++)
    {
-      const RinexObsType& rot = i->first;
+      const gpstk::ObsID& rot = i->first;
       PraPrn& praPrn = i->second;
       for (PraPrn::iterator j = praPrn.begin(); j != praPrn.end(); j++)
       {
@@ -326,7 +360,7 @@ void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
 
    for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
-      const gpstk::RinexObsHeader::RinexObsType& rot = i->first;
+      const gpstk::ObsID& rot = i->first;
       const PraPrn& pp = i->second;
  
       for (PraPrn::const_iterator j = pp.begin(); j != pp.end(); j++)
@@ -361,11 +395,11 @@ void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
 //-----------------------------------------------------------------------------
 void PhaseCleaner::getSlips(
    CycleSlipList& csl, 
-   PrnElevationMap& pem) const
+   SvElevationMap& pem) const
 {
    for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
-      const RinexObsType& rot = i->first;
+      const gpstk::ObsID& rot = i->first;
       const PraPrn& praPrn = i->second;
 
       for (PraPrn::const_iterator j = praPrn.begin(); j != praPrn.end(); j++)
@@ -406,7 +440,7 @@ void PhaseCleaner::getSlips(
             CycleSlipRecord cs;
             cs.t = t1Begin;
             cs.cycles = (arc1.ddBias - arc0.ddBias);
-            cs.rot = rot;
+            cs.oid = rot;
             cs.prn = prn;
             cs.elevation = pem[t1Begin][prn];
             cs.masterPrn = arc1.master;
@@ -434,7 +468,7 @@ void PhaseCleaner::dump(std::ostream& s) const
 
    for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
-      const gpstk::RinexObsHeader::RinexObsType& rot = i->first;
+      const gpstk::ObsID& rot = i->first;
       const PraPrn& pp = i->second;
  
       for (PraPrn::const_iterator j = pp.begin(); j != pp.end(); j++)

@@ -44,12 +44,16 @@
 #include <fstream>
 #include <BCEphemerisStore.hpp>
 #include <CommandOptionWithTimeArg.hpp>
+#include <TropModel.hpp>
+#include <EpochClockModel.hpp>
 
 #include "readers.hpp"
+#include "ObsReader.hpp"
+#include "FFIdentifier.hpp"
 #include "util.hpp"
 #include "ordUtils.hpp"
-#include "PhaseCleaner.hpp"
 #include "RobustLinearEstimator.hpp"
+#include "OrdEngine.hpp"
 
 using namespace std;
 
@@ -70,26 +74,17 @@ char* verboseHelp =
 "\n"
 "Types in the raw output files:\n"
 "   0 - c1p2 observed range deviation\n"
-"   50 - computed clock, difference from estimate, strip\n"
+"   50 - computed clock, difference from estimate\n"
 "   51 - linear clock estimate, abdev \n"
-"Double difference types:\n"
-"   10 - c1     20 - c2\n"
-"   11 - p1     21 - p2\n"
-"   12 - l1     22 - l2\n"
-"   13 - d1     23 - d2\n"
-"   14 - s1     24 - s2 (Why? Because I can!)\n"
 "\n"
 "Misc notes:\n"
-"\n"
-"The criteria min-arc-time and min-arc-length are both required to be met\n"
-"for a arc to be valid in double difference mode.\n"
 "\n"
 "Example command to compute ORDs on an ICD-GPS-211 formated smoothed\n"
 "measurement data file:\n"
 "   reszilla --omode=p1 --svtime --msc=mscoords.cfg -m 85401\n"
 "      -o asm2004.138 -e s011138a.04n\n"
 "\n"
-"All output quantities (stddev, min, max, ord, clock, double differnce, ...)\n"
+"All output quantities (stddev, min, max, ord, clock, ...)\n"
 "are in meters.\n"
 ;
 
@@ -99,13 +94,8 @@ int main(int argc, char *argv[])
    string hmsFmt2="%Y %3j %02H:%02M:%02S";
    string sodFmt="%Y %3j %7.1s";
    string ordMode="p1p2";
-   string ddMode="sv";
    unsigned long msid=0;
    double sigmaMask=6;
-
-   double minArcGap = 60; // seconds
-   double minArcTime = 60; // seconds
-   long minArcLen=5; // epochs
 
    bool rawOutput=false;
    bool keepUnhealthy=false;
@@ -121,15 +111,9 @@ int main(int argc, char *argv[])
    try
    {
       gpstk::CommandOptionWithAnyArg
-         obs1FileOption('o', "obs1", "Observation data file name. If this "
-                        "option is specified more than once the contents of "
-                        "all files will be used.", true);
-
-      gpstk::CommandOptionWithAnyArg
-         obs2FileOption('2', "obs2", " Second receiver's observation data "
-                        "file name. Only used when computing a double "
-                        "difference. If this option is specified more than "
-                        "once the contents of all the files will be used.");
+         obsFileOption('o', "obs", "Observation data file name. If this "
+                       "option is specified more than once the contents of "
+                       "all files will be used.", true);
 
       gpstk::CommandOptionWithAnyArg
          mscFileOption('\0', "msc", "Station coordinate file");
@@ -170,9 +154,6 @@ int main(int argc, char *argv[])
       gpstk::CommandOptionNoArg
          statsOption('s', "no-stats", "Don't compute & output the statistics");
 
-      gpstk::CommandOptionNoArg
-         cycleSlipOption('\0', "cycle-slips", "Output a list of cycle slips");
-   
       gpstk::CommandOptionWithAnyArg
          rawOutputOption('r', "raw-output", "Dump the computed residuals/ords "
                          "into specified file. If '-' is given as the file "
@@ -210,28 +191,6 @@ int main(int argc, char *argv[])
          clkAnalOption('\0', "clock-est", "Compute a linear clock estimate");
 
       gpstk::CommandOptionWithAnyArg
-         ddModeOption('\0', "ddmode", "Double difference residual mode: none, "
-                      "sv, or c1p2. The default is " + ddMode + ".");
-
-      gpstk::CommandOptionWithAnyArg
-         minArcTimeOption('\0', "min-arc-time", "The minimum length of time "
-                          "(in seconds) that a sequence of observations must "
-                          "span to be considered as an arc. The default "
-                          "value is " + asString(minArcTime, 1) + " seconds.");
-
-      gpstk::CommandOptionWithAnyArg
-         minArcGapOption('\0', "min-arc-gap", "The minimum length of time "
-                         "(in seconds) between two arcs for them to be "
-                         "considered separate arcs. The default value "
-                         "is " + asString(minArcGap, 1) + " seconds.");
-
-      gpstk::CommandOptionWithNumberArg
-         minArcLenOption('\0', "min-arc-length", "The minimum number of "
-                         "epochs that can be considered an arc. The "
-                         "default value is " + asString(minArcLen) +
-                         " epochs.");
-
-      gpstk::CommandOptionWithAnyArg
          elevBinsOption('b', "elev-bin", "A range of elevations, used in "
                         "computing the statistical summaries. Repeat to "
                         "specify multiple bins. The default is \"-b 0-10 "
@@ -251,7 +210,7 @@ int main(int argc, char *argv[])
                          "about intermediate steps. The default is 1. "
                          "Specify -hh for more help.");
 
-      string appDesc("Computes various residuals from GPS observations.");
+      string appDesc("Computes observed range deviations from GPS observations.");
       gpstk::CommandOptionParser cop(appDesc);
       cop.parseOptions(argc, argv);
 
@@ -273,10 +232,9 @@ int main(int argc, char *argv[])
 
       if (verbosityOption.getCount())
          verbosity = asInt(verbosityOption.getValue()[0]);
+      if (verbosity>4)
+         gpstk::ObsRngDev::debug = true;
 
-      if (ddModeOption.getCount())
-         ddMode = lowerCase(ddModeOption.getValue().front());
-      
       if (ordModeOption.getCount())
          ordMode = lowerCase(ordModeOption.getValue()[0]);
       
@@ -287,16 +245,6 @@ int main(int argc, char *argv[])
 
       if (sigmaOption.getCount())
          sigmaMask = asDouble(sigmaOption.getValue().front());
-
-      if (minArcTimeOption.getCount())
-         minArcTime = asDouble(minArcTimeOption.getValue().front());
-
-      if (minArcLenOption.getCount())
-         minArcLen = asUnsigned(minArcLenOption.getValue().front());
-
-      if (minArcGapOption.getCount())
-         minArcGap = asDouble(minArcGapOption.getValue().front());
-
       if (keepUnhealthyOption.getCount())
          keepUnhealthy=true;
       
@@ -332,12 +280,6 @@ int main(int argc, char *argv[])
             ofs.clear(std::cout.rdstate());
             ofs.std::basic_ios<char>::rdbuf(std::cout.rdbuf());
          }
-      }
-
-      if (ddMode=="none" && obs2FileOption.getCount())
-      {
-         cout << "Specifying two sets of obs data requires a ddmode other than 'none'." << endl;
-         exit(1);
       }
 
       // Set up the elevation ranges for the various statistical summaries
@@ -395,19 +337,11 @@ int main(int argc, char *argv[])
          else
             cout << "Ignoring unhealthy SVs in statistics." << endl;
             
-
-         if (obs2FileOption.getCount())
-            cout << "Double difference mode: " << ddMode << endl
-                 << "Minimum arc time: " << minArcTime << " seconds" << endl
-                 << "Minimum arc length: " << minArcLen << " epochs" << endl
-                 << "Minimum gap length: " << minArcGap << " seconds" << endl;
-
          cout << "--------------------------------------------------------------" << endl;
       }
 
       // -------------------------------------------------------------------
-      // End of processing/checking command line arguments, now on to the
-      // data processing portion. First we get all the data into memory.
+      // End of processing/checking command line arguments.
       // -------------------------------------------------------------------
 
       // Get the ephemeris data
@@ -418,118 +352,92 @@ int main(int argc, char *argv[])
          bce.SearchNear();
       }
 
-      // The weather data...
+      // Get the weather data...
       gpstk::WxObsData& wod = *read_met_data(metFileOption);
 
-      // The obs data...
-      gpstk::ObsEpochMap obs1;
-      gpstk::Triple ap1;
-      if (verbosity)
-         cout << "Reading obs1 data." << endl;
-      read_obs_data(obs1FileOption, msid, obs1, ap1, startTime, stopTime);
-      if (checkObsOption.getCount())
-         check_data(ap1, obs1);
-
-      // If a msid & msc file is specified, then get & use the msc file
-      // to overwrite the position in the rinex obs header
+      // Get the station position
+      gpstk::Triple ap;
       if (msid && mscFileOption.getCount()>0)
       {
          string mscfn = (mscFileOption.getValue())[0];
-         read_msc_data(mscfn, msid, ap1);
+         read_msc_data(mscfn, msid, ap);
       }
-
-      // If we are given a second set of obs data, don't compute separate ords
-      // since this is a double-difference run
-      if (ordMode!="none" && !obs2FileOption.getCount())
+      else
       {
-         // Compute the ords
-         gpstk::ORDEpochMap ord1;
-         computeOrds(ord1, obs1, ap1, eph, wod, svTimeOption, 
-                     keepUnhealthy, keepWarts, ordMode);
-
-         // Now, output statistics to stdout
-         if (statsOption.getCount()==0)
-            dumpStats(ord1, ordMode, sigmaMask);
-
-         // Save the raw ORDs to a file
-         if (rawOutput)
-            dumpOrds(ofs, ord1);
-
-         RobustLinearEstimator rle;
-         if (clkAnalOption.getCount())
-            estimateClock(ord1, rle);
-
-         if (rawOutput)
-            dumpClock(ofs, ord1, rle);
-      }
-
-      // Now compute double difference residuals on the obs2 data
-      if (obs2FileOption.getCount())
-      {
-         SvElevationMap pem = elevation_map(obs1, ap1, eph);
-
-         gpstk::ObsEpochMap obs2;
-         obs2.clear();
-         gpstk::Triple ap2;
-         if (verbosity>1)
-            cout << "Reading obs data from receiver 2." << endl;
-         read_obs_data(obs2FileOption, msid, obs2, ap2, startTime, stopTime);
-         if (checkObsOption.getCount())
-            check_data(ap2, obs2);
-
-         // copy the position from the other file if it was taken from the msc
-         if (msid && mscFileOption.getCount()>0)
-            ap2 = ap1;
-
-         if (ddMode == "sv")
+         string fn = (obsFileOption.getValue())[0];
+         gpstk::ObsReader obsReader(fn, verbosity);
+         if (obsReader.inputType == gpstk::FFIdentifier::tRinexObs)
          {
-            // we need the rx clock offset for this double differece so
-            // compute the ords just to get a clock offset. Scope these so
-            // the ORDEpochMap objects get removed after they are computed.
-            {
-               gpstk::ORDEpochMap ord1,ord2;
-               computeOrds(ord1, obs1, ap1, eph, wod, svTimeOption, keepUnhealthy, keepWarts, ordMode);
-               computeOrds(ord2, obs2, ap2, eph, wod, svTimeOption, keepUnhealthy, keepWarts, ordMode);
-               add_clock_to_obs(obs1, ord1);
-               add_clock_to_obs(obs2, ord2);
-            }
-
-            DDEpochMap ddem;
-
-            computeDDEpochMap(obs1, obs2, pem, eph, ddem);
-
-            PhaseCleaner pc(minArcLen, minArcTime, minArcGap);
-
-            pc.addData(obs1, obs2);
-            pc.debias(pem);
-            pc.getPhaseDD(ddem);
-
-            CycleSlipList sl;
-            pc.getSlips(sl, pem);
-            
-            if (statsOption.getCount()==0)
-               dumpStats(ddem, sl, pem);
-
-            if (cycleSlipOption.getCount())
-               dump(cout, sl);
-
-            if (rawOutput)
-               dump(ofs, ddem, pem);   
-         }
-
-         else if (ddMode=="c1p2")
-         {
-            DD2EpochMap ddem;
-            computeDD2(obs1, obs2, ddem);
-            if (statsOption.getCount()==0)
-               dumpStats(ddem, pem);
-
-            if (rawOutput)
-               dump(ofs, ddem, pem);            
+            ap = obsReader.roh.antennaPosition;
+            if (verbosity>1)
+                  cout << "Antenna position read from RINEX obs file:"
+                       << ap << endl;
          }
          else
-            cout << "Unknow ddMode:" << ddMode << endl;
-      } // end for()
+         {
+            cout << "Station position not specified" << endl;
+            exit(-1);
+         }
+      }
+
+      // Set up our clock model
+      gpstk::EpochClockModel cm;
+      cm.setSigmaMultiplier(1.5);
+      cm.setElevationMask(10);
+      if (keepUnhealthy)
+         cm.setSvMode(gpstk::ObsClockModel::ALWAYS);
+
+      // Use a New Brunswick trop model.
+      gpstk::NBTropModel tm;
+
+      // Now set up the function object that is used to compute the ords.
+      OrdEngine ordEngine(eph, wod, ap, cm, tm);
+      ordEngine.svTime = svTimeOption;
+      ordEngine.keepWarts = keepWarts;
+      ordEngine.setMode(ordMode);
+      ordEngine.verbosity = verbosity;
+      ordEngine.keepUnhealthy = keepUnhealthy;
+      gpstk::ORDEpochMap ordEpochMap;
+
+      // Walk through each obs file, reading and computing ords along the way.
+      for (int i=0; i<obsFileOption.getCount(); i++)
+      {
+         string fn = (obsFileOption.getValue())[i];
+         gpstk::ObsReader obsReader(fn, verbosity);
+         obsReader.msid = msid;
+
+         while (obsReader())
+         {
+            gpstk::ObsEpoch obs(obsReader.getObsEpoch());
+
+            if (!obsReader())
+               break;
+
+            if (obs.time < startTime || obs.time > stopTime)
+               continue;
+
+            gpstk::ORDEpoch oe = ordEngine(obs);
+
+            // Only add epochs that have a valid clock estimate
+            if (oe.clockOffset.is_valid())
+               ordEpochMap[obs.time] = oe;
+         }
+      }
+
+      // Now, output statistics to stdout
+      if (statsOption.getCount()==0)
+         dumpStats(ordEpochMap, ordMode, sigmaMask);
+      
+      // Save the raw ORDs to a file
+      if (rawOutput)
+         dumpOrds(ofs, ordEpochMap);
+      
+      RobustLinearEstimator rle;
+      if (clkAnalOption.getCount())
+         estimateClock(ordEpochMap, rle);
+      
+      if (rawOutput)
+         dumpClock(ofs, ordEpochMap, rle);
    }
    catch (gpstk::Exception& e)
    {

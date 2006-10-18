@@ -93,9 +93,9 @@ namespace gpstk
 
    std::ostream& ObsID::dump(std::ostream& s) const
    {
-      s << " " << ObsID::cbStrings[band]
-        << " " << ObsID::tcStrings[code]
-        << " " << ObsID::otStrings[type];
+      s << ObsID::cbStrings[band] << " "
+        << ObsID::tcStrings[code] << " "
+        << ObsID::otStrings[type];
 
       return s;
    } // ObsID::dump()

@@ -44,146 +44,141 @@
 #include "ObsUtils.hpp"
 
 using namespace std;
+using namespace gpstk;
 
-namespace gpstk
+SvObsEpoch makeSvObsEpoch(const MDPObsEpoch& mdp) throw()
 {
-   SvObsEpoch makeSvObsEpoch(const MDPObsEpoch& mdp) throw()
+   SvObsEpoch obs;
+   MDPObsEpoch::ObsMap::const_iterator i;
+   for (i=mdp.obs.begin(); i!=mdp.obs.end(); i++)
    {
-      SvObsEpoch obs;
-      MDPObsEpoch::ObsMap::const_iterator i;
-      for (i=mdp.obs.begin(); i!=mdp.obs.end(); i++)
+      CarrierCode cc = i->first.first;
+      RangeCode rc = i->first.second;
+      const MDPObsEpoch::Observation& mdp_obs = i->second;
+
+      ObsID::CarrierBand cb;
+      ObsID::TrackingCode tc;
+
+      switch(cc)
       {
-         CarrierCode cc = i->first.first;
-         RangeCode rc = i->first.second;
-         const MDPObsEpoch::Observation& mdp_obs = i->second;
-
-         ObsID::CarrierBand cb;
-         ObsID::TrackingCode tc;
-
-         switch(cc)
-         {
-            case ccL1: cb = ObsID::cbL1; break;
-            case ccL2: cb = ObsID::cbL2; break;
-            case ccL5: cb = ObsID::cbL5; break;
-            default:   cb = ObsID::cbUnknown;
-         }
-
-         switch (rc)
-         {
-            case rcCA:       tc = ObsID::tcCA; break;
-            case rcPcode:    tc = ObsID::tcP; break;
-            case rcYcode:    tc = ObsID::tcY; break;
-            case rcCodeless: tc = ObsID::tcW; break;
-            case rcCM:       tc = ObsID::tcCA; break;
-            case rcCL:       tc = ObsID::tcCA; break;
-            case rcMcode1:   tc = ObsID::tcCA; break;
-            case rcMcode2:   tc = ObsID::tcCA; break;
-            case rcCMCL:     tc = ObsID::tcCA; break;
-            default:         tc = ObsID::tcUnknown;
-         }
-
-         obs[ObsID(ObsID::otRange,   cb, tc)] = mdp_obs.pseudorange;
-         obs[ObsID(ObsID::otPhase,   cb, tc)] = mdp_obs.phase;
-         obs[ObsID(ObsID::otDoppler, cb, tc)] = mdp_obs.doppler;
-         obs[ObsID(ObsID::otSNR,     cb, tc)] = mdp_obs.snr;
-         obs[ObsID(ObsID::otLLI,     cb, tc)] = mdp_obs.lockCount;
+         case ccL1: cb = ObsID::cbL1; break;
+         case ccL2: cb = ObsID::cbL2; break;
+         case ccL5: cb = ObsID::cbL5; break;
+         default:   cb = ObsID::cbUnknown;
       }
-      return obs;
+
+      switch (rc)
+      {
+         case rcCA:       tc = ObsID::tcCA; break;
+         case rcPcode:    tc = ObsID::tcP; break;
+         case rcYcode:    tc = ObsID::tcY; break;
+         case rcCodeless: tc = ObsID::tcW; break;
+         case rcCM:       tc = ObsID::tcCA; break;
+         case rcCL:       tc = ObsID::tcCA; break;
+         case rcMcode1:   tc = ObsID::tcCA; break;
+         case rcMcode2:   tc = ObsID::tcCA; break;
+         case rcCMCL:     tc = ObsID::tcCA; break;
+         default:         tc = ObsID::tcUnknown;
+      }
+
+      obs[ObsID(ObsID::otRange,   cb, tc)] = mdp_obs.pseudorange;
+      obs[ObsID(ObsID::otPhase,   cb, tc)] = mdp_obs.phase;
+      obs[ObsID(ObsID::otDoppler, cb, tc)] = mdp_obs.doppler;
+      obs[ObsID(ObsID::otSNR,     cb, tc)] = mdp_obs.snr;
+      obs[ObsID(ObsID::otLLI,     cb, tc)] = mdp_obs.lockCount;
+   }
+   return obs;
+}
+
+
+SvObsEpoch makeSvObsEpoch(const RinexObsData::RinexObsTypeMap& rotm) throw()
+{
+   SvObsEpoch soe;
+
+   RinexObsData::RinexObsTypeMap::const_iterator rotm_itr;
+   for (rotm_itr = rotm.begin(); rotm_itr != rotm.end(); rotm_itr++)
+   {
+      const RinexObsHeader::RinexObsType& rot = rotm_itr->first;
+      const RinexObsData::RinexDatum& rd = rotm_itr->second;
+      RinexObsID oid(rot);
+      soe[oid] = rd.data;
+      if (rd.ssi>0)
+      {
+         oid.type = ObsID::otSSI;
+         soe[oid] = rd.ssi;
+      }
+      if (rd.lli>0)
+      {
+         oid.type = ObsID::otLLI;
+         soe[oid] = rd.lli;
+      }
    }
 
-   SvObsEpoch makeSvObsEpoch(const RinexObsData::RinexObsTypeMap& rotm) throw()
+   return soe;
+}
+
+
+ObsEpoch makeObsEpoch(const RinexObsData& rod) throw()
+{
+   ObsEpoch oe;
+   oe.time = rod.time;
+
+   RinexObsData::RinexSatMap::const_iterator rsm_itr;
+   for (rsm_itr = rod.obs.begin(); rsm_itr != rod.obs.end(); rsm_itr++)
    {
-      SvObsEpoch soe;
-
-      RinexObsData::RinexObsTypeMap::const_iterator rotm_itr;
-      for (rotm_itr = rotm.begin(); rotm_itr != rotm.end(); rotm_itr++)
-      {
-         const RinexObsHeader::RinexObsType& rot = rotm_itr->first;
-         const RinexObsData::RinexDatum& rd = rotm_itr->second;
-         RinexObsID oid(rot);
-         soe[oid] = rd.data;
-         if (rd.ssi>0)
-         {
-            oid.type = ObsID::otSSI;
-            soe[oid] = rd.ssi;
-         }
-      }
-
-      return soe;
+      const SatID svid(rsm_itr->first);
+      const RinexObsData::RinexObsTypeMap& rotm = rsm_itr->second;
+      oe[svid] = makeSvObsEpoch(rotm);
    }
 
-   ObsEpoch makeObsEpoch(const RinexObsData& rod) throw()
+   return oe;
+}
+
+
+ObsEpoch makeObsEpoch(const MDPEpoch& mdp) throw()
+{
+   ObsEpoch oe;
+   oe.time = mdp.begin()->second.time;
+
+   for (MDPEpoch::const_iterator i=mdp.begin(); i!=mdp.end(); i++)
    {
-      ObsEpoch oe;
-      oe.time = rod.time;
-
-      RinexObsData::RinexSatMap::const_iterator rsm_itr;
-      for (rsm_itr = rod.obs.begin(); rsm_itr != rod.obs.end(); rsm_itr++)
-      {
-         const SatID svid(rsm_itr->first);
-         const RinexObsData::RinexObsTypeMap& rotm = rsm_itr->second;
-         oe[svid] = makeSvObsEpoch(rotm);
-      }
-
-      return oe;
+      const MDPObsEpoch& moe = i->second;
+      SatID svid(moe.prn, SatID::systemGPS);
+      oe[svid] = makeSvObsEpoch(moe);
    }
+   return oe;
+}
 
 
-   ObsEpoch makeObsEpoch(const MDPEpoch& mdp) throw()
+WxObservation makeWxObs(const SMODFData& smod) throw()
+{
+   WxObservation wx;
+
+   wx.t = smod.time;
+
+   if (smod.tempSource)
    {
-      ObsEpoch oe;
-      oe.time = mdp.begin()->second.time;
-
-      for (MDPEpoch::const_iterator i=mdp.begin(); i!=mdp.end(); i++)
-      {
-         const MDPObsEpoch& moe = i->second;
-         gpstk::SatID svid(moe.prn, gpstk::SatID::systemGPS);
-         oe[svid] = makeSvObsEpoch(moe);
-      }
-      return oe;
+      wx.temperature = smod.temp;
+      wx.temperatureSource = WxObservation::obsWx;
    }
+   else 
+      wx.temperatureSource = WxObservation::noWx;;
 
-   WxObservation makeWxObs(const SMODFData& smod) throw()
+   if (smod.pressSource)
    {
-      WxObservation wx;
+      wx.pressure = smod.pressure;
+      wx.pressureSource = WxObservation::obsWx;
+   }
+   else 
+      wx.pressureSource = WxObservation::noWx;;
 
-      wx.t = smod.time;
-
-      if (smod.tempSource)
-      {
-         wx.temperature = smod.temp;
-         wx.temperatureSource = WxObservation::obsWx;
-      }
-      else 
-         wx.temperatureSource = WxObservation::noWx;;
-
-      if (smod.pressSource)
-      {
-         wx.pressure = smod.pressure;
-         wx.pressureSource = WxObservation::obsWx;
-      }
-      else 
-         wx.pressureSource = WxObservation::noWx;;
-
-      if (smod.humidSource)
-      {
-         wx.humidity = smod.humidity;
-         wx.humiditySource = WxObservation::obsWx;
-      }
-      else 
-         wx.humiditySource = WxObservation::noWx;
+   if (smod.humidSource)
+   {
+      wx.humidity = smod.humidity;
+      wx.humiditySource = WxObservation::obsWx;
+   }
+   else 
+      wx.humiditySource = WxObservation::noWx;
          
-      return wx;
-   }
-
-   ObsID getObsID(const SMODFData& smod) throw()
-   {
-      if (smod.type==0)
-         return ObsID(ObsID::otRange, ObsID::cbL1L2, ObsID::tcUnknown);
-      else if (smod.type==9)
-         return ObsID(ObsID::otPhase, ObsID::cbL1L2, ObsID::tcUnknown);
-
-      return ObsID(ObsID::otUnknown, ObsID::cbUnknown, ObsID::tcUnknown);
-   }
-      
-} // end of namespace gpstk
+   return wx;
+}

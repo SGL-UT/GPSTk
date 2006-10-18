@@ -51,8 +51,10 @@ using namespace std;
 
 namespace gpstk
 {
-   ObsReader::ObsReader(const string& str)
-      : fn(str), inputType(str), verboseLevel(0), epochCount(0), msid(0)
+   //----------------------------------------------------------------------
+   ObsReader::ObsReader(const string& str, int verbose)
+      : fn(str), inputType(str), verboseLevel(verbose), epochCount(0), msid(0),
+        usePrevSMOD(false)
    {
       if (inputType == FFIdentifier::tRinexObs)
       {
@@ -77,6 +79,8 @@ namespace gpstk
       }
    };
 
+
+   //----------------------------------------------------------------------
    ObsEpoch ObsReader::getObsEpoch()
    {
       ObsEpoch oe;
@@ -85,24 +89,72 @@ namespace gpstk
          RinexObsData rod;
          ros >> rod;
          oe = makeObsEpoch(rod);
+         epochCount++;
       }
       else if (inputType == FFIdentifier::tMDP)
       {
          MDPEpoch moe;
          mdps >> moe;
          oe = makeObsEpoch(moe);
+         epochCount++;
       }
       else if (inputType == FFIdentifier::tSMODF)
       {
+         if (msid==0)
+         {
+            cout << "SMODF data requires an msid to be specified. Exiting." << endl;
+            exit(-1);
+         }
+         
          SMODFData smod;
-         smos >> smod;
-         cout << "write me" << endl;
+         while (true)
+         {
+            if (usePrevSMOD)
+            {
+               smod = prevSMOD;
+               usePrevSMOD = false;
+            }
+            else
+            {
+               while (smos >> smod)
+                  if (smod.station == msid) break;
+            }
+
+            if (smod.station != msid)
+               break;
+
+            if (smod.time != oe.time && oe.size())
+            {
+               usePrevSMOD = true;
+               prevSMOD = smod;
+               epochCount++;
+               break;
+            }
+
+            oe.time = smod.time;
+            
+            SatID svid(smod.PRNID, SatID::systemGPS);
+            SvObsEpoch& soe = oe[svid];
+            soe.svid=svid;
+            
+            if (smod.type==0)
+            {
+               ObsID oid(ObsID::otRange, ObsID::cbL1L2, ObsID::tcP);
+               soe[oid] = smod.obs * 1000;
+            }
+            else if (smod.type==9)
+            {
+               ObsID oid(ObsID::otPhase, ObsID::cbL1L2, ObsID::tcP);
+               soe[oid] = smod.obs;
+            }
+         }
       }
 
-      epochCount++;
       return oe;
    }
 
+
+   //----------------------------------------------------------------------
    bool ObsReader::operator()()
    {
       if (inputType == FFIdentifier::tRinexObs)
@@ -114,41 +166,3 @@ namespace gpstk
       return false;
    }
 } // end of namespace gpstk
-
-/*
-   // ---------------------------------------------------------------------
-   // ---------------------------------------------------------------------
-   void DataReader::read_smo_data(const string& fn)
-   {
-      SMODFStream smo(fn.c_str(), ios::in);
-      smo.exceptions(fstream::failbit);
-      if (verbosity>2)
-         cout << "Reading " << fn << " as SMODF."<< endl;
-
-      SMODFData smodata;
-
-      while (smo >> smodata)
-      {
-         if (smodata.station != msid)
-            continue;
-
-         const DayTime& t = smodata.time;
-         if (t<startTime || t>stopTime)
-            continue;
-
-         ObsEpoch& oe = oem[t];
-         oe.time = t;
-
-         SatID svid(smodata.PRNID, SatID::systemGPS);
-         SvObsEpoch& soe = oe[svid];
-         soe.svid=svid;
-
-         soe[getObsID(smodata)] = smodata.obs * 1000;
-      }
-
-      haveObsData = true;
-      if (verbosity>1)
-         cout << "Read " << fn << " as SMODF obs."<< endl;
-
-   } // end of read_smo_data()
-*/

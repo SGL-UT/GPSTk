@@ -49,7 +49,6 @@
 #include <vector>
 
 #include "EphemerisStore.hpp"
-#include "FFIdentifier.hpp"
 
 namespace gpstk
 {

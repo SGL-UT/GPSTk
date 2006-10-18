@@ -60,12 +60,12 @@ namespace gpstk
       EpochClockModel(double sigma = 2, 
                       double elmask = 0, 
                       SvMode mode = ALWAYS)
-         : ObsClockModel(sigma, elmask, mode){}
+         : ObsClockModel(sigma, elmask, mode), valid(false), clkc(0){}
 
       virtual double EpochClockModel::getOffset(const gpstk::DayTime& t) const
          throw(gpstk::InvalidArgumentException) 
       {
-         if (t!=time) 
+         if (t!=time)
          {
             gpstk::InvalidArgumentException e;
             GPSTK_THROW(e);
@@ -91,7 +91,7 @@ namespace gpstk
          throw() {return clkc;};
 
       bool isOffsetValid() const 
-         throw(){return valid;};
+         throw() {return valid;};
 
       virtual void addEpoch(const ORDEpoch& oe) throw(gpstk::InvalidValue)
       {

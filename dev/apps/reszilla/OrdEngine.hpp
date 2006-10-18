@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: ordUtils.hpp 203 2006-10-10 16:12:03Z ocibu $"
 
 //============================================================================
 //
@@ -36,66 +36,47 @@
 //
 //=============================================================================
 
-#ifndef DDEPOCH_HPP
-#define DDEPOCH_HPP
+#ifndef ORDENGINE_HPP
+#define ORDENGINE_HPP
 
-#include "DayTime.hpp"
-#include "stl_helpers.hpp"
-#include "icd_200_constants.hpp"
-#include "Stats.hpp"
+#include "ObsEpochMap.hpp"
+#include "WxObsMap.hpp"
+#include "ORDEpoch.hpp"
+#include "EphemerisStore.hpp"
+#include "ObsClockModel.hpp"
+#include "TropModel.hpp"
 
-#include "util.hpp"
-
-struct DDEpoch
+class OrdEngine
 {
-   DDEpoch() : valid(false){};
-   SvOIDM dd;
+public:
+   OrdEngine(
+      const gpstk::EphemerisStore& e, 
+      const gpstk::WxObsData& w,
+      const gpstk::Triple& p,
+      gpstk::ObsClockModel& c,
+      gpstk::TropModel& t);
 
-   SvShortMap health;
+   void setMode(const std::string& ordMode);
 
-   double clockOffset;
-   gpstk::SatID masterPrn;
-   bool valid;
+   // The crank for this engine. Input an ObsEpoch, get back an ORDEpoch.
+   gpstk::ORDEpoch operator()(const gpstk::ObsEpoch& obs);
 
-   // Computes a single difference between two sets of obs
-   OIDM singleDifference(
-      const gpstk::SvObsEpoch& rx1obs,
-      const gpstk::SvObsEpoch& rx2obs);
-   
-   // Sets the valid flag true if successfull
-   // also sets the masterPrn to the one actually used
-   void doubleDifference(
-      const gpstk::ObsEpoch& rx1,
-      const gpstk::ObsEpoch& rx2);
+   const gpstk::Triple& antennaPos;
+   const gpstk::EphemerisStore& eph;
+   const gpstk::WxObsData& wod;
+   gpstk::ObsClockModel& cm;
+   gpstk::TropModel& tm;
 
-   void selectMasterPrn(
-      const gpstk::ObsEpoch& rx1, 
-      const gpstk::ObsEpoch& rx2,
-      SvElevationMap& pem);
+   bool svTime;
+   bool keepWarts;
+   bool keepUnhealthy;
+   unsigned long wartCount;
+   int verbosity;
+
+private:
+   bool dualFreq;
+   gpstk::ObsID oid1, oid2;
+   gpstk::GPSGeoid gm;
 };
-
-typedef std::map<gpstk::DayTime, DDEpoch> DDEpochMap;
-
-void computeDDEpochMap(
-   gpstk::ObsEpochMap& rx1,
-   gpstk::ObsEpochMap& rx2,
-   SvElevationMap& pem,
-   const gpstk::EphemerisStore& eph,
-   DDEpochMap& ddem);
-
-void dump(std::ostream& s,
-          DDEpochMap& ddem,
-          SvElevationMap& pem);
-
-void dumpStats(
-   DDEpochMap& oem,
-   const CycleSlipList& csl,
-   SvElevationMap& pem);
-
-std::string computeStats(
-   const gpstk::ObsID oid,
-   DDEpochMap& oem,
-   const ElevationRange er,
-   SvElevationMap& pem);
 
 #endif

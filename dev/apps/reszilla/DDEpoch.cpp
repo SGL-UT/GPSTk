@@ -1,5 +1,40 @@
 #pragma ident "$Id$"
 
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 
 #include <limits>
 
@@ -12,39 +47,39 @@ using namespace std;
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-ROTDM DDEpoch::singleDifference(
-   const gpstk::RinexObsData::RinexObsTypeMap& rx1obs,
-   const gpstk::RinexObsData::RinexObsTypeMap& rx2obs)
+OIDM DDEpoch::singleDifference(
+   const gpstk::SvObsEpoch& rx1obs,
+   const gpstk::SvObsEpoch& rx2obs)
 {
-   ROTDM diff;
+   OIDM diff;
 
-   gpstk::RinexObsData::RinexObsTypeMap::const_iterator d1_itr = rx1obs.find(D1);
+   gpstk::SvObsEpoch::const_iterator d1_itr = rx1obs.find(D1);
    if (d1_itr == rx1obs.end())
       return diff;
 
    // clock offset correction
-   double coc = clockOffset * d1_itr->second.data * gpstk::C_GPS_M/gpstk::L1_FREQ; 
-   gpstk::RinexObsData::RinexObsTypeMap::const_iterator roti1, roti2;
+   double coc = clockOffset * d1_itr->second * gpstk::C_GPS_M/gpstk::L1_FREQ; 
+   gpstk::SvObsEpoch::const_iterator roti1, roti2;
    for (roti1 = rx1obs.begin(); roti1 != rx1obs.end(); roti1++)
    {
-      const RinexObsType& rot = roti1->first;
+      const gpstk::ObsID& oid = roti1->first;
 
       // Make sure we have an obs from the other receiver
-      roti2 = rx2obs.find(rot);
+      roti2 = rx2obs.find(oid);
       if (roti2 == rx2obs.end())
          continue;
 
       // Compute the first difference
-      diff[rot] = roti1->second.data - roti2->second.data;
+      diff[oid] = roti1->second - roti2->second;
 
       // Need to convert the phase/doppler observables to meters
-      if (rot == L1 || rot == D1)
-         diff[rot] *=  gpstk::C_GPS_M/gpstk::L1_FREQ;
-      if (rot == L2 || rot == D2)
-         diff[rot] *=  gpstk::C_GPS_M/gpstk::L2_FREQ;
+      if (oid == L1 || oid == D1)
+         diff[oid] *=  gpstk::C_GPS_M/gpstk::L1_FREQ;
+      if (oid == L2 || oid == D2)
+         diff[oid] *=  gpstk::C_GPS_M/gpstk::L2_FREQ;
 
       // Then pull off the clock correction
-      diff[rot] -= coc;
+      diff[oid] -= coc;
    }
 
    return diff;
@@ -54,8 +89,8 @@ ROTDM DDEpoch::singleDifference(
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 void DDEpoch::doubleDifference(
-   const gpstk::RinexObsData& rx1,
-   const gpstk::RinexObsData& rx2)
+   const gpstk::ObsEpoch& rx1,
+   const gpstk::ObsEpoch& rx2)
 {
    valid = false;
    dd.clear();
@@ -67,8 +102,8 @@ void DDEpoch::doubleDifference(
       return;
    }
 
-   double c1 = rx1.clockOffset;
-   double c2 = rx2.clockOffset;
+   double c1 = rx1.rxClock;
+   double c2 = rx2.rxClock;
    clockOffset = c1 - c2;
    double eps = 10*std::numeric_limits<double>().epsilon();
    if (std::abs(clockOffset) > 2.1e-3 ||
@@ -81,37 +116,38 @@ void DDEpoch::doubleDifference(
       return;
    }
 
-   gpstk::RinexObsData::RinexSatMap::const_iterator oi1, oi2;
-   oi1 = rx1.obs.find(masterPrn);
-   oi2 = rx2.obs.find(masterPrn);
+   gpstk::ObsEpoch::const_iterator oi1, oi2;
+   oi1 = rx1.find(masterPrn);
+   oi2 = rx2.find(masterPrn);
 
-   if (oi1 == rx1.obs.end() || oi2 == rx2.obs.end())
+   if (oi1 == rx1.end() || oi2 == rx2.end())
       return;
 
-   const gpstk::RinexObsData::RinexObsTypeMap& rx1obs = oi1->second;
-   const gpstk::RinexObsData::RinexObsTypeMap& rx2obs = oi2->second;
+   const gpstk::SvObsEpoch& rx1obs = oi1->second;
+   const gpstk::SvObsEpoch& rx2obs = oi2->second;
    
-   ROTDM masterDiff = singleDifference(rx1obs, rx2obs);
+   OIDM masterDiff = singleDifference(rx1obs, rx2obs);
    if (masterDiff.size() == 0)
       return;
 
    // Now walk through all prns in track
-   for (oi1=rx1.obs.begin(); oi1!=rx1.obs.end(); oi1++)
+   for (oi1=rx1.begin(); oi1!=rx1.end(); oi1++)
    {
       gpstk::SatID prn = oi1->first;
-      oi2 = rx2.obs.find(prn);
-      if (oi2 == rx2.obs.end())
+      oi2 = rx2.find(prn);
+      if (oi2 == rx2.end())
          continue;
 
-      ROTDM otherDiff;
+      OIDM otherDiff;
 
       if (prn != masterPrn)
          otherDiff = singleDifference( oi1->second,  oi2->second);
 
       // Now compute the double differences
       // Note that for the master this will be a single diff
-      for (ROTDM::const_iterator roti = masterDiff.begin(); roti != masterDiff.end(); roti++)
-         dd[prn][roti->first] = roti->second - otherDiff[roti->first];
+      OIDM::const_iterator i;
+      for (i = masterDiff.begin(); i != masterDiff.end(); i++)
+         dd[prn][i->first] = i->second - otherDiff[i->first];
    }
 
    valid = true;
@@ -125,29 +161,30 @@ void DDEpoch::doubleDifference(
 //   there is a record for it on the other receiver
 // ---------------------------------------------------------------------
 void DDEpoch::selectMasterPrn(
-   const gpstk::RinexObsData& rx1, 
-   const gpstk::RinexObsData& rx2,
-   PrnElevationMap& pem)
+   const gpstk::ObsEpoch& rx1, 
+   const gpstk::ObsEpoch& rx2,
+   SvElevationMap& pem)
 {
    const double minElevation = 15.0;
 
    // If there is already one selected, try to keep using that one...
    if (masterPrn.id >0)
    {
-      RinexPrnMap::const_iterator i = rx1.obs.find(masterPrn);
-      RinexPrnMap::const_iterator j = rx2.obs.find(masterPrn);
-      if (i != rx1.obs.end() && j != rx2.obs.end() &&
+      gpstk::ObsEpoch::const_iterator i = rx1.find(masterPrn);
+      gpstk::ObsEpoch::const_iterator j = rx2.find(masterPrn);
+      if (i != rx1.end() && j != rx2.end() &&
           pem[rx1.time][masterPrn] > minElevation)
          return;
    }
 
    gpstk::SatID prn;
-   for (RinexPrnMap::const_iterator i=rx1.obs.begin(); i != rx1.obs.end(); i++)
+   gpstk::ObsEpoch::const_iterator i;
+   for (i=rx1.begin(); i != rx1.end(); i++)
    {
       prn = i->first;
-      RinexPrnMap::const_iterator j = rx2.obs.find(prn);
-      RinexObsTypeMap obs = i->second;
-      if (j != rx2.obs.end() && obs[D1].data >= 0 &&
+      gpstk::ObsEpoch::const_iterator j = rx2.find(prn);
+      gpstk::SvObsEpoch obs = i->second;
+      if (j != rx2.end() && obs[D1] >= 0 &&
           pem[rx1.time][i->first] > minElevation)
       {
          masterPrn = prn;
@@ -161,9 +198,9 @@ void DDEpoch::selectMasterPrn(
 // Similiar to computeDD but does a triple difference to look for cycle slips
 //-----------------------------------------------------------------------------
 void computeDDEpochMap(
-   RODEpochMap& rx1,
-   RODEpochMap& rx2,
-   PrnElevationMap& pem,
+   gpstk::ObsEpochMap& rx1,
+   gpstk::ObsEpochMap& rx2,
+   SvElevationMap& pem,
    const gpstk::EphemerisStore& eph,
    DDEpochMap& ddem)
 {
@@ -174,12 +211,13 @@ void computeDDEpochMap(
 
    // We use the data from rx1 walk us through the data
    // loop over all epochs for this station
-   for (RODEpochMap::const_iterator ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
+   gpstk::ObsEpochMap::const_iterator ei1;
+   for (ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
    {
       // first make sure we have data from the other receiver for this
       // epoch...
       gpstk::DayTime t = ei1->first;
-      RODEpochMap::const_iterator ei2 = rx2.find(t);
+      gpstk::ObsEpochMap::const_iterator ei2 = rx2.find(t);
       if (ei2 == rx2.end())
       {
          if (verbosity>2)
@@ -208,7 +246,7 @@ void computeDDEpochMap(
    for (DDEpochMap::iterator i = ddem.begin(); i != ddem.end(); i++)
    {
       DDEpoch& dde = i->second;
-      PrnROTDM::iterator j = dde.dd.find(dde.masterPrn);
+      SvOIDM::iterator j = dde.dd.find(dde.masterPrn);
       if (j != dde.dd.end())
          dde.dd.erase(j);
    }
@@ -223,7 +261,7 @@ void computeDDEpochMap(
       {
          const gpstk::DayTime& t=i->first;
          DDEpoch& dde = i->second;
-         for (PrnROTDM::iterator j = dde.dd.begin(); j != dde.dd.end(); j++)
+         for (SvOIDM::iterator j = dde.dd.begin(); j != dde.dd.end(); j++)
          {
             const gpstk::SatID prn=j->first;
             try
@@ -247,7 +285,7 @@ void computeDDEpochMap(
 void dumpStats(
    DDEpochMap& ddem,
    const CycleSlipList& csl,
-   PrnElevationMap& pem)
+   SvElevationMap& pem)
 {
    cout << endl
         << "ord        elev   stddev    mean      # obs    # bad   # unk  max good  slips" << endl
@@ -283,10 +321,10 @@ void dumpStats(
 // residuals for the specified obs type within the given elevation range.
 // ---------------------------------------------------------------------
 string computeStats(
-   const RinexObsType rot,
+   const gpstk::ObsID oid,
    DDEpochMap& ddem,
    const ElevationRange er,
-   PrnElevationMap& pem)
+   SvElevationMap& pem)
 {
    ostringstream oss;
    float minElevation = er.first;
@@ -299,23 +337,23 @@ string computeStats(
    for (ei = ddem.begin(); ei != ddem.end(); ei++)
    {
       const gpstk::DayTime& t = ei->first;
-      PrnROTDM::iterator pi;
+      SvOIDM::iterator pi;
       for (pi = ei->second.dd.begin(); pi != ei->second.dd.end(); pi++)
       {
          const gpstk::SatID& prn = pi->first;
-         ROTDM& ddr = pi->second;
+         OIDM& ddr = pi->second;
 
          if (pem[t][prn]<minElevation || pem[t][prn]>maxElevation)
             continue;
-         if (ddr.find(rot) == ddr.end())
+         if (ddr.find(oid) == ddr.end())
             zeroCount++;
          else
          {
-            double mag=std::abs(ddr[rot]);
+            double mag=std::abs(ddr[oid]);
             if (mag < strip)
-               good.Add(ddr[rot]);
+               good.Add(ddr[oid]);
             else
-               bad.Add(ddr[rot]);
+               bad.Add(ddr[oid]);
          }
       }
    }
@@ -334,7 +372,10 @@ string computeStats(
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-void dump(std::ostream& s, DDEpochMap& ddem, PrnElevationMap& pem)
+void dump(
+   std::ostream& s, 
+   DDEpochMap& ddem, 
+   SvElevationMap& pem)
 {
    if (verbosity>1)
       cout << "Writing raw double differences." << endl;
@@ -344,7 +385,7 @@ void dump(std::ostream& s, DDEpochMap& ddem, PrnElevationMap& pem)
      << endl;
 
    DDEpochMap::iterator ei;
-   PrnROTDM::iterator pi;
+   SvOIDM::iterator pi;
    for (ei = ddem.begin(); ei != ddem.end(); ei++)
    {
       const gpstk::DayTime& t = ei->first;
@@ -354,10 +395,10 @@ void dump(std::ostream& s, DDEpochMap& ddem, PrnElevationMap& pem)
       for (pi = ei->second.dd.begin(); pi != ei->second.dd.end(); pi++)
       {
          const gpstk::SatID& prn = pi->first;
-         ROTDM& ddr = pi->second;
-         for (ROTDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
+         OIDM& ddr = pi->second;
+         for (OIDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
          {
-            const RinexObsType& rot = ti->first;
+            const gpstk::ObsID& rot = ti->first;
             double dd = ti->second;
             
             if (std::abs(dd) < 1e-9)

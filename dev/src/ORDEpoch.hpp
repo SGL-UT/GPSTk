@@ -70,10 +70,9 @@ namespace gpstk
    
       ORDEpoch& applyClockModel(const ClockModel& cm) throw()
       {
-         clockOffset = cm.getOffset(time);
-         validClock = cm.isOffsetValid(time);
-         if (validClock)
+         if (cm.isOffsetValid(time))
          {
+            clockOffset = cm.getOffset(time);
             ORDMap::iterator i;
             for (i = ords.begin(); i != ords.end(); i++)
                i->second.applyClockOffset(clockOffset);
@@ -81,9 +80,8 @@ namespace gpstk
          return *this;
       }
 
-      double clockOffset;    ///< clock bias value (in seconds)
-      bool validClock;
-      ORDMap ords;           ///< map of ORDs in epoch
+      vdouble clockOffset;    ///< clock bias value (application defined units)
+      ORDMap ords;            ///< map of ORDs in epoch
       gpstk::DayTime time;
 
       friend std::ostream& operator<<(std::ostream& s, 
@@ -99,5 +97,8 @@ namespace gpstk
       }
    
    };
+
+   // this is a store of ORDs over time
+   typedef std::map<gpstk::DayTime, gpstk::ORDEpoch> ORDEpochMap;
 }
 #endif

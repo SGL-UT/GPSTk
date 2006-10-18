@@ -1,5 +1,40 @@
 #pragma ident "$Id$"
 
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 
 #ifndef PHASECLEANER_HPP
 #define PHASECLEANER_HPP
@@ -14,37 +49,40 @@ class PhaseCleaner
 public:
    PhaseCleaner(long al, double at, double gt);
 
-   void addData(const RODEpochMap& rx1, const RODEpochMap& rx2);
+   void addData(
+      const gpstk::ObsEpochMap& rx1, 
+      const gpstk::ObsEpochMap& rx2);
 
-   void debias(PrnElevationMap& pem);
+   void debias(SvElevationMap& pem);
 
    void selectMasters(
-      const RinexObsType& rot, 
+      const gpstk::ObsID& oid, 
       const gpstk::SatID& prn,
-      PrnElevationMap& pem);
+      SvElevationMap& pem);
 
    void doubleDifference(
-      const RinexObsType& rot, 
+      const gpstk::ObsID& oid, 
       const gpstk::SatID& prn,
-      PrnElevationMap& pem);
+      SvElevationMap& pem);
 
-   void getSlips(CycleSlipList& csl,
-                 PrnElevationMap& pem) const;
+   void getSlips(
+      CycleSlipList& csl,
+      SvElevationMap& pem) const;
 
    void getPhaseDD(DDEpochMap& ddem) const;
 
    void dump(std::ostream& s) const;
 
-   typedef std::set<RinexObsType> RinexObsTypeSet;
-   RinexObsTypeSet phaseObsTypes;
+   typedef std::set<gpstk::ObsID> ObsIDSet;
+   ObsIDSet phaseObsTypes;
 
-   mutable ROTDM lamda;
+   mutable OIDM lamda;
 
    // And an set of arcs for each PRN
    typedef std::map<gpstk::SatID, PhaseResidual::ArcList> PraPrn;
 
    // And a set of those for each obs type
-   typedef std::map<gpstk::RinexObsHeader::RinexObsType, PraPrn> PraPrnOt;
+   typedef std::map<gpstk::ObsID, PraPrn> PraPrnOt;
 
    // Rx1 - Rx2 clock, in meters.
    TimeDoubleMap clockOffset;
@@ -73,7 +111,7 @@ public:
 
       double bestElev;
       gpstk::SatID bestPrn;
-      bool operator()(const PrnDoubleMap::value_type& pdm);
+      bool operator()(const SvDoubleMap::value_type& pdm);
    };
 };
 #endif

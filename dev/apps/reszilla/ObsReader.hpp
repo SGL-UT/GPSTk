@@ -36,7 +36,6 @@
 //
 //=============================================================================
 
-
 /** @file Read various file formats and output a stream of ObsEpoch objects.
 */
 
@@ -48,6 +47,7 @@
 #include "RinexObsStream.hpp"
 #include "MDPStream.hpp"
 #include "SMODFStream.hpp"
+#include "SMODFData.hpp"
 #include "FFIdentifier.hpp"
 
 namespace gpstk
@@ -67,11 +67,15 @@ namespace gpstk
       int verboseLevel;
       unsigned long epochCount;
 
-      ObsReader(const std::string& str);
+      ObsReader(const std::string& str, int verbose=0);
    
       ObsEpoch getObsEpoch();
 
       bool operator()();
+
+   private:
+      gpstk::SMODFData prevSMOD;
+      bool usePrevSMOD;
    };
 } // end of namespace gpstk
 #endif
