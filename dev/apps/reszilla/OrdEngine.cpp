@@ -79,10 +79,22 @@ void OrdEngine::setMode(const string& mode)
       oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
       dualFreq = true;
    }
+   else if (mode=="y1y2")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcY);
+      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcY);
+      dualFreq = true;
+   }
    else if (mode=="c1p2")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
       oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
+      dualFreq = true;
+   }
+   else if (mode=="c1c2")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
+      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2LM);
       dualFreq = true;
    }
    else if (mode=="c1")

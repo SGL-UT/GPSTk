@@ -73,11 +73,11 @@ SvObsEpoch makeSvObsEpoch(const MDPObsEpoch& mdp) throw()
          case rcPcode:    tc = ObsID::tcP; break;
          case rcYcode:    tc = ObsID::tcY; break;
          case rcCodeless: tc = ObsID::tcW; break;
-         case rcCM:       tc = ObsID::tcCA; break;
-         case rcCL:       tc = ObsID::tcCA; break;
-         case rcMcode1:   tc = ObsID::tcCA; break;
-         case rcMcode2:   tc = ObsID::tcCA; break;
-         case rcCMCL:     tc = ObsID::tcCA; break;
+         case rcCM:       tc = ObsID::tcC2M; break;
+         case rcCL:       tc = ObsID::tcC2L; break;
+         case rcMcode1:   tc = ObsID::tcM; break;
+         case rcMcode2:   tc = ObsID::tcM; break;
+         case rcCMCL:     tc = ObsID::tcC2LM; break;
          default:         tc = ObsID::tcUnknown;
       }
 

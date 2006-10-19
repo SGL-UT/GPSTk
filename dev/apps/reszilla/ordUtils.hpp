@@ -61,6 +61,10 @@ void dumpOrds(
    std::ostream& s, 
    const gpstk::ORDEpochMap& oem);
 
+void readOrds(
+   std::istream& s,
+   gpstk::ORDEpochMap& oem);
+
 void dumpClock(
    std::ostream& s,
    const gpstk::ORDEpochMap& oem, 
