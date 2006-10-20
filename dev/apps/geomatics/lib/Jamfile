@@ -21,7 +21,7 @@ else
       DiscCorr.cpp GDCconfiguration.cpp
       GSatID.cpp DDid.cpp
       RinexUtilities.cpp
-      format.cpp
+      random.cpp format.cpp
       ;
 
    InstallFile $(INCDIR) : 
@@ -33,7 +33,7 @@ else
       DiscCorr.hpp GDCconfiguration.hpp
       GSatID.hpp DDid.hpp
       RinexUtilities.hpp
-      format.hpp index.hpp
+      random.hpp format.hpp index.hpp
       ;
 }
 
