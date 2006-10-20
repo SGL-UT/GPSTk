@@ -1,5 +1,5 @@
 #
-# $Id: Jamfile 71 2006-08-01 18:46:39Z ehagen $
+# $Id$
 #
 
 SubDir TOP apps geomatics lib ;
@@ -21,7 +21,7 @@ else
       DiscCorr.cpp GDCconfiguration.cpp
       GSatID.cpp DDid.cpp
       RinexUtilities.cpp
-      random.cpp format.cpp
+      format.cpp
       ;
 
    InstallFile $(INCDIR) : 
@@ -33,7 +33,7 @@ else
       DiscCorr.hpp GDCconfiguration.hpp
       GSatID.hpp DDid.hpp
       RinexUtilities.hpp
-      random.hpp format.hpp index.hpp
+      format.hpp index.hpp
       ;
 }
 

@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -50,7 +50,7 @@ using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
-#define Stem(x) (long(double(x)/scale))
+inline long Stem(double x, double& scale) { return (long(x/scale)); }
 
 //------------------------------------------------------------------------------------
 void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
@@ -104,41 +104,34 @@ void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
    }
 
       // find length of stem for printing
-   buf = StringUtils::asString<long>(::abs(Stem(xd[0])));
+   buf = StringUtils::asString<long>(::abs(Stem(xd[0],scale)));
    len = buf.size();
-   buf = StringUtils::asString<long>(::abs(Stem(xd[nd-1])));
+   buf = StringUtils::asString<long>(::abs(Stem(xd[nd-1],scale)));
    if(len < buf.size()) len=buf.size();
-   buf = StringUtils::asString<long>(::abs(Stem(M)));
+   buf = StringUtils::asString<long>(::abs(Stem(M,scale)));
    if(len < buf.size()) len=buf.size();
 
       // loop through data, adding stems and leaves to plot
    bool start=true;
    if(xd[0] < 0.0) pos=-1; else pos=1;
-   sM = Stem(M);
-   sQ1 = Stem(Q1);
-   sQ3 = Stem(Q3);
-   sOH = Stem(OH);
-   sOL = Stem(OL);
+   sM = Stem(M,scale);
+   sQ1 = Stem(Q1,scale);
+   sQ3 = Stem(Q3,scale);
+   sOH = Stem(OH,scale);
+   sOL = Stem(OL,scale);
    for(l=0; l<nd; l++) {
          // current: stem=s,pos; data=stem,sign(xd[l])
       if(xd[l]>OH || xd[l]<OL) nout++;                   // count outliers
       sign = 1;
       if(xd[l] < 0.0) sign=-1;
-//cout << endl << "xd[" << l << "]=" << fixed << setprecision(3) << xd[l];
-      stem = Stem(fabs(xd[l]));
-//cout << " stem0=" << stem;
+      stem = Stem(fabs(xd[l]),scale);
       x = 10*fabs(xd[l]/scale-sign*stem);
-//cout << " x=" << setprecision(3) << x;
       leaf = short(x + 0.5);
-//cout << " leaf0=" << leaf;
       if(leaf == 10) {
          stem++;
          leaf=0;
       }
       stem = sign*stem;
-//cout << " stem.leaf=" << stem << "." << leaf;
-//cout << " (" << setprecision(1) << xd[l]/scale << ")";
-//cout << endl;
 
       // print it
       if(start || s!=stem || (s==0 && pos*sign<0.0)) {
@@ -236,7 +229,6 @@ void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
 
    os << "\nEND Stem and Leaf Plot (there are " << nout << " outliers.)\n";
 
-#undef Stem
 }  // end StemLeafPlot
 
 

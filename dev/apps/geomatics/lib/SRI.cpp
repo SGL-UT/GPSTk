@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -873,16 +873,17 @@ namespace gpstk
          // start at the last row,col
       dum = UT(n-1,n-1);
       if(dum == T(0))
-         throw SingularMatrixException("singular in inverseUT");
+         throw SingularMatrixException("Singular matrix");
 
       big = small = dum;
       Inv(n-1,n-1) = T(1)/dum;
+      if(n == 1) return Inv;                 // 1x1 matrix
       for(i=0; i<n-1; i++) Inv(n-1,i)=0;
 
          // now move to rows i = n-2 to 0
       for(i=n-2; i>=0; i--) {
          if(UT(i,i) == T(0))
-            throw SingularMatrixException("singular in inverseUT");
+            throw SingularMatrixException("Singular matrix");
 
          if(fabs(UT(i,i)) > big) big = fabs(UT(i,i));
          if(fabs(UT(i,i)) < small) small = fabs(UT(i,i));

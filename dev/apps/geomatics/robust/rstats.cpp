@@ -47,16 +47,54 @@ using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
+int BadOption(string& arg) {
+   cout << "Error: " << arg << " requires argument. Abort.\n";
+   return -1;
+}
+//------------------------------------------------------------------------------------
+// TD add option to filter on data value (string)
 int main(int argc, char **argv)
 {
    try {
-      bool nostats=false,qplot=false;
+      bool help,nostats=false,qplot=false;
       int i,j,col=1,plot=0,xcol=-1,fit=-1;
       string filename;
       ostream *pout;
 
-      if(argc <= 1) {
-         // TD add filter on value (string)
+      help = (argc <= 1);
+      for(i=1; i<argc; i++) {
+         if(argv[i][0] == '-') { // && argv[i][1] == '-')
+            string arg(argv[i]);
+            if(arg == string("--help") || arg == string("-h"))
+               help = true;
+            else if(arg == string("--plot") || arg == string("-p"))
+               plot = 1;
+            else if(arg == string("--qplot") || arg == string("-q"))
+               qplot = true;
+            else if(arg == string("--nostats") || arg == string("-n"))
+               nostats = true;
+            else if(arg == string("--col") || arg == string("-c")) {
+               if(i==argc-1) return BadOption(arg);
+               col = atoi(argv[++i]);
+            }
+            else if(arg == string("--xcol") || arg == string("-x")) {
+               if(i==argc-1) return BadOption(arg);
+               xcol = atoi(argv[++i]);
+            }
+            else if(arg == string("--fit") || arg == string("-f")) {
+               if(i==argc-1) return BadOption(arg);
+               fit = atoi(argv[++i]);
+            }
+            else {
+               cout << "Ignore unknown option: " << arg << endl;
+            }
+         }
+         else {
+            filename = string(argv[i]);
+         }
+      }
+
+      if(help) {
          cout << "Usage: rstats <file> --col <col> --plot "
             << "--qplot --xcol <xcol> --fit <N> --nostats\n";
          cout << "   Compute standard and robust statistics on numbers "
@@ -74,35 +112,7 @@ int main(int argc, char **argv)
             << "                (--nostats to supress stats output to screen)\n";
          return -1;
       }
-      for(i=1; i<argc; i++) {
-         if(argv[i][0] == '-') { // && argv[i][1] == '-')
-            string arg(argv[i]);
-            if(arg == string("--col") || arg == string("-c")) {
-               col = atoi(argv[++i]);
-            }
-            else if(arg == string("--plot") || arg == string("-p")) {
-               plot = 1;
-            }
-            else if(arg == string("--xcol") || arg == string("-x")) {
-               xcol = atoi(argv[++i]);
-            }
-            else if(arg == string("--fit") || arg == string("-f")) {
-               fit = atoi(argv[++i]);
-            }
-            else if(arg == string("--qplot") || arg == string("-q")) {
-               qplot = true;
-            }
-            else if(arg == string("--nostats") || arg == string("-n")) {
-               nostats = true;
-            }
-            else {
-               cout << "Ignore unknown option: " << arg << endl;
-            }
-         }
-         else {
-            filename = string(argv[i]);
-         }
-      }
+
       if(fit > -1 && xcol == -1) {
          cout << "Error: --fit requires --xcol <xcol>\n";
          return -1;
@@ -115,29 +125,33 @@ int main(int argc, char **argv)
             cout << "Could not open file " << filename << " .. abort.\n";
             return -2;
          }
-         else {
-            cout << "rstats for file: " << filename
-               << ", stats (col " << col << ")";
-            if(xcol > -1) {
-               cout << ", 2-sample stats (col " << xcol << ")";
-               if(fit > -1) {
-                  cout << ", fit (" << fit << ")";
-                  if(nostats) cout << " (but no stats)";
-               }
-            }
-            cout << endl;
-         }
       }
       else pin = &cin;
 
+      // 1-line message to screen
+      cout << "rstats for ";
+      if(pin == &cin) cout << "data from stdin";
+      else            cout << "file: " << filename;
+      cout << ", stats (col " << col << ")";
+      if(xcol > -1) {
+         cout << " and 2-sample stats (x-col " << xcol << ")";
+         if(fit > -1) {
+            cout << ", fit (" << fit << ")";
+            if(nostats) cout << " (but no stats)";
+         }
+      }
+      cout << endl;
+
       const int BUFF_SIZE=1024;
       char buffer[BUFF_SIZE];
+      int nd,nxd;
       double d,xd;
       string stuff;
       vector<double> data,wts,xdata;
       Stats<double> S;
       TwoSampleStats<double> TSS;
 
+      nd = nxd = 0;
       while(pin->getline(buffer,BUFF_SIZE)) {
          //if(buffer[0] == '#') continue;
          string line = buffer;
@@ -147,12 +161,11 @@ int main(int argc, char **argv)
          // skip comments
          if(line[0] == '#') continue;
          //check that column col is there...
-         if(StringUtils::numWords(line) < col) continue;
+         if(StringUtils::numWords(line) < col) { nd++; continue; }
          // pull it out
          stuff = StringUtils::word(line,col-1);
          // is it a number?
-         if(!(StringUtils::isDecimalString(stuff)))
-            continue;
+         if(!(StringUtils::isDecimalString(stuff))) { nd++; continue; }
          // convert it to double and save it
          d = StringUtils::asDouble(stuff);
          data.push_back(d);
@@ -161,10 +174,10 @@ int main(int argc, char **argv)
          // do the same for xcol
          if(xcol > -1) {
             if(StringUtils::numWords(line) < xcol)
-               break;      // TD data and xdata out of sync - throw or data.pop_back
+               { data.pop_back(); nxd++; continue; }
             stuff = StringUtils::word(line,xcol-1);
             if(!(StringUtils::isDecimalString(stuff)))
-               break;      // TD data and xdata out of sync - throw or data.pop_back
+               { data.pop_back(); nxd++; continue; }
             xd = StringUtils::asDouble(stuff);
             TSS.Add(xd, d);
             xdata.push_back(xd);
@@ -176,14 +189,18 @@ int main(int argc, char **argv)
          delete pin;
       }
 
+      // check that input was good
       if(data.size() == 0) {
-         cout << "Abort: no data.\n";
+         cout << "Abort: no data.";
+         if(nd > 0) cout << " [data(col) not found on " << nd << " lines]";
+         if(nxd > 0) cout << " [data(xcol) not found on " << nxd << " lines]";
+         cout << endl;
          return -3;
       }
-      if(fit>-1 && (data.size() != xdata.size())) {
-         cout << "Abort: fit with data(col) and data(xcol) differing lengths.\n";
-         return -3;
-      }
+      if(nd > data.size()/2)
+         cout << "Warning: data(col) not found on " << nd << " lines" << endl;
+      if(nxd > xdata.size()/2)
+         cout << "Warning: data(xcol) not found on " << nxd << " lines" << endl;
 
       //cout << "Collected " << data.size() << " data.\n" << fixed;
       //for(i=0; i<data.size(); i++) {
@@ -219,7 +236,13 @@ int main(int argc, char **argv)
                cout << "Unable to open file rstats.out - output to screen\n";
                pout = &cout;
             }
-            else cout << "Output polynomial fit to file rstats.out\n";
+            else {
+               cout << "Output polynomial fit to file rstats.out\n";
+               cout << " try `plot rstats.out -x 1 -y 2,data,points -y 3,fit,lines"
+                  << " -y 4,residuals -y2 5,weights --y2range -0.1:1.1 "
+                  << "-t \"Robust fit (degree " << fit
+                  << "), output of rstats for file " << filename << "\"`" << endl;
+            }
             t0 = xdata[0];
             *pout << "#Xdata, Data, fit, resid, weight (" << data.size() << " pts):"
                << fixed << setprecision(3) << endl;
