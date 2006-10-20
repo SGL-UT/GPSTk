@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: DataAvailabilityAnalyzer.hpp 192 2006-10-06 15:18:53Z ocibu $"
 
 //============================================================================
 //
@@ -36,40 +36,35 @@
 //
 //=============================================================================
 
-#ifndef EPHREADER_HPP
-#define EPHREADER_HPP
+#ifndef ORDAPP_HPP
+#define ORDAPP_HPP
 
-/** @file This is a class that reads in ephemeris data without the
-    caller needing to know the format the data is suppllied in. The 
-    navigation data formats that are (to be) supported: rinex nav, fic,
-    sp3, mdp. Unlike the ObsReader, this reads in the entire file at once.
-**/
+#include <fstream>
 
-#include <string>
-#include <vector>
+#include "BasicFramework.hpp"
+#include "CommandOption.hpp"
+#include "Exception.hpp"
+#include "ORDEpoch.hpp"
 
-#include "EphemerisStore.hpp"
-
-class EphReader
+class OrdApp : public gpstk::BasicFramework
 {
 public:
-   EphReader()
-      : verboseLevel(0), eph(NULL) {};
+   OrdApp(
+      const std::string& applName, 
+      const std::string& appDesc) throw();
 
-   EphReader(const std::string& fn)
-      : verboseLevel(0), eph(NULL) { read(fn); };
+   bool initialize(int argc, char *argv[]) throw();
 
-   int verboseLevel;
-
-   void read(const std::string& fn);
-
-   std::vector<std::string> filesRead;
-
-   gpstk::EphemerisStore* eph;
+   void write(std::ofstream& ofs, const gpstk::ORDEpoch& ordEpoch) throw();
+   gpstk::ORDEpoch read(std::ifstream& ifs) throw();
+   
+   std::ifstream input;
+   std::ofstream output;
+   std::string timeFormat;
+   static const std::string defaultTimeFormat;
+   gpstk::CommandOptionWithAnyArg inputOpt, outputOpt, timeFormatOpt;
 
 private:
-   void read_rinex_nav_data(const std::string& fn);
-   void read_fic_data(const std::string& fn);
-   void read_sp3_data(const std::string& fn);
+   bool headerWritten;
 };
 #endif

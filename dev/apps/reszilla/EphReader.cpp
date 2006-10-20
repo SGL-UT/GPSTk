@@ -48,123 +48,121 @@
 #include "EphReader.hpp"
 #include "FFIdentifier.hpp"
 
-namespace gpstk
+using namespace std;
+using namespace gpstk;
+
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+void EphReader::read(const std::string& fn)
 {
-   using namespace std;
-
-   // ---------------------------------------------------------------------
-   // ---------------------------------------------------------------------
-   void EphReader::read(const std::string& fn)
+   FFIdentifier ffid(fn);
+   switch (ffid)
    {
-      FFIdentifier ffid(fn);
-      switch (ffid)
-      {
-         case FFIdentifier::tRinexNav: read_rinex_nav_data(fn); break;
-         case FFIdentifier::tFIC:      read_fic_data(fn);       break;
-         case FFIdentifier::tSP3:      read_sp3_data(fn);       break;
-         default:
-            if (verboseLevel) 
-               cout << "Could not determine the format of " << fn << endl;
-      }
+      case FFIdentifier::tRinexNav: read_rinex_nav_data(fn); break;
+      case FFIdentifier::tFIC:      read_fic_data(fn);       break;
+      case FFIdentifier::tSP3:      read_sp3_data(fn);       break;
+      default:
+         if (verboseLevel) 
+            cout << "Could not determine the format of " << fn << endl;
+   }
 
-      filesRead.push_back(fn);
-      if (verboseLevel>1)
-         cout << "Ephemers initial time: " << eph->getInitialTime() 
-              << ", final time: " << eph->getFinalTime() << endl;
-   } // end of read()
+   filesRead.push_back(fn);
+   if (verboseLevel>1)
+      cout << "Ephemers initial time: " << eph->getInitialTime() 
+           << ", final time: " << eph->getFinalTime() << endl;
+} // end of read()
 
 
-   // ---------------------------------------------------------------------
-   // Read in ephemeris data in rinex format
-   // ---------------------------------------------------------------------
-   void EphReader::read_rinex_nav_data(const string& fn)
+// ---------------------------------------------------------------------
+// Read in ephemeris data in rinex format
+// ---------------------------------------------------------------------
+void EphReader::read_rinex_nav_data(const string& fn)
+{
+   BCEphemerisStore* bce;
+   if (eph == NULL)
    {
-      BCEphemerisStore* bce;
-      if (eph == NULL)
-      {
-         bce = new(BCEphemerisStore);
-         eph = dynamic_cast<EphemerisStore*>(bce);
-      }
-      else
-      {
-         if (typeid(*eph) != typeid(BCEphemerisStore))
-            throw(FFStreamError("Don't mix nav data types..."));
-         bce = dynamic_cast<BCEphemerisStore*>(eph);
-      }
-      if (verboseLevel>2)
-         cout << "Reading " << fn << " as RINEX nav."<< endl;
+      bce = new(BCEphemerisStore);
+      eph = dynamic_cast<EphemerisStore*>(bce);
+   }
+   else
+   {
+      if (typeid(*eph) != typeid(BCEphemerisStore))
+         throw(FFStreamError("Don't mix nav data types..."));
+      bce = dynamic_cast<BCEphemerisStore*>(eph);
+   }
+   if (verboseLevel>2)
+      cout << "Reading " << fn << " as RINEX nav."<< endl;
          
-      RinexNavStream rns(fn.c_str(), ios::in);
-      rns.exceptions(ifstream::failbit);
-      RinexNavData rnd;
-      while (rns >> rnd)
-         bce->addEphemeris(rnd);
+   RinexNavStream rns(fn.c_str(), ios::in);
+   rns.exceptions(ifstream::failbit);
+   RinexNavData rnd;
+   while (rns >> rnd)
+      bce->addEphemeris(rnd);
 
-      if (verboseLevel>1)
-         cout << "Read " << fn << " as RINEX nav. " << endl;
-   } // end of read_rinex_nav_data()
+   if (verboseLevel>1)
+      cout << "Read " << fn << " as RINEX nav. " << endl;
+} // end of read_rinex_nav_data()
 
 
-   void EphReader::read_fic_data(const string& fn)
+void EphReader::read_fic_data(const string& fn)
+{
+   BCEphemerisStore* bce;
+
+   if (eph == NULL)
    {
-      BCEphemerisStore* bce;
-
-      if (eph == NULL)
-      {
-         bce = new(BCEphemerisStore);
-         eph = dynamic_cast<EphemerisStore*>(bce);
-      }
-      else
-      {
-         if (typeid(*eph) != typeid(BCEphemerisStore))
-            throw(FFStreamError("Don't mix nav data types..."));
-         bce = dynamic_cast<BCEphemerisStore*>(eph);
-      }
-      if (verboseLevel>2)
-         cout << "Reading " << fn << " as FIC nav."<< endl;
-      
-      FICStream fs(fn.c_str(), ios::in);
-      FICHeader header;
-      fs >> header;
-      
-      FICData data;
-      while(fs >> data)
-         if (data.blockNum==9) // Only look at the eng ephemeris
-            bce->addEphemeris(data);
-
-      if (verboseLevel>1)
-         cout << "Read " << fn << " as FIC nav."<< endl;
-   } // end of read_fic_data()
-
-   void EphReader::read_sp3_data(const string& fn)
+      bce = new(BCEphemerisStore);
+      eph = dynamic_cast<EphemerisStore*>(bce);
+   }
+   else
    {
-      SP3EphemerisStore* pe;
-
-      if (eph == NULL)
-      {
-         pe = new(SP3EphemerisStore);
-         eph = dynamic_cast<EphemerisStore*>(pe);
-      }
-      else
-      {
-         if (typeid(*eph) != typeid(SP3EphemerisStore))
-            throw(FFStreamError("Don't mix nav data types..."));
-         pe = dynamic_cast<SP3EphemerisStore*>(eph);
-      }
-      if (verboseLevel>2)
-         cout << "Reading " << fn << " as SP3 ephemeris."<< endl;
-
-      SP3Stream pefile(fn.c_str(),ios::in);
-      pefile.exceptions(ifstream::failbit);
+      if (typeid(*eph) != typeid(BCEphemerisStore))
+         throw(FFStreamError("Don't mix nav data types..."));
+      bce = dynamic_cast<BCEphemerisStore*>(eph);
+   }
+   if (verboseLevel>2)
+      cout << "Reading " << fn << " as FIC nav."<< endl;
       
-      SP3Header header;
-      pefile >> header;
+   FICStream fs(fn.c_str(), ios::in);
+   FICHeader header;
+   fs >> header;
+      
+   FICData data;
+   while(fs >> data)
+      if (data.blockNum==9) // Only look at the eng ephemeris
+         bce->addEphemeris(data);
 
-      SP3Data data;
-      while(pefile >> data)
-         pe->addEphemeris(data);
+   if (verboseLevel>1)
+      cout << "Read " << fn << " as FIC nav."<< endl;
+} // end of read_fic_data()
 
-      if (verboseLevel>1)
-         cout << "Read " << fn << " as SP3 ephemeris."<< endl;
-   } // end of read_sp3_data()
-}
+void EphReader::read_sp3_data(const string& fn)
+{
+   SP3EphemerisStore* pe;
+
+   if (eph == NULL)
+   {
+      pe = new(SP3EphemerisStore);
+      eph = dynamic_cast<EphemerisStore*>(pe);
+   }
+   else
+   {
+      if (typeid(*eph) != typeid(SP3EphemerisStore))
+         throw(FFStreamError("Don't mix nav data types..."));
+      pe = dynamic_cast<SP3EphemerisStore*>(eph);
+   }
+   if (verboseLevel>2)
+      cout << "Reading " << fn << " as SP3 ephemeris."<< endl;
+
+   SP3Stream pefile(fn.c_str(),ios::in);
+   pefile.exceptions(ifstream::failbit);
+      
+   SP3Header header;
+   pefile >> header;
+
+   SP3Data data;
+   while(pefile >> data)
+      pe->addEphemeris(data);
+
+   if (verboseLevel>1)
+      cout << "Read " << fn << " as SP3 ephemeris."<< endl;
+} // end of read_sp3_data()

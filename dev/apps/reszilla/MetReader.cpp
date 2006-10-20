@@ -36,40 +36,38 @@
 //
 //=============================================================================
 
-#ifndef EPHREADER_HPP
-#define EPHREADER_HPP
-
-/** @file This is a class that reads in ephemeris data without the
-    caller needing to know the format the data is suppllied in. The 
-    navigation data formats that are (to be) supported: rinex nav, fic,
-    sp3, mdp. Unlike the ObsReader, this reads in the entire file at once.
-**/
-
+#include <iostream>
+#include <iomanip>
 #include <string>
-#include <vector>
+#include <map>
 
-#include "EphemerisStore.hpp"
+#include "MetReader.hpp"
+#include "RinexMetStream.hpp"
+#include "RinexMetData.hpp"
 
-class EphReader
+using namespace std;
+using namespace gpstk;
+
+
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+void MetReader::read(const std::string& fn)
 {
-public:
-   EphReader()
-      : verboseLevel(0), eph(NULL) {};
-
-   EphReader(const std::string& fn)
-      : verboseLevel(0), eph(NULL) { read(fn); };
-
-   int verboseLevel;
-
-   void read(const std::string& fn);
-
-   std::vector<std::string> filesRead;
-
-   gpstk::EphemerisStore* eph;
-
-private:
-   void read_rinex_nav_data(const std::string& fn);
-   void read_fic_data(const std::string& fn);
-   void read_sp3_data(const std::string& fn);
-};
-#endif
+   RinexMetStream rms;
+   try { rms.open(fn.c_str(), ios::in); }
+   catch (...) {
+      cout << "Error reading weather data from file " << fn << endl;
+      exit(-1);
+   }
+   
+   RinexMetData rmd;
+   while (rms >> rmd)
+   {
+      WxObservation wob(
+         rmd.time,
+         rmd.data[RinexMetHeader::TD],
+         rmd.data[RinexMetHeader::PR],
+         rmd.data[RinexMetHeader::HR]);
+      wx.insertObservation(wob);
+   }
+} // end of read()

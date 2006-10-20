@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: readers.hpp 246 2006-10-18 12:02:01Z ocibu $"
 
 //============================================================================
 //
@@ -36,28 +36,24 @@
 //
 //=============================================================================
 
-#ifndef EPHREADER_HPP
-#define EPHREADER_HPP
-
-/** @file This is a class that reads in ephemeris data without the
-    caller needing to know the format the data is suppllied in. The 
-    navigation data formats that are (to be) supported: rinex nav, fic,
-    sp3, mdp. Unlike the ObsReader, this reads in the entire file at once.
-**/
+#ifndef METREADER_HPP
+#define METREADER_HPP
 
 #include <string>
-#include <vector>
 
-#include "EphemerisStore.hpp"
+#include "CommandOption.hpp"
+#include "WxObsMap.hpp"
 
-class EphReader
+class MetReader
 {
 public:
-   EphReader()
-      : verboseLevel(0), eph(NULL) {};
+   MetReader()
+      : verboseLevel(0)
+   {};
 
-   EphReader(const std::string& fn)
-      : verboseLevel(0), eph(NULL) { read(fn); };
+   MetReader(const std::string& fn)
+      : verboseLevel(0)
+   { read(fn); };
 
    int verboseLevel;
 
@@ -65,11 +61,8 @@ public:
 
    std::vector<std::string> filesRead;
 
-   gpstk::EphemerisStore* eph;
+   gpstk::WxObsData wx;
 
-private:
-   void read_rinex_nav_data(const std::string& fn);
-   void read_fic_data(const std::string& fn);
-   void read_sp3_data(const std::string& fn);
 };
+
 #endif

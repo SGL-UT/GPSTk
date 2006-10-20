@@ -17,15 +17,17 @@ Library rlib : util.cpp readers.cpp ordUtils.cpp DDEpoch.cpp PhaseCleaner.cpp
   RobustLinearEstimator.cpp OrdEngine.cpp ;
 
 Library datalib : ObsUtils.cpp FFIdentifier.cpp ObsReader.cpp EphReader.cpp 
-  MDP2Rinex.cpp ;
+  MetReader.cpp MDP2Rinex.cpp ;
 
-LinkLibraries reszilla mkord : datalib rlib datalib rlib ;
+LinkLibraries reszilla mkord ordGen : datalib rlib datalib rlib ;
 
-GPSLinkLibraries reszilla mkord : gpstk datalib rlib datalib rlib ;
+GPSLinkLibraries reszilla mkord ordGen : gpstk datalib rlib datalib rlib ;
 
 GPSMain reszilla : reszilla.cpp ;
 
 GPSMain mkord : mkord.cpp ;
+
+GPSMain ordGen : ordGen.cpp OrdApp.cpp ;
 
 InstallBin $(BINDIR) : resplot ;
 
