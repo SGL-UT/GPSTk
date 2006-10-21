@@ -308,8 +308,7 @@ namespace gpstk
 
       void computeTrop(const TropModel& tm);
 
-
-   protected:
+   public:
       DayTime obstime;           ///< time of SV observation
       SatID svid;                ///< PRN number of observed SV
       double ord;                ///< difference between expected and observed range
@@ -324,4 +323,3 @@ namespace gpstk
    };
 }
 #endif
-   
