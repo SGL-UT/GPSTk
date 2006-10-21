@@ -40,6 +40,7 @@
 #define ORDAPP_HPP
 
 #include <fstream>
+#include <string>
 
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
@@ -66,5 +67,6 @@ public:
 
 private:
    bool headerWritten;
+   std::string readBuffer;
 };
 #endif

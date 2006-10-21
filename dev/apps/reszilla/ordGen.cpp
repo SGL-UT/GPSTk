@@ -38,7 +38,6 @@
 
 
 #include <MSCData.hpp>
-#include <EpochClockModel.hpp>
 #include <MSCStream.hpp>
 
 #include "OrdApp.hpp"
@@ -62,7 +61,6 @@ public:
 protected:
    virtual void spinUp();
    virtual void process();
-   virtual void shutDown();
 
 private:
    CommandOptionWithAnyArg obsFileOption, ephFileOption, mscFileOption,
@@ -109,10 +107,10 @@ OrdGen::OrdGen() throw()
    metFileOption('w', "weather", "Weather data file name (RINEX met "
                  "format only)."),
    
-   svTimeOption('\0', "svtime", "Observation data is in SV time frame. "
+   svTimeOption('s', "svtime", "Observation data is in SV time frame. "
                 "The default is RX time frame."),
    
-   keepWartsOption('\0', "keep-warts", "Keep any warts that are in "
+   keepWartsOption('k', "keep-warts", "Keep any warts that are in "
                    "the data. The defailt is to remove them.")
 {
 }
@@ -141,7 +139,7 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
 
 
 //-----------------------------------------------------------------------------
-// Load all the data to analyze.
+// General program setup
 //-----------------------------------------------------------------------------
 void OrdGen::spinUp()
 {
@@ -150,7 +148,10 @@ void OrdGen::spinUp()
    {
       string aps = antennaPosOption.getValue()[0];
       if (numWords(aps) != 3)
-         cout << "Please specify three coordinates in the antenna postion." << endl;
+      {
+         cerr << "Please specify three coordinates in the antenna postion." << endl;
+         exit(-1);
+      }
       else
          for (int i=0; i<3; i++)
             antennaPos[i] = asDouble(word(aps, i));
@@ -175,7 +176,7 @@ void OrdGen::spinUp()
       
    if (RSS(antennaPos[0], antennaPos[1], antennaPos[2]) < 1)
    {
-      cout << "Warning! The antenna appears to be within one meter of the" << endl
+      cerr << "Warning! The antenna appears to be within one meter of the" << endl
            << "center of the geoid. This program is not capable of" << endl
            << "accurately estimating the propigation of GNSS signals" << endl
            << "through solids such as a planetary crust or magma. Also," << endl
@@ -187,9 +188,9 @@ void OrdGen::spinUp()
    if (verboseLevel)
    {
       if (msid)
-         cout << "msid: " << msid << endl;
-      cout << "Antenna Position: " << antennaPos << endl;
-      cout << "Observed Rage Deviation (ORD) mode: " << ordMode << endl;
+         cout << "# msid: " << msid << endl;
+      cout << "# Antenna Position: " << antennaPos << endl;
+      cout << "# Observed Rage Deviation (ORD) mode: " << ordMode << endl;
    }
 }
 
@@ -211,17 +212,11 @@ void OrdGen::process()
       ephReader.read(ephFileOption.getValue()[i]);
    WxObsData& wod = metReader.wx;
 
-   // Set up our clock model
-   EpochClockModel clockModel;
-   clockModel.setSigmaMultiplier(1.5);
-   clockModel.setElevationMask(15);
-   clockModel.setSvMode(ObsClockModel::ALWAYS);
-
    // Use a New Brunswick trop model.
    NBTropModel tm;
 
    // Now set up the function object that is used to compute the ords.
-   OrdEngine ordEngine(eph, wod, antennaPos, clockModel, tm);
+   OrdEngine ordEngine(eph, wod, antennaPos, tm);
    ordEngine.svTime = svTimeOption;
    ordEngine.keepWarts = keepWarts;
    ordEngine.setMode(ordMode);
@@ -251,12 +246,6 @@ void OrdGen::process()
 
 
 //-----------------------------------------------------------------------------
-void OrdGen::shutDown()
-{
-}
-
-
-//-----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
    try
@@ -269,7 +258,7 @@ int main(int argc, char *argv[])
    catch (gpstk::Exception &exc)
    { cout << exc << endl; }
    catch (std::exception &exc)
-   { cout << "Caught std::exception " << exc.what() << endl; }
+   { cerr << "Caught std::exception " << exc.what() << endl; }
    catch (...)
-   { cout << "Caught unknown exception" << endl; }
+   { cerr << "Caught unknown exception" << endl; }
 }

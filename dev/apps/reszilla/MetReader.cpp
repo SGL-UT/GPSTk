@@ -56,7 +56,7 @@ void MetReader::read(const std::string& fn)
    RinexMetStream rms;
    try { rms.open(fn.c_str(), ios::in); }
    catch (...) {
-      cout << "Error reading weather data from file " << fn << endl;
+      cerr << "Error reading weather data from file " << fn << endl;
       exit(-1);
    }
    

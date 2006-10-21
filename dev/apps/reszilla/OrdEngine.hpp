@@ -43,7 +43,6 @@
 #include "WxObsMap.hpp"
 #include "ORDEpoch.hpp"
 #include "EphemerisStore.hpp"
-#include "ObsClockModel.hpp"
 #include "TropModel.hpp"
 
 class OrdEngine
@@ -53,7 +52,6 @@ public:
       const gpstk::EphemerisStore& e, 
       const gpstk::WxObsData& w,
       const gpstk::Triple& p,
-      gpstk::ObsClockModel& c,
       gpstk::TropModel& t);
 
    void setMode(const std::string& ordMode);
@@ -64,7 +62,6 @@ public:
    const gpstk::Triple& antennaPos;
    const gpstk::EphemerisStore& eph;
    const gpstk::WxObsData& wod;
-   gpstk::ObsClockModel& cm;
    gpstk::TropModel& tm;
 
    bool svTime;

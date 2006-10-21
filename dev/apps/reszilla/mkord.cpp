@@ -383,7 +383,7 @@ int main(int argc, char *argv[])
       gpstk::NBTropModel tm;
 
       // Now set up the function object that is used to compute the ords.
-      OrdEngine ordEngine(eph, wod, ap, cm, tm);
+      OrdEngine ordEngine(eph, wod, ap, tm);
       ordEngine.svTime = svTimeOption;
       ordEngine.keepWarts = keepWarts;
       ordEngine.setMode(ordMode);
@@ -410,9 +410,16 @@ int main(int argc, char *argv[])
 
             gpstk::ORDEpoch oe = ordEngine(obs);
 
+            cm.addEpoch(oe);
+            oe.applyClockModel(cm);
+            if (verbosity>3)
+               cout << "clk:" << cm << endl << "clk:" << cm.getOffset() << endl;
+
             // Only add epochs that have a valid clock estimate
-            if (oe.clockOffset.is_valid())
-               ordEpochMap[obs.time] = oe;
+            if (!oe.clockOffset.is_valid())
+               continue;
+
+            ordEpochMap[obs.time] = oe;
          }
       }
 

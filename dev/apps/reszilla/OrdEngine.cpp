@@ -47,22 +47,21 @@ OrdEngine::OrdEngine(
    const gpstk::EphemerisStore& e,
    const gpstk::WxObsData& w,
    const gpstk::Triple& p,
-   gpstk::ObsClockModel& c,
    gpstk::TropModel& t)
-   : eph(e), wod(w), antennaPos(p), cm(c), tm(t),
+   : eph(e), wod(w), antennaPos(p), tm(t),
      svTime(false), keepWarts(false), keepUnhealthy(false),
      wartCount(0), verbosity(0), dualFreq(false)
 {
 
    if (RSS(antennaPos[0], antennaPos[1], antennaPos[2]) < 1)
    {
-      cout << "Warning! The antenna antennaPospears to be within one meter of the" << endl
+      cerr << "Warning! The antenna antennaPospears to be within one meter of the" << endl
            << "center of the geoid. This program is not cantennaPosable of" << endl
            << "accurately estimating the propigation of GNSS signals" << endl
            << "through solids such as a planetary crust or magma. Also," << endl
            << "if this location is correct, your antenna is probally" << endl
            << "no longer in the best of operating condition." << endl;
-      return;
+      exit(-1);
    }
 
    ECEF ecef(antennaPos);
@@ -107,13 +106,13 @@ void OrdEngine::setMode(const string& mode)
    }
    else
    {
-      cout << "Unknown ORD computation requested, mode=" << mode << endl;
+      cerr << "Unknown ORD computation requested, mode=" << mode << endl;
       exit(-1);
    }
 
    if (verbosity>1)
    {
-      cout << "Using " << oid1;
+      cout << "# Using " << oid1;
       if (dualFreq)
          cout << " and " << oid2;
       cout << endl;
@@ -130,7 +129,7 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
    ordEpoch.time = t;
 
    if (verbosity>3)
-      cout << "obs: " << obsEpoch.time << endl << obsEpoch;
+      cout << "#obs: " << obsEpoch.time << endl << obsEpoch;
 
    try
    {
@@ -140,7 +139,7 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
       if (wx.isAllValid())
       {
          if (verbosity>3)
-            cout << "wx: " << wx << endl;
+            cout << "#wx: " << wx << endl;
          tm.setWeather(wx.temperature, wx.pressure, wx.humidity);
       }
 
@@ -215,53 +214,34 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
          }
       } // end looping over each SV in this epoch
 
-      if (verbosity>3)
-         cout << "ord, pre clock:" << endl << ordEpoch;
-
-      cm.addEpoch(ordEpoch);
-      if (verbosity>3)
-         cout << "clk:" << endl << cm;
-
-      if (!cm.isOffsetValid(t))
+      if (!keepWarts)
       {
-         if (verbosity>2)
-            cout << "Could not estimate clock for epoch at " << t << endl;
-         return ORDEpoch();
-      }
-      else
-      {
-         ordEpoch.applyClockModel(cm);
-         if (verbosity>3)
-            cout << "ord, post clock:" << endl << ordEpoch;
-
-         if (!keepWarts)
+         ORDEpoch::ORDMap::iterator pi;
+         for (pi = ordEpoch.ords.begin(); pi != ordEpoch.ords.end();)
          {
-            ORDEpoch::ORDMap::iterator pi;
-            for (pi = ordEpoch.ords.begin(); pi != ordEpoch.ords.end();)
-            {
-               const ObsRngDev& ord = pi->second;
-               ORDEpoch::ORDMap::iterator pi2=pi;
-               pi++;
+            const ObsRngDev& ord = pi->second;
+            ORDEpoch::ORDMap::iterator pi2=pi;
+            pi++;
 
-               if (!keepUnhealthy && ord.getHealth().is_valid() && ord.getHealth())
-               {
-                  ordEpoch.ords.erase(pi2);
-                  if (verbosity>3)
-                     cout << "Tossing ord from an unhealty SV." << endl;
-                  continue;
-               }
-               
-               if (std::abs(ord.getTrop()) > 100 || 
-                   ord.getElevation() <= 0.05)
-               {
-                  ordEpoch.ords.erase(pi2);
-                  if (verbosity>1)
-                     cout << "Tossing wonky ord: " << ord << endl;
-                  continue;
-               }
+            if (!keepUnhealthy && ord.getHealth().is_valid() && ord.getHealth())
+            {
+               ordEpoch.ords.erase(pi2);
+               if (verbosity>3)
+                  cout << "# Tossing ord from an unhealty SV." << endl;
+               continue;
             }
-         } // end deleting bad stuff
-      } // end check for valid clock offset 
+               
+            if (std::abs(ord.getTrop()) > 100 || ord.getElevation() <= 0.05)
+            {
+               ordEpoch.ords.erase(pi2);
+               if (verbosity>1)
+                  cout << "# Tossing wonky ord: " << ord << endl;
+               continue;
+            }
+         }
+      } // end deleting bad stuff
+
+
    }
    catch (gpstk::InvalidParameter& e)
    {

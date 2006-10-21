@@ -63,12 +63,12 @@ void EphReader::read(const std::string& fn)
       case FFIdentifier::tSP3:      read_sp3_data(fn);       break;
       default:
          if (verboseLevel) 
-            cout << "Could not determine the format of " << fn << endl;
+            cout << "# Could not determine the format of " << fn << endl;
    }
 
    filesRead.push_back(fn);
    if (verboseLevel>1)
-      cout << "Ephemers initial time: " << eph->getInitialTime() 
+      cout << "# Ephemers initial time: " << eph->getInitialTime() 
            << ", final time: " << eph->getFinalTime() << endl;
 } // end of read()
 
@@ -91,7 +91,7 @@ void EphReader::read_rinex_nav_data(const string& fn)
       bce = dynamic_cast<BCEphemerisStore*>(eph);
    }
    if (verboseLevel>2)
-      cout << "Reading " << fn << " as RINEX nav."<< endl;
+      cout << "# Reading " << fn << " as RINEX nav."<< endl;
          
    RinexNavStream rns(fn.c_str(), ios::in);
    rns.exceptions(ifstream::failbit);
@@ -100,7 +100,7 @@ void EphReader::read_rinex_nav_data(const string& fn)
       bce->addEphemeris(rnd);
 
    if (verboseLevel>1)
-      cout << "Read " << fn << " as RINEX nav. " << endl;
+      cout << "# Read " << fn << " as RINEX nav. " << endl;
 } // end of read_rinex_nav_data()
 
 
@@ -120,7 +120,7 @@ void EphReader::read_fic_data(const string& fn)
       bce = dynamic_cast<BCEphemerisStore*>(eph);
    }
    if (verboseLevel>2)
-      cout << "Reading " << fn << " as FIC nav."<< endl;
+      cout << "# Reading " << fn << " as FIC nav."<< endl;
       
    FICStream fs(fn.c_str(), ios::in);
    FICHeader header;
@@ -132,7 +132,7 @@ void EphReader::read_fic_data(const string& fn)
          bce->addEphemeris(data);
 
    if (verboseLevel>1)
-      cout << "Read " << fn << " as FIC nav."<< endl;
+      cout << "# Read " << fn << " as FIC nav."<< endl;
 } // end of read_fic_data()
 
 void EphReader::read_sp3_data(const string& fn)
@@ -151,7 +151,7 @@ void EphReader::read_sp3_data(const string& fn)
       pe = dynamic_cast<SP3EphemerisStore*>(eph);
    }
    if (verboseLevel>2)
-      cout << "Reading " << fn << " as SP3 ephemeris."<< endl;
+      cout << "# Reading " << fn << " as SP3 ephemeris."<< endl;
 
    SP3Stream pefile(fn.c_str(),ios::in);
    pefile.exceptions(ifstream::failbit);
@@ -164,5 +164,5 @@ void EphReader::read_sp3_data(const string& fn)
       pe->addEphemeris(data);
 
    if (verboseLevel>1)
-      cout << "Read " << fn << " as SP3 ephemeris."<< endl;
+      cout << "# Read " << fn << " as SP3 ephemeris."<< endl;
 } // end of read_sp3_data()

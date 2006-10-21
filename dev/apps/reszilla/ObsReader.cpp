@@ -59,7 +59,7 @@ namespace gpstk
       if (inputType == FFIdentifier::tRinexObs)
       {
          if (verboseLevel)
-            cout << "Reading " << fn << " as RINEX obs data." << endl;
+            cout << "# Reading " << fn << " as RINEX obs data." << endl;
          ros.open(fn.c_str(), ios::in);
          ros.exceptions(fstream::failbit);
          ros >> roh;
@@ -67,13 +67,13 @@ namespace gpstk
       else if (inputType == FFIdentifier::tMDP)
       {
          if (verboseLevel)
-            cout << "Reading " << fn << " as MDP data." << endl;
+            cout << "# Reading " << fn << " as MDP data." << endl;
          mdps.open(fn.c_str(), ios::in);
       }
       else if (inputType == FFIdentifier::tSMODF)
       {
          if (verboseLevel)
-            cout << "Reading " << fn << " as SMODF data." << endl;
+            cout << "# Reading " << fn << " as SMODF data." << endl;
          smos.open(fn.c_str(), ios::in);
          smos.exceptions(fstream::failbit);
       }
@@ -102,7 +102,7 @@ namespace gpstk
       {
          if (msid==0)
          {
-            cout << "SMODF data requires an msid to be specified. Exiting." << endl;
+            cerr << "SMODF data requires an msid to be specified. Exiting." << endl;
             exit(-1);
          }
          

@@ -44,7 +44,7 @@ using namespace std;
 using namespace gpstk;
 
 
-const std::string OrdApp::defaultTimeFormat("%Y %j %02H:%02M:%04.1f");
+const string OrdApp::defaultTimeFormat("%Y %j %02H:%02M:%04.1f");
 
 //-----------------------------------------------------------------------------
 // The constructor basically just sets up all the command line options
@@ -63,8 +63,7 @@ OrdApp::OrdApp(
      timeFormatOpt('t', "time-format", "Daytime format specifier used for "
                    "times in the output. The default is \"" 
                    + defaultTimeFormat + "\".")
-{
-}
+{}
 
 
 //-----------------------------------------------------------------------------
@@ -72,42 +71,44 @@ OrdApp::OrdApp(
 //-----------------------------------------------------------------------------
 bool OrdApp::initialize(int argc, char *argv[]) throw()
 {
-   if (!BasicFramework::initialize(argc,argv)) return false;
+   if (!BasicFramework::initialize(argc,argv))
+      return false;
 
    if (debugLevel)
-      cout << "debugLevel: " << debugLevel << endl
-           << "verboseLevel: " << verboseLevel << endl;
+      cout << "# program:" << argv0 << endl
+           << "# debugLevel: " << debugLevel << endl
+           << "# verboseLevel: " << verboseLevel << endl;
 
    if (outputOpt.getCount())
    {
       const string fn=outputOpt.getValue()[0];
-      output.open(fn.c_str(), std::ios::out);
+      output.open(fn.c_str(), ios::out);
       if (debugLevel)
-         cout << "Sending output to" << fn << endl;
+         cout << "# Sending output to" << fn << endl;
    }
    else
    {
       if (debugLevel)
-         cout << "Sending output to stdout" << endl;
-      output.copyfmt(std::cout);
-      output.clear(std::cout.rdstate());
-      output.std::basic_ios<char>::rdbuf(std::cout.rdbuf());
+         cout << "# Sending output to stdout" << endl;
+      output.copyfmt(cout);
+      output.clear(cout.rdstate());
+      output.basic_ios<char>::rdbuf(cout.rdbuf());
    }
 
    if (inputOpt.getCount())
    {
       const string fn = inputOpt.getValue()[0];
-      input.open(fn.c_str(), std::ios::in);
+      input.open(fn.c_str(), ios::in);
       if (debugLevel)
-         cout << "Reading ords from" << fn << endl;
+         cout << "# Reading ords from" << fn << endl;
    }
    else
    {
       if (debugLevel)
-         cout << "Reading ords from stdin" << endl;
-      input.copyfmt(std::cin);
-      input.clear(std::cin.rdstate());
-      input.std::basic_ios<char>::rdbuf(std::cin.rdbuf());
+         cout << "# Reading ords from stdin" << endl;
+      input.copyfmt(cin);
+      input.clear(cin.rdstate());
+      input.basic_ios<char>::rdbuf(cin.rdbuf());
    }
 
    if (timeFormatOpt.getCount())
@@ -117,7 +118,7 @@ bool OrdApp::initialize(int argc, char *argv[]) throw()
 }
 
 
-void OrdApp::write(std::ofstream& s, const ORDEpoch& ordEpoch) throw()
+void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
 {
    if (!headerWritten)
    {
@@ -155,6 +156,82 @@ void OrdApp::write(std::ofstream& s, const ORDEpoch& ordEpoch) throw()
         << endl;
 }
 
-gpstk::ORDEpoch OrdApp::read(std::ifstream& s) throw()
+ORDEpoch OrdApp::read(std::ifstream& s) throw()
 {
+   ORDEpoch ordEpoch;
+   ordEpoch.time = DayTime(DayTime::BEGINNING_OF_TIME);
+   using namespace StringUtils;
+   while (s)
+   {
+      try
+      {
+         if (readBuffer.size() == 0)
+         {
+            getline(s, readBuffer);
+            strip(readBuffer);
+         }
+
+         if (readBuffer.size() < 24 || readBuffer[0] == '#')
+         {
+            readBuffer.erase(0, string::npos);
+            continue;
+         }
+
+         DayTime time;
+         time.setToString(readBuffer.substr(0,19), timeFormat);
+
+         // This means that we have a complete epoch. Note that the most
+         // recently read line is left in readBuffer
+         if (ordEpoch.time != time && ordEpoch.ords.size() > 0)
+            break;
+
+         ordEpoch.time = time;
+
+         istringstream iss(readBuffer.substr(20, string::npos));
+         int type;
+         iss >> type;
+
+         if (type == 0)
+         {
+            if (readBuffer.size() < 49)
+            {
+               cout << "# Line to short" << endl;
+               continue;
+            }
+
+            ObsRngDev ord;
+            ord.obstime = time;
+
+            int prn;
+            unsigned iodc, health;
+            double elev, res;
+
+            iss >> prn >> elev >> res;
+
+            SatID svid(prn, SatID::systemGPS);
+            ord.svid = svid;
+            ord.elevation = elev;
+            ord.ord = res;
+            
+            string w;
+            iss >> w;
+            if (w != "Unknown")
+               ord.iodc = x2int(w);
+
+            iss >> w;
+            if (w != "Unknown")
+               ord.health = x2int(w);
+            
+            ordEpoch.ords[svid] = ord;
+         }
+
+         readBuffer.erase(0, string::npos);
+      }
+      catch (Exception& e)
+      {
+         cout << "# Error reading ord file " << e << endl;
+      }
+   }
+
+   return ordEpoch;
 }
