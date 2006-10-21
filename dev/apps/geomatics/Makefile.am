@@ -1,1 +1,1 @@
-SUBDIRS = cycleslips  kalman  lib  relposition  robust
+SUBDIRS = lib  cycleslips  kalman  relposition  robust
