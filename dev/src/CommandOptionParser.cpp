@@ -172,7 +172,7 @@ namespace gpstk
                // for a getopt_long error
             else
                errorArg = argv[optind - 1];
-            errorStrings.push_back(string("Option error: " + errorArg));
+            errorStrings.push_back(string("Option error: ") + errorArg);
          }
             // otherwise this is probably a found option
          else

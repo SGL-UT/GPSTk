@@ -83,7 +83,7 @@ namespace gpstk
    {
       if( inWeek < 0 )
       {
-         gpstk::InvalidParameter ip("GPS Week invalid: " +
+         gpstk::InvalidParameter ip(string("GPS Week invalid: ") +
                                     asString<short>(inWeek)) ;
          GPSTK_THROW(ip) ;
       }
@@ -96,7 +96,7 @@ namespace gpstk
    {
       if(validZcount(inZcount) != 0)
       {
-         gpstk::InvalidParameter ip("GPS Z-count invalid: " +
+         gpstk::InvalidParameter ip(string("GPS Z-count invalid: ") +
                                     asString<long>(inZcount)) ;
          GPSTK_THROW(ip) ;
       }
@@ -118,7 +118,8 @@ namespace gpstk
       }
       catch(gpstk::InvalidParameter& ip)
       {
-         ip.addText("GPS Full Z-count invalid: " + asString<long>(inZcount)) ;
+         ip.addText(string("GPS Full Z-count invalid: ") 
+                           + asString<long>(inZcount)) ;
          GPSTK_RETHROW(ip) ;
       }
       return *this ;
@@ -139,7 +140,7 @@ namespace gpstk
       catch(gpstk::InvalidParameter& ip)
       {
          gpstk::InvalidRequest ir(ip) ;
-         ir.addText("Addition of " + asString(inWeeks) + 
+         ir.addText(string("Addition of ") + asString(inWeeks) + 
                     " weeks renders this object invalid.") ;
          GPSTK_THROW(ir) ;
       }
@@ -183,7 +184,8 @@ namespace gpstk
       {
          setWeek(originalWeek) ;
          setZcount(originalZcount) ; 
-         ir.addText("Did not add " + asString(inZcounts) + " Z-counts.") ;
+         ir.addText(string("Did not add ") + asString(inZcounts) 
+                    + " Z-counts.") ;
          GPSTK_RETHROW(ir) ;
          
       }
@@ -192,7 +194,8 @@ namespace gpstk
          setWeek(originalWeek) ;
          setZcount(originalZcount) ; 
          gpstk::InvalidRequest ir(ip) ;
-         ir.addText("Did not add " + asString(inZcounts) + " Z-counts.") ;
+         ir.addText(string("Did not add ") + asString(inZcounts) 
+                    + " Z-counts.") ;
          GPSTK_THROW(ir) ;         
       }
    }

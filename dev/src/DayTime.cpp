@@ -836,7 +836,7 @@ namespace gpstk
       if(DAYTIME_TEST_VALID)
       {
          using gpstk::StringUtils::asString ;
-         DayTimeException dte("Input inconsistent: year "
+         DayTimeException dte(string("Input inconsistent: year ")
                               + asString<int>(year)
                               + " cannot contain 10-bit GPS week "
                               + asString<short>(week));
@@ -864,7 +864,7 @@ namespace gpstk
             zcount < 0 || zcount > 403199 ) 
          { 
             using gpstk::StringUtils::asString ;
-            DayTimeException dte("Invalid Full GPS Z-count: "
+            DayTimeException dte(string("Invalid Full GPS Z-count: ")
                                  + asString<unsigned long>(Zcount));
             GPSTK_THROW(dte);
          }
@@ -889,7 +889,7 @@ namespace gpstk
             sow >= double(FULLWEEK))
          {
             using gpstk::StringUtils::asString ;
-            DayTimeException dte("Invalid week/seconds-of-week: " 
+            DayTimeException dte(string("Invalid week/seconds-of-week: ") 
                                  + asString<short>(fullweek)+ "/" 
                                  + asString(sow));
             GPSTK_THROW(dte);
@@ -959,7 +959,7 @@ namespace gpstk
          if(mjd < (long double)(BEGIN_LIMIT_JDAY-MJD_JDAY) ||
             mjd > (long double)(END_LIMIT_JDAY-MJD_JDAY))
          {
-            DayTimeException dte("Invalid MJD: " 
+	    DayTimeException dte(string("Invalid MJD: ") 
                                  + gpstk::StringUtils::asString(mjd)) ;
             GPSTK_THROW(dte) ;
          }
@@ -1051,7 +1051,8 @@ namespace gpstk
          if(y != yy || m != mm || d != dd) 
          {
             using gpstk::StringUtils::asString ;
-            DayTimeException dte("Invalid yy/mm/dd: " + asString<int>(yy) + "/"
+            DayTimeException dte(string("Invalid yy/mm/dd: ")
+                                 + asString<int>(yy) + "/"
                                  + asString<int>(mm) + "/" + asString<int>(dd)
                                  + " != " + asString<int>(y) + "/"
                                  + asString<int>(m) + "/" + asString<int>(d));
@@ -1079,7 +1080,8 @@ namespace gpstk
          if(h != hh || m != mm || ABS(s - sec) > tolerance) 
          {
             using gpstk::StringUtils::asString ;
-            DayTimeException dte("Invalid hh:mm:ss: " + asString<int>(hh)
+            DayTimeException dte(string("Invalid hh:mm:ss: ")
+                                 + asString<int>(hh)
                                  + ":" + asString<int>(mm) 
                                  + ":" + asString(sec));
             GPSTK_THROW(dte);
@@ -1097,7 +1099,7 @@ namespace gpstk
       {
          if(sod < 0.0 || sod >= double(SEC_DAY)) 
          {
-            DayTimeException dte("Invalid seconds-of-day: " 
+            DayTimeException dte(string("Invalid seconds-of-day: ") 
                                  + gpstk::StringUtils::asString(sod));
             GPSTK_THROW(dte);
          }
@@ -1121,7 +1123,7 @@ namespace gpstk
          convertJDtoCalendar(jday, y, m, d);
          if(y != yy) 
          {
-            DayTimeException dte("Invalid Year/Day-of-Year: " 
+            DayTimeException dte( string("Invalid Year/Day-of-Year: ") 
                                  + gpstk::StringUtils::asString(yy)
                                  + "/" + gpstk::StringUtils::asString(doy));
             GPSTK_THROW(dte);
@@ -1450,7 +1452,7 @@ namespace gpstk
          {
                // throw an error - something didn't get processed in the strings
             FormatException fe(
-               "Processing error - parts of strings left unread - " + s);
+               string("Processing error - parts of strings left unread - ") + s);
             GPSTK_THROW(fe);
          }
          
@@ -1458,7 +1460,7 @@ namespace gpstk
          {
                // throw an error - something didn't get processed in the strings
             FormatException fe(
-               "Processing error - parts of strings left unread - " + f);
+               string("Processing error - parts of strings left unread - ") + f);
             GPSTK_THROW(fe);
          }
          

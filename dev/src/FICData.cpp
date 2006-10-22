@@ -921,7 +921,7 @@ namespace gpstk
          if ( (blkHdr.size() != FICBlkHdrSize) || 
               (blkHdr != blockString))
          {
-            FFStreamError e("Bad block header, record=" + 
+            FFStreamError e(string("Bad block header, record=") + 
                             asString(strm.recordNumber) + 
                             " location=" + asString(strm.tellg()));
             e.addText(string("blkHdr=[")+string(blkHdr)+string("]"));
@@ -984,7 +984,7 @@ namespace gpstk
             strm.getData(blkHdr, FICBlkHdrSize);
             if ((string(blkHdr, FICBlkHdrSize) != blockString))
             {
-               FFStreamError e("Bad block header, record="
+               FFStreamError e(string("Bad block header, record=")
                                + asString(strm.recordNumber)
                                + " location=" + asString(location));
                e.addText(string("blkHdr=[")+string(blkHdr)+string("]"));
@@ -1069,7 +1069,7 @@ namespace gpstk
       }
       else
       {
-         WrongBlockNumber wbn( "Block number should be 9, was " + 
+         WrongBlockNumber wbn( string("Block number should be 9, was ") + 
                                asString(blockNum) );
          GPSTK_THROW(wbn);
       }
@@ -1089,7 +1089,7 @@ namespace gpstk
       }
       else
       {
-         WrongBlockNumber wbn( "Block number should be 62, was " + 
+         WrongBlockNumber wbn( string("Block number should be 62, was ") + 
                                asString(blockNum) );
          GPSTK_THROW(wbn);
       }
@@ -1100,8 +1100,8 @@ namespace gpstk
    {
       std::ostringstream out;
       DayTime transmitTime(0.L), howTime(0.L);
-      WrongBlockNumber wbn( "Block number should be 9, 109, or 62, was "+
-                            asString(blockNum) );
+      WrongBlockNumber wbn(string("Block number should be 9, 109, or 62, was ")
+                            + asString(blockNum) );
 
       switch (blockNum)
       {
@@ -1150,7 +1150,7 @@ namespace gpstk
             }
             else
             {
-               WrongBlockFormat wbf("Format " + asString(i[4]) +
+               WrongBlockFormat wbf(string("Format ") + asString(i[4]) +
                                     " (page ID " + asString(i[3]) +
                                     ") cannot be used to generate a key.");
                GPSTK_THROW(wbf);

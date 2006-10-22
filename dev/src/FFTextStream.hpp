@@ -208,7 +208,7 @@ namespace gpstk
          } 
          else
          {
-            FFStreamError err("Critical file error: " +
+            FFStreamError err(std::string("Critical file error: ") +
                               std::string(e.what()));
             GPSTK_THROW(err);
          }

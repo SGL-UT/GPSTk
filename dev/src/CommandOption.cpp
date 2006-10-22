@@ -90,14 +90,14 @@ namespace gpstk
          {
             toReturn += string(", --") + longOpt;
             if (optFlag == hasArgument)
-               toReturn += "=" + getArgString();
+               toReturn += string("=") + getArgString();
          }
       }
       else
       {
          toReturn += string("    --") + longOpt;
          if (optFlag == hasArgument)
-            toReturn += "=" + getArgString();
+            toReturn += string("=") + getArgString();
       }
       return toReturn;
    }
@@ -173,7 +173,8 @@ namespace gpstk
    string CommandOption::checkArguments()
    {
       if (required && (count == 0))
-         return "Required option " + getOptionString() + " was not found.";
+         return string("Required option ") + getOptionString() 
+            + " was not found.";
 
       return string();
    }
@@ -350,8 +351,8 @@ namespace gpstk
          errstr = "Null requirer (child) for CommandOptionDependent";
 
       if (requirer->getCount() && !requiree->getCount())
-         errstr = "Option " + requirer->getOptionString() + " requires " +
-            requiree->getOptionString();
+         errstr = string("Option ") + requirer->getOptionString() + 
+            " requires " + requiree->getOptionString();
 
       return errstr;
    }

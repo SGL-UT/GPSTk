@@ -62,7 +62,7 @@ namespace gpstk
       if(flag == '*') {// output Epoch Header Record
          line = "* ";
          line += time.printf(" %4Y %2m %2d %2H %2M");
-         line += " " + rightJustify(time.printf("%.8f"),11);
+         line += string(" ") + rightJustify(time.printf("%.8f"),11);
       }
       else {           // output Position and Clock OR Velocity and Clock Rate Record
          line = flag;
@@ -192,7 +192,8 @@ namespace gpstk
 
             // throw if the line is short
             if(strm.buffer.size() <= 30) {
-               FFStreamError err("Invalid line length "+asString(strm.buffer.size()));
+               FFStreamError err(string("Invalid line length ")
+                                        +asString(strm.buffer.size()));
                GPSTK_THROW(err);                  
             }
 
@@ -218,7 +219,8 @@ namespace gpstk
             // throw if the line is short
             if ((version == 'a' && strm.buffer.size() < 60) ||
                (version == 'c' && strm.buffer.size() < 73) ) {
-               FFStreamError err("Invalid line length "+asString(strm.buffer.size()));
+               FFStreamError err(string("Invalid line length ")
+                                 +asString(strm.buffer.size()));
                GPSTK_THROW(err);
             }
 
@@ -270,7 +272,7 @@ namespace gpstk
 
             // throw if line is short
             if(strm.buffer.size()<80) {
-               FFStreamError err("Invalid SP3c correlation line length "
+	      FFStreamError err(string("Invalid SP3c correlation line length ")
                   + asString(strm.buffer.size()));
                GPSTK_THROW(err);
             }
@@ -291,7 +293,8 @@ namespace gpstk
          }
 
          else {                              // Unknown record
-            FFStreamError err("Unknown line label " + strm.buffer.substr(0,2));
+            FFStreamError err(string("Unknown line label ") 
+                              + strm.buffer.substr(0,2));
             GPSTK_THROW(err);
          }
 

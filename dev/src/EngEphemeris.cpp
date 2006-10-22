@@ -90,7 +90,7 @@ namespace gpstk
          return false;
 
       int sfnum = static_cast<int>( ficked[4] );
-      InvalidParameter exc("Subframe "+StringUtils::asString(sfnum)+
+      InvalidParameter exc(string("Subframe ")+StringUtils::asString(sfnum)+
                            " not ephemeris subframe.");
 
       switch (sfnum)
@@ -286,7 +286,8 @@ namespace gpstk
    {
       if ((subframe < 1) || (subframe > 3))
       {
-         InvalidRequest exc("Subframe "+StringUtils::asString(subframe)+
+         InvalidRequest exc(string("Subframe ")
+                            +StringUtils::asString(subframe)+
                             " is not a valid ephemeris subframe.");
          GPSTK_THROW(exc);
       }
@@ -299,7 +300,8 @@ namespace gpstk
    {
       if( acc < 0 )
       {
-         InvalidParameter exc("SV Accuracy of " + StringUtils::asString(acc) +
+         InvalidParameter exc(string("SV Accuracy of ") 
+                              + StringUtils::asString(acc) +
                               " meters is invalid.");
          GPSTK_THROW(exc);
       }
@@ -605,7 +607,8 @@ namespace gpstk
    {
       if (!haveSubframe[subframe-1])
       {
-         InvalidRequest exc("Subframe "+StringUtils::asString(subframe)+
+         InvalidRequest exc(string("Subframe ")
+                            +StringUtils::asString(subframe)+
                             " not stored.");
          GPSTK_THROW(exc);
       }
@@ -673,7 +676,8 @@ namespace gpstk
    {
       if (!haveSubframe[subframe-1])
       {
-         InvalidRequest exc("Subframe "+StringUtils::asString(subframe)+
+         InvalidRequest exc(string("Subframe ")
+                            +StringUtils::asString(subframe)+
                             " not stored.");
          GPSTK_THROW(exc);
       }
@@ -687,7 +691,8 @@ namespace gpstk
    {
       if (!haveSubframe[subframe-1])
       {
-         InvalidRequest exc("Subframe "+StringUtils::asString(subframe)+
+         InvalidRequest exc(string("Subframe ")
+                            +StringUtils::asString(subframe)+
                             " not stored.");
          GPSTK_THROW(exc);
       }

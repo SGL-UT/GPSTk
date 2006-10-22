@@ -83,11 +83,11 @@ namespace gpstk
          }
          catch (std::exception &e)
          {
-            mostRecentException = FFStreamError("std::exception thrown: " +
+            mostRecentException = FFStreamError(std::string("std::exception thrown: ") +
                                                 std::string(e.what()));
-            mostRecentException.addText("In record " + 
+            mostRecentException.addText(std::string("In record ") + 
                   gpstk::StringUtils::asString(recordNumber));
-            mostRecentException.addText("In file " + filename);            
+            mostRecentException.addText(std::string("In file ") + filename);      
             mostRecentException.addLocation(FILE_LOCATION);
             clear();
             seekg(initialPosition);
@@ -99,17 +99,17 @@ namespace gpstk
             // is handled by std::fstream
          catch (EndOfFile& e)
          {
-            e.addText("In record " + 
+            e.addText(std::string("In record ") + 
                       gpstk::StringUtils::asString(recordNumber));
-            e.addText("In file " + filename);
+            e.addText(std::string("In file ") + filename);
             e.addLocation(FILE_LOCATION);
             mostRecentException = e;
          }
          catch (gpstk::StringUtils::StringException& e)  
          {
-            e.addText("In record " + 
+            e.addText(std::string("In record ") + 
                       gpstk::StringUtils::asString(recordNumber));
-            e.addText("In file " + filename);
+            e.addText(std::string("In file ") + filename);
             e.addLocation(FILE_LOCATION);
             mostRecentException = e;
             clear();
@@ -121,9 +121,9 @@ namespace gpstk
             // catches some errors we can encounter
          catch (FFStreamError& e)  
          {
-            e.addText("In record " + 
+            e.addText(std::string("In record ") + 
                       gpstk::StringUtils::asString(recordNumber));
-            e.addText("In file " + filename);
+            e.addText(std::string("In file ") + filename);
             e.addLocation(FILE_LOCATION);
             mostRecentException = e;
             clear();
@@ -148,18 +148,18 @@ namespace gpstk
             // if this isn't a fail() case
          if (!fail())
          {
-            mostRecentException = FFStreamError("ifstream::failure thrown: " +
+            mostRecentException = FFStreamError(std::string("ifstream::failure thrown: ") +
                                                 std::string(e.what()));
-            mostRecentException.addText("In file " + filename);
+            mostRecentException.addText(std::string("In file ") + filename);
             mostRecentException.addLocation(FILE_LOCATION);
          }
          conditionalThrow();
       }
       catch (std::exception &e)
       {
-         mostRecentException = FFStreamError("std::exception thrown: " + 
-                                             std::string(e.what()));
-         mostRecentException.addText("In file " + filename);
+         mostRecentException = FFStreamError(std::string("std::exception thrown: ")
+                                             + std::string(e.what()));
+         mostRecentException.addText(std::string("In file ") + filename);
          mostRecentException.addLocation(FILE_LOCATION);
          setstate(std::ios::failbit);
          conditionalThrow();
@@ -167,7 +167,7 @@ namespace gpstk
       catch (...)
       {
          mostRecentException = FFStreamError("Unknown exception thrown");
-         mostRecentException.addText("In file " + filename);
+         mostRecentException.addText(std::string("In file ") + filename);
          mostRecentException.addLocation(FILE_LOCATION);
          setstate(std::ios::failbit);
          conditionalThrow();
@@ -201,7 +201,7 @@ namespace gpstk
 
                // the catch(FFStreamError) below will add file information
                // to this exception
-            mostRecentException = FFStreamError("std::exception thrown: " +
+            mostRecentException = FFStreamError(std::string("std::exception thrown: ") +
                                                 std::string(e.what()));
             mostRecentException.addLocation(FILE_LOCATION);
             setstate(std::ios::failbit);
@@ -209,9 +209,9 @@ namespace gpstk
          }
          catch (gpstk::StringUtils::StringException& e)  
          {
-            e.addText("In record " + 
+            e.addText(std::string("In record ") + 
                       gpstk::StringUtils::asString(recordNumber));
-            e.addText("In file " + filename);
+            e.addText(std::string("In file ") + filename);
             e.addLocation(FILE_LOCATION);
             mostRecentException = e;
             seekg(initialPosition);
@@ -222,9 +222,9 @@ namespace gpstk
             // catches some errors we can encounter
          catch (FFStreamError& e)  
          {
-            e.addText("In record " + 
+            e.addText(std::string("In record ") + 
                       gpstk::StringUtils::asString(recordNumber));
-            e.addText("In file " + filename);
+            e.addText(std::string("In file ") + filename);
             e.addLocation(FILE_LOCATION);
             mostRecentException = e;
             seekg(initialPosition);
@@ -248,18 +248,18 @@ namespace gpstk
             // if this isn't a fail() case
          if (!fail())
          {
-            mostRecentException = FFStreamError("ifstream::failure thrown: " +
+            mostRecentException = FFStreamError(std::string("ifstream::failure thrown: ") +
                                                 std::string(e.what()));
-            mostRecentException.addText("In file " + filename);
+            mostRecentException.addText(std::string("In file ") + filename);
             mostRecentException.addLocation(FILE_LOCATION);
          }
          conditionalThrow();
       }
       catch (std::exception &e)
       {
-         mostRecentException = FFStreamError("std::exception thrown: " + 
+         mostRecentException = FFStreamError(std::string("std::exception thrown: ") + 
                                              std::string(e.what()));
-         mostRecentException.addText("In file " + filename);
+         mostRecentException.addText(std::string("In file ") + filename);
          mostRecentException.addLocation(FILE_LOCATION);
          setstate(std::ios::failbit);
          conditionalThrow();
@@ -267,7 +267,7 @@ namespace gpstk
       catch (...)
       {
          mostRecentException = FFStreamError("Unknown exception thrown");
-         mostRecentException.addText("In file " + filename);
+         mostRecentException.addText(std::string("In file ") + filename);
          mostRecentException.addLocation(FILE_LOCATION);
          setstate(std::ios::failbit);
          conditionalThrow();

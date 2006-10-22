@@ -119,7 +119,8 @@ namespace gpstk
       else if (fst == fullzcount)  return string("C");
       else
       {
-         FileSpecException fse("Unknown FileSpecType: " + asString(fst));
+         FileSpecException fse(string("Unknown FileSpecType: ") 
+                                      + asString(fst));
          GPSTK_THROW(fse);
       }
    }
@@ -156,7 +157,7 @@ namespace gpstk
       else if (fst == string("C"))   return fullzcount;
       else
       {
-         FileSpecException fse("Unknown FileSpecType: " + fst);
+         FileSpecException fse(string("Unknown FileSpecType: ") + fst);
          GPSTK_THROW(fse);
       }
    }
@@ -174,7 +175,7 @@ namespace gpstk
             // the error case first...
          if ( ((*itr).type <= unknown) || ((*itr).type >= end) )
          {
-            FileSpecException fse("Unknown FileSpecType: " + 
+            FileSpecException fse(string("Unknown FileSpecType: ") + 
                                   asString((*itr).type));
             GPSTK_THROW(fse);
          }
@@ -202,7 +203,7 @@ namespace gpstk
          // stupidity check - is it a valid FST?
       if ((fst <= unknown) || (fst >= end))
       {
-         FileSpecException fse("Unknown FileSpecType: " + 
+         FileSpecException fse(string("Unknown FileSpecType: ") + 
                                convertFileSpecType(fst));
          GPSTK_THROW(fse);
       }
@@ -221,7 +222,7 @@ namespace gpstk
          itr++;
       }
          // oops - didn't find it.
-      FileSpecException fse("Couldn't find specified FileSpecType: " +
+      FileSpecException fse(string("Couldn't find specified FileSpecType: ") +
                             convertFileSpecType(fst));
       GPSTK_THROW(fse);
    }
@@ -235,7 +236,7 @@ namespace gpstk
             // stupidity check - is it a valid FST?
          if (((*itr).type <= unknown) || ((*itr).type >= end))
          {
-            FileSpecException fse("Unknown FileSpecType: " + 
+            FileSpecException fse(string("Unknown FileSpecType: ") + 
                                   convertFileSpecType((*itr).type));
             GPSTK_THROW(fse);
          }
@@ -266,7 +267,7 @@ namespace gpstk
       }
       catch(std::exception& exc)
       {
-         FileSpecException fse("std::exception: " + string(exc.what()));
+         FileSpecException fse(string("std::exception: ") + string(exc.what()));
          fse.addText("Can't generate a DayTime for this FileSpec");
          GPSTK_THROW(fse);
       }
@@ -512,24 +513,24 @@ namespace gpstk
       }
       catch(FileSpecException& e)
       {
-         e.addText("Check your file spec for errors: " + fileSpec);
+         e.addText(string("Check your file spec for errors: ") + fileSpec);
          GPSTK_RETHROW(e);
       }
       catch(StringException& e)
       {
          FileSpecException fse(e);
-         fse.addText("String exception: Check the file spec for errors: " + fileSpec);
+         fse.addText(string("String exception: Check the file spec for errors: ") + fileSpec);
          GPSTK_THROW(fse);
       }
       catch(std::exception& e)
       {
-         FileSpecException fse("std::exception: " + string(e.what()));
-         fse.addText("Check the file spec for errors: " + fileSpec);
+         FileSpecException fse(string("std::exception: ") + string(e.what()));
+         fse.addText(string("Check the file spec for errors: ") + fileSpec);
          GPSTK_THROW(fse);
       }
       catch(...)
       {
-         FileSpecException fse("Unknown exception: Check the file spec for errors: " + fileSpec);
+         FileSpecException fse(string("Unknown exception: Check the file spec for errors: ") + fileSpec);
          GPSTK_THROW(fse);
       }
    }

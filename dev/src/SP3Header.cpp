@@ -72,28 +72,28 @@ namespace gpstk
       line += version;
       line += pvFlag;
       line += time.printf("%4Y %2m %2d %2H %2M");
-      line += " " + rightJustify(time.printf("%f"),11);
-      line += " " + rightJustify(asString(numberOfEpochs),7);
-      line += " " + rightJustify(dataUsed,5);
-      line += " " + rightJustify(coordSystem,5);
-      line += " " + rightJustify(orbitType,3);
-      line += " " + rightJustify(agency,4);
+      line += string(" ") + rightJustify(time.printf("%f"),11);
+      line += string(" ") + rightJustify(asString(numberOfEpochs),7);
+      line += string(" ") + rightJustify(dataUsed,5);
+      line += string(" ") + rightJustify(coordSystem,5);
+      line += string(" ") + rightJustify(orbitType,3);
+      line += string(" ") + rightJustify(agency,4);
       strm << line << endl;
 
       // line 2
       line = "##";
       line += rightJustify(time.printf("%F"),5);
       line += rightJustify(time.printf("%g"),16);
-      line += " " + rightJustify(asString(epochInterval,8),14);
-      line += " " + time.printf("%5.0Q");
-      line += " " + rightJustify(asString(time.DOYsecond()/86400.,13),15);
+      line += string(" ") + rightJustify(asString(epochInterval,8),14);
+      line += string(" ") + time.printf("%5.0Q");
+      line += string(" ") + rightJustify(asString(time.DOYsecond()/86400.,13),15);
       strm << line << endl;
 
       // lines 3-7 and 8-12
       //Map<SV,accuracy flag> (all SVs in data)
       std::map<SatID, short>::const_iterator it;
       for(i=3; i<=12; i++) {                 // loop over the lines
-         if(i==3) line = "+   " + rightJustify(asString(satList.size()),2) + "   ";
+         if(i==3) line = string("+   ") + rightJustify(asString(satList.size()),2) + "   ";
          else if(i < 8) line = "+        ";
          else           line = "++       ";
          k = 0;
@@ -229,7 +229,7 @@ namespace gpstk
       }
       else
       {
-         FFStreamError e("Unknown label " + string(1, line[0]));
+         FFStreamError e(string("Unknown label ") + string(1, line[0]));
          GPSTK_THROW(e);
       }
       
@@ -240,7 +240,7 @@ namespace gpstk
       }
       else
       {
-         FFStreamError e("Unknown label " + string(1, line[0]));
+         FFStreamError e(string("Unknown label ") + string(1, line[0]));
          GPSTK_THROW(e);
       }
 
@@ -283,7 +283,7 @@ namespace gpstk
          }
          else
          {
-            FFStreamError e("Unknown label " + string(1, line[0]));
+            FFStreamError e(string("Unknown label ") + string(1, line[0]));
             GPSTK_THROW(e);
          }
       }
@@ -307,7 +307,7 @@ namespace gpstk
          }
          else
          {
-            FFStreamError e("Unknown label " + string(1, line[0]));
+            FFStreamError e(string("Unknown label ") + string(1, line[0]));
             GPSTK_THROW(e);
          }
       }

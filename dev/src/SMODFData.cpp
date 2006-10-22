@@ -157,7 +157,7 @@ namespace gpstk
       }
       else
       {
-         gpstk::FFStreamError err("Unknown SMODF format: " + 
+         gpstk::FFStreamError err(string("Unknown SMODF format: ") + 
                            asString<unsigned long>(strm.format));
          err.addText("Make sure you specify the format of the data.");
          GPSTK_THROW(err);
@@ -203,7 +203,7 @@ namespace gpstk
       {
          if (len != SMO_LEN_ICD211)
          {
-            gpstk::FFStreamError e("Bad 211 format line length: " + 
+            gpstk::FFStreamError e(string("Bad 211 format line length: ") + 
                             asString(len));
             GPSTK_THROW(e);
          }
@@ -248,7 +248,7 @@ namespace gpstk
       {
          if (len != SMO_LEN_LEGACY)
          {
-            gpstk::FFStreamError e("Bad legacy format line length: " + 
+            gpstk::FFStreamError e(string("Bad legacy format line length: ") + 
                             asString(len));
             GPSTK_THROW(e);
          }

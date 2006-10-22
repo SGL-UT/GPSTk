@@ -413,7 +413,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " +
+         FFStreamError err(string("std::exception: ") +
                            string(e.what()));
          GPSTK_THROW(err);
       }
@@ -431,7 +431,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " +
+         FFStreamError err(string("std::exception: ") +
                            string(e.what()));
          GPSTK_THROW(err);
       }
@@ -449,7 +449,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " +
+         FFStreamError err(string("std::exception: ") +
                            string(e.what()));
          GPSTK_THROW(err);
       }
@@ -467,7 +467,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " +
+         FFStreamError err(string("std::exception: ") +
                            string(e.what()));
          GPSTK_THROW(err);
       }
@@ -485,7 +485,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " +
+         FFStreamError err(string("std::exception: ") +
                            string(e.what()));
          GPSTK_THROW(err);
       }
@@ -509,7 +509,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " +
+         FFStreamError err(string("std::exception: ") +
                            string(e.what()));
          GPSTK_THROW(err);
       }
@@ -532,7 +532,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " +
+         FFStreamError err(string("std::exception: ") +
                            string(e.what()));
          GPSTK_THROW(err);
       }
@@ -566,7 +566,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " +
+         FFStreamError err(string("std::exception: ") +
                            string(e.what()));
          GPSTK_THROW(err);
       }

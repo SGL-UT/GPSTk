@@ -114,7 +114,8 @@ namespace gpstk
       else if (version == 2.1)   allValid = allValid21;
       else
       {
-         FFStreamError err("Unknown RINEX version: " + asString(version,2));
+         FFStreamError err(string("Unknown RINEX version: ") 
+                           + asString(version,2));
          err.addText("Make sure to set the version correctly.");
          GPSTK_THROW(err);
       }
@@ -339,7 +340,7 @@ namespace gpstk
                   int currPos = i * 6 + 6;
                   if (line.substr(currPos, 4) != string(4, ' '))
                   {
-                     FFStreamError e("Format error for line type " +
+                     FFStreamError e(string("Format error for line type ") +
                                      obsTypeString);
                      GPSTK_THROW(e);
                   }
@@ -359,7 +360,7 @@ namespace gpstk
                   int currPos = (i % maxObsPerLine) * 6 + 6;
                   if (line.substr(currPos, 4) != string(4,' '))
                   {
-                     FFStreamError e("Format error for line type " +
+                     FFStreamError e(string("Format error for line type ") +
                                      obsTypeString);
                      GPSTK_THROW(e);
                   }
@@ -371,7 +372,7 @@ namespace gpstk
          {
             if (line.substr(40,6) != string(6, ' '))
             {
-               FFStreamError e("Format error for line type " + 
+               FFStreamError e(string("Format error for line type ") + 
                                sensorTypeString);
                GPSTK_THROW(e);
             }
@@ -420,7 +421,7 @@ namespace gpstk
          }
          else
          {
-            FFStreamError e("Unknown header label " + thisLabel);
+            FFStreamError e(string("Unknown header label ") + thisLabel);
             GPSTK_THROW(e);
          }
       }
@@ -430,7 +431,7 @@ namespace gpstk
       else if (version == 2.1)      allValid = allValid21;
       else
       {
-         FFStreamError e("Unknown or unsupported RINEX version " + 
+         FFStreamError e(string("Unknown or unsupported RINEX version ") + 
                          asString(version));
          GPSTK_THROW(e);
       }
@@ -482,7 +483,7 @@ namespace gpstk
       else if (oneObs == "HI") return HI;
       else
       {
-         FFStreamError e("Bad obs type:" + oneObs);
+         FFStreamError e(string("Bad obs type:") + oneObs);
          GPSTK_THROW(e);
       } 
    }
@@ -502,7 +503,7 @@ namespace gpstk
       else if (oneObs == HI) return "HI";
       else
       {
-         FFStreamError e("Bad obs type:" + oneObs);
+         FFStreamError e(string("Bad obs type:") + asString(oneObs));
          GPSTK_THROW(e);
       } 
    }

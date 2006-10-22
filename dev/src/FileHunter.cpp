@@ -127,8 +127,8 @@ namespace gpstk
          // didn't find it - throw an exception
       else
       {
-         FileHunterException fhe("The FileSpec does not have a field: " +
-                                 FileSpec::convertFileSpecType(fst));
+         FileHunterException fhe(string("The FileSpec does not have a field: ")
+                                 + FileSpec::convertFileSpecType(fst));
          return *this;
       }
    }
@@ -464,7 +464,7 @@ namespace gpstk
 #ifndef _WIN32
             if (fs[0] != slash)
             {
-               FileHunterException fhe("Unexpected character: " + 
+               FileHunterException fhe(string("Unexpected character: ") + 
                                        fs.substr(0,1));
                GPSTK_THROW(fhe);
             }
@@ -510,7 +510,8 @@ namespace gpstk
       }
       catch(std::exception &e)
       {
-         FileHunterException fhe("std::exception caught: " + string(e.what()));
+         FileHunterException fhe(string("std::exception caught: ") 
+                                 + string(e.what()));
          GPSTK_THROW(fhe);
       }
       catch(...)
@@ -553,7 +554,8 @@ namespace gpstk
          
          if (theDir == NULL)
          {
-            FileHunterException fhe("Cannot open directory: " + directory);
+            FileHunterException fhe(std::string("Cannot open directory: ")
+                                    + directory);
             GPSTK_THROW(fhe);
          }
          
@@ -579,7 +581,7 @@ namespace gpstk
             // cleanup
          if (closedir(theDir) != 0)
          {
-            FileHunterException fhe("Error closing directory: " + 
+            FileHunterException fhe(std::string("Error closing directory: ") + 
                                     directory);
             GPSTK_THROW(fhe);
          }
@@ -621,7 +623,8 @@ namespace gpstk
       }
       catch(std::exception& e)
       {
-         FileHunterException fhe("std::exception caught: " + string(e.what()));
+         FileHunterException fhe(string("std::exception caught: ") 
+                                 + string(e.what()));
          fhe.addText("Search failed");
          GPSTK_THROW(fhe);
       }

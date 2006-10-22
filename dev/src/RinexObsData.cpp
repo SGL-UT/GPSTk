@@ -201,7 +201,7 @@ namespace gpstk
       epochFlag = asInt(line.substr(28,1));
       if ((epochFlag < 0) || (epochFlag > 6))
       {
-         FFStreamError e("Invalid epoch flag: " + asString(epochFlag));
+         FFStreamError e(string("Invalid epoch flag: ") + asString(epochFlag));
          GPSTK_THROW(e);
       }
       time = parseTime(line, hdr);
@@ -222,7 +222,8 @@ namespace gpstk
                strm.formattedGetLine(line);
                isv = 1;
                if(line.size() > 80) {
-                  FFStreamError err("Invalid line size:" + asString(line.size()));
+                  FFStreamError err(string("Invalid line size:") 
+                                    + asString(line.size()));
                   GPSTK_THROW(err);
                }
             }
@@ -249,7 +250,8 @@ namespace gpstk
                   line_ndx = 0;
                   if (line.size() > 80)
                   {
-                     FFStreamError err("Invalid line size:" + asString(line.size()));
+                     FFStreamError err(string("Invalid line size:") 
+                                       + asString(line.size()));
                      GPSTK_THROW(err);
                   }
                }
@@ -335,14 +337,14 @@ namespace gpstk
          // string exceptions for substr are caught here
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " + string(e.what()));
+         FFStreamError err(string("std::exception: ") + string(e.what()));
          GPSTK_THROW(err);
       }
       catch (gpstk::Exception& e)
       {
          std::string text;
          for(int i=0; i<e.getTextCount(); i++) text += e.getText(i);
-         FFStreamError err("gpstk::Exception in parseTime(): " + text);
+         FFStreamError err(string("gpstk::Exception in parseTime(): ") + text);
          GPSTK_THROW(err);
       }
 

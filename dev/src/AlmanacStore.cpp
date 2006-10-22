@@ -93,7 +93,7 @@ namespace gpstk
       UBAMap::const_iterator satItr = uba.find(sat);
       if (satItr == uba.end())
       {
-         NoAlmanacFound nef("No almanacs for satellite " + StringUtils::asString(sat));
+         NoAlmanacFound nef(std::string("No almanacs for satellite ") + StringUtils::asString(sat));
          GPSTK_THROW(nef);
       }
          
@@ -114,7 +114,7 @@ namespace gpstk
       {
          if (nextItr == eam.end()) 
          {
-            NoAlmanacFound nef("No almanacs for time " + t.asString());
+            NoAlmanacFound nef(std::string("No almanacs for time ") + t.asString());
             GPSTK_THROW(nef);
          }
          else

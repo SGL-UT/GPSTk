@@ -76,12 +76,12 @@ namespace gpstk
             }
             catch (...)
             {
-               errstr += "\"" + value[vecIndex] + "\" is not a valid position.";
+               errstr += string("\"") + value[vecIndex] + "\" is not a valid position.";
             }
          }
          else
          {
-            errstr += "\"" + value[vecIndex] + "\" is not a valid position.";
+            errstr += string("\"") + value[vecIndex] + "\" is not a valid position.";
          }
       }
       

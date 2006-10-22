@@ -1429,7 +1429,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1461,7 +1462,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                          + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1559,7 +1561,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                    + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1585,7 +1588,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1616,7 +1620,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       } 
@@ -1634,7 +1639,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1651,7 +1657,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1669,7 +1676,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1724,7 +1732,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1757,7 +1766,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1796,7 +1806,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                          + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1832,7 +1843,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1852,7 +1864,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1875,7 +1888,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -1967,7 +1981,8 @@ namespace gpstk
          {
             regerror(rc, &regExp, errorMsg, regErrorBufSize - 1);
             regfree(&regExp);
-            StringException strerr("Regexp error: " + std::string(errorMsg));
+            StringException strerr(std::string("Regexp error: ") 
+                                   + std::string(errorMsg));
             GPSTK_THROW(strerr);
          }
          rc = regexec(&regExp, thisStr.c_str(), 1, &matches, 
@@ -1976,7 +1991,8 @@ namespace gpstk
          {
             regerror(rc, &regExp, errorMsg, regErrorBufSize - 1);
             regfree(&regExp);
-            StringException strerr("Regexp error: " + std::string(errorMsg));
+            StringException strerr(std::string("Regexp error: ") 
+                                   + std::string(errorMsg));
             GPSTK_THROW(strerr);
          }
 
@@ -2001,8 +2017,9 @@ namespace gpstk
             // if the regex doesnt compile, toast =)
          if ((rc = regcomp(&re, pat.c_str(), REG_EXTENDED)) != 0)
          {
-            StringException se("Bad regular expression: regcomp() rc = " +
-                               asString(rc));
+            StringException se(
+                           std::string("Bad regular expression: regcomp() rc = ") +
+                           asString(rc));
             GPSTK_THROW(se);
          }
 
@@ -2048,7 +2065,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -2112,7 +2130,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                  + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -2141,7 +2160,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -2187,7 +2207,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -2210,7 +2231,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -2263,7 +2285,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -2385,7 +2408,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }  // end sci2for
@@ -2415,7 +2439,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -2489,7 +2514,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
@@ -2559,7 +2585,8 @@ namespace gpstk
          }
          catch(std::exception &e)
          {
-            StringException strexc("Exception thrown: " + std::string(e.what()));
+            StringException strexc(std::string("Exception thrown: ") 
+                                   + std::string(e.what()));
             GPSTK_THROW(strexc);
          }
       }
