@@ -17,7 +17,11 @@ algorithm is applied with properly computed weights (elevation sine weighting) a
 iterates to convergence and attempts to resolve ambiguities to integer values if close enough. Crude outlier rejection
 is provided based on a triple-difference test. Ephemeris used are either broadcast or precise (SP3). Alternatively, also P code
 processing is provided.
-The solution is computed using the ionosphere-free linear combination. The ionospheric model included in broadcast ephemeris may be used. A standard tropospheric correction is applied, or tropospheric parameters (zenith delays) may be estimated.
+The solution is computed using either the ionosphere-free linear
+combination, or the average of L1 and L2. The ionospheric model included
+in broadcast ephemeris may be used. A standard tropospheric correction
+is applied, or tropospheric parameters (zenith delays) may be estimated
+for the first station (vector mode) or both.
 
 \subsection{Usage}
 \begin{\outputsize}
@@ -28,14 +32,20 @@ vecsol usage: vecsol $<$RINEX Obs file 1$>$ $<$RINEX Obs file 2$>$
 The two arguments are names of RINEX observation files. The contain the observations collected at the two end points 1 and 2 of the baseline.
 They must contain a sufficient set of simultaneous observations to the same satellites.
 
+If no separate station coordinate files are provided, the initial
+station coordinates are taken from the RINEX headers. Upon finishing,
+vecsol creates or updates the coordinate file of the first station
+(vector mode) or both.
+
 \subsubsection{Configuration File vecsol.conf}
 The file vecsol.conf contains the input options for the program, one per line.
+
 \begin{\outputsize}
-vecsol usage: vecsol $<$RINEX Obs file 1$>$ $<$RINEX Obs file 2$>$
 
 \begin{longtable}{lll}
 \entry{Options}{Value}{Meaning}{1}
-\entry{phase}{1/0}{If 1, process carrier phase data (instead of P code data)}{2}
+\entry{obsMode}{3/2/1/0}{If 1 or 3, process carrier phase data (instead of P
+code data). If 0 or 1, iterate on ionosphere-free vector (not L1 + L2)}{3}
 \entry{truecov}{1/0}{If 1, use true double difference covariances. If 0, ignore any possible correlations}{2}
 \entry{precise}{1/0}{If 1, use precise ephemeris, if 0, use broadcast ephemeris}{2}
 \entry{iono}{1/0}{If 1, use the 8-parameter ionospheric model that comes with the broadcast  ephemeris (.nav) files}{2}
@@ -44,10 +54,7 @@ vecsol usage: vecsol $<$RINEX Obs file 1$>$ $<$RINEX Obs file 2$>$
 \entry{debug}{1/0}{If 1, produce lots of gory debugging output. See the source for what it all means}{2}
 \entry{refsat elev}{number}{Minimum elevation (degs) of the reference satellite used for computing inter-satellite differences.  Good initial choice: 30.0}{3}
 \entry{cutoff elev}{number}{cut-off elevation (degs). Good initial choice: 10.0 - 20.0}{2}
-\entry{rej TP}{number}{Phase triple differences rejection limit (m)}{1}
-\entry{rej TC}{number}{Code triple differences rejection limit (m)}{1}
-\entry{rej DP}{number}{Phase double differences rejection limit (m)}{1}
-\entry{rej DC}{number}{Code double differences rejection limit (m)}{1}
+\entry{rej TP, rej TC}{two numbers}{Phase, code triple differences rejection limit (m)}{1}
 \entry{reduce}{1/0}{Apply post-reduction to combine dependent unknowns}{1}
 
 \end{longtable}
