@@ -20,7 +20,8 @@ MDPProcessor::MDPProcessor() :
       stopTime(gpstk::DayTime::END_OF_TIME),
       startTime(gpstk::DayTime::BEGINNING_OF_TIME),
       timeSpan(-1), processBad(false), bugMask(0),
-      debugLevel(0), verboseLevel(0), in(d1), out(d2), die(false)
+      debugLevel(0), verboseLevel(0), in(d1), out(d2), die(false),
+      pvtOut(false), obsOut(false), navOut(false), tstOut(false)
 {}
 
 MDPProcessor::MDPProcessor(gpstk::MDPStream& in, std::ofstream& out) :
@@ -28,7 +29,8 @@ MDPProcessor::MDPProcessor(gpstk::MDPStream& in, std::ofstream& out) :
       stopTime(gpstk::DayTime::END_OF_TIME),
       startTime(gpstk::DayTime::BEGINNING_OF_TIME),
       timeSpan(-1), processBad(false), bugMask(0),
-      debugLevel(0), verboseLevel(0), in(in), out(out), die(false)
+      debugLevel(0), verboseLevel(0), in(in), out(out), die(false),
+      pvtOut(false), obsOut(false), navOut(false), tstOut(false)
 {}
 
 void MDPProcessor::process()
