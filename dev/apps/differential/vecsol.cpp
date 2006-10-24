@@ -192,7 +192,7 @@ void Solve(gpstk::Matrix <double> N, gpstk::Matrix <double> const b,
     } else { // SOLVE_AMBS
 	int const endCoords = ( tropo ? MaxUnkn - 2 : MaxUnkn );
 	for (int k = 0; k < endCoords; k++) {
-	    N(k,k) += 1.0E8; // Keep only coordinates fixed (to iono free values)
+	    N(k,k) += 1.0E8; // Keep only coords fixed (to earlier solved values)
 	}
     }
     // Soft-constrain tropo params. This is tricky, as this has to be scaled
@@ -227,7 +227,7 @@ void Solve(gpstk::Matrix <double> N, gpstk::Matrix <double> const b,
     // eigenvalues properly?  -- MV 01.03.2006
     gpstk::SVD<double> svd;
     svd(N1);
-    double big2 = DBL_MAX;
+    double big2 = 0;
     for (int k = 0; k < unknowns; k++)
 	if (svd.S(k) > big2)
 	   big2 = svd.S(k);
