@@ -365,26 +365,30 @@ Triple permanentTide(double const phi)
 	    exit(-1);
 	}
 
-	bool phase;		// Process carrier phase data (instead of P code data)
-	bool truecov;	// Use true DD covariances (inst. of no correlations)
-	bool precise;       // Use precise ephemeris (inst. of broadcast)
-	bool iono;		// Use nav file iono model
-	bool tropo;		// Estimate troposphere parameters
-	bool vecmode;	// Solve vector (inst. of end point coords)
+	int obsMode;   // 0,2 = code, 1,3 = phase; 0,1 = iono free, 2,3 L1+L2
+	bool phase;    // Process carrier phase data (instead of P code data)
+	bool ionoFree; // Compute iono free (instead of L1 + L2)
+	bool truecov;  // Use true DD covariances (inst. of no correlations)
+	bool precise;  // Use precise ephemeris (inst. of broadcast)
+	bool iono;     // Use nav file iono model
+	bool tropo;    // Estimate troposphere parameters
+	bool vecmode;  // Solve vector (inst. of end point coords)
 	bool debug;
 	double refsat_elev; // Minimum elevation of the reference satellite.
 			    // Good value: 30.0
-	double cutoff_elev;	// cut-off elevation. Good value: 10.0
-	int MaxUnkn; 	// The number of std. unknowns. 3 for baseline est.,
+	double cutoff_elev; // cut-off elevation. Good value: 10.0
+	int MaxUnkn;   // The number of std. unknowns. 3 for baseline est.,
 			    // 6 for two endpoint positions, 8 for tropo est. too.
 	// rejection criteria, m/s, m
 	double PTDrej, CTDrej, DDrej = 1.0; 
-	bool reduce;	// Reduce out dependencies between DD biases
+	bool reduce;   // Reduce out dependencies between DD biases
 
 	char s[80];
 	std::ifstream conf;
 	conf.open("vecsol.conf", ios::in);
-	conf >> phase;		conf.getline(s, 80);
+	conf >> obsMode;	conf.getline(s, 80);
+	phase = obsMode == 1 || obsMode == 3;
+	ionoFree = obsMode == 0 || obsMode == 1;
 	conf >> truecov;	conf.getline(s, 80);
 	conf >> precise;	conf.getline(s, 80);
 	conf >> iono;		conf.getline(s, 80);
@@ -409,6 +413,7 @@ Triple permanentTide(double const phi)
 	cout << "Configuration data from vecsol.conf" << endl;
 	cout << "-----------------------------------" << endl;
 	cout << "Use carrier phases:             " << phase << endl;
+	cout << "Compute ionosphere-free:        " << ionoFree << endl;
 	cout << "Use true correlations:          " << truecov << endl;
 	cout << "Use precise ephemeris:          " << precise << endl;
 	cout << "Use broadcast iono model:       " << iono << endl;
@@ -1066,8 +1071,8 @@ Triple permanentTide(double const phi)
 							  rejections)) << endl;
 		float const DDrms = sqrt(DD_RMS / (observations - rejections));
 		cout << "Double-diff RMS [m]:      " << DDrej << endl;
-		// Three-sigma criterion:
-		DDrej = 3.0 * DDrms;
+		// Three-sigma criterion, generous:
+		DDrej = 2.0 * 3.0 * DDrms;
 		cout << "Iono RMS on L1 [m]:       " << sqrt(Iono_RMS /
 							 (observations -
 							  rejections)) <<
@@ -1103,24 +1108,37 @@ Triple permanentTide(double const phi)
 
 		cout << "Solution (correction to inter-station vector):" <<
 		    setprecision(5) << endl;
-		Pos1 = Triple(sol(0,0), sol(1,0), sol(2,0));
-		Triple PosCorr0 = Pos1;
+		Triple PosCorr0 = Triple(sol(0,0), sol(1,0), sol(2,0));
 		Triple PosCorr1 = Triple(sol(0,1), sol(1,1), sol(2,1));
 		Triple PosCorr2 = Triple(sol(0,2), sol(1,2), sol(2,2));
+		if (ionoFree)
+		    Pos1 = PosCorr0;
+		else
+		    Pos1 = 0.5 * (PosCorr1 + PosCorr2);
 		if (!vecmode) {
-		    Pos2 = Triple(sol(3,0), sol(4,0), sol(5,0));
-		    PosCorr0 = PosCorr0 - Triple(Pos2);
+		    PosCorr0 = PosCorr0 - Triple(sol(3,0), sol(4,0), sol(5,0));
 		    PosCorr1 = PosCorr1 - Triple(sol(3,1), sol(4,1), sol(5,1));
 		    PosCorr2 = PosCorr2 - Triple(sol(3,2), sol(4,2), sol(5,2));
+		    if (ionoFree)
+			Pos2 = Pos1 - Position(PosCorr0);
+		    else
+			Pos2 = Pos1 + 0.5 * Position(PosCorr1 + PosCorr2);
 		}
-		cout << "Iono free: " << PosCorr0 << " <--" << endl;
+		cout << "Iono free: " << PosCorr0 << endl;
 		cout << "Freq. 1:   " << PosCorr1 << endl;
 		cout << "Freq. 2:   " << PosCorr2 << endl;
 		cout << endl;
 
-		// Manhattan distance for iteration stop:
-		crit = std::abs(PosCorr0[0]) + std::abs(PosCorr0[1]) 
-		     + std::abs(PosCorr0[2]);
+		// Manhattan distance for iteration stop (is there a
+		// std method for this?):
+		if (ionoFree)
+		    crit = std::abs(PosCorr0[0]) + std::abs(PosCorr0[1]) 
+			 + std::abs(PosCorr0[2]);
+		else
+		    crit = 0.5 * 
+			  (std::abs(PosCorr1[0]) + std::abs(PosCorr1[1]) 
+			 + std::abs(PosCorr1[2]) + std::abs(PosCorr2[0]) 
+			 + std::abs(PosCorr2[1]) + std::abs(PosCorr2[2]));
 
 		cout << "Standard deviations (unscaled):" << endl;
 		for (int k = 0; k < MaxUnkn; k++)
