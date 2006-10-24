@@ -491,7 +491,7 @@ Triple permanentTide(double const phi)
 			    sp3store.loadFile(filename.c_str());
 			}
 		    }
-		sp3store.dump(1 + debug, cout);
+		sp3store.dump(1, cout);
 		}
 		catch(...) {
 		    cerr << "Something wrong with SP3 files." << endl << endl;
@@ -518,6 +518,35 @@ Triple permanentTide(double const phi)
 	    catch(...) {
 		cerr << "Something wrong with obs files." << endl << endl;
 		exit(-1);
+	    }
+            // Here we should input pre-given coordinates (if any) that
+	    //  will override those from the RINEX header
+	    bool coords = true;
+	    string const name1(roh1.markerName);
+	    string const name2(roh2.markerName);
+	    Position XYZ1, XYZ2;
+	    std::ifstream coord1, coord2;
+	    try {
+		coord1.exceptions(ios::failbit);
+		coord2.exceptions(ios::failbit);
+		coord1.open((name1 + ".crd").c_str(), ios::in);
+		coord2.open((name2 + ".crd").c_str(), ios::in);
+	    }
+	    catch(...) {
+		cout << endl;
+		cout << "Did not find / cannot open coordinate files." << endl << endl;
+		coords = false;
+	    }
+	    if (coords) {
+		// Here the given coordinates (of BENCHMARK!) are used if available:
+		coord1 >> XYZ1[0] >> XYZ1[1] >> XYZ1[2];
+		coord2 >> XYZ2[0] >> XYZ2[1] >> XYZ2[2];
+		coord1.close();
+		coord2.close();
+		roh1.antennaPosition = XYZ1;
+		roh2.antennaPosition = XYZ2;
+		cout << "Positions       : " << setprecision(12) << Triple(XYZ1) << endl;
+		cout << "From files      : " << setprecision(12) << Triple(XYZ2) << endl << endl;
 	    }
 	    Triple AO1 = Rotate(roh1.antennaOffset, roh1.antennaPosition);
 	    Triple AO2 = Rotate(roh2.antennaOffset, roh2.antennaPosition);
@@ -573,8 +602,6 @@ Triple permanentTide(double const phi)
 	    Position const t10(t1);  // To keep unknowns invariant
 	    Position const t20(t2);
 	    Position Pos1, Pos2;
-	    string const name1(roh1.markerName);
-	    string const name2(roh2.markerName);
 
 	    double crit(1.0);
 	    double const limit = (phase ? 0.0001 : 0.001);
@@ -599,16 +626,18 @@ Triple permanentTide(double const phi)
 		roffs1.exceptions(ios::failbit);
 		roffs2.exceptions(ios::failbit);
 
-		RinexObsHeader roh1, roh2;
+		RinexObsHeader dummy1, dummy2;
 		RinexObsData rod1, rod2;
 
-		roffs1 >> roh1;
-		roffs2 >> roh2;
+		// Only skip over header this time:
+		roffs1 >> dummy1;
+		roffs2 >> dummy2;
 
+		// Improve antenna positions from previous iteration:
 		if (l > 0) {
-		    t1 = t1 + Pos1;
+		    t1 = t1 + 0.5 * Pos1;
 		    if (!vecmode)
-			t2 = t2 + Pos2;
+			t2 = t2 + 0.5 * Pos2;
 		}
 		Geodetic g1(t1, &geoid);
 		Geodetic g2(t2, &geoid);
@@ -622,6 +651,10 @@ Triple permanentTide(double const phi)
 		Position t2g(Triple(t2) - AO2 - PT2);
 		cout << name1 << ": " << t1g.asGeodetic() << endl 
 		     << name2 << ": " << t2g.asGeodetic() << endl;
+
+		// Update these for output at program end:
+		XYZ1 = t1g.asECEF();
+		XYZ2 = t2g.asECEF();
 
 		gpstk::Matrix <double> N(MaxDim, MaxDim, 0.0);
 		gpstk::Matrix <double> b(MaxDim, 3, 0.0);
@@ -1031,10 +1064,10 @@ Triple permanentTide(double const phi)
 		cout << "Triple-diff RMS [m/s]:    " << sqrt(TD_RMS /
 							 (observations -
 							  rejections)) << endl;
-		DDrej = sqrt(DD_RMS / (observations - rejections));
+		float const DDrms = sqrt(DD_RMS / (observations - rejections));
 		cout << "Double-diff RMS [m]:      " << DDrej << endl;
 		// Three-sigma criterion:
-		DDrej *= 3.0;
+		DDrej = 3.0 * DDrms;
 		cout << "Iono RMS on L1 [m]:       " << sqrt(Iono_RMS /
 							 (observations -
 							  rejections)) <<
@@ -1177,48 +1210,70 @@ Triple permanentTide(double const phi)
 				}
 			}
 
-	        cout << endl << "No. of closures: " << closures << endl << endl;
-		int fixedunknowns = 0;
-		int widelanes = 0;
-		cout << "DD bias fixes (fractional cycles):" << endl;
-		for (int k = MaxUnkn; k < unknowns; k++) {
-		    cout << "[" << setprecision(8) << sqrt(NN(k,k)) << "] ";
-		    cout << k << " (";
-		    cout << asString(FromSat[k]) << " -> " 
-			 << asString(ToSat[k]) << "): ";
-		    vector <double> x0vec(3);
-		    x0vec[1] = x0(k, 1) + sol(k, 1);
-		    x0vec[2] = x0(k, 2) + sol(k, 2);
-		    FixType f = phaseCycles(x0vec, lambda1, lambda2, wt1, wt2);
-		    // remember to correct iono-free too
-		    x0(k, 0) = wt1 * x0vec[1] + wt2 * x0vec[2];
-		    x0(k, 1) = x0vec[1];
-		    x0(k, 2) = x0vec[2];
-		    if (f == FIX_BOTH)
-			fixedunknowns++;
-		    if (f == FIX_WIDELANE) 
-			widelanes++;
-		    fixed[k] = f;
+		    cout << endl << "No. of closures: " << closures << endl << endl;
+		    int fixedunknowns = 0;
+		    int widelanes = 0;
+		    cout << "DD bias fixes (fractional cycles):" << endl;
+		    for (int k = MaxUnkn; k < unknowns; k++) {
+			cout << "[" << setprecision(8) << sqrt(NN(k,k)) << "] ";
+			cout << k << " (";
+			cout << asString(FromSat[k]) << " -> " 
+			     << asString(ToSat[k]) << "): ";
+			vector <double> x0vec(3);
+			x0vec[1] = x0(k, 1) + sol(k, 1);
+			x0vec[2] = x0(k, 2) + sol(k, 2);
+			FixType f = phaseCycles(x0vec, lambda1, lambda2, wt1, wt2);
+			// remember to correct iono-free too
+			x0(k, 0) = wt1 * x0vec[1] + wt2 * x0vec[2];
+			x0(k, 1) = x0vec[1];
+			x0(k, 2) = x0vec[2];
+			if (f == FIX_BOTH)
+			    fixedunknowns++;
+			if (f == FIX_WIDELANE) 
+			    widelanes++;
+			fixed[k] = f;
+		    }
+		    cout << endl;
+		    cout << "Fixed:      " << fixedunknowns << "  "
+			 << 100.0 * fixedunknowns / (unknowns - MaxUnkn) << "%" << endl;
+		    cout << "Widelanes:  " << widelanes << "  "
+			 << 100.0 * widelanes / (unknowns - MaxUnkn) << "%" << endl;
+		    cout << endl;
 		}
-		cout << endl;
-		cout << "Fixed:      " << fixedunknowns << "  "
-		     << 100.0 * fixedunknowns / (unknowns - MaxUnkn) << "%" << endl;
-		cout << "Widelanes:  " << widelanes << "  "
-		     << 100.0 * widelanes / (unknowns - MaxUnkn) << "%" << endl;
-		cout << endl;
+
+	    } // iteration loop end
+
+	    cout << "Writing coordinate(s) to file(s)..." << endl;
+	    std::ofstream coord1o, coord2o;
+	    try {
+		coord1o.exceptions(ios::failbit);
+		coord1o.open((name1 + ".crd").c_str(), ios::out | ios::trunc);
+		coord1o << setprecision(12) << 
+		    XYZ1[0] << ' ' << XYZ1[1] << ' ' << XYZ1[2] << endl;
+		coord1o.close();
+		if (!vecmode || !coords) {
+		    coord2o.exceptions(ios::failbit);
+		    coord2o.open((name2 + ".crd").c_str(), ios::out | ios::trunc);
+		    coord2o << setprecision(12) << 
+			XYZ2[0] << ' ' << XYZ2[1] << ' ' << XYZ2[2] << endl;
+		    coord2o.close();
+		}
 	    }
+	    catch(...) {
+		cerr << "Exception writing coordinate file(s)" << endl;
+	    }
+	        
+	    cout << "Finished." << endl;
+    	}
+        catch(Exception & e) {
+    	    cerr << e << endl;
+	}
+	catch(...) {
+	    cerr << "Caught an unexpected exception." << endl;
+	}
 
-	} // iteration loop end
-
-	cout << "Finished." << endl;
+	exit(0);
+ 
     }
-    catch(Exception & e) {
-	cerr << e << endl;
-    }
-    catch(...) {
-	cerr << "Caught an unexpected exception." << endl;
-    }
 
-    exit(0);
 
-}
