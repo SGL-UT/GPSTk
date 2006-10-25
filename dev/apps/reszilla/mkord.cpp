@@ -387,7 +387,7 @@ int main(int argc, char *argv[])
       ordEngine.svTime = svTimeOption;
       ordEngine.keepWarts = keepWarts;
       ordEngine.setMode(ordMode);
-      ordEngine.verbosity = verbosity;
+      ordEngine.verboseLevel = verbosity;
       ordEngine.keepUnhealthy = keepUnhealthy;
       gpstk::ORDEpochMap ordEpochMap;
 

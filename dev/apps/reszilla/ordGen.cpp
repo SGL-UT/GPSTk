@@ -221,7 +221,8 @@ void OrdGen::process()
    ordEngine.svTime = svTimeOption;
    ordEngine.keepWarts = keepWarts;
    ordEngine.setMode(ordMode);
-   ordEngine.verbosity = verboseLevel;
+   ordEngine.verboseLevel = verboseLevel;
+   ordEngine.debugLevel = debugLevel;
    ORDEpochMap ordEpochMap;
 
    // Walk through each obs file, reading and computing ords along the way.

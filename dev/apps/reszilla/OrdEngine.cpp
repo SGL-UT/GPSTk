@@ -50,7 +50,7 @@ OrdEngine::OrdEngine(
    gpstk::TropModel& t)
    : eph(e), wod(w), antennaPos(p), tm(t),
      svTime(false), keepWarts(false), keepUnhealthy(false),
-     wartCount(0), verbosity(0), dualFreq(false)
+     wartCount(0), verboseLevel(0), debugLevel(0), dualFreq(false)
 {
 
    if (RSS(antennaPos[0], antennaPos[1], antennaPos[2]) < 1)
@@ -84,6 +84,12 @@ void OrdEngine::setMode(const string& mode)
       oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
       dualFreq = true;
    }
+   else if (mode=="y1y2")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcY);
+      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcY);
+      dualFreq = true;
+   }
    else if (mode=="c1")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
@@ -110,7 +116,7 @@ void OrdEngine::setMode(const string& mode)
       exit(-1);
    }
 
-   if (verbosity>1)
+   if (verboseLevel>1)
    {
       cout << "# Using " << oid1;
       if (dualFreq)
@@ -128,8 +134,8 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
    ORDEpoch ordEpoch;
    ordEpoch.time = t;
 
-   if (verbosity>3)
-      cout << "#obs: " << obsEpoch.time << endl << obsEpoch;
+   if (debugLevel>2)
+      cout << " obs: " << obsEpoch.time << endl << obsEpoch;
 
    try
    {
@@ -138,8 +144,8 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
       tm.setDayOfYear(t.DOYday());
       if (wx.isAllValid())
       {
-         if (verbosity>3)
-            cout << "#wx: " << wx << endl;
+         if (debugLevel > 2)
+            cout << " wx: " << wx << endl;
          tm.setWeather(wx.temperature, wx.pressure, wx.humidity);
       }
 
@@ -209,8 +215,8 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
          }
          catch (EphemerisStore::NoEphemerisFound& e)
          {
-            if (verbosity>2)
-               cout << e << endl;
+            if (verboseLevel>2)
+               cout << "#" << e << endl;
          }
       } // end looping over each SV in this epoch
 
@@ -226,7 +232,7 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
             if (!keepUnhealthy && ord.getHealth().is_valid() && ord.getHealth())
             {
                ordEpoch.ords.erase(pi2);
-               if (verbosity>3)
+               if (verboseLevel>2)
                   cout << "# Tossing ord from an unhealty SV." << endl;
                continue;
             }
@@ -234,7 +240,7 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
             if (std::abs(ord.getTrop()) > 100 || ord.getElevation() <= 0.05)
             {
                ordEpoch.ords.erase(pi2);
-               if (verbosity>1)
+               if (verboseLevel>1)
                   cout << "# Tossing wonky ord: " << ord << endl;
                continue;
             }
@@ -245,13 +251,13 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
    }
    catch (gpstk::InvalidParameter& e)
    {
-      if (verbosity>2)
-         cout << e;
+      if (verboseLevel > 2)
+         cout << "#" << e;
    }
    catch (gpstk::Exception& e)
    {
-      if (verbosity)
-         cout << e;
+      if (verboseLevel)
+         cout << "#" << e;
    }
 
    return ordEpoch;

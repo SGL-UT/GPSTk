@@ -77,6 +77,12 @@ void computeOrds(ORDEpochMap& ordEpochMap,
       oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
       dualFreq = true;
    }
+   else if (ordModeStr=="y1y2")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcY);
+      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcY);
+      dualFreq = true;
+   }
    else if (ordModeStr=="c1")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);

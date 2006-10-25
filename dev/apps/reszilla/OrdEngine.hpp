@@ -68,7 +68,8 @@ public:
    bool keepWarts;
    bool keepUnhealthy;
    unsigned long wartCount;
-   int verbosity;
+   int verboseLevel;
+   int debugLevel;
 
 private:
    bool dualFreq;
