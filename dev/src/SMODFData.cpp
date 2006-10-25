@@ -183,7 +183,7 @@ namespace gpstk
       
       strm.formattedGetLine(currentLine, true);
       int len=currentLine.length();
-      
+
          // determine the format of the ODBIF file by examining 
          // the record length
       if (strm.format == SMODFStream::undefined)
@@ -240,6 +240,17 @@ namespace gpstk
          temp =        asDouble(currentLine.substr(69,  5));
          pressure =    asDouble(currentLine.substr(74,  6));
          humidity =    asDouble(currentLine.substr(80,  5));
+
+         // Add some sanity checks on the data so we can detect if this is
+         // *really* a SMOD file.
+         if (DOY < 0 || DOY > 366 || SOD > 86400 || PRNID > 32 || 
+             (type != 0 && type != 9) ||
+             obs < 15e3 || obs > 30e3)
+         {
+            gpstk::FFStreamError e(string("Bad 211 format data"));
+            GPSTK_THROW(e);
+         }
+
          
             // set the time
          time.setYDoySod(year, DOY, SOD);
@@ -275,6 +286,16 @@ namespace gpstk
          temp =        asDouble(currentLine.substr(64,  5));
          pressure =    asDouble(currentLine.substr(69,  6));
          humidity =    asDouble(currentLine.substr(75,  5));
+
+         // Add some sanity checks on the data so we can detect if this is
+         // *really* a SMOD file.
+         if (DOY < 0 || DOY > 366 || SOD > 86400 || PRNID > 32 || 
+             (type != 0 && type != 9) ||
+             obs < 15e3 || obs > 30e3)
+         {
+            gpstk::FFStreamError e(string("Bad legacy format data"));
+            GPSTK_THROW(e);
+         }
          
             // set the time
          if ( year < BEGINGPS2DYEAR )
