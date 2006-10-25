@@ -51,7 +51,7 @@ else
       CodeBuffer.cpp GenXSequence.cpp SVPCodeGen.cpp X1Sequence.cpp
       X2Sequence.cpp GPSZcount.cpp Position.cpp
       CommandOptionWithPositionArg.cpp
-      PRSolution.cpp
+      PRSolution.cpp RinexUtilities.cpp
       RACRotation.cpp SVExclusionList.cpp
       TimeConverters.cpp TimeString.cpp 
       CommonTime.cpp TimeTag.cpp ANSITime.cpp CivilTime.cpp 
@@ -102,7 +102,7 @@ else
       CodeBuffer.hpp GenXSequence.hpp PCodeConst.hpp SVPCodeGen.hpp
       X1Sequence.hpp X2Sequence.hpp GPSZcount.hpp Position.hpp
       CommandOptionWithPositionArg.hpp
-      PRSolution.hpp
+      PRSolution.hpp RinexUtilities.hpp
       RACRotation.hpp SVExclusionList.hpp
       TimeConstants.hpp TimeConverters.hpp TimeString.hpp
       CommonTime.hpp TimeTag.hpp ANSITime.hpp CivilTime.hpp 

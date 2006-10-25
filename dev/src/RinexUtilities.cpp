@@ -1,19 +1,5 @@
-//------------------------------------------------------------------------------------
-// RinexUtilities.cpp  Several miscellaneous utilities for use with Rinex data.
-// RinexUtilities is part of the GPS Tool Kit (GPSTK) developed in the
-// Satellite Geophysics Group at Applied Research Laboratories,
-// The University of Texas at Austin (ARL:UT), and was written by Dr. Brian Tolman.
-//
-//------------------------------------------------------------------------------------
 #pragma ident "$Id$"
 
-
-/**
- * @file RinexUtilities.cpp
- * Miscellaneous utilities for use with Rinex data.
- */
-
-//------------------------------------------------------------------------------------
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -36,23 +22,35 @@
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
+/**
+ * @file RinexUtilities.cpp
+ * Miscellaneous RINEX-related utilities.
+ */
+
 //------------------------------------------------------------------------------------
-#include "StringUtils.hpp"
-#include "DayTime.hpp"
-#include "CommandOptionParser.hpp"
-#include "CommandOption.hpp"
-#include "CommandOptionWithTimeArg.hpp"
+// system includes
+
+// GPSTk includes 
 #include "RinexObsStream.hpp"
 #include "RinexObsHeader.hpp"
-#include "RinexObsData.hpp"
 #include "RinexNavStream.hpp"
 #include "RinexNavHeader.hpp"
 #include "RinexNavData.hpp"
-#include "RinexObsHeader.hpp"
-
 #include "RinexUtilities.hpp"
-
-#include <iostream>
 
 using namespace std;
 using namespace gpstk;
@@ -60,6 +58,7 @@ using namespace gpstk;
 //------------------------------------------------------------------------------
 int RegisterARLUTExtendedTypes(void)
 {
+try {
    unsigned int EPPS = //0x60
       RinexObsHeader::RinexObsType::EPdepend | RinexObsHeader::RinexObsType::PSdepend;
    unsigned int L1L2 = //0x06
@@ -117,6 +116,10 @@ int RegisterARLUTExtendedTypes(void)
    if(j) return j;
    j = RegisterExtendedRinexObsType("MP","Multipath (=M3)",     "meters", PsLs);
    if(j) return j;
+   j = RegisterExtendedRinexObsType("R1","(P1 + L1)/2"         ,"meters", L1P1);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("R2","(P2 + L2)/2"         ,"meters", L2P2);
+   if(j) return j;
    j = RegisterExtendedRinexObsType("M1","L1 Range minus Phase","meters", L1P1);
    if(j) return j;
    j = RegisterExtendedRinexObsType("M2","L2 Range minus Phase","meters", L2P2);
@@ -143,36 +146,55 @@ int RegisterARLUTExtendedTypes(void)
    if(j) return j;
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 bool isSP3File(const string& file)
 {
+try {
    SP3Header header;
    SP3Stream strm(file.c_str());
    strm.exceptions(fstream::failbit);
-   try { strm >> header; } catch(gpstk::Exception& e) { return false; }
+   try { strm >> header; } catch(Exception& e) { return false; }
    strm.close();
    return true;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 //------------------------------------------------------------------------------------
 bool isRinexNavFile(const string& file)
 {
+try {
    RinexNavHeader header;
    RinexNavStream rnstream(file.c_str());
    rnstream.exceptions(fstream::failbit);
-   try { rnstream >> header; } catch(gpstk::Exception& e) { return false; }
+   try { rnstream >> header; } catch(Exception& e) { return false; }
    rnstream.close();
    return true;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 //------------------------------------------------------------------------------------
 bool isRinexObsFile(const string& file)
 {
+try {
    RinexObsHeader header;
    RinexObsStream rostream(file.c_str());
    rostream.exceptions(fstream::failbit);
-   try { rostream >> header; } catch(gpstk::Exception& e) { return false; }
+   try { rostream >> header; } catch(Exception& e) { return false; }
    rostream.close();
    return true;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 //------------------------------------------------------------------------------------
 int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
@@ -192,46 +214,41 @@ try {
          RNFileIn.exceptions(fstream::failbit);
          try {
             RNFileIn >> rnh;
-            //if(Verbose) {
-            //   logof << "Input Rinex Nav file header\n";
-            //   rnh.dump(logof);
-            //}
             while (RNFileIn >> rne)
             {
+               // check health...
                if(rne.health == 0)
                   BCE.addEphemeris(rne);
             }
             nread++;
          }
-         catch(gpstk::Exception& e) {
-            cerr << "Caught Exception while reading Rinex Nav file " << files[i]
-               << " :\n" << e << endl;
-            continue;
+         catch(Exception& e) {
+            //cerr << "Caught Exception while reading Rinex Nav file " << files[i]
+            //   << " :\n" << e << endl;
+            //continue;
+            GPSTK_RETHROW(e);
          }
       }
       else if(isSP3File(files[i])) {
          try {
             PE.loadFile(files[i]);
          }
-         catch(gpstk::Exception& e) {
-            cerr << "Caught Exception while reading SP3 Nav file " << files[i]
-               << " :\n" << e << endl;
-            continue;
+         catch(Exception& e) {
+            //cerr << "Caught Exception while reading SP3 Nav file " << files[i]
+            //   << " :\n" << e << endl;
+            //continue;
+            GPSTK_RETHROW(e);
          }
          nread++;
       }
-      else throw Exception("File " + files[i] + " is neither BCE nor PE file.");
+      else
+         throw Exception("File " + files[i] + " is neither BCE nor PE file.");
    }
    return nread;
 }
-catch(gpstk::Exception& e) {
-   cerr << "RinexUtilities:FillEphemerisStore caught an exception\n" << e << endl;
-   GPSTK_RETHROW(e);
-}
-catch (...) {
-   cerr << "RinexUtilities:FillEphemerisStore caught an unknown exception\n";
-}
-   return -1;
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------

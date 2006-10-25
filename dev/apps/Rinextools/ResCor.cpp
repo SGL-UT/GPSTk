@@ -1890,6 +1890,14 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
+         else if(OTlist[i] == string("R1")) {
+            ok = (kt->second.P1 != 0 && kt->second.L1 != 0);
+            if(ok) jt->second.data = 0.5*(kt->second.P1 + kt->second.L1);
+         }
+         else if(OTlist[i] == string("R2")) {
+            ok = (kt->second.P2 != 0 && kt->second.L2 != 0);
+            if(ok) jt->second.data = 0.5*(kt->second.P2 + kt->second.L2);
+         }
          else if(OTlist[i] == string("M1")) {
             ok = (kt->second.P1 != 0 && kt->second.L1 != 0);
             if(ok) {

@@ -6,5 +6,5 @@ SubDir TOP apps ionosphere ;
 
 GPSLinkLibraries IonoBias TECMaps : gpstk ;
 
-GPSMain IonoBias : IonoBias.cpp RinexUtilities.cpp ;
-GPSMain TECMaps : TECMaps.cpp VTECMap.cpp RinexUtilities.cpp ;
+GPSMain IonoBias : IonoBias.cpp ;
+GPSMain TECMaps : TECMaps.cpp VTECMap.cpp ;

@@ -4,15 +4,10 @@
 
 SubDir TOP apps Rinextools ;
 
-# make local library
-SEARCH_SOURCE += $(TOP)/src ;
-Library toolslib : RinexUtilities.cpp RinexEditor.cpp ;
-
-LinkLibraries RinexDump ResCor EditRinex RinSum : toolslib ;
 GPSLinkLibraries NavMerge RinexDump ResCor EditRinex RinSum : gpstk ;
 
 GPSMain NavMerge : NavMerge.cpp ;
 GPSMain RinexDump : RinexDump.cpp ;
 GPSMain RinSum : RinSum.cpp ;
-GPSMain EditRinex : EditRinex.cpp ;
-GPSMain ResCor : ResCor.cpp ;
+GPSMain EditRinex : EditRinex.cpp RinexEditor.cpp ;
+GPSMain ResCor : ResCor.cpp RinexEditor.cpp ;
