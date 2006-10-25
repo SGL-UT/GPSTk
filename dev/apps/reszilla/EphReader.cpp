@@ -56,6 +56,7 @@ using namespace gpstk;
 void EphReader::read(const std::string& fn)
 {
    FFIdentifier ffid(fn);
+
    switch (ffid)
    {
       case FFIdentifier::tRinexNav: read_rinex_nav_data(fn); break;

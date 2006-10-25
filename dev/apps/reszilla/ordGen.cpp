@@ -189,7 +189,7 @@ void OrdGen::spinUp()
    {
       if (msid)
          cout << "# msid: " << msid << endl;
-      cout << "# Antenna Position: " << antennaPos << endl;
+      cout << "# Antenna Position: " << setprecision(8) << antennaPos << endl;
       cout << "# Observed Rage Deviation (ORD) mode: " << ordMode << endl;
    }
 }
@@ -198,6 +198,7 @@ void OrdGen::spinUp()
 //-----------------------------------------------------------------------------
 void OrdGen::process()
 {
+   FFIdentifier::debugLevel = debugLevel;
    // Get the ephemeris data
    EphReader ephReader;
    ephReader.verboseLevel = verboseLevel;

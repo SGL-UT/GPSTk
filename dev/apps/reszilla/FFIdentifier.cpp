@@ -71,9 +71,11 @@
 
 namespace gpstk
 {
+
+   int FFIdentifier::debugLevel = 0;
+
    FFIdentifier::FFIdentifier(const std::string& fn)
    {
-      int verbosity = 0;
       const int recCount = 2; 
       fileType=tUnknown;
 
@@ -81,7 +83,7 @@ namespace gpstk
       {
          try
          {
-            if (verbosity>2)
+            if (debugLevel>2)
                std::cout << "Trying " << fn << " as RINEX obs."<< std::endl;
             RinexObsStream ros(fn.c_str(), std::ios::in);
             ros.exceptions(std::fstream::failbit);
@@ -95,13 +97,13 @@ namespace gpstk
          } 
          catch (FFStreamError& e)
          {
-            if (verbosity > 3) 
+            if (debugLevel > 3) 
                std::cout << e << std::endl;
          }
 
          try
          {
-            if (verbosity>2)
+            if (debugLevel>2)
                std::cout << "Trying " << fn << " as SMODF."<< std::endl;
             SMODFStream smo(fn.c_str(), std::ios::in);
             smo.exceptions(std::fstream::failbit);
@@ -114,13 +116,13 @@ namespace gpstk
          }
          catch (FFStreamError& e)
          {
-            if (verbosity > 3)
+            if (debugLevel > 3)
                std::cout << e << std::endl;
          }
 
          try
          {
-            if (verbosity>2)
+            if (debugLevel>2)
                std::cout << "Trying " << fn << " as MDP."<< std::endl;
             MDPStream mdps(fn.c_str(), std::ios::in);
             mdps.exceptions(std::fstream::failbit);
@@ -133,51 +135,52 @@ namespace gpstk
          }
          catch (FFStreamError& e)
          {
-            if (verbosity > 3)
+            if (debugLevel > 3)
                std::cout << e << std::endl;
          }
 
          try
          {
-            if (verbosity>2)
+            if (debugLevel>2)
                std::cout << "Trying " << fn << " as RINEX nav."<< std::endl;
             RinexNavStream rns(fn.c_str(), std::ios::in);
             rns.exceptions(std::ifstream::failbit);
 
             RinexNavData rnd;
-            rns >> rnd;
+            RinexNavHeader rnh;
+            rns >> rnh;
             rns >> rnd;
             fileType = tRinexNav;
             break;
          }
          catch (FFStreamError& e)
          {
-            if (verbosity > 3)
+            if (debugLevel > 3)
                std::cout << e << std::endl;
          }
 
          try
          {
-            if (verbosity>2)
+            if (debugLevel>2)
                std::cout << "Trying " << fn << " as FIC nav."<< std::endl;
             FICStream fs(fn.c_str(), std::ios::in);
+            fs.exceptions(std::ifstream::failbit);
       
-            FICHeader header;
-            fs >> header;      
             FICData data;
             fs >> data;
             fileType = tFIC;
+
             break;
          }
          catch (FFStreamError& e)
          {
-            if (verbosity > 3)
+            if (debugLevel > 3)
                std::cout << e <<std:: endl;
          }
 
          try
          {
-            if (verbosity>2)
+            if (debugLevel>2)
                std::cout << "Trying " << fn << " as SP3 ephemeris."<<std:: endl;
             SP3Stream pefile(fn.c_str(), std::ios::in);
             pefile.exceptions(std::ifstream::failbit);
@@ -191,13 +194,13 @@ namespace gpstk
          }
          catch (FFStreamError& e)
          {
-            if (verbosity > 3)
+            if (debugLevel > 3)
                std::cout << e << std::endl;
          }
 
          try
          {
-            if (verbosity>2)
+            if (debugLevel>2)
                std::cout << "Trying " << fn << " as MSC."<<std:: endl;
             MSCStream msc(fn.c_str(), std::ios::in);
             msc.exceptions(std::ifstream::failbit);
@@ -209,7 +212,7 @@ namespace gpstk
          }
          catch (FFStreamError& e)
          {
-            if (verbosity > 3)
+            if (debugLevel > 3)
                std::cout << e << std::endl;
          }
          

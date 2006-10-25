@@ -72,6 +72,8 @@ namespace gpstk
 
       FFType fileType;
       operator FFType();
+
+      static int debugLevel;
    };
 }
 #endif
