@@ -245,7 +245,7 @@ namespace gpstk
          // *really* a SMOD file.
          if (DOY < 0 || DOY > 366 || SOD > 86400 || PRNID > 32 || 
              (type != 0 && type != 9) ||
-             obs < 15e3 || obs > 30e3)
+             stdDev > 100 || stdDev <= 0)
          {
             gpstk::FFStreamError e(string("Bad 211 format data"));
             GPSTK_THROW(e);
@@ -291,7 +291,7 @@ namespace gpstk
          // *really* a SMOD file.
          if (DOY < 0 || DOY > 366 || SOD > 86400 || PRNID > 32 || 
              (type != 0 && type != 9) ||
-             obs < 15e3 || obs > 30e3)
+             stdDev > 100 || stdDev <= 0)
          {
             gpstk::FFStreamError e(string("Bad legacy format data"));
             GPSTK_THROW(e);
