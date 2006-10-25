@@ -103,6 +103,31 @@ void computeOrds(ORDEpochMap& ordEpochMap,
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL1L2,   ObsID::tcP);
    }
+   else if (ordModeStr=="smart")
+   {
+      const ObsEpoch& oe = obsEpochMap.begin()->second;
+      const SvObsEpoch& soe = oe.begin()->second;
+      SvObsEpoch::const_iterator itr;
+      for (itr = soe.begin(); itr != soe.end(); itr++)
+      {
+         const ObsID& oid = itr->first;
+         if (oid.type != ObsID::otRange)
+            continue;
+         if (oid.band == ObsID::cbL1)
+            oid1 = oid;
+         if (oid.band == ObsID::cbL2)
+         {
+            oid2 = oid;
+            dualFreq = true;
+         }
+         if (oid.band == ObsID::cbL1L2)
+         {
+            oid1 = oid;
+            dualFreq = false;
+            svTime = true;
+         }
+      }
+   }
    else
    {
       cout << "Unknown ORD computation requested, mode=" << ordModeStr << endl;
