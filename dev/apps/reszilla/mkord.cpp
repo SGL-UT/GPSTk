@@ -383,10 +383,9 @@ int main(int argc, char *argv[])
       gpstk::NBTropModel tm;
 
       // Now set up the function object that is used to compute the ords.
-      OrdEngine ordEngine(eph, wod, ap, tm);
+      OrdEngine ordEngine(eph, wod, ap, ordMode, tm);
       ordEngine.svTime = svTimeOption;
       ordEngine.keepWarts = keepWarts;
-      ordEngine.setMode(ordMode);
       ordEngine.verboseLevel = verbosity;
       ordEngine.keepUnhealthy = keepUnhealthy;
       gpstk::ORDEpochMap ordEpochMap;

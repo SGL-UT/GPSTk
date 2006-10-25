@@ -52,9 +52,10 @@ public:
       const gpstk::EphemerisStore& e, 
       const gpstk::WxObsData& w,
       const gpstk::Triple& p,
+      const std::string& mode,
       gpstk::TropModel& t);
 
-   void setMode(const std::string& ordMode);
+   void setMode(const gpstk::ObsEpoch& obs);
 
    // The crank for this engine. Input an ObsEpoch, get back an ORDEpoch.
    gpstk::ORDEpoch operator()(const gpstk::ObsEpoch& obs);
@@ -68,11 +69,13 @@ public:
    bool keepWarts;
    bool keepUnhealthy;
    unsigned long wartCount;
+   std::string mode;
    int verboseLevel;
    int debugLevel;
 
 private:
    bool dualFreq;
+   bool oidSet;
    gpstk::ObsID oid1, oid2;
    gpstk::GPSGeoid gm;
 };

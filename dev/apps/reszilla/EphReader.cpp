@@ -136,6 +136,7 @@ void EphReader::read_fic_data(const string& fn)
       cout << "# Read " << fn << " as FIC nav."<< endl;
 } // end of read_fic_data()
 
+
 void EphReader::read_sp3_data(const string& fn)
 {
    SP3EphemerisStore* pe;

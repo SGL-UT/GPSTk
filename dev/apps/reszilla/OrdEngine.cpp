@@ -44,15 +44,16 @@ using namespace gpstk;
 
 // ---------------------------------------------------------------------
 OrdEngine::OrdEngine(
-   const gpstk::EphemerisStore& e,
-   const gpstk::WxObsData& w,
-   const gpstk::Triple& p,
-   gpstk::TropModel& t)
-   : eph(e), wod(w), antennaPos(p), tm(t),
+   const EphemerisStore& e,
+   const WxObsData& w,
+   const Triple& p,
+   const string& mode,
+   TropModel& t)
+   : eph(e), wod(w), antennaPos(p), tm(t), mode(mode),
+     oidSet(false),
      svTime(false), keepWarts(false), keepUnhealthy(false),
      wartCount(0), verboseLevel(0), debugLevel(0), dualFreq(false)
 {
-
    if (RSS(antennaPos[0], antennaPos[1], antennaPos[2]) < 1)
    {
       cerr << "Warning! The antenna antennaPospears to be within one meter of the" << endl
@@ -70,7 +71,7 @@ OrdEngine::OrdEngine(
    tm.setReceiverLatitude(geo.getLatitude());
 }
 
-void OrdEngine::setMode(const string& mode)
+void OrdEngine::setMode(const ObsEpoch& obs)
 {
    if (mode=="p1p2")
    {
@@ -109,6 +110,31 @@ void OrdEngine::setMode(const string& mode)
    else if (mode=="smo")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL1L2,   ObsID::tcP);
+      svTime = true;
+   }
+   else if (mode=="smart")
+   {
+      const SvObsEpoch& soe = obs.begin()->second;
+      SvObsEpoch::const_iterator itr;
+      for (itr = soe.begin(); itr != soe.end(); itr++)
+      {
+         const ObsID& oid = itr->first;
+         if (oid.type != ObsID::otRange)
+            continue;
+         if (oid.band == ObsID::cbL1)
+            oid1 = oid;
+         if (oid.band == ObsID::cbL2)
+         {
+            oid2 = oid;
+            dualFreq = true;
+         }
+         if (oid.band == ObsID::cbL1L2)
+         {
+            oid1 = oid;
+            dualFreq = false;
+            svTime = true;
+         }
+      }
    }
    else
    {
@@ -116,18 +142,26 @@ void OrdEngine::setMode(const string& mode)
       exit(-1);
    }
 
-   if (verboseLevel>1)
+   oidSet = true;
+
+   if (verboseLevel)
    {
-      cout << "# Using " << oid1;
+      cout << "# OrdEngine using " << oid1;
       if (dualFreq)
          cout << " and " << oid2;
       cout << endl;
+      cout << "# OrdEngine using " << mode << " mode" << endl;
+      if (svTime)
+         cout << "# OrdEngine using SV time" << endl;
    }
 }
 
 // ---------------------------------------------------------------------
 gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
 {
+   if (!oidSet)
+      setMode(obs);
+
    const DayTime& t = obs.time;
    const ObsEpoch& obsEpoch = obs;
 

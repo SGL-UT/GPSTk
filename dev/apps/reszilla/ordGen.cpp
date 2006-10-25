@@ -66,10 +66,9 @@ private:
    CommandOptionWithAnyArg obsFileOption, ephFileOption, mscFileOption,
       antennaPosOption, metFileOption, ordModeOption;
    CommandOptionWithNumberArg msidOption;
-   CommandOptionNoArg svTimeOption, keepWartsOption;
+   CommandOptionNoArg keepWartsOption;
 
    string ordMode;
-   bool svTime;
    bool keepWarts;
    Triple antennaPos;
    unsigned msid;
@@ -77,14 +76,14 @@ private:
    static const string defaultOrdMode;
 };
 
-const string OrdGen::defaultOrdMode("p1p2");
+const string OrdGen::defaultOrdMode("smart");
 
 //-----------------------------------------------------------------------------
 // The constructor basically just sets up all the command line options
 //-----------------------------------------------------------------------------
 OrdGen::OrdGen() throw()
    : OrdApp("ordGen", "Generates observed range deviations."),
-     ordMode(defaultOrdMode), svTime(false), keepWarts(false), msid(0),
+     ordMode(defaultOrdMode), keepWarts(false), msid(0),
    
    obsFileOption('o', "obs", 
                  "Where to get the obs data.", true),
@@ -97,18 +96,16 @@ OrdGen::OrdGen() throw()
    msidOption('m', "msid", "Station to process data for. Used to select "
               "a station position from the msc file or data from a SMODF file."),
    
-   ordModeOption('\0', "omode", "ORD mode: p1p2, c1p2, c1, p1, c2, p2, smo. "
-                 "Note that the smo mode often requires the --svtime "
-                 "option to be specified. The default is " + defaultOrdMode),
+   ordModeOption('\0', "omode", "Specifies what observations are used to "
+                 "compute the ORDs. Valid values are:"
+                 "p1p2, c1p2, y1y2, c1, p1, c2, p2, smo, and smart. "
+                 "The default is " + defaultOrdMode),
    
    antennaPosOption('p', "pos", "Location of the antenna in meters ECEF."
                     , false),
    
    metFileOption('w', "weather", "Weather data file name (RINEX met "
                  "format only)."),
-   
-   svTimeOption('s', "svtime", "Observation data is in SV time frame. "
-                "The default is RX time frame."),
    
    keepWartsOption('k', "keep-warts", "Keep any warts that are in "
                    "the data. The defailt is to remove them.")
@@ -125,8 +122,6 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
 
    if (ordModeOption.getCount())
       ordMode = lowerCase(ordModeOption.getValue()[0]);
-
-   svTime = svTimeOption.getCount();
 
    if (keepWartsOption.getCount())
       keepWarts=true;
@@ -190,7 +185,6 @@ void OrdGen::spinUp()
       if (msid)
          cout << "# msid: " << msid << endl;
       cout << "# Antenna Position: " << setprecision(8) << antennaPos << endl;
-      cout << "# Observed Rage Deviation (ORD) mode: " << ordMode << endl;
    }
 }
 
@@ -198,7 +192,9 @@ void OrdGen::spinUp()
 //-----------------------------------------------------------------------------
 void OrdGen::process()
 {
+   // This is only needed to help debug the FFIdentifer class
    FFIdentifier::debugLevel = debugLevel;
+
    // Get the ephemeris data
    EphReader ephReader;
    ephReader.verboseLevel = verboseLevel;
@@ -217,10 +213,8 @@ void OrdGen::process()
    NBTropModel tm;
 
    // Now set up the function object that is used to compute the ords.
-   OrdEngine ordEngine(eph, wod, antennaPos, tm);
-   ordEngine.svTime = svTimeOption;
+   OrdEngine ordEngine(eph, wod, antennaPos, ordMode, tm);
    ordEngine.keepWarts = keepWarts;
-   ordEngine.setMode(ordMode);
    ordEngine.verboseLevel = verboseLevel;
    ordEngine.debugLevel = debugLevel;
    ORDEpochMap ordEpochMap;
