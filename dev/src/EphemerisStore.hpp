@@ -90,10 +90,6 @@ namespace gpstk
                             const gpstk::DayTime& t) const
          throw(NoEphemerisFound) = 0;
 
-         /// This method checks if this ephemeris provides Total Group Delay. By default returns false.
-      virtual bool hasTGD() const throw() { return false; }
-;
-
          /** This method returns the Total Group Delay of the SV (in meters) at the 
           * indicated time.
           * @param sat    the SV's SatID
@@ -101,7 +97,7 @@ namespace gpstk
           * @return       the TGD (in meters) of the SV at time t
           */
       virtual double getTGD(SatID sat, const gpstk::DayTime& t) const
-         throw(NoTGDFound) { return 0.0; };
+         throw(NoTGDFound) { return 0.0; }
 
          /** Dumps all the ephemeris data stored in this object.
           * @param detail the level of detail to provide
