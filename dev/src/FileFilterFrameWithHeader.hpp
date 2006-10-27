@@ -263,8 +263,8 @@ namespace gpstk
          /// @throw InvalidRequest if headerList is empty
       inline void chl(const std::string& req) throw(gpstk::InvalidRequest)
       {
-         gpstk::InvalidRequest exc(std::string("Header list is empty attempting to")
-                                    +std::string(" satisfy ")+req+std::string(" request."));
+         gpstk::InvalidRequest exc("Header list is empty attempting to"
+                                    " satisfy "+req+" request.");
          if (headerList.empty())
          {
             GPSTK_THROW(exc);

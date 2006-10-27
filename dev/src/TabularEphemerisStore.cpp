@@ -116,8 +116,7 @@ namespace gpstk
    {
       EphMap::const_iterator svmap = pe.find(sat);
       if (svmap==pe.end()) {
-         NoEphemerisFound e(std::string("Ephemeris for satellite  ") 
-            + asString(sat)
+         NoEphemerisFound e("Ephemeris for satellite  " + asString(sat)
             + " not found.");
          GPSTK_THROW(e);
       }
@@ -151,23 +150,20 @@ namespace gpstk
       i = sem.lower_bound(t);
       SvEphMap::const_iterator j=i;
       if(i == sem.begin() || --i == sem.begin()) {
-         NoEphemerisFound e(
-	    std::string("Inadequate data before requested time, satellite ")
+         NoEphemerisFound e("Inadequate data before requested time, satellite "
             + asString(sat));
          GPSTK_THROW(e);
       }
       for(int k=0; k<half-1; k++) {
          i--;
          if(i == sem.begin() && k<half-2) {
-            NoEphemerisFound e(
-	       std::string("Inadequate data before requested time, satellite ")
+            NoEphemerisFound e("Inadequate data before requested time, satellite "
                + asString(sat));
             GPSTK_THROW(e);
          }
          j++;
          if(j == sem.end()) {
-            NoEphemerisFound e(
-	       std::string("Inadequate data after requested time, satellite ")
+            NoEphemerisFound e("Inadequate data after requested time, satellite "
                + asString(sat));
             GPSTK_THROW(e);
          }

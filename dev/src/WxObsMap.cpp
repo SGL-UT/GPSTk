@@ -105,7 +105,7 @@ namespace gpstk
    {
       if (obs.empty())
       {
-         ObjectNotFound e(string("No WxObservation available near time ") +
+         ObjectNotFound e("No WxObservation available near time " +
                           t.printf("%02H:%02M:%02S on day %03j of %4Y"));
          GPSTK_THROW(e);
       }
@@ -123,7 +123,7 @@ namespace gpstk
          }
          else
          {
-            ObjectNotFound e(string("No WxObservation available near time ") +
+            ObjectNotFound e("No WxObservation available near time " +
                              t.printf("%02H:%02M:%02S on day %03j of %4Y"));
             GPSTK_THROW(e);
          }
@@ -144,7 +144,7 @@ namespace gpstk
          }
          else
          {
-            ObjectNotFound e(string("No WeatherData available near time ") +
+            ObjectNotFound e("No WeatherData available near time " +
                              t.printf("%02H:%02M:%02S on day %03j of %4Y"));
             GPSTK_THROW(e);
          }
@@ -190,7 +190,7 @@ namespace gpstk
             }
             else
             {
-               ObjectNotFound e(string("No WeatherData available near time ") +
+               ObjectNotFound e("No WeatherData available near time " +
                                 t.printf("%02H:%02M:%02S on day %03j of %4Y"));
                GPSTK_THROW(e);
             }
@@ -220,7 +220,7 @@ namespace gpstk
             }
             else
             {
-               ObjectNotFound e(string("No WeatherData available near time ") +
+               ObjectNotFound e("No WeatherData available near time " +
                                 t.printf("%02H:%02M:%02S on day %03j of %4Y"));
                GPSTK_THROW(e);
             }

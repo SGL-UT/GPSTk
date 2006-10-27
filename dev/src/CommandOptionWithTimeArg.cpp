@@ -75,11 +75,11 @@ namespace gpstk
             }
             catch (...)
             {
-               errstr += string("\"") + value[vecindex] + "\" is not a valid time.";
+               errstr += "\"" + value[vecindex] + "\" is not a valid time.";
             }
          }
          else
-            errstr += string("\"") + value[vecindex] + "\" is not a valid time.";
+            errstr += "\"" + value[vecindex] + "\" is not a valid time.";
       }
 
       return errstr;

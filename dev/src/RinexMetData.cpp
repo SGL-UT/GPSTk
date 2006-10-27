@@ -95,7 +95,7 @@ namespace gpstk
          RinexMetMap::const_iterator itr = data.find(thistype);
          if (itr == data.end())
          {
-            FFStreamError err(string("Couldn't find data for ") + 
+            FFStreamError err("Couldn't find data for " + 
                               RinexMetHeader::convertObsType(strm.header.obsTypeList[i]));
             GPSTK_THROW(err);
          }
@@ -121,7 +121,7 @@ namespace gpstk
             RinexMetMap::const_iterator itr = data.find(thistype);
             if (itr == data.end())
             {
-               FFStreamError err(string("Couldn't find data for ") + 
+               FFStreamError err("Couldn't find data for " + 
                   RinexMetHeader::convertObsType(strm.header.obsTypeList[i]));
                GPSTK_THROW(err);
             }
@@ -190,7 +190,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         FFStreamError err(string("std::exception: ") + string(e.what()));
+         FFStreamError err("std::exception: " + string(e.what()));
          GPSTK_THROW(err);
       }
    }
@@ -214,7 +214,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         FFStreamError err(string("std::exception: ") + string(e.what()));
+         FFStreamError err("std::exception: " + string(e.what()));
          GPSTK_THROW(err);
       }
    }
@@ -262,7 +262,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         FFStreamError err(string("std::exception: ") + string(e.what()));
+         FFStreamError err("std::exception: " + string(e.what()));
          GPSTK_THROW(err);
       }
    }

@@ -159,7 +159,7 @@ namespace gpstk
          {
                // throw an error - something didn't get processed in the strings
             gpstk::StringUtils::StringException se(
-               std::string("Processing error - parts of strings left unread - ")+s);
+               "Processing error - parts of strings left unread - " + s );
             GPSTK_THROW( se );
          }
          
@@ -167,7 +167,7 @@ namespace gpstk
          {
                // throw an error - something didn't get processed in the strings
             gpstk::StringUtils::StringException se(
-               std::string("Processing error - parts of strings left unread - ")+f);
+               "Processing error - parts of strings left unread - " + f );
             GPSTK_THROW( se );
          }
          

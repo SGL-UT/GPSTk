@@ -480,7 +480,7 @@ namespace gpstk
    {
       if(lat > 90 || lat < -90)
       {
-         GeometryException ge(string("Invalid latitude in setGeodetic: ")
+         GeometryException ge("Invalid latitude in setGeodetic: "
                                  + StringUtils::asString(lat));
          GPSTK_THROW(ge);
       }
@@ -516,13 +516,13 @@ namespace gpstk
    {
       if(lat > 90 || lat < -90)
       {
-         GeometryException ge(string("Invalid latitude in setGeocentric: ")
+         GeometryException ge("Invalid latitude in setGeocentric: "
                                  + StringUtils::asString(lat));
          GPSTK_THROW(ge);
       }
       if(rad < 0)
       {
-         GeometryException ge(string("Invalid radius in setGeocentric: ")
+         GeometryException ge("Invalid radius in setGeocentric: "
                                           + StringUtils::asString(rad));
          GPSTK_THROW(ge);
       }
@@ -552,13 +552,13 @@ namespace gpstk
    {
       if(theta < 0 || theta > 180)
       {
-         GeometryException ge(string("Invalid theta in setSpherical: ")
+         GeometryException ge("Invalid theta in setSpherical: "
                                  + StringUtils::asString(theta));
          GPSTK_THROW(ge);
       }
       if(rad < 0)
       {
-         GeometryException ge(string("Invalid radius in setSpherical: ")
+         GeometryException ge("Invalid radius in setSpherical: "
                                           + StringUtils::asString(rad));
          GPSTK_THROW(ge);
       }
@@ -763,8 +763,8 @@ namespace gpstk
                   glat = asDouble(toBeRemoved);
                   if(glat > 90. || glat < -90.) {
                      DayTime::FormatException f(
-			string("Invalid geodetic latitude for setTostring: ")
-                        + toBeRemoved);
+                           "Invalid geodetic latitude for setTostring: "
+                           + toBeRemoved);
                      GPSTK_THROW(f);
                   }
                   hglat = true;
@@ -773,8 +773,8 @@ namespace gpstk
                   clat = asDouble(toBeRemoved);
                   if(clat > 90. || clat < -90.) {
                      DayTime::FormatException f(
-			string("Invalid geocentric latitude for setTostring: ")
-                        + toBeRemoved);
+                           "Invalid geocentric latitude for setTostring: "
+                           + toBeRemoved);
                      GPSTK_THROW(f);
                   }
                   hclat = true;
@@ -806,9 +806,8 @@ namespace gpstk
                case 't':
                   theta = asDouble(toBeRemoved);
                   if(theta > 180. || theta < 0.) {
-                     DayTime::FormatException f(
-			string("Invalid theta for setTostring: ")
-                        + toBeRemoved);
+                     DayTime::FormatException f("Invalid theta for setTostring: "
+                                                + toBeRemoved);
                      GPSTK_THROW(f);
                   }
                   htheta = true;
@@ -816,9 +815,8 @@ namespace gpstk
                case 'T':
                   theta = asDouble(toBeRemoved) * RAD_TO_DEG;
                   if(theta > 90. || theta < -90.) {
-                     DayTime::FormatException f(
-			string("Invalid theta for setTostring: ")
-                        + toBeRemoved);
+                     DayTime::FormatException f("Invalid theta for setTostring: "
+                                                + toBeRemoved);
                      GPSTK_THROW(f);
                   }
                   htheta = true;
@@ -848,9 +846,8 @@ namespace gpstk
                case 'r':
                   rad = asDouble(toBeRemoved);
                   if(rad < 0.0) {
-                     DayTime::FormatException f(
-			string("Invalid radius for setTostring: ")
-                        + toBeRemoved);
+                     DayTime::FormatException f("Invalid radius for setTostring: "
+                                                + toBeRemoved);
                      GPSTK_THROW(f);
                   }
                   hrad = true;
@@ -858,9 +855,8 @@ namespace gpstk
                case 'R':
                   rad = asDouble(toBeRemoved) * 1000;
                   if(rad < 0.0) {
-                     DayTime::FormatException f(
-			string("Invalid radius for setTostring: ")
-                        + toBeRemoved);
+                     DayTime::FormatException f("Invalid radius for setTostring: "
+                                                + toBeRemoved);
                      GPSTK_THROW(f);
                   }
                   hrad = true;
@@ -892,7 +888,7 @@ namespace gpstk
          {
                // throw an error - something didn't get processed in the strings
             DayTime::FormatException fe(
-              string("Processing error - parts of strings left unread - ")+ s);
+               "Processing error - parts of strings left unread - " + s);
             GPSTK_THROW(fe);
          }
          
@@ -900,7 +896,7 @@ namespace gpstk
          {
                // throw an error - something didn't get processed in the strings
             DayTime::FormatException fe(
-              string("Processing error - parts of strings left unread - ")+ f);
+               "Processing error - parts of strings left unread - " + f);
             GPSTK_THROW(fe);
          }
          
@@ -1459,7 +1455,7 @@ namespace gpstk
       {
          if(a > 90 || a < -90)
          {
-            GeometryException ge(string("Invalid latitude in constructor: ")
+            GeometryException ge("Invalid latitude in constructor: "
                                     + StringUtils::asString(a));
             GPSTK_THROW(ge);
          }
@@ -1472,7 +1468,7 @@ namespace gpstk
       {
          if(c < 0)
          {
-            GeometryException ge(string("Invalid radius in constructor: ")
+            GeometryException ge("Invalid radius in constructor: "
                                            + StringUtils::asString(c));
             GPSTK_THROW(ge);
          }
@@ -1481,7 +1477,7 @@ namespace gpstk
       {
          if(a < 0 || a > 180)
          {
-            GeometryException ge(string("Invalid theta in constructor: ")
+            GeometryException ge("Invalid theta in constructor: "
                                     + StringUtils::asString(a));
             GPSTK_THROW(ge);
          }

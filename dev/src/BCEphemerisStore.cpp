@@ -260,10 +260,10 @@ namespace gpstk
            }
            catch (InvalidRequest& exc)
            {
-              exc.addText(string("In wiping ephemerides for PRN ") +
+              exc.addText("In wiping ephemerides for PRN " +
                           asString(i->first));
-              exc.addText(string("Map had ") + asString(mapSize) + 
-                          "elements in it to begin with");
+              exc.addText("Map had " + asString(mapSize) + " elements in"
+                          " it to begin with");
               foo.dump(exc);
               GPSTK_RETHROW(exc);
            }
@@ -337,8 +337,7 @@ namespace gpstk
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
       {
-          NoEphemerisFound nef(string("No ephemeris for satellite ") 
-                               + asString(sat));
+          NoEphemerisFound nef("No ephemeris for satellite " + asString(sat));
           GPSTK_THROW(nef);
       }
 
@@ -389,7 +388,7 @@ namespace gpstk
 
       if (it == em.end())
       {
-         string mess = string("No eph found for satellite ")
+         string mess = "No eph found for satellite "
             + asString(sat) + " at " + t.printf("%03j %02H:%02M:%02S");
          NoEphemerisFound e(mess);
          GPSTK_THROW(e);
@@ -408,8 +407,7 @@ namespace gpstk
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
       {
-          NoEphemerisFound nef(string("No ephemeris for satellite ") 
-                + asString(sat));
+          NoEphemerisFound nef("No ephemeris for satellite " + asString(sat));
           GPSTK_THROW(nef);
       }
 
@@ -457,7 +455,7 @@ namespace gpstk
 
       if (it == em.end())
       {
-         string mess = string("No eph found for satellite ")
+         string mess = "No eph found for satellite "
             + asString(sat) + " at " + t.printf("%03j %02H:%02M:%02S");
          NoEphemerisFound e(mess);
          GPSTK_THROW(e);

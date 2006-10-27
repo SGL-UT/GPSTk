@@ -61,7 +61,7 @@ namespace gpstk
       SvStatusMap::const_iterator i = status.find(svid);
       if(i == status.end())
       {
-         gpstk::ObjectNotFound e(string("No status for SV ") +
+         gpstk::ObjectNotFound e("No status for SV " +
                                  StringUtils::asString(svid) +
                                  " available.");
          GPSTK_THROW(e);
@@ -90,7 +90,7 @@ namespace gpstk
       SvModeMap::const_iterator i = modes.find(svid);
       if(i == modes.end())
       {
-         gpstk::ObjectNotFound e(string("No status for SV ") +
+         gpstk::ObjectNotFound e("No status for SV " +
                                  StringUtils::asString(svid) +
                                  " available.");
          GPSTK_THROW(e);

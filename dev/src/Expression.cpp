@@ -113,7 +113,7 @@ namespace gpstk
       if (!hasValue) 
       { 
          Expression::ExpressionException 
-            ee(std::string("Variable ") + name + " undefined."); 
+            ee("Variable " + name + " undefined."); 
          GPSTK_THROW(ee);
       }
       

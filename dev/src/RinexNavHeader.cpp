@@ -82,8 +82,7 @@ namespace gpstk
       else if (version == 2.1)   allValid = allValid21;
       else
       {
-         FFStreamError err(string("Unknown RINEX version: ") 
-                           + asString(version,2));
+         FFStreamError err("Unknown RINEX version: " + asString(version,2));
          err.addText("Make sure to set the version correctly.");
          GPSTK_THROW(err);
       }
@@ -270,7 +269,7 @@ namespace gpstk
          }
          else
          {
-            throw(FFStreamError(string("Unknown header label at line ") + 
+            throw(FFStreamError("Unknown header label at line " + 
                                 asString<size_t>(strm.lineNumber)));
          }
       }
@@ -280,7 +279,7 @@ namespace gpstk
       else if (version == 2.1)      allValid = allValid21;
       else
       {
-         FFStreamError e(string("Unknown or unsupported RINEX version ") + 
+         FFStreamError e("Unknown or unsupported RINEX version " + 
                          asString(version));
          GPSTK_THROW(e);
       }

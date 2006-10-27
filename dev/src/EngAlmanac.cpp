@@ -119,7 +119,7 @@ namespace gpstk
                /*check PRN */
             if ((ficked[19] < 0) || (ficked[19] > MAX_PRN))
             {
-	      InvalidParameter exc(string("EngAlmanac::addSubframe, PRN out of range ")
+               InvalidParameter exc("EngAlmanac::addSubframe, PRN out of range "
                                     + StringUtils::asString(ficked[19]));
                GPSTK_THROW(exc);
             }
@@ -415,9 +415,9 @@ namespace gpstk
       for (int i = 0; i < len; i++)
       {
          if (v & 1)
-            s = string("1") + s;
+            s = "1" + s;
          else
-            s = string("0")+ s;
+            s = "0" + s;
          v = v >> 1;
       }
       return s;
@@ -480,7 +480,7 @@ namespace gpstk
       {
          int prn = i->first;
          if (prn >= 1 && prn <= 32)
-            bits[prn] += string("  ") + int2bin(i->second, 4);
+            bits[prn] += "  " + int2bin(i->second, 4);
       }
 
       for (int i=1; i<=16; i++)
