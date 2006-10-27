@@ -502,7 +502,7 @@ namespace gpstk
       else if (oneObs == HI) return "HI";
       else
       {
-         FFStreamError e("Bad obs type:" + oneObs);
+         FFStreamError e("Bad obs type:" + asString(oneObs));
          GPSTK_THROW(e);
       } 
    }
