@@ -325,7 +325,7 @@ namespace gpstk
             
             while (itr != extraWaveFactList.end())
             {
-               const int maxPRNsPerLine = 7;
+               const int maxSatsPerLine = 7;
                short satsWritten = 0, satsLeft = (*itr).satList.size(), satsThisLine;
                vector<SatID>::const_iterator vecItr = (*itr).satList.begin();
 
@@ -333,7 +333,7 @@ namespace gpstk
                   if(satsWritten == 0) {
                      line  = rightJustify(asString<short>((*itr).wavelengthFactor[0]),6);
                      line += rightJustify(asString<short>((*itr).wavelengthFactor[1]),6);
-                     satsThisLine = (satsLeft > maxPRNsPerLine ? maxPRNsPerLine : satsLeft);
+                     satsThisLine = (satsLeft > maxSatsPerLine ? maxSatsPerLine : satsLeft);
                      line += rightJustify(asString<short>(satsThisLine),6);
                   }
                   try {
@@ -345,7 +345,7 @@ namespace gpstk
                   }
                   satsWritten++;
                   satsLeft--;
-                  if(satsWritten==maxPRNsPerLine || satsLeft==0) {      // output a complete line
+                  if(satsWritten==maxSatsPerLine || satsLeft==0) {      // output a complete line
                      line += string(60 - line.size(), ' ');
                      line += waveFactString;
                      strm << line << endl;
@@ -609,16 +609,16 @@ namespace gpstk
             // additional wave fact lines
          else
          {
-            const int maxPRNsPerLine = 7;
+            const int maxSatsPerLine = 7;
             int Nsats;
             ExtraWaveFact ewf;
             ewf.wavelengthFactor[0] = asInt(line.substr(0,6));
             ewf.wavelengthFactor[1] = asInt(line.substr(6,6));
             Nsats = asInt(line.substr(12,6));
                
-            if (Nsats > maxPRNsPerLine)   // > not >=
+            if (Nsats > maxSatsPerLine)   // > not >=
             {
-               FFStreamError e("Invalid number of PRNs for " + waveFactString);
+               FFStreamError e("Invalid number of Sats for " + waveFactString);
                GPSTK_THROW(e);
             }
                
@@ -895,7 +895,7 @@ namespace gpstk
          s << "Wavelength factors (extra)   L1:"
             << extraWaveFactList[i].wavelengthFactor[0]
             << ", L2: " << extraWaveFactList[i].wavelengthFactor[1]
-            << ", for PRNs";
+            << ", for Sats";
          for(j=0; j<extraWaveFactList[i].satList.size(); j++)
             s << " " << extraWaveFactList[i].satList[j];
          s << endl;
@@ -948,8 +948,8 @@ namespace gpstk
          s << endl;
          map<SatID, vector<int> >::const_iterator sat_itr = numObsForSat.begin();
          while (sat_itr != numObsForSat.end()) {
-            vector<int> obsvec=(*sat_itr).second;
-            s << " " << (*sat_itr).first << " ";
+            vector<int> obsvec=sat_itr->second;
+            s << " " << RinexSatID(sat_itr->first) << " ";
             for(i=0; i<obsvec.size(); i++) s << " " << setw(6) << obsvec[i];
             s << endl;
             sat_itr++;
