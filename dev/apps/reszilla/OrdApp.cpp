@@ -224,6 +224,12 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
             
             ordEpoch.ords[svid] = ord;
          }
+         else if (type == 50)
+         {
+            double c;
+            iss >> c;
+            ordEpoch.clockOffset = c;
+         }
 
          readBuffer.erase(0, string::npos);
       }
