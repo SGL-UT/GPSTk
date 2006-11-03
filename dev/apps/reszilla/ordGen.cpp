@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
       crap.run();
    }
    catch (gpstk::Exception &exc)
-   { cout << exc << endl; }
+   { cerr << exc << endl; }
    catch (std::exception &exc)
    { cerr << "Caught std::exception " << exc.what() << endl; }
    catch (...)

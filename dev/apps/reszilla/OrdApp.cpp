@@ -136,9 +136,13 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
    {
       const SatID& svid = pi->first;
       const ObsRngDev& ord = pi->second;
-         
+
+      int type = 0;
+      if (ord.wonky)
+         type = 20;
+
       s << left << setw(20) << time << right
-        << " " << setw(4) << 0 // type
+        << " " << setw(4) << type
         << " " << setw(2) << svid.id
         << " " << setprecision(1) << setw(5)  << ord.getElevation()
         << " " << setprecision(5) << setw(14) << ord.getORD()
@@ -150,10 +154,15 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
    }
 
    if (ordEpoch.clockOffset.is_valid())
+   {
+      int type = 50;
+      if (ordEpoch.wonky)
+         type = 70;
       s << left << setw(20) << time << right
-        << " " << setw(4) << 50 //type
-        << " " << setprecision(3) << setw(14)  << ordEpoch.clockOffset
+        << " " << setw(4) << type
+        << "        " << setprecision(3) << setw(14)  << ordEpoch.clockOffset
         << endl;
+   }
 }
 
 ORDEpoch OrdApp::read(std::ifstream& s) throw()
@@ -191,7 +200,7 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
          int type;
          iss >> type;
 
-         if (type == 0)
+         if (type == 0 || type == 20)
          {
             if (readBuffer.size() < 49)
             {
@@ -221,14 +230,19 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
             iss >> w;
             if (w != "Unknown")
                ord.health = x2int(w);
+
+            if (type == 20)
+               ord.wonky = true;
             
             ordEpoch.ords[svid] = ord;
          }
-         else if (type == 50)
+         else if (type == 50 || type == 70)
          {
             double c;
             iss >> c;
             ordEpoch.clockOffset = c;
+            if (type == 70)
+               ordEpoch.wonky = true;
          }
 
          readBuffer.erase(0, string::npos);

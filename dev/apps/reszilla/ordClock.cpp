@@ -54,7 +54,7 @@ protected:
    virtual void process();
 
 private:
-   CommandOptionNoArg useUnhealthyOption;
+   CommandOptionNoArg useUnhealthyOption, useWartsOption;
 };
 
 
@@ -65,7 +65,10 @@ OrdClock::OrdClock() throw()
    : OrdApp("clkGen", "Generates clock estimates for each epoch of ords."),
      useUnhealthyOption('u', "use-unhealthy",
                         "Use unhealthy SVs in the clock offset computation. "
-                        "The default is to not use them.")
+                        "The default is to not use them."),
+     useWartsOption('w', "use-warts",
+                    "Use warts in the clock solution. The default is "
+                    "to not use warts (type=20).")
 {}
 
 
@@ -88,11 +91,30 @@ void OrdClock::process()
    else
       cm.setSvMode(ObsClockModel::HEALTHY);
 
+   if (useWartsOption.getCount())
+      cm.setUseWonkyData(true);
+
    while (input)
    {
       ORDEpoch ordEpoch = read(input);
       cm.addEpoch(ordEpoch);
       ordEpoch.applyClockModel(cm);
+      if (ordEpoch.clockOffset.is_valid())
+      {
+         double clk_mag = std::abs(ordEpoch.clockOffset);
+         if (clk_mag > 1e6 || clk_mag < 1e-5)
+            ordEpoch.wonky = true;
+      }
+      else
+         ordEpoch.wonky = true;
+
+      if (ordEpoch.wonky)
+      {
+         ORDEpoch::ORDMap::iterator i;
+         for (i = ordEpoch.ords.begin(); i != ordEpoch.ords.end(); i++)
+            i->second.wonky = true;
+      }
+
       write(output, ordEpoch);
    }
 }

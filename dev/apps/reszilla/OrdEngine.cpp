@@ -259,27 +259,17 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
          ORDEpoch::ORDMap::iterator pi;
          for (pi = ordEpoch.ords.begin(); pi != ordEpoch.ords.end();)
          {
-            const ObsRngDev& ord = pi->second;
+            ObsRngDev& ord = pi->second;
             ORDEpoch::ORDMap::iterator pi2=pi;
             pi++;
 
             if (!keepUnhealthy && ord.getHealth().is_valid() && ord.getHealth())
-            {
-               ordEpoch.ords.erase(pi2);
-               if (verboseLevel>2)
-                  cout << "# Tossing ord from an unhealty SV." << endl;
-               continue;
-            }
+               ord.wonky = true;
                
             if (std::abs(ord.getTrop()) > 100 || ord.getElevation() <= 0.05)
-            {
-               ordEpoch.ords.erase(pi2);
-               if (verboseLevel>1)
-                  cout << "# Tossing wonky ord: " << ord << endl;
-               continue;
-            }
+               ord.wonky = true;
          }
-      } // end deleting bad stuff
+      } // end flagging
 
 
    }
