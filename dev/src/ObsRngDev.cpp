@@ -66,7 +66,7 @@ namespace gpstk
       const EphemerisStore& eph,
       GeoidModel& gm,
       bool svTime)
-         : obstime(time), svid(svid), ord(0)
+      : obstime(time), svid(svid), ord(0), wonky(false)
    {
       computeOrd(prange, rxpos, eph, gm, svTime);
       Geodetic gx(rxpos, &gm);
@@ -84,7 +84,7 @@ namespace gpstk
       const IonoModelStore& ion,
       IonoModel::Frequency fq,
       bool svTime)
-         : obstime(time), svid(svid), ord(0)
+         : obstime(time), svid(svid), ord(0), wonky(false)
    {
       computeOrd(prange, rxpos, eph, gm, svTime);
       Geodetic gx(rxpos, &gm);
@@ -103,7 +103,7 @@ namespace gpstk
       GeoidModel& gm,
       const TropModel& tm,
       bool svTime)
-         : obstime(time), svid(svid), ord(0)
+         : obstime(time), svid(svid), ord(0), wonky(false)
    {
       computeOrd(prange, rxpos, eph, gm, svTime);
       computeTrop(tm);
@@ -120,7 +120,7 @@ namespace gpstk
       const IonoModelStore& ion,
       IonoModel::Frequency fq,
       bool svTime)
-         : obstime(time), svid(svid), ord(0)
+         : obstime(time), svid(svid), ord(0), wonky(false)
    {
       computeOrd(prange, rxpos, eph, gm, svTime);
       computeTrop(tm);
@@ -139,7 +139,7 @@ namespace gpstk
       const EphemerisStore& eph,
       GeoidModel& gm,
       bool svTime)
-         : obstime(time), svid(svid), ord(0)
+         : obstime(time), svid(svid), ord(0), wonky(false)
    {
       // for dual frequency see ICD-GPS-211, section 20.3.3.3.3.3
       double icpr = (prange2 - GAMMA * prange1)/IGAMMA;
@@ -162,7 +162,7 @@ namespace gpstk
       const GeoidModel& gm,
       const TropModel& tm,
       bool svTime)
-         : obstime(time), svid(svid), ord(0)
+         : obstime(time), svid(svid), ord(0), wonky(false)
    {
       // for dual frequency see ICD-GPS-211, section 20.3.3.3.3.3
       double icpr = (prange2 - GAMMA * prange1)/IGAMMA;
@@ -322,7 +322,8 @@ namespace gpstk
         << " ion=" << ord.iono
         << " trop=" << ord.trop
         << std::hex
-        << " iodc=" << ord.iodc;
+        << " iodc=" << ord.iodc
+        << " wonky=" << ord.wonky;
       s.flags(oldFlags);
       return s;
    }

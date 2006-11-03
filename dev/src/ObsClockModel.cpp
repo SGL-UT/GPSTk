@@ -134,6 +134,9 @@ namespace gpstk
          if (ord.getElevation() < elvmask)
             status[svid] = ELEVATION;
 
+         if (ord.wonky && !useWonkyData)
+            status[svid] = WONKY;
+
          if (status[svid] == USED)
             stat.Add(ord.getORD());
       }

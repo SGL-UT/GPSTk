@@ -74,7 +74,7 @@ namespace gpstk
        * Creates an empty, useless object to facilitate STL containers of this
        * object.
        */
-      ObsRngDev() throw() : obstime(DayTime::END_OF_TIME) {};
+      ObsRngDev() throw() : wonky(false), obstime(DayTime::END_OF_TIME) {};
 
       /**
        * constructor.
@@ -312,6 +312,7 @@ namespace gpstk
       DayTime obstime;           ///< time of SV observation
       SatID svid;                ///< PRN number of observed SV
       double ord;                ///< difference between expected and observed range
+      bool wonky;                ///< Indicates that this ord is suspect
 
       vfloat azimuth;            ///< SV azimuth
       vfloat elevation;          ///< SV elevation

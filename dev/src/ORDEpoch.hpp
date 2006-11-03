@@ -56,6 +56,7 @@ namespace gpstk
    class ORDEpoch
    {
    public:
+      ORDEpoch() : wonky(false) {};
 
       /// defines a store for each SV's ord, indexed by prn
       typedef std::map<SatID, ObsRngDev> ORDMap;
@@ -83,6 +84,7 @@ namespace gpstk
       vdouble clockOffset;    ///< clock bias value (application defined units)
       ORDMap ords;            ///< map of ORDs in epoch
       gpstk::DayTime time;
+      bool wonky;             ///< Indicates that this epoch is suspect
 
       friend std::ostream& operator<<(std::ostream& s, 
                                       const ORDEpoch& oe)

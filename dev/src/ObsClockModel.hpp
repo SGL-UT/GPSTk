@@ -76,6 +76,7 @@ namespace gpstk
          MANUAL,    ///< ORD removed from computation by user request 
          SVHEALTH,  ///< ORD removed from computation because SV unhealthy
          ELEVATION, ///< ORD removed from computation because SV elevation < mask 
+         WONKY,     ///< ORD removed due to being flagged wonky
          SIGMA      ///< ORD removed from computation because it was outlier
       };
 
@@ -86,7 +87,7 @@ namespace gpstk
       typedef std::map<SatID, SvStatus> SvStatusMap;
 
       ObsClockModel(double sigma = 2, double elmask = 0, SvMode mode = ALWAYS)
-         : sigmam(sigma), elvmask(elmask)
+         : sigmam(sigma), elvmask(elmask), useWonkyData(false)
       {
          status.clear();
          setSvMode(mode);
@@ -143,6 +144,12 @@ namespace gpstk
       ObsClockModel& setElevationMask(double right) throw()
       { elvmask = right; return *this; }
 
+      /** Set useWonkyData true and ords that are flagged as wonky
+          will be included in any clock estimation calculations.
+      **/
+      ObsClockModel& setUseWonkyData(bool right) throw()
+      { useWonkyData = right; return *this; }
+
       // get accessor methods ----------------------------------------------   
    
       /**
@@ -186,6 +193,13 @@ namespace gpstk
        */
       double getElevationMask() const throw() { return elvmask; }
 
+
+      /**
+       * return the current value of the userWonkyData flag.
+       */
+      bool getUseWonkyData() const throw()
+      { return useWonkyData; }
+
       /// Computes an average of all ORD in the epoch that pass the elevation
       /// mask, and SvModeMap tests, removes those ORDS that exceede the sigmam
       /// value and returns the resulting statistics. This is effectivly a simple
@@ -200,10 +214,11 @@ namespace gpstk
       
    protected:
 
-      double sigmam;         ///< sigma multiple value for ORD stripping
-      double elvmask;        ///< elevation mask angle for ORD stripping
+      double sigmam;        ///< sigma multiple value for ORD stripping
+      double elvmask;       ///< elevation mask angle for ORD stripping
       SvStatusMap status;   ///< map of ORD usage in bias computation
       SvModeMap modes;      ///< map of modes to use ORDs in bias computation
+      bool useWonkyData;    ///< set to use ords that are flagged wonky
    };
 }
 #endif
