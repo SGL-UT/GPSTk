@@ -72,9 +72,9 @@ namespace gpstk
    protected:
       static const double UNUSED;
       
-      void FICData9::firstFiveItems( const short sfNum, 
-                                     const gpstk::FICData109 rawsf, 
-                                     const gpstk::EngEphemeris ee );
+      void firstFiveItems( const short sfNum, 
+                           const gpstk::FICData109 rawsf, 
+                           const gpstk::EngEphemeris ee );
       
    }; // class FICData9
 

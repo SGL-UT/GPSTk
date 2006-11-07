@@ -147,13 +147,6 @@ namespace gpstk
       }
    }  // end void LagrangeInterpolation(vector, vector, const T, T&, T&)
 
-   /// Perform the root sum square of aa, bb
-   template <class T>
-   T RSS (T aa, T bb)
-   {
-      return RSS(aa,bb,T(0));
-   }
-
    /// Perform the root sum square of aa, bb and cc
    template <class T>
    T RSS (T aa, T bb, T cc)
@@ -195,6 +188,14 @@ namespace gpstk
 
       return T(0);
    }
+
+   /// Perform the root sum square of aa, bb
+   template <class T>
+   T RSS (T aa, T bb)
+   {
+      return RSS(aa,bb,T(0));
+   }
+
  
    /// Perform the root sum square of aa, bb, cc and dd
    template <class T>
@@ -207,7 +208,7 @@ namespace gpstk
       T a(ABS(aa)), b(ABS(bb)), c(ABS(cc)), d(ABS(dd));
 
       // For numerical reason, let's just put the biggest in "a" (we are not sorting)
-      if (a < b) swapValues(a,b);
+      if (a < b) std::swap(a,b);
       if (a < c) swapValues(a,c);
       if (a < d) swapValues(a,d);
 
