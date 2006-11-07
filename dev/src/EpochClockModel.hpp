@@ -62,7 +62,7 @@ namespace gpstk
                       SvMode mode = ALWAYS)
          : ObsClockModel(sigma, elmask, mode), valid(false), clkc(0){}
 
-      virtual double EpochClockModel::getOffset(const gpstk::DayTime& t) const
+      virtual double getOffset(const gpstk::DayTime& t) const
          throw(gpstk::InvalidArgumentException) 
       {
          if (t!=time)
@@ -87,7 +87,7 @@ namespace gpstk
 
       // An unchecked accessor for programs that don't need the generic
       // interface
-      double EpochClockModel::getOffset() const
+      double getOffset() const
          throw() {return clkc;};
 
       bool isOffsetValid() const 
