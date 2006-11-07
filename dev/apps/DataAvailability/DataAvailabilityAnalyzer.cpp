@@ -245,7 +245,7 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
 //------------------------------------------------------------------------------
 void DataAvailabilityAnalyzer::spinUp()
 {      
-   gpstk::EphReader ephData;
+   EphReader ephData;
    ephData.verboseLevel = verboseLevel;
    for (int i=0; i < ephFileOpt.getCount(); i++)
       ephData.read(ephFileOpt.getValue()[i]);
@@ -378,7 +378,8 @@ void DataAvailabilityAnalyzer::InView::update(
       // We really don't care about the observed range deviation, the
       // ObsRngDev class is just a convient way to get the azimuth, 
       // elevation, health, iodc, 
-      ObsRngDev ord(0, prn, time, rxpos, eph, gm);
+
+      ObsRngDev ord(0, SatID(prn, SatID::systemGPS), time, rxpos, eph, gm);
       vfloat el=ord.getElevation();
 
       if (el.is_valid() && el > 0)
