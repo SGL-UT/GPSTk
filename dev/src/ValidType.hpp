@@ -88,6 +88,9 @@ namespace gpstk
       bool is_valid() const { return valid;};
       T get_value() const { return value;};
 
+      void set_valid(const bool& v) throw()
+      { valid=v;}
+
    private:
       T value;
       bool valid;
