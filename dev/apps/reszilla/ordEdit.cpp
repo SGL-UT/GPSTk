@@ -38,6 +38,7 @@
 #include <EpochClockModel.hpp>
 #include <vector>
 #include "OrdApp.hpp"
+#include "OrdApp.cpp"
 #include "EphReader.hpp"
 #include "BCEphemerisStore.hpp"
 
@@ -56,12 +57,12 @@ protected:
    virtual void process();
 
 private:
-   CommandOptionNoArg clkOpt, removeUnhlthyOpt;
-   CommandOptionWithNumberArg elvOpt, typeOpt, prnOpt, clkResOpt;
+   CommandOptionNoArg clkOpt, removeUnhlthyOpt, noClockOpt, noORDsOpt;
+   CommandOptionWithNumberArg elvOpt, prnOpt, clkResOpt;
    CommandOptionWithAnyArg ephSourceOpt, startOpt, endOpt;
    
    double elMask, clkResidLimit;
-   vector<int> prnVector, typeVector;
+   vector<int> prnVector;
    vector<string> ephFilesVector;
    DayTime tStart, tEnd;
 };
@@ -76,19 +77,23 @@ OrdEdit::OrdEdit() throw()
      removeUnhlthyOpt('u', "remove-unhealthy","Remove data for unhealthy SVs."
                   " Requires ephemeris source option."),
      ephSourceOpt('b',"be file","Broadcast ephemeris source. Must be RINEX "
-                  "nav file. In type 0 lines, health fields will be filled in."),           
-     elvOpt('e',"elev","Remove data for SVs below a given elevation mask."),
-     clkOpt('c',"clock-est", "Remove ords that do not have corresponding "
+                  "nav file. In type 0 lines, health fields will be filled "
+                  "in."),           
+     elvOpt('v',"elev","Remove data for SVs below a given elevation mask."),
+     clkOpt('e',"clock-est", "Remove ords that do not have corresponding "
             "clock estimates."),
-     typeOpt('y',"type","Remove lines for a specified type. Types are 0, "
-             "20, 21, 50, and 51. Repeat option for removing more than one"
-             " type."),
      clkResOpt('s',"size","Remove clock residuals that are greater than "
                "this size (meters)."),
      prnOpt('p',"PRN","Remove data from given PRN. Repeat option for multiple"
             " PRNs."),
-     startOpt('\0',"start","Throw out data before this time. Format as string: \"MO/DD/YYYY HH:MM:SS\" "),
-     endOpt('\0',"end","Throw out data after this time.    Format as string: \"MO/DD/YYYY HH:MM:SS\" ")
+     noClockOpt('c',"no-clock", "Remove all clock offset estimate warts. Give"
+             " this option twice to remove all clock data. "),
+     noORDsOpt('o',"no-ords","Remove all obs warts. Give this option twice to"
+            " remove all ORD data. "),
+     startOpt('\0',"start","Throw out data before this time. Format as "
+              "string: \"MO/DD/YYYY HH:MM:SS\" "),
+     endOpt('\0',"end","Throw out data after this time. Format as string:"
+            " \"MO/DD/YYYY HH:MM:SS\" ")
    
 {}
 
@@ -108,14 +113,24 @@ void OrdEdit::process()
            << "from unhealthy SVs. Exiting..." << endl;
       exit(0);
    }
+   //-- Get ephemeris data
+   EphReader ephReader;
+   ephReader.verboseLevel = verboseLevel;
+   for (int i=0; i<ephSourceOpt.getCount(); i++)
+      ephReader.read(ephSourceOpt.getValue()[i]);
+   gpstk::EphemerisStore& eph = *ephReader.eph;  
+   //-- Make sure that the eph data provided is broadcast eph 
+   if (ephSourceOpt.getCount()&&(typeid(eph)!=typeid(BCEphemerisStore)))
+   {
+      cout << "You provided an eph source that was not broadcast ephemeris.\n"
+              "(Precise ephemeris does not contain health info and can't be \n"
+              " used with this program.) Exiting... \n";
+      exit(0);
+   }  
    //-- get PRNs to be excluded
    int numPRNs = prnOpt.getCount();
    for (int index = 0; index < numPRNs; index++)
       prnVector.push_back(asInt(prnOpt.getValue()[index]));
-   //-- get line types to be excluded
-   int numTypes = typeOpt.getCount();
-   for (int index = 0; index < numTypes; index++)
-      typeVector.push_back(asInt(typeOpt.getValue()[index]));
    //-- get ephemeris sources, if given
    int numBEFiles = ephSourceOpt.getCount();
    for (int index = 0; index < numBEFiles; index++)
@@ -131,16 +146,20 @@ void OrdEdit::process()
    int mm,dd,yy,hh,minu; 
    if (startOpt.getCount())
    {
-      sscanf(startOpt.getValue().front().c_str(), "%i/%i/%i %i:%i:%lf",&mm,&dd,&yy,&hh,&minu,&ss);
-      tStart.setYMDHMS((short)yy, (short)mm, (short)dd, (short)hh, (short)minu, (double)ss);
+      sscanf(startOpt.getValue().front().c_str(),"%i/%i/%i %i:%i:%lf",
+             &mm,&dd,&yy,&hh,&minu,&ss);
+      tStart.setYMDHMS((short)yy,(short)mm,(short)dd,(short)hh,
+                       (short)minu,(double)ss);
    }
    if (endOpt.getCount())
    {
-      sscanf(endOpt.getValue().front().c_str(), "%i/%i/%i %i:%i:%lf",&mm,&dd,&yy,&hh,&minu,&ss);
-      tEnd.setYMDHMS((short)yy, (short)mm, (short)dd, (short)hh, (short)minu, (double)ss);
+      sscanf(endOpt.getValue().front().c_str(), "%i/%i/%i %i:%i:%lf",
+             &mm,&dd,&yy,&hh,&minu,&ss);
+      tEnd.setYMDHMS((short)yy,(short)mm,(short)dd,(short)hh,
+                     (short)minu, (double)ss);
    }
-
-   if (verboseLevel || debugLevel) // too lazy?
+   //-- too lazy?
+   if (verboseLevel || debugLevel)
    {
       cout << "#   So, according to you, ordEdit should be... \n";
       if (clkOpt.getCount())
@@ -172,13 +191,6 @@ void OrdEdit::process()
             cout << prnVector[index] << " ";
          cout << endl;
       }
-      if (numTypes)
-      {
-         cout << "# Ignoring line types: ";
-         for (int index = 0; index < numTypes; index++)
-            cout << typeVector[index] << " ";
-         cout << endl;
-      }
       if (clkResidLimit)
          cout << "# Tossing clk resids > " << clkResidLimit << " m.\n";
       else
@@ -189,21 +201,20 @@ void OrdEdit::process()
             cout << "# Eph source: " <<  ephSourceOpt.getValue()[index] 
                  << endl;
       }
+      if (noClockOpt.getCount() == 1)
+         cout << "# Removing clock offset warts from ord file.\n";
+      else if (noClockOpt.getCount() > 1)
+         cout << "# Removing all clock data from ord file.\n";
+      if (noORDsOpt.getCount() == 1)
+         cout << "# Removing obs warts from ord file.\n";
+      else if (noORDsOpt.getCount() > 1)
+         cout << "# Removing all ord data from file.\n";      
    }
-   
-   // Get ephemeris data
-   EphReader ephReader;
-   ephReader.verboseLevel = verboseLevel;
-   for (int i=0; i<ephSourceOpt.getCount(); i++)
-      ephReader.read(ephSourceOpt.getValue()[i]);
-   gpstk::EphemerisStore& eph = *ephReader.eph;
-
    while (input)
    {
       bool writeThisEpoch = true;
-      ORDEpoch ordEpoch = read(input);
-      
-      if (clkOpt.getCount() && !(ordEpoch.clockOffset.get_value()))  // should be using is_valid() but it's not working right! TBFixed
+      ORDEpoch ordEpoch = read(input); 
+      if (clkOpt.getCount() && !(ordEpoch.clockOffset.is_valid()))
          writeThisEpoch = false;
       else if (startOpt.getCount() && (ordEpoch.time < tStart))
          writeThisEpoch = false;
@@ -216,9 +227,16 @@ void OrdEdit::process()
          while (iter!= ordEpoch.ords.end())
          {
             const SatID& satId = iter->first;
-            const ObsRngDev& ord = iter->second;
-            //ord.health = eph.getSatHealth(satId, ordEpoch.time);   add health
-            //ord.health = bce.getSatHealth(satId, ordEpoch.time);   ????????
+            ObsRngDev ord = iter->second;
+            if (typeid(eph) == typeid(BCEphemerisStore))
+            {
+               const BCEphemerisStore& bce = 
+                  dynamic_cast<const BCEphemerisStore&>(eph);
+               const EngEphemeris& eph = 
+                  bce.findEphemeris(satId, ordEpoch.time);
+               ord.health =  eph.getHealth();               
+            }
+            iter++;
          }
       }      
       if (removeUnhlthyOpt.getCount())
@@ -230,7 +248,8 @@ void OrdEdit::process()
             const ObsRngDev& ord = iter->second;
             if (ord.health != 0 )
                ordEpoch.removeORD(satId);            
-         }
+            iter++;
+         }         
       }
       if (elMask)
       {
@@ -243,10 +262,43 @@ void OrdEdit::process()
                ordEpoch.removeORD(satId);
             iter++;
          }
-      }     
-      if (numTypes)
+      }   
+      if (noClockOpt.getCount() == 1)
       {
-      ; // TBD
+         // removing receiver clock offset estimate warts (type 70 lines)
+         if (ordEpoch.clockOffset.is_valid() && ordEpoch.wonky)
+            ordEpoch.clockOffset.set_valid(false);
+      }
+      else if (noClockOpt.getCount() > 1)
+      {
+         // removing all clock data (line types 50, 51, and 70)
+         ordEpoch.clockOffset.set_valid(false);
+ 
+      }
+      if (noORDsOpt.getCount() == 1)
+      {
+         // removing obs warts (the type 20 lines)
+         ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
+         while (iter!= ordEpoch.ords.end())
+         {
+            const SatID& satId = iter->first;
+            const ObsRngDev& ord = iter->second;
+            iter++;
+            if (ord.wonky)
+               ordEpoch.removeORD(satId);
+         }
+      }
+      else if (noORDsOpt.getCount() > 1)
+      {
+         // removing all ords
+         ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
+         while (iter!= ordEpoch.ords.end())
+         {
+            const SatID& satId = iter->first;
+            const ObsRngDev& ord = iter->second;
+            iter++;
+            ordEpoch.removeORD(satId);
+         }         
       }
       if (numPRNs)
       {
@@ -263,17 +315,14 @@ void OrdEdit::process()
       if (clkResidLimit)
       {
       ; /*********************************************
-         hrmmmm. no clock residual because don't have 
-         type 51 (linear clock estimate) coming out of 
-         ordClock. TBFixed
+         hrrmmm. no clock residual because don't have 
+         type 51 (linear clock estimate) generation
+         anywhere yet. TBAdded
        **********************************************/
       }
-
       if (writeThisEpoch)
          write(output, ordEpoch);
    }
-
-
    if (verboseLevel || debugLevel)
       cout << "#   Doneskies.\n";
 }
