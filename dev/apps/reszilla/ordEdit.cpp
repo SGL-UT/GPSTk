@@ -79,7 +79,7 @@ OrdEdit::OrdEdit() throw()
      ephSourceOpt('b',"be file","Broadcast ephemeris source. Must be RINEX "
                   "nav file. In type 0 lines, health fields will be filled "
                   "in."),           
-     elvOpt('v',"elev","Remove data for SVs below a given elevation mask."),
+     elvOpt('m',"elev","Remove data for SVs below a given elevation mask."),
      clkOpt('e',"clock-est", "Remove ords that do not have corresponding "
             "clock estimates."),
      clkResOpt('s',"size","Remove clock residuals that are greater than "
