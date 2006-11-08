@@ -221,7 +221,7 @@ void OrdEdit::process()
       else if (endOpt.getCount() && (ordEpoch.time > tEnd))
          writeThisEpoch = false;        
       
-      if (numBEFiles)
+      if (writeThisEpoch && numBEFiles)
       {
          ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
          while (iter!= ordEpoch.ords.end())
@@ -239,7 +239,7 @@ void OrdEdit::process()
             iter++;
          }
       }      
-      if (removeUnhlthyOpt.getCount())
+      if (writeThisEpoch && removeUnhlthyOpt.getCount())
       {
          ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
          while (iter!= ordEpoch.ords.end())
@@ -251,31 +251,32 @@ void OrdEdit::process()
             iter++;
          }         
       }
-      if (elMask)
+      if (writeThisEpoch && elMask)
       {
          ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
          while (iter!= ordEpoch.ords.end())
          {
             const SatID& satId = iter->first;
             const ObsRngDev& ord = iter->second;
-            if (ord.getElevation()< elMask)
-               ordEpoch.removeORD(satId);
             iter++;
+            if ((ord.getElevation()< elMask))
+                  ordEpoch.removeORD(satId);
          }
       }   
-      if (noClockOpt.getCount() == 1)
+
+      if (writeThisEpoch && (noClockOpt.getCount() == 1))
       {
          // removing receiver clock offset estimate warts (type 70 lines)
          if (ordEpoch.clockOffset.is_valid() && ordEpoch.wonky)
             ordEpoch.clockOffset.set_valid(false);
       }
-      else if (noClockOpt.getCount() > 1)
+      else if (writeThisEpoch && (noClockOpt.getCount() > 1))
       {
          // removing all clock data (line types 50, 51, and 70)
          ordEpoch.clockOffset.set_valid(false);
  
       }
-      if (noORDsOpt.getCount() == 1)
+      if (writeThisEpoch && (noORDsOpt.getCount() == 1))
       {
          // removing obs warts (the type 20 lines)
          ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
@@ -288,7 +289,7 @@ void OrdEdit::process()
                ordEpoch.removeORD(satId);
          }
       }
-      else if (noORDsOpt.getCount() > 1)
+      else if (writeThisEpoch && (noORDsOpt.getCount() > 1))
       {
          // removing all ords
          ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
@@ -300,7 +301,7 @@ void OrdEdit::process()
             ordEpoch.removeORD(satId);
          }         
       }
-      if (numPRNs)
+      if (writeThisEpoch && numPRNs)
       {
          for (int index = 0; index < prnVector.size(); index++)
          {
@@ -312,7 +313,7 @@ void OrdEdit::process()
                ordEpoch.removeORD(thisSatID);
          }
       }
-      if (clkResidLimit)
+      if (writeThisEpoch && clkResidLimit)
       {
       ; /*********************************************
          hrrmmm. no clock residual because don't have 
