@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -114,7 +114,7 @@ public:
 
 		/// change the maximum time gap (in seconds) allowed within any SatPass
       /// return the input.
-	static double SatPass::setMaxGap(const double gap)
+	static double setMaxGap(const double gap)
       { maxGap = gap; return maxGap; }
 
       /// set timetag output format

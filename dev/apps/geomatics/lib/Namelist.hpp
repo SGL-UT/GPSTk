@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -101,6 +101,10 @@ public:
    LabelledMatrix& message(const std::string& m) { msg=m; return *this; }
 };
 
+std::ostream& operator<<(std::ostream&, const LabelledMatrix&);
+std::ostream& operator<<(std::ostream&, const LabelledVector&);
+
+
 //------------------------------------------------------------------------------------
 /** class Namelist. A Namelist is simply an ordered set of unique strings ('names' or
  * 'labels') of any length. Namelists are used to label or identify elements of
@@ -109,6 +113,7 @@ public:
  * an estimation problem; SRI include a Namelist which associates readable labels with
  * the elements of the state and covariance.
  */
+
 class Namelist {
    friend class SRI;
    friend std::ostream& operator<<(std::ostream&, const LabelledMatrix&);

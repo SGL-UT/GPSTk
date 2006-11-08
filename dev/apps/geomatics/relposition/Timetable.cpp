@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -110,6 +110,9 @@ int ReadTimeTable(void);
 int ComputeBaselineTimeTable(const string& bl);
 int TTComputeSingleDifferences(const string& bl, const double ElevLimit);
 int TimeTableAlgorithm(list<TTSegment>& TTS, list<TTSegment>& TTab);
+bool startSort(const TTSegment& left, const TTSegment& right);
+bool increasingMetricSort(const TTSegment& left, const TTSegment& right);
+bool decreasingMetricSort(const TTSegment& left, const TTSegment& right);
 
 //------------------------------------------------------------------------------------
 // Find the entry in the timetable which applies to the baseline given in sdid and
@@ -807,7 +810,7 @@ void TTSegment::findElev(void)
 }
 
 //------------------------------------------------------------------------------------
-// friends of TTSegment, declared there
+// friends of TTSegment, defined there
 bool startSort(const TTSegment& left, const TTSegment& right)
 { return (left.start < right.start); }
 

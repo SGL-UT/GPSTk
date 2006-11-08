@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -278,13 +278,13 @@ public:
 
       /// Zero out the nth row of R and the nth element of Z, removing all
       /// information about that element.
-   void SRI::zeroOne(const unsigned int n)
+   void zeroOne(const unsigned int n)
       throw();
 
       /// Zero out all the first n rows of R and elements of Z, removing all
       /// information about those elements. Default value of the input is 0,
       /// meaning zero out the entire SRI.
-   void SRI::zeroAll(const int n=0)
+   void zeroAll(const int n=0)
       throw();
 
       /// Zero out (set all elements to zero) the Vector Z only.

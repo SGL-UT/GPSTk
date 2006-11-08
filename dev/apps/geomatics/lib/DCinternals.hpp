@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -126,7 +126,7 @@ public:
    static const unsigned short GFDETECT;
    static const unsigned short GFFIX;
 
-   explicit GDCPass::GDCPass(const SatPass& sp, const GDCconfiguration& gdc)
+   explicit GDCPass(const SatPass& sp, const GDCconfiguration& gdc)
       : SatPass(sp.getSat(), sp.getDT())
       { *((SatPass*)this) = sp;  *((GDCconfiguration*)this) = gdc; }
 
