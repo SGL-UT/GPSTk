@@ -57,7 +57,9 @@ protected:
 
 private:
    CommandOptionWithAnyArg elevBinsOption;
+   CommandOptionWithNumberArg sigmaOption;
    ElevationRangeList elr;
+   double sigmaMult;
 
 };
 
@@ -70,7 +72,9 @@ OrdStats::OrdStats() throw()
      elevBinsOption('b', "elev-bin", "A range of elevations, used in  computing"
                   " the statistical summaries. Repeat to specify multiple "
                   "bins. The default is \"-b 0-10 -b 10-20 -b 20-60 -b "
-                  "10-90\".")
+                  "10-90\"."),
+     sigmaOption('s',"sigma","Multiplier for sigma stripping used in "
+                 "statistical computations. The default value is 6.")
 {}
 
 //-----------------------------------------------------------------------------
@@ -102,6 +106,10 @@ void OrdStats::process()
       elr.push_back( ElevationRange(60, 90) );
       elr.push_back( ElevationRange(10, 90) );
    }
+   if (sigmaOption.getCount())
+      sigmaMult = asDouble(sigmaOption.getValue().front());
+   else
+      sigmaMult = 6;
    
    cout << endl
         << "elev\tstddev\t    mean     # obs   # bad"
@@ -138,8 +146,7 @@ void OrdStats::process()
                fp.Add(ord);
          }
       } 
-      double sigmam = 6;    //---------------------------- ok?
-      double strip = sigmam * fp.StdDev();
+      double strip = sigmaMult * fp.StdDev();
       Stats<double> good, bad;
       for (iter = oem.begin(); iter != oem.end(); iter++)
       {
