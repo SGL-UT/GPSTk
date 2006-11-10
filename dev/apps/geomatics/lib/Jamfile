@@ -7,32 +7,20 @@ SubDir TOP apps geomatics lib ;
 SEARCH_SOURCE += $(TOP)/src ;
 SEARCH_SOURCE += $(TOP)/apps/Rinextools ;
 
-if $(PREPROCESSING)
-{
-   GPSSetupLibrary geomatic ;
-}
-else
-{
-   GPSBuildLibrary geomatic : 
-      SRI.cpp Namelist.cpp SRIFilter.cpp
-      RobustStats.cpp
-      EarthOrientation.cpp GeodeticFrames.cpp PreciseRange.cpp
-      PhaseWindup.cpp
-      SatPass.cpp
-      DiscCorr.cpp GDCconfiguration.cpp
-      GSatID.cpp DDid.cpp
-      random.cpp format.cpp
-      ;
 
-   InstallFile $(INCDIR) : 
-      SRI.hpp Namelist.hpp SRIFilter.hpp
-      RobustStats.hpp
-      EarthOrientation.hpp GeodeticFrames.hpp PreciseRange.hpp
-      PhaseWindup.hpp
-      SatPass.hpp
-      DiscCorr.hpp GDCconfiguration.hpp
-      GSatID.hpp DDid.hpp
-      random.hpp format.hpp index.hpp
-      ;
-}
+Library $(LIBPREFIX)geomatic : 
+   SRI.cpp Namelist.cpp SRIFilter.cpp
+   RobustStats.cpp
+   EarthOrientation.cpp GeodeticFrames.cpp PreciseRange.cpp
+   PhaseWindup.cpp
+   SatPass.cpp
+   DiscCorr.cpp GDCconfiguration.cpp
+   GSatID.cpp DDid.cpp
+   random.cpp format.cpp
+   ;
+   
+GPSLinkLibraries : gpstk $(LIBPREVIX)geomatic ;
+
+
+
 

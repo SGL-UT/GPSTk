@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/cycleslips/DiscCorr.cpp#4 $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
