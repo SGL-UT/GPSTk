@@ -36,6 +36,7 @@
 #include "RinexObsData.hpp"
 #include "CheckPRData.hpp"
 #include "Vector.hpp"
+#include "DataStructures.hpp"
 
 
 namespace gpstk
@@ -70,6 +71,8 @@ namespace gpstk
         /// Vector holding the available data
         Vector<double> obsData;
 
+        /// Object of type RinexOneTypeData holding the relevant extracted data
+        RinexOneTypeData extractedData;
 
         /// Default constructor
         ExtractData() throw(InvalidData)
@@ -121,6 +124,7 @@ namespace gpstk
                     // Store all relevant data of this epoch
                     availableSV = availableSV && (*it).first;
                     obsData = obsData && (*itObs1).second.data;
+                    extractedData.obs[(*it).first] = (*itObs1).second;
                 }
             } // End of data extraction from this epoch
         }
@@ -131,6 +135,12 @@ namespace gpstk
 
         // Let's record the number of SV with this type of data available
         numSV = (int)obsData.size();
+        extractedData.numSvs = numSV;
+
+        // Fill the remaining files of extractedData object
+        extractedData.epochFlag = rinexData.epochFlag;
+        extractedData.time = rinexData.time;
+        extractedData.typeObs = typeObs;
 
         // If everything is fine so far, then the results should be valid
         valid = true;
@@ -172,10 +182,10 @@ namespace gpstk
 
 
    }; // end class ExtractData
-   
+
 
    //@}
-   
+
 }
 
 #endif

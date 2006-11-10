@@ -90,10 +90,10 @@ namespace gpstk
 
 
    }; // end class ExtractPC
-   
+
 
    //@}
-   
+
 }
 
 #endif
