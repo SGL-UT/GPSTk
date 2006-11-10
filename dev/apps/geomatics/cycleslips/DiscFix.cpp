@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/sgl/gpstk/dev/apps/cycleslips/DiscFix.cpp#1 $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -785,7 +785,7 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime)
                   roe.numSvs++;
 
                	// build the RINEX data object
-               	RinexObsData::RinexDatum rd;
+               	RinexDatum rd;
 
                	rd.lli = StringUtils::asInt(StringUtils::asString<char>(str[0]));
                	rd.ssi = StringUtils::asInt(StringUtils::asString<char>(str[1]));

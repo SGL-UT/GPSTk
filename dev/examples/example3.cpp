@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
        roffs.exceptions(ios::failbit);
        RinexObsHeader roh;
        RinexObsData roe;
-       RinexObsData::RinexDatum dataobj;
+       RinexDatum dataobj;
 
 //Read the RINEX header (this could be skipped).
 //--------------------------------------------       
@@ -68,10 +68,10 @@ int main(int argc, char *argv[])
 //-------------------------------------------------------------------------------
                 dataobj = roe.obs[prn][RinexObsHeader::P1];  //The intuitive way
 
-                RinexObsData::RinexDatum dataobj2 = (*pointer).second[RinexObsHeader::P1];  //The more efficient STL way
+                RinexDatum dataobj2 = (*pointer).second[RinexObsHeader::P1];  //The more efficient STL way
 
                 // Another way to do the same that above
-                //RinexObsData::RinexDatum dataobj2 = pointer->second[RinexObsHeader::P1];
+                //RinexDatum dataobj2 = pointer->second[RinexObsHeader::P1];
 
                 if( dataobj.data != dataobj2.data) cout << "STL has a bug! (Type crtl-C now or else orcs will crawl from you ears!)" << endl;
 

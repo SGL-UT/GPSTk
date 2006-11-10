@@ -669,14 +669,14 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
    if(Skip && NewFile) return 1;
 
       // copy data over to new obs structure
-   RinexObsData::RinexDatum datum;                       // place holder and zero
+   RinexDatum datum;                       // place holder and zero
    datum.data = 0.0;
    datum.lli = datum.ssi = 0;
    RinexObsData::RinexObsTypeMap otmap;           // place holder for ROOut.obs.second
 
    for(int j=0; j<RHOut.obsTypeList.size(); j++)  // loop over obstypes (out) in otmap
       otmap.insert(std::map<RinexObsHeader::RinexObsType,
-         RinexObsData::RinexDatum>::value_type(RHOut.obsTypeList[j],datum) );
+         RinexDatum>::value_type(RHOut.obsTypeList[j],datum) );
 
       // loop over prns, create otmap and then insert it with the correct prn
    int nsvs=0;
