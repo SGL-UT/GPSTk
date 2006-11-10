@@ -68,5 +68,6 @@ public:
    friend std::ostream& operator<<(std::ostream& os, const format& f);
 }; // end class format
 
+//------------------------------------------------------------------------------------
 #endif
 // nothing below this..

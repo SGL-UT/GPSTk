@@ -320,5 +320,3 @@ private:
    map<string,int> learn;
 
 }; // end class GDCPass
-
-

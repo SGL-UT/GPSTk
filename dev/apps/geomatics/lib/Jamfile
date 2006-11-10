@@ -5,8 +5,6 @@
 SubDir TOP apps geomatics lib ;
 
 SEARCH_SOURCE += $(TOP)/src ;
-SEARCH_SOURCE += $(TOP)/apps/Rinextools ;
-
 
 Library $(LIBPREFIX)geomatic : 
    SRI.cpp Namelist.cpp SRIFilter.cpp
@@ -20,7 +18,4 @@ Library $(LIBPREFIX)geomatic :
    ;
    
 GPSLinkLibraries : gpstk $(LIBPREVIX)geomatic ;
-
-
-
 
