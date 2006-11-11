@@ -674,7 +674,7 @@ namespace gpstk
       long nobs;            // number of observation records (may be 2/PRN: L1 and L2)
       SatID sat;
       RinexObsData rod;     // this will be returned
-      RinexDatum rd;
+      RinexObsData::RinexDatum rd;
       RinexObsData::RinexSatMap::iterator satit;
       RinexObsData::RinexObsTypeMap::iterator obsit;
 

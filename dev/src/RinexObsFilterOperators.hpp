@@ -134,7 +134,7 @@ namespace gpstk
          
                while (obsItr != obsSet.end())
                {
-                  gpstk::RinexDatum lData, rData;
+                  gpstk::RinexObsData::RinexDatum lData, rData;
                   lData = lObs[*obsItr];
                   rData = rObs[*obsItr];
 

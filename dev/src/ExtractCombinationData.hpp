@@ -62,7 +62,7 @@ namespace gpstk
          * @return
          *  Number of satellites with this combination of observable data available
          */
-        virtual int getData(const RinexObsData& rinexData, RinexObsHeader::RinexObsType typeObs1, RinexObsHeader::RinexObsType typeObs2) throw(InvalidData)
+        virtual int getData(const RinexObsData& rinexData, RinexObsHeader::RinexObsType typeObs1,  RinexObsHeader::RinexObsType typeObs2) throw(InvalidData)
         {
         try {
             // Let's make sure each time we start with clean Vectors
@@ -109,10 +109,6 @@ namespace gpstk
                             // Store all relevant data of this epoch
                             availableSV = availableSV && (*it).first;
                             obsData = obsData && combinationValue;
-                            // Let's use for the resutl the lli and ssi values corresponding to the first observable
-                            tempDatum = (*itObs1).second;
-                            tempDatum.data = combinationValue;
-                            extractedData.obs[(*it).first] = tempDatum;
                         }
                     }
                 }
@@ -125,14 +121,6 @@ namespace gpstk
 
         // Let's record the number of SV with this type of data available
         numSV = (int)obsData.size();
-        extractedData.numSvs = numSV;
-
-        // Fill the remaining files of extractedData object
-        extractedData.epochFlag = rinexData.epochFlag;
-        extractedData.time = rinexData.time;
-        // Note: extractedData observation type should be set manually
-        extractedData.typeObs = RinexObsHeader::UN;
-
 
         // If everything is fine so far, then the results should be valid
         valid = true;
@@ -149,8 +137,6 @@ namespace gpstk
     protected:
        /// Compute the combination of observables. You must define this method according to your specific combination.
         virtual double getCombination(double obs1, double obs2) throw(InvalidData) = 0;
-
-        RinexDatum tempDatum;
 
 
    }; // end class ExtractCombinationData

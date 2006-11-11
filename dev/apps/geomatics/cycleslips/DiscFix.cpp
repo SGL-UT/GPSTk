@@ -785,7 +785,7 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime)
                   roe.numSvs++;
 
                	// build the RINEX data object
-               	RinexDatum rd;
+               	RinexObsData::RinexDatum rd;
 
                	rd.lli = StringUtils::asInt(StringUtils::asString<char>(str[0]));
                	rd.ssi = StringUtils::asInt(StringUtils::asString<char>(str[1]));

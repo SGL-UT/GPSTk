@@ -52,19 +52,19 @@ namespace gpstk
     {
         BasicDatum(): data(0) {};    ///< Default constructor.
         double data;            ///< The actual data point.
-    };
+    }
 
 
     /// A structure used to store a single Rinex data point.
-    struct RinexDatum : public BasicDatum
+    struct _RinexDatum : public BasicDatum
     {
         /// Default constructor.
-        RinexDatum(): lli(0),ssi(0) {};
+        _RinexDatum(): lli(0),ssi(0) {};
         /// Loss of Lock Indicator. See the RINEX Spec. for an explanation.
         short lli;
         /// Signal Strength Indicator. See the RINEX Spec. for an explanation.
-        short ssi;
-    };
+        short ssi;            
+    }
 
 
     /// map from SatID to BasicDatum.
@@ -72,15 +72,15 @@ namespace gpstk
 
 
     /// map from SatID to RinexDatum.
-    typedef std::map<SatID, RinexDatum> SatIDRinexDatumMap;
+    typedef std::map<SatID, _RinexDatum> SatIDRinexDatumMap;
 
 
-    /// map from RinexObsType to BasicDatum.
-    typedef std::map<RinexObsHeader::RinexObsType, BasicDatum> ObsTypeDatumMap;
+    /// map from RinexObsType to Datum.
+    typedef std::map<RinexObsHeader::RinexObsType, Datum> ObsTypeDatumMap;
 
 
     /// map from RinexObsType to RinexDatum.
-    typedef std::map<RinexObsHeader::RinexObsType, RinexDatum> _RinexObsTypeMap;
+    typedef std::map<RinexObsHeader::RinexObsType, _RinexDatum> _RinexObsTypeMap;
 
 
     /// map from SatID to ObsTypeDatumMap.
@@ -163,9 +163,6 @@ namespace gpstk
     {
     public:
 
-        /// Observation RINEX type
-        RinexObsHeader::RinexObsType typeObs;
-
         /// Observations as a map from SatID to RinexDatum.
         SatIDRinexDatumMap obs;
 
@@ -192,7 +189,7 @@ namespace gpstk
 
         /// Component in Z of unitary vector from SV to receiver.
         double uZ;
-    };
+    }
 
 
     /// A structure used to store the geometry matrix data for a single SV-Rx pair.
@@ -203,7 +200,7 @@ namespace gpstk
 
         /// Parameter associated with time.
         double uT;
-    };
+    }
 
 
     /// A structure used to store the data needed for simple navigation equations for a single SV-Rx pair.
@@ -214,7 +211,7 @@ namespace gpstk
 
         /// Prefit residual for the a given SV-Rx pair.
         double prefitResidual;
-    };
+    }
 
 
     /// A structure used to store the data needed for double-differenced navigation equations for a single SV-Rx pair.
@@ -225,7 +222,7 @@ namespace gpstk
 
         /// Prefit residual for the a given SV-Rx pair.
         double prefitResidual;
-    };
+    }
 
 
     /// map from SatID to simpleNavEquationData.
@@ -240,12 +237,12 @@ namespace gpstk
     struct baseRXData
     {
         /// Receiver name
-        std::string rxName;
+        string rxName;
 
         /// Receiver position.
         Position rxPosition;
 
-    };
+    }
 
 
     /// A structure used to store information about a receiver.
@@ -260,7 +257,7 @@ namespace gpstk
         /// Antenna offset.
         Triple  rxAntennaOffset;
 
-    };
+    }
 
 
     /// This is a class encapsulating information of a simple navigation equation set.

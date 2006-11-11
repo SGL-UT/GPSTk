@@ -49,7 +49,6 @@
 #include <map>
 
 #include "DayTime.hpp"
-#include "DataStructures.hpp"
 #include "FFStream.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsHeader.hpp"
@@ -69,6 +68,15 @@ namespace gpstk
    {
    public:
 
+         /// A structure used to store a single RINEX Data point.
+      struct RinexDatum
+      {
+         RinexDatum() : data(0), lli(0), ssi(0) {}
+         double data;  ///< The actual data point.
+         short lli;    ///< See the RINEX Spec. for an explanation.
+         short ssi;    ///< See the RINEX Spec. for an explanation.
+      };
+      
          /// map from RinexObsType to RinexDatum.
       typedef std::map<RinexObsHeader::RinexObsType, RinexDatum> RinexObsTypeMap;
          /// map from SatID to RinexObsTypeMap.
