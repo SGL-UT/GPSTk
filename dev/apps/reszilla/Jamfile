@@ -19,10 +19,10 @@ Library rlib : util.cpp readers.cpp ordUtils.cpp DDEpoch.cpp PhaseCleaner.cpp
 Library datalib : ObsUtils.cpp FFIdentifier.cpp ObsReader.cpp EphReader.cpp 
   MetReader.cpp MDP2Rinex.cpp OrdApp.cpp OrdEngine.cpp ;
 
-LinkLibraries reszilla mkord ordGen ordClock ordEdit ordStats : datalib
+LinkLibraries reszilla mkord ordGen ordClock ordEdit ordStats ordLinEst : datalib
    rlib datalib rlib ;
 
-GPSLinkLibraries reszilla mkord ordGen ordClock ordEdit ordStats : gpstk datalib rlib
+GPSLinkLibraries reszilla mkord ordGen ordClock ordEdit ordStats ordLinEst : gpstk datalib rlib
    datalib rlib ;
 
 GPSMain reszilla : reszilla.cpp ;
@@ -32,6 +32,8 @@ GPSMain mkord : mkord.cpp ;
 GPSMain ordGen : ordGen.cpp ;
 
 GPSMain ordClock : ordClock.cpp ;
+
+GPSMain ordLinEst : ordLinEst.cpp ;
 
 GPSMain ordEdit : ordEdit.cpp ;
 
