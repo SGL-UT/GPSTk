@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -76,11 +77,11 @@ OrdEdit::OrdEdit() throw()
      elMask(0),clkResidLimit(0),
      removeUnhlthyOpt('u', "remove-unhealthy","Remove data for unhealthy SVs."
                   " Requires ephemeris source option."),
-     ephSourceOpt('b',"be file","Broadcast ephemeris source. Must be RINEX "
+     ephSourceOpt('e',"be-file","Broadcast ephemeris source. Must be RINEX "
                   "nav file. In type 0 lines, health fields will be filled "
                   "in."),           
      elvOpt('m',"elev","Remove data for SVs below a given elevation mask."),
-     clkOpt('e',"clock-est", "Remove ords that do not have corresponding "
+     clkOpt('k',"clock-est", "Remove ords that do not have corresponding "
             "clock estimates."),
      clkResOpt('s',"size","Remove clock residuals that are greater than "
                "this size (meters)."),
@@ -126,7 +127,7 @@ void OrdEdit::process()
               "(Precise ephemeris does not contain health info and can't be \n"
               " used with this program.) Exiting... \n";
       exit(0);
-   }  
+   }
    //-- get PRNs to be excluded
    int numPRNs = prnOpt.getCount();
    for (int index = 0; index < numPRNs; index++)
@@ -212,46 +213,29 @@ void OrdEdit::process()
    }
    while (input)
    {
-      bool writeThisEpoch = true;
       ORDEpoch ordEpoch = read(input); 
       if (clkOpt.getCount() && !(ordEpoch.clockOffset.is_valid()))
-         writeThisEpoch = false;
+         continue;
       else if (startOpt.getCount() && (ordEpoch.time < tStart))
-         writeThisEpoch = false;
+         continue;
       else if (endOpt.getCount() && (ordEpoch.time > tEnd))
-         writeThisEpoch = false;        
-      
-      if (writeThisEpoch && numBEFiles)
+         continue;
+      if (numBEFiles && removeUnhlthyOpt.getCount())
       {
-         ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
+         const BCEphemerisStore& bce = dynamic_cast<const BCEphemerisStore&>(eph);
+         ORDEpoch::ORDMap::iterator iter = ordEpoch.ords.begin();
          while (iter!= ordEpoch.ords.end())
          {
             const SatID& satId = iter->first;
-            ObsRngDev ord = iter->second;
-            if (typeid(eph) == typeid(BCEphemerisStore))
-            {
-               const BCEphemerisStore& bce = 
-                  dynamic_cast<const BCEphemerisStore&>(eph);
-               const EngEphemeris& eph = 
-                  bce.findEphemeris(satId, ordEpoch.time);
-               ord.health =  eph.getHealth();               
-            }
+            ObsRngDev& ord = iter->second;
             iter++;
+            const EngEphemeris& eph = bce.findEphemeris(satId, ordEpoch.time);
+            ord.health =  eph.getHealth();
+            if (ord.health.is_valid() && ord.health != 0)
+               ordEpoch.removeORD(satId);
          }
-      }      
-      if (writeThisEpoch && removeUnhlthyOpt.getCount())
-      {
-         ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
-         while (iter!= ordEpoch.ords.end())
-         {
-            const SatID& satId = iter->first;
-            const ObsRngDev& ord = iter->second;
-            if (ord.health != 0 )
-               ordEpoch.removeORD(satId);            
-            iter++;
-         }         
       }
-      if (writeThisEpoch && elMask)
+      if (elMask)
       {
          ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
          while (iter!= ordEpoch.ords.end())
@@ -264,19 +248,18 @@ void OrdEdit::process()
          }
       }   
 
-      if (writeThisEpoch && (noClockOpt.getCount() == 1))
+      if (noClockOpt.getCount() == 1)
       {
          // removing receiver clock offset estimate warts (type 70 lines)
          if (ordEpoch.clockOffset.is_valid() && ordEpoch.wonky)
             ordEpoch.clockOffset.set_valid(false);
       }
-      else if (writeThisEpoch && (noClockOpt.getCount() > 1))
+      else if (noClockOpt.getCount() > 1)
       {
          // removing all clock data (line types 50, 51, and 70)
          ordEpoch.clockOffset.set_valid(false);
- 
       }
-      if (writeThisEpoch && (noORDsOpt.getCount() == 1))
+      if (noORDsOpt.getCount() == 1)
       {
          // removing obs warts (the type 20 lines)
          ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
@@ -289,7 +272,7 @@ void OrdEdit::process()
                ordEpoch.removeORD(satId);
          }
       }
-      else if (writeThisEpoch && (noORDsOpt.getCount() > 1))
+      else if (noORDsOpt.getCount() > 1)
       {
          // removing all ords
          ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
@@ -301,7 +284,7 @@ void OrdEdit::process()
             ordEpoch.removeORD(satId);
          }         
       }
-      if (writeThisEpoch && numPRNs)
+      if (numPRNs)
       {
          for (int index = 0; index < prnVector.size(); index++)
          {
@@ -313,16 +296,18 @@ void OrdEdit::process()
                ordEpoch.removeORD(thisSatID);
          }
       }
-      if (writeThisEpoch && clkResidLimit)
+      if (clkResidLimit)
       {
-      ; /*********************************************
+         if (false)
+            continue;
+         /*********************************************
          hrrmmm. no clock residual because don't have 
          type 51 (linear clock estimate) generation
          anywhere yet. TBAdded
-       **********************************************/
+         **********************************************/
       }
-      if (writeThisEpoch)
-         write(output, ordEpoch);
+
+      write(output, ordEpoch);
    }
    if (verboseLevel || debugLevel)
       cout << "#   Doneskies.\n";

@@ -122,7 +122,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
 {
    if (!headerWritten)
    {
-      s << "# time              type PRN  elev     ord/clk(m)  iodc  health"
+      s << "# time              type PRN  elev     ord/clk(m)"
         << endl;
       headerWritten=true;
    }
@@ -146,10 +146,6 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
         << " " << setw(2) << svid.id
         << " " << setprecision(1) << setw(5)  << ord.getElevation()
         << " " << setprecision(5) << setw(14) << ord.getORD()
-        << hex
-        << " " << setw(5) << ord.getIODC()
-        << " " << setw(5) << ord.getHealth()
-        << dec
         << endl;
    }
 
@@ -222,15 +218,6 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
             ord.elevation = elev;
             ord.ord = res;
             
-            string w;
-            iss >> w;
-            if (w != "Unknown")
-               ord.iodc = x2int(w);
-
-            iss >> w;
-            if (w != "Unknown")
-               ord.health = x2int(w);
-
             if (type == 20)
                ord.wonky = true;
             
