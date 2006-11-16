@@ -111,11 +111,11 @@ void OrdStats::process()
    else
       sigmaMult = 6;
    
-   cout << endl
-        << "elev\tstddev\t    mean     # obs   # bad"
-        << "   max    strip\n"
-        << "----\t------\t    ----     -----   -----"
-        << "  -----   -----\n";
+   output << endl
+          << "elev\tstddev\t    mean     # obs   # bad"
+          << "   max    strip\n"
+          << "----\t------\t    ----     -----   -----"
+          << "  -----   -----\n";
         
    ORDEpochMap oem;
    // read in data from the ord file to map of ORDEpochs
@@ -175,7 +175,7 @@ void OrdStats::process()
            (int)minElevation, (int)maxElevation,
            good.StdDev()/sqrt((float)2), good.Average(),
            good.N(), bad.N(), max, strip);
-      cout << b1 << endl;      
+      output << b1 << endl;      
    } 
 }
 
