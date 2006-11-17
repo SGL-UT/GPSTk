@@ -1,0 +1,133 @@
+#!/usr/bin/env python
+# $Id:$
+# A routine to plot the output of the ord apps
+
+
+import sys, string, time, datetime, numpy, matplotlib, pylab
+
+from optparse import OptionParser
+parser = OptionParser()
+parser.add_option("-d", "--debug", help="Increase the debugLevel", \
+                  default=0, dest="debugLevel", action="count")
+
+parser.add_option("-p", "--prn", help="Process only this prn", \
+                  dest="prn", type="int", action="store")
+
+parser.add_option("-i", "--input", help="Input data file, defaults to stdin.", \
+                  dest="inputFile", type="string", action="store")
+
+#parse.add_option("-o", "--no-ords", help="Disable the plotting of ords (type",\
+                 
+
+(options, args) = parser.parse_args()
+
+if (options.prn):
+    print "Only processing prn", options.prn
+
+inputFile = sys.stdin
+if (options.inputFile):
+    inputFile = open(options.inputFile)
+
+if (options.debugLevel):
+    print "Processing: %s" % inputFile.name
+    print "Debug level: %d" % options.debugLevel
+
+ordList=([],[],[],[])   # time, prn, ord, elevation
+clockList=([],[])       # time, offset
+rleClockList=([],[],[]) # time, offset, maxdev
+
+for line in inputFile:
+    line = line.strip()
+    if len(line)==0: continue
+    if line[0] == "#": continue
+    words=line.split()
+    
+    fsec = float(words[2][8:10])
+    ydhms =  words[0]+" "+words[1]+" "+words[2][0:8]
+    utime = time.strptime(ydhms, "%Y %j %H:%M:%S")
+    dtime = datetime.datetime(utime[0], utime[1], utime[2],
+                              utime[3], utime[4], utime[5], int(fsec*1e6))
+    t = matplotlib.dates.date2num(dtime)
+    
+    ordType = int(words[3])
+    if ordType == 0:
+        if len(words) < 7: print "bad ord line"
+        ordList[0].append(t)
+        ordList[1].append(int(words[4]))    # prn
+        ordList[2].append(float(words[6]))  # ord
+        ordList[3].append(float(words[5]))  # elevation
+    elif ordType == 50:
+        if len(words) < 5: print "bad clk line"
+        clockList[0].append(t)
+        clockList[1].append(float(words[4])) #offset
+    elif ordType == 51:
+        if len(words) < 6: print "bad rle line"
+        rleClockList[0].append(t)
+        rleClockList[1].append(float(words[4])) #offset
+        rleClockList[2].append(float(words[5])) #maxdev
+
+    if options.debugLevel>1 and len(clockList[0]) >= 200: break
+
+ords = numpy.array(ordList)
+clocks = numpy.array(clockList)
+rleClocks = numpy.array(rleClockList)
+
+
+if options.debugLevel:
+    print "Read %d ords from %d epochs" % (len(ords[0]), len(clocks[0]))
+    print "ords.shape:",ords.shape
+    print "clocks.shape:",clocks.shape
+    print "rleClocks.shape:",rleClocks.shape
+
+#rom pylab import plot, show, plot_date, subplot, setp, DateFormatter, grid,\
+#    NullFormatter, HourLocator, DayLocator
+
+fig = pylab.figure()
+yprops = dict(rotation=90,
+              horizontalalignment='right',
+              verticalalignment='center',
+              x=-0.01)
+
+timeFmt=pylab.DateFormatter("%02H:%02M\n%j")
+
+ax1 = fig.add_axes([0.1, 0.5, 0.87, 0.45])
+
+ax1.plot_date(ords[0], ords[2], 'r,')
+ax1.set_ylabel('ord (meters)', **yprops)
+
+# This allows the creation of futher axes that will share the x axis
+# with the first plot.
+axprops = dict()
+axprops['sharex'] = ax1
+
+ax2 = fig.add_axes([0.1, 0.065, 0.87, 0.435], **axprops)
+ax2.plot_date(clocks[0], clocks[1], 'g,')
+
+# Only plot the linear clock estimate if there is data for it...
+if rleClocks.shape[1] > 1:
+    ax2.plot_date(rleClocks[0], rleClocks[1], 'b-', linewidth=1)
+    uc = rleClocks[1] + rleClocks[2]
+    lc = rleClocks[1] - rleClocks[2]
+    xc = rleClocks[0]
+    xx = pylab.concatenate( (xc, xc[::-1]) )
+    yy = pylab.concatenate( (uc, lc[::-1]) )
+    ax2.fill(xx, yy, facecolor='b', alpha=0.4)
+
+# Need to find a way to change where the offset of the y axis for the lower
+# plot is placed.
+
+ax2.set_ylabel('clock (meters)', **yprops)
+ax2.xaxis.set_major_formatter(timeFmt)
+
+# Axis labels on the upper plot would be bad since they would be
+# drawn over the upper part of the lower plot
+pylab.setp(ax1.get_xticklabels(), visible=False)
+
+pylab.show()
+
+
+# now to strip (well, set to zero) the data at 50 meters
+# and replot it with pixels, not points
+#x=choose(greater(abs(ord),50), (ord, 0))
+#plot(x, ',')
+# might want to look at where() or compress() to strip out outliers.
