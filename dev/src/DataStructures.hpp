@@ -33,6 +33,7 @@
 #include <string>
 
 #include "SatID.hpp"
+#include "SourceID.hpp"
 #include "RinexObsHeader.hpp"
 #include "Position.hpp"
 
@@ -50,7 +51,9 @@ namespace gpstk
     /// A structure used to store a single generic data point.
     struct BasicDatum
     {
-        BasicDatum(): data(0) {};    ///< Default constructor.
+        BasicDatum(): source(), data(0) {};    ///< Default constructor.
+
+        SourceID source;        ///< The data source.
         double data;            ///< The actual data point.
     }
 
@@ -236,8 +239,10 @@ namespace gpstk
     /// A structure used to store basic information about a receiver.
     struct baseRXData
     {
-        /// Receiver name
-        string rxName;
+        baseRXData(): rxId(stGPS,""), rxPosition() {};    ///< Default constructor.
+
+        /// Receiver ID
+        SourceID rxID;
 
         /// Receiver position.
         Position rxPosition;
@@ -249,10 +254,10 @@ namespace gpstk
     struct RXData : public baseRXData
     {
         /// Antenna number.
-        Triple  rxAntennaNumber;
+        int  rxAntennaNumber;
 
         /// Antenna type.
-        Triple  rxAntennaType;
+        source  rxAntennaType;
 
         /// Antenna offset.
         Triple  rxAntennaOffset;
