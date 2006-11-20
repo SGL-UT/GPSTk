@@ -78,11 +78,13 @@ protected:
    
    string obsFileName;
    string metFileName;
+   string logFileName;
 
    string epochFormat;
 
    bool searchNear;
    bool useSmoother;
+   bool logfileOn;
 
    CommandOptionWithAnyArg obsOption;
    CommandOptionWithAnyArg navOption;
@@ -91,13 +93,15 @@ protected:
    CommandOptionWithAnyArg timeFormatOption;
    CommandOptionWithAnyArg enuOption;
    CommandOptionWithAnyArg elevationMaskOption;
+   CommandOptionWithAnyArg logfileOption;
 
    CommandOptionNoArg spsOption;
    CommandOptionNoArg ppsOption;
    CommandOptionNoArg ionoOption;
    CommandOptionNoArg searchNearOption;
    CommandOptionNoArg smootherOption;
-  
+
+   ofstream logStream;
 };
 
 #endif
