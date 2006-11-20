@@ -98,6 +98,7 @@ RINEXPVTSolution::RINEXPVTSolution(char *arg0)
       searchNearOption('x',"no-closest-ephemeris","Allow ephemeris use outside of fit interval."),
       smootherOption('c',"no-carrier-smoothing","Do NOT use carrier phase smoothing."),
       logfileOption('g',"logfile","Write logfile to this file." ),
+      rateOption('r',"rate","Observation interval (default=30s or Rinex Header specification",false),
       hasBCEstore(false)
   {
     obsOption.setMaxCount(1);
@@ -107,6 +108,7 @@ RINEXPVTSolution::RINEXPVTSolution(char *arg0)
     ppsOption.setMaxCount(1);
     searchNearOption.setMaxCount(1);
     elevationMaskOption.setMaxCount(1);
+    rateOption.setMaxCount(1);
 
     enuOption.setMaxCount(1);
     timeFormatOption.setMaxCount(1);
@@ -297,6 +299,16 @@ void RINEXPVTSolution::process()
     {
 	    obsInterval = roh.interval;
 	    intervalDefined = true;
+    }
+    
+    if (rateOption.getCount()>0)
+    {
+       obsInterval =
+             StringUtils::asFloat(rateOption.getValue().front());
+       if (logfileOn)
+       {
+          logStream << "! Observation Interval set to " << obsInterval << "s" << endl;
+       }
     }
 
        // Determine if we can have access to dual frequency measurements.

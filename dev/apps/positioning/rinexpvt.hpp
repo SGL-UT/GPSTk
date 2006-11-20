@@ -94,6 +94,7 @@ protected:
    CommandOptionWithAnyArg enuOption;
    CommandOptionWithAnyArg elevationMaskOption;
    CommandOptionWithAnyArg logfileOption;
+   CommandOptionWithAnyArg rateOption;
 
    CommandOptionNoArg spsOption;
    CommandOptionNoArg ppsOption;
