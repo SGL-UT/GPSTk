@@ -2,7 +2,6 @@
 # $Id:$
 # A routine to plot the output of the ord apps
 
-
 import sys, string, time, datetime, numpy, matplotlib, pylab
 
 from optparse import OptionParser
@@ -16,10 +15,23 @@ parser.add_option("-p", "--prn", help="Process only this prn", \
 parser.add_option("-i", "--input", help="Input data file, defaults to stdin.", \
                   dest="inputFile", type="string", action="store")
 
-#parse.add_option("-o", "--no-ords", help="Disable the plotting of ords (type",\
-                 
+parser.add_option("-t", "--title", help="Specify a title for the plot. "+\
+                  "Defaults to the name of the input stream.", \
+                 dest="title", type="string", action="store")
+
+parser.add_option("-o", "--no-ords", help="Disable the plotting of ords (types 0 & 20).", \
+                 dest="noOrds", default=0, action="count")
+
+parser.add_option("-c", "--no-clocks", help="Disable the plotting of clocks.",\
+                 dest="noClocks", default=0, action="count")
+
+parser.add_option("-s", "--save-figure", help="Save the figure to the indicated file", \
+                  dest="saveFig", action="store", type="string")
 
 (options, args) = parser.parse_args()
+
+if (len(args) and options.inputFile == None):
+    options.inputFile = args[0]
 
 if (options.prn):
     print "Only processing prn", options.prn
@@ -28,11 +40,16 @@ inputFile = sys.stdin
 if (options.inputFile):
     inputFile = open(options.inputFile)
 
+if (options.title == None):
+    options.title = inputFile.name
+
 if (options.debugLevel):
     print "Processing: %s" % inputFile.name
     print "Debug level: %d" % options.debugLevel
+    print "Title: %s" % options.title
 
 ordList=([],[],[],[])   # time, prn, ord, elevation
+wartList=([],[],[],[])  # time, prn, ord, elevation
 clockList=([],[])       # time, offset
 rleClockList=([],[],[]) # time, offset, maxdev
 
@@ -56,6 +73,12 @@ for line in inputFile:
         ordList[1].append(int(words[4]))    # prn
         ordList[2].append(float(words[6]))  # ord
         ordList[3].append(float(words[5]))  # elevation
+    if ordType == 20:
+        if len(words) < 7: print "bad wart line"
+        wartList[0].append(t)
+        wartList[1].append(int(words[4]))    # prn
+        wartList[2].append(float(words[6]))  # ord
+        wartList[3].append(float(words[5]))  # elevation
     elif ordType == 50:
         if len(words) < 5: print "bad clk line"
         clockList[0].append(t)
@@ -69,23 +92,32 @@ for line in inputFile:
     if options.debugLevel>1 and len(clockList[0]) >= 200: break
 
 ords = numpy.array(ordList)
+warts = numpy.array(wartList)
 clocks = numpy.array(clockList)
 rleClocks = numpy.array(rleClockList)
 
+# Since these are now in numpy arrays, delete the source to save some memory
+del ordList, clockList, rleClockList, wartList
 
 if options.debugLevel:
     print "Read %d ords from %d epochs" % (len(ords[0]), len(clocks[0]))
     print "ords.shape:",ords.shape
+    print "warts.shape:",warts.shape
     print "clocks.shape:",clocks.shape
     print "rleClocks.shape:",rleClocks.shape
 
-#rom pylab import plot, show, plot_date, subplot, setp, DateFormatter, grid,\
-#    NullFormatter, HourLocator, DayLocator
+#Set up the key handler
+def press(event):
+    #print 'Key %c pressed' % event.key
+    if event.key=='q':
+        sys.exit()
 
 fig = pylab.figure()
+pylab.connect('key_press_event', press)
 yprops = dict(rotation=90,
               horizontalalignment='right',
               verticalalignment='center',
+              family='monospace',
               x=-0.01)
 
 timeFmt=pylab.DateFormatter("%02H:%02M\n%j")
@@ -94,6 +126,8 @@ ax1 = fig.add_axes([0.1, 0.5, 0.87, 0.45])
 
 ax1.plot_date(ords[0], ords[2], 'r,')
 ax1.set_ylabel('ord (meters)', **yprops)
+ax1.grid(True)
+pylab.title(options.title)
 
 # This allows the creation of futher axes that will share the x axis
 # with the first plot.
@@ -118,13 +152,16 @@ if rleClocks.shape[1] > 1:
 
 ax2.set_ylabel('clock (meters)', **yprops)
 ax2.xaxis.set_major_formatter(timeFmt)
+ax2.grid(True)
 
 # Axis labels on the upper plot would be bad since they would be
 # drawn over the upper part of the lower plot
 pylab.setp(ax1.get_xticklabels(), visible=False)
 
-pylab.show()
-
+if (options.saveFig == None):
+    pylab.show()
+else:
+    pylab.savefig(options.saveFig)
 
 # now to strip (well, set to zero) the data at 50 meters
 # and replot it with pixels, not points

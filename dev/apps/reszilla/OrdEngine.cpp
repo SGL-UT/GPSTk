@@ -146,11 +146,11 @@ void OrdEngine::setMode(const ObsEpoch& obs)
 
    if (verboseLevel)
    {
+      cout << "# OrdEngine using " << mode << " mode" << endl;
       cout << "# OrdEngine using " << oid1;
       if (dualFreq)
          cout << " and " << oid2;
       cout << endl;
-      cout << "# OrdEngine using " << mode << " mode" << endl;
       if (svTime)
          cout << "# OrdEngine using SV time" << endl;
    }
@@ -193,8 +193,7 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
          SvObsEpoch::const_iterator k;
          double obs1, obs2;
 
-         // first we need to make sure the observation data (in rotm) has
-         // the data we require.
+         // first we need to make sure the observation has the data we require.
          k = svObsEpoch.find(oid1);
          if (k == svObsEpoch.end())
             continue;
