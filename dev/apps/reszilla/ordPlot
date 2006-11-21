@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id:$
+# $Id$
 # A routine to plot the output of the ord apps.
 #
 
@@ -127,7 +127,7 @@ ax1 = fig.add_axes([0.1, 0.5, 0.87, 0.45])
 
 ax1.plot_date(ords[0], ords[2], 'r,')
 ax1.set_ylabel('ord (meters)', **yprops)
-ax1.grid(True)
+#ax1.grid(True)
 pylab.title(options.title)
 
 # This allows the creation of futher axes that will share the x axis
@@ -153,7 +153,7 @@ if rleClocks.shape[1] > 1:
 
 ax2.set_ylabel('clock (meters)', **yprops)
 ax2.xaxis.set_major_formatter(timeFmt)
-ax2.grid(True)
+#ax2.grid(True)
 
 # Axis labels on the upper plot would be bad since they would be
 # drawn over the upper part of the lower plot
