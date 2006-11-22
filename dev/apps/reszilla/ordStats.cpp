@@ -110,20 +110,21 @@ void OrdStats::process()
       sigmaMult = asDouble(sigmaOption.getValue().front());
    else
       sigmaMult = 6;
-   
-   output << endl
-          << "elev\tstddev\t    mean     # obs   # bad"
-          << "   max    strip\n"
-          << "----\t------\t    ----     -----   -----"
-          << "  -----   -----\n";
-        
+      
    ORDEpochMap oem;
    // read in data from the ord file to map of ORDEpochs
    while (input)
    {
       ORDEpoch ordEpoch = read(input); 
-      oem[ordEpoch.time] = ordEpoch;      
-   }
+      oem[ordEpoch.time] = ordEpoch;
+      write(output, ordEpoch);   
+   }      
+      
+   output << "# elev\t  stddev      mean      # obs   # bad"
+          << "   max    strip\n"
+          << "# ----\t  ------      ----      -----   -----"
+          << "  -----   -----\n"; 
+
    // compute stats for each elevation range
    for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
    {
@@ -171,7 +172,7 @@ void OrdStats::process()
       char b1[200];
       char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
       double max = std::max(std::abs(good.Maximum()), std::abs(good.Minimum()));
-      sprintf(b1, "%2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
+      sprintf(b1, "# %2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
            (int)minElevation, (int)maxElevation,
            good.StdDev()/sqrt((float)2), good.Average(),
            good.N(), bad.N(), max, strip);
