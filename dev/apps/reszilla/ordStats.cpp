@@ -56,7 +56,7 @@ protected:
    virtual void process();
 
 private:
-   CommandOptionWithAnyArg elevBinsOption;
+   CommandOptionWithAnyArg elevBinsOption, statsFileOption;
    CommandOptionWithNumberArg sigmaOption;
    ElevationRangeList elr;
    double sigmaMult;
@@ -74,7 +74,9 @@ OrdStats::OrdStats() throw()
                   "bins. The default is \"-b 0-10 -b 10-20 -b 20-60 -b "
                   "10-90\"."),
      sigmaOption('s',"sigma","Multiplier for sigma stripping used in "
-                 "statistical computations. The default value is 6.")
+                 "statistical computations. The default value is 6."),
+     statsFileOption('o',"statsFile","Filename for output of stats only. Stats"
+                     " will still be included at the end of the ord file.")
 {}
 
 //-----------------------------------------------------------------------------
@@ -110,7 +112,12 @@ void OrdStats::process()
       sigmaMult = asDouble(sigmaOption.getValue().front());
    else
       sigmaMult = 6;
-      
+   std::ofstream extraOutput;   
+   if (statsFileOption.getCount())
+   {
+      const string fn = statsFileOption.getValue()[0];
+      extraOutput.open(fn.c_str(), ios::out);
+   }  
    ORDEpochMap oem;
    // read in data from the ord file to map of ORDEpochs
    while (input)
@@ -124,7 +131,13 @@ void OrdStats::process()
           << "   max    strip\n"
           << "# ----\t  ------      ----      -----   -----"
           << "  -----   -----\n"; 
-
+   if (statsFileOption.getCount())
+   {
+      extraOutput << " elev\t  stddev    mean      # obs   # bad"
+                  << "   max    strip\n"
+                  << " ----\t  ------    ----      -----   -----"
+                  << "  -----   -----\n";
+   }
    // compute stats for each elevation range
    for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
    {
@@ -176,7 +189,15 @@ void OrdStats::process()
            (int)minElevation, (int)maxElevation,
            good.StdDev()/sqrt((float)2), good.Average(),
            good.N(), bad.N(), max, strip);
-      output << b1 << endl;      
+      output << b1 << endl; 
+      if (statsFileOption.getCount())
+      {
+        sprintf(b1, "%2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
+               (int)minElevation, (int)maxElevation,
+               good.StdDev()/sqrt((float)2), good.Average(),
+               good.N(), bad.N(), max, strip);
+        extraOutput << b1 << endl;   
+      }
    } 
 }
 
