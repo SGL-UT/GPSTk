@@ -93,11 +93,13 @@ namespace gpstk
       throw(MatrixException)
    {
       if(r.rows() != r.cols() || r.rows() != z.size() || r.rows() != nl.size()) {
+         using namespace StringUtils;
+         
          MatrixException me("Invalid dimensions in explicit SRI constructor:\n R is "
-               + StringUtils::asString<int>(r.rows()) + "x"
-               + StringUtils::asString<int>(r.cols()) + ", Z has length "
-               + StringUtils::asString<int>(z.size()) + " and NL has length "
-               + StringUtils::asString<int>(nl.size())
+               + asString<int>(r.rows()) + "x"
+               + asString<int>(r.cols()) + ", Z has length "
+               + asString<int>(z.size()) + " and NL has length "
+               + asString<int>(nl.size())
                );
          GPSTK_THROW(me);
       }
@@ -476,9 +478,11 @@ namespace gpstk
       throw(MatrixException)
    {
       if(X0.size() != R.cols()) {
+         using namespace StringUtils;
+         
          MatrixException me("Invalid input dimension: SRI has dimension "
-               + StringUtils::asString<int>(R.rows()) + " while input has length "
-               + StringUtils::asString<int>(X0.size())
+               + asString<int>(R.rows()) + " while input has length "
+               + asString<int>(X0.size())
                );
          GPSTK_THROW(me);
       }
@@ -500,13 +504,15 @@ namespace gpstk
          T.cols() != R.cols() ||
          (&invT != &SRINullMatrix && (invT.rows() != R.rows() ||
          invT.cols() != R.cols()))) {
+            using namespace StringUtils;
+         
             MatrixException me("Invalid input dimension:\n  SRI has dimension "
-               + StringUtils::asString<int>(R.rows()) + " while T has dimension "
-               + StringUtils::asString<int>(T.rows()) + "x"
-               + StringUtils::asString<int>(T.cols()));
+               + asString<int>(R.rows()) + " while T has dimension "
+               + asString<int>(T.rows()) + "x"
+               + asString<int>(T.cols()));
             if(&invT != &SRINullMatrix) me.addText("\n  and invT has dimension "
-                           + StringUtils::asString<int>(invT.rows()) + "x"
-                           + StringUtils::asString<int>(invT.cols()));
+                           + asString<int>(invT.rows()) + "x"
+                           + asString<int>(invT.cols()));
             GPSTK_THROW(me);
       }
 
@@ -545,10 +551,11 @@ namespace gpstk
       throw(MatrixException)
    {
       if(invT.rows() != R.rows() || invT.cols() != R.rows()) {
+         using namespace StringUtils;
          MatrixException me("Invalid input dimension: SRI has dimension "
-            + StringUtils::asString<int>(R.rows()) + " while invT has dimension "
-            + StringUtils::asString<int>(invT.rows()) + "x"
-            + StringUtils::asString<int>(invT.cols()));
+            + asString<int>(R.rows()) + " while invT has dimension "
+            + asString<int>(invT.rows()) + "x"
+            + asString<int>(invT.cols()));
          GPSTK_THROW(me);
       }
 
@@ -657,11 +664,13 @@ namespace gpstk
       throw(MatrixException)
    {
       if(Cov.rows() != Cov.cols() || Cov.rows() != R.rows() || X.size() != R.rows()) {
+         using namespace StringUtils;
+         
          MatrixException me("Invalid input dimensions:\n  SRI has dimension "
-            + StringUtils::asString<int>(R.rows()) + ",\n  while input is Cov("
-            + StringUtils::asString<int>(Cov.rows()) + "x"
-            + StringUtils::asString<int>(Cov.cols()) + ") and X("
-            + StringUtils::asString<int>(X.size()) + ")."
+            + asString<int>(R.rows()) + ",\n  while input is Cov("
+            + asString<int>(Cov.rows()) + "x"
+            + asString<int>(Cov.cols()) + ") and X("
+            + asString<int>(X.size()) + ")."
             );
          GPSTK_THROW(me);
       }
@@ -776,12 +785,14 @@ namespace gpstk
             Z = Vector<double>(A.cols()-1,0.0);
          }
          else {
+            using namespace StringUtils;
+            
             MatrixException me("Invalid input dimensions:\n  R has dimension "
-               + StringUtils::asString<int>(R.rows()) + "x"
-               + StringUtils::asString<int>(R.cols()) + ",\n  Z has length "
-               + StringUtils::asString<int>(Z.size()) + ",\n  and A has dimension "
-               + StringUtils::asString<int>(A.rows()) + "x"
-               + StringUtils::asString<int>(A.cols()));
+               + asString<int>(R.rows()) + "x"
+               + asString<int>(R.cols()) + ",\n  Z has length "
+               + asString<int>(Z.size()) + ",\n  and A has dimension "
+               + asString<int>(A.rows()) + "x"
+               + asString<int>(A.cols()));
             GPSTK_THROW(me);
          }
       }
@@ -860,9 +871,11 @@ namespace gpstk
       throw(MatrixException)
    {
       if(UT.rows() != UT.cols() || UT.rows() == 0) {
+         using namespace StringUtils;
+         
          MatrixException me("Invalid input dimensions: "
-               + StringUtils::asString<int>(UT.rows()) + "x"
-               + StringUtils::asString<int>(UT.cols()));
+               + asString<int>(UT.rows()) + "x"
+               + asString<int>(UT.cols()));
          GPSTK_THROW(me);
       }
 
@@ -917,9 +930,10 @@ namespace gpstk
    {
       unsigned int n=UT.rows();
       if(n == 0 || UT.cols() != n) {
+         using namespace StringUtils;
          MatrixException me("Invalid input dimensions: "
-               + StringUtils::asString<int>(UT.rows()) + "x"
-               + StringUtils::asString<int>(UT.cols()));
+               + asString<int>(UT.rows()) + "x"
+               + asString<int>(UT.cols()));
          GPSTK_THROW(me);
       }
 
