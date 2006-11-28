@@ -85,48 +85,40 @@ namespace gpstk
    {
       using namespace gpstk::StringUtils;
 
-      bool hyear( false ), hdoy( false ), hsod( false );
-      int iyear( 0 ), idoy( 0 );
-      double isod( 0. );
-
       for( IdToValue::const_iterator i = info.begin();
            i != info.end(); i++ )
       {
          switch( i->first )
          {
             case 'Y':
-               iyear = asInt( i->second );
-               hyear = true;
+               year = asInt( i->second );
                break;
             
             case 'y':
                switch( i->second.length() )
                {
                   case 2:
-                     iyear = asInt( i->second ) + 1900;
-                     if( iyear < 1980 )
-                        iyear += 100;
+                     year = asInt( i->second ) + 1900;
+                     if( year < 1980 )
+                        year += 100;
                      break;
                   case 3:
-                     iyear = asInt( i->second ) + 1000;
-                     if( iyear < 1980 )
-                        iyear += 100;
+                     year = asInt( i->second ) + 1000;
+                     if( year < 1980 )
+                        year += 100;
                      break;
                   default:
-                     iyear = asInt( i->second );
+                     year = asInt( i->second );
                      break;
                };
-               hyear = true;
                break;
 
             case 'j':
-               idoy = asInt( i->second );
-               hdoy = true;
+               doy = asInt( i->second );
                break;
 
             case 's':
-               isod = asDouble( i->second );
-               hsod = true;
+               sod = asDouble( i->second );
                break;
             
             default:
@@ -135,15 +127,7 @@ namespace gpstk
          };
       }
       
-      if( hyear )
-      {
-         year = iyear;
-         doy = idoy;
-         sod = isod;
-         return true;
-      }
-
-      return false;
+      return true;
    }
 
    bool YDSTime::isValid() const
@@ -156,6 +140,13 @@ namespace gpstk
          return true;
       }
       return false;
+   }
+
+   void YDSTime::reset()
+      throw()
+   {
+      year = doy = 0;
+      sod = 0.0;
    }
 
    bool YDSTime::operator==( const YDSTime& right ) const

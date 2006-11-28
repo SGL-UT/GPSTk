@@ -51,7 +51,7 @@ namespace gpstk
       SystemTime()
          throw()
       {
-         check();
+         update();
       }
       
          /** 
@@ -103,10 +103,10 @@ namespace gpstk
          //@}
 
          /** 
-          * Check the system clock and set this object to the current time.
+          * Update this object to the current system time.
           * @return a reference to this SystemTime
           */
-      SystemTime& check() 
+      SystemTime& update()
          throw();
    };
 

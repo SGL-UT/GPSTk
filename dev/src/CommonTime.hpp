@@ -322,6 +322,10 @@ namespace gpstk
          throw();
          //@}
 
+      void reset()
+         throw()
+      { m_day = m_msod = 0; m_fsod = 0.0; }
+
    protected:
       
          /**

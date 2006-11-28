@@ -139,6 +139,9 @@ namespace gpstk
       virtual bool isValid() const
          throw();
 
+      virtual void reset()
+         throw();
+
          /**
           * @defgroup gz29co GPSZcount29 Comparison Operators
           * All comparison operators have a parameter "right" which corresponds

@@ -68,6 +68,11 @@ namespace gpstk
       /// Days in a Zcount
    const double DAY_PER_ZCOUNT = 1.0/ZCOUNT_PER_DAY;
 
+      /// Zcounts in a week.
+   const long ZCOUNT_PER_WEEK = 403200L;
+      /// Weeks in a Zcount.
+   const double WEEKS_PER_ZCOUNT = 1.0/ZCOUNT_PER_WEEK;
+
 } // namespace
 
 #endif // GPSTK_TIMECONSTANTS_HPP

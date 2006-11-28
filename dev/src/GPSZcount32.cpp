@@ -97,10 +97,9 @@ namespace gpstk
       if( itr != info.end() )
       {
          zcount = gpstk::StringUtils::asInt( itr->second );
-         return true;
       }
       
-      return false;
+      return true;
    }
    
    bool GPSZcount32::isValid() const
@@ -113,6 +112,12 @@ namespace gpstk
          return true;
       }
       return false;
+   }
+
+   void GPSZcount32::reset()
+      throw()
+   {
+      zcount = 0;
    }
    
    bool GPSZcount32::operator==( const GPSZcount32& right ) const

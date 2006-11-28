@@ -87,10 +87,9 @@ namespace gpstk
       if( itr != info.end() )
       {
          jd = gpstk::StringUtils::asLongDouble( itr->second );
-         return true;
       }
       
-      return false;
+      return true;
    }
    
    bool JulianDate::isValid() const
@@ -105,6 +104,12 @@ namespace gpstk
       return false;
    }
    
+   void JulianDate::reset()
+      throw()
+   {
+      jd = 0.0;
+   }
+
    bool JulianDate::operator==( const JulianDate& right ) const
       throw()
    {

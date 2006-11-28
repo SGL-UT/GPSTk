@@ -37,7 +37,7 @@ namespace gpstk
       return *this;
    }
 
-   SystemTime& SystemTime::check()
+   SystemTime& SystemTime::update()
       throw()
    {
 #if defined(ANSI_ONLY)

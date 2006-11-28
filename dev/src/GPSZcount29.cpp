@@ -101,20 +101,15 @@ namespace gpstk
    {
       using namespace gpstk::StringUtils;
       
-      bool hepoch( false ), hzcount( false );
-      int iepoch( 0 ), izcount( 0 );
-      
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
          switch( i->first )
          {
             case 'E':
-               hepoch = true;
-               iepoch = gpstk::StringUtils::asInt( i->second );
+               epoch = gpstk::StringUtils::asInt( i->second );
                break;
             case 'c':
-               hzcount = true;
-               izcount = gpstk::StringUtils::asInt( i->second );
+               zcount = gpstk::StringUtils::asInt( i->second );
                break;
             default:
                   // do nothing
@@ -122,14 +117,7 @@ namespace gpstk
          };
       }
       
-      if( hepoch && hzcount )
-      {
-         epoch = iepoch;
-         zcount = izcount;
          return true;
-      }
-
-      return false;
    }
    
    bool GPSZcount29::isValid() const
@@ -144,6 +132,12 @@ namespace gpstk
       return false;
    }
    
+   void GPSZcount29::reset()
+      throw()
+   {
+      epoch = zcount = 0;
+   }
+
    bool GPSZcount29::operator==( const GPSZcount29& right ) const
       throw()
    {

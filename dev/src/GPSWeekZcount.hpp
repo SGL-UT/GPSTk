@@ -126,7 +126,7 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return "FzZ";
+         return "FwzZ";
       }
 
          /// Return a string containing the default format to use in printing.
@@ -137,6 +137,9 @@ namespace gpstk
       }
 
       virtual bool isValid() const
+         throw();
+      
+      virtual void reset()
          throw();
 
          /**

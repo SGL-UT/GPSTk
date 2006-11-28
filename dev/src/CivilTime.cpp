@@ -123,44 +123,36 @@ namespace gpstk
    {
       using namespace gpstk::StringUtils;
       
-      bool hyear( false ), hmonth( false ), hday( false ), 
-         hhour( false ), hmin( false ), hsec( false );
-      int iyear( 0 ), imonth( 1 ), iday( 1 ), ihour( 0 ), imin( 0 );
-      double isec( 0. );
-
       for( IdToValue::const_iterator i = info.begin();
            i != info.end(); i++ )
       {
          switch( i->first )
          {
             case 'Y':
-               iyear = asInt( i->second );
-               hyear = true;
+               year = asInt( i->second );
                break;
                
             case 'y':
                switch( i->second.length() )
                {
                   case 2:
-                     iyear = asInt( i->second ) + 1900;
-                     if( iyear < 1980 )
-                        iyear += 100;
+                     year = asInt( i->second ) + 1900;
+                     if( year < 1980 )
+                        year += 100;
                      break;
                   case 3:
-                     iyear = asInt( i->second ) + 1000;
-                     if( iyear < 1980 )
-                        iyear += 100;
+                     year = asInt( i->second ) + 1000;
+                     if( year < 1980 )
+                        year += 100;
                      break;
                   default:
-                     iyear = asInt( i->second );
+                     year = asInt( i->second );
                      break;
                };
-               hyear = true;
                break;
             
             case 'm':
-               imonth = asInt( i->second );
-               hmonth = true;
+               month = asInt( i->second );
                break;
                
             case 'b':
@@ -169,46 +161,39 @@ namespace gpstk
                std::string thisMonth( i->second );
                lowerCase(thisMonth);
                
-               if (isLike(thisMonth, "jan.*")) imonth = 1;               
-               else if (isLike(thisMonth, "feb.*")) imonth = 2;
-               else if (isLike(thisMonth, "mar.*")) imonth = 3;
-               else if (isLike(thisMonth, "apr.*")) imonth = 4;
-               else if (isLike(thisMonth, "may.*")) imonth = 5;
-               else if (isLike(thisMonth, "jun.*")) imonth = 6;
-               else if (isLike(thisMonth, "jul.*")) imonth = 7;
-               else if (isLike(thisMonth, "aug.*")) imonth = 8;
-               else if (isLike(thisMonth, "sep.*")) imonth = 9;
-               else if (isLike(thisMonth, "oct.*")) imonth = 10;
-               else if (isLike(thisMonth, "nov.*")) imonth = 11;
-               else if (isLike(thisMonth, "dec.*")) imonth = 12;
+               if (isLike(thisMonth, "jan.*")) month = 1;               
+               else if (isLike(thisMonth, "feb.*")) month = 2;
+               else if (isLike(thisMonth, "mar.*")) month = 3;
+               else if (isLike(thisMonth, "apr.*")) month = 4;
+               else if (isLike(thisMonth, "may.*")) month = 5;
+               else if (isLike(thisMonth, "jun.*")) month = 6;
+               else if (isLike(thisMonth, "jul.*")) month = 7;
+               else if (isLike(thisMonth, "aug.*")) month = 8;
+               else if (isLike(thisMonth, "sep.*")) month = 9;
+               else if (isLike(thisMonth, "oct.*")) month = 10;
+               else if (isLike(thisMonth, "nov.*")) month = 11;
+               else if (isLike(thisMonth, "dec.*")) month = 12;
                else
                {
                   return false;
-                     //InvalidRequest ir("Invalid month entry for readTime");
-                     //GPSTK_THROW( ir );
                }
-               hmonth = true;
             }
                break;
 
             case 'd':
-               iday = asInt( i->second );
-               hday = true;
+               day = asInt( i->second );
                break;
                
             case 'H':
-               ihour = asInt( i->second );
-               hhour = true;
+               hour = asInt( i->second );
                break;
                
             case 'M':
-               imin = asInt( i->second );
-               hmin = true;
+               minute = asInt( i->second );
                break;
                
             case 'S':
-               isec = asDouble( i->second );
-               hsec = true;
+               second = asDouble( i->second );
                break;
                
             default:
@@ -217,18 +202,7 @@ namespace gpstk
          };
       }
 
-      if( hyear )
-      {
-         year = iyear;
-         month = imonth;
-         day = iday;
-         hour = ihour;
-         minute = imin;
-         second = isec;
-         return true;
-      }
-      
-      return false;
+      return true;
    }
 
    bool CivilTime::isValid() const
@@ -243,6 +217,15 @@ namespace gpstk
       return false;
    }
    
+   void CivilTime::reset()
+      throw()
+   {
+      year = 0;
+      month = day = 1;
+      hour = minute = 0;
+      second = 0.0;
+   }
+
    bool CivilTime::operator==( const CivilTime& right ) const
       throw()
    {

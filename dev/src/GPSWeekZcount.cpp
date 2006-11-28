@@ -74,6 +74,8 @@ namespace gpstk
          std::string rv( fmt );
 
          rv = formattedPrint( rv, getFormatPrefixInt() + "F", "Fhd", week );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "w", "whd", 
+                              static_cast<int>(zcount / ZCOUNT_PER_DAY) );
          rv = formattedPrint( rv, getFormatPrefixInt() + "z", "zd", zcount );
          rv = formattedPrint( rv, getFormatPrefixInt() + "Z", "Zd", zcount );
          
@@ -90,23 +92,22 @@ namespace gpstk
    {
       using namespace gpstk::StringUtils;
 
-      bool hfullweek( false ), hzcount( false );
-      int ifullweek( 0 ), izcount( 0 );
-      
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
             // based on the character, we know what to do...
          switch( i->first )
          {
             case 'F':
-               ifullweek = asInt( i->second );
-               hfullweek = true;
+               week = asInt( i->second );
                break;
-            
+
+            case 'w':
+               zcount = asInt( i->second) * ZCOUNT_PER_DAY;
+               break;
+
             case 'z':
             case 'Z':
-               izcount = asInt( i->second );
-               hzcount = true;
+               zcount = asInt( i->second );
                break;
                
             default:
@@ -115,18 +116,11 @@ namespace gpstk
          };
       }
       
-      if( hfullweek )
-      {
-         week = ifullweek;
-         zcount = izcount;
-         return true;
-      }
-      
-      return false;
+      return true;
    }
 
    bool GPSWeekZcount::isValid() const
-         throw()
+      throw()
    {
       GPSWeekZcount temp;
       temp.convertFromCommonTime( convertToCommonTime() );
@@ -135,6 +129,12 @@ namespace gpstk
          return true;
       }
       return false;
+   }
+
+   void GPSWeekZcount::reset()
+      throw()
+   {
+      week = zcount = 0;
    }
 
    bool GPSWeekZcount::operator==( const GPSWeekZcount& right ) const

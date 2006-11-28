@@ -89,32 +89,25 @@ namespace gpstk
    {
       using namespace gpstk::StringUtils;
       
-      bool hunixsec( false ), hunixusec( false );
-      int iunixsec( 0 ), iunixusec( 0 );
-      
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
          switch( i->first )
          {
             case 'U':
-               iunixsec = asInt( i->second );
-               hunixsec = true;
+               tv.tv_sec = asInt( i->second );
                break;
                
             case 'u':
-               iunixusec = asInt( i->second );
-               hunixusec = true;
+               tv.tv_usec = asInt( i->second );
+               break;
+               
+            default:
+                  // do nothing
                break;
          };
       }
       
-      if( hunixsec && hunixusec )
-      {
-         tv.tv_sec = iunixsec;
-         tv.tv_usec = iunixusec;
-         return true;
-      }
-      return false;
+      return true;
    }
    
    bool UnixTime::isValid() const
@@ -127,6 +120,12 @@ namespace gpstk
          return true;
       }
       return false;
+   }
+
+   void UnixTime::reset()
+      throw()
+   {
+      tv.tv_sec  = tv.tv_usec = 0;
    }
    
    bool UnixTime::operator==( const UnixTime& right ) const

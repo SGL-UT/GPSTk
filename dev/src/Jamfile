@@ -41,7 +41,8 @@ else
       RinexObsData.cpp RinexObsHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
       SP3Data.cpp SP3Header.cpp FileSpec.cpp FileHunter.cpp 
       $(GETOPT_SOURCE) CommandOption.cpp CommandOptionParser.cpp
-      CommandOptionWithTimeArg.cpp BasicFramework.cpp LoopedFramework.cpp
+      CommandOptionWithTimeArg.cpp CommandOptionWithCommonTimeArg.cpp
+      BasicFramework.cpp LoopedFramework.cpp
       EphemerisRange.cpp TabularEphemerisStore.cpp 
       RinexEphemerisStore.cpp RungeKutta4.cpp
       MSCData.cpp SMODFData.cpp LinearClockModel.cpp
@@ -90,7 +91,8 @@ else
       WGS84Geoid.hpp Xvt.hpp
       convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp
       stl_helpers.hpp CommandOption.hpp CommandOptionParser.hpp
-      CommandOptionWithTimeArg.hpp BasicFramework.hpp
+      CommandOptionWithTimeArg.hpp CommandOptionWithCommonTimeArg.hpp
+      BasicFramework.hpp
       EphemerisRange.hpp LoopedFramework.hpp TabularEphemerisStore.hpp
       RinexEphemerisStore.hpp FileStore.hpp RungeKutta4.hpp
       $(GETOPT_INC) $(REGEX_INC)

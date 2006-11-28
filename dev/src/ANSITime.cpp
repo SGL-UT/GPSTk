@@ -99,6 +99,12 @@ namespace gpstk
       return false;
    }
    
+   void ANSITime::reset() 
+      throw()
+   {
+      time = 0;
+   }
+
    bool ANSITime::operator==( const ANSITime& right ) const
       throw()
    {

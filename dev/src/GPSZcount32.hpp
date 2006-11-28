@@ -136,6 +136,9 @@ namespace gpstk
 
       virtual bool isValid() const
          throw();
+      
+      virtual void reset()
+         throw();
 
          /**
           * @defgroup gz32co GPSZcount32 Comparison Operators

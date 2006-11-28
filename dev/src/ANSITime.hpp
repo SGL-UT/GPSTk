@@ -141,6 +141,9 @@ namespace gpstk
       virtual bool isValid() const
          throw();
 
+      virtual void reset() 
+         throw();
+
          /**
           * @defgroup utco ANSITime Comparison Operators
           * All comparison operators have a parameter "right" which corresponds

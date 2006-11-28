@@ -53,7 +53,23 @@ namespace gpstk
                   const std::string& fmt )
       throw( gpstk::InvalidRequest,
              gpstk::StringUtils::StringException );
-   
+
+      /** This function is like the other scanTime functions except that
+       *  it allows mixed time formats. 
+       *  i.e. Year / 10-bit GPS week / seconds-of-week
+       *  The time formats are filled in the following order: GPS Epoch,
+       *  year, month, GPS Full Week, GPS 10-bit Week, day-of-week,
+       *  day-of-month, day-of-year, 29-bit Zcount, 19-bit Zcount, hour,
+       *  minute, second-of-week, second-of-day, second-of-minute.
+       *  @note MJD, Julian Date, ANSI time, Unix time, and 32-bit Zcount are
+       *  treated as stand-alone types and are not mixed with others if
+       *  detected.
+       */
+   void mixedScanTime( CommonTime& t,
+                       const std::string& str,
+                       const std::string& fmt )
+      throw( gpstk::InvalidRequest,
+             gpstk::StringUtils::StringException );
 } // namespace
 
 #endif // GPSTK_TIMESTRING_HPP

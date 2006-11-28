@@ -26,7 +26,6 @@
 
 #include "GPSEpochWeekSecond.hpp"
 #include "TimeConstants.hpp"
-//#include "TimeConverters.hpp"
 
 namespace gpstk
 {
@@ -81,6 +80,8 @@ namespace gpstk
                                  "Ehd", epoch );
             rv = formattedPrint( rv, getFormatPrefixInt() + "G", 
                                  "Ghd", week );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "w", 
+                                 "whd", static_cast<int>(sow / SEC_PER_DAY));
             rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
                                  "gf", sow);
             return rv;
@@ -96,26 +97,22 @@ namespace gpstk
    {
       using namespace gpstk::StringUtils;
       
-      bool hepoch( false ), hweek( false ), hsow( false );
-      int iepoch( 0 ), iweek( 0 );
-      double isow( 0. );
-      
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
             // based on the character, we know what to do...
          switch ( i->first ) 
          {
             case 'E':
-               iepoch = asInt( i->second );
-               hepoch = true;
+               epoch = asInt( i->second );
                break;
-            case 'F':
-               iweek = asInt( i->second );
-               hweek = true;
+            case 'G':
+               week = asInt( i->second );
+               break;
+            case 'w':
+               sow = static_cast<double>( asInt( i->second ) ) * SEC_PER_DAY;
                break;
             case 'g':
-               isow = asDouble( i->second );
-               hsow = true;
+               sow = asDouble( i->second );
                break;
             default:
                   // do nothing
@@ -124,15 +121,7 @@ namespace gpstk
          
       } // end of for loop
       
-      if( hepoch )
-      {
-         epoch = iepoch;
-         week = iweek;
-         sow = isow;
-         return true;
-      }
-
-      return false;
+      return true;
    }
 
    bool GPSEpochWeekSecond::isValid() const
@@ -147,6 +136,13 @@ namespace gpstk
       return false;
    }
    
+   void GPSEpochWeekSecond::reset()
+      throw()
+   {
+      epoch = week = 0;
+      sow = 0.0;
+   }
+
    bool 
    GPSEpochWeekSecond::operator==( const GPSEpochWeekSecond& right ) const
       throw()

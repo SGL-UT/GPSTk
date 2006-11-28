@@ -272,6 +272,10 @@ namespace gpstk
                case 'K':
                   hansi = true;
                   break;
+                  
+               case 'E':
+                  hepoch = true;
+                  break;
 
                default:
                {
@@ -419,6 +423,297 @@ namespace gpstk
 
          InvalidRequest ir("Incomplete time specification for readTime");
          GPSTK_THROW( ir );
+      }
+      catch( gpstk::StringUtils::StringException& se )
+      {
+         GPSTK_RETHROW( se );
+      }
+   }   
+
+   void mixedScanTime( CommonTime& t,
+                       const std::string& str,
+                       const std::string& fmt )
+      throw( gpstk::InvalidRequest,
+             gpstk::StringUtils::StringException )
+   {
+      try
+      {
+         using namespace gpstk::StringUtils;
+
+            // Get the mapping of character (from fmt) to value (from str).
+         TimeTag::IdToValue info;
+         TimeTag::getInfo( str, fmt, info );
+         
+            // These indicate which information has been found.
+         bool hsow( false ), hweek( false ), hfullweek( false ),
+            hdow( false ), hyear( false ), hmonth( false ), hday( false ),
+            hzcount( false ), hdoy( false ), hzcount29( false ), 
+            hhour( false ), hmin( false ), hsec( false ),
+            hsod( false ), hepoch( false ), hunixsec( false ),
+            hunixusec( false );
+
+            // MJD, Julian Date, ANSI time, Unix time, and 32-bit Zcounts
+            // are treated as stand-alone types and are not mixed with others
+            // if detected.
+         
+            // These variables will hold the values for use later.
+         double isow, isod, isec;
+         int iweek, ifullweek, idow, iyear, imonth, iday, izcount, idoy,
+            izcount29, ihour, imin, iepoch, iunixsec, iunixusec;
+         
+         for( TimeTag::IdToValue::iterator itr = info.begin();
+              itr != info.end(); itr++ )
+         {
+            switch( itr->first )
+            {
+               case 'Q':
+                  t = MJD( asLongDouble(itr->second) );
+                  return;
+
+               case 'J':
+                  t = JulianDate( asLongDouble(itr->second) );
+                  return;
+                  
+               case 'C':
+                  t = GPSZcount32( asInt(itr->second) );
+                  return;
+
+               case 'K':
+                  t = ANSITime( asInt(itr->second) );
+                  return;
+                  
+               case 'U':
+               case 'u':
+               {
+                  UnixTime tt;
+                  tt.setFromInfo( info );
+                  t = tt.convertToCommonTime();
+                  return;
+               }
+               break;
+
+               case 'Z':
+                  hzcount = true;
+                  izcount = asInt(itr->second);
+                  break;
+
+               case 's':
+                  hsod = true;
+                  isod = asDouble(itr->second);
+                  break;
+
+               case 'g':
+                  hsow = true;
+                  isow = asDouble(itr->second);
+                  break;
+
+               case 'w':
+                  idow = asInt(itr->second);
+                  hdow = true;
+                  break;
+
+               case 'G':
+                  hweek = true;
+                  iweek = asInt(itr->second);
+                  break;
+
+               case 'F':
+                  hfullweek = true;
+                  ifullweek = asInt(itr->second);
+                  break;
+
+               case 'j':
+                  hdoy = true;
+                  idoy = asInt(itr->second);
+                  break;
+
+               case 'b':
+               case 'B':
+                  hmonth = true;
+                  imonth = asInt(itr->second);
+                  break;
+
+               case 'Y':
+               case 'y':
+                  hyear = true;
+                  iyear = asInt(itr->second);
+                  break;
+
+               case 'a':
+               case 'A':
+               {
+                  hdow = true;
+                  std::string thisDay = firstWord( itr->second );
+                  lowerCase(thisDay);
+                  if (isLike(thisDay, "sun.*")) idow = 0;
+                  else if (isLike(thisDay, "mon.*")) idow = 1;
+                  else if (isLike(thisDay, "tue.*")) idow = 2;
+                  else if (isLike(thisDay, "wed.*")) idow = 3;
+                  else if (isLike(thisDay, "thu.*")) idow = 4;
+                  else if (isLike(thisDay, "fri.*")) idow = 5;
+                  else if (isLike(thisDay, "sat.*")) idow = 6;
+               }
+               break;
+                  
+               case 'm':
+                  hmonth = true;
+                  imonth = asInt(itr->second);
+                  break;
+
+               case 'd':
+                  hday = true;
+                  iday = asInt(itr->second);
+                  break;
+
+               case 'H':
+                  hhour = true;
+                  ihour = asInt(itr->second);
+                  break;
+
+               case 'M':
+                  hmin = true;
+                  imin = asInt(itr->second);
+                  break;
+
+               case 'S':
+                  hsec = true;
+                  isec = asDouble(itr->second);
+                  break;
+
+               case 'f':
+                  hsec = true;
+                  isec = asDouble(itr->second);
+                  break;
+
+               case 'c':
+                  hzcount29 = true;
+                  izcount29 = asInt(itr->second);
+                  break;
+
+               case 'E':
+                  hepoch = true;
+                  iepoch = asInt(itr->second);
+                  break;
+
+               default:
+                     // do nothing
+                  break;
+
+            };
+         }
+
+
+            // We'll copy this time to 't' after all of the processing.
+         CommonTime ct;
+         
+            // Go through all of the types in order of least precise to most
+            // precise.
+         if( hepoch ) 
+         {
+            GPSEpochWeekSecond tt(ct);
+            tt.epoch = iepoch;
+            ct = tt.convertToCommonTime();
+         }
+         
+         if( hyear )
+         {
+            YDSTime tt(ct);
+            tt.year = iyear;
+            ct = tt.convertToCommonTime();
+         }
+ 
+         if( hmonth )
+         {
+            CivilTime tt(ct);
+            tt.month = imonth;
+            ct = tt.convertToCommonTime();
+         }
+
+         if( hfullweek )
+         {
+            GPSWeekSecond tt(ct);
+            tt.week = ifullweek;
+            ct = tt.convertToCommonTime();
+         }
+         
+         if( hweek )
+         {
+            GPSEpochWeekSecond tt(ct);
+            tt.week = iweek;
+            ct = tt.convertToCommonTime();
+         }
+         
+         if( hdow )
+         {
+            GPSWeekSecond tt(ct);
+            tt.sow = static_cast<double>(idow) * SEC_PER_DAY;
+            ct = tt.convertToCommonTime();
+         }
+         
+         if( hday )
+         {
+            CivilTime tt(ct);
+            tt.day = iday;
+            ct = tt.convertToCommonTime();
+         }
+         
+         if( hdoy )
+         {
+            YDSTime tt(ct);
+            tt.doy = idoy;
+            ct = tt.convertToCommonTime();
+         }
+         
+         if( hzcount29 )
+         {
+            GPSZcount29 tt(ct);
+            tt.zcount = izcount29;
+            ct = tt.convertToCommonTime(); 
+         }
+
+         if( hzcount )
+         {
+            GPSWeekZcount tt(ct);
+            tt.zcount = izcount;
+            ct = tt.convertToCommonTime();
+         }
+
+         if( hhour )
+         {
+            CivilTime tt(ct);
+            tt.hour = ihour;
+            ct = tt.convertToCommonTime();
+         }
+
+         if( hmin )
+         {
+            CivilTime tt(ct);
+            tt.hour = imin;
+            ct = tt.convertToCommonTime();
+         }
+         
+         if( hsow )
+         {
+            GPSWeekSecond tt(ct);
+            tt.sow = isow;
+            ct = tt.convertToCommonTime();
+         }
+         
+         if( hsod )
+         {
+            YDSTime tt(ct);
+            tt.sod = isod;
+            ct = tt.convertToCommonTime();
+         }
+
+         if( hsec )
+         {
+            CivilTime tt(ct);
+            tt.second = isec;
+            ct = tt.convertToCommonTime();
+         }
+         
+         t = ct;
       }
       catch( gpstk::StringUtils::StringException& se )
       {

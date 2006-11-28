@@ -26,7 +26,6 @@
 
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
-//#include "TimeConverters.hpp"
 
 namespace gpstk
 {
@@ -75,6 +74,8 @@ namespace gpstk
                
             rv = formattedPrint( rv, getFormatPrefixInt() + "F", 
                                  "Fhd", week );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "w",
+                                 "whd", static_cast<int>(sow / SEC_PER_DAY) );
             rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
                                  "gf", sow);
             return rv;
@@ -90,47 +91,28 @@ namespace gpstk
    {
       using namespace gpstk::StringUtils;
 
-         // This class can parse GPS full week and GPS seconds of week.
-      bool hfullWeek( false ), hsow( false );
-      int ifullWeek( 0 );
-      double isow( 0. );
-      
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
             // based on the character, we know what to do...
          switch ( i->first ) 
          {
             case 'F':
-            {
-               ifullWeek = asInt( i->second );
-               hfullWeek = true;
-            }
-            break;
-            
+               week = asInt( i->second );
+               break;
+            case 'w':
+               sow = static_cast<double>( asInt( i->second ) ) * SEC_PER_DAY;
+               break;
             case 'g':
-            {
-               isow = asDouble( i->second );
-               hsow = true;
-            }
-            break;
-            
+               sow = asDouble( i->second );
+               break;
             default:
-            {
                   // do nothing
-            }
-            break;
+               break;
          };
          
       } // end of for loop
       
-      if( hfullWeek )
-      {
-         week = ifullWeek;
-         sow = isow;
-         return true;
-      }
-
-      return false;
+      return true;
    }
 
    bool GPSWeekSecond::isValid() const
@@ -144,7 +126,14 @@ namespace gpstk
       }
       return false;
    }
-   
+
+   void GPSWeekSecond::reset()
+      throw()
+   {
+      week = 0;
+      sow = 0.0;
+   }
+
    bool 
    GPSWeekSecond::operator==( const GPSWeekSecond& right ) const
       throw()

@@ -154,23 +154,6 @@ namespace gpstk
             stripLeading( s );
 
          } // end of while( (s.size() > 0) && (f.size() > 0) )
-         
-         if ( !s.empty() ) 
-         {
-               // throw an error - something didn't get processed in the strings
-            gpstk::StringUtils::StringException se(
-               "Processing error - parts of strings left unread - " + s );
-            GPSTK_THROW( se );
-         }
-         
-         if ( !f.empty() )
-         {
-               // throw an error - something didn't get processed in the strings
-            gpstk::StringUtils::StringException se(
-               "Processing error - parts of strings left unread - " + f );
-            GPSTK_THROW( se );
-         }
-         
       }
       catch( gpstk::StringUtils::StringException& se )
       {

@@ -90,10 +90,9 @@ namespace gpstk
       if( itr != info.end() )
       {
          mjd = gpstk::StringUtils::asLongDouble( itr->second );
-         return true;
       }
       
-      return false;
+      return true;
    }
    
    bool MJD::isValid() const
@@ -108,6 +107,12 @@ namespace gpstk
       return false;
    }
    
+   void MJD::reset()
+      throw()
+   {
+      mjd = 0.0;
+   }
+
    bool MJD::operator==( const MJD& right ) const
       throw()
    {

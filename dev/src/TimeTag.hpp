@@ -117,6 +117,10 @@ namespace gpstk
       virtual bool isValid() const
          throw() = 0;
 
+         /// Reset this object to the default state.
+      virtual void reset()
+         throw() = 0;
+
          /// Format this time as a string using a format specified by the 
          /// inheriting class.
       virtual std::string asString() const
