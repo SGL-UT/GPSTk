@@ -8,9 +8,7 @@
 #ifndef GPSTK_BINEXDATA_HPP
 #define GPSTK_BINEXDATA_HPP
 
-#ifndef __SUNPRO_CC
-#include <stdint.h>
-#endif
+#include "gpstkplatform.h"
 
 #include "BinUtils.hpp"
 #include "FFData.hpp"
