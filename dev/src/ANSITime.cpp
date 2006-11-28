@@ -81,10 +81,9 @@ namespace gpstk
       if( i != info.end() )
       {
          time = asInt( i->second );
-         return true;
       }
 
-      return false;
+      return true;
    }
    
    bool ANSITime::isValid() const
