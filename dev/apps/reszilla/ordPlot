@@ -20,11 +20,11 @@ parser.add_option("-t", "--title", help="Specify a title for the plot. "+\
                   "Defaults to the name of the input stream.", \
                  dest="title", type="string", action="store")
 
-parser.add_option("-o", "--no-ords", help="Disable the plotting of ords (types 0 & 20).", \
-                 dest="noOrds", default=0, action="count")
+parser.add_option("-o", "--ords-only", help="Only plot the ords (types 0 & 20).", \
+                 dest="ordsOnly", default=0, action="count")
 
-parser.add_option("-c", "--no-clocks", help="Disable the plotting of clocks.",\
-                 dest="noClocks", default=0, action="count")
+parser.add_option("-c", "--clocks-only", help="only plot the clocks.",\
+                 dest="clocksOnly", default=0, action="count")
 
 parser.add_option("-s", "--save-figure", help="Save the figure to the indicated file", \
                   dest="saveFig", action="store", type="string")
@@ -100,18 +100,27 @@ rleClocks = numpy.array(rleClockList)
 # Since these are now in numpy arrays, delete the source to save some memory
 del ordList, clockList, rleClockList, wartList
 
-if options.debugLevel:
-    print "Read %d ords from %d epochs" % (len(ords[0]), len(clocks[0]))
-    print "ords.shape:",ords.shape
-    print "warts.shape:",warts.shape
-    print "clocks.shape:",clocks.shape
-    print "rleClocks.shape:",rleClocks.shape
+plotOrds = True
+plotClocks = True
 
-#Set up the key handler
+# Now figure out how many axes we need to use
+if len(clocks[0]) == 0 or options.ordsOnly: plotClocks = False
+if len(ords[0]) == 0 or options.clocksOnly: plotOrds = False
+axesCount=0;
+if plotOrds: axesCount+=1
+if plotClocks: axesCount+=1
+
+if options.debugLevel:
+    print "Read %d ords, %d clocks, %d warts" % (len(ords[0]), len(clocks[0]), \
+                                                 len(warts[0]))
+    print "rleClocks.shape:",rleClocks.shape
+    print "Plotting %d axes" % axesCount
+
+
+# A key handler for matplotlib
 def press(event):
-    #print 'Key %c pressed' % event.key
-    if event.key=='q':
-        sys.exit()
+    if event.key=='q' or event.key==' ':
+        pylab.close()
 
 fig = pylab.figure()
 pylab.connect('key_press_event', press)
@@ -121,48 +130,64 @@ yprops = dict(rotation=90,
               family='monospace',
               x=-0.01)
 
-timeFmt=pylab.DateFormatter("%02H:%02M\n%j")
+xMajorFmt=pylab.DateFormatter("%02H:%02M\n%03j")
+xMinorFmt=pylab.NullFormatter()
+xMajorLoc=matplotlib.dates.DayLocator()
+xMinorLoc=matplotlib.dates.HourLocator()
 
-ax1 = fig.add_axes([0.1, 0.5, 0.87, 0.45])
+if axesCount == 2:
+    ax1 = fig.add_axes([0.1, 0.52, 0.87, 0.44])
+elif axesCount == 1:
+    ax1 = fig.add_axes([0.1, 0.1, 0.85, 0.85])
 
-ax1.plot_date(ords[0], ords[2], 'r,')
-ax1.set_ylabel('ord (meters)', **yprops)
-#ax1.grid(True)
-pylab.title(options.title)
+if plotOrds:
+    ax1.plot_date(ords[0], ords[2], 'r,')
+    ax1.set_ylabel('ord (meters)', **yprops)
+    ax1.grid(True)
 
 # This allows the creation of futher axes that will share the x axis
 # with the first plot.
 axprops = dict()
 axprops['sharex'] = ax1
 
-ax2 = fig.add_axes([0.1, 0.065, 0.87, 0.435], **axprops)
-ax2.plot_date(clocks[0], clocks[1], 'g,')
+if axesCount == 2:
+    ax2 = fig.add_axes([0.1, 0.065, 0.87, 0.42], **axprops)
+elif axesCount == 1:
+    ax2 = ax1
 
-# Only plot the linear clock estimate if there is data for it...
-if rleClocks.shape[1] > 1:
-    ax2.plot_date(rleClocks[0], rleClocks[1], 'b-', linewidth=1)
-    uc = rleClocks[1] + rleClocks[2]
-    lc = rleClocks[1] - rleClocks[2]
-    xc = rleClocks[0]
-    xx = pylab.concatenate( (xc, xc[::-1]) )
-    yy = pylab.concatenate( (uc, lc[::-1]) )
-    ax2.fill(xx, yy, facecolor='b', alpha=0.4)
+if plotClocks:
+    ax2.plot_date(clocks[0], clocks[1], 'g,')
+    ax2.grid(True)
+    ax2.set_ylabel('clock (meters)', **yprops)
 
-# Need to find a way to change where the offset of the y axis for the lower
-# plot is placed.
+    # Only plot the linear clock estimate if there is data for it...
+    if rleClocks.shape[1] > 1:
+        ax2.plot_date(rleClocks[0], rleClocks[1], 'b-', linewidth=1)
+        uc = rleClocks[1] + rleClocks[2]
+        lc = rleClocks[1] - rleClocks[2]
+        xc = rleClocks[0]
+        xx = pylab.concatenate( (xc, xc[::-1]) )
+        yy = pylab.concatenate( (uc, lc[::-1]) )
+        ax2.fill(xx, yy, facecolor='b', alpha=0.4)
 
-ax2.set_ylabel('clock (meters)', **yprops)
-ax2.xaxis.set_major_formatter(timeFmt)
-#ax2.grid(True)
+
+ax2.xaxis.set_major_formatter(xMajorFmt)
+ax2.xaxis.set_minor_formatter(xMinorFmt)
+# Better to just let this be done auto right now
+# ax2.xaxis.set_major_locator(xMajorLoc) 
+ax2.xaxis.set_minor_locator(xMinorLoc)
 
 # Axis labels on the upper plot would be bad since they would be
 # drawn over the upper part of the lower plot
-pylab.setp(ax1.get_xticklabels(), visible=False)
+if axesCount > 1:
+    pylab.setp(ax1.get_xticklabels(), visible=False)
+ax1.set_title(options.title)
+
 
 if (options.saveFig == None):
     pylab.show()
 else:
-    pylab.savefig(options.saveFig)
+   pylab.savefig(options.saveFig)
 
 # now to strip (well, set to zero) the data at 50 meters
 # and replot it with pixels, not points
