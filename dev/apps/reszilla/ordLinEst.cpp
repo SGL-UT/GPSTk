@@ -77,7 +77,6 @@ void OrdLinEst::process()
    {
       ORDEpoch ordEpoch = read(input); 
       oem[ordEpoch.time] = ordEpoch; 
-      write(output, ordEpoch);      
    }
    
    RobustLinearEstimator rle;
@@ -99,11 +98,22 @@ void OrdLinEst::process()
    bool gotEstimate = rle.a != 0;
    if (gotEstimate)
    {
+      ORDEpochMap::iterator i;
+      for (i=oem.begin(); i != oem.end(); i++)
+      {
+         DayTime t = i->first;
+         write(output, i->second);      
+         double ocd = i->second.clockOffset - rle.eval(t.MJDdate());
+         output << left << setw(20) << t.printf(timeFormat) << right
+                << " " << setw(4) << 1 //type
+                << " " << setprecision(6) << setw(21)  << ocd
+                << endl;
+      }
+
       const int N=8;
       output << setfill(' ');
       DayTime t0(oem.begin()->first);
-      DayTime t1(oem.rbegin()->first);     
-      
+      DayTime t1(oem.rbegin()->first);      
       for (int i=0; i<=N; i++)
       {
          DayTime t = t0 + i*(t1-t0)/N;
@@ -113,7 +123,14 @@ void OrdLinEst::process()
                 << " " << setprecision(3) << setw(8)  << rle.abdev
                 << endl;
       }
+
    }   
+   else
+   {
+      ORDEpochMap::iterator i;
+      for (i=oem.begin(); i != oem.end(); i++)
+         write(output, i->second);      
+   }
 }
 
 //-----------------------------------------------------------------------------

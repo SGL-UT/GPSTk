@@ -10,7 +10,9 @@ parser = OptionParser()
 parser.add_option("-d", "--debug", help="Increase the debugLevel", \
                   default=0, dest="debugLevel", action="count")
 
-parser.add_option("-p", "--prn", help="Process only this prn", \
+parser.add_option("-p", "--prn", help="Process only this prn. If a prn of -1\
+is specified, all prns are plotted but each is plotted with a unique color. \
+The default is to plot all prns using the same color.", \
                   dest="prn", type="int", action="store")
 
 parser.add_option("-i", "--input", help="Input data file, defaults to stdin.", \
@@ -29,13 +31,14 @@ parser.add_option("-c", "--clocks-only", help="only plot the clocks.",\
 parser.add_option("-s", "--save-figure", help="Save the figure to the indicated file", \
                   dest="saveFig", action="store", type="string")
 
+parser.add_option("-e", "--min-elevation", help="Only consider ords from SVs "+\
+                  "above this elevation", \
+                  dest="minElevation", action="store", type="float", default=0)
+
 (options, args) = parser.parse_args()
 
 if (len(args) and options.inputFile == None):
     options.inputFile = args[0]
-
-if (options.prn):
-    print "Only processing prn", options.prn
 
 inputFile = sys.stdin
 if (options.inputFile):
@@ -48,11 +51,16 @@ if (options.debugLevel):
     print "Processing: %s" % inputFile.name
     print "Debug level: %d" % options.debugLevel
     print "Title: %s" % options.title
+    if options.prn > 0:
+        print "Only processing prn", options.prn
+    if options.minElevation:
+        print "Only processing ords from SVs above %.1f degrees." % options.minElevation
 
 ordList=([],[],[],[])   # time, prn, ord, elevation
 wartList=([],[],[],[])  # time, prn, ord, elevation
 clockList=([],[])       # time, offset
 rleClockList=([],[],[]) # time, offset, maxdev
+ocdList=([],[])
 
 for line in inputFile:
     line = line.strip()
@@ -74,7 +82,11 @@ for line in inputFile:
         ordList[1].append(int(words[4]))    # prn
         ordList[2].append(float(words[6]))  # ord
         ordList[3].append(float(words[5]))  # elevation
-    if ordType == 20:
+    elif ordType == 1:
+        if len(words) < 2: print "bad ocd line"
+        ocdList[0].append(t)
+        ocdList[1].append(float(words[4]))
+    elif ordType == 20:
         if len(words) < 7: print "bad wart line"
         wartList[0].append(t)
         wartList[1].append(int(words[4]))    # prn
@@ -96,14 +108,23 @@ ords = numpy.array(ordList)
 warts = numpy.array(wartList)
 clocks = numpy.array(clockList)
 rleClocks = numpy.array(rleClockList)
+ocds = numpy.array(ocdList)
 
 # Since these are now in numpy arrays, delete the source to save some memory
-del ordList, clockList, rleClockList, wartList
+del ordList, clockList, rleClockList, wartList, ocdList
 
+# Delete all ords from SVs lower than the specified elevation
+if (options.minElevation):
+    ords=pylab.compress(pylab.greater(ords[3],options.minElevation), ords)
+
+# delete all ords except from the specified prn
+if options.prn and options.prn>0:
+    ords=pylab.compress(pylab.equal(ords[1], options.prn), ords)
+    
+# Now figure out how many axes we need to use
 plotOrds = True
 plotClocks = True
 
-# Now figure out how many axes we need to use
 if len(clocks[0]) == 0 or options.ordsOnly: plotClocks = False
 if len(ords[0]) == 0 or options.clocksOnly: plotOrds = False
 axesCount=0;
@@ -111,17 +132,16 @@ if plotOrds: axesCount+=1
 if plotClocks: axesCount+=1
 
 if options.debugLevel:
-    print "Read %d ords, %d clocks, %d warts" % (len(ords[0]), len(clocks[0]), \
-                                                 len(warts[0]))
+    print "Read %d ords, %d clocks, %d ocds %d warts" %\
+          (len(ords[0]), len(clocks[0]), len(ocds[0]), len(warts[0]))
     print "rleClocks.shape:",rleClocks.shape
-    print "Plotting %d axes" % axesCount
-
 
 # A key handler for matplotlib
 def press(event):
     if event.key=='q' or event.key==' ':
         pylab.close()
 
+# Here we start generating the plots
 fig = pylab.figure()
 pylab.connect('key_press_event', press)
 yprops = dict(rotation=90,
@@ -136,14 +156,26 @@ xMajorLoc=matplotlib.dates.DayLocator()
 xMinorLoc=matplotlib.dates.HourLocator()
 
 if axesCount == 2:
-    ax1 = fig.add_axes([0.1, 0.52, 0.87, 0.44])
+    ax1 = fig.add_axes([0.1, 0.52, 0.87, 0.42])
 elif axesCount == 1:
-    ax1 = fig.add_axes([0.1, 0.1, 0.85, 0.85])
+    ax1 = fig.add_axes([0.1, 0.1, 0.87, 0.85])
 
 if plotOrds:
-    ax1.plot_date(ords[0], ords[2], 'r,')
+    if options.prn == -1:
+        # this might be better done with a where() call?
+        for prn in pylab.arange(1,33):
+            onePrn = pylab.compress(pylab.equal(ords[1], prn), ords)
+            ax1.plot_date(onePrn[0], onePrn[2], ',')
+    else:
+        ax1.plot_date(ords[0], ords[2], 'r,')
+        if len(ocds[0])>0:
+            ax3=fig.add_axes(ax1.get_position())
+            ax3.set_alpha(0.25) #This doesn't seem to affect the plot
+            ax3.plot_date(ocds[0], ocds[1], 'b,')
+
     ax1.set_ylabel('ord (meters)', **yprops)
     ax1.grid(True)
+
 
 # This allows the creation of futher axes that will share the x axis
 # with the first plot.
@@ -170,7 +202,6 @@ if plotClocks:
         yy = pylab.concatenate( (uc, lc[::-1]) )
         ax2.fill(xx, yy, facecolor='b', alpha=0.4)
 
-
 ax2.xaxis.set_major_formatter(xMajorFmt)
 ax2.xaxis.set_minor_formatter(xMinorFmt)
 # Better to just let this be done auto right now
@@ -183,14 +214,8 @@ if axesCount > 1:
     pylab.setp(ax1.get_xticklabels(), visible=False)
 ax1.set_title(options.title)
 
-
 if (options.saveFig == None):
     pylab.show()
 else:
    pylab.savefig(options.saveFig)
 
-# now to strip (well, set to zero) the data at 50 meters
-# and replot it with pixels, not points
-#x=choose(greater(abs(ord),50), (ord, 0))
-#plot(x, ',')
-# might want to look at where() or compress() to strip out outliers.
