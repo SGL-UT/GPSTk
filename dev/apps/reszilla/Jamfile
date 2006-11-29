@@ -39,4 +39,4 @@ GPSMain ordEdit : ordEdit.cpp ;
 
 GPSMain ordStats : ordStats.cpp ;
 
-InstallBin $(BINDIR) : resplot ;
+InstallBin $(BINDIR) : resplot ordPlot ;
