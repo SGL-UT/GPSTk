@@ -5,8 +5,24 @@
 //dod-release-statement END
 
 #include "BasicFramework.hpp"
-#include "DayTime.hpp"
-#include "CommandOptionWithTimeArg.hpp"
+
+#include "TimeString.hpp"
+#include "TimeConstants.hpp"
+
+#include "ANSITime.hpp"
+#include "CivilTime.hpp"
+#include "GPSEpochWeekSecond.hpp"
+#include "GPSWeekSecond.hpp"
+#include "GPSWeekZcount.hpp"
+#include "GPSZcount29.hpp"
+#include "GPSZcount32.hpp"
+#include "JulianDate.hpp"
+#include "MJD.hpp"
+#include "UnixTime.hpp"
+#include "YDSTime.hpp"
+#include "SystemTime.hpp"
+
+#include "CommandOptionWithCommonTimeArg.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -20,17 +36,23 @@ protected:
    virtual void process();
 
 private:
-   CommandOptionWithTimeArg CalendarTime;
-   CommandOptionWithTimeArg RinexTime;
-   CommandOptionWithTimeArg RinexFileTime;
-   CommandOptionWithTimeArg DOYTime;
-   CommandOptionWithTimeArg MJDTime;
-   CommandOptionWithTimeArg ShortWeekSOWTime;
-   CommandOptionWithTimeArg ShortWeekZCountsTime;
-   CommandOptionWithTimeArg FullWeekSOWTime;
-   CommandOptionWithTimeArg FullWeekZCountsTime;
-   CommandOptionWithTimeArg UnixTime;
-   CommandOptionWithTimeArg ZCountsTime;
+   CommandOptionWithCommonTimeArg ANSITimeOption;
+   CommandOptionWithCommonTimeArg CivilTimeOption;
+   CommandOptionWithCommonTimeArg RinexFileTimeOption;
+   CommandOptionWithCommonTimeArg GPSEWSOption;
+   CommandOptionWithCommonTimeArg GPSWSOption;
+   CommandOptionWithCommonTimeArg GPSWZOption;
+   CommandOptionWithCommonTimeArg GPSZ29Option;
+   CommandOptionWithCommonTimeArg GPSZ32Option;
+   CommandOptionWithCommonTimeArg JDOption;
+   CommandOptionWithCommonTimeArg MJDOption;
+   CommandOptionWithCommonTimeArg UnixTimeOption;
+   CommandOptionWithCommonTimeArg YDSTimeOption;
+
+   CommandOptionWithAnyArg inputFormatOption;
+   CommandOptionWithAnyArg inputTimeOption;
+   CommandOptionAllOf inputFormatAndTimeOption;
+
    CommandOptionWithAnyArg formatOption;
    CommandOptionWithNumberArg addOption;
    CommandOptionWithNumberArg subOption;
@@ -44,109 +66,134 @@ TimCvt::TimCvt(char* arg0)
       : BasicFramework(arg0, "Converts from a given input time specification"
                        " to other time formats.  Include the quotation marks."
                        "  All year values are four digit years."),
-        CalendarTime('c', "calendar", "%m %d %Y",
-                     "\"Month(numeric) DayOfMonth Year\""),
-        RinexTime('r',"rinex","%m %d %Y %H:%M:%S",
-                  "\"Month(numeric) DayOfMonth Year Hour:Minute:Second\""),
-        RinexFileTime('R', "rinex-file", "%y %m %d %H %M %S",
-                      "\"Year(2-digit) Month(numeric) DayOfMonth Hour Minute Second\""),
-        DOYTime('y',"doy","%Y %j %s",
-                "\"Year DayOfYear SecondsOfDay\""),
-        MJDTime('m',"mjd","%Q",
-                "\"ModifiedJulianDate\""),
-        ShortWeekSOWTime('o',"shortweekandsow","%G %g %Y",
-                         "\"10bitGPSweek SecondsOfWeek Year\""),
-        ShortWeekZCountsTime('z',"shortweekandzcounts","%G %Z %Y",
-                             "\"10bitGPSweek ZCounts Year\""),
-        FullWeekSOWTime('f',"fullweekandsow","%F %g",
-                        "\"FullGPSweek SecondsOfWeek\""),
-        FullWeekZCountsTime('w',"fullweekandzcounts","%F %Z",
-                            "\"FullGPSweek ZCounts\""),
-        UnixTime('u',"unixtime","%U %u",
-                 "\"UnixSeconds UnixMicroseconds\""),
-        ZCountsTime('Z',"fullZcounts","%C",
-                    "\"fullZcounts\""),
+        ANSITimeOption('A', "ansi", "%K", "\"ANSI-Second\""),
+        CivilTimeOption('c', "civil", "%m %d %Y %H:%M:%f",
+                        "\"Month(numeric) DayOfMonth Year Hour:Minute:Second\""),
+        RinexFileTimeOption('R', "rinex-file", "%y %m %d %H %M %S",
+                            "\"Year(2-digit) Month(numeric) DayOfMonth Hour Minute Second\""),
+        GPSEWSOption('o', "ews", "%E %G %g", 
+                     "\"GPSEpoch 10bitGPSweek SecondOfWeek\""),
+        GPSWSOption('f', "ws", "%F %g", "\"FullGPSWeek SecondOfWeek\""),
+        GPSWZOption('w', "wz", "%F %Z", "\"FullGPSWeek Zcount\""),
+        GPSZ29Option(0, "z29", "%E %c", "\"29bitZcount\""),
+        GPSZ32Option('Z', "z32", "%C", "\"32bitZcount\""),
+        JDOption('j', "julian", "%J", "\"JulianDate\""),
+        MJDOption('m', "mjd", "%Q", "\"ModifiedJulianDate\""),
+        UnixTimeOption('u',"unixtime", "%U %u",
+                       "\"UnixSeconds UnixMicroseconds\""),
+        YDSTimeOption('y', "doy", "%Y %j %s",
+                      "\"Year DayOfYear SecondsOfDay\""),
+        inputFormatOption(0, "input-format", "Time format to use on input"),
+        inputTimeOption(0, "input-time",
+                        "Time to be parsed by \"input-format\" option"),
         formatOption('F', "format", "Time format to use on output"),
         addOption('a', "add-offset", "add NUM seconds to specified time"),
-        subOption('s', "sub-offset", "subtract NUM seconds from specified time")
+        subOption('s', "sub-offset",
+                  "subtract NUM seconds from specified time")
 {
-   CalendarTime.setMaxCount(1);
-   RinexTime.setMaxCount(1);
-   RinexFileTime.setMaxCount(1);
-   DOYTime.setMaxCount(1);
-   MJDTime.setMaxCount(1);
-   ShortWeekSOWTime.setMaxCount(1);
-   ShortWeekZCountsTime.setMaxCount(1);
-   FullWeekSOWTime.setMaxCount(1);
-   FullWeekZCountsTime.setMaxCount(1);
-   UnixTime.setMaxCount(1);
-   ZCountsTime.setMaxCount(1);
+   ANSITimeOption.setMaxCount(1);
+   CivilTimeOption.setMaxCount(1);
+   RinexFileTimeOption.setMaxCount(1);
+   GPSEWSOption.setMaxCount(1);
+   GPSWSOption.setMaxCount(1);
+   GPSWZOption.setMaxCount(1);
+   GPSZ29Option.setMaxCount(1);
+   GPSZ32Option.setMaxCount(1);
+   JDOption.setMaxCount(1);
+   MJDOption.setMaxCount(1);
+   UnixTimeOption.setMaxCount(1);
+   YDSTimeOption.setMaxCount(1);
    formatOption.setMaxCount(1);
 
-   mutexOption.addOption(&CalendarTime);
-   mutexOption.addOption(&RinexTime);
-   mutexOption.addOption(&RinexFileTime);
-   mutexOption.addOption(&DOYTime);
-   mutexOption.addOption(&MJDTime);
-   mutexOption.addOption(&ShortWeekSOWTime);
-   mutexOption.addOption(&ShortWeekZCountsTime);
-   mutexOption.addOption(&FullWeekSOWTime);
-   mutexOption.addOption(&FullWeekZCountsTime);
-   mutexOption.addOption(&UnixTime);
-   mutexOption.addOption(&ZCountsTime);
+   inputFormatOption.setMaxCount(1);
+   inputTimeOption.setMaxCount(1);
+   inputFormatAndTimeOption.addOption(&inputFormatOption);
+   inputFormatAndTimeOption.addOption(&inputTimeOption);
+
+   mutexOption.addOption(&ANSITimeOption);
+   mutexOption.addOption(&CivilTimeOption);
+   mutexOption.addOption(&RinexFileTimeOption);
+   mutexOption.addOption(&GPSEWSOption);
+   mutexOption.addOption(&GPSWSOption);
+   mutexOption.addOption(&GPSWZOption);
+   mutexOption.addOption(&GPSZ29Option);
+   mutexOption.addOption(&GPSZ32Option);
+   mutexOption.addOption(&JDOption);
+   mutexOption.addOption(&MJDOption);
+   mutexOption.addOption(&UnixTimeOption);
+   mutexOption.addOption(&YDSTimeOption);
+   mutexOption.addOption(&inputFormatAndTimeOption);
 }
 
 void TimCvt::process()
 {
-   DayTime dt;
-      //dt.setToString(stringToParse, timeSpec);
-   CommandOptionWithTimeArg* whichOpt =
-      (CommandOptionWithTimeArg*)mutexOption.whichOne();
+   CommonTime ct;
+   CommandOption *whichOpt = mutexOption.whichOne();
 
    if (whichOpt)
-      dt = whichOpt->getTime().front();
+   {
+      CommandOptionWithCommonTimeArg *cta = 
+         dynamic_cast<CommandOptionWithCommonTimeArg *>(whichOpt);
+      if (cta)
+      {
+         ct = cta->getTime().front();
+      }
+      else // whichOpt == &inputFormatAndTimeOption
+      {
+         mixedScanTime( ct, 
+                        inputTimeOption.getValue().front(),
+                        inputFormatOption.getValue().front() );
+      }
+   }
+   else
+   {
+      ct = SystemTime(); 
+   }
 
    int i;
    int addOptions = addOption.getCount();
    int subOptions = subOption.getCount();
    for (i = 0; i < addOptions; i++)
-      dt += StringUtils::asDouble(addOption.getValue()[i]);
+      ct += StringUtils::asDouble(addOption.getValue()[i]);
    for (i = 0; i < subOptions; i++)
-      dt -= StringUtils::asDouble(subOption.getValue()[i]);
+      ct -= StringUtils::asDouble(subOption.getValue()[i]);
 
    if (formatOption.getCount())
    {
-      cout << dt.printf(formatOption.getValue()[0]) << endl;
+      cout << printTime(ct, formatOption.getValue()[0]) << endl;
    }
    else
    {
       using StringUtils::leftJustify;
       string eight(8, ' '); // eight spaces
       
+      CivilTime civ(ct);
+
       cout << endl
            << eight << leftJustify("Month/Day/Year", 32) 
-           << dt.printf("%m/%d/%Y") << endl
+           << civ.printf("%m/%d/%Y") << endl
 
            << eight << leftJustify("Hour:Min:Sec", 32)
-           << dt.printf("%02H:%02M:%02S") << endl
+           << civ.printf("%02H:%02M:%02S") << endl
 
            << eight << leftJustify("Modified Julian Date", 32)
-           << setprecision(15) << dt.MJDdate() << endl
+           << setprecision(15) << MJD(ct) << endl
 
            << eight << leftJustify("GPSweek DayOfWeek SecOfWeek", 32)
-           << dt.printf("%G %w %g") << endl
+           << GPSEpochWeekSecond(ct).printf("%G %w %g") << endl
 
            << eight << leftJustify("FullGPSweek Zcount", 32)
-           << dt.printf("%F %z") << endl
+           << GPSWeekZcount(ct).printf("%F %z") << endl
 
            << eight << leftJustify("Year DayOfYear SecondOfDay", 32)
-           << dt.printf("%Y %j %s") << endl
+           << YDSTime(ct).printf("%Y %j %s") << endl
 
            << eight << leftJustify("Unix_sec Unix_usec", 32)
-           << dt.printf("%U %u") << endl
+           << UnixTime(ct).printf("%U %u") << endl
 
-           << eight << leftJustify("FullZcount", 32)
-           << dt.printf("%c") << endl
+           << eight << leftJustify("Zcount: 29-bit (32-bit)", 32)
+           << GPSZcount29(ct).printf("%c")
+           << GPSZcount32(ct).printf(" (%C)") << endl
 
            << endl << endl;
    }
