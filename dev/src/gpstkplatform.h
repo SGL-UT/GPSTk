@@ -49,9 +49,12 @@ typedef unsigned __int64 uint64_t;
 #include <sys/types.h>
 #include <sys/timeb.h>
 
-long long llabs(long long thisInt)
+namespace std 
 {
-  return _abs64(thisInt);
+  long long llabs(long long thisInt)
+  {
+    return _abs64(thisInt);
+  }
 }
 
 #elif !defined(__SUNPRO_CC)
