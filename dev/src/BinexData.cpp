@@ -331,7 +331,7 @@ namespace gpstk
       throw(FFStreamError)
    {
       value = ll;
-      long long absValue = llabs(ll);
+      long long absValue = std::llabs(ll);
 
       if (absValue < 16LL)
       {
@@ -585,7 +585,7 @@ namespace gpstk
          GPSTK_THROW(err);
       }
 
-      long long      absValue = llabs(value);
+      long long      absValue = std::llabs(value);
       unsigned char  signBit  = (value < 0) ? 0x01 : 0x00;
 
       size_t result = size;  // Default
