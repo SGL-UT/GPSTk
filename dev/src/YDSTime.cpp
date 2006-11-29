@@ -65,11 +65,11 @@ namespace gpstk
          std::string rv = fmt;
          
          rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
-                              "Yhd", year);
+                              "Yd", year);
          rv = formattedPrint(rv, getFormatPrefixInt() + "y",
-                             "yhd", static_cast<short>(year % 100));
+                             "yd", static_cast<short>(year % 100));
          rv = formattedPrint( rv, getFormatPrefixInt() + "j",
-                              "jhd", doy);
+                              "jd", doy);
          rv = formattedPrint( rv, getFormatPrefixFloat() + "s",
                               "sf", sod);
          return rv;

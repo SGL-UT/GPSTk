@@ -77,11 +77,11 @@ namespace gpstk
             std::string rv = fmt;
                
             rv = formattedPrint( rv, getFormatPrefixInt() + "E",
-                                 "Ehd", epoch );
+                                 "Ed", epoch );
             rv = formattedPrint( rv, getFormatPrefixInt() + "G", 
-                                 "Ghd", week );
+                                 "Gd", week );
             rv = formattedPrint( rv, getFormatPrefixInt() + "w", 
-                                 "whd", static_cast<int>(sow / SEC_PER_DAY));
+                                 "wd", static_cast<int>(sow / SEC_PER_DAY));
             rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
                                  "gf", sow);
             return rv;

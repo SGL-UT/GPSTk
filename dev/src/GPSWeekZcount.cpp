@@ -73,8 +73,8 @@ namespace gpstk
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
 
-         rv = formattedPrint( rv, getFormatPrefixInt() + "F", "Fhd", week );
-         rv = formattedPrint( rv, getFormatPrefixInt() + "w", "whd", 
+         rv = formattedPrint( rv, getFormatPrefixInt() + "F", "Fd", week );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "w", "wd", 
                               static_cast<int>(zcount / ZCOUNT_PER_DAY) );
          rv = formattedPrint( rv, getFormatPrefixInt() + "z", "zd", zcount );
          rv = formattedPrint( rv, getFormatPrefixInt() + "Z", "Zd", zcount );

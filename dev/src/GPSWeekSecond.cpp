@@ -73,9 +73,9 @@ namespace gpstk
             std::string rv = fmt;
                
             rv = formattedPrint( rv, getFormatPrefixInt() + "F", 
-                                 "Fhd", week );
+                                 "Fd", week );
             rv = formattedPrint( rv, getFormatPrefixInt() + "w",
-                                 "whd", static_cast<int>(sow / SEC_PER_DAY) );
+                                 "wd", static_cast<int>(sow / SEC_PER_DAY) );
             rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
                                  "gf", sow);
             return rv;

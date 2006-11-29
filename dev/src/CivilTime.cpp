@@ -91,21 +91,21 @@ namespace gpstk
          std::string rv = fmt;
          
          rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
-                              "Yhd", year );
+                              "Yd", year );
          rv = formattedPrint( rv, getFormatPrefixInt() + "y",
-                              "yhd", static_cast<short>( year % 100 ) );
+                              "yd", static_cast<short>( year % 100 ) );
          rv = formattedPrint( rv, getFormatPrefixInt() + "m",
-                              "mhd", month );
+                              "md", month );
          rv = formattedPrint( rv, getFormatPrefixInt() + "b",
                               "bs", MonthAbbrevNames[month] );
          rv = formattedPrint( rv, getFormatPrefixInt() + "B",
                               "Bs", MonthNames[month] );
          rv = formattedPrint( rv, getFormatPrefixInt() + "d",
-                              "dhd", day );
+                              "dd", day );
          rv = formattedPrint( rv, getFormatPrefixInt() + "H",
-                              "Hhd", hour );
+                              "Hd", hour );
          rv = formattedPrint( rv, getFormatPrefixInt() + "M",
-                              "Mhd", minute );
+                              "Md", minute );
          rv = formattedPrint( rv, getFormatPrefixInt() + "S", 
                               "Sd", static_cast<short>( second ) );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "f",
