@@ -99,11 +99,12 @@ SRIFilter::SRIFilter(const Matrix<double>& Rin,
    if(Rin.rows() != Rin.cols() ||
       Rin.rows() != Zin.size() ||
       Rin.rows() != NLin.size()) {
+      using namespace StringUtils;
       MatrixException me("Invalid input dimensions: R is "
-         + StringUtils::asString<int>(Rin.rows()) + "x"
-         + StringUtils::asString<int>(Rin.cols()) + ", Z has length "
-         + StringUtils::asString<int>(Zin.size()) + ", and NL has length "
-         + StringUtils::asString<int>(NLin.size())
+         + asString<int>(Rin.rows()) + "x"
+         + asString<int>(Rin.cols()) + ", Z has length "
+         + asString<int>(Zin.size()) + ", and NL has length "
+         + asString<int>(NLin.size())
          );
       GPSTK_THROW(me);
    }
@@ -147,16 +148,17 @@ void SRIFilter::measurementUpdate(const Matrix<double>& H,
 {
    if(H.cols() != R.cols() || H.rows() != D.size() ||
       (&CM != &SRINullMatrix && (CM.rows() != D.size() || CM.cols() != D.size())) ) {
+      using namespace StringUtils;
       MatrixException me("Invalid input dimensions:\n  SRI is "
-         + StringUtils::asString<int>(R.rows()) + "x"
-         + StringUtils::asString<int>(R.cols()) + ",\n  Partials is "
-         + StringUtils::asString<int>(H.rows()) + "x"
-         + StringUtils::asString<int>(H.cols()) + ",\n  Data has length "
-         + StringUtils::asString<int>(D.size())
+         + asString<int>(R.rows()) + "x"
+         + asString<int>(R.cols()) + ",\n  Partials is "
+         + asString<int>(H.rows()) + "x"
+         + asString<int>(H.cols()) + ",\n  Data has length "
+         + asString<int>(D.size())
          );
       if(&CM != &SRINullMatrix) me.addText(",  and Cov is "
-         + StringUtils::asString<int>(CM.rows()) + "x"
-         + StringUtils::asString<int>(CM.cols()));
+         + asString<int>(CM.rows()) + "x"
+         + asString<int>(CM.cols()));
       GPSTK_THROW(me);
    }
    try {
@@ -324,10 +326,11 @@ int SRIFilter::leastSquaresEstimation(Vector<double>& D,
       GPSTK_THROW(me);
    }
    if(doSequential && R.rows() != X.size()) {
+      using namespace StringUtils;
       MatrixException me("Sequential problem has inconsistent dimensions:\n  SRI is "
-         + StringUtils::asString<int>(R.rows()) + "x"
-         + StringUtils::asString<int>(R.cols()) + " while X has length "
-         + StringUtils::asString<int>(X.size()));
+         + asString<int>(R.rows()) + "x"
+         + asString<int>(R.cols()) + " while X has length "
+         + asString<int>(X.size()));
       GPSTK_THROW(me);
    }
    if(doWeight && doRobust) {
@@ -721,19 +724,20 @@ void SRIFilter::SrifTU(Matrix<T>& R,
       R.cols() != n ||
       Rwx.rows() < ns || Rwx.cols() < n ||
       Z.size() < n || Zw.size() < ns) {
+      using namespace StringUtils;
       MatrixException me("Invalid input dimensions:\n  R is "
-         + StringUtils::asString<int>(R.rows()) + "x"
-         + StringUtils::asString<int>(R.cols()) + ", Z has length "
-         + StringUtils::asString<int>(Z.size()) + "\n  Phi is "
-         + StringUtils::asString<int>(Phi.rows()) + "x"
-         + StringUtils::asString<int>(Phi.cols()) + "\n  Rw is "
-         + StringUtils::asString<int>(Rw.rows()) + "x"
-         + StringUtils::asString<int>(Rw.cols()) + "\n  G is "
-         + StringUtils::asString<int>(G.rows()) + "x"
-         + StringUtils::asString<int>(G.cols()) + "\n  Zw has length "
-         + StringUtils::asString<int>(Zw.size()) + "\n  Rwx is "
-         + StringUtils::asString<int>(Rwx.rows()) + "x"
-         + StringUtils::asString<int>(Rwx.cols())
+         + asString<int>(R.rows()) + "x"
+         + asString<int>(R.cols()) + ", Z has length "
+         + asString<int>(Z.size()) + "\n  Phi is "
+         + asString<int>(Phi.rows()) + "x"
+         + asString<int>(Phi.cols()) + "\n  Rw is "
+         + asString<int>(Rw.rows()) + "x"
+         + asString<int>(Rw.cols()) + "\n  G is "
+         + asString<int>(G.rows()) + "x"
+         + asString<int>(G.cols()) + "\n  Zw has length "
+         + asString<int>(Zw.size()) + "\n  Rwx is "
+         + asString<int>(Rwx.rows()) + "x"
+         + asString<int>(Rwx.cols())
          );
       GPSTK_THROW(me);
    }
@@ -933,19 +937,20 @@ void SRIFilter::SrifSU(Matrix<T>& R,
       R.cols() != N ||
       Rwx.rows() < Ns || Rwx.cols() < N ||
       Z.size() < N || Zw.size() < Ns) {
+      using namespace StringUtils;
       MatrixException me("Invalid input dimensions:\n  R is "
-         + StringUtils::asString<int>(R.rows()) + "x"
-         + StringUtils::asString<int>(R.cols()) + ", Z has length "
-         + StringUtils::asString<int>(Z.size()) + "\n  Phi is "
-         + StringUtils::asString<int>(Phi.rows()) + "x"
-         + StringUtils::asString<int>(Phi.cols()) + "\n  Rw is "
-         + StringUtils::asString<int>(Rw.rows()) + "x"
-         + StringUtils::asString<int>(Rw.cols()) + "\n  G is "
-         + StringUtils::asString<int>(G.rows()) + "x"
-         + StringUtils::asString<int>(G.cols()) + "\n  Zw has length "
-         + StringUtils::asString<int>(Zw.size()) + "\n  Rwx is "
-         + StringUtils::asString<int>(Rwx.rows()) + "x"
-         + StringUtils::asString<int>(Rwx.cols())
+         + asString<int>(R.rows()) + "x"
+         + asString<int>(R.cols()) + ", Z has length "
+         + asString<int>(Z.size()) + "\n  Phi is "
+         + asString<int>(Phi.rows()) + "x"
+         + asString<int>(Phi.cols()) + "\n  Rw is "
+         + asString<int>(Rw.rows()) + "x"
+         + asString<int>(Rw.cols()) + "\n  G is "
+         + asString<int>(G.rows()) + "x"
+         + asString<int>(G.cols()) + "\n  Zw has length "
+         + asString<int>(Zw.size()) + "\n  Rwx is "
+         + asString<int>(Rwx.rows()) + "x"
+         + asString<int>(Rwx.cols())
          );
       GPSTK_THROW(me);
    }
@@ -1162,19 +1167,20 @@ void SRIFilter::SrifSU_DM(Matrix<T>& P,
       Rwx.rows() != Ns || Rwx.cols() != N ||
       Phinv.rows() != N || Phinv.cols() != N ||
       G.rows() != N || G.cols() != Ns ) {
+      using namespace StringUtils;
       MatrixException me("Invalid input dimensions:\n  P is "
-         + StringUtils::asString<int>(P.rows()) + "x"
-         + StringUtils::asString<int>(P.cols()) + ", X has length "
-         + StringUtils::asString<int>(X.size()) + "\n  Phinv is "
-         + StringUtils::asString<int>(Phinv.rows()) + "x"
-         + StringUtils::asString<int>(Phinv.cols()) + "\n  Rw is "
-         + StringUtils::asString<int>(Rw.rows()) + "x"
-         + StringUtils::asString<int>(Rw.cols()) + "\n  G is "
-         + StringUtils::asString<int>(G.rows()) + "x"
-         + StringUtils::asString<int>(G.cols()) + "\n  Zw has length "
-         + StringUtils::asString<int>(Zw.size()) + "\n  Rwx is "
-         + StringUtils::asString<int>(Rwx.rows()) + "x"
-         + StringUtils::asString<int>(Rwx.cols())
+         + asString<int>(P.rows()) + "x"
+         + asString<int>(P.cols()) + ", X has length "
+         + asString<int>(X.size()) + "\n  Phinv is "
+         + asString<int>(Phinv.rows()) + "x"
+         + asString<int>(Phinv.cols()) + "\n  Rw is "
+         + asString<int>(Rw.rows()) + "x"
+         + asString<int>(Rw.cols()) + "\n  G is "
+         + asString<int>(G.rows()) + "x"
+         + asString<int>(G.cols()) + "\n  Zw has length "
+         + asString<int>(Zw.size()) + "\n  Rwx is "
+         + asString<int>(Rwx.rows()) + "x"
+         + asString<int>(Rwx.cols())
          );
       GPSTK_THROW(me);
    }

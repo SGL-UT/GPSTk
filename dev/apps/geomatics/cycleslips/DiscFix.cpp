@@ -786,30 +786,31 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime)
 
                	// build the RINEX data object
                	RinexObsData::RinexDatum rd;
-
-               	rd.lli = StringUtils::asInt(StringUtils::asString<char>(str[0]));
-               	rd.ssi = StringUtils::asInt(StringUtils::asString<char>(str[1]));
+		
+		using namespace StringUtils;
+               	rd.lli = asInt(asString<char>(str[0]));
+               	rd.ssi = asInt(asString<char>(str[1]));
                	rd.data = spd.P1;
                	if(UsingCA)
                   	roe.obs[sat][RinexObsHeader::C1] = rd;
                	else
                   	roe.obs[sat][RinexObsHeader::P1] = rd;
-
-               	rd.lli = StringUtils::asInt(StringUtils::asString<char>(str[2]));
-               	rd.ssi = StringUtils::asInt(StringUtils::asString<char>(str[3]));
+                
+               	rd.lli = asInt(asString<char>(str[2]));
+               	rd.ssi = asInt(asString<char>(str[3]));
                	rd.data = spd.P2;
                	roe.obs[sat][RinexObsHeader::P2] = rd;
 
                	//rd.lli = StringUtils::asInt(StringUtils::asString<char>(str[4]));
                   // TD ought to set the low bit
 						rd.lli = (spd.flag & SatPass::LL1)!=0 ? 1 : 0;
-               	rd.ssi = StringUtils::asInt(StringUtils::asString<char>(str[5]));
+               	rd.ssi = asInt(asString<char>(str[5]));
                	rd.data = spd.L1;
                	roe.obs[sat][RinexObsHeader::L1] = rd;
 
                	//rd.lli = StringUtils::asInt(StringUtils::asString<char>(str[6]));
 						rd.lli = (spd.flag & SatPass::LL2)!=0 ? 1 : 0;
-               	rd.ssi = StringUtils::asInt(StringUtils::asString<char>(str[7]));
+               	rd.ssi = asInt(asString<char>(str[7]));
                	rd.data = spd.L2;
                	roe.obs[sat][RinexObsHeader::L2] = rd;
 

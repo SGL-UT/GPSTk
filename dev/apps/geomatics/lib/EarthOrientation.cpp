@@ -165,8 +165,9 @@ namespace gpstk
    {
       int w2 = t.GPSfullweek()-1;            // the previous week
       if(w2 < 0) {
-         DayTime::DayTimeException dte("Invalid week in EOPP file: "
-               + StringUtils::asString<short>(w2));
+         using namespace StringUtils;
+	 DayTime::DayTimeException dte("Invalid week in EOPP file: "
+               + asString<short>(w2));
          GPSTK_THROW(dte);
       }
 

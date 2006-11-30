@@ -1817,9 +1817,10 @@ namespace gpstk
       throw(InvalidRequest)
    {
       if(R.rows() != 3 || R.cols() != 3) {
-         InvalidRequest ir(string("Input matrix has dimension ")
-                           + StringUtils::asString<int>(R.rows()) + string(",")
-                           + StringUtils::asString<int>(R.cols()));
+         using namespace StringUtils;
+	 InvalidRequest ir(string("Input matrix has dimension ")
+                           + asString<int>(R.rows()) + string(",")
+                           + asString<int>(R.cols()));
          GPSTK_THROW(ir);
       }
 

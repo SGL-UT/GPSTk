@@ -103,12 +103,13 @@ void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
       nscale--;
    }
 
+   using namespace StringUtils;
       // find length of stem for printing
-   buf = StringUtils::asString<long>(::abs(Stem(xd[0],scale)));
+   buf = asString<long>(::abs(Stem(xd[0],scale)));
    len = buf.size();
-   buf = StringUtils::asString<long>(::abs(Stem(xd[nd-1],scale)));
+   buf = asString<long>(::abs(Stem(xd[nd-1],scale)));
    if(len < buf.size()) len=buf.size();
-   buf = StringUtils::asString<long>(::abs(Stem(M,scale)));
+   buf = asString<long>(::abs(Stem(M,scale)));
    if(len < buf.size()) len=buf.size();
 
       // loop through data, adding stems and leaves to plot
