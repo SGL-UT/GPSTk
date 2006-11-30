@@ -10,30 +10,39 @@ parser = OptionParser()
 parser.add_option("-d", "--debug", help="Increase the debugLevel", \
                   default=0, dest="debugLevel", action="count")
 
-parser.add_option("-p", "--prn", help="Process only this prn. If a prn of -1\
-is specified, all prns are plotted but each is plotted with a unique color. \
-The default is to plot all prns using the same color.", \
-                  dest="prn", type="int", action="store")
+parser.add_option("-p", "--prn", dest="prn", type="int", action="store",\
+                  help="Process only this prn. If a prn of -1\
+                  is specified, all prns are plotted but each is plotted with a unique color. \
+                  The default is to plot all prns using the same color.")
 
 parser.add_option("-i", "--input", help="Input data file, defaults to stdin.", \
                   dest="inputFile", type="string", action="store")
 
 parser.add_option("-t", "--title", help="Specify a title for the plot. "+\
                   "Defaults to the name of the input stream.", \
-                 dest="title", type="string", action="store")
+                  dest="title", type="string", action="store")
 
 parser.add_option("-o", "--ords-only", help="Only plot the ords (types 0 & 20).", \
-                 dest="ordsOnly", default=0, action="count")
+                  dest="ordsOnly", default=0, action="count")
 
 parser.add_option("-c", "--clocks-only", help="only plot the clocks.",\
-                 dest="clocksOnly", default=0, action="count")
+                  dest="clocksOnly", default=0, action="count")
 
-parser.add_option("-s", "--save-figure", help="Save the figure to the indicated file", \
-                  dest="saveFig", action="store", type="string")
+parser.add_option("-s", "--save-figure", \
+                  dest="saveFig", action="store", type="string",\
+		  help="Save the figure to the indicated file")
+    
+parser.add_option("-e", "--min-elevation",\
+                  dest="minElevation", action="store", type="float", default=0,
+                  help="Only consider ords from SVs above this elevation")
 
-parser.add_option("-e", "--min-elevation", help="Only consider ords from SVs "+\
-                  "above this elevation", \
-                  dest="minElevation", action="store", type="float", default=0)
+parser.add_option("-w", "--plot-warts",\
+		  dest="plotWarts", action="count",\
+		  help="Plot warts instead of ords")
+
+parser.add_option("-y", "--y-range",\
+		  dest="yRange", action="store", type="float",\
+		  help="Fix the y range on the ords to be +- this value.")
 
 (options, args) = parser.parse_args()
 
@@ -55,6 +64,8 @@ if (options.debugLevel):
         print "Only processing prn", options.prn
     if options.minElevation:
         print "Only processing ords from SVs above %.1f degrees." % options.minElevation
+    if options.yRange:
+        print "Fixing y axis to +/- %.f meters" % options.yRange
 
 ordList=([],[],[],[])   # time, prn, ord, elevation
 wartList=([],[],[],[])  # time, prn, ord, elevation
@@ -83,7 +94,7 @@ for line in inputFile:
         ordList[2].append(float(words[6]))  # ord
         ordList[3].append(float(words[5]))  # elevation
     elif ordType == 1:
-        if len(words) < 2: print "bad ocd line"
+        if len(words) < 2: print "bad clock residual line"
         ocdList[0].append(t)
         ocdList[1].append(float(words[4]))
     elif ordType == 20:
@@ -116,10 +127,12 @@ del ordList, clockList, rleClockList, wartList, ocdList
 # Delete all ords from SVs lower than the specified elevation
 if (options.minElevation):
     ords=pylab.compress(pylab.greater(ords[3],options.minElevation), ords)
+    warts=pylab.compress(pylab.greater(warts[3],options.minElevation), warts)
 
 # delete all ords except from the specified prn
 if options.prn and options.prn>0:
     ords=pylab.compress(pylab.equal(ords[1], options.prn), ords)
+    warts=pylab.compress(pylab.equal(warts[1], options.prn), warts)
     
 # Now figure out how many axes we need to use
 plotOrds = True
@@ -136,6 +149,10 @@ if options.debugLevel:
           (len(ords[0]), len(clocks[0]), len(ocds[0]), len(warts[0]))
     print "rleClocks.shape:",rleClocks.shape
 
+if axesCount == 0:
+    print "No data to plot. Exiting"
+    sys.exit()
+
 # A key handler for matplotlib
 def press(event):
     if event.key=='q' or event.key==' ':
@@ -150,24 +167,38 @@ yprops = dict(rotation=90,
               family='monospace',
               x=-0.01)
 
+scale_props = dict(horizontalalignment="right",
+                   verticalalignment="bottom",
+                   size=8, family="sans-serif")
+
 xMajorFmt=pylab.DateFormatter("%02H:%02M\n%03j")
 xMinorFmt=pylab.NullFormatter()
 xMajorLoc=matplotlib.dates.DayLocator()
 xMinorLoc=matplotlib.dates.HourLocator()
 
 if axesCount == 2:
-    ax1 = fig.add_axes([0.1, 0.52, 0.87, 0.42])
+    ax1 = fig.add_axes([0.08, 0.52, 0.87, 0.42])
 elif axesCount == 1:
-    ax1 = fig.add_axes([0.1, 0.1, 0.87, 0.85])
+    ax1 = fig.add_axes([0.08, 0.1, 0.87, 0.85])
 
 if plotOrds:
     if options.prn == -1:
         # this might be better done with a where() call?
-        for prn in pylab.arange(1,33):
-            onePrn = pylab.compress(pylab.equal(ords[1], prn), ords)
-            ax1.plot_date(onePrn[0], onePrn[2], ',')
+        if options.plotWarts:
+            for prn in pylab.arange(1,33):
+                onePrn = pylab.compress(pylab.equal(warts[1], prn), warts)
+                if len(onePrn[0])>0:
+                    ax1.plot_date(onePrn[0], onePrn[2], ',')
+        else:
+            for  prn in pylab.arange(1,33):
+                onePrn = pylab.compress(pylab.equal(ords[1], prn), ords)
+                if len(onePrn[0])>0:
+                    ax1.plot_date(onePrn[0], onePrn[2], ',')
     else:
-        ax1.plot_date(ords[0], ords[2], 'r,')
+        if options.plotWarts:
+            ax1.plot_date(warts[0], warts[2], '.')
+        else:
+            ax1.plot_date(ords[0], ords[2], 'r.')
         if len(ocds[0])>0:
             ax3=fig.add_axes(ax1.get_position())
             ax3.set_alpha(0.25) #This doesn't seem to affect the plot
@@ -175,7 +206,13 @@ if plotOrds:
 
     ax1.set_ylabel('ord (meters)', **yprops)
     ax1.grid(True)
-
+    if options.yRange:
+        ax1.set_ylim(ymin=-options.yRange, ymax=options.yRange)
+        pylab.figtext(0.95, 0.95, "y range fixed at +/- %.f m" % options.yRange,
+                      **scale_props)
+    else:
+        pylab.figtext(0.95, 0.95, "y range autoscaled",
+                      **scale_props)
 
 # This allows the creation of futher axes that will share the x axis
 # with the first plot.
@@ -183,7 +220,7 @@ axprops = dict()
 axprops['sharex'] = ax1
 
 if axesCount == 2:
-    ax2 = fig.add_axes([0.1, 0.065, 0.87, 0.42], **axprops)
+    ax2 = fig.add_axes([0.08, 0.065, 0.87, 0.42], **axprops)
 elif axesCount == 1:
     ax2 = ax1
 
@@ -203,6 +240,11 @@ if plotClocks:
         ax2.fill(xx, yy, facecolor='b', alpha=0.4)
 
 ax2.xaxis.set_major_formatter(xMajorFmt)
+xlabels=ax2.get_xticklabels()
+ylabels=ax2.get_yticklabels()
+pylab.setp(xlabels, fontsize=10, family='sans-serif')
+pylab.setp(ylabels, fontsize=10, family='sans-serif')
+
 ax2.xaxis.set_minor_formatter(xMinorFmt)
 # Better to just let this be done auto right now
 # ax2.xaxis.set_major_locator(xMajorLoc) 

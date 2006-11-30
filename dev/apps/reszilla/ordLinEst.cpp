@@ -80,15 +80,16 @@ void OrdLinEst::process()
    }
    
    RobustLinearEstimator rle;
-   
+
    DoubleDoubleVec clocks;
    ORDEpochMap::const_iterator ei;
+   int n=0;
    for (ei = oem.begin(); ei != oem.end(); ei++)
    {
       double mjd = ei->first.MJDdate();
-      double clk = ei->second.clockOffset;
-      if (std::abs(clk) < 1e-6 || !ei->second.clockOffset.is_valid())
-         continue;
+      vdouble clk = ei->second.clockOffset;
+      if (!clk.is_valid() || std::abs(clk) < 1e-6)
+         continue; 
       std::pair<double, double> pr(mjd, clk);
       clocks.push_back(pr);
    }
@@ -98,12 +99,28 @@ void OrdLinEst::process()
    bool gotEstimate = rle.a != 0;
    if (gotEstimate)
    {
+      DayTime t0(oem.begin()->first);
+      DayTime t1(oem.rbegin()->first);      
+
+      output << "# time              type              offset(m)    slope (m/day)    abdev(m)" << endl;
+      output << left << setw(20) << t0.printf(timeFormat) << right
+             << " " << setw(4) << 52 //type
+             << " " << setprecision(6) << setw(21) << rle.eval(t0.MJDdate())
+             << " " << setprecision(6) << setw(16) << rle.b
+             << " " << setprecision(3) << setw(11) << rle.abdev
+             << endl;
+      
       ORDEpochMap::iterator i;
       for (i=oem.begin(); i != oem.end(); i++)
       {
          DayTime t = i->first;
          write(output, i->second);      
-         double ocd = i->second.clockOffset - rle.eval(t.MJDdate());
+
+         const vdouble& clk = ei->second.clockOffset;
+         if (!clk.is_valid())
+            continue; 
+
+         double ocd = clk - rle.eval(t.MJDdate());
          output << left << setw(20) << t.printf(timeFormat) << right
                 << " " << setw(4) << 1 //type
                 << " " << setprecision(6) << setw(21)  << ocd
@@ -111,22 +128,22 @@ void OrdLinEst::process()
       }
 
       const int N=8;
+      output << "# time              type  offset(m)    abdev(m)" << endl;
       output << setfill(' ');
-      DayTime t0(oem.begin()->first);
-      DayTime t1(oem.rbegin()->first);      
       for (int i=0; i<=N; i++)
       {
          DayTime t = t0 + i*(t1-t0)/N;
          output << left << setw(20) << t.printf(timeFormat) << right
                 << " " << setw(4) << 51 //type
-                << " " << setprecision(3) << setw(21)  << rle.eval(t.MJDdate())
-                << " " << setprecision(3) << setw(8)  << rle.abdev
+                << " " << setprecision(3) << setw(12)  << rle.eval(t.MJDdate())
+                << " " << setprecision(3) << setw(12)  << rle.abdev
                 << endl;
       }
 
    }   
    else
    {
+      output << "# Unable to form linear estimate" << endl;
       ORDEpochMap::iterator i;
       for (i=oem.begin(); i != oem.end(); i++)
          write(output, i->second);      
