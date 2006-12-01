@@ -82,6 +82,7 @@ namespace gpstk
       }
 
       vdouble clockOffset;    ///< clock bias value (application defined units)
+      vdouble clockResidual;  ///< clock bias minus expected value
       ORDMap ords;            ///< map of ORDs in epoch
       gpstk::DayTime time;
       bool wonky;             ///< Indicates that this epoch is suspect

@@ -99,47 +99,31 @@ void OrdLinEst::process()
    bool gotEstimate = rle.a != 0;
    if (gotEstimate)
    {
-      DayTime t0(oem.begin()->first);
-      DayTime t1(oem.rbegin()->first);      
-
-      output << "# time              type              offset(m)    slope (m/day)    abdev(m)" << endl;
-      output << left << setw(20) << t0.printf(timeFormat) << right
-             << " " << setw(4) << 52 //type
-             << " " << setprecision(6) << setw(21) << rle.eval(t0.MJDdate())
-             << " " << setprecision(6) << setw(16) << rle.b
-             << " " << setprecision(3) << setw(11) << rle.abdev
-             << endl;
-      
       ORDEpochMap::iterator i;
       for (i=oem.begin(); i != oem.end(); i++)
       {
-         DayTime t = i->first;
+         const DayTime& t = i->first;
+         ORDEpoch& ord = i->second;
+         if (ord.clockOffset.is_valid())
+            ord.clockResidual = ord.clockOffset - rle.eval(t.MJDdate());
+
          write(output, i->second);      
-
-         const vdouble& clk = ei->second.clockOffset;
-         if (!clk.is_valid())
-            continue; 
-
-         double ocd = clk - rle.eval(t.MJDdate());
-         output << left << setw(20) << t.printf(timeFormat) << right
-                << " " << setw(4) << 1 //type
-                << " " << setprecision(6) << setw(21)  << ocd
-                << endl;
       }
 
       const int N=8;
-      output << "# time              type  offset(m)    abdev(m)" << endl;
+      output << "# time              type      offset(m)   slope(m/day)    abdev(m)" << endl;
       output << setfill(' ');
+      DayTime t0(oem.begin()->first);
+      DayTime t1(oem.rbegin()->first);      
       for (int i=0; i<=N; i++)
       {
          DayTime t = t0 + i*(t1-t0)/N;
-         output << left << setw(20) << t.printf(timeFormat) << right
-                << " " << setw(4) << 51 //type
-                << " " << setprecision(3) << setw(12)  << rle.eval(t.MJDdate())
-                << " " << setprecision(3) << setw(12)  << rle.abdev
+         output << t.printf(timeFormat) << " " << setw(4) << 51 //type
+                << " " << setprecision(5) << setw(14)  << rle.eval(t.MJDdate())
+                << " " << setprecision(5) << setw(14) << rle.b
+                << " " << setprecision(3) << setw(11)  << rle.abdev
                 << endl;
       }
-
    }   
    else
    {

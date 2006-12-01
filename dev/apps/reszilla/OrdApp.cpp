@@ -44,7 +44,7 @@ using namespace std;
 using namespace gpstk;
 
 
-const string OrdApp::defaultTimeFormat("%Y %j %02H:%02M:%04.1f");
+const string OrdApp::defaultTimeFormat("%4Y %3j %02H:%02M:%04.1f");
 
 //-----------------------------------------------------------------------------
 // The constructor basically just sets up all the command line options
@@ -122,13 +122,12 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
 {
    if (!headerWritten)
    {
-      s << "# time              type PRN  elev     ord/clk(m)"
-        << endl;
+      s << "# Time            Type PRN  Elev         ORD(m)" << endl;
       headerWritten=true;
    }
 
    s.setf(ios::fixed, ios::floatfield);
-   s << setfill(' ');
+   s << setfill(' ') << right;
    
    string time = ordEpoch.time.printf(timeFormat);
    ORDEpoch::ORDMap::const_iterator pi;
@@ -141,11 +140,18 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
       if (ord.wonky)
          type = 20;
 
-      s << left << setw(20) << time << right
-        << " " << setw(4) << type
-        << " " << setw(2) << svid.id
+      s << time << " " << setw(4) << type
+        << " " << setw(3) << svid.id
         << " " << setprecision(1) << setw(5)  << ord.getElevation()
         << " " << setprecision(5) << setw(14) << ord.getORD()
+        << endl;
+   }
+
+   if (ordEpoch.clockResidual.is_valid())
+   {
+      int type = 1;
+      s << time << " " << setw(4) << type
+        << " " << setprecision(5) << setw(24) << ordEpoch.clockResidual
         << endl;
    }
 
@@ -154,9 +160,8 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
       int type = 50;
       if (ordEpoch.wonky)
          type = 70;
-      s << left << setw(20) << time << right
-        << " " << setw(4) << type
-        << "        " << setprecision(3) << setw(14)  << ordEpoch.clockOffset
+      s << time << " " << setw(4) << type
+        << " " << setprecision(5) << setw(24) << ordEpoch.clockOffset
         << endl;
    }
 }
@@ -198,7 +203,7 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
 
          if (type == 0 || type == 20)
          {
-            if (readBuffer.size() < 49)
+            if (readBuffer.size() < 46)
             {
                cout << "# Line to short" << endl;
                continue;
@@ -222,6 +227,12 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
                ord.wonky = true;
             
             ordEpoch.ords[svid] = ord;
+         }
+         else if (type == 1)
+         {
+            double c;
+            iss >> c;
+            ordEpoch.clockResidual = c;
          }
          else if (type == 50 || type == 70)
          {
