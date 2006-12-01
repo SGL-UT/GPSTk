@@ -67,10 +67,10 @@ if (options.debugLevel):
     if options.yRange:
         print "Fixing y axis to +/- %.f meters" % options.yRange
 
-ordList=([],[],[],[])   # time, prn, ord, elevation
-wartList=([],[],[],[])  # time, prn, ord, elevation
-clockList=([],[])       # time, offset
-rleClockList=([],[],[]) # time, offset, maxdev
+ordList=([],[],[],[])      # time, prn, ord, elevation
+wartList=([],[],[],[])     # time, prn, ord, elevation
+clockList=([],[])          # time, offset
+rleClockList=([],[],[],[]) # time, offset, slope, abdev
 ocdList=([],[])
 
 for line in inputFile:
@@ -111,7 +111,8 @@ for line in inputFile:
         if len(words) < 6: print "bad rle line"
         rleClockList[0].append(t)
         rleClockList[1].append(float(words[4])) #offset
-        rleClockList[2].append(float(words[5])) #maxdev
+        rleClockList[2].append(float(words[5])) #offset
+        rleClockList[3].append(float(words[6])) #abdev
 
     if options.debugLevel>1 and len(clockList[0]) >= 200: break
 

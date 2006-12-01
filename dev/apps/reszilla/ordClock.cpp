@@ -54,7 +54,7 @@ protected:
    virtual void process();
 
 private:
-   CommandOptionNoArg useUnhealthyOption, useWartsOption;
+   CommandOptionNoArg useWartsOption, estimateOnlyOption, debiasOnlyOption;
 };
 
 
@@ -63,12 +63,16 @@ private:
 //-----------------------------------------------------------------------------
 OrdClock::OrdClock() throw()
    : OrdApp("clkGen", "Generates clock estimates for each epoch of ords."),
-     useUnhealthyOption('u', "use-unhealthy",
-                        "Use unhealthy SVs in the clock offset computation. "
-                        "The default is to not use them."),
      useWartsOption('w', "use-warts",
-                    "Use warts in the clock solution. The default is "
-                    "to not use warts (type=20).")
+        "Use warts in the clock solution. The default is "
+        "to not use warts (type=20)."),
+     estimateOnlyOption('e', "estimate-only",
+        "Only compute the receiver clock bias. Don't remove"
+        " this bias from the ords. The default is to both estimate"
+        " the bias and remove the it from the ords."),
+     debiasOnlyOption('b', "debias-only",
+        "Only remove the bias from the ords. "
+        "The default is to both estimate the bias and remove the it from the ords.")
 {}
 
 
@@ -86,19 +90,33 @@ void OrdClock::process()
    gpstk::EpochClockModel cm;
    cm.setSigmaMultiplier(1.5);
    cm.setElevationMask(15);
-   if (useUnhealthyOption.getCount())
-      cm.setSvMode(ObsClockModel::ALWAYS);
-   else
-      cm.setSvMode(ObsClockModel::HEALTHY);
+   cm.setSvMode(ObsClockModel::ALWAYS);
 
    if (useWartsOption.getCount())
       cm.setUseWonkyData(true);
 
+   bool estimate=true;
+   bool debias=true;
+   if (estimateOnlyOption.getCount())
+      debias = false;
+
+   if (debiasOnlyOption.getCount())
+      estimate = false;
+
    while (input)
    {
       ORDEpoch ordEpoch = read(input);
-      cm.addEpoch(ordEpoch);
-      ordEpoch.applyClockModel(cm);
+
+      if (estimate)
+      {
+         cm.addEpoch(ordEpoch);
+         if (cm.isOffsetValid())
+            ordEpoch.clockOffset = cm.getOffset();
+      }
+
+      if (debias && ordEpoch.clockOffset.is_valid())
+         ordEpoch.removeOffset(ordEpoch.clockOffset);
+
       if (ordEpoch.clockOffset.is_valid())
       {
          double clk_mag = std::abs(ordEpoch.clockOffset);

@@ -74,10 +74,16 @@ namespace gpstk
          if (cm.isOffsetValid(time))
          {
             clockOffset = cm.getOffset(time);
-            ORDMap::iterator i;
-            for (i = ords.begin(); i != ords.end(); i++)
-               i->second.applyClockOffset(clockOffset);
+            removeOffset(clockOffset);
          }
+         return *this;
+      }
+
+      ORDEpoch& removeOffset(const double offset) throw()
+      {
+         ORDMap::iterator i;
+         for (i = ords.begin(); i != ords.end(); i++)
+            i->second.applyClockOffset(offset);
          return *this;
       }
 
