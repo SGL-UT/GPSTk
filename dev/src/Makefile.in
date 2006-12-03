@@ -57,16 +57,21 @@ am_libgpstk_la_OBJECTS = Exception.lo BinUtils.lo VectorBase.lo \
 	RinexNavData.lo RinexNavHeader.lo RinexSatID.lo SP3Data.lo \
 	SP3Header.lo SP3SatID.lo FileSpec.lo FileHunter.lo getopt.lo \
 	getopt1.lo CommandOption.lo CommandOptionParser.lo \
-	CommandOptionWithTimeArg.lo CommandOptionWithPositionArg.lo \
-	CommonTime.lo BasicFramework.lo LoopedFramework.lo \
-	EphemerisRange.lo TabularEphemerisStore.lo \
-	RinexEphemerisStore.lo RungeKutta4.lo MSCData.lo SMODFData.lo \
-	LinearClockModel.lo ObsClockModel.lo ObsRngDev.lo FICData.lo \
-	FICHeader.lo CodeBuffer.lo GenXSequence.lo SVPCodeGen.lo \
-	X1Sequence.lo X2Sequence.lo GPSZcount.lo Position.lo \
-	PRSolution.lo Expression.lo Bancroft.lo DOP.lo WxObsMap.lo \
-	ModeledReferencePR.lo ModeledPR.lo SimpleIURAWeight.lo \
-	MOPSWeight.lo
+	CommandOptionWithTimeArg.lo CommandOptionWithCommonTimeArg.lo \
+	CommandOptionWithPositionArg.lo CommonTime.lo \
+	BasicFramework.lo LoopedFramework.lo EphemerisRange.lo \
+	TabularEphemerisStore.lo RinexEphemerisStore.lo RungeKutta4.lo \
+	MSCData.lo SMODFData.lo LinearClockModel.lo ObsClockModel.lo \
+	ObsRngDev.lo FICData.lo FICHeader.lo CodeBuffer.lo \
+	GenXSequence.lo SVPCodeGen.lo X1Sequence.lo X2Sequence.lo \
+	GPSZcount.lo Position.lo PRSolution.lo RinexUtilities.lo \
+	Expression.lo Bancroft.lo SolverLMS.lo SolverWMS.lo DOP.lo \
+	WxObsMap.lo ModeledReferencePR.lo ModeledPR.lo \
+	SimpleIURAWeight.lo MOPSWeight.lo BinexData.lo TimeString.lo \
+	TimeTag.lo JulianDate.lo MJD.lo ANSITime.lo GPSZcount.lo \
+	GPSZcount29.lo GPSZcount32.lo GPSWeekZcount.lo UnixTime.lo \
+	CivilTime.lo SystemTime.lo GPSEpochWeekSecond.lo YDSTime.lo \
+	GPSWeekSecond.lo TimeConverters.lo
 libgpstk_la_OBJECTS = $(am_libgpstk_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -192,25 +197,28 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 noinst_LTLIBRARIES = libgpstk.la
 libgpstk_la_SOURCES = Exception.cpp BinUtils.cpp VectorBase.cpp \
-	DayTime.cpp Triple.cpp Geodetic.cpp ECEF.cpp Xvt.cpp \
-	EngNav.cpp EngEphemeris.cpp EngAlmanac.cpp AlmOrbit.cpp \
-	BCEphemerisStore.cpp SP3EphemerisStore.cpp AlmanacStore.cpp \
-	TropModel.cpp IonoModel.cpp IonoModelStore.cpp FFStream.cpp \
-	FFData.cpp RinexMetData.cpp RinexMetHeader.cpp \
-	RinexObsData.cpp RinexObsHeader.cpp RinexNavData.cpp \
-	RinexNavHeader.cpp RinexSatID.cpp SP3Data.cpp SP3Header.cpp \
-	SP3SatID.cpp FileSpec.cpp FileHunter.cpp getopt.c getopt1.c \
-	CommandOption.cpp CommandOptionParser.cpp \
-	CommandOptionWithTimeArg.cpp CommandOptionWithPositionArg.cpp \
-	CommonTime.cpp BasicFramework.cpp LoopedFramework.cpp \
-	EphemerisRange.cpp TabularEphemerisStore.cpp \
-	RinexEphemerisStore.cpp RungeKutta4.cpp MSCData.cpp \
-	SMODFData.cpp LinearClockModel.cpp ObsClockModel.cpp \
-	ObsRngDev.cpp FICData.cpp FICHeader.cpp CodeBuffer.cpp \
-	GenXSequence.cpp SVPCodeGen.cpp X1Sequence.cpp X2Sequence.cpp \
-	GPSZcount.cpp Position.cpp PRSolution.cpp Expression.cpp \
-	Bancroft.cpp DOP.cpp /WxObsMap.cpp ModeledReferencePR.cpp \
-	ModeledPR.cpp SimpleIURAWeight.cpp MOPSWeight.cpp
+DayTime.cpp Triple.cpp Geodetic.cpp ECEF.cpp Xvt.cpp EngNav.cpp \
+EngEphemeris.cpp EngAlmanac.cpp AlmOrbit.cpp BCEphemerisStore.cpp \
+SP3EphemerisStore.cpp AlmanacStore.cpp TropModel.cpp IonoModel.cpp \
+IonoModelStore.cpp FFStream.cpp FFData.cpp RinexMetData.cpp \
+RinexMetHeader.cpp RinexObsData.cpp RinexObsHeader.cpp RinexNavData.cpp \
+RinexNavHeader.cpp RinexSatID.cpp SP3Data.cpp SP3Header.cpp SP3SatID.cpp \
+FileSpec.cpp FileHunter.cpp getopt.c getopt1.c CommandOption.cpp \
+CommandOptionParser.cpp CommandOptionWithTimeArg.cpp \
+CommandOptionWithCommonTimeArg.cpp CommandOptionWithPositionArg.cpp \
+CommonTime.cpp BasicFramework.cpp LoopedFramework.cpp EphemerisRange.cpp \
+TabularEphemerisStore.cpp RinexEphemerisStore.cpp RungeKutta4.cpp \
+MSCData.cpp SMODFData.cpp LinearClockModel.cpp ObsClockModel.cpp \
+ObsRngDev.cpp FICData.cpp FICHeader.cpp CodeBuffer.cpp GenXSequence.cpp \
+SVPCodeGen.cpp X1Sequence.cpp X2Sequence.cpp GPSZcount.cpp Position.cpp \
+PRSolution.cpp RinexUtilities.cpp Expression.cpp Bancroft.cpp \
+SolverLMS.cpp SolverWMS.cpp DOP.cpp WxObsMap.cpp ModeledReferencePR.cpp \
+ModeledPR.cpp SimpleIURAWeight.cpp MOPSWeight.cpp BinexData.cpp \
+TimeString.cpp TimeTag.cpp JulianDate.cpp MJD.cpp ANSITime.cpp \
+GPSZcount.cpp GPSZcount29.cpp GPSZcount32.cpp GPSWeekZcount.cpp \
+UnixTime.cpp CivilTime.cpp SystemTime.cpp GPSEpochWeekSecond.cpp \
+YDSTime.cpp GPSWeekSecond.cpp TimeConverters.cpp
+
 all: all-am
 
 .SUFFIXES:
@@ -262,15 +270,19 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ANSITime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AlmOrbit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AlmanacStore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BCEphemerisStore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Bancroft.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BasicFramework.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BinUtils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BinexData.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CivilTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CodeBuffer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CommandOption.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CommandOptionParser.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CommandOptionWithCommonTimeArg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CommandOptionWithPositionArg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CommandOptionWithTimeArg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CommonTime.Plo@am__quote@
@@ -289,17 +301,24 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FICHeader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FileHunter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FileSpec.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GPSEpochWeekSecond.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GPSWeekSecond.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GPSWeekZcount.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GPSZcount.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GPSZcount29.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GPSZcount32.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GenXSequence.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Geodetic.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IonoModel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IonoModelStore.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/JulianDate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LinearClockModel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LoopedFramework.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MJD.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MOPSWeight.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MSCData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ModeledPR.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ModeledReferencePR.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MOPSWeight.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObsClockModel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObsRngDev.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PRSolution.Plo@am__quote@
@@ -312,22 +331,31 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexObsData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexObsHeader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexSatID.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexUtilities.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RungeKutta4.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SimpleIURAWeight.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SMODFData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SP3Data.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SP3EphemerisStore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SP3Header.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SP3SatID.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SVPCodeGen.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SimpleIURAWeight.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SolverLMS.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SolverWMS.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SystemTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TabularEphemerisStore.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeConverters.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeString.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TimeTag.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Triple.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TropModel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UnixTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VectorBase.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WxObsMap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/X1Sequence.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/X2Sequence.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Xvt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/YDSTime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getopt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getopt1.Plo@am__quote@
 
