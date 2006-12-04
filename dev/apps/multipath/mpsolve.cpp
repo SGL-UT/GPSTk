@@ -128,6 +128,7 @@ int main(int argc, char *argv[])
       }
 
       oa.edit(removePts);
+      allpasses = unique(oa.pass); // TODO: ObsArray should maintain its own pass list.
       
       size_t editedLength = oa.getNumSatEpochs();
       if (!numeric)
@@ -180,7 +181,8 @@ int main(int argc, char *argv[])
       else
       {
          bool byAzimuth = (azimuthOption.getCount()>0);
-         angInterval =  StringUtils::asDouble(angWidthOption.getValue()[0]);
+         if (angWidthOption.getCount()>0)
+            angInterval =  StringUtils::asDouble(angWidthOption.getValue()[0]);
          bool regularIntervals = (byAzimuth || (angWidthOption.getCount()>0));
 
          SparseBinnedStats<double> sbs;

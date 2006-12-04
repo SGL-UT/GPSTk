@@ -1,9 +1,6 @@
 SubDir TOP apps multipath ;
 
-GPSLinkLibraries testoa testva testsbs mpsolve : gpstk ;
+GPSLinkLibraries mpsolve : gpstk ;
 BonkForte ; # bleah.
 
-GPSMain testoa : testObsArray.cpp ObsArray.cpp ;
-GPSMain testva : testValarrayUtils.cpp ;
-GPSMain testsbs : testSparseBinnedStats.cpp ;
 GPSMain mpsolve : mpsolve.cpp ObsArray.cpp ;
