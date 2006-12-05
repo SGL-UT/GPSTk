@@ -10,17 +10,15 @@ parser = OptionParser()
 parser.add_option("-d", "--debug", help="Increase the debugLevel", \
                   default=0, dest="debugLevel", action="count")
 
-parser.add_option("-p", "--prn", dest="prn", type="int", action="store",\
-                  help="Process only this prn. If a prn of -1\
-                  is specified, all prns are plotted but each is plotted with a unique color. \
-                  The default is to plot all prns using the same color.")
-
 parser.add_option("-i", "--input", help="Input data file, defaults to stdin.", \
                   dest="inputFile", type="string", action="store")
 
 parser.add_option("-t", "--title", help="Specify a title for the plot. "+\
                   "Defaults to the name of the input stream.", \
                   dest="title", type="string", action="store")
+
+parser.add_option("-l", "--legend", dest="legend", action="count",
+                  help="Include a legend.")
 
 parser.add_option("-o", "--ords-only", help="Only plot the ords (types 0 & 20).", \
                   dest="ordsOnly", default=0, action="count")
@@ -32,12 +30,8 @@ parser.add_option("-s", "--save-figure", \
                   dest="saveFig", action="store", type="string",\
 		  help="Save the figure to the indicated file")
     
-parser.add_option("-e", "--min-elevation",\
-                  dest="minElevation", action="store", type="float", default=0,
-                  help="Only consider ords from SVs above this elevation")
-
 parser.add_option("-w", "--plot-warts",\
-		  dest="plotWarts", action="count",\
+		  dest="wartsOnly", action="count",\
 		  help="Plot warts instead of ords")
 
 parser.add_option("-y", "--y-range",\
@@ -60,10 +54,6 @@ if (options.debugLevel):
     print "Processing: %s" % inputFile.name
     print "Debug level: %d" % options.debugLevel
     print "Title: %s" % options.title
-    if options.prn > 0:
-        print "Only processing prn", options.prn
-    if options.minElevation:
-        print "Only processing ords from SVs above %.1f degrees." % options.minElevation
     if options.yRange:
         print "Fixing y axis to +/- %.f meters" % options.yRange
 
@@ -125,30 +115,20 @@ ocds = numpy.array(ocdList)
 # Since these are now in numpy arrays, delete the source to save some memory
 del ordList, clockList, rleClockList, wartList, ocdList
 
-# Delete all ords from SVs lower than the specified elevation
-if (options.minElevation):
-    ords=pylab.compress(pylab.greater(ords[3],options.minElevation), ords)
-    warts=pylab.compress(pylab.greater(warts[3],options.minElevation), warts)
-
-# delete all ords except from the specified prn
-if options.prn and options.prn>0:
-    ords=pylab.compress(pylab.equal(ords[1], options.prn), ords)
-    warts=pylab.compress(pylab.equal(warts[1], options.prn), warts)
-    
 # Now figure out how many axes we need to use
 plotOrds = True
 plotClocks = True
 
 if len(clocks[0]) == 0 or options.ordsOnly: plotClocks = False
-if len(ords[0]) == 0 or options.clocksOnly: plotOrds = False
+if (len(ords[0]) == 0 and len(warts[0]) == 0) or options.clocksOnly: plotOrds = False
 axesCount=0;
 if plotOrds: axesCount+=1
 if plotClocks: axesCount+=1
 
 if options.debugLevel:
-    print "Read %d ords, %d clocks, %d ocds %d warts" %\
-          (len(ords[0]), len(clocks[0]), len(ocds[0]), len(warts[0]))
-    print "rleClocks.shape:",rleClocks.shape
+    print "Read %d ords, %d clocks, %d ocds %d warts %d rle" %\
+          (len(ords[0]), len(clocks[0]), len(ocds[0]), len(warts[0]),
+           len(rleClocks[0]))
 
 if axesCount == 0:
     print "No data to plot. Exiting"
@@ -177,42 +157,42 @@ xMinorFmt=pylab.NullFormatter()
 xMajorLoc=matplotlib.dates.DayLocator()
 xMinorLoc=matplotlib.dates.HourLocator()
 
+rExtent=0.90
+if options.legend:
+    rExtent=0.80
+
 if axesCount == 2:
-    ax1 = fig.add_axes([0.08, 0.52, 0.87, 0.42])
+    ax1 = fig.add_axes([0.08, 0.52, rExtent, 0.42])
 elif axesCount == 1:
-    ax1 = fig.add_axes([0.08, 0.1, 0.87, 0.85])
+    ax1 = fig.add_axes([0.08, 0.1, rExtent, 0.85])
 
 if plotOrds:
-    if options.prn == -1:
-        # this might be better done with a where() call?
-        if options.plotWarts:
-            for prn in pylab.arange(1,33):
-                onePrn = pylab.compress(pylab.equal(warts[1], prn), warts)
-                if len(onePrn[0])>0:
-                    ax1.plot_date(onePrn[0], onePrn[2], ',')
-        else:
-            for  prn in pylab.arange(1,33):
-                onePrn = pylab.compress(pylab.equal(ords[1], prn), ords)
-                if len(onePrn[0])>0:
-                    ax1.plot_date(onePrn[0], onePrn[2], ',')
-    else:
-        if options.plotWarts:
-            ax1.plot_date(warts[0], warts[2], '.')
-        else:
-            ax1.plot_date(ords[0], ords[2], 'r.')
-        if len(ocds[0])>0:
-            ax3=fig.add_axes(ax1.get_position())
-            ax3.set_alpha(0.25) #This doesn't seem to affect the plot
-            ax3.plot_date(ocds[0], ocds[1], 'b,')
+    for  prn in pylab.arange(1,33):
+        onePrn = pylab.compress(pylab.equal(ords[1], prn), ords)
+        if len(onePrn[0]):
+            ax1.plot_date(onePrn[0], onePrn[2], '.', label="prn %2d"%prn)
+    for  prn in pylab.arange(1,33):
+        onePrn = pylab.compress(pylab.equal(warts[1], prn), warts)
+        if len(onePrn[0]):
+            ax1.plot_date(onePrn[0], onePrn[2], '.', label="prn %2dW"%prn)
 
+    if len(ocds[0]):
+        ax3=fig.add_axes(ax1.get_position())
+        ax3.set_alpha(0.25) #This doesn't seem to affect the plot
+        ax3.plot_date(ocds[0], ocds[1], 'b,')
+
+    if options.legend:
+        ax1.legend(numpoints=2, pad=0.05, labelsep = 0.002, handlelen=0.01,
+                   shadow=True, handletextsep=0.01, axespad=0.0,
+                   loc=(1.01,-0.9))
     ax1.set_ylabel('ord (meters)', **yprops)
     ax1.grid(True)
     if options.yRange:
         ax1.set_ylim(ymin=-options.yRange, ymax=options.yRange)
-        pylab.figtext(0.95, 0.95, "y range fixed at +/- %.f m" % options.yRange,
+        pylab.figtext(rExtent+.08, 0.95, "y range +/- %.f m" % options.yRange,
                       **scale_props)
     else:
-        pylab.figtext(0.95, 0.95, "y range autoscaled",
+        pylab.figtext(rExtent+.08, 0.95, "y range autoscaled",
                       **scale_props)
 
 # This allows the creation of futher axes that will share the x axis
@@ -221,7 +201,7 @@ axprops = dict()
 axprops['sharex'] = ax1
 
 if axesCount == 2:
-    ax2 = fig.add_axes([0.08, 0.065, 0.87, 0.42], **axprops)
+    ax2 = fig.add_axes([0.08, 0.065, rExtent, 0.42], **axprops)
 elif axesCount == 1:
     ax2 = ax1
 

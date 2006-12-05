@@ -38,6 +38,8 @@
 
 #include <EpochClockModel.hpp>
 #include <vector>
+#include <set>
+#include "gps_constants.hpp"
 #include "OrdApp.hpp"
 #include "OrdApp.cpp"
 #include "EphReader.hpp"
@@ -63,7 +65,7 @@ private:
    CommandOptionWithAnyArg ephSourceOpt, startOpt, endOpt;
    
    double elMask, clkResidLimit;
-   vector<int> prnVector;
+   set<int> prnSet;
    vector<string> ephFilesVector;
    DayTime tStart, tEnd;
 };
@@ -85,12 +87,13 @@ OrdEdit::OrdEdit() throw()
             "clock estimates."),
      clkResOpt('s',"size","Remove clock residuals that are greater than "
                "this size (meters)."),
-     prnOpt('p',"PRN","Remove data from given PRN. Repeat option for multiple"
-            " PRNs."),
+     prnOpt('p',"PRN","Add/Remove data from given PRN. Repeat option for multiple"
+            " PRNs. Negative numbers remove, Postive numbers all, Zero removes all."),
      noClockOpt('c',"no-clock", "Remove all clock offset estimate warts. Give"
-             " this option twice to remove all clock data. "),
+                " this option twice to remove all clock data. "),
      noORDsOpt('o',"no-ords","Remove all obs warts. Give this option twice to"
-            " remove all ORD data. "),
+               " leave only warts. Give this option three times to remove all"
+               "ORD data. "),
      startOpt('\0',"start","Throw out data before this time. Format as "
               "string: \"MO/DD/YYYY HH:MM:SS\" "),
      endOpt('\0',"end","Throw out data after this time. Format as string:"
@@ -129,9 +132,20 @@ void OrdEdit::process()
       exit(0);
    }
    //-- get PRNs to be excluded
-   int numPRNs = prnOpt.getCount();
-   for (int index = 0; index < numPRNs; index++)
-      prnVector.push_back(asInt(prnOpt.getValue()[index]));
+   for (int index = 0; index < prnOpt.getCount(); index++)
+   {
+      int prn = asInt(prnOpt.getValue()[index]);
+      if (prn < 0)
+         prnSet.insert(-prn);
+      else if (prn > 0)
+         prnSet.erase(prn);
+      else
+      {
+         prnSet.clear();
+         for (int i=1; i<=gpstk::MAX_PRN; i++)
+            prnSet.insert(i);
+      }
+   }
    //-- get ephemeris sources, if given
    int numBEFiles = ephSourceOpt.getCount();
    for (int index = 0; index < numBEFiles; index++)
@@ -185,11 +199,12 @@ void OrdEdit::process()
          cout << "# Tossing data after " << tEnd << endl;
       else
          cout << "# End time is end of file. \n";
-      if (numPRNs)
+      if (prnSet.size())
       {
          cout << "# Ignoring PRNs: ";
-         for (int index = 0; index < numPRNs; index++)
-            cout << prnVector[index] << " ";
+         set<int>::const_iterator i;
+         for (i = prnSet.begin(); i != prnSet.end(); i++)
+            cout << *i << " ";
          cout << endl;
       }
       if (clkResidLimit)
@@ -208,7 +223,9 @@ void OrdEdit::process()
          cout << "# Removing all clock data from ord file.\n";
       if (noORDsOpt.getCount() == 1)
          cout << "# Removing obs warts from ord file.\n";
-      else if (noORDsOpt.getCount() > 1)
+      else if (noORDsOpt.getCount() == 2)
+         cout << "# Leaving only warts in the data.\n";      
+      else if (noORDsOpt.getCount() > 2)
          cout << "# Removing all ord data from file.\n";      
    }
    while (input)
@@ -272,7 +289,20 @@ void OrdEdit::process()
                ordEpoch.removeORD(satId);
          }
       }
-      else if (noORDsOpt.getCount() > 1)
+      if (noORDsOpt.getCount() == 2)
+      {
+         // removing good obs (the type 0 lines)
+         ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
+         while (iter!= ordEpoch.ords.end())
+         {
+            const SatID& satId = iter->first;
+            const ObsRngDev& ord = iter->second;
+            iter++;
+            if (!ord.wonky)
+               ordEpoch.removeORD(satId);
+         }
+      }
+      else if (noORDsOpt.getCount() > 2)
       {
          // removing all ords
          ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
@@ -284,17 +314,11 @@ void OrdEdit::process()
             ordEpoch.removeORD(satId);
          }         
       }
-      if (numPRNs)
+      if (prnSet.size())
       {
-         for (int index = 0; index < prnVector.size(); index++)
-         {
-            int prn = prnVector[index];
-            vector<int>::iterator i;
-            i = find(prnVector.begin(), prnVector.end(), prn);
-            SatID thisSatID(prn,SatID::systemGPS);
-            if (i!=prnVector.end())
-               ordEpoch.removeORD(thisSatID);
-         }
+         set<int>::const_iterator i;
+         for (i = prnSet.begin(); i != prnSet.end(); i++)
+            ordEpoch.removeORD(SatID(*i,SatID::systemGPS));
       }
       if (clkResidLimit)
       {
