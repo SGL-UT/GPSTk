@@ -60,12 +60,12 @@ protected:
    virtual void process();
 
 private:
-   CommandOptionNoArg clkOpt, removeUnhlthyOpt, noClockOpt, noORDsOpt;
-   CommandOptionWithNumberArg elvOpt, prnOpt, clkResOpt;
+   CommandOptionNoArg clkOpt, removeUnhlthyOpt, noClockOpt;
+   CommandOptionWithNumberArg elvOpt, prnOpt, wartsOpt, clkResOpt;
    CommandOptionWithAnyArg ephSourceOpt, startOpt, endOpt;
    
    double elMask, clkResidLimit;
-   set<int> prnSet;
+   set<int> prnSet, wartSet; // prns to exclude from analysis
    vector<string> ephFilesVector;
    DayTime tStart, tEnd;
 };
@@ -91,9 +91,10 @@ OrdEdit::OrdEdit() throw()
             " PRNs. Negative numbers remove, Postive numbers all, Zero removes all."),
      noClockOpt('c',"no-clock", "Remove all clock offset estimate warts. Give"
                 " this option twice to remove all clock data. "),
-     noORDsOpt('o',"no-ords","Remove all obs warts. Give this option twice to"
-               " leave only warts. Give this option three times to remove all"
-               "ORD data. "),
+     wartsOpt('w', "warts", "Include/Exclude warts from the indicated PRN. "
+              "Repeat option for multiple PRNs. Negative numbers exclude, "
+              "positive numbers include, zero  excludes warts from all PRNs. "
+              "The default is to include all warts."),
      startOpt('\0',"start","Throw out data before this time. Format as "
               "string: \"MO/DD/YYYY HH:MM:SS\" "),
      endOpt('\0',"end","Throw out data after this time. Format as string:"
@@ -131,7 +132,7 @@ void OrdEdit::process()
               " used with this program.) Exiting... \n";
       exit(0);
    }
-   //-- get PRNs to be excluded
+   //-- get which PRNs to be excluded
    for (int index = 0; index < prnOpt.getCount(); index++)
    {
       int prn = asInt(prnOpt.getValue()[index]);
@@ -144,6 +145,21 @@ void OrdEdit::process()
          prnSet.clear();
          for (int i=1; i<=gpstk::MAX_PRN; i++)
             prnSet.insert(i);
+      }
+   }
+   //-- get which PRNs from which to ignore warts
+   for (int i=0; i < wartsOpt.getCount(); i++)
+   {
+      int prn = asInt(wartsOpt.getValue()[i]);
+      if (prn < 0)
+         wartSet.insert(-prn);
+      else if (prn > 0)
+         wartSet.erase(prn);
+      else
+      {
+         wartSet.clear();
+         for (int i=1; i<=gpstk::MAX_PRN; i++)
+            wartSet.insert(i);
       }
    }
    //-- get ephemeris sources, if given
@@ -201,12 +217,27 @@ void OrdEdit::process()
          cout << "# End time is end of file. \n";
       if (prnSet.size())
       {
-         cout << "# Ignoring PRNs: ";
+         cout << "# Ignoring ords from PRNs: ";
          set<int>::const_iterator i;
-         for (i = prnSet.begin(); i != prnSet.end(); i++)
-            cout << *i << " ";
+         if (prnSet.size() == gpstk::MAX_PRN)
+            cout << "all";
+         else
+            for (i = prnSet.begin(); i != prnSet.end(); i++)
+               cout << *i << " ";
          cout << endl;
       }
+      if (wartSet.size())
+      {
+         cout << "# Ignoring warts from PRNs: ";
+         set<int>::const_iterator i;
+         if (wartSet.size() == gpstk::MAX_PRN)
+            cout << "all";
+         else
+            for (i = wartSet.begin(); i != wartSet.end(); i++)
+               cout << *i << " ";
+         cout << endl;
+      }
+      
       if (clkResidLimit)
          cout << "# Tossing clk resids > " << clkResidLimit << " m.\n";
       else
@@ -221,12 +252,6 @@ void OrdEdit::process()
          cout << "# Removing clock offset warts from ord file.\n";
       else if (noClockOpt.getCount() > 1)
          cout << "# Removing all clock data from ord file.\n";
-      if (noORDsOpt.getCount() == 1)
-         cout << "# Removing obs warts from ord file.\n";
-      else if (noORDsOpt.getCount() == 2)
-         cout << "# Leaving only warts in the data.\n";      
-      else if (noORDsOpt.getCount() > 2)
-         cout << "# Removing all ord data from file.\n";      
    }
    while (input)
    {
@@ -276,20 +301,7 @@ void OrdEdit::process()
          // removing all clock data (line types 50, 51, and 70)
          ordEpoch.clockOffset.set_valid(false);
       }
-      if (noORDsOpt.getCount() == 1)
-      {
-         // removing obs warts (the type 20 lines)
-         ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
-         while (iter!= ordEpoch.ords.end())
-         {
-            const SatID& satId = iter->first;
-            const ObsRngDev& ord = iter->second;
-            iter++;
-            if (ord.wonky)
-               ordEpoch.removeORD(satId);
-         }
-      }
-      if (noORDsOpt.getCount() == 2)
+      if (prnSet.size() || wartSet.size())
       {
          // removing good obs (the type 0 lines)
          ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
@@ -298,27 +310,10 @@ void OrdEdit::process()
             const SatID& satId = iter->first;
             const ObsRngDev& ord = iter->second;
             iter++;
-            if (!ord.wonky)
+            if ((!ord.wonky && prnSet.count(satId.id)) ||
+                (ord.wonky && wartSet.count(satId.id)))
                ordEpoch.removeORD(satId);
          }
-      }
-      else if (noORDsOpt.getCount() > 2)
-      {
-         // removing all ords
-         ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
-         while (iter!= ordEpoch.ords.end())
-         {
-            const SatID& satId = iter->first;
-            const ObsRngDev& ord = iter->second;
-            iter++;
-            ordEpoch.removeORD(satId);
-         }         
-      }
-      if (prnSet.size())
-      {
-         set<int>::const_iterator i;
-         for (i = prnSet.begin(); i != prnSet.end(); i++)
-            ordEpoch.removeORD(SatID(*i,SatID::systemGPS));
       }
       if (clkResidLimit)
       {

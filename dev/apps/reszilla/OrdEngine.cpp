@@ -209,34 +209,6 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
                obs2 = k->second;
          }
 
-         // Now to look for indications that this data is suspect
-         if (!keepWarts)
-         {
-            // A gross check on the pseudorange
-            if (obs1 < 15e6)
-               continue;
-
-            // If there is a LLI on any of the data, ignore the whole obs
-            bool wonky=false;
-            for (k=svObsEpoch.begin(); !wonky && k != svObsEpoch.end(); k++)
-               if (k->first.type == ObsID::otLLI)
-                  wonky=true;
-            if (wonky)
-               continue;
-
-            if (dualFreq)
-            {
-               if (obs2 < 15e6)
-                  continue;
-
-               // Now make sure we have a valid C/A pseudorange
-               const ObsID C1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
-               k = svObsEpoch.find(C1);
-               if (k == svObsEpoch.end() || k->second < 15e6)
-                  continue;
-            }
-         }
-
          try
          {
             if (dualFreq)
@@ -251,25 +223,40 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
             if (verboseLevel>2)
                cout << "#" << e << endl;
          }
+
+         ObsRngDev& ord = ordEpoch.ords[svid];
+
+         // A gross check on the pseudorange
+         const double rhoMin = 1e6; // Minimum reasonable pseudorange
+         if (obs1 < rhoMin || (dualFreq && obs2 < rhoMin))
+            ord.wonky = true;
+
+         if (ord.wonky) continue;
+
+         // Any LLI indicator makes the data suspect
+         for (k=svObsEpoch.begin(); !ord.wonky && k != svObsEpoch.end(); k++)
+            if (k->first.type == ObsID::otLLI)
+               ord.wonky=true;
+
+         if (ord.wonky) continue;
+         
+         // Make sure we have a valid C/A pseudorange
+         const ObsID C1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
+         k = svObsEpoch.find(C1);
+         if (k == svObsEpoch.end() || k->second < rhoMin)
+            ord.wonky = true;
+
+         if (ord.wonky) continue;
+
+         if (!keepUnhealthy && ord.getHealth().is_valid() && ord.getHealth())
+            ord.wonky = true;
+         
+         if (ord.wonky) continue;
+         
+         if (std::abs(ord.getTrop()) > 100 || ord.getElevation() <= 0.05)
+            ord.wonky = true;
+
       } // end looping over each SV in this epoch
-
-      if (!keepWarts)
-      {
-         ORDEpoch::ORDMap::iterator pi;
-         for (pi = ordEpoch.ords.begin(); pi != ordEpoch.ords.end();)
-         {
-            ObsRngDev& ord = pi->second;
-            ORDEpoch::ORDMap::iterator pi2=pi;
-            pi++;
-
-            if (!keepUnhealthy && ord.getHealth().is_valid() && ord.getHealth())
-               ord.wonky = true;
-               
-            if (std::abs(ord.getTrop()) > 100 || ord.getElevation() <= 0.05)
-               ord.wonky = true;
-         }
-      } // end flagging
-
 
    }
    catch (gpstk::InvalidParameter& e)

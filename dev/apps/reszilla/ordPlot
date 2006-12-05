@@ -30,10 +30,6 @@ parser.add_option("-s", "--save-figure", \
                   dest="saveFig", action="store", type="string",\
 		  help="Save the figure to the indicated file")
     
-parser.add_option("-w", "--plot-warts",\
-		  dest="wartsOnly", action="count",\
-		  help="Plot warts instead of ords")
-
 parser.add_option("-y", "--y-range",\
 		  dest="yRange", action="store", type="float",\
 		  help="Fix the y range on the ords to be +- this value.")
@@ -159,7 +155,7 @@ xMinorLoc=matplotlib.dates.HourLocator()
 
 rExtent=0.90
 if options.legend:
-    rExtent=0.80
+    rExtent=0.82
 
 if axesCount == 2:
     ax1 = fig.add_axes([0.08, 0.52, rExtent, 0.42])
@@ -182,9 +178,16 @@ if plotOrds:
         ax3.plot_date(ocds[0], ocds[1], 'b,')
 
     if options.legend:
-        ax1.legend(numpoints=2, pad=0.05, labelsep = 0.002, handlelen=0.01,
-                   shadow=True, handletextsep=0.01, axespad=0.0,
-                   loc=(1.01,-0.9))
+        ax1.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005,
+                   handletextsep=0.01, axespad=0.0, loc=(1,0))
+        leg = pylab.gca().get_legend()
+        ltext = leg.get_texts()
+        llines = leg.get_lines()
+        lframe = leg.get_frame()
+        lframe.set_facecolor('0.4')
+        pylab.setp(ltext, size=8, family="sans-serif")
+        pylab.setp(llines, linewidth=2)
+        leg.draw_frame(False)
     ax1.set_ylabel('ord (meters)', **yprops)
     ax1.grid(True)
     if options.yRange:

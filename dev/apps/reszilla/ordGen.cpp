@@ -66,10 +66,8 @@ private:
    CommandOptionWithAnyArg obsFileOption, ephFileOption, mscFileOption,
       antennaPosOption, metFileOption, ordModeOption;
    CommandOptionWithNumberArg msidOption;
-   CommandOptionNoArg keepWartsOption;
 
    string ordMode;
-   bool keepWarts;
    Triple antennaPos;
    unsigned msid;
 
@@ -83,7 +81,7 @@ const string OrdGen::defaultOrdMode("smart");
 //-----------------------------------------------------------------------------
 OrdGen::OrdGen() throw()
    : OrdApp("ordGen", "Generates observed range deviations."),
-     ordMode(defaultOrdMode), keepWarts(false), msid(0),
+     ordMode(defaultOrdMode), msid(0),
    
    obsFileOption('o', "obs", 
                  "Where to get the obs data.", true),
@@ -105,11 +103,7 @@ OrdGen::OrdGen() throw()
                     , false),
    
    metFileOption('w', "weather", "Weather data file name (RINEX met "
-                 "format only)."),
-   
-   keepWartsOption('k', "keep-warts", "Keep any warts that are in "
-                   "the data. The defailt is to remove them.")
-{
+                 "format only)."){
 }
 
 
@@ -123,9 +117,6 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
    if (ordModeOption.getCount())
       ordMode = lowerCase(ordModeOption.getValue()[0]);
 
-   if (keepWartsOption.getCount())
-      keepWarts=true;
-      
    if (msidOption.getCount())
       msid = asUnsigned(msidOption.getValue().front());
 
@@ -214,7 +205,6 @@ void OrdGen::process()
 
    // Now set up the function object that is used to compute the ords.
    OrdEngine ordEngine(eph, wod, antennaPos, ordMode, tm);
-   ordEngine.keepWarts = keepWarts;
    ordEngine.verboseLevel = verboseLevel;
    ordEngine.debugLevel = debugLevel;
    ORDEpochMap ordEpochMap;
