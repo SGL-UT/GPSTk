@@ -92,7 +92,7 @@ namespace gpstk
 
       /// The code used to collect the observation. This generally follows
       /// the attributes in section 5.1 of RINEX 3. Note that these need to
-      /// be interpreted in conjunction with with the satellite system that
+      /// be interpreted in conjunction with the satellite system that
       /// is in the svid variable.
       enum TrackingCode
       {
@@ -122,15 +122,15 @@ namespace gpstk
       ObsID()
          : type(otUnknown), band(cbUnknown), code(tcUnknown) {};
 
-      /// Explicit constructior
+      /// Explicit constructor
       ObsID(ObservationType ot, CarrierBand cb, TrackingCode tc)
          : type(ot), band(cb), code(tc) {};
 
       /// Equality requires all fields to be the same
       virtual bool operator==(const ObsID& right) const;
 
-      /// This ordering is somewhat arbitrairy but is required to be able
-      /// to us an ObsID as an index to a std::map. If an application needs
+      /// This ordering is somewhat arbitrary but is required to be able
+      /// to use an ObsID as an index to a std::map. If an application needs
       /// some other ordering, inherit and override this function.
       virtual bool operator<(const ObsID& right) const;
 

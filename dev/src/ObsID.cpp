@@ -69,6 +69,7 @@ namespace gpstk
       otStrings[otDoppler] = "doppler";
       otStrings[otSNR]     = "snr";
       otStrings[otSSI]     = "ssi";
+      otStrings[otLLI]     = "lli";
 
       tcStrings[tcUnknown] = "UnknownCode";
       tcStrings[tcCA]      = "C/A";
