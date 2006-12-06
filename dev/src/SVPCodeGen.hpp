@@ -135,12 +135,12 @@ namespace gpstk
              * all the state conditions (for output and debug) before 
              * moving the time forward for the next generation.
              */
-         void increment4ZCounts( );
+         void increment4ZCounts();
          
             /**
              * Returns the current time to the calling method.  
              */
-         const gpstk::DayTime& getCurrentZCount( ) {return( currentZTime);}
+         const gpstk::DayTime& getCurrentZCount() const {return currentZTime;}
      
       private:
          gpstk::X1Sequence X1Seq;
