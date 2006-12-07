@@ -330,9 +330,15 @@ namespace gpstk
    BinexData::MGFZI::MGFZI(long long ll)
       throw(FFStreamError)
    {
-      value = ll;
-      long long absValue = std::llabs(ll);
 
+      value = ll;
+      #ifdef __sun
+      long long absValue = llabs(ll);
+      #else
+      long long absValue = std::llabs(ll);
+      #endif
+
+      
       if (absValue < 16LL)
       {
          size = 1;
@@ -584,8 +590,12 @@ namespace gpstk
          FFStreamError err(errStrm.str() );
          GPSTK_THROW(err);
       }
-
+      #ifdef __sun
+      long long      absValue = llabs(value);
+      #else
       long long      absValue = std::llabs(value);
+      #endif
+      
       unsigned char  signBit  = (value < 0) ? 0x01 : 0x00;
 
       size_t result = size;  // Default
