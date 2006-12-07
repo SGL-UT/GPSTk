@@ -700,7 +700,7 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
             jt->second = kt->second;
       }
       // TD should test for all zero data -> delete this SV.
-      ROOut.obs.insert(std::map<RinexSatID,
+      ROOut.obs.insert(std::map<SatID,
          RinexObsData::RinexObsTypeMap>::value_type(it->first,otmap) );
    }
 
@@ -841,7 +841,7 @@ int RinexEditor::FillHeaderAndReplaceFile(string& TempFile, string& TrueOutputFi
    RHOut.numObsForSat.clear();
    vector<TableData>::iterator tit;
    for(tit=table.begin(); tit!=table.end(); ++tit) {
-      RHOut.numObsForSat.insert(map<RinexSatID,
+      RHOut.numObsForSat.insert(map<SatID,
             vector<int> >::value_type(tit->prn,tit->nobs));
    }
    RHOut.valid |= RinexObsHeader::prnObsValid;

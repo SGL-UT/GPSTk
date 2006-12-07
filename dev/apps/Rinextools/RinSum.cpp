@@ -393,7 +393,7 @@ try {
          rheader.numObsForSat.clear();
          for(tit=table.begin(); tit!=table.end(); ++tit) {      // tit defined above
             rheader.numObsForSat.insert(
-               map<RinexSatID, vector<int> >::value_type(tit->sat,tit->nobs) );
+               map<SatID, vector<int> >::value_type(tit->sat,tit->nobs) );
          }
          rheader.valid |= RinexObsHeader::prnObsValid;
          //*pout << "\nNew header\n";
