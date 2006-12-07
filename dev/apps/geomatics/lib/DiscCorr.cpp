@@ -2137,7 +2137,7 @@ try {
 
    // ---------------------------------------------------------
    // sort the slips in time
-   SlipList.sort(SlipLessThan());
+   SlipList.sort();
 
    // ---------------------------------------------------------
    // merge *this GDCPass and the input SatPass...
