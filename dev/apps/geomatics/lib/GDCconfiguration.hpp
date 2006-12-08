@@ -68,6 +68,9 @@ public:
    void DisplayParameterUsage(std::ostream& os, bool advanced=false)
       throw(gpstk::Exception);
 
+      /// Return version string
+   std::string Version() throw() { return GDCVersion; }
+
 protected:
 
       /// map containing configuration labels and their values

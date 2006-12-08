@@ -426,9 +426,14 @@ namespace gpstk
    /// using robust techniques. The post-fit residuals are returned in the data
    /// vector, and the computed weights in the result may be output as well.
    /// Specifically, the equation describing the fit is
-   /// c0 + c(1)*t(j) + c(2)*t(j)*t(j) + ... c(n-1)*pow(t(j),n-1) = xd[j],
+   /// c0 + c[1]*t(j) + c[2]*t(j)*t(j) + ... c[n-1]*pow(t(j),n-1) = xd[j],
    /// where the zero-th coefficient and the independent variable are debiased
-   /// by the first value; i.e. c0 = c(0)+xd[0] and t(j) = td[i]-td[0].
+   /// by the first value; i.e. c0 = c[0]+xd[0] and t(j) = td[i]-td[0].
+   /// Specifically, to evaluate the polynomial at t, eval = f(t), do the following.
+   /// xd0 = xd[0];
+   /// Robust::RobustPolyFit(xd,td,nd,n,c);
+   /// eval = xd0+c[0]; tt = 1.0;
+   /// for(j=1; j<nd; j++) { tt *= (t-td[0]); eval += c[j]*tt; }
    /// @param xd (input) array of data, of length nd; contains residuals on output.
    /// @param td (input) array of independent variable, length nd (parallel to xd).
    /// @param nd (input) length of arrays xd and td.
@@ -436,7 +441,8 @@ namespace gpstk
    /// @param c (output) array of coefficients (dimension n).
    /// @param w (output, if non-null) array of length nd to contain weights.
    /// @return 0 for success, -1 for singular problem, -2 failure to converge.
-   int RobustPolyFit(double *xd, double *td, int nd, int n, double *c, double *w=NULL)
+   int RobustPolyFit(double *xd, const double *td, int nd,
+                     int n, double *c, double *w=NULL)
       throw(Exception);
 
    /// Print 'stem and leaf' plot of the data in the double array xd of length nd,

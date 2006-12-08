@@ -106,7 +106,7 @@ typedef struct Configuration {
       // processing
    double DataInt;
    int Freq;
-   bool UseCA;
+   bool UseCA,ForceCA;
    vector<SatID> ExSV;
    string TropType;
    double T,Pr,RH;
@@ -369,30 +369,50 @@ try {
       if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("S1")) inS1=j;
       if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("S2")) inS2=j;
    }
-   if((inP1==-1 && (!C.UseCA || inC1==-1)) || inP2==-1 || inL1==-1 || inL2==-1
-         || inD1==-1 || inD2==-1 || inS1==-1 || inS2==-1) {
+   
+   if(   (inP1==-1 && (!C.UseCA || inC1==-1))
+      || (inC1==-1 && C.ForceCA)
+      || inP2==-1 || inL1==-1 || inL2==-1
+      //|| inD1==-1 || inD2==-1 || inS1==-1 || inS2==-1   // why ?
+       ) {
       C.oflog << "Warning: file " << filename << " does not contain";
-      if(inC1==-1) C.oflog << " C1";
-      if(inP1==-1) C.oflog << " P1 (--CA was" << (C.UseCA?"":" not") << " found)";
+      if(inC1==-1) C.oflog << " C1" << " (forceCA is " << (C.ForceCA?"T":"F") << ")";
+      if(inP1==-1) C.oflog << " P1" << " (useCA is " << (C.UseCA?"T":"F") << ")";
       if(inP2==-1) C.oflog << " P2";
       if(inL1==-1) C.oflog << " L1";
       if(inL2==-1) C.oflog << " L2";
-      if(inD1==-1) C.oflog << " D1";
-      if(inD2==-1) C.oflog << " D2";
-      if(inS1==-1) C.oflog << " S1";
-      if(inS2==-1) C.oflog << " S2";
+      //if(inD1==-1) C.oflog << " D1";
+      //if(inD2==-1) C.oflog << " D2";
+      //if(inS1==-1) C.oflog << " S1";
+      //if(inS2==-1) C.oflog << " S2";
       C.oflog << endl;
       //ifstr.clear();
       //ifstr.close();
       //return 2;
    }
-   if(inP1==-1) {
-      if(C.UseCA) inP1=inC1;
+   if(C.ForceCA) {
+      if(inC1 != -1) inP1 = inC1;
       else {
-         C.oflog << "ERROR. Abort. Neither P1 data nor option --CA were not found."
-            << endl;
-         cerr << "ERROR. Abort. Neither P1 data nor option --CA were not found."
-            << endl;
+         C.oflog << "ERROR. Abort. --forceCA was found but C1 data is not found.\n";
+         cerr << "ERROR. Abort. --forceCA was found but C1 data is not found.\n";
+         return -1;
+      }
+   }
+   else if(inP1==-1) {
+      if(C.UseCA && inC1 != -1) inP1 = inC1;
+      else if(C.UseCA && inC1 == -1) {
+         C.oflog << "ERROR. Abort. Neither P1 nor C1 data found (--useCA is set).\n";
+         cerr << "ERROR. Abort. Neither P1 nor C1 data found (--useCA is set).\n";
+         return -1;
+      }
+      else if(!C.UseCA && inC1 != -1) {
+         C.oflog << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)\n";
+         cerr << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)\n";
+         return -1;
+      }
+      else {
+         C.oflog << "ERROR. Abort. Neither P1 nor C1 data found.\n";
+         cerr << "ERROR. Abort. Neither P1 nor C1 data found.\n";
          return -1;
       }
    }
@@ -1087,6 +1107,7 @@ try {
 
    C.APSout = false;
    C.UseCA = false;
+   C.ForceCA = false;
    C.DataInt = -1.0;
    C.TropType = string("BL");
    C.T = 20.0;
@@ -1157,9 +1178,13 @@ try {
    //stopmutex.addOption(&dashee);
    //stopmutex.addOption(&dashge);
 
-   CommandOptionNoArg dashCA(0,"CA",
-      " --CA                 Use C/A code pseudorange if P1 is not available");
+   CommandOptionNoArg dashCA(0,"useCA",
+      " --useCA              Use C/A code pseudorange if P1 is not available");
    dashCA.setMaxCount(1);
+   
+   CommandOptionNoArg dashfCA(0,"forceCA",
+      " --forceCA            Use C/A code pseudorange regardless of P1 availability");
+   dashfCA.setMaxCount(1);
    
    //CommandOption dashDT(CommandOption::hasArgument, CommandOption::stdType,
       //0,"DT"," --DT <dt>              Time interval (sec) of data points");
@@ -1452,6 +1477,10 @@ try {
       C.UseCA = true;
       if(help) cout << "'Use C/A' flag is set\n";
    }
+   if(dashfCA.getCount()) {
+      C.ForceCA = true;
+      if(help) cout << "'Force C/A' flag is set\n";
+   }
    //if(dashDT.getCount()) {
       //values = dashDT.getValue();
       //C.DT = StringUtils::asDouble(values[0]);
@@ -1631,6 +1660,7 @@ try {
       << C.Tend.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
       << " = " << C.Tend.printf("%04F/%10.3g") << endl;
    if(C.UseCA) C.oflog << " 'Use C/A' flag is set\n";
+   if(C.ForceCA) C.oflog << " 'Force C/A' flag is set\n";
    //C.oflog << " DT is set to " << C.DT << endl;
    if(C.ExSV.size()) {
       RinexSatID p;

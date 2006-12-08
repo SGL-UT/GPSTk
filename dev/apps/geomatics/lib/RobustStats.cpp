@@ -48,6 +48,7 @@
 //------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 inline long Stem(double x, double& scale) { return (long(x/scale)); }
@@ -103,7 +104,6 @@ void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
       nscale--;
    }
 
-   using namespace StringUtils;
       // find length of stem for printing
    buf = asString<long>(::abs(Stem(xd[0],scale)));
    len = buf.size();
@@ -170,7 +170,7 @@ void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
 
                // print the new line with stem s
             os << "\n";
-            buf = StringUtils::asString<long>(s < 0 ? -s : s); // abs(stem)
+            buf = asString<long>(s < 0 ? -s : s); // abs(stem)
 
             //for(kk=buf.size(); kk<len; kk++) os << " ";
             //if(s<0) c='-'; else if(s>0) c='+'; else if(pos>0)c='+'; else c='-';
@@ -250,7 +250,8 @@ void Robust::QuantilePlot(double *yd, long nd, double *xd)
 }  // end QuantilePlot
 
 
-int Robust::RobustPolyFit(double *xd, double *td, int nd, int N, double *c, double *w)
+int Robust::RobustPolyFit(double *xd, const double *td, int nd,
+                          int N, double *c, double *w)
    throw(Exception)
 {
    try {

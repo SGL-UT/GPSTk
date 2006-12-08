@@ -37,10 +37,12 @@
 #include "RinexNavData.hpp"
 #include "RinexNavStream.hpp"
 #include "DayTime.hpp"
+#include "SatID.hpp"
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
+#include "icd_200_constants.hpp"
 
 #include <string>
 #include <vector>
@@ -53,7 +55,7 @@ using namespace gpstk;
 using namespace std;
 
 //------------------------------------------------------------------------------------
-string version("2.2 8/29/06");
+string version("2.3 12/8/06");
 
 // data input from command line
 vector<string> InputFiles;
@@ -65,7 +67,7 @@ DayTime EndTime(DayTime::END_OF_TIME);
 bool ReplaceHeader=false;
 bool TimeSortTable=false;
 bool GPSTimeOutput=false;
-bool Debug=false;
+bool debug=false;
 bool brief=false;
 
 //------------------------------------------------------------------------------------
@@ -81,9 +83,10 @@ class TableData {
 public:
    RinexSatID sat;
    vector<int> nobs;
+   double prevC1,prevP1,prevL1;
    DayTime begin,end;
-   TableData(const RinexSatID& p, const int& n)
-      { sat=p; nobs=vector<int>(n); };
+   TableData(const SatID& p, const int& n)
+      { sat=RinexSatID(p); nobs=vector<int>(n); prevC1=prevP1=prevL1=0; };
       // needed for find()
    inline bool operator==(const TableData& d) {return d.sat == sat;}
 };
@@ -110,8 +113,11 @@ bool isRinexNavFile(const string& file);
 int main(int argc, char **argv)
 {
 try {
-   int iret,i,j,k,n,ifile;
+   int iret,i,j,k,n,ifile,nsats,nclkjumps,L1lli;
+   double C1,L1,P1,clkjump;
    DayTime last,prev,ftime;
+   vector<DayTime> clkjumpTimes;
+   vector<double> clkjumpMillsecs;
 
       // Title and description
    string Title;
@@ -217,47 +223,114 @@ try {
          // input obs
       while(InStream >> robs)
       {
-         if(Debug) *pout << "Epoch: " << robs.time
+         if(debug) *pout << "Epoch: " << robs.time
             << ", Flag " << robs.epochFlag
             << ", Nsat " << robs.obs.size()
             << ", clk " << robs.clockOffset << endl;
+
+          // is this a comment?
          if(robs.epochFlag > 1) {
             ncommentblocks++;
             //*pout << "inline header info:\n";
             //robs.auxHeader.dump(*pout);
             continue;
          }
+
+         // update first and last time seen, check time limits, count epochs
          last = robs.time;
          if(last < BegTime) continue;
          if(last > EndTime) break;
          if(ftime == DayTime::BEGINNING_OF_TIME) ftime=last;
          nepochs++;
+         nsats = nclkjumps = 0;  // count sats and signs that clock jumps have occurred
+         clkjump = 0.0;
+
+         // loop over satellites
          RinexObsData::RinexSatMap::const_iterator it;
          RinexObsData::RinexObsTypeMap::const_iterator jt;
          for(it=robs.obs.begin(); it != robs.obs.end(); ++it) {
+            // update the table
             vector<TableData>::iterator ptab;
             ptab = find(table.begin(),table.end(),TableData(it->first,n));
-            if(ptab == table.end()) {
+            if(ptab == table.end()) {        // sat not found in table - create one
                table.push_back(TableData(it->first,n));
                ptab = find(table.begin(),table.end(),TableData(it->first,n));
                ptab->begin = last;
             }
+            // update end time for this sat
             ptab->end = last;
-            if(Debug) *pout << "Sat " << setw(2) << it->first;
+            nsats++;
+            if(debug) *pout << "Sat " << setw(2) << RinexSatID(it->first);
+
+            // loop over obs types
+            C1 = P1 = L1 = 0;
             for(jt=it->second.begin(); jt!=it->second.end(); jt++) {
+               // find the index for this obs type
                for(k=0; k<n; k++) if(rheader.obsTypeList[k] == jt->first) break;
+               // count this obs
                if(jt->second.data != 0) {
                   ptab->nobs[k]++;      // per obs
                   totals[k]++;
                }
-               if(Debug) *pout << " " << RinexObsHeader::convertObsType(jt->first)
+               // save L1 range and phase for clkjump test below
+               if(jt->first == RinexObsHeader::C1) C1 = jt->second.data * 1000.0/C_GPS_M;
+               if(jt->first == RinexObsHeader::P1) P1 = jt->second.data * 1000.0/C_GPS_M;
+               if(jt->first == RinexObsHeader::L1) {
+                  L1 = jt->second.data * 1000.0/C_GPS_M;
+                  L1lli = jt->second.lli;
+               }
+               // dump this data
+               if(debug) *pout << " " << RinexObsHeader::convertObsType(jt->first)
                   << " " << setw(13) << setprecision(3) << jt->second.data << " "
                   << jt->second.lli << " " << jt->second.ssi;
+            }  // end loop over obs types
+            if(debug) *pout << endl;
+
+            // test for millisecond clock adjusts -
+            // sometimes they are applied to range but not phase or vice-versa
+            if(prev != DayTime::BEGINNING_OF_TIME && L1 != 0 && ptab->prevL1 != 0) {
+               int nms;
+               double test;
+               if(P1 != 0 && ptab->prevP1 != 0)
+                  test = P1-L1_WAVELENGTH*L1 - (ptab->prevP1-L1_WAVELENGTH*ptab->prevL1);
+               else if(C1 != 0 && ptab->prevC1 != 0)
+                  test = C1-L1_WAVELENGTH*L1 - (ptab->prevC1-L1_WAVELENGTH*ptab->prevL1);
+               else
+                  test = 0.0;
+               if(fabs(test) > 0.5) {      // test must be > 150 km =~ 1/2 millisecond
+                  // is it nearly an even multiple of 1 millisecond?
+                  //test *= 1000.0/C_GPS_M;
+                  if(debug) *pout << "possible clock jump: test = " << setprecision(9) << test;
+                  nms = long(test + (test > 0 ? 0.5 : -0.5));
+                  if(fabs(test - double(nms)) < 0.001) {
+                     if(debug) *pout << " -> " << setprecision(9) << fabs(test - double(nms));
+                     // keep clkjump = sequential average nms
+                     if(test < 0) nms *= -1;
+                     nclkjumps++;
+                     clkjump += (double(nms)-clkjump)/double(nclkjumps);
+                  }
+                  else if(debug) *pout << " - failed.";
+                  if(debug && L1lli != 0) { *pout << " LLI is set"; }
+                  if(debug) *pout << " " << RinexSatID(it->first)
+                     << " " << last.printf("%4F %.3g") << endl;
+               }
             }
-            if(Debug) *pout << endl;
-         }
+            // save C1,L1,P1 for this sat for next time
+            ptab->prevC1 = C1;
+            ptab->prevL1 = L1;
+            ptab->prevP1 = P1;
+
+         }  // end loop over sats
 
          //out << robs;
+
+         // if more than half the sats saw a clk jump, call it
+         if(nclkjumps > nsats/2) {
+            if(debug) *pout << "test nclkjumps is " << nclkjumps
+               << " and nsats is " << nsats << endl;
+            clkjumpTimes.push_back(last);
+            clkjumpMillsecs.push_back(clkjump);
+         }
 
          if(prev != DayTime::BEGINNING_OF_TIME) {
             dt = last-prev;
@@ -285,24 +358,13 @@ try {
             }
          }
          prev = last;
-      }
+
+      }  // end loop over epochs in the file
       InStream.close();
 
          // compute interval
       for(i=1,j=0; i<ndtmax; i++) if(ndt[i]>ndt[j]) j=i;
       dt = bestdt[j];
-
-         // warnings
-      if((rheader.valid & RinexObsHeader::intervalValid)
-            && fabs(dt-rheader.interval) > 1.e-3)
-         *pout << " WARNING: Computed interval is " << setprecision(2)
-            << dt << " sec, while input header has " << setprecision(2)
-            << rheader.interval << " sec.\n";
-      if(fabs(ftime-rheader.firstObs) > 1.e-8)
-         *pout << " WARNING: Computed first time does not agree with header\n";
-      if((rheader.valid & RinexObsHeader::lastTimeValid)
-            && fabs(last-rheader.lastObs) > 1.e-8)
-         *pout << " WARNING: Computed last time does not agree with header\n";
 
          // summary info
       *pout << "Computed interval "
@@ -376,6 +438,24 @@ try {
          *pout << endl;
       }
 
+         // warnings
+      if((rheader.valid & RinexObsHeader::intervalValid)
+            && fabs(dt-rheader.interval) > 1.e-3)
+         *pout << " WARNING: Computed interval is " << setprecision(2)
+            << dt << " sec, while input header has " << setprecision(2)
+            << rheader.interval << " sec.\n";
+      if(fabs(ftime-rheader.firstObs) > 1.e-8)
+         *pout << " WARNING: Computed first time does not agree with header\n";
+      if((rheader.valid & RinexObsHeader::lastTimeValid)
+            && fabs(last-rheader.lastObs) > 1.e-8)
+         *pout << " WARNING: Computed last time does not agree with header\n";
+
+      if(clkjumpTimes.size() > 0) {
+         *pout << " WARNING: millisecond clock adjusts improperly applied at these times:\n";
+         for(i=0; i<clkjumpTimes.size(); i++)
+            *pout << "   " << clkjumpTimes[i].printf("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%06.3f")
+               << " " << setprecision(2) << clkjumpMillsecs[i] << " ms_clock_adjust" << endl;
+      }
          // look for 'empty' obs types
       for(k=0; k<n; k++) {
          if(totals[k] <= 0) *pout << " WARNING: ObsType "
@@ -713,7 +793,7 @@ try {
    }
 
    if(dashd.getCount()) {
-      Debug = true;
+      debug = true;
       if(help) cout << "Input: found the debug flag" << endl;
    }
 
@@ -727,7 +807,7 @@ try {
       }
    }
 
-   if(Debug && help) {
+   if(debug && help) {
       cout << "\nTokens on command line (" << Args.size() << ") are:" << endl;
       for(j=0; j<Args.size(); j++) cout << Args[j] << endl;
    }
