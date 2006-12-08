@@ -229,33 +229,27 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
          // A gross check on the pseudorange
          const double rhoMin = 1e6; // Minimum reasonable pseudorange
          if (obs1 < rhoMin || (dualFreq && obs2 < rhoMin))
-            ord.wonky = true;
-
-         if (ord.wonky) continue;
+            ord.wonky |= 0x0001;
 
          // Any LLI indicator makes the data suspect
-         for (k=svObsEpoch.begin(); !ord.wonky && k != svObsEpoch.end(); k++)
-            if (k->first.type == ObsID::otLLI)
-               ord.wonky=true;
+         for (k=svObsEpoch.begin(); k != svObsEpoch.end(); k++)
+            if (k->first.type == ObsID::otLLI && k->second == 1)
+               ord.wonky |= 0x0002;
 
-         if (ord.wonky) continue;
-         
          // Make sure we have a valid C/A pseudorange
          const ObsID C1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
          k = svObsEpoch.find(C1);
          if (k == svObsEpoch.end() || k->second < rhoMin)
-            ord.wonky = true;
-
-         if (ord.wonky) continue;
+            ord.wonky |= 0x0004;
 
          if (!keepUnhealthy && ord.getHealth().is_valid() && ord.getHealth())
-            ord.wonky = true;
+            ord.wonky |= 0x0008;
          
-         if (ord.wonky) continue;
-         
-         if (std::abs(ord.getTrop()) > 100 || ord.getElevation() <= 0.05)
-            ord.wonky = true;
+         if (std::abs(ord.getTrop()) > 100)
+            ord.wonky |= 0x0010;
 
+         if (ord.getElevation() <= 0.05)
+            ord.wonky |= 0x0020;
       } // end looping over each SV in this epoch
 
    }

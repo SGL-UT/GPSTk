@@ -110,7 +110,7 @@ SvObsEpoch makeSvObsEpoch(const RinexObsData::RinexObsTypeMap& rotm) throw()
       if (rd.lli>0)
       {
          oid.type = ObsID::otLLI;
-         soe[oid] = rd.lli;
+         soe[oid] = -1;
       }
    }
 

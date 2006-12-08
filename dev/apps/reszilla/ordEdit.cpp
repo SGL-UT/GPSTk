@@ -300,6 +300,7 @@ void OrdEdit::process()
       {
          // removing all clock data (line types 50, 51, and 70)
          ordEpoch.clockOffset.set_valid(false);
+         ordEpoch.clockResidual.set_valid(false);
       }
       if (prnSet.size() || wartSet.size())
       {

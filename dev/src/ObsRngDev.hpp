@@ -312,7 +312,7 @@ namespace gpstk
       DayTime obstime;           ///< time of SV observation
       SatID svid;                ///< PRN number of observed SV
       double ord;                ///< difference between expected and observed range
-      bool wonky;                ///< Indicates that this ord is suspect
+      unsigned wonky;            ///< A bitmask defined by the application to flag questionable data
 
       vfloat azimuth;            ///< SV azimuth
       vfloat elevation;          ///< SV elevation

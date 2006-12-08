@@ -122,7 +122,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
 {
    if (!headerWritten)
    {
-      s << "# Time            Type PRN  Elev         ORD(m)" << endl;
+      s << "# Time            Type PRN  Elev         ORD(m)   wonky" << endl;
       headerWritten=true;
    }
 
@@ -137,13 +137,11 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
       const ObsRngDev& ord = pi->second;
 
       int type = 0;
-      if (ord.wonky)
-         type = 20;
-
       s << time << " " << setw(4) << type
         << " " << setw(3) << svid.id
         << " " << setprecision(1) << setw(5)  << ord.getElevation()
         << " " << setprecision(5) << setw(14) << ord.getORD()
+        << " " << hex << setw(5) << ord.wonky << dec
         << endl;
    }
 
@@ -201,7 +199,7 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
          int type;
          iss >> type;
 
-         if (type == 0 || type == 20)
+         if (type == 0)
          {
             if (readBuffer.size() < 46)
             {
@@ -213,18 +211,16 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
             ord.obstime = time;
 
             int prn;
-            unsigned iodc, health;
             double elev, res;
+            unsigned wonky;
 
-            iss >> prn >> elev >> res;
+            iss >> prn >> elev >> res >> hex >> wonky >> dec;
 
             SatID svid(prn, SatID::systemGPS);
             ord.svid = svid;
             ord.elevation = elev;
             ord.ord = res;
-            
-            if (type == 20)
-               ord.wonky = true;
+            ord.wonky = wonky;
             
             ordEpoch.ords[svid] = ord;
          }

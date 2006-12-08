@@ -130,7 +130,7 @@ void OrdClock::process()
       {
          ORDEpoch::ORDMap::iterator i;
          for (i = ordEpoch.ords.begin(); i != ordEpoch.ords.end(); i++)
-            i->second.wonky = true;
+            i->second.wonky |= 0x0040;
       }
 
       write(output, ordEpoch);

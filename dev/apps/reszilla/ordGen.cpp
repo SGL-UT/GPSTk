@@ -103,8 +103,8 @@ OrdGen::OrdGen() throw()
                     , false),
    
    metFileOption('w', "weather", "Weather data file name (RINEX met "
-                 "format only)."){
-}
+                 "format only).")
+{}
 
 
 //-----------------------------------------------------------------------------
