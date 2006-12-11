@@ -1,3 +1,156 @@
+Version 1.2   Monday, November 6, 2006
+	
+	General modifications
+	---------------------
+	
+	- Moved from Perfoce to a Subversion repository located at 
+		https://svn.sourceforge.net/svnroot/gpstk
+	
+	- GPSTk library testing is now being implemented in dev/tests
+		These unit tests for the library currently cover over
+		40% of the code with an average of 95% coverage for 
+		tested classes.  Tests use CppUnit and Perl scripts.
+		See test documentation for more information.
+	
+	- Added examples/example5.cpp
+		An example that shows how to use some very useful high level
+		GPSTk classes for positioning
+			
+	- Added Python support to the GPSTk
+	
+	- Added capability for FileHunter to work under Window and Cigwin
+	
+	Library modifications
+	---------------------
+	
+	- Added RINEX version 2.11 support for GPS Navigation files
+	
+	- Added the following prototype time classes:
+		src/CommonTime.[h|c]pp
+		src/YDSTime.[h|c]pp
+		src/CivilTime.[h|c]pp
+		src/GPSEpochWeekSecond.[h|c]pp
+		src/GPSWeekSecond.[h|c]pp
+		src/GPSWeekZcount.[h|c]pp
+		src/JulianDate.[h|c]pp
+		src/MJD.[h|c]pp
+		src/UnixTime.[h|c]pp
+		
+	- Added src/TimeConstants.hpp
+		Time constants
+	
+	- Added src/TimeConverters.[c|h]pp
+		Time converstion routines
+	
+	- Added src/Bancroft.[h|c]pp 
+		Class gets an initial guess of GPS receiver's position
+		
+	- Added src/SVExclusionList.[h|c]pp
+	
+	- Added and implemented src/SatID.hpp
+		Class which encapsulates Satellite Identification information
+	
+	- Added src/ModeledPR.[h|c]pp
+		Encapsulates computation of modeled psuedoranges of a mobile
+		receiver
+		
+	- Added src/SimpleIURAWeight.[h|c]pp
+		Assigns weights to satellites based on their URA Index
+	 
+	- Added src/ModeledPseudorangeBase.hpp
+		An abstract base class for modeled pseudoranges
+	
+	- Added src/WeightBase.hpp
+		An abstract base class for algorithms assigning weights to satellites
+			
+	- Improved src/Matrix.hpp and src/Vector.hpp
+		Added unary minus operator, CholeskyCrout class and inverseChol method
+	
+	- Improved src/Vector.hpp
+		Added add() method
+		
+	- Improved src/Stats.hpp 
+		Better handling of weighted input
+		
+	- Improved src/Tropmodel.[h|c]pp
+		Added GCAT tropospheric model
+		Added MOPSTropModel
+		
+	- Improved src/Position.[h|c]pp 
+		Added methods elevationGeodetic() and azimuthGeodetic()
+	
+	- Improved src/TabularEphemerisStore.[h|c]pp
+		Added method hasTGD()
+		
+	- Improved src/BCEphemerisStore.[h|c]pp
+		Added method getTGD() to return the Total Group Delay of the SV
+	
+	- Improved src/EphemerisRange.[h|c]pp
+		Added methods elevationGeodeitc() and azimuthGeodetic().
+		Changed RelativityCorrection() to improved speed and precision
+	
+	- Added src/BinexData.[c|h]pp BinexFilterOperators.hpp BinexStream.hpp
+		Added BINEX code
+	
+	Application modifications
+	-------------------------
+	
+	- Added apps/positioning/poscvt
+		A position converter modeled after timecvt
+		
+	- Added apps/geomatics/relposition/DDBase
+		A network positioning application that uses double
+		differenced carrier phases
+	
+	- Added apps/geomatics/kalman
+		Tools for Kalman filtering
+		
+	- Added apps/geomatics/robust
+		Tool for robust statistics
+	
+	- Added apps/geomatics/????
+		Added geodetic reference frames
+		
+	- Complete rewrite and move of apps/cycleslips/DiscFix
+	  Located now in apps/geomatics/cycleslips/DiscFix
+	  	DiscFix is now much more object-oriented, faster, more robust
+		and more accurate.  Significant changes have been made to the
+		algorithm.
+	
+	- Added apps/visibility/wheresat
+		A tool for caculating SV position, azimut and
+		elevation from a navigation file
+	
+	- Added apps/converters/novaRinex
+		A Novatel binary to Rinex converter
+	
+	- Improved apps/filetools/navdmp
+		Added -r (RINEX) input capability
+	
+	- Added apps/qa/Expression
+		A fully functional expression interpreter
+	
+	- Added apps/qa/obsrip
+		A utility which transforms RINEX files into linear combos, ect.
+	
+	- Added functionality to apps/multipath/ObsArray
+		Can track observations by PRN and by epoch.  Also can insert
+		GPS constants into Expressions.
+		
+	- Added apps/positioning/posInterp
+		This application interpolates positions in a RINEX file, increasing
+		the data rate by an integer factor.  An example that uses both
+		posInterp and PRSolve is included.
+	
+	- Added apps/visibility/findMoreThan12
+		A new tools which given an ephemeris source, finds times when there are
+		more than 12 SVs simultaneously above a specified elevation angle.
+	
+	- Improved apps/positioning/rinexpvt
+		Added optional log file to output
+		Added option to set observation rate to other than 30s
+		
+	
 Version 1.1   Friday, January 7, 2005
 
 	General modifications
