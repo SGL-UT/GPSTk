@@ -77,7 +77,7 @@ SatPassData::SatPassData(void)
 SatPassData::~SatPassData(void) { }
 
 // Default constructor
-SatPass::SatPass(const RinexSatID insat, const double indt)
+SatPass::SatPass(RinexSatID insat, double indt)
 {
    sat = insat;
    dt = indt;
