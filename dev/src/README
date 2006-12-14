@@ -29,9 +29,6 @@
  *
  * Namespace std is also used throughout the GPSTK.
  *
- * \subsection other Other
- * [Other high level code design things...]
- *
  * \section content Library Content
  * The library consists of several modules, which are more or less dependent upon each
  * other. These include
