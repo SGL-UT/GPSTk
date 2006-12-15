@@ -332,11 +332,11 @@ namespace gpstk
    {
 
       value = ll;
-      #ifdef __sun
-      long long absValue = llabs(ll);
-      #else
-      long long absValue = std::llabs(ll);
-      #endif
+      long long absValue = value;
+      if (absValue < 0)
+      {
+         absValue = absValue*(-1);
+      } 
 
       
       if (absValue < 16LL)
@@ -590,11 +590,12 @@ namespace gpstk
          FFStreamError err(errStrm.str() );
          GPSTK_THROW(err);
       }
-      #ifdef __sun
-      long long      absValue = llabs(value);
-      #else
-      long long      absValue = std::llabs(value);
-      #endif
+      
+      long long absValue = value;
+      if (absValue < 0)
+      {
+         absValue = absValue*(-1);
+      } 
       
       unsigned char  signBit  = (value < 0) ? 0x01 : 0x00;
 
