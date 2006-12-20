@@ -290,7 +290,7 @@ namespace gpstk
          return;
 
       // Make sure that we have a header for this correct message.
-      while (stream.header.id != reqId && stream)
+      while (stream.header.id != reqId) // && stream) // && stream is invalid C++
          readHeader(stream);
 
       // Now get the header values from the most recently read header
