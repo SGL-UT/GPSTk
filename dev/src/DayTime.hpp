@@ -1176,6 +1176,11 @@ namespace gpstk
                             long lds, 
                             double ds)
          throw(DayTimeException);
+         
+         /// Helper routine to realign the internal representation in order to
+         /// avoid incorrect output (printf) when mSec is within tolerance of 1
+      void realignInternals(void)
+         throw();
 
          /// integer 'Julian day', = JD+0.5 (0 <= jday <= 3442448)
       long jday; 

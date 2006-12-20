@@ -91,7 +91,8 @@ namespace gpstk
       // ----------- Part  1: exceptions and constants ---------------
       //
 
-      // mSod is sod/FACTOR
+      // mSod is sod*FACTOR and mSec is seconds*FACTOR
+      // NB FACTOR must be <, and a factor of, 1,000,000
    const long DayTime::FACTOR = 1000;
 
       // Seconds per half a GPS week.
@@ -690,8 +691,8 @@ namespace gpstk
    {
       try
       {
-            // Multiply by .001 to convert mSec from milliseconds to seconds.
-         return CommonTime().setInternal(jday, mSod, mSec * .001);
+            // Multiply by 1/FACTOR to convert mSec from milliseconds to seconds.
+         return CommonTime().setInternal(jday, mSod, mSec / FACTOR);
       }
       catch (gpstk::InvalidParameter& ip)
       {
@@ -924,7 +925,7 @@ namespace gpstk
    {
       c.get(jday, mSod, mSec);
          // Convert mSec from seconds to milliseconds by multiplying by 1000.
-      mSec *= 1000;
+      mSec *= FACTOR;
       timeFrame = f;
       return *this;
    }
@@ -969,6 +970,7 @@ namespace gpstk
       jday += MJD_JDAY - 1 ; 
       mSod = long(FACTOR * sod) ;
       mSec = FACTOR * double(sod) - double(mSod) ;
+      realignInternals();
       timeFrame = f ;
       return *this ;
    }
@@ -1103,7 +1105,8 @@ namespace gpstk
          }
       }
       mSod = long(FACTOR * sod);
-      mSec = FACTOR * double(sod) - double(mSod);
+      mSec = FACTOR * sod - double(mSod);
+      realignInternals();
       timeFrame = f;
       return *this;
    }
@@ -1622,9 +1625,11 @@ namespace gpstk
    {
       // warning: the internal representation, even for objects that are equal
       // within the tolerance, may be very different
-      //s << "  Data: " << jday << " " << mSod
-      //<< " " << fixed << setprecision(6) << mSec << endl;
 
+      s << "  internal: jday " << jday << endl;
+      s << "  internal: mSod " << mSod << endl;
+      s << "  internal: mSec " << fixed << setprecision(15) << mSec << endl;
+      s << "  internal: tolerance " << fixed << setprecision(15) << tolerance << endl;
       s << "  double JD(): " << fixed << setprecision(6) << JD() << endl;
       s << "  double MJD(): " << fixed << setprecision(6) << MJD() << endl;
       s << "  short year(): " << year() << endl;
@@ -1882,7 +1887,25 @@ namespace gpstk
       jday = workingJday ;
       mSod = workingMsod ;
       mSec = workingMsec ;
-     
+
+      realignInternals();
+   }
+
+      // Helper routine to realign the internal representation in order to
+      // avoid incorrect output (printf) when mSec is within tolerance of 1
+   void DayTime::realignInternals(void)
+      throw()
+   {
+      if(fabs(mSec-1)/FACTOR < tolerance) {
+         // decrement mSec, except mSec must not be negative
+         // alternately, set mSec = 0, but perhaps this contributes numerical noise?
+         mSec = (mSec-1 < 0 ? 0 : mSec-1);
+         mSod += 1;
+      }
+      if(mSod >= SEC_DAY*FACTOR) {
+         mSod -= SEC_DAY*FACTOR;
+         jday += 1;
+      }
    }
 
       // ----------- Part 13: operator<< --------------
