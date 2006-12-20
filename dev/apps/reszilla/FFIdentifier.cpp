@@ -220,8 +220,4 @@ namespace gpstk
       } // end of while (true)
    }
 
-   FFIdentifier::operator FFType()
-   {
-      return fileType;
-   }
 }

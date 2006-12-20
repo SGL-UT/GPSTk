@@ -107,7 +107,7 @@ namespace gpstk
          }
          
          SMODFData smod;
-         while (smos)
+         while (true)
          {
             if (usePrevSMOD)
             {
@@ -158,11 +158,11 @@ namespace gpstk
    bool ObsReader::operator()()
    {
       if (inputType == FFIdentifier::tRinexObs)
-         return ros;
+         return true;
       else if (inputType == FFIdentifier::tMDP)
-         return mdps;
+         return true;
       else if (inputType == FFIdentifier::tSMODF)
-         return smos;
+         return true;
       return false;
    }
 } // end of namespace gpstk
