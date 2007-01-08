@@ -16,7 +16,7 @@ The standard solution for the user location requires a pseudorange measurement a
 
 \subsubsection{Reducing Measurement Errors}
 
-The GPS signal travels through every layer of the Earth's atmosphere. Each layers affects the signal differently. The ionosphere, which is the high-altitude, electrically charged part of the atmosphere, introduces a delay, and therefore a range error, into the signal. The delay is frequency dependent, so it can be directly computed if you have data on both the GPS frequencies. There is also a delay due to the troposphere, the lower part of the atmosphere. This delay too can be modeled and removed. There are many other errors associated with the GPS signal: multipath reflections and relativistic effects are two examples.
+The GPS signal travels through every layer of the Earth's atmosphere. Each layers affects the signal differently. The ionosphere, which is the high-altitude, electrically charged part of the atmosphere, introduces a delay, and therefore a range error, into the signal. The ionosphere delay can be predicted using a model. However, the accuracy of ionosphere models is limited. A better alternative is to measure and remove the ionosphere delay. Measurement of the ionosphere delay is possible by taking advantage of the fact that the delay is frequency dependent. It can be directly computed if you have data on both the GPS frequencies. There is also a delay due to the troposphere, the lower part of the atmosphere. Like the ionosphere delay, the atmosphere delay can be either predicted or derived from measurements. There are many other errors associated with the GPS signal: multipath reflections and relativistic effects are two examples.
 
 More precise applications reduce the effect of error sources by a technique referred to as differential GPS (DGPS). By differencing measurements simultaneously collected by the user and a nearby reference receiver, the errors that are common to both receivers (most of them) are removed. The result of DGPS positioning is a position relative to the reference receiver; adding the reference position to the DGPS solution results in the absolute user position.
 
@@ -25,12 +25,12 @@ The alternative to DGPS is to explicitly model and remove errors. Creating new a
 
 \subsubsection{Improved Ephemeredes}
 
-The GPS position solution can be directly improved by using an improved satellite ephemeris. The U.S National Geospatial-Intelligence Agency (NGA) generates and makes publicly available a number of precise ephemeredes, which are more accurate satellite orbits. Satellite orbits described by the broadcast navigation message have an error on the order of meters; the precise ephemeris has decimeter accuracy. The International GPS Service (IGS) is a global civil cooperative effort that also provides free precise ephemeris products. Global networks of tracking stations produce the observations that make generation of the precise ephemeredes possible.
+The GPS position solution can be directly improved by using an improved satellite ephemeris. The U.S National Geospatial-Intelligence Agency (NGA) generates and makes publicly available a number of precise ephemeredes, which are more accurate satellite orbits \cite{nga:iongnss06}, \cite{nga:website}. Satellite orbits described by the broadcast navigation message have an error on the order of meters; the precise ephemeris has decimeter accuracy. The International GPS Service (IGS) is a global, civil cooperative effort that also provides free precise ephemeris products \cite{igs:reference}. Global networks of tracking stations produce the observations that make generation of the precise ephemeredes possible.
 
 
 \section{GPS Data Sources}
 
-GPS observation data from many tracking stations are freely available on the Internet. Many such stations contribute their data to the IGS. In addition, many networks of stations also post their data to the Internet; for example the Australian Regional GPS Network (ARGN) and global cooperatives such as NASA's Crust Dynamics Data Information System (CDIS).
+GPS observation data from many tracking stations are freely available on the Internet. Many such stations contribute their data to the IGS. In addition, many networks of stations also post their data to the Internet; for example the Australian Regional GPS Network (ARGN) \cite{argn:website} and global cooperatives such as NASA's Crust Dynamics Data Information System (CDDIS) \cite{cddis:website}.
 
 \subsection{GPS File Formats}
 Typically GPS observations are recorded in a standardized format developed by and for researchers. Fundamental to this format is the idea that the data should be independent of the type of receiver that collected it. For this reason the format is called Receiver INdependent Exchange, or RINEX. Another format associated with GPS is SP-3, which records the precise ephemeris. The GPSTk supports both RINEX and SP-3 formats.
@@ -52,6 +52,7 @@ As a public standard, the NMEA-0183 format has given the user of GPS freedom of 
 
 Closed standards are also common. SiRF is a proprietary protocol that is licensed to receiver manufacturers. Many receiver manufacturers implement their own binary protocols. While some of these protocols have been opened to the public, some have been reverse engineered. 
 
+\putbib[gpstk]
 
 
 

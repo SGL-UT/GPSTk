@@ -1,10 +1,12 @@
 \chapter{GPS File Formats}
+
 A variety of file formats are supported within the GPSTk.  
 The file formats generally store GPS observation data or data related 
 to processing of GPS observables.  In this section, a summary of the 
 file formats supported within the GPSTk is presented along with a brief 
 rationale of why each format is supporting within the GPSTk and where to
 find additional information on the format.  
+
 \section{RINEX}
 The Receiver INdependent EXchange (RINEX) format was developed by the
 National Geodetic Survey (NGS) in the U.S. and the University of Berne 
@@ -13,8 +15,10 @@ storage of GPS observations, GPS navigation message information,
 and meteorological data associated with GPS observations.  
 GPSTk contains classes to both read and write RINEX V2.1 data files 
 of all types (observation, navigation message, and meteorological). 
-For details on the definition of the RINEX format, 
-see http://www.ngs.noaa.gov/CORS/Rinex2.html.
+RINEX has undergone a number of revisions since its inception. Each
+revision is defined using a standard \cite{rinex1format}, \cite{rinex2format},
+\cite{rinex211format}, \cite{rinex300format}.
+
 \section{FIC}
 The Floating, Integer, Charater (FIC) format was developed in the mid-80’s as
 a relatively machine-independent way to store GPS observation and navigation
@@ -24,19 +28,15 @@ and use of the observation records within the FIC format faded away.
 However, the FIC records associated with GPS navigation message data are
 still supported within the GPSTk because these records retain some data 
 quantities that are not contained within the RINEX navigation message file.
-(For example, RINEX makes no provision for storing the almanac data
-contained in Subframe 4 and Subframe 5.)  For more information on the 
-origins of FIC see V. Dan Scott and James R. Clynch, \textit{ A Proposed Standardized
-Exchange Format for Navstar GPS Geodetic Data}, Proceedings for the Fourth 
-International Geodetic Symposium on Satellite Positioning, Austin, Texas, 
-April 1986.  
-For a definition of the format, see “The Floating, Integer, 
-Character Format Definition” by ARL:UT (which should be stored in the same
-location as this document). 
+For example, RINEX makes few provisions for storing the almanac data
+contained in Subframe 4 and Subframe 5. Like RINEX, a standards document
+defines FIC \cite{ficproposal}.
+
 \section{SP-3}
 The SP-3 format stores ephemeris information for satellites.
 Usually SP-3 is used for storage of GPS precise ephemerides.
 GPSTk supports both SP-3a and SP3-c formats.  SP-3 was originally designed
-by NGS.  For a definition as used by NGA and IGS see 
-http://earth-info.nga.mil/GandG/sathtml/sp3format.html and
-http://www.ngs.noaa.gov/GPS/SP3\_format.html. 
+by NGS.  Standards documents describe the specific details of the SP-3 formats
+\cite{sp3format:ngs}, \cite{sp3format:igscb}.
+
+\putbib[gpstk]
