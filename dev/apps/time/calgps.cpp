@@ -1,12 +1,13 @@
 #pragma ident "$Id$"
 
-
-// FIXME. This calendar app should simplify by updating it 
-//        to use the new TimeTag class. Not sure which one to user now tho..
-
 #include <iostream>
 #include <iomanip>
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
+#include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
+#include "TimeConstants.hpp"
+#include "TimeString.hpp"
+#include "SystemTime.hpp"
 #include "CommandOptionParser.hpp"
 
 using namespace std;
@@ -14,12 +15,13 @@ using namespace gpstk;
 
 void printMonth(short month, short year)
 {
-   DayTime thisDay(year, month, 1, 0, 0, 0.0);
-
-   short gpsweek = thisDay.GPSfullweek();
-   short dow     = thisDay.GPSday();
+   CivilTime ct(year, month, 1, 0, 0, 0.0);
+   CommonTime thisDay(ct);
+   GPSWeekSecond gws(thisDay);
+   int gpsweek = gws.week;
+   short dow   = static_cast<long>(gws.sow) / SEC_PER_DAY; 
   
-   cout << endl << thisDay.printf("%26b %4Y") << endl;
+   cout << endl << ct.printf("%26b %4Y") << endl;
 
    bool done = false;
    do 
@@ -29,10 +31,11 @@ void printMonth(short month, short year)
       
       while (thisDow < 7)
       {
-         thisDay = DayTime(gpsweek, thisDow* gpstk::DayTime::SEC_DAY);
-         short thisMonth = thisDay.month();  
+         thisDay = GPSWeekSecond(gpsweek, thisDow*SEC_PER_DAY ).convertToCommonTime();
+         CivilTime ct(thisDay);
+         int thisMonth = ct.month;  
          if (thisMonth==month)
-	   cout << thisDay.printf("%2d-%03j ");
+	   cout << printTime(thisDay, "%2d-%03j ");
          else 
            cout << "       ";
 
@@ -42,10 +45,11 @@ void printMonth(short month, short year)
       cout << endl;
 
       gpsweek++;
-      thisDay = DayTime(gpsweek, 0.0);
-      
-      done = ( (thisDay.month()>month) || 
-               (thisDay.year() >year)     );
+      thisDay = GPSWeekSecond(gpsweek, 0.0).convertToCommonTime();
+      CivilTime ct(thisDay);
+    
+      done = ( (ct.month > month) || 
+               (ct.year  > year)     );
    } while (!done);
   
    return;
@@ -77,11 +81,12 @@ int main(int argc, char* argv[])
       }
 
          // Default condition is to just print this month
-      DayTime now;
-      short firstMonth = now.month();
-      short lastMonth  = now.month();
-      short firstYear  = now.year();
-      short lastYear   = now.year();
+      SystemTime st;
+      CivilTime now(st);
+      int firstMonth = now.month;
+      int lastMonth  = now.month;
+      int firstYear  = now.year;
+      int lastYear   = now.year;
 
       if (thisYearOption.getCount())
       {
@@ -116,9 +121,11 @@ int main(int argc, char* argv[])
          }
       }
       
+      //cout << "first month " << firstMonth << " " << firstYear << endl;
+      //cout << "last month " << lastMonth << " " << lastYear << endl;
 
       for (short m=firstMonth, y=firstYear;
-          (m<=lastMonth) && (y<=lastYear); 
+          (y<lastYear) || ((m<=lastMonth) && (y==lastYear)); 
            m++)
       {
          if (m==13)
