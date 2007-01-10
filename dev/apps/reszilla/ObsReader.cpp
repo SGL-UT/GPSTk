@@ -158,11 +158,11 @@ namespace gpstk
    bool ObsReader::operator()()
    {
       if (inputType == FFIdentifier::tRinexObs)
-         return true;
+         return ros;
       else if (inputType == FFIdentifier::tMDP)
-         return true;
+         return mdps;
       else if (inputType == FFIdentifier::tSMODF)
-         return true;
+         return smos;
       return false;
    }
 } // end of namespace gpstk
