@@ -54,9 +54,14 @@ CommandOptionNoArg
  CommandOptionParser cop(appDesc);
  cop.parseOptions(argc, argv);
 
- if (helpOption.getCount() || cop.hasErrors())
+ if (helpOption.getCount())
  {
-    if (cop.hasErrors())
+    cop.displayUsage(cout);
+    exit(0);
+ }
+ 
+ if (cop.hasErrors())
+ {
     cop.dumpErrors(cout);
     cop.displayUsage(cout);
     exit(0);
