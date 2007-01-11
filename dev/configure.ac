@@ -53,6 +53,7 @@ AC_CONFIG_FILES([Makefile
                  apps/ionosphere/Makefile
                  apps/MDPtools/Makefile
                  apps/mergetools/Makefile
+                 apps/multipath/Makefile
                  apps/reszilla/Makefile
                  apps/time/Makefile
                  apps/positioning/Makefile
