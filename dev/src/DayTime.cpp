@@ -1182,8 +1182,6 @@ namespace gpstk
                   // remove that character now and other whitespace
                s.erase(0,1);
                f.erase(0,1);
-               stripLeading(s);
-               stripLeading(f);
             }
             
                // check just in case we hit the end of either string...
@@ -1193,47 +1191,51 @@ namespace gpstk
                // lose the '%' in f...
             f.erase(0,1);
             
-               // if the format string is like %03f, get '3' as the field
-               // length.
+            // if the format string is like %03f, get '3' as the field length.
             string::size_type fieldLength = string::npos;
             
             if (!isalpha(f[0]))
             {
+               // This is where we have a specified field length so we should
+               // not throw away any more characters
                fieldLength = asInt(f);
                
-                  // remove everything else up to the next character
-                  // (in "%03f", that would be 'f')
+               // remove everything else up to the next character
+               // (in "%03f", that would be 'f')
                while ((!f.empty()) && (!isalpha(f[0])))
                   f.erase(0,1);
                if (f.empty())
                   break;
             }
-            
-               // finally, get the character that should end this field, if any
-            char delimiter = 0;
-            if (f.size() > 1)
+            else
             {
-               if (f[1] != '%')
+               // finally, get the character that should end this field, if any
+               char delimiter = 0;
+               if (f.size() > 1)
                {
-                  delimiter = f[1];
-                  
-                  if (fieldLength == string::npos)
+                  if (f[1] != '%')
+                  {
+                     delimiter = f[1];
+                     
+                     stripLeading(s);
                      fieldLength = s.find(delimiter,0);
-               }
+                  }
+
                   // if the there is no delimiter character and the next field
                   // is another part of the time to parse, assume the length
                   // of this field is 1
-               else if (fieldLength == string::npos)
-               {
-                  fieldLength = 1;
+                  else if (fieldLength == string::npos)
+                  {
+                     fieldLength = 1;
+                  }
                }
             }
-            
-               // figure out the next string to be removed.  if there is a
-               // field length, use that first
+
+            // figure out the next string to be removed.  if there is a
+            // field length, use that first
             string toBeRemoved = s.substr(0, fieldLength);
             
-               // based on char at f[0], convert input to temporary variable
+            // based on char at f[0], convert input to temporary variable
             switch (f[0]) 
             {
                case 'Q':
@@ -1442,11 +1444,6 @@ namespace gpstk
             
                // remove the character we processed from f
             f.erase(0,1);    
-            
-               // check for whitespace again...
-            stripLeading(f);
-            stripLeading(s);
-            
          }
          
          if ( s.length() != 0  ) 
