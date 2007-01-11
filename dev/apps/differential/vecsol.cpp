@@ -186,6 +186,12 @@ void Solve(gpstk::Matrix <double> N, gpstk::Matrix <double> const b,
 	for (int k = MaxUnkn; k < unknowns; k++) {
 	    if (fixed[k] == FIX_BOTH)
 		N(k,k) += 1.0E8; // absolutely fixed
+	    // Note: we store separately the bias unknowns (ambiuguities) for L1 and
+	    // L2. However, in the normal matrix we have them jointly. This limits
+	    // what we can do here with weighting in case of a widelane fix.
+	    // Obviously it would be better to have them separately in the normal 
+	    // matrix also, but then the solution effort would be 8x as expensive
+	    // numerically.
 	    if (fixed[k] == FIX_WIDELANE)
 		N(k,k) *= 1.25; // upgraded
 	}
