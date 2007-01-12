@@ -70,89 +70,89 @@ namespace gpstk
             // strings so when we reach 0, we're done
          while( !s.empty() && !f.empty() )
          {
-               // Remove everything in f and s up to the first % in f
-               // (these parts of the strings must be identical or this will 
-               // break after it tries to remove it!)
+            // Remove everything in f and s up to the first % in f
+            // (these parts of the strings must be identical or this will 
+            // break after it tries to remove it!)
             while ( !s.empty() && 
                     !f.empty() && 
                     ( f[0] != '%' ) )
             {
-                  // remove that character now and other whitespace
-               s.erase( 0, 1 );
-               f.erase( 0, 1 );
-               stripLeading( s );
-               stripLeading( f );
+               // remove that character now and other whitespace
+               s.erase(0,1);
+               f.erase(0,1);
             }
          
-               // check just in case we hit the end of either string...
+            // check just in case we hit the end of either string...
             if ( s.empty() || f.empty() )
-            {
                break;
-            }
             
-               // lose the '%' in f...
+            // lose the '%' in f...
             f.erase( 0, 1 );
             
-               // If the format string is %03f, get '3' as the field length.
             std::string::size_type fieldLength = std::string::npos;
-            
+            char delimiter = 0;
+
+            if (false)
+               std::cout << "--------------" << std::endl
+                         << "f:\"" << f << "\"" << std::endl
+                         << "s:\"" << s << "\"" << std::endl;
+
             if( !isalpha( f[0] ) )
             {
+               // If the format string is %03f, get '3' as the field length.
+               // This is where we have a specified field length so we should
+               // not throw away any more characters
                fieldLength = asInt( f );
                
-                  // remove everything else up to the next character
-                  // (in "%03f", that would be 'f')
-               while ( ( !f.empty() ) && 
-                       ( !isalpha( f[0] ) ) )
-               {
+               // remove everything else up to the next character
+               // (in "%03f", that would be 'f')
+               while ( !f.empty() && !isalpha( f[0] ) )
                   f.erase( 0, 1 );
-               }
                
                if ( f.empty() )
-               {
                   break;
-               }
             }
-            
-               // finally, get the character that should end this field, if any
-            char delimiter = 0;
-            if ( f.size() > 1 )
+            else
             {
-               if ( f[1] != '%' )
+               // When there is no field width specified, there must be a
+               // delimiter for the field.
+               if ( f.size() > 1 )
                {
-                  delimiter = f[1];
-                  
-                  if ( fieldLength == std::string::npos )
+                  if ( f[1] != '%' )
                   {
+                     delimiter = f[1];
+                  
+                     stripLeading(s);
                      fieldLength = s.find( delimiter, 0 );
                   }
-               }
-                  // if the there is no delimiter character and the next field
-                  // is another part of the time to parse, assume the length
-                  // of this field is 1
-               else if ( fieldLength == std::string::npos )
-               {
-                  fieldLength = 1;
+                  else
+                  {
+                     // if the there is no delimiter character and the next field
+                     // is another part of the time to parse, assume the length
+                     // of this field is 1
+                     fieldLength = 1;
+                  }
                }
             }
-            
-               // figure out the next string to be removed.  if there is a field
-               // length, use that first
+
+            // Copy the next string to be removed.
             std::string value( s.substr( 0, fieldLength ) );
             
-               // based on char at f[0], we know what to do...
+            // based on char at f[0], we know what to do...
             info[ f[0] ] = value;
             
                // remove the part of str that we processed
             stripLeading( s, value, 1 );
             
-               // remove the character we processed from fmt
-            f.erase( 0, 1 );    
-            
-               // check for whitespace again...
-            stripLeading( f );
-            stripLeading( s );
+            // remove the character we processed from fmt
+            f.erase( 0, 1 );
 
+            // And remove the delimiter if one was used
+            if (delimiter != 0)
+            {
+               f.erase(0,1);
+               s.erase(0,1);
+            }
          } // end of while( (s.size() > 0) && (f.size() > 0) )
       }
       catch( gpstk::StringUtils::StringException& se )

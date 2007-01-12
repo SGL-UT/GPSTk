@@ -24,6 +24,7 @@
 //
 //============================================================================
 
+#include <cmath>
 #include "CivilTime.hpp"
 #include "TimeConverters.hpp"
 
@@ -122,9 +123,8 @@ namespace gpstk
       throw()
    {
       using namespace gpstk::StringUtils;
-      
-      for( IdToValue::const_iterator i = info.begin();
-           i != info.end(); i++ )
+
+      for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
          switch( i->first )
          {
@@ -193,7 +193,10 @@ namespace gpstk
                break;
                
             case 'S':
+            case 'f':
                second = asDouble( i->second );
+               if (i->first == 'S')
+                  second = floor(second);
                break;
                
             default:
