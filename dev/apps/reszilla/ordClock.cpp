@@ -55,6 +55,7 @@ protected:
 
 private:
    CommandOptionNoArg useWartsOption, estimateOnlyOption, debiasOnlyOption;
+   CommandOptionWithAnyArg clockSource;
 };
 
 
@@ -62,7 +63,7 @@ private:
 // The constructor basically just sets up all the command line options
 //-----------------------------------------------------------------------------
 OrdClock::OrdClock() throw()
-   : OrdApp("clkGen", "Generates clock estimates for each epoch of ords."),
+   : OrdApp("ordClock", "Generates clock estimates for each epoch of ords."),
      useWartsOption('w', "use-warts",
         "Use warts in the clock solution. The default is "
         "to not use warts (type=20)."),
@@ -72,7 +73,10 @@ OrdClock::OrdClock() throw()
         " the bias and remove the it from the ords."),
      debiasOnlyOption('b', "debias-only",
         "Only remove the bias from the ords. "
-        "The default is to both estimate the bias and remove the it from the ords.")
+        "The default is to both estimate the bias and remove the it from the ords."),
+     clockSource('c', "clock-source",
+        "An ord file to read the receiver clock offsets from. This "
+        "option implies the debiasOnlyOption. So maybe we sould remove it???")
 {}
 
 
@@ -103,6 +107,22 @@ void OrdClock::process()
    if (debiasOnlyOption.getCount())
       estimate = false;
 
+   map<DayTime, double> clocks;
+   if (clockSource.getCount())
+   {
+      string fn = clockSource.getValue()[0];
+      if (debugLevel)
+         cout << "# Reading clocks from " << fn << endl;
+      std::ifstream clkStream(fn.c_str(), ios::in);
+      ORDEpoch epoch;
+      while (clkStream)
+      {
+         epoch = read(clkStream);
+         clocks[epoch.time] = epoch.clockOffset;
+      }
+      estimate = false;
+   }
+
    while (input)
    {
       ORDEpoch ordEpoch = read(input);
@@ -112,6 +132,12 @@ void OrdClock::process()
          cm.addEpoch(ordEpoch);
          if (cm.isOffsetValid())
             ordEpoch.clockOffset = cm.getOffset();
+      }
+      else
+      {
+         map<DayTime, double>::const_iterator o=clocks.find(ordEpoch.time);
+         if (o != clocks.end())
+            ordEpoch.clockOffset = o->second;
       }
 
       if (debias && ordEpoch.clockOffset.is_valid())
