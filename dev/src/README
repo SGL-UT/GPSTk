@@ -10,6 +10,8 @@
  * GPS ToolKit (GPSTk), produced by the Space and Geophysics Laboratory (SGL)
  * of Applied Research Laboratories, The University of Texas at Austin (ARL:UT).
  *
+ * This documentation is generated nightly from the GPSTk Subversion repository.
+ *
  * \section intro Introduction
  * GPSTK is a library of support routines designed for use by programmers
  * developing applications that read and write (particularly in RINEX format),

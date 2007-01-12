@@ -1,3 +1,12 @@
+#
+#  The version in Subversion is optimized for the GPSTk website.  Note that 
+#  any changes to this file will effect the documentation display at
+#  http://www.gpstk.org/doxygen/.
+#
+#  This file should work locally without modification however it will have 
+#  a 'search' entry that will be nonfunctional unless hosted by a web server.
+#
+
 # Doxyfile 1.3.9.1
 
 # This file describes the settings to be used by the documentation system
