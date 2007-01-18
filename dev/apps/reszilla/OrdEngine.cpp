@@ -245,11 +245,27 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
          if (!keepUnhealthy && ord.getHealth().is_valid() && ord.getHealth())
             ord.wonky |= 0x0008;
          
-         if (std::abs(ord.getTrop()) > 100)
-            ord.wonky |= 0x0010;
-
-         if (ord.getElevation() <= 0.05)
-            ord.wonky |= 0x0020;
+         try
+         {
+            if (std::abs(ord.getTrop()) > 100)
+              ord.wonky |= 0x0010;
+         }
+         catch(gpstk::Exception &e)
+         {
+            if (verboseLevel>2)
+              cout << "#" << e << endl;
+         }
+         
+         try
+         {
+            if (ord.getElevation() <= 0.05)
+              ord.wonky |= 0x0020;
+         }
+         catch(gpstk::Exception &e)
+         {
+            if (verboseLevel>2)
+              cout << "#" << e << endl;
+         }         
       } // end looping over each SV in this epoch
 
    }
