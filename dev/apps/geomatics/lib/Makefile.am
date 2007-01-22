@@ -1,3 +1,6 @@
 INCLUDES = -I../../../src/
-noinst_LTLIBRARIES = libgeomatics.la
-libgeomatics_la_SOURCES = DDid.cpp GDCconfiguration.cpp PhaseWindup.cpp RobustStats.cpp DiscCorr.cpp GeodeticFrames.cpp PreciseRange.cpp SatPass.cpp EarthOrientation.cpp GSatID.cpp random.cpp SRI.cpp format.cpp Namelist.cpp SRIFilter.cpp
+lib_LTLIBRARIES = libgeomatic.la
+libgeomatic_la_SOURCES = DDid.cpp DiscCorr.cpp EarthOrientation.cpp \
+GDCconfiguration.cpp GSatID.cpp GeodeticFrames.cpp Namelist.cpp \
+PhaseWindup.cpp PreciseRange.cpp RobustStats.cpp SRI.cpp SRIFilter.cpp \
+SatPass.cpp format.cpp random.cpp

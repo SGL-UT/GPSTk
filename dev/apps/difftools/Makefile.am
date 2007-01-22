@@ -1,7 +1,7 @@
 INCLUDES = -I../../src
 LDADD = ../../src/libgpstk.la
 
-noinst_PROGRAMS = rowdiff rnwdiff rmwdiff ephdiff ficdiff
+bin_PROGRAMS = rowdiff rnwdiff rmwdiff ephdiff ficdiff
 
 rowdiff_SOURCES = rowdiff.cpp
 rnwdiff_SOURCES = rnwdiff.cpp

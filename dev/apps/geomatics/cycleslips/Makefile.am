@@ -1,6 +1,6 @@
 INCLUDES = -I../../../src -I../lib
-LDADD = ../../../src/libgpstk.la ../lib/libgeomatics.la
+LDADD = ../../../src/libgpstk.la ../lib/libgeomatic.la
 
-noinst_PROGRAMS = DiscFix
+bin_PROGRAMS = DiscFix
 
 DiscFix_SOURCES = DiscFix.cpp

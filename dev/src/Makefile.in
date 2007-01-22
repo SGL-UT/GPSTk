@@ -14,6 +14,7 @@
 
 @SET_MAKE@
 
+
 SOURCES = $(libgpstk_la_SOURCES)
 
 srcdir = @srcdir@
@@ -39,39 +40,51 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = src
-DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = README $(incl_HEADERS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
-LTLIBRARIES = $(noinst_LTLIBRARIES)
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(incldir)"
+libLTLIBRARIES_INSTALL = $(INSTALL)
+LTLIBRARIES = $(lib_LTLIBRARIES)
 libgpstk_la_LIBADD =
-am_libgpstk_la_OBJECTS = Exception.lo BinUtils.lo VectorBase.lo \
-	DayTime.lo Triple.lo Geodetic.lo ECEF.lo Xvt.lo EngNav.lo \
-	EngEphemeris.lo EngAlmanac.lo AlmOrbit.lo BCEphemerisStore.lo \
-	SP3EphemerisStore.lo AlmanacStore.lo TropModel.lo IonoModel.lo \
-	IonoModelStore.lo FFStream.lo FFData.lo RinexMetData.lo \
-	RinexMetHeader.lo RinexObsData.lo RinexObsHeader.lo \
-	RinexNavData.lo RinexNavHeader.lo RinexSatID.lo SP3Data.lo \
-	SP3Header.lo SP3SatID.lo FileSpec.lo FileHunter.lo getopt.lo \
-	getopt1.lo CommandOption.lo CommandOptionParser.lo \
-	CommandOptionWithTimeArg.lo CommandOptionWithCommonTimeArg.lo \
-	CommandOptionWithPositionArg.lo CommonTime.lo \
-	BasicFramework.lo LoopedFramework.lo EphemerisRange.lo \
-	TabularEphemerisStore.lo RinexEphemerisStore.lo RungeKutta4.lo \
-	MSCData.lo SMODFData.lo LinearClockModel.lo ObsClockModel.lo \
-	ObsRngDev.lo FICData.lo FICHeader.lo CodeBuffer.lo \
-	GenXSequence.lo SVPCodeGen.lo X1Sequence.lo X2Sequence.lo \
-	GPSZcount.lo Position.lo PRSolution.lo RinexUtilities.lo \
-	Expression.lo Bancroft.lo SolverLMS.lo SolverWMS.lo DOP.lo \
-	WxObsMap.lo ModeledReferencePR.lo ModeledPR.lo \
-	SimpleIURAWeight.lo MOPSWeight.lo BinexData.lo TimeString.lo \
-	TimeTag.lo JulianDate.lo MJD.lo ANSITime.lo GPSZcount.lo \
-	GPSZcount29.lo GPSZcount32.lo GPSWeekZcount.lo UnixTime.lo \
-	CivilTime.lo SystemTime.lo GPSEpochWeekSecond.lo YDSTime.lo \
-	GPSWeekSecond.lo TimeConverters.lo
+am_libgpstk_la_OBJECTS = getopt.lo getopt1.lo ANSITime.lo AlmOrbit.lo \
+	AlmanacStore.lo BCEphemerisStore.lo Bancroft.lo \
+	BasicFramework.lo BinUtils.lo BinexData.lo CivilTime.lo \
+	CodeBuffer.lo CommandOption.lo CommandOptionParser.lo \
+	CommandOptionWithCommonTimeArg.lo \
+	CommandOptionWithPositionArg.lo CommandOptionWithTimeArg.lo \
+	CommonTime.lo DOP.lo DayTime.lo ECEF.lo EngAlmanac.lo \
+	EngEphemeris.lo EngNav.lo EphemerisRange.lo Exception.lo \
+	Expression.lo FFData.lo FFStream.lo FICData.lo FICData109.lo \
+	FICData162.lo FICData62.lo FICData9.lo FICHeader.lo \
+	FileHunter.lo FileSpec.lo GPSEpochWeekSecond.lo \
+	GPSWeekSecond.lo GPSWeekZcount.lo GPSZcount.lo GPSZcount29.lo \
+	GPSZcount32.lo GenXSequence.lo Geodetic.lo IonoModel.lo \
+	IonoModelStore.lo JulianDate.lo LinearClockModel.lo \
+	LoopedFramework.lo MJD.lo MOPSWeight.lo MSCData.lo \
+	ModeledPR.lo ModeledReferencePR.lo ObsClockModel.lo \
+	ObsEpochMap.lo ObsID.lo ObsRngDev.lo PRSolution.lo Position.lo \
+	RACRotation.lo RinexEphemerisStore.lo RinexMetData.lo \
+	RinexMetHeader.lo RinexNavData.lo RinexNavHeader.lo \
+	RinexObsData.lo RinexObsHeader.lo RinexObsID.lo RinexSatID.lo \
+	RinexUtilities.lo RungeKutta4.lo SMODFData.lo SP3Data.lo \
+	SP3EphemerisStore.lo SP3Header.lo SP3SatID.lo \
+	SVExclusionList.lo SVPCodeGen.lo SimpleIURAWeight.lo \
+	SolverLMS.lo SolverWMS.lo SystemTime.lo \
+	TabularEphemerisStore.lo TimeConverters.lo TimeString.lo \
+	TimeTag.lo Triple.lo TropModel.lo UnixTime.lo VectorBase.lo \
+	WxObsMap.lo X1Sequence.lo X2Sequence.lo Xvt.lo YDSTime.lo
 libgpstk_la_OBJECTS = $(am_libgpstk_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -94,6 +107,8 @@ CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libgpstk_la_SOURCES)
 DIST_SOURCES = $(libgpstk_la_SOURCES)
+inclHEADERS_INSTALL = $(INSTALL_HEADER)
+HEADERS = $(incl_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -195,29 +210,76 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-noinst_LTLIBRARIES = libgpstk.la
-libgpstk_la_SOURCES = Exception.cpp BinUtils.cpp VectorBase.cpp \
-DayTime.cpp Triple.cpp Geodetic.cpp ECEF.cpp Xvt.cpp EngNav.cpp \
-EngEphemeris.cpp EngAlmanac.cpp AlmOrbit.cpp BCEphemerisStore.cpp \
-SP3EphemerisStore.cpp AlmanacStore.cpp TropModel.cpp IonoModel.cpp \
-IonoModelStore.cpp FFStream.cpp FFData.cpp RinexMetData.cpp \
-RinexMetHeader.cpp RinexObsData.cpp RinexObsHeader.cpp RinexNavData.cpp \
-RinexNavHeader.cpp RinexSatID.cpp SP3Data.cpp SP3Header.cpp SP3SatID.cpp \
-FileSpec.cpp FileHunter.cpp getopt.c getopt1.c CommandOption.cpp \
-CommandOptionParser.cpp CommandOptionWithTimeArg.cpp \
-CommandOptionWithCommonTimeArg.cpp CommandOptionWithPositionArg.cpp \
-CommonTime.cpp BasicFramework.cpp LoopedFramework.cpp EphemerisRange.cpp \
-TabularEphemerisStore.cpp RinexEphemerisStore.cpp RungeKutta4.cpp \
-MSCData.cpp SMODFData.cpp LinearClockModel.cpp ObsClockModel.cpp \
-ObsRngDev.cpp FICData.cpp FICHeader.cpp CodeBuffer.cpp GenXSequence.cpp \
-SVPCodeGen.cpp X1Sequence.cpp X2Sequence.cpp GPSZcount.cpp Position.cpp \
-PRSolution.cpp RinexUtilities.cpp Expression.cpp Bancroft.cpp \
-SolverLMS.cpp SolverWMS.cpp DOP.cpp WxObsMap.cpp ModeledReferencePR.cpp \
-ModeledPR.cpp SimpleIURAWeight.cpp MOPSWeight.cpp BinexData.cpp \
-TimeString.cpp TimeTag.cpp JulianDate.cpp MJD.cpp ANSITime.cpp \
-GPSZcount.cpp GPSZcount29.cpp GPSZcount32.cpp GPSWeekZcount.cpp \
-UnixTime.cpp CivilTime.cpp SystemTime.cpp GPSEpochWeekSecond.cpp \
-YDSTime.cpp GPSWeekSecond.cpp TimeConverters.cpp
+lib_LTLIBRARIES = libgpstk.la
+libgpstk_la_SOURCES = getopt.c getopt1.c ANSITime.cpp AlmOrbit.cpp \
+AlmanacStore.cpp BCEphemerisStore.cpp Bancroft.cpp BasicFramework.cpp \
+BinUtils.cpp BinexData.cpp CivilTime.cpp CodeBuffer.cpp CommandOption.cpp \
+CommandOptionParser.cpp CommandOptionWithCommonTimeArg.cpp \
+CommandOptionWithPositionArg.cpp CommandOptionWithTimeArg.cpp CommonTime.cpp \
+DOP.cpp DayTime.cpp ECEF.cpp EngAlmanac.cpp EngEphemeris.cpp EngNav.cpp \
+EphemerisRange.cpp Exception.cpp Expression.cpp FFData.cpp FFStream.cpp \
+FICData.cpp FICData109.cpp FICData162.cpp FICData62.cpp FICData9.cpp \
+FICHeader.cpp FileHunter.cpp FileSpec.cpp GPSEpochWeekSecond.cpp \
+GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp GPSZcount29.cpp \
+GPSZcount32.cpp GenXSequence.cpp Geodetic.cpp IonoModel.cpp \
+IonoModelStore.cpp JulianDate.cpp LinearClockModel.cpp LoopedFramework.cpp \
+MJD.cpp MOPSWeight.cpp MSCData.cpp ModeledPR.cpp ModeledReferencePR.cpp \
+ObsClockModel.cpp ObsEpochMap.cpp ObsID.cpp ObsRngDev.cpp PRSolution.cpp \
+Position.cpp RACRotation.cpp RinexEphemerisStore.cpp RinexMetData.cpp \
+RinexMetHeader.cpp RinexNavData.cpp RinexNavHeader.cpp RinexObsData.cpp \
+RinexObsHeader.cpp RinexObsID.cpp RinexSatID.cpp RinexUtilities.cpp \
+RungeKutta4.cpp SMODFData.cpp SP3Data.cpp SP3EphemerisStore.cpp \
+SP3Header.cpp SP3SatID.cpp SVExclusionList.cpp SVPCodeGen.cpp \
+SimpleIURAWeight.cpp SolverLMS.cpp SolverWMS.cpp SystemTime.cpp \
+TabularEphemerisStore.cpp TimeConverters.cpp TimeString.cpp TimeTag.cpp \
+Triple.cpp TropModel.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp \
+X1Sequence.cpp X2Sequence.cpp Xvt.cpp YDSTime.cpp
+
+incldir = $(includedir)/gpstk
+incl_HEADERS = ANSITime.hpp AlmOrbit.hpp AlmanacStore.hpp \
+BCEphemerisStore.hpp Bancroft.hpp BasicFramework.hpp BinUtils.hpp \
+BinexData.hpp BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp \
+CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp \
+CommandOption.hpp CommandOptionParser.hpp \
+CommandOptionWithCommonTimeArg.hpp CommandOptionWithPositionArg.hpp \
+CommandOptionWithTimeArg.hpp CommonTime.hpp DOP.hpp DayTime.hpp \
+ECEF.hpp EngAlmanac.hpp EngEphemeris.hpp EngNav.hpp EphemerisRange.hpp \
+EphemerisStore.hpp EpochClockModel.hpp Exception.hpp Expression.hpp \
+ExtractC1.hpp ExtractCombinationData.hpp ExtractD1.hpp ExtractD2.hpp \
+ExtractData.hpp ExtractL1.hpp ExtractL2.hpp ExtractLC.hpp ExtractP1.hpp \
+ExtractP2.hpp ExtractPC.hpp FFBinaryStream.hpp FFData.hpp FFStream.hpp \
+FFStreamError.hpp FFTextStream.hpp FICAStream.hpp FICBase.hpp FICData.hpp \
+FICData109.hpp FICData162.hpp FICData62.hpp FICData9.hpp \
+FICFilterOperators.hpp FICHeader.hpp FICStream.hpp FICStreamBase.hpp \
+FileFilter.hpp FileFilterFrame.hpp FileFilterFrameWithHeader.hpp \
+FileHunter.hpp FileSpec.hpp FileStore.hpp FileUtils.hpp \
+GPSEpochWeekSecond.hpp GPSGeoid.hpp GPSWeekSecond.hpp GPSWeekZcount.hpp \
+GPSZcount.hpp GPSZcount29.hpp GPSZcount32.hpp GenXSequence.hpp \
+Geodetic.hpp GeoidModel.hpp IonoModel.hpp IonoModelStore.hpp \
+JulianDate.hpp LinearClockModel.hpp LoopedFramework.hpp MJD.hpp \
+MOPSWeight.hpp MSCData.hpp MSCStream.hpp MathBase.hpp Matrix.hpp \
+MatrixBase.hpp MatrixBaseOperators.hpp MatrixFunctors.hpp \
+MatrixImplementation.hpp MatrixOperators.hpp MiscMath.hpp ModeledPR.hpp \
+ModeledPseudorangeBase.hpp ModeledReferencePR.hpp ORDEpoch.hpp \
+ObsClockModel.hpp ObsEpochMap.hpp ObsID.hpp ObsRngDev.hpp PCodeConst.hpp \
+PRSolution.hpp PolyFit.hpp Position.hpp RACRotation.hpp RTFileFrame.hpp \
+RinexEphemerisStore.hpp RinexMetBase.hpp RinexMetData.hpp \
+RinexMetFilterOperators.hpp RinexMetHeader.hpp RinexMetStream.hpp \
+RinexNavBase.hpp RinexNavData.hpp RinexNavFilterOperators.hpp \
+RinexNavHeader.hpp RinexNavStream.hpp RinexObsBase.hpp RinexObsData.hpp \
+RinexObsFilterOperators.hpp RinexObsHeader.hpp RinexObsID.hpp \
+RinexObsStream.hpp RinexSatID.hpp RinexUtilities.hpp RungeKutta4.hpp \
+SMODFData.hpp SMODFStream.hpp SP3Base.hpp SP3Data.hpp \
+SP3EphemerisStore.hpp SP3Header.hpp SP3SatID.hpp SP3Stream.hpp \
+SVExclusionList.hpp SVPCodeGen.hpp SatID.hpp SimpleIURAWeight.hpp \
+SolverBase.hpp SolverLMS.hpp SolverWMS.hpp Stats.hpp StringUtils.hpp \
+SystemTime.hpp TabularEphemerisStore.hpp TimeConstants.hpp \
+TimeConverters.hpp TimeString.hpp TimeTag.hpp Triple.hpp TropModel.hpp \
+UnixTime.hpp ValidType.hpp Vector.hpp VectorBase.hpp \
+VectorBaseOperators.hpp VectorOperators.hpp WGS84Geoid.hpp WeightBase.hpp \
+WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp Xvt.hpp YDSTime.hpp \
+convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp \
+stl_helpers.hpp
 
 all: all-am
 
@@ -252,17 +314,35 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	test -z "$(libdir)" || $(mkdir_p) "$(DESTDIR)$(libdir)"
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    f=$(am__strip_dir) \
+	    echo " $(LIBTOOL) --mode=install $(libLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) '$$p' '$(DESTDIR)$(libdir)/$$f'"; \
+	    $(LIBTOOL) --mode=install $(libLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) "$$p" "$(DESTDIR)$(libdir)/$$f"; \
+	  else :; fi; \
+	done
 
-clean-noinstLTLIBRARIES:
-	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
-	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+uninstall-libLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	@set -x; list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  p=$(am__strip_dir) \
+	  echo " $(LIBTOOL) --mode=uninstall rm -f '$(DESTDIR)$(libdir)/$$p'"; \
+	  $(LIBTOOL) --mode=uninstall rm -f "$(DESTDIR)$(libdir)/$$p"; \
+	done
+
+clean-libLTLIBRARIES:
+	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
 	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
 	  test "$$dir" != "$$p" || dir=.; \
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
 libgpstk.la: $(libgpstk_la_OBJECTS) $(libgpstk_la_DEPENDENCIES) 
-	$(CXXLINK)  $(libgpstk_la_LDFLAGS) $(libgpstk_la_OBJECTS) $(libgpstk_la_LIBADD) $(LIBS)
+	$(CXXLINK) -rpath $(libdir) $(libgpstk_la_LDFLAGS) $(libgpstk_la_OBJECTS) $(libgpstk_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -298,6 +378,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FFData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FFStream.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FICData.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FICData109.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FICData162.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FICData62.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FICData9.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FICHeader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FileHunter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FileSpec.Plo@am__quote@
@@ -320,9 +404,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ModeledPR.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ModeledReferencePR.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObsClockModel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObsEpochMap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObsID.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ObsRngDev.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PRSolution.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Position.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RACRotation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexEphemerisStore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexMetData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexMetHeader.Plo@am__quote@
@@ -330,6 +417,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexNavHeader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexObsData.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexObsHeader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexObsID.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexSatID.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RinexUtilities.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RungeKutta4.Plo@am__quote@
@@ -338,6 +426,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SP3EphemerisStore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SP3Header.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SP3SatID.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SVExclusionList.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SVPCodeGen.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SimpleIURAWeight.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SolverLMS.Plo@am__quote@
@@ -410,6 +499,23 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+install-inclHEADERS: $(incl_HEADERS)
+	@$(NORMAL_INSTALL)
+	test -z "$(incldir)" || $(mkdir_p) "$(DESTDIR)$(incldir)"
+	@list='$(incl_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(inclHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(incldir)/$$f'"; \
+	  $(inclHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(incldir)/$$f"; \
+	done
+
+uninstall-inclHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(incl_HEADERS)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(incldir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(incldir)/$$f"; \
+	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -488,8 +594,11 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(incldir)"; do \
+	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -516,7 +625,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
+clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -535,9 +644,9 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-inclHEADERS
 
-install-exec-am:
+install-exec-am: install-libLTLIBRARIES
 
 install-info: install-info-am
 
@@ -563,19 +672,22 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am
+uninstall-am: uninstall-inclHEADERS uninstall-info-am \
+	uninstall-libLTLIBRARIES
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
+	clean-libLTLIBRARIES clean-libtool ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am install-man \
+	install-exec-am install-inclHEADERS install-info \
+	install-info-am install-libLTLIBRARIES install-man \
 	install-strip installcheck installcheck-am installdirs \
 	maintainer-clean maintainer-clean-generic mostlyclean \
 	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
 	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-info-am
+	uninstall-inclHEADERS uninstall-info-am \
+	uninstall-libLTLIBRARIES
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

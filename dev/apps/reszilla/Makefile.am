@@ -1,9 +1,17 @@
 INCLUDES = -I../../src -I../MDPtools
-LDADD = ./librlib.la ../MDPtools/libmdplib.la ../../src/libgpstk.la
+LDADD = ./librlib.la ./libdatalib.la ../../src/libgpstk.la ../MDPtools/libmdplib.la
 
-noinst_LTLIBRARIES = librlib.la
-librlib_la_SOURCES = util.cpp readers.cpp DDEpoch.cpp ordUtils.cpp PhaseCleaner.cpp PhaseResidual.cpp RobustLinearEstimator.cpp
+lib_LTLIBRARIES = librlib.la libdatalib.la
+libdatalib_la_SOURCES = ObsUtils.cpp FFIdentifier.cpp ObsReader.cpp \
+	EphReader.cpp MetReader.cpp OrdApp.cpp OrdEngine.cpp \
+	../../apps/MDPtools/MDP2Rinex.cpp
+librlib_la_SOURCES = util.cpp readers.cpp DDEpoch.cpp ordUtils.cpp \
+	PhaseCleaner.cpp PhaseResidual.cpp RobustLinearEstimator.cpp \
+	../../apps/MDPtools/MDPHeader.cpp \
+	../../apps/MDPtools/MDPObsEpoch.cpp \
+	../../apps/MDPtools/MDPNavSubframe.cpp
 
-noinst_PROGRAMS = reszilla
+
+bin_PROGRAMS = reszilla
 
 reszilla_SOURCES = reszilla.cpp

@@ -1,7 +1,7 @@
 INCLUDES = -I../../src
 LDADD = ../../src/libgpstk.la
 
-noinst_PROGRAMS = ficafic ficfica navdmp fic2rin rinexthin
+bin_PROGRAMS = ficafic ficfica navdmp fic2rin rinexthin
 
 ficfica_SOURCES = ficfica.cpp
 ficafic_SOURCES = ficafic.cpp

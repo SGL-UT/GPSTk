@@ -1,7 +1,7 @@
 INCLUDES = -I../src
 LDADD = ../src/libgpstk.la
 
-noinst_PROGRAMS = rinex_obs_test rinex_nav_test rinex_met_test rinex_met_read_write rinex_nav_read_write rinex_obs_read_write EphComp AnotherFileFilterTest FileSpecTest MatrixTest exceptiontest petest stringutiltest daytimetest rktest gpszcounttest positiontest testExpression
+bin_PROGRAMS = rinex_obs_test rinex_nav_test rinex_met_test rinex_met_read_write rinex_nav_read_write rinex_obs_read_write EphComp AnotherFileFilterTest FileSpecTest MatrixTest exceptiontest petest stringutiltest daytimetest rktest gpszcounttest positiontest testExpression
 
 rinex_obs_test_SOURCES = rinex_obs_test.cpp
 rinex_nav_test_SOURCES = rinex_nav_test.cpp

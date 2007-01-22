@@ -1,7 +1,7 @@
 INCLUDES = -I../../src
 LDADD = ../../src/libgpstk.la
 
-noinst_PROGRAMS = mergeRinNav mergeRinObs mergeRinMet mergeFIC
+bin_PROGRAMS = mergeRinNav mergeRinObs mergeRinMet mergeFIC
 
 mergeRinObs_SOURCES = mergeRinObs.cpp
 mergeRinNav_SOURCES = mergeRinNav.cpp

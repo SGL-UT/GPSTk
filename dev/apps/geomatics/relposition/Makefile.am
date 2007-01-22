@@ -1,10 +1,16 @@
 INCLUDES = -I../../../src -I../lib
-LDADD = ./libbase.la ../lib/libgeomatics.la ../../../src/libgpstk.la
 
-noinst_LTLIBRARIES = libbase.la
-libbase_la_SOURCES = DataStructures.cpp CommandInput.cpp Configure.cpp ReadRawData.cpp ReadObsFiles.cpp EphemerisImprovement.cpp ClockModel.cpp Synchronization.cpp DoubleDifference.cpp EditDDs.cpp DataOutput.cpp Estimation.cpp Timetable.cpp ElevationMask.cpp ProcessRawData.cpp ComputeRAIMSolution.cpp EditRawDataBuffers.cpp
+LDADD = ../lib/libgeomatic.la ../../../src/libgpstk.la
+DDBase_LDADD = ../lib/libgeomatic.la ../../../src/libgpstk.la ./libbase.la
 
-noinst_PROGRAMS = DDBase ddmerge 
+lib_LTLIBRARIES = libbase.la
+libbase_la_SOURCES = ClockModel.cpp CommandInput.cpp ComputeRAIMSolution.cpp \
+Configure.cpp DataOutput.cpp DataStructures.cpp DoubleDifference.cpp \
+EditDDs.cpp EditRawDataBuffers.cpp ElevationMask.cpp EphemerisImprovement.cpp \
+Estimation.cpp ProcessRawData.cpp ReadObsFiles.cpp ReadRawData.cpp \
+Synchronization.cpp Timetable.cpp
+
+bin_PROGRAMS = DDBase ddmerge 
 
 DDBase_SOURCES = DDBase.cpp
 ddmerge_SOURCES = ddmerge.cpp
