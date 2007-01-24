@@ -83,7 +83,7 @@ namespace gpstk
    template <typename T>
    void insert(T *sa,
                int na,
-               int (*comp)(const T&, const T&) = Qsort_compare)
+               int (*comp)(const T&, const T&) = gpstk::Qsort_compare)
    {
       int i,j;
       T stemp;
@@ -108,7 +108,7 @@ namespace gpstk
    template <typename T>
    void QSort(T *sa,
               int na,
-              int (*comp)(const T&, const T&) = Qsort_compare)
+              int (*comp)(const T&, const T&) = gpstk::Qsort_compare)
    {
       int i,j,nr;
       T stemp, spart;
@@ -157,7 +157,7 @@ namespace gpstk
    void insert(T *sa,
                S *pa,
                int na,
-               int (*comp)(const T&, const T&) = Qsort_compare)
+               int (*comp)(const T&, const T&) = gpstk::Qsort_compare)
    {
       int i,j;
       T stemp;
@@ -186,7 +186,7 @@ namespace gpstk
    void QSort(T *sa,
               S *pa,
               int na,
-              int (*comp)(const T&, const T&) = Qsort_compare)
+              int (*comp)(const T&, const T&) = gpstk::Qsort_compare)
    {
       int i,j,nr;
       T stemp, spart;
