@@ -107,7 +107,7 @@ namespace gpstk
          }
          
          SMODFData smod;
-         while (true)
+         while (smos)
          {
             if (usePrevSMOD)
             {
