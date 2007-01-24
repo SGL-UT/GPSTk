@@ -5,7 +5,7 @@
 #define TCPSTREAM_HPP
 
 #include <stdio.h>
-#if !defined(unix)
+#if !defined(unix) && !defined(__unix__)
 #include <winsock.h>
 #else
 #include <sys/types.h>

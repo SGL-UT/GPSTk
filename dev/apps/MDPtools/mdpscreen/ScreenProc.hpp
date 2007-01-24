@@ -17,7 +17,7 @@
 // the curses calls. They tend to interfere with parts of the STL.
 #define NOMACROS
 #include <curses.h>
-#ifndef __linux__
+#if !defined( __linux__) && !defined(NCURSES_ATTR_T)
 typedef int attr_t;
 #endif
 

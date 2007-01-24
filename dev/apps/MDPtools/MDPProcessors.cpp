@@ -44,7 +44,7 @@ void MDPProcessor::process()
 
    while (!die && in >> header)
    {
-      if (startTime == DayTime(DayTime::BEGINNING_OF_TIME))
+      if (startTime == DayTime(DayTime::BEGINNING_OF_TIME) && timeSpan>0)
       {
          startTime = header.time;
          if (debugLevel)
