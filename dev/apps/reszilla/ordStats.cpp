@@ -58,8 +58,10 @@ protected:
 private:
    CommandOptionWithAnyArg elevBinsOption, statsFileOption;
    CommandOptionWithNumberArg sigmaOption;
+   CommandOptionNoArg wonkyOption;
    ElevationRangeList elr;
    double sigmaMult;
+   bool useWonky;
 
 };
 
@@ -70,13 +72,15 @@ private:
 OrdStats::OrdStats() throw()
    : OrdApp("ordStats", "Computes ords statistics. "), 
      elevBinsOption('b', "elev-bin", "A range of elevations, used in  computing"
-                  " the statistical summaries. Repeat to specify multiple "
-                  "bins. The default is \"-b 0-10 -b 10-20 -b 20-60 -b "
-                  "10-90\"."),
+                    " the statistical summaries. Repeat to specify multiple "
+                    "bins. The default is \"-b 0-10 -b 10-20 -b 20-60 -b "
+                    "10-90\"."),
      sigmaOption('s',"sigma","Multiplier for sigma stripping used in "
-                 "statistical computations. The default value is 6."),
+                    "statistical computations. The default value is 6."),
      statsFileOption('o',"statsFile","Filename for output of stats only. Stats"
-                     " will still be included at the end of the ord file.")
+                    " will still be included at the end of the ord file."),
+     wonkyOption('w',"wonky","Use wonky data in stats computation. The default "
+                    "is to not use such data.")
 {}
 
 //-----------------------------------------------------------------------------
@@ -118,6 +122,12 @@ void OrdStats::process()
       const string fn = statsFileOption.getValue()[0];
       extraOutput.open(fn.c_str(), ios::out);
    }  
+   
+   if (wonkyOption.getCount())
+      useWonky = true;
+   else 
+      useWonky = false;
+      
    ORDEpochMap oem;
    // read in data from the ord file to map of ORDEpochs
    while (input)
@@ -171,10 +181,13 @@ void OrdStats::process()
          {
             const float el = pi->second.getElevation();
             const double ord = pi->second.getORD();
+            const unsigned wonk = pi->second.wonky;
             if (el>minElevation && el<maxElevation)
             {
                double mag=std::abs(ord);
-               if (mag < strip)
+               if (wonk && !useWonky)
+                  bad.Add(ord);
+               else if (mag < strip)
                   good.Add(ord);
                else
                   bad.Add(ord);
