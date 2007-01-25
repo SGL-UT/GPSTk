@@ -97,7 +97,7 @@ struct ClockSegmentList : public list<ClockSegment>
       {
          const ClockSegment& cs = *k;
          double t = cs.startTime.MJDdate();
-         output << "#C " << cs.startTime.printf(timeFormat)
+         output << ">  " << cs.startTime.printf(timeFormat)
                 << "  " << cs.endTime.printf(timeFormat)
                 << fixed
                 << " " << setprecision(2) << setw(10) << cs.eval(t)

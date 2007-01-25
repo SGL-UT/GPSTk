@@ -63,6 +63,7 @@ for line in inputFile:
     line = line.strip()
     if len(line)==0: continue
     if line[0] == "#": continue
+    if line[0] == ">": continue
     words=line.split()
     
     fsec = float(words[2][8:10])

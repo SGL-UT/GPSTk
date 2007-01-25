@@ -185,7 +185,7 @@ void OrdStats::process()
       char b1[200];
       char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
       double max = std::max(std::abs(good.Maximum()), std::abs(good.Minimum()));
-      sprintf(b1, "# %2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
+      sprintf(b1, "> %2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
            (int)minElevation, (int)maxElevation,
            good.StdDev()/sqrt((float)2), good.Average(),
            good.N(), bad.N(), max, strip);

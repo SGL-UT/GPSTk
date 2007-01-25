@@ -122,7 +122,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
 {
    if (!headerWritten)
    {
-      s << "# Time            Type PRN  Elev         ORD(m)   wonky" << endl;
+      s << "# Time              Type PRN  Elev         ORD(m) wonky" << endl;
       headerWritten=true;
    }
 
@@ -180,12 +180,12 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
          }
          
          if ((readBuffer.size() < 24) || 
-             (readBuffer=="# Time            Type PRN  Elev         ORD(m)   wonky"))
+             (readBuffer=="# Time              Type PRN  Elev         ORD(m) wonky"))
          {
             readBuffer.erase(0, string::npos);
             continue;
          }
-         else if (readBuffer[0] == '#')
+         else if ((readBuffer[0] == '#') ||(readBuffer[0] == '>')) 
          {
             output << readBuffer << endl;
             readBuffer.erase(0, string::npos);
