@@ -217,66 +217,46 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
             else
                ordEpoch.ords[svid] = ObsRngDev(
                   obs1, svid, t, antennaPos, eph, gm, tm, svTime);
+
+            ObsRngDev& ord = ordEpoch.ords[svid];
+
+            // A gross check on the pseudorange
+            const double rhoMin = 1e6; // Minimum reasonable pseudorange
+            if (obs1 < rhoMin || (dualFreq && obs2 < rhoMin))
+               ord.wonky |= 0x0001;
+
+            // Any LLI indicator makes the data suspect
+            for (k=svObsEpoch.begin(); k != svObsEpoch.end(); k++)
+               if (k->first.type == ObsID::otLLI && k->second == 1)
+                  ord.wonky |= 0x0002;
+
+            // Make sure we have a valid C/A pseudorange unless we are a mixed
+            // frequency 
+            if (oid1.band != ObsID::cbL1L2)
+            {
+               const ObsID C1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
+               k = svObsEpoch.find(C1);
+               if (k == svObsEpoch.end() || k->second < rhoMin)
+                  ord.wonky |= 0x0004;
+            }
+
+            if (!keepUnhealthy && ord.getHealth().is_valid() && ord.getHealth())
+               ord.wonky |= 0x0008;
+         
+            if (std::abs(ord.getTrop()) > 100)
+               ord.wonky |= 0x0010;
+         
+            if (ord.getElevation() <= 0.05)
+               ord.wonky |= 0x0020;
          }
-         catch (EphemerisStore::NoEphemerisFound& e)
+         catch (gpstk::Exception& e)
          {
+            ordEpoch.ords.erase(svid);
             if (verboseLevel>2)
                cout << "#" << e << endl;
          }
-
-         ObsRngDev& ord = ordEpoch.ords[svid];
-
-         // A gross check on the pseudorange
-         const double rhoMin = 1e6; // Minimum reasonable pseudorange
-         if (obs1 < rhoMin || (dualFreq && obs2 < rhoMin))
-            ord.wonky |= 0x0001;
-
-         // Any LLI indicator makes the data suspect
-         for (k=svObsEpoch.begin(); k != svObsEpoch.end(); k++)
-            if (k->first.type == ObsID::otLLI && k->second == 1)
-               ord.wonky |= 0x0002;
-
-         // Make sure we have a valid C/A pseudorange unless we are a mixed
-         // frequency 
-         if (oid1.band != ObsID::cbL1L2)
-         {
-            const ObsID C1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
-            k = svObsEpoch.find(C1);
-            if (k == svObsEpoch.end() || k->second < rhoMin)
-               ord.wonky |= 0x0004;
-         }
-
-         if (!keepUnhealthy && ord.getHealth().is_valid() && ord.getHealth())
-            ord.wonky |= 0x0008;
-         
-         try
-         {
-            if (std::abs(ord.getTrop()) > 100)
-              ord.wonky |= 0x0010;
-         }
-         catch(gpstk::Exception &e)
-         {
-            if (verboseLevel>2)
-              cout << "#" << e << endl;
-         }
-         
-         try
-         {
-            if (ord.getElevation() <= 0.05)
-              ord.wonky |= 0x0020;
-         }
-         catch(gpstk::Exception &e)
-         {
-            if (verboseLevel>2)
-              cout << "#" << e << endl;
-         }         
       } // end looping over each SV in this epoch
 
-   }
-   catch (gpstk::InvalidParameter& e)
-   {
-      if (verboseLevel > 2)
-         cout << "#" << e;
    }
    catch (gpstk::Exception& e)
    {
