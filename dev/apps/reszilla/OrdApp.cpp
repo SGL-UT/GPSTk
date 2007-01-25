@@ -170,7 +170,7 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
    ordEpoch.time = DayTime(DayTime::BEGINNING_OF_TIME);
    using namespace StringUtils;
    while (s)
-   {
+   {      
       try
       {
          if (readBuffer.size() == 0)
@@ -178,12 +178,19 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
             getline(s, readBuffer);
             strip(readBuffer);
          }
-
-         if (readBuffer.size() < 24 || readBuffer[0] == '#')
+         
+         if ((readBuffer.size() < 24) || 
+             (readBuffer=="# Time            Type PRN  Elev         ORD(m)   wonky"))
          {
             readBuffer.erase(0, string::npos);
             continue;
          }
+         else if (readBuffer[0] == '#')
+         {
+            output << readBuffer << endl;
+            readBuffer.erase(0, string::npos);
+            continue;
+         }         
 
          DayTime time;
          time.setToString(readBuffer.substr(0,19), timeFormat);
@@ -203,7 +210,7 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
          {
             if (readBuffer.size() < 46)
             {
-               cout << "# Line to short" << endl;
+               cout << "# Line too short" << endl;
                continue;
             }
 
