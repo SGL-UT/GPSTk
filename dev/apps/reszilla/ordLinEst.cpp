@@ -167,7 +167,7 @@ void OrdLinEst::process()
    if (maxRateOption.getCount())
       maxRate = StringUtils::asDouble(maxRateOption.getValue().front());
    BigRateOperator bro(maxRate);
-xb
+
    DoubleDoubleVec::iterator i,j;
    ClockSegmentList csl;
    for (i=clocks.begin(); i != clocks.end(); i++)
