@@ -41,6 +41,74 @@
 using namespace std;
 using namespace gpstk;
 
+
+// This is a function object that is intended to look for discontinuities
+// in a series of pairs. 
+struct BigRateOperator : 
+   public std::binary_function<DoubleDouble, DoubleDouble, bool>
+{
+   BigRateOperator(double r)
+      : maxRate(std::abs(r))
+   {}
+
+   bool operator() (const DoubleDouble& l, const DoubleDouble& r) const
+   {
+      double dt = l.first - r.first;
+      double dy = l.second - r.second;
+      double rate = 0;
+      if (dt != 0.0) 
+         rate = dy/dt;
+      return abs(rate) > maxRate;
+   }
+
+   const double maxRate;
+};
+
+
+struct ClockSegment: public RobustLinearEstimator
+{
+   DayTime startTime, endTime;
+};
+
+
+struct ClockSegmentList : public list<ClockSegment>
+{
+   vdouble eval(const DayTime& t)
+   {
+      vdouble offset;
+      for (const_iterator k=begin(); k != end(); k++)
+      {
+         const ClockSegment& cs = *k;
+         if ((t - cs.startTime) > -0.01 && (cs.endTime - t) > -0.01)
+         {
+            double mjd = t.MJDdate();
+            if (cs.valid)
+               offset = cs.eval(mjd);
+            break;
+         }
+      }
+      return offset;
+   }
+
+   void dump(ostream& output, string timeFormat) const
+   {
+      output << "#  t0                   t1                   offset(m) slope(m/d)  abdev(m)" << endl;
+      for (const_iterator k=begin(); k != end(); k++)
+      {
+         const ClockSegment& cs = *k;
+         double t = cs.startTime.MJDdate();
+         output << "#C " << cs.startTime.printf(timeFormat)
+                << "  " << cs.endTime.printf(timeFormat)
+                << fixed
+                << " " << setprecision(2) << setw(10) << cs.eval(t)
+                << " " << setprecision(3) << setw(10) << cs.b
+                << " " << setprecision(3) << setw(9) << cs.abdev
+                << endl;
+      }
+   }
+};
+
+
 class OrdLinEst : public OrdApp
 {
 public:
@@ -50,6 +118,7 @@ public:
 
 protected:
    virtual void process();
+   CommandOptionWithAnyArg maxRateOption;
 
 };
 
@@ -57,7 +126,9 @@ protected:
 // The constructor basically just sets up all the command line options
 //-----------------------------------------------------------------------------
 OrdLinEst::OrdLinEst() throw()
-   : OrdApp("ordLinEst", "Computes a linear clock estimate. ")
+   : OrdApp("ordLinEst", "Computes a linear clock estimate. "),
+     maxRateOption('m', "max-rate",
+        "Rate used to detect a clock jump. default is 10,000 m/day")
 
 {}
 
@@ -78,59 +149,55 @@ void OrdLinEst::process()
       ORDEpoch ordEpoch = read(input); 
       oem[ordEpoch.time] = ordEpoch; 
    }
-   
-   RobustLinearEstimator rle;
 
    DoubleDoubleVec clocks;
    ORDEpochMap::const_iterator ei;
-   int n=0;
    for (ei = oem.begin(); ei != oem.end(); ei++)
    {
       double mjd = ei->first.MJDdate();
       vdouble clk = ei->second.clockOffset;
       if (!clk.is_valid() || std::abs(clk) < 1e-6)
-         continue; 
-      std::pair<double, double> pr(mjd, clk);
-      clocks.push_back(pr);
+         continue;
+      clocks.push_back(DoubleDouble(mjd, clk));
    }
 
-   rle.process(clocks);
-   
-   bool gotEstimate = rle.a != 0;
-   if (gotEstimate)
+   // An emperically determied maximum clock drift rate, in meters per day
+   // This really should be brought out to the command line
+   double maxRate=10000;
+   if (maxRateOption.getCount())
+      maxRate = StringUtils::asDouble(maxRateOption.getValue().front());
+   BigRateOperator bro(maxRate);
+xb
+   DoubleDoubleVec::iterator i,j;
+   ClockSegmentList csl;
+   for (i=clocks.begin(); i != clocks.end(); i++)
    {
-      ORDEpochMap::iterator i;
-      for (i=oem.begin(); i != oem.end(); i++)
-      {
-         const DayTime& t = i->first;
-         ORDEpoch& ord = i->second;
-         if (ord.clockOffset.is_valid())
-            ord.clockResidual = ord.clockOffset - rle.eval(t.MJDdate());
+      j = adjacent_find( i, clocks.end(), bro);
+      ClockSegment seg;
+      seg.startTime = DayTime(i->first);
+      if (j != clocks.end())
+         seg.endTime = DayTime(j->first);
+      else
+         seg.endTime = DayTime(clocks.rbegin()->first);
+      seg.process(i, j);
+      csl.push_back(seg);
+      if (j == clocks.end())
+         break;
+      i = j;
+   }
 
-         write(output, i->second);      
-      }
+   csl.dump(output, timeFormat);
 
-      const int N=8;
-      output << "# time              type      offset(m)   slope(m/day)    abdev(m)" << endl;
-      output << setfill(' ');
-      DayTime t0(oem.begin()->first);
-      DayTime t1(oem.rbegin()->first);      
-      for (int i=0; i<=N; i++)
-      {
-         DayTime t = t0 + i*(t1-t0)/N;
-         output << t.printf(timeFormat) << " " << setw(4) << 51 //type
-                << " " << setprecision(5) << setw(14)  << rle.eval(t.MJDdate())
-                << " " << setprecision(5) << setw(14) << rle.b
-                << " " << setprecision(3) << setw(11)  << rle.abdev
-                << endl;
-      }
-   }   
-   else
+   ORDEpochMap::iterator l;
+   for (l=oem.begin(); l != oem.end(); l++)
    {
-      output << "# Unable to form linear estimate" << endl;
-      ORDEpochMap::iterator i;
-      for (i=oem.begin(); i != oem.end(); i++)
-         write(output, i->second);      
+      const DayTime& t = l->first;
+      ORDEpoch& ord = l->second;
+      vdouble offset = csl.eval(t);
+      if (offset.is_valid() && ord.clockOffset.is_valid())
+         ord.clockResidual = ord.clockOffset - offset;
+
+      write(output, l->second);      
    }
 }
 

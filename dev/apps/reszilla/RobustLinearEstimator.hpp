@@ -45,7 +45,8 @@
 
 #include <DayTime.hpp>
 
-typedef std::vector< std::pair<double, double> > DoubleDoubleVec;
+typedef std::pair<double, double> DoubleDouble;
+typedef std::vector< DoubleDouble > DoubleDoubleVec;
 
 // An object to compute a robust estimate of a linear fit to the
 // series data given. It fits y = a + bx by the criterion of least absolute
@@ -59,19 +60,23 @@ public:
    RobustLinearEstimator()
       :a(0), b(0), abdev(0), stripPercent(0.995),
       sumX(0), sumY(0), sumXX(0), sumXY(0),
-      medianY(0), stripY(0), debugLevel(0)
+       medianY(0), stripY(0), debugLevel(0),
+       valid(false)
    {};
 
    void process(const DoubleDoubleVec& d);
+   void process(DoubleDoubleVec::const_iterator b,
+                DoubleDoubleVec::const_iterator e);
+
    double a, b, abdev;
    double medianY, stripY;
    int debugLevel;
    double stripPercent;
+   bool valid;
    double eval(const double x) const {return a+b*x;};
 
 private:
-   typedef DoubleDoubleVec DDV;
-   DDV data;
+   DoubleDoubleVec data;
    double sumX, sumY, sumXX, sumXY;
 
    double rofunc(const double b_est);

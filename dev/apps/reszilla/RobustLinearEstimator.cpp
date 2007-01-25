@@ -42,6 +42,8 @@
 
 #include "RobustLinearEstimator.hpp"
 
+// A little bit of syntatical sugar...
+typedef DoubleDoubleVec::const_iterator DDVci;
 #define SIGN(a,b) ((b) >= 0.0 ? std::abs(a) : -std::abs(a))
 
 using namespace std;
@@ -67,11 +69,20 @@ double medTail(vector<double>& vec, double f)
 }
 
 
+void RobustLinearEstimator::process(
+   DoubleDoubleVec::const_iterator b,
+   DoubleDoubleVec::const_iterator e)
+{
+   // Yea, we could probably find a more efficient way to do this but...
+   process(DoubleDoubleVec(b,e));
+}
+
+
 void RobustLinearEstimator::process(const DoubleDoubleVec& d)
 {
    std::vector<double> y(d.size());
    size_t j=0;
-   for (DDV::const_iterator i=d.begin(); i!=d.end(); i++,j++)
+   for (DDVci i=d.begin(); i!=d.end(); i++,j++)
       y[j] = i->second;
 
    sort(y.begin(), y.end());
@@ -79,7 +90,7 @@ void RobustLinearEstimator::process(const DoubleDoubleVec& d)
    medianY=median(y);
 
    // As a first guess for a and b, find the least-squares fit
-   for (DDV::const_iterator i=d.begin(); i!=d.end(); i++)
+   for (DDVci i=d.begin(); i!=d.end(); i++)
    {
       if (std::abs(i->second - medianY) > stripY)
          continue;
@@ -101,7 +112,7 @@ void RobustLinearEstimator::process(const DoubleDoubleVec& d)
 
    // Now compute the chi^2 for the LR computed a, b
    double chisq=0;
-   for (DDV::const_iterator i=data.begin(); i!=data.end(); i++)
+   for (DDVci i=data.begin(); i!=data.end(); i++)
    {
       double x = i->first;
       double y = i->second;
@@ -121,6 +132,7 @@ void RobustLinearEstimator::process(const DoubleDoubleVec& d)
 
    double f1 = rofunc(b1);
 
+   valid = true;
    // If the sigma on b is already zero, then the current values of a & b are
    // perfect. This should never happen with N>3, I think.
    if (sig_b == 0.0)
@@ -170,7 +182,7 @@ double RobustLinearEstimator::rofunc(const double b_est)
    vector<double> abxVec(data.size());
 
    size_t j=0;
-   for (DDV::const_iterator i=data.begin(); i!=data.end(); i++)
+   for (DDVci i=data.begin(); i!=data.end(); i++)
    {
       double x = i->first;
       double y = i->second;
@@ -184,7 +196,7 @@ double RobustLinearEstimator::rofunc(const double b_est)
    const double eps=dl.epsilon();
    abdev=0;
    double sum=0;
-   for (DDV::const_iterator i=data.begin(); i != data.end(); i++)
+   for (DDVci i=data.begin(); i != data.end(); i++)
    {
       double x=i->first;
       double y=i->second;
