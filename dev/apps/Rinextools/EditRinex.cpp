@@ -225,9 +225,16 @@ try {
    delete[] CArgs;
 
    if(iret != 0 || dashh.getCount() > 0) {      // iret from ParseCommands
-      Par.displayUsage((help ? cout : oflog),false);
-      (help ? cout : oflog) << endl;
-      DisplayRinexEditUsage((help ? cout : oflog));
+      if(help) {
+         Par.displayUsage(cout,false);
+         cout << endl;
+         DisplayRinexEditUsage(cout);
+      }
+      else {
+         Par.displayUsage(oflog,false);
+         oflog << endl;
+         DisplayRinexEditUsage(oflog);
+      }
       help = true;   //return 1;
    }
 
