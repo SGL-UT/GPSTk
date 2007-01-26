@@ -69,6 +69,8 @@ def main():
 
     for line in inputFile:
         line = line.strip()
+        if options.debugLevel>1:
+            print line
         if len(line)==0: continue
 
         if line[0] == "#": continue
@@ -98,17 +100,17 @@ def main():
             prn = int(words[4])
             ord = float(words[6])
             elev = float(words[5])
-            wart = int(words[7])
+            wart = int(words[7],16)
             if wart==0:
                 ordList[0].append(t)
-                ordList[1].append(prn)   # prn
-                ordList[2].append(ord)   # ord
-                ordList[3].append(elev)  # elevation
+                ordList[1].append(prn)
+                ordList[2].append(ord)
+                ordList[3].append(elev)
             else:
                 wartList[0].append(t)
-                wartList[1].append(prn)  # prn
-                wartList[2].append(ord)  # ord
-                wartList[3].append(elev) # elevation
+                wartList[1].append(prn)
+                wartList[2].append(ord)
+                wartList[3].append(elev)
         elif ordType == 1:
             if len(words) < 2: print "bad clock residual line"
             ocdList[0].append(t)
@@ -118,7 +120,7 @@ def main():
             clockList[0].append(t)
             clockList[1].append(float(words[4])) #offset
 
-        if options.debugLevel>1 and len(clockList[0]) >= 200: break
+        if options.debugLevel>2 and len(clockList[0]) >= 200: break
 
     ords = numpy.array(ordList)
     warts = numpy.array(wartList)
@@ -226,6 +228,8 @@ def main():
             pylab.figtext(rExtent+.08, 0.95, "y range +/- %.f m" % options.yRange,
                           **scale_props)
         else:
+            if (options.wartiness<2):
+                ax1.set_ylim(ymin=min(ords[2]), ymax=max(ords[2]))
             pylab.figtext(rExtent+.08, 0.95, "y range autoscaled",
                           **scale_props)
 
@@ -267,6 +271,8 @@ def main():
     # Better to just let this be done auto right now
     # ax2.xaxis.set_major_locator(xMajorLoc) 
     ax2.xaxis.set_minor_locator(xMinorLoc)
+    ax2.set_xlim(xmin=min(ords[0]), xmax=max(ords[0]))
+
 
     # Axis labels on the upper plot would be bad since they would be
     # drawn over the upper part of the lower plot

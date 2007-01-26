@@ -93,6 +93,7 @@ struct ClockSegmentList : public list<ClockSegment>
    void dump(ostream& output, string timeFormat) const
    {
       output << "#  t0                   t1                   offset(m) slope(m/d)  abdev(m)" << endl;
+      output << "#  -------------------  -------------------  --------- ----------  --------" << endl;
       for (const_iterator k=begin(); k != end(); k++)
       {
          const ClockSegment& cs = *k;
@@ -105,6 +106,7 @@ struct ClockSegmentList : public list<ClockSegment>
                 << " " << setprecision(3) << setw(9) << cs.abdev
                 << endl;
       }
+      output << "#" << endl;
    }
 };
 
