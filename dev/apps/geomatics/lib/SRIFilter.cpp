@@ -57,6 +57,8 @@ using namespace std;
 namespace gpstk
 {
 
+using namespace StringUtils;
+
 //------------------------------------------------------------------------------------
 // empty constructor
 SRIFilter::SRIFilter(void)
@@ -99,7 +101,6 @@ SRIFilter::SRIFilter(const Matrix<double>& Rin,
    if(Rin.rows() != Rin.cols() ||
       Rin.rows() != Zin.size() ||
       Rin.rows() != NLin.size()) {
-      using namespace StringUtils;
       MatrixException me("Invalid input dimensions: R is "
          + asString<int>(Rin.rows()) + "x"
          + asString<int>(Rin.cols()) + ", Z has length "
@@ -148,7 +149,6 @@ void SRIFilter::measurementUpdate(const Matrix<double>& H,
 {
    if(H.cols() != R.cols() || H.rows() != D.size() ||
       (&CM != &SRINullMatrix && (CM.rows() != D.size() || CM.cols() != D.size())) ) {
-      using namespace StringUtils;
       MatrixException me("Invalid input dimensions:\n  SRI is "
          + asString<int>(R.rows()) + "x"
          + asString<int>(R.cols()) + ",\n  Partials is "
@@ -321,12 +321,11 @@ int SRIFilter::leastSquaresEstimation(Vector<double>& D,
    if(doLinearize && M < N) {
       MatrixException me(
             string("When linearizing, problem must not be underdetermined:\n")
-            + string("   data dimension is ") + StringUtils::asString(M)
-            + string(" while state dimension is ") + StringUtils::asString(N));
+            + string("   data dimension is ") + asString(M)
+            + string(" while state dimension is ") + asString(N));
       GPSTK_THROW(me);
    }
    if(doSequential && R.rows() != X.size()) {
-      using namespace StringUtils;
       MatrixException me("Sequential problem has inconsistent dimensions:\n  SRI is "
          + asString<int>(R.rows()) + "x"
          + asString<int>(R.cols()) + " while X has length "
@@ -724,7 +723,6 @@ void SRIFilter::SrifTU(Matrix<T>& R,
       R.cols() != n ||
       Rwx.rows() < ns || Rwx.cols() < n ||
       Z.size() < n || Zw.size() < ns) {
-      using namespace StringUtils;
       MatrixException me("Invalid input dimensions:\n  R is "
          + asString<int>(R.rows()) + "x"
          + asString<int>(R.cols()) + ", Z has length "
@@ -937,7 +935,6 @@ void SRIFilter::SrifSU(Matrix<T>& R,
       R.cols() != N ||
       Rwx.rows() < Ns || Rwx.cols() < N ||
       Z.size() < N || Zw.size() < Ns) {
-      using namespace StringUtils;
       MatrixException me("Invalid input dimensions:\n  R is "
          + asString<int>(R.rows()) + "x"
          + asString<int>(R.cols()) + ", Z has length "
@@ -1167,7 +1164,6 @@ void SRIFilter::SrifSU_DM(Matrix<T>& P,
       Rwx.rows() != Ns || Rwx.cols() != N ||
       Phinv.rows() != N || Phinv.cols() != N ||
       G.rows() != N || G.cols() != Ns ) {
-      using namespace StringUtils;
       MatrixException me("Invalid input dimensions:\n  P is "
          + asString<int>(P.rows()) + "x"
          + asString<int>(P.cols()) + ", X has length "

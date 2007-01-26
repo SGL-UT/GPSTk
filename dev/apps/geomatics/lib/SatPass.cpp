@@ -33,6 +33,7 @@
 #include "SatPass.hpp"
 #include "icd_200_constants.hpp"    // OSC_FREQ,L1_MULT,L2_MULT
 #include "Stats.hpp"
+#include "StringUtils.hpp"
 
 using namespace std;
 
@@ -53,6 +54,8 @@ const double D22 = -D11;
 
 //------------------------------------------------------------------------------------
 namespace gpstk {
+
+using namespace StringUtils;
 
 // note that flag & LL1 = true for all L1 discontinuities
 //           flag & LL2 = true for all L2 discontinuities
@@ -115,8 +118,9 @@ bool SatPass::push_back(const DayTime tt, SatPassData& spd)
       n = 0;
    }
    else {
-      if(tt < lastTime) {
-         // throw
+      if(tt < lastTime) {                          // TD return false?
+         Exception e("times are out of order");
+         GPSTK_THROW(e);
       }
          // compute count for this point
       n = int((tt-firstTime)/dt + 0.5);
@@ -131,6 +135,7 @@ bool SatPass::push_back(const DayTime tt, SatPassData& spd)
       // add it
    if(spd.flag & OK) ngood++;
    spd.ndt = n;
+   spd.toffset = tt - firstTime - n*dt;
    data.push_back(spd);
 
    return true;
@@ -140,10 +145,13 @@ bool SatPass::push_back(const DayTime tt, SatPassData& spd)
 DayTime SatPass::time(unsigned int i) const throw(Exception)
 {
    if(i > data.size()) {
-      Exception e("invalid in time() " + StringUtils::asString(i));
+      Exception e("invalid in time() " + asString(i));
       GPSTK_THROW(e);
    }
-   return (firstTime + data[i].ndt * dt);
+   // computing toff first is necessary to avoid a rare bug in DayTime..
+   double toff=data[i].ndt*dt+data[i].toffset;
+   //return (firstTime + data[i].ndt*dt + data[i].toffset);
+   return (firstTime + toff);
 }
 
 // return true if the input time could lie within the pass
@@ -162,7 +170,7 @@ bool SatPass::includesTime(const DayTime& tt) const throw()
 SatPassData SatPass::getData(unsigned int i) const throw(Exception)
 {
    if(i >= data.size()) {
-      Exception e("invalid in getData() " + StringUtils::asString(i));
+      Exception e("invalid in getData() " + asString(i));
       GPSTK_THROW(e);
    }
    return data[i];
@@ -172,7 +180,7 @@ SatPassData SatPass::getData(unsigned int i) const throw(Exception)
 unsigned int SatPass::getCount(unsigned int i) const throw(Exception)
 {
    if(i >= data.size()) {
-      Exception e("invalid in getCount() " + StringUtils::asString(i));
+      Exception e("invalid in getCount() " + asString(i));
       GPSTK_THROW(e);
    }
    return data[i].ndt;
@@ -251,7 +259,7 @@ void SatPass::dump(ostream& os, string msg1, string msg2) const throw()
 
    DayTime tt;
    for(int i=0; i<data.size(); i++) {
-      tt = firstTime + data[i].ndt * dt;
+      tt = time(i);
       os << msg1
          << " " << setw(3) << i
          << " " << sat

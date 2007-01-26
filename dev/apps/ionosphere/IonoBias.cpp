@@ -57,8 +57,9 @@
 #include <vector>
 #include <utility>      // for pair
 
-using namespace gpstk;
 using namespace std;
+using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // Max PRN 
@@ -81,15 +82,13 @@ vector<RinexSatID> ExSV;
    // ephemeris
 string NavDir;
 vector<string> NavFiles;
-SP3EphemerisStore SP3EphList;
-BCEphemerisStore BCEphList;
 EphemerisStore *pEph;
    // obs types needed
 RinexObsHeader::RinexObsType ELot,LAot,LOot,SRot,SSot;
    // geoid
 WGS84Geoid WGS84;
    // Start and stop times
-DayTime BegTime(DayTime::BEGINNING_OF_TIME),EndTime(DayTime::END_OF_TIME);
+DayTime BegTime,EndTime;
 
    // processing
 int MinPoints;
@@ -127,21 +126,25 @@ vector<pair<string,int> > ComponentIDs;
 
 //------------------------------------------------------------------------------------
 // prototypes
-void ConfigureAndDefaults(void);
-int GetCommandLine(int argc, char **argv);
-void PreProcessArgs(const char *arg, vector<string>& Args, bool& Verb, bool& debug);
-int Initialize(void);
-int Process(void);
-int ProcessHeader(RinexObsStream& ins, string& filename, RinexObsHeader& head);
-void TimeLimits(Position llr, int doy, string& sector, double& begin, double& end);
-void SolarPosition(int doy, double hod, double& lat, double& lon);
-void Sunrise(double lat, double lon, double ht, int doy, double& rise, double& set);
-int ProcessObs(RinexObsStream& ins, string& filename, RinexObsHeader& head);
-void WriteATHeader(void);
-void WriteStationHeader(int npts, string sta_name, Position llr);
-void ParseLine(string& str, vector<string>& wds);
-int ReadATandCompute(void);
-double obliquity(double elevation);
+void ConfigureAndDefaults(void) throw(Exception);
+int GetCommandLine(int argc, char **argv) throw(Exception);
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
+int Initialize(void) throw(Exception);
+int Process(void) throw(Exception);
+int ProcessHeader(RinexObsStream& ins, string& filename, RinexObsHeader& head)
+   throw(Exception);
+void TimeLimits(Position llr, int doy, string& sector, double& begin, double& end)
+   throw(Exception);
+void SolarPosition(int doy, double hod, double& lat, double& lon) throw(Exception);
+void Sunrise(double lat, double lon, double ht, int doy, double& rise, double& set)
+   throw(Exception);
+int ProcessObs(RinexObsStream& ins, string& filename, RinexObsHeader& head)
+   throw(Exception);
+void WriteATHeader(void) throw(Exception);
+void WriteStationHeader(int npts, string sta_name, Position llr) throw(Exception);
+void ParseLine(string& str, vector<string>& wds) throw(Exception);
+int ReadATandCompute(void) throw(Exception);
+double obliquity(double elevation) throw(Exception);
 //void PartialsMatrix(Matrix<double>& P,int index,double lat,double lon,double obq);
 
 //------------------------------------------------------------------------------------
@@ -157,37 +160,6 @@ template<class T> int index(const std::vector<T> v, const T& t)
    return -1;
 }
 
-
-////----------------------------------------------------------------------------------
-//// format object - saves writing...
-//class format {
-//   int form;   // 0=general,1=float,2=scientific
-//   int wide;
-//   int prec;
-//   friend ostream& operator<<(ostream& os, const format& f);
-//public:
-//   explicit format(int w=13, int p=3, int f=1) : wide(w),prec(p),form(f) {}
-//   format& scientific() { form=2; return *this; }
-//   format& sci() { form=2; return *this; }
-//   format& fixed() { form=1; return *this; }
-//   format& fix() { form=1; return *this; }
-//   format& general() { form=0; return *this; }
-//   format& gen() { form=0; return *this; }
-//   format& width(int w) { wide=w; return *this; }
-//   format& w(int w) { wide=w; return *this; }
-//   format& precision(int p) { prec=p; return *this; }
-//   format& p(int p) { prec=p; return *this; }
-//   format& wp(int w, int p) { prec=p; wide=w; return *this; }
-//}; // end class format
-//ostream& operator<<(ostream& os, const format& f)
-//{
-//   if(f.form) os << (f.form==1 ? fixed : scientific);
-//   return os << " " << setw(f.wide) << setprecision(f.prec);
-//}
-// formats used here
-//format f96(9,6),f166(16,6),f103(10,3),f51(5,1),f82(8,2,2),f133(13,3);
-//format f136(13,6),f103s(10,3,2),f128(12,8),f93(9,3);
-
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
@@ -195,6 +167,9 @@ try {
    int iret;
    clock_t totaltime=clock(); // timer
    DayTime CurrEpoch;
+
+   BegTime = DayTime::BEGINNING_OF_TIME;
+   EndTime = DayTime::END_OF_TIME;
 
       // Title description and run time
    CurrEpoch.setLocalTime();
@@ -257,8 +232,9 @@ catch (...) {
 
 //------------------------------------------------------------------------------------
 // set defaults
-void ConfigureAndDefaults(void)
+void ConfigureAndDefaults(void) throw(Exception)
 {
+try {
    verbose = false;
    debug = false;
    LogFile = string("IonoBias.log");
@@ -279,10 +255,14 @@ void ConfigureAndDefaults(void)
    SkipPreproc =false;     // if true, assume AT file exists and don't generate it
    ComputeSatBiases=true;  // if true, compute Sat+Rx biases, else Rx biases only
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // Define, parse and evaluate command line
-int GetCommandLine(int argc, char **argv)
+int GetCommandLine(int argc, char **argv) throw(Exception)
 {
 try {
    bool help=false;
@@ -397,7 +377,7 @@ try {
    dashTimeSector.setMaxCount(1);
 
    CommandOption dashTermOffset(CommandOption::hasArgument, CommandOption::stdType,
-      0,"TermOffset", " --TerminOffset <n>   Terminator offset (minutes)");
+      0,"TerminOffset", " --TerminOffset <n>   Terminator offset (minutes)");
    dashTermOffset.setMaxCount(1);
 
    CommandOption dashIonoHt(CommandOption::hasArgument, CommandOption::stdType,
@@ -431,9 +411,9 @@ try {
    // allow user to put all options in a file
    // could also scan for debug here
    vector<string> Args;
-   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args,verbose,debug);
-   argc = Args.size();
-   if(argc==0) Args.push_back(string("-h"));
+   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
+
+   if(Args.size()==0) Args.push_back(string("-h"));
 
       // pass the rest
    argc = Args.size()+1;
@@ -446,16 +426,16 @@ try {
       strcpy(CArgs[j],Args[j-1].c_str());
    }
 
-   //if(debug) {
-      //cout << "List passed to parse\n";
-      //for(i=0; i<argc; i++) cout << i << " " << CArgs[i] << endl;
-   //}
+   if(debug) {
+      cout << "List passed to parse\n";
+      for(i=0; i<argc; i++) cout << i << " " << CArgs[i] << endl;
+   }
    Par.parseOptions(argc, CArgs);
+   delete[] CArgs;
 
    if(dashh.getCount() > 0) { help = true; }
 
-   if (Par.hasErrors())
-   {
+   if(Par.hasErrors()) {
       cerr << "\nErrors found in command line input:\n";
       Par.dumpErrors(cerr);
       cerr << "...end of Errors\n\n";
@@ -463,7 +443,8 @@ try {
    }
 
    if(help) {
-      Par.displayUsage(cout,false); cout << endl;
+      Par.displayUsage(cout,false);
+      cout << endl;
    }
    
       // get values found on command line
@@ -620,61 +601,61 @@ try {
    }
    if(dashMinPoints.getCount()) {
       values = dashMinPoints.getValue();
-      MinPoints = StringUtils::asInt(values[0]);
+      MinPoints = asInt(values[0]);
       if(help) cout << "Minimum points per satellite = " << MinPoints << endl;
    }
    if(dashMinTimeSpan.getCount()) {
       values = dashMinTimeSpan.getValue();
-      MinTimeSpan = StringUtils::asDouble(values[0]);
+      MinTimeSpan = asDouble(values[0]);
       if(help) cout << "Minimum time span = " << MinTimeSpan << " minutes" << endl;
    }
    if(dashMinElevation.getCount()) {
       values = dashMinElevation.getValue();
-      MinElevation = StringUtils::asDouble(values[0]);
+      MinElevation = asDouble(values[0]);
       //if(MinElevation <= 0.0 || MinElevation >= 90.0) {
       //}
       if(help) cout << "Minimum elevation = " << MinElevation << "degrees " << endl;
    }
    if(dashMinLatitude.getCount()) {
       values = dashMinLatitude.getValue();
-      MinLatitude = StringUtils::asDouble(values[0]);
+      MinLatitude = asDouble(values[0]);
       //if(MinLatitude <= -90.0 || MinLatitude >= 90.0) {
       //}
       if(help) cout << "Minimum latitude = " << MinLatitude << " degrees" << endl;
    }
    if(dashMaxLatitude.getCount()) {
       values = dashMaxLatitude.getValue();
-      MaxLatitude = StringUtils::asDouble(values[0]);
+      MaxLatitude = asDouble(values[0]);
       //if(MaxLatitude <= -90.0 || MaxLatitude >= 90.0) {
       //}
       if(help) cout << "Maximum latitude = " << MaxLatitude << " degrees" << endl;
    }
    if(dashMinLongitude.getCount()) {
       values = dashMinLongitude.getValue();
-      MinLongitude = StringUtils::asDouble(values[0]);
+      MinLongitude = asDouble(values[0]);
       while(MinLongitude < 0.0) MinLongitude+=360.0;
       if(help) cout << "Minimum longitude = " << MinLongitude << " degrees" << endl;
    }
    if(dashMaxLongitude.getCount()) {
       values = dashMaxLongitude.getValue();
-      MaxLongitude = StringUtils::asDouble(values[0]);
+      MaxLongitude = asDouble(values[0]);
       while(MaxLongitude < 0.0) MaxLongitude+=360.0;
       if(help) cout << "Maximum longitude = " << MaxLongitude << " degrees" << endl;
    }
    if(dashTimeSector.getCount()) {
       values = dashTimeSector.getValue();
-      TimeSector = StringUtils::lowerCase(values[0]);
+      TimeSector = lowerCase(values[0]);
       if(help) cout << "Time sector = " << TimeSector << endl;
       // TD check that it is valid
    }
    if(dashTermOffset.getCount()) {
       values = dashTermOffset.getValue();
-      TermOffset = StringUtils::asDouble(values[0]);
+      TermOffset = asDouble(values[0]);
       if(help) cout << "Terminal offset = " << TermOffset << " minutes" << endl;
    }
    if(dashIonoHt.getCount()) {
       values = dashIonoHt.getValue();
-      IonoHt = StringUtils::asDouble(values[0]);
+      IonoHt = asDouble(values[0]);
       if(help) cout << "Ionosphere height = " << IonoHt << " km" << endl;
    }
 
@@ -774,58 +755,98 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-      cerr << "IonoBias:GetCommandLine caught an exception\n" << e;
-      GPSTK_RETHROW(e);
-}
-catch (...) {
-      cerr << "IonoBias:GetCommandLine caught an unknown exception\n";
-}
-   return -1;
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void PreProcessArgs(const char *arg, vector<string>& Args, bool& ver, bool& deb)
-{
-   if(arg[0]=='-' && arg[1]=='f') {
-      string filename(arg);
-      filename.erase(0,2);
-      //cout << "Found a file of options: " << filename << endl;
-      ifstream infile(filename.c_str());
-      if(!infile) {
-         cerr << "Error: could not open options file "
-            << filename << endl;
-      }
-      else {
-         char c;
-         string buffer;
-         while( infile >> buffer) {
-            if(buffer[0] == '#') {         // skip to end of line
-               while(infile.get(c)) { if(c=='\n') break; }
-            }
-            else PreProcessArgs(buffer.c_str(),Args,ver,deb);
-         }
-      }
-   }
-   else if((arg[0]=='-' && arg[1]=='d') || string(arg)==string("--debug")) {
-      deb = true;
-      //cout << "Found the debug switch" << endl;
-   }
-   else if((arg[0]=='-' && arg[1]=='v') || string(arg)==string("--verbose")) {
-      ver = true;
-      //cout << "Found the verbose switch" << endl;
-   }
-   else if((arg[0]=='-' && arg[1]=='l')) {
-      LogFile = string(&arg[2]);
-      //cout << "Found the log file name " << LogFile << endl;
-   }
-   else Args.push_back(arg);
-}
-
-//------------------------------------------------------------------------------------
-int Initialize(void)
+// Pull out --debug --verbose -f<f> and --file <f> and -l<f> --log <f> options.
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
 {
 try {
+   static bool found_cfg_file=false;
+   static bool found_log_file=false;
+
+   if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
+      string filename(arg);
+      if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
+      if(debug) cout << "Found a file of options: " << filename << endl;
+      ifstream infile(filename.c_str());
+      if(!infile) {
+         cout << "Error: could not open options file " << filename << endl;
+         return;
+      }
+
+      bool again_cfg_file=false;
+      bool again_log_file=false;
+      char c;
+      string buffer,word;
+      while(1) {
+         getline(infile,buffer);
+         stripTrailing(buffer,'\r');
+
+         // process the buffer before checking eof or bad b/c there can be
+         // a line at EOF that has no CRLF...
+         while(!buffer.empty()) {
+            word = firstWord(buffer);
+            if(again_cfg_file) {
+               word = "-f" + word;
+               again_cfg_file = false;
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else if(again_log_file) {
+               word = "-l" + word;
+               again_log_file = false;
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else if(word[0] == '#') { // skip to end of line
+               buffer.clear();
+            }
+            else if(word == "--file" || word == "-f")
+               again_cfg_file = true;
+            else if(word == "--log" || word == "-l")
+               again_log_file = true;
+            else if(word[0] == '"') {
+               word = stripFirstWord(buffer,'"');
+               buffer = "dummy " + buffer;            // to be stripped later
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else
+               PreProcessArgs(word.c_str(),Args);
+
+            word = stripFirstWord(buffer);      // now remove it from buffer
+         }
+         if(infile.eof() || !infile.good()) break;
+      }
+   }
+   else if(found_log_file || (arg[0]=='-' && arg[1]=='l')) {
+      LogFile = string(arg);
+      if(!found_log_file) LogFile.erase(0,2); else found_log_file = false;
+   }
+   else if(string(arg) == "--log")
+      found_log_file = true;
+   else if((arg[0]=='-' && arg[1]=='d') || string(arg)==string("--debug"))
+      debug = true;
+   else if((arg[0]=='-' && arg[1]=='v') || string(arg)==string("--verbose"))
+      verbose = true;
+   else if(string(arg) == "--file" || string(arg) == "-f")
+      found_cfg_file = true;
+   else Args.push_back(arg);
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+
+
+//------------------------------------------------------------------------------------
+int Initialize(void) throw(Exception)
+{
+try {
+   static SP3EphemerisStore SP3EphList;
+   static BCEphemerisStore BCEphList;
+
       // open nav files and read EphemerisStore
    if(!NavDir.empty())
       for(int i=0; i<NavFiles.size(); i++)
@@ -876,10 +897,9 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-   cerr << "IonoBias:Initialize caught an exception\n";
-   GPSTK_RETHROW(e);
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
@@ -888,7 +908,7 @@ catch(gpstk::Exception& e) {
 //       -3 FFStream exception,
 //       -4 gpstk exception,
 //       -5 no sunrise
-int Process(void)
+int Process(void) throw(Exception)
 {
 try {
    int i,iret;
@@ -933,19 +953,15 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-   cerr << "IonoBias:Process caught an exception\n";
-   GPSTK_RETHROW(e);
-}
-catch(...) {
-   cerr << "IonoBias:Process caught an unknown exception\n";
-   return -1;
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
 // Return 0 ok, -3 FFStream exception, -4 gpstk exception, -5 no sunrise
 int ProcessHeader(RinexObsStream& ins, string& filename, RinexObsHeader& head)
+   throw(Exception)
 {
 try {
       // input header
@@ -1017,14 +1033,9 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-   cerr << "IonoBias:ProcessHeader caught an exception\n";
-   GPSTK_RETHROW(e);
-}
-catch(...) {
-   cerr << "IonoBias:ProcessHeader caught an unknown exception\n";
-   return -1;
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
@@ -1032,7 +1043,9 @@ catch(...) {
 // compute the begin and end times (hours of the day) of our data window,
 // which will = sunrise + TermOffset and sunset - TermOffset.
 void TimeLimits(Position llr, int doy, string& sector, double& begin, double& end)
+   throw(Exception)
 {
+try {
    begin = 0;
    end = 24.;
 
@@ -1052,6 +1065,10 @@ void TimeLimits(Position llr, int doy, string& sector, double& begin, double& en
    while(end <  0) end += 24;
    while(end >= 24) end -= 24;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // Compute the position (latitude and longitude, in degrees) of the sun
@@ -1059,12 +1076,17 @@ void TimeLimits(Position llr, int doy, string& sector, double& begin, double& en
 // Adapted from sunpos by D. Coco 12/15/94
 //#include "icd_200_constants.hpp     // for TWO_PI
 //#include "geometry.hpp"             // for DEG_TO_RAD and RAD_TO_DEG
-void SolarPosition(int doy, double hod, double& lat, double& lon)
+void SolarPosition(int doy, double hod, double& lat, double& lon) throw(Exception)
 {
+try {
    lat = sin(23.5*DEG_TO_RAD)*sin(TWO_PI*double(doy-83)/365.25);
-   lat = lat / SQRT(1.0-lat*lat);
+   lat = lat / ::sqrt(1.0-lat*lat);
    lat = RAD_TO_DEG*atan(lat);
    lon = 180.0 - hod*15.0;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
@@ -1072,7 +1094,9 @@ void SolarPosition(int doy, double hod, double& lat, double& lon)
 // given a geographic position and day of year.
 // Adapted from D. Coco 2/7/96 from equation in Supplement to the Astromonical Almanac
 void Sunrise(double lat, double lon, double ht, int doy, double& rise, double& set)
+   throw(Exception)
 {
+try {
    const double DEG_TO_HRS=(24.0/360.0); // should this be sidereal day?
    double sunlat,sunlon,hod;
 
@@ -1101,10 +1125,15 @@ void Sunrise(double lat, double lon, double ht, int doy, double& rise, double& s
    while(set <  0) set += 24;
    while(set >= 24) set -= 24;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // Return 0 ok, -3 FFStream exception, -4 gpstk exception, -6 stream not good
 int ProcessObs(RinexObsStream& ins, string& filename, RinexObsHeader& head)
+   throw(Exception)
 {
 try {
    int i,j,k,npts[MAXPRN+1];
@@ -1206,7 +1235,7 @@ try {
          fout << " " << setw(8) << setprecision(1) << robs.time.GPSsow();
          fout << " " << setw(9) << setprecision(5) << LA; // latitude
          fout << " " << setw(10) << setprecision(5) << LO+cr; // co-rotating longitude
-         fout << " " << setw(4) << setprecision(2) << ob; // obliquity
+         fout << " " << setw(4) << setprecision(2) << ob; // 1/obliquity
          fout << " " << setw(8) << setprecision(3) << SR; // slant TEC
          fout << " " << setw(6) << setprecision(2) << 1;  // sigma ?? TD
          fout << " " << setw(2) << sat.id; // PRN
@@ -1257,18 +1286,13 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-   cerr << "IonoBias:ProcessObs caught an exception\n";
-   GPSTK_RETHROW(e);
-}
-catch(...) {
-   cerr << "IonoBias:ProcessObs caught an unknown exception\n";
-   return -1;
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void WriteATHeader(void)
+void WriteATHeader(void) throw(Exception)
 {
 try {
    int i,j;
@@ -1281,17 +1305,13 @@ try {
    }
    fout << fixed;
 }
-catch(gpstk::Exception& e) {
-   cerr << "IonoBias:WriteATHeader caught an exception\n";
-   GPSTK_RETHROW(e);
-}
-catch(...) {
-   cerr << "IonoBias:WriteATHeader caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void WriteStationHeader(int npts, string sta_name, Position llr)
+void WriteStationHeader(int npts, string sta_name, Position llr) throw(Exception)
 {
 try {
    fout.seekp(current_header_pos);
@@ -1306,18 +1326,15 @@ try {
                 //gllh.getAltitude();
    fout << endl;
 }
-catch(gpstk::Exception& e) {
-   cerr << "IonoBias:WriteStationHeader caught an exception\n";
-   GPSTK_RETHROW(e);
-}
-catch(...) {
-   cerr << "IonoBias:WriteStationHeader caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void ParseLine(string& str, vector<string>& wds)
+void ParseLine(string& str, vector<string>& wds) throw(Exception)
 {
+try {
    istringstream iss(str);
    string wd;
    wds.clear();
@@ -1325,9 +1342,13 @@ void ParseLine(string& str, vector<string>& wds)
       wds.push_back(wd);
    }
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
-int ReadATandCompute(void)
+int ReadATandCompute(void) throw(Exception)
 {
 try {
    ifstream ifs;
@@ -1402,7 +1423,7 @@ try {
       ParseLine(line,words);
       if(words[0] != string("Npt")) { //oops
       }
-      n = StringUtils::asInt(words[1]);
+      n = asInt(words[1]);
       stationID = words[3];
 
       if(n > 0 && verbose) {
@@ -1416,15 +1437,15 @@ try {
       for(j=0; j<n; j++) {
          getline(ifs,line);
          ParseLine(line,words);
-         wn = StringUtils::asInt(words[0]);
-         sow = StringUtils::asDouble(words[1]);
-         lat = StringUtils::asDouble(words[2]);
-         lon = StringUtils::asDouble(words[3]);
-         obq = StringUtils::asDouble(words[4]);
-         sr = StringUtils::asDouble(words[5]);
-         sig = StringUtils::asDouble(words[6]);
-         prn = StringUtils::asInt(words[7]);
-         nfile = StringUtils::asInt(words[8]);
+         wn = asInt(words[0]);
+         sow = asDouble(words[1]);
+         lat = asDouble(words[2]);
+         lon = asDouble(words[3]);
+         obq = asDouble(words[4]);
+         sr = asDouble(words[5]);
+         sig = asDouble(words[6]);
+         prn = asInt(words[7]);
+         nfile = asInt(words[8]);
 
          // do not include rejected data
          if(!(EstimationFlag[i][prn])) continue;
@@ -1438,10 +1459,10 @@ try {
             MaxCRLon = MinCRLon = lon;
          }
          else {
-            if(ABS(lat) > MaxLat) MaxLat=lat;
-            if(ABS(lat) < MinLat) MinLat=lat;
-            if(ABS(lon) > MaxCRLon) MaxCRLon=lon;
-            if(ABS(lon) < MinCRLon) MinCRLon=lon;
+            if(fabs(lat) > MaxLat) MaxLat=lat;
+            if(fabs(lat) < MinLat) MinLat=lat;
+            if(fabs(lon) > MaxCRLon) MaxCRLon=lon;
+            if(fabs(lon) < MinCRLon) MinCRLon=lon;
          }
          ndata++;
 
@@ -1455,11 +1476,8 @@ try {
             ComponentIDs.push_back(Comp);
          }
 
-         // Before computing partials matrix, scale lat and lon
-         // to avoid large numerical range <=> difficult inversion
-         //lat /= 1000.0;
-         //lon /= 1000.0;
          //PartialsMatrix(Par,in,lat,lon,obq);
+         // note that obq is 1/obliquity
          // row of partials matrix has [in] = 1 and if nb=NBiasParam
             PM[0] =       obq; // [nb+0]               (all models)
             PM[1] = lat * obq; // [nb+1]               (all models)
@@ -1475,6 +1493,7 @@ try {
             PM[8] = lat * lat * lon * obq; // [nb+8]   (cubic only)
             PM[9] = lat * lon * lon * obq; // [nb+9]   (cubic only)
          }
+
          //LS.Add(Par,Dat,Wgt); do the sequential LS by hand for efficiency
          //
          // Inf += transpose(partials) * partials (weight = 1)
@@ -1557,7 +1576,7 @@ try {
          << setfill(' ') << fixed
          << " " << setw(12) << setprecision(6) << Sol(i)                // bias
          << scientific
-         << " " << setw(10) << setprecision(3) << SQRT(Cov(i,i))        // sigma
+         << " " << setw(10) << setprecision(3) << ::sqrt(Cov(i,i))        // sigma
          << endl;
       oflog << oss.str();
       if(biasout) fout << oss.str();
@@ -1568,35 +1587,28 @@ try {
       oss << setw(3) << i+1-NBiasParam << fixed                         // number
          << " " << setw(12) << setprecision(6) << Sol(i)                // solution
          << scientific
-         << " " << setw(10) << setprecision(3) << SQRT(Cov(i,i))        // sigma
+         << " " << setw(10) << setprecision(3) << ::sqrt(Cov(i,i))        // sigma
          << endl;
       oflog << oss.str();
       if(biasout) fout << oss.str();
    }
 
    // compute standard error estimates
-
-
-
-
+   // TBD
 
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-   cerr << "IonoBias:ReadATandCompute caught an exception\n";
-   GPSTK_RETHROW(e);
-}
-catch(...) {
-   cerr << "IonoBias:ReadATandCompute caught an unknown exception\n";
-}
-   return -1;
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-// elevation in degrees
-double obliquity(double elevation)
+// elevation in degrees. Return the inverse of the obliquity factor.
+double obliquity(double elevation) throw(Exception)
 {
+try {
    double ob;
    //const double coef[4]={1.02056,0.466332,3.50523,-1.84119};
    //double x2=(1-elevation/90.)*(1-elevation/90.);
@@ -1604,9 +1616,13 @@ double obliquity(double elevation)
    //for(int i=2; i>=0; i--) ob = ob*x2 + coef[i];
 
    ob = WGS84.a()*cos(elevation*DEG_TO_RAD)/(WGS84.a()+IonoHt*1000);
-   ob = SQRT(1.0-ob*ob);
+   ob = ::sqrt(1.0-ob*ob);
 
    return ob;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------

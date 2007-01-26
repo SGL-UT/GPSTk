@@ -33,6 +33,7 @@
 
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // version number for the entire gpstk discontinuity corrector code,
@@ -61,7 +62,7 @@ try {
       value.erase(0,pos+1);
    }
 
-   setParameter(label, StringUtils::asDouble(value));
+   setParameter(label, asDouble(value));
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
@@ -107,7 +108,7 @@ try {
       ostringstream stst;
       stst << it->first                            // label
          << "=" << it->second;                     // value
-      os << " " << StringUtils::leftJustify(stst.str(),18)
+      os << " " << leftJustify(stst.str(),18)
          << " : " << CFGdescription[it->first]     // description
          << endl;
    }
@@ -119,7 +120,7 @@ try {
       ostringstream stst;
       stst << it->first                            // label
          << "=" << it->second;                     // value
-      os << " " << StringUtils::leftJustify(stst.str(),25)
+      os << " " << leftJustify(stst.str(),25)
          << " : " << CFGdescription[it->first].substr(2)  // description
          << endl;
    }

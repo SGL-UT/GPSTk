@@ -48,10 +48,10 @@
 
 #include <vector>
 #include <string>
-//#include <time.h>
 
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // find the index of first occurance of item t (of type T) in vector<T> v;
@@ -68,16 +68,14 @@ template<class T> int index(const std::vector<T> v, const T& t)
 // Returns 0 on success.  Input and output files should diff without error.
 int main(int argc, char *argv[])
 {
-   //clock_t totaltime=clock();
-
 try {
    bool AllNumeric=false, DumpPos=false, help=false;
    bool DumpAll=false,DumpAllObs=false,DumpAllSat=false,ok;
    int i,j;
-   string X,Y,Z,T,rms,pdop,gdop,N;
+   string X,Y,Z,T,rms,pdop,gdop,N,outputFormat=string("%4F %10.3g");
    RinexObsHeader::RinexObsType ot;
    RinexSatID sat;
-   string line, word, filename;
+   string line, word, filename, leftpad=string(""), rightpad=string("");
    vector<RinexObsHeader::RinexObsType> otlist;
    vector<RinexSatID> satlist;
    RinexObsHeader header;
@@ -97,15 +95,16 @@ try {
       if(word == "pos") DumpPos = true;
       else if(word == "-h" || word == "--help") help = true;
       else if(word == "-file") filename = string(argv[++i]);
-      else if(word == "-n") AllNumeric = true;
-      else if(word == "-sat") {
+      else if(word == "-n" || word == "--num") AllNumeric = true;
+      else if(word == "--format") outputFormat = string(argv[++i]);
+      else if(word == "-sat" || word == "--sat") {
          sat.fromString(string(argv[++i]));
          if(!sat.isValid()) cout << "Error: input argument " << argv[i]
                << " is not a valid satellite id" << endl;
          else
             satlist.push_back(sat);
       }
-      else if(word == "-obs") {
+      else if(word == "-obs" || word == "--obs") {
          ot = RinexObsHeader::convertObsType(argv[++i]);
          if(RinexObsHeader::convertObsType(ot) == string("UN"))
             cout << "Error: input argument " << argv[i]
@@ -132,17 +131,19 @@ try {
    }
 
    if(argc < 2 || help) {
-      cout << "Read a Rinex file and dump the observation data\n"
-         "    for the given satellite(s).\n"
-         " Usage: RinexDump [-file] <file> {<input>} [-n]\n"
-         "     <input> is {[-sat] <satellite(s)> [-obs] <obstype(s)> | pos}\n"
-         "    Output is to the screen with one line per satellite/epoch\n"
-         //"     with columns <week> <sow> <sat> <obs LLI SSI> for each obs type\n"
-         "    If pos appears, dump only position info from auxiliary headers.\n"
-         //"     with columns <week> <sow> <Nsat> <X Y Z Clk PDOP GDOP RMS>\n"
-         "    If all <input> is missing, all obs from all sats are dumped.\n"
-         "    -n   make output purely numeric.\n"
-         "    -obs and -sat are optional but may remove ambiguity (e.g. S8)\n";
+      cout << 
+"Read a RINEX file and dump the data for the given observation types and satellites.\n"
+"Output is to the screen with one time tag and satellite per line\n"
+" Usage: RinexDump [--file] <file> [[--obs] obstype ..] [[--sat] sat ..] [options]\n"
+"  --obs and --sat are optional but may be needed to remove ambiguity (e.g. S8).\n"
+"  If no satellites are given, all are output; likewise for observation types.\n"
+"  Output begins with header lines (starting with #) identifying input and columns.\n"
+" Options are:\n"
+"    -n or --num   make output purely numeric (no header, no system char on sats)\n"
+"    pos           output only positions from aux headers; sat and obs are ignored.\n"
+"    --format <f>  output times in (DayTime) format (" << outputFormat << ")\n"
+"    -h or --help  print this and quit.\n"
+" E.g. RinexDump test2820.06o L1 L2 G17\n";
       return -1;
    }
 
@@ -185,21 +186,21 @@ try {
       otlist.push_back(header.obsTypeList[j]);
 
    // echo input
-   cout << "# Rinexdump File: " << filename << "  Data:";
-   if(DumpPos) {
-      cout << " Positions (in auxiliary header comments)";
+   if(!AllNumeric) {
+      cout << "# Rinexdump File: " << filename;
+      if(DumpPos) cout << " Positions (in auxiliary header comments)";
+      else {
+         cout << "   Satellites:";
+         if(satlist.size() > 0)
+            for(j=0; j<satlist.size(); j++) { cout << " " << satlist[j]; }
+         else cout << " ALL";
+         cout << "   Observations:";
+         if(!DumpAllObs) for(j=0; j<otlist.size(); j++)
+            cout << " " << RinexObsHeader::convertObsType(otlist[j]);
+         else cout << " ALL";
+      }
+      cout << endl;
    }
-   else {
-      cout << "   Satellites:";
-      if(satlist.size() > 0)
-         for(j=0; j<satlist.size(); j++) { cout << " " << satlist[j]; }
-      else cout << " ALL";
-      cout << "   Observations:";
-      if(!DumpAllObs) for(j=0; j<otlist.size(); j++)
-         cout << " " << RinexObsHeader::convertObsType(otlist[j]);
-      else cout << " ALL";
-   }
-   cout << endl;
 
    if(otlist.size() == 0) {
       cout << " Nothing to do.\n";
@@ -207,16 +208,25 @@ try {
    }
 
    // dump the column headers
-   cout << "# Week  GPS_sow";
-   if(DumpPos)
-      cout << " NSVs        X_(m)         Y_(m)         Z_(m)       Clk_(m)"
-            << "  PDOP  GDOP   RMS_(m)";
-   else {
-      cout << " Sat";
-      for(j=0; j<otlist.size(); j++) cout << "            "
-         << RinexObsHeader::convertObsType(otlist[j]) << " L S";
+   if(!AllNumeric) {
+      // figure out widths
+      DayTime Now;
+      string ts;
+      ts = "# Time (" + outputFormat + ")";
+      int n = ts.size() - Now.printf(outputFormat).size();
+      if(n < 0) rightpad = leftJustify(string(""),-n-1);
+      else leftpad = leftJustify(string(""),n);
+      cout << ts;
+      
+      if(DumpPos) cout << " NSVs        X_(m)         Y_(m)         Z_(m)"
+            << "       Clk_(m)  PDOP  GDOP   RMS_(m)";
+      else {
+         cout << " Sat";
+         for(j=0; j<otlist.size(); j++) cout << "            "
+            << RinexObsHeader::convertObsType(otlist[j]) << " L S";
+      }
+      cout << endl;
    }
-   cout << endl;
 
    cout << fixed;
    while(RinFile >> obsdata)
@@ -233,21 +243,21 @@ try {
          // loop over comments in the header data
          X=Y=Z=T=pdop=gdop=rms=N=string();
          for(j=0,i=0; i<obsdata.auxHeader.commentList.size(); i++) {
-            line = StringUtils::stripTrailing(obsdata.auxHeader.commentList[i],
+            line = stripTrailing(obsdata.auxHeader.commentList[i],
                                  string("COMMENT"),1);
-            word = StringUtils::stripFirstWord(line);
+            word = stripFirstWord(line);
             if(word == "XYZT") {
-               X = StringUtils::stripFirstWord(line);
-               Y = StringUtils::stripFirstWord(line);
-               Z = StringUtils::stripFirstWord(line);
-               T = StringUtils::stripFirstWord(line);
+               X = stripFirstWord(line);
+               Y = stripFirstWord(line);
+               Z = stripFirstWord(line);
+               T = stripFirstWord(line);
                j++;
             }
             else if(word == "DIAG") {
-               N = StringUtils::stripFirstWord(line);
-               pdop = StringUtils::stripFirstWord(line);
-               gdop = StringUtils::stripFirstWord(line);
-               rms = StringUtils::stripFirstWord(line);
+               N = stripFirstWord(line);
+               pdop = stripFirstWord(line);
+               gdop = stripFirstWord(line);
+               rms = stripFirstWord(line);
                j++;
             }
             else { // ignore
@@ -255,9 +265,9 @@ try {
          }
 
          // print it
-         if(j==2) cout << setw(4) << obsdata.time.GPSfullweek()
-            << setw(11) << setprecision(3) << obsdata.time.GPSsecond()
+         if(j==2) cout << leftpad << obsdata.time.printf(outputFormat) << rightpad
             << setw(4) << N
+            << setprecision(3)
             << " " << setw(13) << X
             << " " << setw(13) << Y
             << " " << setw(13) << Z
@@ -285,8 +295,7 @@ try {
             else {
                if(!ok) {       // output a line
                   // time tag
-                  cout << setw(4) << obsdata.time.GPSfullweek()
-                     << setw(11) << setprecision(3) << obsdata.time.GPSsecond();
+                  cout << leftpad << obsdata.time.printf(outputFormat) << rightpad;
                   // satellite
                   cout << " ";
                   if(AllNumeric)
@@ -303,27 +312,11 @@ try {
       }
    }
 
-   //totaltime = clock()-totaltime;
-   //cerr << "RinexDump timing: " << setprecision(3)
-      //<< double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
-
    return 0;
 }
-catch(gpstk::FFStreamError& e)
-{
-   cout << e;
-   return 1;
-}
-catch(gpstk::Exception& e)
-{
-   cout << e;
-   return 1;
-}
-catch (...)
-{
-   cout << "unknown error.  Done." << endl;
-   return 1;
-}
+catch(gpstk::FFStreamError& e) { cout << e; }
+catch(gpstk::Exception& e) { cout << e; }
+catch (...) { cout << "unknown error.  Done." << endl; }
    return -1;
 } // main()
 

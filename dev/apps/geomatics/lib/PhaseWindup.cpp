@@ -44,6 +44,7 @@
  
 // -----------------------------------------------------------------------------------
 // GPSTk includes
+#include "StringUtils.hpp"
 #include "Position.hpp"
 #include "Matrix.hpp"
 #include "geometry.hpp"             // DEG_TO_RAD
@@ -51,6 +52,7 @@
 
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 // -----------------------------------------------------------------------------------
 void SolarPosition(DayTime t, double& lat, double& lon, double& R, double& AR);
@@ -107,8 +109,7 @@ Matrix<double> SingleAxisRotation(double angle,
 {
 try {
    if(axis < 1 || axis > 3) {
-      Exception e(string("Invalid axis (1,2,3 <=> X,Y,Z): ")
-            + StringUtils::asString(axis));
+      Exception e(string("Invalid axis (1,2,3 <=> X,Y,Z): ") + asString(axis));
       GPSTK_THROW(e);
    }
    Matrix<double> R(3,3,0.0);

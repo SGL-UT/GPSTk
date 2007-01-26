@@ -31,6 +31,7 @@
 #define RINEX_EDITING_COMMANDS_INCLUDE
 
 //------------------------------------------------------------------------------------
+#include "Exception.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
@@ -81,23 +82,37 @@ private:
    int inOT;
    /// bias associated with this command.
    double bias;
+   /// map giving label as a string for each command type
+   static std::map<TYPE, std::string> typeLabel;
+
 public:
    /// Default constructor (type is set INVALID).
    REditCmd(void) { type=INVALID; }
    /// Destructor
    ~REditCmd(void);
    /// Constructor from a string which contains the editing command.
-   REditCmd(std::string s);
+   REditCmd(std::string s, std::ostream *oflog=&std::cout) throw(Exception);
    /// Is this a valid command?
-   inline bool valid(void) { return (type!=INVALID); }
+   inline bool valid(void) throw() { return (type!=INVALID); }
    /// Print the command on an ostream, with an optional message.
-   void Dump(std::ostream& os, std::string msg);
+   void Dump(std::ostream& os, std::string msg) throw(Exception);
+
+   class Initialize {
+      public: Initialize();
+   };
+   static Initialize REditCmdInitializer;
 };
 
-   /// operator==(REditCmd), defined so algorithm find() can be called.
+   /// operator==(REditCmd), defined so algorithm find() can be used to find
+   /// the "-" companion to "+" commands.
 inline bool operator==(const REditCmd& x, const REditCmd& y)
-   { return (x.type==y.type && x.SV==y.SV && x.time==y.time && x.sign==y.sign
-            && x.field==y.field && x.inOT==y.inOT && x.bias==y.bias); }
+   { return (x.type == y.type &&
+             x.SV == y.SV &&
+             //x.time == y.time &&
+             x.sign == -y.sign &&         // note the -
+             x.field == y.field &&
+             //x.bias == y.bias &&
+             x.inOT == y.inOT); }
 
 /// class REditCmdLessThan, for use with algorithm sort().
 class REditCmdLessThan {      
@@ -173,45 +188,54 @@ public:
       /// the output log file stream.
    std::ostream *oflog;
 
-      /// Default constructor
+      /// Default constructor. NB. Do not instantiate a RinexEditor outside of
+      /// main(), as static initialization order on some OSs (Solaris) mean that
+      /// DayTime::END_OF_TIME may not be defined at that point.
    RinexEditor(void);
       /// Destructor
    virtual ~RinexEditor(void);
+      /// return string giving the editor version
+   std::string getRinexEditVersion(void);
       /// pretty print configuration
    std::ostream& operator<<(const std::ostream& os);
       /// Add the Rinex Editing command structures to the user's command line.
-   void AddCommandLine(std::vector<std::string>& args);
+   void AddCommandLine(std::vector<std::string>& args) throw(Exception);
       /// Add a Rinex Editing command to this Editor.
-   void AddCommand(std::string cmd);
+   void AddCommand(std::string cmd) throw(Exception);
       /// Parse the command line for Rinex Editing commands.
-   int ParseCommands(void);
+   int ParseCommands(void) throw(Exception);
       /// Edit the input header to produce the output header.
-   int EditHeader(RinexObsHeader& RHIn, RinexObsHeader& RHOut);
+   int EditHeader(RinexObsHeader& RHIn, RinexObsHeader& RHOut) throw(Exception);
       /// Edit the input observation to produce the output observation.
-   int EditObs(RinexObsData& ROIn, RinexObsData& ROOut);
+   int EditObs(RinexObsData& ROIn, RinexObsData& ROOut) throw(Exception);
       /// Edit a Rinex observation file, using the stored Rinex Editing commands.
-   int EditFile(void);
+   int EditFile(void) throw(Exception);
       /// used to add optional records to the header.
-   int FillHeaderAndReplaceFile(std::string& TempFile,std::string& TrueOutputFile);
+   int FillHeaderAndReplaceFile(std::string& TempFile,std::string& TrueOutputFile) throw(Exception);
 
    /// This function is called after reading input header and before
    /// calling EditHeader (pass input header).
-   virtual int BeforeEditHeader(const RinexObsHeader& rhin) { return 0; }
+   virtual int BeforeEditHeader(const RinexObsHeader& rhin) throw(Exception)
+      { return 0; }
 
    /// This function is called after calling EditHeader (pass it the output header).
-   virtual int AfterEditHeader(const RinexObsHeader& rhout) { return 0; }
+   virtual int AfterEditHeader(const RinexObsHeader& rhout) throw(Exception)
+      { return 0; }
 
    /// This function is called after reading the input observation and before
    /// calling EditObs (pass it the input observation).
-   virtual int BeforeEditObs(const RinexObsData& roin) { return 0; }
+   virtual int BeforeEditObs(const RinexObsData& roin) throw(Exception)
+      { return 0; }
 
    /// This function is called before writing out the header (pass it
    /// the output header).
-   virtual int BeforeWritingHeader(RinexObsHeader& rhout) { return 0; }
+   virtual int BeforeWritingHeader(RinexObsHeader& rhout) throw(Exception)
+      { return 0; }
 
    /// This function is called before writing out the header that has been
    /// filled with optional records
-   virtual int BeforeWritingFilledHeader(RinexObsHeader& rhout) { return 0; }
+   virtual int BeforeWritingFilledHeader(RinexObsHeader& rhout) throw(Exception)
+      { return 0; }
 
    /** Callback, just before writing output obs (pass output obs)
    * Return value of BeforeWritingObs determines what is written:
@@ -225,7 +249,8 @@ public:
    *                roout.epochFlag = the return value), AND the obs data
    *                in roout, using the original value of roout.epochFlag
    */
-   virtual int BeforeWritingObs(RinexObsData& roout) { return 0; }
+   virtual int BeforeWritingObs(RinexObsData& roout) throw(Exception)
+      { return 0; }
 
    /// member access of the decimation time interval.
    double Decimation(void) { return Decimate; }
@@ -243,7 +268,14 @@ public:
    std::string InputDirectory(void) { return InputDir; }
    /// member access output directory.
    std::string OutputDirectory(void) { return OutputDir; }
-};
+   /// member access command list, return vector of strings, each with
+   /// comma-delimited fields: type,sign,sat,inOT,field,bias,time
+   /// e.g. AO,0,G33,-1,SZ,-99.990,-4713/01/01,00:00:0.0000
+   ///      IF,0,G33,-1,usno2930.06o.df,-99.990,-4713/01/01,00:00:0.0000
+   ///      HD,0,G33,80,ResCor v.3.7 ,-99.990,-4713/01/01,00:00:0.0000
+   std::vector<std::string> CommandList(void) throw(Exception);
+
+}; // end class RinexEditor
 
 //------------------------------------------------------------------------------------
 /// class TableData is used to store the information in the PRN/Obs table in the
@@ -274,7 +306,7 @@ public:
 
 //------------------------------------------------------------------------------------
 /// Pretty print the Rinex Editing command syntax, for use by the calling program.
-void DisplayRinexEditUsage(std::ostream& os);
+void DisplayRinexEditUsage(std::ostream& os) throw();
 
 //------------------------------------------------------------------------------------
 #endif   // nothing below this

@@ -80,12 +80,12 @@
 //------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk;
-using namespace gpstk::StringUtils;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
    // prgm data
 string PrgmName("ResCor");
-string PrgmVers("3.6 8/28/06");
+string PrgmVers("3.7 1/22/07");
 
 // data used in program
 const double CFF=C_GPS_M/OSC_FREQ;
@@ -108,8 +108,8 @@ const double gf2r=1;
 const double gf1p=wl1;
 const double gf2p=-wl2;
 const double alpha=f12/f22 - 1.0;
-const double FL1=F1*10.23e6;                          // Hz
-const double TECUperM=FL1*FL1*1.e-16/40.28;
+const double FL1=F1*10.23e6;                 // Hz
+const double TECUperM=FL1*FL1*1.e-16/40.28;  // 6.1617 TECU/m (0.16229 m/TECU)
 
 clock_t totaltime;
 string Title;
@@ -117,7 +117,7 @@ string Title;
 bool Debug,Verbose,Callow,Cforce;
 double IonoHt;
 RinexSatID SVonly;
-string ErrFile,LogFile;
+string LogFile;
 ofstream logof,oferr;         // don't call it oflog - RinexEditor has that
    // Rinex headers, input and output, saved
 RinexObsHeader rhead, rheadout;
@@ -149,9 +149,9 @@ Stats<double> ARSX,ARSY,ARSZ;      // average solution, for header output
 int inC1,inP1,inP2,inL1,inL2;      // indexes in rhead of C1, C1/P1, P2, L1 and L2
 int inEP,inPS;                     // flags for input of ephemeris, Rx position
 int inD1,inD2,inS1,inS2;
-DayTime CurrentTime(DayTime::BEGINNING_OF_TIME), PrgmEpoch;
+DayTime CurrentTime, PrgmEpoch;
 // these 3 vectors parallel
-vector<string> OTlist;             // list of OT to be computed
+vector<string> OTstrings;          // list of OTs (strings) to be computed
 vector<RinexObsHeader::RinexObsType> OTList;
 vector<int> OTindex;
 int otC1,otP1,otP2,otL1,otL2;      // indexes in rheadout of C1, C1/P1, P2, L1 and L2
@@ -177,7 +177,7 @@ map<RinexObsHeader::RinexObsType,map<RinexSatID,double> > AllBiases; // (OT,SV)
 map<DayTime,RefPosData> RefPosMap;
 double RefPosMapDT;
 
-string Rxhelp=
+string RxhelpString=
 "\n --RxFlat <fn> : fn is a file with reference receiver positions and times:\n"
 "  The first line in the file (other than comments, marked by # in column 1)\n"
 "  is the format for each line of the file, using the specifications in\n"
@@ -206,43 +206,40 @@ class RCRinexEditor : public RinexEditor
    
          /// after reading input header and before calling
          /// RinexEditor::EditHeader (pass input header)
-      virtual int BeforeEditHeader(const RinexObsHeader& rhin);
+      virtual int BeforeEditHeader(const RinexObsHeader& rhin) throw(Exception);
 
          /// after calling RinexEditor::EditHeader (pass output header)
-      virtual int AfterEditHeader(const RinexObsHeader& rhout);
+      virtual int AfterEditHeader(const RinexObsHeader& rhout) throw(Exception);
 
          /// after reading input obs and before calling
          /// RinexEditor::EditObs (pass input obs)
-      virtual int BeforeEditObs(const RinexObsData& roin);
+      virtual int BeforeEditObs(const RinexObsData& roin) throw(Exception);
 
          /// before writing out header (pass output header)
-      virtual int BeforeWritingHeader(RinexObsHeader& rhout);
+      virtual int BeforeWritingHeader(RinexObsHeader& rhout) throw(Exception);
 
          /// before writing out filled header
-      virtual int BeforeWritingFilledHeader(RinexObsHeader& rhout);
+      virtual int BeforeWritingFilledHeader(RinexObsHeader& rhout) throw(Exception);
 
          /// just before writing output obs (pass output obs)
-      virtual int BeforeWritingObs(RinexObsData& roout);
+      virtual int BeforeWritingObs(RinexObsData& roout) throw(Exception);
 
 }; // end class RCRinexEditor
 
-// RinexEditor data input from command line
-RCRinexEditor REC;
-
 //------------------------------------------------------------------------------------
 // prototypes
-int GetCommandLine(int argc, char **argv);
-int PrepareInput(void);
-int LoopOverObs(void);
+int GetCommandLine(int argc, char **argv, RCRinexEditor& rc) throw(Exception);
+int PrepareInput(void) throw(Exception);
+int LoopOverObs(void) throw(Exception);
 void SaveData(const RinexObsData& rod, const RinexObsHeader& rh,
-   int xL1, int xL2, int xP1, int xP2);
-int UpdateRxPosition(void);
-void ComputeNewOTs(RinexObsData& rod);
-void CloseOutputFile(void);
-void PreProcessArgs(const char *arg, vector<string>& Args);
-int setBiasLimit(RinexObsHeader::RinexObsType& ot, double lim);
+   int xL1, int xL2, int xP1, int xP2) throw(Exception);
+int UpdateRxPosition(void) throw(Exception);
+void ComputeNewOTs(RinexObsData& rod) throw(Exception);
+void CloseOutputFile(void) throw(Exception);
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
+int setBiasLimit(RinexObsHeader::RinexObsType& ot, double lim) throw(Exception);
 double removeBias(const RinexObsHeader::RinexObsType& ot, const RinexSatID& sat,
-   bool& reset, DayTime& tt, double delta);
+   bool& reset, DayTime& tt, double delta) throw(Exception);
 
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -250,9 +247,14 @@ int main(int argc, char **argv)
 try {
    totaltime = clock();
    int iret;
+   // NB. Do not instantiate editor outside main(), b/c DayTime::END_OF_TIME is a
+   // static const that can produce static intialization order problems under some OS.
+   RCRinexEditor REC;
+   CurrentTime = DayTime::BEGINNING_OF_TIME; // for same reason, init here...
 
       // Title and description
-   Title = PrgmName + ", part of the GPSTK ToolKit, Ver " + PrgmVers + ", Run ";
+   Title = PrgmName + ", part of the GPSTK ToolKit, Ver. " + PrgmVers
+      + " (editor " + REC.getRinexEditVersion() + string("), Run ");
    time_t timer;
    struct tm *tblock;
    timer = time(NULL);
@@ -269,7 +271,7 @@ try {
 
    // Set defaults, define command line and parse it.
    // Send REdit cmds to REC. Check validity of input.
-   iret = GetCommandLine(argc, argv);
+   iret = GetCommandLine(argc, argv, REC);
    if(iret) goto quit;
 
    // Initialize, read ephemerides, set flags and prepare for processing
@@ -291,24 +293,19 @@ try {
    cout << "End ResCor" << endl;
    return iret;
 }
-catch(gpstk::FFStreamError& e) {
-   cerr << e;
-}
-catch(gpstk::Exception& e) {
-   cerr << e;
-}
-catch (...) {
-   cerr << "Unknown error.  Abort." << endl;
-}
+catch(gpstk::FFStreamError& e) { cerr << e; }
+catch(gpstk::Exception& e) { cerr << e; }
+catch(exception& e) { cerr << e.what(); }
+catch (...) { cerr << "Unknown error.  Abort." << endl; }
    return 1;
 }   // end main()
 
 //------------------------------------------------------------------------------------
 // Set defaults, define command line and parse it. Send REdit cmds to REC.
 // Check validity of input
-int GetCommandLine(int argc, char **argv)
+int GetCommandLine(int argc, char **argv, RCRinexEditor& REC) throw(Exception)
 {
-   bool help=false;
+   bool help=false,Rxhelp=false,REChelp=false,ROThelp=false;
    int i,j,iret;
 try {
       // defaults
@@ -326,8 +323,7 @@ try {
    Callow = true;
    Cforce = false;
 
-   ErrFile = string("rc.err");
-   LogFile = string("rc.log");
+   LogFile = string("ResCor.log");
 
       // -------------------------------------------------
       // required options
@@ -336,7 +332,7 @@ try {
 
       // this only so it will show up in help page...
    CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-      'f',"","\nConfiguration input:\n -f<file>        File containing more options");
+      'f',"","\nConfiguration input:\n --file <file>   File containing more options");
 
    // ephemeris
    CommandOption dashn(CommandOption::hasArgument, CommandOption::stdType,
@@ -428,20 +424,24 @@ try {
       0,"Log","Output files:\n --Log <file>    Output log file name (rc.log)");
    dashLog.setMaxCount(1);
 
-   CommandOption dashErr(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Err"," --Err <file>    Output error file name (rc.err)");
-   dashErr.setMaxCount(1);
+   //CommandOption dashErr(CommandOption::hasArgument, CommandOption::stdType,
+   //   0,"Err"," --Err <file>    Output error file name (rc.err)");
+   //dashErr.setMaxCount(1);
 
    // help
    CommandOptionNoArg dashVerb(0,"verbose",
-      "Help:\n --verbose       Print extended output");
+      "Help:\n --verbose       Print extended output to log file.");
    dashVerb.setMaxCount(1);
 
    CommandOptionNoArg dashDebug(0,"debug",
-      " --debug         Print debugging information.");
+      " --debug         Print debugging information to log file.");
    dashDebug.setMaxCount(1);
 
    CommandOptionNoArg dashh('h', "help"," --help [or -h]  Print syntax and quit.");
+   CommandOptionNoArg dashrech(0, "REChelp",
+      " --REChelp       Print syntax of RinexEditor commands and quit.");
+   CommandOptionNoArg dashexth(0, "ROThelp",
+      " --ROThelp       Print list of extended Rinex obs. types commands and quit.");
 
    // ... other options
    CommandOptionRest Rest("");
@@ -456,7 +456,7 @@ try {
    "   along with the new extended observation types, to an output Rinex "
    "observation file.\n"
    "\nRequired arguments:\n"
-   " -IF and -OF (RinexEditor commands, see below) are required arguments.\n");
+   " -IF and -OF (RinexEditor commands: cf. --REChelp) are required arguments.\n");
 
       // -------------------------------------------------
       // allow user to put all options in a file
@@ -488,12 +488,23 @@ try {
       cout << "List after REC.AddCommandLine(Args)\n";
       argc = Args.size();
       for(i=0; i<argc; i++) cout << i << " " << Args[i] << endl;
-
-      //deque<REditCmd>::iterator it=REC.Cmds.begin();
-      //cout << "\nHere is the list of RE cmds\n";
-      //while(it != REC.Cmds.end()) { it->Dump(cout,string("")); ++it; }
-      //cout << "End of list of RE cmds" << endl;
    }
+
+      // get the list of commands and create OTstrings
+   vector<string> cmds=REC.CommandList();
+   if(Debug) cout << "Here is the list of RE commands:\n";
+   for(i=0; i<cmds.size(); i++) {
+      string cmd = cmds[i];
+      if(Debug) cout << "  " << cmd << endl;
+
+      vector<string> field;
+      while(cmd.size() > 0)
+         field.push_back(stripFirstWord(cmd,','));
+      if(field.size() < 5) continue;
+      if(field[0] == "AO")
+         OTstrings.push_back(field[4]);
+   }
+   if(Debug) cout << "End list of RE commands." << endl;
 
       // preprocess the commands
       // Return 0 ok, -1 no input file name, -2 no output file name
@@ -529,9 +540,11 @@ try {
       // -------------------------------------------------
       // was help requested?
    if(dashh.getCount() > 0) help=true;
-   if(dashRxhelp.getCount() > 0) help=true;
+   if(dashRxhelp.getCount() > 0) Rxhelp=true;
+   if(dashrech.getCount() > 0) REChelp=true;
+   if(dashexth.getCount() > 0) ROThelp=true;
       // if errors on the command line, dump them and turn on help
-   if(!help && (iret<0 || Par.hasErrors())) {
+   if(!(help || Rxhelp || REChelp || ROThelp) && (iret<0 || Par.hasErrors())) {
       cout << "Errors found in command line input:\n";
       if(iret==-1 || iret==-3) cout << "Input file name required: use -IF<name>\n";
       if(iret==-2 || iret==-3) cout << "Output file name required: use -OF<name>\n";
@@ -539,21 +552,31 @@ try {
       cout << "...end of Errors\n\n";
       help = true;
    }
-      // display syntax page
-   if(help) {
-      Par.displayUsage(cout,false);
-      if(dashRxhelp.getCount()) cout << Rxhelp;
-      cout << endl;
-      DisplayRinexEditUsage(cout);
-      DisplayExtendedRinexObsTypes(cout);
-      cout << "End of list of extended observation types\n";
+      // display syntax page(s)
+   if(help || Rxhelp || REChelp || ROThelp) {
+      if(help)
+         Par.displayUsage(cout,false);
+      if(Rxhelp)
+         cout << RxhelpString;
+      if(REChelp) {
+         if(help || Rxhelp) cout << endl;
+         cout << "ResCor is an implementation of the RinexEditor, therefore the"
+               << " following commands are accepted.\n";
+         DisplayRinexEditUsage(cout);
+      }
+      if(ROThelp) {
+         if(help || Rxhelp || REChelp) cout << endl;
+         DisplayExtendedRinexObsTypes(cout);
+         cout << "End of list of extended observation types\n";
+      }
       if(iret < 0) return iret;
    }
 
       // -------------------------------------------------
       // get values found on command line
    vector<string> values;
-   //dashf intercepted above
+
+   //dashf intercepted above by PreProcessArgs
    //dashh Handled above (first)
    //if(dashDebug.getCount()) Debug=true; done by PreProcessArgs
    //if(dashVerb.getCount()) Verbose=true; done by PreProcessArgs
@@ -627,7 +650,7 @@ try {
    }
    if(dashelev.getCount()) {
       values = dashelev.getValue();
-      minElev = StringUtils::asDouble(values[0]);
+      minElev = asDouble(values[0]);
       if(help) cout << "Set minimum elevation angle "
          << fixed << setprecision(2) << minElev << endl;
    }
@@ -656,7 +679,7 @@ try {
          }
          RinexObsHeader::RinexObsType OT;
          OT = RinexObsHeader::convertObsType(subfield[0]);
-         double limit=StringUtils::asDouble(subfield[1]);
+         double limit=asDouble(subfield[1]);
          int iret=setBiasLimit(OT,limit);
          if(iret) {
             cout << "Error: '--debias <OT,lim>' input is invalid: "
@@ -680,7 +703,7 @@ try {
    }
    if(dashih.getCount()) {
       values = dashih.getValue();
-      IonoHt = StringUtils::asDouble(values[0]);
+      IonoHt = asDouble(values[0]);
       if(help) cout << "Set ionosphere height to " << values[0] << " km" << endl;
    }
    if(dashSV.getCount()) {
@@ -692,11 +715,6 @@ try {
       values = dashLog.getValue();
       LogFile = values[0];
       if(help) cout << "Log file is " << LogFile << endl;
-   }
-   if(dashErr.getCount()) {
-      values = dashErr.getValue();
-      ErrFile = values[0];
-      if(help) cout << "Err file is " << ErrFile << endl;
    }
 
    if(Rest.getCount() && help) {
@@ -721,7 +739,8 @@ try {
          return -1;
       }
       else {
-         cout << "Opened log file " << LogFile << endl;
+         cout << "Opened log file (for all output, including debug) "
+            << LogFile << endl;
          logof << Title;
       }
       REC.oflog = &logof;
@@ -769,7 +788,6 @@ try {
       logof << "Tolerance in time-comparisions is " << setprecision(8)
          << REC.Tolerance() << " seconds." << endl;
       logof << "Log file name is " << LogFile << " (this file)" << endl;
-      logof << "Err file name is " << ErrFile << endl;
       if(SVonly.id > 0) logof << "Process only satellite : " << SVonly << endl;
 
       if(!NavDir.empty()) logof << "Nav Directory is " << NavDir  << endl;
@@ -815,19 +833,15 @@ try {
    if(help) return 1;
    return 0;
 }
-catch(gpstk::Exception& e) {
-      cerr << "ResCor:GetCommandLine caught an exception " << e << endl;
-      GPSTK_RETHROW(e);
-}
-catch (...) {
-      cerr << "ResCor:GetCommandLine caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
    return -1;
 }
 
 //------------------------------------------------------------------------------------
 // Initialize, read ephemerides, set flags and prepare for processing
-int PrepareInput(void)
+int PrepareInput(void) throw(Exception)
 {
 try {
    int iret,i;
@@ -1000,9 +1014,9 @@ try {
                   break;
                }
                fmtT = fmtP = lineT = lineP = string("");
-               for(i=0; i<StringUtils::numWords(line); i++) {
-                  word = StringUtils::words(line,i,1);
-                  fword = StringUtils::words(format,i,1);
+               for(i=0; i<numWords(line); i++) {
+                  word = words(line,i,1);
+                  fword = words(format,i,1);
                   if(pattern[i] == 'X') continue;
                   else if(pattern[i] == 'T') {
                      lineT += string(" ") + word;
@@ -1043,7 +1057,7 @@ try {
             }
             if(!ok) break;
             getline(inf,line);
-            StringUtils::stripTrailing(line,'\r');
+            stripTrailing(line,'\r');
          }
          inf.close();
          if(!have) {
@@ -1055,7 +1069,7 @@ try {
             }
             logof << ((havepat || havefmt) ? "was " : "were ")
                << "wrong or not found!\n";
-            logof << Rxhelp << endl;
+            logof << RxhelpString << endl;
             logof << "  [The input format is " << format << "]" << endl;
             logof << "  [The input pattern is " << pattern << "]" << endl;
             return -2;
@@ -1127,12 +1141,12 @@ try {
 
       // search for SX,Y,Z input and set DoSX flag, also XR,XI,X1,X2 and DoXR
    DoSVX = DoXR = false;
-   for(i=0; i<OTlist.size(); i++) {
-      if(OTlist[i]==string("SX")
-            || OTlist[i]==string("SY")
-            || OTlist[i]==string("SZ")) DoSVX = true;
-      if(OTlist[i]==string("XR") || OTlist[i]==string("XI")
-            || OTlist[i]==string("X1") || OTlist[i]==string("X2")) DoXR = true;
+   for(i=0; i<OTstrings.size(); i++) {
+      if(OTstrings[i]==string("SX")
+            || OTstrings[i]==string("SY")
+            || OTstrings[i]==string("SZ")) DoSVX = true;
+      if(OTstrings[i]==string("XR") || OTstrings[i]==string("XI")
+            || OTstrings[i]==string("X1") || OTstrings[i]==string("X2")) DoXR = true;
    }
 
    if(DoXR) {
@@ -1159,20 +1173,17 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-      cerr << "ResCor:PrepareInput caught an exception " << e << endl;
-      GPSTK_RETHROW(e);
-}
-catch (...) {
-      cerr << "ResCor:PrepareInput caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
    return -1;
 }
 
 //------------------------------------------------------------------------------------
 // after reading input header and before calling REC.EditHeader (pass input header)
-int RCRinexEditor::BeforeEditHeader(const RinexObsHeader& rhin)
+int RCRinexEditor::BeforeEditHeader(const RinexObsHeader& rhin) throw(Exception)
 {
+try {
    int i;
 
       // save the header for later use by SaveData and ComputeNewOTs
@@ -1246,13 +1257,12 @@ int RCRinexEditor::BeforeEditHeader(const RinexObsHeader& rhin)
    if(Verbose) logof << "(" << hex << InputData << ")" << dec << endl;
 
       // -----------------------------------------------------------------------
-      // NB OTlist comes from PreProcessArgs, manually looking for -AO<OT> commands
       // create list OTList of RinexObsTypes here, for use later
       // check dependencies of requested output OTs
    if(Verbose) logof << "Here is the list of added OTs:";
-   for(i=0; i<OTlist.size(); i++) {
-      if(Verbose) logof << " " << OTlist[i];
-      OTList.push_back(RinexObsHeader::convertObsType(OTlist[i]));
+   for(i=0; i<OTstrings.size(); i++) {
+      if(Verbose) logof << " " << OTstrings[i];
+      OTList.push_back(RinexObsHeader::convertObsType(OTstrings[i]));
    }
    if(Verbose) logof << endl;
    bool ok=true;
@@ -1260,7 +1270,7 @@ int RCRinexEditor::BeforeEditHeader(const RinexObsHeader& rhin)
       if((InputData & OTList[i].depend) != OTList[i].depend) {
          ostringstream stst;
          ok = false;
-         stst << "ResCor Error: Abort: Output OT " << OTlist[i]
+         stst << "ResCor Error: Abort: Output OT " << OTstrings[i]
             << " requires missing input:";
          unsigned int test=(InputData & OTList[i].depend);
          test ^= OTList[i].depend;
@@ -1279,11 +1289,16 @@ int RCRinexEditor::BeforeEditHeader(const RinexObsHeader& rhin)
 
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // after calling REC.EditHeader (pass output header)
-int RCRinexEditor::AfterEditHeader(const RinexObsHeader& rhout)
+int RCRinexEditor::AfterEditHeader(const RinexObsHeader& rhout) throw(Exception)
 {
+try {
    int i,j;
 
       // save header for later use by SaveData
@@ -1308,7 +1323,7 @@ int RCRinexEditor::AfterEditHeader(const RinexObsHeader& rhout)
    if(Cforce && otC1 > -1)                            otP1=otC1;
 
       // -----------------------------------------------------------------------
-      // create a list of indexes parallel to OTlist and OTList
+      // create a list of indexes parallel to OTstrings and OTList
    for(j=0; j<OTList.size(); j++) {
       for(i=0; i<rhout.obsTypeList.size(); i++) {
          if(rhout.obsTypeList[i] == OTList[j]) OTindex.push_back(i);
@@ -1317,11 +1332,16 @@ int RCRinexEditor::AfterEditHeader(const RinexObsHeader& rhout)
 
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // after reading input obs and before calling EditObs (pass input obs)
-int RCRinexEditor::BeforeEditObs(const RinexObsData& roin)
+int RCRinexEditor::BeforeEditObs(const RinexObsData& roin) throw(Exception)
 {
+try {
    if(Debug) logof << "\n----------------------------- " << roin.time
       << " ------------------------" << endl;
 
@@ -1370,18 +1390,28 @@ int RCRinexEditor::BeforeEditObs(const RinexObsData& roin)
    
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // before writing out header (pass output header)
-int RCRinexEditor::BeforeWritingHeader(RinexObsHeader& rhout)
+int RCRinexEditor::BeforeWritingHeader(RinexObsHeader& rhout) throw(Exception)
 {
+try {
    return 0;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
 // before writing out filled header (pass output header)
-int RCRinexEditor::BeforeWritingFilledHeader(RinexObsHeader& rhout)
+int RCRinexEditor::BeforeWritingFilledHeader(RinexObsHeader& rhout) throw(Exception)
 {
+try {
    if(headRAIM) {
          // put average RAIM position in header
       rhout.antennaPosition[0] = ARSX.Average();
@@ -1404,6 +1434,10 @@ int RCRinexEditor::BeforeWritingFilledHeader(RinexObsHeader& rhout)
 
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // just before writing output obs (pass output obs)
@@ -1413,8 +1447,9 @@ int RCRinexEditor::BeforeWritingFilledHeader(RinexObsHeader& rhout)
 //            1 write the obs data structure (note that if epochFlag==4,
 //               this will result in in-line header information only)
 //            2 write both header data (in auxHeader) and obs data
-int RCRinexEditor::BeforeWritingObs(RinexObsData& roout)
+int RCRinexEditor::BeforeWritingObs(RinexObsData& roout) throw(Exception)
 {
+try {
    int i;
       // what to do with other epochFlags (in-line header information, etc)
    if(roout.epochFlag != 0 && roout.epochFlag != 1) return 0;
@@ -1466,12 +1501,17 @@ int RCRinexEditor::BeforeWritingObs(RinexObsData& roout)
 
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 void SaveData(const RinexObsData& rod, const RinexObsHeader& rhd,
-   int xL1, int xL2, int xP1, int xP2)
+   int xL1, int xL2, int xP1, int xP2) throw(Exception)
 {
+try {
    RinexSatID sat;
    RinexObsData::RinexObsTypeMap otmap;
    RinexObsData::RinexSatMap::const_iterator it;
@@ -1502,11 +1542,16 @@ void SaveData(const RinexObsData& rod, const RinexObsHeader& rhd,
       DataStoreMap[sat] = DataStore;
    }  // end loop over sats
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // fill global data CurrRef
-int UpdateRxPosition(void)
+int UpdateRxPosition(void) throw(Exception)
 {
+try {
    int iret,i;
    double rho;
    Xvt xvt;
@@ -1636,7 +1681,7 @@ int UpdateRxPosition(void)
       }
    }
 
-   if(Verbose && inPS > -1) {
+   if(Debug && inPS > -1) {
       logof << "RxPos " << CurrentTime
          << " " << CurrentTime.printf("%04F %10.3g") << fixed << setprecision(3)
          << " " << setw(13) << CurrRef.RxPos.X()
@@ -1647,10 +1692,15 @@ int UpdateRxPosition(void)
 
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
-void ComputeNewOTs(RinexObsData& rod)
+void ComputeNewOTs(RinexObsData& rod) throw(Exception)
 {
+try {
    bool HaveR,HaveP,HaveEphRange,ok,reset,HaveEphThisSat;
    double rho,IPPLat,IPPLon,Obliq,Trop,Tgd;
    RinexObsData::RinexSatMap::iterator it;         // for loop over sats
@@ -1671,8 +1721,10 @@ void ComputeNewOTs(RinexObsData& rod)
       //otmap = it->second; 
 
          // delete this satellite if it is excluded, or if RAIM has marked it
-      if( (SVonly.id > 0 && sat != SVonly) || (editRAIM && HaveRAIM &&
-         find(Sats.begin(),Sats.end(),RinexSatID(-sat.id,sat.system))!=Sats.end())) {
+      if( (SVonly.id > 0 && sat != SVonly) ||
+           (editRAIM && HaveRAIM &&
+            find(Sats.begin(),Sats.end(),RinexSatID(-sat.id,sat.system))!=Sats.end()))
+      {
          SVDelete.push_back(sat);
          continue;
       }
@@ -1699,13 +1751,13 @@ void ComputeNewOTs(RinexObsData& rod)
          xvt.x[2] = CurrRef.RxPos.Z();
          try {
             if(SP3EphList.size() > 0)
-               rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat,
-                     SP3EphList);
+               rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat, SP3EphList);
             else if(BCEphList.size() > 0)
-               rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat,
-                     BCEphList);
-            else
-               throw gpstk::EphemerisStore::NoEphemerisFound("No ephemeris in store");
+               rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat, BCEphList);
+            else {
+               gpstk::EphemerisStore::NoEphemerisFound e("No ephemeris in store");
+               GPSTK_THROW(e);
+            }
          }
          catch(gpstk::EphemerisStore::NoEphemerisFound& e) {
             if(Verbose)
@@ -1714,29 +1766,27 @@ void ComputeNewOTs(RinexObsData& rod)
             HaveEphThisSat = false;
             HaveEphRange = false;
          }
+
          if(HaveEphRange) {
             if(minElev > 0.0 && CER.elevation < minElev) {
                HaveEphRange = HaveEphThisSat = false;
                SVDelete.push_back(sat);
             }
             else {
-            Position IPP=CurrRef.RxPos.getIonosphericPiercePoint(
+               Position IPP=CurrRef.RxPos.getIonosphericPiercePoint(
                   CER.elevation,CER.azimuth, IonoHt);
-            IPPLat = IPP.geodeticLatitude();
-            IPPLon = IPP.longitude();
-               // Leick, GPS Satellite Surveying, 2nd ed., eq 9.40
-            //Obliq = (96-CER.elevation)/90.0;
-            //Obliq = Obliq * Obliq * Obliq;
-            //Obliq = 1.0/(1 + 2*Obliq);
-            Obliq = WGS84.a()*cos(CER.elevation*DEG_TO_RAD)/(WGS84.a()+IonoHt);
-            Obliq = SQRT(1.0-Obliq*Obliq);
-               // NB other trop models may require a different call,
-               // and will throw(InvalidTropModel) here
-            Trop = ggtm.correction(CER.elevation);
-            if(BCEphList.size() > 0) {
-               const EngEphemeris& eph = BCEphList.findEphemeris(sat,CurrentTime);
-               Tgd = C_GPS_M * eph.getTgd();
-            }
+               IPPLat = IPP.geodeticLatitude();
+               IPPLon = IPP.longitude();
+               //Obliq = WGS84.a()*cos(CER.elevation*DEG_TO_RAD)/(WGS84.a()+IonoHt);
+               Obliq = cos(CER.elevation*DEG_TO_RAD)/(1.0+IonoHt/WGS84.a());
+               Obliq = ::sqrt(1.0-Obliq*Obliq);
+                  // NB other trop models may require a different call,
+                  // and will throw(InvalidTropModel) here
+               Trop = ggtm.correction(CER.elevation);
+               if(BCEphList.size() > 0) {
+                  const EngEphemeris& eph = BCEphList.findEphemeris(sat,CurrentTime);
+                  Tgd = C_GPS_M * eph.getTgd();
+               }
             }
          }
       }
@@ -1776,47 +1826,49 @@ void ComputeNewOTs(RinexObsData& rod)
       RinexObsData::RinexObsTypeMap::iterator jt;
       for(int i=0; i<OTList.size(); i++) {
          jt = it->second.find(OTList[i]);
-         if(jt == it->second.end()) continue;        // this would be an error, no?
+         if(jt == it->second.end()) continue;   // error. throw?
+
          jt->second.data = 0.0;                 // default = marked bad
          ok = false;
-         if(OTlist[i] == string("ER")) {
+
+         if(OTstrings[i] == string("ER")) {
             ok = HaveEphRange;
             if(ok) jt->second.data = rho;
          }
-         else if(OTlist[i] == string("RI")) {
+         else if(OTstrings[i] == string("RI")) {
             ok = HaveR;
             if(ok) jt->second.data = (kt->second.P2 - kt->second.P1)/alpha;
          }
-         else if(OTlist[i] == string("PI")) {
+         else if(OTstrings[i] == string("PI")) {
             ok = HaveP;
             if(ok) jt->second.data = (wl1*kt->second.L1 - wl2*kt->second.L2)/alpha;
          }
-         else if(OTlist[i] == string("TR")) {
+         else if(OTstrings[i] == string("TR")) {
             ok = HaveEphRange;
             if(ok) jt->second.data = Trop;
          }
-         else if(OTlist[i] == string("RL")) {
+         else if(OTstrings[i] == string("RL")) {
             ok = HaveEphThisSat;
             if(ok) jt->second.data = CER.relativity;
          }
-         else if(OTlist[i] == string("SC")) {
+         else if(OTstrings[i] == string("SC")) {
             ok = HaveEphThisSat;
             if(ok) jt->second.data = CER.svclkbias;
          }
-         else if(OTlist[i] == string("EL")) {
+         else if(OTstrings[i] == string("EL")) {
             ok = HaveEphRange;
             if(ok) jt->second.data = CER.elevation;
          }
-         else if(OTlist[i] == string("AZ")) {
+         else if(OTstrings[i] == string("AZ")) {
             ok = HaveEphRange;
             if(ok) jt->second.data = CER.azimuth;
          }
-         else if(OTlist[i] == string("SR")) {
+         else if(OTstrings[i] == string("SR")) {
             ok = HaveR;
             if(ok) jt->second.data =
-               (kt->second.P2 - kt->second.P1)*TECUperM/alpha - Tgd;
+               (kt->second.P2 - kt->second.P1 - Tgd)*TECUperM/alpha;
          }
-         else if(OTlist[i] == string("SP")) {
+         else if(OTstrings[i] == string("SP")) {
             ok = HaveP;
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
@@ -1824,32 +1876,32 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("VR")) {
+         else if(OTstrings[i] == string("VR")) {
             ok = (HaveR && HaveEphRange);
             if(ok) jt->second.data =
-               ((kt->second.P2 - kt->second.P1)*TECUperM/alpha - Tgd)*Obliq;
+               ((kt->second.P2 - kt->second.P1 - Tgd)*TECUperM/alpha)*Obliq;
          }
-         else if(OTlist[i] == string("VP")) {
+         else if(OTstrings[i] == string("VP")) {
             ok = (HaveP && HaveEphRange);
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
-                  ((wl1*kt->second.L1 - wl2*kt->second.L2)*TECUperM/alpha-Tgd)*Obliq);
+                  ((wl1*kt->second.L1 - wl2*kt->second.L2 - Tgd)*TECUperM/alpha)*Obliq);
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("LA")) {
+         else if(OTstrings[i] == string("LA")) {
             ok = HaveEphRange;
             if(ok) jt->second.data = IPPLat;
          }
-         else if(OTlist[i] == string("LO")) {
+         else if(OTstrings[i] == string("LO")) {
             ok = HaveEphRange;
             if(ok) jt->second.data = IPPLon;
          }
-         else if(OTlist[i] == string("P3")) {
+         else if(OTstrings[i] == string("P3")) {
             ok = HaveR;
             if(ok) jt->second.data = if1r*kt->second.P1 + if2r*kt->second.P2;
          }
-         else if(OTlist[i] == string("L3")) {
+         else if(OTstrings[i] == string("L3")) {
             ok = HaveP;
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
@@ -1857,11 +1909,11 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("PF")) {
+         else if(OTstrings[i] == string("PF")) {
             ok = HaveR;
             if(ok) jt->second.data = gf1r*kt->second.P1 + gf2r*kt->second.P2;
          }
-         else if(OTlist[i] == string("LF")) {
+         else if(OTstrings[i] == string("LF")) {
             ok = HaveP;
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
@@ -1869,11 +1921,11 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("PW")) {
+         else if(OTstrings[i] == string("PW")) {
             ok = HaveR;
             if(ok) jt->second.data = wl1r*kt->second.P1 + wl2r*kt->second.P2;
          }
-         else if(OTlist[i] == string("LW")) {
+         else if(OTstrings[i] == string("LW")) {
             ok = HaveP;
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
@@ -1881,7 +1933,7 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("MP") || OTlist[i] == string("M3")) {
+         else if(OTstrings[i] == string("MP") || OTstrings[i] == string("M3")) {
             ok = (HaveP && HaveR);
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
@@ -1890,15 +1942,15 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("R1")) {
+         else if(OTstrings[i] == string("R1")) {
             ok = (kt->second.P1 != 0 && kt->second.L1 != 0);
             if(ok) jt->second.data = 0.5*(kt->second.P1 + kt->second.L1);
          }
-         else if(OTlist[i] == string("R2")) {
+         else if(OTstrings[i] == string("R2")) {
             ok = (kt->second.P2 != 0 && kt->second.L2 != 0);
             if(ok) jt->second.data = 0.5*(kt->second.P2 + kt->second.L2);
          }
-         else if(OTlist[i] == string("M1")) {
+         else if(OTstrings[i] == string("M1")) {
             ok = (kt->second.P1 != 0 && kt->second.L1 != 0);
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
@@ -1906,7 +1958,7 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("M2")) {
+         else if(OTstrings[i] == string("M2")) {
             ok = (kt->second.P2 != 0 && kt->second.L2 != 0);
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
@@ -1915,7 +1967,7 @@ void ComputeNewOTs(RinexObsData& rod)
             }
          }
          // M3 is MP
-         else if(OTlist[i] == string("M4")) {
+         else if(OTstrings[i] == string("M4")) {
             ok = (HaveP && HaveR);
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
@@ -1924,7 +1976,7 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("M5")) {
+         else if(OTstrings[i] == string("M5")) {
             ok = (HaveP && HaveR);
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
@@ -1933,43 +1985,43 @@ void ComputeNewOTs(RinexObsData& rod)
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("XR")) {
+         else if(OTstrings[i] == string("XR")) {
             ok = HaveR && HaveP;
             if(ok) {
                jt->second.data = XRsol[0];
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("XI")) {
+         else if(OTstrings[i] == string("XI")) {
             ok = HaveR && HaveP;
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,XRsol[1]);
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("X1")) {
+         else if(OTstrings[i] == string("X1")) {
             ok = HaveR && HaveP;
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,XRsol[2]);
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("X2")) {
+         else if(OTstrings[i] == string("X2")) {
             ok = HaveR && HaveP;
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,XRsol[3]);
                if(reset) jt->second.lli |= 1;
             }
          }
-         else if(OTlist[i] == string("SX")) {
+         else if(OTstrings[i] == string("SX")) {
             ok = HaveP && HaveEphThisSat;
             if(ok) jt->second.data = CER.svPosVel.x[0];
          }
-         else if(OTlist[i] == string("SY")) {
+         else if(OTstrings[i] == string("SY")) {
             ok = HaveP && HaveEphThisSat;
             if(ok) jt->second.data = CER.svPosVel.x[1];
          }
-         else if(OTlist[i] == string("SZ")) {
+         else if(OTstrings[i] == string("SZ")) {
             ok = HaveP && HaveEphThisSat;
             if(ok) jt->second.data = CER.svPosVel.x[2];
          }
@@ -2014,61 +2066,80 @@ void ComputeNewOTs(RinexObsData& rod)
       rod.dump(logof);
    }
 }
-
-//------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------
-// NB PreProcessArgs pulls out a list of -AO<OT>s,
-// along with --debug --verbose and of course the -f<file> option.
-void PreProcessArgs(const char *arg, vector<string>& Args)
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+//------------------------------------------------------------------------------------//------------------------------------------------------------------------------------
+// NB reentrant, but ugly, function
+// NB PreProcessArgs pulls out --debug --verbose and the -f<f> and --file <f> options.
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
 {
 try {
-   if(arg[0]=='-' && arg[1]=='f') {
+   static bool found_cfg_file=false;
+
+   if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
       string filename(arg);
-      filename.erase(0,2);
+      if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
       if(Debug) cout << "Found a file of options: " << filename << endl;
       ifstream infile(filename.c_str());
       if(!infile) {
          cout << "Error: could not open options file " << filename << endl;
+         return;
       }
-      else {
-         char c;
-         string buffer;
-         while( infile >> buffer) {
-            if(buffer[0] == '#') {         // skip to end of line
-               while(infile.get(c)) { if(c=='\n') break; }
+      bool again_cfg_file=false;
+      char c;
+      string buffer,word;
+      while(1) {
+         getline(infile,buffer);
+         stripTrailing(buffer,'\r');
+
+         while(!buffer.empty()) {
+            word = firstWord(buffer);
+            if(again_cfg_file) {
+               word = "-f" + word;
+               again_cfg_file = false;
+               PreProcessArgs(word.c_str(),Args);
             }
-            else PreProcessArgs(buffer.c_str(),Args);
+            else if(word[0] == '#') {         // skip to end of line
+               buffer = "";
+            }
+            else if(word == "--file")
+               again_cfg_file = true;
+            else if(word[0] == '"') {
+               word = stripFirstWord(buffer,'"');
+               buffer = "dummy " + buffer;      // to be stripped below
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else
+               PreProcessArgs(word.c_str(),Args);
+
+            word = stripFirstWord(buffer);      // now remove it from buffer
          }
+         // check this last b/c there can be a line at EOF without CRLF...
+         if(infile.eof() || !infile.good()) break;
       }
    }
-   else if(string(arg)==string("--verbose")) {
+   else if(string(arg)==string("--verbose"))
       Verbose = true;
-      //cout << "Found the verbose switch" << endl;
-   }
-   else if(string(arg)==string("--debug")) {
+   else if(string(arg)==string("--debug"))
       Debug = true;
-      //cout << "Found the debug switch" << endl;
-   }
-   else if(arg[0]=='-' && arg[1]=='A' && arg[2]=='O') {     // add obs type
-      OTlist.push_back(string(&arg[3]));
+   else if(string(arg)==string("--file"))
+      found_cfg_file = true;
+   else
       Args.push_back(arg);
-   }
-   else Args.push_back(arg);
 }
-catch(gpstk::Exception& e) {
-      cerr << "ResCor:PreProcessArgs caught an exception " << e << endl;
-      GPSTK_RETHROW(e);
-}
-catch (...) {
-      cerr << "ResCor:PreProcessArgs caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // define the bias limit, assign it to the invalid (-1,GPS) satellite
-int setBiasLimit(RinexObsHeader::RinexObsType& ot, double lim)
+int setBiasLimit(RinexObsHeader::RinexObsType& ot, double lim) throw(Exception)
 {
+try {
    if(RinexObsHeader::convertObsType(ot)==string("UN") || lim <= 0.0) return -1;
    RinexSatID p;          // invalid: -1,GPS ... let this hold the LIMIT in the map
    map<RinexObsHeader::RinexObsType,map<RinexSatID,double> >::iterator it;
@@ -2086,12 +2157,17 @@ int setBiasLimit(RinexObsHeader::RinexObsType& ot, double lim)
    }
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // set bias, if necessary, and return raw-bias
 double removeBias(const RinexObsHeader::RinexObsType& ot, const RinexSatID& sv,
-   bool& rset, DayTime& tt, double raw)
+   bool& rset, DayTime& tt, double raw) throw(Exception)
 {
+try {
    rset = false;
    // is the input valid?
    if(RinexObsHeader::convertObsType(ot)==string("UN") || sv.id==-1) return raw;
@@ -2135,6 +2211,10 @@ double removeBias(const RinexObsHeader::RinexObsType& ot, const RinexSatID& sv,
    }
 
    return raw-bias;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------

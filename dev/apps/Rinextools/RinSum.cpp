@@ -51,19 +51,19 @@
 #include <algorithm>
 #include <time.h>
 
-using namespace gpstk;
 using namespace std;
+using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string version("2.3 12/8/06");
+string version("2.4 1/22/07");
 
 // data input from command line
 vector<string> InputFiles;
 string InputDirectory;
 string OutputFile;
 ostream* pout;
-DayTime BegTime(DayTime::BEGINNING_OF_TIME);
-DayTime EndTime(DayTime::END_OF_TIME);
+DayTime BegTime, EndTime;
 bool ReplaceHeader=false;
 bool TimeSortTable=false;
 bool GPSTimeOutput=false;
@@ -104,7 +104,8 @@ public:
 
 //------------------------------------------------------------------------------------
 // prototypes
-int GetCommandLine(int argc, char **argv);
+int GetCommandLine(int argc, char **argv) throw(Exception);
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
 int RegisterARLUTExtendedTypes(void);
 bool isRinexObsFile(const string& file);
 bool isRinexNavFile(const string& file);
@@ -114,10 +115,14 @@ int main(int argc, char **argv)
 {
 try {
    int iret,i,j,k,n,ifile,nsats,nclkjumps,L1lli;
-   double C1,L1,P1,clkjump;
+   double C1,L1,P1,clkjumpave,clkjumpvar;
    DayTime last,prev,ftime;
    vector<DayTime> clkjumpTimes;
-   vector<double> clkjumpMillsecs;
+   vector<double> clkjumpMillsecs,clkjumpUncertainty;
+   vector<int> clkjumpAgree;
+
+   BegTime = DayTime::BEGINNING_OF_TIME;
+   EndTime = DayTime::END_OF_TIME;
 
       // Title and description
    string Title;
@@ -226,7 +231,7 @@ try {
          if(debug) *pout << "Epoch: " << robs.time
             << ", Flag " << robs.epochFlag
             << ", Nsat " << robs.obs.size()
-            << ", clk " << robs.clockOffset << endl;
+            << ", clk " << fixed << robs.clockOffset << endl;
 
           // is this a comment?
          if(robs.epochFlag > 1) {
@@ -242,8 +247,8 @@ try {
          if(last > EndTime) break;
          if(ftime == DayTime::BEGINNING_OF_TIME) ftime=last;
          nepochs++;
-         nsats = nclkjumps = 0;  // count sats and signs that clock jumps have occurred
-         clkjump = 0.0;
+         nsats = nclkjumps = 0;  // count sats and signs clock jumps have occurred
+         clkjumpave = clkjumpvar = 0.0;
 
          // loop over satellites
          RinexObsData::RinexSatMap::const_iterator it;
@@ -259,7 +264,6 @@ try {
             }
             // update end time for this sat
             ptab->end = last;
-            nsats++;
             if(debug) *pout << "Sat " << setw(2) << RinexSatID(it->first);
 
             // loop over obs types
@@ -272,9 +276,9 @@ try {
                   ptab->nobs[k]++;      // per obs
                   totals[k]++;
                }
-               // save L1 range and phase for clkjump test below
-               if(jt->first == RinexObsHeader::C1) C1 = jt->second.data * 1000.0/C_GPS_M;
-               if(jt->first == RinexObsHeader::P1) P1 = jt->second.data * 1000.0/C_GPS_M;
+               // save L1 range and phase for clk jump test below
+               if(jt->first==RinexObsHeader::C1) C1 = jt->second.data*1000.0/C_GPS_M;
+               if(jt->first==RinexObsHeader::P1) P1 = jt->second.data*1000.0/C_GPS_M;
                if(jt->first == RinexObsHeader::L1) {
                   L1 = jt->second.data * 1000.0/C_GPS_M;
                   L1lli = jt->second.lli;
@@ -291,23 +295,32 @@ try {
             if(prev != DayTime::BEGINNING_OF_TIME && L1 != 0 && ptab->prevL1 != 0) {
                int nms;
                double test;
+               nsats++;
                if(P1 != 0 && ptab->prevP1 != 0)
-                  test = P1-L1_WAVELENGTH*L1 - (ptab->prevP1-L1_WAVELENGTH*ptab->prevL1);
+                  test = P1-L1_WAVELENGTH*L1
+                     - (ptab->prevP1-L1_WAVELENGTH*ptab->prevL1);
                else if(C1 != 0 && ptab->prevC1 != 0)
-                  test = C1-L1_WAVELENGTH*L1 - (ptab->prevC1-L1_WAVELENGTH*ptab->prevL1);
+                  test = C1-L1_WAVELENGTH*L1
+                     - (ptab->prevC1-L1_WAVELENGTH*ptab->prevL1);
                else
                   test = 0.0;
                if(fabs(test) > 0.5) {      // test must be > 150 km =~ 1/2 millisecond
                   // is it nearly an even multiple of 1 millisecond?
                   //test *= 1000.0/C_GPS_M;
-                  if(debug) *pout << "possible clock jump: test = " << setprecision(9) << test;
+                  if(debug) *pout << "possible clock jump: test = "
+                                 << setprecision(9) << test;
                   nms = long(test + (test > 0 ? 0.5 : -0.5));
                   if(fabs(test - double(nms)) < 0.001) {
-                     if(debug) *pout << " -> " << setprecision(9) << fabs(test - double(nms));
-                     // keep clkjump = sequential average nms
+                     if(debug) *pout << " -> " << setprecision(9)
+                              << fabs(test - double(nms));
+                     // keep clkjumpave = sequential average nms, clkjumpvar=variance
                      if(test < 0) nms *= -1;
                      nclkjumps++;
-                     clkjump += (double(nms)-clkjump)/double(nclkjumps);
+                     clkjumpave += (double(nms)-clkjumpave)/double(nclkjumps);
+                     if(nclkjumps > 1)
+                        clkjumpvar = (clkjumpvar*(nclkjumps-2)
+                         + nclkjumps*(double(nms)-clkjumpave)*(double(nms)-clkjumpave)
+                            /(nclkjumps-1))/(nclkjumps-1);
                   }
                   else if(debug) *pout << " - failed.";
                   if(debug && L1lli != 0) { *pout << " LLI is set"; }
@@ -327,9 +340,14 @@ try {
          // if more than half the sats saw a clk jump, call it
          if(nclkjumps > nsats/2) {
             if(debug) *pout << "test nclkjumps is " << nclkjumps
-               << " and nsats is " << nsats << endl;
+               << " and nsats is " << nsats
+               << ", ave is " << fixed << setprecision(3) << clkjumpave
+               << " and stddev is " << setprecision(3) << sqrt(clkjumpvar)
+               << endl;
             clkjumpTimes.push_back(last);
-            clkjumpMillsecs.push_back(clkjump);
+            clkjumpMillsecs.push_back(clkjumpave);
+            clkjumpAgree.push_back(nsats-nclkjumps);
+            clkjumpUncertainty.push_back(sqrt(clkjumpvar));
          }
 
          if(prev != DayTime::BEGINNING_OF_TIME) {
@@ -451,10 +469,15 @@ try {
          *pout << " WARNING: Computed last time does not agree with header\n";
 
       if(clkjumpTimes.size() > 0) {
-         *pout << " WARNING: millisecond clock adjusts improperly applied at these times:\n";
-         for(i=0; i<clkjumpTimes.size(); i++)
-            *pout << "   " << clkjumpTimes[i].printf("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%06.3f")
-               << " " << setprecision(2) << clkjumpMillsecs[i] << " ms_clock_adjust" << endl;
+         *pout << " WARNING: millisecond clock adjusts at these times:\n";
+         for(i=0; i<clkjumpTimes.size(); i++) {
+            *pout << "   "
+             << clkjumpTimes[i].printf("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%06.3f")
+             << " " << setprecision(2) << clkjumpMillsecs[i] << " ms_clock_adjust";
+             if(clkjumpAgree[i] > 0 || clkjumpUncertainty[i] > 0.01)
+               *pout << " (low quality determination; data may be irredeemable)";
+            *pout << endl;
+         }
       }
          // look for 'empty' obs types
       for(k=0; k<n; k++) {
@@ -493,6 +516,7 @@ try {
             return -1;
          }
 #endif
+         remove(newname);
 
          RinexObsHeader rhjunk;
          RinexObsStream ROutStr(newname, ios::out);
@@ -534,27 +558,18 @@ try {
 
    return 0;
 }
-catch(gpstk::FFStreamError& e) {
-   cerr << "RinSum caught an FFStreamError: " << e;
+catch(gpstk::FFStreamError& e) { cerr << "FFStreamError: " << e; }
+catch(gpstk::Exception& e) { cerr << "Exception: " << e; }
+catch (...) { cerr << "Unknown exception.  Abort." << endl; }
    return 1;
-}
-catch(gpstk::Exception& e) {
-   cerr << "RinSum caught an Exception: " << e;
-   return 1;
-}
-catch (...) {
-   cerr << "RinSum caught an unknown exception.  Abort." << endl;
-   return 1;
-}
-   return 0;
 }   // end main()
 
 //------------------------------------------------------------------------------------
-int GetCommandLine(int argc, char **argv)
+int GetCommandLine(int argc, char **argv) throw(Exception)
 {
+try {
    bool help=false;
    int j;
-try {
       // required options
 
       // optional
@@ -565,7 +580,7 @@ try {
       // optional options
       // this only so it will show up in help page...
    CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-      'f',""," -f<file>             file containing more options");
+      'f',""," [-f|--file] <file>   file containing more options");
 
    CommandOption dasho(CommandOption::hasArgument, CommandOption::stdType,
       'o',"output"," [-o|--output] <file> Output the summary to a file named <file>");
@@ -617,39 +632,14 @@ try {
 
    // allow user to put all options in a file
    // could also scan for debug here
-   char **CArgs=argv;
    vector<string> Args;
-   for(j=1; j<argc; j++) {
-      if(argv[j][0]=='-' && argv[j][1]=='f') {
-         string filename(argv[j]);
-         filename.erase(0,2);
-         ifstream infile(filename.c_str());
-         if(!infile) {
-            cerr << "Error: could not open options file "
-               << filename << endl;
-         }
-         else {
-            char c;
-            string buffer;
-            while( infile >> buffer) {
-               if(buffer[0] == '#') {         // skip to end of line
-                  while(infile.get(c)) { if(c=='\n') break; }
-               }
-               else Args.push_back(buffer);
-            }
-         }
-      }
-      // old versions of args -- deprecated
-      else if(string(argv[j])==string("--EpochBeg")) { Args.push_back("--start"); }
-      else if(string(argv[j])==string("--GPSBeg")) { Args.push_back("--start"); }
-      else if(string(argv[j])==string("--EpochEnd")) { Args.push_back("--stop"); }
-      else if(string(argv[j])==string("--GPSEnd")) { Args.push_back("--stop"); }
-      else Args.push_back(argv[j]);
-   }
+   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
 
-   if(Args.size()==0) Args.push_back(string("-h"));
+   if(Args.size()==0)
+      Args.push_back(string("-h"));
 
    argc = Args.size()+1;
+   char **CArgs;
    CArgs = new char * [argc];
    if(!CArgs) { cerr << "Failed to allocate CArgs\n"; return -1; }
    CArgs[0] = argv[0];
@@ -660,6 +650,7 @@ try {
    }
 
    Par.parseOptions(argc, CArgs);
+   delete[] CArgs;
 
       // get help option first
    if(dashh.getCount() > 0) {
@@ -721,7 +712,7 @@ try {
       msg = values[0];
       field.clear();
       while(msg.size() > 0)
-         field.push_back(StringUtils::stripFirstWord(msg,','));
+         field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
          BegTime.setToString(field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
@@ -738,7 +729,7 @@ try {
       msg = values[0];
       field.clear();
       while(msg.size() > 0)
-         field.push_back(StringUtils::stripFirstWord(msg,','));
+         field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
          EndTime.setToString(field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
@@ -750,42 +741,6 @@ try {
       if(help) cout << " Input: end time " << values[0] << " = "
          << EndTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
-   //if(dasheb.getCount()) {
-   //   values = dasheb.getValue();
-   //   BegTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
-   //   if(help) {
-   //      cout << "EpochBeg options are:\n";
-   //      for(int i=0; i<values.size(); i++) cout << values[i] << endl;
-   //      cout << "BegTime is " << BegTime << endl;
-   //   }
-   //}
-   //if(dashee.getCount()) {
-   //   values = dashee.getValue();
-   //   EndTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
-   //   if(help) {
-   //      cout << "EpochEnd options are:\n";
-   //      for(int i=0; i<values.size(); i++) cout << values[i] << endl;
-   //      cout << "EndTime is " << EndTime << endl;
-   //   }
-   //}
-   //if(dashgb.getCount()) {
-   //   values = dashgb.getValue();
-   //   BegTime.setToString(values[0], "%F,%g");
-   //   if(help) {
-   //      cout << "GPSBeg options are:\n";
-   //      for(int i=0; i<values.size(); i++) cout << values[i] << endl;
-   //      cout << "BegTime is " << BegTime << endl;
-   //   }
-   //}
-   //if(dashge.getCount()) {
-   //   values = dashge.getValue();
-   //   EndTime.setToString(values[0], "%F,%g");
-   //   if(help) {
-   //      cout << "GPSEnd options are:\n";
-   //      for(int i=0; i<values.size(); i++) cout << values[i] << endl;
-   //      cout << "EndTime is " << EndTime << endl;
-   //   }
-   //}
 
    if(dashb.getCount()) {
       brief = true;
@@ -815,14 +770,75 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-   GPSTK_RETHROW(e);
-}
-catch (...) {
-   Exception e("unknown exception");
-   GPSTK_RETHROW(e);
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
    return -1;
+}
+
+//------------------------------------------------------------------------------------
+// Pull out -f<f> and --file <f> and deprecated options
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
+{
+try {
+   static bool found_cfg_file=false;
+
+   if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
+      string filename(arg);
+      if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
+      ifstream infile(filename.c_str());
+      if(!infile) {
+         cout << "Error: could not open options file " << filename << endl;
+         return;
+      }
+
+      bool again_cfg_file=false;
+      char c;
+      string buffer,word;
+      while(1) {
+         getline(infile,buffer);
+         stripTrailing(buffer,'\r');
+
+         // process the buffer before checking eof or bad b/c there can be
+         // a line at EOF that has no CRLF...
+         while(!buffer.empty()) {
+            word = firstWord(buffer);
+            if(again_cfg_file) {
+               word = "-f" + word;
+               again_cfg_file = false;
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else if(word[0] == '#') { // skip to end of line
+               buffer = "";
+            }
+            else if(word == "--file" || word == "-f")
+               again_cfg_file = true;
+            else if(word[0] == '"') {
+               word = stripFirstWord(buffer,'"');
+               buffer = "dummy " + buffer;            // to be stripped later
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else
+               PreProcessArgs(word.c_str(),Args);
+
+            word = stripFirstWord(buffer);      // now remove it from buffer
+         }
+         if(infile.eof() || !infile.good()) break;
+      }
+   }
+   else if(string(arg) == "--file" || string(arg) == "-f")
+      found_cfg_file = true;
+   // old versions of args -- deprecated
+   else if(string(arg)==string("--EpochBeg")) { Args.push_back("--start"); }
+   else if(string(arg)==string("--GPSBeg")) { Args.push_back("--start"); }
+   else if(string(arg)==string("--EpochEnd")) { Args.push_back("--stop"); }
+   else if(string(arg)==string("--GPSEnd")) { Args.push_back("--stop"); }
+   // regular arg
+   else Args.push_back(arg);
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------

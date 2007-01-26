@@ -51,8 +51,9 @@
 #include <vector>
 
 //------------------------------------------------------------------------------------
-using namespace gpstk;
 using namespace std;
+using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // input data
@@ -80,16 +81,14 @@ vector<RinexSatID> ExSV;
    // ephemeris
 string NavDir;
 vector<string> NavFiles;
-SP3EphemerisStore SP3EphList;
-BCEphemerisStore BCEphList;
-EphemerisStore *pEph;
+EphemerisStore *pEph;         // is this used?
    // obs types needed
 RinexObsHeader::RinexObsType ELot,AZot,VRot,SRot,TPot;
 RinexObsHeader::RinexObsType LAot,LOot;      // TEMP
    // geoid
 WGS84Geoid WGS84;
    // Start and stop times
-DayTime BegTime(DayTime::BEGINNING_OF_TIME),EndTime(DayTime::END_OF_TIME);
+DayTime BegTime,EndTime;
    // processing
 double IonoHt;
 DayTime EarliestTime;
@@ -105,17 +104,18 @@ RinexObsStream *instream; // array of streams, parallell to Stations
 //------------------------------------------------------------------------------------
 // prototypes
 void ConfigureAndDefaults(void);
-int GetCommandLine(int argc, char **argv);
-void PreProcessArgs(const char *arg, vector<string>& Args);
-int Initialize(void);
-int ProcessStations(void);
-void ProcessObsAndComputeMap(void);
-void OutputGridToFile(VTECMap& vmap, string filename);
-void OutputMapToFile(VTECMap& vtmap, string filename, DayTime t, int n);
-void AddStation(string& filename);
-int ProcessHeader(Station& S);
-int ReadNextObs(Station& S);
-int ProcessObs(Station& S, vector<ObsData>& obsvect);
+int GetCommandLine(int argc, char **argv) throw(Exception);
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
+int Initialize(void) throw(Exception);
+int ProcessStations(void) throw(Exception);
+void ProcessObsAndComputeMap(void) throw(Exception);
+void OutputGridToFile(VTECMap& vmap, string filename) throw(Exception);
+void OutputMapToFile(VTECMap& vtmap, string filename, DayTime t, int n)
+   throw(Exception);
+void AddStation(string& filename) throw(Exception);
+int ProcessHeader(Station& S) throw(Exception);
+int ReadNextObs(Station& S) throw(Exception);
+int ProcessObs(Station& S, vector<ObsData>& obsvect) throw(Exception);
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -125,6 +125,9 @@ try {
    int iret;
    clock_t totaltime=clock(); // timer
    DayTime CurrEpoch;
+
+   BegTime = DayTime::BEGINNING_OF_TIME;
+   EndTime = DayTime::END_OF_TIME;
 
       // Title description and run time
    CurrEpoch.setLocalTime();
@@ -181,15 +184,9 @@ quit:
 
    return iret;
 }
-catch(gpstk::Exception& e) {
-   cerr << e;
+catch(gpstk::Exception& e) { cerr << e; }
+catch (...) { cerr << "Unknown error.  Abort." << endl; }
    return 1;
-}
-catch (...) {
-   cerr << "Unknown error.  Abort." << endl;
-   return 1;
-}
-   return 0;
 }   // end main()
 
 //------------------------------------------------------------------------------------
@@ -225,7 +222,7 @@ void ConfigureAndDefaults(void)
 
 //------------------------------------------------------------------------------------
 // Define, parse and evaluate command line
-int GetCommandLine(int argc, char **argv)
+int GetCommandLine(int argc, char **argv) throw(Exception)
 {
 try {
    bool help=false;
@@ -411,8 +408,8 @@ try {
    // could also scan for debug here
    vector<string> Args;
    for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
-   argc = Args.size();
-   if(argc==0) Args.push_back(string("-h"));
+
+   if(Args.size()==0) Args.push_back(string("-h"));
 
       // pass the rest
    argc = Args.size()+1;
@@ -430,6 +427,7 @@ try {
       //for(i=0; i<argc; i++) cout << i << " " << CArgs[i] << endl;
    //}
    Par.parseOptions(argc, CArgs);
+   delete[] CArgs;
 
    // help first
    if(dashh.getCount() > 0) {
@@ -556,9 +554,9 @@ try {
       refSite.filename = string("reference");
       if(values.size() > 3) refSite.filename=values[3];
       if(KnownLLH) {
-         refSite.llr.setGeodetic(StringUtils::asDouble(values[0]),
-                                 StringUtils::asDouble(values[1]),
-                                 StringUtils::asDouble(values[2])); //WGS84 is default
+         refSite.llr.setGeodetic(asDouble(values[0]),
+                                 asDouble(values[1]),
+                                 asDouble(values[2])); //WGS84 is default
          refSite.xyz = refSite.llr;
          try {
             refSite.llr.transformTo(Position::Geocentric);
@@ -571,9 +569,9 @@ try {
          }
       }
       else {
-         refSite.xyz.setECEF(StringUtils::asDouble(values[0]),
-                             StringUtils::asDouble(values[1]),
-                             StringUtils::asDouble(values[2]));
+         refSite.xyz.setECEF(asDouble(values[0]),
+                             asDouble(values[1]),
+                             asDouble(values[2]));
          refSite.llr = refSite.xyz;
          refSite.llr.transformTo(Position::Geocentric);
       }
@@ -645,18 +643,18 @@ try {
    }
    if(dashDecor.getCount()) {
       values = dashDecor.getValue();
-      DecorrelError = StringUtils::asDouble(values[0]);
+      DecorrelError = asDouble(values[0]);
       if(help) cout << "Decorrelation error rate (TECU/1000km) is "
          << DecorrelError << endl;
    }
    if(dashNumLat.getCount()) {
       values = dashNumLat.getValue();
-      NumLat = StringUtils::asInt(values[0]);
+      NumLat = asInt(values[0]);
       if(help) cout << "Number of latitude grid points is " << NumLat << endl;
    }
    if(dashNumLon.getCount()) {
       values = dashNumLon.getValue();
-      NumLon = StringUtils::asInt(values[0]);
+      NumLon = asInt(values[0]);
       if(help) cout << "Number of longitude grid points is " << NumLon << endl;
    }
    if(dashBiases.getCount()) {
@@ -666,32 +664,32 @@ try {
    }
    if(dashElevThresh.getCount()) {
       values = dashElevThresh.getValue();
-      ElevThresh = StringUtils::asDouble(values[0]);
+      ElevThresh = asDouble(values[0]);
       if(help) cout << "Minimum elevation (deg) is " << ElevThresh << endl;
    }
    if(dashMinAcqTime.getCount()) {
       values = dashMinAcqTime.getValue();
-      MinAcqTime = StringUtils::asDouble(values[0]);
+      MinAcqTime = asDouble(values[0]);
       if(help) cout << "Minimum acquisition time (sec) is " << MinAcqTime << endl;
    }
    if(dashBeginLat.getCount()) {
       values = dashBeginLat.getValue();
-      BeginLat = StringUtils::asDouble(values[0]);
+      BeginLat = asDouble(values[0]);
       if(help) cout << "Beginning latitude (deg) is " << BeginLat << endl;
    }
    if(dashBeginLon.getCount()) {
       values = dashBeginLon.getValue();
-      BeginLon = StringUtils::asDouble(values[0]);
+      BeginLon = asDouble(values[0]);
       if(help) cout << "Beginning longitude (deg E) is " << BeginLon << endl;
    }
    if(dashDeltaLat.getCount()) {
       values = dashDeltaLat.getValue();
-      DeltaLat = StringUtils::asDouble(values[0]);
+      DeltaLat = asDouble(values[0]);
       if(help) cout << "Grid step in latitude (deg) is " << DeltaLat << endl;
    }
    if(dashDeltaLon.getCount()) {
       values = dashDeltaLon.getValue();
-      DeltaLon = StringUtils::asDouble(values[0]);
+      DeltaLon = asDouble(values[0]);
       if(help) cout << "Grid step in longitude (deg) is " << DeltaLon << endl;
    }
    if(dashUniSpace.getCount()) {
@@ -720,7 +718,7 @@ try {
    }
    if(dashIonoHt.getCount()) {
       values = dashIonoHt.getValue();
-      IonoHt = StringUtils::asDouble(values[0]);
+      IonoHt = asDouble(values[0]);
       if(help) cout << "Ionosphere height = " << IonoHt << " km" << endl;
    }
    if(dashXsat.getCount()) {
@@ -818,67 +816,82 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-      cerr << "TECMaps:GetCommandLine caught an exception\n" << e;
-      GPSTK_RETHROW(e);
-}
-catch (...) {
-      cerr << "TECMaps:GetCommandLine caught an unknown exception\n";
-}
-   return -1;
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void PreProcessArgs(const char *arg, vector<string>& Args)
-{
-   if(arg[0]=='-' && arg[1]=='f') {
-      string filename(arg);
-      filename.erase(0,2);
-      //cout << "Found a file of options: " << filename << endl;
-      ifstream infile(filename.c_str());
-      if(!infile) {
-         cerr << "Error: could not open options file "
-            << filename << endl;
-      }
-      else {
-         char c;
-         string buffer;
-         while(infile >> buffer) {
-            if(buffer[0] == '#') {         // skip to end of line
-               while(infile.get(c)) { if(c=='\n') break; }
-            }
-            else if(buffer[0] == '"') {    // read to next "
-               buffer.erase(0,1);
-               buffer += ' ';
-               while(infile.get(c)) {
-                  if(c=='"') {
-                     PreProcessArgs(buffer.c_str(),Args);
-                     break;
-                  }
-                  else {
-                     buffer += c;
-                  }
-               }
-            }
-            else PreProcessArgs(buffer.c_str(),Args);
-         }
-      }
-   }
-   else if((arg[0]=='-' && arg[1]=='d') || string(arg)==string("--debug")) {
-      debug = true;
-      //cout << "Found the debug switch" << endl;
-   }
-   else if((arg[0]=='-' && arg[1]=='v') || string(arg)==string("--verbose")) {
-      verbose = true;
-      //cout << "Found the verbose switch" << endl;
-   }
-   else Args.push_back(arg);
-}
-
-//------------------------------------------------------------------------------------
-int Initialize(void)
+// Pull out --debug --verbose options.
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
 {
 try {
+   static bool found_cfg_file=false;
+
+   if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
+      string filename(arg);
+      if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
+      if(debug) cout << "Found a file of options: " << filename << endl;
+      ifstream infile(filename.c_str());
+      if(!infile) {
+         cout << "Error: could not open options file " << filename << endl;
+         return;
+      }
+
+      bool again_cfg_file=false;
+      char c;
+      string buffer,word;
+      while(1) {
+         getline(infile,buffer);
+         stripTrailing(buffer,'\r');
+
+         // process the buffer before checking eof or bad b/c there can be
+         // a line at EOF that has no CRLF...
+         while(!buffer.empty()) {
+            word = firstWord(buffer);
+            if(again_cfg_file) {
+               word = "-f" + word;
+               again_cfg_file = false;
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else if(word[0] == '#') { // skip to end of line
+               buffer.clear();
+            }
+            else if(word == "--file" || word == "-f")
+               again_cfg_file = true;
+            else if(word[0] == '"') {
+               word = stripFirstWord(buffer,'"');
+               buffer = "dummy " + buffer;            // to be stripped later
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else
+               PreProcessArgs(word.c_str(),Args);
+
+            word = stripFirstWord(buffer);      // now remove it from buffer
+         }
+         if(infile.eof() || !infile.good()) break;
+      }
+   }
+   else if((arg[0]=='-' && arg[1]=='d') || string(arg)==string("--debug"))
+      debug = true;
+   else if((arg[0]=='-' && arg[1]=='v') || string(arg)==string("--verbose"))
+      verbose = true;
+   else if(string(arg) == "--file" || string(arg) == "-f")
+      found_cfg_file = true;
+   else Args.push_back(arg);
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+
+//------------------------------------------------------------------------------------
+int Initialize(void) throw(Exception)
+{
+try {
+   static SP3EphemerisStore SP3EphList;
+   static BCEphemerisStore BCEphList;
+
       // open nav files and read EphemerisStore
    if(!NavDir.empty())
       for(int i=0; i<NavFiles.size(); i++)
@@ -933,12 +946,12 @@ try {
                }
                if(words[0] == string("IonoBias,")) break;
                if(words[1] == string("Number")) {
-                  nbiases = StringUtils::asInt(words[0]);
+                  nbiases = asInt(words[0]);
                   break;
                }
                station = words[1];
                sat.fromString(words[2]);
-               bias = StringUtils::asDouble(words[3]);
+               bias = asDouble(words[3]);
                BiasMap[station][sat] = bias;
                n++;
                break;
@@ -990,10 +1003,9 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-   cerr << "TECMaps:Initialize caught an exception\n";
-   GPSTK_RETHROW(e);
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
@@ -1002,7 +1014,7 @@ catch(gpstk::Exception& e) {
 //       -2 could not open a file,
 //       -3 FFStream exception,
 //       -4 gpstk exception,
-int ProcessStations(void)
+int ProcessStations(void) throw(Exception)
 {
 try {
    int iret,nfile;
@@ -1045,18 +1057,13 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-   cerr << "TECMaps:ProcessStations caught an exception\n";
-   GPSTK_RETHROW(e);
-}
-catch(...) {
-   cerr << "TECMaps:ProcessStations caught an unknown exception\n";
-   return -1;
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void ProcessObsAndComputeMap(void)
+void ProcessObsAndComputeMap(void) throw(Exception)
 {
 try {
    int iret,nfile,ngood,nepochs=0;
@@ -1138,19 +1145,16 @@ try {
    if(verbose)
       oflog << endl << "Processed " << Stations.size() << " stations\n";
 }
-catch(gpstk::Exception& e) {
-   cerr << "TECMaps:ProcessObsAndComputeMap caught an exception\n";
-   GPSTK_RETHROW(e);
-}
-catch(...) {
-   cerr << "TECMaps:ProcessObsAndComputeMap caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
 // output the grid to a file
-void OutputGridToFile(VTECMap& vmap, string filename)
+void OutputGridToFile(VTECMap& vmap, string filename) throw(Exception)
 {
+try {
    ofstream ofs(filename.c_str());
    if(!ofs) {
       cerr << "Failed to open grid output file " << filename << endl;
@@ -1161,11 +1165,16 @@ void OutputGridToFile(VTECMap& vmap, string filename)
       ofs.close();
    }
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // output map
-void OutputMapToFile(VTECMap& vtmap, string filename, DayTime t, int n)
+void OutputMapToFile(VTECMap& vtmap, string filename, DayTime t, int n) throw(Exception)
 {
+try {
       // make this a function, pass it the name MUF etc, map and time
    ostringstream oss;
    oss << filename << "." << setw(4) << setfill('0') << n;
@@ -1185,9 +1194,13 @@ void OutputMapToFile(VTECMap& vtmap, string filename, DayTime t, int n)
       ofs.close();
    }
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
-void AddStation(string& name)
+void AddStation(string& name) throw(Exception)
 {
 try {
    Station s;
@@ -1198,20 +1211,16 @@ try {
    }
    Stations.push_back(s);
 }
-catch(gpstk::Exception& e) {
-   cerr << "TECMaps:AddStation caught an exception\n";
-   GPSTK_RETHROW(e);
-}
-catch(...) {
-   cerr << "TECMaps:AddStation caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
 // Return 0 ok,
 //       -3 FFStream exception,
 //       -4 gpstk exception,
-int ProcessHeader(Station& S)
+int ProcessHeader(Station& S) throw(Exception)
 {
 try {
       // input header
@@ -1270,14 +1279,9 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-   cerr << "TECMaps:ProcessHeader caught an exception\n";
-   GPSTK_RETHROW(e);
-}
-catch(...) {
-   cerr << "TECMaps:ProcessHeader caught an unknown exception\n";
-   return -1;
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
@@ -1288,7 +1292,7 @@ catch(...) {
 //       -3 FFStream exception,
 //       -4 gpstk exception,
 //       -6 read error
-int ReadNextObs(Station& S)
+int ReadNextObs(Station& S) throw(Exception)
 {
 try {
    if(S.nread == -1) return -1;
@@ -1326,19 +1330,14 @@ try {
    S.nread++;
    return 0;
 }
-catch(gpstk::Exception& e) {
-   cerr << "TECMaps:ReadNextObs caught an exception\n";
-   GPSTK_RETHROW(e);
-}
-catch(...) {
-   cerr << "TECMaps:ReadNextObs caught an unknown exception\n";
-   return -1;
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
 // return 0 if data is good and was accepted
-int ProcessObs(Station& S, vector<ObsData>& obsvec)
+int ProcessObs(Station& S, vector<ObsData>& obsvec) throw(Exception)
 {
 try {
    int i,k,n;
@@ -1471,14 +1470,9 @@ try {
    if(n>0) return n;
    else return -1;
 }
-catch(gpstk::Exception& e) {
-   cerr << "TECMaps:ProcessObs caught an exception\n";
-   GPSTK_RETHROW(e);
-}
-catch(...) {
-   cerr << "TECMaps:ProcessObs caught an unknown exception\n";
-   return -1;
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------

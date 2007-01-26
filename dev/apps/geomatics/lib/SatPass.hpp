@@ -54,8 +54,10 @@ public:
 		/// a flag (cf. SatPass::BAD, etc.) that is set to OK or BAD at creation (by the
       /// caller of SatPass::push_back), then reset by other processing.
    unsigned short flag;
-      /// time 'count' : time of data[i] = FirstTime + ndt[i] * dt
+      /// time 'count' : time of data[i] = FirstTime + ndt[i] * dt + offset
    unsigned int ndt;
+      /// offset of time from integer number * dt since FirstTime.
+   double toffset;
       /// data arrays for dual frequency pseudorange (m) and carrier phase (cycles)
    double P1,P2,L1,L2;
       /// loss-of-lock and signal-strength indicators (from RINEX) for the P1,P2,L1,L2
@@ -130,7 +132,7 @@ public:
    DayTime getLastTime(void) const throw() { return lastTime; }
 
       /// get the satellite of this SatPass
-   SatID getSat(void) const throw() { return sat; }
+   RinexSatID getSat(void) const throw() { return sat; }
 
       /// get the time interval of this SatPass
    double getDT(void) const throw() { return dt; }

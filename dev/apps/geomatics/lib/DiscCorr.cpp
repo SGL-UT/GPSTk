@@ -49,6 +49,7 @@
 
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 // only to unclutter the top of this file; not included anywhere else...
 #include "DCinternals.hpp"
@@ -150,7 +151,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::preprocess(void) throw(Exception)
 {
 try {
-   int i,ilast,ngood;
+   int i,ilast,Ngood;
    double biasL1,biasL2,dbias;
    list<Segment>::iterator it;
 
@@ -222,7 +223,7 @@ try {
       // 'change the arrays' A1, A2 to be range minus phase for output
       // do the same at the end ("AFT")
       // loop over segments, counting the number of non-trivial ones
-   for(ngood=0,it=SegList.begin(); it != SegList.end(); it++) {
+   for(Ngood=0,it=SegList.begin(); it != SegList.end(); it++) {
       biasL1 = biasL2 = 0.0;
 
          // loop over points in this segment
@@ -256,12 +257,12 @@ try {
       if(it->npts < int(cfg(MinPts)))
          deleteSegment(it,"insufficient data in segment");
       else
-         ngood++;
+         Ngood++;
    }
 
    if(cfg(Debug) >= 2) dumpSegments("BEF",2,true);
 
-   if(ngood == 0) return NoData;
+   if(Ngood == 0) return NoData;
    return ReturnOK;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -1031,7 +1032,7 @@ try {
 
    // now compute stats for the WL for the (single segment) whole pass
    kt = SegList.begin();
-   if(which == string("WL")) {
+   if(which == string("WL")) {                                    // WL
       WLPassStats.Reset();
       for(i=kt->nbeg; i <= kt->nend; i++) {
          if(!(data[i].flag & OK)) continue;
@@ -1046,7 +1047,7 @@ try {
    }
    // change the biases - reset the GFP bias so that it matches the GFR
    // (NB dumpSegments does not remove a bias from L1)
-   else {
+   else {                                                         // GF
       ifirst = -1;
       for(i=kt->nbeg; i <= kt->nend; i++) {
          if(!(data[i].flag & OK)) continue;
@@ -1055,7 +1056,7 @@ try {
             kt->bias2 = data[ifirst].L2 - data[ifirst].P2;
             kt->bias1 = data[ifirst].P1;
          }
-         // change the arrays - recompute GFR-GFP so it has one consistent bias
+         // change the data - recompute GFR-GFP so it has one consistent bias
          data[i].L1 = data[i].L2 - kt->bias2 - data[i].P2;
       }
    }
@@ -2178,7 +2179,7 @@ try {
             else
                stst1 << time(ilast+1).printf("%Y,%m,%d,%H,%M,%f");
             if(i-ilast > 3) stst1 << " # begin delete of "
-                  << StringUtils::asString(i+1-ilast) << " points";
+                  << asString(i+1-ilast) << " points";
             editCmds.push_back(stst1.str());
 
             // -DS-<sat>,<time>
@@ -2191,7 +2192,7 @@ try {
             else
                stst2 << time(i-1).printf("%Y,%m,%d,%H,%M,%f");
             if(i-ilast > 3) stst2 << " # end delete of "
-               << StringUtils::asString(i+1-ilast) << " points";
+               << asString(i+1-ilast) << " points";
             editCmds.push_back(stst2.str());
          }
          else if(i-ilast > 1 && cfg(OutputDeletes) != 0) {

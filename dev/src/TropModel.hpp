@@ -843,6 +843,22 @@ namespace gpstk
                                 const DayTime& tt)
          throw(InvalidTropModel);
 
+         /** \deprecated
+          * Compute and return the full tropospheric delay, given the positions of
+          * receiver and satellite and the time tag. This version is most useful
+          * within positioning algorithms, where the receiver position and timetag
+          * may vary; it computes the elevation (and other receiver location
+          * information) and passes them to appropriate set...() routines and the
+          * correction(elevation) routine.
+          * @param RX  Receiver position in ECEF cartesian coordinates (meters)
+          * @param SV  Satellite position in ECEF cartesian coordinates (meters)
+          * @param tt  Time tag of the signal 
+          */
+      virtual double correction(const Xvt& RX,
+                                const Xvt& SV,
+                                const DayTime& tt)
+         throw(InvalidTropModel);
+
          /// Compute and return the zenith delay for dry component
          /// of the troposphere
       virtual double dry_zenith_delay(void) const

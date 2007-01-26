@@ -38,7 +38,7 @@
 
 /**
  * @file novaRinex.cpp
- * gpstk::novaRinex - convert Novatel binary data files to Rinex
+ * gpstk::novaRinex - convert Novatel binary data files to RINEX format
  */
 
 #include <iostream>
@@ -48,11 +48,11 @@
 #include <map>
 
 // GPSTk
+#include "StringUtils.hpp"
+#include "DayTime.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 #include "CommandOptionParser.hpp"
-#include "StringUtils.hpp"
-#include "DayTime.hpp"
 #include "NovatelStream.hpp"
 #include "NovatelData.hpp"
 #include "RinexObsStream.hpp"
@@ -62,6 +62,7 @@
 
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 // -----------------------------------------------------------------------------------
 string Prgm("novaRinex");                 // name of this program
@@ -75,7 +76,7 @@ string Vers("v1.5 7/06");                 // version - keep to 10 char
 // 1.5 7/06 correct handling of header inputs
 
 // -----------------------------------------------------------------------------------
-// global data, mostly to save information to go in the final Rinex header
+// global data, mostly to save information to go in the final RINEX header
 // for computing the data time interval
 int ndt[9];
 double bestdt[9];
@@ -109,25 +110,27 @@ int inC1,inP1,inL1,inD1,inS1,inP2,inL2,inD2,inS2;
 
 // -----------------------------------------------------------------------------------
 // command line input
-int GetCommandInput(int argc, char **argv);
-void PreProcessArgs(const char *arg, vector<string>& Args);
-void DumpCommandLine(ostream& ofs = cout);
+int GetCommandInput(int argc, char **argv) throw(Exception);
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
+void DumpCommandLine(ostream& ofs = cout) throw(Exception);
 
 // open input and output files
-int OpenFiles(void);
+int OpenFiles(void) throw(Exception);
 
 // fill header initially
-void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh);
+void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh) throw(Exception);
 
 // update saved information for revised header
-void UpdateInformation(RinexObsData& rod);
+void UpdateInformation(RinexObsData& rod) throw(Exception);
 
 // final header update, and write out
-int UpdateHeader(string& TempFile, string& OutputFile, RinexObsHeader& rh);
+int UpdateHeader(string& TempFile, string& OutputFile, RinexObsHeader& rh)
+   throw(Exception);
 
 // final obs output - modify header and write to the real output file name
-string GetTempFileName(void);
-int FillHeaderAndReplaceFile(string& TempFile,string& OutputFile,RinexObsHeader& rh);
+string GetTempFileName(void) throw(Exception);
+int FillHeaderAndReplaceFile(string& TempFile,string& OutputFile,RinexObsHeader& rh)
+   throw(Exception);
 
 // -----------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -254,15 +257,16 @@ int main(int argc, char **argv)
 
       return i;
    }
-   catch(Exception& e) {
-      cerr << "Caught exception\n" << e << endl;
-   }
+   catch(Exception& e) { cerr << "Caught exception\n" << e << endl; }
+   catch(...) { cerr << "Unknown error." << endl; }
+
    return -1;
 }
 
 //------------------------------------------------------------------------------------
-int OpenFiles(void)
+int OpenFiles(void) throw(Exception)
 {
+try {
    string filename;
    if(InputDirectory.empty())
       filename = NovatelFile;
@@ -294,10 +298,15 @@ int OpenFiles(void)
 
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
-void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh)
+void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh) throw(Exception)
 {
+try {
    int i;
    // observation header
    roh.version = 2.1;
@@ -354,10 +363,15 @@ void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh)
    rnh.valid = RinexNavHeader::allValid21;
    rnh.valid |= RinexNavHeader::commentValid;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
-void UpdateInformation(RinexObsData& rod)
+void UpdateInformation(RinexObsData& rod) throw(Exception)
 {
+try {
    int i,j,k;
    double dt;
    SatID sat;
@@ -450,10 +464,15 @@ void UpdateInformation(RinexObsData& rod)
       }
    }
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
-string GetTempFileName(void)
+string GetTempFileName(void) throw(Exception)
 {
+try {
 #ifdef _MSC_VER
    char newname[L_tmpnam];
    if(!tmpnam(newname)) {
@@ -463,12 +482,19 @@ string GetTempFileName(void)
 #endif
       return string("");
    }
+   remove(newname);
    return string(newname);
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
 int UpdateHeader(string& TempFile, string& OutputFile, RinexObsHeader& rh)
+   throw(Exception)
 {
+try {
    int i,j;
 
    // update header
@@ -544,10 +570,14 @@ int UpdateHeader(string& TempFile, string& OutputFile, RinexObsHeader& rh)
 
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-int GetCommandInput(int argc, char **argv)
+int GetCommandInput(int argc, char **argv) throw(Exception)
 {
 try {
    int i,j;
@@ -592,88 +622,88 @@ try {
    // optional arguments:
    // this is here only so it will show up in the help msg...
    CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-      'f',""," -f<file>          Name of file containing more options"
-      " ('#' to EOL : comment)");
+      'f',""," [-f|--file] <fn>  Name of file containing more options"
+      " (ignores '#' to EOL)");
 
    CommandOption dashdir(CommandOption::hasArgument, CommandOption::stdType,0,"dir",
       " --dir <dir>       Directory in which to find input file (defaults to ./)");
    dashdir.setMaxCount(1);
 
    CommandOption dashobs(CommandOption::hasArgument, CommandOption::stdType,0,"obs",
-      " --obs <file>      Rinex observation output file (RnovaRinex.obs)");
+      " --obs <file>      RINEX observation output file (RnovaRinex.obs)");
    dashobs.setMaxCount(1);
 
    CommandOption dashnav(CommandOption::hasArgument, CommandOption::stdType,0,"nav",
-      " --nav <file>      Rinex navigation output file (RnovaRinex.nav)");
+      " --nav <file>      RINEX navigation output file (RnovaRinex.nav)");
    dashnav.setMaxCount(1);
 
    CommandOption dashNHF(CommandOption::hasArgument, CommandOption::stdType,0,
-      "noHDopt", "\nOutput Rinex header fields:\n --noHDopt         If present, "
-      "do not fill optional records in the output Rinex header");
+      "noHDopt", "\nOutput RINEX header fields:\n --noHDopt         If present, "
+      "do not fill optional records in the output RINEX header");
    dashNHF.setMaxCount(1);
 
    CommandOption dashHDp(CommandOption::hasArgument, CommandOption::stdType,0,"HDp",
-      " --HDp <program>   Set output Rinex headers 'program' field ('"
+      " --HDp <program>   Set output RINEX headers 'program' field ('"
       + roh.fileProgram + "')");
    dashHDp.setMaxCount(1);
 
    CommandOption dashHDr(CommandOption::hasArgument, CommandOption::stdType,0,"HDr",
-      " --HDr <run_by>    Set output Rinex headers 'run by' field ('"
+      " --HDr <run_by>    Set output RINEX headers 'run by' field ('"
       + roh.fileAgency + "')");
    dashHDr.setMaxCount(1);
 
    CommandOption dashHDo(CommandOption::hasArgument, CommandOption::stdType,0,"HDo",
-      " --HDo <obser>     Set output Rinex header 'observer' field ('"
+      " --HDo <obser>     Set output RINEX header 'observer' field ('"
       + roh.observer + "')");
    dashHDo.setMaxCount(1);
 
    CommandOption dashHDa(CommandOption::hasArgument, CommandOption::stdType,0,"HDa",
-      " --HDa <agency>    Set output Rinex header 'agency' field ('"
+      " --HDa <agency>    Set output RINEX header 'agency' field ('"
       + roh.agency + "')");
    dashHDa.setMaxCount(1);
 
    CommandOption dashHDm(CommandOption::hasArgument, CommandOption::stdType,0,"HDm",
-      " --HDm <marker>    Set output Rinex header 'marker' field ('"
+      " --HDm <marker>    Set output RINEX header 'marker' field ('"
       + roh.markerName + "')");
    dashHDm.setMaxCount(1);
 
    CommandOption dashHDn(CommandOption::hasArgument, CommandOption::stdType,0,"HDn",
-      " --HDn <number>    Set output Rinex header 'number' field ('"
+      " --HDn <number>    Set output RINEX header 'number' field ('"
       + roh.markerNumber + "')");
    dashHDn.setMaxCount(1);
 
    CommandOption dashHDrn(CommandOption::hasArgument, CommandOption::stdType,0,"HDrn",
-      " --HDrn <number>   Set output Rinex header 'Rx number' field ('"
+      " --HDrn <number>   Set output RINEX header 'Rx number' field ('"
       + roh.recNo + "')");
    dashHDrn.setMaxCount(1);
 
    CommandOption dashHDrt(CommandOption::hasArgument, CommandOption::stdType,0,"HDrt",
-      " --HDrt <type>     Set output Rinex header 'Rx type' field ('"
+      " --HDrt <type>     Set output RINEX header 'Rx type' field ('"
       + roh.recType + "')");
    dashHDrt.setMaxCount(1);
 
    CommandOption dashHDrv(CommandOption::hasArgument, CommandOption::stdType,0,"HDrv",
-      " --HDrv <vers>     Set output Rinex header 'Rx version' field ('"
+      " --HDrv <vers>     Set output RINEX header 'Rx version' field ('"
       + roh.recVers + "')");
    dashHDrv.setMaxCount(1);
 
    CommandOption dashHDan(CommandOption::hasArgument, CommandOption::stdType,0,"HDan",
-      " --HDan <number>   Set output Rinex header 'antenna number' field ('"
+      " --HDan <number>   Set output RINEX header 'antenna number' field ('"
       + roh.antNo + "')");
    dashHDan.setMaxCount(1);
 
    CommandOption dashHDat(CommandOption::hasArgument, CommandOption::stdType,0,"HDat",
-      " --HDat <type>     Set output Rinex header 'antenna type' field ('"
+      " --HDat <type>     Set output RINEX header 'antenna type' field ('"
       + roh.antType + "')");
    dashHDat.setMaxCount(1);
 
    CommandOption dashHDc(CommandOption::hasArgument, CommandOption::stdType,0,"HDc",
-      " --HDc <comment>   Add comment to output Rinex headers (>1 allowed).");
+      " --HDc <comment>   Add comment to output RINEX headers (>1 allowed).");
    //dashHDc.setMaxCount(1);
 
    CommandOption dashobstype(CommandOption::hasArgument, CommandOption::stdType,
-   0,"obstype","\nOutput Rinex observation data:\n"
-   " --obstype <OT>    Output this Rinex (standard) obs type (i.e. <OT> is one of\n"
+   0,"obstype","\nOutput RINEX observation data:\n"
+   " --obstype <OT>    Output this RINEX (standard) obs type (i.e. <OT> is one of\n"
    "                     L1,L2,C1,P1,P2,D1,D2,S1,or S2); repeat for each type.\n"
    "                     NB default is ALL std. types that have data.");
    //dashobstype.setMaxCount(1);
@@ -716,11 +746,11 @@ try {
    dashhelp.setMaxCount(1);
 
    CommandOptionNoArg dashVerbose('v', "verbose",
-      " --verbose             print some output info.");
+      " --verbose         print more information");
    dashVerbose.setMaxCount(1);
 
    CommandOptionNoArg dashDebug('d',"debug",
-      " [-d|--debug]      print extended output info");
+      " [-d|--debug]      print much more information");
    dashDebug.setMaxCount(1);
 
    // ... other options
@@ -730,19 +760,18 @@ try {
    // Define the parser here, after the options -- this is the 'prgm description'
    CommandOptionParser Par(
 " Prgm " + Prgm + " (" + Vers + ") will open and read a binary Novatel file\n"
-"  (OEM2 and OEM4 receivers are supported), and convert the data to Rinex format\n"
-"  observation and navigation files. The Rinex header is filled using user input\n"
+"  (OEM2 and OEM4 receivers are supported), and convert the data to RINEX format\n"
+"  observation and navigation files. The RINEX header is filled using user input\n"
 "  (see below), and optional records are filled. Input is on the command line,\n"
-"  or of the same format in a file (-f<file>).\n");
+"  or of the same format in a file (--file <file>).\n");
 
    // parse the command line
    // allow user to put all options in a file
    // PreProcessArgs pulls out help and Debug
    vector<string> Args;
    for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
-   argc = Args.size();
-   if(argc==0)
-      help = true;
+
+   if(Args.size()==0) help = true;
 
       // pass the rest
    argc = Args.size()+1;
@@ -798,12 +827,12 @@ try {
    }
    if(dashobs.getCount()) {
       values = dashobs.getValue();
-      if(help) cout << " Input Rinex obs file name " << values[0] << endl;
+      if(help) cout << " Input RINEX obs file name " << values[0] << endl;
       RinexObsFile = values[0];
    }
    if(dashnav.getCount()) {
       values = dashnav.getValue();
-      if(help) cout << " Input Rinex nav file name " << values[0] << endl;
+      if(help) cout << " Input RINEX nav file name " << values[0] << endl;
       RinexNavFile = values[0];
    }
    if(dashNHF.getCount()) {
@@ -879,7 +908,7 @@ try {
          RinexObsHeader::RinexObsType rot;
          rot = RinexObsHeader::convertObsType(values[i]);
          OutputTypes.push_back(rot);
-         if(help) cout << " Input output Rinex obs type " << values[i] << endl;
+         if(help) cout << " Input output RINEX obs type " << values[i] << endl;
       }
    }
    if(dasheb.getCount()) {
@@ -944,57 +973,77 @@ try {
    return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void PreProcessArgs(const char *arg, vector<string>& Args)
+// Pull out --debug --help and --file
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
 {
 try {
-   if(string(arg) == string()) return;
-   if(arg[0]=='-' && arg[1]=='f') {
+   static bool found_cfg_file=false;
+
+   if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
       string filename(arg);
-      filename.erase(0,2);
+      if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
       if(Debug) cout << "Found a file of options: " << filename << endl;
       ifstream infile(filename.c_str());
-      if(!infile)
-         cerr << "Error: could not open options file " << filename << endl;
-      else {
-         char c;
-         string buffer,word;
-         while(1) {
-            getline(infile,buffer);
-            if(infile.eof() || !infile.good()) break;
-            StringUtils::stripTrailing(buffer,'\r');
+      if(!infile) {
+         cout << "Error: could not open options file " << filename << endl;
+         return;
+      }
 
-            while(1) {
-               word = StringUtils::firstWord(buffer);
-               if(word[0] == '#')           // skip to end of line
-                  break;
-               else if(word[0] == '"')
-                  word = StringUtils::stripFirstWord(buffer,'"');
-               else
-                  word = StringUtils::stripFirstWord(buffer);
+      bool again_cfg_file=false;
+      char c;
+      string buffer,word;
+      while(1) {
+         getline(infile,buffer);
+         stripTrailing(buffer,'\r');
+
+         // process the buffer before checking eof or bad b/c there can be
+         // a line at EOF that has no CRLF...
+         while(!buffer.empty()) {
+            word = firstWord(buffer);
+            if(again_cfg_file) {
+               word = "-f" + word;
+               again_cfg_file = false;
                PreProcessArgs(word.c_str(),Args);
-               if(buffer.empty()) break;
             }
+            else if(word[0] == '#') { // skip to end of line
+               buffer.clear();
+            }
+            else if(word == "--file" || word == "-f")
+               again_cfg_file = true;
+            else if(word[0] == '"') {
+               word = stripFirstWord(buffer,'"');
+               buffer = "dummy " + buffer;            // to be stripped later
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else
+               PreProcessArgs(word.c_str(),Args);
+
+            word = stripFirstWord(buffer);      // now remove it from buffer
          }
+         if(infile.eof() || !infile.good()) break;
       }
    }
-   else if(string(arg)==string("-h") || string(arg)==string("--help")) {
-      help = true;
-      if(Debug) cout << "Found the help switch" << endl;
-   }
-   else if((arg[0]=='-' && arg[1]=='d') || string(arg)==string("--debug")) {
+   else if((arg[0]=='-' && arg[1]=='d') || string(arg)==string("--debug"))
       Debug = true;
-      //cout << "Found the debug switch" << endl;
-   }
+   else if((arg[0]=='-' && arg[1]=='h') || string(arg)==string("--help"))
+      help = true;
+   else if(string(arg) == "--file" || string(arg) == "-f")
+      found_cfg_file = true;
    else Args.push_back(arg);
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
+
 //------------------------------------------------------------------------------------
-void DumpCommandLine(ostream& ofs)
+void DumpCommandLine(ostream& ofs) throw(Exception)
 {
 try {
    int i;
@@ -1005,8 +1054,8 @@ try {
    if(!InputDirectory.empty()) ofs << " Path for input Novatel file is "
       << InputDirectory << endl;
    ofs << " Input Novatel file is: " << NovatelFile << endl;
-   ofs << " Output Rinex obs file is: " << RinexObsFile << endl;
-   ofs << " Output Rinex nav file is: " << RinexNavFile << endl;
+   ofs << " Output RINEX obs file is: " << RinexObsFile << endl;
+   ofs << " Output RINEX nav file is: " << RinexNavFile << endl;
    ofs << " --------- Header information:\n";
    if(!FillOptionalHeader) ofs << " Do not";
    ofs << " Fill optional records in header" << endl;
@@ -1020,7 +1069,7 @@ try {
       ofs << " Header comments:\n";
       for(i=0; i<HDcomments.size(); i++) ofs << HDcomments[i] << endl;
    }
-   ofs << " Output Rinex observation types (if found in the data):\n";
+   ofs << " Output RINEX observation types (if found in the data):\n";
    for(i=0; i<OutputTypes.size(); i++)
       ofs << " " << RinexObsHeader::convertObsType(OutputTypes[i]);
    ofs << endl;
@@ -1033,6 +1082,8 @@ try {
    ofs << "End of command line input summary." << endl;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------

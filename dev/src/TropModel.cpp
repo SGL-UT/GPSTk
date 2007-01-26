@@ -1469,6 +1469,15 @@ namespace gpstk
 
    }  // end SaasTropModel::correction(RX,SV,TT)
 
+   double SaasTropModel::correction(const Xvt& RX,
+                                    const Xvt& SV,
+                                    const DayTime& tt)
+      throw(TropModel::InvalidTropModel)
+   {
+      Position R(RX),S(SV);
+      return SaasTropModel::correction(R,S,tt);
+   }
+
       // Compute and return the zenith delay for dry component of the troposphere
    double SaasTropModel::dry_zenith_delay(void) const
       throw(TropModel::InvalidTropModel)

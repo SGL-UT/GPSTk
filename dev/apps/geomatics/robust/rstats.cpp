@@ -45,6 +45,7 @@
 
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 int BadOption(string& arg) {
@@ -155,30 +156,30 @@ int main(int argc, char **argv)
       while(pin->getline(buffer,BUFF_SIZE)) {
          //if(buffer[0] == '#') continue;
          string line = buffer;
-         StringUtils::stripTrailing(line,'\r');
+         stripTrailing(line,'\r');
          // remove leading whitespace
-         line = StringUtils::stripLeading(line,string(" "));
+         line = stripLeading(line,string(" "));
          // skip comments
          if(line[0] == '#') continue;
          //check that column col is there...
-         if(StringUtils::numWords(line) < col) { nd++; continue; }
+         if(numWords(line) < col) { nd++; continue; }
          // pull it out
-         stuff = StringUtils::word(line,col-1);
+         stuff = word(line,col-1);
          // is it a number?
-         if(!(StringUtils::isDecimalString(stuff))) { nd++; continue; }
+         if(!(isDecimalString(stuff))) { nd++; continue; }
          // convert it to double and save it
-         d = StringUtils::asDouble(stuff);
+         d = asDouble(stuff);
          data.push_back(d);
          S.Add(d);
 
          // do the same for xcol
          if(xcol > -1) {
-            if(StringUtils::numWords(line) < xcol)
+            if(numWords(line) < xcol)
                { data.pop_back(); nxd++; continue; }
-            stuff = StringUtils::word(line,xcol-1);
-            if(!(StringUtils::isDecimalString(stuff)))
+            stuff = word(line,xcol-1);
+            if(!(isDecimalString(stuff)))
                { data.pop_back(); nxd++; continue; }
-            xd = StringUtils::asDouble(stuff);
+            xd = asDouble(stuff);
             TSS.Add(xd, d);
             xdata.push_back(xd);
          }
@@ -287,7 +288,7 @@ int main(int argc, char **argv)
       if(plot) {
          try {
             Robust::StemLeafPlot(cout, &data[0], data.size(),
-               string("Robust stats for column ") + StringUtils::asString(col) +
+               string("Robust stats for column ") + asString(col) +
                (filename.empty() ? string(" of input")
                                  : string(" of file ") + filename)
                );

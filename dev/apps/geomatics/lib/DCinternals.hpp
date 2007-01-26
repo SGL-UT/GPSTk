@@ -107,17 +107,8 @@ public:
    long NWL,N1;         // slip fixes for WL (N1-N2) and GF (=N1)
    string msg;          // string to be output after '#' on edit cmds
    explicit Slip(int in) : index(in),NWL(0),N1(0) { }
-   bool operator<(const Slip &rhs) const
-   {
-      return index < rhs.index;
-   }
+   bool operator<(const Slip &rhs) const { return index < rhs.index; }
 }; // end class Slip
-
-// class SlipLessThan allows sort() to sort a list<Slip>
-class SlipLessThan {
-public:
-   bool operator()(const Slip& s1, const Slip& s2) { return s1.index < s2.index; }
-};
 
 //------------------------------------------------------------------------------------
 class GDCPass : public SatPass, public GDCconfiguration

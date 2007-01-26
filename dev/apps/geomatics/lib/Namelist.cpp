@@ -60,6 +60,8 @@ using namespace std;
 namespace gpstk
 {
 
+using namespace StringUtils;
+
 //------------------------------------------------------------------------------------
 // constructor given dimension - creates default labels
 Namelist::Namelist(const unsigned int& n)
@@ -377,20 +379,20 @@ try {
    //int wid=os.width(),prec=os.precision();
 
    if(nlp.msg.size() > 0)
-      s = StringUtils::leftJustify(nlp.msg,nlp.wid);
+      s = leftJustify(nlp.msg,nlp.wid);
    else
-      s = StringUtils::rightJustify(string(""),nlp.wid);
+      s = rightJustify(string(""),nlp.wid);
    os << s;
    for(i=0; i<nlp.NL.size(); i++) {
       if(nlp.NL.getName(i).size() > nlp.wid)
-      s = StringUtils::leftJustify(nlp.NL.getName(i),nlp.wid);
+         s = leftJustify(nlp.NL.getName(i),nlp.wid);
       else
-      s = StringUtils::rightJustify(nlp.NL.getName(i),nlp.wid);
+         s = rightJustify(nlp.NL.getName(i),nlp.wid);
       os << s;
    }
    os << endl;
 
-   s = StringUtils::rightJustify(string(""),nlp.wid);
+   s = rightJustify(string(""),nlp.wid);
    os << s;
    if(nlp.form == 1) os << fixed;
    if(nlp.form == 2) os << scientific;
@@ -423,18 +425,18 @@ try {
       // on column labels line, add message or space for row labels
    if(nlp.rc == 0) {    // only if printing both column and row labels
       if(nlp.msg.size() > 0)
-         s = StringUtils::leftJustify(nlp.msg,nlp.wid);
+         s = leftJustify(nlp.msg,nlp.wid);
       else
-         s = StringUtils::rightJustify(string(""),nlp.wid);
+         s = rightJustify(string(""),nlp.wid);
       os << s;
    }
       // print column labels
    if(nlp.rc != 1) { // but not if 'rows only'
       for(i=0; i<(nlp.M.cols()<pNLcol->size()?nlp.M.cols():pNLcol->size()); i++) {
          if(pNLcol->getName(i).size() > nlp.wid)
-            s = StringUtils::leftJustify(pNLcol->getName(i),nlp.wid);
+            s = leftJustify(pNLcol->getName(i),nlp.wid);
          else
-            s = StringUtils::rightJustify(pNLcol->getName(i),nlp.wid);
+            s = rightJustify(pNLcol->getName(i),nlp.wid);
          os << s;
       }
       os << endl;
@@ -447,9 +449,9 @@ try {
          // print row labels
       if(nlp.rc != 2) { // but not if 'columns only'
          if(pNLrow->getName(i).size() > nlp.wid)
-            s = StringUtils::leftJustify(pNLrow->getName(i),nlp.wid);
+            s = leftJustify(pNLrow->getName(i),nlp.wid);
          else
-            s = StringUtils::rightJustify(pNLrow->getName(i),nlp.wid);
+            s = rightJustify(pNLrow->getName(i),nlp.wid);
          os << s;
       }
          // finally, print the data

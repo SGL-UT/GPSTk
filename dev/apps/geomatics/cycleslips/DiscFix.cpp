@@ -66,6 +66,7 @@
 
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // prgm data
@@ -121,7 +122,7 @@ bool WriteASAP=true;
 // data used in program
 clock_t totaltime;
 string Title;
-DayTime CurrEpoch(DayTime::BEGINNING_OF_TIME), PrgmEpoch;
+DayTime CurrEpoch, PrgmEpoch;
 
 RinexObsStream irfstr, orfstr;      // input and output RINEX files
 RinexObsHeader rhead;
@@ -138,19 +139,19 @@ map<RinexSatID,int> SatToCurrentIndexMap;
 
 //------------------------------------------------------------------------------------
 // prototypes
-int ReadFile(int nfile);
-int ProcessOneEntireEpoch(RinexObsData& ro);
-int ProcessOneSatOneEpoch(RinexSatID, DayTime, SatPassData& );
+int ReadFile(int nfile) throw(Exception);
+int ProcessOneEntireEpoch(RinexObsData& ro) throw(Exception);
+int ProcessOneSatOneEpoch(RinexSatID, DayTime, SatPassData& ) throw(Exception);
 
-void ProcessSatPass(int index);
-int AfterReadingFiles(void);
-void WriteToRINEXfile(void);
-void WriteRINEXheader(void);
-void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime);
+void ProcessSatPass(int index) throw(Exception);
+int AfterReadingFiles(void) throw(Exception);
+void WriteToRINEXfile(void) throw(Exception);
+void WriteRINEXheader(void) throw(Exception);
+void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Exception);
 
 void PrintSPList(ostream&, string, const vector<SatPass>&, bool printTime);
-int GetCommandLine(int argc, char **argv);
-void PreProcessArgs(const char *arg, vector<string>& Args, bool& verbose);
+int GetCommandLine(int argc, char **argv) throw(Exception);
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
 
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -170,6 +171,7 @@ int main(int argc, char **argv)
       config.SVonly.setfill('0');
       config.FirstEpoch = DayTime::BEGINNING_OF_TIME;
       config.LastEpoch = DayTime::BEGINNING_OF_TIME;
+      CurrEpoch = DayTime::BEGINNING_OF_TIME;
 
          // get command line
       iret = GetCommandLine(argc, argv);
@@ -232,7 +234,7 @@ int main(int argc, char **argv)
 
       return iret;
    }
-   catch(gpstk::Exception& e) {
+   catch(Exception& e) {
       config.oflog << e;
    }
    catch (...) {
@@ -248,12 +250,14 @@ int main(int argc, char **argv)
 // open the file, read header and check for data; then loop over the epochs
 // Return 0 ok, <0 fatal error, >0 non-fatal error (ie skip this file)
 // 0 ok, 1 couldn't open file, 2 file doesn't have required data
-int ReadFile(int nfile)
+int ReadFile(int nfile) throw(Exception)
 {
    try {
       string name;
          // open input file
-      name = config.Directory + string("/") + config.InputObsName[nfile];
+      name = config.InputObsName[nfile];
+      if(!config.Directory.empty() && config.Directory != string("."))
+         name = config.Directory + string("/") + name;
       irfstr.open(name.c_str(),ios::in);
       if(irfstr.fail()) {
          config.oflog << "Failed to open input file " << name << ". Abort.\n";
@@ -288,7 +292,7 @@ int ReadFile(int nfile)
       {
          config.oflog << "Error: file " << name << " does not contain";
          if(inC1 == -1) config.oflog
-            << " C1 (--useCA was" << (config.UseCA ? "" : " not") << " found)";
+            << " C1 (--forceCA was" << (config.UseCA ? "" : " not") << " found)";
          if(inL1 == -1) config.oflog << " L1";
          if(inL2 == -1) config.oflog << " L2";
          if(inP1 == -1) config.oflog << " P1";
@@ -340,7 +344,7 @@ int ReadFile(int nfile)
 //        1 skip this epoch : before begin time
 //        2 skip this epoch : comment block,
 //        3 skip this epoch : decimated
-int ProcessOneEntireEpoch(RinexObsData& roe)
+int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
 {
    try {
       bool ok;
@@ -380,7 +384,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
             // Is this satellite excluded ?
          sat = it->first;
          if(sat.system != SatID::systemGPS) continue; // ignore non-GPS satellites
-         for(k=-1,i=0; i<config.ExSV.size(); i++)          // ignore user-input sat (--exSat)
+         for(k=-1,i=0; i<config.ExSV.size(); i++)     // ignore input sat (--exSat)
             if(config.ExSV[i] == sat) { k = i; break; }
          if(k > -1) continue;
 
@@ -394,25 +398,25 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
          otmap = it->second;
          if( (jt = otmap.find(rhead.obsTypeList[inP1])) != otmap.end()) {
             spd.P1 = jt->second.data;
-            str[0] = (StringUtils::asString(jt->second.lli))[0];
-            str[1] = (StringUtils::asString(jt->second.ssi))[0];
+            str[0] = (asString(jt->second.lli))[0];
+            str[1] = (asString(jt->second.ssi))[0];
          }
          if( (jt = otmap.find(rhead.obsTypeList[inP2])) != otmap.end()) {
             spd.P2 = jt->second.data;
-            str[2] = (StringUtils::asString(jt->second.lli))[0];
-            str[3] = (StringUtils::asString(jt->second.ssi))[0];
+            str[2] = (asString(jt->second.lli))[0];
+            str[3] = (asString(jt->second.ssi))[0];
          }
          if( (jt = otmap.find(rhead.obsTypeList[inL1])) != otmap.end()) {
             spd.L1 = jt->second.data;
-            str[4] = (StringUtils::asString(jt->second.lli))[0];
-            str[5] = (StringUtils::asString(jt->second.ssi))[0];
+            str[4] = (asString(jt->second.lli))[0];
+            str[5] = (asString(jt->second.ssi))[0];
          }
          if( (jt = otmap.find(rhead.obsTypeList[inL2])) != otmap.end()) {
             spd.L2 = jt->second.data;
-            str[6] = (StringUtils::asString(jt->second.lli))[0];
-            str[7] = (StringUtils::asString(jt->second.ssi))[0];
+            str[6] = (asString(jt->second.lli))[0];
+            str[7] = (asString(jt->second.ssi))[0];
          }
-         spd.indicators = StringUtils::asUnsigned(str);
+         spd.indicators = asUnsigned(str);
 
             // is it good?
          ok = true;
@@ -421,7 +425,11 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
          spd.flag = (ok ? SatPass::OK : SatPass::BAD);
 
             // process this sat
-         ProcessOneSatOneEpoch(sat, CurrEpoch, spd);
+         try { ProcessOneSatOneEpoch(sat, CurrEpoch, spd); }
+         catch(Exception& e) {
+            config.oflog << "Error: time tags are out of order. Abort.\n";
+            return -3;
+         }
 
       }  // end loop over sats
 
@@ -476,6 +484,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
 
 //------------------------------------------------------------------------------------
 int ProcessOneSatOneEpoch(RinexSatID sat, DayTime tt, SatPassData& spd)
+   throw(Exception)
 {
    try {
       int index;
@@ -522,9 +531,8 @@ int ProcessOneSatOneEpoch(RinexSatID sat, DayTime tt, SatPassData& spd)
          // and add it to the map
       SatToCurrentIndexMap[sat] = index;
          // add the data
-      SPList[index].status = 1;                // status == 1 means 'fill'
-      if(! SPList[index].push_back(tt,spd) )
-         ; // throw
+      SPList[index].status = 1;              // status == 1 means 'fill'
+      SPList[index].push_back(tt,spd);       // cannot fail
 
       return 0;
 
@@ -537,7 +545,7 @@ int ProcessOneSatOneEpoch(RinexSatID sat, DayTime tt, SatPassData& spd)
 
 //------------------------------------------------------------------------------------
 // Process the pass (call DC); if there is an output file, try writing to it.
-void ProcessSatPass(int in)
+void ProcessSatPass(int in) throw(Exception)
 {
    try {
       config.oflog << "Proc " << SPList[in]
@@ -581,7 +589,7 @@ void ProcessSatPass(int in)
 }
 
 //------------------------------------------------------------------------------------
-int AfterReadingFiles(void)
+int AfterReadingFiles(void) throw(Exception)
 {
    try {
       config.oflog << "After reading files" << endl;
@@ -622,7 +630,7 @@ int AfterReadingFiles(void)
 //------------------------------------------------------------------------------------
 // this will only write out passes for which ProcessSatPass() has been called. It
 // could be called anytime, particularly after each call to ProcessSatPass.
-void WriteToRINEXfile(void)
+void WriteToRINEXfile(void) throw(Exception)
 {
    try {
       int in,n;
@@ -645,10 +653,9 @@ void WriteToRINEXfile(void)
       }
       // targetTime will == END_OF_TIME, when all passes have been processed
 
-      if(targetTime < DayTime::END_OF_TIME &&
-         WriteEpoch == DayTime::BEGINNING_OF_TIME) {
+      if(targetTime < DayTime::END_OF_TIME
+         && WriteEpoch == DayTime::BEGINNING_OF_TIME) {
          WriteRINEXheader();
-
          WriteEpoch = config.FirstEpoch;
       }
 
@@ -665,7 +672,7 @@ void WriteToRINEXfile(void)
 }
 
 //------------------------------------------------------------------------------------
-void WriteRINEXheader(void)
+void WriteRINEXheader(void) throw(Exception)
 {
    try {
       RinexObsHeader rheadout;   
@@ -730,7 +737,7 @@ void WriteRINEXheader(void)
 }
 
 //------------------------------------------------------------------------------------
-void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime)
+void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Exception)
 {
    try {
       bool first;
@@ -775,8 +782,8 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime)
             if(fabs(SPList[in].time(n) - WriteEpoch) < 0.00001) {
                   // get the data for this epoch
                spd = SPList[in].getData(SPIndexList[in]);
-               str = StringUtils::asString(spd.indicators); // P1P2L1L2*ls   AaBbCcDd
-               str = StringUtils::rightJustify(str,8,'0');
+               str = asString(spd.indicators); // P1P2L1L2*ls   AaBbCcDd
+               str = rightJustify(str,8,'0');
 
 					if(spd.flag > 0) {                           // data is good
                      // add sat to RinexObs
@@ -786,8 +793,7 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime)
 
                	// build the RINEX data object
                	RinexObsData::RinexDatum rd;
-		
-		using namespace StringUtils;
+
                	rd.lli = asInt(asString<char>(str[0]));
                	rd.ssi = asInt(asString<char>(str[1]));
                	rd.data = spd.P1;
@@ -795,36 +801,37 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime)
                   	roe.obs[sat][RinexObsHeader::C1] = rd;
                	else
                   	roe.obs[sat][RinexObsHeader::P1] = rd;
-                
+
                	rd.lli = asInt(asString<char>(str[2]));
                	rd.ssi = asInt(asString<char>(str[3]));
                	rd.data = spd.P2;
                	roe.obs[sat][RinexObsHeader::P2] = rd;
 
-               	//rd.lli = StringUtils::asInt(StringUtils::asString<char>(str[4]));
+               	//rd.lli = asInt(asString<char>(str[4]));
                   // TD ought to set the low bit
 						rd.lli = (spd.flag & SatPass::LL1)!=0 ? 1 : 0;
                	rd.ssi = asInt(asString<char>(str[5]));
                	rd.data = spd.L1;
                	roe.obs[sat][RinexObsHeader::L1] = rd;
 
-               	//rd.lli = StringUtils::asInt(StringUtils::asString<char>(str[6]));
+               	//rd.lli = asInt(asString<char>(str[6]));
 						rd.lli = (spd.flag & SatPass::LL2)!=0 ? 1 : 0;
                	rd.ssi = asInt(asString<char>(str[7]));
                	rd.data = spd.L2;
                	roe.obs[sat][RinexObsHeader::L2] = rd;
 
-               	//config.oflog << "Out "
-               	//   << WriteEpoch.printf(config.format)
-               	//   << " " << sat
-               	//   << " " << spd.flag
-               	//   << " " << setw(3) << spd.ndt     // count
-               	//   << fixed << setprecision(3)
-               	//   << " " << setw(13) << spd.P1
-               	//   << " " << setw(13) << spd.P2
-               	//   << " " << setw(13) << spd.L1
-               	//   << " " << setw(13) << spd.L2
-               	//   << endl;
+               	config.oflog << "Out "
+               	   << WriteEpoch.printf(config.format)
+               	   << " " << roe.time.printf(config.format)
+               	   << " " << sat
+               	   << " " << spd.flag
+               	   << " " << setw(3) << spd.ndt     // count
+               	   << fixed << setprecision(3)
+               	   << " " << setw(13) << spd.P1
+               	   << " " << setw(13) << spd.P2
+               	   << " " << setw(13) << spd.L1
+               	   << " " << setw(13) << spd.L2
+               	   << endl;
 					}
 
                   // go to next point
@@ -860,7 +867,7 @@ void PrintSPList(ostream& os, string msg, const vector<SatPass>& v, bool printTi
    map<RinexSatID,int> lastSP;
    map<RinexSatID,int>::const_iterator kt;
 
-   os << "#" << StringUtils::leftJustify(msg,4)
+   os << "#" << leftJustify(msg,4)
       << " gap tot sat  ok  s      start time        end time  dt\n";
 
    for(i=0; i<v.size(); i++) {
@@ -888,11 +895,11 @@ void PrintSPList(ostream& os, string msg, const vector<SatPass>& v, bool printTi
 //------------------------------------------------------------------------------------
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
-int GetCommandLine(int argc, char **argv)
+int GetCommandLine(int argc, char **argv) throw(Exception)
 {
+   try {
    bool help=false,DChelp=false,DChelpall=false;
    int i,j;
-   try {
       // defaults
    config.verbose = false;
    config.ith = 0.0;
@@ -937,7 +944,7 @@ int GetCommandLine(int argc, char **argv)
       // optional options
       // this only so it will show up in help page...
    CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-      'f',""," -f<file>            file containing more options");
+      'f',""," [-f|--file] <file>  file containing more options");
 
    CommandOption dashd(CommandOption::hasArgument, CommandOption::stdType,
       0,"inputdir"," --inputdir <dir>    Directory of input file(s)");
@@ -959,13 +966,13 @@ int GetCommandLine(int argc, char **argv)
       " --decimate <dt>     Decimate data to time interval (sec) dt");
    dashith.setMaxCount(1);
 
-   CommandOptionNoArg dashCA(0,"useCA", " --useCA             "
-      "Use C/A code range, NOT P code (def: C/A only if P absent)");
+   CommandOptionNoArg dashCA(0,"forceCA", " --forceCA           "
+      "Use C/A code range, NOT P code (default: only if P absent)");
    dashCA.setMaxCount(1);
    
    CommandOption dashGap(CommandOption::hasArgument, CommandOption::stdType,
       0,"gap"," --gap <t>           Minimum data gap (sec) separating "
-      "satellite passes (" + StringUtils::asString(int(config.MaxGap)) + ")");
+      "satellite passes (" + asString(int(config.MaxGap)) + ")");
    dashGap.setMaxCount(1);
    
    //CommandOption dashPts(CommandOption::hasArgument, CommandOption::stdType,
@@ -982,8 +989,8 @@ int GetCommandLine(int argc, char **argv)
       0,"exSat"," --exSat <sat>       Exclude satellite(s) [e.g. --exSat G22]");
    
    CommandOptionNoArg dashSmoothPR(0,"smoothPR",
-      "# Smoothing: [NB smoothed " "pseudorange and debiased phase are not identical.]\n"
-      " --smoothPR          Smooth pseudorange and output in place of raw pseudorange");
+   "# Smoothing: [NB smoothed " "pseudorange and debiased phase are not identical.]\n"
+   " --smoothPR          Smooth pseudorange and output in place of raw pseudorange");
    dashSmoothPR.setMaxCount(1);
    
    CommandOptionNoArg dashSmoothPH(0,"smoothPH",
@@ -992,12 +999,12 @@ int GetCommandLine(int argc, char **argv)
 
    // last smooth option - tack on a 'vapor-option'
    CommandOptionNoArg dashSmooth(0,"smooth",
-      " --smooth            Same as (--smoothPR AND --smoothPH)\n"
-      "# Discontinuity Corrector (DC) configuration:\n"
-      " --DClabel=value     Set Discontinuity Corrector parameter 'label' to 'value'\n"
-      "                       [e.g. --DCWLSigma=1.5 or --DCDebug:7 " "or --DCMinPts,6]\n"
-      " --DChelp            Print a list of GDC parameters and their defaults, then quit"
-      );
+   " --smooth            Same as (--smoothPR AND --smoothPH)\n"
+   "# Discontinuity Corrector (DC) configuration:\n"
+   " --DClabel=value     Set Discontinuity Corrector parameter 'label' to 'value'\n"
+   "                       [e.g. --DCWLSigma=1.5 or --DCDebug:7 " "or --DCMinPts,6]\n"
+   " --DChelp            Print a list of GDC parameters and their defaults, then quit"
+   );
    dashSmooth.setMaxCount(1);
    
    CommandOption dashLog(CommandOption::hasArgument, CommandOption::stdType,
@@ -1068,18 +1075,20 @@ int GetCommandLine(int argc, char **argv)
    "   pseudorange and carrier phase measurements, divides the data into 'satellite\n"
    "   passes', and finds and fixes discontinuities in the phases for each pass.\n"
    "   Output is a list of editing commands for use with program RinexEdit.\n"
-   "   "+PrgmName+" will (optionally) write the corrected pseudorange and phase data\n"
+   "   " + PrgmName
+   + " will (optionally) write the corrected pseudorange and phase data\n"
    "   to a new RINEX observation file. Other options will also smooth the\n"
    "   pseudorange and/or debias the corrected phase.\n"
-   "   "+PrgmName+" calls the GPSTk Discontinuity Corrector (GDC).\n");
+   "   "+PrgmName+" calls the GPSTk Discontinuity Corrector (GDC vers "
+   + GDConfig.Version() + ").\n");
 
       // -------------------------------------------------
       // allow user to put all options in a file
       // could also scan for debug here
    vector<string> Args;
-   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args,config.verbose);
-   argc = Args.size();
-   if(argc==0) Args.push_back(string("-h"));
+   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
+
+   if(Args.size()==0) Args.push_back(string("-h"));
 
       // strip out the DCcmds
    vector<string> DCcmds;
@@ -1178,7 +1187,7 @@ int GetCommandLine(int argc, char **argv)
    }
    if(dashith.getCount()) {
       values = dashith.getValue();
-      config.ith = StringUtils::asDouble(values[0]);
+      config.ith = asDouble(values[0]);
       if(help) config.oflog << "Decimate value is " << config.ith << endl;
    }
 
@@ -1188,7 +1197,7 @@ int GetCommandLine(int argc, char **argv)
       msg = values[0];
       field.clear();
       while(msg.size() > 0)
-         field.push_back(StringUtils::stripFirstWord(msg,','));
+         field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
          config.begTime.setToString(field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
@@ -1205,7 +1214,7 @@ int GetCommandLine(int argc, char **argv)
       msg = values[0];
       field.clear();
       while(msg.size() > 0)
-         field.push_back(StringUtils::stripFirstWord(msg,','));
+         field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
          config.endTime.setToString(field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
@@ -1224,18 +1233,18 @@ int GetCommandLine(int argc, char **argv)
    }
    if(dashDT.getCount()) {
       values = dashDT.getValue();
-      config.dt = StringUtils::asDouble(values[0]);
+      config.dt = asDouble(values[0]);
       if(help) config.oflog << "dt is set to " << config.dt << " seconds." << endl;
    }
    if(dashGap.getCount()) {
       values = dashGap.getValue();
-      config.MaxGap = StringUtils::asDouble(values[0]);
+      config.MaxGap = asDouble(values[0]);
       if(help) config.oflog << "Max gap is " << config.MaxGap << " seconds which is "
          << int(config.MaxGap/config.dt) << " points." << endl;
    }
    //if(dashPts.getCount()) {
       //values = dashPts.getValue();
-      //config.MinPts = StringUtils::asInt(values[0]);
+      //config.MinPts = asInt(values[0]);
       //if(help) config.oflog << "Minimum points is " << config.MinPts << endl;
    //}
    if(dashXsat.getCount()) {
@@ -1424,53 +1433,60 @@ int GetCommandLine(int argc, char **argv)
 }
 
 //------------------------------------------------------------------------------------
-void PreProcessArgs(const char *arg, vector<string>& Args, bool& ver)
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
 {
    try {
+      static bool found_cfg_file=false;
+
       if(string(arg) == string()) return;
-      // -f<file>   file containing more command line arguments
-      if(arg[0]=='-' && arg[1]=='f') {
+
+      if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
          string filename(arg);
-         filename.erase(0,2);
+         if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
          ifstream infile(filename.c_str());
          if(!infile) {
-            cout << "Error: could not open options file "
-               << filename << endl;
+            cout << "Error: could not open options file " << filename << endl;
+            return;
          }
-         else {
-            char c;
-            string buffer,word;
-            while(1) {  // infile >> buffer)
-               getline(infile,buffer);
-               //if(infile.eof() || !infile.good()) break;
-               if(!infile.good()) break;
-               // under Windows...
-               StringUtils::stripTrailing(buffer,'\r');
-               if(buffer.empty()) break;
 
-               while(1) {
-                  word = StringUtils::firstWord(buffer);
-                  if(word[0] == '#') {         // skip this line
-                     buffer.clear();
-                     break;
-                  }
-                  else if(word[0] == '"') {
-                     word = StringUtils::stripFirstWord(buffer,'"');
-                  }
-                  else {
-                     word = StringUtils::stripFirstWord(buffer);
-                  }
-                  PreProcessArgs(word.c_str(),Args,ver); //Args.push_back(buffer);
-                  if(buffer.empty()) break;
+         bool again_cfg_file=false;
+         char c;
+         string buffer,word;
+         while(1) {
+            getline(infile,buffer);
+            stripTrailing(buffer,'\r');
+
+            while(!buffer.empty()) {
+               word = firstWord(buffer);
+               if(again_cfg_file) {
+                  word = "-f" + word;
+                  again_cfg_file = false;
+                  PreProcessArgs(word.c_str(),Args);
                }
-               // break on EOF here b/c there can be a line w/o LF at EOF
-               if(infile.eof()) break;
+               else if(word[0] == '#') {         // skip this line
+                  buffer.clear();
+               }
+               else if(word == "--file" || word == "-f")
+                  again_cfg_file = true;
+               else if(word[0] == '"') {
+                  word = stripFirstWord(buffer,'"');
+                  buffer = "dummy " + buffer;
+                  PreProcessArgs(word.c_str(),Args);
+               }
+               else
+                  PreProcessArgs(word.c_str(),Args);
+
+               word = stripFirstWord(buffer);   // this simply removes it from buffer
             }
+            // break on EOF here b/c there can be a line w/o LF at EOF
+            if(infile.eof() || !infile.good()) break;
          }
       }
+      else if(string(arg) == "--file" || string(arg) == "-f")
+         found_cfg_file = true;
       // -v or --verbose
       else if((arg[0]=='-' && arg[1]=='v') || string(arg)==string("--verbose")) {
-         ver = true;
+         config.verbose = true;
       }
       // old versions of args -- deprecated
       else if(string(arg)==string("--directory")) { Args.push_back("--inputdir"); }
@@ -1478,7 +1494,8 @@ void PreProcessArgs(const char *arg, vector<string>& Args, bool& ver)
       else if(string(arg)==string("--EpochEnd")) { Args.push_back("--endTime"); }
       else if(string(arg)==string("--GPSBeg")) { Args.push_back("--beginTime"); }
       else if(string(arg)==string("--GPSEnd")) { Args.push_back("--endTime"); }
-      else if(string(arg)==string("--CA")) { Args.push_back("--useCA"); }
+      else if(string(arg)==string("--CA")) { Args.push_back("--forceCA"); }
+      else if(string(arg)==string("--useCA")) { Args.push_back("--forceCA"); }
       else if(string(arg)==string("--DT")) { Args.push_back("--dt"); }
       else if(string(arg)==string("--Gap")) { Args.push_back("--gap"); }
       else if(string(arg)==string("--Smooth")) { Args.push_back("--smooth"); }

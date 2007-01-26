@@ -35,6 +35,7 @@
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
 #include "RinexUtilities.hpp"
+#include "StringUtils.hpp"
 
 #include "RinexEditor.hpp"
 
@@ -44,12 +45,12 @@
 #include <fstream>
 #include <time.h>
 
-using namespace gpstk;
 using namespace std;
+using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-// Instantiate an editor
-RinexEditor REC;
+// NB Version for this prgm is just the RinexEditor version.
 
 //------------------------------------------------------------------------------------
 // data input from command line
@@ -63,8 +64,8 @@ ofstream oflog;
 
 //------------------------------------------------------------------------------------
 // prototypes
-int GetCommandLine(int argc, char **argv);
-void PreProcessArgs(const char *arg, vector<string>& Args, bool& Verbose, bool& Debug);
+int GetCommandLine(int argc, char **argv, RinexEditor& re) throw(Exception);
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
 
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -74,9 +75,13 @@ try {
 
    int iret;
    DayTime last;
+   // NB. Do not instantiate editor outside main(), b/c DayTime::END_OF_TIME is a
+   // static const that can produce static intialization order problems under some OS.
+   RinexEditor REC;
 
       // Title and description
-   Title = "EditRinex, part of the GPSTK ToolKit, Ver 3.1 8/28/06 Run ";
+   Title = string("EditRinex, part of the GPSTK ToolKit, Ver ")
+            + REC.getRinexEditVersion() + string(", Run ");
    time_t timer;
    struct tm *tblock;
 
@@ -92,7 +97,7 @@ try {
    if(iret) goto quit;
 
       // get command line
-   iret=GetCommandLine(argc, argv);
+   iret=GetCommandLine(argc, argv, REC);
    if(iret) goto quit;
 
    iret=REC.EditFile();
@@ -106,47 +111,41 @@ try {
 
    return iret;
 }
-catch(gpstk::FFStreamError& e) {
-   cerr << e;
+catch(gpstk::FFStreamError& e) { cerr << e; }
+catch(gpstk::Exception& e) { cerr << e; }
+catch(exception& e) { cerr << e.what(); }
+catch (...) { cerr << "Unknown error.  Abort." << endl; }
    return 1;
-}
-catch(gpstk::Exception& e) {
-   cerr << e;
-   return 1;
-}
-catch (...) {
-   cerr << "Unknown error.  Abort." << endl;
-   return 1;
-}
-   return 0;
 }   // end main()
 
 //------------------------------------------------------------------------------------
-int GetCommandLine(int argc, char **argv)
+int GetCommandLine(int argc, char **argv, RinexEditor& REC) throw(Exception)
 {
    bool help=false;
    int i,j,iret=0;
+   vector<string> values; // to get values found on command line
+
 try {
       // required options
 
       // optional options
       // this only so it will show up in help page...
    CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-      'f',""," -f<file>             file containing more options");
+      'f',""," [-f|--file] <file>   file containing more options");
 
    CommandOption dashl(CommandOption::hasArgument, CommandOption::stdType,
-      'l',""," -l<file>             Output log file name");
+      0,"log"," [-l|--log] <file>    Output log file name");
    dashl.setMaxCount(1);
    
    CommandOptionNoArg dashh('h', "help",
       " [-h|--help]          print syntax and quit.");
 
    CommandOptionNoArg dashd('d', "debug",
-      " [-d|--debug]       print extended output info.");
+      " [-d|--debug]         print extended output info.");
 
    CommandOptionNoArg dashv('v', "verbose",
       " [-v|--verbose]       print extended output info."
-      "\n [-<REC...>]          Rinex editing commands - see the following");
+      "\n [<REC>]              Rinex editing commands - cf. following");
 
    // ... other options
    CommandOptionRest Rest("");
@@ -159,26 +158,10 @@ try {
    // allow user to put all options in a file
    // could also scan for debug here
    vector<string> Args;
-   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args,Verbose,Debug);
-   argc = Args.size();
-   if(argc==0) Args.push_back(string("-h"));
+   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
 
-   //if(Debug) {
-      //cout << "List passed to REditCommandLine:\n";
-      //for(i=0; i<argc; i++) cout << i << " " << Args[i] << endl;
-      // strip out the REditCmds
-   //}
-
-   REC.REVerbose = Verbose;
-   REC.REDebug = Debug;
-   REC.AddCommandLine(Args);
-
-   //if(Debug) {
-      //deque<REditCmd>::iterator it=REC.Cmds.begin();
-      //cout << "\nHere is the list of RE cmds\n";
-      //while(it != REC.Cmds.end()) { it->Dump(cout,string("")); ++it; }
-      //cout << "End of list of RE cmds" << endl;
-   //}
+   if(Args.size()==0 || dashh.getCount())
+      help = true;
 
       // open the log file first
    oflog.open(LogFile.c_str(),ios_base::out);
@@ -189,6 +172,24 @@ try {
    cout << "EditRinex output directed to log file " << LogFile << endl;
    REC.oflog = &oflog;
    oflog << Title;
+
+   //if(Debug) {
+      //cout << "List passed to REditCommandLine:\n";
+      //for(i=0; i<Args.size(); i++) cout << i << " " << Args[i] << endl;
+      // strip out the REditCmds
+   //}
+
+   // set up editor and pull out (delete) editing commands
+   REC.REVerbose = Verbose;
+   REC.REDebug = Debug;
+   REC.AddCommandLine(Args);
+
+   //if(Debug) {
+      //deque<REditCmd>::iterator jt=REC.Cmds.begin();
+      //cout << "\nHere is the list of RE cmds\n";
+      //while(jt != REC.Cmds.end()) { jt->Dump(cout,string("")); ++jt; }
+      //cout << "End of list of RE cmds" << endl;
+   //}
 
       // preprocess the commands
    iret = REC.ParseCommands();
@@ -221,10 +222,12 @@ try {
       //for(i=0; i<argc; i++) cout << i << " " << CArgs[i] << endl;
    //}
    Par.parseOptions(argc, CArgs);
+   delete[] CArgs;
 
    if(iret != 0 || dashh.getCount() > 0) {      // iret from ParseCommands
-      Par.displayUsage(cout,false);
-      DisplayRinexEditUsage(cout);
+      Par.displayUsage((help ? cout : oflog),false);
+      (help ? cout : oflog) << endl;
+      DisplayRinexEditUsage((help ? cout : oflog));
       help = true;   //return 1;
    }
 
@@ -232,32 +235,31 @@ try {
    {
       cerr << "\nErrors found in command line input:\n";
       oflog << "\nErrors found in command line input:\n";
+      Par.dumpErrors(cerr);
       Par.dumpErrors(oflog);
+      cerr << "...end of Errors\n\n";
       oflog << "...end of Errors\n\n";
       help = true;
    }
    
-      // get values found on command line
-   vector<string> values;
-
-      // f never appears because we intercept it above
+      // f never appears because we intercept it in PreProcessArgs
    //if(dashf.getCount()) { cout << "Option f "; dashf.dumpValue(cout); }
- 
+      // get log file name - pull out in PreProcessArgs
    //if(dashl.getCount()) {
    //   values = dashl.getValue();
-   //   if(help) cout << "Output log file is: " << values[0] << endl;
    //   LogFile = values[0];
+   //   if(help) cout << "Output log file is: " << LogFile << endl;
    //}
 
-   if(dashh.getCount() && help)
-      oflog << "Option h appears " << dashh.getCount() << " times\n";
+   //if(dashh.getCount() && help)
+   //   oflog << "Option h appears " << dashh.getCount() << " times\n";
    if(dashv.getCount() && help) {
       Verbose = true;
-      if(help) oflog << "Option v appears " << dashv.getCount() << " times\n";
+      //if(help) oflog << "Option v appears " << dashv.getCount() << " times\n";
    }
    if(dashd.getCount() && help) {
       Debug = true;
-      if(help) oflog << "Option d appears " << dashd.getCount() << " times\n";
+      //if(help) oflog << "Option d appears " << dashd.getCount() << " times\n";
    }
 
    if(Rest.getCount() && help) {
@@ -273,48 +275,89 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-      cerr << "EditRinex:GetCommandLine caught an exception\n" << e;
-      GPSTK_RETHROW(e);
-}
-catch (...) {
-      cerr << "EditRinex:GetCommandLine caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
    return -1;
 }
 
 //------------------------------------------------------------------------------------
-void PreProcessArgs(const char *arg, vector<string>& Args, bool& ver, bool& deb)
+// Pull out --debug --verbose -f<f> and --file <f> and -l<f> --log <f> options.
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
 {
-   if(arg[0]=='-' && arg[1]=='f') {
+try {
+   static bool found_cfg_file=false;
+   static bool found_log_file=false;
+
+   if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
       string filename(arg);
-      filename.erase(0,2);
+      if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
+      if(Debug) cout << "Found a file of options: " << filename << endl;
       ifstream infile(filename.c_str());
       if(!infile) {
-         cerr << "Error: could not open options file "
-            << filename << endl;
+         cout << "Error: could not open options file " << filename << endl;
+         return;
       }
-      else {
-         char c;
-         string buffer;
-         while( infile >> buffer) {
-            if(buffer[0] == '#') {         // skip to end of line
-               while(infile.get(c)) { if(c=='\n') break; }
+
+      bool again_cfg_file=false;
+      bool again_log_file=false;
+      char c;
+      string buffer,word;
+      while(1) {
+         getline(infile,buffer);
+         stripTrailing(buffer,'\r');
+
+         // process the buffer before checking eof or bad b/c there can be
+         // a line at EOF that has no CRLF...
+         while(!buffer.empty()) {
+            word = firstWord(buffer);
+            if(again_cfg_file) {
+               word = "-f" + word;
+               again_cfg_file = false;
+               PreProcessArgs(word.c_str(),Args);
             }
-            else PreProcessArgs(buffer.c_str(),Args,ver,deb);
+            else if(again_log_file) {
+               word = "-l" + word;
+               again_log_file = false;
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else if(word[0] == '#') { // skip to end of line
+               buffer.clear();
+            }
+            else if(word == "--file" || word == "-f")
+               again_cfg_file = true;
+            else if(word == "--log" || word == "-l")
+               again_log_file = true;
+            else if(word[0] == '"') {
+               word = stripFirstWord(buffer,'"');
+               buffer = "dummy " + buffer;            // to be stripped later
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else
+               PreProcessArgs(word.c_str(),Args);
+
+            word = stripFirstWord(buffer);      // now remove it from buffer
          }
+         if(infile.eof() || !infile.good()) break;
       }
    }
-   else if((arg[0]=='-' && arg[1]=='d') || string(arg)==string("--debug")) {
-      deb = true;
+   else if(found_log_file || (arg[0]=='-' && arg[1]=='l')) {
+      LogFile = string(arg);
+      if(!found_log_file) LogFile.erase(0,2); else found_log_file = false;
    }
-   else if((arg[0]=='-' && arg[1]=='v') || string(arg)==string("--verbose")) {
-      ver = true;
-   }
-   else if((arg[0]=='-' && arg[1]=='l')) {
-      LogFile = string(&arg[2]);
-   }
+   else if((arg[0]=='-' && arg[1]=='d') || string(arg)==string("--debug"))
+      Debug = true;
+   else if((arg[0]=='-' && arg[1]=='v') || string(arg)==string("--verbose"))
+      Verbose = true;
+   else if(string(arg) == "--file" || string(arg) == "-f")
+      found_cfg_file = true;
+   else if(string(arg) == "--log")
+      found_log_file = true;
    else Args.push_back(arg);
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------

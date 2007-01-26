@@ -35,6 +35,8 @@
 #include <vector>
 #include <algorithm>
 #include <time.h>
+#include <stdlib.h>  // for mkstemp
+#include <iostream>
 
 #include "RinexEditor.hpp"
 
@@ -44,9 +46,43 @@
 
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string RinexEditVersion("3.1 8/29/2006");
+string RinexEditVersion;         // see below in Initialize()
+std::map<REditCmd::TYPE, std::string> REditCmd::typeLabel;
+
+//------------------------------------------------------------------------------------
+// Initialize
+REditCmd::Initialize REditCmdInitializer;
+
+REditCmd::Initialize::Initialize()
+{
+   RinexEditVersion = string("3.3 1/22/2007");
+
+   typeLabel[INVALID] = string("INVALID");
+   typeLabel[IF] = string("IF");
+   typeLabel[OF] = string("OF");
+   typeLabel[ID] = string("ID");
+   typeLabel[OD] = string("OD");
+   typeLabel[HD] = string("HD");
+   typeLabel[TN] = string("TN");
+   typeLabel[TB] = string("TB");
+   typeLabel[TE] = string("TE");
+   typeLabel[TT] = string("TT");
+   typeLabel[AO] = string("AO");
+   typeLabel[DA] = string("DA");
+   typeLabel[DO] = string("DO");
+   typeLabel[DS] = string("DS");
+   typeLabel[DD] = string("DD");
+   typeLabel[SD] = string("SD");
+   typeLabel[SS] = string("SS");
+   typeLabel[SL] = string("SL");
+   typeLabel[BD] = string("BD");
+   typeLabel[BS] = string("BS");
+   typeLabel[BL] = string("BL");
+   typeLabel[BZ] = string("BZ");
+}
 
 //------------------------------------------------------------------------------------
 // find the index of first occurance of item t (of type T) in vector<T> v;
@@ -60,14 +96,17 @@ template<class T> int index(const std::vector<T> v, const T& t)
 }
 
 //------------------------------------------------------------------------------------
+string RinexEditor::getRinexEditVersion(void) { return RinexEditVersion; }
+
+//------------------------------------------------------------------------------------
 // REditCmd member functions
 //------------------------------------------------------------------------------------
 // constructor from a string, pass by value to avoid changing original
-REditCmd::REditCmd(string s)
+REditCmd::REditCmd(string s, ostream *oflog) throw(Exception)
 {
+try {
    type = INVALID;
 
-   //*oflog << "\nREC: raw cmd is " << s << endl;
       // ignore leading '-'s
    while(s.size() && (s[0]=='-' || (s[0]==' '||s[0]=='\t'))) s.erase(0,1);
    if(s.size() < 2) return;
@@ -75,31 +114,12 @@ REditCmd::REditCmd(string s)
       // separate type and the rest
    string tag=s.substr(0,2);
    field = s.substr(2,s.size()-2);
-   //*oflog << "REC: tag and field are " << tag << " " << field << endl;
 
       // first identify the type
-   if(tag=="IF") type = IF;
-   else if(tag=="OF") type = OF;
-   else if(tag=="ID") type = ID;
-   else if(tag=="OD") type = OD;
-   else if(tag=="HD") type = HD;
-   else if(tag=="AO") type = AO;
-   else if(tag=="TN") type = TN;
-   else if(tag=="TB") type = TB;
-   else if(tag=="TE") type = TE;
-   else if(tag=="TT") type = TT;
-   else if(tag=="DA") type = DA;
-   else if(tag=="DO") type = DO;
-   else if(tag=="DS") type = DS;
-   else if(tag=="DD") type = DD;
-   else if(tag=="SD") type = SD;
-   else if(tag=="SS") type = SS;
-   else if(tag=="SL") type = SL;
-   else if(tag=="BZ") type = BZ;
-   else if(tag=="BD") type = BD;
-   else if(tag=="BS") type = BS;
-   else if(tag=="BL") type = BL;
-   //else its not an RE command
+   map<TYPE,string>::const_iterator it;
+   for(it=typeLabel.begin(); it != typeLabel.end(); it++) {
+      if(tag == it->second) { type = it->first; break; }
+   }
 
       // defaults
    bias = -99.99;
@@ -115,6 +135,7 @@ REditCmd::REditCmd(string s)
    if(type==BZ) return;
 
       // break field into subfields
+   if(field.size() == 0) { type = INVALID; return; }
    vector<string> subfield;
    string::size_type pos;
    while(field.size() > 0) {
@@ -126,23 +147,17 @@ REditCmd::REditCmd(string s)
       field.erase(0,pos+1);
    };
 
-   //if(REDebug) *oflog << "REC: subfields are:";
-   //if(REDebug) for(int i=0; i<subfield.size(); i++) *oflog << " " << subfield[i];
-   //if(REDebug) *oflog << endl;
-
       // TN just needs time spacing
    if(type==TN) {
-      bias = StringUtils::asDouble(subfield[0]);
+      bias = asDouble(subfield[0]);
       // validate?
-      //if(REDebug) *oflog << "REC: TN returns" << endl;
       return;
    }
 
       // TT just needs delta time
    if(type==TT) {
-      bias = StringUtils::asDouble(subfield[0]);
+      bias = asDouble(subfield[0]);
       // validate?
-      //if(REDebug) *oflog << "REC: TT returns" << endl;
       return;
    }
 
@@ -151,17 +166,14 @@ REditCmd::REditCmd(string s)
       if(subfield[0][0]=='+') { sign=+1; subfield[0].erase(0,1); }
       if(subfield[0][0]=='-') { sign=-1; subfield[0].erase(0,1); }
    }
-   //if(REDebug) *oflog << "REC: sign is " << sign << endl;
  
       // field = filename, OT, or header info
    if(type==IF || type==OF || type==ID || type==OD || type==HD
          || type==AO || type==DO) {
       field = subfield[0];
-      //if(REDebug) *oflog << "REC: field is " << field << endl;
       if(type==HD) {            // inOT = int(first character)
          char c=field[0];
          inOT = int(toupper(c));
-         //if(REDebug) *oflog << "REC: HD inOT is " << char(inOT) << endl;
          if(inOT!='F' && inOT!='P' && inOT!='R' && inOT!='O' && inOT!='A' &&
             inOT!='M' && inOT!='N' && inOT!='C' && inOT!='D')
                { type=INVALID; return; }
@@ -176,11 +188,12 @@ REditCmd::REditCmd(string s)
    if(type >= DS) {
       SV.fromString(subfield[0]);
       //if(REDebug) *oflog << "REC: PRN is " << SV << endl;
-         // default (incl. error) is GPS
-         // let prn==-1 denote 'delete all SV of this system'
-      if((type==DS || type==SL) && SV.id == -1) ;   // ok
-      else if(SV.system == SatID::systemGPS && (SV.id<=0 || SV.id>32))
-         { type=INVALID; return; }
+
+      // allow all commands from DS on to have SV = (system,-1)
+      // where id==-1 means 'all SV of this system'
+      //if((type==DS || type==SL) && SV.id == -1) ;   // ok
+      //else if(SV.system == SatID::systemGPS && (SV.id<=0 || SV.id>32))
+      //   { type=INVALID; return; }
       if(type==DS && subfield.size()==1) return;
       subfield.erase(subfield.begin());
    }
@@ -197,13 +210,12 @@ REditCmd::REditCmd(string s)
 
       // get a time
    if(subfield.size()==2 || subfield.size()==3) {
-      time.setGPSfullweek(StringUtils::asInt(subfield[0]),
-         StringUtils::asDouble(subfield[1]));
+      time.setGPSfullweek(asInt(subfield[0]), asDouble(subfield[1]));
    }
    if(subfield.size()==6 || subfield.size()==7) {
-      time.setYMDHMS(StringUtils::asInt(subfield[0]), StringUtils::asInt(subfield[1]),
-         StringUtils::asInt(subfield[2]), StringUtils::asInt(subfield[3]),
-         StringUtils::asInt(subfield[4]), StringUtils::asDouble(subfield[5]));
+      time.setYMDHMS(asInt(subfield[0]), asInt(subfield[1]),
+         asInt(subfield[2]), asInt(subfield[3]),
+         asInt(subfield[4]), asDouble(subfield[5]));
    }
    //if(REDebug) *oflog << "REC: time is "
    //<< time.printf("%4Y/%2m/%2d %2H:%2M:%.4f") << endl;
@@ -212,10 +224,14 @@ REditCmd::REditCmd(string s)
       // bias
    if(type >= SD) {
       //if(REDebug) *oflog << "REC: bias field is " << subfield.back() << endl;
-      bias = StringUtils::asDouble(subfield.back().c_str());
+      bias = asDouble(subfield.back().c_str());
       //if(REDebug) *oflog << "REC: bias is " << bias << endl;
    }
 
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end REditCmd::REditCmd(string)
 
 //------------------------------------------------------------------------------------
@@ -224,17 +240,20 @@ REditCmd::~REditCmd(void)
 }
 
 //------------------------------------------------------------------------------------
-void REditCmd::Dump(ostream& os, string msg)
+void REditCmd::Dump(ostream& os, string msg) throw(Exception)
 {
-   string label[]={"INVALID","IF","OF","ID","OD","HD","TN","TB","TE","TT","AO",
-      "DA","DO","DS","DD","SD","SS","SL","BD","BS","BL","BZ" };
+try {
    if(msg.size()) os << msg;
-   os << " type=" << label[type] << ", sign=" << sign << ", SV="
-      << StringUtils::asString(SV)
+   os << " type=" << typeLabel[type] << ", sign=" << sign << ", SV="
+      << SV.toString()
       << ", inOT=" << inOT
       << ", field=" << field
       << ", bias=" << fixed << setprecision(3) << bias
       << ", time = " << time.printf("%4Y/%2m/%2d %2H:%2M:%.4f") << endl;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
@@ -264,12 +283,14 @@ RinexEditor::~RinexEditor(void)
 
 //------------------------------------------------------------------------------------
 // Return 0 ok, -1 no input file name, -2 no output file name
-int RinexEditor::ParseCommands(void)
+int RinexEditor::ParseCommands(void) throw(Exception)
 {
+try {
    bool flag;
    int iret=0;
       // first scan command list for BZ,HDf,TN,TT,TB,TE,IF,OF,ID,OD
    for(int i=0; i<Cmds.size(); i++) {
+      if(REDebug) Cmds[i].Dump(*oflog,string("parse this command"));
       switch(Cmds[i].type) {
          case REditCmd::TN:
             Decimate = Cmds[i].bias;
@@ -336,7 +357,7 @@ int RinexEditor::ParseCommands(void)
                default: flag=false; break;
             }
             if(flag) {
-               //if(REDebug) Cmds[i].Dump(*oflog,string("set HD rec with this cmd"));
+               if(REDebug) Cmds[i].Dump(*oflog,string("set HD rec with this cmd"));
                Cmds[i].type = REditCmd::INVALID;
             }
             break;
@@ -437,25 +458,80 @@ int RinexEditor::ParseCommands(void)
 
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // leading -'s are ok
-void RinexEditor::AddCommand(string cmd)
+void RinexEditor::AddCommand(string cmd) throw(Exception)
 {
-   REditCmd r(cmd);
+try {
+   REditCmd r(cmd,oflog);
    if(r.valid()) Cmds.push_back(r);
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
 // Adds valid commands to C and removes from args; leading -'s are ok
-void RinexEditor::AddCommandLine(vector<string>& args)
+void RinexEditor::AddCommandLine(vector<string>& args) throw(Exception)
 {
+try {
    if(args.size()==0) return;
    //if(REDebug) *oflog << "\nBefore stripping RE cmds, there are (" << args.size()
    //<< ") tokens." << endl;
+
+   // ver 3.3 preprocess args to allow new-style input, e.g. --IF <file>
+   // e.g. --HD f; --HDp <program> or --HD p<program>; --DS +...; or --DS+ ...
+   static vector<string> CommandLineLabels;
+   if(CommandLineLabels.size() == 0) {
+      for(map<REditCmd::TYPE,string>::iterator jt=REditCmd::typeLabel.begin();
+         jt!=REditCmd::typeLabel.end();
+         jt++)
+            CommandLineLabels.push_back("--" + jt->second);
+      CommandLineLabels.push_back("--HDp");
+      CommandLineLabels.push_back("--HDr");
+      CommandLineLabels.push_back("--HDo");
+      CommandLineLabels.push_back("--HDa");
+      CommandLineLabels.push_back("--HDm");
+      CommandLineLabels.push_back("--HDn");
+      CommandLineLabels.push_back("--HDc");
+      CommandLineLabels.push_back("--DA+");
+      CommandLineLabels.push_back("--DA-");
+      CommandLineLabels.push_back("--DS+");
+      CommandLineLabels.push_back("--DS-");
+      CommandLineLabels.push_back("--DD+");
+      CommandLineLabels.push_back("--DD-");
+      CommandLineLabels.push_back("--SL+");
+      CommandLineLabels.push_back("--SL-");
+      CommandLineLabels.push_back("--BD+");
+      CommandLineLabels.push_back("--BD-");
+   }
+
    vector<string>::iterator it=args.begin();
    while(it != args.end()) {
-      REditCmd r(*it);
+      string str(*it);
+      if(str == string("--HDf")) *it = "-HDf";
+      else if(str == string("--HDdc")) *it = "-HDdc";
+      else if(str == string("--BZ")) *it = "-BZ";
+      else if(index(CommandLineLabels,str) != -1) {
+         it = args.erase(it);
+         if(it == args.end()) break;
+         str.erase(0,1);
+         str += *it;
+         *it = str;
+      }
+      it++;
+   }
+
+   // process args
+   it = args.begin();
+   while(it != args.end()) {
+      REditCmd r(*it,oflog);
       if(r.valid()) {
          Cmds.push_back(r);
          //if(REDebug) *oflog << "Erase command " << *it << endl;
@@ -469,12 +545,19 @@ void RinexEditor::AddCommandLine(vector<string>& args)
    //if(REDebug) *oflog << "\nAfter stripping RE cmds, tokens (" << args.size()
    //<< ") are:" << endl;
    //if(REDebug) for(unsigned int j=0; j<args.size(); j++) *oflog << args[j] << endl;
+   //if(REDebug) *oflog << "End of RE cmds, tokens" << endl;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
 // NB does not fill optional records, even when -HDf (EditObs will).
 int RinexEditor::EditHeader(RinexObsHeader& RHInput, RinexObsHeader& RHOutput)
+   throw(Exception)
 {
+try {
       // save the input header
    RHIn = RHOutput = RHInput;
       // get the obstypes
@@ -540,7 +623,10 @@ int RinexEditor::EditHeader(RinexObsHeader& RHInput, RinexObsHeader& RHOutput)
    if(!HDObserver.empty()) RHOutput.observer = HDObserver;
    if(!HDAgency.empty()) RHOutput.agency = HDAgency;
    if(!HDMarker.empty()) RHOutput.markerName = HDMarker;
-   if(!HDNumber.empty()) RHOutput.markerNumber = HDNumber;
+   if(!HDNumber.empty()) {
+      RHOutput.markerNumber = HDNumber;
+      RHOutput.valid |= RinexObsHeader::markerNumberValid;
+   }
    if(HDComments.size()) RHOutput.commentList.insert(RHOutput.commentList.end(),
       HDComments.begin(),HDComments.end());
    RHOutput.commentList.push_back(string("Edited by GPSTK Rinex Editor ver ") +
@@ -561,6 +647,10 @@ int RinexEditor::EditHeader(RinexObsHeader& RHInput, RinexObsHeader& RHOutput)
 
    return 0;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // will fill header (after writing) when -HDf found.
@@ -570,8 +660,9 @@ int RinexEditor::EditHeader(RinexObsHeader& RHInput, RinexObsHeader& RHOutput)
 //         1 DO NOT write the output obs ROOut, but close and re-open the output file
 //         2 DO write the output obs ROOut
 //         3 DO write the output obs ROOut, but first close and re-open output file
-int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
+int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut) throw(Exception)
 {
+try {
       // check that stored input header is valid...but do only once!
    //if(!RHIn.valid() || !RHOut.valid()) return -2;
    bool NewFile=false;
@@ -587,25 +678,23 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
       return 2;
    }
 
-      // decimate the data // TD consider clock bias?
+      // decimate the data
    if(Decimate > 0.0) {
          // if BegTime is unset, make it the first of the week
       if(BegTime == DayTime::BEGINNING_OF_TIME)
          BegTime.setGPSfullweek(ROIn.time.GPSfullweek(),0.0);
-      double dt=ABS(ROIn.time - BegTime);
+      double dt=fabs(ROIn.time - BegTime);
       dt -= Decimate*long(0.5+dt/Decimate);
-      if(ABS(dt) > TimeTol) return 0;
+      if(fabs(dt) > TimeTol) return 0;
    }
 
-      // TD allow callback to fill new obs types here...
-   
       // scan command list, updating current, onetime command lists,
       // delete-SV list, Skip, NewFile
       // delete the command after processing it
    double dt;
    while(Cmds.size() > 0) {
       dt = Cmds[0].time - ROIn.time;
-      if(dt < -TimeTol || ABS(dt) < TimeTol) {  // commands in present and past
+      if(dt < -TimeTol || fabs(dt) < TimeTol) {  // commands in present and past
          if(REDebug) Cmds[0].Dump(*oflog,
                Cmds[0].time.printf("%4Y/%2m/%2d %2H:%2M:%.4f")
                + string(": Process (now) : "));
@@ -623,9 +712,11 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
             case REditCmd::DS:
                if(Cmds[0].sign > 0 && index(DelSV,Cmds[0].SV) == -1)
                   DelSV.push_back(Cmds[0].SV);
-               if(Cmds[0].sign < 0)
-                  DelSV.erase(find(DelSV.begin(),DelSV.end(),Cmds[0].SV));
-               if(Cmds[0].sign == 0 && ABS(dt) < TimeTol)
+               if(Cmds[0].sign < 0) {
+                  if(find(DelSV.begin(),DelSV.end(),Cmds[0].SV) != DelSV.end())
+                     DelSV.erase(find(DelSV.begin(),DelSV.end(),Cmds[0].SV));
+               }
+               if(Cmds[0].sign == 0 && fabs(dt) < TimeTol)
                   OneTimeCmds.push_back(Cmds[0]);
                if(Cmds[0].sign != 0 && REDebug) {
                   *oflog << "DS: DelSV is";
@@ -639,10 +730,16 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
             case REditCmd::SL:
             case REditCmd::SD:
             case REditCmd::BD:
-               if(Cmds[0].sign > 0) CurrentCmds.push_back(Cmds[0]);
-               if(Cmds[0].sign < 0) CurrentCmds.erase(find(CurrentCmds.begin(),
-                   CurrentCmds.end(),Cmds[0]));
-               if(Cmds[0].sign == 0 && ABS(dt) < TimeTol)
+            case REditCmd::BS:
+            case REditCmd::BL:
+               if(Cmds[0].sign > 0)
+                  CurrentCmds.push_back(Cmds[0]);
+               if(Cmds[0].sign < 0) {
+                  vector<REditCmd>::iterator it;
+                  it = find(CurrentCmds.begin(), CurrentCmds.end(),Cmds[0]);
+                  if(it != CurrentCmds.end()) CurrentCmds.erase(it);
+               }
+               if(Cmds[0].sign == 0 && fabs(dt) < TimeTol)
                   OneTimeCmds.push_back(Cmds[0]);
                break;
             default:
@@ -678,7 +775,7 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
       otmap.insert(std::map<RinexObsHeader::RinexObsType,
          RinexObsData::RinexDatum>::value_type(RHOut.obsTypeList[j],datum) );
 
-      // loop over prns, create otmap and then insert it with the correct prn
+      // loop over prns, create otmap and then insert it with the correct sat
    int nsvs=0;
    RinexObsData::RinexSatMap::iterator it;
    RinexObsData::RinexObsTypeMap::iterator jt,kt;
@@ -702,7 +799,7 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
       // TD should test for all zero data -> delete this SV.
       ROOut.obs.insert(std::map<SatID,
          RinexObsData::RinexObsTypeMap>::value_type(it->first,otmap) );
-   }
+   }  // end loop over sats
 
    ROOut.time = ROIn.time;
    if(!NewFile) {
@@ -713,75 +810,85 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
    ROOut.epochFlag = ROIn.epochFlag;
 
       // apply current commands
-   vector<REditCmd>::iterator cit;
-   RinexObsData::RinexSatMap::reverse_iterator roit;
+   vector<REditCmd>::iterator cit;                    // iterator for commands
    for(cit=CurrentCmds.begin(); cit != CurrentCmds.end(); cit++) {
       if(REDebug) cit->Dump(*oflog,string("Current : "));
-         // modify all satellites in this system
-      if(cit->type == REditCmd::SL && cit->SV.id == -1) {
-         for(roit=ROOut.obs.rbegin(); roit!=ROOut.obs.rend(); roit++) {
-            if(cit->SV.system == roit->first.system) {
-               jt = (roit->second).find(RinexObsHeader::convertObsType(cit->field));
-               if(jt != roit->second.end()) jt->second.lli = int(cit->bias);
-            }
-         }
-      }
-      it = ROOut.obs.find(cit->SV);
-      if(it != ROOut.obs.end()) {
-         jt = (it->second).find(RinexObsHeader::convertObsType(cit->field));
+         // for SV=system only, start at beginning, else start with command SV
+      for(it = ROOut.obs.begin(); it != ROOut.obs.end(); it++) {
+            // skip if the sat is not a match
+         if(cit->SV.system != it->first.system ||
+            (cit->SV.id > -1 && cit->SV.id != it->first.id)) continue;
+            // find the command obs type in the data
+         jt = it->second.find(RinexObsHeader::convertObsType(cit->field));
+            // if its there, edit it
          if(jt != it->second.end()) {
             if(cit->type == REditCmd::DD) jt->second.data = 0.0;
+            if(cit->type == REditCmd::SS) jt->second.ssi =
+               (int(cit->bias) < 0 ? 0 : (int(cit->bias) > 9 ? 9 : int(cit->bias)));
+            if(cit->type == REditCmd::SL) jt->second.lli = int(cit->bias);
+               (int(cit->bias) < 0 ? 0 : (int(cit->bias) > 9 ? 9 : int(cit->bias)));
             if(cit->type == REditCmd::BD) {
-               if(BiasZeroData || ABS(jt->second.data) > 0.001)
+               if(BiasZeroData || fabs(jt->second.data) > 0.001)
                   jt->second.data += cit->bias;
             }
-            if(cit->type == REditCmd::SL) jt->second.lli = int(cit->bias);
+            if(cit->type == REditCmd::BS) {
+               jt->second.ssi += int(cit->bias);
+               if(jt->second.ssi < 0) jt->second.ssi = 0;
+               if(jt->second.ssi > 9) jt->second.ssi = 9;
+            }
+            if(cit->type == REditCmd::BL) {
+               jt->second.lli += int(cit->bias);
+               if(jt->second.lli < 0) jt->second.lli = 0;
+               if(jt->second.lli > 9) jt->second.lli = 9;
+            }
          }
-      }
-   }
+      }  // end loop over satellites
+   }  // end loop over current commands
 
-      // apply one-time commands
+      // apply one-time commands .. iterate in reverse so you can erase as you go
    vector<REditCmd>::reverse_iterator irt;
+   RinexObsData::RinexSatMap::reverse_iterator roit;  // reverse iterator for obs data
    for(irt=OneTimeCmds.rbegin(); irt != OneTimeCmds.rend(); irt++) {
       if(REDebug) irt->Dump(*oflog,string("1-time : "));
-         // delete all satellites in this system
-      if((irt->type == REditCmd::DS || irt->type == REditCmd::SL)
-            && irt->SV.id == -1) {
-         for(roit=ROOut.obs.rbegin(); roit!=ROOut.obs.rend(); roit++) {
-            if(irt->SV.system == roit->first.system) {
-               if(irt->type == REditCmd::DS) ROOut.obs.erase(roit->first);
-               if(irt->type == REditCmd::SL) {
-                  jt=(roit->second).find(RinexObsHeader::convertObsType(irt->field));
-                  if(jt != roit->second.end()) jt->second.lli = int(irt->bias);
+         // for SV=system only, start at beginning, else start with command SV
+      for(roit = ROOut.obs.rbegin(); roit != ROOut.obs.rend(); ) {
+            // skip if not a match
+         if(irt->SV.system != roit->first.system ||
+            (irt->SV.id > -1 && irt->SV.id != roit->first.id)) { roit++; continue; }
+            // DS : delete SV altogether
+         if(irt->type == REditCmd::DS) ROOut.obs.erase(roit->first);
+         else {
+               // find the command obs type in the data
+            jt=roit->second.find(RinexObsHeader::convertObsType(irt->field));
+            if(jt != roit->second.end()) {
+               if(irt->type == REditCmd::DD) jt->second.data = 0.0;
+               if(irt->type == REditCmd::SD) jt->second.data = irt->bias;
+               if(irt->type == REditCmd::SS)
+                  (int(irt->bias) < 0 ? 0 : (int(irt->bias) > 9 ? 9 : int(irt->bias)));
+               if(irt->type == REditCmd::SL)
+                  (int(irt->bias) < 0 ? 0 : (int(irt->bias) > 9 ? 9 : int(irt->bias)));
+               if(irt->type == REditCmd::BD) {
+                  if(BiasZeroData || fabs(jt->second.data) > 0.001)
+                     jt->second.data += irt->bias;
+               }
+               if(irt->type == REditCmd::BS) {
+                  jt->second.ssi += int(irt->bias);
+                  if(jt->second.ssi < 0) jt->second.ssi = 0;
+                  if(jt->second.ssi > 9) jt->second.ssi = 9;
+               }
+               if(irt->type == REditCmd::BL) {
+                  jt->second.lli += int(irt->bias);
+                  if(jt->second.lli < 0) jt->second.lli = 0;
+                  if(jt->second.lli > 9) jt->second.lli = 9;
                }
             }
+            roit++;
          }
-      }
-      else {
-         it = ROOut.obs.find(irt->SV);
-         if(it != ROOut.obs.end()) {
-            if(irt->type == REditCmd::DS) {                   // delete SV altogether
-               ROOut.obs.erase(it);
-            }
-            else {
-               jt = (it->second).find(RinexObsHeader::convertObsType(irt->field));
-               if(jt != it->second.end()) {
-                  if(irt->type == REditCmd::DD) jt->second.data = 0.0;
-                  if(irt->type == REditCmd::SD) jt->second.data = irt->bias;
-                  if(irt->type == REditCmd::SS) jt->second.ssi = int(irt->bias);
-                  if(irt->type == REditCmd::SL) jt->second.lli = int(irt->bias);
-                  if(irt->type == REditCmd::BD) {
-                     if(BiasZeroData || ABS(jt->second.data) > 0.001)
-                        jt->second.data += irt->bias;
-                  }
-                  if(irt->type == REditCmd::BS) jt->second.ssi += int(irt->bias);
-                  if(irt->type == REditCmd::BL) jt->second.lli += int(irt->bias);
-               }
-            }
-         }
-      }
+      }  // end loop over satellites
+
+         // delete this command
       OneTimeCmds.pop_back();
-   }
+   }  // end loop over one-time commands
 
    ROOut.numSvs = ROOut.obs.size();
 
@@ -791,7 +898,7 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
          dt = CurrEpoch-PrevEpoch;
          for(int i=0; i<9; i++) {
             if(ndt[i] <= 0) { bestdt[i]=dt; ndt[i]=1; break; }
-            if(ABS(dt-bestdt[i]) < 0.0001) { ndt[i]++; break; }
+            if(fabs(dt-bestdt[i]) < 0.0001) { ndt[i]++; break; }
             if(i == 8) {
                int k = 0;
                int nleast=ndt[k];
@@ -807,10 +914,16 @@ int RinexEditor::EditObs(RinexObsData& ROIn, RinexObsData& ROOut)
    if(NewFile) return 3;
    return 2;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
-string GetTempFileName(void)
+// use remove(newname) to delete it
+string GetTempFileName(void) throw(Exception)
 {
+try {
 #ifdef _MSC_VER
    char newname[L_tmpnam];
    if(!tmpnam(newname)) {
@@ -822,12 +935,18 @@ string GetTempFileName(void)
    }
    return string(newname);
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
 // assumes TempFile has been written with RHOut, and info is in config
 // Return 0 or -1 if could not open/delete files
 int RinexEditor::FillHeaderAndReplaceFile(string& TempFile, string& TrueOutputFile)
+   throw(Exception)
 {
+try {
    int i,j;
       // compute interval
    for(i=1,j=0; i<9; i++) if(ndt[i]>ndt[j]) j=i;
@@ -858,7 +977,6 @@ int RinexEditor::FillHeaderAndReplaceFile(string& TempFile, string& TrueOutputFi
    RinexObsStream InAgain(TempFile.c_str());
    InAgain.exceptions(ios::failbit);
 
-//*oflog << "Opened " << TempFile << " for input and " << TrueOutputFile << " for output.\n";
    InAgain >> rhjunk;
    ROutStr << RHOut;
 
@@ -872,12 +990,17 @@ int RinexEditor::FillHeaderAndReplaceFile(string& TempFile, string& TrueOutputFi
    ROutStr.close();
 
       // delete the temporary
-   if( remove(TempFile.c_str()) != 0) {
-      //*oflog << "Error: Could not remove existing file: " << TempFile << endl;
+   if(remove(TempFile.c_str()) != 0) {
+      *oflog << "Error: Could not remove existing temp file: " << TempFile << endl;
       return -1;
    }
+   else if(REVerbose) *oflog << "Removed temporary file " << TempFile << endl;
    
    return 0;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
@@ -893,8 +1016,9 @@ int RinexEditor::FillHeaderAndReplaceFile(string& TempFile, string& TrueOutputFi
 //        -9 callback to BeforeWritingHeader returned error
 //       -10 callback to BeforeWritingObs returned error
 // will replace header after filling using temp file
-int RinexEditor::EditFile(void)
+int RinexEditor::EditFile(void) throw(Exception)
 {
+try {
    int iret,Noutput;
    RinexObsHeader rhin,rhout;
    RinexObsData roin,roout;
@@ -961,20 +1085,19 @@ int RinexEditor::EditFile(void)
       // if header is to be filled, write to a temporary file
    TrueOutputFile = OutputFile;
    if(FillOptionalHeader) {
-//*oflog << "FillOptionalHeader" << endl;
       OutputFile = GetTempFileName();
-//*oflog << "Got temp file name " << OutputFile << endl;
       if(OutputFile.empty()) {
          cerr << "Could not create temporary file name - abort\n";
          if(REVerbose) *oflog << "Could not create temporary file name - abort\n";
          return -5;
       }
+      // some OSs create the file when you get the name...
+      remove(OutputFile.c_str());
       if(!OutputDir.empty()) OutputFile = OutputDir + string("/") + OutputFile;
       TempFile = OutputFile;
    }
 
       // open output file
-//*oflog << "Open output file " << OutputFile << endl;
    RinexObsStream ROFout(OutputFile.c_str(), ios::out);
    if(!ROFout) {
       cerr << "RinexEditor::EditFile could not open output file "
@@ -987,7 +1110,6 @@ int RinexEditor::EditFile(void)
 
       // loop over epochs, reading input and writing to output
    Noutput = 0;
-//*oflog << "Start loop over output epochs" << endl;
    while (1) {
 
          // read next observation epoch
@@ -1065,6 +1187,8 @@ int RinexEditor::EditFile(void)
                      *oflog << "Could not create temporary file name - abort\n";
                   return -5;
                }
+               // some OSs create the file when you get the name...
+               remove(OutputFile.c_str());
                if(!OutputDir.empty())
                   OutputFile = OutputDir + string("/") + OutputFile;
                TempFile = OutputFile;
@@ -1168,113 +1292,123 @@ int RinexEditor::EditFile(void)
 
    return iret;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------
-void DisplayRinexEditUsage(ostream& os)
+vector<string> RinexEditor::CommandList(void) throw(Exception)
 {
-   os << "\nRinex Editor commands:\n";
-   os << " ==============================================================="
-      << "===============\n";
-   os << " Commands begin with a '-' or '/', followed by an identifier, "
-      << "then data fields.\n";
-   os << " Fields beyond the initial 2- or 3-character identifier are comma "
-      << "delimited.\n";
-   os << " <SV> gives a satellite; SV=<PRN><System(optional)> "
-      << "eg. 19G or 19 = PRN 19 GPS.\n";
-   os << " <System> is a single character (G=GPS, R=GLONASS, T=Transit, "
-      << "S=Geosynchronous).\n";
-   os << " <OT> gives a Rinex observation type, e.g. L1 or P2 (case sensitive).\n";
-   os << " <time> gives a time; time=<week,sow> OR "
-      << "time=<year,mon,day,hour,min,second>.\n";
-   os << "\n";
-   os << " File I/O:\n";
-   os << " =========\n";
-   os << " -IF<file>       Input Rinex observation file name (required)\n";
-   os << " -ID<dir>        Directory in which to find input file\n";
-   os << " -OF<file>       Output Rinex file name (required, or -OF<file>,<time>)\n";
-   os << " -OF<f>,<time>   At time=<time>, close output file and open another "
-      << "named <f>\n";
-   os << " -OD<dir>        Directory in which to put output file(s)\n";
-   os << "\n";
-   os << " Output Rinex header fields:\n";
-   os << " ===========================\n";
-   os << " -HDf            If present, fill optional records in the output Rinex "
-      << "header\n";
-   os << "                  (NB EditObs() and EditFile() will do this, but NOT "
-      << "EditHeader().)\n";
-   os << " -HDp<program>   Set output Rinex header 'program' field\n";
-   os << " -HDr<run_by>    Set output Rinex header 'run by' field\n";
-   os << " -HDo<observer>  Set output Rinex header 'observer' field\n";
-   os << " -HDa<agency>    Set output Rinex header 'agency' field\n";
-   os << " -HDm<marker>    Set output Rinex header 'marker' field\n";
-   os << " -HDn<number>    Set output Rinex header 'number' field\n";
-   os << " -HDc<comment>   Add comment to output Rinex header "
-      << "(more than one allowed).\n";
-   os << " -HDdc           Delete all comments in output Rinex header\n";
-   os << "     (NB -HDdc cannot delete comments created by *subsequent* "
-      << "-HDc commands)\n";
-   os << "\n";
-   os << " -AO<OT>         Add observation type OT to header and observation data\n";
-   os << "\n";
-   os << " General edit commands:\n";
-   os << " ======================\n";
-   os << " -TB<time>       Begin time: reject data before this time "
-      << "(also used for decimation)\n";
-   os << " -TE<time>       End   time: reject data after this time\n";
-   os << " -TT<dt>         Tolerance in comparing times, in seconds (default=1ms)\n";
-   os << " -TN<dt>         Decimate data to epochs = Begin + integer*dt "
-      << "(within tolerance)\n";
-   os << "\n";
-   os << " Specific edit commands:\n";
-   os << " =======================\n";
-   os << " (Generally each '+' command (e.g DA+,<time>) has a corresponding "
-      << "'-' command,\n";
-   os << "  and vice-versa; if not, End-of-file or Begin-of-file is assumed.\n";
-   os << "  Note commands at one time are applied AFTER other commands of the "
-      << "same type.)\n";
-   os << "\n";
-   os << "     Delete commands:\n";
-   os << " -DA+<time>      Delete all data beginning at this time\n";
-   os << " -DA-<time>      Stop deleting data at this time\n";
-   os << " -DO<OT>         Delete observation type OT entirely "
-      << "(including in header)\n";
-   os << " -DS<SV>         Delete all data for satellite SV entirely "
-      << "(SV may be system only)\n";
-   os << " -DS<SV>,<time>  Delete all data for satellite SV at this single time "
-      << "(only)\n";
-   os << " -DS+<SV>,<time> Delete all data for satellite SV beginning at this time\n";
-   os << " -DS-<SV>,<time> Stop deleting all data for satellite SV at this time\n";
-   os << "     (NB DS commands with SV=system (only) delete all satellites of that "
-      << "system.)\n";
-   os << " -DD<SV,OT,t>    Delete a single Rinex data(SV,OT,t) at time <t>\n";
-   os << " -DD+<SV,OT,t>   Delete all (SV,OT) data, beginning at time <t>\n";
-   os << " -DD-<SV,OT,t>   Stop deleting all (SV,OT) data at time <t>\n";
-   os << "     (NB deleting data for one OT means setting it to zero - here and in "
-      << "Rinex)\n";
-   os << "\n";
-   os << "     Set commands:\n";
-   os << " -SD<SV,OT,t,d>  Set data(SV,OT,t) to <d> at time <t>\n";
-   os << " -SS<SV,OT,t,s>  Set ssi(SV,OT,t) to <s> at time <t>\n";
-   os << " -SL+<SV,OT,t,l> Set all lli(SV,OT,t) to <l> at time <t>\n";
-   os << " -SL-<SV,OT,t,l> Stop setting lli(SV,OT,t) to <l> at time <t>"
-      << " (',<l>' is optional)\n";
-   os << " -SL<SV,OT,t,l>  Set lli(SV,OT,t) to <l> at the single time <t> (only)\n";
-   os << "     (NB SL commands with SV=system (only) modify all satellites of that "
-      << "system.)\n";
-   os << "\n";
-   os << "     Bias commands:\n";
-   os << "   (NB. BD commands apply only when data is non-zero, "
-      << "unless -BZ appears)\n";
-   os << " -BZ             Apply bias data commands (BD) even when data is zero\n";
-   os << " -BD<SV,OT,t,d>  Add the value of <d> to data(SV,OT,t) at time <t>\n";
-   os << " -BD+<SV,OT,t,d> Add value of <d> to data(SV,OT) beginning at time <t>\n";
-   os << " -BD-<SV,OT,t,d> Stop adding <d> to data(SV,OT) at time <t> (',<d>' optional)\n";
-   os << " -BS<SV,OT,t,s>  Add the value of <s> to ssi(SV,OT,t) at time <t>\n";
-   os << " -BL<SV,OT,t,l>  Add the value of <l> to lli(SV,OT,t) at time <t>\n";
-   os << "\n End of Rinex Editor commands.\n";
-   os << " ====================================================================="
-      << "=========\n";
+try {
+   string str,comma(",");
+   vector<string> strs;
+   deque<REditCmd>::iterator jt;
+
+   for(jt=Cmds.begin(); jt != Cmds.end(); jt++) {
+      str = REditCmd::typeLabel[jt->type]
+            + comma + (jt->sign < 0 ? string("-1") :
+                      (jt->sign > 0 ? string("1") : string("0")))
+            + comma + jt->SV.toString()
+            + comma + asString(jt->inOT)
+            + comma + jt->field
+            + comma + asString(jt->bias,3)
+            + comma + jt->time.printf("%4Y/%02m/%02d,%02H:%02M:%.4f")
+            ;
+      strs.push_back(str);
+   }
+
+   return strs;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+
+//------------------------------------------------------------------------------------
+void DisplayRinexEditUsage(ostream& os) throw()
+{
+   os <<
+" Rinex Editor commands:\n"
+" ===================================================================================\n"
+" Commands consist of an identifier and a comma-delimited data field; they may be\n"
+" separated by space(s) '--id <data>' (two minuses) or not '-id<data>' (one minus).\n"
+" Examples are '--IF myFile' or '-IFmyFile'; '--HDc msg' or '--HD cmsg' or '-HDcmsg';\n"
+" --BZ or -BZ; '--DD +<SV,OT,t>' or '--DD+ <SV,OT,t>' or '-DD+<SV,OT,t>'.\n"
+" The data field contains no whitespace and sub-fields are comma-delimited.\n"
+" <SV> is a RINEX 'system & id' identifier, e.g. G27 (= GPS PRN 27);\n"
+"   satellite system alone denotes 'all satellites this system', e.g. 'R' (GLONASS).\n"
+" <OT> is a RINEX observation type, e.g. L1 or P2, and is case sensitive.\n"
+" <time> is either <GPSweek,GPSsecOfWeek> or <year,mon,day,hour,min,second>.\n"
+"\n"
+" File I/O:\n"
+" ---------\n"
+" -IF<file>       Input RINEX observation file name (required)\n"
+" -ID<dir>        Directory in which to find input file\n"
+" -OF<file>       Output RINEX file name (required, or -OF<file>,<time>)\n"
+" -OF<f>,<time>   At RINEX epoch <time>, close output file and open another named <f>\n"
+" -OD<dir>        Directory in which to put output file(s)\n"
+"\n"
+" Output RINEX header:\n"
+" --------------------\n"
+" -HDf            If present, fill optional records in the output RINEX header\n"
+"                   (NB EditObs() and EditFile() will do this, but NOT EditHeader().)\n"
+" -HDp<program>   Set output RINEX header 'program' field\n"
+" -HDr<run_by>    Set output RINEX header 'run by' field\n"
+" -HDo<observer>  Set output RINEX header 'observer' field\n"
+" -HDa<agency>    Set output RINEX header 'agency' field\n"
+" -HDm<marker>    Set output RINEX header 'marker' field\n"
+" -HDn<number>    Set output RINEX header 'number' field\n"
+" -HDc<comment>   Add comment to output RINEX header (more than one allowed).\n"
+" -HDdc           Delete all comments in output RINEX header\n"
+"           (NB -HDdc cannot delete comments created by *subsequent* -HDc commands)\n"
+"\n"
+" -AO<OT>         Add observation type OT to header and observation data\n"
+"\n"
+" Time-related edit commands:\n"
+" ---------------------------\n"
+" -TB<time>       Begin time: reject data before this time (also used for decimation)\n"
+" -TE<time>       End   time: reject data after this time\n"
+" -TT<dt>         Tolerance in comparing times, in seconds (default=1ms)\n"
+" -TN<dt>         Decimate data to epochs = Begin + integer*dt (within tolerance)\n"
+"\n"
+" Specific edit commands:\n"
+" -----------------------\n"
+" (Generally each '+' command (e.g DA+<time>) has a corresponding '-' command,\n"
+"     and vice-versa; if not, end-of-file or beginning-of-file is assumed.\n"
+"  Note that one-time commands are applied AFTER other commands of the same type.)\n"
+"\n"
+"     Delete commands:\n"
+" -DA+<time>      Delete all data beginning at this time\n"
+" -DA-<time>      Stop deleting data at this time\n"
+" -DO<OT>         Delete observation type OT entirely (including in header)\n"
+" -DS<SV>         Delete all data for satellite SV entirely (SV may be system only)\n"
+" -DS<SV>,<time>  Delete all data for satellite SV at this single time only\n"
+" -DS+<SV>,<time> Delete all data for satellite SV beginning at this time\n"
+" -DS-<SV>,<time> Stop deleting all data for satellite SV at this time\n"
+" -DD<SV,OT,t>    Delete a single RINEX datum(SV,OT,t) at time <t>\n"
+" -DD+<SV,OT,t>   Delete all (SV,OT) data, beginning at time <t>\n"
+" -DD-<SV,OT,t>   Stop deleting all (SV,OT) data at time <t>\n"
+"     (NB deleting data for one OT means setting it to zero - as RINEX requires)\n"
+"\n"
+"     Set commands:\n"
+" -SD<SV,OT,t,d>  Set data(SV,OT,t) to <d> at time <t>\n"
+" -SS<SV,OT,t,s>  Set ssi(SV,OT,t) to <s> at time <t>\n"
+" -SL+<SV,OT,t,l> Set all lli(SV,OT,t) to <l> at time <t>\n"
+" -SL-<SV,OT,t,l> Stop setting lli(SV,OT,t) to <l> at time <t> (',<l>' is optional)\n"
+" -SL<SV,OT,t,l>  Set lli(SV,OT,t) to <l> at the single time <t> only\n"
+"\n"
+"     Bias commands:\n"
+"   (NB. BD commands apply only when data is non-zero, unless -BZ appears)\n"
+" -BZ             Apply BD commands even when data is zero (i.e. 'missing')\n"
+" -BD<SV,OT,t,d>  Add the value of <d> to data(SV,OT,t) at time <t>\n"
+" -BD+<SV,OT,t,d> Add value <d> to data(SV,OT) beginning at time <t>\n"
+" -BD-<SV,OT,t,d> Stop adding <d> to data(SV,OT) at time <t> (',<d>' optional)\n"
+" -BS<SV,OT,t,s>  Add the value of <s> to ssi(SV,OT,t) at time <t>\n"
+" -BL<SV,OT,t,l>  Add the value of <l> to lli(SV,OT,t) at time <t>\n"
+"\n End of Rinex Editor commands.\n"
+" ===================================================================================\n"
+   ;
    os << endl;
 }
 

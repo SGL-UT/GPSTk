@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -40,6 +40,7 @@
 #include "RinexObsStream.hpp"
 #include "MiscMath.hpp"             // LagrangeIterpolation()
 #include "icd_200_constants.hpp"
+#include "StringUtils.hpp"
 
 #include <time.h>
 #include <string>
@@ -48,8 +49,9 @@
 #include <fstream>
 #include <sstream>
 
-using namespace gpstk;
 using namespace std;
+using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 string PrgmName("posInterp");
@@ -114,14 +116,14 @@ int Ninterps;
 
 //------------------------------------------------------------------------------------
 // prototypes
-int ReadFile(int nfile, int reading);
-int ProcessHeader(RinexObsStream& ifs, int nfile, int reading);
-int ProcessOneEntireEpoch(RinexObsData& ro, int reading);
-int InterpolateAndOutput(void);
-int AfterReadingFiles(int reading);
+int ReadFile(int nfile, int reading) throw(Exception);
+int ProcessHeader(RinexObsStream& ifs, int nfile, int reading) throw(Exception);
+int ProcessOneEntireEpoch(RinexObsData& ro, int reading) throw(Exception);
+int InterpolateAndOutput(void) throw(Exception);
+int AfterReadingFiles(int reading) throw(Exception);
 
-int GetCommandLine(int argc, char **argv);
-void PreProcessArgs(const char *arg, vector<string>& Args, bool& Debug);
+int GetCommandLine(int argc, char **argv) throw(Exception);
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
 
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -174,22 +176,16 @@ try {
 
    return iret;
 }
-catch(FFStreamError& e) {
-   cout << "FFStream exception:\n" << e << endl;
-}
-catch(Exception& e) {
-   cout << "GPSTK exception:\n" << e << endl;
-}
-catch (...) {
-   cout << "Unknown exception in main." << endl;
-}
+catch(FFStreamError& e) { cout << "FFStream exception:\n" << e << endl; }
+catch(Exception& e) { cout << "GPSTK exception:\n" << e << endl; }
+catch (...) { cout << "Unknown exception in main." << endl; }
 }   // end main()
 
 //------------------------------------------------------------------------------------
 // open the file, read header and check for data; then loop over the epochs
 // Return 0 ok, <0 fatal error, >0 non-fatal error (ie skip this file)
 // 0 ok, 1 couldn't open file, 2 file doesn't have required data
-int ReadFile(int nfile, int reading)
+int ReadFile(int nfile, int reading) throw(Exception)
 {
 try {
    int i,iret;
@@ -247,15 +243,12 @@ try {
    return iret;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch (...) {
-   Exception e("Unknown exception");
-   GPSTK_THROW(e);
-}
-   return -1;
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int ProcessHeader(RinexObsStream& ifs, int nfile, int reading)
+int ProcessHeader(RinexObsStream& ifs, int nfile, int reading) throw(Exception)
 {
 try {
       // read the header
@@ -316,11 +309,8 @@ try {
    return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch (...) {
-   Exception e("Unknown exception");
-   GPSTK_THROW(e);
-}
-   return -1;
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
@@ -330,7 +320,7 @@ catch (...) {
 //        1 skip this epoch,
 //        2 output to Rinex,
 //        3 output position also
-int ProcessOneEntireEpoch(RinexObsData& roe, int reading)
+int ProcessOneEntireEpoch(RinexObsData& roe, int reading) throw(Exception)
 {
 try {
    int i,j;
@@ -427,16 +417,14 @@ try {
    return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch (...) {
-   Exception e("Unknown exception");
-   GPSTK_THROW(e);
-}
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
 void RinexPositionComments(RinexObsData& psdata, DayTime& tt, int N,
    double& X, double& Y, double& Z, double& T,
-   double& PDOP, double& GDOP, double& RMS)
+   double& PDOP, double& GDOP, double& RMS) throw(Exception)
 {
 try {
    ostringstream stst1,stst2;
@@ -466,17 +454,13 @@ try {
    psdata.auxHeader.commentList.push_back(stst2.str());
    psdata.auxHeader.valid |= RinexObsHeader::commentValid;
 }
-catch(Exception& e) {
-   GPSTK_RETHROW(e);
-}
-catch (...) {
-   Exception e("Unknown exception");
-   GPSTK_THROW(e);
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int InterpolateAndOutput(void)
+int InterpolateAndOutput(void) throw(Exception)
 {                        // interpolate positions and output to rinex
 try {
    bool Lagrange;
@@ -650,14 +634,12 @@ try {
    return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch (...) {
-   Exception e("Unknown exception");
-   GPSTK_THROW(e);
-}
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int AfterReadingFiles(int reading)
+int AfterReadingFiles(int reading) throw(Exception)
 {
 try {
    int i,j,iret=0;
@@ -724,18 +706,16 @@ try {
    return iret;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch (...) {
-   Exception e("Unknown exception");
-   GPSTK_THROW(e);
-}
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int GetCommandLine(int argc, char **argv)
+int GetCommandLine(int argc, char **argv) throw(Exception)
 {
+try {
    bool help=false;
    int i,j;
-try {
       // defaults
    PIC.Debug = false;
    PIC.DumpMap = false;
@@ -769,7 +749,7 @@ try {
       // optional options
    // this is here only so it will show up in help page...
    CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-      'f',""," -f<file>            File containing more options");
+      'f',""," [-f|--file] <file>  File containing more options");
 
    CommandOption dashdo(CommandOption::hasArgument, CommandOption::stdType,
       0,"obsdir"," --obsdir <dir>      Directory of input observation file(s)");
@@ -852,10 +832,10 @@ try {
       // allow user to put all options in a file
       // could also scan for debug here
    vector<string> Args;
-   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args,PIC.Debug);
+   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
 
-   argc = Args.size();
-   if(argc==0) Args.push_back(string("-h"));
+   if(Args.size()==0)
+      Args.push_back(string("-h"));
 
       // pass the rest
    argc = Args.size()+1;
@@ -868,6 +848,7 @@ try {
       strcpy(CArgs[j],Args[j-1].c_str());
    }
    Par.parseOptions(argc, CArgs);
+   delete[] CArgs;
 
       // -------------------------------------------------
    if(dashh.getCount() > 0) {
@@ -1063,38 +1044,62 @@ try {
    return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch (...) {
-   Exception e("Unknown exception");
-   GPSTK_THROW(e);
-}
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void PreProcessArgs(const char *arg, vector<string>& Args, bool& dbug)
+// Pull out -f<f> and --file <f> and deprecated options
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
 {
 try {
-   if(arg[0]=='-' && arg[1]=='f') {
+   static bool found_cfg_file=false;
+
+   if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
       string filename(arg);
-      filename.erase(0,2);
+      if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
       ifstream infile(filename.c_str());
       if(!infile) {
-         cout << "Error: could not open options file "
-            << filename << endl;
+         cout << "Error: could not open options file " << filename << endl;
+         return;
       }
-      else {
-         char c;
-         string buffer;
-         while( infile >> buffer) {
-            if(buffer[0] == '#') {         // skip to end of line
-               while(infile.get(c)) { if(c=='\n') break; }
+
+      bool again_cfg_file=false;
+      char c;
+      string buffer,word;
+      while(1) {
+         getline(infile,buffer);
+         stripTrailing(buffer,'\r');
+
+         // process the buffer before checking eof or bad b/c there can be
+         // a line at EOF that has no CRLF...
+         while(!buffer.empty()) {
+            word = firstWord(buffer);
+            if(again_cfg_file) {
+               word = "-f" + word;
+               again_cfg_file = false;
+               PreProcessArgs(word.c_str(),Args);
             }
-            else PreProcessArgs(buffer.c_str(),Args,dbug);
+            else if(word[0] == '#') { // skip to end of line
+               buffer = "";
+            }
+            else if(word == "--file" || word == "-f")
+               again_cfg_file = true;
+            else if(word[0] == '"') {
+               word = stripFirstWord(buffer,'"');
+               buffer = "dummy " + buffer;            // to be stripped later
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else
+               PreProcessArgs(word.c_str(),Args);
+
+            word = stripFirstWord(buffer);      // now remove it from buffer
          }
+         if(infile.eof() || !infile.good()) break;
       }
    }
-   else if((arg[0]=='-' && arg[1]=='d') || string(arg)==string("--debug")) {
-      dbug = true;
-   }
+   else if(string(arg) == "--file" || string(arg) == "-f")
+      found_cfg_file = true;
    // old versions of args -- deprecated
    else if(string(arg)=="--input") { Args.push_back("--obs"); }
    else if(string(arg)=="--EpochBeg") { Args.push_back("--BeginTime"); }
@@ -1102,15 +1107,12 @@ try {
    else if(string(arg)=="--EpochEnd") { Args.push_back("--EndTime"); }
    else if(string(arg)=="--GPSEnd") { Args.push_back("--EndTime"); }
    else if(string(arg)=="--output") { Args.push_back("--outRinex"); }
-   else {
-      Args.push_back(arg);
-   }
+   // regular arg
+   else Args.push_back(arg);
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
-catch (...) {
-   Exception e("Unknown exception");
-   GPSTK_THROW(e);
-}
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------

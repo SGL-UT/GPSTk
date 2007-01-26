@@ -29,6 +29,7 @@
 
 #define RANGECHECK 1        // make Matrix and Vector check limits
 #include "Exception.hpp"
+#include "StringUtils.hpp"
 #include "DayTime.hpp"
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
@@ -59,13 +60,15 @@
 #include <fstream>
 #include <sstream>
 
-using namespace gpstk;
 using namespace std;
+using namespace gpstk;
+using namespace StringUtils;
 
    // prgm data
 string PrgmName("PRSolve");
-string PrgmVers("1.9 9/06");
+string PrgmVers("1.95 1/07");
 
+// data input from command line
 typedef struct Configuration {
       // input files
    string ObsDirectory,NavDirectory;
@@ -116,8 +119,8 @@ typedef struct Configuration {
    int ndt[9];
 } Config;
 
-// data input from command line
 Config C;
+
 // data used in program
 const double CMPS=299792458.0;
 const double CFF=CMPS/10.23e6;
@@ -130,14 +133,11 @@ const double if1r=1.0/(1.0-(F2/F1)*(F2/F1));
 const double if2r=1.0/(1.0-(F1/F2)*(F1/F2));
 clock_t totaltime;
 string Title,filename;
-DayTime CurrEpoch(DayTime::BEGINNING_OF_TIME), PrgmEpoch;
-DayTime PrevEpoch(DayTime::BEGINNING_OF_TIME);
+DayTime CurrEpoch, PrgmEpoch, PrevEpoch;
 
 // data
 int Nsvs;
 EphemerisStore *pEph;
-SP3EphemerisStore SP3EphList;
-BCEphemerisStore BCEphList;
 SimpleTropModel TMsimple;
 SaasTropModel TMsaas;
 GGTropModel TMgg;
@@ -163,19 +163,20 @@ Vector<double> zAPR,zRPR,zANE,zRNE,zzAPR,zzRPR,zzANE,zzRNE;
 
 //------------------------------------------------------------------------------------
 // prototypes
-int ReadFile(int nfile);
+int ReadFile(int nfile) throw(Exception);
 int SolutionAlgorithm(vector<SatID>& Sats,
                       vector<double>& PRanges,
-                      double& RMSresid);
-int AfterReadingFiles(void);
-
-void PrintStats(Stats<double> S[3], Matrix<double> &P, Vector<double> &z, string m,
-   char c0='X', char c1='Y', char c2='Z');
-int GetCommandLine(int argc, char **argv);
-void PreProcessArgs(const char *arg, vector<string>& Args, bool& Verbose);
-
+                      double& RMSresid) throw(Exception);
+int AfterReadingFiles(void) throw(Exception);
+void PrintStats(Stats<double> S[3],
+                Matrix<double> &P,
+                Vector<double> &z,
+                string m,
+                char c0='X', char c1='Y', char c2='Z') throw(Exception);
+int GetCommandLine(int argc, char **argv) throw(Exception);
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
 int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
-  BCEphemerisStore& BCE);
+  BCEphemerisStore& BCE) throw(Exception);
 
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -183,6 +184,11 @@ int main(int argc, char **argv)
 try {
    totaltime = clock();
    int iret;
+
+      // initialization
+   CurrEpoch = PrevEpoch = DayTime::BEGINNING_OF_TIME;
+   SP3EphemerisStore SP3EphList;
+   BCEphemerisStore BCEphList;
 
       // Title and description
    Title = PrgmName + ", part of the GPSTK ToolKit, Ver " + PrgmVers + ", Run ";
@@ -301,15 +307,8 @@ try {
 
    return iret;
 }
-//catch(FFStreamError& e) {
-   //cout << e;
-//}
-catch(Exception& e) {
-   cout << e;
-}
-catch (...) {
-   cerr << C.oflog << "Unknown error.  Abort." << endl;
-}
+catch(Exception& e) { cout << e; }
+catch (...) { cerr << C.oflog << "Unknown error.  Abort." << endl; }
    return 1;
 }  // end main()
 
@@ -317,7 +316,7 @@ catch (...) {
 // open the file, read header and check for data; then loop over the epochs
 // Return 0 ok, <0 fatal error, >0 non-fatal error (ie skip this file)
 // 0 ok, 1 couldn't open file, 2 file doesn't have required data
-int ReadFile(int nfile)
+int ReadFile(int nfile) throw(Exception)
 {
 try {
    bool writeout, first;
@@ -723,12 +722,9 @@ try {
 
    return iret;
 }
-catch(gpstk::Exception& e) {
-      GPSTK_RETHROW(e);
-}
-catch (...) {
-      cerr << "PRSolve:ReadFile caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
    return -1;
 }
 
@@ -741,7 +737,7 @@ catch (...) {
 //        3 output position also
 int SolutionAlgorithm(vector<SatID>& Sats,
                       vector<double>& PRanges,
-                      double& RMSresid)
+                      double& RMSresid) throw(Exception)
 {
 try {
    int iret,i;
@@ -996,17 +992,14 @@ try {
    if(!C.OutRinexObs.empty()) return 2;
    return 0;
 }
-catch(gpstk::Exception& e) {
-   GPSTK_RETHROW(e);
-}
-catch (...) {
-   cerr << "PRSolve:SolutionAlgorithm caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
    return -1;
 }
 
 //------------------------------------------------------------------------------------
-int AfterReadingFiles(void)
+int AfterReadingFiles(void) throw(Exception)
 {
 try {
    if(C.APSout) {
@@ -1049,19 +1042,17 @@ try {
 
    return 0;
 }
-catch(gpstk::Exception& e) {
-      GPSTK_RETHROW(e);
-}
-catch (...) {
-      cerr << "PRSolve:AfterReadingFiles caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
    return -1;
 }
 
 //------------------------------------------------------------------------------------
 void PrintStats(Stats<double> S[3], Matrix<double> &P, Vector<double> &z, string msg,
-   char c0, char c1, char c2)
+   char c0, char c1, char c2) throw(Exception)
 {
+try {
    C.oflog << endl;
    C.oflog << "Simple statistics on " << msg << endl << fixed;
    C.oflog << c0 << " : " << setw(16) << setprecision(6) << S[0] << endl;
@@ -1079,13 +1070,17 @@ void PrintStats(Stats<double> S[3], Matrix<double> &P, Vector<double> &z, string
    }
    else C.oflog << " No data!" << endl;
 }
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
 
 //------------------------------------------------------------------------------------
-int GetCommandLine(int argc, char **argv)
+int GetCommandLine(int argc, char **argv) throw(Exception)
 {
+try {
    bool ok,help=false;
    int i,j;
-try {
       // defaults
    C.Debug = C.Verbose = false;
    C.ith = 0.0;
@@ -1128,15 +1123,15 @@ try {
       // -------------------------------------------------
       // required options
    RequiredOption dashi(CommandOption::hasArgument, CommandOption::stdType,
-      'o',"obs"," [-o|--obs]<file>     Input Rinex observation file(s)");
+      'o',"obs"," [-o|--obs] <file>    Input Rinex observation file(s)");
 
    RequiredOption dashn(CommandOption::hasArgument, CommandOption::stdType,'n',"nav",
-      " [-n|--nav]<file>     Input navigation file(s) (RINEX or SP3)");
+      " [-n|--nav] <file>    Input navigation file(s) (RINEX or SP3)");
 
       // optional options
    // this only so it will show up in help page...
    CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-      'f',"","# Input:\n -f<file>             File containing more options");
+      'f',"","# Input:\n [-f|--file] <file>   File containing more options");
 
    CommandOption dashdo(CommandOption::hasArgument, CommandOption::stdType,
       0,"obsdir"," --obsdir <dir>       Directory of input observation file(s)");
@@ -1195,13 +1190,13 @@ try {
    CommandOption dashrms(CommandOption::hasArgument, CommandOption::stdType,
       0,"RMSlimit", "# Configuration:\n --RMSlimit <rms>     "
       "Upper limit on RMS post-fit residuals ("
-      + StringUtils::asString(prsol.RMSLimit,2) + "m)");
+      + asString(prsol.RMSLimit,2) + "m)");
    dashrms.setMaxCount(1);
 
    CommandOption dashslop(CommandOption::hasArgument, CommandOption::stdType,
       0,"SlopeLimit",
       " --SlopeLimit <s>     Upper limit on RAIM 'slope' ("
-      + StringUtils::asString(int(prsol.SlopeLimit)) + ")");
+      + asString(int(prsol.SlopeLimit)) + ")");
    dashslop.setMaxCount(1);
 
    CommandOptionNoArg dashAlge(0,"Algebra",
@@ -1223,12 +1218,12 @@ try {
 
    CommandOption dashNit(CommandOption::hasArgument, CommandOption::stdType,0,"NIter",
       " --NIter <n>          Maximum iteration count in linearized LS ("
-      + StringUtils::asString(prsol.MaxNIterations) + ")");
+      + asString(prsol.MaxNIterations) + ")");
    dashNit.setMaxCount(1);
 
    CommandOption dashConv(CommandOption::hasArgument, CommandOption::stdType,0,"Conv",
       " --Conv <c>           Minimum convergence criterion in linearized LS ("
-      + StringUtils::doub2sci(prsol.ConvergenceLimit,8,2,false) + ")");
+      + doub2sci(prsol.ConvergenceLimit,8,2,false) + ")");
    dashConv.setMaxCount(1);
 
    CommandOption dashElev(CommandOption::hasArgument, CommandOption::stdType,
@@ -1314,12 +1309,12 @@ try {
       // allow user to put all options in a file
       // could also scan for debug here
    vector<string> Args;
-   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args,C.Verbose);
+   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
 
-   argc = Args.size();
-   if(argc==0) Args.push_back(string("-h"));
+   if(Args.size()==0)
+      Args.push_back(string("-h"));
    //cout << "List after PreProcessArgs\n";
-   //for(i=0; i<argc; i++) cout << i << " " << Args[i] << endl;
+   //for(i=0; i<Args.size(); i++) cout << i << " " << Args[i] << endl;
 
       // pass the rest
    argc = Args.size()+1;
@@ -1396,7 +1391,7 @@ try {
 
    if(dashith.getCount()) {
       values = dashith.getValue();
-      C.ith = StringUtils::asDouble(values[0]);
+      C.ith = asDouble(values[0]);
       if(help) cout << "Ithing values is " << C.ith << endl;
    }
    // times
@@ -1407,7 +1402,7 @@ try {
       stemp = values[0];
       field.clear();
       while(stemp.size() > 0)
-         field.push_back(StringUtils::stripFirstWord(stemp,','));
+         field.push_back(stripFirstWord(stemp,','));
       if(field.size() == 2) {
          try { C.Tbeg.setToString(field[0]+","+field[1], "%F,%g"); }
          catch(Exception& e) { ok=false; }
@@ -1432,7 +1427,7 @@ try {
       field.clear();
       stemp = values[0];
       while(stemp.size() > 0)
-         field.push_back(StringUtils::stripFirstWord(stemp,','));
+         field.push_back(stripFirstWord(stemp,','));
       if(field.size() == 2) {
          try { C.Tend.setToString(field[0]+","+field[1], "%F,%g"); }
          catch(Exception& e) { ok=false; }
@@ -1483,18 +1478,18 @@ try {
    }
    //if(dashDT.getCount()) {
       //values = dashDT.getValue();
-      //C.DT = StringUtils::asDouble(values[0]);
+      //C.DT = asDouble(values[0]);
       //if(help) cout << "DT is set to " << C.DT << endl;
    //}
 
    if(dashrms.getCount()) {
       values = dashrms.getValue();
-      C.rmsLimit = StringUtils::asDouble(values[0]);
+      C.rmsLimit = asDouble(values[0]);
       if(help) cout << "RMS limit is set to " << C.rmsLimit << endl;
    }
    if(dashslop.getCount()) {
       values = dashslop.getValue();
-      C.slopeLimit = StringUtils::asDouble(values[0]);
+      C.slopeLimit = asDouble(values[0]);
       if(help) cout << "Slope limit is set to " << C.slopeLimit << endl;
    }
    if(dashAlge.getCount()) {
@@ -1511,22 +1506,22 @@ try {
    }
    if(dashnrej.getCount()) {
       values = dashnrej.getValue();
-      C.maxReject = StringUtils::asInt(values[0]);
+      C.maxReject = asInt(values[0]);
       if(help) cout << "Max N rejected satellites is set to " << C.maxReject << endl;
    }
    if(dashNit.getCount()) {
       values = dashNit.getValue();
-      C.nIter = StringUtils::asInt(values[0]);
+      C.nIter = asInt(values[0]);
       if(help) cout << "Max N Iterations is set to " << C.nIter << endl;
    }
    if(dashElev.getCount()) {
       values = dashElev.getValue();
-      C.elevLimit = StringUtils::asDouble(values[0]);
+      C.elevLimit = asDouble(values[0]);
       if(help) cout << "Elevation limit is set to " << C.convLimit << " deg" << endl;
    }
    if(dashConv.getCount()) {
       values = dashConv.getValue();
-      C.convLimit = StringUtils::asDouble(values[0]);
+      C.convLimit = asDouble(values[0]);
       if(help) cout << "Convergence limit is set to " << C.convLimit << endl;
    }
 
@@ -1535,15 +1530,13 @@ try {
       for(i=0; i<values.size(); i++) {
          field.clear();
          while(values[i].size() > 0)
-            field.push_back(StringUtils::stripFirstWord(values[i],','));
+            field.push_back(stripFirstWord(values[i],','));
          if(field.size() < 3) {
             cerr << "Error: less than four fields in --PosXYZ input: "
                << values[i] << endl;
             continue;
          }
-         Position p(StringUtils::asDouble(field[0]),
-                    StringUtils::asDouble(field[1]),
-                    StringUtils::asDouble(field[2]));
+         Position p(asDouble(field[0]), asDouble(field[1]), asDouble(field[2]));
          C.knownpos = p;
          if(help) cout << " Input: known XYZ position "
             << field[0] << " " << field[1] << " " << field[2] << endl;
@@ -1567,19 +1560,19 @@ try {
       values = dashTrop.getValue();
       field.clear();
       while(values[0].size() > 0)
-         field.push_back(StringUtils::stripFirstWord(values[0],','));
+         field.push_back(stripFirstWord(values[0],','));
       if(field.size() != 1 && field.size() != 4) {
          cerr << "Error: invalid fields after --Trop input: "
             << values[0] << endl;
       }
       else {
-         field[0] = StringUtils::upperCase(field[0]);
+         field[0] = upperCase(field[0]);
          C.TropType = field[0];
          if(help) cout << " Input: trop model: " << C.TropType;
          if(field.size() == 4) {
-            C.T = StringUtils::asDouble(field[1]);
-            C.Pr = StringUtils::asDouble(field[2]);
-            C.RH = StringUtils::asDouble(field[3]);
+            C.T = asDouble(field[1]);
+            C.Pr = asDouble(field[2]);
+            C.RH = asDouble(field[3]);
             if(help) cout << " and weather (T,P,RH): "
                << C.T << "," << C.Pr << "," << C.RH;
          }
@@ -1714,57 +1707,68 @@ try {
    if(help) return 1;
    return 0;
 }
-catch(gpstk::Exception& e) {
-      GPSTK_RETHROW(e);
-}
-catch (...) {
-      cerr << "PRSolve:GetCommandLine caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
    return -1;
 }
 
 //------------------------------------------------------------------------------------
-void PreProcessArgs(const char *arg, vector<string>& Args, bool& ver)
+// Pull out --verbose -f<f> and --file <f> options
+void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
 {
 try {
-   if(arg[0]=='-' && arg[1]=='f') {
-      string fname(arg);
-      fname.erase(0,2);
-      cout << "Found a file of options: " << fname << endl;
-      ifstream infile(fname.c_str());
-      if(!infile) {
-         cerr << "Error: could not open options file "
-            << fname << endl;
-      }
-      else {
-         char c;
-         string buffer,word;
-         while(1) {
-            getline(infile,buffer);
-            if(infile.eof() || !infile.good()) break;
-            StringUtils::stripTrailing(buffer,'\r');
+   static bool found_cfg_file=false;
 
-            while(1) {
-               word = StringUtils::firstWord(buffer);
-               if(word[0] == '#') {        // skip to end of line
-                  break;
-               }
-               else if(word[0] == '"') {
-                  word = StringUtils::stripFirstWord(buffer,'"');
-               }
-               else {
-                  word = StringUtils::stripFirstWord(buffer);
-               }
-               PreProcessArgs(word.c_str(),Args,ver); //Args.push_back(buffer);
-               if(buffer.empty()) break;
+   if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
+      string filename(arg);
+      if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
+      ifstream infile(filename.c_str());
+      if(!infile) {
+         cout << "Error: could not open options file " << filename << endl;
+         return;
+      }
+
+      bool again_cfg_file=false;
+      char c;
+      string buffer,word;
+      while(1) {
+         getline(infile,buffer);
+         stripTrailing(buffer,'\r');
+
+         // process the buffer before checking eof or bad b/c there can be
+         // a line at EOF that has no CRLF...
+         while(!buffer.empty()) {
+            word = firstWord(buffer);
+            if(again_cfg_file) {
+               word = "-f" + word;
+               again_cfg_file = false;
+               PreProcessArgs(word.c_str(),Args);
             }
+            else if(word[0] == '#') { // skip to end of line
+               buffer = "";
+            }
+            else if(word == "--file" || word == "-f")
+               again_cfg_file = true;
+            else if(word[0] == '"') {
+               word = stripFirstWord(buffer,'"');
+               buffer = "dummy " + buffer;            // to be stripped later
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else
+               PreProcessArgs(word.c_str(),Args);
+
+            word = stripFirstWord(buffer);      // now remove it from buffer
          }
+         if(infile.eof() || !infile.good()) break;
       }
    }
    else if((arg[0]=='-' && arg[1]=='v') || string(arg)==string("--verbose")) {
-      ver = true;
+      C.Verbose = true;
       cout << "Found the verbose switch" << endl;
    }
+   else if(string(arg) == "--file" || string(arg) == "-f")
+      found_cfg_file = true;
    // deprecated args
    else if(string(arg)==string("--EpochBeg")) { Args.push_back("--BeginTime"); }
    else if(string(arg)==string("--GPSBeg")) { Args.push_back("--BeginTime"); }
@@ -1772,14 +1776,12 @@ try {
    else if(string(arg)==string("--GPSEnd")) { Args.push_back("--EndTime"); }
    else if(string(arg)==string("--RinexFile")) { Args.push_back("--outRinex"); }
    else if(string(arg)==string("--XPRN")) { Args.push_back("--exSat"); }
+   // regular arg
    else Args.push_back(arg);
 }
-catch(gpstk::Exception& e) {
-      GPSTK_RETHROW(e);
-}
-catch (...) {
-      cerr << "PRSolve:PreProcessArgs caught an unknown exception\n";
-}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
@@ -1802,57 +1804,54 @@ bool isRinexNavFile(const string& file)
    return true;
 }
 int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
-   BCEphemerisStore& BCE)
+   BCEphemerisStore& BCE) throw(Exception)
 {
-   try {
-      int nread=0;
-      RinexNavHeader rnh;
-      RinexNavData rne;
-      for(int i=0; i<files.size(); i++) {
-         if(files[i].empty()) throw Exception("File name is empty");
-         RinexNavStream strm(files[i].c_str());
-         if(!strm) throw Exception("Could not open file " + files[i]);
-         strm.close();
-         if(isRinexNavFile(files[i])) {
-            RinexNavStream RNFileIn(files[i].c_str());
-            RNFileIn.exceptions(fstream::failbit);
-            try {
-               RNFileIn >> rnh;
-               while (RNFileIn >> rne)
-               {
-                  if(rne.health == 0)
-                     BCE.addEphemeris(rne);
-               }
-               nread++;
-            }
-            catch(gpstk::Exception& e) {
-               cerr << "Caught Exception while reading Rinex Nav file " << files[i]
-                  << " : " << e << endl;
-               continue;
-            }
-         }
-         else if(isSP3File(files[i])) {
-            try {
-               PE.loadFile(files[i]);
-            }
-            catch(gpstk::Exception& e) {
-               cerr << "Caught Exception while reading SP3 Nav file " << files[i]
-                  << " : " << e << endl;
-               continue;
+try {
+   int nread=0;
+   RinexNavHeader rnh;
+   RinexNavData rne;
+   for(int i=0; i<files.size(); i++) {
+      if(files[i].empty()) throw Exception("File name is empty");
+      RinexNavStream strm(files[i].c_str());
+      if(!strm) throw Exception("Could not open file " + files[i]);
+      strm.close();
+      if(isRinexNavFile(files[i])) {
+         RinexNavStream RNFileIn(files[i].c_str());
+         RNFileIn.exceptions(fstream::failbit);
+         try {
+            RNFileIn >> rnh;
+            while (RNFileIn >> rne)
+            {
+               if(rne.health == 0)
+                  BCE.addEphemeris(rne);
             }
             nread++;
          }
-         else throw Exception("File " + files[i] + " is neither BCE nor PE file.");
+         catch(gpstk::Exception& e) {
+            cerr << "Caught Exception while reading Rinex Nav file " << files[i]
+               << " : " << e << endl;
+            continue;
+         }
       }
-      return nread;
+      else if(isSP3File(files[i])) {
+         try {
+            PE.loadFile(files[i]);
+         }
+         catch(gpstk::Exception& e) {
+            cerr << "Caught Exception while reading SP3 Nav file " << files[i]
+               << " : " << e << endl;
+            continue;
+         }
+         nread++;
+      }
+      else throw Exception("File " + files[i] + " is neither BCE nor PE file.");
    }
-   catch(gpstk::Exception& e) {
-      GPSTK_RETHROW(e);
-   }
-   catch (...) {
-      cerr << "PRSolve:FillEphemerisStore caught an unknown exception\n";
-   }
-   return -1;
+   return nread;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+return -1;
 }
 
 //------------------------------------------------------------------------------------
