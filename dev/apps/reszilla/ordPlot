@@ -5,250 +5,292 @@
 
 import sys, string, time, datetime, numpy, matplotlib, pylab
 
-from optparse import OptionParser
-parser = OptionParser()
-parser.add_option("-d", "--debug", help="Increase the debugLevel", \
-                  default=0, dest="debugLevel", action="count")
+def main():
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("-d", "--debug", help="Increase the debugLevel", \
+                      default=0, dest="debugLevel", action="count")
 
-parser.add_option("-i", "--input", help="Input data file, defaults to stdin.", \
-                  dest="inputFile", type="string", action="store")
+    parser.add_option("-i", "--input", help="Input data file, defaults to stdin.", \
+                      dest="inputFile", type="string", action="store")
 
-parser.add_option("-t", "--title", help="Specify a title for the plot. "+\
-                  "Defaults to the name of the input stream.", \
-                  dest="title", type="string", action="store")
+    parser.add_option("-t", "--title", help="Specify a title for the plot. "+\
+                      "Defaults to the name of the input stream.", \
+                      dest="title", type="string", action="store")
 
-parser.add_option("-l", "--legend", dest="legend", action="count",
-                  help="Include a legend.")
+    parser.add_option("-l", "--legend", dest="legend", action="count",
+                      help="Include a legend.")
 
-parser.add_option("-o", "--ords-only", help="Only plot the ords (types 0 & 20).", \
-                  dest="ordsOnly", default=0, action="count")
+    parser.add_option("-o", "--ords-only", help="Only plot the ords (types 0 & 1).", \
+                      dest="ordsOnly", default=0, action="count")
 
-parser.add_option("-c", "--clocks-only", help="only plot the clocks.",\
-                  dest="clocksOnly", default=0, action="count")
+    parser.add_option("-c", "--clocks-only", help="only plot the clocks.",\
+                      dest="clocksOnly", default=0, action="count")
 
-parser.add_option("-s", "--save-figure", \
-                  dest="saveFig", action="store", type="string",\
-		  help="Save the figure to the indicated file")
+    parser.add_option("-s", "--save-figure", \
+                      dest="saveFig", action="store", type="string",\
+                      help="Save the figure to the indicated file")
+
+    parser.add_option("-y", "--y-range",\
+                      dest="yRange", action="store", type="float",\
+                      help="Fix the y range on the ords to be +- this value.")
+
+    parser.add_option("-w", "--warts",\
+                      dest="wartiness", action="count",\
+                      help="Increase the importants of warts on the plot. Zero (the default) means don't even plot them. One means plot them but don't autoscale to show them all (just show all the ords). Two means autoscale to show all the warts. Three means only show the warts and don't show any ords. Only zero and 2 have been implimented.")
+
+    (options, args) = parser.parse_args()
+
+    if (len(args) and options.inputFile == None):
+        options.inputFile = args[0]
+
+    inputFile = sys.stdin
+    if (options.inputFile):
+        inputFile = open(options.inputFile)
+
+    if (options.title == None):
+        options.title = inputFile.name
+
+    if (options.debugLevel):
+        print "Processing: %s" % inputFile.name
+        print "Debug level: %d" % options.debugLevel
+        print "Title: %s" % options.title
+        if options.yRange:
+            print "Fixing y axis to +/- %.f meters" % options.yRange
+
+    # ------------------------------------------------------------------
+    # Here we start reading in the ord file
+    ordList=([],[],[],[])      # time, prn, ord, elevation
+    wartList=([],[],[],[])     # time, prn, ord, elevation
+    clockList=([],[])          # time, offset
+    ocdList=([],[])
+
+    rleClockList=[]
+
+    for line in inputFile:
+        line = line.strip()
+        if len(line)==0: continue
+
+        if line[0] == "#": continue
+        if line[0] == '>':
+            if line[1] == "c":
+                words=line.split()
+                if len(words) < 9:
+                    print "bad rle line"
+                else:
+                    t0 = parse_time(words[1:4])
+                    t1 = parse_time(words[4:7])
+                    offset = float(words[7])
+                    slope = float(words[8])
+                    abdev = float(words[9])
+                    rleClockList.append( (t0, t1, offset, slope, abdev) )
+            continue
+
+        words=line.split()
+        t = parse_time(words[0:3])
+
+        ordType = int(words[3])
+        if ordType == 0:
+            if len(words) < 7:
+                print "bad ord line"
+                continue
+            
+            prn = int(words[4])
+            ord = float(words[6])
+            elev = float(words[5])
+            wart = int(words[7])
+            if wart==0:
+                ordList[0].append(t)
+                ordList[1].append(prn)   # prn
+                ordList[2].append(ord)   # ord
+                ordList[3].append(elev)  # elevation
+            else:
+                wartList[0].append(t)
+                wartList[1].append(prn)  # prn
+                wartList[2].append(ord)  # ord
+                wartList[3].append(elev) # elevation
+        elif ordType == 1:
+            if len(words) < 2: print "bad clock residual line"
+            ocdList[0].append(t)
+            ocdList[1].append(float(words[4]))
+        elif ordType == 50:
+            if len(words) < 5: print "bad clk line"
+            clockList[0].append(t)
+            clockList[1].append(float(words[4])) #offset
+
+        if options.debugLevel>1 and len(clockList[0]) >= 200: break
+
+    ords = numpy.array(ordList)
+    warts = numpy.array(wartList)
+    clocks = numpy.array(clockList)
+    ocds = numpy.array(ocdList)
+
+    # Since these are now in numpy arrays, delete the source to save some memory
+    del ordList, clockList, wartList, ocdList
+    # done reading in the ord file
+    # ------------------------------------------------------------------
+
     
-parser.add_option("-y", "--y-range",\
-		  dest="yRange", action="store", type="float",\
-		  help="Fix the y range on the ords to be +- this value.")
+    # Now figure out how many axes we need to use
+    plotOrds = True
+    plotClocks = True
 
-(options, args) = parser.parse_args()
+    if len(clocks[0]) == 0 or options.ordsOnly: plotClocks = False
+    if (len(ords[0]) == 0 and len(warts[0]) == 0) or options.clocksOnly: plotOrds = False
+    axesCount=0;
+    if plotOrds: axesCount+=1
+    if plotClocks: axesCount+=1
 
-if (len(args) and options.inputFile == None):
-    options.inputFile = args[0]
+    if options.debugLevel:
+        print "Read %d ords, %d clocks, %d ocds %d warts %d rle" %\
+              (len(ords[0]), len(clocks[0]), len(ocds[0]), len(warts[0]),
+               len(rleClockList))
 
-inputFile = sys.stdin
-if (options.inputFile):
-    inputFile = open(options.inputFile)
+    if axesCount == 0:
+        print "No data to plot. Exiting"
+        sys.exit()
 
-if (options.title == None):
-    options.title = inputFile.name
+    # A key handler for matplotlib
+    def press(event):
+        if event.key=='q' or event.key==' ':
+            pylab.close()
 
-if (options.debugLevel):
-    print "Processing: %s" % inputFile.name
-    print "Debug level: %d" % options.debugLevel
-    print "Title: %s" % options.title
-    if options.yRange:
-        print "Fixing y axis to +/- %.f meters" % options.yRange
+    # Here we start generating the plots
+    fig = pylab.figure()
+    pylab.connect('key_press_event', press)
+    yprops = dict(rotation=90,
+                  horizontalalignment='right',
+                  verticalalignment='center',
+                  family='monospace',
+                  x=-0.01)
 
-ordList=([],[],[],[])      # time, prn, ord, elevation
-wartList=([],[],[],[])     # time, prn, ord, elevation
-clockList=([],[])          # time, offset
-rleClockList=([],[],[],[]) # time, offset, slope, abdev
-ocdList=([],[])
+    scale_props = dict(horizontalalignment="right",
+                       verticalalignment="bottom",
+                       size=8, family="sans-serif")
 
-for line in inputFile:
-    line = line.strip()
-    if len(line)==0: continue
-    if line[0] == "#": continue
-    if line[0] == ">": continue
-    words=line.split()
-    
+    xMajorFmt=pylab.DateFormatter("%02H:%02M\n%03j\n%4Y")
+    xMinorFmt=pylab.NullFormatter()
+    xMajorLoc=matplotlib.dates.DayLocator()
+    xMinorLoc=matplotlib.dates.HourLocator()
+
+    rExtent=0.89
+    if options.legend:
+        rExtent=0.82
+
+    if axesCount == 2:
+        ax1 = fig.add_axes([0.08, 0.52, rExtent, 0.42])
+    elif axesCount == 1:
+        ax1 = fig.add_axes([0.08, 0.10, rExtent, 0.85])
+
+    if plotOrds:
+        if True:
+            if len(ords[0]):
+                ax1.plot_date(ords[0], ords[2], 'g,', label="ords")
+            if len(warts[0]) and options.wartiness:
+                ax1.plot_date(warts[0], warts[2], 'r,', label="warts")
+        else:
+            for  prn in pylab.arange(1,33):
+                onePrn = pylab.compress(pylab.equal(ords[1], prn), ords)
+                if len(onePrn[0]):
+                    ax1.plot_date(onePrn[0], onePrn[2], '.', label="prn %2d"%prn)
+            for  prn in pylab.arange(1,33):
+                onePrn = pylab.compress(pylab.equal(warts[1], prn), warts)
+                if len(onePrn[0]):
+                    ax1.plot_date(onePrn[0], onePrn[2], '.', label="prn %2dW"%prn)
+
+        if len(ocds[0]):
+            ax3=fig.add_axes(ax1.get_position())
+            ax3.set_alpha(0.25) #This doesn't seem to affect the plot
+            ax3.plot_date(ocds[0], ocds[1], 'b-,', label="clk res")
+            
+        # If there are rle clocks, draw a vertical line where each new model
+        # starts
+        for t0, t1, y0, m, d in rleClockList:
+            ax1.axvline(t0)
+
+        if options.legend:
+            ax1.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005,
+                       handletextsep=0.01, axespad=0.0, loc=(1,0))
+            leg = pylab.gca().get_legend()
+            ltext = leg.get_texts()
+            llines = leg.get_lines()
+            lframe = leg.get_frame()
+            lframe.set_facecolor('0.4')
+            pylab.setp(ltext, size=8, family="sans-serif")
+            pylab.setp(llines, linewidth=2)
+            leg.draw_frame(False)
+        ax1.set_ylabel('ord (meters)', **yprops)
+        ax1.grid(True)
+        if options.yRange:
+            ax1.set_ylim(ymin=-options.yRange, ymax=options.yRange)
+            pylab.figtext(rExtent+.08, 0.95, "y range +/- %.f m" % options.yRange,
+                          **scale_props)
+        else:
+            pylab.figtext(rExtent+.08, 0.95, "y range autoscaled",
+                          **scale_props)
+
+    # This allows the creation of futher axes that will share the x axis
+    # with the first plot.
+    axprops = dict()
+    axprops['sharex'] = ax1
+
+    if axesCount == 2:
+        ax2 = fig.add_axes([0.08, 0.10, rExtent, 0.38], **axprops)
+    elif axesCount == 1:
+        ax2 = ax1
+
+    if plotClocks:
+        ax2.plot_date(clocks[0], clocks[1], 'g.')
+        ax2.grid(True)
+        ax2.set_ylabel('clock (meters)', **yprops)
+
+        # Only plot the linear clock estimate if there is data for it...
+        for t0, t1, y0, m, d in rleClockList:
+            y1 = y0 + m * (t1 - t0)
+            t = numpy.array([t0, t1])
+            y = numpy.array([y0, y1])
+            ax2.plot_date(t, y, 'b-', linewidth=1)
+            yu = y + d
+            yl = y - d
+            yy = pylab.concatenate( (yu, yl[::-1]) )
+            tt = pylab.concatenate( (t, t[::-1]) )
+            ax2.fill(tt, yy, facecolor='b', alpha=0.4)
+            
+
+    ax2.xaxis.set_major_formatter(xMajorFmt)
+    xlabels=ax2.get_xticklabels()
+    ylabels=ax2.get_yticklabels()
+    pylab.setp(xlabels, fontsize=10, family='sans-serif')
+    pylab.setp(ylabels, fontsize=10, family='sans-serif')
+
+    ax2.xaxis.set_minor_formatter(xMinorFmt)
+    # Better to just let this be done auto right now
+    # ax2.xaxis.set_major_locator(xMajorLoc) 
+    ax2.xaxis.set_minor_locator(xMinorLoc)
+
+    # Axis labels on the upper plot would be bad since they would be
+    # drawn over the upper part of the lower plot
+    if axesCount > 1:
+        pylab.setp(ax1.get_xticklabels(), visible=False)
+    ax1.set_title(options.title)
+
+    if (options.saveFig == None):
+        pylab.show()
+    else:
+       pylab.savefig(options.saveFig)
+# end of main
+
+
+def parse_time(words):
     fsec = float(words[2][8:10])
     ydhms =  words[0]+" "+words[1]+" "+words[2][0:8]
     utime = time.strptime(ydhms, "%Y %j %H:%M:%S")
     dtime = datetime.datetime(utime[0], utime[1], utime[2],
                               utime[3], utime[4], utime[5], int(fsec*1e6))
-    t = matplotlib.dates.date2num(dtime)
+    t0 = matplotlib.dates.date2num(dtime)
+    return t0
+# end of parse_time()
+
     
-    ordType = int(words[3])
-    if ordType == 0:
-        if len(words) < 8: print "bad ord line"
-        if words[7] == "0":
-            ordList[0].append(t)
-            ordList[1].append(int(words[4]))    # prn
-            ordList[2].append(float(words[6]))  # ord
-            ordList[3].append(float(words[5]))  # elevation
-        else:
-            wartList[0].append(t)
-            wartList[1].append(int(words[4]))    # prn
-            wartList[2].append(float(words[6]))  # ord
-            wartList[3].append(float(words[5]))  # elevation
-    elif ordType == 1:
-        if len(words) < 2: print "bad clock residual line"
-        ocdList[0].append(t)
-        ocdList[1].append(float(words[4]))
-    elif ordType == 50:
-        if len(words) < 5: print "bad clk line"
-        clockList[0].append(t)
-        clockList[1].append(float(words[4])) #offset
-    elif ordType == 51:
-        if len(words) < 6: print "bad rle line"
-        rleClockList[0].append(t)
-        rleClockList[1].append(float(words[4])) #offset
-        rleClockList[2].append(float(words[5])) #slope
-        rleClockList[3].append(float(words[6])) #abdev
-
-    if options.debugLevel>1 and len(clockList[0]) >= 200: break
-
-ords = numpy.array(ordList)
-warts = numpy.array(wartList)
-clocks = numpy.array(clockList)
-rleClocks = numpy.array(rleClockList)
-ocds = numpy.array(ocdList)
-
-# Since these are now in numpy arrays, delete the source to save some memory
-del ordList, clockList, rleClockList, wartList, ocdList
-
-# Now figure out how many axes we need to use
-plotOrds = True
-plotClocks = True
-
-if len(clocks[0]) == 0 or options.ordsOnly: plotClocks = False
-if (len(ords[0]) == 0 and len(warts[0]) == 0) or options.clocksOnly: plotOrds = False
-axesCount=0;
-if plotOrds: axesCount+=1
-if plotClocks: axesCount+=1
-
-if options.debugLevel:
-    print "Read %d ords, %d clocks, %d ocds %d warts %d rle" %\
-          (len(ords[0]), len(clocks[0]), len(ocds[0]), len(warts[0]),
-           len(rleClocks[0]))
-
-if axesCount == 0:
-    print "No data to plot. Exiting"
-    sys.exit()
-
-# A key handler for matplotlib
-def press(event):
-    if event.key=='q' or event.key==' ':
-        pylab.close()
-
-# Here we start generating the plots
-fig = pylab.figure()
-pylab.connect('key_press_event', press)
-yprops = dict(rotation=90,
-              horizontalalignment='right',
-              verticalalignment='center',
-              family='monospace',
-              x=-0.01)
-
-scale_props = dict(horizontalalignment="right",
-                   verticalalignment="bottom",
-                   size=8, family="sans-serif")
-
-xMajorFmt=pylab.DateFormatter("%02H:%02M\n%03j")
-xMinorFmt=pylab.NullFormatter()
-xMajorLoc=matplotlib.dates.DayLocator()
-xMinorLoc=matplotlib.dates.HourLocator()
-
-rExtent=0.89
-if options.legend:
-    rExtent=0.82
-
-if axesCount == 2:
-    ax1 = fig.add_axes([0.08, 0.52, rExtent, 0.42])
-elif axesCount == 1:
-    ax1 = fig.add_axes([0.08, 0.1, rExtent, 0.85])
-
-if plotOrds:
-    if True:
-        if len(ords[0]):
-            ax1.plot_date(ords[0], ords[2], 'g,', label="ords")
-        if len(warts[0]):
-            ax1.plot_date(warts[0], warts[2], 'r,', label="warts")
-    else:
-        for  prn in pylab.arange(1,33):
-            onePrn = pylab.compress(pylab.equal(ords[1], prn), ords)
-            if len(onePrn[0]):
-                ax1.plot_date(onePrn[0], onePrn[2], '.', label="prn %2d"%prn)
-        for  prn in pylab.arange(1,33):
-            onePrn = pylab.compress(pylab.equal(warts[1], prn), warts)
-            if len(onePrn[0]):
-                ax1.plot_date(onePrn[0], onePrn[2], '.', label="prn %2dW"%prn)
-
-    if len(ocds[0]):
-        ax3=fig.add_axes(ax1.get_position())
-        ax3.set_alpha(0.25) #This doesn't seem to affect the plot
-        ax3.plot_date(ocds[0], ocds[1], 'b-,', label="clk res")
-
-    if options.legend:
-        ax1.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005,
-                   handletextsep=0.01, axespad=0.0, loc=(1,0))
-        leg = pylab.gca().get_legend()
-        ltext = leg.get_texts()
-        llines = leg.get_lines()
-        lframe = leg.get_frame()
-        lframe.set_facecolor('0.4')
-        pylab.setp(ltext, size=8, family="sans-serif")
-        pylab.setp(llines, linewidth=2)
-        leg.draw_frame(False)
-    ax1.set_ylabel('ord (meters)', **yprops)
-    ax1.grid(True)
-    if options.yRange:
-        ax1.set_ylim(ymin=-options.yRange, ymax=options.yRange)
-        pylab.figtext(rExtent+.08, 0.95, "y range +/- %.f m" % options.yRange,
-                      **scale_props)
-    else:
-        pylab.figtext(rExtent+.08, 0.95, "y range autoscaled",
-                      **scale_props)
-
-# This allows the creation of futher axes that will share the x axis
-# with the first plot.
-axprops = dict()
-axprops['sharex'] = ax1
-
-if axesCount == 2:
-    ax2 = fig.add_axes([0.08, 0.065, rExtent, 0.42], **axprops)
-elif axesCount == 1:
-    ax2 = ax1
-
-if plotClocks:
-    ax2.plot_date(clocks[0], clocks[1], 'g.')
-    ax2.grid(True)
-    ax2.set_ylabel('clock (meters)', **yprops)
-
-    # Only plot the linear clock estimate if there is data for it...
-    if rleClocks.shape[1] > 1:
-        ax2.plot_date(rleClocks[0], rleClocks[1], 'b-', linewidth=1)
-        uc = rleClocks[1] + rleClocks[3]
-        lc = rleClocks[1] - rleClocks[3]
-        xc = rleClocks[0]
-        xx = pylab.concatenate( (xc, xc[::-1]) )
-        yy = pylab.concatenate( (uc, lc[::-1]) )
-        ax2.fill(xx, yy, facecolor='b', alpha=0.4)
-
-ax2.xaxis.set_major_formatter(xMajorFmt)
-xlabels=ax2.get_xticklabels()
-ylabels=ax2.get_yticklabels()
-pylab.setp(xlabels, fontsize=10, family='sans-serif')
-pylab.setp(ylabels, fontsize=10, family='sans-serif')
-
-ax2.xaxis.set_minor_formatter(xMinorFmt)
-# Better to just let this be done auto right now
-# ax2.xaxis.set_major_locator(xMajorLoc) 
-ax2.xaxis.set_minor_locator(xMinorLoc)
-
-# Axis labels on the upper plot would be bad since they would be
-# drawn over the upper part of the lower plot
-if axesCount > 1:
-    pylab.setp(ax1.get_xticklabels(), visible=False)
-ax1.set_title(options.title)
-
-if (options.saveFig == None):
-    pylab.show()
-else:
-   pylab.savefig(options.saveFig)
-
+if __name__ == "__main__":
+    main()

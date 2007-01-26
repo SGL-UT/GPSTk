@@ -97,7 +97,7 @@ struct ClockSegmentList : public list<ClockSegment>
       {
          const ClockSegment& cs = *k;
          double t = cs.startTime.MJDdate();
-         output << ">  " << cs.startTime.printf(timeFormat)
+         output << ">c " << cs.startTime.printf(timeFormat)
                 << "  " << cs.endTime.printf(timeFormat)
                 << fixed
                 << " " << setprecision(2) << setw(10) << cs.eval(t)
@@ -162,7 +162,6 @@ void OrdLinEst::process()
    }
 
    // An emperically determied maximum clock drift rate, in meters per day
-   // This really should be brought out to the command line
    double maxRate=10000;
    if (maxRateOption.getCount())
       maxRate = StringUtils::asDouble(maxRateOption.getValue().front());
@@ -174,11 +173,11 @@ void OrdLinEst::process()
    {
       j = adjacent_find( i, clocks.end(), bro);
       ClockSegment seg;
-      seg.startTime = DayTime(i->first);
+      seg.startTime = DayTime(i->first+1e-9);
       if (j != clocks.end())
-         seg.endTime = DayTime(j->first);
+         seg.endTime = DayTime(j->first+1e-9);
       else
-         seg.endTime = DayTime(clocks.rbegin()->first);
+         seg.endTime = DayTime(clocks.rbegin()->first+1e-9);
       seg.process(i, j);
       csl.push_back(seg);
       if (j == clocks.end())
