@@ -61,8 +61,8 @@ protected:
 
 private:
    CommandOptionNoArg clkOpt, removeUnhlthyOpt, noClockOpt;
-   CommandOptionWithNumberArg elvOpt, prnOpt, wartsOpt, clkResOpt;
-   CommandOptionWithAnyArg ephSourceOpt, startOpt, endOpt;
+   CommandOptionWithNumberArg elvOpt, prnOpt, wartsOpt;
+   CommandOptionWithAnyArg ephSourceOpt, startOpt, endOpt, clkResOpt;
    
    double elMask, clkResidLimit;
    set<int> prnSet, wartSet; // prns to exclude from analysis
@@ -85,8 +85,8 @@ OrdEdit::OrdEdit() throw()
      elvOpt('m',"elev","Remove data for SVs below a given elevation mask."),
      clkOpt('k',"clock-est", "Remove ords that do not have corresponding "
             "clock estimates."),
-     clkResOpt('s',"size","Remove clock residuals that are greater than "
-               "this size (meters)."),
+     clkResOpt('s',"size","Remove clock residuals with absolute values "
+            "greater than this size (meters)."),
      prnOpt('p',"PRN","Add/Remove data from given PRN. Repeat option for multiple"
             " PRNs. Negative numbers remove, Postive numbers all, Zero removes all."),
      noClockOpt('c',"no-clock", "Remove all clock offset estimate warts. Give"
@@ -118,12 +118,14 @@ void OrdEdit::process()
            << "from unhealthy SVs. Exiting..." << endl;
       exit(0);
    }
+   
    //-- Get ephemeris data
    EphReader ephReader;
    ephReader.verboseLevel = verboseLevel;
    for (int i=0; i<ephSourceOpt.getCount(); i++)
       ephReader.read(ephSourceOpt.getValue()[i]);
    gpstk::EphemerisStore& eph = *ephReader.eph;  
+   
    //-- Make sure that the eph data provided is broadcast eph 
    if (ephSourceOpt.getCount()&&(typeid(eph)!=typeid(BCEphemerisStore)))
    {
@@ -132,6 +134,7 @@ void OrdEdit::process()
               " used with this program.) Exiting... \n";
       exit(0);
    }
+   
    //-- get which PRNs to be excluded
    for (int index = 0; index < prnOpt.getCount(); index++)
    {
@@ -147,6 +150,7 @@ void OrdEdit::process()
             prnSet.insert(i);
       }
    }
+   
    //-- get which PRNs from which to ignore warts
    for (int i=0; i < wartsOpt.getCount(); i++)
    {
@@ -162,16 +166,20 @@ void OrdEdit::process()
             wartSet.insert(i);
       }
    }
+   
    //-- get ephemeris sources, if given
    int numBEFiles = ephSourceOpt.getCount();
    for (int index = 0; index < numBEFiles; index++)
       ephFilesVector.push_back(asString(ephSourceOpt.getValue()[index]));
+      
    //-- remove data below a given elevation mask?
    if (elvOpt.getCount())
       elMask = asDouble(elvOpt.getValue().front());
+      
    //-- discard clock residuals that are too large?
    if (clkResOpt.getCount())
       clkResidLimit = asDouble(clkResOpt.getValue().front());
+      
    //-- if a time span was specified, get it
    double ss;
    int mm,dd,yy,hh,minu; 
@@ -189,6 +197,7 @@ void OrdEdit::process()
       tEnd.setYMDHMS((short)yy,(short)mm,(short)dd,(short)hh,
                      (short)minu, (double)ss);
    }
+   
    //-- too lazy?
    if (verboseLevel || debugLevel)
    {
@@ -253,6 +262,7 @@ void OrdEdit::process()
       else if (noClockOpt.getCount() > 1)
          cout << "# Removing all clock data from ord file.\n";
    }
+   
    while (input)
    {
       ORDEpoch ordEpoch = read(input); 
@@ -262,6 +272,7 @@ void OrdEdit::process()
          continue;
       else if (endOpt.getCount() && (ordEpoch.time > tEnd))
          continue;
+         
       if (numBEFiles && removeUnhlthyOpt.getCount())
       {
          const BCEphemerisStore& bce = dynamic_cast<const BCEphemerisStore&>(eph);
@@ -277,6 +288,7 @@ void OrdEdit::process()
                ordEpoch.removeORD(satId);
          }
       }
+      
       if (elMask)
       {
          ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
@@ -316,16 +328,10 @@ void OrdEdit::process()
                ordEpoch.removeORD(satId);
          }
       }
-      if (clkResidLimit)
-      {
-         if (false)
-            continue;
-         /*********************************************
-         hrrmmm. no clock residual because don't have 
-         type 51 (linear clock estimate) generation
-         anywhere yet. TBAdded
-         **********************************************/
-      }
+      
+      if (clkResOpt.getCount() && 
+         (std::abs(ordEpoch.clockResidual)>clkResidLimit))
+         ordEpoch.clockResidual.set_valid(false);
 
       write(output, ordEpoch);
    }
