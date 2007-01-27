@@ -148,19 +148,23 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
    if (ordEpoch.clockResidual.is_valid())
    {
       int type = 1;
+      int wart = 0;
+      if (ordEpoch.wonky)
+         wart = 1;
       s << time << " " << setw(4) << type
         << " " << setprecision(5) << setw(24) << ordEpoch.clockResidual
-        << endl;
+        << setw(6) << wart << endl;
    }
 
    if (ordEpoch.clockOffset.is_valid())
    {
       int type = 50;
+      int wart = 0;
       if (ordEpoch.wonky)
-         type = 70;
+         wart = 1;
       s << time << " " << setw(4) << type
         << " " << setprecision(5) << setw(24) << ordEpoch.clockOffset
-        << endl;
+        << setw(6) << wart << endl;
    }
 }
 
@@ -234,15 +238,19 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
          else if (type == 1)
          {
             double c;
-            iss >> c;
+            unsigned wonky;
+            iss >> c >> wonky;
             ordEpoch.clockResidual = c;
+            if (wonky == 1)
+               ordEpoch.wonky = true;
          }
-         else if (type == 50 || type == 70)
+         else if (type == 50)
          {
             double c;
-            iss >> c;
+            unsigned wonky;
+            iss >> c >> wonky;
             ordEpoch.clockOffset = c;
-            if (type == 70)
+            if (wonky == 1)
                ordEpoch.wonky = true;
          }
 

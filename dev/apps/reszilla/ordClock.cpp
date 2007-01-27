@@ -54,7 +54,7 @@ protected:
    virtual void process();
 
 private:
-   CommandOptionNoArg useWartsOption, estimateOnlyOption, debiasOnlyOption;
+   CommandOptionNoArg useWartsOption, estimateOnlyOption;
    CommandOptionWithAnyArg clockSource;
 };
 
@@ -66,17 +66,13 @@ OrdClock::OrdClock() throw()
    : OrdApp("ordClock", "Generates clock estimates for each epoch of ords."),
      useWartsOption('w', "use-warts",
         "Use warts in the clock solution. The default is "
-        "to not use warts (type=20)."),
+        "to not use warts."),
      estimateOnlyOption('e', "estimate-only",
         "Only compute the receiver clock bias. Don't remove"
         " this bias from the ords. The default is to both estimate"
         " the bias and remove the it from the ords."),
-     debiasOnlyOption('b', "debias-only",
-        "Only remove the bias from the ords. "
-        "The default is to both estimate the bias and remove the it from the ords."),
      clockSource('c', "clock-source",
-        "An ord file to read the receiver clock offsets from. This "
-        "option implies the debiasOnlyOption. So maybe we sould remove it???")
+        "An ord file to read the receiver clock offsets from.")
 {}
 
 
@@ -103,9 +99,6 @@ void OrdClock::process()
    bool debias=true;
    if (estimateOnlyOption.getCount())
       debias = false;
-
-   if (debiasOnlyOption.getCount())
-      estimate = false;
 
    map<DayTime, double> clocks;
    if (clockSource.getCount())
