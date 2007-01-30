@@ -17,6 +17,6 @@ rule TestMain
 	ObjectHdrs $(PATH_TO_CURRENT)/$(<) $(PATH_TO_CURRENT)/$(>) : $(CPPUNIT_INC) $(PATH_TO_CURRENT)/../src ;
 	ObjectC++Flags $(PATH_TO_CURRENT)/$(>) : -fprofile-arcs -ftest-coverage ;
 	LINKLIBS on $(PATH_TO_CURRENT)/$(<) = $(STD_LINK_LIBS) ;
-	LinkLibraries $(PATH_TO_CURRENT)/$(<) : libcppunit libgpstk ;
+	LinkLibraries $(PATH_TO_CURRENT)/$(<) : libcppunit $(PATH_TO_CURRENT)/../src/libgpstk ;
 	
 }
