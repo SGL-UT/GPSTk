@@ -67,6 +67,8 @@ else
       ModeledReferencePR.cpp ModeledPR.cpp SimpleIURAWeight.cpp
       MOPSWeight.cpp
       BinexData.cpp
+      YumaHeader.cpp YumaData.cpp YumaAlmanacStore.cpp
+      SEMHeader.cpp SEMData.cpp SEMAlmanacStore.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp AlmanacStore.hpp BCEphemerisStore.hpp
@@ -122,6 +124,8 @@ else
       ExtractD2.hpp ModeledReferencePR.hpp ModeledPR.hpp SimpleIURAWeight.hpp
       MOPSWeight.hpp
       BinexData.hpp  BinexFilterOperators.hpp  BinexStream.hpp
+      YumaBase.hpp YumaStream.hpp YumaHeader.hpp YumaData.hpp YumaAlmanacStore.hpp
+      SEMBase.hpp SEMStream.hpp SEMHeader.hpp SEMData.hpp SEMAlmanacStore.hpp
       ;
 }
 

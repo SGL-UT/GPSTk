@@ -1158,11 +1158,15 @@ namespace gpstk
           * @param length length (in characters) of output, including exponent
           * @param expLen length (in characters) of the exponent, with sign
           * @param showSign if true, reserves 1 character for +/- sign
+	  * @param checkSwitch if true, keeps the exponential sanity check for
+	  * exponentials above three characters in length.  If false, it removes
+	  * that check.
           */
       inline std::string doub2sci(const double& d, 
                              const std::string::size_type length, 
                              const std::string::size_type expLen,
-                             const bool showSign = true);
+                             const bool showSign = true,
+			     const bool checkSwitch = true);
 
          /**
           * Convert scientific notation to FORTRAN notation.
@@ -1173,13 +1177,18 @@ namespace gpstk
           * @param length length (in characters) of number, including exponent.
           * @param expLen length (in characters of exponent, not including sign.
           * @param startPos start position of number in string
+	  * @param checkSwitch will keep the method running as orignially programed
+	  * when set to true.  If false, the method will always resize exponentials,
+	  * produce an exponential with an E instead of a D, and always have a leading
+	  * zero.  For example -> 0.87654E-0004 or -0.1234E00005. 
           * @throws Exception if the string is not a number in
           * scientific notation
           */
       inline std::string& sci2for(std::string& aStr, 
                              const std::string::size_type length, 
                              const std::string::size_type startPos = 0,
-                             const std::string::size_type expLen = 3)
+                             const std::string::size_type expLen = 3,
+			     const bool checkSwitch = true)
          throw(StringException);
 
          /**
@@ -1189,11 +1198,15 @@ namespace gpstk
           * @param d number to convert.
           * @param length length (in characters) of number, including exponent.
           * @param expLen length (in characters of exponent, including sign.
+	  * @param checkSwitch if true, keeps the exponential sanity check for
+	  * exponentials above three characters in length.  If false, it removes
+	  * that check.
           * @return a string containing \a d in FORTRAN notation.
           */
       inline std::string doub2for(const double& d, 
                              const std::string::size_type length, 
-                             const std::string::size_type expLen)
+                             const std::string::size_type expLen,
+			     const bool checkSwitch = true)
          throw(StringException);
 
          /**
@@ -2271,14 +2284,15 @@ namespace gpstk
       inline std::string doub2sci(const double& d, 
                              const std::string::size_type length, 
                              const std::string::size_type expLen,
-                             const bool showSign)
+                             const bool showSign,
+			     const bool checkSwitch)
       {
          std::string toReturn;
          short exponentLength = expLen;
             
             /* Validate the assumptions regarding the input arguments */
          if (exponentLength < 0) exponentLength = 1;
-         if (exponentLength > 3) exponentLength = 3;
+         if (exponentLength > 3 && checkSwitch) exponentLength = 3;
             
          std::stringstream c;
          c.setf(std::ios::scientific, std::ios::floatfield);
@@ -2304,7 +2318,8 @@ namespace gpstk
       inline std::string& sci2for(std::string& aStr, 
                              const std::string::size_type length, 
                              const std::string::size_type startPos,
-                             const std::string::size_type expLen)
+                             const std::string::size_type expLen,
+			     const bool checkSwitch)
          throw(StringException)
       {
          try
@@ -2313,7 +2328,9 @@ namespace gpstk
             int expAdd = 0;
             std::string exp;
             long iexp;
-            bool redoexp=false;
+	      //If checkSwitch is false, always redo the exponential. Otherwise,
+	      //set it to false. 
+	    bool redoexp=!checkSwitch;
             
                // Check for decimal place within specified boundaries
             if ((idx == 0) || (idx >= (startPos + length - expLen - 1)))
@@ -2348,10 +2365,13 @@ namespace gpstk
                   GPSTK_THROW(e);
                }
             }
-               // Change the exponent character
-            aStr[idx] = 'D';
-            
-               // Change the exponent itself
+               // Change the exponent character to D normally, or E of checkSwitch is false.
+	    if (checkSwitch)
+               aStr[idx] = 'D';
+	    else 
+               aStr[idx] = 'E';
+               
+	       // Change the exponent itself
             if (redoexp)
             {
                exp = aStr.substr(idx + 1, std::string::npos);
@@ -2376,7 +2396,14 @@ namespace gpstk
             {
                aStr.insert((std::string::size_type)0, 1, ' ');
             }
-            
+	    
+	       //If checkSwitch is false, add on one leading zero to the string
+	    if (!checkSwitch)
+	    {
+	       aStr.insert((std::string::size_type)1, 1, '0');
+            }
+	    
+	    
             return aStr;
          }
          catch(StringException &e)
@@ -2393,7 +2420,8 @@ namespace gpstk
 
       inline std::string doub2for(const double& d, 
                              const std::string::size_type length, 
-                             const std::string::size_type expLen)
+                             const std::string::size_type expLen,
+			     const bool checkSwitch)
          throw(StringException)
       {
          try
@@ -2402,10 +2430,10 @@ namespace gpstk
             
                /* Validate the assumptions regarding the input arguments */
             if (exponentLength < 0) exponentLength = 1;
-            if (exponentLength > 3) exponentLength = 3;
+            if (exponentLength > 3 && checkSwitch) exponentLength = 3;
 
-            std::string toReturn = doub2sci(d, length, exponentLength, true);
-            sci2for(toReturn, length, 0, exponentLength);
+            std::string toReturn = doub2sci(d, length, exponentLength, true, checkSwitch);
+            sci2for(toReturn, length, 0, exponentLength, checkSwitch);
          
             return toReturn;
          }
