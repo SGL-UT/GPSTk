@@ -6,14 +6,14 @@ SubDir TOP apps ;
 
 SubInclude TOP apps checktools ;
 SubInclude TOP apps converters ;
+SubInclude TOP apps DataAvailability ;
 SubInclude TOP apps differential ;
 SubInclude TOP apps difftools ;
 SubInclude TOP apps filetools ;
 SubInclude TOP apps geomatics ;
 SubInclude TOP apps ionosphere ;
 SubInclude TOP apps mergetools ;
-#Need to make this not require everything else to have curses
-#SubInclude TOP apps MDPtools ; 
+SubInclude TOP apps MDPtools ; 
 SubInclude TOP apps multipath ;
 SubInclude TOP apps positioning ;
 SubInclude TOP apps receiver ;
