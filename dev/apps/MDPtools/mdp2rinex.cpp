@@ -18,7 +18,7 @@
 #include "MDPNavSubframe.hpp"
 #include "MDPObsEpoch.hpp"
 
-#include "MDP2Rinex.hpp"
+#include "RinexConverters.hpp"
 
 using namespace std;
 using namespace gpstk;

@@ -9,7 +9,7 @@
 #include "Geodetic.hpp"
 #include "NavProc.hpp"
 
-#include "MDP2Rinex.hpp"
+#include "RinexConverters.hpp"
 
 using namespace std;
 using namespace gpstk;
