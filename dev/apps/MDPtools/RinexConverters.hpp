@@ -1,4 +1,4 @@
-#pragma ident "$Id: FormatConversionFunctions.hpp 171 2006-10-02 02:24:10Z ocibu $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -36,8 +36,8 @@
 //
 //=============================================================================
 
-#ifndef RINEX2MDP_HPP
-#define RINEX2MDP_HPP
+#ifndef RINEXCONVERTERS_HPP
+#define RINEXCONVERTERS_HPP
 
 /** @file Translates between various similiar objects */
 

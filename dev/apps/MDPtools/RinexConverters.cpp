@@ -1,4 +1,4 @@
-#pragma ident "$Id: FormatConversionFunctions.cpp 171 2006-10-02 02:24:10Z ocibu $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -41,7 +41,7 @@
 #include "StringUtils.hpp"
 #include "RinexObsID.hpp"
 
-#include "MDP2Rinex.hpp"
+#include "RinexConverters.hpp"
 
 using namespace std;
 
