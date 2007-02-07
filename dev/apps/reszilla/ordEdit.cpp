@@ -60,7 +60,7 @@ protected:
    virtual void process();
 
 private:
-   CommandOptionNoArg clkOpt, removeUnhlthyOpt, noClockOpt;
+   CommandOptionNoArg clkOpt, noClockOpt;
    CommandOptionWithNumberArg elvOpt, prnOpt, wartsOpt;
    CommandOptionWithAnyArg ephSourceOpt, startOpt, endOpt, clkResOpt;
    
@@ -77,11 +77,9 @@ private:
 OrdEdit::OrdEdit() throw()
    : OrdApp("ordEdit", "Edits an ord file based on various criteria."),
      elMask(0),clkResidLimit(0),
-     removeUnhlthyOpt('u', "remove-unhealthy","Remove data for unhealthy SVs."
-                  " Requires ephemeris source option."),
-     ephSourceOpt('e',"be-file","Broadcast ephemeris source. Must be RINEX "
-                  "nav file. In type 0 lines, health fields will be filled "
-                  "in."),           
+     ephSourceOpt('e',"be-file","Remove data for unhealthy SVs by "
+                  " providing broadcast ephemeris source. Must be RINEX "
+                  "nav file."),           
      elvOpt('m',"elev","Remove data for SVs below a given elevation mask."),
      clkOpt('k',"clock-est", "Remove ords that do not have corresponding "
             "clock estimates."),
@@ -111,14 +109,6 @@ bool OrdEdit::initialize(int argc, char *argv[]) throw()
 //-----------------------------------------------------------------------------
 void OrdEdit::process()
 {   
-   //-- don't know SV health without broadcast ephemeris
-   if (removeUnhlthyOpt.getCount() && !(ephSourceOpt.getCount()))
-   {
-      cout << "Need broadcast ephemeris source in order to remove data "
-           << "from unhealthy SVs. Exiting..." << endl;
-      exit(0);
-   }
-   
    //-- Get ephemeris data
    EphReader ephReader;
    ephReader.verboseLevel = verboseLevel;
@@ -208,10 +198,6 @@ void OrdEdit::process()
       else
          cout << "# Leaving in ords without corresponding clock "
               << "estimates.\n";
-      if (removeUnhlthyOpt.getCount())
-         cout << "# Removing unhealthy SVs.\n";
-      else 
-         cout << "# Not looking at SV health.\n";
       if (elMask)
          cout << "# Elevation mask set to " << elMask << " deg.\n";
       else
@@ -273,7 +259,7 @@ void OrdEdit::process()
       else if (endOpt.getCount() && (ordEpoch.time > tEnd))
          continue;
          
-      if (numBEFiles && removeUnhlthyOpt.getCount())
+      if (numBEFiles)
       {
          const BCEphemerisStore& bce = dynamic_cast<const BCEphemerisStore&>(eph);
          ORDEpoch::ORDMap::iterator iter = ordEpoch.ords.begin();
