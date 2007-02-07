@@ -115,11 +115,16 @@ namespace gpstk
    {
       ostringstream oss;
       MDPHeader::dump(oss);
+
+      short page = getSFID() > 3 ? ((getHOWTime()-6) / 30) % 25 + 1 : 0;
+
       oss << getName() << 0 <<":"
           << " PRN:" << prn
           << " CC:" << static_cast<int>(carrier)
           << " RC:" << static_cast<int>(range)
           << " NC:" << static_cast<int>(nav)
+          << " SF:" << getSFID()
+          << " PG:" << page
           << endl;
 
       oss << setfill('0') << hex;
