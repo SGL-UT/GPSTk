@@ -37,6 +37,7 @@
 
 #include "OrdApp.hpp"
 #include "OrdApp.cpp"
+#include "icd_200_constants.hpp"
 #include "util.hpp"
 #include <iostream>
 #include <list>
@@ -134,9 +135,8 @@ void OrdStats::process()
    float wonkyEpochCount = 0; // cnt of entire epochs that are wonky
    float wonkyORDCount   = 0; // cnt of individual ords that are wonky 
    
-   ORDEpochMap oem;
-
    // read in data from the ord file to map of ORDEpochs
+   ORDEpochMap oem;
    while (input)
    {
       ORDEpoch ordEpoch = read(input);
@@ -149,10 +149,30 @@ void OrdStats::process()
       write(output, ordEpoch);   
    }   
    
-   // one more wonky count
+   // output clock offsets greater than 1ms
+   output << "#  Time \t\t\tOffsets > 1ms\n"
+          << "# ------\t\t\t-------------\n";  
+   if (statsFileOption.getCount())
+      extraOutput << "Time \t\t\tOffsets > 1ms\n"
+          << "------\t\t\t-------------\n";         
+   bool foundBigOffset = false;
+   // find offsets > 1ms and get one more wonky count
    ORDEpochMap::iterator iter;
    for (iter = oem.begin(); iter != oem.end(); iter++)
    {
+      const double offset = iter->second.clockOffset;
+      if (abs(offset) > (C_GPS_M/1000))
+      {
+        foundBigOffset = true;
+        output << ">b  " << iter->second.time << "\t\t"
+               << setprecision(5) << setw(12) 
+               << iter->second.clockOffset << endl;
+        if (statsFileOption.getCount())
+          extraOutput << iter->second.time << "\t"
+                      << setprecision(5) << setw(12) 
+                      << iter->second.clockOffset << endl;
+      }       
+      
       ORDEpoch::ORDMap::const_iterator pi;
       for (pi = iter->second.ords.begin(); 
            pi != iter->second.ords.end(); pi++)
@@ -162,7 +182,11 @@ void OrdStats::process()
         if (wonk) 
           wonkyORDCount++;        
       }
-   }    
+   }  
+   if (!foundBigOffset)
+      output << "#     No offsets greater than 1 millisecond found.\n";
+   if ((!foundBigOffset) && statsFileOption.getCount())
+      extraOutput << "     No offsets greater than 1 millisecond found.\n";
    
    // output wonky stats
    output << "# wonky epochs   total   % wonky epochs   # wonky ords   total "
@@ -180,11 +204,11 @@ void OrdStats::process()
               
    if (statsFileOption.getCount())
    {
-      extraOutput << " wonky epochs   total   % wonky epochs   # wonky ords"
+      extraOutput << "wonky epochs   total   % wonky epochs   # wonky ords"
              << "   total ords   % wonky ords\n"
-             << " ------------   -----   --------------   ------------  "
+             << "------------   -----   --------------   ------------  "
              << " ----------   ------------\n";
-      sprintf(b1, " %8.0f  %9.0f  %12.2f  %12.0f  %12.0f  %12.2f", 
+      sprintf(b1, "%8.0f  %9.0f  %12.2f  %12.0f  %12.0f  %12.2f", 
               wonkyEpochCount,
               totalEpochCount, (100*(wonkyEpochCount/totalEpochCount)),
               wonkyORDCount,totalORDCount, 
@@ -199,9 +223,9 @@ void OrdStats::process()
           << "  -----   -----\n"; 
    if (statsFileOption.getCount())
    {
-      extraOutput << " elev\t  stddev    mean      # obs   # bad"
+      extraOutput << "elev\t  stddev    mean      # obs   # bad"
                   << "   max    strip\n"
-                  << " ----\t  ------    ----      -----   -----"
+                  << "----\t  ------    ----      -----   -----"
                   << "  -----   -----\n";
    }
    
