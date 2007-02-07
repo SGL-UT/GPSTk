@@ -17,7 +17,7 @@ Library rlib : util.cpp readers.cpp ordUtils.cpp DDEpoch.cpp PhaseCleaner.cpp
   RobustLinearEstimator.cpp ;
 
 Library datalib : ObsUtils.cpp FFIdentifier.cpp ObsReader.cpp EphReader.cpp 
-  MetReader.cpp MDP2Rinex.cpp OrdApp.cpp OrdEngine.cpp ;
+  MetReader.cpp RinexConverters.cpp OrdApp.cpp OrdEngine.cpp ;
 
 LinkLibraries reszilla mkord ordGen ordClock ordEdit ordStats ordLinEst : datalib
    rlib datalib rlib ;
