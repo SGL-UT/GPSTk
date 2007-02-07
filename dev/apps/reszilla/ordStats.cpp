@@ -135,7 +135,7 @@ void OrdStats::process()
    float wonkyORDCount   = 0; // cnt of individual ords that are wonky 
    
    ORDEpochMap oem;
-   
+
    // read in data from the ord file to map of ORDEpochs
    while (input)
    {
@@ -160,8 +160,7 @@ void OrdStats::process()
         totalORDCount++;
         const unsigned wonk = pi->second.wonky;
         if (wonk) 
-          wonkyORDCount++;
-        
+          wonkyORDCount++;        
       }
    }    
    
@@ -194,9 +193,9 @@ void OrdStats::process()
    }
    
    // print some header info   
-   output << "# elev\t  stddev      mean      # obs   # bad"
+   output << "#  elev\t  stddev      mean      # obs   # bad"
           << "   max    strip\n"
-          << "# ----\t  ------      ----      -----   -----"
+          << "#  ----\t  ------      ----      -----   -----"
           << "  -----   -----\n"; 
    if (statsFileOption.getCount())
    {
@@ -258,7 +257,7 @@ void OrdStats::process()
       char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
       double max = std::max(std::abs(good.Maximum()),
                    std::abs(good.Minimum()));
-      sprintf(b1, "> %2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
+      sprintf(b1, ">r %2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
            (int)minElevation, (int)maxElevation,
            good.StdDev()/sqrt((float)2), good.Average(),
            good.N(), bad.N(), max, strip);

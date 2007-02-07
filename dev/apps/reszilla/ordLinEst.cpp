@@ -92,18 +92,22 @@ struct ClockSegmentList : public list<ClockSegment>
 
    void dump(ostream& output, string timeFormat) const
    {
-      output << "#  t0                   t1                   offset(m) slope(m/d)  abdev(m)" << endl;
-      output << "#  -------------------  -------------------  --------- ----------  --------" << endl;
+      output << "#  t0                   t1                   t0 offset(m)"
+             << "  t1 offset(m)  slope(m/d)  abdev(m)" << endl;
+      output << "#  -------------------  -------------------  "
+             << "------------  ------------  ----------  --------" << endl;
       for (const_iterator k=begin(); k != end(); k++)
       {
          const ClockSegment& cs = *k;
-         double t = cs.startTime.MJDdate();
+         double t0 = cs.startTime.MJDdate();
+         double tf = cs.endTime.MJDdate();
          output << ">c " << cs.startTime.printf(timeFormat)
                 << "  " << cs.endTime.printf(timeFormat)
                 << fixed
-                << " " << setprecision(2) << setw(10) << cs.eval(t)
-                << " " << setprecision(3) << setw(10) << cs.b
-                << " " << setprecision(3) << setw(9) << cs.abdev
+                << " " << setprecision(3) << setw(12) << cs.eval(t0)
+                << " " << setprecision(3) << setw(12) << cs.eval(tf)
+                << " " << setprecision(3) << setw(12) << cs.b
+                << " " << setprecision(3) << setw(10) << cs.abdev
                 << endl;
       }
       output << "#" << endl;
