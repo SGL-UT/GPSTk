@@ -71,16 +71,16 @@ private:
 //-----------------------------------------------------------------------------
 OrdStats::OrdStats() throw()
    : OrdApp("ordStats", "Computes ords statistics. "), 
-     elevBinsOption('b', "elev-bin", "A range of elevations, used in  computing"
-                    " the statistical summaries. Repeat to specify multiple "
-                    "bins. The default is \"-b 0-10 -b 10-20 -b 20-60 -b "
-                    "10-90\"."),
+     elevBinsOption('b', "elev-bin", "A range of elevations, used in "
+                    " computing the statistical summaries. Repeat to specify"
+                    " multiple bins. The default is \"-b 0-10 -b 10-20 -b"
+                    " 20-60 -b 10-90\"."),
      sigmaOption('s',"sigma","Multiplier for sigma stripping used in "
                     "statistical computations. The default value is 6."),
      statsFileOption('o',"statsFile","Filename for output of stats only. Stats"
                     " will still be included at the end of the ord file."),
-     wonkyOption('w',"wonky","Use wonky data in stats computation. The default "
-                    "is to not use such data.")
+     wonkyOption('w',"wonky","Use wonky data in stats computation. The"
+                    " default is to not use such data.")
 {}
 
 //-----------------------------------------------------------------------------
@@ -128,15 +128,72 @@ void OrdStats::process()
    else 
       useWonky = false;
       
+   // initialize some counters
+   float totalEpochCount = 0; // cnt of total # of epochs from input
+   float totalORDCount   = 0; // cnt of total # ord ORDs
+   float wonkyEpochCount = 0; // cnt of entire epochs that are wonky
+   float wonkyORDCount   = 0; // cnt of individual ords that are wonky 
+   
    ORDEpochMap oem;
+   
    // read in data from the ord file to map of ORDEpochs
    while (input)
    {
-      ORDEpoch ordEpoch = read(input); 
+      ORDEpoch ordEpoch = read(input);
+      
+      // increment wonky counters accordingly
+      if (ordEpoch.wonky)
+        wonkyEpochCount++;
+      totalEpochCount++;    
       oem[ordEpoch.time] = ordEpoch;
       write(output, ordEpoch);   
-   }      
-      
+   }   
+   
+   // one more wonky count
+   ORDEpochMap::iterator iter;
+   for (iter = oem.begin(); iter != oem.end(); iter++)
+   {
+      ORDEpoch::ORDMap::const_iterator pi;
+      for (pi = iter->second.ords.begin(); 
+           pi != iter->second.ords.end(); pi++)
+      {
+        totalORDCount++;
+        const unsigned wonk = pi->second.wonky;
+        if (wonk) 
+          wonkyORDCount++;
+        
+      }
+   }    
+   
+   // output wonky stats
+   output << "# wonky epochs   total   % wonky epochs   # wonky ords   total "
+          << "ords   % wonky ords\n"
+          << "# ------------   -----   --------------   ------------"
+          << "   ----------   ------------\n";   
+   char b1[200];
+        // the high # after % symbol is just kinda lazy formatting...
+   sprintf(b1, ">w %8.0f  %9.0f  %12.2f  %12.0f  %12.0f  %12.2f",
+           wonkyEpochCount, totalEpochCount, 
+           (100*(wonkyEpochCount/totalEpochCount)),
+           wonkyORDCount,totalORDCount,
+           (100*(wonkyORDCount/totalORDCount)));
+   output << b1 << endl; 
+              
+   if (statsFileOption.getCount())
+   {
+      extraOutput << " wonky epochs   total   % wonky epochs   # wonky ords"
+             << "   total ords   % wonky ords\n"
+             << " ------------   -----   --------------   ------------  "
+             << " ----------   ------------\n";
+      sprintf(b1, " %8.0f  %9.0f  %12.2f  %12.0f  %12.0f  %12.2f", 
+              wonkyEpochCount,
+              totalEpochCount, (100*(wonkyEpochCount/totalEpochCount)),
+              wonkyORDCount,totalORDCount, 
+              (100*(wonkyORDCount/totalORDCount)));
+      extraOutput << b1 << endl;    
+   }
+   
+   // print some header info   
    output << "# elev\t  stddev      mean      # obs   # bad"
           << "   max    strip\n"
           << "# ----\t  ------      ----      -----   -----"
@@ -148,8 +205,10 @@ void OrdStats::process()
                   << " ----\t  ------    ----      -----   -----"
                   << "  -----   -----\n";
    }
+   
    // compute stats for each elevation range
-   for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
+   for (ElevationRangeList::const_iterator i = elr.begin(); 
+        i != elr.end(); i++)
    {
       ElevationRange er = *i;
       float minElevation = er.first;
@@ -197,12 +256,14 @@ void OrdStats::process()
       
       char b1[200];
       char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
-      double max = std::max(std::abs(good.Maximum()), std::abs(good.Minimum()));
+      double max = std::max(std::abs(good.Maximum()),
+                   std::abs(good.Minimum()));
       sprintf(b1, "> %2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
            (int)minElevation, (int)maxElevation,
            good.StdDev()/sqrt((float)2), good.Average(),
            good.N(), bad.N(), max, strip);
       output << b1 << endl; 
+      
       if (statsFileOption.getCount())
       {
         sprintf(b1, "%2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
