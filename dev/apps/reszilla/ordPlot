@@ -83,8 +83,8 @@ def main():
                     t0 = parse_time(words[1:4])
                     t1 = parse_time(words[4:7])
                     offset = float(words[7])
-                    slope = float(words[8])
-                    abdev = float(words[9])
+                    slope = float(words[9])
+                    abdev = float(words[10])
                     rleClockList.append( (t0, t1, offset, slope, abdev) )
             continue
 
