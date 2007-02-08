@@ -38,31 +38,48 @@
 
 #include <limits>
 
-#include "BCEphemerisStore.hpp"
+#include <StringUtils.hpp>
+#include <Stats.hpp>
 
 #include "DDEpoch.hpp"
+#include "ObsID.hpp"
 
 using namespace std;
+using namespace gpstk;
 
+const ObsID C1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
+const ObsID P1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcP);
+const ObsID L1(ObsID::otPhase,   ObsID::cbL1,   ObsID::tcP);
+const ObsID D1(ObsID::otDoppler, ObsID::cbL1,   ObsID::tcP);
+const ObsID S1(ObsID::otSNR,     ObsID::cbL1,   ObsID::tcP);
+const ObsID C2(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2LM);
+const ObsID P2(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
+const ObsID L2(ObsID::otPhase,   ObsID::cbL2,   ObsID::tcP);
+const ObsID D2(ObsID::otDoppler, ObsID::cbL2,   ObsID::tcP);
+const ObsID S2(ObsID::otSNR,     ObsID::cbL2,   ObsID::tcP);
+
+
+unsigned DDEpoch::debugLevel;
+unsigned DDEpochMap::debugLevel;
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 OIDM DDEpoch::singleDifference(
-   const gpstk::SvObsEpoch& rx1obs,
-   const gpstk::SvObsEpoch& rx2obs)
+   const SvObsEpoch& rx1obs,
+   const SvObsEpoch& rx2obs)
 {
    OIDM diff;
 
-   gpstk::SvObsEpoch::const_iterator d1_itr = rx1obs.find(D1);
+   SvObsEpoch::const_iterator d1_itr = rx1obs.find(D1);
    if (d1_itr == rx1obs.end())
       return diff;
 
    // clock offset correction
-   double coc = clockOffset * d1_itr->second * gpstk::C_GPS_M/gpstk::L1_FREQ; 
-   gpstk::SvObsEpoch::const_iterator roti1, roti2;
+   double coc = clockOffset * d1_itr->second * C_GPS_M/L1_FREQ; 
+   SvObsEpoch::const_iterator roti1, roti2;
    for (roti1 = rx1obs.begin(); roti1 != rx1obs.end(); roti1++)
    {
-      const gpstk::ObsID& oid = roti1->first;
+      const ObsID& oid = roti1->first;
 
       // Make sure we have an obs from the other receiver
       roti2 = rx2obs.find(oid);
@@ -74,9 +91,9 @@ OIDM DDEpoch::singleDifference(
 
       // Need to convert the phase/doppler observables to meters
       if (oid == L1 || oid == D1)
-         diff[oid] *=  gpstk::C_GPS_M/gpstk::L1_FREQ;
+         diff[oid] *=  C_GPS_M/L1_FREQ;
       if (oid == L2 || oid == D2)
-         diff[oid] *=  gpstk::C_GPS_M/gpstk::L2_FREQ;
+         diff[oid] *=  C_GPS_M/L2_FREQ;
 
       // Then pull off the clock correction
       diff[oid] -= coc;
@@ -89,15 +106,15 @@ OIDM DDEpoch::singleDifference(
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 void DDEpoch::doubleDifference(
-   const gpstk::ObsEpoch& rx1,
-   const gpstk::ObsEpoch& rx2)
+   const ObsEpoch& rx1,
+   const ObsEpoch& rx2)
 {
    valid = false;
    dd.clear();
    if (masterPrn.id < 0)
    {
-      if (verbosity>2)
-         cout << rx1.time.printf(timeFormat)
+      if (false)
+         cout << rx1.time
               << " No master SV selected. Skipping epoch." << endl;
       return;
    }
@@ -109,22 +126,22 @@ void DDEpoch::doubleDifference(
    if (std::abs(clockOffset) > 2.1e-3 ||
        std::abs(c1) < eps || std::abs(c2) < eps)
    {
-      if (verbosity>2)
-         cout << rx1.time.printf(timeFormat)
+      if (debugLevel)
+         cout << rx1.time
               << " Insane clock offset (" << 1e3*clockOffset
               << " ms). Skipping epoch." << endl;
       return;
    }
 
-   gpstk::ObsEpoch::const_iterator oi1, oi2;
+   ObsEpoch::const_iterator oi1, oi2;
    oi1 = rx1.find(masterPrn);
    oi2 = rx2.find(masterPrn);
 
    if (oi1 == rx1.end() || oi2 == rx2.end())
       return;
 
-   const gpstk::SvObsEpoch& rx1obs = oi1->second;
-   const gpstk::SvObsEpoch& rx2obs = oi2->second;
+   const SvObsEpoch& rx1obs = oi1->second;
+   const SvObsEpoch& rx2obs = oi2->second;
    
    OIDM masterDiff = singleDifference(rx1obs, rx2obs);
    if (masterDiff.size() == 0)
@@ -133,7 +150,7 @@ void DDEpoch::doubleDifference(
    // Now walk through all prns in track
    for (oi1=rx1.begin(); oi1!=rx1.end(); oi1++)
    {
-      gpstk::SatID prn = oi1->first;
+      SatID prn = oi1->first;
       oi2 = rx2.find(prn);
       if (oi2 == rx2.end())
          continue;
@@ -161,8 +178,8 @@ void DDEpoch::doubleDifference(
 //   there is a record for it on the other receiver
 // ---------------------------------------------------------------------
 void DDEpoch::selectMasterPrn(
-   const gpstk::ObsEpoch& rx1, 
-   const gpstk::ObsEpoch& rx2,
+   const ObsEpoch& rx1, 
+   const ObsEpoch& rx2,
    SvElevationMap& pem)
 {
    const double minElevation = 15.0;
@@ -170,20 +187,20 @@ void DDEpoch::selectMasterPrn(
    // If there is already one selected, try to keep using that one...
    if (masterPrn.id >0)
    {
-      gpstk::ObsEpoch::const_iterator i = rx1.find(masterPrn);
-      gpstk::ObsEpoch::const_iterator j = rx2.find(masterPrn);
+      ObsEpoch::const_iterator i = rx1.find(masterPrn);
+      ObsEpoch::const_iterator j = rx2.find(masterPrn);
       if (i != rx1.end() && j != rx2.end() &&
           pem[rx1.time][masterPrn] > minElevation)
          return;
    }
 
-   gpstk::SatID prn;
-   gpstk::ObsEpoch::const_iterator i;
+   SatID prn;
+   ObsEpoch::const_iterator i;
    for (i=rx1.begin(); i != rx1.end(); i++)
    {
       prn = i->first;
-      gpstk::ObsEpoch::const_iterator j = rx2.find(prn);
-      gpstk::SvObsEpoch obs = i->second;
+      ObsEpoch::const_iterator j = rx2.find(prn);
+      SvObsEpoch obs = i->second;
       if (j != rx2.end() && obs[D1] >= 0 &&
           pem[rx1.time][i->first] > minElevation)
       {
@@ -194,35 +211,59 @@ void DDEpoch::selectMasterPrn(
 }
 
 
-//-----------------------------------------------------------------------------
-// Similiar to computeDD but does a triple difference to look for cycle slips
-//-----------------------------------------------------------------------------
-void computeDDEpochMap(
-   gpstk::ObsEpochMap& rx1,
-   gpstk::ObsEpochMap& rx2,
-   SvElevationMap& pem,
-   const gpstk::EphemerisStore& eph,
-   DDEpochMap& ddem)
+void DDEpoch::dump(ostream& s) const
 {
-   if (verbosity>1)
-      cout << "Computing 2nd differences residuals." << endl;
+   s << "master:" << masterPrn
+     << ", clockOffset:" << clockOffset
+     << endl;
 
+   SvOIDM::const_iterator pi;
+   for (pi = dd.begin(); pi != dd.end(); pi++)
+   {
+      const SatID& prn = pi->first;
+      const OIDM& ddr = pi->second;
+      for (OIDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
+      {
+         const ObsID& rot = ti->first;
+         double dd = ti->second;
+            
+         s << setw(2) << prn.id << " " << setw(4) << rot
+           << " " << setprecision(6) << setw(14) << dd
+           << endl;
+      }
+   }
+
+}
+
+//-----------------------------------------------------------------------------
+// compute the double difference of all common epochs
+//-----------------------------------------------------------------------------
+void DDEpochMap::compute(
+   const ObsEpochMap& rx1,
+   const ObsEpochMap& rx2,
+   SvElevationMap& pem)
+{
    DDEpoch prev;
+
+   DDEpochMap& ddem=*this;
+   DDEpoch::debugLevel = debugLevel;
+
+   if (debugLevel)
+      cout << "DDEpochMap::compute(" << rx1.size()
+           << ", " << rx2.size() << " epochs)" << endl;
 
    // We use the data from rx1 walk us through the data
    // loop over all epochs for this station
-   gpstk::ObsEpochMap::const_iterator ei1;
+   ObsEpochMap::const_iterator ei1;
    for (ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
    {
-      // first make sure we have data from the other receiver for this
-      // epoch...
-      gpstk::DayTime t = ei1->first;
-      gpstk::ObsEpochMap::const_iterator ei2 = rx2.find(t);
+      // first make sure we have data from the other receiver for this epoch...
+      DayTime t = ei1->first;
+      ObsEpochMap::const_iterator ei2 = rx2.find(t);
       if (ei2 == rx2.end())
       {
-         if (verbosity>2)
-            cout << t.printf(timeFormat)
-                 << " No data in second set. Skipping epoch." << endl;
+         if (debugLevel>1)
+            cout << "Epoch with no match" << endl;
          continue;
       }
       
@@ -240,6 +281,11 @@ void computeDDEpochMap(
          ddem[t] = curr;
          prev = curr;
       }
+      else if (debugLevel)
+      {
+         cout << "invalid DDEpoch" << endl;
+         curr.dump(cout);
+      }
    } // end of looping over all epochs in the first set.
 
    // Here we need to remove the double differences for the master PRN
@@ -250,81 +296,66 @@ void computeDDEpochMap(
       if (j != dde.dd.end())
          dde.dd.erase(j);
    }
-
-   // Here we add the SV health info to the DDEpochs
-   if (typeid(eph) == typeid(gpstk::BCEphemerisStore))
-   {
-      const gpstk::BCEphemerisStore& bce = 
-         dynamic_cast<const gpstk::BCEphemerisStore&>(eph);
-
-      for (DDEpochMap::iterator i = ddem.begin(); i != ddem.end(); i++)
-      {
-         const gpstk::DayTime& t=i->first;
-         DDEpoch& dde = i->second;
-         for (SvOIDM::iterator j = dde.dd.begin(); j != dde.dd.end(); j++)
-         {
-            const gpstk::SatID prn=j->first;
-            try
-            {
-               const gpstk::EngEphemeris& prn_eph = bce.findEphemeris(prn.id, t);
-               dde.health[prn] = prn_eph.getHealth();
-            } 
-            catch (gpstk::EphemerisStore::NoEphemerisFound& e)
-            {
-               if (verbosity>1)
-                  cout << t.printf(timeFormat) << " prn " << prn.id << " no eph " << endl;
-            }
-         }
-      }
-   }
 }  // end of computeDDEpochMap()
 
 
+
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-void dumpStats(
-   DDEpochMap& ddem,
-   const CycleSlipList& csl,
-   SvElevationMap& pem)
+void DDEpochMap::dump(
+   std::ostream& s, 
+   SvElevationMap& pem) 
 {
-   cout << endl
-        << "ord        elev   stddev    mean      # obs    # bad   # unk  max good  slips" << endl
-        << "---------- -----  --------  --------  -------  ------  ------  --------  -----" << endl;
+   DDEpochMap& ddem=*this;
 
-   for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
+   s.setf(ios::fixed, ios::floatfield);
+   s << "# time              PRN    type    mstr  elev     ddr(m)          clk(s)   h"
+     << endl;
+
+   DDEpochMap::iterator ei;
+   SvOIDM::iterator pi;
+   for (ei = ddem.begin(); ei != ddem.end(); ei++)
    {
-      cout << "c1 dd res  " << computeStats(C1, ddem,  *i, pem) << "    " << endl;
-      cout << "p1 dd res  " << computeStats(P1, ddem,  *i, pem) << "    " << endl;
-      cout << "l1 dd res  " << computeStats(L1, ddem,  *i, pem) << "    " 
-           << computeStats(csl, *i, L1) << endl;
-      cout << "d1 dd res  " << computeStats(D1, ddem,  *i, pem) << "    " << endl;
-      cout << "s1 dd res  " << computeStats(S1, ddem,  *i, pem) << "    " << endl;
-      cout << endl;
+      const DayTime& t = ei->first;
+      double clk = ei->second.clockOffset;
+      string time=t.printf("%4Y %3j %02H:%02M:%04.1f");
+      SatID& masterPrn = ei->second.masterPrn;
+      for (pi = ei->second.dd.begin(); pi != ei->second.dd.end(); pi++)
+      {
+         const SatID& prn = pi->first;
+         OIDM& ddr = pi->second;
+         for (OIDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
+         {
+            string rot = StringUtils::asString(ti->first);
+            double dd = ti->second;
+            
+            s << left << setw(20) << time << right
+              << setfill(' ')
+              << " " << setw(2) << prn.id
+              << " " << left << setw(12) << rot << right
+              << " " << setw(2) << masterPrn.id
+              << " " << setprecision(1) << setw(5)  << pem[t][prn]
+              << " " << setprecision(6) << setw(14) << dd
+              << " " << setprecision(8) << setw(12) << clk
+              << hex
+              << " " << setw(2) << ei->second.health[prn]
+              << dec 
+              << endl;
+         }
+      }
    }
-   cout << "------------------------------------------------------------------------ " << endl;
-
-   for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
-   {
-      cout << "p2 dd res  " << computeStats(P2, ddem,  *i, pem) << "    " << endl;
-      cout << "l2 dd res  " << computeStats(L2, ddem,  *i, pem) << "    " 
-           << computeStats(csl, *i, L2) << endl;
-      cout << "d2 dd res  " << computeStats(D2, ddem,  *i, pem) << "    " << endl;
-      cout << "s1 dd res  " << computeStats(S2, ddem,  *i, pem) << "    " << endl;
-      cout << endl;
-   }
-   cout << "------------------------------------------------------------------------ " << endl;
-}
+   s << endl;
+}  // end dump()
 
 
-// ---------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Returns a string containing a statistical summary of the double difference
 // residuals for the specified obs type within the given elevation range.
-// ---------------------------------------------------------------------
-string computeStats(
+//-----------------------------------------------------------------------------
+string DDEpochMap::computeStats(
    const gpstk::ObsID oid,
-   DDEpochMap& ddem,
-   const ElevationRange er,
-   SvElevationMap& pem)
+   const ElevationRange& er,
+   SvElevationMap& pem) const
 {
    ostringstream oss;
    float minElevation = er.first;
@@ -333,27 +364,28 @@ string computeStats(
    int zeroCount=0;
 
    gpstk::Stats<double> good, bad;
-   DDEpochMap::iterator ei;
-   for (ei = ddem.begin(); ei != ddem.end(); ei++)
+   for (const_iterator ei = begin(); ei != end(); ei++)
    {
       const gpstk::DayTime& t = ei->first;
-      SvOIDM::iterator pi;
+      SvOIDM::const_iterator pi;
       for (pi = ei->second.dd.begin(); pi != ei->second.dd.end(); pi++)
       {
          const gpstk::SatID& prn = pi->first;
-         OIDM& ddr = pi->second;
+         const OIDM& ddr = pi->second;
 
          if (pem[t][prn]<minElevation || pem[t][prn]>maxElevation)
             continue;
-         if (ddr.find(oid) == ddr.end())
+
+         OIDM::const_iterator ddi = ddr.find(oid);
+         if (ddi == ddr.end())
             zeroCount++;
          else
          {
-            double mag=std::abs(ddr[oid]);
-            if (mag < strip)
-               good.Add(ddr[oid]);
+            double dd = ddi->second;
+            if (std::abs(dd) < strip)
+               good.Add(dd);
             else
-               bad.Add(ddr[oid]);
+               bad.Add(dd);
          }
       }
    }
@@ -369,67 +401,3 @@ string computeStats(
    oss << b1;
    return oss.str();
 }
-
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-void dump(
-   std::ostream& s, 
-   DDEpochMap& ddem, 
-   SvElevationMap& pem)
-{
-   if (verbosity>1)
-      cout << "Writing raw double differences." << endl;
-
-   s.setf(ios::fixed, ios::floatfield);
-   s << "# time              PRN type  elev      ddr/clk(m)       health"
-     << endl;
-
-   DDEpochMap::iterator ei;
-   SvOIDM::iterator pi;
-   for (ei = ddem.begin(); ei != ddem.end(); ei++)
-   {
-      const gpstk::DayTime& t = ei->first;
-      double clk = ei->second.clockOffset;
-      string time=t.printf(timeFormat);
-      gpstk::SatID& masterPrn = ei->second.masterPrn;
-      for (pi = ei->second.dd.begin(); pi != ei->second.dd.end(); pi++)
-      {
-         const gpstk::SatID& prn = pi->first;
-         OIDM& ddr = pi->second;
-         for (OIDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
-         {
-            const gpstk::ObsID& rot = ti->first;
-            double dd = ti->second;
-            
-            if (std::abs(dd) < 1e-9)
-               continue;
-
-            int type=0;
-            if      (rot == C1) type=10;
-            else if (rot == P1) type=11;
-            else if (rot == L1) type=12;
-            else if (rot == D1) type=13;
-            else if (rot == S1) type=14;
-            else if (rot == C2) type=20;
-            else if (rot == P2) type=21;
-            else if (rot == L2) type=22;
-            else if (rot == D2) type=23;
-            else if (rot == S2) type=24;
-
-            s << left << setw(20) << time << right
-              << setfill(' ')
-              << " " << setw(2) << prn.id
-              << " " << setw(4) << type
-              << " " << setprecision(1) << setw(5)  << pem[t][prn]
-              << " " << setprecision(6) << setw(14) << dd
-              << hex
-              << " " << setw(5) << 0
-              << " " << setw(7) << ei->second.health[prn]
-              << dec 
-              << endl;
-         }
-      }
-   }
-   s << endl;
-}  // end dump()
-

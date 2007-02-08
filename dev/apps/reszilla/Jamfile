@@ -12,22 +12,18 @@ if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
   C++FLAGS += -compat=5 ;
 }
 
-Library rlib : util.cpp readers.cpp ordUtils.cpp DDEpoch.cpp PhaseCleaner.cpp
+Library rlib : DDEpoch.cpp PhaseCleaner.cpp
   PhaseResidual.cpp MDPHeader.cpp MDPObsEpoch.cpp MDPNavSubframe.cpp 
-  RobustLinearEstimator.cpp ;
+  RobustLinearEstimator.cpp SvElevationMap.cpp CycleSlipList.cpp ;
 
 Library datalib : ObsUtils.cpp FFIdentifier.cpp ObsReader.cpp EphReader.cpp 
   MetReader.cpp RinexConverters.cpp OrdApp.cpp OrdEngine.cpp ;
 
-LinkLibraries reszilla mkord ordGen ordClock ordEdit ordStats ordLinEst : datalib
-   rlib datalib rlib ;
+LinkLibraries ordGen ordClock ordEdit ordStats ordLinEst ddGen ddStats : 
+   datalib rlib datalib rlib ;
 
-GPSLinkLibraries reszilla mkord ordGen ordClock ordEdit ordStats ordLinEst : gpstk datalib rlib
-   datalib rlib ;
-
-GPSMain reszilla : reszilla.cpp ;
-
-GPSMain mkord : mkord.cpp ;
+GPSLinkLibraries ordGen ordClock ordEdit ordStats ordLinEst ddGen ddStats : 
+   gpstk datalib rlib datalib rlib ;
 
 GPSMain ordGen : ordGen.cpp ;
 
@@ -39,4 +35,8 @@ GPSMain ordEdit : ordEdit.cpp ;
 
 GPSMain ordStats : ordStats.cpp ;
 
-InstallBin $(BINDIR) : resplot ordPlot ;
+GPSMain ddGen : ddGen.cpp ;
+
+GPSMain ddStats : ddStats.cpp ;
+
+InstallBin $(BINDIR) : ordPlot ;

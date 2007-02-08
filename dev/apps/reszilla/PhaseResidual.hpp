@@ -44,6 +44,8 @@
 
 #include "DayTime.hpp"
 #include "RinexObsHeader.hpp"
+#include "Stats.hpp"
+#include "CycleSlipList.hpp"
 
 #include "ElevationRange.hpp"
 

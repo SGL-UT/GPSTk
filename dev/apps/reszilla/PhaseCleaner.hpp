@@ -44,6 +44,8 @@
 #include "DDEpoch.hpp"
 #include "PhaseResidual.hpp"
 
+typedef std::map<gpstk::DayTime, double> TimeDoubleMap;
+
 class PhaseCleaner
 {
 public:
@@ -83,7 +85,8 @@ public:
 
    // And a set of those for each obs type
    typedef std::map<gpstk::ObsID, PraPrn> PraPrnOt;
-
+   PraPrnOt pot;
+   
    // Rx1 - Rx2 clock, in meters.
    TimeDoubleMap clockOffset;
    
@@ -91,17 +94,20 @@ public:
    typedef std::map<gpstk::SatID, TimeDoubleMap> PrnTimeDoubleMap;
    PrnTimeDoubleMap rangeRate;
 
-   PraPrnOt pot;
-   
    long minArcLen;
    double minArcTime, maxGapTime;
+
+   static unsigned debugLevel;
 
    typedef std::map<gpstk::DayTime, gpstk::SatID> TimePrnMap;
 
    class goodMaster
    {
    public:
-      goodMaster(double v, const gpstk::SatID& p, const gpstk::DayTime& t, PrnTimeDoubleMap& rr)
+      goodMaster(double v,
+                 const gpstk::SatID& p, 
+                 const gpstk::DayTime& t,
+                 PrnTimeDoubleMap& rr)
          : minVal(v), prn(p), time(t), rangeRate(rr){};
 
       const double minVal; // Above this elevation

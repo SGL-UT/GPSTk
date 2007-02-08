@@ -39,12 +39,11 @@
 #include <iostream>
 
 #include "OrdApp.hpp"
+#include "CommandOption.hpp"
 
 using namespace std;
 using namespace gpstk;
 
-
-const string OrdApp::defaultTimeFormat("%4Y %3j %02H:%02M:%04.1f");
 
 //-----------------------------------------------------------------------------
 // The constructor basically just sets up all the command line options
@@ -54,15 +53,8 @@ OrdApp::OrdApp(
    const string& appDesc)
    throw()
    : BasicFramework(applName, appDesc),
-     timeFormat(defaultTimeFormat),
-     headerWritten(false),
-     inputOpt('i', "input", 
-              "Where to get the data to analyze. The default is stdin."),
-     outputOpt('r', "output",
-               "Where to send the output. The default is stdout."),
-     timeFormatOpt('t', "time-format", "Daytime format specifier used for "
-                   "times in the output. The default is \"" 
-                   + defaultTimeFormat + "\".")
+     timeFormat("%4Y %3j %02H:%02M:%04.1f"),
+     headerWritten(false)
 {}
 
 
@@ -71,6 +63,15 @@ OrdApp::OrdApp(
 //-----------------------------------------------------------------------------
 bool OrdApp::initialize(int argc, char *argv[]) throw()
 {
+   CommandOptionWithAnyArg
+      inputOpt('i', "input",
+               "Where to read the ord data. The default is stdin."),
+      outputOpt('r', "output",
+               "Where to write the output. The default is stdout."),
+      timeFormatOpt('t', "time-format", "Daytime format specifier used for "
+                    "times in the output. "
+                    "The default is \""+timeFormat + "\".");
+
    if (!BasicFramework::initialize(argc,argv))
       return false;
 

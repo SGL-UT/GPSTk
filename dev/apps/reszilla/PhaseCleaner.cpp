@@ -36,15 +36,30 @@
 //
 //=============================================================================
 
-#include "PhaseCleaner.hpp"
-
 #include <algorithm>
 
-using namespace std;
+#include "ObsID.hpp"
 
+#include "PhaseCleaner.hpp"
+
+using namespace std;
+using namespace gpstk;
+
+
+const ObsID C1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
+const ObsID P1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcP);
+const ObsID L1(ObsID::otPhase,   ObsID::cbL1,   ObsID::tcP);
+const ObsID D1(ObsID::otDoppler, ObsID::cbL1,   ObsID::tcP);
+const ObsID S1(ObsID::otSNR,     ObsID::cbL1,   ObsID::tcP);
+const ObsID C2(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2LM);
+const ObsID P2(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
+const ObsID L2(ObsID::otPhase,   ObsID::cbL2,   ObsID::tcP);
+const ObsID D2(ObsID::otDoppler, ObsID::cbL2,   ObsID::tcP);
+const ObsID S2(ObsID::otSNR,     ObsID::cbL2,   ObsID::tcP);
+
+unsigned PhaseCleaner::debugLevel;
 
 //-----------------------------------------------------------------------------
-// 
 //-----------------------------------------------------------------------------
 PhaseCleaner::PhaseCleaner(long al, double at, double gt)
    : minArcLen(al), minArcTime(at), maxGapTime(gt)
@@ -55,20 +70,20 @@ PhaseCleaner::PhaseCleaner(long al, double at, double gt)
    phaseObsTypes.insert(L1);
    phaseObsTypes.insert(L2);
 
-   if (verbosity>2)
-      cout << "1 mm on L1 is " << 0.001/lamda[L1] << " cycles" << endl
-           << "1 mm on L2 is " << 0.001/lamda[L2] << " cycles" << endl;
+   //cout << "1 mm on L1 is " << 0.001/lamda[L1] << " cycles" << endl
+   //     << "1 mm on L2 is " << 0.001/lamda[L2] << " cycles" << endl;
 }
 
 
 //-----------------------------------------------------------------------------
-// Pulls the phase data data into arcs.
+// Pulls the phase data data into arcs. Only data that exists on both receivers
+// is included
 //-----------------------------------------------------------------------------
 void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1, const gpstk::ObsEpochMap& rx2)
 {
-   if (verbosity>1)
-      cout << "Pulling phase data into arcs." << endl;
-   
+   if (debugLevel)
+      cout << "separating data into arcs" << endl;
+
    // Now loop over all the epochs, pulling the data into the arcs
    for (gpstk::ObsEpochMap::const_iterator ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
    {
@@ -189,7 +204,7 @@ void PhaseCleaner::selectMasters(
          SvElevationMap::iterator j = pem.find(t);
          if (j == pem.end())
          {
-            cout << "No elevation available. Returning." << t.printf(timeFormat) << endl;
+            cout << "No elevation available. Returning." << t << endl;
             return;
          }
          SvDoubleMap& pdm = j->second;
@@ -207,16 +222,17 @@ void PhaseCleaner::selectMasters(
          if (!haveMasterObs || pdm[arc->master] < 10)
          {
             gpstk::SatID newMaster;
-            goodMaster gm = for_each(pdm.begin(), pdm.end(), goodMaster(15, prn, t, rangeRate));
+            goodMaster gm = for_each(pdm.begin(), pdm.end(),
+                                     goodMaster(15, prn, t, rangeRate));
             if (gm.bestPrn.id > 0)
                newMaster = gm.bestPrn;
             else
             {
-               if (verbosity>2)
+               if (debugLevel)
                {
                   cout << "Could not find a suitable master for prn " << prn.id
                        << " " << rot.type
-                       << " at " << t.printf(timeFormat)
+                       << " at " << t
                        << endl;
                   SvDoubleMap::const_iterator e;
                   for (e = pdm.begin(); e != pdm.end(); e++)
@@ -231,13 +247,16 @@ void PhaseCleaner::selectMasters(
             PhaseResidual::Arc::const_iterator k;
             if (!pot[rot][newMaster].findObs(t, k))
             {
-               cout << "Selected a master with no data from the other receiver. Terminating." << endl;
-               exit(-1);
+               if (debugLevel)
+                  cout << t << " rot:" << rot << " newMaster:" << newMaster 
+                       << " Selected an invalid master." << endl;
+               return;
             }
+               
 
-            if (verbosity>3)
-               cout << "Using prn " << newMaster.id
-                    << " as master." << endl;
+            if (debugLevel)
+               cout << t << " prn " << newMaster.id << " as master. (" << rot 
+                    << ")" << endl;
             
             if (arc->master.id < 1)
             {
@@ -282,11 +301,7 @@ void PhaseCleaner::doubleDifference(
 
          PhaseResidual::Arc::const_iterator k;
          if (!pot[rot][arc->master].findObs(t, k))
-         {
-            if (verbosity>1)
-               cout << "Couldn't find obs for master" << endl;
             continue;
-         }
          
          const PhaseResidual::Obs& masterObs = k->second;
          
@@ -311,6 +326,9 @@ void PhaseCleaner::doubleDifference(
 //-----------------------------------------------------------------------------
 void PhaseCleaner::debias(SvElevationMap& pem)
 {
+   if (debugLevel)
+      cout << "debiasing arcs" << endl;
+
    // At this point, the pot has only phase1 & phase2 set.
    // Also only one arc exists for each prn; and that arc doesn't even
    // have the master prn set.
@@ -322,9 +340,6 @@ void PhaseCleaner::debias(SvElevationMap& pem)
       {
          const gpstk::SatID& prn = j->first;
          PhaseResidual::ArcList& pral = j->second;
-
-         if (verbosity>2)
-            cout << "------------------------------------------------------------" << endl;
 
          pral.splitOnGaps(maxGapTime);
          selectMasters(rot, prn, pem);
@@ -340,7 +355,7 @@ void PhaseCleaner::debias(SvElevationMap& pem)
 
          pral.mergeArcs(minArcLen, minArcTime, maxGapTime);
 
-         if (verbosity>2)
+         if (false)
             cout << "Done cleaning " << prn.id << " on " << rot.type << endl
                  << pral;
       }
@@ -353,11 +368,10 @@ void PhaseCleaner::debias(SvElevationMap& pem)
 //-----------------------------------------------------------------------------
 void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
 {
-   if (verbosity>1)
-      cout << "Putting phase data back into the ddem." << endl;
-   
-   // Really should use pot to walk through the data...
+   if (debugLevel)
+      cout << "putting phases back into ddem" << endl;
 
+   // Really should use pot to walk through the data...
    for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
       const gpstk::ObsID& rot = i->first;
@@ -486,7 +500,7 @@ void PhaseCleaner::dump(std::ostream& s) const
                const PhaseResidual::Obs& obs = l->second;
 
                s.setf(ios::fixed, ios::floatfield);
-               s << left << setw(20) << t.printf(timeFormat) << right
+               s << left << setw(20) << t << right
                  << setfill(' ')
                  << " " << setw(2) << prn.id
                  << " " << setw(4) << (int)(rot==L1 ? 1 : 2)

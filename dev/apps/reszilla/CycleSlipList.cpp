@@ -1,4 +1,4 @@
-#pragma ident "$Id: DataAvailabilityAnalyzer.hpp 192 2006-10-06 15:18:53Z ocibu $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -36,34 +36,51 @@
 //
 //=============================================================================
 
-#ifndef ORDAPP_HPP
-#define ORDAPP_HPP
+#include "CycleSlipList.hpp"
 
-#include <fstream>
-#include <string>
+using namespace std;
+using namespace gpstk;
 
-#include "BasicFramework.hpp"
-#include "Exception.hpp"
-#include "ORDEpoch.hpp"
-
-class OrdApp : public gpstk::BasicFramework
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+void dump(std::ostream& s, const CycleSlipList& csl)
 {
-public:
-   OrdApp(
-      const std::string& applName, 
-      const std::string& appDesc) throw();
+   s << "Total Cycle slips: " << csl.size() << endl;
 
-   bool initialize(int argc, char *argv[]) throw();
+   const ObsID L1(ObsID::otPhase,   ObsID::cbL1,   ObsID::tcP);
+   const ObsID L2(ObsID::otPhase,   ObsID::cbL2,   ObsID::tcP);
 
-   void write(std::ofstream& ofs, const gpstk::ORDEpoch& ordEpoch) throw();
-   gpstk::ORDEpoch read(std::ifstream& ifs) throw();
-   
-   std::ifstream input;
-   std::ofstream output;
-   std::string timeFormat;
 
-private:
-   bool headerWritten;
-   std::string readBuffer;
-};
-#endif
+   CycleSlipList::const_iterator i;
+   long l1=0, l2=0;
+   for (i=csl.begin(); i!=csl.end(); i++)
+      if (i->oid == L1)
+         l1++;
+      else if (i->oid == L2)
+         l2++;
+
+   s << "Cycle slips on L1: " << l1 << endl;
+   s << "Cycle slips on L2: " << l2 << endl;
+
+   if (csl.size() == 0)
+      return;
+
+   s << endl
+     << "# time                 prn        cyles     elev     pre   post   gap mstr " << endl;
+   s.setf(ios::fixed, ios::floatfield);
+   for (i=csl.begin(); i!=csl.end(); i++)
+   {
+      const CycleSlipRecord& cs=*i;
+      s << left << setw(20) << cs.t
+        << "  " << right << setw(2) << cs.prn.id
+        << " " << cs.oid
+        << " " << setprecision(3) << setw(14) << cs.cycles
+        << "  " << std::setprecision(2) << setw(5) << cs.elevation
+        << "  " << setw(5) << cs.preCount
+        << "  " << setw(5) << cs.postCount
+        << "  " << setw(5) << setprecision(1) << cs.preGap
+        << "  " << setw(2) << cs.masterPrn.id
+        << endl;
+   }
+   s << endl;
+}

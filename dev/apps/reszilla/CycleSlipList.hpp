@@ -1,5 +1,4 @@
-#pragma ident "$Id: DataAvailabilityAnalyzer.hpp 192 2006-10-06 15:18:53Z ocibu $"
-
+#pragma ident "$Id$"
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -36,34 +35,30 @@
 //
 //=============================================================================
 
-#ifndef ORDAPP_HPP
-#define ORDAPP_HPP
+#ifndef CYCLESLIPLIST_HPP
+#define CYCLESLIPLIST_HPP
 
-#include <fstream>
-#include <string>
+#include <DayTime.hpp>
+#include <ObsID.hpp>
+#include <SatID.hpp>
 
-#include "BasicFramework.hpp"
-#include "Exception.hpp"
-#include "ORDEpoch.hpp"
-
-class OrdApp : public gpstk::BasicFramework
+struct CycleSlipRecord
 {
-public:
-   OrdApp(
-      const std::string& applName, 
-      const std::string& appDesc) throw();
+   gpstk::DayTime t;
+   double cycles;
+   gpstk::SatID prn, masterPrn;
+   gpstk::ObsID oid;
+   double elevation;
+   long preCount;  // for How many epochs had the bias been stable
+   double preGap;  // time between the end of the previous arc and this point
+   long postCount; // how long the arc after the slip is
 
-   bool initialize(int argc, char *argv[]) throw();
-
-   void write(std::ofstream& ofs, const gpstk::ORDEpoch& ordEpoch) throw();
-   gpstk::ORDEpoch read(std::ifstream& ifs) throw();
-   
-   std::ifstream input;
-   std::ofstream output;
-   std::string timeFormat;
-
-private:
-   bool headerWritten;
-   std::string readBuffer;
+   bool operator<(const CycleSlipRecord& right)
+   { return t < right.t; }
 };
+
+typedef std::list<CycleSlipRecord> CycleSlipList;
+
+void dump(std::ostream& s, const CycleSlipList& sl);
+
 #endif

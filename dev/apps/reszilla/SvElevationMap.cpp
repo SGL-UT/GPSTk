@@ -36,47 +36,37 @@
 //
 //=============================================================================
 
-#include <iostream>
-#include <string>
+#include "SvElevationMap.hpp"
 
-#include "util.hpp"
-#include "RobustLinearEstimator.hpp"
+using namespace std;
+using namespace gpstk;
 
-void computeOrds(
-   gpstk::ORDEpochMap& oem,
-   const gpstk::ObsEpochMap& obs,
-   const gpstk::Triple& ap,
-   const gpstk::EphemerisStore& bce,
-   const gpstk::WxObsData& wod,
-   bool svTime, 
-   bool keepUnhealty,
-   bool keepWarts,
-   const std::string& ordModeStr);
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+SvElevationMap elevation_map(const ObsEpochMap& oem,
+                             const Triple& ap,
+                             const EphemerisStore& eph)
+{
+   SvElevationMap pem;
 
-void estimateClock(
-   const gpstk::ORDEpochMap& oem,
-   RobustLinearEstimator& rle);
+   ECEF rxpos(ap);
 
-void dumpOrds(
-   std::ostream& s, 
-   const gpstk::ORDEpochMap& oem);
-
-void readOrds(
-   std::istream& s,
-   gpstk::ORDEpochMap& oem);
-
-void dumpClock(
-   std::ostream& s,
-   const gpstk::ORDEpochMap& oem, 
-   const RobustLinearEstimator& rle);
-
-void dumpStats(
-   const gpstk::ORDEpochMap& oem, 
-   const std::string& ordMode,
-   const double sigmam=5);
-
-void computeStats(
-   const std::string desc,
-   const gpstk::ORDEpochMap& oem,
-   const ElevationRange er, 
-   const double sigmam=5);
+   ObsEpochMap::const_iterator oem_itr;
+   for (oem_itr=oem.begin(); oem_itr!=oem.end(); oem_itr++)
+   {
+      const DayTime& t = oem_itr->first;
+      const ObsEpoch& oe = oem_itr->second;
+      ObsEpoch::const_iterator oe_itr;
+      for (oe_itr=oe.begin(); oe_itr!=oe.end(); oe_itr++)
+         try
+         {
+            SatID prn = oe_itr->first;
+            Xvt svpos = eph.getPrnXvt(prn.id, t);
+            pem[t][prn] = rxpos.elvAngle(svpos.x);
+         }
+         catch (EphemerisStore::NoEphemerisFound& e)
+         {
+         }
+   }
+   return pem;
+}

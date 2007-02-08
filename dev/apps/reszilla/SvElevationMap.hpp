@@ -36,30 +36,22 @@
 //
 //=============================================================================
 
-//
-// Utilitiy functions for reading in various types of data
-//
+#ifndef SVELEVATIONMAP_HPP
+#define SVELEVATIONMAP_HPP
 
-#include <string>
-
-#include "CommandOption.hpp"
-#include "CommandOptionParser.hpp"
+// gpstk crud
+#include "DayTime.hpp"
 #include "EphemerisStore.hpp"
+#include "ObsEpochMap.hpp"
 
-#include "util.hpp"
+// The key for this map is the prn of the SV
+//  PrnElevationMap pem;
+//  pem[time][prn] = elevation;
 
+typedef std::map<gpstk::SatID, double> SvDoubleMap;
+typedef std::map<gpstk::DayTime, SvDoubleMap > SvElevationMap;
 
-void read_obs_data(gpstk::CommandOption& files,
-                   unsigned long msid,
-                   gpstk::ObsEpochMap& oem,
-                   gpstk::Triple& ap,
-                   const gpstk::DayTime& startTime,
-                   const gpstk::DayTime& stopTime);
-
-void read_msc_data(std::string& fn,
-                   unsigned long msid,
-                   gpstk::Triple& ap);
-
-gpstk::EphemerisStore* read_eph_data(gpstk::CommandOption& files);
-
-gpstk::WxObsData* read_met_data(gpstk::CommandOption& files);
+SvElevationMap elevation_map(const gpstk::ObsEpochMap& obs,
+                             const gpstk::Triple& ap,
+                             const gpstk::EphemerisStore& bce);
+#endif

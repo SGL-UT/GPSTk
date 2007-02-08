@@ -63,55 +63,52 @@ protected:
    virtual void process();
 
 private:
-   CommandOptionWithAnyArg obsFileOption, ephFileOption, mscFileOption,
-      antennaPosOption, metFileOption, ordModeOption;
-   CommandOptionWithNumberArg msidOption;
-
    string ordMode;
    Triple antennaPos;
    unsigned msid;
 
-   static const string defaultOrdMode;
+   CommandOptionWithAnyArg obsFileOption, ephFileOption, metFileOption;
 };
 
-const string OrdGen::defaultOrdMode("smart");
-
 //-----------------------------------------------------------------------------
-// The constructor basically just sets up all the command line options
+// The constructor basically just sets up all the defaults
 //-----------------------------------------------------------------------------
 OrdGen::OrdGen() throw()
    : OrdApp("ordGen", "Generates observed range deviations."),
-     ordMode(defaultOrdMode), msid(0),
+     ordMode("smart"), 
+     msid(0),
+     obsFileOption('o', "obs", "Where to get the obs data.", true),
    
-   obsFileOption('o', "obs", 
-                 "Where to get the obs data.", true),
-   
-   ephFileOption('e', "eph",  "Where to get the ephemeris data. Can be "
-                 " rinex, fic, or sp3", true),
-   
-   mscFileOption('c', "msc", "Station coordinate file"),
-   
-   msidOption('m', "msid", "Station to process data for. Used to select "
-              "a station position from the msc file or data from a SMODF file."),
-   
-   ordModeOption('\0', "omode", "Specifies what observations are used to "
-                 "compute the ORDs. Valid values are:"
-                 "p1p2, c1p2, y1y2, c1, p1, c2, p2, smo, and smart. "
-                 "The default is " + defaultOrdMode),
-   
-   antennaPosOption('p', "pos", "Location of the antenna in meters ECEF."
-                    , false),
-   
-   metFileOption('w', "weather", "Weather data file name (RINEX met "
-                 "format only).")
+     ephFileOption('e', "eph",  "Where to get the ephemeris data. Can be "
+                   " rinex, fic, or sp3", true),
+
+     metFileOption('w', "weather", "Weather data file name (RINEX met "
+                    "format only).")
 {}
 
 
 //-----------------------------------------------------------------------------
-// Here the command line options parsed and used to configure the program
+// Here the command line options are set up, parsed, and used to configure
+// the program.
 //-----------------------------------------------------------------------------
 bool OrdGen::initialize(int argc, char *argv[]) throw()
 {
+   CommandOptionWithAnyArg
+      mscFileOption('c', "msc", "Station coordinate file."),
+   
+   
+      ordModeOption('\0', "omode", "Specifies what observations are used to "
+                    "compute the ORDs. Valid values are:"
+                    "p1p2, c1p2, y1y2, c1, p1, c2, p2, smo, and smart. "
+                    "The default is " + ordMode),
+   
+      antennaPosOption('p', "pos", "Location of the antenna in meters ECEF.");
+   
+   CommandOptionWithNumberArg 
+      msidOption('m', "msid", "Station to process data for. Used to "
+                 "select a station position from the msc file or data "
+                 "from a SMODF file.");
+
    if (!OrdApp::initialize(argc,argv)) return false;
 
    if (ordModeOption.getCount())
@@ -120,15 +117,6 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
    if (msidOption.getCount())
       msid = asUnsigned(msidOption.getValue().front());
 
-   return true;
-}
-
-
-//-----------------------------------------------------------------------------
-// General program setup
-//-----------------------------------------------------------------------------
-void OrdGen::spinUp()
-{
    // Get the station position
    if (antennaPosOption.getCount())
    {
@@ -136,7 +124,7 @@ void OrdGen::spinUp()
       if (numWords(aps) != 3)
       {
          cerr << "Please specify three coordinates in the antenna postion." << endl;
-         exit(-1);
+         return false;
       }
       else
          for (int i=0; i<3; i++)
@@ -159,7 +147,7 @@ void OrdGen::spinUp()
       if (obsReader.inputType == FFIdentifier::tRinexObs)
          antennaPos = obsReader.roh.antennaPosition;
    }
-      
+
    if (RSS(antennaPos[0], antennaPos[1], antennaPos[2]) < 1)
    {
       cerr << "Warning! The antenna appears to be within one meter of the" << endl
@@ -168,9 +156,18 @@ void OrdGen::spinUp()
            << "through solids such as a planetary crust or magma. Also," << endl
            << "if this location is correct, your antenna is probally" << endl
            << "no longer in the best of operating condition." << endl;
-      exit(-1);
+      return false;
    }
 
+   return true;
+}
+
+
+//-----------------------------------------------------------------------------
+// General program setup
+//-----------------------------------------------------------------------------
+void OrdGen::spinUp()
+{
    if (verboseLevel)
    {
       if (msid)
@@ -196,8 +193,8 @@ void OrdGen::process()
    // Get the weather data...
    MetReader metReader;
    metReader.verboseLevel = verboseLevel;
-   for (int i=0; i<ephFileOption.getCount(); i++)
-      ephReader.read(ephFileOption.getValue()[i]);
+   for (int i=0; i<metFileOption.getCount(); i++)
+      metReader.read(metFileOption.getValue()[i]);
    WxObsData& wod = metReader.wx;
 
    // Use a New Brunswick trop model.

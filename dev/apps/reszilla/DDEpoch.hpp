@@ -39,12 +39,16 @@
 #ifndef DDEPOCH_HPP
 #define DDEPOCH_HPP
 
-#include "DayTime.hpp"
-#include "stl_helpers.hpp"
-#include "icd_200_constants.hpp"
-#include "Stats.hpp"
+#include <DayTime.hpp>
+#include <stl_helpers.hpp>
+#include <icd_200_constants.hpp>
 
-#include "util.hpp"
+#include "ElevationRange.hpp"
+#include "SvElevationMap.hpp"
+
+typedef std::map<gpstk::ObsID, double> OIDM;
+typedef std::map< gpstk::SatID, OIDM > SvOIDM;
+typedef std::map< gpstk::SatID, short > SvShortMap;
 
 struct DDEpoch
 {
@@ -56,6 +60,7 @@ struct DDEpoch
    double clockOffset;
    gpstk::SatID masterPrn;
    bool valid;
+   static unsigned debugLevel;
 
    // Computes a single difference between two sets of obs
    OIDM singleDifference(
@@ -72,30 +77,30 @@ struct DDEpoch
       const gpstk::ObsEpoch& rx1, 
       const gpstk::ObsEpoch& rx2,
       SvElevationMap& pem);
+
+   void dump(std::ostream& s) const;
 };
 
-typedef std::map<gpstk::DayTime, DDEpoch> DDEpochMap;
+struct DDEpochMap : public std::map<gpstk::DayTime, DDEpoch>
+{
+   // 
+   void compute(
+      const gpstk::ObsEpochMap& rx1,
+      const gpstk::ObsEpochMap& rx2,
+      SvElevationMap& pem);
 
-void computeDDEpochMap(
-   gpstk::ObsEpochMap& rx1,
-   gpstk::ObsEpochMap& rx2,
-   SvElevationMap& pem,
-   const gpstk::EphemerisStore& eph,
-   DDEpochMap& ddem);
+//-----------------------------------------------------------------------------
+// Returns a string containing a statistical summary of the double difference
+// residuals for the specified obs type within the given elevation range.
+//-----------------------------------------------------------------------------
+   std::string computeStats(
+      const gpstk::ObsID oid,
+      const ElevationRange& er,
+      SvElevationMap& pem) const;
+   
+   void dump(std::ostream& s, SvElevationMap& pem);
 
-void dump(std::ostream& s,
-          DDEpochMap& ddem,
-          SvElevationMap& pem);
-
-void dumpStats(
-   DDEpochMap& oem,
-   const CycleSlipList& csl,
-   SvElevationMap& pem);
-
-std::string computeStats(
-   const gpstk::ObsID oid,
-   DDEpochMap& oem,
-   const ElevationRange er,
-   SvElevationMap& pem);
+   static unsigned debugLevel;
+};
 
 #endif
