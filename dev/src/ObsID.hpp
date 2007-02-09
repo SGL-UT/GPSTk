@@ -63,13 +63,13 @@ namespace gpstk
       enum ObservationType
       {
          otUnknown,
-         otRange,     /// pseudorange, in meters
-         otPhase,     /// accumulated phase, in meters
-         otDoppler,   /// Doppler, in Hz
-         otSNR,       /// Signal strength, in dB-Hz
-         otSSI,       /// Signal strength indicator/inded (kinda a rinex thing)
-         otLLI,       /// loss of lock indicator/ lock count
-         otLast,      /// used to extend this...
+         otRange,     ///< pseudorange, in meters
+         otPhase,     ///< accumulated phase, in meters
+         otDoppler,   ///< Doppler, in Hz
+         otSNR,       ///< Signal strength, in dB-Hz
+         otSSI,       ///< Signal strength indicator/inded (kinda a rinex thing)
+         otLLI,       ///< loss of lock indicator/ lock count
+         otLast,      ///< used to extend this...
          otPlaceholder = otLast+1000
       };
 
@@ -77,16 +77,16 @@ namespace gpstk
       enum CarrierBand
       {
          cbUnknown,
-         cbL1,   /// GPS L1, Galileo E2-L1-E1, SBAS L1
-         cbL2,   /// GPS L2
-         cbL5,   /// GPS L5, Galileo E5a, SBAS L5
-         cbL1L2, /// Combined L1L2 (like an ionosphere free obs)
-         cbG1,   /// Glonass G1
-         cbG2,   /// Glonass G2
-         cbE5b,  /// Galileo E5b
-         cbE5ab, /// Galileo E5a+b
-         cbE6,   /// Galileo E6
-         cbLast, /// Used to extend this...
+         cbL1,   ///< GPS L1, Galileo E2-L1-E1, SBAS L1
+         cbL2,   ///< GPS L2
+         cbL5,   ///< GPS L5, Galileo E5a, SBAS L5
+         cbL1L2, ///< Combined L1L2 (like an ionosphere free obs)
+         cbG1,   ///< Glonass G1
+         cbG2,   ///< Glonass G2
+         cbE5b,  ///< Galileo E5b
+         cbE5ab, ///< Galileo E5a+b
+         cbE6,   ///< Galileo E6
+         cbLast, ///< Used to extend this...
          ccPlaceholder = cbLast+1000
       };
 
@@ -96,25 +96,25 @@ namespace gpstk
       /// is in the svid variable.
       enum TrackingCode
       {
-         tcUnknown,
-         tcCA,      /// Legacy civil code
-         tcP,       /// Legacy precise code
-         tcY,       /// Encrypted legacy precise code
-         tcW,       /// Encrypted legacy precise code, with codeless Z mode tracking
-         tcN,       /// Encrypted legacy precise code, with codeless tracking
-         tcM,       /// Encrypted modernized precise code
-         tcC2M,     /// L2 civil M code
-         tcC2L,     /// L2 civil L code
-         tcC2LM,    /// L2 civil M+L combined tracking (such as Trimble NetRS, Septrentrio, and ITT)
-         tcI5,      /// L5 civil in-phase
-         tcQ5,      /// L5 civil quadrature
-         tcIQ5,     /// L5 civil I+Q combined tracking
-         tcA,       /// Galileo L1 PRS code
-         tcB,       /// Galileo OS/CS/SoL code
-         tcC,       /// Galileo Dataless code
-         tcBC,      /// Galileo B+C combined tracking
-         tcABC,     /// Galileo A+B+C combined tracking
-         tcLast,    /// Used to extend this...
+         tcUnknown, 
+         tcCA,      ///< Legacy civil code
+         tcP,       ///< Legacy precise code
+         tcY,       ///< Encrypted legacy precise code
+         tcW,       ///< Encrypted legacy precise code, with codeless Z mode tracking
+         tcN,       ///< Encrypted legacy precise code, with codeless tracking
+         tcM,       ///< Encrypted modernized precise code
+         tcC2M,     ///< L2 civil M code
+         tcC2L,     ///< L2 civil L code
+         tcC2LM,    ///< L2 civil M+L combined tracking (such as Trimble NetRS, Septrentrio, and ITT)
+         tcI5,      ///< L5 civil in-phase
+         tcQ5,      ///< L5 civil quadrature
+         tcIQ5,     ///< L5 civil I+Q combined tracking
+         tcA,       ///< Galileo L1 PRS code
+         tcB,       ///< Galileo OS/CS/SoL code
+         tcC,       ///< Galileo Dataless code
+         tcBC,      ///< Galileo B+C combined tracking
+         tcABC,     ///< Galileo A+B+C combined tracking
+         tcLast,    ///< Used to extend this...
          tcPlaceholder = tcLast+1000
       };
 
