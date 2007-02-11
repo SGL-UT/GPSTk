@@ -152,7 +152,7 @@ namespace gpstk
    namespace StringUtils
    {
       /// convert this object to a string representation
-      inline std::string asString(const ObsID& p)      
+      std::string asString(const ObsID& p)      
       {
          std::ostringstream oss;
          p.dump(oss);

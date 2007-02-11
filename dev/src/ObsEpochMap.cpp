@@ -66,6 +66,7 @@ namespace gpstk
    std::ostream& operator<<(std::ostream& s, const ObsEpoch& oe)
       throw()
    {
+      s << oe.time << ", rxClock: " << oe.rxClock << endl;
       ObsEpoch::const_iterator i;
       for (i=oe.begin(); i!=oe.end(); i++)
          s << i->first << ": " << i->second << endl;

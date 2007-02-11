@@ -165,7 +165,6 @@ namespace gpstk
       CarrierBand      band;
       TrackingCode     code;
 
-   private:
       static std::map< TrackingCode,    std::string > tcStrings;
       static std::map< CarrierBand,     std::string > cbStrings;
       static std::map< ObservationType, std::string > otStrings;
