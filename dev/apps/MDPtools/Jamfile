@@ -5,8 +5,6 @@ SubDir TOP apps MDPtools ;
 # It seems that if I explicity add the src directory, things are much happier.
 SEARCH_SOURCE += $(TOP)/src ;
 
-LINKLIBS += -lncurses ;
-
 if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
 {
   CCFLAGS += -Xc ;
