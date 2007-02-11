@@ -46,17 +46,6 @@ using namespace std;
 using namespace gpstk;
 
 
-const ObsID C1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
-const ObsID P1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcP);
-const ObsID L1(ObsID::otPhase,   ObsID::cbL1,   ObsID::tcP);
-const ObsID D1(ObsID::otDoppler, ObsID::cbL1,   ObsID::tcP);
-const ObsID S1(ObsID::otSNR,     ObsID::cbL1,   ObsID::tcP);
-const ObsID C2(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2LM);
-const ObsID P2(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
-const ObsID L2(ObsID::otPhase,   ObsID::cbL2,   ObsID::tcP);
-const ObsID D2(ObsID::otDoppler, ObsID::cbL2,   ObsID::tcP);
-const ObsID S2(ObsID::otSNR,     ObsID::cbL2,   ObsID::tcP);
-
 unsigned PhaseCleaner::debugLevel;
 
 //-----------------------------------------------------------------------------
@@ -64,14 +53,8 @@ unsigned PhaseCleaner::debugLevel;
 PhaseCleaner::PhaseCleaner(long al, double at, double gt)
    : minArcLen(al), minArcTime(at), maxGapTime(gt)
 {
-   lamda[L1] = gpstk::C_GPS_M/gpstk::L1_FREQ;
-   lamda[L2] = gpstk::C_GPS_M/gpstk::L2_FREQ;
-
-   phaseObsTypes.insert(L1);
-   phaseObsTypes.insert(L2);
-
-   //cout << "1 mm on L1 is " << 0.001/lamda[L1] << " cycles" << endl
-   //     << "1 mm on L2 is " << 0.001/lamda[L2] << " cycles" << endl;
+   lamda[ObsID::cbL1] = gpstk::C_GPS_M/gpstk::L1_FREQ;
+   lamda[ObsID::cbL2] = gpstk::C_GPS_M/gpstk::L2_FREQ;
 }
 
 
@@ -82,7 +65,7 @@ PhaseCleaner::PhaseCleaner(long al, double at, double gt)
 void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1, const gpstk::ObsEpochMap& rx2)
 {
    if (debugLevel)
-      cout << "separating data into arcs" << endl;
+      cout << "PhaseCleaner::addData()" << endl;
 
    // Now loop over all the epochs, pulling the data into the arcs
    for (gpstk::ObsEpochMap::const_iterator ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
@@ -110,19 +93,19 @@ void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1, const gpstk::ObsEpochM
          const gpstk::SvObsEpoch& rotm2 = pi2->second;
 
          // For now we also have to have doppler for this SV.
+         const ObsID D1(ObsID::otDoppler, ObsID::cbL1,   ObsID::tcCA);
          gpstk::SvObsEpoch::const_iterator d1_itr = rotm1.find(D1);
          if (d1_itr == rotm1.end())
             continue;
 
          // get the range rate in meters per second...
-         rangeRate[prn][t] = d1_itr->second *  gpstk::C_GPS_M/gpstk::L1_FREQ;
+         rangeRate[prn][t] = d1_itr->second * gpstk::C_GPS_M/gpstk::L1_FREQ;
 
-         ObsIDSet::const_iterator rot_itr;
-         for (rot_itr = phaseObsTypes.begin(); rot_itr != phaseObsTypes.end(); rot_itr++)
+         gpstk::SvObsEpoch::const_iterator phase1;
+         for (phase1 = rotm1.begin(); phase1 != rotm1.end(); phase1++)
          {
-            const gpstk::ObsID& rot = *rot_itr;
-            gpstk::SvObsEpoch::const_iterator phase1 = rotm1.find(rot);
-            if (phase1 == rotm1.end())
+            const gpstk::ObsID& rot = phase1->first;
+            if (rot.type !=  ObsID::otPhase)
                continue;
 
             gpstk::SvObsEpoch::const_iterator phase2 = rotm2.find(rot);
@@ -132,11 +115,8 @@ void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1, const gpstk::ObsEpochM
             // Don't use the data if we have an SN in the data and it looks
             // bogus.
             double snr=-1;
-            gpstk::ObsID srot;
-            if (rot == L1)
-               srot = S1;
-            if (rot == L2)
-               srot = S2;
+            gpstk::ObsID srot = rot;
+               srot.type = ObsID::otSNR;
             gpstk::SvObsEpoch::const_iterator snr1_itr = rotm1.find(srot);
             gpstk::SvObsEpoch::const_iterator snr2_itr = rotm2.find(srot);
 
@@ -307,11 +287,11 @@ void PhaseCleaner::doubleDifference(
          
          // Now compute the dd for this epoch
          double masterDiff = masterObs.phase1 - masterObs.phase2;
-         double coc = (clockOffset[t]) * (rangeRate[arc->master][t]) / lamda[rot];
+         double coc = (clockOffset[t]) * (rangeRate[arc->master][t]) / lamda[rot.band];
          masterDiff -= coc;
 
          double myDiff = obs.phase1 - obs.phase2;
-         coc = clockOffset[t] * rangeRate[prn][t] / lamda[rot];
+         coc = clockOffset[t] * rangeRate[prn][t] / lamda[rot.band];
          myDiff -= coc;
 
          obs.dd = masterDiff - myDiff;
@@ -327,7 +307,7 @@ void PhaseCleaner::doubleDifference(
 void PhaseCleaner::debias(SvElevationMap& pem)
 {
    if (debugLevel)
-      cout << "debiasing arcs" << endl;
+      cout << "PhaseCleaner::debias()" << endl;
 
    // At this point, the pot has only phase1 & phase2 set.
    // Also only one arc exists for each prn; and that arc doesn't even
@@ -396,7 +376,7 @@ void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
                if (arc.garbage)
                   ddem[t].dd[prn][rot] = 0;
                else
-                  ddem[t].dd[prn][rot] = obs.dd * lamda[rot];
+                  ddem[t].dd[prn][rot] = obs.dd * lamda[rot.band];
             }
          }
       }
@@ -503,10 +483,10 @@ void PhaseCleaner::dump(std::ostream& s) const
                s << left << setw(20) << t << right
                  << setfill(' ')
                  << " " << setw(2) << prn.id
-                 << " " << setw(4) << (int)(rot==L1 ? 1 : 2)
+                 << " " << ObsID::cbStrings[rot.band]
                  << " " << setprecision(1) << setw(5)  << 0  // elevation
                  << " " << setprecision(3) << setw(12)  << 0 // clock
-                 << " " << setprecision(6) << setw(14) << obs.dd * lamda[rot]
+                 << " " << setprecision(6) << setw(14) << obs.dd * lamda[rot.band]
                  << endl;
             }
          }

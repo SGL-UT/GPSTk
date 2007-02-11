@@ -49,13 +49,16 @@
 typedef std::map<gpstk::ObsID, double> OIDM;
 typedef std::map< gpstk::SatID, OIDM > SvOIDM;
 typedef std::map< gpstk::SatID, short > SvShortMap;
+typedef std::map< gpstk::SatID, double > SvDoubleMap;
 
 struct DDEpoch
 {
    DDEpoch() : valid(false){};
    SvOIDM dd;
 
-   SvShortMap health;
+   mutable SvShortMap health;
+   mutable SvDoubleMap rangeRate;
+   mutable SvDoubleMap elevation;
 
    double clockOffset;
    gpstk::SatID masterPrn;
@@ -65,7 +68,8 @@ struct DDEpoch
    // Computes a single difference between two sets of obs
    OIDM singleDifference(
       const gpstk::SvObsEpoch& rx1obs,
-      const gpstk::SvObsEpoch& rx2obs);
+      const gpstk::SvObsEpoch& rx2obs,
+      double rate);
    
    // Sets the valid flag true if successfull
    // also sets the masterPrn to the one actually used
@@ -75,8 +79,7 @@ struct DDEpoch
 
    void selectMasterPrn(
       const gpstk::ObsEpoch& rx1, 
-      const gpstk::ObsEpoch& rx2,
-      SvElevationMap& pem);
+      const gpstk::ObsEpoch& rx2);
 
    void dump(std::ostream& s) const;
 };
@@ -98,7 +101,7 @@ struct DDEpochMap : public std::map<gpstk::DayTime, DDEpoch>
       const ElevationRange& er,
       SvElevationMap& pem) const;
    
-   void dump(std::ostream& s, SvElevationMap& pem);
+   void dump(std::ostream& s);
 
    static unsigned debugLevel;
 };

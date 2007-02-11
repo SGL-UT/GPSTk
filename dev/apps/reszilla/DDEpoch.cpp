@@ -47,18 +47,6 @@
 using namespace std;
 using namespace gpstk;
 
-const ObsID C1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
-const ObsID P1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcP);
-const ObsID L1(ObsID::otPhase,   ObsID::cbL1,   ObsID::tcP);
-const ObsID D1(ObsID::otDoppler, ObsID::cbL1,   ObsID::tcP);
-const ObsID S1(ObsID::otSNR,     ObsID::cbL1,   ObsID::tcP);
-const ObsID C2(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2LM);
-const ObsID P2(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
-const ObsID L2(ObsID::otPhase,   ObsID::cbL2,   ObsID::tcP);
-const ObsID D2(ObsID::otDoppler, ObsID::cbL2,   ObsID::tcP);
-const ObsID S2(ObsID::otSNR,     ObsID::cbL2,   ObsID::tcP);
-
-
 unsigned DDEpoch::debugLevel;
 unsigned DDEpochMap::debugLevel;
 
@@ -66,16 +54,13 @@ unsigned DDEpochMap::debugLevel;
 // ---------------------------------------------------------------------
 OIDM DDEpoch::singleDifference(
    const SvObsEpoch& rx1obs,
-   const SvObsEpoch& rx2obs)
+   const SvObsEpoch& rx2obs,
+   double range)
 {
    OIDM diff;
 
-   SvObsEpoch::const_iterator d1_itr = rx1obs.find(D1);
-   if (d1_itr == rx1obs.end())
-      return diff;
-
    // clock offset correction
-   double coc = clockOffset * d1_itr->second * C_GPS_M/L1_FREQ; 
+   double coc = clockOffset * range;
    SvObsEpoch::const_iterator roti1, roti2;
    for (roti1 = rx1obs.begin(); roti1 != rx1obs.end(); roti1++)
    {
@@ -90,11 +75,13 @@ OIDM DDEpoch::singleDifference(
       diff[oid] = roti1->second - roti2->second;
 
       // Need to convert the phase/doppler observables to meters
-      if (oid == L1 || oid == D1)
-         diff[oid] *=  C_GPS_M/L1_FREQ;
-      if (oid == L2 || oid == D2)
-         diff[oid] *=  C_GPS_M/L2_FREQ;
-
+      if (oid.type == ObsID::otPhase || oid.type == ObsID::otDoppler)
+      {
+         if (oid.band == ObsID::cbL1)
+            diff[oid] *=  C_GPS_M/L1_FREQ;
+         else
+            diff[oid] *=  C_GPS_M/L2_FREQ;
+      }
       // Then pull off the clock correction
       diff[oid] -= coc;
    }
@@ -113,7 +100,7 @@ void DDEpoch::doubleDifference(
    dd.clear();
    if (masterPrn.id < 0)
    {
-      if (false)
+      if (debugLevel>1)
          cout << rx1.time
               << " No master SV selected. Skipping epoch." << endl;
       return;
@@ -143,9 +130,13 @@ void DDEpoch::doubleDifference(
    const SvObsEpoch& rx1obs = oi1->second;
    const SvObsEpoch& rx2obs = oi2->second;
    
-   OIDM masterDiff = singleDifference(rx1obs, rx2obs);
+   OIDM masterDiff = singleDifference(rx1obs, rx2obs, rangeRate[masterPrn]);
    if (masterDiff.size() == 0)
+   {
+      if (debugLevel)
+         cout << "No masterDiff" << endl;
       return;
+   }
 
    // Now walk through all prns in track
    for (oi1=rx1.begin(); oi1!=rx1.end(); oi1++)
@@ -158,7 +149,7 @@ void DDEpoch::doubleDifference(
       OIDM otherDiff;
 
       if (prn != masterPrn)
-         otherDiff = singleDifference( oi1->second,  oi2->second);
+         otherDiff = singleDifference( oi1->second,  oi2->second, rangeRate[prn]);
 
       // Now compute the double differences
       // Note that for the master this will be a single diff
@@ -179,8 +170,7 @@ void DDEpoch::doubleDifference(
 // ---------------------------------------------------------------------
 void DDEpoch::selectMasterPrn(
    const ObsEpoch& rx1, 
-   const ObsEpoch& rx2,
-   SvElevationMap& pem)
+   const ObsEpoch& rx2)
 {
    const double minElevation = 15.0;
 
@@ -190,7 +180,7 @@ void DDEpoch::selectMasterPrn(
       ObsEpoch::const_iterator i = rx1.find(masterPrn);
       ObsEpoch::const_iterator j = rx2.find(masterPrn);
       if (i != rx1.end() && j != rx2.end() &&
-          pem[rx1.time][masterPrn] > minElevation)
+          elevation[masterPrn] > minElevation)
          return;
    }
 
@@ -201,8 +191,8 @@ void DDEpoch::selectMasterPrn(
       prn = i->first;
       ObsEpoch::const_iterator j = rx2.find(prn);
       SvObsEpoch obs = i->second;
-      if (j != rx2.end() && obs[D1] >= 0 &&
-          pem[rx1.time][i->first] > minElevation)
+      if (j != rx2.end() && rangeRate[prn] >= 0 &&
+          elevation[i->first] > minElevation)
       {
          masterPrn = prn;
          break;
@@ -232,7 +222,6 @@ void DDEpoch::dump(ostream& s) const
            << endl;
       }
    }
-
 }
 
 //-----------------------------------------------------------------------------
@@ -266,15 +255,34 @@ void DDEpochMap::compute(
             cout << "Epoch with no match" << endl;
          continue;
       }
+      const ObsEpoch& e1 = ei1->second;
+      const ObsEpoch& e2 = ei2->second;
       
       DDEpoch curr;
+
+      // We need to have a range rate but it doesn't really matter where from.
+      // So here we find a doppler for each of the SVs
+      // Also we fill in the elevation while we are walking through
+      // the SVs.
+      for (ObsEpoch::const_iterator i=e1.begin(); i != e1.end(); i++)
+      {
+         const SatID& prn = i->first;
+         const SvObsEpoch& obs = i->second;
+         for(SvObsEpoch::const_iterator j=obs.begin(); j != obs.end(); j++)
+            if (j->first.type == ObsID::otDoppler && j->first.band == ObsID::cbL1)
+            {
+               curr.rangeRate[prn] = j->second * C_GPS_M/L1_FREQ;
+               break;
+            }
+         curr.elevation[prn] = pem[t][prn];
+      }
 
       // Try to keep using the previous master PRN
       if (prev.valid)
          curr.masterPrn = prev.masterPrn;
 
-      curr.selectMasterPrn(ei1->second, ei2->second, pem);
-      curr.doubleDifference(ei1->second, ei2->second);
+      curr.selectMasterPrn(e1, e2);
+      curr.doubleDifference(e1, e2);
 
       if (curr.valid)
       {
@@ -282,10 +290,7 @@ void DDEpochMap::compute(
          prev = curr;
       }
       else if (debugLevel)
-      {
          cout << "invalid DDEpoch" << endl;
-         curr.dump(cout);
-      }
    } // end of looping over all epochs in the first set.
 
    // Here we need to remove the double differences for the master PRN
@@ -303,8 +308,7 @@ void DDEpochMap::compute(
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 void DDEpochMap::dump(
-   std::ostream& s, 
-   SvElevationMap& pem) 
+   std::ostream& s) 
 {
    DDEpochMap& ddem=*this;
 
@@ -312,18 +316,20 @@ void DDEpochMap::dump(
    s << "# time              PRN    type    mstr  elev     ddr(m)          clk(s)   h"
      << endl;
 
-   DDEpochMap::iterator ei;
-   SvOIDM::iterator pi;
+   DDEpochMap::const_iterator ei;
    for (ei = ddem.begin(); ei != ddem.end(); ei++)
    {
       const DayTime& t = ei->first;
-      double clk = ei->second.clockOffset;
+      const DDEpoch& dde = ei->second;
+
       string time=t.printf("%4Y %3j %02H:%02M:%04.1f");
-      SatID& masterPrn = ei->second.masterPrn;
-      for (pi = ei->second.dd.begin(); pi != ei->second.dd.end(); pi++)
+      const SatID& masterPrn = dde.masterPrn;
+
+      SvOIDM::const_iterator pi;
+      for (pi = dde.dd.begin(); pi != dde.dd.end(); pi++)
       {
          const SatID& prn = pi->first;
-         OIDM& ddr = pi->second;
+         const OIDM& ddr = pi->second;
          for (OIDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
          {
             string rot = StringUtils::asString(ti->first);
@@ -334,11 +340,11 @@ void DDEpochMap::dump(
               << " " << setw(2) << prn.id
               << " " << left << setw(12) << rot << right
               << " " << setw(2) << masterPrn.id
-              << " " << setprecision(1) << setw(5)  << pem[t][prn]
+              << " " << setprecision(1) << setw(5)  << dde.elevation[prn]
               << " " << setprecision(6) << setw(14) << dd
-              << " " << setprecision(8) << setw(12) << clk
+              << " " << setprecision(8) << setw(12) << dde.clockOffset
               << hex
-              << " " << setw(2) << ei->second.health[prn]
+              << " " << setw(2) << dde.health[prn]
               << dec 
               << endl;
          }

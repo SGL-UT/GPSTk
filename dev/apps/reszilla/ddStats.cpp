@@ -256,7 +256,7 @@ void DDStats::process()
       cout << "Done reading the double difference data ("
            << ddem.size() << " epochs)" << endl;
    if (debugLevel>1)
-      ddem.dump(output, pem);
+      ddem.dump(output);
    
    outputStats(output, ddem, pem);
 }

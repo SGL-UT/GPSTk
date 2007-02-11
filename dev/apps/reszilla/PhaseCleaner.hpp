@@ -75,10 +75,7 @@ public:
 
    void dump(std::ostream& s) const;
 
-   typedef std::set<gpstk::ObsID> ObsIDSet;
-   ObsIDSet phaseObsTypes;
-
-   mutable OIDM lamda;
+   mutable std::map<gpstk::ObsID::CarrierBand, double> lamda;
 
    // And an set of arcs for each PRN
    typedef std::map<gpstk::SatID, PhaseResidual::ArcList> PraPrn;

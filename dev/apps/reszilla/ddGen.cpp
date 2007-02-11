@@ -224,10 +224,6 @@ void DDGen::spinUp()
 //-----------------------------------------------------------------------------
 void DDGen::process()
 {
-
-   // Keep this in a separte scope so the ephemeris data will get tossed after
-   // the clocks and elevation map have been computed
-   // Get the ephemeris data
    EphReader ephReader;
    ephReader.verboseLevel = verboseLevel;
    for (int i=0; i<ephFileOption.getCount(); i++)
@@ -242,10 +238,6 @@ void DDGen::process()
    if (verboseLevel)
       cout << "# Reading obs from Rx2" << endl;
    readObsFile(obs2FileOption, *ephReader.eph, oem2);
-
-   if (debugLevel)
-      cout << "Rx1 has " << oem1.size()
-           << " epochs. Rx2 has " << oem2.size() << " epochs." << endl;
 
    SvElevationMap pem;
    pem = elevation_map(oem1, antennaPos, *ephReader.eph);
@@ -263,7 +255,7 @@ void DDGen::process()
    pc.getPhaseDD(ddem);
 
    // Now write out all the double differences
-   ddem.dump(cout, pem);
+   ddem.dump(cout);
 
 //   CycleSlipList sl;
 //   pc.getSlips(sl, pem);
