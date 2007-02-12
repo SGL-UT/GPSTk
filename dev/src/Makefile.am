@@ -22,7 +22,9 @@ SP3Header.cpp SP3SatID.cpp SVExclusionList.cpp SVPCodeGen.cpp \
 SimpleIURAWeight.cpp SolverLMS.cpp SolverWMS.cpp SystemTime.cpp \
 TabularEphemerisStore.cpp TimeConverters.cpp TimeString.cpp TimeTag.cpp \
 Triple.cpp TropModel.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp \
-X1Sequence.cpp X2Sequence.cpp Xvt.cpp YDSTime.cpp
+X1Sequence.cpp X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaHeader.cpp \
+YumaData.cpp YumaAlmanacStore.cpp SEMHeader.cpp SEMData.cpp \
+SEMAlmanacStore.cpp
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = ANSITime.hpp AlmOrbit.hpp AlmanacStore.hpp \
@@ -68,4 +70,6 @@ UnixTime.hpp ValidType.hpp Vector.hpp VectorBase.hpp \
 VectorBaseOperators.hpp VectorOperators.hpp WGS84Geoid.hpp WeightBase.hpp \
 WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp Xvt.hpp YDSTime.hpp \
 convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp \
-stl_helpers.hpp
+stl_helpers.hpp YumaBase.hpp YumaStream.hpp YumaHeader.hpp YumaData.hpp \
+YumaAlmanacStore.hpp SEMBase.hpp SEMStream.hpp SEMHeader.hpp SEMData.hpp \
+SEMAlmanacStore.hpp
