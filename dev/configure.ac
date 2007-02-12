@@ -39,9 +39,12 @@ AC_CHECK_FUNCS([bzero floor ftime getcwd gettimeofday memset mkdir modf pow re_c
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  apps/Makefile
+                 apps/DataAvailability/Makefile
+                 apps/MDPtools/Makefile
                  apps/Rinextools/Makefile
                  apps/checktools/Makefile
                  apps/converters/Makefile
+                 apps/differential/Makefile
                  apps/difftools/Makefile
                  apps/filetools/Makefile
                  apps/geomatics/Makefile
@@ -51,13 +54,12 @@ AC_CONFIG_FILES([Makefile
                  apps/geomatics/relposition/Makefile
                  apps/geomatics/robust/Makefile
                  apps/ionosphere/Makefile
-                 apps/MDPtools/Makefile
                  apps/mergetools/Makefile
                  apps/multipath/Makefile
+                 apps/qa/Makefile
+                 apps/positioning/Makefile
                  apps/reszilla/Makefile
                  apps/time/Makefile
-                 apps/positioning/Makefile
-                 apps/differential/Makefile
                  apps/visibility/Makefile
                  tests/Makefile
                  examples/Makefile])
