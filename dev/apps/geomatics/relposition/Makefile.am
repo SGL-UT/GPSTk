@@ -1,4 +1,4 @@
-INCLUDES = -I../../../src -I../lib
+INCLUDES = -I$(srcdir)/../../../src -I$(srcdir)/../lib
 
 LDADD = ../lib/libgeomatic.la ../../../src/libgpstk.la
 DDBase_LDADD = ../lib/libgeomatic.la ../../../src/libgpstk.la ./libbase.la

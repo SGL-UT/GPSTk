@@ -1,4 +1,4 @@
-INCLUDES = -I../../../src/
+INCLUDES = -I$(srcdir)/../../../src/
 lib_LTLIBRARIES = libgeomatic.la
 libgeomatic_la_SOURCES = DDid.cpp DiscCorr.cpp EarthOrientation.cpp \
 GDCconfiguration.cpp GSatID.cpp GeodeticFrames.cpp Namelist.cpp \

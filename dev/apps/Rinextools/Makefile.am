@@ -1,4 +1,4 @@
-INCLUDES = -I../../src
+INCLUDES = -I$(srcdir)/../../src
 LDADD = ./libtoolslib.la ../../src/libgpstk.la
 
 lib_LTLIBRARIES = libtoolslib.la

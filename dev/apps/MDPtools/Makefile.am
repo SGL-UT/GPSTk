@@ -1,4 +1,4 @@
-INCLUDES = -I../../src
+INCLUDES = -I$(srcdir)/../../src
 LDADD = ./libmdplib.la ../../src/libgpstk.la
 AM_LDFLAGS = -lncurses
 

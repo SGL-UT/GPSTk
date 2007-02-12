@@ -1,4 +1,4 @@
-INCLUDES = -I../../src -I../MDPtools
+INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../MDPtools
 LDADD = ./librlib.la ./libdatalib.la ../../src/libgpstk.la ../MDPtools/libmdplib.la
 
 lib_LTLIBRARIES = librlib.la libdatalib.la

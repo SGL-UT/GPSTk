@@ -1,4 +1,4 @@
-INCLUDES = -I../../src
+INCLUDES = -I$(srcdir)/../../src
 LDADD = ../../src/libgpstk.la
 
 bin_PROGRAMS = timeconvert calgps
