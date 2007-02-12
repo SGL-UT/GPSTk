@@ -3,9 +3,12 @@ LDADD = ./libmdplib.la ../../src/libgpstk.la
 AM_LDFLAGS = -lncurses
 
 lib_LTLIBRARIES = libmdplib.la
-libmdplib_la_SOURCES = MDP2Rinex.cpp MDPHeader.cpp MDPNavSubframe.cpp MDPObsEpoch.cpp MDPProcessors.cpp MDPPVTSolution.cpp MDPSelftestStatus.cpp NavProc.cpp mdpscreen/ScreenProc.cpp SummaryProc.cpp TCPStream.cpp TrackProc.cpp 
+libmdplib_la_SOURCES = MDPHeader.cpp MDPPVTSolution.cpp MDPNavSubframe.cpp \
+MDPObsEpoch.cpp MDPSelftestStatus.cpp RinexConverters.cpp TCPStream.cpp \
+MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp
+
 bin_PROGRAMS = mdp2rinex mdptool tcptest
 
-mdp2rinex_SOURCES = mdp2rinex.cpp
 mdptool_SOURCES = mdptool.cpp
+mdp2rinex_SOURCES = mdp2rinex.cpp
 tcptest_SOURCES = tcptest.cpp
