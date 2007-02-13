@@ -217,7 +217,7 @@ def main():
         # If there are rle clocks, draw a vertical line where each new model
         # starts
         for t0, t1, y0, m, d in rleClockList:
-            ax1.axvline(t0)
+            ax1.axvline(t0, label='_nolegend_')
 
         if options.legend:
             ax1.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005,
@@ -277,11 +277,8 @@ def main():
     pylab.setp(ylabels, fontsize=10, family='sans-serif')
 
     ax2.xaxis.set_minor_formatter(xMinorFmt)
-    # Better to just let this be done auto right now
-    # ax2.xaxis.set_major_locator(xMajorLoc) 
-    #ax2.xaxis.set_minor_locator(xMinorLoc)
-    #ax2.set_xlim(xmin=min(ords[0]), xmax=max(ords[0]))
     
+    # set x axis range
     if options.tStart:
       tMin = parse_time(options.tStart.split()[0:3])
     else:
