@@ -253,21 +253,27 @@ def main():
         ax2 = ax1
 
     if plotClocks:
-        ax2.plot_date(clocks[0], clocks[1], 'g.')
+        ax2.plot_date(clocks[0], clocks[1], 'g.', label="offset")
         ax2.grid(True)
         ax2.set_ylabel('clock (meters)', **yprops)
-
+        
         # Only plot the linear clock estimate if there is data for it...
         for t0, t1, y0, m, d in rleClockList:
             y1 = y0 + m * (t1 - t0)
             t = numpy.array([t0, t1])
             y = numpy.array([y0, y1])
-            ax2.plot_date(t, y, 'b-', linewidth=1)
+            ax2.plot_date(t, y, 'b-', linewidth=1, label='_nolegend_')
             yu = y + d
             yl = y - d
             yy = pylab.concatenate( (yu, yl[::-1]) )
             tt = pylab.concatenate( (t, t[::-1]) )
-            ax2.fill(tt, yy, facecolor='b', alpha=0.4)
+            ax2.fill(tt, yy, facecolor='b', alpha=0.4, label='_nolegend_')
+            
+        if options.legend:
+            ax2.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005,
+                       handletextsep=0.01, axespad=0.0, loc=(1,0))
+            leg = pylab.gca().get_legend()
+            leg.draw_frame(False)        
             
 
     ax2.xaxis.set_major_formatter(xMajorFmt)
