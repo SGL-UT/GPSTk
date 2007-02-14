@@ -4,6 +4,7 @@
  * @file SparseBinnedStats.hpp
  * Generates statistics over a discrete set of conditions. 
  * Class declarations. 
+ *
  */
 
 #ifndef SPARSE_BINNED_STATS_HPP
