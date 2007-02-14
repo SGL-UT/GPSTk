@@ -268,10 +268,19 @@ void OrdEdit::process()
             const SatID& satId = iter->first;
             ObsRngDev& ord = iter->second;
             iter++;
-            const EngEphemeris& eph = bce.findEphemeris(satId, ordEpoch.time);
-            ord.health =  eph.getHealth();
-            if (ord.health.is_valid() && ord.health != 0)
-               ordEpoch.removeORD(satId);
+            try
+            {
+              const EngEphemeris& eph = bce.findEphemeris(satId, ordEpoch.time);
+              ord.health =  eph.getHealth();
+              if (ord.health.is_valid() && ord.health != 0)
+                ordEpoch.removeORD(satId);
+            }
+            catch (gpstk::Exception &exc)
+            { cout << " # Error caught in ordEdit - probably missing eph data\n"; }
+            // I would include the exception catch below, but the exc spans
+            // multiple lines...
+            //catch (gpstk::Exception &exc)
+            //{ cerr << "# Error in ordEdit: " << exc << endl; }
          }
       }
       
