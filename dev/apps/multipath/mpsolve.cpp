@@ -97,8 +97,8 @@ int main(int argc, char *argv[])
 
       if ( (verbose) && (!numeric))
       {
-         cout << "Loading obs and nav files." << obsFileOption.getValue() << endl;
-         cout << "Loading nav files: " << navFileOption.getValue() << endl;
+         cout << "Loading obs file(s): " << obsFileOption.getValue() << endl;
+         cout << "Loading nav file(s): " << navFileOption.getValue() << endl;
       }
          
       ObsArray oa;

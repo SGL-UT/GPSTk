@@ -99,8 +99,13 @@ namespace gpstk
       if ( (roh.valid & RinexObsHeader::antennaPositionValid) == 
            RinexObsHeader::antennaPositionValid)
       {
-         antennaPos = roh.antennaPosition;
-         staticPositionDefined=true;
+         if ( ! ((antennaPos[0]==antennaPos[1]) &&
+                (antennaPos[0]==antennaPos[2]) &&
+                (antennaPos[0]==0)) )
+	 {
+            antennaPos = roh.antennaPosition;
+            staticPositionDefined=true;
+         }
       }
       
          // Remember the data collection rate. If not available, note that.
