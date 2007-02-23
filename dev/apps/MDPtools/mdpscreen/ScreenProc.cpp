@@ -6,7 +6,7 @@
 #include "StringUtils.hpp"
 
 #include "ScreenProc.hpp"
-#include "MDP2Rinex.hpp"
+#include "RinexConverters.hpp"
 
 using namespace std;
 using namespace gpstk;
