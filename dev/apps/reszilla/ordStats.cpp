@@ -164,29 +164,36 @@ void OrdStats::process()
    ORDEpochMap::iterator iter;
    for (iter = oem.begin(); iter != oem.end(); iter++)
    {
-      const double offset = iter->second.clockOffset;
-      if (abs(offset) > (C_GPS_M/1000))
+      try
       {
-        foundBigOffset = true;
-        output << ">b  " << iter->second.time << "\t\t"
-               << setprecision(5) << setw(12) 
-               << iter->second.clockOffset << endl;
-        if (statsFileOption.getCount())
-          extraOutput << iter->second.time << "\t"
-                      << setprecision(5) << setw(12) 
-                      << iter->second.clockOffset << endl;
-      }       
-      
-      ORDEpoch::ORDMap::const_iterator pi;
-      for (pi = iter->second.ords.begin(); 
-           pi != iter->second.ords.end(); pi++)
-      {
-        totalORDCount++;
-        const unsigned wonk = pi->second.wonky;
-        if (wonk) 
-          wonkyORDCount++;        
+        const double offset = iter->second.clockOffset;
+        if (abs(offset) > (C_GPS_M/1000))
+        {
+          foundBigOffset = true;
+          output << ">b  " << iter->second.time << "\t\t"
+                << setprecision(5) << setw(12) 
+                << iter->second.clockOffset << endl;
+          if (statsFileOption.getCount())
+            extraOutput << iter->second.time << "\t"
+                        << setprecision(5) << setw(12) 
+                        << iter->second.clockOffset << endl;
+        }       
+        
+        ORDEpoch::ORDMap::const_iterator pi;
+        for (pi = iter->second.ords.begin(); 
+            pi != iter->second.ords.end(); pi++)
+        {
+          totalORDCount++;
+          const unsigned wonk = pi->second.wonky;
+          if (wonk) 
+            wonkyORDCount++;        
+        }
       }
+      catch (gpstk::Exception &exc)
+      { cout << " # Error caught in ordStats - probably missing clock offset data\n"; }
    }  
+   
+   
    if (!foundBigOffset)
       output << "#     No offsets greater than 1 millisecond found.\n";
    if ((!foundBigOffset) && statsFileOption.getCount())
