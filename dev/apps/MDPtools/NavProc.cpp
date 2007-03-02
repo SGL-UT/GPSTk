@@ -116,22 +116,41 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    RangeCarrierPair rcp(msg.range, msg.carrier);
    NavIndex ni(rcp, msg.prn);
 
-   long sfa[10];
-   msg.fillArray(sfa);
-   long long_sfa[10];
-   for( int j = 0; j < 10; j++ )
-      long_sfa[j] = static_cast<long>( sfa[j] );
+   gpstk::MDPNavSubframe umsg = msg;
 
-   if (!gpstk::EngNav::subframeParity(long_sfa))
+   // First try the data assuming it is already upright
+   umsg.knownUpright = true;
+   bool parityGood = umsg.checkParity();
+
+   if (verboseLevel>2)
+      out << umsg.time.printf(timeFormat)
+          << "  PRN:" << setw(2) << umsg.prn
+          << " " << asString(umsg.carrier)
+          << ":" << setw(6) << left << asString(umsg.range);
+
+   if (!parityGood)
+   {
+      if (verboseLevel>2)
+         out << " Subframe appears raw" << endl;
+      umsg.knownUpright = false;
+      umsg.setUpright();
+      parityGood = umsg.checkParity();
+   }
+   else
+   {
+      if (verboseLevel>2)
+         out << " Subframe appears cooked" << endl;
+   }
+
+   if (!parityGood)
    {
       badNavSubframeCount++;
       if (verboseLevel)
-         out << msg.time.printf(timeFormat)
-             << "  Parity error on prn:" << setw(2) << msg.prn
-             << " " << asString(msg.carrier)
-             << ":" << setw(6) << left << asString(msg.range)
-             << " TOW:" << setw(6) << msg.getHOWTime()
-             << " SFID:" << msg.getSFID()
+         out << umsg.time.printf(timeFormat)
+             << "  PRN:" << setw(2) << umsg.prn
+             << " " << asString(umsg.carrier)
+             << ":" << setw(6) << left << asString(umsg.range)
+             << " Parity error"
              << " SNR:" << fixed << setprecision(1) << snr[ni]
              << " EL:" << el[ni]
              << endl;
@@ -147,20 +166,21 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
       return;
    }
 
-   short sfid = msg.getSFID();
-   short svid = msg.getSVID();
+   short sfid = umsg.getSFID();
+   short svid = umsg.getSVID();
    bool isAlm = sfid > 3;
-   long sow = msg.getHOWTime();
+   long sow = umsg.getHOWTime();
    short page = ((sow-6) / 30) % 25 + 1;
 
    if (verboseLevel>2)
    {
-      out << msg.time.printf(timeFormat)
-          << "  prn:" << setw(2) << msg.prn
-          << " " << asString(msg.carrier)
-          << ":" << setw(6) << left << asString(msg.range)
-          << " nav:" << static_cast<int>(msg.nav)
+      out << umsg.time.printf(timeFormat)
+          << "  PRN:" << setw(2) << umsg.prn
+          << " " << asString(umsg.carrier)
+          << ":" << setw(6) << left << asString(umsg.range)
           << " SOW:" << setw(6) << sow
+          << " NC:" << static_cast<int>(umsg.nav)
+          << " I:" << umsg.inverted
           << " SFID:" << sfid;
       if (isAlm)
          out << " SVID:" << svid
@@ -169,48 +189,49 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    }
 
    // Sanity check on the header time versus the HOW time
-   short week = msg.time.GPSfullweek();
+   short week = umsg.time.GPSfullweek();
    if (sow <0 || sow>=604800)
    {
       badNavSubframeCount++;
       if (verboseLevel>1)
-         out << msg.time.printf(timeFormat)
+         out << umsg.time.printf(timeFormat)
              << "  SOW bad: " << sow
              << endl;
       return;
    }
       
-   DayTime howTime(week, msg.getHOWTime());
-   if (howTime == msg.time)
+   DayTime howTime(week, umsg.getHOWTime());
+   if (howTime == umsg.time)
    {
       // Move this back down to verboseLevel>0 when ITT fixes their code...
       if (verboseLevel>2)
-         out << msg.time.printf(timeFormat) << "  header time is HOW time" << endl;
+         out << umsg.time.printf(timeFormat) 
+             << "  header time is HOW time" << endl;
    }
-   else if (howTime != msg.time+6)
+   else if (howTime != umsg.time+6)
    {
       badNavSubframeCount++;
       if (verboseLevel>1)
-         out << msg.time.printf(timeFormat)
+         out << umsg.time.printf(timeFormat)
              << "  HOW/header time miscompare " << howTime.printf(timeFormat)
              << endl;
       return;
    }
 
    prev[ni] = curr[ni];
-   curr[ni] = msg;
+   curr[ni] = umsg;
 
    if (isAlm && almOut)
    {
       AlmanacPages& almPages = almPageStore[ni];
       EngAlmanac& engAlm = almStore[ni];
       SubframePage sp(sfid, page);
-      almPages[sp] = msg;
-      almPages.insert(make_pair(sp, msg));
+      almPages[sp] = umsg;
+      almPages.insert(make_pair(sp, umsg));
          
       if (makeEngAlmanac(engAlm, almPages))
       {
-         out << msg.time.printf(timeFormat)
+         out << umsg.time.printf(timeFormat)
              << "  Built complete alm from prn " << setw(2) << ni.second
              << " " << setw(2) << asString(ni.first.second)
              << " " << left << setw(6) <<  asString(ni.first.first)
@@ -224,12 +245,13 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    if (!isAlm && ephOut)
    {
       EphemerisPages& ephPages = ephPageStore[ni];
-      ephPages[sfid] = msg;
+      ephPages[sfid] = umsg;
       EngEphemeris engEph;
-
+      try
+      {
       if (makeEngEphemeris(engEph, ephPages))
       {
-         out << msg.time.printf(timeFormat)
+         out << umsg.time.printf(timeFormat)
              << "  Built complete eph from prn " << setw(2) << ni.second
              << " " << setw(2) << asString(ni.first.second)
              << " " << left << setw(6) << asString(ni.first.first)
@@ -238,6 +260,11 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
          if (verboseLevel>1)
             out << engEph;
          ephStore[ni] = engEph;
+      }
+      }
+      catch (gpstk::Exception& e)
+      {
+         out << e << endl;
       }
    }
 }  // end of process()

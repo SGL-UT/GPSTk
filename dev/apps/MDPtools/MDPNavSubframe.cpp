@@ -5,6 +5,7 @@
 #include <BinUtils.hpp>
 #include <StringUtils.hpp>
 #include <gps_constants.hpp>
+#include <EngNav.hpp>
 
 #include "miscenum.hpp"
 #include "MDPNavSubframe.hpp"
@@ -19,16 +20,16 @@ using namespace std;
 
 namespace gpstk
 {
-   //---------------------------------------------------------------------------
+   //--------------------------------------------------------------------------
    MDPNavSubframe::MDPNavSubframe() 
       throw()
-      : subframe(11)
+      : subframe(11), knownUpright(false), inverted(false)
    {
       id = myId;
    }
 
   
-   //---------------------------------------------------------------------------
+   //--------------------------------------------------------------------------
    string MDPNavSubframe::encode() const 
       throw()
    {
@@ -45,7 +46,7 @@ namespace gpstk
    } // MDPNavSubframe::encode()
       
 
-   //---------------------------------------------------------------------------
+   //--------------------------------------------------------------------------
    void MDPNavSubframe::decode(string str) 
       throw()
    {
@@ -109,7 +110,90 @@ namespace gpstk
          return (subframe[3] >> 22) & 0x3F;
    }
 
-   //---------------------------------------------------------------------------
+   /// Get bit 30 from the given subframe word
+   inline uint32_t getd30(uint32_t sfword)
+   {
+      return (sfword & 0x01);
+   }
+   
+   /// Get bit 29 from the given subframe word
+   inline uint32_t getd29(uint32_t sfword)
+   {
+      return ((sfword & 0x02) >> 1);
+   }
+
+
+   //--------------------------------------------------------------------------
+   void MDPNavSubframe::setUpright() throw()
+   {
+      if (knownUpright)
+         return;
+
+      uint32_t preamble = subframe[1] >> 22;
+      if (preamble == 0x74)
+      {
+         for (int i = 1; i<=10; i++)
+            subframe[i] = ~subframe[i] & 0x3fffffff;
+         inverted = true;
+      }
+
+      preamble = subframe[1] >> 22;
+      if (preamble != 0x8b)
+         return;
+
+      // note that this routine assumes that D30 from the previous subframe
+      // is zero. That is why we start with the second word in the array
+      for (int i=2; i<=10; i++)
+         if (getd30(subframe[i-1]))
+            subframe[i] = (~subframe[i] & 0x3fffffc0) | (subframe[i] & 0x3f);
+
+      knownUpright=true;
+   }
+
+
+   //--------------------------------------------------------------------------
+   bool MDPNavSubframe::checkParity() const throw()
+   {
+      uint32_t preamble = subframe[1] >> 22;
+      if (debugLevel>1)
+         cout << "preamble:" << hex << preamble << dec
+              << " knownUpright:" << knownUpright
+              << " inverted:" << inverted
+              << endl;
+
+      bool needsInversion = (preamble == 0x74);
+
+      if (debugLevel>1)
+         cout << "needsInversion:" << needsInversion << endl
+              << "parities:";
+
+      bool goodParity = true;
+      for (int i=1; i<=10; i++)
+      {
+         uint32_t prev = i==1 ? 0 : subframe[i-1];
+         uint32_t curr = subframe[i];
+         if (needsInversion)
+         {
+            if (i>1)
+               prev = ~prev & 0x3fffffff;
+            curr = ~curr & 0x3fffffff;
+         }
+         bool D30 = getd30(prev);
+         unsigned receivedParity = curr & 0x3f;
+         unsigned computedParity = EngNav::computeParity(curr, prev, knownUpright);
+         if (debugLevel>1)
+            cout << i << ":" << receivedParity
+              << "-" << computedParity << " ";
+         if (receivedParity != computedParity)
+            goodParity = false;
+      }
+      if (debugLevel>1)
+         cout << endl;
+      return goodParity;
+   }
+
+
+   //--------------------------------------------------------------------------
    void MDPNavSubframe::dump(ostream& out) const
       throw()
    {
@@ -125,13 +209,15 @@ namespace gpstk
           << " NC:" << static_cast<int>(nav)
           << " SF:" << getSFID()
           << " PG:" << page
+          << " I:" << inverted
+          << " U:" << knownUpright
           << endl;
 
       oss << setfill('0') << hex;
       for(int i = 1; i < subframe.size(); i++)
       {
          if ((i % 5) == 1)
-            oss << getName() << i <<": ";
+            oss << getName() << i << ": ";
          oss << setw(8) << uppercase << subframe[i] << "  ";
          if ((i % 5) == 0)
             oss << endl;

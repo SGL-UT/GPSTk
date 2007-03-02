@@ -39,7 +39,21 @@ namespace gpstk
 
       void fillArray(long out[10]) const
       { for(int i=1; i<=10; i++) out[i-1]=subframe[i];};
+
+      void fillArray(uint32_t out[10]) const
+      { for(int i=1; i<=10; i++) out[i-1]=subframe[i];};
+
+      // This is an experiment. It inverts words based upon the D30
+      // of the previous word. Don't do this unless there is some reason
+      // to believe that the D30 bits are accurate. Like the subframe
+      // has passed its parity check.
+      void setUpright() throw();
       
+      /** Check the parity of the subframe.
+       * @return true if the parity check passes
+       **/
+      bool checkParity() const throw();
+
       virtual std::string getName() const {return "nav";}
 
       /** Dump some debugging information to the given ostream.
@@ -56,6 +70,12 @@ namespace gpstk
       /** The Navigation Subframe. 10 4-byte words.  There are 11
        * elements to facilitate access to elements 1-10. */
       std::vector<uint32_t> subframe;
+
+
+      // These are not actually encoded in the message but are used
+      // in the parity checking
+      bool knownUpright;   ///< true if the bits have been set upright
+      bool inverted;       ///< true when entire subframe has been inverted
 
       static const unsigned myLength = 44;
       static const unsigned myId = 310;
