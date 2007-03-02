@@ -93,13 +93,15 @@ namespace gpstk
           * @param sfword The subframe word to compute the parity of.
           * @param psfword The previous word in the subframe (use 0
           *   when sfword is word 1)
+          * @param knownUpright When this is set, the data is assumed to be upright
+          *   and no D30 inversion is performed
           * @return the 6-bit parity (or, if zeroBits is set, the
           *   6-bit parity along with the two t-bits, the
           *   non-information bits used for parity computation).
-          * @todo Move this code into the gpstk (see gpstk::EngNav).
           */
       static uint32_t computeParity(uint32_t sfword,
-                                    uint32_t psfword);
+                                    uint32_t psfword,
+                                    bool knownUpright=true);
 
          /**
           * Compute the parity for the given subframe using the prior
@@ -123,7 +125,7 @@ namespace gpstk
           * @todo Move this code into the gpstk (see gpstk::EngNav).
           */
       static bool subframeParity(const long input[10]);
-      static bool checkParity(const uint32_t input[10]);
+      static bool checkParity(const uint32_t input[10], bool knownUpright=true);
       
          /// Following two used by checkParity
          /// Get bit 30 from the given subframe word

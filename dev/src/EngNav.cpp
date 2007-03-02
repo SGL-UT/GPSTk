@@ -520,7 +520,8 @@ namespace gpstk
    }
 
    uint32_t EngNav :: computeParity(uint32_t sfword,
-                                    uint32_t psfword)
+                                    uint32_t psfword,
+                                    bool knownUpright)
    {
          /*
            This function is somewhat table-driven.  There is one
@@ -554,13 +555,8 @@ namespace gpstk
          // to get the source data bits.  This will also complement the
          // parity, but we don't need the original parity to compute the
          // new.
-         /* This would be necessary if the receiver being used output
-          * nav subframes with the hamming code removed.  Is there any
-          * such receiver?
-            if (D30)
-            d = ~d;
-         */
-
+      if (D30 && !knownUpright)
+         d = ~d;
       D |= ((D29 + BinUtils::countBits(bmask[0] & d)) % 2) << 5;
       D |= ((D30 + BinUtils::countBits(bmask[1] & d)) % 2) << 4;
       D |= ((D29 + BinUtils::countBits(bmask[2] & d)) % 2) << 3;
@@ -606,18 +602,18 @@ namespace gpstk
       return(checkParity( temp ));
    }
 
-   bool EngNav :: checkParity(const uint32_t sf[10])
+   bool EngNav :: checkParity(const uint32_t sf[10], bool knownUpright)
    {
-      return (((sf[0] & 0x0000003f) == computeParity(sf[0], 0)) &&
-              ((sf[1] & 0x0000003f) == computeParity(sf[1], sf[0])) &&
-              ((sf[2] & 0x0000003f) == computeParity(sf[2], sf[1])) &&
-              ((sf[3] & 0x0000003f) == computeParity(sf[3], sf[2])) &&
-              ((sf[4] & 0x0000003f) == computeParity(sf[4], sf[3])) &&
-              ((sf[5] & 0x0000003f) == computeParity(sf[5], sf[4])) &&
-              ((sf[6] & 0x0000003f) == computeParity(sf[6], sf[5])) &&
-              ((sf[7] & 0x0000003f) == computeParity(sf[7], sf[6])) &&
-              ((sf[8] & 0x0000003f) == computeParity(sf[8], sf[7])) &&
-              ((sf[9] & 0x0000003f) == computeParity(sf[9], sf[8])));
+      return (((sf[0] & 0x0000003f) == computeParity(sf[0],     0, knownUpright)) &&
+              ((sf[1] & 0x0000003f) == computeParity(sf[1], sf[0], knownUpright)) &&
+              ((sf[2] & 0x0000003f) == computeParity(sf[2], sf[1], knownUpright)) &&
+              ((sf[3] & 0x0000003f) == computeParity(sf[3], sf[2], knownUpright)) &&
+              ((sf[4] & 0x0000003f) == computeParity(sf[4], sf[3], knownUpright)) &&
+              ((sf[5] & 0x0000003f) == computeParity(sf[5], sf[4], knownUpright)) &&
+              ((sf[6] & 0x0000003f) == computeParity(sf[6], sf[5], knownUpright)) &&
+              ((sf[7] & 0x0000003f) == computeParity(sf[7], sf[6], knownUpright)) &&
+              ((sf[8] & 0x0000003f) == computeParity(sf[8], sf[7], knownUpright)) &&
+              ((sf[9] & 0x0000003f) == computeParity(sf[9], sf[8], knownUpright)));
    }
 
    void EngNav :: convertQuant(const uint32_t input[10], 
