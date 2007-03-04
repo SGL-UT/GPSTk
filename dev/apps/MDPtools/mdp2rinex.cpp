@@ -155,6 +155,10 @@ protected:
 
       firstEph=false;
 
+      nav.setUpright();
+      if (!nav.checkParity())
+         return;
+
       short sfid = nav.getSFID();
       if (sfid > 3)
          return;
@@ -172,23 +176,13 @@ protected:
       NavIndex ni(RangeCarrierPair(nav.range, nav.carrier), nav.prn);
       ephData[ni] = nav;
 
-      long sfa[10];
-      nav.fillArray(sfa);
-      long long_sfa[10];
-
-      for( int j = 0; j < 10; j++ )
-         long_sfa[j] = static_cast<long>( sfa[j] );
-
-      if (gpstk::EngNav::subframeParity(long_sfa))
+      ephPageStore[ni][sfid] = nav;
+      EngEphemeris engEph;
+      if (makeEngEphemeris(engEph, ephPageStore[ni]))
       {
-         ephPageStore[ni][sfid] = nav;
-         EngEphemeris engEph;
-         if (makeEngEphemeris(engEph, ephPageStore[ni]))
-         {
-            RinexNavData rnd(engEph);
-            rinexNavOutput << rnd;
-            ephPageStore[ni].clear();
-         }
+         RinexNavData rnd(engEph);
+         rinexNavOutput << rnd;
+         ephPageStore[ni].clear();
       }
    } // MDP2Rinex::process(MDPNavSubframe)
 
