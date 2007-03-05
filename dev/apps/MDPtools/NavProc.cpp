@@ -118,39 +118,37 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
 
    gpstk::MDPNavSubframe umsg = msg;
 
+   ostringstream oss;
+   oss << umsg.time.printf(timeFormat)
+      << "  PRN:" << setw(2) << umsg.prn
+      << " " << asString(umsg.carrier)
+      << ":" << setw(4) << left << asString(umsg.range);
+   string msgPrefix = oss.str();
+   if (verboseLevel>2 || debugLevel)
+      out << endl << msgPrefix << " Processing" << endl;
+   
    // First try the data assuming it is already upright
-   umsg.knownUpright = true;
+   umsg.cooked = true;
    bool parityGood = umsg.checkParity();
-
-   if (verboseLevel>2)
-      out << umsg.time.printf(timeFormat)
-          << "  PRN:" << setw(2) << umsg.prn
-          << " " << asString(umsg.carrier)
-          << ":" << setw(6) << left << asString(umsg.range);
-
    if (!parityGood)
    {
       if (verboseLevel>2)
-         out << " Subframe appears raw" << endl;
-      umsg.knownUpright = false;
-      umsg.setUpright();
+         out << msgPrefix << " Subframe appears raw" << endl;
+      umsg.cooked = false;
+      umsg.cookSubframe();
       parityGood = umsg.checkParity();
    }
    else
    {
       if (verboseLevel>2)
-         out << " Subframe appears cooked" << endl;
+         out << msgPrefix << " Subframe appears cooked" << endl;
    }
 
    if (!parityGood)
    {
       badNavSubframeCount++;
       if (verboseLevel)
-         out << umsg.time.printf(timeFormat)
-             << "  PRN:" << setw(2) << umsg.prn
-             << " " << asString(umsg.carrier)
-             << ":" << setw(6) << left << asString(umsg.range)
-             << " Parity error"
+         out << msgPrefix << " Parity error"
              << " SNR:" << fixed << setprecision(1) << snr[ni]
              << " EL:" << el[ni]
              << endl;
@@ -174,10 +172,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
 
    if (verboseLevel>2)
    {
-      out << umsg.time.printf(timeFormat)
-          << "  PRN:" << setw(2) << umsg.prn
-          << " " << asString(umsg.carrier)
-          << ":" << setw(6) << left << asString(umsg.range)
+      out << msgPrefix
           << " SOW:" << setw(6) << sow
           << " NC:" << static_cast<int>(umsg.nav)
           << " I:" << umsg.inverted
@@ -194,26 +189,22 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    {
       badNavSubframeCount++;
       if (verboseLevel>1)
-         out << umsg.time.printf(timeFormat)
-             << "  SOW bad: " << sow
-             << endl;
+         out << msgPrefix << "  Bad SOW: " << sow << endl;
       return;
    }
       
    DayTime howTime(week, umsg.getHOWTime());
    if (howTime == umsg.time)
    {
-      // Move this back down to verboseLevel>0 when ITT fixes their code...
-      if (verboseLevel>2)
-         out << umsg.time.printf(timeFormat) 
-             << "  header time is HOW time" << endl;
+      if (verboseLevel && ! (bugMask & 0x4))
+         out << msgPrefix << " Header time==HOW time" << endl;
    }
    else if (howTime != umsg.time+6)
    {
       badNavSubframeCount++;
       if (verboseLevel>1)
-         out << umsg.time.printf(timeFormat)
-             << "  HOW/header time miscompare " << howTime.printf(timeFormat)
+         out << msgPrefix << " HOW time != hdr time+6, HOW:"
+             << howTime.printf(timeFormat)
              << endl;
       return;
    }
@@ -231,11 +222,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
          
       if (makeEngAlmanac(engAlm, almPages))
       {
-         out << umsg.time.printf(timeFormat)
-             << "  Built complete alm from prn " << setw(2) << ni.second
-             << " " << setw(2) << asString(ni.first.second)
-             << " " << left << setw(6) <<  asString(ni.first.first)
-             << endl;
+         out << msgPrefix << " Built complete alm" << endl;
          if (verboseLevel>1)
             engAlm.dump(out);
          almPages.clear();
@@ -249,24 +236,22 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
       EngEphemeris engEph;
       try
       {
-      if (makeEngEphemeris(engEph, ephPages))
-      {
-         out << umsg.time.printf(timeFormat)
-             << "  Built complete eph from prn " << setw(2) << ni.second
-             << " " << setw(2) << asString(ni.first.second)
-             << " " << left << setw(6) << asString(ni.first.first)
-             << " iocd:0x" << hex << setw(3) << engEph.getIODC() << dec
-             << endl;
-         if (verboseLevel>1)
-            out << engEph;
-         ephStore[ni] = engEph;
-      }
+         if (makeEngEphemeris(engEph, ephPages))
+         {
+            out << msgPrefix << " Built complete eph, iocd:0x"
+                << hex << setw(3) << engEph.getIODC() << dec
+                << endl;
+            if (verboseLevel>1)
+               out << engEph;
+            ephStore[ni] = engEph;
+         }
       }
       catch (gpstk::Exception& e)
       {
          out << e << endl;
       }
    }
+
 }  // end of process()
 
 

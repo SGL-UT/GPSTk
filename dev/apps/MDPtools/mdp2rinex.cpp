@@ -155,7 +155,7 @@ protected:
 
       firstEph=false;
 
-      nav.setUpright();
+      nav.cookSubframe();
       if (!nav.checkParity())
          return;
 

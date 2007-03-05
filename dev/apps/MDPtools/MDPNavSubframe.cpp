@@ -23,7 +23,7 @@ namespace gpstk
    //--------------------------------------------------------------------------
    MDPNavSubframe::MDPNavSubframe() 
       throw()
-      : subframe(11), knownUpright(false), inverted(false)
+      : subframe(11), cooked(false), inverted(false)
    {
       id = myId;
    }
@@ -124,9 +124,9 @@ namespace gpstk
 
 
    //--------------------------------------------------------------------------
-   void MDPNavSubframe::setUpright() throw()
+   void MDPNavSubframe::cookSubframe() throw()
    {
-      if (knownUpright)
+      if (cooked)
          return;
 
       uint32_t preamble = subframe[1] >> 22;
@@ -147,25 +147,33 @@ namespace gpstk
          if (getd30(subframe[i-1]))
             subframe[i] = (~subframe[i] & 0x3fffffc0) | (subframe[i] & 0x3f);
 
-      knownUpright=true;
+      cooked = true;
    }
 
+   // Print as a string of 1/0
+   string asBin(unsigned v, const unsigned n)
+   {
+      char s[n];
+      for (int i=0; i<n; i++,v=v>>1)
+         if (v&1)
+            s[i] = '1';
+         else
+            s[i] = '0';
+      return string(s);
+   }
 
    //--------------------------------------------------------------------------
    bool MDPNavSubframe::checkParity() const throw()
    {
       uint32_t preamble = subframe[1] >> 22;
+      bool needsInversion = (preamble == 0x74);
       if (debugLevel>1)
          cout << "preamble:" << hex << preamble << dec
-              << " knownUpright:" << knownUpright
+              << " cooked:" << cooked
               << " inverted:" << inverted
+              << " needsInversion:" << needsInversion
+              << " parities:"
               << endl;
-
-      bool needsInversion = (preamble == 0x74);
-
-      if (debugLevel>1)
-         cout << "needsInversion:" << needsInversion << endl
-              << "parities:";
 
       bool goodParity = true;
       for (int i=1; i<=10; i++)
@@ -180,12 +188,19 @@ namespace gpstk
          }
          bool D30 = getd30(prev);
          unsigned receivedParity = curr & 0x3f;
-         unsigned computedParity = EngNav::computeParity(curr, prev, knownUpright);
+         unsigned computedParity = EngNav::computeParity(curr, prev, cooked);
          if (debugLevel>1)
-            cout << i << ":" << receivedParity
-              << "-" << computedParity << " ";
+            cout << i << ":" << asBin(receivedParity,6)
+                 << "-" << asBin(computedParity,6) << " ";
+         if (i==5 && debugLevel>1)
+            cout << endl;
          if (receivedParity != computedParity)
             goodParity = false;
+
+         // This seems to be required for pre-cooked bits but I don't understand
+         // why...
+         if (i == 1 && receivedParity == (~computedParity & 0x3f))
+            goodParity = true;
       }
       if (debugLevel>1)
          cout << endl;
@@ -210,7 +225,7 @@ namespace gpstk
           << " SF:" << getSFID()
           << " PG:" << page
           << " I:" << inverted
-          << " U:" << knownUpright
+          << " C:" << cooked
           << endl;
 
       oss << setfill('0') << hex;

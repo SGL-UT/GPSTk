@@ -47,7 +47,7 @@ namespace gpstk
       // of the previous word. Don't do this unless there is some reason
       // to believe that the D30 bits are accurate. Like the subframe
       // has passed its parity check.
-      void setUpright() throw();
+      void cookSubframe() throw();
       
       /** Check the parity of the subframe.
        * @return true if the parity check passes
@@ -74,8 +74,8 @@ namespace gpstk
 
       // These are not actually encoded in the message but are used
       // in the parity checking
-      bool knownUpright;   ///< true if the bits have been set upright
-      bool inverted;       ///< true when entire subframe has been inverted
+      bool cooked;     ///< true if the bits have been set upright
+      bool inverted;   ///< true when entire subframe has been inverted
 
       static const unsigned myLength = 44;
       static const unsigned myId = 310;
