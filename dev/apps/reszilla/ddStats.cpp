@@ -209,7 +209,7 @@ const ObsID S2(ObsID::otSNR,     ObsID::cbL2,   ObsID::tcP);
       s << "p2 dd res  " << ddem.computeStats(P2, *i, pem) << "    " << endl;
       s << "l2 dd res  " << ddem.computeStats(L2, *i, pem) << "    " << endl;
       s << "d2 dd res  " << ddem.computeStats(D2, *i, pem) << "    " << endl;
-      s << "s1 dd res  " << ddem.computeStats(S2, *i, pem) << "    " << endl;
+      s << "s2 dd res  " << ddem.computeStats(S2, *i, pem) << "    " << endl;
       s << endl;
    }
    s << "------------------------------------------------------------------------ " << endl;
