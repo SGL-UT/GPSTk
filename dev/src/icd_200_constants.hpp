@@ -69,6 +69,10 @@ namespace gpstk
    const double REL_CONST = -4.442807633e-10;
       /// Hz
    const double OSC_FREQ  = 10.23e6;
+      /// Hz, chip rate of the P & Y codes
+   const double PY_CHIP_FREQ = OSC_FREQ;
+      /// Hz, chip rate of the C/A code
+   const double CA_CHIP_FREQ = OSC_FREQ / 10.0;
       /// speed of light (m/s)
    const double C_GPS_M = 2.99792458e8;
       /// Base freq w/o relativisitic effects, Hz.
