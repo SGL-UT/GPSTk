@@ -45,22 +45,26 @@ namespace gpstk
       /// The type of source.
       enum SourceType
       {
-         stUnknown,
-         stGPS,     /// GPS data
-         stDGPS,    /// Differential GPS data
-         stRTK,     /// Real Time Kinematic data
-         stINS,     /// Inertial System data
-         stLast,    /// used to extend this...
-         stPlaceholder = stLast+1000
+         Unknown,
+         GPS,     /// GPS data
+         DGPS,    /// Differential GPS data
+         RTK,     /// Real Time Kinematic data
+         INS,     /// Inertial System data
+         Last,    /// used to extend this...
+         Placeholder = Last+1000
       };
 
       /// empty constructor, creates an unknown source data object
       SourceID()
-         : type(stUnknown), sourceName("") {};
+         : type(Unknown), sourceName("") {};
 
-      /// Explicit constructior
+      /// Explicit constructor
       SourceID(SourceType st, std::string name)
          : type(st), sourceName(name) {};
+
+      /// Copy constructor
+      SourceID(const SourceID& s)
+         : type(s.type), sourceName(s.sourceName) {};
 
       /// Equality requires all fields to be the same
       virtual bool operator==(const SourceID& right) const;
@@ -82,12 +86,30 @@ namespace gpstk
       bool operator>=(const SourceID& right) const
       { return !(operator<(right)); }
 
+      /// Assignment operator
+      SourceID operator=(const SourceID& right)
+      {
+        (*this).type = right.type;
+        (*this).sourceName = right.sourceName;
+        return *this;
+      }
+
+      /// Convenience output method
+      virtual std::ostream& dump(std::ostream& s) const;
+
+      /// Returns true if this is a valid SourceID. Basically just
+      /// checks that none of the fields are undefined
+      virtual bool isValid() const;
+
       /// Destructor
       virtual ~SourceID() {}
 
       static SourceType newSourceType(const std::string& s);
 
+      // Fields
+      /// Type of the data source (GPS receiver, Inertial system, etc)
       SourceType  type;
+      /// Name of the data source
       std::string sourceName;
 
    private:
@@ -100,7 +122,7 @@ namespace gpstk
          Initializer();
       };
 
-      static Initializer singleton;
+      static Initializer SourceIDsingleton;
 
    }; // class SourceID
 
