@@ -24,7 +24,7 @@ TabularEphemerisStore.cpp TimeConverters.cpp TimeString.cpp TimeTag.cpp \
 Triple.cpp TropModel.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp \
 X1Sequence.cpp X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaHeader.cpp \
 YumaData.cpp YumaAlmanacStore.cpp SEMHeader.cpp SEMData.cpp \
-SEMAlmanacStore.cpp
+SEMAlmanacStore.cpp SourceID.cpp
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = ANSITime.hpp AlmOrbit.hpp AlmanacStore.hpp \
@@ -72,4 +72,4 @@ WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp Xvt.hpp YDSTime.hpp \
 convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp \
 stl_helpers.hpp YumaBase.hpp YumaStream.hpp YumaHeader.hpp YumaData.hpp \
 YumaAlmanacStore.hpp SEMBase.hpp SEMStream.hpp SEMHeader.hpp SEMData.hpp \
-SEMAlmanacStore.hpp
+SEMAlmanacStore.hpp SourceID.hpp
