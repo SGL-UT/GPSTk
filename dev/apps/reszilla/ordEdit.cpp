@@ -78,8 +78,8 @@ OrdEdit::OrdEdit() throw()
    : OrdApp("ordEdit", "Edits an ord file based on various criteria."),
      elMask(0),clkResidLimit(0),
      ephSourceOpt('e',"be-file","Remove data for unhealthy SVs by "
-                  " providing broadcast ephemeris source. Must be RINEX "
-                  "nav file."),           
+                  "providing broadcast ephemeris source: RINEX nav or"
+                  "FIC file." ),           
      elvOpt('m',"elev","Remove data for SVs below a given elevation mask."),
      clkOpt('k',"clock-est", "Remove ords that do not have corresponding "
             "clock estimates."),
