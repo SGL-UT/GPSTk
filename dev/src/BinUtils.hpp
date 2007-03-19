@@ -120,7 +120,7 @@ namespace gpstk
       {
          T temp(p);
 #if BYTE_ORDER == BIG_ENDIAN
-         twiddle(p);
+         twiddle(temp);
 #endif
          return temp;
       }
@@ -135,7 +135,7 @@ namespace gpstk
       {
          T temp(p);
 #if BYTE_ORDER == BIG_ENDIAN
-         twiddle(p);
+         twiddle(temp);
 #endif
          return temp;
       }      
@@ -150,7 +150,7 @@ namespace gpstk
       {
          T temp(p);
 #if BYTE_ORDER == LITTLE_ENDIAN
-         twiddle(p);
+         twiddle(temp);
 #endif
          return temp;
       }
@@ -165,7 +165,7 @@ namespace gpstk
       {
          T temp(p);
 #if BYTE_ORDER == LITTLE_ENDIAN
-         twiddle(p);
+         twiddle(temp);
 #endif
          return temp;
       }
