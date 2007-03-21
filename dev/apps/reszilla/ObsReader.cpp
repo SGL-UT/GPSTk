@@ -69,6 +69,7 @@ namespace gpstk
          if (verboseLevel)
             cout << "# Reading " << fn << " as MDP data." << endl;
          mdps.open(fn.c_str(), ios::in);
+         mdps.exceptions(fstream::failbit);
       }
       else if (inputType == FFIdentifier::tSMODF)
       {
