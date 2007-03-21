@@ -171,7 +171,7 @@ namespace gpstk
       }
 
          /** 
-          * Remove (optinally) the item specified from the string and convert it 
+          * Remove (optinally) the item specified from the string and convert it
           * from network byte order to host byte order.
           * @param str the string from which to obtain data.
           * @param pos an offset into the string to pull the data from. If this
@@ -187,13 +187,13 @@ namespace gpstk
          if (pos == std::string::npos)
          {
             str.copy( cp, sizeof(T) );
-            gpstk::BinUtils::netToHost( t );
+            t = gpstk::BinUtils::netToHost( t );
             str.erase( 0, sizeof(T) );
          }
          else
          {
             str.copy( cp, sizeof(T) , pos);
-            gpstk::BinUtils::netToHost( t );
+            t = gpstk::BinUtils::netToHost( t );
          }
          return t;
       }
@@ -207,7 +207,7 @@ namespace gpstk
       std::string encodeVar( const T& v )
       {
          T tmp = v;
-         gpstk::BinUtils::hostToNet( tmp );
+         tmp = gpstk::BinUtils::hostToNet( v );
          return std::string( reinterpret_cast<char*>( &tmp ), sizeof( tmp ) );
       }
       
