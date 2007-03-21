@@ -1,6 +1,5 @@
 INCLUDES = -I$(srcdir)/../../src
 LDADD = ./libmdplib.la ../../src/libgpstk.la
-AM_LDFLAGS = -lncurses
 
 lib_LTLIBRARIES = libmdplib.la
 libmdplib_la_SOURCES = MDPHeader.cpp MDPPVTSolution.cpp MDPNavSubframe.cpp \
