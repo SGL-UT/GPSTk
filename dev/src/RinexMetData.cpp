@@ -45,7 +45,7 @@
 
 /**
  * @file RinexMetData.cpp
- * Encapsulate RINEX meterological file data, including I/O
+ * Encapsulate RINEX meteorological file data, including I/O
  */
 
 #include "StringUtils.hpp"

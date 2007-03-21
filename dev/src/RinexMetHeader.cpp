@@ -45,7 +45,7 @@
 
 /**
  * @file RinexMetHeader.cpp
- * Encapsulate header of Rinex meterological file data, including I/O
+ * Encapsulate header of Rinex meteorological file data, including I/O
  */
 
 #include <algorithm>       // for find

@@ -4,7 +4,7 @@
 
 /**
  * @file RinexMetHeader.hpp
- * Encapsulate header of Rinex meterological file data, including I/O
+ * Encapsulate header of Rinex meteorological file data, including I/O
  */
 
 #ifndef GPSTK_RINEXMETHEADER_HPP

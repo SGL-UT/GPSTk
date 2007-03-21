@@ -4,7 +4,7 @@
 
 /**
  * @file RinexMetFilterOperators.hpp
- * Operators for FileFilter using Rinex meterological data
+ * Operators for FileFilter using Rinex meteorological data
  */
 
 #ifndef GPSTK_RINEXMETFILTEROPERATORS_HPP

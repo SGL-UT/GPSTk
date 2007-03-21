@@ -4,7 +4,7 @@
 
 /**
  * @file RinexMetBase.hpp
- * Base class for RINEX meterological file data
+ * Base class for RINEX meteorological file data
  */
 
 #ifndef GPSTK_RINEXMETBASE_HPP
@@ -55,7 +55,7 @@
 
 namespace gpstk
 {
-   /** @defgroup RinexMet RINEX meterological files */
+   /** @defgroup RinexMet RINEX meteorological files */
    //@{
 
   /**

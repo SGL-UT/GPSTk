@@ -23,7 +23,7 @@
 //============================================================================
 
 /**
- * @file PRSolve.cpp  Read a Rinex observation file and compute an autonomous GPS
+ * @file PRSolve.cpp  Read a RINEX observation file and compute an autonomous GPS
  * pseudorange position solution, using a RAIM-like algorithm to eliminate outliers.
  */
 
@@ -41,6 +41,9 @@
 #include "RinexObsStream.hpp"
 #include "RinexNavStream.hpp"
 #include "RinexNavData.hpp"
+#include "RinexMetStream.hpp"
+#include "RinexMetHeader.hpp"
+#include "RinexMetData.hpp"
 #include "SP3Stream.hpp"
 #include "BCEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
@@ -66,14 +69,15 @@ using namespace StringUtils;
 
    // prgm data
 string PrgmName("PRSolve");
-string PrgmVers("1.95 1/07");
+string PrgmVers("2.0 3/07");
 
 // data input from command line
 typedef struct Configuration {
       // input files
-   string ObsDirectory,NavDirectory;
+   string ObsDirectory,NavDirectory,MetDirectory;
    vector<string> InputObsName;
    vector<string> InputNavName;
+   vector<string> InputMetName;
       // configuration
    double rmsLimit;
    double slopeLimit;
@@ -89,7 +93,7 @@ typedef struct Configuration {
    Matrix<double> Rot;
    bool APSout;
    string OutRinexObs;
-   string HDPrgm;       // header of output Rinex file
+   string HDPrgm;       // header of output RINEX file
    string HDRunby;
    string HDObs;
    string HDAgency;
@@ -112,8 +116,9 @@ typedef struct Configuration {
    bool UseCA,ForceCA;
    vector<SatID> ExSV;
    string TropType;
-   double T,Pr,RH;
+   double defaultT,defaultPr,defaultRH;
    TropModel *pTropModel;
+   list<RinexMetData> MetStore;
       // estimate DT from data
    double estdt[9];
    int ndt[9];
@@ -173,6 +178,7 @@ void PrintStats(Stats<double> S[3],
                 Vector<double> &z,
                 string m,
                 char c0='X', char c1='Y', char c2='Z') throw(Exception);
+void setWeather(DayTime& time, TropModel *pTropModel);
 int GetCommandLine(int argc, char **argv) throw(Exception);
 void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
 int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
@@ -221,6 +227,46 @@ try {
       return -1;
    }
 
+   // get met files and build MetStore
+   if(C.InputMetName.size() > 0) {
+      for(int i=0; i<C.InputMetName.size(); i++) {
+         RinexMetStream metstrm(C.InputMetName[i].c_str());
+         RinexMetHeader methead;
+         RinexMetData metdata;
+
+         metstrm >> methead;
+
+         while(metstrm >> metdata)
+            C.MetStore.push_back(metdata);
+
+         metstrm.close();
+      }  // end loop over InputMetName
+
+      // sort the store on time
+      C.MetStore.sort(RinexMetDataLessThan());
+
+      // dump the met data
+      if(C.Debug) {
+         C.oflog << "Dump of meteorological data store ("
+            << C.MetStore.size() << "):\n";
+         list<RinexMetData>::const_iterator it = C.MetStore.begin();
+         for( ; it != C.MetStore.end(); it++) {
+            //it->dump(C.oflog);
+            C.oflog
+               << it->time.printf("%04Y/%02m/%02d//%02H:%02M:%.3f = %04F %10.3g")
+               << fixed << setprecision(1);
+            RinexMetData::RinexMetMap::const_iterator jt=it->data.begin();
+            for( ; jt != it->data.end(); jt++) {
+               C.oflog << "  " << RinexMetHeader::convertObsType(jt->first)
+                  << " = " << setw(6) << jt->second;
+            }
+            C.oflog << endl;
+         }
+         C.oflog << "End dump of meteorological data store." << endl;
+      }
+
+   }  // end InputMetName processing
+
    // assign trop model
    if(C.TropType == string("BL")) C.pTropModel = &TMsimple;
    if(C.TropType == string("SA") || C.TropType == string("NB")) {
@@ -245,7 +291,8 @@ try {
    }
    if(C.TropType == string("GG")) C.pTropModel = &TMgg;
    if(C.TropType == string("GGH")) C.pTropModel = &TMggh;
-   C.pTropModel->setWeather(C.T,C.Pr,C.RH);
+   // set the default weather in the model
+   C.pTropModel->setWeather(C.defaultT,C.defaultPr,C.defaultRH);
 
    // compute rotation XYZ->NEU at known position
    if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
@@ -323,7 +370,7 @@ try {
    int i,j,iret;
    int inC1,inP1,inP2,inL1,inL2,inD1,inD2,inS1,inS2;     // indexes in rhead
    double dt;
-   RinexObsStream ifstr, ofstr;     // input and output Rinex files
+   RinexObsStream ifstr, ofstr;     // input and output RINEX files
    RinexObsHeader rhead, rheadout;  
 
       // open input file
@@ -644,7 +691,7 @@ try {
       if(!writeout) continue;
 
          // output to RINEX
-      if(first) {                               // edit the output Rinex header
+      if(first) {                               // edit the output RINEX header
          rheadout = rhead;
          rheadout.date = PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
          rheadout.fileProgram = PrgmName;
@@ -733,7 +780,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //      <-1 fatal error: -4 no ephemeris
 //       -1 end of file,
 //        1 skip this epoch,
-//        2 output to Rinex,
+//        2 output to RINEX,
 //        3 output position also
 int SolutionAlgorithm(vector<SatID>& Sats,
                       vector<double>& PRanges,
@@ -783,6 +830,9 @@ try {
       conv = prsol.ConvergenceLimit;
    //C.oflog << "NSatsReject is " << prsol.NSatsReject << endl;
 
+   // if met data available, update weather in trop model
+   if(C.InputMetName.size() > 0)
+      setWeather(CurrEpoch,C.pTropModel);
    // compute using AutonomousSolution - no RAIM algorithm
    if(C.APSout) {
       iret = -4;
@@ -1076,6 +1126,60 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
+void setWeather(DayTime& time, TropModel *pTropModel)
+{
+   static list<RinexMetData>::iterator it=C.MetStore.begin();
+   static list<RinexMetData>::iterator nextit;
+   static DayTime currentTime = DayTime::BEGINNING_OF_TIME;
+   double dt;
+
+   while(it != C.MetStore.end()) {
+      // point to the next epoch after the current epoch
+      (nextit = it)++;            // same as nextit=it; nextit++;
+      
+      // is the current epoch (it->time) the right one?
+      if(    // time is before next but after current - just right
+            (nextit != C.MetStore.end() && time < nextit->time && time >= it->time)
+             // there is no next, but time is within 15 minutes of the current epoch
+         || (nextit == C.MetStore.end() && (dt=time-it->time) >= 0.0 && dt < 900.0)
+        )
+      {
+         // set the weather - replace default with current value, if it exists
+         // but skip if it has already been done
+         if(it->time == currentTime) break;
+         currentTime = it->time;
+
+         if(C.Debug) C.oflog << "Reset weather at " << time << " to " << it->time
+            << " " << it->data[RinexMetHeader::TD]
+            << " " << it->data[RinexMetHeader::PR]
+            << " " << it->data[RinexMetHeader::HR] << endl;
+
+         // [if 'it' is declared const_iterator, why does this discard qualifier??]
+         if(it->data.count(RinexMetHeader::TD) > 0)
+            C.defaultT = it->data[RinexMetHeader::TD];
+         if(it->data.count(RinexMetHeader::PR) > 0)
+            C.defaultPr = it->data[RinexMetHeader::PR];
+         if(it->data.count(RinexMetHeader::HR) > 0)
+            C.defaultRH = it->data[RinexMetHeader::HR];
+
+         pTropModel->setWeather(C.defaultT, C.defaultPr, C.defaultRH);
+
+         break;
+      }
+
+      // no, this is not the right epoch; but should we increment the iterator ?
+      else if(nextit != C.MetStore.end() && time >= nextit->time)
+      {
+         // yes, time is at or beyond the next epoch
+         it++;
+      }
+
+      // do nothing, because time is before the next epoch
+      else break;
+   }
+}
+
+//------------------------------------------------------------------------------------
 int GetCommandLine(int argc, char **argv) throw(Exception)
 {
 try {
@@ -1105,9 +1209,9 @@ try {
    C.ForceCA = false;
    C.DataInt = -1.0;
    C.TropType = string("BL");
-   C.T = 20.0;
-   C.Pr = 980.0;
-   C.RH = 50.0;
+   C.defaultT = 20.0;
+   C.defaultPr = 980.0;
+   C.defaultRH = 50.0;
    
    C.HDPrgm = PrgmName + string(" v.") + PrgmVers.substr(0,4);
    C.HDRunby = string("ARL:UT/SGL/GPSTK");
@@ -1118,15 +1222,16 @@ try {
 
    C.ObsDirectory = string("");
    C.NavDirectory = string("");
+   C.MetDirectory = string("");
 
       // -------------------------------------------------
       // -------------------------------------------------
       // required options
    RequiredOption dashi(CommandOption::hasArgument, CommandOption::stdType,
-      'o',"obs"," [-o|--obs] <file>    Input Rinex observation file(s)");
+      'o',"obs"," [-o|--obs] <file>    Input RINEX observation file(s)");
 
-   RequiredOption dashn(CommandOption::hasArgument, CommandOption::stdType,'n',"nav",
-      " [-n|--nav] <file>    Input navigation file(s) (RINEX or SP3)");
+   RequiredOption dashn(CommandOption::hasArgument, CommandOption::stdType,
+      'n',"nav"," [-n|--nav] <file>    Input navigation file(s) (RINEX or SP3)");
 
       // optional options
    // this only so it will show up in help page...
@@ -1134,12 +1239,21 @@ try {
       'f',"","# Input:\n [-f|--file] <file>   File containing more options");
 
    CommandOption dashdo(CommandOption::hasArgument, CommandOption::stdType,
-      0,"obsdir"," --obsdir <dir>       Directory of input observation file(s)");
+      0,"obsdir",
+      " --obsdir <dir>       Directory of input RINEX observation file(s)");
    dashdo.setMaxCount(1);
 
    CommandOption dashdn(CommandOption::hasArgument, CommandOption::stdType,
       0,"navdir"," --navdir <dir>       Directory of input navigation file(s)");
    dashdn.setMaxCount(1);
+
+   CommandOption dashdm(CommandOption::hasArgument, CommandOption::stdType,
+      0,"metdir",
+      " --metdir <dir>       Directory of input RINEX meteorological file(s)");
+   dashdm.setMaxCount(1);
+
+   CommandOption dashm(CommandOption::hasArgument, CommandOption::stdType,
+      'm',"met"," [-m|--met] <file>    Input RINEX meteorological file(s)");
 
    CommandOption dashith(CommandOption::hasArgument, CommandOption::stdType,
       0,"decimate"," --decimate <dt>      Decimate data to time interval dt");
@@ -1236,7 +1350,7 @@ try {
 
    CommandOption dashTrop(CommandOption::hasArgument, CommandOption::stdType,
       0,"Trop"," --Trop <model,T,P,H> Trop model (one of BL,SA,NB,GG,GGH (cf.GPSTk)),"
-      "\n                         with OPTIONAL weather Temp(C),Press(mb),RH(%)");
+      "\n                         with optional default weather: Temp(C),Press(mb),RH(%)");
    dashTrop.setMaxCount(1);
 
    // --------------------------------------------------------------------------------
@@ -1260,28 +1374,28 @@ try {
    dashForm.setMaxCount(1);
 
    CommandOption dashRfile(CommandOption::hasArgument, CommandOption::stdType,
-      0,"outRinex","# Rinex output:\n"
-      " --outRinex <file>    Output Rinex obs file name");
+      0,"outRinex","# RINEX output:\n"
+      " --outRinex <file>    Output RINEX obs file name");
    dashRfile.setMaxCount(1);
    
    CommandOption dashRrun(CommandOption::hasArgument, CommandOption::stdType,
-      0,"RunBy"," --RunBy <string>     Output Rinex header 'RUN BY' string");
+      0,"RunBy"," --RunBy <string>     Output RINEX header 'RUN BY' string");
    dashRrun.setMaxCount(1);
    
    CommandOption dashRobs(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Observer"," --Observer <string>  Output Rinex header 'OBSERVER' string");
+      0,"Observer"," --Observer <string>  Output RINEX header 'OBSERVER' string");
    dashRobs.setMaxCount(1);
    
    CommandOption dashRag(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Agency"," --Agency <string>    Output Rinex header 'AGENCY' string");
+      0,"Agency"," --Agency <string>    Output RINEX header 'AGENCY' string");
    dashRag.setMaxCount(1);
    
    CommandOption dashRmark(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Marker"," --Marker <string>    Output Rinex header 'MARKER' string");
+      0,"Marker"," --Marker <string>    Output RINEX header 'MARKER' string");
    dashRmark.setMaxCount(1);
    
    CommandOption dashRnumb(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Number"," --Number <string>    Output Rinex header 'NUMBER' string");
+      0,"Number"," --Number <string>    Output RINEX header 'NUMBER' string");
    dashRnumb.setMaxCount(1);
    
    CommandOptionNoArg dashVerb(0,"verbose",
@@ -1299,10 +1413,10 @@ try {
    CommandOptionRest Rest("");
 
    CommandOptionParser Par(
-   "Prgm PRSolve reads one or more Rinex observation files, plus one or more\n"
+   "Prgm PRSolve reads one or more RINEX observation files, plus one or more\n"
    "   navigation (ephemeris) files, and computes an autonomous GPS pseudorange\n"
    "   position solution, using a RAIM-like algorithm to eliminate outliers.\n"
-   "   Output is to the log file, and also optionally to a Rinex obs file with\n"
+   "   Output is to the log file, and also optionally to a RINEX obs file with\n"
    "   the position solutions in comments in auxiliary header blocks.\n");
 
       // -------------------------------------------------
@@ -1366,9 +1480,14 @@ try {
       C.NavDirectory = values[0];
       if(help) cout << "Input nav directory is " << C.NavDirectory << endl;
    }
+   if(dashdm.getCount()) {
+      values = dashdm.getValue();
+      C.MetDirectory = values[0];
+      if(help) cout << "Input met directory is " << C.MetDirectory << endl;
+   }
    if(dashi.getCount()) {
       values = dashi.getValue();
-      if(help) cout << "Input Rinex obs files are:\n";
+      if(help) cout << "Input RINEX obs files are:\n";
       for(i=0; i<values.size(); i++) {
          if(!C.ObsDirectory.empty())
             C.InputObsName.push_back(C.ObsDirectory + string("/") + values[i]);
@@ -1379,13 +1498,24 @@ try {
    }
    if(dashn.getCount()) {
       values = dashn.getValue();
-      if(help) cout << "Input Rinex nav files are:\n";
+      if(help) cout << "Input RINEX nav files are:\n";
       for(i=0; i<values.size(); i++) {
          if(!C.NavDirectory.empty())
             C.InputNavName.push_back(C.NavDirectory + string("/") + values[i]);
          else
             C.InputNavName.push_back(values[i]);
          if(help) cout << "  " << C.NavDirectory + string("/") + values[i] << endl;
+      }
+   }
+   if(dashm.getCount()) {
+      values = dashm.getValue();
+      if(help) cout << "Input RINEX met files are:\n";
+      for(i=0; i<values.size(); i++) {
+         if(!C.MetDirectory.empty())
+            C.InputMetName.push_back(C.MetDirectory + string("/") + values[i]);
+         else
+            C.InputMetName.push_back(values[i]);
+         if(help) cout << "  " << C.MetDirectory + string("/") + values[i] << endl;
       }
    }
 
@@ -1570,11 +1700,11 @@ try {
          C.TropType = field[0];
          if(help) cout << " Input: trop model: " << C.TropType;
          if(field.size() == 4) {
-            C.T = asDouble(field[1]);
-            C.Pr = asDouble(field[2]);
-            C.RH = asDouble(field[3]);
+            C.defaultT = asDouble(field[1]);
+            C.defaultPr = asDouble(field[2]);
+            C.defaultRH = asDouble(field[3]);
             if(help) cout << " and weather (T,P,RH): "
-               << C.T << "," << C.Pr << "," << C.RH;
+               << C.defaultT << "," << C.defaultPr << "," << C.defaultRH;
          }
          if(help) cout << endl;
       }
@@ -1587,32 +1717,32 @@ try {
    if(dashRfile.getCount()) {
       values = dashRfile.getValue();
       C.OutRinexObs = values[0];
-      if(help) cout << "Output Rinex file name is " << C.OutRinexObs << endl;
+      if(help) cout << "Output RINEX file name is " << C.OutRinexObs << endl;
    }
    if(dashRrun.getCount()) {
       values = dashRrun.getValue();
       C.HDRunby = values[0];
-      if(help) cout << "Output Rinex 'RUN BY' is " << C.HDRunby << endl;
+      if(help) cout << "Output RINEX 'RUN BY' is " << C.HDRunby << endl;
    }
    if(dashRobs.getCount()) {
       values = dashRobs.getValue();
       C.HDObs = values[0];
-      if(help) cout << "Output Rinex 'OBSERVER' is " << C.HDObs << endl;
+      if(help) cout << "Output RINEX 'OBSERVER' is " << C.HDObs << endl;
    }
    if(dashRag.getCount()) {
       values = dashRag.getValue();
       C.HDAgency = values[0];
-      if(help) cout << "Output Rinex 'AGENCY' is " << C.HDAgency << endl;
+      if(help) cout << "Output RINEX 'AGENCY' is " << C.HDAgency << endl;
    }
    if(dashRmark.getCount()) {
       values = dashRmark.getValue();
       C.HDMarker = values[0];
-      if(help) cout << "Output Rinex 'MARKER' is " << C.HDMarker << endl;
+      if(help) cout << "Output RINEX 'MARKER' is " << C.HDMarker << endl;
    }
    if(dashRnumb.getCount()) {
       values = dashRnumb.getValue();
       C.HDNumber = values[0];
-      if(help) cout << "Output Rinex 'NUMBER' is " << C.HDNumber << endl;
+      if(help) cout << "Output RINEX 'NUMBER' is " << C.HDNumber << endl;
    }
 
    if(Rest.getCount()) {
@@ -1639,12 +1769,23 @@ try {
 
       // print config to log
    C.oflog << "\nHere is the input configuration:\n";
-   C.oflog << " Input Rinex obs files are:\n";
+   C.oflog << " Input Obs directory is '" << C.ObsDirectory << "'" << endl;
+   C.oflog << " Input RINEX observation files are:\n";
    for(i=0; i<C.InputObsName.size(); i++) {
       C.oflog << "   " << C.InputObsName[i] << endl;
    }
-   C.oflog << " Input Obs directory is " << C.ObsDirectory << endl;
-   C.oflog << " Input Nav directory is " << C.NavDirectory << endl;
+   C.oflog << " Input Nav directory is '" << C.NavDirectory << "'" << endl;
+   C.oflog << " Input navigation files are:\n";
+   for(i=0; i<C.InputNavName.size(); i++) {
+      C.oflog << "   " << C.InputNavName[i] << endl;
+   }
+   C.oflog << " Input Met directory is '" << C.MetDirectory << "'" << endl;
+   if(C.InputMetName.size() > 0) {
+      C.oflog << " Input RINEX meteorological files are:\n";
+      for(i=0; i<C.InputMetName.size(); i++) {
+         C.oflog << "   " << C.InputMetName[i] << endl;
+      }
+   }
    C.oflog << " Ithing time interval is " << C.ith << endl;
    if(C.Tbeg > DayTime(DayTime::BEGINNING_OF_TIME)) C.oflog << " Begin time is "
       << C.Tbeg.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
@@ -1665,8 +1806,8 @@ try {
       }
       C.oflog << endl;
    }
-   C.oflog << " Trop model: " << C.TropType
-      << " and weather (T,P,RH): " << C.T << "," << C.Pr << "," << C.RH << endl;
+   C.oflog << " Trop model: " << C.TropType << " and weather (T,P,RH): "
+      << C.defaultT << "," << C.defaultPr << "," << C.defaultRH << endl;
    C.oflog << " Log file is " << C.LogFile << endl;
    if(C.APSout) C.oflog << " Output autonomous solution (no RAIM) - APS,etc.\n";
    C.oflog << " Output format for time tags (cf. class DayTime) is "
@@ -1674,17 +1815,17 @@ try {
    if(C.knownpos.getCoordinateSystem() != Position::Unknown)
       C.oflog << " Output residuals: known position is\n   " << C.knownpos.printf(
          "ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
-   if(!C.OutRinexObs.empty()) C.oflog << " Output Rinex file name is "
+   if(!C.OutRinexObs.empty()) C.oflog << " Output RINEX file name is "
       << C.OutRinexObs << endl;
-   if(!C.HDRunby.empty()) C.oflog << " Output Rinex 'RUN BY' is "
+   if(!C.HDRunby.empty()) C.oflog << " Output RINEX 'RUN BY' is "
       << C.HDRunby << endl;
-   if(!C.HDObs.empty()) C.oflog << " Output Rinex 'OBSERVER' is "
+   if(!C.HDObs.empty()) C.oflog << " Output RINEX 'OBSERVER' is "
       << C.HDObs << endl;
-   if(!C.HDAgency.empty()) C.oflog << " Output Rinex 'AGENCY' is "
+   if(!C.HDAgency.empty()) C.oflog << " Output RINEX 'AGENCY' is "
       << C.HDAgency << endl;
-   if(!C.HDMarker.empty()) C.oflog << " Output Rinex 'MARKER' is "
+   if(!C.HDMarker.empty()) C.oflog << " Output RINEX 'MARKER' is "
       << C.HDMarker << endl;
-   if(!C.HDNumber.empty()) C.oflog << " Output Rinex 'NUMBER' is "
+   if(!C.HDNumber.empty()) C.oflog << " Output RINEX 'NUMBER' is "
       << C.HDNumber << endl;
    C.oflog << " ------ PRSolution configuration (-1 means use PRSolution default) :"
       << endl;
@@ -1828,7 +1969,7 @@ try {
             nread++;
          }
          catch(gpstk::Exception& e) {
-            cerr << "Caught Exception while reading Rinex Nav file " << files[i]
+            cerr << "Caught Exception while reading RINEX Nav file " << files[i]
                << " : " << e << endl;
             continue;
          }

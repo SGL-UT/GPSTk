@@ -4,7 +4,7 @@
 
 /**
  * @file RinexMetData.hpp
- * Encapsulate RINEX meterological file data, including I/O
+ * Encapsulate RINEX meteorological file data, including I/O
  */
 
 #ifndef GPSTK_RINEXMETDATA_HPP
@@ -77,6 +77,7 @@ namespace gpstk
        */
    class RinexMetData : public RinexMetBase
    {
+
    public:
       RinexMetData()
             : time(gpstk::DayTime::BEGINNING_OF_TIME)
@@ -142,6 +143,15 @@ namespace gpstk
       DayTime parseTime(const std::string& line) const 
          throw(FFStreamError);
    };  // class RinexMetData
+
+   /// class RinexMetDataLessThan, for use with algorithm sort(), for time-ordering.
+   class RinexMetDataLessThan {
+   public:
+      /// return true if rmd1 is less than rmd2.
+      /// Uses member 'time' to determine result.
+      bool operator()(const RinexMetData& rmd1, const RinexMetData& rmd2)
+         { return rmd1.time < rmd2.time; }
+   }; // class RinexMetDataLessThan
 
    //@}
 

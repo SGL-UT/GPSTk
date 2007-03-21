@@ -4,7 +4,7 @@
 
 /**
  * @file RinexMetStream.hpp
- * File stream for RINEX meterological files
+ * File stream for RINEX meteorological files
  */
 
 #ifndef GPSTK_RINEXMETSTREAM_HPP

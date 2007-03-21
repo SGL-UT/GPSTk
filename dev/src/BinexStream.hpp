@@ -2,7 +2,7 @@
 
 /**
  * @file BinexStream.hpp
- * File stream for RINEX meterological files
+ * File stream for RINEX meteorological files
  */
 
 #ifndef GPSTK_BINEXSTREAM_HPP
