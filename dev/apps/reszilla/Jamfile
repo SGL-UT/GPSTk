@@ -14,10 +14,10 @@ if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
 
 Library rlib : DDEpoch.cpp PhaseCleaner.cpp
   PhaseResidual.cpp MDPHeader.cpp MDPObsEpoch.cpp MDPNavSubframe.cpp 
-  RobustLinearEstimator.cpp SvElevationMap.cpp CycleSlipList.cpp ;
+  RobustLinearEstimator.cpp SvElevationMap.cpp CycleSlipList.cpp OrdApp.cpp OrdEngine.cpp ;
 
 Library datalib : ObsUtils.cpp FFIdentifier.cpp ObsReader.cpp EphReader.cpp 
-  MetReader.cpp RinexConverters.cpp OrdApp.cpp OrdEngine.cpp ;
+  MetReader.cpp RinexConverters.cpp ;
 
 LinkLibraries ordGen ordClock ordEdit ordStats ordLinEst ddGen ddStats : 
    datalib rlib datalib rlib ;

@@ -66,6 +66,12 @@ OIDM DDEpoch::singleDifference(
    {
       const ObsID& oid = roti1->first;
 
+      // only compute double differences for range, phase, and doppler
+      if (!(oid.type == ObsID::otRange
+            || oid.type == ObsID::otPhase
+            || oid.type == ObsID::otDoppler))
+         continue;
+
       // Make sure we have an obs from the other receiver
       roti2 = rx2obs.find(oid);
       if (roti2 == rx2obs.end())
@@ -313,7 +319,7 @@ void DDEpochMap::dump(
    DDEpochMap& ddem=*this;
 
    s.setf(ios::fixed, ios::floatfield);
-   s << "# time              PRN    type    mstr  elev     ddr(m)          clk(s)   h"
+   s << "# time              PRN    type      mstr  elev     ddr(m)          clk(s)   h"
      << endl;
 
    DDEpochMap::const_iterator ei;
@@ -338,7 +344,7 @@ void DDEpochMap::dump(
             s << left << setw(20) << time << right
               << setfill(' ')
               << " " << setw(2) << prn.id
-              << " " << left << setw(12) << rot << right
+              << " " << left << setw(14) << rot << right
               << " " << setw(2) << masterPrn.id
               << " " << setprecision(1) << setw(5)  << dde.elevation[prn]
               << " " << setprecision(6) << setw(14) << dd

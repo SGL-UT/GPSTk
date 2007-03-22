@@ -126,12 +126,13 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
                       "considered separate arcs. The default value "
                       "is " + asString(minArcGap, 1) + " seconds."),
 
-      mscFileOption('c', "msc", "Station coordinate file."),
-
       minArcLenOption('\0', "min-arc-length", "The minimum number of "
                       "epochs that can be considered an arc. The "
                       "default value is " + asString(minArcLen) +
                       " epochs."),
+
+      mscFileOption('c', "msc", "Station coordinate file."),
+
       antennaPosOption('p', "pos", "Location of the antenna in meters ECEF.");
 
    CommandOptionWithNumberArg 
