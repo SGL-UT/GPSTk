@@ -233,7 +233,6 @@ void PhaseCleaner::selectMasters(
                return;
             }
                
-
             if (debugLevel)
                cout << t << " prn " << newMaster.id << " as master. (" << rot 
                     << ")" << endl;
