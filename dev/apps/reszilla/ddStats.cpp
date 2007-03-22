@@ -38,6 +38,7 @@
 
 #include <iostream>
 #include <list>
+#include <set>
 
 #include "OrdApp.hpp"
 #include "ElevationRange.hpp"
@@ -66,6 +67,8 @@ private:
 
    ifstream input;
    ofstream output;
+
+   set<ObsID> obsSet;
 
    ObsID makeOID(const string& carrier, const string& code, const string& type) const;
 
@@ -178,38 +181,28 @@ bool DDStats::initialize(int argc, char *argv[]) throw()
 //-----------------------------------------------------------------------------
 void DDStats::outputStats(ofstream& s, DDEpochMap& ddem, SvElevationMap& pem) const
 {
-const ObsID C1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
-const ObsID P1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcP);
-const ObsID L1(ObsID::otPhase,   ObsID::cbL1,   ObsID::tcP);
-const ObsID D1(ObsID::otDoppler, ObsID::cbL1,   ObsID::tcP);
-const ObsID S1(ObsID::otSNR,     ObsID::cbL1,   ObsID::tcP);
-const ObsID C2(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2LM);
-const ObsID P2(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
-const ObsID L2(ObsID::otPhase,   ObsID::cbL2,   ObsID::tcP);
-const ObsID D2(ObsID::otDoppler, ObsID::cbL2,   ObsID::tcP);
-const ObsID S2(ObsID::otSNR,     ObsID::cbL2,   ObsID::tcP);
-
    s << endl
-     << "ord        elev   stddev    mean      # obs    # bad   # unk  max good  slips" << endl
-     << "---------- -----  --------  --------  -------  ------  ------  --------  -----" << endl;
+     << "ObsID         elev   stddev    mean      # obs    # bad   # unk  max good  slips" << endl
+     << "------------- -----  --------  --------  -------  ------  ------  --------  -----" << endl;
 
+   // For convience, group these into L1
    for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
    {
-      s << "c1 dd res  " << ddem.computeStats(C1, *i, pem) << "    " << endl;
-      s << "p1 dd res  " << ddem.computeStats(P1, *i, pem) << "    " << endl;
-      s << "l1 dd res  " << ddem.computeStats(L1, *i, pem) << "    " << endl;
-      s << "d1 dd res  " << ddem.computeStats(D1, *i, pem) << "    " << endl;
-      s << "s1 dd res  " << ddem.computeStats(S1, *i, pem) << "    " << endl;
+      for (set<ObsID>::const_iterator j = obsSet.begin(); j != obsSet.end(); j++)
+         if (j->band == ObsID::cbL1)
+            s << setw(14) << left << asString(*j) << right
+              << ddem.computeStats(*j, *i, pem) << "    " << endl;
       s << endl;
    }
    s << "------------------------------------------------------------------------ " << endl;
 
+   // and L2
    for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
    {
-      s << "p2 dd res  " << ddem.computeStats(P2, *i, pem) << "    " << endl;
-      s << "l2 dd res  " << ddem.computeStats(L2, *i, pem) << "    " << endl;
-      s << "d2 dd res  " << ddem.computeStats(D2, *i, pem) << "    " << endl;
-      s << "s2 dd res  " << ddem.computeStats(S2, *i, pem) << "    " << endl;
+      for (set<ObsID>::const_iterator j = obsSet.begin(); j != obsSet.end(); j++)
+         if (j->band == ObsID::cbL2)
+            s << setw(14) << left << asString(*j) << right
+              << ddem.computeStats(*j, *i, pem) << "    " << endl;
       s << endl;
    }
    s << "------------------------------------------------------------------------ " << endl;
@@ -250,6 +243,8 @@ void DDStats::process()
       e.dd[prn][oid] = dd;
       e.health[prn] = h;
       pem[time][prn] = el;
+
+      obsSet.insert(oid);
    }
 
    if (debugLevel)
