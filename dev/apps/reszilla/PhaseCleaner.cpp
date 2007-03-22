@@ -65,7 +65,8 @@ PhaseCleaner::PhaseCleaner(long al, double at, double gt)
 void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1, const gpstk::ObsEpochMap& rx2)
 {
    if (debugLevel)
-      cout << "PhaseCleaner::addData()" << endl;
+      cout << "PhaseCleaner::addData(), " 
+           << rx1.size() << ", " << rx2.size() << " epochs" << endl;
 
    // Now loop over all the epochs, pulling the data into the arcs
    for (gpstk::ObsEpochMap::const_iterator ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
@@ -92,20 +93,24 @@ void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1, const gpstk::ObsEpochM
             continue;
          const gpstk::SvObsEpoch& rotm2 = pi2->second;
 
-         // For now we also have to have doppler for this SV.
-         const ObsID D1(ObsID::otDoppler, ObsID::cbL1,   ObsID::tcCA);
-         gpstk::SvObsEpoch::const_iterator d1_itr = rotm1.find(D1);
-         if (d1_itr == rotm1.end())
+         // We need a doppler, and any one will do
+         gpstk::SvObsEpoch::const_iterator d;
+         for (d = rotm1.begin(); d != rotm1.end(); d++)
+            if (d->first.type == ObsID::otDoppler)
+               break;
+
+         // No doppler, no phase double difference. sorry
+         if (d == rotm1.end())
             continue;
 
-         // get the range rate in meters per second...
-         rangeRate[prn][t] = d1_itr->second * gpstk::C_GPS_M/gpstk::L1_FREQ;
+         double freq = d->first.band == ObsID::cbL2 ? gpstk::L2_FREQ : gpstk::L1_FREQ;
+         rangeRate[prn][t] = d->second * gpstk::C_GPS_M/freq;
 
          gpstk::SvObsEpoch::const_iterator phase1;
          for (phase1 = rotm1.begin(); phase1 != rotm1.end(); phase1++)
          {
             const gpstk::ObsID& rot = phase1->first;
-            if (rot.type !=  ObsID::otPhase)
+            if (rot.type != ObsID::otPhase)
                continue;
 
             gpstk::SvObsEpoch::const_iterator phase2 = rotm2.find(rot);
