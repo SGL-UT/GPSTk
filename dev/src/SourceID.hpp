@@ -87,8 +87,9 @@ namespace gpstk
       { return !(operator<(right)); }
 
       /// Assignment operator
-      SourceID operator=(const SourceID& right)
+      SourceID& operator=(const SourceID& right)
       {
+        if ( this == &right ) return (*this);
         (*this).type = right.type;
         (*this).sourceName = right.sourceName;
         return *this;
