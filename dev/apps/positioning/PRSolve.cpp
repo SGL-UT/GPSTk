@@ -69,7 +69,7 @@ using namespace StringUtils;
 
    // prgm data
 string PrgmName("PRSolve");
-string PrgmVers("2.0 3/07");
+string PrgmVers("2.01 3/07");
 
 // data input from command line
 typedef struct Configuration {
@@ -102,7 +102,6 @@ typedef struct Configuration {
    int NrecOut;
    DayTime FirstEpoch,LastEpoch;
    string timeFormat;
-   //double DT;
    bool Debug,Verbose;
       // data flow
    double ith;
@@ -180,6 +179,7 @@ void PrintStats(Stats<double> S[3],
                 char c0='X', char c1='Y', char c2='Z') throw(Exception);
 void setWeather(DayTime& time, TropModel *pTropModel);
 int GetCommandLine(int argc, char **argv) throw(Exception);
+void DumpConfiguration(ostream& os) throw(Exception);
 void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
 int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
   BCEphemerisStore& BCE) throw(Exception);
@@ -197,7 +197,7 @@ try {
    BCEphemerisStore BCEphList;
 
       // Title and description
-   Title = PrgmName + ", part of the GPSTK ToolKit, Ver " + PrgmVers + ", Run ";
+   Title = PrgmName + ", part of the GPS ToolKit, Ver " + PrgmVers + ", Run ";
    time_t timer;
    struct tm *tblock;
    timer = time(NULL);
@@ -209,7 +209,26 @@ try {
 
       // get command line
    iret=GetCommandLine(argc, argv);
-   if(iret) return iret;
+   if(iret < 0) return iret;
+   // NB save iret until after DumpConfiguration()
+
+      // update configuration of PRSolution
+   if(C.Verbose) {
+      prsol.pDebugStream = &C.oflog;
+      prsol.Debug = true;
+   }
+   prsol.RMSLimit = C.rmsLimit;
+   prsol.SlopeLimit = C.slopeLimit;
+   prsol.Algebraic = C.algebra;
+   prsol.ResidualCriterion = C.residCrit;
+   prsol.ReturnAtOnce = C.returnatonce;
+   prsol.NSatsReject = C.maxReject;
+   prsol.MaxNIterations = C.nIter;
+   prsol.ConvergenceLimit = C.convLimit;
+
+      // iret comes from GetCommandLine
+   if(iret == 0) DumpConfiguration(C.oflog);
+   else return iret;
 
    // get nav files and build EphemerisStore
    int nread = FillEphemerisStore(C.InputNavName, SP3EphList, BCEphList);
@@ -243,7 +262,7 @@ try {
       }  // end loop over InputMetName
 
       // sort the store on time
-      C.MetStore.sort(RinexMetDataLessThan());
+      C.MetStore.sort();
 
       // dump the met data
       if(C.Debug) {
@@ -640,7 +659,7 @@ try {
          if(C.Debug) C.oflog << "SolutionAlgorithm returns " << iret << endl;
          if(iret) break;
 
-            // update LastEpoch and estimate of C.DT
+            // update LastEpoch and estimate of DT
          if(C.LastEpoch > DayTime(DayTime::BEGINNING_OF_TIME)) {
             dt = CurrEpoch-C.LastEpoch;
             for(i=0; i<9; i++) {
@@ -706,7 +725,7 @@ try {
          rheadout.version = 2.1; rheadout.valid |= RinexObsHeader::versionValid;
          rheadout.firstObs = C.FirstEpoch;
          rheadout.valid |= RinexObsHeader::firstTimeValid;
-         //rheadout.interval = C.DT;
+         //rheadout.interval = DT;
          //rheadout.valid |= RinexObsHeader::intervalValid;
          //rheadout.lastObs = C.LastEpoch;
          //rheadout.valid |= RinexObsHeader::lastTimeValid;
@@ -749,18 +768,21 @@ try {
 
    }  // end while loop over epochs
 
-   if(C.APSout) PrintStats(SA,PA,zA,"Autonomous solution for file " + filename);
-   PrintStats(SR,PR,zR,"RAIM solution for file " + filename);
-   if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
-      if(C.APSout) {
-         PrintStats(SAPR,PAPR,zAPR,
-            "Autonomous solution residuals for file " + filename);
-         PrintStats(SANE,PANE,zANE,
-            "Autonomous solution residuals (NEU) for file " + filename,'N','E','U');
+      // only print per file if there is more than one file
+   if(C.InputObsName.size() > 1) {
+      if(C.APSout) PrintStats(SA,PA,zA,"Autonomous solution for file " + filename);
+      PrintStats(SR,PR,zR,"RAIM solution for file " + filename);
+      if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
+         if(C.APSout) {
+            PrintStats(SAPR,PAPR,zAPR,"Autonomous solution residuals for file "
+               + filename);
+            PrintStats(SANE,PANE,zANE,"Autonomous solution residuals (NEU) for file "
+               + filename,'N','E','U');
+         }
+         PrintStats(SRPR,PRPR,zRPR,"RAIM solution residuals for file " + filename);
+         PrintStats(SRNE,PRNE,zRNE,
+            "RAIM solution residuals (NEU) for file " + filename,'N','E','U');
       }
-      PrintStats(SRPR,PRPR,zRPR,"RAIM solution residuals for file " + filename);
-      PrintStats(SRNE,PRNE,zRNE,
-         "RAIM solution residuals (NEU) for file " + filename,'N','E','U');
    }
 
    ifstr.clear();
@@ -805,30 +827,6 @@ try {
    double conv=C.convLimit;
    vector<bool> UseSats(Sats.size(),true);
    Vector<double> Residual,Slope;
-
-   // configuration
-   if(C.Verbose) {
-      prsol.pDebugStream = &C.oflog;
-      prsol.Debug = true;
-   }
-   if(C.rmsLimit > 0.0)
-      prsol.RMSLimit = C.rmsLimit;
-   if(C.slopeLimit > 0.0)
-      prsol.SlopeLimit = C.slopeLimit;
-   prsol.Algebraic = C.algebra;
-   prsol.ResidualCriterion = C.residCrit;
-   prsol.ReturnAtOnce = C.returnatonce;
-   if(C.maxReject > 0)
-      prsol.NSatsReject = C.maxReject;
-   if(C.nIter > 0)
-      prsol.MaxNIterations = C.nIter;
-   else
-      niter = prsol.MaxNIterations;
-   if(C.convLimit > 0.0)
-      prsol.ConvergenceLimit = C.convLimit;
-   else
-      conv = prsol.ConvergenceLimit;
-   //C.oflog << "NSatsReject is " << prsol.NSatsReject << endl;
 
    // if met data available, update weather in trop model
    if(C.InputMetName.size() > 0)
@@ -1052,10 +1050,12 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int AfterReadingFiles(void) throw(Exception)
 {
 try {
+   // only print stats on all files if there is more than one
    if(C.APSout) {
       PrintStats(SSA,PPA,zzA,"Autonomous solution for all files");
       if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
-         PrintStats(SSAPR,PPAPR,zzAPR,"Autonomous position residuals for all files");
+         PrintStats(SSAPR,PPAPR,zzAPR,
+            "Autonomous position residuals for all files");
          PrintStats(SSANE,PPANE,zzANE,
             "Autonomous position residuals (NEU) for all files",'N','E','U');
       }
@@ -1082,12 +1082,11 @@ try {
    int i,j;
    double dt;
    for(j=0,i=1; i<9; i++) { if(C.ndt[i]>C.ndt[j]) j=i; }
-   //C.DT = C.estdt[j];
    C.oflog << endl;
    C.oflog << "Estimated data interval is " << C.estdt[j] << " seconds.\n";
    C.oflog << "First epoch is "
       << C.FirstEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f = %04F %10.3g") << endl;
-   C.oflog << "Last epoch is "
+   C.oflog << "Last  epoch is "
       << C.LastEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f = %04F %10.3g") << endl;
 
    return 0;
@@ -1190,16 +1189,17 @@ try {
    C.ith = 0.0;
    C.Tbeg = C.FirstEpoch = DayTime(DayTime::BEGINNING_OF_TIME);
    C.Tend = DayTime(DayTime::END_OF_TIME);
-   //C.DT = 0;
 
-   C.rmsLimit = -1.0;            // PRSolution() has a default
-   C.slopeLimit = -1.0;          // PRSolution() has a default
-   C.algebra = false;
-   C.residCrit = true;
-   C.returnatonce = false;
-   C.maxReject = -1;             // PRSolution() has a default
-   C.nIter = -1;                 // PRSolution() has a default
-   C.convLimit = -1.0;           // PRSolution() has a default
+      // configuration of PRSolution
+   C.rmsLimit = prsol.RMSLimit;
+   C.slopeLimit = prsol.SlopeLimit;
+   C.algebra = prsol.Algebraic;
+   C.residCrit = prsol.ResidualCriterion;
+   C.returnatonce = prsol.ReturnAtOnce;
+   C.maxReject = prsol.NSatsReject;
+   C.nIter = prsol.MaxNIterations;
+   C.convLimit = prsol.ConvergenceLimit;
+
    C.elevLimit = 0.0;
 
    C.LogFile = string("prs.log");
@@ -1231,78 +1231,77 @@ try {
       'o',"obs"," [-o|--obs] <file>    Input RINEX observation file(s)");
 
    RequiredOption dashn(CommandOption::hasArgument, CommandOption::stdType,
-      'n',"nav"," [-n|--nav] <file>    Input navigation file(s) (RINEX or SP3)");
+      'n',"nav"," [-n|--nav] <file>    Input navigation file(s) [RINEX or SP3]");
 
       // optional options
    // this only so it will show up in help page...
    CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-      'f',"","# Input:\n [-f|--file] <file>   File containing more options");
+      'f',"","# Input:\n [-f|--file] <file>   File containing more options ()");
 
    CommandOption dashdo(CommandOption::hasArgument, CommandOption::stdType,
       0,"obsdir",
-      " --obsdir <dir>       Directory of input RINEX observation file(s)");
+      " --obsdir <dir>       Directory of input RINEX observation file(s) (.)");
    dashdo.setMaxCount(1);
 
    CommandOption dashdn(CommandOption::hasArgument, CommandOption::stdType,
-      0,"navdir"," --navdir <dir>       Directory of input navigation file(s)");
+      0,"navdir"," --navdir <dir>       Directory of input navigation file(s) (.)");
    dashdn.setMaxCount(1);
 
    CommandOption dashdm(CommandOption::hasArgument, CommandOption::stdType,
       0,"metdir",
-      " --metdir <dir>       Directory of input RINEX meteorological file(s)");
+      " --metdir <dir>       Directory of input RINEX meteorological file(s) (.)");
    dashdm.setMaxCount(1);
 
    CommandOption dashm(CommandOption::hasArgument, CommandOption::stdType,
-      'm',"met"," [-m|--met] <file>    Input RINEX meteorological file(s)");
+      'm',"met"," [-m|--met] <file>    Input RINEX meteorological file(s) ()");
 
    CommandOption dashith(CommandOption::hasArgument, CommandOption::stdType,
-      0,"decimate"," --decimate <dt>      Decimate data to time interval dt");
+      0,"decimate"," --decimate <dt>      Decimate data to time interval dt ()");
    dashith.setMaxCount(1);
 
    // time
    // times - don't use CommandOptionWithTimeArg
    CommandOption dashbt(CommandOption::hasArgument, CommandOption::stdType,
       0,"BeginTime", " --BeginTime <arg>    Start time: arg is "
-      "'GPSweek,sow' OR 'YYYY,MM,DD,HH,Min,Sec'");
+      "'GPSweek,sow' OR 'YYYY,MM,DD,HH,Min,Sec' ()");
    dashbt.setMaxCount(1);
 
    CommandOption dashet(CommandOption::hasArgument, CommandOption::stdType,
       0,"EndTime", " --EndTime <arg>      End time: arg is 'GPSweek,sow' OR "
-      "'YYYY,MM,DD,HH,Min,Sec'");
+      "'YYYY,MM,DD,HH,Min,Sec' ()");
    dashet.setMaxCount(1);
 
-   //CommandOptionWithTimeArg dasheb(0,"EpochBeg","%Y,%m,%d,%H,%M,%f",
-   //   " --EpochBeg <arg>     Start time, arg is of the form YYYY,MM,DD,HH,Min,Sec");
-   //CommandOptionWithTimeArg dashgb(0,"GPSBeg","%F,%g",
-   //   " --GPSBeg <arg>       Start time, arg is of the form GPSweek,GPSsow");
-   //CommandOptionWithTimeArg dashee(0,"EpochEnd","%Y,%m,%d,%H,%M,%f",
-   //   " --EpochEnd <arg>     End time, arg is of the form YYYY,MM,DD,HH,Min,Sec");
-   //CommandOptionWithTimeArg dashge(0,"GPSEnd","%F,%g",
-   //   " --GPSEnd <arg>       End time, arg is of the form GPSweek,GPSsow");
-   // allow ONLY one start time (use startmutex(true) if one is required)
-   //CommandOptionMutex startmutex(false);
-   //startmutex.addOption(&dasheb);
-   //startmutex.addOption(&dashgb);
-   //CommandOptionMutex stopmutex(false);
-   //stopmutex.addOption(&dashee);
-   //stopmutex.addOption(&dashge);
-
-   CommandOptionNoArg dashCA(0,"useCA",
-      " --useCA              Use C/A code pseudorange if P1 is not available");
+   CommandOptionNoArg dashCA(0,"useCA", string(" --useCA              ")
+      + string("Use C/A code pseudorange if P1 is not available (")
+      + (C.UseCA ? "true" : "false") + ")");
    dashCA.setMaxCount(1);
    
-   CommandOptionNoArg dashfCA(0,"forceCA",
-      " --forceCA            Use C/A code pseudorange regardless of P1 availability");
+   CommandOptionNoArg dashfCA(0,"forceCA", string(" --forceCA            ")
+      + string("Use C/A code pseudorange regardless of P1 availability (")
+      + (C.ForceCA ? "true" : "false") + ")");
    dashfCA.setMaxCount(1);
-   
-   //CommandOption dashDT(CommandOption::hasArgument, CommandOption::stdType,
-      //0,"DT"," --DT <dt>              Time interval (sec) of data points");
-   //dashDT.setMaxCount(1);
    
    // --------------------------------------------------------------------------------
 
+   CommandOption dashElev(CommandOption::hasArgument, CommandOption::stdType,
+      0,"MinElev", "# Configuration:\n"
+      " --MinElev <el>       Minimum elevation angle (deg) [only if --PosXYZ] ("
+      + asString(C.elevLimit,2) + ")");
+   dashElev.setMaxCount(1);
+
+   CommandOption dashXsat(CommandOption::hasArgument, CommandOption::stdType,
+      0,"exSat"," --exSat <sat>        Exclude this satellite ()");
+
+   CommandOption dashTrop(CommandOption::hasArgument, CommandOption::stdType,0,"Trop",
+      " --Trop <model,T,P,H> Trop model "
+      "[one of BL,SA,NB,GG,GGH (cf. gpstk::TropModel)], with\n                     "
+      "   optional default weather [T(C),P(mb),RH(%)] ("
+      + C.TropType + "," + asString(C.defaultT,0)
+      + "," + asString(C.defaultPr,0) + "," + asString(C.defaultRH,0) + ")");
+   dashTrop.setMaxCount(1);
+
    CommandOption dashrms(CommandOption::hasArgument, CommandOption::stdType,
-      0,"RMSlimit", "# Configuration:\n --RMSlimit <rms>     "
+      0,"RMSlimit", "# PRSolution configuration:\n --RMSlimit <rms>     "
       "Upper limit on RMS post-fit residuals ("
       + asString(prsol.RMSLimit,2) + "m)");
    dashrms.setMaxCount(1);
@@ -1314,20 +1313,26 @@ try {
    dashslop.setMaxCount(1);
 
    CommandOptionNoArg dashAlge(0,"Algebra",
-      " --Algebra            Use algebraic algorithm (otherwise linearized LS)");
+      string(" --Algebra            ")
+      + string("Use algebraic algorithm, rather than linearized least squares: ")
+      + (prsol.Algebraic ? "(on)" : "(off)") );
    dashAlge.setMaxCount(1);
 
-   CommandOptionNoArg dashrcrt(0,"DistanceCriterion", " --DistanceCriterion  "
-      "Use dist. from given pos. as convergence crit. (else RMS)");
+   CommandOptionNoArg dashrcrt(0,"DistanceCriterion", string(" --DistanceCriterion  ")
+    +string("Use distance from given position (--PosXYZ) as convergence criterion,\n")
+    +string("                         rather than RMS residual-of-fit (")
+    + (prsol.ResidualCriterion ? string("off") : string("on")) + string(")") );
    dashrcrt.setMaxCount(1);
 
-   CommandOptionNoArg dashrone(0,"ReturnAtOnce"," --ReturnAtOnce       "
-      "Return as soon as a good solution is found");
+   CommandOptionNoArg dashrone(0,"ReturnAtOnce",string(" --ReturnAtOnce       ")
+     +string("Return as soon as a good solution is found (")
+     +(prsol.ReturnAtOnce ? string("true") : string("false")) + string(")") );
    dashrone.setMaxCount(1);
 
    CommandOption dashnrej(CommandOption::hasArgument, CommandOption::stdType,
-      0,"NReject", " --NReject <n>        "
-      "Maximum number of satellites to reject (no limit)");
+      0,"NReject", " --NReject <n>        Maximum number of satellites to reject ("
+      + (prsol.NSatsReject == -1 ? "no limit" : asString(prsol.NSatsReject))
+      + ")");
    dashnrej.setMaxCount(1);
 
    CommandOption dashNit(CommandOption::hasArgument, CommandOption::stdType,0,"NIter",
@@ -1336,78 +1341,69 @@ try {
    dashNit.setMaxCount(1);
 
    CommandOption dashConv(CommandOption::hasArgument, CommandOption::stdType,0,"Conv",
-      " --Conv <c>           Minimum convergence criterion in linearized LS ("
+      " --Conv <c>           "
+      "Minimum convergence criterion in linearized least squares ("
       + doub2sci(prsol.ConvergenceLimit,8,2,false) + ")");
    dashConv.setMaxCount(1);
-
-   CommandOption dashElev(CommandOption::hasArgument, CommandOption::stdType,
-      0,"MinElev",
-      " --MinElev <el>       Minimum elevation angle (deg) (only if --PosXYZ)");
-   dashElev.setMaxCount(1);
-
-   CommandOption dashXsat(CommandOption::hasArgument, CommandOption::stdType,
-      0,"exSat"," --exSat <sat>        Exclude this satellite.");
-
-   CommandOption dashTrop(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Trop"," --Trop <model,T,P,H> Trop model (one of BL,SA,NB,GG,GGH (cf.GPSTk)),"
-      "\n                         with optional default weather: Temp(C),Press(mb),RH(%)");
-   dashTrop.setMaxCount(1);
 
    // --------------------------------------------------------------------------------
 
    CommandOption dashLog(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Log","# Output:\n --Log <file>         Output log file name (prs.log).");
+      0,"Log","# Output:\n --Log <file>         Output log file name ("
+      + C.LogFile + ")");
    dashLog.setMaxCount(1);
    
    CommandOption dashXYZ(CommandOption::hasArgument, CommandOption::stdType,
       0,"PosXYZ", " --PosXYZ <X,Y,Z>     "
-      "Known position (ECEF,m), used to compute output residuals.");
+      "Known position (ECEF,m), used to compute output residuals ()");
    dashXYZ.setMaxCount(1);
    
-   CommandOptionNoArg dashAPSout(0,"APSout",
-      " --APSout             Output autonomous pseudorange solution (APS - no RAIM)");
+   CommandOptionNoArg dashAPSout(0,"APSout", string(" --APSout             ")
+      + string("Output autonomous pseudorange solution [tag APS, no RAIM] (")
+      + (C.APSout ? "true" : "false") + string(")") );
    dashAPSout.setMaxCount(1);
 
    CommandOption dashForm(CommandOption::hasArgument, CommandOption::stdType,
       0,"TimeFormat", " --TimeFormat <fmt>   "
-      "Output time format (ala DayTime) (default: " + C.timeFormat + ")");
+      "Format for time tags in output (cf gpstk::DayTime) (" + C.timeFormat + ")");
    dashForm.setMaxCount(1);
 
    CommandOption dashRfile(CommandOption::hasArgument, CommandOption::stdType,
       0,"outRinex","# RINEX output:\n"
-      " --outRinex <file>    Output RINEX obs file name");
+      " --outRinex <file>    Output RINEX observation file name ()");
    dashRfile.setMaxCount(1);
    
    CommandOption dashRrun(CommandOption::hasArgument, CommandOption::stdType,
-      0,"RunBy"," --RunBy <string>     Output RINEX header 'RUN BY' string");
+      0,"RunBy"," --RunBy <string>     Output RINEX header 'RUN BY' string ("
+      + C.HDRunby + ")");
    dashRrun.setMaxCount(1);
    
    CommandOption dashRobs(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Observer"," --Observer <string>  Output RINEX header 'OBSERVER' string");
+      0,"Observer"," --Observer <string>  Output RINEX header 'OBSERVER' string ()");
    dashRobs.setMaxCount(1);
    
    CommandOption dashRag(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Agency"," --Agency <string>    Output RINEX header 'AGENCY' string");
+      0,"Agency"," --Agency <string>    Output RINEX header 'AGENCY' string ()");
    dashRag.setMaxCount(1);
    
    CommandOption dashRmark(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Marker"," --Marker <string>    Output RINEX header 'MARKER' string");
+      0,"Marker"," --Marker <string>    Output RINEX header 'MARKER' string ()");
    dashRmark.setMaxCount(1);
    
    CommandOption dashRnumb(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Number"," --Number <string>    Output RINEX header 'NUMBER' string");
+      0,"Number"," --Number <string>    Output RINEX header 'NUMBER' string ()");
    dashRnumb.setMaxCount(1);
    
    CommandOptionNoArg dashVerb(0,"verbose",
-      "# Help:\n --verbose            Print extended output");
+      "# Help:\n --verbose            Print extended output (don't)");
    dashVerb.setMaxCount(1);
 
    CommandOptionNoArg dashDebug(0,"debug",
-      " --debug              Print very extended output.");
+      " --debug              Print very extended output (don't)");
    dashDebug.setMaxCount(1);
 
    CommandOptionNoArg dashh('h', "help",
-     " [-h|--help]          Print syntax and quit.");
+     " [-h|--help]          Print syntax and quit (don't)");
 
    // ... other options
    CommandOptionRest Rest("");
@@ -1416,8 +1412,10 @@ try {
    "Prgm PRSolve reads one or more RINEX observation files, plus one or more\n"
    "   navigation (ephemeris) files, and computes an autonomous GPS pseudorange\n"
    "   position solution, using a RAIM-like algorithm to eliminate outliers.\n"
-   "   Output is to the log file, and also optionally to a RINEX obs file with\n"
-   "   the position solutions in comments in auxiliary header blocks.\n");
+   "   Output is to a log file, and also optionally to a RINEX obs file with\n"
+   "   the position solutions in comments in auxiliary header blocks.\n"
+   "   NB. Default values appear in () after optional arguments below.\n"
+   );
 
       // -------------------------------------------------
       // allow user to put all options in a file
@@ -1451,7 +1449,7 @@ try {
       help = true;
    }
 
-   if (Par.hasErrors())
+   if(!help && Par.hasErrors())
    {
       cout << "\nErrors found in command line input:\n";
       Par.dumpErrors(cout);
@@ -1576,28 +1574,6 @@ try {
       else if(help) cout << " Input: end time " << values[0] << " = "
          << C.Tend.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
-   //if(dasheb.getCount()) {
-   //   values = dasheb.getValue();
-   //   C.Tbeg.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
-   //   if(help) cout << "Begin time is "
-   //      << C.Tbeg.printf("%04Y/%02m/%02d %02H:%02M:%.3f") << endl;
-   //}
-   //if(dashgb.getCount()) {
-   //   values = dashgb.getValue();
-   //   C.Tbeg.setToString(values[0], "%F,%g");
-   //   if(help) cout << "Begin time is " << C.Tbeg.printf("%04F/%10.3g") << endl;
-   //}
-   //if(dashee.getCount()) {
-   //   values = dashee.getValue();
-   //   C.Tend.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
-   //   if(help) cout << "End time is "
-   //      << C.Tend.printf("%04Y/%02m/%02d %02H:%02M:%.3f") << endl;
-   //}
-   //if(dashge.getCount()) {
-   //   values = dashge.getValue();
-   //   C.Tend.setToString(values[0], "%F,%g");
-   //   if(help) cout << "End time is " << C.Tend.printf("%04F/%10.3g") << endl;
-   //}
    if(dashCA.getCount()) {
       C.UseCA = true;
       if(help) cout << "'Use C/A' flag is set\n";
@@ -1606,11 +1582,6 @@ try {
       C.ForceCA = true;
       if(help) cout << "'Force C/A' flag is set\n";
    }
-   //if(dashDT.getCount()) {
-      //values = dashDT.getValue();
-      //C.DT = asDouble(values[0]);
-      //if(help) cout << "DT is set to " << C.DT << endl;
-   //}
 
    if(dashrms.getCount()) {
       values = dashrms.getValue();
@@ -1758,100 +1729,123 @@ try {
    // for(unsigned j=0; j<Args.size(); j++) cout << Args[j] << endl;
    //}
 
+   if(help) return 1;
+
    C.oflog.open(C.LogFile.c_str(),ios::out);
    if(C.oflog.fail()) {
       cout << "Failed to open log file " << C.LogFile << endl;
+      return -2;
    }
    else {
       cout << "Opened log file " << C.LogFile << endl;
       C.oflog << Title;
    }
 
-      // print config to log
-   C.oflog << "\nHere is the input configuration:\n";
-   C.oflog << " Input Obs directory is '" << C.ObsDirectory << "'" << endl;
-   C.oflog << " Input RINEX observation files are:\n";
-   for(i=0; i<C.InputObsName.size(); i++) {
-      C.oflog << "   " << C.InputObsName[i] << endl;
-   }
-   C.oflog << " Input Nav directory is '" << C.NavDirectory << "'" << endl;
-   C.oflog << " Input navigation files are:\n";
-   for(i=0; i<C.InputNavName.size(); i++) {
-      C.oflog << "   " << C.InputNavName[i] << endl;
-   }
-   C.oflog << " Input Met directory is '" << C.MetDirectory << "'" << endl;
-   if(C.InputMetName.size() > 0) {
-      C.oflog << " Input RINEX meteorological files are:\n";
-      for(i=0; i<C.InputMetName.size(); i++) {
-         C.oflog << "   " << C.InputMetName[i] << endl;
-      }
-   }
-   C.oflog << " Ithing time interval is " << C.ith << endl;
-   if(C.Tbeg > DayTime(DayTime::BEGINNING_OF_TIME)) C.oflog << " Begin time is "
-      << C.Tbeg.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
-      << " = " << C.Tbeg.printf("%04F/%10.3g") << endl;
-   if(C.Tend < DayTime(DayTime::END_OF_TIME)) C.oflog << " End time is "
-      << C.Tend.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
-      << " = " << C.Tend.printf("%04F/%10.3g") << endl;
-   if(C.UseCA) C.oflog << " 'Use C/A' flag is set\n";
-   if(C.ForceCA) C.oflog << " 'Force C/A' flag is set\n";
-   //C.oflog << " DT is set to " << C.DT << endl;
-   if(C.ExSV.size()) {
-      RinexSatID p;
-      p.setfill('0');
-      C.oflog << " Exclude satellites";
-      for(i=0; i<C.ExSV.size(); i++) {
-         p = C.ExSV[i];
-         C.oflog << " " << p;
-      }
-      C.oflog << endl;
-   }
-   C.oflog << " Trop model: " << C.TropType << " and weather (T,P,RH): "
-      << C.defaultT << "," << C.defaultPr << "," << C.defaultRH << endl;
-   C.oflog << " Log file is " << C.LogFile << endl;
-   if(C.APSout) C.oflog << " Output autonomous solution (no RAIM) - APS,etc.\n";
-   C.oflog << " Output format for time tags (cf. class DayTime) is "
-      << C.timeFormat << endl;
-   if(C.knownpos.getCoordinateSystem() != Position::Unknown)
-      C.oflog << " Output residuals: known position is\n   " << C.knownpos.printf(
-         "ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
-   if(!C.OutRinexObs.empty()) C.oflog << " Output RINEX file name is "
-      << C.OutRinexObs << endl;
-   if(!C.HDRunby.empty()) C.oflog << " Output RINEX 'RUN BY' is "
-      << C.HDRunby << endl;
-   if(!C.HDObs.empty()) C.oflog << " Output RINEX 'OBSERVER' is "
-      << C.HDObs << endl;
-   if(!C.HDAgency.empty()) C.oflog << " Output RINEX 'AGENCY' is "
-      << C.HDAgency << endl;
-   if(!C.HDMarker.empty()) C.oflog << " Output RINEX 'MARKER' is "
-      << C.HDMarker << endl;
-   if(!C.HDNumber.empty()) C.oflog << " Output RINEX 'NUMBER' is "
-      << C.HDNumber << endl;
-   C.oflog << " ------ PRSolution configuration (-1 means use PRSolution default) :"
-      << endl;
-   C.oflog << " Solution limit parameters are "
-      << C.rmsLimit << " = RMS residuals (m) limit, and "
-      << C.slopeLimit << " = RAIM 'slope' limit" << endl;
-   C.oflog << " Algebraic algorithm is turned "
-      << (C.algebra ? "ON ":"OFF ") << endl;
-   C.oflog << " Residual criterion is '"
-      << (C.residCrit ? "RMS residuals" : "Distance from apriori") << "'" << endl;
-   C.oflog << " Return-at-once option is "
-      << (C.returnatonce ? "on" : "off") << endl;
-   C.oflog << " Maximum # of satellites to reject is " << C.maxReject << endl;
-   C.oflog << " Minimum elevation angle is " << C.elevLimit << " degrees." << endl;
-   C.oflog << " LLS convergence parameters are " << C.nIter << " iterations and "
-      << scientific << setprecision(3) << C.convLimit << " RSS convergence (m)"
-      << endl;
-   C.oflog << "End of input configuration summary" << endl;
-
-   if(help) return 1;
    return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
    return -1;
+}
+
+//------------------------------------------------------------------------------------
+void DumpConfiguration(ostream& os) throw(Exception)
+{
+try {
+   int i;
+      // print config to log
+   os << "\nHere is the PRSolve configuration:\n";
+   os << " # Input:\n";
+   os << " Obs directory is '" << C.ObsDirectory << "'" << endl;
+   os << " RINEX observation files are:\n";
+   for(i=0; i<C.InputObsName.size(); i++) {
+      os << "   " << C.InputObsName[i] << endl;
+   }
+   os << " Nav directory is '" << C.NavDirectory << "'" << endl;
+   os << " navigation files are:\n";
+   for(i=0; i<C.InputNavName.size(); i++) {
+      os << "   " << C.InputNavName[i] << endl;
+   }
+   if(C.InputMetName.size() > 0) {
+      os << " Met directory is '" << C.MetDirectory << "'" << endl;
+      os << " RINEX meteorological files are:\n";
+      for(i=0; i<C.InputMetName.size(); i++) {
+         os << "   " << C.InputMetName[i] << endl;
+      }
+   }
+   else os << " No input meteorological data\n";
+   os << " Ithing time interval is " << C.ith << endl;
+   if(C.Tbeg > DayTime(DayTime::BEGINNING_OF_TIME)) os << " Begin time is "
+      << C.Tbeg.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
+      << " = " << C.Tbeg.printf("%04F/%10.3g") << endl;
+   if(C.Tend < DayTime(DayTime::END_OF_TIME)) os << " End time is "
+      << C.Tend.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
+      << " = " << C.Tend.printf("%04F/%10.3g") << endl;
+   if(C.UseCA) os << " 'Use C/A' flag is set\n";
+   if(C.ForceCA) os << " 'Force C/A' flag is set\n";
+
+   os << " # Configuration:\n";
+   os << " Minimum elevation angle is " << C.elevLimit << " degrees." << endl;
+   if(C.ExSV.size()) {
+      RinexSatID p;
+      p.setfill('0');
+      os << " Exclude satellites";
+      for(i=0; i<C.ExSV.size(); i++) {
+         p = C.ExSV[i];
+         os << " " << p;
+      }
+      os << endl;
+   }
+   os << " Trop model: " << C.TropType << " and weather (T,P,RH): "
+      << C.defaultT << "," << C.defaultPr << "," << C.defaultRH << endl;
+   os << " ------ PRSolution configuration:" << endl;
+   os << "  Limit on RMS solution residual (m) = " << prsol.RMSLimit << endl;
+   os << "  Limit on RAIM 'slope' = " << prsol.SlopeLimit << endl;
+   os << "  Use algebraic algorithm is "
+      << (prsol.Algebraic ? "true" : "false") << endl;
+   os << "  Residual criterion is "
+      << (prsol.ResidualCriterion ? "RMS residuals":"distance from apriori") << endl;
+   os << "  Return-at-once option is "
+      << (prsol.ReturnAtOnce ? "on" : "off") << endl;
+   os << "  Maximum number of rejected satellites is "
+      << (prsol.NSatsReject == -1 ? "unlimited" : asString(prsol.NSatsReject))
+      << endl;
+   os << "  Maximum iterations in linearized least squares (LLS) is "
+      << prsol.MaxNIterations << endl;
+   os << "  RSS convergence criterion (meters) in LLS is "
+      << prsol.ConvergenceLimit << endl;
+   os << " ------ End of PRSolution configuration." << endl;
+
+   os << " # Output:\n";
+   os << " Log file is " << C.LogFile << endl;
+   if(C.knownpos.getCoordinateSystem() != Position::Unknown)
+      os << " Output residuals: known position is\n   " << C.knownpos.printf(
+         "ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
+   if(C.APSout) os << " Output autonomous solution (no RAIM) - APS,etc.\n";
+   os << " Output format for time tags (cf. class DayTime) is "
+      << C.timeFormat << endl;
+
+   os << " # RINEX output:\n";
+   if(!C.OutRinexObs.empty()) os << " Output RINEX file name is "
+      << C.OutRinexObs << endl;
+   if(!C.HDRunby.empty()) os << " Output RINEX 'RUN BY' is "
+      << C.HDRunby << endl;
+   if(!C.HDObs.empty()) os << " Output RINEX 'OBSERVER' is "
+      << C.HDObs << endl;
+   if(!C.HDAgency.empty()) os << " Output RINEX 'AGENCY' is "
+      << C.HDAgency << endl;
+   if(!C.HDMarker.empty()) os << " Output RINEX 'MARKER' is "
+      << C.HDMarker << endl;
+   if(!C.HDNumber.empty()) os << " Output RINEX 'NUMBER' is "
+      << C.HDNumber << endl;
+
+   os << "End of PRSolve configuration summary" << endl << endl;
+
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------

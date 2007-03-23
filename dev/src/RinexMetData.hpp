@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file RinexMetData.hpp
  * Encapsulate RINEX meteorological file data, including I/O
@@ -46,11 +44,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #include <map>
 
 #include "DayTime.hpp"
@@ -91,6 +84,10 @@ namespace gpstk
           * A debug output function.
           */ 
       virtual void dump(std::ostream& s) const;
+
+         /// less than operator, for use with STL sort()
+      bool operator<(const RinexMetData& right) const
+         { return (time < right.time); }
 
          /// A map for storing one line of observations, mapping
          /// the observation type to its value.
@@ -144,26 +141,9 @@ namespace gpstk
          throw(FFStreamError);
    };  // class RinexMetData
 
-   /// class RinexMetDataLessThan, for use with algorithm sort(), for time-ordering.
-   class RinexMetDataLessThan {
-   public:
-      /// return true if rmd1 is less than rmd2.
-      /// Uses member 'time' to determine result.
-      bool operator()(const RinexMetData& rmd1, const RinexMetData& rmd2)
-         { return rmd1.time < rmd2.time; }
-   }; // class RinexMetDataLessThan
-
    //@}
 
 } // namespace
 
 
 #endif
-
-
-
-
-
-
-
-
