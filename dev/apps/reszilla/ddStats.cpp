@@ -166,7 +166,7 @@ bool DDStats::initialize(int argc, char *argv[]) throw()
    else
       sigmaMult = 6;
 
-   std::ofstream extraOutput;   
+   std::ofstream extraOutput;
    if (statsFileOption.getCount())
    {
       const string fn = statsFileOption.getValue()[0];
