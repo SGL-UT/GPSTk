@@ -34,11 +34,13 @@ public:
         navFileOpt('n', "nav",   "Filename to write RINEX nav data to."),
         mdpFileOpt('i', "mdp-input", "Filename to read MDP data from. The filename of '-' means to use stdin.", true),
         c2Opt('c', "l2c", "Enable output of L2C data in C2"),
+        antPosOpt('p',"pos", "Antenna position to write into obs file header.  Format as string: \"X Y Z\"."),
         thinningOpt('t', "thinning", "A thinning factor for the data, specified in seconds between points. Default: none.")
    {
       navFileOpt.setMaxCount(1);
       obsFileOpt.setMaxCount(1);
       mdpFileOpt.setMaxCount(1);
+      antPosOpt.setMaxCount(1);
    } //MDP2Rinex::MDP2Rinex()
 
    bool initialize(int argc, char *argv[]) throw()
@@ -114,7 +116,7 @@ protected:
       roh.observer = "Unknown";
       roh.agency = "Unknown";
       roh.antennaOffset = gpstk::Triple(0,0,0);
-      roh.antennaPosition = gpstk::Triple(0,0,0);
+      //roh.antennaPosition = gpstk::Triple(0,0,0);
       roh.wavelengthFactor[0] = 1;
       roh.wavelengthFactor[1] = 1;
       roh.recType = "Unknown MDP";
@@ -131,6 +133,17 @@ protected:
       roh.obsTypeList.push_back(gpstk::RinexObsHeader::L2);
       roh.obsTypeList.push_back(gpstk::RinexObsHeader::D2);
       roh.obsTypeList.push_back(gpstk::RinexObsHeader::S2);
+      if (antPosOpt.getCount())
+      {
+        double x, y, z;
+        sscanf(antPosOpt.getValue().front().c_str(),"%lf %lf %lf", &x, &y, &z);
+        antPos = gpstk::Triple(x,y,z);
+      }
+      else
+        antPos = gpstk::Triple(0,0,0);
+        
+      roh.antennaPosition = antPos;
+        
       if (c2Opt.getCount())
          roh.obsTypeList.push_back(gpstk::RinexObsHeader::C2);
 
@@ -283,9 +296,9 @@ private:
    int thinning;
    bool firstObs, firstEph;
    gpstk::DayTime prevTime;
+   gpstk::Triple antPos;
    gpstk::CommandOptionWithAnyArg mdpFileOpt, navFileOpt, obsFileOpt;
-   gpstk::CommandOptionWithAnyArg thinningOpt;
-   gpstk::CommandOptionWithAnyArg c2Opt;
+   gpstk::CommandOptionWithAnyArg thinningOpt, antPosOpt, c2Opt;
 };
 
 
