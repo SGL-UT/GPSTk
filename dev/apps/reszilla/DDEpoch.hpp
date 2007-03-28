@@ -69,7 +69,7 @@ struct DDEpoch
    OIDM singleDifference(
       const gpstk::SvObsEpoch& rx1obs,
       const gpstk::SvObsEpoch& rx2obs,
-      double rate);
+      double rangeRate);
    
    // Sets the valid flag true if successfull
    // also sets the masterPrn to the one actually used
@@ -83,6 +83,7 @@ struct DDEpoch
 
    void dump(std::ostream& s) const;
 };
+
 
 struct DDEpochMap : public std::map<gpstk::DayTime, DDEpoch>
 {
@@ -98,12 +99,65 @@ struct DDEpochMap : public std::map<gpstk::DayTime, DDEpoch>
 //-----------------------------------------------------------------------------
    std::string computeStats(
       const gpstk::ObsID oid,
-      const ElevationRange& er,
-      SvElevationMap& pem) const;
+      const ElevationRange& er) const;
    
-   void dump(std::ostream& s);
+   void outputStats(std::ostream& s, const ElevationRangeList elr) const;
+
+   void dump(std::ostream& s) const;
 
    static unsigned debugLevel;
 };
+
+
+typedef std::pair< gpstk::SatID, gpstk::SatID > SatIdPair;
+typedef std::map< SatIdPair, OIDM > PrOIDM;
+
+struct DDAEpoch
+{
+   DDAEpoch() : valid(false){};
+   PrOIDM dd;
+
+   mutable SvShortMap health;
+   mutable SvDoubleMap rangeRate;
+   mutable SvDoubleMap elevation;
+
+   double clockOffset;
+   bool valid;
+   static unsigned debugLevel;
+
+   // Computes a single difference between two sets of obs
+   OIDM singleDifference(
+      const gpstk::SvObsEpoch& rx1obs,
+      const gpstk::SvObsEpoch& rx2obs,
+      double rate);
+   
+   // Sets the valid flag true if successfull
+   void doubleDifference(
+      const gpstk::ObsEpoch& rx1,
+      const gpstk::ObsEpoch& rx2);
+
+   void dump(std::ostream& s) const;
+};
+
+
+struct DDAEpochMap : public std::map<gpstk::DayTime, DDAEpoch>
+{
+   // 
+   void compute(
+      const gpstk::ObsEpochMap& rx1,
+      const gpstk::ObsEpochMap& rx2,
+      SvElevationMap& pem);
+
+   std::string computeStats(
+      const gpstk::ObsID oid,
+      const ElevationRange& er) const;
+
+   void outputStats(std::ostream& s, const ElevationRangeList elr) const;
+   
+   void dump(std::ostream& s) const;
+
+   static unsigned debugLevel;
+};
+
 
 #endif

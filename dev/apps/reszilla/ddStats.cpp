@@ -100,6 +100,7 @@ bool DDStats::initialize(int argc, char *argv[]) throw()
                      " the statistical summaries. Repeat to specify multiple "
                      "bins. The default is \"-b 0-10 -b 10-20 -b 20-60 -b "
                      "10-90\"."),
+
       statsFileOption('o',"statsFile","Filename for output of stats only. Stats"
                       " will still be included at the end of the ord file."),
 
@@ -161,6 +162,7 @@ bool DDStats::initialize(int argc, char *argv[]) throw()
       elr.push_back( ElevationRange(60, 90) );
       elr.push_back( ElevationRange(10, 90) );
    }
+
    if (sigmaOption.getCount())
       sigmaMult = asDouble(sigmaOption.getValue().front());
    else
@@ -191,7 +193,7 @@ void DDStats::outputStats(ofstream& s, DDEpochMap& ddem, SvElevationMap& pem) co
       for (set<ObsID>::const_iterator j = obsSet.begin(); j != obsSet.end(); j++)
          if (j->band == ObsID::cbL1)
             s << setw(14) << left << asString(*j) << right
-              << ddem.computeStats(*j, *i, pem) << "    " << endl;
+              << ddem.computeStats(*j, *i) << "    " << endl;
       s << endl;
    }
    s << "------------------------------------------------------------------------ " << endl;
@@ -202,7 +204,7 @@ void DDStats::outputStats(ofstream& s, DDEpochMap& ddem, SvElevationMap& pem) co
       for (set<ObsID>::const_iterator j = obsSet.begin(); j != obsSet.end(); j++)
          if (j->band == ObsID::cbL2)
             s << setw(14) << left << asString(*j) << right
-              << ddem.computeStats(*j, *i, pem) << "    " << endl;
+              << ddem.computeStats(*j, *i) << "    " << endl;
       s << endl;
    }
    s << "------------------------------------------------------------------------ " << endl;

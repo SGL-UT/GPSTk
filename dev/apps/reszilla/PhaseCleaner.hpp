@@ -117,4 +117,41 @@ public:
       bool operator()(const SvDoubleMap::value_type& pdm);
    };
 };
+
+
+class PhaseCleanerA
+{
+public:
+   PhaseCleanerA(long al, double at, double gt)
+      : minArcLen(al), minArcTime(at), maxGapTime(gt)
+   {}
+
+   void addData(
+      const gpstk::ObsEpochMap& rx1, 
+      const gpstk::ObsEpochMap& rx2);
+
+   void debias(SvElevationMap& pem);
+
+   void getSlips(
+      CycleSlipList& csl,
+      SvElevationMap& pem) const;
+
+   void getPhaseDD(DDAEpochMap& ddem) const;
+
+   void dump(std::ostream& s) const;
+
+   // And an set of arcs for each pair of SVs
+   typedef std::map<SatIdPair, PhaseResidual::ArcList> PraSvPair;
+
+   // And a set of those for each obs type
+   typedef std::map<gpstk::ObsID, PraSvPair> PraSvPrOt;
+   PraSvPrOt pot;
+   
+   long minArcLen;
+   double minArcTime, maxGapTime;
+
+   static unsigned debugLevel;
+};
+
 #endif
+

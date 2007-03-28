@@ -18,9 +18,6 @@ def main():
                       "Defaults to the name of the input stream.", \
                       dest="title", type="string", action="store")
 
-    parser.add_option("-o", "--otype", help="What type of observation to plot. ",\
-                      dest="otype", type="string", action="store")
-
     parser.add_option("-l", "--legend", dest="legend", action="count",
                       help="Include a legend.")
 
@@ -55,11 +52,6 @@ def main():
     if (options.inputFile):
         inputFile = open(options.inputFile)
 
-    if options.otype:
-        otype = options.otype
-    else:
-        otype = "L1 P doppler"
-
     if (options.title == None):
         options.title = inputFile.name
 
@@ -86,18 +78,19 @@ def main():
         words=line.split()
         
         t = parse_time(words[0:3])
-        prn = int(words[3])
-        ordType = "%s %s %s"%(words[4], words[5], words[6])
-        mstr = int(words[7])
-        elev = float(words[8])
-        ddr = float(words[9])
+        ordType = "%s %s %s"%(words[3], words[4], words[5])
+        sv1 = int(words[6])
+        sv2 = int(words[7])
+        elev1 = float(words[8])
+        elev2 = float(words[9])
+        ddr = float(words[10])
         h = int(words[11],16)
         dataList[0].append(t)
         dataList[1].append(ddr)
-        dataList[2].append(prn)
-        dataList[3].append(elev)
-        dataList[4].append(0)
-        dataList[5].append(0)
+        dataList[2].append(sv1)
+        dataList[3].append(sv2)
+        dataList[4].append(elev1)
+        dataList[5].append(elev2)
 
 
     data = numpy.array(dataList)

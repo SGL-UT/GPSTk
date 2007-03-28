@@ -52,6 +52,7 @@
 #include "PhaseCleaner.hpp"
 #include "CycleSlipList.hpp"
 #include "SvElevationMap.hpp"
+#include "ElevationRange.hpp"
 
 
 using namespace std;
@@ -71,6 +72,7 @@ protected:
    virtual void process();
 
 private:
+
    string ddMode;
    double minArcGap; // seconds
    double minArcTime; // seconds
@@ -85,6 +87,10 @@ private:
    void readObsFile(const CommandOptionWithAnyArg& obsFileOption,
                     const EphemerisStore& eph,
                     ObsEpochMap &oem);
+
+   ElevationRangeList elr;
+
+   bool computeStats, computeAll;
 };
 
 //-----------------------------------------------------------------------------
@@ -93,6 +99,8 @@ private:
 DDGen::DDGen() throw()
    : BasicFramework("ddGen", "Computes double-difference residuals from raw observations."),
      ddMode("all"), minArcGap(60), minArcTime(60), minArcLen(5), msid(0),
+     computeStats(false), computeAll(false),
+
      obs1FileOption('1', "obs1", 
                     "Where to get the first receiver's obs data.", true),
    
@@ -131,6 +139,12 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
                       "default value is " + asString(minArcLen) +
                       " epochs."),
 
+      elevBinsOption('b', "elev-bin",
+                     "A range of elevations, used in  computing"
+                     " the statistical summaries. Repeat to specify multiple "
+                     "bins. The default is \"-b 0-10 -b 10-20 -b 20-60 -b "
+                     "10-90\"."),
+
       mscFileOption('c', "msc", "Station coordinate file."),
 
       antennaPosOption('p', "pos", "Location of the antenna in meters ECEF.");
@@ -139,7 +153,13 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       msidOption('m', "msid", "Station to process data for. Used to "
                  "select a station position from the msc file or data "
                  "from a SMODF file.");
-   
+
+   CommandOptionNoArg 
+      statsOption('s', "stats", "Compute stats on the double differences."),
+
+      allComboOption('a', "all-combos", "Compute all combinations, don't just "
+                     "use one master SV.");
+
    if (!BasicFramework::initialize(argc,argv)) 
       return false;
 
@@ -188,6 +208,27 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       return false;
    }
 
+   // get elevation ranges, if specified
+   if (elevBinsOption.getCount())
+   {
+      for (int i=0; i<elevBinsOption.getCount(); i++)
+      {
+         string pr = elevBinsOption.getValue()[i];
+         float minElev = asFloat(pr);
+         stripFirstWord(pr, '-');
+         float maxElev = asFloat(pr);
+         elr.push_back( ElevationRange(minElev, maxElev) );
+      }
+   }
+   else
+   {
+      elr.push_back( ElevationRange( 0, 10) );
+      elr.push_back( ElevationRange(10, 20) );
+      elr.push_back( ElevationRange(20, 60) );
+      elr.push_back( ElevationRange(60, 90) );
+      elr.push_back( ElevationRange(10, 90) );
+   }
+
    if (ddModeOption.getCount())
       ddMode = lowerCase(ddModeOption.getValue()[0]);
 
@@ -199,6 +240,13 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
 
    if (minArcGapOption.getCount())
       minArcGap = asDouble(minArcGapOption.getValue().front());
+
+   if (statsOption.getCount())
+      computeStats = true;
+   
+   if (allComboOption.getCount())
+      computeAll = true;
+
    return true;
 }
 
@@ -217,6 +265,11 @@ void DDGen::spinUp()
            << "# Antenna Position: " << setprecision(8) << antennaPos << endl;
       if (msid)
          cout << "# msid: " << msid << endl;
+
+      if (computeAll)
+         cout << "# Using all SV combinations." << endl;
+      else
+         cout << "# Using one master SV combinations." << endl;
    }
 }
 
@@ -243,25 +296,48 @@ void DDGen::process()
    SvElevationMap pem;
    pem = elevation_map(oem1, antennaPos, *ephReader.eph);
 
-   // This computes a simple double difference on all observables
-   DDEpochMap ddem;
-   ddem.debugLevel = debugLevel;
-   ddem.compute(oem1, oem2, pem);
+   if (computeAll)
+   {
+      DDAEpochMap big;
+      big.debugLevel = debugLevel;
+      big.compute(oem1, oem2, pem);
 
-   // Here we compute a phase double difference that is Better(TM)
-   PhaseCleaner pc(minArcLen, minArcTime, minArcGap);
-   pc.debugLevel = debugLevel;
-   pc.addData(oem1, oem2);
-   pc.debias(pem);
-   pc.getPhaseDD(ddem);
+      // Here we compute a phase double difference that is Better(TM)
+      PhaseCleanerA pc(minArcLen, minArcTime, minArcGap);
+      pc.debugLevel = debugLevel;
+      pc.addData(oem1, oem2);
+      pc.debias(pem);
+      pc.getPhaseDD(big);
 
-   // Now write out all the double differences
-   ddem.dump(cout);
+      if (computeStats)
+         big.outputStats(cout, elr);
+      else
+         big.dump(cout);
+   }
+   else
+   {
+      // This computes a simple double difference on all observables
+      DDEpochMap ddem;
+      ddem.debugLevel = debugLevel;
+      ddem.compute(oem1, oem2, pem);
 
-//   CycleSlipList sl;
-//   pc.getSlips(sl, pem);
-//   dump(cout, sl);    
+      // Here we compute a phase double difference that is Better(TM)
+      PhaseCleaner pc(minArcLen, minArcTime, minArcGap);
+      pc.debugLevel = debugLevel;
+      pc.addData(oem1, oem2);
+      pc.debias(pem);
+      pc.getPhaseDD(ddem);
 
+      // Now write out all the double differences
+      if (computeStats)
+         ddem.outputStats(cout, elr);
+      else
+         ddem.dump(cout);
+
+      //   CycleSlipList sl;
+      //   pc.getSlips(sl, pem);
+      //   dump(cout, sl);    
+   }
 }
 
 

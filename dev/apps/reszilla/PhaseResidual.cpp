@@ -48,7 +48,7 @@ namespace PhaseResidual
 //------------------------------------------------------------------------------
    void Obs::dump(std::ostream& s) const
    {
-      s << "phase:" << phase1
+      s << "phase:" << phase11
         << " dd:" << dd
         << " td:" << td;
    }

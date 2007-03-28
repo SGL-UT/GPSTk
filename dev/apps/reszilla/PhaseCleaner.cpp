@@ -114,7 +114,7 @@ void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1, const gpstk::ObsEpochM
                continue;
 
             gpstk::SvObsEpoch::const_iterator phase2 = rotm2.find(rot);
-            if (phase1 == rotm2.end())
+            if (phase2 == rotm2.end())
                continue;
 
             // Don't use the data if we have an SN in the data and it looks
@@ -135,9 +135,9 @@ void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1, const gpstk::ObsEpochM
             // Note that we need the phase in cycles to make the PhaseResidual
             // class work right.
             PhaseResidual::Arc& arc = pot[rot][prn].front();
-            arc[t].phase1 = phase1->second;
-            arc[t].phase2 = phase2->second;
-            arc[t].snr = snr;
+            arc[t].phase11 = phase1->second;
+            arc[t].phase12 = phase2->second;
+            arc[t].snr1 = snr;
          }
       }
    }
@@ -290,11 +290,11 @@ void PhaseCleaner::doubleDifference(
          const PhaseResidual::Obs& masterObs = k->second;
          
          // Now compute the dd for this epoch
-         double masterDiff = masterObs.phase1 - masterObs.phase2;
+         double masterDiff = masterObs.phase11 - masterObs.phase12;
          double coc = (clockOffset[t]) * (rangeRate[arc->master][t]) / lamda[rot.band];
          masterDiff -= coc;
 
-         double myDiff = obs.phase1 - obs.phase2;
+         double myDiff = obs.phase11 - obs.phase12;
          coc = clockOffset[t] * rangeRate[prn][t] / lamda[rot.band];
          myDiff -= coc;
 
@@ -491,6 +491,310 @@ void PhaseCleaner::dump(std::ostream& s) const
                  << " " << setprecision(1) << setw(5)  << 0  // elevation
                  << " " << setprecision(3) << setw(12)  << 0 // clock
                  << " " << setprecision(6) << setw(14) << obs.dd * lamda[rot.band]
+                 << endl;
+            }
+         }
+      }
+   }
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+unsigned PhaseCleanerA::debugLevel;
+
+//-----------------------------------------------------------------------------
+// Pulls the phase data data into arcs. Only data that exists on both receivers
+// is included
+//-----------------------------------------------------------------------------
+void PhaseCleanerA::addData(const ObsEpochMap& rx1, const ObsEpochMap& rx2)
+{
+   if (debugLevel)
+      cout << "PhaseCleanerA::addData(), " 
+           << rx1.size() << ", " << rx2.size() << " epochs" << endl;
+
+
+   // Now loop over all the epochs, pulling the data into the arcs
+   for (ObsEpochMap::const_iterator ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
+   {
+      DayTime t = ei1->first;
+      const ObsEpoch& oe1 = ei1->second;
+      ObsEpochMap::const_iterator ei2 = rx2.find(t);
+
+      // Gotta have data from the other receiver
+      if (ei2 == rx2.end())
+         continue;
+      const ObsEpoch& oe2 = ei2->second;
+      
+      double clockOffset = oe1.rxClock - oe2.rxClock;
+
+      // SV line-of-sight motion, in meters/second
+      map<gpstk::SatID, double> rangeRate;
+
+      // First we need to get a range rates for all SVs
+      for (ObsEpoch::const_iterator i=oe1.begin(); i != oe1.end(); i++)
+      {
+         const SatID& sv = i->first;
+         const SvObsEpoch& soe = i->second;
+
+         // We need a doppler, and any one will do
+         SvObsEpoch::const_iterator d;
+         for (d = soe.begin(); d != soe.end(); d++)
+            if (d->first.type == ObsID::otDoppler)
+               break;
+
+         if (d == soe.end())
+            continue;
+
+         double freq = d->first.band == ObsID::cbL2 ? L2_FREQ : L1_FREQ;
+         rangeRate[sv] = d->second * C_GPS_M/freq;
+      }
+
+      // Loop over all SVs in track on reciever #1
+      for (ObsEpoch::const_iterator pi11=oe1.begin(); pi11 != oe1.end(); pi11++)
+      {
+         const SatID& sv1 = pi11->first;
+         const SvObsEpoch& soe11 = pi11->second; // SV #1, Rx #1
+
+         // Make sure receiver #2 saw SV #1
+         const ObsEpoch::const_iterator pi12 = oe2.find(sv1);
+         if (pi12 == oe2.end())
+            continue;
+         const SvObsEpoch& soe12 = pi12->second; // SV #1, Rx #2
+
+         // Here we loop over all the 'other' SVs in track on receiver #1
+         for (ObsEpoch::const_iterator pi21=pi11; pi21 != oe1.end(); pi21++)
+         {
+            if (pi21 == pi11)
+               continue;
+
+            const SatID& sv2 = pi21->first;
+            const SvObsEpoch& soe21 = pi21->second; // SV #2, Rx #1
+
+            // Make sure receiver #2 saw SV #2 
+            ObsEpoch::const_iterator pi22 = oe2.find(sv2);
+            if (pi22 == oe2.end())
+               continue;
+            const SvObsEpoch& soe22 = pi22->second;  // SV #2, Rx #2
+
+            SatIdPair svPair(sv1, sv2);
+
+            if (debugLevel>2)
+               cout << t << "  " << sv1 << "-" << sv2 << endl;
+
+            // Now go throgh all phase observations from SV #1, Rx #1
+            SvObsEpoch::const_iterator phase11;
+            for (phase11 = soe11.begin(); phase11 != soe11.end(); phase11++)
+            {
+               const ObsID& rot = phase11->first;
+               if (rot.type != ObsID::otPhase)
+                  continue;
+
+               // Make sure that we have phase data from SV #1, Rx #2
+               SvObsEpoch::const_iterator phase12 = soe12.find(rot);
+               if (phase12 == soe12.end())
+                  continue;
+
+               // Make sure that we have phase data from SV #2, Rx #1
+               SvObsEpoch::const_iterator phase21 = soe21.find(rot);
+               if (phase21 == soe21.end())
+                  continue;
+
+               // Make sure that we have phase data from SV #2, Rx #2
+               SvObsEpoch::const_iterator phase22 = soe22.find(rot);
+               if (phase22 == soe22.end())
+                  continue;
+
+               // Don't use the data if we have an SNR in the data and it looks
+               // bogus.
+               double snr=-1;
+               ObsID srot = rot;
+               srot.type = ObsID::otSNR;
+               SvObsEpoch::const_iterator snr_itr = soe11.find(srot);
+
+               if (snr_itr != soe11.end())
+               {
+                  snr = snr_itr->second;
+                  if (std::abs(snr) < 1 )
+                     continue;
+               }
+
+               // And we can't compute our clock correction without the
+               // doppler
+               if (rangeRate[sv1] == 0 || rangeRate[sv2] ==0)
+                  continue;
+         
+               // Note that we need the phase in cycles to make the PhaseResidual
+               // class work right.
+               PhaseResidual::Arc& arc = pot[rot][svPair].front();
+               PhaseResidual::Obs& obs = arc[t];
+               obs.phase11 = phase11->second;
+               obs.phase12 = phase12->second;
+               obs.phase21 = phase21->second;
+               obs.phase22 = phase22->second;
+               obs.snr1 = snr;
+
+               double lamdaInv;
+               if (rot.band == ObsID::cbL1)
+                  lamdaInv = L1_FREQ/C_GPS_M;
+               else if (rot.band == ObsID::cbL2)
+                  lamdaInv = L2_FREQ/C_GPS_M;
+               else
+                  continue;
+
+               // Now compute the dd for this epoch
+               double sd1 = obs.phase11 - obs.phase12;
+               double coc = clockOffset * rangeRate[sv1] * lamdaInv;
+               sd1 -= coc;
+               
+               double sd2 = obs.phase21 - obs.phase22;
+               coc = clockOffset * rangeRate[sv2] * lamdaInv;
+               sd2 -= coc;
+
+               obs.dd = sd1 - sd2;
+            }
+         }
+      }
+   }
+}
+
+
+
+//-----------------------------------------------------------------------------
+// This is one call to do all the work. All the other functions should be
+// call by this one.
+//-----------------------------------------------------------------------------
+void PhaseCleanerA::debias(SvElevationMap& pem)
+{
+   if (debugLevel)
+      cout << "PhaseCleanerA::debias()" << endl;
+
+   // At this point, the pot has all phases set and the double difference
+   // computed. Only one arc exists for each prn pair.
+   for (PraSvPrOt::iterator i = pot.begin(); i != pot.end(); i++)
+   {
+      const ObsID& rot = i->first;
+      PraSvPair& praSv = i->second;
+      for (PraSvPair::iterator j = praSv.begin(); j != praSv.end(); j++)
+      {
+         const SatIdPair& svPair = j->first;
+         PhaseResidual::ArcList& pral = j->second;
+
+         pral.splitOnGaps(maxGapTime);
+
+         pral.computeTD();
+         pral.splitOnTD();
+         pral.debiasDD();
+
+         pral.mergeArcs(minArcLen, minArcTime, maxGapTime);
+
+         if (debugLevel>1)
+            cout << "Done cleaning " << svPair.first
+                 << ":" << svPair.second
+                 << " on " << rot.type << endl
+                 << pral;
+      }
+   }   
+}  // end of debias()
+
+
+//-----------------------------------------------------------------------------
+// Gets the double differences and puts them back into the DDEpochMap
+//-----------------------------------------------------------------------------
+void PhaseCleanerA::getPhaseDD(DDAEpochMap& ddem) const
+{
+   if (debugLevel)
+      cout << "putting phases back into ddem" << endl;
+
+   // Really should use pot to walk through the data...
+   for (PraSvPrOt::const_iterator i = pot.begin(); i != pot.end(); i++)
+   {
+      const ObsID& rot = i->first;
+      const PraSvPair& pp = i->second;
+
+      double lamda;
+      if (rot.band == ObsID::cbL1)
+         lamda = C_GPS_M/L1_FREQ;
+      else if (rot.band == ObsID::cbL2)
+         lamda = C_GPS_M/L2_FREQ;
+      else
+         continue;
+
+      for (PraSvPair::const_iterator j = pp.begin(); j != pp.end(); j++)
+      {
+         const SatIdPair& svPair = j->first;
+         const PhaseResidual::ArcList& al = j->second;
+
+         for (PhaseResidual::ArcList::const_iterator k = al.begin(); k != al.end(); k++)
+         {
+            const PhaseResidual::Arc& arc = *k;
+
+            for (PhaseResidual::Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
+            {
+               const DayTime& t = l->first;
+               const PhaseResidual::Obs& obs = l->second;
+
+               // Whew! thats deep. Now to stuff the dd back in to the ddem
+               // remember that ddem has it's values in meters
+               if (arc.garbage)
+                  ddem[t].dd[svPair][rot] = 0;
+               else
+                  ddem[t].dd[svPair][rot] = obs.dd * lamda;
+            }
+         }
+      }
+   }
+}
+
+
+//-----------------------------------------------------------------------------
+// Dump the maps to the standard table format...
+//-----------------------------------------------------------------------------
+void PhaseCleanerA::dump(std::ostream& s) const
+{
+   s << "# time              PRN type  elev      clk(m)"
+     << "    2nd diff(m)"
+     << endl;
+
+   for (PraSvPrOt::const_iterator i = pot.begin(); i != pot.end(); i++)
+   {
+      const ObsID& rot = i->first;
+      const PraSvPair& pp = i->second;
+ 
+      double lamda;
+      if (rot.band == ObsID::cbL1)
+         lamda = C_GPS_M/L1_FREQ;
+      else if (rot.band == ObsID::cbL2)
+         lamda = C_GPS_M/L2_FREQ;
+      else
+         continue;
+
+      for (PraSvPair::const_iterator j = pp.begin(); j != pp.end(); j++)
+      {
+         const SatIdPair& svPair = j->first;
+         const PhaseResidual::ArcList& al = j->second;
+
+         for (PhaseResidual::ArcList::const_iterator k = al.begin(); k != al.end(); k++)
+         {
+            const PhaseResidual::Arc& arc = *k;
+
+            for (PhaseResidual::Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
+            {
+               const DayTime& t = l->first;
+               const PhaseResidual::Obs& obs = l->second;
+
+               s.setf(ios::fixed, ios::floatfield);
+               s << left << setw(20) << t << right
+                 << setfill(' ')
+                 << " " << setw(2) << svPair.first.id
+                 << " " << setw(2) << svPair.second.id
+                 << " " << ObsID::cbStrings[rot.band]
+                 << " " << setprecision(1) << setw(5)  << 0  // elevation
+                 << " " << setprecision(3) << setw(12)  << 0 // clock
+                 << " " << setprecision(6) << setw(14) << obs.dd * lamda
                  << endl;
             }
          }

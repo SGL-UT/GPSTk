@@ -37,6 +37,7 @@
 //=============================================================================
 
 #include <limits>
+#include <set>
 
 #include <StringUtils.hpp>
 #include <Stats.hpp>
@@ -46,21 +47,25 @@
 
 using namespace std;
 using namespace gpstk;
+using namespace gpstk::StringUtils;
 
 unsigned DDEpoch::debugLevel;
 unsigned DDEpochMap::debugLevel;
+
+unsigned DDAEpoch::debugLevel;
+unsigned DDAEpochMap::debugLevel;
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 OIDM DDEpoch::singleDifference(
    const SvObsEpoch& rx1obs,
    const SvObsEpoch& rx2obs,
-   double range)
+   double rangeRate)
 {
    OIDM diff;
 
    // clock offset correction
-   double coc = clockOffset * range;
+   double coc = clockOffset * rangeRate;
    SvObsEpoch::const_iterator roti1, roti2;
    for (roti1 = rx1obs.begin(); roti1 != rx1obs.end(); roti1++)
    {
@@ -307,16 +312,15 @@ void DDEpochMap::compute(
       if (j != dde.dd.end())
          dde.dd.erase(j);
    }
-}  // end of computeDDEpochMap()
+}  // end of DDEpochMap::compute()
 
 
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-void DDEpochMap::dump(
-   std::ostream& s) 
+void DDEpochMap::dump(std::ostream& s) const
 {
-   DDEpochMap& ddem=*this;
+   const DDEpochMap& ddem=*this;
 
    s.setf(ios::fixed, ios::floatfield);
    s << "# time              PRN    type      mstr  elev     ddr(m)          clk(s)   h"
@@ -366,8 +370,7 @@ void DDEpochMap::dump(
 //-----------------------------------------------------------------------------
 string DDEpochMap::computeStats(
    const gpstk::ObsID oid,
-   const ElevationRange& er,
-   SvElevationMap& pem) const
+   const ElevationRange& er) const
 {
    ostringstream oss;
    float minElevation = er.first;
@@ -380,12 +383,13 @@ string DDEpochMap::computeStats(
    {
       const gpstk::DayTime& t = ei->first;
       SvOIDM::const_iterator pi;
-      for (pi = ei->second.dd.begin(); pi != ei->second.dd.end(); pi++)
+      const DDEpoch& dde = ei->second;
+      for (pi = dde.dd.begin(); pi != dde.dd.end(); pi++)
       {
          const gpstk::SatID& prn = pi->first;
          const OIDM& ddr = pi->second;
 
-         if (pem[t][prn]<minElevation || pem[t][prn]>maxElevation)
+         if (dde.elevation[prn]<minElevation || dde.elevation[prn]>maxElevation)
             continue;
 
          OIDM::const_iterator ddi = ddr.find(oid);
@@ -413,3 +417,388 @@ string DDEpochMap::computeStats(
    oss << b1;
    return oss.str();
 }
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void DDEpochMap::outputStats(ostream& s, const ElevationRangeList elr) const
+{
+   // First figure out what obs types we have to work with
+   if (debugLevel)
+      cout << "Computing obsSet" << endl;
+
+   set<ObsID> obsSet;
+   for (const_iterator ei = begin(); ei != end(); ei++)
+   {
+      const DDEpoch& dde = ei->second;
+      for (SvOIDM::const_iterator pi = dde.dd.begin(); pi != dde.dd.end(); pi++)
+      {
+         const OIDM& ddr = pi->second;
+         for (OIDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
+            obsSet.insert(ti->first);
+      }
+   }
+
+   s << endl
+     << "ObsID         elev   stddev    mean      # obs    # bad   # unk  max good  slips" << endl
+     << "------------- -----  --------  --------  -------  ------  ------  --------  -----" << endl;
+
+   // For convience, group these into L1
+   for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
+   {
+      for (set<ObsID>::const_iterator j = obsSet.begin(); j != obsSet.end(); j++)
+         if (j->band == ObsID::cbL1)
+            s << setw(14) << left << asString(*j) << right
+              << computeStats(*j, *i) << "    " << endl;
+      s << endl;
+   }
+   s << "------------------------------------------------------------------------ " << endl;
+
+   // and L2
+   for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
+   {
+      for (set<ObsID>::const_iterator j = obsSet.begin(); j != obsSet.end(); j++)
+         if (j->band == ObsID::cbL2)
+            s << setw(14) << left << asString(*j) << right
+              << computeStats(*j, *i) << "    " << endl;
+      s << endl;
+   }
+   s << "------------------------------------------------------------------------ " << endl;
+}
+
+
+
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+OIDM DDAEpoch::singleDifference(
+   const SvObsEpoch& rx1obs,
+   const SvObsEpoch& rx2obs,
+   double rangeRate)
+{
+   OIDM diff;
+
+   // clock offset correction
+   double coc = clockOffset * rangeRate;
+   SvObsEpoch::const_iterator roti1, roti2;
+   for (roti1 = rx1obs.begin(); roti1 != rx1obs.end(); roti1++)
+   {
+      const ObsID& oid = roti1->first;
+
+      // only compute double differences for range, and doppler
+      // phase gets done later
+      if (!(oid.type == ObsID::otRange
+            || oid.type == ObsID::otPhase
+            || oid.type == ObsID::otDoppler))
+         continue;
+
+      // Make sure we have an obs from the other receiver
+      roti2 = rx2obs.find(oid);
+      if (roti2 == rx2obs.end())
+         continue;
+
+      // Compute the first difference
+      diff[oid] = roti1->second - roti2->second;
+
+      // Need to convert the phase/doppler observables to meters
+      if (oid.type == ObsID::otDoppler)
+      {
+         if (oid.band == ObsID::cbL1)
+            diff[oid] *=  C_GPS_M/L1_FREQ;
+         else
+            diff[oid] *=  C_GPS_M/L2_FREQ;
+      }
+      // Then pull off the clock correction
+      diff[oid] -= coc;
+   }
+
+   return diff;
+}
+
+
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+void DDAEpoch::doubleDifference(
+ const ObsEpoch& rx1,
+   const ObsEpoch& rx2)
+{
+   valid = false;
+   dd.clear();
+
+   double c1 = rx1.rxClock;
+   double c2 = rx2.rxClock;
+   clockOffset = c1 - c2;
+   double eps = 10*std::numeric_limits<double>().epsilon();
+   if (std::abs(clockOffset) > 2.1e-3 ||
+       std::abs(c1) < eps || std::abs(c2) < eps)
+   {
+      if (debugLevel)
+         cout << rx1.time
+              << " Insane clock offset (" << 1e3*clockOffset
+              << " ms). Skipping epoch." << endl;
+      return;
+   }
+
+   for (ObsEpoch::const_iterator oi0 = rx1.begin(); oi0 != rx1.end(); oi0++)
+   {
+      const SatID sv1 = oi0->first;
+      ObsEpoch::const_iterator oi2 = rx2.find(sv1);
+      if (oi2 == rx2.end())
+         continue;
+
+      const SvObsEpoch& rx1obs = oi0->second;
+      const SvObsEpoch& rx2obs = oi2->second;
+   
+      OIDM d1 = singleDifference(rx1obs, rx2obs, rangeRate[sv1]);
+      if (d1.size() == 0)
+      {
+         if (debugLevel)
+            cout << "DDAEpoch::doubleDifferece(): empty d1" << endl;
+         continue;
+      }
+
+      // Now walk through all other SVs in track
+      for (ObsEpoch::const_iterator oi1=oi0; oi1!=rx1.end(); oi1++)
+      {
+         SatID sv2 = oi1->first;
+
+         if (sv1 == sv2)
+            continue;
+
+         oi2 = rx2.find(sv2);
+         if (oi2 == rx2.end())
+            continue;
+
+         OIDM d2 = singleDifference( oi1->second,  oi2->second, rangeRate[sv2]);
+
+         // Now compute the double differences
+         SatIdPair pr(sv1, sv2);
+         OIDM::const_iterator i;
+         for (i = d1.begin(); i != d1.end(); i++)
+            dd[pr][i->first] = i->second - d2[i->first];
+      }
+   }
+
+   valid = true;
+}
+
+//-----------------------------------------------------------------------------
+// compute the double difference of all common epochs
+//-----------------------------------------------------------------------------
+void DDAEpochMap::compute(
+   const ObsEpochMap& rx1,
+   const ObsEpochMap& rx2,
+   SvElevationMap& pem)
+{
+   DDAEpoch prev;
+
+   DDAEpochMap& ddem=*this;
+   DDAEpoch::debugLevel = debugLevel;
+
+   if (debugLevel)
+      cout << "DDAEpochMap::compute(" << rx1.size()
+           << ", " << rx2.size() << " epochs)" << endl;
+
+   // We use the data from rx1 walk us through the data
+   // loop over all epochs for this station
+   ObsEpochMap::const_iterator ei1;
+   for (ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
+   {
+      // first make sure we have data from the other receiver for this epoch...
+      DayTime t = ei1->first;
+      ObsEpochMap::const_iterator ei2 = rx2.find(t);
+      if (ei2 == rx2.end())
+      {
+         if (debugLevel>1)
+            cout << "Epoch with no match" << endl;
+         continue;
+      }
+      const ObsEpoch& e1 = ei1->second;
+      const ObsEpoch& e2 = ei2->second;
+      
+      DDAEpoch curr;
+
+      // We need to have a range rate but it doesn't really matter where from.
+      // So here we find a doppler for each of the SVs
+      // Also we fill in the elevation while we are walking through
+      // the SVs.
+      for (ObsEpoch::const_iterator i=e1.begin(); i != e1.end(); i++)
+      {
+         const SatID& prn = i->first;
+         const SvObsEpoch& obs = i->second;
+         for(SvObsEpoch::const_iterator j=obs.begin(); j != obs.end(); j++)
+            if (j->first.type == ObsID::otDoppler && j->first.band == ObsID::cbL1)
+            {
+               curr.rangeRate[prn] = j->second * C_GPS_M/L1_FREQ;
+               break;
+            }
+         curr.elevation[prn] = pem[t][prn];
+      }
+
+      curr.doubleDifference(e1, e2);
+
+      if (curr.valid)
+      {
+         ddem[t] = curr;
+         prev = curr;
+      }
+      else if (debugLevel)
+         cout << "invalid DDAEpoch" << endl;
+   } // end of looping over all epochs in the first set.
+
+}  // end of DDAEpochMap::compute()
+
+
+//-----------------------------------------------------------------------------
+// Returns a string containing a statistical summary of the double difference
+// residuals for the specified obs type within the given elevation range.
+//-----------------------------------------------------------------------------
+string DDAEpochMap::computeStats(
+   const ObsID oid,
+   const ElevationRange& er) const
+{
+   float minElevation = er.first;
+   float maxElevation = er.second;
+   double strip=1000;
+   int zeroCount=0;
+
+   gpstk::Stats<double> good, bad;
+   for (const_iterator ei = begin(); ei != end(); ei++)
+   {
+      const gpstk::DayTime& t = ei->first;
+      PrOIDM::const_iterator pi;
+      SvDoubleMap& elevation = ei->second.elevation;
+      for (pi = ei->second.dd.begin(); pi != ei->second.dd.end(); pi++)
+      {
+         const SatIdPair& pr = pi->first;
+         const gpstk::SatID& sv1 = pr.first;
+         const gpstk::SatID& sv2 = pr.second;
+         const OIDM& ddr = pi->second;
+
+         if (elevation[sv1]<minElevation || elevation[sv1]>maxElevation ||
+             elevation[sv2]<minElevation || elevation[sv2]>maxElevation)
+            continue;
+
+         OIDM::const_iterator ddi = ddr.find(oid);
+         if (ddi == ddr.end())
+            zeroCount++;
+         else
+         {
+            double dd = ddi->second;
+            if (std::abs(dd) < strip)
+               good.Add(dd);
+            else
+               bad.Add(dd);
+         }
+      }
+   }
+   
+   ostringstream oss;
+   if (good.N() > 0 || bad.N() >0)
+   {
+      char b1[200];
+      char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
+      double maxDD = std::max(std::abs(good.Minimum()), std::abs(good.Maximum()));
+      sprintf(b1, "%2d-%2d  %8.5f  %8.3f  %7d  %6d  %6d  %6.2f",
+              (int)minElevation, (int)maxElevation,
+              good.StdDev()/sqrt((float)2), good.Average(),
+              good.N(), bad.N(), zeroCount, maxDD);
+
+      oss << b1;
+   }
+   return oss.str();
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void DDAEpochMap::outputStats(ostream& s, const ElevationRangeList elr) const
+{
+   // First figure out what obs types we have to work with
+   if (debugLevel)
+      cout << "Computing obsSet" << endl;
+
+   set<ObsID> obsSet;
+   for (const_iterator ei = begin(); ei != end(); ei++)
+   {
+      const DDAEpoch& dde = ei->second;
+      for (PrOIDM::const_iterator pi = dde.dd.begin(); pi != dde.dd.end(); pi++)
+      {
+         const OIDM& ddr = pi->second;
+         for (OIDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
+            obsSet.insert(ti->first);
+      }
+   }
+
+   s << endl
+     << "ObsID         elev   stddev    mean      # obs    # bad   # unk  max good  slips" << endl
+     << "------------- -----  --------  --------  -------  ------  ------  --------  -----" << endl;
+
+   // For convience, group these into L1
+   for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
+   {
+      for (set<ObsID>::const_iterator j = obsSet.begin(); j != obsSet.end(); j++)
+         if (j->band == ObsID::cbL1)
+            s << setw(14) << left << asString(*j) << right
+              << computeStats(*j, *i) << "    " << endl;
+      s << endl;
+   }
+   s << "------------------------------------------------------------------------ " << endl;
+
+   // and L2
+   for (ElevationRangeList::const_iterator i = elr.begin(); i != elr.end(); i++)
+   {
+      for (set<ObsID>::const_iterator j = obsSet.begin(); j != obsSet.end(); j++)
+         if (j->band == ObsID::cbL2)
+            s << setw(14) << left << asString(*j) << right
+              << computeStats(*j, *i) << "    " << endl;
+      s << endl;
+   }
+   s << "------------------------------------------------------------------------ " << endl;
+}
+
+
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+void DDAEpochMap::dump(ostream& s) const
+{
+   s.setf(ios::fixed, ios::floatfield);
+   s << "# time               obs type       SV1 SV2 EL1   EL2           ddr(m)  h1h2"
+     << endl;
+
+   const_iterator ei;
+   for (ei = this->begin(); ei != this->end(); ei++)
+   {
+      const DayTime& t = ei->first;
+      const DDAEpoch& dde = ei->second;
+
+      string time=t.printf("%4Y %3j %02H:%02M:%04.1f");
+
+      PrOIDM::const_iterator pi;
+      for (pi = dde.dd.begin(); pi != dde.dd.end(); pi++)
+      {
+         const SatIdPair& pr = pi->first;
+         const SatID& sv1 = pr.first;
+         const SatID& sv2 = pr.second;
+         const OIDM& ddr = pi->second;
+         for (OIDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
+         {
+            string rot = StringUtils::asString(ti->first);
+            double dd = ti->second;
+            
+            s << left << setw(20) << time << right
+              << setfill(' ') << setprecision(2)
+              << " " << left << setw(14) << rot << right
+              << " " << setw(3) << sv1.id 
+              << " " << setw(3) << sv2.id
+              << " " << setw(5) << dde.elevation[sv1]
+              << " " << setw(5) << dde.elevation[sv2]
+              << " " << setprecision(6) << setw(14) << dd
+              << hex
+              << " " << dde.health[sv1] << dde.health[sv2]
+              << dec 
+              << endl;
+         }
+      }
+   }
+   s << endl;
+}  // end dump()

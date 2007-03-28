@@ -43,11 +43,9 @@
 #include <iostream>
 
 #include "DayTime.hpp"
-#include "RinexObsHeader.hpp"
 #include "Stats.hpp"
 #include "CycleSlipList.hpp"
 
-#include "ElevationRange.hpp"
 
 // This namespace is just to keep the identifiers meaninfull and short...
 namespace PhaseResidual
@@ -57,13 +55,17 @@ namespace PhaseResidual
    class Obs
    {
    public:
-      double phase1;  // original phase in cycles
-      double phase2;  // ditto for the other rx
+      double phase11;  // original phase in cycles Sv1, Rx1
+      double phase12;  // ditto for Sv1, Rx2
+      double phase21;  // ditto for Sv2, Rx1
+      double phase22;  // ditto for Sv2, Rx2
       double dd;      // the double difference in cycles
-      double td;      // the triple difference in cycles
-      double snr;
+      double td;       // the triple difference in cycles
+      double snr1;
 
-      Obs():phase1(0), phase2(0),dd(0),td(0),snr(0){};
+      Obs() : phase11(0), phase12(0), phase21(0), phase22(0), 
+              dd(0), td(0), snr1(0)
+      {};
 
       void dump(std::ostream& s) const;
    };
