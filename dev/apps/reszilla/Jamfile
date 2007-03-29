@@ -37,6 +37,6 @@ GPSMain ordStats : ordStats.cpp ;
 
 GPSMain ddGen : ddGen.cpp ;
 
-GPSMain ddStats : ddStats.cpp ;
-
 InstallBin $(BINDIR) : ordPlot ;
+
+InstallBin $(BINDIR) : ddPlot;
