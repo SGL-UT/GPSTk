@@ -39,4 +39,5 @@ GPSMain ddGen : ddGen.cpp ;
 
 InstallBin $(BINDIR) : ordPlot ;
 
-InstallBin $(BINDIR) : ddPlot;
+InstallBin $(BINDIR) : ddPlot ;
+
