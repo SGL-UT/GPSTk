@@ -19,10 +19,10 @@ Library rlib : DDEpoch.cpp PhaseCleaner.cpp
 Library datalib : ObsUtils.cpp FFIdentifier.cpp ObsReader.cpp EphReader.cpp 
   MetReader.cpp RinexConverters.cpp ;
 
-LinkLibraries ordGen ordClock ordEdit ordStats ordLinEst ddGen ddStats : 
+LinkLibraries ordGen ordClock ordEdit ordStats ordLinEst ddGen : 
    datalib rlib datalib rlib ;
 
-GPSLinkLibraries ordGen ordClock ordEdit ordStats ordLinEst ddGen ddStats : 
+GPSLinkLibraries ordGen ordClock ordEdit ordStats ordLinEst ddGen : 
    gpstk datalib rlib datalib rlib ;
 
 GPSMain ordGen : ordGen.cpp ;
