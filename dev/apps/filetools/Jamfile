@@ -4,7 +4,7 @@
 
 SubDir TOP apps filetools ;
 
-GPSLinkLibraries ficafic ficfica navdmp fic2rin rinexthin sp3version bc2sp3 sp32bc : gpstk ;
+GPSLinkLibraries ficafic ficfica navdmp fic2rin rinexthin sp3version bc2sp3 : gpstk ;
 
 GPSMain navdmp : navdmp.cpp ;
 GPSMain ficfica : ficfica.cpp ;
@@ -13,5 +13,5 @@ GPSMain fic2rin : fic2rin.cpp ;
 GPSMain rinexthin : RinexThin.cpp ;
 GPSMain sp3version : sp3version.cpp ;
 GPSMain bc2sp3 : bc2sp3.cpp ;
-GPSMain sp32bc : sp32bc.cpp ;
+#GPSMain sp32bc : sp32bc.cpp ;
 
