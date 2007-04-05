@@ -62,8 +62,12 @@
 #include <stdint.h>
 #endif
 
+
 namespace gpstk
 {
+
+   class MDPStream;
+
    /// This class contains header information for all data types
    /// transmitted by the MSN SAASM Receiver.
    class MDPHeader : public FFData, public CRCDataStatus
@@ -117,6 +121,12 @@ namespace gpstk
       static int debugLevel;
       static bool hexDump;
 
+      void readHeader(MDPStream& s)
+         throw(FFStreamError, EndOfFile);
+
+      std::string readBody(MDPStream& s)
+         throw(FFStreamError, EndOfFile);
+
    protected:
       virtual void reallyPutRecord(FFStream& s) const 
          throw(std::exception, StringUtils::StringException, 
@@ -125,10 +135,6 @@ namespace gpstk
       virtual void reallyGetRecord(FFStream& s)
          throw(std::exception, StringUtils::StringException, 
                FFStreamError, EndOfFile);
-   private:
-      void readHeader(FFStream& s)
-         throw(FFStreamError, EndOfFile);
-
    }; // class MDPHeader
 
 } // namespace gpstk
