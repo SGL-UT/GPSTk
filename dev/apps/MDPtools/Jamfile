@@ -17,9 +17,9 @@ Library mdplib : MDPHeader.cpp MDPPVTSolution.cpp MDPNavSubframe.cpp
    MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp
    ;
 
-LinkLibraries mdptool mdp2rinex tcptest mdp2file : mdplib ;
+LinkLibraries mdptool mdp2rinex tcptest tcp2file : mdplib ;
 
-GPSLinkLibraries mdptool mdp2rinex tcptest mdp2file : gpstk ;
+GPSLinkLibraries mdptool mdp2rinex tcptest tcp2file : gpstk ;
 
 GPSMain mdptool : mdptool.cpp ;
 
@@ -27,4 +27,4 @@ GPSMain mdp2rinex : mdp2rinex.cpp ;
 
 GPSMain tcptest : tcptest.cpp ;
 
-GPSMain mdp2file : mdp2file.cpp ;
+GPSMain tcp2file : tcp2file.cpp ;
