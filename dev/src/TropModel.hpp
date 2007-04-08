@@ -934,7 +934,9 @@ namespace gpstk
      *
      * This is a simple but efective model composed of the wet and dry vertical
      * tropospheric delays as defined in Gipsy/Oasis-II GPS analysis software, and
-     * the mapping function as defined in MOPS (RTCA/DO-229C) standards.
+     * the mapping function as defined by Black and Eisner (H. D. Black, A. Eisner. 
+     * Correcting Satellite Doppler Data for Tropospheric Effects. Journal of 
+     * Geophysical Research. Vol 89. 1984.) and used in MOPS (RTCA/DO-229C) standards.
      *
      * Usually, the caller will set the receiver height using setReceiverHeight() method,
      * and then call the correction() method with the satellite elevation
