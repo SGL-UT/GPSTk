@@ -264,7 +264,10 @@ namespace gpstk
                           asString(i->first));
               exc.addText("Map had " + asString(mapSize) + " elements in"
                           " it to begin with");
-              foo.dump(exc);
+              //foo.dump(exc);
+              ostringstream oss;
+              foo.dump(oss);
+              exc.addText(oss.str());
               GPSTK_RETHROW(exc);
            }
            if( test < t )

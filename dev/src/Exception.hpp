@@ -1,17 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file Exception.hpp
- * Exceptions for all of GPSTK, including location information
- */
-
-// The unusual include macro below is done this way because xerces
-// #defines EXCEPTION_HPP in their own exception class header file.
-#ifndef GPSTK_EXCEPTION_HPP
-#define GPSTK_EXCEPTION_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -48,10 +36,15 @@
 //
 //=============================================================================
 
+/**
+ * @file Exception.hpp
+ * Exceptions for all of GPSTK, including location information
+ */
 
-
-
-
+// The unusual include macro below is done this way because xerces
+// #defines EXCEPTION_HPP in their own exception class header file.
+#ifndef GPSTK_EXCEPTION_HPP
+#define GPSTK_EXCEPTION_HPP
 
 #include <iostream>
 #include <vector>
@@ -113,6 +106,9 @@ namespace gpstk
           */
       void dump(std::ostream& s) const throw();
 
+         /// Dump to a string
+      std::string what() const throw();
+
          /**
           * Output stream operator for ::ExceptionLocation.
           * This is intended just to dump all the data in the
@@ -155,8 +151,7 @@ namespace gpstk
        *
        * @ingroup exceptiongroup
        */
-   class Exception : protected std::streambuf, 
-                     public std::ostream
+   class Exception
    {
    public:
          /// Exception severity classes.
@@ -187,7 +182,7 @@ namespace gpstk
       Exception(const Exception& exception) 
          throw();
          /// Destructor.
-      virtual ~Exception() 
+      ~Exception() 
          throw() 
       {};
 
@@ -291,7 +286,7 @@ namespace gpstk
          throw();
 
          /// Returns the name of the object's class.
-      virtual std::string getName() const
+      std::string getName() const
          throw()
       { return "Exception"; };
 
@@ -301,6 +296,9 @@ namespace gpstk
           */
       void dump(std::ostream& s) const 
          throw();
+
+         /// Dump to a string
+      std::string what() const throw();
 
          /**
           * Output stream operator for ::Exception.
@@ -409,9 +407,9 @@ public: \
          : parent(a, b, c) \
    {};\
       /** Destructor. */ \
-   virtual ~child() throw() {} \
+   ~child() throw() {} \
       /** Returns the name of the exception class. */ \
-   virtual std::string getName() const throw() {return ( # child);} \
+   std::string getName() const throw() {return ( # child);} \
       /** assignment operator for derived exceptions */ \
    child& operator=(const child& kid) \
       { parent::operator=(kid); return *this; } \

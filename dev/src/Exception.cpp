@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,19 +36,16 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file Exception.cpp
  * Exceptions for all of GPSTK, including location information
  */
  
+#include <sstream>
 #include "Exception.hpp"
 
 using std::ostream;
+using std::ostringstream;
 using std::streambuf;
 using std::string;
 using std::endl;
@@ -70,7 +65,6 @@ namespace gpstk
 
    Exception::Exception()
       throw()
-         : streambuf(), ostream((streambuf*)this)
    {
    }
 
@@ -78,7 +72,6 @@ namespace gpstk
                         const unsigned long& errId,
                         const Severity& sever)
       throw()
-         : streambuf(), ostream((streambuf*)this)
    {
       text.push_back(errorText);
       errorId = errId;
@@ -91,9 +84,7 @@ namespace gpstk
            locations(e.locations),
            severity(e.severity),
            text(e.text),
-           streamBuffer(e.streamBuffer),
-           streambuf(), 
-           ostream((streambuf*)this)
+           streamBuffer(e.streamBuffer)
    {}
 
    Exception& Exception::operator=(const Exception& e)
@@ -175,7 +166,7 @@ namespace gpstk
       }
       for (i=0; i<getLocationCount(); i++)
       {
-         s << "location " << i << ":" << getLocation(i) << endl;
+         s << "location " << i << ":" << getLocation(i).what() << endl;
       }
    }
 
@@ -195,21 +186,37 @@ namespace gpstk
       return c;
    }
 
-   ostream& operator<<( ostream& s, 
-                        const Exception& e )
-      throw()
-   { 
-      e.dump(s); 
-      return s;
-   }
-
-   ostream& operator<<( ostream& s,
-                        const ExceptionLocation& e )
+   string ExceptionLocation::what() const
       throw()
    {
-      e.dump(s);
-      return s;
+      ostringstream oss;
+      this->dump(oss);
+      return oss.str();
    }
+
+   string Exception::what() const
+      throw()
+   {
+      ostringstream oss;
+      this->dump(oss);
+      return oss.str();
+   }
+
+    ostream& operator<<( ostream& s, 
+                         const Exception& e )
+       throw()
+    { 
+       e.dump(s); 
+       return s;
+    }
+
+    ostream& operator<<( ostream& s,
+                         const ExceptionLocation& e )
+       throw()
+    {
+       e.dump(s);
+       return s;
+    }
 
 } // namespace gpstk
 

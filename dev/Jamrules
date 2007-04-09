@@ -61,13 +61,43 @@ if $(UNIX)
 else if $(NT)
 {
    LIBPREFIX       = "" ;
+   NEED_REGEX      = true ;
+   # do NOT define __STDC__ here
+
+   # use these to create a dll
    #LDSHARE_FLAGS  ?= /MAP /DLL ;
    #SUFLIBSHR       = .dll ;
-   # for reference, VC++6 defines _MSC_VER=12xx.xx, VS.NET2003 _MSC_VER=13xx.xx
-   # do NOT define __STDC__ here
-   CCFLAGS        += /ML -wd4274 ;
-   C++FLAGS       += /ML -DWIN32 /GX /GR -wd4274 -wd4675 ;
-   NEED_REGEX      = true ;
+
+   # Microsoft compilers define macro _MSC_VER = MMmm.mm MM=Major ver mm.mm=minor ver.
+   # ------ MS VC++ 2005 : _MSC_VER >= 1400
+   if $(MSCVER) >= 1400 {
+      MSVCVersion = "VC++2005(VC8)" ;
+      LINKLIBS   =  ;
+      # -wd turns off warnings; warning 4274 says its ignoring #ident
+      # _CRT_SECURE... stops (many!) warnings
+      # /Ox is max optimize for speed, /O2 opt for speed,
+      #    /GL whole prgm opt (add /LTCG to LINKFLAGS)
+      # /O2 seems to be the best
+      CCFLAGS    += -D_CRT_SECURE_NO_DEPRECATE -wd4274 ;
+      C++FLAGS   += /O2 -DWIN32 -D_CRT_SECURE_NO_DEPRECATE /EHsc /GR -wd4274 ;
+      #LINKFLAGS  += /LTCG ;  # use with /GL
+   }
+   # ------ MS VC++.NET 2003 : _MSC_VER >= 1300
+   else if $(MSCVER) >= 1300 {
+      MSVCVersion = "VC++.NET2003(VC7)" ;
+      LINKLIBS   =  ;
+      CCFLAGS    += /ML -wd4274 ;
+      # use /O2 optimization
+      C++FLAGS   += /O2 /ML -DWIN32 /GX /GR -wd4274 -wd4675 ;
+   }
+   # ------ MS VC++ 6 : _MSC_VER >= 1200
+   # VC++ ver 6 and earlier do not support templates in classes or the toolkit
+   else {
+      Echo "If MSCVER is set, compiler is not supported in Jamrules; otherwise" ;
+      Echo "  for MSVC++.NET2003, set MSCVER=1300" ;
+      Echo "  for MSVC++2005,     set MSCVER=1400" ;
+   }
+   Echo "  Version" $(MSVCVersion) "( MSCVER ==" $(MSCVER) ")" ;
 }
 
 # compiler specific stuff - this is probably actually pretty clumsy

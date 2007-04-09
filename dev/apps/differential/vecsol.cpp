@@ -348,7 +348,7 @@ Triple permanentTide(double const phi)
 }
 
 
-    main(int argc, char *argv[])
+    int main(int argc, char *argv[])
     {
 #define EPH_RANGE(C,T,X,S) ((precise ? \
 	    C.ComputeAtReceiveTime(T.time,X,S,sp3store) : \
