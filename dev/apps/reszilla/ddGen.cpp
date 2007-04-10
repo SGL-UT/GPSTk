@@ -74,15 +74,17 @@ protected:
 private:
 
    string ddMode;
-   double minArcGap; // seconds
-   double minArcTime; // seconds
+   double minArcGap;        // seconds
+   double minArcTime;       // seconds
    unsigned long minArcLen; // epochs
    unsigned long msid;
+   unsigned long window;    // seconds
    Triple antennaPos;
 
    ObsEpochMap obs1, obs2;
 
    CommandOptionWithAnyArg obs1FileOption, obs2FileOption, ephFileOption;
+   
 
    void readObsFile(const CommandOptionWithAnyArg& obsFileOption,
                     const EphemerisStore& eph,
@@ -98,7 +100,7 @@ private:
 //-----------------------------------------------------------------------------
 DDGen::DDGen() throw()
    : BasicFramework("ddGen", "Computes double-difference residuals from raw observations."),
-     ddMode("all"), minArcGap(60), minArcTime(60), minArcLen(5), msid(0),
+     ddMode("all"), minArcGap(60), minArcTime(60), minArcLen(5), msid(0), window(0),
      computeStats(false), computeAll(false),
 
      obs1FileOption('1', "obs1", 
@@ -108,7 +110,7 @@ DDGen::DDGen() throw()
                     "Where to get the second receiver's obs data.", true),
 
      ephFileOption('e', "eph",  "Where to get the ephemeris data. Can be "
-                   " rinex, fic, or sp3", true)
+                   " RINEX, FIC, or SP3.", true)
 {}
 
 
@@ -120,7 +122,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    CommandOptionWithAnyArg
       ddModeOption('\0', "ddmode", "Specifies what observations are used to "
                    "compute the double difference residuals. Valid values are:"
-                   "all. The default is " + ddMode),
+                   " all. The default is " + ddMode),
 
       cycleSlipOption('\0', "cycle-slips", "Output a list of cycle slips"),
    
@@ -152,7 +154,10 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    CommandOptionWithNumberArg 
       msidOption('m', "msid", "Station to process data for. Used to "
                  "select a station position from the msc file or data "
-                 "from a SMODF file.");
+                 "from a SMODF file."),
+                 
+      timeSpanOption('w',"window","Compute mean values of the double "
+                     "differences over this time span (seconds). (15 min = 900)");
 
    CommandOptionNoArg 
       statsOption('s', "stats", "Compute stats on the double differences."),
@@ -162,7 +167,29 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
 
    if (!BasicFramework::initialize(argc,argv)) 
       return false;
+      
+   if (timeSpanOption.getCount() && allComboOption.getCount())
+   {
+      cout << "\n\n You cannot set up the tool to compute averages while computing all\n "
+           << "SV combos.  It doesn't make sense to do so because the arcs are so\n "
+           << "small. Sorry. Exiting....\n\n";
+      return false;
+   }
+   
+   if (mscFileOption.getCount() && !msidOption.getCount())
+   {
+     cout << "\n\n You gave a station coordinate file but didn't specify\n "
+          << "the station ID. Exiting....\n\n";
+     return false;
+   }
 
+   if ((asDouble(timeSpanOption.getValue()[0])<= 0 ) && timeSpanOption.getCount())
+   {
+     cout << "\n\n Please enter a positive value for the time span window.\n "
+          << "Exiting....\n\n";
+     return false;
+   }
+   
    if (msidOption.getCount())
       msid = asUnsigned(msidOption.getValue().front());
 
@@ -246,6 +273,9 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    
    if (allComboOption.getCount())
       computeAll = true;
+      
+   if (timeSpanOption.getCount())
+      window = asUnsigned(timeSpanOption.getValue().front());
 
    return true;
 }
@@ -270,6 +300,9 @@ void DDGen::spinUp()
          cout << "# Using all SV combinations." << endl;
       else
          cout << "# Using one master SV combinations." << endl;
+         
+      if (window)
+         cout << "# Computing mean values for " << window << " second windows" << endl;
    }
 }
 
@@ -293,51 +326,54 @@ void DDGen::process()
       cout << "# Reading obs from Rx2" << endl;
    readObsFile(obs2FileOption, *ephReader.eph, oem2);
 
-   SvElevationMap pem;
-   pem = elevation_map(oem1, antennaPos, *ephReader.eph);
-
+   SvElevationMap pem = elevation_map(oem1, antennaPos, *ephReader.eph);
+   DDEpochMap ddem;
+   ddem.debugLevel = debugLevel;
+   ddem.windowLength = window;
+   
+   if (computeAll)
+      ddem.useMasterSV = false;
+   else
+      ddem.useMasterSV = true;
+      
+   ddem.compute(oem1, oem2, pem);
+   
+   // Here we compute a phase double difference that is Better(TM)    
    if (computeAll)
    {
-      DDAEpochMap big;
-      big.debugLevel = debugLevel;
-      big.compute(oem1, oem2, pem);
-
-      // Here we compute a phase double difference that is Better(TM)
       PhaseCleanerA pc(minArcLen, minArcTime, minArcGap);
       pc.debugLevel = debugLevel;
       pc.addData(oem1, oem2);
       pc.debias(pem);
-      pc.getPhaseDD(big);
-
-      if (computeStats)
-         big.outputStats(cout, elr);
-      else
-         big.dump(cout);
+      pc.getPhaseDD(ddem);      
    }
    else
    {
-      // This computes a simple double difference on all observables
-      DDEpochMap ddem;
-      ddem.debugLevel = debugLevel;
-      ddem.compute(oem1, oem2, pem);
-
-      // Here we compute a phase double difference that is Better(TM)
-      PhaseCleaner pc(minArcLen, minArcTime, minArcGap);
+      PhaseCleaner pc(minArcLen, minArcTime, minArcGap);    
       pc.debugLevel = debugLevel;
       pc.addData(oem1, oem2);
       pc.debias(pem);
       pc.getPhaseDD(ddem);
-
-      // Now write out all the double differences
-      if (computeStats)
-         ddem.outputStats(cout, elr);
-      else
-         ddem.dump(cout);
-
-      //   CycleSlipList sl;
-      //   pc.getSlips(sl, pem);
-      //   dump(cout, sl);    
    }
+    
+   if (window)
+   {
+      // this option was only allowed for the master SV method, i.e. !computeAll
+      if (verboseLevel)
+         cout << "# Computing averages for windows of " << window << " seconds.\n";
+      ddem.outputAverages(cout);   
+   }
+   
+   if (computeAll && computeStats)
+      ddem.outputStatsForAllCombos(cout, elr);
+   else if (computeStats)
+      ddem.outputStats(cout, elr);
+   else
+      ddem.dump(cout);
+    
+   //   CycleSlipList sl;
+   //   pc.getSlips(sl, pem);
+   //   dump(cout, sl);    
 }
 
 
@@ -395,6 +431,7 @@ void DDGen::readObsFile(
       }
    }
 }
+
 
 
 //-----------------------------------------------------------------------------

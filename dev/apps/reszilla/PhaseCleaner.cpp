@@ -378,9 +378,9 @@ void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
                // Whew! thats deep. Now to stuff the dd back in to the ddem
                // remember that ddem has it's values in meters
                if (arc.garbage)
-                  ddem[t].dd[prn][rot] = 0;
+                  ddem[t].ddSvOIDM[prn][rot] = 0;
                else
-                  ddem[t].dd[prn][rot] = obs.dd * lamda[rot.band];
+                  ddem[t].ddSvOIDM[prn][rot] = obs.dd * lamda[rot.band];
             }
          }
       }
@@ -704,7 +704,7 @@ void PhaseCleanerA::debias(SvElevationMap& pem)
 //-----------------------------------------------------------------------------
 // Gets the double differences and puts them back into the DDEpochMap
 //-----------------------------------------------------------------------------
-void PhaseCleanerA::getPhaseDD(DDAEpochMap& ddem) const
+void PhaseCleanerA::getPhaseDD(DDEpochMap& ddem) const
 {
    if (debugLevel)
       cout << "putting phases back into ddem" << endl;
@@ -740,9 +740,9 @@ void PhaseCleanerA::getPhaseDD(DDAEpochMap& ddem) const
                // Whew! thats deep. Now to stuff the dd back in to the ddem
                // remember that ddem has it's values in meters
                if (arc.garbage)
-                  ddem[t].dd[svPair][rot] = 0;
+                  ddem[t].ddPrOIDM[svPair][rot] = 0;
                else
-                  ddem[t].dd[svPair][rot] = obs.dd * lamda;
+                  ddem[t].ddPrOIDM[svPair][rot] = obs.dd * lamda;
             }
          }
       }

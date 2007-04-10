@@ -136,7 +136,7 @@ public:
       CycleSlipList& csl,
       SvElevationMap& pem) const;
 
-   void getPhaseDD(DDAEpochMap& ddem) const;
+   void getPhaseDD(DDEpochMap& ddem) const;
 
    void dump(std::ostream& s) const;
 

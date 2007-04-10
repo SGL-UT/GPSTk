@@ -47,15 +47,19 @@
 #include "SvElevationMap.hpp"
 
 typedef std::map<gpstk::ObsID, double> OIDM;
-typedef std::map< gpstk::SatID, OIDM > SvOIDM;
-typedef std::map< gpstk::SatID, short > SvShortMap;
-typedef std::map< gpstk::SatID, double > SvDoubleMap;
+typedef std::map<gpstk::SatID, OIDM > SvOIDM;
+typedef std::map<gpstk::SatID, short > SvShortMap;
+typedef std::map<gpstk::SatID, double > SvDoubleMap;
+typedef std::pair<gpstk::SatID, gpstk::SatID > SatIdPair;
+typedef std::map<SatIdPair, OIDM > PrOIDM;
 
 struct DDEpoch
 {
    DDEpoch() : valid(false){};
-   SvOIDM dd;
-
+   
+   SvOIDM ddSvOIDM;
+   PrOIDM ddPrOIDM;
+   
    mutable SvShortMap health;
    mutable SvDoubleMap rangeRate;
    mutable SvDoubleMap elevation;
@@ -77,86 +81,44 @@ struct DDEpoch
       const gpstk::ObsEpoch& rx1,
       const gpstk::ObsEpoch& rx2);
 
+   // Criteria for the masterPrn:
+   //   it has an elevation > the min, 
+   //   it it on the way up (i.e. doppler>0),
+   //   there is a record for it on the other receiver     
    void selectMasterPrn(
       const gpstk::ObsEpoch& rx1, 
       const gpstk::ObsEpoch& rx2);
 
-   void dump(std::ostream& s) const;
 };
 
 
 struct DDEpochMap : public std::map<gpstk::DayTime, DDEpoch>
 {
-   // 
+
+   // compute the double difference of all common epochs
    void compute(
       const gpstk::ObsEpochMap& rx1,
       const gpstk::ObsEpochMap& rx2,
       SvElevationMap& pem);
 
-//-----------------------------------------------------------------------------
-// Returns a string containing a statistical summary of the double difference
-// residuals for the specified obs type within the given elevation range.
-//-----------------------------------------------------------------------------
+   // Returns a string containing a statistical summary of the double difference
+   // residuals for the specified obs type within the given elevation range.
    std::string computeStats(
       const gpstk::ObsID oid,
       const ElevationRange& er) const;
-   
-   void outputStats(std::ostream& s, const ElevationRangeList elr) const;
-
-   void dump(std::ostream& s) const;
-
-   static unsigned debugLevel;
-};
-
-
-typedef std::pair< gpstk::SatID, gpstk::SatID > SatIdPair;
-typedef std::map< SatIdPair, OIDM > PrOIDM;
-
-struct DDAEpoch
-{
-   DDAEpoch() : valid(false){};
-   PrOIDM dd;
-
-   mutable SvShortMap health;
-   mutable SvDoubleMap rangeRate;
-   mutable SvDoubleMap elevation;
-
-   double clockOffset;
-   bool valid;
-   static unsigned debugLevel;
-
-   // Computes a single difference between two sets of obs
-   OIDM singleDifference(
-      const gpstk::SvObsEpoch& rx1obs,
-      const gpstk::SvObsEpoch& rx2obs,
-      double rate);
-   
-   // Sets the valid flag true if successfull
-   void doubleDifference(
-      const gpstk::ObsEpoch& rx1,
-      const gpstk::ObsEpoch& rx2);
-
-   void dump(std::ostream& s) const;
-};
-
-
-struct DDAEpochMap : public std::map<gpstk::DayTime, DDAEpoch>
-{
-   // 
-   void compute(
-      const gpstk::ObsEpochMap& rx1,
-      const gpstk::ObsEpochMap& rx2,
-      SvElevationMap& pem);
-
-   std::string computeStats(
+   std::string computeStatsForAllCombos(
       const gpstk::ObsID oid,
-      const ElevationRange& er) const;
-
+      const ElevationRange& er) const;  
+      
    void outputStats(std::ostream& s, const ElevationRangeList elr) const;
-   
-   void dump(std::ostream& s) const;
+   void outputStatsForAllCombos(std::ostream& s, const ElevationRangeList elr) const;
 
+   void outputAverages(std::ostream& s) const;
+   void dump(std::ostream& s) const;
+   
    static unsigned debugLevel;
+   static bool useMasterSV;
+   unsigned long windowLength;    // seconds
 };
 
 
