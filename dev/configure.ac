@@ -2,11 +2,12 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([GPSTK], [1.2], [http://www.gpstk.org/])
+AC_INIT([GPSTK], [1.2], [http://www.gpstk.org/], [gpstk])
+AM_INIT_AUTOMAKE([1.7.6 foreign])
 AC_CONFIG_SRCDIR([src/DayTime.hpp])
-AM_INIT_AUTOMAKE
 
 # Checks for programs.
+AC_LANG([C++])
 AC_PROG_CXX
 AC_PROG_CC
 
