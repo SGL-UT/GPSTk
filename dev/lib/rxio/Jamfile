@@ -1,0 +1,24 @@
+# $Id$
+
+SubDir TOP lib rxio ;
+
+if $(PREPROCESSING)
+{
+   GPSSetupLibrary rxio : gpstk ;
+}
+else
+{
+  GPSBuildLibrary rxio : MDPHeader.cpp MDPPVTSolution.cpp
+    MDPNavSubframe.cpp MDPObsEpoch.cpp MDPSelftestStatus.cpp
+    RinexConverters.cpp TCPStream.cpp
+    ObsUtils.cpp FFIdentifier.cpp
+    ObsReader.cpp EphReader.cpp MetReader.cpp
+    ;
+
+  InstallFile $(INCDIR) : MDPHeader.hpp MDPPVTSolution.hpp MDPNavSubframe.hpp
+    MDPObsEpoch.hpp MDPSelftestStatus.hpp RinexConverters.hpp DataStatus.hpp
+    miscenum.hpp TCPStream.hpp
+    ObsUtils.hpp FFIdentifier.hpp
+    ObsReader.hpp EphReader.hpp MetReader.hpp
+    ;
+}
