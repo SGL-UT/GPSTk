@@ -1,3 +1,4 @@
+# $Id$
 ## Process this file with automake to produce Makefile.in
 lib_LTLIBRARIES = libgpstk.la
 libgpstk_la_SOURCES = getopt.c getopt1.c ANSITime.cpp AlmOrbit.cpp \

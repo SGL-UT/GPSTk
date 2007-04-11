@@ -1,3 +1,4 @@
+# $Id$
 INCLUDES = -I$(srcdir)/../../../src -I$(srcdir)/../lib
 LDADD = ../../../src/libgpstk.la ../lib/libgeomatic.la
 

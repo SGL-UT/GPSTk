@@ -1,3 +1,4 @@
+# $Id$
 INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../MDPtools
 LDADD = ./librlib.la ./libdatalib.la ../../src/libgpstk.la ../MDPtools/libmdplib.la
 
