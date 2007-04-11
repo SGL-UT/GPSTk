@@ -2,6 +2,6 @@
 INCLUDES = -I$(srcdir)/../../src
 LDADD = ../../src/libgpstk.la
 
-bin_PROGRAMS = testoa
+bin_PROGRAMS = mpsolve
 
-testoa_SOURCES = testObsArray.cpp ObsArray.cpp
+mpsolve_SOURCES = mpsolve.cpp ObsArray.cpp

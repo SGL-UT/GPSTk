@@ -37,6 +37,8 @@ AC_FUNC_STRTOD
 AC_CHECK_FUNCS([bzero floor ftime getcwd gettimeofday memset mkdir modf pow re_comp regcomp sqrt strstr strtol strtoul])
 
 AC_CONFIG_FILES([Makefile
+                 lib/Makefile
+                 lib/rxio/Makefile
                  src/Makefile
                  apps/Makefile
                  apps/DataAvailability/Makefile
@@ -56,8 +58,8 @@ AC_CONFIG_FILES([Makefile
                  apps/ionosphere/Makefile
                  apps/mergetools/Makefile
                  apps/multipath/Makefile
-                 apps/qa/Makefile
                  apps/positioning/Makefile
+                 apps/receiver/Makefile
                  apps/reszilla/Makefile
                  apps/time/Makefile
                  apps/visibility/Makefile
