@@ -18,15 +18,14 @@
 #include "Exception.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
+#include "TimeNamedFileStream.hpp"
+
 #include "AshtechMessage.hpp"
 #include "ScreenControl.hpp"
-#include "RollingFile.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsStream.hpp"
 #include "RinexNavData.hpp"
 #include "RinexNavStream.hpp"
-#include "RinexObsRoller.hpp"
-#include "RinexNavRoller.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -34,8 +33,9 @@ using namespace gpstk;
 bool saveLogMessages=true;
 list<string> logList;
 
-RollingFile *logFile   = 0;
-RollingFile *matlabObs = 0;
+
+TimeNamedFileStream<ofstream> logFile;
+TimeNamedFileStream<ofstream> matlabObs;
 
 void log(const string& message)
 {
@@ -45,26 +45,21 @@ void log(const string& message)
    logList.push_back(entry);
    if (saveLogMessages)
    {
-      logFile->write(entry+"\n");
+      logFile.updateFileName();
+      logFile << entry << endl;
    }   
 }
 
 void matlabify(const RinexObsData& rod)
 {
-   string time=rod.time.printf("%F %9.2g ");
-   
    RinexObsData::RinexSatMap::const_iterator i_sat;
    RinexObsData::RinexObsTypeMap::const_iterator i_obs;
    
    for (i_sat=rod.obs.begin(); i_sat!=rod.obs.end(); i_sat++)
    {
-      if (matlabObs->write(time, rod.time))
-      {
-         log("Opened output file: " + 
-         matlabObs->getCurrentFilename());
-      }
+      if (matlabObs.updateFileName(rod.time))
+         log("Opened output file: " + matlabObs.getCurrentFilename());
 
-      
       short PRNID = i_sat->first.id;
 
       i_obs = i_sat->second.find(RinexObsHeader::C1);      
@@ -73,22 +68,17 @@ void matlabify(const RinexObsData& rod)
       i_obs = i_sat->second.find(RinexObsHeader::P1);      
       double P1 = i_obs->second.data;
 
-
       i_obs = i_sat->second.find(RinexObsHeader::P2);      
       double P2 = i_obs->second.data;
-
 
       i_obs = i_sat->second.find(RinexObsHeader::L1);      
       double L1 = i_obs->second.data;
 
-
       i_obs = i_sat->second.find(RinexObsHeader::L2);      
       double L2 = i_obs->second.data;
 
-
       i_obs = i_sat->second.find(RinexObsHeader::D1);      
       double D1 = i_obs->second.data;
-
 
       i_obs = i_sat->second.find(RinexObsHeader::D2);      
       double D2 = i_obs->second.data;
@@ -96,30 +86,22 @@ void matlabify(const RinexObsData& rod)
       i_obs = i_sat->second.find(RinexObsHeader::S1);      
       double S1 = i_obs->second.data;
 
-
       i_obs = i_sat->second.find(RinexObsHeader::S2);      
       double S2 = i_obs->second.data;
 
-      matlabObs->write(StringUtils::asString(PRNID),rod.time);
-      matlabObs->write(" ",rod.time);
-      matlabObs->write(StringUtils::asString(C1,3),rod.time);
-      matlabObs->write(" ",rod.time);
-      matlabObs->write(StringUtils::asString(P1,3),rod.time);
-      matlabObs->write(" ",rod.time);
-      matlabObs->write(StringUtils::asString(P2,3),rod.time);
-      matlabObs->write(" ",rod.time);
-      matlabObs->write(StringUtils::asString(L1,3),rod.time);
-      matlabObs->write(" ",rod.time);
-      matlabObs->write(StringUtils::asString(L2,3),rod.time);
-      matlabObs->write(" ",rod.time);
-      matlabObs->write(StringUtils::asString(D1,3),rod.time);
-      matlabObs->write(" ",rod.time);
-      matlabObs->write(StringUtils::asString(D2,3),rod.time);
-      matlabObs->write(" ",rod.time);
-      matlabObs->write(StringUtils::asString(S1,1),rod.time);
-      matlabObs->write(" ",rod.time);
-      matlabObs->write(StringUtils::asString(S2,1),rod.time);
-      matlabObs->write("\n",rod.time);      
+      using gpstk::StringUtils::asString;
+      matlabObs << rod.time.printf("%F %9.2g ") << " "
+                << asString(PRNID) << " "
+                << asString(C1,3) << " "
+                << asString(P1,3) << " "
+                << asString(P2,3) << " "
+                << asString(L1,3) << " "
+                << asString(L2,3) << " "
+                << asString(D1,3) << " "
+                << asString(D2,3) << " "
+                << asString(S1,1) << " "
+                << asString(S2,1)
+                << endl;
    }
    
    return;
@@ -144,20 +126,18 @@ void printLog(const int num2show=10)
 
 RinexObsHeader defineObsHeader(void)
 {
-
    using namespace std;
    string hdrTemplateFile("rinex.obs.template");
    
    RinexObsHeader hdr;
 
-gpstk::RinexObsStream instrm(hdrTemplateFile.c_str(), ios::in);
+   gpstk::RinexObsStream instrm(hdrTemplateFile.c_str(), ios::in);
    if (instrm >> hdr)
       log("Read obs header template: "+hdrTemplateFile);
    else
       log("Could not use obs header template from "+hdrTemplateFile);
    
    return hdr;
-   
 }
 
 RinexNavHeader defineNavHeader(void)
@@ -178,10 +158,9 @@ RinexNavHeader defineNavHeader(void)
 
 int main(int argc, char *argv[])
 {
-   
    try {
 
-      logFile   = new RollingFile("ash%03j%02y.log");
+      logFile.open("ash%03j%02y.log");
 
       // Define default variables here *********************************************
       // TO DO: Read default variables from an initialization (say, .INI) file
@@ -245,11 +224,14 @@ int main(int argc, char *argv[])
       if (portOption.getCount()>0)
          serialPort = portOption.getValue()[0];
       
-      RollingFile rawFiles(rawMessageFileSpec);
-      RinexObsRoller obsFiles(rinexObsFileSpec, defineObsHeader() );
+      TimeNamedFileStream<ofstream> rawFile(rawMessageFileSpec, ios::out|ios::app);
+      matlabObs.open(matlabObsFileSpec.c_str(), ios::out|ios::app);
+
+      TimeNamedFileStream<RinexObsStream> obsFile(rinexObsFileSpec, ios::out|ios::app);
+      TimeNamedFileStream<RinexNavStream> navFile(rinexNavFileSpec, ios::out|ios::app);
+
       RinexNavHeader rinexNavHeader=defineNavHeader();
-      RinexNavRoller navFiles(rinexNavFileSpec, rinexNavHeader);
-      matlabObs = new RollingFile(matlabObsFileSpec);
+      RinexObsHeader rinexObsHeader=defineObsHeader();
       
       // Acquire the port *****************************************************
 
@@ -382,11 +364,15 @@ int main(int argc, char *argv[])
                   if (rod.obs.empty())
                      log("Empty obs");
                   
-                  if (obsFiles.write(rod,rod.time))
+                  if (obsFile.updateFileName(rod.time))
                   {
                      log("Opened output file: " + 
-                         obsFiles.getCurrentFilename());
+                         obsFile.getCurrentFilename());
+                     obsFile << rinexObsHeader;
                   }
+
+                  obsFile << rod;
+
 
                      // Second write obs to the MATLAB/Octave matrix format
                   if (saveMatlabObs)
@@ -461,10 +447,13 @@ int main(int argc, char *argv[])
 	      try{
                   RinexNavData rnd = AshtechMessage::convertToRinexNavData(msg, currentEpoch);
                   log("Converted a nav message");
-                  if (navFiles.write(rnd, currentEpoch))
+                  if (navFile.updateFileName(currentEpoch))
                   {
-                    log("Opened output file: " + navFiles.getCurrentFilename());
+                    log("Opened output file: " + navFile.getCurrentFilename());
+                    navFile << rinexNavHeader;
                   }
+                  navFile << rnd;
+
                   log("Wrote nav message");
 	      }
               catch(...)
@@ -475,10 +464,11 @@ int main(int argc, char *argv[])
               
             if (saveRawMessages)
             {
-               if (rawFiles.write(temp))
+               if (rawFile.updateFileName())
                {
-                  log("Opened output file: " + rawFiles.getCurrentFilename());
+                  log("Opened output file: " + rawFile.getCurrentFilename());
                }
+               rawFile << temp;
             }
             
          } // Remove each whole message from the buffer

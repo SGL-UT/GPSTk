@@ -1,7 +1,8 @@
 SubDir TOP apps receiver ;
 
 GPSLinkLibraries rtAshtech : gpstk ;
+
 BonkForte ; # bleah.
 
-GPSMain rtAshtech : AshtechMessage.cpp RinexNavRoller.cpp RinexObsRoller.cpp 
-	RollingFile.cpp rtAshtech.cpp ScreenControl.cpp UnixSerialPort.cpp ;
+GPSMain rtAshtech : AshtechMessage.cpp rtAshtech.cpp ScreenControl.cpp
+  UnixSerialPort.cpp ;
