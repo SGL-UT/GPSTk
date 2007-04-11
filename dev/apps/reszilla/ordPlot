@@ -11,10 +11,10 @@ def main():
     parser.add_option("-d", "--debug", help="Increase the debugLevel", \
                       default=0, dest="debugLevel", action="count")
 
-    parser.add_option("-i", "--input", help="Input data file, defaults to stdin.", \
+    parser.add_option("-i", help="Input data file, defaults to stdin.", \
                       dest="inputFile", type="string", action="store")
 
-    parser.add_option("-t", "--title", help="Specify a title for the plot. "+\
+    parser.add_option("-t", help="Specify a title for the plot. "+\
                       "Defaults to the name of the input stream.", \
                       dest="title", type="string", action="store")
 
@@ -24,15 +24,13 @@ def main():
     parser.add_option("-o", "--ords-only", help="Only plot the ords (types 0 & 1).", \
                       dest="ordsOnly", default=0, action="count")
 
-    parser.add_option("-c", "--clocks-only", help="only plot the clocks.",\
+    parser.add_option("-c", "--clocks-only", help="Only plot the clocks.",\
                       dest="clocksOnly", default=0, action="count")
 
-    parser.add_option("-s", "--save-figure", \
-                      dest="saveFig", action="store", type="string",\
+    parser.add_option("-s", dest="saveFig", action="store", type="string",\
                       help="Save the figure to the indicated file")
 
-    parser.add_option("-y", "--y-range",\
-                      dest="yRange", action="store", type="float",\
+    parser.add_option("-y", dest="yRange", action="store", type="float",\
                       help="Fix the y range on the ords to be +- this value.")
                       
     parser.add_option("--start-time",\
@@ -46,7 +44,13 @@ def main():
 
     parser.add_option("-w", "--warts",\
                       dest="wartiness", action="count",\
-                      help="Increase the importants of warts on the plot. Zero (the default) means don't even plot them. One means plot them but don't autoscale to show them all (just show all the ords). Two means autoscale to show all the warts. Three means only show the warts and don't show any ords. Only zero and 2 have been implimented.")
+                      help="Increase the importants of warts on the plot.\
+                      Zero (the default) means don't even plot them. One\
+                      means plot them but don't autoscale to show them all\
+                      (just show all the ords). Two means autoscale to show\
+                      all the warts. Three means only show the warts and\
+                      don't show any ords. Only zero and 2 have been\
+                      implimented.")                    
 
     (options, args) = parser.parse_args()
 
