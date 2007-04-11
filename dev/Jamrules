@@ -160,6 +160,9 @@ rule LibObjects
    }
 }
 
+
+# Useage :
+# GPSSetupLibrary target : depenancies ;
 rule GPSSetupLibrary
 {
    local lib = [ FGristFiles $(LIBPREFIX)$(<:S=$(SUFLIB)) ] ;
@@ -228,7 +231,6 @@ rule GPSLinkLibraries
          thisLib = $($(thisDependency)_GRIST) ;
          LinkLibraries $(<) : $(thisLib) ;
       }
-#      LinkLibraries $(<) : $(dependencies) ;
    }
 }
 
@@ -258,6 +260,7 @@ rule GPSFile
 
 PREPROCESSING = yes ;
 SubInclude TOP src ;
+SubInclude TOP lib ;
 PREPROCESSING = ;
 
 rule TestFiles
