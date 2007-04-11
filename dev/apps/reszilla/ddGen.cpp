@@ -354,6 +354,9 @@ void DDGen::process()
       pc.addData(oem1, oem2);
       pc.debias(pem);
       pc.getPhaseDD(ddem);
+      CycleSlipList sl;
+      pc.getSlips(sl, pem);
+      dump(cout, sl);
    }
     
    if (window)

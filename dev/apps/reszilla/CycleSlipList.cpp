@@ -45,28 +45,28 @@ using namespace gpstk;
 // ---------------------------------------------------------------------
 void dump(std::ostream& s, const CycleSlipList& csl)
 {
-   s << "Total Cycle slips: " << csl.size() << endl;
-
-   const ObsID L1(ObsID::otPhase,   ObsID::cbL1,   ObsID::tcP);
-   const ObsID L2(ObsID::otPhase,   ObsID::cbL2,   ObsID::tcP);
-
+   s << "#  Total Cycle slips: " << csl.size() << endl;
 
    CycleSlipList::const_iterator i;
    long l1=0, l2=0;
-   for (i=csl.begin(); i!=csl.end(); i++)
-      if (i->oid == L1)
-         l1++;
-      else if (i->oid == L2)
-         l2++;
 
-   s << "Cycle slips on L1: " << l1 << endl;
-   s << "Cycle slips on L2: " << l2 << endl;
+   for (i=csl.begin(); i!=csl.end(); i++)
+      if (i->oid.band == ObsID::cbL1)
+         l1++;
+      else if (i->oid.band == ObsID::cbL2)
+         l2++;
+      else
+         cout << "what is this?  " << i->oid << endl;
+         
+   s << "#  Cycle slips on L1: " << l1 << endl;
+   s << "#  Cycle slips on L2: " << l2 << endl;
 
    if (csl.size() == 0)
       return;
 
    s << endl
-     << "# time                 prn        cyles     elev     pre   post   gap mstr " << endl;
+     << "# time               prn obs type            cyles  elev     pre   post    gap  mstr " << endl;
+
    s.setf(ios::fixed, ios::floatfield);
    for (i=csl.begin(); i!=csl.end(); i++)
    {
