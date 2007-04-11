@@ -2,28 +2,21 @@
 
 SubDir TOP apps reszilla ;
 
-# It seems that if I explicity add the src directory, things are much happier.
-SEARCH_SOURCE += $(TOP)/src ;
-SEARCH_SOURCE += $(TOP)/apps/MDPtools ;
 
-if ( $(C++) = CC ) && ( $(OS) = SOLARIS )
-{
-  CCFLAGS += -Xc ;
-  C++FLAGS += -compat=5 ;
-}
+# Note that the local library needs to be declaired and built prior to anything
+# else is done.
+GPSLinkLibraries rlib : rxio gpstk ;
+Library rlib : DDEpoch.cpp PhaseCleaner.cpp PhaseResidual.cpp 
+  RobustLinearEstimator.cpp SvElevationMap.cpp CycleSlipList.cpp
+  OrdApp.cpp OrdEngine.cpp ;
 
-Library rlib : DDEpoch.cpp PhaseCleaner.cpp
-  PhaseResidual.cpp MDPHeader.cpp MDPObsEpoch.cpp MDPNavSubframe.cpp 
-  RobustLinearEstimator.cpp SvElevationMap.cpp CycleSlipList.cpp OrdApp.cpp OrdEngine.cpp ;
 
-Library datalib : ObsUtils.cpp FFIdentifier.cpp ObsReader.cpp EphReader.cpp 
-  MetReader.cpp RinexConverters.cpp ;
+# Now we can set up the things that depend upon the local library. Note that
+# the LinkLibraries rule for mdplib must preceede the GPSLinkLibraries rule
+# for things to build properly
+LinkLibraries ordGen ordClock ordEdit ordStats ordLinEst ddGen : rlib ;
+GPSLinkLibraries ordGen ordClock ordEdit ordStats ordLinEst ddGen : rxio gpstk ;
 
-LinkLibraries ordGen ordClock ordEdit ordStats ordLinEst ddGen : 
-   datalib rlib datalib rlib ;
-
-GPSLinkLibraries ordGen ordClock ordEdit ordStats ordLinEst ddGen : 
-   gpstk datalib rlib datalib rlib ;
 
 GPSMain ordGen : ordGen.cpp ;
 
