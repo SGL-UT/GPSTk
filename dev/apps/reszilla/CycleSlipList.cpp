@@ -55,8 +55,6 @@ void dump(std::ostream& s, const CycleSlipList& csl)
          l1++;
       else if (i->oid.band == ObsID::cbL2)
          l2++;
-      else
-         cout << "what is this?  " << i->oid << endl;
          
    s << "#  Cycle slips on L1: " << l1 << endl;
    s << "#  Cycle slips on L2: " << l2 << endl;
