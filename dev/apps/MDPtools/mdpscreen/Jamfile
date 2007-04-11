@@ -2,18 +2,10 @@
 
 SubDir TOP apps MDPtools mdpscreen ;
 
-SEARCH_SOURCE += $(TOP)/src ;
-
-SEARCH_SOURCE += .. ;
-
 LINKLIBS += -lncurses ;
 
-GPSLinkLibraries mdpscreen : gpstk ;
+SEARCH_SOURCE += $(TOP)/apps/MDPtools ;
 
-# Yea, I should be clever and make this use the .a file built in MDPtools
+GPSLinkLibraries mdpscreen : gpstk rxio ;
 
-GPSMain mdpscreen : mdpscreen.cpp ScreenProc.cpp
-   ../MDPHeader.cpp ../MDPPVTSolution.cpp 
-   ../MDPNavSubframe.cpp ../MDPObsEpoch.cpp 
-   ../MDPSelftestStatus.cpp ../TCPStream.cpp 
-   ../MDPProcessors.cpp ../RinexConverters.cpp ;
+GPSMain mdpscreen : mdpscreen.cpp MDPProcessors.cpp ScreenProc.cpp ;
