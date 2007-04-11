@@ -5,6 +5,7 @@
 SubDir TOP ;
 
 SubInclude TOP src ;
+SubInclude TOP lib ;
 SubInclude TOP apps ;
 SubInclude TOP examples ;
 # SubInclude TOP tests ;
