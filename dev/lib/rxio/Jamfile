@@ -11,6 +11,7 @@ else
   GPSBuildLibrary rxio : MDPHeader.cpp MDPPVTSolution.cpp
     MDPNavSubframe.cpp MDPObsEpoch.cpp MDPSelftestStatus.cpp
     RinexConverters.cpp FDStreamBuff.cpp TCPStreamBuff.cpp
+    DeviceStream.cpp
     ObsUtils.cpp FFIdentifier.cpp
     ObsReader.cpp EphReader.cpp MetReader.cpp
     ;
@@ -18,6 +19,7 @@ else
   InstallFile $(INCDIR) : MDPHeader.hpp MDPPVTSolution.hpp MDPNavSubframe.hpp
     MDPObsEpoch.hpp MDPSelftestStatus.hpp RinexConverters.hpp DataStatus.hpp
     miscenum.hpp FDStreamBuff.hpp  TCPStreamBuff.hpp TCPStream.hpp
+    DeviceStream.hpp
     ObsUtils.hpp FFIdentifier.hpp
     ObsReader.hpp EphReader.hpp MetReader.hpp
     ;

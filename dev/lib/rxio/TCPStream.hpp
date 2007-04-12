@@ -15,7 +15,6 @@ namespace gpstk
 
    public:
       TCPStream(void)
-         : iostream(0)
       {
          init(&tcp_buffer);
       }
@@ -27,7 +26,7 @@ namespace gpstk
             setstate(std::ios::badbit); 
       }
 
-      TCPStreamBuffer* rdbuf(void) const
+      TCPStreamBuff* rdbuf(void) const
       {
          return &tcp_buffer;
       }
@@ -39,8 +38,7 @@ namespace gpstk
 
       void close(void)
       {
-         if (!rdbuf()->close())
-            setstate(ios::failbit);
+         rdbuf()->close();
       }
    };
 } // end of namespace
