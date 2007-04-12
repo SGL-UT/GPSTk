@@ -8,7 +8,8 @@
 #include "LoopedFramework.hpp"
 #include "CommandOption.hpp"
 
-#include "TCPStream.hpp"
+#include "DeviceStream.hpp"
+#include "TCPStreamBuff.hpp"
 
 #include "MDPProcessors.hpp"
 #include "ScreenProc.hpp"
@@ -39,54 +40,13 @@ public:
          cout << "debugLevel: " << debugLevel << endl
               << "verboseLevel: " << verboseLevel << endl;
 
+      string fn;
       if (mdpInputOpt.getCount())
-      {
-         string ifn(mdpInputOpt.getValue()[0]);
-         if (ifn.substr(0, 4) == "tcp:")
-         {
-            int port = 8910;
-            ifn.erase(0,4);
-            string::size_type i = ifn.find(":");
-            if (i<ifn.size())
-            {
-               port = StringUtils::asInt(ifn.substr(i+1));
-               ifn.erase(i);
-            }
-            if (debugLevel)
-               cout << "Taking input from TCP socket at " << ifn
-                    << ":" << port << endl;
-
-            SocketAddr client(ifn, port);
-            if (rdbuf.connect(client))
-            {
-               if (debugLevel)
-                  cout << "Conected to " << ifn << endl;
-            }   
-            else
-            {
-               cout << "Could not connect to " << ifn << endl;
-               exit(-1);
-            }
-            mdpInput.std::basic_ios<char>::rdbuf(&rdbuf);
-            mdpInput.filename = ifn;
-         }
-         else
-         {
-            mdpInput.open(mdpInputOpt.getValue()[0].c_str());
-            if (debugLevel)
-               cout << "Taking input from the file " << mdpInput.filename << endl;
-         }
-      }
-      else
-      {
-         if (debugLevel)
-            cout << "Taking input from stdin" << endl;
-         mdpInput.copyfmt(std::cin);
-         mdpInput.clear(std::cin.rdstate());
-         mdpInput.std::basic_ios<char>::rdbuf(std::cin.rdbuf());
-         mdpInput.filename = "<stdin>";
-      }
-
+         fn =  mdpInputOpt.getValue()[0];
+      DeviceStream* inputDev = new DeviceStream(fn, ios::in);
+      mdpInput.std::basic_ios<char>::rdbuf(inputDev->std::basic_ios<char>::rdbuf());
+      mdpInput.filename = inputDev->getTarget();
+      
       processor = new MDPScreenProcessor(mdpInput, output);
 
       processor->debugLevel = debugLevel;
@@ -128,7 +88,7 @@ protected:
 private:
    MDPStream mdpInput;
    ofstream output;
-   TCPbuf rdbuf;
+   TCPStreamBuff rdbuf;
    CommandOptionWithAnyArg mdpInputOpt;
 
    MDPProcessor* processor;
