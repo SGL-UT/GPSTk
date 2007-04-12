@@ -78,6 +78,7 @@ namespace gpstk
 
    void DeviceStream::open(const string& target, ios::openmode mode)
    {
+      this->target = target;
       if (target != "")
       {
          if (target.substr(0, 4) == "tcp:")
