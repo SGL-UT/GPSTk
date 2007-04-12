@@ -6,15 +6,14 @@ SubDir TOP apps MDPtools ;
 # Note that the local library needs to be declaired and built prior to anything
 # else is done.
 GPSLinkLibraries mdplib : rxio gpstk ;
-Library mdplib : MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp 
-  NavProc.cpp ;
+Library mdplib : MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp ;
 
 
 # Now we can set up the things that depend upon the local library. Note that
 # the LinkLibraries rule for mdplib must preceede the GPSLinkLibraries rule
 # for things to build properly
-LinkLibraries mdptool mdp2rinex tcptest tcp2file : mdplib ;
-GPSLinkLibraries mdptool mdp2rinex tcptest tcp2file : rxio gpstk ;
+LinkLibraries mdptool mdp2rinex tcptest : mdplib ;
+GPSLinkLibraries mdptool mdp2rinex tcptest : rxio gpstk ;
 
 
 GPSMain mdptool : mdptool.cpp ;
@@ -22,5 +21,3 @@ GPSMain mdptool : mdptool.cpp ;
 GPSMain mdp2rinex : mdp2rinex.cpp ;
 
 GPSMain tcptest : tcptest.cpp ;
-
-GPSMain tcp2file : tcp2file.cpp ;

@@ -10,7 +10,7 @@
 #include "LoopedFramework.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 
-#include "TCPStream.hpp"
+#include "DeviceStream.hpp"
 
 #include "MDPProcessors.hpp"
 #include "SummaryProc.hpp"
@@ -86,53 +86,13 @@ public:
          cout << "debugLevel: " << debugLevel << endl
               << "verboseLevel: " << verboseLevel << endl;
 
+      string fn;
       if (mdpInputOpt.getCount())
-      {
-         string ifn(mdpInputOpt.getValue()[0]);
-         if (ifn.substr(0, 4) == "tcp:")
-         {
-            int port = 8910;
-            ifn.erase(0,4);
-            string::size_type i = ifn.find(":");
-            if (i<ifn.size())
-            {
-               port = StringUtils::asInt(ifn.substr(i+1));
-               ifn.erase(i);
-            }
-            if (debugLevel)
-               cout << "Taking input from TCP socket at " << ifn
-                    << ":" << port << endl;
-
-            SocketAddr client(ifn, port);
-            if (rdbuf.connect(client))
-            {
-               if (debugLevel)
-                  cout << "Conected to " << ifn << endl;
-            }   
-            else
-            {
-               cout << "Could not connect to " << ifn << endl;
-               exit(-1);
-            }
-            mdpInput.std::basic_ios<char>::rdbuf(&rdbuf);
-            mdpInput.filename = ifn;
-         }
-         else
-         {
-            mdpInput.open(mdpInputOpt.getValue()[0].c_str());
-            if (debugLevel)
-               cout << "Taking input from the file " << mdpInput.filename << endl;
-         }
-      }
-      else
-      {
-         if (debugLevel)
-            cout << "Taking input from stdin" << endl;
-         mdpInput.copyfmt(std::cin);
-         mdpInput.clear(std::cin.rdstate());
-         mdpInput.std::basic_ios<char>::rdbuf(std::cin.rdbuf());
-         mdpInput.filename = "<stdin>";
-      }
+         fn =  mdpInputOpt.getValue()[0];
+      inputDev.open(fn, ios::in);
+      if (debugLevel)
+         cout << "Taking input from " << inputDev.getTarget() << endl;
+      mdpInput.std::basic_ios<char>::rdbuf(inputDev.std::basic_ios<char>::rdbuf());
 
       if (outputOpt.getCount())
       {
@@ -264,9 +224,9 @@ protected:
    }
 
 private:
+   DeviceStream inputDev;
    MDPStream mdpInput;
    ofstream output;
-   TCPbuf rdbuf;
    gpstk::CommandOptionWithAnyArg mdpInputOpt, outputOpt;
 
    gpstk::CommandOptionNoArg pvtOpt, obsOpt, navOpt, tstOpt, hexOpt, badOpt;
