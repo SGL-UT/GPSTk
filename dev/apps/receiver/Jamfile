@@ -1,8 +1,9 @@
 SubDir TOP apps receiver ;
 
-GPSLinkLibraries rtAshtech : gpstk ;
+GPSLinkLibraries rtAshtech rfw : gpstk rxio ;
 
 BonkForte ; # bleah.
 
-GPSMain rtAshtech : AshtechMessage.cpp rtAshtech.cpp ScreenControl.cpp
-  UnixSerialPort.cpp ;
+GPSMain rtAshtech : AshtechMessage.cpp rtAshtech.cpp ScreenControl.cpp ;
+
+GPSMain rfw : rfw.cpp ;

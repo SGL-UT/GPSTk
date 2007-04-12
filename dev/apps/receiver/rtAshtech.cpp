@@ -1,4 +1,3 @@
-#include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -6,26 +5,18 @@
 #include <list>
 #include <map>
 
-#include <stdio.h>   /* Standard input/output definitions */
-#include <string.h>  /* String function definitions */
-#include <unistd.h>  /* UNIX standard function definitions */
-#include <fcntl.h>   /* File control definitions */
-#include <errno.h>   /* Error number definitions */
-#include <termios.h> /* POSIX terminal control definitions */
-
 #include "DayTime.hpp"
-#include "UnixSerialPort.hpp"
 #include "Exception.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
 #include "TimeNamedFileStream.hpp"
-
 #include "AshtechMessage.hpp"
 #include "ScreenControl.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsStream.hpp"
 #include "RinexNavData.hpp"
 #include "RinexNavStream.hpp"
+#include "DeviceStream.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -175,7 +166,7 @@ int main(int argc, char *argv[])
       string rinexObsFileSpec("site%03j.%02yo");
       string rinexNavFileSpec("site%03j.%02yn");
       string matlabObsFileSpec("obs%03j%02y.txt");
-      string serialPort("/dev/ttyS0");
+      string defaultPort("/dev/ttyS0");
  
       DayTime currentEpoch;
       bool gotGPSEpoch = false;
@@ -187,10 +178,10 @@ int main(int argc, char *argv[])
       CommandOptionNoArg rawOption('r', "raw", "Record raw observations");
       CommandOptionNoArg logOption('l', "log", "Record log entries");
       CommandOptionNoArg matlabOption('t', "text", "Record observations as simple text files");
-      CommandOptionWithAnyArg portOption('p', "port", "Serial port to use");
       CommandOptionWithAnyArg rinexObsFileSpecOption('o',"rinex-obs","Naming convention for RINEX obs files");
       CommandOptionWithAnyArg rinexNavFileSpecOption('n',"rinex-nav","Naming convention for RINEX nav message files");
       CommandOptionWithAnyArg textObsFileSpecOption('T',"text-obs","Naming convention for obs in simple text files");
+      CommandOptionWithAnyArg inputOption('i', "input", "Were to read the ashtech data from. Can be a file, a serial device (/dev/ttyS0), a tcp port (tcp:hostname:port), or standard input (the default).");
 
       // TO DO. Limit the number of times the options can be called as appropriate.
 
@@ -221,9 +212,6 @@ int main(int argc, char *argv[])
       if(textObsFileSpecOption.getCount()>0)
          matlabObsFileSpec = textObsFileSpecOption.getValue()[0];
 
-      if (portOption.getCount()>0)
-         serialPort = portOption.getValue()[0];
-      
       TimeNamedFileStream<ofstream> rawFile(rawMessageFileSpec, ios::out|ios::app);
       matlabObs.open(matlabObsFileSpec.c_str(), ios::out|ios::app);
 
@@ -234,9 +222,11 @@ int main(int argc, char *argv[])
       RinexObsHeader rinexObsHeader=defineObsHeader();
       
       // Acquire the port *****************************************************
-
-      UnixSerialPort port(serialPort.c_str());
-         //UnixSerialPort port("/dev/ttyS1");
+      string fn="/dev/ttyS0";
+      if (inputOption.getCount())
+         fn = inputOption.getValue()[0];
+      DeviceStream port(fn);
+      cout << "Reading data from " << port.getTarget() << endl;
 
       // Setup the receiver ***************************************************
       log("Requesting iono, trop info");
@@ -276,7 +266,8 @@ int main(int argc, char *argv[])
          // Infinite loop, polling the port **********************************
       while (readStream)
       {
-         readSize = port.read(buff, buffSize-1);
+         port.read(buff, buffSize-1);
+         readSize = port.gcount();
          totalCharsRead += readSize;
 
          msgBuffer.append(buff,readSize);
