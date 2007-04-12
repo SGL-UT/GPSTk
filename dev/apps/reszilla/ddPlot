@@ -1,26 +1,50 @@
 #!/usr/bin/env python
 # $Id$
-# A routine to plot the output of the ord apps.
+# A routine to plot the output of ddGen.
 #
 
 import sys, string, time, datetime, numpy, matplotlib, pylab
 
 def main():
+
+    # this needs to go in something else, not just printed...
+    print "\n A routine to plot the output of ddGen.\n"
+    print " All double differences will be plotted by default,"
+    print " or you may specify plotting criteria using the"
+    print " options below.\n"
+    
     from optparse import OptionParser
+    
     parser = OptionParser()
+    
     parser.add_option("-d", "--debug", help="Increase the debugLevel", \
                       default=0, dest="debugLevel", action="count")
 
+    parser.add_option("-l", "--legend", dest="legend", action="count",
+                      help="Include a legend.")
+    
+    parser.add_option("-r", "--range", dest="range", action="count",
+                      help="Plot range double difference values.")
+                      
+    parser.add_option("-D", "--doppler", dest="doppler", action="count",
+                      help="Plot Doppler double difference values.") 
+    
+    parser.add_option("-p", "--phase", dest="phase", action="count",
+                      help="Plot phase double difference values.")
+                      
+    parser.add_option("-1", "--L1", dest="L1", action="count",
+                      help="Plot data from L1 freq band.")
+                      
+    parser.add_option("-2", "--L2", dest="L2", action="count",
+                      help="Plot data from L2 freq band.")
+                      
     parser.add_option("-i", help="Input data file, defaults to stdin.", \
                       dest="inputFile", type="string", action="store")
 
     parser.add_option("-t", help="Specify a title for the plot. "+\
                       "Defaults to the name of the input stream.", \
-                      dest="title", type="string", action="store")
-
-    parser.add_option("-l", "--legend", dest="legend", action="count",
-                      help="Include a legend.")
-
+                      dest="title", type="string", action="store")         
+                      
     parser.add_option("-f", dest="saveFig", action="store", type="string",\
                       help="Save the figure to the indicated file")
 
@@ -34,36 +58,66 @@ def main():
     parser.add_option("-e", dest="tEnd", action="store",\
                       help="End time. Format as \"YYYY DOY HH:MM:SS.S\" (Note\
                       the trailing decimal place).") 
-
-    parser.add_option("-w", "--warts",\
-                      dest="wartiness", action="count",\
-                      help="Increase the importants of warts on the plot.\
-                      Zero (the default) means don't even plot them. One\
-                      means plot them but don't autoscale to show them all\
-                      (just show all the ords). Two means autoscale to show\
-                      all the warts. Three means only show the warts and\
-                      don't show any ords. Only zero and 2 have been\
-                      implimented.")                 
-
-
+    
     (options, args) = parser.parse_args()
 
     if (len(args) and options.inputFile == None):
         options.inputFile = args[0]
-
+    
     inputFile = sys.stdin
     if (options.inputFile):
         inputFile = open(options.inputFile)
 
     if (options.title == None):
         options.title = inputFile.name
-
+    
+    plotRange = True
+    plotPhase = True
+    plotDoppl = True
+    plotL1    = True
+    plotL2    = True
+    # or options.phase or options.L1 or options.L2)
+    if (options.range or options.doppler or options.phase or options.L1 or options.L2):
+         plotAll = False
+         if (not options.range):
+             plotRange = False
+         if (not options.phase):
+             plotPhase = False
+         if (not options.doppler):
+             plotDoppl = False
+         if (not options.L1):
+             plotL1 = False
+         if (not options.L2):
+             plotL2 = False
+    else:
+       plotAll = True
+       
     if (options.debugLevel):
         print "Processing: %s" % inputFile.name
         print "Debug level: %d" % options.debugLevel
         print "Title: %s" % options.title
         if options.yRange:
             print "Fixing y axis to +/- %.f meters" % options.yRange
+        if plotRange:
+            print "Plotting range double differences"
+        else:
+            print "Excluding range double differences from plot"
+        if plotPhase:
+            print "Plotting phase double differences"
+        else:
+            print "Excluding phase double differences from plot"
+        if plotDoppl:
+            print "Plotting doppler double differences"
+        else:
+            print "Excluding doppler double differences from plot"
+        if plotL1:
+            print "Plotting double differences from data collected on L1"
+        else:
+            print "Excluding double differences from data collected on L1"
+        if plotL2:
+            print "Plotting double differences from data collected on L2"
+        else:
+            print "Excluding double differences from data collected on L2"
 
     # ------------------------------------------------------------------
     # Here we start reading in the raw double differences
@@ -133,9 +187,11 @@ def main():
     if options.legend:
         rExtent=0.82
 
-    ax1 = fig.add_axes([0.08, 0.10, 0.9, 0.85])
+    #ax1 = fig.add_axes([0.08, 0.10, 0.9, 0.85])
+    ax1 = fig.add_axes([0.08, 0.10, rExtent, 0.85])
+    
 
-    ax1.plot_date(data[0], data[1], 'g,', label="double differences")
+    ax1.plot_date(data[0], data[1], 'g,', label="dd")
     if options.legend:
         ax1.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005,
                    handletextsep=0.01, axespad=0.0, loc=(1,0))
@@ -144,6 +200,9 @@ def main():
         llines = leg.get_lines()
         lframe = leg.get_frame()
         lframe.set_facecolor('0.4')
+        pylab.setp(ltext, size=8, family="sans-serif")
+        pylab.setp(llines, linewidth=2)
+        leg.draw_frame(False)
 
     ax1.set_ylabel('ord (meters)', **yprops)
     ax1.grid(True)

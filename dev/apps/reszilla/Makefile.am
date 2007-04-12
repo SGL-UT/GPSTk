@@ -1,18 +1,11 @@
-# $Id$
-INCLUDES = -I$(srcdir)/../../lib/rxio -I$(srcdir)/../../src
-LDADD = ./librlib.la ../../lib/rxio/librxio.la ../../src/libgpstk.la
+INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../MDPtools
+LDADD = ./librlib.la ./libdatalib.la ../../src/libgpstk.la ../MDPtools/libmdplib.la
 
-lib_LTLIBRARIES = librlib.la
-librlib_la_SOURCES =  DDEpoch.cpp PhaseCleaner.cpp PhaseResidual.cpp \
-RobustLinearEstimator.cpp SvElevationMap.cpp CycleSlipList.cpp OrdApp.cpp \
-OrdEngine.cpp 
-
-bin_PROGRAMS = ordGen ordClock ordEdit ordStats ordLinEst ddGen
-
-ordGen_SOURCES = ordGen.cpp
-ordClock_SOURCES = ordClock.cpp
-ordEdit_SOURCES = ordEdit.cpp
-ordStats_SOURCES = ordStats.cpp
-ordLinEst_SOURCES = ordLinEst.cpp
-ddGen_SOURCES = ddGen.cpp
-
+lib_LTLIBRARIES = librlib.la libdatalib.la
+libdatalib_la_SOURCES = ObsUtils.cpp FFIdentifier.cpp ObsReader.cpp \
+	EphReader.cpp MetReader.cpp OrdApp.cpp OrdEngine.cpp
+librlib_la_SOURCES = DDEpoch.cpp PhaseCleaner.cpp PhaseResidual.cpp \
+	RobustLinearEstimator.cpp \
+	../../apps/MDPtools/MDPHeader.cpp \
+	../../apps/MDPtools/MDPObsEpoch.cpp \
+	../../apps/MDPtools/MDPNavSubframe.cpp

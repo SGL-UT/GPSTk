@@ -66,10 +66,13 @@ void dump(std::ostream& s, const CycleSlipList& csl)
      << "# time               prn obs type            cyles  elev     pre   post    gap  mstr " << endl;
 
    s.setf(ios::fixed, ios::floatfield);
+   
    for (i=csl.begin(); i!=csl.end(); i++)
    {
       const CycleSlipRecord& cs=*i;
-      s << left << setw(20) << cs.t
+      string time=cs.t.printf("%4Y %3j %02H:%02M:%04.1f");
+      
+      s << ">c " << left << setw(20) << time
         << "  " << right << setw(2) << cs.prn.id
         << " " << cs.oid
         << " " << setprecision(3) << setw(14) << cs.cycles

@@ -345,7 +345,10 @@ void DDGen::process()
       pc.debugLevel = debugLevel;
       pc.addData(oem1, oem2);
       pc.debias(pem);
-      pc.getPhaseDD(ddem);      
+      pc.getPhaseDD(ddem);  
+      CycleSlipList sl;
+      //pc.getSlips(sl, pem);
+      //dump(cout, sl);          
    }
    else
    {
