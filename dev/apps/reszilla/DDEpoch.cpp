@@ -649,7 +649,8 @@ void DDEpochMap::outputStatsForAllCombos(ostream& s,
      << "ObsID         elev    stddev     mean    # obs      # bad   "
      << "# unk  max good  slips" << endl
      << "------------- -----  --------  --------  -------    ------  "
-     << "------ --------  -----";
+     << "------ --------  -----"
+     << endl;
 
    // For convience, group these into L1
    for (ElevationRangeList::const_iterator i = elr.begin(); 

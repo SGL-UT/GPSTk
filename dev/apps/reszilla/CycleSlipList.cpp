@@ -63,7 +63,7 @@ void dump(std::ostream& s, const CycleSlipList& csl)
       return;
 
    s << endl
-     << "# time               prn obs type            cyles  elev     pre   post    gap  mstr " << endl;
+     << "#   time               prn obs type            cyles  elev     pre   post    gap  mstr " << endl;
 
    s.setf(ios::fixed, ios::floatfield);
    

@@ -1,27 +1,28 @@
 #!/usr/bin/env python
 # $Id$
 # A routine to plot the output of ddGen.
-#
+
 
 import sys, string, time, datetime, numpy, matplotlib, pylab
 
 def main():
 
-    # this needs to go in something else, not just printed...
-    print "\n A routine to plot the output of ddGen.\n"
-    print " All double differences will be plotted by default,"
-    print " or you may specify plotting criteria using the"
-    print " options below.\n"
-    
     from optparse import OptionParser
     
     parser = OptionParser()
+        
+    usageString = "ddPlot [option]\n\n A routine to plot the output of ddGen.\n\n All double differences will be plotted by default, or\n you may specify plotting criteria using the command\n line options."
+    
+    parser =OptionParser(usage=usageString)
     
     parser.add_option("-d", "--debug", help="Increase the debugLevel", \
                       default=0, dest="debugLevel", action="count")
 
     parser.add_option("-l", "--legend", dest="legend", action="count",
                       help="Include a legend.")
+                      
+    parser.add_option("-a","--averages", action="count", dest="plotAverages",
+                      help="Plot the averages using the same plotting criteria. Use twice and only averages will be plotted.")
     
     parser.add_option("-r", "--range", dest="range", action="count",
                       help="Plot range double difference values.")
@@ -71,33 +72,35 @@ def main():
     if (options.title == None):
         options.title = inputFile.name
     
+    plotAvg = False
+    if (options.plotAverages):
+        plotAvg = True
+    
     plotRange = True
     plotPhase = True
     plotDoppl = True
     plotL1    = True
     plotL2    = True
-    # or options.phase or options.L1 or options.L2)
-    if (options.range or options.doppler or options.phase or options.L1 or options.L2):
-         plotAll = False
+    
+    if (options.range or options.doppler or options.phase): 
          if (not options.range):
              plotRange = False
          if (not options.phase):
              plotPhase = False
          if (not options.doppler):
              plotDoppl = False
-         if (not options.L1):
-             plotL1 = False
-         if (not options.L2):
-             plotL2 = False
-    else:
-       plotAll = True
-       
+    if (options.L1 or options.L2):
+        if (not options.L1):
+            plotL1 = False
+        if (not options.L2):
+            plotL2 = False
+
     if (options.debugLevel):
         print "Processing: %s" % inputFile.name
         print "Debug level: %d" % options.debugLevel
         print "Title: %s" % options.title
         if options.yRange:
-            print "Fixing y axis to +/- %.f meters" % options.yRange
+            print "Fixing y axis to +/- %4.4f meters" % options.yRange
         if plotRange:
             print "Plotting range double differences"
         else:
@@ -118,11 +121,21 @@ def main():
             print "Plotting double differences from data collected on L2"
         else:
             print "Excluding double differences from data collected on L2"
+        if plotAvg:
+            print "Plotting double differnce averages"
+        else:
+            print "Not plotting averages"
 
-    # ------------------------------------------------------------------
-    # Here we start reading in the raw double differences
-    #      time, doubleDifference, prn1, el1, prn2, el2
-    dataList = ([], [], [], [], [], [])
+    # read in data.
+    # Not using SV or elevation data yet, but we may want to do 
+    # something cool with it later
+    
+    dataListL1 = ([],[],[],[],[],[],[],[],[])  # time, C/A range dd, P/Y range, phase dd, doppler dd, PRN1, el1, PRN2, el2
+    dataListL2 = ([],[],[],[],[],[],[],[])     # time, range dd, phase dd, doppler dd, PRN1, el1, PRN2, el2
+    avergsList = ([],[],[],[],[],[],[],[])     # time, C/A rng avg, L1 P/Y rng avg, L1 phs dd avg, L1 dopp dd avg...
+                                               # ...L2 rng dd avg, L2 phs dd avg, L2 dopp dd avg
+    #cycleSlips =  # not quite sure how to work these in yet
+
     for line in inputFile:
         line = line.strip()
         if options.debugLevel>1:
@@ -130,53 +143,120 @@ def main():
         if len(line)==0: continue
 
         if line[0] == "#": continue
-        if line[0] == '>': continue
-
-        words=line.split()
-        
-        t = parse_time(words[0:3])
-        ordType = "%s %s %s"%(words[3], words[4], words[5])
-        sv1 = int(words[6])
-        sv2 = int(words[7])
-        elev1 = float(words[8])
-        elev2 = float(words[9])
-        ddr = float(words[10])
-        h = int(words[11],16)
-        dataList[0].append(t)
-        dataList[1].append(ddr)
-        dataList[2].append(sv1)
-        dataList[3].append(sv2)
-        dataList[4].append(elev1)
-        dataList[5].append(elev2)
-
-
-    data = numpy.array(dataList)
-    del dataList
+        if line[0] == '>':
+            if line[1] == "c":
+                continue # we'll do something nifty with these later
+            if (line[1]=="a" and plotAvg):
+                words=line.split()
+                t = parse_time(words[1:4])
+                ordType = "%s %s %s"%(words[4], words[5], words[6])
+                mean = float(words[8])
+                if ordType[0:2] == "L1":
+                    if ordType[3:6] == "C/A":
+                        avergsList[0].append(t)     # time
+                        avergsList[1].append(mean)  # C/A range dd mean
+                    elif ordType[7:14] == "range":  
+                        avergsList[2].append(mean)  # L1 P/Y/W range dd mean
+                    elif ordType[7:14] == "phase":
+                        avergsList[3].append(mean)  # L1 P/Y/W phase dd mean
+                    elif ordType[7:14] == "doppl":
+                        avergsList[4].append(mean)  # L1 P/Y/W Doppler dd mean
+                    else:
+                        if (options.debugLevel):
+                            print "Didn't understand this line:"
+                            print line
+                        
+                elif ordType[0:2] == "L2":
+                    if ordType[7:14] == "range":
+                        avergsList[5].append(mean)  # L1 P/Y/W range dd mean
+                    elif ordType[7:14] == "phase":
+                        avergsList[6].append(mean)  # L1 P/Y/W phase dd mean
+                    elif ordType[7:14] == "doppl":
+                        avergsList[7].append(mean)  # L1 P/Y/W Doppler dd mean
+                    else:
+                        if (options.debugLevel):
+                            print "Didn't understand this line:"
+                            print line           
+        else:       
+            words=line.split()
+            t = parse_time(words[0:3])
+            ordType = "%s %s %s"%(words[3], words[4], words[5])
+    
+            # parse the line
+            sv1 = int(words[6])
+            sv2 = int(words[7])
+            elev1 = float(words[8])
+            elev2 = float(words[9])
+            ddr = float(words[10])
+            h = int(words[11],16)
+            # not adding health to the dataLists, this can be changed though
+            
+            if ordType[0:2] == "L1":
+                # get all of this general epoch info from the C/A line only
+                if ordType[3:6] == "C/A":
+                    dataListL1[0].append(t)
+                    dataListL1[1].append(ddr)
+                    dataListL1[5].append(sv1)
+                    dataListL1[6].append(elev1)
+                    dataListL1[7].append(sv2)
+                    dataListL1[8].append(elev2)
+                elif ordType[5:12] == "range":  #this will be the L1 P/Y/W range
+                    dataListL1[2].append(ddr)
+                elif ordType[5:12] == "phase":
+                    dataListL1[3].append(ddr)
+                elif ordType[5:12] == "doppler":
+                    dataListL1[4].append(ddr)
+                else:
+                    if (options.debugLevel):
+                        print "Didn't understand this line:"
+                        print line
+            elif ordType[0:2] == "L2":
+                # get all of the general epoch info from the range line only
+                if ordType[5:12] == "range":
+                    dataListL2[0].append(t)
+                    dataListL2[1].append(ddr)
+                    dataListL2[4].append(sv1)
+                    dataListL2[5].append(elev1)
+                    dataListL2[6].append(sv2)
+                    dataListL2[7].append(elev2)
+                elif ordType[5:12] == "phase":
+                    dataListL2[2].append(ddr)
+                elif ordType[5:12] == "doppler":
+                    dataListL2[3].append(ddr)
+                else:
+                    if (options.debugLevel):
+                        print "Didn't understand this line:"
+                        print line           
+            
+    dataL1 = numpy.array(dataListL1)
+    dataL2 = numpy.array(dataListL2)
+    avergs = numpy.array(avergsList)
+    
+    del dataListL1, dataListL2, avergsList
+    
     # make sure that there is some data to plot
-    if data.shape[1] < 1:
+    if (plotL1 and dataL1.shape[1] < 1):
+        print "\n No L1 data to plot. Exiting...\n"
         exit;
+    if (plotL2 and dataL2.shape[1] < 1):
+        print "\n No L2 data to plot. Exiting...\n"
+        exit;
+    if (plotAvg and avergs.shape[1] < 1):
+        print "\n No L2 data to plot. Exiting...\n"
+        exit;    
 
     # done reading in the ord file
-    # ------------------------------------------------------------------
 
     # A key handler for matplotlib
     def press(event):
         if event.key=='q' or event.key==' ':
             pylab.close()
 
-
     # Here we start generating the plots
     fig = pylab.figure()
     pylab.connect('key_press_event', press)
-    yprops = dict(rotation=90,
-                  horizontalalignment='right',
-                  verticalalignment='center',
-                  family='monospace',
-                  x=-0.01)
-
-    scale_props = dict(horizontalalignment="right",
-                       verticalalignment="bottom",
-                       size=8, family="sans-serif")
+    yprops = dict(rotation=90, horizontalalignment='right', verticalalignment='center', family='monospace', x=-0.01)
+    scale_props = dict(horizontalalignment="right", verticalalignment="bottom", size=8, family="sans-serif") 
 
     xMajorFmt=pylab.DateFormatter("%02H:%02M\n%03j")
     xMinorFmt=pylab.NullFormatter()
@@ -185,16 +265,63 @@ def main():
 
     rExtent=0.89
     if options.legend:
-        rExtent=0.82
-
-    #ax1 = fig.add_axes([0.08, 0.10, 0.9, 0.85])
+        rExtent=0.80
+        
     ax1 = fig.add_axes([0.08, 0.10, rExtent, 0.85])
+    # experimented with alpha blending on the plot, but couldn't find anything that really helped
+    if plotL1:
+        if plotRange:
+            if (options.plotAverages < 2):
+                ax1.plot_date(dataL1[0], dataL1[1], ',', color="r", label="C/A range")
+                ax2=fig.add_axes(ax1.get_position())
+                ax2.plot_date(dataL1[0], dataL1[2], ',', color="purple", label="L1 P/Y range")
+            if plotAvg:
+                ax7=fig.add_axes(ax1.get_position())
+                ax7.plot_date(avergs[0], avergs[1], 'o', color="r", label="C/A rng avg")
+                ax8=fig.add_axes(ax1.get_position())
+                ax8.plot_date(avergs[0], avergs[2], 'o', color="purple", label="L1 P/Y rng avg")
+                
+        if plotPhase:
+            if (options.plotAverages < 2):
+                ax3=fig.add_axes(ax1.get_position())
+                ax3.plot_date(dataL1[0], dataL1[3], ',', color="olive", label="L1 P/Y phase")
+            if plotAvg:
+                ax9=fig.add_axes(ax1.get_position())
+                ax9.plot_date(avergs[0], avergs[3], 'o', color="olive", label="L1 P/Y ph avg")
+                
+        if plotDoppl:
+            if (options.plotAverages < 2):
+                ax4=fig.add_axes(ax1.get_position())
+                ax4.plot_date(dataL1[0], dataL1[4], ',', color="navy", label="L1 P/Y doppler")
+            if plotAvg:
+                ax10=fig.add_axes(ax1.get_position())
+                ax10.plot_date(avergs[0], avergs[4], 'o', color="navy", label="L1 P/Y dop avg")
     
+    if plotL2:
+        if plotRange:
+            if (options.plotAverages < 2):
+                ax4=fig.add_axes(ax1.get_position())
+                ax4.plot_date(dataL2[0], dataL2[1], ',', color="gray", label="L2 P/Y range")
+            if plotAvg:
+                ax11=fig.add_axes(ax1.get_position())
+                ax11.plot_date(avergs[0], avergs[5], 'o', color="gray", label="L2 P/Y rng avg")
+        if plotPhase:
+            if (options.plotAverages < 2):
+                ax5=fig.add_axes(ax1.get_position())
+                ax5.plot_date(dataL2[0], dataL2[2], ',', color="green", label="L2 P/Y phase")
+            if plotAvg:
+                ax12=fig.add_axes(ax1.get_position())
+                ax12.plot_date(avergs[0], avergs[6], 'o', color="green", label="L2 P/Y rng avg")
+        if plotDoppl:
+            if (options.plotAverages < 2):
+                ax6=fig.add_axes(ax1.get_position())
+                ax6.plot_date(dataL2[0], dataL2[3], ',', color="teal", label="L2 P/Y doppler")
+            if plotAvg:
+                ax13=fig.add_axes(ax1.get_position())
+                ax13.plot_date(dataL2[0], dataL2[7], 'o', color="teal", label="L2 P/Y dop avg")
 
-    ax1.plot_date(data[0], data[1], 'g,', label="dd")
     if options.legend:
-        ax1.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005,
-                   handletextsep=0.01, axespad=0.0, loc=(1,0))
+        ax1.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005, handletextsep=0.01, axespad=0.0, loc=(1,0))
         leg = pylab.gca().get_legend()
         ltext = leg.get_texts()
         llines = leg.get_lines()
@@ -209,8 +336,7 @@ def main():
     if options.yRange:
         ax1.set_ylim(ymin=-options.yRange, ymax=options.yRange)
     else:
-        pylab.figtext(rExtent+.08, 0.95, "y range autoscaled",
-                      **scale_props)
+        pylab.figtext(rExtent+.08, 0.95, "y range autoscaled", **scale_props)
     ax1.xaxis.set_major_formatter(xMajorFmt)
     xlabels=ax1.get_xticklabels()
     ylabels=ax1.get_yticklabels()
@@ -222,12 +348,12 @@ def main():
     if options.tStart:
       tMin = parse_time(options.tStart.split()[0:3])
     else:
-      tMin = min(data[0])
+      tMin = min(dataL1[0])
 
     if options.tEnd:
       tMax = parse_time(options.tEnd.split()[0:3])
     else:
-      tMax = max(data[0])
+      tMax = max(dataL1[0])
 
     ax1.set_xlim(xmin=tMin, xmax=tMax)
     ax1.set_title(options.title)
