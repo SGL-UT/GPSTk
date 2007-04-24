@@ -1,0 +1,23 @@
+# $Id$
+
+SubDir TOP apps swrx ;
+
+GPSLinkLibraries simlib : gpstk ;
+
+Library simlib : normal.cpp CCReplica.cpp IQStream.cpp EMLTracker.cpp 
+   NavFramer.cpp ;
+
+LinkLibraries gpsSim tracker corltr iqdump codeDump : simlib ;
+GPSLinkLibraries gpsSim tracker corltr iqdump codeDump simpleNav : gpstk ;
+
+Main gpsSim : gpsSim.cpp ;
+
+Main tracker : tracker.cpp ;
+
+Main corltr : corltr.cpp ;
+
+Main simpleNav : simpleNav.cpp ;
+
+Main iqdump : iqdump.cpp ;
+
+Main codeDump : codeDump.cpp ;

@@ -1,0 +1,157 @@
+#pragma ident "$Id$"
+
+/*
+The start of a program that takes correlation delays, a rough estimate of
+time, a rough estimate of receiver position, and an SV ephemeris. It then
+tries to estimate the pseudoranges from the correlation delays.
+*/
+
+#include <iostream>
+
+#include <DayTime.hpp>
+#include <CommandOption.hpp>
+#include <CommandOptionWithTimeArg.hpp>
+#include <CommandOptionParser.hpp>
+
+#include <BCEphemerisStore.hpp>
+#include <RinexNavStream.hpp>
+#include <RinexNavData.hpp>
+#include <TropModel.hpp>
+#include <IonoModel.hpp>
+#include <GPSGeoid.hpp>
+#include <PRSolution.hpp>
+
+using namespace gpstk;
+using namespace std;
+using namespace gpstk::StringUtils;
+
+int main(int argc, char *argv[])
+{
+   int verbosity = 1;
+   Triple antennaPos;
+
+   CommandOptionWithAnyArg
+      ephFileOption('e', "ephemeris", "Rinex Ephemeris data file name.", true);
+
+   CommandOptionNoArg
+      helpOption('h', "help", "Print usage. Repeat for more info. "),
+
+      verbosityOption('v', "verbosity", "Increase the verbosity level. The default is 0.");
+
+   CommandOptionWithAnyArg
+      antennaPosOption('p', "position", "Initial estimate of the antenna position in ECEF. Only needs to be good to the km level.");
+
+   CommandOptionWithTimeArg
+      timeOption('t', "time", "%m/%d/%Y %H:%M:%S",
+                 "Time estimate for start of data (MM/DD/YYYY HH:MM:SS).");
+
+   string appDesc("Performs a simple nav solution from correlation delays.");
+   CommandOptionParser cop(appDesc);
+   cop.parseOptions(argc, argv);
+
+   if (helpOption.getCount() || cop.hasErrors())
+   {
+      if (cop.hasErrors() && helpOption.getCount()==0)
+      {
+         cop.dumpErrors(cout);
+         cout << "Use -h for help." << endl;
+      }
+      else
+      {
+         cop.displayUsage(cout);
+      }
+      exit(0);
+   }
+
+   if (verbosityOption.getCount())
+      verbosity = asInt(verbosityOption.getValue()[0]);
+
+
+   if (antennaPosOption.getCount())
+   {
+      string aps = antennaPosOption.getValue()[0];
+      if (numWords(aps) != 3)
+      {
+         cout << "Please specify three coordinates in the antenna postion." << endl;
+         exit(-1);
+      }
+      else
+         for (int i=0; i<3; i++)
+            antennaPos[i] = asDouble(word(aps, i));
+   }
+
+   BCEphemerisStore bce;
+   IonoModel iono;
+   for (int i=0; i < ephFileOption.getCount(); i++)
+   {
+      string fn = ephFileOption.getValue()[i];
+      RinexNavStream rns(fn.c_str(), ios::in);
+      rns.exceptions(ifstream::failbit);
+
+      RinexNavHeader hdr;
+      rns >> hdr;
+      iono = IonoModel(hdr.ionAlpha, hdr.ionBeta);
+
+      RinexNavData rnd;
+      while (rns >> rnd)
+         bce.addEphemeris(rnd);
+
+      if (verbosity)
+         cout << "Read " << fn << " as RINEX nav. " << endl;
+   }
+
+   if (verbosity>1)
+      cout << "Have ephemeris data from " << bce.getInitialTime() 
+           << " through " << bce.getFinalTime() << endl;
+
+   DayTime time = timeOption.getTime()[0];
+   if (verbosity)
+      cout << "Initial time estimate: " << time << endl;
+
+   if (time < bce.getInitialTime() || time > bce.getFinalTime())
+      cout << "Warning: Initial time does not appear to be within the provided ephemeris data." << endl;
+
+
+   GPSGeoid gm;
+   ECEF ecef(antennaPos);
+   map<SatID, double> range;
+   vector<SatID> svVec;
+   vector<double> expVec, ionoVec;
+   for (int i=1; i<=32; i++)
+   {
+      SatID sv(i, SatID::systemGPS);
+      try 
+      {
+         Xvt svpos = bce.getSatXvt(sv, time);
+         double el = antennaPos.elvAngle(svpos.x);
+         double az = antennaPos.azAngle(svpos.x);
+
+         double pr = svpos.preciseRho(ecef, gm, 0);
+         double ic = iono.getCorrection(time, ecef, el, az);
+
+         expVec.push_back(pr);
+         svVec.push_back(sv);
+         ionoVec.push_back(ic);
+      }
+      catch (Exception& e)
+      {}
+   }
+
+   // Replace this with the observed delays...
+   vector<double> obsVec(expVec);
+
+   try 
+   {
+      GGTropModel gg;
+      gg.setWeather(20., 1000., 50.);    
+      PRSolution prSolver;
+      prSolver.RMSLimit = 400;
+      prSolver.RAIMCompute(time, svVec, obsVec, bce, &gg);
+      Vector<double> sol = prSolver.Solution;
+      cout << "solution:" << fixed << sol << endl;
+   }   
+   catch (Exception& e)
+   {
+      cout << "Caught exception:" << e << endl;
+   }
+}

@@ -1,0 +1,117 @@
+#!/usr/bin/env python
+# $Id$
+
+import sys, string, time, datetime, numpy, matplotlib, pylab
+
+from optparse import OptionParser
+parser = OptionParser(usage="usage: %prog [options]\nA program to plot the output of the receiver simulator")
+parser.set_description
+parser.add_option("-d", "--debug", default=0, dest="debugLevel", action="count",
+                  help="Increase the debugLevel")
+
+parser.add_option("-i", "--input", dest="inputFile", type="string", action="store", 
+                  help="Input data file, defaults to stdin.")
+
+parser.add_option("-t", "--title", dest="title", type="string", action="store",
+                  help="Specify a title for the plot. Defaults ot the stream name.")
+
+parser.add_option("-s", "--save-figure", dest="saveFig", action="store", type="string",
+		  help="Save the figure to the indicated file")
+
+parser.add_option("-l", "--line-style", dest="lineStyle", action="store", type="string",
+		  help="Line style to use in the plots. See matplotlib docs.")
+
+parser.add_option("-c", "--columns", dest="cols", action="append", type="string",
+		  help="Specify what columns to plot.")
+
+(options, args) = parser.parse_args()
+
+if len(args) and options.inputFile == None:
+    options.inputFile = args[0]
+
+inputFile = sys.stdin
+if (options.inputFile):
+    inputFile = open(options.inputFile)
+
+if (not options.lineStyle):
+    options.lineStyle = "-";
+
+if options.title == None:
+    options.title = inputFile.name
+
+cols = 0;
+data=[]
+labels=[]
+units=[]
+
+for line in inputFile:
+    line = line.strip()
+
+    if len(line)==0: continue
+    
+    words=line.split()
+
+    if line[0] == "#":
+        if len(line) < 2:
+            continue
+        if line[1] == "h":
+            labels = [w for w in words[1:]]
+        if line[1] == "u":
+            units =  [w for w in words[1:]]
+        continue
+
+    if cols == 0:
+        cols = len(words)
+    elif cols != len(words):
+        print "change in cols"
+        continue
+
+    row = [float(w) for w in words]
+    data.append(row)
+
+# A key handler for matplotlib
+def press(event):
+    if event.key=='q' or event.key==' ':
+        pylab.close()
+
+# Here we start generating the plots
+pylab.connect('key_press_event', press)
+
+d2 = numpy.array(data)
+del data
+time = d2[:,0]
+
+(rows,cols) = d2.shape;
+if len(labels)<cols:
+    labels =['time']
+    labels += ['%d'%c for c in xrange(1,cols)]
+
+if len(units)<cols:
+    units = ['' for c in xrange(0,cols)]
+
+if not options.cols:
+    options.cols = labels;
+
+for c in xrange(1,cols):
+    if len(options.cols)==0 or labels[c] in options.cols:
+        pylab.plot(time, d2[:,c], options.lineStyle, label="%s (%s)"%(labels[c],units[c]))
+
+pylab.xlabel("%s(%s)"%(labels[0],units[0]))
+pylab.grid()
+
+pylab.legend(numpoints=2, pad=.1, labelsep=0.001,
+             handlelen=0.01, axespad=0.0, loc='upper left')
+leg = pylab.gca().get_legend()
+ltext = leg.get_texts()
+llines = leg.get_lines()
+lframe = leg.get_frame()
+lframe.set_facecolor('0.90')
+pylab.setp(ltext, size=8, family="sans-serif")
+pylab.setp(llines, linewidth=2)
+
+pylab.title(options.title)
+
+if (options.saveFig == None):
+    pylab.show()
+else:
+   pylab.savefig(options.saveFig)
