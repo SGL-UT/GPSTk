@@ -5,7 +5,7 @@ BonkForte ;
 
 GPSMain wheresat : WhereSat.cpp ;
 
-GPSLinkLibraries findMoreThan12 : gpstk ;
+GPSLinkLibraries findMoreThan12 : rxio gpstk ;
 BonkForte ; 
 
 GPSMain findMoreThan12 : findMoreThan12.cpp ;
