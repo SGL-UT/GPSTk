@@ -1,6 +1,6 @@
 SubDir TOP apps visibility ;
 
-GPSLinkLibraries wheresat : gpstk ;
+GPSLinkLibraries wheresat : rxio gpstk ;
 BonkForte ; 
 
 GPSMain wheresat : WhereSat.cpp ;
