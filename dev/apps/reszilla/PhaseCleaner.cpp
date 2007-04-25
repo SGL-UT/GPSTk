@@ -62,7 +62,9 @@ PhaseCleaner::PhaseCleaner(long al, double at, double gt)
 // Pulls the phase data data into arcs. Only data that exists on both receivers
 // is included
 //-----------------------------------------------------------------------------
-void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1, const gpstk::ObsEpochMap& rx2)
+void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1,
+                           const gpstk::ObsEpochMap& rx2,
+                           const unsigned long minimumSNR)
 {
    if (debugLevel)
       cout << "PhaseCleaner::addData(), " 
@@ -128,7 +130,8 @@ void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1, const gpstk::ObsEpochM
             if (snr1_itr != rotm1.end() && snr2_itr != rotm2.end() )
             {
                snr = snr1_itr->second;
-               if (std::abs(snr) < 1 || std::abs(snr2_itr->second) < 1)
+               if (std::abs(snr) < minimumSNR || 
+                   std::abs(snr2_itr->second) < minimumSNR )
                   continue;
             }
 
@@ -510,7 +513,9 @@ unsigned PhaseCleanerA::debugLevel;
 // Pulls the phase data data into arcs. Only data that exists on both receivers
 // is included
 //-----------------------------------------------------------------------------
-void PhaseCleanerA::addData(const ObsEpochMap& rx1, const ObsEpochMap& rx2)
+void PhaseCleanerA::addData(const ObsEpochMap& rx1, 
+                            const ObsEpochMap& rx2,
+                            const unsigned long minimumSNR)
 {
    if (debugLevel)
       cout << "PhaseCleanerA::addData(), " 
@@ -618,7 +623,7 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1, const ObsEpochMap& rx2)
                if (snr_itr != soe11.end())
                {
                   snr = snr_itr->second;
-                  if (std::abs(snr) < 1 )
+                  if (std::abs(snr) < minimumSNR )
                      continue;
                }
 

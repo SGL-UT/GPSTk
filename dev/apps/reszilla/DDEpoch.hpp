@@ -119,6 +119,7 @@ struct DDEpochMap : public std::map<gpstk::DayTime, DDEpoch>
    static unsigned debugLevel;
    static bool useMasterSV;
    unsigned long windowLength;    // seconds
+   //unsigned long minimumSNR;      // dB
 };
 
 

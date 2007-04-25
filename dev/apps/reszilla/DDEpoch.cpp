@@ -403,9 +403,9 @@ void DDEpochMap::dump(std::ostream& s) const
                }
                
                if (debugLevel && (dde.health[masterPrn] || dde.health[prn]))
-                  cout << "# Unhealthy SV. Master/SV2: " << hex << setw(2) 
-                       << dde.health[masterPrn] << dde.health[prn] << dec 
-                       << endl;    
+                    cout << "# Unhealthy SV. Master/SV2: " << hex << setw(2) 
+                         << dde.health[masterPrn] << dde.health[prn] << dec 
+                         << endl;    
             }
          }
       }

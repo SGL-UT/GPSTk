@@ -53,7 +53,7 @@
 #include "CycleSlipList.hpp"
 #include "SvElevationMap.hpp"
 #include "ElevationRange.hpp"
-
+#include "BCEphemerisStore.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -79,20 +79,22 @@ private:
    unsigned long minArcLen; // epochs
    unsigned long msid;
    unsigned long window;    // seconds
+   unsigned long minSNR;    // dB
    Triple antennaPos;
-
-   ObsEpochMap obs1, obs2;
-
-   CommandOptionWithAnyArg obs1FileOption, obs2FileOption, ephFileOption;
    
-
+   ObsEpochMap obs1, obs2;
+   CommandOptionWithAnyArg obs1FileOption, obs2FileOption, ephFileOption;
+   ElevationRangeList elr;
+   bool computeStats, computeAll, removeUnhealthy;
+   EphReader healthSrcER;
+   
    void readObsFile(const CommandOptionWithAnyArg& obsFileOption,
                     const EphemerisStore& eph,
                     ObsEpochMap &oem);
-
-   ElevationRangeList elr;
-
-   bool computeStats, computeAll;
+   
+   void filterUnhealthyObs(const EphemerisStore& eph,
+                           ObsEpochMap &oem);
+   
 };
 
 //-----------------------------------------------------------------------------
@@ -100,19 +102,16 @@ private:
 //-----------------------------------------------------------------------------
 DDGen::DDGen() throw()
    : BasicFramework("ddGen", "Computes double-difference residuals from raw observations."),
-     ddMode("all"), minArcGap(60), minArcTime(60), minArcLen(5), msid(0), window(0),
-     computeStats(false), computeAll(false),
+     ddMode("all"), minArcGap(60), minArcTime(60), minArcLen(5), msid(0), window(0), minSNR(20),
+     computeStats(false), computeAll(false), removeUnhealthy(false),
 
      obs1FileOption('1', "obs1", 
                     "Where to get the first receiver's obs data.", true),
-   
      obs2FileOption('2', "obs2", 
                     "Where to get the second receiver's obs data.", true),
-
      ephFileOption('e', "eph",  "Where to get the ephemeris data. Can be "
-                   " RINEX, FIC, or SP3.", true)
+                    "RINEX, FIC, or SP3.", true)
 {}
-
 
 //-----------------------------------------------------------------------------
 // Here the command line options parsed and used to configure the program
@@ -121,56 +120,54 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
 {
    CommandOptionWithAnyArg
       ddModeOption('\0', "ddmode", "Specifies what observations are used to "
-                   "compute the double difference residuals. Valid values are:"
-                   " all. The default is " + ddMode),
-
+                    "compute the double difference residuals. Valid values are:"
+                    " all. The default is " + ddMode),
       cycleSlipOption('\0', "cycle-slips", "Output a list of cycle slips"),
-   
       minArcTimeOption('\0', "min-arc-time", "The minimum length of time "
-                       "(in seconds) that a sequence of observations must "
-                       "span to be considered as an arc. The default "
-                       "value is " + asString(minArcTime, 1) + " seconds."),
-
+                    "(in seconds) that a sequence of observations must "
+                    "span to be considered as an arc. The default "
+                    "value is " + asString(minArcTime, 1) + " seconds."),
       minArcGapOption('\0', "min-arc-gap", "The minimum length of time "
-                      "(in seconds) between two arcs for them to be "
-                      "considered separate arcs. The default value "
-                      "is " + asString(minArcGap, 1) + " seconds."),
-
+                    "(in seconds) between two arcs for them to be "
+                    "considered separate arcs. The default value "
+                    "is " + asString(minArcGap, 1) + " seconds."),
       minArcLenOption('\0', "min-arc-length", "The minimum number of "
-                      "epochs that can be considered an arc. The "
-                      "default value is " + asString(minArcLen) +
-                      " epochs."),
-
+                    "epochs that can be considered an arc. The "
+                    "default value is " + asString(minArcLen) +
+                    " epochs."),
       elevBinsOption('b', "elev-bin",
-                     "A range of elevations, used in  computing"
-                     " the statistical summaries. Repeat to specify multiple "
-                     "bins. The default is \"-b 0-10 -b 10-20 -b 20-60 -b "
-                     "10-90\"."),
-
+                    "A range of elevations, used in  computing"
+                    " the statistical summaries. Repeat to specify multiple "
+                    "bins. The default is \"-b 0-10 -b 10-20 -b 20-60 -b "
+                    "10-90\"."),
       mscFileOption('c', "msc", "Station coordinate file."),
-
-      antennaPosOption('p', "pos", "Location of the antenna in meters ECEF.");
+      antennaPosOption('p', "pos", "Location of the antenna in meters ECEF."),
+      ephHealthSource('E',"health-src","Do not use data from unhealthy SVs "
+                    "as determined using this ephemeris source.  Can be "
+                    "RINEX navigation or FIC file(s). ");
 
    CommandOptionWithNumberArg 
       msidOption('m', "msid", "Station to process data for. Used to "
-                 "select a station position from the msc file or data "
-                 "from a SMODF file."),
+                    "select a station position from the msc file or data "
+                    "from a SMODF file."),
                  
       timeSpanOption('w',"window","Compute mean values of the double "
-                     "differences over this time span (seconds). (15 min = 900)");
-
+                    "differences over this time span (seconds). (15 min = 900)"), 
+      SNRoption('S',"SNR","Only included observables with a raw signal strength, "
+                    "or SNR, of at least this value, in dB. The default is 20 dB. "
+                    "CURRENTLY NOT WORKING!!!!");
+                    
    CommandOptionNoArg 
       statsOption('s', "stats", "Compute stats on the double differences."),
-
       allComboOption('a', "all-combos", "Compute all combinations, don't just "
-                     "use one master SV.");
+                    "use one master SV.");
 
    if (!BasicFramework::initialize(argc,argv)) 
       return false;
       
    if (timeSpanOption.getCount() && allComboOption.getCount())
    {
-      cout << "\n\n You cannot set up the tool to compute averages while computing all\n "
+      cerr << "\n\n You cannot set up the tool to compute averages while computing all\n "
            << "SV combos.  It doesn't make sense to do so because the arcs are so\n "
            << "small. Sorry. Exiting....\n\n";
       return false;
@@ -178,16 +175,23 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    
    if (mscFileOption.getCount() && !msidOption.getCount())
    {
-     cout << "\n\n You gave a station coordinate file but didn't specify\n "
-          << "the station ID. Exiting....\n\n";
-     return false;
+      cerr << "\n\n You gave a station coordinate file but didn't specify\n "
+           << "the station ID. Exiting....\n\n";
+      return false;
    }
 
-   if ((asDouble(timeSpanOption.getValue()[0])<= 0 ) && timeSpanOption.getCount())
+   if (timeSpanOption.getCount() && (asDouble(timeSpanOption.getValue()[0])<= 0 ))
    {
-     cout << "\n\n Please enter a positive value for the time span window.\n "
-          << "Exiting....\n\n";
-     return false;
+      cerr << "\n\n Please enter a positive value for the time span window.\n "
+           << "Exiting....\n\n";
+      return false;
+   }
+   
+   if ((SNRoption.getCount() && asDouble(SNRoption.getValue()[0])<= 0 ))
+   {
+      cerr << "\n\n Please enter a SNR value >= 0 dB.\n "
+           << "Exiting....\n\n";
+      return false;
    }
    
    if (msidOption.getCount())
@@ -199,7 +203,8 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       string aps = antennaPosOption.getValue()[0];
       if (numWords(aps) != 3)
       {
-         cerr << "Please specify three coordinates in the antenna postion." << endl;
+         cerr << "Please specify three coordinates in the antenna postion.\n"
+              << "Exiting....\n\n";
          return false;
       }
       else
@@ -230,7 +235,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
            << "center of the geoid. This program is not capable of" << endl
            << "accurately estimating the propigation of GNSS signals" << endl
            << "through solids such as a planetary crust or magma. Also," << endl
-           << "if this location is correct, your antenna is probally" << endl
+           << "if this location is correct, your antenna is probably" << endl
            << "no longer in the best of operating condition." << endl;
       return false;
    }
@@ -255,7 +260,23 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       elr.push_back( ElevationRange(60, 90) );
       elr.push_back( ElevationRange(10, 90) );
    }
-
+   
+   if (ephHealthSource.getCount())
+   {
+      healthSrcER.verboseLevel = verboseLevel;
+      for (int i=0; i<ephHealthSource.getCount(); i++)
+         healthSrcER.read(ephHealthSource.getValue()[i]);
+      gpstk::EphemerisStore& ephStoreTemp = *healthSrcER.eph; 
+      if (typeid(ephStoreTemp)!=typeid(BCEphemerisStore))
+      {
+         cerr << "You provided an eph source that was not broadcast ephemeris.\n"
+                 "(Precise ephemeris does not contain health info and can't be \n"
+                 " used with the \"-E\" option.) Exiting... \n";
+         return false;
+      }
+      removeUnhealthy = true;
+   }
+   
    if (ddModeOption.getCount())
       ddMode = lowerCase(ddModeOption.getValue()[0]);
 
@@ -276,10 +297,12 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       
    if (timeSpanOption.getCount())
       window = asUnsigned(timeSpanOption.getValue().front());
+      
+   if (SNRoption.getCount())
+      minSNR = asUnsigned(SNRoption.getValue().front());
 
    return true;
 }
-
 
 //-----------------------------------------------------------------------------
 // General program setup
@@ -306,7 +329,6 @@ void DDGen::spinUp()
    }
 }
 
-
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void DDGen::process()
@@ -321,10 +343,16 @@ void DDGen::process()
    if (debugLevel)
       cout << "# Reading obs from Rx1" << endl;
    readObsFile(obs1FileOption, *ephReader.eph, oem1);
-
+   
+   if (removeUnhealthy)
+      filterUnhealthyObs(*healthSrcER.eph, oem1);
+   
    if (verboseLevel)
       cout << "# Reading obs from Rx2" << endl;
    readObsFile(obs2FileOption, *ephReader.eph, oem2);
+
+   if (removeUnhealthy)
+      filterUnhealthyObs(*healthSrcER.eph, oem2);
 
    SvElevationMap pem = elevation_map(oem1, antennaPos, *ephReader.eph);
    DDEpochMap ddem;
@@ -343,18 +371,15 @@ void DDGen::process()
    {
       PhaseCleanerA pc(minArcLen, minArcTime, minArcGap);
       pc.debugLevel = debugLevel;
-      pc.addData(oem1, oem2);
+      pc.addData(oem1, oem2, minSNR);
       pc.debias(pem);
-      pc.getPhaseDD(ddem);  
-      CycleSlipList sl;
-      //pc.getSlips(sl, pem);
-      //dump(cout, sl);          
+      pc.getPhaseDD(ddem);          
    }
    else
    {
       PhaseCleaner pc(minArcLen, minArcTime, minArcGap);    
       pc.debugLevel = debugLevel;
-      pc.addData(oem1, oem2);
+      pc.addData(oem1, oem2, minSNR);
       pc.debias(pem);
       pc.getPhaseDD(ddem);
       CycleSlipList sl;
@@ -376,12 +401,7 @@ void DDGen::process()
       ddem.outputStats(cout, elr);
    else
       ddem.dump(cout);
-    
-   //   CycleSlipList sl;
-   //   pc.getSlips(sl, pem);
-   //   dump(cout, sl);    
 }
-
 
 //-----------------------------------------------------------------------------
 // Read a single file of observation data, computing receiver clock offsets along
@@ -418,9 +438,10 @@ void DDGen::readObsFile(
       {
          ObsEpoch obs(obsReader.getObsEpoch());
          if (!obsReader())
-            break;
+            break; 
 
          ORDEpoch oe = ordEngine(obs);
+         
          cm.addEpoch(oe);
 
          if (cm.isOffsetValid())
@@ -438,7 +459,37 @@ void DDGen::readObsFile(
    }
 }
 
-
+void DDGen::filterUnhealthyObs( const EphemerisStore& eph, ObsEpochMap &oem)
+{
+   ObsEpochMap::iterator oemIter;   
+   for (oemIter=oem.begin(); oemIter!=oem.end(); oemIter++)
+   {
+      const BCEphemerisStore& bce = dynamic_cast<const BCEphemerisStore&>(eph);
+      const DayTime& t = oemIter->first;
+      ObsEpoch& obsEpoch = oemIter->second;
+      
+      ObsEpoch::iterator oeIter;
+      for(oeIter=obsEpoch.begin(); oeIter!=obsEpoch.end();)
+      {
+         const SatID& svid = oeIter ->first;
+                 
+         try
+         {
+            EngEphemeris ephTemp = bce.findEphemeris(svid, t);
+            short health =  ephTemp.getHealth();
+            if (health != 0)
+              obsEpoch.erase(oeIter++);
+            else
+              oeIter++;
+         }
+         catch (gpstk::Exception &exc)
+         { 
+            if (verboseLevel || debugLevel)
+               cout << "# DDGen::filterUnhealthyObs - probably missing eph data\n";
+         }
+      }
+   }
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

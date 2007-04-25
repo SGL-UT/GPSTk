@@ -154,7 +154,7 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
            << "center of the geoid. This program is not capable of" << endl
            << "accurately estimating the propigation of GNSS signals" << endl
            << "through solids such as a planetary crust or magma. Also," << endl
-           << "if this location is correct, your antenna is probally" << endl
+           << "if this location is correct, your antenna is probably" << endl
            << "no longer in the best of operating condition." << endl;
       return false;
    }

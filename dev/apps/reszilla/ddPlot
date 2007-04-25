@@ -15,14 +15,17 @@ def main():
     
     parser =OptionParser(usage=usageString)
     
-    parser.add_option("-d", "--debug", help="Increase the debugLevel", \
-                      default=0, dest="debugLevel", action="count")
+    parser.add_option("-d", "--debug", default=0, dest="debugLevel", action="count",
+                      help="Increase the debugLevel.")
 
     parser.add_option("-l", "--legend", dest="legend", action="count",
                       help="Include a legend.")
                       
     parser.add_option("-a","--averages", action="count", dest="plotAverages",
                       help="Plot the averages using the same plotting criteria. Use twice and only averages will be plotted.")
+                      
+    parser.add_option("-u","--no-unhlthy", dest="noUnhealthy",action="count",
+                      help="Do not plot data from unhealthy SVs.")
     
     parser.add_option("-r", "--range", dest="range", action="count",
                       help="Plot range double difference values.")
@@ -75,6 +78,10 @@ def main():
     plotAvg = False
     if (options.plotAverages):
         plotAvg = True
+        
+    plotUnhealthy = True
+    if (options.noUnhealthy):
+        plotUnhealthy = False
     
     plotRange = True
     plotPhase = True
@@ -181,7 +188,12 @@ def main():
             words=line.split()
             t = parse_time(words[0:3])
             ordType = "%s %s %s"%(words[3], words[4], words[5])
-    
+            if (words[11] != "00" and (not plotUnhealthy)):
+                if options.debugLevel:
+                    print "Not plotting data from unhealthy SV(s):"
+                    print line
+                continue
+
             # parse the line
             sv1 = int(words[6])
             sv2 = int(words[7])
@@ -227,7 +239,7 @@ def main():
                     if (options.debugLevel):
                         print "Didn't understand this line:"
                         print line           
-            
+
     dataL1 = numpy.array(dataListL1)
     dataL2 = numpy.array(dataListL2)
     avergs = numpy.array(avergsList)

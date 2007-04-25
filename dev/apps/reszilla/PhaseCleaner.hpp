@@ -53,7 +53,8 @@ public:
 
    void addData(
       const gpstk::ObsEpochMap& rx1, 
-      const gpstk::ObsEpochMap& rx2);
+      const gpstk::ObsEpochMap& rx2,
+      const unsigned long minimumSNR);
 
    void debias(SvElevationMap& pem);
 
@@ -128,7 +129,8 @@ public:
 
    void addData(
       const gpstk::ObsEpochMap& rx1, 
-      const gpstk::ObsEpochMap& rx2);
+      const gpstk::ObsEpochMap& rx2,
+      const unsigned long minimumSNR);
 
    void debias(SvElevationMap& pem);
 
