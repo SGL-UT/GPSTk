@@ -1,6 +1,6 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../../src
-LDADD = ../../src/libgpstk.la
+INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../../lib/rxio
+LDADD = ../../src/libgpstk.la ../../lib/rxio/librxio.la
 
 bin_PROGRAMS = wheresat findMoreThan12
 
