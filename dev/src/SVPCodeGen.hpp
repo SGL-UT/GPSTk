@@ -1,11 +1,5 @@
 #pragma ident "$Id$"
 
-
-//  SVPCodeGen.hpp
-
-#ifndef SVPCODEGEN_HPP
-#define SVPCODEGEN_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -42,15 +36,11 @@
 //
 //=============================================================================
 
+#ifndef SVPCODEGEN_HPP
+#define SVPCODEGEN_HPP
 
 
-
-
-
-   // Library headers
 #include "DayTime.hpp"
-
-   // Project headers
 #include "PCodeConst.hpp"
 #include "CodeBuffer.hpp"
 #include "X1Sequence.hpp"
@@ -104,49 +94,55 @@ namespace gpstk
     */
    class SVPCodeGen
    {
-      public:
-            /**
-             *  SVPCodeGen::SVPCodeGen( const int PRNID, const DayTime ) - 
-             *  Instantiate and initialize a SVPCodeGen object.  Based on the
-             *  PRNID and the ZCount, determine the appropriate starting 
-             *  location in the X2 sequence and set it up.  Set the current 
-             *  time. 
-             */
-         SVPCodeGen( const int SVPRNID, const gpstk::DayTime& dt );
-         ~SVPCodeGen( ) {};
+   public:
+      /**
+       *  SVPCodeGen::SVPCodeGen( const int PRNID, const DayTime ) - 
+       *  Instantiate and initialize a SVPCodeGen object.  Based on the
+       *  PRNID and the ZCount, determine the appropriate starting 
+       *  location in the X2 sequence and set it up.  Set the current 
+       *  time. 
+       */
+      SVPCodeGen( const int SVPRNID, const gpstk::DayTime& dt );
+      ~SVPCodeGen( ) {};
          
-            /**
-             *  Starting at the beginning of the X1 sequence and at the 
-             *  appropriate location (as determined by time and PRN), advance
-             *  through both the X1 sequence and X2 sequences combining the 
-             *  sequences 32 bits at a time until the X1 sequence for this
-             *  six second period has been exhausted.  Sometime within that 
-             *  period, the X2 sequence will be exahusted  (including the
-             *  appropriate delays) and will rollover to the beginning of 
-             *  the sequence.
-             */
-         void getCurrentSixSeconds( CodeBuffer& pcb );
+      /**
+       *  Starting at the beginning of the X1 sequence and at the 
+       *  appropriate location (as determined by time and PRN), advance
+       *  through both the X1 sequence and X2 sequences combining the 
+       *  sequences 32 bits at a time until the X1 sequence for this
+       *  six second period has been exhausted.  Sometime within that 
+       *  period, the X2 sequence will be exahusted  (including the
+       *  appropriate delays) and will rollover to the beginning of 
+       *  the sequence.
+       */
+      void getCurrentSixSeconds( CodeBuffer& pcb );
          
-            /**
-             * Generally, the only action is to increment the Z-count by 
-             * 4 counts.  This function COULD be included at the end of 
-             * getCurrentSixSeconds( ), however, it has been separated to
-             * allow the calling application to have a consistent view of 
-             * all the state conditions (for output and debug) before 
-             * moving the time forward for the next generation.
-             */
-         void increment4ZCounts();
+      /**
+       * Generally, the only action is to increment the Z-count by 
+       * 4 counts.  This function COULD be included at the end of 
+       * getCurrentSixSeconds( ), however, it has been separated to
+       * allow the calling application to have a consistent view of 
+       * all the state conditions (for output and debug) before 
+       * moving the time forward for the next generation.
+       */
+      void increment4ZCounts();
          
-            /**
-             * Returns the current time to the calling method.  
-             */
-         const gpstk::DayTime& getCurrentZCount() const {return currentZTime;}
+      /**
+       * Returns the current time to the calling method.  
+       */
+      const gpstk::DayTime& getCurrentZCount() const {return currentZTime;}
+
+      /** Allows the user to set the current time. While a any time may
+          be specified, this routine will take the Z % 4 for the actuall 
+          time.
+      **/
+      void setCurrentZCount(const gpstk::GPSZcount& z);
      
-      private:
-         gpstk::X1Sequence X1Seq;
-         gpstk::X2Sequence X2Seq;
-         gpstk::DayTime currentZTime;
-         int PRNID;
+   private:
+      gpstk::X1Sequence X1Seq;
+      gpstk::X2Sequence X2Seq;
+      gpstk::DayTime currentZTime;
+      int PRNID;
    };
    //@}
 }     // end of namespace

@@ -250,10 +250,19 @@ namespace gpstk
          /** Compute the time differenct between this object and \a right.
           * @param right the GPSZcount to subtract from this object
           * @return the number of Z-counts between this object and \a right
+          * Note that this returns a double as opposed to a long. This is to
+          * avoid any overflow issues.
           */
       double operator-(const GPSZcount& right) const
          throw() ;
       
+         /** Compute the remainder of the ztime
+          * @param right the number to 
+          * @return z counts % \a right
+          */
+      long operator%(const long right) const
+         throw() ;
+
          /** Add the given number of Z-counts to the current value.
           *  This may cause a roll-(over/under) of the Z-count and appropriate 
           *  modification of the week.

@@ -124,7 +124,7 @@ namespace gpstk
              * return the value of the bit as a right justified unsigned 
              * long word (0x00000000 or 0x00000001)..
              */
-         unsigned long getBit( const long i );
+         unsigned long getBit( const long i ) const;
          
             /** Perform an exclusive-or operation on the bits contained in 
              * this instance of CodeBuffer and the instance referenced by cb.
@@ -156,19 +156,19 @@ namespace gpstk
       return(buffer[i]);
    }
 
-   inline unsigned long CodeBuffer::getBit( const long i )
+   inline unsigned long CodeBuffer::getBit( const long i ) const
    {
       unsigned long iret;
       long bNdx = i / MAX_BIT;
       long bitNum = i - (bNdx * MAX_BIT);
       iret = buffer[bNdx];
    
-         // Shift LEFT to clear off msbs
+      // Shift LEFT to clear off msbs
       iret <<= bitNum;
-         // Then shift RIGHT to clear off lsbs
+      // Then shift RIGHT to clear off lsbs
       iret >>= (MAX_BIT-1);
    
-      return(iret);
+      return iret;
    }
    //@}
 }     // end of namespace

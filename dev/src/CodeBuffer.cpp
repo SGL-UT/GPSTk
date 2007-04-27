@@ -1,10 +1,4 @@
-#pragma ident "$Id: $"
-/*
-*  CodeBuffer.cpp
-*     P(Y)-code Buffer class.
-*     Applied Research Laboratories, The University of Texas at Austin
-*     August 2003
-*/
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -42,12 +36,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
-   // Local headers
 #include "CodeBuffer.hpp"
 
 namespace gpstk
@@ -60,7 +48,7 @@ namespace gpstk
       buffer = new unsigned long[NUM_6SEC_WORDS];
    }
 
-      // Assignment
+   // Assignment
    CodeBuffer& CodeBuffer::operator=( const CodeBuffer& c )
    {
       if (this!=&c)

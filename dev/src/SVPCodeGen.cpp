@@ -1,13 +1,5 @@
 #pragma ident "$Id$"
 
-
-/* 
-*  SVPCodeGen.cpp
-*     SV P-code Generator.
-*     Applied Research Laboratories, The University of Texas at Austin
-*     August 2003
-*/
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -43,11 +35,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-
-
-
-
 
 #include "SVPCodeGen.hpp"
 
@@ -114,7 +101,12 @@ namespace gpstk
 
    void SVPCodeGen::increment4ZCounts( )
    {
-      currentZTime+= 6;    // 6 seconds == 4 Zcounts.
+      currentZTime += 6;    // 6 seconds == 4 Zcounts.
    }
-
+   
+   void SVPCodeGen::setCurrentZCount(const gpstk::GPSZcount& z)
+   {
+      GPSZcount z2 = z - z%4;
+      currentZTime = z2;
+   }
 }     // end of namespace

@@ -244,6 +244,12 @@ namespace gpstk
          + (zcount - right.zcount) ;
    }
 
+   long GPSZcount::operator%(const long right) const
+      throw() 
+   {
+      return zcount % right;
+   }
+
    GPSZcount& GPSZcount::operator+=(long inZcounts)
       throw(gpstk::InvalidRequest)
    {

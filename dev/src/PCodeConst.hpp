@@ -1,8 +1,5 @@
 #pragma ident "$Id$"
 
-
-//  PCodeConst.hpp - Constants for GPS X-register manipulation
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -39,10 +36,7 @@
 //
 //=============================================================================
 
-
-
-
-
+//  PCodeConst.hpp - Constants for GPS X-register manipulation
 
 
 #ifndef PCodeConst_HPP
