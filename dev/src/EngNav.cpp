@@ -602,7 +602,8 @@ namespace gpstk
       return(checkParity( temp ));
    }
 
-   bool EngNav :: checkParity(const uint32_t sf[10], bool knownUpright)
+
+   bool EngNav :: checkParity(const std::vector<uint32_t>& sf, bool knownUpright)
    {
       return (((sf[0] & 0x0000003f) == computeParity(sf[0],     0, knownUpright)) &&
               ((sf[1] & 0x0000003f) == computeParity(sf[1], sf[0], knownUpright)) &&
@@ -614,6 +615,14 @@ namespace gpstk
               ((sf[7] & 0x0000003f) == computeParity(sf[7], sf[6], knownUpright)) &&
               ((sf[8] & 0x0000003f) == computeParity(sf[8], sf[7], knownUpright)) &&
               ((sf[9] & 0x0000003f) == computeParity(sf[9], sf[8], knownUpright)));
+   }
+
+   bool EngNav :: checkParity(const uint32_t sf[10], bool knownUpright)
+   {
+      std::vector<uint32_t> temp(10);
+      for (size_t n=0; n<10; ++n)
+         temp[n] = sf[n];
+      return checkParity(temp, knownUpright);
    }
 
    void EngNav :: convertQuant(const uint32_t input[10], 
