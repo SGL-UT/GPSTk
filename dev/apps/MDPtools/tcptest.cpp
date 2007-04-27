@@ -11,6 +11,8 @@ using std::endl;
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
 
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <sys/errno.h>
 
 int main(int argc, char* argv[])
