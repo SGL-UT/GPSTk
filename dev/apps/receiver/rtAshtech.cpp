@@ -17,6 +17,7 @@
 #include "RinexNavData.hpp"
 #include "RinexNavStream.hpp"
 #include "DeviceStream.hpp"
+#include <unistd.h>
 
 using namespace std;
 using namespace gpstk;
