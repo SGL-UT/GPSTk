@@ -118,19 +118,35 @@ void CCReplica::tick() throw()
 
 void CCReplica::wrapCode()
 {
-   while (codePhase>1)
+   if (codePhase<1)
+      return;
+   if (codePhase<2)
    {
       codePhase -= 1;
       ++(*codeGenPtr);
+   }
+   else
+   {
+      long dc = static_cast<long>(codePhase);
+      codeGenPtr->setIndex(codeGenPtr->getIndex() + dc);
+      codePhase -= static_cast<CodeIndex>(codePhase);
    }
 }
 
 
 void CCReplica::wrapCarrier()
 {
-   while (carrierPhase > 1)
+   if (codePhase<1)
+      return;
+   else if (codePhase<2)
    {
       carrierPhase--;
       carrierAccum++;
+   }
+   else
+   {
+      long dc = static_cast<long>(carrierPhase);
+      carrierPhase -= dc;
+      carrierAccum += dc;
    }
 }

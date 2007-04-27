@@ -54,7 +54,7 @@ private:
 //-----------------------------------------------------------------------------
 RxSim::RxSim() throw() :
    BasicFramework("rxSim", "A simulation of a gps receiver."),
-   cc(NULL), tr(NULL), band(1), fakeL2(false), gain(1), timeLimit(20e-3),
+   cc(NULL), tr(NULL), band(1), fakeL2(false), gain(1), timeLimit(9e99),
    iadMax(20460)
 {}
 
@@ -97,7 +97,7 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
               "Gain to apply to the if prior to digitization, in dB. Default is 0."),
 
       timeLimitOpt('t', "time-limit",
-                  "Limit the amount of data to process. Specify time in ms. Defaults to 20 ms."),
+                  "Limit the amount of data to process. Specify time in ms. Defaults to all data."),
 
       inputOpt('i', "input", 
                "Where to get the IQ samples from. The default is to use stdin.");
@@ -180,23 +180,15 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
 
    if (dllAlphaOpt.getCount())
       tr->dllAlpha = asDouble(dllAlphaOpt.getValue()[0]);
-   else
-      tr->dllAlpha = 2.3;
 
    if (dllBetaOpt.getCount())
       tr->dllBeta = asDouble(dllBetaOpt.getValue()[0]);
-   else
-      tr->dllBeta = 2.3e-7;
 
    if (pllAlphaOpt.getCount())
       tr->pllAlpha = asDouble(pllAlphaOpt.getValue()[0]);
-   else
-      tr->pllAlpha = 0.4;
 
    if (pllBetaOpt.getCount())
       tr->pllBeta = asDouble(pllBetaOpt.getValue()[0]);
-   else
-      tr->pllBeta = 0.1;
 
    tr->debugLevel = debugLevel;
 
@@ -233,7 +225,7 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
       gain = exp10(gainDb/10);
    }
 
-   if (debugLevel>1)
+   if (verboseLevel)
    {
       cout << "# Taking input from " << input->filename
            << " (" << input->bands << " samples/epoch)" << endl
@@ -261,7 +253,7 @@ void RxSim::process()
          s *= gain;
          if (tr->process(s))
          {
-            if (debugLevel>1)
+            if (verboseLevel)
                tr->dump(cout);
             nf.process(*tr);
          }

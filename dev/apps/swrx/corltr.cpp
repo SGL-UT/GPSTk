@@ -59,7 +59,7 @@ private:
 //-----------------------------------------------------------------------------
 Corltr::Corltr() throw() :
    BasicFramework("corltr", "A program to test out local replica generation and correlation."),
-   timeStep(50e-9), bands(2), steps(1023), peakOnly(false)
+   timeStep(50e-9), bands(2), steps(4092), peakOnly(false)
 {}
 
 
@@ -99,7 +99,7 @@ bool Corltr::initialize(int argc, char *argv[]) throw()
 
    CommandOptionWithNumberArg 
       stepsOpt('s', "steps",
-               "The number of 1/4 chip steps to take. Defaults to 1000."),
+               "The number of 1/4 chip steps to take. Defaults to 4092."),
 
       bandsOpt('b', "bands",
                "The number of complex samples per epoch. The default is 2.");
@@ -286,10 +286,13 @@ void Corltr::process()
          maxDelay=delay;
       }
       if (!peakOnly)
-         cout << delay *1e6<< " " << abs(sum()) << " " << r << " " << snr << endl;
+         cout << setprecision(9) << delay*1e6
+              << " " << setprecision(4) << abs(sum())
+              << " " << r << " " << snr << endl;
    }
    if (peakOnly)
-      cout << "# max:" <<maxDelay*1e6<< " " << maxR << " " << maxSnr << endl;
+      cout << setprecision(9) << maxDelay*1e6
+           << setprecision(4) << " " << maxR << " " << maxSnr << endl;
 }
 
 

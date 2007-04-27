@@ -8,13 +8,78 @@ using namespace gpstk;
 using namespace std;
 
 
-NavFramer::NavFramer()
-   : prevNavCount(0), navIndex(0), tlmCurrent(false),
-     codeIndex(5*300)
+void NavFramer::Subframe::dump(std::ostream& s, int detail) const
 {
-   eightBaker = 0x8b;
-   notEightBaker = ~eightBaker;
+   s << "t:" << fixed << setprecision(1) << t * 1e3
+     << ", ni:" << ni
+     << ", ci:" << ci
+     << ", inv:" << inverted
+     << ", prevD30:" << prevD30;
+
+   if (!complete)
+      return;
+   if (checkParity())
+      s << ", SFID:" << EngNav::getSFID(words[1])
+        << ", Z:" << EngNav::getHOWTime(words[1]);
+   else
+      s << ", Parity:" << checkWords();
 }
+
+std::ostream& operator<<(std::ostream& s, const NavFramer::Subframe& sf)
+{
+   sf.dump(s,0);
+}
+
+
+
+bool NavFramer::Subframe::checkParity(bool knownUpright) const
+{
+   return EngNav::checkParity(words, false);
+}
+
+
+void NavFramer::Subframe::load(const std::bitset<5 * 300> bs)
+{
+   bitset<30> word;
+   for (int w=0; w<10; w++)
+   {
+      for(int b=0; b<30; b++)
+         word[29-b] = bs[ni + w*30 + b];
+
+      if (inverted)
+         word = ~word;
+
+      words[w] = word.to_ulong();
+   }
+   complete = true;
+}
+
+
+const char* NavFramer::Subframe::checkWords() const
+{
+   if (!complete)
+      return string("??????????").c_str();
+
+   string good;
+   for (int w=0; w<10; w++)
+   {
+      uint32_t prev=0;
+      if (w)
+         prev = words[w-1];
+      uint32_t par = EngNav::computeParity(words[w], prev, false);
+      if (par == (words[w] & 0x3f))
+         good.append("1");
+      else
+         good.append("0");
+   }
+   return good.c_str();
+}
+
+
+NavFramer::NavFramer()
+   : prevNavCount(0), navIndex(0), howCurrent(false),inSync(false),
+     codeIndex(5*300), eightBaker(0x8b)
+{}
 
 
 bool NavFramer::process(const EMLTracker& tr)
@@ -24,7 +89,7 @@ bool NavFramer::process(const EMLTracker& tr)
    const unsigned navCount = caCount/20;
 
    if (navCount == prevNavCount)
-      return false;
+      return howCurrent;
 
    prevNavCount = navCount;
    navBuffer[navIndex] = tr.getNav();
@@ -33,62 +98,46 @@ bool NavFramer::process(const EMLTracker& tr)
    navIndex %= navBuffer.size();
    lastEight <<= 1;
    lastEight[0] = tr.getNav();
-   bool found = lastEight == eightBaker || lastEight == notEightBaker;
-   
-   if (found)
+
+   if (lastEight == eightBaker || ~lastEight == eightBaker)
    {
-      if (debugLevel)
-         cout << left
-              << "# navIndex: " << setw(6) << navIndex-8
-              << "  caCount: " << setw(4) << codeIndex[navIndex-8]/1023/20
-              << "  lastEight: " << lastEight
-              << endl;
-      tlmCandidates.push_back(navIndex-8);
+      Subframe sf;
+      sf.ni = navIndex-8;
+      sf.ci = codeIndex[navIndex-8];
+      sf.prevD30 = navBuffer[navIndex-9];
+      sf.t = tr.localReplica.localTime;
+      sf.inverted = lastEight != eightBaker;
+      if (debugLevel>1)
+         cout << "# " << sf << endl;
+      candidates.push_back(sf);
    }
    
-   list<size_t>::iterator tlm;
-   for (tlm = tlmCandidates.begin(); tlm != tlmCandidates.end(); )
+   list<Subframe>::iterator sf;
+   for (sf = candidates.begin(); sf != candidates.end(); )
    {
-      if (navIndex - *tlm >= 300)
+      if (navIndex - sf->ni >= 300)
       {
-         uint32_t sf[10];
-         bitset<30> word;
-         for (int w=0; w<10; w++)
+         sf->load(navBuffer);
+         if (sf->checkParity())
          {
-            size_t ni = *tlm + w*30;
-            for(int b=0; b<30; b++)
-               word[29-b] = navBuffer[ni + b];
-            sf[w] = word.to_ulong();
-            if (debugLevel>2)
-            {
-               uint32_t prev=0;
-               if (w)
-                  prev = sf[w-1];
-               cout << "# navBuffer[" << ni << "]:" << word;
-               uint32_t par = EngNav::computeParity(sf[w], prev, false);
-               if (par == (sf[w] & 0x3f))
-                  cout << " Good" << endl;
-               else
-                  cout << " Bad" << endl;
-            }
-         }
-         bool good = EngNav::checkParity(sf, false);
-         if (good)
-         {
+            subframes.push_back(*sf);
+            howCurrent = true;
+            how = sf->words[1];
             if (debugLevel)
-               cout << "# Found subframe at navIndex=" << *tlm 
-                    << ", caCount=" << codeIndex[*tlm] << endl;
-            subframes[codeIndex[*tlm]] = vector<uint32_t>(10);
-            for (int i=0; i<10; i++)
-               subframes[codeIndex[*tlm]][i] = sf[i];
+               cout << "# " << *sf << endl;
          }
-         tlmCandidates.erase(tlm++);
+         else
+         {
+            howCurrent = false;
+            if (debugLevel>1)
+               cout << "# " << *sf << endl;
+         }
+         candidates.erase(sf++);
       }
       else
-         tlm++;
+         sf++;
    }
-
-   return false;
+   return howCurrent;
 }
 
 

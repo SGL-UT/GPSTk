@@ -71,7 +71,7 @@ public:
    double getPllError() const {return pllError;}
    double getDllError() const {return dllError;}
    double getPmag() const {return pmag;}
-   double getPromptPhase() const;
+   double getPromptPhase() const {return promptPhase;}
    double getSNR() const {return snr;}
    double getSqrtSumSq() const {return sqrtSumSq;}
    unsigned getIntegrateCount() const {return iadCount;}
@@ -80,7 +80,7 @@ private:
    void integrate(std::complex<double> in);
    void updateLoop();
 
-   double pllError, dllError;
+   double pllError, dllError, promptPhase;
 
    DllMode dllMode;
    PllMode pllMode;
@@ -95,7 +95,7 @@ private:
 
    // Integrate and dump count and limit. When the count equals the max
    // its time to close the loop and then dump the sums.
-   unsigned iadCount, iadCountMax, iadCountDefault;
+   unsigned iadCount, iadCountMax, iadCountDefault, iadCountPrev;
 
    // Used to detect whether the peak is close.
    double iadThreshold;

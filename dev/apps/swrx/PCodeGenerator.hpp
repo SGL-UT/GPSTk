@@ -16,19 +16,26 @@ namespace gpstk
    public:
       PCodeGenerator(const int prn)
          : CodeGenerator(ObsID::tcP, SatID(prn, SatID::systemGPS)),
-           cb(prn), svp(prn, gpstk::GPSZcount(0))
-      {setIndex(0);}
+           cb(prn), svp(prn, gpstk::GPSZcount(0)), index(0)
+      {
+         svp.getCurrentSixSeconds(cb);
+      }
 
       bool operator*() const { return cb.getBit(index) & 0x1; }
 
       CodeIndex operator++() { index++; handleWrap(); return getIndex(); }
- 
+
       CodeIndex setIndex(CodeIndex new_index)
       {
-         unsigned long z = new_index / 15345000;
-         svp.setCurrentZCount(z);
-         svp.getCurrentSixSeconds(cb);
-         index = new_index % 15345000;
+         unsigned long z = new_index / (15345000*4);
+         z *= 4;
+         if (svp.getCurrentZCount().fullZcountFloor() != z)
+         {
+            std::cerr << "Regen cb" << std::endl;
+            svp.setCurrentZCount(z);
+            svp.getCurrentSixSeconds(cb);
+         }
+         index = new_index % (15345000*4);
          return getIndex();
       }
 
@@ -42,7 +49,7 @@ namespace gpstk
       { return (index%15345000)==15344999; }
 
 
-      CodeIndex getSyncIndex() const {return 15344999;}
+      CodeIndex getSyncIndex() const {return 10230;}
 
       CodeIndex getChipCount() const {return getIndex();}
 
