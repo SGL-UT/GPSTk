@@ -1,5 +1,27 @@
 #pragma ident "$Id$"
 
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
 #include "EngNav.hpp"
 #include "NavFramer.hpp"
 
@@ -78,15 +100,17 @@ const char* NavFramer::Subframe::checkWords() const
 
 NavFramer::NavFramer()
    : prevNavCount(0), navIndex(0), howCurrent(false),inSync(false),
-     codeIndex(5*300), eightBaker(0x8b)
+     codeIndex(5*300), eightBaker(0x8b), bitLength(20e-3)
 {}
 
 
 bool NavFramer::process(const EMLTracker& tr)
 {
+   // number of code chips that go into each bit
+   const unsigned long chipsPerBit = 
+      static_cast<unsigned long>(bitLength / tr.localReplica.codeChipLen);
    const CodeIndex now = tr.localReplica.codeGenPtr->getChipCount();
-   const unsigned caCount = now/1023;
-   const unsigned navCount = caCount/20;
+   const unsigned navCount = now/chipsPerBit;
 
    if (navCount == prevNavCount)
       return howCurrent;
@@ -98,6 +122,11 @@ bool NavFramer::process(const EMLTracker& tr)
    navIndex %= navBuffer.size();
    lastEight <<= 1;
    lastEight[0] = tr.getNav();
+
+   if (debugLevel>2)
+      cout << "# t:" << fixed << setprecision(2)
+           << tr.localReplica.localTime *1e3
+           << " ms, n:" << tr.getNav() << endl;
 
    if (lastEight == eightBaker || ~lastEight == eightBaker)
    {

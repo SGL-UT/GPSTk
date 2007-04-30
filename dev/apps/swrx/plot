@@ -1,6 +1,28 @@
 #!/usr/bin/env python
 # $Id$
 
+##============================================================================
+##
+##  This file is part of GPSTk, the GPS Toolkit.
+##
+##  The GPSTk is free software; you can redistribute it and/or modify
+##  it under the terms of the GNU Lesser General Public License as published
+##  by the Free Software Foundation; either version 2.1 of the License, or
+##  any later version.
+##
+##  The GPSTk is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU Lesser General Public License for more details.
+##
+##  You should have received a copy of the GNU Lesser General Public
+##  License along with GPSTk; if not, write to the Free Software Foundation,
+##  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+##  
+##  Copyright 2004, The University of Texas at Austin
+##
+##============================================================================
+
 import sys, string, time, datetime, numpy, matplotlib, pylab
 
 from optparse import OptionParser
@@ -23,6 +45,9 @@ parser.add_option("-l", "--line-style", dest="lineStyle", action="store", type="
 
 parser.add_option("-c", "--columns", dest="cols", action="append", type="string",
 		  help="Specify what columns to plot.")
+
+parser.add_option("-x", "--x-col", dest="xcol", action="store", type="string",
+                  help="Specify what column to use as the x axis. The default is 0 (time)")
 
 (options, args) = parser.parse_args()
 
@@ -79,24 +104,38 @@ pylab.connect('key_press_event', press)
 
 d2 = numpy.array(data)
 del data
-time = d2[:,0]
 
-(rows,cols) = d2.shape;
+(rows,cols) = d2.shape
 if len(labels)<cols:
-    labels =['time']
+    labels = ['time']
     labels += ['%d'%c for c in xrange(1,cols)]
 
 if len(units)<cols:
     units = ['' for c in xrange(0,cols)]
+else:
+    units = [' (%s)'%c for c in units]
 
 if not options.cols:
     options.cols = labels;
 
+xcol=0
+if options.xcol:
+    if options.xcol in labels:
+        xcol = labels.index(options.xcol)
+    else:
+        xcol=int(options.xcol)
+
+if xcol < 0 or xcol > cols:
+    print "xcol out of range"
+
+time = d2[:,xcol]
+
+
 for c in xrange(1,cols):
     if len(options.cols)==0 or labels[c] in options.cols:
-        pylab.plot(time, d2[:,c], options.lineStyle, label="%s (%s)"%(labels[c],units[c]))
+        pylab.plot(time, d2[:,c], options.lineStyle, label="%s%s"%(labels[c],units[c]))
 
-pylab.xlabel("%s(%s)"%(labels[0],units[0]))
+pylab.xlabel("%s%s"%(labels[xcol],units[xcol]))
 pylab.grid()
 
 pylab.legend(numpoints=2, pad=.1, labelsep=0.001,

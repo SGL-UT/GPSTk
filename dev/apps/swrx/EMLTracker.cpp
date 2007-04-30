@@ -1,5 +1,27 @@
 #pragma ident "$Id$"
 
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
 #include "EMLTracker.hpp"
 
 using namespace gpstk;
@@ -13,10 +35,10 @@ EMLTracker::EMLTracker(CCReplica& localReplica, double codeSpacing) :
    GenericTracker(localReplica),
    ticksPerChip(static_cast<unsigned>(1.0/localReplica.chipsPerTick)),
    eplSpacing(static_cast<unsigned>((codeSpacing / localReplica.tickSize))),
-   pllError(0), pllAlpha(0.2), pllBeta(0.001),
-   dllError(0), dllAlpha(2), dllBeta(0.001),
+   pllError(0), pllAlpha(0.2), pllBeta(0.05),
+   dllError(0), dllAlpha(6), dllBeta(0.01),
    iadCount(0), nav(false), baseGain(1.0/(0.1767*1.404)),
-   inSumSq(0), lrSumSq(0),iadThreshold(0.03),
+   inSumSq(0), lrSumSq(0),iadThreshold(0.02),
    dllMode(dmFar), pllMode(pmUnlocked)
 {
    early.setDelay(2*eplSpacing);
@@ -95,16 +117,21 @@ void EMLTracker::updateLoop()
    pmag = abs(prompt()) / sqrtSumSq;
    lmag = abs(late()) / sqrtSumSq;
 
+   pI = prompt().real();
+   pQ = prompt().imag();
+
    snr= 10*log10(pmag*pmag/localReplica.tickSize);
 
    dllError = lmag - emag;
    pllError = atan(prompt().imag() / prompt().real()) / PI;
 
-   promptPhase =atan2(prompt().imag(), prompt().real())/PI;
+   promptPhase =atan2(prompt().imag(), prompt().real()) / PI;
 
    DllMode oldDllMode=dllMode;
    // Do we have any idea where the peak may lie?
-   if (min(emag,lmag) > iadThreshold/2 && pmag > max(emag,lmag))
+   if (//min(emag,lmag) > iadThreshold/2 &&
+      pmag > iadThreshold &&
+      pmag > max(emag,lmag))
       dllMode = dmOnTop;
    else if (emag > iadThreshold || pmag > iadThreshold || lmag > iadThreshold)
       dllMode = dmClose;
@@ -146,7 +173,7 @@ void EMLTracker::updateLoop()
    iadCountPrev = iadCountMax;
    CodeIndex sync = localReplica.codeGenPtr->getSyncIndex();
    CodeIndex indx = localReplica.codeGenPtr->getIndex() % sync;
-   unsigned chips = sync - indx;
+   unsigned chips =sync - indx;
    iadCountMax = static_cast<unsigned long>(chips / localReplica.chipsPerTick);
    if (iadCountMax < 10000)
       iadCountMax += 20000;
@@ -168,8 +195,8 @@ void EMLTracker::dump(std::ostream& s, int detail) const
         << "# -- dll: alpha=" << dllAlpha << " beta=" << dllBeta << endl
         << "# -- pll: alpha=" << pllAlpha <<  " beta=" << pllBeta << endl
         << "#" << endl
-        << "#h time   pMag  dllErr    codePO    codeFO    pllErr    carrPO  carrFO  nav cp   iad   ely   pmt   lat"  << endl
-        << "#u ms      %      %         us       mHz       cyc       cyc      Hz     -  --   cnt    %     %     %";
+        << "#h time  dllErr    codePO    codeFO pllErr   carrPO   carrFO  nav cp   iad   ely   pmt   lat    pmtI   pmtQ"  << endl
+        << "#u ms      %         us        Hz    cyc      cyc       Hz     -  --   cnt    %     %     %     cnt    cnt";
    }
 
    if (detail==0)
@@ -177,12 +204,12 @@ void EMLTracker::dump(std::ostream& s, int detail) const
       s << left << fixed 
         << setprecision(1) << setw(8) << localReplica.localTime * 1e3
         << setprecision(2) << right
-        << " " << setw(5) << getPmag() * 100
         << " " << setw(6) << getDllError() * 100
         << setprecision(3)
         << " " << setw(11) << localReplica.getCodePhaseOffsetSec() * 1e6
-        << " " << setw(8) << localReplica.getCodeFreqOffsetHz() * 1e3
-        << "   "
+        << setprecision(2)
+        << " " << setw(6) << localReplica.getCodeFreqOffsetHz()
+        << " "
         << setprecision(3)
         << " " << setw(6) << getPromptPhase()
         << setprecision(1)
@@ -198,6 +225,10 @@ void EMLTracker::dump(std::ostream& s, int detail) const
            << " " << setw(5) << emag * 100
            << " " << setw(5) << pmag * 100
            << " " << setw(5) << lmag * 100;
+      if (true)
+         s << setprecision(0)
+           << " " << setw(6) << pI
+           << " " << setw(6) << pQ;
    }
 
    s << endl;
