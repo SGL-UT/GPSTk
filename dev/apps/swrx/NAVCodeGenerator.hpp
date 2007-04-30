@@ -1,4 +1,4 @@
-/* Dummy NAV Code generator, replace me with something that generates more than a square wave */
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -22,8 +22,8 @@
 //
 //============================================================================
 
-#ifndef _NAV_CODE_GENERATOR_HPP
-#define _NAV_CODE_GENERATOR_HPP
+#ifndef NAVCODEGENERATOR_HPP
+#define NAVCODEGENERATOR_HPP
 
 class NAVCodeGenerator 
 {
