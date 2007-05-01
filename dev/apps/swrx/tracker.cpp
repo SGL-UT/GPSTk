@@ -270,7 +270,7 @@ void RxSim::process()
    int b=0;
    while (*input >> s)
    {
-      if (b == band-1)
+      if (b == band-1 || input->bands==1)
       {
          s *= gain;
          if (tr->process(s))

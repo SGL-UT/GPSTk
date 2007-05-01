@@ -32,19 +32,27 @@ using namespace std;
 
 void NavFramer::Subframe::dump(std::ostream& s, int detail) const
 {
-   s << "t:" << fixed << setprecision(1) << t * 1e3
-     << ", ni:" << ni
-     << ", ci:" << ci
-     << ", inv:" << inverted
-     << ", prevD30:" << prevD30;
-
-   if (!complete)
-      return;
-   if (checkParity())
-      s << ", SFID:" << EngNav::getSFID(words[1])
-        << ", Z:" << EngNav::getHOWTime(words[1]);
+   if (detail==0)
+   {
+      s << "t:" << fixed << setprecision(1) << t * 1e3
+        << ", ni:" << ni
+        << ", ci:" << ci
+        << ", inv:" << inverted
+        << ", prevD30:" << prevD30;
+      
+      if (!complete)
+         return;
+      if (checkParity())
+         s << ", SFID:" << EngNav::getSFID(words[1])
+           << ", Z:" << EngNav::getHOWTime(words[1]);
+      else
+         s << ", Parity:" << checkWords();
+   }
    else
-      s << ", Parity:" << checkWords();
+   {
+      for (int w=0; w<10; w++)
+         s << "# w[" << w << "]:" << bitset<30>(words[w]) << endl;
+   }
 }
 
 std::ostream& operator<<(std::ostream& s, const NavFramer::Subframe& sf)
@@ -66,7 +74,7 @@ void NavFramer::Subframe::load(const std::bitset<5 * 300> bs)
    for (int w=0; w<10; w++)
    {
       for(int b=0; b<30; b++)
-         word[29-b] = bs[ni + w*30 + b];
+         word[29-b] = bs[(ni + w*30 + b)%1500];
 
       if (inverted)
          word = ~word;
@@ -131,9 +139,9 @@ bool NavFramer::process(const EMLTracker& tr)
    if (lastEight == eightBaker || ~lastEight == eightBaker)
    {
       Subframe sf;
-      sf.ni = navIndex-8;
-      sf.ci = codeIndex[navIndex-8];
-      sf.prevD30 = navBuffer[navIndex-9];
+      sf.ni = (navIndex-8) % 1500;
+      sf.ci = codeIndex[sf.ni];
+      sf.prevD30 = navBuffer[(navIndex-9)%1500];
       sf.t = tr.localReplica.localTime;
       sf.inverted = lastEight != eightBaker;
       if (debugLevel>1)
@@ -154,12 +162,17 @@ bool NavFramer::process(const EMLTracker& tr)
             how = sf->words[1];
             if (debugLevel)
                cout << "# " << *sf << endl;
+            if (debugLevel>1)
+               sf->dump(cout,1);
          }
          else
          {
             howCurrent = false;
             if (debugLevel>1)
+            {
                cout << "# " << *sf << endl;
+               sf->dump(cout, 1);
+            }
          }
          candidates.erase(sf++);
       }
