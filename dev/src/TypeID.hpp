@@ -43,6 +43,13 @@
 
 namespace gpstk
 {
+
+   /**
+    * This class creates an index able to represent any type of observation,
+    * correction, model parameter or other data value of interest for GNSS 
+    * data processing. 
+    */   
+
    class TypeID
    {
    public:

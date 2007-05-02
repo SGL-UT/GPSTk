@@ -153,43 +153,5 @@ namespace gpstk
       p.dump(s);
       return s;
    }
-/*
-   // Conversion from RinexObsType to TypeID
-   inline TypeID::ValueType RinexType2TypeID(const RinexObsHeader::RinexObsType& rot)
-   {
-        if (rot == RinexObsHeader::UN) return TypeID::Unknown;
-        if (rot == RinexObsHeader::C1) return TypeID::C1;
-        if (rot == RinexObsHeader::C2) return TypeID::C2;
-        if (rot == RinexObsHeader::P1) return TypeID::P1;
-        if (rot == RinexObsHeader::P2) return TypeID::P2;
-        if (rot == RinexObsHeader::L1) return TypeID::L1;
-        if (rot == RinexObsHeader::L2) return TypeID::L2;
-        if (rot == RinexObsHeader::D1) return TypeID::D1;
-        if (rot == RinexObsHeader::D2) return TypeID::D2;
-        if (rot == RinexObsHeader::S1) return TypeID::S1;
-        if (rot == RinexObsHeader::S2) return TypeID::S2;
-        // v 2.11
-        if (rot == RinexObsHeader::C5) return TypeID::C5;
-        if (rot == RinexObsHeader::L5) return TypeID::L5;
-        if (rot == RinexObsHeader::D5) return TypeID::D5;
-        if (rot == RinexObsHeader::S5) return TypeID::S5;
-        // Galileo-related
-        if (rot == RinexObsHeader::C6) return TypeID::C6;
-        if (rot == RinexObsHeader::L6) return TypeID::L6;
-        if (rot == RinexObsHeader::D6) return TypeID::D6;
-        if (rot == RinexObsHeader::S6) return TypeID::S6;
-        if (rot == RinexObsHeader::C7) return TypeID::C7;
-        if (rot == RinexObsHeader::L7) return TypeID::L7;
-        if (rot == RinexObsHeader::D7) return TypeID::D7;
-        if (rot == RinexObsHeader::S7) return TypeID::S7;
-        if (rot == RinexObsHeader::C8) return TypeID::C8;
-        if (rot == RinexObsHeader::L8) return TypeID::L8;
-        if (rot == RinexObsHeader::D8) return TypeID::D8;
-        if (rot == RinexObsHeader::S8) return TypeID::S8;
-
-        // Just in case, but it should never get this far
-        return TypeID::Unknown;
-   }
-*/
 
 }
