@@ -154,8 +154,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       timeSpanOption('w',"window","Compute mean values of the double "
                     "differences over this time span (seconds). (15 min = 900)"), 
       SNRoption('S',"SNR","Only included observables with a raw signal strength, "
-                    "or SNR, of at least this value, in dB. The default is 20 dB. "
-                    "CURRENTLY NOT WORKING!!!!");
+                    "or SNR, of at least this value, in dB. The default is 20 dB.");
                     
    CommandOptionNoArg 
       statsOption('s', "stats", "Compute stats on the double differences."),
