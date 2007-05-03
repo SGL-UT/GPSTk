@@ -254,7 +254,7 @@ def main():
         print "\n No L2 data to plot. Exiting...\n"
         exit;
     if (plotAvg and avergs.shape[1] < 1):
-        print "\n No L2 data to plot. Exiting...\n"
+        print "\n No averages to plot. Exiting...\n"
         exit;    
 
     # done reading in the ord file
@@ -281,57 +281,65 @@ def main():
         
     ax1 = fig.add_axes([0.08, 0.10, rExtent, 0.85])
     # experimented with alpha blending on the plot, but couldn't find anything that really helped
+    
+    # i know this looks rediculous, just trying to control the plotting order
     if plotL1:
         if plotRange:
             if (options.plotAverages < 2):
                 ax1.plot_date(dataL1[0], dataL1[1], ',', color="r", label="C/A range")
                 ax2=fig.add_axes(ax1.get_position())
                 ax2.plot_date(dataL1[0], dataL1[2], ',', color="purple", label="L1 P/Y range")
-            if plotAvg:
-                ax7=fig.add_axes(ax1.get_position())
-                ax7.plot_date(avergs[0], avergs[1], 'o', color="r", label="C/A rng avg")
-                ax8=fig.add_axes(ax1.get_position())
-                ax8.plot_date(avergs[0], avergs[2], 'o', color="purple", label="L1 P/Y rng avg")
                 
         if plotPhase:
             if (options.plotAverages < 2):
                 ax3=fig.add_axes(ax1.get_position())
-                ax3.plot_date(dataL1[0], dataL1[3], ',', color="olive", label="L1 P/Y phase")
-            if plotAvg:
-                ax9=fig.add_axes(ax1.get_position())
-                ax9.plot_date(avergs[0], avergs[3], 'o', color="olive", label="L1 P/Y ph avg")
+                ax3.plot_date(dataL1[0], dataL1[3], ',', color="#FF6600", label="L1 P/Y phase")
                 
         if plotDoppl:
             if (options.plotAverages < 2):
                 ax4=fig.add_axes(ax1.get_position())
                 ax4.plot_date(dataL1[0], dataL1[4], ',', color="navy", label="L1 P/Y doppler")
-            if plotAvg:
-                ax10=fig.add_axes(ax1.get_position())
-                ax10.plot_date(avergs[0], avergs[4], 'o', color="navy", label="L1 P/Y dop avg")
     
     if plotL2:
         if plotRange:
             if (options.plotAverages < 2):
                 ax4=fig.add_axes(ax1.get_position())
-                ax4.plot_date(dataL2[0], dataL2[1], ',', color="gray", label="L2 P/Y range")
-            if plotAvg:
-                ax11=fig.add_axes(ax1.get_position())
-                ax11.plot_date(avergs[0], avergs[5], 'o', color="gray", label="L2 P/Y rng avg")
+                ax4.plot_date(dataL2[0], dataL2[1], ',', color="forestgreen", label="L2 P/Y range")
         if plotPhase:
             if (options.plotAverages < 2):
                 ax5=fig.add_axes(ax1.get_position())
-                ax5.plot_date(dataL2[0], dataL2[2], ',', color="green", label="L2 P/Y phase")
-            if plotAvg:
-                ax12=fig.add_axes(ax1.get_position())
-                ax12.plot_date(avergs[0], avergs[6], 'o', color="green", label="L2 P/Y rng avg")
+                ax5.plot_date(dataL2[0], dataL2[2], ',', color="darkslategray", label="L2 P/Y phase")
         if plotDoppl:
             if (options.plotAverages < 2):
                 ax6=fig.add_axes(ax1.get_position())
                 ax6.plot_date(dataL2[0], dataL2[3], ',', color="teal", label="L2 P/Y doppler")
-            if plotAvg:
-                ax13=fig.add_axes(ax1.get_position())
-                ax13.plot_date(dataL2[0], dataL2[7], 'o', color="teal", label="L2 P/Y dop avg")
-
+    
+                
+    if plotL1 and plotAvg:
+        if plotRange:
+            ax7=fig.add_axes(ax1.get_position())
+            ax7.plot_date(avergs[0], avergs[1], 'o', color="r", label="C/A rng avg")
+            ax8=fig.add_axes(ax1.get_position())
+            ax8.plot_date(avergs[0], avergs[2], 'o', color="purple", label="L1 P/Y rng avg")
+        if plotPhase:
+            ax9=fig.add_axes(ax1.get_position())
+            ax9.plot_date(avergs[0], avergs[3], 'o', color="#FF6600", label="L1 P/Y ph avg")
+        if plotDoppl:
+            ax10=fig.add_axes(ax1.get_position())
+            ax10.plot_date(avergs[0], avergs[4], 'o', color="navy", label="L1 P/Y dop avg") 
+            
+    if plotL2 and plotAvg:
+        if plotRange:
+            ax11=fig.add_axes(ax1.get_position())
+            ax11.plot_date(avergs[0], avergs[5], 'o', color="forestgreen", label="L2 P/Y rng avg")
+        if plotPhase:
+            ax12=fig.add_axes(ax1.get_position())
+            ax12.plot_date(avergs[0], avergs[6], 'o', color="darkslategray", label="L2 P/Y ph avg")
+        if plotDoppl: 
+            ax13=fig.add_axes(ax1.get_position())
+            ax13.plot_date(dataL2[0], dataL2[7], 'o', color="teal", label="L2 P/Y dop avg")
+            
+            
     if options.legend:
         ax1.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005, handletextsep=0.01, axespad=0.0, loc=(1,0))
         leg = pylab.gca().get_legend()
@@ -343,7 +351,7 @@ def main():
         pylab.setp(llines, linewidth=2)
         leg.draw_frame(False)
 
-    ax1.set_ylabel('ord (meters)', **yprops)
+    ax1.set_ylabel('Double Difference (meters)', **yprops)
     ax1.grid(True)
     if options.yRange:
         ax1.set_ylim(ymin=-options.yRange, ymax=options.yRange)
