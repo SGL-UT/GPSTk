@@ -43,6 +43,9 @@ parser.add_option("-s", "--save-figure", dest="saveFig", action="store", type="s
 parser.add_option("-l", "--line-style", dest="lineStyle", action="store", type="string",
 		  help="Line style to use in the plots. See matplotlib docs.")
 
+parser.add_option("", "--height", dest="height", action="store", type="string",
+		  help="Height of plot, in inches.")
+
 parser.add_option("-c", "--columns", dest="cols", action="append", type="string",
 		  help="Specify what columns to plot.")
 
@@ -99,9 +102,6 @@ def press(event):
     if event.key=='q' or event.key==' ':
         pylab.close()
 
-# Here we start generating the plots
-pylab.connect('key_press_event', press)
-
 d2 = numpy.array(data)
 del data
 
@@ -131,6 +131,11 @@ if xcol < 0 or xcol > cols:
 time = d2[:,xcol]
 
 
+# Here we start generating the plots
+if options.height:
+    pylab.figure(figsize=(5.5,int(options.height)))
+pylab.connect('key_press_event', press)
+
 for c in xrange(1,cols):
     if len(options.cols)==0 or labels[c] in options.cols:
         pylab.plot(time, d2[:,c], options.lineStyle, label="%s%s"%(labels[c],units[c]))
@@ -148,7 +153,7 @@ lframe.set_facecolor('0.90')
 pylab.setp(ltext, size=8, family="sans-serif")
 pylab.setp(llines, linewidth=2)
 
-pylab.title(options.title)
+pylab.title(options.title, fontsize='small')
 
 if (options.saveFig == None):
     pylab.show()
