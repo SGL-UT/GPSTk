@@ -69,7 +69,7 @@ else
       BinexData.cpp
       YumaHeader.cpp YumaData.cpp YumaAlmanacStore.cpp
       SEMHeader.cpp SEMData.cpp SEMAlmanacStore.cpp
-      SourceID.cpp TypeID.cpp
+      SourceID.cpp TypeID.cpp DataHeaders.cpp DataStructures.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp AlmanacStore.hpp BCEphemerisStore.hpp
@@ -127,7 +127,7 @@ else
       BinexData.hpp  BinexFilterOperators.hpp  BinexStream.hpp
       YumaBase.hpp YumaStream.hpp YumaHeader.hpp YumaData.hpp YumaAlmanacStore.hpp
       SEMBase.hpp SEMStream.hpp SEMHeader.hpp SEMData.hpp SEMAlmanacStore.hpp
-      SourceID.hpp TypeID.hpp
+      SourceID.hpp TypeID.hpp DataHeaders.hpp DataStructures.hpp
       TimeNamedFileStream.hpp
       ;
 }

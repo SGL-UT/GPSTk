@@ -25,7 +25,7 @@ SolverWMS.cpp SourceID.cpp SystemTime.cpp TabularEphemerisStore.cpp \
 TimeConverters.cpp TimeString.cpp TimeTag.cpp Triple.cpp TropModel.cpp \
 TypeID.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp X1Sequence.cpp \
 X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp YumaData.cpp \
-YumaHeader.cpp
+YumaHeader.cpp DataHeaders.cpp DataStructures.cpp
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = ANSITime.hpp AlmOrbit.hpp AlmanacStore.hpp \
@@ -73,4 +73,4 @@ VectorBaseOperators.hpp VectorOperators.hpp WGS84Geoid.hpp WeightBase.hpp \
 WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp Xvt.hpp YDSTime.hpp \
 YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp YumaHeader.hpp YumaStream.hpp \
 convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp \
-stl_helpers.hpp
+stl_helpers.hpp DataHeaders.hpp DataStructures.hpp
