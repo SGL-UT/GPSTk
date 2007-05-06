@@ -34,7 +34,7 @@ BinexData.hpp BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp \
 CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp \
 CommandOption.hpp CommandOptionParser.hpp CommandOptionWithCommonTimeArg.hpp \
 CommandOptionWithPositionArg.hpp CommandOptionWithTimeArg.hpp CommonTime.hpp \
-DOP.hpp DataStructures.hpp DayTime.hpp ECEF.hpp EngAlmanac.hpp \
+DOP.hpp DayTime.hpp ECEF.hpp EngAlmanac.hpp \
 EngEphemeris.hpp EngNav.hpp EphemerisRange.hpp EphemerisStore.hpp \
 EpochClockModel.hpp Exception.hpp Expression.hpp ExtractC1.hpp \
 ExtractCombinationData.hpp ExtractD1.hpp ExtractD2.hpp ExtractData.hpp \
