@@ -38,7 +38,7 @@ namespace gpstk
    TypeID::Initializer::Initializer()
    {
       tStrings[Unknown] = "UnknownType";
-      tStrings[C1]      = "C/A";
+      tStrings[C1]      = "C1";
       tStrings[C2]      = "C2";
       tStrings[P1]      = "P1";
       tStrings[P2]      = "P2";
