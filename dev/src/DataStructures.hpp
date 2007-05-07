@@ -733,7 +733,7 @@ namespace gpstk
          *      } 
          *      catch (SatIDNotFound& e)
          *      {
-         *          cout << endl << "Satélite G21 not found." << endl;
+         *          cout << endl << "Satellite G21 not found." << endl;
          *      };
          *   }
          * @endcode
