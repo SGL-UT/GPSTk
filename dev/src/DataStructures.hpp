@@ -712,8 +712,34 @@ namespace gpstk
             return (*this);
         }
 
-        /// Returns a reference to the typeValueMap with corresponding satellite.
-        /// @param satellite Satellite to be look for.
+        /** Returns a reference to the typeValueMap with corresponding satellite.
+         * This operator allows direct access to data values when chained with the
+         * typeValueMap::operator() like this: gRin(sat21)(TypeID::C1).
+         *
+         * Example:
+         *
+         * @code
+         *   RinexObsStream rin("bahr1620.04o");    // Create the input file stream
+         *   gnssRinex gRin;                        // Declare a gnssRinex object
+         *   SatID sat21(21,SatID::systemGPS);      // Create a satellite object
+         *
+         *   // Feed the gRin data structure
+         *   while(rin >> gRin)
+         *   {
+         *      try
+         *      {
+         *          if (gRin(sat21)(TypeID::C1) == 0.0) gRin(sat21)(TypeID::C1) = 123.456;
+         *          cout << "C1 value for satellite G21: " << gRin(sat21)(TypeID::C1) << endl;
+         *      } 
+         *      catch (SatIDNotFound& e)
+         *      {
+         *          cout << endl << "Satélite G21 not found." << endl;
+         *      };
+         *   }
+         * @endcode
+         *
+         * @param satellite Satellite to be look for.
+         */
         inline typeValueMap& operator()(const SatID& satellite) throw(SatIDNotFound)
         {
             return (*this).body(satellite);
