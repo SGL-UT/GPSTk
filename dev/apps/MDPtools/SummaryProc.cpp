@@ -492,7 +492,23 @@ void MDPSummaryProcessor::process(const gpstk::MDPSelftestStatus& msg)
          out << msg.time.printf(timeFormat)
              << "  Received first Selftest Status message"
              << endl;
+   } 
+
+   if (verboseLevel)
+   {
+      if (msg.extFreqStatus != prevSelftestStatus.extFreqStatus)
+         out << msg.time.printf(timeFormat)
+             << "  External Frequency Status: "
+             << msg.extFreqStatus
+             << endl;
+      
+      if (msg.saasmStatusWord != prevSelftestStatus.saasmStatusWord)
+         out << msg.time.printf(timeFormat)
+             << "  SAASM Status Word: 0x"
+             << hex << msg.saasmStatusWord << dec
+             << endl;
    }
+   prevSelftestStatus = msg;
 }
 
 std::string MDPSummaryProcessor::secondsAsHMS(double seconds) const

@@ -60,6 +60,7 @@ public:
    ObsEpochVector prevObs;
 
    gpstk::MDPPVTSolution prevPvt;
+   gpstk::MDPSelftestStatus prevSelftestStatus;
 
    // A list of all messages that had an error decoding them...
    typedef std::list<gpstk::MDPHeader> MDPList;
