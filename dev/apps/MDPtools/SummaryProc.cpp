@@ -149,7 +149,7 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
    if (badMessages.size())
    {
       out << "Received " << badMessages.size() << " messages with an error." << endl;
-      if (verboseLevel)
+      if (verboseLevel>1)
       {
          out << "Headers from the bad messages:" << endl;
          for (MDPList::const_iterator i=badMessages.begin(); i!=badMessages.end(); i++)
@@ -423,10 +423,29 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
       return;
    }
 
-   long sfa[10];
-   msg.fillArray(sfa);
+   gpstk::MDPNavSubframe umsg = msg;
 
-   if (!(bugMask & 0x2) && !gpstk::EngNav::subframeParity(sfa))
+   // First try the data assuming it is already upright
+   umsg.cooked = true;
+   bool parityGood = umsg.checkParity();
+   if (!parityGood)
+   {
+      if (verboseLevel>2)
+         out << msg.time.printf(timeFormat)
+             << "  Subframe appears raw" << endl;
+      umsg.cooked = false;
+      umsg.cookSubframe();
+      parityGood = umsg.checkParity();
+   }
+   else
+   {
+      if (verboseLevel>2)
+         out << msg.time.printf(timeFormat)
+             << "  Subframe appears cooked" << endl;
+   }
+
+
+   if (!(bugMask & 0x2) && !parityGood)
    {
       MDPNavSubframe tmp(msg);
       tmp.setstate(parbit);
@@ -434,15 +453,15 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
       return;
    }
 
-   long how_sow = msg.getHOWTime();
-   long hdr_sow = static_cast<long>(msg.time.GPSsow());
+   long how_sow = umsg.getHOWTime();
+   long hdr_sow = static_cast<long>(umsg.time.GPSsow());
    if (how_sow < 0 || how_sow >= 604800)
    {
       if (verboseLevel)
-         out << msg.time.printf(timeFormat)
+         out << umsg.time.printf(timeFormat)
              << "  Bogus HOW SOW (" << how_sow << ")"
              << endl;
-      MDPNavSubframe tmp(msg);
+      MDPNavSubframe tmp(umsg);
       tmp.setstate(fmtbit);
       badMessages.push_back(tmp);
       return;
@@ -452,27 +471,27 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
         (how_sow == hdr_sow && !(bugMask & 0x4))        )
    {
       if (verboseLevel)
-         out << msg.time.printf(timeFormat)
+         out << umsg.time.printf(timeFormat)
              << "  Navigation Subframe HOW/header time mismatch ("
              << how_sow << " vs " << hdr_sow << ")"
              << endl;
-      MDPNavSubframe tmp(msg);
+      MDPNavSubframe tmp(umsg);
       tmp.setstate(fmtbit);
       badMessages.push_back(tmp);
       return;
    }
 
-   if (msg && firstNav)
+   if (umsg && firstNav)
    {
       firstNav = false;
-      firstNavTime = msg.time;
+      firstNavTime = umsg.time;
       if (verboseLevel)
-         out << msg.time.printf(timeFormat)
+         out << umsg.time.printf(timeFormat)
              << "  Received first Navigation Subframe message"
              << endl;
    }
 
-   lastNavTime = msg.time;
+   lastNavTime = umsg.time;
 }
 
 

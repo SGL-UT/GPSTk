@@ -79,7 +79,7 @@ void MDPProcessor::process()
             fcErrorCount++;
             if (verboseLevel)
                cout << header.time.printf(timeFormat)
-                    <<" Freshness count error.  Previous was " << lastFC
+                    <<"  Freshness count error.  Previous was " << lastFC
                     << " current is " << in.header.freshnessCount << endl;
          }
          lastFC = in.header.freshnessCount;
