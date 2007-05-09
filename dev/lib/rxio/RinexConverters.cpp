@@ -197,7 +197,6 @@ namespace gpstk
          if (!alm.addSubframe(long_sfa, week))
             return false;
       }
-      cout << endl;
       
       double p51Toa=alm.getToa();
       double svToa;
