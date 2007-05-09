@@ -124,7 +124,8 @@ namespace gpstk
          elevation, ///< Satellite elevation
          azimuth,   ///< Satellite azimuth
          // Equation system-related types
-         PR,        ///< Prefit residual
+         prefit,    ///< Prefit residual
+         postfit,   ///< Postfit residual
          rhoX,      ///< Unit vector from satellite to receiver, X component
          rhoY,      ///< Unit vector from satellite to receiver, Y component
          rhoZ,      ///< Unit vector from satellite to receiver, Z component
