@@ -36,7 +36,6 @@
 //
 //=============================================================================
 
-
 #include <termios.h> /* POSIX terminal control definitions */
 
 #include "StringUtils.hpp"
@@ -98,7 +97,7 @@ namespace gpstk
             SocketAddr client(ifn, port);
             if (tcpbuff->connect(client))
             {
-               cout << "Could not connect to " << ifn << endl;
+               cerr << "Could not connect to " << ifn << endl;
                exit(-1);
             }   
 
@@ -135,7 +134,15 @@ namespace gpstk
          }
          else // a regular file
          {
-            fstream::open(target.c_str(), mode);
+            int fd = ::open(target.c_str(), mode);
+            if (fd<0)
+            {
+               cerr << "Could not open: " << target.c_str() << endl;
+               return;
+            }
+            fdbuff = new FDStreamBuff(fd);
+            basic_ios<char>::rdbuf(fdbuff);
+
             deviceType = dtFile;
          }
       }
@@ -150,13 +157,12 @@ namespace gpstk
          }
          else
          {
-            copyfmt(cin);
+            copyfmt(cout);
             clear(cin.rdstate());
-            basic_ios<char>::rdbuf(cin.rdbuf());
+            basic_ios<char>::rdbuf(cout.rdbuf());
             this->target = "<stdout>";
          }
          deviceType = dtStdio;
-
       }
    }
 
