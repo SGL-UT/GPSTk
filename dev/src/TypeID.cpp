@@ -98,7 +98,8 @@ namespace gpstk
       tStrings[B]       = "ambiguity";
       tStrings[elevation] = "elevation";
       tStrings[azimuth] = "azimuth";
-      tStrings[PR]      = "prefit residual";
+      tStrings[prefit]  = "prefit residual";
+      tStrings[postfit] = "posfit residual";
       tStrings[rhoX]    = "unit vector X";
       tStrings[rhoY]    = "unit vector Y";
       tStrings[rhoZ]    = "unit vector Z";
