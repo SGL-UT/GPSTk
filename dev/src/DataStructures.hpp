@@ -162,6 +162,26 @@ namespace gpstk
             return (*this);
         }
 
+        /// Modifies this object, removing this type of data.
+        /// @param type Type of value to be removed.
+        inline typeValueMap& removeTypeID(const TypeID& type)
+        {
+            (*this).erase(type);
+            return (*this);
+        }
+
+        /// Modifies this object, removing these types of data.
+        /// @param typeSet Set (TypeIDSet) containing the types of data to be kept.
+        inline typeValueMap& removeTypeID(const TypeIDSet& typeSet)
+        {
+            TypeIDSet::const_iterator pos;
+            for (pos = typeSet.begin(); pos != typeSet.end(); ++pos)
+            {
+                (*this).erase(*pos);
+            }
+            return (*this);
+        }
+
         /// Returns a reference to the data value (double) with corresponding type.
         /// @param type Type of value to be look for.
         inline double& operator()(const TypeID& type) throw(TypeIDNotFound)
@@ -247,6 +267,26 @@ namespace gpstk
         {
             satValueMap svMap = (*this).extractSatID(satSet);
             (*this) = svMap;
+            return (*this);
+        }
+
+        /// Modifies this object, removing this satellite.
+        /// @param satellite Satellite to be removed.
+        inline satValueMap& removeSatID(const SatID& satellite)
+        {
+            (*this).erase(satellite);
+            return (*this);
+        }
+
+        /// Modifies this object, removing these satellites.
+        /// @param satSet Set (SatIDSet) containing the satellites to be removed.
+        inline satValueMap& removeSatID(const SatIDSet& satSet)
+        {
+            SatIDSet::const_iterator pos;
+            for (pos = satSet.begin(); pos != satSet.end(); ++pos)
+            {
+                (*this).erase(*pos);
+            }
             return (*this);
         }
 
@@ -394,6 +434,50 @@ namespace gpstk
             return (*this);
         }
 
+        /// Modifies this object, removing this satellite.
+        /// @param satellite Satellite to be removed.
+        inline satTypeValueMap& removeSatID(const SatID& satellite)
+        {
+            (*this).erase(satellite);
+            return (*this);
+        }
+
+        /// Modifies this object, removing these satellites.
+        /// @param satSet Set (SatIDSet) containing the satellites to be removed.
+        inline satTypeValueMap& removeSatID(const SatIDSet& satSet)
+        {
+            SatIDSet::const_iterator pos;
+            for (pos = satSet.begin(); pos != satSet.end(); ++pos)
+            {
+                (*this).erase(*pos);
+            }
+            return (*this);
+        }
+
+        /// Modifies this object, removing this type of data.
+        /// @param type Type of value to be removed.
+        inline satTypeValueMap& removeTypeID(const TypeID& type)
+        {
+            satTypeValueMap::iterator it;
+            for (it = (*this).begin(); it != (*this).end(); ++it) 
+            {
+                (*it).second.removeTypeID(type);
+            }
+            return (*this);
+        }
+
+        /// Modifies this object, removing these types of data.
+        /// @param typeSet Set (TypeIDSet) containing the types of data to be kept.
+        inline satTypeValueMap& removeTypeID(const TypeIDSet& typeSet)
+        {
+            TypeIDSet::const_iterator pos;
+            for (pos = typeSet.begin(); pos != typeSet.end(); ++pos)
+            {
+                (*this).removeTypeID(*pos);
+            }
+            return (*this);
+        }
+
         /// Returns a reference to the typeValueMap with corresponding SatID.
         /// @param type Type of value to be look for.
         inline typeValueMap& operator()(const SatID& satellite) throw(SatIDNotFound)
@@ -529,6 +613,26 @@ namespace gpstk
             return (*this);
         }
 
+        /// Modifies this object, removing this satellite.
+        /// @param satellite Satellite to be removed.
+        inline gnssSatValue& removeSatID(const SatID& satellite)
+        {
+            (*this).body.erase(satellite);
+            return (*this);
+        }
+
+        /// Modifies this object, removing these satellites.
+        /// @param satSet Set (SatIDSet) containing the satellites to be removed.
+        inline gnssSatValue& removeSatID(const SatIDSet& satSet)
+        {
+            SatIDSet::const_iterator pos;
+            for (pos = satSet.begin(); pos != satSet.end(); ++pos)
+            {
+                (*this).body.erase(*pos);
+            }
+            return (*this);
+        }
+
         /// Returns a reference to the value (double) with corresponding satellite.
         /// @param satellite Satellite to be look for.
         inline double& operator()(const SatID& satellite) throw(SatIDNotFound)
@@ -587,6 +691,26 @@ namespace gpstk
         {
             typeValueMap tvMap = (*this).body.extractTypeID(typeSet);
             (*this).body = tvMap;
+            return (*this);
+        }
+
+        /// Modifies this object, removing this type of data.
+        /// @param type Type of value to be removed.
+        inline gnssTypeValue& removeTypeID(const TypeID& type)
+        {
+            (*this).body.erase(type);
+            return (*this);
+        }
+
+        /// Modifies this object, removing these types of data.
+        /// @param typeSet Set (TypeIDSet) containing the types of data to be kept.
+        inline gnssTypeValue& removeTypeID(const TypeIDSet& typeSet)
+        {
+            TypeIDSet::const_iterator pos;
+            for (pos = typeSet.begin(); pos != typeSet.end(); ++pos)
+            {
+                (*this).body.erase(*pos);
+            }
             return (*this);
         }
 
@@ -712,6 +836,46 @@ namespace gpstk
             return (*this);
         }
 
+        /// Modifies this object, removing this satellite.
+        /// @param satellite Satellite to be removed.
+        inline gnssSatTypeValue& removeSatID(const SatID& satellite)
+        {
+            (*this).body.erase(satellite);
+            return (*this);
+        }
+
+        /// Modifies this object, removing these satellites.
+        /// @param satSet Set (SatIDSet) containing the satellites to be removed.
+        inline gnssSatTypeValue& removeSatID(const SatIDSet& satSet)
+        {
+            SatIDSet::const_iterator pos;
+            for (pos = satSet.begin(); pos != satSet.end(); ++pos)
+            {
+                (*this).body.erase(*pos);
+            }
+            return (*this);
+        }
+
+        /// Modifies this object, removing this type of data.
+        /// @param type Type of value to be kept.
+        inline gnssSatTypeValue& removeTypeID(const TypeID& type)
+        {
+            (*this).body.removeTypeID(type);
+            return (*this);
+        }
+
+        /// Modifies this object, removing these types of data
+        /// @param typeSet Set (TypeIDSet) containing the types of data to be kept.
+        inline gnssSatTypeValue& removeTypeID(const TypeIDSet& typeSet)
+        {
+            TypeIDSet::const_iterator pos;
+            for (pos = typeSet.begin(); pos != typeSet.end(); ++pos)
+            {
+                (*this).body.removeTypeID(*pos);
+            }
+            return (*this);
+        }
+
         /** Returns a reference to the typeValueMap with corresponding satellite.
          * This operator allows direct access to data values when chained with the
          * typeValueMap::operator() like this: gRin(sat21)(TypeID::C1).
@@ -738,7 +902,7 @@ namespace gpstk
          *   }
          * @endcode
          *
-         * @param satellite Satellite to be look for.
+         * @param satellite Satellite to be looked for.
          */
         inline typeValueMap& operator()(const SatID& satellite) throw(SatIDNotFound)
         {
