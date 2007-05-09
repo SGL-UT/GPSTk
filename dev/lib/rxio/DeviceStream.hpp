@@ -69,6 +69,8 @@ namespace gpstk
 
       virtual ~DeviceStream();
 
+      bool is_open() const;
+
       enum DeviceType {dtStdio, dtFile, dtTCP, dtSerial};
 
       DeviceType getDeviceType() {return deviceType;};

@@ -74,6 +74,13 @@ namespace gpstk
       open(string(p), mode);
    }
 
+   bool DeviceStream::is_open() const
+   {
+      if (deviceType == dtStdio)
+         return true;
+      if (fdbuff != NULL)
+         return fdbuff->is_open();
+   }
 
    void DeviceStream::open(const string& target, ios::openmode mode)
    {
@@ -134,7 +141,12 @@ namespace gpstk
          }
          else // a regular file
          {
-            int fd = ::open(target.c_str(), mode);
+            int flags=0;
+            if (mode & ios::app) flags |= O_APPEND;
+            if (mode & ios::out) flags |= O_CREAT;
+            if (mode & ios::trunc) flags |= O_TRUNC;
+               
+            int fd = ::open(target.c_str(), flags);
             if (fd<0)
             {
                cerr << "Could not open: " << target.c_str() << endl;

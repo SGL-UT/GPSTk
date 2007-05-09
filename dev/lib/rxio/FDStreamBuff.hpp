@@ -14,6 +14,10 @@ namespace gpstk
    class FDStreamBuff : public std::streambuf
    {
    public:
+
+      FDStreamBuff() : handle(-1), bufferSize(4096)
+      {}
+
       FDStreamBuff(int fd) : handle(fd), bufferSize(4096)
       {}
 
