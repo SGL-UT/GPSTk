@@ -117,6 +117,18 @@ namespace gpstk
         /// Returns the number of different types available.
         inline size_t numTypes() const { return (*this).size(); }
 
+        /// Returns a TypeIDSet with all the data types present in this object.
+        inline TypeIDSet getTypeID() const
+        {
+            TypeIDSet typeSet;
+            typeValueMap::const_iterator pos;
+            for (pos = (*this).begin(); pos != (*this).end(); ++pos)
+            {
+                typeSet.insert( (*pos).first );
+            }
+            return typeSet;
+        }
+
         /// Returns a typeValueMap with only this type of data.
         /// @param type Type of value to be extracted.
         inline typeValueMap extractTypeID(const TypeID& type) const
@@ -197,7 +209,7 @@ namespace gpstk
         /// Destructor.
         virtual ~typeValueMap() {};
 
-    };
+    };  // End typeValueMap
 
 
     /// Map holding SatID with corresponding numeric value.
@@ -206,6 +218,18 @@ namespace gpstk
 
         /// Returns the number of satellites available.
         inline size_t numSats() const { return (*this).size(); }
+
+        /// Returns a SatIDSet with all the satellites present in this object.
+        inline SatIDSet getSatID() const
+        {
+            SatIDSet satSet;
+            satValueMap::const_iterator pos;
+            for (pos = (*this).begin(); pos != (*this).end(); ++pos)
+            {
+                satSet.insert( (*pos).first );
+            }
+            return satSet;
+        }
 
         /// Returns a satValueMap with only this satellite.
         /// @param satellite Satellite to be extracted.
@@ -305,7 +329,7 @@ namespace gpstk
         /// Destructor.
         virtual ~satValueMap() {};
 
-    };
+    };  // End of satValueMap
 
 
     /// Map holding SatID with corresponding typeValueMap.
@@ -328,6 +352,34 @@ namespace gpstk
                 numEle = numEle + (*it).second.size();
             }
             return numEle;
+        }
+
+        /// Returns a SatIDSet with all the satellites present in this object.
+        inline SatIDSet getSatID() const
+        {
+            SatIDSet satSet;
+            satTypeValueMap::const_iterator pos;
+            for (pos = (*this).begin(); pos != (*this).end(); ++pos)
+            {
+                satSet.insert( (*pos).first );
+            }
+            return satSet;
+        }
+
+        /// Returns a TypeIDSet with all the data types present in this object.
+        inline TypeIDSet getTypeID() const
+        {
+            TypeIDSet typeSet;
+            satTypeValueMap::const_iterator pos;
+            for (pos = (*this).begin(); pos != (*this).end(); ++pos)
+            {
+                typeValueMap::const_iterator it;
+                for (it = (*pos).second.begin(); it != (*pos).second.end(); ++it)
+                {
+                    typeSet.insert( (*it).first );
+                }
+            }
+            return typeSet;
         }
 
         /// Returns a satTypeValueMap with only this satellite.
@@ -493,7 +545,7 @@ namespace gpstk
         /// Destructor.
         virtual ~satTypeValueMap() {};
 
-    };
+    };  // End of satTypeValueMap
 
 
 
@@ -543,7 +595,7 @@ namespace gpstk
         /// Destructor.
         virtual ~gnssData() {};
 
-    };
+    };  // End of gnssData
 
 
 
@@ -556,6 +608,12 @@ namespace gpstk
 
         /// Returns the number of satellites available in the body (a satValueMap).
         inline size_t numSats() const { return body.numSats(); };
+
+        /// Returns a SatIDSet with all the satellites present in this object.
+        inline SatIDSet getSatID() const
+        {
+            return (*this).body.getSatID();
+        }
 
         /// Returns a gnssSatValue with only this satellite.
         /// @param satellite Satellite to be extracted.
@@ -645,7 +703,7 @@ namespace gpstk
         /// Destructor.
         virtual ~gnssSatValue() {};
 
-    };
+    };  // End of gnssSatValue
 
 
 
@@ -655,6 +713,12 @@ namespace gpstk
 
         /// Returns the number of types available in the body (a typeValueMap).
         inline size_t numTypes() const { return body.numTypes(); };
+
+        /// Returns a TypeIDSet with all the data types present in this object.
+        inline TypeIDSet getTypeID() const
+        {
+            return (*this).body.getTypeID();
+        }
 
         /// Returns a gnssTypeValue with only this type of data.
         /// @param type Type of value to be extracted.
@@ -725,7 +789,7 @@ namespace gpstk
         /// Destructor.
         virtual ~gnssTypeValue() {};
 
-    };
+    };  // End of gnssTypeValue
 
 
 
@@ -735,6 +799,18 @@ namespace gpstk
 
         /// Returns the number of satellites available in the body (a satTypeValueMap).
         inline size_t numSats() const { return body.numSats(); };
+
+        /// Returns a TypeIDSet with all the data types present in this object.
+        inline TypeIDSet getTypeID() const
+        {
+            return (*this).body.getTypeID();
+        }
+
+        /// Returns a SatIDSet with all the satellites present in this object.
+        inline SatIDSet getSatID() const
+        {
+            return (*this).body.getSatID();
+        }
 
         /** Returns the total number of data elements in the body.
          * This method DOES NOT suppose that all the satellites have
@@ -913,7 +989,7 @@ namespace gpstk
         /// Destructor.
         virtual ~gnssSatTypeValue() {};
 
-    };
+    };  // End of gnssSatTypeValue
 
 
 
@@ -1024,7 +1100,7 @@ namespace gpstk
         /// Destructor.
         virtual ~gnssRinex() {};
 
-    };
+    };  // End of gnssRinex
 
 
     /// stream input for gnssSatTypeValue.
