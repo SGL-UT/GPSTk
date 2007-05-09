@@ -107,6 +107,134 @@ namespace gpstk
 
 
 
+    // stream input for gnssSatTypeValue
+    std::istream& operator>>(std::istream& i, gnssSatTypeValue& f)
+        throw(FFStreamError, gpstk::StringUtils::StringException)
+    {
+        FFStream* ffs = dynamic_cast<FFStream*>(&i);
+        if (ffs)
+        {
+        try
+          {         
+            RinexObsStream& strm = dynamic_cast<RinexObsStream&>(*ffs);
+      
+            // If the header hasn't been read, read it...
+            if(!strm.headerRead) strm >> strm.header;
+
+            // Clear out this object
+            RinexObsHeader& hdr = strm.header;
+
+            hdr >> f;
+      
+            std::string line;
+
+            strm.formattedGetLine(line, true);
+      
+            if (line.size()>80 || line[0] != ' ' || line[3] != ' ' || line[6] != ' ')
+            {
+                FFStreamError e("Bad epoch line");
+                GPSTK_THROW(e);
+            }
+
+            // process the epoch line, including SV list and clock bias
+            short epochFlag = asInt(line.substr(28,1));
+            if ((epochFlag < 0) || (epochFlag > 6))
+            {
+                FFStreamError e("Invalid epoch flag: " + asString(epochFlag));
+                GPSTK_THROW(e);
+            }
+
+            f.header.epoch = parseTime(line, hdr);
+
+            short numSvs = asInt(line.substr(29,3));
+
+            RinexObsData rod;
+
+            // Now read the observations ...
+            if(epochFlag==0 || epochFlag==1 || epochFlag==6) {
+                int isv, ndx, line_ndx;
+                vector<SatID> satIndex(numSvs);
+                int col=30;
+                for (isv=1, ndx=0; ndx<numSvs; isv++, ndx++) {
+                    if(! (isv % 13)) {
+                        strm.formattedGetLine(line);
+                        isv = 1;
+                        if(line.size() > 80) {
+                            FFStreamError err("Invalid line size:" + asString(line.size()));
+                            GPSTK_THROW(err);
+                        }
+                    }
+                    try {
+                        satIndex[ndx] = RinexSatID(line.substr(col+isv*3-1, 3));
+                    }
+                    catch (Exception& e)
+                    { 
+                        FFStreamError ffse(e);
+                        GPSTK_THROW(ffse);
+                    }
+                }
+
+                for (isv=0; isv < numSvs; isv++)
+                {
+                    short numObs = hdr.obsTypeList.size();
+                    for (ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++)
+                    {
+                        SatID sat = satIndex[isv];
+                        RinexObsHeader::RinexObsType obs_type = hdr.obsTypeList[ndx];
+                        if (! (line_ndx % 5))
+                        {
+                            strm.formattedGetLine(line);
+                            line_ndx = 0;
+                            if (line.size() > 80)
+                            {
+                                FFStreamError err("Invalid line size:" + asString(line.size()));
+                                GPSTK_THROW(err);
+                            }
+                        }
+               
+                        line.resize(80, ' ');
+               
+                        rod.obs[sat][obs_type].data = asDouble(line.substr(line_ndx*16,   14));
+                        rod.obs[sat][obs_type].lli = asInt(    line.substr(line_ndx*16+14, 1));
+                        rod.obs[sat][obs_type].ssi = asInt(    line.substr(line_ndx*16+15, 1));
+                    }
+                }
+
+
+            }
+
+            f.body = FillsatTypeValueMapwithRinexObsData(rod);
+
+            return i;
+          }  // End of "try" block
+          ////
+          //// ATENTION: This part is VERY UGLY
+          ////   Help from the guys who wrote FFStream::tryFFStreamGet(FFData& rec)
+          ////   will be very appreciated
+          ////
+          // EOF - do nothing - eof causes fail() to be set which
+          // is handled by std::fstream
+          catch (EndOfFile& e)
+          {
+            return i;
+          }
+          catch (...)
+          {
+            return i;
+          }
+
+        }  // End of block: "if (ffs)..."
+        else
+        {
+            FFStreamError e("operator<< stream argument must be an FFStream");
+            GPSTK_THROW(e);
+        }
+        
+    }  // End of stream input for gnssSatTypeValue
+
+
+
+
     // stream input for gnssRinex
     std::istream& operator>>(std::istream& i, gnssRinex& f)
         throw(FFStreamError, gpstk::StringUtils::StringException)
