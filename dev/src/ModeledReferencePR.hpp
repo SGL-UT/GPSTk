@@ -258,6 +258,14 @@ namespace gpstk
         };
 
 
+        /** Method to get a pointer to the default EphemerisStore to be used with GNSS data structures.
+         */
+        virtual EphemerisStore* getDefaultEphemeris()
+        {
+           return pDefaultEphemeris;
+        };
+
+
         /// Destructor.
         virtual ~ModeledReferencePR() throw() {};
 
