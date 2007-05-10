@@ -41,6 +41,7 @@
 #include "RinexObsData.hpp"
 #include "StringUtils.hpp"
 #include "Vector.hpp"
+#include "ModeledReferencePR.hpp"
 
 
 
@@ -1057,6 +1058,10 @@ namespace gpstk
         }
 
 
+        /// Input operator from gnssSatTypeValue to ModeledReferencePR.
+        virtual gnssSatTypeValue& operator>>(ModeledReferencePR& modRefPR) throw(Exception);
+
+
         /// Destructor.
         virtual ~gnssSatTypeValue() {};
 
@@ -1174,7 +1179,7 @@ namespace gpstk
     };  // End of gnssRinex
 
 
-    /// stream input for gnssSatTypeValue.
+    /// Stream input for gnssSatTypeValue.
     /// @param i Input stream.
     /// @param f gnssSatTypeValue receiving the data.
     std::istream& operator>>(std::istream& i, gnssSatTypeValue& f)
@@ -1320,7 +1325,7 @@ namespace gpstk
     } // End FillsatTypeValueMapwithRinexObsData(const RinexObsData& rod)
 
 
-    /** stream input for gnssRinex.
+    /** Stream input for gnssRinex.
      * This handy operator allows to fed a gnssRinex data structure directly from
      * an input stream such a RinexObsStream object. For example:
      *

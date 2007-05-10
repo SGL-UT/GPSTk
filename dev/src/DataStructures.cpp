@@ -105,9 +105,38 @@ namespace gpstk
     }
 
 
+    // Input operator from gnssSatTypeValue to ModeledReferencePR.
+    gnssSatTypeValue& gnssSatTypeValue::operator>>(ModeledReferencePR& modRefPR) throw(Exception)
+    {
+        Vector<SatID> Vsat = (*this).getVectorOfSatID();
+        Vector<double> Vprange = (*this).getVectorOfTypeID( modRefPR.getDefaultObservable() );
+        try
+        {
+            // Call the Compute() method with the defaults. Those defaults MUST HAVE BEEN
+            // previously set, usually when creating modRefPR with the appropriate constructor.
+            modRefPR.Compute( (*this).header.epoch, Vsat, Vprange, (*(modRefPR.getDefaultEphemeris())), modRefPR.extraBiases, modRefPR.getDefaultTropoModel(), modRefPR.getDefaultIonoModel() );
+
+            // Once we get the result, it may be necessary to make some satellite cleanup
+            SatIDSet rejectedSet;
+            for (size_t i = 0; i<modRefPR.rejectedSV.size(); ++i) { rejectedSet.insert(modRefPR.rejectedSV[i]); }
+            (*this).removeSatID(rejectedSet);       // All rejected satellites are removed
+
+            // Now we have to add the new values to the data structure
+            // XXX *** Men at work right here :-)
+
+            return (*this);
+        }
+        catch(Exception& e) {
+            GPSTK_RETHROW(e);
+        }
+    }
 
 
-    // stream input for gnssSatTypeValue
+
+
+
+
+    // Stream input for gnssSatTypeValue
     std::istream& operator>>(std::istream& i, gnssSatTypeValue& f)
         throw(FFStreamError, gpstk::StringUtils::StringException)
     {
@@ -115,7 +144,7 @@ namespace gpstk
         if (ffs)
         {
         try
-          {         
+          {
             RinexObsStream& strm = dynamic_cast<RinexObsStream&>(*ffs);
       
             // If the header hasn't been read, read it...
@@ -235,7 +264,7 @@ namespace gpstk
 
 
 
-    // stream input for gnssRinex
+    // Stream input for gnssRinex
     std::istream& operator>>(std::istream& i, gnssRinex& f)
         throw(FFStreamError, gpstk::StringUtils::StringException)
     {
