@@ -94,6 +94,19 @@ namespace gpstk
         };
 
 
+        /** Explicit constructor, taking as input a Position object containing reference 
+         * station coordinates.
+         * @param dIonoModel    Ionospheric model to be used by default.
+         * @param dTropoModel   Tropospheric model to be used by default.
+         */
+        ModeledReferencePR(Position RxCoordinates, IonoModelStore& dIonoModel, TropModel& dTropoModel) throw(Exception) { 
+            InitializeValues();
+            setInitialRxPosition(RxCoordinates);
+            setDefaultIonoModel(dIonoModel);
+            setDefaultTropoModel(dTropoModel);
+        };
+
+
         /** Compute the modeled pseudoranges, given satellite ID's, pseudoranges and other data
          * @param Tr            Measured time of reception of the data.
          * @param Satellite     Vector of satellites; on successful return, satellites that
@@ -171,6 +184,12 @@ namespace gpstk
 
     protected:
 
+        /// Pointer to default ionospheric model
+        IonoModelStore *pDefaultIonoModel;
+
+        /// Pointer to default tropospheric model
+        TropModel *pDefaultTropoModel;
+
         /// Initialization method
         void InitializeValues() throw(Exception) { 
             setInitialRxPosition();
@@ -188,6 +207,8 @@ namespace gpstk
             rejectedSV(0);
             useTGD = true;
             minElev = 10.0;  // By default, cut-off elevation is set to 10 degrees
+            pDefaultIonoModel = NULL;
+            pDefaultTropoModel = NULL;
         };
 
 
@@ -294,6 +315,33 @@ namespace gpstk
         void setMinElev(double newElevation)
         {
            minElev = newElevation;
+        };
+
+
+        /** Method to set the default ionospheric model.
+         * @param dIonoModel    Ionospheric model to be used by default.
+         */
+        void setDefaultIonoModel(IonoModelStore& dIonoModel)
+        {
+           pDefaultIonoModel = &dIonoModel;
+        };
+
+
+        /** Method to set the default tropospheric model.
+         * @param dTropoModel    Tropospheric model to be used by default.
+         */
+        void setDefaultTropoModel(TropModel& dTropoModel)
+        {
+           pDefaultTropoModel = &dTropoModel;
+        };
+
+
+        /** Method to set the default extra biases.
+         * @param eBiases    Vector with the default extra biases
+         */
+        void setDefaultExtraBiases(Vector<double>& eBiases)
+        {
+           extraBiases = eBiases;
         };
 
 
