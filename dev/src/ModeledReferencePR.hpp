@@ -193,14 +193,14 @@ namespace gpstk
 
 
         /// Method to get satellite elevation cut-off angle. By default, it is set to 10 degrees.
-        double getMinElev()
+        virtual double getMinElev() const
         {
            return minElev;
         };
 
 
         /// Method to set satellite elevation cut-off angle. By default, it is set to 10 degrees.
-        void setMinElev(double newElevation)
+        virtual void setMinElev(double newElevation)
         {
            minElev = newElevation;
         };
@@ -209,25 +209,41 @@ namespace gpstk
         /** Method to set the default ionospheric model.
          * @param dIonoModel    Ionospheric model to be used by default.
          */
-        void setDefaultIonoModel(IonoModelStore& dIonoModel)
+        virtual void setDefaultIonoModel(IonoModelStore& dIonoModel)
         {
            pDefaultIonoModel = &dIonoModel;
+        };
+
+
+        /** Method to get a pointer to the default ionospheric model.
+         */
+        virtual IonoModelStore* getDefaultIonoModel() const
+        {
+           return pDefaultIonoModel;
         };
 
 
         /** Method to set the default tropospheric model.
          * @param dTropoModel    Tropospheric model to be used by default.
          */
-        void setDefaultTropoModel(TropModel& dTropoModel)
+        virtual void setDefaultTropoModel(TropModel& dTropoModel)
         {
            pDefaultTropoModel = &dTropoModel;
+        };
+
+
+        /** Method to get a pointer to the default tropospheric model.
+         */
+        virtual TropModel* getDefaultTropoModel() const
+        {
+           return pDefaultTropoModel;
         };
 
 
         /** Method to set the default extra biases.
          * @param eBiases    Vector with the default extra biases
          */
-        void setDefaultExtraBiases(Vector<double>& eBiases)
+        virtual void setDefaultExtraBiases(Vector<double>& eBiases)
         {
            extraBiases = eBiases;
         };
@@ -243,7 +259,7 @@ namespace gpstk
 
 
         /// Method to get the default observable being used with GNSS data structures.
-        virtual TypeID getDefaultObservable()
+        virtual TypeID getDefaultObservable() const
         {
            return defaultObservable;
         };
@@ -260,7 +276,7 @@ namespace gpstk
 
         /** Method to get a pointer to the default EphemerisStore to be used with GNSS data structures.
          */
-        virtual EphemerisStore* getDefaultEphemeris()
+        virtual EphemerisStore* getDefaultEphemeris() const
         {
            return pDefaultEphemeris;
         };
