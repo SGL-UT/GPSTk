@@ -41,6 +41,7 @@
 #include "Geodetic.hpp"
 #include "Position.hpp"
 #include "icd_200_constants.hpp"
+#include "TypeID.hpp"
 
 
 namespace gpstk
@@ -94,16 +95,23 @@ namespace gpstk
         };
 
 
-        /** Explicit constructor, taking as input a Position object containing reference 
-         * station coordinates.
+        /** Explicit constructor, taking as input reference station coordinates, default
+         * ionospheric and tropospheric models, and default observable to be used when
+         * working with GNSS data structures.
+         *
+         * @param RxCoordinates Reference station coordinates.
          * @param dIonoModel    Ionospheric model to be used by default.
          * @param dTropoModel   Tropospheric model to be used by default.
+         * @param dObservable   Observable type to be used by default.
+         *
+         * @sa DataStructures.hpp.
          */
-        ModeledReferencePR(Position RxCoordinates, IonoModelStore& dIonoModel, TropModel& dTropoModel) throw(Exception) { 
+        ModeledReferencePR(Position RxCoordinates, IonoModelStore& dIonoModel, TropModel& dTropoModel, TypeID& dObservable) throw(Exception) { 
             InitializeValues();
             setInitialRxPosition(RxCoordinates);
             setDefaultIonoModel(dIonoModel);
             setDefaultTropoModel(dTropoModel);
+            setDefaultObservable(dObservable);
         };
 
 
@@ -178,17 +186,77 @@ namespace gpstk
         bool useTGD;
 
 
+        /// Method to get satellite elevation cut-off angle. By default, it is set to 10 degrees.
+        double getMinElev()
+        {
+           return minElev;
+        };
+
+
+        /// Method to set satellite elevation cut-off angle. By default, it is set to 10 degrees.
+        void setMinElev(double newElevation)
+        {
+           minElev = newElevation;
+        };
+
+
+        /** Method to set the default ionospheric model.
+         * @param dIonoModel    Ionospheric model to be used by default.
+         */
+        void setDefaultIonoModel(IonoModelStore& dIonoModel)
+        {
+           pDefaultIonoModel = &dIonoModel;
+        };
+
+
+        /** Method to set the default tropospheric model.
+         * @param dTropoModel    Tropospheric model to be used by default.
+         */
+        void setDefaultTropoModel(TropModel& dTropoModel)
+        {
+           pDefaultTropoModel = &dTropoModel;
+        };
+
+
+        /** Method to set the default extra biases.
+         * @param eBiases    Vector with the default extra biases
+         */
+        void setDefaultExtraBiases(Vector<double>& eBiases)
+        {
+           extraBiases = eBiases;
+        };
+
+
+        /** Method to set the default observable to be used when fed with GNSS data structures.
+         * @param type      TypeID object to be used by default
+         */
+        virtual void setDefaultObservable(TypeID& type)
+        {
+           defaultObservable = type;
+        };
+
+
+        /// Method to get the default observable to being used with GNSS data structures.
+        virtual TypeID getDefaultObservable()
+        {
+           return defaultObservable;
+        };
+
+
         /// Destructor.
         virtual ~ModeledReferencePR() throw() {};
 
 
     protected:
 
-        /// Pointer to default ionospheric model
+        /// Pointer to default ionospheric model.
         IonoModelStore *pDefaultIonoModel;
 
-        /// Pointer to default tropospheric model
+        /// Pointer to default tropospheric model.
         TropModel *pDefaultTropoModel;
+
+        /// Default observable to be used when fed with GNSS data structures.
+        TypeID defaultObservable;
 
         /// Initialization method
         void InitializeValues() throw(Exception) { 
@@ -209,6 +277,7 @@ namespace gpstk
             minElev = 10.0;  // By default, cut-off elevation is set to 10 degrees
             pDefaultIonoModel = NULL;
             pDefaultTropoModel = NULL;
+            defaultObservable = TypeID::C1;     // By default, process C1 code
         };
 
 
@@ -301,47 +370,6 @@ namespace gpstk
                 TGDCorr = 0.0;
             }
             return TGDCorr;
-        };
-
-
-        /// Method to get satellite elevation cut-off angle. By default, it is set to 10 degrees.
-        double getMinElev()
-        {
-           return minElev;
-        };
-
-
-        /// Method to set satellite elevation cut-off angle. By default, it is set to 10 degrees.
-        void setMinElev(double newElevation)
-        {
-           minElev = newElevation;
-        };
-
-
-        /** Method to set the default ionospheric model.
-         * @param dIonoModel    Ionospheric model to be used by default.
-         */
-        void setDefaultIonoModel(IonoModelStore& dIonoModel)
-        {
-           pDefaultIonoModel = &dIonoModel;
-        };
-
-
-        /** Method to set the default tropospheric model.
-         * @param dTropoModel    Tropospheric model to be used by default.
-         */
-        void setDefaultTropoModel(TropModel& dTropoModel)
-        {
-           pDefaultTropoModel = &dTropoModel;
-        };
-
-
-        /** Method to set the default extra biases.
-         * @param eBiases    Vector with the default extra biases
-         */
-        void setDefaultExtraBiases(Vector<double>& eBiases)
-        {
-           extraBiases = eBiases;
         };
 
 
