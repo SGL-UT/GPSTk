@@ -30,6 +30,7 @@
 
 
 #include <utility>
+#include <vector>
 #include <set>
 #include <map>
 #include <string>
@@ -39,16 +40,17 @@
 #include "RinexObsStream.hpp"
 #include "RinexObsData.hpp"
 #include "StringUtils.hpp"
+#include "Vector.hpp"
 
 
 
 namespace gpstk
 {
-    /** @defgroup DataStructures GPSTk data structures */
-
-   //@{
-
-    /** Set of several data structures to be used by other GPSTk classes.
+    /** @defgroup DataStructures GPSTk data structures 
+     *
+     * This is a set of several data structures to be used by other 
+     * GPSTk classes.
+     *
      * Each data structure is composed of a header and a body. The header
      * contains the information that is common to all the data stored in
      * the structure, and the body contains the data themselves along with
@@ -64,12 +66,14 @@ namespace gpstk
      *
      * Moreover, all the GNSS data structures have two main parts:
      *
-     *  - Header: Containing the indexes that are common to all the values (plus extra information)
+     *  - Header: Containing the indexes that are common to all the values (sometimes
+     * with some extra information).
+     *
      *  - Body: Containing the GNSS values themselves, organized in std::maps.
      *
-     * The general idea is to use the GNSS data structures like WHITE BOXES that are able to carry  
-     * all the important data around in an easy way, in order to do something like the following 
-     * to process GNSS data:
+     * The general idea is to use the GNSS data structures like WHITE BOXES that 
+     * are able to carry all the important data around in an easy way, in order to 
+     * do something like the following to process GNSS data:
      *
      * @code
      *   RinexObsStream rin("bahr1620.04o");    // Create the input file stream
@@ -85,6 +89,8 @@ namespace gpstk
      * @endcode
      *
      */
+
+   //@{
 
 
     // First, we must declare some important exception objects
@@ -231,6 +237,20 @@ namespace gpstk
             return satSet;
         }
 
+        /// Returns a Vector with all the satellites present in this object.
+        inline Vector<SatID> getVectorOfSatID() const
+        {
+            std::vector<SatID> temp;
+            satValueMap::const_iterator pos;
+            for (pos = (*this).begin(); pos != (*this).end(); ++pos)
+            {
+                temp.push_back( (*pos).first );
+            }
+            Vector<SatID> result;
+            result = temp;
+            return result;
+        }
+
         /// Returns a satValueMap with only this satellite.
         /// @param satellite Satellite to be extracted.
         inline satValueMap extractSatID(const SatID& satellite) const
@@ -364,6 +384,20 @@ namespace gpstk
                 satSet.insert( (*pos).first );
             }
             return satSet;
+        }
+
+        /// Returns a Vector with all the satellites present in this object.
+        inline Vector<SatID> getVectorOfSatID() const
+        {
+            std::vector<SatID> temp;
+            satTypeValueMap::const_iterator pos;
+            for (pos = (*this).begin(); pos != (*this).end(); ++pos)
+            {
+                temp.push_back( (*pos).first );
+            }
+            Vector<SatID> result;
+            result = temp;
+            return result;
         }
 
         /// Returns a TypeIDSet with all the data types present in this object.
@@ -530,6 +564,23 @@ namespace gpstk
             return (*this);
         }
 
+        /// Returns a GPSTk::Vector containing the data values with this type.
+        /// @param type Type of value to be returned.
+        inline Vector<double> getVectorOfTypeID(const TypeID& type)
+        {
+            std::vector<double> temp;
+            typeValueMap::const_iterator itObs;
+            satTypeValueMap::const_iterator it;
+            for (it = (*this).begin(); it != (*this).end(); ++it) 
+            {
+                itObs = (*it).second.find(type);
+                if ( itObs != (*it).second.end() ) temp.push_back( (*itObs).second );
+            }
+            Vector<double> result;
+            result = temp;
+            return result;
+        }
+
         /// Returns a reference to the typeValueMap with corresponding SatID.
         /// @param type Type of value to be look for.
         inline typeValueMap& operator()(const SatID& satellite) throw(SatIDNotFound)
@@ -613,6 +664,12 @@ namespace gpstk
         inline SatIDSet getSatID() const
         {
             return (*this).body.getSatID();
+        }
+
+        /// Returns a Vector with all the satellites present in this object.
+        inline Vector<SatID> getVectorOfSatID() const
+        {
+            return (*this).body.getVectorOfSatID();
         }
 
         /// Returns a gnssSatValue with only this satellite.
@@ -812,6 +869,12 @@ namespace gpstk
             return (*this).body.getSatID();
         }
 
+        /// Returns a Vector with all the satellites present in this object.
+        inline Vector<SatID> getVectorOfSatID() const
+        {
+            return (*this).body.getVectorOfSatID();
+        }
+
         /** Returns the total number of data elements in the body.
          * This method DOES NOT suppose that all the satellites have
          * the same number of type values.
@@ -951,6 +1014,14 @@ namespace gpstk
             }
             return (*this);
         }
+
+        /// Returns a GPSTk::Vector containing the data values with this type.
+        /// @param type Type of value to be returned.
+        inline Vector<double> getVectorOfTypeID(const TypeID& type)
+        {
+            return ( (*this).body.getVectorOfTypeID(type) );
+        }
+
 
         /** Returns a reference to the typeValueMap with corresponding satellite.
          * This operator allows direct access to data values when chained with the
