@@ -117,12 +117,45 @@ namespace gpstk
          tropoSlant, ///< Slant tropospheric delay, total
          iono,      ///< Vertical ionospheric delay
          ionoSlant, ///< Slant ionospheric delay
-         inst,      ///< Instrumental delay
-         MP,        ///< Multipath bias
-         windUp,    ///< Wind-up effect
-         B,         ///< Phase ambiguity
+         windUp,    ///< Wind-up effect (in radians)
+         satX,      ///< Satellite position, X component
+         satY,      ///< Satellite position, Y component
+         satZ,      ///< Satellite position, Z component
          elevation, ///< Satellite elevation
          azimuth,   ///< Satellite azimuth
+         // Phase-ambiguity types
+         BL1,       ///< Phase ambiguity in L1
+         BL2,       ///< Phase ambiguity in L2
+         BL5,       ///< Phase ambiguity in L5
+         BL6,       ///< Phase ambiguity in L6
+         BL7,       ///< Phase ambiguity in L7
+         BL8,       ///< Phase ambiguity in L8
+         // Multipath-related types
+         mpC1,      ///< Multipath bias, C1
+         mpC2,      ///< Multipath bias, C2
+         mpC5,      ///< Multipath bias, C5
+         mpC6,      ///< Multipath bias, C6
+         mpC7,      ///< Multipath bias, C7
+         mpC8,      ///< Multipath bias, C8
+         mpL1,      ///< Multipath bias, L1
+         mpL2,      ///< Multipath bias, L2
+         mpL5,      ///< Multipath bias, L5
+         mpL6,      ///< Multipath bias, L6
+         mpL7,      ///< Multipath bias, L7
+         mpL8,      ///< Multipath bias, L8
+         // Instrumental delays types
+         instC1,    ///< Instrumental delay, C1
+         instC2,    ///< Instrumental delay, C2
+         instC5,    ///< Instrumental delay, C5
+         instC6,    ///< Instrumental delay, C6
+         instC7,    ///< Instrumental delay, C7
+         instC8,    ///< Instrumental delay, C8
+         instL1,    ///< Instrumental delay, L1
+         instL2,    ///< Instrumental delay, L2
+         instL5,    ///< Instrumental delay, L5
+         instL6,    ///< Instrumental delay, L6
+         instL7,    ///< Instrumental delay, L7
+         instL8,    ///< Instrumental delay, L8
          // Equation system-related types
          prefit,    ///< Prefit residual
          postfit,   ///< Postfit residual
