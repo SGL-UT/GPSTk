@@ -96,22 +96,28 @@ namespace gpstk
 
 
         /** Explicit constructor, taking as input reference station coordinates, default
-         * ionospheric and tropospheric models, and default observable to be used when
-         * working with GNSS data structures.
+         * ionospheric and tropospheric models, and default observable.
+
+         * This constructor is meant to be used when working with GNSS data structures in
+         * order to set the basic parameters from the beginning.
          *
          * @param RxCoordinates Reference station coordinates.
          * @param dIonoModel    Ionospheric model to be used by default.
          * @param dTropoModel   Tropospheric model to be used by default.
          * @param dObservable   Observable type to be used by default.
+         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param usetgd        Whether TGD will be used by default or not.
          *
          * @sa DataStructures.hpp.
          */
-        ModeledReferencePR(Position RxCoordinates, IonoModelStore& dIonoModel, TropModel& dTropoModel, TypeID& dObservable) throw(Exception) { 
+        ModeledReferencePR(Position RxCoordinates, IonoModelStore& dIonoModel, TropModel& dTropoModel, EphemerisStore& dEphemeris, TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
             setInitialRxPosition(RxCoordinates);
             setDefaultIonoModel(dIonoModel);
             setDefaultTropoModel(dTropoModel);
             setDefaultObservable(dObservable);
+            setDefaultEphemeris(dEphemeris);
+            useTGD = usetgd;
         };
 
 
@@ -236,10 +242,19 @@ namespace gpstk
         };
 
 
-        /// Method to get the default observable to being used with GNSS data structures.
+        /// Method to get the default observable being used with GNSS data structures.
         virtual TypeID getDefaultObservable()
         {
            return defaultObservable;
+        };
+
+
+        /** Method to set the default EphemerisStore to be used with GNSS data structures.
+         * @param ephem     EphemerisStore object to be used by default
+         */
+        virtual void setDefaultEphemeris(EphemerisStore& ephem)
+        {
+           pDefaultEphemeris = &ephem;
         };
 
 
@@ -257,6 +272,9 @@ namespace gpstk
 
         /// Default observable to be used when fed with GNSS data structures.
         TypeID defaultObservable;
+
+        /// Pointer to default EphemerisStore object when working with GNSS data structures.
+        EphemerisStore* pDefaultEphemeris;
 
         /// Initialization method
         void InitializeValues() throw(Exception) { 
@@ -278,6 +296,7 @@ namespace gpstk
             pDefaultIonoModel = NULL;
             pDefaultTropoModel = NULL;
             defaultObservable = TypeID::C1;     // By default, process C1 code
+            pDefaultEphemeris = NULL;
         };
 
 
