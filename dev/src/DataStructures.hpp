@@ -110,6 +110,12 @@ namespace gpstk
     NEW_EXCEPTION_CLASS(SatIDNotFound, gpstk::Exception);
 
 
+    /// Thrown when the number of data values and the number of corresponding 
+    /// satellites does not match.
+    /// @ingroup exceptiongroup
+    NEW_EXCEPTION_CLASS(NumberOfSatsMismatch, gpstk::Exception);
+
+
     // Now, some useful type definitions
 
     /// Set containing TypeID objects.
@@ -584,6 +590,34 @@ namespace gpstk
             return result;
         }
 
+        /** Modifies this object, adding one vector of data with this type, one value 
+         * per satellite.
+         *
+         * If type already exists, data is overwritten. If the number of values does not
+         * match with the number of satellites, a NumberOfSatsMismatch exception is thrown.
+         *
+         * Given that dataVector does not store information about the satellites the 
+         * values correspond to, the user is held responsible for having the data values
+         * stored in dataVector in the proper order regarding the SatIDs in this object.
+         *
+         * @param type          Type of data to be added.
+         * @param dataVector    GPSTk Vector containing the data to be added.
+         */
+        inline satTypeValueMap& insertTypeIDVector(const TypeID& type, const Vector<double> dataVector) throw(NumberOfSatsMismatch)
+        {
+            if ( dataVector.size() == (*this).numSats() )
+            {
+                size_t pos = 0;
+                satTypeValueMap::iterator it;
+                for (it = (*this).begin(); it != (*this).end(); ++it) 
+                {
+                    (*it).second[type] = dataVector[pos];
+                    ++pos;
+                }
+                return (*this);
+            } else GPSTK_THROW(NumberOfSatsMismatch("Number of data values in vector and number of satellites do not match"));
+        }
+
         /// Returns a reference to the typeValueMap with corresponding SatID.
         /// @param type Type of value to be look for.
         inline typeValueMap& operator()(const SatID& satellite) throw(SatIDNotFound)
@@ -1023,6 +1057,25 @@ namespace gpstk
         inline Vector<double> getVectorOfTypeID(const TypeID& type)
         {
             return ( (*this).body.getVectorOfTypeID(type) );
+        }
+
+
+        /** Modifies this object, adding one vector of data with this type, one value 
+         * per satellite.
+         *
+         * If type already exists, data is overwritten. If the number of values does not
+         * match with the number of satellites, a NumberOfSatsMismatch exception is thrown.
+         *
+         * Given that dataVector does not store information about the satellites the 
+         * values correspond to, the user is held responsible for having the data values
+         * stored in dataVector in the proper order regarding the SatIDs in this object.
+         *
+         * @param type          Type of data to be added.
+         * @param dataVector    GPSTk Vector containing the data to be added.
+         */
+        inline satTypeValueMap& insertTypeIDVector(const TypeID& type, const Vector<double> dataVector) throw(NumberOfSatsMismatch)
+        {
+            return (*this).body.insertTypeIDVector(type, dataVector);
         }
 
 
