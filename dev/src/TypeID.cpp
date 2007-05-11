@@ -78,6 +78,7 @@ namespace gpstk
       tStrings[S8]      = "S8";
       tStrings[SSI8]    = "SSI8";
       tStrings[LLI8]    = "LLI8";
+      tStrings[PC]      = "PC";
       tStrings[LC]      = "LC";
       tStrings[PI]      = "PI";
       tStrings[LI]      = "LI";
