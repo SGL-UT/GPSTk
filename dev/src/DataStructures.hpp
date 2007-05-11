@@ -81,11 +81,13 @@ namespace gpstk
      *   gnssRinex gRin;                        // Declare a gnssRinex object
      *   ModeledPR modelPR;                     // Declare a ModeledReferencePR object
      *   SolverLMS solver;                      // Declare an object to apply LMS method
+     *   Position refPosition(3633909.1016, 4425275.5033, 2799861.2736);  // Initial position
+     *   Position solPosition;                  // Solution
      *
      *   // Feed the gRin data structure
      *   while(rin >> gRin) {
-     *      gRin.keepOnlyTypeID(TypeID::C1) >> modelPR >> solver;
-     *      cout << gRin.computetPosition();
+     *      gRin.keepOnlyTypeID(TypeID::C1) >> modelPR >> solver >> solPosition;
+     *      cout << solPosition;
      *   }
      * @endcode
      *

@@ -46,17 +46,17 @@ namespace gpstk
       enum SourceType
       {
          Unknown,
-         GPS,     /// GPS data
-         Galileo, /// Galileo data
-         Glonass, /// Glonass data
-         Geosync, /// Geostationary data
-         LEO,     /// LEO data
-         Transit, /// Transit data
-         DGPS,    /// Differential GPS data
-         RTK,     /// Real Time Kinematic data
-         INS,     /// Inertial System data
-         Mixed,   /// Mixed data
-         Last,    /// used to extend this...
+         GPS,     ///< GPS data
+         Galileo, ///< Galileo data
+         Glonass, ///< Glonass data
+         Geosync, ///< Geostationary data
+         LEO,     ///< LEO data
+         Transit, ///< Transit data
+         DGPS,    ///< Differential GPS data
+         RTK,     ///< Real Time Kinematic data
+         INS,     ///< Inertial System data
+         Mixed,   ///< Mixed data
+         Last,    ///< used to extend this...
          Placeholder = Last+1000
       };
 
