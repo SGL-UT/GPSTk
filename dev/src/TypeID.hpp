@@ -157,8 +157,10 @@ namespace gpstk
          instL7,    ///< Instrumental delay, L7
          instL8,    ///< Instrumental delay, L8
          // Equation system-related types
-         prefit,    ///< Prefit residual
-         postfit,   ///< Postfit residual
+         prefitC,   ///< Prefit residual, code
+         prefitL,   ///< Prefit residual, phase
+         postfitC,  ///< Postfit residual, code
+         postfitL,  ///< Postfit residual, phase
          rhoX,      ///< Unit vector from satellite to receiver, X component
          rhoY,      ///< Unit vector from satellite to receiver, Y component
          rhoZ,      ///< Unit vector from satellite to receiver, Z component
@@ -171,6 +173,12 @@ namespace gpstk
          dH,        ///< Position bias, Height component
          weight,    ///< Weight assigned to a given observation
          // Other types
+         recX,      ///< Receiver position, X component
+         recY,      ///< Receiver position, Y component
+         recZ,      ///< Receiver position, Z component
+         recLat,    ///< Receiver position, Latitude component
+         recLon,    ///< Receiver position, Longitude component
+         recH,      ///< Receiver position, Height component
          sigma,     ///< Standard deviation
          Last,      ///< used to extend this...
          Placeholder = Last+1000

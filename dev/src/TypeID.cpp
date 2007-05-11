@@ -128,20 +128,28 @@ namespace gpstk
       tStrings[instL6]  = "instrumental L6";
       tStrings[instL7]  = "instrumental L7";
       tStrings[instL8]  = "instrumental L8";
-      tStrings[prefit]  = "prefit residual";
-      tStrings[postfit] = "posfit residual";
+      tStrings[prefitC] = "prefit residual code";
+      tStrings[prefitL] = "prefit residual phase";
+      tStrings[postfitC] = "posfit residual code";
+      tStrings[postfitL] = "posfit residual phase";
       tStrings[rhoX]    = "unit vector X";
       tStrings[rhoY]    = "unit vector Y";
       tStrings[rhoZ]    = "unit vector Z";
-      tStrings[dX]    = "dX";
-      tStrings[dY]    = "dY";
-      tStrings[dZ]    = "dZ";
-      tStrings[dt]    = "Rx clock offset";
+      tStrings[dX]      = "dX";
+      tStrings[dY]      = "dY";
+      tStrings[dZ]      = "dZ";
+      tStrings[dt]      = "Rx clock offset";
       tStrings[dLat]    = "dLat";
       tStrings[dLon]    = "dLon";
-      tStrings[dH]    = "dH";
-      tStrings[weight]    = "weight";
-      tStrings[sigma]    = "sigma";
+      tStrings[dH]      = "dH";
+      tStrings[weight]  = "weight";
+      tStrings[recX]    = "Rx position X";
+      tStrings[recY]    = "Rx position Y";
+      tStrings[recZ]    = "Rx position Z";
+      tStrings[recLat]  = "Rx Lat";
+      tStrings[recLon]  = "Rx Lon";
+      tStrings[recH]    = "Rx H";
+      tStrings[sigma]   = "sigma";
    }
 
 
