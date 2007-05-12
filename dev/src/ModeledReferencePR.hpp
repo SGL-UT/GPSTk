@@ -252,7 +252,7 @@ namespace gpstk
         /** Method to set the default observable to be used when fed with GNSS data structures.
          * @param type      TypeID object to be used by default
          */
-        virtual void setDefaultObservable(TypeID& type)
+        virtual void setDefaultObservable(const TypeID& type)
         {
            defaultObservable = type;
         };
