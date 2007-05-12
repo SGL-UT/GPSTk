@@ -104,7 +104,11 @@ namespace gpstk
 
             for (i=0; i<N; i++) {
                 if(Satellite[i].id <= 0) {      // Skip marked satellites
-                    vRejectedSV.push_back(Satellite[i]);
+                    // First, make sure we are using a positive satellite id
+                    // Note: Now that we have a SatID class, it is a BAD IDEA to use negative id's
+                    // in order to mark faulty or rejected satellites
+                    SatID tempSat(std::abs(Satellite[i].id), Satellite[i].system);
+                    vRejectedSV.push_back(tempSat);
                     continue;
                 }
                 try {
@@ -122,7 +126,6 @@ namespace gpstk
                     }
                     catch(EphemerisStore::NoEphemerisFound& e) {
                         // If there were no ephemeris for this satellite, let's mark it
-                        Satellite[i].id = -std::abs(Satellite[i].id);
                         vRejectedSV.push_back(Satellite[i]);
                         continue;
                     };
@@ -130,7 +133,6 @@ namespace gpstk
                     // Let's test if satellite has enough elevation over horizon
                     if (rxPos.elevationGeodetic(cerange.svPosVel) < (*this).minElev) {
                         // Mark this satellite if it doesn't have enough elevation
-                        Satellite[i].id = -std::abs(Satellite[i].id);
                         vRejectedSV.push_back(Satellite[i]);
                         continue;
                     }
@@ -180,7 +182,6 @@ namespace gpstk
                 }   // End of try
                 catch(EphemerisStore::NoEphemerisFound& e) {
                     // If there were no ephemeris for this satellite, let's mark it
-                    Satellite[i].id = -std::abs(Satellite[i].id);
                     vRejectedSV.push_back(Satellite[i]);
                     continue;
                 }
