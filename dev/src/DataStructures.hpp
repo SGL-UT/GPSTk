@@ -111,6 +111,12 @@ namespace gpstk
 
 
     /// Thrown when the number of data values and the number of corresponding 
+    /// types does not match.
+    /// @ingroup exceptiongroup
+    NEW_EXCEPTION_CLASS(NumberOfTypesMismatch, gpstk::Exception);
+
+
+    /// Thrown when the number of data values and the number of corresponding 
     /// satellites does not match.
     /// @ingroup exceptiongroup
     NEW_EXCEPTION_CLASS(NumberOfSatsMismatch, gpstk::Exception);
@@ -618,6 +624,43 @@ namespace gpstk
             } else GPSTK_THROW(NumberOfSatsMismatch("Number of data values in vector and number of satellites do not match"));
         }
 
+        /** Modifies this object, adding a matrix of data, one vector per satellite.
+         *
+         * If types already exists, data is overwritten. If the number of rows in matrix does not
+         * match with the number of satellites, a NumberOfSatsMismatch exception is thrown. If the 
+         * number of columns in matrix does not match with the number of types in typeSet, a
+         * NumberOfTypesMismatch exception is thrown.
+         *
+         * Given that dataMatrix does not store information about the satellites and types the 
+         * values correspond to, the user is held responsible for having those data values
+         * stored in dataMatrix in the proper order regarding the SatIDs in this object and the 
+         * provided typeSet.
+         *
+         * @param typeSet       Set (TypeIDSet) containing the types of data to be added.
+         * @param dataMatrix    GPSTk Matrix containing the data to be added.
+         */
+        inline satTypeValueMap& insertMatrix(const TypeIDSet& typeSet, const Matrix<double> dataMatrix) throw(NumberOfSatsMismatch, NumberOfTypesMismatch)
+        {
+            if ( dataMatrix.rows() != (*this).numSats() ) GPSTK_THROW(NumberOfSatsMismatch("Number of rows in matrix and number of satellites do not match"));
+            if ( dataMatrix.cols() == typeSet.size() )
+            {
+                size_t pos = 0;
+                satTypeValueMap::iterator it;
+                for (it = (*this).begin(); it != (*this).end(); ++it) 
+                {
+                    size_t idx = 0;
+                    TypeIDSet::iterator itSet;
+                    for (itSet = typeSet.begin(); itSet != typeSet.end(); ++itSet) 
+                    {
+                        (*it).second[(*itSet)] = dataMatrix[pos][idx];
+                        ++idx;
+                    }
+                    ++pos;
+                }
+                return (*this);
+            } else GPSTK_THROW(NumberOfTypesMismatch("Number of data values per row in matrix and number of types do not match"));
+        }
+
         /// Returns a reference to the typeValueMap with corresponding SatID.
         /// @param type Type of value to be look for.
         inline typeValueMap& operator()(const SatID& satellite) throw(SatIDNotFound)
@@ -1073,9 +1116,32 @@ namespace gpstk
          * @param type          Type of data to be added.
          * @param dataVector    GPSTk Vector containing the data to be added.
          */
-        inline satTypeValueMap& insertTypeIDVector(const TypeID& type, const Vector<double> dataVector) throw(NumberOfSatsMismatch)
+        inline gnssSatTypeValue& insertTypeIDVector(const TypeID& type, const Vector<double> dataVector) throw(NumberOfSatsMismatch)
         {
-            return (*this).body.insertTypeIDVector(type, dataVector);
+            (*this).body.insertTypeIDVector(type, dataVector);
+            return (*this);
+        }
+
+
+        /** Modifies this object, adding a matrix of data, one vector per satellite.
+         *
+         * If types already exists, data is overwritten. If the number of rows in matrix does not
+         * match with the number of satellites, a NumberOfSatsMismatch exception is thrown. If the 
+         * number of columns in matrix does not match with the number of types in typeSet, a
+         * NumberOfTypesMismatch exception is thrown.
+         *
+         * Given that dataMatrix does not store information about the satellites and types the 
+         * values correspond to, the user is held responsible for having those data values
+         * stored in dataMatrix in the proper order regarding the SatIDs in this object and the 
+         * provided typeSet.
+         *
+         * @param typeSet       Set (TypeIDSet) containing the types of data to be added.
+         * @param dataMatrix    GPSTk Matrix containing the data to be added.
+         */
+        inline gnssSatTypeValue& insertMatrix(const TypeIDSet& typeSet, const Matrix<double> dataMatrix) throw(NumberOfSatsMismatch, NumberOfTypesMismatch)
+        {
+            (*this).body.insertMatrix(typeSet, dataMatrix);
+            return (*this);
         }
 
 

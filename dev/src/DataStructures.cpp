@@ -1,4 +1,3 @@
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -122,7 +121,54 @@ namespace gpstk
             (*this).removeSatID(rejectedSet);       // All rejected satellites are removed
 
             // Now we have to add the new values to the data structure
-            // XXX *** Men at work right here :-)
+            (*this).insertTypeIDVector(TypeID::prefitC, modRefPR.prefitResiduals);
+            (*this).insertTypeIDVector(TypeID::rho, modRefPR.geometricRho);
+            (*this).insertTypeIDVector(TypeID::dtSat, modRefPR.svClockBiases);
+            (*this).insertTypeIDVector(TypeID::rel, modRefPR.svRelativity);
+            (*this).insertTypeIDVector(TypeID::ionoSlant, modRefPR.ionoCorrections);
+            (*this).insertTypeIDVector(TypeID::tropoSlant, modRefPR.tropoCorrections);
+            (*this).insertTypeIDVector(TypeID::elevation, modRefPR.elevationSV);
+            (*this).insertTypeIDVector(TypeID::azimuth, modRefPR.azimuthSV);
+
+            // Get the instrumental delays right
+            TypeID instDelayType;
+            switch ( modRefPR.getDefaultObservable().type )
+            {
+                case TypeID::C1:
+                    instDelayType = TypeID::instC1;
+                    break;
+                case TypeID::C2:
+                    instDelayType = TypeID::instC2;
+                    break;
+                case TypeID::C5:
+                    instDelayType = TypeID::instC5;
+                    break;
+                case TypeID::C6:
+                    instDelayType = TypeID::instC6;
+                    break;
+                case TypeID::C7:
+                    instDelayType = TypeID::instC7;
+                    break;
+                case TypeID::C8:
+                    instDelayType = TypeID::instC8;
+                    break;
+                default:
+                    instDelayType = TypeID::Unknown;  // It should never get here, but just in case...
+            };
+            (*this).insertTypeIDVector(instDelayType, modRefPR.svTGD);
+
+
+    // MEN AT WORK RIGHT HERE :-)
+
+/*
+            // Now, lets insert the geometry matrix
+            TypeIDSet tSet;
+            tSet.insert(TypeID::rhoX);
+            tSet.insert(TypeID::rhoY);
+            tSet.insert(TypeID::rhoZ);
+            (*this).insertMatrix(tSet, modRefPR.geoMatrix);
+*/
+
 
             return (*this);
         }
