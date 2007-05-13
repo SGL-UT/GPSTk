@@ -661,6 +661,15 @@ namespace gpstk
             } else GPSTK_THROW(NumberOfTypesMismatch("Number of data values per row in matrix and number of types do not match"));
         }
 
+
+        /** Modifies this object, adding the new data generated when calling a modeling object.
+         *
+         * @param time      Epoch when the model will be applied.
+         * @param modPR     Model to use.
+         */
+        virtual satTypeValueMap& processModel(const DayTime& time, ModeledReferencePR& modPR) throw(Exception);
+
+
         /// Returns a reference to the typeValueMap with corresponding SatID.
         /// @param type Type of value to be look for.
         inline typeValueMap& operator()(const SatID& satellite) throw(SatIDNotFound)
@@ -672,6 +681,7 @@ namespace gpstk
                 return (*itObs).second;
             } else GPSTK_THROW(SatIDNotFound("SatID not found in map"));
         }
+
 
         /// Destructor.
         virtual ~satTypeValueMap() {};
@@ -1180,7 +1190,11 @@ namespace gpstk
 
 
         /// Input operator from gnssSatTypeValue to ModeledReferencePR.
-        virtual gnssSatTypeValue& operator>>(ModeledReferencePR& modRefPR) throw(Exception);
+        inline virtual gnssSatTypeValue& operator>>(ModeledReferencePR& modRefPR) throw(Exception)
+        {
+            (*this).body.processModel( (*this).header.epoch, modRefPR );
+            return (*this);
+        }
 
 
         /// Destructor.
@@ -1290,6 +1304,14 @@ namespace gpstk
         {
             satTypeValueMap stvMap = (*this).body.extractTypeID(typeSet);
             (*this).body = stvMap;
+            return (*this);
+        }
+
+
+        /// Input operator from gnssRinex to ModeledReferencePR.
+        inline virtual gnssRinex& operator>>(ModeledReferencePR& modRefPR) throw(Exception)
+        {
+            (*this).body.processModel( (*this).header.epoch, modRefPR );
             return (*this);
         }
 

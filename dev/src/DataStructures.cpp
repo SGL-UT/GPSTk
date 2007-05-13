@@ -104,35 +104,40 @@ namespace gpstk
     }
 
 
-    // Input operator from gnssSatTypeValue to ModeledReferencePR.
-    gnssSatTypeValue& gnssSatTypeValue::operator>>(ModeledReferencePR& modRefPR) throw(Exception)
+
+    // Modifies this object, adding the new data generated when calling a modeling object.
+    //
+    // @param time      Epoch when the model will be applied.
+    // @param modPR     Model to use.
+    //
+    satTypeValueMap& satTypeValueMap::processModel(const DayTime& time, ModeledReferencePR& modPR) throw(Exception)
     {
         Vector<SatID> Vsat = (*this).getVectorOfSatID();
-        Vector<double> Vprange = (*this).getVectorOfTypeID( modRefPR.getDefaultObservable() );
+        Vector<double> Vprange = (*this).getVectorOfTypeID( modPR.getDefaultObservable() );
         try
         {
             // Call the Compute() method with the defaults. Those defaults MUST HAVE BEEN
-            // previously set, usually when creating modRefPR with the appropriate constructor.
-            modRefPR.Compute( (*this).header.epoch, Vsat, Vprange, (*(modRefPR.getDefaultEphemeris())), modRefPR.extraBiases, modRefPR.getDefaultTropoModel(), modRefPR.getDefaultIonoModel() );
+            // previously set, usually when creating modPR with the appropriate constructor.
+            modPR.Compute( time, Vsat, Vprange, (*(modPR.getDefaultEphemeris())), modPR.extraBiases, modPR.getDefaultTropoModel(), modPR.getDefaultIonoModel() );
 
             // Once we get the result, it may be necessary to make some satellite cleanup
             SatIDSet rejectedSet;
-            for (size_t i = 0; i<modRefPR.rejectedSV.size(); ++i) { rejectedSet.insert(modRefPR.rejectedSV[i]); }
+            for (size_t i = 0; i<modPR.rejectedSV.size(); ++i) { rejectedSet.insert(modPR.rejectedSV[i]); }
             (*this).removeSatID(rejectedSet);       // All rejected satellites are removed
 
             // Now we have to add the new values to the data structure
-            (*this).insertTypeIDVector(TypeID::prefitC, modRefPR.prefitResiduals);
-            (*this).insertTypeIDVector(TypeID::rho, modRefPR.geometricRho);
-            (*this).insertTypeIDVector(TypeID::dtSat, modRefPR.svClockBiases);
-            (*this).insertTypeIDVector(TypeID::rel, modRefPR.svRelativity);
-            (*this).insertTypeIDVector(TypeID::ionoSlant, modRefPR.ionoCorrections);
-            (*this).insertTypeIDVector(TypeID::tropoSlant, modRefPR.tropoCorrections);
-            (*this).insertTypeIDVector(TypeID::elevation, modRefPR.elevationSV);
-            (*this).insertTypeIDVector(TypeID::azimuth, modRefPR.azimuthSV);
+            (*this).insertTypeIDVector(TypeID::prefitC, modPR.prefitResiduals);
+            (*this).insertTypeIDVector(TypeID::rho, modPR.geometricRho);
+            (*this).insertTypeIDVector(TypeID::dtSat, modPR.svClockBiases);
+            (*this).insertTypeIDVector(TypeID::rel, modPR.svRelativity);
+            (*this).insertTypeIDVector(TypeID::ionoSlant, modPR.ionoCorrections);
+            (*this).insertTypeIDVector(TypeID::tropoSlant, modPR.tropoCorrections);
+            (*this).insertTypeIDVector(TypeID::elevation, modPR.elevationSV);
+            (*this).insertTypeIDVector(TypeID::azimuth, modPR.azimuthSV);
 
             // Get the instrumental delays right
             TypeID instDelayType;
-            switch ( modRefPR.getDefaultObservable().type )
+            switch ( modPR.getDefaultObservable().type )
             {
                 case TypeID::C1:
                     instDelayType = TypeID::instC1;
@@ -155,19 +160,15 @@ namespace gpstk
                 default:
                     instDelayType = TypeID::Unknown;  // It should never get here, but just in case...
             };
-            (*this).insertTypeIDVector(instDelayType, modRefPR.svTGD);
+            (*this).insertTypeIDVector(instDelayType, modPR.svTGD);
 
-
-    // MEN AT WORK RIGHT HERE :-)
-
-/*
             // Now, lets insert the geometry matrix
             TypeIDSet tSet;
             tSet.insert(TypeID::rhoX);
             tSet.insert(TypeID::rhoY);
             tSet.insert(TypeID::rhoZ);
-            (*this).insertMatrix(tSet, modRefPR.geoMatrix);
-*/
+            tSet.insert(TypeID::dtCoef);
+            (*this).insertMatrix(tSet, modPR.geoMatrix);
 
 
             return (*this);
@@ -176,9 +177,6 @@ namespace gpstk
             GPSTK_RETHROW(e);
         }
     }
-
-
-
 
 
 
