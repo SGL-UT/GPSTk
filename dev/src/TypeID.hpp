@@ -164,6 +164,7 @@ namespace gpstk
          rhoX,      ///< Unit vector from satellite to receiver, X component
          rhoY,      ///< Unit vector from satellite to receiver, Y component
          rhoZ,      ///< Unit vector from satellite to receiver, Z component
+         dtCoef,    ///< Coefficient corresponding to c*dt in geometry matrix; it is usually 1, but not always.
          dX,        ///< Position bias, X component
          dY,        ///< Position bias, Y component
          dZ,        ///< Position bias, Z component

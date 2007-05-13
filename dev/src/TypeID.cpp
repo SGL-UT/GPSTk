@@ -136,6 +136,7 @@ namespace gpstk
       tStrings[rhoX]    = "unitVectorX";
       tStrings[rhoY]    = "unitVectorY";
       tStrings[rhoZ]    = "unitVectorZ";
+      tStrings[dtCoef]  = "dtCoefficient";
       tStrings[dX]      = "dX";
       tStrings[dY]      = "dY";
       tStrings[dZ]      = "dZ";
