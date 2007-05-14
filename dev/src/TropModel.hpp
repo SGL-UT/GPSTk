@@ -1354,6 +1354,26 @@ namespace gpstk
         };
 
 
+        /** Convenient method to set all model parameters in one pass.
+         *
+         * @param time  Time object.
+         * @param rxPos Receiver position object.
+         */
+        virtual void setAllParameters(const DayTime& time, const Position& rxPos)
+        {
+            MOPSTime = (int)time.DOY();
+            validTime = true;
+            MOPSHeight = rxPos.getGeodeticLatitude();
+            validHeight = true;
+            MOPSLat = rxPos.getHeight();
+            validLat = true;
+            // Change the value of field "valid" if everything is already set
+            valid = validHeight && validLat && validTime;
+            // If model is valid, set the appropriate parameters
+            if (valid) setWeather();
+        };
+
+
         /// Compute and return the sigma-squared value of tropospheric delay
         /// residual error (meters^2)
         /// @param elevation is the Elevation of satellite as seen at receiver,
