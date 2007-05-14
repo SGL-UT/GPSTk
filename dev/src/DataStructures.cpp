@@ -180,6 +180,24 @@ namespace gpstk
 
 
 
+    // Modifies this object, adding the new data generated when calling a SolverLMS object.
+    satTypeValueMap& satTypeValueMap::processSolverLMS(SolverLMS& solver) throw(Exception)
+    {
+        Vector<double> prefitResiduals = (*this).getVectorOfTypeID( solver.getDefaultObservable() );
+        try
+        {
+            // XXX MEN AT WORK RIGHT HERE XXX //
+            // Call the Compute() method for the solver.
+//            solver.Compute( prefitResiduals, designMatrix );
+
+            return (*this);
+        }
+        catch(Exception& e) {
+            GPSTK_RETHROW(e);
+        }
+    }
+
+
     // Stream input for gnssSatTypeValue
     std::istream& operator>>(std::istream& i, gnssSatTypeValue& f)
         throw(FFStreamError, gpstk::StringUtils::StringException)

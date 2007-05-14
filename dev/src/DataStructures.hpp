@@ -42,6 +42,8 @@
 #include "StringUtils.hpp"
 #include "Vector.hpp"
 #include "ModeledReferencePR.hpp"
+#include "SolverLMS.hpp"
+#include "SolverWMS.hpp"
 
 
 
@@ -668,6 +670,10 @@ namespace gpstk
          * @param modPR     Model to use.
          */
         virtual satTypeValueMap& processModel(const DayTime& time, ModeledReferencePR& modPR) throw(Exception);
+
+
+        /// Modifies this object, adding the new data generated when calling a SolverLMS object.
+        virtual satTypeValueMap& processSolverLMS(SolverLMS& solver) throw(Exception);
 
 
         /// Returns a reference to the typeValueMap with corresponding SatID.
