@@ -81,7 +81,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        int Prepare(const DayTime& Tr, Vector<SatID>& Satellite, Vector<double>& Pseudorange, const EphemerisStore& Eph) 
+        int Prepare(const DayTime& Tr, const Vector<SatID>& Satellite, const Vector<double>& Pseudorange, const EphemerisStore& Eph) 
         {
             int i;
             std::vector<SatID> vSat;
@@ -105,7 +105,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        int Prepare(double aRx, double bRx, double cRx, 
+        int Prepare(const double& aRx, const double& bRx, const double& cRx, 
             Position::CoordinateSystem s=Position::Cartesian,
             GeoidModel *geoid=NULL) throw(GeometryException);
 
@@ -116,7 +116,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        int Prepare(Position RxCoordinates) throw(GeometryException);
+        int Prepare(const Position& RxCoordinates) throw(GeometryException);
 
 
         /// Destructor.

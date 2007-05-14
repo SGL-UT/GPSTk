@@ -72,7 +72,7 @@ namespace gpstk
      *  0 if OK
      *  -1 if problems arose
      */
-    int ModeledPR::Prepare(double aRx, double bRx, double cRx, Position::CoordinateSystem
+    int ModeledPR::Prepare(const double& aRx, const double& bRx, const double& cRx, Position::CoordinateSystem
         s, GeoidModel *geoid) throw(GeometryException) 
     {
         return setInitialRxPosition(aRx, bRx, cRx, s, geoid); 
@@ -85,7 +85,7 @@ namespace gpstk
      *  0 if OK
      *  -1 if problems arose
      */
-    int ModeledPR::Prepare(Position RxCoordinates) throw(GeometryException) 
+    int ModeledPR::Prepare(const Position& RxCoordinates) throw(GeometryException) 
     {
         return setInitialRxPosition(RxCoordinates); 
     }

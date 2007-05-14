@@ -79,7 +79,7 @@ namespace gpstk
          * @param s     coordinate system (default is Cartesian, may be set to Geodetic).
          * @param geoid pointer to GeoidModel (default is null, implies WGS84)
          */
-        ModeledReferencePR(double aRx, double bRx, double cRx, 
+        ModeledReferencePR(const double& aRx, const double& bRx, const double& cRx, 
             Position::CoordinateSystem s = Position::Cartesian,
             GeoidModel *geoid = NULL) throw(Exception) 
         { 
@@ -89,7 +89,7 @@ namespace gpstk
 
 
         /// Explicit constructor, taking as input a Position object containing reference station coordinates.
-        ModeledReferencePR(Position RxCoordinates) throw(Exception) { 
+        ModeledReferencePR(const Position& RxCoordinates) throw(Exception) { 
             InitializeValues();
             setInitialRxPosition(RxCoordinates);
         };
@@ -110,7 +110,7 @@ namespace gpstk
          *
          * @sa DataStructures.hpp.
          */
-        ModeledReferencePR(Position RxCoordinates, IonoModelStore& dIonoModel, TropModel& dTropoModel, EphemerisStore& dEphemeris, TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+        ModeledReferencePR(const Position& RxCoordinates, IonoModelStore& dIonoModel, TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
             setInitialRxPosition(RxCoordinates);
             setDefaultIonoModel(dIonoModel);
@@ -329,7 +329,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        int setInitialRxPosition(double aRx, double bRx, double cRx, 
+        int setInitialRxPosition(const double& aRx, const double& bRx, const double& cRx, 
             Position::CoordinateSystem s=Position::Cartesian,
             GeoidModel *geoid=NULL) throw(GeometryException) 
         {
@@ -345,7 +345,7 @@ namespace gpstk
 
 
         /// Method to set the initial (a priori) position of receiver.
-        int setInitialRxPosition(Position RxCoordinates) throw(GeometryException) 
+        int setInitialRxPosition(const Position& RxCoordinates) throw(GeometryException) 
         {
             try {
                 rxPos = RxCoordinates;
