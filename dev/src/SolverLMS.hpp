@@ -31,6 +31,7 @@
 
 
 #include "SolverBase.hpp"
+#include "TypeID.hpp"
 
 
 namespace gpstk
@@ -49,8 +50,16 @@ namespace gpstk
     {
     public:
 
-        /// Default constructor
-        SolverLMS() throw(InvalidSolver) { valid = false; };
+        /// Default constructor. By default the prefit residual to be used is TypeID::prefitC (Code) when
+        /// fed with GNSS data structures.
+        SolverLMS() : defaultObservable(TypeID::prefitC) { valid = false; };
+
+
+        /** Explicit constructor. Sets the default prefit residual to be used when fed with GNSS data structures.
+         *
+         * @param prefit    TypeID of prefit residual to be used
+         */
+        SolverLMS(const TypeID& prefit) : defaultObservable(prefit) { valid = false; };
 
 
         /** Compute the Least Mean Squares Solution of the given equations set.
@@ -63,9 +72,31 @@ namespace gpstk
          */
         virtual int Compute(const Vector<double>& prefitResiduals, const Matrix<double>& designMatrix) throw(InvalidSolver);
 
+
+        /** Method to set the default observable to be used when fed with GNSS data structures.
+         * @param type      TypeID object to be used by default
+         */
+        virtual void setDefaultObservable(const TypeID& type)
+        {
+           defaultObservable = type;
+        };
+
+
+        /// Method to get the default observable being used with GNSS data structures.
+        virtual TypeID getDefaultObservable() const
+        {
+           return defaultObservable;
+        };
+
+
         /// Destructor.
         virtual ~SolverLMS() {};
 
+
+    protected:
+
+        /// Default observable to be used when fed with GNSS data structures.
+        TypeID defaultObservable;
 
    }; // class SolverLMS
 

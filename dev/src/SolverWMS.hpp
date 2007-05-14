@@ -50,7 +50,7 @@ namespace gpstk
     public:
 
         /// Implicit constructor
-        SolverWMS() throw(InvalidSolver) { valid = false; };
+        SolverWMS() { valid = false; };
 
 
         /** Compute the Weighted Least Mean Squares Solution of the given equations set.
