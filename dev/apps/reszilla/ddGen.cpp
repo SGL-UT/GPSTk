@@ -122,7 +122,6 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       ddModeOption('\0', "ddmode", "Specifies what observations are used to "
                     "compute the double difference residuals. Valid values are:"
                     " all. The default is " + ddMode),
-      cycleSlipOption('\0', "cycle-slips", "Output a list of cycle slips"),
       minArcTimeOption('\0', "min-arc-time", "The minimum length of time "
                     "(in seconds) that a sequence of observations must "
                     "span to be considered as an arc. The default "
@@ -159,7 +158,8 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    CommandOptionNoArg 
       statsOption('s', "stats", "Compute stats on the double differences."),
       allComboOption('a', "all-combos", "Compute all combinations, don't just "
-                    "use one master SV.");
+                    "use one master SV."),
+      cycleSlipOption('\0', "cycle-slips", "Output a list of cycle slips");
 
    if (!BasicFramework::initialize(argc,argv)) 
       return false;
