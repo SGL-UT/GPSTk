@@ -60,7 +60,8 @@ namespace gpstk
     public:
 
         /// Implicit constructor
-        ModeledReferencePR() throw(Exception) { 
+        ModeledReferencePR() throw(Exception) : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL), defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
+        { 
             InitializeValues();
         };
 
@@ -81,7 +82,7 @@ namespace gpstk
          */
         ModeledReferencePR(const double& aRx, const double& bRx, const double& cRx, 
             Position::CoordinateSystem s = Position::Cartesian,
-            GeoidModel *geoid = NULL) throw(Exception) 
+            GeoidModel *geoid = NULL) throw(Exception) : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL), defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
         { 
             InitializeValues();
             setInitialRxPosition(aRx, bRx, cRx, s, geoid);
@@ -89,7 +90,8 @@ namespace gpstk
 
 
         /// Explicit constructor, taking as input a Position object containing reference station coordinates.
-        ModeledReferencePR(const Position& RxCoordinates) throw(Exception) { 
+        ModeledReferencePR(const Position& RxCoordinates) throw(Exception) : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL), defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
+        { 
             InitializeValues();
             setInitialRxPosition(RxCoordinates);
         };
@@ -97,7 +99,7 @@ namespace gpstk
 
         /** Explicit constructor, taking as input reference station coordinates, default
          * ionospheric and tropospheric models, and default observable.
-
+         *
          * This constructor is meant to be used when working with GNSS data structures in
          * order to set the basic parameters from the beginning.
          *
@@ -315,12 +317,7 @@ namespace gpstk
             extraBiases(0);
             availableSV(0);
             rejectedSV(0);
-            useTGD = true;
             minElev = 10.0;  // By default, cut-off elevation is set to 10 degrees
-            pDefaultIonoModel = NULL;
-            pDefaultTropoModel = NULL;
-            defaultObservable = TypeID::C1;     // By default, process C1 code
-            pDefaultEphemeris = NULL;
         };
 
 
