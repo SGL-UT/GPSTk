@@ -317,7 +317,6 @@ namespace gpstk
             extraBiases(0);
             availableSV(0);
             rejectedSV(0);
-            minElev = 10.0;  // By default, cut-off elevation is set to 10 degrees
         };
 
 

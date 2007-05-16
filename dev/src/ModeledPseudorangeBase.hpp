@@ -49,6 +49,9 @@ namespace gpstk
    class ModeledPseudorangeBase
    {
    public:
+
+        ModeledPseudorangeBase() : minElev(10.0) {};
+
         /// Either estimated or "a priori" position of receiver
         Position rxPos;
 
@@ -88,7 +91,7 @@ namespace gpstk
         /// Matrix of Geometry (director cosines from receiver to satellites)
         Matrix<double> geoMatrix;
 
-        /// The elevation cut-off angle for accepted satellites. By default is set to 5 degrees
+        /// The elevation cut-off angle for accepted satellites. By default is set to 10 degrees
         double minElev;
 
         /// Any other biases (in meters) that the user wants to include. Will be substracted from modeled pseudoranges.
