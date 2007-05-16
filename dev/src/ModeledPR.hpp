@@ -34,6 +34,7 @@
 #include "Matrix.hpp"
 #include "Bancroft.hpp"
 #include "PRSolution.hpp"
+#include "DataStructures.hpp"
 
 namespace gpstk
 {
@@ -55,6 +56,10 @@ namespace gpstk
    class ModeledPR : public ModeledReferencePR
    {
     public:
+
+        /// Implicit constructor
+        ModeledPR() : modelPrepared(false) {};
+
 
         /** Method to set an a priori position of receiver using Bancroft method.
          *
@@ -99,6 +104,34 @@ namespace gpstk
         };
 
 
+        /** Method to set an a priori position of receiver using Bancroft method.
+         *
+         * @param gData         GNSS data structure to be used
+         *
+         * @return
+         *  0 if OK
+         *  -1 if problems arose
+         */
+        int Prepare(gnssSatTypeValue& gData)
+        {
+            int i;
+            std::vector<SatID> vSat;
+            std::vector<double> vPR;
+            Vector<SatID> Satellite( gData.getVectorOfSatID() );
+            Vector<double> Pseudorange( gData.getVectorOfTypeID( (*this).getDefaultObservable() ) );
+
+            // Convert from gpstk::Vector to std::vector
+            for (i = 0; i < (int)Satellite.size(); i++)
+                vSat.push_back(Satellite[i]);
+
+            for (i = 0; i < (int)Pseudorange.size(); i++)
+                vPR.push_back(Pseudorange[i]);
+
+            return Prepare(gData.header.epoch, vSat, vPR, (*( (*this).getDefaultEphemeris())) );
+
+        };
+
+
         /** Method to set the initial (a priori) position of receiver before 
          * Compute() method.
          * @return
@@ -121,6 +154,12 @@ namespace gpstk
 
         /// Destructor.
         virtual ~ModeledPR() throw() {};
+
+
+    protected:
+
+        bool modelPrepared;
+
 
    }; // class ModeledPR
 
