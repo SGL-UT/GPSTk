@@ -1,4 +1,4 @@
-#pragma ident * $Id$
+#pragma ident "$Id$"
 
 #include <sstream>
 #include <errno.h>
