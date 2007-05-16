@@ -52,14 +52,14 @@ namespace gpstk
 
         /// Default constructor. By default the prefit residual to be used is TypeID::prefitC (Code) when
         /// fed with GNSS data structures.
-        SolverLMS() : defaultObservable(TypeID::prefitC) { valid = false; };
+        SolverLMS() : defaultObservable(TypeID::prefitC) {};
 
 
         /** Explicit constructor. Sets the default prefit residual to be used when fed with GNSS data structures.
          *
          * @param prefit    TypeID of prefit residual to be used
          */
-        SolverLMS(const TypeID& prefit) : defaultObservable(prefit) { valid = false; };
+        SolverLMS(const TypeID& prefit) : defaultObservable(prefit) {};
 
 
         /** Compute the Least Mean Squares Solution of the given equations set.

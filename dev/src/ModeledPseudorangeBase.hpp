@@ -50,6 +50,7 @@ namespace gpstk
    {
    public:
 
+        /// Implicit constructor
         ModeledPseudorangeBase() : minElev(10.0) {};
 
         /// Either estimated or "a priori" position of receiver

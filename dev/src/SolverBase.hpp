@@ -53,6 +53,10 @@ namespace gpstk
     class SolverBase
     {
     public:
+
+        /// Implicit constructor
+        SolverBase() : valid(false) {};
+
         /// Return validity of results
         bool isValid(void)
             { return valid; }
