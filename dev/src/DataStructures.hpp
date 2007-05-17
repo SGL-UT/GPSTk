@@ -41,9 +41,7 @@
 #include "RinexObsData.hpp"
 #include "StringUtils.hpp"
 #include "Vector.hpp"
-#include "ModeledReferencePR.hpp"
-#include "SolverLMS.hpp"
-#include "SolverWMS.hpp"
+#include "Matrix.hpp"
 
 
 
@@ -664,18 +662,6 @@ namespace gpstk
         }
 
 
-        /** Modifies this object, adding the new data generated when calling a modeling object.
-         *
-         * @param time      Epoch when the model will be applied.
-         * @param modPR     Model to use.
-         */
-        virtual satTypeValueMap& processModel(const DayTime& time, ModeledReferencePR& modPR) throw(Exception);
-
-
-        /// Modifies this object, adding the new data generated when calling a SolverLMS object.
-        virtual satTypeValueMap& processSolverLMS(SolverLMS& solver) throw(Exception);
-
-
         /// Returns a reference to the typeValueMap with corresponding SatID.
         /// @param type Type of value to be look for.
         inline typeValueMap& operator()(const SatID& satellite) throw(SatIDNotFound)
@@ -1195,14 +1181,6 @@ namespace gpstk
         }
 
 
-        /// Input operator from gnssSatTypeValue to ModeledReferencePR.
-        inline virtual gnssSatTypeValue& operator>>(ModeledReferencePR& modRefPR) throw(Exception)
-        {
-            (*this).body.processModel( (*this).header.epoch, modRefPR );
-            return (*this);
-        }
-
-
         /// Destructor.
         virtual ~gnssSatTypeValue() {};
 
@@ -1310,14 +1288,6 @@ namespace gpstk
         {
             satTypeValueMap stvMap = (*this).body.extractTypeID(typeSet);
             (*this).body = stvMap;
-            return (*this);
-        }
-
-
-        /// Input operator from gnssRinex to ModeledReferencePR.
-        inline virtual gnssRinex& operator>>(ModeledReferencePR& modRefPR) throw(Exception)
-        {
-            (*this).body.processModel( (*this).header.epoch, modRefPR );
             return (*this);
         }
 

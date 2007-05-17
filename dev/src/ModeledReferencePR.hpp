@@ -42,6 +42,7 @@
 #include "Position.hpp"
 #include "icd_200_constants.hpp"
 #include "TypeID.hpp"
+#include "DataStructures.hpp"
 
 
 namespace gpstk
@@ -55,8 +56,8 @@ namespace gpstk
        * @sa ModeledPseudorangeBase.hpp for base class.
        *
        */
-   class ModeledReferencePR : public ModeledPseudorangeBase
-   {
+    class ModeledReferencePR : public ModeledPseudorangeBase
+    {
     public:
 
         /// Implicit constructor
@@ -188,6 +189,20 @@ namespace gpstk
         int Compute(const DayTime& Tr, SatID& Satellite, double& Pseudorange,
             const EphemerisStore& Eph, const double& extraBiases, TropModel *pTropModel=NULL,
             IonoModelStore *pIonoModel=NULL) throw(Exception);
+
+
+        /** Returns a gnnsSatTypeValue object, adding the new data generated when calling a modeling object.
+         *
+         * @param gData    Data object holding the data.
+         */
+        virtual gnssSatTypeValue& processModel(gnssSatTypeValue& gData) throw(Exception);
+
+
+        /** Returns a gnnsRinex object, adding the new data generated when calling a modeling object.
+         *
+         * @param gData    Data object holding the data.
+         */
+        virtual gnssRinex& processModel(gnssRinex& gData) throw(Exception);
 
 
         /// Boolean variable indicating if SV instrumental delays (TGD) will be included  in results. It is true by default.
@@ -412,7 +427,26 @@ namespace gpstk
         };
 
 
-   }; // class ModeledReferencePR
+    }; // class ModeledReferencePR
+
+
+    /// Input operator from gnssSatTypeValue to ModeledReferencePR.
+    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, ModeledReferencePR& modRefPR) throw(Exception)
+    {
+            modRefPR.processModel(gData);
+            return gData;
+    }
+
+
+    /// Input operator from gnssRinex to ModeledReferencePR.
+    inline gnssRinex& operator>>(gnssRinex& gData, ModeledReferencePR& modRefPR) throw(Exception)
+    {
+            modRefPR.processModel(gData);
+            return gData;
+    }
+
+
+
 
    //@}
 
