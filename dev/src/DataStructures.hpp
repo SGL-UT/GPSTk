@@ -583,7 +583,7 @@ namespace gpstk
 
         /// Returns a GPSTk::Vector containing the data values with this type.
         /// @param type Type of value to be returned.
-        inline Vector<double> getVectorOfTypeID(const TypeID& type)
+        inline Vector<double> getVectorOfTypeID(const TypeID& type) const
         {
             std::vector<double> temp;
             typeValueMap::const_iterator itObs;
@@ -1113,7 +1113,7 @@ namespace gpstk
 
         /// Returns a GPSTk::Vector containing the data values with this type.
         /// @param type Type of value to be returned.
-        inline Vector<double> getVectorOfTypeID(const TypeID& type)
+        inline Vector<double> getVectorOfTypeID(const TypeID& type) const
         {
             return ( (*this).body.getVectorOfTypeID(type) );
         }

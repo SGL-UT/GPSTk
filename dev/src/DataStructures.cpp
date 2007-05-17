@@ -116,6 +116,10 @@ namespace gpstk
         Vector<double> Vprange = (*this).getVectorOfTypeID( modPR.getDefaultObservable() );
         try
         {
+
+            // Check if the model is prepared. If not, use provided data and Bancroft method to get it ready
+//            if (!modPR.getModelPrepared()) modPR.Prepare( time, (*this) );
+
             // Call the Compute() method with the defaults. Those defaults MUST HAVE BEEN
             // previously set, usually when creating modPR with the appropriate constructor.
             modPR.Compute( time, Vsat, Vprange, (*(modPR.getDefaultEphemeris())), modPR.extraBiases, modPR.getDefaultTropoModel(), modPR.getDefaultIonoModel() );

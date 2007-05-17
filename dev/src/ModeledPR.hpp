@@ -147,7 +147,8 @@ namespace gpstk
         };
 
 
-        /** Method to set an a priori position of receiver using Bancroft method.
+        /** Method to set an a priori position of receiver using Bancroft method. Intended to be used
+         * with GNSS data structures.
          *
          * @param gData         GNSS data structure to be used
          *
@@ -155,7 +156,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        int Prepare(gnssSatTypeValue& gData)
+        int Prepare(const gnssSatTypeValue& gData)
         {
             int i;
             std::vector<SatID> vSat;
@@ -171,6 +172,36 @@ namespace gpstk
                 vPR.push_back(Pseudorange[i]);
 
             return Prepare(gData.header.epoch, vSat, vPR, (*( (*this).getDefaultEphemeris())) );
+
+        };
+
+
+        /** Method to set an a priori position of receiver using Bancroft method. Intended to be used
+         * with GNSS data structures.
+         *
+         * @param time      DayTime object for this epoch
+         * @param data      A satTypeValueMap data structure holding the data
+         *
+         * @return
+         *  0 if OK
+         *  -1 if problems arose
+         */
+        int Prepare(const DayTime& time, const satTypeValueMap& data)
+        {
+            int i;
+            std::vector<SatID> vSat;
+            std::vector<double> vPR;
+            Vector<SatID> Satellite( data.getVectorOfSatID() );
+            Vector<double> Pseudorange( data.getVectorOfTypeID( (*this).getDefaultObservable() ) );
+
+            // Convert from gpstk::Vector to std::vector
+            for (i = 0; i < (int)Satellite.size(); i++)
+                vSat.push_back(Satellite[i]);
+
+            for (i = 0; i < (int)Pseudorange.size(); i++)
+                vPR.push_back(Pseudorange[i]);
+
+            return Prepare(time, vSat, vPR, (*( (*this).getDefaultEphemeris())) );
 
         };
 
@@ -196,14 +227,14 @@ namespace gpstk
 
 
         /// Method to get if the model has been prepared.
-        bool getModelPrepared() const { return modelPrepared; };
+        inline bool getModelPrepared() const { return modelPrepared; };
 
 
         /** Method to forcefully set whether the model has been prepared.
          *
          * @param prepare       Boolean indicating whether the model has been prepared.
          */
-        void setModelPrepared(const bool& prepare) { modelPrepared = prepare; };
+        inline void setModelPrepared(const bool& prepare) { modelPrepared = prepare; };
 
 
         /// Destructor.
