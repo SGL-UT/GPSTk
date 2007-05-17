@@ -195,6 +195,17 @@ namespace gpstk
         int Prepare(const Position& RxCoordinates) throw(GeometryException);
 
 
+        /// Method to get if the model has been prepared.
+        bool getModelPrepared() const { return modelPrepared; };
+
+
+        /** Method to forcefully set whether the model has been prepared.
+         *
+         * @param prepare       Boolean indicating whether the model has been prepared.
+         */
+        void setModelPrepared(const bool& prepare) { modelPrepared = prepare; };
+
+
         /// Destructor.
         virtual ~ModeledPR() throw() {};
 
