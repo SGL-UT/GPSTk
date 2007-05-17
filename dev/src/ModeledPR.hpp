@@ -61,6 +61,49 @@ namespace gpstk
         ModeledPR() : modelPrepared(false) {};
 
 
+        /** Explicit constructor, taking as input initial receiver coordinates, default
+         * ionospheric and tropospheric models, and default observable.
+         *
+         * @param RxCoordinates Initial receiver coordinates.
+         * @param dIonoModel    Ionospheric model to be used by default.
+         * @param dTropoModel   Tropospheric model to be used by default.
+         * @param dObservable   Observable type to be used by default.
+         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param usetgd        Whether TGD will be used by default or not.
+         *
+         * @sa DataStructures.hpp.
+         */
+        ModeledPR(const Position& RxCoordinates, IonoModelStore& dIonoModel, TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+            InitializeValues();
+            setInitialRxPosition(RxCoordinates);
+            setDefaultIonoModel(dIonoModel);
+            setDefaultTropoModel(dTropoModel);
+            setDefaultObservable(dObservable);
+            setDefaultEphemeris(dEphemeris);
+            useTGD = usetgd;
+        };
+
+
+        /** Explicit constructor, taking as input default ionospheric and tropospheric models, and default observable.
+         *
+         * @param dIonoModel    Ionospheric model to be used by default.
+         * @param dTropoModel   Tropospheric model to be used by default.
+         * @param dObservable   Observable type to be used by default.
+         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param usetgd        Whether TGD will be used by default or not.
+         *
+         * @sa DataStructures.hpp.
+         */
+        ModeledPR(IonoModelStore& dIonoModel, TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+            InitializeValues();
+            setDefaultIonoModel(dIonoModel);
+            setDefaultTropoModel(dTropoModel);
+            setDefaultObservable(dObservable);
+            setDefaultEphemeris(dEphemeris);
+            useTGD = usetgd;
+        };
+
+
         /** Method to set an a priori position of receiver using Bancroft method.
          *
          * @param Tr            Time of observation
