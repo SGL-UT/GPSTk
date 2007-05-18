@@ -326,11 +326,12 @@ namespace gpstk
 
 
 
-    /* Modifies a gnssSatTypeValue object, adding the new data generated when calling a modeling object.
-     *
-     * @param gData    Data object holding the data.
-     */
-    gnssSatTypeValue& ModeledReferencePR::processModel(gnssSatTypeValue& gData) throw(Exception)
+     /* Returns a satTypeValueMap object, adding the new data generated when calling a modeling object.
+      *
+      * @param time      Epoch.
+      * @param gData     Data object holding the data.
+      */
+    satTypeValueMap& ModeledReferencePR::processModel(const DayTime& time, satTypeValueMap& gData) throw(Exception)
     {
         Vector<SatID> Vsat = gData.getVectorOfSatID();
         Vector<double> Vprange = gData.getVectorOfTypeID( (*this).getDefaultObservable() );
@@ -338,7 +339,7 @@ namespace gpstk
         {
             // Call the Compute() method with the defaults. Those defaults MUST HAVE BEEN
             // previously set, usually when creating modPR with the appropriate constructor.
-            (*this).Compute( gData.header.epoch, Vsat, Vprange, (*((*this).getDefaultEphemeris())), (*this).extraBiases, (*this).getDefaultTropoModel(), (*this).getDefaultIonoModel() );
+            (*this).Compute( time, Vsat, Vprange, (*((*this).getDefaultEphemeris())), (*this).extraBiases, (*this).getDefaultTropoModel(), (*this).getDefaultIonoModel() );
 
             // Once we get the result, it may be necessary to make some satellite cleanup
             SatIDSet rejectedSet;
@@ -397,82 +398,8 @@ namespace gpstk
             GPSTK_RETHROW(e);
         }
 
-    }   // End ModeledReferencePR::processModel(gnssSatTypeValue& gData)
+    }   // End ModeledReferencePR::processModel(const DayTime& time, satTypeValueMap& gData)
 
-
-
-    /* Modifies a gnssRinex object, adding the new data generated when calling a modeling object.
-     *
-     * @param gData    Data object holding the data.
-     */
-    gnssRinex& ModeledReferencePR::processModel(gnssRinex& gData) throw(Exception)
-    {
-        Vector<SatID> Vsat = gData.getVectorOfSatID();
-        Vector<double> Vprange = gData.getVectorOfTypeID( (*this).getDefaultObservable() );
-        try
-        {
-            // Call the Compute() method with the defaults. Those defaults MUST HAVE BEEN
-            // previously set, usually when creating modPR with the appropriate constructor.
-            (*this).Compute( gData.header.epoch, Vsat, Vprange, (*((*this).getDefaultEphemeris())), (*this).extraBiases, (*this).getDefaultTropoModel(), (*this).getDefaultIonoModel() );
-
-            // Once we get the result, it may be necessary to make some satellite cleanup
-            SatIDSet rejectedSet;
-            for (size_t i = 0; i<(*this).rejectedSV.size(); ++i) { rejectedSet.insert((*this).rejectedSV[i]); }
-            gData.removeSatID(rejectedSet);       // All rejected satellites are removed
-
-            // Now we have to add the new values to the data structure
-            gData.insertTypeIDVector(TypeID::prefitC, (*this).prefitResiduals);
-            gData.insertTypeIDVector(TypeID::rho, (*this).geometricRho);
-            gData.insertTypeIDVector(TypeID::dtSat, (*this).svClockBiases);
-            gData.insertTypeIDVector(TypeID::rel, (*this).svRelativity);
-            gData.insertTypeIDVector(TypeID::ionoSlant, (*this).ionoCorrections);
-            gData.insertTypeIDVector(TypeID::tropoSlant, (*this).tropoCorrections);
-            gData.insertTypeIDVector(TypeID::elevation, (*this).elevationSV);
-            gData.insertTypeIDVector(TypeID::azimuth, (*this).azimuthSV);
-
-            // Get the instrumental delays right
-            TypeID instDelayType;
-            switch ( (*this).getDefaultObservable().type )
-            {
-                case TypeID::C1:
-                    instDelayType = TypeID::instC1;
-                    break;
-                case TypeID::C2:
-                    instDelayType = TypeID::instC2;
-                    break;
-                case TypeID::C5:
-                    instDelayType = TypeID::instC5;
-                    break;
-                case TypeID::C6:
-                    instDelayType = TypeID::instC6;
-                    break;
-                case TypeID::C7:
-                    instDelayType = TypeID::instC7;
-                    break;
-                case TypeID::C8:
-                    instDelayType = TypeID::instC8;
-                    break;
-                default:
-                    instDelayType = TypeID::Unknown;  // It should never get here, but just in case...
-            };
-            gData.insertTypeIDVector(instDelayType, (*this).svTGD);
-
-            // Now, lets insert the geometry matrix
-            TypeIDSet tSet;
-            tSet.insert(TypeID::rhoX);
-            tSet.insert(TypeID::rhoY);
-            tSet.insert(TypeID::rhoZ);
-            tSet.insert(TypeID::dtCoef);
-            gData.insertMatrix(tSet, (*this).geoMatrix);
-
-
-            return gData;
-        }
-        catch(Exception& e) {
-            GPSTK_RETHROW(e);
-        }
-
-    }   // End ModeledReferencePR::processModel(gnssRinex& gData)
 
 
 

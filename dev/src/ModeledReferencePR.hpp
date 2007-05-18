@@ -191,18 +191,34 @@ namespace gpstk
             IonoModelStore *pIonoModel=NULL) throw(Exception);
 
 
+        /** Returns a satTypeValueMap object, adding the new data generated when calling a modeling object.
+         *
+         * @param time      Epoch.
+         * @param gData     Data object holding the data.
+         */
+        virtual satTypeValueMap& processModel(const DayTime& time, satTypeValueMap& gData) throw(Exception);
+
+
         /** Returns a gnnsSatTypeValue object, adding the new data generated when calling a modeling object.
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssSatTypeValue& processModel(gnssSatTypeValue& gData) throw(Exception);
+        virtual gnssSatTypeValue& processModel(gnssSatTypeValue& gData) throw(Exception)
+        {
+            (*this).processModel(gData.header.epoch, gData.body);
+            return gData;
+        };
 
 
         /** Returns a gnnsRinex object, adding the new data generated when calling a modeling object.
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& processModel(gnssRinex& gData) throw(Exception);
+        virtual gnssRinex& processModel(gnssRinex& gData) throw(Exception)
+        {
+            (*this).processModel(gData.header.epoch, gData.body);
+            return gData;
+        };
 
 
         /// Boolean variable indicating if SV instrumental delays (TGD) will be included  in results. It is true by default.
