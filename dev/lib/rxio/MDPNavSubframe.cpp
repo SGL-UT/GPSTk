@@ -188,13 +188,16 @@ namespace gpstk
    // Print as a string of 1/0
    string asBin(unsigned v, const unsigned n)
    {
-      char s[n];
+      char *s = new char[n+1];
       for (int i=0; i<n; i++,v=v>>1)
          if (v&1)
             s[i] = '1';
          else
             s[i] = '0';
-      return string(s);
+      s[n] = 0;
+      string ns(s);
+      delete[] s;
+      return ns;
    }
 
    //--------------------------------------------------------------------------
