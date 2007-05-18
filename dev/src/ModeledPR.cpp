@@ -100,5 +100,23 @@ namespace gpstk
     }
 
 
+
+     /* Returns a satTypeValueMap object, adding the new data generated when calling a modeling object.
+      *
+      * @param time      Epoch.
+      * @param gData     Data object holding the data.
+      */
+    satTypeValueMap& ModeledPR::processModel(const DayTime& time, satTypeValueMap& gData) throw(Exception)
+    {
+        // First, if the model is not prepared let's take care of it
+        if (!getModelPrepared()) Prepare(time, gData);
+
+        ModeledReferencePR::processModel(time, gData);
+
+        return gData;
+    }   // End ModeledPR::processModel(const DayTime& time, satTypeValueMap& gData)
+
+
+
 } // namespace
 

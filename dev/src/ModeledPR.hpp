@@ -150,35 +150,6 @@ namespace gpstk
         /** Method to set an a priori position of receiver using Bancroft method. Intended to be used
          * with GNSS data structures.
          *
-         * @param gData         GNSS data structure to be used
-         *
-         * @return
-         *  0 if OK
-         *  -1 if problems arose
-         */
-        int Prepare(const gnssSatTypeValue& gData)
-        {
-            int i;
-            std::vector<SatID> vSat;
-            std::vector<double> vPR;
-            Vector<SatID> Satellite( gData.getVectorOfSatID() );
-            Vector<double> Pseudorange( gData.getVectorOfTypeID( (*this).getDefaultObservable() ) );
-
-            // Convert from gpstk::Vector to std::vector
-            for (i = 0; i < (int)Satellite.size(); i++)
-                vSat.push_back(Satellite[i]);
-
-            for (i = 0; i < (int)Pseudorange.size(); i++)
-                vPR.push_back(Pseudorange[i]);
-
-            return Prepare(gData.header.epoch, vSat, vPR, (*( (*this).getDefaultEphemeris())) );
-
-        };
-
-
-        /** Method to set an a priori position of receiver using Bancroft method. Intended to be used
-         * with GNSS data structures.
-         *
          * @param time      DayTime object for this epoch
          * @param data      A satTypeValueMap data structure holding the data
          *
@@ -186,7 +157,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        int Prepare(const DayTime& time, const satTypeValueMap& data)
+        inline int Prepare(const DayTime& time, const satTypeValueMap& data)
         {
             int i;
             std::vector<SatID> vSat;
@@ -203,6 +174,21 @@ namespace gpstk
 
             return Prepare(time, vSat, vPR, (*( (*this).getDefaultEphemeris())) );
 
+        };
+
+
+        /** Method to set an a priori position of receiver using Bancroft method. Intended to be used
+         * with GNSS data structures.
+         *
+         * @param gData         GNSS data structure to be used
+         *
+         * @return
+         *  0 if OK
+         *  -1 if problems arose
+         */
+        inline int Prepare(const gnssSatTypeValue& gData)
+        {
+            return ((*this).Prepare(gData.header.epoch, gData.body));
         };
 
 
@@ -224,6 +210,14 @@ namespace gpstk
          *  -1 if problems arose
          */
         int Prepare(const Position& RxCoordinates) throw(GeometryException);
+
+
+        /** Returns a satTypeValueMap object, adding the new data generated when calling a modeling object.
+         *
+         * @param time      Epoch.
+         * @param gData     Data object holding the data.
+         */
+        virtual satTypeValueMap& processModel(const DayTime& time, satTypeValueMap& gData) throw(Exception);
 
 
         /// Method to get if the model has been prepared.
