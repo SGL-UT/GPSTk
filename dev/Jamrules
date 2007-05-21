@@ -50,6 +50,8 @@ if $(UNIX)
             AR = "CC -xar -o" ;
             NOARSCAN = true ;
             RM = "rm -rf" ;
+            # Required for TCP things to compile.
+            LINKLIBS += -lnsl -lsocket ;
          }
 	 else # for solaris gcc
          {
