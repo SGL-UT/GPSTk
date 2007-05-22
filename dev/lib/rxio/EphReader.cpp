@@ -69,7 +69,7 @@ void EphReader::read(const std::string& fn)
 
    filesRead.push_back(fn);
    if (verboseLevel>1)
-      cout << "# Ephemers initial time: " << eph->getInitialTime() 
+      cout << "# Ephemeris initial time: " << eph->getInitialTime() 
            << ", final time: " << eph->getFinalTime() << endl;
 } // end of read()
 
