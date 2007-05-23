@@ -1298,6 +1298,39 @@ namespace gpstk
     };  // End of gnssRinex
 
 
+
+    /// Object defining the structure of GNSS equation. The header is the prefit and the body is a TypeIDSet containing
+    /// the unknowns.
+    struct  gnssEquationDefinition : gnssData<TypeID, TypeIDSet>
+    {
+
+        /// Common constructor.
+        gnssEquationDefinition(const TypeID& h, const TypeIDSet& b)
+        {
+            header = h;
+            body = b;
+        }
+
+
+        /// Default equation definition: The common GNSS code equation, defined in auxiliary class Initializer
+        static gnssEquationDefinition defaultEquationDefinition;
+
+        /// Destructor.
+        virtual ~gnssEquationDefinition() {};
+
+        class Initializer
+        {
+        public:
+            Initializer();
+        };
+
+        static Initializer gnssEqDefsingleton;
+
+    };  // End of gnssEquationDefinition
+
+
+
+
     /// Stream input for gnssSatTypeValue.
     /// @param i Input stream.
     /// @param f gnssSatTypeValue receiving the data.
