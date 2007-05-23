@@ -161,14 +161,10 @@ namespace gpstk
          prefitL,   ///< Prefit residual, phase
          postfitC,  ///< Postfit residual, code
          postfitL,  ///< Postfit residual, phase
-         rhoX,      ///< Unit vector from satellite to receiver, X component
-         rhoY,      ///< Unit vector from satellite to receiver, Y component
-         rhoZ,      ///< Unit vector from satellite to receiver, Z component
-         dtCoef,    ///< Coefficient corresponding to c*dt in geometry matrix; it is usually 1, but not always.
-         dX,        ///< Position bias, X component
-         dY,        ///< Position bias, Y component
-         dZ,        ///< Position bias, Z component
-         dt,        ///< Receiver clock offset
+         dx,        ///< In the position domain: Position bias, X component; in the range domain: dx coefficient
+         dy,        ///< In the position domain: Position bias, Y component; in the range domain: dy coefficient
+         dz,        ///< In the position domain: Position bias, Z component; in the range domain: dz coefficient
+         cdt,       ///< In the position domain: Receiver clock offset, meters; in the range domain: cdt coefficient
          dLat,      ///< Position bias, Latitude component
          dLon,      ///< Position bias, Longitude component
          dH,        ///< Position bias, Height component

@@ -385,10 +385,10 @@ namespace gpstk
 
             // Now, lets insert the geometry matrix
             TypeIDSet tSet;
-            tSet.insert(TypeID::rhoX);
-            tSet.insert(TypeID::rhoY);
-            tSet.insert(TypeID::rhoZ);
-            tSet.insert(TypeID::dtCoef);
+            tSet.insert(TypeID::dx);
+            tSet.insert(TypeID::dy);
+            tSet.insert(TypeID::dz);
+            tSet.insert(TypeID::cdt);
             gData.insertMatrix(tSet, (*this).geoMatrix);
 
 
