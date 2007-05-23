@@ -80,7 +80,7 @@ OIDM DDEpoch::singleDifference(
       roti2 = rx2obs.find(oid);
       if (roti2 == rx2obs.end())
          continue;
-
+         
       // Compute the first difference
       diff[oid] = roti1->second - roti2->second;
 
@@ -172,9 +172,25 @@ void DDEpoch::doubleDifference(
 
          // Now compute the double differences
          // Note that for the master this will be a single diff
-         OIDM::const_iterator i;
-         for (i = masterDiff.begin(); i != masterDiff.end(); i++)
-            ddSvOIDM[prn][i->first] = i->second - otherDiff[i->first];
+         OIDM::const_iterator i_masterDiff, i_otherDiff;
+         for (i_masterDiff = masterDiff.begin(); 
+              i_masterDiff != masterDiff.end(); i_masterDiff++)
+         {
+            ObsID oid1  = i_masterDiff->first;
+            i_otherDiff = otherDiff.find(oid1);
+            ObsID oid2  = i_otherDiff->first;
+            
+            // make sure that both obs data came from same tracking code
+            if (oid1.code != oid2.code)
+            {
+              if (debugLevel)
+                cout << "# DDEpoch::doubleDifferece(): oid1.code " 
+                     <<  "!= oid2.code\n";
+              continue;
+            }
+
+            ddSvOIDM[prn][oid1] = i_masterDiff->second - otherDiff[oid1];
+         }
       }
       valid = true;
    }

@@ -376,7 +376,7 @@ void DDGen::process()
    }
    else
    {
-      PhaseCleaner pc(minArcLen, minArcTime, minArcGap);    
+      PhaseCleaner pc(minArcLen, minArcTime, minArcGap);
       pc.debugLevel = debugLevel;
       pc.addData(oem1, oem2, minSNR);
       pc.debias(pem);

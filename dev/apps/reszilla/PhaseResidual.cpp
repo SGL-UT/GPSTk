@@ -99,16 +99,20 @@ namespace PhaseResidual
    void Arc::dump(std::ostream& s) const
    {
       gpstk::Stats<double> stats = statsDD();
-
-      const_iterator i=begin();
+      const_iterator i=begin(); 
       const gpstk::DayTime& t0=i->first;
-      i = end(); i--;
-      const gpstk::DayTime& t1=i->first;
+      i = end();
 
-      s << std::left
-        << "Arc: " << t0.printf("%02H:%02M:%04.1f")
-        << " - "   << t1.printf("%02H:%02M:%04.1f")
-        << "  N:" <<  std::setw(5) << stats.N();
+      if (i != begin())
+      {
+        i--;
+        const gpstk::DayTime& t1=i->first;
+        s << std::left
+          << "Arc: " << t0.printf("%02H:%02M:%04.1f")
+          << " - "   << t1.printf("%02H:%02M:%04.1f")
+          << "  N:" <<  std::setw(5) << stats.N();
+      }
+        
       
       if (!garbage)
       {
@@ -123,7 +127,6 @@ namespace PhaseResidual
       else
          s << " Garbage.";
       s << std::endl;
-
    }
 
 //------------------------------------------------------------------------------
@@ -257,9 +260,17 @@ namespace PhaseResidual
       // First mark arcs as garbage as appropriate
       for (iterator i = begin(); i != end(); i++)
       {
-         double dt = (--(i->end()))->first - i->begin()->first;
-         if (i->size() < arcLen || dt < arcTime)
+         Arc::iterator end_of_prev=i->end();
+         if (end_of_prev == i->begin())
             i->garbage = true;
+         else
+            end_of_prev--;
+            Arc::iterator beg_of_curr=i->begin();
+            
+            double dt = end_of_prev->first - beg_of_curr->first;
+            
+            if (i->size() < arcLen || dt < arcTime)
+              i->garbage = true;
       }
 
       iterator i = begin();

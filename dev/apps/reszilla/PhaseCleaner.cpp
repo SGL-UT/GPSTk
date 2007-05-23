@@ -327,19 +327,17 @@ void PhaseCleaner::debias(SvElevationMap& pem)
       {
          const gpstk::SatID& prn = j->first;
          PhaseResidual::ArcList& pral = j->second;
-
+         
          pral.splitOnGaps(maxGapTime);
          selectMasters(rot, prn, pem);
          doubleDifference(rot, prn, pem);
-
+         
          pral.computeTD();
          pral.splitOnTD();
          pral.debiasDD();
-
          pral.computeTD();
          pral.splitOnTD();
          pral.debiasDD();
-
          pral.mergeArcs(minArcLen, minArcTime, maxGapTime);
 
          if (debugLevel>1)
