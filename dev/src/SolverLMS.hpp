@@ -32,6 +32,7 @@
 
 #include "SolverBase.hpp"
 #include "TypeID.hpp"
+#include "DataStructures.hpp"
 
 
 namespace gpstk
@@ -50,16 +51,29 @@ namespace gpstk
     {
     public:
 
-        /// Default constructor. By default the prefit residual to be used is TypeID::prefitC (Code) when
-        /// fed with GNSS data structures.
-        SolverLMS() : defaultObservable(TypeID::prefitC) {};
+        /// Default constructor. When fed with GNSS data structures, the 
+        /// default the equation definition to be used is the common GNSS 
+        /// code equation.
+        SolverLMS()
+        {
+            // First, let's define a set with the typical unknowns
+            TypeIDSet tempSet;
+            tempSet.insert(TypeID::dx);
+            tempSet.insert(TypeID::dy);
+            tempSet.insert(TypeID::dz);
+            tempSet.insert(TypeID::cdt);
+
+            // Now, we build the default definition for a common GNSS code equation
+            defaultEqDef.header = TypeID::prefitC;
+            defaultEqDef.body = tempSet;
+        };
 
 
-        /** Explicit constructor. Sets the default prefit residual to be used when fed with GNSS data structures.
+        /** Explicit constructor. Sets the default equation definition to be used when fed with GNSS data structures.
          *
-         * @param prefit    TypeID of prefit residual to be used
+         * @param eqDef     gnssEquationDefinition to be used
          */
-        SolverLMS(const TypeID& prefit) : defaultObservable(prefit) {};
+        SolverLMS(const gnssEquationDefinition& eqDef) : defaultEqDef(eqDef) {};
 
 
         /** Compute the Least Mean Squares Solution of the given equations set.
@@ -73,19 +87,49 @@ namespace gpstk
         virtual int Compute(const Vector<double>& prefitResiduals, const Matrix<double>& designMatrix) throw(InvalidSolver);
 
 
-        /** Method to set the default observable to be used when fed with GNSS data structures.
-         * @param type      TypeID object to be used by default
+        /** Returns a reference to a satTypeValueMap object after solving the previously defined equation system.
+         *
+         * @param time      Epoch.
+         * @param gData     Data object holding the data.
          */
-        virtual void setDefaultObservable(const TypeID& type)
+        virtual satTypeValueMap& processSolver(const DayTime& time, satTypeValueMap& gData) throw(InvalidSolver);
+
+
+        /** Returns a reference to a gnnsSatTypeValue object after solving the previously defined equation system.
+         *
+         * @param gData    Data object holding the data.
+         */
+        virtual gnssSatTypeValue& processSolver(gnssSatTypeValue& gData) throw(InvalidSolver)
         {
-           defaultObservable = type;
+            (*this).processSolver(gData.header.epoch, gData.body);
+            return gData;
         };
 
 
-        /// Method to get the default observable being used with GNSS data structures.
-        virtual TypeID getDefaultObservable() const
+        /** Returns a reference to a gnnsRinex object after solving the previously defined equation system.
+         *
+         * @param gData    Data object holding the data.
+         */
+        virtual gnssRinex& processSolver(gnssRinex& gData) throw(InvalidSolver)
         {
-           return defaultObservable;
+            (*this).processSolver(gData.header.epoch, gData.body);
+            return gData;
+        };
+
+
+        /** Method to set the default equation definition to be used when fed with GNSS data structures.
+         * @param eqDef     gnssEquationDefinition to be used by default
+         */
+        virtual void setDefaultEqDefinition(const gnssEquationDefinition& eqDef)
+        {
+           defaultEqDef = eqDef;
+        };
+
+
+        /// Method to get the default equation definition being used with GNSS data structures.
+        virtual gnssEquationDefinition getDefaultEqDefinition() const
+        {
+           return defaultEqDef;
         };
 
 
@@ -95,8 +139,8 @@ namespace gpstk
 
     protected:
 
-        /// Default observable to be used when fed with GNSS data structures.
-        TypeID defaultObservable;
+        /// Default equation definition to be used when fed with GNSS data structures.
+        gnssEquationDefinition defaultEqDef;
 
    }; // class SolverLMS
 

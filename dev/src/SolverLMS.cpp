@@ -84,4 +84,34 @@ namespace gpstk
     }  // end SolverLMS::Compute()
 
 
+
+     /* Returns a reference to a satTypeValueMap object after solving the previously defined equation system.
+      *
+      * @param time      Epoch.
+      * @param gData     Data object holding the data.
+      */
+    satTypeValueMap& SolverLMS::processSolver(const DayTime& time, satTypeValueMap& gData) throw(InvalidSolver)
+    {
+        // First, let's fetch the vector of prefit residuals
+        Vector<double> prefit(gData.getVectorOfTypeID((*this).defaultEqDef.header));
+
+        try
+        {
+            // Call the Compute() method with the defined equation model. This equation model MUST HAS BEEN
+            // previously set, usually when creating the SolverLMS object with the appropriate constructor.
+//            (*this).Compute(const Vector<double>& prefitResiduals, const Matrix<double>& designMatrix);
+
+
+            // *** NOTA ***
+            // Hay que agregar los nuevos valores generados, como el postfit
+
+            return gData;
+        }
+        catch(InvalidSolver& e) {
+            GPSTK_RETHROW(e);
+        }
+
+    }   // End SolverLMS::processSolver(const DayTime& time, satTypeValueMap& gData)
+
+
 } // end namespace gpstk
