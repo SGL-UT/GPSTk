@@ -39,22 +39,6 @@ namespace gpstk
 {
 
 
-    gnssEquationDefinition::Initializer gnssEqDefsingleton;
-
-    gnssEquationDefinition::Initializer::Initializer()
-    {
-        // First, let's define a set with the typical unknowns
-        TypeIDSet tempSet;
-        tempSet.insert(TypeID::dx);
-        tempSet.insert(TypeID::dy);
-        tempSet.insert(TypeID::dz);
-        tempSet.insert(TypeID::cdt);
-
-        // Now, we build the default definition for a common GNSS code equation
-        gnssEquationDefinition defaultEquationDefinition(TypeID::prefitC, tempSet);
-    }
-
-
     // Input for gnssSatTypeValue from RinexObsHeader
     gnssSatTypeValue& operator>>(const RinexObsHeader& roh, gnssSatTypeValue& f)
     {

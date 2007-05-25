@@ -489,7 +489,7 @@ namespace gpstk
         /// @param satSet Set (SatIDSet) containing the satellites to be kept.
         inline satTypeValueMap& keepOnlySatID(const SatIDSet& satSet)
         {
-            satTypeValueMap stvMap = (*this).extractSatID(satSet);
+            satTypeValueMap stvMap( (*this).extractSatID(satSet) );
             (*this) = stvMap;
             return (*this);
         }
@@ -530,7 +530,7 @@ namespace gpstk
         /// @param typeSet Set (TypeIDSet) containing the types of data to be kept.
         inline satTypeValueMap& keepOnlyTypeID(const TypeIDSet& typeSet)
         {
-            satTypeValueMap stvMap = (*this).extractTypeID(typeSet);
+            satTypeValueMap stvMap( (*this).extractTypeID(typeSet) );
             (*this) = stvMap;
             return (*this);
         }
@@ -589,12 +589,44 @@ namespace gpstk
             for (it = (*this).begin(); it != (*this).end(); ++it) 
             {
                 itObs = (*it).second.find(type);
-                if ( itObs != (*it).second.end() ) temp.push_back( (*itObs).second );
+                if ( itObs != (*it).second.end() )
+                    temp.push_back( (*itObs).second );
+                else 
+                    temp.push_back( 0.0 );
             }
             Vector<double> result;
             result = temp;
             return result;
         }
+
+        /// Returns a GPSTk::Matrix containing the data values in this set.
+        /// @param typeSet  TypeIDSet of values to be returned.
+        inline Matrix<double> getMatrixOfTypes(const TypeIDSet& typeSet) const
+        {
+            // First, let's create a Matrix<double> of the proper size
+            Matrix<double> tempMat( (*this).numSats(), typeSet.size(), 0.0 );
+
+            size_t numRow(0), numCol(0);
+
+            satTypeValueMap::const_iterator it;
+            typeValueMap::const_iterator itObs;
+            TypeIDSet::const_iterator pos;
+            for (it = (*this).begin(); it != (*this).end(); ++it) 
+            {
+                numCol=0;
+                for (pos = typeSet.begin(); pos != typeSet.end(); ++pos)
+                {
+                    itObs = (*it).second.find(*pos);
+                    if ( itObs != (*it).second.end() ) 
+                        tempMat(numRow, numCol) = (*itObs).second;
+                    ++numCol;
+                }
+                ++numRow;
+            }
+
+            return tempMat;
+        }   // End getMatrixOfTypes(const TypeIDSet& typeSet)
+
 
         /** Modifies this object, adding one vector of data with this type, one value 
          * per satellite.
@@ -644,15 +676,15 @@ namespace gpstk
             if ( dataMatrix.rows() != (*this).numSats() ) GPSTK_THROW(NumberOfSatsMismatch("Number of rows in matrix and number of satellites do not match"));
             if ( dataMatrix.cols() == typeSet.size() )
             {
-                size_t pos = 0;
+                size_t pos(0);
                 satTypeValueMap::iterator it;
                 for (it = (*this).begin(); it != (*this).end(); ++it) 
                 {
-                    size_t idx = 0;
+                    size_t idx(0);
                     TypeIDSet::iterator itSet;
                     for (itSet = typeSet.begin(); itSet != typeSet.end(); ++itSet) 
                     {
-                        (*it).second[(*itSet)] = dataMatrix[pos][idx];
+                        (*it).second[(*itSet)] = dataMatrix(pos,idx);
                         ++idx;
                     }
                     ++pos;
@@ -805,7 +837,7 @@ namespace gpstk
         /// @param satSet Set (SatIDSet) containing the satellites to be kept.
         inline gnssSatValue& keepOnlySatID(const SatIDSet& satSet)
         {
-            satValueMap svMap = (*this).body.extractSatID(satSet);
+            satValueMap svMap ( (*this).body.extractSatID(satSet) );
             (*this).body = svMap;
             return (*this);
         }
@@ -892,7 +924,7 @@ namespace gpstk
         /// @param typeSet Set (TypeIDSet) containing the types of data to be kept.
         inline gnssTypeValue& keepOnlyTypeID(const TypeIDSet& typeSet)
         {
-            typeValueMap tvMap = (*this).body.extractTypeID(typeSet);
+            typeValueMap tvMap( (*this).body.extractTypeID(typeSet) );
             (*this).body = tvMap;
             return (*this);
         }
@@ -1014,7 +1046,7 @@ namespace gpstk
         /// @param satSet Set (SatIDSet) containing the satellites to be kept.
         inline gnssSatTypeValue& keepOnlySatID(const SatIDSet& satSet)
         {
-            satTypeValueMap stvMap = (*this).body.extractSatID(satSet);
+            satTypeValueMap stvMap( (*this).body.extractSatID(satSet) );
             (*this).body = stvMap;
             return (*this);
         }
@@ -1052,7 +1084,7 @@ namespace gpstk
         /// @param typeSet Set (TypeIDSet) containing the types of data to be kept.
         inline gnssSatTypeValue& keepOnlyTypeID(const TypeIDSet& typeSet)
         {
-            satTypeValueMap stvMap = (*this).body.extractTypeID(typeSet);
+            satTypeValueMap stvMap( (*this).body.extractTypeID(typeSet) );
             (*this).body = stvMap;
             return (*this);
         }
@@ -1247,7 +1279,7 @@ namespace gpstk
         /// @param satSet Set (SatIDSet) containing the satellites to be kept.
         inline gnssRinex& keepOnlySatID(const SatIDSet& satSet)
         {
-            satTypeValueMap stvMap = (*this).body.extractSatID(satSet);
+            satTypeValueMap stvMap( (*this).body.extractSatID(satSet) );
             (*this).body = stvMap;
             return (*this);
         }
@@ -1286,7 +1318,7 @@ namespace gpstk
         /// @param typeSet Set (TypeIDSet) containing the types of data to be kept.
         inline gnssRinex& keepOnlyTypeID(const TypeIDSet& typeSet)
         {
-            satTypeValueMap stvMap = (*this).body.extractTypeID(typeSet);
+            satTypeValueMap stvMap( (*this).body.extractTypeID(typeSet) );
             (*this).body = stvMap;
             return (*this);
         }
@@ -1304,6 +1336,10 @@ namespace gpstk
     struct  gnssEquationDefinition : gnssData<TypeID, TypeIDSet>
     {
 
+        /// Default constructor.
+        gnssEquationDefinition() {};
+
+
         /// Common constructor.
         gnssEquationDefinition(const TypeID& h, const TypeIDSet& b)
         {
@@ -1312,19 +1348,9 @@ namespace gpstk
         }
 
 
-        /// Default equation definition: The common GNSS code equation, defined in auxiliary class Initializer
-        static gnssEquationDefinition defaultEquationDefinition;
-
         /// Destructor.
         virtual ~gnssEquationDefinition() {};
 
-        class Initializer
-        {
-        public:
-            Initializer();
-        };
-
-        static Initializer gnssEqDefsingleton;
 
     };  // End of gnssEquationDefinition
 
