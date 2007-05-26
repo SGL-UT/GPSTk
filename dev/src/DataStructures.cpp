@@ -38,6 +38,40 @@ using namespace std;
 namespace gpstk
 {
 
+    // Convenience output method for structure satTypeValueMap
+    std::ostream& satTypeValueMap::dump(std::ostream& s, int mode) const
+    {
+        satTypeValueMap::const_iterator it;
+        for (it = (*this).begin(); it!= (*this).end(); it++) 
+        {
+            // First, print satellite (system and PRN)
+            s << (*it).first << " ";
+
+            typeValueMap::const_iterator itObs;
+            for (itObs = (*it).second.begin(); itObs != (*it).second.end(); itObs++)
+            {
+                if (mode==1) s << (*itObs).first << " ";
+                s << (*itObs).second << " ";
+            }
+
+            s << endl;
+
+        }
+
+        return s;
+    } // satTypeValueMap::dump()
+
+
+
+    // stream output for satTypeValueMap
+    std::ostream& operator<<(std::ostream& s, const satTypeValueMap& stvMap)
+    {
+        stvMap.dump(s);
+        return s;
+    }
+
+
+
 
     // Input for gnssSatTypeValue from RinexObsHeader
     gnssSatTypeValue& operator>>(const RinexObsHeader& roh, gnssSatTypeValue& f)

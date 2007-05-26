@@ -609,11 +609,11 @@ namespace gpstk
             size_t numRow(0), numCol(0);
 
             satTypeValueMap::const_iterator it;
-            typeValueMap::const_iterator itObs;
-            TypeIDSet::const_iterator pos;
             for (it = (*this).begin(); it != (*this).end(); ++it) 
             {
                 numCol=0;
+                typeValueMap::const_iterator itObs;
+                TypeIDSet::const_iterator pos;
                 for (pos = typeSet.begin(); pos != typeSet.end(); ++pos)
                 {
                     itObs = (*it).second.find(*pos);
@@ -707,10 +707,19 @@ namespace gpstk
         }
 
 
+        /// Convenience output method
+        virtual std::ostream& dump(std::ostream& s, int mode = 0) const;
+
+
         /// Destructor.
         virtual ~satTypeValueMap() {};
 
     };  // End of satTypeValueMap
+
+
+
+    /// stream output for satTypeValueMap
+    std::ostream& operator<<(std::ostream& s, const satTypeValueMap& stvMap);
 
 
 
