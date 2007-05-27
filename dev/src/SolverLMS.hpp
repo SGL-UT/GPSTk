@@ -89,10 +89,9 @@ namespace gpstk
 
         /** Returns a reference to a satTypeValueMap object after solving the previously defined equation system.
          *
-         * @param time      Epoch.
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& processSolver(const DayTime& time, satTypeValueMap& gData) throw(InvalidSolver);
+        virtual satTypeValueMap& processSolver(satTypeValueMap& gData) throw(InvalidSolver);
 
 
         /** Returns a reference to a gnnsSatTypeValue object after solving the previously defined equation system.
@@ -101,7 +100,7 @@ namespace gpstk
          */
         virtual gnssSatTypeValue& processSolver(gnssSatTypeValue& gData) throw(InvalidSolver)
         {
-            (*this).processSolver(gData.header.epoch, gData.body);
+            (*this).processSolver(gData.body);
             return gData;
         };
 
@@ -112,7 +111,7 @@ namespace gpstk
          */
         virtual gnssRinex& processSolver(gnssRinex& gData) throw(InvalidSolver)
         {
-            (*this).processSolver(gData.header.epoch, gData.body);
+            (*this).processSolver(gData.body);
             return gData;
         };
 
@@ -143,6 +142,22 @@ namespace gpstk
         gnssEquationDefinition defaultEqDef;
 
    }; // class SolverLMS
+
+
+    /// Input operator from gnssSatTypeValue to SolverLMS.
+    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, SolverLMS& solver) throw(InvalidSolver)
+    {
+            solver.processSolver(gData);
+            return gData;
+    }
+
+
+    /// Input operator from gnssRinex to SolverLMS.
+    inline gnssRinex& operator>>(gnssRinex& gData, SolverLMS& solver) throw(InvalidSolver)
+    {
+            solver.processSolver(gData);
+            return gData;
+    }
 
    //@}
 
