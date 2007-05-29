@@ -127,10 +127,10 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
       codeOpt('c', "code",
               "Generate the signal defined by the argument. ARG takes "
               "the form of code:carrier:prn:offset:doppler:nav. Code is either "
-              "c, p, or cp. Carrier is eiter 1 or 2. Prn a integer between 1 "
-              "and 32. Offset is a number in micro seconds. Doppler is a number "
+              "c, p, or cp. Carrier is either 1 or 2. Prn is an integer between 1 "
+              "and 32. Offset is a number in microseconds. Doppler is a number "
               "in Hz. Nav is 0, c, p, or cp. For example, to generate C/A on L1 for "
-              "PRN 15 with zero time offset, zero doppler, a  dummy nav signal "
+              "PRN 15 with zero time-offset, zero doppler, a dummy nav signal "
               "on both C/A and P, then specify -c c:1:15:0:p.  This option "
               "may be repeated to simulate multiple signals.");
 
@@ -148,8 +148,8 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
 
    CommandOptionWithAnyArg
       noiseGainOpt('n', "noise",
-                   "Specify the gain (in db) for the receiver's noise. The "
-                   "default is 0 db");
+                   "Specify the gain (in dB) for the receiver's noise. The "
+                   "default is 0 dB");
 
    CommandOptionWithAnyArg
       freqErrOpt('f', "freq-err",
