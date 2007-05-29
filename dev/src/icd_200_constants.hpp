@@ -5,6 +5,7 @@
 /**
  * @file icd_200_constants.hpp
  * Constants as defined in the GPS-ICD-200
+ * Now the IS-GPS-200D
  */
 
 #ifndef GPSTK_ICD_200_CONSTANTS_HPP
@@ -76,7 +77,7 @@ namespace gpstk
       /// speed of light (m/s)
    const double C_GPS_M = 2.99792458e8;
       /// Base freq w/o relativisitic effects, Hz.
-   const double RSVCLK    = 10.22999999545e6;
+   const double RSVCLK    = 10.22999999543e6;
       /// L1 carrier frequency in Hz.
    const double L1_FREQ   = 1575.42e6;
       /// L1 carrier wavelength in meters.
