@@ -207,9 +207,8 @@ void xDayTime :: stringTest (void)
 	stringTest9.setToString("8/21/2006 13:30:00", "%m/%d/%Y %H:%M:%f");
 	stringTest10.setToString("1156166999 1000000","%U %u");
 	stringTest11.setToString("191455120","%C");
-	stringTest12.setToString("12 30 2006 00:00:30.1", "%m %d %Y %H:%M:%f");
-	stringTest13.setToString("2004   3 00:00:30.1", "%Y %3j %2H:%02M:%02f");
-        stringTest14.setToString("12 30 2006 11:34:12.5", "%m %d %Y %H:%M:%f");
+	stringTest12.setToString("8 21 2006 13:30:0.0", "%m %d %Y %H:%M:%f");
+	stringTest13.setToString("2006   233  13: 30: 0.0", "%Y %j %H:%M:%f");
 
 	CPPUNIT_ASSERT_EQUAL(CurrentTime,stringTest1);
 	CPPUNIT_ASSERT_EQUAL(CurrentTime,stringTest2);
@@ -224,7 +223,6 @@ void xDayTime :: stringTest (void)
 	CPPUNIT_ASSERT_EQUAL(CurrentTime,stringTest11);
 	CPPUNIT_ASSERT_EQUAL(CurrentTime,stringTest12);
 	CPPUNIT_ASSERT_EQUAL(CurrentTime,stringTest13);
-	CPPUNIT_ASSERT_EQUAL(CurrentTime,stringTest14);
 	
 	CurrentTime.dump(out);
 	stringTest10.dump(out);
