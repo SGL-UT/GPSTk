@@ -35,7 +35,7 @@ void xCivilTime :: setFromInfoTest (void)
 	Id.insert(make_pair('y',"006"));
 	CPPUNIT_ASSERT(setFromInfo3.setFromInfo(Id));
 	Id.erase('y');
-	CPPUNIT_ASSERT(!(setFromInfo4.setFromInfo(Id)));
+	CPPUNIT_ASSERT(setFromInfo4.setFromInfo(Id));
 	Id.erase('m');
 	Id.insert(make_pair('b',"AAA"));
 	CPPUNIT_ASSERT(!(setFromInfo5.setFromInfo(Id)));

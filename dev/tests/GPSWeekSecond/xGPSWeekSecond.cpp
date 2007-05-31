@@ -20,7 +20,7 @@ void xGPSWeekSecond :: setFromInfoTest (void)
 	Id.insert(make_pair('g',"13500"));
 	CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
 	Id.erase('F');
-	CPPUNIT_ASSERT(!(setFromInfo2.setFromInfo(Id)));
+	CPPUNIT_ASSERT(setFromInfo2.setFromInfo(Id));
 	ofstream out("Logs/printfOutput");
 	
 	out << setFromInfo1 << endl;

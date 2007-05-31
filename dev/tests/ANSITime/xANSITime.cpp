@@ -19,7 +19,7 @@ void xANSITime :: setFromInfoTest (void)
 	Id.insert(make_pair('K',"13500000"));
 	CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
 	Id.erase('K');
-	CPPUNIT_ASSERT(!(setFromInfo2.setFromInfo(Id)));
+	CPPUNIT_ASSERT(setFromInfo2.setFromInfo(Id));
 	ofstream out("Logs/printfOutput");
 	
 	out << setFromInfo1 << endl;

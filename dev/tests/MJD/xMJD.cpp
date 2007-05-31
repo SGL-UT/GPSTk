@@ -19,7 +19,7 @@ void xMJD :: setFromInfoTest (void)
 	Id.insert(make_pair('Q',"135000"));
 	CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
 	Id.erase('Q');
-	CPPUNIT_ASSERT(!(setFromInfo2.setFromInfo(Id)));
+	CPPUNIT_ASSERT(setFromInfo2.setFromInfo(Id));
 	ofstream out("Logs/printfOutput");
 	
 	out << setFromInfo1 << endl;

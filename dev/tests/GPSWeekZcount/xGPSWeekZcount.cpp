@@ -14,13 +14,17 @@ void xGPSWeekZcount :: setFromInfoTest (void)
 {
 	gpstk::GPSWeekZcount setFromInfo1;
 	gpstk::GPSWeekZcount setFromInfo2;
+	gpstk::GPSWeekZcount setFromInfo3;
 	
 	gpstk::TimeTag::IdToValue Id;
 	Id.insert(make_pair('F',"1300"));
 	Id.insert(make_pair('z',"13500"));
 	CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
-	Id.erase('F');
-	CPPUNIT_ASSERT(!(setFromInfo2.setFromInfo(Id)));
+	Id.erase('z');
+        Id.insert(make_pair('w',"3"));
+	CPPUNIT_ASSERT(setFromInfo2.setFromInfo(Id));
+        Id.erase('F');
+	CPPUNIT_ASSERT(setFromInfo3.setFromInfo(Id));
 	ofstream out("Logs/printfOutput");
 	
 	out << setFromInfo1 << endl;

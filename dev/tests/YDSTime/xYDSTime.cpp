@@ -33,7 +33,7 @@ void xYDSTime :: setFromInfoTest (void)
 	Id.insert(make_pair('y',"2006"));
 	CPPUNIT_ASSERT(setFromInfo4.setFromInfo(Id));
 	Id.erase('y');
-	CPPUNIT_ASSERT(!(setFromInfo5.setFromInfo(Id)));
+	CPPUNIT_ASSERT(setFromInfo5.setFromInfo(Id));
 	ofstream out("Logs/printfOutput");
 	
 	out << setFromInfo1 << endl;
