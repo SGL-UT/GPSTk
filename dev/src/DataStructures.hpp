@@ -681,7 +681,7 @@ namespace gpstk
                 for (it = (*this).begin(); it != (*this).end(); ++it) 
                 {
                     size_t idx(0);
-                    TypeIDSet::iterator itSet;
+                    TypeIDSet::const_iterator itSet;
                     for (itSet = typeSet.begin(); itSet != typeSet.end(); ++itSet) 
                     {
                         (*it).second[(*itSet)] = dataMatrix(pos,idx);
