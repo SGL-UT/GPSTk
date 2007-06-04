@@ -84,7 +84,7 @@ void xRinexEphemerisStore :: BCESfindEphTest (void)
 	
 		CPPUNIT_ASSERT_THROW(Store.findEphemeris(PRN0,bTime),gpstk::EphemerisStore::NoEphemerisFound);
 		CPPUNIT_ASSERT_THROW(Store.findEphemeris(PRN33,bTime),gpstk::EphemerisStore::NoEphemerisFound);
-		CPPUNIT_ASSERT_THROW(Store.findEphemeris(PRN32,crazy),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(Store.findEphemeris(PRN32,crazy),gpstk::EphemerisStore::NoEphemerisFound);
 	}
 	catch (gpstk::Exception& e)
 	{
