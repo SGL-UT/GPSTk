@@ -94,7 +94,8 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
                "Where to send the output. The default is stdout."),
      
      independantOpt('x', "indepndant",
-                    "The independant variable in the analysis. The default is time."),
+                    "The independant variable in the analysis. The default "
+                    "is time."),
      
      ephFileOpt('e', "eph",  "Where to get the ephemeris data. Can be "
                    " rinex, fic, or sp3", true),
@@ -117,13 +118,17 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
      timeSpanOpt('l', "time-span", "How much data to process, in seconds"),
 
      maskAngleOpt('\0', "mask-angle",
-                  "Ignore anomalies on SVs below this elevation. The default is 10 degrees."),
+                  "Ignore anomalies on SVs below this elevation. The default"
+                  " is 10 degrees."),
      
      timeMaskOpt('\0', "time-mask",
-                 "Ignore anomalies on SVs that haven't been above the mask angle for this number of seconds. The default is 0 seconds."),
+                 "Ignore anomalies on SVs that haven't been above the mask"
+                 " angle for this number of seconds. The default is 0 "
+                 "seconds."),
 
      badHealthMaskOpt('b', "bad-health",
-                      "Ignore anomalies associated with SVs that are marked unhealthy."),
+                      "Ignore anomalies associated with SVs that are marked "
+                      "unhealthy."),
 
      smashAdjacentOpt('s', "smash-adjacent",
                       "Combine adjacent lines from the same PRN."),
@@ -143,7 +148,8 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
    obsItemName[oiTrackCount] = "tcnt";
    obsItemName[oiIOD] = "iod";
 
-   for (ObsItemName::const_iterator i=obsItemName.begin(); i!=obsItemName.end(); i++)
+   for (ObsItemName::const_iterator i=obsItemName.begin(); 
+        i!=obsItemName.end(); i++)
       obsItemId[i->second] = i->first;
 }
 
@@ -227,12 +233,16 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
 
    if (verboseLevel)
    {
-      cout << "Using " << obsItemName[oiX] << " as the independant variable." << endl;
-      cout << "Using a mask angle of " << maskAngle << " degrees" << endl;
+      cout << "Using " << obsItemName[oiX] << " as the independant variable." 
+           << endl
+           << "Using a mask angle of " << maskAngle << " degrees" << endl;
       if (badHealthMask)
-         cout << "Ignore anomalies associated with SVs marked unhealthy." << endl;
+         cout << "Ignore anomalies associated with SVs marked unhealthy." 
+              << endl;
       else
-         cout << "Including anomalies associated with SVs marked unhealthy." << endl;
+         cout << "Including anomalies associated with SVs marked unhealthy."
+              << endl;
+              
       MDPHeader::debugLevel = debugLevel;
    }
 
@@ -284,7 +294,8 @@ void DataAvailabilityAnalyzer::spinUp()
          }
       }
       if (!haveAntennaPos)
-         cout << "Did not find station " << msid << " in " << fn << "." << endl;
+         cout << "Did not find station " << msid << " in " << fn 
+              << "." << endl;
    }
 
    const string fn=inputOpt.getValue()[0];
@@ -317,12 +328,19 @@ void DataAvailabilityAnalyzer::spinUp()
       
    if (j<10)
    {
-      cout << "Could not determine data rate after " << i << " epochs. Sorry. This program is really\nwritten to just work with data that is being collected at a fixed data rate.\nI guess it could be re-written to work for changing data rates but I am too\nlazy to do that right now. I'm not, however, too lazy to write needlessly long\ndiagnostic messages." << endl;
+      cout << "Could not determine data rate after " << i << " epochs. Sorry."
+           << " This program is really\nwritten to just work with data that "
+           << "is being collected at a fixed data rate.\nI guess it could be"
+           << " re-written to work for changing data rates but I am too\n"
+           << "lazy to do that right now. I'm not, however, too lazy to "
+           << "write needlessly long\ndiagnostic messages." 
+           << endl;
       exit(-1);
    }
 
    if (verboseLevel)
-      cout << "Data rate is " << epochRate << " seconds after " << i << " epochs." << endl;
+      cout << "Data rate is " << epochRate << " seconds after " << i 
+           << " epochs." << endl;
 }
 
 
@@ -363,14 +381,233 @@ std::string secAsHMS(double seconds, bool frac=false)
 }
 
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::smash(
+   const MissingList& ml, const gpstk::EphemerisStore& eph) const
+{
+   MissingList sml;
+   for (MissingList::const_iterator i = ml.begin(); i != ml.end(); i++)
+   {
+      InView curr = *i;
+      
+      // Sneaking this in here so that all epochs are processed, including epochs
+      // when data from all SVs is missing
+      short prnTemp = 1;
+      short numSVsInView = 0;
+      ECEF rxpos(antennaPos);
+      
+      while (prnTemp <= gpstk::MAX_PRN)
+      {
+         // see if the SV is in view
+         Xvt svXVT;
+         bool NoEph = false;
+   
+         try { svXVT = eph.getPrnXvt(prnTemp, curr.time); }
+         catch(gpstk::Exception& e) 
+         {
+            if (verboseLevel> 1) {cout << e << endl;}
+            NoEph = true;
+         }
+         double elvAngle = 0;
+         if (!NoEph)
+         {
+            try {elvAngle = rxpos.elvAngle(svXVT.x);}
+            catch(gpstk::Exception& e) { if (verboseLevel > 1) 
+            {cout << e << endl;}}
+            if (elvAngle > maskAngle)  { numSVsInView++; }
+         } 
+         prnTemp++;
+      }     
+      
+      curr.numSVsVisible = numSVsInView;
+   
+      
+      if (i == ml.begin())
+      {
+         sml.push_back(curr);
+         continue;
+      }
+
+      InView& prev = *sml.rbegin();
+
+      if (curr.prn == prev.prn && smashAdjacent)
+      {
+         prev.smashCount++;
+         prev.time = curr.time;
+         prev.elevation = curr.elevation;
+         prev.azimuth = curr.azimuth;
+         prev.snr = curr.snr;
+         prev.epochCount = curr.epochCount;
+      }
+      else
+      {
+         sml.push_back(curr);
+      }
+   }
+   
+   return sml;
+}
+
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void DataAvailabilityAnalyzer::process()
+{
+   const string fn=inputOpt.getValue()[0];
+   ObsReader obsReader(fn);
+
+   double x=RSS(antennaPos[0], antennaPos[1], antennaPos[2]);
+   
+   if (x<1)
+   {
+      cout << "Warning! The antenna appears to be within one meter of the" 
+           << endl << "center of the geoid. Please go check it." << endl;
+      return;
+   }
+
+   ObsEpoch oe, prev_oe;
+
+   DayTime firstEpochTime, lastEpochTime;
+   while (obsReader())
+   {
+      oe = obsReader.getObsEpoch();
+      if (startTime > oe.time)
+         continue;
+      if (stopTime < oe.time)
+         break;
+      
+      if (obsReader.epochCount==1)
+      {
+         firstEpochTime = oe.time;
+         if (verboseLevel)
+            cout << "First observation is at " 
+                 << firstEpochTime.printf(timeFormat) << endl;
+      }
+      else
+      {
+         lastEpochTime = oe.time;
+         if (lastEpochTime - firstEpochTime > timeSpan)
+            break;
+         
+         processEpoch(antennaPos, oe, prev_oe);
+      }
+      prev_oe = oe;
+   }
+
+   if (verboseLevel)
+      cout << "Last observation is at " << lastEpochTime.printf(timeFormat) 
+           << endl;
+}
+
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void DataAvailabilityAnalyzer::processEpoch(
+   const Triple& ap, 
+   const ObsEpoch& oe,
+   const ObsEpoch& prev_oe)
+{
+   ECEF rxpos(ap);
+   InView::dump ivdumper(cout, timeFormat);
+   
+   for (DayTime t = prev_oe.time + epochRate; t <= oe.time; t += epochRate)
+   {
+
+      for (int prn=1; prn<=32; prn++)
+         inView[prn].update(prn, t, rxpos, *eph, gm, maskAngle, verboseLevel);
+      
+      if (verboseLevel>2)
+      {
+         cout << t.printf(timeFormat) << "  SVs in view: ";
+         for (int prn=1; prn<=32; prn++)
+            if (inView[prn].up)
+               cout << prn << "(" << setprecision(3)
+                    << inView[prn].elevation << ") ";
+         cout << endl;
+      }
+
+      if (t != oe.time)
+      {
+         InView iv;
+         iv.prn = 0;
+         iv.time = t;
+         missingList.push_back(iv);
+         continue;
+      }
+
+      for (int prn=1; prn<=32; prn++)
+      {
+         ObsEpoch::const_iterator oei;
+         SatID svid(prn, SatID::systemGPS);
+         
+         oei = oe.find(svid);
+         InView& iv=inView[prn];
+         iv.inTrack = oe.size();
+
+         if (oei == oe.end())  // No data from this SV
+         {
+            if (oe.size()<12 && iv.elevation>maskAngle && 
+                (!iv.health || !badHealthMask))
+            {
+               missingList.push_back(iv);
+            }
+         }
+         else // There is data from this SV
+         {
+            if (verboseLevel>3)
+               cout << oei->first << " " << oei->second << endl;
+            if (verboseLevel>3)
+               ivdumper(iv);
+            if (!iv.up)
+            {
+               missingList.push_back(iv);
+            }
+            else
+            {
+               iv.epochCount++;
+               const SvObsEpoch& soe = oei->second;
+               SvObsEpoch::const_iterator q;
+               
+               q = soe.find(ObsID(ObsID::otSNR, ObsID::cbL1, ObsID::tcCA));
+               if (q != soe.end())
+                  iv.snr = q->second;
+            } // else
+         }    // else      
+      }       // for (int prn=1; prn<=32; prn++)
+   }          // for (DayTime t=prev_oe.time+epochRate;t<=oe.time;t+= epochRate)
+}             // void DataAvailabilityAnalyzer::processEpoch()
+
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void DataAvailabilityAnalyzer::shutDown()
+{
+   MissingList sml = smash(missingList, *eph);
+   
+   cout << "\n Availability Raw Results:\n\n";
+   cout << "      Time         Smashes PRN  CCID  Elv    Az  Hlth  SNR    SVs"
+        << " Above Mask       tama\n"
+        << "=================================================================="
+        << "======================\n";
+   
+   for_each(sml.begin(), sml.end(), InView::dump(cout, timeFormat));
+
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void DataAvailabilityAnalyzer::InView::update(
    short prn,
    const DayTime& time,
    const ECEF& rxpos,
    const EphemerisStore& eph,
    GeoidModel& gm,
-   float maskAngle)
+   float maskAngle,
+   const int verbosityLevel)
 {
+   verbosity = verbosityLevel;
+      
    try
    {
       this->prn = prn;
@@ -427,171 +664,6 @@ void DataAvailabilityAnalyzer::InView::update(
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::smash(
-   const MissingList& ml) const
-{
-   MissingList sml;
-   for (MissingList::const_iterator i = ml.begin(); i != ml.end(); i++)
-   {
-      if (i == ml.begin())
-      {
-         sml.push_back(*i);
-         continue;
-      }
-
-      InView& prev = *sml.rbegin();
-      const InView& curr = *i;
-      if (curr.prn == prev.prn && smashAdjacent)
-      {
-         prev.smashCount++;
-         prev.time = curr.time;
-         prev.elevation = curr.elevation;
-         prev.azimuth = curr.azimuth;
-         prev.snr = curr.snr;
-         prev.epochCount = curr.epochCount;
-      }
-      else
-      {
-         sml.push_back(*i);
-      }
-   }
-   return sml;
-}
-
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-void DataAvailabilityAnalyzer::process()
-{
-   const string fn=inputOpt.getValue()[0];
-   ObsReader obsReader(fn);
-
-   double x=RSS(antennaPos[0], antennaPos[1], antennaPos[2]);
-   
-   if (x<1)
-   {
-      cout << "Warning! The antenna appears to be within one meter of the" << endl
-           << "center of the geoid. Please go check it." << endl;
-      return;
-   }
-
-   ObsEpoch oe, prev_oe;
-
-   DayTime firstEpochTime, lastEpochTime;
-   while (obsReader())
-   {
-      oe = obsReader.getObsEpoch();
-      if (startTime > oe.time)
-         continue;
-      if (stopTime < oe.time)
-         break;
-      
-      if (obsReader.epochCount==1)
-      {
-         firstEpochTime = oe.time;
-         if (verboseLevel)
-            cout << "First observation is at " << firstEpochTime.printf(timeFormat) << endl;
-      }
-      else
-      {
-         lastEpochTime = oe.time;
-         if (lastEpochTime - firstEpochTime > timeSpan)
-            break;
-         
-         processEpoch(antennaPos, oe, prev_oe);
-      }
-      prev_oe = oe;
-   }
-
-   if (verboseLevel)
-      cout << "Last observation is at " << lastEpochTime.printf(timeFormat) << endl;
-}
-
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-void DataAvailabilityAnalyzer::processEpoch(
-   const Triple& ap, 
-   const ObsEpoch& oe,
-   const ObsEpoch& prev_oe)
-{
-   ECEF rxpos(ap);
-   InView::dump ivdumper(cout, timeFormat);
-
-   for (DayTime t = prev_oe.time + epochRate; t <= oe.time; t += epochRate)
-   {
-      for (int prn=1; prn<=32; prn++)
-         inView[prn].update(prn, t, rxpos, *eph, gm, maskAngle);
-
-      if (verboseLevel>2)
-      {
-         cout << t.printf(timeFormat) << "  SVs in view: ";
-         for (int prn=1; prn<=32; prn++)
-            if (inView[prn].up)
-               cout << prn << "(" << setprecision(3)
-                    << inView[prn].elevation << ") ";
-         cout << endl;
-      }
-
-      if (t != oe.time)
-      {
-         InView iv;
-         iv.prn = 0;
-         iv.time = t;
-         missingList.push_back(iv);
-         continue;
-      }
-
-      for (int prn=1; prn<=32; prn++)
-      {
-         ObsEpoch::const_iterator oei;
-         SatID svid(prn, SatID::systemGPS);
-         
-         oei = oe.find(svid);
-         InView& iv=inView[prn];
-         iv.inTrack = oe.size();
-
-         if (oei == oe.end())  // No data from this SV
-         {
-            if (oe.size()<12 && iv.elevation>maskAngle && 
-                (!iv.health || !badHealthMask))
-            {
-               missingList.push_back(iv);
-            }
-         }
-         else // There is data from this SV
-         {
-            if (verboseLevel>3)
-               cout << oei->first << " " << oei->second << endl;
-            if (verboseLevel>3)
-               ivdumper(iv);
-            if (!iv.up)
-            {
-               missingList.push_back(iv);
-            }
-            else
-            {
-               iv.epochCount++;
-               const SvObsEpoch& soe = oei->second;
-               SvObsEpoch::const_iterator q;
-               
-               q = soe.find(ObsID(ObsID::otSNR, ObsID::cbL1, ObsID::tcCA));
-               if (q != soe.end())
-                  iv.snr = q->second;
-            }
-         }
-      }
-   }
-}
-
-void DataAvailabilityAnalyzer::shutDown()
-{
-   MissingList sml = smash(missingList);
-
-   for_each(sml.begin(), sml.end(), InView::dump(cout, timeFormat));
-}
-
-
 bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
 {
    double timeUp     = iv.time - iv.firstEpoch;
@@ -605,27 +677,46 @@ bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
    string ccid="all";
    
    cout << left << iv.time.printf(timeFormat)
-        << "+" << setw(4) << iv.smashCount
-        << " prn:";
+        << "   " << setw(4) << iv.smashCount << "  ";
 
    if (iv.prn>0)
    {
-      cout << setw(3) << iv.prn
-           << " ccid:" << ccid
+      cout << setw(3) << iv.prn << " "
+           << ccid << " "
            << fixed << right
-           << " el:" << setprecision(2) << setw(6) << iv.elevation
-           << dir
-           << " az:" << setprecision(0) << setw(3) << iv.azimuth
-           << " hlth:" << hex << setw(2) << iv.health << dec;
+           << setprecision(2) << setw(6) << iv.elevation
+           << dir << "  "
+           << setprecision(0) << setw(3) << iv.azimuth << "  "
+           << hex << setw(2) << iv.health << "   " << dec;
    
       if (iv.up)
-         cout << " snr:" << setprecision(1) << setw(4) << iv.snr
-              << " tama:" << right << setw(11) <<  secAsHMS(timeUpMask);
+         cout << setprecision(1) << setw(4) << iv.snr;
+      else
+         cout << "-El ";
+      
+      if (iv.smashCount == 0)
+         cout << right << setw(14) << iv.numSVsVisible;
+      
+      else
+         cout << right << setw(14) << "n/a-smashed";
+      
+      if (iv.up)
+         cout << right << setw(16) <<  secAsHMS(timeUpMask);
+      else
+         cout << right << setw(16) << "-El";
    }
    else
-      cout << "all";
-
+   {
+      cout << "All";
+      if (iv.smashCount == 0)
+        cout << right << setw(42) << iv.numSVsVisible;
+      else
+        cout << right << setw(42) << "n/a-smashed";
+   }
+      
    cout << endl;
 
    return true;
 }
+
+

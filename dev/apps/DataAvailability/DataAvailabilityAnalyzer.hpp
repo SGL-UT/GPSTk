@@ -91,6 +91,7 @@ private:
 
    typedef std::map<ObsItemEnum, std::string> ObsItemName;
    typedef std::map<std::string, ObsItemEnum> ObsItemId;
+   typedef std::map<gpstk::DayTime, int> SVsInView;
 
    ObsItemName obsItemName;
    ObsItemId obsItemId;
@@ -100,11 +101,12 @@ private:
 
    gpstk::EphemerisStore* eph;
    gpstk::GPSGeoid gm;
-
    gpstk::Triple antennaPos;
    long msid;
 
    float maskAngle;
+   
+   
 
    // This is used to keep track of SV info for both what SVs are in view
    // and when there is a obs that is missing. 
@@ -118,10 +120,13 @@ private:
          const gpstk::ECEF& rxpos,
          const gpstk::EphemerisStore& eph,
          gpstk::GeoidModel& gm,
-         float maskAngle);
+         float maskAngle,
+         const int verbosityLevel);
 
       short prn;
       gpstk::DayTime time;
+      
+      int verbosity;
 
       // Set true when this SV has an elevation greater than 0
       // If this is false, no other fields are valid.
@@ -155,6 +160,9 @@ private:
 
       // The number of SVs in track at this point in time.
       short inTrack;
+      
+      // The number of SVs physically above the mask angle at this time
+      short numSVsVisible;
 
       // The SNR of the CA signal. Note that this will be the SNR of the 
       // most recently received observation when an outage is detected.
@@ -176,9 +184,12 @@ private:
    typedef std::list<InView> MissingList;
    MissingList missingList;
 
-   std::map<int, InView> inView;
-
    // This combines adjecent items from the same SV
-   MissingList smash(const MissingList& ml) const;
+   MissingList smash(const MissingList& ml, 
+                     const gpstk::EphemerisStore& eph) const;
+   
+   std::map<int, InView> inView;                         
+   
+   
 };
 #endif
