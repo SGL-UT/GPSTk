@@ -55,6 +55,7 @@
 // Geomatics
 #include "GSatID.hpp"
 
+namespace gpstk {
 //------------------------------------------------------------------------------------
 // double difference identification
 class DDid {
@@ -137,5 +138,6 @@ public:
    friend std::ostream& operator<<(std::ostream& s, const OWid& t);
 };
 
+}  // end namespace gpstk
 //------------------------------------------------------------------------------------
 #endif

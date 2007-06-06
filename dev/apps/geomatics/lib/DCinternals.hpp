@@ -27,6 +27,7 @@
  * Class information used internally in DiscCorr.cpp
  */
 
+namespace gpstk {
 //------------------------------------------------------------------------------------
 // constants used in linear combinations
 const double CFF=C_GPS_M/OSC_FREQ;
@@ -315,3 +316,5 @@ private:
    map<string,int> learn;
 
 }; // end class GDCPass
+
+}  // end namespace gpstk

@@ -35,7 +35,7 @@
 #define GPSTK_DISCONTINUITY_CORRECTOR_INCLUDE
 
 #include "DayTime.hpp"
-#include "RinexSatID.hpp"
+#include "GSatID.hpp"
 #include "RinexObsHeader.hpp"
 #include "SatPass.hpp"
 #include "GDCconfiguration.hpp"

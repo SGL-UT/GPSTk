@@ -34,10 +34,10 @@
  
 //------------------------------------------------------------------------------------
 // GPSTk includes
-#include "RobustStats.hpp"
-#include "StringUtils.hpp"
 #include "Exception.hpp"
+#include "StringUtils.hpp"
 #include "Matrix.hpp"
+#include "RobustStats.hpp"
 
 //------------------------------------------------------------------------------------
 // moved to RobustStats.hpp as macros
@@ -99,7 +99,7 @@ void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
       // starting stem=stem(min=xd[0]), and stem step==scale
    i = 1+short((range/scale)+0.5);              // number of stems
    if(xd[0]*xd[nd-1] < 0.0) i++;                // add one stem for zero
-   if(nd > 8 && i < 10 && xd[nd-1] != xd[0]) {  // fudge so #stems is big enough
+   if(nd > 8 && i < 8 && xd[nd-1] != xd[0]) {   // fudge so #stems is big enough
       scale /= 10.0;
       nscale--;
    }

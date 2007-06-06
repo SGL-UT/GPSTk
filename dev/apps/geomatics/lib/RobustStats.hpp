@@ -41,9 +41,8 @@
 
 // GPSTk
 #include "Exception.hpp"
-#include "MiscMath.hpp"
-#include "StringUtils.hpp"
 
+namespace gpstk {
 //------------------------------------------------------------------------------------
 #define ABSOLUTE(x) ((x) < T() ? -(x) : (x))
 /// tuning constant used in M-estimate and Robust least squares (SRIFilter.cpp)
@@ -54,8 +53,6 @@
 #define RobustTuningE (0.6745)
 
 //------------------------------------------------------------------------------------
-namespace gpstk
-{
    /** @addtogroup math */
    //@{
 
@@ -473,7 +470,7 @@ namespace gpstk
 
    //@}
 
-}  // end gpstk namespace
+}  // end namespace gpstk
 
 #undef ABSOLUTE
 

@@ -80,7 +80,7 @@ SatPassData::SatPassData(void)
 SatPassData::~SatPassData(void) { }
 
 // Default constructor
-SatPass::SatPass(RinexSatID insat, double indt)
+SatPass::SatPass(GSatID insat, double indt)
 {
    sat = insat;
    dt = indt;
@@ -213,22 +213,22 @@ void SatPass::smooth(bool smoothPR, bool smoothPH, ostream& os)
    RB1 = (D11*(PB1.Average()) + D12*(PB2.Average()))/wl1;
    RB2 = (D21*(PB1.Average()) + D22*(PB2.Average()))/wl2;
 
-   os << "SMT" << fixed << setprecision(1)
+   os << "SMT" << fixed << setprecision(2)
       << " " << sat
       << " " << firstTime.printf(outFormat)
       << " " << lastTime.printf(outFormat)
       << " " << setw(5) << PB1.N()
-      << " " << setw(5) << PB1.Average()
+      << " " << setw(12) << PB1.Average()
       << " " << setw(5) << PB1.StdDev()
-      << " " << setw(5) << PB1.Minimum()
-      << " " << setw(5) << PB1.Maximum()
+      << " " << setw(12) << PB1.Minimum()
+      << " " << setw(12) << PB1.Maximum()
       << " " << setw(5) << PB2.N()
-      << " " << setw(5) << PB2.Average()
+      << " " << setw(12) << PB2.Average()
       << " " << setw(5) << PB2.StdDev()
-      << " " << setw(5) << PB2.Minimum()
-      << " " << setw(5) << PB2.Maximum()
-      << " " << setw(6) << RB1
-      << " " << setw(6) << RB2
+      << " " << setw(12) << PB2.Minimum()
+      << " " << setw(12) << PB2.Maximum()
+      << " " << setw(12) << RB1
+      << " " << setw(12) << RB2
       << endl;
 
    if(!smoothPH && !smoothPR) return;

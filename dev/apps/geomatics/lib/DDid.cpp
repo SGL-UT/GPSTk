@@ -50,6 +50,7 @@
 using namespace gpstk;
 using namespace std;
 
+namespace gpstk {
 //------------------------------------------------------------------------------------
 // empty constructor - sites are empty and sats are GPS,-1
 //DDid::DDid(void)
@@ -258,5 +259,6 @@ ostream& operator<<(ostream& s, const OWid& t)
    return s;
 }
 
+} // end namespace gpstk
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------

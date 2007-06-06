@@ -71,7 +71,7 @@ using namespace StringUtils;
 //------------------------------------------------------------------------------------
 // prgm data
 string PrgmName("DiscFix");
-string PrgmVers("4.0 2/28/06");
+string PrgmVers("4.1 4/07/06");
 
 typedef struct configuration {
       // input
@@ -85,8 +85,8 @@ typedef struct configuration {
       // processing
    double dt;
    bool UseCA;
-   vector<RinexSatID> ExSV;
-   RinexSatID SVonly;
+   vector<GSatID> ExSV;
+   GSatID SVonly;
       // output files
    string LogFile,OutFile;
    ofstream oflog,ofout;
@@ -135,13 +135,13 @@ bool UsingCA;
 vector<SatPass> SPList;
 vector<unsigned int> SPIndexList;
 // this is a map relating a satellite to the index in SVPList of the current pass
-map<RinexSatID,int> SatToCurrentIndexMap;
+map<GSatID,int> SatToCurrentIndexMap;
 
 //------------------------------------------------------------------------------------
 // prototypes
 int ReadFile(int nfile) throw(Exception);
 int ProcessOneEntireEpoch(RinexObsData& ro) throw(Exception);
-int ProcessOneSatOneEpoch(RinexSatID, DayTime, SatPassData& ) throw(Exception);
+int ProcessOneSatOneEpoch(GSatID, DayTime, SatPassData& ) throw(Exception);
 
 void ProcessSatPass(int index) throw(Exception);
 int AfterReadingFiles(void) throw(Exception);
@@ -167,7 +167,7 @@ int main(int argc, char **argv)
       Title += PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
       cout << Title;
 
-         // set fill char in RinexSatID
+         // set fill char in GSatID
       config.SVonly.setfill('0');
       config.FirstEpoch = DayTime::BEGINNING_OF_TIME;
       config.LastEpoch = DayTime::BEGINNING_OF_TIME;
@@ -351,7 +351,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
       int i,j,k;
       double dt;
       string str,datastr;
-      RinexSatID sat;
+      GSatID sat;
       SatPassData spd;
       RinexObsData::RinexObsTypeMap otmap;
       RinexObsData::RinexSatMap::iterator it;
@@ -483,12 +483,12 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
 }
 
 //------------------------------------------------------------------------------------
-int ProcessOneSatOneEpoch(RinexSatID sat, DayTime tt, SatPassData& spd)
+int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, SatPassData& spd)
    throw(Exception)
 {
    try {
       int index;
-      map<RinexSatID,int>::const_iterator kt;
+      map<GSatID,int>::const_iterator kt;
 
          // find the current SatPass for this sat
       kt = SatToCurrentIndexMap.find(sat);
@@ -743,7 +743,7 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Excepti
       bool first;
       int in,n;
       string str;
-      RinexSatID sat;
+      GSatID sat;
       RinexObsData roe;
       SatPassData spd;
 
@@ -863,9 +863,9 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Excepti
 void PrintSPList(ostream& os, string msg, const vector<SatPass>& v, bool printTime)
 {
    int i,j,gap;
-   RinexSatID sat;
-   map<RinexSatID,int> lastSP;
-   map<RinexSatID,int>::const_iterator kt;
+   GSatID sat;
+   map<GSatID,int> lastSP;
+   map<GSatID,int>::const_iterator kt;
 
    os << "#" << leftJustify(msg,4)
       << " gap tot sat  ok  s      start time        end time  dt\n";
@@ -982,7 +982,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    
    CommandOption dashSV(CommandOption::hasArgument, CommandOption::stdType,
       0,"onlySat"," --onlySat <sat>     Process only satellite <sat> "
-      "(a GPS RinexSatID, e.g. G21)");
+      "(a GPS SatID, e.g. G21)");
    dashSV.setMaxCount(1);
    
    CommandOption dashXsat(CommandOption::hasArgument, CommandOption::stdType,
@@ -1117,18 +1117,8 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    delete[] CArgs;
 
       // -------------------------------------------------
-   if(dashh.getCount() > 0) {
-      Par.displayUsage(cout,false);
-      help = true;
-   }
-   if(DChelp) {
-      GDConfig.DisplayParameterUsage(cout,DChelpall);
-      cout << "For " << PrgmName << ", GDC commands are of the form --DC<GDCcmd>,"
-         << " e.g. --DCWLSigma=1.5\n" << endl;
-   }
-
-   if (Par.hasErrors())
-   {
+   if(dashh.getCount() > 0) help = true;
+   if(Par.hasErrors()) {
       if(!help && !DChelp) {
          cout << "\nErrors found in command line input:\n";
          Par.dumpErrors(cout);
@@ -1148,47 +1138,26 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
 
       // do help first
    if(dashh.getCount()) help=true;
-      // then log file
-   if(dashLog.getCount()) {
-      values = dashLog.getValue();
-      // pick the last one entered
-      config.LogFile = values[values.size()-1];
-      if(help) cout << "Log file is " << config.LogFile << endl;
-   }
-
-      // open the log file
-   config.oflog.open(config.LogFile.c_str(),ios::out);
-   if(config.oflog.fail()) {
-      cout << PrgmName << " failed to open log file "
-         << config.LogFile << ". Abort.\n";
-      return -1;
-   }
-   cout << PrgmName << " is writing to log file " << config.LogFile << endl;
-
-      // output first stuff to log file
-   config.oflog << Title;
-      // allow GDC to output to log file
-   GDConfig.setDebugStream(config.oflog);
 
       // now get the rest of the options
    if(dashVerb.getCount()) config.verbose=true;
    if(dashi.getCount()) {
       values = dashi.getValue();
-      if(help) config.oflog << "Input RINEX obs files are:\n";
+      if(help) cout << "Input RINEX obs files are:\n";
       for(i=0; i<values.size(); i++) {
          config.InputObsName.push_back(values[i]);
-         if(help) config.oflog << "   " << values[i] << endl;
+         if(help) cout << "   " << values[i] << endl;
       }
    }
    if(dashd.getCount()) {
       values = dashd.getValue();
       config.Directory = values[0];
-      if(help) config.oflog << "Input Directory is " << config.Directory << endl;
+      if(help) cout << "Input Directory is " << config.Directory << endl;
    }
    if(dashith.getCount()) {
       values = dashith.getValue();
       config.ith = asDouble(values[0]);
-      if(help) config.oflog << "Decimate value is " << config.ith << endl;
+      if(help) cout << "Decimate value is " << config.ith << endl;
    }
 
    // TD put try {} around setToString and catch invalid formats...
@@ -1204,7 +1173,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
          config.begTime.setToString(field[0]+","+field[1]+","+field[2]+","
             +field[3]+","+field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
       else {
-         config.oflog << "Error: invalid --beginTime input: " << values[0] << endl;
+         cout << "Error: invalid --beginTime input: " << values[0] << endl;
       }
       if(help) cout << " Input: begin time " << values[0] << " = "
          << config.begTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
@@ -1221,7 +1190,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
          config.endTime.setToString(field[0]+","+field[1]+","+field[2]
             +","+field[3]+","+field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
       else {
-         config.oflog << "Error: invalid --endTime input: " << values[0] << endl;
+         cout << "Error: invalid --endTime input: " << values[0] << endl;
       }
       if(help) cout << " Input: end time " << values[0] << " = "
          << config.endTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
@@ -1229,125 +1198,148 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
 
    if(dashCA.getCount()) {
       config.UseCA = true;
-      if(help) config.oflog << "Input: Set the 'Use C/A code range' flag\n";
+      if(help) cout << "Input: Set the 'Use C/A code range' flag\n";
    }
    if(dashDT.getCount()) {
       values = dashDT.getValue();
       config.dt = asDouble(values[0]);
-      if(help) config.oflog << "dt is set to " << config.dt << " seconds." << endl;
+      if(help) cout << "dt is set to " << config.dt << " seconds." << endl;
    }
    if(dashGap.getCount()) {
       values = dashGap.getValue();
       config.MaxGap = asDouble(values[0]);
-      if(help) config.oflog << "Max gap is " << config.MaxGap << " seconds which is "
+      if(help) cout << "Max gap is " << config.MaxGap << " seconds which is "
          << int(config.MaxGap/config.dt) << " points." << endl;
    }
    //if(dashPts.getCount()) {
       //values = dashPts.getValue();
       //config.MinPts = asInt(values[0]);
-      //if(help) config.oflog << "Minimum points is " << config.MinPts << endl;
+      //if(help) cout << "Minimum points is " << config.MinPts << endl;
    //}
    if(dashXsat.getCount()) {
       values = dashXsat.getValue();
       for(i=0; i<values.size(); i++) {
-         RinexSatID p(values[i]);
-         if(help) config.oflog << "Exclude satellite " << p << endl;
+         GSatID p(values[i]);
+         if(help) cout << "Exclude satellite " << p << endl;
          config.ExSV.push_back(p);
       }
    }
    if(dashSV.getCount()) {
       values = dashSV.getValue();
-      RinexSatID p(values[0]);
+      GSatID p(values[0]);
       config.SVonly = p;
-      if(help) config.oflog << "Process only satellite : " << p << endl;
+      if(help) cout << "Process only satellite : " << p << endl;
    }
    if(dashFormat.getCount()) {
       values = dashFormat.getValue();
       config.format = values[0];
-      if(help) config.oflog << "Output times with format: " << config.format << endl;
+      if(help) cout << "Output times with format: " << config.format << endl;
    }
    if(dashOut.getCount()) {
       values = dashOut.getValue();
       config.OutFile = values[0];
-      if(help) config.oflog << "Command output file is " << config.OutFile << endl;
+      if(help) cout << "Command output file is " << config.OutFile << endl;
    }
    if(dashRfile.getCount()) {
       values = dashRfile.getValue();
       // pick the last one entered
       config.OutRinexObs = values[values.size()-1];
-      if(help) config.oflog << "Output RINEX file name is "
+      if(help) cout << "Output RINEX file name is "
          << config.OutRinexObs << endl;
    }
    if(dashRrun.getCount()) {
       values = dashRrun.getValue();
       config.HDRunby = values[0];
-      if(help) config.oflog << "Output RINEX 'RUN BY' is " << config.HDRunby << endl;
+      if(help) cout << "Output RINEX 'RUN BY' is " << config.HDRunby << endl;
    }
    if(dashRobs.getCount()) {
       values = dashRobs.getValue();
       config.HDObs = values[0];
-      if(help) config.oflog << "Output RINEX 'OBSERVER' is " << config.HDObs << endl;
+      if(help) cout << "Output RINEX 'OBSERVER' is " << config.HDObs << endl;
    }
    if(dashRag.getCount()) {
       values = dashRag.getValue();
       config.HDAgency = values[0];
-      if(help) config.oflog << "Output RINEX 'AGENCY' is " << config.HDAgency << endl;
+      if(help) cout << "Output RINEX 'AGENCY' is " << config.HDAgency << endl;
    }
    if(dashRmark.getCount()) {
       values = dashRmark.getValue();
       config.HDMarker = values[0];
-      if(help) config.oflog << "Output RINEX 'MARKER' is " << config.HDMarker << endl;
+      if(help) cout << "Output RINEX 'MARKER' is " << config.HDMarker << endl;
    }
    if(dashRnumb.getCount()) {
       values = dashRnumb.getValue();
       config.HDNumber = values[0];
-      if(help) config.oflog << "Output RINEX 'NUMBER' is " << config.HDNumber << endl;
+      if(help) cout << "Output RINEX 'NUMBER' is " << config.HDNumber << endl;
    }
    if(dashSmooth.getCount()) {
       config.smoothPH = config.smoothPR = true;
-      if(help) config.oflog << "'smooth both' option is on\n";
+      if(help) cout << "'smooth both' option is on\n";
    }
    if(dashSmoothPR.getCount()) {
       config.smoothPR = true;
-      if(help) config.oflog << "smooth the pseudorange\n";
+      if(help) cout << "smooth the pseudorange\n";
    }
    if(dashSmoothPH.getCount()) {
       config.smoothPH = true;
-      if(help) config.oflog << "debias the phase\n";
+      if(help) cout << "debias the phase\n";
    }
    //if(dashCAOut.getCount()) {
    //   config.CAOut = true;
-   //   if(help) config.oflog << "Output the C/A code to RINEX\n";
+   //   if(help) cout << "Output the C/A code to RINEX\n";
    //}
    //if(dashDOut.getCount()) {
    //   config.DopOut = true;
-   //   if(help) config.oflog << "Output the doppler to RINEX\n";
+   //   if(help) cout << "Output the doppler to RINEX\n";
    //}
 
    if(Rest.getCount() && help) {
-      config.oflog << "Remaining options:" << endl;
+      cout << "Remaining options:" << endl;
       values = Rest.getValue();
-      for (i=0; i<values.size(); i++) config.oflog << values[i] << endl;
+      for (i=0; i<values.size(); i++) cout << values[i] << endl;
    }
    //if(config.verbose && help) {
-   //   config.oflog << "\nTokens on command line (" << Args.size() << ") are:"
+   //   cout << "\nTokens on command line (" << Args.size() << ") are:"
    //      << endl;
-   //   for(j=0; j<Args.size(); j++) config.oflog << Args[j] << endl;
+   //   for(j=0; j<Args.size(); j++) cout << Args[j] << endl;
    //}
 
    //if(config.verbose) { // if GDCorrector::Debug is not set higher, set to 2
       //GDCorrector.SetParameter(string("Debug=2"));
    //}
 
+      // if help, print usage and quit
    if(help || DChelp) {
-      if(help) Par.displayUsage(config.oflog,false);
+      if(help) Par.displayUsage(cout,false);
       if(DChelp) {
-         GDConfig.DisplayParameterUsage(config.oflog,DChelpall);
-         config.oflog << "For " << PrgmName
+         GDConfig.DisplayParameterUsage(cout,DChelpall);
+         cout << "For " << PrgmName
             << ", GDC commands are of the form --DC<GDCcmd>,"
             << " e.g. --DCWLSigma=1.5\n" << endl;
       }
       return 1;
+   }
+
+      // get the log file name
+   if(dashLog.getCount()) {
+      values = dashLog.getValue();
+      // pick the last one entered
+      config.LogFile = values[values.size()-1];
+      //if(help) cout << "Log file is " << config.LogFile << endl;
+   }
+      // open the log file
+   config.oflog.open(config.LogFile.c_str(),ios::out);
+   if(config.oflog.fail()) {
+      cout << PrgmName << " failed to open log file "
+         << config.LogFile << ". Abort.\n";
+      return -1;
+   }
+   else {
+      cout << PrgmName << " is writing to log file " << config.LogFile << endl;
+         // output first stuff to log file
+      config.oflog << Title;
+         // allow GDC to output to log file
+      GDConfig.setDebugStream(config.oflog);
    }
 
    if(config.dt <= 0.0) {

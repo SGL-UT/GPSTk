@@ -31,7 +31,7 @@
 #define GPSTK_SATELLITE_PASS_INCLUDE
 
 #include "DayTime.hpp"
-#include "RinexSatID.hpp"
+#include "GSatID.hpp"
 #include "RinexObsHeader.hpp"
 #include "Exception.hpp"
 
@@ -42,8 +42,7 @@ namespace gpstk {
    /** @addtogroup rinexutils */
    //@{
 
-/** class SatPassData is used in SatPass to hold the RINEX data.
-  */
+/** class SatPassData is used in SatPass to hold the RINEX data. */
 class SatPassData {
 public:
    	/// Constructor
@@ -94,7 +93,7 @@ public:
 
       // member functions ----------------------------------------------
    	/// Default constructor
-   SatPass(RinexSatID sat, double dt);
+   SatPass(GSatID sat, double dt);
 
    	/// Destructor
    ~SatPass(void);
@@ -132,7 +131,7 @@ public:
    DayTime getLastTime(void) const throw() { return lastTime; }
 
       /// get the satellite of this SatPass
-   RinexSatID getSat(void) const throw() { return sat; }
+   GSatID getSat(void) const throw() { return sat; }
 
       /// get the time interval of this SatPass
    double getDT(void) const throw() { return dt; }
@@ -191,7 +190,7 @@ protected:
    DayTime firstTime,lastTime;
 
    	/// Satellite identifier for this data.
-   RinexSatID sat;
+   GSatID sat;
 
 		/// number of timetags with good data in the data arrays.
 	unsigned int ngood;

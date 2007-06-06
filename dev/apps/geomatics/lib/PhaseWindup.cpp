@@ -55,6 +55,9 @@ using namespace gpstk;
 using namespace StringUtils;
 
 // -----------------------------------------------------------------------------------
+namespace gpstk {
+
+// -----------------------------------------------------------------------------------
 void SolarPosition(DayTime t, double& lat, double& lon, double& R, double& AR);
 Matrix<double> SatelliteAttitude(DayTime& tt, Position& SV, double& sf);
 double shadowFactor(double Rearth, double Rsun, double dES);
@@ -266,11 +269,11 @@ try {
    D = t.JD() - 2451545.0;
    g = (357.529 + 0.98560028 * D) * DEG_TO_RAD;
    q = 280.459 + 0.98564736 * D;
-   L = (q + 1.915 * sin(g) + 0.020 * sin(2*g)) * DEG_TO_RAD;
+   L = (q + 1.915 * ::sin(g) + 0.020 * ::sin(2*g)) * DEG_TO_RAD;
 
    e = (23.439 - 0.00000036 * D) * DEG_TO_RAD;
-   RA = atan2(cos(e)*sin(L),cos(L)) * RAD_TO_DEG;
-   DEC = asin(sin(e)*sin(L)) * RAD_TO_DEG;
+   RA = atan2(::cos(e)*::sin(L),::cos(L)) * RAD_TO_DEG;
+   DEC = ::asin(::sin(e)*::sin(L)) * RAD_TO_DEG;
 
    //equation of time = apparent solar time minus mean solar time
    //= [q-RA (deg)]/(15deg/hr)
@@ -283,12 +286,12 @@ try {
    lat = DEC;
 
    // ECEF unit vector in direction Earth to sun
-   //xhat = cos(lat*DEG_TO_RAD)*cos(lon*DEG_TO_RAD);
-   //yhat = cos(lat*DEG_TO_RAD)*sin(lon*DEG_TO_RAD);
-   //zhat = sin(lat*DEG_TO_RAD);
+   //xhat = ::cos(lat*DEG_TO_RAD)*::cos(lon*DEG_TO_RAD);
+   //yhat = ::cos(lat*DEG_TO_RAD)*::sin(lon*DEG_TO_RAD);
+   //zhat = ::sin(lat*DEG_TO_RAD);
 
    // R in AU
-   R = 1.00014 - 0.01671 * cos(g) - 0.00014 * cos(2*g);
+   R = 1.00014 - 0.01671 * ::cos(g) - 0.00014 * ::cos(2*g);
    // apparent angular radius in degrees
    AR = 0.2666/R;
    // convert to meters
@@ -399,5 +402,6 @@ catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
+} // end namespace gpstk
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------

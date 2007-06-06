@@ -92,7 +92,6 @@ namespace gpstk {
 
       // operator=, copy constructor and destructor built by compiler
 
-      /// return a character based on the system
       /// return the single-character system descriptor
       char systemChar() const throw()
       {
@@ -104,6 +103,20 @@ namespace gpstk {
             case systemTransit: return 'T';
             case systemLEO: return 'L';
             default: return '?';
+         }
+      };
+
+      /// return string describing system
+      std::string systemString() const throw()
+      {
+         switch(system) {
+            case systemGPS:     return "GPS";
+            case systemGalileo: return "Galileo";
+            case systemGlonass: return "Glonass";
+            case systemGeosync: return "Geosync";
+            case systemTransit: return "Transit";
+            case systemLEO: return "LEO";
+            default:            return "Unknown";
          }
       };
 

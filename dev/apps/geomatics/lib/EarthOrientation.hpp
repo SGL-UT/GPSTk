@@ -59,8 +59,7 @@
 #include "DayTime.hpp"
 
 //------------------------------------------------------------------------------------
-namespace gpstk
-{
+namespace gpstk {
 
    /// Earth orientation parameters
    class EarthOrientation

@@ -38,7 +38,7 @@ using namespace StringUtils;
 //------------------------------------------------------------------------------------
 // version number for the entire gpstk discontinuity corrector code,
 // most convenient to keep it here as GDCpass inherits this
-string GDCconfiguration::GDCVersion = string("5.0 9/01/2006");
+string GDCconfiguration::GDCVersion = string("5.1 4/07/2007");
 
 //------------------------------------------------------------------------------------
 // Set a parameter in the configuration; the input string 'cmd' is of the form

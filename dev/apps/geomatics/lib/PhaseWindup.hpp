@@ -44,16 +44,16 @@
 #ifndef PHASE_WINDUP_INCLUDE
 #define PHASE_WINDUP_INCLUDE
 
+namespace gpstk {
 // -----------------------------------------------------------------------------------
-gpstk::Matrix<double> UpEastNorth(gpstk::Position& P);
-gpstk::Matrix<double> SingleAxisRotation(double angle,
-                                         int axis);
-double PhaseWindup(gpstk::DayTime& tt,
-                   gpstk::Position& SV,
-                   gpstk::Position& Rx2Tx,
-                   gpstk::Position& RxW,
-                   gpstk::Position& RxN,
-                   double& shadow);
+   Matrix<double> UpEastNorth(Position& P);
+   Matrix<double> SingleAxisRotation(double angle, int axis);
+   double PhaseWindup(DayTime& tt,
+                      Position& SV,
+                      Position& Rx2Tx,
+                      Position& RxW,
+                      Position& RxN,
+                      double& shadow);
 // -----------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------
+}  // end namespace gpstk
 #endif

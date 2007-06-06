@@ -37,6 +37,7 @@
 #include <fstream>
 #include "Exception.hpp"
 
+namespace gpstk {
    /// class GDCconfiguration encapsulates the configuration for input to the
    /// GPSTK Discontinuity Corrector.
 class GDCconfiguration
@@ -88,5 +89,6 @@ protected:
 
 }; // end class GDCconfiguration
 
+}  // end namespace gpstk
 //------------------------------------------------------------------------------------
 #endif

@@ -300,10 +300,10 @@ try {
          }
 
          // change the arrays
-         //data[i].L1 = unused!
+         data[i].L1 = gfp + gfr;                         // only used in GF
          data[i].L2 = gfp;
          data[i].P1 = wlbias;
-         data[i].P2 = -gfr;
+         data[i].P2 = - gfr;
 
          it->npts++;
       }
@@ -753,7 +753,7 @@ try {
       test = 0;
       if(pastStats.N() > 0 && futureStats.N() > 0)
          test = fabs(futureStats.Average()-pastStats.Average());
-      limit = sqrt(futureStats.Variance() + pastStats.Variance());
+      limit = ::sqrt(futureStats.Variance() + pastStats.Variance());
       // 'change the arrays' A1 and A2
       A1[i] = test;
       A2[i] = limit;
@@ -920,7 +920,7 @@ try {
    int j,jp,jm,pass4,pass5,Pass;
 
    // A1 = test = fabs(futureStats.Average() - pastStats.Average());
-   // A2 = limit = sqrt(futureStats.Variance() + pastStats.Variance());
+   // A2 = limit = ::sqrt(futureStats.Variance() + pastStats.Variance());
    // all units WL cycles
 
    // CONDITION 1     CONDITION 2
@@ -1046,18 +1046,18 @@ try {
       // TD mark the first slip 'fixed' - unmark it - or something
    }
    // change the biases - reset the GFP bias so that it matches the GFR
-   // (NB dumpSegments does not remove a bias from L1)
    else {                                                         // GF
-      ifirst = -1;
-      for(i=kt->nbeg; i <= kt->nend; i++) {
+//temp
+dumpSegments("GFFbefRebias",2,true);
+      for(ifirst=-1,i=kt->nbeg; i <= kt->nend; i++) {
          if(!(data[i].flag & OK)) continue;
          if(ifirst == -1) {
             ifirst = i;
-            kt->bias2 = data[ifirst].L2 - data[ifirst].P2;
+            kt->bias2 = data[ifirst].L2 + data[ifirst].P2;
             kt->bias1 = data[ifirst].P1;
          }
          // change the data - recompute GFR-GFP so it has one consistent bias
-         data[i].L1 = data[i].L2 - kt->bias2 - data[i].P2;
+         data[i].L1 = data[i].L2 + data[i].P2;
       }
    }
 
@@ -1153,7 +1153,7 @@ try {
    //if(cfg(DT)*(right->nbeg - left->nend) > cfg(MaxGap)) break;
 
       // test that total variance is small
-   //if(sqrt(left->WLStats.Variance() + right->WLStats.Variance())
+   //if(::sqrt(left->WLStats.Variance() + right->WLStats.Variance())
    //   / (left->WLStats.N() + right->WLStats.N()) < cfg(WLFixSigma)) {
    //   log << "Cannot fix WL slip (noisy) at " << right->nbeg
    //      << " " << time(right->nbeg).printf(outFormat)
@@ -1231,6 +1231,8 @@ try {
 
    GDCUniqueFix++;
 
+//temp
+log << "GFslipFix " << GDCUniqueFix << " biases L: " << left->bias2 << " R: " << right->bias2 << endl;
    // find Npts points on each side of slip
    nb = left->nend;
    i = 1;
@@ -1240,7 +1242,8 @@ try {
       if(data[nb].flag & OK) {
          if(ilast == -1) ilast = nb;
          i++; nl++;
-         Lstats.Add(data[nb].L1);
+         Lstats.Add(data[nb].L1 - left->bias2);
+log << "LDATA " << nb << " " << data[nb].L1-left->bias2 << endl;
       }
       nb--;
    }
@@ -1250,7 +1253,8 @@ try {
    while(ne < right->nend && i < Npts) {
       if(data[ne].flag & OK) {
          i++; nr++;
-         Rstats.Add(data[ne].L1);
+         Rstats.Add(data[ne].L1 - right->bias2);
+log << "RDATA " << ne << " " << data[ne].L1-right->bias2 << endl;
       }
       ne++;
    }
@@ -1269,7 +1273,7 @@ try {
 
    // TD worry about too small pieces - nr or nl too small
 
-   // estimate the slip using polynomial fits
+   // estimate the slip using polynomial fits - this prints GFE data
    nadj = EstimateGFslipFix(left,right,nb,ne,n1);
 
    // adjust the adjustment if it is not consistent with Lstats vs Rstats
@@ -1278,12 +1282,13 @@ try {
    // difference should be consistent with R/Lstats.StdDev
    // if not, replace nadj with b. - dn1
    dnGFR = Rstats.Average() - Lstats.Average();
-   if(fabs(n1+nadj-dnGFR) > (Rstats.StdDev()+Lstats.StdDev())) {
+// temp add factor 10.*
+   if(fabs(n1+nadj-dnGFR) > 10.*(Rstats.StdDev()+Lstats.StdDev())) {
       if(cfg(Debug) >= 6)
          log << "GFRadjust " << GDCUnique << " " << sat << " " << GDCUniqueFix
          << " GF " << time(right->nbeg).printf(outFormat)
          << fixed << setprecision(2)
-         << " dbias(GFR): " << Rstats.Average() - Lstats.Average()
+         << " dbias(GFR): " << dnGFR
          << " n1+nadj: " << n1+nadj;
 
       nadj = long(dnGFR+(dnGFR > 0 ? 0.5 : -0.5)) - n1;
@@ -1301,9 +1306,9 @@ try {
       << ", dn1: " << dn1 << ", n1: " << n1 << ", adj: " << nadj
       << " indexes " << nb << " " << ne << " " << nl << " " << nr
       << " segs " << left->nseg << " " << right->nseg
-      << " GFR-GFP "
+      << " GFR-GFP:L: "
       << Lstats.N() << " " << Lstats.Average() << " " << Lstats.StdDev()
-      << "    "
+      << "    R: "
       << Rstats.N() << " " << Rstats.Average() << " " << Rstats.StdDev()
       << " tests " << n1+nadj-dnGFR << " " << Rstats.StdDev()+Lstats.StdDev()
       << endl;
@@ -1316,14 +1321,17 @@ try {
 
    // now do the fixing : 'change the data' within right segment
    // and through the end of the pass, to fix the slip
-   for(i=right->nbeg; i<data.size(); i++) { //=right->nend; i++) {
+   for(i=right->nbeg; i<data.size(); i++) {
       //if(!(data[i].flag & OK)) continue;                 // TD? don't?
       //data[i].P1 -= nwl;                           // no change to WLbias
       data[i].L2 -= n1;                              // GFP
       data[i].L1 -= n1;                              // GFR+GFP
    }
-   // 'change the bias'  although right is about to be deleted....
-   //right->bias2 = left->bias2;
+// temp add this
+   // 'change the bias'  for all segments in the future (although right to be deleted)
+   list<Segment>::iterator kt;
+   for(kt=right; kt != SegList.end(); kt++)
+      kt->bias2 -= n1;
 
    // Add to slip list, but if one exists with same time tag, use it instead
    list<Slip>::iterator jt;
@@ -1402,7 +1410,7 @@ try {
             - PF[in[k]].Evaluate(data[i].ndt - data[nb].ndt);
             rmsrof[in[k]] += rof*rof;
          }
-         rmsrof[in[k]] = sqrt(rmsrof[in[k]]);
+         rmsrof[in[k]] = ::sqrt(rmsrof[in[k]]);
 
       }  // end loop over fits
 
@@ -1506,10 +1514,11 @@ try {
    for(first=true,i=nbeg; i <= nend; i++) {
       if(!(data[i].flag & OK)) continue;
 
-      // 'change the bias' in the GFP by changing units, also
+      // 'change the bias' (initial bias only) in the GFP by changing units, also
       // slip fixing in the WL may have changed the values of GFP
       if(first) {
-         //if(fabs(data[i].L2 - SegList.begin()->bias2)/wl21 > 10.) {
+//temp uncomment next 3 lines then comment again
+         //if(fabs(data[i].L2 - SegList.begin()->bias2) > 10.*wl21) {
          //   SegList.begin()->bias2 = data[i].L2;
          //}
          SegList.begin()->bias2 /= wl21;
@@ -1527,7 +1536,8 @@ try {
       // 'change the data'
       // save in L1                          // gfp+gfr residual (cycles of wl21)
       // ?? data[i].L1 = data[i].L2 - data[i].P2 - SegList.begin()->bias2;
-      data[i].L1 = data[i].L2 - data[i].P2;
+// temp add -bias2  then remove it again
+      data[i].L1 = data[i].L2 - data[i].P2; // - SegList.begin()->bias2;
    }
 
    if(GFPassFit.isSingular()) {
@@ -1549,17 +1559,20 @@ int GDCPass::detectGFslips(void) throw(Exception)
 {
 try {
    int i,iret;
-   double bias;
+   //temp double bias;
    list<Segment>::iterator it;
 
    // places first difference of GF in A1 - 'change the arrays' A1
    if( (iret = detectObviousSlips("GF"))) return iret;
+// temp
+if(cfg(Debug) >= 4) dumpSegments("GFobvious",2,true);
 
    GFPassStats.Reset();
+   //temp bias = 0.0;
    for(it=SegList.begin(); it != SegList.end(); it++) {
-      // save for debiasing below
+      // use bias for debiasing below
       // TD what if this segment deleted?
-      if(it == SegList.begin()) bias = it->bias2;
+      //temp if(it == SegList.begin()) bias += it->bias2;
 
       // compute stats on dGF/dt
       for(i=it->nbeg; i <= it->nend; i++) {
@@ -1570,9 +1583,10 @@ try {
          if(i > it->nbeg) GFPassStats.Add(A1[i]*wl21);
 
          // if a gross GF slip was found, must remove bias in L1=GF(R-P)
-         // in all subsequent segments
-         if(it != SegList.begin()) data[i].L1 += bias - it->bias2;
-      }
+         // in all subsequent segments ; 'change the data' L1
+         //temp if(it != SegList.begin()) data[i].L1 += bias - it->bias2;
+
+      }  // end loop over data in segment it
 
       // delete segments if sigma too high?
 
@@ -1591,6 +1605,8 @@ try {
          continue;
       }
    }
+// temp
+if(cfg(Debug) >= 4) dumpSegments("GFrebias",2,true);
 
    // 'change the arrays'
    // at this point:
@@ -1828,7 +1844,7 @@ try {
    if(i < 0 || inew < 0) return false;
    double pmag = A1[i]; // -pastSt.Average();
    double fmag = A1[inew]; // -futureSt.Average();
-   double var = sqrt(pastSt.Variance() + futureSt.Variance());
+   double var = ::sqrt(pastSt.Variance() + futureSt.Variance());
 
    if(cfg(Debug) >= 7) log << "GFoutlier " << GDCUnique
       << " " << sat << " " << setw(3) << inew
@@ -1905,7 +1921,7 @@ try {
       << " " << setw(7) << futureSt.Average()
       << " " << setw(7) << futureSt.StdDev()
       << " " << setw(7) << mag
-      << " " << setw(7) << sqrt(pvar+fvar)
+      << " " << setw(7) << ::sqrt(pvar+fvar)
       << " " << setw(9) << A1[i]
       << " " << setw(7) << pmag
       << " " << setw(7) << pvar
@@ -1931,14 +1947,14 @@ try {
    if(fabs(mag) <= minMag) return false; 
 
    // 2. change in average is small compared to noise
-   if(fabs(pmag-fmag) >= STN*sqrt(pvar+fvar)) return false;
+   if(fabs(pmag-fmag) >= STN*::sqrt(pvar+fvar)) return false;
 
    if(cfg(Debug) >= 7) log << "GFslip " << GDCUnique
       << " " << sat << " " << nseg
       << " " << setw(3) << i
       << " " << time(i).printf(outFormat)
       << " mag: " << mag << " > " << minMag
-      << "; step/noise: " << fabs(pmag-fmag)/sqrt(pvar+fvar) << " < " << STN;
+      << "; step/noise: " << fabs(pmag-fmag)/::sqrt(pvar+fvar) << " < " << STN;
 
    // 3. slip is large compared to change in average
    if(fabs(mag) <= MTS*fabs(pmag-fmag)) {
@@ -1950,13 +1966,13 @@ try {
       log << "; mag/step: " << fabs(mag/(pmag-fmag)) << " > " << MTS;
 
    // 4. magnitude is large compared to noise: a 3-sigma slip
-   if(fabs(mag) <= MTN*sqrt(pvar+fvar)) {
+   if(fabs(mag) <= MTN*::sqrt(pvar+fvar)) {
       if(cfg(Debug) >= 7) log << endl;
       return false;
    }
 
    if(cfg(Debug) >= 7)
-      log << "; mag/noise: " << fabs(mag)/sqrt(pvar+fvar) << " > " << MTN;
+      log << "; mag/noise: " << fabs(mag)/::sqrt(pvar+fvar) << " > " << MTN;
 
    // if very close to edge, declare it an outlier
    if(pastSt.N() < Edge || futureSt.N() < Edge+1) {
@@ -1976,7 +1992,7 @@ try {
          if(futureIn[j] > -1) fGFRmPh.Add(data[futureIn[j]].L1);
       }
       magGFR = data[i].L1 - (pGFRmPh.Average()+fGFRmPh.Average())/2.0;
-      mtnGFR = fabs(magGFR)/sqrt(pGFRmPh.Variance()+fGFRmPh.Variance());
+      mtnGFR = fabs(magGFR)/::sqrt(pGFRmPh.Variance()+fGFRmPh.Variance());
          
       if(cfg(Debug) >= 7)
          log << "; GFR-GFP has mag: " << magGFR
@@ -2132,7 +2148,7 @@ try {
    bool ok;
    int i,ifirst,ilast,npts;
    long N1,N2,prevN1,prevN2;
-   double slipL1,slipL2,biasL1,biasL2;
+   double slipL1,slipL2,WLbias,GFbias;
    SatPassData spd;
    list<Slip>::iterator jt;
 
@@ -2148,7 +2164,7 @@ try {
    npts = 0;
    ilast = -1;                         // ilast is the index of the last good point
    ifirst = -1;                        // ifirst is the index of the first good point
-   biasL1 = biasL2 = slipL1 = slipL2 = 0.0;
+   WLbias = GFbias = slipL1 = slipL2 = 0.0;
    prevN1 = prevN2 = 0L;
    jt = SlipList.begin();
    for(i=0; i<data.size(); i++) {
@@ -2268,14 +2284,14 @@ try {
       double gfr = gf1r * data[i].P1 + gf2r * data[i].P2;  // geo-free range (m)
       double gfp = gf1p * data[i].L1 + gf2p * data[i].L2;  // geo-free phase (m)
       if(i == ifirst) {
-         biasL1 = (wlp-wlr)/wlwl;
-         //biasL2 = gfp;
+         WLbias = (wlp-wlr)/wlwl;
+         GFbias = gfp;
       }
-      A1[i] = (wlp-wlr)/wlwl - biasL1;    // wide lane bias (cyc)
-      //A2[i] = gfp - biasL2;               // geo-free phase (m)
-      A2[i] = gfr - gfp;                  // geo-free range - phase (m)
+      A1[i] = (wlp-wlr)/wlwl - WLbias;    // wide lane bias (cyc)
+      A2[i] = gfp - GFbias;               // geo-free phase (m)
+      //A2[i] = gfr - gfp;                  // geo-free range - phase (m)
 
-   }
+   } // end loop over all data
 
    // first fix the segment for dump - TD? is this necessary?
    if(SegList.begin() != SegList.end()) {
@@ -2490,7 +2506,7 @@ try {
             << " " << time(i).printf(outFormat)
             << " " << setw(3) << data[i].flag
             << fixed << setprecision(3)
-            << " " << setw(13) << data[i].L1
+            << " " << setw(13) << data[i].L1 - it->bias2 //biasgf  //temp
             << " " << setw(13) << data[i].L2 - it->bias2 //biasgf
             << " " << setw(13) << data[i].P1 - it->bias1 //biaswl
             << " " << setw(13) << data[i].P2;
