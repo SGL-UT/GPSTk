@@ -80,7 +80,7 @@ try {
    RinexEditor REC;
 
       // Title and description
-   Title = string("EditRinex, part of the GPSTK ToolKit, Ver ")
+   Title = string("EditRinex, part of the GPS ToolKit, Ver ")
             + REC.getRinexEditVersion() + string(", Run ");
    time_t timer;
    struct tm *tblock;

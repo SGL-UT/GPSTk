@@ -253,7 +253,7 @@ try {
    CurrentTime = DayTime::BEGINNING_OF_TIME; // for same reason, init here...
 
       // Title and description
-   Title = PrgmName + ", part of the GPSTK ToolKit, Ver. " + PrgmVers
+   Title = PrgmName + ", part of the GPS ToolKit, Ver. " + PrgmVers
       + " (editor " + REC.getRinexEditVersion() + string("), Run ");
    time_t timer;
    struct tm *tblock;
@@ -441,7 +441,7 @@ try {
    CommandOptionNoArg dashrech(0, "REChelp",
       " --REChelp       Print syntax of RinexEditor commands and quit.");
    CommandOptionNoArg dashexth(0, "ROThelp",
-      " --ROThelp       Print list of extended Rinex obs. types commands and quit.");
+      " --ROThelp       Print list of extended Rinex observation types and quit.");
 
    // ... other options
    CommandOptionRest Rest("");

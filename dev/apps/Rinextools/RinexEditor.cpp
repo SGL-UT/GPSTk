@@ -58,7 +58,7 @@ REditCmd::Initialize REditCmdInitializer;
 
 REditCmd::Initialize::Initialize()
 {
-   RinexEditVersion = string("3.3 1/22/2007");
+   RinexEditVersion = string("3.4 4/10/2007");
 
    typeLabel[INVALID] = string("INVALID");
    typeLabel[IF] = string("IF");
@@ -175,8 +175,12 @@ try {
          char c=field[0];
          inOT = int(toupper(c));
          if(inOT!='F' && inOT!='P' && inOT!='R' && inOT!='O' && inOT!='A' &&
-            inOT!='M' && inOT!='N' && inOT!='C' && inOT!='D')
+            inOT!='M' && inOT!='N' && inOT!='C' && inOT!='D' && inOT!='X')
                { type=INVALID; return; }
+         if(inOT == 'X') {
+            if(subfield.size() < 3) { type=INVALID; return; }
+            field += ";" + subfield[1] + ";" + subfield[2];
+         }
          field.erase(0,1);
       }
       if(type!=OF || subfield.size()==1) return;
@@ -348,6 +352,7 @@ try {
                case int('F'): FillOptionalHeader=true; break;
                case int('D'): HDDeleteOldComments=true; break;
                case int('P'): HDProgram=Cmds[i].field; break;
+               case int('X'): HDPosition=Cmds[i].field; break;
                case int('R'): HDRunBy=Cmds[i].field; break;
                case int('O'): HDObserver=Cmds[i].field; break;
                case int('A'): HDAgency=Cmds[i].field; break;
@@ -497,6 +502,7 @@ try {
       CommandLineLabels.push_back("--HDr");
       CommandLineLabels.push_back("--HDo");
       CommandLineLabels.push_back("--HDa");
+      CommandLineLabels.push_back("--HDx");
       CommandLineLabels.push_back("--HDm");
       CommandLineLabels.push_back("--HDn");
       CommandLineLabels.push_back("--HDc");
@@ -533,8 +539,7 @@ try {
    while(it != args.end()) {
       REditCmd r(*it,oflog);
       if(r.valid()) {
-         Cmds.push_back(r);
-         //if(REDebug) *oflog << "Erase command " << *it << endl;
+         Cmds.push_back(r); //if(REDebug) *oflog << "Erase command " << *it << endl;
          it = args.erase(it);
       }
       else {
@@ -619,6 +624,12 @@ try {
       RHOutput.valid ^= RinexObsHeader::commentValid;
    }
    if(!HDProgram.empty()) RHOutput.fileProgram = HDProgram;
+   if(!HDPosition.empty() && numWords(HDPosition,';') >= 3) {
+      double x = asDouble(stripFirstWord(HDPosition,';'));
+      double y = asDouble(stripFirstWord(HDPosition,';'));
+      double z = asDouble(stripFirstWord(HDPosition,';'));
+      RHOutput.antennaPosition = Triple(x,y,z);
+   }
    if(!HDRunBy.empty()) RHOutput.fileAgency = HDRunBy;
    if(!HDObserver.empty()) RHOutput.observer = HDObserver;
    if(!HDAgency.empty()) RHOutput.agency = HDAgency;
@@ -1352,11 +1363,12 @@ void DisplayRinexEditUsage(ostream& os) throw()
 " Output RINEX header:\n"
 " --------------------\n"
 " -HDf            If present, fill optional records in the output RINEX header\n"
-"                   (NB EditObs() and EditFile() will do this, but NOT EditHeader().)\n"
+//"                   (NB EditObs() and EditFile() will do this, but NOT EditHeader().)\n"
 " -HDp<program>   Set output RINEX header 'program' field\n"
 " -HDr<run_by>    Set output RINEX header 'run by' field\n"
 " -HDo<observer>  Set output RINEX header 'observer' field\n"
 " -HDa<agency>    Set output RINEX header 'agency' field\n"
+" -HDx<x,y,z>     Set output RINEX header 'position' field to ECEF position (x,y,z)\n"
 " -HDm<marker>    Set output RINEX header 'marker' field\n"
 " -HDn<number>    Set output RINEX header 'number' field\n"
 " -HDc<comment>   Add comment to output RINEX header (more than one allowed).\n"

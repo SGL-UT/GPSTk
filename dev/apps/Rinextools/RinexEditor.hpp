@@ -160,6 +160,8 @@ private:
    std::string HDObserver;
    /// content of the AGENCY header record.
    std::string HDAgency;
+   /// content of the POSITION header record, in the form 'x,y,z'
+   std::string HDPosition;
    /// content of the MARKER header record.
    std::string HDMarker;
    /// content of the NUMBER header record.
