@@ -55,12 +55,21 @@
 #include <time.h>
 #include <string>
 #include <vector>
+#include <map>
 #include <utility>      // for pair
 
 using namespace std;
 using namespace gpstk;
 using namespace StringUtils;
 
+//------------------------------------------------------------------------------------
+// TD. Robustness!
+// Check for duplicate file names or site names - this makes it singular
+// Check for unreasonable TEC values - this also can make it singular
+// What is the purpose of max and min longitude?
+// look at the german objections
+// I don't understand co-rotating longitude - perhaps I can see making the sun stand
+// still, but why rotate so middle of each pass is aligned?
 //------------------------------------------------------------------------------------
 // Max PRN 
 const int MAXPRN=32;
@@ -96,6 +105,7 @@ double MinTimeSpan;  // TD not implemented
 double MinElevation;
 double MinLatitude,MaxLatitude;
 double MinLongitude,MaxLongitude;
+double FoundMinLat,FoundMinLon,FoundMaxLat,FoundMaxLon;
 string TimeSector;
 double TermOffset;
 double IonoHt;
@@ -123,6 +133,8 @@ Matrix<double> Cov;
 int ndata;
 double MaxLat,MinLat,MaxCRLon,MinCRLon,PM[10];
 vector<pair<string,int> > ComponentIDs;
+map<string,int> mapN;
+map<string,string> mapFilename;
 
 //------------------------------------------------------------------------------------
 // prototypes
@@ -197,6 +209,7 @@ try {
 
          // process the data
       iret = Process();
+      if(iret) goto quit;
 
          // write the revised header
       WriteATHeader();
@@ -243,7 +256,7 @@ try {
    MinPoints = 0;
    MinTimeSpan = 0.0;      // minutes
    MinElevation = 0.0;
-   MinLatitude = 0.0;
+   MinLatitude = -90.0;
    MaxLatitude = 90.0;
    MinLongitude = 0.0;
    MaxLongitude = 360.0;
@@ -895,6 +908,11 @@ try {
    }
    WriteATHeader();
 
+   FoundMinLat = 90;
+   FoundMinLon = 360;
+   FoundMaxLat = -90;
+   FoundMaxLon = 0;
+
    return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -913,7 +931,7 @@ int Process(void) throw(Exception)
 try {
    int i,iret;
    string fname;
-   RinexObsStream instream;
+   //RinexObsStream instream;
    RinexObsHeader header;
 
       // loop over input file names
@@ -921,7 +939,9 @@ try {
    for(ndata=0,nfile=0; nfile<Filenames.size(); nfile++) {
       if(verbose) oflog << endl;
       fname = Filenames[nfile];
-      instream.open(fname.c_str(),ios_base::in);
+      //instream.clear();
+      //instream.open(fname.c_str(),ios_base::in);
+      RinexObsStream instream(fname.c_str(),ios_base::in);
       if(!instream) {
          oflog << " Rinex file " << fname << " could not be opened -- abort.\n";
          return -2;
@@ -941,7 +961,6 @@ try {
       if(iret != 0) return iret;
 
       instream.close();
-      instream.clear();
 
    }  // end loop over file names
 
@@ -949,6 +968,9 @@ try {
       oflog << endl << "Processed " << Filenames.size()
       << " files; " << NgoodStations << " of them had good data.\n";
       oflog << "Total number of data points = " << ndata << endl;
+      oflog << "Found " << fixed << setprecision(2)
+         << FoundMinLat << " <= raw Lat <= " << FoundMaxLat << " and "
+         << FoundMinLon << " <= raw Lon <= " << FoundMaxLon << endl;
    }
 
    return 0;
@@ -994,7 +1016,7 @@ try {
    if(begintime == -999 || endtime == -999) return -5;
 
       // save station info
-   StationName = head.markerName;
+   StationName = lowerCase(subString(head.markerName,0,4));
    TotalSpan = head.lastObs.MJD()-head.firstObs.MJD();
 
       // dump header information
@@ -1200,15 +1222,26 @@ try {
          if(k != -1) continue;
    
             // process this sat
-         if( (jt=it->second.find(ELot)) != it->second.end()) EL = jt->second.data;
-         if(EL < MinElevation) continue;
+         if( (jt=it->second.find(ELot)) != it->second.end()) {
+            EL = jt->second.data;
+            if(EL < MinElevation) continue;
+         }
+         //else ...
 
-         if( (jt=it->second.find(LAot)) != it->second.end()) LA = jt->second.data;
-         if(LA < MinLatitude || LA > MaxLatitude) continue;
+         if( (jt=it->second.find(LAot)) != it->second.end()) {
+            LA = jt->second.data;
+            if(LA < FoundMinLat) FoundMinLat = LA;
+            if(LA > FoundMaxLat) FoundMaxLat = LA;
+            if(LA < MinLatitude || LA > MaxLatitude) continue;
+         }
 
-         if( (jt=it->second.find(LOot)) != it->second.end()) LO = jt->second.data;
-         while(LO < 0.0) LO+=360.0;
-         if(LO < MinLongitude || LO > MaxLongitude) continue;
+         if( (jt=it->second.find(LOot)) != it->second.end()) {
+            LO = jt->second.data;
+            while(LO < 0.0) LO+=360.0;
+            if(LO < FoundMinLon) FoundMinLon = LO;
+            if(LO > FoundMaxLon) FoundMaxLon = LO;
+            if(LO < MinLongitude || LO > MaxLongitude) continue;
+         }
 
          if( (jt=it->second.find(SRot)) != it->second.end()) {
             SR = jt->second.data;
@@ -1428,9 +1461,11 @@ try {
 
       if(n > 0 && verbose) {
          oflog << setw(3) << i+1 << "  " << stationID << " " << setw(4) << n << " ";
-         //for(j=0; j<=MAXPRN; j++) oflog << (EstimationFlag[i][j] ? '1' : '0');
-         oflog << Filenames[i];
+         for(j=0; j<=MAXPRN; j++) oflog << (EstimationFlag[i][j] ? '1' : '0');
+         oflog << " " << Filenames[i];
          oflog << endl;
+         mapN[stationID] = n;
+         mapFilename[stationID] = Filenames[i];
       }
 
          // read data
@@ -1570,13 +1605,15 @@ try {
    if(biasout) fout << setw(2) << NBiasParam << "  Number of SPR biases\n";
    for(i=0; i<NBiasParam; i++) {
       ostringstream oss;
-      oss << setw(3) << i+1                                             // number
+      oss << "BIAS " << setw(3) << i+1                                  // number
          << "  " << ComponentIDs[i].first                               // station id
          << " G" << setw(2) << setfill('0') << ComponentIDs[i].second   // sat G<prn>
          << setfill(' ') << fixed
+         << " " << setw(4) << mapN[ComponentIDs[i].first]
          << " " << setw(12) << setprecision(6) << Sol(i)                // bias
          << scientific
          << " " << setw(10) << setprecision(3) << ::sqrt(Cov(i,i))        // sigma
+         << " " << mapFilename[ComponentIDs[i].first]
          << endl;
       oflog << oss.str();
       if(biasout) fout << oss.str();
