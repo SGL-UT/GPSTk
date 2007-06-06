@@ -456,11 +456,11 @@ namespace gpstk
                         // cf. Ref OEM4 manual pg 21.
 
                         // get the checksum at the end
-                     unsigned long checksum =
-                        intelToHost(strm.getData<unsigned long>());
+                     unsigned int checksum =
+                        intelToHost(strm.getData<unsigned int>());
 
                         // calculate the checksum of the header(even sync)+data
-                     unsigned long check=0,ultemp1,ultemp2;
+                     unsigned int check=0,ultemp1,ultemp2;
                      for(i=0; i<datasize+28; i++) {
                         ultemp1 = (check >> 8) & 0x00FFFFFFL;
                         j = ((int)check ^ buffer[i]) & 0xFF;

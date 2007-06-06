@@ -59,6 +59,7 @@
 #include "RinexNavStream.hpp"
 #include "RinexObsHeader.hpp"
 #include "Triple.hpp"
+//#include "RinexBinex.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -66,7 +67,7 @@ using namespace StringUtils;
 
 // -----------------------------------------------------------------------------------
 string Prgm("novaRinex");                 // name of this program
-string Vers("v1.5 7/06");                 // version - keep to 10 char
+string Vers("v2.0 4/07");                 // version - keep to 10 char
 // 1.0 8/05
 // 1.1 2/06 process obs only when datasize > 4 - empty records were setting FirstEpoch
 // 1.2 6/06 catch exceptions, and allow blanks on cmd line and in input file
@@ -74,6 +75,7 @@ string Vers("v1.5 7/06");                 // version - keep to 10 char
 //          errors when help is the only option
 // 1.4 7/06 handle exceptions
 // 1.5 7/06 correct handling of header inputs
+// 2.0 4/07 added Binex output -- commented out
 
 // -----------------------------------------------------------------------------------
 // global data, mostly to save information to go in the final RINEX header
@@ -88,7 +90,7 @@ vector<int> totals;
 // Command line input
 bool help,Debug,verbose;
 DayTime BegTime,EndTime;
-string NovatelFile, RinexObsFile, RinexNavFile;
+string NovatelFile, RinexObsFile, RinexNavFile; //, BinexFile;
 string InputDirectory;
 // header fields
 bool FillOptionalHeader;
@@ -312,7 +314,9 @@ try {
    roh.version = 2.1;
    roh.fileType = "Observation";
    roh.system = RinexSatID();
-   roh.date = CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
+   // use same format as writer in RinexObsHeader.cpp uses
+      // old "%04Y/%02m/%02d %02H:%02M:%02S");
+   roh.date = CurrEpoch.printf("%02m/%02d/%04Y %02H:%02M:%02S");
    roh.antennaPosition = Triple(0.0,0.0,0.0);
    roh.antennaOffset = Triple(0.0,0.0,0.0);
    roh.wavelengthFactor[0] = 1;
@@ -541,25 +545,67 @@ try {
       rh.valid |= RinexObsHeader::prnObsValid;
    }
 
-      // re-open the file and replace the header
-   RinexObsHeader rhjunk;
+      // re-open the obs file for reading, and replace the header
    RinexObsStream InAgain(TempFile.c_str());
-   RinexObsStream ROutStr(OutputFile.c_str(), ios::out);
+   if(!InAgain) {
+      cerr << "Failed to re-open temp output Rinex obs file " << TempFile << endl;
+      return -3;
+   }
    InAgain.exceptions(fstream::failbit);
+
+      // open the true output obs file for writing
+   RinexObsStream ROutStr(OutputFile.c_str(), ios::out);
+   if(!ROutStr) {
+      cerr << "Failed to open output Rinex obs file " << OutputFile << endl;
+      return -3;
+   }
+   if(verbose) cout << "Opened file " << OutputFile << " for RINEX output." << endl;
    ROutStr.exceptions(fstream::failbit);
 
-   if(verbose) cout << "Opened file " << OutputFile << " for output." << endl;
+   //   // open a BINEX stream
+   //BinexStream BinexOut;
+   //if(!BinexFile.empty()) {
+   //   BinexOut.open(BinexFile.c_str(), std::ios::out | std::ios::binary);
+   //   if(!BinexOut) {
+   //      cerr << "Failed to open output BINEX file " << BinexFile << endl;
+   //      return -3;
+   //   }
+   //   BinexOut.exceptions(ios_base::failbit | ios_base::badbit);
+   //   if(verbose) cout << "Opened file " << BinexFile << " for BINEX output." << endl;
+   //}
+
+      // read preliminary header, ...
+   RinexObsHeader rhjunk;
    InAgain >> rhjunk;
+      // ...write out the full one
    ROutStr << rh;
+      // write header to BINEX, also all the nav information
+   //if(!BinexFile.empty()) {
+   //   writeBinex(BinexOut, rh, char(4));     // 4 means 'from native receiver format'
+   //      // open nav file RinexNavFile, read it all and write it all to Binex
+   //   RinexNavStream rns(RinexNavFile.c_str(),ios::in);
+   //   if(!rns) {
+   //      cerr << "Failed to re-open output nav file " << RinexNavFile << endl;
+   //      return -3;
+   //   }
+   //   rns.exceptions(fstream::failbit);
+   //      // ignore the header
+   //   RinexNavHeader rnh;
+   //   rns >> rnh;
+   //   RinexNavData rnd;
+   //   while(rns >> rnd) writeBinex(BinexOut, rnd);
+   //   rns.close();
+   //}
 
    RinexObsData robs;
-   while(InAgain >> robs)
+   while(InAgain >> robs) {
       ROutStr << robs;
+      //if(!BinexFile.empty()) writeBinex(BinexOut, robs);
+   }
 
-   //InAgain.clear();
    InAgain.close();
-   //ROutStr.clear();
    ROutStr.close();
+   //if(!BinexFile.empty()) BinexOut.close();
 
       // delete the temporary
    if(remove(TempFile.c_str()) != 0) {
@@ -591,6 +637,7 @@ try {
    //NovatelFile,
    RinexObsFile = string("RnovaRinex.obs");
    RinexNavFile = string("RnovaRinex.nav");
+   //BinexFile = string();
    InputDirectory = string("");
    // header fields
    FillOptionalHeader = true;
@@ -637,18 +684,22 @@ try {
       " --nav <file>      RINEX navigation output file (RnovaRinex.nav)");
    dashnav.setMaxCount(1);
 
+   //CommandOption dashbin(CommandOption::hasArgument, CommandOption::stdType,0,"bin",
+   //   " --bin <file>      BINEX (binary) output file (RnovaRinex.bnx)");
+   //dashbin.setMaxCount(1);
+
    CommandOption dashNHF(CommandOption::hasArgument, CommandOption::stdType,0,
       "noHDopt", "\nOutput RINEX header fields:\n --noHDopt         If present, "
       "do not fill optional records in the output RINEX header");
    dashNHF.setMaxCount(1);
 
    CommandOption dashHDp(CommandOption::hasArgument, CommandOption::stdType,0,"HDp",
-      " --HDp <program>   Set output RINEX headers 'program' field ('"
+      " --HDp <program>   Set output RINEX header 'program' field ('"
       + roh.fileProgram + "')");
    dashHDp.setMaxCount(1);
 
    CommandOption dashHDr(CommandOption::hasArgument, CommandOption::stdType,0,"HDr",
-      " --HDr <run_by>    Set output RINEX headers 'run by' field ('"
+      " --HDr <run_by>    Set output RINEX header 'run by' field ('"
       + roh.fileAgency + "')");
    dashHDr.setMaxCount(1);
 
@@ -801,11 +852,16 @@ try {
    }
 
    // check for errors on the command line
-   if (Par.hasErrors())
-   {
+   if (Par.hasErrors() || Rest.getCount()) {
       cerr << "\nErrors found in command line input:\n";
-      Par.dumpErrors(cerr);
-      cerr << "...end of Errors\n\n";
+      if(Par.hasErrors()) Par.dumpErrors(cerr);
+      if(Rest.getCount()) {
+         cerr << "The following command line fields were not recognized:\n";
+         values = Rest.getValue();
+         for(i=0; i<values.size(); i++)
+            cerr << "  " << values[i] << endl;
+      }
+      cerr << "...end of Errors. Abort.\n";
       help = true;
    }
 
@@ -835,6 +891,11 @@ try {
       if(help) cout << " Input RINEX nav file name " << values[0] << endl;
       RinexNavFile = values[0];
    }
+   //if(dashbin.getCount()) {
+   //   values = dashbin.getValue();
+   //   if(help) cout << " Input BINEX file name " << values[0] << endl;
+   //   BinexFile = values[0];
+   //}
    if(dashNHF.getCount()) {
       values = dashNHF.getValue();
       if(help) cout << " Turn off filling of optional header" << endl;
@@ -1056,6 +1117,7 @@ try {
    ofs << " Input Novatel file is: " << NovatelFile << endl;
    ofs << " Output RINEX obs file is: " << RinexObsFile << endl;
    ofs << " Output RINEX nav file is: " << RinexNavFile << endl;
+   //ofs << " Output BINEX (obs/nav) file is: " << BinexFile << endl;
    ofs << " --------- Header information:\n";
    if(!FillOptionalHeader) ofs << " Do not";
    ofs << " Fill optional records in header" << endl;
