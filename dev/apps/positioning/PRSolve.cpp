@@ -69,7 +69,7 @@ using namespace StringUtils;
 
    // prgm data
 string PrgmName("PRSolve");
-string PrgmVers("2.01 3/07");
+string PrgmVers("2.1 5/07");
 
 // data input from command line
 typedef struct Configuration {
@@ -92,6 +92,7 @@ typedef struct Configuration {
    Position knownpos;
    Matrix<double> Rot;
    bool APSout;
+   string ordFile;
    string OutRinexObs;
    string HDPrgm;       // header of output RINEX file
    string HDRunby;
@@ -108,7 +109,7 @@ typedef struct Configuration {
    DayTime Tbeg, Tend;
       // output files
    string LogFile;
-   ofstream oflog;
+   ofstream oflog,oford;
       // processing
    double DataInt;
    int Freq;
@@ -132,7 +133,8 @@ const double F1=154.0;
 const double F2=120.0;
 const double wl1=CFF/F1;
 const double wl2=CFF/F2;
-const double alpha=((F1*F1)/(F2*F2) - 1.0);
+const double F1F2=(F1/F2)*(F1/F2);
+const double alpha=(F1F2 - 1.0);
 const double if1r=1.0/(1.0-(F2/F1)*(F2/F1));
 const double if2r=1.0/(1.0-(F1/F2)*(F1/F2));
 clock_t totaltime;
@@ -329,6 +331,22 @@ try {
       C.Rot(0,0) = -sa*co; C.Rot(0,1) = -sa*so; C.Rot(0,2) = ca;
    }
 
+   if(!C.ordFile.empty()) {
+      if(C.knownpos.getCoordinateSystem() == Position::Unknown) {
+         C.oflog << "Error - ORD output to file (" << C.ordFile << ") requires "
+            << " --PosXYZ input. Abort output of ORDs." << endl;
+      }
+      else {
+         C.oford.open(C.ordFile.c_str(),ios::out);
+         if(C.oford.fail()) {
+            C.oflog << "Failed to open ORD file " << C.ordFile << endl;
+            C.ordFile = string();
+         }
+         else C.oford
+            << "#   sat week seconds_wk ok? elev       ORD(C/A)       ORD(P)" << endl;
+      }
+   }
+
    // initialize global solution and residual statistics
    // not necessary SSA[0].Reset(); SSA[1].Reset(); SSA[2].Reset();
    // not necessary SSR[0].Reset(); SSR[1].Reset(); SSR[2].Reset();
@@ -370,6 +388,7 @@ try {
       << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
 
    C.oflog.close();
+   C.oford.close();
 
    return iret;
 }
@@ -489,28 +508,28 @@ try {
    C.oflog << "Process frequency " << C.Freq << endl;
 
       // initialize file solution and residual statistics
-      SA[0].Reset(); SA[1].Reset(); SA[2].Reset();
-      SR[0].Reset(); SR[1].Reset(); SR[2].Reset();
-      PA = Matrix<double>(3,3,0.0);
-      PR = Matrix<double>(3,3,0.0);
-      zA = Vector<double>(3,0.0);
-      zR = Vector<double>(3,0.0);
-      if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
-         if(C.APSout) {
-            SAPR[0].Reset(); SAPR[1].Reset(); SAPR[2].Reset();
-            SANE[0].Reset(); SANE[1].Reset(); SANE[2].Reset();
-            PAPR = Matrix<double>(3,3,0.0);
-            PANE = Matrix<double>(3,3,0.0);
-            zAPR = Vector<double>(3,0.0);
-            zANE = Vector<double>(3,0.0);
-         }
-         SRPR[0].Reset(); SRPR[1].Reset(); SRPR[2].Reset();
-         SRNE[0].Reset(); SRNE[1].Reset(); SRNE[2].Reset();
-         PRPR = Matrix<double>(3,3,0.0);
-         PRNE = Matrix<double>(3,3,0.0);
-         zRPR = Vector<double>(3,0.0);
-         zRNE = Vector<double>(3,0.0);
+   SA[0].Reset(); SA[1].Reset(); SA[2].Reset();
+   SR[0].Reset(); SR[1].Reset(); SR[2].Reset();
+   PA = Matrix<double>(3,3,0.0);
+   PR = Matrix<double>(3,3,0.0);
+   zA = Vector<double>(3,0.0);
+   zR = Vector<double>(3,0.0);
+   if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
+      if(C.APSout) {
+         SAPR[0].Reset(); SAPR[1].Reset(); SAPR[2].Reset();
+         SANE[0].Reset(); SANE[1].Reset(); SANE[2].Reset();
+         PAPR = Matrix<double>(3,3,0.0);
+         PANE = Matrix<double>(3,3,0.0);
+         zAPR = Vector<double>(3,0.0);
+         zANE = Vector<double>(3,0.0);
       }
+      SRPR[0].Reset(); SRPR[1].Reset(); SRPR[2].Reset();
+      SRNE[0].Reset(); SRNE[1].Reset(); SRNE[2].Reset();
+      PRPR = Matrix<double>(3,3,0.0);
+      PRNE = Matrix<double>(3,3,0.0);
+      zRPR = Vector<double>(3,0.0);
+      zRNE = Vector<double>(3,0.0);
+   }
 
       // loop over epochs in the file
    first = true;
@@ -518,7 +537,7 @@ try {
          // read next obs
       double RMSrof;
       vector<SatID> Satellites;
-      vector<double> Ranges;
+      vector<double> Ranges,vC1,vP1,vP2;
       Matrix<double> inform;
       RinexObsData robsd,auxPosData;
 
@@ -582,16 +601,19 @@ try {
          Nsvs = 0;
          Satellites.clear();
          Ranges.clear();
+         vC1.clear(); vP1.clear(); vP2.clear();
          RinexObsData::RinexSatMap::const_iterator it;
          for(it=robsd.obs.begin(); it != robsd.obs.end(); ++it) {
             // loop over sat=it->first, ObsTypeMap=it->second
             int in,n;
-            double P1=0,P2=0,L1,L2,D1,D2,S1,S2;
+            double C1=0,P1=0,P2=0,L1,L2,D1,D2,S1,S2;
             SatID sat=it->first;
             RinexObsData::RinexObsTypeMap otmap=it->second;
 
                // pull out the data
             RinexObsData::RinexObsTypeMap::const_iterator jt;
+            if(inC1>-1 && (jt=otmap.find(rhead.obsTypeList[inC1])) != otmap.end())
+               C1=jt->second.data;
             if(inP1>-1 && (jt=otmap.find(rhead.obsTypeList[inP1])) != otmap.end())
                P1=jt->second.data;
             if(inP2>-1 && (jt=otmap.find(rhead.obsTypeList[inP2])) != otmap.end())
@@ -645,6 +667,11 @@ try {
             Satellites.push_back(sat);
             Ranges.push_back(C.Freq == 3 ? if1r*P1+if2r*P2 :
                             (C.Freq == 2 ? P2 : P1));
+            if(!C.ordFile.empty()) {
+               vC1.push_back(C1);
+               vP1.push_back(P1);
+               vP2.push_back(P2);
+            }
             Nsvs++;
 
          }  // end loop over sats
@@ -679,7 +706,35 @@ try {
 
       if(C.Debug) C.oflog << "processing returned " << iret << endl;
       if(iret == -1) { iret=0; break; }         // end of file
-      if(iret == 1 || iret == -4) continue;     // ignore this epoch
+      if(iret == -4) continue;                  // ignore this epoch - no ephemeris
+         // NB output ORDs before quitting on too few sats
+
+         // write out ORDs
+      if(!C.ordFile.empty()) {
+         for(i=0; i<Satellites.size(); i++) {
+            SatID sat=Satellites[i];
+            CorrectedEphemerisRange CER;
+            try { CER.ComputeAtReceiveTime(CurrEpoch, C.knownpos, sat, *pEph); }
+            catch(EphemerisStore::NoEphemerisFound& nef) { continue; }
+
+            // compute ionosphere - note that P1-R-RI == P2-R-RI*(F1/F2)**2
+            double RI = (vP2[i]-vP1[i])/alpha;
+            double R = CER.rawrange + prsol.Solution(3)
+               - CER.svclkbias - CER.relativity
+               + C.pTropModel->correction(C.knownpos,CER.svPosVel.x,CurrEpoch);
+            C.oford << "ORD"
+               << " G" << setw(2) << setfill('0') << abs(sat.id) << setfill(' ')
+               << " " << CurrEpoch.printf(C.timeFormat)
+               << " " << (sat.id < 0 ? "0" : "1")
+               << fixed << setprecision(3)
+               << " " << CER.elevation
+               << " " << setw(13) << vC1[i] - R - RI
+               << " " << setw(13) << vP1[i] - R - RI
+               << endl;
+         }
+      }
+
+      if(iret == 1) continue;                   // ignore this epoch - too few sats
 
          // accumulate simple statistics, Autonomous and RAIM
       if(C.APSout) {
@@ -707,7 +762,7 @@ try {
       zR += inform * Vector<double>(prsol.Solution,0,3);
       zzR += inform * Vector<double>(prsol.Solution,0,3);
 
-      if(!writeout) continue;
+      if(!writeout) continue;                   // go to next epoch
 
          // output to RINEX
       if(first) {                               // edit the output RINEX header
@@ -741,7 +796,7 @@ try {
       if(iret > 2) {                         // output position first
          auxPosData.time = robsd.time;
          auxPosData.epochFlag = 4;
-         auxPosData.numSvs = 2;
+         auxPosData.numSvs = 2;              // must be sure only 2 lines are written
          auxPosData.auxHeader.clear();
          ostringstream stst1,stst2;
          stst1 << "XYZT";
@@ -896,7 +951,7 @@ try {
          for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
          C.oflog << endl;
 
-         // accumulate statistis
+         // accumulate statistics
          SAPR[0].Add(V(0)); SAPR[1].Add(V(1)); SAPR[2].Add(V(2));
          SSAPR[0].Add(V(0)); SSAPR[1].Add(V(1)); SSAPR[2].Add(V(2));
          inform = inverseSVD(Cov);
@@ -946,8 +1001,7 @@ try {
       return iret;
    }
    for(Nsvs=0,i=0; i<Sats.size(); i++)
-      if(Sats[i].id > 0)
-         Nsvs++;
+      if(Sats[i].id > 0) Nsvs++;
    RMSresid = prsol.RMSResidual;
 
    C.oflog << "RPF " << setw(2) << Sats.size()-Nsvs
@@ -1203,6 +1257,7 @@ try {
    C.elevLimit = 0.0;
 
    C.LogFile = string("prs.log");
+   C.ordFile = string();
 
    C.APSout = false;
    C.UseCA = false;
@@ -1355,13 +1410,19 @@ try {
    
    CommandOption dashXYZ(CommandOption::hasArgument, CommandOption::stdType,
       0,"PosXYZ", " --PosXYZ <X,Y,Z>     "
-      "Known position (ECEF,m), used to compute output residuals ()");
+      "Known position (ECEF,m), used to compute output residuals and ORDs ()");
    dashXYZ.setMaxCount(1);
    
    CommandOptionNoArg dashAPSout(0,"APSout", string(" --APSout             ")
       + string("Output autonomous pseudorange solution [tag APS, no RAIM] (")
       + (C.APSout ? "true" : "false") + string(")") );
    dashAPSout.setMaxCount(1);
+
+   CommandOption dashORDs(CommandOption::hasArgument, CommandOption::stdType,
+      0,"ORDs", " --ORDs <file>        "
+      "Output ORDs (Observed Range Deviations) to file [PosXYZ req'd] ("
+      + C.ordFile + ")");
+   dashORDs.setMaxCount(1);
 
    CommandOption dashForm(CommandOption::hasArgument, CommandOption::stdType,
       0,"TimeFormat", " --TimeFormat <fmt>   "
@@ -1649,6 +1710,11 @@ try {
       C.timeFormat = values[0];
       if(help) cout << " Input: time format " << C.timeFormat << endl;
    }
+   if(dashORDs.getCount()) {
+      values = dashORDs.getValue();
+      C.ordFile = values[0];
+      if(help) cout << " Input: output ORDs to file " << C.ordFile << endl;
+   }
    if(dashXsat.getCount()) {
       values = dashXsat.getValue();
       for(i=0; i<values.size(); i++) {
@@ -1822,6 +1888,8 @@ try {
    if(C.knownpos.getCoordinateSystem() != Position::Unknown)
       os << " Output residuals: known position is\n   " << C.knownpos.printf(
          "ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
+   if(!C.ordFile.empty())
+      os << " Output ORDs to file " << C.ordFile << endl;
    if(C.APSout) os << " Output autonomous solution (no RAIM) - APS,etc.\n";
    os << " Output format for time tags (cf. class DayTime) is "
       << C.timeFormat << endl;
