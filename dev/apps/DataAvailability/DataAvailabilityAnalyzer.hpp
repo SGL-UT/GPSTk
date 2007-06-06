@@ -69,6 +69,8 @@ private:
       const gpstk::Triple& antPos, 
       const gpstk::ObsEpoch& oe,
       const gpstk::ObsEpoch& prev_oe);
+      
+   void outputSummary();
    
    std::ifstream input;
    std::ofstream output;
@@ -84,7 +86,12 @@ private:
    gpstk::DayTime startTime, stopTime;
    double timeSpan, timeMask;
    double epochRate;
-   unsigned long epochCount;
+   
+   // these are counters used in the summary
+   unsigned long epochCounter;
+   unsigned long allMissingCounter;
+   unsigned long anyMissingCounter;
+   unsigned long pointsMissedCounter;
 
    enum ObsItemEnum {oiUnknown, oiElevation, oiAzimuth, oiTime, oiPRN, oiCCID,
                      oiSNR, oiHealth, oiTrackCount, oiIOD};
@@ -105,8 +112,6 @@ private:
    long msid;
 
    float maskAngle;
-   
-   
 
    // This is used to keep track of SV info for both what SVs are in view
    // and when there is a obs that is missing. 
@@ -185,8 +190,8 @@ private:
    MissingList missingList;
 
    // This combines adjecent items from the same SV
-   MissingList smash(const MissingList& ml, 
-                     const gpstk::EphemerisStore& eph) const;
+   MissingList processList(const MissingList& ml, 
+                           const gpstk::EphemerisStore& eph);
    
    std::map<int, InView> inView;                         
    

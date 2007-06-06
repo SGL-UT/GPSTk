@@ -134,7 +134,8 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
                       "Combine adjacent lines from the same PRN."),
 
      maskAngle(10), badHealthMask(false), timeMask(0), smashAdjacent(false),
-     epochRate(0), epochCount(0)
+     epochRate(0), epochCounter(0), allMissingCounter(0), 
+     anyMissingCounter(0), pointsMissedCounter(0)
 {
    // Set up a couple of helper arrays to map from enum <-> string
    obsItemName[oiUnknown] = "unk";
@@ -383,23 +384,21 @@ std::string secAsHMS(double seconds, bool frac=false)
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::smash(
-   const MissingList& ml, const gpstk::EphemerisStore& eph) const
+DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
+   const MissingList& ml, const gpstk::EphemerisStore& eph)
 {
    MissingList sml;
    for (MissingList::const_iterator i = ml.begin(); i != ml.end(); i++)
    {
       InView curr = *i;
       
-      // Sneaking this in here so that all epochs are processed, including epochs
-      // when data from all SVs is missing
+      // calculate SV visibility info
       short prnTemp = 1;
       short numSVsInView = 0;
       ECEF rxpos(antennaPos);
       
       while (prnTemp <= gpstk::MAX_PRN)
       {
-         // see if the SV is in view
          Xvt svXVT;
          bool NoEph = false;
    
@@ -421,16 +420,28 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::smash(
       }     
       
       curr.numSVsVisible = numSVsInView;
-   
+      InView& prev = *sml.rbegin();
+      
+       // increment counter if there isn't data from any SVs
+      if (curr.prn == 0)
+      {
+         allMissingCounter++;     
+         pointsMissedCounter += numSVsInView;
+      }
+      else
+         pointsMissedCounter++;
+           
       
       if (i == ml.begin())
       {
          sml.push_back(curr);
+         anyMissingCounter++;
          continue;
       }
-
-      InView& prev = *sml.rbegin();
-
+      else if (prev.time != curr.time)
+         anyMissingCounter++;
+      
+      // smash together epochs if necessary
       if (curr.prn == prev.prn && smashAdjacent)
       {
          prev.smashCount++;
@@ -443,9 +454,8 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::smash(
       else
       {
          sml.push_back(curr);
-      }
+      }    
    }
-   
    return sml;
 }
 
@@ -476,6 +486,8 @@ void DataAvailabilityAnalyzer::process()
          continue;
       if (stopTime < oe.time)
          break;
+      
+      epochCounter++;
       
       if (obsReader.epochCount==1)
       {
@@ -583,7 +595,7 @@ void DataAvailabilityAnalyzer::processEpoch(
 //------------------------------------------------------------------------------
 void DataAvailabilityAnalyzer::shutDown()
 {
-   MissingList sml = smash(missingList, *eph);
+   MissingList sml = processList(missingList, *eph);
    
    cout << "\n Availability Raw Results:\n\n";
    cout << "      Time         Smashes PRN  CCID  Elv    Az  Hlth  SNR    SVs"
@@ -593,6 +605,7 @@ void DataAvailabilityAnalyzer::shutDown()
    
    for_each(sml.begin(), sml.end(), InView::dump(cout, timeFormat));
 
+   outputSummary();
 }
 
 //------------------------------------------------------------------------------
@@ -719,4 +732,18 @@ bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
    return true;
 }
 
+void DataAvailabilityAnalyzer::outputSummary()
+{
+   cout << "\n\n Summary:\n\n";
+   
+   cout << right << setw(40) << "Total number of epochs with data: " 
+        << left  << setw(10) << epochCounter << endl;
+   cout << right << setw(40) << "Epochs with any # of missed points: "
+        << left  << setw(10) << anyMissingCounter << endl;
+   cout << right << setw(40) << "Epochs without data from any SV: "
+        << left  << setw(10) << allMissingCounter << endl;
+   cout << right << setw(40) << "Total number of points missed: "
+        << left  << setw(10) << pointsMissedCounter << endl << endl;
+        
 
+}
