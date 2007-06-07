@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -89,7 +89,7 @@ int ClockModel(void);               // ClockModel.cpp
 int Synchronization(void);          // Synchronization.cpp
 int RecomputeFromEphemeris(void);   // Synchronization.cpp
 int Timetable(void);                // Timetable.cpp
-int QueryTimeTable(SDid& sdid, gpstk::DayTime& tt);       // Timetable.cpp
+int QueryTimeTable(gpstk::SDid& sdid, gpstk::DayTime& tt);       // Timetable.cpp
 int QueryTimeTable(std::string bl, int& beg, int& end); // Timetable.cpp
 int DoubleDifference(void);         // DoubleDifference.cpp
 int EditDDs(void);                  // EditDDs.cpp
@@ -116,7 +116,7 @@ extern gpstk::EarthOrientation eorient;
 extern std::map<std::string,Station> Stations;
 extern std::vector<ObsFile> ObsFileList;
 
-extern std::map<DDid,DDData> DDDataMap;
+extern std::map<gpstk::DDid,DDData> DDDataMap;
 
 #endif
 
