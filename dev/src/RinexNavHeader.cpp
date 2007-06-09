@@ -80,9 +80,10 @@ namespace gpstk
       unsigned long allValid;
       if (version == 2.0)        allValid = allValid20;
       else if (version == 2.1)   allValid = allValid21;
+      else if (version == 2.11)  allValid = allValid211;
       else
       {
-         FFStreamError err("Unknown RINEX version: " + asString(version,2));
+         FFStreamError err("Unknown RINEX version: " + asString(version,3));
          err.addText("Make sure to set the version correctly.");
          GPSTK_THROW(err);
       }
@@ -98,8 +99,8 @@ namespace gpstk
       
       if (valid & versionValid)
       {
-         line  = rightJustify(asString(version,2), 9);
-         line += string(11, ' ');
+         line  = rightJustify(asString(version,3), 10);
+         line += string(10, ' ');
          line += string("NAVIGATION"); //leftJustify(fileType, 20);
          line += string(30, ' ');
          line += versionString;
@@ -277,6 +278,7 @@ namespace gpstk
       unsigned long allValid;
       if      (version == 2.0)      allValid = allValid20;
       else if (version == 2.1)      allValid = allValid21;
+      else if (version == 2.11)     allValid = allValid211;
       else
       {
          FFStreamError e("Unknown or unsupported RINEX version " + 
@@ -304,7 +306,8 @@ namespace gpstk
       s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: " << fileAgency << endl;
 
       s << "(This header is ";
-      if((valid & allValid21) == allValid21) s << "VALID 2.1";
+      if((valid & allValid211) == allValid211) s << "VALID 2.11";
+      else if((valid & allValid21) == allValid21) s << "VALID 2.1";
       else if((valid & allValid20) == allValid20) s << "VALID 2.0";
       else s << "NOT VALID";
       s << " Rinex.)\n";
