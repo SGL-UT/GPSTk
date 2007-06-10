@@ -378,10 +378,8 @@ namespace gpstk
                 case TypeID::C8:
                     instDelayType = TypeID::instC8;
                     break;
-                default:
-                    instDelayType = TypeID::Unknown;  // It should never get here, but just in case...
             };
-            gData.insertTypeIDVector(instDelayType, (*this).svTGD);
+            if (useTGD) gData.insertTypeIDVector(instDelayType, (*this).svTGD);
 
             // Now, lets insert the geometry matrix
             TypeIDSet tSet;
