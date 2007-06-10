@@ -400,7 +400,7 @@ namespace gpstk
         /// Method to get the tropospheric corrections.
         double getTropoCorrections(TropModel *pTropModel, double elevation) throw() 
         {
-            double tropoCorr = 0.0;
+            double tropoCorr(0.0);
             try {
                 tropoCorr = pTropModel->correction(elevation);
                 // Check validity
@@ -416,7 +416,7 @@ namespace gpstk
         /// Method to get the ionospheric corrections.
         double getIonoCorrections(IonoModelStore *pIonoModel, DayTime Tr, Geodetic rxGeo, double elevation, double azimuth) throw() 
         {
-            double ionoCorr = 0.0;
+            double ionoCorr(0.0);
             try {
                 ionoCorr = pIonoModel->getCorrection(Tr, rxGeo, elevation, azimuth);
             }
@@ -431,7 +431,7 @@ namespace gpstk
         double getTGDCorrections(DayTime Tr, const EphemerisStore& Eph, SatID sat) throw() 
         {
 
-            double TGDCorr = 0.0;
+            double TGDCorr(0.0);
 
             try {
                 TGDCorr = (Eph.getTGD(sat, Tr));

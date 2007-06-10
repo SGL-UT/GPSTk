@@ -60,7 +60,7 @@ namespace gpstk
 
             int i;
             int eN = int(extraBiases.size()) - 1;  // Maximum valid index of extraBiases vector
-            int validSats = 0;
+            int validSats(0);
             // Some std::vector to hold temporal values (do not confuse with gpstk::Vector)
             vector<double> vPR;
             vector<double> vGeometricRho;
@@ -113,12 +113,12 @@ namespace gpstk
                 }
                 try {
                     // Scalars to hold temporal values
-                    double tempPR = 0.0;
-                    double tempTGD = 0.0;
-                    double tempTrop = 0.0;
-                    double tempIono = 0.0;
-                    double tempModeledPR = 0.0;
-                    double tempPrefit = 0.0;
+                    double tempPR(0.0);
+                    double tempTGD(0.0);
+                    double tempTrop(0.0);
+                    double tempIono(0.0);
+                    double tempModeledPR(0.0);
+                    double tempPrefit(0.0);
 
                     try {
                         // Compute most of the parameters
@@ -211,7 +211,7 @@ namespace gpstk
 
             // Let's fill in the Geometry Matrix
             geoMatrix.resize((size_t)validSats, 4); // First, set the correct size
-            int counter=0;
+            int counter(0);
             for ( iter=vCosines.begin(); iter!=vCosines.end(); iter++ )
             {
                 geoMatrix(counter,0) = (*iter)[0];
