@@ -128,7 +128,7 @@ else
       YumaBase.hpp YumaStream.hpp YumaHeader.hpp YumaData.hpp YumaAlmanacStore.hpp
       SEMBase.hpp SEMStream.hpp SEMHeader.hpp SEMData.hpp SEMAlmanacStore.hpp
       SourceID.hpp TypeID.hpp DataHeaders.hpp DataStructures.hpp
-      TimeNamedFileStream.hpp
+      TimeNamedFileStream.hpp ComputeCombination.hpp ComputePC.hpp
       ;
 }
 

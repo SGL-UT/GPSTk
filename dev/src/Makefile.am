@@ -73,4 +73,5 @@ VectorBaseOperators.hpp VectorOperators.hpp WGS84Geoid.hpp WeightBase.hpp \
 WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp Xvt.hpp YDSTime.hpp \
 YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp YumaHeader.hpp YumaStream.hpp \
 convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp \
-stl_helpers.hpp DataHeaders.hpp DataStructures.hpp
+stl_helpers.hpp DataHeaders.hpp DataStructures.hpp ComputeCombination.hpp \
+ComputePC.hpp
