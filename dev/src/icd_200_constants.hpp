@@ -92,6 +92,27 @@ namespace gpstk
    const double L2_MULT   = 120.0;
       /// Gamma multiplier.
    const double GAMMA_GPS = 1.646944444;
+
+   // Modernized GPS
+      /// L5 carrier frequency in Hz.
+   const double L5_FREQ   = 1176.45e6;
+      /// L5 carrier wavelength in meters.
+   const double L5_WAVELENGTH  = 0.254828049;
+
+   // Galileo-related
+      /// L6 carrier frequency in Hz.
+   const double L6_FREQ   = 1278.75e6;
+      /// L6 carrier wavelength in meters.
+   const double L6_WAVELENGTH  = 0.234441805;
+      /// L7 carrier frequency in Hz.
+   const double L7_FREQ   = 1207.140e6;
+      /// L7 carrier wavelength in meters.
+   const double L7_WAVELENGTH  = 0.24834937;
+      /// L8 carrier frequency in Hz.
+   const double L8_FREQ   = 1191.795e6;
+      /// L8 carrier wavelength in meters.
+   const double L8_WAVELENGTH  = 0.251547001;
+
       /// constant for the max array index in sv accuracy table
    const int SV_ACCURACY_MAX_INDEX_VALUE = 15;
       /// map from SV accuracy/URA flag to minimum accuracy values in m
