@@ -72,13 +72,7 @@ namespace gpstk
 
 
         /// Default constructor
-        ExtractData() throw(InvalidData)
-        {
-            valid = false; 
-            checkData = true;
-            setMinPRange(15000000.0);
-            setMaxPRange(30000000.0);
-        };
+        ExtractData() throw(InvalidData) : checkData(true), valid(false), minPRange(15000000.0), maxPRange(30000000.0) {};
 
 
         /** Pull out the selected observation type from a RinexObsData object

@@ -47,9 +47,8 @@ namespace gpstk
     public:
 
         /// Default constructor
-        ExtractD1() throw(InvalidData)
+        ExtractD1() throw(InvalidData) : valid(false) 
         {
-            valid = false; 
             checkData = false;  // This is not code, and we don't want to check these values
         };
 
