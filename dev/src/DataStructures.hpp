@@ -42,6 +42,7 @@
 #include "StringUtils.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
+#include "icd_200_constants.hpp"
 
 
 
@@ -1447,35 +1448,42 @@ namespace gpstk
             tvMap[ type ] = (*itObs).second.data;
 
             // If this is a phase measurement, let's store corresponding LLI and SSI for this SV and frequency
+            // Also, the values for phase measurements will be given in meters
             if (type == TypeID::L1)
             {
                 tvMap[TypeID::LLI1] = (*itObs).second.lli;
-                tvMap[TypeID::SSI1] = (*itObs).second.ssi; 
+                tvMap[TypeID::SSI1] = (*itObs).second.ssi;
+                tvMap[ type ] = tvMap[ type ] * L1_WAVELENGTH;
             }
             if (type == TypeID::L2)
             {
                 tvMap[TypeID::LLI2] = (*itObs).second.lli;
                 tvMap[TypeID::SSI2] = (*itObs).second.ssi; 
+                tvMap[ type ] = tvMap[ type ] * L2_WAVELENGTH;
             }
             if (type == TypeID::L5)
             {
                 tvMap[TypeID::LLI5] = (*itObs).second.lli;
                 tvMap[TypeID::SSI5] = (*itObs).second.ssi; 
+                tvMap[ type ] = tvMap[ type ] * L5_WAVELENGTH;
             }
             if (type == TypeID::L6)
             {
                 tvMap[TypeID::LLI6] = (*itObs).second.lli;
                 tvMap[TypeID::SSI6] = (*itObs).second.ssi; 
+                tvMap[ type ] = tvMap[ type ] * L6_WAVELENGTH;
             }
             if (type == TypeID::L7)
             {
                 tvMap[TypeID::LLI7] = (*itObs).second.lli;
                 tvMap[TypeID::SSI7] = (*itObs).second.ssi; 
+                tvMap[ type ] = tvMap[ type ] * L7_WAVELENGTH;
             }
             if (type == TypeID::L8)
             {
                 tvMap[TypeID::LLI8] = (*itObs).second.lli;
                 tvMap[TypeID::SSI8] = (*itObs).second.ssi; 
+                tvMap[ type ] = tvMap[ type ] * L8_WAVELENGTH;
             }
         }
 
