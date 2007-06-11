@@ -117,8 +117,13 @@ namespace gpstk
         /// Compute the combination of observables. You must define this method according to your specific combination.
         virtual double getCombination(const double& obs1, const double& obs2) = 0;
 
+        /// Type of observation to be combined. Nro 1.
         TypeID type1;
+
+        /// Type of observation to be combined. Nro 1.
         TypeID type2;
+
+        /// Type assigned to the resulting combination.
         TypeID resultType;
 
 
