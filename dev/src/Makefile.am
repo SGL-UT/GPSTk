@@ -74,4 +74,4 @@ WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp Xvt.hpp YDSTime.hpp \
 YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp YumaHeader.hpp YumaStream.hpp \
 convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp \
 stl_helpers.hpp DataHeaders.hpp DataStructures.hpp ComputeCombination.hpp \
-ComputePC.hpp
+ComputePC.hpp SimpleFilter.hpp

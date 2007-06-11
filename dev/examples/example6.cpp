@@ -33,6 +33,9 @@
 // Class defining the GNSS data structures
 #include "DataStructures.hpp"
 
+// Class to filter out observables grossly out of limits
+#include "SimpleFilter.hpp"
+
 
 using namespace std;
 using namespace gpstk;
@@ -77,6 +80,9 @@ int main(void)
     // Declare SolverLMS object
     SolverLMS solver;
 
+    // Declare a simple filter object. By default, it filters C1
+    SimpleFilter myFilter;
+
     // This is the GNSS data structure that will hold all the GNSS-related information
     gnssRinex gRin;
 
@@ -87,10 +93,11 @@ int main(void)
         {
 
             // This is the line that will process all the GPS data
-            gRin.keepOnlyTypeID(TypeID::C1) >> modelRef >> solver;
+            gRin.keepOnlyTypeID(TypeID::C1) >> myFilter >> modelRef >> solver;
             // First: Wipe off all the data that we will not use (may be skipped)
-            // Second: The resulting data structure will feed the modeler object
-            // Third: The resulting structure from second step will feed the solver object
+            // Second: Filter out observables way out of bounds (may be skipped)
+            // Third: The resulting data structure will feed the modeler object
+            // Fourth: The resulting structure from third step will feed the solver object
 
         }
         catch(...)
@@ -98,7 +105,7 @@ int main(void)
             cerr << "Exception at epoch: " << gRin.header.epoch << endl;
         }
 
-        // Fourth: Get your results out of the solver object and print them. That is all
+        // Fifth: Get your results out of the solver object and print them. That is all
         Position solPos( (modelRef.rxPos.X() + solver.solution[0]), (modelRef.rxPos.Y() + solver.solution[1]), (modelRef.rxPos.Z() + solver.solution[2]) );
 
         cout << gRin.header.epoch.DOYsecond() << " ";   // Output field #1
