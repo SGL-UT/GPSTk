@@ -48,36 +48,32 @@ namespace gpstk
 
 
         /// Constructor that allows to set the data span values
-        CheckPRData(double min, double max)
-        {
-            setMinPRange(min);
-            setMaxPRange(max);
-        };
+        CheckPRData(const double& min, const double& max) : minPRange(min), maxPRange(max) {};
 
 
         /** Checks that the given pseudorange data is between the limits 
-         * @param prange    The pseudorange data to be test
+         * @param prange    The pseudorange data to be tested
          *
          * @return
          *  True if check was OK.
          */
-        virtual bool check(double prange)
+        virtual bool check(const double& prange) const
         {
             return ( prange>=minPRange && prange<=maxPRange );
         };  // end CheckPRData::check()
 
 
         /// Set the minimum pseudorange value allowed for data (in meters).
-        virtual void setMinPRange(const double minPR) { minPRange = minPR; };
+        virtual void setMinPRange(const double& minPR) { minPRange = minPR; };
 
         /// Get the minimum pseudorange value allowed for data (in meters).
-        virtual double getMinPRange(void) { return minPRange; };
+        virtual double getMinPRange(void) const { return minPRange; };
 
         /// Set the maximum pseudorange value allowed for data (in meters).
-        virtual void setMaxPRange(const double maxPR) { maxPRange = maxPR; };
+        virtual void setMaxPRange(const double& maxPR) { maxPRange = maxPR; };
 
         /// Get the maximum pseudorange value allowed for data (in meters).
-        virtual double getMaxPRange(void) { return maxPRange; };
+        virtual double getMaxPRange(void) const { return maxPRange; };
 
 
         /// Destructor
