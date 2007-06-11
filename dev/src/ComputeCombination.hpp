@@ -102,7 +102,7 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& Combine(gnssRinex& gData) throw(Exception)
+        virtual gnssRinex& Combine(gnssRinex& gData)
         {
             (*this).Combine(gData.body);
             return gData;
