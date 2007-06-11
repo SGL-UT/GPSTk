@@ -44,11 +44,7 @@ namespace gpstk
     public:
 
         /// Default constructor
-        CheckPRData()
-        {
-            minPRange = 15000000.0;
-            maxPRange = 30000000.0;
-        };
+        CheckPRData() : minPRange(15000000.0), maxPRange(30000000.0) {};
 
 
         /// Constructor that allows to set the data span values

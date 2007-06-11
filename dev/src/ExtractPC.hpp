@@ -47,11 +47,9 @@ namespace gpstk
     public:
 
         /// Default constructor
-        ExtractPC() throw(InvalidData)
+        ExtractPC() throw(InvalidData) : typeObs1(RinexObsHeader::P1), typeObs2(RinexObsHeader::P2)
         {
             valid = false;
-            typeObs1 = RinexObsHeader::P1;
-            typeObs2 = RinexObsHeader::P2;
             checkData = true;
         };
 

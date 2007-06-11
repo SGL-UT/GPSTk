@@ -48,11 +48,9 @@ namespace gpstk
     public:
 
         /// Default constructor
-        ExtractLC() throw(InvalidData)
+        ExtractLC() throw(InvalidData) : typeObs1(RinexObsHeader::L1), typeObs2(RinexObsHeader::L2)
         {
             valid = false;
-            typeObs1 = RinexObsHeader::L1;
-            typeObs2 = RinexObsHeader::L2;
             checkData = false;  // This is not code, and we don't want to check these values
         };
 
