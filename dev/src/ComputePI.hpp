@@ -1,11 +1,11 @@
 
 /**
- * @file ComputePC.hpp
- * This class eases computing PC combination for GNSS data structures.
+ * @file ComputePI.hpp
+ * This class eases computing PI combination for GNSS data structures.
  */
 
-#ifndef Compute_PC_GPSTK
-#define Compute_PC_GPSTK
+#ifndef Compute_PI_GPSTK
+#define Compute_PI_GPSTK
 
 //============================================================================
 //
@@ -41,17 +41,17 @@ namespace gpstk
     //@{
 
 
-    /// This class eases computing PC combination for GNSS data structures.
-    class ComputePC : public ComputeCombination
+    /// This class eases computing PI combination for GNSS data structures.
+    class ComputePI : public ComputeCombination
     {
     public:
 
         /// Default constructor
-        ComputePC() : DEN(0.646944444)
+        ComputePI()
         {
             type1 = TypeID::P1;
             type2 = TypeID::P2;
-            resultType = TypeID::PC;
+            resultType = TypeID::PI;
         };
 
 
@@ -72,21 +72,17 @@ namespace gpstk
 
 
         /// Destructor
-        virtual ~ComputePC() {};
+        virtual ~ComputePI() {};
 
 
     protected:
         /// Compute the combination of observables.
         virtual double getCombination(const double& obs1, const double& obs2)
         {
-            return ( (GAMMA_GPS*obs1 - obs2)/(DEN) );
+            return ( obs2 - obs1 );
         };
 
-    private:
-
-        const double DEN;     // DEN = GAMMA_GPS - 1
-
-   }; // end class ExtractPC
+   }; // end class ExtractPI
    
 
    //@}

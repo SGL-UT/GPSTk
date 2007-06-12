@@ -129,7 +129,8 @@ else
       SEMBase.hpp SEMStream.hpp SEMHeader.hpp SEMData.hpp SEMAlmanacStore.hpp
       SourceID.hpp TypeID.hpp DataHeaders.hpp DataStructures.hpp
       TimeNamedFileStream.hpp ComputeCombination.hpp ComputePC.hpp
-      SimpleFilter.hpp
+      SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp ComputeLI.hpp ComputePdelta.hpp
+      ComputeLdelta.hpp
       ;
 }
 

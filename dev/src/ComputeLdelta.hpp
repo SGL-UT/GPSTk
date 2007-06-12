@@ -1,11 +1,11 @@
 
 /**
- * @file ComputePC.hpp
- * This class eases computing PC combination for GNSS data structures.
+ * @file ComputeLdelta.hpp
+ * This class eases computing Ldelta combination for GNSS data structures.
  */
 
-#ifndef Compute_PC_GPSTK
-#define Compute_PC_GPSTK
+#ifndef Compute_LDELTA_GPSTK
+#define Compute_LDELTA_GPSTK
 
 //============================================================================
 //
@@ -41,17 +41,17 @@ namespace gpstk
     //@{
 
 
-    /// This class eases computing PC combination for GNSS data structures.
-    class ComputePC : public ComputeCombination
+    /// This class eases computing Ldelta combination for GNSS data structures.
+    class ComputeLdelta : public ComputeCombination
     {
     public:
 
         /// Default constructor
-        ComputePC() : DEN(0.646944444)
+        ComputeLdelta() : DEN(L1_FREQ - L2_FREQ)
         {
-            type1 = TypeID::P1;
-            type2 = TypeID::P2;
-            resultType = TypeID::PC;
+            type1 = TypeID::L1;
+            type2 = TypeID::L2;
+            resultType = TypeID::Ldelta;
         };
 
 
@@ -67,26 +67,22 @@ namespace gpstk
         }
 
 
-        /// Some Rinex data files provide C1 instead of P1. Use this method in those cases.
-        void useC1() { type1 = TypeID::C1; };
-
-
         /// Destructor
-        virtual ~ComputePC() {};
+        virtual ~ComputeLdelta() {};
 
 
     protected:
         /// Compute the combination of observables.
         virtual double getCombination(const double& obs1, const double& obs2)
         {
-            return ( (GAMMA_GPS*obs1 - obs2)/(DEN) );
+            return ( ( L1_FREQ*obs1 - L2_FREQ*obs2 ) / ( DEN ) );
         };
 
     private:
 
-        const double DEN;     // DEN = GAMMA_GPS - 1
+        const double DEN;       // DEN = L1_FREQ - L2_FREQ
 
-   }; // end class ExtractPC
+   }; // end class ExtractLdelta
    
 
    //@}

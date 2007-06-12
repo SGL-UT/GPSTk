@@ -1,11 +1,11 @@
 
 /**
- * @file ComputePC.hpp
- * This class eases computing PC combination for GNSS data structures.
+ * @file ComputeLC.hpp
+ * This class eases computing LC combination for GNSS data structures.
  */
 
-#ifndef Compute_PC_GPSTK
-#define Compute_PC_GPSTK
+#ifndef Compute_LC_GPSTK
+#define Compute_LC_GPSTK
 
 //============================================================================
 //
@@ -41,17 +41,17 @@ namespace gpstk
     //@{
 
 
-    /// This class eases computing PC combination for GNSS data structures.
-    class ComputePC : public ComputeCombination
+    /// This class eases computing LC combination for GNSS data structures.
+    class ComputeLC : public ComputeCombination
     {
     public:
 
         /// Default constructor
-        ComputePC() : DEN(0.646944444)
+        ComputeLC() : DEN(0.646944444)
         {
-            type1 = TypeID::P1;
-            type2 = TypeID::P2;
-            resultType = TypeID::PC;
+            type1 = TypeID::L1;
+            type2 = TypeID::L2;
+            resultType = TypeID::LC;
         };
 
 
@@ -67,12 +67,8 @@ namespace gpstk
         }
 
 
-        /// Some Rinex data files provide C1 instead of P1. Use this method in those cases.
-        void useC1() { type1 = TypeID::C1; };
-
-
         /// Destructor
-        virtual ~ComputePC() {};
+        virtual ~ComputeLC() {};
 
 
     protected:
@@ -86,7 +82,7 @@ namespace gpstk
 
         const double DEN;     // DEN = GAMMA_GPS - 1
 
-   }; // end class ExtractPC
+   }; // end class ExtractLC
    
 
    //@}
