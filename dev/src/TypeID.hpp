@@ -177,6 +177,7 @@ namespace gpstk
          recLon,    ///< Receiver position, Longitude component
          recH,      ///< Receiver position, Height component
          sigma,     ///< Standard deviation
+         iura,      ///< Index User Range Accuracy
          Last,      ///< used to extend this...
          Placeholder = Last+1000
       };
