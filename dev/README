@@ -1,6 +1,6 @@
 $Id$
 
-The following is excerpted from the GPSTk web site at http://www.gpstk.org/ :
+The following is excerpted from the GPSTk web site at http://www.gpstk.org/. 
 
 What is GPSTk?
 --------------
@@ -85,7 +85,14 @@ GPSTk applications fall into the following categories.
 License
 -------
 
-The source code provided by the GPSTk is distributed under the GNU LGPL. 
-This license gives all users the right to use and redistribute the code. 
-Users of the GPSTk are not required to open their source, according to the 
-LGPL. This makes the GPSTk a practical choice for commercial projects.
+The source code provided by the GPSTk is distributed under the GNU LGPL 
+(http://www.gnu.org/copyleft/lesser.html). This license gives all users the 
+right to use and redistribute the code. Users of the GPSTk are not required 
+to open their source, according to the LGPL. This makes the GPSTk a practical 
+choice for commercial projects.
+
+Contact Info
+------------
+The GPSTk is a collaborative effort. However, you can email to 
+gpstk@arlut.utexas.edu or contact one of the CoreTeam members
+(http://www.gpstk.org/bin/view/Development/CoreTeam).
