@@ -44,7 +44,7 @@ namespace gpstk
     //  Number of satellites with valid weights
     //
     // NOTE: Method isValid() will return false if some satellite does not have a
-    // valid weight. Also, its PRN will be set to a negative value.
+    // valid weight.
     //
     int SimpleIURAWeight::getWeights(DayTime& time, Vector<SatID>& Satellites, BCEphemerisStore& bcEph) throw(InvalidWeights)
     {
@@ -75,8 +75,6 @@ namespace gpstk
             catch(...)
             {
                 // If there are problems, we skip this satellite
-                // Satellite PRN is set to a negative value
-                Satellites(i).id = -std::abs(Satellites(i).id);
                 vRejectedSV.push_back(Satellites(i));
                 validFlag = false;      // Validity flag is set to false
                 continue;
@@ -105,7 +103,7 @@ namespace gpstk
     //  Number of satellites with valid weights
     //
     // NOTE: Method isValid() will return false if some satellite does not have a
-    // valid weight. Also, its PRN will be set to a negative value.
+    // valid weight.
     //
     // NOTE: This method assigns an URA of 0.1 m to all satellites.
     //
@@ -135,8 +133,6 @@ namespace gpstk
             catch(...)
             {
                 // If the satellite is not available, we skip it
-                // Satellite PRN is set to a negative value
-                Satellites(i).id = -std::abs(Satellites(i).id);
                 vRejectedSV.push_back(Satellites(i));
                 validFlag = false;      // Validity flag is set to false
                 continue;
