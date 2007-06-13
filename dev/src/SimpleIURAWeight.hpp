@@ -49,7 +49,7 @@ namespace gpstk
     /**
      * Class to assign weights to satellites based on their URA Index (IURA).
      */
-    class SimpleIURAWeight: WeightBase
+    class SimpleIURAWeight : public WeightBase
     {
     public:
 
