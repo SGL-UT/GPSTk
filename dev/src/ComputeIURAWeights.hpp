@@ -54,6 +54,7 @@ namespace gpstk
      * @code
      *   RinexObsStream rin("ebre0300.02o");
      *   RinexNavStream rnavin("brdc0300.02n");
+     *   RinexNavData rNavData;
      *   BCEphemerisStore bceStore;
      *   while (rnavin >> rNavData) bceStore.addEphemeris(rNavData);
      *   bceStore.SearchPast();  // This is the default
@@ -212,10 +213,11 @@ namespace gpstk
         virtual ~ComputeIURAWeights() {};
 
 
-    private:
+    protected:
 
         /// Pointer to default broadcast ephemeris to be used.
         BCEphemerisStore* pBCEphemeris;
+
 
         /// Pointer to default precise ephemeris to be used.
         TabularEphemerisStore* pTabEphemeris;
