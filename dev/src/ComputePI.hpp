@@ -41,7 +41,36 @@ namespace gpstk
     //@{
 
 
-    /// This class eases computing PI combination for GNSS data structures.
+    /** This class eases computing PI combination for GNSS data structures.
+     * This class is meant to be used with the GNSS data structures objects
+     * found in "DataStructures" class.
+     *
+     * A typical way to use this class follows:
+     *
+     * @code
+     *   RinexObsStream rin("ebre0300.02o");
+     *
+     *   gnssRinex gRin;
+     *   ComputePI getPI;
+     *
+     *   while(rin >> gRin) {
+     *      gRin >> getPI;
+     *   }
+     * @endcode
+     *
+     * The "ComputePI" object will visit every satellite in the GNSS data
+     * structure that is "gRin" and will try to compute its PI combination.
+     *
+     * When used with the ">>" operator, this class returns the same incoming
+     * data structure with the PI inserted along their corresponding
+     * satellites. Be warned that if a given satellite does not have the 
+     * observations required, it will be summarily deleted from the data
+     * structure.
+     *
+     * Sometimes, the Rinex observations file does not have P1, but provides C1
+     * instead. In such cases, you must use the useC1() method.
+     *
+     */
     class ComputePI : public ComputeCombination
     {
     public:

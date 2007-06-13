@@ -41,7 +41,35 @@ namespace gpstk
     //@{
 
 
-    /// This class eases computing LI combination for GNSS data structures.
+    /** This class eases computing LI combination for GNSS data structures.
+     * This class is meant to be used with the GNSS data structures objects
+     * found in "DataStructures" class.
+     *
+     * A typical way to use this class follows:
+     *
+     * @code
+     *   RinexObsStream rin("ebre0300.02o");
+     *
+     *   gnssRinex gRin;
+     *   ComputeLI getLI;
+     *
+     *   while(rin >> gRin) {
+     *      gRin >> getLI;
+     *   }
+     * @endcode
+     *
+     * The "ComputeLI" object will visit every satellite in the GNSS data
+     * structure that is "gRin" and will try to compute its LI combination.
+     *
+     * When used with the ">>" operator, this class returns the same incoming
+     * data structure with the LI inserted along their corresponding
+     * satellites. Be warned that if a given satellite does not have the 
+     * observations required, it will be summarily deleted from the data
+     * structure.
+     *
+     * All observations are in meters.
+     *
+     */
     class ComputeLI : public ComputeCombination
     {
     public:

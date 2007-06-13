@@ -1,7 +1,7 @@
 
 /**
  * @file ComputeIURAWeights.hpp
- * This is the base class to ease computing combination of data for GNSS data structures.
+ * This class computes satellites weights based on URA Index and is meant to be used with GNSS data structures.
  */
 
 #ifndef Compute_IURA_WEIGHTS_GPSTK

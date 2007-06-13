@@ -41,7 +41,35 @@ namespace gpstk
     //@{
 
 
-    /// This class eases computing Ldelta combination for GNSS data structures.
+    /** This class eases computing Ldelta combination for GNSS data structures.
+     * This class is meant to be used with the GNSS data structures objects
+     * found in "DataStructures" class.
+     *
+     * A typical way to use this class follows:
+     *
+     * @code
+     *   RinexObsStream rin("ebre0300.02o");
+     *
+     *   gnssRinex gRin;
+     *   ComputeLdelta getLdelta;
+     *
+     *   while(rin >> gRin) {
+     *      gRin >> getLdelta;
+     *   }
+     * @endcode
+     *
+     * The "ComputeLdelta" object will visit every satellite in the GNSS data
+     * structure that is "gRin" and will try to compute its Ldelta combination.
+     *
+     * When used with the ">>" operator, this class returns the same incoming
+     * data structure with the Ldelta inserted along their corresponding
+     * satellites. Be warned that if a given satellite does not have the 
+     * observations required, it will be summarily deleted from the data
+     * structure.
+     *
+     * All observations are in meters.
+     *
+     */
     class ComputeLdelta : public ComputeCombination
     {
     public:
