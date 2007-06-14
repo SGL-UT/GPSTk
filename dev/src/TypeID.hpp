@@ -107,6 +107,7 @@ namespace gpstk
          LI,        ///< Phase-based ionospheric combination
          Pdelta,    ///< Narrow-lane combination
          Ldelta,    ///< Wide-lane combination
+         MWubbena,  ///< Melbourne-Wubbena combination
          // Model-related types
          rho,       ///< Geometric distance satellite-receiver
          dtSat,     ///< Satellite clock offset
