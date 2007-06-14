@@ -120,7 +120,7 @@ namespace gpstk
         /// Type of observation to be combined. Nro 1.
         TypeID type1;
 
-        /// Type of observation to be combined. Nro 1.
+        /// Type of observation to be combined. Nro 2.
         TypeID type2;
 
         /// Type assigned to the resulting combination.
