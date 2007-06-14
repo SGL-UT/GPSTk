@@ -109,4 +109,38 @@ namespace gpstk
     }  // end SolverWMS::Compute()
 
 
+
+     /* Returns a reference to a satTypeValueMap object after solving the previously defined equation system.
+      *
+      * @param gData     Data object holding the data.
+      */
+    satTypeValueMap& SolverWMS::processSolver(satTypeValueMap& gData) throw(InvalidSolver)
+    {
+        // First, let's fetch the vector of prefit residuals
+        Vector<double> prefit(gData.getVectorOfTypeID((*this).defaultEqDef.header));
+        // Second, generate the corresponding geometry/design matrix
+        Matrix<double> dMatrix(gData.getMatrixOfTypes((*this).defaultEqDef.body));
+        // Third, generate the appropriate weights vector
+        Vector<double> weightsVector(gData.getVectorOfTypeID(TypeID::weight));
+
+        try
+        {
+            // Call the Compute() method with the defined equation model. This equation model MUST HAS BEEN
+            // previously set, usually when creating the SolverWMS object with the appropriate constructor.
+            (*this).Compute(prefit, dMatrix, weightsVector);
+        }
+        catch(InvalidSolver& e) {
+            GPSTK_RETHROW(e);
+        }
+
+        // Now we have to add the new values to the data structure
+        if ( (*this).defaultEqDef.header == TypeID::prefitC ) gData.insertTypeIDVector(TypeID::postfitC, (*this).postfitResiduals);
+        if ( (*this).defaultEqDef.header == TypeID::prefitL ) gData.insertTypeIDVector(TypeID::postfitL, (*this).postfitResiduals);
+
+        return gData;
+
+    }   // End SolverWMS::processSolver(const DayTime& time, satTypeValueMap& gData)
+
+
+
 } // end namespace gpstk

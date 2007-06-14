@@ -49,8 +49,32 @@ namespace gpstk
     {
     public:
 
-        /// Implicit constructor
-        SolverWMS() {};
+        /// Default constructor. When fed with GNSS data structures, the 
+        /// default the equation definition to be used is the common GNSS 
+        /// code equation.
+        SolverWMS()
+        {
+            // First, let's define a set with the typical unknowns
+            TypeIDSet tempSet;
+            tempSet.insert(TypeID::dx);
+            tempSet.insert(TypeID::dy);
+            tempSet.insert(TypeID::dz);
+            tempSet.insert(TypeID::cdt);
+
+            // Now, we build the default definition for a common GNSS code equation
+            defaultEqDef.header = TypeID::prefitC;
+            defaultEqDef.body = tempSet;
+        };
+
+
+        /** Explicit constructor. Sets the default equation definition to be used when fed with GNSS data structures.
+         *
+         * @param eqDef     gnssEquationDefinition to be used
+         */
+        SolverWMS(const gnssEquationDefinition& eqDef)
+        {
+            setDefaultEqDefinition(eqDef);
+        };
 
 
         /** Compute the Weighted Least Mean Squares Solution of the given equations set.
@@ -99,6 +123,13 @@ namespace gpstk
         {
             return SolverLMS::Compute(prefitResiduals, designMatrix);
         };
+
+
+        /** Returns a reference to a satTypeValueMap object after solving the previously defined equation system.
+         *
+         * @param gData     Data object holding the data.
+         */
+        virtual satTypeValueMap& processSolver(satTypeValueMap& gData) throw(InvalidSolver);
 
 
         /// Covariance matrix without weights. This must be used to compute DOP
