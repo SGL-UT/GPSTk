@@ -115,7 +115,7 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& getIURAWeight(const DayTime& time, satTypeValueMap& gData)
+        virtual satTypeValueMap& ComputeWeight(const DayTime& time, satTypeValueMap& gData)
         {
             double weight(0.000001);   // By default a very small value
             SatIDSet satRejectedSet;
@@ -154,9 +154,9 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssSatTypeValue& getIURAWeight(gnssSatTypeValue& gData)
+        virtual gnssSatTypeValue& ComputeWeight(gnssSatTypeValue& gData)
         {
-            (*this).getIURAWeight(gData.header.epoch, gData.body);
+            (*this).ComputeWeight(gData.header.epoch, gData.body);
             return gData;
         };
 
@@ -165,9 +165,9 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& getIURAWeight(gnssRinex& gData)
+        virtual gnssRinex& ComputeWeight(gnssRinex& gData)
         {
-            (*this).getIURAWeight(gData.header.epoch, gData.body);
+            (*this).ComputeWeight(gData.header.epoch, gData.body);
             return gData;
         };
 
@@ -282,7 +282,7 @@ namespace gpstk
     /// Input operator from gnssSatTypeValue to ComputeIURAWeights.
     inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, ComputeIURAWeights& right)
     {
-            right.getIURAWeight(gData);
+            right.ComputeWeight(gData);
             return gData;
     }
 
@@ -290,7 +290,7 @@ namespace gpstk
     /// Input operator from gnssRinex to ComputeIURAWeights.
     inline gnssRinex& operator>>(gnssRinex& gData, ComputeIURAWeights& right)
     {
-            right.getIURAWeight(gData);
+            right.ComputeWeight(gData);
             return gData;
     }
 
