@@ -84,6 +84,7 @@ namespace gpstk
       tStrings[LI]      = "LI";
       tStrings[Pdelta]  = "Pdelta";
       tStrings[Ldelta]  = "Ldelta";
+      tStrings[MWubbena]  = "MWubbena";
       tStrings[rho]     = "rho";
       tStrings[dtSat]   = "dtSat";
       tStrings[rel]     = "rel";
@@ -148,6 +149,7 @@ namespace gpstk
       tStrings[recLon]  = "RxLon";
       tStrings[recH]    = "RxH";
       tStrings[sigma]   = "sigma";
+      tStrings[iura]   = "iura";
    }
 
 
