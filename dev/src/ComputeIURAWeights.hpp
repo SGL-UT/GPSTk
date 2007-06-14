@@ -74,8 +74,9 @@ namespace gpstk
      *
      * When used with the ">>" operator, this class returns the same incoming
      * data structure with the weights inserted along their corresponding
-     * satellites. Be warned that if a given satellite is not found, it will 
-     * be summarily deleted from the data structure.
+     * satellites. Be warned that if it is not possible to compute the weight 
+     * for a given satellite, it will be summarily deleted from the data
+     * structure.
      *
      */
 
