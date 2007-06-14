@@ -130,7 +130,7 @@ else
       SourceID.hpp TypeID.hpp DataHeaders.hpp DataStructures.hpp
       TimeNamedFileStream.hpp ComputeCombination.hpp ComputePC.hpp
       SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp ComputeLI.hpp ComputePdelta.hpp
-      ComputeLdelta.hpp ComputeIURAWeights.hpp
+      ComputeLdelta.hpp ComputeIURAWeights.hpp ComputeMOPSWeights.hpp
       ;
 }
 

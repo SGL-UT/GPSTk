@@ -75,4 +75,5 @@ YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp YumaHeader.hpp YumaStream.hpp \
 convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp \
 stl_helpers.hpp DataHeaders.hpp DataStructures.hpp ComputeCombination.hpp \
 ComputePC.hpp SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp ComputeLI.hpp \
-ComputePdelta.hpp ComputeLdelta.hpp ComputeIURAWeights.hpp
+ComputePdelta.hpp ComputeLdelta.hpp ComputeIURAWeights.hpp \
+ComputeMOPSWeights.hpp
