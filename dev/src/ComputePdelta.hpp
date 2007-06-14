@@ -115,7 +115,7 @@ namespace gpstk
 
         const double DEN;       // DEN = L1_FREQ + L2_FREQ
 
-   }; // end class ExtractPdelta
+   }; // end class ComputePdelta
    
 
    //@}

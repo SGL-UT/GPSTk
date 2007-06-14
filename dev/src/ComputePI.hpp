@@ -111,7 +111,7 @@ namespace gpstk
             return ( obs2 - obs1 );
         };
 
-   }; // end class ExtractPI
+   }; // end class ComputePI
    
 
    //@}

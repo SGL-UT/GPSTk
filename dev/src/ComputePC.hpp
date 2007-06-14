@@ -115,7 +115,7 @@ namespace gpstk
 
         const double DEN;     // DEN = GAMMA_GPS - 1
 
-   }; // end class ExtractPC
+   }; // end class ComputePC
    
 
    //@}

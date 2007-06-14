@@ -106,7 +106,7 @@ namespace gpstk
             return ( obs1 - obs2 );
         };
 
-   }; // end class ExtractLI
+   }; // end class ComputeLI
    
 
    //@}
