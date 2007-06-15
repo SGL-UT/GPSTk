@@ -17,7 +17,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Dagoberto Salazar - gAGE. 2007
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
 //============================================================================
 
@@ -124,6 +124,13 @@ namespace gpstk
          satZ,      ///< Satellite position, Z component
          elevation, ///< Satellite elevation
          azimuth,   ///< Satellite azimuth
+         // Cycle slip flags
+         CSL1,      ///< Cycle slip in L1
+         CSL2,      ///< Cycle slip in L2
+         CSL5,      ///< Cycle slip in L5
+         CSL6,      ///< Cycle slip in L6
+         CSL7,      ///< Cycle slip in L7
+         CSL8,      ///< Cycle slip in L8
          // Phase-ambiguity types
          BL1,       ///< Phase ambiguity in L1
          BL2,       ///< Phase ambiguity in L2
