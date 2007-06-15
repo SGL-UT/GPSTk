@@ -380,6 +380,8 @@ namespace gpstk
                     case TypeID::C8:
                         instDelayType = TypeID::instC8;
                         break;
+                    default:
+                        instDelayType = TypeID::instC1;
                 };
                 gData.insertTypeIDVector(instDelayType, (*this).svTGD);
             }
