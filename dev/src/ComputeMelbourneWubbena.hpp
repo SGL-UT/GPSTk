@@ -25,7 +25,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Dagoberto Salazar - gAGE. 2007
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
 //============================================================================
 
@@ -41,7 +41,7 @@ namespace gpstk
     //@{
 
 
-    /** This class eases computing Pdelta combination for GNSS data structures.
+    /** This class eases computing Melbourne-Wubbena combination for GNSS data structures.
      * This class is meant to be used with the GNSS data structures objects
      * found in "DataStructures" class.
      *
@@ -51,20 +51,21 @@ namespace gpstk
      *   RinexObsStream rin("ebre0300.02o");
      *
      *   gnssRinex gRin;
-     *   ComputePdelta getPdelta;
+     *   ComputeMelbourne-Wubbena getMW;
      *
      *   while(rin >> gRin) {
-     *      gRin >> getPdelta;
+     *      gRin >> getMW;
      *   }
      * @endcode
      *
-     * The "ComputePdelta" object will visit every satellite in the GNSS data
-     * structure that is "gRin" and will try to compute its Pdelta combination.
+     * The "ComputeMelbourne-Wubbena" object will visit every satellite in the 
+     * GNSS data structure that is "gRin" and will try to compute its 
+     * Melbourne-Wubbena combination.
      *
      * When used with the ">>" operator, this class returns the same incoming
-     * data structure with the Pdelta inserted along their corresponding
-     * satellites. Be warned that if a given satellite does not have the 
-     * observations required, it will be summarily deleted from the data
+     * data structure with the Melbourne-Wubbena combinations inserted along their
+     * corresponding satellites. Be warned that if a given satellite does not 
+     * have the observations required, it will be summarily deleted from the data
      * structure.
      *
      * Sometimes, the Rinex observations file does not have P1, but provides C1
