@@ -357,29 +357,32 @@ namespace gpstk
             gData.insertTypeIDVector(TypeID::azimuth, (*this).azimuthSV);
 
             // Get the instrumental delays right
-            TypeID instDelayType;
-            switch ( (*this).getDefaultObservable().type )
+            if (useTGD)
             {
-                case TypeID::C1:
-                    instDelayType = TypeID::instC1;
-                    break;
-                case TypeID::C2:
-                    instDelayType = TypeID::instC2;
-                    break;
-                case TypeID::C5:
-                    instDelayType = TypeID::instC5;
-                    break;
-                case TypeID::C6:
-                    instDelayType = TypeID::instC6;
-                    break;
-                case TypeID::C7:
-                    instDelayType = TypeID::instC7;
-                    break;
-                case TypeID::C8:
-                    instDelayType = TypeID::instC8;
-                    break;
-            };
-            if (useTGD) gData.insertTypeIDVector(instDelayType, (*this).svTGD);
+                TypeID instDelayType;
+                switch ( (*this).getDefaultObservable().type )
+                {
+                    case TypeID::C1:
+                        instDelayType = TypeID::instC1;
+                        break;
+                    case TypeID::C2:
+                        instDelayType = TypeID::instC2;
+                        break;
+                    case TypeID::C5:
+                        instDelayType = TypeID::instC5;
+                        break;
+                    case TypeID::C6:
+                        instDelayType = TypeID::instC6;
+                        break;
+                    case TypeID::C7:
+                        instDelayType = TypeID::instC7;
+                        break;
+                    case TypeID::C8:
+                        instDelayType = TypeID::instC8;
+                        break;
+                };
+                gData.insertTypeIDVector(instDelayType, (*this).svTGD);
+            }
 
             // Now, lets insert the geometry matrix
             TypeIDSet tSet;
