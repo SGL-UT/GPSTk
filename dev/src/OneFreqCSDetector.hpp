@@ -42,7 +42,84 @@ namespace gpstk
     //@{
 
 
-    /// This is a class to detect cycle slips using observables in just one frequency.
+    /** This is a class to detect cycle slips using observables in just one frequency.
+     * This class is meant to be used with the GNSS data structures objects
+     * found in "DataStructures" class.
+     *
+     * A typical way to use this class follows:
+     *
+     * @code
+     *   RinexObsStream rin("ebre0300.02o");
+     *
+     *   gnssRinex gRin;
+     *   OneFreqCSDetector markCSC1;
+     *
+     *   while(rin >> gRin) {
+     *      gRin >> markCSC1;
+     *   }
+     * @endcode
+     *
+     * The "OneFreqCSDetector" object will visit every satellite in the GNSS data
+     * structure that is "gRin" and will decide if a cycle slip has happened in the
+     * given observable.
+     *
+     * By default, the algorithm will use C1 and L1 observables, and the LLI1 index.
+     * The result (a 0 if a cycle slip is found, 1 otherwise) will be stored in the
+     * data structure as the CSL1 index. Note that these data types may be changed
+     * using the appropriate methods. For example:
+     *
+     * @code
+     *    markCSC1.setCodeType(TypeID::P2);
+     *    markCSC1.setPhaseType(TypeID::L2);
+     *    markCSC1.setLLIType(TypeID::LLI2);
+     *    markCSC1.setResultType(TypeID::CSI2);
+     * @endcode
+     *
+     * Or a little more advanced:
+     *
+     * @code
+     *    OneFreqCSDetector markCSPC;       // Let's compute cycle slips for PC
+     *
+     *    markCSPC.setCodeType(TypeID::PC);
+     *    markCSPC.setPhaseType(TypeID::LC);
+     *
+     *    // There is no meaning of LLI index for PC, so it is skipped
+     *
+     *    // By default, it doesn't exist a TypeID for cycle slips in LC. So let's 
+     *    // create a new object csLC holding it, with identifier string CSLS.
+     *    TypeID csLC(TypeID::newValueType("CSLC"));
+     *
+     *    // Assign the result type
+     *    markCSPC.setResultType(csLS);
+     * @endcode
+     *
+     * This algorithm will compute the bias between code and phase, and will compare
+     * it with a mean bias that is computed on the fly. If the current bias exceeds a
+     * given threshold, then a cycle slip is declared. The algorithm will also use
+     * the corresponding LLI index (and the RINEX epoch flag, if present) to guide
+     * its decision.
+     *
+     * The threshold, as well as the filter window size and the maximum allowed 
+     * time interval between two successive measures, may be tuned with their 
+     * corresponding methods. For instance:
+     *
+     * @code
+     *    markCSC1.setMaxNumSigmas(3.5);
+     *    markCSC1.setMaxWindowSize(20);
+     * @endcode
+     *
+     * Please be aware that the window size should not be too big, because 
+     * other factors (such as the ionospheric drift) may show up in the bias, affecting
+     * the algorithm. When using 1 Hz data sampling, a window size between 60 and 100
+     * samples will be fine. 
+     *
+     * When used with the ">>" operator, this class returns the same incoming
+     * data structure with the cycle slip index inserted along their corresponding
+     * satellites. Be warned that if a given satellite does not have the 
+     * observations required, it will be summarily deleted from the data
+     * structure.
+     *
+     */    
     class OneFreqCSDetector
     {
     public:
@@ -140,7 +217,133 @@ namespace gpstk
         };
 
 
-// *** ME FALTAN METODOS SET/GET XXX
+        /** Method to set the default code type to be used.
+         * @param codeT     TypeID of code to be used
+         */
+        virtual void setCodeType(const TypeID& codeT)
+        {
+           codeType = codeT;
+        };
+
+
+        /// Method to get the default code type being used.
+        virtual TypeID getCodeType() const
+        {
+           return codeType;
+        };
+
+
+        /** Method to set the default phase type to be used.
+         * @param phaseT    TypeID of phase to be used
+         */
+        virtual void setPhaseType(const TypeID& phaseT)
+        {
+           phaseType = phaseT;
+        };
+
+
+        /// Method to get the default phase type being used.
+        virtual TypeID getPhaseType() const
+        {
+           return phaseType;
+        };
+
+
+        /** Method to set the default LLI to be used.
+         * @param lliT    LLI to be used
+         */
+        virtual void setLLIType(const TypeID& lliT)
+        {
+           lliType = lliT;
+        };
+
+
+        /// Method to get the default LLI being used.
+        virtual TypeID getLLIType() const
+        {
+           return lliType;
+        };
+
+
+        /** Method to set the default return type to be used.
+         * @param returnT    TypeID to be returned
+         */
+        virtual void setResultType(const TypeID& resultT)
+        {
+           resultType = resultT;
+        };
+
+
+        /// Method to get the default return type being used.
+        virtual TypeID getResultType() const
+        {
+           return resultType;
+        };
+
+
+        /** Method to set the maximum interval of time allowed between two successive epochs.
+         * @param maxDelta      Maximum interval of time, in seconds
+         */
+        virtual void setDeltaTMax(const double& maxDelta)
+        {
+           deltaTMax = maxDelta;
+        };
+
+
+        /// Method to get the maximum interval of time allowed between two successive epochs.
+        virtual double getDeltaTMax() const
+        {
+           return deltaTMax;
+        };
+
+
+        /** Method to set the maximum size of filter window, in samples.
+         * @param maxSize       Maximum size of filter window, in samples.
+         */
+        virtual void setMaxWindowSize(const int& maxSize)
+        {
+           maxWindowSize = maxSize;
+        };
+
+
+        /// Method to get the maximum size of filter window, in samples.
+        virtual int getMaxWindowSize() const
+        {
+           return maxWindowSize;
+        };
+
+
+        /** Method to set the maximum deviation allowed before declaring cycle slip (in number of sigmas).
+         * @param maxNSigmas        Maximum deviation allowed before declaring cycle slip (in number of sigmas).
+         */
+        virtual void setMaxNumSigmas(const double& maxNSigmas)
+        {
+           maxNumSigmas = maxNSigmas;
+        };
+
+
+        /// Method to get the maximum deviation allowed before declaring cycle slip (in number of sigmas).
+        virtual double getMaxNumSigmas() const
+        {
+           return maxNumSigmas;
+        };
+
+
+        /** Method to set the default value assigned to sigma when filter starts.
+         * @param defSigma      Default value assigned to sigma when filter starts.
+         */
+        virtual void setDefaultBiasSigma(const double& defSigma)
+        {
+           defaultBiasSigma = defSigma;
+        };
+
+
+        /// Method to get the default value assigned to sigma when filter starts.
+        virtual double getDefaultBiasSigma() const
+        {
+           return defaultBiasSigma;
+        };
+
 
         /** Returns a gnnsSatTypeValue object, adding the new data generated when calling this object.
          *
@@ -201,14 +404,17 @@ namespace gpstk
         /// A structure used to store filter data for a SV.
         struct filterData
         {
+            // Default constructor initializing the data in the structure
+            filterData() : previousEpoch(DayTime::BEGINNING_OF_TIME), windowSize(0), meanBias(0.0), meanSigma2(0.0) {};
+
             DayTime previousEpoch;  ///< The previous epoch time stamp.
             int windowSize;         ///< The filter window size.
             double meanBias;        ///< Accumulated mean bias (pseudorange - phase).
             double meanSigma2;      ///< Accumulated mean bias sigma squared.
-            bool csDetected;        ///< Whether a cycle slip was detected
         };
 
 
+        /// Map holding the information regarding every satellite
         std::map<SatID, filterData> OneFreqData;
 
 
@@ -230,7 +436,7 @@ namespace gpstk
             double deltaBias(0.0);  // Difference between biases
 
             // Get the difference between current epoch and former epoch, in seconds
-            if (OneFreqData[sat].windowSize > 1) deltaT = (epoch.MJDdate() - OneFreqData[sat].previousEpoch.MJDdate())*DayTime::SEC_DAY;
+            deltaT = ( epoch.MJDdate() - OneFreqData[sat].previousEpoch.MJDdate() ) * DayTime::SEC_DAY;
 
             // Store current epoch as former epoch
             OneFreqData[sat].previousEpoch = epoch;
@@ -241,47 +447,41 @@ namespace gpstk
             ++OneFreqData[sat].windowSize;
             if (OneFreqData[sat].windowSize > maxWindowSize) OneFreqData[sat].windowSize = maxWindowSize;
 
-            double temp = tvMap(lliType);
-
             // Check if receiver already declared cycle slip or too much time has elapsed
-            if ( (epochflag==1) || (epochflag==6) || (temp==1.0) || (temp==3.0) || (deltaT > deltaTMax) )
+            // Note: If tvMap(lliType) doesn't exist, then 0 will be returned and that test will pass
+            if ( (epochflag==1) || (epochflag==6) || (tvMap(lliType)!=0.0) || (deltaT > deltaTMax) )
             {
                 OneFreqData[sat].windowSize = 1;
-                reportCS = true;
             }
 
             if (OneFreqData[sat].windowSize > 1)
             {
                 deltaBias = (bias - OneFreqData[sat].meanBias);
-                dif2 = deltaBias*deltaBias;     // Square difference between biases
 
-                // Compute threshold^2
-                thr2 = OneFreqData[sat].meanSigma2 * maxNumSigmas * maxNumSigmas;
+                dif2 = deltaBias*deltaBias;     // Square difference between biases
+                thr2 = OneFreqData[sat].meanSigma2 * maxNumSigmas * maxNumSigmas;   // Compute threshold^2
 
                 // If difference in biases is bigger or equal to threshold, then cycle slip
                 if (dif2 >= thr2)
                 {
                     OneFreqData[sat].windowSize = 1;
-                    reportCS = true;
-                }
-
-                // If there was no cycle slip, prepare for next iteration
-                if (!(reportCS))
-                {
+                } else {
                     // Update mean bias
                     OneFreqData[sat].meanBias = OneFreqData[sat].meanBias + deltaBias/(static_cast<double>(OneFreqData[sat].windowSize));
 
                     // Update mean variance
                     OneFreqData[sat].meanSigma2 = OneFreqData[sat].meanSigma2 + ( (dif2-OneFreqData[sat].meanSigma2) ) / (static_cast<double>(OneFreqData[sat].windowSize));
                 }
+            }
 
-            } else {    // If windowSize <= 1
-
+            if (OneFreqData[sat].windowSize <= 1)   // If a cycle-slip happened
+            {
                 // Set mean bias to current code-phase bias
                 OneFreqData[sat].meanBias = bias;
 
                 // Set mean variance to default variance
                 OneFreqData[sat].meanSigma2 = defaultBiasSigma * defaultBiasSigma;
+                reportCS = true;
             }
 
             if (reportCS) return 1.0; else return 0.0;
