@@ -47,9 +47,27 @@ namespace gpstk
    /**
     * This class creates an index able to represent any type of observation,
     * correction, model parameter or other data value of interest for GNSS 
-    * data processing. 
-    */   
-
+    * data processing.
+    *
+    * This class is exensible in run-time, so the programmer may add 
+    * indexes on-demand. For instance, in order to create a new TypeID object
+    * referring INS-related data, and with "ins" as description string,
+    * you may write the following:
+    *
+    * @code
+    *    TypeID INS = TypeID::newValueType("ins");
+    * @endcode
+    *
+    * Or using the constructor:
+    *
+    * @code
+    *    TypeID INS(TypeID::newValueType("ins"));
+    * @endcode
+    *
+    * From now on, you'll be able to use INS as TypeID when you need to
+    * refer to inertial system data.
+    *
+    */
    class TypeID
    {
    public:
@@ -240,9 +258,11 @@ namespace gpstk
       virtual ~TypeID() {}
 
 
+      /** Static method to add new TypeID's
+       * @param string      Identifying string for the new TypeID
+       */
       static ValueType newValueType(const std::string& s);
 
-      // Field
       /// Type of the value
       ValueType  type;
 
