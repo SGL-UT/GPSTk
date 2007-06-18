@@ -76,12 +76,13 @@ namespace gpstk
      * Another important parameter is the maxWindowSize field. By default, it is
      * set to 100 samples (you may adjust that with the setMaxWindowSize() method).
      *
-     * A window of 100 samples if typical and appropriate when working with data 
+     * A window of 100 samples is typical and appropriate when working with data 
      * sampled at 1 Hz, because then the full window will last at most 100 seconds.
      *
-     * However, if your samples are taken at 30 seconds, then a window of 50 minutes
-     * results and you will get badly distorted data because of ionosphere drift, 
-     * among other effects.
+     * However, if for instance your samples are taken at 30 seconds (and you are
+     * working with C1/L1 or other ionosphere-affected observation pair), then a 
+     * window of 50 minutes will be used and you will get badly distorted data 
+     * because of ionosphere drift, among other effects.
      *
      * A good rule here is to make sure that the filter window lasts at most 5 minutes.
      * Therefore, for a 30 s sampling data set you should set your smoother object like
