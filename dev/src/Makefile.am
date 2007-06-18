@@ -53,7 +53,7 @@ MatrixBase.hpp MatrixBaseOperators.hpp MatrixFunctors.hpp \
 MatrixImplementation.hpp MatrixOperators.hpp MiscMath.hpp ModeledPR.hpp \
 ModeledPseudorangeBase.hpp ModeledReferencePR.hpp ORDEpoch.hpp \
 ObsClockModel.hpp ObsEpochMap.hpp ObsID.hpp ObsRngDev.hpp \
-OneFreqCSDetector.hpp PCodeConst.hpp PRSolution.hpp PolyFit.hpp Position.hpp \
+PCodeConst.hpp PRSolution.hpp PolyFit.hpp Position.hpp \
 RACRotation.hpp RTFileFrame.hpp RinexEphemerisStore.hpp RinexMetBase.hpp \
 RinexMetData.hpp RinexMetFilterOperators.hpp RinexMetHeader.hpp \
 RinexMetStream.hpp RinexNavBase.hpp RinexNavData.hpp \
@@ -76,4 +76,5 @@ convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp \
 stl_helpers.hpp DataHeaders.hpp DataStructures.hpp ComputeCombination.hpp \
 ComputePC.hpp SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp ComputeLI.hpp \
 ComputePdelta.hpp ComputeLdelta.hpp ComputeIURAWeights.hpp \
-ComputeMOPSWeights.hpp ComputeMelbourneWubbena.hpp
+ComputeMOPSWeights.hpp ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp \
+CodeSmoother.hpp
