@@ -75,24 +75,6 @@ namespace gpstk
      *    markCSC1.setResultType(TypeID::CSI2);
      * @endcode
      *
-     * Or a little more advanced:
-     *
-     * @code
-     *    OneFreqCSDetector markCSPC;       // Let's compute cycle slips for PC
-     *
-     *    markCSPC.setCodeType(TypeID::PC);
-     *    markCSPC.setPhaseType(TypeID::LC);
-     *
-     *    // There is no meaning of LLI index for PC, so it is skipped
-     *
-     *    // By default, it doesn't exist a TypeID for cycle slips in LC. So let's 
-     *    // create a new object csLC holding it, with identifier string CSLS.
-     *    TypeID csLC(TypeID::newValueType("CSLC"));
-     *
-     *    // Assign the result type
-     *    markCSPC.setResultType(csLS);
-     * @endcode
-     *
      * This algorithm will compute the bias between code and phase, and will compare
      * it with a mean bias that is computed on the fly. If the current bias exceeds a
      * given threshold, then a cycle slip is declared. The algorithm will also use
