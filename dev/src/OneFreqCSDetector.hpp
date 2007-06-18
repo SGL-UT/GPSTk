@@ -118,8 +118,11 @@ namespace gpstk
          * @param mnSigmas      Maximum deviation allowed before declaring cycle slip (in number of sigmas).
          * @param dbSigma       Default value assigned to sigma when filter starts.
          */
-        OneFreqCSDetector(const TypeID& codeT, const double& dtMax = 31.0, const int& mwSize = 60, const double& mnSigmas = 4.5, const double& dbSigma = 4.0) : codeType(codeT), deltaTMax(dtMax), maxWindowSize(mwSize), maxNumSigmas(mnSigmas), defaultBiasSigma(dbSigma)
+        OneFreqCSDetector(const TypeID& codeT, const double& dtMax = 31.0, const int& mwSize = 60, const double& mnSigmas = 4.5, const double& dbSigma = 4.0) : codeType(codeT), deltaTMax(dtMax), maxNumSigmas(mnSigmas), defaultBiasSigma(dbSigma)
         {
+            // Don't allow window sizes less than 1
+            if (mwSize > 1) maxWindowSize = mwSize; else maxWindowSize = 60;
+
             switch ( codeT.type )
             {
                 case TypeID::C1:
@@ -284,7 +287,8 @@ namespace gpstk
          */
         virtual void setMaxWindowSize(const int& maxSize)
         {
-           maxWindowSize = maxSize;
+            // Don't allow window sizes less than 1
+            if (maxSize > 1) maxWindowSize = maxSize; else maxWindowSize = 60;
         };
 
 
