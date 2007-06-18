@@ -112,7 +112,7 @@ namespace gpstk
 
         /** Common constructor
          *
-         * @param codeType      Type of code to be used.
+         * @param codeT         Type of code to be used.
          * @param dtMax         Maximum interval of time allowed between two successive epochs.
          * @param mwSize        Maximum  size of filter window, in samples.
          * @param mnSigmas      Maximum deviation allowed before declaring cycle slip (in number of sigmas).
@@ -120,7 +120,7 @@ namespace gpstk
          */
         OneFreqCSDetector(const TypeID& codeT, const double& dtMax = 31.0, const int& mwSize = 60, const double& mnSigmas = 4.5, const double& dbSigma = 4.0) : codeType(codeT), deltaTMax(dtMax), maxWindowSize(mwSize), maxNumSigmas(mnSigmas), defaultBiasSigma(dbSigma)
         {
-            switch ( codeType.type )
+            switch ( codeT.type )
             {
                 case TypeID::C1:
                     phaseType   = TypeID::L1;
