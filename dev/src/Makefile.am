@@ -77,4 +77,4 @@ stl_helpers.hpp DataHeaders.hpp DataStructures.hpp ComputeCombination.hpp \
 ComputePC.hpp SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp ComputeLI.hpp \
 ComputePdelta.hpp ComputeLdelta.hpp ComputeIURAWeights.hpp \
 ComputeMOPSWeights.hpp ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp \
-CodeSmoother.hpp
+CodeSmoother.hpp PCSmoother.hpp
