@@ -193,7 +193,9 @@ namespace gpstk
                     continue;
                 }
                 // If everything is OK, then get the new value inside the structure
-                (*it).second[resultType] = getDetection(epoch, (*it).first, (*it).second, epochflag, value1, value2);
+                // This way of doing it allows concatenation of several different cycle slip detectors
+                (*it).second[resultType] += getDetection(epoch, (*it).first, (*it).second, epochflag, value1, value2);
+                if ( (*it).second[resultType] > 1.0 ) (*it).second[resultType] = 1.0;
             }
             // Remove satellites with missing data
             gData.removeSatID(satRejectedSet);

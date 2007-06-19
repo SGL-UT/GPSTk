@@ -158,7 +158,9 @@ namespace gpstk
                     lli2 = 0.0;
                 }
                 // If everything is OK, then get the new values inside the structure
-                (*it).second[resultType1] = getDetection(epoch, (*it).first, (*it).second, epochflag, value1, lli1, lli2);
+                // This way of doing it allows concatenation of several different cycle slip detectors
+                (*it).second[resultType1] += getDetection(epoch, (*it).first, (*it).second, epochflag, value1, lli1, lli2);
+                if ( (*it).second[resultType1] > 1.0 ) (*it).second[resultType1] = 1.0;
                 // We will mark both cycle slip flags
                 (*it).second[resultType2] = (*it).second[resultType1];
             }
