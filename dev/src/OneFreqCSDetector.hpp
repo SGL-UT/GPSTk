@@ -437,9 +437,9 @@ namespace gpstk
 
             // Check if receiver already declared cycle slip or too much time has elapsed
             // Note: If tvMap(lliType) doesn't exist, then 0 will be returned and that test will pass
-            if ( (tvMap(lliType)=1.0) || (tvMap(lliType)=3.0) || (tvMap(lliType)=5.0) || (tvMap(lliType)=7.0) ) tempLLI = 1.0;
+            if ( (tvMap(lliType)==1.0) || (tvMap(lliType)==3.0) || (tvMap(lliType)==5.0) || (tvMap(lliType)==7.0) ) tempLLI = 1.0;
 
-            if ( (epochflag==1) || (epochflag==6) || (tempLLI=1.0) || (deltaT > deltaTMax) )
+            if ( (epochflag==1) || (epochflag==6) || (tempLLI==1.0) || (deltaT > deltaTMax) )
             {
                 OneFreqData[sat].windowSize = 1;
             }
