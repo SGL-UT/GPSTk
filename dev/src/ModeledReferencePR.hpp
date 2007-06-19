@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Dagoberto Salazar - gAGE. 2006
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007
 //
 //============================================================================
 
@@ -99,7 +99,8 @@ namespace gpstk
 
 
         /** Explicit constructor, taking as input reference station coordinates, default
-         * ionospheric and tropospheric models, and default observable.
+         * ionospheric and tropospheric models, ephemeris to be used, default observable 
+         * and whether TGD will be computed or not.
          *
          * This constructor is meant to be used when working with GNSS data structures in
          * order to set the basic parameters from the beginning.
@@ -107,8 +108,8 @@ namespace gpstk
          * @param RxCoordinates Reference station coordinates.
          * @param dIonoModel    Ionospheric model to be used by default.
          * @param dTropoModel   Tropospheric model to be used by default.
-         * @param dObservable   Observable type to be used by default.
          * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dObservable   Observable type to be used by default.
          * @param usetgd        Whether TGD will be used by default or not.
          *
          * @sa DataStructures.hpp.
@@ -118,6 +119,85 @@ namespace gpstk
             setInitialRxPosition(RxCoordinates);
             setDefaultIonoModel(dIonoModel);
             setDefaultTropoModel(dTropoModel);
+            setDefaultObservable(dObservable);
+            setDefaultEphemeris(dEphemeris);
+            useTGD = usetgd;
+        };
+
+
+        /** Explicit constructor, taking as input reference station coordinates, default
+         * ionospheric model, ephemeris to be used, default observable and whether TGD 
+         * will be computed or not.
+         *
+         * The default tropospheric model will be set to NULL.
+         *
+         * This constructor is meant to be used when working with GNSS data structures in
+         * order to set the basic parameters from the beginning.
+         *
+         * @param RxCoordinates Reference station coordinates.
+         * @param dIonoModel    Ionospheric model to be used by default.
+         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dObservable   Observable type to be used by default.
+         * @param usetgd        Whether TGD will be used by default or not.
+         *
+         * @sa DataStructures.hpp.
+         */
+        ModeledReferencePR(const Position& RxCoordinates, IonoModelStore& dIonoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) : pDefaultTropoModel(NULL) { 
+            InitializeValues();
+            setInitialRxPosition(RxCoordinates);
+            setDefaultIonoModel(dIonoModel);
+            setDefaultObservable(dObservable);
+            setDefaultEphemeris(dEphemeris);
+            useTGD = usetgd;
+        };
+
+
+        /** Explicit constructor, taking as input reference station coordinates, default
+         * tropospheric model, ephemeris to be used, default observable and whether TGD 
+         * will be computed or not.
+         *
+         * The default ionospheric model will be set to NULL.
+         *
+         * This constructor is meant to be used when working with GNSS data structures in
+         * order to set the basic parameters from the beginning.
+         *
+         * @param RxCoordinates Reference station coordinates.
+         * @param dTropoModel   Tropospheric model to be used by default.
+         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dObservable   Observable type to be used by default.
+         * @param usetgd        Whether TGD will be used by default or not.
+         *
+         * @sa DataStructures.hpp.
+         */
+        ModeledReferencePR(const Position& RxCoordinates, TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) : pDefaultIonoModel(NULL) { 
+            InitializeValues();
+            setInitialRxPosition(RxCoordinates);
+            setDefaultTropoModel(dTropoModel);
+            setDefaultObservable(dObservable);
+            setDefaultEphemeris(dEphemeris);
+            useTGD = usetgd;
+        };
+
+
+        /** Explicit constructor, taking as input reference station coordinates, 
+         * ephemeris to be used, default observable and whether TGD will be computed 
+         * or not.
+         *
+         * Both the tropospheric and ionospheric models will be set to NULL.
+         *
+         * This constructor is meant to be used when working with GNSS data structures in
+         * order to set the basic parameters from the beginning.
+         *
+         * @param RxCoordinates Reference station coordinates.
+         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dObservable   Observable type to be used by default.
+         * @param usetgd        Whether TGD will be used by default or not.
+         *
+         * @sa DataStructures.hpp.
+         */
+        ModeledReferencePR(const Position& RxCoordinates, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) : pDefaultIonoModel(NULL), pDefaultTropoModel(NULL) { 
+            InitializeValues();
+            setInitialRxPosition(RxCoordinates);
             setDefaultObservable(dObservable);
             setDefaultEphemeris(dEphemeris);
             useTGD = usetgd;
@@ -256,6 +336,13 @@ namespace gpstk
         };
 
 
+        /// Method to set a NULL ionospheric model.
+        virtual void setNULLIonoModel()
+        {
+           pDefaultIonoModel = NULL;
+        };
+
+
         /** Method to set the default tropospheric model.
          * @param dTropoModel    Tropospheric model to be used by default.
          */
@@ -270,6 +357,13 @@ namespace gpstk
         virtual TropModel* getDefaultTropoModel() const
         {
            return pDefaultTropoModel;
+        };
+
+
+        /// Method to set a NULL tropospheric model.
+        virtual void setNULLTropoModel()
+        {
+           pDefaultTropoModel = NULL;
         };
 
 

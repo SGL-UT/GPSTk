@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Dagoberto Salazar - gAGE. 2006
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007
 //
 //============================================================================
 
@@ -62,13 +62,17 @@ namespace gpstk
 
 
         /** Explicit constructor, taking as input initial receiver coordinates, default
-         * ionospheric and tropospheric models, and default observable.
+         * ionospheric and tropospheric models, ephemeris to be used, default observable
+         * and whether TGD will be computed or not.
+         *
+         * This constructor is meant to be used when working with GNSS data structures
+         * in order to set the basic parameters from the beginning.
          *
          * @param RxCoordinates Initial receiver coordinates.
          * @param dIonoModel    Ionospheric model to be used by default.
          * @param dTropoModel   Tropospheric model to be used by default.
-         * @param dObservable   Observable type to be used by default.
          * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dObservable   Observable type to be used by default.
          * @param usetgd        Whether TGD will be used by default or not.
          *
          * @sa DataStructures.hpp.
@@ -84,7 +88,95 @@ namespace gpstk
         };
 
 
-        /** Explicit constructor, taking as input default ionospheric and tropospheric models, and default observable.
+        /** Explicit constructor, taking as input initial receiver coordinates, default
+         * ionospheric model, ephemeris to be used, default observable and whether TGD
+         * will be computed or not.
+         *
+         * The default tropospheric model will be set to NULL.
+         *
+         * This constructor is meant to be used when working with GNSS data structures
+         * in order to set the basic parameters from the beginning.
+         *
+         * @param RxCoordinates Initial receiver coordinates.
+         * @param dIonoModel    Ionospheric model to be used by default.
+         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dObservable   Observable type to be used by default.
+         * @param usetgd        Whether TGD will be used by default or not.
+         *
+         * @sa DataStructures.hpp.
+         */
+        ModeledPR(const Position& RxCoordinates, IonoModelStore& dIonoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+            InitializeValues();
+            setInitialRxPosition(RxCoordinates);
+            setDefaultIonoModel(dIonoModel);
+            pDefaultTropoModel = NULL;
+            setDefaultObservable(dObservable);
+            setDefaultEphemeris(dEphemeris);
+            useTGD = usetgd;
+        };
+
+
+        /** Explicit constructor, taking as input initial receiver coordinates, default
+         * tropospheric model, ephemeris to be used, default observable and whether TGD
+         * will be computed or not.
+         *
+         * The default ionospheric model will be set to NULL.
+         *
+         * This constructor is meant to be used when working with GNSS data structures
+         * in order to set the basic parameters from the beginning.
+         *
+         * @param RxCoordinates Initial receiver coordinates.
+         * @param dTropoModel   Tropospheric model to be used by default.
+         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dObservable   Observable type to be used by default.
+         * @param usetgd        Whether TGD will be used by default or not.
+         *
+         * @sa DataStructures.hpp.
+         */
+        ModeledPR(const Position& RxCoordinates, TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+            InitializeValues();
+            setInitialRxPosition(RxCoordinates);
+            pDefaultIonoModel = NULL;
+            setDefaultTropoModel(dTropoModel);
+            setDefaultObservable(dObservable);
+            setDefaultEphemeris(dEphemeris);
+            useTGD = usetgd;
+        };
+
+
+        /** Explicit constructor, taking as input initial receiver coordinates,
+         * ephemeris to be used, default observable and whether TGD will be 
+         * computed or not.
+         *
+         * Both the tropospheric and ionospheric models will be set to NULL.
+         *
+         * This constructor is meant to be used when working with GNSS data structures
+         * in order to set the basic parameters from the beginning.
+         *
+         * @param RxCoordinates Initial receiver coordinates.
+         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dObservable   Observable type to be used by default.
+         * @param usetgd        Whether TGD will be used by default or not.
+         *
+         * @sa DataStructures.hpp.
+         */
+        ModeledPR(const Position& RxCoordinates, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+            InitializeValues();
+            setInitialRxPosition(RxCoordinates);
+            pDefaultIonoModel = NULL;
+            pDefaultTropoModel = NULL;
+            setDefaultObservable(dObservable);
+            setDefaultEphemeris(dEphemeris);
+            useTGD = usetgd;
+        };
+
+
+        /** Explicit constructor, taking as input default ionospheric and tropospheric
+         * models, ephemeris to be used, default observable and whether TGD will be
+         * computed or not.
+         *
+         * This constructor is meant to be used when working with GNSS data structures
+         * in order to set the basic parameters from the beginning.
          *
          * @param dIonoModel    Ionospheric model to be used by default.
          * @param dTropoModel   Tropospheric model to be used by default.
