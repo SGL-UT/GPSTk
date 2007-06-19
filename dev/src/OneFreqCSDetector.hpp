@@ -421,6 +421,7 @@ namespace gpstk
             double dif2(0.0);   // Difference between biases, squared.
             double thr2(0.0);   // Threshold in sigmas, squared.
             double deltaBias(0.0);  // Difference between biases
+            double tempLLI(0.0);
 
             // Get the difference between current epoch and former epoch, in seconds
             deltaT = ( epoch.MJDdate() - OneFreqData[sat].previousEpoch.MJDdate() ) * DayTime::SEC_DAY;
@@ -436,7 +437,9 @@ namespace gpstk
 
             // Check if receiver already declared cycle slip or too much time has elapsed
             // Note: If tvMap(lliType) doesn't exist, then 0 will be returned and that test will pass
-            if ( (epochflag==1) || (epochflag==6) || (tvMap(lliType)!=0.0) || (deltaT > deltaTMax) )
+            if ( (tvMap(lliType)=1.0) || (tvMap(lliType)=3.0) || (tvMap(lliType)=5.0) || (tvMap(lliType)=7.0) ) tempLLI = 1.0;
+
+            if ( (epochflag==1) || (epochflag==6) || (tempLLI=1.0) || (deltaT > deltaTMax) )
             {
                 OneFreqData[sat].windowSize = 1;
             }
