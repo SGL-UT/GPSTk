@@ -407,7 +407,8 @@ namespace gpstk
         /** Returns a satTypeValueMap object, adding the new data generated when calling this object.
          *
          * @param epoch     Time of observations.
-         * @param gData     Data object holding the data.
+         * @param sat       SatID.
+         * @param tvMap     Data structure of TypeID and values.
          * @param epochflag Epoch flag.
          * @param code      Current code observation value.
          * @param phase     Current phase observation value.
