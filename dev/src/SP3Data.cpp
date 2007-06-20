@@ -215,6 +215,11 @@ namespace gpstk
 
             flag = strm.buffer[0];     // P or V
 
+            // 6/20/07 IGS SP3c files sometimes have short lines, apparently implying
+            // zero sigma and no flags...add the following to be tolerant of this.
+            if (version == 'c' && strm.buffer.size() < 73 && strm.buffer.size() > 59)
+               leftJustify(strm.buffer,73);
+
             // throw if the line is short
             if ((version == 'a' && strm.buffer.size() < 60) ||
                (version == 'c' && strm.buffer.size() < 73) ) {
