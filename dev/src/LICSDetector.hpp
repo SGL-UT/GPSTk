@@ -89,7 +89,7 @@ namespace gpstk
     public:
 
         /// Default constructor, setting default parameters.
-        LICSDetector() : obsType(TypeID::LI), lliType1(TypeID::LLI1), lliType2(TypeID::LLI2), resultType1(TypeID::CSL1), resultType2(TypeID::CSL2), deltaTMax(61.0), minThreshold(0.04), LIDrift(0.002) {};
+        LICSDetector() : obsType(TypeID::LI), lliType1(TypeID::LLI1), lliType2(TypeID::LLI2), resultType1(TypeID::CSL1), resultType2(TypeID::CSL2), deltaTMax(61.0), minThreshold(0.04), LIDrift(0.002), useLLI(true) {};
 
 
         /** Common constructor
@@ -98,7 +98,7 @@ namespace gpstk
          * @param drift         LI combination limit drift, in meters/second.
          * @param dtMax         Maximum interval of time allowed between two successive epochs, in seconds.
          */
-        LICSDetector(const double& mThr, const double& drift, const double& dtMax = 61.0) : obsType(TypeID::LI), lliType1(TypeID::LLI1), lliType2(TypeID::LLI2), resultType1(TypeID::CSL1), resultType2(TypeID::CSL2)
+        LICSDetector(const double& mThr, const double& drift, const double& dtMax = 61.0, const bool& use = true) : obsType(TypeID::LI), lliType1(TypeID::LLI1), lliType2(TypeID::LLI2), resultType1(TypeID::CSL1), resultType2(TypeID::CSL2), useLLI(use)
         {
             setDeltaTMax(dtMax);
             setMinThreshold(mThr);
@@ -135,27 +135,30 @@ namespace gpstk
                     satRejectedSet.insert( (*it).first );
                     continue;
                 }
-                try
+                if (useLLI)
                 {
-                    // Try to get the LLI1 index
-                    lli1  = (*it).second(lliType1);
-                }
-                catch(...)
-                {
-                    // If LLI #1 is not found, set it to zero
-                    // You REALLY want to have BOTH LLI indexes properly set
-                    lli1 = 0.0;
-                }
-                try
-                {
-                    // Try to get the LLI2 index
-                    lli2  = (*it).second(lliType2);
-                }
-                catch(...)
-                {
-                    // If LLI #2 is not found, set it to zero
-                    // You REALLY want to have BOTH LLI indexes properly set
-                    lli2 = 0.0;
+                    try
+                    {
+                        // Try to get the LLI1 index
+                        lli1  = (*it).second(lliType1);
+                    }
+                    catch(...)
+                    {
+                        // If LLI #1 is not found, set it to zero
+                        // You REALLY want to have BOTH LLI indexes properly set
+                        lli1 = 0.0;
+                    }
+                    try
+                    {
+                        // Try to get the LLI2 index
+                        lli2  = (*it).second(lliType2);
+                    }
+                    catch(...)
+                    {
+                        // If LLI #2 is not found, set it to zero
+                        // You REALLY want to have BOTH LLI indexes properly set
+                        lli2 = 0.0;
+                    }
                 }
                 // If everything is OK, then get the new values inside the structure
                 // This way of doing it allows concatenation of several different cycle slip detectors
@@ -222,6 +225,22 @@ namespace gpstk
         };
 
 
+        /** Method to set whether the LLI indexes will be used as an aid or not.
+         * @param use   Boolean value enabling/disabling LLI check
+         */
+        virtual void setUseLLI(const bool& use)
+        {
+            useLLI = use;
+        };
+
+
+        /// Method to know if the LLI check is enabled or disabled.
+        virtual bool getUseLLI() const
+        {
+           return useLLI;
+        };
+
+
         /** Returns a gnnsSatTypeValue object, adding the new data generated when calling this object.
          *
          * @param gData    Data object holding the data.
@@ -277,6 +296,9 @@ namespace gpstk
         /// LI combination limit drift, in meters/second.
         double LIDrift;
 
+
+        /// This field tells whether to use or ignore the LLI indexes as an aid. 
+        bool useLLI;
 
         /// A structure used to store filter data for a SV.
         struct filterData
@@ -336,7 +358,7 @@ namespace gpstk
 
             if ( (epochflag==1) || (epochflag==6) || (tempLLI1==1.0) || (tempLLI2==1.0) || (currentDeltaT > deltaTMax) )
             {
-                LIData[sat].windowSize = 0;
+                LIData[sat].windowSize = 0;      // We reset the filter with this
                 reportCS = true;
             }
 
@@ -346,7 +368,11 @@ namespace gpstk
                 // Compute a linear interpolation and compute LI_predicted - LI_current
                 delta = std::abs(currentBias - LIData[sat].formerBias*currentDeltaT/LIData[sat].formerDeltaT);
 
-                if (delta > deltaLimit) reportCS = true;
+                if (delta > deltaLimit)
+                {
+                    LIData[sat].windowSize = 0;      // We reset the filter with this
+                    reportCS = true;
+                }
             }
 
             // Let's prepare for the next time
