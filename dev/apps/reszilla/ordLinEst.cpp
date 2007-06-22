@@ -35,6 +35,8 @@
 //
 //=============================================================================
 
+#include <algorithm>
+
 #include "OrdApp.hpp"
 #include "RobustLinearEstimator.hpp"
 

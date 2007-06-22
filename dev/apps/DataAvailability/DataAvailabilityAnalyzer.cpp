@@ -60,6 +60,7 @@
 */
 
 #include <map>
+#include <algorithm>
 
 #include "StringUtils.hpp"
 #include "ObsID.hpp"
