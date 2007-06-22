@@ -8,20 +8,18 @@ if $(PREPROCESSING)
 }
 else
 {
-  GPSBuildLibrary rxio : MDPHeader.cpp MDPPVTSolution.cpp
-    MDPNavSubframe.cpp MDPObsEpoch.cpp MDPSelftestStatus.cpp
-    RinexConverters.cpp FDStreamBuff.cpp TCPStreamBuff.cpp
-    ObsUtils.cpp FFIdentifier.cpp
-    ObsReader.cpp EphReader.cpp MetReader.cpp
-    AshtechData.cpp AshtechMBEN.cpp AshtechPBEN.cpp
+  GPSBuildLibrary rxio : AshtechData.cpp AshtechMBEN.cpp AshtechPBEN.cpp
+    EphReader.cpp FDStreamBuff.cpp FFIdentifier.cpp MDPHeader.cpp
+    MDPNavSubframe.cpp MDPObsEpoch.cpp MDPPVTSolution.cpp 
+    MDPSelftestStatus.cpp MetReader.cpp ObsReader.cpp ObsUtils.cpp
+    RinexConverters.cpp TCPStreamBuff.cpp
     ;
 
-  InstallFile $(INCDIR) : MDPHeader.hpp MDPPVTSolution.hpp MDPNavSubframe.hpp
-    MDPObsEpoch.hpp MDPSelftestStatus.hpp RinexConverters.hpp DataStatus.hpp
-    miscenum.hpp FDStreamBuff.hpp  TCPStreamBuff.hpp TCPStream.hpp
-    DeviceStream.hpp
-    AshtechStream.hpp AshtechData.hpp AshtechMBEN.hpp AshtechPBEN.hpp
-    ObsUtils.hpp FFIdentifier.hpp
-    ObsReader.hpp EphReader.hpp MetReader.hpp
+  InstallFile $(INCDIR) : AshtechData.hpp AshtechMBEN.hpp AshtechPBEN.hpp
+    AshtechStream.hpp DataStatus.hpp DeviceStream.hpp EphReader.hpp
+    FDStreamBuff.hpp FFIdentifier.hpp MDPHeader.hpp MDPNavSubframe.hpp
+    MDPObsEpoch.hpp MDPPVTSolution.hpp MDPSelftestStatus.hpp MetReader.hpp
+    ObsReader.hpp ObsUtils.hpp RinexConverters.hpp TCPStream.hpp
+    TCPStreamBuff.hpp miscenum.hpp
     ;
 }
