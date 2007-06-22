@@ -133,4 +133,4 @@ namespace gpstk
       out << oss.str() << flush;
    } // MDPSelftestStatus::dump()
 
-} // namespace sglmsn
+}

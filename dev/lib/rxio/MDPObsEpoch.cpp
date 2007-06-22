@@ -317,4 +317,4 @@ namespace gpstk
       out << oss.str();
    } // MDPObsEpoch::Observation::dump()
 
-} // namespace sglmsn
+}

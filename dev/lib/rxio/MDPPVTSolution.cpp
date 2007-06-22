@@ -149,4 +149,4 @@ namespace gpstk
           << endl;
       out << oss.str() << flush;
    } // MDPPVTSolution::dump()
-} // namespace sglmsn
+}

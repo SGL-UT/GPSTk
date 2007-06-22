@@ -50,28 +50,47 @@
 
 #include "MDPNavSubframe.hpp"
 #include "MDPObsEpoch.hpp"
+#include "MDPPVTSolution.hpp"
 
-/// Conversion Function from MDP data
-gpstk::SvObsEpoch makeSvObsEpoch(
-   const gpstk::MDPObsEpoch& mdp) throw();
+#include "AshtechMBEN.hpp"
+#include "AshtechPBEN.hpp"
 
-gpstk::ObsEpoch makeObsEpoch(
-   const gpstk::MDPEpoch& mdp) throw();
+namespace gpstk
+{
+   /// Conversion Function from MDP data
+   SvObsEpoch makeSvObsEpoch(const MDPObsEpoch& mdp) throw();
 
-/// Conversion functions from Rinex data
-gpstk::SvObsEpoch makeSvObsEpoch(
-   const gpstk::RinexObsData::RinexObsTypeMap& rotm) throw();
+   ObsEpoch makeObsEpoch(const MDPEpoch& mdp) throw();
 
-gpstk::ObsEpoch makeObsEpoch(
-   const gpstk::RinexObsData& rod) throw();
+   MDPObsEpoch makeMDPObsEpoch(const SvObsEpoch& soe) throw();
 
-gpstk::WxObservation makeWxObs(
-   const gpstk::RinexMetData& rmd) throw();
+   /// Conversion functions from Rinex data
+   SvObsEpoch makeSvObsEpoch(const RinexObsData::RinexObsTypeMap& rotm) throw();
 
-/// Conversion functions from SMODFData objects
-/// Note that there is no makeObsEpoch since each SMODFData object just
-/// has a single observation to a single sv.
-gpstk::WxObservation makeWxObs(
-   const gpstk::SMODFData& smod) throw();
+   ObsEpoch makeObsEpoch(const RinexObsData& rod) throw();
 
+   WxObservation makeWxObs(const RinexMetData& rmd) throw();
+
+   /// Conversion functions from SMODFData objects
+   /// Note that there is no makeObsEpoch since each SMODFData object just
+   /// has a single observation to a single sv.
+   WxObservation makeWxObs(const SMODFData& smod) throw();
+
+   /// Conversion functions from AshtechData
+   /// hint is used to provide the data that is not natively in the MBEN data
+   MDPObsEpoch makeMDPObsEpoch(
+      const AshtechMBEN& mben,
+      const MDPObsEpoch& hint) throw();
+
+   void addMDPObservation(
+      MDPObsEpoch& moe,
+      const AshtechMBEN::code_block& cb,
+      CarrierCode cc,
+      RangeCode rc,
+      const MDPObsEpoch& moe_hint) throw();
+
+   MDPPVTSolution makeMDPPVTSolution(
+      const AshtechPBEN& pben,
+      const unsigned week) throw();
+}
 #endif

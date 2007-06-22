@@ -130,6 +130,5 @@ namespace gpstk
       }
    } // namespace StringUtils
 
-} // namespace sglmsn
-
+}
 #endif // MISCENUM_HPP

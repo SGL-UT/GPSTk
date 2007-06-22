@@ -102,15 +102,9 @@ namespace gpstk
       {
          connect_status = ::connect(handle, (sockaddr *)target_address, 
                                     sizeof(target_address));
-         if (false)
-            cout << "connect_status " << connect_status
-                 << "(" << strerror(connect_status)
-                 << ")" << endl;
       }
       if (connect_status !=0)
          return connect_status;
-  
-      set_blocking_io(true);
   
       // We do our own buffering...
       char off=0;
@@ -141,8 +135,6 @@ namespace gpstk
          else
             return 0;
       }
-  
-      set_blocking_io(true);
   
       // We do our own buffering...
       char off=0;

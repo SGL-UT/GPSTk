@@ -40,12 +40,6 @@ namespace gpstk
 
       void dump(std::ostream& out) const;
 
-      // Some TCP specific stuff
-      void set_blocking_io(const bool onoff);
-
-      // Enable/disable SIGIO upon arriving of a new packet
-      void enable_sigio(const bool onoff);
-  
       struct Buffer
       {
          char * start;

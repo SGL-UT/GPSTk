@@ -150,7 +150,8 @@ RinexNavHeader defineNavHeader(void)
 
 int main(int argc, char *argv[])
 {
-   try {
+   try
+   {
 
       logFile.open("ash%03j%02y.log");
 
@@ -160,6 +161,8 @@ int main(int argc, char *argv[])
       bool verbose=false;
       bool saveRawMessages=false;
       bool saveMatlabObs=false;
+
+      bool queryRx=false;
       
       saveLogMessages=true;
 
@@ -175,7 +178,7 @@ int main(int argc, char *argv[])
       // Process user options********************************************************   
  
       CommandOptionNoArg helpOption('h', "help", "Print help usage");
-      CommandOptionNoArg verboseOption('v', "verbose", "Increased diagnostic messages");
+      CommandOptionNoArg verboseOption('v', "verbose", "Increased diagnostic messages.");
       CommandOptionNoArg rawOption('r', "raw", "Record raw observations");
       CommandOptionNoArg logOption('l', "log", "Record log entries");
       CommandOptionNoArg matlabOption('t', "text", "Record observations as simple text files");
@@ -226,20 +229,25 @@ int main(int argc, char *argv[])
       string fn="/dev/ttyS0";
       if (inputOption.getCount())
          fn = inputOption.getValue()[0];
-      DeviceStream port(fn);
-      cout << "Reading data from " << port.getTarget() << endl;
+      DeviceStream<std::ifstream> input(fn);
+      DeviceStream<std::ofstream> rxOut(fn);
+
+      log("Reading data from " + input.getTarget());
 
       // Setup the receiver ***************************************************
-      log("Requesting iono, trop info");
-      port.write("$PASHQ,ION\r\n",12);
+      if (queryRx)
+      {
+         log("Requesting iono, trop info");
+         rxOut.write("$PASHQ,ION\r\n",12);
+      }
 
 
-         // Define loop variables *********************************************
+      // Define loop variables *********************************************
       ssize_t readSize=-333;
       const size_t buffSize=1400;
-      char buff[buffSize]="";
+      char buff[buffSize];
       const size_t buff2size=400;
-      char buff2[buff2size]="";
+      char buff2[buff2size];
       string msgBuffer;
       DayTime pollEphTime;
       bool firstPollDone=false;
@@ -249,12 +257,12 @@ int main(int argc, char *argv[])
       int mnum = 0;
       short currentDoy = currentEpoch.DOY(), lastDoy = -1;
       
-         // Queues 
+      // Queues 
       list<AshtechMessage> obsQ, emptyObsQ; // Observations
       AshtechMessage ionMessage;            // last ION message (iono constants + UTC info)
       bool gotION=false;                    // Have we received an ION message?
       
-         // Storage to remember which PRN is on which tracker
+      // Storage to remember which PRN is on which tracker
       map<int,int> trackerMap, lastTrackerMap, emptyTrackerMap;
       
       bool gotObsData = false;
@@ -264,11 +272,11 @@ int main(int argc, char *argv[])
 
       log("Collection program started");
 
-         // Infinite loop, polling the port **********************************
+      // Infinite loop, polling the port **********************************
       while (readStream)
       {
-         port.read(buff, buffSize-1);
-         readSize = port.gcount();
+         input.read(buff, buffSize-1);
+         readSize = input.gcount();
          totalCharsRead += readSize;
 
          msgBuffer.append(buff,readSize);
@@ -317,7 +325,8 @@ int main(int argc, char *argv[])
          
          cout << endl;
          
-         if (verbose) printLog(15);
+         if (verbose) 
+            printLog(15);
          else printLog(10);
          
          int actualReadCount;
@@ -345,7 +354,7 @@ int main(int argc, char *argv[])
                
                int thisSequence = msg.getSequence();
 
-                  // Trigger dumping the data to files
+               // Trigger dumping the data to files
                if ((thisSequence !=currentSequence) && gotObsData)
 	       {
                   // First write out the RINEX obs data
@@ -366,7 +375,7 @@ int main(int argc, char *argv[])
                   obsFile << rod;
 
 
-                     // Second write obs to the MATLAB/Octave matrix format
+                  // Second write obs to the MATLAB/Octave matrix format
                   if (saveMatlabObs)
                      matlabify(rod);
  
@@ -400,7 +409,7 @@ int main(int argc, char *argv[])
                case AshtechMessage::SNAV :
                case AshtechMessage::EPB  :
                   log("Got ephemeris for PRN " +
-                  StringUtils::asString(msg.getPRN()));
+                      StringUtils::asString(msg.getPRN()));
                   break;
                   
                case AshtechMessage::SALM :
@@ -411,9 +420,9 @@ int main(int argc, char *argv[])
                   ionMessage = msg;
                   gotION=true;
                   log("Got iono, UTC info from RX");
-                     //AshtechMessage::updateNavHeader(msg,rinexNavHeader);
-                     //log("Length:"+StringUtils::asString(temp.size()));
-                     //navFiles.setRinexNavHeader(rinexNavHeader);
+                  //AshtechMessage::updateNavHeader(msg,rinexNavHeader);
+                  //log("Length:"+StringUtils::asString(temp.size()));
+                  //navFiles.setRinexNavHeader(rinexNavHeader);
                   break;
 
             } // End of case
@@ -426,32 +435,35 @@ int main(int argc, char *argv[])
 
             if ((!firstPollDone)||(currentEpoch>pollEphTime))
             { 
-              log("Requesting ephemeris from all PRNs in track.");
-              port.write("$PASHQ,EPB\r\n",12);
-	      firstPollDone=true;
-              pollEphTime = currentEpoch+30*60; // Wait 30 minutes
+               if (queryRx)
+               {
+                  log("Requesting ephemeris from all PRNs in track.");
+                  rxOut.write("$PASHQ,EPB\r\n",12);
+                  firstPollDone=true;
+                  pollEphTime = currentEpoch+30*60; // Wait 30 minutes
+               }
             }
 
 
             // Trigger the writing of nav data
             if ((thisType==AshtechMessage::EPB)&&(gotION))
             {
-	      try{
+               try{
                   RinexNavData rnd = AshtechMessage::convertToRinexNavData(msg, currentEpoch);
                   log("Converted a nav message");
                   if (navFile.updateFileName(currentEpoch))
                   {
-                    log("Opened output file: " + navFile.getCurrentFilename());
-                    navFile << rinexNavHeader;
+                     log("Opened output file: " + navFile.getCurrentFilename());
+                     navFile << rinexNavHeader;
                   }
                   navFile << rnd;
 
                   log("Wrote nav message");
-	      }
-              catch(...)
-	      {
-                 log("Error converting nav message.");
-              }
+               }
+               catch(...)
+               {
+                  log("Error converting nav message.");
+               }
 	    }
               
             if (saveRawMessages)
@@ -465,7 +477,7 @@ int main(int argc, char *argv[])
             
          } // Remove each whole message from the buffer
 
-            // Has the day of year rolled over?
+         // Has the day of year rolled over?
          currentDoy = currentEpoch.DOY();
          
          if (lastDoy!=currentDoy)

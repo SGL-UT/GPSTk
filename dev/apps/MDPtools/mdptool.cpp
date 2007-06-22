@@ -224,7 +224,7 @@ protected:
    }
 
 private:
-   DeviceStream inputDev;
+   DeviceStream<ifstream> inputDev;
    MDPStream mdpInput;
    ofstream output;
    gpstk::CommandOptionWithAnyArg mdpInputOpt, outputOpt;

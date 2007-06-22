@@ -27,17 +27,6 @@ namespace gpstk
       }
    }
 
-
-   // All that has really been tested is blocking. Non-blocking I/O will need
-   // more code to make it functional.
-   void FDStreamBuff::set_blocking_io(const bool onoff)
-   {
-      int rc;
-      rc = ::fcntl(handle,F_GETFL,0);
-      rc = ::fcntl(handle,F_SETFL,onoff ? rc & ~O_NONBLOCK :
-                   rc | O_NONBLOCK);
-   }
-
    // Write characters to the stream, giving time. Return the number of
    // characters actually written (which is always n, or EOF in case of error).
    int FDStreamBuff::write(const char * buffer, const int n)

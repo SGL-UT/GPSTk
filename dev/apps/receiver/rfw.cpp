@@ -1,9 +1,5 @@
 #pragma ident "$Id$"
 
-/** @file reads a stream and writes it to file(s) with names derived from
-    system time.
- */
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -39,6 +35,12 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/** @file reads a stream and writes it to file(s) with names derived from
+    system time.
+ */
+
+#include <fstream>
 
 #include <unistd.h>
 #include <fcntl.h>   /* File control definitions */
@@ -130,7 +132,7 @@ protected:
    {}
 
 private:
-   DeviceStream input;
+   DeviceStream<std::ifstream> input;
 
    TimeNamedFileStream<ofstream> output;
 };

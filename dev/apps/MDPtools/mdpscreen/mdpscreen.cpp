@@ -43,7 +43,7 @@ public:
       string fn;
       if (mdpInputOpt.getCount())
          fn =  mdpInputOpt.getValue()[0];
-      DeviceStream* inputDev = new DeviceStream(fn, ios::in);
+      DeviceStream<ifstream> *inputDev = new DeviceStream<ifstream>(fn, ios::in);
       mdpInput.std::basic_ios<char>::rdbuf(inputDev->std::basic_ios<char>::rdbuf());
       mdpInput.filename = inputDev->getTarget();
       
