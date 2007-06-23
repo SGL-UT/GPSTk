@@ -10,4 +10,4 @@ GPSMain rtAshtech : AshtechMessage.cpp rtAshtech.cpp ScreenControl.cpp ;
 
 GPSMain rfw : rfw.cpp ;
 
-# GPSMain ash2mdp : ash2mdp.cpp ;
+GPSMain ash2mdp : ash2mdp.cpp ;
