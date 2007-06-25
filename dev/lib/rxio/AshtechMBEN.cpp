@@ -42,16 +42,6 @@
 
 using namespace std;
 
-using gpstk::BinUtils::computeCRC;
-using gpstk::StringUtils::asString;
-using gpstk::StringUtils::d2x;
-using gpstk::StringUtils::int2x;
-using gpstk::BinUtils::netToHost;
-using gpstk::BinUtils::hostToNet;
-using gpstk::BinUtils::decodeVar;
-using gpstk::BinUtils::twiddle;
-
-
 namespace gpstk
  {
    const char* AshtechMBEN::mpcId = "MPC";
@@ -88,15 +78,18 @@ namespace gpstk
    void AshtechMBEN::decode(const std::string& data)
       throw(std::exception, FFStreamError)
    {
+      using gpstk::BinUtils::decodeVar;
+
       string str(data);
       if (debugLevel>2)
          cout << "MBEN " << str.length() << " " << endl;
+
       if (str.length() == 108 || str.length()==52)
       {
          ascii=false;
          header = str.substr(0,11); str.erase(0,11);
 
-         seq    = decodeVar<int16_t>(str);
+         seq    = decodeVar<uint16_t>(str);
          left   = decodeVar<uint8_t>(str);
          svprn  = decodeVar<uint8_t>(str);
          el     = decodeVar<uint8_t>(str);
@@ -111,7 +104,7 @@ namespace gpstk
             p2.decodeBIN(str);
          }
 
-         clear(ios_base::goodbit);
+         clear();
       }
       else
       {
@@ -134,8 +127,11 @@ namespace gpstk
             p2.decodeASCII(iss);
          }
          
-         clear(ios_base::goodbit);
+         clear();
       }
+
+      if (seq>36000)
+         setstate(fmtbit);
    }
 
 
@@ -166,6 +162,7 @@ namespace gpstk
    void AshtechMBEN::code_block::decodeBIN(string& str)
       throw(std::exception, FFStreamError)
    {
+      using gpstk::BinUtils::decodeVar;
       uint32_t smo;
       warning        = decodeVar<uint8_t>(str);
       goodbad        = decodeVar<uint8_t>(str);
@@ -186,6 +183,7 @@ namespace gpstk
    //---------------------------------------------------------------------------
    void AshtechMBEN::code_block::dump(ostream& out) const
    {
+      using gpstk::StringUtils::asString;
       out << hex
           << "warn:" << (int)warning
           << " gb:" << (int)goodbad
@@ -226,7 +224,7 @@ namespace gpstk
 
       AshtechData::dump(oss);
       oss << getName() << "1:"
-          << " sow:" << 50e-3 * seq
+          << " seq:" << 0.05 * seq
           << " left:" << (int)left
           << " prn:" << (int)svprn
           << " el:" << (int)el

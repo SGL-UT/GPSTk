@@ -60,6 +60,8 @@
 #include "AshtechStream.hpp"
 #include "AshtechMBEN.hpp"
 #include "AshtechPBEN.hpp"
+#include "AshtechALB.hpp"
+#include "AshtechEPB.hpp"
 
 #include "ObsUtils.hpp"
 
@@ -156,7 +158,7 @@ public:
       if (debugLevel>3)
          AshtechData::hexDump = true;
 
-      if (debugLevel)
+      if (debugLevel>3)
          MDPHeader::hexDump = true;
 
       if (debugLevel)
@@ -177,18 +179,21 @@ protected:
       AshtechPBEN pben;
       AshtechMBEN mben;
       AshtechEPB  epb;
+      AshtechALB  alb;
       unsigned short fc=0;
       vector<MDPObsEpoch> hint(33);
+      short svCount = 0;
 
       while (input >> hdr)
       {
-         if (pben.checkId(hdr.id) && (input >> pben))
+         if (pben.checkId(hdr.id) && (input >> pben) && pben)
          {
             if (debugLevel>1)
                pben.dump(cout);
 
             double dt = pben.sow - time.sow;
             time.sow = pben.sow;
+            svCount = 0;
 
             if (std::abs(dt) > HALFWEEK && !firstPBEN)
                time.week++;
@@ -198,22 +203,25 @@ protected:
             MDPPVTSolution pvt = makeMDPPVTSolution(pben, time.week);
             pvt.freshnessCount = fc++;
             output << pvt << flush;
-            if (debugLevel)
+            if (debugLevel>1)
                pvt.dump(cout);
          }
-         else if (mben.checkId(hdr.id) && (input >> mben))
+         else if (mben.checkId(hdr.id) && (input >> mben) && mben)
          {
             if (debugLevel>1)
                mben.dump(cout);
+            if (svCount==0)
+               svCount = mben.left+1;
 
             if (firstPBEN == true)
             {
-               hint[mben.svprn].time = DayTime(time.week, time.sow);            
+               hint[mben.svprn].time = DayTime(time.week, time.sow);
+               hint[mben.svprn].numSVs = svCount;
                MDPObsEpoch moe = makeMDPObsEpoch(mben, hint[mben.svprn]);
                moe.freshnessCount = fc++;
                hint[mben.svprn] = moe;
                output << moe << flush;
-               if (debugLevel)
+               if (debugLevel>1)
                   moe.dump(cout);
             }
          }
@@ -221,6 +229,14 @@ protected:
          {
             if (debugLevel>1)
                epb.dump(cout);
+            MDPNavSubframe sf[3];
+            
+         }
+         else if (alb.checkId(hdr.id) && (input >> alb))
+         {
+            if (debugLevel>1)
+               alb.dump(cout);
+            MDPNavSubframe sf;
          }
       }
 

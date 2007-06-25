@@ -44,16 +44,6 @@
 
 using namespace std;
 
-using gpstk::BinUtils::computeCRC;
-using gpstk::StringUtils::asString;
-using gpstk::StringUtils::d2x;
-using gpstk::StringUtils::int2x;
-using gpstk::BinUtils::netToHost;
-using gpstk::BinUtils::hostToNet;
-using gpstk::BinUtils::decodeVar;
-using gpstk::BinUtils::twiddle;
-
-
 namespace gpstk
  {
    //---------------------------------------------------------------------------
@@ -128,19 +118,20 @@ namespace gpstk
    {
       string& rawData = stream.rawData;
       const string term("\015\012");
-      while (!good())
+
+      while (rawData.substr(rawData.length()-2,2) != term)
       {
-         while (rawData.substr(rawData.length()-2,2) != term)
-         {
-            string buff;
-            getline(stream, buff, term[1]);
-            rawData.append(buff);
-            rawData.append(term.substr(1,1));
-         }
-         if (debugLevel>2)
-            StringUtils::hexDumpData(cout, rawData);
-         decode(rawData);
+         string buff;
+         getline(stream, buff, term[1]);
+         rawData.append(buff);
+         rawData.append(term.substr(1,1));
       }
+      if (debugLevel>2)
+         StringUtils::hexDumpData(cout, rawData);
+
+      decode(rawData);
+      if (!good() && debugLevel>1)
+         cout << "bad decode" << endl;
 
       if (hexDump || (debugLevel>1 && rdstate()))
       {
@@ -166,140 +157,4 @@ namespace gpstk
 
       out << oss.str() << endl;
    }  // AshtechData::dump()
-
-
-   //---------------------------------------------------------------------------
-   //---------------------------------------------------------------------------
-   const char* AshtechEPB::myId = "EPB";
-
-   //---------------------------------------------------------------------------
-   void AshtechEPB::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, EndOfFile)
-   {
-      AshtechStream& stream=dynamic_cast<AshtechStream&>(ffs);
-
-      // make sure the object is reset before starting the search
-      clear(fmtbit | lenbit | crcbit);
-      string& rawData = stream.rawData;
-
-      // If this object doesn't have an id set yet, assume that the streams
-      // most recent read id is what we need to be
-      if (id == "" && rawData.size()>=11 && 
-          rawData.substr(0,7) == preamble &&
-          rawData[10]==',')
-         id = rawData.substr(7,3);
-
-      // If that didn't work, or this is object is not of the right type,
-      // then give up.
-      if (id == "" || !checkId(id))
-         return;
-
-      readBody(stream);
-   }
-
-   //---------------------------------------------------------------------------
-   void AshtechEPB::decode(const std::string& data)
-      throw(std::exception, FFStreamError)
-   {
-      string str(data);
-      if (debugLevel>1)
-         cout << "EPB " << str.length() << " " << endl;
-      if (str.length() == 138)
-      {
-         ascii=false;
-         header      = str.substr(0,11); str.erase(0,11);
-         prn         = decodeVar<uint16_t>(str);
-         str.erase(0,1);
-
-         for (int s=0; s<3; s++)
-            for (int w=0; w<10; w++)
-               word[s][w] = decodeVar<uint32_t>(str);
-
-         unsigned cksum = decodeVar<uint16_t>(str);
-         clear(ios_base::goodbit);
-      }
-   }
-
-   //---------------------------------------------------------------------------
-   void AshtechEPB::dump(ostream& out) const throw()
-   {
-      ostringstream oss;
-      using gpstk::StringUtils::asString;
-      using gpstk::StringUtils::leftJustify;
-
-      AshtechData::dump(out);
-      oss << getName() << "1:"
-          << " prn:" << prn
-          << " S0W0: ..."
-          << endl;
-      out << oss.str() << flush;
-   }
-
-
-   //---------------------------------------------------------------------------
-   //---------------------------------------------------------------------------
-   const char* AshtechALB::myId = "ALB";
-
-   //---------------------------------------------------------------------------
-   void AshtechALB::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, EndOfFile)
-   {
-      AshtechStream& stream=dynamic_cast<AshtechStream&>(ffs);
-
-      // make sure the object is reset before starting the search
-      clear(fmtbit | lenbit | crcbit);
-      string& rawData = stream.rawData;
-
-      // If this object doesn't have an id set yet, assume that the streams
-      // most recent read id is what we need to be
-      if (id == "" && rawData.size()>=11 && 
-          rawData.substr(0,7) == preamble &&
-          rawData[10]==',')
-         id = rawData.substr(7,3);
-
-      // If that didn't work, or this is object is not of the right type,
-      // then give up.
-      if (id == "" || !checkId(id))
-         return;
-
-      readBody(stream);
-   }
-
-   //---------------------------------------------------------------------------
-   void AshtechALB::decode(const std::string& data)
-      throw(std::exception, FFStreamError)
-   {
-      string str(data);
-      if (debugLevel>1)
-         cout << "ALB " << str.length() << " " << endl;
-      if (str.length() == 138)
-      {
-         ascii=false;
-         header      = str.substr(0,11); str.erase(0,11);
-         svid         = decodeVar<uint16_t>(str);
-         str.erase(0,1);
-
-         for (int w=0; w<10; w++)
-            word[w] = decodeVar<uint32_t>(str);
-
-         unsigned cksum = decodeVar<uint16_t>(str);
-         clear(ios_base::goodbit);
-      }
-   }
-
-   //---------------------------------------------------------------------------
-   void AshtechALB::dump(ostream& out) const throw()
-   {
-      ostringstream oss;
-      using gpstk::StringUtils::asString;
-      using gpstk::StringUtils::leftJustify;
-
-      AshtechData::dump(out);
-      oss << getName() << "1:"
-          << " svid:" << svid
-          << " S0W0: ..."
-          << endl;
-      out << oss.str() << flush;
-   }
-
 } // namespace gpstk

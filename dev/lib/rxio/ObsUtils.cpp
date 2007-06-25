@@ -190,6 +190,7 @@ namespace gpstk
       return wx;
    }
 
+
    //---------------------------------------------------------------------------
    void addMDPObservation(MDPObsEpoch& moe,
                           const AshtechMBEN::code_block& cb,
@@ -246,11 +247,13 @@ namespace gpstk
       double sow1 = moe.time.GPSsecond();
       int sow2 = static_cast<int>(sow1/1800);
       double sow3 = static_cast<double>(sow2 * 1800);
-      double sow_mben = 50e-3 * mben.seq;
+      double sow_mben = 0.05 * mben.seq;
       double sow4 = sow3 + sow_mben;
+      if (sow4 < sow1) // Assume that time only moves forward
+         sow4 += 1800;
       moe.time.setGPS(moe.time.GPSfullweek(), sow4);
 
-      moe.numSVs = mben.left;
+      moe.numSVs = hint.numSVs;
       moe.channel = mben.chid;
       moe.prn = mben.svprn;
       moe.status = hint.status;
@@ -277,7 +280,7 @@ namespace gpstk
 
       pvt.x[0] = pben.navx;
       pvt.x[1] = pben.navy;
-      pvt.x[3] = pben.navz;
+      pvt.x[2] = pben.navz;
       pvt.dtime = pben.navt / C_GPS_M;
       pvt.v[0] = pben.navxdot;
       pvt.v[1] = pben.navydot;

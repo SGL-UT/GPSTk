@@ -148,17 +148,16 @@ namespace gpstk
                          asString(str.length()));
          GPSTK_THROW(e);
       }
-         
+
       // clear out the spot for the crc
       str.replace(14, 2, 2, (char)0);
          
       // calculate the crc on the string
-      unsigned short lcrc = computeCRC((const unsigned char*)str.c_str(),
-                                       length, gpstk::BinUtils::CRCCCITT);
+      crc = computeCRC((const unsigned char*)str.c_str(),
+                       length, gpstk::BinUtils::CRCCCITT);
 
       // and place that value in the string
-      unsigned short tmp=lcrc;
-      hostToNet(tmp);
+      unsigned short tmp = hostToNet(crc);
       str.replace(14, 2, (char*)&tmp, 2);
    } // MDPHeader::encode()
       
@@ -215,7 +214,7 @@ namespace gpstk
 
       string str = MDPHeader::encode() + body;
       setCRC(str);
-
+      
       stream << str;
 
       if (hexDump)

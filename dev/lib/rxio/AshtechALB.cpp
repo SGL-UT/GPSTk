@@ -39,18 +39,17 @@
 #include "StringUtils.hpp"
 #include "BinUtils.hpp"
 
-#include "AshtechPBEN.hpp"
+#include "AshtechALB.hpp"
 #include "AshtechStream.hpp"
-#include "TimeConstants.hpp"
 
 using namespace std;
 
 namespace gpstk
  {
-   const char* AshtechPBEN::myId = "PBN";
+   const char* AshtechALB::myId = "ALB";
 
    //---------------------------------------------------------------------------
-   void AshtechPBEN::reallyGetRecord(FFStream& ffs)
+   void AshtechALB::reallyGetRecord(FFStream& ffs)
       throw(std::exception, FFStreamError, EndOfFile)
    {
       AshtechStream& stream=dynamic_cast<AshtechStream&>(ffs);
@@ -75,60 +74,31 @@ namespace gpstk
    }
 
    //---------------------------------------------------------------------------
-   void AshtechPBEN::decode(const std::string& data)
+   void AshtechALB::decode(const std::string& data)
       throw(std::exception, FFStreamError)
    {
-      using gpstk::BinUtils::decodeVar;
+      using BinUtils::decodeVar;
 
       string str(data);
-      if (debugLevel>2)
-         cout << "PBEN " << str.length() << " " << endl;
-      if (str.length() == 69)
+      if (debugLevel>1)
+         cout << "ALB " << str.length() << " " << endl;
+      if (str.length() == 138)
       {
          ascii=false;
          header      = str.substr(0,11); str.erase(0,11);
-         sow         = 1e-3 * decodeVar<int32_t>(str);
-         sitename    = str.substr(0,4); str.erase(0,4);
-         navx        = decodeVar<double>(str);
-         navy        = decodeVar<double>(str);
-         navz        = decodeVar<double>(str);
-         navt        = decodeVar<float>(str);
-         navxdot     = decodeVar<float>(str);
-         navydot     = decodeVar<float>(str);
-         navzdot     = decodeVar<float>(str);
-         navtdot     = decodeVar<float>(str);
-         pdop        = decodeVar<uint16_t>(str);
-         lat =  lon =  alt =  numSV =  hdop =  vdop =  tdop = 0;
-         clear();
-      }
-      else
-      {
-         ascii=true;
-         header = str.substr(0,11); str.erase(0,11);
-         stringstream iss(str);
-         double latMin,lonMin;
-         char c;
-         iss >> sow >> c
-             >> navx>> c >> navy >> c >> navz >> c
-             >> lat >> c >> latMin >> c >> lon >> c >> lonMin >> c >> alt >> c
-             >> navxdot>> c  >> navydot>> c  >> navzdot >> c
-             >> numSV >> c;
-         getline(iss, sitename, ',');
-         iss >> pdop>> c  >> hdop>> c  >> vdop>> c  >> tdop;
+         svid         = decodeVar<uint16_t>(str);
+         str.erase(0,1);
 
-         lat += latMin / 60;
-         lon += lonMin / 60;
-         navt = navtdot = 0;
-         if (iss)
-            clear();
-      }
+         for (int w=0; w<10; w++)
+            word[w] = decodeVar<uint32_t>(str);
 
-      if (sow>FULLWEEK)
-         setstate(fmtbit);
+         unsigned cksum = decodeVar<uint16_t>(str);
+         clear(ios_base::goodbit);
+      }
    }
 
    //---------------------------------------------------------------------------
-   void AshtechPBEN::dump(ostream& out) const throw()
+   void AshtechALB::dump(ostream& out) const throw()
    {
       ostringstream oss;
       using gpstk::StringUtils::asString;
@@ -136,22 +106,10 @@ namespace gpstk
 
       AshtechData::dump(out);
       oss << getName() << "1:"
-          << " SOW:" << asString(sow, 1)
-          << " #SV:" << (int)numSV
-          << " PDOP:" << (int)pdop
-          << " ClkOff:" << asString(navt, 3) 
-          << " ClkDft:" << asString(navtdot, 3)
-          << " sitename:" << sitename
-          << " " << (ascii?"ascii":"bin")
-          << endl
-          << getName() << "2:"
-          << " X:" << asString(navx, 1)
-          << " Y:" << asString(navy, 1)
-          << " Z:" << asString(navz, 1)
-          << " Vx:" << asString(navxdot, 3)
-          << " Vy:" << asString(navydot, 3)
-          << " Vz:" << asString(navzdot, 3)
+          << " svid:" << svid
+          << " S0W0: ..."
           << endl;
       out << oss.str() << flush;
    }
+
 } // namespace gpstk

@@ -129,61 +129,6 @@ namespace gpstk
          throw(FFStreamError, EndOfFile);
       
    }; // class AshtechData
-
-   class AshtechALB : public AshtechData
-   {
-   public:
-      
-      AshtechALB() {};
-
-      std::string header; // 11 characters exactly
-
-      unsigned svid;
-      long     word[10];
-
-      static const char* myId;
-
-      virtual std::string getName() const {return "epb";}
-      
-      bool checkId(std::string hdrId) const {return hdrId==myId;}
-
-      void dump(std::ostream& out) const throw();
-
-      virtual void decode(const std::string& data)
-         throw(std::exception, FFStreamError);
-
-   protected:
-      virtual void reallyGetRecord(FFStream& ffs)
-         throw(std::exception, FFStreamError, EndOfFile);
-   };
-
-   class AshtechEPB : public AshtechData
-   {
-   public:
-      
-      AshtechEPB() {};
-
-      std::string header; // 11 characters exactly
-
-      unsigned prn;
-      long     word[3][10];
-
-      static const char* myId;
-
-      virtual std::string getName() const {return "epb";}
-      
-      bool checkId(std::string hdrId) const {return hdrId==myId;}
-
-      void dump(std::ostream& out) const throw();
-
-      virtual void decode(const std::string& data)
-         throw(std::exception, FFStreamError);
-
-   protected:
-      virtual void reallyGetRecord(FFStream& ffs)
-         throw(std::exception, FFStreamError, EndOfFile);
-   };
-
 } // namespace gpstk
 
 #endif
