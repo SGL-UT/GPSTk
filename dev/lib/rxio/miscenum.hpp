@@ -1,4 +1,4 @@
-#pragma ident "$Id: miscenum.hpp 77 2006-08-10 03:09:39Z ocibu $"
+#pragma ident "$Id$"
 
 
 /**

@@ -1,4 +1,4 @@
-#pragma ident "$Id: FormatConversionFunctions.hpp 171 2006-10-02 02:24:10Z ocibu $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
