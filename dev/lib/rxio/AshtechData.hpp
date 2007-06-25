@@ -122,7 +122,7 @@ namespace gpstk
       virtual void reallyGetRecord(FFStream& ffs)
          throw(std::exception, FFStreamError, EndOfFile);
 
-      virtual void AshtechData::readHeader(AshtechStream& stream)
+      virtual void readHeader(AshtechStream& stream)
          throw(FFStreamError, EndOfFile);
 
       virtual void readBody(AshtechStream& stream)
