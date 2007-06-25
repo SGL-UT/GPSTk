@@ -207,19 +207,19 @@ namespace gpstk
       }
       else  // Use standard input/output
       {
-         if (mode && ios::in)
-         {
-            T::copyfmt(cin);
-            T::clear(cin.rdstate());
-            basic_ios<char>::rdbuf(cin.rdbuf());
-            this->target = "<stdin>";
-         }
-         else
+         if (mode && ios::out)
          {
             T::copyfmt(cout);
             T::clear(cin.rdstate());
             basic_ios<char>::rdbuf(cout.rdbuf());
             this->target = "<stdout>";
+         }
+         else
+         {
+            T::copyfmt(cin);
+            T::clear(cin.rdstate());
+            basic_ios<char>::rdbuf(cin.rdbuf());
+            this->target = "<stdin>";
          }
          deviceType = dtStdio;
       }
