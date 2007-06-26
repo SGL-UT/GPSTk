@@ -76,7 +76,7 @@ public:
 
       CommandOptionWithAnyArg outputSpecOpt(
          'o', "output",
-         "The file spec for writing the files..");
+         "The file spec for writing the files.");
 
       outputSpecOpt.setMaxCount(1);
       inputOpt.setMaxCount(1);

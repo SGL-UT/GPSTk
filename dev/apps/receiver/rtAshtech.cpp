@@ -178,14 +178,14 @@ int main(int argc, char *argv[])
       // Process user options********************************************************   
  
       CommandOptionNoArg helpOption('h', "help", "Print help usage");
-      CommandOptionNoArg verboseOption('v', "verbose", "Increased diagnostic messages.");
+      CommandOptionNoArg verboseOption('v', "verbose", "Increased diagnostic messages");
       CommandOptionNoArg rawOption('r', "raw", "Record raw observations");
       CommandOptionNoArg logOption('l', "log", "Record log entries");
       CommandOptionNoArg matlabOption('t', "text", "Record observations as simple text files");
       CommandOptionWithAnyArg rinexObsFileSpecOption('o',"rinex-obs","Naming convention for RINEX obs files");
       CommandOptionWithAnyArg rinexNavFileSpecOption('n',"rinex-nav","Naming convention for RINEX nav message files");
       CommandOptionWithAnyArg textObsFileSpecOption('T',"text-obs","Naming convention for obs in simple text files");
-      CommandOptionWithAnyArg inputOption('i', "input", "Were to read the ashtech data from. Can be a file, a serial device (/dev/ttyS0), a tcp port (tcp:hostname:port), or standard input (the default).");
+      CommandOptionWithAnyArg inputOption('i', "input", "Where to read the ashtech data from. Can be a file, a serial device (ser:/dev/ttyS0), a tcp port (tcp:hostname:port), or standard input (the default).");
 
       // TO DO. Limit the number of times the options can be called as appropriate.
 

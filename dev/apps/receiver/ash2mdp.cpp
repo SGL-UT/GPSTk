@@ -80,9 +80,7 @@ public:
                     "port (tcp:hostname:port), or standard input. The default "
                     " is stdin."),
         outputOption('o', "output", "Where to send the output. Same options "
-                     "as input. The default is stdout."),
-        rollFileOption('r', "roll-output",
-                       "Assume that the output is a TimeNamedOutputFile")
+                     "as input. The default is stdout.")
    {
       inputOption.setMaxCount(1);
       outputOption.setMaxCount(1);
@@ -121,7 +119,6 @@ protected:
 
 private:
    CommandOptionWithAnyArg inputOption, outputOption;
-   CommandOptionNoArg rollFileOption;
 };
 
 typedef DeviceFramework<AshtechStream, MDPStream> AshDevFrame;
@@ -138,7 +135,7 @@ public:
     {
        CommandOptionWithNumberArg weekOption(
           'w', "week",
-          "The full GPS week in which this data starts.");
+          "The full GPS week in which this data starts");
 
       if (!DeviceFramework<AshtechStream, MDPStream>::initialize(argc,argv))
          return false;
