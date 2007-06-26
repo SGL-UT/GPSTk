@@ -181,7 +181,7 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
          cout << "Sending output to stdout" << endl;
       output.copyfmt(std::cout);
       output.clear(std::cout.rdstate());
-      output.std::basic_ios<char>::rdbuf(std::cout.rdbuf());
+      output.basic_ios<char>::rdbuf(std::cout.rdbuf());
    }
 
    if (timeFmtOpt.getCount())
