@@ -83,6 +83,11 @@ namespace gpstk
      * observations required, it will be summarily deleted from the data
      * structure.
      *
+     * Be aware that some combinations of cycle slips in L1 and L2 may result in
+     * a false negative when using a cycle slip detector based on LI. Therefore,
+     * to be on the safe side you should complement this with another kind of
+     * detector, such as one based on the Melbourne-Wubbena combination.
+     *
      */    
     class LICSDetector
     {
@@ -347,7 +352,7 @@ namespace gpstk
 
             currentBias = li - LIData[sat].formerLI;   // Current value of LI difference
 
-            // Increment size of window and check if first time here
+            // Increment size of window
             ++LIData[sat].windowSize;
 
             // Check if receiver already declared cycle slip or too much time has elapsed
