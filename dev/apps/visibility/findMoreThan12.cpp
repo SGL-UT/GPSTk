@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
   CommandOptionWithNumberArg 
     minElev('m',"min-elev","Give an integer for the elevation (degrees) above which you want to find more than 12 SVs at a given time.", true);     
       
-  CommandOptionParser cop("Finds when there are simultaneously more than 12 SVs above a given elevation. Although the -a and -b arguments are listed as optional below, one must be specified. An ephemeris source must be given.");
+  CommandOptionParser cop("Find when there are simultaneously more than 12 SVs above a given elevation.");
     cop.parseOptions(argc, argv);
     
   // verify that the correct input was given
