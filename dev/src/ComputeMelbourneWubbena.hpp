@@ -51,7 +51,7 @@ namespace gpstk
      *   RinexObsStream rin("ebre0300.02o");
      *
      *   gnssRinex gRin;
-     *   ComputeMelbourne-Wubbena getMW;
+     *   ComputeMelbourneWubbena getMW;
      *
      *   while(rin >> gRin) {
      *      gRin >> getMW;
