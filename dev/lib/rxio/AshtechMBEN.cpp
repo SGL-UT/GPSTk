@@ -188,6 +188,7 @@ namespace gpstk
           << "warn:" << (int)warning
           << " gb:" << (int)goodbad
           << " pol:" << (int)polarity_known
+          << " qa:" << (int)qa_phase
           << dec
           << " phase:" << asString(full_phase, 1)
           << " range:" << asString(raw_range*1e3, 3)
