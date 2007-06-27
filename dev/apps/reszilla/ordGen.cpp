@@ -39,13 +39,14 @@
 
 #include <MSCData.hpp>
 #include <MSCStream.hpp>
+#include <BCEphemerisStore.hpp>
+
 
 #include "OrdApp.hpp"
 #include "OrdEngine.hpp"
 #include "ObsReader.hpp"
 #include "EphReader.hpp"
 #include "MetReader.hpp"
-
 
 using namespace std;
 using namespace gpstk;
@@ -67,6 +68,8 @@ private:
    Triple antennaPos;
    unsigned msid;
 
+   bool useNear;
+
    CommandOptionWithAnyArg obsFileOption, ephFileOption, metFileOption;
 };
 
@@ -75,7 +78,7 @@ private:
 //-----------------------------------------------------------------------------
 OrdGen::OrdGen() throw()
    : OrdApp("ordGen", "Generates observed range deviations."),
-     ordMode("smart"), 
+     ordMode("smart"), useNear(false),
      msid(0),
      obsFileOption('o', "obs", "Where to get the obs data.", true),
    
@@ -96,7 +99,6 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
    CommandOptionWithAnyArg
       mscFileOption('c', "msc", "Station coordinate file."),
    
-   
       ordModeOption('\0', "omode", "Specifies what observations are used to "
                     "compute the ORDs. Valid values are:"
                     "p1p2, c1p2, y1y2, c1, p1, c2, p2, smo, and smart. "
@@ -108,6 +110,11 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
       msidOption('m', "msid", "Station to process data for. Used to "
                  "select a station position from the msc file or data "
                  "from a SMODF file.");
+
+   CommandOptionNoArg
+      useNearOption('n', "near", "Allows the program to select an ephemeris that "
+                    "is not strictly in the future. Only affects the selection of which broadcast "
+                    "ephemeris to use. Use a close ephemeris");
 
    if (!OrdApp::initialize(argc,argv)) return false;
 
@@ -147,6 +154,8 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
       if (obsReader.inputType == FFIdentifier::tRinexObs)
          antennaPos = obsReader.roh.antennaPosition;
    }
+
+   useNear = useNearOption.getCount();
 
    if (RSS(antennaPos[0], antennaPos[1], antennaPos[2]) < 1)
    {
@@ -189,6 +198,13 @@ void OrdGen::process()
    for (int i=0; i<ephFileOption.getCount(); i++)
       ephReader.read(ephFileOption.getValue()[i]);
    gpstk::EphemerisStore& eph = *ephReader.eph;
+
+   if (useNear && typeid(eph) == typeid(BCEphemerisStore))
+   {
+      BCEphemerisStore& bce = dynamic_cast<BCEphemerisStore&>(eph);
+      bce.SearchNear();
+   }
+
 
    // Get the weather data...
    MetReader metReader;
