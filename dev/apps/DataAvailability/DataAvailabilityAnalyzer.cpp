@@ -311,9 +311,13 @@ void DataAvailabilityAnalyzer::spinUp()
               << antennaPos << endl;
    }
 
+   if (obsReader.inputType == FFIdentifier::tSMODF)
+      obsReader.msid = msid;
+
    DayTime t0;
    ObsEpoch oe;
    int i,j;
+   
    for (i=j=0; i<100 && j<10 && obsReader(); i++)
    {
       oe = obsReader.getObsEpoch();
@@ -467,7 +471,13 @@ void DataAvailabilityAnalyzer::process()
 {
    const string fn=inputOpt.getValue()[0];
    ObsReader obsReader(fn);
-
+   
+   if (msidOpt.getCount() && obsReader.inputType == FFIdentifier::tSMODF)
+   {
+      msid = StringUtils::asUnsigned(msidOpt.getValue()[0]);
+      obsReader.msid = msid;
+   }
+      
    double x=RSS(antennaPos[0], antennaPos[1], antennaPos[2]);
    
    if (x<1)
