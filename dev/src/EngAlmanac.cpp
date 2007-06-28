@@ -138,8 +138,8 @@ namespace gpstk
             break;
 
          case 5:  /*  Page with Satellite health information 1-24 */
-            for (int i=0; i < 24; i++)
-               health[i] = static_cast<char>( ficked[8 + i] );
+            for (int i=1; i <=24; i++)
+               health[i] = static_cast<char>( ficked[7 + i] );
                // manually crack the t_oa and WNa
             t_oa = ((subframe[2] >> 14) & 0xFF) * 4096;
             convert8bit(gpsWeek, &ficked[7]);
@@ -172,11 +172,11 @@ namespace gpstk
             break;
 
          case 9:  /* Page with Health for 25-32 and AS/SV config */
-            for (int i=0; i<=MAX_PRN; i++)
-               SV_config[i] = static_cast<char>( ficked[7 + i] );
+            for (int i=1; i<=MAX_PRN; i++)
+               SV_config[i] = static_cast<char>( ficked[6 + i] );
 
-            for (int i=24; i<=MAX_PRN; i++)
-               health[i] = static_cast<char>( ficked[15 + i] );
+            for (int i=25; i<=MAX_PRN; i++)
+               health[i] = static_cast<char>( ficked[14 + i] );
             break;
 
          case 10:/* Page with Special Message */
