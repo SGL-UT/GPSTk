@@ -128,6 +128,8 @@ public:
 /// from the user.
 class RinexEditor {
 private:
+   /// all input files
+   std::vector<std::string> Inputfiles;
    /// input and output file names.
    std::string InputFile,OutputFile;
    /// directories for the input and output files.
@@ -213,7 +215,8 @@ public:
       /// Edit a Rinex observation file, using the stored Rinex Editing commands.
    int EditFile(void) throw(Exception);
       /// used to add optional records to the header.
-   int FillHeaderAndReplaceFile(std::string& TempFile,std::string& TrueOutputFile) throw(Exception);
+   int FillHeaderAndReplaceFile(std::string& TempFile,std::string& TrueOutputFile)
+      throw(Exception);
 
    /// This function is called after reading input header and before
    /// calling EditHeader (pass input header).

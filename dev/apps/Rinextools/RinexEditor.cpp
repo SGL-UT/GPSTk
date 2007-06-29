@@ -43,6 +43,7 @@
 #include "MathBase.hpp"
 #include "StringUtils.hpp"
 #include "RinexObsStream.hpp"
+#include "RinexUtilities.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -58,7 +59,7 @@ REditCmd::Initialize REditCmdInitializer;
 
 REditCmd::Initialize::Initialize()
 {
-   RinexEditVersion = string("3.4 4/10/2007");
+   RinexEditVersion = string("3.5 6/21/2007");
 
    typeLabel[INVALID] = string("INVALID");
    typeLabel[IF] = string("IF");
@@ -291,9 +292,9 @@ int RinexEditor::ParseCommands(void) throw(Exception)
 {
 try {
    bool flag;
-   int iret=0;
+   int i,iret=0;
       // first scan command list for BZ,HDf,TN,TT,TB,TE,IF,OF,ID,OD
-   for(int i=0; i<Cmds.size(); i++) {
+   for(i=0; i<Cmds.size(); i++) {
       if(REDebug) Cmds[i].Dump(*oflog,string("parse this command"));
       switch(Cmds[i].type) {
          case REditCmd::TN:
@@ -320,7 +321,8 @@ try {
             Cmds[i].type = REditCmd::INVALID;
             break;
          case REditCmd::IF:
-            InputFile = Cmds[i].field;
+            //InputFile = Cmds[i].field;
+            Inputfiles.push_back(Cmds[i].field);
             //if(REDebug) Cmds[i].Dump(*oflog,string("set IF with this cmd"));
             Cmds[i].type = REditCmd::INVALID;
             break;
@@ -371,9 +373,19 @@ try {
    }
 
       // require an input file name
-   if(InputFile.empty()) iret -= 1;
-   else if(!InputDir.empty()) InputFile = InputDir + string("/") + InputFile;
-
+   if(Inputfiles.size() == 0) iret -= 1;
+      // sort on begin time (header) and add path
+   else {
+      if(Inputfiles.size() > 1)
+         sortRinexObsFiles(Inputfiles);
+      if(!InputDir.empty()) {
+         for(i=0; i<Inputfiles.size(); i++) {
+            InputFile = InputDir + string("/") + Inputfiles[i];
+            Inputfiles[i] = InputFile;
+         }
+      }
+   }
+   
       // now iterate over the list in reverse, deleting INVALID commands.
    deque<REditCmd>::iterator jt,it=Cmds.begin();
    while(it != Cmds.end()) {
@@ -605,15 +617,15 @@ try {
       tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
    RHOutput.date = currtime.printf("%04Y/%02m/%02d %02H:%02M:%02S");
    { // figure out system -- anything else will be up to caller
-      bool gps,glo,tra,geo;
-      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGPS)) != DelSV.end())
-         gps=false; else gps=true;
-      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGlonass)) != DelSV.end())
-         glo=false; else glo=true;
-      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemTransit)) != DelSV.end())
-         tra=false; else tra=true;
-      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGeosync)) != DelSV.end())
-         geo=false; else geo=true;
+      bool gps=true,glo=true,tra=true,geo=true;
+      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGPS))
+                  != DelSV.end()) gps=false;
+      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGlonass))
+                  != DelSV.end()) glo=false;
+      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemTransit))
+                  != DelSV.end()) tra=false;
+      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGeosync))
+                  != DelSV.end()) geo=false;
       if(!glo && !tra && !geo) RHOutput.system.system = RinexSatID::systemGPS;
       if(!gps && !tra && !geo) RHOutput.system.system = RinexSatID::systemGlonass;
       if(!gps && !glo && !geo) RHOutput.system.system = RinexSatID::systemTransit;
@@ -666,7 +678,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // will fill header (after writing) when -HDf found.
 // Return -2 error
-//        -1 quit
+//        -1 time limit exceeded
 //         0 DO NOT write the output obs ROOut
 //         1 DO NOT write the output obs ROOut, but close and re-open the output file
 //         2 DO write the output obs ROOut
@@ -1017,8 +1029,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // Return -1 failed to open file
-//        -2 failed to read input file correctly
-//        -3 input file not obs
+//        -2 failed to read input file correctly (includes file not an obs file)
 //        -4 failed to fill header and replace original file
 //        -5 could not create temporary file
 //        -6 callback to BeforeEditHeader returned error
@@ -1034,12 +1045,20 @@ try {
    RinexObsHeader rhin,rhout;
    RinexObsData roin,roout;
    string TrueOutputFile,TempFile;
+   RinexObsStream ROFin;
+   RinexObsStream ROFout;
 
-   if(REVerbose) *oflog << "EditFile: Reading " << InputFile
-      << ", and Writing " << OutputFile << endl;
+   if(REVerbose) *oflog << "EditFile: Reading " << Inputfiles.size()
+      << " input files, and Writing " << OutputFile << endl;
 
+      // --------------------------------------------------------------
+      // loop over input files
+   for(int nfile=0; nfile < Inputfiles.size(); nfile++) {
+   InputFile = Inputfiles[nfile];
+
+      // --------------------------------------------------------------
       // open input file
-   RinexObsStream ROFin(InputFile.c_str());
+   ROFin.open(InputFile.c_str(), ios::in);
    if(!ROFin) {
       if(REVerbose) *oflog << "RinexEditor::EditFile could not open input file "
          << InputFile << endl;
@@ -1051,6 +1070,7 @@ try {
    ROFin.exceptions(ios::failbit);
    if(REDebug) *oflog << "Opened input file " << InputFile << endl;
 
+      // --------------------------------------------------------------
       // read header
    try {
       ROFin >> rhin;
@@ -1070,57 +1090,61 @@ try {
    }
    if(REDebug) *oflog << "Read input header" << endl;
 
-      // check its type
-   if(rhin.fileType[0] != 'O') {
-      cerr << "Input file type is not Observation\n" << endl;
-      if(REVerbose) *oflog << "Input file type is not Observation\n" << endl;
-      return -3;
-   }
+      // dump header
    if(REVerbose) {
       *oflog << "Input header:\n";
       rhin.dump(*oflog);
    }
 
-      // callback before editing input header
-   iret = BeforeEditHeader(rhin);
-   if(iret) return -6;
+      // --------------------------------------------------------------
+      // Edit header and open output file - do this only once
+   if(nfile == 0) {
+         // callback before editing input header
+      iret = BeforeEditHeader(rhin);
+      if(iret) return -6;
 
-      // edit header
-   EditHeader(rhin,rhout);
-   if(REVerbose) *oflog << "Edit header done" << endl;
+         // edit header
+      EditHeader(rhin,rhout);
+      if(REVerbose) *oflog << "Edit header done" << endl;
 
-      // callback after calling EditHeader (pass output header)
-   iret = AfterEditHeader(rhout);
-   if(iret) return -7;
+         // callback after calling EditHeader (pass output header)
+      iret = AfterEditHeader(rhout);
+      if(iret) return -7;
 
-      // if header is to be filled, write to a temporary file
-   TrueOutputFile = OutputFile;
-   if(FillOptionalHeader) {
-      OutputFile = GetTempFileName();
-      if(OutputFile.empty()) {
-         cerr << "Could not create temporary file name - abort\n";
-         if(REVerbose) *oflog << "Could not create temporary file name - abort\n";
-         return -5;
+         // -----------------------------------------------------------
+         // if header is to be filled, write to a temporary file
+      TrueOutputFile = OutputFile;
+      if(FillOptionalHeader) {
+         OutputFile = GetTempFileName();
+         if(OutputFile.empty()) {
+            cerr << "Could not create temporary file name - abort\n";
+            if(REVerbose) *oflog << "Could not create temporary file name - abort\n";
+            return -5;
+         }
+         // some OSs create the file when you get the name...
+         remove(OutputFile.c_str());
+         if(!OutputDir.empty()) OutputFile = OutputDir + string("/") + OutputFile;
+         TempFile = OutputFile;
       }
-      // some OSs create the file when you get the name...
-      remove(OutputFile.c_str());
-      if(!OutputDir.empty()) OutputFile = OutputDir + string("/") + OutputFile;
-      TempFile = OutputFile;
-   }
 
-      // open output file
-   RinexObsStream ROFout(OutputFile.c_str(), ios::out);
-   if(!ROFout) {
-      cerr << "RinexEditor::EditFile could not open output file "
-         << OutputFile << endl;
-      if(REVerbose) *oflog << "RinexEditor::EditFile could not open output file "
-         << OutputFile << endl;
-      return -1;
-   }
-   ROFout.exceptions(ios::failbit);
+         // -----------------------------------------------------------
+         // open output file
+      ROFout.open(OutputFile.c_str(), ios::out);
+      if(!ROFout) {
+         cerr << "RinexEditor::EditFile could not open output file "
+            << OutputFile << endl;
+         if(REVerbose) *oflog << "RinexEditor::EditFile could not open output file "
+            << OutputFile << endl;
+         return -1;
+      }
 
+      ROFout.exceptions(ios::failbit);
+      Noutput = 0;
+
+   } // end if this is the first input file
+
+      // --------------------------------------------------------------
       // loop over epochs, reading input and writing to output
-   Noutput = 0;
    while (1) {
 
          // read next observation epoch
@@ -1143,8 +1167,14 @@ try {
                << e << endl;
          return -2;
       }
-      if(!ROFin) iret = -1;
-      else {
+
+         // was read successful?
+      if(!ROFin) {                     // no
+         if(REVerbose) *oflog << "Reached EOF on " << InputFile << endl;
+         if(nfile == Inputfiles.size()-1) iret = -1;
+         else break;
+      }
+      else {                           // yes, edit the obs data
          if(REDebug) {
             *oflog << "Epoch: " << roin.time << ", Flag " << roin.epochFlag
                << ", clk " << roin.clockOffset << endl;
@@ -1158,17 +1188,17 @@ try {
 
          iret = EditObs(roin,roout);
          // Return -2 error
-         //        -1 quit (EOF or time limit reached)
+         //        -1 time limit reached
          //         0 DO NOT write the output obs ROOut
          //         1 DO NOT write the output obs ROOut,
          //            but close and re-open the output file
          //         2 DO write the output obs ROOut
          //         3 DO write the output obs ROOut,
          //            but first close and re-open the output file
-      }
-      if(REDebug) {
-         *oflog << "EditObs returned " << iret << endl;
-         roout.dump(*oflog);
+         if(REDebug) {
+            *oflog << "EditObs returned " << iret << endl;
+            roout.dump(*oflog);
+         }
       }
 
       if(iret == -2) break;                           // error => abort
@@ -1301,6 +1331,12 @@ try {
 
    }   // end while loop over epochs
 
+   if(REDebug) *oflog << "Close input file" << endl;
+   ROFin.clear();
+   ROFin.close();
+
+   }   // end loop over input file names
+
    return iret;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -1354,7 +1390,7 @@ void DisplayRinexEditUsage(ostream& os) throw()
 "\n"
 " File I/O:\n"
 " ---------\n"
-" -IF<file>       Input RINEX observation file name (required)\n"
+" -IF<file>       Input RINEX observation file name [may be repeated] (required)\n"
 " -ID<dir>        Directory in which to find input file\n"
 " -OF<file>       Output RINEX file name (required, or -OF<file>,<time>)\n"
 " -OF<f>,<time>   At RINEX epoch <time>, close output file and open another named <f>\n"
@@ -1375,7 +1411,10 @@ void DisplayRinexEditUsage(ostream& os) throw()
 " -HDdc           Delete all comments in output RINEX header\n"
 "           (NB -HDdc cannot delete comments created by *subsequent* -HDc commands)\n"
 "\n"
+" Output RINEX observation types (also see 'Specific edit commands' below):\n"
+" -------------------------------------------------------------------------\n"
 " -AO<OT>         Add observation type OT to header and observation data\n"
+" -DO<OT>         Delete observation type OT entirely (including in header)\n"
 "\n"
 " Time-related edit commands:\n"
 " ---------------------------\n"

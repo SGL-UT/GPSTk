@@ -415,8 +415,8 @@ try {
       "(needed for LA,LO,VR,VP)");
    dashih.setMaxCount(1);
 
-   CommandOption dashSV(CommandOption::hasArgument, CommandOption::stdType,
-      0,"SVonly"," --SVonly <sat>  Process this satellite ONLY");
+   CommandOption dashSV(CommandOption::hasArgument, CommandOption::stdType, 0,"SVonly",
+      " --SVonly <sat>  Process this satellite ONLY (use editing command -DS<Sat> to delete Sat)");
    dashSV.setMaxCount(1);
 
    // output files

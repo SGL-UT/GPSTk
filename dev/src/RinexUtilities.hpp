@@ -53,6 +53,7 @@
 #include "BCEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
 
+namespace gpstk {
 //------------------------------------------------------------------------------------
 /** @defgroup rinexutils Rinex Utilities */
 //@{
@@ -68,16 +69,26 @@ int RegisterARLUTExtendedTypes(void);
 bool isSP3File(const std::string& file);
 
    /** Determine if the given file is a Rinex navigation file.
+    * Open the file, read the header, and test its validity.
     * @param file the filename
-    * @return true if the file is a Rinex navigation file.
+    * @return true if the file is a valid Rinex navigation file.
     */
 bool isRinexNavFile(const std::string& file);
 
    /** Determine if the given file is a Rinex observation file.
+    * Open the file, read the header, and test its validity.
     * @param file the filename
-    * @return true if the file is a Rinex observation file.
+    * @return true if the file is a valid Rinex observation file.
     */
 bool isRinexObsFile(const std::string& file);
+
+   /** Sort a vector of RINEX obs file names on the time of the first observation
+    * as found in the header. Return the sorted list in the calling argument.
+    * Do not include files that are found not to be RINEX obs files, or that have
+    * invalid headers.
+    * @param files  vector<string> containing filenames, with path
+    */
+void sortRinexObsFiles(std::vector<std::string>& files);
 
    /** Open the files and add to the appropriate EphemerisStore.
     * @param files vector of the filenames.
@@ -92,6 +103,8 @@ int FillEphemerisStore(const std::vector<std::string>& files,
       gpstk::BCEphemerisStore& BCE);
 
 //@}
+
+} // end namespace gpstk
 
 #endif
 //------------------------------------------------------------------------------------

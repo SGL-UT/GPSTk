@@ -52,6 +52,8 @@
 #include "RinexNavData.hpp"
 #include "RinexUtilities.hpp"
 
+namespace gpstk {
+
 using namespace std;
 using namespace gpstk;
 
@@ -166,14 +168,23 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
+
 //------------------------------------------------------------------------------------
 bool isRinexNavFile(const string& file)
 {
 try {
    RinexNavHeader header;
-   RinexNavStream rnstream(file.c_str());
-   rnstream.exceptions(fstream::failbit);
-   try { rnstream >> header; } catch(Exception& e) { return false; }
+   RinexNavStream rnstream;
+   try {
+      rnstream.open(file.c_str(),ios::in);
+      if(!rnstream) return false;
+      rnstream.exceptions(fstream::failbit);
+   }
+   catch(Exception& e) { return false; }
+   catch(exception& e) { return false; }
+   try { rnstream >> header; }
+   catch(Exception& e) { return false; }
+   catch(exception& e) { return false; }
    rnstream.close();
    return true;
 }
@@ -181,14 +192,23 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
+
 //------------------------------------------------------------------------------------
 bool isRinexObsFile(const string& file)
 {
 try {
    RinexObsHeader header;
-   RinexObsStream rostream(file.c_str());
-   rostream.exceptions(fstream::failbit);
-   try { rostream >> header; } catch(Exception& e) { return false; }
+   RinexObsStream rostream;
+   try {
+      rostream.open(file.c_str(),ios::in);
+      if(!rostream) return false;
+      rostream.exceptions(fstream::failbit);
+   }
+   catch(Exception& e) { return false; }
+   catch(exception& e) { return false; }
+   try { rostream >> header; }
+   catch(Exception& e) { return false; }
+   catch(exception& e) { return false; }
    rostream.close();
    return true;
 }
@@ -196,6 +216,38 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
+
+//------------------------------------------------------------------------------------
+void sortRinexObsFiles(vector<string>& files)
+{
+try {
+   // build a hash with key = start time, value = filename
+   map<DayTime,string> hash;
+   for(int n=0; n<files.size(); n++) {
+      RinexObsHeader header;
+      RinexObsStream rostream(files[n].c_str());
+      rostream.exceptions(fstream::failbit);
+      try { rostream >> header; } catch(Exception& e) {
+         rostream.close();
+         continue;
+      }
+      rostream.close();
+      if(!header.isValid()) continue;
+      hash[header.firstObs] = files[n];
+   }
+   // return the sorted file names
+   files.clear();
+   map<DayTime,string>::const_iterator it = hash.begin();
+   while(it != hash.end()) {
+      files.push_back(it->second);
+      it++;
+   }
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+
 //------------------------------------------------------------------------------------
 int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
       BCEphemerisStore& BCE)
@@ -250,6 +302,8 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
+
+} // end namespace gpstk
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------

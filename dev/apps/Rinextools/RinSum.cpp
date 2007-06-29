@@ -43,6 +43,7 @@
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 #include "icd_200_constants.hpp"
+#include "RinexUtilities.hpp"
 
 #include <string>
 #include <vector>
@@ -78,7 +79,7 @@ int ndt[ndtmax]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 int nepochs,ncommentblocks;
 
 //------------------------------------------------------------------------------------
-// class used to store PRN/Obs table
+// class used to store SAT/Obs table
 class TableData {
 public:
    RinexSatID sat;
@@ -91,7 +92,7 @@ public:
    inline bool operator==(const TableData& d) {return d.sat == sat;}
 };
    // for sort()
-class TablePRNLessThan  {      
+class TableSATLessThan  {      
 public:
    bool operator()(const TableData& d1, const TableData& d2)
       { return d1.sat < d2.sat; }
@@ -106,9 +107,6 @@ public:
 // prototypes
 int GetCommandLine(int argc, char **argv) throw(Exception);
 void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
-int RegisterARLUTExtendedTypes(void);
-bool isRinexObsFile(const string& file);
-bool isRinexNavFile(const string& file);
 
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -156,6 +154,13 @@ try {
       }
    }
    else pout = &cout;
+
+      // add path to input file names
+   if(!InputDirectory.empty()) for(ifile=0; ifile<InputFiles.size(); ifile++) {
+      InputFiles[ifile] = InputDirectory + "/" + InputFiles[ifile];
+   }
+      // sort the input file names on header first time
+   if(InputFiles.size() > 1) sortRinexObsFiles(InputFiles);
 
       // now open the input files, read the headers and data
    RinexObsHeader rheader;
@@ -380,6 +385,12 @@ try {
       }  // end loop over epochs in the file
       InStream.close();
 
+         // check that we found some data
+      if(nepochs <= 0) {
+         *pout << "File " << filename << " : no data found. Are time limits wrong?\n";
+         continue;
+      }
+
          // compute interval
       for(i=1,j=0; i<ndtmax; i++) if(ndt[i]>ndt[j]) j=i;
       dt = bestdt[j];
@@ -410,7 +421,7 @@ try {
          << ncommentblocks << " inline header blocks.\n";
 
          // sort table
-      sort(table.begin(),table.end(),TablePRNLessThan());
+      sort(table.begin(),table.end(),TableSATLessThan());
       if(TimeSortTable) sort(table.begin(),table.end(),TableBegLessThan());
 
          // output table
@@ -595,10 +606,10 @@ try {
    dashr.setMaxCount(1);
 
    CommandOptionNoArg dashs('s', "sort",
-      " [-s|--sort]          Sort the PRN/Obs table on begin time.");
+      " [-s|--sort]          Sort the SAT/Obs table on begin time.");
 
    CommandOptionNoArg dashg('g', "gps",
-      " [-g|--gps]           Print times in the PRN/Obs table as GPS times.");
+      " [-g|--gps]           Print times in the SAT/Obs table as GPS times.");
 
    // time
    // times - don't use CommandOptionWithTimeArg
@@ -699,7 +710,7 @@ try {
    }
    if(dashs.getCount()) {
       TimeSortTable=true;
-      if(help) cout << "Input: sort the PRN/Obs table" << endl;
+      if(help) cout << "Input: sort the SAT/Obs table" << endl;
    }
    if(dashg.getCount()) {
       GPSTimeOutput=true;

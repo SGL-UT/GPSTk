@@ -144,6 +144,7 @@ DayTime CurrEpoch, PrgmEpoch, PrevEpoch;
 // data
 int Nsvs;
 EphemerisStore *pEph;
+ZeroTropModel TMzero;
 SimpleTropModel TMsimple;
 SaasTropModel TMsaas;
 GGTropModel TMgg;
@@ -156,6 +157,8 @@ Vector<double> Solution;      // this will always be the AutonPRS result
 Matrix<double> Covariance;    // this will always be the AutonPRS result
 
 // Solution and residual statistics:
+// total number of epochs
+long nS,nSS;
 // simple average (S : one file; SS : all files)...
 Stats<double> SA[3],SR[3],SSA[3],SSR[3];          // solution (XYZ) Auto and RAIM
 Stats<double> SAPR[3],SRPR[3],SSAPR[3],SSRPR[3];  // XYZ residuals
@@ -177,6 +180,7 @@ int AfterReadingFiles(void) throw(Exception);
 void PrintStats(Stats<double> S[3],
                 Matrix<double> &P,
                 Vector<double> &z,
+                long n,
                 string m,
                 char c0='X', char c1='Y', char c2='Z') throw(Exception);
 void setWeather(DayTime& time, TropModel *pTropModel);
@@ -289,6 +293,7 @@ try {
    }  // end InputMetName processing
 
    // assign trop model
+   if(C.TropType == string("ZR")) C.pTropModel = &TMzero;
    if(C.TropType == string("BL")) C.pTropModel = &TMsimple;
    if(C.TropType == string("SA") || C.TropType == string("NB")) {
       if(C.TropType == string("SA")) C.pTropModel = &TMsaas;
@@ -350,6 +355,7 @@ try {
    // initialize global solution and residual statistics
    // not necessary SSA[0].Reset(); SSA[1].Reset(); SSA[2].Reset();
    // not necessary SSR[0].Reset(); SSR[1].Reset(); SSR[2].Reset();
+   nSS = 0;
    PPA = Matrix<double>(3,3,0.0);
    PPR = Matrix<double>(3,3,0.0);
    zzA = Vector<double>(3,0.0);
@@ -384,7 +390,7 @@ try {
    totaltime = clock()-totaltime;
    C.oflog << "PRSolve timing: " << fixed << setprecision(3)
       << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
-   cout << "PRSolve timing: " << fixed << setprecision(3)
+   cout << "\nPRSolve timing: " << fixed << setprecision(3)
       << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
 
    C.oflog.close();
@@ -508,6 +514,7 @@ try {
    C.oflog << "Process frequency " << C.Freq << endl;
 
       // initialize file solution and residual statistics
+   nS = 0;
    SA[0].Reset(); SA[1].Reset(); SA[2].Reset();
    SR[0].Reset(); SR[1].Reset(); SR[2].Reset();
    PA = Matrix<double>(3,3,0.0);
@@ -682,6 +689,7 @@ try {
             break;
          }
 
+         nS++; nSS++;
          iret = SolutionAlgorithm(Satellites, Ranges, RMSrof);
          if(C.Debug) C.oflog << "SolutionAlgorithm returns " << iret << endl;
          if(iret) break;
@@ -825,19 +833,32 @@ try {
 
       // only print per file if there is more than one file
    if(C.InputObsName.size() > 1) {
-      if(C.APSout) PrintStats(SA,PA,zA,"Autonomous solution for file " + filename);
-      PrintStats(SR,PR,zR,"RAIM solution for file " + filename);
+      if(C.APSout) PrintStats(SA,PA,zA,nS,"Autonomous solution for file " + filename);
+      PrintStats(SR,PR,zR,nS,"RAIM solution for file " + filename);
       if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
          if(C.APSout) {
-            PrintStats(SAPR,PAPR,zAPR,"Autonomous solution residuals for file "
-               + filename);
-            PrintStats(SANE,PANE,zANE,"Autonomous solution residuals (NEU) for file "
-               + filename,'N','E','U');
+            PrintStats(SAPR,PAPR,zAPR,nS,
+               "Autonomous solution residuals for file " + filename);
+            PrintStats(SANE,PANE,zANE,nS,
+               "Autonomous solution residuals (NEU) for file "+ filename,'N','E','U');
          }
-         PrintStats(SRPR,PRPR,zRPR,"RAIM solution residuals for file " + filename);
-         PrintStats(SRNE,PRNE,zRNE,
+         PrintStats(SRPR,PRPR,zRPR,nS,"RAIM solution residuals for file " + filename);
+         PrintStats(SRNE,PRNE,zRNE,nS,
             "RAIM solution residuals (NEU) for file " + filename,'N','E','U');
       }
+      // print to screen
+      cout << "\nWeighted average RAIM solution for file: "
+           << filename << endl << fixed;
+      cout << " (" << nS << " total epochs, with "
+           << SR[0].N() << " good, " << nS-SR[0].N() << " rejected.)\n";
+      if(SR[0].N() > 0) {
+         Matrix<double> Cov=inverse(PR);
+         Vector<double> Sol = Cov * zR;
+         cout << setw(16) << setprecision(6) << Sol << endl;
+         cout << "Covariance of RAIM solution for file " << filename << endl;
+         cout << setw(16) << setprecision(6) << Cov << endl;
+      }
+      else cout << " No data!" << endl;
    }
 
    ifstr.clear();
@@ -1106,28 +1127,35 @@ int AfterReadingFiles(void) throw(Exception)
 try {
    // only print stats on all files if there is more than one
    if(C.APSout) {
-      PrintStats(SSA,PPA,zzA,"Autonomous solution for all files");
+      PrintStats(SSA,PPA,zzA,nSS,"Autonomous solution for all files");
       if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
-         PrintStats(SSAPR,PPAPR,zzAPR,
+         PrintStats(SSAPR,PPAPR,zzAPR,nSS,
             "Autonomous position residuals for all files");
-         PrintStats(SSANE,PPANE,zzANE,
+         PrintStats(SSANE,PPANE,zzANE,nSS,
             "Autonomous position residuals (NEU) for all files",'N','E','U');
       }
    }
 
-   PrintStats(SSR,PPR,zzR,"RAIM solution for all files");
+   PrintStats(SSR,PPR,zzR,nSS,"RAIM solution for all files");
    if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
-      PrintStats(SSRPR,PPRPR,zzRPR,"RAIM position residuals for all files");
-      PrintStats(SSRNE,PPRNE,zzRNE,"RAIM position residuals (NEU) for all files",
+      PrintStats(SSRPR,PPRPR,zzRPR,nSS,"RAIM position residuals for all files");
+      PrintStats(SSRNE,PPRNE,zzRNE,nSS,"RAIM position residuals (NEU) for all files",
          'N','E','U');
    }
 
-   cout << "Weighted average RAIM solution for all files" << endl << fixed;
+   // print to screen
+   cout << "\nWeighted average RAIM solution for file: "
+        << (C.InputObsName.size() > 1 ? "all files" : C.InputObsName[0])
+        << endl << fixed;
+   cout << " (" << nSS << " total epochs, with "
+        << SSR[0].N() << " good, " << nSS-SSR[0].N() << " rejected.)\n";
    if(SSR[0].N() > 0) {
       Matrix<double> Cov=inverse(PPR);
-      Vector<double> Sol=Cov * zzR;
+      Vector<double> Sol = Cov * zzR;
       cout << setw(16) << setprecision(6) << Sol << endl;
-      cout << "Covariance of RAIM solution for all files" << endl;
+      cout << "Covariance of RAIM solution for file: "
+           << (C.InputObsName.size() > 1 ? "all files" : C.InputObsName[0])
+           << endl;
       cout << setw(16) << setprecision(6) << Cov << endl;
    }
    else cout << " No data!" << endl;
@@ -1152,8 +1180,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void PrintStats(Stats<double> S[3], Matrix<double> &P, Vector<double> &z, string msg,
-   char c0, char c1, char c2) throw(Exception)
+void PrintStats(Stats<double> S[3], Matrix<double> &P, Vector<double> &z, long ng,
+   string msg, char c0, char c1, char c2) throw(Exception)
 {
 try {
    C.oflog << endl;
@@ -1269,7 +1297,7 @@ try {
    C.defaultRH = 50.0;
    
    C.HDPrgm = PrgmName + string(" v.") + PrgmVers.substr(0,4);
-   C.HDRunby = string("ARL:UT/SGL/GPSTK");
+   C.HDRunby = string("GPSTk");
 
    C.timeFormat = string("%4F %10.3g");
 
@@ -1348,17 +1376,17 @@ try {
       0,"exSat"," --exSat <sat>        Exclude this satellite ()");
 
    CommandOption dashTrop(CommandOption::hasArgument, CommandOption::stdType,0,"Trop",
-      " --Trop <model,T,P,H> Trop model "
-      "[one of BL,SA,NB,GG,GGH (cf. gpstk::TropModel)], with\n                     "
-      "   optional default weather [T(C),P(mb),RH(%)] ("
+      " --Trop <model,T,P,H> Trop model [one of ZR,BL,SA,NB,GG,GGH "
+      "(cf. gpstk::TropModel)],\n                        with optional "
+      "weather [T(C),P(mb),RH(%)] ("
       + C.TropType + "," + asString(C.defaultT,0)
       + "," + asString(C.defaultPr,0) + "," + asString(C.defaultRH,0) + ")");
    dashTrop.setMaxCount(1);
 
    CommandOption dashrms(CommandOption::hasArgument, CommandOption::stdType,
       0,"RMSlimit", "# PRSolution configuration:\n --RMSlimit <rms>     "
-      "Upper limit on RMS post-fit residuals ("
-      + asString(prsol.RMSLimit,2) + "m)");
+      "Upper limit on RMS post-fit residuals (m) ("
+      + asString(prsol.RMSLimit,2) + ")");
    dashrms.setMaxCount(1);
 
    CommandOption dashslop(CommandOption::hasArgument, CommandOption::stdType,
@@ -1369,14 +1397,12 @@ try {
 
    CommandOptionNoArg dashAlge(0,"Algebra",
       string(" --Algebra            ")
-      + string("Use algebraic algorithm, rather than linearized least squares: ")
-      + (prsol.Algebraic ? "(on)" : "(off)") );
+      + string("Use algebraic algorithm, else linearized least squares ()"));
    dashAlge.setMaxCount(1);
 
    CommandOptionNoArg dashrcrt(0,"DistanceCriterion", string(" --DistanceCriterion  ")
-    +string("Use distance from given position (--PosXYZ) as convergence criterion,\n")
-    +string("                         rather than RMS residual-of-fit (")
-    + (prsol.ResidualCriterion ? string("off") : string("on")) + string(")") );
+    +string("Use distance from given position (--PosXYZ) as convergence\n")
+    +string("                         criterion, else RMS residual-of-fit ()"));
    dashrcrt.setMaxCount(1);
 
    CommandOptionNoArg dashrone(0,"ReturnAtOnce",string(" --ReturnAtOnce       ")
@@ -1397,7 +1423,7 @@ try {
 
    CommandOption dashConv(CommandOption::hasArgument, CommandOption::stdType,0,"Conv",
       " --Conv <c>           "
-      "Minimum convergence criterion in linearized least squares ("
+      "Minimum convergence criterion in estimation ("
       + doub2sci(prsol.ConvergenceLimit,8,2,false) + ")");
    dashConv.setMaxCount(1);
 
@@ -1410,17 +1436,16 @@ try {
    
    CommandOption dashXYZ(CommandOption::hasArgument, CommandOption::stdType,
       0,"PosXYZ", " --PosXYZ <X,Y,Z>     "
-      "Known position (ECEF,m), used to compute output residuals and ORDs ()");
+      "Known position (ECEF,m), for computing residuals and ORDs ()");
    dashXYZ.setMaxCount(1);
    
    CommandOptionNoArg dashAPSout(0,"APSout", string(" --APSout             ")
-      + string("Output autonomous pseudorange solution [tag APS, no RAIM] (")
-      + (C.APSout ? "true" : "false") + string(")") );
+      + string("Output autonomous pseudorange solution [tag APS, no RAIM] ()"));
    dashAPSout.setMaxCount(1);
 
    CommandOption dashORDs(CommandOption::hasArgument, CommandOption::stdType,
       0,"ORDs", " --ORDs <file>        "
-      "Output ORDs (Observed Range Deviations) to file [PosXYZ req'd] ("
+      "ORDs (Observed Range Deviations) output file [PosXYZ req'd] ("
       + C.ordFile + ")");
    dashORDs.setMaxCount(1);
 
@@ -1475,6 +1500,20 @@ try {
    "   position solution, using a RAIM-like algorithm to eliminate outliers.\n"
    "   Output is to a log file, and also optionally to a RINEX obs file with\n"
    "   the position solutions in comments in auxiliary header blocks.\n"
+   "   In the log file, results appear one epoch per line with the format:\n"
+   "   TAG Nrej week sow Nsat X Y Z T RMS slope nit conv sat sat .. (code) [N]V\n"
+   "   TAG denotes solution (X Y Z T) type:\n"
+   "       RPF  Final RAIM ECEF XYZ solution\n"
+   "       RPR  Final RAIM ECEF XYZ solution residuals [only if --PosXYZ given]\n"
+   "       RNE  Final RAIM North-East-Up solution residuals [only if --PosXYZ]\n"
+   "       APS  Autonomous ECEF XYZ solution [only if --APSout given]\n"
+   "       APR  Autonomous ECEF XYZ solution residuals [only if both --APS & --Pos]\n"
+   "       ANE  Autonomous North-East-Up solution residuals [only if --APS & --Pos]\n"
+   "   and where Nrej = number of rejected sats, (week,sow) = GPS time tag,\n"
+   "   Nsat = # sats used, XYZT = position+time solution(or residuals),\n"
+   "   RMS = RMS residual of fit, slope = RAIM slope, nit = # of iterations,\n"
+   "   conv = convergence factor, 'sat sat ...' lists all sat. PRNs (- : rejected),\n"
+   "   code = return value from PRSolution::RAIMCompute(), and NV means NOT valid.\n"
    "   NB. Default values appear in () after optional arguments below.\n"
    );
 
@@ -1890,7 +1929,12 @@ try {
          "ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
    if(!C.ordFile.empty())
       os << " Output ORDs to file " << C.ordFile << endl;
-   if(C.APSout) os << " Output autonomous solution (no RAIM) - APS,etc.\n";
+   os << " Output tags RPF";
+   if(C.knownpos.getCoordinateSystem() != Position::Unknown) os << " RPR RNE";
+   if(C.APSout) os << " APS";
+   if(C.APSout && C.knownpos.getCoordinateSystem() != Position::Unknown)
+      os << " APR ANE";
+   os << endl;
    os << " Output format for time tags (cf. class DayTime) is "
       << C.timeFormat << endl;
 
