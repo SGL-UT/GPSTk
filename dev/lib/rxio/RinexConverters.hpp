@@ -56,7 +56,9 @@ namespace gpstk
    short snr2ssi(float x);
 
    /// Convert the given pages to an EngAlmanac. Returns true upon success.
-   bool makeEngAlmanac(EngAlmanac& alm, const AlmanacPages& pages);
+   bool makeEngAlmanac(EngAlmanac& alm, 
+                       const AlmanacPages& pages, 
+                       bool minimalAlm=false) throw();
 
    /// Convert the given pages to an EngEphemeris. Returns true upon success.
    bool makeEngEphemeris(EngEphemeris& eph, const EphemerisPages& pages);

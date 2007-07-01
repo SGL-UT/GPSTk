@@ -122,11 +122,13 @@ namespace gpstk
    // subframe number. It is used in building up a complete a complete 
    // ephemeris from an SV.
    typedef std::map<short, MDPNavSubframe> EphemerisPages;
+   void dump(std::ostream& out, const EphemerisPages& pages) throw();
 
    // First element is the page number, as determined from the HOW TOW
    // i.e. page = tow % 750
    typedef std::pair<short, short> SubframePage;
    typedef std::map<SubframePage, MDPNavSubframe> AlmanacPages;
+   void dump(std::ostream& out, const AlmanacPages& pages) throw();
 
 } // namespace gpstk
 

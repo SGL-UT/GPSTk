@@ -165,37 +165,73 @@ namespace gpstk
    }
 
    // Try to convert the given pages into an EngAlmanc object. Returns true
-   // upon success. This algorithm will only work for a receiver that outputs
-   // all 4/5 subframes from a code/carrier. Basically it looks for a 12.5 minute
-   // cycle that starts with page 1 from subframe 4.
-   // It makes sure that there hasn't been a cutover during it by checking that
-   // all sv pages (i.e. svid 1-32) have the same toa as the last page 25
-   // (svid 51).
+   // upon success. This routine is tuned for two different types of nav data.
+   //
+   // The first is for a receiver that outputs all 4/5 subframes from a given
+   // code/carrier. Basically it looks for a 12.5 minute cycle that starts
+   // with page 1 from subframe 4. It makes sure that there hasn't been a
+   // cutover during it by checking that all sv pages (i.e. svid 1-32) have
+   // the same toa as the last page 25 (svid 51). This mode is the default.
+   //
+   // The second is for a receiver that only puts out a set of 4/5 subframes
+   // that "should" be a complete almanac. Note that it doesn't output pages
+   // for SVs that are set to the default data. This mode is set with the
+   // minimalAlm parameter.
+   // The only receiver that this has been tested on is the Ashtech Z(Y)12.
+   // 
    // In the IS-GPS-200D, see pages 72-79, 82, 105
-   bool makeEngAlmanac(EngAlmanac& alm, const AlmanacPages& pages)
+   bool makeEngAlmanac(EngAlmanac& alm,
+                       const AlmanacPages& pages,
+                       bool minimalAlm) throw()
    {
-      if (pages.size()!=50)
-         return false;
-
-      AlmanacPages::const_iterator i, firstPage, lastPage;
-      firstPage = pages.find(SubframePage(4, 1));
-      lastPage = pages.find(SubframePage(5,25));
-      long dt = lastPage->second.getHOWTime() - firstPage->second.getHOWTime();
-
-      // 25 pairs of pages every 30 seconds = 750 seconds minus the 24 seconds
-      // that the three ephemeris pages take gives us 726 seconds
-      if (dt != 726)
-         return false;
-
-      int week = firstPage->second.time.GPSfullweek();
+      long sf3p1sow=0;
+      int week=0;
       long sfa[10];
       long long_sfa[10];
-      for (i = pages.begin(); i != pages.end(); i++)
+
+      if (!minimalAlm)
       {
-         i->second.fillArray(sfa);
-         copy( &sfa[0], &sfa[10], long_sfa);
-         if (!alm.addSubframe(long_sfa, week))
+         if (pages.size() <50)
             return false;
+         AlmanacPages::const_iterator firstPage = pages.find(SubframePage(4, 1));
+         if (firstPage == pages.end())
+            return false;
+         sf3p1sow = firstPage->second.getHOWTime();
+         week = firstPage->second.time.GPSfullweek();
+      }
+      else
+      {
+         // This is an empirical number from the ashtechs. Smaller numbers may
+         // be reasonable but I haven't determined what it would be
+         if (pages.size() < 45)
+            return false;
+         AlmanacPages::const_iterator firstPage = pages.begin();
+         week = pages.begin()->second.time.GPSfullweek();
+      }
+
+      for (int p=1; p<=25; p++)
+      {
+         for (int sf=4; sf<=5; sf++)
+         {
+            AlmanacPages::const_iterator i = pages.find(SubframePage(sf, p));
+            if (i == pages.end())
+            {
+               if (minimalAlm)
+                  continue;
+               else
+                  return false;
+            }
+            // All pages have to be contingious unless we are accepting
+            // a minimal set.
+            long sow = i->second.getHOWTime(); 
+            if (!minimalAlm && sow != sf3p1sow + (sf-4)*6 + (p-1)*30)
+               return false;
+
+            i->second.fillArray(sfa);
+            copy( &sfa[0], &sfa[10], long_sfa);
+            if (!alm.addSubframe(long_sfa, week))
+               return false;
+         }
       }
       
       double p51Toa=alm.getToa();
@@ -210,7 +246,6 @@ namespace gpstk
          catch (EngAlmanac::SVNotPresentException& e)
          {}
       }
-
       return true;
    }
 

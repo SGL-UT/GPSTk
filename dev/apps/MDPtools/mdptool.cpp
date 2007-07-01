@@ -63,6 +63,11 @@ public:
            'e', "ephemeris",
            "Build and process engineering ephemerides. Only applies to the "
            "nav style"),
+        minimalAlmOpt(
+           '\0', "min-alm",
+           "This allows a complete almanac to be constructed from fewer than "
+           "50 pages. It is required for receivers the Ashtech Z(Y)12. The "
+           "default is to require all 50 pages."),
         startTimeOpt(
            '\0', "start-time", "%4Y/%03j/%02H:%02M:%05.2f",
            "Ignore data before this time. (%4Y/%03j/%02H:%02M:%05.2f)"),
@@ -152,6 +157,7 @@ public:
          MDPNavProcessor& np=dynamic_cast<MDPNavProcessor&>(*processor);
          np.almOut = almOpt;
          np.ephOut = ephOpt;
+         np.minimalAlm = minimalAlmOpt;
       }
 
       // If no outputs are specified, then at least set the obs output
@@ -230,7 +236,7 @@ private:
    gpstk::CommandOptionWithAnyArg mdpInputOpt, outputOpt;
 
    gpstk::CommandOptionNoArg pvtOpt, obsOpt, navOpt, tstOpt, hexOpt, badOpt;
-   gpstk::CommandOptionNoArg almOpt, ephOpt;
+   gpstk::CommandOptionNoArg almOpt, ephOpt, minimalAlmOpt;
    gpstk::CommandOptionWithAnyArg styleOpt;
    gpstk::CommandOptionWithNumberArg timeSpanOpt, bugMaskOpt;
    gpstk::CommandOptionWithTimeArg startTimeOpt, stopTimeOpt;

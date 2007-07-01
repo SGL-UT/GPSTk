@@ -66,7 +66,7 @@ void MDPProcessor::process()
 
       msgCount++;
 
-      if (verboseLevel>3)
+      if (verboseLevel>5 || debugLevel>2)
          out << "Record: " << in.recordNumber
              << ", message: " << msgCount << endl;
 

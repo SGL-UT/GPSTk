@@ -35,6 +35,7 @@ public:
    // Used to control whether we process the engineering eph/alms.
    bool ephOut;
    bool almOut;
+   bool minimalAlm;  // Set true to allow an alm to be built from a minimal set of pages
 
    // This is really a triple: RangeCode, CarrierCode, prn
    typedef std::pair<gpstk::RangeCode, gpstk::CarrierCode> RangeCarrierPair;

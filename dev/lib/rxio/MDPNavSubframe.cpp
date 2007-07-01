@@ -277,5 +277,36 @@ namespace gpstk
       }
       out << oss.str() << flush;
    }
-      
+
+
+   //--------------------------------------------------------------------------
+   void dump(std::ostream& out, const EphemerisPages& pages) throw()
+   {
+      for (int sf=1; sf<=3; sf++)
+      {
+         EphemerisPages::const_iterator i = pages.find(sf);
+         if (i == pages.end())
+            out << "Missing subframe " << sf << endl;
+         else
+            i->second.dump(out);
+      }
+   }
+
+
+   //--------------------------------------------------------------------------
+   void dump(std::ostream& out, const AlmanacPages& pages) throw()
+   {
+      for (int p=1; p<=25; p++)
+      {
+         for (int sf=4; sf<=5; sf++)
+         {
+            AlmanacPages::const_iterator i = pages.find(SubframePage(sf, p));
+            if (i == pages.end())
+               out << "Missing subframe " << sf << " page " << p << endl;
+            else
+               i->second.dump(out);
+
+         }
+      }
+   }  
 } // namespace gpstk

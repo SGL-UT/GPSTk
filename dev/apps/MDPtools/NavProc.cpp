@@ -19,7 +19,7 @@ using namespace gpstk::StringUtils;
 //-----------------------------------------------------------------------------
 MDPNavProcessor::MDPNavProcessor(gpstk::MDPStream& in, std::ofstream& out)
    : MDPProcessor(in, out),
-     firstNav(true), almOut(false), ephOut(false),
+     firstNav(true), almOut(false), ephOut(false), minimalAlm(false),
      badNavSubframeCount(0), navSubframeCount(0)
 {
    timeFormat = "%4Y/%03j/%02H:%02M:%02S";
@@ -120,12 +120,11 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
 
    ostringstream oss;
    oss << umsg.time.printf(timeFormat)
-      << "  PRN:" << setw(2) << umsg.prn
-      << " " << asString(umsg.carrier)
-      << ":" << setw(4) << left << asString(umsg.range);
+       << "  PRN:" << setw(2) << umsg.prn
+       << " " << asString(umsg.carrier)
+       << ":" << setw(2) << left << asString(umsg.range)
+       << "  ";
    string msgPrefix = oss.str();
-   if (verboseLevel>2 || debugLevel)
-      out << endl << msgPrefix << " Processing" << endl;
    
    // First try the data assuming it is already upright
    umsg.cooked = true;
@@ -133,7 +132,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    if (!parityGood)
    {
       if (verboseLevel>2)
-         out << msgPrefix << " Subframe appears raw" << endl;
+         out << msgPrefix << "Raw subframe" << endl;
       umsg.cooked = false;
       umsg.cookSubframe();
       parityGood = umsg.checkParity();
@@ -141,14 +140,14 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    else
    {
       if (verboseLevel>2)
-         out << msgPrefix << " Subframe appears cooked" << endl;
+         out << msgPrefix << "Cooked subframe" << endl;
    }
 
    if (!parityGood)
    {
       badNavSubframeCount++;
       if (verboseLevel)
-         out << msgPrefix << " Parity error"
+         out << msgPrefix << "Parity error"
              << " SNR:" << fixed << setprecision(1) << snr[ni]
              << " EL:" << el[ni]
              << endl;
@@ -173,7 +172,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    if (verboseLevel>2)
    {
       out << msgPrefix
-          << " SOW:" << setw(6) << sow
+          << "SOW:" << setw(6) << sow
           << " NC:" << static_cast<int>(umsg.nav)
           << " I:" << umsg.inverted
           << " SFID:" << sfid;
@@ -220,9 +219,11 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
       almPages[sp] = umsg;
       almPages.insert(make_pair(sp, umsg));
          
-      if (makeEngAlmanac(engAlm, almPages))
+      if (makeEngAlmanac(engAlm, almPages, minimalAlm))
       {
-         out << msgPrefix << " Built complete alm" << endl;
+         out << msgPrefix << "Built complete almanac" << endl;
+         if (verboseLevel>2)
+            dump(out, almPages);
          if (verboseLevel>1)
             engAlm.dump(out);
          almPages.clear();
@@ -238,9 +239,11 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
       {
          if (makeEngEphemeris(engEph, ephPages))
          {
-            out << msgPrefix << " Built complete eph, iocd:0x"
+            out << msgPrefix << "Built complete ephemeris, iocd:0x"
                 << hex << setw(3) << engEph.getIODC() << dec
                 << endl;
+         if (verboseLevel>2)
+            dump(out, ephPages);
             if (verboseLevel>1)
                out << engEph;
             ephStore[ni] = engEph;
@@ -251,6 +254,9 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
          out << e << endl;
       }
    }
+
+   if (verboseLevel>2)
+      out << endl;
 
 }  // end of process()
 
