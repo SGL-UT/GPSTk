@@ -428,9 +428,9 @@ namespace gpstk
       ios::fmtflags oldFlags = s.flags();
    
       s.fill(' ');
-      
+
       s << "****************************************************************"
-        << "************" << endl
+        << "***************" << endl
         << "Broadcast Almanac (Engineering Units)" << endl
         << endl;
 
@@ -462,11 +462,11 @@ namespace gpstk
       StringUtils::hexDumpData(s, special_msg);
 
 
-      s << endl << "           Page 25 Health & SA bits" << endl << endl;
+      s << endl << "           Page 25 Health, AS, & SV config" << endl << endl;
 
       s << "Toa:    " << setfill(' ') << setw(8) << t_oa
         << ", week: " << setw(5) << alm_wk << endl << endl
-        << "PRN   health   AS    PRN   health   AS" << endl;
+        << "PRN   health  AS  cfg    PRN   health  AS  cfg" << endl;
       string bits[33];
 
       for (SVBitsMap::const_iterator i = health.begin(); i != health.end(); i++)
@@ -480,12 +480,17 @@ namespace gpstk
       {
          int prn = i->first;
          if (prn >= 1 && prn <= 32)
+         {
             bits[prn] += "  " + int2bin(i->second, 4);
+            bits[prn].insert(9, "   ");
+         }
       }
 
       for (int i=1; i<=16; i++)
-         s << setw(2) << i    << "    " << bits[i] << "   "
+         s << setw(2) << i    << "    " << bits[i] << "    "
            << setw(2) << i+16 << "    " << bits[i+16] << endl;
+
+      s << endl;
 
       s.flags(oldFlags);
    } // end of dump()
