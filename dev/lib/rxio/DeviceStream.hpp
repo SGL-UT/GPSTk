@@ -188,9 +188,10 @@ namespace gpstk
          }
          else // a regular file
          {
-            int flags=O_RDWR;
+            int flags=O_RDONLY;
+            if (mode & ios::out)
+               flags=O_WRONLY|O_CREAT;
             if (mode & ios::app) flags |= O_APPEND;
-            if (mode & ios::out) flags |= O_CREAT;
             if (mode & ios::trunc) flags |= O_TRUNC;
 
             int fd = ::open(target.c_str(), flags, 0666);
