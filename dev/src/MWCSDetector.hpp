@@ -1,11 +1,11 @@
 
 /**
- * @file LICSDetector.hpp
- * This is a class to detect cycle slips using LI observables.
+ * @file MWCSDetector.hpp
+ * This is a class to detect cycle slips using the Melbourne-Wubbena combination.
  */
 
-#ifndef LICSDETECTOR_GPSTK
-#define LICSDETECTOR_GPSTK
+#ifndef MWCSDETECTOR_GPSTK
+#define MWCSDETECTOR_GPSTK
 
 //============================================================================
 //
@@ -32,7 +32,7 @@
 
 
 #include "DataStructures.hpp"
-
+#include <list>
 
 
 namespace gpstk
@@ -42,7 +42,7 @@ namespace gpstk
     //@{
 
 
-    /** This is a class to detect cycle slips using LI observables.
+    /** This is a class to detect cycle slips using MW observables.
      * This class is meant to be used with the GNSS data structures objects
      * found in "DataStructures" class.
      *
@@ -52,25 +52,26 @@ namespace gpstk
      *   RinexObsStream rin("ebre0300.02o");
      *
      *   gnssRinex gRin;
-     *   ComputeLI getLI;
-     *   LICSDetector markCSLI;
+     *   ComputeMelbourneWubbena getMW;
+     *   MWCSDetector markCSMW;
      *
      *   while(rin >> gRin) {
-     *      gRin >> getLI >> markCSLI;
+     *      gRin >> getMW >> markCSMW;
      *   }
      * @endcode
      *
-     * The "LICSDetector" object will visit every satellite in the GNSS data
+     * The "MWCSDetector" object will visit every satellite in the GNSS data
      * structure that is "gRin" and will decide if a cycle slip has happened in the
      * given observable.
      *
-     * The algorithm will use LI observables, and the LLI1 and LLI2 indexes.
+     * The algorithm will use MW observables, and the LLI1 and LLI2 indexes.
      * The result (a 0 if a cycle slip is found, 1 otherwise) will be stored in the
      * data structure both as the CSL1 and CSL2 indexes.
      *
-     * This algorithm will use some values as maximum interval of time between
-     * two successive epochs, minimum threshold for declaring cycle slip and LI
-     * combination limit drift.
+     * In taking the decision, this algorithm will use criteria as the maximum
+     * interval of time between two successive epochs and the maximum number of 
+     * Melbourne-Wubbena wavelenghts allowed above or below the MW combination 
+     * average for that arc.
      * 
      * The default values are usually fine, but nevertheless you may change them 
      * with the appropriate methods. The former is of special importance for the
@@ -83,32 +84,48 @@ namespace gpstk
      * observations required, it will be summarily deleted from the data
      * structure.
      *
-     * Be aware that some combinations of cycle slips in L1 and L2 may result in
-     * a false negative when using a cycle slip detector based on LI. Therefore,
-     * to be on the safe side you should complement this with another kind of
-     * detector, such as one based on the Melbourne-Wubbena combination.
+     * You should be aware that the Melbourne-Wubbena combination is based on a
+     * mix of code and phase observations, and it is very noisy. Therefore, it 
+     * has a tendency to yield a fair number of false positives if you are not
+     * careful with its parameters. Because of this, the default parameters are
+     * very conservative, i.e., the detector is NOT much sensitive.
      *
-     * @sa MWCSDetector.hpp for more information.
+     * Best results are achieved when using this detector as a "backup" detector
+     * for detectors based in LI combination, like this:
+     *
+     * @code
+     *   RinexObsStream rin("ebre0300.02o");
+     *
+     *   gnssRinex gRin;
+     *   ComputeLI getLI;
+     *   LICSDetector markCSLI;
+     *   ComputeMelbourneWubbena getMW;
+     *   MWCSDetector markCSMW;
+     *
+     *   while(rin >> gRin) {
+     *      gRin >> getLI >> getMW >> markCSLI >> markCSMW;
+     *   }
+     * @endcode
+     *
+     * @sa LICSDetector.hpp for more information.
      */    
-    class LICSDetector
+    class MWCSDetector
     {
     public:
 
         /// Default constructor, setting default parameters.
-        LICSDetector() : obsType(TypeID::LI), lliType1(TypeID::LLI1), lliType2(TypeID::LLI2), resultType1(TypeID::CSL1), resultType2(TypeID::CSL2), deltaTMax(61.0), minThreshold(0.04), LIDrift(0.002), useLLI(true) {};
+        MWCSDetector() : obsType(TypeID::MWubbena), lliType1(TypeID::LLI1), lliType2(TypeID::LLI2), resultType1(TypeID::CSL1), resultType2(TypeID::CSL2), deltaTMax(61.0), maxNumLambdas(10.0), useLLI(true) {};
 
 
         /** Common constructor
          *
-         * @param mThr          Minimum threshold for declaring cycle slip, in meters.
-         * @param drift         LI combination limit drift, in meters/second.
+         * @param mLambdas      Maximum deviation allowed before declaring cycle slip (in number of Melbourne-Wubbena wavelenghts).
          * @param dtMax         Maximum interval of time allowed between two successive epochs, in seconds.
          */
-        LICSDetector(const double& mThr, const double& drift, const double& dtMax = 61.0, const bool& use = true) : obsType(TypeID::LI), lliType1(TypeID::LLI1), lliType2(TypeID::LLI2), resultType1(TypeID::CSL1), resultType2(TypeID::CSL2), useLLI(use)
+        MWCSDetector(const double& mLambdas, const double& dtMax = 61.0, const bool& use = true) : obsType(TypeID::MWubbena), lliType1(TypeID::LLI1), lliType2(TypeID::LLI2), resultType1(TypeID::CSL1), resultType2(TypeID::CSL2), useLLI(use)
         {
             setDeltaTMax(dtMax);
-            setMinThreshold(mThr);
-            setLIDrift(drift);
+            setMaxNumLambdas(mLambdas);
         };
 
 
@@ -197,37 +214,20 @@ namespace gpstk
         };
 
 
-        /** Method to set the minimum threshold for cycle slip detection, in meters.
-         * @param mThr      Minimum threshold for cycle slip detection, in meters.
+        /** Method to set the maximum deviation allowed before declaring cycle slip (in number of Melbourne-Wubbena wavelenghts).
+         * @param mLambdas     Maximum deviation allowed before declaring cycle slip (in number of Melbourne-Wubbena wavelenghts).
          */
-        virtual void setMinThreshold(const double& mThr)
+        virtual void setMaxNumLambdas(const double& mLambdas)
         {
-            // Don't allow thresholds less than 0
-            if (mThr < 0.0) minThreshold = 0.04; else minThreshold = mThr;
+            // Don't allow number of lambdas less than or equal to 0
+            if (mLambdas > 0.0) maxNumLambdas = mLambdas; else maxNumLambdas = 10.0;
         };
 
 
-        /// Method to get the minimum threshold for cycle slip detection, in meters.
-        virtual double getMinThreshold() const
+        /// Method to get the maximum deviation allowed before declaring cycle slip (in number of Melbourne-Wubbena wavelenghts).
+        virtual double getMaxNumLambdas() const
         {
-           return minThreshold;
-        };
-
-
-        /** Method to set the LI combination limit drift, in meters/second
-         * @param drift     LI combination limit drift, in meters/second.
-         */
-        virtual void setLIDrift(const double& drift)
-        {
-            // Don't allow drift less than or equal to 0
-            if (drift > 0.0) LIDrift = drift; else LIDrift = 0.002;
-        };
-
-
-        /// Method to get the minimum threshold for cycle slip detection, in meters.
-        virtual double getLIDrift() const
-        {
-           return LIDrift;
+           return maxNumLambdas;
         };
 
 
@@ -270,7 +270,8 @@ namespace gpstk
 
 
         /// Destructor
-        virtual ~LICSDetector() {};
+        virtual ~MWCSDetector() {};
+
 
 
     private:
@@ -278,10 +279,10 @@ namespace gpstk
         /// Type of code.
         TypeID obsType;
 
-        /// Type of LLI1 record.
+        /// Type of LMW1 record.
         TypeID lliType1;
 
-        /// Type of LLI2 record.
+        /// Type of LMW2 record.
         TypeID lliType2;
 
         /// Type of result #1.
@@ -295,33 +296,28 @@ namespace gpstk
         double deltaTMax;
 
 
-        /// Minimum threshold for declaring cycle slip, in meters.
-        double minThreshold;
-
-
-        /// LI combination limit drift, in meters/second.
-        double LIDrift;
+        /// Maximum deviation allowed before declaring cycle slip (in number of Melbourne-Wubbena wavelenghts).
+        double maxNumLambdas;
 
 
         /// This field tells whether to use or ignore the LLI indexes as an aid. 
         bool useLLI;
 
+
         /// A structure used to store filter data for a SV.
         struct filterData
         {
             // Default constructor initializing the data in the structure
-            filterData() : formerEpoch(DayTime::BEGINNING_OF_TIME), windowSize(0), formerLI(0.0), formerBias(0.0), formerDeltaT(1.0) {};
+            filterData() : formerEpoch(DayTime::BEGINNING_OF_TIME), windowSize(0), meanMW(0.0) {};
 
             DayTime formerEpoch;    ///< The previous epoch time stamp.
             int windowSize;         ///< Size of current window, in samples.
-            double formerLI;        ///< Value of the previous LI observable.
-            double formerBias;      ///< Previous bias (LI_1 - LI_0).
-            double formerDeltaT;    ///< Previous time difference, in seconds.
+            double meanMW;          ///< Accumulated mean value of combination
         };
 
-
         /// Map holding the information regarding every satellite
-        std::map<SatID, filterData> LIData;
+        std::map<SatID, filterData> MWData;
+
 
 
         /** Returns a satTypeValueMap object, adding the new data generated when calling this object.
@@ -330,80 +326,83 @@ namespace gpstk
          * @param sat       SatID.
          * @param tvMap     Data structure of TypeID and values.
          * @param epochflag Epoch flag.
-         * @param li        Current LI observation value.
+         * @param mw        Current MW observation value.
          * @param lli1      LLI1 index.
          * @param lli2      LLI2 index.
          */
-        virtual double getDetection(const DayTime& epoch, const SatID& sat, typeValueMap& tvMap, const short& epochflag, const double& li, const double& lli1, const double& lli2)
+        virtual double getDetection(const DayTime& epoch, const SatID& sat, typeValueMap& tvMap, const short& epochflag, const double& mw, const double& lli1, const double& lli2)
         {
             bool reportCS(false);
-            double currentDeltaT(0.0); // Difference between current and former epochs, in sec
-            double currentBias(0.0);   // Difference between current and former LI values
-            double deltaLimit(0.0);    // Limit to declare cycle slip
-            double delta(0.0);
+            double currentDeltaT(0.0);  // Difference between current and former epochs, in sec
+            double currentBias(0.0);    // Difference between current and former MW values
+            double lambdaLimit(maxNumLambdas*0.862);    // Limit to declare cycle slip based on lambdas (LambdaLW = 0.862 m)
             double tempLLI1(0.0);
             double tempLLI2(0.0);
 
 
             // Get the difference between current epoch and former epoch, in seconds
-            currentDeltaT = ( epoch.MJDdate() - LIData[sat].formerEpoch.MJDdate() ) * DayTime::SEC_DAY;
+            currentDeltaT = ( epoch.MJDdate() - MWData[sat].formerEpoch.MJDdate() ) * DayTime::SEC_DAY;
 
             // Store current epoch as former epoch
-            LIData[sat].formerEpoch = epoch;
+            MWData[sat].formerEpoch = epoch;
 
-            currentBias = li - LIData[sat].formerLI;   // Current value of LI difference
+            // Difference between current value of MW and average value
+            currentBias = std::abs(mw - MWData[sat].meanMW);
 
             // Increment size of window
-            ++LIData[sat].windowSize;
+            ++MWData[sat].windowSize;
 
             // Check if receiver already declared cycle slip or too much time has elapsed
-            // Note: If tvMap(lliType1) or tvMap(lliType2) don't exist, then 0 will be returned and those tests will pass
+            // Note: If tvMap(lliType1) or tvMap(lliType2) don't exist, then 0 will be used and those tests will pass
             if ( (tvMap(lliType1)==1.0) || (tvMap(lliType1)==3.0) || (tvMap(lliType1)==5.0) || (tvMap(lliType1)==7.0) ) tempLLI1 = 1.0;
 
             if ( (tvMap(lliType2)==1.0) || (tvMap(lliType2)==3.0) || (tvMap(lliType2)==5.0) || (tvMap(lliType2)==7.0) ) tempLLI2 = 1.0;
 
             if ( (epochflag==1) || (epochflag==6) || (tempLLI1==1.0) || (tempLLI2==1.0) || (currentDeltaT > deltaTMax) )
             {
-                LIData[sat].windowSize = 0;      // We reset the filter with this
-                reportCS = true;
+                MWData[sat].windowSize = 1;     // We reset the filter with this
+                reportCS = true;                // Report cycle slip
             }
 
-            if (LIData[sat].windowSize > 1)
-            {
-                deltaLimit = minThreshold + std::abs(LIDrift*currentDeltaT);
-                // Compute a linear interpolation and compute LI_predicted - LI_current
-                delta = std::abs(currentBias - LIData[sat].formerBias*currentDeltaT/LIData[sat].formerDeltaT);
 
-                if (delta > deltaLimit)
+            if (MWData[sat].windowSize > 1)
+            {
+                // Test for current bias bigger than lambda limit and for current bias squared bigger than sigma squared limit
+                if ( (currentBias > lambdaLimit) )
                 {
-                    LIData[sat].windowSize = 0;      // We reset the filter with this
-                    reportCS = true;
+                    MWData[sat].windowSize = 1;     // We reset the filter with this
+                    reportCS = true;                // Report cycle slip
                 }
             }
 
             // Let's prepare for the next time
-            LIData[sat].formerLI = li;
-            LIData[sat].formerBias = currentBias;
-            LIData[sat].formerDeltaT = currentDeltaT;               
+            // If a cycle-slip happened or just starting up
+            if (MWData[sat].windowSize < 2)
+            {
+                MWData[sat].meanMW = mw;
+            } else {
+                // Compute average
+                MWData[sat].meanMW += (mw - MWData[sat].meanMW) / (static_cast<double>(MWData[sat].windowSize));
+            }
 
             if (reportCS) return 1.0; else return 0.0;
         };
 
-   }; // end class LICSDetector
+   }; // end class MWCSDetector
    
 
-    /// Input operator from gnssSatTypeValue to LICSDetector.
-    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, LICSDetector& liD)
+    /// Input operator from gnssSatTypeValue to MWCSDetector.
+    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, MWCSDetector& mwD)
     {
-            liD.Detect(gData);
+            mwD.Detect(gData);
             return gData;
     }
 
 
-    /// Input operator from gnssRinex to LICSDetector.
-    inline gnssRinex& operator>>(gnssRinex& gData, LICSDetector& liD)
+    /// Input operator from gnssRinex to MWCSDetector.
+    inline gnssRinex& operator>>(gnssRinex& gData, MWCSDetector& mwD)
     {
-            liD.Detect(gData);
+            mwD.Detect(gData);
             return gData;
     }
 

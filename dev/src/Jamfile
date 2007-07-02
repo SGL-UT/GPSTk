@@ -132,7 +132,7 @@ else
       SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp ComputeLI.hpp ComputePdelta.hpp 
       ComputeLdelta.hpp ComputeIURAWeights.hpp ComputeMOPSWeights.hpp
       ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp CodeSmoother.hpp
-      PCSmoother.hpp LICSDetector.hpp
+      PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp
       ;
 }
 
