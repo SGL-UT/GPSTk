@@ -423,7 +423,38 @@ namespace gpstk
       return s;
    }
 
-   void EngAlmanac::dump(ostream& s) const
+
+   bool EngAlmanac::check(ostream& s) const
+   {
+      bool good = false;
+      
+      if (!haveUTC)
+         s << "UTC offset (subframe 4, page 18) is not present." << endl;
+
+      double p51Toa=getToa();
+      for (int prn=1; prn<=32; prn++)
+      {
+         try 
+         {
+            double svToa = getToa(gpstk::SatID(prn, SatID::systemGPS));
+            if (svToa != p51Toa)
+            {
+               s << "Toa mis-match on prn " << prn 
+                 << "  page 51 Toa=" << p51Toa
+                 << ", SV Toa=" << svToa << endl;
+               good = false;
+            }
+         }
+         catch (SVNotPresentException& e)
+         {
+            cout << "No page for prn" << prn << endl;
+         }
+      }
+      return good;
+   }
+
+
+   void EngAlmanac::dump(ostream& s, bool checkFlag) const
    {
       ios::fmtflags oldFlags = s.flags();
    
@@ -489,6 +520,11 @@ namespace gpstk
       for (int i=1; i<=16; i++)
          s << setw(2) << i    << "    " << bits[i] << "    "
            << setw(2) << i+16 << "    " << bits[i+16] << endl;
+
+      s << endl;
+
+      if (checkFlag)
+         check(s);
 
       s << endl;
 

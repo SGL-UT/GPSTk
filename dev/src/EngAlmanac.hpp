@@ -261,7 +261,9 @@ namespace gpstk
          throw(SVNotPresentException)
          { SatID sat(prn,SatID::systemGPS); return svXvt(sat,t); }
 
-      void dump(std::ostream& s = std::cout) const;
+      void dump(std::ostream& s = std::cout, bool checkFlag=true) const;
+
+      bool check(std::ostream& s) const;
 
    protected:
          /** This function is used to make sure data is present before
