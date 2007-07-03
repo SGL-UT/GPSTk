@@ -171,44 +171,40 @@ namespace gpstk
    // code/carrier. Basically it looks for a 12.5 minute cycle that starts
    // with page 1 from subframe 4. It makes sure that there hasn't been a
    // cutover during it by checking that all sv pages (i.e. svid 1-32) have
-   // the same toa as the last page 25 (svid 51). This mode is the default.
+   // the same toa as the last page 25 (svid 51). This mode is the default and
+   // is set with the requireFull parameter.
    //
    // The second is for a receiver that only puts out a set of 4/5 subframes
    // that "should" be a complete almanac. Note that it doesn't output pages
-   // for SVs that are set to the default data. This mode is set with the
-   // minimalAlm parameter.
+   // for SVs that are set to the default data.
+   //
    // The only receiver that this has been tested on is the Ashtech Z(Y)12.
    // 
    // In the IS-GPS-200D, see pages 72-79, 82, 105
    bool makeEngAlmanac(EngAlmanac& alm,
                        const AlmanacPages& pages,
-                       bool minimalAlm) throw()
+                       bool requireFull) throw()
    {
-      long sf3p1sow=0;
-      int week=0;
-      long sfa[10];
-      long long_sfa[10];
+      AlmanacPages::const_iterator sf4p1  = pages.find(SubframePage(4,  1));
+      AlmanacPages::const_iterator sf4p18 = pages.find(SubframePage(4, 18));
+      AlmanacPages::const_iterator sf4p25 = pages.find(SubframePage(4, 25));
+      AlmanacPages::const_iterator sf5p25 = pages.find(SubframePage(5, 25));
 
-      if (!minimalAlm)
+      // These pages are required for a reasonable alm
+      if (sf4p18==pages.end() || sf4p25==pages.end() || sf5p25==pages.end())
+         return false;
+
+      long sf4p1sow=0;
+      if (requireFull)
       {
-         if (pages.size() <50)
+         if (sf4p1==pages.end())
             return false;
-         AlmanacPages::const_iterator firstPage = pages.find(SubframePage(4, 1));
-         if (firstPage == pages.end())
-            return false;
-         sf3p1sow = firstPage->second.getHOWTime();
-         week = firstPage->second.time.GPSfullweek();
-      }
-      else
-      {
-         // This is an empirical number from the ashtechs. Smaller numbers may
-         // be reasonable but I haven't determined what it would be
-         if (pages.size() < 45)
-            return false;
-         AlmanacPages::const_iterator firstPage = pages.begin();
-         week = pages.begin()->second.time.GPSfullweek();
+         else
+            sf4p1sow = sf4p1->second.getHOWTime();
       }
 
+      int week=sf4p18->second.time.GPSfullweek();
+      
       for (int p=1; p<=25; p++)
       {
          for (int sf=4; sf<=5; sf++)
@@ -216,35 +212,27 @@ namespace gpstk
             AlmanacPages::const_iterator i = pages.find(SubframePage(sf, p));
             if (i == pages.end())
             {
-               if (minimalAlm)
-                  continue;
+               if (requireFull)
+                  return false;
                else
+                  continue;
+            }
+
+            // All pages have to be contingious for the full alm mode.
+            if (requireFull)
+            {
+               long sow = i->second.getHOWTime(); 
+               if (sow != sf4p1sow + (sf-4)*6 + (p-1)*30)
                   return false;
             }
-            // All pages have to be contingious unless we are accepting
-            // a minimal set.
-            long sow = i->second.getHOWTime(); 
-            if (!minimalAlm && sow != sf3p1sow + (sf-4)*6 + (p-1)*30)
-               return false;
 
+            long sfa[10];
+            long long_sfa[10];
             i->second.fillArray(sfa);
             copy( &sfa[0], &sfa[10], long_sfa);
             if (!alm.addSubframe(long_sfa, week))
                return false;
          }
-      }
-      
-      double p51Toa=alm.getToa();
-      double svToa;
-      for (int prn=1; prn<=32; prn++)
-      {
-         try {
-            svToa = alm.getToa(gpstk::SatID(prn, SatID::systemGPS));
-            if (svToa != p51Toa)
-               return false;
-         }
-         catch (EngAlmanac::SVNotPresentException& e)
-         {}
       }
       return true;
    }
