@@ -447,7 +447,7 @@ namespace gpstk
          }
          catch (SVNotPresentException& e)
          {
-            cout << "No page for prn" << prn << endl;
+            cout << "No page for prn " << prn << endl;
          }
       }
       return good;
