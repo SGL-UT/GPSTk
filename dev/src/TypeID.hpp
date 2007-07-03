@@ -190,10 +190,10 @@ namespace gpstk
          dx,        ///< In the position domain: Position bias, X component; in the range domain: dx coefficient
          dy,        ///< In the position domain: Position bias, Y component; in the range domain: dy coefficient
          dz,        ///< In the position domain: Position bias, Z component; in the range domain: dz coefficient
-         cdt,       ///< In the position domain: Receiver clock offset, meters; in the range domain: cdt coefficient
          dLat,      ///< Position bias, Latitude component
          dLon,      ///< Position bias, Longitude component
          dH,        ///< Position bias, Height component
+         cdt,       ///< In the position domain: Receiver clock offset, meters; in the range domain: cdt coefficient
          weight,    ///< Weight assigned to a given observation
          // Other types
          recX,      ///< Receiver position, X component
