@@ -1291,13 +1291,21 @@ namespace gpstk
       //        computed elevation, as seen from this Position.
       // @return the elevation in degrees
    double Position::elevation(const Position& Target) const
-      throw()
+      throw(GeometryException)
    {
       Position R(*this),S(Target);
       R.transformTo(Cartesian);
       S.transformTo(Cartesian);
       // use Triple:: functions in cartesian coordinates (only)
-      return R.elvAngle(S);
+      double elevation;
+      try {
+         elevation = R.elvAngle(S);         
+      }
+      catch(GeometryException& ge)
+      {
+         GPSTK_RETHROW(ge);
+      }
+      return elevation;
    }
 
       // A member function that computes the elevation of the input
@@ -1307,7 +1315,7 @@ namespace gpstk
       //        computed elevation, as seen from this Position.
       // @return the elevation in degrees
    double Position::elevationGeodetic(const Position& Target) const
-      throw()
+      throw(GeometryException)
    {
       Position R(*this),S(Target);
       double latGeodetic = R.getGeodeticLatitude()*DEG_TO_RAD;
@@ -1319,6 +1327,13 @@ namespace gpstk
       Triple z;
       // Let's get the slant vector
       z = S.theArray - R.theArray;
+
+      if (z.mag()<=1e-4) // if the positions are within .1 millimeter
+      {
+         GeometryException ge("Positions are within .1 millimeter");
+         GPSTK_THROW(ge);
+      }
+
       // Compute k vector in local North-East-Up (NEU) system
       Triple kVector(cos(latGeodetic)*cos(longGeodetic), cos(latGeodetic)*sin(longGeodetic), sin(latGeodetic));
       // Take advantage of dot method to get Up coordinate in local NEU system
@@ -1335,13 +1350,24 @@ namespace gpstk
       //        computed azimuth, as seen from this Position.
       // @return the azimuth in degrees
    double Position::azimuth(const Position& Target) const
-      throw()
+      throw(GeometryException)
    {
       Position R(*this),S(Target);
       R.transformTo(Cartesian);
       S.transformTo(Cartesian);
       // use Triple:: functions in cartesian coordinates (only)
-      return R.azAngle(S);
+      double az;
+      try
+      {
+         az = R.azAngle(S);
+         
+      }
+      catch(GeometryException& ge)
+      {
+         GPSTK_RETHROW(ge);
+      }
+      
+      return az; 
    }
 
       // A member function that computes the azimuth of the input
@@ -1351,7 +1377,7 @@ namespace gpstk
       //        computed azimuth, as seen from this Position.
       // @return the azimuth in degrees
    double Position::azimuthGeodetic(const Position& Target) const
-      throw()
+      throw(GeometryException)
    {
       Position R(*this),S(Target);
       double latGeodetic = R.getGeodeticLatitude()*DEG_TO_RAD;
@@ -1362,6 +1388,13 @@ namespace gpstk
       Triple z;
       // Let's get the slant vector
       z = S.theArray - R.theArray;
+
+      if (z.mag()<=1e-4) // if the positions are within .1 millimeter
+      {
+         GeometryException ge("Positions are within .1 millimeter");
+         GPSTK_THROW(ge);
+      }
+      
       // Compute i vector in local North-East-Up (NEU) system
       Triple iVector(-sin(latGeodetic)*cos(longGeodetic), -sin(latGeodetic)*sin(longGeodetic), cos(latGeodetic));
       // Compute j vector in local North-East-Up (NEU) system

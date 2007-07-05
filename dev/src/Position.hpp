@@ -811,7 +811,7 @@ namespace gpstk
          * @return the elevation in degrees
          */
       double elevation(const Position& Target) const
-         throw();
+         throw(GeometryException);
 
          /**
          * A member function that computes the elevation of the input
@@ -822,7 +822,7 @@ namespace gpstk
          * @return the elevation in degrees
          */
       double elevationGeodetic(const Position& Target) const
-         throw();
+         throw(GeometryException);
 
          /**
          * A member function that computes the azimuth of the input
@@ -832,7 +832,7 @@ namespace gpstk
          * @return the azimuth in degrees
          */
       double azimuth(const Position& Target) const
-         throw();
+         throw(GeometryException);
 
          /**
          * A member function that computes the azimuth of the input
@@ -843,7 +843,7 @@ namespace gpstk
          * @return the azimuth in degrees
          */
       double azimuthGeodetic(const Position& Target) const
-         throw();
+         throw(GeometryException);
 
          /**
          * A member function that computes the position at which a signal, which
