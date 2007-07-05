@@ -95,19 +95,20 @@ namespace gpstk
    void AshtechData::readHeader(AshtechStream& stream)
       throw(FFStreamError, EndOfFile)
    {
-      char buff[11];
+      char buff[12];
       string& rawData = stream.rawData;
       while (stream.read(buff, sizeof(buff)) && id == "")
       {
          rawData.append(buff, stream.gcount());
          if (rawData.size()>=11 && 
              rawData.substr(0,7) == preamble &&
-             rawData[10]==',')
+             (rawData[10]==',' ||
+              rawData.substr(7,3)=="EPB"))
          {
             id = rawData.substr(7,3);
             break;
          }
-
+         
          rawData.erase(0, rawData.find(preamble[0]));
       }
    }

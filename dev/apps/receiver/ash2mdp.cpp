@@ -128,7 +128,7 @@ class Ashtech2MDP : public DeviceFramework<AshtechStream, MDPStream>
 public:
    Ashtech2MDP(const string& applName)
       throw()
-      : DeviceFramework<AshtechStream,MDPStream>(applName, "Converts ashtech Z(Y)-12 data to MDP.")
+      : DeviceFramework<AshtechStream,MDPStream>(applName, "Converts Ashtech Z(Y)-12 data to MDP.")
    {}
 
    bool initialize(int argc, char *argv[]) throw()
@@ -181,6 +181,9 @@ protected:
       vector<MDPObsEpoch> hint(33);
       short svCount = 0;
 
+      // allow for file stream exceptions to be thrown
+      input.exceptions(std::fstream::failbit);
+      
       while (input >> hdr)
       {
          if (pben.checkId(hdr.id) && (input >> pben) && pben)
