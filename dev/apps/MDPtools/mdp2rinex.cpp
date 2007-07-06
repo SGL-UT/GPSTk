@@ -88,7 +88,7 @@ public:
                cout << "Taking input from stdin." << endl;
             mdpInput.copyfmt(std::cin);
             mdpInput.clear(std::cin.rdstate());
-            mdpInput.std::basic_ios<char>::rdbuf(std::cin.rdbuf());
+            mdpInput.basic_ios<char>::rdbuf(std::cin.rdbuf());
          }
       
 
@@ -101,7 +101,7 @@ public:
                cout << "Sending output to stdout." << endl;
             rinexObsOutput.copyfmt(std::cout);
             rinexObsOutput.clear(std::cout.rdstate());
-            rinexObsOutput.std::basic_ios<char>::rdbuf(std::cout.rdbuf());
+            rinexObsOutput.basic_ios<char>::rdbuf(std::cout.rdbuf());
          }
 
       if (navFileOpt.getCount())
