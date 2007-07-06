@@ -97,6 +97,7 @@ namespace gpstk
    {
       char buff[12];
       string& rawData = stream.rawData;
+
       while (stream.read(buff, sizeof(buff)) && id == "")
       {
          rawData.append(buff, stream.gcount());
@@ -108,8 +109,15 @@ namespace gpstk
             id = rawData.substr(7,3);
             break;
          }
-         
-         rawData.erase(0, rawData.find(preamble[0]));
+
+         if (rawData.find(preamble[0]))
+            rawData.erase(0, rawData.find(preamble[0]));
+         else
+         {
+            if (debugLevel>1)
+               cout << "Couldn't find preamble. rawData: " << rawData << endl;
+            break;
+         }
       }
    }
 
