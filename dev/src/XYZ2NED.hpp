@@ -1,11 +1,11 @@
 
 /**
- * @file XYZ2NEU.hpp
- * This is a class to change the reference base from ECEF XYZ to topocentric North-East-Up (NEU).
+ * @file XYZ2NED.hpp
+ * This is a class to change the reference base from ECEF XYZ to topocentric North-East-Down (NED).
  */
 
-#ifndef XYZ2NEU_HPP
-#define XYZ2NEU_HPP
+#ifndef XYZ2NED_HPP
+#define XYZ2NED_HPP
 
 //============================================================================
 //
@@ -45,13 +45,12 @@ namespace gpstk
 
       /**
        * This class changes the reference base from an Earth-Centered,
-       * Earth-Fixed (ECEF) system to a North-East-Up (NEU) topocentric system,
+       * Earth-Fixed (ECEF) system to a North-East-Down (NED) topocentric system,
        * centered at the provided reference location.
        *
-       * The NEU system is commonly used when comparing the relative accuracy
-       * of a given GNSS data processing strategy. Be mindful, however, that NEU
-       * is a "left-handed" reference system, whereas geocentric ECEF and
-       * topocentric North-East-Down (NED) are "right-handed" systems.
+       * The NED system may be used when comparing the relative accuracy
+       * of a given GNSS data processing strategy. This is a "right-handed"
+       * system, and be aware that "down" is positive and "up" is negative.
        * 
        * A typical way to use this class follows:
        *
@@ -80,7 +79,7 @@ namespace gpstk
        *   solver.setDefaultEqDefinition(newEq);
        *
        *   // Declare the base-changing object setting the reference position
-       *   XYZ2NEU baseChange(nominalPos);
+       *   XYZ2NED baseChange(nominalPos);
        *
        *   while(rin >> gRin) {
        *      gRin >> modelRef >> baseChange >> solver;
@@ -88,14 +87,14 @@ namespace gpstk
        *
        * @endcode
        *
-       * The "XYZ2NEU" object will visit every satellite in the GNSS data structure that
+       * The "XYZ2NED" object will visit every satellite in the GNSS data structure that
        * is "gRin" and will apply a rotation matrix to coefficients dx, dy and dz of the
        * design matrix, yielding corresponding dLat, dLon and dH for each satellite.
        * 
        * Take notice that the design matrix coefficients dx, dy and dz were computed by 
        * the "ModeledPR" object, so that step is mandatory.
        *
-       * Also, the "XYZ2NEU" class is effective when properly coupled with the "solver"
+       * Also, the "XYZ2NED" class is effective when properly coupled with the "solver"
        * object (be it based on LMS or WMS). In order to get this, you must instruct the
        * "solver" object to get the solution using a geometry/design matrix based on
        * dLat, dLon and dH, instead of the defaults (dx, dy and dz).
@@ -103,14 +102,14 @@ namespace gpstk
        * The later is achieved defining an appropriate "gnssEquationDefinition" object
        * and instructing "solver" to use it as the default equation definition.
        *
-       * @sa XYZ2NED.hpp
+       * @sa XYZ2NEU.hpp
        */
-    class XYZ2NEU
+    class XYZ2NED
     {
     public:
 
         /// Default constructor.
-        XYZ2NEU() : refLat(0.0), refLon(0.0)
+        XYZ2NED() : refLat(0.0), refLon(0.0)
         {
             Prepare();
         };
@@ -121,7 +120,7 @@ namespace gpstk
          * @param lat       Latitude of the reference point.
          * @param lon       Longitude of the reference point.
          */
-        XYZ2NEU(const double& lat, const double& lon)
+        XYZ2NED(const double& lat, const double& lon)
         {
             setLatLon(lat, lon);
         }
@@ -131,7 +130,7 @@ namespace gpstk
          *
          * @param refPos    Reference point Position object.
          */
-        XYZ2NEU(const Position& refPos)
+        XYZ2NED(const Position& refPos)
         {
             setLatLon(refPos.getGeodeticLatitude(), refPos.getLongitude());
         }
@@ -215,7 +214,7 @@ namespace gpstk
 
 
         /// Destructor.
-        virtual ~XYZ2NEU() {};
+        virtual ~XYZ2NED() {};
 
 
     private:
@@ -245,19 +244,19 @@ namespace gpstk
         virtual void Prepare();
 
 
-   }; // class XYZ2NEU
+   }; // class XYZ2NED
 
 
-    /// Input operator from gnssSatTypeValue to XYZ2NEU.
-    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, XYZ2NEU& converter) 
+    /// Input operator from gnssSatTypeValue to XYZ2NED.
+    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, XYZ2NED& converter) 
     {
             converter.Convert(gData);
             return gData;
     }
 
 
-    /// Input operator from gnssRinex to XYZ2NEU.
-    inline gnssRinex& operator>>(gnssRinex& gData, XYZ2NEU& converter) 
+    /// Input operator from gnssRinex to XYZ2NED.
+    inline gnssRinex& operator>>(gnssRinex& gData, XYZ2NED& converter) 
     {
             converter.Convert(gData);
             return gData;

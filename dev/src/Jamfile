@@ -70,6 +70,7 @@ else
       YumaHeader.cpp YumaData.cpp YumaAlmanacStore.cpp
       SEMHeader.cpp SEMData.cpp SEMAlmanacStore.cpp
       SourceID.cpp TypeID.cpp DataHeaders.cpp DataStructures.cpp XYZ2NEU.cpp
+      XYZ2NED.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp AlmanacStore.hpp BCEphemerisStore.hpp
@@ -132,7 +133,7 @@ else
       SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp ComputeLI.hpp ComputePdelta.hpp 
       ComputeLdelta.hpp ComputeIURAWeights.hpp ComputeMOPSWeights.hpp
       ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp CodeSmoother.hpp
-      PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp XYZ2NEU.hpp
+      PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp XYZ2NEU.hpp XYZ2NED.hpp
       ;
 }
 
