@@ -122,8 +122,7 @@ namespace gpstk
          */
         XYZ2NEU(const double& lat, const double& lon)
         {
-            setLat(lat);
-            setLon(lon);
+            setLatLon(lat, lon);
         }
 
 
@@ -133,8 +132,7 @@ namespace gpstk
          */
         XYZ2NEU(const Position& refPos)
         {
-            setLat(refPos.getGeodeticLatitude());
-            setLon(refPos.getLongitude());
+            setLatLon(refPos.getGeodeticLatitude(), refPos.getLongitude());
         }
 
 
