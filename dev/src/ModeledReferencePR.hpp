@@ -428,7 +428,7 @@ namespace gpstk
         EphemerisStore* pDefaultEphemeris;
 
         /// Initialization method
-        void InitializeValues() throw(Exception) { 
+        virtual void InitializeValues() throw(Exception) { 
             setInitialRxPosition();
             geometricRho(0);
             svClockBiases(0);
@@ -450,7 +450,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        int setInitialRxPosition(const double& aRx, const double& bRx, const double& cRx, 
+        virtual int setInitialRxPosition(const double& aRx, const double& bRx, const double& cRx, 
             Position::CoordinateSystem s=Position::Cartesian,
             GeoidModel *geoid=NULL) throw(GeometryException) 
         {
@@ -466,10 +466,10 @@ namespace gpstk
 
 
         /// Method to set the initial (a priori) position of receiver.
-        int setInitialRxPosition(const Position& RxCoordinates) throw(GeometryException) 
+        virtual int setInitialRxPosition(const Position& RxCoordinates) throw(GeometryException) 
         {
             try {
-                rxPos = RxCoordinates;
+                (*this).rxPos = RxCoordinates;
                 return 0;
             }
             catch(GeometryException& e) {
@@ -479,10 +479,11 @@ namespace gpstk
 
 
         /// Method to set the initial (a priori) position of receiver.
-        int setInitialRxPosition() throw(GeometryException) 
+        virtual int setInitialRxPosition() throw(GeometryException) 
         {
             try {
-                rxPos.setECEF(0.0, 0.0, 0.0);
+                Position rxpos(0.0, 0.0, 0.0, Position::Cartesian, NULL);
+                setInitialRxPosition(rxpos);
                 return 0;
             }
             catch(GeometryException& e) {
@@ -492,7 +493,7 @@ namespace gpstk
 
 
         /// Method to get the tropospheric corrections.
-        double getTropoCorrections(TropModel *pTropModel, double elevation) throw() 
+        virtual double getTropoCorrections(TropModel *pTropModel, double elevation) throw() 
         {
             double tropoCorr(0.0);
             try {
@@ -508,7 +509,7 @@ namespace gpstk
 
 
         /// Method to get the ionospheric corrections.
-        double getIonoCorrections(IonoModelStore *pIonoModel, DayTime Tr, Geodetic rxGeo, double elevation, double azimuth) throw() 
+        virtual double getIonoCorrections(IonoModelStore *pIonoModel, DayTime Tr, Geodetic rxGeo, double elevation, double azimuth) throw() 
         {
             double ionoCorr(0.0);
             try {
@@ -522,7 +523,7 @@ namespace gpstk
 
 
         /// Method to get TGD corrections.
-        double getTGDCorrections(DayTime Tr, const EphemerisStore& Eph, SatID sat) throw() 
+        virtual double getTGDCorrections(DayTime Tr, const EphemerisStore& Eph, SatID sat) throw() 
         {
 
             double TGDCorr(0.0);

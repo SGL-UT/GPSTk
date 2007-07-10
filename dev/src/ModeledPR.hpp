@@ -79,7 +79,7 @@ namespace gpstk
          */
         ModeledPR(const Position& RxCoordinates, IonoModelStore& dIonoModel, TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
-            setInitialRxPosition(RxCoordinates);
+            Prepare(RxCoordinates);
             setDefaultIonoModel(dIonoModel);
             setDefaultTropoModel(dTropoModel);
             setDefaultObservable(dObservable);
@@ -107,7 +107,7 @@ namespace gpstk
          */
         ModeledPR(const Position& RxCoordinates, IonoModelStore& dIonoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
-            setInitialRxPosition(RxCoordinates);
+            Prepare(RxCoordinates);
             setDefaultIonoModel(dIonoModel);
             pDefaultTropoModel = NULL;
             setDefaultObservable(dObservable);
@@ -135,7 +135,7 @@ namespace gpstk
          */
         ModeledPR(const Position& RxCoordinates, TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
-            setInitialRxPosition(RxCoordinates);
+            Prepare(RxCoordinates);
             pDefaultIonoModel = NULL;
             setDefaultTropoModel(dTropoModel);
             setDefaultObservable(dObservable);
@@ -162,7 +162,7 @@ namespace gpstk
          */
         ModeledPR(const Position& RxCoordinates, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
-            setInitialRxPosition(RxCoordinates);
+            Prepare(RxCoordinates);
             pDefaultIonoModel = NULL;
             pDefaultTropoModel = NULL;
             setDefaultObservable(dObservable);
@@ -196,18 +196,52 @@ namespace gpstk
         };
 
 
-        /** Method to set an a priori position of receiver using Bancroft method.
+        /** Explicit constructor, taking as input default ionospheric model, 
+         * ephemeris to be used, default observable and whether TGD will be
+         * computed or not.
          *
-         * @param Tr            Time of observation
-         * @param Satellite     Vector of satellites in view
-         * @param Pseudorange   Pseudoranges measured from mobile to satellites
-         * @param Eph           Satellites Ephemeris
+         * This constructor is meant to be used when working with GNSS data structures
+         * in order to set the basic parameters from the beginning.
          *
-         * @return
-         *  0 if OK
-         *  -1 if problems arose
+         * @param dIonoModel    Ionospheric model to be used by default.
+         * @param dObservable   Observable type to be used by default.
+         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param usetgd        Whether TGD will be used by default or not.
+         *
+         * @sa DataStructures.hpp.
          */
-        int Prepare(const DayTime& Tr, std::vector<SatID>& Satellite, std::vector<double>& Pseudorange, const EphemerisStore& Eph);
+        ModeledPR(IonoModelStore& dIonoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+            InitializeValues();
+            setDefaultIonoModel(dIonoModel);
+            pDefaultTropoModel = NULL;
+            setDefaultObservable(dObservable);
+            setDefaultEphemeris(dEphemeris);
+            useTGD = usetgd;
+        };
+
+
+        /** Explicit constructor, taking as input default tropospheric model, 
+         * ephemeris to be used, default observable and whether TGD will be
+         * computed or not.
+         *
+         * This constructor is meant to be used when working with GNSS data structures
+         * in order to set the basic parameters from the beginning.
+         *
+         * @param dTropoModel   Tropospheric model to be used by default.
+         * @param dObservable   Observable type to be used by default.
+         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param usetgd        Whether TGD will be used by default or not.
+         *
+         * @sa DataStructures.hpp.
+         */
+        ModeledPR(TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+            InitializeValues();
+            pDefaultIonoModel = NULL;
+            setDefaultTropoModel(dTropoModel);
+            setDefaultObservable(dObservable);
+            setDefaultEphemeris(dEphemeris);
+            useTGD = usetgd;
+        };
 
 
         /** Method to set an a priori position of receiver using Bancroft method.
@@ -221,7 +255,21 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        int Prepare(const DayTime& Tr, const Vector<SatID>& Satellite, const Vector<double>& Pseudorange, const EphemerisStore& Eph) 
+        virtual int Prepare(const DayTime& Tr, std::vector<SatID>& Satellite, std::vector<double>& Pseudorange, const EphemerisStore& Eph);
+
+
+        /** Method to set an a priori position of receiver using Bancroft method.
+         *
+         * @param Tr            Time of observation
+         * @param Satellite     Vector of satellites in view
+         * @param Pseudorange   Pseudoranges measured from mobile to satellites
+         * @param Eph           Satellites Ephemeris
+         *
+         * @return
+         *  0 if OK
+         *  -1 if problems arose
+         */
+        virtual int Prepare(const DayTime& Tr, const Vector<SatID>& Satellite, const Vector<double>& Pseudorange, const EphemerisStore& Eph) 
         {
             int i;
             std::vector<SatID> vSat;
@@ -249,7 +297,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        inline int Prepare(const DayTime& time, const satTypeValueMap& data)
+        virtual inline int Prepare(const DayTime& time, const satTypeValueMap& data)
         {
             int i;
             std::vector<SatID> vSat;
@@ -278,7 +326,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        inline int Prepare(const gnssSatTypeValue& gData)
+        virtual inline int Prepare(const gnssSatTypeValue& gData)
         {
             return ((*this).Prepare(gData.header.epoch, gData.body));
         };
@@ -290,7 +338,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        int Prepare(const double& aRx, const double& bRx, const double& cRx, 
+        virtual int Prepare(const double& aRx, const double& bRx, const double& cRx, 
             Position::CoordinateSystem s=Position::Cartesian,
             GeoidModel *geoid=NULL) throw(GeometryException);
 
@@ -301,7 +349,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        int Prepare(const Position& RxCoordinates) throw(GeometryException);
+        virtual int Prepare(const Position& RxCoordinates) throw(GeometryException);
 
 
         /** Returns a satTypeValueMap object, adding the new data generated when calling a modeling object.
