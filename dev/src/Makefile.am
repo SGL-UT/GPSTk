@@ -26,7 +26,7 @@ TimeConverters.cpp TimeString.cpp TimeTag.cpp Triple.cpp TropModel.cpp \
 TypeID.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp X1Sequence.cpp \
 X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp YumaData.cpp \
 YumaHeader.cpp DataHeaders.cpp DataStructures.cpp XYZ2NEU.cpp \
-XYZ2NED.cpp
+XYZ2NED.cpp DeltaOp.cpp
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = ANSITime.hpp AlmOrbit.hpp AlmanacStore.hpp \
@@ -79,4 +79,4 @@ ComputePC.hpp SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp ComputeLI.hpp \
 ComputePdelta.hpp ComputeLdelta.hpp ComputeIURAWeights.hpp \
 ComputeMOPSWeights.hpp ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp \
 CodeSmoother.hpp PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp \
-XYZ2NEU.hpp XYZ2NED.hpp
+XYZ2NEU.hpp XYZ2NED.hpp DeltaOp.hpp
