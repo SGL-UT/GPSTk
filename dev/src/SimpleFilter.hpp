@@ -41,7 +41,47 @@ namespace gpstk
     //@{
 
 
-    /// This class eases computing combination of data for GNSS data structures.
+    /** This class filters out satellites with observations grossly out of bounds.
+     * This class is meant to be used with the GNSS data structures objects
+     * found in "DataStructures" class.
+     *
+     * A typical way to use this class follows:
+     *
+     * @code
+     *   RinexObsStream rin("ebre0300.02o");
+     *
+     *   gnssRinex gRin;
+     *   SimpleFilter myFilter;
+     *
+     *   while(rin >> gRin) {
+     *      gRin >> myFilter;
+     *   }
+     * @endcode
+     *
+     * The "SimpleFilter" object will visit every satellite in the GNSS data
+     * structure that is "gRin" and will check that the given code observations
+     * are within some (preassigned) boundaries.
+     *
+     * By default, the algorithm will check C1 observables, the minimum limit
+     * is 15000000.0 meters and the maximum limit is 30000000.0 meters. You can 
+     * change all these settings with the appropriate set methods.
+     *
+     * Also, you may set more than one observable to be checked by passing a
+     * "TypeIDSet" object to the appropriate constructors or methods. For instance:
+     *
+     * @code
+     *   TypeIDSet typeSet;
+     *   typeSet.insert(TypeID::P1);
+     *   typeSet.insert(TypeID::P2);
+     *
+     *   myFilter.setFilteredType(typeSet);
+     * @endcode
+     *
+     * Be warned that if a given satellite does not have the observations required, 
+     * or if their are out of bounds, the full satellite record will be summarily 
+     * deleted from the data structure.
+     *
+     */
     class SimpleFilter
     {
     public:
@@ -64,6 +104,17 @@ namespace gpstk
             setFilteredType(type);
         };
 
+
+        /** Explicit constructor
+         *
+         * @param type      TypeID to be filtered.
+         */
+        SimpleFilter(const TypeID& type) : minLimit(15000000.0), maxLimit(30000000.0)
+        {
+            setFilteredType(type);
+        };
+
+
         /** Explicit constructor
          *
          * @param typeSet   Set of TypeID's to be filtered.
@@ -71,6 +122,13 @@ namespace gpstk
          * @param max       Maximum limit (in meters).
          */
         SimpleFilter(const TypeIDSet& typeSet, const double& min, const double& max) : filterTypeSet(typeSet), minLimit(min), maxLimit(max) {};
+
+
+        /** Explicit constructor
+         *
+         * @param typeSet   Set of TypeID's to be filtered.
+         */
+        SimpleFilter(const TypeIDSet& typeSet) : filterTypeSet(typeSet), minLimit(15000000.0), maxLimit(30000000.0) {};
 
 
         /** Returns a satTypeValueMap object, filtering the target observables.
