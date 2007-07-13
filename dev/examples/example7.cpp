@@ -177,7 +177,7 @@ int main(void)
     // This object will compute the appropriate MOPS weights
     ComputeMOPSWeights mopsW(nominalPos, bceStore);
 
-    // Declare a sover object using Weighted-Least-Mean-Squares and 
+    // Declare a solver object using Weighted-Least-Mean-Squares and 
     // a topocentric reference system (NEU)
     SolverWMS solverWMS;
     solverWMS.setDefaultEqDefinition(newEq);    // NEU reconfiguration

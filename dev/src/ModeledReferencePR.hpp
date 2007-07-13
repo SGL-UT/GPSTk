@@ -50,8 +50,57 @@ namespace gpstk
       /** @addtogroup GPSsolutions */
       //@{
 
-      /**
-       * This class compute modeled pseudoranges from satellites to a reference station.
+      /** This class compute modeled pseudoranges from satellites to a reference station.
+       *
+       * This class may be used either in a Vector- and Matrix-oriented way, or
+       * with GNSS data structure objects from "DataStructures" class. In any
+       * case, it is intented to be used with stations where the position is
+       * known (there comes the name: Modeled Reference station PseudoRange).
+       *
+       * A typical way to use this class with GNSS data structures follows:
+       *
+       * @code
+       *   RinexObsStream rin("ebre0300.02o");  // Data stream
+       *   RinexNavStream rnavin("brdc0300.02n");   // Ephemeris data stream
+       *   RinexNavData rNavData;
+       *   BCEphemerisStore bceStore;
+       *   while (rnavin >> rNavData) bceStore.addEphemeris(rNavData);
+       *   bceStore.SearchPast();  // This is the default
+       *
+       *   RinexNavHeader rNavHeader;
+       *   IonoModelStore ionoStore;
+       *   IonoModel ioModel;
+       *   rnavin >> rNavHeader;    // Read navigation RINEX header
+       *   ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
+       *   ionoStore.addIonoModel(DayTime::BEGINNING_OF_TIME, ioModel);
+       *
+       *   // EBRE station nominal position
+       *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
+       *
+       *   // Declare a tropospheric model object, setting the defaults
+       *   MOPSTropModel mopsTM(nominalPos.getAltitude(), nominalPos.getGeodeticLatitude(), 30);
+       *
+       *   // Declare the modeler object, setting all the parameters in one pass
+       *   // As stated, it will compute the model using the C1 observable
+       *   ModeledReferencePR modelRef(nominalPos, ionoStore, mopsTM, bceStore, TypeID::C1);
+       *
+       *   gnssRinex gRin;
+       *
+       *   while(rin >> gRin) {
+       *      gRin >> modelRef;
+       *   }
+       * @endcode
+       *
+       * The "ModeledReferencePR" object will visit every satellite in the 
+       * GNSS data structure that is "gRin" and will try to compute its 
+       * model: Prefit residual, geometric distance, relativity delay,
+       * ionospheric/tropospheric corrections, geometry matrix, etc.
+       *
+       * When used with the ">>" operator, this class returns the same incoming
+       * data structure with the extra data inserted along their corresponding
+       * satellites. Be warned that if a given satellite does not 
+       * have the observations required, it will be summarily deleted from the data
+       * structure.
        *
        * @sa ModeledPseudorangeBase.hpp for base class.
        *
