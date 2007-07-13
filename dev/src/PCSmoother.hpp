@@ -86,6 +86,10 @@ namespace gpstk
      * the ionosphere drift.
      *
      * @sa CodeSmoother.hpp for base class.
+     *
+     * \warning Code smoothers are objets that store their internal state,
+     * so you MUST NOT use the SAME object to process DIFFERENT data streams.
+     *
      */
     class PCSmoother : public CodeSmoother
     {

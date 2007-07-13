@@ -95,6 +95,9 @@ namespace gpstk
      *
      * Resulting in a 4 minutes filter window.
      *
+     * \warning Code smoothers are objets that store their internal state,
+     * so you MUST NOT use the SAME object to process DIFFERENT data streams.
+     *
      */
     class CodeSmoother
     {

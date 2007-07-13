@@ -108,6 +108,10 @@ namespace gpstk
      * @endcode
      *
      * @sa LICSDetector.hpp for more information.
+     *
+     * \warning Cycle slip detectors are objets that store their internal state,
+     * so you MUST NOT use the SAME object to process DIFFERENT data streams.
+     *
      */    
     class MWCSDetector
     {

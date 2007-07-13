@@ -101,6 +101,11 @@ namespace gpstk
      * observations required, it will be summarily deleted from the data
      * structure.
      *
+     * @sa LICSDetector.hpp and MWCSDetector.hpp for more information.
+     *
+     * \warning Cycle slip detectors are objets that store their internal state,
+     * so you MUST NOT use the SAME object to process DIFFERENT data streams.
+     *
      */    
     class OneFreqCSDetector
     {

@@ -89,6 +89,10 @@ namespace gpstk
      * detector, such as one based on the Melbourne-Wubbena combination.
      *
      * @sa MWCSDetector.hpp for more information.
+     *
+     * \warning Cycle slip detectors are objets that store their internal state,
+     * so you MUST NOT use the SAME object to process DIFFERENT data streams.
+     *
      */    
     class LICSDetector
     {
