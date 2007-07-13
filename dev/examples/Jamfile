@@ -4,7 +4,7 @@
 
 SubDir TOP examples ;
 
-GPSLinkLibraries RungeKuttaTest example1 example2 example3 example4 example5 example6 : gpstk ;
+GPSLinkLibraries RungeKuttaTest example1 example2 example3 example4 example5 example6 example7 : gpstk ;
 
 # Note that we use the Main rule here as opposed to the GPSMain rule. That is 
 # to prevent these binaries from getting installed as part of the Jam install
@@ -15,6 +15,7 @@ Main example3 : example3.cpp ;
 Main example4 : example4.cpp ;
 Main example5 : example5.cpp ;
 Main example6 : example6.cpp ;
+Main example7 : example7.cpp ;
 
 # SubInclude TOP examples foo ;
 
