@@ -48,7 +48,7 @@ namespace gpstk
 
 
     /** This class computes satellites weights based on the Appendix J of MOPS C.
-     * This class is meant to be used with the GNSS data structures objects
+     * It is meant to be used with the GNSS data structures objects
      * found in "DataStructures" class.
      *
      * A typical way to use this class follows:
@@ -73,7 +73,7 @@ namespace gpstk
      *   MOPSTropModel mopsTM;
      *   mopsTM.setReceiverHeight(nominalPos.getAltitude());
      *   mopsTM.setReceiverLatitude(nominalPos.getGeodeticLatitude());
-     *   mopsTM.setDayOfYear(30);    // Days of the year
+     *   mopsTM.setDayOfYear(30);    // Day of the year
      *
      *   ModeledPR modelRef(nominalPos, ionoStore, mopsTM, bceStore, TypeID::C1, true);
      *
