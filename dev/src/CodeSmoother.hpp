@@ -129,6 +129,16 @@ namespace gpstk
                     csFlag      = TypeID::CSL2;
                     resultType  = TypeID::C2;
                     break;
+                case TypeID::P1:
+                    phaseType   = TypeID::L1;
+                    csFlag      = TypeID::CSL1;
+                    resultType  = TypeID::P1;
+                    break;
+                case TypeID::P2:
+                    phaseType   = TypeID::L2;
+                    csFlag      = TypeID::CSL2;
+                    resultType  = TypeID::P2;
+                    break;
                 case TypeID::C5:
                     phaseType   = TypeID::L5;
                     csFlag      = TypeID::CSL5;
