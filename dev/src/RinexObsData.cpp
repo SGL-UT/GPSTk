@@ -377,25 +377,23 @@ namespace gpstk
    {
       if (obs.empty())
          return;
-      //s << "Time:" << time
-      //  << ", sats: ";
-      //RinexSatMap::const_iterator i;
-      //for(i=obs.begin(); i!=obs.end(); i++)
-      //   s << i->first << " ";
-      //s << endl;
-      s << "Dump of RinexObsData: ";
-      s << writeTime(time);
-      s << " " << epochFlag << " " << numSvs << fixed << setprecision(6)
-         << " " << clockOffset << endl;
-      if(epochFlag == 0 || epochFlag == 1) {
+
+      s << "Dump of RinexObsData - time: ";
+      s << writeTime(time) << " epochFlag: "
+        << " " << epochFlag << " numSvs: " << numSvs 
+        << fixed << setprecision(6)
+        << " clk offset: " << clockOffset << endl;
+      if(epochFlag == 0 || epochFlag == 1) 
+      {
          RinexSatMap::const_iterator it;
          for(it=obs.begin(); it!=obs.end(); it++) {
             s << "Sat " << setw(2) << RinexSatID(it->first);
             RinexObsTypeMap::const_iterator jt;
-            for(jt=it->second.begin(); jt!=it->second.end(); jt++) {
-               s << " " << jt->first.type << fixed << setprecision(3)
-                  << " " << setw(13) << jt->second.data
-                  << "/" << jt->second.lli << "/" << jt->second.ssi;
+            for(jt=it->second.begin(); jt!=it->second.end(); jt++) 
+            {
+               s << " " << jt->first.type << ":" << fixed << setprecision(3)
+                 << " " << setw(12) << jt->second.data
+                 << "/" << jt->second.lli << "/" << jt->second.ssi;
             }
             s << endl;
          }
