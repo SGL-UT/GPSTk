@@ -255,7 +255,8 @@ protected:
                roh.firstObs = t;
                rinexObsOutput << roh;
                firstObs=false;
-               cout << "Got first obs" << endl;
+               if (debugLevel)
+                  cout << "Got first obs" << endl;
             }
 
             RinexObsData rod;
