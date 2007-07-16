@@ -94,16 +94,16 @@ namespace gpstk
       if (j != ol.end())
       {
          rotm[gpstk::RinexObsHeader::P1].data = j->second.pseudorange;
-         rotm[gpstk::RinexObsHeader::P1].lli = j->second.lockCount ? 1 : 0;
-         rotm[gpstk::RinexObsHeader::P1].ssi = snr2ssi(j->second.snr);
+         rotm[gpstk::RinexObsHeader::P1].lli  = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::P1].ssi  = snr2ssi(j->second.snr);
 
          rotm[gpstk::RinexObsHeader::L1].data = j->second.phase;
-         rotm[gpstk::RinexObsHeader::L1].lli = j->second.lockCount ? 1 : 0;
-         rotm[gpstk::RinexObsHeader::L1].ssi = snr2ssi(j->second.snr);
+         rotm[gpstk::RinexObsHeader::L1].lli  = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::L1].ssi  = snr2ssi(j->second.snr);
 
          rotm[gpstk::RinexObsHeader::D1].data = j->second.doppler;
-         rotm[gpstk::RinexObsHeader::D1].lli = j->second.lockCount ? 1 : 0;
-         rotm[gpstk::RinexObsHeader::D1].ssi = snr2ssi(j->second.snr);
+         rotm[gpstk::RinexObsHeader::D1].lli  = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::D1].ssi  = snr2ssi(j->second.snr);
 
          rotm[gpstk::RinexObsHeader::S1].data = j->second.snr;
       }
@@ -117,16 +117,16 @@ namespace gpstk
       if (j != ol.end())
       {
          rotm[gpstk::RinexObsHeader::P2].data = j->second.pseudorange;
-         rotm[gpstk::RinexObsHeader::P2].lli = j->second.lockCount ? 0 : 1;
-         rotm[gpstk::RinexObsHeader::P2].ssi = snr2ssi(j->second.snr);
+         rotm[gpstk::RinexObsHeader::P2].lli  = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::P2].ssi  = snr2ssi(j->second.snr);
 
          rotm[gpstk::RinexObsHeader::L2].data = j->second.phase;
-         rotm[gpstk::RinexObsHeader::L2].lli = j->second.lockCount ? 0 : 1;
-         rotm[gpstk::RinexObsHeader::L2].ssi = snr2ssi(j->second.snr);
+         rotm[gpstk::RinexObsHeader::L2].lli  = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::L2].ssi  = snr2ssi(j->second.snr);
 
          rotm[gpstk::RinexObsHeader::D2].data = j->second.doppler;
-         rotm[gpstk::RinexObsHeader::D2].lli = j->second.lockCount ? 0 : 1;
-         rotm[gpstk::RinexObsHeader::D2].ssi = snr2ssi(j->second.snr);
+         rotm[gpstk::RinexObsHeader::D2].lli  = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::D2].ssi  = snr2ssi(j->second.snr);
 
          rotm[gpstk::RinexObsHeader::S2].data = j->second.snr;
       }
@@ -140,8 +140,8 @@ namespace gpstk
       if (j != ol.end())
       {
          rotm[gpstk::RinexObsHeader::C2].data = j->second.pseudorange;
-         rotm[gpstk::RinexObsHeader::C2].lli = j->second.lockCount ? 0 : 1;
-         rotm[gpstk::RinexObsHeader::C2].ssi = snr2ssi(j->second.snr);
+         rotm[gpstk::RinexObsHeader::C2].lli  = j->second.lockCount ? 1 : 0;
+         rotm[gpstk::RinexObsHeader::C2].ssi  = snr2ssi(j->second.snr);
       }
       return rotm;
    }
