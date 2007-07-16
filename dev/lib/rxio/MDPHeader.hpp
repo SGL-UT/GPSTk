@@ -69,7 +69,7 @@ namespace gpstk
    class MDPStream;
 
    /// This class contains header information for all data types
-   /// transmitted by the MSN SAASM Receiver.
+   /// transmitted by receiver meeting the MDP specification.
    class MDPHeader : public FFData, public CRCDataStatus
    {
    public:
