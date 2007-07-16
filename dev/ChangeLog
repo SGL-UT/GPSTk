@@ -1,3 +1,155 @@
+Version 1.3   Monday, July 16, 2006
+
+	General modifications
+	---------------------
+
+	- Added examples/example7.cpp & associated RINEX data files
+	        This program shows 10 different ways to process GPS data using
+		"GNSS data structures". The "GNSS Data Structures" paradigm can   
+	        process GPS code-based data based on Voctors, Matrices 
+		and other objects.
+	- Added examples/example6.cpp
+	        Shows a rather minimilist way to process GPS data using GNSS Data
+		Strutures
+
+	- Improved src/icd_200_constants.hpp
+	        Fixed RSVCLK value	
+
+	- GPSTk is now able to build under the MS Visual Studio 2005 (Express
+	        Edition)
+
+	Library modifications
+	---------------------
+
+	+ Added the following as part of the "GNSS data structures" paradigm
+
+	- Added src/TypeID.[h|c]pp
+	        Index able to represent any type of observation, correction,
+		model paratmeter or other data value of interest 
+
+	- Added src/DataHeaders.[h|c]pp
+	        Adds several headers to be used with the GNSS data structures
+		classes
+
+	- Added DataStructures.[h|c]pp
+	        Set of data structures to be used by other GPSTk classes
+
+	- Added src/DeltaOp.[h|c]pp
+	        Applies differences on ground-related data to the GNSS data
+		structures
+
+	- Added src/ComputeCompination.hpp
+	        Base class to ease computing of data for the GNSS data structures
+
+	- Added src/ComputePC.hpp
+	        Eases computing the PC combination for GNSS data structures
+
+	- Added src/ComputeLC.hpp
+	        Eases computing the LC combination for GNSS data structures
+
+	- Added src/ComputeLI.hpp
+	        Eases computing the LI combination for GNSS data structures
+
+	- Added src/ComputeLdelta.hpp
+	        Eases computing the Ldelta combination for GNSS data structures
+
+	- Added src/ComputePdelta.hpponly
+	        Eases computing the Pdelta combination for GNSS data structures
+
+	- Added src/ComputePI.hpp
+	        Eases computing the PI combination for GNSS data structures
+
+	- Added src/ComputeMelbourneWubbena.hpp
+	        Eases computing the ComputeMelbourneWubbena combination for 
+		GNSS data structures
+
+	- Added src/ComputeIURAWeights.hpp
+	        Computes satellites weights based on URA Index for GNSS data
+		structures
+
+	- Added src/ComputeMOPSWeights.hpp
+	        Computes satellites weights based on Appendix J of MOPS C
+		(RTCA/DO-229C), for GNSS data structures
+
+	- Added src/SimpleFilter.hpp
+	        Filters satellites with observables grossly out of bounds, 
+		intended for GNSS data structures
+
+	- Added src/OneFreqCSDetector.hpp
+	        Detects cycle slips using observables in just one frequency
+
+	- Added src/LICSDetector.hpp
+	        Detects cycle slips using LI observables
+
+	- Added src/MWCSDetector.hpp
+	        Detects cycle slips using the Melbourne-Wubbena combination
+
+	- Added src/CodeSmoother.hpp
+	        Smoothes a given code observable using the corresponding phase 
+		observable
+
+	- Added src/PCsmoother.hpp
+	        Smoothes PC code obserrvables using the corresponding LC phase
+		observables
+
+	- Added src/XYZ2NEU.[h|c]pp
+	        Refrence frame change from ECEF XYZ to topcentric North-East-Up
+
+	- Added src/XYZ2NED.[h|c]pp
+	        Refrence frame change from ECEF XYZ to topcentric North-East-Down
+
+	- Added src/TimeNamedFileStream.hpp
+	        Simple time-based file name stream
+
+	- Improved src/ModeledReferencePR.[c|h]pp
+	        Adapted to work with GNSS data structures
+
+	- Improved src/ModeledPR.[h|c]pp
+	        Adapted to work with GNSS data structures
+
+	- Improved src/TropModel.hpp
+	        Added method MOPSTropModel::setAllParameters()
+
+	- Improved src/SolverLMS.[h|c]pp
+	        Adapted to work with GNSS data structures
+
+	- Improved src/SolverWMS.[h|c]pp
+	        Adapted to work with GNSS data structures
+
+	- Improved src/icd_200_constants.hpp
+	        Added data regarding L5, L6, L7 and L8
+
+	- Improved src/RinexHeader.[h|c]pp
+	        Can now process RINEX2.11 navigation files
+
+	- Improved src/icd_200_constants.hpp
+	        Fixed RSVCLK
+
+	- Improved src/SP3Data.cpp
+	        Modified the reader to be tolerant of short PG lines
+
+	- Improved src/RinexUtilitties.[h|c]pp
+	        Added a sort routine 
+
+	- Improved src/EngAlmanac.[h|c]pp
+	        Routing added that performs a simple sanity check on the almanac
+	
+	Application modifications
+	-------------------------
+
+	- Improved apps/differential/vecsol.cpp
+	        Along with other submissions allows the toolkit to build under
+		the MS Visual Studio 2005
+
+	- Improved apps/Rinextools.[h|c]pp
+	        Increased robustness and added multiple input file capabilities
+
+	- Improved all tools to process input files in time order:
+	        apps/Rinextools/ResCor.cpp
+		apps/Rinextools/RinSum.cpp
+		apps/Rinextools/RinexDump.cpp
+		apps/positioning/PRSolve.cpp
+
 Version 1.2   Monday, November 6, 2006
 	
 	General modifications
