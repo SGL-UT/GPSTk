@@ -131,7 +131,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    bool parityGood = umsg.checkParity();
    if (!parityGood)
    {
-      if (verboseLevel>2)
+      if (verboseLevel>3)
          out << msgPrefix << "Raw subframe" << endl;
       umsg.cooked = false;
       umsg.cookSubframe();
@@ -139,7 +139,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    }
    else
    {
-      if (verboseLevel>2)
+      if (verboseLevel>3)
          out << msgPrefix << "Cooked subframe" << endl;
    }
 
@@ -169,7 +169,8 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    long sow = umsg.getHOWTime();
    short page = ((sow-6) / 30) % 25 + 1;
 
-   if (verboseLevel>2)
+   if (((isAlm && almOut) || (!isAlm && ephOut))
+       && verboseLevel>2)
    {
       out << msgPrefix
           << "SOW:" << setw(6) << sow
@@ -218,8 +219,8 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
       SubframePage sp(sfid, page);
       almPages[sp] = umsg;
       almPages.insert(make_pair(sp, umsg));
-         
-      if (makeEngAlmanac(engAlm, almPages, minimalAlm))
+
+      if (makeEngAlmanac(engAlm, almPages, !minimalAlm))
       {
          out << msgPrefix << "Built complete almanac" << endl;
          if (verboseLevel>2)
@@ -255,7 +256,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
       }
    }
 
-   if (verboseLevel>2)
+   if (verboseLevel>3)
       out << endl;
 
 }  // end of process()
