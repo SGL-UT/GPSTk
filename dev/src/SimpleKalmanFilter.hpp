@@ -67,6 +67,7 @@ namespace gpstk
        *        {
        *            cout << e;
        *        }
+       *    }
        * @endcode
        *
        * More information about the Kalman filter may be found in the excellent and
