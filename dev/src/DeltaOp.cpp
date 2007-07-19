@@ -48,7 +48,7 @@ namespace gpstk
         for (it = gData.begin(); it != gData.end(); ++it) 
         {
             satTypeValueMap::const_iterator itref;
-            // Let's find if in refData there is the same satellite
+            // Let's find if the same satellite is present in refData 
             itref = refData.find((*it).first);
 
             // If we found the satellite, let's proceed with the differences
@@ -76,7 +76,7 @@ namespace gpstk
             };
         }
 
-        // If oredered so, delete the missing satellites
+        // If ordered so, delete the missing satellites
         if (deleteMissingSats) gData.removeSatID(satRejectedSet);
 
         return gData;

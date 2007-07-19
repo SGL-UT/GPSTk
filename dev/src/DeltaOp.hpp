@@ -107,7 +107,7 @@ namespace gpstk
 
         /** Common constructor taking a satTypeValueMap as reference station data.
          * By default it will difference prefitC data and will delete satellites
-         * present in reference station data but missing in input data,
+         * present in reference station data but missing in input data.
          *
          * @param gData     satTypeValueMap data object holding the reference station data.
          * @param delSats   Boolean value setting if satellites present in reference station data but missing in input data will be deleted from the later (this is the default).
@@ -334,11 +334,11 @@ namespace gpstk
     private:
 
 
-        /// satTypeValueMap data structure containing reference station data
+        /// satTypeValueMap data structure containing reference station data.
         satTypeValueMap refData;
 
 
-        /// Longitude of the reference point (topocentric reference), in radians.
+        /// Flag indicating if satellites present in reference station data but missing in input data will be deleted.
         bool deleteMissingSats;
 
 
