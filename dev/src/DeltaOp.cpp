@@ -58,13 +58,22 @@ namespace gpstk
                 TypeIDSet::const_iterator itType;
                 for (itType = diffTypes.begin(); itType != diffTypes.end(); ++itType)
                 {
+
+                    double value1(0.0);
+                    double value2(0.0);
+
                     try
                     {
                         // Let's try to compute the difference
-                        gData((*it).first)((*itType)) = ( gData((*it).first)((*itType)) - refData((*it).first)((*itType)) );
+                        value1 = gData((*it).first)(*itType);
+                        value2 = refData((*it).first)(*itType);
+
+                        gData((*it).first)((*itType)) =  value1 - value2;
                     }
                     catch(...) 
                     {
+                        // If some value is missing, then schedule this satellite for removal
+                        satRejectedSet.insert( (*it).first );
                         continue;    // Skip this value if problems arise
                     }
                 }

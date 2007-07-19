@@ -93,6 +93,9 @@ namespace gpstk
        *
        * Be warned that, by default, if a given satellite does not have in "gRin" the data
        * required to be differenced, it will be summarily deleted from the data structure.
+       *
+       * @sa NablaOp.hpp for differences on satellite-related data.
+       *
        */
     class DeltaOp
     {
