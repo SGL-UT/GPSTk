@@ -48,6 +48,11 @@ namespace gpstk
       /** @addtogroup geodeticgroup */
       //@{
 
+      // The following forward declaration of Position and range are the only
+      // way I can get range to be a member of namespace gpstk.
+   class Position;
+   double range(const Position& A, const Position& B) throw(GeometryException);
+   
       /**
        * A position representation class for common 3D geographic position formats,
        * including geodetic (geodetic latitude, longitude, and height above the geoid)
