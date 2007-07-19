@@ -311,8 +311,8 @@ namespace gpstk
             xhat = P * ( (measMatrixT*invR*measurements) + (invPMinus*xhatminus) );
         }
         catch(Exception e) {
-            InvalidSolver e("Correct(): Unable to compute xhat.");
-            GPSTK_THROW(e);
+            InvalidSolver eis("Correct(): Unable to compute xhat.");
+            GPSTK_THROW(eis);
             return -1;
         }
 
