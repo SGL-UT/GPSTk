@@ -62,9 +62,9 @@ protected:
 private:
    CommandOptionNoArg clkOpt, noClockOpt;
    CommandOptionWithNumberArg elvOpt, prnOpt, wartsOpt;
-   CommandOptionWithAnyArg ephSourceOpt, startOpt, endOpt, clkResOpt;
+   CommandOptionWithAnyArg ephSourceOpt, startOpt, endOpt, clkResOpt, ordLimitOpt;
    
-   double elMask, clkResidLimit;
+   double elMask, clkResidLimit, ordLimit;
    set<int> prnSet, wartSet; // prns to exclude from analysis
    vector<string> ephFilesVector;
    DayTime tStart, tEnd;
@@ -84,6 +84,8 @@ OrdEdit::OrdEdit() throw()
      clkOpt('k',"clock-est", "Remove ords that do not have corresponding "
             "clock estimates."),
      clkResOpt('s',"size","Remove clock residuals with absolute values "
+            "greater than this size (meters)."),
+     ordLimitOpt('l',"ord-limit","Remove ords with absolute valies "
             "greater than this size (meters)."),
      prnOpt('p',"PRN","Add/Remove data from given PRN. Repeat option for multiple"
             " PRNs. Negative numbers remove, Postive numbers all, Zero removes all."),
@@ -170,6 +172,10 @@ void OrdEdit::process()
    if (clkResOpt.getCount())
       clkResidLimit = asDouble(clkResOpt.getValue().front());
       
+   //-- discard ords that are too large?
+   if (ordLimitOpt.getCount())
+      ordLimit = asDouble(ordLimitOpt.getValue().front());
+   
    //-- if a time span was specified, get it
    double ss;
    int mm,dd,yy,hh,minu; 
@@ -237,6 +243,12 @@ void OrdEdit::process()
          cout << "# Tossing clk resids > " << clkResidLimit << " m.\n";
       else
          cout << "# Keeping all clock residuals.\n";
+         
+      if (ordLimit)
+         cout << "# Tossing ords > " << ordLimit << " m.\n";
+      else
+         cout << "# No ORD limit given.\n";
+         
       if (numBEFiles)
       {
          for (int index = 0; index < numBEFiles; index++)
@@ -317,7 +329,7 @@ void OrdEdit::process()
          {
             const SatID& satId = iter->first;
             const ObsRngDev& ord = iter->second;
-            iter++;
+            iter++;           
             if ((!ord.wonky && prnSet.count(satId.id)) ||
                 (ord.wonky && wartSet.count(satId.id)))
                ordEpoch.removeORD(satId);
@@ -328,6 +340,19 @@ void OrdEdit::process()
          (std::abs(ordEpoch.clockResidual)>clkResidLimit))
          ordEpoch.clockResidual.set_valid(false);
 
+      if (ordLimitOpt.getCount())
+      {
+         ORDEpoch::ORDMap::const_iterator iter = ordEpoch.ords.begin();
+         while (iter!= ordEpoch.ords.end())
+         {
+            const SatID& satId = iter->first;
+            const ObsRngDev& ord = iter->second;
+            iter++;
+            if (ord.getORD() < ordLimit)
+               ordEpoch.removeORD(satId);
+         }
+      } 
+      
       write(output, ordEpoch);
    }
    if (verboseLevel || debugLevel)
