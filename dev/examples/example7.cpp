@@ -250,6 +250,10 @@ int main(void)
     ModeledPR modelPC(nominalPos, mopsTM, bceStore, TypeID::PC, false);
     // Take notice that PC combination doesn't use ionosphere modelling, nor
     // TGD computation
+    // WARNING: When using C1 instead of P1 to compute PC combination, be aware
+    // that instrumental errors will NOT cancel, introducing a bias that must be
+    // taken into account by other means. This will not work out in this example.
+
 
     ////////////////////////////////////////
 

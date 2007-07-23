@@ -70,6 +70,10 @@ namespace gpstk
      * Sometimes, the Rinex observations file does not have P1, but provides C1
      * instead. In such cases, you must use the useC1() method.
      *
+     * @warning When using C1 instead of P1 to compute this combination, be aware
+     * that instrumental errors will NOT cancel, introducing a bias that must be
+     * taken into account by other means.
+     *
      */
     class ComputePC : public ComputeCombination
     {
