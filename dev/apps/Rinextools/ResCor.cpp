@@ -557,7 +557,7 @@ try {
       if(help)
          Par.displayUsage(cout,false);
       if(Rxhelp)
-         cout << RxhelpString;
+         cout << RxhelpString << endl;
       if(REChelp) {
          if(help || Rxhelp) cout << endl;
          cout << "ResCor is an implementation of the RinexEditor, therefore the"
@@ -566,6 +566,8 @@ try {
       }
       if(ROThelp) {
          if(help || Rxhelp || REChelp) cout << endl;
+         DisplayStandardRinexObsTypes(cout);
+         cout << "End of list of standard observation types\n";
          DisplayExtendedRinexObsTypes(cout);
          cout << "End of list of extended observation types\n";
       }
@@ -2073,6 +2075,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------//------------------------------------------------------------------------------------
 // NB reentrant, but ugly, function
 // NB PreProcessArgs pulls out --debug --verbose and the -f<f> and --file <f> options.
+// NB It also allow --ROThelp and --REChelp to have any case
 void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
 {
 try {
@@ -2126,7 +2129,14 @@ try {
       Debug = true;
    else if(string(arg)==string("--file"))
       found_cfg_file = true;
+   else if(lowerCase(string(arg)) == string("--rothelp"))
+      Args.push_back(string("--ROThelp"));
+   else if(lowerCase(string(arg)) == string("--rechelp"))
+      Args.push_back(string("--REChelp"));
+   else if(lowerCase(string(arg)) == string("--rxhelp"))
+      Args.push_back(string("--Rxhelp"));
    else
+      inline std::string& lowerCase(std::string& s);
       Args.push_back(arg);
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }

@@ -360,6 +360,9 @@ namespace gpstk
                                     std::string u=std::string("undefined"),
                                     unsigned int dep=0);
 
+      /// Pretty print a list of standard Rinex observation types
+   void DisplayStandardRinexObsTypes(std::ostream& s);
+
       /// Pretty print a list of registered extended Rinex observation types
    void DisplayExtendedRinexObsTypes(std::ostream& s);
 

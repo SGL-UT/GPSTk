@@ -982,6 +982,21 @@ namespace gpstk
       return 0;
    }
 
+      // Pretty print a list of standard Rinex observation types
+   void DisplayStandardRinexObsTypes(ostream& s)
+   {
+      s << "The list of standard Rinex obs types:\n";
+      s << "  OT Description          Units\n";
+      s << "  -- -------------------- ---------\n";
+      for(int i=0; i<RinexObsHeader::StandardRinexObsTypes.size(); i++) {
+         string line;
+         line = string("  ")+RinexObsHeader::StandardRinexObsTypes[i].type;
+         line += leftJustify(string(" ")+RinexObsHeader::StandardRinexObsTypes[i].description,21);
+         line += leftJustify(string(" ")+RinexObsHeader::StandardRinexObsTypes[i].units,11);
+         s << line << endl;
+      }
+   }
+
       // Pretty print a list of registered extended Rinex observation types
    void DisplayExtendedRinexObsTypes(ostream& s)
    {

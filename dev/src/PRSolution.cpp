@@ -175,7 +175,6 @@ void Combinations::init(int N, int K)
 }
 
 // -----------------------------------------------------------------------------------
-
 using namespace std;
 using namespace gpstk;
 
@@ -399,8 +398,6 @@ namespace gpstk
       }
       }  // end PRSolution::RAIMCompute()
 
-
-
    int PRSolution::PrepareAutonomousSolution(const DayTime& Tr,
                                              vector<SatID>& Satellite,
                                              vector<double>& Pseudorange,
@@ -453,7 +450,6 @@ namespace gpstk
          return 0;
   
       } // end PrepareAutonomousPRSolution
-
 
    int PRSolution::AlgebraicSolution(Matrix<double>& A,
                                      Vector<double>& Q,
@@ -609,7 +605,12 @@ namespace gpstk
                   // correct for troposphere (but not on the first iteration)
                if(n_iterate > 0) {
                   SV.x = ECEF(svxyz[0],svxyz[1],svxyz[2]);
-                  CRange(n) -= pTropModel->correction(RX,SV,T);
+                  // must test RX for reasonableness to avoid corrupting TropModel
+                  Position R(RX),S(SV);
+                  double tc=R.getHeight(), elev = R.elevation(SV);
+                  if(elev < 0.0 || tc > 10000.0 || tc < -1000) tc=0.0;
+                  else tc = pTropModel->correction(R,S,T);
+                  CRange(n) -= tc;
                }
 
                   // geometric range
@@ -653,7 +654,6 @@ namespace gpstk
             catch(SingularMatrixException& sme) {
                return -2;
             }
-
 
                // generalized inverse
             G = Cov * PT;

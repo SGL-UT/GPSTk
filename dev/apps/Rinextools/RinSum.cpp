@@ -206,12 +206,8 @@ try {
          *pout << "Rinex header:\n";
          rheader.dump(*pout);
       }
-      // move below else {
-      //   *pout << "Obs types(" << rheader.obsTypeList.size() << "): ";
-      //   for(i=0; i<rheader.obsTypeList.size(); i++)
-      //      *pout << " " << rheader.obsTypeList[i].type;
-      //   *pout << endl;
-      //}
+      else *pout << "Position (XYZ,m) : " << fixed << setprecision(4)
+         << rheader.antennaPosition << ".\n";
 
       if(!rheader.isValid()) {
          *pout << "Abort: header is invalid\n";
@@ -373,7 +369,7 @@ try {
             }
             else {
                cerr << " WARNING time tags out of order: "
-                  << " prev > curr : "
+                  //<< " prev > curr : "
                   << prev.printf("%F/%.0g = %04Y/%02m/%02d %02H:%02M:%02S")
                   << " > "
                   << last.printf("%F/%.0g = %04Y/%02m/%02d %02H:%02M:%02S")

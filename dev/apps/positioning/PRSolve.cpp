@@ -80,7 +80,7 @@ typedef struct Configuration {
    vector<string> InputMetName;
       // configuration
    double rmsLimit;
-   double slopeLimit;
+   double SlopeLimit;
    bool algebra;
    int nIter;
    double convLimit;
@@ -224,7 +224,7 @@ try {
       prsol.Debug = true;
    }
    prsol.RMSLimit = C.rmsLimit;
-   prsol.SlopeLimit = C.slopeLimit;
+   prsol.SlopeLimit = C.SlopeLimit;
    prsol.Algebraic = C.algebra;
    prsol.ResidualCriterion = C.residCrit;
    prsol.ReturnAtOnce = C.returnatonce;
@@ -340,6 +340,7 @@ try {
       if(C.knownpos.getCoordinateSystem() == Position::Unknown) {
          C.oflog << "Error - ORD output to file (" << C.ordFile << ") requires "
             << " --PosXYZ input. Abort output of ORDs." << endl;
+         C.ordFile = string();
       }
       else {
          C.oford.open(C.ordFile.c_str(),ios::out);
@@ -715,21 +716,24 @@ try {
       if(C.Debug) C.oflog << "processing returned " << iret << endl;
       if(iret == -1) { iret=0; break; }         // end of file
       if(iret == -4) continue;                  // ignore this epoch - no ephemeris
-         // NB output ORDs before quitting on too few sats
+      if(iret == 1) continue;                   // ignore this epoch - fatal error
 
          // write out ORDs
       if(!C.ordFile.empty()) {
          for(i=0; i<Satellites.size(); i++) {
             SatID sat=Satellites[i];
+            // don't allow bad sats b/c it can corrupt TropModel
+            if(sat.id < 0) continue;
+
             CorrectedEphemerisRange CER;
             try { CER.ComputeAtReceiveTime(CurrEpoch, C.knownpos, sat, *pEph); }
             catch(EphemerisStore::NoEphemerisFound& nef) { continue; }
 
             // compute ionosphere - note that P1-R-RI == P2-R-RI*(F1/F2)**2
             double RI = (vP2[i]-vP1[i])/alpha;
+            double tc = C.pTropModel->correction(C.knownpos,CER.svPosVel.x,CurrEpoch);
             double R = CER.rawrange + prsol.Solution(3)
-               - CER.svclkbias - CER.relativity
-               + C.pTropModel->correction(C.knownpos,CER.svPosVel.x,CurrEpoch);
+                        - CER.svclkbias - CER.relativity + tc;
             C.oford << "ORD"
                << " G" << setw(2) << setfill('0') << abs(sat.id) << setfill(' ')
                << " " << CurrEpoch.printf(C.timeFormat)
@@ -741,8 +745,6 @@ try {
                << endl;
          }
       }
-
-      if(iret == 1) continue;                   // ignore this epoch - too few sats
 
          // accumulate simple statistics, Autonomous and RAIM
       if(C.APSout) {
@@ -1274,7 +1276,7 @@ try {
 
       // configuration of PRSolution
    C.rmsLimit = prsol.RMSLimit;
-   C.slopeLimit = prsol.SlopeLimit;
+   C.SlopeLimit = prsol.SlopeLimit;
    C.algebra = prsol.Algebraic;
    C.residCrit = prsol.ResidualCriterion;
    C.returnatonce = prsol.ReturnAtOnce;
@@ -1690,8 +1692,8 @@ try {
    }
    if(dashslop.getCount()) {
       values = dashslop.getValue();
-      C.slopeLimit = asDouble(values[0]);
-      if(help) cout << "Slope limit is set to " << C.slopeLimit << endl;
+      C.SlopeLimit = asDouble(values[0]);
+      if(help) cout << "Slope limit is set to " << C.SlopeLimit << endl;
    }
    if(dashAlge.getCount()) {
       C.algebra = true;
