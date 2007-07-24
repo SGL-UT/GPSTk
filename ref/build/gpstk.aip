@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<DOCUMENT type="Advanced Installer" CreateVersion="5.1.1" version="5.1.1" modules="freeware" RootPath="." Language="en">
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
+    <ROW Property="ALLUSERS" Value="2"/>
+    <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
+    <ROW Property="ARPCONTACT" Value="gpstk@arlut.utexas.edu"/>
+    <ROW Property="ARPHELPLINK" Value="http://www.gpstk.org/"/>
+    <ROW Property="ARPURLINFOABOUT" Value="http://www.gpstk.org/"/>
+    <ROW Property="BannerBitmap" Value="default_banner.bmp" Type="1"/>
+    <ROW Property="DialogBitmap" Value="default_dialog.bmp" Type="1"/>
+    <ROW Property="Manufacturer" Value="Applied Research Laboratories, The University of Texas at Austin" ValueLocId="*"/>
+    <ROW Property="ProductCode" Value="1033:{DD7ACB95-0DB8-4F83-87C4-B8D401826F58} "/>
+    <ROW Property="ProductLanguage" Value="1033"/>
+    <ROW Property="ProductName" Value="GPS Toolkit" ValueLocId="*"/>
+    <ROW Property="ProductVersion" Value="1.3"/>
+    <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
+    <ROW Property="UpgradeCode" Value="{9F409322-AF3A-476F-B2CF-A0E349ACA55A}"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
+    <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1"/>
+    <ROW Directory="DDBase_DIR" Directory_Parent="SHORTCUTDIR" DefaultDir="DDBase"/>
+    <ROW Directory="SHORTCUTDIR" Directory_Parent="TARGETDIR" DefaultDir="SHORTC~1|SHORTCUTDIR" IsPseudoRoot="1"/>
+    <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
+    <ROW Directory="bin_DIR" Directory_Parent="APPDIR" DefaultDir="bin"/>
+    <ROW Directory="include_DIR" Directory_Parent="APPDIR" DefaultDir="include"/>
+    <ROW Directory="lib_DIR" Directory_Parent="APPDIR" DefaultDir="lib"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
+    <ROW Component="APPDIR" ComponentId="{1403A03C-AA0C-4D01-8F19-B7C8F006372E}" Directory_="APPDIR" Attributes="0"/>
+    <ROW Component="AlmanacStore.hpp" ComponentId="{31E7644B-6038-4D3E-8CC1-2BC96B451487}" Directory_="include_DIR" Attributes="0" KeyPath="AlmanacStore.hpp" FullKeyPath="APPDIR\include"/>
+    <ROW Component="DDBase.exe" ComponentId="{34CFCAA4-AB17-4C2D-9D57-E07E965227C5}" Directory_="bin_DIR" Attributes="0" KeyPath="DDBase.exe" FullKeyPath="APPDIR\bin\DDBase.exe"/>
+    <ROW Component="DDBaseDoc.pdf" ComponentId="{F3213EF2-3140-439E-B5F9-E7A749EC5C67}" Directory_="DDBase_DIR" Attributes="0" KeyPath="DDBaseDoc.pdf" FullKeyPath="SHORTCUTDIR\DDBase"/>
+    <ROW Component="DiscFix.exe" ComponentId="{C18E72F2-DB33-4AE0-87F7-B018984D12AA}" Directory_="bin_DIR" Attributes="0" KeyPath="DiscFix.exe" FullKeyPath="APPDIR\bin\DiscFix.exe"/>
+    <ROW Component="EditRinex.exe" ComponentId="{36A83182-B17F-4D4C-88C2-86373E477E4B}" Directory_="bin_DIR" Attributes="0" KeyPath="EditRinex.exe" FullKeyPath="APPDIR\bin\EditRinex.exe"/>
+    <ROW Component="IonoBias.exe" ComponentId="{6290C754-497D-4656-9B50-B34A2261CF39}" Directory_="bin_DIR" Attributes="0" KeyPath="IonoBias.exe" FullKeyPath="APPDIR\bin\IonoBias.exe"/>
+    <ROW Component="NavMerge.exe" ComponentId="{6CDA2B1D-A7C1-4F28-BBE8-26D6F9675CDE}" Directory_="bin_DIR" Attributes="0" KeyPath="NavMerge.exe" FullKeyPath="APPDIR\bin\NavMerge.exe"/>
+    <ROW Component="PRSolve.exe" ComponentId="{52D2914E-FF97-4CBB-B483-2E53F3D15380}" Directory_="bin_DIR" Attributes="0" KeyPath="PRSolve.exe" FullKeyPath="APPDIR\bin\PRSolve.exe"/>
+    <ROW Component="ResCor.exe" ComponentId="{C7E96632-2CC7-4423-B97E-271FC95327AB}" Directory_="bin_DIR" Attributes="0" KeyPath="ResCor.exe" FullKeyPath="APPDIR\bin\ResCor.exe"/>
+    <ROW Component="RinSum.exe" ComponentId="{ACBFE622-8111-4F21-B0D9-F065FCB0A6A5}" Directory_="bin_DIR" Attributes="0" KeyPath="RinSum.exe" FullKeyPath="APPDIR\bin\RinSum.exe"/>
+    <ROW Component="RinexDump.exe" ComponentId="{42244EEF-8501-4E13-B3E7-291F1183997F}" Directory_="bin_DIR" Attributes="0" KeyPath="RinexDump.exe" FullKeyPath="APPDIR\bin\RinexDump.exe"/>
+    <ROW Component="TECMaps.exe" ComponentId="{357A76AB-0B9F-4CA7-A066-BEA0940C7012}" Directory_="bin_DIR" Attributes="0" KeyPath="TECMaps.exe" FullKeyPath="APPDIR\bin\TECMaps.exe"/>
+    <ROW Component="bc2sp3.exe" ComponentId="{FCD06097-8D49-49A6-A438-6ABCB0C025E7}" Directory_="bin_DIR" Attributes="0" KeyPath="bc2sp3.exe" FullKeyPath="APPDIR\bin\bc2sp3.exe"/>
+    <ROW Component="calgps.exe" ComponentId="{E8572896-07F4-4E5C-BA49-CD953EE08736}" Directory_="bin_DIR" Attributes="0" KeyPath="calgps.exe" FullKeyPath="APPDIR\bin\calgps.exe"/>
+    <ROW Component="ddmerge.exe" ComponentId="{486CC858-95CB-4253-9C62-4E5614AD35EF}" Directory_="bin_DIR" Attributes="0" KeyPath="ddmerge.exe" FullKeyPath="APPDIR\bin\ddmerge.exe"/>
+    <ROW Component="ephdiff.exe" ComponentId="{0D3D23F9-156B-4407-9C09-EEB2A8FFF389}" Directory_="bin_DIR" Attributes="0" KeyPath="ephdiff.exe" FullKeyPath="APPDIR\bin\ephdiff.exe"/>
+    <ROW Component="fic2rin.exe" ComponentId="{45639FBC-32EA-4AA5-86EF-7D9C56037DA8}" Directory_="bin_DIR" Attributes="0" KeyPath="fic2rin.exe" FullKeyPath="APPDIR\bin\fic2rin.exe"/>
+    <ROW Component="ficacheck.exe" ComponentId="{A7D7E4A6-D078-4F24-B4F5-2D1C74CDF063}" Directory_="bin_DIR" Attributes="0" KeyPath="ficacheck.exe" FullKeyPath="APPDIR\bin\ficacheck.exe"/>
+    <ROW Component="ficafic.exe" ComponentId="{312E9BE2-D51A-437B-9E12-393351C5DA86}" Directory_="bin_DIR" Attributes="0" KeyPath="ficafic.exe" FullKeyPath="APPDIR\bin\ficafic.exe"/>
+    <ROW Component="ficcheck.exe" ComponentId="{E6454D10-BCC6-449E-ACEE-CD48F152FA6A}" Directory_="bin_DIR" Attributes="0" KeyPath="ficcheck.exe" FullKeyPath="APPDIR\bin\ficcheck.exe"/>
+    <ROW Component="ficdiff.exe" ComponentId="{0FE26648-66CB-4C2A-8462-41FBA7D75B7A}" Directory_="bin_DIR" Attributes="0" KeyPath="ficdiff.exe" FullKeyPath="APPDIR\bin\ficdiff.exe"/>
+    <ROW Component="ficfica.exe" ComponentId="{A50FA514-F2BF-440D-9A43-A47E9780975F}" Directory_="bin_DIR" Attributes="0" KeyPath="ficfica.exe" FullKeyPath="APPDIR\bin\ficfica.exe"/>
+    <ROW Component="gpstk.lib" ComponentId="{92E69E2C-0E65-4284-BDEE-6722BACB1FA7}" Directory_="lib_DIR" Attributes="0" KeyPath="gpstk.lib" FullKeyPath="APPDIR\lib"/>
+    <ROW Component="gpstk_user_reference.pdf_1" ComponentId="{FA0A4E59-6949-449B-BB63-DE6E0E7E05A1}" Directory_="SHORTCUTDIR" Attributes="0" KeyPath="gpstk_user_reference.pdf" FullKeyPath="SHORTCUTDIR"/>
+    <ROW Component="mergeFIC.exe" ComponentId="{EFDDE139-F69F-4C20-8CFF-8685DB973820}" Directory_="bin_DIR" Attributes="0" KeyPath="mergeFIC.exe" FullKeyPath="APPDIR\bin\mergeFIC.exe"/>
+    <ROW Component="mergeRinMet.exe" ComponentId="{231A13CB-6C7D-4296-AB60-78FD040F4023}" Directory_="bin_DIR" Attributes="0" KeyPath="mergeRinMet.exe" FullKeyPath="APPDIR\bin\mergeRinMet.exe"/>
+    <ROW Component="mergeRinNav.exe" ComponentId="{66D0EAE1-A262-48CB-9F4E-35920EB4EF0E}" Directory_="bin_DIR" Attributes="0" KeyPath="mergeRinNav.exe" FullKeyPath="APPDIR\bin\mergeRinNav.exe"/>
+    <ROW Component="mergeRinObs.exe" ComponentId="{167F6DB6-315B-48C1-B0D2-BBA3BEEC389B}" Directory_="bin_DIR" Attributes="0" KeyPath="mergeRinObs.exe" FullKeyPath="APPDIR\bin\mergeRinObs.exe"/>
+    <ROW Component="mergeSRI.exe" ComponentId="{2566B8B9-3429-4BBF-BA2C-68E9CF24D08C}" Directory_="bin_DIR" Attributes="0" KeyPath="mergeSRI.exe" FullKeyPath="APPDIR\bin\mergeSRI.exe"/>
+    <ROW Component="mpsolve.exe" ComponentId="{4515D68C-01C0-4B53-9C72-3BF45AD253B4}" Directory_="bin_DIR" Attributes="0" KeyPath="mpsolve.exe" FullKeyPath="APPDIR\bin\mpsolve.exe"/>
+    <ROW Component="navdmp.exe" ComponentId="{67EF2C9E-D17E-402C-8164-A200BE9C1BF0}" Directory_="bin_DIR" Attributes="0" KeyPath="navdmp.exe" FullKeyPath="APPDIR\bin\navdmp.exe"/>
+    <ROW Component="novaRinex.exe" ComponentId="{C2159EC6-8E9F-4C50-BA19-C044712DA73F}" Directory_="bin_DIR" Attributes="0" KeyPath="novaRinex.exe" FullKeyPath="APPDIR\bin\novaRinex.exe"/>
+    <ROW Component="posInterp.exe" ComponentId="{DF80F91D-6FBA-48AF-A8B3-40DAF65CB578}" Directory_="bin_DIR" Attributes="0" KeyPath="posInterp.exe" FullKeyPath="APPDIR\bin\posInterp.exe"/>
+    <ROW Component="poscvt.exe" ComponentId="{7D440995-7E4C-4E72-AD48-AD748C0B6096}" Directory_="bin_DIR" Attributes="0" KeyPath="poscvt.exe" FullKeyPath="APPDIR\bin\poscvt.exe"/>
+    <ROW Component="rinexpvt.exe" ComponentId="{53FB158D-5710-4DF1-911F-A52A0CF4E927}" Directory_="bin_DIR" Attributes="0" KeyPath="rinexpvt.exe" FullKeyPath="APPDIR\bin\rinexpvt.exe"/>
+    <ROW Component="rinexthin.exe" ComponentId="{E70DD697-2250-4564-9924-1C346F3C2B58}" Directory_="bin_DIR" Attributes="0" KeyPath="rinexthin.exe" FullKeyPath="APPDIR\bin\rinexthin.exe"/>
+    <ROW Component="rmwcheck.exe" ComponentId="{63C834F5-A340-4FC0-B85E-EFFE4C1013F0}" Directory_="bin_DIR" Attributes="0" KeyPath="rmwcheck.exe" FullKeyPath="APPDIR\bin\rmwcheck.exe"/>
+    <ROW Component="rmwdiff.exe" ComponentId="{023DC1D4-6DBA-488C-B814-DAF786B95320}" Directory_="bin_DIR" Attributes="0" KeyPath="rmwdiff.exe" FullKeyPath="APPDIR\bin\rmwdiff.exe"/>
+    <ROW Component="rnwcheck.exe" ComponentId="{14BF220D-865D-427D-BF77-3A67A871EDB2}" Directory_="bin_DIR" Attributes="0" KeyPath="rnwcheck.exe" FullKeyPath="APPDIR\bin\rnwcheck.exe"/>
+    <ROW Component="rnwdiff.exe" ComponentId="{603C6DD7-FFC3-4F91-9FA1-FDFD7C2B2B70}" Directory_="bin_DIR" Attributes="0" KeyPath="rnwdiff.exe" FullKeyPath="APPDIR\bin\rnwdiff.exe"/>
+    <ROW Component="rowcheck.exe" ComponentId="{D56AA307-2140-46F4-AC17-C5E64C6A4A65}" Directory_="bin_DIR" Attributes="0" KeyPath="rowcheck.exe" FullKeyPath="APPDIR\bin\rowcheck.exe"/>
+    <ROW Component="rowdiff.exe" ComponentId="{07991397-61A1-4BE3-A205-C96D98F61E00}" Directory_="bin_DIR" Attributes="0" KeyPath="rowdiff.exe" FullKeyPath="APPDIR\bin\rowdiff.exe"/>
+    <ROW Component="rstats.exe" ComponentId="{107D4FB8-CE7A-49D7-8103-262C91E26CC5}" Directory_="bin_DIR" Attributes="0" KeyPath="rstats.exe" FullKeyPath="APPDIR\bin\rstats.exe"/>
+    <ROW Component="sp3version.exe" ComponentId="{6B47BD50-B3DC-4369-9BA4-9A753DF24888}" Directory_="bin_DIR" Attributes="0" KeyPath="sp3version.exe" FullKeyPath="APPDIR\bin\sp3version.exe"/>
+    <ROW Component="timeconvert.exe" ComponentId="{A6C5459B-A15C-4B8A-A4F7-516AB67E15BC}" Directory_="bin_DIR" Attributes="0" KeyPath="timeconvert.exe" FullKeyPath="APPDIR\bin\timeconvert.exe"/>
+    <ROW Component="tnl.exe" ComponentId="{76E3434F-94DA-4ACD-AA71-DFB6810E0E21}" Directory_="bin_DIR" Attributes="0" KeyPath="tnl.exe" FullKeyPath="APPDIR\bin\tnl.exe"/>
+    <ROW Component="tsrif.exe" ComponentId="{F1B95E0F-D908-4A2E-959C-49059EC63149}" Directory_="bin_DIR" Attributes="0" KeyPath="tsrif.exe" FullKeyPath="APPDIR\bin\tsrif.exe"/>
+    <ROW Component="tsrifsu.exe" ComponentId="{39094244-CE40-4682-A93D-3505D46D8CEA}" Directory_="bin_DIR" Attributes="0" KeyPath="tsrifsu.exe" FullKeyPath="APPDIR\bin\tsrifsu.exe"/>
+    <ROW Component="tsriftu.exe" ComponentId="{54041AAC-90E1-4574-8BDF-650B72396C4A}" Directory_="bin_DIR" Attributes="0" KeyPath="tsriftu.exe" FullKeyPath="APPDIR\bin\tsriftu.exe"/>
+    <ROW Component="vecsol.exe" ComponentId="{B89FA2AC-87B8-4488-BF06-0D8CE70FBDBE}" Directory_="bin_DIR" Attributes="0" KeyPath="vecsol.exe" FullKeyPath="APPDIR\bin\vecsol.exe"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="APPDIR bc2sp3.exe calgps.exe DDBase.exe ddmerge.exe DiscFix.exe EditRinex.exe ephdiff.exe fic2rin.exe ficacheck.exe ficafic.exe ficcheck.exe ficdiff.exe ficfica.exe IonoBias.exe mergeFIC.exe mergeRinMet.exe mergeRinNav.exe mergeRinObs.exe mergeSRI.exe mpsolve.exe navdmp.exe NavMerge.exe novaRinex.exe poscvt.exe posInterp.exe PRSolve.exe ResCor.exe RinexDump.exe rinexpvt.exe rinexthin.exe RinSum.exe rmwcheck.exe rmwdiff.exe rnwcheck.exe rnwdiff.exe rowcheck.exe rowdiff.exe rstats.exe sp3version.exe TECMaps.exe timeconvert.exe tnl.exe tsrif.exe tsrifsu.exe tsriftu.exe vecsol.exe AlmanacStore.hpp gpstk.lib DDBaseDoc.pdf gpstk_user_reference.pdf_1"/>
+    <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
+    <ROW File="ANSITime.hpp" Component_="AlmanacStore.hpp" FileName="ANSITime.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ANSITime.hpp" SelfReg="false" Sequence="49"/>
+    <ROW File="AlmOrbit.hpp" Component_="AlmanacStore.hpp" FileName="AlmOrbit.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\AlmOrbit.hpp" SelfReg="false" Sequence="48"/>
+    <ROW File="AlmanacStore.hpp" Component_="AlmanacStore.hpp" FileName="Almana~1.hpp|AlmanacStore.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\AlmanacStore.hpp" SelfReg="false" Sequence="47"/>
+    <ROW File="AshtechALB.hpp" Component_="AlmanacStore.hpp" FileName="Ashtec~1.hpp|AshtechALB.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\AshtechALB.hpp" SelfReg="false" Sequence="50"/>
+    <ROW File="AshtechData.hpp" Component_="AlmanacStore.hpp" FileName="Ashtec~2.hpp|AshtechData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\AshtechData.hpp" SelfReg="false" Sequence="51"/>
+    <ROW File="AshtechEPB.hpp" Component_="AlmanacStore.hpp" FileName="Ashtec~3.hpp|AshtechEPB.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\AshtechEPB.hpp" SelfReg="false" Sequence="52"/>
+    <ROW File="AshtechMBEN.hpp" Component_="AlmanacStore.hpp" FileName="Ashtec~4.hpp|AshtechMBEN.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\AshtechMBEN.hpp" SelfReg="false" Sequence="53"/>
+    <ROW File="AshtechPBEN.hpp" Component_="AlmanacStore.hpp" FileName="Ashtec~5.hpp|AshtechPBEN.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\AshtechPBEN.hpp" SelfReg="false" Sequence="54"/>
+    <ROW File="AshtechStream.hpp" Component_="AlmanacStore.hpp" FileName="Ashtec~6.hpp|AshtechStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\AshtechStream.hpp" SelfReg="false" Sequence="55"/>
+    <ROW File="BCEphemerisStore.hpp" Component_="AlmanacStore.hpp" FileName="BCEphe~1.hpp|BCEphemerisStore.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\BCEphemerisStore.hpp" SelfReg="false" Sequence="58"/>
+    <ROW File="Bancroft.hpp" Component_="AlmanacStore.hpp" FileName="Bancroft.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\Bancroft.hpp" SelfReg="false" Sequence="56"/>
+    <ROW File="BasicFramework.hpp" Component_="AlmanacStore.hpp" FileName="BasicF~1.hpp|BasicFramework.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\BasicFramework.hpp" SelfReg="false" Sequence="57"/>
+    <ROW File="BinUtils.hpp" Component_="AlmanacStore.hpp" FileName="BinUtils.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\BinUtils.hpp" SelfReg="false" Sequence="62"/>
+    <ROW File="BinexData.hpp" Component_="AlmanacStore.hpp" FileName="BinexD~1.hpp|BinexData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\BinexData.hpp" SelfReg="false" Sequence="59"/>
+    <ROW File="BinexFilterOperators.hpp" Component_="AlmanacStore.hpp" FileName="BinexF~1.hpp|BinexFilterOperators.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\BinexFilterOperators.hpp" SelfReg="false" Sequence="60"/>
+    <ROW File="BinexStream.hpp" Component_="AlmanacStore.hpp" FileName="BinexS~1.hpp|BinexStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\BinexStream.hpp" SelfReg="false" Sequence="61"/>
+    <ROW File="BivarStats.hpp" Component_="AlmanacStore.hpp" FileName="BivarS~1.hpp|BivarStats.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\BivarStats.hpp" SelfReg="false" Sequence="63"/>
+    <ROW File="CheckPRData.hpp" Component_="AlmanacStore.hpp" FileName="CheckP~1.hpp|CheckPRData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\CheckPRData.hpp" SelfReg="false" Sequence="64"/>
+    <ROW File="CivilTime.hpp" Component_="AlmanacStore.hpp" FileName="CivilT~1.hpp|CivilTime.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\CivilTime.hpp" SelfReg="false" Sequence="65"/>
+    <ROW File="ClockModel.hpp" Component_="AlmanacStore.hpp" FileName="ClockM~1.hpp|ClockModel.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ClockModel.hpp" SelfReg="false" Sequence="66"/>
+    <ROW File="CodeBuffer.hpp" Component_="AlmanacStore.hpp" FileName="CodeBu~1.hpp|CodeBuffer.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\CodeBuffer.hpp" SelfReg="false" Sequence="67"/>
+    <ROW File="CodeSmoother.hpp" Component_="AlmanacStore.hpp" FileName="CodeSm~1.hpp|CodeSmoother.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\CodeSmoother.hpp" SelfReg="false" Sequence="68"/>
+    <ROW File="CommandOption.hpp" Component_="AlmanacStore.hpp" FileName="Comman~1.hpp|CommandOption.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\CommandOption.hpp" SelfReg="false" Sequence="69"/>
+    <ROW File="CommandOptionParser.hpp" Component_="AlmanacStore.hpp" FileName="Comman~2.hpp|CommandOptionParser.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\CommandOptionParser.hpp" SelfReg="false" Sequence="70"/>
+    <ROW File="CommandOptionWithCommonTimeArg.hpp" Component_="AlmanacStore.hpp" FileName="Comman~3.hpp|CommandOptionWithCommonTimeArg.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\CommandOptionWithCommonTimeArg.hpp" SelfReg="false" Sequence="71"/>
+    <ROW File="CommandOptionWithPositionArg.hpp" Component_="AlmanacStore.hpp" FileName="Comman~4.hpp|CommandOptionWithPositionArg.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\CommandOptionWithPositionArg.hpp" SelfReg="false" Sequence="72"/>
+    <ROW File="CommandOptionWithTimeArg.hpp" Component_="AlmanacStore.hpp" FileName="Comman~5.hpp|CommandOptionWithTimeArg.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\CommandOptionWithTimeArg.hpp" SelfReg="false" Sequence="73"/>
+    <ROW File="CommonTime.hpp" Component_="AlmanacStore.hpp" FileName="Common~1.hpp|CommonTime.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\CommonTime.hpp" SelfReg="false" Sequence="74"/>
+    <ROW File="ComputeCombination.hpp" Component_="AlmanacStore.hpp" FileName="Comput~1.hpp|ComputeCombination.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ComputeCombination.hpp" SelfReg="false" Sequence="75"/>
+    <ROW File="ComputeIURAWeights.hpp" Component_="AlmanacStore.hpp" FileName="Comput~2.hpp|ComputeIURAWeights.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ComputeIURAWeights.hpp" SelfReg="false" Sequence="76"/>
+    <ROW File="ComputeLC.hpp" Component_="AlmanacStore.hpp" FileName="Comput~3.hpp|ComputeLC.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ComputeLC.hpp" SelfReg="false" Sequence="77"/>
+    <ROW File="ComputeLI.hpp" Component_="AlmanacStore.hpp" FileName="Comput~5.hpp|ComputeLI.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ComputeLI.hpp" SelfReg="false" Sequence="79"/>
+    <ROW File="ComputeLdelta.hpp" Component_="AlmanacStore.hpp" FileName="Comput~4.hpp|ComputeLdelta.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ComputeLdelta.hpp" SelfReg="false" Sequence="78"/>
+    <ROW File="ComputeMOPSWeights.hpp" Component_="AlmanacStore.hpp" FileName="Comput~7.hpp|ComputeMOPSWeights.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ComputeMOPSWeights.hpp" SelfReg="false" Sequence="81"/>
+    <ROW File="ComputeMelbourneWubbena.hpp" Component_="AlmanacStore.hpp" FileName="Comput~6.hpp|ComputeMelbourneWubbena.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ComputeMelbourneWubbena.hpp" SelfReg="false" Sequence="80"/>
+    <ROW File="ComputePC.hpp" Component_="AlmanacStore.hpp" FileName="Comput~8.hpp|ComputePC.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ComputePC.hpp" SelfReg="false" Sequence="82"/>
+    <ROW File="ComputePI.hpp" Component_="AlmanacStore.hpp" FileName="Compu~10.hpp|ComputePI.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ComputePI.hpp" SelfReg="false" Sequence="84"/>
+    <ROW File="ComputePdelta.hpp" Component_="AlmanacStore.hpp" FileName="Comput~9.hpp|ComputePdelta.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ComputePdelta.hpp" SelfReg="false" Sequence="83"/>
+    <ROW File="DDBase.exe" Component_="DDBase.exe" FileName="DDBase.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\DDBase.exe" SelfReg="false" Sequence="3"/>
+    <ROW File="DDBaseCmdLineRef.pdf" Component_="DDBaseDoc.pdf" FileName="DDBase~2.pdf|DDBaseCmdLineRef.pdf" Attributes="0" SourcePath="..\..\dev\apps\geomatics\relposition\doc\DDBaseCmdLineRef.pdf" SelfReg="false" Sequence="281"/>
+    <ROW File="DDBaseDoc.pdf" Component_="DDBaseDoc.pdf" FileName="DDBase~1.pdf|DDBaseDoc.pdf" Attributes="0" SourcePath="..\..\dev\apps\geomatics\relposition\doc\DDBaseDoc.pdf" SelfReg="false" Sequence="280"/>
+    <ROW File="DOP.hpp" Component_="AlmanacStore.hpp" FileName="DOP.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\DOP.hpp" SelfReg="false" Sequence="92"/>
+    <ROW File="DataHeaders.hpp" Component_="AlmanacStore.hpp" FileName="DataHe~1.hpp|DataHeaders.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\DataHeaders.hpp" SelfReg="false" Sequence="86"/>
+    <ROW File="DataStatus.hpp" Component_="AlmanacStore.hpp" FileName="DataSt~1.hpp|DataStatus.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\DataStatus.hpp" SelfReg="false" Sequence="87"/>
+    <ROW File="DataStructures.hpp" Component_="AlmanacStore.hpp" FileName="DataSt~2.hpp|DataStructures.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\DataStructures.hpp" SelfReg="false" Sequence="88"/>
+    <ROW File="DayTime.hpp" Component_="AlmanacStore.hpp" FileName="DayTime.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\DayTime.hpp" SelfReg="false" Sequence="89"/>
+    <ROW File="DeltaOp.hpp" Component_="AlmanacStore.hpp" FileName="DeltaOp.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\DeltaOp.hpp" SelfReg="false" Sequence="90"/>
+    <ROW File="DeviceStream.hpp" Component_="AlmanacStore.hpp" FileName="Device~1.hpp|DeviceStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\DeviceStream.hpp" SelfReg="false" Sequence="91"/>
+    <ROW File="DiscFix.exe" Component_="DiscFix.exe" FileName="DiscFix.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\DiscFix.exe" SelfReg="false" Sequence="5"/>
+    <ROW File="ECEF.hpp" Component_="AlmanacStore.hpp" FileName="ECEF.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ECEF.hpp" SelfReg="false" Sequence="93"/>
+    <ROW File="EditRinex.exe" Component_="EditRinex.exe" FileName="EditRi~1.exe|EditRinex.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\EditRinex.exe" SelfReg="false" Sequence="6"/>
+    <ROW File="EngAlmanac.hpp" Component_="AlmanacStore.hpp" FileName="EngAlm~1.hpp|EngAlmanac.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\EngAlmanac.hpp" SelfReg="false" Sequence="94"/>
+    <ROW File="EngEphemeris.hpp" Component_="AlmanacStore.hpp" FileName="EngEph~1.hpp|EngEphemeris.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\EngEphemeris.hpp" SelfReg="false" Sequence="95"/>
+    <ROW File="EngNav.hpp" Component_="AlmanacStore.hpp" FileName="EngNav.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\EngNav.hpp" SelfReg="false" Sequence="96"/>
+    <ROW File="EphReader.hpp" Component_="AlmanacStore.hpp" FileName="EphRea~1.hpp|EphReader.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\EphReader.hpp" SelfReg="false" Sequence="99"/>
+    <ROW File="EphemerisRange.hpp" Component_="AlmanacStore.hpp" FileName="Epheme~1.hpp|EphemerisRange.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\EphemerisRange.hpp" SelfReg="false" Sequence="97"/>
+    <ROW File="EphemerisStore.hpp" Component_="AlmanacStore.hpp" FileName="Epheme~2.hpp|EphemerisStore.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\EphemerisStore.hpp" SelfReg="false" Sequence="98"/>
+    <ROW File="EpochClockModel.hpp" Component_="AlmanacStore.hpp" FileName="EpochC~1.hpp|EpochClockModel.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\EpochClockModel.hpp" SelfReg="false" Sequence="100"/>
+    <ROW File="Exception.hpp" Component_="AlmanacStore.hpp" FileName="Except~1.hpp|Exception.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\Exception.hpp" SelfReg="false" Sequence="101"/>
+    <ROW File="Expression.hpp" Component_="AlmanacStore.hpp" FileName="Expres~1.hpp|Expression.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\Expression.hpp" SelfReg="false" Sequence="102"/>
+    <ROW File="ExtractC1.hpp" Component_="AlmanacStore.hpp" FileName="Extrac~1.hpp|ExtractC1.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ExtractC1.hpp" SelfReg="false" Sequence="103"/>
+    <ROW File="ExtractCombinationData.hpp" Component_="AlmanacStore.hpp" FileName="Extrac~2.hpp|ExtractCombinationData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ExtractCombinationData.hpp" SelfReg="false" Sequence="104"/>
+    <ROW File="ExtractD1.hpp" Component_="AlmanacStore.hpp" FileName="Extrac~3.hpp|ExtractD1.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ExtractD1.hpp" SelfReg="false" Sequence="105"/>
+    <ROW File="ExtractD2.hpp" Component_="AlmanacStore.hpp" FileName="Extrac~4.hpp|ExtractD2.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ExtractD2.hpp" SelfReg="false" Sequence="106"/>
+    <ROW File="ExtractData.hpp" Component_="AlmanacStore.hpp" FileName="Extrac~5.hpp|ExtractData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ExtractData.hpp" SelfReg="false" Sequence="107"/>
+    <ROW File="ExtractL1.hpp" Component_="AlmanacStore.hpp" FileName="Extrac~6.hpp|ExtractL1.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ExtractL1.hpp" SelfReg="false" Sequence="108"/>
+    <ROW File="ExtractL2.hpp" Component_="AlmanacStore.hpp" FileName="Extrac~7.hpp|ExtractL2.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ExtractL2.hpp" SelfReg="false" Sequence="109"/>
+    <ROW File="ExtractLC.hpp" Component_="AlmanacStore.hpp" FileName="Extrac~8.hpp|ExtractLC.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ExtractLC.hpp" SelfReg="false" Sequence="110"/>
+    <ROW File="ExtractP1.hpp" Component_="AlmanacStore.hpp" FileName="Extrac~9.hpp|ExtractP1.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ExtractP1.hpp" SelfReg="false" Sequence="111"/>
+    <ROW File="ExtractP2.hpp" Component_="AlmanacStore.hpp" FileName="Extra~10.hpp|ExtractP2.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ExtractP2.hpp" SelfReg="false" Sequence="112"/>
+    <ROW File="ExtractPC.hpp" Component_="AlmanacStore.hpp" FileName="Extra~11.hpp|ExtractPC.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ExtractPC.hpp" SelfReg="false" Sequence="113"/>
+    <ROW File="FDStreamBuff.hpp" Component_="AlmanacStore.hpp" FileName="FDStre~1.hpp|FDStreamBuff.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FDStreamBuff.hpp" SelfReg="false" Sequence="114"/>
+    <ROW File="FFBinaryStream.hpp" Component_="AlmanacStore.hpp" FileName="FFBina~1.hpp|FFBinaryStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FFBinaryStream.hpp" SelfReg="false" Sequence="115"/>
+    <ROW File="FFData.hpp" Component_="AlmanacStore.hpp" FileName="FFData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FFData.hpp" SelfReg="false" Sequence="116"/>
+    <ROW File="FFIdentifier.hpp" Component_="AlmanacStore.hpp" FileName="FFIden~1.hpp|FFIdentifier.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FFIdentifier.hpp" SelfReg="false" Sequence="117"/>
+    <ROW File="FFStream.hpp" Component_="AlmanacStore.hpp" FileName="FFStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FFStream.hpp" SelfReg="false" Sequence="118"/>
+    <ROW File="FFStreamError.hpp" Component_="AlmanacStore.hpp" FileName="FFStre~1.hpp|FFStreamError.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FFStreamError.hpp" SelfReg="false" Sequence="119"/>
+    <ROW File="FFTextStream.hpp" Component_="AlmanacStore.hpp" FileName="FFText~1.hpp|FFTextStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FFTextStream.hpp" SelfReg="false" Sequence="120"/>
+    <ROW File="FICAStream.hpp" Component_="AlmanacStore.hpp" FileName="FICASt~1.hpp|FICAStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FICAStream.hpp" SelfReg="false" Sequence="121"/>
+    <ROW File="FICBase.hpp" Component_="AlmanacStore.hpp" FileName="FICBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FICBase.hpp" SelfReg="false" Sequence="122"/>
+    <ROW File="FICData.hpp" Component_="AlmanacStore.hpp" FileName="FICData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FICData.hpp" SelfReg="false" Sequence="123"/>
+    <ROW File="FICData109.hpp" Component_="AlmanacStore.hpp" FileName="FICDat~1.hpp|FICData109.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FICData109.hpp" SelfReg="false" Sequence="124"/>
+    <ROW File="FICData162.hpp" Component_="AlmanacStore.hpp" FileName="FICDat~2.hpp|FICData162.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FICData162.hpp" SelfReg="false" Sequence="125"/>
+    <ROW File="FICData62.hpp" Component_="AlmanacStore.hpp" FileName="FICDat~3.hpp|FICData62.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FICData62.hpp" SelfReg="false" Sequence="126"/>
+    <ROW File="FICData9.hpp" Component_="AlmanacStore.hpp" FileName="FICData9.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FICData9.hpp" SelfReg="false" Sequence="127"/>
+    <ROW File="FICFilterOperators.hpp" Component_="AlmanacStore.hpp" FileName="FICFil~1.hpp|FICFilterOperators.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FICFilterOperators.hpp" SelfReg="false" Sequence="128"/>
+    <ROW File="FICHeader.hpp" Component_="AlmanacStore.hpp" FileName="FICHea~1.hpp|FICHeader.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FICHeader.hpp" SelfReg="false" Sequence="129"/>
+    <ROW File="FICStream.hpp" Component_="AlmanacStore.hpp" FileName="FICStr~1.hpp|FICStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FICStream.hpp" SelfReg="false" Sequence="130"/>
+    <ROW File="FICStreamBase.hpp" Component_="AlmanacStore.hpp" FileName="FICStr~2.hpp|FICStreamBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FICStreamBase.hpp" SelfReg="false" Sequence="131"/>
+    <ROW File="FileFilter.hpp" Component_="AlmanacStore.hpp" FileName="FileFi~1.hpp|FileFilter.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FileFilter.hpp" SelfReg="false" Sequence="132"/>
+    <ROW File="FileFilterFrame.hpp" Component_="AlmanacStore.hpp" FileName="FileFi~2.hpp|FileFilterFrame.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FileFilterFrame.hpp" SelfReg="false" Sequence="133"/>
+    <ROW File="FileFilterFrameWithHeader.hpp" Component_="AlmanacStore.hpp" FileName="FileFi~3.hpp|FileFilterFrameWithHeader.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FileFilterFrameWithHeader.hpp" SelfReg="false" Sequence="134"/>
+    <ROW File="FileHunter.hpp" Component_="AlmanacStore.hpp" FileName="FileHu~1.hpp|FileHunter.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FileHunter.hpp" SelfReg="false" Sequence="135"/>
+    <ROW File="FileSpec.hpp" Component_="AlmanacStore.hpp" FileName="FileSpec.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FileSpec.hpp" SelfReg="false" Sequence="136"/>
+    <ROW File="FileStore.hpp" Component_="AlmanacStore.hpp" FileName="FileSt~1.hpp|FileStore.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FileStore.hpp" SelfReg="false" Sequence="137"/>
+    <ROW File="FileUtils.hpp" Component_="AlmanacStore.hpp" FileName="FileUt~1.hpp|FileUtils.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\FileUtils.hpp" SelfReg="false" Sequence="138"/>
+    <ROW File="GPSEpochWeekSecond.hpp" Component_="AlmanacStore.hpp" FileName="GPSEpo~1.hpp|GPSEpochWeekSecond.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\GPSEpochWeekSecond.hpp" SelfReg="false" Sequence="144"/>
+    <ROW File="GPSGeoid.hpp" Component_="AlmanacStore.hpp" FileName="GPSGeoid.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\GPSGeoid.hpp" SelfReg="false" Sequence="145"/>
+    <ROW File="GPSWeekSecond.hpp" Component_="AlmanacStore.hpp" FileName="GPSWee~1.hpp|GPSWeekSecond.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\GPSWeekSecond.hpp" SelfReg="false" Sequence="147"/>
+    <ROW File="GPSWeekZcount.hpp" Component_="AlmanacStore.hpp" FileName="GPSWee~2.hpp|GPSWeekZcount.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\GPSWeekZcount.hpp" SelfReg="false" Sequence="148"/>
+    <ROW File="GPSZcount.hpp" Component_="AlmanacStore.hpp" FileName="GPSZco~1.hpp|GPSZcount.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\GPSZcount.hpp" SelfReg="false" Sequence="149"/>
+    <ROW File="GPSZcount29.hpp" Component_="AlmanacStore.hpp" FileName="GPSZco~2.hpp|GPSZcount29.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\GPSZcount29.hpp" SelfReg="false" Sequence="150"/>
+    <ROW File="GPSZcount32.hpp" Component_="AlmanacStore.hpp" FileName="GPSZco~3.hpp|GPSZcount32.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\GPSZcount32.hpp" SelfReg="false" Sequence="151"/>
+    <ROW File="GenXSequence.hpp" Component_="AlmanacStore.hpp" FileName="GenXSe~1.hpp|GenXSequence.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\GenXSequence.hpp" SelfReg="false" Sequence="139"/>
+    <ROW File="Geodetic.hpp" Component_="AlmanacStore.hpp" FileName="Geodetic.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\Geodetic.hpp" SelfReg="false" Sequence="140"/>
+    <ROW File="GeoidModel.hpp" Component_="AlmanacStore.hpp" FileName="GeoidM~1.hpp|GeoidModel.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\GeoidModel.hpp" SelfReg="false" Sequence="141"/>
+    <ROW File="IonoBias.exe" Component_="IonoBias.exe" FileName="IonoBias.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\IonoBias.exe" SelfReg="false" Sequence="14"/>
+    <ROW File="IonoModel.hpp" Component_="AlmanacStore.hpp" FileName="IonoMo~1.hpp|IonoModel.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\IonoModel.hpp" SelfReg="false" Sequence="154"/>
+    <ROW File="IonoModelStore.hpp" Component_="AlmanacStore.hpp" FileName="IonoMo~2.hpp|IonoModelStore.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\IonoModelStore.hpp" SelfReg="false" Sequence="155"/>
+    <ROW File="JulianDate.hpp" Component_="AlmanacStore.hpp" FileName="Julian~1.hpp|JulianDate.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\JulianDate.hpp" SelfReg="false" Sequence="156"/>
+    <ROW File="LICSDetector.hpp" Component_="AlmanacStore.hpp" FileName="LICSDe~1.hpp|LICSDetector.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\LICSDetector.hpp" SelfReg="false" Sequence="157"/>
+    <ROW File="LinearClockModel.hpp" Component_="AlmanacStore.hpp" FileName="Linear~1.hpp|LinearClockModel.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\LinearClockModel.hpp" SelfReg="false" Sequence="158"/>
+    <ROW File="LoopedFramework.hpp" Component_="AlmanacStore.hpp" FileName="Looped~1.hpp|LoopedFramework.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\LoopedFramework.hpp" SelfReg="false" Sequence="159"/>
+    <ROW File="MDPHeader.hpp" Component_="AlmanacStore.hpp" FileName="MDPHea~1.hpp|MDPHeader.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MDPHeader.hpp" SelfReg="false" Sequence="167"/>
+    <ROW File="MDPNavSubframe.hpp" Component_="AlmanacStore.hpp" FileName="MDPNav~1.hpp|MDPNavSubframe.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MDPNavSubframe.hpp" SelfReg="false" Sequence="168"/>
+    <ROW File="MDPObsEpoch.hpp" Component_="AlmanacStore.hpp" FileName="MDPObs~1.hpp|MDPObsEpoch.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MDPObsEpoch.hpp" SelfReg="false" Sequence="169"/>
+    <ROW File="MDPPVTSolution.hpp" Component_="AlmanacStore.hpp" FileName="MDPPVT~1.hpp|MDPPVTSolution.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MDPPVTSolution.hpp" SelfReg="false" Sequence="170"/>
+    <ROW File="MDPSelftestStatus.hpp" Component_="AlmanacStore.hpp" FileName="MDPSel~1.hpp|MDPSelftestStatus.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MDPSelftestStatus.hpp" SelfReg="false" Sequence="171"/>
+    <ROW File="MJD.hpp" Component_="AlmanacStore.hpp" FileName="MJD.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MJD.hpp" SelfReg="false" Sequence="176"/>
+    <ROW File="MOPSWeight.hpp" Component_="AlmanacStore.hpp" FileName="MOPSWe~1.hpp|MOPSWeight.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MOPSWeight.hpp" SelfReg="false" Sequence="180"/>
+    <ROW File="MSCData.hpp" Component_="AlmanacStore.hpp" FileName="MSCData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MSCData.hpp" SelfReg="false" Sequence="181"/>
+    <ROW File="MSCStream.hpp" Component_="AlmanacStore.hpp" FileName="MSCStr~1.hpp|MSCStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MSCStream.hpp" SelfReg="false" Sequence="182"/>
+    <ROW File="MWCSDetector.hpp" Component_="AlmanacStore.hpp" FileName="MWCSDe~1.hpp|MWCSDetector.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MWCSDetector.hpp" SelfReg="false" Sequence="183"/>
+    <ROW File="MathBase.hpp" Component_="AlmanacStore.hpp" FileName="MathBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MathBase.hpp" SelfReg="false" Sequence="160"/>
+    <ROW File="Matrix.hpp" Component_="AlmanacStore.hpp" FileName="Matrix.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\Matrix.hpp" SelfReg="false" Sequence="161"/>
+    <ROW File="MatrixBase.hpp" Component_="AlmanacStore.hpp" FileName="Matrix~1.hpp|MatrixBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MatrixBase.hpp" SelfReg="false" Sequence="162"/>
+    <ROW File="MatrixBaseOperators.hpp" Component_="AlmanacStore.hpp" FileName="Matrix~2.hpp|MatrixBaseOperators.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MatrixBaseOperators.hpp" SelfReg="false" Sequence="163"/>
+    <ROW File="MatrixFunctors.hpp" Component_="AlmanacStore.hpp" FileName="Matrix~3.hpp|MatrixFunctors.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MatrixFunctors.hpp" SelfReg="false" Sequence="164"/>
+    <ROW File="MatrixImplementation.hpp" Component_="AlmanacStore.hpp" FileName="Matrix~4.hpp|MatrixImplementation.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MatrixImplementation.hpp" SelfReg="false" Sequence="165"/>
+    <ROW File="MatrixOperators.hpp" Component_="AlmanacStore.hpp" FileName="Matrix~5.hpp|MatrixOperators.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MatrixOperators.hpp" SelfReg="false" Sequence="166"/>
+    <ROW File="MetReader.hpp" Component_="AlmanacStore.hpp" FileName="MetRea~1.hpp|MetReader.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MetReader.hpp" SelfReg="false" Sequence="173"/>
+    <ROW File="MiscMath.hpp" Component_="AlmanacStore.hpp" FileName="MiscMath.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\MiscMath.hpp" SelfReg="false" Sequence="175"/>
+    <ROW File="ModeledPR.hpp" Component_="AlmanacStore.hpp" FileName="Modele~1.hpp|ModeledPR.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ModeledPR.hpp" SelfReg="false" Sequence="177"/>
+    <ROW File="ModeledPseudorangeBase.hpp" Component_="AlmanacStore.hpp" FileName="Modele~2.hpp|ModeledPseudorangeBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ModeledPseudorangeBase.hpp" SelfReg="false" Sequence="178"/>
+    <ROW File="ModeledReferencePR.hpp" Component_="AlmanacStore.hpp" FileName="Modele~3.hpp|ModeledReferencePR.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ModeledReferencePR.hpp" SelfReg="false" Sequence="179"/>
+    <ROW File="NavMerge.exe" Component_="NavMerge.exe" FileName="NavMerge.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\NavMerge.exe" SelfReg="false" Sequence="22"/>
+    <ROW File="ORDEpoch.hpp" Component_="AlmanacStore.hpp" FileName="ORDEpoch.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ORDEpoch.hpp" SelfReg="false" Sequence="191"/>
+    <ROW File="ObsClockModel.hpp" Component_="AlmanacStore.hpp" FileName="ObsClo~1.hpp|ObsClockModel.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ObsClockModel.hpp" SelfReg="false" Sequence="184"/>
+    <ROW File="ObsEpochMap.hpp" Component_="AlmanacStore.hpp" FileName="ObsEpo~1.hpp|ObsEpochMap.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ObsEpochMap.hpp" SelfReg="false" Sequence="185"/>
+    <ROW File="ObsID.hpp" Component_="AlmanacStore.hpp" FileName="ObsID.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ObsID.hpp" SelfReg="false" Sequence="186"/>
+    <ROW File="ObsReader.hpp" Component_="AlmanacStore.hpp" FileName="ObsRea~1.hpp|ObsReader.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ObsReader.hpp" SelfReg="false" Sequence="187"/>
+    <ROW File="ObsRngDev.hpp" Component_="AlmanacStore.hpp" FileName="ObsRng~1.hpp|ObsRngDev.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ObsRngDev.hpp" SelfReg="false" Sequence="188"/>
+    <ROW File="ObsUtils.hpp" Component_="AlmanacStore.hpp" FileName="ObsUtils.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ObsUtils.hpp" SelfReg="false" Sequence="189"/>
+    <ROW File="OneFreqCSDetector.hpp" Component_="AlmanacStore.hpp" FileName="OneFre~1.hpp|OneFreqCSDetector.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\OneFreqCSDetector.hpp" SelfReg="false" Sequence="190"/>
+    <ROW File="PCSmoother.hpp" Component_="AlmanacStore.hpp" FileName="PCSmoo~1.hpp|PCSmoother.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\PCSmoother.hpp" SelfReg="false" Sequence="193"/>
+    <ROW File="PCodeConst.hpp" Component_="AlmanacStore.hpp" FileName="PCodeC~1.hpp|PCodeConst.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\PCodeConst.hpp" SelfReg="false" Sequence="192"/>
+    <ROW File="PRSolution.hpp" Component_="AlmanacStore.hpp" FileName="PRSolu~1.hpp|PRSolution.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\PRSolution.hpp" SelfReg="false" Sequence="196"/>
+    <ROW File="PRSolve.exe" Component_="PRSolve.exe" FileName="PRSolve.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\PRSolve.exe" SelfReg="false" Sequence="26"/>
+    <ROW File="PolyFit.hpp" Component_="AlmanacStore.hpp" FileName="PolyFit.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\PolyFit.hpp" SelfReg="false" Sequence="194"/>
+    <ROW File="Position.hpp" Component_="AlmanacStore.hpp" FileName="Position.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\Position.hpp" SelfReg="false" Sequence="195"/>
+    <ROW File="RACRotation.hpp" Component_="AlmanacStore.hpp" FileName="RACRot~1.hpp|RACRotation.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RACRotation.hpp" SelfReg="false" Sequence="197"/>
+    <ROW File="RTFileFrame.hpp" Component_="AlmanacStore.hpp" FileName="RTFile~1.hpp|RTFileFrame.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RTFileFrame.hpp" SelfReg="false" Sequence="219"/>
+    <ROW File="ResCor.exe" Component_="ResCor.exe" FileName="ResCor.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\ResCor.exe" SelfReg="false" Sequence="27"/>
+    <ROW File="RinSum.exe" Component_="RinSum.exe" FileName="RinSum.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\RinSum.exe" SelfReg="false" Sequence="31"/>
+    <ROW File="RinexConverters.hpp" Component_="AlmanacStore.hpp" FileName="RinexC~1.hpp|RinexConverters.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexConverters.hpp" SelfReg="false" Sequence="199"/>
+    <ROW File="RinexDump.exe" Component_="RinexDump.exe" FileName="RinexD~1.exe|RinexDump.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\RinexDump.exe" SelfReg="false" Sequence="28"/>
+    <ROW File="RinexEphemerisStore.hpp" Component_="AlmanacStore.hpp" FileName="RinexE~1.hpp|RinexEphemerisStore.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexEphemerisStore.hpp" SelfReg="false" Sequence="200"/>
+    <ROW File="RinexMetBase.hpp" Component_="AlmanacStore.hpp" FileName="RinexM~1.hpp|RinexMetBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexMetBase.hpp" SelfReg="false" Sequence="201"/>
+    <ROW File="RinexMetData.hpp" Component_="AlmanacStore.hpp" FileName="RinexM~2.hpp|RinexMetData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexMetData.hpp" SelfReg="false" Sequence="202"/>
+    <ROW File="RinexMetFilterOperators.hpp" Component_="AlmanacStore.hpp" FileName="RinexM~3.hpp|RinexMetFilterOperators.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexMetFilterOperators.hpp" SelfReg="false" Sequence="203"/>
+    <ROW File="RinexMetHeader.hpp" Component_="AlmanacStore.hpp" FileName="RinexM~4.hpp|RinexMetHeader.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexMetHeader.hpp" SelfReg="false" Sequence="204"/>
+    <ROW File="RinexMetStream.hpp" Component_="AlmanacStore.hpp" FileName="RinexM~5.hpp|RinexMetStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexMetStream.hpp" SelfReg="false" Sequence="205"/>
+    <ROW File="RinexNavBase.hpp" Component_="AlmanacStore.hpp" FileName="RinexN~1.hpp|RinexNavBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexNavBase.hpp" SelfReg="false" Sequence="206"/>
+    <ROW File="RinexNavData.hpp" Component_="AlmanacStore.hpp" FileName="RinexN~2.hpp|RinexNavData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexNavData.hpp" SelfReg="false" Sequence="207"/>
+    <ROW File="RinexNavFilterOperators.hpp" Component_="AlmanacStore.hpp" FileName="RinexN~3.hpp|RinexNavFilterOperators.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexNavFilterOperators.hpp" SelfReg="false" Sequence="208"/>
+    <ROW File="RinexNavHeader.hpp" Component_="AlmanacStore.hpp" FileName="RinexN~4.hpp|RinexNavHeader.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexNavHeader.hpp" SelfReg="false" Sequence="209"/>
+    <ROW File="RinexNavStream.hpp" Component_="AlmanacStore.hpp" FileName="RinexN~5.hpp|RinexNavStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexNavStream.hpp" SelfReg="false" Sequence="210"/>
+    <ROW File="RinexObsBase.hpp" Component_="AlmanacStore.hpp" FileName="RinexO~1.hpp|RinexObsBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexObsBase.hpp" SelfReg="false" Sequence="211"/>
+    <ROW File="RinexObsData.hpp" Component_="AlmanacStore.hpp" FileName="RinexO~2.hpp|RinexObsData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexObsData.hpp" SelfReg="false" Sequence="212"/>
+    <ROW File="RinexObsFilterOperators.hpp" Component_="AlmanacStore.hpp" FileName="RinexO~3.hpp|RinexObsFilterOperators.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexObsFilterOperators.hpp" SelfReg="false" Sequence="213"/>
+    <ROW File="RinexObsHeader.hpp" Component_="AlmanacStore.hpp" FileName="RinexO~4.hpp|RinexObsHeader.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexObsHeader.hpp" SelfReg="false" Sequence="214"/>
+    <ROW File="RinexObsID.hpp" Component_="AlmanacStore.hpp" FileName="RinexO~5.hpp|RinexObsID.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexObsID.hpp" SelfReg="false" Sequence="215"/>
+    <ROW File="RinexObsStream.hpp" Component_="AlmanacStore.hpp" FileName="RinexO~6.hpp|RinexObsStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexObsStream.hpp" SelfReg="false" Sequence="216"/>
+    <ROW File="RinexSatID.hpp" Component_="AlmanacStore.hpp" FileName="RinexS~1.hpp|RinexSatID.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexSatID.hpp" SelfReg="false" Sequence="217"/>
+    <ROW File="RinexUtilities.hpp" Component_="AlmanacStore.hpp" FileName="RinexU~1.hpp|RinexUtilities.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RinexUtilities.hpp" SelfReg="false" Sequence="218"/>
+    <ROW File="RungeKutta4.hpp" Component_="AlmanacStore.hpp" FileName="RungeK~1.hpp|RungeKutta4.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\RungeKutta4.hpp" SelfReg="false" Sequence="220"/>
+    <ROW File="SEMAlmanacStore.hpp" Component_="AlmanacStore.hpp" FileName="SEMAlm~1.hpp|SEMAlmanacStore.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SEMAlmanacStore.hpp" SelfReg="false" Sequence="222"/>
+    <ROW File="SEMBase.hpp" Component_="AlmanacStore.hpp" FileName="SEMBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SEMBase.hpp" SelfReg="false" Sequence="223"/>
+    <ROW File="SEMData.hpp" Component_="AlmanacStore.hpp" FileName="SEMData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SEMData.hpp" SelfReg="false" Sequence="224"/>
+    <ROW File="SEMHeader.hpp" Component_="AlmanacStore.hpp" FileName="SEMHea~1.hpp|SEMHeader.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SEMHeader.hpp" SelfReg="false" Sequence="225"/>
+    <ROW File="SEMStream.hpp" Component_="AlmanacStore.hpp" FileName="SEMStr~1.hpp|SEMStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SEMStream.hpp" SelfReg="false" Sequence="226"/>
+    <ROW File="SMODFData.hpp" Component_="AlmanacStore.hpp" FileName="SMODFD~1.hpp|SMODFData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SMODFData.hpp" SelfReg="false" Sequence="229"/>
+    <ROW File="SMODFStream.hpp" Component_="AlmanacStore.hpp" FileName="SMODFS~1.hpp|SMODFStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SMODFStream.hpp" SelfReg="false" Sequence="230"/>
+    <ROW File="SP3Base.hpp" Component_="AlmanacStore.hpp" FileName="SP3Base.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SP3Base.hpp" SelfReg="false" Sequence="235"/>
+    <ROW File="SP3Data.hpp" Component_="AlmanacStore.hpp" FileName="SP3Data.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SP3Data.hpp" SelfReg="false" Sequence="236"/>
+    <ROW File="SP3EphemerisStore.hpp" Component_="AlmanacStore.hpp" FileName="SP3Eph~1.hpp|SP3EphemerisStore.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SP3EphemerisStore.hpp" SelfReg="false" Sequence="237"/>
+    <ROW File="SP3Header.hpp" Component_="AlmanacStore.hpp" FileName="SP3Hea~1.hpp|SP3Header.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SP3Header.hpp" SelfReg="false" Sequence="238"/>
+    <ROW File="SP3SatID.hpp" Component_="AlmanacStore.hpp" FileName="SP3SatID.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SP3SatID.hpp" SelfReg="false" Sequence="239"/>
+    <ROW File="SP3Stream.hpp" Component_="AlmanacStore.hpp" FileName="SP3Str~1.hpp|SP3Stream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SP3Stream.hpp" SelfReg="false" Sequence="240"/>
+    <ROW File="SVExclusionList.hpp" Component_="AlmanacStore.hpp" FileName="SVExcl~1.hpp|SVExclusionList.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SVExclusionList.hpp" SelfReg="false" Sequence="244"/>
+    <ROW File="SVPCodeGen.hpp" Component_="AlmanacStore.hpp" FileName="SVPCod~1.hpp|SVPCodeGen.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SVPCodeGen.hpp" SelfReg="false" Sequence="245"/>
+    <ROW File="SatID.hpp" Component_="AlmanacStore.hpp" FileName="SatID.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SatID.hpp" SelfReg="false" Sequence="221"/>
+    <ROW File="SimpleFilter.hpp" Component_="AlmanacStore.hpp" FileName="Simple~1.hpp|SimpleFilter.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SimpleFilter.hpp" SelfReg="false" Sequence="227"/>
+    <ROW File="SimpleIURAWeight.hpp" Component_="AlmanacStore.hpp" FileName="Simple~2.hpp|SimpleIURAWeight.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SimpleIURAWeight.hpp" SelfReg="false" Sequence="228"/>
+    <ROW File="SolverBase.hpp" Component_="AlmanacStore.hpp" FileName="Solver~1.hpp|SolverBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SolverBase.hpp" SelfReg="false" Sequence="231"/>
+    <ROW File="SolverLMS.hpp" Component_="AlmanacStore.hpp" FileName="Solver~2.hpp|SolverLMS.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SolverLMS.hpp" SelfReg="false" Sequence="232"/>
+    <ROW File="SolverWMS.hpp" Component_="AlmanacStore.hpp" FileName="Solver~3.hpp|SolverWMS.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SolverWMS.hpp" SelfReg="false" Sequence="233"/>
+    <ROW File="SourceID.hpp" Component_="AlmanacStore.hpp" FileName="SourceID.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SourceID.hpp" SelfReg="false" Sequence="234"/>
+    <ROW File="Stats.hpp" Component_="AlmanacStore.hpp" FileName="Stats.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\Stats.hpp" SelfReg="false" Sequence="241"/>
+    <ROW File="StringUtils.hpp" Component_="AlmanacStore.hpp" FileName="String~1.hpp|StringUtils.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\StringUtils.hpp" SelfReg="false" Sequence="243"/>
+    <ROW File="SystemTime.hpp" Component_="AlmanacStore.hpp" FileName="System~1.hpp|SystemTime.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\SystemTime.hpp" SelfReg="false" Sequence="246"/>
+    <ROW File="TCPStream.hpp" Component_="AlmanacStore.hpp" FileName="TCPStr~1.hpp|TCPStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\TCPStream.hpp" SelfReg="false" Sequence="248"/>
+    <ROW File="TCPStreamBuff.hpp" Component_="AlmanacStore.hpp" FileName="TCPStr~2.hpp|TCPStreamBuff.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\TCPStreamBuff.hpp" SelfReg="false" Sequence="249"/>
+    <ROW File="TECMaps.exe" Component_="TECMaps.exe" FileName="TECMaps.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\TECMaps.exe" SelfReg="false" Sequence="40"/>
+    <ROW File="TabularEphemerisStore.hpp" Component_="AlmanacStore.hpp" FileName="Tabula~1.hpp|TabularEphemerisStore.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\TabularEphemerisStore.hpp" SelfReg="false" Sequence="247"/>
+    <ROW File="TimeConstants.hpp" Component_="AlmanacStore.hpp" FileName="TimeCo~1.hpp|TimeConstants.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\TimeConstants.hpp" SelfReg="false" Sequence="250"/>
+    <ROW File="TimeConverters.hpp" Component_="AlmanacStore.hpp" FileName="TimeCo~2.hpp|TimeConverters.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\TimeConverters.hpp" SelfReg="false" Sequence="251"/>
+    <ROW File="TimeNamedFileStream.hpp" Component_="AlmanacStore.hpp" FileName="TimeNa~1.hpp|TimeNamedFileStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\TimeNamedFileStream.hpp" SelfReg="false" Sequence="252"/>
+    <ROW File="TimeString.hpp" Component_="AlmanacStore.hpp" FileName="TimeSt~1.hpp|TimeString.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\TimeString.hpp" SelfReg="false" Sequence="253"/>
+    <ROW File="TimeTag.hpp" Component_="AlmanacStore.hpp" FileName="TimeTag.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\TimeTag.hpp" SelfReg="false" Sequence="254"/>
+    <ROW File="Triple.hpp" Component_="AlmanacStore.hpp" FileName="Triple.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\Triple.hpp" SelfReg="false" Sequence="255"/>
+    <ROW File="TropModel.hpp" Component_="AlmanacStore.hpp" FileName="TropMo~1.hpp|TropModel.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\TropModel.hpp" SelfReg="false" Sequence="256"/>
+    <ROW File="TypeID.hpp" Component_="AlmanacStore.hpp" FileName="TypeID.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\TypeID.hpp" SelfReg="false" Sequence="257"/>
+    <ROW File="UnixTime.hpp" Component_="AlmanacStore.hpp" FileName="UnixTime.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\UnixTime.hpp" SelfReg="false" Sequence="258"/>
+    <ROW File="ValidType.hpp" Component_="AlmanacStore.hpp" FileName="ValidT~1.hpp|ValidType.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\ValidType.hpp" SelfReg="false" Sequence="259"/>
+    <ROW File="Vector.hpp" Component_="AlmanacStore.hpp" FileName="Vector.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\Vector.hpp" SelfReg="false" Sequence="260"/>
+    <ROW File="VectorBase.hpp" Component_="AlmanacStore.hpp" FileName="Vector~1.hpp|VectorBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\VectorBase.hpp" SelfReg="false" Sequence="261"/>
+    <ROW File="VectorBaseOperators.hpp" Component_="AlmanacStore.hpp" FileName="Vector~2.hpp|VectorBaseOperators.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\VectorBaseOperators.hpp" SelfReg="false" Sequence="262"/>
+    <ROW File="VectorOperators.hpp" Component_="AlmanacStore.hpp" FileName="Vector~3.hpp|VectorOperators.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\VectorOperators.hpp" SelfReg="false" Sequence="263"/>
+    <ROW File="WGS84Geoid.hpp" Component_="AlmanacStore.hpp" FileName="WGS84G~1.hpp|WGS84Geoid.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\WGS84Geoid.hpp" SelfReg="false" Sequence="265"/>
+    <ROW File="WeightBase.hpp" Component_="AlmanacStore.hpp" FileName="Weight~1.hpp|WeightBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\WeightBase.hpp" SelfReg="false" Sequence="264"/>
+    <ROW File="WxObsMap.hpp" Component_="AlmanacStore.hpp" FileName="WxObsMap.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\WxObsMap.hpp" SelfReg="false" Sequence="266"/>
+    <ROW File="X1Sequence.hpp" Component_="AlmanacStore.hpp" FileName="X1Sequ~1.hpp|X1Sequence.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\X1Sequence.hpp" SelfReg="false" Sequence="267"/>
+    <ROW File="X2Sequence.hpp" Component_="AlmanacStore.hpp" FileName="X2Sequ~1.hpp|X2Sequence.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\X2Sequence.hpp" SelfReg="false" Sequence="268"/>
+    <ROW File="XYZ2NED.hpp" Component_="AlmanacStore.hpp" FileName="XYZ2NED.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\XYZ2NED.hpp" SelfReg="false" Sequence="270"/>
+    <ROW File="XYZ2NEU.hpp" Component_="AlmanacStore.hpp" FileName="XYZ2NEU.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\XYZ2NEU.hpp" SelfReg="false" Sequence="271"/>
+    <ROW File="Xvt.hpp" Component_="AlmanacStore.hpp" FileName="Xvt.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\Xvt.hpp" SelfReg="false" Sequence="269"/>
+    <ROW File="YDSTime.hpp" Component_="AlmanacStore.hpp" FileName="YDSTime.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\YDSTime.hpp" SelfReg="false" Sequence="272"/>
+    <ROW File="YumaAlmanacStore.hpp" Component_="AlmanacStore.hpp" FileName="YumaAl~1.hpp|YumaAlmanacStore.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\YumaAlmanacStore.hpp" SelfReg="false" Sequence="273"/>
+    <ROW File="YumaBase.hpp" Component_="AlmanacStore.hpp" FileName="YumaBase.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\YumaBase.hpp" SelfReg="false" Sequence="274"/>
+    <ROW File="YumaData.hpp" Component_="AlmanacStore.hpp" FileName="YumaData.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\YumaData.hpp" SelfReg="false" Sequence="275"/>
+    <ROW File="YumaHeader.hpp" Component_="AlmanacStore.hpp" FileName="YumaHe~1.hpp|YumaHeader.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\YumaHeader.hpp" SelfReg="false" Sequence="276"/>
+    <ROW File="YumaStream.hpp" Component_="AlmanacStore.hpp" FileName="YumaSt~1.hpp|YumaStream.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\YumaStream.hpp" SelfReg="false" Sequence="277"/>
+    <ROW File="bc2sp3.exe" Component_="bc2sp3.exe" FileName="bc2sp3.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\bc2sp3.exe" SelfReg="false" Sequence="1"/>
+    <ROW File="calgps.exe" Component_="calgps.exe" FileName="calgps.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\calgps.exe" SelfReg="false" Sequence="2"/>
+    <ROW File="convhelp.hpp" Component_="AlmanacStore.hpp" FileName="convhelp.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\convhelp.hpp" SelfReg="false" Sequence="85"/>
+    <ROW File="ddmerge.exe" Component_="ddmerge.exe" FileName="ddmerge.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\ddmerge.exe" SelfReg="false" Sequence="4"/>
+    <ROW File="ephdiff.exe" Component_="ephdiff.exe" FileName="ephdiff.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\ephdiff.exe" SelfReg="false" Sequence="7"/>
+    <ROW File="fic2rin.exe" Component_="fic2rin.exe" FileName="fic2rin.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\fic2rin.exe" SelfReg="false" Sequence="8"/>
+    <ROW File="ficacheck.exe" Component_="ficacheck.exe" FileName="ficach~1.exe|ficacheck.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\ficacheck.exe" SelfReg="false" Sequence="9"/>
+    <ROW File="ficafic.exe" Component_="ficafic.exe" FileName="ficafic.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\ficafic.exe" SelfReg="false" Sequence="10"/>
+    <ROW File="ficcheck.exe" Component_="ficcheck.exe" FileName="ficcheck.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\ficcheck.exe" SelfReg="false" Sequence="11"/>
+    <ROW File="ficdiff.exe" Component_="ficdiff.exe" FileName="ficdiff.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\ficdiff.exe" SelfReg="false" Sequence="12"/>
+    <ROW File="ficfica.exe" Component_="ficfica.exe" FileName="ficfica.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\ficfica.exe" SelfReg="false" Sequence="13"/>
+    <ROW File="geometry.hpp" Component_="AlmanacStore.hpp" FileName="geometry.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\geometry.hpp" SelfReg="false" Sequence="142"/>
+    <ROW File="getopt.h" Component_="AlmanacStore.hpp" FileName="getopt.h" Attributes="0" SourcePath="..\..\..\Test\install\include\getopt.h" SelfReg="false" Sequence="143"/>
+    <ROW File="gps_constants.hpp" Component_="AlmanacStore.hpp" FileName="gps_co~1.hpp|gps_constants.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\gps_constants.hpp" SelfReg="false" Sequence="152"/>
+    <ROW File="gpstk.lib" Component_="gpstk.lib" FileName="gpstk.lib" Attributes="0" SourcePath="..\..\..\Test\install\lib\gpstk.lib" SelfReg="false" Sequence="278"/>
+    <ROW File="gpstk_user_reference.pdf" Component_="gpstk_user_reference.pdf_1" FileName="gpstk-~1.pdf|gpstk-user-reference.pdf" Attributes="0" SourcePath="..\usersguide\gpstk-user-reference.pdf" SelfReg="false" Sequence="279"/>
+    <ROW File="gpstkplatform.h" Component_="AlmanacStore.hpp" FileName="gpstkp~1.h|gpstkplatform.h" Attributes="0" SourcePath="..\..\..\Test\install\include\gpstkplatform.h" SelfReg="false" Sequence="146"/>
+    <ROW File="icd_200_constants.hpp" Component_="AlmanacStore.hpp" FileName="icd_20~1.hpp|icd_200_constants.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\icd_200_constants.hpp" SelfReg="false" Sequence="153"/>
+    <ROW File="mergeFIC.exe" Component_="mergeFIC.exe" FileName="mergeFIC.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\mergeFIC.exe" SelfReg="false" Sequence="15"/>
+    <ROW File="mergePCodeWords.h" Component_="AlmanacStore.hpp" FileName="mergeP~1.h|mergePCodeWords.h" Attributes="0" SourcePath="..\..\..\Test\install\include\mergePCodeWords.h" SelfReg="false" Sequence="172"/>
+    <ROW File="mergeRinMet.exe" Component_="mergeRinMet.exe" FileName="mergeR~1.exe|mergeRinMet.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\mergeRinMet.exe" SelfReg="false" Sequence="16"/>
+    <ROW File="mergeRinNav.exe" Component_="mergeRinNav.exe" FileName="mergeR~2.exe|mergeRinNav.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\mergeRinNav.exe" SelfReg="false" Sequence="17"/>
+    <ROW File="mergeRinObs.exe" Component_="mergeRinObs.exe" FileName="mergeR~3.exe|mergeRinObs.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\mergeRinObs.exe" SelfReg="false" Sequence="18"/>
+    <ROW File="mergeSRI.exe" Component_="mergeSRI.exe" FileName="mergeSRI.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\mergeSRI.exe" SelfReg="false" Sequence="19"/>
+    <ROW File="miscenum.hpp" Component_="AlmanacStore.hpp" FileName="miscenum.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\miscenum.hpp" SelfReg="false" Sequence="174"/>
+    <ROW File="mpsolve.exe" Component_="mpsolve.exe" FileName="mpsolve.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\mpsolve.exe" SelfReg="false" Sequence="20"/>
+    <ROW File="navdmp.exe" Component_="navdmp.exe" FileName="navdmp.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\navdmp.exe" SelfReg="false" Sequence="21"/>
+    <ROW File="novaRinex.exe" Component_="novaRinex.exe" FileName="novaRi~1.exe|novaRinex.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\novaRinex.exe" SelfReg="false" Sequence="23"/>
+    <ROW File="posInterp.exe" Component_="posInterp.exe" FileName="posInt~1.exe|posInterp.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\posInterp.exe" SelfReg="false" Sequence="25"/>
+    <ROW File="poscvt.exe" Component_="poscvt.exe" FileName="poscvt.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\poscvt.exe" SelfReg="false" Sequence="24"/>
+    <ROW File="regex.h" Component_="AlmanacStore.hpp" FileName="regex.h" Attributes="0" SourcePath="..\..\..\Test\install\include\regex.h" SelfReg="false" Sequence="198"/>
+    <ROW File="rinexpvt.exe" Component_="rinexpvt.exe" FileName="rinexpvt.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\rinexpvt.exe" SelfReg="false" Sequence="29"/>
+    <ROW File="rinexthin.exe" Component_="rinexthin.exe" FileName="rinext~1.exe|rinexthin.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\rinexthin.exe" SelfReg="false" Sequence="30"/>
+    <ROW File="rmwcheck.exe" Component_="rmwcheck.exe" FileName="rmwcheck.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\rmwcheck.exe" SelfReg="false" Sequence="32"/>
+    <ROW File="rmwdiff.exe" Component_="rmwdiff.exe" FileName="rmwdiff.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\rmwdiff.exe" SelfReg="false" Sequence="33"/>
+    <ROW File="rnwcheck.exe" Component_="rnwcheck.exe" FileName="rnwcheck.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\rnwcheck.exe" SelfReg="false" Sequence="34"/>
+    <ROW File="rnwdiff.exe" Component_="rnwdiff.exe" FileName="rnwdiff.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\rnwdiff.exe" SelfReg="false" Sequence="35"/>
+    <ROW File="rowcheck.exe" Component_="rowcheck.exe" FileName="rowcheck.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\rowcheck.exe" SelfReg="false" Sequence="36"/>
+    <ROW File="rowdiff.exe" Component_="rowdiff.exe" FileName="rowdiff.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\rowdiff.exe" SelfReg="false" Sequence="37"/>
+    <ROW File="rstats.exe" Component_="rstats.exe" FileName="rstats.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\rstats.exe" SelfReg="false" Sequence="38"/>
+    <ROW File="sp3version.exe" Component_="sp3version.exe" FileName="sp3ver~1.exe|sp3version.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\sp3version.exe" SelfReg="false" Sequence="39"/>
+    <ROW File="stl_helpers.hpp" Component_="AlmanacStore.hpp" FileName="stl_he~1.hpp|stl_helpers.hpp" Attributes="0" SourcePath="..\..\..\Test\install\include\stl_helpers.hpp" SelfReg="false" Sequence="242"/>
+    <ROW File="timeconvert.exe" Component_="timeconvert.exe" FileName="timeco~1.exe|timeconvert.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\timeconvert.exe" SelfReg="false" Sequence="41"/>
+    <ROW File="tnl.exe" Component_="tnl.exe" FileName="tnl.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\tnl.exe" SelfReg="false" Sequence="42"/>
+    <ROW File="tsrif.exe" Component_="tsrif.exe" FileName="tsrif.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\tsrif.exe" SelfReg="false" Sequence="43"/>
+    <ROW File="tsrifsu.exe" Component_="tsrifsu.exe" FileName="tsrifsu.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\tsrifsu.exe" SelfReg="false" Sequence="44"/>
+    <ROW File="tsriftu.exe" Component_="tsriftu.exe" FileName="tsriftu.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\tsriftu.exe" SelfReg="false" Sequence="45"/>
+    <ROW File="vecsol.exe" Component_="vecsol.exe" FileName="vecsol.exe" Attributes="0" SourcePath="..\..\..\Test\install\bin\vecsol.exe" SelfReg="false" Sequence="46"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
+    <ROW BuildName="DefaultBuild" BuildOrder="1" BuildType="0" InstallationType="4"/>
+    <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
+    <ROW Path="&lt;ui.ail&gt;"/>
+    <ROW Path="&lt;ui_en.ail&gt;"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
+    <ROW Fragment="FolderDlg.aip" Path="&lt;FolderDlg.aip&gt;"/>
+    <ROW Fragment="StaticUIStrings.aip" Path="&lt;StaticUIStrings.aip&gt;"/>
+    <ROW Fragment="UI.aip" Path="&lt;UI.aip&gt;"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
+    <ROW Name="aicustact.dll" SourcePath="&lt;aicustact.dll&gt;"/>
+    <ROW Name="default_banner.bmp" SourcePath="&lt;default-banner.bmp&gt;"/>
+    <ROW Name="default_dialog.bmp" SourcePath="&lt;default-dialog.bmp&gt;"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
+    <ATTRIBUTE name="FixedSizeBitmaps" value="0"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
+    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="3"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceWelcomeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="2"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="1"/>
+    <ROW Dialog_="PatchWelcomeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_PATCH" Ordering="3"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
+    <ROW Directory_="APPDIR" Component_="APPDIR"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
+    <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Type="1" Source="aicustact.dll" Target="PrepareUpgrade"/>
+    <ROW Action="AI_RESTORE_LOCATION" Type="1" Source="aicustact.dll" Target="RestoreLocation"/>
+    <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
+    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFilesFolder]\[ProductName]"/>
+    <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
+    <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiEnvComponent">
+    <ROW Environment="PATH" Name="+*PATH" Value="[~];[ProgramFilesFolder][ProductName]\bin" Component_="PRSolve.exe"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiIniFileComponent">
+    <ROW IniFile="URL" FileName="GPSTkW~1.url|GPSTk Website.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="http://www.gpstk.org/" Action="0" Component_="PRSolve.exe"/>
+    <ROW IniFile="WorkingDirectory" FileName="GPSTkW~1.url|GPSTk Website.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="WorkingDirectory" Value="[SHORTCUTDIR]" Action="0" Component_="PRSolve.exe"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
+    <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="740"/>
+    <ROW Action="AI_STORE_LOCATION" Condition="Not Installed" Sequence="1545"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1300"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="740"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiUpgradeComponent">
+    <ROW UpgradeCode="[|UpgradeCode]" VersionMax="[|ProductVersion]" Attributes="1025" ActionProperty="OLDPRODUCTS"/>
+    <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
+  </COMPONENT>
+</DOCUMENT>
