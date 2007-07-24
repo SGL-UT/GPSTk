@@ -2136,7 +2136,6 @@ try {
    else if(lowerCase(string(arg)) == string("--rxhelp"))
       Args.push_back(string("--Rxhelp"));
    else
-      inline std::string& lowerCase(std::string& s);
       Args.push_back(arg);
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
