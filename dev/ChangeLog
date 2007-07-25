@@ -6,11 +6,11 @@ Version 1.3   Monday, July 16, 2006
 	- Added examples/example7.cpp & associated RINEX data files
 	        This program shows 10 different ways to process GPS data using
 		"GNSS data structures". The "GNSS Data Structures" paradigm can   
-	        process GPS code-based data based on Voctors, Matrices 
+	        process GPS code-based data based on Vectors, Matrices 
 		and other objects.
 	- Added examples/example6.cpp
-	        Shows a rather minimilist way to process GPS data using GNSS Data
-		Strutures
+	        Shows a rather minimalist way to process GPS data using GNSS Data
+		Structures
 
 	- Improved src/icd_200_constants.hpp
 	        Fixed RSVCLK value	
@@ -23,7 +23,7 @@ Version 1.3   Monday, July 16, 2006
 
 	- Added src/SimpleKalmanFilter.[h|c]pp
 	        Implements a version of the Kalman filter, based in Vectors
-		and Matrices - not yet GNSS data stuctrures-enabled
+		and Matrices - not yet GNSS data structures-enabled
 
 	- Added src/NablaOp.[h|c]pp
 	        Applies differences in satellite-related data to the GNSS
@@ -31,7 +31,7 @@ Version 1.3   Monday, July 16, 2006
 
 	- Added src/TypeID.[h|c]pp
 	        Index able to represent any type of observation, correction,
-		model paratmeter or other data value of interest 
+		model parameter or other data value of interest 
 
 	- Added src/DataHeaders.[h|c]pp
 	        Adds several headers to be used with the GNSS data structures
@@ -95,14 +95,14 @@ Version 1.3   Monday, July 16, 2006
 		observable
 
 	- Added src/PCsmoother.hpp
-	        Smoothes PC code obserrvables using the corresponding LC phase
+	        Smoothes PC code observables using the corresponding LC phase
 		observables
 
 	- Added src/XYZ2NEU.[h|c]pp
-	        Refrence frame change from ECEF XYZ to topcentric North-East-Up
+	        Reference frame change from ECEF XYZ to topocentric North-East-Up
 
 	- Added src/XYZ2NED.[h|c]pp
-	        Refrence frame change from ECEF XYZ to topcentric North-East-Down
+	        Reference frame change from ECEF XYZ to topocentric North-East-Down
 
 	- Added src/TimeNamedFileStream.hpp
 	        Simple time-based file name stream
@@ -161,7 +161,7 @@ Version 1.2   Monday, November 6, 2006
 	General modifications
 	---------------------
 	
-	- Moved from Perfoce to a Subversion repository located at 
+	- Moved from Perforce to a Subversion repository located at 
 		https://svn.sourceforge.net/svnroot/gpstk
 	
 	- GPSTk library testing is now being implemented in dev/tests
@@ -176,7 +176,7 @@ Version 1.2   Monday, November 6, 2006
 			
 	- Added Python support to the GPSTk
 	
-	- Added capability for FileHunter to work under Window and Cigwin
+	- Added capability for FileHunter to work under Window and Cygwin
 	
 	Library modifications
 	---------------------
@@ -209,7 +209,7 @@ Version 1.2   Monday, November 6, 2006
 		Class which encapsulates Satellite Identification information
 	
 	- Added src/ModeledPR.[h|c]pp
-		Encapsulates computation of modeled psuedoranges of a mobile
+		Encapsulates computation of modeled pseudoranges of a mobile
 		receiver
 		
 	- Added src/SimpleIURAWeight.[h|c]pp
@@ -276,11 +276,11 @@ Version 1.2   Monday, November 6, 2006
 		algorithm.
 	
 	- Added apps/visibility/wheresat
-		A tool for caculating SV position, azimut and
+		A tool for calculating SV position, azimuth and
 		elevation from a navigation file
 	
 	- Added apps/converters/novaRinex
-		A Novatel binary to Rinex converter
+		A NovAtel binary to Rinex converter
 	
 	- Improved apps/filetools/navdmp
 		Added -r (RINEX) input capability
@@ -312,7 +312,7 @@ Version 1.2   Monday, November 6, 2006
 Version 1.1   Friday, January 7, 2005
 
 	General modifications
-        ---------------------
+	---------------------
 
 	- Added patches to support more compilers:
 	     GNU compiler version 3.4
@@ -352,9 +352,9 @@ Version 1.1   Friday, January 7, 2005
 	- Bug fix: DayTime::setGPS(short week, long zcount, short year)
 	  now works across a year rollover.
 	
-        - Renamed WxObsData::find(...) to getWxObservation(...) to remove
-          any confusion that might develop over having the same method
-          name as the STL.
+	- Renamed WxObsData::find(...) to getWxObservation(...) to remove
+	  any confusion that might develop over having the same method
+	  name as the STL.
 	
 	- Bug fix: satellite combinations in RAIM sometimes incorrect when 
 	  a user-marked satellite was present.
@@ -383,13 +383,13 @@ Version 1.1   Friday, January 7, 2005
 	  was acting as %f should; date was trashed when time was set, 
 	  and vice versa, and year input was not properly handled.
 
-        - Implemented ionospheric model types other than linear.
+	- Implemented ionospheric model types other than linear.
 
 	- Cleaned up weather data handling (e.g., error checks).
 
 	
 	Application modifications
-        -------------------------
+	-------------------------
 	
 	apps/difftools
 
@@ -420,7 +420,7 @@ Version 1.1   Friday, January 7, 2005
 	apps/RinexPlot
 
 	- Improved documentation.
-        
+
 	- Various tweaks.
 
 	- Plotting improvements.
