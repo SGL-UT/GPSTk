@@ -54,7 +54,10 @@ library:
    5. Mathematics. Includes Matrix and Vector implementations, as well as 
       interpolation and numerical integration.
 
-   6. Application framework. Includes processing command lines options, 
+   6. GNSS data structure. Data structures that contain observations mapped
+      to satellites.
+
+   7. Application framework. Includes processing command lines options, 
       providing interactive help and working with file systems.
 
 A more detailed description of the functionality provided by the GPSTk library can be found in the Doxygen documentation.
@@ -78,8 +81,7 @@ GPSTk applications fall into the following categories.
 
    3. RINEX file manipulation. Differencing, mergins and clipping RINEX files.
 
-   4. Interactive analysis. Bindings to Octave, an open source alternative to 
-      MATLAB.
+   4. Interactive analysis. Bindings to Python.
 
 
 License

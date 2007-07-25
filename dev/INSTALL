@@ -95,6 +95,7 @@ The following procedure will build and install the GPSTk.
 
    4. Change into the gpstk directory and type
 
+         ./autogen.sh
          ./configure
          make
 
@@ -108,7 +109,7 @@ The following procedure will build and install the GPSTk.
          make install
 
 
-Building under Microsoft Visual Studio .NET 2003
+Building under Microsoft Visual Studio .NET
 ------------------------------------------------
 
 If you are building GPSTk under the Cygwin environment, then use the build
@@ -118,7 +119,8 @@ The GPSTk is not supported under Microsoft Visual C++ 6.0, or earlier, mainly
 because templates in classes are not supported. Currently there are no 
 Makefiles for MSVS, so you must use jam to build the GPSTk on the command line.
 
-Here are the steps we have used to build under MSVS.NET 2003.
+Here are the steps we have used to build under MSVS.NET 2003 and
+the Free .NET Express Compiler 2005.
 
    1. Ensure that prerequisites such as jam have been installed.
 
@@ -127,30 +129,116 @@ Here are the steps we have used to build under MSVS.NET 2003.
       (compiler and linker) must be installed in a directory without
       whitespace in it. Thus the default installation directory 
       (\Program Files\...), for example, will cause Jam to fail. Sorry, 
-      you'll have to re-install in another directory; for example we used 
-      C:\MSVS2003. Also, if the VCVARS32.BAT batch file was not installed, 
+      you'll have to re-install in another directory. 
+      Also, if the VSVARS32.BAT batch file was not installed, 
       this option must be chosen during a reinstallation.
 
-   3. Open a command window and run the VCVARS32.BAT batch file before 
-      running Jam.
+   3. Open a command window and run the VSVARS32.BAT batch file before 
+      running Jam. You should be able to type the following into the
+      DOS Prompt:
 
-   4. Jam requires that two other environment variables be set. Using the 
-      command line:
+      cl
+
+      and get a response from the compiler.
+
+   4. Jam requires that two other environment variables be set: MSCVNT,
+      and MSCVER. The value you use depends on which version of the compiler
+      you will used. For the 2003 .NET compiler use:
 
          set MSVCNT=C:\MSVS2003\VC7
-         set NEED_REGEX=yes
+         set MSCVER=1300
+
+      For the 2005 Free Express Compiler use:
+
+         set MSVCNT=C:\MSVS2005\VC
+         set MSCVER=1400
 
       The directory on the right of the '=' is the directory where the command
       line tools are installed (it will have subdirectories bin,lib,include, 
-      etc.); this tells Jam where the compiler and linker are. NEED_REGEX 
-      tells Jam to compile regex.c into the library, as it is not part of the 
-      MSVS libraries.
+      etc.); this tells Jam where the compiler and linker are. 
+
+      Of course you may have other install directories; this example uses 
+      C:\MSVC2003 for the 2003 tools and C:\MSVC2005 for the 2005 tools. Note 
+      the different subdirectories '\VC7' and '\VC'; this is an MS thing, 
+      these are the directories where the \bin, \lib, and \include directories
+      are found. (The values 1300 and 1400 were chosen because all MS 
+      compilers define the macro _MSC_VER as a float number of the form 
+      'MMmm.mm' where MM is the major version, and mm.mm is the minor version 
+      number; in MS VC++ versions 6, 7 and 8 the major versions are 12, 13, 
+      and 14 respectively).
 
    5. Ensure the Jam executable for Windows is in the path. Install the GPSTk 
       tarball and change to the /dev directory of the GPSTk -- the file 
       'Jamrules' should be here -- and type
 
          jam
+
+      Jam will tell you which compiler you are using, and then get to work.
+
+Notes about the Windows build:
+
+Note 1. You could install BOTH MS compilers, in different directories, and then put all this setup into batch files that allow you to run either one independently. For example:
+
+      REM Batch file go2005.bat  Run from the command line
+      REM    before using jam and the MS 2005 build tools.
+      set MSVCNT=C:\MSVC2005\VC
+      set MSCVER=1400
+      REM This is a copy of VSVARS32.bat that came with MS VC++ 2005
+      call VSVARS32_2005
+      REM Move to my working directory
+      cd C:\WorkingDirectory
+
+and
+
+      REM Batch file go2003.bat  Run from the command line
+      REM    before using jam and the MS 2003 build tools.
+      set MSVCNT=C:\MSVC2003\VC7
+      set MSCVER=1300
+      REM This is a copy of VSVARS32.bat that came with MS VC++.NET 2003
+      call VSVARS32_2003
+      REM Move to my working directory
+      cd C:\WorkingDirectory
+
+With  these batch  files the  whole process  is a  simple as  (a) open
+command window, (b)  type go2005 (or go2003), (c)  type jam. Type 'jam
+clean' to delete all the object (.obj) and executable (.exe) files.
+
+Note 2. In the past we have required the command
+
+set NEED_REGEX=yes
+
+under   Windows,   in   order   to  ensure   that   src\regex.c   gets
+compiled. However  this is  handled automatically within  the Jamrules
+file and so it is not necessary to type this on the command line.
+
+Note 3. The Jamrules file is where the MSCVER variable is required
+(unlike the MSVCNT variable, which the jam executable requires). If
+you use only one compiler exclusively, you might edit the Jamrules
+file and remove this version dependency; then you would not need
+MSCVER at all.
+
+Note 4. In any  case you ought to look at the  Jamrules file; look for
+$(NT),  which  the  Windows  executable  jam.exe  defines,  for  items
+relevant to  Windows. C++FLAGS contains C++  compiler options, CCFLAGS
+contains  C compiler  options (but  note  that CCFLAGS  is changed  in
+\src\Jamfile for compiling regex.c), LINKFLAGS are linker options, and
+LINKLIBS are extra libraries included in  the link.  # Note 5. We have
+found  that optimization  is a  practical necessity  in  building with
+these compilers. The option /O2 (that's capital 'oh' not 'zero') seems
+to be  best for speed. Jamrules  now includes /O2 in  both versions of
+the MS  compilers. Of course you  may change this, or  any compiler or
+linker options, by editing Jamrules.
+
+Note 6.  In the  past one  of the problems  in using  jam with  the MS
+compilers beyond version 6.0  has been that the libraries advapi32.lib
+and kernel32.lib seemed  to be missing. This, however,  comes from the
+jam  executable,  not  from  MS.  These libraries  are  required,  and
+provided,  in  MS VC++  6.0,  and  this is  the  default  for the  jam
+executable.  Jam.exe does  this by  defining the  default  LINKLIBS to
+include  these  libraries.  Since  they  are not  required  for  later
+versions, Jamrules now redefines LINKLIBS  to be empty. If you want to
+understand the defaults in jam.exe, go to the jam website and find the
+Jambase file - it is a 'Jamrules' file that contains all the defaults.
 
 
 ADDENDUM: Standard notes on using configure
