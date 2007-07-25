@@ -1,4 +1,3 @@
-$Id$
 
 GPS Toolkit Authorship
 ------------------------------------------------------------------------------
@@ -10,11 +9,12 @@ GPS Toolkit Authorship
     at ARL:UT decided to open source much of their basic GPS processing
     software as the GPSTk.
 
+
 Contact Information
 ------------------------------------------------------------------------------
    GPSTk Homepage
    ----------------------------
-   http://gpstk.sourceforge.net
+   http://www.gpstk.org
 
    SGL:ARL:UT Homepage
    ----------------------------
@@ -22,11 +22,10 @@ Contact Information
 
    Mailing Lists                         Subscribe/Unsubscribe/Archive URL
    ------------------------------------  -------------------------------------
-   gpstk-users@lists.sourceforge.net     http://lists.sourceforge.net/lists/listinfo/gpstk-users
    gpstk-devel@lists.sourceforge.net     http://lists.sourceforge.net/lists/listinfo/gpstk-devel
    gpstk-announce@lists.sourceforge.net  http://lists.sourceforge.net/lists/listinfo/gpstk-announce
    gpstk-admin@lists.sourceforge.net     http://lists.sourceforge.net/lists/listinfo/gpstk-admin
   
    Email
    ----------------------------
-   Please send general GPSTk comments to gpstk@arlut.utexas.edu .
+   Inquiries beyond those covered in the above lists can be sent to gpstk@arlut.utexas.edu .
