@@ -2,9 +2,15 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([GPSTK], [1.2], [http://www.gpstk.org/], [gpstk])
+AC_INIT([GPSTK], [1.3], [http://www.gpstk.org/], [gpstk])
 AM_INIT_AUTOMAKE([1.7.6 foreign])
 AC_CONFIG_SRCDIR([src/DayTime.hpp])
+
+#gpstk 1.3 -> libgpstk.so.13.0, etc...
+GPSTK_MAJOR_VERSION=13
+GPSTK_MINOR_VERSION=0
+GPSTK_SO_VERSION=$GPSTK_MAJOR_VERSION:$GPSTK_MINOR_VERSION:0
+AC_SUBST(GPSTK_SO_VERSION)
 
 # Checks for programs.
 AC_LANG([C++])

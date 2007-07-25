@@ -9,8 +9,10 @@ NotFile install ;
 KEEPOBJS = true ;
 
 # where to install the .hpp files
-INCDIR = /usr/local/include ;
+PREFIX ?= /usr/local/ ;
+INCDIR = $(PREFIX)/include/gpstk ;
 
+GPSTK_SO_VERSION = 13 ;
 # override the built-in EXEMODE
 EXEMODE = 755 ;
 
@@ -117,7 +119,7 @@ if $(PREFIX)
 # fix does this need to be forward/backslash independent? darn windows.
    BINDIR = [ FDirName $(PREFIX) bin ] ;
    LIBDIR = [ FDirName $(PREFIX) lib ] ;
-   INCDIR = [ FDirName $(PREFIX) include ] ;
+   INCDIR = [ FDirName $(PREFIX) include gpstk ] ;
 }
 
 # debug - edit this as needed.
@@ -205,11 +207,12 @@ rule GPSBuildLibrary
    # build DLLs for Windows.
    if $(UNIX)
    {
-      shlib = $(LIBPREFIX)$(<:S=$(SUFLIBSHR)) ;
+      soname = $(LIBPREFIX)$(<:S=$(SUFLIBSHR)).$(GPSTK_SO_VERSION) ;
+      shlib = $(LIBPREFIX)$(<:S=$(SUFLIBSHR).$(GPSTK_SO_VERSION).0) ;
       shrobjs = $(>:S=$(SUFOBJ2)) ;
       ObjectCcFlags $(shrobjs) : $(CCSHARE_FLAGS) ;
       ObjectC++Flags $(shrobjs) : $(CCSHARE_FLAGS) ;
-      LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM) ;
+      LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM) -Wl,-soname=$(soname) ;
       Depends lib : $(shlib) ;
       LibObjects $(>) ;
       MainFromObjects $(shlib) : $(shrobjs) ;

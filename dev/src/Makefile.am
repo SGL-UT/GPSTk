@@ -1,6 +1,7 @@
 # $Id$
 ## Process this file with automake to produce Makefile.in
 lib_LTLIBRARIES = libgpstk.la
+libgpstk_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 libgpstk_la_SOURCES = ANSITime.cpp AlmOrbit.cpp AlmanacStore.cpp \
 BCEphemerisStore.cpp Bancroft.cpp BasicFramework.cpp BinUtils.cpp \
 BinexData.cpp CivilTime.cpp CodeBuffer.cpp CommandOption.cpp \

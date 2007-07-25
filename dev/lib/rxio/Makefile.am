@@ -1,6 +1,7 @@
 # $Id$
 INCLUDES = -I$(srcdir)/../../src
 lib_LTLIBRARIES = librxio.la
+librxio_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 librxio_la_SOURCES = AshtechData.cpp AshtechMBEN.cpp AshtechPBEN.cpp \
 AshtechEPB.cpp AshtechALB.cpp EphReader.cpp FDStreamBuff.cpp FFIdentifier.cpp \
 MDPHeader.cpp MDPNavSubframe.cpp MDPObsEpoch.cpp MDPPVTSolution.cpp \

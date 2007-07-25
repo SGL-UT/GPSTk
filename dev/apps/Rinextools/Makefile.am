@@ -3,6 +3,7 @@ INCLUDES = -I$(srcdir)/../../src
 LDADD = ./libtoolslib.la ../../src/libgpstk.la
 
 lib_LTLIBRARIES = libtoolslib.la
+libtoolslib_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 libtoolslib_la_SOURCES = RinexEditor.cpp
 
 bin_PROGRAMS = NavMerge RinexDump ResCor EditRinex RinSum
