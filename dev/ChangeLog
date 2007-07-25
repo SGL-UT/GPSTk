@@ -21,7 +21,13 @@ Version 1.3   Monday, July 16, 2006
 	Library modifications
 	---------------------
 
-	+ Added the following as part of the "GNSS data structures" paradigm
+	- Added src/SimpleKalmanFilter.[h|c]pp
+	        Implements a version of the Kalman filter, based in Vectors
+		and Matrices - not yet GNSS data stuctrures-enabled
+
+	- Added src/NablaOp.[h|c]pp
+	        Applies differences in satellite-related data to the GNSS
+		data structures (a.k.a. GDS)
 
 	- Added src/TypeID.[h|c]pp
 	        Index able to represent any type of observation, correction,
