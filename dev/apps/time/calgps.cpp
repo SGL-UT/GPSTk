@@ -31,7 +31,7 @@ void printMonth(short month, short year)
       
       while (thisDow < 7)
       {
-         thisDay = GPSWeekSecond(gpsweek, thisDow*SEC_PER_DAY ).convertToCommonTime();
+         thisDay = GPSWeekSecond(gpsweek, thisDow*SEC_PER_DAY+.01 ).convertToCommonTime();
          CivilTime ct(thisDay);
          int thisMonth = ct.month;  
          if (thisMonth==month)
