@@ -3,11 +3,19 @@ Version 1.3   Monday, July 16, 2006
 	General modifications
 	---------------------
 
+	- Most of version 1.3 comprised of revision number 701
+
+	- gpstk1.3/apps/time/calgps.cpp was pulled from revision nember 707
+
+	- The current msi for the windows package may not update the 
+	        previous version installations
+	
 	- Added examples/example7.cpp & associated RINEX data files
 	        This program shows 10 different ways to process GPS data using
 		"GNSS data structures". The "GNSS Data Structures" paradigm can   
 	        process GPS code-based data based on Vectors, Matrices 
 		and other objects.
+	
 	- Added examples/example6.cpp
 	        Shows a rather minimalist way to process GPS data using GNSS Data
 		Structures
@@ -17,6 +25,9 @@ Version 1.3   Monday, July 16, 2006
 
 	- GPSTk is now able to build under the MS Visual Studio 2005 (Express
 	        Edition)
+
+	- A simulator has been added but is not part of the binary build, but
+	        can be found in the source tarball under gpstk/apps/swrx
 
 	Library modifications
 	---------------------
