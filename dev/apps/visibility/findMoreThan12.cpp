@@ -170,11 +170,19 @@ int main(int argc, char *argv[])
         }
         catch(gpstk::Exception& e) {NoEph = true;}
         double elvAngle = 0;
+        double azAngle = 0;
         if (!NoEph)
         {
           try {elvAngle = antPVT.x.elvAngle(peXVT.x);}
           catch(gpstk::Exception& e) {if (verbose) {cout << e << endl;}}
-          if ( elvAngle > 0 ) { cout << t << " - PRN " << prn << " at " << elvAngle << " degrees elevation. " << endl; }
+          if ( elvAngle > 0 ) 
+          { 
+            cout << t << "  PRN " << setw(2) << prn << " : elev: " << elvAngle;
+            try {azAngle = antPVT.x.azAngle(peXVT.x);}
+            catch(gpstk::Exception& e) {if (verbose) {cout << e << endl;}}
+            if ( azAngle > 0 ) { cout << "  azim: " << azAngle; }
+            cout << " degrees\n";
+          }
         }
         prn++;
       }
