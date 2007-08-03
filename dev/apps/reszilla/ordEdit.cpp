@@ -78,8 +78,7 @@ OrdEdit::OrdEdit() throw()
    : OrdApp("ordEdit", "Edits an ord file based on various criteria."),
      elMask(0),clkResidLimit(0),
      ephSourceOpt('e',"be-file","Remove data for unhealthy SVs by "
-                  "providing broadcast ephemeris source: RINEX nav or "
-                  "FIC file." ),           
+            "providing broadcast ephemeris source: RINEX nav or FIC file." ),           
      elvOpt('m',"elev","Remove data for SVs below a given elevation mask."),
      clkOpt('k',"clock-est", "Remove ords that do not have corresponding "
             "clock estimates."),
@@ -87,16 +86,18 @@ OrdEdit::OrdEdit() throw()
             "greater than this size (meters)."),
      ordLimitOpt('l',"ord-limit","Remove ords with absolute valies "
             "greater than this size (meters)."),
-     prnOpt('p',"PRN","Add/Remove data from given PRN. Repeat option for multiple"
-            " PRNs. Negative numbers remove, Postive numbers all, Zero removes all."),
+     prnOpt('p',"PRN","Filter data by PRN number. Repeat option for multiple"
+            " satellites. Negative PRN numbers mean exclude these PRNs. "
+            "Positive PRN numbers mean only include these satellites. Zero "
+            "removes all."),
      noClockOpt('c',"no-clock", "Remove all clock offset estimate warts. Give"
-                " this option twice to remove all clock data. "),
+            " this option twice to remove all clock data. "),
      wartsOpt('w', "warts", "Include/Exclude warts from the indicated PRN. "
-              "Repeat option for multiple PRNs. Negative numbers exclude, "
-              "positive numbers include, zero  excludes warts from all PRNs. "
-              "The default is to include all warts."),
+            "Repeat option for multiple PRNs. Negative numbers exclude, "
+            "positive numbers include, zero  excludes warts from all PRNs. "
+            "The default is to include all warts."),
      startOpt('\0',"start","Throw out data before this time. Format as "
-              "string: \"MO/DD/YYYY HH:MM:SS\" "),
+            "string: \"MO/DD/YYYY HH:MM:SS\" "),
      endOpt('\0',"end","Throw out data after this time. Format as string:"
             " \"MO/DD/YYYY HH:MM:SS\" ")
    
@@ -128,17 +129,55 @@ void OrdEdit::process()
    }
    
    //-- get which PRNs to be excluded
+   bool excludePRNs = false;
+   bool includePRNs = false;
    for (int index = 0; index < prnOpt.getCount(); index++)
    {
       int prn = asInt(prnOpt.getValue()[index]);
       if (prn < 0)
-         prnSet.insert(-prn);
+         excludePRNs = true;
       else if (prn > 0)
-         prnSet.erase(prn);
+         includePRNs = true;
       else
+         excludePRNs = true;
+   }
+   
+   if (excludePRNs && includePRNs)
+   {
+      cout << "You PRN filtering arguments don't make sense.\n"
+           << "Either filter by specifically excluding or \n"
+           << "including, but not both. Exiting...\n";
+      exit(0);
+   }
+   else if (excludePRNs)
+   {
+      for (int index = 0; index < prnOpt.getCount(); index++)
       {
-         prnSet.clear();
-         for (int i=1; i<=gpstk::MAX_PRN; i++)
+         int prn = asInt(prnOpt.getValue()[index]);
+         if (prn < 0)
+            prnSet.insert(-prn);
+         else if (prn == 0)
+         {
+            prnSet.clear();
+            for (int i=1; i<=gpstk::MAX_PRN; i++)
+               prnSet.insert(i);
+         }
+      }
+   }
+   else if (includePRNs)
+   {   
+      set<int> includeSet;  
+      for (int index = 0; index < prnOpt.getCount(); index++)
+      {
+         int prn = asInt(prnOpt.getValue()[index]);
+         includeSet.insert(prn);
+      }
+      
+      prnSet.clear();
+      for (int i=1; i<=gpstk::MAX_PRN; i++)
+      {
+         set<int>::const_iterator iter = includeSet.find(i);
+         if (iter == includeSet.end())
             prnSet.insert(i);
       }
    }
@@ -289,10 +328,6 @@ void OrdEdit::process()
             }
             catch (gpstk::Exception &exc)
             { cout << " # Error caught in ordEdit - probably missing eph data\n"; }
-            // I would include the exception catch below, but the exc spans
-            // multiple lines...
-            //catch (gpstk::Exception &exc)
-            //{ cerr << "# Error in ordEdit: " << exc << endl; }
          }
       }
       
@@ -329,8 +364,8 @@ void OrdEdit::process()
          {
             const SatID& satId = iter->first;
             const ObsRngDev& ord = iter->second;
-            iter++;           
-            if ((!ord.wonky && prnSet.count(satId.id)) ||
+            iter++;    
+            if (prnSet.count(satId.id) ||
                 (ord.wonky && wartSet.count(satId.id)))
                ordEpoch.removeORD(satId);
          }
