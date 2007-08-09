@@ -283,22 +283,28 @@ def main():
     ax2.xaxis.set_major_formatter(xMajorFmt)
     xlabels=ax2.get_xticklabels()
     ylabels=ax2.get_yticklabels()
-    pylab.setp(xlabels, fontsize=10, family='sans-serif')
+    pylab.setp(xlabels, fontsize=10, f qamily='sans-serif')
     pylab.setp(ylabels, fontsize=10, family='sans-serif')
 
     ax2.xaxis.set_minor_formatter(xMinorFmt)
     
     # set x axis range
     if options.tStart:
-      tMin = parse_time(options.tStart.split()[0:3])
+        tMin = parse_time(options.tStart.split()[0:3])
     else:
-      tMin = min(ords[0])
-
+        if len(ords[0]):
+            tMin = min(ords[0])
+        else:
+            tMin = min(clocks[0])
+            
     if options.tEnd:
-      tMax = parse_time(options.tEnd.split()[0:3])
+        tMax = parse_time(options.tEnd.split()[0:3])
     else:
-      tMax = max(ords[0])
-
+        if len(ords[0]):
+            tMax = max(ords[0])
+        else:
+            tMax = max(clocks[0])
+        
     ax2.set_xlim(xmin=tMin, xmax=tMax)
 
     # Axis labels on the upper plot would be bad since they would be
