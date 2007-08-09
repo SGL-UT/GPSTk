@@ -283,7 +283,7 @@ def main():
     ax2.xaxis.set_major_formatter(xMajorFmt)
     xlabels=ax2.get_xticklabels()
     ylabels=ax2.get_yticklabels()
-    pylab.setp(xlabels, fontsize=10, f qamily='sans-serif')
+    pylab.setp(xlabels, fontsize=10, family='sans-serif')
     pylab.setp(ylabels, fontsize=10, family='sans-serif')
 
     ax2.xaxis.set_minor_formatter(xMinorFmt)
