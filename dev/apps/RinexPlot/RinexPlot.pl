@@ -1190,7 +1190,7 @@ sub CompObst {
 #-------------------------------------------------------------------------------------
 sub ExtDialogInit {
    if($#ExtOT == -1) {  # only do this once...
-      $cmd = $CFG{'prgmdir'} . $SLASH . "ResCor -h > syntax.rc";
+      $cmd = $CFG{'prgmdir'} . $SLASH . "ResCor --ROThelp > syntax.rc";
       print LOG "Get list of possible new obs types: Execute $cmd\n";
       $dummy = `$cmd`; if($CFG{'verbose'} eq 'on') { print LOG $dummy; }
       open FILE, "syntax.rc" or die "Error: could not open syntax.rc\n";
