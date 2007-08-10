@@ -1,15 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file WGS84Geoid.hpp
- * WGS 1984 model of the geoid
- */
-
-#ifndef GPSTK_WGS84GEOID_HPP
-#define GPSTK_WGS84GEOID_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -46,10 +36,13 @@
 //
 //=============================================================================
 
+/**
+ * @file WGS84Geoid.hpp
+ * WGS 1984 model of the geoid
+ */
 
-
-
-
+#ifndef GPSTK_WGS84GEOID_HPP
+#define GPSTK_WGS84GEOID_HPP
 
 #include "GeoidModel.hpp"
 
@@ -76,13 +69,10 @@ namespace gpstk
 
          /**
           * Derived from TR8350.2, Appendix A.1
-          * @note This parameter was in gappc as e-2, but a
-          * little calculator work indicates it should really be e-3.
-          * We'll leave it as e-3 for now.
           * @return flattening (ellipsoid parameter).
           */
       virtual double flattening() const throw()
-      { return 0.335281066475e-3; }
+      { return 0.335281066475e-2; }
 
          /// Defined in TR8350.2, Table 3.3
          /// @return eccentricity (ellipsoid parameter).
