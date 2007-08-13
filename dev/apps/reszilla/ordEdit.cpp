@@ -220,14 +220,14 @@ void OrdEdit::process()
    int mm,dd,yy,hh,minu; 
    if (startOpt.getCount())
    {
-      sscanf(startOpt.getValue().front().c_str(),"%i/%i/%i %i:%i:%lf",
+      sscanf(startOpt.getValue().front().c_str(),"%d/%d/%d %d:%d:%lf",
              &mm,&dd,&yy,&hh,&minu,&ss);
       tStart.setYMDHMS((short)yy,(short)mm,(short)dd,(short)hh,
                        (short)minu,(double)ss);
    }
    if (endOpt.getCount())
    {
-      sscanf(endOpt.getValue().front().c_str(), "%i/%i/%i %i:%i:%lf",
+      sscanf(endOpt.getValue().front().c_str(), "%d/%d/%d %d:%d:%lf",
              &mm,&dd,&yy,&hh,&minu,&ss);
       tEnd.setYMDHMS((short)yy,(short)mm,(short)dd,(short)hh,
                      (short)minu, (double)ss);

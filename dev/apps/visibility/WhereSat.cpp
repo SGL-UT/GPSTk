@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
   {
       double ss;
       int mm,dd,yy,hh,minu; 
-      sscanf(StartTimeOption.getValue().front().c_str(), "%i/%i/%i %i:%i:%lf",&mm,&dd,&yy,&hh,&minu,&ss);
+      sscanf(StartTimeOption.getValue().front().c_str(), "%d/%d/%d %d:%d:%lf",&mm,&dd,&yy,&hh,&minu,&ss);
       tStart.setYMDHMS((short)yy, (short)mm, (short)dd, (short)hh, (short)minu, (double)ss);
   }	
   else
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
   {
       double ss;
       int mm,dd,yy,hh,minu; 
-      sscanf(EndTimeOption.getValue().front().c_str(), "%i/%i/%i %i:%i:%lf",&mm,&dd,&yy,&hh,&minu,&ss);
+      sscanf(EndTimeOption.getValue().front().c_str(), "%d/%d/%d %d:%d:%lf",&mm,&dd,&yy,&hh,&minu,&ss);
       tEnd.setYMDHMS((short)yy, (short)mm, (short)dd, (short)hh, (short)minu, (double)ss);
   }
   else
