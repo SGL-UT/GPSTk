@@ -3,7 +3,7 @@
 # A routine to plot the output of the ord apps.
 #
 
-import sys, string, time, datetime, numpy, matplotlib, pylab
+import sys, string, time, datetime, numpy, matplotlib, pylab, math
 
 def main():
     from optparse import OptionParser
@@ -27,6 +27,9 @@ def main():
     parser.add_option("-c", "--clocks-only", help="Only plot the clocks.",\
                       dest="clocksOnly", default=0, action="count")
 
+    parser.add_option("--clock-delta", help="Plot clock delta instead of clock residual.",\
+                      dest="clockDelta", default=0, action="count")
+
     parser.add_option("-s", dest="saveFig", action="store", type="string",\
                       help="Save the figure to the indicated file")
 
@@ -37,6 +40,12 @@ def main():
                       dest="tStart", action="store",\
                       help="Start time. Format as \"YYYY DOY HH:MM:SS.S\" (Note\
                       the trailing decimal place).") 
+
+    parser.add_option("--smoothing",\
+                      dest="smoothing", action="store", type="float", \
+                      help="Smooth clock data with specified window length. \
+                      Window length is specied in seconds.", default=0)
+
     parser.add_option("--end-time",\
                       dest="tEnd", action="store",\
                       help="End time. Format as \"YYYY DOY HH:MM:SS.S\" (Note\
@@ -151,7 +160,7 @@ def main():
     plotClocks = True
 
     if len(clocks[0]) == 0 or options.ordsOnly: plotClocks = False
-    if (len(ords[0]) == 0 and len(warts[0]) == 0) or options.clocksOnly: plotOrds = False
+    if ((len(clocks[0])==0 and options.clockDelta) and len(ords[0]) == 0 and len(warts[0]) == 0 and len(ocds[0]) == 0) or options.clocksOnly: plotOrds = False
     axesCount=0;
     if plotOrds: axesCount+=1
     if plotClocks: axesCount+=1
@@ -197,6 +206,13 @@ def main():
     elif axesCount == 1:
         ax1 = fig.add_axes([0.08, 0.10, rExtent, 0.85])
 
+    if options.smoothing:
+        dt = 86400 * (clocks[0,1] - clocks[0,0])
+        n = options.smoothing/dt
+        if n>1:
+            clocks[1]=smooth(clocks[1], window_len=n, window='bartlett')
+
+
     if plotOrds:
         if True:
             if len(ords[0]):
@@ -213,15 +229,23 @@ def main():
                 if len(onePrn[0]):
                     ax1.plot_date(onePrn[0], onePrn[2], '.', label="prn %2dW"%prn)
 
-        if len(ocds[0]):
+        if options.clockDelta:
+            # Plot the first deritive of the clock...
+            ax3=fig.add_axes(ax1.get_position())
+            time_diff = 86400 * (clocks[0,1:] - clocks[0,0:-1])
+            clock_diff = 1e9 * 3.3356e-9 * (clocks[1,1:] - clocks[1,0:-1])
+            dc = clock_diff/time_diff
+            ax3.plot_date(clocks[0,:-1], dc, 'b-,', label="clk dif")
+        elif len(ocds[0]):
             ax3=fig.add_axes(ax1.get_position())
             ax3.set_alpha(0.25) #This doesn't seem to affect the plot
             ax3.plot_date(ocds[0], ocds[1], 'b-,', label="clk res")
             
         # If there are rle clocks, draw a vertical line where each new model
         # starts
-        for t0, t1, y0, m, d in rleClockList:
-            ax1.axvline(t0, label='_nolegend_')
+        if not options.clockDelta:
+            for t0, t1, y0, m, d in rleClockList:
+                ax1.axvline(t0, label='_nolegend_')
 
         if options.legend:
             ax1.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005,
@@ -234,15 +258,30 @@ def main():
             pylab.setp(ltext, size=8, family="sans-serif")
             pylab.setp(llines, linewidth=2)
             leg.draw_frame(False)
-        ax1.set_ylabel('ord (meters)', **yprops)
+        if not options.clockDelta:
+            ax1.set_ylabel('ord (meters)', **yprops)
+        else:
+            ax1.set_ylabel('ord (meters)\nclock diff (10^-12)', **yprops)
+    
         ax1.grid(True)
         if options.yRange:
             ax1.set_ylim(ymin=-options.yRange, ymax=options.yRange)
-            pylab.figtext(rExtent+.08, 0.95, "y range +/- %.f m" % options.yRange,
+            pylab.figtext(rExtent+.08, 0.95, "y range +/- %.f" % options.yRange,
                           **scale_props)
         else:
             if (options.wartiness<2):
-                ax1.set_ylim(ymin=min(ords[2]), ymax=max(ords[2]))
+                y_min = 1e100
+                y_max = -1e100
+                if len(ords[0]):
+                    y_min = min( min(ords[1]), y_min)
+                    y_max = max( max(ords[1]), y_max)
+                if options.clockDelta:
+                    y_min = min( min(clock_diff), y_min)
+                    y_max = max( max(clock_diff), y_max)
+                elif len(ocds[0]):
+                    y_min = min( min(ocds[1]), y_min)
+                    y_max = max( max(ocds[1]), y_max)
+                ax1.set_ylim(ymin=y_min, ymax=y_max)
             pylab.figtext(rExtent+.08, 0.95, "y range autoscaled",
                           **scale_props)
 
@@ -330,6 +369,58 @@ def parse_time(words):
     return t0
 # end of parse_time()
 
+
+def smooth(x,window_len=10,window='hanning'):
+    """smooth the data using a window with requested size.
     
+    This method is based on the convolution of a scaled window with the signal.
+    The signal is prepared by introducing reflected copies of the signal 
+    (with the window size) in both ends so that transient parts are minimized
+    in the begining and end part of the output signal.
+    
+    input:
+        x: the input signal 
+        window_len: the dimension of the smoothing window
+        window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
+            flat window will produce a moving average smoothing.
+
+    output:
+        the smoothed signal
+        
+    example:
+
+    t=linspace(-2,2,0.1)
+    x=sin(t)+randn(len(t))*0.1
+    y=smooth(x)
+    
+    see also: 
+    
+    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
+    scipy.signal.lfilter
+    """
+
+    if x.ndim != 1:
+        raise ValueError, "smooth only accepts 1 dimension arrays."
+
+    if x.size < window_len:
+        raise ValueError, "Input vector needs to be bigger than window size."
+
+    if window_len<3:
+        return x
+
+    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
+        raise ValueError, "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
+
+    s=numpy.r_[2*x[0]-x[window_len:1:-1],x,2*x[-1]-x[-1:-window_len:-1]]
+    #print(len(s))
+    if window == 'flat': #moving average
+        w=numpy.ones(window_len,'d')
+    else:
+        w=eval('numpy.'+window+'(window_len)')
+
+    y=numpy.convolve(w/w.sum(),s,mode='same')
+    return y[window_len-1:-window_len+1]
+# end of smooth
+
 if __name__ == "__main__":
     main()
