@@ -97,9 +97,9 @@ OrdEdit::OrdEdit() throw()
             "positive numbers include, zero  excludes warts from all PRNs. "
             "The default is to include all warts."),
      startOpt('\0',"start","Throw out data before this time. Format as "
-            "string: \"MO/DD/YYYY HH:MM:SS\" "),
+            "string: \"yyyy ddd HH:MM:SS\" "),
      endOpt('\0',"end","Throw out data after this time. Format as string:"
-            " \"MO/DD/YYYY HH:MM:SS\" ")
+            " \"yyyy ddd HH:MM:SS\" ")
    
 {}
 
@@ -216,22 +216,11 @@ void OrdEdit::process()
       ordLimit = asDouble(ordLimitOpt.getValue().front());
    
    //-- if a time span was specified, get it
-   double ss;
-   int mm,dd,yy,hh,minu; 
    if (startOpt.getCount())
-   {
-      sscanf(startOpt.getValue().front().c_str(),"%d/%d/%d %d:%d:%lf",
-             &mm,&dd,&yy,&hh,&minu,&ss);
-      tStart.setYMDHMS((short)yy,(short)mm,(short)dd,(short)hh,
-                       (short)minu,(double)ss);
-   }
+      tStart.setToString(startOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
+
    if (endOpt.getCount())
-   {
-      sscanf(endOpt.getValue().front().c_str(), "%d/%d/%d %d:%d:%lf",
-             &mm,&dd,&yy,&hh,&minu,&ss);
-      tEnd.setYMDHMS((short)yy,(short)mm,(short)dd,(short)hh,
-                     (short)minu, (double)ss);
-   }
+      tEnd.setToString(endOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
    
    //-- too lazy?
    if (verboseLevel || debugLevel)
