@@ -202,7 +202,8 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
 
          // This means that we have a complete epoch. Note that the most
          // recently read line is left in readBuffer
-         if (ordEpoch.time != time && ordEpoch.ords.size() > 0)
+         if (ordEpoch.time != time && 
+             (ordEpoch.ords.size() > 0 || ordEpoch.clockOffset.is_valid()))
             break;
 
          ordEpoch.time = time;
