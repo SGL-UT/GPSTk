@@ -153,7 +153,6 @@ def main():
     del ordList, clockList, wartList, ocdList
     # done reading in the ord file
     # ------------------------------------------------------------------
-
     
     # Now figure out how many axes we need to use
     plotOrds = True
@@ -212,7 +211,6 @@ def main():
         if n>1:
             clocks[1]=smooth(clocks[1], window_len=n, window='bartlett')
 
-
     if plotOrds:
         if True:
             if len(ords[0]):
@@ -234,9 +232,10 @@ def main():
             ax3=fig.add_axes(ax1.get_position())
             time_diff = 86400 * (clocks[0,1:] - clocks[0,0:-1])
             clock_diff = 1e9 * 3.3356e-9 * (clocks[1,1:] - clocks[1,0:-1])
-            dc = clock_diff/time_diff
+            dc = 1e3 * clock_diff/time_diff
             ax3.plot_date(clocks[0,:-1], dc, 'b-,', label="clk dif")
         elif len(ocds[0]):
+            # otherwise plot the clock deviations
             ax3=fig.add_axes(ax1.get_position())
             ax3.set_alpha(0.25) #This doesn't seem to affect the plot
             ax3.plot_date(ocds[0], ocds[1], 'b-,', label="clk res")
@@ -296,7 +295,7 @@ def main():
         ax2 = ax1
 
     if plotClocks:
-        ax2.plot_date(clocks[0], clocks[1], 'g.', label="offset")
+        ax2.plot_date(clocks[0], clocks[1], 'g,', label="offset")
         ax2.grid(True)
         ax2.set_ylabel('clock (meters)', **yprops)
         
@@ -316,8 +315,7 @@ def main():
             ax2.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005,
                        handletextsep=0.01, axespad=0.0, loc=(1,0))
             leg = pylab.gca().get_legend()
-            leg.draw_frame(False)        
-            
+            leg.draw_frame(False)
 
     ax2.xaxis.set_major_formatter(xMajorFmt)
     xlabels=ax2.get_xticklabels()
