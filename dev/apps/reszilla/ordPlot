@@ -272,12 +272,12 @@ def main():
                 y_min = 1e100
                 y_max = -1e100
                 if len(ords[0]):
-                    y_min = min( min(ords[1]), y_min)
-                    y_max = max( max(ords[1]), y_max)
+                    y_min = min( min(ords[2]), y_min)
+                    y_max = max( max(ords[2]), y_max)
                 if options.clockDelta:
                     y_min = min( min(clock_diff), y_min)
                     y_max = max( max(clock_diff), y_max)
-                elif len(ocds[0]):
+                if len(ocds[0]):
                     y_min = min( min(ocds[1]), y_min)
                     y_max = max( max(ocds[1]), y_max)
                 ax1.set_ylim(ymin=y_min, ymax=y_max)
