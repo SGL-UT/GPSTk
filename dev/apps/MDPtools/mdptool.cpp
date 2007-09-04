@@ -74,6 +74,8 @@ public:
         stopTimeOpt(
            '\0',  "stop-time", "%4Y/%03j/%02H:%02M:%05.2f",
            "Ignore any data after this time"),
+        extraOpt(
+           "File to process."),
         timeSpanOpt('l', "time-span", "How much data to process, in seconds")
    {
       pvtOpt.setMaxCount(1);
@@ -94,6 +96,8 @@ public:
       string fn;
       if (mdpInputOpt.getCount())
          fn =  mdpInputOpt.getValue()[0];
+      else if (extraOpt.getCount())
+         fn = extraOpt.getValue()[0];
       inputDev.open(fn, ios::in);
       if (debugLevel)
          cout << "Taking input from " << inputDev.getTarget() << endl;
@@ -240,6 +244,8 @@ private:
    gpstk::CommandOptionWithAnyArg styleOpt;
    gpstk::CommandOptionWithNumberArg timeSpanOpt, bugMaskOpt;
    gpstk::CommandOptionWithTimeArg startTimeOpt, stopTimeOpt;
+
+   gpstk::CommandOptionRest extraOpt;
 
    string style;
 

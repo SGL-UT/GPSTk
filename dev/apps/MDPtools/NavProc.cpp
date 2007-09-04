@@ -243,8 +243,8 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
             out << msgPrefix << "Built complete ephemeris, iocd:0x"
                 << hex << setw(3) << engEph.getIODC() << dec
                 << endl;
-         if (verboseLevel>2)
-            dump(out, ephPages);
+            if (verboseLevel>2)
+               dump(out, ephPages);
             if (verboseLevel>1)
                out << engEph;
             ephStore[ni] = engEph;

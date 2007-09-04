@@ -2,12 +2,10 @@
 
 SubDir TOP apps receiver ;
 
-GPSLinkLibraries rtAshtech rfw ash2mdp : gpstk rxio ;
+GPSLinkLibraries rtAshtech ash2mdp : gpstk rxio ;
 
 BonkForte ; # bleah.
 
 GPSMain rtAshtech : AshtechMessage.cpp rtAshtech.cpp ScreenControl.cpp ;
-
-GPSMain rfw : rfw.cpp ;
 
 GPSMain ash2mdp : ash2mdp.cpp ;

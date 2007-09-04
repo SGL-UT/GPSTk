@@ -224,6 +224,8 @@ namespace gpstk
    {
       using std::endl;
       using std::setw;
+      s << std::setprecision(4);
+      s.setf(std::ios::scientific);
       switch (verbosity)
       {
          case 0:
@@ -236,6 +238,7 @@ namespace gpstk
               << AF1       << ", "
               << ecc       << ", "
               << w         << ", "
+              << Ahalf     << ", "
               << M0        << ", "
               << OMEGA0    << ", "
               << OMEGAdot  << ", "
@@ -251,9 +254,11 @@ namespace gpstk
               << " AF1:" <<AF1
               << " Ecc:" << ecc
               << endl
-              << "    " << w
+              << "   w:" << w
+              << " Ahalf:" << Ahalf
               << " M0:" << M0
-              << " OMEGA0:" << OMEGA0
+              << endl
+              << "   OMEGA0:" << OMEGA0
               << " OMEGAdot:" << OMEGAdot
               << " Ioff:" << i_offset
               << endl;
@@ -267,6 +272,7 @@ namespace gpstk
               << "SV_health:             " << SV_health << endl
               << "AFO:                   " << setw(12) << AF0  << " sec" << endl
               << "AF1:                   " << setw(12) << AF1  << " sec/sec" << endl
+              << "Sqrt A:                " << setw(12) << Ahalf  << " sqrt meters" << endl
               << "Eccentricity:          " << setw(12) << ecc    << endl
               << "Arg of perigee:        " << setw(12) << w      << " rad" << endl
               << "Mean anomaly at epoch: " << setw(12) << M0     << " rad" << endl

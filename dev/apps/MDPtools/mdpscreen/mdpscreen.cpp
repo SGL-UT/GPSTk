@@ -24,6 +24,8 @@ public:
       throw()
       : BasicFramework(applName, "A curses based near-real-time display of an "
                        " MDP stream."),
+        extraOpt(
+           "File to process."),
         mdpInputOpt('i', "input", "Where to get the MDP data from. The default "
                     "is to use stdin. If the file name begins with \"tcp:\" "
                     "the remainder is assumed to be a hostname[:port] and the "
@@ -43,6 +45,8 @@ public:
       string fn;
       if (mdpInputOpt.getCount())
          fn =  mdpInputOpt.getValue()[0];
+      else if (extraOpt.getCount())
+         fn = extraOpt.getValue()[0];
       DeviceStream<ifstream> *inputDev = new DeviceStream<ifstream>(fn, ios::in);
       mdpInput.std::basic_ios<char>::rdbuf(inputDev->std::basic_ios<char>::rdbuf());
       mdpInput.filename = inputDev->getTarget();
@@ -90,6 +94,8 @@ private:
    ofstream output;
    TCPStreamBuff rdbuf;
    CommandOptionWithAnyArg mdpInputOpt;
+
+   CommandOptionRest extraOpt;
 
    MDPProcessor* processor;
 };
