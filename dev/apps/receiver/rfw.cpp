@@ -76,7 +76,10 @@ public:
 
       CommandOptionWithAnyArg outputSpecOpt(
          'o', "output",
-         "The file spec for writing the files.");
+         "The file spec for writing the files. The default is to write "
+         "to stdout");
+
+      CommandOptionRest extraOpt("File to process.");
 
       outputSpecOpt.setMaxCount(1);
       inputOpt.setMaxCount(1);
@@ -90,6 +93,8 @@ public:
       string fn;
       if (inputOpt.getCount())
          fn = inputOpt.getValue()[0];
+      else if (extraOpt.getCount())
+         fn = extraOpt.getValue()[0];
       input.open(fn, ios::in);
 
       if (debugLevel)
@@ -101,6 +106,10 @@ public:
          string spec = outputSpecOpt.getValue()[0];
          output.setFilespec(spec);
       }
+      else
+      {
+      }
+         
 
       output.debugLevel = debugLevel;
 
