@@ -1,0 +1,38 @@
+
+\section*{Project Description}
+
+As a project, the GPSTk has changed signficantly since it was
+presented at the ION-GNSS-2005. New processes have been implemented to
+support both development of code and use of the
+applications. Development support includes a shared, online repository
+hosted by Source Forge\cite{sourceforge}, and a new testing
+framework. Users are now supported with an online, collaborative
+project site. In addition, a user manual for the GPSTk applications
+has been initiated and is publicly available.
+
+
+--------------------------------------
+
+\subsection*{Data Collection and Conversion}
+
+There are applications that convert observations between RINEX and
+other formats. Some applications such as \gpstkapplication{novaRinex}
+and \gpstkapplication{rtAshtech} parse message specific to a
+particular family of receivers. Other applications such as
+\gpstkapplication{RinexDump} and \gpstkapplication{navdmp} that
+reformat RINEX into human- or machine-readable formats.
+
+There are two sets of conversion applications that support formats
+derived by ARL:UT.  The first set supports a format known as
+Floating-Integer-Character (FIC). FIC was first proposed in the 1980's
+as a format to record a broad range of measurments from a GPS receivers or
+a reference station. \cite{rinex1format}, \cite{ficproposal}. The full
+FIC format supports the recording of pseudorange observations and
+navigation messages, as well as atomic clock models. In a sense FIC is
+a precursor to BINEX. In practice, FIC is only used to store the
+navigation message. Therefore, in the GPSTk, FIC functionality is
+restricted to that pertaining to the navigation message. The
+second set of applications that support formats derived by ARL:UT use
+the Measurement Data Port (MDP) protocol. The MDP format and its
+associated tools will be discussed in the following ``New
+Applications'' section.

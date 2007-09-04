@@ -1,0 +1,123 @@
+
+\begin{table*}
+\begin{footnotesize}
+\begin{tabular}{clll}
+
+& \textbf{Tool} & \textbf{Description} & \textbf{Execution Example} \\
+\hline
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{calgps} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{generates a GPS calendar}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{calgps -Y 2004}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{poscvt} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{converts a given input position to other position formats}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{poscvt --geodetic="30.28 262.26700 167.64" }}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{timeconvert} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{converts given input time to other time formats}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{timeconvert --calendar="07 04 2006"}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{wheresat} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{outputs expected location of a satellite}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{wheresat -b arl2100.06n -p 3}}} \\
+\hline
+
+\multirow{-9}{\sidewidth}{\rotatebox{90}{\sidesize{\hspace{3mm}Transforms}}}
+
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{rtAshtech} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{records observations from an Ashtech receiver}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{rtAshtech -p /dev/ttyS1 -o "minute\%03j\%02H\%02m.\%06yo"}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{ficfica ficafic fic2rin} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{convert fic files between ASCII, binary, and RINEX formats}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{fic2rin fic2100.06 rin121.06n}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{mdp2fic mdp2rinex} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{convert MDP files to FIC or RINEX files}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{mdp2rinex -i mdpfile -o arl2100.06o }}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{novaRinex} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{convert Novatel files to RINEX}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{novaRinex --input nova2100.06 --obstype L1}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{navdmp} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{dumps information from nav files to human readable formats}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{navdmp -i arl2100.06n -o arl2100.06.dmp}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{RinexDump} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{dumps observation data for specified satellites from a RINEX file}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{RinexDump arl2100.06o 3 4 L1 L2}}} \\
+\hline
+
+\multirow{-13}{\sidewidth}{\rotatebox{90}{\sidesize{\hspace{2mm} Collecting \& Converting}}}
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{ephdiff} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{compares the satellite positions from two ephemeris sources}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{ephdiff arl2100.06n fic2100.06}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{ficdiff} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{compares contents of two FIC files}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{ficidff fic12100.06 fic22100.06}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{ficcheck ficacheck} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{reads a FIC file and checks it for errors reporting the first found}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{ficcheck fic2100.06 -t "07/20/2006 11:00:00"}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{rowdiff rnwdiff rmwdiff} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{compares contents of two RINEX files}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{rowdiff arl1210.06o arl22100.06o}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{rowcheck rnwcheck rmwcheck} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{read Rinex files and checks it for errors reporting the first found}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{rnwcheck arl210.06n -e "07/20/2006 11:00:00"}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{navsum RinSum} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{summarizes the contents of nav/Rinex files}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{RinSum -i arl2100.06o --EpochBeg 2006,07,20,13,20,00}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{mdptool} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{summarizes MDP data}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{mdptool -i mdpfile --pvt --obs}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{reszilla} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{computes range residuals or zero baseline differences}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{reszilla -o arl210.06o -e arl2100.06n}}} \\
+\hline
+
+\multirow{-17}{\sidewidth}{\rotatebox{90}{\sidesize{Comparing \& Validating}}}
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{mergeFIC} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{sorts and merges input FIC files into a single file}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{mergeFIC -i fic12100.06 -i fic22100.06 -o ficmerge2100.06}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{mergeRinObs, -Nav, -Met} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{sorts and merges RINEX files}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{mergeRinNav -i arl2100.06n -i arl2110.06n arl210-211.06n}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{NavMerge} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{merges RINEX nav files into a single file}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{NavMerge -oarlnavs.06n arl2100.06n arl2110.06n}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{rinexthin} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{decimates an input RINEX observation files to desired data rate}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{rinexthin -f arl2100.06o -s 30 -o arl2100thin.06n}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{ResCor} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{edits RINEX files and computes corrections}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{ResCor -IFarl2100.06o -OFarl2100mod.06o -DS12,12:00:00 }}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{DiscFix} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{cycle slip corrector}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{DiscFix -i arl2100.06o --DT 1.5}}} \\
+\hline
+
+\multirow{-13}{\sidewidth}{\rotatebox{90}{\sidesize{Editing Data}}}
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{IonoBias} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{solves interfrequency biases and a simple ionosphere model}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{IonoBias --input arl2100.06o --nav arl2100.06n --XSat 3}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{TECMaps} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{creates maps of Total Electron Content (TEC)}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{TECMaps --input arl2100.06o --nav arl2100.06n --LinearFit}}} \\
+\hline
+
+\multirow{-5}{\sidewidth}{\rotatebox{90}{\sidesize{\hspace{3mm}Iono}}}
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{PRSolve} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{generates autonomous position solution}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{PRSolve -o arl2100.06o -n arl2100.06nn --XPRN 12}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{rinexpvt} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{generates autonomous position solution}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{rinexpvt -o alr2100.06o -n arl2100.06n}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} & \cellcolor[\entct]{\entst} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\twidth}{DDBase} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\dwidth}{\footnotesize{computes a network solution using carrier phase}} & \cellcolor[\entct]{\entst} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{DDBase ... --ObsFile arl2100.06o --PosXYZ x,y,z,1 --Fix}}} \\
+
+\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} & \cellcolor[\entco]{\entso} \\
+\cellcolor[\sidect]{\sidest} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\twidth}{vecsol} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\dwidth}{\footnotesize{estimates short baseline using range or carrier phase}} & \cellcolor[\entco]{\entso} \multirow{\bkup}{\ewidth}{\ttfamily{\execsize{vecsol station12100.06o station22100.06o}}} \\
+\hline
+ 
+\multirow{-9}{\sidewidth}{\rotatebox{90}{\sidesize{\hspace{3mm}Positioning}}} \\
+
+\end{tabular}
+\end{footnotesize}
+\caption{GPSTk Applications, categorized, with execution examples.}
+\label{apptable}
+\end{table*}
+
