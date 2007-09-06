@@ -76,8 +76,9 @@ public:
 
       CommandOptionWithAnyArg outputSpecOpt(
          'o', "output",
-         "The file spec for writing the files. The default is to write "
-         "to stdout");
+         "The file spec for writing the files. To have the output "
+         "go to stdout, specify - as the output file. The default file spec "
+         "is tmp%03j_%04Y.raw");
 
       CommandOptionRest extraOpt("File to process.");
 
@@ -100,16 +101,14 @@ public:
       if (debugLevel)
          cout << "Taking input from " << input.getTarget() << endl;
 
-
       if (outputSpecOpt.getCount())
       {
          string spec = outputSpecOpt.getValue()[0];
          output.setFilespec(spec);
       }
-      else
-      {
-      }
-         
+
+      if (output.getFilespec() == "-")
+         output.setFilespec("<stdout>");
 
       output.debugLevel = debugLevel;
 
@@ -126,14 +125,23 @@ protected:
 
    virtual void process()
    {
+      bool use_stdout = output.getFilespec() == "<stdout>";
       const size_t max_len=512;
       char data[max_len];
       while (input)
       {
          input.read(data, max_len);
-         output.updateFileName();
-         output.write(data, input.gcount());
-         output.flush();
+         if (use_stdout)
+         {
+            cout.write(data, input.gcount());
+            cout.flush();
+         }
+         else
+         {
+            output.updateFileName();
+            output.write(data, input.gcount());
+            output.flush();
+         }
       }
    }
 
