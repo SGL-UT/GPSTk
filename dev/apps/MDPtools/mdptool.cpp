@@ -10,8 +10,6 @@
 #include "LoopedFramework.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 
-#include "DeviceStream.hpp"
-
 #include "MDPProcessors.hpp"
 #include "SummaryProc.hpp"
 #include "TrackProc.hpp"
@@ -34,11 +32,10 @@ public:
          "10 degrees."),
         mdpInputOpt(
            'i', "input", 
-           "Where to get the MDP data from. The default "
-           "is to use stdin. If the file name begins with \"tcp:\" "
-           "the remainder is assumed to be a hostname[:port] and the "
-           "source is taken from a tcp socket at this address. If the "
-           "port number is not specified a default of 8910 is used."),
+           "Where to get the MDP data from. The default is to use stdin."),
+        followOpt(
+           'f', "follow", 
+           "Follow the input file as it grow."),
         outputOpt(
            '\0', "output",
            "Where to send the output. The default is stdout."),
@@ -98,10 +95,20 @@ public:
          fn =  mdpInputOpt.getValue()[0];
       else if (extraOpt.getCount())
          fn = extraOpt.getValue()[0];
-      inputDev.open(fn, ios::in);
+
+      if (fn == "")
+      {
+         fn = "<stdin>";
+         mdpInput.std::basic_ios<char>::rdbuf(cin.rdbuf());
+      }
+      else
+      {
+         inputDev.open(fn.c_str(), ios::in);
+         mdpInput.std::basic_ios<char>::rdbuf(inputDev.std::basic_ios<char>::rdbuf());
+      }
+
       if (debugLevel)
-         cout << "Taking input from " << inputDev.getTarget() << endl;
-      mdpInput.std::basic_ios<char>::rdbuf(inputDev.std::basic_ios<char>::rdbuf());
+         cout << "Taking input from " << fn << endl;
 
       if (outputOpt.getCount())
       {
@@ -177,6 +184,9 @@ public:
       for (int i=0; i<bugMaskOpt.getCount(); i++)
          processor->bugMask |= StringUtils::asUnsigned(bugMaskOpt.getValue()[i]);
       
+      if (followOpt.getCount())
+         processor->followEOF = true;
+
       if (debugLevel)
       {
          string msgList;
@@ -187,6 +197,8 @@ public:
          if (msgList.size()==0)
             msgList = "no ";
          cout  << "Processing " << msgList << "messages." << endl;
+         if (processor->followEOF)
+            cout << "Following input as it grows" << endl;
       }
 
       processor->debugLevel = debugLevel;
@@ -234,13 +246,14 @@ protected:
    }
 
 private:
-   DeviceStream<ifstream> inputDev;
+   ifstream inputDev;
    MDPStream mdpInput;
    ofstream output;
    gpstk::CommandOptionWithAnyArg mdpInputOpt, outputOpt;
 
    gpstk::CommandOptionNoArg pvtOpt, obsOpt, navOpt, tstOpt, hexOpt, badOpt;
    gpstk::CommandOptionNoArg almOpt, ephOpt, minimalAlmOpt;
+   gpstk::CommandOptionNoArg followOpt;
    gpstk::CommandOptionWithAnyArg styleOpt;
    gpstk::CommandOptionWithNumberArg timeSpanOpt, bugMaskOpt;
    gpstk::CommandOptionWithTimeArg startTimeOpt, stopTimeOpt;

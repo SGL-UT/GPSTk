@@ -56,8 +56,9 @@ MDPNavProcessor::~MDPNavProcessor()
       out << "  No Navigation Subframe messages processed." << endl;
    else
    {
-      out << "  navSubframeCount: " << navSubframeCount << endl;
-      out << "  badNavSubframeCount: " << badNavSubframeCount << endl;
+      out << "  navSubframeCount: " << navSubframeCount << endl
+          << "  badNavSubframeCount: " << badNavSubframeCount << endl
+          << "  percent bad: " << 100.0 * badNavSubframeCount/navSubframeCount << endl;
    }
 
    cout << "Parity Errors" << endl;

@@ -1,15 +1,44 @@
 #pragma ident "$Id$"
 
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
 
-//lgpl-license START
-//lgpl-license END
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 
 #include "StringUtils.hpp"
 #include "LoopedFramework.hpp"
 #include "CommandOption.hpp"
-
-#include "DeviceStream.hpp"
-#include "TCPStreamBuff.hpp"
 
 #include "MDPProcessors.hpp"
 #include "ScreenProc.hpp"
@@ -27,10 +56,8 @@ public:
         extraOpt(
            "File to process."),
         mdpInputOpt('i', "input", "Where to get the MDP data from. The default "
-                    "is to use stdin. If the file name begins with \"tcp:\" "
-                    "the remainder is assumed to be a hostname[:port] and the "
-                    "source is taken from a tcp socket at this address. If the "
-                    "port number is not specified a default of 8910 is used.")
+                    "is to use stdin. Use the rfw program to get input from "
+                    "a device")
    {}
 
    bool initialize(int argc, char *argv[]) throw()
@@ -47,9 +74,18 @@ public:
          fn =  mdpInputOpt.getValue()[0];
       else if (extraOpt.getCount())
          fn = extraOpt.getValue()[0];
-      DeviceStream<ifstream> *inputDev = new DeviceStream<ifstream>(fn, ios::in);
-      mdpInput.std::basic_ios<char>::rdbuf(inputDev->std::basic_ios<char>::rdbuf());
-      mdpInput.filename = inputDev->getTarget();
+
+      if (fn == "")
+      {
+         mdpInput.basic_ios<char>::rdbuf(cin.rdbuf());
+         mdpInput.filename = "<stdin>";
+      }
+      else
+      {
+         ifstream *inputDev = new ifstream(fn.c_str(), ios::in);
+         mdpInput.std::basic_ios<char>::rdbuf(inputDev->std::basic_ios<char>::rdbuf());
+         mdpInput.filename = fn;
+      }
       
       processor = new MDPScreenProcessor(mdpInput, output);
 
@@ -92,7 +128,6 @@ protected:
 private:
    MDPStream mdpInput;
    ofstream output;
-   TCPStreamBuff rdbuf;
    CommandOptionWithAnyArg mdpInputOpt;
 
    CommandOptionRest extraOpt;

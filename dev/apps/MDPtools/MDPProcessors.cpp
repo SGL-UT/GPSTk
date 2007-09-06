@@ -1,10 +1,42 @@
 #pragma ident "$Id$"
 
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 
 /** @file Various presentations/analysis on MDP streams */
-
-//lgpl-license START
-//lgpl-license END
 
 #include "MDPProcessors.hpp"
 
@@ -21,7 +53,8 @@ MDPProcessor::MDPProcessor() :
       startTime(gpstk::DayTime::BEGINNING_OF_TIME),
       timeSpan(-1), processBad(false), bugMask(0),
       debugLevel(0), verboseLevel(0), in(d1), out(d2), die(false),
-      pvtOut(false), obsOut(false), navOut(false), tstOut(false)
+      pvtOut(false), obsOut(false), navOut(false), tstOut(false),
+      followEOF(false)
 {}
 
 MDPProcessor::MDPProcessor(gpstk::MDPStream& in, std::ofstream& out) :
@@ -30,7 +63,8 @@ MDPProcessor::MDPProcessor(gpstk::MDPStream& in, std::ofstream& out) :
       startTime(gpstk::DayTime::BEGINNING_OF_TIME),
       timeSpan(-1), processBad(false), bugMask(0),
       debugLevel(0), verboseLevel(0), in(in), out(out), die(false),
-      pvtOut(false), obsOut(false), navOut(false), tstOut(false)
+      pvtOut(false), obsOut(false), navOut(false), tstOut(false),
+      followEOF(false)
 {}
 
 void MDPProcessor::process()
@@ -42,8 +76,32 @@ void MDPProcessor::process()
    lastFC=0;
    fcErrorCount=0;
 
-   while (!die && in >> header)
+   while (!die)
    {
+      in >> header;
+      
+      if (debugLevel>2)
+      {
+         cerr << " Post Read:";
+         cerr << " " << in.gcount();
+         if (in.eof()) cerr << " in:eof";
+         if (in.fail()) cerr << " in.fail()";
+         if (in.bad()) cerr << " in.bad()";
+         cerr << endl;
+      }
+
+      if (in.eof())
+      {
+         if (followEOF)
+            in.clear();
+         else
+            die=true;
+         continue;
+      }
+      
+      if (!in)
+         break;
+      
       if (startTime == DayTime(DayTime::BEGINNING_OF_TIME) && timeSpan>0)
       {
          startTime = header.time;

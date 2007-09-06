@@ -12,12 +12,10 @@ Library mdplib : MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp ;
 # Now we can set up the things that depend upon the local library. Note that
 # the LinkLibraries rule for mdplib must preceede the GPSLinkLibraries rule
 # for things to build properly
-LinkLibraries mdptool mdp2rinex tcptest : mdplib ;
-GPSLinkLibraries mdptool mdp2rinex tcptest : rxio gpstk ;
+LinkLibraries mdptool mdp2rinex : mdplib ;
+GPSLinkLibraries mdptool mdp2rinex : rxio gpstk ;
 
 
 GPSMain mdptool : mdptool.cpp ;
 
 GPSMain mdp2rinex : mdp2rinex.cpp ;
-
-GPSMain tcptest : tcptest.cpp ;

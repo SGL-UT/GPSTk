@@ -38,6 +38,7 @@ public:
    int debugLevel;
    int verboseLevel;
    bool die;
+   bool followEOF;
 
    bool processBad;
    bool pvtOut, obsOut, navOut, tstOut;
