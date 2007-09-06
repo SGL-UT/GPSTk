@@ -67,7 +67,7 @@ using namespace StringUtils;
 
 // -----------------------------------------------------------------------------------
 string Prgm("novaRinex");                 // name of this program
-string Vers("v2.0 4/07");                 // version - keep to 10 char
+string Vers("v2.1 9/07");                 // version - keep to 10 char
 // 1.0 8/05
 // 1.1 2/06 process obs only when datasize > 4 - empty records were setting FirstEpoch
 // 1.2 6/06 catch exceptions, and allow blanks on cmd line and in input file
@@ -76,6 +76,7 @@ string Vers("v2.0 4/07");                 // version - keep to 10 char
 // 1.4 7/06 handle exceptions
 // 1.5 7/06 correct handling of header inputs
 // 2.0 4/07 added Binex output -- commented out
+// 2.1 9/07 declare failure when message length is < 0 in NovatelData.cpp
 
 // -----------------------------------------------------------------------------------
 // global data, mostly to save information to go in the final RINEX header

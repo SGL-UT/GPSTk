@@ -327,7 +327,7 @@ namespace gpstk
                      checksum ^= buffer[2];
                      for(i=4; i<datasize; i++) checksum ^= buffer[i];
 
-                     if(checksum == buffer[3]) break;    // sucess
+                     if(checksum == buffer[3]) break;    // success
                      failure = 2;
 
                   }  // end if datasize fits into buffer
@@ -433,7 +433,7 @@ namespace gpstk
                      // ---------------------------------------
                      // read the data message, but don't overwrite the header
                      // first check against buffer overflow
-                  if(datasize-28 >= 1024) {
+                  if(datasize-28 >= 1024 || datasize-28 < 0) {
                      //FFStreamError fe("Read error - buffer overflow");
                      //GPSTK_THROW(fe);
                      failure = 1;
