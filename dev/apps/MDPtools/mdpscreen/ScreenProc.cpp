@@ -95,17 +95,18 @@ MDPScreenProcessor::MDPScreenProcessor(gpstk::MDPStream& in, std::ofstream& out)
    MDPProcessor(in, out),
    updateRate(0.5), obsRate(-1), pvtRate(-1)
 {
-
-   // First set up curses
    signal(SIGWINCH, wench);
+
+   // Set up curses
    win = initscr();
    cbreak();
-   nodelay(win,true);
+   nodelay(win, true);
    noecho();
    nonl();
    intrflush(win, true);
    keypad(win, true);
    prev_curs = ::curs_set(0);   // we want an invisible cursor. 
+
    gotWench=false;
    followEOF=true;
 
@@ -230,18 +231,11 @@ void MDPScreenProcessor::redraw()
       string time=currentPvt.time.printf(" %02H:%02M:%02S %2m/%d/%02y");
       writeAt(win, 0, COLS-time.length()-5, time.c_str());
       lastUpdateTime = now;
-      int ch = getch();
-      if (tolower(ch)=='q')
-      {
-         die=true;
-         writeAt(win, 0, 0, "Exiting program.");
-         // Use this to indicate that it is time to quit
-         in.setstate(ios_base::failbit);
-      }
 
-      /* should consider doing endwin(), initscr() and redrawing the window */
-      if (gotWench || tolower(ch)=='r')
+      if (gotWench)
       {
+         endwin();
+         refresh();
          char buff[30];
          sprintf(buff, "%2d x %2d (wench)", LINES, COLS);
          writeAt(win, 0, COLS/2-15, buff);
@@ -250,6 +244,7 @@ void MDPScreenProcessor::redraw()
          drawBase();
       }
    }
+
    wrefresh(win);
 }
 
@@ -278,6 +273,7 @@ void MDPScreenProcessor::drawSTS()
    string ssw=leftJustify(int2x(currentSts.saasmStatusWord), 3);
    writeAt(win, stsRow, stsSSWCol, ssw.c_str());
 }
+
 
 void MDPScreenProcessor::drawPVT()
 {
@@ -323,6 +319,7 @@ void MDPScreenProcessor::drawPVT()
    fom = leftJustify(asString((int)currentPvt.corrections), 2);
    writeAt(win, pvtRow+2, prateCol+6, fom.c_str());
 }
+
 
 void MDPScreenProcessor::drawChan(int chan)
 {
@@ -433,6 +430,7 @@ void MDPScreenProcessor::drawChan(int chan)
    writeAt(win, row, iodcCol, iodc);
 }
 
+
 void MDPScreenProcessor::drawBase()
 {
    wclear(win);
@@ -465,7 +463,7 @@ void MDPScreenProcessor::drawBase()
    redraw();
 }
 
-/* should consider doing endwin(), initscr() and redrawing the window */
+
 void wench(int sig)
 {
    MDPScreenProcessor::gotWench=true;
