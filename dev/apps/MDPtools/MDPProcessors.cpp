@@ -79,16 +79,6 @@ void MDPProcessor::process()
    while (!die)
    {
       in >> header;
-      
-      if (debugLevel>2)
-      {
-         cerr << " Post Read:";
-         cerr << " " << in.gcount();
-         if (in.eof()) cerr << " in:eof";
-         if (in.fail()) cerr << " in.fail()";
-         if (in.bad()) cerr << " in.bad()";
-         cerr << endl;
-      }
 
       if (in.eof())
       {
