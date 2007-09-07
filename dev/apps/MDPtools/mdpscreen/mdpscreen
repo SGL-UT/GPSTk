@@ -1,0 +1,4 @@
+#!/bin/bash
+# $Id: Jamfile 471 2007-04-11 15:06:40Z ocibu $
+
+rfw -i $1 -o - | mdpscreen.bin

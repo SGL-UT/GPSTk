@@ -1,11 +1,13 @@
 # $Id$
 
-SubDir TOP apps MDPtools mdpscreen ;
+SubDir TOP apps MDPtools mdpscreen.bin ;
 
 LINKLIBS += -lncurses ;
 
 SEARCH_SOURCE += $(TOP)/apps/MDPtools ;
 
-GPSLinkLibraries mdpscreen : gpstk rxio ;
+GPSLinkLibraries mdpscreen.bin : gpstk rxio ;
 
-GPSMain mdpscreen : mdpscreen.cpp MDPProcessors.cpp ScreenProc.cpp ;
+GPSMain mdpscreen.bin : mdpscreen.cpp MDPProcessors.cpp ScreenProc.cpp ;
+
+InstallBin $(BINDIR) : mdpscreen ;
