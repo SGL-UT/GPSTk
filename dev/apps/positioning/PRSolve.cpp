@@ -229,7 +229,7 @@ try {
    prsol.ResidualCriterion = C.residCrit;
    prsol.ReturnAtOnce = C.returnatonce;
    prsol.NSatsReject = C.maxReject;
-   prsol.MaxNIterations = C.nIter;
+   prsol.MaxNIterations = prsol.NIterations = C.nIter;
    prsol.ConvergenceLimit = C.convLimit;
 
       // iret comes from GetCommandLine
@@ -897,7 +897,7 @@ try {
    if(C.Debug) {
       C.oflog << "Satellites and Ranges before Prepare:\n";
       for(i=0; i<PRanges.size(); i++)
-         C.oflog << " " << setw(2) << Sats[i] << fixed
+         C.oflog << " " << setw(2) << RinexSatID(Sats[i]) << fixed
             << " " << setw(13) << setprecision(3) << PRanges[i] << endl;
    }
 
@@ -932,7 +932,7 @@ try {
 
       iret = PRSolution::AutonomousPRSolution(CurrEpoch, UseSats, SVP, C.pTropModel,
          C.algebra, niter, conv, Solution, Covariance, Residual, Slope,
-         (C.Verbose ? &C.oflog : NULL));
+         (C.Debug ? &C.oflog : NULL));
 
       C.oflog << "APS " << setw(2) << iret
          << " " << CurrEpoch.printf(C.timeFormat)
@@ -1016,17 +1016,13 @@ try {
 
    // --------------------------------------------------------------
    // now compute again, using RAIM
-
-   iret = -4;
    iret = prsol.RAIMCompute(CurrEpoch, Sats, PRanges, *pEph, C.pTropModel);
-   if(iret == -4) {
-      C.oflog << "PRS Sol. failed to find ephemeris\n" << endl;
-      return iret;
-   }
+
    for(Nsvs=0,i=0; i<Sats.size(); i++)
       if(Sats[i].id > 0) Nsvs++;
    RMSresid = prsol.RMSResidual;
 
+   // output
    C.oflog << "RPF " << setw(2) << Sats.size()-Nsvs
       << " " << CurrEpoch.printf(C.timeFormat)
       << " " << setw(2) << Nsvs << fixed
@@ -1039,9 +1035,25 @@ try {
       << " " << prsol.NIterations
       << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
    for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
-   C.oflog << " (" << iret << ")" << (prsol.isValid() ? " V" : " NV")
-      << endl;
-   //C.oflog << "prsol Sol. returned " << iret << " at " << CurrEpoch << endl;
+   C.oflog << " (" << iret;
+   if(C.Verbose) {
+      //C.oflog << "PRS returned " << iret << " at " << CurrEpoch.printf(C.timeFormat)
+      //   << ", meaning ";
+      if(iret==2) C.oflog
+         << " solution is found, but it is not good (RMS residual exceed limits)";
+      if(iret==1) C.oflog
+         << " solution is found, but it is suspect (slope is large)";
+      if(iret==0) C.oflog << " ok";
+      if(iret==-1) C.oflog
+         << " algorithm failed to converge";
+      if(iret==-2) C.oflog
+         << " singular problem, no solution is possible";
+      if(iret==-3) C.oflog
+         << " not enough good data, < 5 sats, 4-sat sol is ok if V at EOL";
+      if(iret==-4) C.oflog
+         << " failed to find any ephemeris";
+   }
+   C.oflog << ")" << (prsol.isValid() ? " V" : " NV") << endl;
 
    // compute residuals using known position, and output
    if(C.knownpos.getCoordinateSystem() != Position::Unknown && iret >= 0) {
@@ -1108,7 +1120,6 @@ try {
          zzRNE += inform * V;
       }
    }
-   //C.oflog << endl;
 
    //
    if(prsol.isValid() && !C.OutRinexObs.empty()) return 3;
@@ -1193,7 +1204,7 @@ try {
    C.oflog << c2 << " : " << setw(16) << setprecision(6) << S[2] << endl;
 
    //C.oflog << endl;
-   C.oflog << "Weighted average " << msg << endl << fixed;
+   C.oflog << "\nWeighted average " << msg << endl << fixed;
    if(S[0].N() > 0) {
       Matrix<double> Cov=inverse(P);
       Vector<double> Sol=Cov * z;

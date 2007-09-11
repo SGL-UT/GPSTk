@@ -120,13 +120,11 @@ namespace gpstk
             + " not found.");
          GPSTK_THROW(e);
       }
-   
+
       const SvEphMap& sem=svmap->second;
       SvEphMap::const_iterator i=sem.find(t);
-      
       Xvt sv;
-      if (i!= sem.end() && haveVelocity)
-      {
+      if (i!= sem.end() && haveVelocity) {      // exact match of t
          sv = i->second;
          sv.x[0] *= 1.e3;     // m
          sv.x[1] *= 1.e3;     // m
@@ -147,22 +145,29 @@ namespace gpstk
       const int half=5;
 
          //  i will be the lower bound, j the upper (in time).
-      i = sem.lower_bound(t);
+      i = sem.lower_bound(t); // i points to first element with key >= t
       SvEphMap::const_iterator j=i;
       if(i == sem.begin() || --i == sem.begin()) {
          NoEphemerisFound e("Inadequate data before requested time, satellite "
             + asString(sat));
          GPSTK_THROW(e);
       }
+      if(j == sem.end()) {
+         NoEphemerisFound e("Inadequate data after requested time, satellite "
+            + asString(sat));
+         GPSTK_THROW(e);
+      }
+      // t is now between i and j
+
       for(int k=0; k<half-1; k++) {
          i--;
-         if(i == sem.begin() && k<half-2) {
+         if(i == sem.begin() && k<half-2) {  // if k==half-2, this is last iteration
             NoEphemerisFound e("Inadequate data before requested time, satellite "
                + asString(sat));
             GPSTK_THROW(e);
          }
          j++;
-         if(j == sem.end()) {
+         if(j == sem.end() && k<half-2) {
             NoEphemerisFound e("Inadequate data after requested time, satellite "
                + asString(sat));
             GPSTK_THROW(e);
@@ -174,7 +179,6 @@ namespace gpstk
       DayTime t0=i->first;
       double dt=t-t0,err;
       std::vector<double> times,X,Y,Z,T,VX,VY,VZ,F;
-
 
       for (itr=i; itr!=sem.end(); itr++)
       {

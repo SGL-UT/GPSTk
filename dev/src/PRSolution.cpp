@@ -186,15 +186,15 @@ namespace gpstk
                                const EphemerisStore& Eph,
                                TropModel *pTropModel)
       throw(Exception)
-      {
+   {
       try {
          int iret,jret,i,j,N,Nreject,MinSV,stage;
          vector<bool> UseSat,UseSave;
          vector<int> GoodIndexes;
          // Use these to save the 'best' solution within the loop.
-         int BestNIter;
+         int BestNIter=0;
          double BestRMS=0.0,BestSL=0.0,BestConv=0.0;
-         Vector<double> BestSol;
+         Vector<double> BestSol(3,0.0);
          vector<bool> BestUse;
          BestRMS = -1.0;      // this marks the 'Best' set as unused.
 
@@ -210,16 +210,18 @@ namespace gpstk
          // ----------------------------------------------------------------
          // fill the SVP matrix, and use it for every solution
          // NB this routine can set Satellite[.]=negative when no ephemeris
-         i = PrepareAutonomousSolution(Tr, Satellite, Pseudorange, Eph, SVP);
-         if(Debug) {
-            *pDebugStream << "In RAIMCompute after PAS(): Satellites:";
-            for(j=0; j<Satellite.size(); j++) *pDebugStream << " " << Satellite[j];
-            *pDebugStream << endl;
-            *pDebugStream << " SVP matrix("
-               << SVP.rows() << "," << SVP.cols() << ")" << endl;
-            *pDebugStream << fixed << setw(16) << setprecision(3) << SVP << endl;
-         }
-         if(i) return -3;  // return is 0(ok) or -4(no ephemeris)
+         i = PrepareAutonomousSolution(Tr, Satellite, Pseudorange, Eph, SVP,
+               pDebugStream);
+         //if(Debug) {
+         //   *pDebugStream << "In RAIMCompute after PAS(): Satellites:";
+         //   for(j=0; j<Satellite.size(); j++)
+         //      *pDebugStream << " " << RinexSatID(Satellite[j]);
+         //   *pDebugStream << endl;
+         //   *pDebugStream << " SVP matrix("
+         //      << SVP.rows() << "," << SVP.cols() << ")" << endl;
+         //   *pDebugStream << fixed << setw(16) << setprecision(3) << SVP << endl;
+         //}
+         if(i) return i;  // return is 0(ok) or -4(no ephemeris)
 
          // count how many good satellites we have
          // Initialize UseSat based on Satellite, and build GoodIndexes.
@@ -292,7 +294,8 @@ namespace gpstk
                NIterations = MaxNIterations;             // pass limits in
                Convergence = ConvergenceLimit;
                iret = AutonomousPRSolution(Tr, UseSat, SVP, pTropModel, Algebraic,
-                  NIterations, Convergence, Solution, Covariance, Residuals, Slopes);
+                  NIterations, Convergence, Solution, Covariance, Residuals, Slopes,
+                  pDebugStream);
 
                // ----------------------------------------------------------------
                // Compute RMS residual...
@@ -396,7 +399,7 @@ namespace gpstk
       catch(Exception& e) {
          GPSTK_RETHROW(e);
       }
-      }  // end PRSolution::RAIMCompute()
+   }  // end PRSolution::RAIMCompute()
 
    int PRSolution::PrepareAutonomousSolution(const DayTime& Tr,
                                              vector<SatID>& Satellite,
@@ -405,7 +408,7 @@ namespace gpstk
                                              Matrix<double>& SVP,
                                              ostream *pDebugStream)
       throw()
-      {
+   {
          int i,j,nsvs,N=Satellite.size();
          DayTime tx;                // transmit time
          Xvt PVT;
@@ -449,13 +452,13 @@ namespace gpstk
          if(nsvs == 0) return -4;
          return 0;
   
-      } // end PrepareAutonomousPRSolution
+   } // end PrepareAutonomousPRSolution
 
    int PRSolution::AlgebraicSolution(Matrix<double>& A,
                                      Vector<double>& Q,
                                      Vector<double>& X,
                                      Vector<double>& R)
-      {
+   {
        try {
          int N=A.rows();
          Matrix<double> AT=transpose(A);
@@ -518,7 +521,7 @@ namespace gpstk
       catch(Exception& e) {
          GPSTK_RETHROW(e);
       }
-      }  // end PRSolution::AlgebraicSolution
+   }  // end PRSolution::AlgebraicSolution
 
 
    int PRSolution::AutonomousPRSolution(const DayTime& T,
@@ -534,7 +537,7 @@ namespace gpstk
                                         Vector<double>& Slope,
                                         ostream *pDebugStream)
          throw(Exception)
-      {
+   {
          if(!pTropModel) {
             Exception e("Undefined tropospheric model");
             GPSTK_THROW(e);
@@ -545,8 +548,8 @@ namespace gpstk
          double rho,wt,svxyz[3];
          GPSGeoid geoid;               // WGS84?
 
-         if(pDebugStream) *pDebugStream << "Enter APRS " << n_iterate << " "
-            << scientific << setprecision(3) << converge << endl;
+         //if(pDebugStream) *pDebugStream << "Enter APRS " << n_iterate << " "
+         //   << scientific << setprecision(3) << converge << endl;
 
             // find the number of good satellites
          for(N=0,i=0; i<Use.size(); i++) if(Use[i]) N++;
@@ -706,6 +709,6 @@ namespace gpstk
       catch(Exception& e) {
          GPSTK_RETHROW(e);
       }
-      } // end PRSolution::AutonomousPRSolution
+   } // end PRSolution::AutonomousPRSolution
 
 } // namespace gpstk
