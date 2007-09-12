@@ -38,6 +38,9 @@
 
 #include<stdlib.h>
 
+#define HAVE_STRING_H 1
+#define STDC_HEADERS  1
+
 typedef __int8  int8_t;
 typedef __int16 int16_t;
 typedef __int32 int32_t;
