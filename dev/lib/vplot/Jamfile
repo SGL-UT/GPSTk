@@ -1,0 +1,30 @@
+# vplot Jamfile
+#
+# $Id:$ 
+
+SubDir TOP lib vplot ;
+
+if $(PREPROCESSING)
+{
+  GPSSetupLibrary vplot ;
+}
+else
+{
+  GPSBuildLibrary vplot : VGImage.cpp SVGImage.cpp 
+	PSImage.cpp PSImageBase.cpp EPSImage.cpp 
+	StrokeStyle.cpp Color.cpp ViewerManager.cpp Path.cpp 
+	GraphicsConstants.cpp Line.cpp Polygon.cpp 
+	Rectangle.cpp Circle.cpp TextStyle.cpp Text.cpp 
+	Marker.cpp Comment.cpp Layout.cpp Frame.cpp
+	;
+
+  InstallFile $(INCDIR) : BasicShape.hpp Circle.hpp Color.hpp
+	Comment.hpp EPSImage.hpp Fillable.hpp GraphicsConstants.hpp
+	Line.hpp Markable.hpp Marker.hpp Path.hpp Polygon.hpp
+	PSImageBase.hpp PSImage.hpp Rectangle.hpp
+	StrokeStyle.hpp SVGImage.hpp Text.hpp TextStyle.hpp
+        VGImage.hpp ViewerManager.hpp VPlotException.hpp
+	Layout.hpp Frame.hpp
+	;
+
+}

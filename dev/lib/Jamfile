@@ -3,3 +3,4 @@
 SubDir TOP lib ;
 
 SubInclude TOP lib rxio ;
+SubInclude TOP lib vplot ;
