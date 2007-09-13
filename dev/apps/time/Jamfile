@@ -1,6 +1,7 @@
 SubDir TOP apps time ;
 
-GPSLinkLibraries timeconvert calgps : gpstk ;
+GPSLinkLibraries timeconvert : gpstk ;
+GPSLinkLibraries calgps :  gpstk vplot ;
 BonkForte ; # bleah.
 
 GPSMain timeconvert : timeconvert.cpp ;
