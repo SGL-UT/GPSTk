@@ -19,6 +19,10 @@
 \newcommand{\dwidth}{4.025in}
 \newcommand{\ewidth}{4.275in}
 
+\newcommand{\appdesce}[3] {\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{1}{\twidth}{#1} & \cellcolor[\entct]{\entst} \multirow{1}{\dwidth}{\footnotesize{#2}} & \cellcolor[\entct]{\entst} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{#3}}}}
+
+\newcommand{\appdesco}[3]{\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{1}{\twidth}{#1} & \cellcolor[\entco]{\entso} \multirow{1}{\dwidth}{\footnotesize{#2}} & \cellcolor[\entco]{\entso} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{#3}}}}
+
 \pagestyle{empty}
 
 \begin{document}
@@ -29,30 +33,43 @@
 & \textbf{Tool} & \textbf{Description} & \textbf{Execution Example} \\
 \hline
 
-\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{1}{\twidth}{calgps} & \cellcolor[\entct]{\entst} \multirow{1}{\dwidth}{\footnotesize{generates a GPS calendar}} & \cellcolor[\entct]{\entst} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{calgps -Y 2004}}} \\
+\appdesco{calgps}
+	 {generates a GPS calendar}
+	 {calgps -Y 2004} \\
 
-\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{1}{\twidth}{poscvt} & \cellcolor[\entco]{\entso} \multirow{1}{\dwidth}{\footnotesize{converts a given input position to other position formats}} & \cellcolor[\entco]{\entso} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{poscvt --geodetic="30.28 262.26700 167.64" }}} \\
+\appdesce{poscvt}
+	 {converts a given input position to other position formats}
+	 {poscvt --geodetic="30.28 262.26700 167.64" } \\
 
-\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{1}{\twidth}{timeconvert} & \cellcolor[\entct]{\entst} \multirow{1}{\dwidth}{\footnotesize{converts given input time to other time formats}} & \cellcolor[\entct]{\entst} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{timeconvert --calendar="07 04 2006"}}} \\
+\appdesco{timeconvert}
+         {converts given input time to other time formats}
+         {timeconvert --calendar="07 04 2006"} \\ \hline
 
-\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{1}{\twidth}{WhereSat} & \cellcolor[\entco]{\entso} \multirow{1}{\dwidth}{\footnotesize{outputs expected location of a satellite}} & \cellcolor[\entco]{\entso} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{WhereSat -b arl2100.06n -p 3}}} \\
-\hline
+\multirow{-5}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{3mm}Transforms}}} 
 
-\multirow{-5}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{3mm}Transforms}}}
+\appdesce{rtAshtech}
+         {records observations from an Ashtech receiver}
+         {rtAshtech -p /dev/ttyS1 -o "minute\%03j\%02H\%02m.\%06yo"} \\
 
+\appdesco{ficfica, ficafic, fic2rin}
+         {convert FIC files between ASCII, binary, and RINEX formats}
+	 {fic2rin fic2100.06 rin121.06n} \\
 
-\cellcolor[\sidect]{\sidest} & \cellcolor[\entct]{\entst} \multirow{1}{\twidth}{rtAshtech} & \cellcolor[\entct]{\entst} \multirow{1}{\dwidth}{\footnotesize{records observations from an Ashtech receiver}} & \cellcolor[\entct]{\entst} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{rtAshtech -p /dev/ttyS1 -o "minute\%03j\%02H\%02m.\%06yo}}} \\
+\appdesce{mdp2fic, mdp2rinex}
+         {convert MDP files to FIC or RINEX files}
+	 {mdp2rinex -i mdpfile -o arl2100.06o} \\
 
-\cellcolor[\sidect]{\sidest} & \cellcolor[\entco]{\entso} \multirow{1}{\twidth}{ficfica ficafic fic2rin} & \cellcolor[\entco]{\entso} \multirow{1}{\dwidth}{\footnotesize{convert fic files between ASCII, binary, and Rinex formats}} & \cellcolor[\entco]{\entso} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{fic2rin fic2100.06 rin121.06n}}} \\
+\appdesco{novaRinex}
+         {convert Novatel files to RINEX files}
+         {novaRinex --input nova2100.06 --obstype L1} \\
 
-\cellcolor[\sidect]{\sidest} & \cellcolor[\entct]{\entst} \multirow{1}{\twidth}{mdp2fic mdp2rinex} & \cellcolor[\entct]{\entst} \multirow{1}{\dwidth}{\footnotesize{convert MDP files to fic or rinex files}} & \cellcolor[\entct]{\entst} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{mdp2rinex -i mdpfile -o arl2100.06o }}} \\
+\appdesce{navdmp}
+         {dumps information from nav files to human readable formats}
+         {navdmp -i arl2100.06n -o arl2100.06.dmp} \\
 
-\cellcolor[\sidect]{\sidest} & \cellcolor[\entco]{\entso} \multirow{1}{\twidth}{novaRinex} & \cellcolor[\entco]{\entso} \multirow{1}{\dwidth}{\footnotesize{convert Novatel files to Rinex files}} & \cellcolor[\entco]{\entso} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{novaRinex --input nova2100.06 --obstype L1}}} \\
-
-\cellcolor[\sidect]{\sidest} & \cellcolor[\entct]{\entst} \multirow{1}{\twidth}{navdmp} & \cellcolor[\entct]{\entst} \multirow{1}{\dwidth}{\footnotesize{dumps information from nav files to human readable formats}} & \cellcolor[\entct]{\entst} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{navdmp -i arl2100.06n -o arl2100.06.dmp}}} \\
-
-\cellcolor[\sidect]{\sidest} & \cellcolor[\entco]{\entso} \multirow{1}{\twidth}{RinexDump} & \cellcolor[\entco]{\entso} \multirow{1}{\dwidth}{\footnotesize{dumps observation data for specified satellites from a Rinex file}} & \cellcolor[\entco]{\entso} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{RinexDump arl2100.06o 3 4 L1 L2}}} \\
-\hline
+\appdesco{RinexDump}
+         {Flattens a RINEX file into a matrix}
+	 {RinexDump arl2100.06o 3 4 L1 L2} \\ \hline 
 
 \multirow{-7}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{2mm} Collecting/Converting}}}
 
