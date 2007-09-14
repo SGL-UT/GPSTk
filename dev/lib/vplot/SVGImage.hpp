@@ -24,8 +24,8 @@
 //============================================================================
 
 
-#ifndef VPLOT_SVGSTREAM_H
-#define VPLOT_SVGSTREAM_H
+#ifndef VPLOT_SVGIMAGE_H
+#define VPLOT_SVGIMAGE_H
 
 #include <string>
 #include <iostream>
@@ -127,11 +127,11 @@ namespace vplot
       /// Remember the output file name
       std::string filename;
 
-      //using VectorGraphicsStreamBase::StyleType;
-      //using VectorGraphicsStreamBase::getCorrectStrokeStyle;
-      //using VectorGraphicsStreamBase::getCorrectMarker;
-      //using VectorGraphicsStreamBase::getCorrectTextStyle;
-      //using VectorGraphicsStreamBase::getCorrectFillColor;
+      //using VGImage::StyleType;
+      //using VGImage::getCorrectStrokeStyle;
+      //using VGImage::getCorrectMarker;
+      //using VGImage::getCorrectTextStyle;
+      //using VGImage::getCorrectFillColor;
 
    private:
 
@@ -204,4 +204,4 @@ namespace vplot
 
 } // namespace GPSTK
 
-#endif //VPLOT_SVGSTREAM_H
+#endif //VPLOT_SVGIMAGE_H

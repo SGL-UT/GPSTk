@@ -24,8 +24,8 @@
 //============================================================================
 
 
-#ifndef VPLOT_ENCAPSULATEDPOSTSCRIPTIMAGE_H
-#define VPLOT_ENCAPSULATEDPOSTSCRIPTIMAGE_H
+#ifndef VPLOT_EPSIMAGE_H
+#define VPLOT_EPSIMAGE_H
 #include <string>
 #include "PSImageBase.hpp"
 #include "ViewerManager.hpp"
@@ -99,5 +99,5 @@ namespace vplot
 
 } // end namespace vplot
 
-#endif //VPLOT_ENCAPSULATEDPOSTSCRIPTIMAGE_H
+#endif //VPLOT_EPSIMAGE_H
 

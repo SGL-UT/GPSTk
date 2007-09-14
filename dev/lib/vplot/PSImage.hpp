@@ -24,8 +24,8 @@
 //============================================================================
 
 
-#ifndef VPLOT_POSTSCRIPTSTREAM_H
-#define VPLOT_POSTSCRIPTSTREAM_H
+#ifndef VPLOT_PSIMAGE_H
+#define VPLOT_PSIMAGE_H
 
 #include <string>
 #include <iostream>
@@ -94,5 +94,5 @@ namespace vplot
 
 } // namespace vplot
 
-#endif //VPLOT_POSTSCRIPTSTREAM_H
+#endif //VPLOT_PSIMAGE_H
 

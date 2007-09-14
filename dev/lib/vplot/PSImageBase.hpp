@@ -24,8 +24,8 @@
 //============================================================================
 
 
-#ifndef VPLOT_POSTSCRIPTSTREAMBASE_H
-#define VPLOT_POSTSCRIPTSTREAMBASE_H
+#ifndef VPLOT_PSIMAGEBASE_H
+#define VPLOT_PSIMAGEBASE_H
 
 #include <string>
 #include <iostream>
@@ -175,5 +175,5 @@ namespace vplot
    //@} group BasicVectorGraphics
 
 } // namespace vplot
-#endif //VPLOT_POSTSCRIPTSTREAMBASE_H
+#endif //VPLOT_PSIMAGEBASE_H
 

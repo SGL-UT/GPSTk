@@ -2,8 +2,8 @@ CPPFLAGS= -O2
 
 all: library
 
-VPLOTPLOT_OBJS=VectorGraphicsStreamBase.o SVGStream.o \
-	PostscriptStream.o PostscriptStreamBase.o EPSStream.o \
+VPLOTPLOT_OBJS=VGImage.o SVGImage.o \
+	PSImage.o PSImageBase.o EPSImage.o \
 	StrokeStyle.o Color.o ViewerManager.o Path.o \
 	GraphicsConstants.o Line.o Polygon.o \
 	Rectangle.o Circle.o TextStyle.o Text.o \

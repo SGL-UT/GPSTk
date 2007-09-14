@@ -1,5 +1,5 @@
 
-///@file VectorGraphicsStreamBase.hpp Common interface to all vector plot formats. Class declarations.
+///@file VGImage.hpp Common interface to all vector plot formats. Class declarations.
 
 //============================================================================
 //
@@ -121,7 +121,6 @@ namespace vplot
       UPPER_LEFT 
     };
 
-
     /**
      * Constructors and Destructor
      */
@@ -145,19 +144,19 @@ namespace vplot
     /// Destructor.
     virtual ~VGImage() {}   
 
-        /// Access width
-     double getWidth(void) const 
-     {
-        return canvasWidth;
-     }
- 
-        /// Access height
-     double getHeight(void) const
-     {
-        return canvasHeight;
-     }
-     
-     
+    /// Access width
+    double getWidth(void) const 
+    {
+      return canvasWidth;
+    }
+
+    /// Access height
+    double getHeight(void) const
+    {
+      return canvasHeight;
+    }
+
+
     /**
      * Set the default line style. Doesn't necessarily
      * generate output on the stream until a new line is drawn.
@@ -440,5 +439,5 @@ namespace vplot
 
 } // namespace vplot
 
-#endif //VPLOT_VECTORGRAPHICSSTREAMBASE_H
+#endif //VPLOT_VGIMAGE_H
 
