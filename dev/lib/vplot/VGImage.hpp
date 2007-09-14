@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/VectorGraphicsStreamBase.hpp#4 $"
 
 ///@file VectorGraphicsStreamBase.hpp Common interface to all vector plot formats. Class declarations.
 

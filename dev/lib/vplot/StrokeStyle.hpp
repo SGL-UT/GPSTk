@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/StrokeStyle.hpp#3 $"
 
 /// @file StrokeStyle.hpp Defines line appearance: width, etc. Class declarations.
 

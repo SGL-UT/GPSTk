@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/EPSImage.cpp#3 $"
 
 ///@file EPSImage.cpp Vector plotting in the Encapsulated Postscript format. Class definitions.
 

@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/Comment.hpp#2 $"
 
 /// @file Comment.hpp Defines a comment like printf. Class declarations.
 

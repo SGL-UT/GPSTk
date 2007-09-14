@@ -1,4 +1,3 @@
-#pragma ident "$Id:$"
 
 /// @file Frame.hpp Class to represent a region to draw in. Class declarations.
 

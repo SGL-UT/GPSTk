@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/Rectangle.cpp#3 $"
 
 /// @file Rectangle.cpp Defines a simple rectangle. Class definitions.
 

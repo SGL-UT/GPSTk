@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/VPlotException.hpp#2 $"
 
 /// @file VPlotException.hpp Declare exception class
 

@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/Marker.hpp#2 $"
 
 /// @file Marker.hpp Defines marker appearance. Class declarations.
 
@@ -125,7 +124,7 @@ namespace vplot
        * Mutator.
        * @param newColor The new color of the marker. 
        */
-      Color setColor(const Color& newColor) { markerColor=newColor; }
+      void setColor(const Color& newColor) { markerColor=newColor; }
 
       /// Returns whether this marker uses a default marker.
       bool hasDefaultMark(void) const { return usesDefault; };

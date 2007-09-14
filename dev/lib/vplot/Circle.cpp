@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/Circle.cpp#3 $"
 
 /// @file Circle.cpp Defines a simple circle. Class definitions.
 

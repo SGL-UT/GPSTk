@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/BasicShape.hpp#2 $"
 
 ///@file BasicShape.hpp Interface for all basic shapes.  Manages common objects/calls.
 

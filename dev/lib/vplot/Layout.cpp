@@ -1,4 +1,3 @@
-#pragma ident "$Id:$"
 
 /// @file Layout.cpp Class to a layout or frame. Class definitions.
 

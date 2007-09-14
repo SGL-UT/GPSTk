@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/Line.hpp#2 $"
 
 /// @file Line.hpp Defines a simple line. Class declarations.
 

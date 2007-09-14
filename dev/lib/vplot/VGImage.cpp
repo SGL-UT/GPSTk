@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/VectorGraphicsStreamBase.cpp#3 $"
 
 ///@file VGImage.cpp Common interface to all vector plot formats. Class definitions.
 

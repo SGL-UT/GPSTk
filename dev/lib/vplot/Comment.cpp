@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/Comment.cpp#2 $"
 
 /// @file Comment.cpp Defines a simple comment. Class definitions.
 

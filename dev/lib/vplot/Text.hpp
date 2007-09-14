@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/Text.hpp#4 $"
 
 /// @file Text.hpp Class to represent text. Class declarations.
 

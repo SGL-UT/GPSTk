@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/SVGStream.cpp#4 $"
 
 ///@file SVGImage.cpp Vector plotting in the SVG format. Class definitions.
 

@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/Marker.cpp#2 $"
 
 /// @file Marker.cpp Defines marker appearance. Class definitions.
 

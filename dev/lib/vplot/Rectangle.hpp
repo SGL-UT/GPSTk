@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/Rectangle.hpp#3 $"
 
 /// @file Rectangle.hpp Defines a simple rectangle. Class declarations.
 

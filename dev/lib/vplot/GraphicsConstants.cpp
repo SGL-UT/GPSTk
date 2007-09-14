@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/GraphicsConstants.cpp#2 $"
 
 /// @file GraphicsConstants.cpp Defines constants. 
 

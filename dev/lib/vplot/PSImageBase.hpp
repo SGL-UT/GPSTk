@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/PostscriptStreamBase.hpp#3 $"
 
 ///@file PSImageBase.hpp Common functionality between EPS and PS formats. Class declarations.
 

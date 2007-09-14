@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/Circle.hpp#2 $"
 
 /// @file Circle.hpp Defines a simple circle. Class declarations.
 

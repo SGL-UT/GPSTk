@@ -1,6 +1,5 @@
 # vplot Jamfile
 #
-# $Id:$ 
 
 SubDir TOP lib vplot ;
 

@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/Polygon.cpp#3 $"
 
 /// @file Polygon.cpp Defines a simple line. Class definitions.
 

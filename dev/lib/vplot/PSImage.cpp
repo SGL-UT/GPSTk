@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/PostscriptStream.cpp#3 $"
 
 ///@file PSImage.cpp Vector plotting in the Postscript format. Class definitions
 

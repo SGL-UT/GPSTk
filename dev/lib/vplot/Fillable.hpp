@@ -1,4 +1,3 @@
-#pragma ident "$Id: //depot/msn/r5.3/wonky/gpstkplot/lib/draw/Fillable.hpp#2 $"
 
 ///@file Fillable.hpp Interface for all fillable basic shapes.  
 

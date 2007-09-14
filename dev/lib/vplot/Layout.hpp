@@ -1,4 +1,3 @@
-#pragma ident "$Id:$"
 
 /// @file Text.hpp Class to represent a layout or frame. Class declarations.
 
