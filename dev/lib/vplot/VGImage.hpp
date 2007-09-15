@@ -380,14 +380,14 @@ namespace vplot
      */
     virtual void outputFooter(void) {}
 
-    /// Make sure to only write the footer once.
-    bool footerHasBeenWritten;
-
     /// Width of the drawable area in points
     double canvasWidth;  
 
     /// Height of the drawable area in points 
     double canvasHeight;
+
+    /// Make sure to only write the footer once.
+    bool footerHasBeenWritten;
 
     /**
      * Is the origin lower left? If not it is upper left.

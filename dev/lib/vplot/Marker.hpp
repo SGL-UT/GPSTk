@@ -166,11 +166,11 @@ namespace vplot
       /// This is the range of the drawing (width=height=range)
       double range;
 
-      /// Contains the marker's color.
-      Color markerColor;
-
       /// Determines if this marker uses a default marker.
       bool usesDefault;
+
+      /// Contains the marker's color.
+      Color markerColor;
 
       /// Determines if this non-default marker is to use the marker color.
       bool useMarkerColor;
