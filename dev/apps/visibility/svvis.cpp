@@ -69,7 +69,6 @@ private:
    EphReader ephReader;
    double minElev;
    DayTime startTime, stopTime;
-   long msid;
    Triple rxPos;
    double timeStep;
 };
@@ -79,24 +78,24 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
 {
    CommandOptionWithAnyArg 
       minElevOpt(
-         'm', "min-elev",
-         "Give an integer for the elevation (degrees) above which you want to find more than 12 SVs at a given time.", true),
+         '\0', "min-elev",
+         "Give an integer for the elevation (degrees) above which you want to find more than 12 SVs at a given time."),
 
       rxPosOpt(
          'p', "position",
-         "Receiver antenna position in ECEF (x,y,z) coordinates.  Format as a string: \"X Y Z\".",false),
+         "Receiver antenna position in ECEF (x,y,z) coordinates.  Format as a string: \"X Y Z\"."),
          
       ephFileOpt(
          'e', "eph",
-         "Where to get the ephemeris data. Can be rinex, fic, or sp3", true),
+         "Where to get the ephemeris data. Can be rinex, fic, or sp3.", true),
 
       mscFileOpt(
          'c', "msc",
-         "Station coordinate file"),
+         "Station coordinate file."),
 
       msidOpt(
          'm', "msid",
-         "Station to process data for. Used to select a station position from the msc file."),
+         "Station number to use from the msc file."),
 
       timeSpanOpt(
          'l', "time-span",
@@ -141,11 +140,10 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
       rxPos[2] = z;
       haveRxPos = true;
    }
-   else if (msid && mscFileOpt.getCount())
+   else if (msidOpt.getCount() && mscFileOpt.getCount())
    {
+      long msid = StringUtils::asUnsigned(msidOpt.getValue()[0]);
       string fn = mscFileOpt.getValue()[0];
-      if (verboseLevel)
-         cout << "Reading " << fn << " as MSC data." << endl;
       MSCStream mscs(fn.c_str(), ios::in);
       MSCData mscd;
       while (mscs >> mscd)
@@ -153,25 +151,30 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
          if (mscd.station == msid)
          {
             rxPos = mscd.coordinates;
-            if (verboseLevel>1)
-               cout << "Antenna position read from MSC file:"
-                    << rxPos << " (msid: "
-                    << msid << ")" << endl;
             haveRxPos=true;
             break;
          }
       }
       if (!haveRxPos)
-         cout << "Did not find station " << msid << " in " << fn 
-              << "." << endl;
+         cout << "Did not find station " << msid << " in " << fn << "." << endl;
    }
+
    if (!haveRxPos)
       return false;
+
+   timeStep=900;
 
    if (startTimeOpt.getCount())
       startTime = startTimeOpt.getTime()[0];
    else
+   {
       startTime = ephReader.eph->getInitialTime();
+      long sow = static_cast<long>(startTime.GPSsow());
+      sow -= sow % static_cast<long>(timeStep);
+      cout << sow << endl;
+      startTime.setGPS(startTime.GPSfullweek(), static_cast<double>(sow));
+      startTime += timeStep;
+   }
 
    if (stopTimeOpt.getCount())
       stopTime = stopTimeOpt.getTime()[0];
@@ -183,8 +186,6 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
       double dt = StringUtils::asDouble(timeSpanOpt.getValue()[0]);
       stopTime = startTime + dt;
    }
-
-   timeStep=900;
 
    if (debugLevel)
       cout << "debugLevel: " << debugLevel << endl
@@ -206,20 +207,38 @@ void SVVis::process()
    Xvt rxXvt;
    rxXvt.x = rxPos;
 
-   for (DayTime t=startTime; t < stopTime; t+=timeStep)
+   string up, prev_up;
+   int n_up;
+   for (DayTime t=startTime; t < stopTime; t+=1)
    {
+      up = "";
+      n_up = 0;
       for (int prn=1; prn <= MAX_PRN; prn++)
       {
          try
          {
+            using namespace StringUtils;
             Xvt svXvt = ephStore.getPrnXvt(prn,t);
             double elev = rxXvt.x.elvAngle(svXvt.x);
+            if (elev>=minElev)
+            {
+               up += leftJustify(asString(prn), 3);
+               n_up++;
+            }
+            else
+               up += "   ";
          }
          catch(gpstk::Exception& e)
          {
-            cout << "Caught one!" << endl << e << endl;
+            up += "   ";
+            if (debugLevel)
+               cout << e << endl;
          }
       }
+      if (up != prev_up)
+         cout << t << " " << setw(2) << n_up
+              << ": " << up << endl;
+      prev_up = up;
    }
 }
 
