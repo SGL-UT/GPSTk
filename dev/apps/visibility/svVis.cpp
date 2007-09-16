@@ -41,6 +41,8 @@
 #include "LoopedFramework.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 #include "EphReader.hpp"
+#include "MSCData.hpp"
+#include "MSCStream.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -65,21 +67,22 @@ protected:
 
 private:
    EphReader ephReader;
-   int minElevation;
+   double minElev;
    DayTime startTime, stopTime;
-   double timeSpan;
+   long msid;
+   Triple antennaPos;
+   double timeStep;
 };
 
 
 bool SVVis::initialize(int argc, char *argv[]) throw()
 {
-   CommandOptionWithNumberArg 
+   CommandOptionWithAnyArg 
       minElevOpt(
          'm', "min-elev",
-         "Give an integer for the elevation (degrees) above which you want to find more than 12 SVs at a given time.", true);     
-   
-   CommandOptionWithAnyArg 
-      antennaPositionopt(
+         "Give an integer for the elevation (degrees) above which you want to find more than 12 SVs at a given time.", true),
+
+      antennaPosOpt(
          'p', "position",
          "Antenna position in ECEF (x,y,z) coordinates.  Format as a string: \"X Y Z\".",false),
          
@@ -107,38 +110,38 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
       stopTimeOpt(
          '\0',  "stop-time", "%4Y/%03j/%02H:%02M:%05.2f",
          "Ignore any data after this time");
-
-      if (!BasicFramework::initialize(argc,argv)) return false;
+   
+   if (!BasicFramework::initialize(argc,argv)) return false;
 
    // get the minimum elevation
-   int minElev = StringUtils::asInt((minElevOpt.getValue())[0]);
-
-   if (startTimeOpt.getCount())
-      startTime = startTimeOpt.getTime()[0];
+   if (minElevOpt.getCount())
+      minElev = StringUtils::asDouble((minElevOpt.getValue())[0]);
    else
-      startTime = DayTime::BEGINNING_OF_TIME;
-
-   if (stopTimeOpt.getCount())
-      stopTime = stopTimeOpt.getTime()[0];
-   else
-      stopTime = DayTime::END_OF_TIME;
-
-   if (timeSpanOpt.getCount())
-      timeSpan = StringUtils::asDouble(timeSpanOpt.getValue()[0]);
-   else
-      timeSpan = 1e99;
+      minElev = 0;
 
    // get the ephemeris source(s)
    ephReader.verboseLevel = verboseLevel;
-   for (int i=0; i<ephFilesOpt.getCount(); i++)
-      ephReader.read(ephFilesOpt.getValue()[i]);
-   if (ephData.eph == NULL)
+   for (int i=0; i<ephFileOpt.getCount(); i++)
+      ephReader.read(ephFileOpt.getValue()[i]);
+   if (ephReader.eph == NULL)
    {
       cout << "Didn't get any ephemeris data from the eph files. "
            << "Exiting." << endl;
       exit(-1);
    }
-   if (msid && mscFileOpt.getCount())
+
+   // get the antenna position
+   bool haveAntennaPos = false;
+   if (antennaPosOpt.getCount())
+   {
+      double x,y,z;
+      sscanf(antennaPosOpt.getValue().front().c_str(),"%lf %lf %lf", &x, &y, &z);
+      antennaPos[0] = x;
+      antennaPos[1] = y;
+      antennaPos[2] = z;
+      haveAntennaPos = true;
+   }
+   else if (msid && mscFileOpt.getCount())
    {
       string fn = mscFileOpt.getValue()[0];
       if (verboseLevel)
@@ -162,116 +165,62 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
          cout << "Did not find station " << msid << " in " << fn 
               << "." << endl;
    }
+   if (!haveAntennaPos)
+      return false;
 
+   if (startTimeOpt.getCount())
+      startTime = startTimeOpt.getTime()[0];
+   else
+      startTime = ephReader.eph->getInitialTime();
+
+   if (stopTimeOpt.getCount())
+      stopTime = stopTimeOpt.getTime()[0];
+   else
+      stopTime = ephReader.eph->getFinalTime();
+
+   if (timeSpanOpt.getCount())
+   {
+      double dt = StringUtils::asDouble(timeSpanOpt.getValue()[0]);
+      stopTime = startTime + dt;
+   }
+
+   timeStep=900;
 
    if (debugLevel)
       cout << "debugLevel: " << debugLevel << endl
            << "verboseLevel: " << verboseLevel << endl
-           << "minEl: " << minEl << endl;
-
+           << "antennaPos: " << antennaPos << endl
+           << "minElev: " << minElev << endl
+           << "startTime: " << startTime << endl
+           << "stopTime: " << stopTime << endl;
   
-   // get the antenna position
-   Xvt antPVT;
-   double x,y,z;
-   sscanf(antennaPosition.getValue().front().c_str(),"%lf %lf %lf", &x, &y, &z);
-   antPVT.x[0] = x; antPVT.x[1] = y; antPVT.x[2] = z;
-   ECEF antPos = Triple(antPVT.x);
-  
-   // get initial and final times for analysis. extra code b/c sscanf reads in int's but setYMDHMS needs shorts
-   short year, month, day, hour, minute;
-   double seconds;
-
-   DayTime tStartDT = ephStore.getInitialTime();
-   year = tStartDT.year();
-   month = tStartDT.month();
-   day = tStartDT.day();
-   hour = tStartDT.hour();
-   minute = tStartDT.minute();
-   seconds = tStartDT.second();
-   DayTime tstart;
-   tstart.setYMDHMS(year,month,day,hour,minute,seconds);
-  
-   DayTime tEndDT = ephStore.getFinalTime();
-   year = tEndDT.year();
-   month = tEndDT.month();
-   day = tEndDT.day();
-   hour = tEndDT.hour();
-   minute = tEndDT.minute();
-   seconds = tEndDT.second();
-   DayTime tend;
-   tend.setYMDHMS(year,month,day,hour,minute,seconds);
-  
-   DayTime t = tstart;
-
-   cout << "Start Time: " << tstart << " End Time: " << tend << endl;
-
-
    return true;
 }
 
+
 void SVVis::process()
-   {      
-      gpstk::EphemerisStore& ephStore = *ephReader.eph;
-      while (t < tend)
+{
+   gpstk::EphemerisStore& ephStore = *ephReader.eph;
+   DayTime t = startTime;
+
+   ECEF rxpos(antennaPos);
+
+   for (DayTime t=startTime; t < stopTime; t+=timeStep)
+   {
+      for (int prn=1; prn <= MAX_PRN; prn++)
       {
-         short numSVsAboveElv = 0;
-         short prn = 1;
-         while (prn <= gpstk::MAX_PRN)
+         try
          {
-            Xvt peXVT;
-            bool NoEph = false;
-            try
-            {
-               peXVT = ephStore.getPrnXvt(prn,t);
-            }
-            catch(gpstk::Exception& e) 
-            {
-               if (verbose) {cout << e << endl;}
-               NoEph = true;
-            }
-            double elvAngle = 0;
-            if (!NoEph)
-            {
-               try {elvAngle = antPVT.x.elvAngle(peXVT.x);}
-               catch(gpstk::Exception& e) {if (verbose) {cout << e << endl;}}
-               if ( elvAngle > minEl ) { numSVsAboveElv++; }
-            }
-            prn++;
+            Xvt svXvt = ephStore.getPrnXvt(prn,t);
+            double elev = rxpos.x.elvAngle(svXVT.x);
          }
-         if (numSVsAboveElv > 12)
-         { 
-            cout << "Found " << numSVsAboveElv << " SVs above " << minEl << " degrees at " << t << endl;
-            prn = 1;
-            while (prn < gpstk::MAX_PRN)
-            {
-               bool NoEph = false;
-               Xvt peXVT;
-               try 
-               {
-                  peXVT = ephStore.getPrnXvt(prn,t);
-               }
-               catch(gpstk::Exception& e) {NoEph = true;}
-               double elvAngle = 0;
-               double azAngle = 0;
-               if (!NoEph)
-               {
-                  try {elvAngle = antPVT.x.elvAngle(peXVT.x);}
-                  catch(gpstk::Exception& e) {if (verbose) {cout << e << endl;}}
-                  if ( elvAngle > 0 ) 
-                  { 
-                     cout << t << "  PRN " << setw(2) << prn << " : elev: " << elvAngle;
-                     try {azAngle = antPVT.x.azAngle(peXVT.x);}
-                     catch(gpstk::Exception& e) {if (verbose) {cout << e << endl;}}
-                     if ( azAngle > 0 ) { cout << "  azim: " << azAngle; }
-                     cout << " degrees\n";
-                  }
-               }
-               prn++;
-            }
+         catch(gpstk::Exception& e)
+         {
+            cout << "Caught one!" << endl << e << endl;
          }
-         t += 10;  
       }
    }
+}
 
 int main(int argc, char *argv[])
 {
