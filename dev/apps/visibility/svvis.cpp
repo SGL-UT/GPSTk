@@ -70,7 +70,7 @@ private:
    double minElev;
    DayTime startTime, stopTime;
    long msid;
-   Triple antennaPos;
+   Triple rxPos;
    double timeStep;
 };
 
@@ -82,9 +82,9 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
          'm', "min-elev",
          "Give an integer for the elevation (degrees) above which you want to find more than 12 SVs at a given time.", true),
 
-      antennaPosOpt(
+      rxPosOpt(
          'p', "position",
-         "Antenna position in ECEF (x,y,z) coordinates.  Format as a string: \"X Y Z\".",false),
+         "Receiver antenna position in ECEF (x,y,z) coordinates.  Format as a string: \"X Y Z\".",false),
          
       ephFileOpt(
          'e', "eph",
@@ -131,15 +131,15 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
    }
 
    // get the antenna position
-   bool haveAntennaPos = false;
-   if (antennaPosOpt.getCount())
+   bool haveRxPos = false;
+   if (rxPosOpt.getCount())
    {
       double x,y,z;
-      sscanf(antennaPosOpt.getValue().front().c_str(),"%lf %lf %lf", &x, &y, &z);
-      antennaPos[0] = x;
-      antennaPos[1] = y;
-      antennaPos[2] = z;
-      haveAntennaPos = true;
+      sscanf(rxPosOpt.getValue().front().c_str(),"%lf %lf %lf", &x, &y, &z);
+      rxPos[0] = x;
+      rxPos[1] = y;
+      rxPos[2] = z;
+      haveRxPos = true;
    }
    else if (msid && mscFileOpt.getCount())
    {
@@ -152,20 +152,20 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
       {
          if (mscd.station == msid)
          {
-            antennaPos = mscd.coordinates;
+            rxPos = mscd.coordinates;
             if (verboseLevel>1)
                cout << "Antenna position read from MSC file:"
-                    << antennaPos << " (msid: "
+                    << rxPos << " (msid: "
                     << msid << ")" << endl;
-            haveAntennaPos=true;
+            haveRxPos=true;
             break;
          }
       }
-      if (!haveAntennaPos)
+      if (!haveRxPos)
          cout << "Did not find station " << msid << " in " << fn 
               << "." << endl;
    }
-   if (!haveAntennaPos)
+   if (!haveRxPos)
       return false;
 
    if (startTimeOpt.getCount())
@@ -189,7 +189,7 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
    if (debugLevel)
       cout << "debugLevel: " << debugLevel << endl
            << "verboseLevel: " << verboseLevel << endl
-           << "antennaPos: " << antennaPos << endl
+           << "rxPos: " << rxPos << endl
            << "minElev: " << minElev << endl
            << "startTime: " << startTime << endl
            << "stopTime: " << stopTime << endl;
@@ -203,7 +203,8 @@ void SVVis::process()
    gpstk::EphemerisStore& ephStore = *ephReader.eph;
    DayTime t = startTime;
 
-   ECEF rxpos(antennaPos);
+   Xvt rxXvt;
+   rxXvt.x = rxPos;
 
    for (DayTime t=startTime; t < stopTime; t+=timeStep)
    {
@@ -212,7 +213,7 @@ void SVVis::process()
          try
          {
             Xvt svXvt = ephStore.getPrnXvt(prn,t);
-            double elev = rxpos.x.elvAngle(svXVT.x);
+            double elev = rxXvt.x.elvAngle(svXvt.x);
          }
          catch(gpstk::Exception& e)
          {
