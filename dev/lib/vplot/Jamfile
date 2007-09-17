@@ -14,7 +14,7 @@ else
 	StrokeStyle.cpp Color.cpp ViewerManager.cpp Path.cpp 
 	GraphicsConstants.cpp Line.cpp Polygon.cpp 
 	Rectangle.cpp Circle.cpp TextStyle.cpp Text.cpp 
-	Marker.cpp Comment.cpp Frame.cpp VLayout.cpp HLayout.cpp
+	Marker.cpp Comment.cpp Frame.cpp VLayout.cpp
 	;
 
   InstallFile $(INCDIR) : BasicShape.hpp Circle.hpp Color.hpp
