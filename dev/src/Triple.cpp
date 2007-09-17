@@ -142,11 +142,14 @@ namespace gpstk
       double rx, ry, cosvects;
    
       rx = dot(*this);
+      std::cout << "rx: " << rx << std::endl;
       ry = right.dot(right);
+      std::cout << "ry: " << ry << std::endl;
       
       if (rx <= 1e-14 ||  ry <= 1e-14)
+	{      std::cout << "gonna throw" << std::flush;
       	GPSTK_THROW(GeometryException("Divide by Zero Error"));
-      
+	}
       cosvects = dot(right) / ::sqrt(rx * ry);
 
       /* this if checks for and corrects round off error */

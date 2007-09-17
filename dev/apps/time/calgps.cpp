@@ -14,6 +14,7 @@
 #include "EPSImage.hpp"
 #include "SVGImage.hpp"
 #include "Frame.hpp"
+#include "HLayout.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -62,7 +63,7 @@ void printMonth(short month, short year)
 }
 
 void plotMonth(short month, short year, 
-               Frame& f)
+               const Frame& f)
 {
    CivilTime ct(year, month, 1, 0, 0, 0.0);
    CommonTime thisDay(ct);
@@ -72,7 +73,7 @@ void plotMonth(short month, short year,
 
    Color bgclr(220,220,220);
    Rectangle background(f.lx(),f.ly(),f.ux(),f.uy(),
-                        StrokeStyle(bgclr,0), bgclr);
+                        StrokeStyle(Color(Color::CLEAR),0), bgclr);
    f << background;
    
    TextStyle ts((double)15.0, (int) TextStyle::BOLD, Color::BLACK, 
@@ -160,28 +161,32 @@ int main(int argc, char* argv[])
       double theight=mheight*nrows;
       
       VGImage* vgs=0; 
-      Frame frame;
- 
+      Frame* frame;
+      HLayout* vlayout;
+
       if (postscriptOption.getCount())
       {
          drawCalendar=true;
          vgs = new PSImage(postscriptOption.getValue()[0].c_str(),
-                          twidth, theight);
+                          twidth, theight, VGImage::UPPER_LEFT);
       }
       if (epsOption.getCount())
       {
          drawCalendar=true;
          vgs = new EPSImage(epsOption.getValue()[0].c_str(),
-                             0,0,twidth, theight);
+                             0,0,twidth, theight, VGImage::UPPER_LEFT);
       }
       if(svgOption.getCount())
       {
          drawCalendar=true;
          vgs = new SVGImage(svgOption.getValue()[0].c_str(),
-                             twidth, theight);
+                             twidth, theight, VGImage::UPPER_LEFT);
       }
       if (drawCalendar)
-         frame=Frame(*vgs);
+      {
+         frame   = new Frame(*vgs);
+         vlayout = new HLayout(*frame,nrows);
+      }
       
       
       // Default condition is to just print this month
@@ -228,6 +233,7 @@ int main(int argc, char* argv[])
       //cout << "first month " << firstMonth << " " << firstYear << endl;
       //cout << "last month " << lastMonth << " " << lastYear << endl;
 
+      int mcount=0;
       for (short m=firstMonth, y=firstYear;
           (y<lastYear) || ((m<=lastMonth) && (y==lastYear)); 
            m++)
@@ -243,7 +249,7 @@ int main(int argc, char* argv[])
 
          if (drawCalendar)
          {
-            plotMonth(m, y, frame);
+            plotMonth(m, y, vlayout->getFrame(mcount++));
          }
          
       }
@@ -252,6 +258,10 @@ int main(int argc, char* argv[])
       
       if ((displayCalendar) && (vgs!=0))
          vgs->view();
+
+      delete vgs;
+      delete frame;
+      delete vlayout;
       
    }
    catch( Exception error)

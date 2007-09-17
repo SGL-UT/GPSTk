@@ -104,7 +104,7 @@ namespace vplot
       /**
        * This constant can be used to declare something as "invisible."  Its primary
        * use is for creating a type of line that shall only be displayed as points
-       * using a marker.  Thus these points are each seperated, not connected by a line.
+       * using a marker.  Thus these points are each separated, not connected by a line.
        */
       static const long CLEAR        = -1;
 

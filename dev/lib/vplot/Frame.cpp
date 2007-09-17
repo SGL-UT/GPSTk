@@ -6,7 +6,7 @@
 namespace vplot
 {
    /// Outputs the specified text to the frame
-   Frame& operator<<(Frame& f, const Text& text)
+   const Frame& operator<<(const Frame& f, const Text& text)
    {
          //TODO: add check validity
       Text tcopy(text);
@@ -17,7 +17,7 @@ namespace vplot
    }
 
 
-  Frame& operator<<(Frame& f,const Rectangle& rect)
+  const Frame& operator<<(const Frame& f,const Rectangle& rect)
   {
      Rectangle rcopy(rect);
      rcopy.x1 += f.originX;
@@ -34,9 +34,15 @@ namespace vplot
            originX(0), originY(0),
            width(target.getWidth()), height(target.getHeight()),
            valid(true)
+   {}
+   
+   void Frame::nest(const Frame& parentFrame, double xoffset, double yoffset)
    {
-      
-   }
-   
-   
+      valid=true;
+      isTopLevel=false;
+      // Compute global coordinates of the nested frame
+      originX = parentFrame.originX + xoffset;
+      originY = parentFrame.originY + yoffset;
+      display = parentFrame.display;
+   }   
 }

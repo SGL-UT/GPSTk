@@ -40,28 +40,35 @@ namespace vplot
 
     public:
 
-      friend Frame& operator<<(Frame& f, const Text& text);
-      friend Frame& operator<<(Frame& f, const Rectangle& rect);
+      friend const Frame& operator<<(const Frame& f, const Text& text);
+      friend const Frame& operator<<(const Frame& f, const Rectangle& rect);
 
          /// Default constructor. Creates an unusable frame. Needed for containers.
       Frame(void):display(0) 
          {valid=false;};
 
       Frame(VGImage& target);
-      Frame(const Frame& rhs);
+     //Frame(const Frame& rhs);
+
+     void setWidth(double newWidth) {width=newWidth;}
+     void setHeight(double newHeight) {height=newHeight;}
+     double getWidth(void) const {return width;}
+     double getHeight(void) const {return height;}
+
+     void nest(const Frame& parent, double xoffset, double yoffset);
 
          /// Returns x coordinate of center of frame in frame coordinates.
-      double cx(void) { return width/2;}
+      double cx(void) const { return width/2;}
          /// Returns y coordinate of center of frame in frame coordinates.
-      double cy(void) { return height/2;}
+      double cy(void) const { return height/2;}
          /// Returns x coordinate of the left edge of the frame in frame coordinates.
-      double lx(void){ return 0;}
+      double lx(void) const { return 0;}
          /// Returns x coordinate of the right edge of the frame in frame coordinates.
-      double ux(void) { return width;}
+      double ux(void) const { return width;}
          /// Returns y coordinate of the upper edge of the frame in frame coordinates.
-      double uy(void) { return height;}
+      double uy(void) const { return height;}
          /// Returns y coordinate of the lower edge of the frame in frame coordinates.
-      double ly(void) { return 0;}
+      double ly(void) const { return 0;}
 
    protected:
       bool isTopLevel;

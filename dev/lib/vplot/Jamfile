@@ -14,7 +14,7 @@ else
 	StrokeStyle.cpp Color.cpp ViewerManager.cpp Path.cpp 
 	GraphicsConstants.cpp Line.cpp Polygon.cpp 
 	Rectangle.cpp Circle.cpp TextStyle.cpp Text.cpp 
-	Marker.cpp Comment.cpp Layout.cpp Frame.cpp
+	Marker.cpp Comment.cpp Frame.cpp VLayout.cpp HLayout.cpp
 	;
 
   InstallFile $(INCDIR) : BasicShape.hpp Circle.hpp Color.hpp
@@ -22,8 +22,8 @@ else
 	Line.hpp Markable.hpp Marker.hpp Path.hpp Polygon.hpp
 	PSImageBase.hpp PSImage.hpp Rectangle.hpp
 	StrokeStyle.hpp SVGImage.hpp Text.hpp TextStyle.hpp
-  VGImage.hpp ViewerManager.hpp VPlotException.hpp
-	Layout.hpp Frame.hpp Helper.hpp
+  	VGImage.hpp ViewerManager.hpp VPlotException.hpp
+	Layout.hpp VLayout.hpp Frame.hpp Helper.hpp
 	;
 
 }

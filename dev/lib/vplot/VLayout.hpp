@@ -1,5 +1,5 @@
 
-/// @file Layout.hpp Base class to lay out graphic elements (declarations).
+/// @file VLayout.hpp Class to lay out graphic elements vertially (declarations).
 
 //============================================================================
 //
@@ -24,18 +24,24 @@
 //============================================================================
 
 
-#ifndef VPLOT_LAYOUT_H
-#define VPLOT_LAYOUT_H
+#ifndef VPLOT_VLAYOUT_H
+#define VPLOT_VLAYOUT_H
+
+#include <vector>
 
 #include "GraphicsConstants.hpp"
 #include "Frame.hpp"
+#include "Layout.hpp"
 
 namespace vplot
 {
    /** \addtogroup BasicVectorGraphics */ 
    //@{
 
-   class Layout
+     /**
+      * Assists in arranging frames in a vertical stack.
+      */
+   class VLayout : public Layout
    {
       
    public:
@@ -43,22 +49,19 @@ namespace vplot
       /**
        * Constructor. 
        * @param frame Frame to create layout within
+       * @param nframe Number of evenly stacked vertical frames to make
        */   
-      Layout(const Frame& frame) : target(frame)
-         {}
+      VLayout(const Frame& frame, int nframes);
 
       virtual int getFrameCount(void)
-	{return 1;}
+	{return targetList.size();}
 
       virtual Frame getFrame(int fnum)
-	{return target;}
-
-      virtual Frame getParentFrame(void)
-        {return target;}
+	{return targetList[fnum];}
 
    protected:
 
-      Frame target;
+      std::vector<Frame> targetList;
    };
 
   //@}
