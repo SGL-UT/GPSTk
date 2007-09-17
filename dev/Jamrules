@@ -5,7 +5,6 @@
 # not much here... just use defaults as much as possible
 
 NotFile install ;
-C++FLAGS += -fexceptions ;
 KEEPOBJS = true ;
 
 # where to install the .hpp files
