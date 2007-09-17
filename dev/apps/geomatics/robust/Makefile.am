@@ -1,6 +1,6 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../../../src -I$(srcdir)/../lib
-LDADD = ../lib/libgeomatic.la ../../../src/libgpstk.la
+INCLUDES = -I$(srcdir)/../../../src -I$(srcdir)/../../../lib/geomatics
+LDADD = ../../../lib/geomatics/libgeomatics.la ../../../src/libgpstk.la
 
 bin_PROGRAMS = rstats
 

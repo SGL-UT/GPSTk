@@ -1,2 +1,2 @@
 # $Id$
-SUBDIRS = lib cycleslips kalman relposition  robust
+SUBDIRS = cycleslips kalman relposition  robust

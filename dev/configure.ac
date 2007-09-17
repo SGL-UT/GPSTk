@@ -46,6 +46,8 @@ AC_CHECK_FUNCS([bzero floor ftime getcwd gettimeofday memset mkdir modf pow re_c
 AC_CONFIG_FILES([Makefile
                  lib/Makefile
                  lib/rxio/Makefile
+		 lib/vplot/Makefile
+		 lib/geomatics/Makefile
                  src/Makefile
                  apps/Makefile
                  apps/DataAvailability/Makefile
@@ -59,7 +61,6 @@ AC_CONFIG_FILES([Makefile
                  apps/geomatics/Makefile
                  apps/geomatics/cycleslips/Makefile
                  apps/geomatics/kalman/Makefile
-                 apps/geomatics/lib/Makefile
                  apps/geomatics/relposition/Makefile
                  apps/geomatics/robust/Makefile
                  apps/ionosphere/Makefile

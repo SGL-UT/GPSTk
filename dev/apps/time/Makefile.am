@@ -1,6 +1,6 @@
 # $Id$
 INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../../lib/vplot
-LDADD = ../../src/libgpstk.la ../../lib/vplot/libvplot.a
+LDADD = ../../src/libgpstk.la ../../lib/vplot/libvplot.la
 
 bin_PROGRAMS = timeconvert calgps
 

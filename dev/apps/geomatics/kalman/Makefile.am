@@ -1,12 +1,14 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../../../src -I$(srcdir)/../lib
+INCLUDES = -I$(srcdir)/../../../src -I$(srcdir)/../../../lib/geomatics
 # In this order!
-LDADD = ../lib/libgeomatic.la ../../../src/libgpstk.la
+LDADD = ../../../lib/geomatics/libgeomatics.la ../../../src/libgpstk.la
 
-bin_PROGRAMS = tnl tsrif tsrifsu tsriftu mergeSRI
+bin_PROGRAMS = mergeSRI
 
 mergeSRI_SOURCES = mergeSRI.cpp  
-tnl_SOURCES = tnl.cpp
-tsrif_SOURCES = tsrif.cpp
-tsrifsu_SOURCES = tsrifsu.cpp  
-tsriftu_SOURCES = tsriftu.cpp
+
+#These are test programs, shouldn't be part of the build
+#tnl_SOURCES = tnl.cpp
+#tsrif_SOURCES = tsrif.cpp
+#tsrifsu_SOURCES = tsrifsu.cpp  
+#tsriftu_SOURCES = tsriftu.cpp
