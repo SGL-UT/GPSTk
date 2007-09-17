@@ -1,3 +1,3 @@
 # $Id$
 EXTRA_DIST = README
-SUBDIRS = rxio vplot
+SUBDIRS = rxio vplot geomatics

@@ -1,20 +1,16 @@
 #
-# $Id: Jamfile 71 2006-08-01 18:46:39Z ehagen $
+# $Id$
 #
 
 SubDir TOP apps geomatics kalman ;
 
-SEARCH_SOURCE += $(TOP)/src ;
-SEARCH_SOURCE += $(TOP)/apps/geomatics/lib ;
+GPSLinkLibraries mergeSRI : gpstk geomatics ;
 
-#link prgms to libraries
-# must have the prefix here ... why, and why not with others?
-LinkLibraries tnl tsrif tsrifsu tsriftu mergeSRI : $(LIBPREFIX)geomatic ;
-# gpstk must be last
-GPSLinkLibraries tnl tsrif tsrifsu tsriftu mergeSRI : gpstk ;
+# These are test programs, don't belong in the build
+#GPSLinkLibraries tnl tsrif tsrifsu tsriftu : gpstk geomatics ;
+#GPSMain tnl : tnl.cpp ;
+#GPSMain tsrif : tsrif.cpp ;
+#GPSMain tsrifsu : tsrifsu.cpp ;
+#GPSMain tsriftu : tsriftu.cpp ;
 
-GPSMain tnl : tnl.cpp ;
-GPSMain tsrif : tsrif.cpp ;
-GPSMain tsrifsu : tsrifsu.cpp ;
-GPSMain tsriftu : tsriftu.cpp ;
 GPSMain mergeSRI : mergeSRI.cpp ;

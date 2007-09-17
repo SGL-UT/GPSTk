@@ -1,6 +1,6 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../../../src -I$(srcdir)/../lib
-LDADD = ../../../src/libgpstk.la ../lib/libgeomatic.la
+INCLUDES = -I$(srcdir)/../../../src -I$(srcdir)/../../../lib/geomatics
+LDADD = ../../../src/libgpstk.la ../../../lib/geomatics/libgeomatics.la
 
 bin_PROGRAMS = DiscFix
 

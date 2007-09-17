@@ -1,8 +1,8 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../../../src -I$(srcdir)/../lib
+INCLUDES = -I$(srcdir)/../../../src -I$(srcdir)/../../../lib/geomatics
 
-LDADD = ../lib/libgeomatic.la ../../../src/libgpstk.la
-DDBase_LDADD = ../lib/libgeomatic.la ../../../src/libgpstk.la ./libbase.la
+LDADD = ../../../lib/geomatics/libgeomatics.la ../../../src/libgpstk.la
+DDBase_LDADD = ../../../lib/geomatics/libgeomatics.la ../../../src/libgpstk.la ./libbase.la
 
 lib_LTLIBRARIES = libbase.la
 libbase_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@

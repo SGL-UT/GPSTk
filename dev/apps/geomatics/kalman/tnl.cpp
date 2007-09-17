@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -45,6 +45,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include "Exception.hpp"
 #include "Namelist.hpp"
 
 using namespace std;

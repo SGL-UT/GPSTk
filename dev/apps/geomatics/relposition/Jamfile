@@ -1,11 +1,11 @@
 #
-# $Id: Jamfile 71 2006-08-01 18:46:39Z ehagen $
+# $Id$
 #
 
 SubDir TOP apps geomatics relposition ;
 
 SEARCH_SOURCE += $(TOP)/src ;
-SEARCH_SOURCE += $(TOP)/apps/geomatics/lib ;
+SEARCH_SOURCE += $(TOP)/lib/geomatics/ ;
 
 # this is necessary for Windows b/c the linker command line gets too long!
 Library baselib : DataStructures.cpp CommandInput.cpp Configure.cpp
@@ -19,9 +19,9 @@ Library baselib : DataStructures.cpp CommandInput.cpp Configure.cpp
 #link prgms to libraries
 LinkLibraries DDBase : baselib ;
 # must have the prefix here ... why, and why not with others?
-LinkLibraries DDBase dprgm : $(LIBPREFIX)geomatic ;
+LinkLibraries dprgm : $(LIBPREFIX)geomatics ;
 # gpstk must be last
-GPSLinkLibraries DDBase ddmerge : gpstk ;
+GPSLinkLibraries DDBase ddmerge : geomatics gpstk ;
 
 GPSMain DDBase : DDBase.cpp ;
 GPSMain ddmerge : ddmerge.cpp ;
