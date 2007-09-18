@@ -2472,7 +2472,7 @@ namespace gpstk
             // just treat it like a double
          else
          {
-            return asDouble(aStr.substr(length, startPos));
+            return asDouble(aStr.substr(startPos, length));
          }
          
          std::stringstream st;
