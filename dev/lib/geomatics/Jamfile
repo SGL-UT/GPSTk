@@ -1,12 +1,10 @@
-#
 # $Id$
-#
 
 SubDir TOP lib geomatics ;
 
 if $(PREPROCESSING)
 {
-  GPSSetupLibrary geomatics ;
+  GPSSetupLibrary geomatics : gpstk ;
 }
 else
 {
@@ -19,15 +17,13 @@ else
    	DiscCorr.cpp GDCconfiguration.cpp
    	GSatID.cpp DDid.cpp
    	random.cpp format.cpp
-  	;
-
-   GPSLinkLibraries geomatics : gpstk ;
+  	   ;
 
    InstallFile $(INCDIR) :
-	DCinternals.hpp DDid.hpp DiscCorr.hpp
-	EarthOrientation.hpp format.hpp GDCconfiguration.hpp 
-	GeodeticFrames.hpp GSatID.hpp index.hpp Namelist.hpp
-	PhaseWindup.hpp PreciseRange.hpp random.hpp RobustStats.hpp
-	SatPass.hpp SRIFilter.hpp SRI.hpp
-	;
+	   DCinternals.hpp DDid.hpp DiscCorr.hpp
+	   EarthOrientation.hpp format.hpp GDCconfiguration.hpp 
+	   GeodeticFrames.hpp GSatID.hpp index.hpp Namelist.hpp
+	   PhaseWindup.hpp PreciseRange.hpp random.hpp RobustStats.hpp
+	   SatPass.hpp SRIFilter.hpp SRI.hpp
+	   ;
 }

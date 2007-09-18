@@ -1,12 +1,7 @@
-#
 # $Id$
-#
 
 SubDir TOP apps geomatics cycleslips ;
 
-#SEARCH_SOURCE += $(TOP)/src ;
-#SEARCH_SOURCE += $(TOP)/apps/geomatics/lib ;
-
-GPSLinkLibraries DiscFix : gpstk geomatics ;
+GPSLinkLibraries DiscFix : geomatics gpstk ;
 
 GPSMain DiscFix : DiscFix.cpp ;

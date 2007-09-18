@@ -4,12 +4,6 @@
 
 SubDir TOP apps geomatics robust ;
 
-#SEARCH_SOURCE += $(TOP)/src ;
-#SEARCH_SOURCE += $(TOP)/apps/geomatics/lib ;
-
-# must have the prefix here ... why, and why not with others?
-#LinkLibraries rstats qtest : $(LIBPREFIX)geomatic ;
-# gpstk must be last
 GPSLinkLibraries rstats : geomatics gpstk ;
 
 GPSMain rstats : rstats.cpp ;
