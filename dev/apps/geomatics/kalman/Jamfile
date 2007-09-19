@@ -1,16 +1,7 @@
-#
 # $Id$
-#
 
 SubDir TOP apps geomatics kalman ;
 
 GPSLinkLibraries mergeSRI : gpstk geomatics ;
-
-# These are test programs, don't belong in the build
-#GPSLinkLibraries tnl tsrif tsrifsu tsriftu : gpstk geomatics ;
-#GPSMain tnl : tnl.cpp ;
-#GPSMain tsrif : tsrif.cpp ;
-#GPSMain tsrifsu : tsrifsu.cpp ;
-#GPSMain tsriftu : tsriftu.cpp ;
 
 GPSMain mergeSRI : mergeSRI.cpp ;
