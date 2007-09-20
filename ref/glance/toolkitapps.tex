@@ -17,7 +17,7 @@
 
 \newcommand{\twidth}{1.52in}
 \newcommand{\dwidth}{3.38in}
-\newcommand{\ewidth}{3.45in}
+\newcommand{\ewidth}{3.55in}
 
 \newcommand{\appdesce}[3] {\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{1}{\twidth}{#1} & \cellcolor[\entct]{\entst} \multirow{1}{\dwidth}{\footnotesize{#2}} & \cellcolor[\entct]{\entst} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{#3}}}}
 
@@ -52,19 +52,19 @@
 
 \multirow{-5}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{3mm}Transforms}}} 
 
-\appdesco{ash2mdp}
-         {converts Ashtech Z(Y)-12 data to MDP}
-	 {TC or JL} \\
+%\appdesco{ash2mdp}
+%         {converts Ashtech Z(Y)-12 data to MDP}
+%	 {TC or JL} \\
 
-\appdesce{rtAshtech}
-         {records observations from an Ashtech receiver}
-         {rtAshtech -p /dev/ttyS1 -o "minute\%03j\%02H\%02m.\%06yo"} \\
+%\appdesce{rtAshtech}
+%         {records observations from an Ashtech receiver}
+%         {rtAshtech -p /dev/ttyS1 -o "minute\%03j\%02H\%02m.\%06yo"} \\
 
 \appdesco{ficfica/ficafic/fic2rin}
          {convert FIC files between ASCII, binary, and RINEX formats}
 	 {fic2rin fic2100.06 rin121.06n} \\
 
-\appdesce{mdp2fic/mdp2rinex}
+\appdesce{mdp2rinex}
          {convert MDP files to FIC or RINEX files}
 	 {mdp2rinex -i mdpfile -o arl2100.06o} \\
 
@@ -81,7 +81,7 @@
 	 {RinexDump arl2100.06o 3 4 L1 L2} \\
 \hline 
 
-\multirow{-8}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{2mm} Collecting/Converting}}}
+\multirow{-6}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{2mm} Collect/Convert}}}
 
 \appdesce{daa}
          {performs a data availability analysis of collected data}
@@ -107,108 +107,108 @@
          {predicts when more than twelve satellites are in view}
 	 {findMoreThan12 -e arl1256.06n -p "X Y Z" -m 10} \\
 
-\appdesce{mdptool}
-         {manipulates MDP data streams}
-	 {mdptool -i mdpfile --pvt --obs} \\
+%\appdesco{mdptool}
+%         {manipulates MDP data streams}
+%	 {mdptool -i mdpfile --pvt --obs} \\
 
-\appdesco{mpsolve}
+\appdesce{mpsolve}
          {computes statistical model of multipath combination}
 	 {mpsolve -o arl2100.06o -e arl2100.06n} \\
 
-\appdesce{ordGen/Clock/LinEst/...}
+\appdesco{ordGen/Clock/LinEst/...}
          {models observed range deviations}
 	 {TC or JCL} \\
 
-\appdesco{RinSum}
+\appdesce{RinSum}
          {summarizes contents of a RINEX observation file}
 	 {RinSum -i arl2100.06o --EpochBeg 2006,07,20,13,20,00} \\ 
 
-\appdesce{rmwdiff/rnwdiff/rowdiff}
+\appdesco{rmwdiff/rnwdiff/rowdiff}
          {compares contents of two RINEX files}
 	 {rowdiff arl1210.06o arl22100.06o} \\
 
-\appdesco{row/rnw/rmwcheck}
+\appdesce{row/rnw/rmwcheck}
          {read RINEX files and checks it for errors reporting the first found}
 	 {rnwcheck arl210.06n -e "07/20/2006 11:00:00"} \\
 
-\appdesce{rstats}
+\appdesco{rstats}
          {computes standard, robust statistics on numbers in text stream}
 	 {BT} \\
 \hline
 
 
-\multirow{-14}{\sidewidth}{\rotatebox{90}{\tiny{Comparing \& Validating}}}
+\multirow{-13}{\sidewidth}{\rotatebox{90}{\tiny{Comparing \& Validating}}}
 
-\appdesco{DiscFix}
+\appdesce{DiscFix}
          {cycle slip corrector}
 	 {DiscFix -i arl2100.06o --DT 1.5} \\
 
-\appdesce{EditRinex}
+\appdesco{EditRinex}
          {edits a RINEX observations file based on user input}
 	 {BT} \\
 
-\appdesco{mergeFIC}
+\appdesce{mergeFIC}
          {sorts and merges input FIC files into a single file}
 	 {mergeFIC -i fic12100.06 -i fic22100.06 -o ficmerge2100.06} \\
 
-\appdesce{mergeRinObs/Nav/Met}
+\appdesco{mergeRinObs/Nav/Met}
          {sorts and merges RINEX files}
 	 {mergeRinNav -i arl2100.06n -i arl2110.06n arl210-211.06n} \\
 
-\appdesco{NavMerge}
+\appdesce{NavMerge}
          {merges RINEX nav files into a single file}
 	 {NavMerge -oarlnavs.06n arl2100.06n arl2110.06n} \\
 
-\appdesce{rinexthin}
+\appdesco{rinexthin}
          {decimates an input RINEX observation files to desired data rate}
 	 {rinexthin -f arl2100.06o -s 30 -o arl2100thin.06n} \\
 
-\appdesco{ResCor}
+\appdesce{ResCor}
          {edits RINEX files and computes corrections}
 	 {ResCor -IFalr2100.06o -OFarl2100mod.06o -DS12,12:00:00} \\
 
-\appdesce{sp3version}
+\appdesco{sp3version}
          {reads and writes from and to SP3 files}
 	 {JV} \\ \hline
 
 \multirow{-9}{\sidewidth}{\rotatebox{90}{\tiny{Editing Data}}}
 
-\appdesco{IonoBias}
+\appdesce{IonoBias}
          {solves interfrequency biases and a simple ionosphere model}
 	 {IonoBias --input arl2100.06o --nav arl2100.06n --XSat 3} \\
 
-\appdesce{TECMaps}
+\appdesco{TECMaps}
          {creates maps of Total Electron Content (TEC)}
 	 {TECMaps --input arl2100.06o --nav arl2100.06n --LinearFit} \\
 \hline
 
 \multirow{-3}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{3mm}Iono}}}
 
-\appdesco{DDBase}
+\appdesce{DDBase}
          {computes a network solution using carrier phase}
-	 {DDBase ...--ObsFile arl2100.06o --PosXYZ x,y,z,1 --Fix ...} \\
+	 {DDBase ... --ObsFile arl2100.06o --PosXYZ x,y,z,1 --Fix ...} \\
 
-\appdesce{ddmerge}
+\appdesco{ddmerge}
          {appends elevation and azimuth data to lines in the output file}
 	 {BT} \\
 
-\appdesco{mergeSRI}
+\appdesce{mergeSRI}
          {combines solution and covariance results into a single result}
 	 {BT} \\
 
-\appdesce{posInterp}
+\appdesco{posInterp}
          {calculates user positions at a higher rate than observations}
 	 {BT} \\
 
-\appdesco{PRSolve}
+\appdesce{PRSolve}
          {generates autonomous position solution}
 	 {PRSolve -o alr2100.06o -n arl2100.06nn --XPRN 12} \\
 
-\appdesce{rinexpvt}
+\appdesco{rinexpvt}
          {generates autonous position solution}
 	 {rinexpvt -o alr2100.06o -n arl2100.06n} \\
 
-\appdesco{vecsol}
+\appdesce{vecsol}
          {estimates short baseline using range or carrier phase}
 	 {vecsol station12100.06o station22100.06o}  \\
 
