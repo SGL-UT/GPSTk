@@ -3,7 +3,7 @@
 \usepackage{rotating}
 \usepackage{colortbl}
 \usepackage{xcolor}
-\usepackage[total={8.5in,11in},top=1.5cm,left=1.5cm,landscape=true]{geometry}
+\usepackage[total={8.5in,11in},top=2.0cm,left=1.5cm,landscape=true]{geometry}
 
 \newcommand{\sideco}{gray}
 \newcommand{\sideso}{1.0}
@@ -17,7 +17,7 @@
 
 \newcommand{\twidth}{1.52in}
 \newcommand{\dwidth}{3.38in}
-\newcommand{\ewidth}{3.55in}
+\newcommand{\ewidth}{3.60in}
 
 \newcommand{\appdesce}[3] {\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{1}{\twidth}{#1} & \cellcolor[\entct]{\entst} \multirow{1}{\dwidth}{\footnotesize{#2}} & \cellcolor[\entct]{\entst} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{#3}}}}
 
@@ -85,11 +85,11 @@
 
 \appdesce{daa}
          {performs a data availability analysis of collected data}
-	 {TC or JL} \\
+	 { ---} \\
 
 \appdesco{ddGen}
          {computes double-differences from raw observations}
-	 {TC or JL} \\
+	 { ---} \\
 
 \appdesce{ephdiff}
          {compares the satellite positions from two ephemeris sources}
@@ -117,7 +117,7 @@
 
 \appdesco{ordGen/Clock/LinEst/...}
          {models observed range deviations}
-	 {TC or JCL} \\
+	 {ordGen -o arl2100.06o -e apc14080 | ordEdit ... | ... | ...} \\
 
 \appdesce{RinSum}
          {summarizes contents of a RINEX observation file}
@@ -133,7 +133,7 @@
 
 \appdesco{rstats}
          {computes standard, robust statistics on numbers in text stream}
-	 {BT} \\
+	 {rstats myfile.dat --col 3 --xcol 2} \\
 \hline
 
 
@@ -145,7 +145,7 @@
 
 \appdesco{EditRinex}
          {edits a RINEX observations file based on user input}
-	 {BT} \\
+	 {EditRinex -IFalr2100.06o -TB1418,518000. -DSG17 -AOLW -AOPW} \\
 
 \appdesce{mergeFIC}
          {sorts and merges input FIC files into a single file}
@@ -169,7 +169,7 @@
 
 \appdesco{sp3version}
          {reads and writes from and to SP3 files}
-	 {JV} \\ \hline
+	 {sp3version --in mySP3a.dat --out mySP3c.dat --outputC } \\ \hline
 
 \multirow{-9}{\sidewidth}{\rotatebox{90}{\tiny{Editing Data}}}
 
@@ -189,23 +189,23 @@
 	 {DDBase ... --ObsFile arl2100.06o --PosXYZ x,y,z,1 --Fix ...} \\
 
 \appdesco{ddmerge}
-         {appends elevation and azimuth data to lines in the output file}
-	 {BT} \\
+         {ddmerge merges DDBase RAW and DDR output files}
+	 {ddmerge myRAW.dat myDDR.dat myData.dat} \\
 
 \appdesce{mergeSRI}
          {combines solution and covariance results into a single result}
-	 {BT} \\
+	 {mergeSRI myResult1.out myResult2.out myResult3.out } \\
 
 \appdesco{posInterp}
          {calculates user positions at a higher rate than observations}
-	 {BT} \\
+	 {PosInterp -o alr2100.06o -m 10 --outRinex myNewRinex.obs} \\
 
 \appdesce{PRSolve}
          {generates autonomous position solution}
 	 {PRSolve -o alr2100.06o -n arl2100.06nn --XPRN 12} \\
 
 \appdesco{rinexpvt}
-         {generates autonous position solution}
+         {generates autonomous position solution}
 	 {rinexpvt -o alr2100.06o -n arl2100.06n} \\
 
 \appdesce{vecsol}
