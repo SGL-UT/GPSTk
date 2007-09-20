@@ -3,7 +3,7 @@
 \usepackage{rotating}
 \usepackage{colortbl}
 \usepackage{xcolor}
-\usepackage[total={8.5in,11in},top=2cm,left=1.5cm,landscape=true]{geometry}
+\usepackage[total={8.5in,11in},top=1.5cm,left=1.5cm,landscape=true]{geometry}
 
 \newcommand{\sideco}{gray}
 \newcommand{\sideso}{1.0}
@@ -15,9 +15,9 @@
 \newcommand{\entct}{gray}
 \newcommand{\entst}{0.95}
 
-\newcommand{\twidth}{2.0in}
-\newcommand{\dwidth}{3.10in}
-\newcommand{\ewidth}{3.10in}
+\newcommand{\twidth}{1.52in}
+\newcommand{\dwidth}{3.38in}
+\newcommand{\ewidth}{3.45in}
 
 \newcommand{\appdesce}[3] {\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{1}{\twidth}{#1} & \cellcolor[\entct]{\entst} \multirow{1}{\dwidth}{\footnotesize{#2}} & \cellcolor[\entct]{\entst} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{#3}}}}
 
@@ -29,7 +29,7 @@
 
 \begin{tabular}{clll}
 
-\multicolumn{4}{c}{GPSTk Apps at a Glance} \\
+\multicolumn{4}{c}{Cross Platform Applications} \\
 & \textbf{Tool} & \textbf{Description} & \textbf{Execution Example} \\
 \hline
 
@@ -112,10 +112,10 @@
 	 {mdptool -i mdpfile --pvt --obs} \\
 
 \appdesco{mpsolve}
-         {computes statistical model of a dual frequency multipath combination}
+         {computes statistical model of multipath combination}
 	 {mpsolve -o arl2100.06o -e arl2100.06n} \\
 
-\appdesce{ordGen/Clock/LinEst/Edit/Stats}
+\appdesce{ordGen/Clock/LinEst/...}
          {models observed range deviations}
 	 {TC or JCL} \\
 
@@ -137,7 +137,7 @@
 \hline
 
 
-\multirow{-11}{\sidewidth}{\rotatebox{90}{\tiny{Comparing \& Validating}}}
+\multirow{-14}{\sidewidth}{\rotatebox{90}{\tiny{Comparing \& Validating}}}
 
 \appdesco{DiscFix}
          {cycle slip corrector}
@@ -168,10 +168,10 @@
 	 {ResCor -IFalr2100.06o -OFarl2100mod.06o -DS12,12:00:00} \\
 
 \appdesce{sp3version}
-         {read and write from and to either a or c format SP3 file}
+         {reads and writes from and to SP3 files}
 	 {JV} \\ \hline
 
-\multirow{-8}{\sidewidth}{\rotatebox{90}{\tiny{Editing Data}}}
+\multirow{-9}{\sidewidth}{\rotatebox{90}{\tiny{Editing Data}}}
 
 \appdesco{IonoBias}
          {solves interfrequency biases and a simple ionosphere model}
@@ -186,17 +186,17 @@
 
 \appdesco{DDBase}
          {computes a network solution using carrier phase}
-	 {DDBase ... --ObsFile arl2100.06o --PosXYZ x,y,z,1 --Fix ...} \\
+	 {DDBase ...--ObsFile arl2100.06o --PosXYZ x,y,z,1 --Fix ...} \\
 
 \appdesce{ddmerge}
-         {appends elevation and azimuth data taken from the RAW file to the appropriate line in the DDR file and output to the output file}
+         {appends elevation and azimuth data to lines in the output file}
 	 {BT} \\
 
 \appdesco{mergeSRI}
-         {combines solution and covariance results from different sources into a single result}
+         {combines solution and covariance results into a single result}
 	 {BT} \\
 
-\appdesce{PosInterp}
+\appdesce{posInterp}
          {calculates user positions at a higher rate than observations}
 	 {BT} \\
 
@@ -214,7 +214,7 @@
 
 \hline
 
-\multirow{-7}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{3mm}Positioning}}}
+\multirow{-8}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{3mm}Positioning}}}
 
 
 \end{tabular}
