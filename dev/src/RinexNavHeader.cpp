@@ -242,19 +242,19 @@ namespace gpstk
          else if (thisLabel == ionAlphaString)
          {
             for(int i = 0; i < 4; i++)
-               ionAlpha[i] = gpstk::StringUtils::for2doub(line.substr(2 + 12 * i,12),12);
+               ionAlpha[i] = gpstk::StringUtils::for2doub(line.substr(2 + 12 * i,12));
             valid |= ionAlphaValid;
          }
          else if (thisLabel == ionBetaString)
          {
             for(int i = 0; i < 4; i++)
-               ionBeta[i] = gpstk::StringUtils::for2doub(line.substr(2 + 12 * i,12),12);
+               ionBeta[i] = gpstk::StringUtils::for2doub(line.substr(2 + 12 * i,12));
             valid |= ionBetaValid;
          }
          else if (thisLabel == deltaUTCString)
          {
-            A0 = gpstk::StringUtils::for2doub(line.substr(3,19),19);
-            A1 = gpstk::StringUtils::for2doub(line.substr(22,19),19);
+            A0 = gpstk::StringUtils::for2doub(line.substr(3,19));
+            A1 = gpstk::StringUtils::for2doub(line.substr(22,19));
             UTCRefTime = asInt(line.substr(41,9));
             UTCRefWeek = asInt(line.substr(50,9));
             valid |= deltaUTCValid;

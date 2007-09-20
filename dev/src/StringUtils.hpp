@@ -1174,9 +1174,9 @@ namespace gpstk
           * Note that the first character of the string will be '-' if
           * the number is negative or ' ' if the first character is positive.
           * @param aStr string with number to convert
+          * @param startPos start position of number in string
           * @param length length (in characters) of number, including exponent.
           * @param expLen length (in characters of exponent, not including sign.
-          * @param startPos start position of number in string
 	  * @param checkSwitch will keep the method running as orignially programed
 	  * when set to true.  If false, the method will always resize exponentials,
 	  * produce an exponential with an E instead of a D, and always have a leading
@@ -1185,8 +1185,8 @@ namespace gpstk
           * scientific notation
           */
       inline std::string& sci2for(std::string& aStr, 
-                             const std::string::size_type length, 
                              const std::string::size_type startPos = 0,
+                             const std::string::size_type length = std::string::npos, 
                              const std::string::size_type expLen = 3,
 			     const bool checkSwitch = true)
          throw(StringException);
@@ -1214,13 +1214,13 @@ namespace gpstk
           * floating point in a string to a number.
           * As an example, the number ".15636D6" becomes 156360.
           * @param aStr string containing FORTRAN representation of number.
-          * @param length length (in characters) of number, including exponent.
           * @param startPos beginning of number in string.
+          * @param length length (in characters) of number, including exponent.
           * @return value of the number.
           */
       inline double for2doub(const std::string& aStr, 
-                             const std::string::size_type length,
-                             const std::string::size_type startPos = 0);
+                             const std::string::size_type startPos = 0,
+                             const std::string::size_type length = std::string::npos);
       
          /**
           * Change a string into printable characters.  Control
@@ -2316,8 +2316,8 @@ namespace gpstk
       }
 
       inline std::string& sci2for(std::string& aStr, 
-                             const std::string::size_type length, 
                              const std::string::size_type startPos,
+                             const std::string::size_type length, 
                              const std::string::size_type expLen,
 			     const bool checkSwitch)
          throw(StringException)
@@ -2449,9 +2449,9 @@ namespace gpstk
       }
       
       
-      inline double for2doub(const std::string& aStr, 
-                             const std::string::size_type length,
-                             const std::string::size_type startPos) 
+      inline double for2doub(const std::string& aStr,
+                             const std::string::size_type startPos,
+                             const std::string::size_type length) 
       {
          std::string s(aStr);
          strip(s);

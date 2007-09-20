@@ -941,7 +941,7 @@ namespace gpstk
          {
             if (n%4 == 0)
                strm.formattedGetLine(line);
-            f.push_back(for2doub(line.substr((n%4)*20, 20), 20));
+            f.push_back(for2doub(line.substr((n%4)*20, 20)));
          }
          
          for (n = 0; n < numi; n++)

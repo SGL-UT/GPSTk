@@ -407,9 +407,9 @@ namespace gpstk
          if(ds != 0) time += ds;
          
          Toc = time.GPSsecond();
-         af0 = gpstk::StringUtils::for2doub(currentLine.substr(22,19),19);
-         af1 = gpstk::StringUtils::for2doub(currentLine.substr(41,19),19);
-         af2 = gpstk::StringUtils::for2doub(currentLine.substr(60,19),19);
+         af0 = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
+         af1 = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
+         af2 = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
       }
       catch (std::exception &e)
       {
@@ -424,10 +424,10 @@ namespace gpstk
    {
       try
       {
-         IODE = gpstk::StringUtils::for2doub(currentLine.substr(3,19),19);
-         Crs = gpstk::StringUtils::for2doub(currentLine.substr(22,19),19);
-         dn = gpstk::StringUtils::for2doub(currentLine.substr(41,19),19);
-         M0 = gpstk::StringUtils::for2doub(currentLine.substr(60,19),19);
+         IODE = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
+         Crs = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
+         dn = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
+         M0 = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
       }
       catch (std::exception &e)
       {
@@ -442,10 +442,10 @@ namespace gpstk
    {
       try
       {
-         Cuc = gpstk::StringUtils::for2doub(currentLine.substr(3,19),19);
-         ecc = gpstk::StringUtils::for2doub(currentLine.substr(22,19),19);
-         Cus = gpstk::StringUtils::for2doub(currentLine.substr(41,19),19);
-         Ahalf = gpstk::StringUtils::for2doub(currentLine.substr(60,19),19);
+         Cuc = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
+         ecc = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
+         Cus = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
+         Ahalf = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
       }
       catch (std::exception &e)
       {
@@ -460,10 +460,10 @@ namespace gpstk
    {
       try
       {
-         Toe = gpstk::StringUtils::for2doub(currentLine.substr(3,19),19);
-         Cic = gpstk::StringUtils::for2doub(currentLine.substr(22,19),19);
-         OMEGA0 = gpstk::StringUtils::for2doub(currentLine.substr(41,19),19);
-         Cis = gpstk::StringUtils::for2doub(currentLine.substr(60,19),19);
+         Toe = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
+         Cic = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
+         OMEGA0 = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
+         Cis = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
       }
       catch (std::exception &e)
       {
@@ -478,10 +478,10 @@ namespace gpstk
    {
       try
       {
-         i0 = gpstk::StringUtils::for2doub(currentLine.substr(3,19),19);
-         Crc = gpstk::StringUtils::for2doub(currentLine.substr(22,19),19);
-         w = gpstk::StringUtils::for2doub(currentLine.substr(41,19),19);
-         OMEGAdot = gpstk::StringUtils::for2doub(currentLine.substr(60,19),19);
+         i0 = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
+         Crc = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
+         w = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
+         OMEGAdot = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
       }
       catch (std::exception &e)
       {
@@ -498,10 +498,10 @@ namespace gpstk
       {
          double codeL2, L2P, toe_wn;
 
-         idot = gpstk::StringUtils::for2doub(currentLine.substr(3,19),19);
-         codeL2 = gpstk::StringUtils::for2doub(currentLine.substr(22,19),19);
-         toe_wn = gpstk::StringUtils::for2doub(currentLine.substr(41,19),19);
-         L2P = gpstk::StringUtils::for2doub(currentLine.substr(60,19),19);
+         idot = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
+         codeL2 = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
+         toe_wn = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
+         L2P = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
 
          codeflgs = (short) codeL2;
          L2Pdata = (short) L2P;
@@ -522,10 +522,10 @@ namespace gpstk
       {
          double SV_acc, SV_health;
 
-         accuracy = gpstk::StringUtils::for2doub(currentLine.substr(3,19),19);
-         SV_health = gpstk::StringUtils::for2doub(currentLine.substr(22,19),19);
-         Tgd = gpstk::StringUtils::for2doub(currentLine.substr(41,19),19);
-         IODC = gpstk::StringUtils::for2doub(currentLine.substr(60,19),19);
+         accuracy = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
+         SV_health = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
+         Tgd = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
+         IODC = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
 
    
          health = (short) SV_health;
@@ -545,8 +545,8 @@ namespace gpstk
       {
          double HOW_sec;
 
-         HOW_sec = gpstk::StringUtils::for2doub(currentLine.substr(3,19),19);
-         fitint = gpstk::StringUtils::for2doub(currentLine.substr(22,19),19);
+         HOW_sec = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
+         fitint = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
    
          HOWtime = (long) HOW_sec;
 

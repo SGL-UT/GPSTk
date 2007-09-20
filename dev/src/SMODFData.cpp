@@ -232,8 +232,8 @@ namespace gpstk
          channel =        asInt(currentLine.substr(28,  2));
          type =           asInt(currentLine.substr(30,  1));
          lol  =           asInt(currentLine.substr(31,  1));
-         obs  =        for2doub(currentLine.substr(32, 21), 21);
-         stdDev =      for2doub(currentLine.substr(53, 12), 12);
+         obs  =        for2doub(currentLine.substr(32, 21));
+         stdDev =      for2doub(currentLine.substr(53, 12));
          tempSource =     asInt(currentLine.substr(66,  1));
          pressSource =    asInt(currentLine.substr(67,  1));
          humidSource =    asInt(currentLine.substr(68,  1));
@@ -280,8 +280,8 @@ namespace gpstk
          channel =        asInt(currentLine.substr(25,  2));
          type =           asInt(currentLine.substr(27,  1));
          lol  =           asInt(currentLine.substr(28,  1));
-         obs  =        for2doub(currentLine.substr(29, 21), 21);// len ??
-         stdDev =      for2doub(currentLine.substr(50, 12), 12);//start & 
+         obs  =        for2doub(currentLine.substr(29, 21));// len ??
+         stdDev =      for2doub(currentLine.substr(50, 12));//start & 
          short src =      asInt(currentLine.substr(63,  1));
          temp =        asDouble(currentLine.substr(64,  5));
          pressure =    asDouble(currentLine.substr(69,  6));
