@@ -84,7 +84,7 @@ vector<string> NavFiles;
 EphemerisStore *pEph;         // is this used?
    // obs types needed
 RinexObsHeader::RinexObsType ELot,AZot,VRot,SRot,TPot;
-RinexObsHeader::RinexObsType LAot,LOot;      // TEMP
+RinexObsHeader::RinexObsType LAot,LOot;
    // geoid
 WGS84Geoid WGS84;
    // Start and stop times
@@ -99,7 +99,7 @@ F0F2Map f0f2map;
 map<string,map<RinexSatID,double> > BiasMap;
    // Data structures for all receivers
 vector<Station> Stations;
-RinexObsStream *instream; // array of streams, parallell to Stations
+RinexObsStream *instream; // array of streams, parallel to Stations
 
 //------------------------------------------------------------------------------------
 // prototypes
@@ -131,7 +131,7 @@ try {
 
       // Title description and run time
    CurrEpoch.setLocalTime();
-   Title = "TECMaps, built on the GPSTK ToolKit, Ver 1.0 8/12/04, Run ";
+   Title = "TECMaps, built on the GPSTK ToolKit, Ver 1.2 9/21/07, Run ";
    Title += CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
    cout << Title;
 
@@ -948,7 +948,7 @@ try {
                   break;
                }
                if(words[0] == string("BIAS")) {
-                  station = words[2];
+                  station = lowerCase(words[2]);
                   sat.fromString(words[3]);
                   bias = asDouble(words[5]);
                   BiasMap[station][sat] = bias;
@@ -979,8 +979,8 @@ try {
       // create the obs types for later use
    ELot = RinexObsHeader::convertObsType("EL");
    AZot = RinexObsHeader::convertObsType("AZ");
-   LAot = RinexObsHeader::convertObsType("LA"); // TEMP
-   LOot = RinexObsHeader::convertObsType("LO"); // TEMP
+   LAot = RinexObsHeader::convertObsType("LA");
+   LOot = RinexObsHeader::convertObsType("LO");
    SRot = RinexObsHeader::convertObsType("SR");
    VRot = RinexObsHeader::convertObsType("VR");
    TPot = RinexObsHeader::convertObsType("TP");
@@ -1336,13 +1336,13 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-// return 0 if data is good and was accepted
+// return -1 if failure, n>0 if data is good and was accepted, n = number of points
 int ProcessObs(Station& S, vector<ObsData>& obsvec) throw(Exception)
 {
 try {
    int i,k,n;
    double EL,AZ,LA,LO,SR,VR,TP,bias,obliq;
-   double la,lo;     // TEMP
+   double la,lo;
    RinexSatID sat;
    RinexObsData::RinexSatMap::const_iterator it;
    RinexObsData::RinexObsTypeMap::const_iterator jt;
@@ -1353,7 +1353,10 @@ try {
    for(n=0,it=S.robs.obs.begin(); it!=S.robs.obs.end(); ++it) {
       ObsData od;
       sat = it->first;
-      if(sat.system != SatID::systemGPS) continue; // ignore non-GPS satellites
+      if(sat.system != SatID::systemGPS) {
+         if(debug) oflog << "Satellite is not GPS " << sat << endl;
+         continue; // ignore non-GPS satellites
+      }
       k = -1;
       for(i=0; i<ExSV.size(); i++) {   // Is this satellite excluded ?
          if(ExSV[i] == sat ||                                 // sat is excluded
@@ -1362,7 +1365,10 @@ try {
             break;
          }
       }
-      if(k != -1) continue;
+      if(k != -1) {
+         if(debug) oflog << "Satellite is excluded " << sat << endl;
+         continue;
+      }
    
          // save first time
       if(S.InitTime[sat] == DayTime::BEGINNING_OF_TIME) {
@@ -1372,19 +1378,27 @@ try {
          // process this sat
       if((jt=it->second.find(ELot)) != it->second.end())
          EL = jt->second.data;
-      else continue;
-      if(EL < vtecmap.MinElevation) continue;   // here or inside class?
+      else {
+         if(debug) oflog << "Elevation is not found" << endl;
+         continue;
+      }
+      if(EL < vtecmap.MinElevation) {
+         if(debug) oflog << "Elevation is below minimum " << fixed
+           << EL << " < " << vtecmap.MinElevation << endl;
+         continue;   // here or inside class?
+      }
   
       if((jt=it->second.find(AZot)) != it->second.end())
          AZ = jt->second.data;
-      else continue;
+      else {
+         if(debug) oflog << "Azimuth is not found" << endl;
+         continue;
+      }
   
-      //TEMP
       if((jt=it->second.find(LAot)) != it->second.end())
          la = jt->second.data;
       else lo = -999.0;
  
-      //TEMP
       if((jt=it->second.find(LOot)) != it->second.end())
          lo = jt->second.data;
       else lo = -999.0;
@@ -1397,7 +1411,10 @@ try {
          VR = jt->second.data;
       else VR = -1.0;
 
-      if(SR == -1.0 && VR == -1.0) continue;
+      if(SR == -1.0 && VR == -1.0) {
+         if(debug) oflog << "Neither SR nor VR is not found" << endl;
+         continue;
+      }
 
       if((jt=it->second.find(TPot)) != it->second.end())
          TP = jt->second.data;
@@ -1419,16 +1436,27 @@ try {
       if(TP != -1.0) od.AcqTime = TP;
       else od.AcqTime = S.robs.time - S.InitTime[sat];
 
-      if(od.AcqTime < MinAcqTime) continue;
+      if(od.AcqTime < MinAcqTime) {
+         if(debug) oflog << "Acquisition time is below min " << fixed
+            << od.AcqTime << " < " << MinAcqTime << endl;
+         continue;
+      }
 
          // get the bias
       map<string,map<RinexSatID,double> >::const_iterator jt;
-      jt = BiasMap.find(S.header.markerName);
+      jt = BiasMap.find(lowerCase(S.header.markerName));
          // skip sat+rx for which there are no biases
-      if(jt == BiasMap.end()) continue;
+      if(jt == BiasMap.end()) {
+         if(debug) oflog << "Site is not found in bias map "
+            << S.header.markerName << endl;
+         continue;
+      }
       map<RinexSatID,double>::const_iterator kt;
       kt = jt->second.find(sat);
-      if(kt == jt->second.end()) continue;
+      if(kt == jt->second.end()) {
+         if(debug) oflog << "Sat is not found in bias map " << sat << endl;
+         continue;
+      }
       bias = kt->second;
       if(debug) oflog << "Apply bias for station " << S.header.markerName
          << " and sat " << sat << " = " << fixed << setw(12) << setprecision(6)
@@ -1451,7 +1479,6 @@ try {
       obsvec.push_back(od);
 
          // write out
-      /* */
       oflog <<        setw(4) << S.robs.time.GPSfullweek();
       oflog << " " << setw(8) << setprecision(1) << S.robs.time.GPSsow();
       oflog << " " << setw(2) << n;
@@ -1463,7 +1490,6 @@ try {
       oflog << " " << setw(2) << sat.id; // PRN
       oflog << " " << setw(3) << S.nfile+1; // file number
       oflog << endl;
-      /* */
 
    }  // end for loop over sats
 
