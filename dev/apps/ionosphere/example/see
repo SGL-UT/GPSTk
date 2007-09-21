@@ -1,1 +1,2 @@
-perl plotall.pl out/%1 %2 %3 %4
+#!/bin/bash
+perl plotall.pl out/$1 $2 $3 $4
