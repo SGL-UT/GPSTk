@@ -1,3 +1,5 @@
 # use this ls command, or make up your own list.files
-#ls processed/*.obs > list.files
-/home/btolman/gpstk/dev/apps/ionosphere/IonoBias -fbias.inp
+# be sure to replace the IonoBias path with the correct one for your system
+ls processed/*.04o.RC > list.files
+#/home/btolman/gpstk/dev/apps/ionosphere/IonoBias -fbias.inp
+/home/btolman/mybin/IonoBias -fbias.inp

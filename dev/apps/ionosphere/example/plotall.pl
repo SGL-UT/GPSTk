@@ -78,7 +78,7 @@ close FPOUT;
 
 if ($^O eq "linux") {
    #`/usr/local/bin/gnuplot -persist contour$N.gp`;
-   open(GP, "/usr/local/bin/gnuplot -persist $base.gp |");
+   open(GP, "gnuplot -persist $base.gp |");
 }
 if ($^O eq "MSWin32") {
    #open(GP, "C:\\bat\\gp $base.gp |");

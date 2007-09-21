@@ -931,29 +931,29 @@ try {
          string line,station;
          vector<string> words;
          while(!inf.eof() && inf.good()) {
-            {        // parse line into words
-               istringstream iss(line);
-               string wd;
-               words.clear();
-               while(iss >> wd) { words.push_back(wd); }
-            }
+            words.clear();
+            stripLeading(line);
+            while(!line.empty())
+               words.push_back(stripFirstWord(line));
             while(1) {
-               if(words.size() != 5) break;
+               if(words.size() == 0) break;
                if(debug) {
                   oflog << "Biases file:";
                   for(int i=0; i<words.size(); i++) oflog << " " << words[i];
                   oflog << endl;
                }
-               if(words[0] == string("IonoBias,")) break;
-               if(words[1] == string("Number")) {
+               if(words[0] == string("IonoBias,")) break; // first line
+               if(words[1] == string("Number")) {         // second line
                   nbiases = asInt(words[0]);
                   break;
                }
-               station = words[1];
-               sat.fromString(words[2]);
-               bias = asDouble(words[3]);
-               BiasMap[station][sat] = bias;
-               n++;
+               if(words[0] == string("BIAS")) {
+                  station = words[2];
+                  sat.fromString(words[3]);
+                  bias = asDouble(words[5]);
+                  BiasMap[station][sat] = bias;
+                  n++;
+               }
                break;
             }
             getline(inf,line);

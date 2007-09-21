@@ -12,7 +12,7 @@
 --MinLongitude 250
 --MaxLongitude 290
 --TimeSector night
---TermOffset 20 
+--TerminOffset 20 
 --IonoHeight 350
 #--NoSatBiases
 --biasout satbias.txt

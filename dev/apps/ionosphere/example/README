@@ -28,11 +28,14 @@ perl and maybe wget and gnuplot under Windows -- get them free on the web!)
    0. Create subdirectories 'alldata', 'processed' and 'out'.
 
    1. The raw data is IGS data downloaded from the web for day 210 of 2004;
-the script 'getigs' shows one way to do this using wget. Note the last 'wget' call
-is different - it gets the broadcast ephemeris. These stations were
-chosen because they lie near or within a rectangle bounded by latitude 40 - 60 and
-longitude 250 - 290, which is where the map is going to be made. The raw data
-files, including the broadcast ephemeris file, are placed in subdirectory 'alldata'.
+the script 'getigs' shows one way to do this using wget. Note the last few 'wget'
+calls are different - they get the broadcast ephemeris and the IGS clock+ephemeris
+file. At the bottom of the script the files are unzipped using gzip, then uncompressed
+using the program crx2rnx, which is available on the internet - look for 'compressed
+RINEX'. These stations were chosen because they lie near or within a rectangle bounded
+by latitude 40 - 60 and longitude 250 - 290, which is where the map is going to be
+made. The raw data files, including the ephemeris files, are placed in subdirectory
+'alldata'.
 
    2. Preprocess the data by computing EL (elevation), AZ (azimuth),
 LA (latitude of the ionospheric pierce point or IPP), LO (longitude of IPP), and

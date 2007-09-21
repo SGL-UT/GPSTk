@@ -30,7 +30,8 @@ $stationID = substr($filename,length($filename)-12,4);
 if ($^O eq "linux") {
    $slash = "/";
    # GPSTK prgms found here
-   $prgmdir = "/home/btolman/gpstk/dev/apps/Rinextools";
+   #$prgmdir = "/home/btolman/gpstk/dev/apps/Rinextools";
+   $prgmdir = "/home/btolman/mybin";
 }
 if ($^O eq "MSWin32") {
    $slash = "\\";
@@ -38,11 +39,13 @@ if ($^O eq "MSWin32") {
    $prgmdir = "C:\\Code\\GPSLIB\\Working\\dev\\apps\\Rinextools";
 }
 
-print "Process station $stationID in file $filename\n";
+print "Process station $stationID in file alldata/$filename using GPSTk tools in directory $prgmdir\n";
 
 $rawfile = "alldata$slash$filename";
-$obsfile = "processed$slash$stationID.obs";
-$sumfile = "processed$slash$stationID.sum";
+#$obsfile = "processed$slash$stationID.obs";
+$obsfile = "processed$slash$filename.RC";
+#$sumfile = "processed$slash$stationID.sum";
+$sumfile = "processed$slash$filename.sum";
 
 # make up ResCor options
 #decimate to 30 second data, fill output header

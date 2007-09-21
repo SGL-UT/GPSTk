@@ -1,3 +1,4 @@
+# preprocess data files in directory ./alldata placing results in ./processed
 perl preprocess.pl adri2100.04o
 perl preprocess.pl agmt2100.04o
 perl preprocess.pl algo2100.04o
