@@ -70,7 +70,7 @@ else
       YumaHeader.cpp YumaData.cpp YumaAlmanacStore.cpp
       SEMHeader.cpp SEMData.cpp SEMAlmanacStore.cpp
       SourceID.cpp TypeID.cpp DataHeaders.cpp DataStructures.cpp
-      ProcessingList.cpp
+      ProcessingList.cpp ProcessingVector.cpp
       XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
       ;
 
@@ -130,7 +130,7 @@ else
       YumaBase.hpp YumaStream.hpp YumaHeader.hpp YumaData.hpp YumaAlmanacStore.hpp
       SEMBase.hpp SEMStream.hpp SEMHeader.hpp SEMData.hpp SEMAlmanacStore.hpp
       SourceID.hpp TypeID.hpp DataHeaders.hpp DataStructures.hpp
-      ProcessingClass.hpp ProcessingList.hpp
+      ProcessingClass.hpp ProcessingList.hpp ProcessingVector.hpp
       TimeNamedFileStream.hpp ComputeCombination.hpp ComputePC.hpp
       SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp ComputeLI.hpp ComputePdelta.hpp 
       ComputeLdelta.hpp ComputeIURAWeights.hpp ComputeMOPSWeights.hpp
