@@ -4,8 +4,8 @@
  * This class filters out satellites with observations grossly out of bounds.
  */
 
-#ifndef Simple_Filter_GPSTK
-#define Simple_Filter_GPSTK
+#ifndef SIMPLE_FILTER_GPSTK
+#define SIMPLE_FILTER_GPSTK
 
 //============================================================================
 //
@@ -25,13 +25,13 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Dagoberto Salazar - gAGE. 2007
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
 //============================================================================
 
 
 
-#include "DataStructures.hpp"
+#include "ProcessingClass.hpp"
 
 
 namespace gpstk
@@ -82,7 +82,7 @@ namespace gpstk
      * deleted from the data structure.
      *
      */
-    class SimpleFilter
+    class SimpleFilter : public ProcessingClass
     {
     public:
 
@@ -90,6 +90,7 @@ namespace gpstk
         SimpleFilter() : minLimit(15000000.0), maxLimit(30000000.0)
         {
             setFilteredType(TypeID::C1);   // By default, filter C1
+            setIndex();
         };
 
 
@@ -102,6 +103,7 @@ namespace gpstk
         SimpleFilter(const TypeID& type, const double& min, const double& max) : minLimit(min), maxLimit(max)
         {
             setFilteredType(type);
+            setIndex();
         };
 
 
@@ -112,6 +114,7 @@ namespace gpstk
         SimpleFilter(const TypeID& type) : minLimit(15000000.0), maxLimit(30000000.0)
         {
             setFilteredType(type);
+            setIndex();
         };
 
 
@@ -121,60 +124,21 @@ namespace gpstk
          * @param min       Minimum limit (in meters).
          * @param max       Maximum limit (in meters).
          */
-        SimpleFilter(const TypeIDSet& typeSet, const double& min, const double& max) : filterTypeSet(typeSet), minLimit(min), maxLimit(max) {};
+        SimpleFilter(const TypeIDSet& typeSet, const double& min, const double& max) : filterTypeSet(typeSet), minLimit(min), maxLimit(max) { setIndex(); };
 
 
         /** Explicit constructor
          *
          * @param typeSet   Set of TypeID's to be filtered.
          */
-        SimpleFilter(const TypeIDSet& typeSet) : filterTypeSet(typeSet), minLimit(15000000.0), maxLimit(30000000.0) {};
+        SimpleFilter(const TypeIDSet& typeSet) : filterTypeSet(typeSet), minLimit(15000000.0), maxLimit(30000000.0) { setIndex(); };
 
 
         /** Returns a satTypeValueMap object, filtering the target observables.
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& Filter(satTypeValueMap& gData)
-        {
-
-            SatIDSet satRejectedSet;
-
-            // Check all the indicated TypeID's
-            TypeIDSet::const_iterator pos;
-            for (pos = filterTypeSet.begin(); pos != filterTypeSet.end(); ++pos)
-            {
-
-                double value(0.0);
-
-                // Loop through all the satellites
-                satTypeValueMap::iterator it;
-                for (it = gData.begin(); it != gData.end(); ++it) 
-                {
-                    try
-                    {
-                        // Try to extract the values
-                        value = (*it).second(*pos);
-
-                        // Now, check that the value is within bounds
-                        if ( !( checkValue(value) ) )
-                        {
-                            // If value is out of bounds, then schedule this satellite for removal
-                            satRejectedSet.insert( (*it).first );
-                        }
-                    }
-                    catch(...)
-                    {
-                        // If some value is missing, then schedule this satellite for removal
-                        satRejectedSet.insert( (*it).first );
-                    }
-                }
-                // Before checking next TypeID, let's remove satellites with data out of bounds
-                gData.removeSatID(satRejectedSet);
-            }
-
-            return gData;
-        };
+        virtual satTypeValueMap& Process(satTypeValueMap& gData);
 
 
         /** Method to set the minimum limit.
@@ -249,22 +213,29 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssSatTypeValue& Filter(gnssSatTypeValue& gData)
-        {
-            (*this).Filter(gData.body);
-            return gData;
-        };
+        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData);
 
 
         /** Returns a gnnsRinex object, filtering the target observables.
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& Filter(gnssRinex& gData)
-        {
-            (*this).Filter(gData.body);
-            return gData;
-        };
+        virtual gnssRinex& Process(gnssRinex& gData);
+
+
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; }; 
 
 
         /// Destructor
@@ -293,25 +264,18 @@ namespace gpstk
         double maxLimit;
 
 
+    private:
+
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
+
    }; // end class SimpleFilter
-
-
-    /// Input operator from gnssSatTypeValue to SimpleFilter.
-    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, SimpleFilter& sFilter)
-    {
-            sFilter.Filter(gData);
-            return gData;
-    }
-
-
-    /// Input operator from gnssRinex to SimpleFilter.
-    inline gnssRinex& operator>>(gnssRinex& gData, SimpleFilter& sFilter)
-    {
-            sFilter.Filter(gData);
-            return gData;
-    }
-
-   
 
    //@}
    
