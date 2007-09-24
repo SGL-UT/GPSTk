@@ -69,8 +69,9 @@ else
       BinexData.cpp
       YumaHeader.cpp YumaData.cpp YumaAlmanacStore.cpp
       SEMHeader.cpp SEMData.cpp SEMAlmanacStore.cpp
-      SourceID.cpp TypeID.cpp DataHeaders.cpp DataStructures.cpp XYZ2NEU.cpp
-      XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
+      SourceID.cpp TypeID.cpp DataHeaders.cpp DataStructures.cpp
+      ProcessingList.cpp
+      XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp AlmanacStore.hpp BCEphemerisStore.hpp
@@ -128,7 +129,8 @@ else
       BinexData.hpp  BinexFilterOperators.hpp  BinexStream.hpp
       YumaBase.hpp YumaStream.hpp YumaHeader.hpp YumaData.hpp YumaAlmanacStore.hpp
       SEMBase.hpp SEMStream.hpp SEMHeader.hpp SEMData.hpp SEMAlmanacStore.hpp
-      SourceID.hpp TypeID.hpp DataHeaders.hpp DataStructures.hpp ProcessingClass.hpp
+      SourceID.hpp TypeID.hpp DataHeaders.hpp DataStructures.hpp
+      ProcessingClass.hpp ProcessingList.hpp
       TimeNamedFileStream.hpp ComputeCombination.hpp ComputePC.hpp
       SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp ComputeLI.hpp ComputePdelta.hpp 
       ComputeLdelta.hpp ComputeIURAWeights.hpp ComputeMOPSWeights.hpp
