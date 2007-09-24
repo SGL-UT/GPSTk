@@ -128,7 +128,7 @@ else
       BinexData.hpp  BinexFilterOperators.hpp  BinexStream.hpp
       YumaBase.hpp YumaStream.hpp YumaHeader.hpp YumaData.hpp YumaAlmanacStore.hpp
       SEMBase.hpp SEMStream.hpp SEMHeader.hpp SEMData.hpp SEMAlmanacStore.hpp
-      SourceID.hpp TypeID.hpp DataHeaders.hpp DataStructures.hpp
+      SourceID.hpp TypeID.hpp DataHeaders.hpp DataStructures.hpp ProcessingClass.hpp
       TimeNamedFileStream.hpp ComputeCombination.hpp ComputePC.hpp
       SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp ComputeLI.hpp ComputePdelta.hpp 
       ComputeLdelta.hpp ComputeIURAWeights.hpp ComputeMOPSWeights.hpp

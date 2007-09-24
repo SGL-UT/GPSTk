@@ -75,9 +75,9 @@ VectorBaseOperators.hpp VectorOperators.hpp WGS84Geoid.hpp WeightBase.hpp \
 WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp Xvt.hpp YDSTime.hpp \
 YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp YumaHeader.hpp YumaStream.hpp \
 convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp \
-stl_helpers.hpp DataHeaders.hpp DataStructures.hpp ComputeCombination.hpp \
-ComputePC.hpp SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp ComputeLI.hpp \
-ComputePdelta.hpp ComputeLdelta.hpp ComputeIURAWeights.hpp \
+stl_helpers.hpp DataHeaders.hpp DataStructures.hpp ProcessingClass.hpp \
+ComputeCombination.hpp ComputePC.hpp SimpleFilter.hpp ComputeLC.hpp ComputePI.hpp \
+ComputeLI.hpp ComputePdelta.hpp ComputeLdelta.hpp ComputeIURAWeights.hpp \
 ComputeMOPSWeights.hpp ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp \
 CodeSmoother.hpp PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp \
 XYZ2NEU.hpp XYZ2NED.hpp DeltaOp.hpp SimpleKalmanFilter.hpp NablaOp.hpp
