@@ -65,7 +65,8 @@ namespace gpstk
    class GPSAlmanacStore : public XvtStore<SatID>
    {
    public:
-      virtual ~GPSAlmanacStore() {}
+      virtual ~GPSAlmanacStore()
+      {}
       
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.
@@ -99,7 +100,7 @@ namespace gpstk
       /// determine the Xvt for any object.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual DayTime getInitialTime() 
+      virtual DayTime getInitialTime()
          const throw(InvalidRequest);
 
       
@@ -109,7 +110,6 @@ namespace gpstk
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual DayTime getFinalTime()
          const throw(InvalidRequest);
-
 
       virtual bool velocityIsPresent()
          const throw()

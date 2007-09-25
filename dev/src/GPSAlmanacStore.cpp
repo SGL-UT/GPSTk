@@ -183,5 +183,47 @@ namespace gpstk
       }
       return(retDT);
    }
+
+
+   DayTime GPSAlmanacStore::getFinalTime() 
+      const throw(InvalidRequest)
+   {
+      DayTime retDT = DayTime::BEGINNING_OF_TIME;
+      UBAMap::const_iterator satItr = uba.begin();
+      while (satItr != uba.end())
+      {
+         const EngAlmMap& eam = (*satItr).second;
+
+         EngAlmMap::const_iterator nextItr;
+         for (nextItr=eam.begin(); nextItr!=eam.end(); ++nextItr)
+         {
+            const AlmOrbit& ao = (*nextItr).second;
+            try 
+            {
+               DayTime testT = ao.getToaTime();
+               if (testT<retDT) retDT = testT;
+            }
+               // Not to worry, worst case method return 'BEGINNING_OF_TIME'
+            catch(...)
+            {}
+         }
+         satItr++;
+      }
+      return(retDT);
+   }
+
+
+   void GPSAlmanacStore::edit(const DayTime& tmin, const DayTime& tmax)
+      throw()
+   {
+      std::cout << "Not yet implimented" << std::endl;
+   }
+
+
+   void GPSAlmanacStore::dump(std::ostream& s, short detail)
+      const throw()
+   {
+      s << "Not yet implimented" << std::endl;
+   }
    
 }
