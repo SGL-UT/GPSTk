@@ -40,7 +40,7 @@
 #include "RinexNavData.hpp"
 #include "RinexNavHeader.hpp"
 #include "RinexNavStream.hpp"
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 
 //------------------------------------------------------------------------------------
 
@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 
       RinexNavHeader rnh,rnhout;
       RinexNavData rne;
-      BCEphemerisStore EphStore;
+      GPSEphemerisStore EphStore;
       RinexNavStream RNFileOut;
 
       if(outfile != string("")) {
@@ -263,7 +263,7 @@ int main(int argc, char *argv[])
             << outfile << endl;
       }
       else {
-         EphStore.dump(1);
+         EphStore.dump(cout,1);
       }
 
       return 0;

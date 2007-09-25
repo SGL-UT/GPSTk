@@ -34,7 +34,7 @@
 #include "WeightBase.hpp"
 #include "EngEphemeris.hpp"
 #include "TabularEphemerisStore.hpp"
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "DataStructures.hpp"
 
 
@@ -92,7 +92,7 @@ namespace gpstk
          *
          * @param bcephem   BCEphemerisStore object holding the ephemeris.
          */
-        ComputeIURAWeights(BCEphemerisStore& bcephem) : pBCEphemeris(&bcephem), pTabEphemeris(NULL) {};
+        ComputeIURAWeights(GPSEphemerisStore& bcephem) : pBCEphemeris(&bcephem), pTabEphemeris(NULL) {};
 
 
         /** Common constructor
@@ -106,7 +106,7 @@ namespace gpstk
          *
          * @param ephem  EphemerisStore object holding the ephemeris.
          */
-        ComputeIURAWeights(EphemerisStore& ephem)
+        ComputeIURAWeights(XvtStore<SatID>& ephem)
         {
             setDefaultEphemeris(ephem);
         };
@@ -176,12 +176,12 @@ namespace gpstk
         /** Method to set the default ephemeris to be used with GNSS data structures.
          * @param ephem     EphemerisStore object to be used
          */
-        virtual void setDefaultEphemeris(EphemerisStore& ephem)
+        virtual void setDefaultEphemeris(XvtStore<SatID>& ephem)
         {
             // Let's check what type ephem belongs to
-            if (dynamic_cast<BCEphemerisStore*>(&ephem))
+            if (dynamic_cast<GPSEphemerisStore*>(&ephem))
             {
-                pBCEphemeris = dynamic_cast<BCEphemerisStore*>(&ephem);
+                pBCEphemeris = dynamic_cast<GPSEphemerisStore*>(&ephem);
                 pTabEphemeris = NULL;
             } else {
                 pBCEphemeris = NULL;
@@ -193,7 +193,7 @@ namespace gpstk
         /** Method to set the default ephemeris to be used with GNSS data structures.
          * @param ephem     BCEphemerisStore object to be used
          */
-        virtual void setDefaultEphemeris(BCEphemerisStore& ephem)
+        virtual void setDefaultEphemeris(GPSEphemerisStore& ephem)
         {
             pBCEphemeris = &ephem;
             pTabEphemeris = NULL;
@@ -217,7 +217,7 @@ namespace gpstk
     protected:
 
         /// Pointer to default broadcast ephemeris to be used.
-        BCEphemerisStore* pBCEphemeris;
+        GPSEphemerisStore* pBCEphemeris;
 
 
         /// Pointer to default precise ephemeris to be used.
@@ -235,7 +235,7 @@ namespace gpstk
             try
             {
                 // Look if this satellite is present in ephemeris
-                preciseEph->getSatXvt(sat, time);
+                preciseEph->getXvt(sat, time);
             }
             catch(...)
             {
@@ -253,7 +253,7 @@ namespace gpstk
          * @param time      Epoch
          * @param bcEph     Broadcast EphemerisStore object to be used
          */
-        virtual double getWeight(const SatID& sat, const DayTime& time, const BCEphemerisStore* bcEph) throw(InvalidWeights)
+        virtual double getWeight(const SatID& sat, const DayTime& time, const GPSEphemerisStore* bcEph) throw(InvalidWeights)
         {
             int iura(1000000);   // By default a very big value
             double sigma(1000000.0);

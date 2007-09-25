@@ -39,7 +39,7 @@
 #include "SatID.hpp"
 #include "Matrix.hpp"
 #include "RinexObsHeader.hpp"
-#include "EphemerisStore.hpp"
+#include "XvtStore.hpp"
 #include "TropModel.hpp"
 
 namespace gpstk
@@ -87,7 +87,7 @@ namespace gpstk
       int RAIMCompute(const DayTime& Tr,
                       std::vector<SatID>& Satellite,
                       std::vector<double>& Pseudorange,
-                      const EphemerisStore& Eph,
+                      const XvtStore<SatID>& Eph,
                       TropModel *pTropModel)
          throw(Exception);
 
@@ -186,7 +186,7 @@ namespace gpstk
        *                    negative 'prn' member.
        * @param Pseudorange std::vector<double> of raw pseudoranges (parallel to
        *                    Satellite), in meters
-       * @param Eph         gpstk::EphemerisStore to be used in the algorithm.
+       * @param Eph         gpstk::XvtStore<SatID> to be used in the algorithm.
        * @param SVP         gpstk::Matrix<double> of dimension (N,4), N is the number
        *                    of unmarked satellites in Sats[], on output this
        *                    contains the satellite positions at transmit time, and
@@ -200,7 +200,7 @@ namespace gpstk
       static int PrepareAutonomousSolution(const DayTime& Tr,
                                            std::vector<SatID>& Sats,
                                            std::vector<double>& Pseudorange,
-                                           const EphemerisStore& Eph,
+                                           const XvtStore<SatID>& Eph,
                                            Matrix<double>& SVP,
                                            std::ostream *pDebug=NULL)
          throw();

@@ -45,7 +45,7 @@ using namespace gpstk;
 // ---------------------------------------------------------------------
 SvElevationMap elevation_map(const ObsEpochMap& oem,
                              const Triple& ap,
-                             const EphemerisStore& eph)
+                             const XvtStore<SatID>& eph)
 {
    SvElevationMap pem;
 
@@ -61,10 +61,10 @@ SvElevationMap elevation_map(const ObsEpochMap& oem,
          try
          {
             SatID prn = oe_itr->first;
-            Xvt svpos = eph.getPrnXvt(prn.id, t);
+            Xvt svpos = eph.getXvt(prn, t);
             pem[t][prn] = rxpos.elvAngle(svpos.x);
          }
-         catch (EphemerisStore::NoEphemerisFound& e)
+         catch (InvalidRequest& e)
          {
          }
    }

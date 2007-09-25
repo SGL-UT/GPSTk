@@ -21,7 +21,6 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
-
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
@@ -37,47 +36,37 @@
 //=============================================================================
 
 /**
- * @file TabularEphemerisStore.hpp
- * Store a tabular list of Xvt data (such as a table of precise ephemeris data
- * in an SP3 file) and compute Xvt from this table. A Lagrange interpolation
- * is used to compute the Xvt for times that are not in the table but do have
- * sufficient data.
+ * @file AlmanacStore.hpp
+ * Store GPS almanac information (i.e. like the data in subframes 4&5) and 
+ * compute satellite Xvt based upon this data and the algorithms defined
+ * in the IS-GPS-200.
  */
-
-#ifndef GPSTK_TABULAR_EPHEMERIS_STORE_HPP
-#define GPSTK_TABULAR_EPHEMERIS_STORE_HPP
+ 
+#ifndef GPSTK_GPSALMANACSTORE_HPP
+#define GPSTK_GPSALMANACSTORE_HPP
 
 #include <iostream>
+#include <string>
+#include <map>
 
-#include "SatID.hpp"
-#include "DayTime.hpp"
 #include "XvtStore.hpp"
-#include "SP3Data.hpp"
+#include "SatID.hpp"
+#include "AlmOrbit.hpp"
+#include "EngAlmanac.hpp"
 
 namespace gpstk
 {
-   /** @addtogroup ephemstore */
+   /** @defgroup ephemstore */
    //@{
 
-   /// Store a tabular list of Xvt data (such as a table of precise ephemeris data
-   /// in an SP3 file) and compute Xvt from this table. A Lagrange interpolation
-   /// is used to compute the Xvt for times that are not in the table but do have
-   /// sufficient data.
-   class TabularEphemerisStore : public XvtStore<SatID>
+   /// Store GPS almanac information (i.e. like the data in subframes 4&5) and 
+   /// compute satellite Xvt based upon this data and the algorithms defined
+   /// in the IS-GPS-200.
+   class GPSAlmanacStore : public XvtStore<SatID>
    {
    public:
-      TabularEphemerisStore()
-         throw()
-         : initialTime(DayTime::END_OF_TIME), 
-           finalTime(DayTime::BEGINNING_OF_TIME),
-           haveVelocity(true)
-      {}
-
-      virtual ~TabularEphemerisStore()
-      {}
-    
-
-
+      virtual ~GPSAlmanacStore() {}
+      
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.
       /// @param[in] id the object's identifier
@@ -86,7 +75,7 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xvt getXvt(const SatID id, const DayTime& t)
+      virtual Xvt getXvt(const SatID id, const DayTime& t) 
          const throw(InvalidRequest);
       
 
@@ -94,7 +83,7 @@ namespace gpstk
       /// all data stored in this object.
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
-      virtual void dump(std::ostream& s = std::cout, short detail = 0)
+      virtual void dump(std::ostream& s = std::cout, short detail = 0) 
          const throw();
 
 
@@ -110,9 +99,8 @@ namespace gpstk
       /// determine the Xvt for any object.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual DayTime getInitialTime()
-         const throw(InvalidRequest)
-      {return initialTime;}
+      virtual DayTime getInitialTime() 
+         const throw(InvalidRequest);
 
       
       /// Determine the latest time for which this object can successfully 
@@ -120,13 +108,14 @@ namespace gpstk
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual DayTime getFinalTime()
-         const throw(InvalidRequest)
-      {return finalTime;}
+         const throw(InvalidRequest);
+
 
       virtual bool velocityIsPresent()
          const throw()
-      {return haveVelocity;}
+      {return true;}
 
+      
       virtual bool clockIsPresent()
          const throw()
       {return true;}
@@ -137,37 +126,41 @@ namespace gpstk
       // in the parent class)
       //---------------------------------------------------------------
 
-      /// Insert a new SP3Data object into the store
-      void addEphemeris(const SP3Data& data)
-         throw();
+      /// Returns the health of an SV for a particular time
+      /// @param sat the satellite's SatID
+      /// @param t the time to look up
+      /// @return the SV health bits
+      /// @throw InvalidRequest no data found in store
+      short getSatHealth(SatID sat, const DayTime& t) 
+         const throw(InvalidRequest);
 
-      /// Remove all data
-      void clear() throw();
+      bool addAlmanac(const AlmOrbit& alm) throw();
+      bool addAlmanac(const EngAlmanac& alm) throw();
+
+      /// gets the closest almanac for the given time and satellite id,
+      /// closest being in the past or future.
+      /// @param sat the satellite's SatID
+      /// @param t the time of interest
+      AlmOrbit findAlmanac(SatID sat, const DayTime& t) 
+         const throw(InvalidRequest);
+
+      /// returns all almanacs closest to t for all satellites
+      AlmOrbits findAlmanacs(const DayTime& t) 
+         const throw(InvalidRequest);
 
    protected:
-      /// Flag indicating that velocity data present in all datasets loaded.
-      bool haveVelocity;
+      /// This is intended to just store weekly sets of unique EngAlmanacs
+      /// for a single SV.  The key is ToA
+      typedef std::map<DayTime, AlmOrbit> EngAlmMap;
 
-   private:
+      /// This is intended to hold all unique EngEphemerises for each SV
+      /// The key is the SatID of the SV.
+      typedef std::map<SatID, EngAlmMap> UBAMap;
 
-      /// The key to this map is the time
-      typedef std::map<DayTime, Xvt> SvEphMap;
-
-      /// The key to this map is the svid of the satellite (usually the prn)
-      typedef std::map<SatID, SvEphMap> EphMap;
-
-      /// the map of SVs and XVTs
-      EphMap pe;
-
-      /** These give the overall span of time for which this object contains data.
-       * NB there may be gaps in the data, i.e. the data may not be continuous.
-       */
-      DayTime initialTime, finalTime;
-
+      /// The map where all EngAlmanacs are stored.
+      UBAMap uba;
    };
 
    //@}
-
-}  // namespace
-
+}
 #endif

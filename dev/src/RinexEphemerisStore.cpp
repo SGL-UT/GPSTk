@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,11 +36,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file RinexEphemerisStore.cpp
  * Read & store Rinex formated ephemeris data
@@ -60,7 +53,7 @@ namespace gpstk
    //-----------------------------------------------------------------------------
    //-----------------------------------------------------------------------------
    void RinexEphemerisStore::loadFile(const std::string& filename)
-      throw(gpstk::FileMissingException)
+      throw(FileMissingException)
    {
       try
       {
@@ -89,7 +82,8 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   void RinexEphemerisStore::dump(short detail, std::ostream& s) const
+   void RinexEphemerisStore::dump(std::ostream& s, short detail)
+      const throw()
    {
       s << "Dump of RinexEphemerisStore:" << std::endl;
       std::vector<std::string> fileNames = getFileNames();
@@ -97,7 +91,7 @@ namespace gpstk
       for (f=fileNames.begin(); f!=fileNames.end(); f++)
          s << *f << std::endl;
 
-      BCEphemerisStore::dump(detail, s);
+      GPSEphemerisStore::dump(s, detail);
 
    } // end of RinexEphemerisStore::dump
 

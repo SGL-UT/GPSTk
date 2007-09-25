@@ -91,7 +91,7 @@ vector<RinexSatID> ExSV;
    // ephemeris
 string NavDir;
 vector<string> NavFiles;
-EphemerisStore *pEph;
+XvtStore<SatID> *pEph;
    // obs types needed
 RinexObsHeader::RinexObsType ELot,LAot,LOot,SRot,SSot;
    // geoid
@@ -858,7 +858,7 @@ int Initialize(void) throw(Exception)
 {
 try {
    static SP3EphemerisStore SP3EphList;
-   static BCEphemerisStore BCEphList;
+   static GPSEphemerisStore BCEphList;
 
       // open nav files and read EphemerisStore
    if(!NavDir.empty())
@@ -866,13 +866,13 @@ try {
          NavFiles[i] = NavDir + "/" + NavFiles[i];
    FillEphemerisStore(NavFiles, SP3EphList, BCEphList);
    if(SP3EphList.size()) {
-      if(verbose) SP3EphList.dump(0,oflog);
+      if(verbose) SP3EphList.dump(oflog,0);
    }
    else if(verbose) oflog << "SP3 Ephemeris list is empty\n";
 
    if(BCEphList.size()) {
       BCEphList.SearchNear();
-      if(verbose) BCEphList.dump(0,oflog);
+      if(verbose) BCEphList.dump(oflog,0 );
    }
    else if(verbose) oflog << "BC Ephemeris list is empty\n";
 

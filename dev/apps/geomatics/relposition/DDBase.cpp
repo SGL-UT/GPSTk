@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -108,7 +108,7 @@ int minCount,maxCount;        // minimum and maximum timetag count seen
 int begcount,endcount;        // first and last counts of *good* data in buffers
 double wave;                  // wavelength (m) being processed (see CI.Frequency)
 
-EphemerisStore *pEph;         // pointer to ephemeris store (BC or SP3)
+XvtStore<SatID> *pEph;         // pointer to ephemeris store (BC or SP3)
 EOPStore EOPList;             // store of EarthOrientation parameters
 EarthOrientation eorient;     // earth orientation parameters at mean time of dataset
 

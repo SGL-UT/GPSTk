@@ -51,7 +51,8 @@
 // GPSTk
 #include "DayTime.hpp"
 #include "Position.hpp"
-#include "EphemerisStore.hpp"
+#include "XvtStore.hpp"
+#include "SatID.hpp"
 #include "Matrix.hpp"
 #include "Xvt.hpp"
 
@@ -80,16 +81,16 @@ namespace gpstk
       /// the CER quantities, given the nominal receive time tr_nom and
       /// an EphemerisStore.
       double ComputeAtReceiveTime(const DayTime& tr_nom,
-            const Position& Rx, const int prn, const EphemerisStore& Eph,
+            const Position& Rx, const int prn, const XvtStore<SatID>& Eph,
             const EarthOrientation& EO)
-      throw(EphemerisStore::NoEphemerisFound);
+      throw(InvalidRequest);
 
       /// Compute the corrected range at TRANSMIT time, from receiver at
       /// position Rx, to the GPS satellite given by PRN prn, as well as all
       /// the CER quantities, given the nominal receive time tr_nom and
       /// an EphemerisStore.
       double ComputeAtTransmitTime(const DayTime& tr_nom, const double& pr,
-            const Position& Rx, const int prn, const EphemerisStore& Eph,
+            const Position& Rx, const int prn, const XvtStore<SatID>& Eph,
             const EarthOrientation& EO);
 
       /// The computed raw (geometric) range in meters.

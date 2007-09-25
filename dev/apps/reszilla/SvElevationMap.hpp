@@ -41,7 +41,7 @@
 
 // gpstk crud
 #include "DayTime.hpp"
-#include "EphemerisStore.hpp"
+#include "XvtStore.hpp"
 #include "ObsEpochMap.hpp"
 
 // The key for this map is the prn of the SV
@@ -53,5 +53,5 @@ typedef std::map<gpstk::DayTime, SvDoubleMap > SvElevationMap;
 
 SvElevationMap elevation_map(const gpstk::ObsEpochMap& obs,
                              const gpstk::Triple& ap,
-                             const gpstk::EphemerisStore& bce);
+                             const gpstk::XvtStore<gpstk::SatID>& bce);
 #endif

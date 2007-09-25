@@ -42,14 +42,15 @@
 #include "ObsEpochMap.hpp"
 #include "WxObsMap.hpp"
 #include "ORDEpoch.hpp"
-#include "EphemerisStore.hpp"
+#include "XvtStore.hpp"
+#include "SatID.hpp"
 #include "TropModel.hpp"
 
 class OrdEngine
 {
 public:
    OrdEngine(
-      const gpstk::EphemerisStore& e, 
+      const gpstk::XvtStore<gpstk::SatID>& e, 
       const gpstk::WxObsData& w,
       const gpstk::Triple& p,
       const std::string& mode,
@@ -61,7 +62,7 @@ public:
    gpstk::ORDEpoch operator()(const gpstk::ObsEpoch& obs);
 
    const gpstk::Triple& antennaPos;
-   const gpstk::EphemerisStore& eph;
+   const gpstk::XvtStore<gpstk::SatID>& eph;
    const gpstk::WxObsData& wod;
    gpstk::TropModel& tm;
 

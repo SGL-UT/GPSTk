@@ -49,8 +49,11 @@ namespace gpstk
      * @return
      *  Number of satellites with valid data
      */
-    int ModeledReferencePR::Compute(const DayTime& Tr, Vector<SatID>& Satellite, 
-        Vector<double>& Pseudorange, const EphemerisStore& Eph, const Vector<double>& extraBiases,
+    int ModeledReferencePR::Compute(
+       const DayTime& Tr,
+       Vector<SatID>& Satellite, 
+       Vector<double>& Pseudorange,
+       const XvtStore<SatID>& Eph, const Vector<double>& extraBiases,
         TropModel *pTropModel, IonoModelStore *pIonoModel) throw(Exception)
         {
         try {
@@ -124,7 +127,7 @@ namespace gpstk
                         // Compute most of the parameters
                         tempPR = cerange.ComputeAtTransmitTime(Tr, Pseudorange[i], rxPos, Satellite[i], Eph);
                     }
-                    catch(EphemerisStore::NoEphemerisFound& e) {
+                    catch(InvalidRequest& e) {
                         // If there were no ephemeris for this satellite, let's mark it
                         vRejectedSV.push_back(Satellite[i]);
                         continue;
@@ -180,7 +183,7 @@ namespace gpstk
                     validSats += 1;     // If everything is OK, increment valid sat's counter
 
                 }   // End of try
-                catch(EphemerisStore::NoEphemerisFound& e) {
+                catch(InvalidRequest& e) {
                     // If there were no ephemeris for this satellite, let's mark it
                     vRejectedSV.push_back(Satellite[i]);
                     continue;
@@ -234,7 +237,7 @@ namespace gpstk
 
     // Compute the modeled pseudoranges, given satellite ID's, pseudoranges and other data
     int ModeledReferencePR::Compute(const DayTime& Tr, Vector<SatID>& Satellite, 
-        Vector<double>& Pseudorange, const EphemerisStore& Eph) throw(Exception)
+        Vector<double>& Pseudorange, const XvtStore<SatID>& Eph) throw(Exception)
         {
             // Create missing parameters
             Vector<double> vectorBIAS(1, 0.0);
@@ -246,7 +249,7 @@ namespace gpstk
 
     // Compute the modeled pseudoranges, given satellite ID's, pseudoranges and other data
     int ModeledReferencePR::Compute(const DayTime& Tr, Vector<SatID>& Satellite, 
-        Vector<double>& Pseudorange, const EphemerisStore& Eph, TropModel *pTropModel)
+        Vector<double>& Pseudorange, const XvtStore<SatID>& Eph, TropModel *pTropModel)
         throw(Exception)
         {
             // Create missing parameters
@@ -259,7 +262,7 @@ namespace gpstk
 
     // Compute the modeled pseudoranges, given satellite ID's, pseudoranges and other data
     int ModeledReferencePR::Compute(const DayTime& Tr, Vector<SatID>& Satellite, 
-        Vector<double>& Pseudorange, const EphemerisStore& Eph, const Vector<double>& extraBiases,
+        Vector<double>& Pseudorange, const XvtStore<SatID>& Eph, const Vector<double>& extraBiases,
         IonoModelStore *pIonoModel) throw(Exception)
         {
             // Create missing parameters
@@ -272,7 +275,7 @@ namespace gpstk
 
     // Compute the modeled pseudoranges, given satellite ID's, pseudoranges and other data
     int ModeledReferencePR::Compute(const DayTime& Tr, Vector<SatID>& Satellite, 
-        Vector<double>& Pseudorange, const EphemerisStore& Eph, IonoModelStore *pIonoModel)
+        Vector<double>& Pseudorange, const XvtStore<SatID>& Eph, IonoModelStore *pIonoModel)
         throw(Exception)
         {
             // Create missing parameters
@@ -286,7 +289,7 @@ namespace gpstk
 
     // Compute the modeled pseudoranges, given satellite ID's, pseudoranges and other data
     int ModeledReferencePR::Compute(const DayTime& Tr, Vector<SatID>& Satellite, 
-        Vector<double>& Pseudorange, const EphemerisStore& Eph, TropModel *pTropModel,
+        Vector<double>& Pseudorange, const XvtStore<SatID>& Eph, TropModel *pTropModel,
         IonoModelStore *pIonoModel) throw(Exception)
         {
             // Create missing parameters
@@ -301,7 +304,7 @@ namespace gpstk
      * @param Tr            Measured time of reception of the data.
      * @param Satellite     ID's of satellite
      * @param Pseudorange   Pseudorange (parallel to satellite), in meters.
-     * @param Eph           EphemerisStore to be used.
+     * @param Eph           XvtStore<SatID> to be used.
      * @param pTropModel    Pointer to tropospheric model to be used (@sa TropModel.hpp). By
      *                      default points to NULL.
      * @param pIonoModel    Pointer to ionospheric model to be used (@sa IonoModelStore.hpp).
@@ -312,7 +315,7 @@ namespace gpstk
      *  1 if satellite has valid data
      */
     int ModeledReferencePR::Compute(const DayTime& Tr, SatID& Satellite, double& Pseudorange,
-        const EphemerisStore& Eph, const double& extraBiases, TropModel *pTropModel,
+        const XvtStore<SatID>& Eph, const double& extraBiases, TropModel *pTropModel,
         IonoModelStore *pIonoModel) throw(Exception)
         {
             // Create Vectors from scalar values

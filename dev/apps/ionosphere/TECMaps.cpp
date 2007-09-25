@@ -37,7 +37,7 @@
 #include "CommandOptionWithTimeArg.hpp"
 #include "CommandOptionParser.hpp"
 
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
 #include "WGS84Geoid.hpp"
 #include "Position.hpp"
@@ -81,7 +81,7 @@ vector<RinexSatID> ExSV;
    // ephemeris
 string NavDir;
 vector<string> NavFiles;
-EphemerisStore *pEph;         // is this used?
+XvtStore<SatID> *pEph;         // is this used?
    // obs types needed
 RinexObsHeader::RinexObsType ELot,AZot,VRot,SRot,TPot;
 RinexObsHeader::RinexObsType LAot,LOot;
@@ -890,7 +890,7 @@ int Initialize(void) throw(Exception)
 {
 try {
    static SP3EphemerisStore SP3EphList;
-   static BCEphemerisStore BCEphList;
+   static GPSEphemerisStore BCEphList;
 
       // open nav files and read EphemerisStore
    if(!NavDir.empty())
@@ -898,13 +898,13 @@ try {
          NavFiles[i] = NavDir + "/" + NavFiles[i];
    FillEphemerisStore(NavFiles, SP3EphList, BCEphList);
    if(SP3EphList.size()) {
-      if(verbose) SP3EphList.dump(0,oflog);
+      if(verbose) SP3EphList.dump(oflog),0;
    }
    else if(verbose) oflog << "SP3 Ephemeris list is empty\n";
 
    if(BCEphList.size()) {
       BCEphList.SearchNear();
-      if(verbose) BCEphList.dump(0,oflog);
+      if(verbose) BCEphList.dump(oflog,0);
    }
    else if(verbose) oflog << "BC Ephemeris list is empty\n";
 

@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   for (int i=0; i<ephFiles.getCount(); i++)
       ephReader.read(ephFiles.getValue()[i]);
   
-  gpstk::EphemerisStore& ephStore = *ephReader.eph;
+  gpstk::XvtStore<SatID>& ephStore = *ephReader.eph;
   
   // get the antenna position
   Xvt antPVT;
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
       bool NoEph = false;
       try
       {
-        peXVT = ephStore.getPrnXvt(prn,t);
+        peXVT = ephStore.getXvt(SatID(prn, SatID::systemGPS),t);
       }
       catch(gpstk::Exception& e) 
       {
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
         Xvt peXVT;
         try 
         {
-          peXVT = ephStore.getPrnXvt(prn,t);
+          peXVT = ephStore.getXvt(SatID(prn,SatID::systemGPS),t);
         }
         catch(gpstk::Exception& e) {NoEph = true;}
         double elvAngle = 0;

@@ -291,11 +291,11 @@ namespace gpstk
             // Get topocentric coords for given sat
             try
             {
-               Xvt svPos = ephStore.getPrnXvt(it->first.id, rod.time);
+               Xvt svPos = ephStore.getXvt(it->first, rod.time);
                elevation[satEpochIdx]= antennaPos.elvAngle(svPos.x);
                azimuth[satEpochIdx]  = antennaPos.azAngle( svPos.x);
             }
-            catch(EphemerisStore::NoEphemerisFound)
+            catch(InvalidRequest)
             {
                validAzEl[satEpochIdx]=false;
             }

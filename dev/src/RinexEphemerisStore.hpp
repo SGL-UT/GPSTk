@@ -1,15 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file RinexEphemerisStore.hpp
- * Read and store Rinex formated ephemeris data
- */
-
-#ifndef GPSTK_RINEX_EPHEMERIS_STORE_HPP
-#define GPSTK_RINEX_EPHEMERIS_STORE_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -47,13 +37,17 @@
 //=============================================================================
 
 
+/**
+ * @file RinexEphemerisStore.hpp
+ * Read and store Rinex formated ephemeris data
+ */
 
-
-
+#ifndef GPSTK_RINEX_EPHEMERIS_STORE_HPP
+#define GPSTK_RINEX_EPHEMERIS_STORE_HPP
 
 #include <iostream>
 
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "FileStore.hpp"
 #include "RinexNavStream.hpp"
 #include "RinexNavData.hpp"
@@ -64,15 +58,11 @@ namespace gpstk
    /** @addtogroup ephemstore */
    //@{
 
-      /**
-       * This adds the interface to read Rinex files into a BCEphemerisStore
-       */
-   class RinexEphemerisStore : public BCEphemerisStore, 
+   class RinexEphemerisStore : public GPSEphemerisStore,
                                public FileStore<RinexNavHeader>
    {
    public:
-      /// Constructor.
-      RinexEphemerisStore() throw() {BCEphemerisStore();}
+      RinexEphemerisStore() throw() {GPSEphemerisStore();}
 
       /// destructor
       virtual ~RinexEphemerisStore() {}
@@ -84,7 +74,8 @@ namespace gpstk
        *     other header information and prns/accuracy.
        *   2 above, plus dump all the PVT data (use judiciously).
        */
-      void dump(short detail=0, std::ostream& s=std::cout) const;
+      void dump(std::ostream& s=std::cout, short detail=0)
+         const throw();
 
       /// load the given Rinex file
       void loadFile(const std::string& filename) 

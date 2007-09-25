@@ -17,7 +17,7 @@
 #include "RinexNavHeader.hpp"
 #include "RinexNavData.hpp"
 #include "RinexNavStream.hpp"
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 
 #include "RinexMetBase.hpp"
 #include "RinexMetData.hpp"
@@ -56,8 +56,8 @@ protected:
    virtual void process();
    
 
-   EphemerisStore *virtualEphStore;
-   BCEphemerisStore bcestore;
+   XvtStore<SatID> *virtualEphStore;
+   GPSEphemerisStore bcestore;
    SP3EphemerisStore sp3store;
    PRSolution prSolver;
    GGTropModel ggTropModel;

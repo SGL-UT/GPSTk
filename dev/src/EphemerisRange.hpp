@@ -46,8 +46,7 @@
 #include "DayTime.hpp"
 #include "SatID.hpp"
 #include "Position.hpp"
-#include "EphemerisStore.hpp"
-#include "Xvt.hpp"
+#include "XvtStore.hpp"
 
 namespace gpstk
 {
@@ -69,15 +68,22 @@ namespace gpstk
       /// position Rx, to the GPS satellite given by SatID sat, as well as all
       /// the CER quantities, given the nominal receive time tr_nom and
       /// an EphemerisStore.
-      double ComputeAtReceiveTime(const DayTime& tr_nom,
-            const Position& Rx, const SatID sat, const EphemerisStore& Eph);
+      double ComputeAtReceiveTime(
+         const DayTime& tr_nom,
+         const Position& Rx,
+         const SatID sat,
+         const XvtStore<SatID>& Eph);
 
       /// Compute the corrected range at TRANSMIT time, from receiver at
       /// position Rx, to the GPS satellite given by SatID sat, as well as all
       /// the CER quantities, given the nominal receive time tr_nom and
       /// an EphemerisStore.
-      double ComputeAtTransmitTime(const DayTime& tr_nom, const double& pr,
-            const Position& Rx, const SatID sat, const EphemerisStore& Eph);
+      double ComputeAtTransmitTime(
+         const DayTime& tr_nom,
+         const double& pr,
+         const Position& Rx,
+         const SatID sat,
+         const XvtStore<SatID>& Eph);
 
       /// The computed raw (geometric) range in meters.
       double rawrange;

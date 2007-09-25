@@ -390,7 +390,8 @@ std::string secAsHMS(double seconds, bool frac=false)
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
-   const MissingList& ml, const gpstk::EphemerisStore& eph)
+   const MissingList& ml,
+   const EphemerisStore& eph)
 {
    MissingList sml;
    for (MissingList::const_iterator i = ml.begin(); i != ml.end(); i++)
@@ -407,7 +408,7 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
          Xvt svXVT;
          bool NoEph = false;
    
-         try { svXVT = eph.getPrnXvt(prnTemp, curr.time); }
+         try { svXVT = eph.getXvt(SatID(prnTemp, SatID::systemGPS), curr.time); }
          catch(gpstk::Exception& e) 
          {
             if (verboseLevel> 1) {cout << e << endl;}
@@ -674,7 +675,7 @@ void DataAvailabilityAnalyzer::InView::update(
       iodc = ord.getIODC();
       health = ord.getHealth();
    }
-   catch (EphemerisStore::NoEphemerisFound& e)
+   catch (InvalidRequest& e)
    {
       up = false;
       aboveMask = false;

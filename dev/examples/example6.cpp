@@ -18,7 +18,7 @@
 #include "ModeledPR.hpp"
 
 // Class to store satellite broadcast navigation data
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 
 // Class to model the tropospheric delays
 #include "TropModel.hpp"
@@ -46,7 +46,7 @@ int main(void)
     cout << fixed << setprecision(8);   // Set a proper output format
 
     RinexNavData rNavData;              // Object to store Rinex navigation data
-    BCEphemerisStore bceStore;          // Object to store satellites ephemeris
+    GPSEphemerisStore bceStore;          // Object to store satellites ephemeris
     RinexNavHeader rNavHeader;          // Object to read the header of Rinex navigation data files
     IonoModelStore ionoStore;           // Object to store ionospheric models
     IonoModel ioModel;                  // Declare a Ionospheric Model object

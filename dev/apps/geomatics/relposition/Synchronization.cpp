@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -383,7 +383,7 @@ try {
                   rawdat.L2[nc] += pwu * wl2;
                }
             }
-            catch(EphemerisStore::NoEphemerisFound& e) {
+            catch(InvalidRequest& e) {
                // these should have been caught and removed before...
                oflog << "Warning - No ephemeris found for sat " << sat
                      << " at time "

@@ -43,7 +43,7 @@
 #ifndef SEMALMANACSTORE_HPP
 #define SEMALMANACSTORE_HPP
 
-#include "AlmanacStore.hpp"
+#include "GPSAlmanacStore.hpp"
 #include "FileStore.hpp"
 #include "SEMData.hpp"
 #include "SEMStream.hpp"
@@ -53,22 +53,14 @@ namespace gpstk
    /** @addtogroup ephemstore */
    //@{
 
-      /// This class defines an interface to hide how we are getting an SV's 
-      /// position at some point in time using almanac data.
    class SEMAlmanacStore : public FileStore<SEMHeader>, 
-                           public AlmanacStore
+                           public GPSAlmanacStore
    {
    public:
-      
       void loadFile(const std::string& filename) 
          throw(FileMissingException);
-	 
-      gpstk::DayTime getFinalTime() const;
-	 
    };
-
    //@}
-
 }
 
 #endif

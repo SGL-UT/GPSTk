@@ -37,7 +37,7 @@
 //=============================================================================
 
 #include "SP3EphemerisStore.hpp"
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 
 #include "RinexNavStream.hpp"
 #include "RinexNavData.hpp"
@@ -79,17 +79,17 @@ void EphReader::read(const std::string& fn)
 // ---------------------------------------------------------------------
 void EphReader::read_rinex_nav_data(const string& fn)
 {
-   BCEphemerisStore* bce;
+   GPSEphemerisStore* bce;
    if (eph == NULL)
    {
-      bce = new(BCEphemerisStore);
-      eph = dynamic_cast<EphemerisStore*>(bce);
+      bce = new(GPSEphemerisStore);
+      eph = dynamic_cast<XvtStore<SatID>*>(bce);
    }
    else
    {
-      if (typeid(*eph) != typeid(BCEphemerisStore))
+      if (typeid(*eph) != typeid(GPSEphemerisStore))
          throw(FFStreamError("Don't mix nav data types..."));
-      bce = dynamic_cast<BCEphemerisStore*>(eph);
+      bce = dynamic_cast<GPSEphemerisStore*>(eph);
    }
    if (verboseLevel>2)
       cout << "# Reading " << fn << " as RINEX nav."<< endl;
@@ -107,18 +107,18 @@ void EphReader::read_rinex_nav_data(const string& fn)
 
 void EphReader::read_fic_data(const string& fn)
 {
-   BCEphemerisStore* bce;
+   GPSEphemerisStore* bce;
 
    if (eph == NULL)
    {
-      bce = new(BCEphemerisStore);
-      eph = dynamic_cast<EphemerisStore*>(bce);
+      bce = new(GPSEphemerisStore);
+      eph = dynamic_cast<XvtStore<SatID>*>(bce);
    }
    else
    {
-      if (typeid(*eph) != typeid(BCEphemerisStore))
+      if (typeid(*eph) != typeid(GPSEphemerisStore))
          throw(FFStreamError("Don't mix nav data types..."));
-      bce = dynamic_cast<BCEphemerisStore*>(eph);
+      bce = dynamic_cast<GPSEphemerisStore*>(eph);
    }
    if (verboseLevel>2)
       cout << "# Reading " << fn << " as FIC nav."<< endl;
@@ -144,7 +144,7 @@ void EphReader::read_sp3_data(const string& fn)
    if (eph == NULL)
    {
       pe = new(SP3EphemerisStore);
-      eph = dynamic_cast<EphemerisStore*>(pe);
+      eph = dynamic_cast<XvtStore<SatID>*>(pe);
    }
    else
    {

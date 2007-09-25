@@ -201,7 +201,7 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
 
 void SVVis::process()
 {
-   gpstk::EphemerisStore& ephStore = *ephReader.eph;
+   gpstk::XvtStore<SatID>& ephStore = *ephReader.eph;
    DayTime t = startTime;
 
    Xvt rxXvt;
@@ -218,7 +218,7 @@ void SVVis::process()
          try
          {
             using namespace StringUtils;
-            Xvt svXvt = ephStore.getPrnXvt(prn,t);
+            Xvt svXvt = ephStore.getXvt(SatID(prn, SatID::systemGPS),t);
             double elev = rxXvt.x.elvAngle(svXvt.x);
             if (elev>=minElev)
             {

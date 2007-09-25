@@ -62,9 +62,9 @@ namespace gpstk
    double PreciseRange::ComputeAtReceiveTime(const DayTime& tr_nom,
                                              const Position& Rx,
                                              const int prn,
-                                             const EphemerisStore& Eph,
+                                             const XvtStore<SatID>& Eph,
                                              const EarthOrientation& EO)
-   throw(EphemerisStore::NoEphemerisFound)
+   throw(InvalidRequest)
    {
    try {
       int nit,i;
@@ -83,20 +83,15 @@ namespace gpstk
             // get SV position
          try {
             GSatID sat(prn,GSatID::systemGPS);
-            Xvt svPosVel = Eph.getSatXvt(sat,transmit);
+            Xvt svPosVel = Eph.getXvt(sat,transmit);
             SVR = Position(svPosVel.x[0],svPosVel.x[1],svPosVel.x[2]);// default is
             SVV = Position(svPosVel.v[0],svPosVel.v[1],svPosVel.v[2]);// Cartesian
             SVdtime = svPosVel.dtime;
             SVdrift = svPosVel.ddtime;
          }
-         catch(EphemerisStore::NoEphemerisFound& e)
+         catch(InvalidRequest& e)
          {
             GPSTK_RETHROW(e);
-         }
-         catch(InvalidRequest& ir)
-         {
-            EphemerisStore::NoEphemerisFound nef(ir);
-            GPSTK_THROW(nef);
          }
 
             // compute new time of flight

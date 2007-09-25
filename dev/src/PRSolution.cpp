@@ -183,7 +183,7 @@ namespace gpstk
    int PRSolution::RAIMCompute(const DayTime& Tr,
                                vector<SatID>& Satellite,
                                vector<double>& Pseudorange,
-                               const EphemerisStore& Eph,
+                               const XvtStore<SatID>& Eph,
                                TropModel *pTropModel)
       throw(Exception)
    {
@@ -404,7 +404,7 @@ namespace gpstk
    int PRSolution::PrepareAutonomousSolution(const DayTime& Tr,
                                              vector<SatID>& Satellite,
                                              vector<double>& Pseudorange,
-                                             const EphemerisStore& Eph,
+                                             const XvtStore<SatID>& Eph,
                                              Matrix<double>& SVP,
                                              ostream *pDebugStream)
       throw()
@@ -426,9 +426,9 @@ namespace gpstk
             tx -= Pseudorange[i]/C_GPS_M;
                // get ephemeris range, etc
             try {
-               PVT = Eph.getSatXvt(Satellite[i], tx);
+               PVT = Eph.getXvt(Satellite[i], tx);
             }
-            catch(EphemerisStore::NoEphemerisFound& e) {
+            catch(InvalidRequest& e) {
                Satellite[i].id = -::abs(Satellite[i].id);
                continue;
             }
@@ -436,9 +436,9 @@ namespace gpstk
                // update transmit time and get ephemeris range again
             tx -= PVT.dtime;     // clk+rel
             try {
-               PVT = Eph.getSatXvt(Satellite[i], tx);
+               PVT = Eph.getXvt(Satellite[i], tx);
             }
-            catch(EphemerisStore::NoEphemerisFound& e) {
+            catch(InvalidRequest& e) {
                Satellite[i].id = -::abs(Satellite[i].id);
                continue;
             }

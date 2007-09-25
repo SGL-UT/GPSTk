@@ -34,7 +34,7 @@
 #include "WeightBase.hpp"
 #include "EngEphemeris.hpp"
 #include "TabularEphemerisStore.hpp"
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "ComputeIURAWeights.hpp"
 #include "TropModel.hpp"
 #include "DataStructures.hpp"
@@ -122,7 +122,7 @@ namespace gpstk
          * @param bcephem   BCEphemerisStore object holding the ephemeris.
          * @param rxClass   Receiver class. By default, it is 2.
          */
-        ComputeMOPSWeights(const Position& pos, BCEphemerisStore& bcephem, int rxClass = 2) : receiverClass(rxClass), nominalPos(pos)
+        ComputeMOPSWeights(const Position& pos, GPSEphemerisStore& bcephem, int rxClass = 2) : receiverClass(rxClass), nominalPos(pos)
         {
             setDefaultEphemeris(bcephem);
         };

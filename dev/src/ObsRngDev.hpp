@@ -49,7 +49,7 @@
 
 #include "DayTime.hpp"
 #include "ECEF.hpp"
-#include "EphemerisStore.hpp"
+#include "XvtStore.hpp"
 #include "Exception.hpp"
 #include "GPSGeoid.hpp"
 #include "IonoModelStore.hpp"
@@ -94,7 +94,7 @@ namespace gpstk
                 const SatID& svid,
                 const DayTime& time,
                 const ECEF& rxpos,
-                const EphemerisStore& eph,
+                const XvtStore<SatID>& eph,
                 GeoidModel& gm,
                 bool svTime = false);
       /**
@@ -115,7 +115,7 @@ namespace gpstk
                 const SatID& svid,
                 const DayTime& time,
                 const ECEF& rxpos,
-                const EphemerisStore& eph,
+                const XvtStore<SatID>& eph,
                 GeoidModel& gm,
                 const IonoModelStore& ion,
                 IonoModel::Frequency fq,
@@ -139,7 +139,7 @@ namespace gpstk
                 const SatID& svid,
                 const DayTime& time,
                 const ECEF& rxpos,
-                const EphemerisStore& eph,
+                const XvtStore<SatID>& eph,
                 GeoidModel& gm,
                 const TropModel& tm,
                 bool svTime = false);
@@ -163,7 +163,7 @@ namespace gpstk
                 const SatID& svid,
                 const DayTime& time,
                 const ECEF& rxpos,
-                const EphemerisStore& eph,
+                const XvtStore<SatID>& eph,
                 GeoidModel& gm,
                 const TropModel& tm,
                 const IonoModelStore& ion,
@@ -187,7 +187,7 @@ namespace gpstk
                 const SatID& svid,
                 const DayTime& time,
                 const ECEF& rxpos,
-                const EphemerisStore& eph,
+                const XvtStore<SatID>& eph,
                 GeoidModel& gm,
                 bool svTime = false);
    
@@ -209,7 +209,7 @@ namespace gpstk
                 const SatID& svid,
                 const DayTime& time,
                 const ECEF& rxpos,
-                const EphemerisStore& eph,
+                const XvtStore<SatID>& eph,
                 const GeoidModel& gm,
                 const TropModel& tm,
                 bool svTime = false);
@@ -283,7 +283,7 @@ namespace gpstk
    private:
       void computeOrd(double obs,
                       const ECEF& rxpos,
-                      const EphemerisStore& eph,
+                      const XvtStore<SatID>& eph,
                       const GeoidModel& gm,
                       bool svTime)
       {
@@ -298,12 +298,12 @@ namespace gpstk
 
       void computeOrdTx(double obs,
                         const ECEF& rxpos,
-                        const EphemerisStore& eph,
+                        const XvtStore<SatID>& eph,
                         const GeoidModel& gm);
    
       void computeOrdRx(double obs,
                         const ECEF& rxpos,
-                        const EphemerisStore& eph,
+                        const XvtStore<SatID>& eph,
                         const GeoidModel& gm);
 
       void computeTrop(const TropModel& tm);

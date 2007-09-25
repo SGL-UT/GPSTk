@@ -43,7 +43,7 @@
 #ifndef YUMAALMANACSTORE_HPP
 #define YUMAALMANACSTORE_HPP
 
-#include "AlmanacStore.hpp"
+#include "GPSAlmanacStore.hpp"
 #include "FileStore.hpp"
 #include "YumaData.hpp"
 #include "YumaStream.hpp"
@@ -52,21 +52,15 @@ namespace gpstk
 {
    /** @addtogroup ephemstore */
    //@{
-
    class YumaAlmanacStore : public FileStore<YumaHeader>, 
-                            public AlmanacStore
+                            public GPSAlmanacStore
    {
    public:
-      
       void loadFile(const std::string& filename) 
-         throw(FileMissingException);
-	 
-      gpstk::DayTime getFinalTime() const;
-
+         throw(FileMissingException);	 
    };
 
    //@}
-
 }
 
 #endif

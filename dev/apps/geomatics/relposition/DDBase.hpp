@@ -63,7 +63,7 @@
 #include "DayTime.hpp"
 #include "TropModel.hpp"
 #include "SP3EphemerisStore.hpp"
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "EarthOrientation.hpp"
 #include "Position.hpp"
 #include "RinexObsBase.hpp"
@@ -109,7 +109,7 @@ extern int Count;
 extern int maxCount;
 extern double wave;
 
-extern gpstk::EphemerisStore *pEph;
+extern gpstk::XvtStore<gpstk::SatID> *pEph;
 extern gpstk::EOPStore EOPList;
 extern gpstk::EarthOrientation eorient;
 

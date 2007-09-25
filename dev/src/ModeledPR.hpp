@@ -124,13 +124,13 @@ namespace gpstk
          * @param RxCoordinates Initial receiver coordinates.
          * @param dIonoModel    Ionospheric model to be used by default.
          * @param dTropoModel   Tropospheric model to be used by default.
-         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dEphemeris    XvtStore<SatID> object to be used by default.
          * @param dObservable   Observable type to be used by default.
          * @param usetgd        Whether TGD will be used by default or not.
          *
          * @sa DataStructures.hpp.
          */
-        ModeledPR(const Position& RxCoordinates, IonoModelStore& dIonoModel, TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+        ModeledPR(const Position& RxCoordinates, IonoModelStore& dIonoModel, TropModel& dTropoModel, XvtStore<SatID>& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
             Prepare(RxCoordinates);
             setDefaultIonoModel(dIonoModel);
@@ -152,13 +152,13 @@ namespace gpstk
          *
          * @param RxCoordinates Initial receiver coordinates.
          * @param dIonoModel    Ionospheric model to be used by default.
-         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dEphemeris    XvtStore<SatID> object to be used by default.
          * @param dObservable   Observable type to be used by default.
          * @param usetgd        Whether TGD will be used by default or not.
          *
          * @sa DataStructures.hpp.
          */
-        ModeledPR(const Position& RxCoordinates, IonoModelStore& dIonoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+        ModeledPR(const Position& RxCoordinates, IonoModelStore& dIonoModel, XvtStore<SatID>& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
             Prepare(RxCoordinates);
             setDefaultIonoModel(dIonoModel);
@@ -180,13 +180,13 @@ namespace gpstk
          *
          * @param RxCoordinates Initial receiver coordinates.
          * @param dTropoModel   Tropospheric model to be used by default.
-         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dEphemeris    XvtStore<SatID> object to be used by default.
          * @param dObservable   Observable type to be used by default.
          * @param usetgd        Whether TGD will be used by default or not.
          *
          * @sa DataStructures.hpp.
          */
-        ModeledPR(const Position& RxCoordinates, TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+        ModeledPR(const Position& RxCoordinates, TropModel& dTropoModel, XvtStore<SatID>& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
             Prepare(RxCoordinates);
             pDefaultIonoModel = NULL;
@@ -207,13 +207,13 @@ namespace gpstk
          * in order to set the basic parameters from the beginning.
          *
          * @param RxCoordinates Initial receiver coordinates.
-         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dEphemeris    XvtStore<SatID> object to be used by default.
          * @param dObservable   Observable type to be used by default.
          * @param usetgd        Whether TGD will be used by default or not.
          *
          * @sa DataStructures.hpp.
          */
-        ModeledPR(const Position& RxCoordinates, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+        ModeledPR(const Position& RxCoordinates, XvtStore<SatID>& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
             Prepare(RxCoordinates);
             pDefaultIonoModel = NULL;
@@ -234,12 +234,12 @@ namespace gpstk
          * @param dIonoModel    Ionospheric model to be used by default.
          * @param dTropoModel   Tropospheric model to be used by default.
          * @param dObservable   Observable type to be used by default.
-         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dEphemeris    XvtStore<SatID> object to be used by default.
          * @param usetgd        Whether TGD will be used by default or not.
          *
          * @sa DataStructures.hpp.
          */
-        ModeledPR(IonoModelStore& dIonoModel, TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+        ModeledPR(IonoModelStore& dIonoModel, TropModel& dTropoModel, XvtStore<SatID>& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
             setDefaultIonoModel(dIonoModel);
             setDefaultTropoModel(dTropoModel);
@@ -258,12 +258,12 @@ namespace gpstk
          *
          * @param dIonoModel    Ionospheric model to be used by default.
          * @param dObservable   Observable type to be used by default.
-         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dEphemeris    XvtStore<SatID> object to be used by default.
          * @param usetgd        Whether TGD will be used by default or not.
          *
          * @sa DataStructures.hpp.
          */
-        ModeledPR(IonoModelStore& dIonoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+        ModeledPR(IonoModelStore& dIonoModel, XvtStore<SatID>& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
             setDefaultIonoModel(dIonoModel);
             pDefaultTropoModel = NULL;
@@ -282,12 +282,12 @@ namespace gpstk
          *
          * @param dTropoModel   Tropospheric model to be used by default.
          * @param dObservable   Observable type to be used by default.
-         * @param dEphemeris    EphemerisStore object to be used by default.
+         * @param dEphemeris    XvtStore<SatID> object to be used by default.
          * @param usetgd        Whether TGD will be used by default or not.
          *
          * @sa DataStructures.hpp.
          */
-        ModeledPR(TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+        ModeledPR(TropModel& dTropoModel, XvtStore<SatID>& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
             InitializeValues();
             pDefaultIonoModel = NULL;
             setDefaultTropoModel(dTropoModel);
@@ -308,7 +308,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        virtual int Prepare(const DayTime& Tr, std::vector<SatID>& Satellite, std::vector<double>& Pseudorange, const EphemerisStore& Eph);
+        virtual int Prepare(const DayTime& Tr, std::vector<SatID>& Satellite, std::vector<double>& Pseudorange, const XvtStore<SatID>& Eph);
 
 
         /** Method to set an a priori position of receiver using Bancroft method.
@@ -322,7 +322,7 @@ namespace gpstk
          *  0 if OK
          *  -1 if problems arose
          */
-        virtual int Prepare(const DayTime& Tr, const Vector<SatID>& Satellite, const Vector<double>& Pseudorange, const EphemerisStore& Eph) 
+        virtual int Prepare(const DayTime& Tr, const Vector<SatID>& Satellite, const Vector<double>& Pseudorange, const XvtStore<SatID>& Eph) 
         {
             int i;
             std::vector<SatID> vSat;

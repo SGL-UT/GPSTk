@@ -44,8 +44,9 @@
 
 namespace gpstk
 {
+
    void YumaAlmanacStore::loadFile(const std::string& filename)
-      throw(gpstk::FileMissingException)
+      throw(FileMissingException)
    {
       try
       {
@@ -64,41 +65,12 @@ namespace gpstk
          while(strm >> rec)
 	 {
 	    addAlmanac(AlmOrbit(rec));
-         }  
-	 
+         }	 
       }
       catch (gpstk::Exception& e)
       {
          GPSTK_RETHROW(e);
-      }
-   
+      }   
    }
-   
-   gpstk::DayTime YumaAlmanacStore::getFinalTime() 
-      const
-   {
-      DayTime retDT = DayTime::BEGINNING_OF_TIME;
-      UBAMap::const_iterator satItr = uba.begin();
-      while (satItr != uba.end())
-      {
-         const EngAlmMap& eam = (*satItr).second;
 
-         EngAlmMap::const_iterator nextItr;
-         for (nextItr=eam.begin(); nextItr!=eam.end(); ++nextItr)
-         {
-            const AlmOrbit& ao = (*nextItr).second;
-            try 
-            {
-               DayTime testT = ao.getToaTime();
-               if (testT<retDT) retDT = testT;
-            }
-               // Not to worry, worst case method return 'BEGINNING_OF_TIME'
-            catch(...)
-            {}
-         }
-         satItr++;
-      }
-      return(retDT);
-   }
-   
 }

@@ -79,7 +79,7 @@ namespace gpstk
          /// If any file doesn't have the velocity data, clear the
          /// the flag indicating that there is any velocity data
          if (tolower(header.pvFlag) != 'v')
-            setHaveVelocity(false);
+            haveVelocity = false;
 
          SP3Data rec;
          while(strm >> rec) {
@@ -96,7 +96,8 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   void SP3EphemerisStore::dump(short detail, std::ostream& s) const
+   void SP3EphemerisStore::dump(std::ostream& s, short detail)
+      const throw()
    {
       s << "Dump of SP3EphemerisStore:" << std::endl;
       std::vector<std::string> fileNames = getFileNames();
@@ -133,7 +134,7 @@ namespace gpstk
          fmi++;
       }
 */
-      TabularEphemerisStore::dump(detail, s);
+      TabularEphemerisStore::dump(s, detail);
 
    } // end of SP3EphemerisStore::dump
 

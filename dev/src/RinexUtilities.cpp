@@ -250,7 +250,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
-      BCEphemerisStore& BCE)
+      GPSEphemerisStore& BCE)
 {
 try {
    int nread=0;

@@ -54,7 +54,7 @@ namespace gpstk
     // Method isValid() will return false if some satellite does not have a
     // valid weight. Also, its PRN will be set to a negative value.
     //
-    int MOPSWeight::getWeights(DayTime& time, Vector<SatID>& Satellites, BCEphemerisStore& bcEph, Vector<double>& ionoCorrections, Vector<double>& elevationVector, Vector<double>& azimuthVector, Position rxPosition, int rxClass) throw(InvalidWeights)
+    int MOPSWeight::getWeights(DayTime& time, Vector<SatID>& Satellites, GPSEphemerisStore& bcEph, Vector<double>& ionoCorrections, Vector<double>& elevationVector, Vector<double>& azimuthVector, Position rxPosition, int rxClass) throw(InvalidWeights)
     {
 
         int N = Satellites.size();

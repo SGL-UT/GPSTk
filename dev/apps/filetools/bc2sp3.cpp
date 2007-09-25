@@ -36,8 +36,8 @@
 #include "RinexNavStream.hpp"
 #include "RinexNavHeader.hpp"
 #include "RinexNavData.hpp"
-#include "EphemerisStore.hpp"
-#include "BCEphemerisStore.hpp"
+#include "XvtStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "SP3Stream.hpp"
 #include "SP3Header.hpp"
 #include "SP3Data.hpp"
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
       DayTime begTime=DayTime::BEGINNING_OF_TIME;
       DayTime endTime=DayTime::END_OF_TIME;
       DayTime tt;
-      BCEphemerisStore BCEph;
+      GPSEphemerisStore BCEph;
       SP3Header sp3header;
       SP3Data sp3data;
 
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
          for(i=1; i<33; i++) {            // for each PRN ...
             SatID sat(i,SatID::systemGPS);
             try { EngEphemeris ee = BCEph.findEphemeris(sat, tt); }
-            catch(EphemerisStore::NoEphemerisFound& nef) { continue; }
+            catch(InvalidRequest& nef) { continue; }
 
             if(sp3header.satList.find(sat) == sp3header.satList.end()) {
                sp3header.satList[sat] = 0;        // sat accuracy = ?
@@ -256,10 +256,10 @@ int main(int argc, char *argv[])
             EngEphemeris ee;
 
             try { ee = BCEph.findEphemeris(sat, tt); }
-            catch(EphemerisStore::NoEphemerisFound& nef) { continue; }
+            catch(InvalidRequest& nef) { continue; }
 
             sp3data.sat = sat;
-            xvt = BCEph.getSatXvt(sat, tt);
+            xvt = BCEph.getXvt(sat, tt);
 
             // epoch
             if(!epochOut) {

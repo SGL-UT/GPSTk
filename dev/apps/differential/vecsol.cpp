@@ -30,7 +30,7 @@
 #include "WGS84Geoid.hpp"
 #include "IonoModelStore.hpp"
 
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
 #include "EphemerisRange.hpp"
 #include "icd_200_constants.hpp"
@@ -354,7 +354,7 @@ Triple permanentTide(double const phi)
 	    C.ComputeAtReceiveTime(T.time,X,S,sp3store) : \
 	    C.ComputeAtReceiveTime(T.time,X,S,bcestore)))
 
-	BCEphemerisStore bcestore;
+	GPSEphemerisStore bcestore;
 	SP3EphemerisStore sp3store;
 	WGS84Geoid geoid;
 	IonoModelStore ion;
@@ -502,7 +502,7 @@ Triple permanentTide(double const phi)
 			    sp3store.loadFile(filename.c_str());
 			}
 		    }
-		sp3store.dump(1, cout);
+		sp3store.dump(cout,1 );
 		}
 		catch(...) {
 		    cerr << "Something wrong with SP3 files." << endl << endl;

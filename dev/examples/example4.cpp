@@ -26,7 +26,7 @@
 #include "TropModel.hpp" 
 
 // Class for storing "broadcast-type" ephemerides
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 
 // Class for handling RAIM
 #include "PRSolution.hpp"
@@ -40,7 +40,7 @@ using namespace gpstk;
 int main(int argc, char *argv[])
 {
    // Declaration of objects for storing ephemerides and handling RAIM
-   BCEphemerisStore bcestore;
+   GPSEphemerisStore bcestore;
    PRSolution raimSolver;
 
    // Object for void-type tropospheric model (in case no meteorological RINEX 

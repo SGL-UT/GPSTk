@@ -43,7 +43,7 @@
 
 #include "EphemerisRange.hpp"
 #include "EngEphemeris.hpp"
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "MiscMath.hpp"
 #include "icd_200_constants.hpp"
 
@@ -63,7 +63,7 @@ namespace gpstk
       const SatID& svid,
       const DayTime& time,
       const ECEF& rxpos,
-      const EphemerisStore& eph,
+      const XvtStore<SatID>& eph,
       GeoidModel& gm,
       bool svTime)
       : obstime(time), svid(svid), ord(0), wonky(false)
@@ -79,7 +79,7 @@ namespace gpstk
       const SatID& svid,
       const DayTime& time,
       const ECEF& rxpos,
-      const EphemerisStore& eph,
+      const XvtStore<SatID>& eph,
       GeoidModel& gm,
       const IonoModelStore& ion,
       IonoModel::Frequency fq,
@@ -99,7 +99,7 @@ namespace gpstk
       const SatID& svid,
       const DayTime& time,
       const ECEF& rxpos,
-      const EphemerisStore& eph,
+      const XvtStore<SatID>& eph,
       GeoidModel& gm,
       const TropModel& tm,
       bool svTime)
@@ -114,7 +114,7 @@ namespace gpstk
       const SatID& svid,
       const DayTime& time,
       const ECEF& rxpos,
-      const EphemerisStore& eph,
+      const XvtStore<SatID>& eph,
       GeoidModel& gm,
       const TropModel& tm,
       const IonoModelStore& ion,
@@ -136,7 +136,7 @@ namespace gpstk
       const SatID& svid,
       const DayTime& time,
       const ECEF& rxpos,
-      const EphemerisStore& eph,
+      const XvtStore<SatID>& eph,
       GeoidModel& gm,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
@@ -158,7 +158,7 @@ namespace gpstk
       const SatID& svid,
       const DayTime& time,
       const ECEF& rxpos,
-      const EphemerisStore& eph,
+      const XvtStore<SatID>& eph,
       const GeoidModel& gm,
       const TropModel& tm,
       bool svTime)
@@ -176,7 +176,7 @@ namespace gpstk
    void ObsRngDev::computeOrdRx(
       const double obs,
       const ECEF& rxpos,
-      const EphemerisStore& eph,
+      const XvtStore<SatID>& eph,
       const GeoidModel& gm)
    {
       // This algorithm should really be moved to Xvt.preciseRho() or somewhere
@@ -191,7 +191,7 @@ namespace gpstk
          ttime = obstime - tof;
          tof_old = tof;
 
-         svpos = eph.getSatXvt(svid, ttime);
+         svpos = eph.getXvt(svid, ttime);
 
          rawrange = rxpos.slantRange(svpos.x);
          tof = rawrange/gm.c();
@@ -208,9 +208,9 @@ namespace gpstk
       }
 
       double svclkbias = svpos.dtime*gm.c();
-      if (typeid(eph) == typeid(BCEphemerisStore))
+      if (typeid(eph) == typeid(GPSEphemerisStore))
       {
-         const BCEphemerisStore& bce = dynamic_cast<const BCEphemerisStore&>(eph);
+         const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
          const EngEphemeris& eph = bce.findEphemeris(svid, obstime);
          iodc = eph.getIODC();
          health = eph.getHealth();
@@ -255,10 +255,10 @@ namespace gpstk
    void ObsRngDev::computeOrdTx(
       double obs,
       const ECEF& rxpos,
-      const EphemerisStore& eph,
+      const XvtStore<SatID>& eph,
       const GeoidModel& gm)
    {
-      Xvt svpos = eph.getSatXvt(svid, obstime);
+      Xvt svpos = eph.getXvt(svid, obstime);
 
       // compute the range from the station to the SV
       rho = svpos.preciseRho(rxpos, gm);
@@ -266,9 +266,9 @@ namespace gpstk
       // and now calculate the ORD
       ord = obs - rho;
 
-      if (typeid(eph) == typeid(BCEphemerisStore))
+      if (typeid(eph) == typeid(GPSEphemerisStore))
       {
-         const BCEphemerisStore& bce = dynamic_cast<const BCEphemerisStore&>(eph);
+         const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
          const EngEphemeris& eph = bce.findEphemeris(svid, obstime);
          iodc = eph.getIODC();
          health = eph.getHealth();

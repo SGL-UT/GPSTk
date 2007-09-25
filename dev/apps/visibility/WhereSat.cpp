@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
   for (int i=0; i<ephFiles.getCount(); i++)
       ephReader.read(ephFiles.getValue()[i]);
   
-  gpstk::EphemerisStore& ephStore = *ephReader.eph;
+  XvtStore<SatID>& ephStore = *ephReader.eph;
   
   DayTime tStart,tEnd;
   if (StartTimeOption.getCount())
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
   {
       try
       {
-        Xvt BCPVT = ephStore.getSatXvt(sat, t);
+        Xvt BCPVT = ephStore.getXvt(sat, t);
         cout  << " "  << left << setw(20) << t
               << fixed
               << " "  << left << setw(20) << BCPVT.x[0]
@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
               << " "  << left << setw(20) << BCPVT.dtime << endl;
         count++;
       }
-      catch (gpstk::EphemerisStore::NoEphemerisFound& e) { ; }
+      catch (InvalidRequest& e) { ; }
       t += incr;
   }
   if (PositionOption.getCount())
@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
       {
         try 
         {
-          Xvt BCPVT = ephStore.getSatXvt(sat, t);
+          Xvt BCPVT = ephStore.getXvt(sat, t);
           WGS84Geoid geoid;
           double correction = (BCPVT.dtime) * (geoid.c());
           cout  << fixed
@@ -251,7 +251,7 @@ int main(int argc, char *argv[])
       {
         try 
         {   
-          Xvt BCPVT = ephStore.getSatXvt(sat, t);
+          Xvt BCPVT = ephStore.getXvt(sat, t);
           WGS84Geoid geoid;
           double correction = (BCPVT.dtime) * (geoid.c());
           

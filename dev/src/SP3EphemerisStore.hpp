@@ -77,7 +77,8 @@ namespace gpstk
        *     other header information and prns/accuracy.
        *   2 above, plus dump all the PVT data (use judiciously).
        */
-      virtual void dump(short detail=0, std::ostream& s=std::cout) const;
+      virtual void dump(std::ostream& s=std::cout, short detail=0)
+         const throw();
 
       /// load the given SP3 file
       virtual void loadFile(const std::string& filename) 

@@ -37,47 +37,39 @@
 //=============================================================================
 
 /**
- * @file TabularEphemerisStore.hpp
- * Store a tabular list of Xvt data (such as a table of precise ephemeris data
- * in an SP3 file) and compute Xvt from this table. A Lagrange interpolation
- * is used to compute the Xvt for times that are not in the table but do have
- * sufficient data.
+ * @file EphemerisStore.hpp
+ * Abstract base class for storing and/or computing position, velocity, 
+ * and clock data.
  */
-
-#ifndef GPSTK_TABULAR_EPHEMERIS_STORE_HPP
-#define GPSTK_TABULAR_EPHEMERIS_STORE_HPP
+ 
+#ifndef GPSTK_XVTSTORE_HPP
+#define GPSTK_XVTSTORE_HPP
 
 #include <iostream>
+#include <string>
+#include <list>
+#include <map>
 
+#include "Exception.hpp"
 #include "SatID.hpp"
 #include "DayTime.hpp"
-#include "XvtStore.hpp"
-#include "SP3Data.hpp"
+#include "Xvt.hpp"
 
 namespace gpstk
 {
    /** @addtogroup ephemstore */
    //@{
 
-   /// Store a tabular list of Xvt data (such as a table of precise ephemeris data
-   /// in an SP3 file) and compute Xvt from this table. A Lagrange interpolation
-   /// is used to compute the Xvt for times that are not in the table but do have
-   /// sufficient data.
-   class TabularEphemerisStore : public XvtStore<SatID>
+   /// Abstract base class for storing and accessing an objects position, 
+   /// velocity, and clock data. Also defines a simple interface to remove
+   /// data that has been added.
+   template <class IndexType>
+   class XvtStore
    {
    public:
-      TabularEphemerisStore()
-         throw()
-         : initialTime(DayTime::END_OF_TIME), 
-           finalTime(DayTime::BEGINNING_OF_TIME),
-           haveVelocity(true)
+      virtual ~XvtStore()
       {}
-
-      virtual ~TabularEphemerisStore()
-      {}
-    
-
-
+      
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.
       /// @param[in] id the object's identifier
@@ -86,8 +78,9 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xvt getXvt(const SatID id, const DayTime& t)
-         const throw(InvalidRequest);
+      virtual Xvt getXvt(const IndexType id, const DayTime& t)
+         const throw(InvalidRequest)
+         = 0;
       
 
       /// A debugging function that outputs in human readable form,
@@ -95,7 +88,8 @@ namespace gpstk
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
       virtual void dump(std::ostream& s = std::cout, short detail = 0)
-         const throw();
+         const throw()
+      {}
 
 
       /// Edit the dataset, removing data outside the indicated time interval
@@ -103,7 +97,8 @@ namespace gpstk
       /// @param[in] tmax defines the end of the time interval
       virtual void edit(const DayTime& tmin, 
                         const DayTime& tmax = DayTime(DayTime::END_OF_TIME))
-         throw();
+         throw()
+         = 0;
 
 
       /// Determine the earliest time for which this object can successfully 
@@ -112,7 +107,7 @@ namespace gpstk
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual DayTime getInitialTime()
          const throw(InvalidRequest)
-      {return initialTime;}
+         = 0;
 
       
       /// Determine the latest time for which this object can successfully 
@@ -121,53 +116,19 @@ namespace gpstk
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual DayTime getFinalTime()
          const throw(InvalidRequest)
-      {return finalTime;}
+         = 0;
 
       virtual bool velocityIsPresent()
          const throw()
-      {return haveVelocity;}
+         = 0;
 
       virtual bool clockIsPresent()
          const throw()
-      {return true;}
-
-
-      //---------------------------------------------------------------
-      // Below are interfaces that are unique to this class (i.e. not 
-      // in the parent class)
-      //---------------------------------------------------------------
-
-      /// Insert a new SP3Data object into the store
-      void addEphemeris(const SP3Data& data)
-         throw();
-
-      /// Remove all data
-      void clear() throw();
-
-   protected:
-      /// Flag indicating that velocity data present in all datasets loaded.
-      bool haveVelocity;
-
-   private:
-
-      /// The key to this map is the time
-      typedef std::map<DayTime, Xvt> SvEphMap;
-
-      /// The key to this map is the svid of the satellite (usually the prn)
-      typedef std::map<SatID, SvEphMap> EphMap;
-
-      /// the map of SVs and XVTs
-      EphMap pe;
-
-      /** These give the overall span of time for which this object contains data.
-       * NB there may be gaps in the data, i.e. the data may not be continuous.
-       */
-      DayTime initialTime, finalTime;
-
-   };
+         = 0;
+   }; // end class EphemerisStore
 
    //@}
 
-}  // namespace
+} // namespace
 
 #endif

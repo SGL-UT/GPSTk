@@ -20,7 +20,7 @@
 #include "RinexNavStream.hpp"
 
 // Class to store satellite broadcast navigation data
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 
 // Class to model GPS data for a mobile receiver
 #include "ModeledPR.hpp"
@@ -76,7 +76,7 @@ private:
     RinexNavData rNavData;              // Object to store Rinex navigation data
     RinexNavHeader rNavHeader;          // Object to read the header of Rinex navigation data files
     IonoModelStore ionoStore;           // Object to store ionospheric models
-    BCEphemerisStore bceStore;          // Object to store ephemeris
+    GPSEphemerisStore bceStore;          // Object to store ephemeris
     ModeledPR modelPR;                  // Declare a ModeledReferencePR object
     MOPSTropModel mopsTM;               // Declare a MOPSTropModel object
     ExtractC1 obsC1;                    // Declare an ExtractData object

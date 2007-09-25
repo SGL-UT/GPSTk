@@ -34,8 +34,8 @@ else
    GPSBuildLibrary gpstk : $(REGEX_SOURCE) Exception.cpp BinUtils.cpp
       VectorBase.cpp DayTime.cpp Triple.cpp Geodetic.cpp
       ECEF.cpp Xvt.cpp EngNav.cpp EngEphemeris.cpp EngAlmanac.cpp
-      AlmOrbit.cpp BCEphemerisStore.cpp ObsEpochMap.cpp WxObsMap.cpp
-      SP3EphemerisStore.cpp AlmanacStore.cpp TropModel.cpp
+      AlmOrbit.cpp GPSEphemerisStore.cpp ObsEpochMap.cpp WxObsMap.cpp
+      SP3EphemerisStore.cpp GPSAlmanacStore.cpp TropModel.cpp
       IonoModel.cpp IonoModelStore.cpp
       FFStream.cpp FFData.cpp RinexMetData.cpp RinexMetHeader.cpp
       RinexObsData.cpp RinexObsHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
@@ -74,9 +74,9 @@ else
       XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
       ;
 
-   InstallFile $(INCDIR) : AlmOrbit.hpp AlmanacStore.hpp BCEphemerisStore.hpp
+   InstallFile $(INCDIR) : AlmOrbit.hpp GPSAlmanacStore.hpp GPSEphemerisStore.hpp
       BinUtils.hpp DayTime.hpp ECEF.hpp EngAlmanac.hpp EngEphemeris.hpp 
-      EngNav.hpp EphemerisStore.hpp Exception.hpp FFBinaryStream.hpp 
+      EngNav.hpp Exception.hpp FFBinaryStream.hpp 
       FFData.hpp FFStream.hpp FFStreamError.hpp FFTextStream.hpp
       SatID.hpp RinexSatID.hpp SP3SatID.hpp
       FileFilter.hpp FileFilterFrame.hpp FileFilterFrameWithHeader.hpp 

@@ -55,7 +55,7 @@
 #include "RinexNavData.hpp"
 #include "SP3Stream.hpp"
 #include "SP3EphemerisStore.hpp"
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "EphemerisRange.hpp"
 #include "TropModel.hpp"
 #include "PRSolution.hpp"
@@ -125,7 +125,7 @@ RinexObsHeader rhead, rheadout;
 string NavDir;
 vector<string> NavFiles;
 SP3EphemerisStore SP3EphList;
-BCEphemerisStore BCEphList;
+GPSEphemerisStore BCEphList;
 SimpleTropModel ggtm;
    // for use with current position and in RefPosMap (RAIM and/or RefPosFile)
 typedef struct ReferencePositionFileData {
@@ -863,14 +863,14 @@ try {
       // open nav files and read EphemerisStore -- set inEP and inPS
    iret = FillEphemerisStore(NavFiles, SP3EphList, BCEphList);
    if(SP3EphList.size()) {
-      if(Verbose) SP3EphList.dump(1,logof);
+      if(Verbose) SP3EphList.dump(logof,1);
       inEP = 1;
    }
    else if(Verbose) logof << "SP3 Ephemeris list is empty\n";
 
    if(BCEphList.size()) {
       BCEphList.SearchNear();
-      if(Verbose) BCEphList.dump(0,logof);
+      if(Verbose) BCEphList.dump(logof,0);
       inEP = 1;
    }
    else if(Verbose) logof << "BC Ephemeris list is empty\n";
@@ -1581,7 +1581,7 @@ try {
                         BCEphList);
                else continue;
             }
-            catch(gpstk::EphemerisStore::NoEphemerisFound& e) {
+            catch(InvalidRequest& e) {
                continue;
             }
          }
@@ -1757,11 +1757,11 @@ try {
             else if(BCEphList.size() > 0)
                rho = CER.ComputeAtReceiveTime(CurrentTime, xvt, sat, BCEphList);
             else {
-               gpstk::EphemerisStore::NoEphemerisFound e("No ephemeris in store");
+               InvalidRequest e("No ephemeris in store");
                GPSTK_THROW(e);
             }
          }
-         catch(gpstk::EphemerisStore::NoEphemerisFound& e) {
+         catch(InvalidRequest& e) {
             if(Verbose)
                logof << "ComputeNewOTs failed to find ephemeris for satellite "
                << sat << " at time " << CurrentTime << endl;
@@ -1814,11 +1814,11 @@ try {
          unsigned long ref;
          try {
             if(SP3EphList.size())
-               CER.svPosVel = SP3EphList.getSatXvt(sat,CurrentTime);
+               CER.svPosVel = SP3EphList.getXvt(sat,CurrentTime);
             else
-               CER.svPosVel = BCEphList.getSatXvt(sat,CurrentTime);
+               CER.svPosVel = BCEphList.getXvt(sat,CurrentTime);
          }
-         catch(EphemerisStore::NoEphemerisFound& e) {
+         catch(InvalidRequest& e) {
             HaveEphThisSat = false;
          }
       }

@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -258,7 +258,7 @@ try {
          it->second.elev = CER.elevation;  // this will be compared to PRS elev Limit
          it->second.az = CER.azimuth;
       }
-      catch(EphemerisStore::NoEphemerisFound& e) {
+      catch(InvalidRequest& e) {
          if(CI.Verbose)
             oflog << "No ephemeris found for sat " << it->first << " at time "
                   << timetag.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;

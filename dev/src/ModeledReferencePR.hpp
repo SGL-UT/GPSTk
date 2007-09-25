@@ -33,7 +33,8 @@
 #include "ModeledPseudorangeBase.hpp"
 #include "DayTime.hpp"
 #include "EngEphemeris.hpp"
-#include "EphemerisStore.hpp"
+#include "XvtStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "EphemerisRange.hpp"
 #include "TropModel.hpp"
 #include "IonoModel.hpp"
@@ -163,7 +164,13 @@ namespace gpstk
          *
          * @sa DataStructures.hpp.
          */
-        ModeledReferencePR(const Position& RxCoordinates, IonoModelStore& dIonoModel, TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) { 
+        ModeledReferencePR(
+           const Position& RxCoordinates, 
+           IonoModelStore& dIonoModel, 
+           TropModel& dTropoModel, 
+           XvtStore<SatID>& dEphemeris,
+           const TypeID& dObservable,
+           bool usetgd = true) throw(Exception) { 
             InitializeValues();
             setInitialRxPosition(RxCoordinates);
             setDefaultIonoModel(dIonoModel);
@@ -191,7 +198,12 @@ namespace gpstk
          *
          * @sa DataStructures.hpp.
          */
-        ModeledReferencePR(const Position& RxCoordinates, IonoModelStore& dIonoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) : pDefaultTropoModel(NULL) { 
+        ModeledReferencePR(
+           const Position& RxCoordinates,
+           IonoModelStore& dIonoModel, 
+           XvtStore<SatID>& dEphemeris, 
+           const TypeID& dObservable,
+           bool usetgd = true) throw(Exception) : pDefaultTropoModel(NULL) { 
             InitializeValues();
             setInitialRxPosition(RxCoordinates);
             setDefaultIonoModel(dIonoModel);
@@ -218,7 +230,12 @@ namespace gpstk
          *
          * @sa DataStructures.hpp.
          */
-        ModeledReferencePR(const Position& RxCoordinates, TropModel& dTropoModel, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) : pDefaultIonoModel(NULL) { 
+        ModeledReferencePR(
+           const Position& RxCoordinates,
+           TropModel& dTropoModel,
+           XvtStore<SatID>& dEphemeris,
+           const TypeID& dObservable,
+           bool usetgd = true) throw(Exception) : pDefaultIonoModel(NULL) { 
             InitializeValues();
             setInitialRxPosition(RxCoordinates);
             setDefaultTropoModel(dTropoModel);
@@ -244,7 +261,11 @@ namespace gpstk
          *
          * @sa DataStructures.hpp.
          */
-        ModeledReferencePR(const Position& RxCoordinates, EphemerisStore& dEphemeris, const TypeID& dObservable, bool usetgd = true) throw(Exception) : pDefaultIonoModel(NULL), pDefaultTropoModel(NULL) { 
+        ModeledReferencePR(
+           const Position& RxCoordinates,
+           XvtStore<SatID>& dEphemeris,
+           const TypeID& dObservable,
+           bool usetgd = true) throw(Exception) : pDefaultIonoModel(NULL), pDefaultTropoModel(NULL) { 
             InitializeValues();
             setInitialRxPosition(RxCoordinates);
             setDefaultObservable(dObservable);
@@ -270,34 +291,34 @@ namespace gpstk
          * @sa TropModel.hpp, IonoModelStore.hpp.
          */
         int Compute(const DayTime& Tr, Vector<SatID>& Satellite, Vector<double>& Pseudorange,
-            const EphemerisStore& Eph, const Vector<double>& extraBiases, TropModel 
+            const XvtStore<SatID>& Eph, const Vector<double>& extraBiases, TropModel 
             *pTropModel=NULL, IonoModelStore *pIonoModel=NULL) throw(Exception);
 
 
         /// Compute the modeled pseudoranges, given satellite ID's, pseudoranges and other data
         int Compute(const DayTime& Tr, Vector<SatID>& Satellite, Vector<double>& Pseudorange,
-            const EphemerisStore& Eph) throw(Exception);
+            const XvtStore<SatID>& Eph) throw(Exception);
 
 
         /// Compute the modeled pseudoranges, given satellite ID's, pseudoranges and other data
         int Compute(const DayTime& Tr, Vector<SatID>& Satellite, Vector<double>& Pseudorange,
-            const EphemerisStore& Eph, TropModel *pTropModel) throw(Exception);
+            const XvtStore<SatID>& Eph, TropModel *pTropModel) throw(Exception);
 
 
         /// Compute the modeled pseudoranges, given satellite ID's, pseudoranges and other data
         int Compute(const DayTime& Tr, Vector<SatID>& Satellite, Vector<double>& Pseudorange,
-            const EphemerisStore& Eph, const Vector<double>& extraBiases, IonoModelStore
+            const XvtStore<SatID>& Eph, const Vector<double>& extraBiases, IonoModelStore
             *pIonoModel) throw(Exception);
 
 
         /// Compute the modeled pseudoranges, given satellite ID's, pseudoranges and other data
         int Compute(const DayTime& Tr, Vector<SatID>& Satellite, Vector<double>& Pseudorange,
-            const EphemerisStore& Eph, IonoModelStore *pIonoModel) throw(Exception);
+            const XvtStore<SatID>& Eph, IonoModelStore *pIonoModel) throw(Exception);
 
 
         /// Compute the modeled pseudoranges, given satellite ID's, pseudoranges and other data
         int Compute(const DayTime& Tr, Vector<SatID>& Satellite, Vector<double>& Pseudorange,
-            const EphemerisStore& Eph, TropModel *pTropModel, IonoModelStore *pIonoModel)
+            const XvtStore<SatID>& Eph, TropModel *pTropModel, IonoModelStore *pIonoModel)
             throw(Exception);
 
 
@@ -305,7 +326,7 @@ namespace gpstk
          * @param Tr            Measured time of reception of the data.
          * @param Satellite     ID's of satellite
          * @param Pseudorange   Pseudorange (parallel to satellite), in meters.
-         * @param Eph           EphemerisStore to be used.
+         * @param Eph           XvtStore<SatID> to be used.
          * @param pTropModel    Pointer to tropospheric model to be used. By default points to NULL.
          * @param pIonoModel    Pointer to ionospheric model to be used. By default points to NULL.
          * @param extraBiases   Extra bias to be added to the model.
@@ -316,7 +337,7 @@ namespace gpstk
          * @sa TropModel.hpp, IonoModelStore.hpp.
          */
         int Compute(const DayTime& Tr, SatID& Satellite, double& Pseudorange,
-            const EphemerisStore& Eph, const double& extraBiases, TropModel *pTropModel=NULL,
+            const XvtStore<SatID>& Eph, const double& extraBiases, TropModel *pTropModel=NULL,
             IonoModelStore *pIonoModel=NULL) throw(Exception);
 
 
@@ -441,18 +462,18 @@ namespace gpstk
         };
 
 
-        /** Method to set the default EphemerisStore to be used with GNSS data structures.
-         * @param ephem     EphemerisStore object to be used by default
+        /** Method to set the default XvtStore<SatID> to be used with GNSS data structures.
+         * @param ephem     XvtStore<SatID> object to be used by default
          */
-        virtual void setDefaultEphemeris(EphemerisStore& ephem)
+        virtual void setDefaultEphemeris(XvtStore<SatID>& ephem)
         {
            pDefaultEphemeris = &ephem;
         };
 
 
-        /** Method to get a pointer to the default EphemerisStore to be used with GNSS data structures.
+        /** Method to get a pointer to the default XvtStore<SatID> to be used with GNSS data structures.
          */
-        virtual EphemerisStore* getDefaultEphemeris() const
+        virtual XvtStore<SatID>* getDefaultEphemeris() const
         {
            return pDefaultEphemeris;
         };
@@ -473,8 +494,8 @@ namespace gpstk
         /// Default observable to be used when fed with GNSS data structures.
         TypeID defaultObservable;
 
-        /// Pointer to default EphemerisStore object when working with GNSS data structures.
-        EphemerisStore* pDefaultEphemeris;
+        /// Pointer to default XvtStore<SatID> object when working with GNSS data structures.
+        XvtStore<SatID>* pDefaultEphemeris;
 
         /// Initialization method
         virtual void InitializeValues() throw(Exception) { 
@@ -572,18 +593,16 @@ namespace gpstk
 
 
         /// Method to get TGD corrections.
-        virtual double getTGDCorrections(DayTime Tr, const EphemerisStore& Eph, SatID sat) throw() 
+        virtual double getTGDCorrections(DayTime Tr, const XvtStore<SatID>& Eph, SatID sat) throw() 
         {
-
-            double TGDCorr(0.0);
-
-            try {
-                TGDCorr = (Eph.getTGD(sat, Tr));
+           try {
+              const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(Eph);
+              const EngEphemeris& eph = bce.findEphemeris(sat,Tr);
+              return bce.findEphemeris(sat,Tr).getTgd() * C_GPS_M;
             }
-            catch(EphemerisStore::NoTGDFound& e) {
-                TGDCorr = 0.0;
+            catch(...) {
             }
-            return TGDCorr;
+            return 0.0;
         };
 
 

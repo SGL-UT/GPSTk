@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -56,7 +56,7 @@ using namespace gpstk;
 
 //------------------------------------------------------------------------------------
 // local data
-BCEphemerisStore BCEphList;               // global pEph will point to one of these
+GPSEphemerisStore BCEphList;               // global pEph will point to one of these
 SP3EphemerisStore SP3EphList;
 
 SimpleTropModel TropModelSimple;          // CI.pTropModel will point to one of these
@@ -115,7 +115,7 @@ try {
 
       // dump SP3 store to log
    if(SP3EphList.size()) {
-      if(CI.Verbose) SP3EphList.dump(0,oflog);
+      if(CI.Verbose) SP3EphList.dump(oflog, 0);
    }
    else if(CI.Verbose) oflog << "SP3 Ephemeris store is empty" << endl;
 
@@ -126,8 +126,8 @@ try {
          // than the closest in the past -- see BCEphemerisStore.hpp
       BCEphList.SearchNear();
 
-      if(CI.Debug) BCEphList.dump(1,oflog);
-      else if(CI.Verbose) BCEphList.dump(0,oflog);
+      if(CI.Debug) BCEphList.dump(oflog,1);
+      else if(CI.Verbose) BCEphList.dump(oflog,1);
    }
    else if(CI.Verbose) oflog << "BC Ephemeris store is empty" << endl;
 

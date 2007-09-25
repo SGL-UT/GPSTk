@@ -48,7 +48,8 @@
 #include <string>
 #include <vector>
 
-#include "EphemerisStore.hpp"
+#include "XvtStore.hpp"
+#include "SatID.hpp"
 
 class EphReader
 {
@@ -65,7 +66,7 @@ public:
 
    std::vector<std::string> filesRead;
 
-   gpstk::EphemerisStore* eph;
+   gpstk::XvtStore<gpstk::SatID>* eph;
 
 private:
    void read_rinex_nav_data(const std::string& fn);

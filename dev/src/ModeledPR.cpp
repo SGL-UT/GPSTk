@@ -44,7 +44,7 @@ namespace gpstk
      *  0 if OK
      *  -1 if problems arose
      */
-    int ModeledPR::Prepare(const DayTime& Tr, std::vector<SatID>& Satellite, std::vector<double>& Pseudorange, const EphemerisStore& Eph)
+    int ModeledPR::Prepare(const DayTime& Tr, std::vector<SatID>& Satellite, std::vector<double>& Pseudorange, const XvtStore<SatID>& Eph)
     {
         Matrix<double> SVP;
         Bancroft Ban;

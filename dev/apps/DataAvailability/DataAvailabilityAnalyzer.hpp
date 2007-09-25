@@ -51,7 +51,10 @@
 #include "GPSGeoid.hpp"
 #include "MiscMath.hpp"
 #include "ObsRngDev.hpp"
-#include "EphemerisStore.hpp"
+#include "SatID.hpp"
+#include "XvtStore.hpp"
+
+typedef gpstk::XvtStore<gpstk::SatID> EphemerisStore;
 
 class DataAvailabilityAnalyzer : public gpstk::BasicFramework
 {
@@ -106,7 +109,7 @@ private:
 
    bool badHealthMask, smashAdjacent;
 
-   gpstk::EphemerisStore* eph;
+   EphemerisStore* eph;
    gpstk::GPSGeoid gm;
    gpstk::Triple antennaPos;
    long msid;
@@ -123,7 +126,7 @@ private:
          short prn,
          const gpstk::DayTime& time,
          const gpstk::ECEF& rxpos,
-         const gpstk::EphemerisStore& eph,
+         const EphemerisStore& eph,
          gpstk::GeoidModel& gm,
          float maskAngle,
          const int verbosityLevel);
@@ -191,7 +194,7 @@ private:
 
    // This combines adjecent items from the same SV
    MissingList processList(const MissingList& ml, 
-                           const gpstk::EphemerisStore& eph);
+                           const EphemerisStore& eph);
    
    std::map<int, InView> inView;                         
    

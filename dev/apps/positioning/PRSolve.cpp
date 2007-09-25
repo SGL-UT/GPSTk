@@ -45,7 +45,7 @@
 #include "RinexMetHeader.hpp"
 #include "RinexMetData.hpp"
 #include "SP3Stream.hpp"
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
 #include "TropModel.hpp"
 #include "Position.hpp"
@@ -143,7 +143,7 @@ DayTime CurrEpoch, PrgmEpoch, PrevEpoch;
 
 // data
 int Nsvs;
-EphemerisStore *pEph;
+XvtStore<SatID> *pEph;
 ZeroTropModel TMzero;
 SimpleTropModel TMsimple;
 SaasTropModel TMsaas;
@@ -188,7 +188,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception);
 void DumpConfiguration(ostream& os) throw(Exception);
 void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
 int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
-  BCEphemerisStore& BCE) throw(Exception);
+  GPSEphemerisStore& BCE) throw(Exception);
 
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -200,7 +200,7 @@ try {
       // initialization
    CurrEpoch = PrevEpoch = DayTime::BEGINNING_OF_TIME;
    SP3EphemerisStore SP3EphList;
-   BCEphemerisStore BCEphList;
+   GPSEphemerisStore BCEphList;
 
       // Title and description
    Title = PrgmName + ", part of the GPS ToolKit, Ver " + PrgmVers + ", Run ";
@@ -239,8 +239,8 @@ try {
    // get nav files and build EphemerisStore
    int nread = FillEphemerisStore(C.InputNavName, SP3EphList, BCEphList);
    C.oflog << "Added " << nread << " ephemeris files to store.\n";
-   SP3EphList.dump(0,C.oflog);
-   BCEphList.dump(0,C.oflog);
+   SP3EphList.dump(C.oflog,0);
+   BCEphList.dump(C.oflog,0);
    if(SP3EphList.size() > 0) pEph=&SP3EphList;
    else if(BCEphList.size() > 0) {
       BCEphList.SearchNear();
@@ -662,7 +662,7 @@ try {
                   if(C.Debug) C.oflog << "Ephemeris range is "
                      << setprecision(4) << CER.rawrange << endl;
                }
-               catch(EphemerisStore::NoEphemerisFound& nef) {
+               catch(InvalidRequest& nef) {
                   // do not exclude the sat here; PRSolution will...
                   if(C.Debug)
                      C.oflog << "CER did not find ephemeris for " << sat << endl;
@@ -727,7 +727,7 @@ try {
 
             CorrectedEphemerisRange CER;
             try { CER.ComputeAtReceiveTime(CurrEpoch, C.knownpos, sat, *pEph); }
-            catch(EphemerisStore::NoEphemerisFound& nef) { continue; }
+            catch(InvalidRequest& nef) { continue; }
 
             // compute ionosphere - note that P1-R-RI == P2-R-RI*(F1/F2)**2
             double RI = (vP2[i]-vP1[i])/alpha;
@@ -2063,8 +2063,7 @@ bool isRinexNavFile(const string& file)
    rnstream.close();
    return true;
 }
-int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
-   BCEphemerisStore& BCE) throw(Exception)
+int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE, GPSEphemerisStore& BCE) throw(Exception)
 {
 try {
    int nread=0;

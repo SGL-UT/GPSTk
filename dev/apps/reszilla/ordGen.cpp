@@ -39,7 +39,7 @@
 
 #include <MSCData.hpp>
 #include <MSCStream.hpp>
-#include <BCEphemerisStore.hpp>
+#include <GPSEphemerisStore.hpp>
 
 
 #include "OrdApp.hpp"
@@ -197,11 +197,11 @@ void OrdGen::process()
    ephReader.verboseLevel = verboseLevel;
    for (int i=0; i<ephFileOption.getCount(); i++)
       ephReader.read(ephFileOption.getValue()[i]);
-   gpstk::EphemerisStore& eph = *ephReader.eph;
+   gpstk::XvtStore<SatID>& eph = *ephReader.eph;
 
-   if (useNear && typeid(eph) == typeid(BCEphemerisStore))
+   if (useNear && typeid(eph) == typeid(GPSEphemerisStore))
    {
-      BCEphemerisStore& bce = dynamic_cast<BCEphemerisStore&>(eph);
+      GPSEphemerisStore& bce = dynamic_cast<GPSEphemerisStore&>(eph);
       bce.SearchNear();
    }
 

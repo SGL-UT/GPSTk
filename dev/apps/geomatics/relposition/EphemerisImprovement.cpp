@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -63,12 +63,12 @@ int EphemerisImprovement(void)
 try {
    if(CI.Verbose) oflog << "BEGIN EphemerisImprovement()" << endl;
 
-   if(dynamic_cast<BCEphemerisStore*>(pEph)) {
+   if(dynamic_cast<GPSEphemerisStore*>(pEph)) {
 
-      BCEphemerisStore& BCE = dynamic_cast<BCEphemerisStore&>(*pEph);
+      GPSEphemerisStore& BCE = dynamic_cast<GPSEphemerisStore&>(*pEph);
       list<EngEphemeris> EphList;
 
-      oflog << "EphemerisStore is broadcast ephemeris" << endl;
+      oflog << "XvtStore is broadcast ephemeris" << endl;
       //BCE.dump(1,oflog);
 
       long i, neph = BCE.addToList(EphList);
@@ -127,7 +127,7 @@ try {
                   IODEmap[sat] = i;
                }
             }
-            catch(EphemerisStore::NoEphemerisFound& nef) { continue; }
+            catch(InvalidRequest& nef) { continue; }
          }
 
          tt += CI.DataInterval;

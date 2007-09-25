@@ -53,7 +53,7 @@
 #include "CycleSlipList.hpp"
 #include "SvElevationMap.hpp"
 #include "ElevationRange.hpp"
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -89,10 +89,10 @@ private:
    EphReader healthSrcER;
    
    void readObsFile(const CommandOptionWithAnyArg& obsFileOption,
-                    const EphemerisStore& eph,
+                    const XvtStore<SatID>& eph,
                     ObsEpochMap &oem);
    
-   void filterUnhealthyObs(const EphemerisStore& eph,
+   void filterUnhealthyObs(const XvtStore<SatID>& eph,
                            ObsEpochMap &oem);
    
 };
@@ -265,8 +265,8 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       healthSrcER.verboseLevel = verboseLevel;
       for (int i=0; i<ephHealthSource.getCount(); i++)
          healthSrcER.read(ephHealthSource.getValue()[i]);
-      gpstk::EphemerisStore& ephStoreTemp = *healthSrcER.eph; 
-      if (typeid(ephStoreTemp)!=typeid(BCEphemerisStore))
+      gpstk::XvtStore<SatID>& ephStoreTemp = *healthSrcER.eph; 
+      if (typeid(ephStoreTemp)!=typeid(GPSEphemerisStore))
       {
          cerr << "You provided an eph source that was not broadcast ephemeris.\n"
                  "(Precise ephemeris does not contain health info and can't be \n"
@@ -408,7 +408,7 @@ void DDGen::process()
 //-----------------------------------------------------------------------------
 void DDGen::readObsFile(
    const CommandOptionWithAnyArg& obsFileOption, 
-   const EphemerisStore& eph,
+   const XvtStore<SatID>& eph,
    ObsEpochMap &oem)
 {
    // Just a placeholder
@@ -458,12 +458,12 @@ void DDGen::readObsFile(
    }
 }
 
-void DDGen::filterUnhealthyObs( const EphemerisStore& eph, ObsEpochMap &oem)
+void DDGen::filterUnhealthyObs(const XvtStore<SatID>& eph, ObsEpochMap &oem)
 {
    ObsEpochMap::iterator oemIter;   
    for (oemIter=oem.begin(); oemIter!=oem.end(); oemIter++)
    {
-      const BCEphemerisStore& bce = dynamic_cast<const BCEphemerisStore&>(eph);
+      const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
       const DayTime& t = oemIter->first;
       ObsEpoch& obsEpoch = oemIter->second;
       

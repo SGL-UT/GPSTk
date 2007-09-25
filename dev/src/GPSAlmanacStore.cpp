@@ -37,31 +37,32 @@
 
 /**
  * @file AlmanacStore.cpp
- * Store almanac information, and access by satellite and time
+ * Store GPS almanac information (i.e. like the data in subframes 4&5) and 
+ * compute satellite Xvt based upon this data and the algorithms defined
+ * in the IS-GPS-200.
  */
 
-#include "AlmanacStore.hpp"
+#include "GPSAlmanacStore.hpp"
 #include "StringUtils.hpp"
-#include "EngAlmanac.hpp"
 #include "gps_constants.hpp"
 
 namespace gpstk
 {
-   Xvt AlmanacStore::getSatXvt(SatID sat, const gpstk::DayTime& t)
-      const throw(AlmanacStore::NoAlmanacFound)
+   Xvt GPSAlmanacStore::getXvt(SatID sat, const DayTime& t)
+      const throw(InvalidRequest)
    {
       AlmOrbit a = findAlmanac(sat, t);
       return a.svXvt(t);
    }
 
-   short AlmanacStore::getSatHealth(SatID sat, const gpstk::DayTime& t)
-      const throw(AlmanacStore::NoAlmanacFound)
+   short GPSAlmanacStore::getSatHealth(SatID sat, const DayTime& t)
+      const throw(InvalidRequest)
    {
       AlmOrbit a = findAlmanac(sat, t);
       return a.getSVHealth();
    }
 
-   bool AlmanacStore::addAlmanac(const AlmOrbit& alm) throw()
+   bool GPSAlmanacStore::addAlmanac(const AlmOrbit& alm) throw()
    {
       if ((alm.getPRNID() >= 1) && (alm.getPRNID() <= MAX_PRN))
       {
@@ -72,7 +73,7 @@ namespace gpstk
       return false;
    }
 
-   bool AlmanacStore::addAlmanac(const EngAlmanac& alm) throw()
+   bool GPSAlmanacStore::addAlmanac(const EngAlmanac& alm) throw()
    {
       AlmOrbits ao = alm.getAlmOrbElems();
       AlmOrbits::const_iterator oci;
@@ -87,14 +88,14 @@ namespace gpstk
 
       /// gets the closest almanac for the given time and satellite,
       /// closest being in the past or future.
-   AlmOrbit AlmanacStore::findAlmanac(SatID sat, const gpstk::DayTime& t) 
-      const throw(AlmanacStore::NoAlmanacFound)
+   AlmOrbit GPSAlmanacStore::findAlmanac(SatID sat, const DayTime& t) 
+      const throw(InvalidRequest)
    {
       UBAMap::const_iterator satItr = uba.find(sat);
       if (satItr == uba.end())
       {
-         NoAlmanacFound nef("No almanacs for satellite " + StringUtils::asString(sat));
-         GPSTK_THROW(nef);
+         InvalidRequest e("No almanacs for satellite " + StringUtils::asString(sat));
+         GPSTK_THROW(e);
       }
          
       const EngAlmMap& eam = (*satItr).second;
@@ -114,8 +115,8 @@ namespace gpstk
       {
          if (nextItr == eam.end()) 
          {
-            NoAlmanacFound nef("No almanacs for time " + t.asString());
-            GPSTK_THROW(nef);
+            InvalidRequest e("No almanacs for time " + t.asString());
+            GPSTK_THROW(e);
          }
          else
          {
@@ -134,8 +135,8 @@ namespace gpstk
    }
 
 
-   AlmOrbits AlmanacStore::findAlmanacs(const gpstk::DayTime& t) 
-      const
+   AlmOrbits GPSAlmanacStore::findAlmanacs(const DayTime& t) 
+      const throw(InvalidRequest)
    {
       AlmOrbits ao;
       UBAMap::const_iterator satItr = uba.begin();
@@ -156,8 +157,8 @@ namespace gpstk
       return ao;
    }
    
-   gpstk::DayTime AlmanacStore::getInitialTime() 
-      const
+   DayTime GPSAlmanacStore::getInitialTime() 
+      const throw(InvalidRequest)
    {
       DayTime retDT = DayTime::END_OF_TIME;
       UBAMap::const_iterator satItr = uba.begin();

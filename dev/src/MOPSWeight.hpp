@@ -32,8 +32,8 @@
 
 
 #include "WeightBase.hpp"
-#include "EphemerisStore.hpp"
-#include "BCEphemerisStore.hpp"
+#include "XvtStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "TabularEphemerisStore.hpp"
 #include "EngEphemeris.hpp"
 #include "RinexObsHeader.hpp"
@@ -90,7 +90,7 @@ namespace gpstk
          * valid weight. Also, its PRN will be set to a negative value.
          *
          */
-        virtual int getWeights(DayTime& time, Vector<SatID>& Satellites, BCEphemerisStore& bcEph, Vector<double>& ionoCorrections, Vector<double>& elevationVector, Vector<double>& azimuthVector, Position rxPosition, int rxClass=2) throw(InvalidWeights);
+        virtual int getWeights(DayTime& time, Vector<SatID>& Satellites, GPSEphemerisStore& bcEph, Vector<double>& ionoCorrections, Vector<double>& elevationVector, Vector<double>& azimuthVector, Position rxPosition, int rxClass=2) throw(InvalidWeights);
 
 
         /** Compute and return a vector with the weights for the given satellites

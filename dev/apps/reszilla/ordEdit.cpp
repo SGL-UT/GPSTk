@@ -43,7 +43,7 @@
 #include "OrdApp.hpp"
 #include "OrdApp.cpp"
 #include "EphReader.hpp"
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -117,10 +117,10 @@ void OrdEdit::process()
    ephReader.verboseLevel = verboseLevel;
    for (int i=0; i<ephSourceOpt.getCount(); i++)
       ephReader.read(ephSourceOpt.getValue()[i]);
-   gpstk::EphemerisStore& eph = *ephReader.eph;  
+   gpstk::XvtStore<SatID>& eph = *ephReader.eph;  
    
    //-- Make sure that the eph data provided is broadcast eph 
-   if (ephSourceOpt.getCount()&&(typeid(eph)!=typeid(BCEphemerisStore)))
+   if (ephSourceOpt.getCount()&&(typeid(eph)!=typeid(GPSEphemerisStore)))
    {
       cout << "You provided an eph source that was not broadcast ephemeris.\n"
               "(Precise ephemeris does not contain health info and can't be \n"
@@ -301,7 +301,7 @@ void OrdEdit::process()
          
       if (numBEFiles)
       {
-         const BCEphemerisStore& bce = dynamic_cast<const BCEphemerisStore&>(eph);
+         const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
          ORDEpoch::ORDMap::iterator iter = ordEpoch.ords.begin();
          while (iter!= ordEpoch.ords.end())
          {

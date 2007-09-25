@@ -44,7 +44,7 @@ using namespace gpstk;
 
 // ---------------------------------------------------------------------
 OrdEngine::OrdEngine(
-   const EphemerisStore& e,
+   const XvtStore<SatID>& e,
    const WxObsData& w,
    const Triple& p,
    const string& mode,

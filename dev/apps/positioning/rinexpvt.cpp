@@ -371,7 +371,7 @@ void RINEXPVTSolution::process()
              {
 		          RinexObsData::RinexObsTypeMap otmap = (*it).second;
 
-                svpos = virtualEphStore->getSatXvt((*it).first,rod.time);
+                svpos = virtualEphStore->getXvt((*it).first,rod.time);
                 double elevation = aprioriPosition.elvAngle(svpos.x);
                 double azimuth =  aprioriPosition.azAngle(svpos.x);
                 

@@ -35,7 +35,7 @@ tries to estimate the pseudoranges from the correlation delays.
 #include <CommandOptionWithTimeArg.hpp>
 #include <CommandOptionParser.hpp>
 
-#include <BCEphemerisStore.hpp>
+#include <GPSEphemerisStore.hpp>
 #include <RinexNavStream.hpp>
 #include <RinexNavData.hpp>
 #include <TropModel.hpp>
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
             antennaPos[i] = asDouble(word(aps, i));
    }
 
-   BCEphemerisStore bce;
+   GPSEphemerisStore bce;
    IonoModel iono;
    for (int i=0; i < ephFileOption.getCount(); i++)
    {
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
       SatID sv(i, SatID::systemGPS);
       try 
       {
-         Xvt svpos = bce.getSatXvt(sv, time);
+         Xvt svpos = bce.getXvt(sv, time);
          double el = antennaPos.elvAngle(svpos.x);
          double az = antennaPos.azAngle(svpos.x);
 

@@ -52,7 +52,8 @@ namespace gpstk
 {
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   void TabularEphemerisStore::dump(short detail, std::ostream& s) const
+   void TabularEphemerisStore::dump(std::ostream& s, short detail)
+      const throw()
    {
       s << "Dump of TabularEphemerisStore:" << std::endl;
       if(detail >= 0) {
@@ -61,7 +62,7 @@ namespace gpstk
          if(detail == 0) return;
          for(it=pe.begin(); it!=pe.end(); it++) {
             s << "  PRN " << it->first << " : "
-               << it->second.size() << " records.";
+              << it->second.size() << " records.";
             if(detail == 1) { s << std::endl; continue; }
             s << "  Data:" << std::endl;
             SvEphMap::const_iterator jt;
@@ -69,7 +70,7 @@ namespace gpstk
                s << " " << jt->first << " P "
                  << std::fixed << std::setprecision(6)
                  << std::setw(13) << jt->second.x[0] << " "
-                  << std::setw(13) << jt->second.x[1] << " "
+                 << std::setw(13) << jt->second.x[1] << " "
                  << std::setw(13) << jt->second.x[2] << " "
                  << std::setw(13) << jt->second.dtime
                  << " V "
@@ -87,7 +88,8 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   void TabularEphemerisStore::edit(const DayTime& tmin, const DayTime& tmax) throw()
+   void TabularEphemerisStore::edit(const DayTime& tmin, const DayTime& tmax)
+      throw()
    {
       EphMap::iterator kt;
       for(kt=pe.begin(); kt!=pe.end(); kt++) {
@@ -97,12 +99,16 @@ namespace gpstk
             jt ++;
          }
       }
+      initialTime = tmin;
+      finalTime = tmax;
    }  // end TabularEphemerisStore::edit
+
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    // Remove all data
-   void TabularEphemerisStore::clear() throw()
+   void TabularEphemerisStore::clear()
+      throw()
    {
       pe.clear();
       initialTime = DayTime::END_OF_TIME;
@@ -111,13 +117,13 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt TabularEphemerisStore::getSatXvt(SatID sat, const gpstk::DayTime& t)
-      const throw(EphemerisStore::NoEphemerisFound)
+   Xvt TabularEphemerisStore::getXvt(SatID sat, const DayTime& t)
+      const throw(InvalidRequest)
    {
       EphMap::const_iterator svmap = pe.find(sat);
       if (svmap==pe.end()) {
-         NoEphemerisFound e("Ephemeris for satellite  " + asString(sat)
-            + " not found.");
+         InvalidRequest e("Ephemeris for satellite  " + asString(sat)
+                            + " not found.");
          GPSTK_THROW(e);
       }
 
@@ -144,17 +150,17 @@ namespace gpstk
       /// Note that the order of the Lagrange interpolation is twice this value
       const int half=5;
 
-         //  i will be the lower bound, j the upper (in time).
+      //  i will be the lower bound, j the upper (in time).
       i = sem.lower_bound(t); // i points to first element with key >= t
       SvEphMap::const_iterator j=i;
       if(i == sem.begin() || --i == sem.begin()) {
-         NoEphemerisFound e("Inadequate data before requested time, satellite "
-            + asString(sat));
+         InvalidRequest e("Inadequate data before requested time, satellite "
+                          + asString(sat));
          GPSTK_THROW(e);
       }
       if(j == sem.end()) {
-         NoEphemerisFound e("Inadequate data after requested time, satellite "
-            + asString(sat));
+         InvalidRequest e("Inadequate data after requested time, satellite "
+                          + asString(sat));
          GPSTK_THROW(e);
       }
       // t is now between i and j
@@ -162,19 +168,19 @@ namespace gpstk
       for(int k=0; k<half-1; k++) {
          i--;
          if(i == sem.begin() && k<half-2) {  // if k==half-2, this is last iteration
-            NoEphemerisFound e("Inadequate data before requested time, satellite "
-               + asString(sat));
+            InvalidRequest e("Inadequate data before requested time, satellite "
+                             + asString(sat));
             GPSTK_THROW(e);
          }
          j++;
          if(j == sem.end() && k<half-2) {
-            NoEphemerisFound e("Inadequate data after requested time, satellite "
-               + asString(sat));
+            InvalidRequest e("Inadequate data after requested time, satellite "
+                               + asString(sat));
             GPSTK_THROW(e);
          }
       }
 
-         // pull data and interpolate
+      // pull data and interpolate
       SvEphMap::const_iterator itr;
       DayTime t0=i->first;
       double dt=t-t0,err;
@@ -230,8 +236,8 @@ namespace gpstk
       // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10 * ecc * sqrt(A(m))*sinE
       // (do it this way for numerical reasons)
       sv.dtime += -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)
-                  -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
-                  -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
+         -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
+         -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
 
       return sv;
 

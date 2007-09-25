@@ -50,7 +50,7 @@
 #include <vector>
 
 // GPSTk
-#include "BCEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
 
 namespace gpstk {
@@ -100,7 +100,7 @@ void sortRinexObsFiles(std::vector<std::string>& files);
     */
 int FillEphemerisStore(const std::vector<std::string>& files,
       gpstk::SP3EphemerisStore& PE,
-      gpstk::BCEphemerisStore& BCE);
+      gpstk::GPSEphemerisStore& BCE);
 
 //@}
 

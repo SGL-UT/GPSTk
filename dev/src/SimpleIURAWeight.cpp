@@ -46,7 +46,7 @@ namespace gpstk
     // NOTE: Method isValid() will return false if some satellite does not have a
     // valid weight.
     //
-    int SimpleIURAWeight::getWeights(DayTime& time, Vector<SatID>& Satellites, BCEphemerisStore& bcEph) throw(InvalidWeights)
+    int SimpleIURAWeight::getWeights(DayTime& time, Vector<SatID>& Satellites, GPSEphemerisStore& bcEph) throw(InvalidWeights)
     {
         int N = Satellites.size();
         // We need at least one satellite
@@ -69,7 +69,7 @@ namespace gpstk
         {
             try
             {
-                engEph = bcEph.findEphemeris(Satellites(i).id, time);
+                engEph = bcEph.findEphemeris(Satellites(i), time);
                 iura = engEph.getAccFlag();
             }
             catch(...)
@@ -128,7 +128,7 @@ namespace gpstk
         {
             try
             {
-                preciseEph.getSatXvt(Satellites(i), time);
+                preciseEph.getXvt(Satellites(i), time);
             }
             catch(...)
             {
