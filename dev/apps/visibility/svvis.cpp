@@ -40,9 +40,12 @@
 
 #include "LoopedFramework.hpp"
 #include "CommandOptionWithTimeArg.hpp"
+
 #include "EphReader.hpp"
 #include "MSCData.hpp"
 #include "MSCStream.hpp"
+
+#include "FFIdentifier.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -120,6 +123,7 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
 
    // get the ephemeris source(s)
    ephReader.verboseLevel = verboseLevel;
+   FFIdentifier::debugLevel = debugLevel;
    for (int i=0; i<ephFileOpt.getCount(); i++)
       ephReader.read(ephFileOpt.getValue()[i]);
    if (ephReader.eph == NULL)
@@ -229,7 +233,7 @@ void SVVis::process()
          }
          catch(gpstk::Exception& e)
          {
-            up += "   ";
+            up += " ? ";
             if (debugLevel)
                cout << e << endl;
          }
