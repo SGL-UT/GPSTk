@@ -151,13 +151,16 @@ namespace gpstk
             std::fstream(fn, mode), 
 #endif
             recordNumber(0), filename(fn) 
-         {}
+         {clear();}
 
          /**
           * Overrides fstream:open so derived classes can make appropriate
           * internal changes (line count, header info, etc).
           */
       virtual void open(const char* fn, std::ios::openmode mode);
+
+      /// A function to help debug FFStreams
+      void dumpState(std::ostream& s = std::cout) const;
 
          /**
           * Throws \a mostRecentException only if the stream is enabled

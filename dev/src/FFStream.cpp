@@ -61,7 +61,26 @@ namespace gpstk
 #endif
       filename = std::string(fn);
       recordNumber = 0;
+      clear();
    }
+
+   void FFStream::dumpState(std::ostream& s) const
+   {
+      s << "filename:" << filename
+        << ", recordNumber:" << recordNumber;
+      s << ", exceptions:";
+      if (exceptions() & std::ios::badbit)  s << "bad ";
+      if (exceptions() & std::ios::failbit) s << "fail ";
+      if (exceptions() & std::ios::eofbit)  s << "eof ";
+      if (exceptions() == 0) s << "none";
+      s << ", rdstate:";
+      if (rdstate() & std::ios::badbit)  s << "bad ";
+      if (rdstate() & std::ios::failbit) s << "fail ";
+      if (rdstate() & std::ios::eofbit)  s << "eof ";
+      if (rdstate() == 0)  s << "none";
+      s << std::endl;
+   }
+
 
       // the crazy double try block is so that no gpstk::Exception throws 
       // get masked, allowing all exception information (line numbers, text,
