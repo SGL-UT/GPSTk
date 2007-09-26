@@ -36,8 +36,11 @@
 //
 //=============================================================================
 
+#include "XvtStore.hpp"
 #include "SP3EphemerisStore.hpp"
 #include "GPSEphemerisStore.hpp"
+#include "YumaAlmanacStore.hpp"
+#include "SEMAlmanacStore.hpp"
 
 #include "RinexNavStream.hpp"
 #include "RinexNavData.hpp"
@@ -45,8 +48,14 @@
 #include "FICStream.hpp"
 #include "FICData.hpp"
 
-#include "EphReader.hpp"
+#include "YumaStream.hpp"
+#include "YumaData.hpp"
+
+#include "SEMStream.hpp"
+#include "SEMData.hpp"
+
 #include "FFIdentifier.hpp"
+#include "EphReader.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -62,6 +71,9 @@ void EphReader::read(const std::string& fn)
       case FFIdentifier::tRinexNav: read_rinex_nav_data(fn); break;
       case FFIdentifier::tFIC:      read_fic_data(fn);       break;
       case FFIdentifier::tSP3:      read_sp3_data(fn);       break;
+      case FFIdentifier::tYuma:     read_yuma_data(fn);      break;
+      case FFIdentifier::tSEM:      read_sem_data(fn);       break;
+      case FFIdentifier::tMDP:
       default:
          if (verboseLevel) 
             cout << "# Could not determine the format of " << fn << endl;
@@ -83,7 +95,7 @@ void EphReader::read_rinex_nav_data(const string& fn)
    if (eph == NULL)
    {
       bce = new(GPSEphemerisStore);
-      eph = dynamic_cast<XvtStore<SatID>*>(bce);
+      eph = dynamic_cast<EphemerisStore*>(bce);
    }
    else
    {
@@ -112,7 +124,7 @@ void EphReader::read_fic_data(const string& fn)
    if (eph == NULL)
    {
       bce = new(GPSEphemerisStore);
-      eph = dynamic_cast<XvtStore<SatID>*>(bce);
+      eph = dynamic_cast<EphemerisStore*>(bce);
    }
    else
    {
@@ -128,7 +140,7 @@ void EphReader::read_fic_data(const string& fn)
    fs >> header;
       
    FICData data;
-   while(fs >> data)
+   while (fs >> data)
       if (data.blockNum==9) // Only look at the eng ephemeris
          bce->addEphemeris(data);
 
@@ -144,7 +156,7 @@ void EphReader::read_sp3_data(const string& fn)
    if (eph == NULL)
    {
       pe = new(SP3EphemerisStore);
-      eph = dynamic_cast<XvtStore<SatID>*>(pe);
+      eph = dynamic_cast<EphemerisStore*>(pe);
    }
    else
    {
@@ -155,16 +167,82 @@ void EphReader::read_sp3_data(const string& fn)
    if (verboseLevel>2)
       cout << "# Reading " << fn << " as SP3 ephemeris."<< endl;
 
-   SP3Stream pefile(fn.c_str(),ios::in);
-   pefile.exceptions(ifstream::failbit);
+   SP3Stream fs(fn.c_str(),ios::in);
+   fs.exceptions(ifstream::failbit);
       
    SP3Header header;
-   pefile >> header;
+   fs >> header;
 
    SP3Data data;
-   while(pefile >> data)
+   while (fs >> data)
       pe->addEphemeris(data);
 
    if (verboseLevel>1)
       cout << "# Read " << fn << " as SP3 ephemeris."<< endl;
 } // end of read_sp3_data()
+
+
+void EphReader::read_yuma_data(const string& fn)
+{
+   YumaAlmanacStore* alm;
+
+   if (eph == NULL)
+   {
+      alm = new(YumaAlmanacStore);
+      eph = dynamic_cast<EphemerisStore*>(alm);
+   }
+   else
+   {
+      if (typeid(*eph) != typeid(YumaAlmanacStore))
+         throw(FFStreamError("Don't mix nav data types..."));
+      alm = dynamic_cast<YumaAlmanacStore*>(eph);
+   }
+   if (verboseLevel>2)
+      cout << "# Reading " << fn << " as Yuma almanc."<< endl;
+
+   YumaStream fs(fn.c_str(),ios::in);
+   fs.exceptions(ifstream::failbit);
+      
+   YumaHeader header;
+   fs >> header;
+
+   YumaData data;
+   while (fs >> data)
+      alm->addAlmanac(data);
+
+   if (verboseLevel>1)
+      cout << "# Read " << fn << " as Yuma almanac."<< endl;
+} // end of read_yuma_data()
+
+
+void EphReader::read_sem_data(const string& fn)
+{
+   SEMAlmanacStore* alm;
+
+   if (eph == NULL)
+   {
+      alm = new(SEMAlmanacStore);
+      eph = dynamic_cast<EphemerisStore*>(alm);
+   }
+   else
+   {
+      if (typeid(*eph) != typeid(SEMAlmanacStore))
+         throw(FFStreamError("Don't mix nav data types..."));
+      alm = dynamic_cast<SEMAlmanacStore*>(eph);
+   }
+   if (verboseLevel>2)
+      cout << "# Reading " << fn << " as SEM almanc."<< endl;
+
+   SEMStream fs(fn.c_str(),ios::in);
+   fs.exceptions(ifstream::failbit);
+      
+   SEMHeader header;
+   fs >> header;
+
+   SEMData data;
+   while (fs >> data)
+      alm->addAlmanac(data);
+
+   if (verboseLevel>1)
+      cout << "# Read " << fn << " as Yuma almanac."<< endl;
+} // end of read_sem_data()

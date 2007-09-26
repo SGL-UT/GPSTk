@@ -44,6 +44,7 @@
 
 #include "SP3EphemerisStore.hpp"
 #include "RinexEphemerisStore.hpp"
+#include "YumaAlmanacStore.hpp"
 #include "GPSGeoid.hpp"
 
 #include "RinexObsStream.hpp"
@@ -69,155 +70,167 @@
 #include "MDPSelftestStatus.hpp"
 #include "MDPStream.hpp"
 
+#include "YumaData.hpp"
+#include "YumaStream.hpp"
+
+#include "SEMData.hpp"
+#include "SEMStream.hpp"
+
 namespace gpstk
 {
-
    int FFIdentifier::debugLevel = 0;
 
    FFIdentifier::FFIdentifier(const std::string& fn)
    {
-      const int recCount = 2; 
+      using namespace std;
       fileType=tUnknown;
 
-      while (true)
       {
-         try
-         {
-            if (debugLevel>2)
-               std::cout << "Trying " << fn << " as RINEX obs."<< std::endl;
-            RinexObsStream ros(fn.c_str(), std::ios::in);
-            ros.exceptions(std::fstream::failbit);
-
-            RinexObsHeader temp_roh;
-            ros >> temp_roh;
-            RinexObsData rod;
-            ros >> rod;
-            fileType = tRinexObs;
-            break;
-         } 
-         catch (FFStreamError& e)
-         {
-            if (debugLevel > 3) 
-               std::cout << e << std::endl;
-         }
-
-         try
-         {
-            if (debugLevel>2)
-               std::cout << "Trying " << fn << " as SMODF."<< std::endl;
-            SMODFStream smo(fn.c_str(), std::ios::in);
-            smo.exceptions(std::fstream::failbit);
-         
-            SMODFData smodata;       
-            smo >> smodata;
-            smo >> smodata;
-            fileType = tSMODF;
-            break;
-         }
-         catch (FFStreamError& e)
-         {
-            if (debugLevel > 3)
-               std::cout << e << std::endl;
-         }
-
-         try
-         {
-            if (debugLevel>2)
-               std::cout << "Trying " << fn << " as MDP."<< std::endl;
-            MDPStream mdps(fn.c_str(), std::ios::in);
-            mdps.exceptions(std::fstream::failbit);
-
-            MDPHeader header;
-            mdps >> header;
-            mdps >> header;
-            fileType = tMDP;
-            break;
-         }
-         catch (FFStreamError& e)
-         {
-            if (debugLevel > 3)
-               std::cout << e << std::endl;
-         }
-
-         try
-         {
-            if (debugLevel>2)
-               std::cout << "Trying " << fn << " as RINEX nav."<< std::endl;
-            RinexNavStream rns(fn.c_str(), std::ios::in);
-            rns.exceptions(std::ifstream::failbit);
-
-            RinexNavData rnd;
-            RinexNavHeader rnh;
-            rns >> rnh;
-            rns >> rnd;
-            fileType = tRinexNav;
-            break;
-         }
-         catch (FFStreamError& e)
-         {
-            if (debugLevel > 3)
-               std::cout << e << std::endl;
-         }
-
-         try
-         {
-            if (debugLevel>2)
-               std::cout << "Trying " << fn << " as FIC nav."<< std::endl;
-            FICStream fs(fn.c_str(), std::ios::in);
-            fs.exceptions(std::ifstream::failbit);
+         if (debugLevel>2)
+            cout << "Trying " << fn << " as RINEX obs."<< endl;
+         RinexObsStream s(fn.c_str(), ios::in);
+         if (debugLevel>2)
+            s.dumpState();
       
-            FICData data;
-            fs >> data;
-            fileType = tFIC;
+         RinexObsHeader temp_roh;
+         s >> temp_roh;
+         RinexObsData rod;
+         s >> rod;
+         if (s)
+         {
+            fileType = tRinexObs;
+            return;
+         } 
+      }
 
-            break;
-         }
-         catch (FFStreamError& e)
-         {
-            if (debugLevel > 3)
-               std::cout << e <<std:: endl;
-         }
-
-         try
-         {
-            if (debugLevel>2)
-               std::cout << "Trying " << fn << " as SP3 ephemeris."<<std:: endl;
-            SP3Stream pefile(fn.c_str(), std::ios::in);
-            pefile.exceptions(std::ifstream::failbit);
-            
-            SP3Header header;
-            pefile >> header;
-            SP3Data data;
-            pefile >> data;
-            fileType = tSP3;
-            break;
-         }
-         catch (FFStreamError& e)
-         {
-            if (debugLevel > 3)
-               std::cout << e << std::endl;
-         }
-
-         try
-         {
-            if (debugLevel>2)
-               std::cout << "Trying " << fn << " as MSC."<<std:: endl;
-            MSCStream msc(fn.c_str(), std::ios::in);
-            msc.exceptions(std::ifstream::failbit);
-
-            MSCData mscd;
-            msc >> mscd;
-            fileType = tMSC;
-            break;
-         }
-         catch (FFStreamError& e)
-         {
-            if (debugLevel > 3)
-               std::cout << e << std::endl;
-         }
+      {
+         if (debugLevel>2)
+            cout << "Trying " << fn << " as SMODF."<< endl;
+         SMODFStream s(fn.c_str(), ios::in);
+         if (debugLevel>2)
+            s.dumpState();
          
-         break;
-      } // end of while (true)
+         SMODFData smodata;       
+         s >> smodata;
+         s >> smodata;
+         if (s)
+         {
+            fileType = tSMODF;
+            return;
+         }
+      }
+
+      {
+         if (debugLevel>2)
+            cout << "Trying " << fn << " as MDP."<< endl;
+         MDPStream s(fn.c_str(), ios::in);
+         if (debugLevel>2)
+            s.dumpState();
+
+         MDPHeader header;
+         s >> header;
+         s >> header;
+         if (s)
+         {
+            fileType = tMDP;
+            return;
+         }
+      }
+
+      {
+         if (debugLevel>2)
+            cout << "Trying " << fn << " as RINEX nav."<< endl;
+         RinexNavStream s(fn.c_str(), ios::in);
+         if (debugLevel>2)
+            s.dumpState();
+
+         RinexNavData rnd;
+         RinexNavHeader rnh;
+         s >> rnh;
+         s >> rnd;
+         if (s)
+         {
+            fileType = tRinexNav;
+            return;
+         }
+      }
+      
+      {
+         if (debugLevel>2)
+            cout << "Trying " << fn << " as FIC nav."<< endl;
+         FICStream s(fn.c_str(), ios::in);
+         
+         FICData data;
+         s >> data;
+         if (s)
+         {
+            fileType = tFIC;
+            return;
+         }
+      }
+
+      {
+         if (debugLevel>2)
+            cout << "Trying " << fn << " as SP3 ephemeris."<< endl;
+         SP3Stream s(fn.c_str(), ios::in);
+         
+         SP3Header header;
+         s >> header;
+         SP3Data data;
+         s >> data;
+         if (s)
+         {
+            fileType = tSP3;
+            return;
+         }
+      }
+
+      {
+         if (debugLevel>2)
+            cout << "Trying " << fn << " as Yuma elmanac."<< endl;
+         YumaStream s(fn.c_str(), ios::in);
+         
+         YumaHeader header;
+         s >> header;
+         YumaData data;
+         s >> data;
+         if (s)
+         {
+            fileType = tYuma;
+            return;
+         }
+      }
+
+      {
+         if (debugLevel>2)
+            cout << "Trying " << fn << " as SEM almanac."<< endl;
+         SEMStream s(fn.c_str(), ios::in);
+         
+         SEMHeader header;
+         s >> header;
+         SEMData data;
+         s >> data;
+         if (s)
+         {
+            fileType = tYuma;
+            return;
+         }
+      }
+
+      {
+         if (debugLevel>2)
+            cout << "Trying " << fn << " as MSC."<< endl;
+         MSCStream s(fn.c_str(), ios::in);
+
+         MSCData mscd;
+         s >> mscd;
+         if (s)
+         {
+            fileType = tMSC;
+            return;
+         }
+      }
+
    }
 
 }

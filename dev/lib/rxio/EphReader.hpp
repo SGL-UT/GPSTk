@@ -42,7 +42,8 @@
 /** @file This is a class that reads in ephemeris data without the
     caller needing to know the format the data is suppllied in. The 
     navigation data formats that are (to be) supported: rinex nav, fic,
-    sp3, mdp. Unlike the ObsReader, this reads in the entire file at once.
+    sp3, mdp, Yuma, and SEM.
+    Unlike the ObsReader, this reads in the entire file at once.
 **/
 
 #include <string>
@@ -66,11 +67,14 @@ public:
 
    std::vector<std::string> filesRead;
 
-   gpstk::XvtStore<gpstk::SatID>* eph;
+   typedef gpstk::XvtStore<gpstk::SatID> EphemerisStore;
+   EphemerisStore* eph;
 
 private:
    void read_rinex_nav_data(const std::string& fn);
    void read_fic_data(const std::string& fn);
    void read_sp3_data(const std::string& fn);
+   void read_yuma_data(const std::string& fn);
+   void read_sem_data(const std::string& fn);
 };
 #endif

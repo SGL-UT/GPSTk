@@ -61,7 +61,9 @@ namespace gpstk
          tFIC,
          tMDP,
          tSP3,
-         tMSC
+         tMSC,
+         tYuma,
+         tSEM
       };
 
       FFIdentifier()
