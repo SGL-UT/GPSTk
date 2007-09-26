@@ -65,6 +65,13 @@ namespace gpstk
    class GPSAlmanacStore : public XvtStore<SatID>
    {
    public:
+
+      GPSAlmanacStore()
+         throw()
+         : initialTime(DayTime::END_OF_TIME), 
+           finalTime(DayTime::BEGINNING_OF_TIME)
+      {}
+
       virtual ~GPSAlmanacStore()
       {}
       
@@ -101,7 +108,8 @@ namespace gpstk
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual DayTime getInitialTime()
-         const throw(InvalidRequest);
+         const throw(InvalidRequest)
+      {return initialTime;}
 
       
       /// Determine the latest time for which this object can successfully 
@@ -109,7 +117,8 @@ namespace gpstk
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual DayTime getFinalTime()
-         const throw(InvalidRequest);
+         const throw(InvalidRequest)
+      {return finalTime;}
 
       virtual bool velocityIsPresent()
          const throw()
@@ -159,6 +168,10 @@ namespace gpstk
 
       /// The map where all EngAlmanacs are stored.
       UBAMap uba;
+
+      DayTime initialTime; //< Earliest Toa minus a half week
+      DayTime finalTime;   //< Last Toa plus a half week
+      
    };
 
    //@}

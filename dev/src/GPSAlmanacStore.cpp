@@ -45,6 +45,7 @@
 #include "GPSAlmanacStore.hpp"
 #include "StringUtils.hpp"
 #include "gps_constants.hpp"
+#include "CommonTime.hpp"
 
 namespace gpstk
 {
@@ -67,7 +68,14 @@ namespace gpstk
       if ((alm.getPRNID() >= 1) && (alm.getPRNID() <= MAX_PRN))
       {
          SatID sat(alm.getPRNID(),SatID::systemGPS);
-         uba[sat][alm.getToaTime()] = alm;
+         DayTime toa = alm.getToaTime();
+         uba[sat][toa] = alm;
+         DayTime tmin(toa - DayTime::HALFWEEK);
+         DayTime tmax(toa + DayTime::HALFWEEK);
+         if (tmin < initialTime)
+            initialTime = tmin;
+         if (tmax > finalTime)
+            finalTime = tmax;
          return true;
       }
       return false;
@@ -77,30 +85,28 @@ namespace gpstk
    {
       AlmOrbits ao = alm.getAlmOrbElems();
       AlmOrbits::const_iterator oci;
-      for (oci = ao.begin();
-           oci != ao.end();
-           oci++)
-      {
+      for (oci = ao.begin(); oci != ao.end(); oci++)
          addAlmanac((*oci).second);
-      }
+
       return true;
    }
 
-      /// gets the closest almanac for the given time and satellite,
-      /// closest being in the past or future.
+   /// gets the closest almanac for the given time and satellite,
+   /// closest being in the past or future.
    AlmOrbit GPSAlmanacStore::findAlmanac(SatID sat, const DayTime& t) 
       const throw(InvalidRequest)
    {
       UBAMap::const_iterator satItr = uba.find(sat);
       if (satItr == uba.end())
       {
-         InvalidRequest e("No almanacs for satellite " + StringUtils::asString(sat));
+         InvalidRequest e("No almanacs for satellite " +
+                        StringUtils::asString(sat));
          GPSTK_THROW(e);
       }
          
       const EngAlmMap& eam = (*satItr).second;
 
-         // find the closest almanac BEFORE t, if any.
+      // find the closest almanac BEFORE t, if any.
       EngAlmMap::const_iterator nextItr = eam.begin(),
          almItr = eam.end();
          
@@ -124,8 +130,8 @@ namespace gpstk
          }
       }
 
-         // check the next almanac (the first one after t's time)
-         // to see if it's closer than the one before t
+      // check the next almanac (the first one after t's time)
+      // to see if it's closer than the one before t
       if (nextItr != eam.end())
       {
          if ( ((*nextItr).first - t) < (t - (*almItr).first))
@@ -147,69 +153,14 @@ namespace gpstk
             AlmOrbit a = findAlmanac((*satItr).first, t);
             ao[(*satItr).first] = a;
          }
-            /// who cares about exceptions - the map will
-            /// be empty if there are no alms...
+         /// who cares about exceptions - the map will
+         /// be empty if there are no alms...
          catch(...)
          {}
 
          satItr++;
       }
       return ao;
-   }
-   
-   DayTime GPSAlmanacStore::getInitialTime() 
-      const throw(InvalidRequest)
-   {
-      DayTime retDT = DayTime::END_OF_TIME;
-      UBAMap::const_iterator satItr = uba.begin();
-      while (satItr != uba.end())
-      {
-         const EngAlmMap& eam = (*satItr).second;
-
-         EngAlmMap::const_iterator nextItr;
-         for (nextItr=eam.begin(); nextItr!=eam.end(); ++nextItr)
-         {
-            const AlmOrbit& ao = (*nextItr).second;
-            try 
-            {
-               DayTime testT = ao.getToaTime();
-               if (testT<retDT) retDT = testT;
-            }
-               // Not to worry, worst case method return 'END_OF_TIME'
-            catch(...)
-            {}
-         }
-         satItr++;
-      }
-      return(retDT);
-   }
-
-
-   DayTime GPSAlmanacStore::getFinalTime() 
-      const throw(InvalidRequest)
-   {
-      DayTime retDT = DayTime::BEGINNING_OF_TIME;
-      UBAMap::const_iterator satItr = uba.begin();
-      while (satItr != uba.end())
-      {
-         const EngAlmMap& eam = (*satItr).second;
-
-         EngAlmMap::const_iterator nextItr;
-         for (nextItr=eam.begin(); nextItr!=eam.end(); ++nextItr)
-         {
-            const AlmOrbit& ao = (*nextItr).second;
-            try 
-            {
-               DayTime testT = ao.getToaTime();
-               if (testT<retDT) retDT = testT;
-            }
-               // Not to worry, worst case method return 'BEGINNING_OF_TIME'
-            catch(...)
-            {}
-         }
-         satItr++;
-      }
-      return(retDT);
    }
 
 
