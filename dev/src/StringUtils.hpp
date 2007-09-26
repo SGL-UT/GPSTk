@@ -2453,9 +2453,8 @@ namespace gpstk
                              const std::string::size_type startPos,
                              const std::string::size_type length) 
       {
-         std::string s(aStr);
+         std::string s(aStr, startPos, length);
          strip(s);
-         std::string::size_type pos;
 
             // you can blame Rinex for these special checks
          if (s.empty())
@@ -2463,15 +2462,14 @@ namespace gpstk
             return 0;
          }
 
-         if ( ((pos = s.find('E', startPos)) != std::string::npos) ||
-              ((pos = s.find('d', startPos)) != std::string::npos) ||
-              ((pos = s.find('D', startPos)) != std::string::npos))
+         std::string::size_type pos = s.find_first_of("EDd");
+         if (pos != std::string::npos)
          {
             s[pos] = 'e';
          }
-            // just treat it like a double
          else
          {
+               // just treat it like a double
             return asDouble(aStr.substr(startPos, length));
          }
          
