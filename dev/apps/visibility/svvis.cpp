@@ -171,7 +171,6 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
       startTime = ephReader.eph->getInitialTime();
       long sow = static_cast<long>(startTime.GPSsow());
       sow -= sow % static_cast<long>(timeStep);
-      cout << sow << endl;
       startTime.setGPS(startTime.GPSfullweek(), static_cast<double>(sow));
       startTime += timeStep;
    }
