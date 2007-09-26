@@ -2,15 +2,16 @@
 ## Process this file with automake to produce Makefile.in
 lib_LTLIBRARIES = libgpstk.la
 libgpstk_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
-libgpstk_la_SOURCES = ANSITime.cpp AlmOrbit.cpp AlmanacStore.cpp \
-BCEphemerisStore.cpp Bancroft.cpp BasicFramework.cpp BinUtils.cpp \
+libgpstk_la_SOURCES = ANSITime.cpp AlmOrbit.cpp \
+Bancroft.cpp BasicFramework.cpp BinUtils.cpp \
 BinexData.cpp CivilTime.cpp CodeBuffer.cpp CommandOption.cpp \
 CommandOptionParser.cpp CommandOptionWithCommonTimeArg.cpp \
 CommandOptionWithPositionArg.cpp CommandOptionWithTimeArg.cpp CommonTime.cpp \
 DOP.cpp DayTime.cpp ECEF.cpp EngAlmanac.cpp EngEphemeris.cpp EngNav.cpp \
 EphemerisRange.cpp Exception.cpp Expression.cpp FFData.cpp FFStream.cpp \
 FICData.cpp FICData109.cpp FICData162.cpp FICData62.cpp FICData9.cpp \
-FICHeader.cpp FileHunter.cpp FileSpec.cpp GPSEpochWeekSecond.cpp \
+FICHeader.cpp FileHunter.cpp FileSpec.cpp \
+GPSAlmanacStore.cpp GPSEphemerisStore.cpp GPSEpochWeekSecond.cpp \
 GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp GPSZcount29.cpp \
 GPSZcount32.cpp GenXSequence.cpp Geodetic.cpp IonoModel.cpp \
 IonoModelStore.cpp JulianDate.cpp LinearClockModel.cpp LoopedFramework.cpp \
@@ -31,14 +32,14 @@ ProcessingList.cpp ProcessingVector.cpp SimpleFilter.cpp XYZ2NEU.cpp \
 XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
 
 incldir = $(includedir)/gpstk
-incl_HEADERS = ANSITime.hpp AlmOrbit.hpp AlmanacStore.hpp \
-BCEphemerisStore.hpp Bancroft.hpp BasicFramework.hpp BinUtils.hpp \
+incl_HEADERS = ANSITime.hpp AlmOrbit.hpp \
+Bancroft.hpp BasicFramework.hpp BinUtils.hpp \
 BinexData.hpp BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp \
 CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp \
 CommandOption.hpp CommandOptionParser.hpp CommandOptionWithCommonTimeArg.hpp \
 CommandOptionWithPositionArg.hpp CommandOptionWithTimeArg.hpp CommonTime.hpp \
 DOP.hpp DayTime.hpp ECEF.hpp EngAlmanac.hpp \
-EngEphemeris.hpp EngNav.hpp EphemerisRange.hpp EphemerisStore.hpp \
+EngEphemeris.hpp EngNav.hpp EphemerisRange.hpp \
 EpochClockModel.hpp Exception.hpp Expression.hpp ExtractC1.hpp \
 ExtractCombinationData.hpp ExtractD1.hpp ExtractD2.hpp ExtractData.hpp \
 ExtractL1.hpp ExtractL2.hpp ExtractLC.hpp ExtractP1.hpp ExtractP2.hpp \
@@ -47,7 +48,8 @@ FFTextStream.hpp FICAStream.hpp FICBase.hpp FICData.hpp FICData109.hpp \
 FICData162.hpp FICData62.hpp FICData9.hpp FICFilterOperators.hpp \
 FICHeader.hpp FICStream.hpp FICStreamBase.hpp FileFilter.hpp \
 FileFilterFrame.hpp FileFilterFrameWithHeader.hpp FileHunter.hpp FileSpec.hpp \
-FileStore.hpp FileUtils.hpp GPSEpochWeekSecond.hpp GPSGeoid.hpp \
+FileStore.hpp FileUtils.hpp GPSEphemerisStore.cpp GPSAlmanacStore.hpp \
+GPSEpochWeekSecond.hpp GPSGeoid.hpp \
 GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp GPSZcount29.hpp \
 GPSZcount32.hpp GenXSequence.hpp Geodetic.hpp GeoidModel.hpp IonoModel.hpp \
 IonoModelStore.hpp JulianDate.hpp LinearClockModel.hpp LoopedFramework.hpp \
