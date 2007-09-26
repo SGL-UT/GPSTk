@@ -89,8 +89,6 @@ namespace gpstk
          if (debugLevel>2)
             cout << "Trying " << fn << " as RINEX obs."<< endl;
          RinexObsStream s(fn.c_str(), ios::in);
-         if (debugLevel>2)
-            s.dumpState();
       
          RinexObsHeader temp_roh;
          s >> temp_roh;
@@ -107,8 +105,6 @@ namespace gpstk
          if (debugLevel>2)
             cout << "Trying " << fn << " as SMODF."<< endl;
          SMODFStream s(fn.c_str(), ios::in);
-         if (debugLevel>2)
-            s.dumpState();
          
          SMODFData smodata;       
          s >> smodata;
@@ -124,8 +120,6 @@ namespace gpstk
          if (debugLevel>2)
             cout << "Trying " << fn << " as MDP."<< endl;
          MDPStream s(fn.c_str(), ios::in);
-         if (debugLevel>2)
-            s.dumpState();
 
          MDPHeader header;
          s >> header;
@@ -141,8 +135,6 @@ namespace gpstk
          if (debugLevel>2)
             cout << "Trying " << fn << " as RINEX nav."<< endl;
          RinexNavStream s(fn.c_str(), ios::in);
-         if (debugLevel>2)
-            s.dumpState();
 
          RinexNavData rnd;
          RinexNavHeader rnh;
