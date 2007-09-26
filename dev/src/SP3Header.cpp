@@ -220,7 +220,13 @@ namespace gpstk
          int hour = asInt(line.substr(14,2));
          int minute = asInt(line.substr(17,2));
          double second = asInt(line.substr(20,10));
-         time = DayTime(year, month, dom, hour, minute, second);
+         try {
+            time = DayTime(year, month, dom, hour, minute, second);
+         }
+         catch (DayTime::DayTimeException& e) {
+            FFStreamError e("Invalid time:" + string(1, line[0]));
+            GPSTK_THROW(e);
+         }
          numberOfEpochs = asInt(line.substr(32,7));
          dataUsed = line.substr(40,5);
          coordSystem = line.substr(46,5);

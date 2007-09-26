@@ -203,7 +203,13 @@ namespace gpstk
             int hour = asInt(strm.buffer.substr(14,2));
             int minute = asInt(strm.buffer.substr(17,2));
             double second = asInt(strm.buffer.substr(20,10));
-            DayTime t(year, month, dom, hour, minute, second);
+            DayTime t;
+            try {
+               t = DayTime(year, month, dom, hour, minute, second);
+            } catch (DayTime::DayTimeException& e) {
+               FFStreamError e("Invalid time in:" + strm.buffer);
+               GPSTK_THROW(e);
+            }               
             time = strm.currentEpoch = t;
          }
 

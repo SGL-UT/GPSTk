@@ -44,58 +44,40 @@ namespace gpstk
    /** @addtogroup Yuma */
    //@{
 
-      /** 
-       * This class does not really do anything.  It is here to conform to the
-       * other file types, even though the Yuma file type 
-       * does not have any header information.
-       *
-       * @sa tests/Yuma for examples
-       * @sa YumaStream.
-       * @sa YumaData for more information on writing Yuma files.
-       */
+   /** 
+    * This class does not really do anything.  It is here to conform to the
+    * other file types, even though the Yuma file type 
+    * does not have any header information.
+    *
+    * @sa tests/Yuma for examples
+    * @sa YumaStream.
+    * @sa YumaData for more information on writing Yuma files.
+    */
    class YumaHeader : public YumaBase
    {
    public:
-         /// Constructor.
+      /// Constructor.
       YumaHeader() {}
 
-         /// Destructor
+      /// Destructor
       virtual ~YumaHeader() {}
       
 
-         /**
-          * Debug output function. 
-          * Dump the contents of each of the Yuma header to a
-          * given ostream \c s.
-          */ 
-      virtual void dump(std::ostream& s) const;
+      virtual void dump(std::ostream& s) const {};
       
-         //! This class is a "header" so this function always returns "true". 
+      //! This class is a "header" so this function always returns "true". 
       virtual bool isHeader() const {return true;}
-   
-      
 
    protected:      
-	 /**
-          * Writes a correctly formatted record from this header to stream \a s.
-          */
       virtual void reallyPutRecord(FFStream& s) const 
          throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException);  
+               gpstk::StringUtils::StringException)
+      {}
   
-         /**
-          * This functions obtains a Yuma header record from the given 
-          * FFStream.
-          * If there is an error in reading from the stream, it is reset
-          * to its original position and its fail-bit is set.
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and
-          *  a read or formatting error occurs.  This also resets the
-          *  stream to its pre-read position.
-          */
       virtual void reallyGetRecord(FFStream& s) 
          throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException);  
+               gpstk::StringUtils::StringException)
+      {}
       
    }; // class YumaHeader
 

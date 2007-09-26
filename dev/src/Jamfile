@@ -67,7 +67,7 @@ else
       ModeledReferencePR.cpp ModeledPR.cpp SimpleIURAWeight.cpp
       MOPSWeight.cpp
       BinexData.cpp
-      YumaHeader.cpp YumaData.cpp YumaAlmanacStore.cpp
+      YumaData.cpp YumaAlmanacStore.cpp
       SEMHeader.cpp SEMData.cpp SEMAlmanacStore.cpp
       SourceID.cpp TypeID.cpp DataHeaders.cpp DataStructures.cpp
       ProcessingList.cpp ProcessingVector.cpp SimpleFilter.cpp
