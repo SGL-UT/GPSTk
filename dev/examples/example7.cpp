@@ -212,8 +212,8 @@ int main(void)
     // Such equation states that there are NO changes in height for the rover.
     //                          dH = 0
 
-    // Add a "fake" satellite to identify the new equation: Sat #1 of system "mixed"
-    SatID satEq(1,SatID::systemMixed);
+    // Add a "fake" satellite to identify the new equation: Sat #1 of system "UserDefined"
+    SatID satEq(1,SatID::systemUserDefined);
 
     // Declare and fill a "typeValueMap" object that will hold the equation data
     typeValueMap equTVMap;

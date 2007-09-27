@@ -70,6 +70,7 @@ namespace gpstk
          systemLEO,
          systemTransit,
          systemMixed,
+         systemUserDefined,
          systemUnknown
       };
 
@@ -95,6 +96,7 @@ namespace gpstk
             case systemLEO:     s << "LEO";           break;
             case systemTransit: s << "Transit";       break;
             case systemMixed:   s << "Mixed";         break;
+            case systemUserDefined:   s << "UserDefined";         break;
             case systemUnknown: s << "Unknown";       break;
             default:            s << "??";            break;
          }
