@@ -104,14 +104,13 @@ namespace gpstk
          GPSTK_THROW(e);
       }
          
-      const EngAlmMap& eam = (*satItr).second;
+      const EngAlmMap& eam = satItr->second;
 
       // find the closest almanac BEFORE t, if any.
-      EngAlmMap::const_iterator nextItr = eam.begin(),
-         almItr = eam.end();
+      EngAlmMap::const_iterator nextItr = eam.begin(), almItr = eam.end();
          
       while ( (nextItr != eam.end()) &&
-              ((*nextItr).first < t) )
+              (nextItr->first < t) )
       {
          almItr = nextItr;
          nextItr++;
@@ -134,7 +133,7 @@ namespace gpstk
       // to see if it's closer than the one before t
       if (nextItr != eam.end())
       {
-         if ( ((*nextItr).first - t) < (t - (*almItr).first))
+         if ( (nextItr->first - t) < (t - almItr->first))
             almItr = nextItr;
       }
       return (*almItr).second;
@@ -150,8 +149,8 @@ namespace gpstk
       {
          try
          {
-            AlmOrbit a = findAlmanac((*satItr).first, t);
-            ao[(*satItr).first] = a;
+            AlmOrbit a = findAlmanac(satItr->first, t);
+            ao[satItr->first] = a;
          }
          /// who cares about exceptions - the map will
          /// be empty if there are no alms...
@@ -174,7 +173,17 @@ namespace gpstk
    void GPSAlmanacStore::dump(std::ostream& s, short detail)
       const throw()
    {
-      s << "Not yet implimented" << std::endl;
+      UBAMap::const_iterator i;
+      EngAlmMap::const_iterator j;
+      for (i=uba.begin(); i!= uba.end(); i++)
+      {
+         const EngAlmMap& eam = i->second;
+         for (j=eam.begin(); j!=eam.end(); j++)
+         {
+            j->second.dump(s, detail);
+            s << std::endl;
+         }
+      }
    }
    
 }
