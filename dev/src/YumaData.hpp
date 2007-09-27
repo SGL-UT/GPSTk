@@ -130,7 +130,10 @@ namespace gpstk
           */
       virtual void reallyGetRecord(FFStream& s) 
          throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException);  
+               gpstk::StringUtils::StringException);
+
+      std::string lineParser(const std::string& line, const std::string& s)
+         const throw(FFStreamError);
       
    }; // class YumaData
 

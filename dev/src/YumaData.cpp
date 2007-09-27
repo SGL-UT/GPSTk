@@ -39,124 +39,63 @@ using namespace std;
 
 namespace gpstk
 {
-   const std::string YumaData::sID   = "ID:                         ";
-   const std::string YumaData::sHlth = "Health:                     ";
-   const std::string YumaData::sEcc  = "Eccentricity:              ";
-   const std::string YumaData::sTOA  = "Time of Applicability(s):  ";
-   const std::string YumaData::sOrbI = "Orbital Inclination(rad):  ";
-   const std::string YumaData::sRRA  = "Rate of Right Ascen(r/s):  ";
-   const std::string YumaData::sSqrA = "SQRT(A)  (m 1/2):          ";
-   const std::string YumaData::sRtAs = "Right Ascen at Week(rad):  ";
-   const std::string YumaData::sArgP = "Argument of Perigee(rad):  ";
-   const std::string YumaData::sMnAn = "Mean Anom(rad):            ";
-   const std::string YumaData::sAf0  = "Af0(s):                    ";
-   const std::string YumaData::sAf1  = "Af1(s/s):                  ";
-   const std::string YumaData::sweek = "week:                      ";
+   const std::string YumaData::sID   = "ID:";
+   const std::string YumaData::sHlth = "Health:";
+   const std::string YumaData::sEcc  = "Eccentricity:";
+   const std::string YumaData::sTOA  = "Time of Applicability(s):";
+   const std::string YumaData::sOrbI = "Orbital Inclination(rad):";
+   const std::string YumaData::sRRA  = "Rate of Right Ascen(r/s):";
+   const std::string YumaData::sSqrA = "SQRT(A)  (m 1/2):";
+   const std::string YumaData::sRtAs = "Right Ascen at Week(rad):";
+   const std::string YumaData::sArgP = "Argument of Perigee(rad):";
+   const std::string YumaData::sMnAn = "Mean Anom(rad):";
+   const std::string YumaData::sAf0  = "Af0(s):";
+   const std::string YumaData::sAf1  = "Af1(s/s):";
+   const std::string YumaData::sweek = "week:";
 
    void YumaData::reallyPutRecord(FFStream& ffs) const 
       throw(std::exception, FFStreamError, 
                gpstk::StringUtils::StringException)  
    {
-      string line;
-
       YumaStream& strm = dynamic_cast<YumaStream&>(ffs);
       
-      // first the epoch line to 'line'
-      line  = "******** Week";
-      int epochWeek = week % 1024;
-      line += rightJustify(asString<short>(epochWeek), 5);
-      line += " almanac for PRN-";
-      line += rightJustify(asString<short>(PRN), 2, '0');
-      line += " ********";
-
-      // write the header line
-      strm << line << endl;
-      line.erase();
-
-      // Write the ID line
-      line = sID;
-      line += rightJustify(asString<short>(PRN),2,'0');
-      strm << line << endl;
-      line.erase();
-      
-      // Write the Health line
-      line = sHlth;
-      line += rightJustify(asString<short>(SV_health),3,'0');  // should be hex
-      strm << line << endl;
-      line.erase();
-      
-      // Write the Ecc line
-      line = sEcc;
-      line += leftJustify(asString(doub2for(ecc,17,3,false)),18);  
-      strm << line << endl;
-      line.erase();
-      
-      // Write the Toa line
-      line = sTOA;
-      line += leftJustify(asString((double)Toa,4),11);  
-      strm << line << endl;
-      line.erase();
-      
-      // Write the Orbital Inc line
-      line = sOrbI;
-      double i_total = i_offset + 54.0 * (gpstk::PI / 180.0 );
-      if (i_total >=0) line += " ";
-      line += leftJustify(asString(i_total,10),17);  
-      strm << line << endl;
-      line.erase();
-      
-      // Write the Rate of Right Ascen line
-      line = sRRA;
-      line += leftJustify(asString(doub2for(OMEGAdot,17,3,false)),18);
-      strm << line << endl;
-      line.erase();
-      
-      // Write the SqrtA line
-      line = sSqrA;
-      line += " ";
-      line += leftJustify(asString(Ahalf,6),18); 
-      strm << line << endl;
-      line.erase();
-      
-      // Write the Right Ascen at Week line
-      line = sRtAs;
-      line += leftJustify(asString(doub2for(OMEGA0,17,3,false)),18); 
-      strm << line << endl;
-      line.erase();
-      
-      // Write the Argument of Perigee line
-      line = sArgP;
-      if (w>=0) line += " ";
-      line += leftJustify(asString(w,9),18); 
-      strm << line << endl;
-      line.erase();
-      
-      // Write Mean Anomaly line
-      line = sMnAn;
-      line += leftJustify(asString(doub2for(M0,17,3,false)),18);  
-      strm << line << endl;
-      line.erase();
-      
-      // Write the Af0 line
-      line = sAf0;
-      line += leftJustify(asString(doub2for(AF0,17,3,false)),18);
-      strm << line << endl;
-      line.erase();
-      
-      // Write the AF1 line
-      line = sAf1;
-      line += leftJustify(asString(doub2for(AF1,17,3,false)),18);  // should be hex
-      strm << line << endl;
-      line.erase();
-      
-      // Write the week line
-      line = sweek;
-      line += rightJustify(asString<short>(epochWeek),5);  // should be hex
-      strm << line << endl;
-      line.erase();
-      strm << endl;
-      
+      const int width=27;
+      strm << "******** Week" << setw(5) << (week % 1024)
+           << " almanac for PRN-" << PRN 
+           << " ********" << endl
+           << left
+           << setw(width) << sID   << PRN << endl
+           << setw(width) << sHlth << hex << SV_health << endl
+           << setw(width) << sEcc  << ecc << endl
+           << setw(width) << sTOA  << Toa << endl
+           << setw(width) << sOrbI << (i_offset + 54.0 * (gpstk::PI / 180.0)) << endl
+           << setw(width) << sRRA  << OMEGAdot << endl
+           << setw(width) << sSqrA << Ahalf << endl
+           << setw(width) << sRtAs << OMEGA0 << endl
+           << setw(width) << sArgP << w << endl
+           << setw(width) << sMnAn << M0 << endl
+           << setw(width) << sAf0  << AF0 << endl
+           << setw(width) << sAf1  << AF1 << endl
+           << setw(width) << sweek << week << endl;
    }   // end YumaData::reallyPutRecord
+
+
+   string YumaData::lineParser(const string& line, const string& s)
+      const throw(FFStreamError)
+   {
+      int i = line.find_first_of(":");
+
+      // Gotta have a colon or the format is wrong
+      if (i == string::npos)
+         GPSTK_THROW(FFStreamError("Format error in YumaData"));
+      
+      // Only compare the first five characters since some files differ after that
+      int w = std::min(5, std::min(i, (int)s.size()));
+      if (line.substr(0,w) != s.substr(0,w))
+         GPSTK_THROW(FFStreamError("Format error in YumaData"));
+
+      return stripLeading(line.substr(i+1), " ");
+   }
 
 
    void YumaData::reallyGetRecord(FFStream& ffs) 
@@ -172,71 +111,58 @@ namespace gpstk
       
       //Second Line - PRN
       strm.formattedGetLine(line, true);
-      stripLeading( line, sID );
-      PRN = asInt(line);
+      PRN = asInt(lineParser(line, sID));
 
       //Third Line - Satellite Health
       strm.formattedGetLine(line, true);
-      stripLeading( line, sHlth ); 
-      SV_health = asInt(line);
+      SV_health = asInt(lineParser(line, sHlth));
       
       //Fourth Line - Eccentricity
       strm.formattedGetLine(line, true);
-      stripLeading( line, sEcc ); 
-      ecc = asDouble(line);
+      ecc = asDouble(lineParser(line, sEcc));
 
       //Fifth Line - Time of Applicability
       strm.formattedGetLine(line, true);
-      stripLeading( line, sTOA ); 
-      double dToa = asDouble(line);
-      Toa = (long) dToa;
+      Toa = (long) asDouble(lineParser(line, sTOA));
 
       //Sixth Line - Orbital Inclination
       strm.formattedGetLine(line, true);
-      stripLeading( line, sOrbI ); 
-      double i_total = asDouble(line);
+      double i_total = asDouble(lineParser(line, sOrbI));
       i_offset = i_total - 54.0 * (gpstk::PI / 180.0);
       
       //Seventh Line - Rate of Right Ascen
       strm.formattedGetLine(line, true);
-      stripLeading( line, sRRA ); 
-      OMEGAdot = asDouble(line);
+      OMEGAdot = asDouble(lineParser(line, sRRA));
       
       //Eigth Line - SqrtA
       strm.formattedGetLine(line, true);
-      stripLeading( line, sSqrA ); 
-      Ahalf = asDouble(line);
+      Ahalf = asDouble(lineParser(line, sSqrA));
       
       //Ninth Line - Right Ascen at Week
       strm.formattedGetLine(line, true);
-      stripLeading( line, sRtAs ); 
-      OMEGA0 = asDouble(line);
+      OMEGA0 = asDouble(lineParser(line, sRtAs));
       
       //Tenth Line - Argument of Perigee
       strm.formattedGetLine(line, true);
-      stripLeading( line, sArgP ); 
-      w = asDouble(line);
+      w = asDouble(lineParser(line, sArgP));
       
       //Eleventh Line - Mean Anomaly
       strm.formattedGetLine(line, true);
-      stripLeading( line, sMnAn ); 
-      M0 = asDouble(line);
+      M0 = asDouble(lineParser(line, sMnAn));
       
       //Twelfth Line - Af0
       strm.formattedGetLine(line, true);
-      stripLeading( line, sAf0 ); 
-      AF0 = asDouble(line);
+      AF0 = asDouble(lineParser(line, sAf0));
       
       //Thirteenth Line - Af1
       strm.formattedGetLine(line, true);
-      stripLeading( line, sAf1 ); 
-      AF1 = asDouble(line);
+      AF1 = asDouble(lineParser(line, sAf1));
       
       //Fourteenth Line - week
       strm.formattedGetLine(line, true);
-      stripLeading( line, sweek ); 
-      int epoch_week = asInt(line);
-      week = epoch_week + 1024;                    // Need a way to set epoch     Do we??
+      int epoch_week = asInt(lineParser(line, sweek));
+      // Need a way to set epoch     Do we??
+      week = epoch_week + 1024;
       
       xmit_time = 0;
       strm.formattedGetLine(line,true);
