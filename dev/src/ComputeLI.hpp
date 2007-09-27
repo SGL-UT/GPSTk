@@ -4,8 +4,8 @@
  * This class eases computing LI combination for GNSS data structures.
  */
 
-#ifndef Compute_LI_GPSTK
-#define Compute_LI_GPSTK
+#ifndef COMPUTE_LI_GPSTK
+#define COMPUTE_LI_GPSTK
 
 //============================================================================
 //
@@ -80,6 +80,7 @@ namespace gpstk
             type1 = TypeID::L1;
             type2 = TypeID::L2;
             resultType = TypeID::LI;
+            setIndex();
         };
 
 
@@ -87,12 +88,27 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& Combine(satTypeValueMap& gData)
+        virtual satTypeValueMap& Process(satTypeValueMap& gData)
         {
-            ComputeCombination::Combine(gData);
+            ComputeCombination::Process(gData);
 
             return gData;
         }
+
+
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
 
 
         /// Destructor
@@ -100,11 +116,24 @@ namespace gpstk
 
 
     protected:
+
         /// Compute the combination of observables.
         virtual double getCombination(const double& obs1, const double& obs2)
         {
             return ( obs1 - obs2 );
         };
+
+
+    private:
+
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
 
    }; // end class ComputeLI
    

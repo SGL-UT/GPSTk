@@ -4,8 +4,8 @@
  * This class eases computing LC combination for GNSS data structures.
  */
 
-#ifndef Compute_LC_GPSTK
-#define Compute_LC_GPSTK
+#ifndef COMPUTE_LC_GPSTK
+#define COMPUTE_LC_GPSTK
 
 //============================================================================
 //
@@ -25,7 +25,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Dagoberto Salazar - gAGE. 2007
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
 //============================================================================
 
@@ -80,6 +80,7 @@ namespace gpstk
             type1 = TypeID::L1;
             type2 = TypeID::L2;
             resultType = TypeID::LC;
+            setIndex();
         };
 
 
@@ -87,12 +88,27 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& Combine(satTypeValueMap& gData)
+        virtual satTypeValueMap& Process(satTypeValueMap& gData)
         {
-            ComputeCombination::Combine(gData);
+            ComputeCombination::Process(gData);
 
             return gData;
         }
+
+
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
 
 
         /// Destructor
@@ -100,15 +116,26 @@ namespace gpstk
 
 
     protected:
+
         /// Compute the combination of observables.
         virtual double getCombination(const double& obs1, const double& obs2)
         {
             return ( (GAMMA_GPS*obs1 - obs2)/(DEN) );
         };
 
+
     private:
 
         const double DEN;     // DEN = GAMMA_GPS - 1
+
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
 
    }; // end class ComputeLC
    

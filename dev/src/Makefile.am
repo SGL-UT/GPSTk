@@ -28,8 +28,9 @@ TimeConverters.cpp TimeString.cpp TimeTag.cpp Triple.cpp TropModel.cpp \
 TypeID.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp X1Sequence.cpp \
 X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp YumaData.cpp \
 YumaHeader.cpp DataHeaders.cpp DataStructures.cpp \
-ProcessingList.cpp ProcessingVector.cpp SimpleFilter.cpp XYZ2NEU.cpp \
-XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
+ProcessingList.cpp ProcessingVector.cpp SimpleFilter.cpp \
+ComputePC.cpp ComputeLC.cpp ComputeLI.cpp ComputeMelbourneWubbena.cpp \
+XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = ANSITime.hpp AlmOrbit.hpp \

@@ -4,8 +4,8 @@
  * This is the base class to ease computing combination of data for GNSS data structures.
  */
 
-#ifndef Compute_Combination_GPSTK
-#define Compute_Combination_GPSTK
+#ifndef COMPUTE_COMBINATION_GPSTK
+#define COMPUTE_COMBINATION_GPSTK
 
 //============================================================================
 //
@@ -25,13 +25,13 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Dagoberto Salazar - gAGE. 2007
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
 //============================================================================
 
 
 
-#include "DataStructures.hpp"
+#include "ProcessingClass.hpp"
 
 
 namespace gpstk
@@ -42,7 +42,7 @@ namespace gpstk
 
 
     /// This class eases computing combination of data for GNSS data structures.
-    class ComputeCombination
+    class ComputeCombination : public ProcessingClass
     {
     public:
 
@@ -54,7 +54,7 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& Combine(satTypeValueMap& gData)
+        virtual satTypeValueMap& Process(satTypeValueMap& gData)
         {
             double value1(0.0);
             double value2(0.0);
@@ -91,9 +91,9 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssSatTypeValue& Combine(gnssSatTypeValue& gData)
+        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
         {
-            (*this).Combine(gData.body);
+            (*this).Process(gData.body);
             return gData;
         };
 
@@ -102,11 +102,19 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& Combine(gnssRinex& gData)
+        virtual gnssRinex& Process(gnssRinex& gData)
         {
-            (*this).Combine(gData.body);
+            (*this).Process(gData.body);
             return gData;
         };
+
+
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const { return 1599999; };
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const { return "ComputeCombination"; };
 
 
         /// Destructor
@@ -128,23 +136,6 @@ namespace gpstk
 
 
    }; // end class ComputeCombination
-
-
-    /// Input operator from gnssSatTypeValue to ComputeCombination.
-    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, ComputeCombination& compComb)
-    {
-            compComb.Combine(gData);
-            return gData;
-    }
-
-
-    /// Input operator from gnssRinex to ComputeCombination.
-    inline gnssRinex& operator>>(gnssRinex& gData, ComputeCombination& compComb)
-    {
-            compComb.Combine(gData);
-            return gData;
-    }
-
    
 
    //@}
