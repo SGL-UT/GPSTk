@@ -207,8 +207,8 @@ namespace gpstk
             try {
                t = DayTime(year, month, dom, hour, minute, second);
             } catch (DayTime::DayTimeException& e) {
-               FFStreamError e("Invalid time in:" + strm.buffer);
-               GPSTK_THROW(e);
+               FFStreamError fe("Invalid time in:" + strm.buffer);
+               GPSTK_THROW(fe);
             }               
             time = strm.currentEpoch = t;
          }

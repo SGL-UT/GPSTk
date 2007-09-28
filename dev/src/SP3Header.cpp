@@ -224,8 +224,8 @@ namespace gpstk
             time = DayTime(year, month, dom, hour, minute, second);
          }
          catch (DayTime::DayTimeException& e) {
-            FFStreamError e("Invalid time:" + string(1, line[0]));
-            GPSTK_THROW(e);
+            FFStreamError fe("Invalid time:" + string(1, line[0]));
+            GPSTK_THROW(fe);
          }
          numberOfEpochs = asInt(line.substr(32,7));
          dataUsed = line.substr(40,5);
