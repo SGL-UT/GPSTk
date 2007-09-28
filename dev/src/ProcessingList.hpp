@@ -81,13 +81,17 @@ namespace gpstk
         /** Processing method. It returns a satTypeValueMap object.
          *
          * @param gData     Data object holding the data.
+         *
+         * \warning: Some processing classes require time information in order to carry out
+         * their work (for instance, cycle-slip detectors). Therefore, they may not work
+         * when trying to process a satTypeValueMap GNSS data structure.
          */
         virtual satTypeValueMap& Process(satTypeValueMap& gData)
         {
             std::list<ProcessingClass*>::iterator pos;
             for (pos = proclist.begin(); pos != proclist.end(); ++pos)
             {
-                (*pos)->Process(gData);                
+                (*pos)->Process(gData);
             }
 
             return gData;
@@ -100,7 +104,12 @@ namespace gpstk
          */
         virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
         {
-            (*this).Process(gData.body);
+            std::list<ProcessingClass*>::iterator pos;
+            for (pos = proclist.begin(); pos != proclist.end(); ++pos)
+            {
+                (*pos)->Process(gData);
+            }
+
             return gData;
         };
 
@@ -111,7 +120,12 @@ namespace gpstk
          */
         virtual gnssRinex& Process(gnssRinex& gData)
         {
-            (*this).Process(gData.body);
+            std::list<ProcessingClass*>::iterator pos;
+            for (pos = proclist.begin(); pos != proclist.end(); ++pos)
+            {
+                (*pos)->Process(gData);
+            }
+
             return gData;
         };
 
