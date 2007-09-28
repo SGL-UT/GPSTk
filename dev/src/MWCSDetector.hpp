@@ -31,7 +31,7 @@
 
 
 
-#include "DataStructures.hpp"
+#include "ProcessingClass.hpp"
 #include <list>
 
 
@@ -113,12 +113,15 @@ namespace gpstk
      * so you MUST NOT use the SAME object to process DIFFERENT data streams.
      *
      */    
-    class MWCSDetector
+    class MWCSDetector : public ProcessingClass
     {
     public:
 
         /// Default constructor, setting default parameters.
-        MWCSDetector() : obsType(TypeID::MWubbena), lliType1(TypeID::LLI1), lliType2(TypeID::LLI2), resultType1(TypeID::CSL1), resultType2(TypeID::CSL2), deltaTMax(61.0), maxNumLambdas(10.0), useLLI(true) {};
+        MWCSDetector() : obsType(TypeID::MWubbena), lliType1(TypeID::LLI1), lliType2(TypeID::LLI2), resultType1(TypeID::CSL1), resultType2(TypeID::CSL2), deltaTMax(61.0), maxNumLambdas(10.0), useLLI(true)
+        {
+            setIndex();
+        };
 
 
         /** Common constructor
@@ -130,6 +133,7 @@ namespace gpstk
         {
             setDeltaTMax(dtMax);
             setMaxNumLambdas(mLambdas);
+            setIndex();
         };
 
 
@@ -139,7 +143,7 @@ namespace gpstk
          * @param gData     Data object holding the data.
          * @param epochflag Epoch flag.
          */
-        virtual satTypeValueMap& Detect(const DayTime& epoch, satTypeValueMap& gData, const short& epochflag=0)
+        virtual satTypeValueMap& Process(const DayTime& epoch, satTypeValueMap& gData, const short& epochflag=0)
         {
             double value1(0.0);
             double lli1(0.0);
@@ -255,9 +259,9 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssSatTypeValue& Detect(gnssSatTypeValue& gData)
+        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
         {
-            (*this).Detect(gData.header.epoch, gData.body);
+            (*this).Process(gData.header.epoch, gData.body);
             return gData;
         };
 
@@ -266,11 +270,26 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& Detect(gnssRinex& gData)
+        virtual gnssRinex& Process(gnssRinex& gData)
         {
-            (*this).Detect(gData.header.epoch, gData.body, gData.header.epochFlag);
+            (*this).Process(gData.header.epoch, gData.body, gData.header.epochFlag);
             return gData;
         };
+
+
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
 
 
         /// Destructor
@@ -392,26 +411,25 @@ namespace gpstk
             if (reportCS) return 1.0; else return 0.0;
         };
 
+
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
+
+
+        /// Dummy method, returning as output the same satTypeValueMap object input.
+        /// It means that this method processes NOTHING, given that OneFreqCSDetector
+        /// objects need epoch information to work, which is not provided by
+        /// satTypeValueMap GNSS data structures.
+        virtual satTypeValueMap& Process(satTypeValueMap& gData) { return gData; };
+
+
    }; // end class MWCSDetector
-   
-
-    /// Input operator from gnssSatTypeValue to MWCSDetector.
-    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, MWCSDetector& mwD)
-    {
-            mwD.Detect(gData);
-            return gData;
-    }
-
-
-    /// Input operator from gnssRinex to MWCSDetector.
-    inline gnssRinex& operator>>(gnssRinex& gData, MWCSDetector& mwD)
-    {
-            mwD.Detect(gData);
-            return gData;
-    }
-
-   
-
 
 
    //@}

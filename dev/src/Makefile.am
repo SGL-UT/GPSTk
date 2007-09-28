@@ -30,7 +30,7 @@ X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp YumaData.cpp \
 YumaHeader.cpp DataHeaders.cpp DataStructures.cpp \
 ProcessingList.cpp ProcessingVector.cpp SimpleFilter.cpp \
 ComputePC.cpp ComputeLC.cpp ComputeLI.cpp ComputeMelbourneWubbena.cpp \
-OneFreqCSDetector.cpp LICSDetector.cpp \
+OneFreqCSDetector.cpp LICSDetector.cpp MWCSDetector.cpp \
 XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
 
 incldir = $(includedir)/gpstk
