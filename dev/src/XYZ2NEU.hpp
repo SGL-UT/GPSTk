@@ -35,7 +35,7 @@
 #include "Matrix.hpp"
 #include "Position.hpp"
 #include "TypeID.hpp"
-#include "DataStructures.hpp"
+#include "ProcessingClass.hpp"
 
 
 namespace gpstk
@@ -105,7 +105,7 @@ namespace gpstk
        *
        * @sa XYZ2NED.hpp
        */
-    class XYZ2NEU
+    class XYZ2NEU : public ProcessingClass
     {
     public:
 
@@ -113,6 +113,7 @@ namespace gpstk
         XYZ2NEU() : refLat(0.0), refLon(0.0)
         {
             Prepare();
+            setIndex();
         };
 
 
@@ -124,6 +125,7 @@ namespace gpstk
         XYZ2NEU(const double& lat, const double& lon)
         {
             setLatLon(lat, lon);
+            setIndex();
         }
 
 
@@ -134,6 +136,7 @@ namespace gpstk
         XYZ2NEU(const Position& refPos)
         {
             setLatLon(refPos.getGeodeticLatitude(), refPos.getLongitude());
+            setIndex();
         }
 
 
@@ -189,16 +192,16 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& Convert(satTypeValueMap& gData);
+        virtual satTypeValueMap& Process(satTypeValueMap& gData);
 
 
         /** Returns a reference to a gnssSatTypeValue object after converting from a geocentric reference system to a topocentric reference system.
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssSatTypeValue& Convert(gnssSatTypeValue& gData) 
+        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData) 
         {
-            (*this).Convert(gData.body);
+            (*this).Process(gData.body);
             return gData;
         };
 
@@ -207,11 +210,26 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& Convert(gnssRinex& gData)
+        virtual gnssRinex& Process(gnssRinex& gData)
         {
-            (*this).Convert(gData.body);
+            (*this).Process(gData.body);
             return gData;
         };
+
+
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
 
 
         /// Destructor.
@@ -245,23 +263,18 @@ namespace gpstk
         virtual void Prepare();
 
 
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
+
+
    }; // class XYZ2NEU
 
-
-    /// Input operator from gnssSatTypeValue to XYZ2NEU.
-    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, XYZ2NEU& converter) 
-    {
-            converter.Convert(gData);
-            return gData;
-    }
-
-
-    /// Input operator from gnssRinex to XYZ2NEU.
-    inline gnssRinex& operator>>(gnssRinex& gData, XYZ2NEU& converter) 
-    {
-            converter.Convert(gData);
-            return gData;
-    }
 
    //@}
 

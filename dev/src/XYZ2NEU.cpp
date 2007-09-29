@@ -38,7 +38,7 @@ namespace gpstk
     //
     // @param gData     Data object holding the data.
     //
-    satTypeValueMap& XYZ2NEU::Convert(satTypeValueMap& gData)
+    satTypeValueMap& XYZ2NEU::Process(satTypeValueMap& gData)
     {
         Matrix<double> neuMatrix;
 
@@ -53,7 +53,7 @@ namespace gpstk
 
         return gData;
 
-    }  // end XYZ2NEU::Convert()
+    }  // end XYZ2NEU::Process()
 
 
     // This method builds the rotation matrix according to refLat and refLon values.
@@ -85,6 +85,19 @@ namespace gpstk
         outputSet.insert(TypeID::dH);
 
     }  // end XYZ2NEU::Prepare()
+
+
+
+    // Index initially assigned to this class
+    int XYZ2NEU::classIndex = 5000000;
+
+
+    // Returns an index identifying this object.
+    int XYZ2NEU::getIndex() const { return (*this).index; }
+
+
+    // Returns a string identifying this object.
+    std::string XYZ2NEU::getClassName() const { return "XYZ2NEU"; }
 
 
 } // end namespace gpstk

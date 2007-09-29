@@ -34,7 +34,7 @@ namespace gpstk
 {
 
     // Index initially assigned to this class
-    int ProcessingVector::classIndex = 6500000;
+    int ProcessingVector::classIndex = 9500000;
 
 
     // Returns an index identifying this object.
