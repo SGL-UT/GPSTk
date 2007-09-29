@@ -32,7 +32,7 @@ ProcessingList.cpp ProcessingVector.cpp SimpleFilter.cpp \
 ComputePC.cpp ComputeLC.cpp ComputePI.cpp ComputeLI.cpp \
 ComputePdelta.cpp ComputeLdelta.cpp ComputeMelbourneWubbena.cpp \
 OneFreqCSDetector.cpp LICSDetector.cpp MWCSDetector.cpp CodeSmoother.cpp \
-PCSmoother.cpp \
+PCSmoother.cpp ComputeIURAWeights.cpp ComputeMOPSWeights.cpp \
 XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
 
 incldir = $(includedir)/gpstk

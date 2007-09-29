@@ -4,8 +4,8 @@
  * This class computes satellites weights based on the Appendix J of MOPS C, and is meant to be used with GNSS data structures.
  */
 
-#ifndef Compute_MOPS_WEIGHTS_GPSTK
-#define Compute_MOPS_WEIGHTS_GPSTK
+#ifndef COMPUTE_MOPS_WEIGHTS_GPSTK
+#define COMPUTE_MOPS_WEIGHTS_GPSTK
 
 //============================================================================
 //
@@ -37,7 +37,6 @@
 #include "GPSEphemerisStore.hpp"
 #include "ComputeIURAWeights.hpp"
 #include "TropModel.hpp"
-#include "DataStructures.hpp"
 #include "geometry.hpp"             // DEG_TO_RAD
 
 namespace gpstk
@@ -57,7 +56,7 @@ namespace gpstk
      *   RinexObsStream rin("ebre0300.02o");
      *   RinexNavStream rnavin("brdc0300.02n");
      *   RinexNavData rNavData;
-     *   BCEphemerisStore bceStore;
+     *   GPSEphemerisStore bceStore;
      *   while (rnavin >> rNavData) bceStore.addEphemeris(rNavData);
      *   bceStore.SearchPast();  // This is the default
      *
@@ -112,6 +111,7 @@ namespace gpstk
         {
             pBCEphemeris = NULL;
             pTabEphemeris = NULL;
+            setIndex();
         }
 
 
@@ -119,12 +119,13 @@ namespace gpstk
         /** Common constructor
          *
          * @param pos       Reference position.
-         * @param bcephem   BCEphemerisStore object holding the ephemeris.
+         * @param bcephem   GPSEphemerisStore object holding the ephemeris.
          * @param rxClass   Receiver class. By default, it is 2.
          */
         ComputeMOPSWeights(const Position& pos, GPSEphemerisStore& bcephem, int rxClass = 2) : receiverClass(rxClass), nominalPos(pos)
         {
             setDefaultEphemeris(bcephem);
+            setIndex();
         };
 
 
@@ -137,6 +138,7 @@ namespace gpstk
         ComputeMOPSWeights(const Position& pos, TabularEphemerisStore& tabephem, int rxClass = 2) : receiverClass(rxClass), nominalPos(pos)
         {
             setDefaultEphemeris(tabephem);
+            setIndex();
         };
 
 
@@ -144,10 +146,10 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& ComputeWeight(const DayTime& time, satTypeValueMap& gData)
+        virtual satTypeValueMap& Process(const DayTime& time, satTypeValueMap& gData)
         {
             // IURA weights are needed
-            ComputeIURAWeights::ComputeWeight(time, gData);
+            ComputeIURAWeights::Process(time, gData);
 
             double weight(0.000001);   // By default a very small value
             SatIDSet satRejectedSet;
@@ -180,9 +182,9 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssSatTypeValue& ComputeWeight(gnssSatTypeValue& gData)
+        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
         {
-            (*this).ComputeWeight(gData.header.epoch, gData.body);
+            (*this).Process(gData.header.epoch, gData.body);
             return gData;
         };
 
@@ -191,9 +193,9 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& ComputeWeight(gnssRinex& gData)
+        virtual gnssRinex& Process(gnssRinex& gData)
         {
-            (*this).ComputeWeight(gData.header.epoch, gData.body);
+            (*this).Process(gData.header.epoch, gData.body);
             return gData;
         };
 
@@ -205,6 +207,21 @@ namespace gpstk
         {
             nominalPos = pos;
         };
+
+
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
 
 
         /// Destructor
@@ -258,56 +275,74 @@ namespace gpstk
         };
 
 
-    // Compute ionospheric sigma^2 according to Appendix J.2.3 and Appendix A.4.4.10.4 in MOPS-C
-    double sigma2iono(const double& ionoCorrection, const double& elevation, const double& azimuth, const Position& rxPosition) throw(InvalidWeights)
-    {
-        // First, let's found magnetic latitude according to ICD-GPS-200, section 20.3.3.5.2.6
-        double azRad = azimuth * DEG_TO_RAD;
-        double elevRad = elevation * DEG_TO_RAD;
-        double cosElev = std::cos(elevRad);
-        double svE = elevation / 180.0;     // Semi-circles
-
-        double phi_u = rxPosition.getGeodeticLatitude() / 180.0;        // Semi-circles
-        double lambda_u = rxPosition.getLongitude() / 180.0;    // Semi-circles
-      
-        double psi = (0.0137 / (svE + 0.11)) - 0.022;       // Semi-circles
-      
-        double phi_i = phi_u + psi * std::cos(azRad);        // Semi-circles
-        if (phi_i > 0.416)
-            phi_i = 0.416;
-        if (phi_i < -0.416)
-            phi_i = -0.416;
-
-        double lambda_i = lambda_u + ( psi * std::sin(azRad) / std::cos(phi_i*PI) ); // Semi-circles
-      
-        double phi_m = phi_i + 0.064 * std::cos((lambda_i - 1.617)*PI);     // Semi-circles
-
-        // Convert magnetic latitude to degrees
-        phi_m = std::abs(phi_m * 180.0);
-
-        // Estimate vertical ionospheric delay according to MOPS-C
-        double tau_vert;
-        if ( (phi_m >= 0.0) && (phi_m <= 20.0) ) { tau_vert = 9.0; }
-        else
+        // Compute ionospheric sigma^2 according to Appendix J.2.3 and Appendix A.4.4.10.4 in MOPS-C
+        double sigma2iono(const double& ionoCorrection, const double& elevation, const double& azimuth, const Position& rxPosition) throw(InvalidWeights)
         {
-            if ( (phi_m > 20.0) && (phi_m <= 55.0) ) { tau_vert = 4.5; }
-            else tau_vert = 6.0;
-        }
+            // First, let's found magnetic latitude according to ICD-GPS-200, section 20.3.3.5.2.6
+            double azRad = azimuth * DEG_TO_RAD;
+            double elevRad = elevation * DEG_TO_RAD;
+            double cosElev = std::cos(elevRad);
+            double svE = elevation / 180.0;     // Semi-circles
 
-        // Compute obliquity factor
-        double fpp = ( 1.0 / (std::sqrt(1.0 - 0.898665418 * cosElev * cosElev)) );
+            double phi_u = rxPosition.getGeodeticLatitude() / 180.0;        // Semi-circles
+            double lambda_u = rxPosition.getLongitude() / 180.0;    // Semi-circles
+      
+            double psi = (0.0137 / (svE + 0.11)) - 0.022;       // Semi-circles
+      
+           double phi_i = phi_u + psi * std::cos(azRad);        // Semi-circles
+            if (phi_i > 0.416)
+                phi_i = 0.416;
+            if (phi_i < -0.416)
+                phi_i = -0.416;
 
-        double sigma2uire = ( (ionoCorrection*ionoCorrection) / 25.0 );
+            double lambda_i = lambda_u + ( psi * std::sin(azRad) / std::cos(phi_i*PI) ); // Semi-circles
+      
+            double phi_m = phi_i + 0.064 * std::cos((lambda_i - 1.617)*PI);     // Semi-circles
 
-        double fact = ( (fpp*tau_vert) * (fpp*tau_vert) );
+            // Convert magnetic latitude to degrees
+            phi_m = std::abs(phi_m * 180.0);
 
-        if (fact > sigma2uire) sigma2uire = fact;
+            // Estimate vertical ionospheric delay according to MOPS-C
+            double tau_vert;
+            if ( (phi_m >= 0.0) && (phi_m <= 20.0) ) { tau_vert = 9.0; }
+            else
+            {
+                if ( (phi_m > 20.0) && (phi_m <= 55.0) ) { tau_vert = 4.5; }
+                else tau_vert = 6.0;
+            }
 
-        return sigma2uire;
+            // Compute obliquity factor
+            double fpp = ( 1.0 / (std::sqrt(1.0 - 0.898665418 * cosElev * cosElev)) );
 
-    }  // End of sigma2iono()
+            double sigma2uire = ( (ionoCorrection*ionoCorrection) / 25.0 );
 
-   }; // end class ComputeMOPSWeights
+            double fact = ( (fpp*tau_vert) * (fpp*tau_vert) );
+
+            if (fact > sigma2uire) sigma2uire = fact;
+
+            return sigma2uire;
+
+        }  // End of sigma2iono()
+
+
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
+
+
+        /// Dummy method, returning as output the same satTypeValueMap object input.
+        /// It means that this method processes NOTHING, given that OneFreqCSDetector
+        /// objects need epoch information to work, which is not provided by
+        /// satTypeValueMap GNSS data structures.
+        virtual satTypeValueMap& Process(satTypeValueMap& gData) { return gData; };
+
+
+    }; // end class ComputeMOPSWeights
 
 
    //@}

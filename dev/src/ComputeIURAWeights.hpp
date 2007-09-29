@@ -4,8 +4,8 @@
  * This class computes satellites weights based on URA Index and is meant to be used with GNSS data structures.
  */
 
-#ifndef Compute_IURA_WEIGHTS_GPSTK
-#define Compute_IURA_WEIGHTS_GPSTK
+#ifndef COMPUTE_IURA_WEIGHTS_GPSTK
+#define COMPUTE_IURA_WEIGHTS_GPSTK
 
 //============================================================================
 //
@@ -35,7 +35,7 @@
 #include "EngEphemeris.hpp"
 #include "TabularEphemerisStore.hpp"
 #include "GPSEphemerisStore.hpp"
-#include "DataStructures.hpp"
+#include "ProcessingClass.hpp"
 
 
 namespace gpstk
@@ -55,7 +55,7 @@ namespace gpstk
      *   RinexObsStream rin("ebre0300.02o");
      *   RinexNavStream rnavin("brdc0300.02n");
      *   RinexNavData rNavData;
-     *   BCEphemerisStore bceStore;
+     *   GPSEphemerisStore bceStore;
      *   while (rnavin >> rNavData) bceStore.addEphemeris(rNavData);
      *   bceStore.SearchPast();  // This is the default
      *
@@ -80,35 +80,45 @@ namespace gpstk
      *
      */
 
-    class ComputeIURAWeights : public WeightBase
+    class ComputeIURAWeights : public WeightBase, public ProcessingClass
     {
     public:
 
         /// Default constructor
-        ComputeIURAWeights() : pBCEphemeris(NULL), pTabEphemeris(NULL) {};
+        ComputeIURAWeights() : pBCEphemeris(NULL), pTabEphemeris(NULL)
+        {
+            setIndex();
+        };
 
 
         /** Common constructor
          *
-         * @param bcephem   BCEphemerisStore object holding the ephemeris.
+         * @param bcephem   GPSEphemerisStore object holding the ephemeris.
          */
-        ComputeIURAWeights(GPSEphemerisStore& bcephem) : pBCEphemeris(&bcephem), pTabEphemeris(NULL) {};
+        ComputeIURAWeights(GPSEphemerisStore& bcephem) : pBCEphemeris(&bcephem), pTabEphemeris(NULL)
+        {
+            setIndex();
+        };
 
 
         /** Common constructor
          *
          * @param tabephem  TabularEphemerisStore object holding the ephemeris.
          */
-        ComputeIURAWeights(TabularEphemerisStore& tabephem) : pBCEphemeris(NULL), pTabEphemeris(&tabephem) {};
+        ComputeIURAWeights(TabularEphemerisStore& tabephem) : pBCEphemeris(NULL), pTabEphemeris(&tabephem)
+        {
+            setIndex();
+        };
 
 
         /** Common constructor
          *
-         * @param ephem  EphemerisStore object holding the ephemeris.
+         * @param ephem  XvtStore<SatID> object holding the ephemeris.
          */
         ComputeIURAWeights(XvtStore<SatID>& ephem)
         {
             setDefaultEphemeris(ephem);
+            setIndex();
         };
 
 
@@ -116,7 +126,7 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& ComputeWeight(const DayTime& time, satTypeValueMap& gData)
+        virtual satTypeValueMap& Process(const DayTime& time, satTypeValueMap& gData)
         {
             double weight(0.000001);   // By default a very small value
             SatIDSet satRejectedSet;
@@ -155,9 +165,9 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssSatTypeValue& ComputeWeight(gnssSatTypeValue& gData)
+        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
         {
-            (*this).ComputeWeight(gData.header.epoch, gData.body);
+            (*this).Process(gData.header.epoch, gData.body);
             return gData;
         };
 
@@ -166,9 +176,9 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& ComputeWeight(gnssRinex& gData)
+        virtual gnssRinex& Process(gnssRinex& gData)
         {
-            (*this).ComputeWeight(gData.header.epoch, gData.body);
+            (*this).Process(gData.header.epoch, gData.body);
             return gData;
         };
 
@@ -208,6 +218,21 @@ namespace gpstk
             pBCEphemeris = NULL;
             pTabEphemeris = &ephem;
         };
+
+
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
 
 
         /// Destructor
@@ -277,25 +302,29 @@ namespace gpstk
         };
 
 
+
+    private:
+
+
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
+
+
+        /// Dummy method, returning as output the same satTypeValueMap object input.
+        /// It means that this method processes NOTHING, given that OneFreqCSDetector
+        /// objects need epoch information to work, which is not provided by
+        /// satTypeValueMap GNSS data structures.
+        virtual satTypeValueMap& Process(satTypeValueMap& gData) { return gData; };
+
+
    }; // end class ComputeIURAWeights
 
-
-    /// Input operator from gnssSatTypeValue to ComputeIURAWeights.
-    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, ComputeIURAWeights& right)
-    {
-            right.ComputeWeight(gData);
-            return gData;
-    }
-
-
-    /// Input operator from gnssRinex to ComputeIURAWeights.
-    inline gnssRinex& operator>>(gnssRinex& gData, ComputeIURAWeights& right)
-    {
-            right.ComputeWeight(gData);
-            return gData;
-    }
-
-   
 
    //@}
    
