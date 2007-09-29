@@ -34,7 +34,7 @@ namespace gpstk
 {
 
     // Index initially assigned to this class
-    int MWCSDetector::classIndex = 2200000;
+    int MWCSDetector::classIndex = 2700000;
 
 
     // Returns an index identifying this object.

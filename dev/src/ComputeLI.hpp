@@ -135,6 +135,7 @@ namespace gpstk
         /// Sets the index and increment classIndex.
         void setIndex(void) { (*this).index = classIndex++; }; 
 
+
    }; // end class ComputeLI
    
 

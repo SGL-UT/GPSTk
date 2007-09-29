@@ -71,8 +71,10 @@ else
       SEMHeader.cpp SEMData.cpp SEMAlmanacStore.cpp
       SourceID.cpp TypeID.cpp DataHeaders.cpp DataStructures.cpp
       ProcessingList.cpp ProcessingVector.cpp SimpleFilter.cpp
-      ComputePC.cpp ComputeLC.cpp ComputeLI.cpp ComputeMelbourneWubbena.cpp
+      ComputePC.cpp ComputeLC.cpp ComputePI.cpp ComputeLI.cpp 
+      ComputePdelta.cpp ComputeLdelta.cpp ComputeMelbourneWubbena.cpp
       OneFreqCSDetector.cpp LICSDetector.cpp MWCSDetector.cpp
+      CodeSmoother.cpp PCSmoother.cpp
       XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
       ;
 

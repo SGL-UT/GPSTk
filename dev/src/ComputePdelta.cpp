@@ -1,7 +1,7 @@
 
 /**
- * @file ComputeMelbourneWubbena.cpp
- * This class eases computing Melbourne-Wubbena combination for GNSS data structures.
+ * @file ComputePdelta.hpp
+ * This class eases computing Pdelta combination for GNSS data structures.
  */
 
 //============================================================================
@@ -27,22 +27,22 @@
 //============================================================================
 
 
-#include "ComputeMelbourneWubbena.hpp"
+#include "ComputePdelta.hpp"
 
 
 namespace gpstk
 {
 
     // Index initially assigned to this class
-    int ComputeMelbourneWubbena::classIndex = 2200000;
+    int ComputePdelta::classIndex = 2000000;
 
 
     // Returns an index identifying this object.
-    int ComputeMelbourneWubbena::getIndex() const { return (*this).index; }
+    int ComputePdelta::getIndex() const { return (*this).index; }
 
 
     // Returns a string identifying this object.
-    std::string ComputeMelbourneWubbena::getClassName() const { return "ComputeMelbourneWubbena"; }
+    std::string ComputePdelta::getClassName() const { return "ComputePdelta"; }
 
 
 

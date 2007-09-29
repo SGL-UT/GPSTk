@@ -4,8 +4,8 @@
  * This class eases computing Ldelta combination for GNSS data structures.
  */
 
-#ifndef Compute_LDELTA_GPSTK
-#define Compute_LDELTA_GPSTK
+#ifndef COMPUTE_LDELTA_GPSTK
+#define COMPUTE_LDELTA_GPSTK
 
 //============================================================================
 //
@@ -80,6 +80,7 @@ namespace gpstk
             type1 = TypeID::L1;
             type2 = TypeID::L2;
             resultType = TypeID::Ldelta;
+            setIndex();
         };
 
 
@@ -87,12 +88,27 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& Combine(satTypeValueMap& gData)
+        virtual satTypeValueMap& Process(satTypeValueMap& gData)
         {
-            ComputeCombination::Combine(gData);
+            ComputeCombination::Process(gData);
 
             return gData;
         }
+
+
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
 
 
         /// Destructor
@@ -109,6 +125,17 @@ namespace gpstk
     private:
 
         const double DEN;       // DEN = L1_FREQ - L2_FREQ
+
+
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
+
 
    }; // end class ComputeLdelta
    

@@ -34,7 +34,7 @@ namespace gpstk
 {
 
     // Index initially assigned to this class
-    int LICSDetector::classIndex = 2100000;
+    int LICSDetector::classIndex = 2600000;
 
 
     // Returns an index identifying this object.

@@ -31,7 +31,7 @@
 
 
 
-#include "DataStructures.hpp"
+#include "ProcessingClass.hpp"
 
 
 namespace gpstk
@@ -99,12 +99,15 @@ namespace gpstk
      * so you MUST NOT use the SAME object to process DIFFERENT data streams.
      *
      */
-    class CodeSmoother
+    class CodeSmoother : public ProcessingClass
     {
     public:
 
         /// Default constructor, setting default parameters and C1 and L1 as observables.
-        CodeSmoother() : codeType(TypeID::C1), phaseType(TypeID::L1), resultType(TypeID::C1), maxWindowSize(100), csFlag(TypeID::CSL1) { };
+        CodeSmoother() : codeType(TypeID::C1), phaseType(TypeID::L1), resultType(TypeID::C1), maxWindowSize(100), csFlag(TypeID::CSL1) 
+        {
+            setIndex();
+        };
 
 
         /** Common constructor
@@ -164,6 +167,9 @@ namespace gpstk
                     csFlag      = TypeID::CSL1;
                     resultType  = TypeID::C1;
                 };
+
+            setIndex();
+
         };
 
 
@@ -171,7 +177,7 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& Smooth(satTypeValueMap& gData)
+        virtual satTypeValueMap& Process(satTypeValueMap& gData)
         {
             double codeObs(0.0);
             double phaseObs(0.0);
@@ -210,9 +216,9 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssSatTypeValue& Smooth(gnssSatTypeValue& gData)
+        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
         {
-            (*this).Smooth(gData.body);
+            (*this).Process(gData.body);
             return gData;
         };
 
@@ -221,9 +227,9 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& Smooth(gnssRinex& gData)
+        virtual gnssRinex& Process(gnssRinex& gData)
         {
-            (*this).Smooth(gData.body);
+            (*this).Process(gData.body);
             return gData;
         };
 
@@ -309,6 +315,21 @@ namespace gpstk
         };
 
 
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
+
+
         /// Destructor
         virtual ~CodeSmoother() {};
 
@@ -388,25 +409,19 @@ namespace gpstk
         };
 
 
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
+
+
    }; // end class CodeSmoother
 
 
-    /// Input operator from gnssSatTypeValue to CodeSmoother.
-    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, CodeSmoother& codeS)
-    {
-            codeS.Smooth(gData);
-            return gData;
-    }
-
-
-    /// Input operator from gnssRinex to CodeSmoother.
-    inline gnssRinex& operator>>(gnssRinex& gData, CodeSmoother& codeS)
-    {
-            codeS.Smooth(gData);
-            return gData;
-    }
-
-   
 
    //@}
    

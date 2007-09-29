@@ -1,7 +1,7 @@
 
 /**
- * @file ComputeMelbourneWubbena.cpp
- * This class eases computing Melbourne-Wubbena combination for GNSS data structures.
+ * @file PCSmoother.cpp
+ * This class smoothes PC code observables using the corresponding LC phase observable.
  */
 
 //============================================================================
@@ -27,22 +27,22 @@
 //============================================================================
 
 
-#include "ComputeMelbourneWubbena.hpp"
+#include "PCSmoother.hpp"
 
 
 namespace gpstk
 {
 
     // Index initially assigned to this class
-    int ComputeMelbourneWubbena::classIndex = 2200000;
+    int PCSmoother::classIndex = 3100000;
 
 
     // Returns an index identifying this object.
-    int ComputeMelbourneWubbena::getIndex() const { return (*this).index; }
+    int PCSmoother::getIndex() const { return (*this).index; }
 
 
     // Returns a string identifying this object.
-    std::string ComputeMelbourneWubbena::getClassName() const { return "ComputeMelbourneWubbena"; }
+    std::string PCSmoother::getClassName() const { return "PCSmoother"; }
 
 
 

@@ -34,7 +34,7 @@ namespace gpstk
 {
 
     // Index initially assigned to this class
-    int OneFreqCSDetector::classIndex = 2000000;
+    int OneFreqCSDetector::classIndex = 2500000;
 
 
     // Returns an index identifying this object.

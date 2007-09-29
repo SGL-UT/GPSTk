@@ -29,8 +29,10 @@ TypeID.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp X1Sequence.cpp \
 X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp YumaData.cpp \
 YumaHeader.cpp DataHeaders.cpp DataStructures.cpp \
 ProcessingList.cpp ProcessingVector.cpp SimpleFilter.cpp \
-ComputePC.cpp ComputeLC.cpp ComputeLI.cpp ComputeMelbourneWubbena.cpp \
-OneFreqCSDetector.cpp LICSDetector.cpp MWCSDetector.cpp \
+ComputePC.cpp ComputeLC.cpp ComputePI.cpp ComputeLI.cpp \
+ComputePdelta.cpp ComputeLdelta.cpp ComputeMelbourneWubbena.cpp \
+OneFreqCSDetector.cpp LICSDetector.cpp MWCSDetector.cpp CodeSmoother.cpp \
+PCSmoother.cpp \
 XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
 
 incldir = $(includedir)/gpstk

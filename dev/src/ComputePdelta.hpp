@@ -4,8 +4,8 @@
  * This class eases computing Pdelta combination for GNSS data structures.
  */
 
-#ifndef Compute_PDELTA_GPSTK
-#define Compute_PDELTA_GPSTK
+#ifndef COMPUTE_PDELTA_GPSTK
+#define COMPUTE_PDELTA_GPSTK
 
 //============================================================================
 //
@@ -81,6 +81,7 @@ namespace gpstk
             type1 = TypeID::P1;
             type2 = TypeID::P2;
             resultType = TypeID::Pdelta;
+            setIndex();
         };
 
 
@@ -88,9 +89,9 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& Combine(satTypeValueMap& gData)
+        virtual satTypeValueMap& Process(satTypeValueMap& gData)
         {
-            ComputeCombination::Combine(gData);
+            ComputeCombination::Process(gData);
 
             return gData;
         }
@@ -98,6 +99,21 @@ namespace gpstk
 
         /// Some Rinex data files provide C1 instead of P1. Use this method in those cases.
         void useC1() { type1 = TypeID::C1; };
+
+
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
 
 
         /// Destructor
@@ -111,9 +127,21 @@ namespace gpstk
             return ( ( L1_FREQ*obs1 + L2_FREQ*obs2 ) / ( DEN ) );
         };
 
+
     private:
 
         const double DEN;       // DEN = L1_FREQ + L2_FREQ
+
+
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
+
 
    }; // end class ComputePdelta
    

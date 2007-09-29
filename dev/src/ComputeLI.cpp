@@ -34,7 +34,7 @@ namespace gpstk
 {
 
     // Index initially assigned to this class
-    int ComputeLI::classIndex = 1800000;
+    int ComputeLI::classIndex = 1900000;
 
 
     // Returns an index identifying this object.

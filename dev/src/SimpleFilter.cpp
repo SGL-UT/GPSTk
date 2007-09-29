@@ -104,7 +104,7 @@ namespace gpstk
 
 
     // Index initially assigned to this class
-    int SimpleFilter::classIndex = 1500000;
+    int SimpleFilter::classIndex = 1000000;
 
 
     // Returns an index identifying this object.

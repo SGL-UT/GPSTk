@@ -96,7 +96,10 @@ namespace gpstk
     public:
 
         /// Default constructor, setting default parameters and C1 and L1 as observables.
-        PCSmoother() : codeType(TypeID::PC), phaseType(TypeID::LC), resultType(TypeID::PC), maxWindowSize(100), csFlag1(TypeID::CSL1), csFlag2(TypeID::CSL2) {};
+        PCSmoother() : codeType(TypeID::PC), phaseType(TypeID::LC), resultType(TypeID::PC), maxWindowSize(100), csFlag1(TypeID::CSL1), csFlag2(TypeID::CSL2)
+        {
+            setIndex();
+        };
 
 
         /** Common constructor
@@ -104,14 +107,17 @@ namespace gpstk
          * @param mwSize        Maximum  size of filter window, in samples.
          * @param resultT       TypeID where results will be stored.
          */
-        PCSmoother(const int& mwSize, const TypeID& resultT = TypeID::PC) : codeType(TypeID::PC), phaseType(TypeID::LC), resultType(resultT), maxWindowSize(mwSize), csFlag1(TypeID::CSL1), csFlag2(TypeID::CSL2) {};
+        PCSmoother(const int& mwSize, const TypeID& resultT = TypeID::PC) : codeType(TypeID::PC), phaseType(TypeID::LC), resultType(resultT), maxWindowSize(mwSize), csFlag1(TypeID::CSL1), csFlag2(TypeID::CSL2)
+        {
+            setIndex();
+        };
 
 
         /** Returns a satTypeValueMap object, adding the new data generated when calling this object.
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& Smooth(satTypeValueMap& gData)
+        virtual satTypeValueMap& Process(satTypeValueMap& gData)
         {
             double codeObs(0.0);
             double phaseObs(0.0);
@@ -233,6 +239,21 @@ namespace gpstk
         };
 
 
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
+
+
         /// Destructor
         virtual ~PCSmoother() {};
 
@@ -329,6 +350,16 @@ namespace gpstk
         /// This method is out of reach in this class.
         virtual TypeID getCSFlag() const { return TypeID::Unknown; };
 
+
+
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
 
 
 
