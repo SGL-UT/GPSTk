@@ -32,7 +32,7 @@
 
 
 #include "TypeID.hpp"
-#include "DataStructures.hpp"
+#include "ProcessingClass.hpp"
 
 
 namespace gpstk
@@ -97,7 +97,7 @@ namespace gpstk
        * @sa NablaOp.hpp for differences on satellite-related data.
        *
        */
-    class DeltaOp
+    class DeltaOp : public ProcessingClass
     {
     public:
 
@@ -105,6 +105,7 @@ namespace gpstk
         DeltaOp() : deleteMissingSats(true)
         {
             diffTypes.insert(TypeID::prefitC);
+            setIndex();
         };
 
 
@@ -118,6 +119,7 @@ namespace gpstk
         DeltaOp(const satTypeValueMap& gData, const bool& delSats=true) : refData(gData), deleteMissingSats(delSats)
         {
             diffTypes.insert(TypeID::prefitC);
+            setIndex();
         }
 
 
@@ -132,6 +134,7 @@ namespace gpstk
         DeltaOp(const satTypeValueMap& gData, const TypeID& difftype, const bool& delSats=true) : refData(gData), deleteMissingSats(delSats)
         {
             diffTypes.insert(difftype);
+            setIndex();
         }
 
 
@@ -143,7 +146,10 @@ namespace gpstk
          * @param diffSet   TypeIDSet of data values to be differenced.
          * @param delSats   Boolean value setting if satellites present in reference station data but missing in input data will be deleted from the later (this is the default).
          */
-        DeltaOp(const satTypeValueMap& gData, const TypeIDSet& diffSet, const bool& delSats=true) : refData(gData), deleteMissingSats(delSats), diffTypes(diffSet) {}
+        DeltaOp(const satTypeValueMap& gData, const TypeIDSet& diffSet, const bool& delSats=true) : refData(gData), deleteMissingSats(delSats), diffTypes(diffSet)
+        {
+            setIndex();
+        }
 
 
         /** Common constructor taking a gnssSatTypeValue as reference station data.
@@ -156,6 +162,7 @@ namespace gpstk
         DeltaOp(const gnssSatTypeValue& gData, const bool& delSats=true) : refData(gData.body), deleteMissingSats(delSats)
         {
             diffTypes.insert(TypeID::prefitC);
+            setIndex();
         }
 
 
@@ -170,6 +177,7 @@ namespace gpstk
         DeltaOp(const gnssSatTypeValue& gData, const TypeID& difftype, const bool& delSats=true) : refData(gData.body), deleteMissingSats(delSats)
         {
             diffTypes.insert(difftype);
+            setIndex();
         }
 
 
@@ -181,7 +189,10 @@ namespace gpstk
          * @param diffSet   TypeIDSet of data values to be differenced.
          * @param delSats   Boolean value setting if satellites present in reference station data but missing in input data will be deleted from the later (this is the default).
          */
-        DeltaOp(const gnssSatTypeValue& gData, const TypeIDSet& diffSet, const bool& delSats=true) : refData(gData.body), deleteMissingSats(delSats), diffTypes(diffSet) {}
+        DeltaOp(const gnssSatTypeValue& gData, const TypeIDSet& diffSet, const bool& delSats=true) : refData(gData.body), deleteMissingSats(delSats), diffTypes(diffSet)
+        {
+            setIndex();
+        }
 
 
         /** Common constructor taking a gnssRinex as reference station data.
@@ -194,6 +205,7 @@ namespace gpstk
         DeltaOp(const gnssRinex& gData, const bool& delSats=true) : refData(gData.body), deleteMissingSats(delSats)
         {
             diffTypes.insert(TypeID::prefitC);
+            setIndex();
         }
 
 
@@ -208,6 +220,7 @@ namespace gpstk
         DeltaOp(const gnssRinex& gData, const TypeID& difftype, const bool& delSats=true) : refData(gData.body), deleteMissingSats(delSats)
         {
             diffTypes.insert(difftype);
+            setIndex();
         }
 
 
@@ -219,7 +232,10 @@ namespace gpstk
          * @param diffSet   TypeIDSet of data values to be differenced.
          * @param delSats   Boolean value setting if satellites present in reference station data but missing in input data will be deleted from the later (this is the default).
          */
-        DeltaOp(const gnssRinex& gData, const TypeIDSet& diffSet, const bool& delSats=true) : refData(gData.body), deleteMissingSats(delSats), diffTypes(diffSet) {}
+        DeltaOp(const gnssRinex& gData, const TypeIDSet& diffSet, const bool& delSats=true) : refData(gData.body), deleteMissingSats(delSats), diffTypes(diffSet)
+        {
+            setIndex();
+        }
 
 
 
@@ -305,16 +321,16 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& Difference(satTypeValueMap& gData);
+        virtual satTypeValueMap& Process(satTypeValueMap& gData);
 
 
         /** Returns a reference to a gnssSatTypeValue object after differencing the data type values given in the diffTypes field with respect to reference station data in refData field.
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssSatTypeValue& Difference(gnssSatTypeValue& gData) 
+        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData) 
         {
-            (*this).Difference(gData.body);
+            (*this).Process(gData.body);
             return gData;
         };
 
@@ -323,11 +339,26 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& Difference(gnssRinex& gData)
+        virtual gnssRinex& Process(gnssRinex& gData)
         {
-            (*this).Difference(gData.body);
+            (*this).Process(gData.body);
             return gData;
         };
+
+
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
 
 
         /// Destructor.
@@ -345,28 +376,22 @@ namespace gpstk
         bool deleteMissingSats;
 
 
-
         /// Set (TypeIDSet) containing the types of data to be differenced.
         TypeIDSet diffTypes;
 
 
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
+
+
    }; // class DeltaOp
 
-
-    /// Input operator from gnssSatTypeValue to DeltaOp.
-    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, DeltaOp& delta) 
-    {
-            delta.Difference(gData);
-            return gData;
-    }
-
-
-    /// Input operator from gnssRinex to DeltaOp.
-    inline gnssRinex& operator>>(gnssRinex& gData, DeltaOp& delta) 
-    {
-            delta.Difference(gData);
-            return gData;
-    }
 
    //@}
 

@@ -39,7 +39,7 @@ namespace gpstk
     //
     // @param gData     Data object holding the data.
     //
-    satTypeValueMap& DeltaOp::Difference(satTypeValueMap& gData)
+    satTypeValueMap& DeltaOp::Process(satTypeValueMap& gData)
     {
         SatIDSet satRejectedSet;
 
@@ -90,7 +90,21 @@ namespace gpstk
 
         return gData;
 
-    }  // end DeltaOp::Difference()
+    }  // end DeltaOp::Process()
+
+
+
+    // Index initially assigned to this class
+    int DeltaOp::classIndex = 4500000;
+
+
+    // Returns an index identifying this object.
+    int DeltaOp::getIndex() const { return (*this).index; }
+
+
+    // Returns a string identifying this object.
+    std::string DeltaOp::getClassName() const { return "DeltaOp"; }
+
 
 
 } // end namespace gpstk

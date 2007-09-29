@@ -39,7 +39,7 @@ namespace gpstk
     //
     // @param gData     Data object holding the data.
     //
-    satTypeValueMap& NablaOp::Difference(satTypeValueMap& gData)
+    satTypeValueMap& NablaOp::Process(satTypeValueMap& gData)
     {
 
         double maxElevation(0.0);
@@ -100,7 +100,20 @@ namespace gpstk
 
         return gData;
 
-    }  // end NablaOp::Difference()
+    }  // end NablaOp::Process()
+
+
+    // Index initially assigned to this class
+    int NablaOp::classIndex = 4600000;
+
+
+    // Returns an index identifying this object.
+    int NablaOp::getIndex() const { return (*this).index; }
+
+
+    // Returns a string identifying this object.
+    std::string NablaOp::getClassName() const { return "NablaOp"; }
+
 
 
 } // end namespace gpstk

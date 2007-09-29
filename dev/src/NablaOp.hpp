@@ -32,7 +32,7 @@
 
 
 #include "TypeID.hpp"
-#include "DataStructures.hpp"
+#include "ProcessingClass.hpp"
 
 
 namespace gpstk
@@ -90,7 +90,7 @@ namespace gpstk
        * @sa DeltaOp.hpp for differences on ground-related data.
        *
        */
-    class NablaOp
+    class NablaOp : public ProcessingClass
     {
     public:
 
@@ -98,6 +98,7 @@ namespace gpstk
         NablaOp() : lookReferenceSat(true)
         {
             diffTypes.insert(TypeID::prefitC);
+            setIndex();
         };
 
 
@@ -108,6 +109,7 @@ namespace gpstk
         NablaOp(const SatID& rSat) : refSat(rSat), lookReferenceSat(false)
         {
             diffTypes.insert(TypeID::prefitC);
+            setIndex();
         };
 
 
@@ -118,6 +120,7 @@ namespace gpstk
         NablaOp(const TypeID& difftype) : lookReferenceSat(true)
         {
             diffTypes.insert(difftype);
+            setIndex();
         }
 
 
@@ -129,6 +132,7 @@ namespace gpstk
         NablaOp(const SatID& rSat, const TypeID& difftype) : refSat(rSat), lookReferenceSat(false)
         {
             diffTypes.insert(difftype);
+            setIndex();
         }
 
 
@@ -137,7 +141,10 @@ namespace gpstk
          * @param rSat      SatID of satellite to be used as reference.
          * @param diffSet   TypeIDSet of data values to be differenced.
          */
-        NablaOp(const SatID& rSat, const TypeIDSet& diffSet) : refSat(rSat), lookReferenceSat(false), diffTypes(diffSet) {}
+        NablaOp(const SatID& rSat, const TypeIDSet& diffSet) : refSat(rSat), lookReferenceSat(false), diffTypes(diffSet)
+        {
+            setIndex();
+        }
 
 
         /** Method to set the reference satellite to be used. It is not common to use this method.
@@ -214,16 +221,16 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& Difference(satTypeValueMap& gData);
+        virtual satTypeValueMap& Process(satTypeValueMap& gData);
 
 
         /** Returns a reference to a gnssSatTypeValue object after differencing the data type values given in the diffTypes field with respect to reference station data in refData field.
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssSatTypeValue& Difference(gnssSatTypeValue& gData) 
+        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData) 
         {
-            (*this).Difference(gData.body);
+            (*this).Process(gData.body);
             return gData;
         };
 
@@ -232,11 +239,26 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& Difference(gnssRinex& gData)
+        virtual gnssRinex& Process(gnssRinex& gData)
         {
-            (*this).Difference(gData.body);
+            (*this).Process(gData.body);
             return gData;
         };
+
+
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
 
 
         /// Destructor.
@@ -254,28 +276,22 @@ namespace gpstk
         bool lookReferenceSat;
 
 
-
         /// Set (TypeIDSet) containing the types of data to be differenced.
         TypeIDSet diffTypes;
 
 
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
+
+
    }; // class NablaOp
 
-
-    /// Input operator from gnssSatTypeValue to NablaOp.
-    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, NablaOp& nabla) 
-    {
-            nabla.Difference(gData);
-            return gData;
-    }
-
-
-    /// Input operator from gnssRinex to NablaOp.
-    inline gnssRinex& operator>>(gnssRinex& gData, NablaOp& nabla) 
-    {
-            nabla.Difference(gData);
-            return gData;
-    }
 
    //@}
 
