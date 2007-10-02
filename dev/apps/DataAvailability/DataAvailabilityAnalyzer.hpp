@@ -79,7 +79,8 @@ private:
    std::ofstream output;
    std::string timeFormat;
    gpstk::CommandOptionWithAnyArg inputOpt, outputOpt, independantOpt,
-      mscFileOpt, msidOpt, timeFmtOpt, ephFileOpt, maskAngleOpt, timeMaskOpt;
+      mscFileOpt, msidOpt, timeFmtOpt, ephFileOpt, maskAngleOpt, timeMaskOpt,
+      rxPosOpt;
 
    gpstk::CommandOptionNoArg badHealthMaskOpt, smashAdjacentOpt;
 
@@ -112,6 +113,7 @@ private:
    EphemerisStore* eph;
    gpstk::GPSGeoid gm;
    gpstk::Triple antennaPos;
+   bool haveAntennaPos;
    long msid;
 
    float maskAngle;

@@ -99,7 +99,11 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
                     "is time."),
      
      ephFileOpt('e', "eph",  "Where to get the ephemeris data. Can be "
-                   " rinex, fic, or sp3", true),
+                " rinex, fic, or sp3", true),
+     
+     rxPosOpt('p', "position",
+              "Receiver antenna position in ECEF (x,y,z) coordinates.  Format "
+              "as a string: \"X Y Z\"."),
      
      mscFileOpt('c', "msc", "Station coordinate file"),
      
@@ -136,7 +140,7 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
 
      maskAngle(10), badHealthMask(false), timeMask(0), smashAdjacent(false),
      epochRate(0), epochCounter(0), allMissingCounter(0), 
-     anyMissingCounter(0), pointsMissedCounter(0)
+     anyMissingCounter(0), pointsMissedCounter(0), haveAntennaPos(false)
 {
    // Set up a couple of helper arrays to map from enum <-> string
    obsItemName[oiUnknown] = "unk";
@@ -233,11 +237,47 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
       }
    }
 
+   // get the antenna position
+   if (rxPosOpt.getCount())
+   {
+      double x,y,z;
+      sscanf(rxPosOpt.getValue().front().c_str(),"%lf %lf %lf", &x, &y, &z);
+      antennaPos[0] = x;
+      antennaPos[1] = y;
+      antennaPos[2] = z;
+      haveAntennaPos = true;
+   }
+   else if (msidOpt.getCount() && mscFileOpt.getCount())
+   {
+      long msid = StringUtils::asUnsigned(msidOpt.getValue()[0]);
+      string fn = mscFileOpt.getValue()[0];
+      MSCStream mscs(fn.c_str(), ios::in);
+      MSCData mscd;
+      while (mscs >> mscd)
+      {
+         if (mscd.station == msid)
+         {
+            antennaPos = mscd.coordinates;
+            haveAntennaPos=true;
+            break;
+         }
+      }
+      if (!haveAntennaPos)
+         cout << "Did not find station " << msid << " in " << fn << "." << endl;
+   }
+
    if (verboseLevel)
    {
       cout << "Using " << obsItemName[oiX] << " as the independant variable." 
            << endl
            << "Using a mask angle of " << maskAngle << " degrees" << endl;
+      if (haveAntennaPos)
+         cout << "Antenna position: " << antennaPos << " m ecef" << endl;
+
+      cout << "Start time is " << startTime.printf(timeFormat) << endl
+           << "Stop time is " << stopTime.printf(timeFormat) << endl
+           << "Time span is " << timeSpan << " seconds" << endl;
+      
       if (badHealthMask)
          cout << "Ignore anomalies associated with SVs marked unhealthy." 
               << endl;
@@ -270,35 +310,6 @@ void DataAvailabilityAnalyzer::spinUp()
    }
    eph = ephData.eph;
 
-   msid = 0;
-   bool haveAntennaPos=false;
-   if (msidOpt.getCount())
-      msid = StringUtils::asUnsigned(msidOpt.getValue()[0]);
-
-   if (msid && mscFileOpt.getCount())
-   {
-      string fn = mscFileOpt.getValue()[0];
-      if (verboseLevel)
-         cout << "Reading " << fn << " as MSC data." << endl;
-      MSCStream mscs(fn.c_str(), ios::in);
-      MSCData mscd;
-      while (mscs >> mscd)
-      {
-         if (mscd.station == msid)
-         {
-            antennaPos = mscd.coordinates;
-            if (verboseLevel>1)
-               cout << "Antenna position read from MSC file:"
-                    << antennaPos << " (msid: "
-                    << msid << ")" << endl;
-            haveAntennaPos=true;
-            break;
-         }
-      }
-      if (!haveAntennaPos)
-         cout << "Did not find station " << msid << " in " << fn 
-              << "." << endl;
-   }
 
    const string fn=inputOpt.getValue()[0];
    ObsReader obsReader(fn);
@@ -408,7 +419,7 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
          Xvt svXVT;
          bool NoEph = false;
    
-         try { svXVT = eph.getXvt(SatID(prnTemp, SatID::systemGPS), curr.time); }
+         try {svXVT = eph.getXvt(SatID(prnTemp, SatID::systemGPS), curr.time);}
          catch(gpstk::Exception& e) 
          {
             if (verboseLevel> 1) {cout << e << endl;}
@@ -417,9 +428,10 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
          double elvAngle = 0;
          if (!NoEph)
          {
-            try {elvAngle = rxpos.elvAngle(svXVT.x);}
-            catch(gpstk::Exception& e) { if (verboseLevel > 1) 
-            {cout << e << endl;}}
+            try {
+               elvAngle = rxpos.elvAngle(svXVT.x);}
+            catch(gpstk::Exception& e) {
+               if (verboseLevel > 1) cout << e << endl;}
             if (elvAngle > maskAngle)  { numSVsInView++; }
          } 
          prnTemp++;
@@ -513,7 +525,7 @@ void DataAvailabilityAnalyzer::process()
          lastEpochTime = oe.time;
          if (lastEpochTime - firstEpochTime > timeSpan)
             break;
-         
+
          processEpoch(antennaPos, oe, prev_oe);
       }
       prev_oe = oe;
