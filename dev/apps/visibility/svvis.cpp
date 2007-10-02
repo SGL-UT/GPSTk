@@ -74,6 +74,7 @@ private:
    DayTime startTime, stopTime;
    Triple rxPos;
    double timeStep;
+   bool printElev;
 };
 
 
@@ -82,15 +83,18 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
    CommandOptionWithAnyArg 
       minElevOpt(
          '\0', "min-elev",
-         "Give an integer for the elevation (degrees) above which you want to find more than 12 SVs at a given time."),
+         "Give an integer for the elevation (degrees) above which you want "
+         "to find more than 12 SVs at a given time."),
 
       rxPosOpt(
          'p', "position",
-         "Receiver antenna position in ECEF (x,y,z) coordinates.  Format as a string: \"X Y Z\"."),
+         "Receiver antenna position in ECEF (x,y,z) coordinates.  Format as "
+         "a string: \"X Y Z\"."),
          
       ephFileOpt(
          'e', "eph",
-         "Where to get the ephemeris data. Can be rinex, fic, or sp3.", true),
+         "Where to get the ephemeris data. Can be "
+         + EphReader::formatsUnderstood() + ".", true),
 
       mscFileOpt(
          'c', "msc",
@@ -112,6 +116,11 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
       stopTimeOpt(
          '\0',  "stop-time", "%4Y/%03j/%02H:%02M:%05.2f",
          "Ignore any data after this time");
+
+   CommandOptionNoArg
+      printElevOpt('\0', "print-elev",
+                   "Print the elevation of the sv at each change in tracking. "
+                   "The defaut is to just to output the PRN of the sv.");
    
    if (!BasicFramework::initialize(argc,argv)) return false;
 
@@ -132,6 +141,9 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
            << "Exiting." << endl;
       exit(-1);
    }
+
+   if (debugLevel)
+      ephReader.eph->dump(cout, debugLevel-1);
 
    // get the antenna position
    bool haveRxPos = false;
@@ -190,7 +202,9 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
       stopTime = startTime + dt;
    }
 
-   if (debugLevel)
+   printElev = printElevOpt.getCount() > 0;
+
+   if (verboseLevel)
       cout << "debugLevel: " << debugLevel << endl
            << "verboseLevel: " << verboseLevel << endl
            << "rxPos: " << rxPos << endl
@@ -210,11 +224,17 @@ void SVVis::process()
    Xvt rxXvt;
    rxXvt.x = rxPos;
 
-   string up, prev_up;
+   cout << "# date     time      #: ";
+   for (int prn=1; prn <= MAX_PRN; prn++)
+      cout << left << setw(3) << prn;
+   cout << endl;
+
+   string up, prev_up, el;
    int n_up;
    for (DayTime t=startTime; t < stopTime; t+=1)
    {
       up = "";
+      el = "";
       n_up = 0;
       for (int prn=1; prn <= MAX_PRN; prn++)
       {
@@ -226,10 +246,14 @@ void SVVis::process()
             if (elev>=minElev)
             {
                up += leftJustify(asString(prn), 3);
+               el += leftJustify(asString(elev,0), 3);
                n_up++;
             }
             else
+            {
                up += "   ";
+               el += "   ";
+            }
          }
          catch(gpstk::Exception& e)
          {
@@ -239,8 +263,14 @@ void SVVis::process()
          }
       }
       if (up != prev_up)
-         cout << t << " " << setw(2) << n_up
-              << ": " << up << endl;
+      {
+         cout << t << " " << setw(2) << n_up << ": ";
+         if (printElev)
+            cout << el;
+         else
+            cout << up;
+         cout << endl;
+      }
       prev_up = up;
    }
 }

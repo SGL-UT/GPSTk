@@ -70,6 +70,9 @@ public:
    typedef gpstk::XvtStore<gpstk::SatID> EphemerisStore;
    EphemerisStore* eph;
 
+   static std::string formatsUnderstood()
+   { return "rinex nav, fic, sp3, yuma, and sem";}
+
 private:
    void read_rinex_nav_data(const std::string& fn);
    void read_fic_data(const std::string& fn);
