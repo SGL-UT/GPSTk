@@ -98,8 +98,9 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
                     "The independant variable in the analysis. The default "
                     "is time."),
      
-     ephFileOpt('e', "eph",  "Where to get the ephemeris data. Can be "
-                " rinex, fic, or sp3", true),
+     ephFileOpt('e', "eph",
+                "Where to get the ephemeris data. Can be " +
+                EphReader::formatsUnderstood() + ".", true),
      
      rxPosOpt('p', "position",
               "Receiver antenna position in ECEF (x,y,z) coordinates.  Format "
