@@ -72,8 +72,8 @@ namespace vplot
    {
      size_t count;
 #if defined(WINDOWS) || defined(WIN32) || defined(WIN64) || defined(windows)
-     count = vscprintf(format, ap);
-     vsnprintf(str, size, _TRUNCATE, format, ap);
+     count = _vscprintf(format, ap);
+     vsnprintf(str, size, format, ap);
 #else
      count = vsnprintf(str, size, format, ap);
 #endif
