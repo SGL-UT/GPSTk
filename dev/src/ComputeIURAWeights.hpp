@@ -201,7 +201,7 @@ namespace gpstk
 
 
         /** Method to set the default ephemeris to be used with GNSS data structures.
-         * @param ephem     BCEphemerisStore object to be used
+         * @param ephem     GPSEphemerisStore object to be used
          */
         virtual void setDefaultEphemeris(GPSEphemerisStore& ephem)
         {

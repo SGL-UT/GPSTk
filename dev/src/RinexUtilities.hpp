@@ -93,7 +93,7 @@ void sortRinexObsFiles(std::vector<std::string>& files);
    /** Open the files and add to the appropriate EphemerisStore.
     * @param files vector of the filenames.
     * @param PE an SP3EphemerisStore into which to put SP3 ephemeris data.
-    * @param BCE a BCEphemerisStore into which to put broadcast
+    * @param BCE a GPSEphemerisStore into which to put broadcast
     *    (Rinex Nav) ephemeris data.
     * @return the number of files successfully read.
     * Throws on errors.

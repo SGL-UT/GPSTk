@@ -232,7 +232,7 @@ namespace gpstk
       sv.ddtime *= 1.e-10; // sec/sec
 
       // add relativity correction to dtime
-      // this only for consistency with BCEphemerisStore::getSatXvt ....
+      // this only for consistency with GPSEphemerisStore::getSatXvt ....
       // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10 * ecc * sqrt(A(m))*sinE
       // (do it this way for numerical reasons)
       sv.dtime += -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)

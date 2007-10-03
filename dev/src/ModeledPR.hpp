@@ -61,7 +61,7 @@ namespace gpstk
        *   RinexObsStream rin("ebre0300.02o");  // Data stream
        *   RinexNavStream rnavin("brdc0300.02n");   // Ephemeris data stream
        *   RinexNavData rNavData;
-       *   BCEphemerisStore bceStore;
+       *   GPSEphemerisStore bceStore;
        *   while (rnavin >> rNavData) bceStore.addEphemeris(rNavData);
        *   bceStore.SearchPast();  // This is the default
        *
