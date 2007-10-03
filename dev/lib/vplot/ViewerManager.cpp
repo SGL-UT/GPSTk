@@ -25,6 +25,8 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <algorithm>
+
 #include "ViewerManager.hpp"
 
 namespace vplot
