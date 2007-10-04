@@ -21,6 +21,7 @@ else
     AshtechStream.hpp DataStatus.hpp EphReader.hpp
     FFIdentifier.hpp MDPHeader.hpp MDPNavSubframe.hpp
     MDPObsEpoch.hpp MDPPVTSolution.hpp MDPSelftestStatus.hpp MetReader.hpp
-    ObsReader.hpp ObsUtils.hpp RinexConverters.hpp miscenum.hpp
+    ObsReader.hpp ObsUtils.hpp RinexConverters.hpp miscenum.hpp MDPStream.hpp
+    miscdefs.hpp
     ;
 }

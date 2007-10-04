@@ -141,7 +141,7 @@ else
       ComputeLdelta.hpp ComputeIURAWeights.hpp ComputeMOPSWeights.hpp
       ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp CodeSmoother.hpp
       PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp XYZ2NEU.hpp XYZ2NED.hpp
-      DeltaOp.hpp SimpleKalmanFilter.hpp NablaOp.hpp
+      DeltaOp.hpp SimpleKalmanFilter.hpp NablaOp.hpp XvtStore.hpp
       ;
 }
 
