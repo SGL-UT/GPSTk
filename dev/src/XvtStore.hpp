@@ -37,7 +37,7 @@
 //=============================================================================
 
 /**
- * @file EphemerisStore.hpp
+ * @file XvtStore.hpp
  * Abstract base class for storing and/or computing position, velocity, 
  * and clock data.
  */
@@ -125,7 +125,7 @@ namespace gpstk
       virtual bool clockIsPresent()
          const throw()
          = 0;
-   }; // end class EphemerisStore
+   }; // end class XvtStore
 
    //@}
 

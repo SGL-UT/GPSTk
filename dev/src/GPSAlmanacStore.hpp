@@ -36,7 +36,7 @@
 //=============================================================================
 
 /**
- * @file AlmanacStore.hpp
+ * @file GPSAlmanacStore.hpp
  * Store GPS almanac information (i.e. like the data in subframes 4&5) and 
  * compute satellite Xvt based upon this data and the algorithms defined
  * in the IS-GPS-200.

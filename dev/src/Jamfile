@@ -142,6 +142,7 @@ else
       ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp CodeSmoother.hpp
       PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp XYZ2NEU.hpp XYZ2NED.hpp
       DeltaOp.hpp SimpleKalmanFilter.hpp NablaOp.hpp XvtStore.hpp
+      BCEphemerisStore.hpp AlmanacStore.hpp EphemerisStore.hpp
       ;
 }
 
