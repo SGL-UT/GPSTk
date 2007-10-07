@@ -284,21 +284,20 @@ void dumpRaw(std::ostream& ostr, const ObsArray& oa, bool numeric)
       }
       else
       {
-         ostr << setprecision(4) << oa.epoch[i].GPSfullweek() << " ";
-         ostr << setprecision(6) << oa.epoch[i].GPSsow() << " ";
-         ostr << oa.satellite[i].id << " ";
-         ostr << (int) oa.satellite[i].system << " ";
-         ostr << oa.pass[i] << " ";
-         ostr << setprecision(12) << oa.observation[i] << " ";
-         ostr << (int) oa.lli[i];
          if (oa.validAzEl[i])
          {  
+            ostr << setprecision(4) << oa.epoch[i].GPSfullweek() << " ";
+            ostr << setprecision(6) << oa.epoch[i].GPSsow() << " ";
+            ostr << oa.satellite[i].id << " ";
+            ostr << (int) oa.satellite[i].system << " ";
+            ostr << oa.pass[i] << " ";
+            ostr << setprecision(12) << oa.observation[i] << " ";
+            ostr << (int) oa.lli[i];
             ostr << setprecision(5);
             ostr << " " << oa.azimuth[i];
             ostr << " " << oa.elevation[i];
+            ostr << std::endl;
          }
-         
-         ostr << std::endl;
       }  
    }
 }
