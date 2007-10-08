@@ -217,13 +217,13 @@ namespace gpstk
       obs.snr = cb.snr(chipRate);
       obs.pseudorange = cb.raw_range * C_GPS_M;
       obs.phase = cb.full_phase;
-      obs.doppler = -cb.doppler; // yea, the Ashtech sign is backwards
+      obs.doppler = -cb.doppler; // yeah, the Ashtech sign is backwards
 
       if (moe_hint.haveObservation(cc, rc))
       {
          MDPObsEpoch::Observation obs_hint = moe_hint.getObservation(cc, rc);
          obs.bw = obs_hint.bw;
-         obs.lockCount = obs_hint.lockCount++;
+         obs.lockCount = obs_hint.lockCount+1;
       }
       else
       {
