@@ -69,13 +69,6 @@ namespace gpstk
     {
     public:
 
-        /** Abstract method. It returns a satTypeValueMap object.
-         *
-         * @param gData     Data object holding the data.
-         */
-        virtual satTypeValueMap& Process(satTypeValueMap& gData) = 0;
-
-
         /** Abstract method. It returns a gnnsSatTypeValue object.
          *
          * @param gData    Data object holding the data.

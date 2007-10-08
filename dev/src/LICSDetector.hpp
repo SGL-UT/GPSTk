@@ -422,13 +422,6 @@ namespace gpstk
         void setIndex(void) { (*this).index = classIndex++; }; 
 
 
-        /// Dummy method, returning as output the same satTypeValueMap object input.
-        /// It means that this method processes NOTHING, given that OneFreqCSDetector
-        /// objects need epoch information to work, which is not provided by
-        /// satTypeValueMap GNSS data structures.
-        virtual satTypeValueMap& Process(satTypeValueMap& gData) { return gData; };
-
-
    }; // end class LICSDetector
    
 
