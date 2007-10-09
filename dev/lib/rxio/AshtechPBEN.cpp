@@ -81,8 +81,6 @@ namespace gpstk
       using gpstk::BinUtils::decodeVar;
 
       string str(data);
-      if (debugLevel>3)
-         StringUtils::hexDumpData(cout, data);
       if (str.length() == 69)
       {
          ascii=false;
@@ -132,6 +130,8 @@ namespace gpstk
              >> numSV >> c;
          getline(iss, sitename, ',');
          iss >> pdop>> c  >> hdop>> c  >> vdop>> c  >> tdop;
+
+         // Note that there isn't a checksum on the PBNs
 
          lat += latMin / 60;
          lon += lonMin / 60;

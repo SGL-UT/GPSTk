@@ -81,8 +81,6 @@ namespace gpstk
       using gpstk::BinUtils::decodeVar;
 
       string str(data);
-      if (debugLevel>3)
-         StringUtils::hexDumpData(cout, data);
 
       if (str.length() == 108 || str.length()==52)
       {
@@ -136,8 +134,8 @@ namespace gpstk
       }
 
       uint8_t csum=0;
-      int len=data.size()-3;
-      for (int i=11; i<len; i++)
+      int end=data.rfind(',');
+      for (int i=11; i<=end; i++)
          csum ^= data[i];
 
       if (csum != checksum)
