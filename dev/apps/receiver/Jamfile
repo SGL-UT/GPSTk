@@ -11,4 +11,4 @@ BonkForte ; # bleah.
 
 GPSMain rtAshtech : AshtechMessage.cpp rtAshtech.cpp ScreenControl.cpp FDStreamBuff.cpp TCPStreamBuff.cpp ;
 
-GPSMain ash2mdp : ash2mdp.cpp FDStreamBuff.cpp TCPStreamBuff.cpp ;
+GPSMain ash2mdp : ash2mdp.cpp ;
