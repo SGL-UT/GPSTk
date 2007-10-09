@@ -81,8 +81,8 @@ namespace gpstk
       using gpstk::BinUtils::decodeVar;
 
       string str(data);
-      if (debugLevel>2)
-         cout << "MBEN " << str.length() << " " << endl;
+      if (debugLevel>3)
+         StringUtils::hexDumpData(cout, data);
 
       if (str.length() == 108 || str.length()==52)
       {
@@ -103,6 +103,8 @@ namespace gpstk
             p1.decodeBIN(str);
             p2.decodeBIN(str);
          }
+
+         checksum = decodeVar<uint8_t>(str);
 
          clear();
       }
@@ -126,8 +128,24 @@ namespace gpstk
             p1.decodeASCII(iss);
             p2.decodeASCII(iss);
          }
-         
-         clear();
+
+         iss >> checksum;
+
+         if (iss)
+            clear();
+      }
+
+      uint8_t csum=0;
+      int len=data.size()-3;
+      for (int i=11; i<len; i++)
+         csum ^= data[i];
+
+      if (csum != checksum)
+      {
+         setstate(crcbit);
+         if (debugLevel)
+               cout << "checksum error, computed:" << hex << (uint16_t) csum
+                    << " received:" << checksum << dec << endl;
       }
 
       if (seq>36000)
@@ -193,7 +211,8 @@ namespace gpstk
           << " phase:" << asString(full_phase, 1)
           << " range:" << asString(raw_range*1e3, 3)
           << " doppler:" << doppler
-          << " smo:" << smoothing;
+          << " smo:" << smoothing
+          << " smo_cnt:" << smooth_cnt;
    }
 
 

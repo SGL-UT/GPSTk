@@ -58,18 +58,20 @@ namespace gpstk
          void dump(std::ostream& out) const throw();
          std::string encode() const throw();
 
-         // Note that this is a destructive decode, unlike the others in this set 
-         // of classes.
+         // Note that this is a destructive decode, unlike the others in this
+         //  set of classes.
          void decode(std::string& str) throw();
   
-         CarrierCode carrier;     ///< This observation's carrier frequency code.
+         CarrierCode carrier;     ///< This observation's carrier frequency.
          RangeCode range;         ///< This observation's range code.
-         unsigned bw;             ///< The Effective Tracking Loop Bandwidth. (Hz)
+         unsigned bw;             ///< The effective tracking loop bandwidth, Hz
          double snr;              ///< The Signal-to-Noise Ratio. (dB-Hz)
-         unsigned long lockCount; ///< The number of consecutive observations (0 implies a cycle slip or beginning of track).
+         unsigned long lockCount; ///< The number of consecutive observations, 0
+                                  ///< implies a cycle slip or start of track
          double pseudorange;      ///< Pseudorange Measurement (meters)
          double phase;            ///< Phase Measurement (cycles)
-         double doppler;          ///< Doppler Measurement (Hz, positive for approaching satellites)
+         double doppler;          ///< Doppler Measurement, Hz,
+                                  ///< positive for approaching satellites
       };
 
       MDPObsEpoch() throw();
@@ -105,13 +107,16 @@ namespace gpstk
       double azimuth;       ///< The SV's azimuth in degrees.
 
       ObsMap obs;          ///< The list of Observations made at this Epoch.
+
       bool haveObservation(const CarrierCode cc, const RangeCode rc) const;
-      Observation getObservation(const CarrierCode cc, const RangeCode rc) const;
+      Observation getObservation(const CarrierCode cc, const RangeCode rc) 
+         const;
 
       static const unsigned myId = 300;
-      static const unsigned myLength = 8;  // This is just the pre obs_block stuff
-      static const unsigned myObsLength=32;  // This is the size of a single obs_block
-
+      // This is just the pre obs_block stuff
+      static const unsigned myLength = 8;
+      // This is the size of a single obs_block
+      static const unsigned myObsLength=32;
    }; // class MDPObsEpoch
 
    // The key is intended to the PRN of the MDPObsEpoch

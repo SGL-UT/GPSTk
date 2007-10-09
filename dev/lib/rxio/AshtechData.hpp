@@ -64,7 +64,7 @@ namespace gpstk
    class AshtechData : public FFData, public CRCDataStatus
    {
    public:
-      AshtechData() throw() {}
+      AshtechData() throw() : checksum(0), ascii(false){}
 
       // Returns whether or not this AshtechData is valid.
       bool isValid() const {return good();}
@@ -95,18 +95,15 @@ namespace gpstk
        */
       void dump(std::ostream& out) const throw();
 
-      /// Compute the CRC over the string and set the CRC in that
-      /// string and in the header.
-      void setCRC(std::string& str) const throw() {}
-
-      /// Checks the crc of the message and set crc_err if it fails.
-      void checkCRC(std::string str) throw();
-
       static int debugLevel;
       static bool hexDump;
 
       std::string id;
       bool ascii;
+
+      // Note that this doesn't appear in the RID message. Also there is reason
+      // to believe it isn't trustworthy except in the PBN and MPC messages.
+      uint16_t checksum;
 
       static const char* preamble;
 

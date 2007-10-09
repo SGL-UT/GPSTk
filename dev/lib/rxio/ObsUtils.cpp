@@ -218,17 +218,17 @@ namespace gpstk
       obs.pseudorange = cb.raw_range * C_GPS_M;
       obs.phase = cb.full_phase;
       obs.doppler = -cb.doppler; // yeah, the Ashtech sign is backwards
+      obs.bw=1;
+      obs.lockCount = 0;
 
       if (moe_hint.haveObservation(cc, rc))
       {
          MDPObsEpoch::Observation obs_hint = moe_hint.getObservation(cc, rc);
          obs.bw = obs_hint.bw;
-         obs.lockCount = obs_hint.lockCount+1;
-      }
-      else
-      {
-         obs.bw=1;
-         obs.lockCount = 0;
+
+      // if any bits in 3-5, 7,8 are set we are are questionable
+         if (!(cb.warning & ~0x23))
+            obs.lockCount = obs_hint.lockCount+1;
       }
 
       moe.obs[MDPObsEpoch::ObsKey(cc, rc)] = obs;   

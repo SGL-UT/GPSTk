@@ -72,6 +72,7 @@ namespace gpstk
       // ascii output
       float lat, lon, alt, numSV, hdop, vdop, tdop;
 
+
       static const char* myId;
 
       virtual std::string getName() const {return "pben";}

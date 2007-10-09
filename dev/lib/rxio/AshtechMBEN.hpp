@@ -68,8 +68,25 @@ namespace gpstk
 
       struct code_block
       {
-         unsigned  warning;    // field is bit packed, see code
-         unsigned  goodbad;    // 'position' quality
+         // Warning flag, a bit packed field
+         // bits 1&2: 0 same as goodbad=22, 1 same as goodbad=23,
+         //           3 same as goodbad=24
+         // bit 3: carrier phase questionable
+         // bit 4: code phase questionable
+         // bit 5: code phase integration not stable
+         // bit 6: Z tracking mode
+         // bit 7: possible lock of lock
+         // bit 8: loss of lock counter reset
+         unsigned  warning;
+         // Measurement quality
+         // 0: measurement not available
+         // 22: code and or carrier phase measured
+         //     P mode tracking on Z(Y)-12 units
+         // 23: 22 + nav msg obtained + obs NOT used in PVT computation
+         // 24: 22 + nav msg obtained + obs used in PVT computation
+         //     Y mode tracking on Z(Y)-12 units
+         // 25: Z mode tracking on Z(Y)-12 units
+         unsigned  goodbad;
          unsigned  polarity_known;  // 'spare' in the ashtech docs
          unsigned  ireg;       // SNR in custom units
          unsigned  qa_phase;   // phase quality 0..5 and 95..100 are good

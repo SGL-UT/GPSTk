@@ -81,8 +81,8 @@ namespace gpstk
       using gpstk::BinUtils::decodeVar;
 
       string str(data);
-      if (debugLevel>2)
-         cout << "PBEN " << str.length() << " " << endl;
+      if (debugLevel>3)
+         StringUtils::hexDumpData(cout, data);
       if (str.length() == 69)
       {
          ascii=false;
@@ -99,7 +99,24 @@ namespace gpstk
          navtdot     = decodeVar<float>(str);
          pdop        = decodeVar<uint16_t>(str);
          lat =  lon =  alt =  numSV =  hdop =  vdop =  tdop = 0;
+
+         checksum = decodeVar<uint16_t>(str);
          clear();
+
+         uint16_t csum=0;
+         int len=data.size()-3-11;
+         string body(data.substr(11, len));
+         while (body.size()>1)
+            csum += decodeVar<uint16_t>(body);
+
+         if (csum != checksum)
+         {
+            setstate(crcbit);
+            if (debugLevel)
+               cout << "checksum error, computed:" << hex << csum
+                    << " received:" << checksum << dec << endl;
+         }
+
       }
       else
       {

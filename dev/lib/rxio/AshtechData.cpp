@@ -62,20 +62,6 @@ namespace gpstk
 
 
    //---------------------------------------------------------------------------
-   // Compute the CRC of the string and set the crcbit appropriately.
-   void AshtechData::checkCRC(string str)
-      throw()
-   {
-      // Nope, we don't do this. for now
-      if (false)
-      {
-         clearstate(crcbit);
-         return;
-      }
-   } // AshtechData::checkCRC()
-
-
-   //---------------------------------------------------------------------------
    void AshtechData::reallyGetRecord(FFStream& ffs)
       throw(exception, FFStreamError, EndOfFile)
    {
@@ -114,8 +100,14 @@ namespace gpstk
             rawData.erase(0, rawData.find(preamble[0]));
          else
          {
-            if (debugLevel>1)
-               cout << "Couldn't find preamble. rawData: " << rawData << endl;
+            if (hexDump || debugLevel>1)
+            {
+               cout << "no preamble, tossing " << rawData.size()
+                    << " bytes at offset:"
+                    << (int)stream.tellg()-(int)rawData.size()
+                    << endl;
+               StringUtils::hexDumpData(cout, rawData);
+            }
             break;
          }
       }
@@ -132,6 +124,8 @@ namespace gpstk
       {
          string buff;
          getline(stream, buff, term[1]);
+         if (buff.size()==0)
+            return;
          rawData.append(buff);
          rawData.append(term.substr(1,1));
       }
@@ -139,13 +133,14 @@ namespace gpstk
          StringUtils::hexDumpData(cout, rawData);
 
       decode(rawData);
-      if (!good() && debugLevel>1)
-         cout << "bad decode" << endl;
-
-      if (hexDump || (debugLevel>1 && rdstate()))
+      if (!good() && debugLevel)
       {
-         cout << "Record Number:" << stream.recordNumber << endl;
-         StringUtils::hexDumpData(cout, rawData);
+         cout << "bad decode, tossing " << rawData.size()
+              << " bytes at offset:"
+              << (long)stream.tellg()-(long)rawData.size()
+              << endl;
+         if (hexDump || debugLevel>1)
+            StringUtils::hexDumpData(cout, rawData);
       }
    }
 
@@ -154,7 +149,9 @@ namespace gpstk
    void AshtechData::dump(ostream& out) const throw()
    {
       ostringstream oss;
-      oss << getName() << " : id:" << id << " rdstate:" << rdstate();
+      oss << getName() << " : id:" << id
+          << " checksum:" << hex << checksum
+          << " rdstate:" << rdstate() << dec;
       if (crcerr())
          oss << "-crc";
       if (fmterr())

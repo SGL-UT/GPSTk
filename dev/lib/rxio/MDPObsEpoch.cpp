@@ -56,7 +56,8 @@ namespace gpstk
 {
    //---------------------------------------------------------------------------
    MDPObsEpoch::MDPObsEpoch()
-      throw()
+      throw(): 
+      numSVs(0), channel(0), prn(0),status(0), elevation(0),azimuth(0)
    {
       id = myId;
    } // MDPObsEpoch::MDPObsEpoch()
