@@ -98,6 +98,7 @@ namespace gpstk
       else if (fst == version)     return string("v");
       else if (fst == fixed)       return string("");
       else if (fst == clock)       return string("c");
+      else if (fst == text)        return string("x");
 
       else if (fst == year)        return string("y");
       else if (fst == month)       return string("m");
@@ -134,6 +135,7 @@ namespace gpstk
       else if (fst == string("I"))   return sequence;
       else if (fst == string("v"))   return version;
       else if (fst == string("c"))   return clock;
+      else if (fst == string("x"))   return text;
 
       else if (fst == string("Y") || 
                fst == string("y"))   return year;
@@ -297,7 +299,16 @@ namespace gpstk
             // the file spec. otherwise, just put the fixed field in.
          if (fstsItr != fstsMap.end())
          {
-            toReturn += rightJustify((*fstsItr).second, (*fslItr).numCh, '0');
+               // special case for 'text': just print it
+            if ((*fstsItr).first == text)
+            {
+               toReturn += (*fstsItr).second;
+            }
+            else
+            {
+               toReturn += 
+                  rightJustify((*fstsItr).second, (*fslItr).numCh, '0');
+            }
          }
          else
          {

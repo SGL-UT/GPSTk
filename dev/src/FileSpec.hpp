@@ -100,6 +100,7 @@ namespace gpstk
                         ///<     is more recent than version 1
          fixed,         ///< A field for fixed characters
          clock,         ///< 'c' A field for the clock number
+         text,          ///< 'x' A field for arbitrary text
 
 
             // see DayTime for more information on the followint elements
