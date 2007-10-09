@@ -52,7 +52,7 @@ namespace gpstk
    /** @defgroup ephemstore */
    //@{
 
-   typedef AlmanacStore GPSAlmanacStore;
+   typedef GPSAlmanacStore AlmanacStore;
 
    //@}
 }

@@ -52,7 +52,7 @@ namespace gpstk
    /** @addtogroup ephemstore */
    //@{
    
-   typedef BCEphemerisStore GPSEphemersStore;
+   typedef GPSEphemerisStore BCEphemerisStore;
    
 } // namespace gpstk
 #endif
