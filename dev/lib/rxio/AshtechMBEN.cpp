@@ -82,6 +82,7 @@ namespace gpstk
 
       string str(data);
 
+      uint8_t csum=0;
       if (str.length() == 108 || str.length()==52)
       {
          ascii=false;
@@ -105,6 +106,10 @@ namespace gpstk
          checksum = decodeVar<uint8_t>(str);
 
          clear();
+
+         int end=data.size() - 3;
+         for (int i=11; i<end; i++)
+            csum ^= data[i];
       }
       else
       {
@@ -131,12 +136,12 @@ namespace gpstk
 
          if (iss)
             clear();
+
+         int end=data.rfind(',');
+         for (int i=11; i<=end; i++)
+            csum ^= data[i];
       }
 
-      uint8_t csum=0;
-      int end=data.rfind(',');
-      for (int i=11; i<=end; i++)
-         csum ^= data[i];
 
       if (csum != checksum)
       {
