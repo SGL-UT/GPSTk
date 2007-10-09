@@ -123,7 +123,7 @@ namespace gpstk
          throw();
       
          /// Destructor.
-      ~CommonTime()
+      virtual ~CommonTime()
          throw()
       {}
          //@}

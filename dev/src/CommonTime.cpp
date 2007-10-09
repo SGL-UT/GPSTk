@@ -285,6 +285,57 @@ namespace gpstk
       return *this;
    }
 
+   bool CommonTime::operator==( const CommonTime& right ) const
+      throw()
+   {
+      return (m_day == right.m_day &&
+              m_msod == right.m_msod &&
+              m_fsod == right.m_fsod );
+   }
+
+   bool CommonTime::operator!=( const CommonTime& right ) const
+      throw()
+   {
+      return !operator==(right);
+   }
+
+   bool CommonTime::operator<( const CommonTime& right ) const
+      throw()
+   {
+      if (m_day < right.m_day)
+         return true;
+      if (m_day > right.m_day)
+         return false;
+
+      if (m_msod < right.m_msod)
+         return true;
+      if (m_msod > right.m_msod)
+         return false;
+      
+      if (m_fsod < right.m_fsod)
+         return true;
+      
+      return false;
+   }
+
+   bool CommonTime::operator>( const CommonTime& right ) const
+      throw()
+   {
+      return !operator <=(right);
+   }
+
+   bool CommonTime::operator<=( const CommonTime& right ) const
+      throw()
+   {
+      return (operator<(right) || operator==(right));
+   }
+
+   bool CommonTime::operator>=( const CommonTime& right ) const
+      throw()
+   {
+      return !operator<(right);
+   }
+
       /// protected functions
    bool CommonTime::add( long days, 
                          long msod,
