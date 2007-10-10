@@ -35,6 +35,19 @@
 namespace gpstk
 {
 
+
+    // Index initially assigned to this class
+    int SolverLMS::classIndex = 6000000;
+
+
+    // Returns an index identifying this object.
+    int SolverLMS::getIndex() const { return (*this).index; }
+
+
+    // Returns a string identifying this object.
+    std::string SolverLMS::getClassName() const { return "SolverLMS"; }
+
+
     // Compute the Least Mean Squares Solution of the given equations set.
     // @param prefitResiduals   Vector of prefit residuals
     // @param designMatrix      Design matrix for equation system
@@ -89,7 +102,7 @@ namespace gpstk
       *
       * @param gData     Data object holding the data.
       */
-    satTypeValueMap& SolverLMS::processSolver(satTypeValueMap& gData) throw(InvalidSolver)
+    satTypeValueMap& SolverLMS::Process(satTypeValueMap& gData) throw(InvalidSolver)
     {
         // First, let's fetch the vector of prefit residuals
         Vector<double> prefit(gData.getVectorOfTypeID((*this).defaultEqDef.header));
@@ -112,7 +125,7 @@ namespace gpstk
 
         return gData;
 
-    }   // End SolverLMS::processSolver(const DayTime& time, satTypeValueMap& gData)
+    }   // End SolverLMS::Process(const DayTime& time, satTypeValueMap& gData)
 
 
 } // end namespace gpstk

@@ -4,8 +4,8 @@
  * Class to compute the Least Mean Squares Solution
  */
 
-#ifndef SOLVER_LMS_HPP
-#define SOLVER_LMS_HPP
+#ifndef GPSTK_SOLVER_LMS_HPP
+#define GPSTK_SOLVER_LMS_HPP
 
 //============================================================================
 //
@@ -32,7 +32,7 @@
 
 #include "SolverBase.hpp"
 #include "TypeID.hpp"
-#include "DataStructures.hpp"
+#include "ProcessingClass.hpp"
 
 
 namespace gpstk
@@ -55,7 +55,7 @@ namespace gpstk
        *   // ephemeris, etc.
        *
        *   // Declare the modeler object, setting all the parameters in one pass
-       *   ModeledPR model(ionoStore, mopsTM, bceStore, TypeID::C1);
+       *   ModelObs model(ionoStore, mopsTM, bceStore, TypeID::C1);
        *   model.Prepare();     // Set initial position (Bancroft method)
        *
        *   // Declare a SolverLMS object
@@ -98,7 +98,7 @@ namespace gpstk
        * @sa SolverBase.hpp for base class.
        *
        */
-    class SolverLMS : public SolverBase
+    class SolverLMS : public SolverBase, public ProcessingClass
     {
     public:
 
@@ -117,6 +117,7 @@ namespace gpstk
             // Now, we build the default definition for a common GNSS code equation
             defaultEqDef.header = TypeID::prefitC;
             defaultEqDef.body = tempSet;
+            setIndex();
         };
 
 
@@ -124,7 +125,10 @@ namespace gpstk
          *
          * @param eqDef     gnssEquationDefinition to be used
          */
-        SolverLMS(const gnssEquationDefinition& eqDef) : defaultEqDef(eqDef) {};
+        SolverLMS(const gnssEquationDefinition& eqDef) : defaultEqDef(eqDef)
+        {
+            setIndex();
+        };
 
 
         /** Compute the Least Mean Squares Solution of the given equations set.
@@ -142,16 +146,16 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& processSolver(satTypeValueMap& gData) throw(InvalidSolver);
+        virtual satTypeValueMap& Process(satTypeValueMap& gData) throw(InvalidSolver);
 
 
         /** Returns a reference to a gnnsSatTypeValue object after solving the previously defined equation system.
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssSatTypeValue& processSolver(gnssSatTypeValue& gData) throw(InvalidSolver)
+        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData) throw(InvalidSolver)
         {
-            (*this).processSolver(gData.body);
+            (*this).Process(gData.body);
             return gData;
         };
 
@@ -160,9 +164,9 @@ namespace gpstk
          *
          * @param gData    Data object holding the data.
          */
-        virtual gnssRinex& processSolver(gnssRinex& gData) throw(InvalidSolver)
+        virtual gnssRinex& Process(gnssRinex& gData) throw(InvalidSolver)
         {
-            (*this).processSolver(gData.body);
+            (*this).Process(gData.body);
             return gData;
         };
 
@@ -183,6 +187,21 @@ namespace gpstk
         };
 
 
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
+
+
         /// Destructor.
         virtual ~SolverLMS() {};
 
@@ -192,23 +211,22 @@ namespace gpstk
         /// Default equation definition to be used when fed with GNSS data structures.
         gnssEquationDefinition defaultEqDef;
 
+
+    private:
+
+
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
+
+
    }; // class SolverLMS
 
-
-    /// Input operator from gnssSatTypeValue to SolverLMS.
-    inline gnssSatTypeValue& operator>>(gnssSatTypeValue& gData, SolverLMS& solver) throw(InvalidSolver)
-    {
-            solver.processSolver(gData);
-            return gData;
-    }
-
-
-    /// Input operator from gnssRinex to SolverLMS.
-    inline gnssRinex& operator>>(gnssRinex& gData, SolverLMS& solver) throw(InvalidSolver)
-    {
-            solver.processSolver(gData);
-            return gData;
-    }
 
    //@}
 

@@ -35,6 +35,19 @@
 namespace gpstk
 {
 
+
+    // Index initially assigned to this class
+    int SolverWMS::classIndex = 6100000;
+
+
+    // Returns an index identifying this object.
+    int SolverWMS::getIndex() const { return (*this).index; }
+
+
+    // Returns a string identifying this object.
+    std::string SolverWMS::getClassName() const { return "SolverWMS"; }
+
+
     // Compute the Weighted Least Mean Squares Solution of the given equations set.
     // @param prefitResiduals   Vector of prefit residuals
     // @param designMatrix      Design matrix for equation system
@@ -114,7 +127,7 @@ namespace gpstk
       *
       * @param gData     Data object holding the data.
       */
-    satTypeValueMap& SolverWMS::processSolver(satTypeValueMap& gData) throw(InvalidSolver)
+    satTypeValueMap& SolverWMS::Process(satTypeValueMap& gData) throw(InvalidSolver)
     {
         // First, let's fetch the vector of prefit residuals
         Vector<double> prefit(gData.getVectorOfTypeID((*this).defaultEqDef.header));
@@ -139,7 +152,7 @@ namespace gpstk
 
         return gData;
 
-    }   // End SolverWMS::processSolver(const DayTime& time, satTypeValueMap& gData)
+    }   // End SolverWMS::Process(const DayTime& time, satTypeValueMap& gData)
 
 
 

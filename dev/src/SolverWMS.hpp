@@ -4,8 +4,8 @@
  * Class to compute the Weighted Least Mean Squares Solution
  */
 
-#ifndef SOLVER_WMS_HPP
-#define SOLVER_WMS_HPP
+#ifndef GPSTK_SOLVER_WMS_HPP
+#define GPSTK_SOLVER_WMS_HPP
 
 //============================================================================
 //
@@ -53,7 +53,7 @@ namespace gpstk
        *   // ephemeris, etc.
        *
        *   // Declare the modeler object, setting all the parameters in one pass
-       *   ModeledPR model(ionoStore, mopsTM, bceStore, TypeID::C1);
+       *   ModelObs model(ionoStore, mopsTM, bceStore, TypeID::C1);
        *   model.Prepare();     // Set initial position (Bancroft method)
        *
        *   // Declare a SolverWMS object
@@ -122,6 +122,7 @@ namespace gpstk
             // Now, we build the default definition for a common GNSS code equation
             defaultEqDef.header = TypeID::prefitC;
             defaultEqDef.body = tempSet;
+            setIndex();
         };
 
 
@@ -132,6 +133,7 @@ namespace gpstk
         SolverWMS(const gnssEquationDefinition& eqDef)
         {
             setDefaultEqDefinition(eqDef);
+            setIndex();
         };
 
 
@@ -187,15 +189,43 @@ namespace gpstk
          *
          * @param gData     Data object holding the data.
          */
-        virtual satTypeValueMap& processSolver(satTypeValueMap& gData) throw(InvalidSolver);
+        virtual satTypeValueMap& Process(satTypeValueMap& gData) throw(InvalidSolver);
 
 
         /// Covariance matrix without weights. This must be used to compute DOP
         Matrix<double> covMatrixNoWeight;
 
 
+        /// Returns an index identifying this object.
+        virtual int getIndex(void) const;
+
+
+        /// Returns a string identifying this object.
+        virtual std::string getClassName(void) const;
+
+
+        /** Sets the index to a given arbitrary value. Use with caution.
+         *
+         * @param newindex      New integer index to be assigned to current object.
+         */
+        void setIndex(const int newindex) { (*this).index = newindex; };
+
+
         /// Destructor.
         virtual ~SolverWMS() {};
+
+
+    private:
+
+
+        /// Initial index assigned to this class.
+        static int classIndex;
+
+        /// Index belonging to this object.
+        int index;
+
+        /// Sets the index and increment classIndex.
+        void setIndex(void) { (*this).index = classIndex++; }; 
 
 
    }; // class SolverWMS
