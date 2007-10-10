@@ -98,7 +98,7 @@ namespace gpstk
                 if(pDefaultTropoModel){
                     tempTrop = getTropoCorrections(pDefaultTropoModel, cerange.elevationGeodetic);
                     (*stv).second[TypeID::tropoSlant] = tempTrop;
-                }
+                } else (*stv).second[TypeID::tropoSlant] = 0.0;
 
                 // If given, computes ionospheric model
                 if(pDefaultIonoModel)
@@ -107,7 +107,7 @@ namespace gpstk
                     Geodetic rxGeo(rxPos.getGeodeticLatitude(), rxPos.getLongitude(), rxPos.getAltitude());
                     tempIono = getIonoCorrections(pDefaultIonoModel, time, rxGeo, cerange.elevationGeodetic, cerange.azimuthGeodetic);
                     (*stv).second[TypeID::ionoSlant] = tempIono;
-                };
+                } else (*stv).second[TypeID::ionoSlant] = 0.0;
 
                 tempModeledPR = tempPR + tempTrop + tempIono;
 

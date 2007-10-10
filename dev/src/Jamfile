@@ -75,7 +75,7 @@ else
       ComputePdelta.cpp ComputeLdelta.cpp ComputeMelbourneWubbena.cpp
       OneFreqCSDetector.cpp LICSDetector.cpp MWCSDetector.cpp
       CodeSmoother.cpp PCSmoother.cpp ComputeIURAWeights.cpp
-      ComputeMOPSWeights.cpp ModelObsFixedStation.cpp
+      ComputeMOPSWeights.cpp ModelObsFixedStation.cpp ModelObs.cpp
       XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
       ;
 
@@ -139,7 +139,7 @@ else
       TimeNamedFileStream.hpp ComputeCombination.hpp ComputePC.hpp
       ComputeLC.hpp ComputePI.hpp ComputeLI.hpp ComputePdelta.hpp
       ComputeLdelta.hpp ComputeIURAWeights.hpp ComputeMOPSWeights.hpp
-      ModelObsFixedStation.hpp
+      ModelObsFixedStation.hpp ModelObs.hpp
       ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp CodeSmoother.hpp
       PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp XYZ2NEU.hpp XYZ2NED.hpp
       DeltaOp.hpp SimpleKalmanFilter.hpp NablaOp.hpp XvtStore.hpp

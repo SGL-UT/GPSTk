@@ -15,7 +15,7 @@
 #include "RinexNavData.hpp"
 
 // Class in charge of the GPS signal modelling
-#include "ModeledPR.hpp"
+#include "ModelObs.hpp"
 
 // Class to store satellite broadcast navigation data
 #include "GPSEphemerisStore.hpp"
@@ -75,7 +75,7 @@ int main(void)
     MOPSTropModel mopsTM(nominalPos.getAltitude(), nominalPos.getGeodeticLatitude(), 162);
 
     // Declare the modeler object, setting all the parameters in one pass
-    ModeledPR modelRef(nominalPos, ionoStore, mopsTM, bceStore, TypeID::C1);
+    ModelObs modelRef(nominalPos, ionoStore, mopsTM, bceStore, TypeID::C1);
 
     // Declare SolverLMS object
     SolverLMS solver;
