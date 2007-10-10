@@ -94,18 +94,16 @@ namespace gpstk
             break;
          }
 
-         if (rawData.find(preamble[0]))
-         {
-            size_t len=rawData.find(preamble[0]);
-            if (hexDump)
-               StringUtils::hexDumpData(cout, rawData.substr(0,len));
-            if (debugLevel>1)
-               cout << "no preamble, tossing " << len
-                    << " bytes at offset:"
-                    << (int)stream.tellg()-(int)len
-                    << endl;
-            rawData.erase(0, len);
-         }
+         if (hexDump)
+            StringUtils::hexDumpData(cout, rawData);
+
+         size_t len=min(rawData.size(),rawData.find(preamble[0],1));
+         if (debugLevel>1)
+            cout << "no preamble, tossing " << len
+                 << " bytes at offset:"
+                 << (int)stream.tellg()-(int)len
+                 << endl;
+         rawData.erase(0, len);
       }
    }
 
