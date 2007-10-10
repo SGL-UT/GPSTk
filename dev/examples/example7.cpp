@@ -15,7 +15,8 @@
 #include "RinexNavData.hpp"
 
 // Class in charge of the GPS signal modelling
-#include "ModeledPR.hpp"
+//#include "ModeledPR.hpp"
+#include "ModelObs.hpp"
 
 // Class to store satellite broadcast navigation data
 #include "GPSEphemerisStore.hpp"
@@ -121,7 +122,8 @@ int main(void)
     // However, for a rover is more appropriate to use a "ModeledPR" object because
     // it allows to update the apriori position more easily (and it may automatically
     // compute one, if needed, using Bancroft's method)
-    ModeledPR model(nominalPos, ionoStore, mopsTM, bceStore, TypeID::C1);
+//    ModeledPR model(nominalPos, ionoStore, mopsTM, bceStore, TypeID::C1);
+    ModelObs model(nominalPos, ionoStore, mopsTM, bceStore, TypeID::C1);
 
     // On the other hand, the usual way to use "ModeledPR" is setting just the models 
     // in the constructor, and calling method "Prepare()" later, like in the following 
@@ -247,7 +249,8 @@ int main(void)
     pcFilter.setFilteredType(TypeID::PC);
 
     // Declare the modeler object for PC, setting all the parameters in one pass
-    ModeledPR modelPC(nominalPos, mopsTM, bceStore, TypeID::PC, false);
+//    ModeledPR modelPC(nominalPos, mopsTM, bceStore, TypeID::PC, false);
+    ModelObs modelPC(nominalPos, mopsTM, bceStore, TypeID::PC, false);
     // Take notice that PC combination doesn't use ionosphere modelling, nor
     // TGD computation
     // WARNING: When using C1 instead of P1 to compute PC combination, be aware
@@ -306,7 +309,8 @@ int main(void)
     MOPSTropModel mopsTMRef(nominalPosRef.getAltitude(), nominalPosRef.getGeodeticLatitude(), 30);
 
     // Declare the appropriate modeler object for a reference station
-    ModeledReferencePR modelRef(nominalPosRef, ionoStore, mopsTMRef, bceStore, TypeID::C1);
+//    ModeledReferencePR modelRef(nominalPosRef, ionoStore, mopsTMRef, bceStore, TypeID::C1);
+    ModelObsFixedStation modelRef(nominalPosRef, ionoStore, mopsTMRef, bceStore, TypeID::C1);
 
     // Create an object to compute the single differences of prefit residuals
     DeltaOp delta;      // By default, it will work on code prefit residuals

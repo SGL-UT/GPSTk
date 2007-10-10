@@ -68,9 +68,9 @@ namespace gpstk
    public:
       TabularEphemerisStore()
          throw()
-         : initialTime(DayTime::END_OF_TIME), 
-           finalTime(DayTime::BEGINNING_OF_TIME),
-           haveVelocity(true)
+         : haveVelocity(true), initialTime(DayTime::END_OF_TIME), 
+           finalTime(DayTime::BEGINNING_OF_TIME)
+           
       {}
 
       virtual ~TabularEphemerisStore()
@@ -144,9 +144,12 @@ namespace gpstk
       /// Remove all data
       void clear() throw();
 
+
    protected:
+
       /// Flag indicating that velocity data present in all datasets loaded.
       bool haveVelocity;
+
 
    private:
 
