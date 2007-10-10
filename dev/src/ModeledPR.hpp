@@ -300,8 +300,8 @@ namespace gpstk
         /** Method to set an a priori position of receiver using Bancroft method.
          *
          * @param Tr            Time of observation
-         * @param Satellite     Vector of satellites in view
-         * @param Pseudorange   Pseudoranges measured from mobile to satellites
+         * @param Satellite     std::vector of satellites in view
+         * @param Pseudorange   std::vector of pseudoranges measured from mobile to satellites
          * @param Eph           Satellites Ephemeris
          *
          * @return
