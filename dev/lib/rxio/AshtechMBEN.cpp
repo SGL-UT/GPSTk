@@ -107,7 +107,7 @@ namespace gpstk
 
          clear();
 
-         int end=data.size() - 3;
+         int end = data.size() - 3;
          for (int i=11; i<end; i++)
             csum ^= data[i];
       }
@@ -147,8 +147,8 @@ namespace gpstk
       {
          setstate(crcbit);
          if (debugLevel)
-               cout << "checksum error, computed:" << hex << (uint16_t) csum
-                    << " received:" << checksum << dec << endl;
+            cout << "checksum error, computed:" << hex << (uint16_t) csum
+                 << " received:" << checksum << dec << endl;
       }
 
       if (seq>36000)

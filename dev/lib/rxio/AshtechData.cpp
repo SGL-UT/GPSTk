@@ -84,31 +84,27 @@ namespace gpstk
       char buff[12];
       string& rawData = stream.rawData;
 
-      while (stream.read(buff, sizeof(buff)) && id == "")
+      while (stream.read(buff, sizeof(buff)))
       {
          rawData.append(buff, stream.gcount());
-         if (rawData.size()>=11 && 
-             rawData.substr(0,7) == preamble &&
-             (rawData[10]==',' ||
-              rawData.substr(7,3)=="EPB"))
+
+         if (rawData.size()>=11 && rawData.substr(0,7)==preamble)
          {
             id = rawData.substr(7,3);
             break;
          }
 
          if (rawData.find(preamble[0]))
-            rawData.erase(0, rawData.find(preamble[0]));
-         else
          {
-            if (hexDump || debugLevel>1)
-            {
-               cout << "no preamble, tossing " << rawData.size()
+            size_t len=rawData.find(preamble[0]);
+            if (hexDump)
+               StringUtils::hexDumpData(cout, rawData.substr(0,len));
+            if (debugLevel>1)
+               cout << "no preamble, tossing " << len
                     << " bytes at offset:"
-                    << (int)stream.tellg()-(int)rawData.size()
+                    << (int)stream.tellg()-(int)len
                     << endl;
-               StringUtils::hexDumpData(cout, rawData);
-            }
-            break;
+            rawData.erase(0, len);
          }
       }
    }
@@ -129,19 +125,15 @@ namespace gpstk
          rawData.append(buff);
          rawData.append(term.substr(1,1));
       }
-      if (debugLevel>2)
+
+      if (hexDump)
          StringUtils::hexDumpData(cout, rawData);
 
       decode(rawData);
       if (!good() && debugLevel)
-      {
-         cout << "bad decode, tossing " << rawData.size()
-              << " bytes at offset:"
+         cout << "bad decode at offset:"
               << (long)stream.tellg()-(long)rawData.size()
               << endl;
-         if (hexDump || debugLevel>1)
-            StringUtils::hexDumpData(cout, rawData);
-      }
    }
 
 

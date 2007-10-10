@@ -57,7 +57,11 @@ namespace gpstk
       std::string header; // 11 characters exactly
 
       unsigned prn;
-      long     word[3][10];
+
+      // Note that an extra element is allocated so these can be
+      // numbered as they are in the IS-GPS-200. Therefore
+      // element 0 of each index is not used.
+      long     word[4][11];
 
       static const char* myId;
 

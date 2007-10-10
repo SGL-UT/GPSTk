@@ -60,9 +60,8 @@ namespace gpstk
 
       // If this object doesn't have an id set yet, assume that the streams
       // most recent read id is what we need to be
-      if (id == "" && rawData.size()>=11 && 
-          rawData.substr(0,7) == preamble &&
-          rawData[10]==',')
+      if (id == "" && rawData.size()>=10 && 
+          rawData.substr(0,7) == preamble)
          id = rawData.substr(7,3);
 
       // If that didn't work, or this is object is not of the right type,
@@ -78,19 +77,19 @@ namespace gpstk
       throw(std::exception, FFStreamError)
    {
       using BinUtils::decodeVar;
+      using gpstk::StringUtils::asInt;
 
       string str(data);
-      if (debugLevel>1)
-         cout << "EPB " << str.length() << " " << endl;
+
       if (str.length() == 138)
       {
-         ascii=false;
+         ascii = false;
          header      = str.substr(0,11); str.erase(0,11);
-         prn         = decodeVar<uint16_t>(str);
-         str.erase(0,1);
+         prn         = asInt(str.substr(0,2));
+         str.erase(0,3);
 
-         for (int s=0; s<3; s++)
-            for (int w=0; w<10; w++)
+         for (int s=1; s<=3; s++)
+            for (int w=1; w<=10; w++)
                word[s][w] = decodeVar<uint32_t>(str);
 
          unsigned cksum = decodeVar<uint16_t>(str);
@@ -106,10 +105,21 @@ namespace gpstk
       using gpstk::StringUtils::leftJustify;
 
       AshtechData::dump(out);
-      oss << getName() << "1:"
-          << " prn:" << prn
-          << " S0W0: ..."
-          << endl;
+      oss << getName() << "0:" << " prn:" << prn << endl;
+
+      oss << setfill('0') << hex;
+      for (int s=1; s<=3; s++)
+      {
+         for (int w=1; w<=10; w++)
+         {
+            if ((w % 5) == 1)
+               oss << getName() << s*2+w/5-1 << ": ";
+            oss << setw(8) << uppercase << word[s][w] << "  ";
+            if ((w % 5) == 0)
+               oss << endl;
+         }
+      }
+
       out << oss.str() << flush;
    }
 } // namespace gpstk
