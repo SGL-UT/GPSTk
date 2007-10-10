@@ -95,6 +95,7 @@ namespace gpstk
         ModelObsFixedStation() throw(Exception) : minElev(10.0), useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL), defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
         { 
             InitializeValues();
+            setIndex();
         };
 
 
@@ -118,6 +119,7 @@ namespace gpstk
         { 
             InitializeValues();
             setInitialRxPosition(aRx, bRx, cRx, s, geoid);
+            setIndex();
         };
 
 
@@ -126,6 +128,7 @@ namespace gpstk
         { 
             InitializeValues();
             setInitialRxPosition(RxCoordinates);
+            setIndex();
         };
 
 
@@ -152,6 +155,7 @@ namespace gpstk
             setDefaultObservable(dObservable);
             setDefaultEphemeris(dEphemeris);
             useTGD = usetgd;
+            setIndex();
         };
 
 
@@ -178,6 +182,7 @@ namespace gpstk
             setDefaultObservable(dObservable);
             setDefaultEphemeris(dEphemeris);
             useTGD = usetgd;
+            setIndex();
         };
 
 
@@ -204,6 +209,7 @@ namespace gpstk
             setDefaultObservable(dObservable);
             setDefaultEphemeris(dEphemeris);
             useTGD = usetgd;
+            setIndex();
         };
 
 
@@ -228,6 +234,7 @@ namespace gpstk
             setDefaultObservable(dObservable);
             setDefaultEphemeris(dEphemeris);
             useTGD = usetgd;
+            setIndex();
         };
 
 

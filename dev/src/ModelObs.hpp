@@ -107,7 +107,10 @@ namespace gpstk
     public:
 
         /// Implicit constructor
-        ModelObs() : modelPrepared(false) {};
+        ModelObs() : modelPrepared(false)
+        {
+            setIndex();
+        };
 
 
         /** Explicit constructor, taking as input initial receiver coordinates, default
@@ -130,6 +133,7 @@ namespace gpstk
             setDefaultObservable(dObservable);
             setDefaultEphemeris(dEphemeris);
             useTGD = usetgd;
+            setIndex();
         };
 
 
@@ -154,6 +158,7 @@ namespace gpstk
             setDefaultObservable(dObservable);
             setDefaultEphemeris(dEphemeris);
             useTGD = usetgd;
+            setIndex();
         };
 
 
@@ -178,6 +183,7 @@ namespace gpstk
             setDefaultObservable(dObservable);
             setDefaultEphemeris(dEphemeris);
             useTGD = usetgd;
+            setIndex();
         };
 
 
@@ -201,6 +207,7 @@ namespace gpstk
             setDefaultObservable(dObservable);
             setDefaultEphemeris(dEphemeris);
             useTGD = usetgd;
+            setIndex();
         };
 
 
@@ -222,6 +229,7 @@ namespace gpstk
             setDefaultObservable(dObservable);
             setDefaultEphemeris(dEphemeris);
             useTGD = usetgd;
+            setIndex();
         };
 
 
@@ -242,6 +250,7 @@ namespace gpstk
             setDefaultObservable(dObservable);
             setDefaultEphemeris(dEphemeris);
             useTGD = usetgd;
+            setIndex();
         };
 
 
@@ -262,6 +271,7 @@ namespace gpstk
             setDefaultObservable(dObservable);
             setDefaultEphemeris(dEphemeris);
             useTGD = usetgd;
+            setIndex();
         };
 
 
