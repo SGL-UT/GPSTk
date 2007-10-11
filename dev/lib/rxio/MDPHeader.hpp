@@ -73,7 +73,8 @@ namespace gpstk
    class MDPHeader : public FFData, public CRCDataStatus
    {
    public:
-      MDPHeader() throw() : id(0),length(0),crc(0) {}
+      MDPHeader() throw() : id(0),length(0),crc(0)
+      {length=myLength;}
 
       // Returns whether or not this MDPData is valid.
       bool isValid() const {return good();}

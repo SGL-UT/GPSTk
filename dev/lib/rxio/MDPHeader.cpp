@@ -231,7 +231,7 @@ namespace gpstk
    {
       // first reset the data status
       setstate(fmtbit | lenbit);
-         
+
       // If a header has been read in but the corresponding body hasn't been
       // read, read and toss the body
       if (ffs.streamState == MDPStream::gotHeader)
@@ -292,7 +292,8 @@ namespace gpstk
             ffs.streamState = MDPStream::gotHeader;
             ffs.header = *this;
             if (debugLevel>2)
-               cout << "Got header for id " << id << " body, length=" << length << endl;
+               cout << "Got header for id " << id
+                    << " body, length=" << length << endl;
          }
       }
    }
@@ -310,11 +311,10 @@ namespace gpstk
       if (debugLevel>2)
          cout << "Reading " << myLen 
               << " bytes for message id " << id
-              << " body." << endl;
+              << " body at offset " << ffs.tellg() << endl;
       ffs.getData(buff, myLen);
       if (ffs.gcount() == myLen)
          ffs.streamState = MDPStream::gotBody;
-
       string str(buff, ffs.gcount());
       delete buff;
       return str;

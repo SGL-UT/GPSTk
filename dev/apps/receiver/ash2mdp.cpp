@@ -100,10 +100,10 @@ public:
          
 
       AshtechData::debugLevel = debugLevel;
-      if (debugLevel>3)
+      if (debugLevel>2)
          AshtechData::hexDump = true;
 
-      if (debugLevel>3)
+      if (debugLevel>4)
          MDPHeader::hexDump = true;
 
       if (debugLevel)
@@ -147,9 +147,8 @@ protected:
 
             MDPPVTSolution pvt = makeMDPPVTSolution(pben, time.week);
             pvt.freshnessCount = fc++;
-            if (debugLevel<2)
-               output << pvt << flush;
-            else if (debugLevel>2)
+            output << pvt << flush;
+            if (debugLevel>3)
                pvt.dump(cout);
          }
          else if (mben.checkId(hdr.id) && (input >> mben) && mben)
@@ -166,24 +165,40 @@ protected:
                MDPObsEpoch moe = makeMDPObsEpoch(mben, hint[mben.svprn]);
                moe.freshnessCount = fc++;
                hint[mben.svprn] = moe;
-            if (debugLevel<2)
                output << moe << flush;
-            else if (debugLevel>2)
-               moe.dump(cout);
+               if (debugLevel>3)
+                  moe.dump(cout);
             }
          }
-         else if (epb.checkId(hdr.id) && (input >> epb))
+         else if (epb.checkId(hdr.id) && (input >> epb) && epb)
          {
             if (debugLevel>2)
                epb.dump(cout);
-            MDPNavSubframe sf[3];
-            
+            MDPNavSubframe sf;
+            sf.carrier = ccL1;
+            sf.range = rcCA;
+            sf.nav = ncICD_200_2;
+            sf.prn = epb.prn;
+            for (int s=1; s<=3; s++)
+            {
+               for (int w=1; w<=10; w++)
+                  sf.subframe[w] = epb.word[s][w];
+               long sow = sf.getHOWTime();
+               if (sow>FULLWEEK || sow<0)
+                  continue;
+               DayTime t = DayTime(time.week, sf.getHOWTime()) - 6;
+               sf.freshnessCount = fc++;
+               sf.time = t;
+               output << sf << flush;
+               if (debugLevel>3)
+                  sf.dump(cout);
+            }
          }
          else if (alb.checkId(hdr.id) && (input >> alb))
          {
-            if (debugLevel>2)
-               alb.dump(cout);
             MDPNavSubframe sf;
+            if (debugLevel>3)
+               alb.dump(cout);
          }
       }
 
