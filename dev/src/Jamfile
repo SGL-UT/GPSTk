@@ -102,7 +102,7 @@ else
       convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp
       stl_helpers.hpp CommandOption.hpp CommandOptionParser.hpp
       CommandOptionWithTimeArg.hpp CommandOptionWithCommonTimeArg.hpp
-      BasicFramework.hpp
+      BasicFramework.hpp InOutFramework.hpp
       EphemerisRange.hpp LoopedFramework.hpp TabularEphemerisStore.hpp
       RinexEphemerisStore.hpp FileStore.hpp RungeKutta4.hpp
       $(GETOPT_INC) $(REGEX_INC)
