@@ -1,0 +1,7 @@
+# $Id$
+
+SubDir TOP apps geomatics cycleslips ;
+
+GPSLinkLibraries DiscFix : geomatics gpstk ;
+
+GPSMain DiscFix : DiscFix.cpp ;

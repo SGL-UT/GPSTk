@@ -1,0 +1,27 @@
+#!/bin/sh
+
+echo "This script will help you set up the variables to compile and run the GPSTk"
+echo "test suite."
+
+export PATH_TO_CURRENT=`pwd`
+
+echo "Please enter the directory which holds the CppUnit Libraries"
+echo "e.g. /home/user/lib"
+
+read CppLib
+echo ""
+
+export CPPUNIT_LIB=$CppLib
+
+echo "Please enter the directory which holds the CppUnit Includes"
+echo "e.g. /home/user/include"
+
+read CppInc
+echo ""
+
+export CPPUNIT_INC=$CppInc
+
+
+
+
+

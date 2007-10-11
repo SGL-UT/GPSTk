@@ -1,0 +1,9 @@
+#
+# $Id$
+#
+
+SubDir TOP apps converters ;
+
+GPSLinkLibraries novaRinex : gpstk ;
+
+GPSMain novaRinex : novaRinex.cpp NovatelData.cpp ;

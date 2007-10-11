@@ -1,0 +1,45 @@
+Developer's Notes for GPSTk binding for Python through SWIG 1.3.25
+
+Supervisors
+Ben Harris, David Munton
+
+Student
+Rob Chang
+
+Date: August 1, 2005
+------------------------------------------------------------------
+
+We need the typedef's between %{ }% because SWIG does not write the class prefix (<classname>::) in front of nested objects.
+
+All operator overloads either require renaming or ignoring.  See common.i.
+
+The overload for operator<< is more confusing.  Some classes list operator<< as friend functions and the overloaded functions for them are in the global scope.  Since the function parameters in Python are all the same (PyObjects), some operator<<'s end up with the same signature.  When such ambiguity occurs, I rename the operator<< for both classes to <classname>_streamRead.  Right now the pairs that conflict are:
+Exception and DayTimeExceptions
+Triple and Xvt
+
+Typecasting operators (operator GPSZcount, for example) also require renaming.
+
+Constant bracket operators require renaming.
+
+Order matters.  If class B inherits from class A, then A.hpp needs to be %included or %imported before B.
+
+Some functions are declared in .hpp but never implemented in .cpp.  %ignore them.
+
+Using pydoc.py doesn't always work.  Sometimes it will return the following:
+make: *** [gpstkPython.html] Segmentation fault
+Just run ./pydoc.py -w gpstkPython again and it should create gpstkPython.html.
+
+In RinexObsData.hpp, there are two typedefs: RinexPrnMap and RinexObsTypeMap.  I created templates for them so those two data types are available in Python.  To create a map template, you must also declare a pair template of the same types.  In this particular case, I had to use a BOGUS_TEMPLATE so the RinexPrnMap template will compile.  I have no idea why that is.  I reached that by accident.
+
+Examples 1 and 3 have try+catch blocks.  But they only catch an Exception and print "Hey, exception" as opposed to the C++ version where they print specific information about the exception raised.
+
+Many operator<< are not wrapped.  I don't know why.  I added streamRead.i and streamRead.cpp to separately implement DayTime_streamRead for example3.
+
+----------------
+gpstkPythonUtils
+----------------
+This file holds two groups of functions that I wrote.
+
+SWIG has a std_ios.i file built-in.  But it uses integer type for openmode.  SWIG parser picks that up; therefore, calling ios.out in Python returns an integer value.  RinexObsStream constructor insists on having a pointer to "openmode".
+
+SWIG never wrapped RinexObsStream operators << and >> because it was never explicited defined.  RinexObsStream inherits from FFTextStream which inherits from FFStream which inherits from fstream.  SWIG cannot wrap fstream because there's no fstream.hpp.  Therefore I wrote functions to perform the fstream read/write.

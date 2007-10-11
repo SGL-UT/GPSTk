@@ -1,0 +1,15 @@
+# $Id$
+
+SubDir TOP apps visibility ;
+
+GPSLinkLibraries wheresat svvis findMoreThan12 : rxio gpstk ;
+
+BonkForte ; 
+
+GPSMain wheresat : WhereSat.cpp ;
+
+GPSMain svvis : svvis.cpp ;
+
+GPSMain findMoreThan12 : findMoreThan12.cpp ;
+
+

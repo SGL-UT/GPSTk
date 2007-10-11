@@ -1,0 +1,29 @@
+<h1>Example: Reading and Writing a RINEX Observation File</h1>
+
+<p>This example demonstrates the basic I/O processing of RINEX files.</p>
+
+<p>
+<pre>
+   1  #!/usr/bin/python
+
+   2  from gpstkPython import *
+
+   3  rin = RinexObsStream('bahr1620.04o')
+   4  rout = RinexObsStream('bahr1620.04o.new', ios_out_trunc())
+
+   5  head = RinexObsHeader()
+   6  write(rin, head)
+   7  rout.header = rin.header
+   8  read(rout, rout.header)
+
+   9  data = RinexObsData()
+  10  while write(rin, data):
+  11      read(rout, data)
+</pre>
+</p>
+
+<p>Line 3 and 4 instantiate RinexObsStream object, for input and output, respectively. Note by example that the simpler constructor defaults to input-only behavior.  All of the complexity of reading and writing RINEX observation classes has been <em>encapsulated</em> by the RinexObsStream class.</p>
+
+<p>Lines 5 through 8 demonstrate reading and writing of the RINEX observation file header.</p>
+
+<p>The observations are read into a RinexObsData object, epoch by epoch in lines 9 through 11.  The C++ streaming operators have been renamed to read() and write().  Note that the streaming operator serves as a loop control variable as well as a method of "filling" a RinexObsData object.  The RinexObsData class contains the epoch time stamp, and a map of satellites to observations.</p>
