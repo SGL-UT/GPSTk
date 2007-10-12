@@ -196,7 +196,7 @@ namespace gpstk
          */
         virtual void sort(void)
         {
-            return (proclist.sort(CompareIndex) );
+            proclist.sort(CompareIndex);
         };
 
 
