@@ -77,7 +77,6 @@ else
       CodeSmoother.cpp PCSmoother.cpp ComputeIURAWeights.cpp
       ComputeMOPSWeights.cpp ModelObsFixedStation.cpp ModelObs.cpp
       XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
-      AAAAAAAA.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp GPSAlmanacStore.hpp GPSEphemerisStore.hpp
