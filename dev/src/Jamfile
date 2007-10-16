@@ -45,7 +45,7 @@ else
       BasicFramework.cpp LoopedFramework.cpp
       EphemerisRange.cpp TabularEphemerisStore.cpp 
       RinexEphemerisStore.cpp RungeKutta4.cpp
-      MSCData.cpp SMODFData.cpp LinearClockModel.cpp
+      MSCData.cpp MSCStore.cpp SMODFData.cpp LinearClockModel.cpp
       ObsClockModel.cpp ObsRngDev.cpp
       FICData.cpp FICHeader.cpp 
       FICData109.cpp FICData9.cpp FICData162.cpp FICData62.cpp
@@ -106,7 +106,8 @@ else
       EphemerisRange.hpp LoopedFramework.hpp TabularEphemerisStore.hpp
       RinexEphemerisStore.hpp FileStore.hpp RungeKutta4.hpp
       $(GETOPT_INC) $(REGEX_INC)
-      MSCData.hpp MSCStream.hpp SMODFData.hpp SMODFStream.hpp
+      MSCData.hpp MSCHeader.hpp MSCBase.hpp MSCStore.hpp MSCStream.hpp
+      SMODFData.hpp SMODFStream.hpp
       ClockModel.hpp EpochClockModel.hpp LinearClockModel.hpp
       ObsClockModel.hpp ObsRngDev.hpp ValidType.hpp ORDEpoch.hpp
       FICAStream.hpp FICBase.hpp FICData.hpp FICData9.hpp 
