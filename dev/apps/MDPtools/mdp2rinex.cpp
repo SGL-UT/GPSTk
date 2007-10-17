@@ -171,8 +171,6 @@ protected:
 
    virtual void process(MDPNavSubframe& nav)
    {
-      cout << "nav ";
-
       if (!rinexNavOutput)
          return;
 
