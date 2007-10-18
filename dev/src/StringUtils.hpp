@@ -2433,7 +2433,7 @@ namespace gpstk
             if (exponentLength > 3 && checkSwitch) exponentLength = 3;
 
             std::string toReturn = doub2sci(d, length, exponentLength, true, checkSwitch);
-            sci2for(toReturn, length, 0, exponentLength, checkSwitch);
+            sci2for(toReturn, 0, length, exponentLength, checkSwitch);
          
             return toReturn;
          }
