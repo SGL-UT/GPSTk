@@ -60,67 +60,81 @@ using namespace gpstk;
 
 int main(int argc, char* argv[])
 {
-   if (argc != 3)
+   try
    {
-      cout << "fic2rin" << endl
-           << "  converts a binary FIC file to a Rinex Nav file" << endl
-           << endl
-           << "usage:" << endl
-           << "    fic2rin inputfile outputfile" << endl
-           << endl
-           << "where:" << endl
-           << "    inputfile: an input binary FIC file name" << endl
-           << "    outputfile: an output Rinex Nav file name" << endl;
-      return 0;
-   }
-   // What is up
-   FileFilterFrame<FICStream, FICData> input(argv[1]);
-   list<FICData> alist = input.getData();
+      if (argc != 3)
+      {
+         cout << "fic2rin" << endl
+              << "  converts a binary FIC file to a Rinex Nav file" << endl
+              << endl
+              << "usage:" << endl
+              << "    fic2rin inputfile outputfile" << endl
+              << endl
+              << "where:" << endl
+              << "    inputfile: an input binary FIC file name" << endl
+              << "    outputfile: an output Rinex Nav file name" << endl;
+         return 0;
+      }
+      // What is up
+      FileFilterFrame<FICStream, FICData> input(argv[1]);
+      list<FICData> alist = input.getData();
    
-      // write the header info
-   RinexNavStream rns(argv[2], ios::out|ios::trunc);
-   RinexNavHeader rnh;
-   rnh.fileType = "Navigation";
-   rnh.fileProgram = "fic2rin";
-   rnh.fileAgency = "";
-   ostringstream ostr;
-   ostr << DayTime();
-   rnh.date = ostr.str();
-   rnh.version = 2.1;
-   rnh.valid |= RinexNavHeader::versionValid;
-   rnh.valid |= RinexNavHeader::runByValid;
-   rnh.valid |= RinexNavHeader::endValid;
-   rns.header = rnh;
-   rnh.putRecord(rns);
-   rns.close();
+         // write the header info
+      RinexNavStream rns(argv[2], ios::out|ios::trunc);
+      RinexNavHeader rnh;
+      rnh.fileType = "Navigation";
+      rnh.fileProgram = "fic2rin";
+      rnh.fileAgency = "";
+      ostringstream ostr;
+      ostr << DayTime();
+      rnh.date = ostr.str();
+      rnh.version = 2.1;
+      rnh.valid |= RinexNavHeader::versionValid;
+      rnh.valid |= RinexNavHeader::runByValid;
+      rnh.valid |= RinexNavHeader::endValid;
+      rns.header = rnh;
+      rnh.putRecord(rns);
+      rns.close();
 
-      // filter the FIC data for block 9
-   list<long> blockList;
-   blockList.push_back(9);
-   input.filter(FICDataFilterBlock(blockList));
-   input.sort(FICDataOperatorLessThanBlock9());
-   input.unique(FICDataUniqueBlock9());
+         // filter the FIC data for block 9
+      list<long> blockList;
+      blockList.push_back(9);
+      input.filter(FICDataFilterBlock(blockList));
+      input.sort(FICDataOperatorLessThanBlock9());
+      input.unique(FICDataUniqueBlock9());
 
-      // some hand waving for the data conversion
-   list<RinexNavData> rndList;
-   list<FICData>& ficList = input.getData();
-   list<FICData>::iterator itr = ficList.begin();
-   while (itr != ficList.end())
-   {
-         // use TOE and transmit week number to determine time
-      DayTime time;
-      time.setGPSfullweek(short((*itr).f[5]), (double)(*itr).f[33]);
-         // this station number is bogus, but it's unused so it should be ok
-      EngEphemeris ee(*itr);
-      rndList.push_back(RinexNavData(ee));
-      itr++;
+
+         // some hand waving for the data conversion
+      list<RinexNavData> rndList;
+      list<FICData>& ficList = input.getData();
+      list<FICData>::iterator itr = ficList.begin();
+      while (itr != ficList.end())
+      {
+            // use TOE and transmit week number to determine time
+         DayTime time;
+         time.setGPSfullweek(short((*itr).f[5]), (double)(*itr).f[33]);
+            // this station number is bogus, but it's unused so it should be ok
+         EngEphemeris ee(*itr);
+         rndList.push_back(RinexNavData(ee));
+         itr++;
+      }
+   
+         // write the file data
+      FileFilterFrame<RinexNavStream, RinexNavData> output;
+      output.addData(rndList);
+      output.sort(RinexNavDataOperatorLessThanFull());
+      output.writeFile(argv[2], true);
+
    }
-
-      // write the file data
-   FileFilterFrame<RinexNavStream, RinexNavData> output;
-   output.addData(rndList);
-   output.sort(RinexNavDataOperatorLessThanFull());
-   output.writeFile(argv[2], true);
-
+   catch (Exception& exc)
+   {
+      cerr << exc;
+      return 1;
+   }
+   catch (...)
+   {
+      cerr << "Caught unknown exception" << endl;
+      return 1;
+   }
    return 0;
 }
