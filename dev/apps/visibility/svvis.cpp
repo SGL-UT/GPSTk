@@ -75,6 +75,7 @@ private:
    Triple rxPos;
    double timeStep;
    bool printElev;
+   int graphElev;
 };
 
 
@@ -82,9 +83,8 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
 {
    CommandOptionWithAnyArg 
       minElevOpt(
-         '\0', "min-elev",
-         "Give an integer for the elevation (degrees) above which you want "
-         "to find more than 12 SVs at a given time."),
+         '\0', "elevation-mask",
+         "The elevation above which an SV is visible. The default is 0 degrees."),
 
       rxPosOpt(
          'p', "position",
@@ -104,23 +104,30 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
          'm', "msid",
          "Station number to use from the msc file."),
 
+      graphElevOpt(
+         '\0', "graph-elev",
+         "Output data at the specified interval. Interval is in seconds."),
+
       timeSpanOpt(
          'l', "time-span",
-         "How much data to process, in seconds");
+         "How much data to process, in seconds. Default is 86400.");
 
    CommandOptionWithTimeArg
       startTimeOpt(
          '\0', "start-time", "%4Y/%03j/%02H:%02M:%05.2f",
-         "Ignore data before this time. (%4Y/%03j/%02H:%02M:%05.2f)"),
+         "When to start computing positions. The default is the start of the "
+         "ephemers data. (%4Y/%03j/%02H:%02M:%05.2f)"),
 
       stopTimeOpt(
          '\0',  "stop-time", "%4Y/%03j/%02H:%02M:%05.2f",
-         "Ignore any data after this time");
+         "When to stop computing positions. The default is one day after "
+         "the start time");
 
    CommandOptionNoArg
-      printElevOpt('\0', "print-elev",
-                   "Print the elevation of the sv at each change in tracking. "
-                   "The defaut is to just to output the PRN of the sv.");
+      printElevOpt(
+         '\0', "print-elev",
+         "Print the elevation of the sv at each change in tracking. "
+         "The defaut is to just to output the PRN of the sv.");
    
    if (!BasicFramework::initialize(argc,argv)) return false;
 
@@ -202,13 +209,21 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
       stopTime = startTime + dt;
    }
 
+
+
+   if (graphElevOpt.getCount())
+      graphElev = StringUtils::asInt(graphElevOpt.getValue()[0]);
+   else
+      graphElev = 0;
+
    printElev = printElevOpt.getCount() > 0;
 
-   if (verboseLevel)
+   if (debugLevel)
       cout << "debugLevel: " << debugLevel << endl
            << "verboseLevel: " << verboseLevel << endl
            << "rxPos: " << rxPos << endl
            << "minElev: " << minElev << endl
+           << "graphElev: " << graphElev << endl
            << "startTime: " << startTime << endl
            << "stopTime: " << stopTime << endl;
   
@@ -258,11 +273,13 @@ void SVVis::process()
          catch(gpstk::Exception& e)
          {
             up += " ? ";
+            el += " ? ";
             if (debugLevel)
                cout << e << endl;
          }
       }
-      if (up != prev_up)
+      long sod=static_cast<long>(t.DOYsecond());
+      if (up != prev_up || (graphElev && (sod % graphElev==0)) )
       {
          cout << t << " " << setw(2) << n_up << ": ";
          if (printElev)
@@ -277,19 +294,10 @@ void SVVis::process()
 
 int main(int argc, char *argv[])
 {
-   try
-   {
-      SVVis crap(argv[0]);
+   SVVis crap(argv[0]);
 
-      if (!crap.initialize(argc, argv))
-         exit(0);
+   if (!crap.initialize(argc, argv))
+      exit(0);
 
-      crap.run();
-   }
-   catch (gpstk::Exception &exc)
-   { cout << exc << endl; }
-   catch (std::exception &exc)
-   { cout << "Caught std::exception " << exc.what() << endl; }
-   catch (...)
-   { cout << "Caught unknown exception" << endl; }
+   crap.run();
 }
