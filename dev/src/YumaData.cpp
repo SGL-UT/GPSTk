@@ -159,10 +159,9 @@ namespace gpstk
       AF1 = asDouble(lineParser(line, sAf1));
       
       //Fourteenth Line - week
+      // Its unclear whether this is a full week or week % 1024
       strm.formattedGetLine(line, true);
-      int epoch_week = asInt(lineParser(line, sweek));
-      // Need a way to set epoch     Do we??
-      week = epoch_week + 1024;
+      week = asInt(lineParser(line, sweek));
       
       xmit_time = 0;
       strm.formattedGetLine(line,true);
