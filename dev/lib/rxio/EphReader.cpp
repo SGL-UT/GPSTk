@@ -207,8 +207,12 @@ void EphReader::read_yuma_data(const string& fn)
    fs >> header;
 
    YumaData data;
-   while (fs >> data)
-      alm->addAlmanac(data);
+   while (fs)
+   {
+      fs >> data;
+      if (fs || fs.eof())
+         alm->addAlmanac(data);
+   }
 
    if (verboseLevel>1)
       cout << "# Read " << fn << " as Yuma almanac."<< endl;
@@ -240,8 +244,12 @@ void EphReader::read_sem_data(const string& fn)
    fs >> header;
 
    SEMData data;
-   while (fs >> data)
-      alm->addAlmanac(data);
+   while (fs)
+   {
+      fs >> data;
+      if (fs || fs.eof())
+         alm->addAlmanac(data);
+   }
 
    if (verboseLevel>1)
       cout << "# Read " << fn << " as Yuma almanac."<< endl;
