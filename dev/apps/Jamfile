@@ -16,7 +16,10 @@ SubInclude TOP apps mergetools ;
 SubInclude TOP apps MDPtools ; 
 SubInclude TOP apps multipath ;
 SubInclude TOP apps positioning ;
-SubInclude TOP apps receiver ;
+if $(UNIX)
+{
+   SubInclude TOP apps receiver ;
+}
 SubInclude TOP apps reszilla ;
 SubInclude TOP apps Rinextools ;
 SubInclude TOP apps time ;
