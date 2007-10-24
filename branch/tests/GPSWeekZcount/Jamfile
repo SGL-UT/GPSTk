@@ -1,2 +1,0 @@
-SubDir TOP GPSWeekZcount ;
-TestMain GPSWeekZcount/xGPSWeekZcount.tst : GPSWeekZcount/xGPSWeekZcountM.cpp GPSWeekZcount/xGPSWeekZcount.cpp GPSWeekZcount/GPSWeekZcount.cpp ;

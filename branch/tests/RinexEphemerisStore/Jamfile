@@ -1,5 +1,0 @@
-SubDir TOP RinexEphemerisStore ;
-
-
-
-TestMain RinexEphemerisStore/xRinexEphemerisStore.tst : RinexEphemerisStore/xRinexEphemerisStoreM.cpp RinexEphemerisStore/xRinexEphemerisStore.cpp RinexEphemerisStore/RinexEphemerisStore.cpp ;

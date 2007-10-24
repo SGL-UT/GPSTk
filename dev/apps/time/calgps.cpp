@@ -160,9 +160,9 @@ int main(int argc, char* argv[])
       double twidth=mwidth*ncols;
       double theight=mheight*nrows;
       
-      VGImage* vgs=0; 
-      Frame* frame;
-      HLayout* vlayout;
+      VGImage* vgs = 0; 
+      Frame* frame = 0;
+      HLayout* vlayout = 0;
 
       if (postscriptOption.getCount())
       {
@@ -259,9 +259,12 @@ int main(int argc, char* argv[])
       if ((displayCalendar) && (vgs!=0))
          vgs->view();
 
-      delete vgs;
-      delete frame;
-      delete vlayout;
+      if (vgs != 0)
+      {
+	delete vgs;
+	delete frame;
+	delete vlayout;
+      }
       
    }
    catch( Exception error)

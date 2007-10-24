@@ -1,2 +1,0 @@
-SubDir TOP RACRotation ;
-TestMain RACRotation/xRACRotation.tst : RACRotation/xRACRotationM.cpp RACRotation/xRACRotation.cpp RACRotation/RACRotation.cpp ;
