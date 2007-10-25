@@ -16,9 +16,78 @@ namespace gpstk
 
 SVNumXRef::SVNumXRef( )
 {
-      // Note: This table start with Block II values
+   NtoBMap.insert( make_pair(  1,  I )); 
+   NtoBMap.insert( make_pair(  2,  I ));
+   NtoBMap.insert( make_pair(  3,  I ));
+   NtoBMap.insert( make_pair(  4,  I ));
+   NtoBMap.insert( make_pair(  5,  I ));
+   NtoBMap.insert( make_pair(  6,  I ));
+     // no NAVSTAR 07, I-7 was a launch failure
+   NtoBMap.insert( make_pair(  8,  I ));
+   NtoBMap.insert( make_pair(  9,  I ));
+   NtoBMap.insert( make_pair( 10,  I ));
+   NtoBMap.insert( make_pair( 11,  I ));
+   NtoBMap.insert( make_pair( 13, II ));
+   NtoBMap.insert( make_pair( 14, II ));
+   NtoBMap.insert( make_pair( 15, II ));
+   NtoBMap.insert( make_pair( 16, II ));
+   NtoBMap.insert( make_pair( 17, II ));
+   NtoBMap.insert( make_pair( 18, II ));
+   NtoBMap.insert( make_pair( 19, II ));
+   NtoBMap.insert( make_pair( 20, II ));
+   NtoBMap.insert( make_pair( 21, II ));
+   NtoBMap.insert( make_pair( 22,IIA ));
+   NtoBMap.insert( make_pair( 23,IIA ));
+   NtoBMap.insert( make_pair( 24,IIA ));
+   NtoBMap.insert( make_pair( 25,IIA ));
+   NtoBMap.insert( make_pair( 26,IIA ));
+   NtoBMap.insert( make_pair( 27,IIA ));
+   NtoBMap.insert( make_pair( 28,IIA ));
+   NtoBMap.insert( make_pair( 29,IIA ));
+   NtoBMap.insert( make_pair( 30,IIA ));
+   NtoBMap.insert( make_pair( 31,IIA ));
+   NtoBMap.insert( make_pair( 32,IIA ));
+   NtoBMap.insert( make_pair( 33,IIA ));
+   NtoBMap.insert( make_pair( 34,IIA ));
+   NtoBMap.insert( make_pair( 35,IIA ));
+   NtoBMap.insert( make_pair( 36,IIA ));
+   NtoBMap.insert( make_pair( 37,IIA ));
+   NtoBMap.insert( make_pair( 38,IIA ));
+   NtoBMap.insert( make_pair( 39,IIA ));
+   NtoBMap.insert( make_pair( 40,IIA )); 
+   NtoBMap.insert( make_pair( 41,IIR ));
+    // no NAVSTAR 42, IIR-1 was a launch failure
+   NtoBMap.insert( make_pair( 43,IIR )); 
+   NtoBMap.insert( make_pair( 44,IIR ));
+   NtoBMap.insert( make_pair( 45,IIR ));
+   NtoBMap.insert( make_pair( 46,IIR ));
+   NtoBMap.insert( make_pair( 47,IIR ));
+   NtoBMap.insert( make_pair( 51,IIR ));
+   NtoBMap.insert( make_pair( 52,IIR_M));
+   NtoBMap.insert( make_pair( 53,IIR_M));
+   NtoBMap.insert( make_pair( 54,IIR ));
+   NtoBMap.insert( make_pair( 55,IIR_M ));
+
+   NtoBMap.insert( make_pair( 56,IIR ));
+   NtoBMap.insert( make_pair( 58,IIR_M));
+   NtoBMap.insert( make_pair( 59,IIR ));
+   NtoBMap.insert( make_pair( 60,IIR ));
+   NtoBMap.insert( make_pair( 61,IIR )); 
+
+      // Note: This table start with Block I values
       // Set up NAVSTAR -> PRN ID relationship
       // NAVSTAR ID first, PRN ID second
+   NtoPMap.insert( make_pair(  1,  4 ));
+   NtoPMap.insert( make_pair(  2,  7 ));
+   NtoPMap.insert( make_pair(  3,  6 ));
+   NtoPMap.insert( make_pair(  4,  8 ));
+   NtoPMap.insert( make_pair(  5,  5 ));
+   NtoPMap.insert( make_pair(  6,  9 ));
+     // no NAVSTAR 07, I-7 was a launch failure
+   NtoPMap.insert( make_pair(  8, 11 ));
+   NtoPMap.insert( make_pair(  9, 13 ));
+   NtoPMap.insert( make_pair( 10, 12 ));
+   NtoPMap.insert( make_pair( 11,  3 ));
    NtoPMap.insert( make_pair( 13,  2 ));
    NtoPMap.insert( make_pair( 14, 14 ));
    NtoPMap.insert( make_pair( 15, 15 ));
@@ -244,6 +313,43 @@ bool SVNumXRef::NAVSTARIDAvailable( const int PRNID, const gpstk::DayTime dt ) c
    return( false ); 
 }
 
+SVNumXRef::BlockType SVNumXRef::getBlockType( const int NAVSTARID ) const
+{
+   map<int,BlockType>::const_iterator i;
+   i = NtoBMap.find(  NAVSTARID );
+   if (i!=NtoBMap.end()) return(i->second);
+   
+      // We didn't find a BlockType for this NAVSTAR #, so throw an 
+      // exception.
+   char textOut[80];
+   sprintf(textOut,"No BlockType found associated with NAVSTAR Num %d.", 
+            NAVSTARID);
+   std::string sout = textOut;
+   NoNAVSTARNumberFound noFound( sout );
+   GPSTK_THROW(noFound); 
+   throw( noFound );
+}
+
+std::string SVNumXRef::getBlockTypeString( const int NAVSTARID ) const
+{
+   std::map<int,BlockType>::const_iterator i;
+   i = NtoBMap.find(  NAVSTARID );
+   if (i!=NtoBMap.end())
+   {
+     switch( getBlockType( NAVSTARID ) )
+     {
+       case I: return("Block I"); break;
+       case II: return("Block II"); break;
+       case IIA: return("Block IIA"); break;
+       case IIR: return("Block IIR"); break;
+       case IIR_M: return("Block IIR_M"); break;
+     }
+
+   }
+   return("unkown");
+}
+
+
 int SVNumXRef::getPRNID( const int NAVSTARID ) const
 {
    NAVNumXRefCI p = NtoPMap.find( NAVSTARID );
@@ -264,6 +370,14 @@ bool SVNumXRef::PRNIDAvailable(  const int NAVSTARID ) const
 {
    NAVNumXRefCI p = NtoPMap.find( NAVSTARID );
    if (p!=NtoPMap.end()) return(true);
+   return(false);
+}
+
+bool SVNumXRef::BlockTypeAvailable(  const int NAVSTARID ) const
+{
+   map<int,BlockType>::const_iterator i;
+   i = NtoBMap.find(  NAVSTARID );   
+   if (i!=NtoBMap.end()) return(true);
    return(false);
 }
 

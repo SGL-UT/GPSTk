@@ -84,20 +84,32 @@ class SVNumXRef
    public:
       NEW_EXCEPTION_CLASS( NoPRNNumberFound, gpstk::Exception);
       NEW_EXCEPTION_CLASS( NoNAVSTARNumberFound, gpstk::Exception);
-      
+
+      enum BlockType 
+      {
+	I,
+	II,
+	IIA,
+	IIR,
+	IIR_M
+      };  
       SVNumXRef( );
       ~SVNumXRef() {}
+      BlockType getBlockType( const int NAVSTARID ) const;
+      std::string getBlockTypeString( const int NAVSTARID ) const;
       int getNAVSTAR( const int PRNID ) const;
       int getNAVSTAR( const int PRNID, const gpstk::DayTime dt ) const;
       int getPRNID( const int NAVSTARID ) const;
       bool PRNIDAvailable(  const int NAVSTARID ) const;
       bool NAVSTARIDAvailable( const int PRNID, const gpstk::DayTime dt ) const;
+      bool BlockTypeAvailable( const int NAVSTARID ) const;
       bool NAVSTARIDAvailable( const int PRNID ) const;
       bool isApplicable( gpstk::DayTime dt ) const;
       
    protected:
       std::map<int,int> NtoPMap;
       std::multimap<int,SVNumXRefNode> PtoNMap;
+      std::map<int,BlockType> NtoBMap;
 };
 
 inline int SVNumXRefNode::getNAVSTARNum() const { return(NAVSTARNum); }
