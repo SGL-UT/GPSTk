@@ -66,136 +66,141 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( make_pair( 61,  2 ));
       
       // Set up PRN ID -> NAVSTAR relationship
-   PtoNMap.insert( make_pair( 1, SVNumXRefNode( 32, 
+      // Note: Because of a bug in the Solaris compler version 5.x,
+      // you cannot use make_pair b/c Solaris ASSUMES the key is const AND
+      // Sun's implementation of pair lacks the templated copy constructor 
+      // template< class a, blass b> pair::pair< const pair<a,b>& p >
+
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>( 1, SVNumXRefNode( 32, 
                                        DayTime( 1992, 11, 22, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair( 2, SVNumXRefNode( 13, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>( 2, SVNumXRefNode( 13, 
                                        DayTime( 1989,  6, 10, 0, 0, 0.0),
                                        DayTime( 2004,  5, 12, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair( 2, SVNumXRefNode( 61, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>( 2, SVNumXRefNode( 61, 
                                        DayTime( 2004,  6,  6, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair( 3, SVNumXRefNode( 33, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>( 3, SVNumXRefNode( 33, 
                                        DayTime( 1996,  3, 28, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair( 4, SVNumXRefNode( 34, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>( 4, SVNumXRefNode( 34, 
                                        DayTime( 1993, 10, 26, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair( 5, SVNumXRefNode( 35, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>( 5, SVNumXRefNode( 35, 
                                        DayTime( 1993,  8, 30, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair( 6, SVNumXRefNode( 36, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>( 6, SVNumXRefNode( 36, 
                                        DayTime( 1995,  3, 10, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair( 7, SVNumXRefNode( 37, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>( 7, SVNumXRefNode( 37, 
                                        DayTime( 1993,  5, 13, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair( 8, SVNumXRefNode( 38, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>( 8, SVNumXRefNode( 38, 
                                        DayTime( 1997, 11, 06, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair( 9, SVNumXRefNode( 39, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>( 9, SVNumXRefNode( 39, 
                                        DayTime( 1993,  6, 26, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(10, SVNumXRefNode( 40, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(10, SVNumXRefNode( 40, 
                                        DayTime( 1996,  7, 16, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(11, SVNumXRefNode( 46, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(11, SVNumXRefNode( 46, 
                                        DayTime( 1999, 10,  7, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(12, SVNumXRefNode( 58, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(12, SVNumXRefNode( 58, 
                                        DayTime( 2006, 11, 17, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(13, SVNumXRefNode( 43, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(13, SVNumXRefNode( 43, 
                                        DayTime( 1997,  7, 23, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(14, SVNumXRefNode( 14, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(14, SVNumXRefNode( 14, 
                                        DayTime( 1989,  2, 14, 0, 0, 0.0),
                                        DayTime( 2000,  4, 14, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair(14, SVNumXRefNode( 41, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(14, SVNumXRefNode( 41, 
                                        DayTime( 2000, 11, 10, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(15, SVNumXRefNode( 15, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(15, SVNumXRefNode( 15, 
                                        DayTime( 1990, 10, 01, 0, 0, 0.0),
                                        DayTime( 2007,  3, 15, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair(15, SVNumXRefNode( 55, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(15, SVNumXRefNode( 55, 
                                        DayTime( 2007, 10, 17, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(16, SVNumXRefNode( 16, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(16, SVNumXRefNode( 16, 
                                        DayTime( 1989,  8, 18, 0, 0, 0.0),
                                        DayTime( 2000, 10, 13, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair(16, SVNumXRefNode( 56, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(16, SVNumXRefNode( 56, 
                                        DayTime( 2003,  1, 29, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(17, SVNumXRefNode( 17, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(17, SVNumXRefNode( 17, 
                                        DayTime( 1989, 12, 11, 0, 0, 0.0),
                                        DayTime( 2005,  2, 23, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair(17, SVNumXRefNode( 53, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(17, SVNumXRefNode( 53, 
                                        DayTime( 2005,  9, 26, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(18, SVNumXRefNode( 18, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(18, SVNumXRefNode( 18, 
                                        DayTime( 1990,  1, 24, 0, 0, 0.0),
                                        DayTime( 2000,  8, 18, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair(18, SVNumXRefNode( 54, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(18, SVNumXRefNode( 54, 
                                        DayTime( 2001,  1, 30, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(19, SVNumXRefNode( 19, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(19, SVNumXRefNode( 19, 
                                        DayTime( 1989, 10, 21, 0, 0, 0.0),
                                        DayTime( 2001,  9, 11, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair(19, SVNumXRefNode( 59, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(19, SVNumXRefNode( 59, 
                                        DayTime( 2004,  3, 20, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(20, SVNumXRefNode( 20, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(20, SVNumXRefNode( 20, 
                                        DayTime( 1990,  3, 26, 0, 0, 0.0),
                                        DayTime( 1996, 12, 13, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair(20, SVNumXRefNode( 51, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(20, SVNumXRefNode( 51, 
                                        DayTime( 2000,  5, 11, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(21, SVNumXRefNode( 21, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(21, SVNumXRefNode( 21, 
                                        DayTime( 1990,  8,  2, 0, 0, 0.0),
                                        DayTime( 2003,  1, 27, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair(21, SVNumXRefNode( 45, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(21, SVNumXRefNode( 45, 
                                        DayTime( 2003,  3, 31, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(22, SVNumXRefNode( 22, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(22, SVNumXRefNode( 22, 
                                        DayTime( 1993,  2,  3, 0, 0, 0.0),
                                        DayTime( 2003,  8,  6, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair(22, SVNumXRefNode( 47, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(22, SVNumXRefNode( 47, 
                                        DayTime( 2003, 12, 21, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(23, SVNumXRefNode( 23, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(23, SVNumXRefNode( 23, 
                                        DayTime( 1990, 11, 26, 0, 0, 0.0),
                                        DayTime( 2004,  2, 13, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair(23, SVNumXRefNode( 60, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(23, SVNumXRefNode( 60, 
                                        DayTime( 2004,  6, 23, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(24, SVNumXRefNode( 24, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(24, SVNumXRefNode( 24, 
                                        DayTime( 1991,  7,  4, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(25, SVNumXRefNode( 25, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(25, SVNumXRefNode( 25, 
                                        DayTime( 1992,  2, 23, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(26, SVNumXRefNode( 26, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(26, SVNumXRefNode( 26, 
                                        DayTime( 1992,  7,  7, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(27, SVNumXRefNode( 27, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(27, SVNumXRefNode( 27, 
                                        DayTime( 1992,  9,  9, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(28, SVNumXRefNode( 28, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(28, SVNumXRefNode( 28, 
                                        DayTime( 1992,  4, 10, 0, 0, 0.0),
                                        DayTime( 1997,  8, 15, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair(28, SVNumXRefNode( 44,
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(28, SVNumXRefNode( 44,
                                        DayTime( 2000,  7, 16, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(29, SVNumXRefNode( 29, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(29, SVNumXRefNode( 29, 
                                        DayTime( 1992, 12, 18, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(30, SVNumXRefNode( 30, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(30, SVNumXRefNode( 30, 
                                        DayTime( 1996,  9, 12, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( make_pair(31, SVNumXRefNode( 31, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(31, SVNumXRefNode( 31, 
                                        DayTime( 1993,  3, 30, 0, 0, 0.0),
                                        DayTime( 2005, 10, 24, 0, 0, 0.0))));
-   PtoNMap.insert( make_pair(31, SVNumXRefNode( 52, 
+   PtoNMap.insert( std::pair<const int, SVNumXRefNode>(31, SVNumXRefNode( 52, 
                                        DayTime( 2006,  9, 25, 0, 0, 0.0),
                                        DayTime::END_OF_TIME  )));
 

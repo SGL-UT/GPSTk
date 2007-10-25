@@ -30,7 +30,7 @@
 //============================================================================
 
 
-#include <list>
+#include <vector>
 #include "ProcessingClass.hpp"
 
 
@@ -84,7 +84,7 @@ namespace gpstk
          */
         virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
         {
-            std::list<ProcessingClass*>::iterator pos;
+            std::vector<ProcessingClass*>::iterator pos;
             for (pos = proclist.begin(); pos != proclist.end(); ++pos)
             {
                 (*pos)->Process(gData);
@@ -100,7 +100,7 @@ namespace gpstk
          */
         virtual gnssRinex& Process(gnssRinex& gData)
         {
-            std::list<ProcessingClass*>::iterator pos;
+            std::vector<ProcessingClass*>::iterator pos;
             for (pos = proclist.begin(); pos != proclist.end(); ++pos)
             {
                 (*pos)->Process(gData);
@@ -127,8 +127,20 @@ namespace gpstk
         /// Inserts a new element at the beginning.
         virtual void push_front(ProcessingClass& pClass)
         {
-            proclist.push_front( (&pClass) );
-            return;
+           // Add space to the end 
+           proclist.resize(proclist.size()+1);
+
+           // Roll the vector forward
+           size_t idx;
+           for (idx=(proclist.size()-1);idx>0;idx++)
+           {
+              proclist[idx]=proclist[idx-1]; 
+           }
+
+           // Put the new member at the start of the vector
+           proclist[0]=&pClass;
+
+           return;
         };
 
 
@@ -143,8 +155,17 @@ namespace gpstk
         /// Removes the first element. It does NOT return it.
         virtual void pop_front(void)
         {
-            proclist.pop_front();
-            return;
+           // Roll the vector backward
+           size_t idx;
+           for (idx=0; idx<(proclist.size()-1);idx++)
+           {
+              proclist[idx]=proclist[idx+1]; 
+           }
+
+           // Remove space at the end 
+           proclist.resize(proclist.size()-1);
+
+           return;
         };
 
 
@@ -196,7 +217,8 @@ namespace gpstk
          */
         virtual void sort(void)
         {
-            proclist.sort(CompareIndex);
+              //proclist.sort(gpstk::CompareIndex());
+              std::sort(proclist.begin(), proclist.end(), CompareIndex());
         };
 
 
@@ -221,8 +243,8 @@ namespace gpstk
 
     private:
 
-        /// stl::list holding pointers to ProcessingClass objects.
-        std::list<ProcessingClass*> proclist;
+        /// stl::vector holding pointers to ProcessingClass objects.
+        std::vector<ProcessingClass*> proclist;
 
         /// Initial index assigned to this class.
         static int classIndex;

@@ -55,8 +55,6 @@
 
    // Project Headers
 
-using namespace std;
-
 namespace gpstk
 {
 

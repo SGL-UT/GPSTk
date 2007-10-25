@@ -142,12 +142,18 @@ namespace gpstk
     /** This function is a Binary Predicate (in STL parlance), and it is used to allow comparison 
      * and sorting by object index (instead of memory address) when using pointers. 
      */
-    inline bool CompareIndex(const ProcessingClass* a, const ProcessingClass* b)
-    {
-        return ( (a->getIndex()) < (b->getIndex()) );
-    }
+    //inline bool CompareIndex(const ProcessingClass* a, const ProcessingClass* b)
+    //{
+    //    return ( (a->getIndex()) < (b->getIndex()) );
+      // }
 
-
+   struct CompareIndex : public std::binary_function<const ProcessingClass*,const ProcessingClass*, bool> 
+   {
+      bool operator() (const ProcessingClass * a, const ProcessingClass * b) const
+      {
+         return ( (a->getIndex()) < (b->getIndex()) );
+      }
+   };
 
    //@}
    
