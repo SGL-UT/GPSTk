@@ -15,6 +15,7 @@ else
 	GraphicsConstants.cpp Line.cpp Polygon.cpp 
 	Rectangle.cpp Circle.cpp TextStyle.cpp Text.cpp 
 	Marker.cpp Comment.cpp Frame.cpp VLayout.cpp HLayout.cpp
+	GridLayout.cpp BorderLayout.cpp
 	;
 
   InstallFile $(INCDIR) : BasicShape.hpp Circle.hpp Color.hpp
@@ -24,6 +25,7 @@ else
 	StrokeStyle.hpp SVGImage.hpp Text.hpp TextStyle.hpp
   	VGImage.hpp ViewerManager.hpp VPlotException.hpp
 	Layout.hpp VLayout.hpp Frame.hpp Helper.hpp HLayout.hpp
+	GridLayout.hpp BorderLayout.hpp
 	;
 
 }

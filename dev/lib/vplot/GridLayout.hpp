@@ -1,5 +1,5 @@
 
-/// @file HLayout.hpp Class to lay out graphic elements vertially (declarations).
+/// @file GridLayout.hpp Class to lay out graphic elements vertially (declarations).
 
 //============================================================================
 //
@@ -24,8 +24,8 @@
 //============================================================================
 
 
-#ifndef VPLOT_HLAYOUT_H
-#define VPLOT_HLAYOUT_H
+#ifndef VPLOT_GRIDLAYOUT_H
+#define VPLOT_GRIDLAYOUT_H
 
 #include <vector>
 
@@ -41,7 +41,7 @@ namespace vplot
      /**
       * Assists in arranging frames in a vertical stack.
       */
-   class HLayout : public Layout
+   class GridLayout : public Layout
    {
       
    public:
@@ -49,16 +49,10 @@ namespace vplot
       /**
        * Constructor. 
        * @param frame Frame to create layout within
-       * @param nframe Number of evenly stacked vertical frames to make
+       * @param rows Number of rows of frames to make
+       * @param columns Nums of columns of frames to make
        */   
-      HLayout(const Frame& frame, int nframes);
-
-      /**
-       * Constructor. 
-       * @param frame Frame to split into two
-       * @param fraction Fraction (>0, <1) of the horizontal space for the first frame.
-       */
-      HLayout(const Frame& frame, double fraction);
+      GridLayout(const Frame& frame, int rows, int columns);
 
       virtual int getFrameCount(void)
 	{return targetList.size();}
@@ -66,9 +60,15 @@ namespace vplot
       virtual Frame getFrame(int fnum)
 	{return targetList[fnum];}
 
+      virtual Frame getFrame(int row, int col)
+         {return targetList[col+row*ncols];}
+            
+            
+
    protected:
 
       std::vector<Frame> targetList;
+      int nrows, ncols;
    };
 
   //@}

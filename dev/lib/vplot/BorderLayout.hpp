@@ -1,5 +1,4 @@
-
-/// @file HLayout.hpp Class to lay out graphic elements vertially (declarations).
+/// @file BorderLayout.hpp Class to create frame within a frame, with a border or margin. (declarations).
 
 //============================================================================
 //
@@ -24,8 +23,8 @@
 //============================================================================
 
 
-#ifndef VPLOT_HLAYOUT_H
-#define VPLOT_HLAYOUT_H
+#ifndef VPLOT_BORDERLAYOUT_H
+#define VPLOT_BORDERLAYOUT_H
 
 #include <vector>
 
@@ -41,30 +40,32 @@ namespace vplot
      /**
       * Assists in arranging frames in a vertical stack.
       */
-   class HLayout : public Layout
+   class BorderLayout : public Layout
    {
       
    public:
 
       /**
        * Constructor. 
-       * @param frame Frame to create layout within
-       * @param nframe Number of evenly stacked vertical frames to make
+       * @param frame Outer frame.
+       * @param marginSize Length in points between inner and outer frames
        */   
-      HLayout(const Frame& frame, int nframes);
+      BorderLayout(const Frame& frame, double marginSize );
 
       /**
        * Constructor. 
-       * @param frame Frame to split into two
-       * @param fraction Fraction (>0, <1) of the horizontal space for the first frame.
-       */
-      HLayout(const Frame& frame, double fraction);
+       * @param frame Outer frame.
+       * @param xMarginSize Border size between left and right parts of inner and outer frames
+       * @param yMarginSize Border size between upper and lower parts of inner and outer frames
+       */   
+      BorderLayout(const Frame& frame, 
+                   double xMarginSize, double yMarginSize );
 
       virtual int getFrameCount(void)
-	{return targetList.size();}
+	{return (1);}
 
       virtual Frame getFrame(int fnum)
-	{return targetList[fnum];}
+	{return targetList[0];}
 
    protected:
 

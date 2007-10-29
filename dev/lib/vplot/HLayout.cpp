@@ -20,4 +20,21 @@ namespace vplot
 	 targetList[i].nest(parent, xloc, 0);
       }
    }
+
+   HLayout::HLayout(const Frame& frame, double fraction)
+         : Layout(frame), targetList(2)
+   {
+      Frame parent=getParentFrame();
+
+      double xlow=parent.lx();
+      double xhigh=parent.ux();
+
+      targetList[0].setHeight(parent.getHeight());
+      targetList[0].setWidth(parent.getWidth()*fraction);
+      targetList[0].nest(parent, xlow, 0);
+      targetList[1].setHeight(parent.getHeight());
+      targetList[1].setWidth(parent.getWidth()*(1.-fraction));
+      targetList[1].nest(parent, xlow+parent.getWidth()*fraction,0);
+   }
+
 }

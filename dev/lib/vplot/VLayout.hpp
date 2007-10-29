@@ -53,6 +53,13 @@ namespace vplot
        */   
       VLayout(const Frame& frame, int nframes);
 
+      /**
+       * Constructor. 
+       * @param frame Frame to split into two
+       * @param fraction Fraction (>0, <1) of the vertical space for the first frame.
+       */
+      VLayout(const Frame& frame, double fraction);
+
       virtual int getFrameCount(void)
 	{return targetList.size();}
 
