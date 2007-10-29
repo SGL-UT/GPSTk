@@ -313,6 +313,16 @@ bool SVNumXRef::NAVSTARIDAvailable( const int PRNID, const gpstk::DayTime dt ) c
    return( false ); 
 }
 
+bool SVNumXRef::NAVSTARIDActive( const int NAVSTARID, const gpstk::DayTime dt ) const
+{
+   for (SVNumXRefListCI ci=PtoNMap.begin(); ci != PtoNMap.end(); ++ci )
+   {
+      if (ci->second.getNAVSTARNum()==NAVSTARID &&
+          ci->second.isApplicable( dt )         ) return( true );
+   }
+   return( false ); 
+}
+
 SVNumXRef::BlockType SVNumXRef::getBlockType( const int NAVSTARID ) const
 {
    map<int,BlockType>::const_iterator i;

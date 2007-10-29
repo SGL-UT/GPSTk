@@ -104,7 +104,7 @@ class SVNumXRef
       bool NAVSTARIDAvailable( const int PRNID, const gpstk::DayTime dt ) const;
       bool BlockTypeAvailable( const int NAVSTARID ) const;
       bool NAVSTARIDAvailable( const int PRNID ) const;
-      bool isApplicable( gpstk::DayTime dt ) const;
+      bool NAVSTARIDActive( const int NAVSTARID, const gpstk::DayTime dt ) const;
       
    protected:
       std::map<int,int> NtoPMap;
