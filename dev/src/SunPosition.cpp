@@ -68,19 +68,18 @@ namespace gpstk
         // Compute the years, and fraction of year, pased since J1900.0
         int y(t.year());    // Current year
         int doy(t.DOY());   // Day of current year
-        double fd( (t.secOfDay()/86400.0 ) );   // Fraction of day
+        double fd( (t.secOfDay()/3600.0 ) );   // Fraction of day, in hours
         int years( (y - 1900) );    // Integer number of years since J1900.0
         int iy4( ( ((y%4)+4)%4 ) ); // Is it a leap year?
         // Compute fraction of year
-        double yearfrac = ( ( (4.0*(doy-1.0/((double)iy4+1.0)) - (double)iy4 - 2.0 ) + 4.0 * fd ) / 1461.0 );
+        double yearfrac = ( ( (4.0*(doy-1.0/(iy4+1)) - iy4 - 2 ) + 4.0 * fd ) / 1461.0 );
         double time(years+yearfrac);
 
         // Compute the geometric mean longitude of the Sun
-        double* intpar;
-        double elm( modf((4.881628 + TWO_PI*yearfrac + 0.0001342*time)/TWO_PI, intpar) );
+        double elm( fmod((4.881628 + TWO_PI*yearfrac + 0.0001342*time), TWO_PI) );
 
         // Mean longitude of perihelion
-        double gamma(4.90823 + 3.0005e-4*time);
+        double gamma(4.90823 + 0.00030005*time);
 
         // Mean anomaly
         double em(elm-gamma);
@@ -102,8 +101,7 @@ namespace gpstk
         double r( (1.0 - esq)/(1.0 + e*cos(v)) );
 
         // Moon's mean longitude
-        modf((4.72 + 83.9971*time)/TWO_PI, intpar);
-        double elmm(*intpar);
+        double elmm( fmod((4.72 + 83.9971*time),TWO_PI) );
 
         // Useful definitions
         double coselt(cos(elt));
@@ -152,18 +150,24 @@ namespace gpstk
     double UTC2SID(const DayTime& t)
     {
 
-        // Fraction of day, in hours
-        double frofday( t.secOfDay()/3600.0 );
+        double y(t.year()-1.0);
+        double m(13.0);
+        double d(t.DOY());
+        double h(t.secOfDay()/3600.0);  // Hours of day (decimal)
+        double frofday (t.secOfDay()/86400.0);        // Fraction of day
+
+        // Compute Julian Day, including decimals
+        double jd(floor(365.25*y) + floor(30.6001*(m+1.0)) + d + frofday + 1720981.5);
 
         // Temporal value, in centuries
-        double tt( (t.JD() - 2451545.0)/36525.0 );
+        double tt( (jd - 2451545.0)/36525.0 );
 
         double sid( 24110.54841 + tt*( (8640184.812866) + tt*( (0.093104) - (6.2e-6*tt)) ) );
 
-        double* intpar;
-        sid = modf( (sid/3600.0 + frofday)/24.0, intpar);
+        sid = sid/3600.0 + h;
+        sid = fmod(sid,24.0);
 
-        if(sid<0.0) sid = sid + 24.0;
+        if (sid < 0.0) sid+=24.0;
 
         return sid;
     }
