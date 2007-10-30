@@ -28,7 +28,7 @@ TimeConverters.cpp TimeString.cpp TimeTag.cpp Triple.cpp TropModel.cpp \
 TypeID.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp X1Sequence.cpp \
 X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp YumaData.cpp \
 YumaHeader.cpp DataHeaders.cpp DataStructures.cpp \
-ProcessingList.cpp ProcessingVector.cpp SimpleFilter.cpp \
+ProcessingVector.cpp SimpleFilter.cpp \
 ComputePC.cpp ComputeLC.cpp ComputePI.cpp ComputeLI.cpp \
 ComputePdelta.cpp ComputeLdelta.cpp ComputeMelbourneWubbena.cpp \
 OneFreqCSDetector.cpp LICSDetector.cpp MWCSDetector.cpp CodeSmoother.cpp \
@@ -84,7 +84,7 @@ WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp Xvt.hpp YDSTime.hpp \
 YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp YumaHeader.hpp YumaStream.hpp \
 convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp \
 stl_helpers.hpp DataHeaders.hpp DataStructures.hpp \
-ProcessingClass.hpp ProcessingList.hpp ProcessingVector.hpp SimpleFilter.hpp \
+ProcessingClass.hpp  ProcessingVector.hpp SimpleFilter.hpp \
 ComputeCombination.hpp ComputePC.hpp ComputeLC.hpp ComputePI.hpp \
 ComputeLI.hpp ComputePdelta.hpp ComputeLdelta.hpp ComputeIURAWeights.hpp \
 ComputeMOPSWeights.hpp ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp \

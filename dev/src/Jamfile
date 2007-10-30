@@ -70,7 +70,7 @@ else
       YumaData.cpp YumaAlmanacStore.cpp
       SEMHeader.cpp SEMData.cpp SEMAlmanacStore.cpp
       SourceID.cpp TypeID.cpp DataHeaders.cpp DataStructures.cpp
-      ProcessingList.cpp ProcessingVector.cpp SimpleFilter.cpp
+      ProcessingVector.cpp SimpleFilter.cpp
       ComputePC.cpp ComputeLC.cpp ComputePI.cpp ComputeLI.cpp 
       ComputePdelta.cpp ComputeLdelta.cpp ComputeMelbourneWubbena.cpp
       OneFreqCSDetector.cpp LICSDetector.cpp MWCSDetector.cpp
@@ -137,7 +137,7 @@ else
       YumaBase.hpp YumaStream.hpp YumaHeader.hpp YumaData.hpp YumaAlmanacStore.hpp
       SEMBase.hpp SEMStream.hpp SEMHeader.hpp SEMData.hpp SEMAlmanacStore.hpp
       SourceID.hpp TypeID.hpp DataHeaders.hpp DataStructures.hpp
-      ProcessingClass.hpp ProcessingList.hpp ProcessingVector.hpp SimpleFilter.hpp
+      ProcessingClass.hpp  ProcessingVector.hpp SimpleFilter.hpp
       TimeNamedFileStream.hpp ComputeCombination.hpp ComputePC.hpp
       ComputeLC.hpp ComputePI.hpp ComputeLI.hpp ComputePdelta.hpp
       ComputeLdelta.hpp ComputeIURAWeights.hpp ComputeMOPSWeights.hpp
