@@ -477,7 +477,7 @@ namespace vplot
     ostr.flush();
 
     // Register viewers in case they haven't been registered.
-    viewerManager.registerViewer("rsvg-view");
+    viewerManager.registerViewer("rsvg-view -b white");
     viewerManager.registerViewer("ksvg");
     viewerManager.registerViewer("inkscape");
 
