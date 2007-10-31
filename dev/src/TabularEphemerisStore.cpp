@@ -117,7 +117,7 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt TabularEphemerisStore::getXvt(SatID sat, const DayTime& t)
+   Xvt TabularEphemerisStore::getXvt(const SatID sat, const DayTime& t)
       const throw(InvalidRequest)
    {
       EphMap::const_iterator svmap = pe.find(sat);

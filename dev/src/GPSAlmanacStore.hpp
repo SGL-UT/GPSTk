@@ -140,7 +140,7 @@ namespace gpstk
       /// @param t the time to look up
       /// @return the SV health bits
       /// @throw InvalidRequest no data found in store
-      short getSatHealth(SatID sat, const DayTime& t) 
+      short getSatHealth(const SatID sat, const DayTime& t) 
          const throw(InvalidRequest);
 
       bool addAlmanac(const AlmOrbit& alm) throw();
@@ -150,7 +150,7 @@ namespace gpstk
       /// closest being in the past or future.
       /// @param sat the satellite's SatID
       /// @param t the time of interest
-      AlmOrbit findAlmanac(SatID sat, const DayTime& t) 
+      AlmOrbit findAlmanac(const SatID sat, const DayTime& t) 
          const throw(InvalidRequest);
 
       /// returns all almanacs closest to t for all satellites
