@@ -284,9 +284,12 @@ namespace vplot
     if( tfc != CLEAR && tfc != NONE )
       ostr << fillWithColor(fc);
 
-    updateStrokeStyle(ss);
-
-    ostr << "stroke" << endl;
+    // If the line is clear then don't bother to stroke
+    if(!(tss == CLEAR))
+    {
+      updateStrokeStyle(ss);
+      ostr << "stroke" << endl;
+    }
   }
 
   void PSImageBase::circle (const Circle& circle)
@@ -315,9 +318,12 @@ namespace vplot
     if( tfc != CLEAR && tfc != NONE )
       ostr << fillWithColor(fc);
 
-    updateStrokeStyle(ss);
-
-    ostr << "stroke" << endl;
+    // If the line is clear then don't bother to stroke
+    if(!(tss == CLEAR))
+    {
+      updateStrokeStyle(ss);
+      ostr << "stroke" << endl;
+    }
   }
 
 
@@ -343,9 +349,12 @@ namespace vplot
     if( tfc != CLEAR && tfc != NONE )
       ostr << fillWithColor(fc);
 
-    updateStrokeStyle(ss);
-
-    ostr << "stroke" << endl;
+    // If the line is clear then don't bother to stroke
+    if(!(tss == CLEAR))
+    {
+      updateStrokeStyle(ss);
+      ostr << "stroke" << endl;
+    }
   }
 
   void PSImageBase::text(const Text& text)
@@ -354,6 +363,15 @@ namespace vplot
 
     TextStyle ts;
     StyleType tts = getCorrectTextStyle(&ts,text);
+
+    /*
+     * This is to be safe since other things rely upon the last stroke
+     * style to see if they need to redefine the style.  Since text changes
+     * color this could screw up lines to be this color since the stroke
+     * style has not changed.
+     */
+    StrokeStyle ss(ts.getColor());
+    updateStrokeStyle(ss);
 
     if( tts == CLEAR )
     {
