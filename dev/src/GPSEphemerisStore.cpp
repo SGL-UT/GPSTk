@@ -43,7 +43,7 @@ namespace gpstk
 {
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt GPSEphemerisStore::getXvt(SatID sat, const DayTime& t)
+   Xvt GPSEphemerisStore::getXvt(const SatID sat, const DayTime& t)
       const throw(InvalidRequest)
    {
       short ref;
@@ -53,7 +53,7 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt GPSEphemerisStore::getXvt(SatID sat, const DayTime& t, short& ref)
+   Xvt GPSEphemerisStore::getXvt(const SatID sat, const DayTime& t, short& ref)
       const throw(InvalidRequest)
    {
       try
@@ -74,7 +74,7 @@ namespace gpstk
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    const EngEphemeris&
-   GPSEphemerisStore::findEphemeris(SatID sat, const DayTime& t) 
+   GPSEphemerisStore::findEphemeris(const SatID sat, const DayTime& t) 
       const throw(InvalidRequest)
    {
       try
@@ -90,7 +90,7 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   short GPSEphemerisStore::getSatHealth(SatID sat, const DayTime& t)
+   short GPSEphemerisStore::getSatHealth(const SatID sat, const DayTime& t)
       const throw(InvalidRequest)
    {
       try

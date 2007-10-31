@@ -174,7 +174,7 @@ namespace gpstk
        * @param ref a place to return the IODC for future reference.
        * @return the Xvt of the SV at time t
        */
-      Xvt getXvt(SatID sat, const DayTime& t, short& ref)
+      Xvt getXvt(const SatID sat, const DayTime& t, short& ref)
          const throw(InvalidRequest);
 
       /// Get the number of EngEphemeris objects in this collection.
@@ -192,7 +192,7 @@ namespace gpstk
       /// @param t time with which to search for ephemeris
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findEphemeris(SatID sat, const DayTime& t)
+      const EngEphemeris& findEphemeris(const SatID sat, const DayTime& t)
          const throw(InvalidRequest);
       
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
@@ -203,7 +203,7 @@ namespace gpstk
       /// @param t the time of interest
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findUserEphemeris(SatID sat, const DayTime& t)
+      const EngEphemeris& findUserEphemeris(const SatID sat, const DayTime& t)
          const throw(InvalidRequest);
 
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
@@ -213,10 +213,10 @@ namespace gpstk
       /// @param t the time of interest
       /// @return a reference to desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findNearEphemeris(SatID sat, const DayTime& t)
+      const EngEphemeris& findNearEphemeris(const SatID sat, const DayTime& t)
          const throw(InvalidRequest);
 
-      short getHealth(SatID sat, const DayTime& t)
+      short getHealth(const SatID sat, const DayTime& t)
          const throw(InvalidRequest);
 
       /// Add all ephemerides to an existing list<EngEphemeris>.
