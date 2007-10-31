@@ -145,7 +145,7 @@ namespace gpstk
       /// @param t the time to look up
       /// @return the SV health bits
       /// @throw InvalidRequest no matching ephemeris found in the store
-      short getSatHealth(SatID sat, const DayTime& t)
+      short getSatHealth(const SatID sat, const DayTime& t)
          const throw(InvalidRequest);
 
 

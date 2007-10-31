@@ -243,7 +243,7 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
    const EngEphemeris&
-   GPSEphemerisStore::findUserEphemeris(SatID sat, const DayTime& t) 
+   GPSEphemerisStore::findUserEphemeris(const SatID sat, const DayTime& t) 
       const throw(InvalidRequest)
    {
       DayTime test;
@@ -314,7 +314,7 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
    const EngEphemeris&
-   GPSEphemerisStore::findNearEphemeris(SatID sat, const DayTime& t) 
+   GPSEphemerisStore::findNearEphemeris(const SatID sat, const DayTime& t) 
       const throw(InvalidRequest)
    {
       DayTime test;
