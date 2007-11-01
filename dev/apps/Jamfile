@@ -13,7 +13,10 @@ SubInclude TOP apps filetools ;
 SubInclude TOP apps geomatics ;
 SubInclude TOP apps ionosphere ;
 SubInclude TOP apps mergetools ;
-SubInclude TOP apps MDPtools ; 
+if $(UNIX)
+{
+   SubInclude TOP apps MDPtools ; 
+}
 SubInclude TOP apps multipath ;
 SubInclude TOP apps positioning ;
 if $(UNIX)
