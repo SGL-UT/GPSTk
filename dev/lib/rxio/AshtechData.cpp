@@ -46,111 +46,137 @@ using namespace std;
 
 namespace gpstk
  {
-   //---------------------------------------------------------------------------
-   //---------------------------------------------------------------------------
-   // This is the string that preceeds every message from the receiver.
-   const char* AshtechData::preamble = "$PASHR,";
+    //---------------------------------------------------------------------------
+    //---------------------------------------------------------------------------
+    // This is the string that preceeds every message from the receiver.
+    const string AshtechData::preamble("$PASHR,");
 
-   // Set to zero for no debugging output
-   // set to 1 to output text messages about decode/format/range errors
-   // set to 2 to add a hex dump of those messages
-   // set to 3+ to add the tossed bytes whether or not they are bad
-   int AshtechData::debugLevel = 0;
+    // This is the string that is at the end of every message.
+    const string AshtechData::trailer("\015\012");
 
-   // set true to print a hex dump of every message to cout
-   bool AshtechData::hexDump = false;
+    // Set to zero for no debugging output
+    // set to 1 to output text messages about decode/format/range errors
+    // set to 2 to add a hex dump of those messages
+    // set to 3+ to add the tossed bytes whether or not they are bad
+    int AshtechData::debugLevel = 0;
 
-
-   //---------------------------------------------------------------------------
-   void AshtechData::reallyGetRecord(FFStream& ffs)
-      throw(exception, FFStreamError, EndOfFile)
-   {
-      // Note that this will generate a bad_cast exception if it doesn't work.
-      AshtechStream& stream=dynamic_cast<AshtechStream&>(ffs);
-
-      // make sure the object is reset before starting the search
-      clear(fmtbit | lenbit | crcbit);
-      id.clear();
-      stream.rawData.erase();
-
-      readHeader(stream);
-   } // AshtechData::reallyGetRecord()
+    // set true to print a hex dump of every message to cout
+    bool AshtechData::hexDump = false;
 
 
-   //---------------------------------------------------------------------------
-   void AshtechData::readHeader(AshtechStream& stream)
-      throw(FFStreamError, EndOfFile)
-   {
-      char buff[12];
-      string& rawData = stream.rawData;
+    //---------------------------------------------------------------------------
+    void AshtechData::reallyGetRecord(FFStream& ffs)
+       throw(exception, FFStreamError, EndOfFile)
+    {
+       // Note that this will generate a bad_cast exception if it doesn't work.
+       AshtechStream& stream=dynamic_cast<AshtechStream&>(ffs);
 
-      while (stream.read(buff, sizeof(buff)))
-      {
-         rawData.append(buff, stream.gcount());
+       // make sure the object is reset before starting the search
+       clear(fmtbit | lenbit | crcbit);
+       id.clear();
 
-         if (rawData.size()>=11 && rawData.substr(0,7)==preamble)
-         {
-            id = rawData.substr(7,3);
-            break;
-         }
-
-         if (hexDump)
-            StringUtils::hexDumpData(cout, rawData);
-
-         size_t len=min(rawData.size(),rawData.find(preamble[0],1));
-         if (debugLevel>1)
-            cout << "no preamble, tossing " << len
-                 << " bytes at offset:"
-                 << (int)stream.tellg()-(int)len
-                 << endl;
-         rawData.erase(0, len);
-      }
-   }
-
-   //---------------------------------------------------------------------------
-   void AshtechData::readBody(AshtechStream& stream)
-      throw(FFStreamError, EndOfFile)
-   {
-      string& rawData = stream.rawData;
-      const string term("\015\012");
-
-      while (rawData.substr(rawData.length()-2,2) != term)
-      {
-         string buff;
-         getline(stream, buff, term[1]);
-         if (buff.size()==0)
-            return;
-         rawData.append(buff);
-         rawData.append(term.substr(1,1));
-      }
-
-      if (hexDump)
-         StringUtils::hexDumpData(cout, rawData);
-
-      decode(rawData);
-      if (!good() && debugLevel)
-         cout << "bad decode at offset:"
-              << (long)stream.tellg()-(long)rawData.size()
-              << endl;
-   }
+       readHeader(stream);
+    } // AshtechData::reallyGetRecord()
 
 
-   //---------------------------------------------------------------------------
-   void AshtechData::dump(ostream& out) const throw()
-   {
-      ostringstream oss;
-      oss << getName() << " : id:" << id
-          << " checksum:" << hex << checksum
-          << " rdstate:" << rdstate() << dec;
-      if (crcerr())
-         oss << "-crc";
-      if (fmterr())
-         oss << "-fmt";
-      if (lenerr())
-         oss << "-len";
-      if (parerr())
-         oss << "-par";
+    //---------------------------------------------------------------------------
+    void AshtechData::readHeader(AshtechStream& stream)
+       throw(FFStreamError, EndOfFile)
+    {
+       string& rawData = stream.rawData;
+       size_t i;
 
-      out << oss.str() << endl;
-   }  // AshtechData::dump()
+       while (stream)
+       {
+          if (rawData.length() < preamble.length()+4)
+          {
+             char buff[512];
+             stream.read(buff, sizeof(buff));
+             rawData.append(buff, stream.gcount());
+          }
+
+          if (stream.header)
+             i = rawData.find(preamble, preamble.length());
+          else
+             i = rawData.find(preamble);
+          stream.header = false;
+
+          if (i)
+          {
+             i = min (rawData.length(), i);
+             if (debugLevel>2)
+                cout << "Tossing " << i
+                     << " bytes at offset: 0x" << hex << stream.getRawPos() << dec
+                     << endl;
+             if (hexDump)
+                StringUtils::hexDumpData(cout, rawData.substr(0,i));
+             rawData.erase(0, i);
+          }
+          else
+          {
+             id = rawData.substr(7,3);
+             break;
+          }
+       }
+       stream.header = true;
+    }
+
+    //---------------------------------------------------------------------------
+    void AshtechData::readBody(AshtechStream& stream)
+       throw(FFStreamError, EndOfFile)
+    {
+       string& rawData = stream.rawData;
+       const static string term = trailer+preamble;
+       size_t term_pos = rawData.find(term);
+
+       while (stream)
+       {
+          term_pos = rawData.find(term);
+          if (term_pos > 0 && term_pos < rawData.length())
+             break;
+
+          if (stream)
+          {
+             char cbuff[512];
+             stream.read(cbuff, sizeof(cbuff));
+             rawData.append(cbuff, stream.gcount());
+          }
+          else
+             break;
+       }
+
+       term_pos += trailer.length();
+       if (hexDump)
+          StringUtils::hexDumpData(cout, rawData.substr(0,term_pos));
+
+       decode(rawData.substr(0, term_pos));
+
+       if (!good() && debugLevel>1)
+          cout << "bad decode starting at at offset 0x"
+               << hex << stream.getRawPos() << dec
+               << endl;
+
+       rawData.erase(0, term_pos);
+       stream.header=false;
+    }
+
+
+    //---------------------------------------------------------------------------
+    void AshtechData::dump(ostream& out) const throw()
+    {
+       ostringstream oss;
+       oss << getName() << " : id:" << id
+           << " checksum:" << hex << checksum
+           << " rdstate:" << rdstate() << dec;
+       if (crcerr())
+          oss << "-crc";
+       if (fmterr())
+          oss << "-fmt";
+       if (lenerr())
+          oss << "-len";
+       if (parerr())
+          oss << "-par";
+
+       out << oss.str() << endl;
+    }  // AshtechData::dump()
 } // namespace gpstk

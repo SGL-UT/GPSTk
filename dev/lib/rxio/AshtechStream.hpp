@@ -54,7 +54,7 @@ namespace gpstk
    class AshtechStream : public FFBinaryStream
    {
    public:
-      AshtechStream() {}
+      AshtechStream():header(false) {}
 
       /**
        * @param fn the name of the Ashtech file to be opened
@@ -74,8 +74,23 @@ namespace gpstk
          FFBinaryStream::open(fn, mode); 
       }
 
-      /// The raw bytes of the most recent message above message
+      /// The raw bytes read from the file.
       std::string rawData;
+
+      // set true when a header was the last piece read, set false when the
+      // a body is read.
+      bool header;
+
+      // Offset of the first character in rawData in the file
+      streampos getRawPos()
+      {
+         streampos t = tellg();
+         if (static_cast<long>(t)==-1)
+            return -1;
+         else
+            return t - (streampos)rawData.length();
+      }
+
    }; // class AshtechStream
 } // namespace gpstk
 

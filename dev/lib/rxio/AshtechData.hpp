@@ -105,7 +105,8 @@ namespace gpstk
       // to believe it isn't trustworthy except in the PBN and MPC messages.
       uint16_t checksum;
 
-      static const char* preamble;
+      static const std::string preamble;
+      static const std::string trailer;
 
    protected:
       virtual void reallyPutRecord(FFStream& ffs) const
