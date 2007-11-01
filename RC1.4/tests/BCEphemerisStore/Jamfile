@@ -1,0 +1,4 @@
+SubDir TOP BCEphemerisStore ;
+
+TestMain BCEphemerisStore/xBCEphemerisStore.tst : BCEphemerisStore/xRinexEphemerisStoreM.cpp BCEphemerisStore/xRinexEphemerisStore.cpp BCEphemerisStore/BCEphemerisStore.cpp ;
+

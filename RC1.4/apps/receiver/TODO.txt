@@ -1,0 +1,23 @@
+Lots of changes should be made to this code. Here are the big ones:
+
+2. Add CRC checking.
+
+3. Port this to Windows. This should only require adding a new serial port class
+   and finding a terminal call to clear the screen. But of course 
+   there could be compiler issues.
+
+4. Add code to understand binary MPC and PBENs.
+
+5. Consider adding code to configure the receiver.
+
+6. Consider adding a config file.
+
+8. Add text output for nav files. One row per ephemeris, one column per element. For lack of any 
+   better idea, use the column definitions from the Strang and Borre GPS book.
+
+Done:
+1. The Rolling* classes are clearly copy and paste... but not entirely.
+   Collapse these into one flexible template.
+
+7. It *should* be easy to accommodate reprocessing the raw file, pretending it's a serial port.
+   
