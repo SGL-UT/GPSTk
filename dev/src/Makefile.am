@@ -34,7 +34,8 @@ ComputePdelta.cpp ComputeLdelta.cpp ComputeMelbourneWubbena.cpp \
 OneFreqCSDetector.cpp LICSDetector.cpp MWCSDetector.cpp CodeSmoother.cpp \
 PCSmoother.cpp ComputeIURAWeights.cpp ComputeMOPSWeights.cpp \
 XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp \
-ModelObsFixedStation.cpp ModelObs.cpp
+ModelObsFixedStation.cpp ModelObs.cpp SunPosition.cpp \
+AstronomicalFunctions.cpp
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = ANSITime.hpp AlmOrbit.hpp \
@@ -91,4 +92,5 @@ ComputeMOPSWeights.hpp ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp \
 CodeSmoother.hpp PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp \
 XYZ2NEU.hpp XYZ2NED.hpp DeltaOp.hpp SimpleKalmanFilter.hpp NablaOp.hpp \
 EphemerisStore.hpp AlmanacStore.hpp BCEphemerisStore.hpp \
-ModelObsFixedStation.hpp ModelObs.hpp
+ModelObsFixedStation.hpp ModelObs.hpp SunPosition.hpp \
+AstronomicalFunctions.hpp

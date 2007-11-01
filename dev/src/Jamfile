@@ -77,7 +77,7 @@ else
       CodeSmoother.cpp PCSmoother.cpp ComputeIURAWeights.cpp
       ComputeMOPSWeights.cpp ModelObsFixedStation.cpp ModelObs.cpp
       XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
-      SVNumXRef.cpp
+      SVNumXRef.cpp SunPosition.cpp AstronomicalFunctions.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp GPSAlmanacStore.hpp GPSEphemerisStore.hpp
@@ -145,6 +145,7 @@ else
       ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp CodeSmoother.hpp
       PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp XYZ2NEU.hpp XYZ2NED.hpp
       DeltaOp.hpp SimpleKalmanFilter.hpp NablaOp.hpp XvtStore.hpp SVNumXRef.hpp
+      SunPosition.hpp AstronomicalFunctions.hpp
       ;
 }
 

@@ -1,6 +1,6 @@
 
 /**
- * @file SunPosition.hpp
+ * @file SunPosition.cpp
  * Returns the approximate position of the Sun at the given epoch in the 
  * ECEF system.
  */
@@ -43,10 +43,17 @@ namespace gpstk
     Xvt SunPosition::getXvt(const DayTime& t) const throw(InvalidRequest)
     {
 
+        // Test if the time interval is correct
+        if ( (t < initialTime) || (t > finalTime) )
+        {
+            InvalidRequest ir("Provided epoch is out of bounds.");
+            GPSTK_THROW(ir);
+        }
+
         // Here we will store the results
         Xvt res;
 
-        res = sun_position_CIS(t);
+        res = SunPosition::getXvtCIS(t);
         res = CIS2CTS(res, t);
 
         return res;
@@ -57,8 +64,16 @@ namespace gpstk
     /* Function to compute Sun position in CIS system (coordinates in meters)
      * @param t Epoch
      */
-    Xvt sun_position_CIS(const DayTime& t)
+    Xvt SunPosition::getXvtCIS(const DayTime& t) const throw(InvalidRequest)
     {
+
+        // Test if the time interval is correct
+        if ( (t < initialTime) || (t > finalTime) )
+        {
+            InvalidRequest ir("Provided epoch is out of bounds.");
+            GPSTK_THROW(ir);
+        }
+
         // Astronomical Unit value (AU), in meters
         const double AU_CONST(1.49597870e11);
 
@@ -68,11 +83,11 @@ namespace gpstk
         // Compute the years, and fraction of year, pased since J1900.0
         int y(t.year());    // Current year
         int doy(t.DOY());   // Day of current year
-        double fd( (t.secOfDay()/3600.0 ) );   // Fraction of day, in hours
+        double fd( (t.secOfDay()/86400.0 ) );   // Fraction of day
         int years( (y - 1900) );    // Integer number of years since J1900.0
         int iy4( ( ((y%4)+4)%4 ) ); // Is it a leap year?
         // Compute fraction of year
-        double yearfrac = ( ( (4.0*(doy-1.0/(iy4+1)) - iy4 - 2 ) + 4.0 * fd ) / 1461.0 );
+        double yearfrac = ( ( (double)(4*(doy-1/(iy4+1)) - iy4 - 2) + 4.0 * fd ) / 1461.0 );
         double time(years+yearfrac);
 
         // Compute the geometric mean longitude of the Sun
@@ -109,7 +124,7 @@ namespace gpstk
         double coseps(cos(eps0));
         double w1(-r*sin(elt));
         double selmm(sin(elmm));
-        double celmm(cos(elm));
+        double celmm(cos(elmm));
 
         Xvt result;
 
@@ -119,58 +134,7 @@ namespace gpstk
         result.x.theArray[2] = (-w1*sineps)*AU_CONST;
 
         return result;
-    } // End sun_position_CIS()
-
-
-    /* Function to change from CIS to CTS(ECEF) coordinate system (coordinates in meters)
-     * @param posCis    Coordinates in CIS system (in meters).
-     * @param t         Epoch
-     */
-    Xvt CIS2CTS(const Xvt posCIS, const DayTime& t)
-    {
-
-        // Angle of Earth rotation, in radians
-        double ts( UTC2SID(t)*TWO_PI/24.0 );
-
-        Xvt res;
-
-        res.x.theArray[0] = cos(ts)*posCIS.x.theArray[0] + sin(ts)*posCIS.x.theArray[1];
-        res.x.theArray[1] = -sin(ts)*posCIS.x.theArray[0] + cos(ts)*posCIS.x.theArray[1];
-        res.x.theArray[2] = posCIS.x.theArray[2];
-
-        return res;
-    } // End CIS2CTS()
-
-
-    /* Function to convert from UTC to sidereal time
-     * @param t         Epoch
-     *
-     * @return sidereal time in hours
-     */
-    double UTC2SID(const DayTime& t)
-    {
-
-        double y(t.year()-1.0);
-        double m(13.0);
-        double d(t.DOY());
-        double h(t.secOfDay()/3600.0);  // Hours of day (decimal)
-        double frofday (t.secOfDay()/86400.0);        // Fraction of day
-
-        // Compute Julian Day, including decimals
-        double jd(floor(365.25*y) + floor(30.6001*(m+1.0)) + d + frofday + 1720981.5);
-
-        // Temporal value, in centuries
-        double tt( (jd - 2451545.0)/36525.0 );
-
-        double sid( 24110.54841 + tt*( (8640184.812866) + tt*( (0.093104) - (6.2e-6*tt)) ) );
-
-        sid = sid/3600.0 + h;
-        sid = fmod(sid,24.0);
-
-        if (sid < 0.0) sid+=24.0;
-
-        return sid;
-    }
+    } // End SunPosition::getXvtCIS()
 
 
 } // end namespace gpstk

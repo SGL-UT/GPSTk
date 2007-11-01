@@ -37,6 +37,8 @@
 #include "DayTime.hpp"
 #include "Xvt.hpp"
 #include "icd_200_constants.hpp"
+#include "AstronomicalFunctions.hpp"
+
 
 
 namespace gpstk
@@ -80,9 +82,14 @@ namespace gpstk
         ///    information as to why the request failed.
         /// @warning This method yields and approximate result, given that pole movement
         /// is not taken into account, neither precession nor nutation.
-        Xvt getXvt(const DayTime& t)
-            const throw(InvalidRequest);
+        Xvt getXvt(const DayTime& t) const throw(InvalidRequest);
       
+
+        /** Function to compute Sun position in CIS system (coordinates in meters)
+         * @param t Epoch
+         */
+        Xvt getXvtCIS(const DayTime& t) const throw(InvalidRequest);
+
 
         /// Determine the earliest time for which this object can successfully 
         /// determine the Xvt for the Sun.
@@ -111,28 +118,7 @@ namespace gpstk
     }; // end class SunPosition
 
 
-
-    /** Function to compute Sun position in CIS system (coordinates in meters)
-     * @param t Epoch
-     */
-    Xvt sun_position_CIS(const DayTime& t);
-
-
-    /** Function to change from CIS to CTS(ECEF) coordinate system (coordinates in meters)
-     * @param posCis    Coordinates in CIS system (in meters).
-     * @param t         Epoch
-     */
-    Xvt CIS2CTS(const Xvt posCIS, const DayTime& t);
-
-
-    /** Function to convert from UTC to sidereal time
-     * @param t         Epoch
-     *
-     * @return sidereal time in hours
-     */
-    double UTC2SID(const DayTime& t);
-
    //@}
    
 } // namespace gpstk
-#endif  // GPSTK_SUNPOSITION_HPP_HPP
+#endif  // GPSTK_SUNPOSITION_HPP
