@@ -14,6 +14,7 @@ Library mdplib : MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp ;
 LinkLibraries mdptool mdp2rinex : mdplib ;
 GPSLinkLibraries mdptool mdp2rinex : rxio gpstk ;
 
+BonkForte ;
 
 GPSMain mdptool : mdptool.cpp ;
 
@@ -21,7 +22,12 @@ GPSMain mdp2rinex : mdp2rinex.cpp ;
 
 if $(UNIX)
 {
-  LINKLIBS += -lncurses ;
+  if $(OS) = SOLARIS  {
+    LINKLIBS += -lcurses ;
+  }
+  else {
+    LINKLIBS += -lncurses ;
+  }
 
   GPSLinkLibraries mdpscreen.bin : gpstk rxio ;
   LinkLibraries mdpscreen.bin : mdplib ;
