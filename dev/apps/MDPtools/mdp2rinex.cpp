@@ -63,7 +63,7 @@ public:
       throw()
       : InOutFramework<MDPStream, RinexObsStream>(
          applName, "Converts an MDP stream to RINEX.")
-   {} //MDP2Rinex::MDP2Rinex()
+   {}
 
    bool initialize(int argc, char *argv[]) throw()
    {
@@ -105,7 +105,6 @@ public:
       roh.observer = "Unknown";
       roh.agency = "Unknown";
       roh.antennaOffset = Triple(0,0,0);
-      //roh.antennaPosition = Triple(0,0,0);
       roh.wavelengthFactor[0] = 1;
       roh.wavelengthFactor[1] = 1;
       roh.recType = "Unknown MDP";
@@ -147,7 +146,8 @@ public:
       firstObs = true;;
       firstEph = true;
 
-      MDPHeader::debugLevel = debugLevel;
+      if (debugLevel>2)
+         MDPHeader::debugLevel = debugLevel-2;
       MDPHeader::hexDump = debugLevel>3;
 
       if (!input)
@@ -174,13 +174,11 @@ protected:
       if (!rinexNavOutput)
          return;
 
-      cout << "1";
       if (firstEph)
       {
          rinexNavOutput << rnh;
          cout << "Got first nav SF" << endl;
       }
-
 
       MDPNavSubframe tmp = nav;
 
@@ -201,7 +199,6 @@ protected:
             cout << "Cooked subframe" << endl;
       }
 
-      cout << "2";
       firstEph=false;
 
       if (!parityGood)
@@ -224,15 +221,13 @@ protected:
          return;
       }
 
-      cout << "3";
-
-      nav.dump(cout);
+      if (debugLevel>1)
+         nav.dump(cout);
       DayTime howTime(week, sow);
 
       if (nav.range != rcCA || nav.carrier != ccL1)
          return;
 
-      cout <<"4" << endl;
       NavIndex ni(RangeCarrierPair(nav.range, nav.carrier), nav.prn);
       ephData[ni] = nav;
 
@@ -268,8 +263,7 @@ protected:
                roh.firstObs = t;
                output << roh;
                firstObs=false;
-               if (debugLevel)
-                  cout << "Got first obs" << endl;
+               cout << "Got first obs" << endl;
             }
 
             RinexObsData rod;
@@ -296,7 +290,10 @@ protected:
          case MDPNavSubframe::myId :
             input >> nav;
             if (!nav)
-               cout << "Error decoding nav " << endl;
+            {
+               if (input && debugLevel)
+                  cout << "Error decoding nav " << endl;
+            }
             else
                process(nav);
             break;
@@ -304,7 +301,10 @@ protected:
          case MDPObsEpoch::myId :
             input >> obs;
             if (!obs)
-               cout << "Error decoding obs " << endl;
+            {
+               if (input && debugLevel)
+                  cout << "Error decoding obs " << endl;
+            }
             else
                process(obs);
             break;
@@ -313,7 +313,9 @@ protected:
    } // MDP2Rinex::process()
 
    virtual void shutDown()
-   {}
+   {
+      cout << "Done" << endl;
+   }
 
 private:
    RinexObsHeader roh;
