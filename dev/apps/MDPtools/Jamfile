@@ -2,7 +2,6 @@
 
 SubDir TOP apps MDPtools ;
 
-
 # Note that the local library needs to be declaired and built prior to anything
 # else is done.
 GPSLinkLibraries mdplib : rxio gpstk ;
@@ -19,3 +18,15 @@ GPSLinkLibraries mdptool mdp2rinex : rxio gpstk ;
 GPSMain mdptool : mdptool.cpp ;
 
 GPSMain mdp2rinex : mdp2rinex.cpp ;
+
+if $(UNIX)
+{
+  LINKLIBS += -lncurses ;
+
+  GPSLinkLibraries mdpscreen.bin : gpstk rxio ;
+  LinkLibraries mdpscreen.bin : mdplib ;
+
+  GPSMain mdpscreen.bin : mdpscreen.cpp ScreenProc.cpp ;
+
+  InstallBin $(BINDIR) : mdpscreen mdpscreen.bin ;
+}

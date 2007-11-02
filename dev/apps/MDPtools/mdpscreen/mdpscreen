@@ -1,6 +1,0 @@
-#!/bin/bash
-# $Id: Jamfile 471 2007-04-11 15:06:40Z ocibu $
-
-echo -ne "\033]0;$1\007"
-
-rfw -i $1 -o - | mdpscreen.bin
