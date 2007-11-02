@@ -131,6 +131,8 @@ protected:
 
       while (input >> hdr)
       {
+         if (debugLevel>2)
+            cout << "---" << endl;
          if (pben.checkId(hdr.id) && (input >> pben) && pben)
          {
             if (debugLevel>2)
