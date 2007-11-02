@@ -205,7 +205,7 @@ namespace gpstk
    {
       uint32_t preamble = subframe[1] >> 22;
       bool needsInversion = (preamble == 0x74);
-      if (debugLevel>1)
+      if (debugLevel>2)
          cout << "preamble:" << hex << preamble << dec
               << " cooked:" << cooked
               << " inverted:" << inverted
@@ -227,7 +227,7 @@ namespace gpstk
          bool D30 = getd30(prev);
          unsigned receivedParity = curr & 0x3f;
          unsigned computedParity = EngNav::computeParity(curr, prev, cooked);
-         if (debugLevel>1)
+         if (debugLevel>3)
             cout << i << ":" << asBin(receivedParity,6)
                  << "-" << asBin(computedParity,6) << " ";
          if (i==5 && debugLevel>1)
@@ -240,7 +240,7 @@ namespace gpstk
          if (i == 1 && receivedParity == (~computedParity & 0x3f))
             goodParity = true;
       }
-      if (debugLevel>1)
+      if (debugLevel>2)
          cout << endl;
       return goodParity;
    }
