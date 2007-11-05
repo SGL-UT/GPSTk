@@ -48,7 +48,7 @@ namespace gpstk
     const double AU_CONST(1.49597870e11);
 
     /// Mean Earth-Moon barycenter (EMB) distance (AU)
-    const double REMB(3.12e-5);
+    const double MeanEarthMoonBary(3.12e-5);
 
    
 

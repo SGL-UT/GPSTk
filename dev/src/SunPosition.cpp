@@ -109,30 +109,30 @@ namespace gpstk
         double esq(e*e);
 
         // True anomaly
-        double v(em + 2.0*e*sin(em) + 1.25*esq*sin(2.0*em));
+        double v(em + 2.0*e*std::sin(em) + 1.25*esq*std::sin(2.0*em));
 
         // True ecliptic longitude
         double elt(v+gamma);
 
         // True distance
-        double r( (1.0 - esq)/(1.0 + e*cos(v)) );
+        double r( (1.0 - esq)/(1.0 + e*std::cos(v)) );
 
         // Moon's mean longitude
         double elmm( fmod((4.72 + 83.9971*time),TWO_PI) );
 
         // Useful definitions
-        double coselt(cos(elt));
-        double sineps(sin(eps0));
-        double coseps(cos(eps0));
-        double w1(-r*sin(elt));
-        double selmm(sin(elmm));
-        double celmm(cos(elmm));
+        double coselt(std::cos(elt));
+        double sineps(std::sin(eps0));
+        double coseps(std::cos(eps0));
+        double w1(-r*std::sin(elt));
+        double selmm(std::sin(elmm));
+        double celmm(std::cos(elmm));
 
         Xvt result;
 
         // Sun position is the opposite of Earth position
-        result.x.theArray[0] = (r*coselt+REMB*celmm)*AU_CONST;
-        result.x.theArray[1] = (REMB*selmm-w1)*coseps*AU_CONST;
+        result.x.theArray[0] = (r*coselt+MeanEarthMoonBary*celmm)*AU_CONST;
+        result.x.theArray[1] = (MeanEarthMoonBary*selmm-w1)*coseps*AU_CONST;
         result.x.theArray[2] = (-w1*sineps)*AU_CONST;
 
         return result;
