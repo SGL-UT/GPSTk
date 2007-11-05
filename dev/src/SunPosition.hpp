@@ -61,14 +61,7 @@ namespace gpstk
     public:
 
         /// Default constructor
-        SunPosition() throw() 
-        {
-            DayTime iTime(1900, 3, 1, 0, 0, 0.0);    // March 1st, 1900
-            DayTime fTime(2100, 2, 28, 0, 0, 0.0);   // February 28th, 2100
-
-            initialTime = iTime;
-            finalTime = fTime;
-        }
+        SunPosition() throw() {}
 
         /// Destructur
         virtual ~SunPosition() {}
@@ -110,10 +103,10 @@ namespace gpstk
     private:
 
         /// Time of the first valid time
-        DayTime initialTime;
+        static const DayTime initialTime;
 
         /// Time of the last valid time
-        DayTime finalTime;
+        static const DayTime finalTime;
 
     }; // end class SunPosition
 

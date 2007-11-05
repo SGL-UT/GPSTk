@@ -42,6 +42,14 @@ namespace gpstk
 {
     /** @addtogroup ephemcalc */
     //@{
+
+
+    /// Astronomical Unit value (AU), in meters
+    const double AU_CONST(1.49597870e11);
+
+    /// Mean Earth-Moon barycenter (EMB) distance (AU)
+    const double REMB(3.12e-5);
+
    
 
     /** Function to change from CIS to CTS(ECEF) coordinate system (coordinates in meters)

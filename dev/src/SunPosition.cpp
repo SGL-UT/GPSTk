@@ -34,6 +34,14 @@
 namespace gpstk
 {
 
+
+    // Time of the first valid time
+    const DayTime SunPosition::initialTime(1900, 3, 1, 0, 0, 0.0);
+
+    // Time of the last valid time
+    const DayTime SunPosition::finalTime(2100, 2, 28, 0, 0, 0.0);
+
+
     // Returns the position of Sun ECEF coordinates (meters) at the indicated time.
     // @param[in] t the time to look up
     // @return the Xvt of the Sun at time
@@ -44,7 +52,7 @@ namespace gpstk
     {
 
         // Test if the time interval is correct
-        if ( (t < initialTime) || (t > finalTime) )
+        if ( (t < SunPosition::initialTime) || (t > SunPosition::finalTime) )
         {
             InvalidRequest ir("Provided epoch is out of bounds.");
             GPSTK_THROW(ir);
@@ -68,17 +76,11 @@ namespace gpstk
     {
 
         // Test if the time interval is correct
-        if ( (t < initialTime) || (t > finalTime) )
+        if ( (t < SunPosition::initialTime) || (t > SunPosition::finalTime) )
         {
             InvalidRequest ir("Provided epoch is out of bounds.");
             GPSTK_THROW(ir);
         }
-
-        // Astronomical Unit value (AU), in meters
-        const double AU_CONST(1.49597870e11);
-
-        //Mean Earth-Moon barycenter (EMB) distance (AU)
-        const double REMB(3.12e-5);
 
         // Compute the years, and fraction of year, pased since J1900.0
         int y(t.year());    // Current year
