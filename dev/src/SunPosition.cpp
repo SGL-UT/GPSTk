@@ -87,7 +87,7 @@ namespace gpstk
         int years( (y - 1900) );    // Integer number of years since J1900.0
         int iy4( ( ((y%4)+4)%4 ) ); // Is it a leap year?
         // Compute fraction of year
-        double yearfrac = ( ( (double)(4*(doy-1/(iy4+1)) - iy4 - 2) + 4.0 * fd ) / 1461.0 );
+        double yearfrac = ( ( static_cast<double>(4*(doy-1/(iy4+1)) - iy4 - 2) + 4.0 * fd ) / 1461.0 );
         double time(years+yearfrac);
 
         // Compute the geometric mean longitude of the Sun
