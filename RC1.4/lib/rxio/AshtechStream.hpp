@@ -82,13 +82,13 @@ namespace gpstk
       bool header;
 
       // Offset of the first character in rawData in the file
-      streampos getRawPos()
+      std::streampos getRawPos()
       {
-         streampos t = tellg();
+         std::streampos t = tellg();
          if (static_cast<long>(t)==-1)
             return -1;
          else
-            return t - (streampos)rawData.length();
+            return t - static_cast<std::streampos>(rawData.length());
       }
 
    }; // class AshtechStream
