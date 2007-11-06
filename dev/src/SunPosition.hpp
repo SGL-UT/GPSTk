@@ -54,6 +54,11 @@ namespace gpstk
      * originally written by P.T. Wallace, Starlink Project. The FORTRAN
      * version of Starlink project was available under the GPL license.
      *
+     * Errors in position in the period 1950-2050 are:
+     *
+     * Maximum: 13*10^-5 AU (19200 km).
+     * RMS: 5*10^-5 AU (7600 km).
+     *
      * More information may be found in http://starlink.jach.hawaii.edu/
      */
     class SunPosition

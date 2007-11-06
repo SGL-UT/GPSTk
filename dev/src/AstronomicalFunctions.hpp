@@ -50,7 +50,21 @@ namespace gpstk
     /// Mean Earth-Moon barycenter (EMB) distance (AU)
     const double MeanEarthMoonBary(3.12e-5);
 
-   
+    /// Degrees to radians
+    const double D2R(0.0174532925199432957692369);
+
+    /// Arcseconds to radians
+    const double DAS2R(4.848136811095359935899141e-6);
+
+    /// Seconds of time to radians
+    const double DS2R(7.272205216643039903848712e-5);
+
+    /// Julian epoch of B1950
+    const double B1950(1949.9997904423);
+
+    /// Earth equatorial radius in AU ( 6378.137 km / 149597870 km)
+    const double ERADAU(4.2635212653763e-5);
+
 
     /** Function to change from CIS to CTS(ECEF) coordinate system (coordinates in meters)
      * @param posCis    Coordinates in CIS system (in meters).
