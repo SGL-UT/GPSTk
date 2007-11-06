@@ -68,7 +68,7 @@ namespace gpstk
         /// Default constructor
         SunPosition() throw() {}
 
-        /// Destructur
+        /// Destructor
         virtual ~SunPosition() {}
 
 

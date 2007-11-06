@@ -73,7 +73,7 @@ namespace gpstk
         /// Default constructor
         MoonPosition() throw() {}
 
-        /// Destructur
+        /// Destructor
         virtual ~MoonPosition() {}
 
 

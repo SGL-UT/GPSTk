@@ -50,6 +50,9 @@ namespace gpstk
     /// Mean Earth-Moon barycenter (EMB) distance (AU)
     const double MeanEarthMoonBary(3.12e-5);
 
+    /// Earth gravity acceleration on surface (m/s^2)
+    const double EarthGrav(9.80665);
+
     /// Degrees to radians
     const double D2R(0.0174532925199432957692369);
 
