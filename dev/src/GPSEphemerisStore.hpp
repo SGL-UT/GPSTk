@@ -234,10 +234,18 @@ namespace gpstk
          throw()
       {method = 0;}
 
-   private:
       /// This is intended to just store sets of unique EngEphemerides
       /// for a single SV.  The key is the Toe - 1/2 the fit interval.
       typedef std::map<DayTime, EngEphemeris> EngEphMap;
+      
+      /// Returns a map of the ephemerides available for the specified
+      /// satellite.  Note that the return is specifically chosen as a 
+      /// const reference.  The intent is to provide "read only" access
+      /// for analysis.  If the map needs to be modified, see other methods.
+      const EngEphMap& getEphMap( const SatID sat )
+               const throw(InvalidRequest);
+
+   private:
       
       /// This is intended to hold all unique EngEphemerides for each SV
       /// The key is the prn of the SV.

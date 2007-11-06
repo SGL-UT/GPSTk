@@ -131,6 +131,7 @@ namespace gpstk
             Ahalf      = ficked[12];
             Toe        = ficked[13];
             fitint     = static_cast<short>( ficked[14] );
+            AODO       = static_cast<long>( ficked[15] );
             haveSubframe[1] = true;
             break;
 
@@ -780,6 +781,17 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
       return (short)IODE;
+   }
+   
+   long EngEphemeris::getAODO() const
+      throw(InvalidRequest)
+   {
+      if (!haveSubframe[1])
+      {
+         InvalidRequest exc("Required subframe 2 not stored.");
+         GPSTK_THROW(exc);
+      }
+      return AODO;
    }
    
    double EngEphemeris::getToc() const

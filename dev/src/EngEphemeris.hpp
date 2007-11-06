@@ -241,6 +241,9 @@ namespace gpstk
          /** This function return the IODE for the ephemeris. */
       short getIODE() const throw(gpstk::InvalidRequest);
       
+         /** This function return the AODO for the ephemeris. */
+      long getAODO() const throw(gpstk::InvalidRequest);
+      
          /** This function returns the clock epoch in GPS seconds of
           * week. */
       double getToc() const throw(gpstk::InvalidRequest);
@@ -448,6 +451,7 @@ namespace gpstk
       short L2Pdata;       /**< L2 P data flag */
       short IODC;         /**< Index of data-clock  */
       short IODE;         /**< Index of data-eph    */
+      long  AODO;         /**< Age of Data Offset for NMCT */
          //@}
       
          /// Clock information

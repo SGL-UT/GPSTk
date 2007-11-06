@@ -398,5 +398,21 @@ namespace gpstk
       return n;
    } // end of GPSEphemerisStore::addToList(list<EngEphemeris>&)
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//   const EngEphMap 
+   const std::map<DayTime, EngEphemeris>& 
+   GPSEphemerisStore::getEphMap( const SatID sat )
+            const throw(InvalidRequest)
+   {
+      UBEMap::const_iterator prn_i = ube.find(sat.id);
+      if (prn_i == ube.end())
+      {
+         InvalidRequest e("No ephemeris for satellite " + asString(sat));
+         GPSTK_THROW(e);
+      }
+      return(prn_i->second);
+   } // end of GPSEphemerisStore::getEphMap(const SatID sat)
+   
 } // namespace
  
