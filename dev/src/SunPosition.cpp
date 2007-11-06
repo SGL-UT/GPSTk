@@ -58,7 +58,7 @@ namespace gpstk
             GPSTK_THROW(ir);
         }
 
-        // Here we will store the results
+        // We will store here the results
         Xvt res;
 
         res = SunPosition::getXvtCIS(t);

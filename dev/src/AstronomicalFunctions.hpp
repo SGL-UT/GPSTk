@@ -50,6 +50,12 @@ namespace gpstk
     /// Mean Earth-Moon barycenter (EMB) distance (AU)
     const double MeanEarthMoonBary(3.12e-5);
 
+    /// Ratio of mass Sun to Earth
+    const double MU_SUN(332946.0);
+
+    /// Ratio of mass Moon to Earth
+    const double MU_MOON(0.01230002);
+
     /// Earth gravity acceleration on surface (m/s^2)
     const double EarthGrav(9.80665);
 
