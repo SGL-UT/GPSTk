@@ -1791,8 +1791,9 @@ namespace gpstk
     throw(TropModel::InvalidTropModel)
     {
         if(!valid) throw InvalidTropModel("Invalid model");
-        double ddry;
-        ddry = std::pow(2.3, (-0.000116 * gcatHeight) );
+
+        double ddry(2.29951*std::exp((-0.000116 * gcatHeight) ));
+
         return ddry;
     }  // end GCATTropModel::dry_zenith_delay()
 
