@@ -1,7 +1,7 @@
 // file: xRinexEphemerisStore.cpp
 
 #include "xRinexEphemerisStore.hpp"
-
+#include "SatID.hpp"
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xRinexEphemerisStore);
 
@@ -35,13 +35,13 @@ void xRinexEphemerisStore :: RESTest (void)
 	
 	CPPUNIT_ASSERT_NO_THROW(Store.loadFile("TestRinex06.031"));
 	Store.loadFile("TestRinex06.031");
-	Store.dump(1,DumpData);
+	Store.dump(DumpData,1);
 	DumpData.close();
 	
 }
 
 /*
-**** Test to assure the quality of BCEphemerisStore class member findEph()
+**** Test to assure the quality of GPSEphemerisStore class member findEph()
 
 **** This test makes sure that exceptions are thrown if there is no ephemeris data
 **** for the given PRN and also that an exception is thrown if there is no data for
@@ -51,6 +51,7 @@ void xRinexEphemerisStore :: RESTest (void)
 **** To see the ephemeris information for the selected Time and PRN please see
 **** findEph.txt
 */
+
 void xRinexEphemerisStore :: BCESfindEphTest (void)
 {
 	ofstream fPRN1;
@@ -68,6 +69,11 @@ void xRinexEphemerisStore :: BCESfindEphTest (void)
 	const short PRN15 = 15;
 	const short PRN32 = 32;
 	const short PRN33 = 33;  //Top PRN (33) (Border test case);
+   gpstk::SatID sid0(PRN0,gpstk::SatID::systemGPS);
+   gpstk::SatID sid1(PRN1,gpstk::SatID::systemGPS);
+   gpstk::SatID sid15(PRN15,gpstk::SatID::systemGPS);
+   gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
+   gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
 	
 	gpstk::DayTime Time(2006,1,31,11,45,0);
 	gpstk::DayTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
@@ -76,15 +82,15 @@ void xRinexEphemerisStore :: BCESfindEphTest (void)
 	try
 	{
 		gpstk::DayTime crazy(200000,1,31,2,0,0);
-		CPPUNIT_ASSERT_NO_THROW(Store.findEphemeris(PRN1,Time));
+		CPPUNIT_ASSERT_NO_THROW(Store.findEphemeris(sid1,Time));
 		
-		fPRN1 << Store.findEphemeris(PRN1,Time);
-		fPRN15 << Store.findEphemeris(PRN15,Time);
-		fPRN32 << Store.findEphemeris(PRN32,Time);
+		fPRN1 << Store.findEphemeris(sid1,Time);
+		fPRN15 << Store.findEphemeris(sid15,Time);
+		fPRN32 << Store.findEphemeris(sid32,Time);
 	
-		CPPUNIT_ASSERT_THROW(Store.findEphemeris(PRN0,bTime),gpstk::EphemerisStore::NoEphemerisFound);
-		CPPUNIT_ASSERT_THROW(Store.findEphemeris(PRN33,bTime),gpstk::EphemerisStore::NoEphemerisFound);
-		CPPUNIT_ASSERT_THROW(Store.findEphemeris(PRN32,crazy),gpstk::EphemerisStore::NoEphemerisFound);
+		CPPUNIT_ASSERT_THROW(Store.findEphemeris(sid0,bTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(Store.findEphemeris(sid33,bTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(Store.findEphemeris(sid32,crazy),gpstk::InvalidRequest);
 	}
 	catch (gpstk::Exception& e)
 	{
@@ -99,7 +105,7 @@ void xRinexEphemerisStore :: BCESfindEphTest (void)
 
 
 /*
-**** Test to assure the quality of BCEphemerisStore class member getPrnXvt()
+**** Test to assure the quality of GPSEphemerisStore class member getXvt()
 
 **** This test makes sure that exceptions are thrown if there is no ephemeris data
 **** for the given PRN and also that an exception is thrown if there is no data for
@@ -107,18 +113,17 @@ void xRinexEphemerisStore :: BCESfindEphTest (void)
 **** DayTime Time and PRN.
 
 **** To see the Xvt information for the selected Time and PRN please see
-**** getPrnXvt.txt
+**** getXvt.txt
 */
-
-void xRinexEphemerisStore :: BCESgetPrnXvtTest (void)
+void xRinexEphemerisStore :: BCESgetXvtTest (void)
 {
 	ofstream fPRN1;
 	ofstream fPRN15;
 	ofstream fPRN32;
 
-	fPRN1.open ("Logs/getPrnXvt1.txt");
-	fPRN15.open ("Logs/getPrnXvt15.txt");
-	fPRN32.open ("Logs/getPrnXvt32.txt");
+	fPRN1.open ("Logs/getXvt1.txt");
+	fPRN15.open ("Logs/getXvt15.txt");
+	fPRN32.open ("Logs/getXvt32.txt");
 	
 	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
@@ -128,35 +133,40 @@ void xRinexEphemerisStore :: BCESgetPrnXvtTest (void)
 	const short PRN15 = 15;
 	const short PRN32 = 32;
 	const short PRN33 = 33;  //Top PRN (33) (Border test case);
+   gpstk::SatID sid0(PRN0,gpstk::SatID::systemGPS);
+   gpstk::SatID sid1(PRN1,gpstk::SatID::systemGPS);
+   gpstk::SatID sid15(PRN15,gpstk::SatID::systemGPS);
+   gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
+   gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
 	
 	gpstk::DayTime Time(2006,1,31,11,45,0);
 	gpstk::DayTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
 	
 	try
 	{
-		CPPUNIT_ASSERT_NO_THROW(Store.getPrnXvt(PRN1,Time));
+		CPPUNIT_ASSERT_NO_THROW(Store.getXvt(sid1,Time));
 
-		fPRN1 << Store.getPrnXvt(PRN1,Time) << endl;
-		fPRN15 << Store.getPrnXvt(PRN15,Time) << endl;
-		fPRN32 << Store.getPrnXvt(PRN32,Time) << endl;
+		fPRN1 << Store.getXvt(sid1,Time) << endl;
+		fPRN15 << Store.getXvt(sid15,Time) << endl;
+		fPRN32 << Store.getXvt(sid32,Time) << endl;
 
-		CPPUNIT_ASSERT_THROW(Store.getPrnXvt(PRN0,bTime),gpstk::EphemerisStore::NoEphemerisFound);
-		CPPUNIT_ASSERT_THROW(Store.getPrnXvt(PRN33,bTime),gpstk::EphemerisStore::NoEphemerisFound);	
+		CPPUNIT_ASSERT_THROW(Store.getXvt(sid0,bTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(Store.getXvt(sid33,bTime),gpstk::InvalidRequest);	
 	}
 	catch (gpstk::Exception& e)
 	{
 		//cout << e;
 	}
 
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getPrnXvt1.txt","Checks/getPrnXvt1.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getPrnXvt15.txt","Checks/getPrnXvt15.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getPrnXvt32.txt","Checks/getPrnXvt32.chk"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt1.txt","Checks/getXvt1.chk"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt15.txt","Checks/getXvt15.chk"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt32.txt","Checks/getXvt32.chk"));
 }
 
 
 /*
-**** Test to assure the quality of BCEphemerisStore class member getPrnXvt()
-**** This test differs from the previous in that this getPrnXvt() has another parameter
+**** Test to assure the quality of GPSEphemerisStore class member getXvt()
+**** This test differs from the previous in that this getXvt() has another parameter
 **** for the IODC
 
 **** This test makes sure that exceptions are thrown if there is no ephemeris data
@@ -165,18 +175,18 @@ void xRinexEphemerisStore :: BCESgetPrnXvtTest (void)
 **** DayTime Time and PRN and IODC.
 
 **** To see the Xvt information for the selected Time and PRN please see
-**** getPrnXvt2.txt
+**** getXvt2.txt
 */
-void xRinexEphemerisStore :: BCESgetPrnXvt2Test (void)
+void xRinexEphemerisStore :: BCESgetXvt2Test (void)
 {
 
 	ofstream fPRN1;
 	ofstream fPRN15;
 	ofstream fPRN32;
 
-	fPRN1.open ("Logs/getPrnXvt2_1.txt");
-	fPRN15.open ("Logs/getPrnXvt2_15.txt");
-	fPRN32.open ("Logs/getPrnXvt2_32.txt");
+	fPRN1.open ("Logs/getXvt2_1.txt");
+	fPRN15.open ("Logs/getXvt2_15.txt");
+	fPRN32.open ("Logs/getXvt2_32.txt");
 	
 	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
@@ -186,6 +196,11 @@ void xRinexEphemerisStore :: BCESgetPrnXvt2Test (void)
 	const short PRN15 = 15;
 	const short PRN32 = 32;
 	const short PRN33 = 33;  //Top PRN (33) (Border test case);
+   gpstk::SatID sid0(PRN0,gpstk::SatID::systemGPS);
+   gpstk::SatID sid1(PRN1,gpstk::SatID::systemGPS);
+   gpstk::SatID sid15(PRN15,gpstk::SatID::systemGPS);
+   gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
+   gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
 	
 	short IODC0 = 89;
 	short IODC1 = 372;
@@ -198,25 +213,25 @@ void xRinexEphemerisStore :: BCESgetPrnXvt2Test (void)
 	
 	try
 	{
-		fPRN1 << Store.getPrnXvt(PRN1,Time,IODC1) << endl;
-		fPRN15 << Store.getPrnXvt(PRN15,Time,IODC15) << endl;
-		fPRN32 << Store.getPrnXvt(PRN32,Time,IODC32) << endl;
+		fPRN1 << Store.getXvt(sid1,Time,IODC1) << endl;
+		fPRN15 << Store.getXvt(sid15,Time,IODC15) << endl;
+		fPRN32 << Store.getXvt(sid32,Time,IODC32) << endl;
 		
-		CPPUNIT_ASSERT_THROW(Store.getPrnXvt(PRN0,bTime,IODC0),gpstk::EphemerisStore::NoEphemerisFound);
-		CPPUNIT_ASSERT_THROW(Store.getPrnXvt(PRN33,bTime,IODC33),gpstk::EphemerisStore::NoEphemerisFound);
+		CPPUNIT_ASSERT_THROW(Store.getXvt(sid0,bTime,IODC0),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(Store.getXvt(sid33,bTime,IODC33),gpstk::InvalidRequest);
 	}
 	catch (gpstk::Exception& e)
 	{
 		//cout << e;
 	}
 
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getPrnXvt2_1.txt","Checks/getPrnXvt1.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getPrnXvt2_15.txt","Checks/getPrnXvt15.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getPrnXvt2_32.txt","Checks/getPrnXvt32.chk"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt2_1.txt","Checks/getXvt1.chk"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt2_15.txt","Checks/getXvt15.chk"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt2_32.txt","Checks/getXvt32.chk"));
 }
 
 /*
-**** Test to assure the quality of BCEphemerisStore class member getPrnHealth()
+**** Test to assure the quality of GPSEphemerisStore class member getSatHealth()
 
 **** This test makes sure that exceptions are thrown if there is no ephemeris data
 **** for the given PRN and also that an exception is thrown if there is no data for
@@ -224,13 +239,18 @@ void xRinexEphemerisStore :: BCESgetPrnXvt2Test (void)
 **** and Time, that SV is as we expect it, health (0).
 */
 
-void xRinexEphemerisStore :: BCESgetPrnHealthTest (void)
+void xRinexEphemerisStore :: BCESgetSatHealthTest (void)
 {
 	const short PRN0 = 0; // Zero PRN (Border test case)
 	const short PRN1 = 1;
 	const short PRN15 = 15;
 	const short PRN32 = 32;
 	const short PRN33 = 33;  //Top PRN (33) (Border test case);
+   gpstk::SatID sid0(PRN0,gpstk::SatID::systemGPS);
+   gpstk::SatID sid1(PRN1,gpstk::SatID::systemGPS);
+   gpstk::SatID sid15(PRN15,gpstk::SatID::systemGPS);
+   gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
+   gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
 	
 	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
@@ -242,14 +262,14 @@ void xRinexEphemerisStore :: BCESgetPrnHealthTest (void)
 	{
 		
 		
-		CPPUNIT_ASSERT_NO_THROW(Store.getPrnHealth(PRN1,Time));
+		CPPUNIT_ASSERT_NO_THROW(Store.getSatHealth(sid1,Time));
 		
-		CPPUNIT_ASSERT_EQUAL((short) 0,Store.getPrnHealth(PRN1,Time));
-		CPPUNIT_ASSERT_EQUAL((short) 0,Store.getPrnHealth(PRN15,Time));
-		CPPUNIT_ASSERT_EQUAL((short) 0,Store.getPrnHealth(PRN32,Time));
+		CPPUNIT_ASSERT_EQUAL((short) 0,Store.getSatHealth(sid1,Time));
+		CPPUNIT_ASSERT_EQUAL((short) 0,Store.getSatHealth(sid15,Time));
+		CPPUNIT_ASSERT_EQUAL((short) 0,Store.getSatHealth(sid32,Time));
 		
-		CPPUNIT_ASSERT_THROW(Store.getPrnHealth(PRN0,bTime),gpstk::EphemerisStore::NoEphemerisFound);
-		CPPUNIT_ASSERT_THROW(Store.getPrnHealth(PRN33,bTime),gpstk::EphemerisStore::NoEphemerisFound);
+		CPPUNIT_ASSERT_THROW(Store.getSatHealth(sid0,bTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(Store.getSatHealth(sid33,bTime),gpstk::InvalidRequest);
 	}
 	catch (gpstk::Exception& e)
 	{
@@ -258,7 +278,7 @@ void xRinexEphemerisStore :: BCESgetPrnHealthTest (void)
 }
 
 /*
-**** Test to assure the quality of BCEphemerisStore class member dump()
+**** Test to assure the quality of GPSEphemerisStore class member dump()
 
 **** This test makes sure that dump() behaves as expected.  With paramters from
 **** 0-2 with each giving more and more respective information, this information is
@@ -284,8 +304,8 @@ void xRinexEphemerisStore :: BCESdumpTest (void)
 
 	try
 	{
-		CPPUNIT_ASSERT_NO_THROW(Store.dump(0,DumpData0));
-		CPPUNIT_ASSERT_NO_THROW(Store.dump(1,DumpData1));
+		CPPUNIT_ASSERT_NO_THROW(Store.dump(DumpData0,0));
+		CPPUNIT_ASSERT_NO_THROW(Store.dump(DumpData1,1));
 		//Code outputs to cout but does pass, just dont want to run that every time
 		//CPPUNIT_ASSERT_NO_THROW(Store.dump(2,DumpData2));
 		//Store.dump(2,DumpData2);
@@ -301,7 +321,7 @@ void xRinexEphemerisStore :: BCESdumpTest (void)
 }
 
 /*
-**** Test to assure the quality of BCEphemerisStore class member addEphemeris()
+**** Test to assure the quality of GPSEphemerisStore class member addEphemeris()
 
 **** This test assures that no exceptions are thrown when a an ephemeris, taken from Store
 **** is added to a blank BCES Object.  Then the test makes sure that only that Ephemeris
@@ -316,14 +336,15 @@ void xRinexEphemerisStore :: BCESaddEphemerisTest (void)
 	DumpData.open ("Logs/addEphemerisTest.txt");
 
 
-	gpstk::BCEphemerisStore Blank;
+	gpstk::GPSEphemerisStore Blank;
 	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 	short PRN = 1;
+   gpstk::SatID sid(PRN,gpstk::SatID::systemGPS);
 	
 	gpstk::DayTime Time(2006,1,31,11,45,0);
 	gpstk::DayTime TimeB(2006,1,31,9,59,44);
-	const gpstk::EngEphemeris& eph = Store.findEphemeris(PRN,Time);
+	const gpstk::EngEphemeris& eph = Store.findEphemeris(sid,Time);
 
 	try
 	{
@@ -333,7 +354,7 @@ void xRinexEphemerisStore :: BCESaddEphemerisTest (void)
 		CPPUNIT_ASSERT_EQUAL(TimeB,Blank.getInitialTime());
 		CPPUNIT_ASSERT_EQUAL(TimeB,Blank.getFinalTime());
 		
-		Blank.dump(1,DumpData);
+		Blank.dump(DumpData,1);
 	}
 	catch (gpstk::Exception& e)
 	{
@@ -343,7 +364,7 @@ void xRinexEphemerisStore :: BCESaddEphemerisTest (void)
 }
 
 /*
-**** Test to assure the quality of BCEphemerisStore class member edit()
+**** Test to assure the quality of GPSEphemerisStore class member edit()
 
 **** This test assures that no exceptions are thrown when we edit a RES object
 **** then after we edit the RES Object, we test to make sure that our edit time
@@ -369,7 +390,7 @@ void xRinexEphemerisStore :: BCESeditTest (void)
 		Store.edit(TimeMin, TimeMax);
 		CPPUNIT_ASSERT_EQUAL(TimeMin,Store.getInitialTime());
 		CPPUNIT_ASSERT_EQUAL(TimeMax,Store.getFinalTime());
-		Store.dump(1,DumpData);
+		Store.dump(DumpData,1);
 		
 	}
 	catch (gpstk::Exception& e)
@@ -380,7 +401,7 @@ void xRinexEphemerisStore :: BCESeditTest (void)
 }
 
 /*
-**** Test to assure the quality of BCEphemerisStore class member wiper()
+**** Test to assure the quality of GPSEphemerisStore class member wiper()
 
 **** This test assures that no exceptions are thrown when we wiper a RES object
 **** then after we wiper the RES Object, we test to make sure that our wiper time
@@ -410,7 +431,7 @@ void xRinexEphemerisStore :: BCESwiperTest (void)
 		CPPUNIT_ASSERT_NO_THROW(Store.wiper(gpstk::DayTime::BEGINNING_OF_TIME));
 		//Wipe everything and make sure that we did wipe all the data
 		Store.wiper(Time);
-		Store.dump(1,DumpData1);
+		Store.dump(DumpData1,1);
 		
 		CPPUNIT_ASSERT_EQUAL(Time,Store.getInitialTime());
 		
@@ -418,7 +439,7 @@ void xRinexEphemerisStore :: BCESwiperTest (void)
 		
 		CPPUNIT_ASSERT_EQUAL(Num,Store.wiper(gpstk::DayTime::END_OF_TIME));
 		
-		Store.dump(1,DumpData2);
+		Store.dump(DumpData2,1);
 		
 		CPPUNIT_ASSERT_EQUAL(gpstk::DayTime::END_OF_TIME,Store.getInitialTime());
 		
@@ -433,7 +454,7 @@ void xRinexEphemerisStore :: BCESwiperTest (void)
 }
 
 /*
-**** Test to assure the quality of BCEphemerisStore class member clear()
+**** Test to assure the quality of GPSEphemerisStore class member clear()
 
 **** This test assures that no exceptions are thrown when we clear a RES object
 **** then after we clear the RES Object, we test to make sure that END_OF_TIME is our
@@ -441,6 +462,7 @@ void xRinexEphemerisStore :: BCESwiperTest (void)
 
 **** For further inspection of the edit, please view clearTest.txt
 */
+
 void xRinexEphemerisStore :: BCESclearTest (void)
 {
 	ofstream DumpData;
@@ -455,7 +477,7 @@ void xRinexEphemerisStore :: BCESclearTest (void)
 		
 		CPPUNIT_ASSERT_EQUAL(gpstk::DayTime::END_OF_TIME,Store.getInitialTime());
 		CPPUNIT_ASSERT_EQUAL(gpstk::DayTime::BEGINNING_OF_TIME,Store.getFinalTime());
-		Store.dump(1,DumpData);
+		Store.dump(DumpData,1);
 		
 	}
 	catch (gpstk::Exception& e)
@@ -466,7 +488,7 @@ void xRinexEphemerisStore :: BCESclearTest (void)
 }
 
 /*
-**** Test to assure the quality of BCEphemerisStore class member findUserEphemeris()
+**** Test to assure the quality of GPSEphemerisStore class member findUserEphemeris()
 
 **** findUserEphemeris find the ephemeris which a) is within the fit tinterval for the
 **** given time of interest and 2) is the last ephemeris transmitted before the time of
@@ -495,19 +517,24 @@ void xRinexEphemerisStore :: BCESfindUserTest (void)
 	short PRN15 = 15;
 	short PRN32 = 32;
 	short PRN33 = 33;
+   gpstk::SatID sid0(PRN0,gpstk::SatID::systemGPS);
+   gpstk::SatID sid1(PRN1,gpstk::SatID::systemGPS);
+   gpstk::SatID sid15(PRN15,gpstk::SatID::systemGPS);
+   gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
+   gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
 	
 	try
 	{
-		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(PRN0,Time),gpstk::EphemerisStore::NoEphemerisFound);
-		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(PRN33,Time),gpstk::EphemerisStore::NoEphemerisFound);
-		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(PRN1,gpstk::DayTime::END_OF_TIME),
-					gpstk::EphemerisStore::NoEphemerisFound);
+		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(sid0,Time),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(sid33,Time),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(sid1,gpstk::DayTime::END_OF_TIME),
+					gpstk::InvalidRequest);
 		
-		CPPUNIT_ASSERT_NO_THROW(Store.findUserEphemeris(PRN1, Time));
+		CPPUNIT_ASSERT_NO_THROW(Store.findUserEphemeris(sid1, Time));
 		
-		const gpstk::EngEphemeris& Eph1 = Store.findUserEphemeris(PRN1, Time);
-		const gpstk::EngEphemeris& Eph15 = Store.findUserEphemeris(PRN15, Time);
-		const gpstk::EngEphemeris& Eph32 = Store.findUserEphemeris(PRN32, Time);
+		const gpstk::EngEphemeris& Eph1 = Store.findUserEphemeris(sid1, Time);
+		const gpstk::EngEphemeris& Eph15 = Store.findUserEphemeris(sid15, Time);
+		const gpstk::EngEphemeris& Eph32 = Store.findUserEphemeris(sid32, Time);
 		
 		Store.clear();
 		
@@ -515,7 +542,7 @@ void xRinexEphemerisStore :: BCESfindUserTest (void)
 		Store.addEphemeris(Eph15);
 		Store.addEphemeris(Eph32);
 		
-		Store.dump(1,DumpData);
+		Store.dump(DumpData,1);
 		
 	}
 	catch (gpstk::Exception& e)
@@ -526,7 +553,7 @@ void xRinexEphemerisStore :: BCESfindUserTest (void)
 }
 
 /*
-**** Test to assure the quality of BCEphemerisStore class member findNearEphemeris()
+**** Test to assure the quality of GPSEphemerisStore class member findNearEphemeris()
 **** findNearEphemeris finds the ephemeris with the HOW time closest to the time t, i.e
 **** with the smalles fabs(t-HOW), but still within the fit interval
 
@@ -553,19 +580,24 @@ void xRinexEphemerisStore :: BCESfindNearTest (void)
 	short PRN15 = 15;
 	short PRN32 = 32;
 	short PRN33 = 33;
+   gpstk::SatID sid0(PRN0,gpstk::SatID::systemGPS);
+   gpstk::SatID sid1(PRN1,gpstk::SatID::systemGPS);
+   gpstk::SatID sid15(PRN15,gpstk::SatID::systemGPS);
+   gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
+   gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
 	
 	try
 	{
-		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(PRN0,Time),gpstk::EphemerisStore::NoEphemerisFound);
-		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(PRN33,Time),gpstk::EphemerisStore::NoEphemerisFound);
-		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(PRN1,gpstk::DayTime::END_OF_TIME),
-					gpstk::EphemerisStore::NoEphemerisFound);
+		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(sid0,Time),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(sid33,Time),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(sid1,gpstk::DayTime::END_OF_TIME),
+					gpstk::InvalidRequest);
 		
-		CPPUNIT_ASSERT_NO_THROW(Store.findNearEphemeris(PRN1, Time));
+		CPPUNIT_ASSERT_NO_THROW(Store.findNearEphemeris(sid1, Time));
 		
-		const gpstk::EngEphemeris& Eph1 = Store.findNearEphemeris(PRN1, Time);
-		const gpstk::EngEphemeris& Eph15 = Store.findNearEphemeris(PRN15, Time);
-		const gpstk::EngEphemeris& Eph32 = Store.findNearEphemeris(PRN32, Time);
+		const gpstk::EngEphemeris& Eph1 = Store.findNearEphemeris(sid1, Time);
+		const gpstk::EngEphemeris& Eph15 = Store.findNearEphemeris(sid15, Time);
+		const gpstk::EngEphemeris& Eph32 = Store.findNearEphemeris(sid32, Time);
 		
 		Store.clear();
 		
@@ -573,7 +605,7 @@ void xRinexEphemerisStore :: BCESfindNearTest (void)
 		Store.addEphemeris(Eph15);
 		Store.addEphemeris(Eph32);
 		
-		Store.dump(1,DumpData);
+		Store.dump(DumpData,1);
 		
 	}
 	catch (gpstk::Exception& e)
@@ -586,7 +618,7 @@ void xRinexEphemerisStore :: BCESfindNearTest (void)
 
 
 /*
-**** Test to assure the quality of BCEphemerisStore class member addToList()
+**** Test to assure the quality of GPSEphemerisStore class member addToList()
 
 **** This test creats a list of EngEphemeris and then adds all of the ephemeris
 **** members to that list.  After that of the List and Store are checked to be
