@@ -37,8 +37,9 @@ namespace gpstk
     // Love numbers
     const double SolidTides::H_LOVE(0.609), SolidTides::L_LOVE(0.0852);
 
-    // Phase lag. Assumed as zero here
-    const double SolidTides::PH_LAG(0.0);
+    // Phase lag. Assumed as zero here because no phase lag has been 
+    // detected so far.
+    // const double SolidTides::PH_LAG(0.0);
 
 
     /* Returns the effect of solid Earth tides (meters) on the given
@@ -69,14 +70,14 @@ namespace gpstk
         {
 
             // Variables to hold Sun and Moon positions
-            Xvt sunPos(sun.getXvt(t));
-            Xvt moonPos(moon.getXvt(t));
+            Triple sunPos(sun.getPosition(t));
+            Triple moonPos(moon.getPosition(t));
 
 
             // Compute the factors for the Sun
-            double rpRs( p.X()*sunPos.x.theArray[0] + p.Y()*sunPos.x.theArray[1] + p.Z()*sunPos.x.theArray[2]);
+            double rpRs( p.X()*sunPos.theArray[0] + p.Y()*sunPos.theArray[1] + p.Z()*sunPos.theArray[2]);
 
-            double Rs2(sunPos.x.theArray[0]*sunPos.x.theArray[0] + sunPos.x.theArray[1]*sunPos.x.theArray[1] + sunPos.x.theArray[2]*sunPos.x.theArray[2]);
+            double Rs2(sunPos.theArray[0]*sunPos.theArray[0] + sunPos.theArray[1]*sunPos.theArray[1] + sunPos.theArray[2]*sunPos.theArray[2]);
 
             double rp2( p.X()*p.X() + p.Y()*p.Y() + p.Z()*p.Z() );
 
@@ -89,15 +90,15 @@ namespace gpstk
 
             double g1sun( fac_s*(rpRs*rpRs/2.0 - rp2*Rs2/6.0) );
 
-            double g2sun( fac_s * rpRs * (sunPos.x.theArray[1]*p.X() - sunPos.x.theArray[0]*p.Y()) * std::sqrt(rp2)/sqxy2p );
+            double g2sun( fac_s * rpRs * (sunPos.theArray[1]*p.X() - sunPos.theArray[0]*p.Y()) * std::sqrt(rp2)/sqxy2p );
 
-            double g3sun( fac_s * rpRs * ( sqxy2p* sunPos.x.theArray[2] - p.Z()/sqxy2p * (p.X()*sunPos.x.theArray[0] + p.Y()*sunPos.x.theArray[1]) ) );
+            double g3sun( fac_s * rpRs * ( sqxy2p* sunPos.theArray[2] - p.Z()/sqxy2p * (p.X()*sunPos.theArray[0] + p.Y()*sunPos.theArray[1]) ) );
 
 
             // Compute the factors for the Moon
-            double rpRm( p.X()*moonPos.x.theArray[0] + p.Y()*moonPos.x.theArray[1] + p.Z()*moonPos.x.theArray[2]);
+            double rpRm( p.X()*moonPos.theArray[0] + p.Y()*moonPos.theArray[1] + p.Z()*moonPos.theArray[2]);
 
-            double Rm2(moonPos.x.theArray[0]*moonPos.x.theArray[0] + moonPos.x.theArray[1]*moonPos.x.theArray[1] + moonPos.x.theArray[2]*moonPos.x.theArray[2]);
+            double Rm2(moonPos.theArray[0]*moonPos.theArray[0] + moonPos.theArray[1]*moonPos.theArray[1] + moonPos.theArray[2]*moonPos.theArray[2]);
 
             double sqRm2(std::sqrt(Rm2));
 
@@ -105,9 +106,9 @@ namespace gpstk
 
             double g1moon( fac_m*(rpRm*rpRm/2.0 - rp2*Rm2/6.0) );
 
-            double g2moon( fac_m * rpRm * (moonPos.x.theArray[1]*p.X() - moonPos.x.theArray[0]*p.Y()) * std::sqrt(rp2)/sqxy2p );
+            double g2moon( fac_m * rpRm * (moonPos.theArray[1]*p.X() - moonPos.theArray[0]*p.Y()) * std::sqrt(rp2)/sqxy2p );
 
-            double g3moon( fac_m * rpRm * ( sqxy2p* moonPos.x.theArray[2] - p.Z()/sqxy2p * (p.X()*moonPos.x.theArray[0] + p.Y()*moonPos.x.theArray[1]) ) );
+            double g3moon( fac_m * rpRm * ( sqxy2p* moonPos.theArray[2] - p.Z()/sqxy2p * (p.X()*moonPos.theArray[0] + p.Y()*moonPos.theArray[1]) ) );
 
             // Effects due to the Sun
             double delta_sun1(H_LOVE*g1sun);

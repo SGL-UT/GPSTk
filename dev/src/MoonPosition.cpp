@@ -93,11 +93,11 @@ namespace gpstk
 
     // Returns the position of Moon ECEF coordinates (meters) at the indicated time.
     // @param[in] t the time to look up
-    // @return the Xvt of the Moon at time
+    // @return the position of the Moon at time (as a Triple)
     // @throw InvalidRequest If the request can not be completed for any
     //    reason, this is thrown. The text may have additional
     //    information as to why the request failed.
-    Xvt MoonPosition::getXvt(const DayTime& t) const throw(InvalidRequest)
+    Triple MoonPosition::getPosition(const DayTime& t) const throw(InvalidRequest)
     {
 
         // Test if the time interval is correct
@@ -108,21 +108,21 @@ namespace gpstk
         }
 
         // We will store here the results
-        Xvt res;
+        Triple res;
 
-        res = MoonPosition::getXvtCIS(t);
+        res = MoonPosition::getPositionCIS(t);
         res = CIS2CTS(res, t);
 
         return res;
 
-    } // End MoonPosition::getXvt
+    } // End MoonPosition::getPosition
 
 
 
     /* Function to compute Moon position in CIS system (coordinates in meters)
      * @param t Epoch
      */
-    Xvt MoonPosition::getXvtCIS(const DayTime& t) const throw(InvalidRequest)
+    Triple MoonPosition::getPositionCIS(const DayTime& t) const throw(InvalidRequest)
     {
 
         // Test if the time interval is correct
@@ -622,16 +622,16 @@ namespace gpstk
         double ES(EQCOR*SINEPS);
         double EC(EQCOR*COSEPS);
 
-        Xvt res;
+        Triple res;
 
-        res.x.theArray[0] = (X-EC*Y+ES*Z)*AU_CONST;
-        res.x.theArray[1] = (EQCOR*X+Y*COSEPS-Z*SINEPS)*AU_CONST;
-        res.x.theArray[2] = (Y*SINEPS+Z*COSEPS)*AU_CONST;
+        res.theArray[0] = (X-EC*Y+ES*Z)*AU_CONST;
+        res.theArray[1] = (EQCOR*X+Y*COSEPS-Z*SINEPS)*AU_CONST;
+        res.theArray[2] = (Y*SINEPS+Z*COSEPS)*AU_CONST;
 
 
         return res;
 
-    } // End MoonPosition::getXvtCIS()
+    } // End MoonPosition::getPositionCIS()
 
 
 } // end namespace gpstk

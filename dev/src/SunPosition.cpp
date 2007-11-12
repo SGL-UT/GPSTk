@@ -44,11 +44,11 @@ namespace gpstk
 
     // Returns the position of Sun ECEF coordinates (meters) at the indicated time.
     // @param[in] t the time to look up
-    // @return the Xvt of the Sun at time
+    // @return the position of the Sun at time (as a Triple)
     // @throw InvalidRequest If the request can not be completed for any
     //    reason, this is thrown. The text may have additional
     //    information as to why the request failed.
-    Xvt SunPosition::getXvt(const DayTime& t) const throw(InvalidRequest)
+    Triple SunPosition::getPosition(const DayTime& t) const throw(InvalidRequest)
     {
 
         // Test if the time interval is correct
@@ -59,20 +59,20 @@ namespace gpstk
         }
 
         // We will store here the results
-        Xvt res;
+        Triple res;
 
-        res = SunPosition::getXvtCIS(t);
+        res = SunPosition::getPositionCIS(t);
         res = CIS2CTS(res, t);
 
         return res;
-    } // End SunPosition::getXvt
+    } // End SunPosition::getPosition
 
 
 
     /* Function to compute Sun position in CIS system (coordinates in meters)
      * @param t Epoch
      */
-    Xvt SunPosition::getXvtCIS(const DayTime& t) const throw(InvalidRequest)
+    Triple SunPosition::getPositionCIS(const DayTime& t) const throw(InvalidRequest)
     {
 
         // Test if the time interval is correct
@@ -128,15 +128,15 @@ namespace gpstk
         double selmm(std::sin(elmm));
         double celmm(std::cos(elmm));
 
-        Xvt result;
+        Triple result;
 
         // Sun position is the opposite of Earth position
-        result.x.theArray[0] = (r*coselt+MeanEarthMoonBary*celmm)*AU_CONST;
-        result.x.theArray[1] = (MeanEarthMoonBary*selmm-w1)*coseps*AU_CONST;
-        result.x.theArray[2] = (-w1*sineps)*AU_CONST;
+        result.theArray[0] = (r*coselt+MeanEarthMoonBary*celmm)*AU_CONST;
+        result.theArray[1] = (MeanEarthMoonBary*selmm-w1)*coseps*AU_CONST;
+        result.theArray[2] = (-w1*sineps)*AU_CONST;
 
         return result;
-    } // End SunPosition::getXvtCIS()
+    } // End SunPosition::getPositionCIS()
 
 
 } // end namespace gpstk

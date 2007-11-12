@@ -35,7 +35,7 @@
 #include <string>
 
 #include "DayTime.hpp"
-#include "Xvt.hpp"
+#include "Triple.hpp"
 #include "icd_200_constants.hpp"
 #include "AstronomicalFunctions.hpp"
 
@@ -74,23 +74,23 @@ namespace gpstk
 
         /// Returns the position of Sun ECEF coordinates (meters) at the indicated time.
         /// @param[in] t the time to look up
-        /// @return the Xvt of the Sun at time
+        /// @return the position of the Sun at time (as a Triple)
         /// @throw InvalidRequest If the request can not be completed for any
         ///    reason, this is thrown. The text may have additional
         ///    information as to why the request failed.
         /// @warning This method yields and approximate result, given that pole movement
         /// is not taken into account, neither precession nor nutation.
-        Xvt getXvt(const DayTime& t) const throw(InvalidRequest);
+        Triple getPosition(const DayTime& t) const throw(InvalidRequest);
       
 
         /** Function to compute Sun position in CIS system (coordinates in meters)
          * @param t Epoch
          */
-        Xvt getXvtCIS(const DayTime& t) const throw(InvalidRequest);
+        Triple getPositionCIS(const DayTime& t) const throw(InvalidRequest);
 
 
         /// Determine the earliest time for which this object can successfully 
-        /// determine the Xvt for the Sun.
+        /// determine the position for the Sun.
         /// @return The initial time
         /// @throw InvalidRequest This is thrown if the object has no data.
         DayTime getInitialTime() const throw(InvalidRequest)
@@ -98,7 +98,7 @@ namespace gpstk
 
 
         /// Determine the latest time for which this object can successfully 
-        /// determine the Xvt for the Sun.
+        /// determine the position for the Sun.
         /// @return The final time
         /// @throw InvalidRequest This is thrown if the object has no data.
         DayTime getFinalTime() const throw(InvalidRequest)

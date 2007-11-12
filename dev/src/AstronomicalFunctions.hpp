@@ -34,7 +34,7 @@
 #include <string>
 
 #include "DayTime.hpp"
-#include "Xvt.hpp"
+#include "Triple.hpp"
 #include "icd_200_constants.hpp"
 
 
@@ -79,7 +79,7 @@ namespace gpstk
      * @param posCis    Coordinates in CIS system (in meters).
      * @param t         Epoch
      */
-    Xvt CIS2CTS(const Xvt posCIS, const DayTime& t);
+    Triple CIS2CTS(const Triple posCIS, const DayTime& t);
 
 
     /** Function to convert from UTC to sidereal time

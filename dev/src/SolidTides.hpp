@@ -34,7 +34,6 @@
 #include <string>
 
 #include "DayTime.hpp"
-#include "Xvt.hpp"
 #include "Triple.hpp"
 #include "Position.hpp"
 #include "icd_200_constants.hpp"
@@ -72,13 +71,13 @@ namespace gpstk
 
 
         /** Returns the effect of solid Earth tides (meters) on the given
-         * position and epoch, in the Up-East-Down (UEN) reference frame.
+         * position and epoch, in the Up-East-North (UEN) reference frame.
          *
          * @param[in] t the time to look up
          * @param[in] p the position of interest
          *
          * @return a Triple with the solid tidal effect, in meters and in
-         * the UED reference frame.
+         * the UEN reference frame.
          *
          * @throw InvalidRequest If the request can not be completed for any
          * reason, this is thrown. The text may have additional information

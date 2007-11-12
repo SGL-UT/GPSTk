@@ -38,17 +38,17 @@ namespace gpstk
      * @param posCis    Coordinates in CIS system (in meters).
      * @param t         Epoch
      */
-    Xvt CIS2CTS(const Xvt posCIS, const DayTime& t)
+    Triple CIS2CTS(const Triple posCIS, const DayTime& t)
     {
 
         // Angle of Earth rotation, in radians
         double ts( UTC2SID(t)*TWO_PI/24.0 );
 
-        Xvt res;
+        Triple res;
 
-        res.x.theArray[0] = cos(ts)*posCIS.x.theArray[0] + sin(ts)*posCIS.x.theArray[1];
-        res.x.theArray[1] = -sin(ts)*posCIS.x.theArray[0] + cos(ts)*posCIS.x.theArray[1];
-        res.x.theArray[2] = posCIS.x.theArray[2];
+        res.theArray[0] = cos(ts)*posCIS.theArray[0] + sin(ts)*posCIS.theArray[1];
+        res.theArray[1] = -sin(ts)*posCIS.theArray[0] + cos(ts)*posCIS.theArray[1];
+        res.theArray[2] = posCIS.theArray[2];
 
         return res;
     } // End CIS2CTS()
