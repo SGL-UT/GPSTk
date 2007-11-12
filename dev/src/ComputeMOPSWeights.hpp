@@ -144,6 +144,7 @@ namespace gpstk
 
         /** Returns a satTypeValueMap object, adding the new data generated when calling this object.
          *
+         * @param time      Epoch corresponding to the data.
          * @param gData     Data object holding the data.
          */
         virtual satTypeValueMap& Process(const DayTime& time, satTypeValueMap& gData)
