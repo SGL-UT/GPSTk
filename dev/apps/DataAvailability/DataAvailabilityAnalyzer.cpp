@@ -54,12 +54,14 @@
     snr     Signal to noise ratio (C/C0) in dB-Hz
     health  SV health bits
     tcnt    Continuous tracking count
-    iod     Issue of data
     intrk   Number of SVs in track
     tama    Time above mask angle
 */
 
 #include <map>
+#include <set>
+#include <vector>
+#include <list>
 #include <algorithm>
 
 #include "StringUtils.hpp"
@@ -153,7 +155,6 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
    obsItemName[oiSNR] = "snr";
    obsItemName[oiHealth] = "health";
    obsItemName[oiTrackCount] = "tcnt";
-   obsItemName[oiIOD] = "iod";
 
    for (ObsItemName::const_iterator i=obsItemName.begin(); 
         i!=obsItemName.end(); i++)
@@ -423,7 +424,7 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
          try {svXVT = eph.getXvt(SatID(prnTemp, SatID::systemGPS), curr.time);}
          catch(gpstk::Exception& e) 
          {
-            if (verboseLevel> 1) {cout << e << endl;}
+            if (verboseLevel> 3) {cout << e << endl;}
             NoEph = true;
          }
          double elvAngle = 0;
@@ -513,7 +514,7 @@ void DataAvailabilityAnalyzer::process()
          break;
       
       epochCounter++;
-      
+
       if (obsReader.epochCount==1)
       {
          firstEpochTime = oe.time;
@@ -550,7 +551,6 @@ void DataAvailabilityAnalyzer::processEpoch(
    
    for (DayTime t = prev_oe.time + epochRate; t <= oe.time; t += epochRate)
    {
-
       for (int prn=1; prn<=32; prn++)
          inView[prn].update(prn, t, rxpos, *eph, gm, maskAngle, verboseLevel);
       
@@ -609,6 +609,41 @@ void DataAvailabilityAnalyzer::processEpoch(
                q = soe.find(ObsID(ObsID::otSNR, ObsID::cbL1, ObsID::tcCA));
                if (q != soe.end())
                   iv.snr = q->second;
+
+               // Now figure out if there was an obs from this SV for the
+               // previous epoch, if no, no prob. That should have been caught
+               // by the visibility check.
+               ObsEpoch::const_iterator poei = prev_oe.find(svid);
+               if (poei == prev_oe.end())
+                  break;
+
+               // At this point we know there is some data from the SV, so
+               // figure out if the obs set is different from the previous
+               const SvObsEpoch& psoe = poei->second;
+               set<ObsID> curr, prev, diff;
+               for (q=soe.begin(); q != soe.end(); q++)
+                  curr.insert(q->first);
+               for (q=psoe.begin(); q != psoe.end(); q++)
+                  prev.insert(q->first);
+
+               set_difference(curr.begin(), curr.end(),
+                              prev.begin(), prev.end(),
+                              inserter(diff, diff.end()));
+               set<ObsID>::const_iterator r;
+               for (r=diff.begin(); r != diff.end();)
+                  if (r->type == ObsID::otSSI || r->type == ObsID::otLLI)
+                     diff.erase(r++);
+
+               if (diff.size() > 0)
+               {
+                  cout << t << " SV:" << svid << endl;
+                  set<ObsID>::const_iterator r;
+                  for (r=diff.begin(); r != diff.end(); r++)
+                     cout << *r << " ";
+                  cout << endl;
+               }
+
+               
             } // else
          }    // else      
       }       // for (int prn=1; prn<=32; prn++)
@@ -645,14 +680,13 @@ void DataAvailabilityAnalyzer::InView::update(
    const int verbosityLevel)
 {
    verbosity = verbosityLevel;
-      
    try
    {
       this->prn = prn;
       this->time = time;
       // We really don't care about the observed range deviation, the
       // ObsRngDev class is just a convient way to get the azimuth, 
-      // elevation, health, iodc, 
+      // elevation, health 
 
       ObsRngDev ord(0, SatID(prn, SatID::systemGPS), time, rxpos, eph, gm);
       vfloat el=ord.getElevation();
@@ -685,8 +719,7 @@ void DataAvailabilityAnalyzer::InView::update(
       }
       elevation = ord.getElevation();
       azimuth = ord.getAzimuth();
-      iodc = ord.getIODC();
-      health = ord.getHealth();
+      health = 0; //ord.getHealth();
    }
    catch (InvalidRequest& e)
    {
@@ -694,7 +727,6 @@ void DataAvailabilityAnalyzer::InView::update(
       aboveMask = false;
       elevation = 0;
       azimuth = 0;
-      iodc = 0;
       health = 0;
    }
 } // end of InView::update()
@@ -769,6 +801,4 @@ void DataAvailabilityAnalyzer::outputSummary()
         << left  << setw(10) << allMissingCounter << endl;
    cout << right << setw(40) << "Total number of points missed: "
         << left  << setw(10) << pointsMissedCounter << endl << endl;
-        
-
 }

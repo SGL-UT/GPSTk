@@ -98,7 +98,7 @@ private:
    unsigned long pointsMissedCounter;
 
    enum ObsItemEnum {oiUnknown, oiElevation, oiAzimuth, oiTime, oiPRN, oiCCID,
-                     oiSNR, oiHealth, oiTrackCount, oiIOD};
+                     oiSNR, oiHealth, oiTrackCount};
 
    typedef std::map<ObsItemEnum, std::string> ObsItemName;
    typedef std::map<std::string, ObsItemEnum> ObsItemId;
@@ -159,7 +159,7 @@ private:
       // Number of epochs received from this SV during this pass
       unsigned epochCount;
       float elevation,azimuth;
-      short iodc, health;
+      short health;
 
       // This following items are only useful when this class is used to record
       // information associated with missing data.
