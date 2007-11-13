@@ -58,6 +58,7 @@
 #include "MDPStream.hpp"
 #include "MDPNavSubframe.hpp"
 #include "MDPObsEpoch.hpp"
+#include "MDPSelftestStatus.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -119,7 +120,7 @@ public:
       {
          tStart.setToString(startOpt.getValue().front().c_str(),
                             "%Y %j %H:%M:%S");
-         if (debugLevel || verboseLevel)
+         if (debugLevel)
             cout << "Throwing out data before " << tStart << endl;
       }
       else
@@ -213,7 +214,7 @@ protected:
          if (msgCount == 1 && debugLevel)
             cout << "First message at " << header.time << endl;
 
-         if (verboseLevel > 3 || debugLevel > 2)
+         if (verboseLevel > 4 || debugLevel > 3)
             cout << "Record: "    << input.recordNumber
                  << ", message: " << msgCount << endl;
               
@@ -293,16 +294,27 @@ protected:
                        << input.recordNumber << endl;                     
                }
                break;
-/* can't get this to work yet
+
             case gpstk::MDPSelftestStatus::myId:
                if (!noSts) 
                {
                   gpstk::MDPSelftestStatus sts;
                   input  >> sts;
-                  output << sts;
+                  if (sts)
+                     output << sts;
+                     if (debugLevel > 2)
+                     {
+                        cout << "Writing self test status message:\n";
+                        sts.dump(cout);
+                     }
                }
+               else if (debugLevel > 3)
+               {
+                  cout << "Ignoring status message from record "
+                       << input.recordNumber << endl;                     
+               }               
                break;
-*/
+
          } // switch (input.header.id)
       }    // while (!input.eof())  
       

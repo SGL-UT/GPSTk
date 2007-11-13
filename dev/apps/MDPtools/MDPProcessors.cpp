@@ -192,13 +192,13 @@ void MDPTableProcessor::outputHeader()
       return;
 
    if (obsOut)
-      out << "# time, 300, prn, chan, hlth, #SVs, ele, az, code, carrier, LC, SNR, range, phase, doppler" << endl;
+      out << "# time, 300, prn, chan, hlth, #SVs, ele, az, code, carrier, LC, SNR, range, phase, doppler, record #" << endl;
    if (pvtOut)
-      out << "# time, 301, #SV, dtime, ddtime, x, y, z, vx, vy, vz" << endl;
+      out << "# time, 301, #SV, dtime, ddtime, x, y, z, vx, vy, vz, record #" << endl;
    if (navOut)
       out << "# time, 310, prn, carrier_code, range_code, nav_code, word1, word2, ..." << endl;
    if (tstOut)
-      out << "# time, 400, tstTime, startTime, Tant, Trx, status, cpu, freq, ssw" << endl;
+      out << "# time, 400, tstTime, startTime, Tant, Trx, status, cpu, freq, ssw, record #" << endl;
 
    headerDone=true;
 }
@@ -231,6 +231,7 @@ void MDPTableProcessor::process(const gpstk::MDPObsEpoch& oe)
           << ", " << setw(13) << obs.pseudorange
           << ", " << setw(14) << obs.phase
           << ", " << setw(10) << obs.doppler
+          << ", " << setw(10) << in.recordNumber
           << endl;
    }
 }
@@ -256,6 +257,7 @@ void MDPTableProcessor::process(const gpstk::MDPPVTSolution& pvt)
        << ", " << setw(8) << pvt.v[0]
        << ", " << setw(8) << pvt.v[1]
        << ", " << setw(8) << pvt.v[2]
+       << ", " << setw(10) << in.recordNumber
        << endl;
 }
 
@@ -298,6 +300,7 @@ void MDPTableProcessor::process(const gpstk::MDPSelftestStatus& sts)
        << ", " << setprecision(1) << sts.cpuLoad
        << ", " << hex << sts.extFreqStatus << dec
        << ", " << hex << sts.saasmStatusWord << dec
+       << ", " << setw(10) << in.recordNumber
        << endl;
 }
 
