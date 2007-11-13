@@ -1,7 +1,7 @@
 
 /**
  * @file SolidTides.hpp
- * Computes the effect of solid Earth tides on a given position and epoch.
+ * Computes the effect of solid Earth tides at a given position and epoch.
  */
 
 #ifndef GPSTK_SOLIDTIDES_HPP
@@ -48,7 +48,7 @@ namespace gpstk
     /** @addtogroup GPSsolutions */
     //@{
    
-    /** This class computes the effect of solid Earth tides on a given
+    /** This class computes the effect of solid Earth tides at a given
      * position and epoch.
      *
      * The model used is the simple quadrupole response model described
@@ -70,11 +70,11 @@ namespace gpstk
         virtual ~SolidTides() {}
 
 
-        /** Returns the effect of solid Earth tides (meters) on the given
+        /** Returns the effect of solid Earth tides (meters) at the given
          * position and epoch, in the Up-East-North (UEN) reference frame.
          *
-         * @param[in] t the time to look up
-         * @param[in] p the position of interest
+         * @param[in] t Epoch to look up
+         * @param[in] p Position of interest
          *
          * @return a Triple with the solid tidal effect, in meters and in
          * the UEN reference frame.
