@@ -234,6 +234,58 @@ namespace gpstk
       }
    }
    
+
+   /* Computes rotation about axis X.
+    * @param angle    Angle to rotate, in degrees
+    * @return A triple which is the original triple rotated angle about X
+    */
+   Triple Triple::R1(const double& angle) const
+      throw()
+   {
+      double sinangle(std::sin(angle*DEG_TO_RAD));
+      double cosangle(std::cos(angle*DEG_TO_RAD));
+      Triple rot;
+      rot[0] = (*this)[0];
+      rot[1] = cosangle*(*this)[1] + sinangle*(*this)[2];
+      rot[2] = -sinangle*(*this)[1] + cosangle*(*this)[2];
+      return rot;
+   }
+
+
+   /* Computes rotation about axis Y.
+    * @param angle    Angle to rotate, in degrees
+    * @return A triple which is the original triple rotated angle about Y
+    */
+   Triple Triple::R2(const double& angle) const
+      throw()
+   {
+      double sinangle(std::sin(angle*DEG_TO_RAD));
+      double cosangle(std::cos(angle*DEG_TO_RAD));
+      Triple rot;
+      rot[0] = cosangle*(*this)[0] - sinangle*(*this)[2];
+      rot[1] = (*this)[1];
+      rot[2] = sinangle*(*this)[0] + cosangle*(*this)[2];
+      return rot;
+   }
+
+
+   /* Computes rotation about axis Z.
+    * @param angle    Angle to rotate, in degrees
+    * @return A triple which is the original triple rotated angle about Z
+    */
+   Triple Triple::R3(const double& angle) const
+      throw()
+   {
+      double sinangle(std::sin(angle*DEG_TO_RAD));
+      double cosangle(std::cos(angle*DEG_TO_RAD));
+      Triple rot;
+      rot[0] = cosangle*(*this)[0] + sinangle*(*this)[1];
+      rot[1] = -sinangle*(*this)[0] + cosangle*(*this)[1];
+      rot[2] = (*this)[2];
+      return rot;
+   }
+
+
    bool Triple :: operator== (const Triple& right) const
    {
      return (*this)[0]==right[0] && (*this)[1]==right[1] && (*this)[2]==right[2];

@@ -153,6 +153,29 @@ namespace gpstk
       double azAngle(const Triple& right) const 
          throw(GeometryException);
       
+         /** Computes rotation about axis X.
+          * @param angle    Angle to rotate, in degrees
+          * @return A triple which is the original triple rotated angle about X
+          */
+      Triple R1(const double& angle) const
+         throw();
+   
+      
+         /** Computes rotation about axis Y.
+          * @param angle    Angle to rotate, in degrees
+          * @return A triple which is the original triple rotated angle about Y
+          */
+      Triple R2(const double& angle) const
+         throw();
+   
+      
+         /** Computes rotation about axis Z.
+          * @param angle    Angle to rotate, in degrees
+          * @return A triple which is the original triple rotated angle about Z
+          */
+      Triple R3(const double& angle) const
+         throw();
+   
          /**
           * Return a reference to the element at /a index.
           * @param index the index of the element to return.
