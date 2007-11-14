@@ -35,21 +35,21 @@
 
 namespace vplot
 {
-   /** \addtogroup BasicVectorGraphics */ 
-   //@{
+  /** \addtogroup BasicVectorGraphics */ 
+  //@{
 
-     /**
-      * Assists in arranging frames in a vertical stack.
-      */
-   class HLayout : public Layout
-   {
-      
-   public:
+  /**
+   * Assists in arranging frames in a vertical stack.
+   */
+  class HLayout : public Layout
+  {
+
+    public:
 
       /**
        * Constructor. 
        * @param frame Frame to create layout within
-       * @param nframe Number of evenly stacked vertical frames to make
+       * @param nframes Number of evenly stacked vertical frames to make
        */   
       HLayout(const Frame& frame, int nframes);
 
@@ -61,18 +61,19 @@ namespace vplot
       HLayout(const Frame& frame, double fraction);
 
       virtual int getFrameCount(void)
-	{return targetList.size();}
+      {return targetList.size();}
 
       virtual Frame getFrame(int fnum)
-	{return targetList[fnum];}
+      {return targetList[fnum];}
 
-   protected:
+    protected:
 
+      /// List containing the frames created in this layout.      
       std::vector<Frame> targetList;
-   };
+  };
 
   //@}
-   
+
 } // namespace vplot
 
 #endif

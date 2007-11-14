@@ -32,37 +32,55 @@
 
 namespace vplot
 {
-   /** \addtogroup BasicVectorGraphics */ 
-   //@{
+  /** \addtogroup BasicVectorGraphics */ 
+  //@{
 
-   class Layout
-   {
-      
-   public:
+
+  /**
+   * This class is used to create new frames from an existing frame.  
+   * It is overloaded to partition the space in a frame in several 
+   * different ways.
+   */
+  class Layout
+  {
+
+    public:
 
       /**
        * Constructor. 
        * @param frame Frame to create layout within
        */   
       Layout(const Frame& frame) : target(frame)
-         {}
+      {}
 
+      /**
+       * @return Number of frames contained in this layout.
+       */
       virtual int getFrameCount(void)
-	{return 1;}
+      {return 1;}
 
+      /**
+       * @param fnum Frame index number
+       * @return The fnum-th frame
+       */
       virtual Frame getFrame(int fnum)
-	{return target;}
+      {return target;}
 
+
+      /**
+       * @return The frame from which this layout was created.
+       */
       virtual Frame getParentFrame(void)
-        {return target;}
+      {return target;}
 
-   protected:
+    protected:
 
+      /// The frame from which nre frames are created in this layout.
       Frame target;
-   };
+  };
 
   //@}
-   
+
 } // namespace vplot
 
 #endif

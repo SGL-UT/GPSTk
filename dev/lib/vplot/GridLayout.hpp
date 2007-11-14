@@ -35,16 +35,16 @@
 
 namespace vplot
 {
-   /** \addtogroup BasicVectorGraphics */ 
-   //@{
+  /** \addtogroup BasicVectorGraphics */ 
+  //@{
 
-     /**
-      * Assists in arranging frames in a vertical stack.
-      */
-   class GridLayout : public Layout
-   {
-      
-   public:
+  /**
+   * Assists in arranging frames in a vertical stack.
+   */
+  class GridLayout : public Layout
+  {
+
+    public:
 
       /**
        * Constructor. 
@@ -55,24 +55,35 @@ namespace vplot
       GridLayout(const Frame& frame, int rows, int columns);
 
       virtual int getFrameCount(void)
-	{return targetList.size();}
+      {return targetList.size();}
 
       virtual Frame getFrame(int fnum)
-	{return targetList[fnum];}
+      {return targetList[fnum];}
 
+      /**
+       * @param row 
+       * @param col
+       * @return Frame at (row,col)
+       */
       virtual Frame getFrame(int row, int col)
-         {return targetList[col+row*ncols];}
-            
-            
+      {return targetList[col+row*ncols];}
 
-   protected:
 
+
+    protected:
+
+      /// List containing the frames created in this layout.
       std::vector<Frame> targetList;
-      int nrows, ncols;
-   };
+
+      /// Number of rows.
+      int nrows;
+
+      /// Number of columns.
+      int ncols;
+  };
 
   //@}
-   
+
 } // namespace vplot
 
 #endif

@@ -32,53 +32,90 @@
 
 namespace vplot
 {
-   /** \addtogroup BasicVectorGraphics */ 
-   //@{
+  /** \addtogroup BasicVectorGraphics */ 
+  //@{
 
-   class Frame
-   {
+  /**
+   * This class defines a frame that can be drawn in.  A frame is positioned
+   * somewhere on a VGImage, the frame automatically does translation of
+   * things drawn in it to page space.  (Currently does not scale)
+   */
+  class Frame
+  {
 
     public:
 
       friend const Frame& operator<<(const Frame& f, const Text& text);
       friend const Frame& operator<<(const Frame& f, const Rectangle& rect);
 
-         /// Default constructor. Creates an unusable frame. Needed for containers.
+      /// Default constructor. Creates an unusable frame. Needed for containers.
       Frame(void):display(0) 
-         {valid=false;};
+      {valid=false;};
 
+      /// Constructor.  Create a top level frame from a VGImage.
       Frame(VGImage& target);
-     //Frame(const Frame& rhs);
+      //Frame(const Frame& rhs);
 
-     void setWidth(double newWidth) {width=newWidth;}
-     void setHeight(double newHeight) {height=newHeight;}
-     double getWidth(void) const {return width;}
-     double getHeight(void) const {return height;}
+      /**
+       * @param newWidth new width for the frame.
+       */
+      void setWidth(double newWidth) {width=newWidth;}
 
-     void nest(const Frame& parent, double xoffset, double yoffset);
+      /**
+       * @param newHeight new height for the frame.
+       */
+      void setHeight(double newHeight) {height=newHeight;}
 
-         /// Returns x coordinate of center of frame in frame coordinates.
+      /**
+       * @return Width of the frame.
+       */
+      double getWidth(void) const {return width;}
+
+      /**
+       * @return Height of the frame.
+       */
+      double getHeight(void) const {return height;}
+
+      /**
+       * Nests this frame within the parent by the given amounts.
+       * @param parent Frame in which to nest this frame.
+       * @param xoffset X offset to decrease on either side of the frame.
+       * @param yoffset Y offset to decrease on top and bottom of the frame.
+       */
+      void nest(const Frame& parent, double xoffset, double yoffset);
+
+      /// Returns x coordinate of center of frame in frame coordinates.
       double cx(void) const { return width/2;}
-         /// Returns y coordinate of center of frame in frame coordinates.
+      /// Returns y coordinate of center of frame in frame coordinates.
       double cy(void) const { return height/2;}
-         /// Returns x coordinate of the left edge of the frame in frame coordinates.
+      /// Returns x coordinate of the left edge of the frame in frame coordinates.
       double lx(void) const { return 0;}
-         /// Returns x coordinate of the right edge of the frame in frame coordinates.
+      /// Returns x coordinate of the right edge of the frame in frame coordinates.
       double ux(void) const { return width;}
-         /// Returns y coordinate of the upper edge of the frame in frame coordinates.
+      /// Returns y coordinate of the upper edge of the frame in frame coordinates.
       double uy(void) const { return height;}
-         /// Returns y coordinate of the lower edge of the frame in frame coordinates.
+      /// Returns y coordinate of the lower edge of the frame in frame coordinates.
       double ly(void) const { return 0;}
 
-   protected:
+    protected:
+      /// If this frame's parent is the VGImage, not another frame or a layout.
       bool isTopLevel;
-      double originX, originY, width, height;
+      /// X value of the origin of this frame.
+      double originX;
+      /// Y value of the origin of this frame.      
+      double originY;
+      /// Width of this frame
+      double width; 
+      /// Height of this frame
+      double height;
+      /// If this frame is valid and can be drawn in.
       bool valid;
+      /// The VGImage in which to draw.
       VGImage *display;
-   };
+  };
 
   //@}
-   
+
 } // namespace vplot
 
 #endif

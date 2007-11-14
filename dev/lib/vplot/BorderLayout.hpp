@@ -34,16 +34,16 @@
 
 namespace vplot
 {
-   /** \addtogroup BasicVectorGraphics */ 
-   //@{
+  /** \addtogroup BasicVectorGraphics */ 
+  //@{
 
-     /**
-      * Assists in arranging frames in a vertical stack.
-      */
-   class BorderLayout : public Layout
-   {
-      
-   public:
+  /**
+   * Assists in arranging frames in a vertical stack.
+   */
+  class BorderLayout : public Layout
+  {
+
+    public:
 
       /**
        * Constructor. 
@@ -59,21 +59,22 @@ namespace vplot
        * @param yMarginSize Border size between upper and lower parts of inner and outer frames
        */   
       BorderLayout(const Frame& frame, 
-                   double xMarginSize, double yMarginSize );
+          double xMarginSize, double yMarginSize );
 
       virtual int getFrameCount(void)
-	{return (1);}
+      {return (1);}
 
       virtual Frame getFrame(int fnum)
-	{return targetList[0];}
+      {return targetList[0];}
 
-   protected:
+    protected:
 
+      /// List containing the frames created in this layout.
       std::vector<Frame> targetList;
-   };
+  };
 
   //@}
-   
+
 } // namespace vplot
 
 #endif
