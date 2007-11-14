@@ -81,8 +81,8 @@ public:
          " this time. Format as string: \"yyyy ddd HH:MM:SS\" ");
       CommandOptionWithAnyArg endOpt('e',"end","Throw out data after this"
          " time. Format as string: \"yyyy ddd HH:MM:SS\" ");
-      CommandOptionWithNumberArg prnOpt('p',"PRN","Throw out data from this"
-         " PRN. Repeat option for mutiple SVs.");
+      CommandOptionWithNumberArg prnOpt('p',"PRN","Throw out obs data from"
+         " this PRN. Repeat option for mutiple SVs.");
       CommandOptionWithNumberArg recordStartOpt('\0',"record-start","Throw"
          " out data before this record number.");
       CommandOptionWithNumberArg recordEndOpt('\0',"record-end","Throw out"
@@ -216,7 +216,7 @@ protected:
 
          if (verboseLevel > 4 || debugLevel > 3)
             cout << "Record: "    << input.recordNumber
-                 << ", message: " << msgCount << endl;
+                 << ", message: " << msgCount << ":" << endl;
               
          switch (input.header.id)
          {
@@ -226,21 +226,42 @@ protected:
                   MDPObsEpoch obs;
                   input  >> obs;
                   if (obs)
-                     output << obs;
-                     if (debugLevel > 2)
+                  {
+                     if (prnSetToToss.size())
                      {
-                        cout << "  Writing obs message:\n";
-                        obs.dump(cout);
+                        unsigned thisPRN = obs.prn;
+                        if (!prnSetToToss.count(thisPRN))
+                        {
+                           output << obs;
+                           if (debugLevel > 2)
+                           {
+                              cout << "  Writing obs message:\n";
+                              obs.dump(cout);
+                           }
+                        }
+                        else if (debugLevel > 2)
+                           cout << "  Not writing obs message for PRN "
+                                << thisPRN << endl;                        
                      }
+                     else
+                     {
+                        if (debugLevel > 2)
+                        {
+                           cout << "  Writing obs message:\n";
+                           obs.dump(cout);
+                        }
+                        output << obs;    
+                     }             
+                  }
                   else if (debugLevel > 2)
                   {
-                     cout << "Tossing obs message:\n";
+                     cout << "  Tossing obs message:\n";
                      obs.dump(cout);
                   }
                }
                else if (debugLevel > 3)
                {
-                  cout << "Ignoring obs message from record "
+                  cout << "  Ignoring obs message from record "
                        << input.recordNumber << endl;
                }
                break;
@@ -254,18 +275,18 @@ protected:
                      output << pvt;
                      if (debugLevel > 2)
                      {
-                        cout << "Writing pvt message:\n";
+                        cout << "  Writing pvt message:\n";
                         pvt.dump(cout);
                      }
                   else if (debugLevel > 2)
                   {
-                     cout << "Tossing pvt message:\n";
+                     cout << "  Tossing pvt message:\n";
                      pvt.dump(cout);
                   }                   
                }
                else if (debugLevel > 3)
                {
-                  cout << "Ignoring pvt message from record "
+                  cout << "  Ignoring pvt message from record "
                        << input.recordNumber << endl;
                }               
                break;
@@ -279,18 +300,18 @@ protected:
                      output << nav;
                      if (debugLevel > 2)
                      {
-                        cout << "Writing nav message:\n";
+                        cout << "  Writing nav message:\n";
                         nav.dump(cout);
                      }
                   else if (debugLevel > 2)
                   {
-                     cout << "Tossing nav message:\n";
+                     cout << "  Tossing nav message:\n";
                      nav.dump(cout);
                   }                   
                }
                else if (debugLevel > 3)
                {
-                  cout << "Ignoring nav message from record "
+                  cout << "  Ignoring nav message from record "
                        << input.recordNumber << endl;                     
                }
                break;
@@ -304,13 +325,13 @@ protected:
                      output << sts;
                      if (debugLevel > 2)
                      {
-                        cout << "Writing self test status message:\n";
+                        cout << "  Writing self test status message:\n";
                         sts.dump(cout);
                      }
                }
                else if (debugLevel > 3)
                {
-                  cout << "Ignoring status message from record "
+                  cout << "  Ignoring status message from record "
                        << input.recordNumber << endl;                     
                }               
                break;
