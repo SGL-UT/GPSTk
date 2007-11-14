@@ -103,7 +103,7 @@ namespace gpstk
 
       /// Compute the CRC over the string and set the CRC in that
       /// string and in the header.
-      void setCRC(std::string& str) const throw();
+      void setCRC(std::string& str) const throw(FFStreamError);
          
       /// Checks the crc of the message and set crc_err if it fails.
       void checkCRC(std::string str) throw();

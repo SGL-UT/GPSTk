@@ -137,7 +137,7 @@ namespace gpstk
    // Compute and set the CRC in an encoded representation of this
    // object
    void MDPHeader::setCRC(string& str) const
-      throw()
+      throw(FFStreamError)
    {
       // Here we make sure that the length of the string matches
       // the length in the header.

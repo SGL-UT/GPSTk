@@ -62,6 +62,9 @@ namespace gpstk
       if (op=="*") return leftVal * rightVal;
       if (op=="/") return leftVal / rightVal;
 
+      // else THROW exception
+      GPSTK_THROW(gpstk::Expression::ExpressionException());
+
    }
 
    double Expression::FuncOpNode::getValue()
@@ -81,7 +84,9 @@ namespace gpstk
       if (op=="sqrt") return sqrt(rightVal);
       if (op=="log") return log(rightVal);
       if (op=="log10") return log10(rightVal);
-// else THROW exception
+
+      // else THROW exception
+      GPSTK_THROW(gpstk::Expression::ExpressionException());
    }
 
    std::ostream& Expression::FuncOpNode::print(std::ostream& ostr) {
