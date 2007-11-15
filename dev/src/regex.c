@@ -118,28 +118,9 @@
    even if config.h says that we can.  */
 #  undef REL_ALLOC
 
-#  if defined STDC_HEADERS || defined _LIBC
+
 #   include <stdlib.h>
-#  else
-char *malloc ();
-char *realloc ();
-#  endif
 
-/* When used in Emacs's lib-src, we need to get bzero and bcopy somehow.
-   If nothing else has been done, use the method below.  */
-#  ifdef INHIBIT_STRING_HEADER
-#   if !(defined HAVE_BZERO && defined HAVE_BCOPY)
-#    if !defined bzero && !defined bcopy
-#     undef INHIBIT_STRING_HEADER
-#    endif
-#   endif
-#  endif
-
-/* This is the normal way of making sure we have a bcopy and a bzero.
-   This is used in most programs--a few other programs avoid this
-   by defining INHIBIT_STRING_HEADER.  */
-#  ifndef INHIBIT_STRING_HEADER
-#   if defined HAVE_STRING_H || defined STDC_HEADERS || defined _LIBC
 #    include <string.h>
 #    ifndef bzero
 #     ifndef _LIBC
@@ -148,16 +129,7 @@ char *realloc ();
 #      define bzero(s, n)	__bzero (s, n)
 #     endif
 #    endif
-#   else
-#    include <strings.h>
-#    ifndef memcmp
-#     define memcmp(s1, s2, n)	bcmp (s1, s2, n)
-#    endif
-#    ifndef memcpy
-#     define memcpy(d, s, n)	(bcopy (s, d, n), (d))
-#    endif
-#   endif
-#  endif
+
 
 /* Define the syntax stuff for \<, \>, etc.  */
 

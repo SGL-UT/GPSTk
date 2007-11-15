@@ -2,7 +2,7 @@
 ## Process this file with automake to produce Makefile.in
 lib_LTLIBRARIES = libgpstk.la
 libgpstk_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
-libgpstk_la_SOURCES = ANSITime.cpp AlmOrbit.cpp \
+libgpstk_la_SOURCES = regex.c ANSITime.cpp AlmOrbit.cpp \
 Bancroft.cpp BasicFramework.cpp BinUtils.cpp \
 BinexData.cpp CivilTime.cpp CodeBuffer.cpp CommandOption.cpp \
 CommandOptionParser.cpp CommandOptionWithCommonTimeArg.cpp \
@@ -38,7 +38,7 @@ ModelObsFixedStation.cpp ModelObs.cpp AstronomicalFunctions.cpp \
 SunPosition.cpp MoonPosition.cpp SolidTides.cpp PoleTides.cpp
 
 incldir = $(includedir)/gpstk
-incl_HEADERS = ANSITime.hpp AlmOrbit.hpp \
+incl_HEADERS = regex.h ANSITime.hpp AlmOrbit.hpp \
 Bancroft.hpp BasicFramework.hpp BinUtils.hpp \
 BinexData.hpp BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp \
 CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp \

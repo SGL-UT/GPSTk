@@ -20,6 +20,10 @@ EXEMODE = 755 ;
 # any attempt to use any extension other than .o
 SUFOBJ2      ?= -l.o ;
 
+
+# Use regex on all platforms because it is outside the C++ standard
+NEED_REGEX      = true ;
+
 # some OS specific stuff
 if $(UNIX)
 {
@@ -68,7 +72,6 @@ if $(UNIX)
 else if $(NT)
 {
    LIBPREFIX       = "" ;
-   NEED_REGEX      = true ;
    # do NOT define __STDC__ here
 
    # use these to create a dll
