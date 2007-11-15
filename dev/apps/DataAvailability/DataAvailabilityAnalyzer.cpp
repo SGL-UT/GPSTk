@@ -281,11 +281,9 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
            << "Time span is " << timeSpan << " seconds" << endl;
       
       if (badHealthMask)
-         cout << "Ignore anomalies associated with SVs marked unhealthy." 
-              << endl;
+         cout << "Ignore anomalies associated with SVs marked unhealthy." << endl;
       else
-         cout << "Including anomalies associated with SVs marked unhealthy."
-              << endl;
+         cout << "Including anomalies associated with SVs marked unhealthy." << endl;
               
       MDPHeader::debugLevel = debugLevel;
    }
@@ -470,6 +468,7 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
          prev.azimuth = curr.azimuth;
          prev.snr = curr.snr;
          prev.epochCount = curr.epochCount;
+         prev.numSVsVisible = max(curr.numSVsVisible, prev.numSVsVisible);
       }
       else
       {
@@ -641,7 +640,7 @@ void DataAvailabilityAnalyzer::processEpoch(
 
                if (!iv.obsGained.empty() || !iv.obsLost.empty())
                {
-                  if (debugLevel)
+                  if (verboseLevel)
                      cout << t.printf(timeFormat) << " prn:" << svid.id
                           << " +" << iv.obsGained
                           << " -" << iv.obsLost << endl;
@@ -661,14 +660,12 @@ void DataAvailabilityAnalyzer::shutDown()
    MissingList sml = processList(missingList, *eph);
    
    cout << "\n Availability Raw Results :\n\n";
-   cout << "      Time          smash  PRN     Elv    Az  Hlth  SNR  #ama"
+   cout << "      Time          smash   PRN    Elv    Az  Hlth  SNR  #ama"
         << "    tama    ccid\n"
         << "=================================================================="
         << "======================\n";
    
    for_each(sml.begin(), sml.end(), InView::dump(cout, timeFormat));
-
-   cout << "See -h for an explanations of columns" << endl;
 
    outputSummary();
 }
@@ -763,10 +760,7 @@ bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
       else
          cout << "-El ";
       
-      if (iv.smashCount == 0)
-         cout << right << setw(6) << iv.numSVsVisible;      
-      else
-         cout << right << setw(6) << "n/a";
+      cout << right << setw(6) << iv.numSVsVisible;      
       
       if (iv.up)
       {
@@ -776,17 +770,17 @@ bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
             cout << setw(12) << " ";
       }
       else
-         cout << right << setw(12) << "-elev";
+         cout << right << setw(12) << " -elev  ";
 
-      cout << iv.obsLost << " - " << iv.obsGained;
+      if (iv.obsLost.empty() || iv.obsGained.empty())
+         cout << "all";
+      else
+         cout << iv.obsLost << " -> " << iv.obsGained;
    }
    else
    {
       cout << "All";
-      if (iv.smashCount == 0)
-        cout << right << setw(42) << iv.numSVsVisible;
-      else
-        cout << right << setw(42) << "n/a";
+      cout << right << setw(30) << iv.numSVsVisible;
    }
 
    cout << endl;
@@ -817,17 +811,13 @@ void dump(ostream& s, const ObsSet& obs, int detail)
       if (detail>0)
          copy(obs.begin(), obs.end(), ostream_iterator<ObsID>(s, ", "));
       else
-      {
          for (ObsSet::const_iterator i=obs.begin(); i!=obs.end(); i++)
-         {
             if (i->type==ObsID::otRange)
             {
                if (i != obs.begin())
                   s << ",";
                s << ObsID::cbStrings[i->band] << ObsID::tcStrings[i->code];
             }
-         }
-      }
    }
 }
 
