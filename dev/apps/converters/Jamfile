@@ -4,6 +4,8 @@
 
 SubDir TOP apps converters ;
 
-GPSLinkLibraries novaRinex : gpstk rxio ;
+GPSLinkLibraries novaRinex ash2mdp : gpstk rxio ;
 
-GPSMain novaRinex : novaRinex.cpp  ;
+GPSMain novaRinex : novaRinex.cpp ;
+
+GPSMain ash2mdp : ash2mdp.cpp ;

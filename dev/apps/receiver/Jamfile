@@ -2,7 +2,7 @@
 
 SubDir TOP apps receiver ;
 
-GPSLinkLibraries rtAshtech ash2mdp : gpstk rxio ;
+GPSLinkLibraries rtAshtech : gpstk rxio ;
 
 # This is just a quick hack to get the build working again
 SEARCH_SOURCE += $(TOP)/apps/rfw ;
@@ -10,5 +10,3 @@ SEARCH_SOURCE += $(TOP)/apps/rfw ;
 BonkForte ; # bleah.
 
 GPSMain rtAshtech : AshtechMessage.cpp rtAshtech.cpp ScreenControl.cpp FDStreamBuff.cpp TCPStreamBuff.cpp ;
-
-GPSMain ash2mdp : ash2mdp.cpp ;

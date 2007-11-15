@@ -48,7 +48,6 @@
 #include "Exception.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
-#include "DeviceStream.hpp"
 
 #include "StringUtils.hpp"
 #include "InOutFramework.hpp"
