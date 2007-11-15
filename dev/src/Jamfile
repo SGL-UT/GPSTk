@@ -14,10 +14,11 @@ if $(NEED_GETOPT)
 
 if $(PREPROCESSING)
 {
+
    if $(NEED_REGEX)
    {
       REGEX_SOURCE = regex.c ;
-      REGEX_INC    = regex.h ;
+      REGEX_INC    = regex.h xregex2.h ;
       if $(MSVCNT)
       {
          ObjectCcFlags $(REGEX_SOURCE) : -D__STDC__ -D_POSIX_SOURCE -DREGEX_MALLOC -DSTDC_HEADERS ;
@@ -81,7 +82,8 @@ else
       MoonPosition.cpp SolidTides.cpp PoleTides.cpp
       ;
 
-   InstallFile $(INCDIR) : AlmOrbit.hpp GPSAlmanacStore.hpp GPSEphemerisStore.hpp
+   InstallFile $(INCDIR) : AlmOrbit.hpp GPSAlmanacStore.hpp
+      GPSEphemerisStore.hpp
       BinUtils.hpp DayTime.hpp ECEF.hpp EngAlmanac.hpp EngEphemeris.hpp 
       EngNav.hpp Exception.hpp FFBinaryStream.hpp 
       FFData.hpp FFStream.hpp FFStreamError.hpp FFTextStream.hpp
@@ -135,7 +137,8 @@ else
       ExtractD2.hpp ModeledReferencePR.hpp ModeledPR.hpp SimpleIURAWeight.hpp
       MOPSWeight.hpp
       BinexData.hpp  BinexFilterOperators.hpp  BinexStream.hpp
-      YumaBase.hpp YumaStream.hpp YumaHeader.hpp YumaData.hpp YumaAlmanacStore.hpp
+      YumaBase.hpp YumaStream.hpp YumaHeader.hpp YumaData.hpp
+      YumaAlmanacStore.hpp
       SEMBase.hpp SEMStream.hpp SEMHeader.hpp SEMData.hpp SEMAlmanacStore.hpp
       SourceID.hpp TypeID.hpp DataHeaders.hpp DataStructures.hpp
       ProcessingClass.hpp  ProcessingVector.hpp SimpleFilter.hpp
@@ -150,4 +153,3 @@ else
       PoleTides.cpp
       ;
 }
-
