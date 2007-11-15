@@ -87,7 +87,7 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
    : timeFormat("%Y %j %02H:%02M:%04.1f"),
      BasicFramework(
         applName,
-        "Performs a data availability analysis of the input data. In general,"
+        "Performs a data availability analysis of the input data. In general, "
         "availability is determined by station and satellite position."),
      
      inputOpt('o', "obs", 
@@ -552,7 +552,7 @@ void DataAvailabilityAnalyzer::processEpoch(
    for (DayTime t = prev_oe.time + epochRate; t <= oe.time; t += epochRate)
    {
       for (int prn=1; prn<=32; prn++)
-         inView[prn].update(prn, t, rxpos, *eph, gm, maskAngle, verboseLevel);
+         inView[prn].update(prn, t, rxpos, *eph, gm, maskAngle);
       
       if (verboseLevel>2)
       {
@@ -610,6 +610,9 @@ void DataAvailabilityAnalyzer::processEpoch(
                if (q != soe.end())
                   iv.snr = q->second;
 
+               iv.obsGained.clear();
+               iv.obsLost.clear();
+
                // Now figure out if there was an obs from this SV for the
                // previous epoch, if no, no prob. That should have been caught
                // by the visibility check.
@@ -620,30 +623,30 @@ void DataAvailabilityAnalyzer::processEpoch(
                // At this point we know there is some data from the SV, so
                // figure out if the obs set is different from the previous
                const SvObsEpoch& psoe = poei->second;
-               set<ObsID> curr, prev, diff;
+               set<ObsID> curr, prev;
                for (q=soe.begin(); q != soe.end(); q++)
-                  curr.insert(q->first);
+                  if (q->first.type != ObsID::otSSI && q->first.type != ObsID::otLLI)
+                     curr.insert(q->first);
                for (q=psoe.begin(); q != psoe.end(); q++)
-                  prev.insert(q->first);
+                  if (q->first.type != ObsID::otSSI && q->first.type != ObsID::otLLI)
+                     prev.insert(q->first);
 
                set_difference(curr.begin(), curr.end(),
                               prev.begin(), prev.end(),
-                              inserter(diff, diff.end()));
-               set<ObsID>::const_iterator r;
-               for (r=diff.begin(); r != diff.end();)
-                  if (r->type == ObsID::otSSI || r->type == ObsID::otLLI)
-                     diff.erase(r++);
+                              inserter(iv.obsGained, iv.obsGained.end()));
 
-               if (diff.size() > 0)
+               set_difference(prev.begin(), prev.end(),
+                              curr.begin(), curr.end(),
+                              inserter(iv.obsLost, iv.obsLost.end()));
+
+               if (!iv.obsGained.empty() || !iv.obsLost.empty())
                {
-                  cout << t << " SV:" << svid << endl;
-                  set<ObsID>::const_iterator r;
-                  for (r=diff.begin(); r != diff.end(); r++)
-                     cout << *r << " ";
-                  cout << endl;
+                  if (debugLevel)
+                     cout << t.printf(timeFormat) << " prn:" << svid.id
+                          << " +" << iv.obsGained
+                          << " -" << iv.obsLost << endl;
+                  missingList.push_back(iv);
                }
-
-               
             } // else
          }    // else      
       }       // for (int prn=1; prn<=32; prn++)
@@ -657,13 +660,15 @@ void DataAvailabilityAnalyzer::shutDown()
 {
    MissingList sml = processList(missingList, *eph);
    
-   cout << "\n Availability Raw Results:\n\n";
-   cout << "      Time         Smashes PRN  CCID  Elv    Az  Hlth  SNR    SVs"
-        << " Above Mask       tama\n"
+   cout << "\n Availability Raw Results :\n\n";
+   cout << "      Time          smash  PRN     Elv    Az  Hlth  SNR  #ama"
+        << "    tama    ccid\n"
         << "=================================================================="
         << "======================\n";
    
    for_each(sml.begin(), sml.end(), InView::dump(cout, timeFormat));
+
+   cout << "See -h for an explanations of columns" << endl;
 
    outputSummary();
 }
@@ -676,10 +681,8 @@ void DataAvailabilityAnalyzer::InView::update(
    const ECEF& rxpos,
    const EphemerisStore& eph,
    GeoidModel& gm,
-   float maskAngle,
-   const int verbosityLevel)
+   float maskAngle)
 {
-   verbosity = verbosityLevel;
    try
    {
       this->prn = prn;
@@ -744,16 +747,12 @@ bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
    else
       dir = ' ';
 
-   string ccid="all";
-   
    cout << left << iv.time.printf(timeFormat)
         << "   " << setw(4) << iv.smashCount << "  ";
 
    if (iv.prn>0)
    {
-      cout << setw(3) << iv.prn << " "
-           << ccid << " "
-           << fixed << right
+      cout << setw(3) << iv.prn << " " << fixed << right
            << setprecision(2) << setw(6) << iv.elevation
            << dir << "  "
            << setprecision(0) << setw(3) << iv.azimuth << "  "
@@ -765,15 +764,21 @@ bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
          cout << "-El ";
       
       if (iv.smashCount == 0)
-         cout << right << setw(14) << iv.numSVsVisible;
-      
+         cout << right << setw(6) << iv.numSVsVisible;      
       else
-         cout << right << setw(14) << "n/a-smashed";
+         cout << right << setw(6) << "n/a";
       
       if (iv.up)
-         cout << right << setw(16) <<  secAsHMS(timeUpMask);
+      {
+         if (timeUpMask>0)
+            cout << right << setw(12) <<  secAsHMS(timeUpMask);
+         else
+            cout << setw(12) << " ";
+      }
       else
-         cout << right << setw(16) << "-El";
+         cout << right << setw(12) << "-elev";
+
+      cout << iv.obsLost << " - " << iv.obsGained;
    }
    else
    {
@@ -781,9 +786,9 @@ bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
       if (iv.smashCount == 0)
         cout << right << setw(42) << iv.numSVsVisible;
       else
-        cout << right << setw(42) << "n/a-smashed";
+        cout << right << setw(42) << "n/a";
    }
-      
+
    cout << endl;
 
    return true;
@@ -801,4 +806,33 @@ void DataAvailabilityAnalyzer::outputSummary()
         << left  << setw(10) << allMissingCounter << endl;
    cout << right << setw(40) << "Total number of points missed: "
         << left  << setw(10) << pointsMissedCounter << endl << endl;
+}
+
+void dump(ostream& s, const ObsSet& obs, int detail)
+{
+   if (obs.empty())
+      s << "--- ";
+   else
+   {
+      if (detail>0)
+         copy(obs.begin(), obs.end(), ostream_iterator<ObsID>(s, ", "));
+      else
+      {
+         for (ObsSet::const_iterator i=obs.begin(); i!=obs.end(); i++)
+         {
+            if (i->type==ObsID::otRange)
+            {
+               if (i != obs.begin())
+                  s << ",";
+               s << ObsID::cbStrings[i->band] << ObsID::tcStrings[i->code];
+            }
+         }
+      }
+   }
+}
+
+std::ostream& operator<<(std::ostream& s, const ObsSet& obs)
+{
+   dump(s, obs);
+   return s;
 }

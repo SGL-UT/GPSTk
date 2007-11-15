@@ -45,6 +45,7 @@
 
 #include <fstream>
 #include <list>
+#include <set>
 
 #include "BasicFramework.hpp"
 #include "CommandOptionWithTimeArg.hpp"
@@ -55,6 +56,7 @@
 #include "XvtStore.hpp"
 
 typedef gpstk::XvtStore<gpstk::SatID> EphemerisStore;
+typedef std::set<gpstk::ObsID> ObsSet;
 
 class DataAvailabilityAnalyzer : public gpstk::BasicFramework
 {
@@ -130,14 +132,18 @@ private:
          const gpstk::ECEF& rxpos,
          const EphemerisStore& eph,
          gpstk::GeoidModel& gm,
-         float maskAngle,
-         const int verbosityLevel);
+         float maskAngle);
 
       short prn;
       gpstk::DayTime time;
-      
-      int verbosity;
 
+      // This is a list of all obs that are changed in the current epoch. Lost is
+      // is defined as present in the previous epoch but not present in the current
+      // epoch. Gained is those obs that are new to this epoch. Obviously, these are
+      // only used when there are some observations available for an SV
+      ObsSet obsLost;
+      ObsSet obsGained;
+      
       // Set true when this SV has an elevation greater than 0
       // If this is false, no other fields are valid.
       bool up;
@@ -170,7 +176,7 @@ private:
 
       // The number of SVs in track at this point in time.
       short inTrack;
-      
+
       // The number of SVs physically above the mask angle at this time
       short numSVsVisible;
 
@@ -199,7 +205,10 @@ private:
                            const EphemerisStore& eph);
    
    std::map<int, InView> inView;                         
-   
-   
+
 };
+
+void dump(std::ostream& s, const ObsSet& obs, int detail=0);
+std::ostream& operator<<(std::ostream& s, const ObsSet& obs);
+
 #endif
