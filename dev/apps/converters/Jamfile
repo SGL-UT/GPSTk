@@ -4,6 +4,6 @@
 
 SubDir TOP apps converters ;
 
-GPSLinkLibraries novaRinex : gpstk ;
+GPSLinkLibraries novaRinex : gpstk rxio ;
 
-GPSMain novaRinex : novaRinex.cpp NovatelData.cpp ;
+GPSMain novaRinex : novaRinex.cpp  ;
