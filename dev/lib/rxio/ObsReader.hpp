@@ -49,6 +49,8 @@
 #include "SMODFStream.hpp"
 #include "SMODFData.hpp"
 #include "FFIdentifier.hpp"
+#include "NovatelStream.hpp"
+#include "AshtechStream.hpp"
 
 namespace gpstk
 {
@@ -56,14 +58,16 @@ namespace gpstk
    {
    public:
       const std::string fn;
-      gpstk::FFIdentifier inputType;
+      FFIdentifier inputType;
 
-      gpstk::RinexObsStream ros;
-      gpstk::MDPStream mdps;
-      gpstk::SMODFStream smos;
+      RinexObsStream ros;
+      MDPStream mdps;
+      SMODFStream smos;
+      NovatelStream novas;
+      AshtechStream ashs;
 
       unsigned msid;
-      gpstk::RinexObsHeader roh;
+      RinexObsHeader roh;
       int verboseLevel;
       unsigned long epochCount;
 
@@ -74,7 +78,7 @@ namespace gpstk
       bool operator()();
 
    private:
-      gpstk::SMODFData prevSMOD;
+      SMODFData prevSMOD;
       bool usePrevSMOD;
    };
 } // end of namespace gpstk

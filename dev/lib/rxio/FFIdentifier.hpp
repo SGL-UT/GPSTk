@@ -63,7 +63,9 @@ namespace gpstk
          tSP3,
          tMSC,
          tYuma,
-         tSEM
+         tSEM,
+         tAshtechSerial,
+         tNovatelOem
       };
 
       FFIdentifier()

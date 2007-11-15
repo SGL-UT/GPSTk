@@ -46,6 +46,7 @@
 #include "SMODFData.hpp"
 #include "MDPObsEpoch.hpp"
 #include "ObsReader.hpp"
+#include "NovatelData.hpp"
 
 using namespace std;
 
@@ -77,6 +78,20 @@ namespace gpstk
             cout << "# Reading " << fn << " as SMODF data." << endl;
          smos.open(fn.c_str(), ios::in);
          smos.exceptions(fstream::failbit);
+      }
+      else if (inputType == FFIdentifier::tNovatelOem)
+      {
+         if (verboseLevel)
+            cout << "# Reading " << fn << " as Novatel OEM data." << endl;
+         novas.open(fn.c_str(), ios::in);
+         novas.exceptions(fstream::failbit);
+      }
+      else if (inputType == FFIdentifier::tAshtechSerial)
+      {
+         if (verboseLevel)
+            cout << "# Reading " << fn << " as Ashtech serial data." << endl;
+         ashs.open(fn.c_str(), ios::in);
+         ashs.exceptions(fstream::failbit);
       }
    };
 
@@ -150,7 +165,20 @@ namespace gpstk
             }
          }
       }
-
+      else if (inputType == FFIdentifier::tNovatelOem)
+      {
+         NovatelData nd;
+         novas >> nd;
+         cout << "Not implimented yet." << endl;
+         epochCount++;
+      }
+      else if (inputType == FFIdentifier::tAshtechSerial)
+      {
+         AshtechData d;
+         ashs >> d;
+         cout << "Ocibu bites" << endl;
+         epochCount++;
+      }
       return oe;
    }
 
@@ -164,6 +192,10 @@ namespace gpstk
          return mdps;
       else if (inputType == FFIdentifier::tSMODF)
          return smos;
+      else if (inputType == FFIdentifier::tNovatelOem)
+         return novas;
+      else if (inputType == FFIdentifier::tAshtechSerial)
+         return ashs;
       return false;
    }
 } // end of namespace gpstk

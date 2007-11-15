@@ -76,6 +76,12 @@
 #include "SEMData.hpp"
 #include "SEMStream.hpp"
 
+#include "NovatelData.hpp"
+#include "NovatelStream.hpp"
+
+#include "AshtechData.hpp"
+#include "AshtechStream.hpp"
+
 namespace gpstk
 {
    int FFIdentifier::debugLevel = 0;
@@ -219,6 +225,33 @@ namespace gpstk
          if (s)
          {
             fileType = tMSC;
+            return;
+         }
+      }
+
+
+      {
+         if (debugLevel>2)
+            cout << "Trying " << fn << " as Novatel OEM." << endl;
+         NovatelStream s(fn.c_str(), ios::in);
+         NovatelData nd;
+         s >> nd;
+         if (s)
+         {
+            fileType = tNovatelOem;
+            return;
+         }
+      }
+
+      {
+         if (debugLevel>2)
+            cout << "Trying " << fn << " as Ashtech serial." << endl;
+         AshtechStream s(fn.c_str(), ios::in);
+         AshtechData nd;
+         s >> nd;
+         if (s)
+         {
+            fileType = tAshtechSerial;
             return;
          }
       }
