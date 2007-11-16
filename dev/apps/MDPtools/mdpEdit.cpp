@@ -143,6 +143,7 @@ public:
             cout << "No end time given.\n";
       }
 
+      recordStart = recordEnd = 0;
       if (recordStartOpt.getCount())
       {
          recordStart = asInt(recordStartOpt.getValue().front());
@@ -155,7 +156,7 @@ public:
          recordEnd = asInt(recordEndOpt.getValue().front());
          if (debugLevel || verboseLevel)
             cout << "Throwing out data after record number "
-                 << recordStart << endl;
+                 << recordEnd << endl;
       }
 
       // see if any message types should be removed
@@ -201,14 +202,18 @@ protected:
       while (!input.eof())     
       {
          input >> header;
-         
+
          if (!input)
-            break;        
+            break;
          else if (header.time > tEnd)
             return;
-         else if (header.time < tStart)
-            continue;   
- 
+         else if (recordEnd && (input.recordNumber > recordEnd))
+	    return;
+	 else if (header.time < tStart)
+	    continue;
+         else if (recordStart && (input.recordNumber < recordStart))
+            continue;
+	 
          msgCount++;
 
          if (msgCount == 1 && debugLevel)
