@@ -150,6 +150,6 @@ else
       PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp XYZ2NEU.hpp XYZ2NED.hpp
       DeltaOp.hpp SimpleKalmanFilter.hpp NablaOp.hpp XvtStore.hpp SVNumXRef.hpp
       AstronomicalFunctions.hpp SunPosition.hpp MoonPosition.hpp SolidTides.hpp
-      PoleTides.cpp
+      PoleTides.hpp
       ;
 }
