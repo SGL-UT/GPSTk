@@ -79,7 +79,7 @@ else
       ComputeMOPSWeights.cpp ModelObsFixedStation.cpp ModelObs.cpp
       XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
       SVNumXRef.cpp AstronomicalFunctions.cpp SunPosition.cpp
-      MoonPosition.cpp SolidTides.cpp PoleTides.cpp
+      MoonPosition.cpp SolidTides.cpp PoleTides.cpp SatDataReader.cpp
       ;
 
    InstallFile $(INCDIR) : AlmOrbit.hpp GPSAlmanacStore.hpp
@@ -150,6 +150,6 @@ else
       PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp XYZ2NEU.hpp XYZ2NED.hpp
       DeltaOp.hpp SimpleKalmanFilter.hpp NablaOp.hpp XvtStore.hpp SVNumXRef.hpp
       AstronomicalFunctions.hpp SunPosition.hpp MoonPosition.hpp SolidTides.hpp
-      PoleTides.hpp
+      PoleTides.hpp SatDataReader.hpp
       ;
 }
