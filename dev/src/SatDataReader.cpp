@@ -65,6 +65,9 @@ namespace gpstk
             // Remove trailing and leading blanks
             line = StringUtils::strip(line);
 
+            // Skip blank lines
+            if (line.size()==0) continue;
+
             // Let's start to get data out of file
             // Launch date
             string ldate(StringUtils::stripFirstWord(line));
