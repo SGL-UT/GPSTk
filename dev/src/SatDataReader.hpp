@@ -95,12 +95,32 @@ namespace gpstk
             : FFTextStream(fn, std::ios::in) { (*this).loadData(); }
 
 
+        /** Common constructor. It will always open file for read and will
+         * load satellite data in one pass.
+         *
+         * @param fn   Satellite data file to read
+         *
+         */
+        SatDataReader(const string& fn)
+            : FFTextStream(fn.c_str(), std::ios::in) { (*this).loadData(); }
+
+
         /// Method to open AND load satellite data file.
         virtual void open(const char* fn)
         {
             FFTextStream::open(fn, std::ios::in);
             (*this).loadData();
 
+            return;
+        }
+
+
+        /// Method to open AND load satellite data file.
+        virtual void open(const string& fn)
+        {
+            FFTextStream::open(fn.c_str(), std::ios::in);
+            (*this).loadData();
+            
             return;
         }
 
