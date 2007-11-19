@@ -85,6 +85,7 @@ namespace gpstk
 
    bool initialize(int argc, char *argv[]) throw()
    {
+      using std::ios;
       CommandOptionWithAnyArg
          inputOpt('i', "input",
                   "A file to take the input from. The default is stdin."),
@@ -101,7 +102,7 @@ namespace gpstk
       {
          input.copyfmt(std::cin);
          input.clear(std::cin.rdstate());
-         input.std::ios::rdbuf(std::cin.rdbuf());
+         input.ios::rdbuf(std::cin.rdbuf());
          inputFn = "<stdin>";
       } 
       else
@@ -119,7 +120,7 @@ namespace gpstk
       {
             output.copyfmt(std::cout);
             output.clear(std::cout.rdstate());
-            output.std::ios::rdbuf(std::cout.rdbuf());
+            output.ios::rdbuf(std::cout.rdbuf());
             outputFn = "<stdout>";
       }
       else
