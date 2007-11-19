@@ -36,7 +36,7 @@ PCSmoother.cpp ComputeIURAWeights.cpp ComputeMOPSWeights.cpp \
 XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp \
 ModelObsFixedStation.cpp ModelObs.cpp AstronomicalFunctions.cpp \
 SunPosition.cpp MoonPosition.cpp SolidTides.cpp PoleTides.cpp \
-SatDataReader.cpp
+SatDataReader.cpp ComputeWindUp.cpp
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = regex.h ANSITime.hpp AlmOrbit.hpp \
@@ -95,4 +95,4 @@ XYZ2NEU.hpp XYZ2NED.hpp DeltaOp.hpp SimpleKalmanFilter.hpp NablaOp.hpp \
 EphemerisStore.hpp AlmanacStore.hpp BCEphemerisStore.hpp \
 ModelObsFixedStation.hpp ModelObs.hpp AstronomicalFunctions.hpp \
 SunPosition.hpp MoonPosition.hpp SolidTides.hpp PoleTides.hpp \
-SatDataReader.hpp
+SatDataReader.hpp ComputeWindUp.hpp
