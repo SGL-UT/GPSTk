@@ -82,11 +82,10 @@ private:
    std::string timeFormat;
    gpstk::CommandOptionWithAnyArg inputOpt, outputOpt, independantOpt,
       mscFileOpt, msidOpt, timeFmtOpt, ephFileOpt, maskAngleOpt, timeMaskOpt,
-      rxPosOpt;
+      rxPosOpt, timeSpanOpt, ignorePrnOpt;
 
    gpstk::CommandOptionNoArg badHealthMaskOpt, smashAdjacentOpt;
 
-   gpstk::CommandOptionWithNumberArg timeSpanOpt;
    gpstk::CommandOptionWithTimeArg startTimeOpt, stopTimeOpt;
 
    gpstk::DayTime startTime, stopTime;
@@ -120,6 +119,8 @@ private:
 
    float maskAngle;
 
+   std::set<int> ignorePrn;
+
    // This is used to keep track of SV info for both what SVs are in view
    // and when there is a obs that is missing. 
    struct InView
@@ -137,10 +138,11 @@ private:
       short prn;
       gpstk::DayTime time;
 
-      // This is a list of all obs that are changed in the current epoch. Lost is
-      // is defined as present in the previous epoch but not present in the current
-      // epoch. Gained is those obs that are new to this epoch. Obviously, these are
-      // only used when there are some observations available for an SV
+      // This is a list of all obs that are changed in the current epoch. Lost
+      // is defined as present in the previous epoch but not present in the 
+      // current epoch. Gained is those obs that are new to this epoch. 
+      // Obviously, these are only used when there are some observations 
+      // available for an SV
       ObsSet obsLost;
       ObsSet obsGained;
       

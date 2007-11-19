@@ -108,6 +108,10 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
               "Receiver antenna position in ECEF (x,y,z) coordinates.  Format "
               "as a string: \"X Y Z\"."),
      
+     ignorePrnOpt('\0', "ignore-prn",
+                  "Specify the PRN of an SV to not report on in the output. "
+                  "Repeat to specify multiple SVs"),
+     
      mscFileOpt('c', "msc", "Station coordinate file"),
      
      msidOpt('m', "msid", "Station to process data for. Used to select "
@@ -220,6 +224,9 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
    if (smashAdjacentOpt.getCount())
       smashAdjacent = true;
 
+   for (int i=0; i<ignorePrnOpt.getCount(); i++)
+      ignorePrn.insert(StringUtils::asInt(ignorePrnOpt.getValue()[i]));
+
    oiX = oiTime;
    if (independantOpt.getCount())
    {
@@ -281,10 +288,18 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
            << "Time span is " << timeSpan << " seconds" << endl;
       
       if (badHealthMask)
-         cout << "Ignore anomalies associated with SVs marked unhealthy." << endl;
+         cout << "Ignore anomalies associated with SVs marked unhealthy."
+              << endl;
       else
-         cout << "Including anomalies associated with SVs marked unhealthy." << endl;
-              
+         cout << "Including anomalies associated with SVs marked unhealthy."
+              << endl;
+      if (!ignorePrn.empty())
+      {
+         cout << "Ignoring PRNs:";
+         copy(ignorePrn.begin(), ignorePrn.end(),
+              ostream_iterator<int>(cout, " "));
+         cout << endl;
+      }
       MDPHeader::debugLevel = debugLevel;
    }
 
@@ -439,7 +454,7 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
       
       curr.numSVsVisible = numSVsInView;
       InView& prev = *sml.rbegin();
-      
+
        // increment counter if there isn't data from any SVs
       if (curr.prn == 0)
       {
@@ -448,7 +463,6 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
       }
       else
          pointsMissedCounter++;
-           
       
       if (i == ml.begin())
       {
@@ -574,6 +588,9 @@ void DataAvailabilityAnalyzer::processEpoch(
 
       for (int prn=1; prn<=32; prn++)
       {
+         if (ignorePrn.find(prn) != ignorePrn.end())
+            continue;
+
          ObsEpoch::const_iterator oei;
          SatID svid(prn, SatID::systemGPS);
          
@@ -624,10 +641,13 @@ void DataAvailabilityAnalyzer::processEpoch(
                const SvObsEpoch& psoe = poei->second;
                set<ObsID> curr, prev;
                for (q=soe.begin(); q != soe.end(); q++)
-                  if (q->first.type != ObsID::otSSI && q->first.type != ObsID::otLLI)
+                  if (q->first.type != ObsID::otSSI &&
+                      q->first.type != ObsID::otLLI)
                      curr.insert(q->first);
+
                for (q=psoe.begin(); q != psoe.end(); q++)
-                  if (q->first.type != ObsID::otSSI && q->first.type != ObsID::otLLI)
+                  if (q->first.type != ObsID::otSSI &&
+                      q->first.type != ObsID::otLLI)
                      prev.insert(q->first);
 
                set_difference(curr.begin(), curr.end(),
@@ -640,7 +660,7 @@ void DataAvailabilityAnalyzer::processEpoch(
 
                if (!iv.obsGained.empty() || !iv.obsLost.empty())
                {
-                  if (verboseLevel)
+                  if (verboseLevel>1)
                      cout << t.printf(timeFormat) << " prn:" << svid.id
                           << " +" << iv.obsGained
                           << " -" << iv.obsLost << endl;
@@ -758,10 +778,10 @@ bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
       if (iv.up)
          cout << setprecision(1) << setw(4) << iv.snr;
       else
-         cout << "-El ";
+         cout << "-el ";
       
       cout << right << setw(6) << iv.numSVsVisible;      
-      
+
       if (iv.up)
       {
          if (timeUpMask>0)
@@ -770,7 +790,7 @@ bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
             cout << setw(12) << " ";
       }
       else
-         cout << right << setw(12) << " -elev  ";
+         cout << right << setw(12) << " -el  ";
 
       if (iv.obsLost.empty() || iv.obsGained.empty())
          cout << "all";
