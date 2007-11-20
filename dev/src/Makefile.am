@@ -27,7 +27,7 @@ SolverWMS.cpp SourceID.cpp SystemTime.cpp TabularEphemerisStore.cpp \
 TimeConverters.cpp TimeString.cpp TimeTag.cpp Triple.cpp TropModel.cpp \
 TypeID.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp X1Sequence.cpp \
 X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp YumaData.cpp \
-YumaHeader.cpp DataHeaders.cpp DataStructures.cpp \
+DataHeaders.cpp DataStructures.cpp \
 ProcessingVector.cpp SimpleFilter.cpp \
 ComputePC.cpp ComputeLC.cpp ComputePI.cpp ComputeLI.cpp \
 ComputePdelta.cpp ComputeLdelta.cpp ComputeMelbourneWubbena.cpp \
