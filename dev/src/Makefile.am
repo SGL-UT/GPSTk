@@ -92,7 +92,6 @@ ComputeLI.hpp ComputePdelta.hpp ComputeLdelta.hpp ComputeIURAWeights.hpp \
 ComputeMOPSWeights.hpp ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp \
 CodeSmoother.hpp PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp \
 XYZ2NEU.hpp XYZ2NED.hpp DeltaOp.hpp SimpleKalmanFilter.hpp NablaOp.hpp \
-EphemerisStore.hpp AlmanacStore.hpp BCEphemerisStore.hpp \
 ModelObsFixedStation.hpp ModelObs.hpp AstronomicalFunctions.hpp \
 SunPosition.hpp MoonPosition.hpp SolidTides.hpp PoleTides.hpp \
 SatDataReader.hpp ComputeWindUp.hpp

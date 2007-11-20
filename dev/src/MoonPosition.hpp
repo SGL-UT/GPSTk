@@ -42,7 +42,6 @@
 #include "Matrix.hpp"
 
 
-
 namespace gpstk
 {
     /** @addtogroup ephemcalc */
@@ -151,7 +150,7 @@ namespace gpstk
         static const double PFC;
         static const double PGC;
         static const double PHC;
-        static const double PIC;
+        static const double _PIC;
         static const double PJC, PJ0, PJ1;
         static const double CW1;
         static const double CW2;

@@ -76,7 +76,7 @@ namespace gpstk
     const double MoonPosition::PFC(0.001964);
     const double MoonPosition::PGC(0.002541);
     const double MoonPosition::PHC(0.001964);
-    const double MoonPosition::PIC(-0.024691);
+    const double MoonPosition::_PIC(-0.024691);
     const double MoonPosition::PJC(-0.004328), MoonPosition::PJ0(275.05), MoonPosition::PJ1(-2.30);
     const double MoonPosition::CW1(0.0004664);
     const double MoonPosition::CW2(0.0000754);
@@ -458,8 +458,8 @@ namespace gpstk
         double  DWOM(DOM+D2R*PJ1);
         double  SINWOM(std::sin(WOM));
         double  COSWOM(std::cos(WOM));
-        F     = F+D2R*(WB+PIC*SINOM+PJC*SINWOM);
-        DF    = DF+D2R*(DWB+PIC*DOMCOM+PJC*DWOM*COSWOM);
+        F     = F+D2R*(WB+_PIC*SINOM+PJC*SINWOM);
+        DF    = DF+D2R*(DWB+_PIC*DOMCOM+PJC*DWOM*COSWOM);
 
 
         // E-factor, and square
