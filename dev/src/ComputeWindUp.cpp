@@ -1,7 +1,7 @@
 
 /**
  * @file ComputeWindUp.cpp
- * This class smoothes a given code observable using the corresponding phase observable.
+ * This class computes the wind-up effect on the phase observables, in radians.
  */
 
 //============================================================================
@@ -103,7 +103,13 @@ namespace gpstk
     }
 
 
-    // Compute the wind-up.
+    /* Compute the value of the wind-up, in radians.
+     * @param sat       Satellite IDmake
+     * @param time      Epoch of interest
+     * @param satpos    Satellite position, as a Triple
+     * @param sunpos    Sun position, as a Triple
+     * @return Wind-up computation, in radians
+     */
     double ComputeWindUp::getWindUp(const SatID& satid, const DayTime& time, const Triple& sat, const Triple& sun)
     {
 
@@ -204,12 +210,15 @@ namespace gpstk
         alpha1 = alpha1 + wind_up; 
 
         double da1(alpha1-phase_satellite[satid].previousPhase);
+
         double da2(alpha2-phase_station[satid].previousPhase);
 
+        // Let's avoid problems when passing from 359 to 0.
         phase_satellite[satid].previousPhase=phase_satellite[satid].previousPhase+std::atan2(std::sin(da1),std::cos(da1));
+
         phase_station[satid].previousPhase=phase_station[satid].previousPhase+std::atan2(std::sin(da2),std::cos(da2));
 
-
+        // Compute wind up effect in radians
         wind_up=(phase_satellite[satid].previousPhase-phase_station[satid].previousPhase);
 
         return wind_up;

@@ -1,7 +1,7 @@
 
 /**
  * @file ComputeWindUp.hpp
- * This class smoothes a given code observable using the corresponding phase observable.
+ * This class computes the wind-up effect on the phase observables, in radians.
  */
 
 #ifndef COMPUTE_WINDUP_GPSTK
@@ -49,32 +49,37 @@ namespace gpstk
     //@{
 
 
-    /** This class computes the wind-up effect on the phase observables, correcting them.
+    /** This class computes the wind-up effect on the phase observables, in radians.
      * This class is meant to be used with the GNSS data structures objects
      * found in "DataStructures" class.
      *
      * A typical way to use this class follows:
      *
      * @code
+     *   // Create the input obs file stream
      *   RinexObsStream rin("ebre0300.02o");
      *
+     *   // Loads precise ephemeris object with file data
+     *   SP3EphemerisStore SP3EphList;
+     *   SP3EphList.loadFile("igs11513.sp3");
+     *
+     *   // Sets nominal position of receiver
+     *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
+     *
      *   gnssRinex gRin;
-     *   ComputeWindUp windup;
+     *   ComputeWindUp windup(SP3EphList, nominalPos);
      *
      *   while(rin >> gRin) {
-     *      gRin >> markCSC1 >> smoothC1;
+     *      gRin >> windup;
      *   }
      * @endcode
      *
      * The "ComputeWindUp" object will visit every satellite in the GNSS data
-     * structure that is "gRin" and will smooth the given code observation using
-     * the corresponding phase observation.
-     *
-     * By default, the algorithm will cumpute wind-up on L1 and L2 observables. 
-     * You can change these settings with the appropriate set methods.
+     * structure that is "gRin" and will compute the corresponding receiver -
+     * satellite wind-up effect, in radians.
      *
      * When used with the ">>" operator, this class returns the same incoming
-     * data structure with the phase observations corrected. Be warned that if 
+     * data structure with the wind-up inserted in it. Be warned that if 
      * a given satellite does not have the observations required, it will be 
      * summarily deleted from the data structure.
      *
@@ -244,12 +249,12 @@ namespace gpstk
         map<SatID, phaseData> phase_satellite;
 
 
-        /** Compute the value of the wind-up, in cycles.
-         * @param sat       Satellite IDmake
+        /** Compute the value of the wind-up, in radians.
+         * @param sat       Satellite ID
          * @param time      Epoch of interest
          * @param satpos    Satellite position, as a Triple
          * @param sunpos    Sun position, as a Triple
-         * @return Wind-up computation, in cycles
+         * @return Wind-up computation, in radians
          */
         virtual double getWindUp(const SatID& sat, const DayTime& time, const Triple& satpos, const Triple& sunpos);
 
