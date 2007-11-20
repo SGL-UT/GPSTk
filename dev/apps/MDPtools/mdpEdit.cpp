@@ -1,4 +1,4 @@
-
+//$Id$
 
 //============================================================================
 //
@@ -198,7 +198,10 @@ protected:
       msgCount=0;
 
       die = false;
-       
+
+      DayTime currEpoch;
+      MDPEpoch oe;
+      
       while (!input.eof())     
       {
          input >> header;
@@ -229,24 +232,41 @@ protected:
                if (!noObs)
                {
                   MDPObsEpoch obs;
-                  input  >> obs;
+                  input >> obs;
                   if (obs)
                   {
                      if (prnSetToToss.size())
                      {
-                        unsigned thisPRN = obs.prn;
-                        if (!prnSetToToss.count(thisPRN))
+                        // If we have moved on to a new time, output the previous epoch
+                        if (currEpoch != obs.time)
                         {
-                           output << obs;
+                           if (!oe.empty())
+                           {
+                              MDPEpoch::iterator i;
+                              for (i=oe.begin(); i != oe.end(); i++)
+                              {
+                                 i->second.numSVs = oe.size();
+                                 output << i->second;
+                              }
+                           }
+                           currEpoch = obs.time;
+                           oe.clear();
+                        }
+                        if (!prnSetToToss.count(obs.prn))
+                        {
+                           oe[obs.prn] = obs;
                            if (debugLevel > 2)
                            {
                               cout << "  Writing obs message:\n";
                               obs.dump(cout);
                            }
                         }
-                        else if (debugLevel > 2)
-                           cout << "  Not writing obs message for PRN "
-                                << thisPRN << endl;                        
+                        else
+                        {
+                           if (debugLevel > 2)
+                              cout << "  Not writing obs message for PRN "
+                                   << obs.prn << endl;
+                        }
                      }
                      else
                      {
@@ -258,16 +278,22 @@ protected:
                         output << obs;    
                      }             
                   }
-                  else if (debugLevel > 2)
+                  else
                   {
-                     cout << "  Tossing obs message:\n";
-                     obs.dump(cout);
+                     if (debugLevel > 2)
+                     {
+                        cout << "  Tossing obs message due to a bad read:\n";
+                        obs.dump(cout);
+                     }
                   }
                }
-               else if (debugLevel > 3)
+               else
                {
-                  cout << "  Ignoring obs message from record "
-                       << input.recordNumber << endl;
+                  if (debugLevel > 3)
+                  {
+                     cout << "  Ignoring obs message from record "
+                          << input.recordNumber << endl;
+                  }
                }
                break;
 
