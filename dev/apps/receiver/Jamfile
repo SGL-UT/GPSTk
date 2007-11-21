@@ -9,4 +9,4 @@ SEARCH_SOURCE += $(TOP)/apps/rfw ;
 
 BonkForte ; # bleah.
 
-GPSMain rtAshtech : AshtechMessage.cpp rtAshtech.cpp ScreenControl.cpp FDStreamBuff.cpp TCPStreamBuff.cpp ;
+GPSMain rtAshtech : AshtechMessage.cpp rtAshtech.cpp ScreenControl.cpp ;

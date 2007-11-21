@@ -10,7 +10,7 @@
 #include <sys/file.h>
 
 #include <stdio.h>
-#if !defined(unix) && !defined(__unix__)
+#if !defined(unix) && !defined(__unix__) && !defined(__APPLE__)
 #include <winsock.h>
 #else
 #include <sys/types.h>
