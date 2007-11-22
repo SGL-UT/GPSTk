@@ -11,7 +11,7 @@ KEEPOBJS = true ;
 PREFIX ?= /usr/local/ ;
 INCDIR = $(PREFIX)/include/gpstk ;
 
-GPSTK_SO_VERSION = 13 ;
+GPSTK_SO_VERSION = 15 ;
 # override the built-in EXEMODE
 EXEMODE = 755 ;
 
@@ -20,9 +20,6 @@ EXEMODE = 755 ;
 # any attempt to use any extension other than .o
 SUFOBJ2      ?= -l.o ;
 
-
-# Use regex on all platforms because it is outside the C++ standard
-NEED_REGEX      = true ;
 
 # some OS specific stuff
 if $(UNIX)

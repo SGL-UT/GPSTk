@@ -15,142 +15,132 @@ if $(NEED_GETOPT)
 if $(PREPROCESSING)
 {
 
-   if $(NEED_REGEX)
+   if $(MSVCNT)
    {
-      REGEX_SOURCE = regex.c ;
-      REGEX_INC    = regex.h xregex2.h ;
-      if $(MSVCNT)
-      {
-         ObjectCcFlags $(REGEX_SOURCE) : -D__STDC__ -D_POSIX_SOURCE -DREGEX_MALLOC -DSTDC_HEADERS ;
-      }
-   }
-   else
-   {
-      REGEX_SOURCE = ;
+      ObjectCcFlags regex.c : -D__STDC__ -D_POSIX_SOURCE -DREGEX_MALLOC -DSTDC_HEADERS ;
    }
    GPSSetupLibrary gpstk ;
 }
 else
 {
-   GPSBuildLibrary gpstk : $(REGEX_SOURCE) Exception.cpp BinUtils.cpp
-      VectorBase.cpp DayTime.cpp Triple.cpp Geodetic.cpp
-      ECEF.cpp Xvt.cpp EngNav.cpp EngEphemeris.cpp EngAlmanac.cpp
-      AlmOrbit.cpp GPSEphemerisStore.cpp ObsEpochMap.cpp WxObsMap.cpp
-      SP3EphemerisStore.cpp GPSAlmanacStore.cpp TropModel.cpp
-      IonoModel.cpp IonoModelStore.cpp
-      FFStream.cpp FFData.cpp RinexMetData.cpp RinexMetHeader.cpp
-      RinexObsData.cpp RinexObsHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
-      SP3Data.cpp SP3Header.cpp FileSpec.cpp FileHunter.cpp 
-      $(GETOPT_SOURCE) CommandOption.cpp CommandOptionParser.cpp
-      CommandOptionWithTimeArg.cpp CommandOptionWithCommonTimeArg.cpp
-      BasicFramework.cpp LoopedFramework.cpp
-      EphemerisRange.cpp TabularEphemerisStore.cpp 
-      RinexEphemerisStore.cpp RungeKutta4.cpp
-      MSCData.cpp MSCStore.cpp SMODFData.cpp LinearClockModel.cpp
-      ObsClockModel.cpp ObsRngDev.cpp
-      FICData.cpp FICHeader.cpp 
-      FICData109.cpp FICData9.cpp FICData162.cpp FICData62.cpp
-      CodeBuffer.cpp GenXSequence.cpp SVPCodeGen.cpp X1Sequence.cpp
-      X2Sequence.cpp GPSZcount.cpp Position.cpp
-      CommandOptionWithPositionArg.cpp
-      PRSolution.cpp RinexUtilities.cpp
-      RACRotation.cpp SVExclusionList.cpp
-      TimeConverters.cpp TimeString.cpp 
-      CommonTime.cpp TimeTag.cpp ANSITime.cpp CivilTime.cpp 
-      GPSEpochWeekSecond.cpp GPSWeekSecond.cpp 
-      GPSWeekZcount.cpp GPSZcount32.cpp
-      GPSZcount29.cpp JulianDate.cpp MJD.cpp UnixTime.cpp YDSTime.cpp
-      SystemTime.cpp
-      Expression.cpp
-      RinexSatID.cpp SP3SatID.cpp
-      ObsID.cpp RinexObsID.cpp
-      Bancroft.cpp SolverLMS.cpp SolverWMS.cpp DOP.cpp
-      ModeledReferencePR.cpp ModeledPR.cpp SimpleIURAWeight.cpp
-      MOPSWeight.cpp
-      BinexData.cpp
-      YumaData.cpp YumaAlmanacStore.cpp
-      SEMHeader.cpp SEMData.cpp SEMAlmanacStore.cpp
-      SourceID.cpp TypeID.cpp DataHeaders.cpp DataStructures.cpp
-      ProcessingVector.cpp SimpleFilter.cpp
-      ComputePC.cpp ComputeLC.cpp ComputePI.cpp ComputeLI.cpp 
-      ComputePdelta.cpp ComputeLdelta.cpp ComputeMelbourneWubbena.cpp
-      OneFreqCSDetector.cpp LICSDetector.cpp MWCSDetector.cpp
-      CodeSmoother.cpp PCSmoother.cpp ComputeIURAWeights.cpp
-      ComputeMOPSWeights.cpp ModelObsFixedStation.cpp ModelObs.cpp
-      XYZ2NEU.cpp XYZ2NED.cpp DeltaOp.cpp SimpleKalmanFilter.cpp NablaOp.cpp
-      SVNumXRef.cpp AstronomicalFunctions.cpp SunPosition.cpp
-      MoonPosition.cpp SolidTides.cpp PoleTides.cpp SatDataReader.cpp
-      ComputeWindUp.cpp
+# Please add in alphabetical order
+   GPSBuildLibrary gpstk : 
+      ANSITime.cpp AlmOrbit.cpp AstronomicalFunctions.cpp
+      Bancroft.cpp BasicFramework.cpp BinUtils.cpp
+      BinexData.cpp CivilTime.cpp CodeBuffer.cpp
+      CodeSmoother.cpp CommandOption.cpp CommandOptionParser.cpp
+      CommandOptionWithCommonTimeArg.cpp CommandOptionWithPositionArg.cpp
+      CommandOptionWithTimeArg.cpp CommonTime.cpp
+      ComputeIURAWeights.cpp ComputeLC.cpp
+      ComputeLI.cpp ComputeLdelta.cpp ComputeMOPSWeights.cpp
+      ComputeMelbourneWubbena.cpp ComputePC.cpp ComputePI.cpp
+      ComputePdelta.cpp ComputeWindUp.cpp DOP.cpp
+      DataHeaders.cpp DataStructures.cpp DayTime.cpp
+      DeltaOp.cpp ECEF.cpp EngAlmanac.cpp
+      EngEphemeris.cpp EngNav.cpp EphemerisRange.cpp
+      Exception.cpp Expression.cpp FFData.cpp
+      FFStream.cpp FICData.cpp FICData109.cpp FICData162.cpp
+      FICData62.cpp FICData9.cpp FICHeader.cpp FileHunter.cpp
+      FileSpec.cpp GPSAlmanacStore.cpp GPSEphemerisStore.cpp
+      GPSEpochWeekSecond.cpp GPSWeekSecond.cpp GPSWeekZcount.cpp
+      GPSZcount.cpp GPSZcount29.cpp GPSZcount32.cpp
+      GenXSequence.cpp Geodetic.cpp IonoModel.cpp
+      IonoModelStore.cpp JulianDate.cpp LICSDetector.cpp
+      LinearClockModel.cpp LoopedFramework.cpp MJD.cpp
+      MOPSWeight.cpp MSCData.cpp MSCStore.cpp MWCSDetector.cpp
+      ModelObs.cpp ModelObsFixedStation.cpp ModeledPR.cpp
+      ModeledReferencePR.cpp MoonPosition.cpp NablaOp.cpp
+      ObsClockModel.cpp ObsEpochMap.cpp ObsID.cpp
+      ObsRngDev.cpp OneFreqCSDetector.cpp PCSmoother.cpp
+      PRSolution.cpp PoleTides.cpp Position.cpp ProcessingVector.cpp
+      RACRotation.cpp RinexEphemerisStore.cpp RinexMetData.cpp
+      RinexMetHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
+      RinexObsData.cpp RinexObsHeader.cpp RinexObsID.cpp
+      RinexSatID.cpp RinexUtilities.cpp RungeKutta4.cpp
+      SEMAlmanacStore.cpp SEMData.cpp SEMHeader.cpp
+      SMODFData.cpp SP3Data.cpp SP3EphemerisStore.cpp
+      SP3Header.cpp SP3SatID.cpp SVExclusionList.cpp
+      SVNumXRef.cpp SVPCodeGen.cpp SatDataReader.cpp
+      SimpleFilter.cpp SimpleIURAWeight.cpp SimpleKalmanFilter.cpp
+      SolidTides.cpp SolverLMS.cpp SolverWMS.cpp SourceID.cpp
+      SunPosition.cpp SystemTime.cpp TabularEphemerisStore.cpp
+      TimeConverters.cpp TimeString.cpp TimeTag.cpp Triple.cpp
+      TropModel.cpp TypeID.cpp UnixTime.cpp VectorBase.cpp
+      WxObsMap.cpp X1Sequence.cpp X2Sequence.cpp XYZ2NED.cpp
+      XYZ2NEU.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp
+      YumaData.cpp regex.c
+#getopt.c getopt1.c 
+      $(GETOPT_SOURCE)
       ;
 
-   InstallFile $(INCDIR) : AlmOrbit.hpp GPSAlmanacStore.hpp
-      GPSEphemerisStore.hpp
-      BinUtils.hpp DayTime.hpp ECEF.hpp EngAlmanac.hpp EngEphemeris.hpp 
-      EngNav.hpp Exception.hpp FFBinaryStream.hpp 
-      FFData.hpp FFStream.hpp FFStreamError.hpp FFTextStream.hpp
-      SatID.hpp RinexSatID.hpp SP3SatID.hpp
-      FileFilter.hpp FileFilterFrame.hpp FileFilterFrameWithHeader.hpp 
-      FileHunter.hpp FileSpec.hpp FileUtils.hpp GPSGeoid.hpp Geodetic.hpp
-      GeoidModel.hpp MathBase.hpp Matrix.hpp MatrixBase.hpp 
+   InstallFile $(INCDIR) : 
+# please add in alphabetical order
+      ANSITime.hpp AlmOrbit.hpp AstronomicalFunctions.hpp
+      Bancroft.hpp BasicFramework.hpp BinUtils.hpp BinexData.hpp
+      BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp
+      CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp
+      CodeSmoother.hpp CommandOption.hpp CommandOptionParser.hpp
+      CommandOptionWithCommonTimeArg.hpp CommandOptionWithPositionArg.hpp
+      CommandOptionWithTimeArg.hpp CommonTime.hpp ComputeCombination.hpp
+      ComputeIURAWeights.hpp ComputeLC.hpp ComputeLI.hpp
+      ComputeLdelta.hpp ComputeMOPSWeights.hpp ComputeMelbourneWubbena.hpp
+      ComputePC.hpp ComputePI.hpp ComputePdelta.hpp ComputeWindUp.hpp DOP.hpp
+      DataHeaders.hpp DataStructures.hpp DayTime.hpp DeltaOp.hpp
+      ECEF.hpp EngAlmanac.hpp EngEphemeris.hpp EngNav.hpp
+      EphemerisRange.hpp EpochClockModel.hpp Exception.hpp Expression.hpp
+      ExtractC1.hpp ExtractCombinationData.hpp ExtractD1.hpp
+      ExtractD2.hpp ExtractData.hpp ExtractL1.hpp ExtractL2.hpp
+      ExtractLC.hpp ExtractP1.hpp ExtractP2.hpp ExtractPC.hpp
+      FFBinaryStream.hpp FFData.hpp FFStream.hpp FFStreamError.hpp
+      FFTextStream.hpp FICAStream.hpp FICBase.hpp FICData.hpp
+      FICData109.hpp FICData162.hpp FICData62.hpp FICData9.hpp
+      FICFilterOperators.hpp FICHeader.hpp FICStream.hpp
+      FICStreamBase.hpp FileFilter.hpp FileFilterFrame.hpp
+      FileFilterFrameWithHeader.hpp FileHunter.hpp FileSpec.hpp
+      FileStore.hpp FileUtils.hpp GPSAlmanacStore.hpp
+      GPSEphemerisStore.hpp GPSEpochWeekSecond.hpp GPSGeoid.hpp
+      GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp
+      GPSZcount29.hpp GPSZcount32.hpp
+      GenXSequence.hpp Geodetic.hpp GeoidModel.hpp
+      InOutFramework.hpp IonoModel.hpp IonoModelStore.hpp
+      JulianDate.hpp LICSDetector.hpp LinearClockModel.hpp
+      LoopedFramework.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp
+      MSCData.hpp MSCHeader.hpp MSCStore.hpp MSCStream.hpp
+      MWCSDetector.hpp MathBase.hpp Matrix.hpp MatrixBase.hpp
       MatrixBaseOperators.hpp MatrixFunctors.hpp MatrixImplementation.hpp
-      MatrixOperators.hpp MiscMath.hpp ObsEpochMap.hpp WxObsMap.hpp PolyFit.hpp 
-      RTFileFrame.hpp RinexMetBase.hpp RinexMetData.hpp 
-      RinexMetFilterOperators.hpp RinexMetHeader.hpp RinexMetStream.hpp
-      RinexNavBase.hpp RinexNavData.hpp RinexNavFilterOperators.hpp
-      RinexNavHeader.hpp RinexNavStream.hpp RinexObsBase.hpp
-      RinexObsData.hpp RinexObsFilterOperators.hpp RinexObsHeader.hpp
-      RinexObsStream.hpp SP3Base.hpp SP3Data.hpp SP3EphemerisStore.hpp
-      SP3Header.hpp SP3Stream.hpp Stats.hpp StringUtils.hpp Triple.hpp
-      TropModel.hpp IonoModel.hpp IonoModelStore.hpp
-      Vector.hpp VectorBase.hpp VectorBaseOperators.hpp VectorOperators.hpp 
-      WGS84Geoid.hpp Xvt.hpp
-      convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp
-      stl_helpers.hpp CommandOption.hpp CommandOptionParser.hpp
-      CommandOptionWithTimeArg.hpp CommandOptionWithCommonTimeArg.hpp
-      BasicFramework.hpp InOutFramework.hpp
-      EphemerisRange.hpp LoopedFramework.hpp TabularEphemerisStore.hpp
-      RinexEphemerisStore.hpp FileStore.hpp RungeKutta4.hpp
-      $(GETOPT_INC) $(REGEX_INC)
-      MSCData.hpp MSCHeader.hpp MSCBase.hpp MSCStore.hpp MSCStream.hpp
-      SMODFData.hpp SMODFStream.hpp
-      ClockModel.hpp EpochClockModel.hpp LinearClockModel.hpp
-      ObsClockModel.hpp ObsRngDev.hpp ValidType.hpp ORDEpoch.hpp
-      FICAStream.hpp FICBase.hpp FICData.hpp FICData9.hpp 
-      FICData109.hpp FICData162.hpp FICData62.hpp FICFilterOperators.hpp
-      FICHeader.hpp FICStream.hpp FICStreamBase.hpp
-      CodeBuffer.hpp GenXSequence.hpp PCodeConst.hpp SVPCodeGen.hpp
-      X1Sequence.hpp X2Sequence.hpp GPSZcount.hpp Position.hpp
-      CommandOptionWithPositionArg.hpp
-      PRSolution.hpp RinexUtilities.hpp
-      RACRotation.hpp SVExclusionList.hpp
-      TimeConstants.hpp TimeConverters.hpp TimeString.hpp
-      CommonTime.hpp TimeTag.hpp ANSITime.hpp CivilTime.hpp 
-      GPSEpochWeekSecond.hpp GPSWeekSecond.hpp
-      GPSWeekZcount.hpp GPSZcount32.hpp
-      GPSZcount29.hpp JulianDate.hpp MJD.hpp UnixTime.hpp YDSTime.hpp 
-      SystemTime.hpp
-      gpstkplatform.h mergePCodeWords.h BivarStats.hpp
-      Expression.hpp ObsID.hpp RinexObsID.hpp
-      Bancroft.hpp CheckPRData.hpp SolverBase.hpp SolverLMS.hpp SolverWMS.hpp
-      DOP.hpp WeightBase.hpp ModeledPseudorangeBase.hpp ExtractData.hpp
-      ExtractCombinationData.hpp ExtractC1.hpp ExtractP1.hpp ExtractP2.hpp
-      ExtractPC.hpp ExtractL1.hpp ExtractL2.hpp ExtractLC.hpp ExtractD1.hpp
-      ExtractD2.hpp ModeledReferencePR.hpp ModeledPR.hpp SimpleIURAWeight.hpp
-      MOPSWeight.hpp
-      BinexData.hpp  BinexFilterOperators.hpp  BinexStream.hpp
-      YumaBase.hpp YumaStream.hpp YumaHeader.hpp YumaData.hpp
-      YumaAlmanacStore.hpp
-      SEMBase.hpp SEMStream.hpp SEMHeader.hpp SEMData.hpp SEMAlmanacStore.hpp
-      SourceID.hpp TypeID.hpp DataHeaders.hpp DataStructures.hpp
-      ProcessingClass.hpp  ProcessingVector.hpp SimpleFilter.hpp
-      TimeNamedFileStream.hpp ComputeCombination.hpp ComputePC.hpp
-      ComputeLC.hpp ComputePI.hpp ComputeLI.hpp ComputePdelta.hpp
-      ComputeLdelta.hpp ComputeIURAWeights.hpp ComputeMOPSWeights.hpp
-      ModelObsFixedStation.hpp ModelObs.hpp
-      ComputeMelbourneWubbena.hpp OneFreqCSDetector.hpp CodeSmoother.hpp
-      PCSmoother.hpp LICSDetector.hpp MWCSDetector.hpp XYZ2NEU.hpp XYZ2NED.hpp
-      DeltaOp.hpp SimpleKalmanFilter.hpp NablaOp.hpp XvtStore.hpp SVNumXRef.hpp
-      AstronomicalFunctions.hpp SunPosition.hpp MoonPosition.hpp SolidTides.hpp
-      PoleTides.hpp SatDataReader.hpp ComputeWindUp.hpp
+      MatrixOperators.hpp MiscMath.hpp ModelObs.hpp
+      ModelObsFixedStation.hpp ModeledPR.hpp ModeledPseudorangeBase.hpp
+      ModeledReferencePR.hpp MoonPosition.hpp NablaOp.hpp ORDEpoch.hpp
+      ObsClockModel.hpp ObsEpochMap.hpp ObsID.hpp ObsRngDev.hpp
+      OneFreqCSDetector.hpp PCSmoother.hpp PCodeConst.hpp
+      PRSolution.hpp PoleTides.hpp PolyFit.hpp Position.hpp
+      ProcessingClass.hpp ProcessingVector.hpp RACRotation.hpp
+      RTFileFrame.hpp RinexEphemerisStore.hpp RinexMetBase.hpp
+      RinexMetData.hpp RinexMetFilterOperators.hpp RinexMetHeader.hpp
+      RinexMetStream.hpp RinexNavBase.hpp RinexNavData.hpp
+      RinexNavFilterOperators.hpp RinexNavHeader.hpp RinexNavStream.hpp
+      RinexObsBase.hpp RinexObsData.hpp RinexObsFilterOperators.hpp
+      RinexObsHeader.hpp RinexObsID.hpp RinexObsStream.hpp
+      RinexSatID.hpp RinexUtilities.hpp RungeKutta4.hpp
+      SEMAlmanacStore.hpp SEMBase.hpp SEMData.hpp SEMHeader.hpp
+      SEMStream.hpp SMODFData.hpp SMODFStream.hpp SP3Base.hpp
+      SP3Data.hpp SP3EphemerisStore.hpp SP3Header.hpp SP3SatID.hpp
+      SP3Stream.hpp SVExclusionList.hpp SVNumXRef.hpp SVPCodeGen.hpp
+      SatDataReader.hpp SatID.hpp SimpleFilter.hpp SimpleIURAWeight.hpp
+      SimpleKalmanFilter.hpp SolidTides.hpp SolverBase.hpp SolverLMS.hpp
+      SolverWMS.hpp SourceID.hpp Stats.hpp StringUtils.hpp
+      SunPosition.hpp SystemTime.hpp TabularEphemerisStore.hpp
+      TimeConstants.hpp TimeConverters.hpp TimeNamedFileStream.hpp
+      TimeString.hpp TimeTag.hpp Triple.hpp TropModel.hpp TypeID.hpp
+      UnixTime.hpp ValidType.hpp Vector.hpp VectorBase.hpp
+      VectorBaseOperators.hpp VectorOperators.hpp WGS84Geoid.hpp
+      WeightBase.hpp WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp
+      XYZ2NED.hpp XYZ2NEU.hpp Xvt.hpp XvtStore.hpp YDSTime.hpp
+      YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp YumaHeader.hpp
+      YumaStream.hpp convhelp.hpp geometry.hpp 
+#getopt.h
+      gps_constants.hpp gpstkplatform.h icd_200_constants.hpp
+      mergePCodeWords.h regex.h stl_helpers.hpp xregex2.h
+      $(GETOPT_INC)
       ;
 }
