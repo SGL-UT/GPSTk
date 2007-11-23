@@ -7,7 +7,8 @@ lib_LTLIBRARIES = libgpstk.la
 libgpstk_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 libgpstk_la_SOURCES = regex.c ANSITime.cpp AlmOrbit.cpp \
 AstronomicalFunctions.cpp Bancroft.cpp BasicFramework.cpp BinUtils.cpp \
-BinexData.cpp CivilTime.cpp CodeBuffer.cpp CodeSmoother.cpp CommandOption.cpp \
+BinexData.cpp  BLQDataReader.cpp \
+CivilTime.cpp CodeBuffer.cpp CodeSmoother.cpp CommandOption.cpp \
 CommandOptionParser.cpp CommandOptionWithCommonTimeArg.cpp \
 CommandOptionWithPositionArg.cpp CommandOptionWithTimeArg.cpp CommonTime.cpp \
 ComputeIURAWeights.cpp ComputeLC.cpp ComputeLI.cpp ComputeLdelta.cpp \
@@ -48,6 +49,7 @@ incldir = $(includedir)/gpstk
 incl_HEADERS = regex.h ANSITime.hpp AlmOrbit.hpp AstronomicalFunctions.hpp \
 Bancroft.hpp BasicFramework.hpp BinUtils.hpp \
 BinexData.hpp BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp \
+BLQDataReader.hpp \
 CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp CodeSmoother.hpp \
 CommandOption.hpp CommandOptionParser.hpp CommandOptionWithCommonTimeArg.hpp \
 CommandOptionWithPositionArg.hpp CommandOptionWithTimeArg.hpp CommonTime.hpp \

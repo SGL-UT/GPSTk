@@ -27,7 +27,7 @@ else
    GPSBuildLibrary gpstk : 
       ANSITime.cpp AlmOrbit.cpp AstronomicalFunctions.cpp
       Bancroft.cpp BasicFramework.cpp BinUtils.cpp
-      BinexData.cpp CivilTime.cpp CodeBuffer.cpp
+      BinexData.cpp BLQDataReader.cpp CivilTime.cpp CodeBuffer.cpp
       CodeSmoother.cpp CommandOption.cpp CommandOptionParser.cpp
       CommandOptionWithCommonTimeArg.cpp CommandOptionWithPositionArg.cpp
       CommandOptionWithTimeArg.cpp CommonTime.cpp
@@ -77,7 +77,7 @@ else
 # please add in alphabetical order
       ANSITime.hpp AlmOrbit.hpp AstronomicalFunctions.hpp
       Bancroft.hpp BasicFramework.hpp BinUtils.hpp BinexData.hpp
-      BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp
+      BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp BLQDataReader.hpp
       CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp
       CodeSmoother.hpp CommandOption.hpp CommandOptionParser.hpp
       CommandOptionWithCommonTimeArg.hpp CommandOptionWithPositionArg.hpp
@@ -137,7 +137,7 @@ else
       WeightBase.hpp WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp
       XYZ2NED.hpp XYZ2NEU.hpp Xvt.hpp XvtStore.hpp YDSTime.hpp
       YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp YumaHeader.hpp
-      YumaStream.hpp convhelp.hpp geometry.hpp 
+      YumaStream.hpp convhelp.hpp geometry.hpp
 #getopt.h
       gps_constants.hpp gpstkplatform.h icd_200_constants.hpp
       mergePCodeWords.h regex.h stl_helpers.hpp xregex2.h
