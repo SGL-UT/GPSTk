@@ -57,6 +57,7 @@
 #include "ECEF.hpp"
 #include "DayTime.hpp"
 #include "FFData.hpp"
+#include "Xvt.hpp"
 
 namespace gpstk
 {
@@ -74,7 +75,15 @@ namespace gpstk
       
          /// destructor
       virtual ~MSCData() throw() {}
-      
+
+         /// Returns position, velocity, time in ECEF coords, units meters, for the indicated time.
+         /// @param t time for which to calcuate the position
+         /// @throw InvalidRequest If the request can not be completed for any
+         ///    reason, this is thrown. The text may have additional
+         ///    information as to why the request failed.
+      Xvt getXvt(const DayTime& t)
+         const throw(InvalidRequest);
+
       gpstk::DayTime time;  ///< date of coordinates release from NIMA
       unsigned long station; ///< NIMA Monitor Station number (e.g. 85408)
       std::string mnemonic;  ///< NIMA Monitor Station identifier (e.g. ARLM)

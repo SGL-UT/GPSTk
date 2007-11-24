@@ -52,26 +52,26 @@ namespace gpstk
    {
       try
       {
-            // Find an appropriate MSCData object.  Two steps:
+            // Find an appropriate MSCData object.  
          const MSCData& msc = findMSC( stationID, t ); 
 
-            //
-            // Calculate the elapsed time between the reference time
-            // and the time of interest in order to determine the 
-            // total station drift.
-         double dt = (t - msc.refepoch) / SEC_YEAR;
-         Xvt xvt;
-         xvt.x = msc.coordinates;
-         xvt.v = msc.velocities;
-         xvt.dtime = 0.0;
-         xvt.ddtime = 0.0;
-         const Triple& drift = msc.velocities;
-      
-            // compute the position given the total drift vectors
-         xvt.x[0] += drift[0] * dt;
-         xvt.x[1] += drift[1] * dt;
-         xvt.x[2] += drift[2] * dt;
-         return( xvt );
+         return( msc.getXvt(t) );
+      }
+      catch(InvalidRequest& ir)
+      {
+         GPSTK_RETHROW(ir);
+      }
+   } // end of MSCStore::getXvt()
+
+   Xvt MSCStore::getXvt(unsigned long stationIDno, const DayTime& t)
+      const throw(InvalidRequest)
+   {
+      try
+      {
+            // Find an appropriate MSCData object.  
+         const MSCData& msc = findMSC( stationIDno, t ); 
+
+         return( msc.getXvt(t) );
       }
       catch(InvalidRequest& ir)
       {

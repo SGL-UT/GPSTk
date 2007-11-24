@@ -79,15 +79,28 @@ namespace gpstk
       {}
 
       /// Returns the position, velocity, and clock offset of the indicated
-      /// satellite in ECEF coordinates (meters) at the indicated time.
-      /// @param[in] sat the SV's SatID
+      /// station in ECEF coordinates (meters) at the indicated time.
+      /// @param[in] stationID id
       /// @param[in] t the time to look up
-      /// @return the Xvt of the SV at time
+      /// @return the Xvt of the station at time
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
       Xvt getXvt(const std::string stationID, const DayTime& t)
          const throw(InvalidRequest);
+
+
+      /// Returns the position, velocity, and clock offset of the indicated
+      /// station in ECEF coordinates (meters) at the indicated time.
+      /// @param[in] stationIDno id number
+      /// @param[in] t the time to look up
+      /// @return the Xvt of the station at time
+      /// @throw InvalidRequest If the request can not be completed for any
+      ///    reason, this is thrown. The text may have additional
+      ///    information as to why the request failed.
+      Xvt getXvt(unsigned long stationIDno, const DayTime& t)
+         const throw(InvalidRequest);
+
 
       /// A debugging function that outputs in human readable form,
       /// all data stored in this object.

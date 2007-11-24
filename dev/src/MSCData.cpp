@@ -141,4 +141,35 @@ namespace gpstk
       velocities[1] = asDouble(currentLine.substr(76, 7));
       velocities[2] = asDouble(currentLine.substr(83, 7));            
    }
+
+   Xvt MSCData::getXvt(const DayTime& t)
+      const throw(InvalidRequest)
+   {
+      try
+      {
+         //
+         // Calculate the elapsed time between the reference time
+         // and the time of interest in order to determine the 
+         // total station drift.
+         double dt = (t - refepoch) / SEC_YEAR;
+         Xvt xvt;
+         xvt.x = coordinates;
+         xvt.v = velocities;
+         xvt.dtime = 0.0;
+         xvt.ddtime = 0.0;
+         const Triple& drift = velocities;
+      
+            // compute the position given the total drift vectors
+         xvt.x[0] += drift[0] * dt;
+         xvt.x[1] += drift[1] * dt;
+         xvt.x[2] += drift[2] * dt;
+         return( xvt );
+      }
+      catch(InvalidRequest& ir)
+      {
+         GPSTK_RETHROW(ir);
+      }
+   } // end of MSCData::getXvt()
+
+
 }
