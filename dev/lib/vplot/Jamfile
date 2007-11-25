@@ -1,6 +1,6 @@
 # vplot Jamfile
 #
-
+# please add in alphabetic order
 SubDir TOP lib vplot ;
 
 if $(PREPROCESSING)
@@ -9,23 +9,24 @@ if $(PREPROCESSING)
 }
 else
 {
-  GPSBuildLibrary vplot : VGImage.cpp SVGImage.cpp 
-	PSImage.cpp PSImageBase.cpp EPSImage.cpp 
-	StrokeStyle.cpp Color.cpp ViewerManager.cpp Path.cpp 
-	GraphicsConstants.cpp Line.cpp Polygon.cpp 
-	Rectangle.cpp Circle.cpp TextStyle.cpp Text.cpp 
-	Marker.cpp Comment.cpp Frame.cpp VLayout.cpp HLayout.cpp
-	GridLayout.cpp BorderLayout.cpp
+  GPSBuildLibrary vplot : 
+        BorderLayout.cpp Circle.cpp Color.cpp Comment.cpp EPSImage.cpp
+        Frame.cpp GraphicsConstants.cpp GridLayout.cpp HLayout.cpp
+        Line.cpp Marker.cpp PSImage.cpp PSImageBase.cpp Path.cpp
+        Polygon.cpp Rectangle.cpp SVGImage.cpp StrokeStyle.cpp
+        Text.cpp TextStyle.cpp VGImage.cpp VLayout.cpp
+        ViewManager.cpp
 	;
 
-  InstallFile $(INCDIR) : BasicShape.hpp Circle.hpp Color.hpp
-	Comment.hpp EPSImage.hpp Fillable.hpp GraphicsConstants.hpp
-	Line.hpp Markable.hpp Marker.hpp Path.hpp Polygon.hpp
-	PSImageBase.hpp PSImage.hpp Rectangle.hpp
-	StrokeStyle.hpp SVGImage.hpp Text.hpp TextStyle.hpp
-  	VGImage.hpp ViewerManager.hpp VPlotException.hpp
-	Layout.hpp VLayout.hpp Frame.hpp Helper.hpp HLayout.hpp
-	GridLayout.hpp BorderLayout.hpp
+  InstallFile $(INCDIR) : BasicShape.hpp BorderLayout.hpp
+        Circle.hpp Color.hpp Comment.hpp EPSImage.hpp 
+        Fillable.hpp Frame.hpp GraphicsConstants.hpp
+	GridLayout.hpp HLayout.hpp Helper.hpp Layout.hpp
+        Line.hpp Markable.hpp Marker.hpp PSImage.hpp 
+        PSImageBase.hpp Path.hpp Polygon.hpp
+	Rectangle.hpp SVGImage.hpp StrokeStyle.hpp Text.hpp 
+        TextStyle.hpp VGImage.hpp VLayout.hpp VPlotException.hpp
+        ViewManager.hpp
 	;
 
 }

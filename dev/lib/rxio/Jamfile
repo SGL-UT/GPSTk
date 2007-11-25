@@ -8,20 +8,22 @@ if $(PREPROCESSING)
 }
 else
 {
-  GPSBuildLibrary rxio : AshtechData.cpp AshtechMBEN.cpp AshtechPBEN.cpp
-    AshtechEPB.cpp AshtechALB.cpp
-    NovatelData.cpp
+# Please add in alphabetic order
+  GPSBuildLibrary rxio : AshtechALB.cpp AshtechData.cpp 
+    AshtechEPB.cpp AshtechMBEN.cpp AshtechPBEN.cpp
     EphReader.cpp FFIdentifier.cpp MDPHeader.cpp
     MDPNavSubframe.cpp MDPObsEpoch.cpp MDPPVTSolution.cpp
-    MDPSelftestStatus.cpp MetReader.cpp ObsReader.cpp ObsUtils.cpp
+    MDPSelftestStatus.cpp MetReader.cpp NovatelData.cpp 
+    ObsReader.cpp ObsUtils.cpp
     RinexConverters.cpp
     ;
 
-  InstallFile $(INCDIR) : AshtechData.hpp AshtechMBEN.hpp AshtechPBEN.hpp
-    AshtechEPB.hpp AshtechALB.hpp
-    AshtechStream.hpp NovatelData.hpp NovatelStream.hpp DataStatus.hpp
+  InstallFile $(INCDIR) : AshtechALB.hpp AshtechData.hpp 
+    AshtechEPB.hpp AshtechMBEN.hpp AshtechPBEN.hpp
+    AshtechStream.hpp  DataStatus.hpp
     EphReader.hpp FFIdentifier.hpp MDPHeader.hpp MDPNavSubframe.hpp
     MDPObsEpoch.hpp MDPPVTSolution.hpp MDPSelftestStatus.hpp MetReader.hpp
+    NovatelData.hpp NovatelStream.hpp
     ObsReader.hpp ObsUtils.hpp RinexConverters.hpp miscenum.hpp MDPStream.hpp
     miscdefs.hpp
     ;

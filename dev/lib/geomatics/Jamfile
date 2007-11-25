@@ -1,5 +1,5 @@
 # $Id$
-
+# please add in alphabetic order
 SubDir TOP lib geomatics ;
 
 if $(PREPROCESSING)
@@ -9,21 +9,18 @@ if $(PREPROCESSING)
 else
 {
    GPSBuildLibrary geomatics : 
-   	SRI.cpp Namelist.cpp SRIFilter.cpp
-   	RobustStats.cpp
-   	EarthOrientation.cpp GeodeticFrames.cpp PreciseRange.cpp
-   	PhaseWindup.cpp
-   	SatPass.cpp
-   	DiscCorr.cpp GDCconfiguration.cpp
-   	GSatID.cpp DDid.cpp
-   	random.cpp format.cpp
+        DDid.cpp DiscCorr.cpp EarthOrientation.cpp
+        GDCconfiguration.cpp GSatID.cpp GeodeticFrames.cpp
+   	Namelist.cpp PhaseWindup.cpp PreciseRange.cpp
+        RobustStats.cpp SRI.cpp SRIFilter.cpp
+   	SatPass.cpp format.cpp random.cpp
   	   ;
 
    InstallFile $(INCDIR) :
 	   DCinternals.hpp DDid.hpp DiscCorr.hpp
-	   EarthOrientation.hpp format.hpp GDCconfiguration.hpp 
-	   GeodeticFrames.hpp GSatID.hpp index.hpp Namelist.hpp
-	   PhaseWindup.hpp PreciseRange.hpp random.hpp RobustStats.hpp
-	   SatPass.hpp SRIFilter.hpp SRI.hpp
+	   EarthOrientation.hpp GDCconfiguration.hpp GSatID.hpp 
+	   GeodeticFrames.hpp Namelist.hpp PhaseWindup.hpp 
+           PreciseRange.hpp RobustStats.hpp SRI.cpp
+	   SRIFilter.hpp SatPass.hpp format.hpp index.hpp random.hpp
 	   ;
 }
