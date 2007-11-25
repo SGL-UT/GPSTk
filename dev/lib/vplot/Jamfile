@@ -15,7 +15,7 @@ else
         Line.cpp Marker.cpp PSImage.cpp PSImageBase.cpp Path.cpp
         Polygon.cpp Rectangle.cpp SVGImage.cpp StrokeStyle.cpp
         Text.cpp TextStyle.cpp VGImage.cpp VLayout.cpp
-        ViewManager.cpp
+        ViewerManager.cpp
 	;
 
   InstallFile $(INCDIR) : BasicShape.hpp BorderLayout.hpp
