@@ -50,8 +50,8 @@ else
       MOPSWeight.cpp MSCData.cpp MSCStore.cpp MWCSDetector.cpp
       ModelObs.cpp ModelObsFixedStation.cpp ModeledPR.cpp
       ModeledReferencePR.cpp MoonPosition.cpp NablaOp.cpp
-      ObsClockModel.cpp ObsEpochMap.cpp ObsID.cpp
-      ObsRngDev.cpp OneFreqCSDetector.cpp PCSmoother.cpp
+      ObsClockModel.cpp ObsEpochMap.cpp ObsID.cpp ObsRngDev.cpp
+      OceanLoading.cpp OneFreqCSDetector.cpp PCSmoother.cpp
       PRSolution.cpp PoleTides.cpp Position.cpp ProcessingVector.cpp
       RACRotation.cpp RinexEphemerisStore.cpp RinexMetData.cpp
       RinexMetHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
@@ -68,7 +68,7 @@ else
       TropModel.cpp TypeID.cpp UnixTime.cpp VectorBase.cpp
       WxObsMap.cpp X1Sequence.cpp X2Sequence.cpp XYZ2NED.cpp
       XYZ2NEU.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp
-      YumaData.cpp regex.c
+      YumaData.cpp regex.c OceanLoading.cpp
 #getopt.c getopt1.c 
       $(GETOPT_SOURCE)
       ;
@@ -112,7 +112,7 @@ else
       ModelObsFixedStation.hpp ModeledPR.hpp ModeledPseudorangeBase.hpp
       ModeledReferencePR.hpp MoonPosition.hpp NablaOp.hpp ORDEpoch.hpp
       ObsClockModel.hpp ObsEpochMap.hpp ObsID.hpp ObsRngDev.hpp
-      OneFreqCSDetector.hpp PCSmoother.hpp PCodeConst.hpp
+      OceanLoading.hpp OneFreqCSDetector.hpp PCSmoother.hpp PCodeConst.hpp
       PRSolution.hpp PoleTides.hpp PolyFit.hpp Position.hpp
       ProcessingClass.hpp ProcessingVector.hpp RACRotation.hpp
       RTFileFrame.hpp RinexEphemerisStore.hpp RinexMetBase.hpp

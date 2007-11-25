@@ -28,6 +28,7 @@ MJD.cpp MOPSWeight.cpp MSCData.cpp MSCStore.cpp MWCSDetector.cpp \
 ModelObs.cpp ModelObsFixedStation.cpp \
 ModeledPR.cpp ModeledReferencePR.cpp MoonPosition.cpp NablaOp.cpp \
 ObsClockModel.cpp ObsEpochMap.cpp ObsID.cpp ObsRngDev.cpp \
+OceanLoading.cpp \
 OneFreqCSDetector.cpp PCSmoother.cpp PRSolution.cpp PoleTides.cpp \
 Position.cpp ProcessingVector.cpp RACRotation.cpp \
 RinexEphemerisStore.cpp RinexMetData.cpp \
@@ -82,6 +83,7 @@ ModelObs.hpp ModelObsFixedStation.hpp ModeledPR.hpp \
 ModeledPseudorangeBase.hpp ModeledReferencePR.hpp MoonPosition.hpp \
 NablaOp.hpp ORDEpoch.hpp \
 ObsClockModel.hpp ObsEpochMap.hpp ObsID.hpp ObsRngDev.hpp \
+OceanLoading.hpp \
 OneFreqCSDetector.hpp PCSmoother.hpp \
 PCodeConst.hpp PRSolution.hpp PoleTides.hpp PolyFit.hpp Position.hpp \
 ProcessingClass.hpp ProcessingVector.hpp \
