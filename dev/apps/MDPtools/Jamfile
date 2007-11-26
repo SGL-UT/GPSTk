@@ -23,8 +23,6 @@ GPSMain mdptool : mdptool.cpp ;
 
 GPSMain mdp2rinex : mdp2rinex.cpp ;
 
-GPSMain mdpEdit : mdpEdit.cpp ;
-
 if $(UNIX)
 {
   if $(OS) = SOLARIS  {
@@ -38,6 +36,8 @@ if $(UNIX)
   LinkLibraries mdpscreen.bin : mdplib ;
 
   GPSMain mdpscreen.bin : mdpscreen.cpp ScreenProc.cpp ;
+
+  GPSMain mdpEdit : mdpEdit.cpp ;
 
   InstallBin $(BINDIR) : mdpscreen mdpscreen.bin ;
 }

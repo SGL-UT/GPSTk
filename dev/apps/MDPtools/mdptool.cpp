@@ -116,6 +116,7 @@ public:
 
    bool initialize(int argc, char *argv[]) throw()
    {
+      using std::basic_ios;
       if (!BasicFramework::initialize(argc,argv)) return false;
 
       if (debugLevel)
@@ -131,12 +132,12 @@ public:
       if (fn == "")
       {
          fn = "<stdin>";
-         mdpInput.std::basic_ios<char>::rdbuf(cin.rdbuf());
+         mdpInput.basic_ios<char>::rdbuf(cin.rdbuf());
       }
       else
       {
          inputDev.open(fn.c_str(), ios::in);
-         mdpInput.std::basic_ios<char>::rdbuf(inputDev.std::basic_ios<char>::rdbuf());
+         mdpInput.basic_ios<char>::rdbuf(inputDev.basic_ios<char>::rdbuf());
       }
 
       if (debugLevel)
@@ -156,7 +157,7 @@ public:
             cout << "Sending output to stdout" << endl;
          output.copyfmt(std::cout);
          output.clear(std::cout.rdstate());
-         output.std::basic_ios<char>::rdbuf(std::cout.rdbuf());
+         output.basic_ios<char>::rdbuf(std::cout.rdbuf());
       }
 
       style = "summary";
