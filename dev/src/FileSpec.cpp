@@ -97,7 +97,7 @@ namespace gpstk
       else if (fst == sequence)    return string("I");
       else if (fst == version)     return string("v");
       else if (fst == fixed)       return string("");
-      else if (fst == clock)       return string("c");
+      else if (fst == clock)       return string("k");
       else if (fst == text)        return string("x");
 
       else if (fst == year)        return string("y");
@@ -113,6 +113,7 @@ namespace gpstk
       else if (fst == mjd)         return string("Q");
       else if (fst == dayofweek)   return string("w");
       else if (fst == day)         return string("j");
+      else if (fst == doysecond)   return string("s");
       else if (fst == zcount)      return string("Z");
       else if (fst == zcountfloor) return string("z");
       else if (fst == unixsec)     return string("U");
@@ -134,7 +135,7 @@ namespace gpstk
       else if (fst == string("t"))   return selected;
       else if (fst == string("I"))   return sequence;
       else if (fst == string("v"))   return version;
-      else if (fst == string("c"))   return clock;
+      else if (fst == string("k"))   return clock;
       else if (fst == string("x"))   return text;
 
       else if (fst == string("Y") || 
@@ -151,11 +152,13 @@ namespace gpstk
       else if (fst == string("Q"))   return mjd;
       else if (fst == string("w"))   return dayofweek;
       else if (fst == string("j"))   return day;
+      else if (fst == string("s"))   return doysecond;
       else if (fst == string("Z"))   return zcount;
       else if (fst == string("z"))   return zcountfloor;
       else if (fst == string("U"))   return unixsec;
       else if (fst == string("u"))   return unixusec;
-      else if (fst == string("C"))   return fullzcount;
+      else if (fst == string("C") ||
+               fst == string("c"))   return fullzcount;
       else
       {
          FileSpecException fse("Unknown FileSpecType: " + fst);
@@ -439,8 +442,8 @@ namespace gpstk
    {
       try
       {
-         fileSpecList.erase(fileSpecList.begin(), fileSpecList.end());
-         fileSpecString.erase(fileSpecString.begin(), fileSpecString.end());
+         fileSpecList.clear();
+         fileSpecString.clear();
 
          fileSpecString = fileSpec;
 

@@ -68,7 +68,7 @@ else
       TropModel.cpp TypeID.cpp UnixTime.cpp VectorBase.cpp
       WxObsMap.cpp X1Sequence.cpp X2Sequence.cpp XYZ2NED.cpp
       XYZ2NEU.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp
-      YumaData.cpp regex.c OceanLoading.cpp
+      YumaData.cpp regex.c
 #getopt.c getopt1.c 
       $(GETOPT_SOURCE)
       ;

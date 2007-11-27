@@ -1037,6 +1037,13 @@ namespace gpstk
          /**
           * Format this time into a string.
           *
+          * @note 
+          * Whenever a format is added or removed from the DayTime
+          * class, it more than likely should also be added or removed
+          * from the FileSpec class.  Additionally, the format
+          * character must not conflict with any of the existing
+          * format characters in DayTime or FileSpec.
+          *
           * Generate and return a string containing a formatted
           * date, formatted by the specification \c fmt.
           *
@@ -1065,6 +1072,8 @@ namespace gpstk
           * \li \%u   unixTime().tv_usec
           * \li \%C   fullZcount()
           * \li \%c   fullZcountFloor()
+          *
+          * @warning See above note.
           *
           * @param fmt format to use for this time.
           * @return a string containing this time in the

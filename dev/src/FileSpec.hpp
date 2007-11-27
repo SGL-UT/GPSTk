@@ -86,8 +86,16 @@ namespace gpstk
    class FileSpec
    {
    public:
-         /// This enum lists the different possible elements you can
-         /// have in a FileSpec.
+         /** This enum lists the different possible elements you can
+          * have in a FileSpec.
+          *
+          * @note 
+          * Whenever a format is added or removed from the DayTime
+          * class, it more than likely should also be added or removed
+          * from the FileSpec class.  Additionally, the format
+          * character must not conflict with any of the existing
+          * format characters in DayTime or FileSpec.
+          */
       enum FileSpecType
       {
          unknown,       ///< Unknown type
@@ -99,11 +107,11 @@ namespace gpstk
          version,       ///< 'v' A version number, as in version 2 
                         ///<     is more recent than version 1
          fixed,         ///< A field for fixed characters
-         clock,         ///< 'c' A field for the clock number
+         clock,         ///< 'k' A field for the clock number
          text,          ///< 'x' A field for arbitrary text
 
 
-            // see DayTime for more information on the followint elements
+            // see DayTime for more information on the following elements
          year,          ///< 'y' or 'Y' A field for a year
          month,         ///< 'm' A field for month (numeric)
          dayofmonth,    ///< 'd' A field for day-of-month  
@@ -117,11 +125,12 @@ namespace gpstk
          mjd,           ///< 'Q' A field for Modified Julian Date
          dayofweek,     ///< 'w' A field for day-of-week (numeric)
          day,           ///< 'j' A field for day of year
+         doysecond,     ///< 's' a field for second-of-day (float)
          zcount,        ///< 'Z' A field for GPS Z-count
          zcountfloor,   ///< 'z' A field for GPS Z-count rounded down
          unixsec,       ///< 'U' A field for UNIX seconds
          unixusec,      ///< 'u' A field for UNIX microseconds
-         fullzcount,    ///< 'C' A field for Full GPS Z-count
+         fullzcount,    ///< 'C' or 'c' A field for Full GPS Z-count
 
          end            ///< A place holder for the end of this list
       };
