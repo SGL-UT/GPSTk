@@ -34,11 +34,14 @@ public:
                                " report the first error found in each file. "
                                " The entire file is always checked, regardless"
                                " of time options."),
+         firstErrorOption('1', "quit-on-first-error", "Quit on the first"
+                          " error encountered (default = no)."),
          timeOption('t', "time", "Time of first record to count (default ="
                     " \"beginning of time\")"),
          eTimeOption('e', "end-time", "End of time range to compare (default"
                      " = \"end of time\")"),
          inputFileOption("Each input file is checked for errors.", true),
+         quitOnFirstError(false),
          startTime(gpstk::DayTime::BEGINNING_OF_TIME),
          endTime(gpstk::DayTime::END_OF_TIME)
    {
@@ -52,6 +55,8 @@ public:
    {
       if (!gpstk::BasicFramework::initialize(argc, argv))
          return false;
+      if (firstErrorOption.getCount())
+         quitOnFirstError = true;
       if (timeOption.getCount())
          startTime = timeOption.getTime()[0];
       if (eTimeOption.getCount())
@@ -67,6 +72,7 @@ public:
 protected:
    virtual void process()
    {
+      unsigned errors = 0;
       std::vector<std::string> inputFiles = inputFileOption.getValue();
       std::vector<std::string>::iterator itr = inputFiles.begin();
       FilterTimeOperator timeFilt(startTime, endTime);
@@ -92,20 +98,40 @@ protected:
          catch (gpstk::Exception& e)
          {
             std::cout << e << std::endl << std::endl;
+            ++errors;
+            if (quitOnFirstError)
+               GPSTK_RETHROW(e);
          }
          catch (std::exception& e)
          {
             std::cout << e.what() << std::endl;
+            ++errors;
+            if (quitOnFirstError)
+               throw e;
          }
          catch (...)
          {
             std::cout << "unknown exception caught" << std::endl;
+            ++errors;
+            if (quitOnFirstError)
+               throw;
          }
          
          itr++;
       }
+
+      if (errors > 0)
+      {
+            // Throw an exception so the app returns 1 on any errors.
+         gpstk::Exception exc("Encountered " + 
+                              gpstk::StringUtils::asString(errors) +
+                              " error(s).");
+         GPSTK_THROW(exc);
+      }
    }
    
+      /// Quit on first error.
+   gpstk::CommandOptionNoArg firstErrorOption;
       /// start time for record counting
    gpstk::CommandOptionWithSimpleTimeArg timeOption;
       /// end time for record counting
@@ -114,6 +140,7 @@ protected:
    gpstk::CommandOptionGroupOr timeOptions;
    gpstk::CommandOptionRest inputFileOption;
    
+   bool quitOnFirstError;
    gpstk::DayTime startTime, endTime;
    
 };
