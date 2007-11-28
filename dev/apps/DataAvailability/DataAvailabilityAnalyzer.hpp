@@ -96,7 +96,6 @@ private:
    unsigned long epochCounter;
    unsigned long allMissingCounter;
    unsigned long anyMissingCounter;
-   unsigned long pointsMissedCounter;
 
    enum ObsItemEnum {oiUnknown, oiElevation, oiAzimuth, oiTime, oiPRN, oiCCID,
                      oiSNR, oiHealth, oiTrackCount};
@@ -122,7 +121,7 @@ private:
    std::set<int> ignorePrn;
 
    // This is used to keep track of SV info for both what SVs are in view
-   // and when there is a obs that is missing. 
+   // and when there is an obs that is missing. 
    struct InView
    {
       InView() : up(false), aboveMask(false), smashCount(0){};

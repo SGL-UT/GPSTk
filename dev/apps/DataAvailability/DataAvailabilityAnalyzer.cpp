@@ -147,7 +147,7 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
 
      maskAngle(10), badHealthMask(false), timeMask(0), smashAdjacent(false),
      epochRate(0), epochCounter(0), allMissingCounter(0), 
-     anyMissingCounter(0), pointsMissedCounter(0), haveAntennaPos(false)
+     anyMissingCounter(0), haveAntennaPos(false)
 {
    // Set up a couple of helper arrays to map from enum <-> string
    obsItemName[oiUnknown] = "unk";
@@ -455,15 +455,13 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
       curr.numSVsVisible = numSVsInView;
       InView& prev = *sml.rbegin();
 
-       // increment counter if there isn't data from any SVs
+       // increment counter if there isn't data from any SV
       if (curr.prn == 0)
       {
          allMissingCounter++;     
-         pointsMissedCounter += numSVsInView;
+         anyMissingCounter++;
       }
-      else
-         pointsMissedCounter++;
-      
+
       if (i == ml.begin())
       {
          sml.push_back(curr);
@@ -596,12 +594,15 @@ void DataAvailabilityAnalyzer::processEpoch(
          
          oei = oe.find(svid);
          InView& iv=inView[prn];
+
+	 if (iv.elevation < maskAngle)
+	    continue;
+
          iv.inTrack = oe.size();
 
          if (oei == oe.end())  // No data from this SV
          {
-            if (oe.size()<12 && iv.elevation>maskAngle && 
-                (!iv.health || !badHealthMask))
+            if (oe.size()<12 && (!iv.health || !badHealthMask))
             {
                missingList.push_back(iv);
             }
@@ -814,12 +815,10 @@ void DataAvailabilityAnalyzer::outputSummary()
    
    cout << right << setw(40) << "Total number of epochs with data: " 
         << left  << setw(10) << epochCounter << endl;
-   cout << right << setw(40) << "Epochs with any # of missed points: "
+   cout << right << setw(40) << "Epochs with any data missing: "
         << left  << setw(10) << anyMissingCounter << endl;
    cout << right << setw(40) << "Epochs without data from any SV: "
-        << left  << setw(10) << allMissingCounter << endl;
-   cout << right << setw(40) << "Total number of points missed: "
-        << left  << setw(10) << pointsMissedCounter << endl << endl;
+        << left  << setw(10) << allMissingCounter << endl << endl;
 }
 
 void dump(ostream& s, const ObsSet& obs, int detail)
