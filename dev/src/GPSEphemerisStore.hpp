@@ -165,7 +165,7 @@ namespace gpstk
       /// Remove all data from this collection.   
       void clear()
          throw()
-      {edit(DayTime(DayTime::BEGINNING_OF_TIME));}
+      {edit(DayTime(DayTime::END_OF_TIME));}
       
       /** This returns the pvt of the sv in ecef coordinates
        * (units m, s, m/s, s/s) at the indicated time.

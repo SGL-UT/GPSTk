@@ -200,7 +200,7 @@ namespace gpstk
          initialTime = t;
       else if (t>finalTime)
          finalTime = t;
-      
+
       return rc;
    }
 
@@ -217,7 +217,7 @@ namespace gpstk
 
          EngEphMap::iterator lower = eMap.lower_bound(tmin);
          if (lower != eMap.begin())
-            eMap.erase(eMap.begin(), --lower);
+            eMap.erase(eMap.begin(), lower);
 
          EngEphMap::iterator upper = eMap.upper_bound(tmax);
          if (upper != eMap.end())
