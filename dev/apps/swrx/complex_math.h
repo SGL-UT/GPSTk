@@ -27,11 +27,16 @@
 
 #include <complex>
 
+#ifndef round
+   #define round(x)   floor(x+.5)
+#endif
+
 static inline std::complex<double> sincos(double radians) 
 {
-   std::complex<double> ret;
-   sincos(radians,&(ret.imag()),&(ret.real()));
-   return ret;
+   double imag, real;
+   imag = sin(radians);
+   real = cos(radians);
+   return std::complex<double>(real,imag);
 }
 
 static inline std::complex<int> quantize(const std::complex<double> x)

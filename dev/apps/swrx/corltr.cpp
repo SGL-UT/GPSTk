@@ -167,9 +167,10 @@ bool Corltr::initialize(int argc, char *argv[]) throw()
    }
    else
    {
+      using std::basic_ios;
       input->copyfmt(std::cin);
       input->clear(std::cin.rdstate());
-      input->std::basic_ios<char>::rdbuf(std::cin.rdbuf());
+      input->basic_ios<char>::rdbuf(std::cin.rdbuf());
       input->filename = "<stdin>";
    }
    if (verboseLevel)
@@ -242,7 +243,7 @@ void Corltr::process()
    vector< complex<double> > in(maxSamp);
    unsigned numSamp = 0;
    complex<float> s;
-   double sumSq;
+   double sumSq = 0.0;
    while (*input >> s && numSamp < maxSamp)
    {
       in[numSamp] = s;

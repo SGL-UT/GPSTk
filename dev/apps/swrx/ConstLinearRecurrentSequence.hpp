@@ -56,7 +56,7 @@ public:
 
    bool operator*() const {return (*this)[index];}
 
-   int operator++() { if((++index)==Length) index=0; } 
+   void operator++() { if((++index)==Length) index=0; } 
  
    int setIndex(int new_index) { index=new_index%Length; return getIndex();}
    int getIndex() const { return index; }

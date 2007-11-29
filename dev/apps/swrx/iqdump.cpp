@@ -101,9 +101,10 @@ bool IQDump::initialize(int argc, char *argv[]) throw()
    }
    else
    {
+      using std::basic_ios;
       input->copyfmt(std::cin);
       input->clear(std::cin.rdstate());
-      input->std::basic_ios<char>::rdbuf(std::cin.rdbuf());
+      input->basic_ios<char>::rdbuf(std::cin.rdbuf());
       input->filename = "<stdin>";
    }
    if (debugLevel)

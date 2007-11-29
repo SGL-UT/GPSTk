@@ -56,6 +56,7 @@
 using namespace gpstk;
 using namespace std;
 
+
 class GpsSim : public BasicFramework
 {
 public:
@@ -187,9 +188,10 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
    }
    else
    {
+      using std::basic_ios;
       output->copyfmt(std::cout);
       output->clear(std::cout.rdstate());
-      output->std::basic_ios<char>::rdbuf(std::cout.rdbuf());
+      output->basic_ios<char>::rdbuf(std::cout.rdbuf());
       output->filename = "<stdout>";
    }
    if (debugLevel)

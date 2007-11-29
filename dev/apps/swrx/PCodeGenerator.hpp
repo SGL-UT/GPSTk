@@ -31,6 +31,11 @@
 
 #include "CodeGenerator.hpp"
 
+/* If we're not using GNU C, elide __attribute__ */
+#ifndef __GNUC__
+#  define  __attribute__(x)  /*NOTHING*/
+#endif
+
 namespace gpstk
 {
    class PCodeGenerator : public CodeGenerator
@@ -79,7 +84,7 @@ namespace gpstk
 
    private:
 
-      inline int handleWrap()
+      inline void handleWrap()
       {
          while(index>=15345000*4)
          {

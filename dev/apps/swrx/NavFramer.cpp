@@ -58,6 +58,7 @@ void NavFramer::Subframe::dump(std::ostream& s, int detail) const
 std::ostream& operator<<(std::ostream& s, const NavFramer::Subframe& sf)
 {
    sf.dump(s,0);
+   return s;
 }
 
 
