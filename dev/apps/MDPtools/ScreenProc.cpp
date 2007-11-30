@@ -367,9 +367,9 @@ void MDPScreenProcessor::drawChan(int chan)
       writeAt(win, row, lockCol, lockCount.c_str());
    }
 
-   if (obs.haveObservation(ccL2,rcCM))
+   if (obs.haveObservation(ccL2,rcCMCL))
    {
-      MDPObsEpoch::Observation o = obs.getObservation(ccL2, rcCM);
+      MDPObsEpoch::Observation o = obs.getObservation(ccL2, rcCMCL);
       string snr = rightJustify(asString(o.snr, 1), 4);
       string lockCount = rightJustify(asString(o.lockCount), 6);
       writeAt(win, row, c2snrCol, snr.c_str());
