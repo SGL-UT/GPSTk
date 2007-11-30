@@ -481,7 +481,7 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
       {
          InView& prev = *j;
 
-         if (smashAdjacent && prev.time == curr.time - epochRate)
+         if (smashAdjacent && std::abs(curr.time - prev.time - epochRate) < 1e-3)
          {
             prev.smashCount++;
             prev.span = prev.smashCount * epochRate;
