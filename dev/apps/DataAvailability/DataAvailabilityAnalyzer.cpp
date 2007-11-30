@@ -133,6 +133,10 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
                   "Ignore anomalies on SVs below this elevation. The default"
                   " is 10 degrees."),
      
+     trackAngleOpt('\0', "track-angle",
+                  "Assume the receiver starts tracking at this elevation. The "
+                  "default is 0 degrees."),
+
      timeMaskOpt('\0', "time-mask",
                  "Ignore anomalies on SVs that haven't been above the mask"
                  " angle for this number of seconds. The default is 0 "
@@ -145,7 +149,7 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
      smashAdjacentOpt('s', "smash-adjacent",
                       "Combine adjacent lines from the same PRN."),
 
-     maskAngle(10), badHealthMask(false), timeMask(0), smashAdjacent(false),
+     maskAngle(10), trackAngle(0), badHealthMask(false), timeMask(0), smashAdjacent(false),
      epochRate(0), epochCounter(0), allMissingCounter(0), 
      anyMissingCounter(0), haveAntennaPos(false)
 {
@@ -215,6 +219,9 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
    if (maskAngleOpt.getCount())
       maskAngle = StringUtils::asDouble(maskAngleOpt.getValue()[0]);
 
+   if (trackAngleOpt.getCount())
+      trackAngle = StringUtils::asDouble(trackAngleOpt.getValue()[0]);
+
    if (timeMaskOpt.getCount())
       timeMask = StringUtils::asDouble(timeMaskOpt.getValue()[0]);
 
@@ -279,7 +286,8 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
    {
       cout << "Using " << obsItemName[oiX] << " as the independant variable." 
            << endl
-           << "Using a mask angle of " << maskAngle << " degrees" << endl;
+           << "Using a mask angle of " << maskAngle << " degrees" << endl
+           << "Using a track angle of " << trackAngle << " degrees" << endl;
       if (haveAntennaPos)
          cout << "Antenna position: " << antennaPos << " m ecef" << endl;
 
@@ -393,21 +401,11 @@ std::string secAsHMS(double seconds, bool frac=false)
    if (s > 3600)  { h = s/3600;  s %= 3600;  }
    if (s > 60)    { m = s/60;    s %= 60;    }
 
-   if (d) oss << d << " d ";
-   if (h) oss << setw(2) << h << ":";
-   if (m) oss << setw(2) << m << ":";
+   if (d) oss << d << " d " << setw(2);
+   if (h) oss << h << ":" << setw(2);
+   if (h || m) oss << m << ":" << setw(2);
 
-   if (h || m)
-      oss << setfill('0');
-   else
-      oss << setfill(' ');
-
-   oss << setw(2) << s;
-
-   if (seconds>=0.1 && frac)
-      oss << "." << static_cast<int>(seconds*10);
-   else
-      oss << "  ";
+   oss << s << "." << static_cast<int>(seconds*10);
 
    return oss.str();
 }
@@ -426,7 +424,7 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
       
       // calculate SV visibility info
       short prnTemp = 1;
-      short numSVsInView = 0;
+      short ama = 0, ata = 0;
       ECEF rxpos(antennaPos);
       
       while (prnTemp <= gpstk::MAX_PRN)
@@ -434,59 +432,72 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
          Xvt svXVT;
          bool NoEph = false;
    
-         try {svXVT = eph.getXvt(SatID(prnTemp, SatID::systemGPS), curr.time);}
+         try
+         {
+            svXVT = eph.getXvt(SatID(prnTemp, SatID::systemGPS), curr.time);
+         }
          catch(gpstk::Exception& e) 
          {
-            if (verboseLevel> 3) {cout << e << endl;}
+            if (verboseLevel> 3)
+               cout << e << endl;
             NoEph = true;
          }
          double elvAngle = 0;
          if (!NoEph)
          {
-            try {
-               elvAngle = rxpos.elvAngle(svXVT.x);}
-            catch(gpstk::Exception& e) {
-               if (verboseLevel > 1) cout << e << endl;}
-            if (elvAngle > maskAngle)  { numSVsInView++; }
-         } 
+            try
+            {
+               elvAngle = rxpos.elvAngle(svXVT.x);
+            }
+            catch(gpstk::Exception& e)
+            {
+               if (verboseLevel > 1) cout << e << endl;
+            }
+            if (elvAngle > trackAngle)
+               ata++;
+            if (elvAngle > maskAngle)
+               ama++;
+         }
          prnTemp++;
-      }     
-      
-      curr.numSVsVisible = numSVsInView;
-      InView& prev = *sml.rbegin();
-
-       // increment counter if there isn't data from any SV
-      if (curr.prn == 0)
-      {
-         allMissingCounter++;     
-         anyMissingCounter++;
       }
 
-      if (i == ml.begin())
+      anyMissingCounter++;
+      if (curr.prn == 0)
+         allMissingCounter++;     
+
+      curr.numAboveMaskAngle = ama;
+      curr.numAboveTrackAngle = ata;
+      MissingList::reverse_iterator j;
+      MissingList::reverse_iterator k=sml.rend();
+      for (j = sml.rbegin(); j != k; j++)
+         if (j->prn == curr.prn)
+            break;
+
+      if (j == sml.rend())
       {
          sml.push_back(curr);
-         anyMissingCounter++;
-         continue;
-      }
-      else if (prev.time != curr.time)
-         anyMissingCounter++;
-      
-      // smash together epochs if necessary
-      if (curr.prn == prev.prn && smashAdjacent)
-      {
-         prev.smashCount++;
-         prev.time = curr.time;
-         prev.elevation = curr.elevation;
-         prev.azimuth = curr.azimuth;
-         prev.snr = curr.snr;
-         prev.epochCount = curr.epochCount;
-         prev.numSVsVisible = max(curr.numSVsVisible, prev.numSVsVisible);
       }
       else
       {
-         sml.push_back(curr);
-      }    
+         InView& prev = *j;
+
+         if (smashAdjacent && prev.time == curr.time - epochRate)
+         {
+            prev.smashCount++;
+            prev.span = prev.smashCount * epochRate;
+            prev.time = curr.time;
+            prev.elevation = curr.elevation;
+            prev.azimuth = curr.azimuth;
+            prev.snr = curr.snr;
+            prev.epochCount = curr.epochCount;
+            prev.numAboveMaskAngle = max(curr.numAboveMaskAngle, prev.numAboveMaskAngle);
+            prev.numAboveTrackAngle = max(curr.numAboveTrackAngle, prev.numAboveTrackAngle);
+         }
+         else
+            sml.push_back(curr);
+      }
    }
+
    return sml;
 }
 
@@ -558,12 +569,11 @@ void DataAvailabilityAnalyzer::processEpoch(
    const ObsEpoch& prev_oe)
 {
    ECEF rxpos(ap);
-   InView::dump ivdumper(cout, timeFormat);
    
    for (DayTime t = prev_oe.time + epochRate; t <= oe.time; t += epochRate)
    {
       for (int prn=1; prn<=32; prn++)
-         inView[prn].update(prn, t, rxpos, *eph, gm, maskAngle);
+         inView[prn].update(prn, t, rxpos, *eph, gm, maskAngle, trackAngle);
       
       if (verboseLevel>2)
       {
@@ -612,7 +622,7 @@ void DataAvailabilityAnalyzer::processEpoch(
             if (verboseLevel>3)
                cout << oei->first << " " << oei->second << endl;
             if (verboseLevel>3)
-               ivdumper(iv);
+               cout << iv;
             if (!iv.up)
             {
                missingList.push_back(iv);
@@ -681,12 +691,10 @@ void DataAvailabilityAnalyzer::shutDown()
    MissingList sml = processList(missingList, *eph);
    
    cout << "\n Availability Raw Results :\n\n";
-   cout << "      Time          smash   PRN    Elv    Az  Hlth  SNR  #ama"
-        << "    tama    ccid\n"
-        << "=================================================================="
-        << "======================\n";
+   cout << "Start                 End        PRN    Elv    Az  Hlth   SNR  ama ata     Tah        Tama   ccid" << endl
+        << "=================================================================================================" << endl;
    
-   for_each(sml.begin(), sml.end(), InView::dump(cout, timeFormat));
+   for_each(sml.begin(), sml.end(), InView::dumper(cout, timeFormat));
 
    outputSummary();
 }
@@ -699,7 +707,8 @@ void DataAvailabilityAnalyzer::InView::update(
    const ECEF& rxpos,
    const EphemerisStore& eph,
    GeoidModel& gm,
-   float maskAngle)
+   float maskAngle,
+   float trackAngle)
 {
    try
    {
@@ -755,59 +764,59 @@ void DataAvailabilityAnalyzer::InView::update(
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-bool DataAvailabilityAnalyzer::InView::dump::operator()(const InView& iv)
+void DataAvailabilityAnalyzer::InView::dump(std::ostream& s, const std::string fmt)
+   const
 {
-   double timeUp     = iv.time - iv.firstEpoch;
-   double timeUpMask = iv.time - iv.firstEpochAboveMask;
+   DayTime t0 = time - span;
+   double timeUp     = t0 - firstEpoch;
+   double timeUpMask = t0 - firstEpochAboveMask;
    char dir;
-   if (iv.elevation > 0)
-      dir = iv.rising ? '^' : 'v';
+   if (elevation > 0)
+      dir = rising ? '^' : 'v';
    else
       dir = ' ';
 
-   cout << left << iv.time.printf(timeFormat)
-        << "   " << setw(4) << iv.smashCount << "  ";
+   s << left << t0.printf(fmt);
+   if (smashCount)
+      s << " - " << time.printf("%02H:%02M:%04.1f") << "  ";
+   else
+      s << setw(15) << " ";
 
-   if (iv.prn>0)
+   if (prn>0)
    {
-      cout << setw(3) << iv.prn << " " << fixed << right
-           << setprecision(2) << setw(6) << iv.elevation
-           << dir << "  "
-           << setprecision(0) << setw(3) << iv.azimuth << "  "
-           << hex << setw(2) << iv.health << "   " << dec;
-   
-      if (iv.up)
-         cout << setprecision(1) << setw(4) << iv.snr;
+      s << setw(3) << prn << " " << fixed << right
+        << setprecision(2) << setw(6) << elevation
+        << dir << "  "
+        << setprecision(0) << setw(3) << azimuth << "  "
+        << hex << setw(2) << health << "  " << dec;
+      if (snr>0)
+         s << setprecision(1) << setw(5) << snr;
       else
-         cout << "-el ";
-      
-      cout << right << setw(6) << iv.numSVsVisible;      
+         s << setw(5) << "-";
+      s << "   "
+        << left << setw(2) << numAboveMaskAngle << "  "
+        << left << setw(2) << numAboveTrackAngle << "  ";
 
-      if (iv.up)
-      {
-         if (timeUpMask>0)
-            cout << right << setw(12) <<  secAsHMS(timeUpMask);
-         else
-            cout << setw(12) << " ";
-      }
+      if (up)
+         s << right << setw(9) << secAsHMS(timeUp) << " " << setw(9) << secAsHMS(timeUpMask) << " ";
       else
-         cout << right << setw(12) << " -el  ";
+         s << right << setw(9) << "el<0" << " " << setw(9) << " ";
 
-      if (iv.obsLost.empty() || iv.obsGained.empty())
-         cout << "all";
+      if (obsLost.empty() || obsGained.empty())
+         s << " all";
       else
-         cout << iv.obsLost << " -> " << iv.obsGained;
+         s << " " << obsLost << " -> " << obsGained;
    }
    else
    {
-      cout << "All";
-      cout << right << setw(30) << iv.numSVsVisible;
+      s << "All" << setw(28) << " " 
+        << left << setw(2) << numAboveMaskAngle << " "
+        << left << setw(2) << numAboveTrackAngle << "  ";
    }
 
-   cout << endl;
-
-   return true;
+   s << endl;
 }
+
 
 void DataAvailabilityAnalyzer::outputSummary()
 {
@@ -820,6 +829,7 @@ void DataAvailabilityAnalyzer::outputSummary()
    cout << right << setw(40) << "Epochs without data from any SV: "
         << left  << setw(10) << allMissingCounter << endl << endl;
 }
+
 
 void dump(ostream& s, const ObsSet& obs, int detail)
 {
@@ -838,10 +848,4 @@ void dump(ostream& s, const ObsSet& obs, int detail)
                s << ObsID::cbStrings[i->band] << ObsID::tcStrings[i->code];
             }
    }
-}
-
-std::ostream& operator<<(std::ostream& s, const ObsSet& obs)
-{
-   dump(s, obs);
-   return s;
 }

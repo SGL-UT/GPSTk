@@ -71,7 +71,7 @@ protected:
 
 private:
    void processEpoch(
-      const gpstk::Triple& antPos, 
+      const gpstk::Triple& antPos,
       const gpstk::ObsEpoch& oe,
       const gpstk::ObsEpoch& prev_oe);
       
@@ -81,7 +81,7 @@ private:
    std::ofstream output;
    std::string timeFormat;
    gpstk::CommandOptionWithAnyArg inputOpt, outputOpt, independantOpt,
-      mscFileOpt, msidOpt, timeFmtOpt, ephFileOpt, maskAngleOpt, timeMaskOpt,
+      mscFileOpt, msidOpt, timeFmtOpt, ephFileOpt, maskAngleOpt, trackAngleOpt, timeMaskOpt,
       rxPosOpt, timeSpanOpt, ignorePrnOpt;
 
    gpstk::CommandOptionNoArg badHealthMaskOpt, smashAdjacentOpt;
@@ -116,15 +116,16 @@ private:
    bool haveAntennaPos;
    long msid;
 
-   float maskAngle;
+   float maskAngle, trackAngle;
 
    std::set<int> ignorePrn;
 
+public:
    // This is used to keep track of SV info for both what SVs are in view
    // and when there is an obs that is missing. 
    struct InView
    {
-      InView() : up(false), aboveMask(false), smashCount(0){};
+      InView() : up(false), aboveMask(false), smashCount(0), span(0){};
 
       void update(
          short prn,
@@ -132,7 +133,8 @@ private:
          const gpstk::ECEF& rxpos,
          const EphemerisStore& eph,
          gpstk::GeoidModel& gm,
-         float maskAngle);
+         float maskAngle, 
+         float trackAngle);
 
       short prn;
       gpstk::DayTime time;
@@ -174,12 +176,13 @@ private:
       // Set only when the smash function merges this record with others.
       // Indicates the number of records merged.
       unsigned smashCount;
+      double span;
 
       // The number of SVs in track at this point in time.
       short inTrack;
 
       // The number of SVs physically above the mask angle at this time
-      short numSVsVisible;
+      short numAboveMaskAngle, numAboveTrackAngle;
 
       // The SNR of the CA signal. Note that this will be the SNR of the 
       // most recently received observation when an outage is detected.
@@ -187,15 +190,19 @@ private:
 
       // A function object to allow printing of a list of these with a 
       // for_each loop
-      class dump
+      class dumper
       {
       public:
-         dump(std::ostream& s, const std::string fmt)
+         dumper(std::ostream& s, const std::string fmt)
             : stream(s), timeFormat(fmt) {};
          std::ostream& stream;
          std::string timeFormat;
-         bool operator()(const InView& iv);
+         bool operator()(const InView& iv)
+         { iv.dump(stream, timeFormat); return true; }
       };
+
+      void dump(std::ostream& s, const std::string fmt="%Y %j %02H:%02M:%04.1f")
+         const;
    };
 
    typedef std::list<InView> MissingList;
@@ -209,7 +216,17 @@ private:
 
 };
 
+
 void dump(std::ostream& s, const ObsSet& obs, int detail=0);
-std::ostream& operator<<(std::ostream& s, const ObsSet& obs);
+
+
+inline std::ostream& operator<<(std::ostream& s,
+                         const DataAvailabilityAnalyzer::InView& iv)
+{ iv.dump(s); return s; }
+
+
+inline std::ostream& operator<<(std::ostream& s, const ObsSet& obs)
+{ dump(s, obs); return s; }
+
 
 #endif
