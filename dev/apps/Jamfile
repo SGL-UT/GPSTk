@@ -21,7 +21,7 @@ SubInclude TOP apps multipath ;
 SubInclude TOP apps positioning ;
 if $(UNIX)
 {
-   SubInclude TOP apps receiver ;
+#   SubInclude TOP apps receiver ;
 }
 SubInclude TOP apps reszilla ;
 SubInclude TOP apps Rinextools ;
