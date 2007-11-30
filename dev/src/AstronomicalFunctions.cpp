@@ -1,3 +1,4 @@
+#pragma ident "$Id: $"
 
 /**
  * @file AstronomicalFunctions.cpp
@@ -33,55 +34,70 @@
 namespace gpstk
 {
 
+      /* Function to change from CIS to CTS(ECEF) coordinate system
+       * (coordinates in meters)
+       * @param posCis    Coordinates in CIS system (in meters).
+       * @param t         Epoch
+       *
+       * @return Triple in CTS(ECEF) coordinate system.
+       */
+   Triple CIS2CTS(const Triple posCIS,
+                  const DayTime& t)
+   {
 
-    /* Function to change from CIS to CTS(ECEF) coordinate system (coordinates in meters)
-     * @param posCis    Coordinates in CIS system (in meters).
-     * @param t         Epoch
-     */
-    Triple CIS2CTS(const Triple posCIS, const DayTime& t)
-    {
+         // Angle of Earth rotation, in radians
+      double ts( UTC2SID(t)*TWO_PI/24.0 );
 
-        // Angle of Earth rotation, in radians
-        double ts( UTC2SID(t)*TWO_PI/24.0 );
+      Triple res;
 
-        Triple res;
+      res.theArray[0] = cos(ts)*posCIS.theArray[0] +
+                        sin(ts)*posCIS.theArray[1];
 
-        res.theArray[0] = cos(ts)*posCIS.theArray[0] + sin(ts)*posCIS.theArray[1];
-        res.theArray[1] = -sin(ts)*posCIS.theArray[0] + cos(ts)*posCIS.theArray[1];
-        res.theArray[2] = posCIS.theArray[2];
+      res.theArray[1] = -sin(ts)*posCIS.theArray[0] +
+                        cos(ts)*posCIS.theArray[1];
 
-        return res;
-    } // End CIS2CTS()
+      res.theArray[2] = posCIS.theArray[2];
+
+      return res;
+   } // End CIS2CTS()
 
 
-    /* Function to convert from UTC to sidereal time
-     * @param t         Epoch
-     *
-     * @return sidereal time in hours
-     */
-    double UTC2SID(const DayTime& t)
-    {
+      /* Function to convert from UTC to sidereal time
+       * @param t         Epoch
+       *
+       * @return sidereal time in hours.
+       */
+   double UTC2SID(const DayTime& t)
+   {
 
-        double y(t.year()-1.0);
-        double m(13.0);
-        double d(t.DOY());
-        double h(t.secOfDay()/3600.0);  // Hours of day (decimal)
-        double frofday (t.secOfDay()/86400.0);        // Fraction of day
+      double y(t.year()-1.0);
+      double m(13.0);
+      double d(t.DOY());
 
-        // Compute Julian Day, including decimals
-        double jd(t.JD());
+         // Hours of day (decimal)
+      double h(t.secOfDay()/3600.0);
 
-        // Temporal value, in centuries
-        double tt( (jd - 2451545.0)/36525.0 );
+         // Fraction of day
+      double frofday (t.secOfDay()/86400.0);
 
-        double sid( 24110.54841 + tt*( (8640184.812866) + tt*( (0.093104) - (6.2e-6*tt)) ) );
+         // Compute Julian Day, including decimals
+      double jd(t.JD());
 
-        sid = sid/3600.0 + h;
-        sid = fmod(sid,24.0);
+         // Temporal value, in centuries
+      double tt( (jd - 2451545.0)/36525.0 );
 
-        if (sid < 0.0) sid+=24.0;
+      double sid( 24110.54841 + tt*( (8640184.812866) + 
+                  tt*( (0.093104) - (6.2e-6*tt)) ) );
 
-        return sid;
-    }
+      sid = sid/3600.0 + h;
+      sid = fmod(sid,24.0);
+
+      if (sid < 0.0)
+      {
+         sid+=24.0;
+      }
+
+      return sid;
+   }
 
 } // end namespace gpstk
