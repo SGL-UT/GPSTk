@@ -235,15 +235,16 @@ namespace gpstk
    }
    
 
-   /* Computes rotation about axis X.
-    * @param angle    Angle to rotate, in degrees
-    * @return A triple which is the original triple rotated angle about X
-    */
+      /* Computes rotation about axis X.
+       * @param angle    Angle to rotate, in degrees
+       * @return A triple which is the original triple rotated angle about X
+       */
    Triple Triple::R1(const double& angle) const
       throw()
    {
-      double sinangle(std::sin(angle*DEG_TO_RAD));
-      double cosangle(std::cos(angle*DEG_TO_RAD));
+      double ang(angle*DEG_TO_RAD);
+      double sinangle(std::sin(ang));
+      double cosangle(std::cos(ang));
       Triple rot;
       rot[0] = (*this)[0];
       rot[1] = cosangle*(*this)[1] + sinangle*(*this)[2];
@@ -252,15 +253,16 @@ namespace gpstk
    }
 
 
-   /* Computes rotation about axis Y.
-    * @param angle    Angle to rotate, in degrees
-    * @return A triple which is the original triple rotated angle about Y
-    */
+      /* Computes rotation about axis Y.
+       * @param angle    Angle to rotate, in degrees
+       * @return A triple which is the original triple rotated angle about Y
+       */
    Triple Triple::R2(const double& angle) const
       throw()
    {
-      double sinangle(std::sin(angle*DEG_TO_RAD));
-      double cosangle(std::cos(angle*DEG_TO_RAD));
+      double ang(angle*DEG_TO_RAD);
+      double sinangle(std::sin(ang));
+      double cosangle(std::cos(ang));
       Triple rot;
       rot[0] = cosangle*(*this)[0] - sinangle*(*this)[2];
       rot[1] = (*this)[1];
@@ -269,15 +271,16 @@ namespace gpstk
    }
 
 
-   /* Computes rotation about axis Z.
-    * @param angle    Angle to rotate, in degrees
-    * @return A triple which is the original triple rotated angle about Z
-    */
+      /* Computes rotation about axis Z.
+       * @param angle    Angle to rotate, in degrees
+       * @return A triple which is the original triple rotated angle about Z
+       */
    Triple Triple::R3(const double& angle) const
       throw()
    {
-      double sinangle(std::sin(angle*DEG_TO_RAD));
-      double cosangle(std::cos(angle*DEG_TO_RAD));
+      double ang(angle*DEG_TO_RAD);
+      double sinangle(std::sin(ang));
+      double cosangle(std::cos(ang));
       Triple rot;
       rot[0] = cosangle*(*this)[0] + sinangle*(*this)[1];
       rot[1] = -sinangle*(*this)[0] + cosangle*(*this)[1];
