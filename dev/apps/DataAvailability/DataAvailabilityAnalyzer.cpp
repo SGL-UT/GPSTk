@@ -480,8 +480,8 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
       else
       {
          InView& prev = *j;
-         double dt=std::abs(curr.time - prev.time);
-         if (smashAdjacent && std::abs(dt - epochRate) < 1e-3)
+         double dt=std::abs(curr.time - prev.time-epochRate);
+         if (smashAdjacent && dt < 1e-3)
          {
             prev.smashCount++;
             prev.span = prev.smashCount * epochRate;
@@ -490,8 +490,10 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
             prev.azimuth = curr.azimuth;
             prev.snr = curr.snr;
             prev.epochCount = curr.epochCount;
-            prev.numAboveMaskAngle = max(curr.numAboveMaskAngle, prev.numAboveMaskAngle);
-            prev.numAboveTrackAngle = max(curr.numAboveTrackAngle, prev.numAboveTrackAngle);
+            prev.numAboveMaskAngle = 
+               max(curr.numAboveMaskAngle, prev.numAboveMaskAngle);
+            prev.numAboveTrackAngle = 
+               max(curr.numAboveTrackAngle, prev.numAboveTrackAngle);
          }
          else
             sml.push_back(curr);
@@ -610,6 +612,7 @@ void DataAvailabilityAnalyzer::processEpoch(
 
          iv.inTrack = oe.size();
 
+
          if (oei == oe.end())  // No data from this SV
          {
             if (oe.size()<12 && (!iv.health || !badHealthMask))
@@ -645,7 +648,7 @@ void DataAvailabilityAnalyzer::processEpoch(
                // by the visibility check.
                ObsEpoch::const_iterator poei = prev_oe.find(svid);
                if (poei == prev_oe.end())
-                  break;
+                  continue;
 
                // At this point we know there is some data from the SV, so
                // figure out if the obs set is different from the previous
@@ -691,8 +694,8 @@ void DataAvailabilityAnalyzer::shutDown()
    MissingList sml = processList(missingList, *eph);
    
    cout << "\n Availability Raw Results :\n\n";
-   cout << "Start                 End        PRN    Elv    Az  Hlth   SNR  ama ata     Tah        Tama   ccid" << endl
-        << "=================================================================================================" << endl;
+   cout << "Start                 End        #     PRN    Elv    Az  Hlth  SNR  ama ata     Tah        Tama   ccid" << endl
+        << "======================================================================================================" << endl;
    
    for_each(sml.begin(), sml.end(), InView::dumper(cout, timeFormat));
 
@@ -764,7 +767,7 @@ void DataAvailabilityAnalyzer::InView::update(
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-void DataAvailabilityAnalyzer::InView::dump(std::ostream& s, const std::string fmt)
+void DataAvailabilityAnalyzer::InView::dump(ostream& s, const string fmt)
    const
 {
    DayTime t0 = time - span;
@@ -778,9 +781,11 @@ void DataAvailabilityAnalyzer::InView::dump(std::ostream& s, const std::string f
 
    s << left << t0.printf(fmt);
    if (smashCount)
-      s << " - " << time.printf("%02H:%02M:%04.1f") << "  ";
+      s << " - " << time.printf("%02H:%02M:%04.1f");
    else
-      s << setw(15) << " ";
+      s << "   " << "          ";
+   s << " " << setw(5) << smashCount+1
+     << " ";
 
    if (prn>0)
    {
@@ -798,7 +803,8 @@ void DataAvailabilityAnalyzer::InView::dump(std::ostream& s, const std::string f
         << left << setw(2) << numAboveTrackAngle << "  ";
 
       if (up)
-         s << right << setw(9) << secAsHMS(timeUp) << " " << setw(9) << secAsHMS(timeUpMask) << " ";
+         s << right << setw(9) << secAsHMS(timeUp)
+           << " " << setw(9) << secAsHMS(timeUpMask) << " ";
       else
          s << right << setw(9) << "el<0" << " " << setw(9) << " ";
 
@@ -809,7 +815,7 @@ void DataAvailabilityAnalyzer::InView::dump(std::ostream& s, const std::string f
    }
    else
    {
-      s << "All" << setw(28) << " " 
+      s << "all" << setw(28) << " " 
         << left << setw(2) << numAboveMaskAngle << " "
         << left << setw(2) << numAboveTrackAngle << "  ";
    }
