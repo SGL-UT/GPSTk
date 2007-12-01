@@ -1,6 +1,6 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../src
-LDADD = ../src/libgpstk.la
+INCLUDES = -I$(srcdir)/../src -I$(srcdir)/../lib/procframe
+LDADD = ../src/libgpstk.la ../lib/procframe/libprocframe.la
 
 bin_PROGRAMS = example1 example2 example3 example4 example5 example6 example7
 example1_SOURCES = example1.cpp

@@ -9,10 +9,10 @@ if $(PREPROCESSING)
 else
 {
    GPSBuildLibrary procframe : 
-      ComputeWindUp.cpp
+      ComputeMOPSWeights.cpp ComputeWindUp.cpp
       ;
 
    InstallFile $(INCDIR) :
-      ComputeWindUp.hpp 
+      ComputeMOPSWeights.hpp ComputeWindUp.hpp 
       ;
 }
