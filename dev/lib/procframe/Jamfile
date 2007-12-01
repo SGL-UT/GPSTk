@@ -1,0 +1,18 @@
+# $Id: $
+# please add in alphabetic order
+SubDir TOP lib procframe ;
+
+if $(PREPROCESSING)
+{
+   GPSSetupLibrary procframe : gpstk ;
+}
+else
+{
+   GPSBuildLibrary procframe : 
+      ComputeWindUp.cpp
+      ;
+
+   InstallFile $(INCDIR) :
+      ComputeWindUp.hpp 
+      ;
+}

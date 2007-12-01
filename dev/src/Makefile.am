@@ -13,7 +13,7 @@ CommandOptionParser.cpp CommandOptionWithCommonTimeArg.cpp \
 CommandOptionWithPositionArg.cpp CommandOptionWithTimeArg.cpp CommonTime.cpp \
 ComputeIURAWeights.cpp ComputeLC.cpp ComputeLI.cpp ComputeLdelta.cpp \
 ComputeMOPSWeights.cpp ComputeMelbourneWubbena.cpp ComputePC.cpp ComputePI.cpp \
-ComputePdelta.cpp ComputeWindUp.cpp  \
+ComputePdelta.cpp \
 DOP.cpp DataHeaders.cpp DataStructures.cpp \
 DayTime.cpp DeltaOp.cpp ECEF.cpp EngAlmanac.cpp EngEphemeris.cpp EngNav.cpp \
 EphemerisRange.cpp Exception.cpp Expression.cpp FFData.cpp FFStream.cpp \
@@ -56,7 +56,7 @@ CommandOption.hpp CommandOptionParser.hpp CommandOptionWithCommonTimeArg.hpp \
 CommandOptionWithPositionArg.hpp CommandOptionWithTimeArg.hpp CommonTime.hpp \
 ComputeCombination.hpp ComputeIURAWeights.hpp ComputeLC.hpp ComputeLI.hpp \
 ComputeLdelta.hpp ComputeMOPSWeights.hpp ComputeMelbourneWubbena.hpp \
-ComputePC.hpp ComputePI.hpp ComputePdelta.hpp ComputeWindUp.hpp \
+ComputePC.hpp ComputePI.hpp ComputePdelta.hpp \
 DOP.hpp DataHeaders.hpp DataStructures.hpp DayTime.hpp DeltaOp.hpp \
 ECEF.hpp EngAlmanac.hpp \
 EngEphemeris.hpp EngNav.hpp EphemerisRange.hpp \
