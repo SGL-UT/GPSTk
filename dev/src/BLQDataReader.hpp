@@ -1,11 +1,12 @@
+#pragma ident "$Id: $"
 
 /**
  * @file BLQDataReader.hpp
  * File stream for ocean tides harmonics data in BLQ file format.
  */
 
-#ifndef GPSTK_BLQDATAREADER_HPP
-#define GPSTK_BLQDATAREADER_HPP
+#ifndef BLQDATAREADER_HPP
+#define BLQDATAREADER_HPP
 
 //============================================================================
 //
@@ -43,160 +44,148 @@ using namespace std;
 
 namespace gpstk
 {
-    /** @addtogroup formattedfile */
-    //@{
+      /** @addtogroup formattedfile */
+      //@{
 
-    /**
-     * This is a class to read and parse ocean tides harmonics data in BLQ file format.
-     *
-     * Ocean loading displacement models usually use the ocean tide harmonics
-     * in order to compute station biases due to this effect.
-     *
-     * A common format to encode such information is the so-called BLQ format,
-     * where each station name is associated to a matrix with 11 columns
-     * (corresponding to the most important harmonics) and six rows: Three
-     * for amplitudes (radial, west, south), and three for phases (radial, 
-     * west, south).
-     *
-     * You may find this data using the "Ocean tide loading provider" at:
-     *
-     * http://www.oso.chalmers.se/~loading/
-     *
-     * A typical way to use this class follows:
-     *
-     * @code
-     *   BLQDataReader blqread;
-     *
-     *   blqread.open("EBRE.GOT00.2");
-     *
-     *   Matrix<double> tides(6,11,0.0);
-     *
-     *   tides = blqread.getTideHarmonics("EBRE");
-     * @endcode
-     *
-     * The eleven tide harmonics used are:
-     *
-     * - M2:  Principal lunar semidiurnal
-     * - S2:  Principal solar semidiurnal
-     * - N2:  Larger lunar elliptic semidiurnal
-     * - K2:  Lunisolar semidiurnal
-     * - K1:  Lunar diurnal
-     * - O1:  Lunar diurnal
-     * - P1:  Solar diurnal
-     * - Q1:  Larger lunar elliptic diurnal
-     * - MF:  Lunisolar fortnightly
-     * - MM:  Lunar monthly
-     * - SSA: Solar semiannual
-     *
-     * @warning Be aware that you may select several different tide models
-     * to generate tide harmonics. It is advised to use the latest
-     * models such as GOT00.2, FES99, TPXO.6.2, etc.
-     */
-    class BLQDataReader : public FFTextStream
-    {
-    public:
+      /** This is a class to read and parse ocean tides harmonics data 
+       *  in BLQ file format.
+       *
+       * Ocean loading displacement models usually use the ocean tide 
+       * harmonics in order to compute station biases due to this effect.
+       *
+       * A common format to encode such information is the so-called BLQ 
+       * format, where each station name is associated to a matrix with 
+       * 11 columns (corresponding to the most important harmonics) and 
+       * six rows: Three for amplitudes (radial, west, south), and three 
+       * for phases (radial, west, south).
+       *
+       * You may find this data using the "Ocean tide loading provider" at:
+       *
+       * http://www.oso.chalmers.se/~loading/
+       *
+       * A typical way to use this class follows:
+       *
+       * @code
+       *   BLQDataReader blqread;
+       *
+       *   blqread.open("EBRE.GOT00.2");
+       *
+       *   Matrix<double> tides(6,11,0.0);
+       *
+       *   tides = blqread.getTideHarmonics("EBRE");
+       * @endcode
+       *
+       * The eleven tide harmonics used are:
+       *
+       * - M2:  Principal lunar semidiurnal
+       * - S2:  Principal solar semidiurnal
+       * - N2:  Larger lunar elliptic semidiurnal
+       * - K2:  Lunisolar semidiurnal
+       * - K1:  Lunar diurnal
+       * - O1:  Lunar diurnal
+       * - P1:  Solar diurnal
+       * - Q1:  Larger lunar elliptic diurnal
+       * - MF:  Lunisolar fortnightly
+       * - MM:  Lunar monthly
+       * - SSA: Solar semiannual
+       *
+       * @warning Be aware that you may select several different tide models
+       * to generate tide harmonics. It is advised to use the latest
+       * models such as GOT00.2, FES99, TPXO.6.2, etc.
+       */
+   class BLQDataReader : public FFTextStream
+   {
+   public:
 
-        /// Default constructor
-        BLQDataReader() {}
+         /// Default constructor
+      BLQDataReader() {}
 
-        /** Common constructor. It will always open file a for read and will
-         * load ocean tide harmonics data in one pass.
-         *
-         * @param fn   BLQ data file to read
-         *
-         */
-        BLQDataReader(const char* fn)
-            : FFTextStream(fn, std::ios::in) { (*this).loadData(); }
-
-
-        /** Common constructor. It will always open file for read and will
-         * load ocean tide harmonics data in one pass.
-         *
-         * @param fn   BLQ data file to read
-         *
-         */
-        BLQDataReader(const string& fn)
-            : FFTextStream(fn.c_str(), std::ios::in) { (*this).loadData(); }
+         /** Common constructor. It will always open file a for read and will
+          * load ocean tide harmonics data in one pass.
+          *
+          * @param fn   BLQ data file to read
+          *
+          */
+      BLQDataReader(const char* fn) : FFTextStream(fn, std::ios::in)
+      { loadData(); }
 
 
-        /// Method to open AND load ocean tide harmonics data file.
-        virtual void open(const char* fn)
-        {
-            FFTextStream::open(fn, std::ios::in);
-            (*this).loadData();
-
-            return;
-        }
-
-
-        /// Method to open AND load ocean tide harmonics data file.
-        virtual void open(const string& fn)
-        {
-            FFTextStream::open(fn.c_str(), std::ios::in);
-            (*this).loadData();
-            
-            return;
-        }
+         /** Common constructor. It will always open file for read and will
+          * load ocean tide harmonics data in one pass.
+          *
+          * @param fn   BLQ data file to read
+          *
+          */
+      BLQDataReader(const string& fn) : FFTextStream(fn.c_str(), std::ios::in)
+      { loadData(); }
 
 
-        /** Method to get the ocean tide harmonics corresponding to a given station.
-         *
-         * @param station   Station name (case is NOT relevant).
-         *
-         * @return A Matrix<double> of siw rows and eleven columns 
-         * containing tide harmonics M2, S2, N2, K2, K1, O1, P1, Q1, MF,
-         * MM and SSA for amplitudes (radial, west, south, in meters) and
-         * phases (radial, west, south, in degrees). If station is 
-         * not found, this method will return a matrix full of zeros.
-         */
-        virtual Matrix<double> getTideHarmonics(const string& station);
+         /// Method to open AND load ocean tide harmonics data file.
+      virtual void open(const char* fn);
 
 
-        /// Destructor
-        virtual ~BLQDataReader() {}
+         /// Method to open AND load ocean tide harmonics data file.
+      virtual void open(const string& fn);
 
 
-    private:
+         /** Method to get the ocean tide harmonics corresponding to a 
+          *  given station.
+          *
+          * @param station   Station name (case is NOT relevant).
+          *
+          * @return A Matrix<double> of siw rows and eleven columns 
+          * containing tide harmonics M2, S2, N2, K2, K1, O1, P1, Q1, MF,
+          * MM and SSA for amplitudes (radial, west, south, in meters) and
+          * phases (radial, west, south, in degrees). If station is 
+          * not found, this method will return a matrix full of zeros.
+          */
+      virtual Matrix<double> getTideHarmonics(const string& station);
 
 
-        /// A structure used to store ocean tide harmonics data.
-        struct tideData
-        {
+         /// Destructor
+      virtual ~BLQDataReader() {}
+
+
+   private:
+
+
+         /// A structure used to store ocean tide harmonics data.
+      struct tideData
+      {
             // Default constructor initializing the data in the structure
-            tideData() : harmonics(6,11,0.0) {};
+         tideData() : harmonics(6,11,0.0) {};
 
-            Matrix<double> harmonics;   ///< Tide harmonics data
-        };
-
-
-        /// Handy iterator type
-        typedef std::map<string, tideData>::const_iterator tideDataIt;
+         Matrix<double> harmonics;   ///< Tide harmonics data
+      };
 
 
-        /// Map holding the information regarding ocean tide harmonics
-        std::map<string, tideData> OceanTidesData;
+         /// Handy iterator type
+      typedef std::map<string, tideData>::const_iterator tideDataIt;
 
 
-        /** Method to store ocean tide harmonics data in this class' data map
-         * @param stationName   String holding station name.
-         * @param data          tideData structure holding the harmonics data
-         */
-        void setData(const string& stationName, const tideData& data)
-        {
-            (*this).OceanTidesData.insert(pair<string, tideData>(stationName, data));
-        }
+         /// Map holding the information regarding ocean tide harmonics
+      std::map<string, tideData> OceanTidesData;
 
 
-        /// Method to store ocean tide harmonics data in this class' data map
-        virtual void loadData(void) throw(FFStreamError, gpstk::StringUtils::StringException);
+         /** Method to store ocean tide harmonics data in this class' 
+          *  data map
+          * @param stationName String holding station name.
+          * @param data        tideData structure holding the harmonics data
+          */
+      void setData(const string& stationName, 
+                   const tideData& data)
+      { OceanTidesData.insert(pair<string, tideData>(stationName, data)); }
 
 
-    };
+         /// Method to store ocean tide harmonics data in this class' data map
+      virtual void loadData(void)
+         throw(FFStreamError, gpstk::StringUtils::StringException);
 
 
-   //@}
+   };
+
+
+      //@}
 
 } // namespace
-
-#endif
-
+#endif  // BLQDATAREADER_HPP

@@ -137,13 +137,11 @@ namespace gpstk
           *
           * @param x     Pole displacement x, in arcseconds
           * @param y     Pole displacement y, in arcseconds
+          *
+          * @return This same object
           */
-      void setXY(const double& x,
-                 const double& y)
-      {
-         xdisp = x;
-         ydisp = y;
-      };
+      PoleTides& setXY(const double& x,
+                       const double& y);
 
 
          /// Method to get the x pole displacement parameter

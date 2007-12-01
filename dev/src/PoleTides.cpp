@@ -105,4 +105,21 @@ namespace gpstk
    } // End PoleTides::getPoleTide
 
 
+      /* Method to set the pole displacement parameters
+       *
+       * @param x     Pole displacement x, in arcseconds
+       * @param y     Pole displacement y, in arcseconds
+       *
+       * @return This same object
+       */
+   PoleTides& PoleTides::setXY(const double& x,
+                               const double& y)
+   {
+      xdisp = x;
+      ydisp = y;
+
+      return (*this);
+   };
+
+
 } // end namespace gpstk
