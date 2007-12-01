@@ -48,6 +48,11 @@
 using namespace gpstk;
 using namespace std;
 
+/* exp10() is a gnu specific extensions */
+#ifndef exp10
+#define exp10(x) (exp((x)*log(10)))
+#endif
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 class RxSim : public BasicFramework

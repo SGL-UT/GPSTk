@@ -70,6 +70,7 @@ AC_CONFIG_FILES([Makefile
                  apps/receiver/Makefile
                  apps/rfw/Makefile
                  apps/reszilla/Makefile
+                 apps/swrx/Makefile
                  apps/time/Makefile
                  apps/visibility/Makefile
                  tests/Makefile

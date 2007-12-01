@@ -1,3 +1,4 @@
+# $Id:$
 INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../../lib/rxio
 LDADD = ./librlib.la ../../lib/rxio/librxio.la ../../src/libgpstk.la 
 
