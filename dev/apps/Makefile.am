@@ -1,4 +1,5 @@
 # $Id$
 SUBDIRS = DataAvailability MDPtools Rinextools checktools converters \
 differential difftools filetools geomatics ionosphere mergetools multipath \
-positioning rfw receiver reszilla swrx time visibility
+positioning rfw reszilla swrx time visibility
+#positioning rfw receiver reszilla swrx time visibility

@@ -17,7 +17,7 @@ if $(UNIX)
 {
    SubInclude TOP apps MDPtools ; 
    SubInclude TOP apps rfw ;
-   SubInclude TOP apps receiver ;
+#   SubInclude TOP apps receiver ;
 }
 SubInclude TOP apps multipath ;
 SubInclude TOP apps positioning ;
