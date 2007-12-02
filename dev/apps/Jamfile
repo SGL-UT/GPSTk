@@ -16,14 +16,13 @@ SubInclude TOP apps mergetools ;
 if $(UNIX)
 {
    SubInclude TOP apps MDPtools ; 
+   SubInclude TOP apps rfw ;
+   SubInclude TOP apps receiver ;
 }
 SubInclude TOP apps multipath ;
 SubInclude TOP apps positioning ;
-if $(UNIX)
-{
-#   SubInclude TOP apps receiver ;
-}
 SubInclude TOP apps reszilla ;
 SubInclude TOP apps Rinextools ;
+SubInclude TOP apps swrx ;
 SubInclude TOP apps time ;
 SubInclude TOP apps visibility ;

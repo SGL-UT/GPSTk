@@ -67,9 +67,10 @@ AC_CONFIG_FILES([Makefile
                  apps/mergetools/Makefile
                  apps/multipath/Makefile
                  apps/positioning/Makefile
+                 apps/qa/Makefile
                  apps/receiver/Makefile
-                 apps/rfw/Makefile
                  apps/reszilla/Makefile
+                 apps/rfw/Makefile
                  apps/swrx/Makefile
                  apps/time/Makefile
                  apps/visibility/Makefile
