@@ -48,6 +48,7 @@ AC_CONFIG_FILES([Makefile
                  lib/rxio/Makefile
 		 lib/vplot/Makefile
 		 lib/geomatics/Makefile
+                 lib/procframe/Makefile
                  src/Makefile
                  apps/Makefile
                  apps/DataAvailability/Makefile
