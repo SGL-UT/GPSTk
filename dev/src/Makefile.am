@@ -11,7 +11,7 @@ BinexData.cpp  BLQDataReader.cpp \
 CivilTime.cpp CodeBuffer.cpp CodeSmoother.cpp CommandOption.cpp \
 CommandOptionParser.cpp CommandOptionWithCommonTimeArg.cpp \
 CommandOptionWithPositionArg.cpp CommandOptionWithTimeArg.cpp CommonTime.cpp \
-ComputeIURAWeights.cpp ComputeLC.cpp ComputeLI.cpp ComputeLdelta.cpp \
+ComputeLC.cpp ComputeLI.cpp ComputeLdelta.cpp \
 ComputeMelbourneWubbena.cpp ComputePC.cpp ComputePI.cpp \
 ComputePdelta.cpp \
 DOP.cpp DataHeaders.cpp DataStructures.cpp \
@@ -54,7 +54,7 @@ BLQDataReader.hpp \
 CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp CodeSmoother.hpp \
 CommandOption.hpp CommandOptionParser.hpp CommandOptionWithCommonTimeArg.hpp \
 CommandOptionWithPositionArg.hpp CommandOptionWithTimeArg.hpp CommonTime.hpp \
-ComputeCombination.hpp ComputeIURAWeights.hpp ComputeLC.hpp ComputeLI.hpp \
+ComputeCombination.hpp ComputeLC.hpp ComputeLI.hpp \
 ComputeLdelta.hpp ComputeMelbourneWubbena.hpp \
 ComputePC.hpp ComputePI.hpp ComputePdelta.hpp \
 DOP.hpp DataHeaders.hpp DataStructures.hpp DayTime.hpp DeltaOp.hpp \

@@ -1,4 +1,5 @@
-# $Id: $
+# $Id: Jamfile 948 2007-12-01 23:38:22Z architest $
+
 # please add in alphabetic order
 SubDir TOP lib procframe ;
 
@@ -9,10 +10,10 @@ if $(PREPROCESSING)
 else
 {
    GPSBuildLibrary procframe : 
-      ComputeMOPSWeights.cpp ComputeWindUp.cpp
+      ComputeIURAWeights.cpp ComputeMOPSWeights.cpp ComputeWindUp.cpp
       ;
 
    InstallFile $(INCDIR) :
-      ComputeMOPSWeights.hpp ComputeWindUp.hpp 
+      ComputeIURAWeights.hpp ComputeMOPSWeights.hpp ComputeWindUp.hpp 
       ;
 }
