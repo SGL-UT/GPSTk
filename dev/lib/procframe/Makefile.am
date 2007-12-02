@@ -5,14 +5,21 @@ INCLUDES = -I$(srcdir)/../../src/
 lib_LTLIBRARIES = libprocframe.la
 libprocframe_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 libprocframe_la_SOURCES = CodeSmoother.cpp ComputeIURAWeights.cpp \
-ComputeMOPSWeights.cpp ComputeWindUp.cpp DeltaOp.cpp LICSDetector.cpp \
-ModelObs.cpp ModelObsFixedStation.cpp MWCSDetector.cpp NablaOp.cpp \
-OneFreqCSDetector.cpp PCSmoother.cpp ProcessingVector.cpp SimpleFilter.cpp \
-SolverLMS.cpp SolverWMS.cpp XYZ2NED.cpp XYZ2NEU.cpp
+ComputeLC.cpp ComputeLdelta.cpp ComputeLI.cpp ComputeMelbourneWubbena.cpp \
+ComputeMOPSWeights.cpp ComputePC.cpp ComputePdelta.cpp ComputePI.cpp \
+ComputeWindUp.cpp DataHeaders.cpp DataStructures.cpp DeltaOp.cpp \
+LICSDetector.cpp ModeledPR.cpp ModeledReferencePR.cpp ModelObs.cpp \
+ModelObsFixedStation.cpp MWCSDetector.cpp \
+NablaOp.cpp OneFreqCSDetector.cpp PCSmoother.cpp ProcessingVector.cpp \
+SimpleFilter.cpp SolverLMS.cpp SolverWMS.cpp XYZ2NED.cpp XYZ2NEU.cpp
 
 incldir = $(includedir)/gpstk
-incl_HEADERS = CodeSmoother.hpp ComputeIURAWeights.hpp ComputeMOPSWeights.hpp \
-ComputeWindUp.hpp DeltaOp.hpp LICSDetector.hpp ModelObs.hpp \
-ModelObsFixedStation.hpp MWCSDetector.hpp NablaOp.hpp OneFreqCSDetector.hpp \
-PCSmoother.hpp ProcessingVector.hpp SimpleFilter.hpp SolverLMS.hpp \
-SolverWMS.hpp XYZ2NED.hpp XYZ2NEU.hpp
+incl_HEADERS = CodeSmoother.hpp ComputeCombination.hpp \
+ComputeIURAWeights.hpp ComputeLC.hpp ComputeLdelta.hpp ComputeLI.hpp \
+ComputeMelbourneWubbena.hpp ComputeMOPSWeights.hpp ComputePC.hpp \
+ComputePdelta.hpp ComputePI.hpp ComputeWindUp.hpp DataHeaders.hpp \
+DataStructures.hpp DeltaOp.hpp LICSDetector.hpp ModeledPR.hpp \
+ModeledReferencePR.hpp ModelObs.hpp ModelObsFixedStation.hpp MWCSDetector.hpp \
+NablaOp.hpp OneFreqCSDetector.hpp PCSmoother.hpp ProcessingClass.hpp \
+ProcessingVector.hpp SimpleFilter.hpp SolverLMS.hpp SolverWMS.hpp XYZ2NED.hpp \
+XYZ2NEU.hpp
