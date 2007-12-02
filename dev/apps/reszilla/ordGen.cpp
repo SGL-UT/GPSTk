@@ -101,8 +101,8 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
    
       ordModeOption('\0', "omode", "Specifies what observations are used to "
                     "compute the ORDs. Valid values are:"
-                    "p1p2, c1p2, y1y2, c1, p1, c2, p2, smo, and smart. "
-                    "The default is " + ordMode),
+                    "p1p2, z1z2, c1p2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
+                    "z2 smo, and smart. The default is " + ordMode),
    
       antennaPosOption('p', "pos", "Location of the antenna in meters ECEF.");
    

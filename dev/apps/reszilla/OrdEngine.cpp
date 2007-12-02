@@ -79,10 +79,22 @@ void OrdEngine::setMode(const ObsEpoch& obs)
       oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
       dualFreq = true;
    }
+   if (mode=="z1z2" || mode=="w1w2")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcW);
+      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcW);
+      dualFreq = true;
+   }
    else if (mode=="c1p2")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
       oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
+      dualFreq = true;
+   }
+   else if (mode=="c1z2" || mode=="c1w2")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
+      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcW);
       dualFreq = true;
    }
    else if (mode=="y1y2")
@@ -99,6 +111,14 @@ void OrdEngine::setMode(const ObsEpoch& obs)
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcP);
    }
+   else if (mode=="y1")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcY);
+   }
+   else if (mode=="z1" || mode=="w1")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcW);
+   }
    else if (mode=="c2")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2LM);
@@ -106,6 +126,14 @@ void OrdEngine::setMode(const ObsEpoch& obs)
    else if (mode=="p2")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
+   }
+   else if (mode=="y2")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcY);
+   }
+   else if (mode=="z2" || mode=="w2")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcW);
    }
    else if (mode=="smo")
    {
@@ -116,6 +144,7 @@ void OrdEngine::setMode(const ObsEpoch& obs)
    {
       const SvObsEpoch& soe = obs.begin()->second;
       SvObsEpoch::const_iterator itr;
+      cout << "obs:" << soe << endl;
       for (itr = soe.begin(); itr != soe.end(); itr++)
       {
          const ObsID& oid = itr->first;
