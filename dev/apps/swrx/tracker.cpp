@@ -250,7 +250,7 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
    if (gainOpt.getCount())
    {
       double gainDb = StringUtils::asDouble(gainOpt.getValue()[0]);
-      gain = exp10(gainDb/10);
+      gain = exp10(gainDb/10.);
    }
 
    if (verboseLevel)
