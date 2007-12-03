@@ -1,11 +1,12 @@
+#pragma ident "$Id: $"
 
 /**
  * @file ComputeWindUp.hpp
  * This class computes the wind-up effect on the phase observables, in radians.
  */
 
-#ifndef COMPUTE_WINDUP_GPSTK
-#define COMPUTE_WINDUP_GPSTK
+#ifndef COMPUTEWINDUP_HPP
+#define COMPUTEWINDUP_HPP
 
 //============================================================================
 //
@@ -45,236 +46,221 @@
 namespace gpstk
 {
 
-    /** @addtogroup DataStructures */
-    //@{
+      /** @addtogroup DataStructures */
+      //@{
 
 
-    /** This class computes the wind-up effect on the phase observables, in radians.
-     * This class is meant to be used with the GNSS data structures objects
-     * found in "DataStructures" class.
-     *
-     * A typical way to use this class follows:
-     *
-     * @code
-     *   // Create the input obs file stream
-     *   RinexObsStream rin("ebre0300.02o");
-     *
-     *   // Loads precise ephemeris object with file data
-     *   SP3EphemerisStore SP3EphList;
-     *   SP3EphList.loadFile("igs11513.sp3");
-     *
-     *   // Sets nominal position of receiver
-     *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
-     *
-     *   gnssRinex gRin;
-     *   ComputeWindUp windup(SP3EphList, nominalPos);
-     *
-     *   while(rin >> gRin) {
-     *      gRin >> windup;
-     *   }
-     * @endcode
-     *
-     * The "ComputeWindUp" object will visit every satellite in the GNSS data
-     * structure that is "gRin" and will compute the corresponding receiver -
-     * satellite wind-up effect, in radians.
-     *
-     * When used with the ">>" operator, this class returns the same incoming
-     * data structure with the wind-up inserted in it. Be warned that if 
-     * a given satellite does not have the observations required, it will be 
-     * summarily deleted from the data structure.
-     *
-     * \warning ComputeWindUp objects store their internal state, so you MUST 
-     * NOT use the SAME object to process DIFFERENT data streams.
-     *
-     */
-    class ComputeWindUp : public ProcessingClass
-    {
-    public:
+      /** This class computes the wind-up effect on the phase observables, 
+       *  in radians.
+       *
+       * This class is meant to be used with the GNSS data structures objects
+       * found in "DataStructures" class.
+       *
+       * A typical way to use this class follows:
+       *
+       * @code
+       *   // Create the input obs file stream
+       *   RinexObsStream rin("ebre0300.02o");
+       *
+       *   // Loads precise ephemeris object with file data
+       *   SP3EphemerisStore SP3EphList;
+       *   SP3EphList.loadFile("igs11513.sp3");
+       *
+       *   // Sets nominal position of receiver
+       *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
+       *
+       *   gnssRinex gRin;
+       *   ComputeWindUp windup(SP3EphList, nominalPos);
+       *
+       *   while(rin >> gRin) {
+       *      gRin >> windup;
+       *   }
+       * @endcode
+       *
+       * The "ComputeWindUp" object will visit every satellite in the GNSS 
+       * data structure that is "gRin" and will compute the corresponding
+       * receiver -satellite wind-up effect, in radians.
+       *
+       * When used with the ">>" operator, this class returns the same 
+       * incoming data structure with the wind-up inserted in it. Be warned
+       * that if a given satellite does not have the observations required, 
+       * it will be summarily deleted from the data structure.
+       *
+       * \warning ComputeWindUp objects store their internal state, so 
+       * you MUST NOT use the SAME object to process DIFFERENT data streams.
+       *
+       */
+   class ComputeWindUp : public ProcessingClass
+   {
+   public:
 
-        /** Common constructor
-         *
-         * @param ephem     Satellite ephemeris.
-         * @param stapos    Nominal position of receiver station.
-         * @param filename  Name of "PRN_GPS"-like file containing satellite data.
-         *
-         * @warning If filename is not given, this class will look for a file
-         * named "PRN_GPS" in the current directory.
-         */
-        ComputeWindUp(XvtStore<SatID>& ephem, const Position& stapos, string filename="PRN_GPS") : ephemeris(ephem), nominalPos(stapos), satData(filename), fileData(filename)
-        {
-
-            setIndex();
-
-        };
-
-
-        /** Returns a satTypeValueMap object, adding the new data generated when calling this object.
-         *
-         * @param time      Epoch corresponding to the data.
-         * @param gData     Data object holding the data.
-         */
-        virtual satTypeValueMap& Process(const DayTime& time, satTypeValueMap& gData);
+         /** Common constructor
+          *
+          * @param ephem     Satellite ephemeris.
+          * @param stapos    Nominal position of receiver station.
+          * @param filename  Name of "PRN_GPS"-like file containing 
+          *                  satellite data.
+          *
+          * @warning If filename is not given, this class will look for a 
+          * file named "PRN_GPS" in the current directory.
+          */
+      ComputeWindUp(XvtStore<SatID>& ephem,
+                    const Position& stapos, 
+                    string filename="PRN_GPS")
+         : ephemeris(ephem), nominalPos(stapos), satData(filename),
+           fileData(filename)
+      { setIndex(); };
 
 
-        /** Returns a gnnsSatTypeValue object, adding the new data generated when calling this object.
-         *
-         * @param gData    Data object holding the data.
-         */
-        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-        {
-            (*this).Process(gData.header.epoch, gData.body);
-            return gData;
-        };
+         /** Returns a satTypeValueMap object, adding the new data generated
+          *  when calling this object.
+          *
+          * @param time      Epoch corresponding to the data.
+          * @param gData     Data object holding the data.
+          */
+      virtual satTypeValueMap& Process(const DayTime& time,
+                                       satTypeValueMap& gData);
 
 
-        /** Returns a gnnsRinex object, adding the new data generated when calling this object.
-         *
-         * @param gData    Data object holding the data.
-         */
-        virtual gnssRinex& Process(gnssRinex& gData)
-        {
-            (*this).Process(gData.header.epoch, gData.body);
-            return gData;
-        };
+         /** Returns a gnnsSatTypeValue object, adding the new data 
+          *  generated when calling this object.
+          *
+          * @param gData    Data object holding the data.
+          */
+      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+      { Process(gData.header.epoch, gData.body); return gData; };
 
 
-        /// Returns name of "PRN_GPS"-like file containing satellite data.
-        virtual string getFilename(void) const
-        {
-            return fileData;
-        };
+         /** Returns a gnnsRinex object, adding the new data generated 
+          *  when calling this object.
+          *
+          * @param gData    Data object holding the data.
+          */
+      virtual gnssRinex& Process(gnssRinex& gData)
+      { Process(gData.header.epoch, gData.body); return gData; };
 
 
-        /** Sets name of "PRN_GPS"-like file containing satellite data.
-         * @param name      Name of satellite data file.
-         */
-        virtual void setFilename(const string& name)
-        {
-            fileData = name;
-            satData.open(fileData);
-
-            return;
-        };
+         /// Returns name of "PRN_GPS"-like file containing satellite data.
+      virtual string getFilename(void) const
+      { return fileData; };
 
 
-        /// Returns nominal position of receiver station.
-        virtual Position getNominalPosition(void) const
-        {
-            return nominalPos;
-        };
+         /** Sets name of "PRN_GPS"-like file containing satellite data.
+          * @param name      Name of satellite data file.
+          */
+      virtual ComputeWindUp& setFilename(const string& name);
 
 
-        /** Sets  nominal position of receiver station.
-         * @param stapos    Nominal position of receiver station.
-         */
-        virtual void setNominalPosition(const Position& stapos)
-        {
-            nominalPos = stapos;
-
-            return;
-        };
+         /// Returns nominal position of receiver station.
+      virtual Position getNominalPosition(void) const
+      { return nominalPos; };
 
 
-        /// Returns a reference to satellite ephemeris object currently in use.
-        virtual XvtStore<SatID>& getEphemeris(void) const
-        {
-            return ephemeris;
-        };
+         /** Sets  nominal position of receiver station.
+          * @param stapos    Nominal position of receiver station.
+          */
+      virtual ComputeWindUp& setNominalPosition(const Position& stapos)
+        { nominalPos = stapos; return (*this); };
 
 
-        /** Sets satellite ephemeris object to be used.
-         * @param ephem     Satellite ephemeris object.
-         */
-        virtual void setEphemeris(const XvtStore<SatID>& ephem)
-        {
-            ephemeris = ephem;
-
-            return;
-        };
+         /// Returns a reference to satellite ephemeris object 
+         /// currently in use.
+      virtual XvtStore<SatID>& getEphemeris(void) const
+      { return ephemeris; };
 
 
-        /// Returns an index identifying this object.
-        virtual int getIndex(void) const;
+         /** Sets satellite ephemeris object to be used.
+          * @param ephem     Satellite ephemeris object.
+          */
+      virtual ComputeWindUp& setEphemeris(const XvtStore<SatID>& ephem)
+      { ephemeris = ephem; return (*this); };
 
 
-        /// Returns a string identifying this object.
-        virtual std::string getClassName(void) const;
+         /// Returns an index identifying this object.
+      virtual int getIndex(void) const;
 
 
-        /** Sets the index to a given arbitrary value. Use with caution.
-         *
-         * @param newindex      New integer index to be assigned to current object.
-         */
-        void setIndex(const int newindex) { (*this).index = newindex; };
+         /// Returns a string identifying this object.
+      virtual std::string getClassName(void) const;
 
 
-        /// Destructor
-        virtual ~ComputeWindUp() {};
+         /** Sets the index to a given arbitrary value. Use with caution.
+          *
+          * @param newindex      New integer index to be assigned to 
+          *                      current object.
+          */
+      ComputeWindUp& setIndex(const int newindex)
+      { index = newindex; return (*this); };
 
 
-    private:
+         /// Destructor
+      virtual ~ComputeWindUp() {};
 
 
-        /// Satellite ephemeris to be used
-        XvtStore<SatID>& ephemeris;
+   private:
 
 
-        /// Receiver position
-        Position nominalPos;
+         /// Satellite ephemeris to be used
+      XvtStore<SatID>& ephemeris;
 
 
-        /// Object to read satellite data file (PRN_GPS)
-        SatDataReader satData;
+         /// Receiver position
+      Position nominalPos;
 
 
-        /// Name of "PRN_GPS"-like file containing satellite data.
-        string fileData;
+         /// Object to read satellite data file (PRN_GPS)
+      SatDataReader satData;
 
 
-        /// A structure used to store phase data.
-        struct phaseData
-        {
+         /// Name of "PRN_GPS"-like file containing satellite data.
+      string fileData;
+
+
+         /// A structure used to store phase data.
+      struct phaseData
+      {
             // Default constructor initializing the data in the structure
-            phaseData() : previousPhase(0.0) {};
+         phaseData() : previousPhase(0.0) {};
 
-            double previousPhase;      ///< Previous phase.
-        };
-
-
-        /// Map to store station phase data
-        map<SatID, phaseData> phase_station;
+         double previousPhase;      ///< Previous phase.
+      };
 
 
-        /// Map to store satellite phase data
-        map<SatID, phaseData> phase_satellite;
+         /// Map to store station phase data
+      map<SatID, phaseData> phase_station;
 
 
-        /** Compute the value of the wind-up, in radians.
-         * @param sat       Satellite ID
-         * @param time      Epoch of interest
-         * @param satpos    Satellite position, as a Triple
-         * @param sunpos    Sun position, as a Triple
-         * @return Wind-up computation, in radians
-         */
-        virtual double getWindUp(const SatID& sat, const DayTime& time, const Triple& satpos, const Triple& sunpos);
+         /// Map to store satellite phase data
+      map<SatID, phaseData> phase_satellite;
 
 
+         /** Compute the value of the wind-up, in radians.
+          * @param sat       Satellite ID
+          * @param time      Epoch of interest
+          * @param satpos    Satellite position, as a Triple
+          * @param sunpos    Sun position, as a Triple
+          * @return Wind-up computation, in radians
+          */
+      virtual double getWindUp(const SatID& sat,
+                               const DayTime& time,
+                               const Triple& satpos,
+                               const Triple& sunpos);
 
-        /// Initial index assigned to this class.
-        static int classIndex;
 
-        /// Index belonging to this object.
-        int index;
+         /// Initial index assigned to this class.
+      static int classIndex;
 
-        /// Sets the index and increment classIndex.
-        void setIndex(void) { (*this).index = classIndex++; }; 
+         /// Index belonging to this object.
+      int index;
+
+         /// Sets the index and increment classIndex.
+      void setIndex(void)
+      { index = classIndex++; }; 
 
 
    }; // end class ComputeWindUp
 
-
-   //@}
+      //@}
    
 }
-
-#endif
+#endif // COMPUTEWINDUP_HPP
