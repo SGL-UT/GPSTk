@@ -1,7 +1,9 @@
+#pragma ident "$Id: $"
 
 /**
  * @file XYZ2NEU.hpp
- * This is a class to change the reference base from ECEF XYZ to topocentric North-East-Up (NEU).
+ * This is a class to change the reference base from ECEF XYZ to topocentric
+ * North-East-Up (NEU).
  */
 
 #ifndef XYZ2NEU_HPP
@@ -40,17 +42,17 @@
 
 namespace gpstk
 {
-    /** @addtogroup GPSsolutions */
+      /** @addtogroup GPSsolutions */
       //@{
 
       /**
        * This class changes the reference base from an Earth-Centered,
-       * Earth-Fixed (ECEF) system to a North-East-Up (NEU) topocentric system,
-       * centered at the provided reference location.
+       * Earth-Fixed (ECEF) system to a North-East-Up (NEU) topocentric
+       * system, centered at the provided reference location.
        *
        * The NEU system is commonly used when comparing the relative accuracy
-       * of a given GNSS data processing strategy. Be mindful, however, that NEU
-       * is a "left-handed" reference system, whereas geocentric ECEF and
+       * of a given GNSS data processing strategy. Be mindful, however, that 
+       * NEU is a "left-handed" reference system, whereas geocentric ECEF and
        * topocentric North-East-Down (NED) are "right-handed" systems.
        * 
        * A typical way to use this class follows:
@@ -65,9 +67,11 @@ namespace gpstk
        *   gnssRinex gRin;
        *
        *   // Set defaults of model. A typical C1-based modeling is used
-       *   ModeledPR modelRef(nominalPos, ionoStore, mopsTM, bceStore, TypeID::C1, true);
+       *   ModeledPR modelRef(nominalPos, ionoStore, mopsTM, bceStore,
+       *   TypeID::C1, true);
        *
-       *   // Let's define a new equation definition to adapt solver object to base change
+       *   // Let's define a new equation definition to adapt solver object 
+       *   // to base change
        *   TypeIDSet typeSet;
        *   typeSet.insert(TypeID::dLat);
        *   typeSet.insert(TypeID::dLon);
@@ -88,196 +92,188 @@ namespace gpstk
        *
        * @endcode
        *
-       * The "XYZ2NEU" object will visit every satellite in the GNSS data structure that
-       * is "gRin" and will apply a rotation matrix to coefficients dx, dy and dz of the
-       * design matrix, yielding corresponding dLat, dLon and dH for each satellite.
+       * The "XYZ2NEU" object will visit every satellite in the GNSS data
+       * structure that is "gRin" and will apply a rotation matrix to
+       * coefficients dx, dy and dz of the design matrix, yielding
+       * corresponding dLat, dLon and dH for each satellite.
        * 
-       * Take notice that the design matrix coefficients dx, dy and dz were computed by 
-       * the "ModeledPR" object, so that step is mandatory.
+       * Take notice that the design matrix coefficients dx, dy and dz were
+       * computed by the "ModeledPR" object, so that step is mandatory.
        *
-       * Also, the "XYZ2NEU" class is effective when properly coupled with the "solver"
-       * object (be it based on LMS or WMS). In order to get this, you must instruct the
-       * "solver" object to get the solution using a geometry/design matrix based on
-       * dLat, dLon and dH, instead of the defaults (dx, dy and dz).
+       * Also, the "XYZ2NEU" class is effective when properly coupled with
+       * the "solver" object (be it based on LMS or WMS). In order to get
+       * this, you must instruct the "solver" object to get the solution using
+       * a geometry/design matrix based on dLat, dLon and dH, instead of the
+       * defaults (dx, dy and dz).
        *
-       * The later is achieved defining an appropriate "gnssEquationDefinition" object
-       * and instructing "solver" to use it as the default equation definition.
+       * The later is achieved defining an appropriate "gnssEquationDefinition"
+       * object and instructing "solver" to use it as the default equation
+       * definition.
        *
        * @sa XYZ2NED.hpp
        */
-    class XYZ2NEU : public ProcessingClass
-    {
-    public:
+   class XYZ2NEU : public ProcessingClass
+   {
+   public:
 
-        /// Default constructor.
-        XYZ2NEU() : refLat(0.0), refLon(0.0)
-        {
-            Prepare();
-            setIndex();
-        };
+         /// Default constructor.
+      XYZ2NEU() : refLat(0.0), refLon(0.0)
+      { init(); setIndex(); };
 
 
-        /** Common constructor taking reference point latitude and longitude
-         *
-         * @param lat       Latitude of the reference point.
-         * @param lon       Longitude of the reference point.
-         */
-        XYZ2NEU(const double& lat, const double& lon)
-        {
-            setLatLon(lat, lon);
-            setIndex();
-        }
+         /** Common constructor taking reference point latitude and longitude
+          *
+          * @param lat       Latitude of the reference point.
+          * @param lon       Longitude of the reference point.
+          */
+      XYZ2NEU(const double& lat,
+              const double& lon)
+      { setLatLon(lat, lon); setIndex(); }
 
 
-        /** Common constructor taking reference point Position object
-         *
-         * @param refPos    Reference point Position object.
-         */
-        XYZ2NEU(const Position& refPos)
-        {
-            setLatLon(refPos.getGeodeticLatitude(), refPos.getLongitude());
-            setIndex();
-        }
+         /** Common constructor taking reference point Position object
+          *
+          * @param refPos    Reference point Position object.
+          */
+      XYZ2NEU(const Position& refPos);
 
 
-        /** Method to set the latitude of the reference point, in degrees.
-         * @param lat      Latitude of the reference point, in degrees.
-         */
-        virtual void setLat(const double& lat)
-        {
-            // Don't allow latitudes out of the -90/+90 interval
-            if ( (lat > 90.0) || (lat < -90.0) ) refLat = 0.0; else refLat = (lat*DEG_TO_RAD);
-            Prepare();
-        };
+         /** Method to set the latitude of the reference point, in degrees.
+          * @param lat      Latitude of the reference point, in degrees.
+          *
+          * @warning If parameter lat is outside +90/-90 degrees range,
+          *    then latitude will be set to 0 degrees.
+          */
+      virtual XYZ2NEU& setLat(const double& lat);
 
 
-        /// Method to get the latitude of the reference point, in degrees.
-        virtual double getLat() const
-        {
-            return (refLat*RAD_TO_DEG);
-        };
+         /// Method to get the latitude of the reference point, in degrees.
+      virtual double getLat() const
+      { return (refLat*RAD_TO_DEG); };
 
 
-        /** Method to set the longitude of the reference point, in degrees.
-         * @param lon       Longitude of the reference point, in degrees.
-         */
-        virtual void setLon(const double& lon)
-        {
-            refLon = (lon*DEG_TO_RAD);
-            Prepare();
-        };
+         /** Method to set the longitude of the reference point, in degrees.
+          * @param lon       Longitude of the reference point, in degrees.
+          */
+      virtual XYZ2NEU& setLon(const double& lon);
 
 
-        /// Method to get the longitude of the reference point, in degrees.
-        virtual double getLon() const
-        {
-           return (refLon*RAD_TO_DEG);
-        };
+         /// Method to get the longitude of the reference point, in degrees.
+      virtual double getLon() const
+      { return (refLon*RAD_TO_DEG); };
 
 
-        /** Method to set simultaneously the latitude and longitude of the reference point, in degrees.
-         * @param lat      Latitude of the reference point, in degrees.
-         * @param lon       Longitude of the reference point, in degrees.
-         */
-        virtual void setLatLon(const double& lat, const double& lon)
-        {
-            // Don't allow latitudes out of the -90/+90 interval
-            if ( (lat > 90.0) || (lat < -90.0) ) refLat = 0.0; else refLat = (lat*DEG_TO_RAD);
-            refLon = (lon*DEG_TO_RAD);
-            Prepare();
-        };
+         /** Method to set simultaneously the latitude and longitude of the
+          *  reference point, in degrees.
+          * @param lat      Latitude of the reference point, in degrees.
+          * @param lon       Longitude of the reference point, in degrees.
+          *
+          * @warning If parameter lat is outside +90/-90 degrees range,
+          *    then latitude will be set to 0 degrees.
+          */
+      virtual XYZ2NEU& setLatLon(const double& lat,
+                                 const double& lon);
 
 
-        /** Returns a reference to a satTypeValueMap object after converting from a geocentric reference system to a topocentric reference system.
-         *
-         * @param gData     Data object holding the data.
-         */
-        virtual satTypeValueMap& Process(satTypeValueMap& gData);
+         /** Returns a reference to a satTypeValueMap object after 
+          *  converting from a geocentric reference system to a topocentric
+          *  reference system.
+          *
+          * @param gData     Data object holding the data.
+          */
+      virtual satTypeValueMap& Process(satTypeValueMap& gData);
 
 
-        /** Returns a reference to a gnssSatTypeValue object after converting from a geocentric reference system to a topocentric reference system.
-         *
-         * @param gData    Data object holding the data.
-         */
-        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData) 
-        {
-            (*this).Process(gData.body);
-            return gData;
-        };
+         /** Returns a reference to a gnssSatTypeValue object after 
+          *  converting from a geocentric reference system to a topocentric
+          *  reference system.
+          *
+          * @param gData    Data object holding the data.
+          */
+      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData) 
+      { Process(gData.body); return gData; };
 
 
-        /** Returns a reference to a gnnsRinex object after converting from a geocentric reference system to a topocentric reference system.
-         *
-         * @param gData    Data object holding the data.
-         */
-        virtual gnssRinex& Process(gnssRinex& gData)
-        {
-            (*this).Process(gData.body);
-            return gData;
-        };
+         /** Returns a reference to a gnnsRinex object after converting 
+          *  from a geocentric reference system to a topocentric reference
+          *  system.
+          *
+          * @param gData    Data object holding the data.
+          */
+      virtual gnssRinex& Process(gnssRinex& gData)
+      { Process(gData.body); return gData; };
 
 
-        /// Returns an index identifying this object.
-        virtual int getIndex(void) const;
+         /// Returns an index identifying this object.
+      virtual int getIndex(void) const;
 
 
-        /// Returns a string identifying this object.
-        virtual std::string getClassName(void) const;
+         /// Returns a string identifying this object.
+      virtual std::string getClassName(void) const;
 
 
-        /** Sets the index to a given arbitrary value. Use with caution.
-         *
-         * @param newindex      New integer index to be assigned to current object.
-         */
-        void setIndex(const int newindex) { (*this).index = newindex; };
+         /** Sets the index to a given arbitrary value. Use with caution.
+          *
+          * @param newindex      New integer index to be assigned to 
+          *                      current object.
+          */
+      XYZ2NEU& setIndex(const int newindex)
+      { index = newindex; return (*this); };
 
 
-        /// Destructor.
-        virtual ~XYZ2NEU() {};
+         /// Destructor.
+      virtual ~XYZ2NEU() {};
 
 
-    private:
+   private:
 
 
-        /// Latitude of the reference point (topocentric reference), in radians.
-        double refLat;
+         /// Latitude of the reference point (topocentric reference), 
+         /// in radians.
+      double refLat;
 
 
-        /// Longitude of the reference point (topocentric reference), in radians.
-        double refLon;
+         /// Longitude of the reference point (topocentric reference), 
+         /// in radians.
+      double refLon;
 
 
-        /// Rotation matrix.
-        Matrix<double> rotationMatrix;
+         /// Rotation matrix.
+      Matrix<double> rotationMatrix;
 
 
-        /// Set (TypeIDSet) containing the types of data to be converted (dx, dy, dz).
-        TypeIDSet inputSet;
+         /// Set (TypeIDSet) containing the types of data to be converted 
+         /// (dx, dy, dz).
+      TypeIDSet inputSet;
 
 
-        /// Set (TypeIDSet) containing the resulting types of data (dLat, dLon, dH).
-        TypeIDSet outputSet;
+         /// Set (TypeIDSet) containing the resulting types of data 
+         /// (dLat, dLon, dH).
+      TypeIDSet outputSet;
 
 
-        /// This method builds the rotation matrix according to refLat and refLon values.
-        virtual void Prepare();
+         /// This method builds the rotation matrix according to refLat 
+         /// and refLon values.
+      virtual void init();
 
 
-        /// Initial index assigned to this class.
-        static int classIndex;
+         /// Initial index assigned to this class.
+      static int classIndex;
 
-        /// Index belonging to this object.
-        int index;
 
-        /// Sets the index and increment classIndex.
-        void setIndex(void) { (*this).index = classIndex++; }; 
+         /// Index belonging to this object.
+      int index;
+
+
+         /// Sets the index and increment classIndex.
+      void setIndex(void)
+      { index = classIndex++; };
 
 
    }; // class XYZ2NEU
 
 
-   //@}
+      //@}
 
 } // namespace
-
-#endif
+#endif // XYZ2NEU_HPP
