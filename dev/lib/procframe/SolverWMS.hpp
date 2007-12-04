@@ -1,11 +1,12 @@
+#pragma ident "$Id: $"
 
 /**
  * @file SolverWMS.hpp
  * Class to compute the Weighted Least Mean Squares Solution
  */
 
-#ifndef GPSTK_SOLVER_WMS_HPP
-#define GPSTK_SOLVER_WMS_HPP
+#ifndef SOLVERWMS_HPP
+#define SOLVERWMS_HPP
 
 //============================================================================
 //
@@ -35,14 +36,17 @@
 
 namespace gpstk
 {
-    /** @addtogroup GPSsolutions */
-    /// @ingroup math
+
+      /** @addtogroup GPSsolutions */
+      /// @ingroup math
+
       //@{
 
-      /**This class computes the Weighted Least Mean Squares Solution of a given equations set.
+      /** This class computes the Weighted Least Mean Squares Solution of 
+       *  a given equations set.
        * 
-       * This class may be used either in a Vector- and Matrix-oriented way, or
-       * with GNSS data structure objects from "DataStructures" class.
+       * This class may be used either in a Vector- and Matrix-oriented way, 
+       * or with GNSS data structure objects from "DataStructures" class.
        *
        * A typical way to use this class with GNSS data structures follows:
        *
@@ -52,7 +56,8 @@ namespace gpstk
        *   // More declarations here: Ionospheric and tropospheric models, 
        *   // ephemeris, etc.
        *
-       *   // Declare the modeler object, setting all the parameters in one pass
+       *   // Declare the modeler object, setting all the parameters in one
+       *   // pass
        *   ModelObs model(ionoStore, mopsTM, bceStore, TypeID::C1);
        *   model.Prepare();     // Set initial position (Bancroft method)
        *
@@ -75,16 +80,17 @@ namespace gpstk
        * also insert back postfit residual data into "gRin" if it successfully
        * solves the equation system.
        *
-       * Please note it needs some weights assigned to each satellite. This 
-       * can be achieved with objects from classes such as "ComputeIURAWeights",
-       * "ComputeMOPSWeights", etc., but in any case this is a mandatory step.
+       * Please note it needs some weights assigned to each satellite.
+       * This can be achieved with objects from classes such as
+       * "ComputeIURAWeights", "ComputeMOPSWeights", etc., but in any case 
+       * this is a mandatory step.
        *
        * By default, it will build the geometry matrix from the values of 
        * coefficients dx, dy, dz and cdt, and the independent vector will be
        * composed of the code prefit residuals (TypeID::prefitC) values.
        *
-       * You may change the former by redefining the default equation definition 
-       * to be used. For instance:
+       * You may change the former by redefining the default equation
+       * definition to be used. For instance:
        *
        * @code
        *   TypeIDSet unknownsSet;
@@ -93,7 +99,8 @@ namespace gpstk
        *   unknownsSet.insert(TypeID::dH);
        *   unknownsSet.insert(TypeID::cdt);
        *
-       *   // Create a new equation definition (independent value, unknowns set)
+       *   // Create a new equation definition
+       *   // newEq(independent value, set of unknowns)
        *   gnssEquationDefinition newEq(TypeID::prefitC, unknownsSet);
        *
        *   // Reconfigure solver
@@ -103,135 +110,119 @@ namespace gpstk
        * @sa SolverBase.hpp and SolverLMS for base classes.
        *
        */
-    class SolverWMS : public SolverLMS
-    {
-    public:
+   class SolverWMS : public SolverLMS
+   {
+   public:
 
-        /// Default constructor. When fed with GNSS data structures, the 
-        /// default the equation definition to be used is the common GNSS 
-        /// code equation.
-        SolverWMS()
-        {
-            // First, let's define a set with the typical unknowns
-            TypeIDSet tempSet;
-            tempSet.insert(TypeID::dx);
-            tempSet.insert(TypeID::dy);
-            tempSet.insert(TypeID::dz);
-            tempSet.insert(TypeID::cdt);
-
-            // Now, we build the default definition for a common GNSS code equation
-            defaultEqDef.header = TypeID::prefitC;
-            defaultEqDef.body = tempSet;
-            setIndex();
-        };
+         /** Default constructor. When fed with GNSS data structures, the 
+          *  default equation definition to be used is the common GNSS 
+          * code equation.
+          */
+      SolverWMS();
 
 
-        /** Explicit constructor. Sets the default equation definition to be used when fed with GNSS data structures.
-         *
-         * @param eqDef     gnssEquationDefinition to be used
-         */
-        SolverWMS(const gnssEquationDefinition& eqDef)
-        {
-            setDefaultEqDefinition(eqDef);
-            setIndex();
-        };
+         /** Explicit constructor. Sets the default equation definition 
+          *  to be used when fed with GNSS data structures.
+          *
+          * @param eqDef     gnssEquationDefinition to be used
+          */
+      SolverWMS(const gnssEquationDefinition& eqDef);
 
 
-        /** Compute the Weighted Least Mean Squares Solution of the given equations set.
-         * @param prefitResiduals   Vector of prefit residuals
-         * @param designMatrix      Design matrix for the equation system
-         * @param weightMatrix      Matrix of weights
-         *
-         * @return
-         *  0 if OK
-         *  -1 if problems arose
-         */
-        virtual int Compute(const Vector<double>& prefitResiduals, const Matrix<double>& designMatrix, const Matrix<double>& weightMatrix) throw(InvalidSolver);
+         /** Compute the Weighted Least Mean Squares Solution of the given
+          *  equations set.
+          * @param prefitResiduals   Vector of prefit residuals
+          * @param designMatrix      Design matrix for the equation system
+          * @param weightMatrix      Matrix of weights
+          *
+          * @return
+          *  0 if OK
+          *  -1 if problems arose
+          */
+      virtual int Compute(const Vector<double>& prefitResiduals,
+                          const Matrix<double>& designMatrix,
+                          const Matrix<double>& weightMatrix)
+         throw(InvalidSolver);
 
 
-        /** Compute the Weighted Least Mean Squares Solution of the given equations set.
-         * @param prefitResiduals   Vector of prefit residuals
-         * @param designMatrix      Design matrix for the equation system
-         * @param weightVector      Vector of weights assigned to each satellite.
-         *
-         * @return
-         *  0 if OK
-         *  -1 if problems arose
-         */
-        virtual int Compute(const Vector<double>& prefitResiduals, const Matrix<double>& designMatrix, const Vector<double>& weightVector) throw(InvalidSolver)
-        {
-            // First, check that everyting has a proper size
-            int wSize = (int) weightVector.size();
-            int pSize = (int) prefitResiduals.size();
-            if (!(wSize==pSize)) {
-                InvalidSolver e("prefitResiduals size does not match dimension of weightVector");
-                GPSTK_THROW(e);
-            }
-
-            Matrix<double> wMatrix(wSize,wSize,0.0);  // Declare a weight matrix
-
-            // Fill the weight matrix diagonal with the content of the weight vector
-            for (int i=0; i<wSize; i++) wMatrix(i,i) = weightVector(i);
-
-            // Call the more general SolverWMS::Compute() method
-            return SolverWMS::Compute(prefitResiduals, designMatrix, wMatrix);
-        };
+         /** Compute the Weighted Least Mean Squares Solution of the given
+          *  equations set.
+          * @param prefitResiduals   Vector of prefit residuals
+          * @param designMatrix      Design matrix for the equation system
+          * @param weightVector      Vector of weights assigned to each
+          *                          satellite.
+          *
+          * @return
+          *  0 if OK
+          *  -1 if problems arose
+          */
+      virtual int Compute(const Vector<double>& prefitResiduals,
+                          const Matrix<double>& designMatrix,
+                          const Vector<double>& weightVector)
+         throw(InvalidSolver);
 
 
-        /// Compute the Weighted Least Mean Squares Solution of the given equations set.
-        virtual int Compute(const Vector<double>& prefitResiduals, const Matrix<double>& designMatrix) throw(InvalidSolver) 
-        {
-            return SolverLMS::Compute(prefitResiduals, designMatrix);
-        };
+         /** Compute the Weighted Least Mean Squares Solution of the given
+          *  equations set.
+          */
+      virtual int Compute(const Vector<double>& prefitResiduals,
+                          const Matrix<double>& designMatrix)
+         throw(InvalidSolver) 
+      { return SolverLMS::Compute(prefitResiduals, designMatrix); };
 
 
-        /** Returns a reference to a satTypeValueMap object after solving the previously defined equation system.
-         *
-         * @param gData     Data object holding the data.
-         */
-        virtual satTypeValueMap& Process(satTypeValueMap& gData) throw(InvalidSolver);
+         /** Returns a reference to a satTypeValueMap object after solving 
+          *  the previously defined equation system.
+          *
+          * @param gData     Data object holding the data.
+          */
+      virtual satTypeValueMap& Process(satTypeValueMap& gData)
+         throw(InvalidSolver);
 
 
-        /// Covariance matrix without weights. This must be used to compute DOP
-        Matrix<double> covMatrixNoWeight;
+         /// Covariance matrix without weights. This must be used to 
+         /// compute DOP
+      Matrix<double> covMatrixNoWeight;
 
 
-        /// Returns an index identifying this object.
-        virtual int getIndex(void) const;
+         /// Returns an index identifying this object.
+      virtual int getIndex(void) const;
 
 
-        /// Returns a string identifying this object.
-        virtual std::string getClassName(void) const;
+         /// Returns a string identifying this object.
+      virtual std::string getClassName(void) const;
 
 
-        /** Sets the index to a given arbitrary value. Use with caution.
-         *
-         * @param newindex      New integer index to be assigned to current object.
-         */
-        void setIndex(const int newindex) { (*this).index = newindex; };
+         /** Sets the index to a given arbitrary value. Use with caution.
+          *
+          * @param newindex      New integer index to be assigned to 
+          *                      current object.
+          */
+      SolverWMS& setIndex(const int newindex)
+      { index = newindex; return (*this); };
 
 
-        /// Destructor.
-        virtual ~SolverWMS() {};
+         /// Destructor.
+      virtual ~SolverWMS() {};
 
 
-    private:
+   private:
 
 
-        /// Initial index assigned to this class.
-        static int classIndex;
+         /// Initial index assigned to this class.
+      static int classIndex;
 
-        /// Index belonging to this object.
-        int index;
+         /// Index belonging to this object.
+      int index;
 
-        /// Sets the index and increment classIndex.
-        void setIndex(void) { (*this).index = classIndex++; }; 
+         /// Sets the index and increment classIndex.
+      void setIndex(void)
+      { index = classIndex++; }; 
 
 
    }; // class SolverWMS
 
-   //@}
+      //@}
 
 } // namespace
-
-#endif
+#endif // SOLVERWMS_HPP
