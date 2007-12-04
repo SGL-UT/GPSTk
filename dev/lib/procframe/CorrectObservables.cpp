@@ -70,6 +70,10 @@ namespace gpstk
          // Compute displacement vectors for L1 and L2, in meters [UEN]
       Triple dispL1(extraBiases + monumentVector + L1PhaseCenter);
       Triple dispL2(extraBiases + monumentVector + L2PhaseCenter);
+      Triple dispL5(extraBiases + monumentVector + L5PhaseCenter);
+      Triple dispL6(extraBiases + monumentVector + L6PhaseCenter);
+      Triple dispL7(extraBiases + monumentVector + L7PhaseCenter);
+      Triple dispL8(extraBiases + monumentVector + L8PhaseCenter);
 
          // Object to store satellite Xvt
       Xvt svPosVel;
@@ -119,6 +123,10 @@ namespace gpstk
             // along ray direction.
          double corrL1(dispL1.dot(ray));
          double corrL2(dispL2.dot(ray));
+         double corrL5(dispL5.dot(ray));
+         double corrL6(dispL6.dot(ray));
+         double corrL7(dispL7.dot(ray));
+         double corrL8(dispL8.dot(ray));
 
 
             // Find which observables are present, and then apply corrections
@@ -153,6 +161,50 @@ namespace gpstk
          if( (*it).second.find(TypeID::L2) != (*it).second.end() )
          {
             (*it).second[TypeID::L2] = (*it).second[TypeID::L2] + corrL2;
+         };
+
+            // Look for C5
+         if( (*it).second.find(TypeID::C5) != (*it).second.end() )
+         {
+            (*it).second[TypeID::C5] = (*it).second[TypeID::C5] + corrL5;
+         };
+            // Look for L5
+         if( (*it).second.find(TypeID::L5) != (*it).second.end() )
+         {
+            (*it).second[TypeID::L5] = (*it).second[TypeID::L5] + corrL5;
+         };
+
+            // Look for C6
+         if( (*it).second.find(TypeID::C6) != (*it).second.end() )
+         {
+            (*it).second[TypeID::C6] = (*it).second[TypeID::C6] + corrL6;
+         };
+            // Look for L6
+         if( (*it).second.find(TypeID::L6) != (*it).second.end() )
+         {
+            (*it).second[TypeID::L6] = (*it).second[TypeID::L6] + corrL6;
+         };
+
+            // Look for C7
+         if( (*it).second.find(TypeID::C7) != (*it).second.end() )
+         {
+            (*it).second[TypeID::C7] = (*it).second[TypeID::C7] + corrL7;
+         };
+            // Look for L7
+         if( (*it).second.find(TypeID::L7) != (*it).second.end() )
+         {
+            (*it).second[TypeID::L7] = (*it).second[TypeID::L7] + corrL7;
+         };
+
+            // Look for C8
+         if( (*it).second.find(TypeID::C8) != (*it).second.end() )
+         {
+            (*it).second[TypeID::C8] = (*it).second[TypeID::C8] + corrL8;
+         };
+            // Look for L8
+         if( (*it).second.find(TypeID::L8) != (*it).second.end() )
+         {
+            (*it).second[TypeID::L8] = (*it).second[TypeID::L8] + corrL8;
          };
 
       }
