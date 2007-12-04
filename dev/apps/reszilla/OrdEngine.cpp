@@ -144,7 +144,7 @@ void OrdEngine::setMode(const ObsEpoch& obs)
    {
       const SvObsEpoch& soe = obs.begin()->second;
       SvObsEpoch::const_iterator itr;
-      cout << "obs:" << soe << endl;
+
       for (itr = soe.begin(); itr != soe.end(); itr++)
       {
          const ObsID& oid = itr->first;
