@@ -166,6 +166,28 @@ namespace gpstk
           *    to ARP ([UEN]).
           * @param L2pc      Position of antenna L2 phase center with respect
           *    to ARP ([UEN]).
+          *
+          */
+      CorrectObservables(XvtStore<SatID>& ephem, 
+                         const Position& stapos, 
+                         const Triple& L1pc, 
+                         const Triple& L2pc) 
+         : ephemeris(ephem), nominalPos(stapos),
+           L1PhaseCenter(L1pc), L2PhaseCenter(L2pc),
+           L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
+           L7PhaseCenter(0.0, 0.0, 0.0), L8PhaseCenter(0.0, 0.0, 0.0),
+           monumentVector(0.0, 0.0, 0.0), extraBiases(0.0, 0.0, 0.0)
+      { setIndex(); };
+
+
+         /** Common constructor
+          *
+          * @param ephem     Satellite ephemeris.
+          * @param stapos    Nominal position of receiver station.
+          * @param L1pc      Position of antenna L1 phase center with respect
+          *    to ARP ([UEN]).
+          * @param L2pc      Position of antenna L2 phase center with respect
+          *    to ARP ([UEN]).
           * @param extra     Extra biases affecting monument, such as tidal
           *    effects ([UEN]).
           *
