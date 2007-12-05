@@ -32,7 +32,7 @@
 #include "CodeGenerator.hpp"
 
 /* If we're not using GNU C, elide __attribute__ */
-#ifndef __GNUC__
+#if !defined( __GNUC__ ) || ( __GNUC__ < 4 )
 #  define  __attribute__(x)  /*NOTHING*/
 #endif
 
