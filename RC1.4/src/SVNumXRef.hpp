@@ -1,4 +1,4 @@
-/** $Id: //depot/msn/prototype/brent/IGEB_Demo/SVNumXRef.hpp#1 $
+/** $Id: $
 *   SVNumXRef.hpp
 *
 *   Applied Research Laboratories, The University of Texas at Austin

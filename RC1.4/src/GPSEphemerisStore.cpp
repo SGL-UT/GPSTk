@@ -200,7 +200,7 @@ namespace gpstk
          initialTime = t;
       else if (t>finalTime)
          finalTime = t;
-      
+
       return rc;
    }
 
@@ -217,7 +217,7 @@ namespace gpstk
 
          EngEphMap::iterator lower = eMap.lower_bound(tmin);
          if (lower != eMap.begin())
-            eMap.erase(eMap.begin(), --lower);
+            eMap.erase(eMap.begin(), lower);
 
          EngEphMap::iterator upper = eMap.upper_bound(tmax);
          if (upper != eMap.end())
@@ -398,5 +398,21 @@ namespace gpstk
       return n;
    } // end of GPSEphemerisStore::addToList(list<EngEphemeris>&)
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//   const EngEphMap 
+   const std::map<DayTime, EngEphemeris>& 
+   GPSEphemerisStore::getEphMap( const SatID sat )
+            const throw(InvalidRequest)
+   {
+      UBEMap::const_iterator prn_i = ube.find(sat.id);
+      if (prn_i == ube.end())
+      {
+         InvalidRequest e("No ephemeris for satellite " + asString(sat));
+         GPSTK_THROW(e);
+      }
+      return(prn_i->second);
+   } // end of GPSEphemerisStore::getEphMap(const SatID sat)
+   
 } // namespace
  

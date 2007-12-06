@@ -45,9 +45,11 @@
 #include "MiscMath.hpp"
 #include "ECEF.hpp"
 #include "icd_200_constants.hpp"
+#include <iostream>
+#include <fstream>
 
 using namespace gpstk::StringUtils;
-
+using namespace std;
 namespace gpstk
 {
    //-----------------------------------------------------------------------------
@@ -58,24 +60,27 @@ namespace gpstk
       try
       {
          RinexNavStream strm(filename.c_str());
-         if (!strm)
-         {
-            FileMissingException e("File " + filename + " could not be opened.");
-            GPSTK_THROW(e);
-         }
-      
-         RinexNavHeader header;
-         strm >> header;
+	 if (strm.is_open())
+	 {
+	   RinexNavHeader header;
+	   strm >> header;
 
-         addFile(filename, header);
+	   addFile(filename, header);
+	   
+	   RinexNavData rec;
+	   while(strm >> rec)
+	     addEphemeris(rec);
 
-         RinexNavData rec;
-         while(strm >> rec)
-            addEphemeris(rec);
+	 }
+	 else
+	 {
+	   FileMissingException e("File " + filename + " could not be opened.");
+	   GPSTK_THROW(e);
+	 }
       }
       catch (gpstk::Exception& e)
       {
-         GPSTK_RETHROW(e);
+	GPSTK_RETHROW(e);
       }
    }  // end RinexEphemerisStore::load
 

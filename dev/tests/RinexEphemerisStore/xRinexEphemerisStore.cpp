@@ -2,6 +2,7 @@
 
 #include "xRinexEphemerisStore.hpp"
 #include "SatID.hpp"
+#include "Exception.hpp"
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xRinexEphemerisStore);
 
@@ -27,10 +28,12 @@ void xRinexEphemerisStore :: RESTest (void)
 	gpstk::RinexEphemerisStore Store;
 	try
 	{
-		CPPUNIT_ASSERT_THROW(Store.loadFile("NotaFILE"),gpstk::Exception);
+	  CPPUNIT_ASSERT_THROW(Store.loadFile("NotaFILE"),gpstk::FileMissingException);
 	}
 	catch (gpstk::Exception& e)
 	{
+	  cout << "unexpected exception thrown" << endl;
+	  cout << e << endl;
 	}
 	
 	CPPUNIT_ASSERT_NO_THROW(Store.loadFile("TestRinex06.031"));
@@ -158,9 +161,9 @@ void xRinexEphemerisStore :: BCESgetXvtTest (void)
 		//cout << e;
 	}
 
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt1.txt","Checks/getXvt1.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt15.txt","Checks/getXvt15.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt32.txt","Checks/getXvt32.chk"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt1.txt","Checks/getPrnXvt1.chk"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt15.txt","Checks/getPrnXvt15.chk"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt32.txt","Checks/getPrnXvt32.chk"));
 }
 
 
@@ -225,9 +228,9 @@ void xRinexEphemerisStore :: BCESgetXvt2Test (void)
 		//cout << e;
 	}
 
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt2_1.txt","Checks/getXvt1.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt2_15.txt","Checks/getXvt15.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt2_32.txt","Checks/getXvt32.chk"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt2_1.txt","Checks/getPrnXvt1.chk"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt2_15.txt","Checks/getPrnXvt15.chk"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt2_32.txt","Checks/getPrnXvt32.chk"));
 }
 
 /*
@@ -429,15 +432,17 @@ void xRinexEphemerisStore :: BCESwiperTest (void)
 	{
 		//Make sure it doesn't fail but dont wipe anything
 		CPPUNIT_ASSERT_NO_THROW(Store.wiper(gpstk::DayTime::BEGINNING_OF_TIME));
-		//Wipe everything and make sure that we did wipe all the data
+		//Wipe everything outside interval and make sure that we did wipe all the data
 		Store.wiper(Time);
 		Store.dump(DumpData1,1);
 		
 		CPPUNIT_ASSERT_EQUAL(Time,Store.getInitialTime());
-		
+
+		//Wipe everything, return size (should be zero)
+		Store.wiper(gpstk::DayTime::END_OF_TIME);
 		unsigned int Num = Store.ubeSize();
 		
-		CPPUNIT_ASSERT_EQUAL(Num,Store.wiper(gpstk::DayTime::END_OF_TIME));
+		CPPUNIT_ASSERT_EQUAL((unsigned) 0,Num);
 		
 		Store.dump(DumpData2,1);
 		
@@ -466,7 +471,7 @@ void xRinexEphemerisStore :: BCESwiperTest (void)
 void xRinexEphemerisStore :: BCESclearTest (void)
 {
 	ofstream DumpData;
-	DumpData.open ("Checks/clearTest.chk");
+	DumpData.open ("Logs/clearTest.txt");
 
 	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
@@ -476,7 +481,7 @@ void xRinexEphemerisStore :: BCESclearTest (void)
 		CPPUNIT_ASSERT_NO_THROW(Store.clear());
 		
 		CPPUNIT_ASSERT_EQUAL(gpstk::DayTime::END_OF_TIME,Store.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL(gpstk::DayTime::BEGINNING_OF_TIME,Store.getFinalTime());
+		CPPUNIT_ASSERT_EQUAL(gpstk::DayTime::END_OF_TIME,Store.getFinalTime());
 		Store.dump(DumpData,1);
 		
 	}

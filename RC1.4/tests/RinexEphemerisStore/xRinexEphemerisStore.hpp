@@ -5,7 +5,9 @@
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
+
 #include "RinexEphemerisStore.hpp"
+#include "SatID.hpp"
 #include <fstream>
 
 
@@ -18,8 +20,8 @@ class xRinexEphemerisStore: public CPPUNIT_NS :: TestFixture
 	CPPUNIT_TEST_SUITE (xRinexEphemerisStore);
 	CPPUNIT_TEST (RESTest);
 	CPPUNIT_TEST (BCESfindEphTest);
-	CPPUNIT_TEST (BCESgetPrnXvtTest);
-	CPPUNIT_TEST (BCESgetPrnXvt2Test);
+	CPPUNIT_TEST (BCESgetXvtTest);
+	CPPUNIT_TEST (BCESgetXvt2Test);
 	CPPUNIT_TEST (BCESgetPrnHealthTest);
 	CPPUNIT_TEST (BCESdumpTest);
 	CPPUNIT_TEST (BCESaddEphemerisTest);
@@ -38,8 +40,8 @@ class xRinexEphemerisStore: public CPPUNIT_NS :: TestFixture
 		
 		void RESTest (void); 
 		void BCESfindEphTest (void);
-		void BCESgetPrnXvtTest (void);
-		void BCESgetPrnXvt2Test (void);
+		void BCESgetXvtTest (void);
+		void BCESgetXvt2Test (void);
 		void BCESgetPrnHealthTest (void);
 		void BCESdumpTest (void);
 		void BCESaddEphemerisTest (void);
