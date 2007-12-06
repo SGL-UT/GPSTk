@@ -345,73 +345,81 @@ namespace gpstk
       virtual int Prepare( const DayTime& time,
                            const satTypeValueMap& data );
 
-// XXX
-        /** Method to set an a priori position of receiver using Bancroft method. Intended to be used
-         * with GNSS data structures.
-         *
-         * @param gData         GNSS data structure to be used
-         *
-         * @return
-         *  0 if OK
-         *  -1 if problems arose
-         */
-        virtual inline int Prepare(const gnssSatTypeValue& gData)
-        {
-            return ((*this).Prepare(gData.header.epoch, gData.body));
-        };
+
+         /** Method to set an a priori position of receiver using Bancroft
+          * method. Intended to be used with GNSS data structures.
+          *
+          * @param gData         GNSS data structure to be used
+          *
+          * @return
+          *  0 if OK
+          *  -1 if problems arose
+          */
+      virtual int Prepare(const gnssSatTypeValue& gData)
+      { return (Prepare(gData.header.epoch, gData.body)); };
 
 
-        /** Method to set the initial (a priori) position of receiver before 
-         * Compute() method.
-         * @return
-         *  0 if OK
-         *  -1 if problems arose
-         */
-        virtual int Prepare(const double& aRx, const double& bRx, const double& cRx, 
-            Position::CoordinateSystem s=Position::Cartesian,
-            GeoidModel *geoid=NULL) throw(GeometryException);
+         /** Method to set the initial (a priori) position of receiver before
+          * Compute() method.
+          * @return
+          *  0 if OK
+          *  -1 if problems arose
+          */
+      virtual int Prepare( const double& aRx,
+                           const double& bRx,
+                           const double& cRx,
+                           Position::CoordinateSystem s=Position::Cartesian,
+                           GeoidModel *geoid = NULL )
+         throw(GeometryException);
 
 
-        /** Method to set the initial (a priori) position of receiver before 
-         * Compute() method.
-         * @return
-         *  0 if OK
-         *  -1 if problems arose
-         */
-        virtual int Prepare(const Position& RxCoordinates) throw(GeometryException);
+         /** Method to set the initial (a priori) position of receiver before
+          * Compute() method.
+          * @return
+          *  0 if OK
+          *  -1 if problems arose
+          */
+      virtual int Prepare(const Position& RxCoordinates)
+         throw(GeometryException);
 
 
-        /** Returns a satTypeValueMap object, adding the new data generated when calling a modeling object.
-         *
-         * @param time      Epoch.
-         * @param gData     Data object holding the data.
-         */
-        virtual satTypeValueMap& processModel(const DayTime& time, satTypeValueMap& gData) throw(Exception);
+         /** Returns a satTypeValueMap object, adding the new data generated
+          *  when calling a modeling object.
+          *
+          * @param time      Epoch.
+          * @param gData     Data object holding the data.
+          */
+      virtual satTypeValueMap& processModel( const DayTime& time,
+                                             satTypeValueMap& gData )
+         throw(Exception);
 
 
-        /// Method to get if the model has been prepared.
-        inline bool getModelPrepared() const { return modelPrepared; };
+         /// Method to get if the model has been prepared.
+      bool getModelPrepared() const
+      { return modelPrepared; };
 
 
-        /** Method to forcefully set whether the model has been prepared.
-         *
-         * @param prepare       Boolean indicating whether the model has been prepared.
-         */
-        inline void setModelPrepared(const bool& prepare) { modelPrepared = prepare; };
+         /** Method to forcefully set whether the model has been prepared.
+          *
+          * @param prepare       Boolean indicating whether the model has
+          *                      been prepared.
+          */
+      ModeledPR& setModelPrepared(const bool& prepare)
+      { modelPrepared = prepare; return (*this); };
 
 
-        /// Destructor.
-        virtual ~ModeledPR() throw() {};
+         /// Destructor.
+      virtual ~ModeledPR() throw() {};
 
 
-    protected:
+   protected:
 
-        bool modelPrepared;
+      bool modelPrepared;
 
 
    }; // class ModeledPR
 
-   //@}
+      //@}
 
 } // namespace
 #endif  // MODELEDPR_HPP

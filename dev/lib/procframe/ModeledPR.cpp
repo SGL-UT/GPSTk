@@ -405,57 +405,86 @@ namespace gpstk
    }
 
 
-    /* Method to set the initial (a priori) position of receiver before 
-     * Compute() method.
-     * @return
-     *  0 if OK
-     *  -1 if problems arose
-     */
-    int ModeledPR::Prepare(const double& aRx, const double& bRx, const double& cRx, Position::CoordinateSystem
-        s, GeoidModel *geoid) throw(GeometryException) 
-    {
-        int result = setInitialRxPosition(aRx, bRx, cRx, s, geoid);
-        // If everything is OK, the model is prepared
-        if (result ==0) modelPrepared = true; else modelPrepared = false;
-
-        return result;
-    }
-
-
-    /* Method to set the initial (a priori) position of receiver before 
-     * Compute() method.
-     * @return
-     *  0 if OK
-     *  -1 if problems arose
-     */
-    int ModeledPR::Prepare(const Position& RxCoordinates) throw(GeometryException) 
-    {
-        
-        int result = setInitialRxPosition(RxCoordinates); 
-        // If everything is OK, the model is prepared
-        if (result ==0) modelPrepared = true; else modelPrepared = false;
-
-        return result;
-    }
-
-
-
-     /* Returns a satTypeValueMap object, adding the new data generated when calling a modeling object.
-      *
-      * @param time      Epoch.
-      * @param gData     Data object holding the data.
+      /* Method to set the initial (a priori) position of receiver before 
+      * Compute() method.
+      * @return
+      *  0 if OK
+      *  -1 if problems arose
       */
-    satTypeValueMap& ModeledPR::processModel(const DayTime& time, satTypeValueMap& gData) throw(Exception)
-    {
-        // First, if the model is not prepared let's take care of it
-        if (!getModelPrepared()) Prepare(time, gData);
+   int ModeledPR::Prepare( const double& aRx,
+                           const double& bRx,
+                           const double& cRx,
+                           Position::CoordinateSystem s,
+                           GeoidModel *geoid )
+      throw(GeometryException) 
+   {
 
-        ModeledReferencePR::processModel(time, gData);
+      int result = setInitialRxPosition(aRx, bRx, cRx, s, geoid);
 
-        return gData;
-    }   // End ModeledPR::processModel(const DayTime& time, satTypeValueMap& gData)
+         // If everything is OK, the model is prepared
+      if( result == 0 )
+      {
+         modelPrepared = true;
+      }
+      else
+      {
+         modelPrepared = false;
+      }
 
+      return result;
+
+   }
+
+
+      /* Method to set the initial (a priori) position of receiver before
+       * Compute() method.
+       * @return
+       *  0 if OK
+       *  -1 if problems arose
+       */
+   int ModeledPR::Prepare(const Position& RxCoordinates)
+      throw(GeometryException) 
+   {
+        
+      int result = setInitialRxPosition(RxCoordinates); 
+
+         // If everything is OK, the model is prepared
+      if( result == 0 )
+      {
+         modelPrepared = true;
+      }
+      else
+      {
+         modelPrepared = false;
+      }
+
+      return result;
+
+   }
+
+
+      /* Returns a satTypeValueMap object, adding the new data generated when
+       * calling a modeling object.
+       *
+       * @param time      Epoch.
+       * @param gData     Data object holding the data.
+       */
+   satTypeValueMap& ModeledPR::processModel( const DayTime& time,
+                                             satTypeValueMap& gData )
+      throw(Exception)
+   {
+
+         // First, if the model is not prepared let's take care of it
+      if( !getModelPrepared() )
+      {
+         Prepare(time, gData);
+      }
+
+      ModeledReferencePR::processModel(time, gData);
+
+      return gData;
+
+   }   // End ModeledPR::processModel()
 
 
 } // namespace
-
