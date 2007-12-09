@@ -123,7 +123,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
 {
    if (!headerWritten)
    {
-      s << "# Time              Type PRN  Elev         ORD(m) wonky" << endl;
+      s << "# Time              Type PRN  Elev   Azimuth       ORD(m) wonky" << endl;
       headerWritten=true;
    }
 
@@ -140,7 +140,8 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
       int type = 0;
       s << time << " " << setw(4) << type
         << " " << setw(3) << svid.id
-        << " " << setprecision(1) << setw(5)  << ord.getElevation()
+        << " " << setprecision(2) << setw(6)  << ord.getElevation()
+        << " " << setprecision(2) << setw(7)  << ord.getAzimuth()
         << " " << setprecision(5) << setw(14) << ord.getORD()
         << " " << hex << setw(5) << ord.wonky << dec
         << endl;
@@ -185,7 +186,7 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
          }
          
          if ((readBuffer.size() < 24) || 
-             (readBuffer=="# Time              Type PRN  Elev         ORD(m) wonky"))
+             (readBuffer=="# Time              Type PRN  Elev   Azimuth       ORD(m) wonky"))
          {
             readBuffer.erase(0, string::npos);
             continue;
@@ -224,14 +225,15 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
             ord.obstime = time;
 
             int prn;
-            double elev, res;
+            double elev, az, res;
             unsigned wonky;
 
-            iss >> prn >> elev >> res >> hex >> wonky >> dec;
+            iss >> prn >> elev >> az >> res >> hex >> wonky >> dec;
 
             SatID svid(prn, SatID::systemGPS);
             ord.svid = svid;
             ord.elevation = elev;
+            ord.azimuth = az;
             ord.ord = res;
             ord.wonky = wonky;
             
