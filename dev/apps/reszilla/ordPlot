@@ -212,7 +212,7 @@ def main():
             clocks[1]=smooth(clocks[1], window_len=n, window='bartlett')
 
     if plotOrds:
-        if True:
+        if options.legend and options.legend <2:
             if len(ords[0]):
                 ax1.plot_date(ords[0], ords[2], 'g,', label="ords")
             if len(warts[0]) and options.wartiness:
