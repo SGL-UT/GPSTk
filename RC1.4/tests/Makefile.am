@@ -1,3 +1,3 @@
 # $Id$
-SUBDIRS = RungeKutta4 Stats BCEphemerisStore BinUtils DayTime IonoModel PolyFit RinexEphemerisStore RinexMet RinexObs RinexNav
+SUBDIRS = RungeKutta4 Stats BinUtils DayTime IonoModel PolyFit RinexEphemerisStore RinexMet RinexObs RinexNav
  
