@@ -75,8 +75,8 @@ namespace gpstk
       Triple dispL7(extraBiases + monumentVector + L7PhaseCenter);
       Triple dispL8(extraBiases + monumentVector + L8PhaseCenter);
 
-         // Object to store satellite Xvt
-      Xvt svPosVel;
+         // Define a Triple that will hold satellite position, in ECEF
+      Triple svPos(0.0, 0.0, 0.0);
 
       SatIDSet satRejectedSet;
 
@@ -85,30 +85,49 @@ namespace gpstk
       for (it = gData.begin(); it != gData.end(); ++it) 
       {
 
-            // Use this if satellite position is not already computed
-            // NOTE: This may change in the future, if some other class
-            // already provides satellite position, improving performance
-         if(true)
+            // Use ephemeris if satellite position is not already computed
+         if( ( (*it).second.find(TypeID::satX) == (*it).second.end() ) ||
+             ( (*it).second.find(TypeID::satY) == (*it).second.end() ) ||
+             ( (*it).second.find(TypeID::satZ) == (*it).second.end() ) )
          {
-               // Try to get satellite position if it is not already computed
-            try
+            if(pEphemeris==NULL)
             {
-                  // For our purposes, position at receive time is fine enough
-               svPosVel = ephemeris.getXvt( (*it).first, time );
-            }
-            catch(...)
-            {
-                  // If satellite is missing, then schedule it for removal
+                  // If ephemeris is missing, then remove all satellites
                satRejectedSet.insert( (*it).first );
                continue;
-             }
-         }
+            }
+            else
+            {
+                  // Try to get satellite position
+                  // if it is not already computed
+               try
+               {
+                     // For our purposes, position at receive time 
+                     // is fine enough
+                  Xvt svPosVel(pEphemeris->getXvt( (*it).first, time ));
 
-            // If everything is OK, then continue processing.
-            // Create a Triple with satellite position, in ECEF
-         Triple svPos( svPosVel.x.theArray[0],
-                       svPosVel.x.theArray[1],
-                       svPosVel.x.theArray[2] );
+                     // If everything is OK, then continue processing.
+                  svPos[0] = svPosVel.x.theArray[0];
+                  svPos[1] = svPosVel.x.theArray[1];
+                  svPos[2] = svPosVel.x.theArray[2];
+
+               }
+               catch(...)
+               {
+                     // If satellite is missing, then schedule it for removal
+                  satRejectedSet.insert( (*it).first );
+                  continue;
+               }
+            }
+
+         }
+         else
+         {
+               // Get satellite position out of GDS
+            svPos[0] = (*it).second[TypeID::satX];
+            svPos[1] = (*it).second[TypeID::satY];
+            svPos[2] = (*it).second[TypeID::satZ];
+         }
 
             // Compute vector station-satellite, in ECEF
          Triple ray(svPos - staPos);

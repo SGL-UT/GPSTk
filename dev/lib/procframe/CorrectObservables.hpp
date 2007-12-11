@@ -109,13 +109,23 @@ namespace gpstk
    {
    public:
 
+         /// Default constructor
+      CorrectObservables()
+         : pEphemeris(NULL), nominalPos(0.0, 0.0, 0.0),
+           L1PhaseCenter(0.0, 0.0, 0.0), L2PhaseCenter(0.0, 0.0, 0.0),
+           L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
+           L7PhaseCenter(0.0, 0.0, 0.0), L8PhaseCenter(0.0, 0.0, 0.0),
+           monumentVector(0.0, 0.0, 0.0), extraBiases(0.0, 0.0, 0.0)
+      { setIndex(); };
+
+
          /** Common constructor
           *
           * @param ephem     Satellite ephemeris.
           *
           */
       CorrectObservables(XvtStore<SatID>& ephem)
-         : ephemeris(ephem), nominalPos(0.0, 0.0, 0.0),
+         : pEphemeris(&ephem), nominalPos(0.0, 0.0, 0.0),
            L1PhaseCenter(0.0, 0.0, 0.0), L2PhaseCenter(0.0, 0.0, 0.0),
            L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
            L7PhaseCenter(0.0, 0.0, 0.0), L8PhaseCenter(0.0, 0.0, 0.0),
@@ -131,7 +141,7 @@ namespace gpstk
           */
       CorrectObservables(XvtStore<SatID>& ephem, 
                          const Position& stapos) 
-         : ephemeris(ephem), nominalPos(stapos),
+         : pEphemeris(&ephem), nominalPos(stapos),
            L1PhaseCenter(0.0, 0.0, 0.0), L2PhaseCenter(0.0, 0.0, 0.0),
            L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
            L7PhaseCenter(0.0, 0.0, 0.0), L8PhaseCenter(0.0, 0.0, 0.0),
@@ -150,7 +160,7 @@ namespace gpstk
       CorrectObservables(XvtStore<SatID>& ephem, 
                          const Position& stapos, 
                          const Triple& L1pc) 
-         : ephemeris(ephem), nominalPos(stapos),
+         : pEphemeris(&ephem), nominalPos(stapos),
            L1PhaseCenter(L1pc), L2PhaseCenter(0.0, 0.0, 0.0),
            L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
            L7PhaseCenter(0.0, 0.0, 0.0), L8PhaseCenter(0.0, 0.0, 0.0),
@@ -172,7 +182,7 @@ namespace gpstk
                          const Position& stapos, 
                          const Triple& L1pc, 
                          const Triple& L2pc) 
-         : ephemeris(ephem), nominalPos(stapos),
+         : pEphemeris(&ephem), nominalPos(stapos),
            L1PhaseCenter(L1pc), L2PhaseCenter(L2pc),
            L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
            L7PhaseCenter(0.0, 0.0, 0.0), L8PhaseCenter(0.0, 0.0, 0.0),
@@ -197,7 +207,7 @@ namespace gpstk
                          const Triple& L1pc, 
                          const Triple& L2pc,
                          const Triple& extra) 
-         : ephemeris(ephem), nominalPos(stapos),
+         : pEphemeris(&ephem), nominalPos(stapos),
            L1PhaseCenter(L1pc), L2PhaseCenter(L2pc),
            L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
            L7PhaseCenter(0.0, 0.0, 0.0), L8PhaseCenter(0.0, 0.0, 0.0),
@@ -224,7 +234,7 @@ namespace gpstk
                          const Triple& L2pc,
                          const Triple& monument,
                          const Triple& extra) 
-         : ephemeris(ephem), nominalPos(stapos),
+         : pEphemeris(&ephem), nominalPos(stapos),
            L1PhaseCenter(L1pc), L2PhaseCenter(L2pc),
            L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
            L7PhaseCenter(0.0, 0.0, 0.0), L8PhaseCenter(0.0, 0.0, 0.0),
@@ -263,7 +273,7 @@ namespace gpstk
                          const Triple& L8pc,
                          const Triple& monument,
                          const Triple& extra) 
-         : ephemeris(ephem), nominalPos(stapos),
+         : pEphemeris(&ephem), nominalPos(stapos),
            L1PhaseCenter(L1pc), L2PhaseCenter(L2pc),
            L5PhaseCenter(L5pc), L6PhaseCenter(L6pc),
            L7PhaseCenter(L7pc), L8PhaseCenter(L8pc),
@@ -311,17 +321,17 @@ namespace gpstk
       { nominalPos = stapos; return (*this); };
 
 
-         /// Returns a reference to satellite ephemeris object currently 
+         /// Returns a pointer to the satellite ephemeris object currently 
          /// in use.
-      virtual XvtStore<SatID>& getEphemeris(void) const
-      { return ephemeris; };
+      virtual XvtStore<SatID> *getEphemeris(void) const
+      { return pEphemeris; };
 
 
          /** Sets satellite ephemeris object to be used.
           * @param ephem     Satellite ephemeris object.
           */
-      virtual CorrectObservables& setEphemeris(const XvtStore<SatID>& ephem)
-      { ephemeris = ephem; return (*this); };
+      virtual CorrectObservables& setEphemeris(XvtStore<SatID>& ephem)
+      { pEphemeris = &ephem; return (*this); };
 
 
          /** Returns position of antenna L1 phase center with respect
@@ -468,7 +478,7 @@ namespace gpstk
 
 
          /// Satellite ephemeris to be used
-      XvtStore<SatID>& ephemeris;
+      XvtStore<SatID> *pEphemeris;
 
 
          /// Receiver position
