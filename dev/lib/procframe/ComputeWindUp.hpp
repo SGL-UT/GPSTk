@@ -94,6 +94,13 @@ namespace gpstk
    {
    public:
 
+         /// Default constructor
+      ComputeWindUp()
+         : pEphemeris(NULL), nominalPos(0.0, 0.0, 0.0), 
+           satData("PRN_GPS"), fileData("PRN_GPS")
+      { setIndex(); };
+
+
          /** Common constructor
           *
           * @param ephem     Satellite ephemeris.
@@ -107,7 +114,7 @@ namespace gpstk
       ComputeWindUp(XvtStore<SatID>& ephem,
                     const Position& stapos, 
                     string filename="PRN_GPS")
-         : ephemeris(ephem), nominalPos(stapos), satData(filename),
+         : pEphemeris(&ephem), nominalPos(stapos), satData(filename),
            fileData(filename)
       { setIndex(); };
 
@@ -163,17 +170,17 @@ namespace gpstk
         { nominalPos = stapos; return (*this); };
 
 
-         /// Returns a reference to satellite ephemeris object 
+         /// Returns a pointer to the satellite ephemeris object 
          /// currently in use.
-      virtual XvtStore<SatID>& getEphemeris(void) const
-      { return ephemeris; };
+      virtual XvtStore<SatID> *getEphemeris(void) const
+      { return pEphemeris; };
 
 
          /** Sets satellite ephemeris object to be used.
           * @param ephem     Satellite ephemeris object.
           */
-      virtual ComputeWindUp& setEphemeris(const XvtStore<SatID>& ephem)
-      { ephemeris = ephem; return (*this); };
+      virtual ComputeWindUp& setEphemeris(XvtStore<SatID>& ephem)
+      { pEphemeris = &ephem; return (*this); };
 
 
          /// Returns an index identifying this object.
@@ -201,7 +208,7 @@ namespace gpstk
 
 
          /// Satellite ephemeris to be used
-      XvtStore<SatID>& ephemeris;
+      XvtStore<SatID> *pEphemeris;
 
 
          /// Receiver position
