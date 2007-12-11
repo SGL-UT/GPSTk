@@ -78,7 +78,7 @@ namespace gpstk
       minElev = 10.0;
       pDefaultEphemeris = NULL;
       defaultObservable = TypeID::C1;
-      useTGD = true;
+      useTGD = false;
       setInitialRxPosition(aRx, bRx, cRx, s, geoid);
       setIndex();
    }
@@ -92,7 +92,7 @@ namespace gpstk
       minElev = 10.0;
       pDefaultEphemeris = NULL;
       defaultObservable = TypeID::C1;
-      useTGD = true;
+      useTGD = false;
       setInitialRxPosition(RxCoordinates);
       setIndex();
    }

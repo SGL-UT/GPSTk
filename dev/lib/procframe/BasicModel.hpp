@@ -47,8 +47,8 @@ namespace gpstk
       //@{
 
       /** This is a class to compute the basic parts of a GNSS model, i.e.:
-       *  Geometric distance, relativity correction, satellite position at
-       *  transmission time, satellite elevation and azimuth, etc.
+       * Geometric distance, relativity correction, satellite position at
+       * transmission time, satellite elevation and azimuth, etc.
        *
        * This class is intended to be used with GNSS Data Structures (GDS).
        * It is a more modular alternative to classes such as ModelObs
@@ -107,7 +107,7 @@ namespace gpstk
       BasicModel()
          throw(Exception)
          : minElev(10.0), pDefaultEphemeris(NULL),
-           defaultObservable(TypeID::C1), useTGD(true)
+           defaultObservable(TypeID::C1), useTGD(false)
       { setInitialRxPosition(); setIndex(); };
 
 
@@ -150,13 +150,13 @@ namespace gpstk
           * @param dEphemeris    EphemerisStore object to be used by default.
           * @param dObservable   Observable type to be used by default.
           * @param applyTGD      Whether or not C1 observable will be
-          *                      corrected from TGD effect or not.
+          *                      corrected from TGD effect.
           *
           */
       BasicModel( const Position& RxCoordinates,
                   XvtStore<SatID>& dEphemeris,
                   const TypeID& dObservable = TypeID::C1,
-                  const bool& applyTGD = true )
+                  const bool& applyTGD = false )
          throw(Exception);
 
 
