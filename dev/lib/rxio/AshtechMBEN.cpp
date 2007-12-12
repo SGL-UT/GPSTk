@@ -256,16 +256,16 @@ namespace gpstk
           << " " << (ascii?"ascii":"bin")
           << endl;
 
-      oss << getName() << "2: ca";
+      oss << getName() << "2: ca ";
       ca.dump(oss);
       oss << endl;
 
       if (id == mpcId)
       {
-         oss << getName() << "3: p1";
+         oss << getName() << "3: p1 ";
          p1.dump(oss);
          oss << endl;
-         oss << getName() << "4: p2";
+         oss << getName() << "4: p2 ";
          p2.dump(oss);
          oss << endl;
       }

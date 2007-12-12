@@ -202,9 +202,9 @@ namespace gpstk
       if (rc != rcCA)
          switch (cb.goodbad)
          {
-            case 22: rc = rcPcode; break;
-            case 24: rc = rcYcode; break;
-            case 25: rc = rcCodeless; break;
+            case 22: rc = rcPcode; break; //0x16
+            case 24: rc = rcYcode; break; //0x18
+            case 25: rc = rcCodeless; break; //0x19
          }
 
       float chipRate=PY_CHIP_FREQ;
