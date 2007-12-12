@@ -120,9 +120,9 @@ def main():
                 continue
             
             prn = int(words[4])
-            ord = float(words[6])
+            ord = float(words[7])
             elev = float(words[5])
-            wart = int(words[7],16)
+            wart = int(words[8],16)
             if wart==0:
                 ordList[0].append(t)
                 ordList[1].append(prn)
