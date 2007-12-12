@@ -1446,7 +1446,7 @@ namespace gpstk
      * A typical way to use this model follows:
      *
      * @code
-     *   NeillropModel neillTM;
+     *   NeillTropModel neillTM;
      *   neillTM.setReceiverLatitude(lat);
      *   neillTM.setReceiverHeight(height);
      *   neillTM.setDayOfYear(doy);
