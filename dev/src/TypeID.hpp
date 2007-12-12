@@ -1,4 +1,18 @@
 #pragma ident "$Id$"
+
+/**
+ * @file TypeID.hpp
+ * gpstk::TypeID - This class was written taking as inspiration ObsID. The
+   objective of this class is to create an index able to represent any type 
+   of observation, correction, model parameter or other data value of interest 
+   for GNSS data processing. This class is extensible in run-time, so the 
+   programmer may add indexes on-demand.
+ */
+
+
+#ifndef TYPEID_HPP
+#define TYPEID_HPP
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -21,8 +35,6 @@
 //
 //============================================================================
 
-#ifndef GPSTK_TYPEID_HPP
-#define GPSTK_TYPEID_HPP
 
 #include <iostream>
 #include <iomanip>
@@ -32,46 +44,38 @@
 #include "RinexObsHeader.hpp"
 
 
-/**
- * @file TypeID.hpp
- * gpstk::TypeID - This class was written taking as inspiration ObsID. The
-   objective of this class is to create an index able to represent any type 
-   of observation, correction, model parameter or other data value of interest 
-   for GNSS data processing. This class is extensible in run-time, so the 
-   programmer may add indexes on-demand.
- */
-
 namespace gpstk
 {
 
-   /**
-    * This class creates an index able to represent any type of observation,
-    * correction, model parameter or other data value of interest for GNSS 
-    * data processing.
-    *
-    * This class is exensible in run-time, so the programmer may add 
-    * indexes on-demand. For instance, in order to create a new TypeID object
-    * referring INS-related data, and with "ins" as description string,
-    * you may write the following:
-    *
-    * @code
-    *    TypeID INS = TypeID::newValueType("ins");
-    * @endcode
-    *
-    * Or using the constructor:
-    *
-    * @code
-    *    TypeID INS(TypeID::newValueType("ins"));
-    * @endcode
-    *
-    * From now on, you'll be able to use INS as TypeID when you need to
-    * refer to inertial system data.
-    *
-    */
+      /**
+       * This class creates an index able to represent any type of observation,
+       * correction, model parameter or other data value of interest for GNSS 
+       * data processing.
+       *
+       * This class is exensible in run-time, so the programmer may add 
+       * indexes on-demand. For instance, in order to create a new TypeID
+       * object referring INS-related data, and with "ins" as description
+       * string, you may write the following:
+       *
+       * @code
+       *    TypeID INS = TypeID::newValueType("ins");
+       * @endcode
+       *
+       * Or using the constructor:
+       *
+       * @code
+       *    TypeID INS(TypeID::newValueType("ins"));
+       * @endcode
+       *
+       * From now on, you'll be able to use INS as TypeID when you need to
+       * refer to inertial system data.
+       *
+       */
    class TypeID
    {
    public:
-      /// The type of the data value.
+
+         /// The type of the data value.
       enum ValueType
       {
          Unknown,
@@ -132,9 +136,12 @@ namespace gpstk
          rel,       ///< Relativistic delay
          tropo,     ///< Vertical tropospheric delay, total
          dryTropo,  ///< Vertical tropospheric delay, dry component
+         dryMap,    ///< Tropospheric mapping function, dry component
          wetTropo,  ///< Vertical tropospheric delay, wet component
+         wetMap,    ///< Tropospheric mapping function, wet component
          tropoSlant, ///< Slant tropospheric delay, total
          iono,      ///< Vertical ionospheric delay
+         ionoMap,   ///< Ionospheric mapping function
          ionoSlant, ///< Slant ionospheric delay
          windUp,    ///< Wind-up effect (in radians)
          satX,      ///< Satellite position, X component
@@ -208,65 +215,79 @@ namespace gpstk
          Placeholder = Last+1000
       };
 
-      /// empty constructor, creates an invalid object
+
+         /// empty constructor, creates an invalid object
       TypeID()
          : type(Unknown) {};
 
-      /// Explicit constructor
+
+         /// Explicit constructor
       TypeID(ValueType vt)
          : type(vt) {};
 
-      /// Equality requires all fields to be the same
+
+         /// Equality requires all fields to be the same
       virtual bool operator==(const TypeID& right) const
       { return type==right.type; }
 
-      /// This ordering is somewhat arbitrary but is required to be able
-      /// to use an TypeID as an index to a std::map. If an application needs
-      /// some other ordering, inherit and override this function.
+
+         /// This ordering is somewhat arbitrary but is required to be able
+         /// to use an TypeID as an index to a std::map. If an application
+         /// needs some other ordering, inherit and override this function.
       virtual bool operator<(const TypeID& right) const
       { return type < right.type; }
 
 
+         /// Inequality operator   
       bool operator!=(const TypeID& right) const
       { return !(operator==(right)); }
 
+
+         /// Greater than operator
       bool operator>(const TypeID& right) const
       {  return (!operator<(right) && !operator==(right)); }
 
+
+         /// Less than or equal operator
       bool operator<=(const TypeID& right) const
       { return (operator<(right) || operator==(right)); }
 
+
+         /// Greater than or equal operator
       bool operator>=(const TypeID& right) const
       { return !(operator<(right)); }
 
-      /// Assignment operator
-      virtual TypeID operator=(const TypeID& right)
-      {
-        if ( this == &right ) return (*this);
-        (*this).type = right.type;
-        return *this;
-      }
 
-      /// Convenience output method
+         /// Assignment operator
+      virtual TypeID operator=(const TypeID& right);
+
+
+         /// Convenience output method
       virtual std::ostream& dump(std::ostream& s) const;
 
-      /// Returns true if this is a valid TypeID. Basically just
-      /// checks that the enum is defined
+
+         /// Returns true if this is a valid TypeID. Basically just
+         /// checks that the enum is defined
       virtual bool isValid() const;
 
-      /// Destructor
+
+         /// Destructor
       virtual ~TypeID() {}
 
 
-      /** Static method to add new TypeID's
-       * @param string      Identifying string for the new TypeID
-       */
+         /** Static method to add new TypeID's
+          * @param string      Identifying string for the new TypeID
+          */
       static ValueType newValueType(const std::string& s);
 
-      /// Type of the value
+
+         /// Type of the value
       ValueType  type;
 
+
+         /// Map holding type descriptions
       static std::map< ValueType, std::string > tStrings;
+
 
    public:
       class Initializer
@@ -277,56 +298,23 @@ namespace gpstk
 
       static Initializer TypeIDsingleton;
 
-   }; // class TypeID
+   }; // End of class TypeID
+
 
    namespace StringUtils
    {
-      /// convert this object to a string representation
+         /// convert this object to a string representation
       std::string asString(const TypeID& p);
    }
    
-   /// stream output for TypeID
+
+      /// stream output for TypeID
    std::ostream& operator<<(std::ostream& s, const TypeID& p);
 
 
-   /// Conversion from RinexObsType to TypeID
-   inline TypeID::ValueType RinexType2TypeID(const RinexObsHeader::RinexObsType& rot)
-   {
-        if (rot == RinexObsHeader::UN) return TypeID::Unknown;
-        if (rot == RinexObsHeader::C1) return TypeID::C1;
-        if (rot == RinexObsHeader::C2) return TypeID::C2;
-        if (rot == RinexObsHeader::P1) return TypeID::P1;
-        if (rot == RinexObsHeader::P2) return TypeID::P2;
-        if (rot == RinexObsHeader::L1) return TypeID::L1;
-        if (rot == RinexObsHeader::L2) return TypeID::L2;
-        if (rot == RinexObsHeader::D1) return TypeID::D1;
-        if (rot == RinexObsHeader::D2) return TypeID::D2;
-        if (rot == RinexObsHeader::S1) return TypeID::S1;
-        if (rot == RinexObsHeader::S2) return TypeID::S2;
-        // v 2.11
-        if (rot == RinexObsHeader::C5) return TypeID::C5;
-        if (rot == RinexObsHeader::L5) return TypeID::L5;
-        if (rot == RinexObsHeader::D5) return TypeID::D5;
-        if (rot == RinexObsHeader::S5) return TypeID::S5;
-        // Galileo-related
-        if (rot == RinexObsHeader::C6) return TypeID::C6;
-        if (rot == RinexObsHeader::L6) return TypeID::L6;
-        if (rot == RinexObsHeader::D6) return TypeID::D6;
-        if (rot == RinexObsHeader::S6) return TypeID::S6;
-        if (rot == RinexObsHeader::C7) return TypeID::C7;
-        if (rot == RinexObsHeader::L7) return TypeID::L7;
-        if (rot == RinexObsHeader::D7) return TypeID::D7;
-        if (rot == RinexObsHeader::S7) return TypeID::S7;
-        if (rot == RinexObsHeader::C8) return TypeID::C8;
-        if (rot == RinexObsHeader::L8) return TypeID::L8;
-        if (rot == RinexObsHeader::D8) return TypeID::D8;
-        if (rot == RinexObsHeader::S8) return TypeID::S8;
-
-        // Just in case, but it should never get this far
-        return TypeID::Unknown;
-   }
-
+      /// Conversion from RinexObsType to TypeID
+   TypeID::ValueType RinexType2TypeID(const RinexObsHeader::RinexObsType& rot);
 
 
 } // namespace gpstk
-#endif
+#endif  // TYPEID_HPP
