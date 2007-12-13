@@ -539,459 +539,384 @@ namespace gpstk
 
       // Further type definitions
 
-    /// GNSS data structure with source, epoch and data type as header (common indexes) and satValueMap as body.
-    struct  gnssSatValue : gnssData<sourceEpochTypeHeader, satValueMap>
-    {
-
-        /// Returns the number of satellites available in the body (a satValueMap).
-        inline size_t numSats() const { return body.numSats(); };
-
-        /// Returns a SatIDSet with all the satellites present in this object.
-        inline SatIDSet getSatID() const
-        {
-            return (*this).body.getSatID();
-        }
-
-        /// Returns a Vector with all the satellites present in this object.
-        inline Vector<SatID> getVectorOfSatID() const
-        {
-            return (*this).body.getVectorOfSatID();
-        }
-
-        /// Returns a gnssSatValue with only this satellite.
-        /// @param satellite Satellite to be extracted.
-        inline gnssSatValue extractSatID(const SatID& satellite) const
-        {
-            gnssSatValue result;
-            result.header = (*this).header;
-            result.body = (*this).body.extractSatID(satellite);
-            return result;
-        };
-
-        /// Returns a gnssSatValue with only one satellite, identified by the given parameters.
-        /// @param p Satellite PRN number.
-        /// @param p System the satellite belongs to.
-        inline gnssSatValue extractSatID(const int& p, const SatID::SatelliteSystem& s) const
-        {
-            SatID tempSatellite(p, s);  // We build a temporary SatID object
-            return (*this).extractSatID(tempSatellite);
-        };
-
-        /// Returns a gnssSatValue with only these satellites.
-        /// @param satSet Set (SatIDSet) containing the satellites to be extracted.
-        inline gnssSatValue extractSatID(const SatIDSet& satSet) const
-        {
-            gnssSatValue result;
-            result.header = (*this).header;
-            result.body = (*this).body.extractSatID(satSet);
-            return result;
-        }
-
-        /// Modifies this object, keeping only this satellite.
-        /// @param satellite Satellite to be kept.
-        inline gnssSatValue& keepOnlySatID(const SatID& satellite)
-        {
-            SatIDSet satSet;
-            satSet.insert(satellite);
-            return (*this).keepOnlySatID(satSet);
-        }
-
-        /// Modifies this object, keeping only this satellite.
-        /// @param p Satellite PRN number.
-        /// @param p System the satellite belongs to.
-        inline gnssSatValue& keepOnlySatID(const int& p, const SatID::SatelliteSystem& s)
-        {
-            SatID tempSatellite(p, s);  // We build a temporary SatID object
-            return (*this).keepOnlySatID(tempSatellite);
-        }
-
-        /// Modifies this object, keeping only these satellites.
-        /// @param satSet Set (SatIDSet) containing the satellites to be kept.
-        inline gnssSatValue& keepOnlySatID(const SatIDSet& satSet)
-        {
-            satValueMap svMap ( (*this).body.extractSatID(satSet) );
-            (*this).body = svMap;
-            return (*this);
-        }
-
-        /// Modifies this object, removing this satellite.
-        /// @param satellite Satellite to be removed.
-        inline gnssSatValue& removeSatID(const SatID& satellite)
-        {
-            (*this).body.erase(satellite);
-            return (*this);
-        }
-
-        /// Modifies this object, removing these satellites.
-        /// @param satSet Set (SatIDSet) containing the satellites to be removed.
-        inline gnssSatValue& removeSatID(const SatIDSet& satSet)
-        {
-            SatIDSet::const_iterator pos;
-            for (pos = satSet.begin(); pos != satSet.end(); ++pos)
-            {
-                (*this).body.erase(*pos);
-            }
-            return (*this);
-        }
-
-        /// Returns a reference to the value (double) with corresponding satellite.
-        /// @param satellite Satellite to be look for.
-        inline double& operator()(const SatID& satellite) throw(SatIDNotFound)
-        {
-            return (*this).body(satellite);
-        }
-
-
-
-        /// Destructor.
-        virtual ~gnssSatValue() {};
-
-    };  // End of gnssSatValue
-
-
-
-    /// GNSS data structure with source, epoch and satellite as header (common indexes) and typeValueMap as body.
-    struct  gnssTypeValue : gnssData<sourceEpochSatHeader, typeValueMap>
-    {
-
-        /// Returns the number of types available in the body (a typeValueMap).
-        inline size_t numTypes() const { return body.numTypes(); };
-
-        /// Returns a TypeIDSet with all the data types present in this object.
-        inline TypeIDSet getTypeID() const
-        {
-            return (*this).body.getTypeID();
-        }
-
-        /// Returns a gnssTypeValue with only this type of data.
-        /// @param type Type of value to be extracted.
-        inline gnssTypeValue extractTypeID(const TypeID& type) const
-        {
-            gnssTypeValue result;
-            result.header = (*this).header;
-            result.body = (*this).body.extractTypeID(type);
-            return result;
-        };
-
-        /// Returns a gnssTypeValue with only these types of data.
-        /// @param typeSet Set (TypeIDSet) containing the types of data to be extracted.
-        inline gnssTypeValue extractTypeID(const TypeIDSet& typeSet) const
-        {
-            gnssTypeValue result;
-            result.header = (*this).header;
-            result.body = (*this).body.extractTypeID(typeSet);
-            return result;
-        };
-
-        /// Modifies this object, keeping only this type of data.
-        /// @param type Type of value to be kept.
-        inline gnssTypeValue& keepOnlyTypeID(const TypeID& type)
-        {
-            TypeIDSet typeSet;
-            typeSet.insert(type);
-            return (*this).keepOnlyTypeID(typeSet);
-        }
-
-        /// Modifies this object, keeping only these types of data.
-        /// @param typeSet Set (TypeIDSet) containing the types of data to be kept.
-        inline gnssTypeValue& keepOnlyTypeID(const TypeIDSet& typeSet)
-        {
-            typeValueMap tvMap( (*this).body.extractTypeID(typeSet) );
-            (*this).body = tvMap;
-            return (*this);
-        }
-
-        /// Modifies this object, removing this type of data.
-        /// @param type Type of value to be removed.
-        inline gnssTypeValue& removeTypeID(const TypeID& type)
-        {
-            (*this).body.erase(type);
-            return (*this);
-        }
-
-        /// Modifies this object, removing these types of data.
-        /// @param typeSet Set (TypeIDSet) containing the types of data to be kept.
-        inline gnssTypeValue& removeTypeID(const TypeIDSet& typeSet)
-        {
-            TypeIDSet::const_iterator pos;
-            for (pos = typeSet.begin(); pos != typeSet.end(); ++pos)
-            {
-                (*this).body.erase(*pos);
-            }
-            return (*this);
-        }
-
-        /// Returns a reference to the value (double) with corresponding type.
-        /// @param type TypeID to be look for.
-        inline double& operator()(const TypeID& type) throw(TypeIDNotFound)
-        {
-            return (*this).body(type);
-        }
-
-
-        /// Destructor.
-        virtual ~gnssTypeValue() {};
-
-    };  // End of gnssTypeValue
-
-
-
-    /// GNSS data structure with source and epoch as header (common indexes) and satTypeValueMap as body.
-    struct  gnssSatTypeValue : gnssData<sourceEpochHeader, satTypeValueMap>
-    {
-
-        /// Returns the number of satellites available in the body (a satTypeValueMap).
-        inline size_t numSats() const { return body.numSats(); };
-
-        /// Returns a TypeIDSet with all the data types present in this object.
-        inline TypeIDSet getTypeID() const
-        {
-            return (*this).body.getTypeID();
-        }
-
-        /// Returns a SatIDSet with all the satellites present in this object.
-        inline SatIDSet getSatID() const
-        {
-            return (*this).body.getSatID();
-        }
-
-        /// Returns a Vector with all the satellites present in this object.
-        inline Vector<SatID> getVectorOfSatID() const
-        {
-            return (*this).body.getVectorOfSatID();
-        }
-
-        /** Returns the total number of data elements in the body.
-         * This method DOES NOT suppose that all the satellites have
-         * the same number of type values.
-         */
-        inline size_t numElements() const { return body.numElements(); };
-
-        /// Returns a gnssSatTypeValue with only this satellite.
-        /// @param satellite Satellite to be extracted.
-        inline gnssSatTypeValue extractSatID(const SatID& satellite) const
-        {
-            gnssSatTypeValue result;
-            result.header = (*this).header;
-            result.body = (*this).body.extractSatID(satellite);
-            return result;
-        };
-
-        /// Returns a gnssSatTypeValue with only one satellite, identified by the given parameters.
-        /// @param p Satellite PRN number.
-        /// @param p System the satellite belongs to.
-        inline gnssSatTypeValue extractSatID(const int& p, const SatID::SatelliteSystem& s) const
-        {
-            SatID tempSatellite(p, s);  // We build a temporary SatID object
-            return (*this).extractSatID(tempSatellite);
-        };
-
-        /// Returns a gnssSatTypeValue with only these satellites.
-        /// @param satSet Set (SatIDSet) containing the satellites to be extracted.
-        inline gnssSatTypeValue extractSatID(const SatIDSet& satSet) const
-        {
-            gnssSatTypeValue result;
-            result.header = (*this).header;
-            result.body = (*this).body.extractSatID(satSet);
-            return result;
-        }
-
-        /// Modifies this object, keeping only this satellite.
-        /// @param satellite Satellite to be kept.
-        inline gnssSatTypeValue& keepOnlySatID(const SatID& satellite)
-        {
-            SatIDSet satSet;
-            satSet.insert(satellite);
-            return (*this).keepOnlySatID(satSet);
-        }
-
-        /// Modifies this object, keeping only this satellite.
-        /// @param p Satellite PRN number.
-        /// @param p System the satellite belongs to.
-        inline gnssSatTypeValue& keepOnlySatID(const int& p, const SatID::SatelliteSystem& s)
-        {
-            SatID tempSatellite(p, s);  // We build a temporary SatID object
-            return (*this).keepOnlySatID(tempSatellite);
-        }
-
-        /// Modifies this object, keeping only these satellites.
-        /// @param satSet Set (SatIDSet) containing the satellites to be kept.
-        inline gnssSatTypeValue& keepOnlySatID(const SatIDSet& satSet)
-        {
-            satTypeValueMap stvMap( (*this).body.extractSatID(satSet) );
-            (*this).body = stvMap;
-            return (*this);
-        }
-
-        /// Returns a gnssSatTypeValue with only this type of data.
-        /// @param type Type of value to be extracted.
-        inline gnssSatTypeValue extractTypeID(const TypeID& type) const
-        {
-            gnssSatTypeValue result;
-            result.header = (*this).header;
-            result.body = (*this).body.extractTypeID(type);
-            return result;
-        };
-
-        /// Returns a gnssSatTypeValue with only these types of data.
-        /// @param typeSet Set (TypeIDSet) containing the types of data to be extracted.
-        inline gnssSatTypeValue extractTypeID(const TypeIDSet& typeSet) const
-        {
-            gnssSatTypeValue result;
-            result.header = (*this).header;
-            result.body = (*this).body.extractTypeID(typeSet);
-            return result;
-        };
-
-        /// Modifies this object, keeping only this type of data.
-        /// @param type Type of value to be kept.
-        inline gnssSatTypeValue& keepOnlyTypeID(const TypeID& type)
-        {
-            TypeIDSet typeSet;
-            typeSet.insert(type);
-            return (*this).keepOnlyTypeID(typeSet);
-        }
-
-        /// Modifies this object, keeping only these types of data.
-        /// @param typeSet Set (TypeIDSet) containing the types of data to be kept.
-        inline gnssSatTypeValue& keepOnlyTypeID(const TypeIDSet& typeSet)
-        {
-            satTypeValueMap stvMap( (*this).body.extractTypeID(typeSet) );
-            (*this).body = stvMap;
-            return (*this);
-        }
-
-        /// Modifies this object, removing this satellite.
-        /// @param satellite Satellite to be removed.
-        inline gnssSatTypeValue& removeSatID(const SatID& satellite)
-        {
-            (*this).body.erase(satellite);
-            return (*this);
-        }
-
-        /// Modifies this object, removing these satellites.
-        /// @param satSet Set (SatIDSet) containing the satellites to be removed.
-        inline gnssSatTypeValue& removeSatID(const SatIDSet& satSet)
-        {
-            SatIDSet::const_iterator pos;
-            for (pos = satSet.begin(); pos != satSet.end(); ++pos)
-            {
-                (*this).body.erase(*pos);
-            }
-            return (*this);
-        }
-
-        /// Modifies this object, removing this type of data.
-        /// @param type Type of value to be kept.
-        inline gnssSatTypeValue& removeTypeID(const TypeID& type)
-        {
-            (*this).body.removeTypeID(type);
-            return (*this);
-        }
-
-        /// Modifies this object, removing these types of data
-        /// @param typeSet Set (TypeIDSet) containing the types of data to be kept.
-        inline gnssSatTypeValue& removeTypeID(const TypeIDSet& typeSet)
-        {
-            TypeIDSet::const_iterator pos;
-            for (pos = typeSet.begin(); pos != typeSet.end(); ++pos)
-            {
-                (*this).body.removeTypeID(*pos);
-            }
-            return (*this);
-        }
-
-        /// Returns a GPSTk::Vector containing the data values with this type.
-        /// @param type Type of value to be returned.
-        inline Vector<double> getVectorOfTypeID(const TypeID& type) const
-        {
-            return ( (*this).body.getVectorOfTypeID(type) );
-        }
-
-
-        /** Modifies this object, adding one vector of data with this type, one value 
-         * per satellite.
-         *
-         * If type already exists, data is overwritten. If the number of values does not
-         * match with the number of satellites, a NumberOfSatsMismatch exception is thrown.
-         *
-         * Given that dataVector does not store information about the satellites the 
-         * values correspond to, the user is held responsible for having the data values
-         * stored in dataVector in the proper order regarding the SatIDs in this object.
-         *
-         * @param type          Type of data to be added.
-         * @param dataVector    GPSTk Vector containing the data to be added.
-         */
-        inline gnssSatTypeValue& insertTypeIDVector(const TypeID& type, const Vector<double> dataVector) throw(NumberOfSatsMismatch)
-        {
-            (*this).body.insertTypeIDVector(type, dataVector);
-            return (*this);
-        }
-
-
-        /** Modifies this object, adding a matrix of data, one vector per satellite.
-         *
-         * If types already exists, data is overwritten. If the number of rows in matrix does not
-         * match with the number of satellites, a NumberOfSatsMismatch exception is thrown. If the 
-         * number of columns in matrix does not match with the number of types in typeSet, a
-         * NumberOfTypesMismatch exception is thrown.
-         *
-         * Given that dataMatrix does not store information about the satellites and types the 
-         * values correspond to, the user is held responsible for having those data values
-         * stored in dataMatrix in the proper order regarding the SatIDs in this object and the 
-         * provided typeSet.
-         *
-         * @param typeSet       Set (TypeIDSet) containing the types of data to be added.
-         * @param dataMatrix    GPSTk Matrix containing the data to be added.
-         */
-        inline gnssSatTypeValue& insertMatrix(const TypeIDSet& typeSet, const Matrix<double> dataMatrix) throw(NumberOfSatsMismatch, NumberOfTypesMismatch)
-        {
-            (*this).body.insertMatrix(typeSet, dataMatrix);
-            return (*this);
-        }
-
-
-        /** Returns a reference to the typeValueMap with corresponding satellite.
-         * This operator allows direct access to data values when chained with the
-         * typeValueMap::operator() like this: gRin(sat21)(TypeID::C1).
-         *
-         * Example:
-         *
-         * @code
-         *   RinexObsStream rin("bahr1620.04o");    // Create the input file stream
-         *   gnssRinex gRin;                        // Declare a gnssRinex object
-         *   SatID sat21(21,SatID::systemGPS);      // Create a satellite object
-         *
-         *   // Feed the gRin data structure
-         *   while(rin >> gRin)
-         *   {
-         *      try
-         *      {
-         *          if (gRin(sat21)(TypeID::C1) == 0.0) gRin(sat21)(TypeID::C1) = 123.456;
-         *          cout << "C1 value for satellite G21: " << gRin(sat21)(TypeID::C1) << endl;
-         *      } 
-         *      catch (SatIDNotFound& e)
-         *      {
-         *          cout << endl << "Satellite G21 not found." << endl;
-         *      };
-         *   }
-         * @endcode
-         *
-         * @param satellite Satellite to be looked for.
-         */
-        inline typeValueMap& operator()(const SatID& satellite) throw(SatIDNotFound)
-        {
-            return (*this).body(satellite);
-        }
-
-
-        /// Destructor.
-        virtual ~gnssSatTypeValue() {};
-
-    };  // End of gnssSatTypeValue
+      /// GNSS data structure with source, epoch and data type as header
+      /// (common indexes) and satValueMap as body.
+   struct  gnssSatValue : gnssData<sourceEpochTypeHeader, satValueMap>
+   {
 
 
+         /// Returns the number of satellites available in the body,
+         /// which is a satValueMap.
+      size_t numSats() const
+      { return body.numSats(); };
 
+
+         /// Returns a SatIDSet with all the satellites present in this object.
+      SatIDSet getSatID() const
+      { return (*this).body.getSatID(); }
+
+
+         /// Returns a Vector with all the satellites present in this object.
+      Vector<SatID> getVectorOfSatID() const
+      { return body.getVectorOfSatID(); }
+
+
+         /// Returns a gnssSatValue with only this satellite.
+         /// @param satellite Satellite to be extracted.
+      gnssSatValue extractSatID(const SatID& satellite) const;
+
+
+         /// Returns a gnssSatValue with only one satellite, identified by
+         /// the given parameters.
+         /// @param p Satellite PRN number.
+         /// @param p System the satellite belongs to.
+      gnssSatValue extractSatID( const int& p,
+                                 const SatID::SatelliteSystem& s ) const;
+
+
+         /// Returns a gnssSatValue with only these satellites.
+         /// @param satSet Set (SatIDSet) containing the satellites
+         ///               to be extracted.
+      gnssSatValue extractSatID(const SatIDSet& satSet) const;
+
+
+         /// Modifies this object, keeping only this satellite.
+         /// @param satellite Satellite to be kept.
+      gnssSatValue& keepOnlySatID(const SatID& satellite);
+
+
+         /// Modifies this object, keeping only this satellite.
+         /// @param p Satellite PRN number.
+         /// @param p System the satellite belongs to.
+      gnssSatValue& keepOnlySatID( const int& p,
+                                   const SatID::SatelliteSystem& s );
+
+
+         /// Modifies this object, keeping only these satellites.
+         /// @param satSet Set (SatIDSet) containing the satellites to be kept.
+      gnssSatValue& keepOnlySatID(const SatIDSet& satSet);
+
+
+         /// Modifies this object, removing this satellite.
+         /// @param satellite Satellite to be removed.
+      gnssSatValue& removeSatID(const SatID& satellite)
+      { (*this).body.erase(satellite); return (*this); }
+
+
+         /// Modifies this object, removing these satellites.
+         /// @param satSet Set (SatIDSet) containing the satellites
+         ///               to be removed.
+      gnssSatValue& removeSatID(const SatIDSet& satSet);
+
+
+         /// Returns a reference to the value (double) with corresponding
+         /// satellite.
+         /// @param satellite Satellite to be looked for.
+      double& operator()(const SatID& satellite)
+         throw(SatIDNotFound)
+      { return (*this).body(satellite); }
+
+
+         /// Destructor.
+      virtual ~gnssSatValue() {};
+
+
+   };  // End of gnssSatValue
+
+
+
+
+      /// GNSS data structure with source, epoch and satellite as header
+      /// (common indexes) and typeValueMap as body.
+   struct  gnssTypeValue : gnssData<sourceEpochSatHeader, typeValueMap>
+   {
+
+         /// Returns the number of types available in the body,
+         /// which is a typeValueMap.
+      size_t numTypes() const
+      { return body.numTypes(); };
+
+
+         /// Returns a TypeIDSet with all the data types present
+         /// in this object.
+      TypeIDSet getTypeID() const
+      { return (*this).body.getTypeID(); }
+
+
+         /// Returns a gnssTypeValue with only this type of data.
+         /// @param type Type of value to be extracted.
+      gnssTypeValue extractTypeID(const TypeID& type) const;
+
+
+         /// Returns a gnssTypeValue with only these types of data.
+         /// @param typeSet Set (TypeIDSet) containing the types of data
+         ///                to be extracted.
+      gnssTypeValue extractTypeID(const TypeIDSet& typeSet) const;
+
+
+         /// Modifies this object, keeping only this type of data.
+         /// @param type Type of value to be kept.
+      gnssTypeValue& keepOnlyTypeID(const TypeID& type);
+
+
+         /// Modifies this object, keeping only these types of data.
+         /// @param typeSet Set (TypeIDSet) containing the types of data
+         ///                to be kept.
+      gnssTypeValue& keepOnlyTypeID(const TypeIDSet& typeSet);
+
+
+         /// Modifies this object, removing this type of data.
+         /// @param type Type of value to be removed.
+      gnssTypeValue& removeTypeID(const TypeID& type)
+      { (*this).body.erase(type); return (*this); }
+
+
+         /// Modifies this object, removing these types of data.
+         /// @param typeSet Set (TypeIDSet) containing the types of data
+         ///                to be kept.
+      gnssTypeValue& removeTypeID(const TypeIDSet& typeSet);
+
+
+         /// Returns a reference to the value (double) with corresponding type.
+         /// @param type TypeID to be looked for.
+      double& operator()(const TypeID& type)
+         throw(TypeIDNotFound)
+      { return (*this).body(type); }
+
+
+         /// Destructor.
+      virtual ~gnssTypeValue() {};
+
+
+   };  // End of gnssTypeValue
+
+
+
+      /// GNSS data structure with source and epoch as header
+      /// (common indexes) and satTypeValueMap as body.
+   struct  gnssSatTypeValue : gnssData<sourceEpochHeader, satTypeValueMap>
+   {
+
+         /// Returns the number of satellites available in the body,
+         /// which is a satTypeValueMap.
+      size_t numSats() const
+      { return body.numSats(); };
+
+
+         /// Returns a TypeIDSet with all the data types present in
+         /// this object.
+      TypeIDSet getTypeID() const
+      { return (*this).body.getTypeID(); }
+
+
+         /// Returns a SatIDSet with all the satellites present in this object.
+      SatIDSet getSatID() const
+      { return (*this).body.getSatID(); }
+
+
+         /// Returns a Vector with all the satellites present in this object.
+      Vector<SatID> getVectorOfSatID() const
+      { return (*this).body.getVectorOfSatID(); }
+
+
+         /** Returns the total number of data elements in the body.
+          * This method DOES NOT suppose that all the satellites have
+          * the same number of type values.
+          */
+      size_t numElements() const
+      { return body.numElements(); };
+
+
+         /// Returns a gnssSatTypeValue with only this satellite.
+         /// @param satellite Satellite to be extracted.
+      gnssSatTypeValue extractSatID(const SatID& satellite) const;
+
+
+         /// Returns a gnssSatTypeValue with only one satellite, identified
+         /// by the given parameters.
+         /// @param p Satellite PRN number.
+         /// @param p System the satellite belongs to.
+      gnssSatTypeValue extractSatID( const int& p,
+                                     const SatID::SatelliteSystem& s ) const;
+
+
+         /// Returns a gnssSatTypeValue with only these satellites.
+         /// @param satSet Set (SatIDSet) containing the satellites
+         ///               to be extracted.
+      gnssSatTypeValue extractSatID(const SatIDSet& satSet) const;
+
+
+         /// Modifies this object, keeping only this satellite.
+         /// @param satellite Satellite to be kept.
+      gnssSatTypeValue& keepOnlySatID(const SatID& satellite);
+
+
+         /// Modifies this object, keeping only this satellite.
+         /// @param p Satellite PRN number.
+         /// @param p System the satellite belongs to.
+      gnssSatTypeValue& keepOnlySatID( const int& p,
+                                       const SatID::SatelliteSystem& s );
+
+
+         /// Modifies this object, keeping only these satellites.
+         /// @param satSet Set (SatIDSet) containing the satellites to be kept.
+      gnssSatTypeValue& keepOnlySatID(const SatIDSet& satSet);
+
+
+         /// Returns a gnssSatTypeValue with only this type of data.
+         /// @param type Type of value to be extracted.
+      gnssSatTypeValue extractTypeID(const TypeID& type) const;
+
+
+         /// Returns a gnssSatTypeValue with only these types of data.
+         /// @param typeSet Set (TypeIDSet) containing the types of data
+         ///                to be extracted.
+      gnssSatTypeValue extractTypeID(const TypeIDSet& typeSet) const;
+
+
+         /// Modifies this object, keeping only this type of data.
+         /// @param type Type of value to be kept.
+      gnssSatTypeValue& keepOnlyTypeID(const TypeID& type);
+
+
+         /// Modifies this object, keeping only these types of data.
+         /// @param typeSet Set (TypeIDSet) containing the types of data
+         ///                to be kept.
+      gnssSatTypeValue& keepOnlyTypeID(const TypeIDSet& typeSet);
+
+
+         /// Modifies this object, removing this satellite.
+         /// @param satellite Satellite to be removed.
+      gnssSatTypeValue& removeSatID(const SatID& satellite)
+      { (*this).body.erase(satellite); return (*this); }
+
+
+         /// Modifies this object, removing these satellites.
+         /// @param satSet Set (SatIDSet) containing the satellites
+         ///               to be removed.
+      gnssSatTypeValue& removeSatID(const SatIDSet& satSet);
+
+
+         /// Modifies this object, removing this type of data.
+         /// @param type Type of value to be kept.
+      gnssSatTypeValue& removeTypeID(const TypeID& type)
+      { (*this).body.removeTypeID(type); return (*this); }
+
+
+         /// Modifies this object, removing these types of data
+         /// @param typeSet Set (TypeIDSet) containing the types of data
+         ///                to be kept.
+      gnssSatTypeValue& removeTypeID(const TypeIDSet& typeSet);
+
+
+         /// Returns a GPSTk::Vector containing the data values with this type.
+         /// @param type Type of value to be returned.
+      Vector<double> getVectorOfTypeID(const TypeID& type) const
+      { return ( (*this).body.getVectorOfTypeID(type) ); }
+
+
+         /** Modifies this object, adding one vector of data with this type,
+          *  one value per satellite.
+          *
+          * If type already exists, data is overwritten. If the number of
+          * values does not match with the number of satellites, a
+          * NumberOfSatsMismatch exception is thrown.
+          *
+          * Given that dataVector does not store information about the
+          * satellites the values correspond to, the user is held responsible
+          * for having the data values stored in dataVector in the proper order
+          * regarding the SatIDs in this object.
+          *
+          * @param type          Type of data to be added.
+          * @param dataVector    GPSTk Vector containing the data to be added.
+          */
+      gnssSatTypeValue& insertTypeIDVector( const TypeID& type,
+                                            const Vector<double> dataVector )
+         throw(NumberOfSatsMismatch)
+      { (*this).body.insertTypeIDVector(type, dataVector); return (*this); }
+
+
+         /** Modifies this object, adding a matrix of data, one vector
+          *  per satellite.
+          *
+          * If types already exists, data is overwritten. If the number of
+          * rows in matrix does not match with the number of satellites, a
+          * NumberOfSatsMismatch exception is thrown. If the number of columns
+          * in matrix does not match with the number of types in typeSet, a
+          * NumberOfTypesMismatch exception is thrown.
+          *
+          * Given that dataMatrix does not store information about the
+          * satellites and types the values correspond to, the user is held
+          * responsible for having those data values stored in dataMatrix in
+          * the proper order regarding the SatIDs in this object and the
+          * provided typeSet.
+          *
+          * @param typeSet    Set (TypeIDSet) containing the types of data
+          *                   to be added.
+          * @param dataMatrix GPSTk Matrix containing the data to be added.
+          */
+      gnssSatTypeValue& insertMatrix( const TypeIDSet& typeSet,
+                                      const Matrix<double> dataMatrix )
+         throw(NumberOfSatsMismatch, NumberOfTypesMismatch)
+      { (*this).body.insertMatrix(typeSet, dataMatrix); return (*this); }
+
+
+         /** Returns a reference to the typeValueMap with corresponding
+          *  satellite.
+          *
+          * This operator allows direct access to data values when chained
+          * with the typeValueMap::operator(), like this:
+          *
+          *    gRin(sat21)(TypeID::C1).
+          *
+          * Example:
+          *
+          * @code
+          *   // Create the input file stream
+          *   RinexObsStream rin("bahr1620.04o");
+          *
+          *   // Declare a gnssRinex object
+          *   gnssRinex gRin;
+          *
+          *   // Create a satellite object
+          *   SatID sat21(21,SatID::systemGPS);
+          *
+          *   // Feed the gRin data structure
+          *   while(rin >> gRin)
+          *   {
+          *      try
+          *      {
+          *          if (gRin(sat21)(TypeID::C1) == 0.0)
+          *          {
+          *             gRin(sat21)(TypeID::C1) = 123.456;
+          *          }
+          *
+          *          cout << "C1 value for satellite G21: "
+          *               << gRin(sat21)(TypeID::C1) << endl;
+          *      }
+          *      catch (SatIDNotFound& e)
+          *      {
+          *          cout << endl << "Satellite G21 not found." << endl;
+          *      };
+          *   }
+          * @endcode
+          *
+          * @param satellite Satellite to be looked for.
+          */
+      typeValueMap& operator()(const SatID& satellite)
+         throw(SatIDNotFound)
+      { return (*this).body(satellite); }
+
+
+         /// Destructor.
+      virtual ~gnssSatTypeValue() {};
+
+
+   };  // End of gnssSatTypeValue
+
+
+
+// XXX
     /// GNSS data structure with source, epoch and extra Rinex data as header (common indexes) and satTypeValueMap as body.
     struct gnssRinex : gnssSatTypeValue
     {
