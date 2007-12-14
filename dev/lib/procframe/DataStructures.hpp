@@ -1042,6 +1042,9 @@ namespace gpstk
    };  // End of gnssLinearCombination
 
 
+      /// Set containing gnssLinearCombination objects.
+   typedef std::set<gnssLinearCombination> LinearCombSet;
+
 
 
       /// Stream input for gnssSatTypeValue.
