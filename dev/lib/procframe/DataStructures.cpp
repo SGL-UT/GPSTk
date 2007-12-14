@@ -1126,9 +1126,151 @@ namespace gpstk
 
 
 
+      ////// gnssRinex //////
+
+
+      // Returns a gnssRinex with only this satellite.
+      // @param satellite Satellite to be extracted.
+   gnssRinex gnssRinex::extractSatID(const SatID& satellite) const
+   {
+      gnssRinex result;
+      result.header = (*this).header;
+      result.body = (*this).body.extractSatID(satellite);
+
+      return result;
+
+   }
+
+
+      // Returns a gnssRinex with only one satellite, identified by
+      // the given parameters.
+      // @param p Satellite PRN number.
+      // @param p System the satellite belongs to.
+   gnssRinex gnssRinex::extractSatID( const int& p,
+                                      const SatID::SatelliteSystem& s ) const
+   {
+
+      SatID tempSatellite(p, s);  // We build a temporary SatID object
+
+      return extractSatID(tempSatellite);
+
+   }
+
+
+      // Returns a gnssRinex with only these satellites.
+      // @param satSet Set (SatIDSet) containing the satellites
+      //               to be extracted.
+   gnssRinex gnssRinex::extractSatID(const SatIDSet& satSet) const
+   {
+
+      gnssRinex result;
+      result.header = (*this).header;
+      result.body = (*this).body.extractSatID(satSet);
+
+      return result;
+
+   }
+
+
+      // Modifies this object, keeping only this satellite.
+      // @param satellite Satellite to be kept.
+   gnssRinex& gnssRinex::keepOnlySatID(const SatID& satellite)
+   {
+
+      SatIDSet satSet;
+      satSet.insert(satellite);
+
+      return keepOnlySatID(satSet);
+
+   }
+
+
+      // Modifies this object, keeping only this satellite.
+      // @param p Satellite PRN number.
+      // @param p System the satellite belongs to.
+   gnssRinex& gnssRinex::keepOnlySatID( const int& p,
+                                        const SatID::SatelliteSystem& s )
+   {
+
+      SatID tempSatellite(p, s);  // We build a temporary SatID object
+
+      return keepOnlySatID(tempSatellite);
+
+   }
+
+
+      // Modifies this object, keeping only these satellites.
+      // @param satSet Set (SatIDSet) containing the satellites to be kept.
+   gnssRinex& gnssRinex::keepOnlySatID(const SatIDSet& satSet)
+   {
+
+      satTypeValueMap stvMap( (*this).body.extractSatID(satSet) );
+      (*this).body = stvMap;
+
+      return (*this);
+
+   }
+
+
+      // Returns a gnssRinex with only this type of data.
+      // @param type Type of value to be extracted.
+   gnssRinex gnssRinex::extractTypeID(const TypeID& type) const
+   {
+
+      gnssRinex result;
+      result.header = (*this).header;
+      result.body = (*this).body.extractTypeID(type);
+
+      return result;
+
+   }
+
+
+      // Returns a gnssRinex with only these types of data.
+      // @param typeSet Set (TypeIDSet) containing the types of data
+      //                to be extracted.
+   gnssRinex gnssRinex::extractTypeID(const TypeIDSet& typeSet) const
+   {
+
+      gnssRinex result;
+      result.header = (*this).header;
+      result.body = (*this).body.extractTypeID(typeSet);
+
+      return result;
+
+   }
+
+
+      // Modifies this object, keeping only this type of data.
+      // @param type Type of value to be kept.
+   gnssRinex& gnssRinex::keepOnlyTypeID(const TypeID& type)
+   {
+
+      TypeIDSet typeSet;
+      typeSet.insert(type);
+
+      return keepOnlyTypeID(typeSet);
+
+   }
+
+
+      // Modifies this object, keeping only these types of data.
+      // @param typeSet Set (TypeIDSet) containing the types of data
+      //                to be kept.
+   gnssRinex& gnssRinex::keepOnlyTypeID(const TypeIDSet& typeSet)
+   {
+
+      satTypeValueMap stvMap( (*this).body.extractTypeID(typeSet) );
+      (*this).body = stvMap;
+
+      return (*this);
+
+   }
 
 
 
+
+      ////// Other stuff //////
 
 
 
@@ -1554,6 +1696,211 @@ namespace gpstk
       }
         
    }  // End of stream input for gnssRinex
+
+
+
+      // Convenience function to convert from SatID system to SourceID type.
+      // @param sid Satellite ID.
+   SourceID::SourceType SatIDsystem2SourceIDtype(const SatID& sid)
+   {
+
+         // Select the right system the data came from
+      switch(sid.system)
+      {
+         case SatID::systemGPS:
+            return SourceID::GPS;
+            break;
+         case SatID::systemGalileo:
+            return SourceID::Galileo;
+            break;
+         case SatID::systemGlonass:
+            return SourceID::Glonass;
+            break;
+         case SatID::systemGeosync:
+            return SourceID::Geosync;
+            break;
+         case SatID::systemLEO:
+            return SourceID::LEO;
+            break;
+         case SatID::systemTransit:
+            return SourceID::Transit;
+            break;
+         case SatID::systemMixed:
+            return SourceID::Mixed;
+            break;
+         default:
+            return SourceID::Unknown;
+      }
+   } // End SatIDsystem2SourceIDtype(const SatID& sid)
+
+
+      // Convenience function to fill a typeValueMap with data
+      // from RinexObsTypeMap.
+   typeValueMap FilltypeValueMapwithRinexObsTypeMap(
+                                 const RinexObsData::RinexObsTypeMap& otmap )
+   {
+
+         // RinexObsTypeMap is a map from RinexObsType to RinexDatum:
+         //   std::map<RinexObsHeader::RinexObsType, RinexDatum>
+
+         // Let's define a iterator to visit the observations type map
+      RinexObsData::RinexObsTypeMap::const_iterator itObs;
+
+         // We will need a typeValueMap
+      typeValueMap tvMap;
+
+         // Let's visit the RinexObsTypeMap (RinexObsType -> RinexDatum)
+      for( itObs = otmap.begin(); itObs!= otmap.end(); ++itObs )
+      {
+
+         TypeID type( RinexType2TypeID( (*itObs).first ) );
+         tvMap[ type ] = (*itObs).second.data;
+
+            // If this is a phase measurement, let's store corresponding
+            // LLI and SSI for this SV and frequency
+            // Also, the values for phase measurements will be given in meters
+         if( type == TypeID::L1 )
+         {
+            tvMap[TypeID::LLI1] = (*itObs).second.lli;
+            tvMap[TypeID::SSI1] = (*itObs).second.ssi;
+            tvMap[ type ] = tvMap[ type ] * L1_WAVELENGTH;
+         }
+         if( type == TypeID::L2 )
+         {
+            tvMap[TypeID::LLI2] = (*itObs).second.lli;
+            tvMap[TypeID::SSI2] = (*itObs).second.ssi; 
+            tvMap[ type ] = tvMap[ type ] * L2_WAVELENGTH;
+         }
+         if( type == TypeID::L5 )
+         {
+            tvMap[TypeID::LLI5] = (*itObs).second.lli;
+            tvMap[TypeID::SSI5] = (*itObs).second.ssi; 
+            tvMap[ type ] = tvMap[ type ] * L5_WAVELENGTH;
+         }
+         if( type == TypeID::L6 )
+         {
+            tvMap[TypeID::LLI6] = (*itObs).second.lli;
+            tvMap[TypeID::SSI6] = (*itObs).second.ssi; 
+            tvMap[ type ] = tvMap[ type ] * L6_WAVELENGTH;
+         }
+         if( type == TypeID::L7 )
+         {
+            tvMap[TypeID::LLI7] = (*itObs).second.lli;
+            tvMap[TypeID::SSI7] = (*itObs).second.ssi; 
+            tvMap[ type ] = tvMap[ type ] * L7_WAVELENGTH;
+         }
+         if( type == TypeID::L8 )
+         {
+            tvMap[TypeID::LLI8] = (*itObs).second.lli;
+            tvMap[TypeID::SSI8] = (*itObs).second.ssi; 
+            tvMap[ type ] = tvMap[ type ] * L8_WAVELENGTH;
+         }
+      }  // End of "for( itObs = otmap.begin(); ..."
+
+      return tvMap;
+
+   } // End FilltypeValueMapwithRinexObsTypeMap()
+
+
+      // Convenience function to fill a satTypeValueMap with data
+      // from RinexObsData.
+      // @param rod RinexObsData holding the data.
+   satTypeValueMap FillsatTypeValueMapwithRinexObsData(const RinexObsData& rod)
+   {
+
+         // We need to declare a satTypeValueMap
+      satTypeValueMap theMap;
+
+         // Let's define the "it" iterator to visit the observations PRN map
+         // RinexSatMap is a map from SatID to RinexObsTypeMap: 
+         //      std::map<SatID, RinexObsTypeMap>
+      RinexObsData::RinexSatMap::const_iterator it;
+      for( it = rod.obs.begin(); it!= rod.obs.end(); ++it )
+      {
+            // RinexObsTypeMap is a map from RinexObsType to RinexDatum:
+            //   std::map<RinexObsHeader::RinexObsType, RinexDatum>
+            // The "second" field of a RinexSatMap (it) is a
+            // RinexObsTypeMap (otmap)
+         RinexObsData::RinexObsTypeMap otmap = (*it).second;
+
+         theMap[(*it).first] = FilltypeValueMapwithRinexObsTypeMap(otmap);
+
+      }
+
+      return theMap;
+
+   } // End FillsatTypeValueMapwithRinexObsData(const RinexObsData& rod)
+
+
+      /* This function constructs a DayTime object from the given parameters.
+       * 
+       * @param line    the encoded time string found in the RINEX record.
+       * @param hdr     the RINEX Observation Header object for the current
+       *                RINEX file.
+       */
+   DayTime parseTime( const std::string& line,
+                      const RinexObsHeader& hdr )
+      throw(FFStreamError)
+   {
+
+      try
+      {
+            // check if the spaces are in the right place - an easy
+            // way to check if there's corruption in the file
+         if ( (line[0] != ' ')  ||
+              (line[3] != ' ')  ||
+              (line[6] != ' ')  ||
+              (line[9] != ' ')  ||
+              (line[12] != ' ') ||
+              (line[15] != ' ') )
+         {
+            FFStreamError e("Invalid time format");
+            GPSTK_THROW(e);
+         }
+
+            // if there's no time, just return a bad time
+         if (line.substr(0,26) == std::string(26, ' '))
+         {
+            return DayTime(DayTime::BEGINNING_OF_TIME);
+         }
+
+         int year, month, day, hour, min;
+         double sec;
+         int yy = hdr.firstObs.year()/100;
+         yy *= 100;
+   
+         year  = StringUtils::asInt(   line.substr(1,  2 ));
+         month = StringUtils::asInt(   line.substr(4,  2 ));
+         day   = StringUtils::asInt(   line.substr(7,  2 ));
+         hour  = StringUtils::asInt(   line.substr(10, 2 ));
+         min   = StringUtils::asInt(   line.substr(13, 2 ));
+         sec   = StringUtils::asDouble(line.substr(15, 11));
+
+            // Real Rinex has epochs 'yy mm dd hr 59 60.0'
+            // surprisingly often....
+         double ds=0;
+         if(sec >= 60.) { ds=sec; sec=0.0; }
+         DayTime rv(yy+year, month, day, hour, min, sec);
+         if(ds != 0) rv += ds;
+
+         return rv;
+      }
+         // string exceptions for substr are caught here
+      catch (std::exception &e)
+      {
+         FFStreamError err("std::exception: " + std::string(e.what()));
+         GPSTK_THROW(err);
+      }
+      catch (gpstk::Exception& e)
+      {
+         std::string text;
+         for(int i=0; i<(int)e.getTextCount(); i++) text += e.getText(i);
+         FFStreamError err("gpstk::Exception in parseTime(): " + text);
+         GPSTK_THROW(err);
+      }
+
+   }  // End of parseTime()
+
 
 
 }
