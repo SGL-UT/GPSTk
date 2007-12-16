@@ -55,6 +55,8 @@
 #include "AshtechMBEN.hpp"
 #include "AshtechPBEN.hpp"
 
+#include "ATSData.hpp"
+
 namespace gpstk
 {
    /// Conversion Function from MDP data
@@ -92,5 +94,9 @@ namespace gpstk
    MDPPVTSolution makeMDPPVTSolution(
       const AshtechPBEN& pben,
       const unsigned week) throw();
+
+   /// Conversion Function from ATS data
+   MDPEpoch makeMDPEpoch(const ATSData& soe, const MDPEpoch& hint)
+      throw();
 }
 #endif

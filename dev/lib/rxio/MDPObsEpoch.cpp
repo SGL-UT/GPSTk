@@ -301,7 +301,7 @@ namespace gpstk
 
 
    //---------------------------------------------------------------------------
-   void MDPObsEpoch::Observation::dump(std::ostream& out) const 
+   void MDPObsEpoch::Observation::dump(ostream& out) const 
       throw()
    {
       using gpstk::StringUtils::asString;
@@ -318,4 +318,12 @@ namespace gpstk
       out << oss.str();
    } // MDPObsEpoch::Observation::dump()
 
+
+   //---------------------------------------------------------------------------
+   void dump(ostream& s, const MDPEpoch& me)
+   {
+      MDPEpoch::const_iterator i;
+      for (i=me.begin(); i != me.end(); i++)
+         i->second.dump(s);
+   }
 }

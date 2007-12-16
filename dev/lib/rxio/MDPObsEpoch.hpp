@@ -112,6 +112,12 @@ namespace gpstk
       Observation getObservation(const CarrierCode cc, const RangeCode rc) 
          const;
 
+      bool haveObservation(const ObsKey& ok) const
+      {return haveObservation(ok.first, ok.second);}
+
+      Observation getObservation(const ObsKey& ok) const
+      {return getObservation(ok.first, ok.second);}
+
       static const unsigned myId = 300;
       // This is just the pre obs_block stuff
       static const unsigned myLength = 8;
@@ -121,6 +127,7 @@ namespace gpstk
 
    // The key is intended to the PRN of the MDPObsEpoch
    typedef std::map<int, gpstk::MDPObsEpoch> MDPEpoch;
+   void dump(std::ostream& out, const MDPEpoch& me);
 
    FFStream& operator>>(FFStream& s, MDPEpoch& oe);
    FFStream& operator<<(FFStream& s, const MDPEpoch& oe);

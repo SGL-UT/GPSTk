@@ -226,7 +226,7 @@ namespace gpstk
          MDPObsEpoch::Observation obs_hint = moe_hint.getObservation(cc, rc);
          obs.bw = obs_hint.bw;
 
-      // if any bits in 3-5, 7,8 are set we are are questionable
+         // if any bits in 3-5, 7,8 are set we are are questionable
          if (!(cb.warning & ~0x23))
             obs.lockCount = obs_hint.lockCount+1;
       }
@@ -298,4 +298,98 @@ namespace gpstk
       return pvt;
    }
 
-}
+   //---------------------------------------------------------------------------
+   MDPEpoch makeMDPEpoch(const ATSData& ats, const MDPEpoch& hint) throw()
+   {
+      MDPEpoch me;
+      DayTime t0;
+
+      // first figure out the 'correct' time for this epoch
+      
+      for (int i=0; i <ats.channels.size(); i++)
+      {
+         const ATSData::ChannelBlock& cb = ats.channels[i];
+         short week = static_cast<short>(cb.absTime / DayTime::FULLWEEK);
+         double sow = cb.absTime - week * DayTime::FULLWEEK;
+         DayTime t(week, sow);
+         if (i == 0 || std::abs(t - t0) > 0.1)
+            t0 = t;
+      }
+
+      for (int i=0; i <ats.channels.size(); i++)
+      {
+         const ATSData::ChannelBlock& cb = ats.channels[i];
+         short week = static_cast<short>(cb.absTime / DayTime::FULLWEEK);
+         double sow = cb.absTime - week * DayTime::FULLWEEK;
+         DayTime t(week, sow);
+         if (std::abs(t - t0) > 0.1)
+         {
+            if (ats.debugLevel>2)
+               cout << "dropping channel with missmatched times" << endl;
+            continue;
+         }
+
+         MDPObsEpoch& moe = me[cb.svid.id];
+
+         moe.time = t;
+         moe.prn = cb.svid.id;
+         moe.status=0;
+         moe.elevation=0;
+         moe.azimuth=0;
+         moe.channel = i;
+
+         MDPObsEpoch moe_hint;
+         MDPEpoch::const_iterator k = hint.find(cb.svid.id);
+         if (k != hint.end())
+            moe_hint = k->second;
+         
+         for (int j=0; j<ats.numSubChan; j++)
+         {
+            const ATSData::SubChannelBlock& scb=cb.subChannels[j];
+
+            MDPObsEpoch::ObsKey obsKey;
+            switch (j)
+            {
+               case 0: obsKey = MDPObsEpoch::ObsKey(ccL1, rcCA);     break;
+               case 1: obsKey = MDPObsEpoch::ObsKey(ccL1, rcYcode);  break;
+               case 2: obsKey = MDPObsEpoch::ObsKey(ccL2, rcYcode);  break;
+               case 3: obsKey = MDPObsEpoch::ObsKey(ccL1, rcMcode1); break;
+               case 4: obsKey = MDPObsEpoch::ObsKey(ccL2, rcMcode2); break;
+            }
+
+            MDPObsEpoch::Observation obs;
+            obs.carrier = obsKey.first;
+            obs.range = obsKey.second;
+            obs.bw = 1;
+            obs.snr = scb.cn0;
+            obs.pseudorange = scb.pseudorange;
+            obs.phase = scb.phase;
+            obs.lockCount = 0;
+            // bit0: loss of lock, bit1: code tracking, bit2 carrier tracking
+            // bit3: gps time, bit4: tbd, bits5-7: Data rate
+            // It appears that the M codes loss of lock bit doesn't work
+            if (scb.flags & 0x1 && j<3)
+               continue;
+            else if (moe_hint.haveObservation(obsKey))
+            {
+               MDPObsEpoch::Observation oh = moe_hint.getObservation(obsKey);
+               obs.lockCount = oh.lockCount+1;
+            }
+
+            if (obs.carrier == ccL1)
+               obs.doppler = scb.rangeRate ;
+            else if (obs.carrier == ccL2)
+               obs.doppler = scb.rangeRate;
+
+            moe.obs[obsKey] = obs;
+         }
+      }
+      // now compute how many SVs were really tracked...
+      int numSVs = me.size();
+      MDPEpoch::iterator i;
+      for (i=me.begin(); i != me.end(); i++)
+         i->second.numSVs = numSVs;
+      return me;
+   }
+   
+} // namespace gpstk
