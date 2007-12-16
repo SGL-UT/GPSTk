@@ -1042,8 +1042,8 @@ namespace gpstk
    };  // End of gnssLinearCombination
 
 
-      /// Set containing gnssLinearCombination objects.
-   typedef std::set<gnssLinearCombination> LinearCombSet;
+      /// List containing gnssLinearCombination objects.
+   typedef std::list<gnssLinearCombination> LinearCombList;
 
 
 
