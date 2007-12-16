@@ -126,7 +126,11 @@ namespace gpstk
    }; // class MDPObsEpoch
 
    // The key is intended to the PRN of the MDPObsEpoch
-   typedef std::map<int, gpstk::MDPObsEpoch> MDPEpoch;
+   typedef std::multimap<int, gpstk::MDPObsEpoch> MDPEpoch;
+   // This is useful when finding all obs from a prn
+   // BTW, MCIP stands for MDPEPoch const interator pair
+   typedef std::pair<MDPEpoch::const_iterator, MDPEpoch::const_iterator> MCIP;
+
    void dump(std::ostream& out, const MDPEpoch& me);
 
    FFStream& operator>>(FFStream& s, MDPEpoch& oe);

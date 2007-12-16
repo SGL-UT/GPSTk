@@ -49,7 +49,7 @@ void MDPTrackProcessor::process(const gpstk::MDPObsEpoch& oe)
    int chan=oe.channel;
 
    if (chan<1 || chan >12)
-      cout << "Bad channel" << endl, exit(-1);
+      cout << "This program can only handles channles 1...12" << endl, exit(-1);
 
    // make a set of the obs that this epoch has
    rc_set ccs;
