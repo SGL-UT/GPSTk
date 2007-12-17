@@ -168,7 +168,8 @@ protected:
          {
             if (now - lastSendTime[i] > 60)
             {
-               cout << "Sending: " << sendString[i] << endl;
+               if (debugLevel)
+                  cout << "Sending: " << sendString[i] << endl;
                input.write(sendString[i].c_str(), sendString[i].size());
                input.write("\015\012", 2);
                lastSendTime[i] = now;
