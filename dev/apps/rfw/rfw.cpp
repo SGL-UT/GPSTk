@@ -74,6 +74,14 @@ public:
          "device (ser:/dev/ttyS0), a tcp port (tcp:hostname:port), or "
          "standard input. The default is just to take standard input.");
 
+      CommandOptionWithAnyArg sendStringOpt(
+         's', "send-string",
+         "A string to send to the device being recorded.");
+
+      CommandOptionWithAnyArg sendPeriodOpt(
+         'p', "send-period",
+         "A string to send to the device being recorded.");
+
       CommandOptionWithAnyArg outputSpecOpt(
          'o', "output",
          "The file spec for writing the files. To have the output "
@@ -109,6 +117,15 @@ public:
 
       if (output.getFilespec() == "-")
          output.setFilespec("<stdout>");
+      
+      for (int i=0; i<sendStringOpt.getCount(); i++)
+         sendString.push_back(sendStringOpt.getValue()[i]);
+      
+      for (int i=0; i<sendPeriodOpt.getCount(); i++)
+         sendPeriod.push_back(StringUtils::asInt(sendPeriodOpt.getValue()[i]));
+
+      for (int i=sendPeriod.size(); i< sendString.size(); i++)
+         sendPeriod.push_back(60);
 
       output.debugLevel = debugLevel;
 
@@ -125,6 +142,9 @@ protected:
 
    virtual void process()
    {
+      const int sendSize=sendString.size();
+      vector<DayTime> lastSendTime(sendSize);
+
       bool use_stdout = output.getFilespec() == "<stdout>";
       const size_t max_len=512;
       char data[max_len];
@@ -142,6 +162,18 @@ protected:
             output.write(data, input.gcount());
             output.flush();
          }
+
+         DayTime now;
+         for (int i=0; i<sendSize; i++)
+         {
+            if (now - lastSendTime[i] > 60)
+            {
+               cout << "Sending: " << sendString[i] << endl;
+               input.write(sendString[i].c_str(), sendString[i].size());
+               input.write("\015\012", 2);
+               lastSendTime[i] = now;
+            }
+         }
       }
    }
 
@@ -149,9 +181,12 @@ protected:
    {}
 
 private:
-   DeviceStream<std::ifstream> input;
+   DeviceStream<std::fstream> input;
 
    TimeNamedFileStream<ofstream> output;
+
+   vector<string> sendString;
+   vector<int> sendPeriod;
 };
 
 
