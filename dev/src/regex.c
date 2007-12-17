@@ -265,8 +265,8 @@ init_syntax_once (void)
 # endif /* emacs */
 
 /* Integer type for pointers.  */
-# if !defined _LIBC && !defined HAVE_UINTPTR_T && !defined _UINTPTR_T 
-typedef unsigned int uintptr_t;
+# if !defined _LIBC && !defined HAVE_UINTPTR_T && !defined _UINTPTR_T  && !defined __intptr_t_defined
+typedef unsigned int uintptr_t; 
 # endif
 
 /* Should we use malloc or alloca?  If REGEX_MALLOC is not defined, we

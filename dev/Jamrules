@@ -20,13 +20,13 @@ EXEMODE = 755 ;
 # any attempt to use any extension other than .o
 SUFOBJ2      ?= -l.o ;
 
-
 # some OS specific stuff
 if $(UNIX)
 {
    LIBPREFIX     = lib ;
    LDSHARE_FLAGS = -shared ;
    LINKLIBS += -lm ;
+
    switch $(OS)
    {
       case CYGWIN :
@@ -201,10 +201,11 @@ rule GPSBuildLibrary
    LibraryFromObjects $(arlib) : $(statobjs) ;
    InstallLib $(LIBDIR) : $(arlib) ;
 
-   # Windows is limited to 1024 character command lines.  This goes over that.
+   # Windows/cygwin is limited to 1024 character command lines.  
+   # This goes over that.
    # Until we can figure out how to properly split our library, we just can't
-   # build DLLs for Windows.
-   if $(UNIX)
+   # build DLLs for Windows/cygwin.
+   if $(UNIX) && $(OS) != CYGWIN
    {
       soname = $(LIBPREFIX)$(<:S=$(SUFLIBSHR)).$(GPSTK_SO_VERSION) ;
       shlib = $(LIBPREFIX)$(<:S=$(SUFLIBSHR).$(GPSTK_SO_VERSION).0) ;
