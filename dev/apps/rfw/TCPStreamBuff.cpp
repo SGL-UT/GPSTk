@@ -4,22 +4,24 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include <unistd.h>
-#include <netdb.h>
 #include <fcntl.h>
-#include <sys/file.h>
 
 #include <stdio.h>
+
 #if !defined(unix) && !defined(__unix__) && !defined(__APPLE__)
-#include <winsock.h>
+  #include <winsock.h>
+  #include <windows.h>
 #else
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
+  #include <unistd.h>
+  #include <netdb.h>
+  #include <sys/file.h>
+  #include <sys/types.h>
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <netinet/tcp.h>
+  #include <arpa/inet.h>
 #endif
 
-#include <arpa/inet.h>
 
 #include "TCPStreamBuff.hpp"
 
