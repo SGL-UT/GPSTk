@@ -71,6 +71,12 @@ void plotMonth(short month, short year,
                const Frame& outerFrame, double monthBorderSize=0,
                double printYear=true)
 {
+
+      // Fill the frame with white, clear the area so to speak
+   Rectangle backfill(outerFrame.lx(), outerFrame.ly(),
+                      outerFrame.ux(),outerFrame.uy(), Color::WHITE);
+   outerFrame << backfill;
+         
       // Create the border/margin
    BorderLayout marginLayout(outerFrame, monthBorderSize);
    Frame mframe=marginLayout.getFrame(0);
@@ -131,7 +137,7 @@ void plotMonth(short month, short year,
          fwkrow << background;
       }  
       Frame ftemp = weekListLayout.getFrame(week-gpsweek1);
-      ftemp << Text(week,ftemp.cx(), ftemp.uy()-.6*ftemp.getHeight(), tsw, Text::CENTER);
+      ftemp << Text(week,ftemp.cx(), ftemp.uy()-.3*ftemp.getHeight(), tsw, Text::CENTER);
 
    }
 
