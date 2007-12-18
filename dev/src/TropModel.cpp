@@ -2170,135 +2170,203 @@ namespace gpstk
 
 
 
-    //----------------------------------------------------------------------------
-    // Neill model.
+   //---------------------------------------------------------------------
+   // Neill model.
 
-    // Parameters borrowed from Saastamoinen tropospheric model
-    // Constants for wet mapping function
-    static const double NeillWetA[5]=
-     { 0.00058021897, 0.00056794847, 0.00058118019, 0.00059727542, 0.00061641693 };
-    static const double NeillWetB[5]=
-     { 0.0014275268, 0.0015138625, 0.0014572752, 0.0015007428, 0.0017599082 };
-    static const double NeillWetC[5]=
-     { 0.043472961, 0.046729510, 0.043908931, 0.044626982, 0.054736038 };
-
-    // constants for dry mapping function
-    static const double NeillDryA[5]=
-     { 0.0012769934, 0.0012683230, 0.0012465397, 0.0012196049, 0.0012045996 };
-    static const double NeillDryB[5]=
-     { 0.0029153695, 0.0029152299, 0.0029288445, 0.0029022565, 0.0029024912 };
-    static const double NeillDryC[5]=
-     { 0.062610505, 0.062837393, 0.063721774, 0.063824265, 0.064258455 };
-
-    static const double NeillDryA1[5]=
-     { 0.0, 0.000012709626, 0.000026523662, 0.000034000452, 0.000041202191 };
-    static const double NeillDryB1[5]=
-     { 0.0, 0.000021414979, 0.000030160779, 0.000072562722, 0.00011723375 };
-    static const double NeillDryC1[5]=
-     { 0.0, 0.000090128400, 0.000043497037, 0.00084795348, 0.0017037206 };
+      // Constructor to create a Neill trop model providing the position
+      // of the receiver and current time.
+      // 
+      // @param RX   Receiver position.
+      // @param time Time.
+   NeillTropModel::NeillTropModel( const Position& RX,
+                                   const DayTime& time )
+   {
+      setReceiverHeight(RX.getAltitude());
+      setReceiverLatitude(RX.getGeodeticLatitude( ));
+      setDayOfYear(time);
+   }
 
 
-    // Compute and return the full tropospheric delay. The receiver height, 
-    // latitude and Day oy Year must has been set before using the 
-    // appropriate constructor or the provided methods.
-    // @param elevation Elevation of satellite as seen at receiver, in degrees
-    double NeillTropModel::correction(double elevation) const        throw(TropModel::InvalidTropModel)
-    {
-        if(!valid) {
-            if(!validLat)
-                throw InvalidTropModel("Invalid Neill trop model: Rx Latitude");
-            if(!validHeight)
-                throw InvalidTropModel("Invalid Neill trop model: Rx Height");
-            if(!validDOY)
-                throw InvalidTropModel("Invalid Neill trop model: day of year");
-        }
 
-        // Neill mapping functions work down to 3 degrees of elevation
-        if(elevation < 3.0) return 0.0;
+      // Parameters borrowed from Saastamoinen tropospheric model
+      // Constants for wet mapping function
+   static const double NeillWetA[5] =
+                              { 0.00058021897, 0.00056794847, 0.00058118019,
+                                0.00059727542, 0.00061641693 };
+   static const double NeillWetB[5] =
+                              { 0.0014275268, 0.0015138625, 0.0014572752,
+                                0.0015007428, 0.0017599082 };
+   static const double NeillWetC[5] =
+                              { 0.043472961, 0.046729510, 0.043908931,
+                                0.044626982, 0.054736038 };
 
-        double map_dry(NeillTropModel::dry_mapping_function(elevation));
+      // constants for dry mapping function
+   static const double NeillDryA[5] =
+                              { 0.0012769934, 0.0012683230, 0.0012465397,
+                                0.0012196049, 0.0012045996 };
+   static const double NeillDryB[5] =
+                              { 0.0029153695, 0.0029152299, 0.0029288445,
+                                0.0029022565, 0.0029024912 };
+   static const double NeillDryC[5] =
+                              { 0.062610505, 0.062837393, 0.063721774,
+                                0.063824265, 0.064258455 };
 
-        double map_wet(NeillTropModel::wet_mapping_function(elevation));
-
-        // Compute tropospheric delay
-        double tropDelay((NeillTropModel::dry_zenith_delay() * map_dry) + (NeillTropModel::wet_zenith_delay() * map_wet));
-
-        return tropDelay;
-
-    }  // end NeillTropModel::correction(elevation)
-
-
-    // Compute and return the full tropospheric delay, given the positions of
-    // receiver and satellite. This version is most useful within positioning 
-    // algorithms, where the receiver position may vary; it computes the elevation
-    // (and other receiver location information as height and latitude) and passes
-    // them to appropriate methods. You must set time using method setDayOfYear()
-    // before calling this method.
-    // @param RX  Receiver position
-    // @param SV  Satellite position
-    double NeillTropModel::correction(const Position& RX, 
-                                     const Position& SV)
-    throw(TropModel::InvalidTropModel)
-    {
-        try
-        {
-            setReceiverHeight( RX.getAltitude() );
-            setReceiverLatitude(RX.getGeodeticLatitude());
-            setWeather();
-        }
-        catch(GeometryException& e)
-        {
-            valid = false;
-        }
-
-        if(!valid) throw InvalidTropModel("Invalid model");
-        double c;
-        try
-        {
-            c = NeillTropModel::correction(RX.elevationGeodetic(SV));
-        }
-        catch(InvalidTropModel& e)
-        {
-            GPSTK_RETHROW(e);
-        }
-        return c;
-    }  // end NeillTropModel::correction(RX,SV)
+   static const double NeillDryA1[5] =
+                              { 0.0, 0.000012709626, 0.000026523662,
+                                0.000034000452, 0.000041202191 };
+   static const double NeillDryB1[5] =
+                              { 0.0, 0.000021414979, 0.000030160779,
+                                0.000072562722, 0.00011723375 };
+   static const double NeillDryC1[5] =
+                              { 0.0, 0.000090128400, 0.000043497037,
+                                0.00084795348, 0.0017037206 };
 
 
-    // Compute and return the full tropospheric delay, given the positions of
-    // receiver and satellite and the time tag. This version is more useful 
-    // within positioning algorithms, where the receiver position may vary; it
-    // computes the elevation (and other receiver location information as height 
-    // and latitude) and passes them to appropriate methods.
-    // @param RX  Receiver position in ECEF cartesian coordinates (meters)
-    // @param SV  Satellite position in ECEF cartesian coordinates (meters)
-    // @param tt  Time (DayTime object).
-    double NeillTropModel::correction(const Position& RX, 
-                                     const Position& SV,
-                                     const DayTime& tt)
-    throw(TropModel::InvalidTropModel)
-    {
-        setDayOfYear(tt);
-        return NeillTropModel::correction(RX,SV);
-    }  // end NeillTropModel::correction(RX,SV,TT)
+      // Compute and return the full tropospheric delay. The receiver height, 
+      // latitude and Day oy Year must has been set before using the 
+      // appropriate constructor or the provided methods.
+      //
+      // @param elevation Elevation of satellite as seen at receiver,
+      // in degrees
+   double NeillTropModel::correction(double elevation) const       
+      throw(TropModel::InvalidTropModel)
+   {
+
+      if(!valid)
+      {
+         if(!validLat)
+         {
+            throw InvalidTropModel("Invalid Neill trop model: Rx Latitude");
+         }
+
+         if(!validHeight)
+         {
+            throw InvalidTropModel("Invalid Neill trop model: Rx Height");
+         }
+
+         if(!validDOY)
+         {
+            throw InvalidTropModel("Invalid Neill trop model: day of year");
+         }
+      }
+
+         // Neill mapping functions work down to 3 degrees of elevation
+      if(elevation < 3.0)
+      {
+         return 0.0;
+      }
+
+      double map_dry(NeillTropModel::dry_mapping_function(elevation));
+
+      double map_wet(NeillTropModel::wet_mapping_function(elevation));
+
+         // Compute tropospheric delay
+      double tropDelay( (NeillTropModel::dry_zenith_delay() * map_dry) +
+                        (NeillTropModel::wet_zenith_delay() * map_wet) );
+
+      return tropDelay;
+
+   }  // end NeillTropModel::correction(elevation)
 
 
-    // Compute and return the full tropospheric delay, given the positions of
-    // receiver and satellite and the day of the year. This version is more useful 
-    // within positioning algorithms, where the receiver position may vary; it
-    // computes the elevation (and other receiver location information as height 
-    // and latitude) and passes them to appropriate methods.
-    // @param RX  Receiver position in ECEF cartesian coordinates (meters)
-    // @param SV  Satellite position in ECEF cartesian coordinates (meters)
-    // @param doy Day of year.
-    double NeillTropModel::correction(const Position& RX, 
-                                     const Position& SV,
-                                     const int& doy)
-    throw(TropModel::InvalidTropModel)
-    {
-        setDayOfYear(doy);
-        return NeillTropModel::correction(RX,SV);
-    }  // end NeillTropModel::correction(RX,SV,doy)
+      /* Compute and return the full tropospheric delay, given the
+       * positions of receiver and satellite.
+       *
+       * This version is more useful within positioning algorithms, where
+       * the receiver position may vary; it computes the elevation (and
+       * other receiver location information as height and latitude) and
+       * passes them to appropriate methods.
+       *
+       * You must set time using method setReceiverDOY() before calling
+       * this method.
+       *
+       * @param RX  Receiver position.
+       * @param SV  Satellite position.
+       */
+   double NeillTropModel::correction( const Position& RX, 
+                                      const Position& SV )
+      throw(TropModel::InvalidTropModel)
+   {
+
+      try
+      {
+         setReceiverHeight( RX.getAltitude() );
+         setReceiverLatitude(RX.getGeodeticLatitude());
+         setWeather();
+      }
+      catch(GeometryException& e)
+      {
+         valid = false;
+      }
+
+      if(!valid)
+      {
+         throw InvalidTropModel("Invalid model");
+      }
+
+      double c;
+      try
+      {
+         c = NeillTropModel::correction(RX.elevationGeodetic(SV));
+      }
+      catch(InvalidTropModel& e)
+      {
+         GPSTK_RETHROW(e);
+      }
+
+      return c;
+
+   }  // end NeillTropModel::correction(RX,SV)
+
+
+      /* Compute and return the full tropospheric delay, given the
+       * positions of receiver and satellite and the time tag.
+       *
+       * This version is more useful within positioning algorithms, where
+       * the receiver position may vary; it computes the elevation (and
+       * other receiver location information as height and latitude), and
+       * passes them to appropriate methods.
+       *
+       * @param RX  Receiver position.
+       * @param SV  Satellite position.
+       * @param tt  Time (DayTime object).
+       */
+   double NeillTropModel::correction( const Position& RX,
+                                      const Position& SV,
+                                      const DayTime& tt )
+      throw(TropModel::InvalidTropModel)
+   {
+
+      setDayOfYear(tt);
+
+      return NeillTropModel::correction(RX,SV);
+
+   }  // end NeillTropModel::correction(RX,SV,TT)
+
+
+      /* Compute and return the full tropospheric delay, given the
+       * positions of receiver and satellite and the day of the year.
+       *
+       * This version is more useful within positioning algorithms, where
+       * the receiver position may vary; it computes the elevation (and
+       * other receiver location information as height and latitude), and
+       * passes them to appropriate methods.
+       *
+       * @param RX  Receiver position.
+       * @param SV  Satellite position.
+       * @param doy Day of year.
+       */
+   double NeillTropModel::correction( const Position& RX,
+                                      const Position& SV,
+                                      const int& doy )
+      throw(TropModel::InvalidTropModel)
+   {
+
+      setDayOfYear(doy);
+
+      return NeillTropModel::correction(RX,SV);
+
+   }  // end NeillTropModel::correction(RX,SV,doy)
 
 
 
@@ -2369,8 +2437,6 @@ namespace gpstk
 
         // Note: 1.013*2.27 = 2.29951
         double ddry(2.29951*std::exp((-0.000116 * NeillHeight) ));
-
-        std::cout << "  " << std::exp((-0.000116 * NeillHeight)) << std::endl;
 
         return ddry;
     }  // end NeillTropModel::dry_zenith_delay()
