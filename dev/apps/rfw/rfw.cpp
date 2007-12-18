@@ -77,7 +77,7 @@ public:
       CommandOptionWithAnyArg sendStringOpt(
          's', "send-string",
          "A string to send to the device being recorded. For example to querry an "
-         "Ashtech Z(Y)-123 for as-broadcast ephemeris use the following string:\n\t "
+         "Ashtech Z(Y)-12 for as-broadcast ephemeris use the following string:\n\t "
          "'$PASHQ,EPB'$'\\r\\n'");
 
       CommandOptionWithAnyArg sendPeriodOpt(
