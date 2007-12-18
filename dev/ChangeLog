@@ -1,4 +1,165 @@
-Version 1.3   Monday, July 16, 2006
+Version 1.4   Tuesday, December 18, 2007
+
+	General modifications
+	---------------------
+
+	- Majority of version 1.4 comprised of revision number 863 
+	  branching took place under revision 864 from dev/ to RC1.4/
+	
+	- Major refactoring of the Ephemeris/Almanac classes. This change may 
+	     break some apps. To fix them the following translations are useful:
+	
+              Old                           |        New
+    -------------------------------------------------------------------------------
+    gpstk::EphemerisStore		    | gpstk::XvtStore<gpstk::SatID>
+    gpstk::BCEphemerisStore		    | gpstk::GPSEphemerisStore
+    gpstk::AlmanacStore                     | gpstk::GPSAlmanacStore
+    gpstk::EphemerisStore::NoEphemerisFound | gpstk::InvalidRequest
+    eph.getSatXvt(sat, time)	            | eph.getXvt(sat, time)
+    eph.getSatXvt(prn, time)		    | eph.getXvt(SatID(prn, SatID::systemGPS), time)
+    eph.dump(0, cout)			    | eph.dump(cout, 0)
+
+
+        - Added an updated LaTeX source for table describing apps of v1.3, 
+	        as well as a list of classes in the gpstk libraries 
+	        (sorted & categorized) found in ref/glance/
+
+	- Added LeTex source for the GPSTk paper at the ION-GNSS-2006
+
+	- Added a library /dev/lib/vplot/ to create drawing primitives in SVG 
+	        and postscript formats. Intended to support complex, fully 
+	        customizable visualizations on GNSS analyses. Supported only 
+	        in jam for now,	but with the hope of support in make.
+
+	- Improved version control 
+	  * set gpstk package version to 1.3 in the autoconf build world
+	  * set the current shared library major version to 13, so gpstk 1.3
+	    delivers lib{gpstk,rxio,mdplib,...}.so.13.0
+	  * now allows jam and make to build shared libraries with the 
+	    appropriate versions
+	  * causes jam to install headers to $PREFIX/include/gpstk to prevent 
+	    header namespace collision. This behaviour is consistent with the 
+	    "make" build.
+
+	- Moved apps/geomatics/lib library to dev/lib/geomatics
+
+	Library modifications
+	---------------------
+
+	- Added src/InOutFramework.hpp
+	        New framework that is useful for a program that processes one 
+		input and produces one output. 
+	
+	- Added src/ModelObs.[h|c]pp
+	        ModelObs class is a GDS-optimized version ModeledPR
+	
+	- Added src/GPSAlmanacStore.[h|c]pp
+	        Part of the refactoring of the Ephemeris/Almanac classes
+		A migration path has been provided for BCEPhemerisStore, 
+		EphemerisStore, and AlmanacStore
+	
+	- Added src/GPSEphemerisStore.[h|c]pp
+	        Part of the refactoring of the Ephemeris/Almanac classes
+		A migration path has been provided for BCEPhemerisStore, 
+		EphemerisStore, and AlmanacStore
+
+	- Added src/XvtStore.hpp
+	        Part of the refactoring of the Ephemeris/Almanac classes
+		A migration path has been provided for BCEPhemerisStore, 
+		EphemerisStore, and AlmanacStore
+	
+	- Added src/ProcessingClass.hpp
+	        ProcessingClass is an abstract base class for all objects 
+		processing GNSS Data Structures. This step furthers the GNSS 
+		Data Structures (GDS) processing paradigm clearly separating 
+		the GDS and the objects that process them.
+
+	- Added src/ProcessingList.[h|c]pp
+	        ProcessingList allows to create run-time defined and modified 
+		lists of processing objects to be applied on GNSS data 
+		structures. This class furthers the paradigm of GNSS data 
+		processing as an assembly line.
+
+	- Added src/ProcessingVector.[h|c]pp
+	        ProcessingVector allows to create run-time defined and modified
+		std::vectors of processing objects to be applied on GNSS data
+		structures. This class furthers the paradigm of GNSS data
+		processing as an assembly line.
+
+	- Added src/SimpleFilter.cpp
+	        SimpleFilter class was modified in order to inherit from 
+	        ProcessingClass.
+	
+	- Added lib/vplot/Helper.hpp
+	        A helper class for creating VGImage pointer for a file name 
+		using the extension.
+
+	- Added src/ComputeLC.cpp
+	        src/ComputeLI.cpp
+		src/ComputeMelbourneWubbena.cpp
+		src/ComputePC.cpp
+		src/OneFreqCSDetector.cpp
+		src/LICSDetector.cpp
+		src/MWCSDetector.cpp
+		src/CodeSmoother.cpp
+		src/ComputeLdelta.cpp
+		src/ComputePI.cpp
+		src/CoputePdelta.cpp
+		src/PCSmoother.cpp
+		src/ComputeIURAWeights.cpp
+		src/ComputeMOPSWeights.cpp
+		The above classes were added to inherit from ProcessingClass
+
+	- Improved src/XYZ2NED.[h|c]pp
+	           src/NablaOP.[h|c]pp
+		   src/DeltaOP.[h|c]pp
+		The above classes were modified to inherit from ProcessingClass
+
+	- Improved lib/rxio/AshtechData.[h|c]pp
+	           lib/rxio/AshtechMBEN.[h|c]pp
+		   lib/rxio/AshtechPBEN.[h|c]pp
+		   lib/rxio/MDPHeader.hpp
+		   lib/rxio/MDPObsEpoch
+		   lib/rxio/ObsUtils.cpp
+		   lib/rxio/ash2mdp.cpp
+	        Added checksum checking to ashtech data, and made the parsing
+		a bit more robust
+	
+	- Improved lib/rxio/FFIdentifier.[h|c]pp
+	        FFIdentifier no londer uses iostream exceptions to determine
+		file type
+
+	- Improved lib/rxio/EphReader.[h|c]pp 
+	        Added support for YUMA and SEM streams
+
+	- Improved src/SatID.hpp
+	        Added systemUderDefined to SatId and corresponding change 
+	        in example7.cpp
+
+	//- //Improved src/SimpleKalmanFilter.[h|c]pp
+
+	Application modifications
+	---------------------
+
+	- Added apps/visibility/svvis.cpp
+	        Computes when satellites are visible at a given point 
+		on the earth
+
+	- Improved apps/DataAvailability/DataAvailabilityAnalyzer.[h|c]pp
+	        Added a position option
+	
+	- Improved apps/receiver/rfw.cpp
+	        Added new input option??????
+	
+	- Improved apps/visibility/findMoreThan12.cpp
+	        Added SV azmith to output
+
+	- Improved apps/time/calgps.cpp
+	        Added ability to draw a calender
+
+	
+
+Version 1.3   Monday, July 16, 2007
 
 	General modifications
 	---------------------
@@ -12,7 +173,7 @@ Version 1.3   Monday, July 16, 2006
 	
 	- Added examples/example7.cpp & associated RINEX data files
 	        This program shows 10 different ways to process GPS data using
-		"GNSS data structures". The "GNSS Data Structures" paradigm can   
+		"GNSS data structures". The "GNSS Data Structures" paradigm can 
 	        process GPS code-based data based on Vectors, Matrices 
 		and other objects.
 	
