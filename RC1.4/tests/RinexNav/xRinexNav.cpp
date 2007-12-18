@@ -129,12 +129,15 @@ void xRinexNav :: headerExceptionTest (void)
 */
 void xRinexNav :: dataTest (void)
 {
+        const short PRN6 = 6 ;
+	gpstk::SatID sid6(PRN6,gpstk::SatID::systemGPS); 
+
 	try
 	{
 		gpstk::RinexEphemerisStore Store;
 		gpstk::DayTime Time(1999,9,2,17,51,44);
 		Store.loadFile("Logs/RinexNavExample.99n");
-		const gpstk::EngEphemeris& Eph6 = Store.findUserEphemeris((short) 6, Time);
+		const gpstk::EngEphemeris& Eph6 = Store.findUserEphemeris(sid6, Time);
 		gpstk::RinexNavData Data(Eph6);
 		list<double> NavDataList = Data.toList();
 	

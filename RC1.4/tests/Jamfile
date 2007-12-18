@@ -1,6 +1,5 @@
 SubDir TOP ;
 SubInclude TOP ANSITime ;
-SubInclude TOP BCEphemerisStore ;
 SubInclude TOP BinUtils ;
 SubInclude TOP CivilTime ;
 SubInclude TOP CommonTime ;

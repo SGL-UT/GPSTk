@@ -22,7 +22,7 @@ class xRinexEphemerisStore: public CPPUNIT_NS :: TestFixture
 	CPPUNIT_TEST (BCESfindEphTest);
 	CPPUNIT_TEST (BCESgetXvtTest);
 	CPPUNIT_TEST (BCESgetXvt2Test);
-	CPPUNIT_TEST (BCESgetPrnHealthTest);
+	CPPUNIT_TEST (BCESgetSatHealthTest);
 	CPPUNIT_TEST (BCESdumpTest);
 	CPPUNIT_TEST (BCESaddEphemerisTest);
 	CPPUNIT_TEST (BCESeditTest);
@@ -42,7 +42,7 @@ class xRinexEphemerisStore: public CPPUNIT_NS :: TestFixture
 		void BCESfindEphTest (void);
 		void BCESgetXvtTest (void);
 		void BCESgetXvt2Test (void);
-		void BCESgetPrnHealthTest (void);
+		void BCESgetSatHealthTest (void);
 		void BCESdumpTest (void);
 		void BCESaddEphemerisTest (void);
 		void BCESeditTest (void);
