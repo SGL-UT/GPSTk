@@ -28,8 +28,7 @@ Version 1.4   Tuesday, December 18, 2007
 
 	- Added a library /dev/lib/vplot/ to create drawing primitives in SVG 
 	        and postscript formats. Intended to support complex, fully 
-	        customizable visualizations on GNSS analyses. Supported only 
-	        in jam for now,	but with the hope of support in make.
+	        customizable visualizations on GNSS analyses. 
 
 	- Improved version control 
 	  * set gpstk package version to 1.3 in the autoconf build world
