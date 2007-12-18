@@ -117,9 +117,9 @@ void plotMonth(short month, short year,
 
    Color bgclr(230,230,230);
 
-   double wkHeight=weekListLayoutRows.getFrame(0).getHeight()*.3;
+   double wkHeight=weekListLayoutRows.getFrame(0).getHeight()*.4;
    TextStyle tsw(wkHeight, (int) TextStyle::BOLD, Color::BLACK, 
-                TextStyle::SANSSERIF);
+                TextStyle::SERIF);
    for (int week=gpsweek1; week<=gpsweek2; week++)
    {
       if (week%2 == 1)
@@ -131,19 +131,19 @@ void plotMonth(short month, short year,
          fwkrow << background;
       }  
       Frame ftemp = weekListLayout.getFrame(week-gpsweek1);
-      ftemp << Text(week,ftemp.cx(), ftemp.uy()-.4*ftemp.getHeight(), tsw, Text::CENTER);
+      ftemp << Text(week,ftemp.cx(), ftemp.uy()-.6*ftemp.getHeight(), tsw, Text::CENTER);
 
    }
 
    GridLayout domLayout(weekDOWLayout.getFrame(1),gpsweek2-gpsweek1+1,7);
 
-   TextStyle tsdom(domLayout.getFrame(0).getHeight()*.3,
+   TextStyle tsdom(domLayout.getFrame(0).getHeight()*.40,
                    (int) TextStyle::BOLD, Color::BLACK, 
-                   TextStyle::SANSSERIF);
-   double doyHt=domLayout.getFrame(0).getHeight()*.2;
+                   TextStyle::SERIF);
+   double doyHt=domLayout.getFrame(0).getHeight()*.27;
    TextStyle tsdoy(doyHt,
                    (int) TextStyle::BOLD, Color::BLUE, 
-                   TextStyle::SANSSERIF);
+                   TextStyle::SERIF);
 
    while (thisDay.day <= thatDay.day)
    {
@@ -155,7 +155,7 @@ void plotMonth(short month, short year,
       int doy = ydsTemp.doy;
 
       Frame ftemp = domLayout.getFrame(gpsweek-gpsweek1, dow);
-      ftemp << Text(thisDay.day,ftemp.cx(), ftemp.uy()-.4*ftemp.getHeight(), 
+      ftemp << Text(thisDay.day,ftemp.cx(), ftemp.uy()-.5*ftemp.getHeight(), 
                     tsdom, Text::CENTER);
       ftemp << Text(doy, ftemp.ux(), ftemp.uy()-.1*ftemp.getHeight(), 
                     tsdoy, Text::RIGHT);
@@ -178,6 +178,7 @@ int main(int argc, char* argv[])
       CommandOptionWithAnyArg svgOption('s',"svg","Generate an SVG file");
       CommandOptionWithAnyArg epsOption('e',"eps","Generate an encapsulated postscript file");
       CommandOptionNoArg viewOption('v',"view","Try to launch an appropriate viewer for the file.");
+      CommandOptionNoArg blurbOption('n',"no-blurb","Suppress GPSTk reference in graphic output.");
       
       CommandOptionParser cop("GPSTk GPS Calendar Generator");
       cop.parseOptions(argc, argv);
@@ -294,9 +295,33 @@ int main(int argc, char* argv[])
                             titleStyle, Text::CENTER);
 
             }
-            
 
-            layout = new GridLayout(titleLayout.getFrame(1),nrows,ncols);
+            if (blurbOption.getCount()==0)
+            {
+               VLayout blurbLayout(titleLayout.getFrame(1),0.95);
+               TextStyle blurbStyle(blurbLayout.getFrame(1).getHeight()*.4,
+                       TextStyle::NORMAL, Color::BLACK,
+                       TextStyle::SERIF);
+               TextStyle blurbStyleHttp(blurbLayout.getFrame(1).getHeight()*.4,
+                       TextStyle::ITALIC, Color::BLACK,
+                       TextStyle::SERIF);
+               
+               VLayout blurbStackLayout(blurbLayout.getFrame(1),0.6);
+               Frame blurbFrame;
+
+               blurbFrame = blurbStackLayout.getFrame(0);
+               blurbFrame << Text("Generated using the GPS Toolkit", blurbFrame.cx(), blurbFrame.uy()-0.3*blurbFrame.getHeight() , blurbStyle, Text::CENTER);
+
+               blurbFrame = blurbStackLayout.getFrame(1);
+               blurbFrame << Text("http://www.gpstk.org/", blurbFrame.cx(), blurbFrame.uy()-0.3*blurbFrame.getHeight() , blurbStyleHttp, Text::CENTER);
+
+               layout = new GridLayout(blurbLayout.getFrame(0),nrows,ncols);
+            }
+            else
+            {
+               layout = new GridLayout(titleLayout.getFrame(1),nrows,ncols);
+            }
+            
          }
          
       }
