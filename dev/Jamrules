@@ -40,6 +40,10 @@ if $(UNIX)
          LINKLIBS += -lstdc++ ;
          CCSHARE_FLAGS = -fPIC ;
 
+      case MACOSX :
+         LINKLIBS += -lstdc++ ;
+         CCSHARE_FLAGS = -fPIC ;
+
       case SOLARIS :
          LINKLIBS += -lgen ;
          # for solaris forte
@@ -205,7 +209,9 @@ rule GPSBuildLibrary
    # This goes over that.
    # Until we can figure out how to properly split our library, we just can't
    # build DLLs for Windows/cygwin.
-   if $(UNIX) && $(OS) != CYGWIN
+   # Under Mac Xcode 3, the shared library syntax seems to be incorrect
+   # so shared libraries are disabled for now
+   if $(UNIX) && $(OS) != CYGWIN && $(OS) != MACOSX
    {
       soname = $(LIBPREFIX)$(<:S=$(SUFLIBSHR)).$(GPSTK_SO_VERSION) ;
       shlib = $(LIBPREFIX)$(<:S=$(SUFLIBSHR).$(GPSTK_SO_VERSION).0) ;
