@@ -76,11 +76,14 @@ public:
 
       CommandOptionWithAnyArg sendStringOpt(
          's', "send-string",
-         "A string to send to the device being recorded.");
+         "A string to send to the device being recorded. For example to querry an "
+         "Ashtech Z(Y)-123 for as-broadcast ephemeris use the following string:\n\t "
+         "'$PASHQ,EPB'$'\\r\\n'");
 
       CommandOptionWithAnyArg sendPeriodOpt(
          'p', "send-period",
-         "A string to send to the device being recorded.");
+         "The time (in seconds) to pause between sending of the send-strings. "
+         "If strings are specified, the default period is 60 seconds.");
 
       CommandOptionWithAnyArg outputSpecOpt(
          'o', "output",
@@ -130,8 +133,15 @@ public:
       output.debugLevel = debugLevel;
 
       if (debugLevel)
+      {
          cout << "Using " << output.getFilespec() 
               << " for output files" << endl;
+         for (int i=0; i<sendString.size(); i++)
+         {
+            cout << "Send period:" << sendPeriod[i] << endl;
+            StringUtils::hexDumpData(cout, sendString[i]);
+         }
+      }
 
       return true;
    }
@@ -166,12 +176,11 @@ protected:
          DayTime now;
          for (int i=0; i<sendSize; i++)
          {
-            if (now - lastSendTime[i] > 60)
+            if (now - lastSendTime[i] > sendPeriod[i])
             {
                if (debugLevel)
                   cout << "Sending: " << sendString[i] << endl;
                input.write(sendString[i].c_str(), sendString[i].size());
-               input.write("\015\012", 2);
                lastSendTime[i] = now;
             }
          }
