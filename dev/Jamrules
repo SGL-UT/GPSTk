@@ -14,6 +14,7 @@ INCDIR = $(PREFIX)/include/gpstk ;
 GPSTK_SO_VERSION = 15 ;
 # override the built-in EXEMODE
 EXEMODE = 755 ;
+SHELLMODE = 755 ;
 
 # Used to prevent mixing static and dynamic library objects.
 # This was, once upon a time, .lo, but forte's C compiler prevents, stupidly,
