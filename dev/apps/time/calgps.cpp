@@ -270,7 +270,9 @@ int main(int argc, char* argv[])
 
             // Fill the frame with white, clear the area so to speak
          Rectangle backfill(frameOutermost.lx(), frameOutermost.ly(),
-                            frameOutermost.ux(),frameOutermost.uy(), Color::WHITE);
+                            frameOutermost.ux(),frameOutermost.uy(), 
+                            StrokeStyle(Color::WHITE,0), 
+                            Color::WHITE);
          frameOutermost << backfill;
 
 
