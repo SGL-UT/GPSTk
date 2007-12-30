@@ -34,7 +34,7 @@
 namespace gpstk
 {
 
-   Combinations::Combinations()
+   LinearCombinations::LinearCombinations()
    {
 
       double a(+GAMMA_GPS/0.646944444);

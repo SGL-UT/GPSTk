@@ -53,8 +53,8 @@ namespace gpstk
        *
        * @code
        *
-       *   // Define a Combinations object
-       *   Combinations comb;
+       *   // Define a LinearCombinations object
+       *   LinearCombinations comb;
        *
        *   // Object to compute linear combinations of data
        *   // Linear combinations will be computed in a FIFO basis
@@ -100,12 +100,12 @@ namespace gpstk
        *
        * @sa ComputeLinear.hpp
        */
-   class Combinations
+   class LinearCombinations
    {
    public:
 
          /// Default constructor
-      Combinations();
+      LinearCombinations();
 
          /// Definition to compute prefit residual of C1
       gnssLinearCombination c1Prefit;
