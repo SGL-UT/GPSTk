@@ -53,48 +53,50 @@ namespace gpstk
        *
        * @code
        *
-       *   // Define a LinearCombinations object
+       *      // Define a LinearCombinations object
        *   LinearCombinations comb;
        *
-       *   // Object to compute linear combinations of data
-       *   // Linear combinations will be computed in a FIFO basis
+       *      // Object to compute linear combinations of data
+       *      // Linear combinations will be computed in a FIFO basis
        *   ComputeLinear linear;
        *
-       *   // Add a linear combination to compute PC combination using C1
+       *      // Add a linear combination to compute PC combination using C1
        *   linear.addLinear(comb.pcCombWithC1);
        *
-       *   // Add a linear combination to compute prefit residual using PC
+       *      // Add a linear combination to compute prefit residual using PC
        *   linear.addLinear(comb.pcPrefit);
        *
        *
-       *   // Load observation data
+       *      // Load observation data
        *   RinexObsStream rin("ebre0300.02o");
        *
-       *   // Loads precise ephemeris object with file data
+       *      // Loads precise ephemeris object with file data
        *   SP3EphemerisStore SP3EphList;
        *   SP3EphList.loadFile("igs11513.sp3");
        *
-       *   // Sets nominal position of receiver
+       *      // Sets nominal position of receiver
        *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
        *
-       *   // Declare a MOPSTropModel object, setting the defaults
+       *      // Declare a MOPSTropModel object, setting the defaults
        *   MOPSTropModel mopsTM( nominalPos.getAltitude(),
        *                         nominalPos.getGeodeticLatitude(), 30);
        *
-       *   // Object to compute the tropospheric data
+       *      // Object to compute the tropospheric data
        *   ComputeTropModel computeTropo(mopsTM);
-
-       *   // Declare a basic modeler
+       *
+       *      // Declare a basic modeler
        *   BasicModel basic(nominalPos, SP3EphList);
        *
        *   gnssRinex gRin;
        *
        *   while(rin >> gRin) {
-       *      gRin >> basic >> computeTropo >> linear;
-       *   }
        *
-       *   // Dump results
-       *   gRin.body.dump(cout,1);
+       *      gRin >> basic >> computeTropo >> linear;
+       *
+       *         // Dump results
+       *      gRin.body.dump(cout,1);
+       *
+       *   }
        *
        * @endcode
        *

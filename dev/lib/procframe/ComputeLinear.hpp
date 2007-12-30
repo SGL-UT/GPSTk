@@ -53,14 +53,15 @@ namespace gpstk
        *
        * @code
        *
-       *   // Define a linear combination to compute PC using C1
+       *      // Define a linear combination to compute PC using C1
        *   gnssLinearCombination pcComb;
        *   pcComb.header = TypeID::PC;
        *   pcComb.body[TypeID::C1] = +GAMMA_GPS/0.646944444;
        *   pcComb.body[TypeID::P2] = -1.0/0.646944444;
        *
        *
-       *   // Define another linear combination to compute PC prefit residual
+       *      // Define another linear combination to compute PC prefit
+       *      // residual
        *   gnssLinearCombination prefitComb;
        *   prefitComb.header = TypeID::prefitC;
        *   prefitComb.body[TypeID::PC] = +1.0;
@@ -70,40 +71,41 @@ namespace gpstk
        *   prefitComb.body[TypeID::tropoSlant] = -1.0;
        *
        *
-       *   // Object to compute linear combinations of data
-       *   // Linear combinations will be computed in a FIFO basis
+       *      // Object to compute linear combinations of data
+       *      // Linear combinations will be computed in a FIFO basis
        *   ComputeLinear linear;
        *   linear.addLinear(pcComb);
        *   linear.addLinear(prefitComb);
        *
-       *   // Load observation data
+       *      // Load observation data
        *   RinexObsStream rin("ebre0300.02o");
        *
-       *   // Loads precise ephemeris object with file data
+       *      // Loads precise ephemeris object with file data
        *   SP3EphemerisStore SP3EphList;
        *   SP3EphList.loadFile("igs11513.sp3");
        *
-       *   // Sets nominal position of receiver
+       *      // Sets nominal position of receiver
        *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
        *
-       *   // Declare a MOPSTropModel object, setting the defaults
+       *      // Declare a MOPSTropModel object, setting the defaults
        *   MOPSTropModel mopsTM( nominalPos.getAltitude(),
        *                         nominalPos.getGeodeticLatitude(), 30);
        *
-       *   // Object to compute the tropospheric data
+       *      // Object to compute the tropospheric data
        *   ComputeTropModel computeTropo(mopsTM);
-
-       *   // Declare a basic modeler
+       *
+       *      // Declare a basic modeler
        *   BasicModel basic(nominalPos, SP3EphList);
        *
        *   gnssRinex gRin;
        *
        *   while(rin >> gRin) {
-       *      gRin >> basic >> computeTropo >> linear;
-       *   }
        *
-       *   // Dump results
-       *   gRin.body.dump(cout,1);
+       *      gRin >> basic >> computeTropo >> linear;
+       *
+       *         // Dump results
+       *      gRin.body.dump(cout,1);
+       *   }
        *
        * @endcode
        *
