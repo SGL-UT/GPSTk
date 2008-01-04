@@ -333,5 +333,20 @@ namespace gpstk
       return n;
    }
 
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+   list<std::string> MSCStore::getIDList()
+   {
+      list<std::string> temp;
+      MMci mmci;
+      for(mmci = mscMap.begin(); mmci != mscMap.end(); mmci++)
+      {
+         temp.push_back(mmci->first);
+      }
+      return(temp);
+   }
+
+   
 } // namespace
  

@@ -118,7 +118,7 @@ namespace gpstk
          throw();
 
       /// Determine the earliest time for which this object can successfully 
-      /// determine the Xvt for any satellite.
+      /// determine the Xvt for any station.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
       DayTime getInitialTime()
@@ -127,7 +127,7 @@ namespace gpstk
 
       
       /// Determine the latest time for which this object can successfully 
-      /// determine the Xvt for any satellite.
+      /// determine the Xvt for any station.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
       DayTime getFinalTime()
@@ -153,9 +153,9 @@ namespace gpstk
       // Below are interfaces that are unique to this class (i.e. not 
       // in the parent class)
       //---------------------------------------------------------------
-      /// Add an EngEphemeris object to this collection.
-      /// @param eph the EngEphemeris to add
-      /// @return true if ephemeris was added, false otherwise
+      /// Add an MSCData object to this collection.
+      /// @param msc the MSCData to add
+      /// @return true if monitor station coordinates were added, false otherwise
       bool addMSC(const MSCData& msc)
          throw();
       
@@ -182,11 +182,15 @@ namespace gpstk
       const MSCData& findMSC(const unsigned long stationID, const DayTime& t) 
          const throw(InvalidRequest);
 
-      /// Add all ephemerides to an existing list<EngEphemeris>.
-      /// @return the number of ephemerides added.
+      /// Add all MSCData to an existing list<MSCData>.
+      /// @return the number of MSCData added.
       int addToList(std::list<MSCData>& v)
          const throw();
 
+      // Return a list of the station IDs for all MSCData objects
+      // currently stored. 
+      std::list<std::string> getIDList();
+         
    private:
       /// StaMSCMap is a list of MSCData objects for a particular station
       /// in order of their effective epoch
@@ -199,7 +203,7 @@ namespace gpstk
       typedef MSCMap::const_iterator MMci;
       typedef MSCMap::iterator MMi;
       
-      /// The map where all EngEphemerides are stored.
+      /// The map where all MSCData objects are stored.
       MSCMap mscMap;
       
       DayTime initialTime; //< Time of the first MSCData object
