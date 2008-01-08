@@ -127,24 +127,11 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
        << "  ";
    string msgPrefix = oss.str();
    
-   // First try the data assuming it is already upright
-   umsg.cooked = true;
-   bool parityGood = umsg.checkParity();
-   if (!parityGood)
-   {
-      if (verboseLevel>3)
-         out << msgPrefix << "Raw subframe" << endl;
-      umsg.cooked = false;
-      umsg.cookSubframe();
-      parityGood = umsg.checkParity();
-   }
-   else
-   {
-      if (verboseLevel>3)
-         out << msgPrefix << "Cooked subframe" << endl;
-   }
+   umsg.cookSubframe();
+   if (verboseLevel>3 && umsg.neededCooking)
+      out << msgPrefix << "Subframe required cooking" << endl;
 
-   if (!parityGood)
+   if (!umsg.parityGood)
    {
       badNavSubframeCount++;
       if (verboseLevel)
@@ -207,6 +194,8 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
          out << msgPrefix << " HOW time != hdr time+6, HOW:"
              << howTime.printf(timeFormat)
              << endl;
+      if (verboseLevel>3)
+         umsg.dump(out);
       return;
    }
 
@@ -256,9 +245,6 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
          out << e << endl;
       }
    }
-
-   if (verboseLevel>3)
-      out << endl;
 
 }  // end of process()
 

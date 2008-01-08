@@ -58,7 +58,8 @@ namespace gpstk
    //--------------------------------------------------------------------------
    MDPNavSubframe::MDPNavSubframe() 
       throw()
-      : subframe(11), cooked(false), inverted(false)
+      : subframe(11), cooked(false), inverted(false), 
+        neededCooking(false), parityGood(false)
    {
       id = myId;
    }
@@ -108,7 +109,7 @@ namespace gpstk
    } // MDPNavSubframe::decode()
 
 
-   //---------------------------------------------------------------------------
+   //--------------------------------------------------------------------------
    // This cracks the sow from the handover word
    unsigned long MDPNavSubframe::getHOWTime() const throw()
    {
@@ -122,7 +123,7 @@ namespace gpstk
       return iret;
    }
 
-   //---------------------------------------------------------------------------
+   //--------------------------------------------------------------------------
    // This cracks the subframe ID from the handover word
    unsigned int MDPNavSubframe::getSFID() const throw()
    {
@@ -135,7 +136,7 @@ namespace gpstk
       return iret;
    }
    
-   //---------------------------------------------------------------------------
+   //--------------------------------------------------------------------------
    // This cracks the SV (page) ID from an almanac subframe
    unsigned int MDPNavSubframe::getSVID() const throw()
    {
@@ -164,13 +165,19 @@ namespace gpstk
       if (cooked)
          return;
 
+      cooked = true;
       uint32_t preamble = subframe[1] >> 22;
       if (preamble == 0x74)
       {
+         neededCooking = inverted = true;
          for (int i = 1; i<=10; i++)
             subframe[i] = ~subframe[i] & 0x3fffffff;
-         inverted = true;
-      }
+      }      
+
+      // First try the data assuming it is already upright
+      parityGood = checkParity();
+      if (parityGood)
+         return;
 
       preamble = subframe[1] >> 22;
       if (preamble != 0x8b)
@@ -180,9 +187,12 @@ namespace gpstk
       // is zero. That is why we start with the second word in the array
       for (int i=2; i<=10; i++)
          if (getd30(subframe[i-1]))
+         {
             subframe[i] = (~subframe[i] & 0x3fffffc0) | (subframe[i] & 0x3f);
+            neededCooking = true;
+         }
 
-      cooked = true;
+      parityGood = checkParity();
    }
 
    // Print as a string of 1/0
@@ -230,17 +240,17 @@ namespace gpstk
          if (debugLevel>3)
             cout << i << ":" << asBin(receivedParity,6)
                  << "-" << asBin(computedParity,6) << " ";
-         if (i==5 && debugLevel>1)
+         if (i==5 && debugLevel>3)
             cout << endl;
          if (receivedParity != computedParity)
             goodParity = false;
 
-         // This seems to be required for pre-cooked bits but I don't understand
-         // why...
+         // This seems to be required for pre-cooked bits but I don't
+         // understand why...
          if (i == 1 && receivedParity == (~computedParity & 0x3f))
             goodParity = true;
       }
-      if (debugLevel>2)
+      if (debugLevel>3)
          cout << endl;
       return goodParity;
    }

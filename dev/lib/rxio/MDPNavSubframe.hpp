@@ -113,6 +113,12 @@ namespace gpstk
       bool cooked;     ///< true if the bits have been set upright
       bool inverted;   ///< true when entire subframe has been inverted
 
+      // set true when the subframe needed setting upright by cookSubframe
+      bool neededCooking;
+      
+      // set true when the subframe has passed parity check.
+      bool parityGood;
+
       static const unsigned myLength = 44;
       static const unsigned myId = 310;
 
