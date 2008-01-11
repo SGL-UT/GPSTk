@@ -206,7 +206,7 @@ def main():
     if axesCount == 2:
         ax1 = fig.add_axes([0.08, 0.52, rExtent, 0.42])
     elif axesCount == 1:
-        ax1 = fig.add_axes([0.08, 0.10, rExtent, 0.85])
+        ax1 = fig.add_axes([0.08, 0.10, rExtent, 0.82])
 
     if options.smoothing:
         dt = 86400 * (clocks[0,1] - clocks[0,0])
@@ -224,7 +224,7 @@ def main():
                 prn = int(options.prnHighlight);
                 onePrn = pylab.compress(pylab.equal(ords[1], prn), ords);
                 if len(onePrn[0]):
-                    ax1.plot_date(onePrn[0], onePrn[2], 'b,', label="prn %2d"%prn);
+                    ax1.plot_date(onePrn[0], onePrn[2], 'b.', label="prn %2d"%prn);
         else:
             for  prn in pylab.arange(1,33):
                 onePrn = pylab.compress(pylab.equal(ords[1], prn), ords)
