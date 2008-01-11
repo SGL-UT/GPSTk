@@ -21,10 +21,13 @@ def main():
     parser.add_option("-l", "--legend", dest="legend", action="count",
                       help="Include a legend.")
 
-    parser.add_option("-o", "--ords-only", help="Only plot the ords (types 0 & 1).", \
+    parser.add_option("-p", "--prn-highlight", dest="prnHighlight", action="store",
+                     type="string", help="Highlight the indicated prn")
+
+    parser.add_option("-o", "--ords-only", help="Only plot the ords (types 0 & 1).",
                       dest="ordsOnly", default=0, action="count")
 
-    parser.add_option("-c", "--clocks-only", help="Only plot the clocks.",\
+    parser.add_option("-c", "--clocks-only", help="Only plot the clocks.",
                       dest="clocksOnly", default=0, action="count")
 
     parser.add_option("--clock-delta", help="Plot clock delta instead of clock residual.",\
@@ -212,11 +215,16 @@ def main():
             clocks[1]=smooth(clocks[1], window_len=n, window='bartlett')
 
     if plotOrds:
-        if options.legend and options.legend <2:
+        if not options.legend or options.legend <2:
             if len(ords[0]):
                 ax1.plot_date(ords[0], ords[2], 'g,', label="ords")
             if len(warts[0]) and options.wartiness:
                 ax1.plot_date(warts[0], warts[2], 'r,', label="warts")
+            if options.prnHighlight:
+                prn = int(options.prnHighlight);
+                onePrn = pylab.compress(pylab.equal(ords[1], prn), ords);
+                if len(onePrn[0]):
+                    ax1.plot_date(onePrn[0], onePrn[2], 'b,', label="prn %2d"%prn);
         else:
             for  prn in pylab.arange(1,33):
                 onePrn = pylab.compress(pylab.equal(ords[1], prn), ords)
