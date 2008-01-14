@@ -5,6 +5,7 @@ INCLUDES = -I$(srcdir)/../../src/
 lib_LTLIBRARIES = libprocframe.la
 libprocframe_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 libprocframe_la_SOURCES = BasicModel.cpp CodeSmoother.cpp \
+ComputeCombination.cpp \
 ComputeIURAWeights.cpp ComputeLC.cpp ComputeLdelta.cpp ComputeLI.cpp \
 ComputeLinear.cpp ComputeMelbourneWubbena.cpp ComputeMOPSWeights.cpp \
 ComputePC.cpp ComputePdelta.cpp ComputePI.cpp ComputeTropModel.cpp \
