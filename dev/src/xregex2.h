@@ -1,4 +1,6 @@
-/* Definitions for data structures and routines for the regular
+/* Originally from svn://gcc.gnu.org/svn/gcc/include
+
+   Definitions for data structures and routines for the regular
    expression library, version 0.12.
 
    Copyright (C) 1985, 1989, 1990, 1991, 1992, 1993, 1995, 1996, 1997,

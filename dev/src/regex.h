@@ -1,4 +1,6 @@
-/* This file redefines all regex external names before including
+/* Originally from svn://gcc.gnu.org/svn/gcc/include
+
+This file redefines all regex external names before including
    a renamed copy of glibc's regex.h.  */
 
 #ifndef _XREGEX_H
