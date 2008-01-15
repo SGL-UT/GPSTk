@@ -1,2 +1,0 @@
-SubDir TOP GPSEpochWeekSecond ;
-TestMain GPSEpochWeekSecond/xGPSEpochWeekSecond.tst : GPSEpochWeekSecond/xGPSEpochWeekSecondM.cpp GPSEpochWeekSecond/xGPSEpochWeekSecond.cpp GPSEpochWeekSecond/GPSEpochWeekSecond.cpp ;
