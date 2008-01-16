@@ -63,8 +63,20 @@ namespace gpstk
 
          YumaData rec;
          while(strm >> rec)
-	 {
-	    addAlmanac(AlmOrbit(rec));
+	      {
+               // If the user has indcated a time of interest and
+               // the reference week number is less than 10 bits long, 
+               // assume the almanac must be within 511 weeks of the 
+               // time of interest
+               // If necessary, adjust the GPS week number
+            if (timeOfInterest>gpstk::DayTime::BEGINNING_OF_TIME &&
+                rec.week < 1024)
+            {
+               short diff = timeOfInterest.GPSfullweek() - rec.week;
+               short nEpochs = (diff+512) / 1024;
+               rec.week += nEpochs * 1024;
+            }
+	         addAlmanac(AlmOrbit(rec));
          }	 
       }
       catch (gpstk::Exception& e)

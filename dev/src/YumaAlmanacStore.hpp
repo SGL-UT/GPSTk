@@ -56,10 +56,19 @@ namespace gpstk
                             public GPSAlmanacStore
    {
    public:
+      YumaAlmanacStore(const gpstk::DayTime& dtInterest=
+                             gpstk::DayTime::BEGINNING_OF_TIME)
+      {
+         timeOfInterest = dtInterest;
+      }
+      
       void loadFile(const std::string& filename) 
-         throw(FileMissingException);	 
+         throw(FileMissingException);
+         
+      gpstk::DayTime timeOfInterest;
    };
 
+   
    //@}
 }
 
