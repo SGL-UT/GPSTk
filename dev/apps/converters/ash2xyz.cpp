@@ -49,6 +49,7 @@
 #include "InOutFramework.hpp"
 #include "RinexConverters.hpp"
 #include "ObsUtils.hpp"
+#include "StringUtils.hpp"
 
 #include "MDPStream.hpp"
 #include "MDPNavSubframe.hpp"
@@ -162,22 +163,26 @@ public:
 		// set code restriction
 		if (codeOpt.getCount())
 		{
-			if      (codeOpt.getValue()[0].c_str() == "Y")
+			if (codeOpt.getValue()[0].c_str() == string("Y"))
 				rangeCode = rcYcode;
-			else if (codeOpt.getValue()[0].c_str() == "P")
+			else if (codeOpt.getValue()[0].c_str() == string("P"))
 				rangeCode = rcPcode;
-			else if (codeOpt.getValue()[0].c_str() == "codeless")	
+			else if (codeOpt.getValue()[0].c_str() == string("codeless"))	
 				rangeCode = rcCodeless;
 			else
 			{
-				cout << "Invalid tracking code specification. Enter Y, P, or "
-				     << "codeless. (or don't enter anything - the default is Y. "
-				     << "\nExiting...";
+				cout << "\nInvalid tracking code specification. Enter Y, P, or \n"
+				     << "codeless. (or don't enter anything - the default is Y.) "
+				     << "\n\nExiting...\n\n";
 				return false;
 			}
 		}
 		else
 			rangeCode = rcYcode; // default
+			
+		if (debugLevel || verboseLevel)
+			cout << "Only processing observation data collected via "
+			     << StringUtils::asString(rangeCode) << " code tracking\n";
 
       // set debug levels      
       AshtechData::debugLevel = debugLevel;
@@ -218,7 +223,7 @@ protected:
 
          if (pben.checkId(hdr.id) && (input >> pben) && pben)
          {
-            if (debugLevel>2)
+            if (debugLevel>4)
                pben.dump(cout);
             
             double dt = pben.sow - time.sow;
@@ -299,13 +304,13 @@ protected:
                                                 
             if (debugLevel > 2)
                cout << "---\nIono errors for PRN " << moe.prn << " at " 
-                    << moe.time << fixed << endl
+                    << moe.time << ":\n" << fixed 
                     << "pseudorange on L1 (m): " << setprecision(4) << prL1 
                     << endl << "pseudorange on L2 (m): " << setprecision(4) 
-                    << prL2 << endl << "Iono Error (m): " << setprecision(4) 
-                    << ionoError << endl << "L1 Doppler (Hz): " << setprecision(4)
-                    << doppL1 << endl << "L2 Doppler (Hz): " << setprecision(4)
-                    << doppL2 << endl << "Iono rate (m/s): " 
+                    << prL2 << endl << "Iono Error (m) : " << setprecision(4) 
+                    << ionoError << endl << "L1 Doppler (Hz): " 
+                    << setprecision(4) << doppL1 << endl << "L2 Doppler (Hz): "
+                    << setprecision(4) << doppL2 << endl << "Iono rate (m/s): " 
                     << setprecision(4) << ionoErrorRate << endl;
 
             for (i = moe.obs.begin(); i != moe.obs.end(); i++)
@@ -314,7 +319,7 @@ protected:
                SatID satID(moe.prn,SatID::systemGPS);
 
                // There will (usually) be 3 MBEN messages for each SV for 
-               // the C/A, L1 Z/Y and L2 Z/Y obs measurements. Let's just 
+               // the C/A, L1 P/Z/Y and L2 P/Z/Y obs measurements. Let's just 
                // output data when we see the C/A measurement
 
                if (obs.carrier == ccL1 && obs.range == rcCA)
@@ -440,13 +445,7 @@ protected:
                engEph.dump(cout);	
             }
       	} // else if (epb.checkId(hdr.id) && (input >> epb) && epb)
-      	else
-      	{
-      		cout << "Got unknown data?\n";
-      		continue;
-      	} // else
 		}    // while (input >> hdr)
-   	     // timeToDie = true;  <- replace this with something? 
 	}       // virtual void process()
 
    virtual void shutDown()
