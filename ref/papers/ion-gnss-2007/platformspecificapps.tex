@@ -1,0 +1,64 @@
+\documentclass{article}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage[total={8.5in,11in},top=1.5cm,left=1.0cm,landscape=false]{geometry}
+
+\newcommand{\sideco}{gray}
+\newcommand{\sideso}{1.0}
+\newcommand{\sidect}{gray}
+\newcommand{\sidest}{1.0}
+\newcommand{\sidewidth}{0.15in}
+\newcommand{\entco}{gray}
+\newcommand{\entso}{1.00}
+\newcommand{\entct}{gray}
+\newcommand{\entst}{0.95}
+
+\newcommand{\twidth}{1.50in}
+\newcommand{\dwidth}{2.5in}
+\newcommand{\ewidth}{2.5in}
+
+\newcommand{\appdesce}[3] {\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{1}{\twidth}{#1} & \cellcolor[\entct]{\entst} \multirow{1}{\dwidth}{\footnotesize{#2}} & \cellcolor[\entct]{\entst} \multirow{1}{\ewidth}{\footnotesize{#3}}}
+
+\newcommand{\appdesco}[3]{\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{1}{\twidth}{#1} & \cellcolor[\entco]{\entso} \multirow{1}{\dwidth}{\footnotesize{#2}} & \cellcolor[\entco]{\entso} \multirow{1}{\ewidth}{\footnotesize{#3}}}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{tabular}{clll}
+
+\multicolumn{3}{c}{} \\
+& \textbf{Tool} & \textbf{Function} & \textbf{Dependencies} \\
+\hline
+
+\appdesco{python binding}
+	 {provides library class to the python language}
+	 {required python environment} \\
+
+\appdesce{swrx}
+	 {simulates GPS signal and receiver tracking}
+	 {too specialized} \\
+
+\appdesco{Rinex plot}
+	 {plots observable combinations}
+	 {requires perl-tk} \\
+
+
+\appdesce{mdptool}
+	 {manipulates MDP data streams}
+	 {requires UNIX terminal, networking} \\
+
+\appdesco{ash2mdp}
+	 {converts Ashtech Z(Y)-12 data to MDP}
+	 {requires UNIX terminal and serial port} \\
+
+\appdesce{rtAshtech}
+	 {records observations from an Ashtech receiver}
+	 {requires UNIX terminal and serial port} \\
+
+\end{tabular}
+
+\end{document}
+

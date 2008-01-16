@@ -1,0 +1,227 @@
+\documentclass{article}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage[total={8.5in,11in},top=2.0cm,left=1.5cm,landscape=true]{geometry}
+
+\newcommand{\sideco}{gray}
+\newcommand{\sideso}{1.0}
+\newcommand{\sidect}{gray}
+\newcommand{\sidest}{1.0}
+\newcommand{\sidewidth}{0.15in}
+\newcommand{\entco}{gray}
+\newcommand{\entso}{1.00}
+\newcommand{\entct}{gray}
+\newcommand{\entst}{0.95}
+
+\newcommand{\twidth}{1.52in}
+\newcommand{\dwidth}{3.38in}
+\newcommand{\ewidth}{3.60in}
+
+\newcommand{\appdesce}[3] {\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{1}{\twidth}{#1} & \cellcolor[\entct]{\entst} \multirow{1}{\dwidth}{\footnotesize{#2}} & \cellcolor[\entct]{\entst} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{#3}}}}
+
+\newcommand{\appdesco}[3]{\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{1}{\twidth}{#1} & \cellcolor[\entco]{\entso} \multirow{1}{\dwidth}{\footnotesize{#2}} & \cellcolor[\entco]{\entso} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{#3}}}}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{tabular}{clll}
+
+\multicolumn{4}{c}{GPSTk Cross Platform Applications} \\
+& \textbf{Tool} & \textbf{Description} & \textbf{Execution Example} \\
+\hline
+
+\appdesco{calgps}
+	 {generates a GPS calendar}
+	 {calgps -Y 2004} \\
+
+\appdesce{poscvt}
+	 {converts a given input position to other position formats}
+	 {poscvt --geodetic="30.28 262.26700 167.64" } \\
+
+\appdesco{timeconvert}
+         {converts given input time to other time formats}
+         {timeconvert --calendar="07 04 2006"} \\ 
+
+\appdesce{wheresat}
+         {outputs expected location of a satellite}
+	 {wheresat -b arl2100.06n -p 3} \\
+\hline
+
+\multirow{-5}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{3mm}Transforms}}} 
+
+%\appdesco{ash2mdp}
+%         {converts Ashtech Z(Y)-12 data to MDP}
+%	 {TC or JL} \\
+
+%\appdesce{rtAshtech}
+%         {records observations from an Ashtech receiver}
+%         {rtAshtech -p /dev/ttyS1 -o "minute\%03j\%02H\%02m.\%06yo"} \\
+
+\appdesco{ficfica/ficafic/fic2rin}
+         {convert FIC files between ASCII, binary, and RINEX formats}
+	 {fic2rin fic2100.06 rin121.06n} \\
+
+\appdesce{mdp2rinex}
+         {convert MDP files to FIC or RINEX files}
+	 {mdp2rinex -i mdpfile -o arl2100.06o} \\
+
+\appdesco{novaRinex}
+         {convert Novatel files to RINEX files}
+         {novaRinex --input nova2100.06 --obstype L1} \\
+
+\appdesce{navdmp}
+         {dumps information from nav files to human readable formats}
+         {navdmp -i arl2100.06n -o arl2100.06.dmp} \\
+
+\appdesco{RinexDump}
+         {flattens a RINEX file into a matrix}
+	 {RinexDump arl2100.06o 3 4 L1 L2} \\
+\hline 
+
+\multirow{-6}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{2mm} Collect/Convert}}}
+
+\appdesce{daa}
+         {performs a data availability analysis of collected data}
+	 { ---} \\
+
+\appdesco{ddGen}
+         {computes double-differences from raw observations}
+	 { ---} \\
+
+\appdesce{ephdiff}
+         {compares the satellite positions from two ephemeris sources}
+	 {ephdiff arl2100.06n fic2100.06} \\
+
+\appdesco{ficdiff}
+         {compares contents of two FIC files}
+	 {ficidff fic12100.06 fic22100.06} \\
+
+\appdesce{ficcheck/ficacheck}
+         {reads a FIC file and checks it for errors reporting the first found}
+	 {ficcheck fic2100.06 -t "07/20/2006 11:00:00"} \\
+
+\appdesco{findMoreThan12}
+         {predicts when more than twelve satellites are in view}
+	 {findMoreThan12 -e arl1256.06n -p "X Y Z" -m 10} \\
+
+%\appdesco{mdptool}
+%         {manipulates MDP data streams}
+%	 {mdptool -i mdpfile --pvt --obs} \\
+
+\appdesce{mpsolve}
+         {computes statistical model of multipath combination}
+	 {mpsolve -o arl2100.06o -e arl2100.06n} \\
+
+\appdesco{ordGen/Clock/LinEst/...}
+         {models observed range deviations}
+	 {ordGen -o arl2100.06o -e apc14080 | ordEdit ... | ... | ...} \\
+
+\appdesce{RinSum}
+         {summarizes contents of a RINEX observation file}
+	 {RinSum -i arl2100.06o --EpochBeg 2006,07,20,13,20,00} \\ 
+
+\appdesco{rmwdiff/rnwdiff/rowdiff}
+         {compares contents of two RINEX files}
+	 {rowdiff arl1210.06o arl22100.06o} \\
+
+\appdesce{row/rnw/rmwcheck}
+         {read RINEX files and checks it for errors reporting the first found}
+	 {rnwcheck arl210.06n -e "07/20/2006 11:00:00"} \\
+
+\appdesco{rstats}
+         {computes standard, robust statistics on numbers in text stream}
+	 {rstats myfile.dat --col 3 --xcol 2} \\
+\hline
+
+
+\multirow{-13}{\sidewidth}{\rotatebox{90}{\tiny{Comparing \& Validating}}}
+
+\appdesce{DiscFix}
+         {cycle slip corrector}
+	 {DiscFix -i arl2100.06o --DT 1.5} \\
+
+\appdesco{EditRinex}
+         {edits a RINEX observations file based on user input}
+	 {EditRinex -IFalr2100.06o -TB1418,518000. -DSG17 -AOLW -AOPW} \\
+
+\appdesce{mergeFIC}
+         {sorts and merges input FIC files into a single file}
+	 {mergeFIC -i fic12100.06 -i fic22100.06 -o ficmerge2100.06} \\
+
+\appdesco{mergeRinObs/Nav/Met}
+         {sorts and merges RINEX files}
+	 {mergeRinNav -i arl2100.06n -i arl2110.06n arl210-211.06n} \\
+
+\appdesce{NavMerge}
+         {merges RINEX nav files into a single file}
+	 {NavMerge -oarlnavs.06n arl2100.06n arl2110.06n} \\
+
+\appdesco{rinexthin}
+         {decimates an input RINEX observation files to desired data rate}
+	 {rinexthin -f arl2100.06o -s 30 -o arl2100thin.06n} \\
+
+\appdesce{ResCor}
+         {edits RINEX files and computes corrections}
+	 {ResCor -IFalr2100.06o -OFarl2100mod.06o -DS12,12:00:00} \\
+
+\appdesco{sp3version}
+         {reads and writes from and to SP3 files}
+	 {sp3version --in mySP3a.dat --out mySP3c.dat --outputC } \\ \hline
+
+\multirow{-9}{\sidewidth}{\rotatebox{90}{\tiny{Editing Data}}}
+
+\appdesce{IonoBias}
+         {solves interfrequency biases and a simple ionosphere model}
+	 {IonoBias --input arl2100.06o --nav arl2100.06n --XSat 3} \\
+
+\appdesco{TECMaps}
+         {creates maps of Total Electron Content (TEC)}
+	 {TECMaps --input arl2100.06o --nav arl2100.06n --LinearFit} \\
+\hline
+
+\multirow{-3}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{3mm}Iono}}}
+
+\appdesce{DDBase}
+         {computes a network solution using carrier phase}
+	 {DDBase ... --ObsFile arl2100.06o --PosXYZ x,y,z,1 --Fix ...} \\
+
+\appdesco{ddmerge}
+         {ddmerge merges DDBase RAW and DDR output files}
+	 {ddmerge myRAW.dat myDDR.dat myData.dat} \\
+
+\appdesce{mergeSRI}
+         {combines solution and covariance results into a single result}
+	 {mergeSRI myResult1.out myResult2.out myResult3.out } \\
+
+\appdesco{posInterp}
+         {calculates user positions at a higher rate than observations}
+	 {PosInterp -o alr2100.06o -m 10 --outRinex myNewRinex.obs} \\
+
+\appdesce{PRSolve}
+         {generates autonomous position solution}
+	 {PRSolve -o alr2100.06o -n arl2100.06nn --XPRN 12} \\
+
+\appdesco{rinexpvt}
+         {generates autonomous position solution}
+	 {rinexpvt -o alr2100.06o -n arl2100.06n} \\
+
+\appdesce{vecsol}
+         {estimates short baseline using range or carrier phase}
+	 {vecsol station12100.06o station22100.06o}  \\
+
+\hline
+
+\multirow{-8}{\sidewidth}{\rotatebox{90}{\tiny{\hspace{3mm}Positioning}}}
+
+
+\end{tabular}
+
+\centering
+
+\large{http://www.gpstk.org/}
+
+
+\end{document}
