@@ -119,30 +119,63 @@ namespace gpstk
       strm.formattedGetLine(line, true);
       URAnum = (short) asInt(line);
 
-            
-      // Fifth line - Eccentricity, Inclinatin Offset, and Rate of Right Ascension
+      string whitespace = " \t\r\n";
+      
+      // Fifth line - Eccentricity, Inclination Offset, and Rate of Right Ascension
       strm.formattedGetLine(line, true);
-      ecc = asDouble(line.substr(0,23));
-      i_offset = asDouble(line.substr(24,47));
-      OMEGAdot = asDouble(line.substr(48,72));
+      string::size_type front = line.find_first_not_of(whitespace);
+      string::size_type end = line.find_first_of(whitespace,front);
+      string::size_type length = end - front;
+      ecc = asDouble(line.substr(front,length));
+      
+      front = line.find_first_not_of(whitespace,end);
+      end = line.find_first_of(whitespace,front);
+      length = end - front;
+      i_offset = asDouble(line.substr(front,length));
+      
+      front = line.find_first_not_of(whitespace,end);
+      length = line.length() - front;
+      OMEGAdot = asDouble(line.substr(front,length));
       i_offset *= gpstk::PI;
       OMEGAdot *= gpstk::PI;
 
 
       // Sixth line - Sqrt of A, Omega0, and Arg of Perigee
       strm.formattedGetLine(line, true);
-      Ahalf = asDouble(line.substr(0,23));
-      OMEGA0 = asDouble(line.substr(24,47));
+      
+      front = line.find_first_not_of(whitespace);
+      end = line.find_first_of(whitespace,front);
+      length = end - front;
+      Ahalf = asDouble(line.substr(front,length));
+      
+      front = line.find_first_not_of(whitespace,end);
+      end = line.find_first_of(whitespace,front);
+      length = end - front;
+      OMEGA0 = asDouble(line.substr(front,length));
+      
+      front = line.find_first_not_of(whitespace,end);
+      length = line.length() - front;
       OMEGA0 *= gpstk::PI;
-      w = asDouble(line.substr(48,72));
+      w = asDouble(line.substr(front,length));
       w *= gpstk::PI;
       
       // Seventh Line - M0, AF0, AF1
       strm.formattedGetLine(line, true);
-      M0 = asDouble(line.substr(0,23));
+      
+      front = line.find_first_not_of(whitespace);
+      end = line.find_first_of(whitespace,front);
+      length = end - front;
+      M0 = asDouble(line.substr(front,length));
       M0 *= gpstk::PI;
-      AF0 = asDouble(line.substr(24,47));
-      AF1 = asDouble(line.substr(48,72));
+      
+      front = line.find_first_not_of(whitespace,end);
+      end = line.find_first_of(whitespace,front);
+      length = end - front;
+      AF0 = asDouble(line.substr(front,length));
+      
+      front = line.find_first_not_of(whitespace,end);
+      length = line.length() - front;
+      AF1 = asDouble(line.substr(front,length));
       
       // Eigth line - Satellite Health
       strm.formattedGetLine(line, true);
@@ -151,15 +184,10 @@ namespace gpstk
       // Ninth line - Satellite Config
       strm.formattedGetLine(line, true); 
       satConfig = (short) asInt(line);
-            
 
-      //week = strm.header.week + 1024;                    // Need a way to set epoch  Hmmm really?
-
-      
       week = hdr.week;
       Toa = hdr.Toa;
 
-      
       xmit_time = 0;
       
    } // end of reallyGetRecord()

@@ -59,17 +59,37 @@ namespace gpstk
          
          SEMHeader header;
          strm >> header;
+         
+            // If the user has indcated a time of interest and
+            // the reference week number is less than 10 bits long, 
+            // assume the almanac must be within 511 weeks of the 
+            // time of interest
+            // If necessary, adjust the GPS week number
+            //
+            // NOTE: According to the SEM format documetation on the
+            // USCG NAVCEN website, the week in the header should be
+            // 0-1023; however there is anecdotal evidence that some
+            // organizations have used the full GPS week number.  
+            // This is an attempt to "do the right thing" in the 
+            // broadest number of cases.
+         if (timeOfInterest>gpstk::DayTime::BEGINNING_OF_TIME &&
+             header.week < 1024)
+         {
+            short diff = timeOfInterest.GPSfullweek() - header.week;
+            short nEpochs = (diff+512) / 1024;
+            header.week += nEpochs * 1024;
+         }
          addFile(filename, header);
 
          SEMData rec;
          while(strm >> rec)
-	 {
-            //This is a fix to get the header and the data to share Toa and week.
-	    //This should be fixed in the future
-	    rec.Toa = header.Toa;
-	    rec.week = header.week + 1024;
-	    addAlmanac(AlmOrbit(rec));
-         }	 
+	      {
+               //This is a fix to get the header and the data to share Toa and week.
+	         rec.Toa = header.Toa;
+	         rec.week = header.week;
+            
+	         addAlmanac(AlmOrbit(rec));
+         }
       }
       catch (Exception& e)
       {

@@ -231,6 +231,7 @@ namespace gpstk
          case 0:
             s << PRN       << ", "
               << Toa       << ", "
+              << week       << ", "
               << std::hex
               << SV_health << ", "
               << std::dec
