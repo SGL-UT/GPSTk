@@ -38,7 +38,7 @@ namespace vplot
   //@{
 
   /**
-   * Assists in arranging frames in a vertical stack.
+   * Assists in arranging a new frame within a given one, with a margin.
    */
   class BorderLayout : public Layout
   {

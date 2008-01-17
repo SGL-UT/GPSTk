@@ -1,5 +1,5 @@
 
-/// @file GridLayout.hpp Class to lay out graphic elements vertially (declarations).
+/// @file GridLayout.hpp Class to lay out graphic elements on a grid (declarations).
 
 //============================================================================
 //
@@ -39,7 +39,8 @@ namespace vplot
   //@{
 
   /**
-   * Assists in arranging frames in a vertical stack.
+   * Assists in arranging frames in a grid with some number of rows and 
+   * columns.
    */
   class GridLayout : public Layout
   {
