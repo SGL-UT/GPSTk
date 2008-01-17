@@ -177,7 +177,8 @@ protected:
       if (firstEph)
       {
          rinexNavOutput << rnh;
-         cout << "Got first nav SF" << endl;
+         if (debugLevel)
+         	cout << "Got first nav SF" << endl;
       }
 
       MDPNavSubframe tmp = nav;
@@ -263,7 +264,8 @@ protected:
                roh.firstObs = t;
                output << roh;
                firstObs=false;
-               cout << "Got first obs" << endl;
+               if (debugLevel)
+               	cout << "Got first obs" << endl;
             }
 
             RinexObsData rod;
@@ -314,7 +316,8 @@ protected:
 
    virtual void shutDown()
    {
-      cout << "Done" << endl;
+      if (debugLevel)
+      	cout << "Done" << endl;
    }
 
 private:
