@@ -1,5 +1,5 @@
 
-/// @file HLayout.hpp Class to lay out graphic elements vertially (declarations).
+/// @file HLayout.hpp Class to lay out graphic elements horizontally (declarations).
 
 //============================================================================
 //
@@ -39,7 +39,7 @@ namespace vplot
   //@{
 
   /**
-   * Assists in arranging frames in a vertical stack.
+   * Assists in arranging frames in a horizontal stack.
    */
   class HLayout : public Layout
   {
@@ -49,7 +49,7 @@ namespace vplot
       /**
        * Constructor. 
        * @param frame Frame to create layout within
-       * @param nframes Number of evenly stacked vertical frames to make
+       * @param nframes Number of evenly stacked horizontal frames to make
        */   
       HLayout(const Frame& frame, int nframes);
 
