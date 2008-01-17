@@ -118,7 +118,7 @@ public:
       }
       if (debugLevel || verboseLevel>2)
          cout << "Taking input from " << fn << endl;
-      
+         
       // output option
       if (outputOpt.getCount())
       {
@@ -153,7 +153,7 @@ public:
 
 		// time offset option
 		if (offsetOpt.getCount())
-         offsetSec = StringUtils::asInt(weekOpt.getValue()[0]); 
+         offsetSec = StringUtils::asInt(offsetOpt.getValue()[0]); 
       else
          offsetSec = 0;
          
@@ -276,14 +276,12 @@ protected:
                 	prL1   = obs.pseudorange;
                  	doppL1 = obs.snr;
                }
-               
-               if (obs.carrier == ccL2 && obs.range == rangeCode)
+               else if (obs.carrier == ccL2 && obs.range == rangeCode)
                {
                   prL2   =  obs.pseudorange;
                   doppL2 = obs.snr;
                }
             }
-
             double ionoError  = (prL1 - prL2)/
                                ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
                                 (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1); // m
@@ -330,7 +328,6 @@ protected:
                      Xvt xvt = gpsEphStore.getXvt(satID,tempTime);
                      EngEphemeris tempEph = gpsEphStore.findEphemeris(satID,
                                                                      moe.time);
-						
                      cout << moe.time.printf("%4Y/%03j/%02H:%02M:%04.1f")
                           << fixed << right
                           << ", " << setw(8) << offsetSec
@@ -362,7 +359,12 @@ protected:
 				// sort of a lazy hack here - using functionality from MDP classes
             if (debugLevel)
                epb.dump(cout);
+            	
             MDPNavSubframe nav;
+            nav.carrier = ccL1;
+            nav.range = rcCA;
+            nav.nav = ncICD_200_2;
+            nav.prn = epb.prn;
 
             for (int s=1; s<=3; s++)
 				{
@@ -371,82 +373,74 @@ protected:
                long sow = nav.getHOWTime();
                if (sow>FULLWEEK || sow<0)
                   continue;
+               
                DayTime t = DayTime(time.week, nav.getHOWTime()) - 6;
-
                nav.freshnessCount = fc++;
                nav.time = t;
-				}
+                				
+					if (firstEph && debugLevel)
+						cout << "---\nGot first nav SF" << endl;
 				
-				if (firstEph && debugLevel)
-					cout << "---\nGot first nav SF" << endl;
+					MDPNavSubframe tmp = nav;		
 				
-				MDPNavSubframe tmp = nav;		
-				
-				// First try the data assuming it is already upright
-      		tmp.cooked = true;
-      		bool parityGood = tmp.checkParity();
-      		if (!parityGood)
-      		{
-         		if (debugLevel && firstEph)
-            		cout << "Raw subframe" << endl;
-         		nav.cooked = false;
-         		nav.cookSubframe();
-         		parityGood = nav.checkParity();
-      		}
-      		else
-      		{
-         		if (debugLevel && firstEph)
-            		cout << "Cooked subframe" << endl;
-      		}
+					// First try the data assuming it is already upright
+      			tmp.cooked = true;
+      			bool parityGood = tmp.checkParity();
+      			if (!parityGood)
+      			{
+         			if (debugLevel && firstEph)
+            			cout << "Raw subframe (not cooked)\n";
+         			nav.cooked = false;
+         			nav.cookSubframe();
+         			parityGood = nav.checkParity();
+      			}
+      			else if (debugLevel && firstEph)
+            		cout << "Cooked subframe\n";
 
-      		firstEph=false;
+      			firstEph=false;
 
-      		if (!parityGood)
-      		{
-         		if (debugLevel)
-            		cout << "Parity error" << endl;
-         		return;
-      		}
+      			if (!parityGood)
+      			{
+         			if (debugLevel)
+            			cout << "Parity error\n";
+         			return;
+      			}
 
-      		short sfid = nav.getSFID();
-      		if (sfid > 3)
-         		return;
+      			short sfid = nav.getSFID();
+      			if (sfid > 3)
+      			{
+						cout << "Bad SF ID, sfid > 3\n";
+         			return;
+					}
+      			short week = nav.time.GPSfullweek();
 
-      		short week = nav.time.GPSfullweek();
-      		long sow = nav.getHOWTime();
-      		if (sow > DayTime::FULLWEEK)
-      		{
-        	 		if (debugLevel)
-            		cout << "Bad week" << endl;
-         		return;
-      		}
+	      		sow = nav.getHOWTime();
+   	   		if (sow > DayTime::FULLWEEK)
+      			{
+        		 		if (debugLevel)
+            			cout << "Bad week, sow > DayTime::FULLWEEK\n";
+         			return;
+      			}
 
-      		if (debugLevel>1)
-         		nav.dump(cout);
-      		DayTime howTime(week, sow);
-
-      		NavIndex ni(RangeCarrierPair(nav.range, nav.carrier), nav.prn);
-      		ephData[ni] = nav;
-
-      		ephPageStore[ni][sfid] = nav;
-      		EngEphemeris engEph;
-      		if (makeEngEphemeris(engEph, ephPageStore[ni]))
-      		{
-         		gpsEphStore.addEphemeris(engEph);
-         		ephPageStore[ni].clear();
-      		}
-            else if (debugLevel>2)
-	           cout << "---\nmakeEngEphemeris failed for PRN " << epb.prn
-                   << " at HOW time " << nav.time << endl;      		
-
-            if (debugLevel > 3)
-            {
-               cout << "---\nengEph dump:\n";
-               engEph.dump(cout);	
-            }
-      	} // else if (epb.checkId(hdr.id) && (input >> epb) && epb)
-		}    // while (input >> hdr)
-	}       // virtual void process()
+      			if (debugLevel>1)
+         			nav.dump(cout);
+         		
+      			DayTime howTime(week, sow);
+      			NavIndex ni(RangeCarrierPair(nav.range, nav.carrier), nav.prn);
+      			ephData[ni] = nav;
+	      		ephPageStore[ni][sfid] = nav;
+         		EngEphemeris engEph;
+         		
+   	   		if (makeEngEphemeris(engEph, ephPageStore[ni]))
+      			{
+	         		gpsEphStore.addEphemeris(engEph);
+   	      		ephPageStore[ni].clear();
+      			}
+      			
+				} 	// for (int s=1; s<=3; s++)
+      	} 		// else if (epb.checkId(hdr.id) && (input >> epb) && epb)
+		}    		// while (input >> hdr)
+	}       		// virtual void process()
 
    virtual void shutDown()
    {}
@@ -464,10 +458,9 @@ private:
    typedef pair<RangeCode, CarrierCode> RangeCarrierPair;
    typedef pair<RangeCarrierPair, short> NavIndex;
    typedef map<NavIndex, MDPNavSubframe> NavMap;
-   typedef std::map<short, MDPNavSubframe> EphemerisPages;
+   NavMap ephData;
    map<NavIndex, EphemerisPages> ephPageStore;
    bool firstEph;
-   NavMap ephData;
    RangeCode rangeCode;
 };
 
