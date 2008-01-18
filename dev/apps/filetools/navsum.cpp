@@ -46,10 +46,6 @@
 #include "FICData.hpp"
 #include "FICStream.hpp"
 #include "FICFilterOperators.hpp"
-#include "RinexNavStream.hpp"
-#include "RinexNavData.hpp"
-#include "RinexNavHeader.hpp"
-#include "RinexNavFilterOperators.hpp"
 #include "DayTime.hpp"
 
 #include "gps_constants.hpp"
@@ -90,8 +86,6 @@ private:
    CommandOptionWithNumberArg prnOption;
       /// command option for FIC blocks
    CommandOptionWithNumberArg blockOption;
-      /// command option for using a RINEX navigation message file (vice FIC)
-   CommandOptionNoArg rinexOption;
 
    DayTime startTime, endTime;
    list<long> prnFilterList;
@@ -106,8 +100,7 @@ private:
    static const string blockStr[4];
    int totalsByPRN[gpstk::MAX_PRN+1][2];
    int totalsBySVID[64][2];
-   
-   bool isRinexInput;
+
 };
 
 const int NavSum::BLK9 = 0;
@@ -115,20 +108,12 @@ const int NavSum::BLK109 = 1;
 const int NavSum::BLK62 = 2;
 const int NavSum::BLK162 = 3;
 const string NavSum::blockStr[]   = {"  9", "109", " 62", "162"};
-//const string NavSum::blockStr[BLK109] = "109";
-//const string NavSum::blockStr[BLK62]  = " 62";
-//const string NavSum::blockStr[BLK162] = "162";
 
 NavSum::NavSum(char* arg0)
-      : BasicFramework(arg0, "Prints the contents of an FIC or RINEX file into a human readable file and allows filtering of the data."),
-        inputFileOption('i',
-                        "input",
-                        "Name of an input navigation message file",
-                        true),
-        outputFileOption('o',
-                         "output",
-                         "Name of an output file",
-                         true),
+      : BasicFramework(arg0, "Lists the block contents of a FIC file and prints"
+                        " summary count information."),
+        inputFileOption('i', "input", "Name of an input FIC file", true),
+        outputFileOption('o', "output", "Name of an output file", true),
         timeOption('t', "time", "Start time (of data) for processing"),
         eTimeOption('e', "end-time", "End time (of data) for processing"),
         prnOption('p', "prn", "PRN(s) to include"),
@@ -137,8 +122,6 @@ NavSum::NavSum(char* arg0)
                     " almanacs)"),
         defaultsOption('a', "all-records", "Unless otherwise specified, use"
                        " default values for record filtration"),
-        rinexOption('r',"RINEX", "Assume input file is a RINEX navigation"
-                         " message file"),
         startTime(0,0.0),
         endTime(DayTime::END_OF_TIME)
 {
@@ -148,7 +131,7 @@ NavSum::NavSum(char* arg0)
    outputFileOption.setMaxCount(1);
    timeOption.setMaxCount(1);
    eTimeOption.setMaxCount(1);
-   isRinexInput = false;
+
    int cnt;
    for (cnt=0;cnt<4;++cnt)
    {
@@ -177,16 +160,13 @@ void NavSum::printCurrentFilter()
    else
       copy(prnFilterList.begin(), prnFilterList.end(),
            ostream_iterator<long>(cout, " "));
-   if (!isRinexInput)
-   {
-      cout << endl
-           << "\tFIC blocks:\t";
-      if (blockFilterList.empty())
-         cout << "using all blocks";
-      else
-         copy(blockFilterList.begin(), blockFilterList.end(),
-              ostream_iterator<long>(cout, " "));
-   }
+   cout << endl
+        << "\tFIC blocks:\t";
+   if (blockFilterList.empty())
+      cout << "using all blocks";
+   else
+      copy(blockFilterList.begin(), blockFilterList.end(),
+           ostream_iterator<long>(cout, " "));
    cout << endl;
 }
 
@@ -213,9 +193,6 @@ bool NavSum::initialize(int argc, char* argv[]) throw()
       startTime = timeOption.getTime()[0];
    if (eTimeOption.getCount())
       endTime = eTimeOption.getTime()[0];
-
-   if (rinexOption.getCount())
-      isRinexInput = true;
    
    return true;
 }
@@ -239,12 +216,9 @@ void NavSum::additionalSetup()
            << "Choose an option by number then push enter:" << endl
            << "\t1) Change the start time" << endl
            << "\t2) Change the end time" << endl
-           << "\t3) Select specific PRNs" << endl;
-      if (!isRinexInput)
-      {
-      cout << "\t4) Select specific FIC block numbers" << endl;
-      }
-      cout << "\t5) Process the file" << endl
+           << "\t3) Select specific PRNs" << endl
+           << "\t4) Select specific FIC block numbers" << endl
+           << "\t5) Process the file" << endl
            << "use ctrl-c to exit" << endl
            << "? ";
       
@@ -270,7 +244,7 @@ void NavSum::additionalSetup()
             option = 0;
             break;
          case 4:
-            if (!isRinexInput) getFICBlocks();
+            getFICBlocks();
             option = 0;
             break;
          case 5:
@@ -283,7 +257,8 @@ void NavSum::additionalSetup()
 
       if (startTime > endTime)
          cout << endl
-              << "Please check the start and end times because all the data will be filtered" << endl
+              << "Please check the start and end times because all the data "
+              << "will be filtered" << endl
               << "with this setting (startTime > endTime)." << endl;
    }
 
@@ -294,14 +269,14 @@ void NavSum::getFICBlocks()
 {
    int block;
    string line;
-   cout << "Enter a list of FIC blocks to search for separated by spaces." << endl
+   cout << "Enter a list of FIC blocks to search for separated by spaces.\n" 
         << "The old list will be discarded." << endl
         << "   9 : Ephemeris - engineering units." << endl
         << " 109 : Ephemeris - as broadcast." << endl
         << "  62 : Almanac - engineering units." << endl
         << " 162 : Almanac - as broadcast." << endl
-        << "Enter '0' for all blocks - any other blocks entered will be ignored." << endl
-        << "? ";
+        << "Enter '0' for all blocks - any other blocks entered will be "
+        << "ignored.\n ? ";
    getline(cin, line);
    istringstream is(line);
    while (is >> block)
@@ -396,160 +371,139 @@ void NavSum::process()
       return;
    }
 
-   if (!isRinexInput)
+      // filter the data...  first by block number, then by PRN
+   FileFilterFrame<FICStream, FICData> data(inputFileOption.getValue()[0]);
+   if (!blockFilterList.empty())
+      data.filter(FICDataFilterBlock(blockFilterList));
+   if (!prnFilterList.empty())
+      data.filter(FICDataFilterPRN(prnFilterList));
+      
+   out << "Block#       PRN or                Transmit            !        Toe/Toa" << endl;
+   out << "in set Type   SVID   mm/dd/yy DOY hh:mm:ss Week    SOW ! mm/dd/yy DOY HH:MM:SS" << endl;
+   std::string xmitFmt("%02m/%02d/%02y %03j %02H:%02M:%02S %4F %6.0g");
+   std::string epochFmt("%02m/%02d/%02y %03j %02H:%02M:%02S");
+   DayTime XMitT;
+   DayTime EpochT;
+   uint32_t temp;
+   int PRNID; 
+   int xmitPRN;
+   int xMitWeek;
+   int EpochWeek;
+   char line[100];
+   string linestr;
+      
+   int count = 0;
+   list<FICData>& ficlist = data.getData();
+   list<FICData>::iterator itr = ficlist.begin();
+   while (itr != ficlist.end())
    {
-         // filter the data...  first by block number, then by PRN
-      FileFilterFrame<FICStream, FICData> data(inputFileOption.getValue()[0]);
-      if (!blockFilterList.empty())
-         data.filter(FICDataFilterBlock(blockFilterList));
-      if (!prnFilterList.empty())
-         data.filter(FICDataFilterPRN(prnFilterList));
-      
-      out << "Block#       PRN or                Transmit            !        Toe/Toa" << endl;
-      out << "in set Type   SVID   mm/dd/yy DOY hh:mm:ss Week    SOW ! mm/dd/yy DOY HH:MM:SS" << endl;
-      std::string xmitFmt("%02m/%02d/%02y %03j %02H:%02M:%02S %4F %6.0g");
-      std::string epochFmt("%02m/%02d/%02y %03j %02H:%02M:%02S");
-      DayTime XMitT;
-      DayTime EpochT;
-      uint32_t temp;
-      int PRNID; 
-      int xmitPRN;
-      int xMitWeek;
-      int EpochWeek;
-      char line[100];
-      string linestr;
-      
-      int count = 0;
-      list<FICData>& ficlist = data.getData();
-      list<FICData>::iterator itr = ficlist.begin();
-      while (itr != ficlist.end())
+		FICData& r = *itr;
+      count++;
+      int blockType = r.blockNum;
+      double diff = 0.0;
+      double Toe = 0.0;
+      double HOW = 0.0;
+      double xMitSOW = 0.0;
+      double iMitSOW = 0;
+      long IODC = 0;
+      int fit = 0;
+      switch (blockType)
       {
-         FICData& r = *itr;
-         count++;
-         int blockType = r.blockNum;
-         double diff = 0.0;
-         double Toe = 0.0;
-         double HOW = 0.0;
-         double xMitSOW = 0.0;
-         double iMitSOW = 0;
-         long IODC = 0;
-         int fit = 0;
-         switch (blockType)
-         {
-            case 9:
-               PRNID = (short) r.f[19];
-               HOW = r.f[2];
-               Toe = r.f[33];
-               xMitWeek = (int) r.f[5];
-               IODC = ((long) r.f[9]) / 2048;
-               fit = (int) r.f[34];
-               EpochWeek = xMitWeek;
-               diff = Toe - HOW;
-               if (diff < -1.0 * (double) DayTime::HALFWEEK) EpochWeek++;
-               if (diff > (double) DayTime::HALFWEEK) xMitWeek--;
-               //cout << " HOW = " << HOW << endl;
-               XMitT = DayTime( xMitWeek, HOW-6.0 );
-               EpochT = DayTime( EpochWeek, Toe );
-               sprintf(line," %5d  %3d    %02d    %s ! %s 0x%03X %1d",
-                  count,blockType,PRNID,
-                  XMitT.printf(xmitFmt).c_str(),
-                  EpochT.printf(epochFmt).c_str(),
-                  IODC,
-                  fit);
-               linestr = string(line);
-               out << linestr << endl;
-               totalsByBlock[BLK9]++;
-               totalsByPRN[PRNID][BLK9]++;
-               break;
+			case 9:
+				PRNID = (short) r.f[19];
+				HOW = r.f[2];
+				Toe = r.f[33];
+				xMitWeek = (int) r.f[5];
+				IODC = ((long) r.f[9]) / 2048;
+				fit = (int) r.f[34];
+				EpochWeek = xMitWeek;
+				diff = Toe - HOW;
+				if (diff < -1.0 * (double) DayTime::HALFWEEK) EpochWeek++;
+				if (diff > (double) DayTime::HALFWEEK) xMitWeek--;
+				XMitT = DayTime( xMitWeek, HOW-6.0 );
+				EpochT = DayTime( EpochWeek, Toe );
+				sprintf(line," %5d  %3d    %02d    %s ! %s 0x%03X %1d",
+					count,blockType,PRNID,
+					XMitT.printf(xmitFmt).c_str(),
+					EpochT.printf(epochFmt).c_str(),
+					IODC,
+					fit);
+				linestr = string(line);
+				out << linestr << endl;
+				totalsByBlock[BLK9]++;
+				totalsByPRN[PRNID][BLK9]++;
+				break;
                
-            case 109:
-               PRNID = (int) r.i[1];
-               xMitWeek = (int) r.i[0];
-               temp = (uint32_t) r.i[3];
-               cout << "temp, xMitWeek = ";
-               cout.setf(ios_base::hex,ios_base::basefield);
-               cout << temp << ", ";
-               cout.setf(ios_base::dec,ios_base::basefield);
-               cout << xMitWeek << endl;
-               XMitT = buildXMitTime( temp, xMitWeek );
-               sprintf(line," %5d  %3d    %02d    %s !",
-                  count,blockType,PRNID,
-                  XMitT.printf(xmitFmt).c_str() );
-               linestr = string(line);
-               out << linestr << endl;
-               totalsByBlock[BLK109]++;
-               totalsByPRN[PRNID][BLK109]++;
-               break;
+			case 109:
+				PRNID = (int) r.i[1];
+				xMitWeek = (int) r.i[0];
+				temp = (uint32_t) r.i[3];
+				cout << "temp, xMitWeek = ";
+				cout.setf(ios_base::hex,ios_base::basefield);
+				cout << temp << ", ";
+				cout.setf(ios_base::dec,ios_base::basefield);
+				cout << xMitWeek << endl;
+				XMitT = buildXMitTime( temp, xMitWeek );
+				sprintf(line," %5d  %3d    %02d    %s !",
+					count,blockType,PRNID,
+					XMitT.printf(xmitFmt).c_str() );
+				linestr = string(line);
+				out << linestr << endl;
+				totalsByBlock[BLK109]++;
+				totalsByPRN[PRNID][BLK109]++;
+				break;
                
-            case 62:
-               PRNID = r.i[3];
-               xMitWeek = (int) r.i[5];
-               EpochWeek = (int) r.i[0];
-               iMitSOW = r.i[1];
-               if (iMitSOW<0)
-               {
-                  iMitSOW += gpstk::DayTime::FULLWEEK;
-                  xMitWeek--;
-               }
-               xMitSOW = (double) iMitSOW;
-               XMitT = DayTime( xMitWeek, xMitSOW );
-               if (PRNID>0 && PRNID<33)
-               {
-                  EpochT = DayTime( EpochWeek, r.f[8] );
-                  sprintf(line," %5d  %3d    %02d    %s ! %s",
-                     count,blockType,PRNID,
-                     XMitT.printf(xmitFmt).c_str(),
-                     EpochT.printf(epochFmt).c_str() );
-               }
-               else
-               {
-                  sprintf(line," %5d  %3d    %02d    %s !",
-                     count,blockType,PRNID,
-                     XMitT.printf(xmitFmt).c_str() );
-               }
-               linestr = string(line);
-               out << linestr << endl;
-               totalsByBlock[BLK62]++;
-               totalsBySVID[PRNID][BLK62]++;
-               break;
+			case 62:
+				PRNID = r.i[3];
+				xMitWeek = (int) r.i[5];
+				EpochWeek = (int) r.i[0];
+				iMitSOW = r.i[1];
+				if (iMitSOW<0)
+				{
+					iMitSOW += gpstk::DayTime::FULLWEEK;
+					xMitWeek--;
+				}
+				xMitSOW = (double) iMitSOW;
+				XMitT = DayTime( xMitWeek, xMitSOW );
+				if (PRNID>0 && PRNID<33)
+				{
+					EpochT = DayTime( EpochWeek, r.f[8] );
+					sprintf(line," %5d  %3d    %02d    %s ! %s",
+						count,blockType,PRNID,
+						XMitT.printf(xmitFmt).c_str(),
+						EpochT.printf(epochFmt).c_str() );
+				}
+				else
+				{
+					sprintf(line," %5d  %3d    %02d    %s !",
+						count,blockType,PRNID,
+						XMitT.printf(xmitFmt).c_str() );
+				}
+				linestr = string(line);
+				out << linestr << endl;
+				totalsByBlock[BLK62]++;
+				totalsBySVID[PRNID][BLK62]++;
+				break;
                
-            case 162:
-               PRNID = r.i[0];
-               xMitWeek = r.i[14];
-               EpochWeek = r.i[13];
-               temp = (uint32_t) r.i[2];
-               xmitPRN = r.i[11];
-               XMitT = buildXMitTime( temp, xMitWeek );
-               sprintf(line," %5d  %3d    %02d    %s !                        %02d",
-                  count,blockType,PRNID,
-                  XMitT.printf(xmitFmt).c_str(),
-                  xmitPRN);
-               linestr = string(line);
-               out << linestr << endl;
-               totalsByBlock[BLK162]++;
-               totalsBySVID[PRNID][BLK162]++;
-               break;
-         }
+			case 162:
+				PRNID = r.i[0];
+				xMitWeek = r.i[14];
+				EpochWeek = r.i[13];
+				temp = (uint32_t) r.i[2];
+				xmitPRN = r.i[11];
+				XMitT = buildXMitTime( temp, xMitWeek );
+				sprintf(line," %5d  %3d    %02d    %s !                        %02d",
+					count,blockType,PRNID,
+					XMitT.printf(xmitFmt).c_str(),
+					xmitPRN);
+				linestr = string(line);
+				out << linestr << endl;
+				totalsByBlock[BLK162]++;
+				totalsBySVID[PRNID][BLK162]++;
+				break;
+		}
          
-         itr++;
-      }
-   }
-   else     // Rinex navigation message data
-   {
-      FileFilterFrame<RinexNavStream, RinexNavData> 
-                             data(inputFileOption.getValue()[0]);
-      if (!prnFilterList.empty())
-         data.filter(RinexNavDataFilterPRN(prnFilterList));
-
-      list<RinexNavData>& rnavlist = data.getData();
-      list<RinexNavData>::iterator itr = rnavlist.begin();
-      while (itr!=rnavlist.end())
-      {
-         RinexNavData& r = *itr;
-         EngEphemeris ee(r);
-         //ee.dump(out);
-         itr++;
-      }
+		itr++;
    }
    printSummary( out );
    }
@@ -617,7 +571,6 @@ gpstk::DayTime NavSum::buildXMitTime(const uint32_t word2, const int week )
       useweek--;
    }
    double XmitSOW = (double) SOW;
-   //cout << "temp, SOW, XmitSOW = " << temp << ", " << SOW << ", " << XmitSOW << endl;
    return ( DayTime( useweek, XmitSOW) ); 
 }
 
