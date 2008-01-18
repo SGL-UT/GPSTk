@@ -14,4 +14,5 @@ GPSMain ash2mdp : ash2mdp.cpp ;
 
 GPSMain ats2mdp : ats2mdp.cpp ;
 
-GPSMain ash2xyz : ash2xyz.cpp FDStreamBuff.cpp TCPStreamBuff.cpp ;
+GPSMain ash2xyz : ash2xyz.cpp ;
+

@@ -318,9 +318,9 @@ protected:
 
                // There will (usually) be 3 MBEN messages for each SV for 
                // the C/A, L1 P/Z/Y and L2 P/Z/Y obs measurements. Let's just 
-               // output data when we see the C/A measurement
+               // output data in one of these instances
 
-               if (obs.carrier == ccL1 && obs.range == rcCA)
+               if (obs.carrier == ccL1 && obs.range == rangeCode)
                {
 						try
 						{
@@ -328,22 +328,22 @@ protected:
                      Xvt xvt = gpsEphStore.getXvt(satID,tempTime);
                      EngEphemeris tempEph = gpsEphStore.findEphemeris(satID,
                                                                      moe.time);
-                     cout << moe.time.printf("%4Y/%03j/%02H:%02M:%04.1f")
-                          << fixed << right
-                          << ", " << setw(8) << offsetSec
-                          << ", " << setw(2) << (int) moe.prn
-                          << ", " << setprecision(4) << setw(10) << ionoError
-                          << ", " << setprecision(4) << setw(10)  
-                          << ionoErrorRate
-                          << ", " << setprecision(2) << setw(12) << xvt.x[0]
-                          << ", " << setprecision(2) << setw(12) << xvt.x[1]
-                          << ", " << setprecision(2) << setw(12) << xvt.x[2];
+                     output << moe.time.printf("%4Y/%03j/%02H:%02M:%04.1f")
+                            << fixed << right
+                            << ", " << setw(8) << offsetSec
+                            << ", " << setw(2) << (int) moe.prn
+                            << ", " << setprecision(4) << setw(10) << ionoError
+                            << ", " << setprecision(4) << setw(10)  
+                            << ionoErrorRate
+                            << ", " << setprecision(2) << setw(12) << xvt.x[0]
+                            << ", " << setprecision(2) << setw(12) << xvt.x[1]
+                            << ", " << setprecision(2) << setw(12) << xvt.x[2];
 						 if (debugLevel)
-						    cout << ", " << setprecision(2) << setw(7) 
-                                   << moe.elevation << ", " 
-                                   << setprecision(2) << setw(7) 
-                                   << moe.azimuth;
-                   cout << endl;
+						    output << ", " << setprecision(2) << setw(7) 
+                                     << moe.elevation << ", " 
+                                     << setprecision(2) << setw(7) 
+                                     << moe.azimuth;
+                   output << endl;
                   }
                   catch (...)
                   {
