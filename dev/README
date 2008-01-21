@@ -1,14 +1,28 @@
 $Id$
 
-The following is excerpted from the GPSTk web site at http://www.gpstk.org/. 
+The following is excerpted from the GPSTk web/wiki site at http://www.gpstk.org/.
+The website includes a variety of additional and the latest information 
+including:
+   * Source code and compiled binaries
+   * Coding examples
+   * Doxygen documentation
+   * System requirements and build instructions
+   * A users guide
+   * Publications
+   * Email lists
+   * Support question/answer
+   * Development process (including feature suggestions, bug tracking, 
+      schedule, testing, and developer documentation)
+   * Source code repository information
+   * GPSTk IRC channel
+   * Success stories
 
 What is GPSTk?
 --------------
 
-The goal of the GPSTk project is to provide a world class, open source 
-computing suite to the satellite navigation community. It is our hope that the
-GPSTk will empower its users to perform new research and create new 
-applications.
+The goal of the GPSTk project is to provide an open source library and suite
+of applications to the satellite navigation community--to free researchers
+to focus on research, not lower level coding.
 
 GPS users employ practically every computational architecture and operating 
 system. Therefore the design of the GPSTk suite is as platform-independent as 
@@ -17,11 +31,11 @@ C++ programming language. The principles of object-oriented programming are
 used throughout the GPSTk code base in order to ensure that the code is 
 modular, extensible and maintainable.
 
-The GPSTk suite consists of a core ibrary and a set of applications. The 
-library provides a wide array of functions that solve processing problems 
-associated with GPS such as processing or using RINEX. The library is the 
-basis for the more advanced applications distributed as part of the GPSTk 
-suite.
+The GPSTk suite consists of a core library, auxiliary libriaries, and a set 
+of applications. The GPSTk provides a wide array of functions that solve 
+processing problems associated with GPS such as processing or using standard 
+formats such as RINEX. The libraries are the basis for the more advanced 
+applications distributed as part of the GPSTk suite.
 
 The GPSTk is sponsored by Space and Geophysics Laboratory, within the Applied 
 Research Laboratories at the University of Texas at Austin (ARL:UT). GPSTk is
@@ -31,14 +45,15 @@ engineers and scientists. In 2003 the research staff at ARL:UT decided to
 open source much of their basic GPS processing software as the GPSTk.
 
 
-GPSTk Library
--------------
+GPSTk Core Library
+------------------
 
-The GPSTk library provides a number of models and algorithms found in GPS 
-textbooks and classic papers, such as solving for the user position, or 
-estimating atmospheric refraction. Common formats are supported as well, such 
-as RINEX or SP-3. There are several categories of functions in the GPSTk 
-library:
+The GPSTk core library consist of the most robust, broadly useful,  and 
+platform independ code in the GPSTk.  It provides a number of models and 
+algorithms found in GPS textbooks and classic papers, such as solving for 
+the user position, or estimating atmospheric refraction. Common formats 
+are supported as well, such as RINEX or SP-3. There are several categories 
+of functions in the GPSTk library:
 
    1. GPS time. Conversion among time representations such as MJD, GPS week 
       and seconds of week, and many others.
@@ -60,13 +75,28 @@ library:
    7. Application framework. Includes processing command lines options, 
       providing interactive help and working with file systems.
 
-A more detailed description of the functionality provided by the GPSTk library can be found in the Doxygen documentation.
+A more detailed description of the functionality provided by the GPSTk library 
+can be found in the Doxygen documentation on the GPSTk website.
 
+GPSTk Auxiliary Libraries
+-------------------------
+   The auxiliary libraries contains code that could be useful in GNSS processing 
+but do not fit this description and portability of the core library. This code 
+could contain highly specialized algorithms or be related to the message format 
+of a specific receiver. The code could require libraries or system functions 
+that are broadly available but not part of the C++ standard.  Currently the 
+auxiliary libraries are:
+
+   1. rxio - Receiver and input/output library
+   2. vplot - Vector graphics library
+   3. geomatics - Precise positioning library
+   4. procframe - inital work at refactoring structures and prototype phase wind
+        wind up support
 
 GPSTk Applications
 ------------------
 
-The library is the foundation for applications within the GPSTk suite. Many 
+The libraries are the foundation for applications within the GPSTk suite. Many 
 such applications are utilities necessary for advanced research and 
 development. For example the GPSTk utility DiscFix fixes cycle slips. Some 
 applications implement algorithms described in research papers. The TECMap 

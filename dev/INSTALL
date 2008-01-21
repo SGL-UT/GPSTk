@@ -6,11 +6,11 @@ This INSTALL file has these sections
 Introduction
 Building and Installing in a UNIX-like Environment using Jam
 Building and Installing in a UNIX-like Environment using GNU make
-Building under Microsoft Visual Studio .NET 2003
+Building under Microsoft Visual Studio .NET 2003/Visual C++ Express edition
 ADDENDUM: Standard notes on using configure
 
-More background information can be found at the GPSTk website, 
-http://www.gpstk.org/ .
+More background information and detailed instuctions can be 
+found at the GPSTk website, http://www.gpstk.org/ .
 
 
 Introduction
@@ -19,15 +19,18 @@ Introduction
    See http://perforce.com/jam/jam.html for more details on this tool.
    There are two sections below, excepted from the GPSTk website at 
    http://www.gpstk.org/, that describe how UNIX and Windows users
-   can build and install the GPSTk.
+   can build and install the GPSTk.  (Please refer to the GPSTk website
+   for the most detailed and up to date information.)
 
    This project uses doxygen to dynamically generate API documentation.
    See http://www.doxygen.org/ for more details.
 
    As of ver. 1.1 we have introduced autoconf generated Makefiles into the 
-   GPSTk. Since this is a new feature, your mileage may vary. If you don't
-   know how use these makefile, the attached info at the bottom of this file
-   from the Free Software Foundation will help.
+   GPSTk. Efforts are made to maintain both build environments for allowing
+   flexibility when building the project.  However, the jam method of building
+   is typically exercised more frequently and is the recommended choice.  If 
+   you don't know how use these makefile, the attached info at the bottom of 
+   this file from the Free Software Foundation will help.
 
    For more information about building the GPSTk, see the website at
    http://www.gpstk.org/
@@ -38,8 +41,9 @@ Building and Installing in a UNIX-like Environment using Jam
 
 This section describes build and installation under the following environments.
 
-   - Linux, AIX and Windows/Cygwin using gcc versions 3.3 and 3.4
+   - Linux, AIX and Windows/Cygwin using gcc versions 3.3, 3.4, 4.0, 4.1
    - Solaris using Sun Workshop 6 or Sun ONE Studio 8
+   - OS X using Xtools
 
 The following procedure will build and install the GPSTk.
 
@@ -109,8 +113,8 @@ The following procedure will build and install the GPSTk.
          make install
 
 
-Building under Microsoft Visual Studio .NET
-------------------------------------------------
+Building under Microsoft Visual Studio .NET or Visual C++ Express edition
+-------------------------------------------------------------------------
 
 If you are building GPSTk under the Cygwin environment, then use the build
 instructions for UNIX-like environments (above).
@@ -120,7 +124,7 @@ because templates in classes are not supported. Currently there are no
 Makefiles for MSVS, so you must use jam to build the GPSTk on the command line.
 
 Here are the steps we have used to build under MSVS.NET 2003 and
-the Free .NET Express Compiler 2005.
+the Free Visual C++ Express edition 2005.
 
    1. Ensure that prerequisites such as jam have been installed.
 
@@ -148,7 +152,7 @@ the Free .NET Express Compiler 2005.
          set MSVCNT=C:\MSVS2003\VC7
          set MSCVER=1300
 
-      For the 2005 Free Express Compiler use:
+      For the 2005 Visual C++ Express edition use:
 
          set MSVCNT=C:\MSVS2005\VC
          set MSCVER=1400
