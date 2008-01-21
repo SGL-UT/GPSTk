@@ -10,8 +10,10 @@ Building under Microsoft Visual Studio .NET 2003/Visual C++ Express edition
 ADDENDUM: Standard notes on using configure
 
 More background information and detailed instuctions can be 
-found at the GPSTk website, http://www.gpstk.org/ .
-
+found at the GPSTk website, http://www.gpstk.org/.  The website
+contains the latest information, support forum, and email and IRC
+contacts to obtain help on the project.  Please utilize these
+resource for problems with or questions about the GPSTk.
 
 Introduction
 ------------
