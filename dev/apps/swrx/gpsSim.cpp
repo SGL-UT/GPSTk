@@ -325,7 +325,7 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
 void GpsSim::process()
 {
    // Used to accumulate up the samples
-   complex<float> accum[LO_COUNT];
+   vector<complex<float>> accum(LO_COUNT);
 
    // simulation time, in seconds
    double rx_time = 0;

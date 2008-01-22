@@ -91,7 +91,7 @@ else if $(NT)
       #    /GL whole prgm opt (add /LTCG to LINKFLAGS)
       # /O2 seems to be the best
       CCFLAGS    += -D_CRT_SECURE_NO_DEPRECATE -wd4274 ;
-      C++FLAGS   += /O2 -DWIN32 -D_CRT_SECURE_NO_DEPRECATE /EHsc /GR -wd4274 ;
+      C++FLAGS   += /O2 -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_USE_MATH_DEFINES /EHsc /GR -wd4274 ;
       #LINKFLAGS  += /LTCG ;  # use with /GL
    }
    # ------ MS VC++.NET 2003 : _MSC_VER >= 1300
@@ -100,7 +100,7 @@ else if $(NT)
       LINKLIBS   =  ;
       CCFLAGS    += /ML -wd4274 ;
       # use /O2 optimization
-      C++FLAGS   += /O2 /ML -DWIN32 /GX /GR -wd4274 -wd4675 ;
+      C++FLAGS   += /O2 /ML -DWIN32 -D_USE_MATH_DEFINES /GX /GR -wd4274 -wd4675 ;
    }
    # ------ MS VC++ 6 : _MSC_VER >= 1200
    # VC++ ver 6 and earlier do not support templates in classes or the toolkit
