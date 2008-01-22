@@ -56,7 +56,7 @@ namespace gpstk
        * This class provides access to SP3 files.
        *
        * @sa gpstk::SP3Header and gpstk::SP3Data for more information.
-       * @sa sp3_test.cpp for an example.
+       * @sa petest.cpp for an example.
        */
    class SP3Stream : public FFTextStream
    {
