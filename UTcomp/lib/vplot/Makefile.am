@@ -3,10 +3,10 @@
 INCLUDES = -I$(srcdir)/../../src
 lib_LTLIBRARIES = libvplot.la
 libvplot_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
-libvplot_la_SOURCES = BorderLayout.cpp Circle.cpp Color.cpp Comment.cpp \
+libvplot_la_SOURCES = BorderLayout.cpp Color.cpp Comment.cpp \
 EPSImage.cpp Frame.cpp GraphicsConstants.cpp GridLayout.cpp \
 HLayout.cpp Line.cpp Marker.cpp PSImage.cpp PSImageBase.cpp \
-Path.cpp Polygon.cpp  Rectangle.cpp SVGImage.cpp StrokeStyle.cpp \
+Path.cpp Rectangle.cpp SVGImage.cpp StrokeStyle.cpp \
 Text.cpp TextStyle.cpp VGImage.cpp VLayout.cpp ViewerManager.cpp 
 
 incldir = $(includedir)/gpstk

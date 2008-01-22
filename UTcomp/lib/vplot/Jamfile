@@ -10,10 +10,10 @@ if $(PREPROCESSING)
 else
 {
   GPSBuildLibrary vplot : 
-        BorderLayout.cpp Circle.cpp Color.cpp Comment.cpp EPSImage.cpp
+        BorderLayout.cpp Color.cpp Comment.cpp EPSImage.cpp
         Frame.cpp GraphicsConstants.cpp GridLayout.cpp HLayout.cpp
         Line.cpp Marker.cpp PSImage.cpp PSImageBase.cpp Path.cpp
-        Polygon.cpp Rectangle.cpp SVGImage.cpp StrokeStyle.cpp
+        Rectangle.cpp SVGImage.cpp StrokeStyle.cpp
         Text.cpp TextStyle.cpp VGImage.cpp VLayout.cpp
         ViewerManager.cpp
 	;
