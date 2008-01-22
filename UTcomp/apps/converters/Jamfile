@@ -1,0 +1,18 @@
+#
+# $Id$
+#
+
+SubDir TOP apps converters ;
+
+GPSLinkLibraries novaRinex ash2mdp ats2mdp ash2xyz : gpstk rxio ;
+
+SEARCH_SOURCE += $(TOP)/apps/rfw ;
+
+GPSMain novaRinex : novaRinex.cpp ;
+
+GPSMain ash2mdp : ash2mdp.cpp ;
+
+GPSMain ats2mdp : ats2mdp.cpp ;
+
+GPSMain ash2xyz : ash2xyz.cpp ;
+

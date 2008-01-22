@@ -1,0 +1,9 @@
+# $Id$
+
+SubDir TOP apps rfw ;
+
+GPSLinkLibraries rfw : gpstk rxio ;
+
+BonkForte ; # bleah.
+
+GPSMain rfw : rfw.cpp FDStreamBuff.cpp TCPStreamBuff.cpp ;
