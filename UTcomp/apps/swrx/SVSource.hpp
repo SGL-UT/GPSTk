@@ -79,7 +79,7 @@ public:
       double phase = zchip_fraction_accum*carrier_multiplier*2*gpstk::PI;
       std::complex<double> carrier = sincos(phase);
 
-      int nav_bit=(*nav_codegen);
+      bool nav_bit=(*nav_codegen);
       int p_bit=p_modulation?((*p_codegen)^(p_nav?nav_bit:0)):0;
       int ca_bit=ca_modulation?((*ca_codegen)^(ca_nav?nav_bit:0)):0;
 
