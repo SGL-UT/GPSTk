@@ -1,5 +1,5 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../../lib/rxio -I$(srcdir)/../rfw -I$(srcdir)/../../src
+INCLUDES = -I$(srcdir)/../../lib/rxio -I$(srcdir)/../../src
 LDADD = ./libmdplib.la ../../lib/rxio/librxio.la ../../src/libgpstk.la
 
 lib_LTLIBRARIES = libmdplib.la

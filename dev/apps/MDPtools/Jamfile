@@ -15,13 +15,13 @@ Library mdplib : MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp ;
 LinkLibraries mdptool mdp2rinex mdpEdit : mdplib ;
 GPSLinkLibraries mdptool mdp2rinex mdpEdit : rxio gpstk ;
 
-SEARCH_SOURCE += $(TOP)/apps/rfw ;
-
 BonkForte ;
 
 GPSMain mdptool : mdptool.cpp ;
 
 GPSMain mdp2rinex : mdp2rinex.cpp ;
+
+GPSMain mdpEdit : mdpEdit.cpp ;
 
 if $(UNIX)
 {
@@ -36,8 +36,6 @@ if $(UNIX)
   LinkLibraries mdpscreenx : mdplib ;
 
   GPSMain mdpscreenx : mdpscreen.cpp ScreenProc.cpp ;
-
-  GPSMain mdpEdit : mdpEdit.cpp ;
 
   InstallBin $(BINDIR) : mdpscreen mdpscreenx ;
 }
