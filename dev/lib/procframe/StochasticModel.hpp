@@ -129,7 +129,7 @@ namespace gpstk
           *
           */
       RandomWalkModel( double qp,
-                       DayTime prevTime = DayTime::BEGINNING_OF_TIME )
+                       const DayTime& prevTime = DayTime::BEGINNING_OF_TIME )
          : qprime(qp), previousTime(prevTime) {};
 
 
@@ -138,7 +138,7 @@ namespace gpstk
           * @param prevTime   Value of previous epoch
           *
           */
-      RandomWalkModel& setPreviousTime(DayTime prevTime)
+      RandomWalkModel& setPreviousTime(const DayTime& prevTime)
       { previousTime = prevTime; return (*this); }
 
 
@@ -147,7 +147,7 @@ namespace gpstk
           * @param currTime   Value of current epoch
           *
           */
-      RandomWalkModel& setCurrentTime(DayTime currTime)
+      RandomWalkModel& setCurrentTime(const DayTime& currTime)
       { currentTime = currTime; return (*this); }
 
 
