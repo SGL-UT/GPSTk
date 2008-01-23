@@ -1,7 +1,7 @@
 #pragma ident "$Id: $"
 
 /**
- * @file StochasticModel.hpp
+ * @file StochasticModel.cpp
  * Base class to define stochastic models, plus implementations
  * of common ones.
  */
