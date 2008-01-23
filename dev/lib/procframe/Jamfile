@@ -20,7 +20,7 @@ else
       ModeledReferencePR.cpp ModelObs.cpp ModelObsFixedStation.cpp
       MWCSDetector.cpp NablaOp.cpp OneFreqCSDetector.cpp PCSmoother.cpp
       ProcessingVector.cpp SimpleFilter.cpp SolverLMS.cpp SolverWMS.cpp
-      XYZ2NED.cpp XYZ2NEU.cpp
+      StochasticModel.cpp XYZ2NED.cpp XYZ2NEU.cpp
       ;
 
    InstallFile $(INCDIR) :
@@ -34,6 +34,6 @@ else
       ModelObsFixedStation.hpp MWCSDetector.hpp NablaOp.hpp
       OneFreqCSDetector.hpp PCSmoother.hpp ProcessingClass.hpp
       ProcessingVector.hpp SimpleFilter.hpp SolverLMS.hpp SolverWMS.hpp
-      XYZ2NED.hpp XYZ2NEU.hpp
+      StochasticModel.hpp XYZ2NED.hpp XYZ2NEU.hpp
       ;
 }

@@ -1,0 +1,306 @@
+#pragma ident "$Id: $"
+
+/**
+ * @file StochasticModel.hpp
+ * Base class to define stochastic models, plus implementations
+ * of common ones.
+ */
+
+#ifndef STOCHASTICMODEL_HPP
+#define STOCHASTICMODEL_HPP
+
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//
+//============================================================================
+
+
+
+#include "DayTime.hpp"
+#include "SatID.hpp"
+#include "DataStructures.hpp"
+
+
+
+namespace gpstk
+{
+
+      /** @addtogroup DataStructures */
+      //@{
+
+
+      /// This is a base class to define stochastic models.
+   class StochasticModel
+   {
+   public:
+
+         /// Default constructor
+      StochasticModel() {};
+
+
+         /// Get element of the state transition matrix Phi
+      virtual double getPhi() = 0;
+
+
+         /// Get element of the process noise matrix Q
+      virtual double getQ() = 0;
+
+
+         /// Destructor
+      virtual ~StochasticModel() {};
+
+   };
+
+
+
+      /** This class compute the elements of Phi and Q matrices corresponding 
+       *  to a constant stochastic model.
+       *
+       * @sa StochasticModel, RandomWalkModel, WhiteNoiseModel
+       *
+       */
+   class ConstantModel : public StochasticModel
+   {
+   public:
+
+         /// Default constructor
+      ConstantModel() {};
+
+
+         /// Get element of the state transition matrix Phi
+      virtual double getPhi()
+      { return 1.0; };
+
+
+         /// Get element of the process noise matrix Q
+      virtual double getQ()
+      { return 0.0; };
+
+
+         /// Destructor
+      virtual ~ConstantModel() {};
+
+   };
+
+
+
+      /** This class compute the elements of Phi and Q matrices corresponding 
+       *  to a random walk stochastic model.
+       *
+       * @sa StochasticModel, ConstantModel, WhiteNoiseModel
+       *
+       * \warning RandomWalkModel objets store their internal state, so you
+       * MUST NOT use the SAME object to process DIFFERENT data streams.
+       *
+       */
+   class RandomWalkModel : public ConstantModel
+   {
+   public:
+
+         /// Default constructor
+      RandomWalkModel() {};
+
+
+         /** Common constructor
+          *
+          * @param qp         Process spectral density: d(variance)/d(time) or
+          *                   d(sigma*sigma)/d(time).
+          * @param prevTime   Value of previous epoch
+          *
+          * \warning Beware of units: Process spectral density units are
+          * sigma*sigma/time, while other models take plain sigma as input.
+          *
+          */
+      RandomWalkModel( double qp,
+                       DayTime prevTime = DayTime::BEGINNING_OF_TIME )
+         : qprime(qp), previousTime(prevTime) {};
+
+
+         /** Set the value of previous epoch
+          *
+          * @param prevTime   Value of previous epoch
+          *
+          */
+      RandomWalkModel& setPreviousTime(DayTime prevTime)
+      { previousTime = prevTime; return (*this); }
+
+
+         /** Set the value of current epoch
+          *
+          * @param currTime   Value of current epoch
+          *
+          */
+      RandomWalkModel& setCurrentTime(DayTime currTime)
+      { currentTime = currTime; return (*this); }
+
+
+         /** Set the value of process spectral density.
+          *
+          * @param qp         Process spectral density: d(variance)/d(time) or
+          *                   d(sigma*sigma)/d(time).
+          *
+          * \warning Beware of units: Process spectral density units are
+          * sigma*sigma/time, while other models take plain sigma as input.
+          *
+          */
+      RandomWalkModel& setQprime(double qp)
+      { qprime = qp; return (*this); }
+
+
+         /// Get element of the process noise matrix Q
+      virtual double getQ();
+
+
+         /// Destructor
+      virtual ~RandomWalkModel() {};
+
+
+   private:
+
+         /// Process spectral density
+      double qprime;
+
+
+         /// Epoch of previous measurement
+      DayTime previousTime;
+
+
+         /// Epoch of previous measurement
+      DayTime currentTime;
+
+   };
+
+
+
+      /** This class compute the elements of Phi and Q matrices corresponding 
+       *  to a white noise stochastic model.
+       *
+       * @sa StochasticModel, ConstantModel, RandomWalkModel
+       *
+       */
+   class WhiteNoiseModel : public StochasticModel
+   {
+   public:
+
+
+         /** Common constructor
+          *
+          * @param sigma   Standard deviation (sigma) of white noise process
+          *
+          */
+      WhiteNoiseModel( double sigma = 300000.0 )
+         : variance(sigma*sigma) {};
+
+
+         /// Set the value of white noise sigma
+      WhiteNoiseModel& setSigma(double sigma)
+      { variance = sigma*sigma; return (*this); }
+
+
+         /// Get element of the state transition matrix Phi
+      virtual double getPhi()
+      { return 0.0; };
+
+
+         /// Get element of the process noise matrix Q
+      virtual double getQ()
+      { return variance; };
+
+
+         /// Destructor
+      virtual ~WhiteNoiseModel() {};
+
+
+   private:
+
+
+         /// White noise variance
+      double variance;
+
+   };
+
+
+
+      /** This class compute the elements of Phi and Q matrices corresponding 
+       *  to a phase ambiguity variable: Constant stochastic model within 
+       *  cycle slips and white noise stochastic model when a cycle slip
+       *  happens.
+       *
+       * @sa StochasticModel, ConstantModel, WhiteNoiseModel
+       *
+       */
+   class PhaseAmbiguityModel : public StochasticModel
+   {
+   public:
+
+
+         /** Common constructor
+          *
+          * @param sigma   Standard deviation (sigma) of white noise process
+          *
+          */
+      PhaseAmbiguityModel( double sigma = 300000.0 )
+         : variance(sigma*sigma), cycleSlip(false) {};
+
+
+         /// Set the value of white noise sigma
+      PhaseAmbiguityModel& setSigma(double sigma)
+      { variance = sigma*sigma; return (*this); }
+
+
+         /** Feed the object with information about occurrence of cycle slips.
+          *
+          * @param cs   Boolean indicating if there is a cycle slip at current
+          *             epoch.
+          *
+          */
+      PhaseAmbiguityModel& setCS(bool cs)
+      { cycleSlip = cs; return (*this); };
+
+
+         /// Get element of the state transition matrix Phi
+      virtual double getPhi();
+
+
+         /// Get element of the process noise matrix Q
+      virtual double getQ();
+
+
+         /// Destructor
+      virtual ~PhaseAmbiguityModel() {};
+
+
+   private:
+
+
+         /// White noise variance
+      double variance;
+
+         /// Boolean stating if there is a cycle slip at current epoch
+      bool cycleSlip;
+
+   };
+
+
+
+      //@}
+   
+}
+#endif // STOCHASTICMODEL_HPP
