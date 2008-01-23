@@ -31,12 +31,12 @@ public:
    
    NAVCodeGenerator() : bit(0) { }
 
-   int operator*() const               { return bit;  }
+   bool operator*() const               { return bit;  }
    void operator++()                   { bit^=1; } 
  
    void setIndex(int new_index)     { bit=new_index&1; }
 
 private:
-   int bit;
+   bool bit;
 };
 #endif
