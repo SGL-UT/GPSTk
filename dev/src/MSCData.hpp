@@ -84,9 +84,10 @@ namespace gpstk
       Xvt getXvt(const DayTime& t)
          const throw(InvalidRequest);
 
-      gpstk::DayTime time;  ///< date of coordinates release from NIMA
-      unsigned long station; ///< NIMA Monitor Station number (e.g. 85408)
-      std::string mnemonic;  ///< NIMA Monitor Station identifier (e.g. ARLM)
+      gpstk::DayTime time;  ///< date coordinates released
+                            ///<   (Bookkeeping convenience not used)
+      unsigned long station; ///< Monitor Station number (e.g. 10234)
+      std::string mnemonic;  ///< Monitor Station identifier (e.g. ARLM)
       gpstk::DayTime refepoch;  ///< epoch of coordinates and velocities
       gpstk::DayTime effepoch;  ///< earliest epoch data is valid
       gpstk::ECEF coordinates;  ///< ECEF XYZ coordinates
