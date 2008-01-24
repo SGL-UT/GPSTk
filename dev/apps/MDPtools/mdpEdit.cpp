@@ -201,6 +201,7 @@ protected:
 
       DayTime currEpoch;
       MDPEpoch oe;
+      uint16_t fc=0; 
       
       while (!input.eof())     
       {
@@ -219,8 +220,12 @@ protected:
 	 
          msgCount++;
 
-         if (msgCount == 1 && debugLevel)
-            cout << "First message at " << header.time << endl;
+         if (msgCount == 1)
+         {
+            fc = header.freshnessCount;
+            if (debugLevel)
+               cout << "First message at " << header.time << endl;
+         }
 
          if (verboseLevel > 4 || debugLevel > 3)
             cout << "Record: "    << input.recordNumber
@@ -246,6 +251,7 @@ protected:
                               for (i=oe.begin(); i != oe.end(); i++)
                               {
                                  i->second.numSVs = oe.size();
+                                 i->second.freshnessCount = fc++;
                                  output << i->second;
                               }
                            }
@@ -275,6 +281,7 @@ protected:
                            cout << "  Writing obs message:\n";
                            obs.dump(cout);
                         }
+                        obs.freshnessCount = fc++;
                         output << obs;    
                      }             
                   }
@@ -303,12 +310,15 @@ protected:
                   MDPPVTSolution pvt;
                   input  >> pvt;
                   if (pvt)
+                  {
+                     pvt.freshnessCount = fc++;
                      output << pvt;
                      if (debugLevel > 2)
                      {
                         cout << "  Writing pvt message:\n";
                         pvt.dump(cout);
                      }
+                  }
                   else if (debugLevel > 2)
                   {
                      cout << "  Tossing pvt message:\n";
@@ -328,12 +338,15 @@ protected:
                   MDPNavSubframe nav;
                   input  >> nav;
                   if (nav)
+                  {
+                     nav.freshnessCount = fc++;
                      output << nav;
                      if (debugLevel > 2)
                      {
                         cout << "  Writing nav message:\n";
                         nav.dump(cout);
                      }
+                  }
                   else if (debugLevel > 2)
                   {
                      cout << "  Tossing nav message:\n";
@@ -353,12 +366,15 @@ protected:
                   gpstk::MDPSelftestStatus sts;
                   input  >> sts;
                   if (sts)
+                  {
+                     sts.freshnessCount = fc++;
                      output << sts;
                      if (debugLevel > 2)
                      {
                         cout << "  Writing self test status message:\n";
                         sts.dump(cout);
                      }
+                  }
                }
                else if (debugLevel > 3)
                {
