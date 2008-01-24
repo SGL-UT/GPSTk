@@ -54,9 +54,25 @@ namespace gpstk
 
       /**
        * This class models Satellite Position in Three Dimensions.
+       * When using this class it's version member needs to be set correctly.
+       * This is best done using the header. For example: 
+       *
+       * @code
+       * SP3Stream ss("igr14080.sp3");
+       * SP3Header sh;
+       * SP3Data sd;
+       *
+       * ss >> sh;
+       * sd.version = sh.version;
+       *
+       * while (ss >> sd)
+       * {
+       *    // Interesting stuff...
+       * }    
+       * @endcode
        *
        * @sa gpstk::SP3Header and gpstk::SP3Stream for more information.
-       * @sa sp3_test.cpp for an example.
+       * @sa petest.cpp for an example.
        */
    class SP3Data : public SP3Base
    {

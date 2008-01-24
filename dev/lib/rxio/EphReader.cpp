@@ -174,6 +174,8 @@ void EphReader::read_sp3_data(const string& fn)
    fs >> header;
 
    SP3Data data;
+   data.version = header.version;
+   
    while (fs >> data)
       pe->addEphemeris(data);
 
