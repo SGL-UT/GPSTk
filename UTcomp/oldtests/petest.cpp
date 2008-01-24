@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
       for(i=1; i<argc; i++) {
          gpstk::SP3Header header;
          gpstk::SP3Data data;
+         
          // you can't open, close, and reopen a file w/o abort on second open...
          gpstk::SP3Stream pefile;
          pefile.exceptions(ifstream::failbit);
@@ -37,6 +38,8 @@ int main(int argc, char *argv[])
          pefile.open(argv[i],ios::in);
 
          pefile >> header;
+         data.version = header.version;
+         
          //cout << "Dump header:\n";
          //header.dump(cout);
          //cout << endl;
