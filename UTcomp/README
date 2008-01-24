@@ -49,7 +49,7 @@ GPSTk Core Library
 ------------------
 
 The GPSTk core library consist of the most robust, broadly useful,  and 
-platform independ code in the GPSTk.  It provides a number of models and 
+platform independent code in the GPSTk.  It provides a number of models and 
 algorithms found in GPS textbooks and classic papers, such as solving for 
 the user position, or estimating atmospheric refraction. Common formats 
 are supported as well, such as RINEX or SP-3. There are several categories 
