@@ -20,7 +20,7 @@ Introduction
    This project uses Jam for all of its configuration, build & install tasks.
    See http://perforce.com/jam/jam.html for more details on this tool.
    There are two sections below, excepted from the GPSTk website at 
-   http://www.gpstk.org/, that describe how UNIX and Windows users
+   http://www.gpstk.org/, that describe how UNIX/OS X and Windows users
    can build and install the GPSTk.  (Please refer to the GPSTk website
    for the most detailed and up to date information.)
 
