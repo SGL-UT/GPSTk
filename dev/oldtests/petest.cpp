@@ -8,6 +8,7 @@
 #include "SP3Data.hpp"
 #include "SP3Header.hpp"
 #include "SP3EphemerisStore.hpp"
+#include "SatID.hpp"
 
 /**
  * @file petest.cpp
@@ -15,6 +16,7 @@
  */
 
 using namespace std;
+using namespace gpstk;
 
 int main(int argc, char *argv[])
 {
@@ -25,13 +27,19 @@ int main(int argc, char *argv[])
 
    try
    {
+
+      bool firstEpochFound=true;
+      DayTime firstTime;
+      DayTime lastTime;
+      SatID firstSat;
+         
       int i,ip,it,nf=0,np=0,nt=0;
-      gpstk::SP3EphemerisStore EphList;
+      SP3EphemerisStore EphList;
       for(i=1; i<argc; i++) {
-         gpstk::SP3Header header;
-         gpstk::SP3Data data;
+         SP3Header header;
+         SP3Data data;
          // you can't open, close, and reopen a file w/o abort on second open...
-         gpstk::SP3Stream pefile;
+         SP3Stream pefile;
          pefile.exceptions(ifstream::failbit);
          cout << "Reading SP3 file " << argv[i] << "." << endl;
          pefile.open(argv[i],ios::in);
@@ -42,8 +50,20 @@ int main(int argc, char *argv[])
          //cout << endl;
 
          ip = it = 0;
-         gpstk::DayTime t(gpstk::DayTime::BEGINNING_OF_TIME);
+         DayTime t(DayTime::BEGINNING_OF_TIME);
+
          while(pefile >> data) {
+            if (firstEpochFound)
+            {  
+               firstSat = data.sat;
+               firstTime = data.time;
+               lastTime = firstTime;
+               
+               firstEpochFound=false;
+            }
+
+            if (data.time > lastTime) lastTime = data.time;
+            
             if(data.time > t) {
                //cout << "Epoch " << data.time << endl;
                t = data.time;
@@ -60,6 +80,7 @@ int main(int argc, char *argv[])
          // add to store
          EphList.loadFile(string(argv[i]));
       }
+      
       cout << "\nDone with " << nf << " files: read "
            << np << " P/V records and " << nt << " epochs." << endl;
 
@@ -67,13 +88,14 @@ int main(int argc, char *argv[])
 
       unsigned long ref;
       // choose a time tag within the data....
-      gpstk::DayTime tt(2004,2,29,3,0,0.0);
-      gpstk::Xvt PVT;
+      DayTime tt = firstTime + (lastTime-firstTime)/2.;
+      SatID tsat = firstSat;
+      Xvt PVT;
       for(i=0; i<300; i++) {
          tt += 30.0;
-         PVT = EphList.getPrnXvt(31,tt);
+         PVT = EphList.getXvt(tsat,tt);
 
-         if (false) 
+         if (true) 
             cout << "LI " << tt << " P " << fixed
                  << setw(13) << setprecision(6) << PVT.x[0] << " "
                  << setw(13) << setprecision(6) << PVT.x[1] << " "
@@ -86,8 +108,9 @@ int main(int argc, char *argv[])
                  << setw(13) << setprecision(6) << PVT.ddtime
                  << endl;
       }
+      
    }
-   catch (gpstk::Exception& e)
+   catch (Exception& e)
    {
       cout << e;
       exit(-1);
