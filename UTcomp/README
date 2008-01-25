@@ -1,6 +1,12 @@
 $Id$
 
-The following is excerpted from the GPSTk web/wiki site at http://www.gpstk.org/.
+This package from the GPSTk project is our entry to the University of Texas 
+at Austin University CO-OP Open Source Software Competition 
+(http://www.cs.utexas.edu/open_source/). Much of the information in this README
+covers information from the GPSTk web/wiki site at http://www.gpstk.org/. 
+At the end of this file is a guide to the organization of the package and a
+guide to the documentation provided.
+
 The website includes a variety of additional and the latest information 
 including:
    * Source code and compiled binaries
@@ -128,3 +134,54 @@ Contact Info
 The GPSTk is a collaborative effort. However, you can email to 
 gpstk@arlut.utexas.edu or contact one of the CoreTeam members
 (http://www.gpstk.org/bin/view/Development/CoreTeam).
+
+
+Package Structure
+-------------------
+In general the structure of this package is as that found in the 
+source distributions of the GPSTk. User documentation, development references
+and academic publications have been included as well. The general directory
+structure for the GPSTk is as follows.
+
+.
+|-- apps		User applications and functional examples
+|   |-- ...		One subdirectory per application group
+|-- doc			
+|   |-- html		API documentation
+|   |-- publications	Conference papers and journal articles
+|   `-- usersguide	Reference manual for applications
+|-- examples		Instructional examples to use libraries
+|-- lib
+|   |-- geomatics	Precise positioning library
+|   |-- procframe	Framework for storage and filtering of observations
+|   |-- rxio		Receiver and input/output library
+|   `-- vplot		Vector graphics library
+|-- src			Source to core library
+`-- tests		Regression test suite
+    |-- ...		One subdirectory per class
+
+Documentation
+-------------
+
+Documentation for the GPSTk project has been placed in the gpstk/doc directory.
+Three kinds of documentation have been included: a design reference, a 
+users guide and a set of publications. The design of the GPSTk's
+libraries is documented in gpstk/doc/html/index.html. The design is
+derived directly from code using the Doxygen utility. Another document
+provide guidance to the GPSTk from the user's perspective. That document is 
+found in gpstk/doc/usersguide. The source to that document is in LaTeX and
+can be found in the GPSTk subversion repository. Finally, a number of papers
+have been published that either describe the GPSTk project or that are based on it. Both kinds have been included in this package in gpstk/doc/publications. 
+
+A recommendation for which publication to first read depends on the 
+audience. For a technically minded reader unfamiliar with GPS, the project's
+very first publication in the Linux Journal in 2004 is the best option.
+That article can be found in the file gpstk-linuxjournal.pdf. To those 
+familiar with GPS but not the GPSTk project, the article published
+by the Springer Verlag journal GPS Solutions would be more appropriate.
+That article is found in gpstk-gps-solutions-2007.pdf. Ionosphere scientists
+would be interest in GaussiranBeaconGPSTK.pdf which was presented at the
+BEACON conference in Trieste, Italy, in 2004. 
+ 
+
+

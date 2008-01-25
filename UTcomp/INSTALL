@@ -4,6 +4,7 @@ Installation of the GPSTk library and applications
 This INSTALL file has these sections
 
 Introduction
+Tested Platforms
 Building and Installing in a UNIX-like Environment using Jam
 Building and Installing in a UNIX-like Environment using GNU make
 Building under Microsoft Visual Studio .NET 2003/Visual C++ Express edition
@@ -37,6 +38,20 @@ Introduction
    For more information about building the GPSTk, see the website at
    http://www.gpstk.org/
 
+
+Tested Platforms
+----------------
+
+The source in this package successfully builds in the following
+development environments:
+
+ - Linux, 32- or 64- bit, using jam and make/autotools, and gcc versions
+   3.3, 3.4, 4.0 and 4.1
+ - Windows, 32-bit, using the Microsoft Visual C++ compiler and jam
+ - Windows, 32-bit, in the Cygwin environment with gcc and jam
+ - Mac OS X, using Xtools development package, with jam and make/autotools
+ - Solaris/SPARC, using the Sun compiler and jam
+ 
 
 Building and Installing in a UNIX-like Environment using Jam
 ------------------------------------------------------------
