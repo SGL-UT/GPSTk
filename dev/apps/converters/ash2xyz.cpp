@@ -273,19 +273,21 @@ protected:
 
                if (obs.carrier == ccL1 && obs.range == rangeCode)
                {
-                	prL1   = obs.pseudorange;
-                 	doppL1 = obs.snr;
+                	prL1   = obs.pseudorange;	// meters
+                 	doppL1 = obs.doppler;		// Hz
                }
                else if (obs.carrier == ccL2 && obs.range == rangeCode)
                {
-                  prL2   =  obs.pseudorange;
-                  doppL2 = obs.snr;
+                  prL2   =  obs.pseudorange;	// meters
+                  doppL2 = obs.doppler;		// Hz
                }
             }
             double ionoError  = (prL1 - prL2)/
                                ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
                                 (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1); // m
 
+				ionoError = abs(ionoError);	// want error, not correction
+				
             // iono rate is essentially the same eqn, but substitute 
             // (doppler * wavelenghth) for pseudorange
               
@@ -295,7 +297,8 @@ protected:
             double ionoErrorRate = (x1 - x2)/
                                    ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
                                    (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1); // m/s
-                                   
+				ionoErrorRate *= 1000;	// mm/sec     
+
             if (debugLevel > 4)
               	cout << "---\nx1 (m/s): " << setprecision(4) << x1 << endl
               	     << "x2 (m/s): "      << setprecision(4) << x2 << endl;
@@ -308,7 +311,7 @@ protected:
                     << prL2 << endl << "Iono Error (m) : " << setprecision(4) 
                     << ionoError << endl << "L1 Doppler (Hz): " 
                     << setprecision(4) << doppL1 << endl << "L2 Doppler (Hz): "
-                    << setprecision(4) << doppL2 << endl << "Iono rate (m/s): " 
+                    << setprecision(4) << doppL2 << endl <<"Iono rate (mm/s): " 
                     << setprecision(4) << ionoErrorRate << endl;
 
             for (i = moe.obs.begin(); i != moe.obs.end(); i++)
