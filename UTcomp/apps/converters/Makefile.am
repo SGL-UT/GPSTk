@@ -11,4 +11,4 @@ ash2mdp_SOURCES = ash2mdp.cpp
 
 ats2mdp_SOURCES = ats2mdp.cpp
 
-ash2xyz_SOURCES = ash2xyz.cpp FDStreamBuff.cpp
+ash2xyz_SOURCES = ash2xyz.cpp
