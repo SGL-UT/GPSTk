@@ -68,9 +68,9 @@ namespace gpstk
        * @param humid the recorded relative humidity (%)
        */
       WxObservation(const DayTime& t, 
-                    double temp, 
-                    double pres, 
-                    double humid)
+                    float temp, 
+                    float pres, 
+                    float humid)
          throw()
          :t(t),
           temperature(temp), pressure(pres),
