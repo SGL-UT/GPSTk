@@ -688,7 +688,7 @@ namespace gpstk
          if( hmin )
          {
             CivilTime tt(ct);
-            tt.hour = imin;
+            tt.minute = imin;
             ct = tt.convertToCommonTime();
          }
          
