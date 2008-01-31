@@ -37,6 +37,7 @@
 #include <string>
 #include <list>
 #include <map>
+#include <vector>
 
 #include "DayTime.hpp"
 #include "GPSWeekSecond.hpp"
@@ -50,11 +51,6 @@
 #include "RinexConverters.hpp"
 #include "ObsUtils.hpp"
 #include "StringUtils.hpp"
-
-#include "MDPStream.hpp"
-#include "MDPNavSubframe.hpp"
-#include "MDPObsEpoch.hpp"
-
 #include "AshtechStream.hpp"
 #include "AshtechMBEN.hpp"
 #include "AshtechPBEN.hpp"
@@ -84,13 +80,15 @@ public:
         codeOpt('c',"code","Restriction for source of obs data. If no "
          "restriction is given, only observation data collected via L1/L2 Y "
          "code tracking will be used. Options are \"Y\", \"P\", and "
-         "\"codeless\".")
+         "\"codeless\"."),
+        numPointsOpt('n',"num_points","Width of the exponential filter moving "
+         "window, in number of points. Default is 36.")
    {   
 	  inputOpt.setMaxCount(1);
 	  outputOpt.setMaxCount(1);
 	  weekOpt.setMaxCount(1);
 	  offsetOpt.setMaxCount(1);
-   }
+	}
 
    bool initialize(int argc, char *argv[]) throw()
    {
@@ -152,11 +150,9 @@ public:
       	     << "] (week, sow)\n";
 
 		// time offset option
-		if (offsetOpt.getCount())
-         offsetSec = StringUtils::asInt(offsetOpt.getValue()[0]); 
-      else
-         offsetSec = 0;
-         
+		offsetSec = offsetOpt.getCount() ? 
+		            StringUtils::asInt(offsetOpt.getValue()[0]) : 0;
+  
       if (debugLevel || verboseLevel)
       	cout << "Time offset is " << offsetSec << " sec.\n";
 
@@ -184,38 +180,52 @@ public:
 			cout << "Only processing observation data collected via "
 			     << StringUtils::asString(rangeCode) << " code tracking\n";
 
+		// filter window width
+		numPoints = numPointsOpt.getCount() ? 
+		            StringUtils::asInt(numPointsOpt.getValue()[0]) : 36;
+		if (debugLevel || verboseLevel)
+			cout << "Filter window width is " << numPoints << " points.\n";
+		            
       // set debug levels      
-      AshtechData::debugLevel = debugLevel;
-      if (debugLevel>2)
-         AshtechData::hexDump = true;
-      if (debugLevel>4)
-         MDPHeader::hexDump = true;
+		AshtechData::debugLevel = debugLevel;
+		if (debugLevel>2)
+			AshtechData::hexDump = true;
+		if (debugLevel>4)
+			MDPHeader::hexDump = true;
       
-      // initialize firstEph (1st ephemeris) to true
-      firstEph = true;
+		// initialize firstEph (1st ephemeris) to true
+		firstEph = true;
 
 		// successful exit
-      return true;
+		return true;
    }
-   
+	   
 protected:
    virtual void spinUp()
    {}
 
    virtual void process()
    {
-      
-      bool firstPBEN = false;
-
       AshtechData hdr;
       AshtechPBEN pben;
       AshtechMBEN mben;
       AshtechEPB  epb;
       AshtechALB  alb;
+
+		// maps of the recent dual frequency observations for each SV
+		map<gpstk::SatID, TimePhaseVec> phaseMap;
+		map<gpstk::SatID, RangePairVec> rangeMap;
+		
+		// these vectors will store the most recently computed iono error and 
+		// error rate for each SV. They are initialized to 0, so until we have
+		// enough points to run the filter, 0.000 will be output
+		vector<double> currentErrors(gpstk::MAX_PRN, 0);
+      vector<double> currentRates(gpstk::MAX_PRN, 0);
+      
       unsigned short fc=0;
       vector<MDPObsEpoch> hint(33);
-      short svCount = 0;
-
+      bool firstPBEN = false;
+      
       while (input >> hdr)
       {
          if (debugLevel>1)
@@ -223,12 +233,11 @@ protected:
 
          if (pben.checkId(hdr.id) && (input >> pben) && pben)
          {
-            if (debugLevel>4)
+            if (debugLevel>3)
                pben.dump(cout);
             
             double dt = pben.sow - time.sow;
             time.sow = pben.sow;
-            svCount = 0;
             firstPBEN = true;
 
             if (std::abs(dt) > HALFWEEK && !firstPBEN)
@@ -236,131 +245,285 @@ protected:
          }
          else if (mben.checkId(hdr.id) && (input >> mben) && mben)
          {
-            if (debugLevel>1)
+            if (debugLevel>2)
             {
                cout << "---\n";
                mben.dump(cout);
-             }
-            if (svCount==0)
-               svCount = mben.left+1;
-
+            }
+            
+				// if we don't have a PBEN message, we can't resolve time
             if (firstPBEN != true)
             	continue;
             	
-            hint[mben.svprn].time = DayTime(time.week, time.sow);
-            hint[mben.svprn].numSVs = svCount;
-            MDPObsEpoch moe = makeMDPObsEpoch(mben, hint[mben.svprn]);
-            moe.freshnessCount = fc++;
-            hint[mben.svprn] = moe;
+            // use the time set in the PBEN as a hint, resolve time exactly
+            DayTime hintTime = DayTime(time.week, time.sow);
+            DayTime tempTime = hintTime;
+   	   	double  sow1     = tempTime.GPSsecond();
+	      	int     sow2     = static_cast<int>(sow1/1800);
+   	   	double  sow3     = static_cast<double>(sow2 * 1800);
+      		double  sow_mben = 0.05 * mben.seq;
+		      double  sow4     = sow3 + sow_mben;
+      
+		      if (sow4 < sow1) // Assume that time only moves forward
+ 		        sow4 += 1800;
+ 		     	
+ 		     	// this is the time for this epoch
+ 		     	tempTime.setGPS(tempTime.GPSfullweek(), sow4);
 
-            if (debugLevel>1)
-            {
-             	cout << "---\n"
-              	     << "MDPObsEpoch::dump():\n";
-              	moe.dump(cout);
-				}
-            // compute the errors for this PRN and epoch
-            MDPObsEpoch::ObsMap::const_iterator i;
-               
-			   double prL1;   // pseudorange on L1Z (m)
-			   double prL2;   // pseudorange on L2Z (m)
-			   double doppL1; // Doppler on L1Z (Hz)
-			   double doppL2; // Doppler on L2Z (Hz)
-
-            for (i = moe.obs.begin(); i != moe.obs.end(); i++)
-            {
-               const MDPObsEpoch::Observation& obs=i->second;
-
-               if (obs.carrier == ccL1 && obs.range == rangeCode)
-               {
-                	prL1   = obs.pseudorange;	// meters
-                 	doppL1 = obs.doppler;		// Hz
-               }
-               else if (obs.carrier == ccL2 && obs.range == rangeCode)
-               {
-                  prL2   =  obs.pseudorange;	// meters
-                  doppL2 = obs.doppler;		// Hz
-               }
-            }
-            double ionoError  = (prL1 - prL2)/
-                               ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
-                                (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1); // m
-
-				ionoError = abs(ionoError);	// want error, not correction
+				// this is the satellite ID for this PRN
+				SatID satID(mben.svprn,SatID::systemGPS);
 				
-            // iono rate is essentially the same eqn, but substitute 
-            // (doppler * wavelenghth) for pseudorange
-              
-            double x1 = doppL1 * gpstk::L1_WAVELENGTH; // m/s
-            double x2 = doppL2 * gpstk::L2_WAVELENGTH; // m/s
+				// get the phase values	
+			   double phaseL1 = 0; // phase on L1 (cycles)
+			   double phaseL2 = 0; // phase on L2 (cycles)
+			   
+				if (mben.p1.full_phase)
+					phaseL1 = mben.p1.full_phase;
+				else if (debugLevel > 3)
+					cout << "No L1 phase value for PRN " << mben.svprn
+					     << " at time " << tempTime << endl;
+				
+				if (mben.p2.full_phase)
+					phaseL2 = mben.p2.full_phase;
+				else if (debugLevel > 3)
+					cout << "No L2 phase value for PRN " << mben.svprn
+					     << " at time " << tempTime << endl;
+				
+				// if missing data, go to next epoch
+				if (!(phaseL1 && phaseL2))
+					continue;
+					
+				// get the pseudorange values
+				double prL1 = 0;    // pseudorange on L1 (m)
+			   double prL2 = 0;    // pseudorange on L2 (m)
+
+				// note that raw_range is in seconds
+				if (mben.p1.raw_range)
+					prL1 = mben.p1.raw_range * C_GPS_M;
+				else if (debugLevel > 3)
+					cout << "No L1 range value for PRN " << mben.svprn
+					     << " at time " << tempTime << endl;
+				
+				if (mben.p2.raw_range)
+					prL2 = mben.p2.raw_range * C_GPS_M;
+				else if (debugLevel > 3)
+					cout << "No L2 range value for PRN " << mben.svprn
+					     << " at time " << tempTime << endl;
+				
+				// if missing data, or if values are unreasonable, go to next epoch
+				if (!(prL1 && prL2))
+					continue;
+				else if (prL1 < 1e6 || prL2 < 1e6)	// sanity check on range
+				{
+					if (debugLevel > 1 )
+						cout << "Bad pseudorange value: " << satID << "\t" 
+						     << tempTime << "\tL1: " << fixed << prL1 << "\tL2: "
+						     << prL2 << endl;
+					continue;
+				}
+				
+				// if we have enough phase points, run filter for phase rate
+				map<gpstk::SatID, TimePhaseVec>::iterator iter1;
+				iter1 = phaseMap.find(satID);
+				if ((*iter1).second.size() == (numPoints+1))
+				{
+					// initial filter result will be the initial iono rate value
+					TimePhaseVec tpVec = (*iter1).second;
+					DayTime t0 = tpVec[0].first;
+					DayTime t1 = tpVec[1].first;
+					// FIX should diff the MJDs, then convert to seconds
+					double deltaT = t1.GPSsow() - t0.GPSsow();
+					double yPrevL1 = (tpVec[1].second.first-tpVec[0].second.first)/
+											deltaT;  // cycles/sec
+					double yPrevL2 = (tpVec[1].second.second-tpVec[0].second.second)/
+											deltaT;  // cycles/sec							
+					double yCurrL1;
+					double yCurrL2;
+					double a = 1.000/(numPoints + 1);
+					for (int index = 2; index < tpVec.size(); index++)
+					{
+						double xCurrL1 = tpVec[index].second.first;    // L1, cycles
+						double xCurrL2 = tpVec[index].second.second;   // L2, cycles
+						double xPrevL1 = tpVec[index-1].second.first;  // L1, cycles
+						double xPrevL2 = tpVec[index-1].second.second; // L2, cycles					
+						double deltaT  = tpVec[index].first.GPSsow() - 
+						                 tpVec[index-1].first.GPSsow(); // seconds
+						yCurrL1 = a*((xCurrL1-xPrevL1)/deltaT)+(1-a)*yPrevL1;
+						yCurrL2 = a*((xCurrL2-xPrevL2)/deltaT)+(1-a)*yPrevL2; //cycl/s
+					
+						yPrevL1 = yCurrL1;
+						yPrevL2 = yCurrL2;
+					}
+					
+					// compute iono error with filter results
+            	double x1 = yCurrL1 * gpstk::L1_WAVELENGTH; // m/s
+            	double x2 = yCurrL2 * gpstk::L2_WAVELENGTH; // m/s
                         
-            double ionoErrorRate = (x1 - x2)/
-                                   ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
-                                   (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1); // m/s
-				ionoErrorRate *= 1000;	// mm/sec     
+            	double ionoErrorRate = (x1 - x2)/
+                                      ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
+                                       (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1);
+					ionoErrorRate *= 1000;	// mm/sec					
+					
+					// store value
+					currentRates[satID.id - 1] = ionoErrorRate;
+					
+					// remove the oldest measurement, which would be at index 0
+					vector<TimePhasePair> prevVector = (*iter1).second;
+					(*iter1).second.clear();
+					
+					for (int index = 0; index < (numPoints - 1); index++)
+						(*iter1).second.push_back(prevVector[index + 1]);		
+				}
+							
+				// check current phase values and store
+				PhasePair phasePair(phaseL1, phaseL2);	
+				TimePhasePair timePhasePair(tempTime, phasePair);
+				if (phaseMap.find(satID) == phaseMap.end())
+				{
+					// this is the first element for this SV
+					vector<TimePhasePair> tempVector;
+					tempVector.push_back(timePhasePair);
+					phaseMap[satID] = tempVector;
+				}
+				else
+				{
+					map<gpstk::SatID, TimePhaseVec>::iterator iter;
+					iter = phaseMap.find(satID);
+					
+					// use the previous phase values to computer iono error rate
+					int lastIndex = (*iter).second.size() - 1;				
+					TimePhasePair lastTPPair = (*iter).second[lastIndex];
+					DayTime lastTime = lastTPPair.first;
+					PhasePair lastPPair = lastTPPair.second;
+					double dL1 = phaseL1 - lastPPair.first;             // cycles
+					double dL2 = phaseL2 - lastPPair.second;            // cycles
+					double dt  = tempTime.GPSsow() - lastTime.GPSsow(); // sec
+					
+					double x1 = (dL1/dt) * gpstk::L1_WAVELENGTH;        // m/s
+            	double x2 = (dL2/dt) * gpstk::L2_WAVELENGTH;        // m/s
+            	
+            	double ionoErrorRate = (x1 - x2)/
+                                      ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
+                                       (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1);
+					ionoErrorRate *= 1000;	                            // mm/sec
+					
+					// if phase values produce a resonable iono rate, store
+					if (abs(ionoErrorRate) < 10)
+						(*iter).second.push_back(timePhasePair);
+					else
+					{
+						(*iter).second.clear();
+						
+						if (debugLevel)
+							cout << "Rate(mm/s) = " << ionoErrorRate 
+							     << "\tRejecting phase values(L1,L2): " 
+							     << fixed << phaseL1 << "\t" << phaseL2 
+					           << "\t" << satID << "\t" << tempTime << endl;
+					}
+				}
 
-            if (debugLevel > 4)
-              	cout << "---\nx1 (m/s): " << setprecision(4) << x1 << endl
-              	     << "x2 (m/s): "      << setprecision(4) << x2 << endl;
-                                                
-            if (debugLevel > 2)
-               cout << "---\nIono errors for PRN " << moe.prn << " at " 
-                    << moe.time << ":\n" << fixed 
-                    << "pseudorange on L1 (m): " << setprecision(4) << prL1 
-                    << endl << "pseudorange on L2 (m): " << setprecision(4) 
-                    << prL2 << endl << "Iono Error (m) : " << setprecision(4) 
-                    << ionoError << endl << "L1 Doppler (Hz): " 
-                    << setprecision(4) << doppL1 << endl << "L2 Doppler (Hz): "
-                    << setprecision(4) << doppL2 << endl <<"Iono rate (mm/s): " 
-                    << setprecision(4) << ionoErrorRate << endl;
+				// if we have enough range points, run filter for iono error
+				map<gpstk::SatID, RangePairVec>::iterator iter2;
+				iter2 = rangeMap.find(satID);
+				if ((*iter2).second.size() == numPoints)
+				{
+					// initial filter result will be the actual value
+					RangePairVec rpVec = (*iter2).second;
+					double yPrev = (rpVec[0].first - rpVec[0].second)/
+                               ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
+                                (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1); // m					
+					double yCurr;
+					double a = 1.000/(numPoints + 1);
+					for (int index = 1; index < rpVec.size(); index++)
+					{
+						double xCurr;
+						xCurr = (rpVec[index].first - rpVec[index].second)/
+                           ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
+                            (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1); // m							
+						yCurr = a*xCurr + (1-a)*yPrev;
+						yPrev = yCurr;
+					}
 
-            for (i = moe.obs.begin(); i != moe.obs.end(); i++)
+					// filter result is iono error for this epoch for this SV
+					double ionoError  = yCurr; // m
+
+					// store error
+					currentErrors[satID.id - 1] = ionoError; // m
+				
+					// remove oldest measurement, which would be at index 0....
+					vector<RangePair> prevVector = (*iter2).second;
+					(*iter2).second.clear();
+					// .... so keep values after index 1
+					for (int index = 1; index < numPoints; index++)
+						(*iter2).second.push_back(prevVector[index]);
+		
+				}
+				
+				// check range values for this epoch
+				double ionoError = (prL1 - prL2)/
+                               ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
+    		                       (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1); // m
+    		   if ( (ionoError>-15) && (ionoError<0) )
+    		   {
+    		   	RangePair rangePair(prL1, prL2);
+					if (rangeMap.find(satID) == rangeMap.end())
+					{
+						vector<RangePair> tempVector;
+						tempVector.push_back(rangePair);
+						rangeMap[satID] = tempVector;
+					}
+					else
+					{
+						map<gpstk::SatID, RangePairVec>::iterator iter;
+						iter = rangeMap.find(satID);
+						(*iter).second.push_back(rangePair);
+					}
+				}
+				else if (debugLevel)
+					cout << "Error(m) = " << ionoError << "\tRejecting pseudorange "
+					     << "values(L1,L2): " << fixed << prL1 << "\t" << prL2 
+					     << "\t" << satID << "\t" << tempTime << endl;
+
+				// if we have gotten eph data for this SV and time, we can 
+				// find the position. If so, then output results for this epoch
+				DayTime xvtTime = tempTime + offsetSec;
+				try
+				{	
+					// get poisition of SV, possibly at offset time
+            	DayTime xvtTime = tempTime + offsetSec;
+               Xvt xvt = gpsEphStore.getXvt(satID,xvtTime);
+ 					
+					// ouput data
+					output << xvtTime.printf("%4Y/%03j/%02H:%02M:%04.1f")
+               		<< fixed << right
+                  	<< ", " << setw(8) << offsetSec
+                 		<< ", " << setw(2) << (int)mben.svprn
+                   	<< ", " << setprecision(4) << setw(10) 
+                   	<< currentErrors[satID.id - 1]
+                   	<< ", " << setprecision(4) << setw(10)  
+                   	<< currentRates[satID.id - 1]
+                   	<< ", " << setprecision(2) << setw(12) << xvt.x[0]
+                   	<< ", " << setprecision(2) << setw(12) << xvt.x[1]
+                   	<< ", " << setprecision(2) << setw(12) << xvt.x[2];
+            	if (debugLevel)
+            		output << fixed << right
+            		       << ", " << setprecision(2) << setw(12) << prL1
+            		       << ", " << setprecision(2) << setw(12) << prL2
+            		       << ", " << setprecision(2) << setw(12) << phaseL1
+            		       << ", " << setprecision(2) << setw(12) << phaseL2;
+            	output << endl;
+           	}
+           	catch(...)
             {
-               const MDPObsEpoch::Observation& obs=i->second;
-               SatID satID(moe.prn,SatID::systemGPS);
-
-               // There will (usually) be 3 MBEN messages for each SV for 
-               // the C/A, L1 P/Z/Y and L2 P/Z/Y obs measurements. Let's just 
-               // output data in one of these instances
-
-               if (obs.carrier == ccL1 && obs.range == rangeCode)
-               {
-						try
-						{
-                     DayTime tempTime = moe.time + offsetSec;
-                     Xvt xvt = gpsEphStore.getXvt(satID,tempTime);
-                     EngEphemeris tempEph = gpsEphStore.findEphemeris(satID,
-                                                                     moe.time);
-                     output << moe.time.printf("%4Y/%03j/%02H:%02M:%04.1f")
-                            << fixed << right
-                            << ", " << setw(8) << offsetSec
-                            << ", " << setw(2) << (int) moe.prn
-                            << ", " << setprecision(4) << setw(10) << ionoError
-                            << ", " << setprecision(4) << setw(10)  
-                            << ionoErrorRate
-                            << ", " << setprecision(2) << setw(12) << xvt.x[0]
-                            << ", " << setprecision(2) << setw(12) << xvt.x[1]
-                            << ", " << setprecision(2) << setw(12) << xvt.x[2];
-						 if (debugLevel)
-						    output << ", " << setprecision(2) << setw(7) 
-                                     << moe.elevation << ", " 
-                                     << setprecision(2) << setw(7) 
-                                     << moe.azimuth;
-                   output << endl;
-                  }
-                  catch (...)
-                  {
-                     if (debugLevel > 1)
-                        cout << "---\nCould not output data for PRN " 
-                             << moe.prn << " at " << moe.time << endl;
-                  }
-               } // if (obs.carrier == ccL1 && obs.range == rcYcode)
-            }    // for (i = moe.obs.begin(); i != moe.obs.end(); i++)
+            	if (debugLevel > 1)
+               	cout << "---\nCould not output data for " 
+                       << satID << " at " << xvtTime << endl;
+				}          
 		 	}       // else if (mben.checkId(hdr.id) && (input >> mben) && mben)
          else if (epb.checkId(hdr.id) && (input >> epb) && epb)
 			{
-				// sort of a lazy hack here - using functionality from MDP classes
-            if (debugLevel)
+				// using functionality from MDP classes
+            if (debugLevel > 2)
                epb.dump(cout);
             	
             MDPNavSubframe nav;
@@ -425,7 +588,7 @@ protected:
          			return;
       			}
 
-      			if (debugLevel>1)
+      			if (debugLevel>2)
          			nav.dump(cout);
          		
       			DayTime howTime(week, sow);
@@ -439,7 +602,6 @@ protected:
 	         		gpsEphStore.addEphemeris(engEph);
    	      		ephPageStore[ni].clear();
       			}
-      			
 				} 	// for (int s=1; s<=3; s++)
       	} 		// else if (epb.checkId(hdr.id) && (input >> epb) && epb)
 		}    		// while (input >> hdr)
@@ -456,15 +618,24 @@ private:
    ifstream inputDev;
    ofstream output;
    CommandOptionWithAnyArg inputOpt, outputOpt, codeOpt;
-   CommandOptionWithNumberArg weekOpt, offsetOpt;
+   CommandOptionWithNumberArg weekOpt, offsetOpt, numPointsOpt;
    GPSEphemerisStore gpsEphStore;
+   bool firstEph;
+   RangeCode rangeCode;
+   DayTime lastTime;
+   int numPoints;
+   
    typedef pair<RangeCode, CarrierCode> RangeCarrierPair;
    typedef pair<RangeCarrierPair, short> NavIndex;
    typedef map<NavIndex, MDPNavSubframe> NavMap;
    NavMap ephData;
    map<NavIndex, EphemerisPages> ephPageStore;
-   bool firstEph;
-   RangeCode rangeCode;
+   
+   typedef pair<double, double> PhasePair;
+   typedef pair<DayTime, PhasePair> TimePhasePair;
+   typedef pair<double, double> RangePair;
+   typedef vector<TimePhasePair> TimePhaseVec;
+   typedef vector<RangePair> RangePairVec;
 };
 
 
