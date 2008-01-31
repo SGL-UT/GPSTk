@@ -168,13 +168,13 @@ public:
 			else
 			{
 				cout << "\nInvalid tracking code specification. Enter Y, P, or \n"
-				     << "codeless. (or don't enter anything - the default is Y.) "
+				     << "codeless. (or don't enter anything - the default is codeless.) "
 				     << "\n\nExiting...\n\n";
 				return false;
 			}
 		}
 		else
-			rangeCode = rcYcode; // default
+			rangeCode = rcCodeless; // default
 			
 		if (debugLevel || verboseLevel)
 			cout << "Only processing observation data collected via "
