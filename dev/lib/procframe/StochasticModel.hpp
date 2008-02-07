@@ -114,8 +114,10 @@ namespace gpstk
    {
    public:
 
-         /// Default constructor
-      RandomWalkModel() {};
+         /// Default constructor. By default sets a very high Qprime and
+         /// previousTime is DayTime::BEGINNING_OF_TIME.
+      RandomWalkModel()
+         : qprime(90000000000.0), previousTime(DayTime::BEGINNING_OF_TIME) {};
 
 
          /** Common constructor

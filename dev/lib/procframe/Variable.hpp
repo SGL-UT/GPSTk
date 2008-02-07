@@ -178,8 +178,7 @@ namespace gpstk
           *
           * @param source  Specific SourceID of variable.
           */
-      Variable& setSource(const SourceID& source)
-      { varSource = source; return (*this); };
+      Variable& setSource(const SourceID& source);
 
 
          /// Get variable-specific satellite
@@ -191,8 +190,7 @@ namespace gpstk
           *
           * @param satellite  Specific SatID of variable.
           */
-      Variable& setSatellite(const SatID& satellite)
-      { varSat = satellite; return (*this); };
+      Variable& setSatellite(const SatID& satellite);
 
 
          /// Equality operator

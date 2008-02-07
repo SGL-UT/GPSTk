@@ -2,7 +2,7 @@
 
 /**
  * @file Equation.cpp
- * Class to define and handle GNSS equations.
+ * GNSS Data Structure to define and handle GNSS equations.
  */
 
 //============================================================================
@@ -45,7 +45,7 @@ namespace gpstk
    {
          // Set the properties of the independent term. Defaults are OK except
          // for type
-      indTerm.setType(gnssEq.header);
+      header.setType(gnssEq.header);
 
          // Now, get the types of the variables
       TypeIDSet::const_iterator pos;
@@ -53,8 +53,8 @@ namespace gpstk
       {
             // Create a default Variable object with this type
          Variable var(*pos);
-            // Insert this variable in this Equation's 'variables' field
-         variables.insert(var);
+            // Insert this variable in this Equation's 'body' field
+         body.insert(var);
       }
 
    }
@@ -139,92 +139,6 @@ namespace gpstk
 
       return (addVariable(var));
    }
-
-
-      /* Add a new equation to be managed. Any given equation is identified
-       * by its the TypeID of its independent term (measurement type) AND
-       * the specific SourceID it applies to.
-       *
-       * @param type    TypeID of equation independent term (measurement
-       *                type).
-       * @param source  Specific SourceID this equation applies to.
-       *
-       */
-/*   Equation& Equation::addEquation( const TypeID& type,
-                                                  const SourceID& source )
-   {
-         // Look for equation definition corresponding to "source", and insert
-         // "type" in its corresponding TypeIDSet.
-      equationDefinitions[source].insert(type);
-
-      return (*this);
-   }
-*/
-
-      /* Add a new equation to be managed. In this case the equation will
-       * be identified just by its the TypeID of its independent term
-       * (measurement type) because it will apply to ALL available
-       * SourceID's.
-       *
-       * @param type    TypeID of equation independent term (measurement
-       *                type).
-       *
-       */
-/*   Equation& Equation::addEquation( const TypeID& type )
-   {
-         // Look for equation definition corresponding to "allSources", and
-         // insert "type" in its corresponding TypeIDSet.
-      equationDefinitions[allSources].insert(type);
-
-      return (*this);
-   }
-*/
-
-      /* Remove an equation being managed. Any given equation is identified
-       * by its the TypeID of its independent term (measurement type) AND
-       * the specific SourceID it applies to.
-       *
-       * @param type    TypeID of equation independent term (measurement
-       *                type).
-       * @param source  Specific SourceID this equation applies to.
-       *
-       */
-/*   Equation& Equation::removeEquation( const TypeID& type,
-                                                     const SourceID& source )
-   {
-         // Look for equation definition corresponding to "source", and erase
-         // "type" from its corresponding TypeIDSet.
-      equationDefinitions[source].erase(type);
-
-      return (*this);
-   }
-*/
-
-      /* Remove an equation being managed. In this case the equation is
-       * identified just by its the TypeID of its independent term
-       * (measurement type) because it will be removed from ALL
-       * available SourceID's.
-       *
-       * @param type    TypeID of equation independent term (measurement
-       *                type).
-       *
-       */
-/*   Equation& Equation::removeEquation( const TypeID& type )
-   {
-         // Look for equation definitions corresponding to all available
-         // sources, and erase "type" from corresponding TypeIDSet.
-      sourceTypeIDSetMap::iterator it;
-      for(  it = equationDefinitions.begin();
-            it!= equationDefinitions.end(); 
-            it++ )
-      {
-         (*it).second.erase(type);
-      }
-
-      return (*this);
-   }
-*/
-
 
 
 

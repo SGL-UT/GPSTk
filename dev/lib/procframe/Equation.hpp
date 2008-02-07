@@ -2,7 +2,7 @@
 
 /**
  * @file Equation.hpp
- * Class to define and handle GNSS equations.
+ * GNSS Data Structure to define and handle GNSS equations.
  */
 
 #ifndef EQUATION_HPP
@@ -44,10 +44,15 @@ namespace gpstk
       //@{
 
 
-      /// Class to define and handle GNSS equations.
-   class Equation
+      // Handy type definition
+
+      /// Set containing Variable objects.
+   typedef std::set<Variable> VariableSet;
+
+
+      /// GNSS Data Structure to define and handle GNSS equations.
+   struct Equation : gnssData<Variable, VariableSet>
    {
-   public:
 
          /// Default constructor
       Equation() {};
@@ -59,7 +64,7 @@ namespace gpstk
           * @param var     Variable object describing the independent term.
           */
       Equation( const Variable& var )
-      { indTerm = var; };
+      { header = var; };
 
 
          /** Common constructor. It defines an Equation from its independent
@@ -68,7 +73,7 @@ namespace gpstk
           * @param var     TypeID object describing the independent term.
           */
       Equation( const TypeID& type )
-      { indTerm.setType(type); };
+      { header.setType(type); };
 
 
          /** Common constructor. It takes a simple gnssEquationDefinition
@@ -95,7 +100,7 @@ namespace gpstk
 
          /// Return the independent term of this equation
       virtual Variable getIndependentTerm() const
-      { return indTerm; };
+      { return header; };
 
 
          /** Set the independent term of this Equation.
@@ -103,7 +108,7 @@ namespace gpstk
           * @param var     Variable object describing the independent term.
           */
       virtual Equation& setIndependentTerm(const Variable& var)
-      { indTerm = var; return (*this); };
+      { header = var; return (*this); };
 
 
          /** Add a variable (unknown) to this Equation
@@ -111,7 +116,7 @@ namespace gpstk
           * @param var     Variable object to be added to the unknowns.
           */
       virtual Equation& addVariable(const Variable& var)
-      { variables.insert(var); return (*this); };
+      { body.insert(var); return (*this); };
 
 
          /** Add a variable (unknown) to this Equation
@@ -175,34 +180,26 @@ namespace gpstk
                                      const SatID& satellite );
 
 
-         /** Remove a variable (unknown) to this Equation
+         /** Remove a variable (unknown) from this Equation
           *
           * @param var     Variable object to be romoved from the unknowns.
           */
       virtual Equation& removeVariable(const Variable& var)
-      { variables.erase(var); return (*this); };
+      { body.erase(var); return (*this); };
+
+
+         /** Remove ALL variables (unknowns) from this Equation.
+          *
+          * @warning This method does NOT clear the Equation's independent
+          *          term. You MUST take care of it yourself (use method
+          *          'setIndependentTerm', for instance).
+          */
+      virtual Equation& clear()
+      { body.clear(); return (*this); };
 
 
          /// Destructor
       virtual ~Equation() {};
-
-
-   private:
-
-
-         // Handy type definitions
-
-         /// Set containing Variable objects.
-      typedef std::set<Variable> VariableSet;
-
-
-
-         /// Independent term
-      Variable indTerm;
-
-
-         /// Independent term
-      VariableSet variables;
 
 
    };

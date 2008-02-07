@@ -35,6 +35,20 @@ namespace gpstk
 {
 
 
+      // SourceID object representing all sources : type(Unknown),
+      // sourceName("").
+   SourceID Variable::allSources;
+
+
+      // SatID object representing all satellites : type(Unknown),
+      /// sourceName("").
+   SatID Variable::allSats;
+
+
+      // Default stochastic model to be assigned to variables.
+   WhiteNoiseModel Variable::defaultModel;
+
+
       // Default constructor for Variable
    Variable::Variable()
    {
@@ -177,6 +191,34 @@ namespace gpstk
    Variable& Variable::setModel(StochasticModel* pModel)
    {
       pVarModel = pModel;
+
+      return (*this);
+   }
+
+
+      /* Set variable-specific source
+       *
+       * @param source  Specific SourceID of variable.
+       */
+   Variable& Variable::setSource(const SourceID& source)
+   {
+      varSource = source;
+
+      setSourceSpecific(true);
+
+      return (*this);
+   }
+
+
+      /* Set variable-specific satellite
+       *
+       * @param satellite  Specific SatID of variable.
+       */
+   Variable& Variable::setSatellite(const SatID& satellite)
+   {
+      varSat = satellite;
+
+      setSatSpecific(true);
 
       return (*this);
    }

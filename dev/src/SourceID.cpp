@@ -37,11 +37,17 @@ namespace gpstk
 
    SourceID::Initializer::Initializer()
    {
-      stStrings[Unknown] = "UnknownSource";
-      stStrings[GPS]      = "GPS";
-      stStrings[DGPS]     = "DGPS";
-      stStrings[RTK]      = "RTK";
-      stStrings[INS]      = "INS";
+      stStrings[Unknown]   = "UnknownSource";
+      stStrings[GPS]       = "GPS";
+      stStrings[Galileo]   = "Galileo";
+      stStrings[Glonass]   = "Glonass";
+      stStrings[Geosync]   = "Geosync";
+      stStrings[LEO]       = "LEO";
+      stStrings[Transit]   = "Transit";
+      stStrings[DGPS]      = "DGPS";
+      stStrings[RTK]       = "RTK";
+      stStrings[INS]       = "INS";
+      stStrings[Mixed]     = "Mixed";
    }
 
    std::ostream& SourceID::dump(std::ostream& s) const
