@@ -2,7 +2,7 @@
 
 SubDir TOP apps visibility ;
 
-GPSLinkLibraries wheresat svvis findMoreThan12 : rxio gpstk ;
+GPSLinkLibraries wheresat svvis findMoreThan12 compStaVis compSatVis : rxio gpstk ;
 
 BonkForte ; 
 
@@ -12,4 +12,7 @@ GPSMain svvis : svvis.cpp ;
 
 GPSMain findMoreThan12 : findMoreThan12.cpp ;
 
+GPSMain compSatVis : compSatVis.cpp StaStats.cpp VisSupport.cpp ;
+
+GPSMain compStaVis : compStaVis.cpp StaStats.cpp VisSupport.cpp ;
 
