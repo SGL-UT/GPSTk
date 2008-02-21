@@ -251,6 +251,8 @@ namespace gpstk
       double sow4 = sow3 + sow_mben;
       if (sow4 < sow1) // Assume that time only moves forward
          sow4 += 1800;
+      if (sow4 == DayTime::FULLWEEK)
+         sow4 = 0;
       moe.time.setGPS(moe.time.GPSfullweek(), sow4);
 
       moe.numSVs = hint.numSVs;
