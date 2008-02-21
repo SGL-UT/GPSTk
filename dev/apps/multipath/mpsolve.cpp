@@ -287,7 +287,7 @@ void dumpRaw(std::ostream& ostr, const ObsArray& oa, bool numeric)
          if (oa.validAzEl[i])
          {  
             ostr << setprecision(4) << oa.epoch[i].GPSfullweek() << " ";
-            ostr << setprecision(6) << oa.epoch[i].GPSsow() << " ";
+            ostr << setprecision(9) << oa.epoch[i].GPSsow() << " ";
             ostr << oa.satellite[i].id << " ";
             ostr << (int) oa.satellite[i].system << " ";
             ostr << oa.pass[i] << " ";
