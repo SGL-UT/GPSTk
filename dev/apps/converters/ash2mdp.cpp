@@ -141,7 +141,7 @@ protected:
             time.sow = pben.sow;
             svCount = 0;
 
-            if (std::abs(dt) > HALFWEEK && !firstPBEN)
+            if (std::abs(dt) > HALFWEEK && firstPBEN)
                time.week++;
 
             firstPBEN = true;

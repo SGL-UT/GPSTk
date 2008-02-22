@@ -249,11 +249,15 @@ namespace gpstk
       double sow3 = static_cast<double>(sow2 * 1800);
       double sow_mben = 0.05 * mben.seq;
       double sow4 = sow3 + sow_mben;
+      long week = moe.time.GPSfullweek();
       if (sow4 < sow1) // Assume that time only moves forward
          sow4 += 1800;
-      if (sow4 == DayTime::FULLWEEK)
-         sow4 = 0;
-      moe.time.setGPS(moe.time.GPSfullweek(), sow4);
+      while (sow4 >= DayTime::FULLWEEK)
+      {
+         sow4 -= DayTime::FULLWEEK;
+         week += 1;
+      }
+      moe.time.setGPS(week, sow4);
 
       moe.numSVs = hint.numSVs;
       moe.channel = mben.chid;
