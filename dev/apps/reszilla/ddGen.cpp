@@ -85,7 +85,7 @@ private:
    ObsEpochMap obs1, obs2;
    CommandOptionWithAnyArg obs1FileOption, obs2FileOption, ephFileOption;
    ElevationRangeList elr;
-   bool computeStats, computeAll, removeUnhealthy;
+   bool computeStats, computeAll, removeUnhealthy, zeroTrop;
    EphReader healthSrcER;
    
    void readObsFile(const CommandOptionWithAnyArg& obsFileOption,
@@ -159,6 +159,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       statsOption('s', "stats", "Compute stats on the double differences."),
       allComboOption('a', "all-combos", "Compute all combinations, don't just "
                     "use one master SV."),
+      zeroTropOption('\0', "zero-trop", "Disables trop corrections."),
       cycleSlipOption('\0', "cycle-slips", "Output a list of cycle slips");
 
    if (!BasicFramework::initialize(argc,argv)) 
@@ -238,6 +239,9 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
            << "no longer in the best of operating condition." << endl;
       return false;
    }
+
+   if (zeroTropOption.getCount())
+      zeroTrop = true;
 
    // get elevation ranges, if specified
    if (elevBinsOption.getCount())
@@ -414,11 +418,14 @@ void DDGen::readObsFile(
    // Just a placeholder
    gpstk::WxObsData wod;
 
-   // Use a New Brunswick trop model.
-   NBTropModel tm;
+   TropModel* tm;
+   if (!zeroTrop)
+      tm = new NBTropModel;
+   else
+      tm = new ZeroTropModel;
 
    // Now set up the function object that is used to compute the ords.
-   OrdEngine ordEngine(eph, wod, antennaPos, "smart", tm);
+   OrdEngine ordEngine(eph, wod, antennaPos, "smart", *tm);
    ordEngine.verboseLevel = verboseLevel;
    ordEngine.debugLevel = debugLevel;
 

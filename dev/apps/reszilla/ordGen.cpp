@@ -67,7 +67,7 @@ private:
    string ordMode;
    Triple antennaPos;
    unsigned msid;
-
+   bool zeroTrop;
    bool useNear;
 
    CommandOptionWithAnyArg obsFileOption, ephFileOption, metFileOption;
@@ -78,7 +78,7 @@ private:
 //-----------------------------------------------------------------------------
 OrdGen::OrdGen() throw()
    : OrdApp("ordGen", "Generates observed range deviations."),
-     ordMode("smart"), useNear(false),
+     ordMode("smart"), useNear(false),zeroTrop(false),
      msid(0),
      obsFileOption('o', "obs", "Where to get the obs data.", true),
    
@@ -116,6 +116,9 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
                     "is not strictly in the future. Only affects the selection of which broadcast "
                     "ephemeris to use. Use a close ephemeris");
 
+   CommandOptionNoArg
+      zeroTropOption('\0', "zero-trop", "Disables trop corrections.");
+
    if (!OrdApp::initialize(argc,argv)) return false;
 
    if (ordModeOption.getCount())
@@ -123,6 +126,9 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
 
    if (msidOption.getCount())
       msid = asUnsigned(msidOption.getValue().front());
+
+   if (zeroTropOption.getCount())
+      zeroTrop = true;
 
    // Get the station position
    if (antennaPosOption.getCount())
@@ -213,11 +219,14 @@ void OrdGen::process()
       metReader.read(metFileOption.getValue()[i]);
    WxObsData& wod = metReader.wx;
 
-   // Use a New Brunswick trop model.
-   NBTropModel tm;
+   TropModel* tm;
+   if (!zeroTrop)
+      tm = new NBTropModel;
+   else
+      tm = new ZeroTropModel;
 
    // Now set up the function object that is used to compute the ords.
-   OrdEngine ordEngine(eph, wod, antennaPos, ordMode, tm);
+   OrdEngine ordEngine(eph, wod, antennaPos, ordMode, *tm);
    ordEngine.verboseLevel = verboseLevel;
    ordEngine.debugLevel = debugLevel;
    ORDEpochMap ordEpochMap;
