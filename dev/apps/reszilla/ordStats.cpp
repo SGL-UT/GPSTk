@@ -190,7 +190,7 @@ void OrdStats::process()
         }
       }
       catch (gpstk::Exception &exc)
-      { cout << "# Error caught in ordStats - probably missing clock offset data\n"; }
+      { cerr << "Error caught in ordStats - probably missing clock offset data\n"; }
    }  
    
    
