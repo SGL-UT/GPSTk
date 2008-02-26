@@ -61,7 +61,7 @@ public:
       std::vector<uint32_t> words;
       void dump(std::ostream& s, int detail=0) const;
       bool checkParity(bool knownUpright=false) const;
-      void load(const std::bitset<5 * 300> bs);
+      void load(const std::bitset<5 * 300>& bs);
       const char* checkWords() const;
    };
 

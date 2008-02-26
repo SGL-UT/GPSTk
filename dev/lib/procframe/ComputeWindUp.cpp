@@ -60,8 +60,8 @@ namespace gpstk
    {
 
          // Compute Sun position at this epoch
-      SunPosition sun;
-      Triple sunPos(sun.getPosition(time));
+      SunPosition sunPosition;
+      Triple sunPos(sunPosition.getPosition(time));
 
          // Define a Triple that will hold satellite position, in ECEF
       Triple svPos(0.0, 0.0, 0.0);
@@ -154,14 +154,14 @@ namespace gpstk
    double ComputeWindUp::getWindUp(const SatID& satid,
                                    const DayTime& time,
                                    const Triple& sat,
-                                   const Triple& sun)
+                                   const Triple& sunPosition)
    {
 
          // Unitary vector from satellite to Earth mass center
       Triple rk( ( (-1.0)*(sat.unitVector()) ) );
 
          // Unitary vector from Earth mass center to Sun
-      Triple ri( sun.unitVector() );
+      Triple ri( sunPosition.unitVector() );
 
          // rj = rk x ri
       Triple rj(rk.cross(ri));
@@ -184,7 +184,7 @@ namespace gpstk
       Triple rrho( (rxPos-sat).unitVector() );
 
          // Vector from SV to Sun center of mass
-      Triple gps_sun( sun-sat );
+      Triple gps_sun( sunPosition-sat );
 
          // Redefine rk: Unitary vector from SV to Earth mass center
       rk = (-1.0)*(sat.unitVector());

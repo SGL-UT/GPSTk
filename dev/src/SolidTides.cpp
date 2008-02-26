@@ -65,16 +65,16 @@ namespace gpstk
       Triple res;
 
          // Objects to compute Sun and Moon positions
-      SunPosition  sun;
-      MoonPosition moon;
+      SunPosition  sunPosition;
+      MoonPosition moonPosition;
 
 
       try
       {
 
             // Variables to hold Sun and Moon positions
-         Triple sunPos(sun.getPosition(t));
-         Triple moonPos(moon.getPosition(t));
+         Triple sunPos(sunPosition.getPosition(t));
+         Triple moonPos(moonPosition.getPosition(t));
 
 
             // Compute the factors for the Sun

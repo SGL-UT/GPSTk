@@ -212,10 +212,10 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
 
    if (noiseGainOpt.getCount())
    {
-      double gain = StringUtils::asDouble(noiseGainOpt.getValue()[0]);
-      noise_amplitude *= exp10(gain/10);
+      double gain_local = StringUtils::asDouble(noiseGainOpt.getValue()[0]);
+      noise_amplitude *= exp10(gain_local/10);
       if (debugLevel)
-         cout << "# Noise level: " << gain << " db" << endl;
+         cout << "# Noise level: " << gain_local << " db" << endl;
    }
 
    if (codeOnlyOpt.getCount())

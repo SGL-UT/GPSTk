@@ -184,7 +184,7 @@ namespace gpstk
        * this method will return an empty string.
        */
    string SatDataReader::getBlock(const SatID& sat,
-                                  const DayTime& epoch)
+                                  const DayTime& epoch) const
    {
 
          // Create a pair of range belonging to this SatID
@@ -233,7 +233,7 @@ namespace gpstk
        * this method will return -1.
        */
    int SatDataReader::getGPSNumber(const SatID& sat,
-                                   const DayTime& epoch)
+                                   const DayTime& epoch) const 
    {
 
          // Create a pair of range belonging to this SatID
@@ -282,7 +282,7 @@ namespace gpstk
        * bounds, this method will return DayTime::END_OF_TIME.
        */
    DayTime SatDataReader::getLaunchDate(const SatID& sat,
-                                        const DayTime& epoch)
+                                        const DayTime& epoch) const 
    {
 
          // Create a pair of range belonging to this SatID
@@ -331,7 +331,7 @@ namespace gpstk
        * DayTime::BEGINNING_OF_TIME.
        */
    DayTime SatDataReader::getDeactivationDate(const SatID& sat,
-                                              const DayTime& epoch)
+                                              const DayTime& epoch) const 
    {
 
          // Create a pair of range belonging to this SatID

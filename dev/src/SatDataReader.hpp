@@ -128,7 +128,7 @@ namespace gpstk
           * this method will return an empty string.
           */
       virtual string getBlock(const SatID& sat,
-                              const DayTime& epoch);
+                              const DayTime& epoch) const ;
 
 
          /** Method to get the GPS number of a given SV at a given epoch.
@@ -141,7 +141,7 @@ namespace gpstk
           * this method will return -1.
           */
       virtual int getGPSNumber(const SatID& sat,
-                               const DayTime& epoch);
+                               const DayTime& epoch) const ;
 
 
          /** Method to get the launch date of a given SV.
@@ -155,7 +155,7 @@ namespace gpstk
           * DayTime::END_OF_TIME.
           */
       virtual DayTime getLaunchDate(const SatID& sat,
-                                    const DayTime& epoch);
+                                    const DayTime& epoch) const ;
 
 
          /** Method to get the deactivation date of a given SV.
@@ -169,7 +169,7 @@ namespace gpstk
           * method will return DayTime::BEGINNING_OF_TIME.
           */
       virtual DayTime getDeactivationDate(const SatID& sat,
-                                          const DayTime& epoch);
+                                          const DayTime& epoch) const ;
 
 
          /// Destructor
@@ -209,7 +209,7 @@ namespace gpstk
           */
       void setData(const SatID& sat,
                    const svData& data)
-      { SatelliteData.insert(pair<SatID, svData>(sat, data)); }
+      { SatelliteData.insert(pair<const SatID, svData>(sat, data)); }
 
 
          /// Method to load satellite data in this class' data map

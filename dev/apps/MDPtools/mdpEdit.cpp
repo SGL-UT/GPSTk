@@ -259,7 +259,7 @@ protected:
                         }
                         if (!prnSetToToss.count(obs.prn))
                         {
-                           oe.insert(pair<int, MDPObsEpoch>(obs.prn, obs));
+                           oe.insert(pair<const int, MDPObsEpoch>(obs.prn, obs));
                            if (debugLevel > 2)
                            {
                               cout << "  Writing obs message:\n";

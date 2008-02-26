@@ -248,7 +248,7 @@ namespace gpstk
                     << endl;
             oe.clear();
          }
-         oe.insert(pair<int, MDPObsEpoch>(me.prn,me));
+         oe.insert(pair<const int, MDPObsEpoch>(me.prn,me));
          t = me.time;
 
          if (me.numSVs == oe.size())

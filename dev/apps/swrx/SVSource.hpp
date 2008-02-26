@@ -47,7 +47,7 @@ class SVSource
 {
 public:
 
-   SVSource (int SVPRNID, int band) :
+   SVSource (int SVPRNID, int bandArg) :
       zchips_per_sample(1),
       doppler(0),
       zchip_fraction_accum(0),
@@ -59,7 +59,7 @@ public:
       code_only(false),
       zchip_counter(0),
       prn(SVPRNID),
-      band(band),
+      band(bandArg),
       p_modulation(true),
       ca_modulation(true),
       p_nav(true),

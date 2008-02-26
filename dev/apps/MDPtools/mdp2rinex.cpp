@@ -275,7 +275,7 @@ protected:
          epoch.clear();
          prevTime = t;
       }
-      epoch.insert(pair<int, MDPObsEpoch>(obs.prn, obs));
+      epoch.insert(pair<const int, MDPObsEpoch>(obs.prn, obs));
    } // MDP2Rinex::process(MDPObsEpoch)
 
 

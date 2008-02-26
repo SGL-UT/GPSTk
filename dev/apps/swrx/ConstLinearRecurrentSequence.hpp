@@ -54,7 +54,7 @@ public:
       }
    }
 
-   bool operator*() const {return (*this)[index];}
+   bool operator*() const {return (*this).test(index);}
 
    void operator++() { if((++index)==Length) index=0; } 
  

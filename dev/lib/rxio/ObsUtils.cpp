@@ -394,7 +394,7 @@ namespace gpstk
             moe.obs[obsKey] = obs;
          }
 
-         me.insert(pair<int, MDPObsEpoch>(moe.prn, moe));
+         me.insert(pair<const int, MDPObsEpoch>(moe.prn, moe));
       }
       // now compute how many SVs were really tracked...
       int numSVs = me.size();

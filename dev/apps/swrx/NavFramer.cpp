@@ -69,14 +69,14 @@ bool NavFramer::Subframe::checkParity(bool knownUpright) const
 }
 
 
-void NavFramer::Subframe::load(const std::bitset<5 * 300> bs)
+void NavFramer::Subframe::load(const std::bitset<5 * 300>& bs)
 {
    bitset<30> word;
    for (int w=0; w<10; w++)
    {
       for(int b=0; b<30; b++)
-         word[29-b] = bs[(ni + w*30 + b)%1500];
-
+         word[29-b] = bs.test((ni + w*30 + b)%1500);
+      
       if (inverted)
          word = ~word;
 
