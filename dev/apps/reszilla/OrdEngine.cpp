@@ -209,7 +209,12 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
       {
          if (debugLevel > 2)
             cout << " wx: " << wx << endl;
-         tm.setWeather(wx.temperature, wx.pressure, wx.humidity);
+            
+         // trop model will return errors for humidity over 100
+         if (wx.humidity > 100)
+            tm.setWeather(wx.temperature, wx.pressure, 100);
+         else   
+            tm.setWeather(wx.temperature, wx.pressure, wx.humidity);
       }
 
       // Walk over all prns in this epoch
