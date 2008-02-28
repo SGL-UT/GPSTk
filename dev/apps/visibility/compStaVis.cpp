@@ -72,6 +72,7 @@ protected:
    gpstk::CommandOptionWithAnyArg excludeStation;
    gpstk::CommandOptionWithAnyArg includeStation;
    gpstk::CommandOptionWithAnyArg maxSVOpt;
+   gpstk::CommandOptionNoArg healthyOpt;
    gpstk::CommandOptionNoArg detailPrintOpt;
    gpstk::CommandOptionWithTimeArg evalStartTimeOpt;
    gpstk::CommandOptionWithTimeArg evalEndTimeOpt;
@@ -112,6 +113,8 @@ protected:
    DayTime startT;
    DayTime endT;
    bool siderealDay; 
+
+   bool healthyOnly;
    
    void generateHeader( gpstk::DayTime currT );
    void generateTrailer( );
@@ -160,6 +163,7 @@ compStaVis::compStaVis(const std::string& applName,
            includeStation('i',"include","Include station",false),
            detailPrintOpt('D',"detail","Print SV count for each interval",false),
            maxSVOpt('m',"max-SV","Maximum # of SVs tracked simultaneously",false),
+           healthyOpt('h',"healthy","Consider only healthy SVs (require FIC ephemeris or Rinex nav file",false),
            evalStartTimeOpt('s',"start-time","%m/%d/%y %H:%M","Start time of evaluation (\"m/d/y H:M\") ",false),
            evalEndTimeOpt('z',"end-time","%m/%d/%y %H:%M","End time of evaluation (\"m/d/y H:M\")",false),
            typeOpt('t', "navFileType", "FALM, FEPH, RNAV, YUMA, SEM, or SP3 ", false)
@@ -172,6 +176,7 @@ compStaVis::compStaVis(const std::string& applName,
    typeOpt.setMaxCount(1);
    detailPrintOpt.setMaxCount(1);
    maxSVOpt.setMaxCount(1);
+   healthyOpt.setMaxCount(1);
    evalStartTimeOpt.setMaxCount(1);
    evalEndTimeOpt.setMaxCount(1);
    epochCount = 0;
@@ -233,6 +238,20 @@ bool compStaVis::initialize(int argc, char *argv[])
    {
       values = maxSVOpt.getValue();
       maxSVCount = StringUtils::asInt( values[0] );
+   }
+
+   healthyOnly = false;   
+   if (healthyOpt.getCount()!=0)
+   {
+      if (navFileType!= FIC_EPH &&
+          navFileType!= RINEX_NAV)
+      {
+         cerr << "Invalid value for nav file type.";
+         cerr << "  To determine SV health must use 'FEPH' or 'RNAV'. " << endl;
+         cerr << "Fatal error.  compStaVis will terminate." << endl;
+         return false;
+      }
+      healthyOnly = true;
    }
    
       // If the user SPECIFIED a start time for the evaluation, store that
@@ -496,6 +515,9 @@ void compStaVis::generateHeader( gpstk::DayTime currT )
    fprintf(logfp,"  Day of interest         : %s\n",currT.printf(tform).c_str());
    fprintf(logfp,"  Minimum elv ang         : %5.0f degrees\n",minimumElevationAngle);
    fprintf(logfp,"  Evaluation interval     : %5.0f sec\n",intervalInSeconds);
+   fprintf(logfp,"  Only consider healthy SV: ");
+   if (healthyOnly) fprintf(logfp,"TRUE\n");
+    else           fprintf(logfp,"no\n");
    fprintf(logfp,"  Station coordinates file: %s\n",mscFileName.getValue().front().c_str());
    printNavFileReferenceTime(logfp);
    fprintf(logfp,"  Start time of evaluation: %s\n",startT.printf(tform+", %02H:%02M:%02S").c_str());
@@ -522,6 +544,21 @@ void compStaVis::generateHeader( gpstk::DayTime currT )
       fprintf(logfp,"Number of Stations: %d\n\n",stationPositions.size());
    }
    else fprintf(logfp,"  All stations in coordinates file were included in the analysis.");
+   
+   if (detailPrint)
+   {
+      StaPosList::const_iterator si;
+      fprintf(logfp,"\n DOY:HH:MM:SS");
+      for (si=stationPositions.begin();si!=stationPositions.end();++si)
+      {
+         string mnemonic = (string) si->first;
+         fprintf(logfp,"  %4s",mnemonic.c_str());
+      }
+      fprintf(logfp,"   Max   Min");
+      if (stationPositions.size()==1) fprintf(logfp,"    List of SV PRN IDs");
+      fprintf(logfp,"\n");
+   }
+   
 }
 
 void compStaVis::generateTrailer( )
@@ -561,6 +598,7 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
 {
    gpstk::ECEF SVpos[gpstk::MAX_PRN+1];
    bool SVAvail[gpstk::MAX_PRN+1];
+   int SVHealth[gpstk::MAX_PRN+1];
    Xvt SVxvt;
    
       // Compute SV positions for this epoch
@@ -568,6 +606,7 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
    for (PRNID=1;PRNID<=gpstk::MAX_PRN;++PRNID)
    {
       SVAvail[PRNID] = false;
+      SVHealth[PRNID] = 0;
       try
       {
          SatID satid(PRNID, SatID::systemGPS);
@@ -576,6 +615,7 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
             case FIC_EPH:
             case RINEX_NAV:
                SVxvt = BCEphList.getXvt( satid, currT );
+               SVHealth[PRNID] = BCEphList.getSatHealth( satid, currT ); 
                break;
             
             case FIC_ALM:
@@ -608,11 +648,14 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
       }
    }
    
-   if (detailPrint) fprintf(logfp,"%s ",currT.printf("%02H:%02M").c_str());
+   if (detailPrint) fprintf(logfp,"%s ",currT.printf("T%03j:%02H:%02M:%02S").c_str());
 
+   string SVList;       // We'll build a list of SVs in view in this string
+                        // We'll only use it if there's only one station selected.
+   
       // Now count number of SVs visible at each station
    int maxNum = 0;
-   int minNum = stationPositions.size() + 1; 
+   int minNum = gpstk::MAX_PRN + 1; 
    StaPosList::const_iterator splCI;
    for (splCI =stationPositions.begin();
         splCI!=stationPositions.end();
@@ -632,16 +675,36 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
       }
       StaStats& ss = sslI->second;
 
+      SVList = "";
+      char SVform[10];
       ECEF staPos = splCI->second;
       for (PRNID=1;PRNID<=gpstk::MAX_PRN;++PRNID)
       {
+         // Debug
+         if (currT.hour()==0 && (PRNID==2 || PRNID==7)) 
+         {
+            cerr << "PRNID: " << PRNID <<
+                    "SVAvail:" << SVAvail[PRNID] <<
+                    "SVHealth:" << SVHealth[PRNID] << endl;
+         }
          if (SVAvail[PRNID])
          {
             elv = staPos.elvAngle( SVpos[PRNID] );
             if (elv>=minimumElevationAngle)
             {
-               numVis++;
-               ss.addToElvBins( elv );
+               if (!healthyOnly ||
+                  (healthyOnly && SVHealth[PRNID]==0))
+               {
+                  numVis++;
+                  ss.addToElvBins( elv );
+                  sprintf(SVform," %02d",PRNID);
+                  SVList += SVform;
+               }
+               else
+               {
+                  sprintf(SVform," %02d(HLTH)",PRNID);
+                  SVList += SVform;
+               }
             }
          }
       }
@@ -652,5 +715,10 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
       //cout << " Calling addEpochInfo() for station " << staNum << ", station " << ss.getStaNum() << endl;
       ss.addEpochInfo( numVis, epochCount ); 
    }
-   if (detailPrint) fprintf(logfp,"    %2d    %2d\n",maxNum,minNum);
+   if (detailPrint)
+   {
+      fprintf(logfp,"    %2d    %2d",maxNum,minNum);
+      if (stationPositions.size()==1) fprintf(logfp,"   %s",SVList.c_str());
+      fprintf(logfp,"\n");
+   }
 }
