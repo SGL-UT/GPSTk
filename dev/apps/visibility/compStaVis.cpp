@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/prototype/brent/coverage/compStaVis.cpp#19 $"
+ #pragma ident "$Id: //depot/msn/prototype/brent/coverage/compStaVis.cpp#19 $"
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -114,7 +114,7 @@ protected:
    DayTime endT;
    bool siderealDay; 
 
-   bool healthyOnly;
+   int healthyOnly;
    
    void generateHeader( gpstk::DayTime currT );
    void generateTrailer( );
@@ -176,7 +176,7 @@ compStaVis::compStaVis(const std::string& applName,
    typeOpt.setMaxCount(1);
    detailPrintOpt.setMaxCount(1);
    maxSVOpt.setMaxCount(1);
-   healthyOpt.setMaxCount(1);
+   healthyOpt.setMaxCount(2);
    evalStartTimeOpt.setMaxCount(1);
    evalEndTimeOpt.setMaxCount(1);
    epochCount = 0;
@@ -240,7 +240,7 @@ bool compStaVis::initialize(int argc, char *argv[])
       maxSVCount = StringUtils::asInt( values[0] );
    }
 
-   healthyOnly = false;   
+   healthyOnly = 0;   
    if (healthyOpt.getCount()!=0)
    {
       if (navFileType!= FIC_EPH &&
@@ -251,7 +251,7 @@ bool compStaVis::initialize(int argc, char *argv[])
          cerr << "Fatal error.  compStaVis will terminate." << endl;
          return false;
       }
-      healthyOnly = true;
+      healthyOnly = healthyOpt.getCount();
    }
    
       // If the user SPECIFIED a start time for the evaluation, store that
@@ -516,7 +516,7 @@ void compStaVis::generateHeader( gpstk::DayTime currT )
    fprintf(logfp,"  Minimum elv ang         : %5.0f degrees\n",minimumElevationAngle);
    fprintf(logfp,"  Evaluation interval     : %5.0f sec\n",intervalInSeconds);
    fprintf(logfp,"  Only consider healthy SV: ");
-   if (healthyOnly) fprintf(logfp,"TRUE\n");
+   if (healthyOnly!=0) fprintf(logfp,"TRUE\n");
     else           fprintf(logfp,"no\n");
    fprintf(logfp,"  Station coordinates file: %s\n",mscFileName.getValue().front().c_str());
    printNavFileReferenceTime(logfp);
@@ -680,20 +680,13 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
       ECEF staPos = splCI->second;
       for (PRNID=1;PRNID<=gpstk::MAX_PRN;++PRNID)
       {
-         // Debug
-         if (currT.hour()==0 && (PRNID==2 || PRNID==7)) 
-         {
-            cerr << "PRNID: " << PRNID <<
-                    "SVAvail:" << SVAvail[PRNID] <<
-                    "SVHealth:" << SVHealth[PRNID] << endl;
-         }
          if (SVAvail[PRNID])
          {
             elv = staPos.elvAngle( SVpos[PRNID] );
             if (elv>=minimumElevationAngle)
             {
-               if (!healthyOnly ||
-                  (healthyOnly && SVHealth[PRNID]==0))
+               if (healthyOnly==0 ||
+                  (healthyOnly!=0 && SVHealth[PRNID]==0))
                {
                   numVis++;
                   ss.addToElvBins( elv );
@@ -702,7 +695,7 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
                }
                else
                {
-                  sprintf(SVform," %02d(HLTH)",PRNID);
+                  if (healthyOnly==2) sprintf(SVform," %02d(HLTH)",PRNID);
                   SVList += SVform;
                }
             }
