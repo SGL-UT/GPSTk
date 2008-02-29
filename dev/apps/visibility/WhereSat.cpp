@@ -100,7 +100,8 @@ int main(int argc, char *argv[])
 	}
  
 	set<int> prnSet;
-	for (int index = 0; index < prnOpt.getCount(); index++)
+	int index;
+	for (index = 0; index < prnOpt.getCount(); index++)
 	{
 		int prn = asInt(prnOpt.getValue()[index]);
 		if ((prn > gpstk::MAX_PRN) || (prn < 1))
@@ -113,6 +114,10 @@ int main(int argc, char *argv[])
 			prnSet.insert(prn);
 		}
 	}
+
+	if (index == 0)
+		for (index = 1; index <= gpstk::MAX_PRN; index++)
+			prnSet.insert(index);
 	
 	std::string timeFormat;
 	if (formatOpt.getCount())
