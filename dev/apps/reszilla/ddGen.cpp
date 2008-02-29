@@ -73,6 +73,7 @@ protected:
 
 private:
 
+   string ordMode;
    string ddMode;
    double minArcGap;        // seconds
    double minArcTime;       // seconds
@@ -85,7 +86,7 @@ private:
    ObsEpochMap obs1, obs2;
    CommandOptionWithAnyArg obs1FileOption, obs2FileOption, ephFileOption;
    ElevationRangeList elr;
-   bool computeStats, computeAll, removeUnhealthy, zeroTrop;
+   bool computeStats, computeAll, removeUnhealthy, zeroTrop, useNear;
    EphReader healthSrcER;
    
    void readObsFile(const CommandOptionWithAnyArg& obsFileOption,
@@ -102,7 +103,8 @@ private:
 //-----------------------------------------------------------------------------
 DDGen::DDGen() throw()
    : BasicFramework("ddGen", "Computes double-difference residuals from raw observations."),
-     ddMode("all"), minArcGap(60), minArcTime(60), minArcLen(5), msid(0), window(0), minSNR(20),
+     ddMode("all"), ordMode("smart"), minArcGap(60), minArcTime(60),
+     minArcLen(5), msid(0), window(0), minSNR(20),
      computeStats(false), computeAll(false), removeUnhealthy(false),
 
      obs1FileOption('1', "obs1", 
@@ -122,6 +124,10 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       ddModeOption('\0', "ddmode", "Specifies what observations are used to "
                     "compute the double difference residuals. Valid values are:"
                     " all. The default is " + ddMode),
+      ordModeOption('\0', "omode", "Specifies what observations are used to "
+                    "compute the ORDs. Valid values are:"
+                    "p1p2, z1z2, c1p2, c1y2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
+                    "z2 smo, and smart. The default is " + ordMode),
       minArcTimeOption('\0', "min-arc-time", "The minimum length of time "
                     "(in seconds) that a sequence of observations must "
                     "span to be considered as an arc. The default "
@@ -159,6 +165,9 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       statsOption('s', "stats", "Compute stats on the double differences."),
       allComboOption('a', "all-combos", "Compute all combinations, don't just "
                     "use one master SV."),
+      useNearOption('n', "near", "Allows the program to select an ephemeris that "
+                    "is not strictly in the future. Only affects the selection of which broadcast "
+                    "ephemeris to use. Use a close ephemeris"),
       zeroTropOption('\0', "zero-trop", "Disables trop corrections."),
       cycleSlipOption('\0', "cycle-slips", "Output a list of cycle slips");
 
@@ -193,6 +202,9 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
            << "Exiting....\n\n";
       return false;
    }
+
+   if (ordModeOption.getCount())
+      ordMode = lowerCase(ordModeOption.getValue()[0]);
    
    if (msidOption.getCount())
       msid = asUnsigned(msidOption.getValue().front());
@@ -304,6 +316,8 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    if (SNRoption.getCount())
       minSNR = asUnsigned(SNRoption.getValue().front());
 
+   useNear = useNearOption.getCount();
+
    return true;
 }
 
@@ -340,6 +354,13 @@ void DDGen::process()
    ephReader.verboseLevel = verboseLevel;
    for (int i=0; i<ephFileOption.getCount(); i++)
       ephReader.read(ephFileOption.getValue()[i]);
+   gpstk::XvtStore<SatID>& eph = *ephReader.eph;
+
+   if (useNear && typeid(eph) == typeid(GPSEphemerisStore))
+   {
+      GPSEphemerisStore& bce = dynamic_cast<GPSEphemerisStore&>(eph);
+      bce.SearchNear();
+   }
 
    ObsEpochMap oem1, oem2;
 
@@ -425,7 +446,7 @@ void DDGen::readObsFile(
       tm = new ZeroTropModel;
 
    // Now set up the function object that is used to compute the ords.
-   OrdEngine ordEngine(eph, wod, antennaPos, "smart", *tm);
+   OrdEngine ordEngine(eph, wod, antennaPos, ordMode, *tm);
    ordEngine.verboseLevel = verboseLevel;
    ordEngine.debugLevel = debugLevel;
 

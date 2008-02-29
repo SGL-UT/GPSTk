@@ -67,7 +67,7 @@ private:
    string ordMode;
    Triple antennaPos;
    unsigned msid;
-   bool zeroTrop;
+   string tropModel;
    bool useNear;
 
    CommandOptionWithAnyArg obsFileOption, ephFileOption, metFileOption;
@@ -78,7 +78,7 @@ private:
 //-----------------------------------------------------------------------------
 OrdGen::OrdGen() throw()
    : OrdApp("ordGen", "Generates observed range deviations."),
-     ordMode("smart"), useNear(false),zeroTrop(false),
+     ordMode("smart"), useNear(false),tropModel("nb"),
      msid(0),
      obsFileOption('o', "obs", "Where to get the obs data.", true),
    
@@ -98,12 +98,14 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
 {
    CommandOptionWithAnyArg
       mscFileOption('c', "msc", "Station coordinate file."),
-   
+
       ordModeOption('\0', "omode", "Specifies what observations are used to "
                     "compute the ORDs. Valid values are:"
-                    "p1p2, z1z2, c1p2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
+                    "p1p2, z1z2, c1p2, c1y2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
                     "z2 smo, and smart. The default is " + ordMode),
    
+      tropModelOption('\0', "trop-model", "Specify the trop model to use. Options are zero, simple, nb, and gg. The default is nb."),
+
       antennaPosOption('p', "pos", "Location of the antenna in meters ECEF.");
    
    CommandOptionWithNumberArg 
@@ -116,8 +118,6 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
                     "is not strictly in the future. Only affects the selection of which broadcast "
                     "ephemeris to use. Use a close ephemeris");
 
-   CommandOptionNoArg
-      zeroTropOption('\0', "zero-trop", "Disables trop corrections.");
 
    if (!OrdApp::initialize(argc,argv)) return false;
 
@@ -127,8 +127,10 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
    if (msidOption.getCount())
       msid = asUnsigned(msidOption.getValue().front());
 
-   if (zeroTropOption.getCount())
-      zeroTrop = true;
+   if (tropModelOption.getCount())
+      tropModel = lowerCase(tropModelOption.getValue()[0]);
+   else
+      tropModel = "nb";
 
    // Get the station position
    if (antennaPosOption.getCount())
@@ -211,7 +213,6 @@ void OrdGen::process()
       bce.SearchNear();
    }
 
-
    // Get the weather data...
    MetReader metReader;
    metReader.verboseLevel = verboseLevel;
@@ -219,11 +220,20 @@ void OrdGen::process()
       metReader.read(metFileOption.getValue()[i]);
    WxObsData& wod = metReader.wx;
 
-   TropModel* tm;
-   if (!zeroTrop)
+   TropModel* tm; //zenith delay= 2.4225 m, scale height=7492.83 m
+   if (tropModel=="nb")
       tm = new NBTropModel;
-   else
+   else if (tropModel=="zero")
       tm = new ZeroTropModel;
+   else if (tropModel=="simple")
+      tm = new SimpleTropModel;
+   else if (tropModel=="gg")
+      tm = new GGTropModel;
+   else
+   {
+      cerr << "Unknown trop model requested: " << tropModel << ". Exiting." << endl;
+      return;
+   }
 
    // Now set up the function object that is used to compute the ords.
    OrdEngine ordEngine(eph, wod, antennaPos, ordMode, *tm);

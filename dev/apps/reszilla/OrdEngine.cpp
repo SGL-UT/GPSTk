@@ -103,6 +103,12 @@ void OrdEngine::setMode(const ObsEpoch& obs)
       oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcY);
       dualFreq = true;
    }
+   else if (mode=="c1y2")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
+      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcY);
+      dualFreq = true;
+   }
    else if (mode=="c1")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
@@ -282,6 +288,10 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
          
             if (ord.getElevation() <= 0.05)
                ord.wonky |= 0x0020;
+
+            if (debugLevel>2)
+               cout << ord << endl;
+
          }
          catch (gpstk::Exception& e)
          {

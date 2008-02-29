@@ -166,6 +166,8 @@ void OrdStats::process()
    {
       try
       {
+         if (!iter->second.clockOffset.is_valid())
+            continue;
         const double offset = iter->second.clockOffset;
         if (abs(offset) > (C_GPS_M/1000))
         {
@@ -185,12 +187,14 @@ void OrdStats::process()
         {
           totalORDCount++;
           const unsigned wonk = pi->second.wonky;
-          if (wonk) 
+          if (wonk)
             wonkyORDCount++;        
         }
       }
       catch (gpstk::Exception &exc)
-      { cerr << "Error caught in ordStats - probably missing clock offset data\n"; }
+      {
+         cerr << "Caught exception: " << exc << endl;
+      }
    }  
    
    

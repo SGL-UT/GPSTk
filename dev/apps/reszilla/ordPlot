@@ -194,7 +194,7 @@ def main():
                        verticalalignment="bottom",
                        size=8, family="sans-serif")
 
-    xMajorFmt=pylab.DateFormatter("%02H:%02M\n%03j\n%4Y")
+    xMajorFmt=pylab.DateFormatter("%H:%M\n%j")
     xMinorFmt=pylab.NullFormatter()
     xMajorLoc=matplotlib.dates.DayLocator()
     xMinorLoc=matplotlib.dates.HourLocator()
