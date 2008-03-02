@@ -300,6 +300,8 @@ namespace gpstk
                      // get the size of the record
                   memmove(&datasize, &(buffer[8]), 4);
                   intelToHost(datasize);
+                  if (debug)
+                     cout << "datasize:" << datasize << endl;
 
                      // read the rest of the record
                   if(datasize-12 >= 1024) {
@@ -332,6 +334,11 @@ namespace gpstk
 
                   }  // end if datasize fits into buffer
                }  // end if record type != unknown
+
+               if (debug)
+                  cout << "failure=" << failure
+                       << ", rectype=" << rectype
+                       << ", datasize=" << datasize << endl;
 
                   // failure - either type unknown, buffer overflow or failed checksum
                if(debug) {
@@ -502,7 +509,7 @@ namespace gpstk
                   // print only if sync is not underway
                if(debug && !(*p1==0xAA && *p2==0x44) && !(*p2==0xAA) )
                   cout << "Skip a byte " << hex << uppercase << setfill('0')
-                     << setw(2) << *p0 << dec << setfill(' ') << endl;
+                       << setw(2) << int(*p0) << setfill(' ') << endl;
             }
 
          } while(1);   // end read loop
@@ -670,8 +677,8 @@ namespace gpstk
       }
 
       int i,j;
-      short temps;
-      long nobs;            // number of observation records (may be 2/PRN: L1 and L2)
+      int16_t temps;
+      int32_t nobs;        // number of observation records (may be 2/PRN: L1 and L2)
       SatID sat;
       RinexObsData rod;     // this will be returned
       RinexObsData::RinexDatum rd;
@@ -695,7 +702,7 @@ namespace gpstk
             // number of observation records to follow
          memmove(&temps, &(buffer[12]), 2);
          intelToHost(temps);
-         nobs = long(temps);
+         nobs = int32_t(temps);
 
             // GPS week (long gpsWeek is member data)
          memmove(&temps, &(buffer[14]), 2);
@@ -709,15 +716,17 @@ namespace gpstk
          gpsWeek = long(temps) + 1024*(gpsWeek/1024);
 
             // seconds of week * 100
-         long gpsSOW;
+         int32_t gpsSOW;
          memmove(&gpsSOW, &(buffer[16]), 4);
          intelToHost(gpsSOW);
 
             // receiver status
-         long rxStatus;
+         int32_t rxStatus;
          memmove(&rxStatus, &(buffer[20]), 4);
          
             // put timetag into rod
+         if (debug)
+            cout << "gpsWeek:" << gpsWeek << " sow:" << gpsSOW/100.0 << endl;
          rod.time = DayTime(gpsWeek,gpsSOW/100.);
          rod.epochFlag = 0;
          rod.clockOffset = 0.0;     // don't have it ?
@@ -725,7 +734,7 @@ namespace gpstk
 
             // loop over observation records
          for(i=0; i<nobs; i++) {
-            unsigned long data[5];
+            uint32_t data[5];
             for(j=0; j<5; j++)
                memmove(&data[j], &(buffer[24+i*20+j*4]), 4);
 
@@ -848,31 +857,31 @@ namespace gpstk
 
             // header
             // Ref OEM4 Manual pg 16
-         unsigned char headerLength;
+         uint8_t headerLength;
          memmove(&headerLength, &(buffer[3]), 1);  intelToHost(headerLength);
-         short messageID;
+         int16_t messageID;
          memmove(&messageID, &(buffer[4]), 2);     intelToHost(messageID);
-         char messageType;
+         int8_t messageType;
          memmove(&messageType, &(buffer[6]), 1);   intelToHost(messageType);
-         char portAddress;
+         int8_t portAddress;
          memmove(&portAddress, &(buffer[7]), 1);   intelToHost(portAddress);
-         short messageLength;
+         int16_t messageLength;
          memmove(&messageLength, &(buffer[8]), 2); intelToHost(messageLength);
-         short sequence;
+         int16_t sequence;
          memmove(&sequence, &(buffer[10]), 2);     intelToHost(sequence);
-         char idleTime;
+         int8_t idleTime;
          memmove(&idleTime, &(buffer[12]), 1);     intelToHost(idleTime);
-         char timeStatus;
+         int8_t timeStatus;
          memmove(&timeStatus, &(buffer[13]), 1);   intelToHost(timeStatus);
-         short week;
+         int16_t week;
          memmove(&week, &(buffer[14]), 2);         intelToHost(week);
-         long msecOfWeek;
+         int32_t msecOfWeek;
          memmove(&msecOfWeek, &(buffer[16]), 4);   intelToHost(msecOfWeek);
-         long rxStatus;
+         int32_t rxStatus;
          memmove(&rxStatus, &(buffer[20]), 4);     intelToHost(rxStatus);
-         short reserved;
+         int16_t reserved;
          memmove(&reserved, &(buffer[24]), 2);     intelToHost(reserved);
-         short rxSWVersion;
+         int16_t rxSWVersion;
          memmove(&rxSWVersion, &(buffer[26]), 2);  intelToHost(rxSWVersion);
                
             // put timetag into rod
@@ -889,8 +898,8 @@ namespace gpstk
 
             rod.numSvs = 0;
             for(i=0; i<nobs; i++) {
-               unsigned short prn,reserved;
-               unsigned long TrackStatus;
+               uint16_t prn,reserved;
+               uint32_t TrackStatus;
                float PrStd,PhStd,Doppler,SNR,locktime;
                double Pr,Ph;
 
@@ -981,7 +990,7 @@ namespace gpstk
 
             rod.numSvs = 0;
             for(i=0; i<nobs; i++) {
-               unsigned long data[6];
+               uint32_t data[6];
                for(j=0; j<6; j++)
                   memmove(&data[j], &(buffer[32+i*24+j*4]), 4);
 
