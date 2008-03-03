@@ -163,7 +163,7 @@ compStaVis::compStaVis(const std::string& applName,
            includeStation('i',"include","Include station",false),
            detailPrintOpt('D',"detail","Print SV count for each interval",false),
            maxSVOpt('m',"max-SV","Maximum # of SVs tracked simultaneously",false),
-           healthyOpt('h',"healthy","Consider only healthy SVs (require FIC ephemeris or Rinex nav file",false),
+           healthyOpt('H',"Healthy","Consider only healthy SVs (requires FIC ephemeris or Rinex nav file)",false),
            evalStartTimeOpt('s',"start-time","%m/%d/%y %H:%M","Start time of evaluation (\"m/d/y H:M\") ",false),
            evalEndTimeOpt('z',"end-time","%m/%d/%y %H:%M","End time of evaluation (\"m/d/y H:M\")",false),
            typeOpt('t', "navFileType", "FALM, FEPH, RNAV, YUMA, SEM, or SP3 ", false)
