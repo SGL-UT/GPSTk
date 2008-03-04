@@ -52,6 +52,55 @@ using namespace std;
 using namespace gpstk;
 using namespace gpstk::StringUtils;
 
+   //---------------------------------------------------------------------------------
+   /// The ATS implimentation of a black trop model.
+   class ATSTropModel : public TropModel
+   {
+   public:
+      virtual double correction(double elevation) const
+         throw(InvalidTropModel)
+      {
+         double zenith_delay= 2.4225; // meters
+         double scale_height=7492.83; // meters
+         double height = 0; // Is this an altitude above the geoid?
+         double delay = 93.6;
+         double el = elevation * 2.0 * gpstk::PI / 360.0;
+         if (elevation>0)
+            delay = zenith_delay * std::exp(-height/scale_height)/(std::sin(el) + 0.026);
+         return delay;
+      }
+
+      virtual double correction(const Position& RX,
+                                const Position& SV,
+                                const DayTime& tt)
+         throw(InvalidTropModel)
+      { return 0.0; }
+
+      virtual double correction(const Xvt& RX,
+                                const Xvt& SV,
+                                const DayTime& tt)
+         throw(InvalidTropModel)
+      { return 0.0; }
+
+      virtual double dry_zenith_delay(void) const
+         throw(InvalidTropModel)
+      { return 0.0; }
+
+      virtual double wet_zenith_delay(void) const
+         throw(InvalidTropModel)
+      { return 0.0; }
+
+      virtual double dry_mapping_function(double elevation)
+         const throw(InvalidTropModel)
+      { return 0.0; }
+
+      virtual double wet_mapping_function(double elevation)
+         const throw(InvalidTropModel)
+      { return 0.0; }
+
+   }; // end class ATSTropModel
+
+
 class OrdGen : public OrdApp
 {
 public:
@@ -220,13 +269,15 @@ void OrdGen::process()
       metReader.read(metFileOption.getValue()[i]);
    WxObsData& wod = metReader.wx;
 
-   TropModel* tm; //zenith delay= 2.4225 m, scale height=7492.83 m
+   TropModel* tm; 
    if (tropModel=="nb")
       tm = new NBTropModel;
    else if (tropModel=="zero")
       tm = new ZeroTropModel;
    else if (tropModel=="simple")
       tm = new SimpleTropModel;
+   else if (tropModel=="ats")
+      tm = new ATSTropModel;
    else if (tropModel=="gg")
       tm = new GGTropModel;
    else
