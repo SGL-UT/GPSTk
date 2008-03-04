@@ -1,4 +1,4 @@
-
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -51,6 +51,7 @@
 #include "Xvt.hpp"
 #include "Position.hpp"
 #include "Matrix.hpp"
+#include "icd_200_constants.hpp"
 
 
 // Model of the troposphere, used to compute non-dispersive delay of
@@ -273,7 +274,8 @@ namespace gpstk
          { return 0.0; }
 
    }; // end class ZeroTropModel
-   
+
+
    //---------------------------------------------------------------------------------
    /// A simple Black model of the troposphere. temp is in Kelvin.
    class SimpleTropModel : public TropModel
