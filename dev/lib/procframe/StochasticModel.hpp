@@ -46,42 +46,19 @@ namespace gpstk
       //@{
 
 
-      /// This is a base class to define stochastic models.
+      /** This is a base class to define stochastic models. It computes the
+       *  elements of Phi and Q matrices corresponding  to a constant
+       *  stochastic model.
+       *
+       * @sa RandomWalkModel, WhiteNoiseModel, PhaseAmbiguityModel
+       *
+       */
    class StochasticModel
    {
    public:
 
          /// Default constructor
       StochasticModel() {};
-
-
-         /// Get element of the state transition matrix Phi
-      virtual double getPhi() = 0;
-
-
-         /// Get element of the process noise matrix Q
-      virtual double getQ() = 0;
-
-
-         /// Destructor
-      virtual ~StochasticModel() {};
-
-   };
-
-
-
-      /** This class compute the elements of Phi and Q matrices corresponding 
-       *  to a constant stochastic model.
-       *
-       * @sa StochasticModel, RandomWalkModel, WhiteNoiseModel
-       *
-       */
-   class ConstantModel : public StochasticModel
-   {
-   public:
-
-         /// Default constructor
-      ConstantModel() {};
 
 
          /// Get element of the state transition matrix Phi
@@ -95,7 +72,7 @@ namespace gpstk
 
 
          /// Destructor
-      virtual ~ConstantModel() {};
+      virtual ~StochasticModel() {};
 
    };
 
@@ -110,7 +87,7 @@ namespace gpstk
        * MUST NOT use the SAME object to process DIFFERENT data streams.
        *
        */
-   class RandomWalkModel : public ConstantModel
+   class RandomWalkModel : public StochasticModel
    {
    public:
 
