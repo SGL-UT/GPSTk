@@ -167,8 +167,8 @@ def main():
     plotOrds = True
     plotClocks = True
 
-    if len(clocks[0]) == 0 or options.ordsOnly: plotClocks = False
-    if ((len(clocks[0])==0 and options.clockDelta) and len(ords[0]) == 0 and len(warts[0]) == 0 and len(ocds[0]) == 0) or options.clocksOnly: plotOrds = False
+    if clocks.size==0 or options.ordsOnly: plotClocks = False
+    if ((clocks.size==0 and options.clockDelta) and ords.size == 0 and warts.size == 0 and ocds.size == 0) or options.clocksOnly: plotOrds = False
     axesCount=0;
     if plotOrds: axesCount+=1
     if plotClocks: axesCount+=1
@@ -222,15 +222,16 @@ def main():
 
     if plotOrds:
         if not options.legend or options.legend <2:
-            if len(ords[0]):
+            if ords.size:
                 ax1.plot_date(ords[0], ords[2], 'g,', label="ords")
             if options.wartiness and warts.size:
                 ax1.plot_date(warts[0], warts[2], 'r,', label="warts")
-            for p in options.prnHighlight:
-                prn = int(p);
-                onePrn = ords[:,ords[1]==prn]
-                if onePrn.size:
-                    ax1.plot_date(onePrn[0], onePrn[2], ',', label="prn %2d"%prn);
+            if options.prnHighlight:
+                for p in options.prnHighlight:
+                    prn = int(p);
+                    onePrn = ords[:,ords[1]==prn]
+                    if onePrn.size:
+                        ax1.plot_date(onePrn[0], onePrn[2], ',', label="prn %2d"%prn);
         else:
             for  prn in pylab.arange(1,33):
                 onePrn = ords[:,ords[1]==prn]
