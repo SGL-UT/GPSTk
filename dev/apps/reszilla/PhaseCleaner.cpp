@@ -229,7 +229,8 @@ void PhaseCleaner::selectMasters(
                           << ", rate:" << rangeRate[e->first][t]
                           << endl;
                }
-                  return;
+
+               return;
             }
 
             PhaseResidual::Arc::const_iterator k;
@@ -261,7 +262,7 @@ void PhaseCleaner::selectMasters(
          }
       }
    }
-} // PhaseCleaner::splitMaster()
+} // PhaseCleaner::selectMaster()
 
 
 //-----------------------------------------------------------------------------
@@ -327,7 +328,6 @@ void PhaseCleaner::debias(SvElevationMap& pem)
       {
          const gpstk::SatID& prn = j->first;
          PhaseResidual::ArcList& pral = j->second;
-         
          pral.splitOnGaps(maxGapTime);
          selectMasters(rot, prn, pem);
          doubleDifference(rot, prn, pem);

@@ -178,17 +178,15 @@ void DDEpoch::doubleDifference(
          {
             ObsID oid1  = i_masterDiff->first;
             i_otherDiff = otherDiff.find(oid1);
+            if (i_otherDiff == otherDiff.end())
+            {
+               if (debugLevel>1)
+                  cout << "# DDEpoch::doubleDifferece(): no obs from other RX"
+                       << endl;
+               continue;
+            }
             ObsID oid2  = i_otherDiff->first;
             
-            // make sure that both obs data came from same tracking code
-            if (oid1.code != oid2.code)
-            {
-              if (debugLevel)
-                cout << "# DDEpoch::doubleDifferece(): oid1.code " 
-                     <<  "!= oid2.code\n";
-              continue;
-            }
-
             ddSvOIDM[prn][oid1] = i_masterDiff->second - otherDiff[oid1];
          }
       }
