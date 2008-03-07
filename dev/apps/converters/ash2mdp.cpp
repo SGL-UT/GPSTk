@@ -63,6 +63,7 @@
 #include "AshtechEPB.hpp"
 
 #include "ObsUtils.hpp"
+#include "RinexConverters.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -73,9 +74,10 @@ class Ashtech2MDP : public InOutFramework<AshtechStream, MDPStream>
 public:
    Ashtech2MDP(const string& applName)
       throw()
-      : InOutFramework<AshtechStream,MDPStream>(
-         applName, "Converts Ashtech Z(Y)-12 serial streaming format to "
-         "MDP format.")
+      : week(-1),
+        InOutFramework<AshtechStream,MDPStream>(
+           applName, "Converts Ashtech Z(Y)-12 serial streaming format to "
+           "MDP format.")
    {}
 
    bool initialize(int argc, char *argv[]) throw()
@@ -87,16 +89,8 @@ public:
       if (!InOutFramework<AshtechStream, MDPStream>::initialize(argc,argv))
          return false;
 
-      DayTime now;
-      time.week = now.GPSfullweek();
-      time.sow = now.GPSsecond();
-
       if (weekOption.getCount())
-      {
-         time.week = StringUtils::asInt(weekOption.getValue()[0]);
-         time.sow = HALFWEEK;
-      }
-         
+         week = StringUtils::asInt(weekOption.getValue()[0]);
 
       AshtechData::debugLevel = debugLevel;
       if (debugLevel>2)
@@ -104,9 +98,6 @@ public:
 
       if (debugLevel>4)
          MDPHeader::hexDump = true;
-
-      if (debugLevel)
-         cout << "Initial time: " << time.printf("%F %.1g") << endl;
 
       return true;
    }
@@ -117,7 +108,13 @@ protected:
 
    virtual void process()
    {
-      bool firstPBEN = false;
+      bool knowSOW(false), knowWeek(false);
+
+      if (week>0)
+      {
+         knowWeek = true;
+         time.week = week;
+      }
 
       AshtechData hdr;
       AshtechPBEN pben;
@@ -137,20 +134,39 @@ protected:
             if (debugLevel>2)
                pben.dump(cout);
 
-            double dt = pben.sow - time.sow;
-            time.sow = pben.sow;
             svCount = 0;
 
-            if (std::abs(dt) > HALFWEEK && firstPBEN)
-               time.week++;
+            // If we don't know what week it is, we really can't do much...
+            if (!knowWeek)
+               continue;
 
-            firstPBEN = true;
+            if (!knowSOW)
+            {
+               knowSOW=true;
+               time.sow = pben.sow;
+               if (debugLevel)
+                  cout << "sow is: " << time.sow << endl;
+            }
+            else
+            {
+               double dt = pben.sow - time.sow;
+               time.sow = pben.sow;
+               if (std::abs(dt) > HALFWEEK)
+               {
+                  time.week++;
+                  if (debugLevel)
+                     cout << "Bumped week. Time is now " << time << " (dt:" << dt << ")" << endl;
+               }
+            }
 
-            MDPPVTSolution pvt = makeMDPPVTSolution(pben, time.week);
-            pvt.freshnessCount = fc++;
-            output << pvt << flush;
-            if (debugLevel>3)
-               pvt.dump(cout);
+            if (knowSOW && knowWeek)
+            {
+               MDPPVTSolution pvt = makeMDPPVTSolution(pben, time.week);
+               pvt.freshnessCount = fc++;
+               output << pvt << flush;
+               if (debugLevel>3)
+                  pvt.dump(cout);
+            }
          }
          else if (mben.checkId(hdr.id) && (input >> mben) && mben)
          {
@@ -159,7 +175,7 @@ protected:
             if (svCount==0)
                svCount = mben.left+1;
 
-            if (firstPBEN == true)
+            if (knowSOW && knowWeek)
             {
                hint[mben.svprn].time = DayTime(time.week, time.sow);
                hint[mben.svprn].numSVs = svCount;
@@ -176,6 +192,29 @@ protected:
             if (debugLevel>2)
                epb.dump(cout);
             MDPNavSubframe sf;
+            if (!knowWeek)
+            {
+               EphemerisPages ephPageStore;
+               for (int s=1; s<=3; s++)
+               {
+                  for (int w=1; w<=10; w++)
+                     sf.subframe[w] = epb.word[s][w];
+                  ephPageStore[s] = sf;
+               }
+               EngEphemeris engEph;
+               if (makeEngEphemeris(engEph, ephPageStore))
+               {
+                  int week10 = 0x3ff & engEph.getFullWeek();
+                  DayTime now;
+                  time.week = (now.GPSfullweek() & ~0x3ff) | week10;
+                  if (debugLevel)
+                     cout << "week is " << time.week << endl;
+                  knowWeek=true;
+               }
+               else
+                  continue;
+            }
+
             sf.carrier = ccL1;
             sf.range = rcCA;
             sf.nav = ncICD_200_2;
@@ -210,6 +249,7 @@ protected:
    {}
 
    GPSWeekSecond time;
+   int week;
 };
 
 
