@@ -34,7 +34,6 @@
 
 
 #include "DayTime.hpp"
-#include "SatID.hpp"
 #include "DataStructures.hpp"
 
 
@@ -69,6 +68,36 @@ namespace gpstk
          /// Get element of the process noise matrix Q
       virtual double getQ()
       { return 0.0; };
+
+
+         /** This method provides the stochastic model with all the available
+          *  information and takes appropriate actions. By default, it does
+          *  nothihg.
+          *
+          * @param type       Type of variable.
+          * @param sat        Satellite.
+          * @param gData      Data object holding the data.
+          *
+          */
+      virtual void Prepare( const TypeID& type,
+                            const SatID& sat,
+                            gnssSatTypeValue& gData )
+      { return; };
+
+
+         /** This method provides the stochastic model with all the available
+          *  information and takes appropriate actions. By default, it does
+          *  nothihg.
+          *
+          * @param type       Type of variable.
+          * @param sat        Satellite.
+          * @param gData      Data object holding the data.
+          *
+          */
+      virtual void Prepare( const TypeID& type,
+                            const SatID& sat,
+                            gnssRinex& gData )
+      { return; };
 
 
          /// Destructor
@@ -145,6 +174,32 @@ namespace gpstk
 
          /// Get element of the process noise matrix Q
       virtual double getQ();
+
+
+         /** This method provides the stochastic model with all the available
+          *  information and takes appropriate actions.
+          *
+          * @param type       Type of variable.
+          * @param sat        Satellite.
+          * @param gData      Data object holding the data.
+          *
+          */
+      virtual void Prepare( const TypeID& type,
+                            const SatID& sat,
+                            gnssSatTypeValue& gData );
+
+
+         /** This method provides the stochastic model with all the available
+          *  information and takes appropriate actions.
+          *
+          * @param type       Type of variable.
+          * @param sat        Satellite.
+          * @param gData      Data object holding the data.
+          *
+          */
+      virtual void Prepare( const TypeID& type,
+                            const SatID& sat,
+                            gnssRinex& gData );
 
 
          /// Destructor
@@ -260,6 +315,32 @@ namespace gpstk
 
          /// Get element of the process noise matrix Q
       virtual double getQ();
+
+
+         /** This method provides the stochastic model with all the available
+          *  information and takes appropriate actions.
+          *
+          * @param type       Type of variable.
+          * @param sat        Satellite.
+          * @param gData      Data object holding the data.
+          *
+          */
+      virtual void Prepare( const TypeID& type,
+                            const SatID& sat,
+                            gnssSatTypeValue& gData );
+
+
+         /** This method provides the stochastic model with all the available
+          *  information and takes appropriate actions.
+          *
+          * @param type       Type of variable.
+          * @param sat        Satellite.
+          * @param gData      Data object holding the data.
+          *
+          */
+      virtual void Prepare( const TypeID& type,
+                            const SatID& sat,
+                            gnssRinex& gData );
 
 
          /// Destructor
