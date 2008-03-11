@@ -1,0 +1,35 @@
+# input file for VTECMap
+--verbose
+#
+# input
+--input list.files@
+--navdir alldata
+--nav brdc2100.04n
+# ref station
+--RxLLH 50.,270.,0.0,refs
+# sat+rx biases
+--Biases satbias.txt
+#
+# Processing
+--UniformSpacing
+#--UniformGrid
+--ElevThresh 6.0
+--MinAcqTime 0
+--NumLat 40
+--BeginLat 40
+--DeltaLat .5
+--NumLon 40
+--BeginLon 250
+--DeltaLon 1
+#  VTEC map will be created by default
+#--MUFmap  these maps have not been verified yet...
+#--F0F2map
+#
+# output
+--log maps.log
+--OutputGrid
+--GnuplotOutput
+--BaseName out/igs
+#
+#--BeginTime 2004,7,28,23,0,0.0
+#--EndTime 2004,7,28,23,59,59.0

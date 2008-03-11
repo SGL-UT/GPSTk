@@ -1,0 +1,61 @@
+<h1>Example: Extracting Observables from a RINEX Observation File.</h1>
+
+<p>In this example, observations recorded in a RINEX observation file are combined to create a quantity that is dominated by multipath error. The following code is excerpted from the GPSTk distribution file example3.py. This example extends example 2 which merely reads and writes a RINEX observation file. For the sake of brevity, discussion of classes used in that previous example have been omitted. Furthermore, some segments of code such as comments have been omitted. </p>
+
+<pre>
+
+  12     gamma = (L1_FREQ / L2_FREQ) * (L1_FREQ / L2_FREQ);
+
+  14     try:
+  15         print "Reading bahr1620.04o."
+
+  18         roffs = RinexObsStream("bahr1620.04o")
+  19         roh = RinexObsHeader()
+  20         roe = RinexObsData()
+  21         dataobj = RinexDatum()
+
+  24         write(roffs, roh)
+
+  27         roh.dump(cout)
+
+  30         while write(roffs, roe):
+  31             junk = DayTime_streamRead(cout, roe.time)
+
+  34             prn = RinexPrn(myprn, systemGPS)
+
+  37             pointer = RinexPrnMap_find(roe, prn)
+        
+  39             if RinexPrnMap_compare(pointer, RinexPrnMap_end(roe)):
+  40                 print " PRN ", str(myprn), " not in view."
+  41             else:
+  42                 dataobj = getPseudoRangeCode(roe, prn, RinexObsHeader.P1)
+  43                 dataobj2 = getPseudoRangeCode(pointer, RinexObsHeader.P1)
+  44                 if dataobj.data != dataobj2.data:
+  45                     print "dataobj.data != dataobj2.data"
+
+  47                 P1 = dataobj.data
+
+  49                 dataobj = getPseudoRangeCode(roe, prn, RinexObsHeader.P2)
+  50                 P2 = dataobj.data
+
+  52                 dataobj = getPseudoRangeCode(roe, prn, RinexObsHeader.L1)
+  53                 L1 = dataobj.data
+
+  56                 mu = P1 -L1*(C_GPS_M/L1_FREQ) -2*(P1 -P2)/(1-gamma)
+  57                 print " PRN", myprn, "biased multipath", mu
+
+</pre>
+
+<p>In line 12, a commonly used GPS constant is defined in terms of constants defined by the ICD-GPS-200.</p>
+
+<p> Line 21 creates a structure dataobj that can represent any RINEX measurement. This structure will be used repeatedly in lines 42 through 53 to represent the RINEX data types P1, P2 and L1.</p>
+
+<p>Line 30 demonstrates how a GPSTk streaming operator can also be used to control a loop. With each loop, an epoch of observations are extracted from the RINEX observation file.</p>
+
+<p>In line 34, an identifier is created to match the satellite of interest. Note that although a GPS PRN identifier was used, the identifier associated with another system such as Transit could have been employed.</p>
+
+<p>In line 37, the epoch of observations is searched for data associated with the satellite of interest. Note the use of the STL iterator class and search function find().</p>
+
+<p>If the satellite is found, then lines 42 through 52 show how to traverse the "map" data structures within the RinexObsData to extract the observation values. The STL data structure map is used extensively here and elsewhere in the GPSTk. The robustness of this code section could be improved by dynamically checking if P1, P2 and L1 exist before actually accessing those map entries .</p>
+
+<p>Lines 56 and 57 show the computation and output of the multipath-related combination of observables.</p>

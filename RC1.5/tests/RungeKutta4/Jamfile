@@ -1,0 +1,3 @@
+SubDir TOP RungeKutta4 ;
+
+TestMain RungeKutta4/xRungeKutta4.tst : RungeKutta4/xRungeKutta4M.cpp RungeKutta4/xRungeKutta4.cpp RungeKutta4/RungeKutta4.cpp ;

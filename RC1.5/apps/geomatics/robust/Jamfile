@@ -1,0 +1,9 @@
+#
+# $Id$
+#
+
+SubDir TOP apps geomatics robust ;
+
+GPSLinkLibraries rstats : geomatics gpstk ;
+
+GPSMain rstats : rstats.cpp ;

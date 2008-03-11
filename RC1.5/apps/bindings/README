@@ -1,0 +1,67 @@
+GPSTk Bindings
+--------------
+
+Ben Harris
+Applied Research Laboratories,
+The University of Texas at Austin
+January 2005
+
+
+This application provides GPSTk functionality to other languages.
+These interfaces, referred to as bindings, are in an alpha stage.
+Only the most minimal capablity is available (the DayTime class).
+The code is provided should the user community wish to experiment with this
+interface as well.
+
+There are three subdirectory with working bindings for the indicated
+programing language:
+
+   - tcl
+   - python
+   - octave
+
+The remainder--java and perl--are not functional.
+
+Each contains bindings for the named language. The bindings are 
+built using the Makefile in each directory. Depending on  your
+installation, the Makefile will likely have to hand edited to match your 
+system's setup. For example, to build Tcl/Tk bindings, you have to 
+know where tk.h is installed on the system and provide that as an include
+directory for g++.
+
+The Tcl and Python ports are based on the open source SWIG utility. 
+What is SWIG? To quote the website (http://www.swig.org/Doc1.3/Preface.html#Preface)
+
+ 
+   "SWIG (Simplified Wrapper and Interface Generator) is a software 
+    development tool for building scripting language interfaces to C and C++ 
+    programs. Originally developed in 1995, SWIG was first used by scientists 
+    in the Theoretical Physics Division at Los Alamos National Laboratory for
+    building user interfaces to simulation codes running on the Connection 
+    Machine 5 supercomputer. In this environment, scientists needed to work 
+    with huge amounts of simulation data, complex hardware, and a constantly 
+    changing code base. The use of a scripting language interface provided a 
+    simple yet highly flexible foundation for solving these types of 
+    problems. SWIG simplifies development by largely automating the task of 
+    scripting language integration--allowing developers and users to focus on 
+    more important problems.
+
+   Although SWIG was originally developed for scientific applications, it has 
+   since evolved into a general purpose tool that is used in a wide variety of
+   applications--in fact almost anything where C/C++ programming is involved."
+
+
+Thanks to Bryce Deary of ARINC for the suggestion to use SWIG to provide
+the interface to the GPSTk. He proposed the idea at a conference, the 2004
+ION GNSS meeting in Long Beach.
+
+The Octave port is based only on Octave's development utility mkoctfile. This
+may be replaced in the near term with an SWIG-like tool used by VTK
+(the Visualization Toolkit). The utility called Octaviz is created in this
+fashion.
+
+
+(c) University of Texas at Austin, 2005
+
+
+
