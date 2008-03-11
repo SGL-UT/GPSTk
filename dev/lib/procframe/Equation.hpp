@@ -50,12 +50,110 @@ namespace gpstk
    typedef std::set<Variable> VariableSet;
 
 
+      /// Defines a header containing basic equation data
+   struct equationHeader
+   {
+
+         /// Source this equation is related to
+      SourceID equationSource;
+
+
+         /// Satellite this equation is related to
+      SatID equationSat;
+
+
+         /// Independent term
+      Variable indTerm;
+
+
+         /** Constant weight associated to this equation. This is a relative
+          *  value that compares with the other Equations. It is 1.0 by
+          *  default.
+          */
+      double constWeight;
+
+
+         /// Default constructor
+      equationHeader() :
+         equationSource(Variable::allSources),
+         equationSat(Variable::allSats),
+         constWeight(1.0) {};
+
+
+         /** Explicit constructor
+          *
+          * @param source     Source this equation is related to.
+          * @param sat        Satellite this equation is related to.
+          * @param indep      Variable representing the independent term.
+          * @param cweight    Constant weight associated to this equation.
+          */
+      equationHeader( const SourceID& source,
+                      const SatID& sat,
+                      const Variable indep,
+                      const double& cweight ) :
+         equationSource(source),
+         equationSat(sat),
+         indTerm(indep),
+         constWeight(cweight) {};
+
+
+         /** Explicit constructor from a Variable
+          *
+          * @param indep      Variable representing the independent term.
+          */
+      equationHeader(const Variable& indep)
+         : equationSource(Variable::allSources),
+           equationSat(Variable::allSats),
+           indTerm(indep) {};
+
+
+         /// Get the value of the constant weight associated to this equation
+      virtual double getWeight() const
+      { return constWeight; };
+
+
+         /** Set the value of the constant weight associated to this equation
+          *
+          * @param cweight    Value of constant weight.
+          */
+      virtual equationHeader& setWeight(const double& cweight)
+      { constWeight = cweight; return (*this); };
+
+
+         /// Assignment operator
+      virtual equationHeader& operator=(const equationHeader& right);
+      
+
+         /** Assignment operator from a Variable
+          *
+          * @param indep      Variable representing the independent term.
+          */
+      virtual equationHeader& operator=(const Variable& right)
+      { indTerm = right; return (*this); };
+
+
+         /// Destructor
+      virtual ~equationHeader() {};
+
+   };
+
+
+
       /// GNSS Data Structure to define and handle GNSS equations.
-   struct Equation : gnssData<Variable, VariableSet>
+   struct Equation : gnssData<equationHeader, VariableSet>
    {
 
          /// Default constructor
       Equation() {};
+
+
+         /** Common constructor. It defines an Equation from its header. You
+          *  must later use other methods to input the variables.
+          *
+          * @param head     Data structure describing the Equation header.
+          */
+      Equation( const equationHeader& head )
+      { header = head; };
 
 
          /** Common constructor. It defines an Equation from its independent
@@ -64,7 +162,7 @@ namespace gpstk
           * @param var     Variable object describing the independent term.
           */
       Equation( const Variable& var )
-      { header = var; };
+      { header.indTerm = var; };
 
 
          /** Common constructor. It defines an Equation from its independent
@@ -73,7 +171,7 @@ namespace gpstk
           * @param var     TypeID object describing the independent term.
           */
       Equation( const TypeID& type )
-      { header.setType(type); };
+      { header.indTerm.setType(type); };
 
 
          /** Common constructor. It takes a simple gnssEquationDefinition
@@ -100,7 +198,7 @@ namespace gpstk
 
          /// Return the independent term of this equation
       virtual Variable getIndependentTerm() const
-      { return header; };
+      { return header.indTerm; };
 
 
          /** Set the independent term of this Equation.

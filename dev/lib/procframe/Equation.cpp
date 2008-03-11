@@ -35,6 +35,22 @@ namespace gpstk
 {
 
 
+      // Assignment operator for equationHeader
+   equationHeader& equationHeader::operator=(const equationHeader& right)
+   {
+      if ( this == &right )
+      {
+         return (*this);
+      }
+
+      equationSource = right.equationSource;
+      equationSat = right.equationSat;
+      indTerm = right.indTerm;
+
+      return (*this);
+   }
+
+
       /* Common constructor. It takes a simple gnssEquationDefinition
        *  object and creates an Equation.
        *
@@ -45,7 +61,7 @@ namespace gpstk
    {
          // Set the properties of the independent term. Defaults are OK except
          // for type
-      header.setType(gnssEq.header);
+      header.indTerm.setType(gnssEq.header);
 
          // Now, get the types of the variables
       TypeIDSet::const_iterator pos;
