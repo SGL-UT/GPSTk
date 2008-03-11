@@ -21,20 +21,16 @@ def main():
                       Defaults to the name of the input stream.")
 
     parser.add_option("-l", "--legend", dest="legend", action="count",
-                      help="Include a legend. Give this option twice to use a \
-                      separate color for each prn. The default is no legend")
+                      help="Include a legend.")
 
     parser.add_option("-p", "--prn-highlight", dest="prnHighlight", action="append",
-                     help="Highlight the indicated prn.")
+                     help="Highlight the indicated prn. Specify all for all prns.")
 
     parser.add_option("-o", "--ords-only", help="Only plot the ords (types 0 & 1).",
                       dest="ordsOnly", default=0, action="count")
 
     parser.add_option("-c", "--clocks-only", help="Only plot the clocks.",
                       dest="clocksOnly", default=0, action="count")
-
-    parser.add_option("--debias-clock", help="Do a simple debiasing of clocks.",
-                      dest="debiasClock", default=0, action="count")
 
     parser.add_option("--clock-delta", help="Plot clock delta instead of clock residual.",
                       dest="clockDelta", default=0, action="count")
@@ -43,25 +39,23 @@ def main():
                       help="Save the figure to the indicated file")
 
     parser.add_option("-y", dest="yRange", action="store", type="string",
-                      help="Fix the y range on the ords to be +- this value or include the percentage data indicated.")
+                      help="Fix the y range on the ords to be +- this value or include\
+                      the percentage data indicated.")
                       
-    parser.add_option("--start-time",
-                      dest="tStart", action="store",
+    parser.add_option("--start-time", dest="tStart", action="store",
                       help="Start time. Format as \"YYYY DOY HH:MM:SS.S\" (Note\
                       the trailing decimal place).") 
 
-    parser.add_option("--smoothing",\
-                      dest="smoothing", action="store", type="float", \
-                      help="Smooth clock data with specified window length. \
-                      Window length is specied in seconds.", default=0)
+    parser.add_option("--smoothing", dest="smoothing", action="store", type="float",
+                      default=0,
+                      help="Smooth hilighted prns and clock data with specified \
+                      window length. Window length is specied in seconds.")
 
-    parser.add_option("--end-time",\
-                      dest="tEnd", action="store",\
+    parser.add_option("--end-time", dest="tEnd", action="store",
                       help="End time. Format as \"YYYY DOY HH:MM:SS.S\" (Note\
                       the trailing decimal place).") 
 
-    parser.add_option("-w", "--warts",\
-                      dest="wartiness", action="count",\
+    parser.add_option("-w", "--warts", dest="wartiness", action="count",
                       help="Increase the importants of warts on the plot.\
                       Zero (the default) means don't even plot them. One\
                       means plot them but don't autoscale to show them all\
@@ -82,17 +76,27 @@ def main():
     if (options.title == None):
         options.title = inputFile.name
 
+    prns = range(1,33)
+    highlightPrns = []
+    if options.prnHighlight:
+        if options.prnHighlight[0] == 'all':
+            highlightPrns = range(1,33)
+        else:
+            highlightPrns = [int(p) for p in options.prnHighlight]
+
     if (options.debugLevel):
         print "Processing: %s" % inputFile.name
         print "Debug level: %d" % options.debugLevel
         print "Title: %s" % options.title
         print "Warts: %s"% options.wartiness
+        print "Smoothing: %d seconds" % options.smoothing
         print "Y axis:",
         if options.yRange:
             print options.yRange
         else:
             print "auto ranged"
-        print "Highlight prns:",options.prnHighlight
+        if options.debugLevel:
+            print "highlighting prns:",highlightPrns
 
     # ------------------------------------------------------------------
     # Here we start reading in the ord file
@@ -221,29 +225,22 @@ def main():
     ax1.set_ylim((0,0))
 
     if plotOrds:
-        if not options.legend or options.legend <2:
-            if ords.size:
-                smoothPlot(ax1, ords[0], ords[2], 'g,', "all SVs",
-                           options.smoothing, options.yRange)
-            if options.wartiness and warts.size:
-                smoothPlot(ax1, warts[0], warts[2], 'r,', "warts",
-                           options.smoothing, options.yRange)
-            if options.prnHighlight:
-                for p in options.prnHighlight:
-                    prn = int(p);
-                    onePrn = ords[:,ords[1]==prn]
-                    smoothPlot(ax1, onePrn[0], onePrn[2], ',', "prn %2d"%prn,
-                               options.smoothing, options.yRange)
-        else:
-            for  prn in pylab.arange(1,33):
-                onePrn = ords[:,ords[1]==prn]
+        label="All prns"
+        for prn in prns:
+            onePrn = ords[:,ords[1]==prn]
+            oneWart = warts[:,warts[1]==prn]
+            if prn in highlightPrns:
                 smoothPlot(ax1, onePrn[0], onePrn[2], ',', "prn %2d"%prn,
-                           options.smoothing, options.yRange)
-            if options.wartiness:
-                for  prn in pylab.arange(1,33):
-                    onePrn = warts[:,warts[1]==prn]
-                    smoothPlot(ax1, onePrn[0], onePrn[2], ',', "prn %2dW"%prn,
-                               options.smoothing, options.yRange)
+                           options.smoothing)
+                if options.wartiness:
+                    smoothPlot(ax1, oneWart[0], oneWart[2], ',', "prn %2dW"%prn, 0)
+            else:
+                smoothPlot(ax1, ords[0], ords[2], 'g,', label, 0)
+                if options.wartiness:
+                    smoothPlot(ax1, oneWart[0], oneWart[2], 'r,', label, 0)
+                label="none"
+
+        setLimit(ax1, ords[2], options.yRange)
 
         if options.clockDelta:
             # Plot the first deritive of the clock...
@@ -253,11 +250,13 @@ def main():
             dc = 1e3 * clock_diff/time_diff
             smoothPlot(ax1, clocks[0,:-1], dc, 'b-', "clk dif"%prn,
                        options.smoothing, options.yRange)
+            setLimit(ax1, dc, options.yRange)
         elif len(ocds[0]):
             # otherwise plot the clock deviations
             ax3=fig.add_axes(ax1.get_position())
             smoothPlot(ax3, ocds[0], ocds[1], 'b-', "clk res"%prn,
                        options.smoothing, options.yRange)
+            setLimit(ax3, ocds[1], options.yRange)
             
         # If there are rle clocks, draw a vertical line where each new model
         # starts
@@ -296,15 +295,14 @@ def main():
         ax2 = ax1
 
     if plotClocks:
-        if options.debiasClock:
-            if options.debugLevel:
-                print "Debiasing clocks"
-            clockOffset = int(numpy.average(clocks[1]))
-            clocks[1] = clocks[1] - clockOffset
+        if options.debugLevel:
+            print "Debiasing clocks"
+        clockOffset = int(numpy.average(clocks[1]))
+        clocks[1] = clocks[1] - clockOffset
 
-            pylab.figtext(rExtent+0.08, 0.49, 
-                          "clock offset removed: %d m"%clockOffset,
-                          **scale_props)
+        pylab.figtext(rExtent+0.08, 0.49, 
+                      "Clock offset removed: %d m"%clockOffset,
+                      **scale_props)
 
         smoothPlot(ax2, clocks[0], clocks[1], 'g,', "clock offset",
                    options.smoothing, options.yRange)
@@ -382,6 +380,21 @@ def parse_time(words):
 # end of parse_time()
 
 
+def setLimit(ax, y, limit=None):
+    if not limit:
+        lim = (min(y), max(y))
+    elif limit == "ignore":
+        lim = ax.get_ylim()
+    elif limit[-1] == "%":
+        fraction = float(limit[:-1])/100.0
+        drop = int(numpy.floor(0.5 * (1-fraction) * len(y)))
+        ds = numpy.sort(y)
+        lim = (ds[drop], ds[-drop])
+    else:
+        lim = (-float(limit), float(limit))
+    ax.set_ylim(lim)
+
+
 def smoothPlot(ax, x, y, style="", txt="", window_len=0, limit=None):
     if x.ndim != 1 or y.ndim !=1:
         raise ValueError, "Only accepts rank 1 arrays."
@@ -389,27 +402,19 @@ def smoothPlot(ax, x, y, style="", txt="", window_len=0, limit=None):
     if x.size<2 or y.size<2:
         return
 
-    if not limit:
-        lim = (min(y), max(y))
-    elif limit[-1] == "%":
-        fraction = float(limit[:-1])/100.0
-        drop = int(numpy.floor(0.5 * (1-fraction) * len(y)))
-        ds = numpy.sort(y)
-        lim = (ds[drop], ds[len(y)-drop])
-    else:
-        lim = (-float(limit), float(limit))
-    clim = ax.get_ylim()
-    lim = (min(lim[0],clim[0]), max(lim[1],clim[1]))
-
     n = window_len/(86400 * (x[1] - x[0]))
     if n>3 and n<y.size:
         s=numpy.r_[2*y[0]-y[n:1:-1],y,2*y[-1]-y[-1:-n:-1]]
         w=eval('numpy.bartlett(n)')
         y=numpy.convolve(w/w.sum(),s,mode='same')
         y=y[n-1:-n+1]
+        y=y[n-1:-n+1]
+        x=x[n-1:-n+1]
 
-    ax.plot_date(x, y, style, label=txt);
-    ax.set_ylim(lim)
+    if txt == "none":
+        ax.plot_date(x, y, style)
+    else:
+        ax.plot_date(x, y, style, label=txt)
 
 
 if __name__ == "__main__":
