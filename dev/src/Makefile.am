@@ -11,7 +11,8 @@ BinexData.cpp  BLQDataReader.cpp CivilTime.cpp CodeBuffer.cpp \
 CommandOption.cpp CommandOptionParser.cpp CommandOptionWithCommonTimeArg.cpp \
 CommandOptionWithPositionArg.cpp CommandOptionWithTimeArg.cpp CommonTime.cpp \
 DOP.cpp DayTime.cpp ECEF.cpp EngAlmanac.cpp EngEphemeris.cpp EngNav.cpp \
-EphemerisRange.cpp Exception.cpp Expression.cpp FFData.cpp FFStream.cpp \
+ENUUtil.cpp EphemerisRange.cpp Exception.cpp Expression.cpp FFData.cpp \
+FFStream.cpp \
 FICData.cpp FICData109.cpp FICData162.cpp FICData62.cpp FICData9.cpp \
 FICHeader.cpp FileHunter.cpp FileSpec.cpp \
 GPSAlmanacStore.cpp GPSEphemerisStore.cpp GPSEpochWeekSecond.cpp \
@@ -19,7 +20,8 @@ GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp GPSZcount29.cpp \
 GPSZcount32.cpp GenXSequence.cpp Geodetic.cpp IonoModel.cpp \
 IonoModelStore.cpp JulianDate.cpp LinearClockModel.cpp LoopedFramework.cpp \
 MJD.cpp MOPSWeight.cpp MSCData.cpp MSCStore.cpp \
-MoonPosition.cpp ObsClockModel.cpp ObsEpochMap.cpp ObsID.cpp ObsRngDev.cpp \
+MoonPosition.cpp NEDUtil.cpp ObsClockModel.cpp ObsEpochMap.cpp ObsID.cpp \
+ObsRngDev.cpp \
 OceanLoading.cpp PRSolution.cpp PoleTides.cpp Position.cpp RACRotation.cpp \
 RinexEphemerisStore.cpp RinexMetData.cpp RinexMetHeader.cpp RinexNavData.cpp \
 RinexNavHeader.cpp RinexObsData.cpp RinexObsHeader.cpp RinexObsID.cpp \
@@ -40,7 +42,8 @@ CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp \
 CommandOption.hpp CommandOptionParser.hpp CommandOptionWithCommonTimeArg.hpp \
 CommandOptionWithPositionArg.hpp CommandOptionWithTimeArg.hpp CommonTime.hpp \
 DOP.hpp DayTime.hpp ECEF.hpp EngAlmanac.hpp EngEphemeris.hpp EngNav.hpp \
-EphemerisRange.hpp EpochClockModel.hpp Exception.hpp Expression.hpp \
+ENUUtil.hpp EphemerisRange.hpp EpochClockModel.hpp Exception.hpp \
+Expression.hpp \
 ExtractC1.hpp ExtractCombinationData.hpp ExtractD1.hpp ExtractD2.hpp \
 ExtractData.hpp ExtractL1.hpp ExtractL2.hpp ExtractLC.hpp ExtractP1.hpp \
 ExtractP2.hpp ExtractPC.hpp FFBinaryStream.hpp FFData.hpp FFStream.hpp \
@@ -57,7 +60,8 @@ LinearClockModel.hpp LoopedFramework.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp \
 MSCData.hpp MSCHeader.hpp MSCStore.hpp MSCStream.hpp MathBase.hpp Matrix.hpp \
 MatrixBase.hpp MatrixBaseOperators.hpp MatrixFunctors.hpp \
 MatrixImplementation.hpp MatrixOperators.hpp MiscMath.hpp \
-ModeledPseudorangeBase.hpp MoonPosition.hpp ORDEpoch.hpp ObsClockModel.hpp \
+ModeledPseudorangeBase.hpp MoonPosition.hpp NEDUtil.hpp ORDEpoch.hpp \
+ObsClockModel.hpp \
 ObsEpochMap.hpp ObsID.hpp ObsRngDev.hpp OceanLoading.hpp PCodeConst.hpp \
 PRSolution.hpp PoleTides.hpp PolyFit.hpp Position.hpp RACRotation.hpp \
 RTFileFrame.hpp RinexEphemerisStore.hpp RinexMetBase.hpp RinexMetData.hpp \
