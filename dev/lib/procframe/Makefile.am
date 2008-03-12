@@ -20,7 +20,7 @@ incldir = $(includedir)/gpstk
 incl_HEADERS = BasicModel.hpp CodeSmoother.hpp ComputeCombination.hpp \
 ComputeIURAWeights.hpp ComputeLC.hpp ComputeLdelta.hpp ComputeLI.hpp \
 ComputeLinear.hpp ComputeMelbourneWubbena.hpp ComputeMOPSWeights.hpp \
-ComputePC.hpp ComputePdelta.hpp ComputePI.hpp ComputeTropModel.cpp \
+ComputePC.hpp ComputePdelta.hpp ComputePI.hpp ComputeTropModel.hpp \
 ComputeWindUp.hpp CorrectObservables.hpp Equation.hpp DataHeaders.hpp \
 DataStructures.hpp DeltaOp.hpp LICSDetector.hpp LinearCombinations.hpp \
 ModeledPR.hpp ModeledReferencePR.hpp ModelObs.hpp ModelObsFixedStation.hpp \

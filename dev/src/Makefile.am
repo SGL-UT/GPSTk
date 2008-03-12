@@ -52,7 +52,7 @@ FICData109.hpp FICData162.hpp FICData62.hpp FICData9.hpp \
 FICFilterOperators.hpp FICHeader.hpp FICStream.hpp FICStreamBase.hpp \
 FileFilter.hpp FileFilterFrame.hpp FileFilterFrameWithHeader.hpp \
 FileHunter.hpp FileSpec.hpp FileStore.hpp FileUtils.hpp GPSAlmanacStore.hpp \
-GPSEphemerisStore.cpp GPSEpochWeekSecond.hpp GPSGeoid.hpp \
+GPSEphemerisStore.hpp GPSEpochWeekSecond.hpp GPSGeoid.hpp \
 GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp GPSZcount29.hpp \
 GPSZcount32.hpp GenXSequence.hpp Geodetic.hpp GeoidModel.hpp \
 InOutFramework.hpp IonoModel.hpp IonoModelStore.hpp JulianDate.hpp \
@@ -70,7 +70,8 @@ RinexNavBase.hpp RinexNavData.hpp RinexNavFilterOperators.hpp \
 RinexNavHeader.hpp RinexNavStream.hpp RinexObsBase.hpp RinexObsData.hpp \
 RinexObsFilterOperators.hpp RinexObsHeader.hpp RinexObsID.hpp \
 RinexObsStream.hpp RinexSatID.hpp RinexUtilities.hpp RungeKutta4.hpp \
-SEMAlmanacStore.hpp SEMBase.hpp SEMData.hpp SEMHeader.hpp SEMStream.hpp \
+SatDataReader.hpp SEMAlmanacStore.hpp SEMBase.hpp SEMData.hpp \
+SEMHeader.hpp SEMStream.hpp \
 SMODFData.hpp SMODFStream.hpp SP3Base.hpp SP3Data.hpp SP3EphemerisStore.hpp \
 SP3Header.hpp SP3SatID.hpp SP3Stream.hpp SVExclusionList.hpp SVNumXRef.hpp \
 SVPCodeGen.hpp SatID.hpp SimpleIURAWeight.hpp SimpleKalmanFilter.hpp \
@@ -82,5 +83,5 @@ VectorBase.hpp VectorBaseOperators.hpp VectorOperators.hpp WGS84Geoid.hpp \
 WeightBase.hpp WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp Xvt.hpp \
 XvtStore.hpp YDSTime.hpp YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp \
 YumaHeader.hpp YumaStream.hpp \
-convhelp.hpp geometry.hpp gps_constants.hpp icd_200_constants.hpp \
-stl_helpers.hpp 
+convhelp.hpp geometry.hpp gps_constants.hpp gpstkplatform.h \
+icd_200_constants.hpp mergePCodeWords.h stl_helpers.hpp xregex2.h

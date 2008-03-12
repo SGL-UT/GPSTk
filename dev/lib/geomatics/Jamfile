@@ -20,7 +20,7 @@ else
 	   DCinternals.hpp DDid.hpp DiscCorr.hpp
 	   EarthOrientation.hpp GDCconfiguration.hpp GSatID.hpp 
 	   GeodeticFrames.hpp Namelist.hpp PhaseWindup.hpp 
-           PreciseRange.hpp RobustStats.hpp SRI.cpp
+           PreciseRange.hpp RobustStats.hpp SRI.hpp
 	   SRIFilter.hpp SatPass.hpp format.hpp index.hpp random.hpp
 	   ;
 }

@@ -16,6 +16,6 @@ AshtechStream.hpp ATSData.hpp ATSStream.hpp DataStatus.hpp EphReader.hpp \
 FFIdentifier.hpp MDPHeader.hpp MDPNavSubframe.hpp \
 MDPObsEpoch.hpp MDPPVTSolution.hpp MDPSelftestStatus.hpp MDPStream.hpp \
 MetReader.hpp NovatelData.hpp NovatelStream.hpp \
-ObsReader.hpp ObsUtils.hpp RinexConverters.hpp \
+ObsReader.hpp ObsUtils.hpp RinexConverters.hpp miscdefs.hpp \
 miscenum.hpp
 

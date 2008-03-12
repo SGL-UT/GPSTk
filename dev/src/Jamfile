@@ -59,7 +59,6 @@ else
       TropModel.cpp TypeID.cpp UnixTime.cpp VectorBase.cpp
       WxObsMap.cpp X1Sequence.cpp X2Sequence.cpp  Xvt.cpp YDSTime.cpp 
       YumaAlmanacStore.cpp YumaData.cpp regex.c
-#getopt.c getopt1.c 
       $(GETOPT_SOURCE)
       ;
 
@@ -120,7 +119,6 @@ else
       X2Sequence.hpp Xvt.hpp XvtStore.hpp YDSTime.hpp
       YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp YumaHeader.hpp
       YumaStream.hpp convhelp.hpp geometry.hpp
-#getopt.h
       gps_constants.hpp gpstkplatform.h icd_200_constants.hpp
       mergePCodeWords.h regex.h stl_helpers.hpp xregex2.h
       $(GETOPT_INC)

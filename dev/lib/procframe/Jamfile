@@ -25,7 +25,7 @@ else
 
    InstallFile $(INCDIR) :
       BasicModel.hpp CodeSmoother.hpp ComputeCombination.hpp
-      ComputeIURAWeights.hpp ComputeLC.cpp ComputeLdelta.hpp ComputeLI.hpp
+      ComputeIURAWeights.hpp ComputeLC.hpp ComputeLdelta.hpp ComputeLI.hpp
       ComputeLinear.hpp ComputeMelbourneWubbena.hpp ComputeMOPSWeights.hpp
       ComputePC.hpp ComputePdelta.hpp ComputePI.hpp ComputeTropModel.hpp
       ComputeWindUp.hpp CorrectObservables.hpp Equation.hpp DataHeaders.hpp
