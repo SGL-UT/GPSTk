@@ -164,6 +164,8 @@ namespace gpstk
 
          /** Compute the Weighted Least Mean Squares Solution of the given
           *  equations set.
+          * @param prefitResiduals   Vector of prefit residuals
+          * @param designMatrix      Design matrix for the equation system
           */
       virtual int Compute(const Vector<double>& prefitResiduals,
                           const Matrix<double>& designMatrix)

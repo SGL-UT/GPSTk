@@ -61,7 +61,7 @@ namespace gpstk
       pcCombWithC1.body[TypeID::P2]       = -b;
 
          // Definition to compute prefit residual of PC
-      pcPrefit.header = TypeID::prefitC;
+      pcPrefit.header                     = TypeID::prefitC;
       pcPrefit.body[TypeID::PC]           = +1.0;
       pcPrefit.body[TypeID::rho]          = -1.0;
       pcPrefit.body[TypeID::dtSat]        = +1.0;
