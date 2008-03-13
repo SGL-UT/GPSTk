@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/prototype/brent/coverage/VisSupport.cpp#2 $"
+#pragma ident "$Id:$"
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -265,7 +265,7 @@ void VisSupport::readPEData(
 }
 
    //------------------------------------------------------------------------
-   // Test added as workaround for MSN bug.
+   // Test added as workaround for bug.
    // Need to confirm consistency of IODC/IODE across all three subframes.
    // If inconsistent, we don't want to use the data.
 bool VisSupport::checkIOD( const EngEphemeris ee )

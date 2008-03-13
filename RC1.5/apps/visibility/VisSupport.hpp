@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/prototype/brent/coverage/VisSupport.hpp#1 $"
+#pragma ident "$Id:$"
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.

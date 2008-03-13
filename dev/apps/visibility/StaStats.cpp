@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/prototype/brent/coverage/StaStats.cpp#9 $"
+#pragma ident "$Id:$"
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.

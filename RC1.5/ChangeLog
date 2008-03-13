@@ -1,3 +1,245 @@
+Version 1.5   Tuesday, March 11, 2008
+
+	General modifications
+	---------------------
+
+	- Majority of version 1.5 comprised of revision number 1115, 
+	  branching took place under revision 1115 from dev/ to RC1.5/
+
+	- A large amount of work went into ensuring that the GPSTk built
+	  on all supported platforms using both jam and make. A place has 
+	  been set aside on the TWiki to inform developers on which patforms
+	  the Tk has been built successfully.
+	  http://www.gpstk.org/bin/view/Development/SourceStatus
+
+	- The Tk know builds successfully on OSX using jam and make
+
+	- Added a library /dev/lib/procframe/ (from Processing Framework)
+	  under which all pre-existing classes related to GNSS Data 
+	  Structures (GDS) have been moved out of /src/.
+
+	      + lib/procframe/CodeSmoother.[h|c]pp
+	                      ComputeCombination.[h|c]pp
+			      ComputeIURAWeights.[h|c]pp
+			      ComputeLC.[h|c]pp
+			      ComputeLI.[h|c]pp
+			      ComputeLdelta.[h|c]pp
+			      ComputeMOPSWeights.[h|c]pp
+			      ComputeMelbourneWubbena.[h|c]pp
+			      ComputePC.[h|c]pp
+			      ComputePI.[h|c]pp
+			      ComputePdelta.[h|c]pp
+			      ComputeWindUp.[h|c]pp
+			      DataHeaders.[h|c]pp
+			      DataStructures.[h|c]pp
+			      DeltaOp.[h|c]pp
+			      LICSDetector.[h|c]pp
+			      MWCSDetector.[h|c]pp
+			      ModelObs.[h|c]pp
+			      ModelObsFixedStation.[h|c]pp
+			      ModeledPR.[h|c]pp
+			      ModeledReferencePR.[h|c]pp
+			      NablaOp.[h|c]pp
+			      OneFreqCSDetector.[h|c]pp
+			      PCSmoother.[h|c]pp
+			      ProcessingClass.hpp
+			      ProcessingVector.[h|c]pp
+			      SimpleFilter.[h|c]pp
+			      SolverLMS.[h|c]pp
+			      SolverWMS.[h|c]pp
+
+	- Integrated a new regex that is LGPL instead of GPL
+
+	- GCC 3.3.5 chokes on the use of __attribute__ - avoid using it
+	  unless we're compiling under GCC 4.x
+
+	- Updates to the INSTALL and README including additional website 
+	  information, information about new lib directory, an update of
+	  the build instructions, and an additional plug for help and 
+	  instruction available on the website
+
+	- Added a script to parse apps for user manual
+	        /apps/Wikify.pl
+
+	Library modifications
+	---------------------
+
+	- Added src/BLQDataReader.[h|c]pp
+	        Reads and parses ocean tides harmonics data in BLQ file format.
+		Ocean loading displacement modles usually use the ocean tide 
+		harmonics to compute station biases due to this effect.
+		You may find this data in 
+		http://www.oso.chalmers.se/~loading/
+	
+	- Added src/ComputeWindUp.[h|c]pp
+	        Computes the wind-up effect on the phase observables in radians.
+	
+	- Added src/MoonPosition.[h|c]pp
+	        Computes the approximate position of the Moon in ECEF.
+
+	- Added src/OceanLoading.[h|c]pp
+	        Models station discplacement caused by ovean tides loading
+
+	- Added src/PoleTides.[h|c]pp
+	        Computes pole tides according to IERS conventions.
+
+	- Added src/SatDataReader.[h|c]pp
+	        Reads and parses satellite data from PRN_GPS-like files. JPL
+		provides a files called PRN_GPS with important satellite 
+		information for some precise GPS data processing algorithms.
+		You may find this file in 
+		ftp://sideshow.jpl.nasa.gov:/pub/gipsy_products/gipsy_params
+	
+	- Added src/SolidTides.[h|c]pp
+	        Computes the solid tide effect at a given position and epoch
+		based on the Williams model (1970).
+
+	- Added lib/rxio/NovatelData.[h|c]pp
+	        lib/rxio/NovatelDtream.hpp
+		Moved Novatel data parsing into the rxio library
+	
+	- Added lib/procframe/BasicModel.[h|c]pp
+	        Computes the basic parts of a GNSS model. It is a more modular 
+		alternative to classes such as ModelObs.
+
+	- Added lib/procframe/ComputeLinear.[h|c]pp
+	        ComputeLinear is a GDS-enabled class that allows you to
+		compute several previously defined linear combinations in
+		one pass and in a flexible way.
+	
+	- Added lib/procframe/ComputeTropModel.[h|c]pp
+	        ComputeTropModel is a GDS-enabled class that computes and
+		inserts the main values related to a given GNSS 
+		tropospheric model. 
+	
+	- Added lib/procframe/CorrectObservables.[h|c]pp
+	        Corrects observables from effects such as antenna 
+		eccentricity, differences in phase centers, offsets due
+		to tide effects, etc.
+
+	- Added lib/procframe/Equation.[h|c]pp
+	        Used to define and handle an equation when dealing with GDS.
+	
+	- Added lib/procframe/LinearCombinations.[h|c]pp
+	        Defines handy linear conmbinations of GDS data.
+
+	- Added lib/procframe/StochasticModel.[h|c]pp
+	        Simple implementations of common stochastic models
+		used in Kalman filters.
+	
+	- Added lib/procframe/Variable.[h|c]pp
+	        Used to define and handle a variable when dealing with GDS
+
+	- Improved lib/procframe/ComputeMOPSWeights.[h|c]pp
+		More robust when ionospheric information is missing for GDS.
+	
+	- Improved lib/rxio/MDPNavSubframe.cpp
+	           lib/rxio/RinexConverters.cpp
+		The above classes now have better LLI computation.
+
+	- Improved src/AlmOrbit.cpp
+	           src/SEMAlmanacStore.[h|c]pp
+	        Added GPS epoch handling option.
+	
+	- Improved src/AstronomicalFunctions.[h|c]pp
+	           src/SunPosition.[h|c]pp
+	        Improvements: Use of statis members, definition of 
+		constants, etc.
+
+	- Improved src/EngEphemeris.[h|c]pp
+	           src/EngNav.cpp
+		   src/GPSEphemerisStore.[h|c]pp
+	        Added AODO to FIC bit cracking. Added means to access stored
+		eph moaps by SV.
+	
+	- Improved src/MSCData.[h|c]pp
+	           src/MSCStore.[h|c]pp
+	        Promoted getXvt from MSCStore to MSCData. 
+		Old MSCStore::getXvt(string, DayTime) still there. Now 
+		overloaded with MSCStore::getXvt(unsigned long, DayTime)
+
+	- Improved src/SP3Data.[h|c]pp
+	        Added a version guessing test to support SP3 better.
+	
+	- Improved src/TropModel.[h|c]pp
+	        Added NeillTropModel, a useful model implementing Neill
+		mapping finctions and used in deodetic software such as 
+		JPLs Gipsy/OASIS.
+	
+	- Improved src/YumaAlmanacStore.[h|c]pp
+	        Added time_of_interest option to aid with 10-bit week problem.
+
+	
+	Application modifications
+	-------------------------
+
+	- Added apps/converters/ash2mdp.cpp
+	        ash2mdp moved from apps/receiver/ to /apps/converters/
+
+	- Added apps/converters/ash2xyz.cpp
+	        Takes a stream of Ashtech observation and ephemeris data 
+		and outputs SV positions and ionospheric corrections. Added
+		an exponential filter to iono error and rate calculation.
+	
+	- Added apps/DataAvailability/DataAvailabilityAnalyzer.[h|c]pp
+	        Includes the per-obs changes in the raw statistics.
+	
+	- Added apps/MDPtools/mdpscreen.cpp
+	        mdpscreen moved back into MDPtools, but only being build 
+		conditionally.
+
+	- Added apps/MDPtools/mdpEdit.cpp
+	        mdpEdit: filters messages based on record number.
+
+	- Added apps/time/generateCalenders.bash
+	        Added a simple script to generate los of calendars at once
+		using calgps.
+
+	- Improved apps/checktools/CheckFrame.hpp
+	        Fixed CheckFrame to return 1 if any erors are encountered.
+		Added a command-line-option to CheckFrom to exit on first
+		error.
+
+	- Improved apps/reszilla/OrdEngine.cpp
+	        The trop model throws erros when the humidity is over 100.
+		Instead of sending it values over 100, just send 100.
+
+	- Improved apps/reszilla/OrdPlot.cpp
+	        Added a % data autoranger and smoothing on the ords.
+	
+	- Improved apps/rfw/rfw.cpp
+	        Added command line option that sends strings to the 
+		source periodically.
+
+	- Improved apps/swrx/PCodeGenerator.hpp
+	        GCC 3.3.5 chokes on the use of __attribute__ - avoid using it
+		unless we're compiling under GCC 4.x
+
+	- Improved apps/time/calgps.cpp
+	        Calgps now in graphical output.
+
+	- Improved apps/visibility/WhereSat.cpp
+	        + Got rid of "MATLAB-suitable" output option.
+		+ Results now output in a tabular format only.
+		+ Can process more than one SV, or all SVs.
+		+ Added time format option.
+		+ Output clock correction in ms, not seconds.
+		+ Better exception handling.
+	
+	- Improved apps/MDPtools/
+	        To allow the Tk to build under all platforms MDPTool was
+		removed from all non UNIX based system builds, namely Windows.
+
+	- Improved apps/receiver/
+	        Compilation disabled becasue of severe linking problems.
+
+	- Improved apps/reszilla/
+	        Changed Install process to allow python scripts to be 
+		installed without a hickup under Windows.
+
+
+	#################################################
+
 Version 1.4   Tuesday, December 18, 2007
 
 	General modifications
@@ -7,7 +249,7 @@ Version 1.4   Tuesday, December 18, 2007
 	  branching took place under revision 864 from dev/ to RC1.4/
 	
 	- Major refactoring of the Ephemeris/Almanac classes. This change may 
-	     break some apps. To fix them the following translations are useful:
+	  break some apps. To fix them the following translations are useful:
 	
               Old                           |        New
     -------------------------------------------------------------------------------
@@ -28,7 +270,8 @@ Version 1.4   Tuesday, December 18, 2007
 
 	- Added a library /dev/lib/vplot/ to create drawing primitives in SVG 
 	        and postscript formats. Intended to support complex, fully 
-	        customizable visualizations on GNSS analyses. 
+	        customizable visualizations on GNSS analyses. Supported only 
+	        in jam for now,	but with the hope of support in make.
 
 	- Improved version control 
 	  * set gpstk package version to 1.3 in the autoconf build world
@@ -135,10 +378,9 @@ Version 1.4   Tuesday, December 18, 2007
 	        Added systemUderDefined to SatId and corresponding change 
 	        in example7.cpp
 
-	//- //Improved src/SimpleKalmanFilter.[h|c]pp
 
 	Application modifications
-	---------------------
+	-------------------------
 
 	- Added apps/visibility/svvis.cpp
 	        Computes when satellites are visible at a given point 

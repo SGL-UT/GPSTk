@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/prototype/brent/coverage/compSatVis.cpp#11 $"
+#pragma ident "$Id:$"
 //
 // Compute number of stations visible to a set of space vehicles (SV) 
 // over a requested period (default 23:56).  Accept FIC 
