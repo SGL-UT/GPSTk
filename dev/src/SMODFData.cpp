@@ -71,8 +71,7 @@ namespace gpstk
          line += rightJustify(asString<short>(time.DOYyear()),4);
          line += rightJustify(asString<short>(time.DOYday()),3,'0');
          line += rightJustify(asString(time.DOYsecond(),7),13);
-         line += string(1, ' ');
-         line += rightJustify(asString<short>(PRNID),2);
+         line += rightJustify(asString<short>(PRNID),3);
          line += rightJustify(asString<long>(station),5);
          line += rightJustify(asString<short>(channel),2);
          line += rightJustify(asString<short>(type),1);
@@ -82,10 +81,8 @@ namespace gpstk
          else
             line += string(1, ' ');
          
-         line += string(1, ' ');
-         line += doub2for(obs, 20, 2);
-         line += string(1, ' ');
-         line += doub2for(stdDev, 11, 2);
+         line += doub2funny(obs, 21, 2);
+         line += doub2funny(stdDev, 12, 2);
          line += string(1, ' ');
          line += rightJustify(asString<short>(tempSource),1);
          line += rightJustify(asString<short>(pressSource),1);
@@ -208,14 +205,6 @@ namespace gpstk
             GPSTK_THROW(e);
          }
          
-            // a simple check to see if this is really an ODBIF file
-         if ((currentLine[20] != ' ') ||
-             (currentLine[32] != ' '))
-         {
-            gpstk::FFStreamError e("Invalid ICD211 line");
-            GPSTK_THROW(e);
-         }
-         
             // blank out column 66 (in case this ODBIF file uses it 
             //   for some unauthorized purpose)
          currentLine[65] = ' ';
@@ -324,5 +313,20 @@ namespace gpstk
             tempSource = pressSource = humidSource = 0;   
       }
    }   // end reallyGetRecord()
+
+   string SMODFData::doub2funny(const double& num,
+                                const std::string::size_type length,
+                                const std::string::size_type expLen)
+   {
+         // Prepend a space if num > 0.
+         // doub2sci() is supposed to do this, but it doesn't.
+      string str((num >= 0 ? 1 : 0), ' ');
+      str += doub2sci(num, length, expLen);
+         // replace the 'e' or 'E' with 'D' as specified in the '211
+      std::string::size_type idx = str.find_first_of("eE");
+      if (idx != std::string::npos)
+         str[idx] = 'D';
+      return str;
+   }
 
 } // end namespace gpstk

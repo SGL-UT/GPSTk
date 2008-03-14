@@ -92,6 +92,11 @@ namespace gpstk
 
       virtual void dump(std::ostream& s) const;
       
+         /// Convert a double to the "funny" format specified in the '211.
+      static std::string doub2funny(const double& num,
+                                    const std::string::size_type length,
+                                    const std::string::size_type expLen);
+
    protected:
       /// Writes a smodfdata object in the format specified
       /// by the stream to the stream.
