@@ -101,7 +101,7 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
                     "is time."),
      
      ephFileOpt('e', "eph",
-                "Where to get the ephemeris data. Can be " +
+                "Where to get the ephemeris data. Acceptable formats include " +
                 EphReader::formatsUnderstood() + ".", true),
      
      rxPosOpt('p', "position",

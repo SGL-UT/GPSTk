@@ -111,8 +111,8 @@ DDGen::DDGen() throw()
                     "Where to get the first receiver's obs data.", true),
      obs2FileOption('2', "obs2", 
                     "Where to get the second receiver's obs data.", true),
-     ephFileOption('e', "eph",  "Where to get the ephemeris data. Can be "
-                    "RINEX, FIC, or SP3.", true)
+     ephFileOption('e', "eph",  "Where to get the ephemeris data.  Acceptable "
+                "formats include " + EphReader::formatsUnderstood() + ".", true)
 {}
 
 //-----------------------------------------------------------------------------

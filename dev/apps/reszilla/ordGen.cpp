@@ -131,8 +131,8 @@ OrdGen::OrdGen() throw()
      msid(0),
      obsFileOption('o', "obs", "Where to get the obs data.", true),
    
-     ephFileOption('e', "eph",  "Where to get the ephemeris data. Can be "
-                   " rinex, fic, or sp3", true),
+     ephFileOption('e', "eph",  "Where to get the ephemeris data. Acceptable "
+                "formats include " + EphReader::formatsUnderstood() + ".", true),
 
      metFileOption('w', "weather", "Weather data file name (RINEX met "
                     "format only).")

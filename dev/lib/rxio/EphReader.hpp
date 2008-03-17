@@ -71,7 +71,7 @@ public:
    EphemerisStore* eph;
 
    static std::string formatsUnderstood()
-   { return "rinex nav, fic, sp3, yuma, and sem";}
+   { return "RINEX nav, FIC, SP3, YUMA, and SEM";}
 
 private:
    void read_rinex_nav_data(const std::string& fn);
