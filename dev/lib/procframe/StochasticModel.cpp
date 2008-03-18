@@ -145,14 +145,21 @@ namespace gpstk
                                       const SatID& sat,
                                       gnssSatTypeValue& gData )
    {
-         // Check if there was a cycle slip
-      if (gData(sat)(type) > 0.0)
+      try
+      {
+            // Check if there was a cycle slip
+         if (gData(sat)(type) > 0.0)
+         {
+            setCS(true);
+         }
+         else
+         {
+            setCS(false);
+         }
+      }
+      catch(Exception& e)
       {
          setCS(true);
-      }
-      else
-      {
-         setCS(false);
       }
 
       return;
@@ -173,14 +180,21 @@ namespace gpstk
                                       const SatID& sat,
                                       gnssRinex& gData )
    {
-         // Check if there was a cycle slip
-      if (gData(sat)(type) > 0.0)
+      try
+      {
+            // Check if there was a cycle slip
+         if (gData(sat)(type) > 0.0)
+         {
+            setCS(true);
+         }
+         else
+         {
+            setCS(false);
+         }
+      }
+      catch(Exception& e)
       {
          setCS(true);
-      }
-      else
-      {
-         setCS(false);
       }
 
       return;
