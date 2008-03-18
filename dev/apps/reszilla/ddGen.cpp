@@ -81,6 +81,7 @@ private:
    unsigned long msid;
    unsigned long window;    // seconds
    unsigned long minSNR;    // dB
+   double sigma;
    Triple antennaPos;
    
    ObsEpochMap obs1, obs2;
@@ -104,7 +105,7 @@ private:
 DDGen::DDGen() throw()
    : BasicFramework("ddGen", "Computes double-difference residuals from raw observations."),
      ddMode("all"), ordMode("smart"), minArcGap(60), minArcTime(60),
-     minArcLen(5), msid(0), window(0), minSNR(20),
+     minArcLen(5), msid(0), window(0), minSNR(20), sigma(6),
      computeStats(false), computeAll(false), removeUnhealthy(false),
 
      obs1FileOption('1', "obs1", 
@@ -122,49 +123,51 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
 {
    CommandOptionWithAnyArg
       ddModeOption('\0', "ddmode", "Specifies what observations are used to "
-                    "compute the double difference residuals. Valid values are:"
-                    " all. The default is " + ddMode),
+                   "compute the double difference residuals. Valid values are:"
+                   " all. The default is " + ddMode),
       ordModeOption('\0', "omode", "Specifies what observations are used to "
                     "compute the ORDs. Valid values are:"
                     "p1p2, z1z2, c1p2, c1y2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
                     "z2 smo, and smart. The default is " + ordMode),
       minArcTimeOption('\0', "min-arc-time", "The minimum length of time "
-                    "(in seconds) that a sequence of observations must "
-                    "span to be considered as an arc. The default "
-                    "value is " + asString(minArcTime, 1) + " seconds."),
+                       "(in seconds) that a sequence of observations must "
+                       "span to be considered as an arc. The default "
+                       "value is " + asString(minArcTime, 1) + " seconds."),
       minArcGapOption('\0', "min-arc-gap", "The minimum length of time "
-                    "(in seconds) between two arcs for them to be "
-                    "considered separate arcs. The default value "
-                    "is " + asString(minArcGap, 1) + " seconds."),
+                      "(in seconds) between two arcs for them to be "
+                      "considered separate arcs. The default value "
+                      "is " + asString(minArcGap, 1) + " seconds."),
       minArcLenOption('\0', "min-arc-length", "The minimum number of "
-                    "epochs that can be considered an arc. The "
-                    "default value is " + asString(minArcLen) +
-                    " epochs."),
+                      "epochs that can be considered an arc. The "
+                      "default value is " + asString(minArcLen) +
+                      " epochs."),
       elevBinsOption('b', "elev-bin",
-                    "A range of elevations, used in  computing"
-                    " the statistical summaries. Repeat to specify multiple "
-                    "bins. The default is \"-b 0-10 -b 10-20 -b 20-60 -b "
-                    "10-90\"."),
+                     "A range of elevations, used in  computing"
+                     " the statistical summaries. Repeat to specify multiple "
+                     "bins. The default is \"-b 0-10 -b 10-20 -b 20-60 -b "
+                     "10-90\"."),
       mscFileOption('c', "msc", "Station coordinate file."),
       antennaPosOption('p', "pos", "Location of the antenna in meters ECEF."),
       ephHealthSource('E',"health-src","Do not use data from unhealthy SVs "
-                    "as determined using this ephemeris source.  Can be "
-                    "RINEX navigation or FIC file(s). ");
+                      "as determined using this ephemeris source.  Can be "
+                      "RINEX navigation or FIC file(s). "),
+      sigmaOption('\0',"sigma","Multiplier for sigma stripping used in "
+                  "statistical computations. The default value is 6.");
 
-   CommandOptionWithNumberArg 
+   CommandOptionWithNumberArg
       msidOption('m', "msid", "Station to process data for. Used to "
-                    "select a station position from the msc file or data "
-                    "from a SMODF file."),
-                 
+                 "select a station position from the msc file or data "
+                 "from a SMODF file."),
+      
       timeSpanOption('w',"window","Compute mean values of the double "
-                    "differences over this time span (seconds). (15 min = 900)"), 
+                     "differences over this time span (seconds). (15 min = 900)"), 
       SNRoption('S',"SNR","Only included observables with a raw signal strength, "
-                    "or SNR, of at least this value, in dB. The default is 20 dB.");
+                "or SNR, of at least this value, in dB. The default is 20 dB.");
                     
    CommandOptionNoArg 
       statsOption('s', "stats", "Compute stats on the double differences."),
       allComboOption('a', "all-combos", "Compute all combinations, don't just "
-                    "use one master SV."),
+                     "use one master SV."),
       useNearOption('n', "near", "Allows the program to select an ephemeris that "
                     "is not strictly in the future. Only affects the selection of which broadcast "
                     "ephemeris to use. Use a close ephemeris"),
@@ -285,8 +288,8 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       if (typeid(ephStoreTemp)!=typeid(GPSEphemerisStore))
       {
          cerr << "You provided an eph source that was not broadcast ephemeris.\n"
-                 "(Precise ephemeris does not contain health info and can't be \n"
-                 " used with the \"-E\" option.) Exiting... \n";
+            "(Precise ephemeris does not contain health info and can't be \n"
+            " used with the \"-E\" option.) Exiting... \n";
          return false;
       }
       removeUnhealthy = true;
@@ -332,7 +335,8 @@ void DDGen::spinUp()
            << "# Minimum arc time: " << minArcTime << " seconds" << endl
            << "# Minimum arc length: " << minArcLen << " epochs" << endl
            << "# Minimum gap length: " << minArcGap << " seconds" << endl
-           << "# Antenna Position: " << setprecision(8) << antennaPos << endl;
+           << "# Antenna Position: " << setprecision(8) << antennaPos << endl
+           << "# Stripping sigma: " << sigma << endl;
       if (msid)
          cout << "# msid: " << msid << endl;
 
@@ -419,9 +423,7 @@ void DDGen::process()
       ddem.outputAverages(cout);   
    }
    
-   if (computeAll && computeStats)
-      ddem.outputStatsForAllCombos(cout, elr);
-   else if (computeStats)
+   if (computeStats)
       ddem.outputStats(cout, elr);
    else
       ddem.dump(cout);
