@@ -32,10 +32,12 @@ if $(UNIX)
     LINKLIBS += -lncurses ;
   }
 
-  GPSLinkLibraries mdpscreenx : gpstk rxio ;
   LinkLibraries mdpscreenx : mdplib ;
+  GPSLinkLibraries mdpscreenx : gpstk rxio ;
 
   GPSMain mdpscreenx : mdpscreen.cpp ScreenProc.cpp ;
 
+  if $(OS) != CYGWIN  {
   InstallBin $(BINDIR) : mdpscreen mdpscreenx ;
+  }
 }

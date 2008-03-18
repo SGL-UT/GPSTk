@@ -8,11 +8,11 @@ Version 1.5   Tuesday, March 11, 2008
 
 	- A large amount of work went into ensuring that the GPSTk built
 	  on all supported platforms using both jam and make. A place has 
-	  been set aside on the TWiki to inform developers on which patforms
+	  been set aside on the TWiki to inform developers on which platforms
 	  the Tk has been built successfully.
 	  http://www.gpstk.org/bin/view/Development/SourceStatus
 
-	- The Tk know builds successfully on OSX using jam and make
+	- The Tk now builds successfully on Mac OSX using jam and make
 
 	- Added a library /dev/lib/procframe/ (from Processing Framework)
 	  under which all pre-existing classes related to GNSS Data 
@@ -66,7 +66,7 @@ Version 1.5   Tuesday, March 11, 2008
 
 	- Added src/BLQDataReader.[h|c]pp
 	        Reads and parses ocean tides harmonics data in BLQ file format.
-		Ocean loading displacement modles usually use the ocean tide 
+		Ocean loading displacement models usually use the ocean tide 
 		harmonics to compute station biases due to this effect.
 		You may find this data in 
 		http://www.oso.chalmers.se/~loading/
@@ -85,7 +85,7 @@ Version 1.5   Tuesday, March 11, 2008
 
 	- Added src/SatDataReader.[h|c]pp
 	        Reads and parses satellite data from PRN_GPS-like files. JPL
-		provides a files called PRN_GPS with important satellite 
+		provides files called PRN_GPS with important satellite 
 		information for some precise GPS data processing algorithms.
 		You may find this file in 
 		ftp://sideshow.jpl.nasa.gov:/pub/gipsy_products/gipsy_params
@@ -143,7 +143,7 @@ Version 1.5   Tuesday, March 11, 2008
 	
 	- Improved src/AstronomicalFunctions.[h|c]pp
 	           src/SunPosition.[h|c]pp
-	        Improvements: Use of statis members, definition of 
+	        Improvements: Use of static members, definition of 
 		constants, etc.
 
 	- Improved src/EngEphemeris.[h|c]pp
@@ -163,7 +163,7 @@ Version 1.5   Tuesday, March 11, 2008
 	
 	- Improved src/TropModel.[h|c]pp
 	        Added NeillTropModel, a useful model implementing Neill
-		mapping finctions and used in deodetic software such as 
+		mapping functions and used in deodetic software such as 
 		JPLs Gipsy/OASIS.
 	
 	- Improved src/YumaAlmanacStore.[h|c]pp
@@ -185,7 +185,7 @@ Version 1.5   Tuesday, March 11, 2008
 	        Includes the per-obs changes in the raw statistics.
 	
 	- Added apps/MDPtools/mdpscreen.cpp
-	        mdpscreen moved back into MDPtools, but only being build 
+	        mdpscreen moved back into MDPtools, but only being built 
 		conditionally.
 
 	- Added apps/MDPtools/mdpEdit.cpp
