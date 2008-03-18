@@ -69,6 +69,8 @@ def main():
     if (len(args) and options.inputFile == None):
         options.inputFile = args[0]
 
+    debugLevel = options.debugLevel
+
     inputFile = sys.stdin
     if (options.inputFile):
         inputFile = open(options.inputFile)
@@ -84,7 +86,7 @@ def main():
         else:
             highlightPrns = [int(p) for p in options.prnHighlight]
 
-    if (options.debugLevel):
+    if options.debugLevel:
         print "Processing: %s" % inputFile.name
         print "Debug level: %d" % options.debugLevel
         print "Title: %s" % options.title
@@ -107,6 +109,8 @@ def main():
 
     rleClockList=[]
 
+    if options.debugLevel:
+        print "Reading ",inputFile.name
     for line in inputFile:
         line = line.strip()
         if options.debugLevel>1:
@@ -225,6 +229,8 @@ def main():
     ax1.set_ylim((0,0))
 
     if plotOrds:
+        if options.debugLevel:
+            print "Plotting ORDs"
         label="All prns"
         for prn in prns:
             onePrn = ords[:,ords[1]==prn]
@@ -240,7 +246,7 @@ def main():
                     smoothPlot(ax1, oneWart[0], oneWart[2], 'r,', label, 0)
                 label="none"
 
-        setLimit(ax1, ords[2], options.yRange)
+        set_ylim(ax1, ords[2], options.yRange)
 
         if options.clockDelta:
             # Plot the first deritive of the clock...
@@ -250,13 +256,13 @@ def main():
             dc = 1e3 * clock_diff/time_diff
             smoothPlot(ax1, clocks[0,:-1], dc, 'b-', "clk dif"%prn,
                        options.smoothing, options.yRange)
-            setLimit(ax1, dc, options.yRange)
+            set_ylim(ax1, dc, options.yRange)
         elif len(ocds[0]):
             # otherwise plot the clock deviations
             ax3=fig.add_axes(ax1.get_position())
             smoothPlot(ax3, ocds[0], ocds[1], 'b-', "clk res"%prn,
                        options.smoothing, options.yRange)
-            setLimit(ax3, ocds[1], options.yRange)
+            set_ylim(ax3, ocds[1], options.yRange)
             
         # If there are rle clocks, draw a vertical line where each new model
         # starts
@@ -296,7 +302,7 @@ def main():
 
     if plotClocks:
         if options.debugLevel:
-            print "Debiasing clocks"
+            print "Plotting clocks"
         clockOffset = int(numpy.average(clocks[1]))
         clocks[1] = clocks[1] - clockOffset
 
@@ -306,6 +312,7 @@ def main():
 
         smoothPlot(ax2, clocks[0], clocks[1], 'g,', "clock offset",
                    options.smoothing, options.yRange)
+        set_ylim(ax2, clocks[1], options.yRange)
         ax2.grid(True)
         ax2.set_ylabel('clock (meters)', **yprops)
 
@@ -380,19 +387,31 @@ def parse_time(words):
 # end of parse_time()
 
 
-def setLimit(ax, y, limit=None):
-    if not limit:
-        lim = (min(y), max(y))
-    elif limit == "ignore":
-        lim = ax.get_ylim()
-    elif limit[-1] == "%":
+def stripper(y, limit):
+    if not limit or limit == "ignore" or limit == "none":
+        return y
+
+    if limit[-1] == "%":
         fraction = float(limit[:-1])/100.0
         drop = int(numpy.floor(0.5 * (1-fraction) * len(y)))
         ds = numpy.sort(y)
         lim = (ds[drop], ds[-drop])
+    elif limit[-1] == "s":
+        mult = float(limit[:-1])
+        sigma = y.std(0) * mult        
+        lim = (-sigma , sigma)
     else:
         lim = (-float(limit), float(limit))
+
+    return y[(y>lim[0]) & (y<lim[1])]
+# endo stripper()
+
+
+def set_ylim(ax, y, limit=None):
+    ys = stripper(y, limit)
+    lim = (min(ys), max(ys))
     ax.set_ylim(lim)
+# endo set_ylim()
 
 
 def smoothPlot(ax, x, y, style="", txt="", window_len=0, limit=None):

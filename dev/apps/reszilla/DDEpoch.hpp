@@ -105,13 +105,13 @@ struct DDEpochMap : public std::map<gpstk::DayTime, DDEpoch>
    // residuals for the specified obs type within the given elevation range.
    std::string computeStats(
       const gpstk::ObsID oid,
-      const ElevationRange& er) const;
-   std::string computeStatsForAllCombos(
-      const gpstk::ObsID oid,
-      const ElevationRange& er) const;  
-      
-   void outputStats(std::ostream& s, const ElevationRangeList elr) const;
-   void outputStatsForAllCombos(std::ostream& s, const ElevationRangeList elr) const;
+      const ElevationRange& er,
+      const double sigma) const;
+
+   void outputStats(
+      std::ostream& s,
+      const ElevationRangeList elr,
+      const double sigma) const;
 
    void outputAverages(std::ostream& s) const;
    void dump(std::ostream& s) const;

@@ -461,67 +461,9 @@ void DDEpochMap::dump(std::ostream& s) const
 // residuals for the specified obs type within the given elevation range.
 //----------------------------------------------------------------------------
 string DDEpochMap::computeStats(
-   const gpstk::ObsID oid,
-   const ElevationRange& er) const
-{
-   ostringstream oss;
-   float minElevation = er.first;
-   float maxElevation = er.second;
-   double strip=1000;
-   int zeroCount=0;
-
-   gpstk::Stats<double> good, bad;
-   for (const_iterator ei = begin(); ei != end(); ei++)
-   {
-      const gpstk::DayTime& t = ei->first;
-      SvOIDM::const_iterator pi;
-      const DDEpoch& dde = ei->second;
-      for (pi = dde.ddSvOIDM.begin(); pi != dde.ddSvOIDM.end(); pi++)
-      {
-         const gpstk::SatID& prn = pi->first;
-         const OIDM& ddr = pi->second;
-         
-         if (prn == dde.masterPrn)
-            continue;
-         
-         if (dde.elevation[prn]<minElevation ||
-             dde.elevation[prn]>maxElevation)
-            continue;
-
-         OIDM::const_iterator ddi = ddr.find(oid);
-         if (ddi == ddr.end())
-            zeroCount++;
-         else
-         {
-            double dd = ddi->second;
-            if (std::abs(dd) < strip)
-               good.Add(dd);
-            else
-               bad.Add(dd);
-         }
-      }
-   }
-   
-   char b1[200];
-   char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
-   double maxDD = std::max(std::abs(good.Minimum()), std::abs(good.Maximum()));
-   sprintf(b1, "%2d-%2d  %8.5f  %8.3f  %7d  %6d  %6d  %6.2f",
-           (int)minElevation, (int)maxElevation,
-           good.StdDev()/sqrt((float)2), good.Average(),
-           good.N(), bad.N(), zeroCount, maxDD);
-
-   oss << setw(14) << left << asString(oid) << right << b1 << endl;
-   return oss.str();
-}  // end of DDEpochMap::computeStats()
-
-
-//----------------------------------------------------------------------------
-// Returns a string containing a statistical summary of the double difference
-// residuals for the specified obs type within the given elevation range.
-//----------------------------------------------------------------------------
-string DDEpochMap::computeStatsForAllCombos(
    const ObsID oid,
-   const ElevationRange& er) const
+   const ElevationRange& er,
+   const double sigma) const
 {
    float minElevation = er.first;
    float maxElevation = er.second;
@@ -529,35 +471,79 @@ string DDEpochMap::computeStatsForAllCombos(
    int zeroCount=0;
 
    gpstk::Stats<double> good, bad;
-   for (const_iterator ei = begin(); ei != end(); ei++)
+   for (int n=0; n<2; n++)
    {
-      const gpstk::DayTime& t = ei->first;
-      PrOIDM::const_iterator pi;
-      SvDoubleMap& elevation = ei->second.elevation;
-      for (pi = ei->second.ddPrOIDM.begin(); 
-           pi != ei->second.ddPrOIDM.end(); pi++)
+      good.Reset();
+      bad.Reset();
+      zeroCount=0;
+      if (debugLevel)
+         cout << "# stripping at " << strip << endl;
+      for (const_iterator ei = begin(); ei != end(); ei++)
       {
-         const SatIdPair& pr = pi->first;
-         const gpstk::SatID& sv1 = pr.first;
-         const gpstk::SatID& sv2 = pr.second;
-         const OIDM& ddr = pi->second;
+         const gpstk::DayTime& t = ei->first;
+         if (useMasterSV)
+         {
+            SvOIDM::const_iterator pi;
+            const DDEpoch& dde = ei->second;
+            for (pi = dde.ddSvOIDM.begin(); pi != dde.ddSvOIDM.end(); pi++)
+            {
+               const gpstk::SatID& prn = pi->first;
+               const OIDM& ddr = pi->second;
+               if (prn == dde.masterPrn ||
+                   dde.elevation[prn]<minElevation || 
+                   dde.elevation[prn]>maxElevation)
+                  continue;
 
-         if (elevation[sv1]<minElevation || elevation[sv1]>maxElevation ||
-             elevation[sv2]<minElevation || elevation[sv2]>maxElevation)
-            continue;
-
-         OIDM::const_iterator ddi = ddr.find(oid);
-         if (ddi == ddr.end())
-            zeroCount++;
+               OIDM::const_iterator ddi = ddr.find(oid);
+               if (ddi == ddr.end())
+                  zeroCount++;
+               else
+               {
+                  double dd = ddi->second;
+                  if (std::abs(dd) < strip)
+                     good.Add(dd);
+                  else
+                     bad.Add(dd);
+               }
+            }
+         }
          else
          {
-            double dd = ddi->second;
-            if (std::abs(dd) < strip)
-               good.Add(dd);
-            else
-               bad.Add(dd);
+            PrOIDM::const_iterator pi;
+            SvDoubleMap& elevation = ei->second.elevation;
+            for (pi = ei->second.ddPrOIDM.begin(); 
+                 pi != ei->second.ddPrOIDM.end(); pi++)
+            {
+               const SatIdPair& pr = pi->first;
+               const gpstk::SatID& sv1 = pr.first;
+               const gpstk::SatID& sv2 = pr.second;
+               const OIDM& ddr = pi->second;
+               
+               if (elevation[sv1]<minElevation || elevation[sv1]>maxElevation ||
+                   elevation[sv2]<minElevation || elevation[sv2]>maxElevation)
+                  continue;
+
+               OIDM::const_iterator ddi = ddr.find(oid);
+               if (ddi == ddr.end())
+                  zeroCount++;
+               else
+               {
+                  double dd = ddi->second;
+                  if (std::abs(dd) < strip)
+                     good.Add(dd);
+                  else
+                     bad.Add(dd);
+               }
+            }
          }
       }
+
+      if (sigma==0)
+         break;
+      double newStrip = sigma * good.StdDev();
+      if (std::abs((strip - newStrip)/strip) < .1)
+         break;
+      strip = newStrip;
    }
    
    ostringstream oss;
@@ -575,11 +561,15 @@ string DDEpochMap::computeStatsForAllCombos(
    }
 
    return oss.str();
-}  // end of DDEpochMap::computeStatsForAllCombos()
+}  // end of DDEpochMap::computeStats()
+
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-void DDEpochMap::outputStats(ostream& s, const ElevationRangeList elr) const
+void DDEpochMap::outputStats(
+   ostream& s, 
+   const ElevationRangeList elr,
+   const double sigma) const
 {
    // First figure out what obs types we have to work with
    if (debugLevel)
@@ -589,73 +579,25 @@ void DDEpochMap::outputStats(ostream& s, const ElevationRangeList elr) const
    for (const_iterator ei = begin(); ei != end(); ei++)
    {
       const DDEpoch& dde = ei->second;
-      for (SvOIDM::const_iterator pi = dde.ddSvOIDM.begin(); 
-          pi != dde.ddSvOIDM.end(); pi++)
+      if (useMasterSV)
       {
-         const OIDM& ddr = pi->second;
-         for (OIDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
-            obsSet.insert(ti->first);
+         for (SvOIDM::const_iterator pi = dde.ddSvOIDM.begin(); 
+              pi != dde.ddSvOIDM.end(); pi++)
+         {
+            const OIDM& ddr = pi->second;
+            for (OIDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
+               obsSet.insert(ti->first);
+         }
       }
-   }
-
-   s << endl
-     << "ObsID         elev    stddev     mean    # obs      # bad   "
-     << "# unk  max good  slips" 
-     << endl
-     << "------------- -----  --------  --------  -------    ------  "
-     << "------ --------  -----" 
-     << endl;
-     
-   // For convience, group these into L1
-   for (ElevationRangeList::const_iterator i = elr.begin(); 
-        i != elr.end(); i++)
-   {
-      for (set<ObsID>::const_iterator j = obsSet.begin(); 
-           j != obsSet.end(); j++)
-         if (j->band == ObsID::cbL1)
-            s << computeStats(*j, *i);
-      s << endl;
-   }
-   s << "------------------------------------"
-     << "------------------------------------"
-     << endl << endl;
-
-   // and L2
-   for (ElevationRangeList::const_iterator i = elr.begin(); 
-        i != elr.end(); i++)
-   {
-      for (set<ObsID>::const_iterator j = obsSet.begin(); 
-           j != obsSet.end(); j++)
-         if (j->band == ObsID::cbL2)
-            s << computeStats(*j, *i);
-      s << endl;
-   }
-   s << "------------------------------------"
-     << "------------------------------------"
-     << endl << endl;
-     
-}  // end of DDEpochMap::outputStats()
-
-
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-void DDEpochMap::outputStatsForAllCombos(ostream& s, 
-                                         const ElevationRangeList elr) const
-{
-   // First figure out what obs types we have to work with
-   if (debugLevel)
-      cout << "# Computing obsSet" << endl;
-
-   set<ObsID> obsSet;
-   for (const_iterator ei = begin(); ei != end(); ei++)
-   {
-      const DDEpoch& dde = ei->second;
-      for (PrOIDM::const_iterator pi = dde.ddPrOIDM.begin(); 
-           pi != dde.ddPrOIDM.end(); pi++)
+      else
       {
-         const OIDM& ddr = pi->second;
-         for (OIDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
-            obsSet.insert(ti->first);
+         for (PrOIDM::const_iterator pi = dde.ddPrOIDM.begin(); 
+              pi != dde.ddPrOIDM.end(); pi++)
+         {
+            const OIDM& ddr = pi->second;
+            for (OIDM::const_iterator ti = ddr.begin(); ti != ddr.end(); ti++)
+               obsSet.insert(ti->first);
+         }
       }
    }
 
@@ -673,7 +615,7 @@ void DDEpochMap::outputStatsForAllCombos(ostream& s,
       for (set<ObsID>::const_iterator j = obsSet.begin(); 
            j != obsSet.end(); j++)
          if (j->band == ObsID::cbL1)
-            s << computeStatsForAllCombos(*j, *i);
+            s << computeStats(*j, *i, sigma);
       s << endl;
    }
    
@@ -688,7 +630,7 @@ void DDEpochMap::outputStatsForAllCombos(ostream& s,
       for (set<ObsID>::const_iterator j = obsSet.begin(); 
            j != obsSet.end(); j++)
          if (j->band == ObsID::cbL2)
-            s << computeStatsForAllCombos(*j, *i);
+            s << computeStats(*j, *i, sigma);
       s << endl;
    }
    
@@ -696,8 +638,7 @@ void DDEpochMap::outputStatsForAllCombos(ostream& s,
      << "------------------------------------" 
      << endl << endl;
      
-}  // end of DDEpochMap::outputStatsForAllCombos()
-
+}  // end of DDEpochMap::outputStats()
 
 void DDEpochMap::outputAverages(ostream& s) const
 {
