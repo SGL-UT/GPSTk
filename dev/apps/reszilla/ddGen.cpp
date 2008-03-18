@@ -424,7 +424,7 @@ void DDGen::process()
    }
    
    if (computeStats)
-      ddem.outputStats(cout, elr);
+      ddem.outputStats(cout, elr, sigma);
    else
       ddem.dump(cout);
 }

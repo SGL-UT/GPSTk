@@ -38,6 +38,7 @@
 
 #include <limits>
 #include <set>
+#include <list>
 
 #include <StringUtils.hpp>
 #include <Stats.hpp>
@@ -467,9 +468,57 @@ string DDEpochMap::computeStats(
 {
    float minElevation = er.first;
    float maxElevation = er.second;
-   double strip=1000;
-   int zeroCount=0;
 
+   list<double> dd;
+   int zeroCount=0;
+   for (const_iterator ei = begin(); ei != end(); ei++)
+   {
+      if (useMasterSV)
+      {
+         SvOIDM::const_iterator pi;
+         const DDEpoch& dde = ei->second;
+         for (pi = dde.ddSvOIDM.begin(); pi != dde.ddSvOIDM.end(); pi++)
+         {
+            const gpstk::SatID& prn = pi->first;
+            const OIDM& ddr = pi->second;
+            if (prn == dde.masterPrn ||
+                dde.elevation[prn]<minElevation || 
+                dde.elevation[prn]>maxElevation)
+               continue;
+
+            OIDM::const_iterator ddi = ddr.find(oid);
+            if (ddi == ddr.end())
+               zeroCount++;
+            else
+               dd.push_back(ddi->second);
+         }
+      }
+      else
+      {
+         PrOIDM::const_iterator pi;
+         SvDoubleMap& elevation = ei->second.elevation;
+         for (pi = ei->second.ddPrOIDM.begin(); 
+              pi != ei->second.ddPrOIDM.end(); pi++)
+         {
+            const SatIdPair& pr = pi->first;
+            const gpstk::SatID& sv1 = pr.first;
+            const gpstk::SatID& sv2 = pr.second;
+            const OIDM& ddr = pi->second;
+               
+            if (elevation[sv1]<minElevation || elevation[sv1]>maxElevation ||
+                elevation[sv2]<minElevation || elevation[sv2]>maxElevation)
+               continue;
+
+            OIDM::const_iterator ddi = ddr.find(oid);
+            if (ddi == ddr.end())
+               zeroCount++;
+            else
+               dd.push_back(ddi->second);
+         }
+      }
+   }
+
+   double strip=1000;
    gpstk::Stats<double> good, bad;
    for (int n=0; n<2; n++)
    {
@@ -478,64 +527,13 @@ string DDEpochMap::computeStats(
       zeroCount=0;
       if (debugLevel)
          cout << "# stripping at " << strip << endl;
-      for (const_iterator ei = begin(); ei != end(); ei++)
+      list<double>::const_iterator i;
+      for (i = dd.begin(); i != dd.end(); i++)
       {
-         const gpstk::DayTime& t = ei->first;
-         if (useMasterSV)
-         {
-            SvOIDM::const_iterator pi;
-            const DDEpoch& dde = ei->second;
-            for (pi = dde.ddSvOIDM.begin(); pi != dde.ddSvOIDM.end(); pi++)
-            {
-               const gpstk::SatID& prn = pi->first;
-               const OIDM& ddr = pi->second;
-               if (prn == dde.masterPrn ||
-                   dde.elevation[prn]<minElevation || 
-                   dde.elevation[prn]>maxElevation)
-                  continue;
-
-               OIDM::const_iterator ddi = ddr.find(oid);
-               if (ddi == ddr.end())
-                  zeroCount++;
-               else
-               {
-                  double dd = ddi->second;
-                  if (std::abs(dd) < strip)
-                     good.Add(dd);
-                  else
-                     bad.Add(dd);
-               }
-            }
-         }
+         if (std::abs(*i) < strip)
+            good.Add(*i);
          else
-         {
-            PrOIDM::const_iterator pi;
-            SvDoubleMap& elevation = ei->second.elevation;
-            for (pi = ei->second.ddPrOIDM.begin(); 
-                 pi != ei->second.ddPrOIDM.end(); pi++)
-            {
-               const SatIdPair& pr = pi->first;
-               const gpstk::SatID& sv1 = pr.first;
-               const gpstk::SatID& sv2 = pr.second;
-               const OIDM& ddr = pi->second;
-               
-               if (elevation[sv1]<minElevation || elevation[sv1]>maxElevation ||
-                   elevation[sv2]<minElevation || elevation[sv2]>maxElevation)
-                  continue;
-
-               OIDM::const_iterator ddi = ddr.find(oid);
-               if (ddi == ddr.end())
-                  zeroCount++;
-               else
-               {
-                  double dd = ddi->second;
-                  if (std::abs(dd) < strip)
-                     good.Add(dd);
-                  else
-                     bad.Add(dd);
-               }
-            }
-         }
+            bad.Add(*i);
       }
 
       if (sigma==0)
