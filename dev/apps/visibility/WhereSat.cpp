@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 		double x, y, z;
 		sscanf(positionOpt.getValue().front().c_str(),"%lf %lf %lf", &x, &y, &z);
 		antXvt.x[0] = x; antXvt.x[1] = y; antXvt.x[2] = z;
-		cout << ", Elevation(deg), Azimuth(deg), Range(m)";
+		cout << ", Azimuth(deg), Elevation(deg), Range(m)";
 	}
 	cout << endl;
 	
