@@ -277,7 +277,6 @@ void DDEpoch::selectMasterPrn(
    }
 } // end of DDEpoch::selectMasterPrn()
 
-
 //----------------------------------------------------------------------------
 // compute the double difference of all common epochs
 //----------------------------------------------------------------------------
@@ -457,6 +456,112 @@ void DDEpochMap::dump(std::ostream& s) const
 }  // end of DDEpochMap::dump()
 
 
+class PowerSum
+{
+public:
+   PowerSum() {clear();};
+   const static int order = 4;
+   double s[order+1];
+   long n;
+
+   void clear()
+   {
+      for (int i=1; i<=order; i++)
+         s[i]=0.0;
+      n=0;
+   }
+   
+   void add(double x)
+   {
+      n++;
+      double px=x;
+      for (int i=1; i<=order; i++, px*=x)
+         s[i] += px;
+   }
+
+   void subtract(double x)
+   {
+      n--;
+      double px=x;
+      for (int i=1; i<=order; i++, px*=x)
+         s[i] -= px;
+   }
+
+   void add(list<double>::const_iterator b, list<double>::const_iterator e)
+   {
+      list<double>::const_iterator i;
+      for (i=b; i != e; i++)
+         add(*i);
+   }
+
+   void subtract(list<double>::const_iterator b, list<double>::const_iterator e)
+   {
+      list<double>::const_iterator i;
+      for (i=b; i != e; i++)
+         subtract(*i);
+   }
+
+   double avg() const
+   {
+      if (n<1)
+         return 0;
+      return s[1]/n;
+   }
+
+   double var() const
+   {
+      if (n<2)
+         return 0;
+      double ni=1.0/n;
+      double s12 = s[1]*s[1];
+      double m2 = ni*(s[2] - ni*s12);
+      return m2;
+   }
+
+   double kurt() const
+   {
+      if (n<4)
+         return 0;
+      double ni=1.0/n;
+
+      double s12 = s[1]*s[1];
+      double m2 = ni*(s[2] - ni*s12);
+      double m4 = ni*(s[4] + ni*(-4*s[1]*s[3] + ni*(6*s12*s[2] + ni*(-3*s12*s12))));
+      return m4/(m2*m2);
+   }
+
+   void dump(std::ostream& str)
+   {
+      str << "n:" << n;
+      for (int i=1; i<=order; i++)
+         str << " s" << i << ":" << s[i];
+      str << endl;
+
+      double ni=1.0/n;
+
+      double s12 = s[1]*s[1];
+      double m2 = ni*(s[2] - ni*s12);
+      double m4 = ni*(s[4] + ni*(-4*s[1]*s[3] + ni*(6*s12*s[2] + ni*(-3*s12*s12))));
+
+      str << "stddev:" << sqrt(var()) << " kurtosis:" << kurt() << endl;
+   }   
+/*
+   const double pnt[]={
+      5,    7,    8,    9,   10,   12,   15,   20,   25,
+      30,   40,   50,   75,  100,  200,  500, 1000, 1e5, 1.e30};
+   // 5% critical values
+   const double cv5[] = {
+      2.90, 3.55, 3.70, 3.86, 3.95, 4.05, 4.13, 4.17, 4.16,
+      4.11, 4.06, 3.99, 3.87, 3.77, 3.57, 3.37, 3.26, 3.10, 3.00};
+   // 1% critical values
+   const double cv1[]= {
+      3.10, 4.23, 4.53, 4.82, 5.00, 5.20, 5.30, 5.36, 5.30,
+      5.21, 5.04, 4.88, 4.59, 4.39, 3.98, 3.60, 3.41, 3.20, 3.00};
+*/
+};
+
+
+
 //----------------------------------------------------------------------------
 // Returns a string containing a statistical summary of the double difference
 // residuals for the specified obs type within the given elevation range.
@@ -518,47 +623,68 @@ string DDEpochMap::computeStats(
       }
    }
 
-   double strip=1000;
-   gpstk::Stats<double> good, bad;
-   for (int n=0; n<2; n++)
+   if (dd.size()<5)
+      return "";
+
+   dd.sort();
+   list<double>::const_iterator b=dd.begin(), e=dd.end();
+   PowerSum f;
+   f.add(b,e);
+
+   // Now start removing outliers
+   while (f.n>5 && f.kurt() > 3.2)
    {
-      good.Reset();
-      bad.Reset();
-      zeroCount=0;
-      if (debugLevel)
-         cout << "# stripping at " << strip << endl;
-      list<double>::const_iterator i;
-      for (i = dd.begin(); i != dd.end(); i++)
+      if (debugLevel>1)
+         cout << "n:" << f.n
+              << " sdev:" << setprecision(8) << sqrt(f.var())
+              << " kurt:"<< setprecision(4) << f.kurt();
+
+      double kill, dk;
+      e--;
+      if (std::abs(*b) > std::abs(*e))
       {
-         if (std::abs(*i) < strip)
-            good.Add(*i);
-         else
-            bad.Add(*i);
+         kill = *b;
+         b++;
+         dk = std::abs((kill - *b)/ *b);
       }
+      else
+      {
+         kill = *e;
+         e--;
+         dk = std::abs((kill - *e)/ *e);
+      }
+      e++;
 
-      if (sigma==0)
-         break;
-      double newStrip = sigma * good.StdDev();
-      if (std::abs((strip - newStrip)/strip) < .1)
-         break;
-      strip = newStrip;
+      // If we removed a number that significantly changes the range, we should
+      // recompute the sums since numerical error will creep in otherwise
+      if (dk>10)
+      {
+         f.clear();
+         f.add(b,e);
+      }
+      else
+         f.subtract(kill);
    }
-   
+
+   if (f.n<5)
+      return "";
+
    ostringstream oss;
-   if (good.N() > 0 || bad.N() >0)
-   {
-      char b1[200];
-      char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
-      double maxDD = std::max(std::abs(good.Minimum()),
-                     std::abs(good.Maximum()));
-      sprintf(b1, "%2d-%2d  %8.5f  %8.3f  %7d  %6d  %6d  %6.2f",
-              (int)minElevation, (int)maxElevation,
-              good.StdDev()/sqrt((float)2), good.Average(),
-              good.N(), bad.N(), zeroCount, maxDD);
-      oss << setw(14) << left << asString(oid) << right << b1 << endl;
-   }
 
+   double kurt = f.kurt();
+   double sdev = sqrt(f.var());
+   double avg = f.avg();
+   long n = f.n;
+   long nbad = dd.size()-n;
+   double pctbad = 100.0 * nbad/dd.size();
+   char b1[200];
+   double range = *e - *b;
+   sprintf(b1, "%2d-%2d  %8.5f  %8.4f  %8d  %7d  %7.4f  %7.4f ",
+           (int)minElevation, (int)maxElevation,
+           sdev/2, avg, n, nbad, pctbad, kurt);
+   oss << setw(15) << left << asString(oid) << right << b1 << endl;
    return oss.str();
+
 }  // end of DDEpochMap::computeStats()
 
 
@@ -600,10 +726,9 @@ void DDEpochMap::outputStats(
    }
 
    s << endl
-     << "ObsID         elev    stddev     mean    # obs      # bad   "
-     << "# unk  max good  slips" << endl
-     << "------------- -----  --------  --------  -------    ------  "
-     << "------ --------  -----"
+     << "                        Inluded Observations        Excluded Outliers " << endl
+     << "ObsID          elev    noise     mean       count     count    pcts     kurt    slips" << endl
+     << "-------------  -----  --------  --------  --------  -------  -------   ------   ------"
      << endl;
 
    // For convience, group these into L1
@@ -617,8 +742,7 @@ void DDEpochMap::outputStats(
       s << endl;
    }
    
-   s << "------------------------------------"
-     << "------------------------------------"
+   s << "-----------------------------------------------------------------------------"
      << endl;
 
    // and L2
@@ -632,11 +756,11 @@ void DDEpochMap::outputStats(
       s << endl;
    }
    
-   s << "------------------------------------"
-     << "------------------------------------" 
+   s << "-----------------------------------------------------------------------------"
      << endl << endl;
      
 }  // end of DDEpochMap::outputStats()
+
 
 void DDEpochMap::outputAverages(ostream& s) const
 {
