@@ -10,8 +10,8 @@ if $(PREPROCESSING)
 else
 {
    GPSBuildLibrary procframe : 
-      BasicModel.cpp CodeSmoother.cpp ComputeCombination.cpp
-      ComputeIURAWeights.cpp ComputeLC.cpp
+      BasicModel.cpp CodeKalmanSolver.cpp CodeSmoother.cpp
+      ComputeCombination.cpp ComputeIURAWeights.cpp ComputeLC.cpp
       ComputeLdelta.cpp ComputeLI.cpp ComputeLinear.cpp
       ComputeMelbourneWubbena.cpp ComputeMOPSWeights.cpp ComputePC.cpp
       ComputePdelta.cpp ComputePI.cpp ComputeTropModel.cpp ComputeWindUp.cpp
@@ -24,16 +24,16 @@ else
       ;
 
    InstallFile $(INCDIR) :
-      BasicModel.hpp CodeSmoother.hpp ComputeCombination.hpp
-      ComputeIURAWeights.hpp ComputeLC.hpp ComputeLdelta.hpp ComputeLI.hpp
-      ComputeLinear.hpp ComputeMelbourneWubbena.hpp ComputeMOPSWeights.hpp
-      ComputePC.hpp ComputePdelta.hpp ComputePI.hpp ComputeTropModel.hpp
-      ComputeWindUp.hpp CorrectObservables.hpp Equation.hpp DataHeaders.hpp
-      DataStructures.hpp DeltaOp.hpp LICSDetector.hpp LinearCombinations.hpp
-      ModeledPR.hpp ModeledReferencePR.hpp ModelObs.hpp
-      ModelObsFixedStation.hpp MWCSDetector.hpp NablaOp.hpp
-      OneFreqCSDetector.hpp PCSmoother.hpp ProcessingClass.hpp
-      ProcessingVector.hpp SimpleFilter.hpp SolverLMS.hpp SolverWMS.hpp
-      StochasticModel.hpp Variable.hpp XYZ2NED.hpp XYZ2NEU.hpp
+      BasicModel.hpp CodeKalmanSolver.hpp CodeSmoother.hpp
+      ComputeCombination.hpp ComputeIURAWeights.hpp ComputeLC.hpp
+      ComputeLdelta.hpp ComputeLI.hpp  ComputeLinear.hpp
+      ComputeMelbourneWubbena.hpp ComputeMOPSWeights.hpp ComputePC.hpp
+      ComputePdelta.hpp ComputePI.hpp ComputeTropModel.hpp ComputeWindUp.hpp
+      CorrectObservables.hpp Equation.hpp DataHeaders.hpp DataStructures.hpp
+      DeltaOp.hpp LICSDetector.hpp LinearCombinations.hpp ModeledPR.hpp
+      ModeledReferencePR.hpp ModelObs.hpp ModelObsFixedStation.hpp
+      MWCSDetector.hpp NablaOp.hpp OneFreqCSDetector.hpp PCSmoother.hpp
+      ProcessingClass.hpp ProcessingVector.hpp SimpleFilter.hpp SolverLMS.hpp
+      SolverWMS.hpp  StochasticModel.hpp Variable.hpp XYZ2NED.hpp XYZ2NEU.hpp
       ;
 }
