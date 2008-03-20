@@ -106,12 +106,12 @@ struct DDEpochMap : public std::map<gpstk::DayTime, DDEpoch>
    std::string computeStats(
       const gpstk::ObsID oid,
       const ElevationRange& er,
-      const double sigma) const;
+      const double strip) const;
 
    void outputStats(
       std::ostream& s,
       const ElevationRangeList elr,
-      const double sigma) const;
+      const double strip) const;
 
    void outputAverages(std::ostream& s) const;
    void dump(std::ostream& s) const;

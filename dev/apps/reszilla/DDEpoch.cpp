@@ -546,6 +546,8 @@ public:
       str << "stddev:" << sqrt(var()) << " kurtosis:" << kurt() << endl;
    }   
 /*
+  These are used to determine kurtosis values for specific confidence based upon
+  the sample size.
    const double pnt[]={
       5,    7,    8,    9,   10,   12,   15,   20,   25,
       30,   40,   50,   75,  100,  200,  500, 1000, 1e5, 1.e30};
@@ -569,7 +571,7 @@ public:
 string DDEpochMap::computeStats(
    const ObsID oid,
    const ElevationRange& er,
-   const double sigma) const
+   const double strip) const
 {
    float minElevation = er.first;
    float maxElevation = er.second;
@@ -632,7 +634,7 @@ string DDEpochMap::computeStats(
    f.add(b,e);
 
    // Now start removing outliers
-   while (f.n>5 && f.kurt() > 3.2)
+   while (f.n>5 && f.kurt() > strip)
    {
       if (debugLevel>1)
          cout << "n:" << f.n
@@ -675,14 +677,21 @@ string DDEpochMap::computeStats(
    double sdev = sqrt(f.var());
    double avg = f.avg();
    long n = f.n;
-   long nbad = dd.size()-n;
+   long nbad = dd.size()-f.n;
    double pctbad = 100.0 * nbad/dd.size();
-   char b1[200];
    double range = *e - *b;
-   sprintf(b1, "%2d-%2d  %8.5f  %8.4f  %8d  %7d  %7.4f  %7.4f ",
-           (int)minElevation, (int)maxElevation,
-           sdev/2, avg, n, nbad, pctbad, kurt);
-   oss << setw(15) << left << asString(oid) << right << b1 << endl;
+
+   oss << setw(15) << left << asString(oid) << right
+       << setw(2) << (int)minElevation << "-" << setw(2) << (int)maxElevation
+       << left
+       << "  " << setprecision(3) << setw(9) << sdev/2
+       << "  " << setprecision(3) << setw(9) << avg
+       << right
+       << "  " << setw(8) << f.n
+       << "  " << setw(7) << nbad
+       << left
+       << "  " << setprecision(4) << setw(8) << pctbad
+       << "  " << setw(7) << kurt << endl;
    return oss.str();
 
 }  // end of DDEpochMap::computeStats()
@@ -693,7 +702,7 @@ string DDEpochMap::computeStats(
 void DDEpochMap::outputStats(
    ostream& s, 
    const ElevationRangeList elr,
-   const double sigma) const
+   const double strip) const
 {
    // First figure out what obs types we have to work with
    if (debugLevel)
@@ -726,9 +735,9 @@ void DDEpochMap::outputStats(
    }
 
    s << endl
-     << "                        Inluded Observations        Excluded Outliers " << endl
-     << "ObsID          elev    noise     mean       count     count    pcts     kurt    slips" << endl
-     << "-------------  -----  --------  --------  --------  -------  -------   ------   ------"
+     << "                           Inluded Observations       Excluded Outliers         " << endl
+     << "ObsID          elev   noise      mean          count    count  pcts       kurt " << endl
+     << "-------------  -----  --------   --------   --------  -------  --------   ------"
      << endl;
 
    // For convience, group these into L1
@@ -738,7 +747,7 @@ void DDEpochMap::outputStats(
       for (set<ObsID>::const_iterator j = obsSet.begin(); 
            j != obsSet.end(); j++)
          if (j->band == ObsID::cbL1)
-            s << computeStats(*j, *i, sigma);
+            s << computeStats(*j, *i, strip);
       s << endl;
    }
    
@@ -752,7 +761,7 @@ void DDEpochMap::outputStats(
       for (set<ObsID>::const_iterator j = obsSet.begin(); 
            j != obsSet.end(); j++)
          if (j->band == ObsID::cbL2)
-            s << computeStats(*j, *i, sigma);
+            s << computeStats(*j, *i, strip);
       s << endl;
    }
    

@@ -81,7 +81,7 @@ private:
    unsigned long msid;
    unsigned long window;    // seconds
    unsigned long minSNR;    // dB
-   double sigma;
+   double strip;
    Triple antennaPos;
    
    ObsEpochMap obs1, obs2;
@@ -105,7 +105,7 @@ private:
 DDGen::DDGen() throw()
    : BasicFramework("ddGen", "Computes double-difference residuals from raw observations."),
      ddMode("all"), ordMode("smart"), minArcGap(60), minArcTime(60),
-     minArcLen(5), msid(0), window(0), minSNR(20), sigma(6),
+     minArcLen(5), msid(0), window(0), minSNR(20), strip(3.2),
      computeStats(false), computeAll(false), removeUnhealthy(false),
 
      obs1FileOption('1', "obs1", 
@@ -151,8 +151,8 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       ephHealthSource('E',"health-src","Do not use data from unhealthy SVs "
                       "as determined using this ephemeris source.  Can be "
                       "RINEX navigation or FIC file(s). "),
-      sigmaOption('\0',"sigma","Multiplier for sigma stripping used in "
-                  "statistical computations. The default value is 6.");
+      stripOption('\0',"strip","Factor used in stripping data prior to computing"
+                  "descriptive statistics. The default value is "+asString(strip));
 
    CommandOptionWithNumberArg
       msidOption('m', "msid", "Station to process data for. Used to "
@@ -307,6 +307,9 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    if (minArcGapOption.getCount())
       minArcGap = asDouble(minArcGapOption.getValue().front());
 
+   if (stripOption.getCount())
+      strip = asDouble(stripOption.getValue().front());
+
    if (statsOption.getCount())
       computeStats = true;
    
@@ -336,7 +339,7 @@ void DDGen::spinUp()
            << "# Minimum arc length: " << minArcLen << " epochs" << endl
            << "# Minimum gap length: " << minArcGap << " seconds" << endl
            << "# Antenna Position: " << setprecision(8) << antennaPos << endl
-           << "# Stripping sigma: " << sigma << endl;
+           << "# Stripping factor: " << strip << endl;
       if (msid)
          cout << "# msid: " << msid << endl;
 
@@ -424,7 +427,7 @@ void DDGen::process()
    }
    
    if (computeStats)
-      ddem.outputStats(cout, elr, sigma);
+      ddem.outputStats(cout, elr, strip);
    else
       ddem.dump(cout);
 }
