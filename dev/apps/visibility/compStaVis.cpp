@@ -1,4 +1,4 @@
- #pragma ident "$Id:$"
+#pragma ident "$Id:$"
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -695,8 +695,11 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
                }
                else
                {
-                  if (healthyOnly==2) sprintf(SVform," %02d(HLTH)",PRNID);
-                  SVList += SVform;
+                  if (healthyOnly==2)
+                  {
+                     sprintf(SVform," %02d(HLTH)",PRNID);
+                     SVList += SVform;
+                  }
                }
             }
          }
