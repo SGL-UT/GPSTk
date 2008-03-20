@@ -41,7 +41,7 @@ namespace gpstk
 
 
       // SatID object representing all satellites : type(Unknown),
-      /// sourceName("").
+      // sourceName("").
    SatID Variable::allSats;
 
 
