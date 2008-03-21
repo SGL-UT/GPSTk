@@ -84,6 +84,8 @@ namespace gpstk
                           const Matrix<double>& designMatrix)
       throw(InvalidSolver)
    {
+         // By default, results are invalid
+      valid = false;
 
       int gCol = static_cast<int>(designMatrix.cols());
 

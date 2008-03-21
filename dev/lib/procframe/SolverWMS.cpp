@@ -99,7 +99,10 @@ namespace gpstk
                           const Vector<double>& weightVector)
       throw(InvalidSolver)
    {
-         // First, check that everyting has a proper size
+         // By default, results are invalid
+      valid = false;
+
+         // Check that everyting has a proper size
       int wSize = static_cast<int>(weightVector.size());
       int pSize = static_cast<int>(prefitResiduals.size());
       if (!(wSize==pSize))
@@ -138,6 +141,9 @@ namespace gpstk
                           const Matrix<double>& weightMatrix)
       throw(InvalidSolver)
    {
+         // By default, results are invalid
+      valid = false;
+
       if (!(weightMatrix.isSquare()))
       {
          InvalidSolver e("Weight matrix is not square");
