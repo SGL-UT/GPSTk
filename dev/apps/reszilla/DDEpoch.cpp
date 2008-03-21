@@ -681,7 +681,8 @@ string DDEpochMap::computeStats(
    double pctbad = 100.0 * nbad/dd.size();
    double range = *e - *b;
 
-   oss << setw(15) << left << asString(oid) << right
+   oss << "<s " 
+       << setw(15) << left << asString(oid) << right
        << setw(2) << (int)minElevation << "-" << setw(2) << (int)maxElevation
        << left
        << "  " << setprecision(3) << setw(9) << sdev/2
@@ -735,9 +736,9 @@ void DDEpochMap::outputStats(
    }
 
    s << endl
-     << "                           Inluded Observations       Excluded Outliers         " << endl
-     << "ObsID          elev   noise      mean          count    count  pcts       kurt " << endl
-     << "-------------  -----  --------   --------   --------  -------  --------   ------"
+     << "<s                           Inluded Observations       Excluded Outliers         " << endl
+     << "<s  ObsID         elev   noise      mean          count    count  pcts       kurt " << endl
+     << "<s -------------  -----  --------   --------   --------  -------  --------   ------"
      << endl;
 
    // For convience, group these into L1
@@ -751,7 +752,7 @@ void DDEpochMap::outputStats(
       s << endl;
    }
    
-   s << "-----------------------------------------------------------------------------"
+   s << "<s -----------------------------------------------------------------------------"
      << endl;
 
    // and L2
@@ -765,7 +766,7 @@ void DDEpochMap::outputStats(
       s << endl;
    }
    
-   s << "-----------------------------------------------------------------------------"
+   s << "<s -----------------------------------------------------------------------------"
      << endl << endl;
      
 }  // end of DDEpochMap::outputStats()

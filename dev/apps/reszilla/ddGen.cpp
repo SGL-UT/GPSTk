@@ -87,7 +87,7 @@ private:
    ObsEpochMap obs1, obs2;
    CommandOptionWithAnyArg obs1FileOption, obs2FileOption, ephFileOption;
    ElevationRangeList elr;
-   bool computeStats, computeAll, removeUnhealthy, zeroTrop, useNear;
+   bool outputRaw, computeAll, removeUnhealthy, zeroTrop, useNear;
    EphReader healthSrcER;
    
    void readObsFile(const CommandOptionWithAnyArg& obsFileOption,
@@ -106,7 +106,7 @@ DDGen::DDGen() throw()
    : BasicFramework("ddGen", "Computes double-difference residuals from raw observations."),
      ddMode("all"), ordMode("smart"), minArcGap(60), minArcTime(60),
      minArcLen(5), msid(0), window(0), minSNR(20), strip(3.2),
-     computeStats(false), computeAll(false), removeUnhealthy(false),
+     outputRaw(false), computeAll(false), removeUnhealthy(false),
 
      obs1FileOption('1', "obs1", 
                     "Where to get the first receiver's obs data.", true),
@@ -165,7 +165,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
                 "or SNR, of at least this value, in dB. The default is 20 dB.");
                     
    CommandOptionNoArg 
-      statsOption('s', "stats", "Compute stats on the double differences."),
+      rawOption('r', "raw", "Output the raw double differences in addition to the descriptive statistics."),
       allComboOption('a', "all-combos", "Compute all combinations, don't just "
                      "use one master SV."),
       useNearOption('n', "near", "Allows the program to select an ephemeris that "
@@ -310,8 +310,8 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    if (stripOption.getCount())
       strip = asDouble(stripOption.getValue().front());
 
-   if (statsOption.getCount())
-      computeStats = true;
+   if (rawOption.getCount())
+      outputRaw = true;
    
    if (allComboOption.getCount())
       computeAll = true;
@@ -426,9 +426,8 @@ void DDGen::process()
       ddem.outputAverages(cout);   
    }
    
-   if (computeStats)
-      ddem.outputStats(cout, elr, strip);
-   else
+   ddem.outputStats(cout, elr, strip);
+   if (outputRaw)
       ddem.dump(cout);
 }
 
