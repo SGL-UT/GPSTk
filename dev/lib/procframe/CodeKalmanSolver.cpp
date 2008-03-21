@@ -195,8 +195,6 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      int gCol = static_cast<int>(designMatrix.cols());
-
       int gRow = static_cast<int>(designMatrix.rows());
       if (!(gRow==pRow))
       {
