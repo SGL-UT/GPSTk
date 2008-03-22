@@ -1,3 +1,4 @@
+#pragma ident "$Id: $"
 
 /**
  * @file SimpleFilter.cpp
@@ -22,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -33,88 +34,92 @@
 namespace gpstk
 {
 
-    // Returns a satTypeValueMap object, filtering the target observables.
-    //
-    // @param gData     Data object holding the data.
-    //
-    satTypeValueMap& SimpleFilter::Process(satTypeValueMap& gData)
-    {
+      // Returns a satTypeValueMap object, filtering the target observables.
+      //
+      // @param gData     Data object holding the data.
+      //
+   satTypeValueMap& SimpleFilter::Process(satTypeValueMap& gData)
+   {
 
-        SatIDSet satRejectedSet;
+      SatIDSet satRejectedSet;
 
-        // Check all the indicated TypeID's
-        TypeIDSet::const_iterator pos;
-        for (pos = filterTypeSet.begin(); pos != filterTypeSet.end(); ++pos)
-        {
+         // Check all the indicated TypeID's
+      TypeIDSet::const_iterator pos;
+      for (pos = filterTypeSet.begin(); pos != filterTypeSet.end(); ++pos)
+      {
 
-            double value(0.0);
+         double value(0.0);
 
             // Loop through all the satellites
-            satTypeValueMap::iterator it;
-            for (it = gData.begin(); it != gData.end(); ++it) 
+         satTypeValueMap::iterator it;
+         for (it = gData.begin(); it != gData.end(); ++it) 
+         {
+            try
             {
-                try
-                {
-                    // Try to extract the values
-                    value = (*it).second(*pos);
+                  // Try to extract the values
+               value = (*it).second(*pos);
 
-                    // Now, check that the value is within bounds
-                    if ( !( checkValue(value) ) )
-                    {
-                        // If value is out of bounds, then schedule this satellite for removal
-                        satRejectedSet.insert( (*it).first );
-                    }
-                }
-                catch(...)
-                {
-                    // If some value is missing, then schedule this satellite for removal
-                    satRejectedSet.insert( (*it).first );
-                }
+                  // Now, check that the value is within bounds
+               if ( !( checkValue(value) ) )
+               {
+                     // If value is out of bounds, then schedule this
+                     // satellite for removal
+                   satRejectedSet.insert( (*it).first );
+               }
             }
-            // Before checking next TypeID, let's remove satellites with data out of bounds
-            gData.removeSatID(satRejectedSet);
-        }
+            catch(...)
+            {
+                  // If some value is missing, then schedule this satellite
+                  // for removal
+               satRejectedSet.insert( (*it).first );
+            }
+         }
 
-        return gData;
+            // Before checking next TypeID, let's remove satellites with data
+            // out of bounds
+         gData.removeSatID(satRejectedSet);
+      }
 
-    }  // end SimpleFilter::Process()
+      return gData;
 
-
-
-    // Returns a gnnsSatTypeValue object, filtering the target observables.
-    //
-    // @param gData    Data object holding the data.
-    //
-    gnssSatTypeValue& SimpleFilter::Process(gnssSatTypeValue& gData)
-    {
-        (*this).Process(gData.body);
-        return gData;
-    }
+   }  // end SimpleFilter::Process()
 
 
-    // Returns a gnnsRinex object, filtering the target observables.
-    //
-    // @param gData    Data object holding the data.
-    //
-    gnssRinex& SimpleFilter::Process(gnssRinex& gData)
-    {
-        (*this).Process(gData.body);
-        return gData;
-    }
+
+      // Returns a gnnsSatTypeValue object, filtering the target observables.
+      //
+      // @param gData    Data object holding the data.
+      //
+   gnssSatTypeValue& SimpleFilter::Process(gnssSatTypeValue& gData)
+   {
+      Process(gData.body);
+      return gData;
+   }
 
 
-    // Index initially assigned to this class
-    int SimpleFilter::classIndex = 1000000;
+      // Returns a gnnsRinex object, filtering the target observables.
+      //
+      // @param gData    Data object holding the data.
+      //
+   gnssRinex& SimpleFilter::Process(gnssRinex& gData)
+   {
+      Process(gData.body);
+      return gData;
+   }
 
 
-    // Returns an index identifying this object.
-    int SimpleFilter::getIndex() const { return (*this).index; }
+      // Index initially assigned to this class
+   int SimpleFilter::classIndex = 1000000;
 
 
-    // Returns a string identifying this object.
-    std::string SimpleFilter::getClassName() const { return "SimpleFilter"; }
+      // Returns an index identifying this object.
+   int SimpleFilter::getIndex() const
+   { return (*this).index; }
 
 
+      // Returns a string identifying this object.
+   std::string SimpleFilter::getClassName() const
+   { return "SimpleFilter"; }
 
 
 } // end namespace gpstk
