@@ -21,8 +21,8 @@ GPSZcount32.cpp GenXSequence.cpp Geodetic.cpp IonoModel.cpp \
 IonoModelStore.cpp JulianDate.cpp LinearClockModel.cpp LoopedFramework.cpp \
 MJD.cpp MOPSWeight.cpp MSCData.cpp MSCStore.cpp \
 MoonPosition.cpp NEDUtil.cpp ObsClockModel.cpp ObsEpochMap.cpp ObsID.cpp \
-ObsRngDev.cpp \
-OceanLoading.cpp PRSolution.cpp PoleTides.cpp Position.cpp RACRotation.cpp \
+ObsRngDev.cpp OceanLoading.cpp \
+PRSolution.cpp PoleTides.cpp Position.cpp PowerSum.cpp RACRotation.cpp \
 RinexEphemerisStore.cpp RinexMetData.cpp RinexMetHeader.cpp RinexNavData.cpp \
 RinexNavHeader.cpp RinexObsData.cpp RinexObsHeader.cpp RinexObsID.cpp \
 RinexSatID.cpp RinexUtilities.cpp RungeKutta4.cpp SEMAlmanacStore.cpp \
@@ -61,10 +61,10 @@ MSCData.hpp MSCHeader.hpp MSCStore.hpp MSCStream.hpp MathBase.hpp Matrix.hpp \
 MatrixBase.hpp MatrixBaseOperators.hpp MatrixFunctors.hpp \
 MatrixImplementation.hpp MatrixOperators.hpp MiscMath.hpp \
 ModeledPseudorangeBase.hpp MoonPosition.hpp NEDUtil.hpp ORDEpoch.hpp \
-ObsClockModel.hpp \
-ObsEpochMap.hpp ObsID.hpp ObsRngDev.hpp OceanLoading.hpp PCodeConst.hpp \
-PRSolution.hpp PoleTides.hpp PolyFit.hpp Position.hpp RACRotation.hpp \
-RTFileFrame.hpp RinexEphemerisStore.hpp RinexMetBase.hpp RinexMetData.hpp \
+ObsClockModel.hpp ObsEpochMap.hpp ObsID.hpp ObsRngDev.hpp OceanLoading.hpp \
+PCodeConst.hpp PRSolution.hpp PoleTides.hpp PolyFit.hpp Position.hpp \
+PowerSum.cpp RACRotation.hpp RTFileFrame.hpp RinexEphemerisStore.hpp \
+RinexMetBase.hpp RinexMetData.hpp \
 RinexMetFilterOperators.hpp RinexMetHeader.hpp RinexMetStream.hpp \
 RinexNavBase.hpp RinexNavData.hpp RinexNavFilterOperators.hpp \
 RinexNavHeader.hpp RinexNavStream.hpp RinexObsBase.hpp RinexObsData.hpp \
