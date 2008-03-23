@@ -121,9 +121,10 @@ namespace gpstk
    public:
 
          /// Default constructor. By default sets a very high Qprime and
-         /// previousTime is DayTime::BEGINNING_OF_TIME.
+         /// both previousTime and currentTime are DayTime::BEGINNING_OF_TIME.
       RandomWalkModel()
-         : qprime(90000000000.0), previousTime(DayTime::BEGINNING_OF_TIME) {};
+         : qprime(90000000000.0), previousTime(DayTime::BEGINNING_OF_TIME),
+           currentTime(DayTime::BEGINNING_OF_TIME) {};
 
 
          /** Common constructor
@@ -134,11 +135,14 @@ namespace gpstk
           *
           * \warning Beware of units: Process spectral density units are
           * sigma*sigma/time, while other models take plain sigma as input.
+          * Sigma units are usually given in meters, but time units MUST BE
+          * in SECONDS.
           *
           */
       RandomWalkModel( double qp,
-                       const DayTime& prevTime = DayTime::BEGINNING_OF_TIME )
-         : qprime(qp), previousTime(prevTime) {};
+                       const DayTime& prevTime=DayTime::BEGINNING_OF_TIME,
+                       const DayTime& currentTime=DayTime::BEGINNING_OF_TIME )
+         : qprime(qp), previousTime(prevTime), currentTime(prevTime) {};
 
 
          /** Set the value of previous epoch
@@ -166,6 +170,8 @@ namespace gpstk
           *
           * \warning Beware of units: Process spectral density units are
           * sigma*sigma/time, while other models take plain sigma as input.
+          * Sigma units are usually given in meters, but time units MUST BE
+          * in SECONDS.
           *
           */
       RandomWalkModel& setQprime(double qp)
