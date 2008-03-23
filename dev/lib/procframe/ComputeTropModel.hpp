@@ -2,9 +2,8 @@
 
 /**
  * @file ComputeTropModel.hpp
- * This is a class to compute the basic parts of a GNSS model, i.e.:
- * Geometric distance, relativity correction, satellite position at
- * transmission time, satellite elevation and azimuth, etc.
+ * This is a class to compute the main values related to a given
+ * GNSS tropospheric model.
  */
 
 #ifndef COMPUTETROPMODEL_HPP
@@ -44,7 +43,7 @@ namespace gpstk
       //@{
 
       /** This is a class to compute the main values related to a given
-       * GNSS tropospheric model.
+       *  GNSS tropospheric model.
        *
        * This class is intended to be used with GNSS Data Structures (GDS).
        * It is a more modular alternative to classes such as ModelObs
@@ -88,7 +87,7 @@ namespace gpstk
        * Be warned that if a given satellite does not have the information
        * needed (mainly elevation), it will be summarily deleted from the data
        * structure. This also implies that if you try to use a
-       * "ComputeTropModel" object without defining first the tropospheric
+       * "ComputeTropModel" object without first defining the tropospheric
        * model, then ALL satellites will be deleted.
        *
        * @sa TropModel.hpp

@@ -2,9 +2,8 @@
 
 /**
  * @file ComputeTropModel.cpp
- * This is a class to compute the basic parts of a GNSS model, i.e.:
- * Geometric distance, relativity correction, satellite position at
- * transmission time, satellite elevation and azimuth, etc.
+ * This is a class to compute the main values related to a given
+ * GNSS tropospheric model.
  */
 
 //============================================================================
