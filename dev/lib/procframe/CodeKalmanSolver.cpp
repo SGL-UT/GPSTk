@@ -123,20 +123,27 @@ namespace gpstk
    }
 
 
-      /* Compute the solution of the given equations set.
+      /* Compute the code-based Kalman solution of the given equations set.
        *
        * @param prefitResiduals   Vector of prefit residuals
        * @param designMatrix      Design matrix for the equation system
        * @param weightVector      Vector of weights assigned to each
        *                          satellite.
        *
+       * \warning A typical Kalman filter works with the measurements noise
+       * covariance matrix, instead of the vector of weights. Beware of this
+       * detail, because this method uses the later.
+       *
+       * \warning If you use this method, be sure you previously set
+       * phiMatrix and qMatrix using the appropriate methods.
+       *
        * @return
        *  0 if OK
        *  -1 if problems arose
        */
    int CodeKalmanSolver::Compute( const Vector<double>& prefitResiduals,
-                                    const Matrix<double>& designMatrix,
-                                    const Vector<double>& weightVector )
+                                  const Matrix<double>& designMatrix,
+                                  const Vector<double>& weightVector )
       throw(InvalidSolver)
    {
          // By default, results are invalid
@@ -163,24 +170,31 @@ namespace gpstk
 
          // Call the more general CodeKalmanSolver::Compute() method
       return CodeKalmanSolver::Compute( prefitResiduals,
-                                          designMatrix,
-                                          wMatrix );
+                                        designMatrix,
+                                        wMatrix );
    }
 
 
-      // Compute the solution of the given equations set.
+      // Compute the code-based Kalman solution of the given equations set.
       //
       // @param prefitResiduals   Vector of prefit residuals
       // @param designMatrix      Design matrix for equation system
       // @param weightMatrix      Matrix of weights
+      //
+      // \warning A typical Kalman filter works with the measurements noise
+      // covariance matrix, instead of the matrix of weights. Beware of this
+      // detail, because this method uses the later.
+      //
+      // \warning If you use this method, be sure you previously set
+      // phiMatrix and qMatrix using the appropriate methods.
       //
       // @return
       //  0 if OK
       //  -1 if problems arose
       //
    int CodeKalmanSolver::Compute( const Vector<double>& prefitResiduals,
-                                    const Matrix<double>& designMatrix,
-                                    const Matrix<double>& weightMatrix )
+                                  const Matrix<double>& designMatrix,
+                                  const Matrix<double>& weightMatrix )
       throw(InvalidSolver)
    {
          // By default, results are invalid
@@ -237,6 +251,21 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
+         // After checking sizes, let's invert the matrix of weights in order
+         // to get the measurements noise covariance matrix, which is what we
+         // use in the "SimpleKalmanFilter" class
+      Matrix<double> measNoiseMatrix;
+
+      try
+      {
+         measNoiseMatrix = inverseChol(weightMatrix);
+      }
+      catch(...)
+      {
+         InvalidSolver e("Correct(): Unable to compute measurements noise \
+                          covariance matrix.");
+         GPSTK_THROW(e);
+      }
 
       try
       {
@@ -245,7 +274,7 @@ namespace gpstk
                           qMatrix,
                           prefitResiduals,
                           designMatrix,
-                          weightMatrix );
+                          measNoiseMatrix );
       }
       catch(InvalidSolver& e)
       {
@@ -319,7 +348,7 @@ namespace gpstk
          // Build the vector of measurements
       measVector = gData.getVectorOfTypeID(defaultEqDef.header);
 
-         // Generate the appropriate weights vector
+         // Generate the appropriate weights matrix
       Vector<double> weightsVector(gData.getVectorOfTypeID(TypeID::weight));
       for (int i= 0; i<numMeas; i++)
       {

@@ -71,7 +71,8 @@ namespace gpstk
        *
        *   gnssRinex gRin;
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> model >> mopsW >> kSolver;
        *   }
        * @endcode
@@ -133,11 +134,18 @@ namespace gpstk
       CodeKalmanSolver(const gnssEquationDefinition& eqDef);
 
 
-         /** Compute the PPP Solution of the given equations set.
+         /** Compute the code-based Kalman solution of the given equations set.
           *
           * @param prefitResiduals   Vector of prefit residuals
           * @param designMatrix      Design matrix for the equation system
           * @param weightMatrix      Matrix of weights
+          *
+          * \warning A typical Kalman filter works with the measurements noise
+          * covariance matrix, instead of the matrix of weights. Beware of this
+          * detail, because this method uses the later.
+          *
+          * \warning If you use this method, be sure you previously set
+          * phiMatrix and qMatrix using the appropriate methods.
           *
           * @return
           *  0 if OK
@@ -149,12 +157,19 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-         /** Compute the PPP Solution of the given equations set.
+         /** Compute the code-based Kalman solution of the given equations set.
           *
           * @param prefitResiduals   Vector of prefit residuals
           * @param designMatrix      Design matrix for the equation system
           * @param weightVector      Vector of weights assigned to each
           *                          satellite.
+          *
+          * \warning A typical Kalman filter works with the measurements noise
+          * covariance matrix, instead of the vector of weights. Beware of this
+          * detail, because this method uses the later.
+          *
+          * \warning If you use this method, be sure you previously set
+          * phiMatrix and qMatrix using the appropriate methods.
           *
           * @return
           *  0 if OK
