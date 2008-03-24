@@ -63,7 +63,7 @@ MatrixImplementation.hpp MatrixOperators.hpp MiscMath.hpp \
 ModeledPseudorangeBase.hpp MoonPosition.hpp NEDUtil.hpp ORDEpoch.hpp \
 ObsClockModel.hpp ObsEpochMap.hpp ObsID.hpp ObsRngDev.hpp OceanLoading.hpp \
 PCodeConst.hpp PRSolution.hpp PoleTides.hpp PolyFit.hpp Position.hpp \
-PowerSum.cpp RACRotation.hpp RTFileFrame.hpp RinexEphemerisStore.hpp \
+PowerSum.hpp RACRotation.hpp RTFileFrame.hpp RinexEphemerisStore.hpp \
 RinexMetBase.hpp RinexMetData.hpp \
 RinexMetFilterOperators.hpp RinexMetHeader.hpp RinexMetStream.hpp \
 RinexNavBase.hpp RinexNavData.hpp RinexNavFilterOperators.hpp \
