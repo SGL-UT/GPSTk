@@ -124,11 +124,11 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    CommandOptionWithAnyArg
       ddModeOption('\0', "ddmode", "Specifies what observations are used to "
                    "compute the double difference residuals. Valid values are:"
-                   " all. The default is " + ddMode),
-      ordModeOption('\0', "omode", "Specifies what observations are used to "
-                    "compute the ORDs. Valid values are:"
+                   " all. The default is " + ddMode + "."),
+      ordModeOption('\0', "omode", "Specifies what observations to use to "
+                    "compute the ORDs. Valid values are: "
                     "p1p2, z1z2, c1p2, c1y2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
-                    "z2 smo, and smart. The default is " + ordMode),
+                    "z2 smo, and smart. The default is " + ordMode + "."),
       minArcTimeOption('\0', "min-arc-time", "The minimum length of time "
                        "(in seconds) that a sequence of observations must "
                        "span to be considered as an arc. The default "
@@ -142,7 +142,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
                       "default value is " + asString(minArcLen) +
                       " epochs."),
       elevBinsOption('b', "elev-bin",
-                     "A range of elevations, used in  computing"
+                     "Range of elevations to use in  computing"
                      " the statistical summaries. Repeat to specify multiple "
                      "bins. The default is \"-b 0-10 -b 10-20 -b 20-60 -b "
                      "10-90\"."),
@@ -151,8 +151,9 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       ephHealthSource('E',"health-src","Do not use data from unhealthy SVs "
                       "as determined using this ephemeris source.  Can be "
                       "RINEX navigation or FIC file(s). "),
-      stripOption('\0',"strip","Factor used in stripping data prior to computing"
-                  "descriptive statistics. The default value is "+asString(strip));
+      stripOption('\0',"strip","Factor used in stripping data prior to computing "
+                  "descriptive statistics. The default value is "
+                  + asString(strip,1) + ".");
 
    CommandOptionWithNumberArg
       msidOption('m', "msid", "Station to process data for. Used to "
@@ -168,11 +169,11 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       rawOption('r', "raw", "Output the raw double differences in addition to the descriptive statistics."),
       allComboOption('a', "all-combos", "Compute all combinations, don't just "
                      "use one master SV."),
-      useNearOption('n', "near", "Allows the program to select an ephemeris that "
+      useNearOption('n', "near", "Allow the program to select an ephemeris that "
                     "is not strictly in the future. Only affects the selection of which broadcast "
-                    "ephemeris to use. Use a close ephemeris"),
+                    "ephemeris to use. i.e. use a close ephemeris."),
       zeroTropOption('\0', "zero-trop", "Disables trop corrections."),
-      cycleSlipOption('\0', "cycle-slips", "Output a list of cycle slips");
+      cycleSlipOption('\0', "cycle-slips", "Output a list of cycle slips.");
 
    if (!BasicFramework::initialize(argc,argv)) 
       return false;

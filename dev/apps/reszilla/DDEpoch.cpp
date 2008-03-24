@@ -681,18 +681,18 @@ string DDEpochMap::computeStats(
    double pctbad = 100.0 * nbad/dd.size();
    double range = *e - *b;
 
-   oss << "<s " 
-       << setw(15) << left << asString(oid) << right
+   oss << ">s " 
+       << setw(17) << left << asString(oid) 
+       << right << fixed
        << setw(2) << (int)minElevation << "-" << setw(2) << (int)maxElevation
-       << left
-       << "  " << setprecision(3) << setw(9) << sdev/2
-       << "  " << setprecision(3) << setw(9) << avg
-       << right
+       << "   " << setprecision(7) << setw(11) << sdev/2
+       << scientific
+       << "  " << setprecision(4) << setw(11) << avg
+       << fixed
        << "  " << setw(8) << f.n
-       << "  " << setw(7) << nbad
-       << left
-       << "  " << setprecision(4) << setw(8) << pctbad
-       << "  " << setw(7) << kurt << endl;
+       << "  " << setw(8) << nbad
+       << "  " << setprecision(5) << setw(10) << pctbad
+       << "  " << setprecision(5) << setw(7) << kurt << endl;
    return oss.str();
 
 }  // end of DDEpochMap::computeStats()
@@ -736,9 +736,9 @@ void DDEpochMap::outputStats(
    }
 
    s << endl
-     << "<s                           Inluded Observations       Excluded Outliers         " << endl
-     << "<s  ObsID         elev   noise      mean          count    count  pcts       kurt " << endl
-     << "<s -------------  -----  --------   --------   --------  -------  --------   ------"
+     << ">s                   Included Observations                     |    Excluded Outliers      " << endl
+     << ">s  ObsID           elev       noise         mean        count     count       pcts    kurt " << endl
+     << ">s -------------    -----     --------     --------     -------   -------    -------  ------"
      << endl;
 
    // For convience, group these into L1
@@ -752,7 +752,7 @@ void DDEpochMap::outputStats(
       s << endl;
    }
    
-   s << "<s -----------------------------------------------------------------------------"
+   s << ">s ---------------------------------------------------------------------------------------"
      << endl;
 
    // and L2
@@ -766,7 +766,7 @@ void DDEpochMap::outputStats(
       s << endl;
    }
    
-   s << "<s -----------------------------------------------------------------------------"
+   s << ">s ---------------------------------------------------------------------------------------"
      << endl << endl;
      
 }  // end of DDEpochMap::outputStats()
