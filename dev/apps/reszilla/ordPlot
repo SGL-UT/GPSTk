@@ -234,7 +234,8 @@ def main():
         label="All prns"
         for prn in prns:
             onePrn = ords[:,ords[1]==prn]
-            oneWart = warts[:,warts[1]==prn]
+            if warts.size > 0:
+                oneWart = warts[:,warts[1]==prn]
             if prn in highlightPrns:
                 smoothPlot(ax1, onePrn[0], onePrn[2], ',', "prn %2d"%prn,
                            options.smoothing)
