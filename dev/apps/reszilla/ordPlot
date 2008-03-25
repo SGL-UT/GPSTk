@@ -46,10 +46,10 @@ def main():
                       help="Start time. Format as \"YYYY DOY HH:MM:SS.S\" (Note\
                       the trailing decimal place).") 
 
-    parser.add_option("--smoothing", dest="smoothing", action="store", type="float",
+    parser.add_option("--smoothing", dest="smoothing", action="store", type="int",
                       default=0,
                       help="Smooth hilighted prns and clock data with specified \
-                      window length. Window length is specied in seconds.")
+                      window length. Window length is specied in epochs.")
 
     parser.add_option("--end-time", dest="tEnd", action="store",
                       help="End time. Format as \"YYYY DOY HH:MM:SS.S\" (Note\
@@ -91,7 +91,7 @@ def main():
         print "Debug level: %d" % options.debugLevel
         print "Title: %s" % options.title
         print "Warts: %s"% options.wartiness
-        print "Smoothing: %d seconds" % options.smoothing
+        print "Smoothing: %d epochs" % options.smoothing
         print "Y axis:",
         if options.yRange:
             print options.yRange
@@ -233,19 +233,20 @@ def main():
             print "Plotting ORDs"
         label="All prns"
         for prn in prns:
+            if prn in highlightPrns: continue
             onePrn = ords[:,ords[1]==prn]
-            if warts.size > 0:
+            smoothPlot(ax1, onePrn[0], onePrn[2], 'g,', label, options.smoothing)
+            if options.wartiness and warts.size > 0:
                 oneWart = warts[:,warts[1]==prn]
-            if prn in highlightPrns:
-                smoothPlot(ax1, onePrn[0], onePrn[2], ',', "prn %2d"%prn,
-                           options.smoothing)
-                if options.wartiness:
-                    smoothPlot(ax1, oneWart[0], oneWart[2], ',', "prn %2dW"%prn, 0)
-            else:
-                smoothPlot(ax1, ords[0], ords[2], 'g,', label, 0)
-                if options.wartiness:
-                    smoothPlot(ax1, oneWart[0], oneWart[2], 'r,', label, 0)
-                label="none"
+                smoothPlot(ax1, oneWart[0], oneWart[2], 'r,', label, 0)
+            label="none"
+
+        for prn in highlightPrns:
+            onePrn = ords[:,ords[1]==prn]
+            smoothPlot(ax1, onePrn[0], onePrn[2], ',', "prn %2d"%prn, options.smoothing)
+            if options.wartiness and warts.size > 0:
+                oneWart = warts[:,warts[1]==prn]
+                smoothPlot(ax1, oneWart[0], oneWart[2], ',', "prn %2dW"%prn, 0)
 
         set_ylim(ax1, ords[2], options.yRange)
 
@@ -422,7 +423,7 @@ def smoothPlot(ax, x, y, style="", txt="", window_len=0, limit=None):
     if x.size<2 or y.size<2:
         return
 
-    n = window_len/(86400 * (x[1] - x[0]))
+    n = int(window_len)
     if n>3 and n<y.size:
         s=numpy.r_[2*y[0]-y[n:1:-1],y,2*y[-1]-y[-1:-n:-1]]
         w=eval('numpy.bartlett(n)')
