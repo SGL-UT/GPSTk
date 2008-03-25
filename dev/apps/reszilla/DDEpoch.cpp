@@ -42,7 +42,7 @@
 
 #include <StringUtils.hpp>
 #include <Stats.hpp>
-
+#include <PowerSum.hpp>
 #include "DDEpoch.hpp"
 #include "ObsID.hpp"
 
@@ -456,114 +456,6 @@ void DDEpochMap::dump(std::ostream& s) const
 }  // end of DDEpochMap::dump()
 
 
-class PowerSum
-{
-public:
-   PowerSum() {clear();};
-   const static int order = 4;
-   double s[order+1];
-   long n;
-
-   void clear()
-   {
-      for (int i=1; i<=order; i++)
-         s[i]=0.0;
-      n=0;
-   }
-   
-   void add(double x)
-   {
-      n++;
-      double px=x;
-      for (int i=1; i<=order; i++, px*=x)
-         s[i] += px;
-   }
-
-   void subtract(double x)
-   {
-      n--;
-      double px=x;
-      for (int i=1; i<=order; i++, px*=x)
-         s[i] -= px;
-   }
-
-   void add(list<double>::const_iterator b, list<double>::const_iterator e)
-   {
-      list<double>::const_iterator i;
-      for (i=b; i != e; i++)
-         add(*i);
-   }
-
-   void subtract(list<double>::const_iterator b, list<double>::const_iterator e)
-   {
-      list<double>::const_iterator i;
-      for (i=b; i != e; i++)
-         subtract(*i);
-   }
-
-   double avg() const
-   {
-      if (n<1)
-         return 0;
-      return s[1]/n;
-   }
-
-   double var() const
-   {
-      if (n<2)
-         return 0;
-      double ni=1.0/n;
-      double s12 = s[1]*s[1];
-      double m2 = ni*(s[2] - ni*s12);
-      return m2;
-   }
-
-   double kurt() const
-   {
-      if (n<4)
-         return 0;
-      double ni=1.0/n;
-
-      double s12 = s[1]*s[1];
-      double m2 = ni*(s[2] - ni*s12);
-      double m4 = ni*(s[4] + ni*(-4*s[1]*s[3] + ni*(6*s12*s[2] + ni*(-3*s12*s12))));
-      return m4/(m2*m2);
-   }
-
-   void dump(std::ostream& str)
-   {
-      str << "n:" << n;
-      for (int i=1; i<=order; i++)
-         str << " s" << i << ":" << s[i];
-      str << endl;
-
-      double ni=1.0/n;
-
-      double s12 = s[1]*s[1];
-      double m2 = ni*(s[2] - ni*s12);
-      double m4 = ni*(s[4] + ni*(-4*s[1]*s[3] + ni*(6*s12*s[2] + ni*(-3*s12*s12))));
-
-      str << "stddev:" << sqrt(var()) << " kurtosis:" << kurt() << endl;
-   }   
-/*
-  These are used to determine kurtosis values for specific confidence based upon
-  the sample size.
-   const double pnt[]={
-      5,    7,    8,    9,   10,   12,   15,   20,   25,
-      30,   40,   50,   75,  100,  200,  500, 1000, 1e5, 1.e30};
-   // 5% critical values
-   const double cv5[] = {
-      2.90, 3.55, 3.70, 3.86, 3.95, 4.05, 4.13, 4.17, 4.16,
-      4.11, 4.06, 3.99, 3.87, 3.77, 3.57, 3.37, 3.26, 3.10, 3.00};
-   // 1% critical values
-   const double cv1[]= {
-      3.10, 4.23, 4.53, 4.82, 5.00, 5.20, 5.30, 5.36, 5.30,
-      5.21, 5.04, 4.88, 4.59, 4.39, 3.98, 3.60, 3.41, 3.20, 3.00};
-*/
-};
-
-
-
 //----------------------------------------------------------------------------
 // Returns a string containing a statistical summary of the double difference
 // residuals for the specified obs type within the given elevation range.
@@ -576,6 +468,7 @@ string DDEpochMap::computeStats(
    float minElevation = er.first;
    float maxElevation = er.second;
 
+   // First we pull all data in the elevation bin into a list
    list<double> dd;
    int zeroCount=0;
    for (const_iterator ei = begin(); ei != end(); ei++)
@@ -634,12 +527,12 @@ string DDEpochMap::computeStats(
    f.add(b,e);
 
    // Now start removing outliers
-   while (f.n>5 && f.kurt() > strip)
+   while (f.size()>5 && f.kurtosis() > strip)
    {
       if (debugLevel>1)
-         cout << "n:" << f.n
-              << " sdev:" << setprecision(8) << sqrt(f.var())
-              << " kurt:"<< setprecision(4) << f.kurt();
+         cout << "n:" << f.size()
+              << " sdev:" << setprecision(8) << sqrt(f.variance())
+              << " kurt:"<< setprecision(4) << f.kurtosis();
 
       double kill, dk;
       e--;
@@ -668,16 +561,16 @@ string DDEpochMap::computeStats(
          f.subtract(kill);
    }
 
-   if (f.n<5)
+   if (f.size()<5)
       return "";
 
    ostringstream oss;
 
-   double kurt = f.kurt();
-   double sdev = sqrt(f.var());
-   double avg = f.avg();
-   long n = f.n;
-   long nbad = dd.size()-f.n;
+   double kurt = f.kurtosis();
+   double sdev = sqrt(f.variance());
+   double avg = f.average();
+   long n = f.size();
+   long nbad = dd.size()-f.size();
    double pctbad = 100.0 * nbad/dd.size();
    double range = *e - *b;
 
@@ -689,7 +582,7 @@ string DDEpochMap::computeStats(
        << scientific
        << "  " << setprecision(4) << setw(11) << avg
        << fixed
-       << "  " << setw(8) << f.n
+       << "  " << setw(8) << f.size()
        << "  " << setw(8) << nbad
        << "  " << setprecision(5) << setw(10) << pctbad
        << "  " << setprecision(5) << setw(7) << kurt << endl;
