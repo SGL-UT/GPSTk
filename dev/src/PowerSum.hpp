@@ -80,6 +80,9 @@ namespace gpstk
       /// Computes the ith order central moment
       double moment(int i) const throw();
 
+      /// Reuturn the number of points in the current sum
+      long size() const throw() {return n;}
+      
       /// Computes the indicated value
       double average() const throw();
       double variance() const throw();
