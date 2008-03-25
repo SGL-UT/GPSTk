@@ -54,7 +54,9 @@ namespace gpstk
 {
    // Compute the corrected range at RECEIVE time, from receiver at position Rx,
    // to the GPS satellite given by SatID sat, as well as all the CER quantities,
-   // given the nominal receive time tr_nom and an EphemerisStore.
+   // given the nominal receive time tr_nom and an EphemerisStore. Note that this
+   // routine does not intrinsicly account for the receiver clock error
+   // like the ComputeAtTransmitTime routine does.
    double CorrectedEphemerisRange::ComputeAtReceiveTime(
       const DayTime& tr_nom,
       const Position& Rx,
@@ -81,21 +83,7 @@ namespace gpstk
                GPSTK_RETHROW(e);
             }
 
-            // compute new time of flight
-            tof = RSS(svPosVel.x[0]-Rx.X(),
-                      svPosVel.x[1]-Rx.Y(),
-                      svPosVel.x[2]-Rx.Z());
-            tof /= geoid.c();
-            // correct for Earth rotation
-            wt = geoid.angVelocity()*tof;
-            sx =  cos(wt)*svPosVel.x[0] + sin(wt)*svPosVel.x[1];
-            sy = -sin(wt)*svPosVel.x[0] + cos(wt)*svPosVel.x[1];
-            svPosVel.x[0] = sx;
-            svPosVel.x[1] = sy;
-            sx =  cos(wt)*svPosVel.v[0] + sin(wt)*svPosVel.v[1];
-            sy = -sin(wt)*svPosVel.v[0] + cos(wt)*svPosVel.v[1];
-            svPosVel.v[0] = sx;
-            svPosVel.v[1] = sy;
+            rotateEarth(Rx);
             // update raw range and time of flight
             rawrange = RSS(svPosVel.x[0]-Rx.X(),
                            svPosVel.x[1]-Rx.Y(),
@@ -104,22 +92,7 @@ namespace gpstk
 
          } while(ABS(tof-tof_old)>1.e-13 && ++nit<5);
 
-         relativity = RelativityCorrection(svPosVel) * C_GPS_M;
-         // relativity correction is added to dtime by the
-         // EphemerisStore::getSatXvt routines...
-
-         svclkbias = svPosVel.dtime*C_GPS_M - relativity;
-         svclkdrift = svPosVel.ddtime * C_GPS_M;
-
-         cosines[0] = (Rx.X()-svPosVel.x[0])/rawrange;
-         cosines[1] = (Rx.Y()-svPosVel.x[1])/rawrange;
-         cosines[2] = (Rx.Z()-svPosVel.x[2])/rawrange;
-
-         Position SV(svPosVel);
-         elevation = Rx.elevation(SV);
-         azimuth = Rx.azimuth(SV);
-         elevationGeodetic = Rx.elevationGeodetic(SV);
-         azimuthGeodetic = Rx.azimuthGeodetic(SV);
+         updateCER(Rx);
 
          return (rawrange-svclkbias-relativity);
       }
@@ -127,6 +100,7 @@ namespace gpstk
          GPSTK_RETHROW(e);
       }
    }  // end CorrectedEphemerisRange::ComputeAtReceiveTime
+
 
       // Compute the corrected range at TRANSMIT time, from receiver at position Rx,
       // to the GPS satellite given by SatID sat, as well as all the CER quantities,
@@ -141,7 +115,6 @@ namespace gpstk
    {
       try {
          DayTime tt;
-         GPSGeoid geoid;
 
          // 0-th order estimate of transmit time = receiver - pseudorange/c
          transmit = tr_nom;
@@ -161,40 +134,13 @@ namespace gpstk
             tt -= svPosVel.dtime;      // clock and relativity
          }
 
-         // correct for Earth rotation
-         double tof = RSS(svPosVel.x[0]-Rx.X(),
-                          svPosVel.x[1]-Rx.Y(),
-                          svPosVel.x[2]-Rx.Z())/geoid.c();
-         double wt = geoid.angVelocity()*tof;
-         double sx =  cos(wt)*svPosVel.x[0] + sin(wt)*svPosVel.x[1];
-         double sy = -sin(wt)*svPosVel.x[0] + cos(wt)*svPosVel.x[1];
-         svPosVel.x[0] = sx;
-         svPosVel.x[1] = sy;
-         sx =  cos(wt)*svPosVel.v[0] + sin(wt)*svPosVel.v[1];
-         sy = -sin(wt)*svPosVel.v[0] + cos(wt)*svPosVel.v[1];
-         svPosVel.v[0] = sx;
-         svPosVel.v[1] = sy;
+         rotateEarth(Rx);
          // raw range
          rawrange = RSS(svPosVel.x[0]-Rx.X(),
                         svPosVel.x[1]-Rx.Y(),
                         svPosVel.x[2]-Rx.Z());
 
-         relativity = RelativityCorrection(svPosVel) * C_GPS_M;
-         // relativity correction is added to dtime by the
-         // EphemerisStore::getSatXvt routines...
-
-         svclkbias = svPosVel.dtime*C_GPS_M - relativity;
-         svclkdrift = svPosVel.ddtime * C_GPS_M;
-
-         cosines[0] = (Rx.X()-svPosVel.x[0])/rawrange;
-         cosines[1] = (Rx.Y()-svPosVel.x[1])/rawrange;
-         cosines[2] = (Rx.Z()-svPosVel.x[2])/rawrange;
-
-         Position SV(svPosVel);
-         elevation = Rx.elevation(SV);
-         azimuth = Rx.azimuth(SV);
-         elevationGeodetic = Rx.elevationGeodetic(SV);
-         azimuthGeodetic = Rx.azimuthGeodetic(SV);
+         updateCER(Rx);
 
          return (rawrange-svclkbias-relativity);
       }
@@ -202,6 +148,46 @@ namespace gpstk
          GPSTK_RETHROW(e);
       }
    }  // end CorrectedEphemerisRange::ComputeAtTransmitTime
+
+
+   void CorrectedEphemerisRange::updateCER(const Position& Rx)
+   {
+      relativity = RelativityCorrection(svPosVel) * C_GPS_M;
+      // relativity correction is added to dtime by the
+      // EphemerisStore::getSatXvt routines...
+      
+      svclkbias = svPosVel.dtime*C_GPS_M - relativity;
+      svclkdrift = svPosVel.ddtime * C_GPS_M;
+      
+      cosines[0] = (Rx.X()-svPosVel.x[0])/rawrange;
+      cosines[1] = (Rx.Y()-svPosVel.x[1])/rawrange;
+      cosines[2] = (Rx.Z()-svPosVel.x[2])/rawrange;
+      
+      Position SV(svPosVel);
+      elevation = Rx.elevation(SV);
+      azimuth = Rx.azimuth(SV);
+      elevationGeodetic = Rx.elevationGeodetic(SV);
+      azimuthGeodetic = Rx.azimuthGeodetic(SV);
+   }
+
+
+   void CorrectedEphemerisRange::rotateEarth(const Position& Rx)
+   {
+      GPSGeoid geoid;
+      double tof = RSS(svPosVel.x[0]-Rx.X(),
+                       svPosVel.x[1]-Rx.Y(),
+                       svPosVel.x[2]-Rx.Z())/geoid.c();
+      double wt = geoid.angVelocity()*tof;
+      double sx =  cos(wt)*svPosVel.x[0] + sin(wt)*svPosVel.x[1];
+      double sy = -sin(wt)*svPosVel.x[0] + cos(wt)*svPosVel.x[1];
+      svPosVel.x[0] = sx;
+      svPosVel.x[1] = sy;
+      sx =  cos(wt)*svPosVel.v[0] + sin(wt)*svPosVel.v[1];
+      sy = -sin(wt)*svPosVel.v[0] + cos(wt)*svPosVel.v[1];
+      svPosVel.v[0] = sx;
+      svPosVel.v[1] = sy;
+   }
+
 
    double RelativityCorrection(const Xvt& svPosVel)
    {

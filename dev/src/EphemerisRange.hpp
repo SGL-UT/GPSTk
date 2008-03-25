@@ -108,10 +108,16 @@ namespace gpstk
       /// The satellite position (m) and velocity (m/s) in ECEF coordinates.
       Xvt svPosVel;
 
+   private:
+      // These are just helper functions to keep from repeating code
+      void updateCER(const Position& Rx);
+      void rotateEarth(const Position& Rx);
+
    }; // end class CorrectedEphemerisRange
 
    /// Compute relativity correction (seconds) from the satellite position and velocity
    double RelativityCorrection(const Xvt& svPosVel);
+
 
    //@}
 

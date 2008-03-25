@@ -179,35 +179,12 @@ namespace gpstk
       const XvtStore<SatID>& eph,
       const GeoidModel& gm)
    {
-      // This algorithm should really be moved to Xvt.preciseRho() or somewhere
-      Xvt svpos;
-      double rawrange;
-      double tof = 0.070;
-      double tof_old = 0;
-      DayTime ttime;
+      CorrectedEphemerisRange cer;
+      rho = cer.ComputeAtTransmitTime(obstime, obs, rxpos, svid, eph);
+      azimuth = cer.azimuth;
+      elevation = cer.elevation;
+      ord = obs - rho;
 
-      for (int i=0; fabs(tof-tof_old) > 1.0e-13 && i<=5; i++)
-      {
-         ttime = obstime - tof;
-         tof_old = tof;
-
-         svpos = eph.getXvt(svid, ttime);
-
-         rawrange = rxpos.slantRange(svpos.x);
-         tof = rawrange/gm.c();
-
-         // Perform earth rotation correction
-         double wt = gm.angVelocity()*tof;
-         Triple tmp;
-         tmp[0] =     svpos.x[0] + wt*svpos.x[1];
-         tmp[1] = -wt*svpos.x[0] +    svpos.x[1];
-         tmp[2] = svpos.x[2];
-
-         rawrange = rxpos.slantRange(tmp);
-         tof = rawrange/gm.c();
-      }
-
-      double svclkbias = svpos.dtime*gm.c();
       if (typeid(eph) == typeid(GPSEphemerisStore))
       {
          const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
@@ -215,16 +192,6 @@ namespace gpstk
          iodc = eph.getIODC();
          health = eph.getHealth();
       }
-
-      // Now add in the corrections
-      rho = rawrange - svclkbias;
-
-      // compute the azimuth and elevation of the SV
-      azimuth = rxpos.azAngle(svpos.x);
-      elevation = rxpos.elvAngle(svpos.x);
-
-      // and now calculate the ORD
-      ord = obs - rho;
 
       if (debug)
       {
@@ -234,17 +201,11 @@ namespace gpstk
                    << "  obs=" << obs
                    << ", rho=" << (double)rho
                    << ", obs-rho=" << (double)ord
-                   << std::setprecision(9)
-                   << ", tof=" << tof
-                   << std::endl 
-                   << std::setprecision(3)
-                   << "  sv.x=" << svpos.x
-                   << ", sv.v=" << svpos.v
                    << std::endl
                    << "  rx.x=" << rxpos
                    << std::setprecision(4) << std::scientific
-                   << ", sv bias=" << svpos.dtime
-                   << ", sv drift=" << svpos.ddtime
+                   << ", sv bias=" << cer.svclkbias
+                   << ", sv drift=" << cer.svclkdrift
                    << std::endl;
          std::cout.flags(oldFlags);
       }
@@ -258,10 +219,21 @@ namespace gpstk
       const XvtStore<SatID>& eph,
       const GeoidModel& gm)
    {
-      Xvt svpos = eph.getXvt(svid, obstime);
+      // Now, there was a receiver clock error so we need to account for that
+      // when we evaluate the sv position
+      Xvt svpos = eph.getXvt(svid,obstime);
 
-      // compute the range from the station to the SV
-      rho = svpos.preciseRho(rxpos, gm);
+      // compute rotation angle in the time of signal transit
+      double rotation_angle = -gm.angVelocity() * (obs/gm.c() - svpos.dtime);
+
+      Triple xnew;
+      xnew[0] = svpos.x[0] - svpos.x[1] * rotation_angle;
+      xnew[1] = svpos.x[1] + svpos.x[0] * rotation_angle;
+      xnew[2] = svpos.x[2];   
+      double sr1 = rxpos.slantRange(xnew);
+
+      // Account for SV clock drift
+      rho = sr1 - (svpos.dtime * gm.c());
 
       // and now calculate the ORD
       ord = obs - rho;
