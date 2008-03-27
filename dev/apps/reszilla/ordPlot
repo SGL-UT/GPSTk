@@ -226,7 +226,6 @@ def main():
         ax1 = fig.add_axes([0.08, 0.52, rExtent, 0.42])
     elif axesCount == 1:
         ax1 = fig.add_axes([0.08, 0.10, rExtent, 0.82])
-    ax1.set_ylim((0,0))
 
     if plotOrds:
         if options.debugLevel:
@@ -248,24 +247,24 @@ def main():
                 oneWart = warts[:,warts[1]==prn]
                 smoothPlot(ax1, oneWart[0], oneWart[2], ',', "prn %2dW"%prn, 0)
 
-        set_ylim(ax1, ords[2], options.yRange)
+        ylim=strip_lim(ords[2], options.yRange)
 
         if options.clockDelta:
             # Plot the first deritive of the clock...
-            ax3=fig.add_axes(ax1.get_position())
             time_diff = 86400 * (clocks[0,1:] - clocks[0,0:-1])
             clock_diff = 1e9 * 3.3356e-9 * (clocks[1,1:] - clocks[1,0:-1])
             dc = 1e3 * clock_diff/time_diff
-            smoothPlot(ax1, clocks[0,:-1], dc, 'b-', "clk dif"%prn,
-                       options.smoothing, options.yRange)
-            set_ylim(ax1, dc, options.yRange)
+            smoothPlot(ax1, clocks[0,:-1], dc, 'b-', "clk dif", options.smoothing)
+            yl2 = strip_lim(dc, options.yRange)
+            ylim = (min(ylim[0],yl2[0]), max(ylim[1],yl2[1]))
         elif len(ocds[0]):
             # otherwise plot the clock deviations
-            ax3=fig.add_axes(ax1.get_position())
-            smoothPlot(ax3, ocds[0], ocds[1], 'b-', "clk res"%prn,
-                       options.smoothing, options.yRange)
-            set_ylim(ax3, ocds[1], options.yRange)
-            
+            smoothPlot(ax1, ocds[0], ocds[1], 'b-', "clk res", options.smoothing)
+            yl2 = strip_lim(ocds[1], options.yRange)
+            ylim = (min(ylim[0],yl2[0]), max(ylim[1],yl2[1]))
+
+        ax1.set_ylim(ylim)
+
         # If there are rle clocks, draw a vertical line where each new model
         # starts
         if not options.clockDelta:
@@ -312,14 +311,14 @@ def main():
                       "Clock offset removed: %d m"%clockOffset,
                       **scale_props)
 
-        smoothPlot(ax2, clocks[0], clocks[1], 'g,', "clock offset",
-                   options.smoothing, options.yRange)
-        set_ylim(ax2, clocks[1], options.yRange)
+        smoothPlot(ax2, clocks[0], clocks[1], 'g,', "clock offset", options.smoothing)
+        ax2.set_ylim(strip_lim(clocks[1],options.yRange))
         ax2.grid(True)
         ax2.set_ylabel('clock (meters)', **yprops)
 
         # Only plot the linear clock estimate if there is data for it...
         for t0, t1, y0, m, d in rleClockList:
+            y0 -= clockOffset
             y1 = y0 + m * (t1 - t0)
             t = numpy.array([t0, t1])
             y = numpy.array([y0, y1])
@@ -389,11 +388,10 @@ def parse_time(words):
 # end of parse_time()
 
 
-def stripper(y, limit):
+def strip_lim(y, limit):
     if not limit or limit == "ignore" or limit == "none":
-        return y
-
-    if limit[-1] == "%":
+        lim = (y.min(), y.max())
+    elif limit[-1] == "%":
         fraction = float(limit[:-1])/100.0
         drop = int(numpy.floor(0.5 * (1-fraction) * len(y)))
         ds = numpy.sort(y)
@@ -404,19 +402,12 @@ def stripper(y, limit):
         lim = (-sigma , sigma)
     else:
         lim = (-float(limit), float(limit))
-
-    return y[(y>lim[0]) & (y<lim[1])]
-# endo stripper()
-
-
-def set_ylim(ax, y, limit=None):
-    ys = stripper(y, limit)
-    lim = (min(ys), max(ys))
-    ax.set_ylim(lim)
-# endo set_ylim()
+                       
+    return lim;
+#
 
 
-def smoothPlot(ax, x, y, style="", txt="", window_len=0, limit=None):
+def smoothPlot(ax, x, y, style="", txt="", window_len=0):
     if x.ndim != 1 or y.ndim !=1:
         raise ValueError, "Only accepts rank 1 arrays."
 
