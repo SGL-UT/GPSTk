@@ -27,7 +27,8 @@
 //
 //============================================================================
 
-#include "TimeTag.hpp"
+#include "GPSWeek.hpp"
+#include "TimeConstants.hpp"
 
 namespace gpstk
 {
@@ -35,12 +36,9 @@ namespace gpstk
        * This class encapsulates the "Full GPS Week and GPS 
        * Seconds-of-week" time representation.
        */
-   class GPSWeekSecond : public TimeTag
+   class GPSWeekSecond : public GPSWeek
    {
    public:
-      static const std::string printChars;
-      static const std::string defaultFormat;
-
          /** 
           * @defgroup gwsbo GPSWeekSecond Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
@@ -50,10 +48,10 @@ namespace gpstk
           * Default Constructor.
           * All elements are initialized to zero.
           */
-      GPSWeekSecond( int w = 0,
+      GPSWeekSecond( unsigned int w = 0,
                      double s = 0. )
          throw()
-            : week(w), sow(s)
+            : GPSWeek(w), sow(s)
       {}
       
          /**
@@ -62,7 +60,7 @@ namespace gpstk
           */
       GPSWeekSecond( const GPSWeekSecond& right )
          throw()
-            : week( right.week ), sow( right.sow )
+            : GPSWeek( right ), sow( right.sow )
       {}
       
          /**
@@ -106,13 +104,20 @@ namespace gpstk
          //@}
 
          // The following functions are required by TimeTag.
-      virtual CommonTime convertToCommonTime() const;
+      virtual CommonTime convertToCommonTime() const
+         throw(InvalidRequest);
 
-      virtual void convertFromCommonTime( const CommonTime& ct ) ;
+      virtual void convertFromCommonTime( const CommonTime& ct )
+         throw(InvalidRequest);
 
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
       virtual std::string printf( const std::string& fmt ) const
+         throw( gpstk::StringUtils::StringException );
+
+         /// This function works similarly to printf.  Instead of filling
+         /// the format with data, it fills with error messages.
+      virtual std::string printError( const std::string& fmt ) const
          throw( gpstk::StringUtils::StringException );
 
          /**
@@ -129,14 +134,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return "Fwg";
+         return GPSWeek::getPrintChars() + "wg";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%04F %g";
+         return GPSWeek::getDefaultFormat() + " %010.3g";
       }
 
       virtual bool isValid() const
@@ -144,6 +149,12 @@ namespace gpstk
 
       virtual void reset()
          throw();
+
+      inline virtual unsigned int getDayOfWeek() const
+         throw()
+      {
+         return static_cast<unsigned int>(sow) / SEC_PER_DAY;
+      }
 
          /**
           * @defgroup gwsco GPSWeekSecond Comparison Operators
@@ -167,7 +178,6 @@ namespace gpstk
          throw();
          //@}
 
-      int week;
       double sow;
    };
 

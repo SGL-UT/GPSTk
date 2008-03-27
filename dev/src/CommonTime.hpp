@@ -326,6 +326,9 @@ namespace gpstk
          throw()
       { m_day = m_msod = 0; m_fsod = 0.0; }
 
+      std::string asString() const
+         throw();
+
    protected:
       
          /**
@@ -350,6 +353,8 @@ namespace gpstk
       long m_msod;    //< milliseconds-of-day        0 <= val < 86400000
       double m_fsod;  //< fractional seconds-of-day  0 <= val < 0.001
    };
+
+   std::ostream& operator<<(std::ostream& o, const CommonTime& ct);
 
 } // namespace
 

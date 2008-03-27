@@ -33,23 +33,42 @@ namespace gpstk
    GPSWeekSecond::operator=( const GPSWeekSecond& right )
       throw()
    {
-      week = right.week;
+      GPSWeek::operator=(right);
       sow = right.sow;
       return *this;
    }
    
    CommonTime GPSWeekSecond::convertToCommonTime() const
+      throw(InvalidRequest)
    {
-      int dow = static_cast<int>( sow * DAY_PER_SEC );
-      int jday = GPS_EPOCH_JDAY + ( 7 * week ) + dow;
-      double sod(  sow - SEC_PER_DAY * dow );
-      return CommonTime( jday, 
-                         static_cast<long>( sod ),
-                         sod - static_cast<long>( sod ) );
+      try
+      {
+         int dow = static_cast<int>( sow * DAY_PER_SEC );
+         int jday = GPS_EPOCH_JDAY + ( 7 * week ) + dow;
+         double sod(  sow - SEC_PER_DAY * dow );
+         return CommonTime( jday, 
+                            static_cast<long>( sod ),
+                            sod - static_cast<long>( sod ) );
+      }
+      catch (InvalidParameter& ip)
+      {
+         InvalidRequest ir(ip);
+         GPSTK_THROW(ir);
+      }
    }
    
    void GPSWeekSecond::convertFromCommonTime( const CommonTime& ct )
+      throw(InvalidRequest)
    {
+         /// This is the earliest CommonTime convertible to GPSWeekSecond.
+      static const CommonTime MIN_CT = GPSWeekSecond();
+
+      if (ct < MIN_CT)
+      {
+         InvalidRequest ir("Unable to convert CommonTime to GPSWeekSecond.");
+         GPSTK_THROW(ir);
+      }
+      
       long day, sod;
       double fsod;
       ct.get( day, sod, fsod );
@@ -64,41 +83,60 @@ namespace gpstk
       sow = static_cast<double>( day * SEC_PER_DAY + sod ) + fsod;
    }
    
-   std::string GPSWeekSecond::printf(const std::string& fmt) const
+   std::string GPSWeekSecond::printf( const std::string& fmt ) const
       throw( gpstk::StringUtils::StringException )
+   {
+      try
       {
-         try
-         {
-            using gpstk::StringUtils::formattedPrint;
-            std::string rv = fmt;
-               
-            rv = formattedPrint( rv, getFormatPrefixInt() + "F", 
-                                 "Fd", week );
-            rv = formattedPrint( rv, getFormatPrefixInt() + "w",
-                                 "wd", static_cast<int>(sow / SEC_PER_DAY) );
-            rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
-                                 "gf", sow);
-            return rv;
-         }
-         catch( gpstk::StringUtils::StringException& exc )
-         {
-            GPSTK_RETHROW( exc );
-         }
+         using gpstk::StringUtils::formattedPrint;
+         
+         std::string rv = GPSWeek::printf( fmt );
+         
+         rv = formattedPrint( rv, getFormatPrefixInt() + "w",
+                              "wu", getDayOfWeek() );
+         rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
+                              "gf", sow);
+         return rv;
       }
+      catch( gpstk::StringUtils::StringException& exc )
+      {
+         GPSTK_RETHROW( exc );
+      }
+   }
       
+   std::string GPSWeekSecond::printError( const std::string& fmt ) const
+      throw( gpstk::StringUtils::StringException )
+   {
+      try
+      {
+         using gpstk::StringUtils::formattedPrint;
+         
+         std::string rv = GPSWeek::printError( fmt );
+         
+         rv = formattedPrint( rv, getFormatPrefixInt() + "w",
+                              "ws", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
+                              "gs", getError().c_str() );               
+         return rv;
+      }
+      catch( gpstk::StringUtils::StringException& exc )
+      {
+         GPSTK_RETHROW( exc );
+      }
+   }
+   
    bool GPSWeekSecond::setFromInfo( const IdToValue& info )
       throw()
    {
       using namespace gpstk::StringUtils;
+
+      GPSWeek::setFromInfo( info );
 
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
             // based on the character, we know what to do...
          switch ( i->first ) 
          {
-            case 'F':
-               week = asInt( i->second );
-               break;
             case 'w':
                sow = static_cast<double>( asInt( i->second ) ) * SEC_PER_DAY;
                break;
@@ -118,19 +156,14 @@ namespace gpstk
    bool GPSWeekSecond::isValid() const
       throw()
    {
-      GPSWeekSecond temp;
-      temp.convertFromCommonTime( convertToCommonTime() );
-      if( *this == temp )
-      {
-         return true;
-      }
-      return false;
+      return ( GPSWeek::isValid() &&
+               sow < FULLWEEK );
    }
 
    void GPSWeekSecond::reset()
       throw()
    {
-      week = 0;
+      GPSWeek::reset();
       sow = 0.0;
    }
 
@@ -138,12 +171,8 @@ namespace gpstk
    GPSWeekSecond::operator==( const GPSWeekSecond& right ) const
       throw()
    {
-      if( week == right.week &&
-          sow == right.sow )
-      {
-         return true;
-      }
-      return false;
+      return ( GPSWeek::operator==(right) &&
+               sow == right.sow );
    }
 
    bool 
@@ -157,11 +186,11 @@ namespace gpstk
    GPSWeekSecond::operator<( const GPSWeekSecond& right ) const
       throw()
    {
-      if( week < right.week )
+      if( GPSWeek::operator<(right) )
       {
          return true;
       }
-      if( week > right.week )
+      if( GPSWeek::operator>(right) )
       {
          return false;
       }

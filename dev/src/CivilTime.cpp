@@ -59,17 +59,28 @@ namespace gpstk
    }
    
    CommonTime CivilTime::convertToCommonTime() const
+      throw( InvalidRequest )
    {
-         // get the julian day
-      long jday = convertCalendarToJD( year, month, day );
-         // get the second of day
-      double sod = convertTimeToSOD( hour, minute, second );
-         // make a CommonTime with jd, whole sod, and fractional second of day
-      return CommonTime( jday, static_cast<long>( sod ),
-                         ( sod - static_cast<long>( sod ) ) );
+      try
+      {
+            // get the julian day
+         long jday = convertCalendarToJD( year, month, day );
+            // get the second of day
+         double sod = convertTimeToSOD( hour, minute, second );
+            // make a CommonTime with jd, whole sod, and 
+            // fractional second of day
+         return CommonTime( jday, static_cast<long>( sod ),
+                            ( sod - static_cast<long>( sod ) ) );
+      }
+      catch (InvalidParameter& ip)
+      {
+         InvalidRequest ir(ip);
+         GPSTK_THROW(ir);
+      }
    }
    
    void CivilTime::convertFromCommonTime( const CommonTime& ct )
+      throw()
    {
       long jday, sod;
       double fsod;
@@ -83,7 +94,7 @@ namespace gpstk
       second += fsod;
    }
    
-   std::string CivilTime::printf(const std::string& fmt) const
+   std::string CivilTime::printf( const std::string& fmt ) const
       throw( gpstk::StringUtils::StringException )
    {
       try
@@ -96,21 +107,57 @@ namespace gpstk
          rv = formattedPrint( rv, getFormatPrefixInt() + "y",
                               "yd", static_cast<short>( year % 100 ) );
          rv = formattedPrint( rv, getFormatPrefixInt() + "m",
-                              "md", month );
+                              "mu", month );
          rv = formattedPrint( rv, getFormatPrefixInt() + "b",
                               "bs", MonthAbbrevNames[month] );
          rv = formattedPrint( rv, getFormatPrefixInt() + "B",
                               "Bs", MonthNames[month] );
          rv = formattedPrint( rv, getFormatPrefixInt() + "d",
-                              "dd", day );
+                              "du", day );
          rv = formattedPrint( rv, getFormatPrefixInt() + "H",
-                              "Hd", hour );
+                              "Hu", hour );
          rv = formattedPrint( rv, getFormatPrefixInt() + "M",
-                              "Md", minute );
+                              "Mu", minute );
          rv = formattedPrint( rv, getFormatPrefixInt() + "S", 
-                              "Sd", static_cast<short>( second ) );
+                              "Su", static_cast<short>( second ) );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "f",
                               "ff", second );
+         return rv;
+      }
+      catch( gpstk::StringUtils::StringException& exc )
+      {
+         GPSTK_RETHROW( exc );
+      }
+   }
+
+   std::string CivilTime::printError( const std::string& fmt) const
+      throw( gpstk::StringUtils::StringException )
+   {
+      try
+      {
+         using gpstk::StringUtils::formattedPrint;
+         std::string rv = fmt;
+         
+         rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
+                              "Ys", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "y",
+                              "ys", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "m",
+                              "ms", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "b",
+                              "bs", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "B",
+                              "Bs", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "d",
+                              "ds", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "H",
+                              "Hs", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "M",
+                              "Ms", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "S", 
+                              "Ss", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixFloat() + "f",
+                              "fs", getError().c_str() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )

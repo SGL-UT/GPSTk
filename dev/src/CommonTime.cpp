@@ -336,6 +336,18 @@ namespace gpstk
       return !operator<(right);
    }
 
+   std::string CommonTime::asString() const
+      throw()
+   {
+      using namespace std;
+      ostringstream oss;
+      oss << setfill('0') 
+          << setw(7) << m_day << " "
+          << setw(8) << m_msod << " "
+          << fixed << setprecision(15) << setw(17) << m_fsod;
+      return oss.str();
+   }
+
       /// protected functions
    bool CommonTime::add( long days, 
                          long msod,
@@ -384,6 +396,12 @@ namespace gpstk
       
       return ( ( m_day >= BEGIN_LIMIT_JDAY ) && 
                ( m_day <  END_LIMIT_JDAY ) );
+   }
+
+   std::ostream& operator<<(std::ostream& o, const CommonTime& ct)
+   {
+      o << ct.asString();
+      return o;
    }
 
 } // namespace

@@ -32,13 +32,30 @@
 
 namespace gpstk
 {
-   std::string printTime( const TimeTag& t,
-                          const std::string& fmt )
-      throw( gpstk::StringUtils::StringException );
-
    std::string printTime( const CommonTime& t,
                           const std::string& fmt )
       throw( gpstk::StringUtils::StringException );
+
+      /// This function converts the given CommonTime into the templatized
+      /// TimeTag object, before calling the TimeTag's printf(fmt).  If 
+      /// there's an error in conversion, it instead calls printf(fmt, true)
+      /// to signal a conversion error.
+   template <class TimeTagType>
+   std::string printAs( const CommonTime& t,
+                        const std::string& fmt )
+      throw( gpstk::StringUtils::StringException )
+   {
+      TimeTagType ttt;
+      try
+      {
+         ttt.convertFromCommonTime(t);
+         return ttt.printf(fmt);
+      }
+      catch (InvalidRequest& ir)
+      {
+         return ttt.printError(fmt);
+      }
+   }
    
       /// Fill the TimeTag object \a btime with time information found in
       /// string \a str formatted according to string \a fmt.

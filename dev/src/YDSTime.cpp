@@ -39,12 +39,22 @@ namespace gpstk
    }
    
    CommonTime YDSTime::convertToCommonTime() const
+      throw(InvalidRequest)
    {
-      long jday = convertCalendarToJD( year, 1, 1 ) + doy - 1;
-      return CommonTime( jday, sod );
+      try
+      {
+         long jday = convertCalendarToJD( year, 1, 1 ) + doy - 1;
+         return CommonTime( jday, sod );
+      }
+      catch (InvalidParameter& ip)
+      {
+         InvalidRequest ir(ip);
+         GPSTK_THROW(ir);
+      }
    }
    
    void YDSTime::convertFromCommonTime( const CommonTime& ct )
+      throw()
    {
       long jday, secDay;
       double fsecDay;
@@ -65,13 +75,37 @@ namespace gpstk
          std::string rv = fmt;
          
          rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
-                              "Yd", year);
+                              "Yd", year );
          rv = formattedPrint(rv, getFormatPrefixInt() + "y",
-                             "yd", static_cast<short>(year % 100));
+                             "yd", static_cast<short>(year % 100) );
          rv = formattedPrint( rv, getFormatPrefixInt() + "j",
-                              "jd", doy);
+                              "ju", doy );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "s",
-                              "sf", sod);
+                              "sf", sod );
+         return rv;
+      }
+      catch( gpstk::StringUtils::StringException& exc)
+      {
+         GPSTK_RETHROW( exc );
+      }
+   }
+
+   std::string YDSTime::printError( const std::string& fmt ) const
+      throw( gpstk::StringUtils::StringException )
+   {
+      try
+      {
+         using gpstk::StringUtils::formattedPrint;
+         std::string rv = fmt;
+         
+         rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
+                              "Ys", getError().c_str() );
+         rv = formattedPrint(rv, getFormatPrefixInt() + "y",
+                             "ys", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "j",
+                              "js", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixFloat() + "s",
+                              "ss", getError().c_str() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc)

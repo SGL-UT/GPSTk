@@ -47,20 +47,24 @@ namespace gpstk
          throw()
       {}
       
-         /// This function probably won't throw exceptions because if you can
-         /// represent a time in this format, you can probably represent it in
-         /// the Common format.
-      virtual CommonTime convertToCommonTime() const = 0;
+         /// @throws InvalidRequest if this TimeTag cannot be correctly 
+         /// represented by a CommonTime object.
+      virtual CommonTime convertToCommonTime() const
+         throw( gpstk::InvalidRequest ) = 0;
       
-         /// This function may throw exceptions b/c it is possible that it may
-         /// not be possible to represent the  time specified by the Common 
-         /// object "bt" in this object.
-      virtual void convertFromCommonTime( const CommonTime& ct ) = 0;
+         /// @throws InvalidRequest if \c ct cannot be correctly represented
+         /// in this TimeTag object.
+      virtual void convertFromCommonTime( const CommonTime& ct )
+         throw( gpstk::InvalidRequest ) = 0;
 
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
-         /// 
-      virtual std::string printf(const std::string& fmt) const
+      virtual std::string printf( const std::string& fmt ) const
+         throw( gpstk::StringUtils::StringException ) = 0;
+
+         /// This function works similarly to printf.  Instead of filling
+         /// the format with data, it fills with error messages.
+      virtual std::string printError( const std::string& fmt ) const
          throw( gpstk::StringUtils::StringException ) = 0;
 
          /**
@@ -129,18 +133,23 @@ namespace gpstk
 
          /// Hey, it's an implicit casting operator!  Basically just a lazy
          /// way to get at convertToCommonTime().
-      operator CommonTime() const
+      virtual operator CommonTime() const
+         throw(InvalidRequest)
       { return convertToCommonTime(); }
 
          /// This returns the regular expression prefix that is used when 
          /// searching for integer specifiers.
-      static std::string getFormatPrefixInt()
+      static inline std::string getFormatPrefixInt()
       { return "%[ 0-]?[[:digit:]]*"; }
       
          /// This returns the regular expression prefix that is used when
          /// searching for float specifiers.
-      static std::string getFormatPrefixFloat()
+      static inline std::string getFormatPrefixFloat()
       { return getFormatPrefixInt() + "(\\.[[:digit:]]+)?"; }
+      
+         /// This returns the default error string for the TimeTag classes.
+      static inline std::string getError()
+      { return "ErrorBadTime"; }
 
    };
 

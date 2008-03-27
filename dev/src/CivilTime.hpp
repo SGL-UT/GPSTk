@@ -81,7 +81,7 @@ namespace gpstk
       {
          convertFromCommonTime( right.convertToCommonTime() ); 
       }
-      
+     
          /** 
           * Alternate Copy Constructor.
           * Takes a const CommonTime reference and copies its contents via
@@ -90,7 +90,7 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       CivilTime( const CommonTime& right )
-         throw( InvalidRequest )
+         throw()
       {
          convertFromCommonTime( right );
       }
@@ -116,15 +116,22 @@ namespace gpstk
       static const char *MonthAbbrevNames[];
       
          // The following functions are required by TimeTag.
-      virtual CommonTime convertToCommonTime() const;
+      virtual CommonTime convertToCommonTime() const
+         throw( InvalidRequest );
 
-      virtual void convertFromCommonTime( const CommonTime& ct ) ;      
+      virtual void convertFromCommonTime( const CommonTime& ct )
+         throw();
       
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
       virtual std::string printf(const std::string& fmt) const
          throw( gpstk::StringUtils::StringException );
-      
+
+         /// This function works similarly to printf.  Instead of filling
+         /// the format with data, it fills with error messages.
+      virtual std::string printError( const std::string& fmt) const
+         throw( gpstk::StringUtils::StringException );
+
          /**
           * Set this object using the information provided in \a info.
           * @param info the IdToValue object to which this object shall be set.
@@ -146,7 +153,7 @@ namespace gpstk
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%02m/%02d/%04Y %02H:%02M:%02.9f";
+         return "%02m/%02d/%04Y %02H:%02M:%02S";
       }
 
       virtual bool isValid() const

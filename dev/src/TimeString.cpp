@@ -28,11 +28,8 @@
 
 #include "ANSITime.hpp"
 #include "CivilTime.hpp"
-#include "GPSEpochWeekSecond.hpp"
 #include "GPSWeekSecond.hpp"
 #include "GPSWeekZcount.hpp"
-#include "GPSZcount29.hpp"
-#include "GPSZcount32.hpp"
 #include "JulianDate.hpp"
 #include "MJD.hpp"
 #include "UnixTime.hpp"
@@ -43,27 +40,6 @@
 
 namespace gpstk
 {
-   std::string printTime( const TimeTag& t,
-                          const std::string& fmt )
-      throw( gpstk::StringUtils::StringException )
-   {
-      try
-      {
-         std::string rv( fmt );
-         
-            // First, try to print using 't' itself.
-         rv = t.printf( rv );
-         
-            // Next, run it through all the other TimeTag classes.
-         return printTime( t.convertToCommonTime(), rv );
-
-      }
-      catch( gpstk::StringUtils::StringException& se )
-      {
-         GPSTK_RETHROW( se );
-      }
-   }
-
    std::string printTime( const CommonTime& t,
                           const std::string& fmt )
       throw( gpstk::StringUtils::StringException )
@@ -73,20 +49,14 @@ namespace gpstk
          std::string rv( fmt );
 
             // Convert to each TimeTag type and run its printf using rv.
-            // The printf functions test to see if they can print any part
-            // of the requested format.  If they can, they do, and if not, 
-            // simply return without doing any work.
-         rv = ANSITime( t ).printf( rv );
-         rv = CivilTime( t ).printf( rv );
-         rv = GPSEpochWeekSecond( t ).printf( rv );
-         rv = GPSWeekSecond( t ).printf( rv );
-         rv = GPSWeekZcount( t ).printf( rv );
-         rv = GPSZcount32( t ).printf( rv );
-         rv = GPSZcount29( t ).printf( rv );
-         rv = JulianDate( t ).printf( rv );
-         rv = MJD( t ).printf( rv );
-         rv = UnixTime( t ).printf( rv );
-         rv = YDSTime( t ).printf( rv );
+         rv = printAs<ANSITime>( t, rv );
+         rv = printAs<CivilTime>( t, rv );
+         rv = printAs<GPSWeekSecond>( t, rv );
+         rv = printAs<GPSWeekZcount>( t, rv );
+         rv = printAs<JulianDate>( t, rv );
+         rv = printAs<MJD>( t, rv );
+         rv = printAs<UnixTime>( t, rv );
+         rv = printAs<YDSTime>( t, rv );
       
          return rv;
       }
@@ -316,59 +286,19 @@ namespace gpstk
 
          } // end of if( hyear )
 
-         if( hzcount32 )
+         if( hzcount32 ||
+             (hfullweek && hzcount) ||
+             (hepoch && (hzcount29 || 
+                         (hweek && hzcount))) )
          {
-            GPSZcount32 tt;
+            GPSWeekZcount tt;
             tt.setFromInfo( info );
             t = tt.convertToCommonTime();
             return;
          }
 
-         if( hepoch )
+         if ( ((hepoch && hweek) || hfullweek) )
          {
-            if( hzcount29 )
-            {
-               GPSZcount29 tt;
-               tt.setFromInfo( info );
-               t = tt.convertToCommonTime();
-               return;
-            }
-
-            if( hweek )
-            {
-               GPSEpochWeekSecond tt;
-               tt.setFromInfo( info );
-               if( hdow && !hsow )
-               {
-                  tt.sow = asInt( info['w'] ) * SEC_PER_DAY;
-                  if( hsod )
-                  {
-                     tt.sow += asDouble( info['s'] );
-                  }
-                  else if( hhour && hmin && hsec )
-                  {
-                     tt.sow += convertTimeToSOD( asInt( info['H'] ), 
-                                                 asInt( info['M'] ), 
-                                                 asDouble( info['S'] ) );
-                  }
-               }
-               t = tt.convertToCommonTime();
-               return;
-
-            } // end of if( hweek )
-
-         } // end of if( hepoch )
-         
-         if( hfullweek )
-         {
-            if( hzcount )
-            {
-               GPSWeekZcount tt;
-               tt.setFromInfo( info );
-               t = tt.convertToCommonTime();
-               return;
-            }
-            
             GPSWeekSecond tt;
             tt.setFromInfo( info );
             if( hdow && !hsow )
@@ -387,7 +317,7 @@ namespace gpstk
             }
             t = tt.convertToCommonTime();
             return;
-         } // end of if( hfullweek )
+         }
 
          if( hmjd )
          {
@@ -475,7 +405,7 @@ namespace gpstk
                   return;
                   
                case 'C':
-                  t = GPSZcount32( asInt(itr->second) );
+                  t = GPSWeekZcount().setZcount32( asInt(itr->second) );
                   return;
 
                case 'K':
@@ -610,8 +540,8 @@ namespace gpstk
             // precise.
          if( hepoch ) 
          {
-            GPSEpochWeekSecond tt(ct);
-            tt.epoch = iepoch;
+            GPSWeekSecond tt(ct);
+            tt.setEpoch( iepoch );
             ct = tt.convertToCommonTime();
          }
          
@@ -638,8 +568,8 @@ namespace gpstk
          
          if( hweek )
          {
-            GPSEpochWeekSecond tt(ct);
-            tt.week = iweek;
+            GPSWeekSecond tt(ct);
+            tt.setWeek10( iweek );
             ct = tt.convertToCommonTime();
          }
          
@@ -666,8 +596,8 @@ namespace gpstk
          
          if( hzcount29 )
          {
-            GPSZcount29 tt(ct);
-            tt.zcount = izcount29;
+            GPSWeekZcount tt(ct);
+            tt.setZcount29( izcount29 );
             ct = tt.convertToCommonTime(); 
          }
 

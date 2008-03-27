@@ -38,20 +38,41 @@ namespace gpstk
    }
    
    CommonTime UnixTime::convertToCommonTime() const
+      throw( InvalidRequest )
    {
-      return CommonTime( ( MJD_JDAY + UNIX_MJD + tv.tv_sec / SEC_PER_DAY ),
-                         ( tv.tv_sec % SEC_PER_DAY ),
-                         ( static_cast<double>( tv.tv_usec ) * 1e-6 ) );
+      try
+      {
+         return CommonTime( ( MJD_JDAY + UNIX_MJD + tv.tv_sec / SEC_PER_DAY ),
+                            ( tv.tv_sec % SEC_PER_DAY ),
+                            ( static_cast<double>( tv.tv_usec ) * 1e-6 ) );
+      }
+      catch (InvalidParameter& ip)
+      {
+         InvalidRequest ir(ip);
+         GPSTK_THROW(ip);
+      }
    }
    
    void UnixTime::convertFromCommonTime( const CommonTime& ct )
+      throw( InvalidRequest )
    {
+         /// This is the earliest CommonTime for which UnixTimes are valid.
+      static const CommonTime MIN_CT = UnixTime();
+         /// This is the latest CommonTime for which UnixTimes are valid.
+         /// (2^31 - 1) s and 999999 us
+      static const CommonTime MAX_CT = UnixTime(2147483647, 999999);
+
+      if ( ct < MIN_CT || ct > MAX_CT )
+      {
+         InvalidRequest ir("Unable to convert given CommonTime to UnixTime.");
+         GPSTK_THROW(ir);
+      }
+                             
       long jday, sod;
       double fsod;
       ct.get( jday, sod, fsod );
       
-      tv.tv_sec = 
-         static_cast<time_t>((jday - MJD_JDAY - UNIX_MJD) * SEC_PER_DAY + sod);
+      tv.tv_sec = (jday - MJD_JDAY - UNIX_MJD) * SEC_PER_DAY + sod;
       
          // round to the nearest microsecond
       tv.tv_usec = static_cast<time_t>( fsod * 1e6 + 0.5 ) ;
@@ -70,12 +91,11 @@ namespace gpstk
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
-
+         
          rv = formattedPrint(rv, getFormatPrefixInt() + "U",
-                             "Ud", tv.tv_sec);
+                             "Ulu", tv.tv_sec);
          rv = formattedPrint(rv, getFormatPrefixInt() + "u",
-                             "ud", tv.tv_usec);         
-
+                             "ulu", tv.tv_usec);         
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& se )
@@ -83,7 +103,27 @@ namespace gpstk
          GPSTK_RETHROW( se );
       }
    }
-   
+
+   std::string UnixTime::printError( const std::string& fmt ) const
+      throw( gpstk::StringUtils::StringException )
+   {
+      try
+      {
+         using gpstk::StringUtils::formattedPrint;
+         std::string rv( fmt );
+         
+         rv = formattedPrint(rv, getFormatPrefixInt() + "U",
+                             "Us", getError().c_str());
+         rv = formattedPrint(rv, getFormatPrefixInt() + "u",
+                             "us", getError().c_str());         
+         return rv;         
+      }
+      catch( gpstk::StringUtils::StringException& se )
+      {
+         GPSTK_RETHROW( se );
+      }
+   }
+
    bool UnixTime::setFromInfo( const IdToValue& info )
       throw()
    {

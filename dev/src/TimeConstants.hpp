@@ -46,7 +46,7 @@ namespace gpstk
    const long FULLWEEK = 604800L;
 
       /// Weeks per GPS Epoch
-   const long WEEKS_PER_EPOCH = 1024L;
+   const long WEEK_PER_EPOCH = 1024L;
 
       /// Seconds per day.
    const long SEC_PER_DAY = 86400L;
@@ -71,7 +71,7 @@ namespace gpstk
       /// Zcounts in a week.
    const long ZCOUNT_PER_WEEK = 403200L;
       /// Weeks in a Zcount.
-   const double WEEKS_PER_ZCOUNT = 1.0/ZCOUNT_PER_WEEK;
+   const double WEEK_PER_ZCOUNT = 1.0/ZCOUNT_PER_WEEK;
 
 } // namespace
 

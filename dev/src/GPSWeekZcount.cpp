@@ -33,23 +33,42 @@ namespace gpstk
    GPSWeekZcount& GPSWeekZcount::operator=( const GPSWeekZcount& right )
       throw()
    {
-      week = right.week;
+      GPSWeek::operator=(right);
       zcount = right.zcount;
       return *this;
    }
    
    CommonTime GPSWeekZcount::convertToCommonTime() const
+      throw(InvalidRequest)
    {
-      int dow = zcount / ZCOUNT_PER_DAY;
-      int jday = GPS_EPOCH_JDAY + ( 7 * week ) + dow;
-      double sod = static_cast<double>( zcount % ZCOUNT_PER_DAY ) * 1.5;
-      return CommonTime( jday,
-                         static_cast<long>( sod ),
-                         sod - static_cast<long>( sod ) );
+      try
+      {
+         int dow = zcount / ZCOUNT_PER_DAY;
+         int jday = GPS_EPOCH_JDAY + ( 7 * week ) + dow;
+         double sod = static_cast<double>( zcount % ZCOUNT_PER_DAY ) * 1.5;
+         return CommonTime( jday,
+                            static_cast<long>( sod ),
+                            sod - static_cast<long>( sod ) );
+      }
+      catch (InvalidParameter& ip)
+      {
+         InvalidRequest ir(ip);
+         GPSTK_THROW(ir);
+      }
    }
    
-   void GPSWeekZcount::convertFromCommonTime( const CommonTime& ct ) 
+   void GPSWeekZcount::convertFromCommonTime( const CommonTime& ct )
+      throw(InvalidRequest)
    {
+         /// This is the earliest CommonTime representable by GPSWeekZcount.
+      static const CommonTime MIN_CT = GPSWeekZcount();
+
+      if (ct < MIN_CT)
+      {
+         InvalidRequest ir("Unable to convert CommonTime to GPSWeekZcount.");
+         GPSTK_THROW(ir);
+      }
+
       long day, sod;
       double fsod;
       ct.get( day, sod, fsod );
@@ -71,14 +90,46 @@ namespace gpstk
       try
       {
          using gpstk::StringUtils::formattedPrint;
-         std::string rv( fmt );
 
-         rv = formattedPrint( rv, getFormatPrefixInt() + "F", "Fd", week );
-         rv = formattedPrint( rv, getFormatPrefixInt() + "w", "wd", 
-                              static_cast<int>(zcount / ZCOUNT_PER_DAY) );
-         rv = formattedPrint( rv, getFormatPrefixInt() + "z", "zd", zcount );
-         rv = formattedPrint( rv, getFormatPrefixInt() + "Z", "Zd", zcount );
-         
+         std::string rv = GPSWeek::printf( fmt );
+
+         rv = formattedPrint( rv, getFormatPrefixInt() + "w",
+                              "wu", getDayOfWeek() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "z",
+                              "zu", zcount );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "Z",
+                              "Zu", zcount );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "c",
+                              "cu", getZcount29() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "C",
+                              "Cu", getZcount32() );
+         return rv;         
+      }
+      catch( gpstk::StringUtils::StringException& exc )
+      {
+         GPSTK_RETHROW( exc );
+      }
+   }
+   
+   std::string GPSWeekZcount::printError( const std::string& fmt ) const
+         throw( gpstk::StringUtils::StringException )
+   {
+      try
+      {
+         using gpstk::StringUtils::formattedPrint;
+
+         std::string rv = GPSWeek::printError( fmt );
+
+         rv = formattedPrint( rv, getFormatPrefixInt() + "w",
+                              "ws", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "z",
+                              "zs", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "Z",
+                              "Zs", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "c",
+                              "cs", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "C",
+                              "Cs", getError().c_str() );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -97,10 +148,6 @@ namespace gpstk
             // based on the character, we know what to do...
          switch( i->first )
          {
-            case 'F':
-               week = asInt( i->second );
-               break;
-
             case 'w':
                zcount = asInt( i->second) * ZCOUNT_PER_DAY;
                break;
@@ -110,6 +157,14 @@ namespace gpstk
                zcount = asInt( i->second );
                break;
                
+            case 'c':
+               setZcount29( asInt( i->second ) );
+               break;
+
+            case 'C':
+               setZcount32( asInt( i->second ) );
+               break;
+
             default:
                   // do nothing
                break;
@@ -122,30 +177,38 @@ namespace gpstk
    bool GPSWeekZcount::isValid() const
       throw()
    {
-      GPSWeekZcount temp;
-      temp.convertFromCommonTime( convertToCommonTime() );
-      if( *this == temp )
-      {
-         return true;
-      }
-      return false;
+      return ( GPSWeek::isValid() &&
+               zcount < ZCOUNT_PER_WEEK );
    }
 
    void GPSWeekZcount::reset()
       throw()
    {
-      week = zcount = 0;
+      GPSWeek::reset();
+      zcount = 0;
+   }
+
+   GPSWeekZcount& GPSWeekZcount::setZcount29(unsigned int z)
+      throw()
+   {
+      setWeek10( (z >> 19) & bits10 );
+      zcount = z & bits19;
+      return *this;
+   }
+   
+   GPSWeekZcount& GPSWeekZcount::setZcount32(unsigned int z)
+      throw()
+   {
+      week = z >> 19;
+      zcount = z & bits19;
+      return *this;
    }
 
    bool GPSWeekZcount::operator==( const GPSWeekZcount& right ) const
       throw()
    {
-      if( week == right.week &&
-          zcount == right.zcount )
-      {
-         return true;
-      }
-      return false;         
+      return ( GPSWeek::operator==(right) &&
+               zcount == right.zcount );
    }
 
    bool GPSWeekZcount::operator!=( const GPSWeekZcount& right ) const
@@ -157,11 +220,11 @@ namespace gpstk
    bool GPSWeekZcount::operator<( const GPSWeekZcount& right ) const
       throw()
    {
-      if( week < right.week )
+      if( GPSWeek::operator<(right) )
       {
          return true;
       }
-      if( week > right.week )
+      if( GPSWeek::operator>(right) )
       {
          return false;
       }

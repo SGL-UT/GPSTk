@@ -30,13 +30,6 @@
 
 namespace gpstk
 {
-   SystemTime& SystemTime::operator=( const SystemTime& right )
-      throw()
-   {
-      UnixTime::operator=( right );
-      return *this;
-   }
-
    SystemTime& SystemTime::update()
       throw()
    {

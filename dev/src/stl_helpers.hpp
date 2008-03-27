@@ -61,13 +61,13 @@ namespace gpstk
       //@{
 
       /// A simple way to get the max value of a list of numbers
-   template<class For> For max(const std::list<For> lst) 
+   template<class For> For max(const std::list<For>& lst) 
    {
       return *max_element(lst.begin(), lst.end());
    }
    
       /// A simple way to get the minimum value of a list of numbers
-   template<class For> For min(const std::list<For> lst) 
+   template<class For> For min(const std::list<For>& lst) 
    {
       return *min_element(lst.begin(), lst.end());
    }

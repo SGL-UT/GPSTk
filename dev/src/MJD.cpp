@@ -37,22 +37,33 @@ namespace gpstk
    }
    
    CommonTime MJD::convertToCommonTime() const
+      throw(InvalidRequest)
    {
-         // convert to Julian Day
-      long double tmp( mjd + MJD_JDAY );
-         // get the whole number of days
-      long jday( static_cast<long>( tmp ) );
-         // tmp now holds the partial days
-      tmp -= static_cast<long>( tmp );
-         // convert tmp to seconds of day
-      tmp *= SEC_PER_DAY;
+      try
+      {
+            // convert to Julian Day
+         long double tmp( mjd + MJD_JDAY );
+            // get the whole number of days
+         long jday( static_cast<long>( tmp ) );
+            // tmp now holds the partial days
+         tmp -= static_cast<long>( tmp );
+            // convert tmp to seconds of day
+         tmp *= SEC_PER_DAY;
       
-      return CommonTime( jday,
-                         static_cast<long>( tmp ),
-                         tmp - static_cast<long>( tmp ) );
+         return CommonTime( jday,
+                            static_cast<long>( tmp ),
+                            tmp - static_cast<long>( tmp ) );
+      }
+      catch (InvalidParameter& ip)
+      {
+         InvalidRequest ir(ip);
+         GPSTK_THROW(ip);
+      }
+      
    }
    
    void MJD::convertFromCommonTime( const CommonTime& ct )
+      throw()
    {
       long jday, sod;
       double fsod;
@@ -73,6 +84,24 @@ namespace gpstk
          
          rv = formattedPrint( rv, getFormatPrefixFloat() + "Q",
                               "QLf", mjd );
+         return rv;         
+      }
+      catch( gpstk::StringUtils::StringException& se )
+      {
+         GPSTK_RETHROW( se );
+      }
+   }
+   
+   std::string MJD::printError( const std::string& fmt ) const
+      throw( gpstk::StringUtils::StringException )
+   {
+      try
+      {
+         using gpstk::StringUtils::formattedPrint;
+         std::string rv( fmt );
+         
+         rv = formattedPrint( rv, getFormatPrefixFloat() + "Q",
+                              "Qs", getError().c_str() );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& se )

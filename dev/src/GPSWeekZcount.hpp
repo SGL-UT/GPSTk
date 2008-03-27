@@ -27,7 +27,8 @@
 //
 //============================================================================
 
-#include "TimeTag.hpp"
+#include "GPSWeek.hpp"
+#include "TimeConstants.hpp"
 
 namespace gpstk
 {
@@ -35,9 +36,12 @@ namespace gpstk
        * This class encapsulates the "Full GPS Week and GPS Z-count" time
        * representation.
        */
-   class GPSWeekZcount : public TimeTag
+   class GPSWeekZcount : public GPSWeek
    {
    public:
+         /// This is just a 19-bit mask.
+      static const unsigned int bits19 = 0x7FFFF;
+
          /**
           * @defgroup gwzbo GPSWeekZcount Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
@@ -50,7 +54,7 @@ namespace gpstk
       GPSWeekZcount( int w = 0,
                      int z = 0 )
          throw()
-            : week( w ), zcount( z )
+            : GPSWeek( w ), zcount( z )
       {}
       
          /** 
@@ -59,7 +63,7 @@ namespace gpstk
           */
       GPSWeekZcount( const GPSWeekZcount& right )
          throw()
-            : week( right.week ), zcount( right.zcount )
+            : GPSWeek( right.week ), zcount( right.zcount )
       {}
       
          /**
@@ -103,13 +107,20 @@ namespace gpstk
          //@}
 
          // The following functions are required by TimeTag.
-      virtual CommonTime convertToCommonTime() const;
+      virtual CommonTime convertToCommonTime() const
+         throw(InvalidRequest);
 
-      virtual void convertFromCommonTime( const CommonTime& ct ) ;
+      virtual void convertFromCommonTime( const CommonTime& ct )
+         throw(InvalidRequest);
 
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
       virtual std::string printf( const std::string& fmt ) const
+         throw( gpstk::StringUtils::StringException );
+
+         /// This function works similarly to printf.  Instead of filling
+         /// the format with data, it fills with error messages.
+      virtual std::string printError( const std::string& fmt) const
          throw( gpstk::StringUtils::StringException );
 
          /**
@@ -123,24 +134,51 @@ namespace gpstk
       
          /// Return a string containing the characters that this class
          /// understands when printing times.
-      virtual std::string getPrintChars() const
+      inline virtual std::string getPrintChars() const
          throw()
       { 
-         return "FwzZ";
+         return GPSWeek::getPrintChars() + "wzZcC";
       }
 
          /// Return a string containing the default format to use in printing.
-      virtual std::string getDefaultFormat() const
+      inline virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%04F %06Z";
+         return GPSWeek::getDefaultFormat() + " %06Z";
       }
 
-      virtual bool isValid() const
+      inline virtual bool isValid() const
          throw();
       
-      virtual void reset()
+      inline virtual void reset()
          throw();
+
+         /// @name Special Zcount-related Methods.
+         /// @note The 29- and 32-bit Zcounts cannot represent time from 
+         /// GPS weeks over 1023 and 8191 respectively.
+         //@{
+      inline unsigned int getZcount29() const
+      { 
+         return (getWeek10() << 19) | zcount;
+      }
+      
+      inline unsigned int getZcount32() const
+      {
+         return (week << 19) | zcount;
+      }
+      
+      GPSWeekZcount& setZcount29(unsigned int z)
+         throw();
+
+      GPSWeekZcount& setZcount32(unsigned int z)
+         throw();
+         //@}
+
+      inline virtual unsigned int getDayOfWeek() const
+         throw()
+      {
+         return static_cast<unsigned int>(zcount) / ZCOUNT_PER_DAY;
+      }
 
          /**
           * @defgroup gwzco GPSWeekZcount Comparison Operators
@@ -150,22 +188,21 @@ namespace gpstk
           *  and false on failure.
           */
          //@{
-      bool operator==( const GPSWeekZcount& right ) const
+      inline bool operator==( const GPSWeekZcount& right ) const
          throw();
-      bool operator!=( const GPSWeekZcount& right ) const
+      inline bool operator!=( const GPSWeekZcount& right ) const
          throw();
-      bool operator<( const GPSWeekZcount& right ) const
+      inline bool operator<( const GPSWeekZcount& right ) const
          throw();
-      bool operator>( const GPSWeekZcount& right ) const
+      inline bool operator>( const GPSWeekZcount& right ) const
          throw();
-      bool operator<=( const GPSWeekZcount& right ) const
+      inline bool operator<=( const GPSWeekZcount& right ) const
          throw();
-      bool operator>=( const GPSWeekZcount& right ) const
+      inline bool operator>=( const GPSWeekZcount& right ) const
          throw();
          //@}
 
-      int week;
-      int zcount;
+      unsigned int zcount;
    };   
    
 } // namespace

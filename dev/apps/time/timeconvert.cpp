@@ -11,11 +11,8 @@
 
 #include "ANSITime.hpp"
 #include "CivilTime.hpp"
-#include "GPSEpochWeekSecond.hpp"
 #include "GPSWeekSecond.hpp"
 #include "GPSWeekZcount.hpp"
-#include "GPSZcount29.hpp"
-#include "GPSZcount32.hpp"
 #include "JulianDate.hpp"
 #include "MJD.hpp"
 #include "UnixTime.hpp"
@@ -167,33 +164,29 @@ void TimCvt::process()
       using StringUtils::leftJustify;
       string eight(8, ' '); // eight spaces
       
-      CivilTime civ(ct);
+      GPSWeekZcount wz(ct);
 
       cout << endl
-           << eight << leftJustify("Month/Day/Year", 32) 
-           << civ.printf("%m/%d/%Y") << endl
-
-           << eight << leftJustify("Hour:Min:Sec", 32)
-           << civ.printf("%02H:%02M:%02S") << endl
+           << eight << leftJustify("Month/Day/Year H:M:S", 32) 
+           << CivilTime(ct) << endl
 
            << eight << leftJustify("Modified Julian Date", 32)
-           << setprecision(15) << MJD(ct) << endl
+           << setprecision(15) << MJD(ct).printf("%.15Q") << endl
 
            << eight << leftJustify("GPSweek DayOfWeek SecOfWeek", 32)
-           << GPSEpochWeekSecond(ct).printf("%G %w %g") << endl
+           << GPSWeekSecond(ct).printf("%G %w %013.6g") << endl
 
            << eight << leftJustify("FullGPSweek Zcount", 32)
-           << GPSWeekZcount(ct).printf("%F %z") << endl
+           << wz.printf("%F %06z") << endl
 
            << eight << leftJustify("Year DayOfYear SecondOfDay", 32)
-           << YDSTime(ct).printf("%Y %j %s") << endl
+           << YDSTime(ct).printf("%Y %03j %012.6s") << endl
 
-           << eight << leftJustify("Unix_sec Unix_usec", 32)
-           << UnixTime(ct).printf("%U %u") << endl
+           << eight << leftJustify("Unix: Second Microsecond", 32)
+           << UnixTime(ct).printf("%U %06u") << endl
 
            << eight << leftJustify("Zcount: 29-bit (32-bit)", 32)
-           << GPSZcount29(ct).printf("%c")
-           << GPSZcount32(ct).printf(" (%C)") << endl
+           << wz.printf("%c (%C)") << endl
 
            << endl << endl;
    }
@@ -203,27 +196,11 @@ void TimCvt::process()
 
 int main(int argc, char* argv[])
 {
-   try
-   {
-      TimCvt tc(argv[0]);
-      if (!tc.initialize(argc, argv))
-         return 0;
-      if (!tc.run())
-         return 1;
-      
+   TimCvt tc(argv[0]);
+   if (!tc.initialize(argc, argv))
       return 0;
-   }
-   catch(Exception& e)
-   {
-      cout << e << endl;
-   }
-   catch(exception& e)
-   {
-      cout << e.what() << endl;
-   }
-   catch(...)
-   {
-      cout << "unknown error" << endl;
-   }
+   if (!tc.run())
+      return 1;
+   
    return 0;
 }

@@ -37,18 +37,28 @@ namespace gpstk
    }
    
    CommonTime JulianDate::convertToCommonTime() const
+      throw(InvalidRequest)
    {
-      long double temp_jd( jd + 0.5 );
-      long jday( static_cast<long>( temp_jd ) );
-      long double sod = 
-         ( temp_jd - static_cast<long double>( jday ) ) * SEC_PER_DAY;
-
-      return CommonTime( jday, 
-                         static_cast<long>( sod ),
-                         static_cast<double>( sod - static_cast<long>( sod ) ));
+      try
+      {
+         long double temp_jd( jd + 0.5 );
+         long jday( static_cast<long>( temp_jd ) );
+         long double sod = 
+            ( temp_jd - static_cast<long double>( jday ) ) * SEC_PER_DAY;
+         
+         return CommonTime( jday, 
+                            static_cast<long>( sod ),
+                            static_cast<double>( sod - static_cast<long>( sod ) ));
+      }
+      catch (InvalidParameter& ip)
+      {
+         InvalidRequest ir(ip);
+         GPSTK_THROW(ir);
+      }
    }
    
    void JulianDate::convertFromCommonTime( const CommonTime& ct )
+      throw()
    {
       long jday, sod;
       double fsod;
@@ -78,6 +88,24 @@ namespace gpstk
       }
    }
    
+   std::string JulianDate::printError( const std::string& fmt ) const
+      throw( gpstk::StringUtils::StringException )
+   {
+      try
+      {
+         using gpstk::StringUtils::formattedPrint;
+         std::string rv( fmt );
+         
+         rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
+                              "Js", getError().c_str() );
+         return rv;         
+      }
+      catch( gpstk::StringUtils::StringException& se )
+      {
+         GPSTK_RETHROW( se );
+      }
+   }
+
    bool JulianDate::setFromInfo( const IdToValue& info )
       throw()
    {

@@ -54,48 +54,6 @@ namespace gpstk
          update();
       }
       
-         /** 
-          * Copy Constructor.
-          * @param right a reference to the SystemTime object to copy
-          */
-      SystemTime( const SystemTime& right )
-         throw()
-            : UnixTime( right )
-      {}
-      
-         /**
-          * Alternate Copy Constructor.
-          * Takes a const TimeTag reference and copies its contents via
-          * conversion to CommonTime.
-          * @param right a const reference to the BasicTime object to copy
-          * @throw InvalidRequest on over-/under-flow
-          */
-      SystemTime( const TimeTag& right )
-         throw( gpstk::InvalidRequest )
-      { 
-         convertFromCommonTime( right.convertToCommonTime() ); 
-      }
-      
-         /** 
-          * Alternate Copy Constructor.
-          * Takes a const CommonTime reference and copies its contents via
-          * the convertFromCommonTime method.
-          * @param right a const reference to the CommonTime object to copy
-          * @throw InvalidRequest on over-/under-flow
-          */
-      SystemTime( const CommonTime& right )
-         throw( InvalidRequest )
-            : UnixTime( right )
-      {}
-
-         /** 
-          * Assignment Operator.
-          * @param right a const reference to the SystemTime to copy
-          * @return a reference to this SystemTime
-          */
-      SystemTime& operator=( const SystemTime& right )
-         throw();     
-      
          /// Virtual Destructor.
       virtual ~SystemTime()
          throw()
@@ -108,6 +66,16 @@ namespace gpstk
           */
       SystemTime& update()
          throw();
+
+   protected:
+         /** 
+          * Disallow Copy Constructor.
+          */
+      SystemTime( const SystemTime& right )
+         throw()
+            : UnixTime( right )
+      {}
+
    };
 
 }

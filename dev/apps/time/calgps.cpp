@@ -27,44 +27,27 @@ using namespace vplot;
 
 void printMonth(short month, short year)
 {
-   CivilTime ct(year, month, 1, 0, 0, 0.0);
-   CommonTime thisDay(ct);
-   GPSWeekSecond gws(thisDay);
-   int gpsweek = gws.week;
-   short dow   = static_cast<long>(gws.sow) / SEC_PER_DAY; 
+   CivilTime civ(year, month, 1, 0, 0, 0.0);
   
-   cout << endl << ct.printf("%26b %4Y") << endl;
+   cout << endl << civ.printf("%26b %4Y") << endl;
+   
+   GPSWeekSecond gws(civ);
 
-   bool done = false;
-   do 
+   for (; civ.month == month; ++gws.week, gws.sow = 0, civ = gws)
    {
-      cout << setw(4) << gpsweek << "  ";
-      short thisDow=0;
+      cout << setw(4) << gws.week << "  ";
       
-      while (thisDow < 7)
+      for (short thisDow = 0; thisDow < 7; ++thisDow)
       {
-         thisDay = GPSWeekSecond(gpsweek, thisDow*SEC_PER_DAY+.01 ).convertToCommonTime();
-         CivilTime ct(thisDay);
-         int thisMonth = ct.month;  
-         if (thisMonth==month)
-	   cout << printTime(thisDay, "%2d-%03j ");
+         gws.sow = thisDow * SEC_PER_DAY;
+         CommonTime com(gws);
+         if (CivilTime(com).month == month)
+	   cout << printTime(com, "%2d-%03j ");
          else 
            cout << "       ";
-
-         // Iterate
-         thisDow++;        
       }
       cout << endl;
-
-      gpsweek++;
-      thisDay = GPSWeekSecond(gpsweek, 0.0).convertToCommonTime();
-      CivilTime ct(thisDay);
-    
-      done = ( (ct.month > month) || 
-               (ct.year  > year)     );
-   } while (!done);
-  
-   return;
+   }
 }
 
 void plotMonth(short month, short year, 
@@ -87,15 +70,12 @@ void plotMonth(short month, short year,
    CommonTime lastDOM = CommonTime(nextFirstDOM) - SEC_PER_DAY+1;
 
    CivilTime thisDay(firstDOM);
-   GPSWeekSecond gws(thisDay);
-   int gpsweek1 = gws.week;
-   
-   short dow1   = static_cast<long>(gws.sow) / SEC_PER_DAY; 
+   GPSWeekSecond gws1(thisDay);
+   int gpsweek1 = gws1.week;
 
    CivilTime thatDay(lastDOM);
    GPSWeekSecond gws2(thatDay);
    int gpsweek2 = gws2.week;
-   short dow2   = static_cast<long>(gws.sow) / SEC_PER_DAY;
 
    TextStyle ts(ft.getHeight()*.5, (int) TextStyle::BOLD, Color::BLACK, 
                 TextStyle::SANSSERIF);
@@ -112,30 +92,30 @@ void plotMonth(short month, short year,
                  ts,Text::CENTER);
    }
 
-   VLayout weekListLayout(weekDOWLayout.getFrame(0),gpsweek2-gpsweek1+1);
-   VLayout weekListLayoutRows(fb,gpsweek2-gpsweek1+1);
+   VLayout weekListLayout(weekDOWLayout.getFrame(0),gws2.week-gws1.week+1);
+   VLayout weekListLayoutRows(fb,gws2.week-gws1.week+1);
 
    Color bgclr(230,230,230);
 
    double wkHeight=weekListLayoutRows.getFrame(0).getHeight()*.4;
    TextStyle tsw(wkHeight, (int) TextStyle::BOLD, Color::BLACK, 
                 TextStyle::SERIF);
-   for (int week=gpsweek1; week<=gpsweek2; week++)
+   for (int week=gws1.week; week<=gws2.week; week++)
    {
       if (week%2 == 1)
       {
-         Frame fwkrow = weekListLayoutRows.getFrame(week-gpsweek1);
+         Frame fwkrow = weekListLayoutRows.getFrame(week-gws1.week);
          Rectangle background(fwkrow.lx(),fwkrow.ly(),
                               fwkrow.ux(),fwkrow.uy(),
                               StrokeStyle(bgclr,0), bgclr);
          fwkrow << background;
       }  
-      Frame ftemp = weekListLayout.getFrame(week-gpsweek1);
+      Frame ftemp = weekListLayout.getFrame(week-gws1.week);
       ftemp << Text(week,ftemp.cx(), ftemp.uy()-.3*ftemp.getHeight(), tsw, Text::CENTER);
 
    }
 
-   GridLayout domLayout(weekDOWLayout.getFrame(1),gpsweek2-gpsweek1+1,7);
+   GridLayout domLayout(weekDOWLayout.getFrame(1),gws2.week-gws1.week+1,7);
 
    TextStyle tsdom(domLayout.getFrame(0).getHeight()*.40,
                    (int) TextStyle::BOLD, Color::BLACK, 
@@ -149,12 +129,11 @@ void plotMonth(short month, short year,
    {
       GPSWeekSecond gwsTemp(thisDay);
       int gpsweek = gwsTemp.week;
-      int dow   = static_cast<long>(gwsTemp.sow) / SEC_PER_DAY;
+      int dow   = gwsTemp.getDayOfWeek();
 
-      YDSTime ydsTemp(thisDay);
-      int doy = ydsTemp.doy;
+      int doy = YDSTime(thisDay).doy;
 
-      Frame ftemp = domLayout.getFrame(gpsweek-gpsweek1, dow);
+      Frame ftemp = domLayout.getFrame(gpsweek-gws1.week, dow);
       ftemp << Text(thisDay.day,ftemp.cx(), ftemp.uy()-.5*ftemp.getHeight(), 
                     tsdom, Text::CENTER);
       ftemp << Text(doy, ftemp.ux(), ftemp.uy()-.1*ftemp.getHeight(), 

@@ -37,14 +37,36 @@ namespace gpstk
    }
    
    CommonTime ANSITime::convertToCommonTime() const
+      throw(InvalidRequest)
    {
-      return CommonTime( ( MJD_JDAY + UNIX_MJD + time / SEC_PER_DAY ),
-                         ( time % SEC_PER_DAY ),
-                         0 );
+      try
+      {
+         return CommonTime( ( MJD_JDAY + UNIX_MJD + time / SEC_PER_DAY ),
+                            ( time % SEC_PER_DAY ),
+                            0 );
+      }
+      catch (InvalidParameter& ip)
+      {
+         InvalidRequest ir(ip);
+         GPSTK_THROW(ir);
+      }
    }
    
    void ANSITime::convertFromCommonTime( const CommonTime& ct )
+      throw(InvalidRequest)
    {
+         /// This is the earliest CommonTime for which ANSITimes are valid.
+      static const CommonTime MIN_CT = ANSITime(0);
+         /// This is the latest CommonTime for which ANSITimes are valid.
+         /// 2^31 - 1 seconds
+      static const CommonTime MAX_CT = ANSITime(2147483647);
+
+      if ( ct < MIN_CT || ct > MAX_CT )
+      {
+         InvalidRequest ir("Unable to convert given CommonTime to ANSITime.");
+         GPSTK_THROW(ir);
+      }
+
       long jday, sod;
       double fsod;
       ct.get( jday, sod, fsod );
@@ -53,17 +75,16 @@ namespace gpstk
          static_cast<time_t>((jday - MJD_JDAY - UNIX_MJD) * SEC_PER_DAY + sod);
    }
    
-   std::string ANSITime::printf( const std::string& fmt ) const
+   std::string ANSITime::printf( const std::string& fmt) const
       throw( gpstk::StringUtils::StringException )
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
-
+         
          rv = formattedPrint( rv, getFormatPrefixInt() + "K",
-                              "Kd", time );
-
+                              "Klu", time );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& se )
@@ -72,6 +93,24 @@ namespace gpstk
       }
    }
    
+   std::string ANSITime::printError( const std::string& fmt) const
+      throw( gpstk::StringUtils::StringException )
+   {
+      try
+      {
+         using gpstk::StringUtils::formattedPrint;
+         std::string rv( fmt );
+         
+         rv = formattedPrint( rv, getFormatPrefixInt() + "K",
+                              "Ks", getError().c_str() );
+         return rv;         
+      }
+      catch( gpstk::StringUtils::StringException& se )
+      {
+         GPSTK_RETHROW( se );
+      }
+   }
+
    bool ANSITime::setFromInfo( const IdToValue& info )
       throw()
    {
