@@ -1,4 +1,4 @@
-#pragma ident "$Id: DataAvailabilityAnalyzer.hpp 192 2006-10-06 15:18:53Z ocibu $"
+#pragma ident "$Id$"
 
 //============================================================================
 //

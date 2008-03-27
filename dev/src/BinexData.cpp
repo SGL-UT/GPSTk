@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/code/shared/gpstk/BinexData.cpp#1 $"
+#pragma ident "$Id$"
 
 
 /**

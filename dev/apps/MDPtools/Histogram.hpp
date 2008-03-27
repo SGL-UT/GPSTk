@@ -1,4 +1,4 @@
-#pragma ident "$Id: Histogram.hpp 71 2006-08-01 18:46:39Z ehagen $"
+#pragma ident "$Id$"
 
 #ifndef HISTOGRAM_HPP
 #define HISTOGRAM_HPP

@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 /**
  * @file AstronomicalFunctions.hpp

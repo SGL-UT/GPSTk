@@ -1,4 +1,4 @@
-/** $Id: $
+/** $Id$
 *   SVNumXRef.hpp
 *
 *   Applied Research Laboratories, The University of Texas at Austin

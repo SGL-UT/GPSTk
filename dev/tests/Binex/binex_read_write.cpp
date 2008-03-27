@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/r5.3/code/shared/gpstk/test/binex_read_write.cpp#1 $"
+#pragma ident "$Id$"
 
 #include <stdlib.h> // For lrand48()
 #include "BinexData.hpp"

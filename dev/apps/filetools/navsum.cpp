@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 /**
  * @file navsum.cpp - print a human readable file from a binary FIC file

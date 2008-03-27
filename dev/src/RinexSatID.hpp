@@ -1,4 +1,4 @@
-#pragma ident "$Id: SatID.hpp 105 2006-08-31 15:53:26Z ocibu $"
+#pragma ident "$Id$"
 
 #ifndef GPSTK_RINEX_SATID_HPP
 #define GPSTK_RINEX_SATID_HPP
