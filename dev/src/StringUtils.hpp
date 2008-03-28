@@ -2028,8 +2028,8 @@ namespace gpstk
          while ( regexec(&re, rv.c_str(), 1, &r, 0) == 0 )
          {
             size_t len = r.rm_eo - r.rm_so;
-            std::string mac = replaceAll(rv.substr(r.rm_so, len), 
-                                         rep.substr(0,1), rep.substr(1));
+            std::string mac = rv.substr(r.rm_so, len);
+            mac = replaceAll(mac, rep.substr(0,1), rep.substr(1));
             snprintf(buffer, bufferSize, mac.c_str(), to);
             rv.replace(r.rm_so, len, std::string(buffer));
          }
