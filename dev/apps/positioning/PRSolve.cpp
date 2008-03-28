@@ -507,10 +507,11 @@ try {
          return -1;
       }
    }
-   if(inP1 > -1) {
-      if(inP2 > -1) C.Freq = 3;
-      else C.Freq = 1;
-      // TD add 2 as an input option
+
+   // determine which frequency to process
+   if(C.Freq != 1 && inP2 == -1) {
+      C.oflog << "WARNING. Unable to process L" << C.Freq << " data - no L2." << endl;
+      C.Freq = 1;
    }
    C.oflog << "Process frequency " << C.Freq << endl;
 
@@ -1295,6 +1296,7 @@ try {
    C.nIter = prsol.MaxNIterations;
    C.convLimit = prsol.ConvergenceLimit;
 
+   C.Freq = 3;
    C.elevLimit = 0.0;
 
    C.LogFile = string("prs.log");
@@ -1379,8 +1381,14 @@ try {
    
    // --------------------------------------------------------------------------------
 
+   CommandOption dashFreq(CommandOption::hasArgument, CommandOption::stdType,
+      0,"Freq", "# Configuration:\n"
+      " --Freq <f>           Frequency to process: 1, 2 or 3 for L1, L2 or "
+      "iono-free combo (" + asString(C.Freq) + ")");
+   dashFreq.setMaxCount(1);
+
    CommandOption dashElev(CommandOption::hasArgument, CommandOption::stdType,
-      0,"MinElev", "# Configuration:\n"
+      0,"MinElev",
       " --MinElev <el>       Minimum elevation angle (deg) [only if --PosXYZ] ("
       + asString(C.elevLimit,2) + ")");
    dashElev.setMaxCount(1);
@@ -1728,6 +1736,15 @@ try {
       C.nIter = asInt(values[0]);
       if(help) cout << "Max N Iterations is set to " << C.nIter << endl;
    }
+   if(dashFreq.getCount()) {
+      values = dashFreq.getValue();
+      i = asInt(values[0]);
+      if(i == 1 || i == 2 || i == 3) {
+         C.Freq = i;
+         if(help) cout << "Frequency is set to " << C.Freq << endl;
+      }
+      else cerr << "Error: invalid frequency" << endl;
+   }
    if(dashElev.getCount()) {
       values = dashElev.getValue();
       C.elevLimit = asDouble(values[0]);
@@ -1904,6 +1921,9 @@ try {
    if(C.ForceCA) os << " 'Force C/A' flag is set\n";
 
    os << " # Configuration:\n";
+   os << " Process frequency L" << C.Freq;
+   if(C.Freq == 3) os << ", which is the ionosphere-free combination of L1 and L2";
+   os << "." << endl;
    os << " Minimum elevation angle is " << C.elevLimit << " degrees." << endl;
    if(C.ExSV.size()) {
       RinexSatID p;
