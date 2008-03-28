@@ -496,12 +496,12 @@ try {
          cerr << "ERROR. Abort. Neither P1 nor C1 data found (--useCA is set).\n";
          return -1;
       }
-      else if(!C.UseCA && inC1 != -1) {
+      else if(C.Freq != 2 && !C.UseCA && inC1 != -1) {
          C.oflog << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)\n";
          cerr << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)\n";
          return -1;
       }
-      else {
+      else if(C.Freq != 2) {
          C.oflog << "ERROR. Abort. Neither P1 nor C1 data found.\n";
          cerr << "ERROR. Abort. Neither P1 nor C1 data found.\n";
          return -1;
