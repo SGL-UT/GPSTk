@@ -149,10 +149,11 @@ namespace gpstk
           * @param indent indents the string by that many spaces.
           * @param cfg formatting configuration.
           */
-      inline void hexDumpData(std::ostream& s, const std::string& data,
+      inline void hexDumpData(std::ostream& s,
+                              const std::string& data,
                               unsigned indent = 0,
                               HexDumpDataConfig cfg = HexDumpDataConfig());
-
+      
          /**
           * Perform a formatted hex-dump of the (potentially) binary
           * data to the given stream.
@@ -161,7 +162,8 @@ namespace gpstk
           * @param tag string to put at the beginning of each line of output.
           * @param cfg formatting configuration.
           */
-      inline void hexDumpData(std::ostream& s, const std::string& data,
+      inline void hexDumpData(std::ostream& s,
+                              const std::string& data,
                               const std::string& tag,
                               HexDumpDataConfig cfg = HexDumpDataConfig());
 
@@ -192,8 +194,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string stripLeading(const std::string& s,
-                                  const std::string& aString,
-                                  std::string::size_type num = std::string::npos)
+                                      const std::string& aString,
+                                      std::string::size_type num = std::string::npos)
          throw(StringException)
       { std::string t(s); stripLeading(t, aString, num); return t; }
 
@@ -208,8 +210,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string& stripLeading(std::string& s, 
-                                  const char* pString,
-                                  std::string::size_type num = std::string::npos)
+                                       const char* pString,
+                                       std::string::size_type num = std::string::npos)
          throw(StringException)
       { return stripLeading(s, std::string(pString), num); }
 
@@ -224,8 +226,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string stripLeading(const std::string& s, 
-                                  const char* pString,
-                                  std::string::size_type num = std::string::npos)
+                                      const char* pString,
+                                      std::string::size_type num = std::string::npos)
          throw(StringException)
       { std::string t(s); stripLeading(t, std::string(pString), num); return t; }
 
@@ -240,8 +242,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string& stripLeading(std::string& s, 
-                                  const char aCharacter,
-                                  std::string::size_type num = std::string::npos)
+                                       const char aCharacter,
+                                       std::string::size_type num = std::string::npos)
          throw(StringException)
       { return stripLeading(s, std::string(1,aCharacter), num); }
      
@@ -256,8 +258,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string stripLeading(const std::string& s, 
-                                  const char aCharacter,
-                                  std::string::size_type num = std::string::npos)
+                                      const char aCharacter,
+                                      std::string::size_type num = std::string::npos)
          throw(StringException)
       { std::string t(s); stripLeading(t, std::string(1,aCharacter), num); return t; }
      
@@ -271,7 +273,7 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string& stripLeading(std::string& s, 
-                                  std::string::size_type num = std::string::npos)
+                                       std::string::size_type num = std::string::npos)
          throw(StringException)
       { return stripLeading(s,std::string(1,' '),num); }
 
@@ -285,7 +287,7 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string stripLeading(const std::string& s, 
-                                  std::string::size_type num = std::string::npos)
+                                      std::string::size_type num = std::string::npos)
          throw(StringException)
       { std::string t(s); stripLeading(t,std::string(1,' '),num); return t; }
      
@@ -300,8 +302,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string& stripTrailing(std::string& s,
-                                   const std::string& aString,
-                                   std::string::size_type num = std::string::npos)
+                                        const std::string& aString,
+                                        std::string::size_type num = std::string::npos)
          throw(StringException);
 
          /**
@@ -315,8 +317,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string stripTrailing(const std::string& s,
-                                   const std::string& aString,
-                                   std::string::size_type num = std::string::npos)
+                                       const std::string& aString,
+                                       std::string::size_type num = std::string::npos)
          throw(StringException)
       { std::string t(s); stripTrailing(t, aString, num); return t;}
 
@@ -331,8 +333,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string& stripTrailing(std::string& s, 
-               const char* pString, 
-                                   std::string::size_type num = std::string::npos)
+                                        const char* pString, 
+                                        std::string::size_type num = std::string::npos)
          throw(StringException)
       { return stripTrailing(s, std::string(pString), num); }
 
@@ -347,8 +349,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string stripTrailing(const std::string& s, 
-               const char* pString, 
-                                   std::string::size_type num = std::string::npos)
+                                       const char* pString, 
+                                       std::string::size_type num = std::string::npos)
          throw(StringException)
       { std::string t(s); stripTrailing(t, std::string(pString), num); return t; }
 
@@ -363,8 +365,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string& stripTrailing(std::string& s, 
-                                   const char aCharacter,
-                                   std::string::size_type num = std::string::npos)
+                                        const char aCharacter,
+                                        std::string::size_type num = std::string::npos)
          throw(StringException)
       { return stripTrailing(s, std::string(1,aCharacter), num); }
 
@@ -379,8 +381,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string stripTrailing(const std::string& s, 
-                                   const char aCharacter,
-                                   std::string::size_type num = std::string::npos)
+                                       const char aCharacter,
+                                       std::string::size_type num = std::string::npos)
          throw(StringException)
       { std::string t(s); stripTrailing(t, std::string(1,aCharacter), num); return t; }
 
@@ -394,7 +396,7 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string& stripTrailing(std::string& s, 
-                                   std::string::size_type num = std::string::npos)
+                                        std::string::size_type num = std::string::npos)
          throw(StringException)
       { return stripTrailing(s, std::string(1,' '), num); }
 
@@ -408,7 +410,7 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string stripTrailing(const std::string& s, 
-                                   std::string::size_type num = std::string::npos)
+                                       std::string::size_type num = std::string::npos)
          throw(StringException)
       { std::string t(s); stripTrailing(t, std::string(1,' '), num); return t;}
 
@@ -423,8 +425,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string& strip(std::string& s, 
-            const std::string& aString, 
-                           std::string::size_type num = std::string::npos)
+                                const std::string& aString, 
+                                std::string::size_type num = std::string::npos)
          throw(StringException);
 
 
@@ -439,8 +441,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string strip(const std::string& s, 
-            const std::string& aString, 
-                           std::string::size_type num = std::string::npos)
+                               const std::string& aString, 
+                               std::string::size_type num = std::string::npos)
          throw(StringException)
       { std::string t(s);  strip(t, aString, num); return t; }
 
@@ -456,8 +458,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string& strip(std::string& s, 
-            const char* pString,
-                           std::string::size_type num = std::string::npos)
+                                const char* pString,
+                                std::string::size_type num = std::string::npos)
          throw(StringException)
       { return strip(s, std::string(pString), num); }
 
@@ -472,8 +474,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string strip(const std::string& s, 
-            const char* pString,
-                           std::string::size_type num = std::string::npos)
+                               const char* pString,
+                               std::string::size_type num = std::string::npos)
          throw(StringException)
       { std::string t(s); strip(t, std::string(pString), num); return t; }
 
@@ -488,8 +490,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string& strip(std::string& s, 
-            const char aCharacter,
-                           std::string::size_type num = std::string::npos)
+                                const char aCharacter,
+                                std::string::size_type num = std::string::npos)
          throw(StringException)
       { return strip(s, std::string(1,aCharacter), num); }
 
@@ -504,8 +506,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string strip(const std::string& s, 
-            const char aCharacter,
-                           std::string::size_type num = std::string::npos)
+                               const char aCharacter,
+                               std::string::size_type num = std::string::npos)
          throw(StringException)
       { std::string t(s);  strip(t, std::string(1,aCharacter), num); return t;}
 
@@ -519,7 +521,7 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string& strip(std::string& s, 
-                           std::string::size_type num = std::string::npos)
+                                std::string::size_type num = std::string::npos)
          throw(StringException)
       { return strip(s, std::string(1, ' '), num); }
 
@@ -533,7 +535,7 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string strip(const std::string& s, 
-                           std::string::size_type num = std::string::npos)
+                               std::string::size_type num = std::string::npos)
          throw(StringException)
       { std::string t(s);  strip(t, std::string(1, ' '), num); return t;}
 
@@ -549,10 +551,10 @@ namespace gpstk
           * become the translated character.
           */
       inline std::string translate(const std::string& aString,
-                              const std::string& inputChars,
-                              const std::string& outputChars,
-                              const char pad = ' ');
-
+                                   const std::string& inputChars,
+                                   const std::string& outputChars,
+                                   const char pad = ' ');
+      
          /**
           * Changes occurrences of a specified pattern to a specified
           * replacement string.  You can specify the number of changes
@@ -615,8 +617,8 @@ namespace gpstk
           * @throws StringException if there's a std::exception thrown.
           * @return a reference to \a s.  */
       inline std::string& rightJustify(std::string& s, 
-                                  const std::string::size_type length, 
-                                  const char pad = ' ')
+                                       const std::string::size_type length, 
+                                       const char pad = ' ')
          throw(StringException);
 
          /**
@@ -631,8 +633,8 @@ namespace gpstk
           * @throws StringException if there's a std::exception thrown.
           * @return a reference to \a s.  */
       inline std::string rightJustify(const std::string& s, 
-                                 const std::string::size_type length, 
-                                 const char pad = ' ')
+                                      const std::string::size_type length, 
+                                      const char pad = ' ')
          throw(StringException)
       { std::string t(s); return rightJustify(t, length, pad); }
 
@@ -648,8 +650,8 @@ namespace gpstk
           * @throws StringException if there's a std::exception thrown.
           * @return a reference to \a s.  */
       inline std::string& leftJustify(std::string& s,
-                                 const std::string::size_type length,
-                                 const char pad = ' ')
+                                      const std::string::size_type length,
+                                      const char pad = ' ')
          throw(StringException);
 
          /**
@@ -664,8 +666,8 @@ namespace gpstk
           * @throws StringException if there's a std::exception thrown.
           * @return a reference to \a s.  */
       inline std::string leftJustify(const std::string& s,
-                                const std::string::size_type length,
-                                const char pad = ' ')
+                                     const std::string::size_type length,
+                                     const char pad = ' ')
          throw(StringException)
       { std::string t(s); return leftJustify(t, length, pad); }
      
@@ -687,8 +689,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string& center(std::string& s,
-             const std::string::size_type length,
-             const char pad = ' ')
+                                 const std::string::size_type length,
+                                 const char pad = ' ')
          throw(StringException);
 
          /**
@@ -710,8 +712,8 @@ namespace gpstk
           * @return a reference to \a s.
           */
       inline std::string center(const std::string& s,
-                           const std::string::size_type length,
-                           const char pad = ' ')
+                                const std::string::size_type length,
+                                const char pad = ' ')
          throw(StringException)
       { std::string t(s); return center(t, length, pad); }
 
@@ -886,8 +888,8 @@ namespace gpstk
           * @return a reference to the modified string.
           */
       inline std::string& replaceAll(std::string& s, 
-                                const std::string& oldString, 
-                                const std::string& newString )
+                                     const std::string& oldString, 
+                                     const std::string& newString )
          throw(StringException);
 
          /**
@@ -933,10 +935,10 @@ namespace gpstk
           * \a s.  Returns a null string if no match is found.
           */
       inline std::string matches(const std::string& s,
-                            const std::string& aPattern,
-                            const char zeroOrMore = '*',
-                            const char oneOrMore = '+',
-                            const char anyChar = '.' )
+                                 const std::string& aPattern,
+                                 const char zeroOrMore = '*',
+                                 const char oneOrMore = '+',
+                                 const char anyChar = '.' )
          throw(StringException);
 
          /**
@@ -985,8 +987,8 @@ namespace gpstk
                          const char oneOrMore = '+',
                          const char anyChar = '.' )
          throw(StringException)
-      { return matches(s, std::string(pPattern), zeroOrMore, oneOrMore, anyChar) != 
-           std::string(); }
+      { return matches(s, std::string(pPattern), 
+                       zeroOrMore, oneOrMore, anyChar) !=  std::string(); }
      
      
          /**
@@ -1006,9 +1008,9 @@ namespace gpstk
           */
       template <class T>
       std::string formattedPrint(const std::string& fmt, 
-                            const std::string& pat,
-                            const std::string& rep, 
-                            T to)
+                                 const std::string& pat,
+                                 const std::string& rep, 
+                                 T to)
          throw(StringException);
 
          /**
@@ -1017,9 +1019,9 @@ namespace gpstk
           * method instead (and ::leftJustify if needed).
           */
       inline std::string subString(const std::string& s, 
-                              const std::string::size_type startPos = 0,
-                              const std::string::size_type length = std::string::npos,
-                              const char pad = ' ' )
+                                   const std::string::size_type startPos = 0,
+                                   const std::string::size_type length = std::string::npos,
+                                   const char pad = ' ' )
          throw(StringException);
      
          /**
@@ -1066,8 +1068,8 @@ namespace gpstk
           * @return string object containing the contents of \a p.
           */
       inline std::string memToString(const void* p, 
-                                const std::string::size_type size);
-     
+                                     const std::string::size_type size);
+      
          /**
           * Returns the first word in string \a s without modifying the string.
           * @param s the string to count the words from.
@@ -1076,7 +1078,7 @@ namespace gpstk
           * @return the first word from \a s;
           */
       inline std::string firstWord(const std::string& s, 
-                              const char delimiter = ' ')
+                                   const char delimiter = ' ')
          throw(StringException);
      
          /**
@@ -1103,9 +1105,9 @@ namespace gpstk
           * no \a wordNum'th word.
           */
       inline std::string words(const std::string& s, 
-                          const std::string::size_type firstWord = 0,
-                          const std::string::size_type numWords = std::string::npos,
-                          const char delimiter = ' ')
+                               const std::string::size_type firstWord = 0,
+                               const std::string::size_type numWords = std::string::npos,
+                               const char delimiter = ' ')
          throw(StringException);
      
          /**
@@ -1119,8 +1121,8 @@ namespace gpstk
           * no \a wordNum'th word.
           */
       inline std::string word(const std::string& s, 
-                         const std::string::size_type wordNum = 0,
-                         const char delimiter = ' ')
+                              const std::string::size_type wordNum = 0,
+                              const char delimiter = ' ')
          throw(StringException)
       { return words(s, wordNum, 1, delimiter); }
      
@@ -1133,7 +1135,7 @@ namespace gpstk
           * @return the first word from \a s
           */
       inline std::string stripFirstWord(std::string& s, 
-                                   const char delimiter = ' ')
+                                        const char delimiter = ' ')
          throw(StringException);
      
          /**
@@ -1147,9 +1149,9 @@ namespace gpstk
           * @return a reference to string \a s with the words removed.
           */
       inline std::string& removeWords(std::string& s, 
-                                 const std::string::size_type first = 0, 
-                                 const std::string::size_type wordsToReplace = std::string::npos,
-                                 const char delimiter = ' ')
+                                      const std::string::size_type first = 0, 
+                                      const std::string::size_type wordsToReplace = std::string::npos,
+                                      const char delimiter = ' ')
          throw(StringException);
 
          /**
@@ -1163,11 +1165,11 @@ namespace gpstk
 	  * that check.
           */
       inline std::string doub2sci(const double& d, 
-                             const std::string::size_type length, 
-                             const std::string::size_type expLen,
-                             const bool showSign = true,
-			     const bool checkSwitch = true);
-
+                                  const std::string::size_type length, 
+                                  const std::string::size_type expLen,
+                                  const bool showSign = true,
+                                  const bool checkSwitch = true);
+      
          /**
           * Convert scientific notation to FORTRAN notation.
           * As an example, the string "1.5636E5" becomes " .15636D6".
@@ -1185,10 +1187,10 @@ namespace gpstk
           * scientific notation
           */
       inline std::string& sci2for(std::string& aStr, 
-                             const std::string::size_type startPos = 0,
-                             const std::string::size_type length = std::string::npos, 
-                             const std::string::size_type expLen = 3,
-			     const bool checkSwitch = true)
+                                  const std::string::size_type startPos = 0,
+                                  const std::string::size_type length = std::string::npos, 
+                                  const std::string::size_type expLen = 3,
+                                  const bool checkSwitch = true)
          throw(StringException);
 
          /**
@@ -1204,9 +1206,9 @@ namespace gpstk
           * @return a string containing \a d in FORTRAN notation.
           */
       inline std::string doub2for(const double& d, 
-                             const std::string::size_type length, 
-                             const std::string::size_type expLen,
-			     const bool checkSwitch = true)
+                                  const std::string::size_type length, 
+                                  const std::string::size_type expLen,
+                                  const bool checkSwitch = true)
          throw(StringException);
 
          /**
@@ -1943,10 +1945,10 @@ namespace gpstk
       }
 
       inline std::string matches(const std::string& s,
-                            const std::string& aPattern,
-                            const char zeroOrMore,
-                            const char oneOrMore,
-                            const char anyChar)
+                                 const std::string& aPattern,
+                                 const char zeroOrMore,
+                                 const char oneOrMore,
+                                 const char anyChar)
          throw(StringException)
       {
          const std::string::size_type regErrorBufSize = 512;
@@ -1974,11 +1976,11 @@ namespace gpstk
          regmatch_t matches;
          regex_t regExp;
          char errorMsg[regErrorBufSize];
-         int rc;
+         int rc = regcomp(&regExp, thisPattern.c_str(), REG_EXTENDED);
 
-         if ((rc = regcomp(&regExp, thisPattern.c_str(), REG_EXTENDED)) != 0)
+         if (rc != 0)
          {
-            regerror(rc, &regExp, errorMsg, regErrorBufSize - 1);
+            regerror(rc, NULL, errorMsg, regErrorBufSize - 1);
             regfree(&regExp);
             StringException strerr("Regexp error: " + std::string(errorMsg));
             GPSTK_THROW(strerr);
@@ -2001,49 +2003,45 @@ namespace gpstk
       }
 
       template <class T>
-      inline std::string formattedPrint(const std::string& fmt, const std::string& pat,
-                                   const std::string& rep, T to)
+      inline std::string formattedPrint(const std::string& fmt,
+                                        const std::string& pat,
+                                        const std::string& rep,
+                                        T to)
          throw(StringException)
       {
          regex_t re;
-         regmatch_t r;
-         std::string rv = fmt;
-         int rc;
-         char buffer[513];
-         
+         const size_t bufferSize = 513;
+         char buffer[bufferSize];
+         int rc = regcomp(&re, pat.c_str(), REG_EXTENDED);
             // if the regex doesnt compile, toast =)
-         if ((rc = regcomp(&re, pat.c_str(), REG_EXTENDED)) != 0)
+         if ( rc != 0)
          {
-            StringException se("Bad regular expression: regcomp() rc = " +
-                               asString(rc));
+            regerror(rc, NULL, buffer, bufferSize - 1);
+            regfree(&re);
+            StringException se("Regexp error: " + std::string(buffer));
             GPSTK_THROW(se);
          }
+         
+         regmatch_t r;
+         std::string rv = fmt;
 
-         int len = rv.length();
-         for (int i = 0; i < len; i++)
+         while ( regexec(&re, rv.c_str(), 1, &r, 0) == 0 )
          {
-            if ((rc = regexec(&re, rv.c_str(), 1, &r, 0)) != 0)
-               break;
-            else
-            {
-               std::string mac = rv.substr(r.rm_so, r.rm_eo - r.rm_so);
-               mac = replaceAll(mac, rep.substr(0,1), rep.substr(1));
-               sprintf(buffer, mac.c_str(), to);
-               rv = rv.substr(0, r.rm_so) + std::string(buffer) + 
-                  rv.substr(r.rm_eo);
-               i = r.rm_eo;
-            }
+            size_t len = r.rm_eo - r.rm_so;
+            std::string mac = replaceAll(rv.substr(r.rm_so, len), 
+                                         rep.substr(0,1), rep.substr(1));
+            snprintf(buffer, bufferSize, mac.c_str(), to);
+            rv.replace(r.rm_so, len, std::string(buffer));
          }
          
          regfree(&re);
-         
          return rv;
       }
       
       inline std::string subString(const std::string& s, 
-                              const std::string::size_type startPos,
-                              const std::string::size_type length,
-                              const char pad)
+                                   const std::string::size_type startPos,
+                                   const std::string::size_type length,
+                                   const char pad)
          throw(StringException)
       {
          try
