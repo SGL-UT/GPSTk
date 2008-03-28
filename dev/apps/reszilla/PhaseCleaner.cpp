@@ -694,11 +694,10 @@ void PhaseCleanerA::debias(SvElevationMap& pem)
 
          pral.mergeArcs(minArcLen, minArcTime, maxGapTime);
 
-         if (debugLevel>1)
+         if (debugLevel>2)
             cout << "Done cleaning " << svPair.first
                  << ":" << svPair.second
-                 << " on " << rot.type << endl
-                 << pral;
+                 << " on " << rot.type << endl;
       }
    }   
 }  // end of debias()

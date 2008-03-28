@@ -529,7 +529,7 @@ string DDEpochMap::computeStats(
    // Now start removing outliers
    while (f.size()>5 && f.kurtosis() > strip)
    {
-      if (debugLevel>1)
+      if (debugLevel>4)
          cout << "n:" << f.size()
               << " sdev:" << setprecision(8) << sqrt(f.variance())
               << " kurt:"<< setprecision(4) << f.kurtosis();

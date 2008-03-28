@@ -372,14 +372,14 @@ void DDGen::process()
 
    ObsEpochMap oem1, oem2;
 
-   if (debugLevel)
+   if (debugLevel || verboseLevel)
       cout << "# Reading obs from Rx1" << endl;
    readObsFile(obs1FileOption, *ephReader.eph, oem1);
    
    if (removeUnhealthy)
       filterUnhealthyObs(*healthSrcER.eph, oem1);
    
-   if (verboseLevel)
+   if (debugLevel || verboseLevel)
       cout << "# Reading obs from Rx2" << endl;
    readObsFile(obs2FileOption, *ephReader.eph, oem2);
 
