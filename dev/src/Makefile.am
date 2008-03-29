@@ -15,9 +15,9 @@ ENUUtil.cpp EphemerisRange.cpp Exception.cpp Expression.cpp FFData.cpp \
 FFStream.cpp \
 FICData.cpp FICData109.cpp FICData162.cpp FICData62.cpp FICData9.cpp \
 FICHeader.cpp FileHunter.cpp FileSpec.cpp \
-GPSAlmanacStore.cpp GPSEphemerisStore.cpp GPSEpochWeekSecond.cpp \
-GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp GPSZcount29.cpp \
-GPSZcount32.cpp GenXSequence.cpp Geodetic.cpp IonoModel.cpp \
+GPSAlmanacStore.cpp GPSEphemerisStore.cpp GPSWeek.cpp \
+GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp \
+GenXSequence.cpp Geodetic.cpp IonoModel.cpp \
 IonoModelStore.cpp JulianDate.cpp LinearClockModel.cpp LoopedFramework.cpp \
 MJD.cpp MOPSWeight.cpp MSCData.cpp MSCStore.cpp \
 MoonPosition.cpp NEDUtil.cpp ObsClockModel.cpp ObsEpochMap.cpp ObsID.cpp \
@@ -52,9 +52,9 @@ FICData109.hpp FICData162.hpp FICData62.hpp FICData9.hpp \
 FICFilterOperators.hpp FICHeader.hpp FICStream.hpp FICStreamBase.hpp \
 FileFilter.hpp FileFilterFrame.hpp FileFilterFrameWithHeader.hpp \
 FileHunter.hpp FileSpec.hpp FileStore.hpp FileUtils.hpp GPSAlmanacStore.hpp \
-GPSEphemerisStore.hpp GPSEpochWeekSecond.hpp GPSGeoid.hpp \
-GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp GPSZcount29.hpp \
-GPSZcount32.hpp GenXSequence.hpp Geodetic.hpp GeoidModel.hpp \
+GPSEphemerisStore.hpp GPSWeek.hpp GPSGeoid.hpp \
+GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp \
+GenXSequence.hpp Geodetic.hpp GeoidModel.hpp \
 InOutFramework.hpp IonoModel.hpp IonoModelStore.hpp JulianDate.hpp \
 LinearClockModel.hpp LoopedFramework.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp \
 MSCData.hpp MSCHeader.hpp MSCStore.hpp MSCStream.hpp MathBase.hpp Matrix.hpp \
