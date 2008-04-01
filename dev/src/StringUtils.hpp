@@ -2030,7 +2030,7 @@ namespace gpstk
             size_t len = r.rm_eo - r.rm_so;
             std::string mac = rv.substr(r.rm_so, len);
             mac = replaceAll(mac, rep.substr(0,1), rep.substr(1));
-            snprintf(buffer, bufferSize, mac.c_str(), to);
+            sprintf(buffer, mac.c_str(), to);
             rv.replace(r.rm_so, len, std::string(buffer));
          }
          
