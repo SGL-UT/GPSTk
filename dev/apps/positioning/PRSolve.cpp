@@ -677,6 +677,7 @@ try {
             Ranges.push_back(C.Freq == 3 ? if1r*P1+if2r*P2 :
                             (C.Freq == 2 ? P2 : P1));
             if(!C.ordFile.empty()) {
+               // TD check vs Freq
                vC1.push_back(C1);
                vP1.push_back(P1);
                vP2.push_back(P2);
@@ -721,13 +722,17 @@ try {
 
          // write out ORDs
       if(!C.ordFile.empty()) {
+         int n=0;
+         double clk=0.0;
          for(i=0; i<Satellites.size(); i++) {
             SatID sat=Satellites[i];
             // don't allow bad sats b/c it can corrupt TropModel
             if(sat.id < 0) continue;
 
             CorrectedEphemerisRange CER;
-            try { CER.ComputeAtReceiveTime(CurrEpoch, C.knownpos, sat, *pEph); }
+            try {
+               CER.ComputeAtTransmitTime(CurrEpoch, vP1[i], C.knownpos, sat, *pEph);
+            }
             catch(InvalidRequest& nef) { continue; }
 
             // compute ionosphere - note that P1-R-RI == P2-R-RI*(F1/F2)**2
@@ -735,14 +740,27 @@ try {
             double tc = C.pTropModel->correction(C.knownpos,CER.svPosVel.x,CurrEpoch);
             double R = CER.rawrange + prsol.Solution(3)
                         - CER.svclkbias - CER.relativity + tc;
+            // output
             C.oford << "ORD"
-               << " G" << setw(2) << setfill('0') << abs(sat.id) << setfill(' ')
+               << " G" << setw(2) << setfill('0') << sat.id << setfill(' ')
                << " " << CurrEpoch.printf(C.timeFormat)
-               << " " << (sat.id < 0 ? "0" : "1")
-               << fixed << setprecision(3)
-               << " " << CER.elevation
+               << " " << 1 << fixed << setprecision(3)
+               << " " << setw(6) << CER.elevation
                << " " << setw(13) << vC1[i] - R - RI
                << " " << setw(13) << vP1[i] - R - RI
+               << endl;
+
+            clk += vP1[i] - (CER.rawrange - CER.svclkbias - CER.relativity + tc) - RI;
+            n++;
+         }
+         // output a clock record, clk = average range residual from known pos
+         if(n > 0) {
+            clk /= double(n);
+            C.oford << "CLK"
+               << " " << CurrEpoch.printf(C.timeFormat)
+               << " " << setw(2) << n
+               << " " << fixed << setprecision(3)
+               << " " << setw(13) << clk
                << endl;
          }
       }
@@ -910,7 +928,8 @@ try {
    // if met data available, update weather in trop model
    if(C.InputMetName.size() > 0)
       setWeather(CurrEpoch,C.pTropModel);
-   // compute using AutonomousSolution - no RAIM algorithm
+
+   // compute using AutonomousPRSolution - no RAIM algorithm
    if(C.APSout) {
       iret = -4;
       Matrix<double> SVP;
@@ -955,7 +974,7 @@ try {
          Matrix<double> Cov;
          Vector<double> V(3);
 
-         // compute residuals
+         // compute position residuals using known position
          Position pos(Solution(0), Solution(1), Solution(2));
          Position res=pos-C.knownpos;
          Cov = Matrix<double>(Covariance,0,0,3,3);
@@ -2065,6 +2084,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
+// TD found in src/RinexUtilities
 bool isSP3File(const string& file)
 {
    SP3Header header;
@@ -2083,7 +2103,9 @@ bool isRinexNavFile(const string& file)
    rnstream.close();
    return true;
 }
-int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE, GPSEphemerisStore& BCE) throw(Exception)
+int FillEphemerisStore(const vector<string>& files,
+                       SP3EphemerisStore& PE,
+                       GPSEphemerisStore& BCE) throw(Exception)
 {
 try {
    int nread=0;
