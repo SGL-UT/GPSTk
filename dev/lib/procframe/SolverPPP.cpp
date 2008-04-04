@@ -80,18 +80,18 @@ namespace gpstk
       Matrix<double> initialErrorCovariance(numUnknowns, numUnknowns, 0.0);
          // Fill the initialErrorCovariance matrix
          // First, the zenital wet tropospheric delay
-      initialErrorCovariance(0,0) = 0.5;
+      initialErrorCovariance(0,0) = 0.25;          // (0.5 m)**2
          // Second, the coordinates
       for (int i=1; i<4; i++)
       {
-         initialErrorCovariance(i,i) = 9.0;
+         initialErrorCovariance(i,i) = 10000.0;    // (100 m)**2
       }
          // Third, the receiver clock
-      initialErrorCovariance(4,4) = 9.0e10;
+      initialErrorCovariance(4,4) = 9.0e10;        // (300 km)**2
          // Finally, the phase biases
       for (int i=5; i<numUnknowns; i++)
       {
-         initialErrorCovariance(i,i) = 9.0e10;
+         initialErrorCovariance(i,i) = 4.0e16;     // (20000 km)**2
       }
 
 
