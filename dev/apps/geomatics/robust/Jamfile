@@ -4,6 +4,7 @@
 
 SubDir TOP apps geomatics robust ;
 
-GPSLinkLibraries rstats : geomatics gpstk ;
+GPSLinkLibraries lsfilt rstats : geomatics gpstk ;
 
+GPSMain lsfilt : lsfilt.cpp ;
 GPSMain rstats : rstats.cpp ;
