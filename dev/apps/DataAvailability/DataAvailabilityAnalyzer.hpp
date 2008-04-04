@@ -91,6 +91,7 @@ private:
    gpstk::DayTime startTime, stopTime;
    double timeSpan, timeMask;
    double epochRate;
+   gpstk::DayTime firstEpochTime, lastEpochTime;
    
    // these are counters used in the summary
    unsigned long epochCounter;

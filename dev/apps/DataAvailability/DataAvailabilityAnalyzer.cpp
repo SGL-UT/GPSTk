@@ -71,9 +71,10 @@
 
 #include "EphReader.hpp"
 #include "ObsReader.hpp"
-
+#include "GPSEphemerisStore.hpp"
 #include "MSCData.hpp"
 #include "MSCStream.hpp"
+#include "Position.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -331,6 +332,13 @@ void DataAvailabilityAnalyzer::spinUp()
            << "Exiting." << endl;
       exit(-1);
    }
+   if (typeid(*ephData.eph) == typeid(GPSEphemerisStore))
+   {
+      GPSEphemerisStore& bce = dynamic_cast<GPSEphemerisStore&>(*ephData.eph);
+      bce.SearchNear();
+      if (verboseLevel)
+         cout << "Using search near for ephemeris." << endl;
+   }
    eph = ephData.eph;
 
 
@@ -417,48 +425,34 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
    const MissingList& ml,
    const EphemerisStore& eph)
 {
+   Position rx(antennaPos);   
    MissingList sml;
+
    for (MissingList::const_iterator i = ml.begin(); i != ml.end(); i++)
    {
       InView curr = *i;
       
-      // calculate SV visibility info
-      short prnTemp = 1;
-      short ama = 0, ata = 0;
-      ECEF rxpos(antennaPos);
-      
-      while (prnTemp <= gpstk::MAX_PRN)
+      // calculate the number of SV above the track and mask angles
+      int ama = 0, ata = 0;
+      for (int prn=1; prn <= gpstk::MAX_PRN; prn++)
       {
-         Xvt svXVT;
-         bool NoEph = false;
-   
+         Position sv;
          try
          {
-            svXVT = eph.getXvt(SatID(prnTemp, SatID::systemGPS), curr.time);
+            Xvt svXVT = eph.getXvt(SatID(prn, SatID::systemGPS), curr.time);
+            sv = svXVT.x;
+
+            double el = rx.elevationGeodetic(sv);
+            if (el > trackAngle)
+               ata++;
+            if (el > maskAngle)
+               ama++;
          }
          catch(gpstk::Exception& e) 
          {
             if (verboseLevel> 3)
                cout << e << endl;
-            NoEph = true;
          }
-         double elvAngle = 0;
-         if (!NoEph)
-         {
-            try
-            {
-               elvAngle = rxpos.elvAngle(svXVT.x);
-            }
-            catch(gpstk::Exception& e)
-            {
-               if (verboseLevel > 1) cout << e << endl;
-            }
-            if (elvAngle > trackAngle)
-               ata++;
-            if (elvAngle > maskAngle)
-               ama++;
-         }
-         prnTemp++;
       }
 
       anyMissingCounter++;
@@ -528,7 +522,6 @@ void DataAvailabilityAnalyzer::process()
 
    ObsEpoch oe, prev_oe;
 
-   DayTime firstEpochTime, lastEpochTime;
    while (obsReader())
    {
       oe = obsReader.getObsEpoch();
@@ -713,18 +706,17 @@ void DataAvailabilityAnalyzer::InView::update(
    float maskAngle,
    float trackAngle)
 {
+   SatID svid(prn, SatID::systemGPS);
    try
    {
       this->prn = prn;
       this->time = time;
-      // We really don't care about the observed range deviation, the
-      // ObsRngDev class is just a convient way to get the azimuth, 
-      // elevation, health 
 
-      ObsRngDev ord(0, SatID(prn, SatID::systemGPS), time, rxpos, eph, gm);
-      vfloat el=ord.getElevation();
-
-      if (el.is_valid() && el > 0)
+      Xvt svXVT = eph.getXvt(svid, time);
+      Position sv(svXVT.x);
+      Position rx(rxpos);
+      double el = rx.elevationGeodetic(sv);
+      if (el > 0)
       {
          if (!up)
          {
@@ -745,14 +737,13 @@ void DataAvailabilityAnalyzer::InView::update(
             firstEpochAboveMask = time;
          }
       }
-      else
+      elevation = el;
+      azimuth = rx.azimuth(sv);
+      if (typeid(eph) == typeid(GPSEphemerisStore))
       {
-         up = false;
-         aboveMask = false;
+         const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
+         health = bce.getSatHealth(svid, time);
       }
-      elevation = ord.getElevation();
-      azimuth = ord.getAzimuth();
-      health = 0; //ord.getHealth();
    }
    catch (InvalidRequest& e)
    {
@@ -826,14 +817,13 @@ void DataAvailabilityAnalyzer::InView::dump(ostream& s, const string fmt)
 
 void DataAvailabilityAnalyzer::outputSummary()
 {
-   cout << "\n\n Summary:\n\n";
-   
-   cout << right << setw(40) << "Total number of epochs with data: " 
-        << left  << setw(10) << epochCounter << endl;
-   cout << right << setw(40) << "Epochs with any data missing: "
-        << left  << setw(10) << anyMissingCounter << endl;
-   cout << right << setw(40) << "Epochs without data from any SV: "
-        << left  << setw(10) << allMissingCounter << endl << endl;
+   cout << endl
+        << " Summary:" << endl
+        << endl
+        << "Data spans " <<  firstEpochTime << " through " << lastEpochTime << endl
+        << "Total number of epochs with data: " << epochCounter << endl
+        << "Epochs with any data missing: " << anyMissingCounter << endl
+        << "Epochs without data from any SV: " << allMissingCounter << endl;
 }
 
 
