@@ -307,7 +307,7 @@ try {
                   test = 0.0;
                if(fabs(test) > 0.5) {      // test must be > 150 km =~ 1/2 millisecond
                   // is it nearly an even multiple of 1 millisecond?
-                  //test *= 1000.0/C_GPS_M;
+                  //test *= 1000.0/C_GPS_M;  // leave sign on it
                   if(debug) *pout << "possible clock jump: test = "
                                  << setprecision(9) << test;
                   nms = long(test + (test > 0 ? 0.5 : -0.5));
@@ -315,7 +315,7 @@ try {
                      if(debug) *pout << " -> " << setprecision(9)
                               << fabs(test - double(nms));
                      // keep clkjumpave = sequential average nms, clkjumpvar=variance
-                     if(test < 0) nms *= -1;
+                     //if(test < 0) nms *= -1;
                      nclkjumps++;
                      clkjumpave += (double(nms)-clkjumpave)/double(nclkjumps);
                      if(nclkjumps > 1)
@@ -480,7 +480,8 @@ try {
          for(i=0; i<clkjumpTimes.size(); i++) {
             *pout << "   "
              << clkjumpTimes[i].printf("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%06.3f")
-             << " " << setprecision(2) << clkjumpMillsecs[i] << " ms_clock_adjust";
+             << " " << setw(5) << setprecision(2) << clkjumpMillsecs[i]
+             << " ms_clock_adjust";
              if(clkjumpAgree[i] > 0 || clkjumpUncertainty[i] > 0.01)
                *pout << " (low quality determination; data may be irredeemable)";
             *pout << endl;

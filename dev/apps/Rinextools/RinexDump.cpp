@@ -330,22 +330,22 @@ try {
             // loop over obs
             ok = false;            // set true only when data exists to output
             for(j=0; j<otlist.size(); j++) {
+               if(!ok) {       // output a line
+                  // time tag
+                  cout << leftpad << obsdata.time.printf(outputFormat) << rightpad;
+                  // satellite
+                  cout << " ";
+                  if(AllNumeric)
+                     cout << setw(3) << sat.id;
+                  else
+                     cout << sat;
+                  ok = true;
+               }
                if((jt=it->second.find(otlist[j])) == it->second.end()) {
                   cout << " " << setw(13) << setprecision(3)
                      << 0.0 << " " << 0 << " " << 0;
                }
                else {
-                  if(!ok) {       // output a line
-                     // time tag
-                     cout << leftpad << obsdata.time.printf(outputFormat) << rightpad;
-                     // satellite
-                     cout << " ";
-                     if(AllNumeric)
-                        cout << setw(3) << sat.id;
-                     else
-                        cout << sat;
-                     ok = true;
-                  }
                   cout << " " << setw(13) << setprecision(3) << jt->second.data
                      << " " << jt->second.lli << " " << jt->second.ssi;
                }
