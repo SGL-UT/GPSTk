@@ -173,15 +173,15 @@ void VTECMap::OutputGrid(ostream& os)
    for(j=0; j<NumLat; j++) {
       for(i=0; i<NumLon; i++) {
          k = i * NumLat + j;
-         os << grid[k].LLR.printf(" %.8a %.8l %.3r");
-         os << grid[k].XYZ.printf(" %.3x %.3y %.3z");
-         os << " " << i << " " << j << endl;
+         os << grid[k].LLR.printf(" %7.3a %8.3l %11.3r");
+         os << grid[k].XYZ.printf(" %13.3x %13.3y %13.3z");
+         os << " " << setw(3) << i << " " << setw(3) << j << endl;
       }
    }
 }
 
 //------------------------------------------------------------------------------------
-void VTECMap::ComputeMap(DayTime& epoch, vector<ObsData>& data)
+void VTECMap::ComputeMap(DayTime& epoch, vector<ObsData>& data, double bias)
 {
    int i,j,k,n;
       // first compute the average value
@@ -196,14 +196,14 @@ void VTECMap::ComputeMap(DayTime& epoch, vector<ObsData>& data)
    for(i=0; i<NumLon; i++) {
       for(j=0; j<NumLat; j++) {
          k = i * NumLat + j;
-         ComputeGridValue(grid[k],data);
+         ComputeGridValue(grid[k],data,bias);
       }
    }
 }
 
 //------------------------------------------------------------------------------------
 // Compute the grid values. Called by ComputeMap.
-void VTECMap::ComputeGridValue(GridData& gridpt, vector<ObsData>& data)
+void VTECMap::ComputeGridValue(GridData& gridpt, vector<ObsData>& data, double bias)
 {
    double gridLat = gridpt.LLR.getGeocentricLatitude() * DEG_TO_RAD;
    double gridLon = gridpt.LLR.longitude();
@@ -249,8 +249,9 @@ void VTECMap::ComputeGridValue(GridData& gridpt, vector<ObsData>& data)
 
    }  // end loop over all data
 
-   d = ChiSqPlane(vtec,xtmp,ytmp,sigma);
+   d = ChiSqPlane(vtec,xtmp,ytmp,sigma) + bias;
    if(d < 0) {
+      //std::cout << "Negative TEC " << d << std::endl;
       //if(d < -0.5) output warning: negative TEC set to 0
       d = 0.0;
    }
@@ -334,7 +335,7 @@ void VTECMap::OutputMap(ostream& os, bool format)
 }
 
 //------------------------------------------------------------------------------------
-void MUFMap::ComputeMap(DayTime& epoch, vector<ObsData>& data)
+void MUFMap::ComputeMap(DayTime& epoch, vector<ObsData>& data, double bias)
 {
    int i,k;
    double lvect1,lvect2,tmp,cosin;;
@@ -357,7 +358,7 @@ void MUFMap::ComputeMap(DayTime& epoch, vector<ObsData>& data)
       reflect = center;
       reflect.LLR[2] = reflect.LLR.radiusEarth() + IonoHeight;
 
-      ComputeGridValue(reflect, data);
+      ComputeGridValue(reflect, data, bias);
 
       reflect.XYZ = reflect.LLR;
       reflect.XYZ.transformTo(Position::Cartesian);
@@ -378,13 +379,13 @@ void MUFMap::ComputeMap(DayTime& epoch, vector<ObsData>& data)
 //------------------------------------------------------------------------------------
 // First cut at foF2 assuming constant slab thickness of 280 km and 
 // TEC = 1.24e10 (foF2)^2 tau / 10^16
-void F0F2Map::ComputeMap(DayTime& epoch, vector<ObsData>& data)
+void F0F2Map::ComputeMap(DayTime& epoch, vector<ObsData>& data, double bias)
 {
    int i,j,k;
    for(i=0; i<NumLon; i++) {
       for(j=0; j<NumLat; j++) {
          k = i * NumLat + j;
-         ComputeGridValue(grid[k],data);
+         ComputeGridValue(grid[k],data, bias);
          grid[k].value = VTECtoF0F2(1,grid[k].value,epoch,grid[k].LLR.longitude());
       }
    }

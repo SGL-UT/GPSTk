@@ -137,8 +137,10 @@ public:
    void OutputGrid(std::ostream& os);
 
       /// populate the 2D grid
+      /// @param epoch time of interest
       /// @param data vector of ObsData structures for all observed data
-   virtual void ComputeMap(DayTime& epoch, std::vector<ObsData>& data);
+      /// @param bias overall bias to add to vertical TEC data
+   virtual void ComputeMap(DayTime& epoch, std::vector<ObsData>& data, double bias);
 
       /// write the computed grid values to a file
       /// @param ostream on which to write
@@ -200,8 +202,9 @@ protected:
    void reallyMakeGrid(Station& refStation, int factor)
       throw(Exception);
 
-      /// Compute one grid value, using all the data. Called by ComputeMap.
-   void ComputeGridValue(GridData& gridpt, std::vector<ObsData>& data);
+      /// Compute one grid value, using all the data. Add a bias b to all the data.
+      /// Called by ComputeMap.
+   void ComputeGridValue(GridData& gridpt, std::vector<ObsData>& data, double b);
 
       /// Chi squared calculation ... TD
    double ChiSqPlane(std::vector<double>& vtec, std::vector<double>& x,
@@ -216,17 +219,22 @@ public:
       /// @param refStation Station object for the reference station
    void MakeGrid(Station& refStation) throw(Exception)
          { reallyMakeGrid(refStation,2); }
+
       /// populate the 2D grid
+      /// @param epoch time of interest
       /// @param data vector of ObsData structures for all observed data
-   void ComputeMap(DayTime& epoch, std::vector<ObsData>& data);
+      /// @param bias overall bias to add to vertical TEC data
+   void ComputeMap(DayTime& epoch, std::vector<ObsData>& data, double bias);
 };
 
 /// class MUFMap is a VTECMap that computes F0F2 on the grid points.
 class F0F2Map : public VTECMap {
 public:
       /// populate the 2D grid
+      /// @param epoch time of interest
       /// @param data vector of ObsData structures for all observed data
-   void ComputeMap(DayTime& epoch, std::vector<ObsData>& data);
+      /// @param bias overall bias to add to vertical TEC data
+   void ComputeMap(DayTime& epoch, std::vector<ObsData>& data, double bias);
 };
 
 //------------------------------------------------------------------------------------

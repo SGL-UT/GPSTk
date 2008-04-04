@@ -50,6 +50,7 @@
 #include "geometry.hpp"              // for DEG_TO_RAD and RAD_TO_DEG
 
 #include "RinexUtilities.hpp"
+#include "RobustStats.hpp"
 
 #include <iostream>
 #include <time.h>
@@ -155,6 +156,8 @@ int ProcessObs(RinexObsStream& ins, string& filename, RinexObsHeader& head)
 void WriteATHeader(void) throw(Exception);
 void WriteStationHeader(int npts, string sta_name, Position llr) throw(Exception);
 void ParseLine(string& str, vector<string>& wds) throw(Exception);
+void ReadATHeader(ifstream& ifs, long& N, long& n) throw(Exception);
+int ReadATandDoStats(void) throw(Exception);
 int ReadATandCompute(void) throw(Exception);
 double obliquity(double elevation) throw(Exception);
 //void PartialsMatrix(Matrix<double>& P,int index,double lat,double lon,double obq);
@@ -217,6 +220,9 @@ try {
    }
 
    if(DoEstimation) {
+      // read the AT file, compute stats, and re-write the file
+      iret = ReadATandDoStats();
+
       // read the AT file and compute biases and model
       iret = ReadATandCompute();
    }
@@ -872,7 +878,7 @@ try {
 
    if(BCEphList.size()) {
       BCEphList.SearchNear();
-      if(verbose) BCEphList.dump(oflog,0 );
+      if(verbose) BCEphList.dump(oflog,0);
    }
    else if(verbose) oflog << "BC Ephemeris list is empty\n";
 
@@ -1381,23 +1387,14 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int ReadATandCompute(void) throw(Exception)
+void ReadATHeader(ifstream& ifs, long& N, long& n) throw(Exception)
 {
 try {
-   ifstream ifs;
-   ifs.open(ATFileName.c_str());       // output file is now the input
-   if(!ifs) {
-      cerr << "Failed to open AT file " << ATFileName << " for input" << endl;
-      return -1;
-   }
-   else if(verbose) oflog << "\nOpened AT file " << ATFileName << " for input\n";
-
-      // read the AT header
-   int i,j,k,ii,jj;
-   long N,n;
+   int i,j;
    string line;
 
    EstimationFlag.clear();
+
    ifs >> N >> n;
    getline(ifs,line);      // read to eol
    for(i=0; i<N; i++) {
@@ -1416,6 +1413,144 @@ try {
 
    if(N != EstimationFlag.size()) { //oops
    }
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+
+//------------------------------------------------------------------------------------
+int ReadATandDoStats(void) throw(Exception)
+{
+try {
+   ifstream ifs;
+   ifs.open(ATFileName.c_str());       // output file is now the input
+   if(!ifs) {
+      cerr << "Failed to open AT file " << ATFileName << " for input" << endl;
+      return -1;
+   }
+   else if(verbose) oflog << "\nOpened AT file " << ATFileName << " for input\n";
+
+   int i,j;
+   int wn,prn,nfile,in;
+   long N,n;                        // number of sites, number of data/site
+   double sow,lat,lon,obq,sr,sig;
+   string line;
+   string stationID;
+   vector<string> words;
+   vector<double> rdata;
+
+      // read the AT header
+   ReadATHeader(ifs,N,n);
+
+      // Read the rest of the AT file
+      // loop over stations
+   oflog << setw(2) << N << "  Number of stations (N data and filename follow).\n";
+   for(ndata=0,i=0; i<N; i++) {
+         // read station header
+      getline(ifs,line);
+      ParseLine(line,words);
+      if(words[0] != string("Npt")) { //oops
+      }
+      n = asInt(words[1]);
+      stationID = words[3];
+
+      if(n > 0 && verbose) {
+         oflog << setw(3) << i+1 << "  " << stationID << " " << setw(5) << n << " ";
+         for(j=0; j<=MAXPRN; j++) oflog << (EstimationFlag[i][j] ? '1' : '0');
+         oflog << " " << Filenames[i] << endl;
+         mapN[stationID] = n;
+         mapFilename[stationID] = Filenames[i];
+      }
+
+         // read data
+      for(j=0; j<n; j++) {
+         getline(ifs,line);
+         ParseLine(line,words);
+         wn = asInt(words[0]);
+         sow = asDouble(words[1]);
+         lat = asDouble(words[2]);
+         lon = asDouble(words[3]);
+         obq = asDouble(words[4]);
+         sr = asDouble(words[5]);
+         sig = asDouble(words[6]);
+         prn = asInt(words[7]);
+         nfile = asInt(words[8]);
+
+         // do not include rejected data
+         if(!(EstimationFlag[i][prn])) continue;
+
+         // find min and max lat and lon
+         if(ndata == 0) {
+            MaxLat = MinLat = lat;
+            MaxCRLon = MinCRLon = lon;
+         }
+         else {
+            if(fabs(lat) > MaxLat) MaxLat=lat;
+            if(fabs(lat) < MinLat) MinLat=lat;
+            if(fabs(lon) > MaxCRLon) MaxCRLon=lon;
+            if(fabs(lon) < MinCRLon) MinCRLon=lon;
+         }
+
+         rdata.push_back(sr);
+
+         ndata++;
+
+      }  // end loop over points for this station
+
+   }  // end loop over stations
+
+   ifs.close();
+
+   // compute Robust statistics
+   double median,mad,mest,Q1,Q3;
+   QSort(&rdata[0],rdata.size());
+   Robust::Quartiles(&rdata[0],rdata.size(),Q1,Q3);
+   mad = Robust::MedianAbsoluteDeviation(&rdata[0],rdata.size(),median);
+
+   oflog << "Robust statistics:\n";
+	oflog << " Number    = " << rdata.size() << endl;
+	oflog << " Quartiles = " << setw(11) << setprecision(8) << Q1
+                     << " " << setw(11) << setprecision(8) << Q3 << endl;
+	oflog << " Median    = " << setw(11) << setprecision(8) << median << endl;
+	oflog << " MAD       = " << setw(11) << setprecision(8) << mad << endl;
+   // count
+   for(n=0,i=0; i<rdata.size(); i++) if(rdata[i] < Q1) n++; else break;
+	oflog << " Outliers (low) = " << n << endl;
+   for(n=0,i=rdata.size()-1; i>=0; i--) if(rdata[i] > Q3) n++; else break;
+	oflog << " Outliers (high) = " << n << endl;
+
+   oflog << setw(9) << setprecision(2) << MinLat << "  Minimum Latitude\n";
+   oflog << setw(9) << setprecision(2) << MaxLat << "  Maximum Latitude\n";
+   oflog << setw(9) << setprecision(2) << MinCRLon << "  Minimum Co-rot lon\n";
+   oflog << setw(9) << setprecision(2) << MaxCRLon << "  Maximum Co-rot lon\n";
+   oflog << setw(5) << ndata << " data points used." << endl << endl;
+
+   return 0;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+
+//------------------------------------------------------------------------------------
+int ReadATandCompute(void) throw(Exception)
+{
+try {
+   ifstream ifs;
+   ifs.open(ATFileName.c_str());       // output file is now the input
+   if(!ifs) {
+      cerr << "Failed to open AT file " << ATFileName << " for input" << endl;
+      return -1;
+   }
+   else if(verbose) oflog << "\nOpened AT file " << ATFileName << " for input\n";
+
+      // read the AT header
+   int i,j,k,ii,jj;
+   long N,n;
+   string line;
+
+   ReadATHeader(ifs,N,n);
 
       // dimension and initialize the LS problem
    if(Model == "cubic") {
@@ -1460,7 +1595,7 @@ try {
       stationID = words[3];
 
       if(n > 0 && verbose) {
-         oflog << setw(3) << i+1 << "  " << stationID << " " << setw(4) << n << " ";
+         oflog << setw(3) << i+1 << "  " << stationID << " " << setw(5) << n << " ";
          for(j=0; j<=MAXPRN; j++) oflog << (EstimationFlag[i][j] ? '1' : '0');
          oflog << " " << Filenames[i];
          oflog << endl;

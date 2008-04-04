@@ -90,7 +90,7 @@ WGS84Geoid WGS84;
    // Start and stop times
 DayTime BegTime,EndTime;
    // processing
-double IonoHt;
+double IonoHt,overallBias;
 DayTime EarliestTime;
 VTECMap vtecmap;
 MUFMap mufmap;
@@ -213,6 +213,7 @@ void ConfigureAndDefaults(void)
    doF0F2map = false;
    LogFile = string("vtm.log");
    IonoHt = 350.0;         // km
+   overallBias = 0.0;
    verbose = false;
    debug = false;
    KnownPos = string("");
@@ -344,6 +345,10 @@ try {
    CommandOption dashIonoHt(CommandOption::hasArgument, CommandOption::stdType,
       0,"IonoHeight", " --IonoHeight <n>     Ionosphere height (km)");
    dashIonoHt.setMaxCount(1);
+
+   CommandOption dashOBias(CommandOption::hasArgument, CommandOption::stdType,
+      0,"Offset", " --Offset <tec>       Overall bias to add to data (TECU)");
+   dashOBias.setMaxCount(1);
 
    CommandOptionNoArg dashUniSpace(0, "UniformSpacing",
       "Grid:\n --UniformSpacing     Grid uniform in space (XYZ) (default)");
@@ -721,6 +726,11 @@ try {
       IonoHt = asDouble(values[0]);
       if(help) cout << "Ionosphere height = " << IonoHt << " km" << endl;
    }
+   if(dashOBias.getCount()) {
+      values = dashOBias.getValue();
+      overallBias = asDouble(values[0]);
+      if(help) cout << "Overall bias = " << overallBias << " TECU" << endl;
+   }
    if(dashXsat.getCount()) {
       values = dashXsat.getValue();
       for(i=0; i<values.size(); i++) {
@@ -785,9 +795,11 @@ try {
       oflog << "  Beginning latitude (deg) is " << BeginLat << endl;
       oflog << "  Beginning longitude (deg E) is " << BeginLon << endl;
       oflog << "  Number of latitude grid points is " << NumLat << endl;
-      oflog << "  Number of latitude grid points is " << NumLat << endl;
+      oflog << "  Number of longitude grid points is " << NumLon << endl;
       oflog << "  Grid step in latitude (deg) is " << DeltaLat << endl;
       oflog << "  Grid step in longitude (deg) is " << DeltaLon << endl;
+      oflog << "  Ending latitude (deg) is " << BeginLat+NumLat*DeltaLat << endl;
+      oflog << "  Ending longitude (deg E) is " << BeginLon+NumLon*DeltaLon << endl;
       oflog << "  Minimum elevation (deg) is " << ElevThresh << endl;
       oflog << "  Minimum acquisition time (sec) is " << MinAcqTime << endl;
       if(BiasFile.length() > 0)
@@ -797,6 +809,7 @@ try {
       oflog << "  Decorrelation error rate (TECU/1000km) is " << DecorrelError
          << endl;
       oflog << "  Ionosphere height = " << IonoHt << " km" << endl;
+      oflog << "  Add overall bias = " << overallBias << " TECU" << endl;
       oflog << "  Base name for output files is " << BaseName << endl;
       cout << (GridOut ? "O":"Do NOT o") << "utput grid in file named " <<
          BaseName << ".LL" << endl;
@@ -898,7 +911,7 @@ try {
          NavFiles[i] = NavDir + "/" + NavFiles[i];
    FillEphemerisStore(NavFiles, SP3EphList, BCEphList);
    if(SP3EphList.size()) {
-      if(verbose) SP3EphList.dump(oflog),0;
+      if(verbose) SP3EphList.dump(oflog,0);
    }
    else if(verbose) oflog << "SP3 Ephemeris list is empty\n";
 
@@ -1118,18 +1131,18 @@ try {
       if(ngood > 0) {
          oflog << ngood << " data at epoch "
             << EarliestTime.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
-            << ", file #" << nepochs << "." << endl;
+            << ", epoch #" << nepochs << "." << endl;
             // compute the map(s)
          if(doVTECmap) {
-            vtecmap.ComputeMap(EarliestTime,AllObs);
+            vtecmap.ComputeMap(EarliestTime,AllObs,overallBias);
             OutputMapToFile(vtecmap,BaseName,EarliestTime,nepochs);
          }
          if(doMUFmap) {
-            mufmap.ComputeMap(EarliestTime,AllObs);
+            mufmap.ComputeMap(EarliestTime,AllObs,overallBias);
             OutputMapToFile(mufmap,BaseName+string(".MUF"),EarliestTime,nepochs);
          }
          if(doF0F2map) {
-            f0f2map.ComputeMap(EarliestTime,AllObs);
+            f0f2map.ComputeMap(EarliestTime,AllObs,overallBias);
             OutputMapToFile(f0f2map,BaseName+string(".F0F2"),EarliestTime,nepochs);
          }
       }
@@ -1458,9 +1471,9 @@ try {
          continue;
       }
       bias = kt->second;
-      if(debug) oflog << "Apply bias for station " << S.header.markerName
-         << " and sat " << sat << " = " << fixed << setw(12) << setprecision(6)
-         << bias << endl;
+      //if(debug) oflog << "Apply bias for station " << S.header.markerName
+      //   << " and sat " << sat << " = " << fixed << setw(12) << setprecision(6)
+      //   << bias << endl;
 
          // compute the obliquity
       obliq = WGS84.a()*cos(EL*DEG_TO_RAD)/(WGS84.a()+IonoHt*1000);
@@ -1486,7 +1499,7 @@ try {
       oflog << " " << setw(10) << setprecision(5)<< LO; // longitude
       oflog << " " << setw(4) << setprecision(2) << obliq; // obliquity
       oflog << " " << setw(8) << setprecision(3) << od.VTEC; // vertical TEC
-      oflog << " " << setw(8) << setprecision(3) << od.AcqTime; // acquisition time
+      oflog << " " << setw(8) << setprecision(1) << od.AcqTime; // acquisition time
       oflog << " " << setw(2) << sat.id; // PRN
       oflog << " " << setw(3) << S.nfile+1; // file number
       oflog << endl;
