@@ -182,7 +182,7 @@ namespace gpstk
 {
    int PRSolution::RAIMCompute(const DayTime& Tr,
                                vector<SatID>& Satellite,
-                               vector<double>& Pseudorange,
+                               const vector<double>& Pseudorange,
                                const XvtStore<SatID>& Eph,
                                TropModel *pTropModel)
       throw(Exception)
@@ -403,7 +403,7 @@ namespace gpstk
 
    int PRSolution::PrepareAutonomousSolution(const DayTime& Tr,
                                              vector<SatID>& Satellite,
-                                             vector<double>& Pseudorange,
+                                             const vector<double>& Pseudorange,
                                              const XvtStore<SatID>& Eph,
                                              Matrix<double>& SVP,
                                              ostream *pDebugStream)

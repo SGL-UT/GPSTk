@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file PRSolution.hpp
  * Autonomous pseudorange navigation solution, including RAIM algorithm
@@ -70,8 +68,7 @@ namespace gpstk
        *                    return, satellites that were excluded by the algorithm
        *                    are marked by a negative 'prn' member.
        * @param Pseudorange std::vector<double> of raw pseudoranges (parallel to
-       *                    Satellite), in meters; on successful return,
-       *                    contains residuals of fit (m) (for unmarked satellites).
+       *                    Satellite), in meters.
        * @param Eph         gpstk::EphemerisStore to be used in the algorithm.
        *
        * @return Return values:
@@ -86,7 +83,7 @@ namespace gpstk
        */
       int RAIMCompute(const DayTime& Tr,
                       std::vector<SatID>& Satellite,
-                      std::vector<double>& Pseudorange,
+                      const std::vector<double>& Pseudorange,
                       const XvtStore<SatID>& Eph,
                       TropModel *pTropModel)
          throw(Exception);
@@ -199,7 +196,7 @@ namespace gpstk
        */
       static int PrepareAutonomousSolution(const DayTime& Tr,
                                            std::vector<SatID>& Sats,
-                                           std::vector<double>& Pseudorange,
+                                           const std::vector<double>& Pseudorange,
                                            const XvtStore<SatID>& Eph,
                                            Matrix<double>& SVP,
                                            std::ostream *pDebug=NULL)
