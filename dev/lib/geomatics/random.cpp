@@ -143,7 +143,6 @@ double ARand(double low, double hi)
 // -----------------------------------------------------------------------------
 // Generate a random walk sequence, given sqrt variance sigma, time step dt
 // and previous point xlast.
-//
 double RandomWalk(double dt, double sigma, double xlast)
 {
 	return xlast+RandNorm(sigma)*dt;
@@ -152,11 +151,10 @@ double RandomWalk(double dt, double sigma, double xlast)
 // -----------------------------------------------------------------------------
 // Generate an exponentially correlated random sequence, given time step dt,
 // sqrt variance sigma, time constant T and previous point xlast.
-//
-//double RandExpCor(double dt, double sigma, double T, double xlast)
-//{
-	//return exp(-dt/T)*xlast+RandNorm(sigma);
-//}
+double RandExpCor(double dt, double sigma, double T, double xlast)
+{
+	return exp(-dt/T)*xlast+RandNorm(sigma);
+}
 
 // -----------------------------------------------------------------------------
 // integer mod function.  assume arguments positive.

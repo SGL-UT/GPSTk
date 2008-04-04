@@ -137,57 +137,22 @@ public:
                          const Matrix<double>& CM=SRINullMatrix)
    throw(MatrixException,VectorException);
 
-      /// SRIF (Kalman) measurement update, or least squares update
-      /// Given data and measurement covariance, compute a solution and
-      /// covariance using the appropriate least squares algorithm.
-      /// @param D   Data vector, length M
-      ///               Input:  raw data
-      ///               Output: post-fit residuals
-      /// @param X   Solution vector, length N
-      ///               Input:  nominal solution X0 (zero when doLinearized is false)
-      ///               Output: final solution
-      /// @param Cov Covariance matrix, dimension (N,N)
-      ///               Input:  (If doWeight is true) inverse measurement covariance
-      ///                       or weight matrix(M,M)
-      ///               Output: Solution covariance matrix (N,N)
-      /// @param LSF Pointer to a function which is used to define the equation
-      ///            to be solved.
-      ///            LSF arguments are:
-      ///            X  Nominal solution (input)
-      ///            f  Values of the equation f(X) (length M) (output)
-      ///            P  Partials matrix df/dX evaluated at X (dimension M,N) (output)
-      ///        When doLinearize is false, LSF ignores X and returns the (constant)
-      ///        partials matrix P and zero for f(X).
-      /// @throw MatrixException if the input is inconsistent
-      /// Return values: 0 ok
-      ///               -1 Problem is underdetermined (M<N) // TD -- naturalized sol?
-      ///               -2 Problem is singular
-      ///               -3 Algorithm failed to converge
-      ///               -4 Algorithm diverged
-   int leastSquaresEstimation(Vector<double>& D,
-                              Vector<double>& X,
-                              Matrix<double>& Cov,
-                              void (LSF)(Vector<double>& X,
-                                         Vector<double>& f,
-                                         Matrix<double>& P)
-      )
-      throw(MatrixException);
-
       /// SRIF (Kalman) time update
       /// This routine uses the Householder transformation to propagate the SRIFilter
       /// state and covariance through a time step.
       /// If the existing SRI state is of dimension n, and the number of noise
       /// parameter is ns, then the inputs must be dimensioned as indicated.
-      /// @param Phi Matrix<double>
+      /// @param PhiInv Matrix<double>
       ///        Inverse of state transition matrix, an n by n matrix.
-      ///        Phi is destroyed on output.
+      ///        PhiInv is destroyed on output.
       /// @param Rw Matrix<double>
       ///        a priori square root information matrix for the process
-      ///        noise, an ns by ns upper triangular matrix
+      ///        noise, an ns by ns upper triangular matrix. Rw is modified on output.
       /// @param G Matrix<double>
-      ///        The n by ns matrix associated with process noise.  The 
-      ///        process noise covariance is G*Q*transpose(G) where inverse(Q)
-      ///        is transpose(Rw)*Rw.  G is destroyed on output.
+      ///        The n by ns matrix associated with process noise, which relates the
+      ///        state to the noise variables.  The process noise covariance is
+      ///        G*Q*transpose(G) where inverse(Q) is transpose(Rw)*Rw.
+      ///        G is destroyed on output.
       /// @param Zw Vector<double>
       ///        a priori 'state' associated with the process noise,
       ///        a vector with ns elements.  Usually set to zero by
@@ -223,6 +188,7 @@ public:
       /// be zero.  That is, "no information" would imply that R and Z are zero,
       /// as well as Zw.  A priori information (covariance) and state
       /// are handled by setting P = inverse(R)*transpose(inverse((R)), Z = R*X.
+      /// Normally Zw is reset to zero before each call.
       ///   There are three ways to handle non-zero process noise covariance.
       /// (1) If Q is the (known) a priori process noise covariance Q, then
       /// set Q=Rw(-1)*Rw(-T), and G=1.
@@ -231,8 +197,8 @@ public:
       /// (3) Take the sqrt of process noise covariance matrix Q, then set
       /// G=this sqrt and Rw = 1.  [2 and 3 have been tested.]
       ///   The routine applies a Householder transformation to a large
-      /// matrix formed by addending the input matricies.  Two preliminary 
-      /// steps are to form Rd = R*Phi (stored in Phi) and -Rd*G (stored in 
+      /// matrix formed by concatenation of the input matricies.  Two preliminary 
+      /// steps are to form Rd = R*PhiInv (stored in PhiInv) and -Rd*G (stored in 
       /// G) by matrix multiplication, and to set Rwx to the zero matrix.  
       /// Then the Householder transformation is applied to the following
       /// matrix, dimensions are shown in ():
@@ -253,8 +219,8 @@ public:
       /// backward filter process.
       /// -------------------------------------------------------------------
       /// Ref: Bierman, G.J. "Factorization Methods for Discrete Sequential
-      ///      Estimation," Academic Press, 1977.
-   void timeUpdate(Matrix<double>& Phi,
+      ///      Estimation," Academic Press, 1977, pg 121.
+   void timeUpdate(Matrix<double>& PhiInv,
                    Matrix<double>& Rw,
                    Matrix<double>& G,
                    Vector<double>& zw,
@@ -274,9 +240,10 @@ public:
       ///        noise, an Ns by Ns upper triangular matrix (which has 
       ///        Ns(Ns+1)/2 elements), output of the time update.
       /// @param G Matrix<double>
-      ///        The N by Ns matrix associated with process noise.  The 
-      ///        process noise covariance is GQtranspose(G) where inverse(Q)
-      ///        is Rw(trans)*Rw, also input to the time update.   // TD
+      ///        The n by ns matrix associated with process noise, which relates the
+      ///        state to the noise variables.  The process noise covariance is
+      ///        G*Q*transpose(G) where inverse(Q) is transpose(Rw)*Rw,
+      ///        also input to the time update. G is destroyed on output.
       /// @param zw Vector<double>
       ///        A priori 'state' associated with the process noise,
       ///        a vector with Ns elements, output of the time update.
@@ -294,7 +261,7 @@ public:
       /// composed of two Kalman filters, one identical with the square root 
       /// information filter (SRIF), the other similar but operating on the
       /// data in reverse order and combining the current (smoothed) state
-      /// with elements output by the SRIF in its forward run and saved.
+      /// with elements output by the SRIF in its forward run.
       /// Thus a smoother is composed of a forward filter which saves all of
       /// its output, followed by a backward filter which makes use of that
       /// saved information.
@@ -320,7 +287,7 @@ public:
       /// The SRI matricies R and Rw remain upper triangular.
       ///
       /// Ref: Bierman, G.J. "Factorization Methods for Discrete Sequential
-      ///      Estimation," Academic Press, 1977.
+      ///      Estimation," Academic Press, 1977, pg 216.
    void smootherUpdate(Matrix<double>& Phi,
                        Matrix<double>& Rw,
                        Matrix<double>& G,
@@ -333,6 +300,8 @@ public:
       /// recursions which constitute the backward filter of the Square Root
       /// Information Smoother; it is equivalent to the SRI form implemented in
       /// SRIFilter::smootherUpdate().
+      /// NB. This routine does NOT use the SRIFilter object; it is implemented as a
+      /// member function to be consistent with other updates.
       /// 
       /// @param X Vector<double> X(N)
       ///          A priori state, derived from SRI (R*X=Z)
@@ -366,7 +335,10 @@ public:
       /// filter Householder transformation algorithm, but uses less computer
       /// resources. It is not necessary to update both the state and the
       /// covariance, although doing both at once is less expensive than
-      /// doing them separately. (This routine does both.)
+      /// doing them separately. (This routine does both.) Besides being more
+      /// efficient, it requires the inverse of the state transition matrix,
+      /// which is what was used in the time update (the SRIS requires the
+      /// non-inverse state transition matrix).
       ///   For startup of the backward filter, the state after the final 
       /// measurement update of the SRIF is given another time update, the
       /// output of which is identified with the a priori values for the 
@@ -375,6 +347,7 @@ public:
       ///
       /// Ref: Bierman, G.J. "Factorization Methods for Discrete Sequential
       ///      Estimation," Academic Press, 1977.
+      ///
    static void DMsmootherUpdate(Matrix<double>& P,
                                 Vector<double>& X,
                                 Matrix<double>& Phinv,
@@ -388,26 +361,9 @@ public:
    friend std::ostream& operator<<(std::ostream& s,
                                    const SRIFilter& srif);
 
-      /// Get the current solution vector
-      /// @return current solution vector
-   Vector<double> Solution(void) { return Xsave; }
-
-      /// Get the number of iterations used in last call to leastSquaresEstimation()
-      /// @return the number of iterations
-   int Iterations() { return number_iterations; }
-
-      /// Get the convergence value found in last call to leastSquaresEstimation()
-      /// @return the convergence value
-   double Convergence() { return rms_convergence; }
-
-      /// Get the condition number of the covariance matrix from last calls
-      /// to leastSquaresEstimation() (Larger means 'closer to singular' except
-      /// zero means condition number is infinite)
-   double ConditionNumber() { return condition_number; }
-
-      /// Return true if the algorithm succeeded.
-      /// Currently used only by leastSquaresEstimation(). TD - do in TU and SU
-   bool isValid() { return valid; }
+      // Return true if the algorithm succeeded.
+      // TD - implement valid in MU, TU, SU
+   //bool isValid() { return valid; }
 
       /// remove all stored information by setting the SRI to zero
       /// (does not re-dimension).
@@ -418,27 +374,6 @@ public:
       /// dimension is not changed.
       /// @param N new SRIFilter dimension (optional).
    void Reset(const int N=0);
-
-   // ------------- member data ---------------
-      /// limit on the number of iterations
-   int iterationsLimit;
-      /// limit on the RSS change in solution which produces success
-   double convergenceLimit;
-      /// upper limit on the RSS change in solution which produces an abort
-   double divergenceLimit;
-      /// if true, weight the equation using the inverse of covariance matrix
-      /// on input - default is false
-   bool doWeight;
-      /// if true, weight the equation using robust statistical techniques
-      /// - default is false
-   bool doRobust;
-      /// if true, save information for a sequential solution - default is false
-   bool doSequential;
-      /// if true, equation F(X)=D is non-linear, the algorithm will be iterated,
-      /// and LSF must return partials matrix and F(X). - default is false
-   bool doLinearize;
-      /// if true, output intermediate results
-   bool doVerbose;
 
 private:
       /// SRIF time update (non-SRI version); SRIFilter::timeUpdate for doc.
@@ -478,17 +413,7 @@ private:
       /// initialization used by constructors
    void defaults(void) throw()
    {
-      iterationsLimit = 10;
-      convergenceLimit = 1.e-8;
-      divergenceLimit = 1.e10;
-      doWeight = false;
-      doRobust = false;
-      doLinearize = false;
-      doSequential = false;
-      doVerbose = false;
-      valid = false;
-      number_iterations = number_batches = 0;
-      rms_convergence = condition_number = 0.0;
+      //valid = false;
    }
 
    // private member data - inherits from SRI
@@ -498,18 +423,11 @@ private:
    //Vector<double> Z;
       // inherit SRI Namelist parallel to R and Z, labelling elements of state vector.
    //Namelist names;
-   /// indicates if filter is valid - set false when inversion finds singularity.
-   bool valid;
-   /// current number of iterations
-   int number_iterations;
-   /// current number of batches seen
-   int number_batches;
-   /// RMS change in state, used for convergence test
-   double rms_convergence;
-   /// condition number, defined in inversion to get state and covariance
-   double condition_number;
-   /// solution X consistent with current information RX=z
-   Vector<double> Xsave;
+
+   // --------- private member data ------------
+   // TD how to implement valid?
+   // indicates if filter is valid - set false when inversion finds singularity.
+   //bool valid;
 
 }; // end class SRIFilter
 

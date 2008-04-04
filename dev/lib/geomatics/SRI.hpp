@@ -64,6 +64,7 @@
 #include <sstream>
 // GPSTk
 #include "Matrix.hpp"
+// geomatics
 #include "Namelist.hpp"
 
 namespace gpstk
@@ -75,8 +76,8 @@ extern const Matrix<double> SRINullMatrix;
 
 //------------------------------------------------------------------------------------
 // fundamental routines
-/// Compute inverse of uppertriangular matrix, returning smallest and
-/// largest eigenvalues.
+/// Compute inverse of upper triangular matrix, returning smallest and largest
+/// eigenvalues.
 /// @param UT upper triangular matrix to be inverted
 /// @param ptrS pointer to <T> small, on output *ptrS contains smallest eigenvalue.
 /// @param ptrB pointer to <T> small, on output *ptrB contains largest eigenvalue.
@@ -97,7 +98,22 @@ template <class T>
 Matrix<T> UTtimesTranspose(const Matrix<T>& UT)
    throw(MatrixException);
 
-/// Square root information measurement update
+/// Square root information filter (Srif) measurement update (MU).
+/// Use the Householder transformation to combine the information stored in the square
+/// root information (SRI) covariance matrix R and state Z with new information in
+/// the given partials matrix and data vector to produce an updated SRI {R,Z}.
+/// Measurement noise associated with the new information (H and D) is assumed to be
+/// white with unit covariance. If necessary, the data may be 'whitened' by
+/// multiplying H and D by the inverse of the lower triangular square root of the
+/// covariance matrix; that is, compute L = Cholesky(Measurement covariance) and
+/// let H = L*H, D = L*D.
+/// @param  R  Upper triangluar apriori SRI covariance matrix of dimension N
+/// @param  Z  A priori SRI state vector of length N
+/// @param  H  Partials matrix of dimension MxN, trashed on output.
+/// @param  D  Data vector of length M; on output contains the residuals of fit.
+/// @param  M  If H and D have dimension M' > M, then call with M = true data length;
+///             otherwise M = 0 (the default) and is ignored.
+/// @throw MatrixException if the input has inconsistent dimensions.
 template <class T>
 void SrifMU(Matrix<T>& R,
             Vector<T>& Z,
@@ -107,7 +123,8 @@ void SrifMU(Matrix<T>& R,
    throw(MatrixException);
 
 /// Square root information measurement update, with new data in the form of a
-/// single matrix of H and D concatenated: A = H || D.
+/// single matrix concatenation of H and D: A = H || D.
+/// See doc for the overloaded SrifMU().
 template <class T>
 void SrifMU(Matrix<T>& R,
             Vector<T>& Z,
@@ -287,8 +304,8 @@ public:
    void zeroAll(const int n=0)
       throw();
 
-      /// Zero out (set all elements to zero) the Vector Z only.
-   void zeroZ(void)
+      /// Zero out (set all elements to zero) the state (Vector Z) only.
+   void zeroState(void)
       throw()
    { Z = 0.0; }
 
@@ -338,6 +355,14 @@ public:
                 const double&)
       throw(MatrixException,VectorException);
 
+      /// Vector version of biasFix, with Namelist identifying the states.
+      /// Fix the given state elements to the input value, and
+      /// collapse the SRI by removing those elements.
+      /// No effect if name is not found.
+   void biasFix(const Namelist& drops,
+                const Vector<double>& biases)
+      throw(MatrixException,VectorException);
+
       /// Add a priori or constraint information in the form of an ordinary
       /// state vector and covariance matrix.
       /// @param Cov Covariance matrix of same dimension as this SRIFilter
@@ -346,7 +371,17 @@ public:
    void addAPriori(const Matrix<double>& Cov, const Vector<double>& X)
       throw(MatrixException);
 
+      /// Add a priori or constraint information in the form of an information
+      /// matrix (inverse covariance) and ordinary state.
+      /// @param ICov Inverse covariance matrix of same dimension as this SRIFilter
+      /// @param X    State vector of same dimension as this SRIFilter
+      /// @throw if input is invalid: dimensions are wrong
+   void addAPrioriInformation(const Matrix<double>& ICov, const Vector<double>& X)
+      throw(MatrixException);
+
       /// SRIF (Kalman) measurement update, or least squares update
+      /// Call the SRI measurement update for this SRI and the given input. See doc.
+      /// for SrifMU().
    void measurementUpdate(Matrix<double>& Partials,
                           Vector<double>& Data)
       throw(MatrixException)

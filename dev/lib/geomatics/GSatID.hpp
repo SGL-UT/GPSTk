@@ -79,7 +79,7 @@ namespace gpstk {
 
       /// cast SatID to GSatID
       GSatID(const SatID& sat) throw()
-      { *this = GSatID(sat.id,sat.system); }
+         { *this = GSatID(sat.id,sat.system); }
 
       /// set the fill character used in output
       /// return the current fill character

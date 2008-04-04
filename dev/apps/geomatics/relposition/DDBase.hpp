@@ -79,21 +79,28 @@
 #include "format.hpp"
 
 //------------------------------------------------------------------------------------
+// testing - not for release
+// see CommandInput.hpp - do not define here! - #define StochasticModelTest 1
+
+#include <time.h>
+extern clock_t totaltime;        // for timing tests
+
+//------------------------------------------------------------------------------------
 // prototypes
-int Configure(int which);           // Configure.cpp
-int ReadRawData(void);              // ReadRawData.cpp
-int EditRawDataBuffers(void);       // EditRawDataBuffers.cpp
-int OutputRawDataBuffers(void);     // EditRawDataBuffers.cpp
-int EphemerisImprovement(void);     // EphemerisImprovement.cpp
-int ClockModel(void);               // ClockModel.cpp
-int Synchronization(void);          // Synchronization.cpp
-int RecomputeFromEphemeris(void);   // Synchronization.cpp
-int Timetable(void);                // Timetable.cpp
-int QueryTimeTable(gpstk::SDid& sdid, gpstk::DayTime& tt);       // Timetable.cpp
-int QueryTimeTable(std::string bl, int& beg, int& end); // Timetable.cpp
-int DoubleDifference(void);         // DoubleDifference.cpp
-int EditDDs(void);                  // EditDDs.cpp
-int Estimation(void);               // Estimation.cpp
+int Configure(int which) throw(gpstk::Exception);        // Configure.cpp
+int ReadAndProcessRawData(void) throw(gpstk::Exception); // ReadRawData.cpp
+int EditRawDataBuffers(void) throw(gpstk::Exception);    // EditRawDataBuffers.cpp
+int OutputRawDataBuffers(void) throw(gpstk::Exception);  // EditRawDataBuffers.cpp
+int EphemerisImprovement(void) throw(gpstk::Exception);  // EphemerisImprovement.cpp
+int ClockModel(void) throw(gpstk::Exception);            // ClockModel.cpp
+int Synchronization(void) throw(gpstk::Exception);       // Synchronization.cpp
+int RecomputeFromEphemeris(void) throw(gpstk::Exception);// Synchronization.cpp
+int Timetable(void) throw(gpstk::Exception);             // Timetable.cpp
+int QueryTimeTable(gpstk::SDid& sdid, gpstk::DayTime& tt) throw(gpstk::Exception);
+int QueryTimeTable(std::string bl, int& beg, int& end) throw(gpstk::Exception);
+int DoubleDifference(void) throw(gpstk::Exception);      // DoubleDifference.cpp
+int EditDDs(void) throw(gpstk::Exception);               // EditDDs.cpp
+int Estimation(void) throw(gpstk::Exception);            // Estimation.cpp
 
 //------------------------------------------------------------------------------------
 // Global data -- see DDBase.cpp where these are declared and documented

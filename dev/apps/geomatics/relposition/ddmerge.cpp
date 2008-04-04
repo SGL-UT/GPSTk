@@ -59,6 +59,7 @@
 //------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 string Version("1.0 7/5/06");
@@ -95,7 +96,7 @@ public:
       if(status) {
          tmp = line;
          line = string(buffer);
-         StringUtils::stripTrailing(line,'\r');
+         stripTrailing(line,'\r');
          filepos = filepointer[fpindex].tellg();
       }
       //else filepointer[fpindex].close();
@@ -107,8 +108,8 @@ public:
       string tmp;
       do {
          //if(!status) break;
-         tmp = StringUtils::word(line,5);     // TD will be 4 if MJD is output
-         count = StringUtils::asInt(tmp);
+         tmp = word(line,5);     // TD will be 4 if MJD is output
+         count = asInt(tmp);
          if(count >= n) break;
          Update();
       } while(1);
@@ -165,11 +166,11 @@ try {
 
       n++;
       line = string(buffer);
-      StringUtils::stripTrailing(line,'\r');
-      if(StringUtils::word(line,0) == "RAW") {
-         id = StringUtils::word(line,1);
+      stripTrailing(line,'\r');
+      if(word(line,0) == "RAW") {
+         id = word(line,1);
          if(id != "site") {
-            id += " " + StringUtils::word(line,2);
+            id += " " + word(line,2);
             if(Chunklist.find(id) == Chunklist.end()) {
                Chunk newchunk;
                newchunk.filepos = instr.tellg();
@@ -233,37 +234,37 @@ try {
 
       n++;
       line = string(buffer);
-      StringUtils::stripTrailing(line,'\r');
-      if(StringUtils::word(line,0) == "RES") {
-         site1 = StringUtils::word(line,1);
+      stripTrailing(line,'\r');
+      if(word(line,0) == "RES") {
+         site1 = word(line,1);
          if(site1 != "site") {
-            site2 = StringUtils::word(line,2);
-            sat1 = StringUtils::word(line,3);
-            sat2 = StringUtils::word(line,4);
-            id = StringUtils::word(line,7);        // TD different for MJD
-            n = StringUtils::asInt(id);
+            site2 = word(line,2);
+            sat1 = word(line,3);
+            sat2 = word(line,4);
+            id = word(line,7);        // TD different for MJD
+            n = asInt(id);
             outstr << line;                          // endl below
             // find the corresponding lines in the chunks
             id = site1 + " " + sat1;
             line2 = Chunklist[id].find(n);
             if(Chunklist[id].status) outstr
-               << " " << StringUtils::rightJustify(StringUtils::word(line2,11),5)
-               << " " << StringUtils::rightJustify(StringUtils::word(line2,12),6);
+               << " " << rightJustify(word(line2,11),5)
+               << " " << rightJustify(word(line2,12),6);
             id = site1 + " " + sat2;
             line2 = Chunklist[id].find(n);
             if(Chunklist[id].status) outstr
-               << " " << StringUtils::rightJustify(StringUtils::word(line2,11),5)
-               << " " << StringUtils::rightJustify(StringUtils::word(line2,12),6);
+               << " " << rightJustify(word(line2,11),5)
+               << " " << rightJustify(word(line2,12),6);
             id = site2 + " " + sat1;
             line2 = Chunklist[id].find(n);
             if(Chunklist[id].status) outstr
-               << " " << StringUtils::rightJustify(StringUtils::word(line2,11),5)
-               << " " << StringUtils::rightJustify(StringUtils::word(line2,12),6);
+               << " " << rightJustify(word(line2,11),5)
+               << " " << rightJustify(word(line2,12),6);
             id = site2 + " " + sat2;
             line2 = Chunklist[id].find(n);
             if(Chunklist[id].status) outstr
-               << " " << StringUtils::rightJustify(StringUtils::word(line2,11),5)
-               << " " << StringUtils::rightJustify(StringUtils::word(line2,12),6);
+               << " " << rightJustify(word(line2,11),5)
+               << " " << rightJustify(word(line2,12),6);
          }
          else outstr
             << line << "  EL11   AZ11  EL12   AZ12  EL21   AZ21  EL22   AZ22";

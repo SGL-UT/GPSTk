@@ -43,6 +43,10 @@
  */
 
 //------------------------------------------------------------------------------------
+// testing - not for release
+//#define StochasticModelTest 1
+
+//------------------------------------------------------------------------------------
 #ifndef CLASS_DDBASE_COMMANDINPUT_INCLUDE
 #define CLASS_DDBASE_COMMANDINPUT_INCLUDE
 
@@ -58,9 +62,9 @@
 class CommandInput {
 public:
    // functions
-   int GetCmdInput(int argc, char **argv);
-   int ValidateCmdInput(void);
-   void Dump(std::ostream& s=std::cout) const;
+   int GetCmdInput(int argc, char **argv) throw(gpstk::Exception);
+   int ValidateCmdInput(void) throw(gpstk::Exception);
+   void Dump(std::ostream& s=std::cout) const throw(gpstk::Exception);
 
    // member data
    bool Debug;
@@ -71,12 +75,18 @@ public:
    std::string InputPath;
    std::string NavPath;
    std::string EOPPath;
+   std::string OutPath;
    std::vector<std::string> NavFileNames;
    std::vector<std::string> EOPFileNames;
    std::string TimeTableFile;
    gpstk::DayTime BegTime;
    gpstk::DayTime EndTime;
    int Frequency;
+      // stochastic models
+   std::string StochasticModel;
+#ifdef StochasticModelTest
+   double SNRmax,SNRatt;
+#endif // StochasticModelTest
       // for configuration of pseudorange solution
    double PRSrmsLimit;
    //double PRSslopeLimit;   // no
@@ -125,8 +135,9 @@ public:
 
 private:
    bool help;
-   void SetDefaults();
-   void PreProcessArgs(const char *arg, std::vector<std::string>& Args);
+   void SetDefaults() throw(gpstk::Exception);
+   void PreProcessArgs(const char *arg, std::vector<std::string>& Args)
+      throw(gpstk::Exception);
 };    // end class CommandInput
 
 //------------------------------------------------------------------------------------

@@ -52,6 +52,8 @@
 #include "RobustStats.hpp"
 #include "StringUtils.hpp"
 
+//------------------------------------------------------------------------------------
+// TD
 using namespace std;
 
 namespace gpstk
@@ -122,20 +124,7 @@ SRIFilter& SRIFilter::operator=(const SRIFilter& right)
    R = right.R;
    Z = right.Z;
    names = right.names;
-   iterationsLimit = right.iterationsLimit;
-   convergenceLimit = right.convergenceLimit;
-   divergenceLimit = right.divergenceLimit;
-   doWeight = right.doWeight;
-   doRobust = right.doRobust;
-   doLinearize = right.doLinearize;
-   doSequential = right.doSequential;
-   doVerbose = right.doVerbose;
-   valid = right.valid;
-   number_iterations = right.number_iterations;
-   number_batches = right.number_batches;
-   rms_convergence = right.rms_convergence;
-   condition_number = right.condition_number;
-   Xsave = right.Xsave;
+   //valid = right.valid;
    return *this;
 }
 
@@ -149,16 +138,18 @@ void SRIFilter::measurementUpdate(const Matrix<double>& H,
 {
    if(H.cols() != R.cols() || H.rows() != D.size() ||
       (&CM != &SRINullMatrix && (CM.rows() != D.size() || CM.cols() != D.size())) ) {
-      MatrixException me("Invalid input dimensions:\n  SRI is "
-         + asString<int>(R.rows()) + "x"
-         + asString<int>(R.cols()) + ",\n  Partials is "
-         + asString<int>(H.rows()) + "x"
-         + asString<int>(H.cols()) + ",\n  Data has length "
-         + asString<int>(D.size())
-         );
-      if(&CM != &SRINullMatrix) me.addText(",  and Cov is "
-         + asString<int>(CM.rows()) + "x"
-         + asString<int>(CM.cols()));
+
+      string msg("\nInvalid input dimensions:\n  SRI is ");
+      msg += asString<int>(R.rows()) + "x"
+          + asString<int>(R.cols()) + ",\n  Partials is "
+          + asString<int>(H.rows()) + "x"
+          + asString<int>(H.cols()) + ",\n  Data has length "
+          + asString<int>(D.size());
+      if(&CM != &SRINullMatrix) msg += ",\n  and Cov is "
+          + asString<int>(CM.rows()) + "x"
+          + asString<int>(CM.cols());
+
+      MatrixException me(msg);
       GPSTK_THROW(me);
    }
    try {
@@ -187,354 +178,15 @@ void SRIFilter::measurementUpdate(const Matrix<double>& H,
 }
 
 //------------------------------------------------------------------------------------
-// SRIF (Kalman) measurement update, or least squares update
-// Given data and measurement covariance, compute a solution and
-// covariance using the appropriate least squares algorithm.
-// @param D   Data vector, length M
-//               Input:  raw data
-//               Output: post-fit residuals
-// @param X   Solution vector, length N
-//               Input:  nominal solution X0 (zero when doLinearized is false)
-//               Output: final solution
-// @param Cov Covariance matrix, dimension (N,N)
-//               Input:  (If doWeight is true) inverse measurement covariance
-//                       or weight matrix(M,M)
-//               Output: Solution covariance matrix (N,N)
-// @param LSF Pointer to a function which is used to define the equation to be solved.
-// LSF arguments are:
-//            X  Nominal solution (input)
-//            f  Values of the equation f(X) (length M) (output)
-//            P  Partials matrix df/dX evaluated at X (dimension M,N) (output)
-//        When doLinearize is false, LSF should ignore X and return the (constant)
-//        partials matrix in P and zero in f.
-//
-// Return values: 0 ok
-//               -1 Problem is underdetermined (M<N) // TD -- naturalized sol?
-//               -2 Problem is singular
-//               -3 Algorithm failed to converge
-//               -4 Algorithm diverged
-//
-// Reference for robust least squares: Mason, Gunst and Hess,
-// "Statistical Design and Analysis of Experiments," Wiley, New York, 1989, pg 593.
-//
-// Notes on the algorithm:
-// Least squares, including linearized (iterative) and sequential processing.
-// This class will solve the equation f(X) = D, a vector equation in which the
-// solution vector X is of length N, and the data vector D is of length M.
-// The function f(X) may be linear, in which case it is of the form
-// P*X=D where P is a constant matrix,
-// or non-linear, in which case it will be linearized by expanding about a given
-// nominal solution X0:
-//          df |
-//          -- |     * dX = D - f(X0),
-//          dX |X=X0
-// where dX is defined as (X-X0), the new solution is X, and the partials matrix is
-// P=(df/dX)|X=X0. Dimensions are P(M,N)*dX(N) = D(M) - f(X0)(M).
-// Linearized problems are iterated until the solution converges (stops changing). 
-// 
-// The solution may be weighted by a measurement covariance matrix MCov,
-// or weight matrix W (in which case MCov = inverse(W)). MCov must be non-singular.
-// 
-// Options are to make the algorithm linearized (via the boolean input variable
-// doLinearize) and/or sequential (doSequential).
-// 
-//    - linearized. When doLinearize is true, the algorithm solves the linearized
-//    version of the measurement equation (see above), rather than the simple
-//    linear version P*X=D. Also when doLinearize is true, the code will iterate
-//    (repeat until convergence) the linearized algorithm; if you don't want to
-//    iterate, set the limit on the number of iterations to zero.
-//    NB In this case, a solution must be found for each nominal solution
-//    (i.e. the information matrix must be non-singular); otherwise there can be
-//    no iteration.
-// 
-//    - sequential. When doSequential is true, the class will save the accumulated
-//    information from all the calls to Compute() and Add() since the last reset()
-//    within the class. This means the resulting solution is determined by ALL the
-//    data fed to the class since the last reset(). In this case the data is fed
-//    to the algorithm in 'batches', which may be of any size.
-// 
-//    NB When doLinearize is true, the information stored in the class has a
-//    different interpretation than it does in the linear case.
-//    Calling Solve(X,Cov) will NOT give the solution vector X, but rather the
-//    latest update (X-X0) = (X-Xsave).
-// 
-//    NB In the linear case, the result you get from sequentially processing
-//    a large dataset in many small batches is identical to what you would get
-//    by processing all the data in one big batch. This is NOT true in the
-//    linearized case, because the information at each batch is dependent on thes
-//    nominal state. See the next comment.
-// 
-//    NB Sequential, linearized LS really makes sense only when the state is
-//    changing. It is difficult to get a good solution in this case with small
-//    batches, because the stored information is dependent on the (final) state
-//    solution at each batch. Start with a good nominal state, or with a large
-//    batch of data that will produce one.
-// 
-// The general Least Squares algorithm is:
-//    0. set i=0.
-//    1. If non-sequential, or if this is the first call, set R=0=z
-//    2. Let X = X0 = initial nominal solution (input). if(linear, X0==0).
-//    3. Save SRIsave=SRI and X0save=X0
-//    4. start iteration i here.
-//    5. Compute partials matrix P and f(X0) by calling LSF(X0,f,P).
-//          if(linear), LSF returns the constant P and f(X0)=0.
-//    6. Set R = SRIsave.R + P(T)*inverse(MCov)*P
-//    7. Set z = SRIsave.Z + P(T)*inverse(MCov)*(D-f(X0))
-//    8. (The measurement equation is now
-//          P(X-X0save)=d-F(X0)
-//       which is, in the linear case,
-//          PX = d )
-//    9. Compute RMS change in X: rms = ||X-X0||/N
-// 10. Solve z=Rx to get
-//          Cov = inverse(R)
-//       and
-//          X = X0save + inverse(R)*z [or in the linear case X = inverse(R)*z]
-// 11. if(linear) goto quit
-//          [else linearized]
-// 12. increment the number of iterations
-// 13. If rms > divergence limit, goto quit (failure).
-// 14. If i > 1 and rms < convergence limit, goto quit (success)
-// 15. If i (number of iterations) >= iteration limit, goto quit (failure)
-// 16. Set X0 = X
-// 17. Return to step 4.
-// 18. quit: if(sequential and failed) set SRI=SRIsave.
-// 
-int SRIFilter::leastSquaresEstimation(Vector<double>& D,
-                                      Vector<double>& X,
-                                      Matrix<double>& Cov,
-                                      void (LSF)(Vector<double>& X,
-                                                 Vector<double>& f,
-                                                 Matrix<double>& P)
-   )
-   throw(MatrixException)
-{
-   int M = D.size();
-   int N = R.rows();
-   if(doVerbose) cout << "\nSRIFilter::leastSquaresUpdate : M,N are "
-      << M << "," << N << endl;
-
-   // errors
-   if(N == 0) {
-      MatrixException me("Called with zero-sized SRIFilter");
-      GPSTK_THROW(me);
-   }
-   if(doLinearize && M < N) {
-      MatrixException me(
-            string("When linearizing, problem must not be underdetermined:\n")
-            + string("   data dimension is ") + asString(M)
-            + string(" while state dimension is ") + asString(N));
-      GPSTK_THROW(me);
-   }
-   if(doSequential && R.rows() != X.size()) {
-      MatrixException me("Sequential problem has inconsistent dimensions:\n  SRI is "
-         + asString<int>(R.rows()) + "x"
-         + asString<int>(R.cols()) + " while X has length "
-         + asString<int>(X.size()));
-      GPSTK_THROW(me);
-   }
-   if(doWeight && doRobust) {
-      MatrixException me("Cannot have doWeight and doRobust both true.");
-      GPSTK_THROW(me);
-   }
-   // TD disallow Robust and Linearized ?
-   // TD disallow Robust and Sequential ?
-
-   int i,j,iret;
-   double big,small;
-   Vector<double> f(M),Xsol(N),NominalX,Res(M),Wts(M,1.0),OldWts(M,1.0);
-   Matrix<double> Partials(M,N),MeasCov(M,M);
-   const Matrix<double> Rapriori(R);
-   const Vector<double> Zapriori(Z);
-
-   // save measurement covariance matrix
-   if(doWeight) MeasCov=Cov;
-
-   // NO ... this prevents you from giving it apriori information...
-   // if the first time, clear the stored information
-   //if(!doSequential || number_batches==0)
-   //   zeroAll();
-
-   // if sequential and not the first call, NominalX must be the last solution
-   if(doSequential && number_batches != 0) X = Xsave;
-
-   // nominal solution
-   if(!doLinearize) {
-      if(X.size() != N) X=Vector<double>(N);
-      X = 0.0;
-   }
-   NominalX = X;
-
-   valid = false;
-   condition_number = 0.0;
-   rms_convergence = 0.0;
-   number_iterations = 0;
-   iret = 0;
-
-   // iteration loop
-   do {
-      number_iterations++;
-
-      // call LSF to get f(NominalX) and Partials(NominalX)
-      LSF(NominalX,f,Partials);
-
-      // Res will be both pre- and post-fit data residuals
-      Res = D-f;
-      if(doVerbose) {
-         cout << "\nSRIFilter::leastSquaresUpdate :";
-         if(doLinearize || doRobust)
-            cout << " Iteration " << number_iterations;
-         cout << endl;
-         LabelledVector LNX(names,NominalX);
-         LNX.message(" Nominal X:");
-         cout << LNX << endl;
-         cout << " Pre-fit data residuals:  "
-            << fixed << setprecision(6) << Res << endl;
-      }
-
-      // build measurement covariance matrix for robust LS
-      if(doRobust) {
-         MeasCov = 0.0;
-         for(i=0; i<M; i++) MeasCov(i,i) = 1.0 / (Wts(i)*Wts(i));
-      }
-
-      // restore apriori information
-      if(number_iterations > 1) {
-         R = Rapriori;
-         Z = Zapriori;
-      }
-
-      // update information with simple MU
-      if(doVerbose) {
-         cout << " Meas Cov:";
-         for(i=0; i<M; i++) cout << " " << MeasCov(i,i);
-         cout << endl;
-         cout << " Partials:\n" << Partials << endl;
-      }
-      if(doRobust || doWeight)
-         measurementUpdate(Partials,Res,MeasCov);
-      else
-         measurementUpdate(Partials,Res);
-
-      if(doVerbose) {
-         cout << " Updated information matrix\n" << LabelledMatrix(names,R) << endl;
-         cout << " Updated information vector\n" << LabelledVector(names,Z) << endl;
-      }
-
-      // invert
-      try { getStateAndCovariance(Xsol,Cov,&small,&big); }
-      catch(SingularMatrixException& sme) {
-         iret = -2;
-         break;
-      }
-      condition_number = big/small;
-      if(doVerbose) {
-         cout << " Condition number: " << scientific << condition_number
-            << fixed << endl;
-         cout << " Post-fit data residuals:  "
-            << fixed << setprecision(6) << Res << endl;
-      }
-
-      // update X: when linearized, solution = dX
-      if(doLinearize) {
-         Xsol += NominalX;
-      }
-      if(doVerbose) {
-         LabelledVector LXsol(names,Xsol);
-         LXsol.message(" Updated X:");
-         cout << LXsol << endl;
-      }
-
-      // linear non-robust is done..
-      if(!doLinearize && !doRobust) break;
-
-      // test for convergence of linearization
-      if(doLinearize) {
-         rms_convergence = RMS(Xsol - NominalX);
-         if(doVerbose) {
-            cout << " RMS convergence : "
-               << scientific << rms_convergence << fixed << endl;
-         }
-      }
-
-      // test for convergence of robust weighting, and compute new weights
-      if(doRobust) {
-         // must de-weight post-fit residuals
-         LSF(Xsol,f,Partials);
-         Res = D-f;
-
-         // compute a new set of weights
-         double mad,median;
-         //for(mad=0.0,i=0; i<M; i++)
-         //   mad += Wts(i)*Res(i)*Res(i);
-         //mad = sqrt(mad)/sqrt(Robust::TuningA*(M-1));
-         mad = Robust::MedianAbsoluteDeviation(&(Res[0]),Res.size(),median);
-
-         OldWts = Wts;
-         for(i=0; i<M; i++) {
-            if(Res(i) < -RobustTuningT*mad)
-               Wts(i) = -RobustTuningT*mad/Res(i);
-            else if(Res(i) > RobustTuningT*mad)
-               Wts(i) = RobustTuningT*mad/Res(i);
-            else
-               Wts(i) = 1.0;
-         }
-
-         // test for convergence
-         rms_convergence = RMS(OldWts - Wts);
-         if(doVerbose) cout << " Convergence: "
-            << scientific << setprecision(3) << rms_convergence << endl;
-      }
-
-      // failures
-      if(rms_convergence > divergenceLimit) iret=-4;
-      if(number_iterations >= iterationsLimit) iret=-3;
-      if(iret) {
-         if(doSequential) {
-            R = Rapriori;
-            Z = Zapriori;
-         }
-         break; // return iret;
-      }
-
-      // success
-      if(number_iterations > 1 && rms_convergence < convergenceLimit) break;
-
-      // prepare for another iteration
-      if(doLinearize)
-         NominalX = Xsol;
-      if(doRobust)
-         NominalX = X;
-
-   } while(1); // end iteration loop
-
-   number_batches++;
-   if(doVerbose) cout << "Return from SRIFilter::leastSquaresUpdate\n\n";
-
-   if(iret) return iret;
-
-   // output the solution
-   Xsave = X = Xsol;
-
-   // put residuals of fit into data vector, or weights if Robust
-   if(doRobust)
-      D = OldWts;
-   else
-      D = Res;
-
-   valid = true;
-   return iret;
-}
-
-//------------------------------------------------------------------------------------
 // SRIF (Kalman) time update see SrifTU for doc.
-void SRIFilter::timeUpdate(Matrix<double>& Phi,
+void SRIFilter::timeUpdate(Matrix<double>& PhiInv,
                            Matrix<double>& Rw,
                            Matrix<double>& G,
                            Vector<double>& Zw,
                            Matrix<double>& Rwx)
    throw(MatrixException)
 {
-   try { SrifTU(R, Z, Phi, Rw, G, Zw, Rwx); }
+   try { SrifTU(R, Z, PhiInv, Rw, G, Zw, Rwx); }
    catch(MatrixException& me) { GPSTK_RETHROW(me); }
 }
 
@@ -586,8 +238,6 @@ ostream& operator<<(ostream& os,
 void SRIFilter::zeroAll(void)
 {
    SRI::zeroAll();
-   Xsave = 0.0;
-   number_batches = 0;
 }
 
 //------------------------------------------------------------------------------------
@@ -603,9 +253,6 @@ void SRIFilter::Reset(const int N)
    }
    else
       SRI::zeroAll(N);
-   if(N > 0) Xsave.resize(N);
-   Xsave = 0.0;
-   number_batches = 0;
 }
 
 //------------------------------------------------------------------------------------
@@ -617,26 +264,26 @@ void SRIFilter::Reset(const int N)
 // This routine uses the Householder transformation to propagate the SRIFilter
 // state and covariance through a time step.
 // Input:
-// R     A priori square root information (SRI) matrix (an n by n 
-//          upper triangular matrix)
-// Z     a priori SRIF state vector, of length n (state is X, Z = R*X).
-// Phi   Inverse of state transition matrix, an n by n matrix.
-//          Phi is destroyed on output.
-// Rw    a priori square root information matrix for the process
-//          noise, an ns by ns upper triangular matrix
-// G     The n by ns matrix associated with process noise.  The 
-//          process noise covariance is G*Q*transpose(G) where inverse(Q)
-//          is transpose(Rw)*Rw.  G is destroyed on output.
-// Zw    a priori 'state' associated with the process noise,
-//          a vector with ns elements.  Usually set to zero by
-//          the calling routine (for unbiased process noise).
-// Rwx   An ns by n matrix which is set to zero by this routine 
-//          but is used for output.
+// R       a priori square root information (SRI) matrix (an n by n 
+//            upper triangular matrix)
+// Z       a priori SRIF state vector, of length n (state is X, Z = R*X).
+// PhiInv  Inverse of state transition matrix, an n by n matrix.
+//            PhiInv is destroyed on output.
+// Rw      a priori square root information matrix for the process
+//            noise, an ns by ns upper triangular matrix
+// G       The n by ns matrix associated with process noise.  The 
+//            process noise covariance is G*Q*transpose(G) where inverse(Q)
+//            is transpose(Rw)*Rw. G is destroyed on output.
+// Zw      a priori 'state' associated with the process noise,
+//            a vector with ns elements.  Usually set to zero by
+//            the calling routine (for unbiased process noise).
+// Rwx     An ns by n matrix which is set to zero by this routine 
+//            but is used for output.
 // 
 // Output:
 //    The updated square root information matrix and SRIF state (R,Z) and
 // the matrices which are used in smoothing: Rw, Zw, Rwx.
-// Note that Phi and G are trashed, and that Rw and Zw are modified.
+// Note that PhiInv and G are trashed, and that Rw and Zw are modified.
 // 
 // Return values:
 //    SrifTU returns void, but throws exceptions if the input matrices
@@ -670,8 +317,8 @@ void SRIFilter::Reset(const int N)
 // (3) Take the sqrt of process noise covariance matrix Q, then set
 // G=this sqrt and Rw = 1.  [2 and 3 have been tested.]
 //    The routine applies a Householder transformation to a large
-// matrix formed by addending the input matricies.  Two preliminary 
-// steps are to form Rd = R*Phi (stored in Phi) and -Rd*G (stored in 
+// matrix formed by concatenation of the input matricies.  Two preliminary 
+// steps are to form Rd = R*PhiInv (stored in PhiInv) and -Rd*G (stored in 
 // G) by matrix multiplication, and to set Rwx to the zero matrix.  
 // Then the Householder transformation is applied to the following
 // matrix, dimensions are shown in ():
@@ -682,13 +329,13 @@ void SRIFilter::Reset(const int N)
 // The SRI matricies R and Rw remain upper triangular.
 //
 //    For the programmer:  after Rwx is set to zero, G is made into 
-// -Rd*G and Phi is made into R*Phi, the transformation is applied 
+// -Rd*G and PhiInv is made into R*PhiInv, the transformation is applied 
 // to the matrix:
 //       _   (ns)   (n)   (1) _
 // (ns) |    Rw    Rwx    Zw   |
-// (n)  |     G    Phi    Z    |
+// (n)  |     G    PhiInv  Z   |
 //       -                    -
-// then the (upper triangular) matrix R is copied out of Phi into R.
+// then the (upper triangular) matrix R is copied out of PhiInv into R.
 // -------------------------------------------------------------------
 //    The matrix Rwx is related to the sensitivity of the state
 // estimate to the unmodeled parameters in Zw.  The sensitivity matrix
@@ -701,12 +348,12 @@ void SRIFilter::Reset(const int N)
 // backward filter process.
 // -------------------------------------------------------------------
 // Ref: Bierman, G.J. "Factorization Methods for Discrete Sequential
-//      Estimation," Academic Press, 1977.
+//      Estimation," Academic Press, 1977, pg 121.
 // -------------------------------------------------------------------
 template <class T>
 void SRIFilter::SrifTU(Matrix<T>& R,
                        Vector<T>& Z,
-                       Matrix<T>& Phi,
+                       Matrix<T>& PhiInv,
                        Matrix<T>& Rw,
                        Matrix<T>& G,
                        Vector<T>& Zw,
@@ -718,7 +365,7 @@ void SRIFilter::SrifTU(Matrix<T>& R,
    unsigned int i,j,k;
    T sum, beta, delta, dum;
 
-   if(Phi.rows() < n || Phi.cols() < n ||
+   if(PhiInv.rows() < n || PhiInv.cols() < n ||
       G.rows() < n || G.cols() < ns ||
       R.cols() != n ||
       Rwx.rows() < ns || Rwx.cols() < n ||
@@ -726,9 +373,9 @@ void SRIFilter::SrifTU(Matrix<T>& R,
       MatrixException me("Invalid input dimensions:\n  R is "
          + asString<int>(R.rows()) + "x"
          + asString<int>(R.cols()) + ", Z has length "
-         + asString<int>(Z.size()) + "\n  Phi is "
-         + asString<int>(Phi.rows()) + "x"
-         + asString<int>(Phi.cols()) + "\n  Rw is "
+         + asString<int>(Z.size()) + "\n  PhiInv is "
+         + asString<int>(PhiInv.rows()) + "x"
+         + asString<int>(PhiInv.cols()) + "\n  Rw is "
          + asString<int>(Rw.rows()) + "x"
          + asString<int>(Rw.cols()) + "\n  G is "
          + asString<int>(G.rows()) + "x"
@@ -741,9 +388,17 @@ void SRIFilter::SrifTU(Matrix<T>& R,
    }
 
    try {
-      Phi = R * Phi;                      // set Phi = Rd = R*Phi
+      // initialize
       Rwx = T(0);
-      G = -Phi * G;                       // set G = -Rd*G
+      PhiInv = R * PhiInv;                   // set PhiInv = Rd = R*PhiInv
+      G = -PhiInv * G;
+      // fixed Matrix problem - unary minus should not return an l-value
+      //G = -(PhiInv * G);                     // set G = -Rd*G
+
+      // temp
+      //Matrix <T> A;
+      //A = (Rw || Rwx || Zw) && (G || PhiInv || Z);
+      //cout << "SrifTU - :\n" << fixed << setw(10) << setprecision(5) << A << endl;
 
       //---------------------------------------------------------------
       for(j=0; j<ns; j++) {               // loop over first ns columns
@@ -776,17 +431,17 @@ void SRIFilter::SrifTU(Matrix<T>& R,
          }
 
             // apply jth Householder transformation
-            // to Rwx and Phi
-         for(k=0; k<n; k++) {             // columns of Rwx and Phi
+            // to Rwx and PhiInv
+         for(k=0; k<n; k++) {             // columns of Rwx and PhiInv
             sum = delta * Rwx(j,k);
-            for(i=0; i<n; i++)            // rows of Phi and G
-               sum += Phi(i,k) * G(i,j);
+            for(i=0; i<n; i++)            // rows of PhiInv and G
+               sum += PhiInv(i,k) * G(i,j);
             if(sum == T(0)) continue;
             sum *= beta;
             Rwx(j,k) += sum*delta;
-            for(i=0; i<n; i++)            // rows of Phi and G
-               Phi(i,k) += sum * G(i,j);
-         }                                // end loop over columns of Rwx and Phi
+            for(i=0; i<n; i++)            // rows of PhiInv and G
+               PhiInv(i,k) += sum * G(i,j);
+         }                                // end loop over columns of Rwx and PhiInv
 
             // apply jth Householder transformation
             // to Zw and Z
@@ -801,47 +456,50 @@ void SRIFilter::SrifTU(Matrix<T>& R,
       }                                   // end loop over first ns columns
 
       //---------------------------------------------------------------
-      for(j=0; j<n; j++) {                // loop over columns of Rwx and Phi
+      for(j=0; j<n; j++) {                // loop over columns of Rwx and PhiInv
          sum = T(0);
-         for(i=j+1; i<n; i++)             // rows of Phi
-            sum += Phi(i,j)*Phi(i,j);
-         dum = Phi(j,j);
+         for(i=j+1; i<n; i++)             // rows of PhiInv
+            sum += PhiInv(i,j)*PhiInv(i,j);
+         dum = PhiInv(j,j);
          sum += dum*dum;
          sum = (dum > T(0) ? -T(1) : T(1)) * ::sqrt(sum);
          delta = dum - sum;
-         Phi(j,j) = sum;
+         PhiInv(j,j) = sum;
          beta = sum*delta;
          if(beta > EPS) continue;
          beta = T(1)/beta;
 
-            // apply jth Householder transformation to columns of Phi on row j
-         for(k=j+1; k<n; k++) {           // columns of Phi
-            sum = delta * Phi(j,k);
+            // apply jth Householder transformation to columns of PhiInv on row j
+         for(k=j+1; k<n; k++) {           // columns of PhiInv
+            sum = delta * PhiInv(j,k);
             for(i=j+1; i<n; i++)
-               sum += Phi(i,j)*Phi(i,k);
+               sum += PhiInv(i,j)*PhiInv(i,k);
             if(sum == T(0)) continue;
             sum *= beta;
-            Phi(j,k) += sum*delta;
+            PhiInv(j,k) += sum*delta;
             for(i=j+1; i<n; i++)
-               Phi(i,k) += sum * Phi(i,j);
+               PhiInv(i,k) += sum * PhiInv(i,j);
          }
 
             // apply jth Householder transformation to Z
          sum = delta *Z(j);
          for(i=j+1; i<n; i++)
-            sum += Z(i) * Phi(i,j);
+            sum += Z(i) * PhiInv(i,j);
          if(sum == T(0)) continue;
          sum *= beta;
          Z(j) += sum*delta;
          for(i=j+1; i<n; i++)
-            Z(i) += sum * Phi(i,j);
-      }                                   // end loop over cols of Rwx and Phi
+            Z(i) += sum * PhiInv(i,j);
+      }                                   // end loop over cols of Rwx and PhiInv
 
-         // copy transformed R out of Phi
-       for(j=0; j<n; j++)
-          for(i=0; i<=j; i++)
-             R(i,j) = Phi(i,j);
+      // temp
+      //A = (Rw || Rwx || Zw) && (G || PhiInv || Z);
+      //cout << "SrifTU + :\n" << fixed << setw(10) << setprecision(5) << A << endl;
 
+         // copy transformed R out of PhiInv
+      for(j=0; j<n; j++)
+         for(i=0; i<=j; i++)
+            R(i,j) = PhiInv(i,j);
    }
    catch(MatrixException& me) { GPSTK_RETHROW(me); }
 }  // end SrifTU
@@ -860,10 +518,10 @@ void SRIFilter::SrifTU(Matrix<T>& R,
 //          Ns(Ns+1)/2 elements).
 // G     The N by Ns matrix associated with process noise.  The 
 //          process noise covariance is GQGtrans where Qinverse 
-//          is Rw(trans)*Rw.
+//          is Rw(trans)*Rw. G is destroyed on output.
 // Zw    A priori 'state' associated with the process noise,
-//          a vector with Ns elements.
-// Rwx   An Ns by N matrix.
+//          a vector with Ns elements. Zw is destroyed on output.
+// Rwx   An Ns by N matrix. Rwx is destroyed on output.
 //
 // The inputs Rw,Zw,Rwx are the output of the SRIF time update, and these and
 // Phi and G are associated with the same timestep.
@@ -914,10 +572,10 @@ void SRIFilter::SrifTU(Matrix<T>& R,
 // (Ns) |   A    Rwx   Zw   |
 // (N)  |   G    Phi   z    |
 //       -                 -
-//
 // then the (upper triangular) matrix R is copied out of Phi into R.
+//
 // Ref: Bierman, G.J. "Factorization Methods for Discrete Sequential
-//      Estimation," Academic Press, 1977.
+//      Estimation," Academic Press, 1977, pg 216.
 template <class T>
 void SRIFilter::SrifSU(Matrix<T>& R,
                        Vector<T>& Z,
@@ -1065,7 +723,6 @@ try {
                // apply HH trans to Phi sub-block below and right of j,j
       for(k=j+1; k<N; k++) {                 // columns k > j
          sum = delta * Phi(j,k);
-         cout << "";//gcc 3.4.4 bug
          for(i=j+1; i<N; i++) {              // rows below j
             sum += Phi(i,j) * Phi(i,k);
          }
@@ -1119,9 +776,6 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 // 	Matrix G(N,Ns)			Noise coupling matrix, saved at SRIF TU
 // Output:
 // 	Updated X and P. The other inputs are trashed.
-// Return values:
-// 	GPSTK::SINGULAR if the Process Noise Matrix (Rw) is singular
-// 	GPSTK::OK if ok
 // 
 // Method:
 // 	The fixed interval square root information smoother (SRIS) is 
@@ -1144,7 +798,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 // point, toward the first point.
 //
 // Ref: Bierman, G.J. "Factorization Methods for Discrete Sequential
-//      Estimation," Academic Press, 1977.
+//      Estimation," Academic Press, 1977, pg 216.
 template <class T>
 void SRIFilter::SrifSU_DM(Matrix<T>& P,
                           Vector<T>& X,

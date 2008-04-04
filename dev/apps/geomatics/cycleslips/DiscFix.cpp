@@ -70,8 +70,8 @@ using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // prgm data
+string PrgmVers("5.0 8/20/07");
 string PrgmName("DiscFix");
-string PrgmVers("4.1 4/07/06");
 
 typedef struct configuration {
       // input
@@ -102,6 +102,7 @@ typedef struct configuration {
    int NrecOut;
    DayTime FirstEpoch,LastEpoch;
    bool smoothPR,smoothPH,smooth;
+   bool WriteASAP; // if true, write to RINEX only after ALL data has been processed
    //bool CAOut;
    //bool DopOut;
    bool verbose;
@@ -114,10 +115,6 @@ typedef struct configuration {
 // data input from command line
 DFConfig config;                 // for DiscFix
 GDCconfiguration GDConfig;       // the discontinuity corrector configuration
-
-// if true, write to RINEX only after ALL data has been processed (by ProcessSatPass)
-// (I can't see why DiscFix would want to set this false, so it is not in the input.)
-bool WriteASAP=true;
 
 // data used in program
 clock_t totaltime;
@@ -133,15 +130,21 @@ bool UsingCA;
 // this contains all the SatPass's defined so far
 // the parallel vector holds an iterator for use in writing out the data
 vector<SatPass> SPList;
-vector<unsigned int> SPIndexList;
+// convenience
+static const string L1="L1",L2="L2",P1="P1",P2="P2";
+// list of observation types to be included in each SatPass
+vector<string> L1L2P1P2;
 // this is a map relating a satellite to the index in SVPList of the current pass
+vector<unsigned int> SPIndexList;
 map<GSatID,int> SatToCurrentIndexMap;
 
 //------------------------------------------------------------------------------------
 // prototypes
 int ReadFile(int nfile) throw(Exception);
 int ProcessOneEntireEpoch(RinexObsData& ro) throw(Exception);
-int ProcessOneSatOneEpoch(GSatID, DayTime, SatPassData& ) throw(Exception);
+int ProcessOneSatOneEpoch(GSatID, DayTime, unsigned short&,
+      vector<double>&, vector<unsigned short>&, vector<unsigned short>&)
+   throw(Exception);
 
 void ProcessSatPass(int index) throw(Exception);
 int AfterReadingFiles(void) throw(Exception);
@@ -149,7 +152,7 @@ void WriteToRINEXfile(void) throw(Exception);
 void WriteRINEXheader(void) throw(Exception);
 void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Exception);
 
-void PrintSPList(ostream&, string, const vector<SatPass>&, bool printTime);
+void PrintSPList(ostream&, string, vector<SatPass>&, bool printTime);
 int GetCommandLine(int argc, char **argv) throw(Exception);
 void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
 
@@ -179,6 +182,11 @@ int main(int argc, char **argv)
 
          // configure SatPass
       {
+         L1L2P1P2.push_back(L1);    // DiscFix requires these 4 observables only
+         L1L2P1P2.push_back(L2);
+         L1L2P1P2.push_back(P1);
+         L1L2P1P2.push_back(P2);
+
          SatPass dummy(config.SVonly,config.dt);
          dummy.setMaxGap(config.MaxGap);
          dummy.setOutputFormat(config.format);
@@ -193,6 +201,7 @@ int main(int argc, char **argv)
       }
       else
          cout << PrgmName << " is writing to output file " << config.OutFile << endl;
+
          // RINEX output
       orfstr.open(config.OutRinexObs.c_str(), ios::out);
       if(!config.OutRinexObs.empty()) {
@@ -337,8 +346,8 @@ int ReadFile(int nfile) throw(Exception)
 }
 
 //------------------------------------------------------------------------------------
-// Return :
-//      <-1 fatal error,
+// Return : (return < -1 means fatal error)
+//       -2 time tags were out of order - fatal
 //       -1 end of file (or past end time limit),
 //        0 ok,
 //        1 skip this epoch : before begin time
@@ -348,11 +357,15 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
 {
    try {
       bool ok;
-      int i,j,k;
+      int i,j,k,iret;
       double dt;
-      string str,datastr;
+      //string str;
+      string datastr;
       GSatID sat;
-      SatPassData spd;
+      //SatPassData spd;
+      unsigned short flag;
+      vector<double> data;
+      vector<unsigned short> lli,ssi;
       RinexObsData::RinexObsTypeMap otmap;
       RinexObsData::RinexSatMap::iterator it;
       RinexObsData::RinexObsTypeMap::const_iterator jt;
@@ -394,41 +407,57 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
             // pull out the data and the SSI and LLI (indicators)
             // put all the indicators together in a string, then make it a long
             // order of the indicators: P1P2L1L2*ls   AaBbCcDd
-         str = string("00000000");
+         //str = string("00000000");
+         data = vector<double>(4,0.0);
+         lli = vector<unsigned short>(4,0);
+         ssi = vector<unsigned short>(4,0);
          otmap = it->second;
          if( (jt = otmap.find(rhead.obsTypeList[inP1])) != otmap.end()) {
-            spd.P1 = jt->second.data;
-            str[0] = (asString(jt->second.lli))[0];
-            str[1] = (asString(jt->second.ssi))[0];
+            //spd.P1 = jt->second.data;
+            //str[0] = (asString(jt->second.lli))[0];
+            //str[1] = (asString(jt->second.ssi))[0];
+            data[2] = jt->second.data;
+            lli[2] = jt->second.lli;
+            ssi[2] = jt->second.ssi;
          }
          if( (jt = otmap.find(rhead.obsTypeList[inP2])) != otmap.end()) {
-            spd.P2 = jt->second.data;
-            str[2] = (asString(jt->second.lli))[0];
-            str[3] = (asString(jt->second.ssi))[0];
+            //spd.P2 = jt->second.data;
+            //str[2] = (asString(jt->second.lli))[0];
+            //str[3] = (asString(jt->second.ssi))[0];
+            data[3] = jt->second.data;
+            lli[3] = jt->second.lli;
+            ssi[3] = jt->second.ssi;
          }
          if( (jt = otmap.find(rhead.obsTypeList[inL1])) != otmap.end()) {
-            spd.L1 = jt->second.data;
-            str[4] = (asString(jt->second.lli))[0];
-            str[5] = (asString(jt->second.ssi))[0];
+            //spd.L1 = jt->second.data;
+            //str[4] = (asString(jt->second.lli))[0];
+            //str[5] = (asString(jt->second.ssi))[0];
+            data[0] = jt->second.data;
+            lli[0] = jt->second.lli;
+            ssi[0] = jt->second.ssi;
          }
          if( (jt = otmap.find(rhead.obsTypeList[inL2])) != otmap.end()) {
-            spd.L2 = jt->second.data;
-            str[6] = (asString(jt->second.lli))[0];
-            str[7] = (asString(jt->second.ssi))[0];
+            //spd.L2 = jt->second.data;
+            //str[6] = (asString(jt->second.lli))[0];
+            //str[7] = (asString(jt->second.ssi))[0];
+            data[1] = jt->second.data;
+            lli[1] = jt->second.lli;
+            ssi[1] = jt->second.ssi;
          }
-         spd.indicators = asUnsigned(str);
+         //spd.indicators = asUnsigned(str);
 
             // is it good?
          ok = true;
-         if(spd.P1 < 1000.0 || spd.P2 < 1000.0) ok = false;
-         if(fabs(spd.L1) <= 0.001 || fabs(spd.L2) <= 0.001) ok = false;
-         spd.flag = (ok ? SatPass::OK : SatPass::BAD);
+         //if(spd.P1 < 1000.0 || spd.P2 < 1000.0) ok = false;
+         if(fabs(data[0]) <= 0.001 || fabs(data[1]) <= 0.001 ||
+            fabs(data[2]) <= 0.001 || fabs(data[3]) <= 0.001) ok = false;
+         flag = (ok ? SatPass::OK : SatPass::BAD);
 
             // process this sat
-         try { ProcessOneSatOneEpoch(sat, CurrEpoch, spd); }
-         catch(Exception& e) {
+         iret = ProcessOneSatOneEpoch(sat, CurrEpoch, flag, data, lli, ssi);
+         if(iret == -2) {
             config.oflog << "Error: time tags are out of order. Abort.\n";
-            return -3;
+            return -2;
          }
 
       }  // end loop over sats
@@ -455,21 +484,21 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
 
          // check times looking for passes that ought to be processed
       for(i=0; i<SPList.size(); i++) {
-         if(SPList[i].status > 1)
+         if(SPList[i].status() > 1)
             continue;                          // already processed
          if(SPList[i].includesTime(CurrEpoch))
             continue;                          // don't process yet
 
          ProcessSatPass(i);                    // ok, process this pass
-         if(!orfstr) SPList[i].status = 99;    // status == 99 means 'written out'
+         if(!orfstr) SPList[i].status() = 99;    // status == 99 means 'written out'
       }
 
       // try writing more data to output RINEX file
-      if(WriteASAP) {
+      if(config.WriteASAP) {
          WriteToRINEXfile();
          // gut passes that have 99
          //for(i=0; i<SPList.size(); i++) {
-         //   if(SPList[i].status != 99) continue;
+         //   if(SPList[i].status() != 99) continue;
          //   SPList[i].resize(0);
          //}
       }
@@ -483,11 +512,15 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
 }
 
 //------------------------------------------------------------------------------------
-int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, SatPassData& spd)
+//int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, SatPassData& spd)
+// return -2 if time tags are out of order,
+//         0 normal = data was added
+int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, unsigned short& flag,
+      vector<double>& data, vector<unsigned short>& lli, vector<unsigned short>& ssi)
    throw(Exception)
 {
    try {
-      int index;
+      int index,iret;
       map<GSatID,int>::const_iterator kt;
 
          // find the current SatPass for this sat
@@ -508,17 +541,19 @@ int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, SatPassData& spd)
          // get the index of this SatPass in the SPList vector
          // and add the data to that SatPass
       index = kt->second;
-      SPList[index].status = 1;                // status == 1 means 'fill'
-      if( SPList[index].push_back(tt,spd) )
-         return 0;
+      SPList[index].status() = 1;                // status == 1 means 'fill'
+      //if( SPList[index].push_back(tt,spd) )
+      iret = SPList[index].addData(tt, L1L2P1P2, data, lli, ssi, flag);
+      if(iret == -2) return -2;                 // time tags are out of order
+      if(iret >= 0) return 0;                   // data was added successfully
 
          // --- need to create a new pass ---
 
          // first process the old one
       ProcessSatPass(index);
       if(!orfstr)                         // not writing to RINEX
-         SPList[index].status = 99;       // status == 99 means 'written out'
-      else if(WriteASAP)
+         SPList[index].status() = 99;       // status == 99 means 'written out'
+      else if(config.WriteASAP)
          WriteToRINEXfile();              // try writing out
 
          // create a new SatPass for this sat
@@ -531,8 +566,9 @@ int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, SatPassData& spd)
          // and add it to the map
       SatToCurrentIndexMap[sat] = index;
          // add the data
-      SPList[index].status = 1;              // status == 1 means 'fill'
-      SPList[index].push_back(tt,spd);       // cannot fail
+      SPList[index].status() = 1;              // status == 1 means 'fill'
+      //SPList[index].push_back(tt,spd);       // cannot fail
+      SPList[index].addData(tt, L1L2P1P2, data, lli, ssi, flag);
 
       return 0;
 
@@ -559,10 +595,10 @@ void ProcessSatPass(int in) throw(Exception)
       vector<string> EditCmds;
       int iret = DiscontinuityCorrector(SPList[in], GDConfig, EditCmds);
       if(iret != 0) {
-         SPList[in].status = 100;         // status == 100 means 'failed'
+         SPList[in].status() = 100;         // status == 100 means 'failed'
          return;
       }
-      SPList[in].status = 2;              // status == 2 means 'processed'.
+      SPList[in].status() = 2;              // status == 2 means 'processed'.
 
       // --------- output editing commands ----------------
       for(int i=0; i<EditCmds.size(); i++)
@@ -570,8 +606,10 @@ void ProcessSatPass(int in) throw(Exception)
 
       // --------- smooth pseudorange and debias phase ----
       if(config.smooth) {
-         SPList[in].smooth(config.smoothPR,config.smoothPH,config.oflog);
-         SPList[in].status = 3;           // status == 3 means 'smoothed'.
+         string msg;
+         SPList[in].smooth(config.smoothPR,config.smoothPH,msg);
+         config.oflog << msg << endl;
+         SPList[in].status() = 3;           // status == 3 means 'smoothed'.
       }
 
       // status ==   0 means 'new'
@@ -606,10 +644,10 @@ int AfterReadingFiles(void) throw(Exception)
 
       // process all the passes that have not been processed yet
       for(int i=0; i<SPList.size(); i++) {
-         if(SPList[i].status <= 1) {
+         if(SPList[i].status() <= 1) {
             ProcessSatPass(i);
             if(!orfstr)                         // not writing out to RINEX
-               SPList[i].status = 99;           // status == 99 means 'written out'
+               SPList[i].status() = 99;         // status == 99 means 'written out'
          }
       }
 
@@ -632,6 +670,7 @@ int AfterReadingFiles(void) throw(Exception)
 // could be called anytime, particularly after each call to ProcessSatPass.
 void WriteToRINEXfile(void) throw(Exception)
 {
+   if(!orfstr) return;
    try {
       int in,n;
       DayTime targetTime=DayTime::END_OF_TIME;
@@ -640,15 +679,15 @@ void WriteToRINEXfile(void) throw(Exception)
       // find all passes that have been newly processed (status > 1 but < 98)
       // mark these passes 'being written out' and initialize the iterator
       for(in=0; in<SPList.size(); in++) {
-         if(SPList[in].status > 1 && SPList[in].status < 98) {
-            SPList[in].status = 98;       // status == 98 means 'being written out'
+         if(SPList[in].status() > 1 && SPList[in].status() < 98) {
+            SPList[in].status() = 98;       // status == 98 means 'being written out'
             SPIndexList[in] = 0;          // initialize iteration over the data array
          }
       }
 
       // find the earliest FirstTime of 'non-processed' (status==1) passes
       for(in=0; in<SPList.size(); in++) {
-         if(SPList[in].status == 1 && SPList[in].getFirstTime() < targetTime)
+         if(SPList[in].status() == 1 && SPList[in].getFirstTime() < targetTime)
             targetTime = SPList[in].getFirstTime();
       }
       // targetTime will == END_OF_TIME, when all passes have been processed
@@ -696,7 +735,8 @@ void WriteRINEXheader(void) throw(Exception)
 
          // fill records in output header
       rheadout.date = PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
-      rheadout.fileProgram = PrgmName;
+      rheadout.fileProgram = PrgmName + string(" v.") + PrgmVers.substr(0,4)
+         + string(",") + GDConfig.Version().substr(0,4);
       if(!config.HDRunby.empty()) rheadout.fileAgency = config.HDRunby;
       if(!config.HDObs.empty()) rheadout.observer = config.HDObs;
       if(!config.HDAgency.empty()) rheadout.agency = config.HDAgency;
@@ -706,7 +746,7 @@ void WriteRINEXheader(void) throw(Exception)
       rheadout.firstObs = config.FirstEpoch; rheadout.valid
          |= RinexObsHeader::firstTimeValid;
       rheadout.interval = config.dt; rheadout.valid |= RinexObsHeader::intervalValid;
-      if(!WriteASAP) {
+      if(!config.WriteASAP) {
          rheadout.interval = config.estdt[0];
          rheadout.valid |= RinexObsHeader::intervalValid;
          rheadout.lastObs = config.LastEpoch;
@@ -742,17 +782,18 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Excepti
    try {
       bool first;
       int in,n;
-      string str;
+      unsigned short flag;
+      //string str;
       GSatID sat;
       RinexObsData roe;
-      SatPassData spd;
+      //SatPassData spd;
 
       // loop over epochs, up to just before targetTime
       do {
             // find the next WriteEpoch = earliest iterator time among the status==98
          first = true;
          for(in=0; in<SPList.size(); in++) {
-            if(SPList[in].status != 98)     // status == 98 means 'being written out'
+            if(SPList[in].status() != 98)   // status == 98 means 'being written out'
                continue;
 
             n = SPIndexList[in];   // current iterator index
@@ -774,18 +815,19 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Excepti
 
             // output all data at this WriteEpoch
          for(in=0; in<SPList.size(); in++) {
-            if(SPList[in].status != 98) continue;
+            if(SPList[in].status() != 98) continue;
 
             sat = SPList[in].getSat();
             n = SPIndexList[in];   // current iterator index
 
             if(fabs(SPList[in].time(n) - WriteEpoch) < 0.00001) {
                   // get the data for this epoch
-               spd = SPList[in].getData(SPIndexList[in]);
-               str = asString(spd.indicators); // P1P2L1L2*ls   AaBbCcDd
-               str = rightJustify(str,8,'0');
+               //spd = SPList[in].getData(SPIndexList[in]);
+               //str = asString(spd.indicators); // P1P2L1L2*ls   AaBbCcDd
+               //str = rightJustify(str,8,'0');
 
-					if(spd.flag > 0) {                           // data is good
+					flag = SPList[in].getFlag(SPIndexList[in]);
+					if(flag != SatPass::BAD) {                // data is good
                      // add sat to RinexObs
                   RinexObsData::RinexObsTypeMap rotm;
                   roe.obs[sat] = rotm;
@@ -794,43 +836,43 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Excepti
                	// build the RINEX data object
                	RinexObsData::RinexDatum rd;
 
-               	rd.lli = asInt(asString<char>(str[0]));
-               	rd.ssi = asInt(asString<char>(str[1]));
-               	rd.data = spd.P1;
+               	rd.lli = SPList[in].LLI(SPIndexList[in],P1);
+               	rd.ssi = SPList[in].SSI(SPIndexList[in],P1);
+               	rd.data = SPList[in].data(SPIndexList[in],P1);
                	if(UsingCA)
                   	roe.obs[sat][RinexObsHeader::C1] = rd;
                	else
                   	roe.obs[sat][RinexObsHeader::P1] = rd;
 
-               	rd.lli = asInt(asString<char>(str[2]));
-               	rd.ssi = asInt(asString<char>(str[3]));
-               	rd.data = spd.P2;
+               	rd.lli = SPList[in].LLI(SPIndexList[in],P2);
+               	rd.ssi = SPList[in].SSI(SPIndexList[in],P2);
+               	rd.data = SPList[in].data(SPIndexList[in],P2);
                	roe.obs[sat][RinexObsHeader::P2] = rd;
 
                	//rd.lli = asInt(asString<char>(str[4]));
                   // TD ought to set the low bit
-						rd.lli = (spd.flag & SatPass::LL1)!=0 ? 1 : 0;
-               	rd.ssi = asInt(asString<char>(str[5]));
-               	rd.data = spd.L1;
+						rd.lli = (flag & SatPass::LL1) != 0 ? 1 : 0;
+               	rd.ssi = SPList[in].SSI(SPIndexList[in],L1);
+               	rd.data = SPList[in].data(SPIndexList[in],L1);
                	roe.obs[sat][RinexObsHeader::L1] = rd;
 
                	//rd.lli = asInt(asString<char>(str[6]));
-						rd.lli = (spd.flag & SatPass::LL2)!=0 ? 1 : 0;
-               	rd.ssi = asInt(asString<char>(str[7]));
-               	rd.data = spd.L2;
+						rd.lli = (flag & SatPass::LL2) != 0 ? 1 : 0;
+               	rd.ssi = SPList[in].SSI(SPIndexList[in],L2);
+               	rd.data = SPList[in].data(SPIndexList[in],L2);
                	roe.obs[sat][RinexObsHeader::L2] = rd;
 
                	config.oflog << "Out "
                	   << WriteEpoch.printf(config.format)
                	   << " " << roe.time.printf(config.format)
                	   << " " << sat
-               	   << " " << spd.flag
-               	   << " " << setw(3) << spd.ndt     // count
+               	   << " " << flag
+               	   << " " << setw(3) << SPList[in].getCount(SPIndexList[in])
                	   << fixed << setprecision(3)
-               	   << " " << setw(13) << spd.P1
-               	   << " " << setw(13) << spd.P2
-               	   << " " << setw(13) << spd.L1
-               	   << " " << setw(13) << spd.L2
+               	   << " " << setw(13) << SPList[in].data(SPIndexList[in],P1)
+               	   << " " << setw(13) << SPList[in].data(SPIndexList[in],P2)
+               	   << " " << setw(13) << SPList[in].data(SPIndexList[in],L1)
+               	   << " " << setw(13) << SPList[in].data(SPIndexList[in],L2)
                	   << endl;
 					}
 
@@ -839,7 +881,7 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Excepti
 
                   // end of data?
                if(SPIndexList[in] >= SPList[in].size())
-                  SPList[in].status = 99;        // status == 99 means 'written out'
+                  SPList[in].status() = 99;        // status == 99 means 'written out'
             }
          }
 
@@ -860,7 +902,7 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Excepti
 }
 
 //------------------------------------------------------------------------------------
-void PrintSPList(ostream& os, string msg, const vector<SatPass>& v, bool printTime)
+void PrintSPList(ostream& os, string msg, vector<SatPass>& v, bool printTime)
 {
    int i,j,gap;
    GSatID sat;
@@ -901,6 +943,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    bool help=false,DChelp=false,DChelpall=false;
    int i,j;
       // defaults
+   config.WriteASAP = true;   // this is not in the input...
    config.verbose = false;
    config.ith = 0.0;
    config.begTime = DayTime(DayTime::BEGINNING_OF_TIME);
@@ -1373,7 +1416,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
          << config.endTime.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
          << " = " << config.endTime.printf("%04F/%10.3g") << endl;
    if(config.UseCA) config.oflog << " 'Use the C/A pseudorange' flag is set\n";
-   else config.oflog << "Do not use C/A code range (C1) unless P1 is absent\n";
+   else config.oflog << " Do not use C/A code range (C1) unless P1 is absent\n";
    config.oflog << " dt is set to " << config.dt << " seconds." << endl;
    config.oflog << " Max gap is " << config.MaxGap << " seconds which is "
       << int(config.MaxGap/config.dt) << " points." << endl;

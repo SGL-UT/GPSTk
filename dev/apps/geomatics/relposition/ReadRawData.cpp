@@ -64,24 +64,29 @@ using namespace gpstk;
 static DayTime EarliestTime;// earliest timetag among newly-input observation epochs
 static int ngood;           // number of good data points, this epoch
 static double sow;          // GPS seconds of week of current epoch
-ofstream ofprs;             // output file for PRS solution - extern in ComputeRAIM..
+ofstream ofprs;             // output file for PRS solution
+ofstream *pofs=NULL;        // pointer to output file stream (&ofprs)
 
 //------------------------------------------------------------------------------------
 // prototypes -- others
-int OutputClockData(void);                                  // DataIO.cpp
-int ReadNextObs(ObsFile& of);                               // ReadObsFiles.cpp
-int ProcessRawData(ObsFile& obsfile, DayTime& timetag);     // ProcessRawData.cpp
+int OutputClockData(void) throw(Exception);              // DataOutput.cpp
+int ReadNextObs(ObsFile& of) throw(Exception);           // ReadObsFiles.cpp
+int ProcessRawData(ObsFile& obsfile, DayTime& timetag, ofstream *pofs)
+   throw(Exception);                                     // ProcessRawData.cpp
 // prototypes -- this module only
-int FindEarliestTime(void);
-void ComputeSolutionEpoch(void);
+int FindEarliestTime(void) throw(Exception);
+void ComputeSolutionEpoch(void) throw(Exception);
 
 //------------------------------------------------------------------------------------
-int ReadRawData(void)
+int ReadAndProcessRawData(void) throw(Exception)
 {
 try {
    int iret,nfile,ntotal;
 
-   if(CI.Verbose) oflog << "BEGIN ReadRawData()" << endl;
+   if(CI.Verbose) oflog << "BEGIN ReadAndProcessRawData()"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
    if(CI.Screen) cout << "Reading raw data and computing PR solution ..." << endl;
 
    if(!CI.OutputPRSFile.empty()) {
@@ -98,6 +103,7 @@ try {
                //<< "    (ret) Valid/NotValid"
                << endl;
       }
+      pofs = &ofprs;
    }
 
       // loop over all epochs in all files
@@ -106,7 +112,8 @@ try {
          // find earliest time among open, active files, and synchronize reading
       iret = FindEarliestTime();
       if(iret == 1) {
-         if(CI.Debug) oflog << "End of data reached in ReadRawData." << endl;
+         if(CI.Debug) oflog << "End of data reached in ReadAndProcessRawData."
+            << endl;
          iret = 0;
          break;
       }
@@ -137,12 +144,14 @@ try {
          if(fabs(ObsFileList[nfile].Robs.time - EarliestTime) >= 0.5) continue;
 
             // process at the nominal receive time
-         iret = ProcessRawData(ObsFileList[nfile],ObsFileList[nfile].Robs.time);
+         iret = ProcessRawData(ObsFileList[nfile],ObsFileList[nfile].Robs.time,pofs);
          if(iret) break;
 
       }  // end loop over observation files
 
    } while(iret == 0);       // end loop over all epochs
+
+   if(!CI.OutputPRSFile.empty()) ofprs.close();
 
    if(iret) return iret;
 
@@ -268,11 +277,11 @@ try {
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}   // end ReadRawData()
+}   // end ReadAndProcessRawData()
 
 //------------------------------------------------------------------------------------
 // read the data for the next (earliest in future) observation epoch
-int FindEarliestTime(void)
+int FindEarliestTime(void) throw(Exception)
 {
 try {
    int iret,nfile;
@@ -324,7 +333,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void ComputeSolutionEpoch(void)
+void ComputeSolutionEpoch(void) throw(Exception)
 {
 try {
    double dt;

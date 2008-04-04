@@ -21,7 +21,6 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
-
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
@@ -44,7 +43,6 @@
 //------------------------------------------------------------------------------------
 // TD CommandInput.cpp need baseline identifier to Tight and Loose cmds
 // TD CommandInput.cpp test reasonableness of input station positions
-
 //------------------------------------------------------------------------------------
 // includes
 // system
@@ -60,12 +58,13 @@
 //------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // local data
 
 //------------------------------------------------------------------------------------
-void CommandInput::SetDefaults()
+void CommandInput::SetDefaults() throw(Exception)
 {
 try {
    Debug = false;
@@ -85,6 +84,12 @@ try {
    EndTime = DayTime::END_OF_TIME;
       // process configuration
    Frequency = 1;
+      // stochastic model
+   StochasticModel = string("cos2");      // cos, cos2, SNR
+//#ifdef StochasticModelTest
+//   SNRmax =  6.0;                         // dB-Hz
+//   SNRatt = 0.294;                        // 0 <= SNRatt <= 1
+//#endif // StochasticModelTest
       // for pseudorange solution
    PRSrmsLimit = 6.5;                     // this is the PRSolution() default
    PRSalgebra = false;
@@ -120,6 +125,7 @@ try {
    DefaultPress = 1010.0;                 // mbars at sea level
    DefaultRHumid = 50.0;                  // %
       // output
+   OutPath = string("");
    OutputClkFile = string("");
    OutputDDDFile = string("");
    OutputTDDFile = string("");
@@ -134,11 +140,12 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int CommandInput::GetCmdInput(int argc, char **argv)
+int CommandInput::GetCmdInput(int argc, char **argv) throw(Exception)
 {
 try {
    help = false;
    int i,j;
+   double tmp;
    string msg;
    vector<string> values,field;
 
@@ -154,8 +161,8 @@ try {
 
    // this is here only so it will show up in the help msg...
    CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-      'f',"","\n -f<file>              Name of file containing more options"
-      " ('#' to EOL : comment)");
+      'f',"","\n [-f|--file] <file>    Name of file containing more options"
+      " [repeatable, #->comment] ()");
 
    // log file
    CommandOption dashl(CommandOption::hasArgument, CommandOption::stdType,
@@ -166,70 +173,71 @@ try {
    // observation
    CommandOption dashop(CommandOption::hasArgument, CommandOption::stdType,
       0,"ObsPath",
-      "\n# Observations:\n --ObsPath <path>      Path for input obs file(s) (.)");
+      "\n# Observations:\n --ObsPath <path>      Path for input obs file(s) ()");
    dashop.setMaxCount(1);
 
    CommandOption dashof(CommandOption::hasArgument, CommandOption::stdType,
-      0,"ObsFile"," --ObsFile <name,id>   Rinex observation file name(s),"
-      " followed by a station label.");
+      0,"ObsFile"," --ObsFile <name,id>   RINEX obs file name,"
+      " and station label [repeatable] ()");
 
    // ephemeris
    CommandOption dashnp(CommandOption::hasArgument, CommandOption::stdType, 0,
       "NavPath","# Ephemeris and Earth orientation:\n"
-      " --NavPath <dir>       Path of navigation file(s) (.)");
+      " --NavPath <dir>       Path of navigation file(s) ()");
    dashnp.setMaxCount(1);
 
    CommandOption dashnf(CommandOption::hasArgument, CommandOption::stdType,
-      0,"NavFile"," --NavFile <file>      Navigation (Rinex Nav OR SP3) file(s)");
+      0,"NavFile"," --NavFile <file>      Navigation (RINEX nav OR SP3) "
+      "file name [repeatable] ()");
 
    // earth orientation
    CommandOption dashep(CommandOption::hasArgument, CommandOption::stdType, 0,
       "EOPPath"," --EOPPath <dir>       "
-      "Path of earth orientation file(s)");
+      "Path of earth orientation file(s) ()");
    dashep.setMaxCount(1);
 
    CommandOption dashef(CommandOption::hasArgument, CommandOption::stdType,
       0,"EOPFile"," --EOPFile <file>      "
-      "Earth orientation parameter (EOPP or IERS format) file(s).\n"
+      "Earth orientation parameter (EOPP or IERS format) file [repeatable].\n"
       "                        If no EOP file is given, DDBase will search "
-      "for the IERS\n                        format file 'finals.daily' in the "
-      "current directory.");
+      "for a default IERS\n                        format file in the "
+      "current directory.] (finals.daily)");
 
    // station configuration
    CommandOption dashXYZ(CommandOption::hasArgument, CommandOption::stdType,
       0,"PosXYZ",
-      "\n# Station configuration [--Pos.. (1 only) MUST be given for each site]:\n"
-      " --PosXYZ <X,Y,Z,id>   Station position in ECEF coordinates (m),\n"
-      "                         followed by a label identifying the station.");
+      "\n# Station configuration   [--Pos.. (1 only) MUST be given for each site]:\n"
+      " --PosXYZ <X,Y,Z,id>   Station position in ECEF coordinates in m,\n"
+      "                         followed by a label identifying the station. ()");
 
    CommandOption dashLLH(CommandOption::hasArgument, CommandOption::stdType,
       0,"PosLLH"," --PosLLH <La,Lo,H,id> Station position in geodetic coordinates:\n"
-      "                         Latitude(deg),Longitude(E,deg),Height(m),label");
+      "                         Latitude(deg),Longitude(E,deg),Height(m),label ()");
 
    CommandOption dashPRS(CommandOption::hasArgument, CommandOption::stdType,
       0,"PosPRS"," --PosPRS <id>         Let position of station labelled <id> be set"
       " to the computed\n                         average pseudorange solution"
-      " for that site.");
+      " for that site. ()");
 
    CommandOption dashtrop(CommandOption::hasArgument, CommandOption::stdType,
       0,"TropModel"," --TropModel <trop,id> Use trop model <trop> for station <id>, "
       "choices are: 'Zero',\n                        'Black','NewB','ModHop',"
-      "'ModHopH','Saas' (Saas) [cf. GPSTk]");
+      "'ModHopH','Saas' [cf. GPSTk] (Saas)");
 
    msg = string(
       " --Weather <T,P,H,id>  Weather parameters: Temperature(degC),Pressure(mbar),\n"
       "                         Humidity(%), followed by a label identifying the\n"
       "                         station. ("
-            + StringUtils::asString(CI.DefaultTemp,1) + string(",")
-            + StringUtils::asString(CI.DefaultPress,2) + string(",")
-            + StringUtils::asString(CI.DefaultRHumid,1) + string(")")
+            + asString(CI.DefaultTemp,1) + string(",")
+            + asString(CI.DefaultPress,2) + string(",")
+            + asString(CI.DefaultRHumid,1) + string(")")
       );
    CommandOption dashWx(CommandOption::hasArgument, CommandOption::stdType,
       0,"Weather",msg);
 
    CommandOption dashfix(CommandOption::hasArgument, CommandOption::stdType,
       0,"Fix"," --Fix <id>            Hold the station <id> fixed "
-      "in estimation (don't)");
+      "in estimation [repeatable] (don't)");
 
    //CommandOption dashant(CommandOption::hasArgument, CommandOption::stdType,
    //   0,"AntAz"," --AntAz <angle,id>    "
@@ -237,17 +245,17 @@ try {
 
    // configuration
    CommandOptionNoArg dashnoest(0, "noEstimate", "\n# Configuration:\n"
-      " --noEstimate          Quit before performing the estimation.");
+      " --noEstimate          Quit before performing the estimation. (don't)");
    dashnoest.setMaxCount(1);
 
    CommandOption dashfreq(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Freq"," --Freq <L1|L2|L3>     Process L1, L2 or L3(L1+L2) frequency data"
-      " (L3 not validated)");
+      0,"Freq"," --Freq <L1|L2|L3>     Process L1, L2 or L3 [L1+L2] frequency data"
+      " [L3 not validated] (L1)");
    dashfreq.setMaxCount(1);
 
    CommandOption dashnit(CommandOption::hasArgument, CommandOption::stdType,
       0,"nIter"," --nIter <n>           Maximum number of estimation iterations ("
-      + StringUtils::asString(nIter) + ")");
+      + asString(nIter) + ")");
    dashnit.setMaxCount(1);
 
    {
@@ -256,117 +264,135 @@ try {
       msg = oss.str();
    }
    CommandOption dashconv(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Converge"," --Converge <cl>       Convergence limit on RSS change in state ("
-      + msg + " m)");
+      0,"Converge"," --Converge <cl>       Convergence limit on RSS change in state "
+      "in meters (" + msg + ")");
    dashconv.setMaxCount(1);
 
    CommandOptionNoArg dashfixbias(0, "FixBiases", " --FixBiases           "
-      "Perform an extra, last iteration that fixes the phase biases");
+      "Perform an extra, last iteration that fixes the phase biases (don't)");
    dashfixbias.setMaxCount(1);
 
-   // state model
+   // state
    CommandOption dashntrop(CommandOption::hasArgument, CommandOption::stdType,
-      0,"RZDnIntervals","\n# State model, a priori constraints:\n"
+      0,"RZDnIntervals","\n# Model, state elements, a priori constraints:\n"
       " --RZDnIntervals <n>   Number of (equal time) residual zenith delay "
-      "intervals (" + StringUtils::asString(NRZDintervals) + ")\n"
-      "                         (enter 0 to turn off estimation of RZD)");
+      "intervals (" + asString(NRZDintervals) + ")\n"
+      "                         [enter 0 to turn off estimation of RZD]");
    dashntrop.setMaxCount(1);
    
    CommandOption dashttrop(CommandOption::hasArgument, CommandOption::stdType,
       0,"RZDtimeconst",
-      " --RZDtimeconst <tau>  Time constant (hours) for multiple RZD intervals ("
-      + StringUtils::asString(RZDtimeconst,2) + ")");
+      " --RZDtimeconst <tau>  Time constant in hours for multiple RZD intervals ("
+      + asString(RZDtimeconst,2) + ")");
    dashttrop.setMaxCount(1);
    
    CommandOption dashstrop(CommandOption::hasArgument, CommandOption::stdType,
       0,"RZDsigma",
-      " --RZDsigma <sig>      A priori sigma (m) for residual zenith delay ("
-      + StringUtils::asString(RZDsigma,2) + ")");
+      " --RZDsigma <sig>      A priori sigma in m for residual zenith delay ("
+      + asString(RZDsigma,2) + ")");
    dashstrop.setMaxCount(1);
    
-   // TD need baseline identifier: --Tight <id,id,ppm>. also Loose
+   // TD need baseline identifier: --Tight <id,id,ppm>. also for Loose
    CommandOption dashtight(CommandOption::hasArgument, CommandOption::stdType,
       0,"Tight"," --Tight <ppm>         Tight a priori constraint, a fraction "
-      "of baseline (" + StringUtils::asString(TightConstraint,4) + ")");
+      "of baseline (" + asString(TightConstraint,4) + ")");
    dashtight.setMaxCount(1);
 
    CommandOption dashloose(CommandOption::hasArgument, CommandOption::stdType,
       0,"Loose"," --Loose <ppm>         Loose a priori constraint, a fraction "
-      "of baseline ("+StringUtils::asString(LooseConstraint,1)+")");
+      "of baseline (" + asString(LooseConstraint,1)+")");
    dashloose.setMaxCount(1);
 
    // times - don't use CommandOptionWithTimeArg
    CommandOption dashbt(CommandOption::hasArgument, CommandOption::stdType,
       0,"BeginTime",
-      "\n# Time limits:\n --BeginTime <arg>     Start time: arg is "
-      "'GPSweek,sow' OR 'YYYY,MM,DD,HH,Min,Sec'");
+      "\n# Time limits:\n --BeginTime <arg>     Start time: arg = "
+      "'GPSweek,sow' OR 'YYYY,M,D,H,Min,Sec' ()");
    dashbt.setMaxCount(1);
 
    CommandOption dashet(CommandOption::hasArgument, CommandOption::stdType,
       0,"EndTime",
-      " --EndTime <arg>       End time: arg is 'GPSweek,sow' OR "
-      "'YYYY,MM,DD,HH,Min,Sec'");
+      " --EndTime <arg>       End time: arg = 'GPSweek,sow' OR "
+      "'YYYY,M,D,H,Min,Sec' ()");
    dashet.setMaxCount(1);
 
    // time table(s)
    CommandOption dashttab(CommandOption::hasArgument, CommandOption::stdType,
       0,"TimeTable","\n# Satellite time table:\n"
-      " --TimeTable <file>    Time table file name (if this option does not appear"
+      " --TimeTable <file>    Time table file name [if this option does not appear"
       "\n                          a time table will be computed and output to log"
-      " file)");
+      " file] ()");
    dashttab.setMaxCount(1);
 
    CommandOption dashRef(CommandOption::hasArgument, CommandOption::stdType, 0,
       "Ref", " --Ref <sat>           Use <sat> as 'reference' "
-      "in DDs; don't use a timetable");
+      "in DDs; don't use a timetable ()");
    dashRef.setMaxCount(1);
    
    // data editing
    CommandOption dashelev(CommandOption::hasArgument, CommandOption::stdType,
       0,"MinElev","\n# Data editing:\n --MinElev <elev>      Ignore data "
       "below elevation <elev> degrees, DDs only ("
-      + StringUtils::asString(MinElevation,2) + ")");
+      + asString(MinElevation,2) + ")");
    dashelev.setMaxCount(1);
 
    CommandOption dashrotelev(CommandOption::hasArgument, CommandOption::stdType,
       0,"AntRotElev"," --AntRotElev <elev>   Apply MinElev to antenna rotated "
-      "in elevation by <elev> deg.");
+      "in elevation by <elev> deg. ()");
    dashrotelev.setMaxCount(1);
 
    CommandOption dashrotaz(CommandOption::hasArgument, CommandOption::stdType,
       0,"AntRotAz"," --AntRotAz <az>       Apply MinElev to antenna rotated "
-      "in azimuth by <az> deg.");
+      "in azimuth by <az> deg. ()");
    dashrotaz.setMaxCount(1);
 
    CommandOption dashgap(CommandOption::hasArgument, CommandOption::stdType, 0,
-      "MaxGap"," --MaxGap              Maximum acceptable gap in data "
-      "[number of --DT intervals] (" + StringUtils::asString(MaxGap) + ")\n"
-      "                          [Used in raw data editing and synchronization]");
+      "MaxGap"," --MaxGap <n>          Maximum acceptable gap in data "
+      "[number of --DT intervals] (" + asString(MaxGap) + ")");
    dashgap.setMaxCount(1);
 
    CommandOption dashmindd(CommandOption::hasArgument, CommandOption::stdType, 0,
-      "MinDDSeg"," --MinDDSeg            Minimum acceptable length of DD data segment"
-      " (" + StringUtils::asString(MinDDSeg) + ")");
+      "MinDDSeg"," --MinDDSeg <n>        Minimum acceptable length of DD data segment"
+      " (" + asString(MinDDSeg) + ")");
    dashmindd.setMaxCount(1);
 
    CommandOption dashphbias(CommandOption::hasArgument, CommandOption::stdType, 0,
-      "PhaseBiasReset"," --PhaseBiasReset      Limit on pt-to-pt change in pha"
-      "se without reset, in cycles (" + StringUtils::asString(PhaseBiasReset) + ")");
+      "PhaseBiasReset"," --PhaseBiasReset <n>  Limit on pt-to-pt change in pha"
+      "se without reset, in cycles (" + asString(PhaseBiasReset) + ")");
    dashphbias.setMaxCount(1);
 
    CommandOption dashXsat(CommandOption::hasArgument, CommandOption::stdType, 0,
-      "XSat", " --XSat <sat>          Exclude this satellite ()");
+      "XSat", " --XSat <sat>          Exclude this satellite [repeatable] ()");
 
    CommandOption dashDT(CommandOption::hasArgument, CommandOption::stdType, 0,
-      "DT"," --DT <t>              Data time interval in sec [will also decimate"
-      " input data]");
+      "DT"," --DT <t>              Data time interval in sec, or decimate input data"
+      " [REQUIRED] ()");
    dashDT.setMaxCount(1);
+
+//#ifdef StochasticModelTest
+//   // stochastic model
+//   CommandOption dashstoch(CommandOption::hasArgument, CommandOption::stdType,
+//      0,"Stochastic","\n# Stochastic model configuration:\n"
+//      " --Stochastic <sm>     Stochastic model; choices are "
+//      "'cos','cos2','SNR' (" + StochasticModel + ")");
+//   dashstoch.setMaxCount(1);
+//
+//   CommandOption dashSNRmax(CommandOption::hasArgument, CommandOption::stdType, 0,
+//      "SNRmax"," --SNRmax <s>          SNR stochastic model: Maximum delta SNR "
+//      "in dB-Hz (" + asString(CI.SNRmax,1) + ")");
+//   dashSNRmax.setMaxCount(1);
+//
+//   CommandOption dashSNRatt(CommandOption::hasArgument, CommandOption::stdType, 0,
+//      "SNRatten"," --SNRatten <a>        SNR stochastic model: Effective attenuation "
+//      "[0<=a<=1] (" + asString(CI.SNRatt,3) + ")");
+//   dashSNRatt.setMaxCount(1);
+//#endif // StochasticModelTest
 
    // pseudorange solution
    CommandOption dashprsnit(CommandOption::hasArgument, CommandOption::stdType,
       0,"PRSniter","\n# Pseudorange solution (PRS) configuration:\n"
       " --PRSniter <n>        PRS: Limit on number of iterations ("
-      + StringUtils::asString(PRSnIter) + ")");
+      + asString(PRSnIter) + ")");
    dashprsnit.setMaxCount(1);
 
    {
@@ -376,33 +402,32 @@ try {
    }
    CommandOption dashprscon(CommandOption::hasArgument, CommandOption::stdType,
       0,"PRSconverge",
-      " --PRSconverge <cl>    PRS: Convergence limit (m) (" + msg + ")");
+      " --PRSconverge <cl>    PRS: Convergence limit in m (" + msg + ")");
    dashprscon.setMaxCount(1);
 
    CommandOption dashprsrms(CommandOption::hasArgument, CommandOption::stdType,
       0,"PRSrmsLimit",
-      " --PRSrmsLimit <rms>   PRS: RMS residual limit (m) ("
-      + StringUtils::asString(PRSrmsLimit,2) + ")");
+      " --PRSrmsLimit <rms>   PRS: RMS residual limit in m ("
+      + asString(PRSrmsLimit,2) + ")");
    dashprsrms.setMaxCount(1);
 
-   CommandOption dashprsalg(CommandOption::hasArgument, CommandOption::stdType,
-      0,"PRSalgebra",
+   CommandOptionNoArg dashprsalg(0,"PRSalgebra",
       " --PRSalgebra          PRS: Use algebraic algorithm (don't)");
    dashprsalg.setMaxCount(1);
 
    CommandOption dashprselev(CommandOption::hasArgument, CommandOption::stdType,
       0,"PRSMinElev"," --PRSMinElev <elev>   PRS: Reject data below elevation "
       "<elev> degrees ("
-      + StringUtils::asString(PRSMinElevation,2) + ")");
+      + asString(PRSMinElevation,2) + ")");
    dashprselev.setMaxCount(1);
 
-   //dont CommandOptionNoArg dashnoprs(0, "noPRS",
-      //dont " --noPRS               Skip the pseudorange solution (!)");
-   //dont dashnoprs.setMaxCount(1);
+   // output files
+   CommandOption dashoutp(CommandOption::hasArgument, CommandOption::stdType, 0,
+      "OutPath","\n# Output files:\n --OutPath <dir>       Path for output files ()");
+   dashoutp.setMaxCount(1);
 
-   // output flags
    CommandOption dashrawout(CommandOption::hasArgument, CommandOption::stdType,
-      0,"RAWFileOut","\n# Output files:\n --RAWFileOut <file>   "
+      0,"RAWFileOut"," --RAWFileOut <file>   "
       "Filename for output of raw data ()");
    dashrawout.setMaxCount(1);
 
@@ -438,22 +463,23 @@ try {
 
    CommandOption dashbaseout(CommandOption::hasArgument, CommandOption::stdType,
       0,"BaseOut","\n# Output misc:\n --BaseOut <id-id,x,y,z> Baseline to output;"
-      " <id>s are station labels, '-' is\n                          "
-      "required, <x,y,z> are optional baseline coordinates.");
+      " <id>s are station labels, '-' is\n                          required, "
+      "<x,y,z> are optional baseline coordinates\n                          "
+      "for comparison [repeatable] ()");
 
    CommandOptionNoArg dashvalid('0', "validate",
-         " --validate            Read input and validate it, then quit.");
+      " --validate            Read input and validate it, then quit (don't)");
    dashvalid.setMaxCount(1);
 
    CommandOptionNoArg dashv('v', "verbose",
-         " --verbose             (also -v) print extended output info.");
+      " --verbose             (also -v) print extended output info (don't)");
 
    CommandOptionNoArg dashd('d', "debug",
-         " --debug               (also -d) print very extended output info "
-         "(for developers).");
+      " --debug               (also -d) print very extended output info "
+      "[developers only] (don't)");
 
    CommandOptionNoArg dashh('h', "help",
-         " --help                (also -h) print this help message and quit.");
+      " --help                (also -h) print this help message and quit (don't)");
 
    // ... other options
    CommandOptionRest Rest("");
@@ -467,8 +493,8 @@ try {
    // PreProcessArgs pulls out help, Debug, Verbose
    vector<string> Args;
    for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
-   argc = Args.size();
-   if(argc==0)
+
+   if(Args.size()==0)
       help = true;
 
       // pass the rest
@@ -494,7 +520,7 @@ try {
    // check for errors on the command line
    // hasErrors() returns invalid commands
    // Rest contains things not recognized
-   if (Par.hasErrors() || Rest.getCount()) {
+   if(Par.hasErrors() || Rest.getCount()) {
       cerr << "\nErrors found in command line input:\n";
       if(Par.hasErrors()) Par.dumpErrors(cerr);
       if(Rest.getCount()) {
@@ -510,9 +536,10 @@ try {
    if(help) {
       Par.displayUsage(cout,false);
       cout << endl;
-   }
 
-   if(help && argc > 1) cout << endl << "--------- parsed input:" << endl;
+      if(argc > 1) cout << endl << "--------- parsed input:" << endl;
+      else return -99;
+   }
 
    // --------------------------------------------------------------------------------
    // pull out the parsed input
@@ -567,18 +594,30 @@ try {
    else EOPPath = string("");
 
    // files
-   // obs
+   // RINEX obs
    if(dashof.getCount()) {
       values = dashof.getValue();
       for(i=0; i<values.size(); i++) {
          field.clear();
          while(values[i].size() > 0)
-            field.push_back(StringUtils::stripFirstWord(values[i],','));
+            field.push_back(stripFirstWord(values[i],','));
          if(field.size() < 2) {
-            oflog << "Error: no label in --obsfile input: " << values[i] << endl;
-            cerr << "Error: no label in --obsfile input: " << values[i] << endl;
+            oflog << "Error: no label in --ObsFile input: " << values[i]
+               << ". Ignore." << endl;
+            cerr << "Error: no label in --ObsFile input: " << values[i]
+               << ". Ignore." << endl;
             continue;
          }
+         // first decide if this filename has been seen before...if so, error
+         for(j=0; j<ObsFileList.size(); j++)
+            if(ObsFileList[j].name == field[0]) {
+               oflog << "Error: duplicated obs file name: " << field[0]
+                  << ". Ignore." << endl;
+               cerr << "Error: duplicated obs file name: " << field[0]
+                  << ". Ignore." << endl;
+               continue;
+            }
+         // this adds the station name to the list of stations
          Station& st=findStationInList(Stations,field[1]);
          // create new ObsFile and add to list
          ObsFile of;
@@ -619,7 +658,7 @@ try {
       for(i=0; i<values.size(); i++) {
          field.clear();
          while(values[i].size() > 0)
-            field.push_back(StringUtils::stripFirstWord(values[i],','));
+            field.push_back(stripFirstWord(values[i],','));
          if(field.size() < 4) {
             oflog << "Error: less than four fields in --PosXYZ input: "
                << values[i] << endl;
@@ -628,9 +667,7 @@ try {
             continue;
          }
          Station& st=findStationInList(Stations,field[3]);
-         Position p(StringUtils::asDouble(field[0]),
-                    StringUtils::asDouble(field[1]),
-                    StringUtils::asDouble(field[2]));
+         Position p(asDouble(field[0]), asDouble(field[1]), asDouble(field[2]));
          st.pos = p;
          if(help) cout << " Input: XYZ for station " << field[3] << ":"
             << " " << field[0] << " " << field[1] << " " << field[2] << endl;
@@ -641,7 +678,7 @@ try {
       for(i=0; i<values.size(); i++) {
          field.clear();
          while(values[i].size() > 0)
-            field.push_back(StringUtils::stripFirstWord(values[i],','));
+            field.push_back(stripFirstWord(values[i],','));
          if(field.size() < 4) {
             oflog << "Error: less than four fields in --PosLLH input: "
                << values[i] << endl;
@@ -651,9 +688,7 @@ try {
          }
          Station& st=findStationInList(Stations,field[3]);
          Position p;
-         p.setGeodetic(StringUtils::asDouble(field[0]),
-                       StringUtils::asDouble(field[1]),
-                       StringUtils::asDouble(field[2]));
+         p.setGeodetic(asDouble(field[0]), asDouble(field[1]), asDouble(field[2]));
          st.pos = p;
          if(help) cout << " Input: LLH for station " << field[3] << ":"
             << " " << field[0] << " " << field[1] << " " << field[2] << endl;
@@ -663,7 +698,7 @@ try {
       values = dashPRS.getValue();
       for(i=0; i<values.size(); i++) {
          field.clear();
-         field.push_back(StringUtils::stripFirstWord(values[i],','));
+         field.push_back(stripFirstWord(values[i],','));
          Station& st=findStationInList(Stations,field[0]);
          st.usePRS = true;
          if(help) cout << " Input: pos for station " << field[0]
@@ -675,7 +710,7 @@ try {
       for(i=0; i<values.size(); i++) {
          field.clear();
          while(values[i].size() > 0)
-            field.push_back(StringUtils::stripFirstWord(values[i],','));
+            field.push_back(stripFirstWord(values[i],','));
          if(field.size() < 2) {
             oflog << "Error: less than two fields in --TropModel input: "
                << values[i] << endl;
@@ -694,7 +729,7 @@ try {
       for(i=0; i<values.size(); i++) {
          field.clear();
          while(values[i].size() > 0)
-            field.push_back(StringUtils::stripFirstWord(values[i],','));
+            field.push_back(stripFirstWord(values[i],','));
          if(field.size() < 4) {
             oflog << "Error: less than four fields in --Weather input: "
                << values[i] << endl;
@@ -703,9 +738,9 @@ try {
             continue;
          }
          Station& st=findStationInList(Stations,field[3]);
-         st.temp = StringUtils::asDouble(field[0]);
-         st.press = StringUtils::asDouble(field[1]);
-         st.rhumid = StringUtils::asDouble(field[2]);
+         st.temp = asDouble(field[0]);
+         st.press = asDouble(field[1]);
+         st.rhumid = asDouble(field[2]);
 
          if(help) cout << " Weather input for station " << field[3] << ":"
             << " " << field[0] << " " << field[1] << " " << field[2] << endl;
@@ -724,14 +759,14 @@ try {
    //   for(i=0; i<values.size(); i++) {
    //      field.clear();
    //      while(values[i].size() > 0)
-   //         field.push_back(StringUtils::stripFirstWord(values[i],','));
+   //         field.push_back(stripFirstWord(values[i],','));
    //      if(field.size() < 2) {
    //         oflog << "Error: invalid AntAz input: " << values[i] << endl;
    //         cerr << "Error: invalid AntAz input: " << values[i] << endl;
    //         continue;
    //      }
    //      Station& st=findStationInList(Stations,field[1]);
-   //      st.ant_azimuth = StringUtils::asDouble(field[0]);
+   //      st.ant_azimuth = asDouble(field[0]);
 
    //      if(help) cout << " Input: antenna azimuth for station " << field[1] << ": "
    //         << fixed << setprecision(2) << st.ant_azimuth << " degrees" << endl;
@@ -763,20 +798,55 @@ try {
       noEstimate = true;
       if(help) cout << " *** Turn OFF the estimation ***" << endl;
    }
+//#ifdef StochasticModelTest
+//   if(dashstoch.getCount()) {
+//      values = dashstoch.getValue();
+//      if(values[values.size()-1] == string("cos"))
+//         CI.StochasticModel = string("cos");
+//      else if(values[values.size()-1] == string("cos2"))
+//         CI.StochasticModel = string("cos2");
+//      else if(values[values.size()-1] == string("SNR"))
+//         CI.StochasticModel = string("SNR");
+//      else {
+//         cout << "Error: invalid stochastic model input (" << values[values.size()-1]
+//            << ") --Stochastic must be followed by 'cos','cos2' or 'SNR'" << endl;
+//         return -1;
+//      }
+//      if(help) cout << " Input: Stochastic model " << CI.StochasticModel << endl;
+//   }
+//   if(dashSNRmax.getCount()) {
+//      values = dashSNRmax.getValue();
+//      CI.SNRmax = asDouble(values[0]);
+//      if(help) cout << " Input: SNR stochastic model: maximum delta SNR "
+//         << fixed << setprecision(2) << CI.SNRmax << " dB-Hz" << endl;
+//   }
+//   if(dashSNRatt.getCount()) {
+//      values = dashSNRatt.getValue();
+//      tmp = asDouble(values[0]);
+//      if(tmp < 0.0 || tmp > 1.0) {
+//         cout << "Error: invalid stochastic model input (" << fixed << setprecision(3)
+//            << ") --SNRatt must be followed by a number between 0 and 1" << endl;
+//         return -1;
+//      }
+//      CI.SNRatt = tmp;
+//      if(help) cout << " Input: SNR stochastic model: effective attenuation "
+//         << fixed << setprecision(3) << CI.SNRatt << " dB-Hz" << endl;
+//   }
+//#endif // StochasticModelTest
    if(dashprsnit.getCount()) {
       values = dashprsnit.getValue();
-      PRSnIter = StringUtils::asInt(values[0]);
+      PRSnIter = asInt(values[0]);
       if(help) cout << " Input: set PRS iteration limit to  " << PRSnIter << endl;
    }
    if(dashprsrms.getCount()) {
       values = dashprsrms.getValue();
-      PRSrmsLimit = StringUtils::asDouble(values[0]);
+      PRSrmsLimit = asDouble(values[0]);
       if(help) cout << " Input: set PRS RMS residual limit to  "
          << scientific << setprecision(2) << PRSrmsLimit << endl;
    }
    if(dashprscon.getCount()) {
       values = dashprscon.getValue();
-      PRSconverge = StringUtils::asDouble(values[0]);
+      PRSconverge = asDouble(values[0]);
       if(help) cout << " Input: set PRS convergence limit to  "
          << scientific << setprecision(2) << PRSconverge << endl;
    }
@@ -787,7 +857,7 @@ try {
    }
    if(dashprselev.getCount()) {
       values = dashprselev.getValue();
-      PRSMinElevation = StringUtils::asDouble(values[0]);
+      PRSMinElevation = asDouble(values[0]);
       if(help) cout << " Input: set PRS elevation limit to  "
          << fixed << setprecision(2) << PRSMinElevation << endl;
    }
@@ -797,13 +867,13 @@ try {
    //dont }
    if(dashnit.getCount()) {
       values = dashnit.getValue();
-      nIter = StringUtils::asInt(values[0]);
+      nIter = asInt(values[0]);
       if(help)
          cout << " Input: number of iterations in Estimation : " << nIter << endl;
    }
    if(dashconv.getCount()) {
       values = dashconv.getValue();
-      convergence = fabs(StringUtils::asDouble(values[0]));
+      convergence = fabs(asDouble(values[0]));
       if(help)
          cout << " Input: convergence limit in Estimation : "
             << scientific << setprecision(3) << convergence << endl;
@@ -814,32 +884,32 @@ try {
    }
    if(dashntrop.getCount()) {
       values = dashntrop.getValue();
-      NRZDintervals = StringUtils::asInt(values[0]);
+      NRZDintervals = asInt(values[0]);
       if(help) cout << " Input: " << NRZDintervals
          << " residual zenith delay intervals" << endl;
    }
    if(dashttrop.getCount()) {
       values = dashttrop.getValue();
-      RZDtimeconst = StringUtils::asDouble(values[0]);
+      RZDtimeconst = asDouble(values[0]);
       if(help) cout << " Input: RZD time constant " << fixed << setprecision(2)
          << RZDtimeconst << " hours" << endl;
    }
    if(dashstrop.getCount()) {
       values = dashstrop.getValue();
-      RZDsigma = StringUtils::asDouble(values[0]);
+      RZDsigma = asDouble(values[0]);
       if(help) cout << " Input: RZD sigma " << fixed << setprecision(2)
          << RZDsigma << " meters" << endl;
    }
    if(dashtight.getCount()) {
       values = dashtight.getValue();
-      TightConstraint = StringUtils::asDouble(values[0]);
+      TightConstraint = asDouble(values[0]);
       if(help) cout << " Input: tight constraint "
          << scientific << setprecision(2) << TightConstraint
          << " (fraction of baseline)" << endl;
    }
    if(dashloose.getCount()) {
       values = dashloose.getValue();
-      LooseConstraint = StringUtils::asDouble(values[0]);
+      LooseConstraint = asDouble(values[0]);
       if(help) cout << " Input: loose constraint "
          << scientific << setprecision(2) << LooseConstraint
          << " (fraction of baseline)" << endl;
@@ -852,7 +922,7 @@ try {
       msg = values[0];
       field.clear();
       while(msg.size() > 0)
-         field.push_back(StringUtils::stripFirstWord(msg,','));
+         field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
          BegTime.setToString(field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
@@ -870,7 +940,7 @@ try {
       msg = values[0];
       field.clear();
       while(msg.size() > 0)
-         field.push_back(StringUtils::stripFirstWord(msg,','));
+         field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
          EndTime.setToString(field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
@@ -894,37 +964,37 @@ try {
    // data editing
    if(dashelev.getCount()) {
       values = dashelev.getValue();
-      MinElevation = StringUtils::asDouble(values[0]);
+      MinElevation = asDouble(values[0]);
       if(help) cout << " Input: minimum elevation for phases : "
          << values[0] << " degrees" << endl;
    }
    if(dashrotelev.getCount()) {
       values = dashrotelev.getValue();
-      RotatedAntennaElevation = StringUtils::asDouble(values[0]);
+      RotatedAntennaElevation = asDouble(values[0]);
       if(help) cout << " Input: rotate antenna in elevation by : "
          << values[0] << " degrees" << endl;
    }
    if(dashrotaz.getCount()) {
       values = dashrotaz.getValue();
-      RotatedAntennaAzimuth = StringUtils::asDouble(values[0]);
+      RotatedAntennaAzimuth = asDouble(values[0]);
       if(help) cout << " Input: rotate antenna in azimuth by : "
          << values[0] << " degrees" << endl;
    }
    if(dashgap.getCount()) {
       values = dashgap.getValue();
-      MaxGap = StringUtils::asInt(values[0]);
+      MaxGap = asInt(values[0]);
       if(help) cout << " Input: maximum acceptable gap (units DT): "
          << values[0] << endl;
    }
    if(dashmindd.getCount()) {
       values = dashmindd.getValue();
-      MinDDSeg = StringUtils::asInt(values[0]);
+      MinDDSeg = asInt(values[0]);
       if(help) cout << " Input: minimum acceptable double difference segment: "
          << values[0] << endl;
    }
    if(dashphbias.getCount()) {
       values = dashphbias.getValue();
-      PhaseBiasReset = StringUtils::asInt(values[0]);
+      PhaseBiasReset = asInt(values[0]);
       if(help) cout << " Input: phase bias reset limit (cycles) "
          << values[0] << endl;
    }
@@ -938,13 +1008,19 @@ try {
    }
    if(dashDT.getCount()) {
       values = dashDT.getValue();
-      DataInterval = StringUtils::asDouble(values[0]);
+      DataInterval = asDouble(values[0]);
       if(DataInterval < 0.0) DataInterval=fabs(DataInterval);
       if(help) cout << " Input: data interval " << fixed << setprecision(2)
          << DataInterval << " seconds" << endl;
    }
 
    // output
+   if(dashoutp.getCount()) {
+      values = dashoutp.getValue();
+      OutPath = values[0];
+      if(help) cout << " Input: path for data output files .................. "
+         << OutPath << endl;
+   }
    if(dashrawout.getCount()) {
       values = dashrawout.getValue();
       OutputRawFile = values[0];
@@ -991,9 +1067,9 @@ try {
       values = dashbaseout.getValue();
       for(i=0; i<values.size(); i++) {
          field.clear();
-         field.push_back(StringUtils::stripFirstWord(values[i],'-'));
+         field.push_back(stripFirstWord(values[i],'-'));
          while(values[i].size() > 0)
-            field.push_back(StringUtils::stripFirstWord(values[i],','));
+            field.push_back(stripFirstWord(values[i],','));
          if(field.size() != 2 && field.size() != 5) {
             oflog << "Error: invalid --BaseOut input: " << values[i] << endl;
             cerr << "Error: invalid --BaseOut input: " << values[i] << endl;
@@ -1006,9 +1082,9 @@ try {
 
          Triple trip(0.0,0.0,0.0);
          if(field.size() == 5) {
-            double x=StringUtils::asDouble(field[2]);
-            double y=StringUtils::asDouble(field[3]);
-            double z=StringUtils::asDouble(field[4]);
+            double x=asDouble(field[2]);
+            double y=asDouble(field[3]);
+            double z=asDouble(field[4]);
             trip = Triple(x,y,z);
             if(help) cout << " with offset " << field[2]
                            << "," << field[3] << "," << field[4];
@@ -1029,7 +1105,7 @@ try {
 
    if(help) {
       if(argc > 1) cout << "--------- end of parsed input, Quit." << endl << endl;
-      return -1;
+      return -99;
    }
 
    return 0;
@@ -1041,44 +1117,55 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 void CommandInput::PreProcessArgs(const char *arg, vector<string>& Args)
+   throw(Exception)
 {
 try {
+   static bool found_cfg_file=false;
+
    if(string(arg) == string()) return;
-   if(arg[0]=='-' && arg[1]=='f') {
+
+   if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
       string filename(arg);
-      filename.erase(0,2);
+      if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
       if(Debug) cout << "Found a file of options: " << filename << endl;
       ifstream infile(filename.c_str());
       if(!infile) {
-         cerr << "Error: could not open options file "
-            << filename << endl;
+         cerr << "Error: could not open options file " << filename << endl;
+         return;
       }
-      else {
-         char c;
-         string buffer,word;
-         while(1) {
-            getline(infile,buffer);
-            StringUtils::stripTrailing(buffer,'\r');
 
-            // process the buffer before checking eof or bad b/c there can be
-            // a line at EOF that has no CRLF...
-            while(!buffer.empty()) {
-               word = StringUtils::firstWord(buffer);
-               if(word[0] == '#') {        // skip to end of line
-                  break;
-               }
-               else if(word[0] == '"') {
-                  word = StringUtils::stripFirstWord(buffer,'"');
-               }
-               else {
-                  word = StringUtils::stripFirstWord(buffer);
-               }
+      bool again_cfg_file=false;
+      char c;
+      string buffer,word;
+      while(1) {
+         getline(infile,buffer);
+         stripTrailing(buffer,'\r');
+
+         // process the buffer before checking eof or bad b/c there can be
+         // a line at EOF that has no CRLF...
+         while(!buffer.empty()) {
+            word = firstWord(buffer);
+            if(again_cfg_file) {
+               word = "-f" + word;
+               again_cfg_file = false;
                PreProcessArgs(word.c_str(),Args);
-               if(buffer.empty()) break;
             }
+            else if(word[0] == '#') {        // skip to end of line
+               buffer = "";
+            }
+            else if(word == "--file" || word == "-f")
+               again_cfg_file = true;
+            else if(word[0] == '"') {
+               word = stripFirstWord(buffer,'"');
+               buffer = "dummy " + buffer;   // to be stripped below
+               PreProcessArgs(word.c_str(),Args);
+            }
+            else
+               PreProcessArgs(word.c_str(),Args);
 
-            if(infile.eof() || !infile.good()) break;
+            word = stripFirstWord(buffer);
          }
+         if(infile.eof() || !infile.good()) break;
       }
    }
    else if(string(arg)==string("-h") || string(arg)==string("--help")) {
@@ -1093,6 +1180,8 @@ try {
       Verbose = true;
       if(Debug) cout << "Found the verbose switch" << endl;
    }
+   else if(string(arg) == "--file" || string(arg) == "-f")
+      found_cfg_file = true;
    // undocumented shortcut
    else if(string(arg).substr(0,7)==string("-AllOut")) {
       string stem=string(arg).substr(7);
@@ -1112,7 +1201,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int CommandInput::ValidateCmdInput(void)
+int CommandInput::ValidateCmdInput(void) throw(Exception)
 {
 try {
    bool ok=true,flag;
@@ -1122,11 +1211,12 @@ try {
    map<string,Station>::iterator it;
 
       // data interval must be given
-   if(DataInterval == -1.0) {
-      cerr << "Input ERROR: data interval must be specified: --DT <t>. Abort.\n";
-      oflog << "Input ERROR: data interval must be specified: --DT <t>. Abort.\n";
-      ok = false;
-   }
+      // v 4.4 and 4.2a - compute by reading some data in ReadAllObsHeaders
+   //if(DataInterval == -1.0) {
+   //   cerr << "Input ERROR: data interval must be specified: --DT <t>. Abort.\n";
+   //   oflog << "Input ERROR: data interval must be specified: --DT <t>. Abort.\n";
+   //   ok = false;
+   //}
 
    if(BegTime > DayTime::BEGINNING_OF_TIME &&
       EndTime < DayTime::END_OF_TIME &&
@@ -1147,7 +1237,7 @@ try {
 
    if(MinElevation < 0.0 || MinElevation > 90.0) {
       msg = "Input ERROR: Elevation limit (--MinElevation) is out of bounds: "
-         + StringUtils::asString(MinElevation,2) + " Abort.\n";
+         + asString(MinElevation,2) + " Abort.\n";
       cerr << msg;
       oflog << msg;
       ok = false;
@@ -1155,7 +1245,7 @@ try {
 
    if(PRSMinElevation < 0.0 || PRSMinElevation > 90.0) {
       msg = "Input ERROR: Elevation limit (--PRSMinElevation) is out of bounds: "
-         + StringUtils::asString(PRSMinElevation,2) + " Abort.\n";
+         + asString(PRSMinElevation,2) + " Abort.\n";
       cerr << msg;
       oflog << msg;
       ok = false;
@@ -1181,14 +1271,14 @@ try {
          ok = false;
       }
 
-         // check that there is 1+ data files
+         // check that there are 1+ data files
       for(n=0,i=0; i<ObsFileList.size(); i++)
          if(ObsFileList[i].label == it->first) n++;
       if(n==0) {
          cerr << "Input ERROR: station " << it->first
-            << " has no observation data files. Abort.\n";
+            << " has no input data files. Abort.\n";
          oflog << "Input ERROR: station " << it->first
-            << " has no observation data files. Abort.\n";
+            << " has no input data files. Abort.\n";
          ok = false;
       }
 
@@ -1288,8 +1378,8 @@ try {
 
       // check that baselines for output are all valid
    for(i=0; i<CI.OutputBaselines.size(); i++) {
-      site1 = StringUtils::word(CI.OutputBaselines[i],0,'-');
-      site2 = StringUtils::word(CI.OutputBaselines[i],1,'-');
+      site1 = word(CI.OutputBaselines[i],0,'-');
+      site2 = word(CI.OutputBaselines[i],1,'-');
       if(  Stations.find(site1) == Stations.end()
         || Stations.find(site2) == Stations.end()) {
          
@@ -1311,7 +1401,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void CommandInput::Dump(std::ostream& ofs) const
+void CommandInput::Dump(std::ostream& ofs) const throw(Exception)
 {
 try {
    int i;
@@ -1393,11 +1483,15 @@ try {
       << "  RMS residual limit " << fixed << PRSrmsLimit
       << ", elevation mask " << fixed << PRSMinElevation
       << endl;
-   if(DataInterval != -1)
-      ofs << " Data interval is DT = "
+   ofs << " Stochastic model: use " << StochasticModel << " model." << endl;
+//#ifdef StochasticModelTest
+//   if(StochasticModel == string("SNR"))
+//      ofs << " Configuration of SNR stochastic model: SNRmax = "
+//         << fixed << setprecision(1) << SNRmax << " dB-Hz, SNR attenuation = "
+//         << setprecision(3) << SNRatt << endl;
+//#endif // StochasticModelTest
+   if(DataInterval != -1) ofs << " Data interval is DT = "
       << fixed << setprecision(2) << DataInterval << " seconds." << endl;
-   else
-      ofs << " ERROR -- data interval must be specified: --DT <t>" << endl;
    ofs << " Maximum gap in data = " << MaxGap << " * DT" << endl;
    ofs << " Minimum DD dataset length = " << MinDDSeg << endl;
    ofs << " Phase bias reset limit is " << PhaseBiasReset << " cycles" << endl;
@@ -1424,6 +1518,8 @@ try {
          ofs << endl;
       }
    }
+   if(!OutPath.empty())
+      ofs << " Output path name: " << OutPath << endl;
    if(!OutputRawFile.empty())
       ofs << " Output file name: " << OutputRawFile << " for raw data." << endl;
    if(!OutputPRSFile.empty())

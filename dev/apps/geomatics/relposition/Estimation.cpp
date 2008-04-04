@@ -68,32 +68,37 @@
 //------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
+void BuildStochasticModel(int count, Namelist& DNL, Matrix<double>& MCov)
+   throw(Exception);                                        // in StochasticModels.cpp
+
 // prototypes -- this module only
    // called by ConfigureEstimation(), which is Configure(3)
-void DefineStateVector(void);
-void DefineLSProblem(void);
+void DefineStateVector(void) throw(Exception);
+void DefineLSProblem(void) throw(Exception);
 string ComposeName(const string& site1, const string& site2,
-                   const GSatID& sat1, const GSatID& sat2);
-string ComposeName(const DDid& ddid);
+                   const GSatID& sat1, const GSatID& sat2) throw(Exception);
+string ComposeName(const DDid& ddid) throw(Exception);
 void DecomposeName(const string& label, string& site1, string& site2,
-                    GSatID& sat1, GSatID& sat2);
+                    GSatID& sat1, GSatID& sat2) throw(Exception);
    // called by Estimation() -- inside the loop
-int EditDDdata(int n);
-int ModifyState(int n);
-int InitializeEstimator(void);
-int aPrioriConstraints(void);
-int FillDataVector(int count);
-void StochasticModel(int count, Namelist& DNL, Matrix<double>& MCov);
-void EvaluateLSEquation(Vector<double>& X,Vector<double>& f,Matrix<double>& P);
-int MeasurementUpdate(Matrix<double>& P, Vector<double>& f, Matrix<double>& MC);
-int Solve(void);
-int UpdateNominalState(void);
-void OutputIterationResults(bool final);
-int IterationControl(int iter_n);
-void OutputFinalResults(int iret);
-double RMSResidualOfFit(int N, Vector<double>& dX, bool final=false);
+int EditDDdata(int n) throw(Exception);
+int ModifyState(int n) throw(Exception);
+int InitializeEstimator(void) throw(Exception);
+int aPrioriConstraints(void) throw(Exception);
+int FillDataVector(int count) throw(Exception);
+void EvaluateLSEquation(Vector<double>& X,Vector<double>& f,Matrix<double>& P)
+   throw(Exception);
+int MeasurementUpdate(Matrix<double>& P, Vector<double>& f, Matrix<double>& MC)
+   throw(Exception);
+int Solve(void) throw(Exception);
+int UpdateNominalState(void) throw(Exception);
+void OutputIterationResults(bool final) throw(Exception);
+int IterationControl(int iter_n) throw(Exception);
+void OutputFinalResults(int iret) throw(Exception);
+double RMSResidualOfFit(int N, Vector<double>& dX, bool final=false) throw(Exception);
 
 //------------------------------------------------------------------------------------
 // local data
@@ -149,10 +154,13 @@ static Vector<double> NominalState;// save the nominal state to output with solu
 //    endif
 // end loop over data epochs
 // invert to get solution
-int Estimation(void)
+int Estimation(void) throw(Exception)
 {
 try {
-   if(CI.Verbose) oflog << "BEGIN Estimation()" << endl;
+   if(CI.Verbose) oflog << "BEGIN Estimation()"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
    if(CI.noEstimate) {
       oflog << "Option --noEstimate was chosen .. terminate.\n";
       return 0;
@@ -167,6 +175,8 @@ try {
    for(n=0; ; n++) {
 
       if(CI.Verbose) oflog << "BEGIN LLS Iteration #" << n+1
+         << " at total time " << fixed << setprecision(3)
+         << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
          << "------------------------------------------------------------------\n";
       if(CI.Screen) cout << "BEGIN LLS Iteration #" << n+1
          << "------------------------------------------------------------------\n";
@@ -204,7 +214,7 @@ try {
          nDD += M;
 
             // compute the measurement covariance matrix
-         StochasticModel(curr,DataNL,MeasCov);
+         BuildStochasticModel(curr,DataNL,MeasCov);
 
             // get nominal data = NomData(nominal state) and partials
             // NB position components of state not used in here..
@@ -274,10 +284,13 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Configure(3)
-int ConfigureEstimation(void)
+int ConfigureEstimation(void) throw(Exception)
 {
 try {
-   if(CI.Verbose) oflog << "BEGIN ConfigureEstimation()" << endl;
+   if(CI.Verbose) oflog << "BEGIN ConfigureEstimation()"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
 
       // find the mean time, get Earth orientation parameters
    MedianEpoch = FirstEpoch;
@@ -309,7 +322,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by ConfigureEstimation()
-void DefineStateVector(void)
+void DefineStateVector(void) throw(Exception)
 {
 try {
       // set up the names of the state vector
@@ -332,7 +345,7 @@ try {
       }
       if(CI.NRZDintervals > 0) {
          for(i=0; i<CI.NRZDintervals; i++) {
-            StateNL += it->first + string("-RZD") + StringUtils::asString(i);
+            StateNL += it->first + string("-RZD") + asString(i);
          }
       }
    }
@@ -388,18 +401,9 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by ConfigureEstimation()
-void DefineLSProblem(void)
+void DefineLSProblem(void) throw(Exception)
 {
 try {
-      // define the least squares processor
-   srif.iterationsLimit = CI.nIter;
-   srif.convergenceLimit = CI.convergence;
-   srif.divergenceLimit = 1.e10;    // TD input parameter
-   srif.doWeight = false;
-   srif.doRobust = false;
-   srif.doLinearize = false;
-   srif.doSequential = true;
-
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
@@ -411,7 +415,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // called by Estimation() - inside the iteration loop
 // currently, n is not used...
 // currently does nothing but print stats on the residuals
-int EditDDdata(int n)
+int EditDDdata(int n) throw(Exception)
 {
 try {
    int i,k;
@@ -465,7 +469,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the iteration loop
-int ModifyState(int niter)
+int ModifyState(int niter) throw(Exception)
 {
 try {
    int i,j,k;
@@ -523,7 +527,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the iteration loop
 // actually fixes the biases
-int InitializeEstimator(void)
+int InitializeEstimator(void) throw(Exception)
 {
 try {
    int i;
@@ -578,7 +582,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the iteration loop
-int aPrioriConstraints(void)
+int aPrioriConstraints(void) throw(Exception)
 {
 try {
       // add initial constraints
@@ -595,8 +599,8 @@ try {
 
       // loop over baselines - to get the position constraints
    for(n=0; n<Baselines.size(); n++) {
-      string one=StringUtils::word(Baselines[n],0,'-');
-      string two=StringUtils::word(Baselines[n],1,'-');
+      string one=word(Baselines[n],0,'-');
+      string two=word(Baselines[n],1,'-');
       BL = Stations[one].pos - Stations[two].pos;
 
          // find the position states
@@ -659,7 +663,7 @@ try {
          string stname;
          vector<int> indexes;
          for(n=0; n<CI.NRZDintervals; n++) {
-            stname = it->first + string("-RZD") + StringUtils::asString(n);
+            stname = it->first + string("-RZD") + asString(n);
             i = StateNL.index(stname);
             if(i == -1) {
                Exception e("RZD states confused: unable to find state " + stname);
@@ -753,7 +757,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the data loop, inside the iteration loop
-int FillDataVector(int count)
+int FillDataVector(int count) throw(Exception)
 {
 try {
    int i,j;
@@ -795,134 +799,11 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the data loop, inside the iteration loop
-// Input is Namelist DNL, the double difference data Namelist (DataNL)
-// Output is MCov, the measurement covariance matrix for this data (MeasCov).
-// Let:
-//  d = vector of one-way data (one site, one satellite)
-// sd = vector of single difference data (two sites, one satellite)
-// dd = vector of double difference data (two sites, two satellites)
-// DD and SD are matricies with elements 0,1,-1 which transform d to sd to dd:
-// sd = SD * d
-// dd = DD * sd
-// dd = DD * SD * d
-// The covariance matrix will be MC = (DD*SD)*transpose(DD*SD)
-//                                  = DD*SD*transpose(SD)*transpose(DD)
-// If the one-way data has a measurement covariance, then fill the vector d with
-// them; then MC = DD*SD* d * transpose(SD)*transpose(DD).
-// Building DD and SD is just a matter of lists:
-// loop through the dd namelist, keeping lists of:
-// one-way data (site-satellite pairs) (d)
-// single differences (site-site-satellite sets) (sd)
-// and you have a list of double differences (DNL)
-//
-// TD MinElevation here should be a separate parameter, not necessarily the mask angle
-void StochasticModel(int count, Namelist& DNL, Matrix<double>& MCov)
-{
-try {
-   unsigned int m=DNL.size();
-   if(m==0) return;
-
-   int i,j,in,jn,kn;
-   double eps,coselev,d0,sig0;
-   string site1,site2;
-   GSatID sat1,sat2;
-   vector<double> d;    // weights of one-way data
-   vector<OWid> ld;     // labels of d
-   vector<SDid> sd;
-
-   // eps non-zero avoids blowup at zenith
-   //eps = 0.0000001;   seems to have no effect
-   eps = 0.001;
-
-   for(i=0; i<DNL.size(); i++) {
-      // break the label into site1,site2,sat1,sat2
-      DecomposeName(DNL.getName(i), site1, site2, sat1, sat2);
-      if(index(ld,OWid(site1,sat1)) == -1) ld.push_back(OWid(site1,sat1));
-      if(index(ld,OWid(site1,sat2)) == -1) ld.push_back(OWid(site1,sat2));
-      if(index(ld,OWid(site2,sat1)) == -1) ld.push_back(OWid(site2,sat1));
-      if(index(ld,OWid(site2,sat2)) == -1) ld.push_back(OWid(site2,sat2));
-      if(index(sd,SDid(site1,site2,sat1)) == -1) sd.push_back(SDid(site1,site2,sat1));
-      if(index(sd,SDid(site1,site2,sat2)) == -1) sd.push_back(SDid(site1,site2,sat2));
-   }
-
-      // fill d with the weights
-      // d needs to have units meters and be realistic ~ sigma(phase)
-      // =sig0(m) at min elev, smaller at higher elevation
-   sig0 = 1.0e-3; // smaller than e-2, else little effect
-   coselev = eps + cos(CI.MinElevation * DEG_TO_RAD);          // TD new input param
-   d0 = sig0 / (coselev*coselev);   // cosine squared model
-   //d0 = sig0 / coselev;            // cosine model
-   d = vector<double>(ld.size());
-   for(i=0; i<ld.size(); i++) {
-      j = index(Stations[ld[i].site].RawDataBuffers[ld[i].sat].count,count);
-      if(j == -1) {
-         oflog << "Error -- count " << count << " not found in buffer for " << ld[i]
-            << endl;
-         d[i] = d0;
-      }
-      else {
-         coselev = eps + cos(Stations[ld[i].site].RawDataBuffers[ld[i].sat].elev[j]
-                           * DEG_TO_RAD);
-         d[i] = d0 * coselev * coselev;   // cosine squared model
-         //d[i] = d0 * coselev;            // cosine model
-      }
-   }
-
-   // temp
-   //format f113s(11,3,2);
-   //oflog << "DDs are (" << DNL.size() << "):\n" << setw(20) << DNL << endl;
-   //oflog << "SDs are: (" << sd.size() << ")" << fixed << endl;
-   //for(i=0; i<sd.size(); i++) oflog << " / " << sd[i];
-   //oflog << endl;
-   //oflog << "OWs are: (" << ld.size() << ")" << endl;
-   //for(i=0; i<ld.size(); i++) oflog << " / " << ld[i];
-   //oflog << endl;
-   //oflog << "OW wts are: (" << d.size() << ")" << endl;
-   //for(i=0; i<d.size(); i++) oflog << " " << f113s << d[i];
-   //oflog << endl;
-
-   Matrix<double> SD(sd.size(),ld.size(),0.0);
-   Matrix<double> DD(m,sd.size(),0.0);
-   // TD need to account for signs here ... sd[.] may be site2,site1,sat1 ...
-   for(in=0; in<DNL.size(); in++) {
-      DecomposeName(DNL.getName(in), site1, site2, sat1, sat2);
-      jn = index(sd,SDid(site1,site2,sat1));        // site1-site2, sat1
-      DD(in,jn) = 1;
-      kn = index(ld,OWid(site1,sat1));              // site1, sat1
-      SD(jn,kn) = d[kn];
-      kn = index(ld,OWid(site2,sat1));              // site2, sat1
-      SD(jn,kn) = -d[kn];
-
-      jn = index(sd,SDid(site1,site2,sat2));        // site1-site2, sat2
-      DD(in,jn) = -1;
-      kn = index(ld,OWid(site1,sat2));              // site1, sat2
-      SD(jn,kn) = d[kn];
-      kn = index(ld,OWid(site2,sat2));              // site2, sat2
-      SD(jn,kn) = -d[kn];
-   }
-
-   //oflog << " SD is\n" << fixed << setw(3) << SD << endl;
-   //oflog << " DD is\n" << fixed << setw(3) << DD << endl;
-
-   Matrix<double> T;
-   T = DD * SD;
-   MCov = T * transpose(T);
-
-   if(CI.Debug) oflog << "Measurement covariance is\n" << scientific
-      << setw(8) << setprecision(3) << MeasCov << endl;
-
-}
-catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}
-
-//------------------------------------------------------------------------------------
-// called by Estimation() - inside the data loop, inside the iteration loop
 // Given a nominal state vector X, compute the function f(X) and the partials matrix
 // P at X.
 // NB X is not used here ... except that State is used for biases
 void EvaluateLSEquation(Vector<double>& X, Vector<double>& f, Matrix<double>& P)
+   throw(Exception)
 {
 try {
    int i,j,k,n,m,ntrop;
@@ -937,7 +818,6 @@ try {
       //
 
       // find the trop estimation interval for this epoch
-      // trop is a temporary here..
    if(CI.NRZDintervals > 0) {
       ntrop = int( (SolutionEpoch-FirstEpoch) /
                     (((LastEpoch-FirstEpoch)+CI.DataInterval)/CI.NRZDintervals) );
@@ -981,10 +861,10 @@ try {
 
          // trop rzd .. depends on site, sat and trop model
       if(CI.NRZDintervals > 0) {
-         n = StateNL.index(site1 + string("-RZD") + StringUtils::asString(ntrop));
+         n = StateNL.index(site1 + string("-RZD") + asString(ntrop));
          if(n == -1) {
             Exception e("RZD states confused: unable to find state " + 
-               site1 + string("-RZD") + StringUtils::asString(ntrop));
+               site1 + string("-RZD") + asString(ntrop));
             GPSTK_THROW(e);
          }
          mapf = st1.pTropModel->wet_mapping_function(CER.elevation);
@@ -1032,10 +912,10 @@ try {
 
          // trop rzd .. depends on site, sat and trop model
       if(CI.NRZDintervals > 0) {
-         n = StateNL.index(site2 + string("-RZD") + StringUtils::asString(ntrop));
+         n = StateNL.index(site2 + string("-RZD") + asString(ntrop));
          if(n == -1) {
             Exception e("RZD states confused: unable to find state " + 
-               site2 + string("-RZD") + StringUtils::asString(ntrop));
+               site2 + string("-RZD") + asString(ntrop));
             GPSTK_THROW(e);
          }
          mapf = st2.pTropModel->wet_mapping_function(CER.elevation);
@@ -1095,6 +975,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the data loop, inside the iteration loop
 int MeasurementUpdate(Matrix<double>& P, Vector<double>& f, Matrix<double>& MC)
+   throw(Exception)
 {
 try {
 
@@ -1109,7 +990,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the iteration loop
-int Solve(void)
+int Solve(void) throw(Exception)
 {
 try {
 
@@ -1130,7 +1011,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the iteration loop
-int UpdateNominalState(void)
+int UpdateNominalState(void) throw(Exception)
 {
 try {
    int n,i,j,k;
@@ -1179,7 +1060,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // called by Estimation() - inside the iteration loop
-void OutputIterationResults(bool final)
+void OutputIterationResults(bool final) throw(Exception)
 {
 try {
    int i,N=dX.size();
@@ -1216,8 +1097,8 @@ try {
    Position BL;
    for(i=0; i<CI.OutputBaselines.size(); i++) {
          // dependent on the order given in ComputeSingleDifferences()
-      string one=StringUtils::word(CI.OutputBaselines[i],0,'-');
-      string two=StringUtils::word(CI.OutputBaselines[i],1,'-');
+      string one=word(CI.OutputBaselines[i],0,'-');
+      string two=word(CI.OutputBaselines[i],1,'-');
       BL = Stations[one].pos - Stations[two].pos;
       oflog << "Baseline " << CI.OutputBaselines[i]
          << " " << BL.printf("%16.6x %16.6y %16.6z")
@@ -1260,7 +1141,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //         1   reached convergence and don't fix biases
 //         2   reached last iteration and don't fix biases
 //         4   1 and/or 2 and fix biases, i.e. fix the biases then quit
-int IterationControl(int iter_n)
+int IterationControl(int iter_n) throw(Exception)
 {
 try {
    int done=0;
@@ -1322,29 +1203,20 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 string ComposeName(const string& site1,
                    const string& site2,
                    const GSatID& sat1,
-                   const GSatID& sat2)
+                   const GSatID& sat2) throw(Exception)
 {
 try {
-   //RinexSatID rsat1=sat2,rsat2=sat2;   // use RinexSatID to get the fill char == '0'
    return ( site1 + string("-") + site2 + string("_")
-      //+ rsat1.toString() + string("-") + rsat2.toString() );
-      //+ sat1.toString() + string("-") + sat2.toString() );
-      + StringUtils::asString(sat1) + string("-") + StringUtils::asString(sat2) );
+      + asString(sat1) + string("-") + asString(sat2) );
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 //------------------------------------------------------------------------------------
-string ComposeName(const DDid& ddid)
+string ComposeName(const DDid& ddid) throw(Exception)
 {
 try {
-   //ostringstream oss;
-   //if(ddid.ssite > 0) oss << ddid.site1 << "-" << ddid.site2 << "_";
-   //else               oss << ddid.site2 << "-" << ddid.site1 << "_";
-   //if(ddid.ssat  > 0) oss << ddid.sat1  << "-" << ddid.sat2;
-   //else               oss << ddid.sat2  << "-" << ddid.sat1;
-   //return(oss.str());
    if(ddid.ssite > 0) {
       if(ddid.ssat > 0) 
          return ComposeName(ddid.site1,ddid.site2,ddid.sat1,ddid.sat2);
@@ -1367,16 +1239,16 @@ void DecomposeName(const string& label,
                    string& site1,
                    string& site2,
                    GSatID& sat1,
-                   GSatID& sat2)
+                   GSatID& sat2) throw(Exception)
 {
 try {
    string copy=label;
    //oflog << "Decompose found " << label << " = ";
-   site1 = StringUtils::stripFirstWord(copy,'-');
+   site1 = stripFirstWord(copy,'-');
    //oflog << site1;
-   site2 = StringUtils::stripFirstWord(copy,'_');
+   site2 = stripFirstWord(copy,'_');
    //oflog << " " << site2;
-   sat1.fromString(StringUtils::stripFirstWord(copy,'-'));
+   sat1.fromString(stripFirstWord(copy,'-'));
    //oflog << " " << sat1;
    sat2.fromString(copy);
    //oflog << " " << sat2 << endl;
@@ -1387,7 +1259,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void OutputFinalResults(int iret)
+void OutputFinalResults(int iret) throw(Exception)
 {
 try {
    int i,j,len;
@@ -1479,8 +1351,8 @@ try {
 
       // do for all baselines
       for(i=0; i<CI.OutputBaselines.size(); i++) {
-         string one=StringUtils::word(CI.OutputBaselines[i],0,'-');
-         string two=StringUtils::word(CI.OutputBaselines[i],1,'-');
+         string one=word(CI.OutputBaselines[i],0,'-');
+         string two=word(CI.OutputBaselines[i],1,'-');
          Position BL = Stations[one].pos - Stations[two].pos;
          oflog << "Final Baseline " << CI.OutputBaselines[i]
             << " " << BL.printf("%16.6x %16.6y %16.6z")
@@ -1508,9 +1380,13 @@ try {
          }
       }
    }
-   oflog << "Data Totals: " << NEp << " epochs, " << nDD << " DDs." << endl;
+   oflog << "Data Totals: " << NEp << " epochs, " << nDD << " DDs (which is "
+      << fixed << setprecision(3) << double(nDD)/double(NEp) << " DDs/epoch)"
+      << " used in estimation." << endl;
    if(CI.Screen)
-      cout << "Data Totals: " << NEp << " epochs, " << nDD << " DDs." << endl;
+      cout << "Data Totals: " << NEp << " epochs, " << nDD << " DDs (which is "
+         << fixed << setprecision(3) << double(nDD)/double(NEp) << " DDs/epoch) "
+         << " used in estimation." << endl;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
@@ -1518,7 +1394,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-double RMSResidualOfFit(int N, Vector<double>& dX, bool final)
+double RMSResidualOfFit(int N, Vector<double>& dX, bool final) throw(Exception)
 {
 try {
    int i,j,nd,cnt;

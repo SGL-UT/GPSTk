@@ -60,15 +60,17 @@
 #include "DDBase.hpp"
 
 //------------------------------------------------------------------------------------
-double RotatedAntennaElevation(double elevation, double azimuth); // ElevationMask.cpp
-
-//------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-// Segment structure used in deducing time table
-// functions implemented in Timetable.cpp
+// ElevationMask.cpp
+double RotatedAntennaElevation(double elevation, double azimuth) throw(Exception);
+
+//------------------------------------------------------------------------------------
+// Segment structure used in deducing time table functions implemented in
+// Timetable.cpp
 class TTSegment {
 public:
    std::string site1,site2;
@@ -90,9 +92,9 @@ public:
    //bool operator>(const TTSegment& right) const
    //{ return (metric() > right.metric()); }
 
-   void findElev(void);
+   void findElev(void) throw(Exception);
 
-   friend ostream& operator<<(ostream& s, const TTSegment& t);
+   friend ostream& operator<<(ostream& s, const TTSegment& t) throw(Exception);
 
    friend bool increasingMetricSort(const TTSegment& left, const TTSegment& right);
    friend bool decreasingMetricSort(const TTSegment& left, const TTSegment& right);
@@ -106,10 +108,12 @@ map<SDid,SDData> SDmap;       // map of SD data - not full single differences
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
-int ReadTimeTable(void);
-int ComputeBaselineTimeTable(const string& bl);
-int TTComputeSingleDifferences(const string& bl, const double ElevLimit);
-int TimeTableAlgorithm(list<TTSegment>& TTS, list<TTSegment>& TTab);
+int ReadTimeTable(void) throw(Exception);
+int ComputeBaselineTimeTable(const string& bl) throw(Exception);
+int TTComputeSingleDifferences(const string& bl, const double ElevLimit)
+   throw(Exception);
+int TimeTableAlgorithm(list<TTSegment>& TTS, list<TTSegment>& TTab)
+   throw(Exception);
 bool startSort(const TTSegment& left, const TTSegment& right);
 bool increasingMetricSort(const TTSegment& left, const TTSegment& right);
 bool decreasingMetricSort(const TTSegment& left, const TTSegment& right);
@@ -119,7 +123,7 @@ bool decreasingMetricSort(const TTSegment& left, const TTSegment& right);
 // the time tt. Set the satellite in sdid to the reference satellite, and set the
 // time tt to the time (in the future) when the reference will change again.
 // return 0 on success, 1 on failure.
-int QueryTimeTable(SDid& sdid, DayTime& tt)
+int QueryTimeTable(SDid& sdid, DayTime& tt) throw(Exception)
 {
 try {
       // loop over the timetable, looking for a match : baseline and time
@@ -145,11 +149,11 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
     
 //------------------------------------------------------------------------------------
 // Find the start and stop counts in the timetable which applies to the given baseline
-int QueryTimeTable(string baseline, int& beg, int& end)
+int QueryTimeTable(string baseline, int& beg, int& end) throw(Exception)
 {
 try {
-   string site1=StringUtils::word(baseline,0,'-');
-   string site2=StringUtils::word(baseline,1,'-');
+   string site1=word(baseline,0,'-');
+   string site2=word(baseline,1,'-');
    beg = end = -1;
       // loop over the timetable, looking for a match in baseline
    list<TTSegment>::iterator ttit;
@@ -169,10 +173,13 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int Timetable(void)
+int Timetable(void) throw(Exception)
 {
 try {
-   if(CI.Verbose) oflog << "BEGIN Timetable()" << endl;
+   if(CI.Verbose) oflog << "BEGIN Timetable()"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
 
    int ib,iret;
    list<TTSegment>::iterator ttit;
@@ -184,8 +191,8 @@ try {
       // loop over baselines
       for(ib=0; ib<Baselines.size(); ib++) {
          TTSegment ts;
-         ts.site1 = StringUtils::word(Baselines[ib],0,'-');
-         ts.site2 = StringUtils::word(Baselines[ib],1,'-');
+         ts.site1 = word(Baselines[ib],0,'-');
+         ts.site2 = word(Baselines[ib],1,'-');
          ts.sat = CI.RefSat;
          ts.start = ts.first = 0;
          ts.end = ts.last = maxCount;
@@ -269,7 +276,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // Input the time table from a file
-int ReadTimeTable(void)
+int ReadTimeTable(void) throw(Exception)
 {
 try {
    int week;
@@ -288,32 +295,32 @@ try {
    //REF site site sat week use_first use_last data_start data_end
    do {
       getline(ttifs,line);
-      StringUtils::stripTrailing(line,'\r');
+      stripTrailing(line,'\r');
       if(ttifs.eof() || !ttifs.good()) break;
 
       if(line.size() <= 0) continue;                              // skip blank lines
       if(line[0] == '#') continue;                                // skip comments
-      if(StringUtils::numWords(line) < 9) continue; // TD msg?    // skip bad lines
-      if(StringUtils::words(line,0,1) != string("REF")) continue; // only REF lines
+      if(numWords(line) < 9) continue; // TD msg?    // skip bad lines
+      if(words(line,0,1) != string("REF")) continue; // only REF lines
       TTSegment ts;
-      ts.site1 = StringUtils::words(line,1,1);
-      ts.site2 = StringUtils::words(line,2,1);
-      ts.sat.fromString(StringUtils::words(line,3,1));
+      ts.site1 = words(line,1,1);
+      ts.site2 = words(line,2,1);
+      ts.sat.fromString(words(line,3,1));
 
-      week = StringUtils::asInt(StringUtils::words(line,4,1));
-      sow = StringUtils::asInt(StringUtils::words(line,5,1));
+      week = asInt(words(line,4,1));
+      sow = asInt(words(line,5,1));
       tt.setGPSfullweek(week,sow);           // TD handle week rollover
       ts.first = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
-      sow = StringUtils::asInt(StringUtils::words(line,6,1));
+      sow = asInt(words(line,6,1));
       tt.setGPSfullweek(week,sow);
       ts.last = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
-      sow = StringUtils::asInt(StringUtils::words(line,7,1));
+      sow = asInt(words(line,7,1));
       tt.setGPSfullweek(week,sow);
       ts.start = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
-      sow = StringUtils::asInt(StringUtils::words(line,8,1));
+      sow = asInt(words(line,8,1));
       tt.setGPSfullweek(week,sow);
       ts.end = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
@@ -336,7 +343,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int ComputeBaselineTimeTable(const string& bl)
+int ComputeBaselineTimeTable(const string& bl) throw(Exception)
 {
 try {
    int i,j;
@@ -394,6 +401,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 int TTComputeSingleDifferences(const string& bl, const double ElevLimit)
+   throw(Exception)
 {
 try {
    int i,j,k;
@@ -405,8 +413,8 @@ try {
    format f62(6,2),f133(13,3);
 
    // loop over buffered raw data of sats common to both
-   string est=StringUtils::word(bl,0,'-');
-   string fix=StringUtils::word(bl,1,'-');
+   string est=word(bl,0,'-');
+   string fix=word(bl,1,'-');
 
    for(it=Stations[est].RawDataBuffers.begin();
        it != Stations[est].RawDataBuffers.end(); it++) {
@@ -501,7 +509,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // preprocess the segment list - get first and last counts
-int TimeTableAlgorithm(list<TTSegment>& TTS, list<TTSegment>& TTab)
+int TimeTableAlgorithm(list<TTSegment>& TTS, list<TTSegment>& TTab) throw(Exception)
 {
 try {
    bool keep;
@@ -793,7 +801,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void TTSegment::findElev(void)
+void TTSegment::findElev(void) throw(Exception)
 {
    int i,k;
    double elevi;
@@ -821,7 +829,7 @@ bool decreasingMetricSort(const TTSegment& left, const TTSegment& right)
 { return (left.metric() > right.metric()); }
 
 //------------------------------------------------------------------------------------
-ostream& operator<<(ostream& os, const TTSegment& t)
+ostream& operator<<(ostream& os, const TTSegment& t) throw(Exception)
 {
 try {
    os << " " << t.site1

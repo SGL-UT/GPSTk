@@ -58,13 +58,15 @@ using namespace gpstk;
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
 bool DefaultElevationMask(double elevation, double azimuth, double ElevCutoff);
-bool RotatedAntennaElevationMask(double elevation, double azimuth, double ElevCutoff);
-double RotatedAntennaElevation(double elevation, double azimuth);
+bool RotatedAntennaElevationMask(double elevation, double azimuth, double ElevCutoff)
+   throw(Exception);
+double RotatedAntennaElevation(double elevation, double azimuth)
+   throw(Exception);
 
 //------------------------------------------------------------------------------------
 // return 'true' if satellite data at elevation and azimuth (both in degrees)
 // is accepted.
-bool ElevationMask(double elevation, double azimuth)
+bool ElevationMask(double elevation, double azimuth) throw(Exception)
 {
 try {
    if(DefaultElevationMask(elevation,azimuth,CI.MinElevation))
@@ -85,6 +87,7 @@ inline bool DefaultElevationMask(double elevation, double azimuth, double ElevCu
 
 //------------------------------------------------------------------------------------
 bool RotatedAntennaElevationMask(double elevation, double azimuth, double ElevCutoff)
+   throw(Exception)
 {
 try {
    return ( RotatedAntennaElevation(elevation, azimuth) >= ElevCutoff );
@@ -97,7 +100,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // Return the elevation of the input direction (elevation and azimuth) in a frame
 // which is rotated by angles RotateElev and RotateAzimuth. All angles in degrees.
-double RotatedAntennaElevation(double elevation, double azimuth)
+double RotatedAntennaElevation(double elevation, double azimuth) throw(Exception)
 {
 try {
    if(CI.RotatedAntennaElevation > 0.0 || CI.RotatedAntennaAzimuth > 0.0) {

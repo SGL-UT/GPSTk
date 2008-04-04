@@ -55,7 +55,7 @@ using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
-Station& findStationInList(map<string,Station>& SL, string& label)
+Station& findStationInList(map<string,Station>& SL, string& label) throw(Exception)
 {
 try {
    map<string,Station>::const_iterator it;

@@ -444,11 +444,10 @@ namespace gpstk
 
       //------------------------------------------------------------------------------
       /// Generate the full transformation matrix (3x3 rotation) relating the ECEF
-      /// frame to the conventional inertial frame
-      /// throw(); Input is the time of interest,
+      /// frame to the conventional inertial frame. Input is the time of interest,
       /// the polar motion angles xp and yp (arcseconds), and UT1-UTC (seconds)
-      /// (xp,yp and UT1-UTC are just as found in the IERS bulletin);
-      /// see class EarthOrientation.
+      /// (xp,yp and UT1-UTC are just as found in the IERS bulletin;
+      /// see class EarthOrientation).
       /// @param t DayTime epoch of the rotation.
       /// @param xp, Earth wobble in arcseconds, as found in the IERS bulletin.
       /// @param yp, Earth wobble in arcseconds, as found in the IERS bulletin.

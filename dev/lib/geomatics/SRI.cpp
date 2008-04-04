@@ -630,8 +630,9 @@ using namespace StringUtils;
          Vector<double> Znew(n-1,0.0);
          Matrix<double> Rnew(n-1,n-1,0.0);
             // move the X(in) terms to the data vector on the RHS
-         for(i=0; i<=in; i++) Z(i) -= R(i,in)*bias;
-         for(i=0,ii=0; i<=n; i++) {
+         for(i=0; i<in; i++) Z(i) -= R(i,in)*bias;
+            // remove row/col in and collapse
+         for(i=0,ii=0; i<n; i++) {
             if(i == in) continue;
             Znew(ii) = Z(i);
             for(j=i,jj=ii; j<n; j++) {
@@ -653,8 +654,65 @@ using namespace StringUtils;
       }
    }
 
+   // --------------------------------------------------------------------------------
+   // Vector version of biasFix with several states given in a Namelist.
+   void SRI::biasFix(const Namelist& drops, const Vector<double>& biases)
+      throw(MatrixException,VectorException)
+   {
+      try {
+         unsigned int i,j,k,ii,jj,n=R.rows();
+            // create a vector of indexes and corresponding biases
+         vector<int> indx;
+         vector<double> bias;
+         for(i=0; i<drops.size(); i++) {
+            j = names.index(drops.getName(i));
+            if(j > -1) {
+               indx.push_back(j);
+               bias.push_back(biases(i));
+            }
+         }
+         const unsigned int m = indx.size();
+         if(m == 0) return;
+         if(m == n) {            // error?
+            *this = SRI(0);
+            return;
+         }
+
+         Vector<double> Znew(n-m,0.0);
+         Matrix<double> Rnew(n-m,n-m,0.0);
+            // move the X(in) terms to the data vector on the RHS
+         for(k=0; k<m; k++)
+            for(i=0; i<indx[k]; i++)
+               Z(i) -= R(i,indx[k])*bias[k];
+            // remove row/col in and collapse
+         for(i=0,ii=0; i<n; i++) {
+            for(k=0; k<m; k++)
+               if(i == indx[k]) continue;
+            Znew(ii) = Z(i);
+            for(j=i,jj=ii; j<n; j++) {
+               for(k=0; k<m; k++)
+                  if(j == indx[k]) continue;
+               Rnew(ii,jj) = R(i,j);
+               jj++;
+            }
+            ii++;
+         }
+         R = Rnew;
+         Z = Znew;
+         for(k=0; k<m; k++)
+            names -= names.labels[indx[k]];
+      }
+      catch(MatrixException& me) {
+         GPSTK_RETHROW(me);
+      }
+      catch(VectorException& ve) {
+         GPSTK_RETHROW(ve);
+      }
+   }
+
    //---------------------------------------------------------------------------------
    // Add a priori or 'constraint' information
+   // Prefer addAPrioriInformation(inverse(Cov), inverse(Cov)*X);
    void SRI::addAPriori(const Matrix<double>& Cov, const Vector<double>& X)
       throw(MatrixException)
    {
@@ -669,14 +727,35 @@ using namespace StringUtils;
       }
 
       try {
-         Matrix<double> invcovar;
-         Vector<double> zstate;
-   
-         invcovar = inverse(Cov);
+         Matrix<double> InvCov = inverse(Cov);
+         addAPrioriInformation(InvCov, X);
+      }
+      catch(MatrixException& me) {
+         GPSTK_THROW(me);
+      }
+   }
+
+   // --------------------------------------------------------------------------------
+   void SRI::addAPrioriInformation(const Matrix<double>& InvCov,
+                                   const Vector<double>& X)
+      throw(MatrixException)
+   {
+      if(InvCov.rows() != InvCov.cols() || InvCov.rows() != R.rows()
+            || X.size() != R.rows()) {
+         MatrixException me("Invalid input dimensions:\n  SRI has dimension "
+            + asString<int>(R.rows()) + ",\n  while input is InvCov("
+            + asString<int>(InvCov.rows()) + "x"
+            + asString<int>(InvCov.cols()) + ") and X("
+            + asString<int>(X.size()) + ")."
+            );
+         GPSTK_THROW(me);
+      }
+
+      try {
          Cholesky<double> Ch;
-         Ch(invcovar);
-         zstate = Ch.U * X;            // R = UT(inv(Cov)) and z = R*X
-         SrifMU(R, Z, Ch.U, zstate);
+         Ch(InvCov);
+         Vector<double> apZ = Ch.U * X;      // R = UT(inv(Cov)) and z = R*X
+         SrifMU(R, Z, Ch.U, apZ);
       }
       catch(MatrixException& me) {
          GPSTK_THROW(me);
@@ -725,7 +804,7 @@ using namespace StringUtils;
    }
 
    //---------------------------------------------------------------------------------
-   // This routine uses the Householder algorithm to update the SRIFilter
+   // This routine uses the Householder algorithm to update the SRI
    // state and covariance.
    // Input:
    //    R  a priori SRI matrix (upper triangular, dimension N)
@@ -755,7 +834,7 @@ using namespace StringUtils;
    // column at a time, without actually constructing the transformation
    // matrix.  Let y be column k of the input matrix.  y can be zeroed
    // below the diagonal as follows:  let sum=sign(y(k))*sqrt(y*y), and
-   // define vector u(k)=y(k)+sum, u(j)=y(j) (j.gt.k).  This defines the
+   // define vector u(k)=y(k)+sum, u(j)=y(j) for j>k.  This defines the
    // transformation matrix as (1-bu*u), with b=2/u*u=1/sum*u(k).
    // Redefine y(k)=u(k) and apply the transformation to elements of the
    // input matrix below and to the right of the (k,k) element.  This 

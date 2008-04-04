@@ -56,26 +56,31 @@
 //------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk;
+using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
-void ComputeSingleDifferences(string baseline, map<SDid,RawData>& SDmap);
-int ComputeDoubleDifferences(map<SDid,RawData>& SDmap);
-//int OutputDDData(void);                      // DataIO.cpp
+void ComputeSingleDifferences(string baseline, map<SDid,RawData>& SDmap)
+   throw(Exception);
+int ComputeDoubleDifferences(map<SDid,RawData>& SDmap) throw(Exception);
 
 //------------------------------------------------------------------------------------
 // other prototypes
-bool ElevationMask(double elevation, double azimuth);       // ElevationMask.cpp
+// ElevationMask.cpp
+bool ElevationMask(double elevation, double azimuth) throw(Exception);
 
 //------------------------------------------------------------------------------------
-int DoubleDifference(void)
+int DoubleDifference(void) throw(Exception)
 {
 try {
    int n,i,j,k;
       // map to hold all buffered single differences for one baseline
    map<SDid,RawData> SDmap;
 
-   if(CI.Verbose) oflog << "BEGIN DoubleDifference()" << endl;
+   if(CI.Verbose) oflog << "BEGIN DoubleDifference()"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
 
       // clear any existing DDs
    DDDataMap.clear();
@@ -141,10 +146,9 @@ try {
          // now compute double differences - according to timetable
       if(ComputeDoubleDifferences(SDmap)) return 1;
 
-   }  // end loop over baselines
+         // check that there are non-zero double differences
 
-      // dump buffers to a file
-   // no - do after editing OutputDDData();
+   }  // end loop over baselines
 
    return 0;
 }
@@ -157,14 +161,15 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Compute all single differences 'site1' - 'site2', using the RawDataBuffers in
 // Stations[site], and store the results in the given map<SDid,RawData>.
 void ComputeSingleDifferences(string baseline, map<SDid,RawData>& SDmap)
+   throw(Exception)
 {
 try {
    int i,j,beg,end;
    GSatID sat;
 
       // decompose the baseline
-   string site1=StringUtils::word(baseline,0,'-');
-   string site2=StringUtils::word(baseline,1,'-');
+   string site1=word(baseline,0,'-');
+   string site2=word(baseline,1,'-');
 
       // find the beginning and ending *counts* of good data for this baseline
    if(QueryTimeTable(baseline,beg,end)) {
@@ -247,7 +252,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // Assume SDmap is all for the same baseline
-int ComputeDoubleDifferences(map<SDid,RawData>& SDmap)
+int ComputeDoubleDifferences(map<SDid,RawData>& SDmap) throw(Exception)
 {
 try {
    bool frst,ok;
@@ -341,9 +346,11 @@ try {
             nn2 = int(dd + (dd > 0 ? 0.5 : -0.5));
             tddb.L2bias = wl2 * nn2;
             oflog << " Phase bias (initial) on " << ddid
-               << " at " << setw(3) << count << " "
-               << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
-               << " L1: " << setw(14) << nn1 << " L2: " << setw(14) << nn2 << endl;
+               << " at " << setw(4) << count << " "
+               << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g");
+            if(CI.Frequency != 2) oflog << " L1: " << setw(10) << nn1;
+            if(CI.Frequency != 1) oflog << " L2: " << setw(10) << nn2;
+            oflog << endl;
             //tddb.lastresetcount = count;
             tddb.resets.push_back(tddb.count.size());    // always one at beginning
             tddb.prevL1 = (ddL1-ddER)+tddb.L1bias;
@@ -365,9 +372,11 @@ try {
             long ndb1 = long(db1 + (db1 > 0 ? 0.5 : -0.5));
             long ndb2 = long(db2 + (db2 > 0 ? 0.5 : -0.5));
             oflog << " Phase bias (reset  ) on " << ddid
-               << " at " << setw(3) << count << " "
-               << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
-               << " L1: " << setw(14) << ndb1 << " L2: " << setw(14) << ndb2 << endl;
+               << " at " << setw(4) << count << " "
+               << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g");
+            if(CI.Frequency != 2) oflog << " L1: " << setw(10) << ndb1;
+            if(CI.Frequency != 1) oflog << " L2: " << setw(10) << ndb2;
+            oflog << endl;
             ddb.L1bias -= wl1 * ndb1;
             ddb.L2bias -= wl2 * ndb2;
             //ddb.lastresetcount = count;

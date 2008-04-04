@@ -49,29 +49,133 @@
 
 // DDBase
 #include "DDBase.hpp"
+#include "index.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
-// prototypes -- this module only
-int OutputClockData(void);             // DataIO.cpp
+// prototypes -- for this module only
+int RemoveClockJumps(void) throw(Exception);             // here
+int OutputClockData(void) throw(Exception);              // DataOutput.cpp
 
 //------------------------------------------------------------------------------------
-int ClockModel(void)
+int ClockModel(void) throw(Exception)
 {
 try {
-   if(CI.Verbose) oflog << "BEGIN ClockModel()"; // << endl;
+   int iret=0;
+
+   if(CI.Verbose) oflog << "BEGIN ClockModel()"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      ; //<< endl;
    oflog << " -- ClockModel() is not yet implemented." << endl;
 
-   OutputClockData();      // may be done in ReadRawData if PRS is far off
+   // TD remove discontinuitites in the clock model by looking at second differences
+   // of the Station.ClockBuffer data. These are caused when the number of satellites
+   // in the PR solution changes. Also remove an average by summing up the weighted
+   // average jump removed.
+   iret = RemoveClockJumps();
+   if(iret) return iret;
 
-   return 0;
+   // output the clock data - Station.ClockBuffer and RxTimeOffset
+   // this may be called just before abort in ReadAndProcessRawData, if PRS is far off
+   OutputClockData();
+
+   return iret;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end ClockModel()
 
+//------------------------------------------------------------------------------------
+int RemoveClockJumps(void) throw(Exception)
+{
+try {
+   if(CI.Verbose) oflog << "BEGIN RemoveClockJumps()" << endl;
+
+   bool jump;
+   int i,n,iprev;
+   double curr,prev,prevprev,fdiff,sdiff,prevsdiff,frac,offset;
+   DayTime tt;
+   map<int,double> jumps;
+   map<string,Station>::iterator it;
+
+   for(it=Stations.begin(); it != Stations.end(); it++) {
+         // loop over epochs
+      //offset = 0.0;
+      jumps.clear();
+      for(n=0,i=0; i<it->second.ClockBuffer.size(); i++) {
+         curr = it->second.ClockBuffer[i];
+         // when PRS fails, 0.0 is pushed into ClockBuffer
+         if(curr == 0.0) continue;
+         tt = FirstEpoch + it->second.CountBuffer[i]*CI.DataInterval;
+
+         // second difference at (i) is (i)-2(i-1)+(i-2) ; ignore gaps in time
+         if(n > 1) {
+            jump = false;
+            fdiff = curr-prev;
+            sdiff = curr-2*prev+prevprev;
+            frac = 2*fabs(fabs(sdiff)-fabs(prevsdiff))/(fabs(sdiff)+fabs(prevsdiff));
+            if(n>2 && fabs(sdiff)>0.3 && fabs(prevsdiff)>0.3
+                   && sdiff*prevsdiff<0. && frac < 0.15) {
+               jump = true;
+               jumps[iprev] = prev-prevprev;
+               oflog << "Define jump at " << iprev << endl;
+               //offset += prev-prevprev;
+            }
+            //curr = it->second.ClockBuffer[i] += offset;
+
+            //oflog << "C2D " << it->first << " " << tt.printf("%4F %10.3g")
+            //   << fixed << setprecision(6)
+            //   << " " << setw(10) << curr
+            //   << " " << setw(10) << fdiff
+            //   << " " << setw(10) << sdiff;
+            //if(jump) oflog << " jump " << frac;
+            //oflog << endl;
+
+            prevsdiff = sdiff;
+         }
+
+         iprev = i;
+         prevprev = prev;
+         prev = curr;
+         n++;
+
+      }
+
+      jump = false;
+      offset = 0.0;
+      map<int,double>::const_iterator kt = jumps.begin();
+      for(n=0,i=0; i<it->second.ClockBuffer.size(); i++) {
+         curr = it->second.ClockBuffer[i];
+         if(curr == 0.0) continue;
+         tt = FirstEpoch + it->second.CountBuffer[i]*CI.DataInterval;
+         if(kt != jumps.end() && kt->first == i) {
+            oflog << "Found jump at " << i << endl;
+            jump = true;
+            offset += kt->second;
+            kt++;
+         }
+         it->second.ClockBuffer[i] -= offset;
+
+         //oflog << "C2DF " << it->first << " " << tt.printf("%4F %10.3g")
+         //   << fixed << setprecision(6)
+         //   << " " << setw(10) << curr
+         //   << " " << setw(10) << curr-offset;
+         //if(jump) { oflog << " jump " << setw(10) << offset; jump=false; }
+         //oflog << endl;
+      }
+   }
+
+   return 0;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}   // end RemoveClockJumps()
+
+//------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------

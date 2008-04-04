@@ -70,20 +70,25 @@ static ofstream tddofs;          // output stream for OutputTDDFile
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
-int EditDDResets(const DDid& ddid, DDData& dddata);
-int EditDDIsolatedPoints(const DDid& ddid, DDData& dddata);
-int EditDDSlips(const DDid& ddid, DDData& dddata, int frequency);
-int EditDDOutliers(const DDid& ddid, DDData& dddata, int frequency);
-//void LSPolyFunc(Vector<double>& X, Vector<double>& f, Matrix<double>& P);
+int EditDDResets(const DDid& ddid, DDData& dddata) throw(Exception);
+int EditDDIsolatedPoints(const DDid& ddid, DDData& dddata) throw(Exception);
+int EditDDSlips(const DDid& ddid, DDData& dddata, int frequency) throw(Exception);
+int EditDDOutliers(const DDid& ddid, DDData& dddata, int frequency) throw(Exception);
+//void LSPolyFunc(Vector<double>& X, Vector<double>& f, Matrix<double>& P)
+//   throw(Exception);
 // prototypes -- DataOutput.cpp
-int OutputRawDData(const DDid& ddid, const DDData& dddata, const vector<int>& mark);
-int OutputDDData(void);
+int OutputRawDData(const DDid& ddid, const DDData& dddata, const vector<int>& mark)
+   throw(Exception);
+int OutputDDData(void) throw(Exception);
 
 //------------------------------------------------------------------------------------
-int EditDDs(void)
+int EditDDs(void) throw(Exception)
 {
 try {
-   if(CI.Verbose) oflog << "BEGIN EditDDs()" << endl;
+   if(CI.Verbose) oflog << "BEGIN EditDDs()"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
 
    if(!CI.OutputTDDFile.empty()) {
       tddofs.open(CI.OutputTDDFile.c_str(),ios::out);
@@ -225,36 +230,36 @@ try {
 
       // -------------------------------------------------------------------
       // output DD summary
-   if(CI.Screen) {
-      cout << "Double differences summary:" << endl;
-      for(k=1,it=DDDataMap.begin(); it!=DDDataMap.end(); it++,k++) {
-         cout << " " << setw(2) << k << " " << it->first
-            << " " << setw(5) << it->second.count.size()
-            << " " << setw(5) << it->second.count[0]
-            << " - " << setw(5) << it->second.count[it->second.count.size()-1];
-         for(i=0; i<it->second.count.size()-1; i++) {
-            j = it->second.count.at(i+1) - it->second.count.at(i);
-            if(j > 1)
-               cout << " (" << it->second.count.at(i)+1 << ":" << j-1 << ")";
-         }
-         cout << endl;
-      }
-   }
-   if(CI.Verbose) {
-      oflog << "Double differences summary:" << endl;
-      for(k=1,it=DDDataMap.begin(); it!=DDDataMap.end(); it++,k++) {
+   {
+      // use this loop to compute the number of DDs
+      long nDDs;
+      ostringstream oss;
+      oss << "Double differences summary:" << endl;
+      for(k=1,nDDs=0,it=DDDataMap.begin(); it!=DDDataMap.end(); it++,k++) {
             // output
-         oflog << " " << setw(2) << k << " " << it->first
+         oss << " " << setw(2) << k << " " << it->first
             << " " << setw(5) << it->second.count.size()
             << " " << setw(5) << it->second.count[0]
             << " - " << setw(5) << it->second.count[it->second.count.size()-1];
+         nDDs += it->second.count.size();
                // gaps - (count : number of pts)
          for(i=0; i<it->second.count.size()-1; i++) {
             j = it->second.count.at(i+1) - it->second.count.at(i);
-            if(j > 1)
-               oflog << " (" << it->second.count.at(i)+1 << ":" << j-1 << ")";
+            if(j > 1) oss << " (" << it->second.count.at(i)+1 << ":" << j-1 << ")";
          }
-         oflog << endl;
+         oss << endl;
+      }
+         // output
+      if(CI.Verbose) oflog << oss.str();
+      if(CI.Screen) cout << oss.str();
+
+         // check that there were some DDs
+      if(k <= 1 || nDDs < 500) {              // what is the min number of DDs ?
+         oflog << "Too few double differences (" << nDDs
+            << ") were found.. Abort." << endl;
+         cout << "Too few double differences (" << nDDs
+            << ") were found.. Abort." << endl;
+         return -3;
       }
    }
 
@@ -273,7 +278,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // solving for different biases (separated in time) for the same DDid.
 // Therefore, this routine simply deletes all but the largest unbroken segment
 // separated by resets.
-int EditDDResets(const DDid& ddid, DDData& dddata)
+int EditDDResets(const DDid& ddid, DDData& dddata) throw(Exception)
 {
 try {
    int i,j,ibeg,iend;
@@ -344,20 +349,27 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int EditDDIsolatedPoints(const DDid& ddid, DDData& dddata)
+int EditDDIsolatedPoints(const DDid& ddid, DDData& dddata) throw(Exception)
 {
 try {
+   //if(CI.Verbose) oflog << "BEGIN EditDDIsolatedPoints()"
+   //   << " at total time " << fixed << setprecision(3)
+   //   << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+   //   << endl;
+
    int i,j,gappast,gapfuture;
 
    // loop over all counts
    // i is current (good) point, j is the next good point
-   i = 0; while(i<dddata.count.size() & mark[i]==0) i++;     // find first good pt
+   i = 0; while(i<dddata.count.size() && mark[i]==0) i++;     // find first good pt
 
    gapfuture = CI.MaxGap;
    while(i < dddata.count.size()) {
       gappast = gapfuture;
 
-      j = i+1; while(j<dddata.count.size() & mark[j]==0) j++;// find next good pt
+      // find next good pt
+      j = i+1;
+      while(j < dddata.count.size() && mark[j]==0) j++;
 
       if(j < dddata.count.size()) gapfuture = dddata.count[j] - dddata.count[i];
       else                        gapfuture = CI.MaxGap;
@@ -381,7 +393,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int EditDDSlips(const DDid& ddid, DDData& dddata, int frequency)
+int EditDDSlips(const DDid& ddid, DDData& dddata, int frequency) throw(Exception)
 {
 try {
    int i,j,k,n,m,tdcount,tddt,ii,iter;
@@ -490,7 +502,7 @@ try {
 
          oflog << " TUR " << ddid << " L" << frequency << fixed << setprecision(3)
             << " " << iter
-            << " " << setw(4) << tsstats.N()
+            << " " << setw(5) << tsstats.N()
             << " " << setw(7) << tsstats.AverageY()
             << " " << setw(7) << tsstats.StdDevY()
             << " " << setw(7) << tsstats.SigmaYX()
@@ -585,7 +597,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // ASWA CTRA G11 G14  T202B
 // ASWA CTRA G16 G25  T202D
 // ASWA CTRA G20 G25  T202D
-int EditDDOutliers(const DDid& ddid, DDData& dddata, int frequency)
+int EditDDOutliers(const DDid& ddid, DDData& dddata, int frequency) throw(Exception)
 {
 try {
    int i,j,n,tol;
@@ -623,6 +635,9 @@ try {
          cnt.resize(M);      // important -- see LSPolyFunc()
       }
 
+         // fail if too little data
+      if(dat.size() < 10) break;
+
          // ... compute stats on it
       tsstats.Reset();
       tsstats.Add(cnt,dat);
@@ -633,7 +648,7 @@ try {
       if(CI.Verbose) {
          oflog << " SUR " << ddid << " L" << frequency << " " << iter
             << fixed << setprecision(3)
-            << " " << setw(4) << tsstats.N()
+            << " " << setw(5) << tsstats.N()
             << " " << setw(7) << tsstats.AverageY()
             << " " << setw(7) << tsstats.StdDevY()
             << " " << setw(7) << tsstats.SigmaYX()
@@ -772,6 +787,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // compute the partials matrix P and the solution at each data point (Vector f),
 // given the solution Vector X. Called by SRIFilter::leastSquaresEstimation()
 //void LSPolyFunc(Vector<double>& X, Vector<double>& f, Matrix<double>& P)
+//   throw(Exception)
 //{
 //   try {
 //      for(int i=0; i<LScount.size(); i++) {

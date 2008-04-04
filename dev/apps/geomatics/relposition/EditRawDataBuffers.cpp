@@ -55,23 +55,25 @@ using namespace gpstk;
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
-int OutputRawData(void);                     // DataIO.cpp
+int OutputRawData(void) throw(Exception);                     // DataOutput.cpp
 
 //------------------------------------------------------------------------------------
-int EditRawDataBuffers(void)
+int EditRawDataBuffers(void) throw(Exception)
 {
 try {
    int i,j,k;
    map<string,Station>::iterator kt;
    map<GSatID,RawData>::iterator it;
 
-   if(CI.Verbose) oflog << "BEGIN EditRawDataBuffers()" << endl;
+   if(CI.Verbose) oflog << "BEGIN EditRawDataBuffers()"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
 
    // find the largest value of Count seen in the raw data (same will be done for DD)
    maxCount = 0;
    for(kt=Stations.begin(); kt != Stations.end(); kt++) {
       vector<GSatID> Emptys;
-
       Station& st = kt->second;
 
       // first find and remove empty RawData's
@@ -86,46 +88,63 @@ try {
       }
          // remove empty buffers
       for(i=0; i<Emptys.size(); i++)
-         st.RawDataBuffers.erase(Emptys[i]);
+         st.RawDataBuffers.erase(Emptys[i]);    // erase map
 
          // remove isolated points (single points with gaps > CI.MaxGap on both sides
       for(it=st.RawDataBuffers.begin(); it != st.RawDataBuffers.end(); it++) {
          RawData& rd=it->second;
-         vector<int>::iterator cjt,cit=rd.count.begin();
+         vector<int>::iterator cit, cjt;
          vector<double>::iterator ditL1=rd.L1.begin();
          vector<double>::iterator ditL2=rd.L2.begin();
          vector<double>::iterator ditP1=rd.P1.begin();
          vector<double>::iterator ditP2=rd.P2.begin();
+         vector<double>::iterator ditS1=rd.S1.begin();
+         vector<double>::iterator ditS2=rd.S2.begin();
          vector<double>::iterator ditER=rd.ER.begin();
          vector<double>::iterator ditEL=rd.elev.begin();
          vector<double>::iterator ditAZ=rd.az.begin();
          k = CI.MaxGap+1;      // k is the gap behind point i
-         while(cit != rd.count.end()) {
-            (cjt = cit)++;     // cjt points to the next count
-            //   gap or begin before     &&      gap or end after
+         cjt = cit = rd.count.begin();
+         cjt++;
+         while(1) {
+            // gap or begin before &&    end            or     gap    after
             if(k >= CI.MaxGap && (cjt == rd.count.end() || *cjt - *cit > CI.MaxGap)) {
+               if(CI.Debug) {
+                  oflog << "Found isolated point with gap " << k
+                     << " pts before and ";
+                  if(cjt != rd.count.end()) oflog << *cjt - *cit << " pts after, ";
+                  else oflog << " end point after, ";
+                  oflog << "at " << *cit << endl;
+               }
                // this is an isolated pt
-               k = *cjt - *cit;
+               if(cjt != rd.count.end()) k = *cjt - *cit;
                cit = rd.count.erase(cit);    // cit now pts to the following element
                ditL1 = rd.L1.erase(ditL1);
                ditL2 = rd.L2.erase(ditL2);
                ditP1 = rd.P1.erase(ditP1);
                ditP2 = rd.P2.erase(ditP2);
+               ditS1 = rd.S1.erase(ditS1);
+               ditS2 = rd.S2.erase(ditS2);
                ditER = rd.ER.erase(ditER);
                ditEL = rd.elev.erase(ditEL);
                ditAZ = rd.az.erase(ditAZ);
+               if(cit == rd.count.end()) break;
             }
             else {
+               if(cjt == rd.count.end()) break;
                k = *cjt - *cit;
                cit++;
                ditL1++;
                ditL2++;
                ditP1++;
                ditP2++;
+               ditS1++;
+               ditS2++;
                ditER++;
                ditEL++;
                ditAZ++;
             }
+            cjt++;                           // cjt points to the next count
          }
       }
 
@@ -135,7 +154,6 @@ try {
             it->second.count[int(it->second.count.size())-1] > maxCount)
                maxCount = it->second.count[int(it->second.count.size())-1];
       }
-
    }
 
    if(maxCount <= 0) {
@@ -152,14 +170,17 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-int OutputRawDataBuffers(void)
+int OutputRawDataBuffers(void) throw(Exception)
 {
 try {
    int i,j,k;
    map<string,Station>::iterator kt;
    map<GSatID,RawData>::const_iterator it;
 
-   if(CI.Verbose) oflog << "BEGIN OutputRawDataBuffers()" << endl;
+   if(CI.Verbose) oflog << "BEGIN OutputRawDataBuffers()"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
 
    oflog << "Raw buffered data summary : n SITE sat npts span (count,gap size) (..)"
       << endl;

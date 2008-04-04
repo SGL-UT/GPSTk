@@ -57,11 +57,9 @@ using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
-extern ofstream ofprs;           // ReadRawData.cpp
-
-//------------------------------------------------------------------------------------
 // called by ProcessRawData
-int ComputeRAIMSolution(ObsFile& of, DayTime& tt, vector<SatID>& Sats)
+int ComputeRAIMSolution(ObsFile& of, DayTime& tt, vector<SatID>& Sats, ofstream *pofs)
+   throw(Exception)
 {
 try {
    int nsvs,i,iret;
@@ -80,12 +78,6 @@ try {
       // pull data out of raw data map
    map<GSatID,DataStruct>::iterator it;
    for(nsvs=0,it=st.RawDataMap.begin(); it != st.RawDataMap.end(); it++) {
-      //if(CI.Frequency == 1) PR = it->second.P1;
-      //else if(CI.Frequency == 2) PR = it->second.P2;
-      //else if(CI.Frequency == 3) {
-      //   if(it->second.P1 == 0 || it->second.P2 == 0) PR = 0.0;
-      //   else PR = if1r * it->second.P1 + if2r * it->second.P2;
-      //}
          // use dual frequency if you have it
       if(it->second.P1 != 0 && it->second.P2 != 0)
          PR = if1r * it->second.P1 + if2r * it->second.P2;
@@ -109,17 +101,13 @@ try {
             << " " << setw(13) << setprecision(3) << Ranges[i] << endl;
    }
 
-      // compute a RAIM solution
+      // compute a RAIM solution, hence need more than 4 satellites
    if(nsvs <= 4) {
       if(CI.Verbose) oflog << "Not enough data to compute RAIM solution for file "
          << of.name << " at time "
          << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
       return -2;
    }
-
-   //temp
-//cout << "RAIM Compute for file " << of.name << " at time ";
-//cout << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
 
    iret = st.PRS.RAIMCompute(tt, Sats, Ranges, *pEph, CI.pTropModel);
 
@@ -149,31 +137,32 @@ try {
       return iret;
    }
 
-   if(!CI.OutputPRSFile.empty()) {
-      ofprs << "PRS " << of.label << " " << setw(2) << nsvs
+   // output to OutputPRSFile, opened in ReadAndProcessRawData()
+   if(pofs) {
+      *pofs << "PRS " << of.label << " " << setw(2) << nsvs
          << tt.printf(" %4F %10.3g");
 
       // if a Position is defined for this Station, output residuals
       if(st.pos.getSystemName() != string("Unknown"))
-         ofprs
+         *pofs
          << " " << f166 << st.PRS.Solution(0)-st.pos.X()
          << " " << f166 << st.PRS.Solution(1)-st.pos.Y()
          << " " << f166 << st.PRS.Solution(2)-st.pos.Z();
       else
-         ofprs
+         *pofs
          << " " << f166 << st.PRS.Solution(0)
          << " " << f166 << st.PRS.Solution(1)
          << " " << f166 << st.PRS.Solution(2);
 
-      ofprs
+      *pofs
          << " " << f166 << st.PRS.Solution(3)
          << " " << f62 << st.PRS.RMSResidual;
          //<< " " << f51 << st.PRS.MaxSlope
          //<< " " << st.PRS.NIterations
          //<< " " << f82s << st.PRS.Convergence;
-      for(i=0; i<Sats.size(); i++) ofprs << " " << setw(3) << Sats[i].id;
-      ofprs << " (" << iret << ")" << (st.PRS.isValid() ? " V" : " NV");
-      ofprs << endl;
+      for(i=0; i<Sats.size(); i++) *pofs << " " << setw(3) << Sats[i].id;
+      *pofs << " (" << iret << ")" << (st.PRS.isValid() ? " V" : " NV");
+      *pofs << endl;
    }
 
    return 0;
@@ -184,7 +173,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end ComputeRAIMSolution()
 
 //------------------------------------------------------------------------------------
-void RAIMedit(ObsFile& of, vector<SatID>& Sats)
+void RAIMedit(ObsFile& of, vector<SatID>& Sats) throw(Exception)
 {
 try {
    int i;

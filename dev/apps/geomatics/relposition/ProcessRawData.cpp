@@ -69,17 +69,19 @@ static vector<SatID> Sats;     // used by RAIM, bad ones come back marked (id < 
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
-   // ComputeRAIMSolution.cpp
-int ComputeRAIMSolution(ObsFile& of, DayTime& tt, vector<SatID>& Sats);
-void RAIMedit(ObsFile& of, vector<SatID>& Sats);
-   // here
-void FillRawData(ObsFile& of);
-void GetEphemerisRange(ObsFile& obsfile, DayTime& timetag);
-void EditRawData(ObsFile& of);
-int BufferRawData(ObsFile& of);
+   // ComputeRAIMSolution.cpp :
+int ComputeRAIMSolution(ObsFile& of,DayTime& tt,vector<SatID>& Sats,ofstream *pofs)
+   throw(Exception);
+void RAIMedit(ObsFile& of, vector<SatID>& Sats) throw(Exception);
+   // those defined here
+void FillRawData(ObsFile& of) throw(Exception);
+void GetEphemerisRange(ObsFile& obsfile, DayTime& timetag) throw(Exception);
+void EditRawData(ObsFile& of) throw(Exception);
+int BufferRawData(ObsFile& of) throw(Exception);
 
 //------------------------------------------------------------------------------------
-int ProcessRawData(ObsFile& obsfile, DayTime& timetag)
+int ProcessRawData(ObsFile& obsfile, DayTime& timetag, ofstream *pofs)
+   throw(Exception)
 {
 try {
    int iret;
@@ -96,7 +98,7 @@ try {
 
       // fill RawDataMap for Station, and compute pseudorange solution
       // return Sats, with bad satellites marked with (id < 0)
-   iret = ComputeRAIMSolution(obsfile,timetag,Sats);
+   iret = ComputeRAIMSolution(obsfile,timetag,Sats,pofs);
    if(iret) {
       if(CI.Verbose) oflog
          << " Warning - ProcessRawData for station " << obsfile.label
@@ -159,14 +161,14 @@ try {
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}
+}  // end ProcessRawData
 
 //------------------------------------------------------------------------------------
-void FillRawData(ObsFile& of)
+void FillRawData(ObsFile& of) throw(Exception)
 {
 try {
    //int nsvs;
-   double C1;
+   //double C1;
    GSatID sat;
    RinexObsData::RinexSatMap::const_iterator it;
    RinexObsData::RinexObsTypeMap otmap;
@@ -176,6 +178,9 @@ try {
 
       // loop over sat=it->first, ObsTypeMap=it->second
       // fill DataStruct
+      // Don't include L2 when user has specified --Freq L1 -- there have been
+      // cases where L2 is present but bad, and user had no recourse but to edit
+      // the RINEX file to remove L2 before processing
    //nsvs = 0;
    for(it=of.Robs.obs.begin(); it != of.Robs.obs.end(); ++it) {
       sat = it->first;
@@ -190,29 +195,46 @@ try {
          // pull out the data
       DataStruct D;
       D.P1 = D.P2 = D.L1 = D.L2 = D.D1 = D.D2 = D.S1 = D.S2 = 0;
-      if(of.inP1>-1 && (jt=otmap.find(of.Rhead.obsTypeList[of.inP1])) != otmap.end())
-         D.P1 = jt->second.data;
-      if(of.inP2>-1 && (jt=otmap.find(of.Rhead.obsTypeList[of.inP2])) != otmap.end())
-         D.P2 = jt->second.data;
-      if(of.inL1>-1 && (jt=otmap.find(of.Rhead.obsTypeList[of.inL1])) != otmap.end())
-         D.L1 = jt->second.data;
-      if(of.inL2>-1 && (jt=otmap.find(of.Rhead.obsTypeList[of.inL2])) != otmap.end())
-         D.L2 = jt->second.data;
-      if(of.inD1>-1 && (jt=otmap.find(of.Rhead.obsTypeList[of.inD1])) != otmap.end())
-         D.D1 = jt->second.data;
-      if(of.inD2>-1 && (jt=otmap.find(of.Rhead.obsTypeList[of.inD2])) != otmap.end())
-         D.D2 = jt->second.data;
-      if(of.inS1>-1 && (jt=otmap.find(of.Rhead.obsTypeList[of.inS1])) != otmap.end())
-         D.S1 = jt->second.data;
-      if(of.inS2>-1 && (jt=otmap.find(of.Rhead.obsTypeList[of.inS2])) != otmap.end())
-         D.S2 = jt->second.data;
-      if(of.inC1>-1 && (jt=otmap.find(of.Rhead.obsTypeList[of.inC1])) != otmap.end())
-         C1 = jt->second.data;
+      if(of.inP1 > -1 && CI.Frequency != 2 &&
+         (jt=otmap.find(of.Rhead.obsTypeList[of.inP1])) != otmap.end())
+            D.P1 = jt->second.data;
+      if(of.inP2 > -1 && CI.Frequency != 1 &&
+         (jt=otmap.find(of.Rhead.obsTypeList[of.inP2])) != otmap.end())
+            D.P2 = jt->second.data;
+      if(of.inL1 > -1 && CI.Frequency != 2 &&
+         (jt=otmap.find(of.Rhead.obsTypeList[of.inL1])) != otmap.end())
+            D.L1 = jt->second.data;
+      if(of.inL2 > -1 && CI.Frequency != 1 &&
+         (jt=otmap.find(of.Rhead.obsTypeList[of.inL2])) != otmap.end())
+            D.L2 = jt->second.data;
+      if(of.inD1 > -1 && CI.Frequency != 2 &&
+         (jt=otmap.find(of.Rhead.obsTypeList[of.inD1])) != otmap.end())
+            D.D1 = jt->second.data;
+      if(of.inD2 > -1 && CI.Frequency != 1 &&
+         (jt=otmap.find(of.Rhead.obsTypeList[of.inD2])) != otmap.end())
+            D.D2 = jt->second.data;
+      if(of.inS1 > -1 && CI.Frequency != 2 &&
+         (jt=otmap.find(of.Rhead.obsTypeList[of.inS1])) != otmap.end())
+            D.S1 = jt->second.data;
+      if(of.inS2 > -1 && CI.Frequency != 1 &&
+         (jt=otmap.find(of.Rhead.obsTypeList[of.inS2])) != otmap.end())
+            D.S2 = jt->second.data;
+      //if(of.inC1 > -1 && CI.Frequency != 2 &&
+      //   (jt=otmap.find(of.Rhead.obsTypeList[of.inC1])) != otmap.end())
+      //      C1 = jt->second.data;
 
       // if P1 is not available, but C1 is, use C1 in place of P1
-      if((of.inP1 == -1 || D.P1 == 0) && of.inC1 > -1 &&
-         (jt=otmap.find(of.Rhead.obsTypeList[of.inC1])) != otmap.end() )
-            D.P1 = jt->second.data;
+      if((of.inP1 == -1 || D.P1 == 0) &&
+          of.inC1 > -1 && CI.Frequency != 2 &&
+          (jt=otmap.find(of.Rhead.obsTypeList[of.inC1])) != otmap.end())
+             D.P1 = jt->second.data;
+
+      // temp - round L1 and L2 to 1/256 cycle
+      //{
+      //   double dL1 = D.L1 - long(D.L1);
+      //   double cL1 = double(long(256.*dL1))/256.;
+      //   D.L1 -= dL1 - cL1;
+      //}
 
       st.RawDataMap[sat] = D;
       st.time = SolutionEpoch;
@@ -226,7 +248,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end FillRawData()
 
 //------------------------------------------------------------------------------------
-void GetEphemerisRange(ObsFile& obsfile, DayTime& timetag)
+void GetEphemerisRange(ObsFile& obsfile, DayTime& timetag) throw(Exception)
 {
 try {
    CorrectedEphemerisRange CER;        // temp
@@ -275,7 +297,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void EditRawData(ObsFile& obsfile)
+void EditRawData(ObsFile& obsfile) throw(Exception)
 {
 try {
    int i;
@@ -290,11 +312,12 @@ try {
          // bad pseudorange
          //   (CI.Frequency != 2 && it->second.P1 < 1000.0) ||   // TD
          //   (CI.Frequency != 1 && it->second.P2 < 1000.0) ||
+
             // below elevation cutoff (for PRS)
          (it->second.elev < CI.PRSMinElevation)
-         )//end if
-      {
-         BadSVs.push_back(it->first);
+
+         ) { //end if
+            BadSVs.push_back(it->first);
       }
    }
 
@@ -313,17 +336,15 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // add good raw data in RawDataMap to RawDataBuffers for the appropriate station
 // and satellite. Also buffer the clock solution and sigma.
 // NB these buffers must remain parallel.
-int BufferRawData(ObsFile& obsfile)
+int BufferRawData(ObsFile& obsfile) throw(Exception)
 {
 try {
-   int n;
-
    Station& st=Stations[obsfile.label];
 
    map<GSatID,DataStruct>::iterator it;
    map<GSatID,RawData>::iterator jt;
       // loop over satellites
-   for(n=0,it=st.RawDataMap.begin(); it != st.RawDataMap.end(); it++) {
+   for(it=st.RawDataMap.begin(); it != st.RawDataMap.end(); it++) {
 
       // find iterator for this sat in Buffers map
       jt = st.RawDataBuffers.find(it->first);
@@ -333,20 +354,21 @@ try {
          jt = st.RawDataBuffers.find(it->first);
       }
 
-      // buffer the data -- keep parallel with count and clock
+      // buffer the data -- keep parallel with count
       jt->second.count.push_back(Count);
       jt->second.L1.push_back(it->second.L1);
       jt->second.L2.push_back(it->second.L2);
       jt->second.P1.push_back(it->second.P1);
       jt->second.P2.push_back(it->second.P2);
       jt->second.ER.push_back(it->second.ER);
+      jt->second.S1.push_back(it->second.S1);
+      jt->second.S2.push_back(it->second.S2);
       jt->second.elev.push_back(it->second.elev);
       jt->second.az.push_back(it->second.az);
-      n++;
    }
 
-      // now buffer the clock solution and the timetag offset
-      // and buffer the (Station) count if there is some data
+      // buffer the clock solution and the timetag offset, and
+      // buffer the (Station) count in parallel.
       // NB these are NOT necessarily parallel to raw data buffers
    if(st.PRS.isValid()) {
       st.ClockBuffer.push_back(st.PRS.Solution(3));

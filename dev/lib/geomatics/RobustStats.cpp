@@ -37,6 +37,7 @@
 #include "Exception.hpp"
 #include "StringUtils.hpp"
 #include "Matrix.hpp"
+#include "SRI.hpp"
 #include "RobustStats.hpp"
 
 //------------------------------------------------------------------------------------
@@ -250,6 +251,7 @@ void Robust::QuantilePlot(double *yd, long nd, double *xd)
 }  // end QuantilePlot
 
 
+#define SEQUENTIAL 1     // don't see much difference in timing...
 int Robust::RobustPolyFit(double *xd, const double *td, int nd,
                           int N, double *c, double *w)
    throw(Exception)
@@ -260,35 +262,80 @@ int Robust::RobustPolyFit(double *xd, const double *td, int nd,
          GPSTK_THROW(e);
       }
 
-      int i,j,niter;
-      double x0=xd[0],t0=td[0],mad,median,conv,conv_limit=::sqrt(double(nd))*1.e-3;
-      Matrix<double> PT,P(nd,N,1.0),Cov;
-      Vector<double> Wts(nd,1.0), Coeff(N,0.0), D(nd), Res, ResCopy;
+      const int maxiter=50;
+      const double conv_limit=::sqrt(double(nd))*1.e-3;
+      int i,j,k,niter;
+      double x0=xd[0],t0=td[0],mad,median,conv;
+#ifdef SEQUENTIAL
+      double fit,dt;
+      Matrix<double> R,A(1,N+1),invR;
+      Vector<double> Z;
+#else
+      Matrix<double> PT,P(nd,N,1.0);
+      Vector<double> D(nd);
+#endif
+      Matrix<double> Cov;
+      Vector<double> Wts(nd,1.0), Coeff(N,0.0), Res(nd), ResCopy(nd);
 
+#ifndef SEQUENTIAL
       // build the data vector and the (constant) partials matrix
       for(i=0; i<nd; i++) {
          D(i) = xd[i]-x0;
          for(j=1; j<N; j++)
             P(i,j) = P(i,j-1)*(td[i]-t0);
       }
+#endif
 
       // iterate until weights don't change
       niter = 0;
       while(1) {
+#ifdef SEQUENTIAL
+         R = Matrix<double>(N,N,0.0);
+         Z = Vector<double>(N,0.0);
+         // loop over the data
+         for(i=0; i<nd; i++) {
+            //if(Wts(i) < 1.e-8) continue;             // ignore if weight is very small
+            A(0,N) = (xd[i]-x0)*Wts(i);              // data
+            dt = td[i]-t0;       
+            A(0,0) = 1.0*Wts(i);                     // partials
+            for(j=1; j<N; j++) A(0,j) = A(0,j-1)*dt;
+            SrifMU<double>(R,Z,A,1);
+         }
+#else
          // compute partials transpose multiplied by 'weight matrix'=diag(squared wts)
          PT = transpose(P);
          for(i=0; i<N; i++)
             for(j=0; j<nd; j++)
                PT(i,j) *= Wts(j)*Wts(j);
          Cov = PT * P;        // information matrix
+#endif
 
          // solve
-         try { Cov = inverse(Cov); }
-         catch(Exception& e) { return -1; }
+         try {
+#ifdef SEQUENTIAL
+         invR = inverseUT(R,&mad,&median);
+         Cov = UTtimesTranspose(invR);
+         Coeff = invR * Z;
+#else
+         Cov = inverse(Cov);
          Coeff = Cov * PT * D;
+#endif
+         }
+         catch(Exception& e) { return -1; }
 
          // compute residuals
+#ifdef SEQUENTIAL
+         // loop over the data
+         for(i=0; i<nd; i++) {
+            fit = Coeff(N-1);                      // fit = partials * coeff
+            dt = td[i]-t0;                         // delta time
+            for(j=N-2; j>=0; j--)
+               fit = fit*dt + Coeff(j);
+            ResCopy(i) = Res(i) = xd[i]-x0 - fit;  // data - fit
+         }
+#else
          ResCopy = Res = D - P*Coeff;
+#endif
 
          // compute median and MAD. NB Median() will sort the vector...
          mad = MedianAbsoluteDeviation(&(ResCopy[0]),ResCopy.size(),median);
@@ -305,9 +352,10 @@ int Robust::RobustPolyFit(double *xd, const double *td, int nd,
          }
 
          // test for convergence
-         if(++niter > 20) return -2;
+         niter++;
          conv = RMS(OldWts - Wts);
-         if(conv > 1.) return -3;
+         if(niter > maxiter) break; // return -2;
+         if(conv > 1.) break; // return -3;
          if(niter > 2 && conv < conv_limit) break;
       }
 
@@ -318,10 +366,18 @@ int Robust::RobustPolyFit(double *xd, const double *td, int nd,
          xd[i] = Res(i);
          if(w) w[i] = Wts(i);
       }
+      if(niter > maxiter) return -2;
+      if(conv > 1.) return -3;
 
+#undef SEQUENTIAL
       return 0;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
+   catch(exception& e) {
+      Exception E("std except: "+string(e.what()));
+      GPSTK_THROW(E);
+   }
+   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------

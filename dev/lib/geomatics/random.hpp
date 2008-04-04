@@ -49,4 +49,8 @@ double ARand(double low, double hi);
 /// and previous point xlast.
 double RandomWalk(double dt, double sigma, double xlast);
 
+/// Generate exponentially correlated random numbers, given sqrt variance sigma,
+/// time step dt, time constant T, and previous point xlast.
+double RandExpCor(double dt, double sigma, double T, double xlast);
+
 #endif

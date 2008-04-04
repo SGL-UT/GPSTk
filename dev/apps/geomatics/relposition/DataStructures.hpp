@@ -67,8 +67,8 @@ typedef struct data_structure {
    double P2;     // m
    double D1;     // Hz  optional when fit to phase used in synchronization
    double D2;     // Hz
-   double S1;     // dB-Hz unused
-   double S2;     // dB-Hz unused
+   double S1;     // dB-Hz
+   double S2;     // dB-Hz
    double ER;     // m
    double elev;   // degrees
    double az;     // degrees
@@ -81,6 +81,8 @@ public:
    std::vector<double> L2;      // cycles
    std::vector<double> P1;      // m
    std::vector<double> P2;      // m
+   std::vector<double> S1;      // db-Hz
+   std::vector<double> S2;      // db-Hz
    std::vector<double> ER;      // m
    std::vector<double> elev;    // deg
    std::vector<double> az;      // deg
@@ -139,29 +141,38 @@ public:
    double press;                    // pressure in mbars at sealevel
    double rhumid;                   // relative humidity in % (0-100)
 
+//#ifdef StochasticModelTest
+//   double maxSNR,maxSNRmp;          // max SNR, SNR(mp); for snr stochastic model
+//#endif // StochasticModelTest
+
    Station(void) throw();           // empty and only constructor
    ~Station(void) throw();          // destructor - free trop model
 };
 
-Station& findStationInList(std::map<std::string,Station>& SL, std::string& label);
+Station& findStationInList(std::map<std::string,Station>& SL, std::string& label)
+   throw(gpstk::Exception);
 
 // Rinex observation input files
 class ObsFile {
 public:
    std::string name;           // file name, not including path
    std::string label;          // Station label to which this obs file belongs
-   gpstk::RinexObsStream ins;  // stream for reading
-                               // TD use pointer -- operator= does not work for
-                               // RinexObsStream, yet operator= necessary to form
-                               // vector<RinexObsStream>
+   gpstk::RinexObsStream ins;  // streams for reading RINEX
+      // TD use pointer -- operator= does not work for RinexObsStream,
+      // yet operator= necessary to form vector<RinexObsStream>
    gpstk::RinexObsHeader Rhead;// RINEX header record (for reading)
    gpstk::RinexObsData Robs;   // RINEX observation record (for reading)
+
+   double dt;                  // nominal time step <= reading past header
+   gpstk::DayTime firstTime;   // first good epoch
+
    int nread;                  // number of records read (-1=unopened, 0=header read)
    bool valid;                 // set false if unopened or at EOF
    bool getNext;               // flag used by ReadNextObs to synchronize reading 
    int inC1,inP1,inP2;         // indexes in RINEX header for pseudorange
    int inL1,inL2;              // indexes in RINEX header for carrier phase
    int inD1,inD2,inS1,inS2;    // needed or used ??
+
    ObsFile(void) throw();                          // empty constructor
    ObsFile(const ObsFile& of) throw();             // copy constructor
                                                    // (need for vector<ObsFile>)

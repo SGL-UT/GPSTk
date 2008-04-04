@@ -201,7 +201,7 @@ namespace gpstk {
                  EOPPrediction& eopp)
          throw(DayTime::DayTimeException);
 
-      /** Add EOPs to the store via an inpu file: either an EOPP file
+      /** Add EOPs to the store via an input file: either an EOPP file
        *  or a flat file produced by the IERS and available at USNO
        *  (see http://maia.usno.navy.mil/ and get either file
        *  'finals.data' or finals2000A.data').

@@ -57,9 +57,18 @@ using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
-string Version("4.0 9/8/06");
+string Version("4.4 6/28/07");
+//     10/31/07 Moved ClockModel back to before Synchronize
+// 4.4  4/20/07 Removed BINEX support
+// 4.3  4/20/07 Add BINEX support - must remain consistent with novaRinex
+//4.2c 12/01/06 Reject small segments in EditDDs before calling Robust to avoid error.
+//4.2b 12/01/06 Fix DT blunder in 4.2a
+//4.2a 12/01/06 Read some data when reading headers, and intelligently choose DT.
+// 4.1  2/16/07 Enforce --Freq inside FillRawData(); earlier versions used other data.
+//     11/08/06 Move clock and ephemeris processing to after synchronization,
+//               pass pointer to ofstream for PRS output.
 // 4.0  9/08/06 Convert to SatID and new RinexObs* names
-// 3.9  7/27/06 In EditDDs: pts between two combined slips not removed, TD miscomputed
+// 3.9  7/27/06 EditDDs: pts between two combined slips not removed, TripD miscomputed
 // 3.8  7/24/06 Remove CR at EOL and read line w/o CRLF at EOF
 // 3.7  6/01/06 Added L3 and checked L2.
 // 3.6  4/01/06 Fixed rotated antenna to work properly.
@@ -96,6 +105,8 @@ string PrgmName("DDBase");    // program name, used in title, desc., and output
 string Title;                 // program name and run time, for output
 string PrgmDesc;              // program description, used in CommandInput
 ofstream oflog;               // output log file stream
+clock_t totaltime;            // for timing tests
+
 CommandInput CI;              // all command line input .. see CommandInput.hpp
 
 std::vector<std::string> Baselines;  // *computed* Baselines, (those to output in CI)
@@ -108,7 +119,7 @@ int minCount,maxCount;        // minimum and maximum timetag count seen
 int begcount,endcount;        // first and last counts of *good* data in buffers
 double wave;                  // wavelength (m) being processed (see CI.Frequency)
 
-XvtStore<SatID> *pEph;         // pointer to ephemeris store (BC or SP3)
+XvtStore<SatID> *pEph;        // pointer to ephemeris store (BC or SP3)
 EOPStore EOPList;             // store of EarthOrientation parameters
 EarthOrientation eorient;     // earth orientation parameters at mean time of dataset
 
@@ -121,7 +132,7 @@ vector<ObsFile> ObsFileList;  // list of all observation files
 map<DDid,DDData> DDDataMap;   // buffered DDs
 
 //------------------------------------------------------------------------------------
-int OutputRawData(void);                     // DataIO.cpp
+int OutputRawData(void);                     // DataOutput.cpp
 // prototypes -- this module only
 
 //------------------------------------------------------------------------------------
@@ -130,7 +141,7 @@ int main(int argc, char **argv)
 try {
       // ------------------------------------------------------------------
       // START
-   clock_t totaltime = clock();
+   totaltime = clock();
    int iret;
    DayTime CurrEpoch;
 
@@ -138,18 +149,17 @@ try {
    Title = PrgmName + ", ARL:UT DD phase estimation processor, Ver " + Version;
       // PrgmDesc description
    PrgmDesc = " Prgm " + PrgmName +
-   " will read RINEX obs data from any number of files and process them\n"
+   " will read GPS data from any number of RINEX obs files and process them\n"
    " in a double-differenced carrier phase estimation algorithm to produce precise\n"
    " estimates of relative positions. Input is on the command line, or of the same\n"
    " format in a file (see -f<file> below). DDBase is built on the GPS Toolkit (GPSTk).\n"
-   " NB. Input option --DT <data_interval_(seconds)> is required.\n"
+   " NB. Input option --DT <data_interval_(seconds)> is optional but recommended.\n"
    " NB. Stations are defined, and many inputs for each are identified, by a label\n"
    "  (called station label or id below), which is case sensitive and must be used\n"
    "  consistently throughout. It cannot be 'X','Y' or 'Z' nor contain '-' or '_';\n"
    "  four characters work best.\n"
    " NB. There must be at least two stations defined, with observation file(s)\n"
    "  provided for each, and at least one station must be fixed.\n"
-   "\n"
    " Options may be given in an input file (see -f<file>); the '#' character marks\n"
    " a comment, to EOL. All input options are shown below, followed by a\n"
    " description, and the default value, if there is one, in ().\n";
@@ -167,7 +177,7 @@ try {
 
    for(;;) {
          // ------------------------------------------------------------------
-         // get command line input
+         // get command line input; -99 is 'help' return
       if((iret = CI.GetCmdInput(argc, argv))) break;
 
          // ------------------------------------------------------------------
@@ -189,7 +199,7 @@ try {
 
          // ------------------------------------------------------------------
          // Open and read all files, compute PR solution, edit and buffer raw data
-      if((iret = ReadRawData())) break;
+      if((iret = ReadAndProcessRawData())) break;
 
          // ------------------------------------------------------------------
          // Edit buffers
@@ -204,10 +214,6 @@ try {
       if((iret = Configure(2))) break;
 
          // ------------------------------------------------------------------
-         // Orbit processing
-      if((iret = EphemerisImprovement())) break;
-
-         // ------------------------------------------------------------------
          // clock processing
       if((iret = ClockModel())) break;
 
@@ -219,7 +225,12 @@ try {
          // correct ephemeris range, elevation, and compute phase windup
       if((iret = RecomputeFromEphemeris())) break;
 
-         // output data here, as phase and elevation are changed in Recompute...
+         // ------------------------------------------------------------------
+         // Orbit processing
+      if((iret = EphemerisImprovement())) break;
+
+         // ------------------------------------------------------------------
+         // output 'raw' data here
       OutputRawData();
 
          // ------------------------------------------------------------------
@@ -246,18 +257,19 @@ try {
    }  // end for(;;)
 
       // END --------------------------------------------------------------
-      // error condition?
-   if(iret) {
-      cerr << PrgmName << " terminating with error code " << iret << endl;
-      oflog << PrgmName << " terminating with error code " << iret << endl;
+      // error condition?  -99 is 'normal' help return from GetCmdInput
+   if(iret != -99) {
+      if(iret) {
+         cerr << PrgmName << " terminating with error code " << iret << endl;
+         oflog << PrgmName << " terminating with error code " << iret << endl;
+      }
+         // compute run time
+      totaltime = clock()-totaltime;
+      cout << PrgmName << " timing: " << fixed << setprecision(3)
+         << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
+      oflog << PrgmName << " timing: " << fixed << setprecision(3)
+         << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
    }
-
-      // compute run time
-   totaltime = clock()-totaltime;
-   cout << PrgmName << " timing: " << fixed << setprecision(3)
-      << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
-   oflog << PrgmName << " timing: " << fixed << setprecision(3)
-      << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
 
    return iret;
 }

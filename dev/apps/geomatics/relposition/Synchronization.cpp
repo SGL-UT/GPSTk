@@ -69,13 +69,17 @@ using namespace gpstk;
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only -- called by Synchronization()
-void FitPhaseAndMoveData(GSatID& sat, string site, Station& st, RawData& rd);
+void FitPhaseAndMoveData(GSatID& sat, string site, Station& st, RawData& rd, int freq)
+   throw(Exception);
 
 //------------------------------------------------------------------------------------
-int Synchronization(void)
+int Synchronization(void) throw(Exception)
 {
 try {
-   if(CI.Verbose) oflog << "BEGIN Synchronization()" << endl;
+   if(CI.Verbose) oflog << "BEGIN Synchronization()"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
 
    GSatID sat;
    map<string,Station>::iterator it;
@@ -95,7 +99,10 @@ try {
             // Loop over all points in the buffers, using a sliding window.
             // For each window, fit a polynomial to the phase data.
             // At each point, evaluate the polynomial at the true receive time.
-         FitPhaseAndMoveData(sat,it->first,st,rawdat);
+         if(CI.Frequency != 2)
+            FitPhaseAndMoveData(sat,it->first,st,rawdat,1);
+         if(CI.Frequency != 1)
+            FitPhaseAndMoveData(sat,it->first,st,rawdat,2);
 
       }  // loop over sats
 
@@ -113,7 +120,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // loop over all points in the buffers of RawData, using a sliding window of fixed
 // length which is centered (as much as possible) about the buffer point of interest.
 // Process each buffer point using the data in the sliding window.
-void FitPhaseAndMoveData(GSatID& sat, string site, Station& statn, RawData& rawdat)
+void FitPhaseAndMoveData(GSatID& sat, string site, Station& statn, RawData& rawdat,
+      int freq) throw(Exception)
 {
 try {
    const int N=11;   // size of the window // best odd  // TD make input
@@ -127,10 +135,15 @@ try {
    int ngap;         // number of counts between the end pt (nend) and the next
    int nsize;        // size of the sliding window (deques)
    int i,j;
-   double x,x0,d10,d20,dx,dph1,dph2;
-   PolyFit<double> PF1,PF2;// fit polynomials to L1 and L2 phase
-   deque<int> dc;          // the sliding window : time -- keep the deques 
-   deque<double> d1,d2;    // the sliding window : data -- parallel
+   double x,x0,d0,dx,dph;
+   PolyFit<double> PF;// fit polynomials to phase
+   deque<int> dc;     // the sliding window : time -- keep the deques 
+   deque<double> dp;  // the sliding window : data -- parallel
+
+   if(CI.Verbose) oflog << "BEGIN FitPhasesAndMoveData() for site " << site
+      << " and sat " << sat << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
 
       // starting: nend is before the current point (0)
    nbeg = 0;
@@ -145,20 +158,17 @@ try {
          // -------------------------------------------------------------
          // the only way this could be true is if the current point is the
          // first point past a big (>=MaxGap) gap
-//if(CI.Verbose && site=="Aref" && sat.id==29) oflog << "LOOP nc=" << nc << " nbeg=" << nbeg << " nend=" << nend << " ngap=" << (rawdat.count[nend+1]-rawdat.count[nend]) << " len=" << len << endl;
       if(nc > nend) {
             // clear window and start again
          dc.clear();
-         d1.clear();
-         d2.clear();
+         dp.clear();
          nbeg = nend = nc;
          ngap = rawdat.count[nend+1]-rawdat.count[nend];
          if(ngap >= CI.MaxGap) continue;        // skip this point if there's a gap
          dc.push_back(rawdat.count[nend]);      // time / DataInterval
-         d1.push_back(rawdat.L1[nend]);         // cycles
-         d2.push_back(rawdat.L2[nend]);         // cycles
+         dp.push_back(freq == 1 ? rawdat.L1[nend] :
+                                  rawdat.L2[nend]);         // cycles
          change = true;
-//if(CI.Verbose && site=="Aref" && sat.id==29) oflog << "clear" << endl;
       }
 
          // -------------------------------------------------------------
@@ -172,10 +182,9 @@ try {
             // expand the window one point into the future
          nend++;
          dc.push_back(rawdat.count[nend]);      // keep the deques parallel
-         d1.push_back(rawdat.L1[nend]);
-         d2.push_back(rawdat.L2[nend]);
+         dp.push_back(freq == 1 ? rawdat.L1[nend] :
+                                  rawdat.L2[nend]);
          change = true;
-//if(CI.Verbose && site=="Aref" && sat.id==29) oflog << "advance" << endl;
       };
 
          // -------------------------------------------------------------
@@ -188,11 +197,6 @@ try {
          // -------------------------------------------------------------
          // Process the deques when a change has been made
       if(change) {
-//if(CI.Verbose && site=="Aref" && sat.id==29) {
-//oflog << "buffer:";
-//for(i=nbeg; i<=nend; i++) oflog << " " << rawdat.count[i];
-//oflog << " end+1: " << rawdat.count[nend+1] << endl;
-//}
             // size of the sliding window (deques)
          nsize = dc.size();
 
@@ -211,13 +215,11 @@ try {
          }
 
          // fit a polynomial of degree D to the points in deques
-         PF1.Reset(D<nsize ? D : nsize);
-         PF2.Reset(D<nsize ? D : nsize);
+         PF.Reset(D<nsize ? D : nsize);
 
             // debias using the first point
          x0 = double(dc[0]);
-         d10 = d1[0];
-         d20 = d2[0];
+         d0 = dp[0];
 
             // use all the data in the sliding window
          for(i=0; i<nsize; i++) {
@@ -227,8 +229,7 @@ try {
             j = index(statn.CountBuffer,dc[i]);
             //if(j == -1) ?? TD
             x -= statn.RxTimeOffset[j]/CI.DataInterval;
-            PF1.Add(d1[i]-d10,x-x0);
-            PF2.Add(d2[i]-d20,x-x0);
+            PF.Add(dp[i]-d0,x-x0);
          }
 
          change = false;
@@ -238,24 +239,24 @@ try {
          //      x = double(dc[i]);         // count
          //      j = index(statn.CountBuffer,dc[i]);
          //      x -= statn.RxTimeOffset[j]/CI.DataInterval;
-         //      //PF1.Add(d1[i]-d10,x-x0);
-         //      //PF2.Add(d2[i]-d20,x-x0);
+         //      //PF.Add(dp[i]-d0,x-x0);
          //      oflog << "FIT " << site << " " << sat
          //         << " " << nc << " " << rawdat.count[nc]
          //         << " " << (D<nsize?D:nsize) << " " << nsize
          //         << fixed << setprecision(6)
          //         << " " << nbeg+i << " " << dc[i] << " " << rawdat.count[nbeg+i]
-         //         << " " << x-x0 << " " << d1[i]-d10
-         //         << " " << PF1.Evaluate(x-x0)
-         //         << " " << d1[i]-d10 - PF1.Evaluate(x-x0)
+         //         << " " << x-x0 << " " << dp[i]-d0
+         //         << " " << PF.Evaluate(x-x0)
+         //         << " " << dp[i]-d0 - PF.Evaluate(x-x0)
          //         << endl;
          //}
-      }
+
+      }  // end if change
 
          // -------------------------------------------------------------
          // Process each point in the window/buffer
          // correct L1,L2,P1,P2 using the polynomials and dt=RxTTOffset+clk/c
-         // statn.ClockBuffer contains clock solution
+         // statn.ClockBuffer contains raw PRS clock solution
          // statn.RxTimeOffset contains SolutionEpoch - Rx timetag
          //
          // nominal time for point nc
@@ -266,12 +267,15 @@ try {
       dx =  statn.RxTimeOffset[j]/CI.DataInterval
          + (statn.ClockBuffer[j]/C_GPS_M)/CI.DataInterval;
          // change in phase between nominal and true time
-      dph1 = PF1.Evaluate(x-x0) - PF1.Evaluate(x-dx-x0);
-      rawdat.L1[nc] += dph1;
-      rawdat.P1[nc] += dph1 * wl1;
-      dph2 = PF2.Evaluate(x-x0) - PF2.Evaluate(x-dx-x0);
-      rawdat.L2[nc] += dph2;
-      rawdat.P2[nc] += dph2 * wl2;
+      dph = PF.Evaluate(x-x0) - PF.Evaluate(x-dx-x0);
+      if(freq == 1) {
+         rawdat.L1[nc] += dph;
+         rawdat.P1[nc] += dph * wl1;
+      }
+      else {
+         rawdat.L2[nc] += dph;
+         rawdat.P2[nc] += dph * wl2;
+      }
 
       //if(CI.Debug) oflog << "FIT " << site << " " << sat
       //   << " " << nc << " " << rawdat.count[nc]
@@ -279,8 +283,7 @@ try {
       //   << " " << x-x0 << " " << dx
       //   << " " << statn.RxTimeOffset[nc]
       //   << " " << statn.ClockBuffer[nc]/C_GPS_M
-      //   << " " << dph1
-      //   << " " << dph2 << " eval" << endl;
+      //   << " " << dph << " eval" << endl;
 
          // -------------------------------------------------------------
          // remove old point(s) from the deques
@@ -290,8 +293,7 @@ try {
             && (nc >= nbeg+nhalf)  // & current point is at mid-window or later
             ) {
          dc.pop_front();      // keep the deques parallel
-         d1.pop_front();
-         d2.pop_front();
+         dp.pop_front();
          nbeg++;
          change = true;
       };
@@ -302,13 +304,16 @@ try {
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}
+} // end FitPhaseAndMoveData
 
 //------------------------------------------------------------------------------------
-int RecomputeFromEphemeris(void)
+int RecomputeFromEphemeris(void) throw(Exception)
 {
 try {
-   if(CI.Verbose) oflog << "BEGIN RecomputeFromEphemeris()" << endl;
+   if(CI.Verbose) oflog << "BEGIN RecomputeFromEphemeris()"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
 
    int nc;
    double angle,pwu,shadow;

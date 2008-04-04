@@ -45,19 +45,18 @@
 // -----------------------------------------------------------------------------------
 // GPSTk includes
 #include "StringUtils.hpp"
-#include "Position.hpp"
-#include "Matrix.hpp"
 #include "geometry.hpp"             // DEG_TO_RAD
 #include "icd_200_constants.hpp"    // TWO_PI
+//
+#include "PhaseWindup.hpp"
 
 using namespace std;
-using namespace gpstk;
-using namespace StringUtils;
+using namespace gpstk::StringUtils;
 
-// -----------------------------------------------------------------------------------
 namespace gpstk {
 
 // -----------------------------------------------------------------------------------
+// prototypes for functions used in this module only
 void SolarPosition(DayTime t, double& lat, double& lon, double& R, double& AR);
 Matrix<double> SatelliteAttitude(DayTime& tt, Position& SV, double& sf);
 double shadowFactor(double Rearth, double Rsun, double dES);
@@ -68,7 +67,7 @@ static double GMST(DayTime t);
 // at that position. Use geodetic coordinates, i.e. 'up' is perpendicular to the
 // geoid. Return the vectors in the form of a 3x3 Matrix<double>, this is in fact the
 // rotation matrix that will take an ECEF vector into an 'up-east-north' vector.
-Matrix<double> UpEastNorth(Position& P)
+Matrix<double> UpEastNorth(Position& P) throw(Exception)
 {
 try {
    Matrix<double> R(3,3);
@@ -88,9 +87,9 @@ try {
 
    // The rows of R are also the unit vectors, in ECEF, of up,east,north;
    //  R = (U && E && N) = transpose(U || E || N).
-   //Matrix<double> U = R.rowCopy(0);
-   //Matrix<double> E = R.rowCopy(1);
-   //Matrix<double> N = R.rowCopy(2);
+   //Vector<double> U = R.rowCopy(0);
+   //Vector<double> E = R.rowCopy(1);
+   //Vector<double> N = R.rowCopy(2);
 
    return R;
 }
@@ -139,7 +138,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //    Z = along the boresight (i.e. towards Earth center),
 //    Y = perpendicular to both Z and the satellite-sun direction, and
 //    X completing the orthonormal triad. X will generally point toward the sun.
-// Also return the shadow factor = fraction of the sun's area visible to satellite.
+// Also return the shadow factor = fraction of sun's area not visible to satellite.
 Matrix<double> SatelliteAttitude(DayTime& tt, Position& SV, double& sf)
 {
 try {
@@ -204,13 +203,13 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Compute the phase windup, in cycles, given the time, the unit vector from receiver
 // to transmitter, and the west and north unit vectors at the receiver, all in ECEF.
 // YR is the West unit vector, XR is the North unit vector, at the receiver.
-// shadow is the fraction of the sun's area visible at the satellite.
+// shadow is the fraction of the sun's area not visible at the satellite.
 double PhaseWindup(DayTime& tt,        // epoch of interest
                    Position& SV,       // satellite position
                    Position& Rx2Tx,    // unit vector from receiver to satellite
                    Position& YR,       // west unit vector at receiver
                    Position& XR,       // north unit vector at receiver
-                   double& shadow)     // fraction of sun visible at satellite
+                   double& shadow)     // fraction of sun not visible at satellite
 {
 try {
    double d,windup=0.0;

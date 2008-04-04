@@ -10,6 +10,7 @@ Library baselib : DataStructures.cpp CommandInput.cpp Configure.cpp
                   DoubleDifference.cpp EditDDs.cpp DataOutput.cpp
                   Estimation.cpp Timetable.cpp ElevationMask.cpp
                   ProcessRawData.cpp ComputeRAIMSolution.cpp EditRawDataBuffers.cpp
+                  StochasticModels.cpp
                   ;
 
 LinkLibraries DDBase : baselib ;

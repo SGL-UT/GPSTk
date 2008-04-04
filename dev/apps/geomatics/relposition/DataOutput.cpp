@@ -65,7 +65,8 @@ using namespace gpstk;
 // prototypes -- this module only
 
 //------------------------------------------------------------------------------------
-int OutputRawData(void)
+// called from DDBase.cpp
+int OutputRawData(void) throw(Exception)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN OutputRawData()" << endl;
@@ -133,7 +134,9 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end OutputRawData()
 
 //------------------------------------------------------------------------------------
+// called from EditDDs.cpp
 int OutputRawDData(const DDid& ddid, const DDData& dddata, const vector<int>& mark)
+   throw(Exception)
 {
 try {
    bool TripleOut=true;                      // output triple differences as well
@@ -215,7 +218,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end OutputRawDData()
 
 //------------------------------------------------------------------------------------
-int OutputDDData(void)
+int OutputDDData(void) throw(Exception)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN OutputDDData()" << endl;
@@ -280,7 +283,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end OutputDDData()
 
 //------------------------------------------------------------------------------------
-int OutputClockData(void)
+int OutputClockData(void) throw(Exception)
 {
 try {
    if(CI.Verbose) oflog << "BEGIN OutputClockData()" << endl;
@@ -290,7 +293,7 @@ try {
    int i;
    DayTime tt;
    map<string,Station>::const_iterator it;
-   format f133(13,3),f92(9,2,2),f96(9,6);
+   format f166(16,6),f92(9,2,2),f96(9,6);
 
       // open an output file for Clk data
    ofstream clkofs;
@@ -315,7 +318,7 @@ try {
          tt = FirstEpoch + it->second.CountBuffer[i]*CI.DataInterval;
 
          clkofs << "CLK " << it->first << " " << tt.printf("%4F %10.3g")
-            << " " << f133 << it->second.ClockBuffer[i]
+            << " " << f166 << it->second.ClockBuffer[i]
             << " " << f92 << it->second.ClkSigBuffer[i]
             // TD add clock polynomial Evaluate(tt)
             << " " << f92 << it->second.RxTimeOffset[i]

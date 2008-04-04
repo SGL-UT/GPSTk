@@ -56,9 +56,6 @@ using namespace gpstk;
 
 //------------------------------------------------------------------------------------
 // local data
-GPSEphemerisStore BCEphList;               // global pEph will point to one of these
-SP3EphemerisStore SP3EphList;
-
 SimpleTropModel TropModelSimple;          // CI.pTropModel will point to one of these
 GGTropModel TropModelGG;
 GGHeightTropModel TropModelGGh;
@@ -67,20 +64,22 @@ SaasTropModel TropModelSaas;
 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
-int Initialize(void);
-int UpdateConfig(void);
-void ReadAllObsHeaders(void);       // ReadObsFiles.cpp
-int ConfigureEstimation(void);      // Estimation.cpp
+int Initialize(void) throw(Exception);
+int UpdateConfig(void) throw(Exception);
+void ReadAllObsHeaders();                            // ReadObsFiles.cpp
+int ConfigureEstimation(void) throw(Exception);      // Estimation.cpp
+int ConfigureStochasticModel(void) throw(Exception); // StochasticModels.cpp
 
 //------------------------------------------------------------------------------------
-int Configure(int which)
+int Configure(int which) throw(Exception)
 {
 try {
    if(which == 1) return Initialize();
    if(which == 2) return UpdateConfig();
    if(which == 3) {
-      if(CI.Verbose) oflog << "BEGIN Configure(3)" << endl;
-      return ConfigureEstimation();            // Estimation.cpp
+      int iret = ConfigureEstimation();         // Estimation.cpp
+      if(iret) return iret;
+      return ConfigureStochasticModel();        // StochasticModels.cpp
    }
 
    return 0;
@@ -94,28 +93,61 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Configure(1)
 // open and read navigation files
 // open and read headers of all observation files
-int Initialize(void)
+int Initialize(void) throw(Exception)
 {
 try {
    int i,j;
+   // global pEph will point to one of these
+   static GPSEphemerisStore BCEphList;
+   static SP3EphemerisStore SP3EphList;
 
-   if(CI.Verbose) oflog << "BEGIN Configure(1)" << endl;
+   if(CI.Verbose) oflog << "BEGIN Configure(1)"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
    if(CI.Frequency == 1) wave = wl1;
    if(CI.Frequency == 2) wave = wl2;
       // NB wave should never be used for L3 -- see warning in CommandInput.cpp
    else if(CI.Frequency == 3) wave = wl1;
 
-      // open nav files and read EphemerisStore
-   if(!CI.NavPath.empty())
-      for(i=0; i<CI.NavFileNames.size(); i++)
-         CI.NavFileNames[i] = CI.NavPath + "/" + CI.NavFileNames[i];
+      // open nav files, if any, and read EphemerisStore into EphLists
+   if(CI.NavFileNames.size() > 0) {
+      if(!CI.NavPath.empty())
+         for(i=0; i<CI.NavFileNames.size(); i++)
+            CI.NavFileNames[i] = CI.NavPath + "/" + CI.NavFileNames[i];
 
       // fill ephemeris store -- this routine in RinexUtilities.cpp
-   FillEphemerisStore(CI.NavFileNames, SP3EphList, BCEphList);
+      FillEphemerisStore(CI.NavFileNames, SP3EphList, BCEphList);
+   }
+
+      // read all headers and store information in Station object
+   ReadAllObsHeaders();
+
+      // use the information gathered in ReadAllObsHeaders to determine DT
+      // if the user did not specify --DT, set it
+      // else if the --DT the user chose is too small, reset it
+      // else leave --DT alone
+   double DT=-1.0;
+   for(i=0; i<ObsFileList.size(); i++) {
+      if(ObsFileList[i].dt > DT)
+         DT = ObsFileList[i].dt;
+      if(ObsFileList[i].firstTime > CI.BegTime)
+         CI.BegTime = ObsFileList[i].firstTime;
+   }
+   if(CI.DataInterval == -1) {
+      CI.DataInterval = DT;
+      if(CI.Verbose) oflog << "DDBase has determined the data interval (--DT) to be "
+         << CI.DataInterval << " seconds." << endl;
+   }
+   else if(CI.DataInterval < DT) {
+      CI.DataInterval = DT;
+      oflog << "Warning - DDBase has changed the data interval (--DT) to "
+         << CI.DataInterval << " seconds." << endl;
+   }
 
       // dump SP3 store to log
    if(SP3EphList.size()) {
-      if(CI.Verbose) SP3EphList.dump(oflog, 0);
+      if(CI.Verbose) SP3EphList.dump(oflog,0);
    }
    else if(CI.Verbose) oflog << "SP3 Ephemeris store is empty" << endl;
 
@@ -123,16 +155,17 @@ try {
    if(BCEphList.size()) {
          // this causes the CorrectedEphemerisRange routines to pick the
          // closest TOE in either future or past of the epoch, rather
-         // than the closest in the past -- see BCEphemerisStore.hpp
+         // than the closest in the past -- see GPSEphemerisStore.hpp
       BCEphList.SearchNear();
 
       if(CI.Debug) BCEphList.dump(oflog,1);
-      else if(CI.Verbose) BCEphList.dump(oflog,1);
+      else if(CI.Verbose) BCEphList.dump(oflog,0);
    }
    else if(CI.Verbose) oflog << "BC Ephemeris store is empty" << endl;
 
       // assign pointer
-   if(SP3EphList.size()) pEph = &SP3EphList;
+      // NB SP3 takes precedence
+   if(SP3EphList.size())     pEph = &SP3EphList;
    else if(BCEphList.size()) pEph = &BCEphList;
    else {
       cerr << "Initialize ERROR: no ephemeris. Abort." << endl;
@@ -169,8 +202,23 @@ try {
    }
    else oflog << "Warning - no Earth Orientation Parameters were input\n";
 
-      // read all headers and store information in Station object
-   ReadAllObsHeaders();
+      // add path to output files
+   if(!CI.OutPath.empty()) {
+      if(!CI.OutputClkFile.empty())
+         CI.OutputClkFile = CI.OutPath + "/" + CI.OutputClkFile;
+      if(!CI.OutputDDDFile.empty())
+         CI.OutputDDDFile = CI.OutPath + "/" + CI.OutputDDDFile;
+      if(!CI.OutputTDDFile.empty())
+         CI.OutputTDDFile = CI.OutPath + "/" + CI.OutputTDDFile;
+      if(!CI.OutputRawFile.empty())
+         CI.OutputRawFile = CI.OutPath + "/" + CI.OutputRawFile;
+      if(!CI.OutputRawDDFile.empty())
+         CI.OutputRawDDFile = CI.OutPath + "/" + CI.OutputRawDDFile;
+      if(!CI.OutputPRSFile.empty())
+         CI.OutputPRSFile = CI.OutPath + "/" + CI.OutputPRSFile;
+      if(!CI.OutputDDRFile.empty())
+         CI.OutputDDRFile = CI.OutPath + "/" + CI.OutputDDRFile;
+   }
 
       // assign trop model for RAIM (model for DD est assigned in Configure(2))
       // NB using another, like Saastamoinen, here, is problematic because it
@@ -194,10 +242,13 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // Configure(2)
-int UpdateConfig(void)
+int UpdateConfig(void) throw(Exception)
 {
 try {
-   if(CI.Verbose) oflog << "BEGIN Configure(2)" << endl;
+   if(CI.Verbose) oflog << "BEGIN Configure(2)"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
 
       // configure trop model for each station
       // dump height, zenith delays, etc

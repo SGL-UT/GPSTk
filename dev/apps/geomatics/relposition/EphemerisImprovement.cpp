@@ -58,17 +58,20 @@ using namespace gpstk;
 // prototypes -- this module only
 
 //------------------------------------------------------------------------------------
-int EphemerisImprovement(void)
+int EphemerisImprovement(void) throw(Exception)
 {
 try {
-   if(CI.Verbose) oflog << "BEGIN EphemerisImprovement()" << endl;
+   if(CI.Verbose) oflog << "BEGIN EphemerisImprovement()"
+      << " at total time " << fixed << setprecision(3)
+      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+      << endl;
 
    if(dynamic_cast<GPSEphemerisStore*>(pEph)) {
 
       GPSEphemerisStore& BCE = dynamic_cast<GPSEphemerisStore&>(*pEph);
       list<EngEphemeris> EphList;
 
-      oflog << "XvtStore is broadcast ephemeris" << endl;
+      oflog << "EphemerisStore is broadcast ephemeris" << endl;
       //BCE.dump(1,oflog);
 
       long i, neph = BCE.addToList(EphList);

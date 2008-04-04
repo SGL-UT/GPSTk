@@ -67,6 +67,7 @@ class LabelledVector {
 public:
    int wid,prec,form;
    std::string msg;
+   std::string tag;
    const Namelist& NL;
    Vector<double>& V;
    LabelledVector(const Namelist& nl, Vector<double>& v)
@@ -76,6 +77,7 @@ public:
    LabelledVector& fixed(void) { form = 1; return *this; }
    LabelledVector& scientific(void) { form = 2; return *this; }
    LabelledVector& message(const std::string& m) { msg=m; return *this; }
+   LabelledVector& linetag(const std::string& m) { tag=m; return *this; }
 };
 
 /// class LabelledMatrix. Pretty print a Matrix using the labels in a Namelist.
@@ -85,6 +87,7 @@ public:
    int form;         // format: 1=fixed, 2=scientific
    int rc;           // rows only (1) columns only (2) or both (0)
    std::string msg;
+   std::string tag;
    const Namelist& NLrows;
    const Namelist& NLcols;
    const Matrix<double>& M;
@@ -96,9 +99,11 @@ public:
    LabelledMatrix& setprecision(int p) { prec = p; return *this; }
    LabelledMatrix& fixed(void) { form = 1; return *this; }
    LabelledMatrix& scientific(void) { form = 2; return *this; }
+   LabelledMatrix& both(void) { rc=0; return *this; }
    LabelledMatrix& rows(void) { rc=1; return *this; }
    LabelledMatrix& cols(void) { rc=2; return *this; }
    LabelledMatrix& message(const std::string& m) { msg=m; return *this; }
+   LabelledMatrix& linetag(const std::string& m) { tag=m; return *this; }
 };
 
 std::ostream& operator<<(std::ostream&, const LabelledMatrix&);

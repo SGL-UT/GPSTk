@@ -71,7 +71,7 @@ try {
    string name;
    for(unsigned int i=0; i<n; i++) {
       ostringstream oss;
-      oss << "NAME" << setw(2) << setfill('0') << i;
+      oss << "NAME" << setw(3) << setfill('0') << i;
       name = oss.str();
       labels.push_back(name);
    }
@@ -151,7 +151,7 @@ try {
       string s;
       do {
          ostringstream oss;
-         oss << "NAME" << setw(2) << setfill('0') << N << setfill(' ');
+         oss << "NAME" << setw(3) << setfill('0') << N;
          s = oss.str();
          N++;
       } while(this->contains(s));
@@ -372,34 +372,41 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 ostream& operator<<(ostream& os, const LabelledVector& nlp)
 {
 try {
-   unsigned int i;
+   int i;
    string s;
-   //ofstream savefmt;
+   //ofstream savefmt; 
    //savefmt.copyfmt(os);
    //int wid=os.width(),prec=os.precision();
 
+   // print message or blanks
+   os << nlp.tag << " ";
    if(nlp.msg.size() > 0)
-      s = leftJustify(nlp.msg,nlp.wid);
+      s = nlp.msg; //s = leftJustify(nlp.msg,nlp.wid);
    else
-      s = rightJustify(string(""),nlp.wid);
-   os << s;
+      s = rightJustify(string(""),nlp.msg.size()); //nlp.wid);
+   os << s << " ";
+
+   // print each label
    for(i=0; i<nlp.NL.size(); i++) {
       if(nlp.NL.getName(i).size() > nlp.wid)
          s = leftJustify(nlp.NL.getName(i),nlp.wid);
       else
          s = rightJustify(nlp.NL.getName(i),nlp.wid);
       os << s;
+      if(i-nlp.NL.size()+1) os << " ";
    }
-   os << endl;
+   os << endl;       // next line
 
-   s = rightJustify(string(""),nlp.wid);
-   os << s;
+   // print same space as with labels
+   s = rightJustify(string(""),nlp.msg.size()); //nlp.wid);
+   os << nlp.tag << " " << s << " ";
    if(nlp.form == 1) os << fixed;
    if(nlp.form == 2) os << scientific;
    for(i=0; i<nlp.V.size(); i++) {
       //os.copyfmt(savefmt);
       //os << nlp.V(i);
       os << setw(nlp.wid) << setprecision(nlp.prec) << nlp.V(i);
+      if(i-nlp.V.size()+1) os << " ";
    }
 
    return os;
@@ -410,7 +417,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 ostream& operator<<(ostream& os, const LabelledMatrix& nlp)
 {
 try {
-   unsigned int i,j;
+   int i,j,n,nspace;
    string s;
    const Namelist *pNLcol = &nlp.NLcols;
    const Namelist *pNLrow = &nlp.NLrows;
@@ -422,22 +429,27 @@ try {
    if(nlp.NLrows.size() == 0) pNLrow = pNLcol;
    if(nlp.NLcols.size() == 0) pNLcol = pNLrow;
 
-      // on column labels line, add message or space for row labels
+      // on column labels line
    if(nlp.rc == 0) {    // only if printing both column and row labels
-      if(nlp.msg.size() > 0)
-         s = leftJustify(nlp.msg,nlp.wid);
+      os << nlp.tag << " ";                                       // tag
+      if(nlp.msg.size() > 0)                                      // msg
+         s = nlp.msg;
       else
-         s = rightJustify(string(""),nlp.wid);
-      os << s;
+         s = rightJustify(string(""),nlp.msg.size());
+      os << s << " ";
+      if(nlp.msg.size() < nlp.wid)
+         os << rightJustify(string(""),nlp.wid-nlp.msg.size());   // space
    }
       // print column labels
    if(nlp.rc != 1) { // but not if 'rows only'
-      for(i=0; i<(nlp.M.cols()<pNLcol->size()?nlp.M.cols():pNLcol->size()); i++) {
+      n = (nlp.M.cols() < pNLcol->size() ? nlp.M.cols() : pNLcol->size());
+      for(i=0; i<n; i++) {
          if(pNLcol->getName(i).size() > nlp.wid)
             s = leftJustify(pNLcol->getName(i),nlp.wid);
          else
             s = rightJustify(pNLcol->getName(i),nlp.wid);
-         os << s;
+         os << s;                                                 // label
+         if(i-n+1) os << " ";
       }
       os << endl;
    }
@@ -445,18 +457,25 @@ try {
    if(nlp.form == 1) os << fixed;
    if(nlp.form == 2) os << scientific;
 
+   if(nlp.msg.size() > nlp.wid) nspace = nlp.msg.size()-nlp.wid;
+   else nspace = 0;
+
+      // print one row per line
    for(i=0; i<nlp.M.rows(); i++) {
+      os << nlp.tag << " ";                                       // tag
+      if(nspace) os << rightJustify(string(""),nspace);           // space
          // print row labels
       if(nlp.rc != 2) { // but not if 'columns only'
          if(pNLrow->getName(i).size() > nlp.wid)
             s = leftJustify(pNLrow->getName(i),nlp.wid);
          else
             s = rightJustify(pNLrow->getName(i),nlp.wid);
-         os << s;
+         os << s << " ";                                          // label
       }
          // finally, print the data
       for(j=0; j<nlp.M.cols(); j++) {
          os << setw(nlp.wid) << setprecision(nlp.prec) << nlp.M(i,j);
+         if(j-nlp.M.cols()+1) os << " ";                          // data
       }
       if(i<nlp.M.rows()-1) os << endl;
    }
