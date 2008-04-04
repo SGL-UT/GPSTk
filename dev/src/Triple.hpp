@@ -44,11 +44,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #include <valarray>
 #include "Exception.hpp"
 
@@ -217,8 +212,8 @@ namespace gpstk
 
          /**
           * Multiplication Operator.
-          * @scale the scale by which to multiply a Triple
-          * @theTriple the Triple to scale 
+          * @right the scale by which to multiply a Triple
+          * @rhs   the Triple to scale 
           * @return a Triple containing the scaled result
           */
       friend Triple operator*(double right, const Triple& rhs);

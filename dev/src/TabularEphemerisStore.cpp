@@ -58,7 +58,8 @@ namespace gpstk
       s << "Dump of TabularEphemerisStore:" << std::endl;
       if(detail >= 0) {
          EphMap::const_iterator it;
-         s << " Data stored for " << pe.size() << " satellites." << std::endl;
+         s << " Data stored for " << pe.size() << " satellites, over time span "
+            << initialTime << " to " << finalTime << "." << std::endl;
          if(detail == 0) return;
          for(it=pe.begin(); it!=pe.end(); it++) {
             s << "  PRN " << it->first << " : "
