@@ -41,7 +41,7 @@ namespace gpstk
 
 /// @ingroup VectorGroup
 /// Thrown when there are problems with the matrix operations
-   NEW_EXCEPTION_CLASS(MatrixException, gpstk::Exception);
+   NEW_EXCEPTION_CLASS(MatrixException, Exception);
 /// @ingroup VectorGroup
 /// Thrown when an operation can't be performed on a singular matrix.
    NEW_EXCEPTION_CLASS(SingularMatrixException, MatrixException);
@@ -128,12 +128,15 @@ namespace gpstk
 
          /// copies out column c into a vector starting with row r
       Vector<T> colCopy(size_t c, size_t r = 0) const
+         throw(MatrixException)
          { 
+#ifdef RANGECHECK
             if ((c >= cols()) || (r >= rows()))
             {
-               gpstk::Exception e("Invalid ConstMatrixBase index for colCopy");
+               MatrixException e("Invalid ConstMatrixBase index for colCopy");
                GPSTK_THROW(e);
             }
+#endif
             Vector<T> toReturn(rows() - r);
             size_t i;
             for (i = r; i < rows(); i++)
@@ -143,12 +146,15 @@ namespace gpstk
 
          /// copies out row r into a vector starting with column c
       Vector<T> rowCopy(size_t r, size_t c = 0) const
+         throw(MatrixException)
          { 
+#ifdef RANGECHECK
             if ((c >= cols()) || (r >= rows()))
             {
-               gpstk::Exception e("Invalid ConstMatrixBase index for rowCopy");
+               MatrixException e("Invalid ConstMatrixBase index for rowCopy");
                GPSTK_THROW(e);
             }
+#endif
             Vector<T> toReturn(cols() - c);
             size_t i;
             for (i = c; i < cols(); i++)
@@ -159,13 +165,13 @@ namespace gpstk
    protected:
          /// returns the const (i,j) element from the matrix
       inline T constMatrixRef(size_t i, size_t j) const
-         throw(gpstk::Exception)
+         throw(MatrixException)
          {
             const BaseClass& b = static_cast<const BaseClass&>(*this);
 #ifdef RANGECHECK
             if ((i >= b.rows()) || (j > b.cols()))
             {
-               gpstk::Exception e("Invalid ConstMatrixBase index for ref");
+               MatrixException e("Invalid ConstMatrixBase index for ref");
                GPSTK_THROW(e);
             }
 #endif
@@ -232,72 +238,340 @@ namespace gpstk
             return me;
          }
 
-#define MatBaseArrayAssignMacro(func) \
-   BaseClass& me = static_cast<BaseClass&>(*this); \
-   size_t i,j; \
-   for (i=0; i < me.rows(); i++) \
-      for (j=0; j < me.cols(); j++) \
-         me(i,j) func x(i,j); \
-   return me;
-              
-#define MatBaseArrayAssignMacroVecSource(func) \
-   BaseClass& me = static_cast<BaseClass&>(*this); \
-   size_t i,j; \
-   for (i=0; i < me.rows(); i++) \
-      for (j=0; j < me.cols(); j++) \
-         me(i,j) func x[i*me.cols()+j]; \
-   return me;
-              
-#define MatBaseAtomicAssignMacro(func) \
-   BaseClass& me = static_cast<BaseClass&>(*this); \
-   size_t i,j; \
-   for (i=0; i < me.rows(); i++) \
-      for (j=0; j < me.cols(); j++) \
-         me(i,j) func x; \
-   return me;
-              
-#define MatBaseNewAssignOperator(funcName, op) \
-/** performs op on each element of this matrix with each element of x */ \
-   template <class E> BaseClass& funcName(const ConstMatrixBase<T, E>& x) \
-      { MatBaseArrayAssignMacro(op); } \
-/** performs op on each element of this matrix with each element of x */ \
-   template <class E> BaseClass& funcName(const ConstVectorBase<T, E>& x) \
-      { MatBaseArrayAssignMacroVecSource(op); } \
-/** performs op on each element of this matrix with each element of x */ \
-   BaseClass& funcName(const std::valarray<T>& x) \
-      { MatBaseArrayAssignMacroVecSource(op); } \
-/** performs op on each element of this matrix with each element of x */ \
-   BaseClass& funcName(const T* x) \
-      { MatBaseArrayAssignMacroVecSource(op); } \
-/** performs op on each element of this matrix with x */ \
-   BaseClass& funcName(T x) \
-      { MatBaseAtomicAssignMacro(op); }
+// this macro expansion technique has 2 major faults: 1. there can be no RANGECHECK,
+// 2. since there is no range checking, one can have a mis-match in dimensions in the
+// l-value vs the r-value, which makes no sense.
+//#define MatBaseArrayAssignMacro(func) \
+//   BaseClass& me = static_cast<BaseClass&>(*this); \
+//   size_t i,j; \
+//   for (i=0; i < me.rows(); i++) \
+//      for (j=0; j < me.cols(); j++) \
+//         me(i,j) func x(i,j); \
+//   return me;
+//              
+//#define MatBaseArrayAssignMacroVecSource(func) \
+//   BaseClass& me = static_cast<BaseClass&>(*this); \
+//   size_t i,j; \
+//   for (i=0; i < me.rows(); i++) \
+//      for (j=0; j < me.cols(); j++) \
+//         me(i,j) func x[i*me.cols()+j]; \
+//   return me;
+//              
+//#define MatBaseAtomicAssignMacro(func) \
+//   BaseClass& me = static_cast<BaseClass&>(*this); \
+//   size_t i,j; \
+//   for (i=0; i < me.rows(); i++) \
+//      for (j=0; j < me.cols(); j++) \
+//         me(i,j) func x; \
+//   return me;
+//              
+//#define MatBaseNewAssignOperator(funcName, op) \
+///** performs op on each element of this matrix with each element of x */ \
+//   template <class E> BaseClass& funcName(const ConstMatrixBase<T, E>& x) \
+//      { MatBaseArrayAssignMacro(op); } \
+///** performs op on each element of this matrix with each element of x */ \
+//   template <class E> BaseClass& funcName(const ConstVectorBase<T, E>& x) \
+//      { MatBaseArrayAssignMacroVecSource(op); } \
+///** performs op on each element of this matrix with each element of x */ \
+//   BaseClass& funcName(const std::valarray<T>& x) \
+//      { MatBaseArrayAssignMacroVecSource(op); } \
+///** performs op on each element of this matrix with each element of x */ \
+//   BaseClass& funcName(const T* x) \
+//      { MatBaseArrayAssignMacroVecSource(op); } \
+///** performs op on each element of this matrix with x */ \
+//   BaseClass& funcName(T x) \
+//      { MatBaseAtomicAssignMacro(op); }
               
          /// remember that operator= isn't inherited.  use assignFrom in
          /// derived classes' copy constructors and operator=.
-      MatBaseNewAssignOperator(assignFrom, =);
-      MatBaseNewAssignOperator(operator+=, +=);
-      MatBaseNewAssignOperator(operator-=, -=);
+      //MatBaseNewAssignOperator(assignFrom, =);
+      //MatBaseNewAssignOperator(operator+=, +=);
+      //MatBaseNewAssignOperator(operator-=, -=);
+//------------------------------------------------------------------------------------
+//      MatBaseNewAssignOperator(assignFrom, =);
+/** performs = on each element of this matrix with each element of x */
+   template <class E> BaseClass& assignFrom(const ConstMatrixBase<T, E>& x)
+      throw(MatrixException)
+      {
+         //MatBaseArrayAssignMacro(=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+#ifdef RANGECHECK
+         if(x.rows() != me.rows() || x.cols() != me.cols()) {
+            MatrixException e("Invalid dimensions for Matrix assignFrom(Matrix)");
+            GPSTK_THROW(e);
+         }
+#endif
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) = x(i,j);
+         return me;
+      }
+/** performs = on each element of this matrix with each element of x */
+   template <class E> BaseClass& assignFrom(const ConstVectorBase<T, E>& x)
+      throw(MatrixException)
+      {
+         //MatBaseArrayAssignMacroVecSource(=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+#ifdef RANGECHECK
+         if(x.size() != me.rows() * me.cols()) {
+            MatrixException e("Invalid dimensions for Matrix assignFrom(Vector)");
+            GPSTK_THROW(e);
+         }
+#endif
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) = x[i*me.cols()+j];
+         return me;
+      }
+/** performs = on each element of this matrix with each element of x */
+   BaseClass& assignFrom(const std::valarray<T>& x)
+      throw(MatrixException)
+      {
+         //MatBaseArrayAssignMacroVecSource(=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+#ifdef RANGECHECK
+         if(x.size() != me.rows() * me.cols()) {
+            MatrixException e("Invalid dimensions for Matrix assignFrom(valarray)");
+            GPSTK_THROW(e);
+         }
+#endif
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) = x[i*me.cols()+j];
+         return me;
+      }
+/** performs = on each element of this matrix with each element of x */
+   BaseClass& assignFrom(const T* x)
+      {
+         //MatBaseArrayAssignMacroVecSource(=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) = x[i*me.cols()+j];          // no way to RANGECHECK on x[..]!
+         return me;
+      }
+/** performs = on each element of this matrix with x */
+   BaseClass& assignFrom(T x)
+      {
+         //MatBaseAtomicAssignMacro(=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) = x;
+         return me;
+      }
+
+//------------------------------------------------------------------------------------
+//      MatBaseNewAssignOperator(operator+=, +=);
+/** performs += on each element of this matrix with each element of x */
+   template <class E> BaseClass& operator+=(const ConstMatrixBase<T, E>& x)
+      throw(MatrixException)
+      {
+         //MatBaseArrayAssignMacro(+=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+#ifdef RANGECHECK
+         if(x.rows() != me.rows() || x.cols() != me.cols()) {
+            MatrixException e("Invalid dimensions for Matrix operator+=(Matrix)");
+            GPSTK_THROW(e);
+         }
+#endif
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) += x(i,j);
+         return me;
+      }
+/** performs += on each element of this matrix with each element of x */
+   template <class E> BaseClass& operator+=(const ConstVectorBase<T, E>& x)
+      throw(MatrixException)
+      {
+         //MatBaseArrayAssignMacroVecSource(+=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+#ifdef RANGECHECK
+         if(x.size() != me.rows() * me.cols()) {
+            MatrixException e("Invalid dimensions for Matrix operator+=(Vector)");
+            GPSTK_THROW(e);
+         }
+#endif
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) += x[i*me.cols()+j];
+         return me;
+      }
+/** performs += on each element of this matrix with each element of x */
+   BaseClass& operator+=(const std::valarray<T>& x)
+      throw(MatrixException)
+      {
+         //MatBaseArrayAssignMacroVecSource(+=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+#ifdef RANGECHECK
+         if(x.size() != me.rows() * me.cols()) {
+            MatrixException e("Invalid dimensions for Matrix operator+=(valarray)");
+            GPSTK_THROW(e);
+         }
+#endif
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) += x[i*me.cols()+j];
+         return me;
+      }
+/** performs += on each element of this matrix with each element of x */
+   BaseClass& operator+=(const T* x)
+      {
+         //MatBaseArrayAssignMacroVecSource(+=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) += x[i*me.cols()+j];          // no way to RANGECHECK on x[..]!
+         return me;
+      }
+/** performs += on each element of this matrix with x */
+   BaseClass& operator+=(T x)
+      {
+         //MatBaseAtomicAssignMacro(+=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) += x;
+         return me;
+      }
+
+//------------------------------------------------------------------------------------
+//#define MatBaseNewAssignOperator(operator-=, -=)
+/** performs -= on each element of this matrix with each element of x */
+   template <class E> BaseClass& operator-=(const ConstMatrixBase<T, E>& x)
+      throw(MatrixException)
+      {
+         //MatBaseArrayAssignMacro(-=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+#ifdef RANGECHECK
+         if(x.rows() != me.rows() || x.cols() != me.cols()) {
+            MatrixException e("Invalid dimensions for Matrix operator-=(Matrix)");
+            GPSTK_THROW(e);
+         }
+#endif
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) -= x(i,j);
+         return me;
+      }
+/** performs -= on each element of this matrix with each element of x */
+   template <class E> BaseClass& operator-=(const ConstVectorBase<T, E>& x)
+      throw(MatrixException)
+      {
+         //MatBaseArrayAssignMacroVecSource(-=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+#ifdef RANGECHECK
+         if(x.size() != me.rows() * me.cols()) {
+            MatrixException e("Invalid dimensions for Matrix operator-=(Vector)");
+            GPSTK_THROW(e);
+         }
+#endif
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) -= x[i*me.cols()+j];
+         return me;
+      }
+/** performs -= on each element of this matrix with each element of x */
+   BaseClass& operator-=(const std::valarray<T>& x)
+      throw(MatrixException)
+      {
+         //MatBaseArrayAssignMacroVecSource(-=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+#ifdef RANGECHECK
+         if(x.size() != me.rows() * me.cols()) {
+            MatrixException e("Invalid dimensions for Matrix operator-=(valarray)");
+            GPSTK_THROW(e);
+         }
+#endif
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) -= x[i*me.cols()+j];
+         return me;
+      }
+/** performs -= on each element of this matrix with each element of x */
+   BaseClass& operator-=(const T* x)
+      {
+         //MatBaseArrayAssignMacroVecSource(-=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) -= x[i*me.cols()+j];          // no way to RANGECHECK on x[..]!
+         return me;
+      }
+/** performs -= on each element of this matrix with x */
+   BaseClass& operator-=(T x)
+      {
+         //MatBaseAtomicAssignMacro(-=);
+         BaseClass& me = static_cast<BaseClass&>(*this);
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) -= x;
+         return me;
+      }
    
+
          /// multiplies each element in this matrix by x.
       BaseClass& operator*=(const T x)
          {
-            MatBaseAtomicAssignMacro(*=);
+            //MatBaseAtomicAssignMacro(*=);
+            BaseClass& me = static_cast<BaseClass&>(*this);
+            size_t i,j;
+            for (i=0; i < me.rows(); i++)
+               for (j=0; j < me.cols(); j++)
+                  me(i,j) *= x;
+            return me;
          }
+
          /// divides each element in this matrix by x.
       BaseClass& operator/=(const T x)
          {
-            MatBaseAtomicAssignMacro(/=);
+            //MatBaseAtomicAssignMacro(/=);
+            BaseClass& me = static_cast<BaseClass&>(*this);
+            size_t i,j;
+            for (i=0; i < me.rows(); i++)
+               for (j=0; j < me.cols(); j++)
+                  me(i,j) /= x;
+            return me;
          }
+
+         // unary minus: multiplies each element in this matrix by -1.
+      //BaseClass& operator-()
+      //   {
+      //      const T x=T(-1);
+      //      MatBaseAtomicAssignMacro(*=);
+      //   }
+      // unary minus must not return an l-value
+
          /// unary minus: multiplies each element in this matrix by -1.
-      BaseClass& operator-()
+      BaseClass operator-()
          {
             const T x=T(-1);
-            MatBaseAtomicAssignMacro(*=);
+            BaseClass me = static_cast<BaseClass>(*this); \
+            size_t i,j;
+            for (i=0; i < me.rows(); i++)
+               for (j=0; j < me.cols(); j++)
+                  me(i,j) *= x;
+            return me;
          }
 
          /// swaps rows row1 and row2 in this matrix.
       BaseClass& swapRows(size_t row1, size_t row2) 
+         throw(MatrixException)
          {
             BaseClass& me = static_cast<BaseClass&>(*this);
 #ifdef RANGECHECK
@@ -320,6 +594,7 @@ namespace gpstk
 
          /// swaps columns col1 and col2 in this matrix.
       BaseClass& swapCols(size_t col1, size_t col2) 
+         throw(MatrixException)
          {
             BaseClass& me = static_cast<BaseClass&>(*this);
 #ifdef RANGECHECK
@@ -372,7 +647,7 @@ namespace gpstk
                                 size_t sourceColSize) const
          throw(MatrixException)
          {
-#ifdef RANGECHECK
+//#ifdef RANGECHECK
             if (rowSize() > 0)
             {
                if ( (rowStart() >= sourceRowSize) || 
@@ -391,7 +666,7 @@ namespace gpstk
                   GPSTK_THROW(e);
                }
             }
-#endif
+//#endif
          }
    };
 
