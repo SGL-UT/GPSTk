@@ -216,9 +216,6 @@ namespace gpstk
       const EngEphemeris& findNearEphemeris(const SatID sat, const DayTime& t)
          const throw(InvalidRequest);
 
-      short getHealth(const SatID sat, const DayTime& t)
-         const throw(InvalidRequest);
-
       /// Add all ephemerides to an existing list<EngEphemeris>.
       /// @return the number of ephemerides added.
       int addToList(std::list<EngEphemeris>& v)
