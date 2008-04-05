@@ -10,7 +10,7 @@ libbase_la_SOURCES = ClockModel.cpp CommandInput.cpp ComputeRAIMSolution.cpp \
 Configure.cpp DataOutput.cpp DataStructures.cpp DoubleDifference.cpp \
 EditDDs.cpp EditRawDataBuffers.cpp ElevationMask.cpp EphemerisImprovement.cpp \
 Estimation.cpp ProcessRawData.cpp ReadObsFiles.cpp ReadRawData.cpp \
-Synchronization.cpp Timetable.cpp
+StochasticModels.cpp Synchronization.cpp Timetable.cpp
 
 bin_PROGRAMS = DDBase ddmerge 
 

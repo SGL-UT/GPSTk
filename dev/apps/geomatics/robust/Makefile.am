@@ -2,6 +2,7 @@
 INCLUDES = -I$(srcdir)/../../../src -I$(srcdir)/../../../lib/geomatics
 LDADD = ../../../lib/geomatics/libgeomatics.la ../../../src/libgpstk.la
 
-bin_PROGRAMS = rstats
+bin_PROGRAMS = lsfilt rstats
 
-rstats_SOURCES = rstats.cpp  
+lsfilt_SOURCES = lsfilt.cpp
+rstats_SOURCES = rstats.cpp
