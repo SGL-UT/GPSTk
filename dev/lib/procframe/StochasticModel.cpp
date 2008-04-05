@@ -42,9 +42,6 @@ namespace gpstk
          // Compute current variance
       double variance(qprime*(currentTime - previousTime));
 
-         // Update previous epoch
-      setPreviousTime(currentTime);
-
          // Return variance
       return variance;
 

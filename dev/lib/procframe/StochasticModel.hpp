@@ -296,7 +296,7 @@ namespace gpstk
           * @param sigma   Standard deviation (sigma) of white noise process
           *
           */
-      PhaseAmbiguityModel( double sigma = 300000.0 )
+      PhaseAmbiguityModel( double sigma = 2e7 )
          : variance(sigma*sigma), cycleSlip(false) {};
 
 
