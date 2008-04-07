@@ -24,7 +24,7 @@ def main():
                       help="Include a legend.")
 
     parser.add_option("-p", "--prn-highlight", dest="prnHighlight", action="append",
-                     help="Highlight the indicated prn. Specify all for all prns.")
+                     help="Highlight the indicated PRN. Specify all for all PRNs.")
 
     parser.add_option("-o", "--ords-only", help="Only plot the ords (types 0 & 1).",
                       dest="ordsOnly", default=0, action="count")
@@ -48,8 +48,8 @@ def main():
 
     parser.add_option("--smoothing", dest="smoothing", action="store", type="int",
                       default=0,
-                      help="Smooth hilighted prns and clock data with specified \
-                      window length. Window length is specied in epochs.")
+                      help="Smooth highlighted PRNs and clock data with specified \
+                      window length. Window length is specified in epochs.")
 
     parser.add_option("--end-time", dest="tEnd", action="store",
                       help="End time. Format as \"YYYY DOY HH:MM:SS.S\" (Note\
