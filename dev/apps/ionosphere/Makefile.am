@@ -1,6 +1,6 @@
 # $Id$
 INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../../lib/geomatics
-LDADD = ../geomatics/lib/libgeomatic.la ../../src/libgpstk.la
+LDADD = ../../lib/geomatics/libgeomatics.la ../../src/libgpstk.la
 
 bin_PROGRAMS = IonoBias TECMaps
 

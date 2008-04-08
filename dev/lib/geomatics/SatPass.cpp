@@ -717,7 +717,7 @@ void SatPassIterator::reset(void) throw()
 // NB uses SatPass::operator<()
 void sort(vector<SatPass>& SPList) throw()
 {
-   sort(SPList.begin(), SPList.end());
+   std::sort(SPList.begin(), SPList.end());
 }
 
 int SatPassFromRinexFiles(vector<string>& filenames,
