@@ -76,6 +76,9 @@ namespace gpstk
       ObsEpoch getObsEpoch();
 
       bool operator()();
+      
+      static std::string formatsUnderstood()
+      { return "RINEX obs, MDP, smooth, Novatel, and raw Ashtech"; }
 
    private:
       SMODFData prevSMOD;
