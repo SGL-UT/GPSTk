@@ -282,6 +282,9 @@ void DOPCalc::process()
          if (elev < minElev)
             continue; 
          
+         double rangeL1 = 0;
+         double rangeL2 = 0;
+         
             // see if we can find data for this SV
          SvObsEpoch::const_iterator obsEpochIter;
          for (obsEpochIter = svObsEpoch.begin(); 
@@ -290,20 +293,48 @@ void DOPCalc::process()
          {
             const ObsID& obsID = obsEpochIter->first;
             
-               // look for a pseudorange from C/A
-            if (obsID.type == ObsID::otRange && obsID.code == ObsID::tcCA)
+               // look for a pseudorange from L1 (P, Y, or codeless)
+            if (!(obsID.type == ObsID::otRange))
+               continue;
+
+            if (obsID.band == ObsID::cbL1 && 
+                (obsID.code == ObsID::tcY ||
+                 obsID.code == ObsID::tcP ||
+                 obsID.code == ObsID::tcW ))
             {
-                  // store the SatID and corresponding range for the valid SV
-               satIDVec.push_back(satID);
-               rangeVec.push_back(obsEpochIter->second);
-               
-               if (debugLevel > 2)
-                  cout << "Storing: " << tempTime << " " << satID
-                       << " C/A range: " << obsEpochIter->second << " m \n";
-               
-               break;
+               rangeL1 = obsEpochIter->second;
+               continue;
             }
+            
+            if (obsID.band == ObsID::cbL2 && 
+                (obsID.code == ObsID::tcY ||
+                 obsID.code == ObsID::tcP ||
+                 obsID.code == ObsID::tcW ))
+            {
+               rangeL2 = obsEpochIter->second;
+               continue;
+            }
+         } // end loop over svObsEpoch
+         
+            // if have dual frequency data, do iono correction
+         if (rangeL1 && rangeL2)
+         {
+            double ionoCorrection = 0;
+            const double gamma = (L1_FREQ / L2_FREQ)*(L1_FREQ / L2_FREQ);
+            ionoCorrection = 1./(1.-gamma)*(rangeL1-rangeL2);
+
+               // store the SatID and corresponding range for the valid SV
+            satIDVec.push_back(satID);
+            rangeVec.push_back(rangeL1 - ionoCorrection);
+              
+            if (debugLevel > 2)
+               cout << tempTime << " " << satID << " dual freq iono correction: "
+                    << ionoCorrection  << "m , range: " << rangeL1 
+                    << " corrected range: " << (rangeL1 - ionoCorrection) 
+                    << endl;
+
          }
+         
       }  // process obsEpoch
       
       if ( satIDVec.size() == 0)
@@ -311,11 +342,11 @@ void DOPCalc::process()
          
          // need a trop model pntr - points to the "void" model by default
       ZeroTropModel noTropModel;
-      TropModel *tropModelPtr = &noTropModel;
+      TropModel *tropPtr = &noTropModel;
          
          // use PRSolution class to get the covariance matrix
       PRSolution prSolution;
-      prSolution.RAIMCompute(tempTime, satIDVec, rangeVec, ephStore, tropModelPtr);
+      prSolution.RAIMCompute(tempTime, satIDVec, rangeVec, ephStore, tropPtr);
          
          // use DOP class to compute DOPs
       DOP dop;
