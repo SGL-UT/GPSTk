@@ -1,3 +1,5 @@
+#pragma ident "$Id$"
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -83,11 +85,11 @@ public:
          "\"codeless\"."),
         numPointsOpt('n',"num_points","Width of the exponential filter moving "
          "window, in number of points. Default is 36.")
-   {   
-	  inputOpt.setMaxCount(1);
-	  outputOpt.setMaxCount(1);
-	  weekOpt.setMaxCount(1);
-	  offsetOpt.setMaxCount(1);
+   {
+      inputOpt.setMaxCount(1);
+      outputOpt.setMaxCount(1);
+      weekOpt.setMaxCount(1);
+      offsetOpt.setMaxCount(1);
 	}
 
    bool initialize(int argc, char *argv[]) throw()
@@ -259,8 +261,8 @@ protected:
             DayTime hintTime = DayTime(time.week, time.sow);
             DayTime tempTime = hintTime;
    	   	double  sow1     = tempTime.GPSsecond();
-	      	int     sow2     = static_cast<int>(sow1/1800);
-   	   	double  sow3     = static_cast<double>(sow2 * 1800);
+            int     sow2     = static_cast<int>(sow1/1800);
+            double  sow3     = static_cast<double>(sow2 * 1800);
       		double  sow_mben = 0.05 * mben.seq;
 		      double  sow4     = sow3 + sow_mben;
       
