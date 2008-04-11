@@ -186,9 +186,7 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
    {
       output.open(outputOpt.getValue()[0].c_str(), std::ios::out);
       if (debugLevel)
-         cout << "Sending output to" 
-              << outputOpt.getValue()[0]
-              << endl;
+         cout << "Sending output to "  << outputOpt.getValue()[0] << endl;
    }
    else
    {
@@ -285,29 +283,29 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
 
    if (verboseLevel)
    {
-      cout << "Using " << obsItemName[oiX] << " as the independant variable." 
-           << endl
-           << "Using a mask angle of " << maskAngle << " degrees" << endl
-           << "Using a track angle of " << trackAngle << " degrees" << endl;
+      output << "Using " << obsItemName[oiX] << " as the independant variable." 
+             << endl
+             << "Using a mask angle of " << maskAngle << " degrees" << endl
+             << "Using a track angle of " << trackAngle << " degrees" << endl;
       if (haveAntennaPos)
-         cout << "Antenna position: " << antennaPos << " m ecef" << endl;
+         output << "Antenna position: " << antennaPos << " m ecef" << endl;
 
-      cout << "Start time is " << startTime.printf(timeFormat) << endl
-           << "Stop time is " << stopTime.printf(timeFormat) << endl
-           << "Time span is " << timeSpan << " seconds" << endl;
+      output << "Start time is " << startTime.printf(timeFormat) << endl
+             << "Stop time is " << stopTime.printf(timeFormat) << endl
+             << "Time span is " << timeSpan << " seconds" << endl;
       
       if (badHealthMask)
-         cout << "Ignore anomalies associated with SVs marked unhealthy."
-              << endl;
+         output << "Ignore anomalies associated with SVs marked unhealthy."
+                << endl;
       else
-         cout << "Including anomalies associated with SVs marked unhealthy."
-              << endl;
+         output << "Including anomalies associated with SVs marked unhealthy."
+                << endl;
       if (!ignorePrn.empty())
       {
-         cout << "Ignoring PRNs:";
+         output << "Ignoring PRNs:";
          copy(ignorePrn.begin(), ignorePrn.end(),
-              ostream_iterator<int>(cout, " "));
-         cout << endl;
+              ostream_iterator<int>(output, " "));
+         output << endl;
       }
       MDPHeader::debugLevel = debugLevel;
    }
@@ -337,20 +335,22 @@ void DataAvailabilityAnalyzer::spinUp()
       GPSEphemerisStore& bce = dynamic_cast<GPSEphemerisStore&>(*ephData.eph);
       bce.SearchNear();
       if (verboseLevel)
-         cout << "Using search near for ephemeris." << endl;
+         output << "Using search near for ephemeris." << endl;
    }
    eph = ephData.eph;
 
 
    const string fn=inputOpt.getValue()[0];
    ObsReader obsReader(fn);
+   if (verboseLevel)
+      output << "Reading obs from " << fn << endl;
 
    if (obsReader.inputType == FFIdentifier::tRinexObs && !haveAntennaPos)
    {
       antennaPos = obsReader.roh.antennaPosition;
       if (verboseLevel>1)
-         cout << "Antenna position read from RINEX obs file:"
-              << antennaPos << endl;
+         output << "Antenna position read from RINEX obs file:"
+                << antennaPos << endl;
    }
 
    if (obsReader.inputType == FFIdentifier::tSMODF)
@@ -387,8 +387,8 @@ void DataAvailabilityAnalyzer::spinUp()
    }
 
    if (verboseLevel)
-      cout << "Data rate is " << epochRate << " seconds after " << i 
-           << " epochs." << endl;
+      output << "Data rate is " << epochRate << " seconds after " << i 
+             << " epochs." << endl;
 }
 
 
@@ -451,7 +451,7 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
          catch(gpstk::Exception& e) 
          {
             if (verboseLevel> 3)
-               cout << e << endl;
+               output << e << endl;
          }
       }
 
@@ -536,8 +536,8 @@ void DataAvailabilityAnalyzer::process()
       {
          firstEpochTime = oe.time;
          if (verboseLevel)
-            cout << "First observation is at " 
-                 << firstEpochTime.printf(timeFormat) << endl;
+            output << "First observation is at " 
+                   << firstEpochTime.printf(timeFormat) << endl;
       }
       else
       {
@@ -551,8 +551,8 @@ void DataAvailabilityAnalyzer::process()
    }
 
    if (verboseLevel)
-      cout << "Last observation is at " << lastEpochTime.printf(timeFormat) 
-           << endl;
+      output << "Last observation is at " << lastEpochTime.printf(timeFormat) 
+             << endl;
 }
 
 
@@ -572,12 +572,12 @@ void DataAvailabilityAnalyzer::processEpoch(
       
       if (verboseLevel>2)
       {
-         cout << t.printf(timeFormat) << "  SVs in view: ";
+         output << t.printf(timeFormat) << "  SVs in view: ";
          for (int prn=1; prn<=32; prn++)
             if (inView[prn].up)
-               cout << prn << "(" << setprecision(3)
-                    << inView[prn].elevation << ") ";
-         cout << endl;
+               output << prn << "(" << setprecision(3)
+                      << inView[prn].elevation << ") ";
+         output << endl;
       }
 
       if (t != oe.time)
@@ -616,9 +616,9 @@ void DataAvailabilityAnalyzer::processEpoch(
          else // There is data from this SV
          {
             if (verboseLevel>3)
-               cout << oei->first << " " << oei->second << endl;
+               output << oei->first << " " << oei->second << endl;
             if (verboseLevel>3)
-               cout << iv;
+               output << iv;
             if (!iv.up)
             {
                missingList.push_back(iv);
@@ -668,9 +668,9 @@ void DataAvailabilityAnalyzer::processEpoch(
                if (!iv.obsGained.empty() || !iv.obsLost.empty())
                {
                   if (verboseLevel>1)
-                     cout << t.printf(timeFormat) << " prn:" << svid.id
-                          << " +" << iv.obsGained
-                          << " -" << iv.obsLost << endl;
+                     output << t.printf(timeFormat) << " prn:" << svid.id
+                            << " +" << iv.obsGained
+                            << " -" << iv.obsLost << endl;
                   missingList.push_back(iv);
                }
             } // else
@@ -686,11 +686,11 @@ void DataAvailabilityAnalyzer::shutDown()
 {
    MissingList sml = processList(missingList, *eph);
    
-   cout << "\n Availability Raw Results :\n\n";
-   cout << "Start                 End        #     PRN    Elv    Az  Hlth  SNR  ama ata     Tah        Tama   ccid" << endl
-        << "======================================================================================================" << endl;
+   output << "\n Availability Raw Results :\n\n";
+   output << "Start                 End        #     PRN    Elv    Az  Hlth  SNR  ama ata     Tah        Tama   ccid" << endl
+          << "======================================================================================================" << endl;
    
-   for_each(sml.begin(), sml.end(), InView::dumper(cout, timeFormat));
+   for_each(sml.begin(), sml.end(), InView::dumper(output, timeFormat));
 
    outputSummary();
 }
@@ -817,13 +817,13 @@ void DataAvailabilityAnalyzer::InView::dump(ostream& s, const string fmt)
 
 void DataAvailabilityAnalyzer::outputSummary()
 {
-   cout << endl
-        << " Summary:" << endl
-        << endl
-        << "Data spans " <<  firstEpochTime << " through " << lastEpochTime << endl
-        << "Total number of epochs with data: " << epochCounter << endl
-        << "Epochs with any data missing: " << anyMissingCounter << endl
-        << "Epochs without data from any SV: " << allMissingCounter << endl;
+   output << endl
+          << " Summary:" << endl
+          << endl
+          << "Analysis spans " <<  firstEpochTime << " through " << lastEpochTime << endl
+          << "Total number of epochs with data: " << epochCounter << endl
+          << "Epochs with any data missing: " << anyMissingCounter << endl
+          << "Epochs without data from any SV: " << allMissingCounter << endl;
 }
 
 
