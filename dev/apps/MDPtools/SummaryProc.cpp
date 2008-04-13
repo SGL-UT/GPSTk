@@ -224,10 +224,11 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
    int prn=msg.prn;
    int chan=msg.channel;
 
-   // First check to see if this channel has been used yet...
-   if (prevObs[chan].prn == 0)
+   if (prevObs[chan].prn == 0 || prevObs[chan].prn != prn)
    {
-      // do nothing
+      if (verboseLevel>1)
+         out << msg.time.printf(timeFormat)
+             << "  PRN " << prn << " now on channel " << chan << endl;
    }
    else
    {
