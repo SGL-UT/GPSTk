@@ -27,12 +27,15 @@ public:
    typedef std::list<elevationPair> elevBinList;
    elevBinList elevBins;
 
-   // Used to determine how many of each type of obs we get
    typedef std::pair<gpstk::RangeCode, gpstk::CarrierCode> rcpair;
    typedef std::set<rcpair> rc_set;
    typedef std::map<rc_set, unsigned long> ocm;
    typedef std::map<elevationPair, ocm> ebocm;
-   ebocm whack;
+   ebocm whack;  // records how many of each type of obs we get
+
+   typedef std::map<rcpair, unsigned long> rcpm;
+   typedef std::map<elevationPair, rcpm> eprcpm;
+   eprcpm lol;    // records how many lock count resets we get
 
    // How many epochs that have the incorrect number of SVs in them.
    unsigned long svCountErrorCount;

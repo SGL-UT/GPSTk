@@ -110,6 +110,10 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
                out << endl;
             }
          }
+         for (rcpm::const_iterator j= lol[*i].begin(); j != lol[*i].end(); j++)
+            out << setw(10) << j->second << "   "
+                << asString(j->first.second) << " " << asString(j->first.first)
+                << " lock count discontinuities" << endl;
          if (verboseLevel<2)
             break;
          out << endl;
@@ -156,7 +160,7 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
             i->dump(out);
       }
    }
-}
+}  // ~MDPSummaryProcessor()
 
 
 //-----------------------------------------------------------------------------
@@ -252,45 +256,49 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
          gpstk::DayTime first =  prevObs[chan].time + dt;
          gpstk::DayTime second = msg.time - dt;
          chanGapList[chan].push_back(DayTimePair(first, second));
-         if (verboseLevel>1)
+         if (verboseLevel)
             out << msg.time.printf(timeFormat)
                 << "  Data gap on channel " << chan
-                << ", " << secondsAsHMS(dt)
+                << ", prn " << msg.prn << ", " << secondsAsHMS(dt)
                 << endl;
          if (verboseLevel>2)
          {
             out << "  prev obs on chan " << chan << endl;
             prevObs[chan].dump(out);
-            out << "  curr obs:" << endl;
+            out << "  curr obs on chan" << chan << endl;
             msg.dump(out);
          }
       }
 
       // Look for discontinuities in the lock count
       // Since this can be quite verbose, only do it in verbose mode
-      if (verboseLevel)
+      for (gpstk::MDPObsEpoch::ObsMap::const_iterator i = msg.obs.begin();
+           i != msg.obs.end(); i++)
       {
-         for (gpstk::MDPObsEpoch::ObsMap::const_iterator i = msg.obs.begin();
-              i != msg.obs.end(); i++)
+         const gpstk::MDPObsEpoch::Observation& curr=i->second;
+         if (prevObs[chan].haveObservation(curr.carrier, curr.range))
          {
-            const gpstk::MDPObsEpoch::Observation& curr=i->second;
-            if (prevObs[chan].haveObservation(i->first.first, i->first.second))
+            gpstk::MDPObsEpoch::Observation prev =
+               prevObs[chan].getObservation(curr.carrier, curr.range);
+            if (curr.lockCount - prev.lockCount != 1 && prev.lockCount > 0)
             {
-               gpstk::MDPObsEpoch::Observation prev = prevObs[chan].getObservation(i->first.first, i->first.second);
-               if (curr.lockCount - prev.lockCount != 1)
-               {
-                  // The current ash2mdp has periods where it outputs every
-                  // message with a lock count of zero 
-                  if ((prev.lockCount > 0 && verboseLevel>1) || verboseLevel>2)
-                     out << msg.time.printf(timeFormat)
-                         << "  Lock count reset prn " << prn
-                         << ", chan " << chan
-                         << ", " << asString(i->first.first)
-                         << " "  << asString(i->first.second)
-                         << " (" << prev.lockCount
-                         << " -> " << curr.lockCount
-                         << ")" << endl;
-               }
+               // figure out what bins we should update loss-of-lock counts on
+               rcpair rcPair(curr.range, curr.carrier);
+               for (elevBinList::const_iterator j=elevBins.begin();
+                    j != elevBins.end(); j++)
+                  if (msg.elevation >= j->first && msg.elevation <= j->second)
+                     lol[*j][rcPair]++;
+
+               if (verboseLevel)
+                  out << msg.time.printf(timeFormat)
+                      << "  Lock count discontinuity on prn " << prn
+                      << ", chan " << chan
+                      << ", " << asString(i->first.first)
+                      << " "  << asString(i->first.second)
+                      << ", elev " << msg.elevation
+                      << " (" << prev.lockCount
+                      << " -> " << curr.lockCount
+                      << ")" << endl;
             }
          }
       }
