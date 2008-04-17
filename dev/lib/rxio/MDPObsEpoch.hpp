@@ -55,6 +55,9 @@ namespace gpstk
       class Observation
       {
       public:
+         Observation() throw(): carrier(ccUnknown), range(rcUnknown),bw(0),
+            snr(0), lockCount(0), pseudorange(0), phase(0), doppler(0) {}
+
          void dump(std::ostream& out) const throw();
          std::string encode() const throw();
 
