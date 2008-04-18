@@ -74,6 +74,8 @@ private:
       const gpstk::Triple& antPos,
       const gpstk::ObsEpoch& oe,
       const gpstk::ObsEpoch& prev_oe);
+
+   gpstk::ObsEpoch removeBadObs(const gpstk::ObsEpoch& oe);
       
    void outputSummary();
    
@@ -81,8 +83,8 @@ private:
    std::ofstream output;
    std::string timeFormat;
    gpstk::CommandOptionWithAnyArg inputOpt, outputOpt, independantOpt,
-      mscFileOpt, msidOpt, timeFmtOpt, ephFileOpt, maskAngleOpt, trackAngleOpt, timeMaskOpt,
-      rxPosOpt, timeSpanOpt, ignorePrnOpt;
+      mscFileOpt, msidOpt, timeFmtOpt, ephFileOpt, maskAngleOpt, trackAngleOpt,
+      timeMaskOpt, snrThresholdOpt, rxPosOpt, timeSpanOpt, ignorePrnOpt;
 
    gpstk::CommandOptionNoArg badHealthMaskOpt, smashAdjacentOpt;
 
@@ -91,6 +93,7 @@ private:
    gpstk::DayTime startTime, stopTime;
    double timeSpan, timeMask;
    double epochRate;
+   double snrThreshold;
    gpstk::DayTime firstEpochTime, lastEpochTime;
    
    // these are counters used in the summary

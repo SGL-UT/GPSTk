@@ -134,6 +134,10 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
                   "Ignore anomalies on SVs below this elevation. The default"
                   " is 10 degrees."),
      
+     snrThresholdOpt('\0', "snr",
+                     "Discard data with an SNR less than this value. The default "
+                     " is 20 dB-Hz."),
+     
      trackAngleOpt('\0', "track-angle",
                   "Assume the receiver starts tracking at this elevation. The "
                   "default is 0 degrees."),
@@ -215,6 +219,11 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
    else
       timeSpan = 1e99;
 
+   if (snrThresholdOpt.getCount())
+      snrThreshold = StringUtils::asDouble(snrThresholdOpt.getValue()[0]);
+   else
+      snrThreshold = 20.0;
+
    if (maskAngleOpt.getCount())
       maskAngle = StringUtils::asDouble(maskAngleOpt.getValue()[0]);
 
@@ -289,8 +298,8 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
              << "Using a track angle of " << trackAngle << " degrees" << endl;
       if (haveAntennaPos)
          output << "Antenna position: " << antennaPos << " m ecef" << endl;
-
-      output << "Start time is " << startTime.printf(timeFormat) << endl
+      output << "Ignoring data with SNR < " << snrThreshold << " dB-Hz" << endl
+             << "Start time is " << startTime.printf(timeFormat) << endl
              << "Stop time is " << stopTime.printf(timeFormat) << endl
              << "Time span is " << timeSpan << " seconds" << endl;
       
@@ -544,7 +553,7 @@ void DataAvailabilityAnalyzer::process()
          lastEpochTime = oe.time;
          if (lastEpochTime - firstEpochTime > timeSpan)
             break;
-
+         oe = removeBadObs(oe);
          processEpoch(antennaPos, oe, prev_oe);
       }
       prev_oe = oe;
@@ -553,6 +562,53 @@ void DataAvailabilityAnalyzer::process()
    if (verboseLevel)
       output << "Last observation is at " << lastEpochTime.printf(timeFormat) 
              << endl;
+}
+
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+ObsEpoch DataAvailabilityAnalyzer::removeBadObs(const ObsEpoch& oe)
+{
+   // Remove data that has an SNR less than the threshold and all LLI/
+   // SSI obs.
+   ObsEpoch oe2;
+   oe2.time = oe.time;
+   oe2.rxClock = oe.rxClock;
+
+   for (ObsEpoch::const_iterator oei = oe.begin(); oei != oe.end(); oei++)
+   {
+      const SvObsEpoch& soe = oei->second;
+      SvObsEpoch soe2;
+      soe2.svid = soe.svid;
+      soe2.azimuth = soe.azimuth;
+      soe2.elevation = soe.elevation;
+
+      for (SvObsEpoch::const_iterator p=soe.begin(); p != soe.end(); p++)
+      {
+         const ObsID& oid = p->first;
+         if (oid.type == ObsID::otSSI || oid.type == ObsID::otLLI)
+            continue;
+         if (oid.type == ObsID::otSNR && p->second >= snrThreshold)
+            soe2[p->first] = p->second;
+         else
+         {
+            ObsID snrId(ObsID::otSNR, oid.band, oid.code);
+            SvObsEpoch::const_iterator snr_itr = soe.find(snrId);
+            if (snr_itr != soe.end() && snr_itr->second < snrThreshold)
+            {
+               if (verboseLevel>2)
+                  output << oe.time.printf(timeFormat)
+                         << " Ignoring " << soe.svid
+                         << " " << oid
+                         << " SNR:" << snr_itr->second << endl;
+               continue;
+            }
+            soe2[p->first] = p->second; 
+         }
+      }
+      oe2[oei->first] = soe2;
+   }
+   return oe2;
 }
 
 
@@ -596,7 +652,7 @@ void DataAvailabilityAnalyzer::processEpoch(
 
          ObsEpoch::const_iterator oei;
          SatID svid(prn, SatID::systemGPS);
-         
+
          oei = oe.find(svid);
          InView& iv=inView[prn];
 
@@ -604,7 +660,6 @@ void DataAvailabilityAnalyzer::processEpoch(
 	    continue;
 
          iv.inTrack = oe.size();
-
 
          if (oei == oe.end())  // No data from this SV
          {
@@ -619,6 +674,8 @@ void DataAvailabilityAnalyzer::processEpoch(
                output << oei->first << " " << oei->second << endl;
             if (verboseLevel>3)
                output << iv;
+
+            // This adds obs that we receive that *aren't* supposed to be there
             if (!iv.up)
             {
                missingList.push_back(iv);
@@ -627,9 +684,8 @@ void DataAvailabilityAnalyzer::processEpoch(
             {
                iv.epochCount++;
                const SvObsEpoch& soe = oei->second;
-               SvObsEpoch::const_iterator q;
-               
-               q = soe.find(ObsID(ObsID::otSNR, ObsID::cbL1, ObsID::tcCA));
+               SvObsEpoch::const_iterator q =
+                  soe.find(ObsID(ObsID::otSNR, ObsID::cbL1, ObsID::tcCA));
                if (q != soe.end())
                   iv.snr = q->second;
 
@@ -648,14 +704,10 @@ void DataAvailabilityAnalyzer::processEpoch(
                const SvObsEpoch& psoe = poei->second;
                set<ObsID> curr, prev;
                for (q=soe.begin(); q != soe.end(); q++)
-                  if (q->first.type != ObsID::otSSI &&
-                      q->first.type != ObsID::otLLI)
-                     curr.insert(q->first);
+                  curr.insert(q->first);
 
                for (q=psoe.begin(); q != psoe.end(); q++)
-                  if (q->first.type != ObsID::otSSI &&
-                      q->first.type != ObsID::otLLI)
-                     prev.insert(q->first);
+                  prev.insert(q->first);
 
                set_difference(curr.begin(), curr.end(),
                               prev.begin(), prev.end(),
