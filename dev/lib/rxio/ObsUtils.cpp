@@ -53,6 +53,9 @@ namespace gpstk
    {
       SvObsEpoch obs;
       MDPObsEpoch::ObsMap::const_iterator i;
+      obs.svid = SatID(mdp.prn, SatID::systemGPS);
+      obs.elevation = mdp.elevation;
+      obs.elevation = mdp.azimuth;
       for (i=mdp.obs.begin(); i!=mdp.obs.end(); i++)
       {
          CarrierCode cc = i->first.first;
