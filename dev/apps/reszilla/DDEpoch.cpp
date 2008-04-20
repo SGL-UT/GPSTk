@@ -504,9 +504,14 @@ string DDEpochMap::computeStats(
             const gpstk::SatID& sv1 = pr.first;
             const gpstk::SatID& sv2 = pr.second;
             const OIDM& ddr = pi->second;
-               
+            
+            // Make sure the SVs are in this elevation bin. If we are using
+            // a single master SV, then only the first SV needs to be in this
+            // range since the master SV selection algorigthm tries to only use
+            // SVs that should be 'good'.
             if (elevation[sv1]<minElevation || elevation[sv1]>maxElevation ||
-                elevation[sv2]<minElevation || elevation[sv2]>maxElevation)
+                (!useMasterSV && 
+                 (elevation[sv2]<minElevation || elevation[sv2]>maxElevation)))
                continue;
 
             OIDM::const_iterator ddi = ddr.find(oid);
