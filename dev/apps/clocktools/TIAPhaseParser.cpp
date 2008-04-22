@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 /*************************************************************************/
 /* This program reads in clock phase data files provided by the TIA      */
 /*  and outputs the data in the format required by oallandev and         */

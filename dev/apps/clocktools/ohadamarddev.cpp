@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 /**********************************************************************************/
 /* This program reads in clock phase data provided by any of the phase parsers    */
 /*  and calculates the Overlapping Hadamard Deviation, outputting the results to  */

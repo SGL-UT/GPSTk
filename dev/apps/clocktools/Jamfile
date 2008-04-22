@@ -1,0 +1,11 @@
+# $Id:$
+
+SubDir TOP apps clocktools ;
+
+GPSLinkLibraries oallandev rmoutlier ohadamarddev OrdPhaseParser TIAPhaseParser : gpstk ;
+
+GPSMain oallandev : oallandev.cpp ;
+GPSMain rmoutlier : rmoutlier.cpp ;
+GPSMain ohadamarddev : ohadamarddev.cpp ;
+GPSMain OrdPhaseParser : OrdPhaseParser.cpp ;
+GPSMain TIAPhaseParser : TIAPhaseParser.cpp ;

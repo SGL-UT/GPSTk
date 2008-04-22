@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 /**************************************************************************/
 /* This program reads in clock phase data provided by ordGen and ordClock */
 /*  and outputs the data in the format required by oallandev and          */
