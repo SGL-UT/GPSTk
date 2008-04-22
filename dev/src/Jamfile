@@ -63,6 +63,7 @@ else
 
    InstallFile $(INCDIR) : 
 # please add in alphabetical order
+      AllanDeviation.hpp
       ANSITime.hpp AlmOrbit.hpp AstronomicalFunctions.hpp
       Bancroft.hpp BasicFramework.hpp BinUtils.hpp BinexData.hpp
       BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp BLQDataReader.hpp
