@@ -35,7 +35,8 @@ TypeID.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp X1Sequence.cpp \
 X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp YumaData.cpp 
 
 incldir = $(includedir)/gpstk
-incl_HEADERS = regex.h ANSITime.hpp AlmOrbit.hpp AstronomicalFunctions.hpp \
+incl_HEADERS = regex.h AllanDeviation.hpp ANSITime.hpp AlmOrbit.hpp \
+AstronomicalFunctions.hpp \
 Bancroft.hpp BasicFramework.hpp BinUtils.hpp BinexData.hpp \
 BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp BLQDataReader.hpp \
 CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp \

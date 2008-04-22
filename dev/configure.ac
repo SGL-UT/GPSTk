@@ -1,4 +1,4 @@
-#                                               -*- Autoconf -*-
+#						-*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
@@ -44,37 +44,38 @@ AC_FUNC_STRTOD
 AC_CHECK_FUNCS([bzero floor ftime getcwd gettimeofday memset mkdir modf pow re_comp regcomp sqrt strstr strtol strtoul])
 
 AC_CONFIG_FILES([Makefile
-                 lib/Makefile
-                 lib/rxio/Makefile
+		 lib/Makefile
+		 lib/rxio/Makefile
 		 lib/vplot/Makefile
 		 lib/geomatics/Makefile
-                 lib/procframe/Makefile
-                 src/Makefile
-                 apps/Makefile
-                 apps/DataAvailability/Makefile
-                 apps/MDPtools/Makefile
-                 apps/Rinextools/Makefile
-                 apps/checktools/Makefile
-                 apps/converters/Makefile
-                 apps/differential/Makefile
-                 apps/difftools/Makefile
-                 apps/filetools/Makefile
-                 apps/geomatics/Makefile
-                 apps/geomatics/cycleslips/Makefile
-                 apps/geomatics/kalman/Makefile
-                 apps/geomatics/relposition/Makefile
-                 apps/geomatics/robust/Makefile
-                 apps/ionosphere/Makefile
-                 apps/mergetools/Makefile
-                 apps/multipath/Makefile
-                 apps/positioning/Makefile
-                 apps/qa/Makefile
-                 apps/receiver/Makefile
-                 apps/reszilla/Makefile
-                 apps/rfw/Makefile
-                 apps/swrx/Makefile
-                 apps/time/Makefile
-                 apps/visibility/Makefile
-                 tests/Makefile
-                 examples/Makefile])
+		 lib/procframe/Makefile
+		 src/Makefile
+		 apps/Makefile
+		 apps/DataAvailability/Makefile
+		 apps/MDPtools/Makefile
+		 apps/Rinextools/Makefile
+		 apps/checktools/Makefile
+		 apps/clocktools/Makefile
+		 apps/converters/Makefile
+		 apps/differential/Makefile
+		 apps/difftools/Makefile
+		 apps/filetools/Makefile
+		 apps/geomatics/Makefile
+		 apps/geomatics/cycleslips/Makefile
+		 apps/geomatics/kalman/Makefile
+		 apps/geomatics/relposition/Makefile
+		 apps/geomatics/robust/Makefile
+		 apps/ionosphere/Makefile
+		 apps/mergetools/Makefile
+		 apps/multipath/Makefile
+		 apps/positioning/Makefile
+		 apps/qa/Makefile
+		 apps/receiver/Makefile
+		 apps/reszilla/Makefile
+		 apps/rfw/Makefile
+		 apps/swrx/Makefile
+		 apps/time/Makefile
+		 apps/visibility/Makefile
+		 tests/Makefile
+		 examples/Makefile])
 AC_OUTPUT
