@@ -188,9 +188,8 @@ public:
       // The number of SVs physically above the mask angle at this time
       short numAboveMaskAngle, numAboveTrackAngle;
 
-      // The SNR of the CA signal. Note that this will be the SNR of the 
-      // most recently received observation when an outage is detected.
-      float snr;
+      // The most recent obs from this prn
+      gpstk::SvObsEpoch obs;
 
       // A function object to allow printing of a list of these with a 
       // for_each loop

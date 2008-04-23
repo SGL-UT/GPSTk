@@ -470,6 +470,8 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
 
       curr.numAboveMaskAngle = ama;
       curr.numAboveTrackAngle = ata;
+
+      // Search for the previous in the list from this prn
       MissingList::reverse_iterator j;
       MissingList::reverse_iterator k=sml.rend();
       for (j = sml.rbegin(); j != k; j++)
@@ -478,12 +480,13 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
 
       if (j == sml.rend())
       {
+         // Since there was no previous, go ahead and keep this one
          sml.push_back(curr);
       }
       else
       {
          InView& prev = *j;
-         double dt=std::abs(curr.time - prev.time-epochRate);
+         double dt=std::abs(curr.time - prev.time - epochRate);
          if (smashAdjacent && dt < 1e-3)
          {
             prev.smashCount++;
@@ -491,7 +494,7 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
             prev.time = curr.time;
             prev.elevation = curr.elevation;
             prev.azimuth = curr.azimuth;
-            prev.snr = curr.snr;
+            prev.obs = curr.obs;
             prev.epochCount = curr.epochCount;
             prev.numAboveMaskAngle = 
                max(curr.numAboveMaskAngle, prev.numAboveMaskAngle);
@@ -534,12 +537,15 @@ void DataAvailabilityAnalyzer::process()
    while (obsReader())
    {
       oe = obsReader.getObsEpoch();
+      if (!obsReader())
+         break;
       if (startTime > oe.time)
          continue;
       if (stopTime < oe.time)
          break;
       
       epochCounter++;
+      oe = removeBadObs(oe);
 
       if (obsReader.epochCount==1)
       {
@@ -553,7 +559,6 @@ void DataAvailabilityAnalyzer::process()
          lastEpochTime = oe.time;
          if (lastEpochTime - firstEpochTime > timeSpan)
             break;
-         oe = removeBadObs(oe);
          processEpoch(antennaPos, oe, prev_oe);
       }
       prev_oe = oe;
@@ -626,7 +631,7 @@ void DataAvailabilityAnalyzer::processEpoch(
       for (int prn=1; prn<=32; prn++)
          inView[prn].update(prn, t, rxpos, *eph, gm, maskAngle, trackAngle);
       
-      if (verboseLevel>2)
+      if (verboseLevel>3)
       {
          output << t.printf(timeFormat) << "  SVs in view: ";
          for (int prn=1; prn<=32; prn++)
@@ -684,10 +689,8 @@ void DataAvailabilityAnalyzer::processEpoch(
             {
                iv.epochCount++;
                const SvObsEpoch& soe = oei->second;
-               SvObsEpoch::const_iterator q =
-                  soe.find(ObsID(ObsID::otSNR, ObsID::cbL1, ObsID::tcCA));
-               if (q != soe.end())
-                  iv.snr = q->second;
+
+               iv.obs = soe;
 
                iv.obsGained.clear();
                iv.obsLost.clear();
@@ -703,6 +706,7 @@ void DataAvailabilityAnalyzer::processEpoch(
                // figure out if the obs set is different from the previous
                const SvObsEpoch& psoe = poei->second;
                set<ObsID> curr, prev;
+               SvObsEpoch::const_iterator q;
                for (q=soe.begin(); q != soe.end(); q++)
                   curr.insert(q->first);
 
@@ -719,10 +723,10 @@ void DataAvailabilityAnalyzer::processEpoch(
 
                if (!iv.obsGained.empty() || !iv.obsLost.empty())
                {
-                  if (verboseLevel>1)
+                  if (verboseLevel>2)
                      output << t.printf(timeFormat) << " prn:" << svid.id
-                            << " +" << iv.obsGained
-                            << " -" << iv.obsLost << endl;
+                            << " gained:" << iv.obsGained
+                            << " lost:" << iv.obsLost << endl;
                   missingList.push_back(iv);
                }
             } // else
@@ -738,9 +742,10 @@ void DataAvailabilityAnalyzer::shutDown()
 {
    MissingList sml = processList(missingList, *eph);
    
-   output << "\n Availability Raw Results :\n\n";
-   output << "Start                 End        #     PRN    Elv    Az  Hlth  SNR  ama ata     Tah        Tama   ccid" << endl
-          << "======================================================================================================" << endl;
+   output << "\n Availability Raw Results :" << endl
+          << endl
+          << "Start                 End        #     PRN    Elv    Az  Hlth  ama ata   ccid" << endl
+          << "=============================================================================" << endl;
    
    for_each(sml.begin(), sml.end(), InView::dumper(output, timeFormat));
 
@@ -776,7 +781,7 @@ void DataAvailabilityAnalyzer::InView::update(
             up = true;
             aboveMask = false;
             epochCount = 0;
-            snr = 0;
+            obs = SvObsEpoch();
             inTrack = 0;
          }
          else
@@ -836,25 +841,27 @@ void DataAvailabilityAnalyzer::InView::dump(ostream& s, const string fmt)
         << setprecision(2) << setw(6) << elevation
         << dir << "  "
         << setprecision(0) << setw(3) << azimuth << "  "
-        << hex << setw(2) << health << "  " << dec;
-      if (snr>0)
-         s << setprecision(1) << setw(5) << snr;
-      else
-         s << setw(5) << "-";
-      s << "   "
+        << hex << setw(2) << health << "  " << dec
+        << "   "
         << left << setw(2) << numAboveMaskAngle << "  "
         << left << setw(2) << numAboveTrackAngle << "  ";
 
-      if (up)
+      if (false && up) // in hindsight, this isn't proving to be that usefull
          s << right << setw(9) << secAsHMS(timeUp)
            << " " << setw(9) << secAsHMS(timeUpMask) << " ";
-      else
-         s << right << setw(9) << "el<0" << " " << setw(9) << " ";
 
       if (obsLost.empty() || obsGained.empty())
          s << " all";
       else
          s << " " << obsLost << " -> " << obsGained;
+
+      s << right << "  ";
+
+      if (!up)
+         s << "below horizon ";
+
+      if (!aboveMask)
+         s << "below mask angle ";
    }
    else
    {
@@ -893,7 +900,7 @@ void dump(ostream& s, const ObsSet& obs, int detail)
             {
                if (i != obs.begin())
                   s << ",";
-               s << ObsID::cbStrings[i->band] << ObsID::tcStrings[i->code];
+               s << ObsID::cbStrings[i->band] << " " << ObsID::tcStrings[i->code];
             }
    }
 }
