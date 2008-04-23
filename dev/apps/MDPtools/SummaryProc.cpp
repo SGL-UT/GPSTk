@@ -86,13 +86,20 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
           << " sec."
           << endl;
 
+      out << "  Receiver data gaps:" << endl;
+      int rxGapCount=0;
       for (DayTimePairList::const_iterator i=epochGapList.begin(); i!=epochGapList.end(); i++)
          if (std::abs(i->first - i->second - obsRateEst) > 1e-3)
-            out << "  Data gap from " << i->second.printf(timeFormat)
+            out << "    " << rxGapCount++ << ": "
+                << i->second.printf(timeFormat)
                 << " to " << i->first.printf(timeFormat)
                 << " ( " << secondsAsHMS(i->first - i->second) << " )."
                 << endl;
-      
+      if (rxGapCount==0)
+         out << "    none" << endl;
+
+      out << endl;
+
       for (elevBinList::const_iterator i=elevBins.begin(); i!=elevBins.end(); i++)
       {
          const ocm &oc = whack[*i];
@@ -119,7 +126,8 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
          out << endl;
       }
       
-      cout << "Encountered " << svCountErrorCount << " SV count errors." << endl;
+      cout << "Encountered " << svCountErrorCount << " SV count errors." << endl
+           << endl;
    }
 
    out << endl << "PVT Solution message summary:" << endl;
@@ -145,15 +153,19 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
       double dt = lastNavTime - firstNavTime;
       out << "  Nav data spans " << firstNavTime.printf(timeFormat) 
           << " to " << lastNavTime.printf(timeFormat)
-          << " (" << secondsAsHMS(dt) << ")"
-          << endl << endl;
+          << " (" << secondsAsHMS(dt) << ")" << endl
+          << setw(10) << navParityErrors   << "   Parity errors" << endl
+          << setw(10) << navSowErrors      << "   Bogus HOW SOWs" << endl
+          << setw(10) << navSowMiscompares << "   SOW vs header time miscompares" << endl
+          << endl;
    }
-      
+
    out << endl;
    if (badMessages.size())
    {
       out << "Received " << badMessages.size() << " messages with an error." << endl;
-      if (verboseLevel>1)
+
+      if (verboseLevel>2)
       {
          out << "Headers from the bad messages:" << endl;
          for (MDPList::const_iterator i=badMessages.begin(); i!=badMessages.end(); i++)
@@ -453,12 +465,15 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
              << "  Subframe appears cooked" << endl;
    }
 
-
    if (!(bugMask & 0x2) && !parityGood)
    {
-      MDPNavSubframe tmp(msg);
-      tmp.setstate(parbit);
-      badMessages.push_back(tmp);
+      navParityErrors++;
+      if (verboseLevel>1)
+         out << msg.time.printf(timeFormat)
+             << "  Parity error on PRN " << umsg.prn
+             << ", " << asString(umsg.carrier)
+             << " " << asString(umsg.range)
+             << endl;
       return;
    }
 
@@ -466,27 +481,29 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
    long hdr_sow = static_cast<long>(umsg.time.GPSsow());
    if (how_sow < 0 || how_sow >= 604800)
    {
-      if (verboseLevel)
-         out << umsg.time.printf(timeFormat)
-             << "  Bogus HOW SOW (" << how_sow << ")"
+      navSowErrors++;
+      if (verboseLevel>1)
+         out << msg.time.printf(timeFormat)
+             << "  Bogus HOW SOW on PRN " << umsg.prn
+             << ", " << asString(umsg.carrier)
+             << " " << asString(umsg.range)
+             << "  sow:" << how_sow
              << endl;
-      MDPNavSubframe tmp(umsg);
-      tmp.setstate(fmtbit);
-      badMessages.push_back(tmp);
       return;
    }
 
    if ( (how_sow != hdr_sow+6 && how_sow != hdr_sow) ||
         (how_sow == hdr_sow && !(bugMask & 0x4))        )
    {
-      if (verboseLevel)
-         out << umsg.time.printf(timeFormat)
-             << "  Navigation Subframe HOW/header time mismatch ("
-             << how_sow << " vs " << hdr_sow << ")"
+      navSowMiscompares++;
+      if (verboseLevel>1)
+         out << msg.time.printf(timeFormat)
+             << "  Navigation subframe HOW/header time miscompare on PRN " << umsg.prn
+             << ", " << asString(umsg.carrier)
+             << " " << asString(umsg.range)
+             << "  how:" << how_sow
+             << ", header:" << hdr_sow
              << endl;
-      MDPNavSubframe tmp(umsg);
-      tmp.setstate(fmtbit);
-      badMessages.push_back(tmp);
       return;
    }
 
