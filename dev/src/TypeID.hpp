@@ -31,7 +31,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -79,7 +79,7 @@ namespace gpstk
       enum ValueType
       {
          Unknown,
-         // Observation-related types
+            // Observation-related types
          C1,        ///< GPS civil code observation in L1 frequency
          C2,        ///< GPS civil code observation in L2 frequency
          P1,        ///< GPS precise code observation in L1 frequency
@@ -96,14 +96,14 @@ namespace gpstk
          LLI1,      ///< Loss of Lock Indicator/ lock count, L1 frequency
          SSI2,      ///< Signal strength indicator/index, L2 frequency
          LLI2,      ///< Loss of Lock Indicator/ lock count, L2 frequency
-         // v 2.11
+            // v 2.11
          C5,        ///< GPS L5C-code pseudorange
          L5,        ///< GPS phase observation in L5 frequency
          D5,        ///< GPS doppler observation in L5 frequency
          S5,        ///< GPS signal strength observation in L5 frequency
          SSI5,      ///< Signal strength indicator/index, L5 frequency
          LLI5,      ///< Loss of Lock Indicator/ lock count, L5 frequency
-         // Galileo-related
+            // Galileo-related
          C6,        ///< Galileo E6-code pseudorange
          L6,        ///< Galileo phase observation in L6 frequency
          D6,        ///< Galileo doppler observation in L6 frequency
@@ -122,7 +122,7 @@ namespace gpstk
          S8,        ///< Galileo signal strength observation in L5a+b frequency
          SSI8,      ///< Signal strength indicator/index, L5a+b frequency
          LLI8,      ///< Loss of Lock Indicator/ lock count, L5a+b frequency
-         // Combination-related types
+            // Combination-related types
          PC,        ///< Code-based ionosphere-free combination
          LC,        ///< Phase-based ionosphere-free combination
          PI,        ///< Code-based ionospheric combination
@@ -130,7 +130,7 @@ namespace gpstk
          Pdelta,    ///< Narrow-lane combination
          Ldelta,    ///< Wide-lane combination
          MWubbena,  ///< Melbourne-Wubbena combination
-         // Model-related types
+            // Model-related types
          rho,       ///< Geometric distance satellite-receiver
          dtSat,     ///< Satellite clock offset
          rel,       ///< Relativistic delay
@@ -149,21 +149,23 @@ namespace gpstk
          satZ,      ///< Satellite position, Z component
          elevation, ///< Satellite elevation
          azimuth,   ///< Satellite azimuth
-         // Cycle slip flags
+            // Cycle slip flags
          CSL1,      ///< Cycle slip in L1
          CSL2,      ///< Cycle slip in L2
          CSL5,      ///< Cycle slip in L5
          CSL6,      ///< Cycle slip in L6
          CSL7,      ///< Cycle slip in L7
          CSL8,      ///< Cycle slip in L8
-         // Phase-ambiguity types
+            // Satellite 'arcs'
+         satArc,    ///< Satellite arc number
+            // Phase-ambiguity types
          BL1,       ///< Phase ambiguity in L1
          BL2,       ///< Phase ambiguity in L2
          BL5,       ///< Phase ambiguity in L5
          BL6,       ///< Phase ambiguity in L6
          BL7,       ///< Phase ambiguity in L7
          BL8,       ///< Phase ambiguity in L8
-         // Multipath-related types
+            // Multipath-related types
          mpC1,      ///< Multipath bias, C1
          mpC2,      ///< Multipath bias, C2
          mpC5,      ///< Multipath bias, C5
@@ -176,7 +178,7 @@ namespace gpstk
          mpL6,      ///< Multipath bias, L6
          mpL7,      ///< Multipath bias, L7
          mpL8,      ///< Multipath bias, L8
-         // Instrumental delays types
+            // Instrumental delays types
          instC1,    ///< Instrumental delay, C1
          instC2,    ///< Instrumental delay, C2
          instC5,    ///< Instrumental delay, C5
@@ -189,7 +191,7 @@ namespace gpstk
          instL6,    ///< Instrumental delay, L6
          instL7,    ///< Instrumental delay, L7
          instL8,    ///< Instrumental delay, L8
-         // Equation system-related types
+            // Equation system-related types
          prefitC,   ///< Prefit residual, code
          prefitL,   ///< Prefit residual, phase
          postfitC,  ///< Postfit residual, code
@@ -202,7 +204,7 @@ namespace gpstk
          dH,        ///< Position bias, Height component
          cdt,       ///< In the position domain: Receiver clock offset, meters; in the range domain: cdt coefficient
          weight,    ///< Weight assigned to a given observation
-         // Other types
+            // Other types
          recX,      ///< Receiver position, X component
          recY,      ///< Receiver position, Y component
          recZ,      ///< Receiver position, Z component
