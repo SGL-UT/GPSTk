@@ -1,0 +1,189 @@
+#pragma ident "$Id: SatArcMarker.hpp $"
+
+/**
+ * @file SatArcMarker.hpp
+ * This class keeps track of satellite arcs caused by cycle slips.
+ */
+
+#ifndef SATARCMARKER_HPP
+#define SATARCMARKER_HPP
+
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//
+//============================================================================
+
+
+
+#include "ProcessingClass.hpp"
+
+
+
+namespace gpstk
+{
+
+      /** @addtogroup GPSsolutions */
+      //@{
+
+
+      /** This class keeps track of satellite arcs caused by cycle slips.
+       *
+       * This class is meant to be used with the GNSS data structures objects
+       * found in "DataStructures" class.
+       *
+       * A typical way to use this class follows:
+       *
+       * @code
+       *   RinexObsStream rin("ebre0300.02o");
+       *
+       *   gnssRinex gRin;
+       *   LICSDetector markCSLI;
+       *   SatArcMarker markArc;
+       *
+       *   while(rin >> gRin)
+       *   {
+       *      gRin >> markCSLI >> markArc;
+       *   }
+       * @endcode
+       *
+       * The "SatArcMarker" object will visit every satellite in the GNSS
+       * data structure that is "gRin" and, if a cycle slip has happened 
+       * (indicated by the corresponding CS flag), it will increase the
+       * value of the corresponding "TypeID::satArc" type.
+       *
+       * By default, the "SatArcMarker" objects will only watch the
+       * "TypeID::CSL1" cycle slip flag. This may be changed, although it is
+       * rarely necessary because CS detectors raise all flags when a cycle
+       * slip happens.
+       *
+       * \warning Be aware that this class DOES NOT apply cycle slip detection
+       * algorithms, so you MUST invoke CS detection objects BEFORE calling
+       * SatArcMarker objects.
+       *
+       * \warning Objects in this class store their internal state, so you
+       * MUST NOT use the SAME object to process DIFFERENT data streams.
+       *
+       * @sa LICSDetector.hpp and MWCSDetector.hpp for CS detection classes.
+       *
+       */    
+   class SatArcMarker : public ProcessingClass
+   {
+      public:
+
+         /// Default constructor. It will only watch "TypeID::CSL1" flag.
+      SatArcMarker()
+         : watchCSFlag(TypeID::CSL1)
+      { setIndex(); };
+
+
+         /** Common constructor
+          *
+          * @param watchFlag     Cycle slip flag to be watched.
+          */
+      SatArcMarker( const TypeID& watchFlag )
+         : watchCSFlag(watchFlag)
+      { setIndex(); };
+
+
+         /// Method to get the default CS flag type being used.
+      virtual TypeID getCSFlag() const
+      { return watchCSFlag; };
+
+
+         /** Method to set the default CS flag type to be used.
+          *
+          * @param watchFlag     Cycle slip flag to be watched.
+          */
+      virtual SatArcMarker& setCSFlag(const TypeID& watchFlag)
+      { watchCSFlag = watchFlag; return (*this); };
+
+
+         /** Returns a satTypeValueMap object, adding the new data generated
+          *  when calling this object.
+          *
+          * @param epoch     Time of observations.
+          * @param gData     Data object holding the data.
+          * @param epochflag Epoch flag.
+          */
+      virtual satTypeValueMap& Process( const DayTime& epoch,
+                                        satTypeValueMap& gData,
+                                        const short& epochflag = 0 );
+
+
+         /** Returns a gnnsSatTypeValue object, adding the new data generated
+          *  when calling this object.
+          *
+          * @param gData    Data object holding the data.
+          */
+      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+      { Process(gData.header.epoch, gData.body); return gData; };
+
+
+         /** Returns a gnnsRinex object, adding the new data generated when
+          *  calling this object.
+          *
+          * @param gData    Data object holding the data.
+          */
+      virtual gnssRinex& Process(gnssRinex& gData);
+
+
+         /// Returns an index identifying this object.
+      virtual int getIndex(void) const;
+
+
+         /// Returns a string identifying this object.
+      virtual std::string getClassName(void) const;
+
+
+         /// Destructor
+      virtual ~SatArcMarker() {};
+
+
+   private:
+
+
+         /// Cycle slip flag to be watched.
+      TypeID watchCSFlag;
+ 
+         /// Map holding information regarding every satellite
+      std::map<SatID, double> satArcMap;
+
+         /// Map holding information regarding previous CS flags
+      std::map<SatID, double> prevCSFlagMap;
+
+         /// Initial index assigned to this class.
+      static int classIndex;
+
+         /// Index belonging to this object.
+      int index;
+
+         /// Sets the index and increment classIndex.
+      void setIndex(void)
+      { index = classIndex++; }; 
+
+
+   }; // end class SatArcMarker
+
+
+   //@}
+   
+}
+
+#endif   // SATARCMARKER_HPP
