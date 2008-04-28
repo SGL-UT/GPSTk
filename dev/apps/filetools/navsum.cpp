@@ -438,11 +438,6 @@ void NavSum::process()
 				PRNID = (int) r.i[1];
 				xMitWeek = (int) r.i[0];
 				temp = (uint32_t) r.i[3];
-				cout << "temp, xMitWeek = ";
-				cout.setf(ios_base::hex,ios_base::basefield);
-				cout << temp << ", ";
-				cout.setf(ios_base::dec,ios_base::basefield);
-				cout << xMitWeek << endl;
 				XMitT = buildXMitTime( temp, xMitWeek );
 				sprintf(line," %5d  %3d    %02d    %s !",
 					count,blockType,PRNID,

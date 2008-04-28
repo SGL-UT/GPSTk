@@ -297,6 +297,50 @@ namespace gpstk
                   ( ((l.i[24] >> 11) & 0x3) == ((r.i[24] >> 11) & 0x3) ) );
       }
    };
+   
+      /// Uniqueness operator for block 62 FIC data
+   struct FICDataUniqueBlock62:
+      public std::binary_function<gpstk::FICData, gpstk::FICData, bool>
+   {
+   public:
+      bool operator() (const gpstk::FICData& l,
+                       const gpstk::FICData& r) const
+         {
+               // the unique criteria are:
+                        // SV ID - dimensionless
+            return ( (l.i[3] == r.i[3]) &&
+                        // transmit week
+                     (l.i[5] == r.i[5]) &&
+                        // reference week - full GPS week number
+                     (l.f[18] == r.f[18]) &&
+                        // toa (time of epoch) - GPS sec of week
+                     (l.f[8] == r.f[8]) &&
+                        // AS/alert bit - dimensionless
+                     (l.f[3] == r.f[3]) );         
+         }   
+   };
+   
+         /// Uniqueness operator for block 162 FIC data
+   struct FICDataUniqueBlock162:
+      public std::binary_function<gpstk::FICData, gpstk::FICData, bool>
+   {
+   public:
+      bool operator() (const gpstk::FICData& l,
+                       const gpstk::FICData& r) const
+         {
+               // the unique criteria are: 
+                        // SV ID  - dimensionless
+            return ( (l.i[0] == r.i[0]) &&
+                        // transmit week
+                     (l.i[14] == r.i[14]) &&
+                        // reference week - full GPS week number
+                     (l.i[13] == r.i[13]) &&
+                        // toa (time of week) - GPS sec week
+                     ((((l.i[2] & 0x3FFFFFFFL) >> 13) * 6) == 
+                      (((r.i[2] & 0x3FFFFFFFL) >> 13) * 6)) );       
+         }   
+   };
+   
 }
 
 #endif

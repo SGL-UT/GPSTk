@@ -61,7 +61,8 @@ public:
    MergeFIC(char* arg0) : 
          MergeFrame(arg0, 
                     std::string("FIC"),
-                    std::string("No filtering is performed on FIC merges.  The resulting file may have some duplicate data."))
+                    std::string("No filtering is performed on FIC merges.  "
+                    "The resulting file may have some duplicate data."))
       {}   
 
 protected:
@@ -73,8 +74,14 @@ void MergeFIC::process()
    std::vector<std::string> files = inputFileOption.getValue();
 
       // FFF will sort and merge the FIC data using a simple time check
-   FileFilterFrameWithHeader<FICStream, FICData, FICHeader> 
-      fff(files);
+   FileFilterFrameWithHeader<FICStream, FICData, FICHeader> fff(files);
+      
+      // sort and filter the data
+   fff.sort(FICDataOperatorLessThanFull());
+   fff.unique(FICDataUniqueBlock9());
+   fff.unique(FICDataUniqueBlock109());
+   fff.unique(FICDataUniqueBlock62());
+   fff.unique(FICDataUniqueBlock162());
 
       // arbitrarily take the first FIC header as the header for the merged 
       // file
