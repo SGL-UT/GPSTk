@@ -39,11 +39,13 @@ namespace gpstk
 
 
       // Returns an index identifying this object.
-   int LICSDetector::getIndex() const { return (*this).index; }
+   int LICSDetector::getIndex() const
+   { return index; }
 
 
       // Returns a string identifying this object.
-   std::string LICSDetector::getClassName() const { return "LICSDetector"; }
+   std::string LICSDetector::getClassName() const
+   { return "LICSDetector"; }
 
 
       /* Common constructor
