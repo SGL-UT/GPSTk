@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
  * @file MWCSDetector.hpp
@@ -5,8 +6,8 @@
  * combination.
  */
 
-#ifndef MWCSDETECTOR_GPSTK
-#define MWCSDETECTOR_GPSTK
+#ifndef MWCSDETECTOR_HPP
+#define MWCSDETECTOR_HPP
 
 //============================================================================
 //
@@ -228,8 +229,7 @@ namespace gpstk
       virtual ~MWCSDetector() {};
 
 
-
-    private:
+   private:
 
 
          /// Type of code.
@@ -325,4 +325,4 @@ namespace gpstk
    
 }
 
-#endif
+#endif   // MWCSDETECTOR_HPP

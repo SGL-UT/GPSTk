@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
  * @file MWCSDetector.cpp
@@ -351,7 +352,6 @@ namespace gpstk
       }
 
    }
-
 
 
 } // end namespace gpstk
