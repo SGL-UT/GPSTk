@@ -61,8 +61,7 @@ public:
    MergeFIC(char* arg0) : 
          MergeFrame(arg0, 
                     std::string("FIC"),
-                    std::string("No filtering is performed on FIC merges.  "
-                    "The resulting file may have some duplicate data."))
+                    std::string("Duplicate data will be removed."))
       {}   
 
 protected:
