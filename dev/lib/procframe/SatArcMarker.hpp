@@ -1,4 +1,4 @@
-#pragma ident "$Id: SatArcMarker.hpp $"
+#pragma ident "$Id$"
 
 /**
  * @file SatArcMarker.hpp
