@@ -13,7 +13,7 @@ system("rm $dirn/TestResults.log");			#Results of the tests
 system("rm $dirn/CovResults.log");			#Gcov results
 open (DATA,">>CovResults.log");                         #Open file to which the output will go
 chdir "$dirn";
-system("jam clean");
+#system("jam clean");
 print ("Jamming!\n\n");
 
 system("jam");

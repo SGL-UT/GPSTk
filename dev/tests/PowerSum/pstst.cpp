@@ -27,6 +27,10 @@
 
 #include "Stats.hpp"
 #include "PowerSum.hpp"
+#include "Exception.hpp"
+
+#include <cppunit/TestFixture.h>
+#include <cppunit/extensions/HelperMacros.h>
 
 #include <stdlib.h>
 #include <math.h>
@@ -39,6 +43,7 @@ using namespace std;
 // for every other call. Also this uses the libc standard rand() function
 // which really blows by most accounts. If you want this to be a 'good'
 // normal distribution, use a different rand()
+
 double gasdev()
 {
    const double mr2 = 2.0 / RAND_MAX;
@@ -68,25 +73,43 @@ int main(int argc, char *argv[])
       s.Add(rv);
    }
 
-   ps.dump(cout);
+   //ps.dump(cout);
 
-   cout << "Stats class average:" << s.Average()
-        << " stddev:" << s.StdDev() << endl;
+   //cout << "Stats class average:" << s.Average()
+   //     << " stddev:" << s.StdDev() << endl;
 
    double e1 = std::abs(s.Average() - ps.average());
    double e2 = std::abs(s.StdDev() - sqrt(ps.variance()));
-   cout << "Disagreement in average: " << e1 << endl
-        << "Disagreement in standard deviation: " << e2 << endl;
+   //cout << "Disagreement in average: " << e1 << endl
+   //     << "Disagreement in standard deviation: " << e2 << endl;
 
-   if (e1 > 1e-3 || e2 > 1e-3 || 
-       std::abs(ps.average()) > 1e-3 || 
-       std::abs(sqrt(ps.variance())-1) > 1e-3 || 
-       std::abs(ps.skew()) > 0.01 ||
-       std::abs(ps.kurtosis()-3) > 0.05)
+   try
    {
-      cout << "Error in computed values" << endl;
-      return -1;
+     CPPUNIT_ASSERT(e1 < 1e-3);
+     CPPUNIT_ASSERT(e2 < 1e-3);
+     CPPUNIT_ASSERT(std::abs(ps.average()) < 1e-3);
+     // 2e-3 : tolerance is dependent on platform and can be improved with
+     // better random number generators
+     CPPUNIT_ASSERT(std::abs(sqrt(ps.variance())-1) < 2e-3);
+     CPPUNIT_ASSERT(std::abs(ps.skew()) < 0.01);
+     CPPUNIT_ASSERT(std::abs(ps.kurtosis()-3) < 0.05);
+     
    }
-   cout << "Looks good to me..." << endl;
-   return 0;
+   catch (gpstk::Exception& e)
+   {
+     cout << e;
+   }
+
+
+   //if (e1 > 1e-3 || e2 > 1e-3 || 
+   //    std::abs(ps.average()) > 1e-3 || 
+   //    std::abs(sqrt(ps.variance())-1) > 2e-3 || 
+   //    std::abs(ps.skew()) > 0.01 ||
+   //    std::abs(ps.kurtosis()-3) > 0.05)
+   //{
+   //   cout << "Error in computed values" << endl;
+   //   return -1;
+   //}
+   //cout << "Looks good to me..." << endl;
+   //return 0;
 }

@@ -147,11 +147,19 @@ namespace gpstk
          return GPSWeek::getDefaultFormat() + " %06Z";
       }
 
-      inline virtual bool isValid() const
-         throw();
+      virtual bool isValid() const
+         throw()
+      {
+	 return ( GPSWeek::isValid() &&
+		 zcount < ZCOUNT_PER_WEEK );
+      }
       
       inline virtual void reset()
-         throw();
+         throw()
+      {
+	 GPSWeek::reset();
+	 zcount = 0;
+      }
 
          /// @name Special Zcount-related Methods.
          /// @note The 29- and 32-bit Zcounts cannot represent time from 
@@ -188,18 +196,56 @@ namespace gpstk
           *  and false on failure.
           */
          //@{
-      inline bool operator==( const GPSWeekZcount& right ) const
-         throw();
-      inline bool operator!=( const GPSWeekZcount& right ) const
-         throw();
-      inline bool operator<( const GPSWeekZcount& right ) const
-         throw();
-      inline bool operator>( const GPSWeekZcount& right ) const
-         throw();
-      inline bool operator<=( const GPSWeekZcount& right ) const
-         throw();
-      inline bool operator>=( const GPSWeekZcount& right ) const
-         throw();
+     //
+       inline bool operator==( const GPSWeekZcount& right ) const
+         throw()
+       {
+          return ( GPSWeek::operator==(right) &&
+                zcount == right.zcount );
+       }
+   
+       inline bool operator!=( const GPSWeekZcount& right ) const
+         throw()
+       {
+	  return ( !operator==( right ) );
+       }
+
+       inline bool operator<( const GPSWeekZcount& right ) const
+         throw()
+       {
+	 if( GPSWeek::operator<(right) )
+	 {
+	   return true;
+	 }
+	 if( GPSWeek::operator>(right) )
+	 {
+	   return false;
+	 }
+	 if( zcount < right.zcount )
+	 {
+	   return true;
+	 }
+	 return false;
+       }
+
+       inline bool operator>( const GPSWeekZcount& right ) const
+         throw()
+       {
+	 return ( !operator<=( right ) );
+       }
+
+       inline bool operator<=( const GPSWeekZcount& right ) const
+         throw()
+       {
+	 return ( operator<( right ) ||
+		  operator==( right ) );
+       }
+
+       inline bool operator>=( const GPSWeekZcount& right ) const
+         throw()
+       { 
+	 return ( !operator<( right ) );
+       }
          //@}
 
       unsigned int zcount;

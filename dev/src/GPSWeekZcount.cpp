@@ -174,19 +174,19 @@ namespace gpstk
       return true;
    }
 
-   bool GPSWeekZcount::isValid() const
-      throw()
-   {
-      return ( GPSWeek::isValid() &&
-               zcount < ZCOUNT_PER_WEEK );
-   }
+  //inline bool GPSWeekZcount::isValid() const
+  //    throw()
+  //{
+  //    return ( GPSWeek::isValid() &&
+  //             zcount < ZCOUNT_PER_WEEK );
+  //}
 
-   void GPSWeekZcount::reset()
-      throw()
-   {
-      GPSWeek::reset();
-      zcount = 0;
-   }
+  //void GPSWeekZcount::reset()
+  //    throw()
+  //{
+  //    GPSWeek::reset();
+  //    zcount = 0;
+  //}
 
    GPSWeekZcount& GPSWeekZcount::setZcount29(unsigned int z)
       throw()
@@ -204,54 +204,5 @@ namespace gpstk
       return *this;
    }
 
-   bool GPSWeekZcount::operator==( const GPSWeekZcount& right ) const
-      throw()
-   {
-      return ( GPSWeek::operator==(right) &&
-               zcount == right.zcount );
-   }
-
-   bool GPSWeekZcount::operator!=( const GPSWeekZcount& right ) const
-      throw()
-   {
-      return ( !operator==( right ) );
-   }
-
-   bool GPSWeekZcount::operator<( const GPSWeekZcount& right ) const
-      throw()
-   {
-      if( GPSWeek::operator<(right) )
-      {
-         return true;
-      }
-      if( GPSWeek::operator>(right) )
-      {
-         return false;
-      }
-      if( zcount < right.zcount )
-      {
-         return true;
-      }
-      return false;
-   }
-
-   bool GPSWeekZcount::operator>( const GPSWeekZcount& right ) const
-      throw()
-   {
-      return ( !operator<=( right ) );
-   }
-
-   bool GPSWeekZcount::operator<=( const GPSWeekZcount& right ) const
-      throw()
-   {
-      return ( operator<( right ) ||
-               operator==( right ) );
-   }
-
-   bool GPSWeekZcount::operator>=( const GPSWeekZcount& right ) const
-      throw()
-   {
-      return ( !operator<( right ) );
-   }
    
 } // namespace

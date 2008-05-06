@@ -205,7 +205,7 @@ namespace gpstk
          return "%04F";
       }
 
-      inline virtual bool isValid() const
+      virtual bool isValid() const
          throw()
       {
          return (week >= 0 && week <= MAX_WEEK);
