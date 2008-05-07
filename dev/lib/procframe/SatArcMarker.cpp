@@ -56,8 +56,8 @@ namespace gpstk
        * @param epochflag Epoch flag.
        */
    satTypeValueMap& SatArcMarker::Process( const DayTime& epoch,
-                                                satTypeValueMap& gData,
-                                                const short& epochflag )
+                                           satTypeValueMap& gData,
+                                           const short& epochflag )
    {
       double flag(0.0);
 

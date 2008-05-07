@@ -297,7 +297,7 @@ namespace gpstk
           *
           */
       PhaseAmbiguityModel( double sigma = 2e7 )
-         : variance(sigma*sigma), cycleSlip(false) {};
+         : variance(sigma*sigma), cycleSlip(false), watchSatArc(false) {};
 
 
          /// Set the value of white noise sigma
@@ -313,6 +313,11 @@ namespace gpstk
           */
       PhaseAmbiguityModel& setCS(bool cs)
       { cycleSlip = cs; return (*this); };
+
+
+         /// Set whether satellite arc will be used instead of cycle slip flag
+      PhaseAmbiguityModel& setWatchSatArc(bool watchArc)
+      { watchSatArc = watchArc; return (*this); }
 
 
          /// Get element of the state transition matrix Phi
@@ -361,6 +366,12 @@ namespace gpstk
 
          /// Boolean stating if there is a cycle slip at current epoch
       bool cycleSlip;
+
+         /// Whether satellite arcs will be watched. False by default
+      bool watchSatArc;
+ 
+         /// Map holding information regarding every satellite
+      std::map<SatID, double> satArcMap;
 
    };
 

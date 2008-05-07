@@ -144,15 +144,43 @@ namespace gpstk
    {
       try
       {
-            // Check if there was a cycle slip
-         if (gData(sat)(type) > 0.0)
+
+         if (!watchSatArc)
          {
-            setCS(true);
+               // In this case, we only use cycle slip flags
+               // Check if there was a cycle slip
+            if (gData(sat)(type) > 0.0)
+            {
+               setCS(true);
+            }
+            else
+            {
+               setCS(false);
+            }
          }
          else
          {
-            setCS(false);
+               // Check if this satellite has entries
+            std::map<SatID, double>::const_iterator itArc;
+            itArc = satArcMap.find( sat );
+            if( itArc == satArcMap.end() ) 
+            {
+                  // If it doesn't have an entry, insert one
+               satArcMap[ sat ] = 0.0;
+            };
+
+            if ( gData(sat)(TypeID::satArc) > satArcMap[sat] )
+            {
+               setCS(true);
+               satArcMap[ sat ] = gData(sat)(TypeID::satArc);
+            }
+            else
+            {
+               setCS(false);
+            }
+
          }
+
       }
       catch(Exception& e)
       {
@@ -179,15 +207,43 @@ namespace gpstk
    {
       try
       {
-            // Check if there was a cycle slip
-         if (gData(sat)(type) > 0.0)
+
+         if (!watchSatArc)
          {
-            setCS(true);
+               // In this case, we only use cycle slip flags
+               // Check if there was a cycle slip
+            if (gData(sat)(type) > 0.0)
+            {
+               setCS(true);
+            }
+            else
+            {
+               setCS(false);
+            }
          }
          else
          {
-            setCS(false);
+               // Check if this satellite has entries
+            std::map<SatID, double>::const_iterator itArc;
+            itArc = satArcMap.find( sat );
+            if( itArc == satArcMap.end() ) 
+            {
+                  // If it doesn't have an entry, insert one
+               satArcMap[ sat ] = 0.0;
+            };
+
+            if ( gData(sat)(TypeID::satArc) > satArcMap[sat] )
+            {
+               setCS(true);
+               satArcMap[ sat ] = gData(sat)(TypeID::satArc);
+            }
+            else
+            {
+               setCS(false);
+            }
+
          }
+
       }
       catch(Exception& e)
       {

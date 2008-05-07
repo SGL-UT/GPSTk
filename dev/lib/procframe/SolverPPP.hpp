@@ -312,6 +312,23 @@ namespace gpstk
       { pClockStoModel = pModel; return (*this); };
 
 
+         /// Get phase biases stochastic model pointer
+      StochasticModel* getPhaseBiasesModel() const
+      { return pBiasStoModel; };
+
+
+         /** Set phase biases stochastic model.
+          *
+          * @param pModel      Pointer to StochasticModel associated with
+          *                    receiver clock.
+          *
+          * \warning This method should be used with caution, because model
+          * must be of PhaseAmbiguityModel class in order to make sense.
+          */
+      SolverPPP& setPhaseBiasesModel(StochasticModel* pModel)
+      { pBiasStoModel = pModel; return (*this); };
+
+
          /// Get the State Transition Matrix (phiMatrix)
       Matrix<double> getPhiMatrix() const
       { return phiMatrix; };
