@@ -43,6 +43,8 @@
 #include <StringUtils.hpp>
 #include <Stats.hpp>
 #include <PowerSum.hpp>
+#include <RobustStats.hpp>
+
 #include "DDEpoch.hpp"
 #include "ObsID.hpp"
 
@@ -55,7 +57,9 @@ unsigned DDEpochMap::debugLevel;
 bool DDEpochMap::useMasterSV;
 
 // ---------------------------------------------------------------------------
-// Computes a single difference between two sets of obs
+// Computes a single difference between two sets of obs. Note that this method
+// no longer computes the phase double difference since that really needs to
+// be debiased before it is usefull.
 // ---------------------------------------------------------------------------
 OIDM DDEpoch::singleDifference(
    const SvObsEpoch& rx1obs,
@@ -71,9 +75,9 @@ OIDM DDEpoch::singleDifference(
    {
       const ObsID& oid = roti1->first;
 
-      // only compute double differences for range, phase, and doppler
+      // only compute double differences for range, and doppler
       if (!(oid.type == ObsID::otRange
-            || oid.type == ObsID::otPhase
+//            || oid.type == ObsID::otPhase
             || oid.type == ObsID::otDoppler))
          continue;
 
@@ -305,7 +309,7 @@ void DDEpochMap::compute(
       if (ei2 == rx2.end())
       {
          if (debugLevel>1)
-            cout << "# Epoch with no match" << endl;
+            cout << "# Epoch with no data from rx 2" << endl;
          continue;
       }
       const ObsEpoch& e1 = ei1->second;
@@ -530,6 +534,7 @@ string DDEpochMap::computeStats(
    list<double>::const_iterator b=dd.begin(), e=dd.end();
    PowerSum f;
    f.add(b,e);
+   vector<double> ddv(b,e);
 
    // Now start removing outliers
    while (f.size()>5 && f.kurtosis() > strip)
@@ -591,6 +596,23 @@ string DDEpochMap::computeStats(
        << "  " << setw(8) << nbad
        << "  " << setprecision(5) << setw(10) << pctbad
        << "  " << setprecision(5) << setw(7) << kurt << endl;
+
+   double median;
+   double mad = Robust::MedianAbsoluteDeviation(&ddv[0], ddv.size(), median);
+   vector<double> wts(ddv.size());
+   double mest = Robust::MEstimate(&ddv[0], ddv.size(), median , mad, &wts[0]);
+
+   oss << ">r " 
+       << setw(17) << left << asString(oid) 
+       << right << fixed
+       << setw(2) << (int)minElevation << "-" << setw(2) << (int)maxElevation
+       << "   " << setprecision(7) << setw(11) << mad/2
+       << scientific
+       << "  " << setprecision(4) << setw(11) << mest
+       << fixed
+       << "  " << setw(8) << ddv.size()
+       << endl;
+
    return oss.str();
 
 }  // end of DDEpochMap::computeStats()
@@ -636,6 +658,7 @@ void DDEpochMap::outputStats(
    s << endl
      << ">s                   Included Observations                     |    Excluded Outliers      " << endl
      << ">s  ObsID           elev       noise         mean        count     count       pcts    kurt " << endl
+     << ">r  ObsID           elev       mad           m-est       count      " << endl
      << ">s -------------    -----     --------     --------     -------   -------    -------  ------"
      << endl;
 

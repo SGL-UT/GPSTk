@@ -5,7 +5,7 @@ SubDir TOP apps reszilla ;
 
 # Note that the local library needs to be declaired and built prior to anything
 # else is done.
-GPSLinkLibraries rlib : rxio gpstk ;
+GPSLinkLibraries rlib : rxio gpstk geomatics ;
 Library rlib : DDEpoch.cpp PhaseCleaner.cpp PhaseResidual.cpp 
   RobustLinearEstimator.cpp SvElevationMap.cpp CycleSlipList.cpp
   OrdApp.cpp OrdEngine.cpp ;

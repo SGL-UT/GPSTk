@@ -358,6 +358,12 @@ void DDGen::spinUp()
 //-----------------------------------------------------------------------------
 void DDGen::process()
 {
+   // The debug level is lowered for the first part since other programs (i.e.
+   // ordGen) are better at debugging those algorithms
+   int prevDebugLevel = debugLevel;
+   if (debugLevel>1)
+      debugLevel = 1;
+
    EphReader ephReader;
    ephReader.verboseLevel = verboseLevel;
    for (int i=0; i<ephFileOption.getCount(); i++)
@@ -395,9 +401,10 @@ void DDGen::process()
       ddem.useMasterSV = false;
    else
       ddem.useMasterSV = true;
-      
+
+   debugLevel = prevDebugLevel;
    ddem.compute(oem1, oem2, pem);
-   
+
    // Here we compute a phase double difference that is Better(TM)    
    if (computeAll)
    {

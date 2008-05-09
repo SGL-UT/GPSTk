@@ -53,8 +53,8 @@ unsigned PhaseCleaner::debugLevel;
 PhaseCleaner::PhaseCleaner(long al, double at, double gt)
    : minArcLen(al), minArcTime(at), maxGapTime(gt)
 {
-   lamda[ObsID::cbL1] = gpstk::C_GPS_M/gpstk::L1_FREQ;
-   lamda[ObsID::cbL2] = gpstk::C_GPS_M/gpstk::L2_FREQ;
+   lamda[ObsID::cbL1] = C_GPS_M/L1_FREQ;
+   lamda[ObsID::cbL2] = C_GPS_M/L2_FREQ;
 }
 
 
@@ -62,8 +62,8 @@ PhaseCleaner::PhaseCleaner(long al, double at, double gt)
 // Pulls the phase data data into arcs. Only data that exists on both receivers
 // is included
 //-----------------------------------------------------------------------------
-void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1,
-                           const gpstk::ObsEpochMap& rx2,
+void PhaseCleaner::addData(const ObsEpochMap& rx1,
+                           const ObsEpochMap& rx2,
                            const unsigned long minimumSNR)
 {
    if (debugLevel)
@@ -71,32 +71,32 @@ void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1,
            << rx1.size() << ", " << rx2.size() << " epochs" << endl;
 
    // Now loop over all the epochs, pulling the data into the arcs
-   for (gpstk::ObsEpochMap::const_iterator ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
+   for (ObsEpochMap::const_iterator ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
    {
-      gpstk::DayTime t = ei1->first;
-      const gpstk::ObsEpoch& rod1 = ei1->second;
-      gpstk::ObsEpochMap::const_iterator ei2 = rx2.find(t);
+      const DayTime& t = ei1->first;
+      const ObsEpoch& rod1 = ei1->second;
+      ObsEpochMap::const_iterator ei2 = rx2.find(t);
 
       // Gotta have data from the other receiver
       if (ei2 == rx2.end())
          continue;
-      const gpstk::ObsEpoch& rod2 = ei2->second;
+      const ObsEpoch& rod2 = ei2->second;
       
       clockOffset[t] = rod1.rxClock - rod2.rxClock;
 
-      for (gpstk::ObsEpoch::const_iterator pi1=rod1.begin(); pi1 != rod1.end(); pi1++)
+      for (ObsEpoch::const_iterator pi1=rod1.begin(); pi1 != rod1.end(); pi1++)
       {
-         const gpstk::SatID& prn = pi1->first;
-         const gpstk::SvObsEpoch& rotm1 = pi1->second;
+         const SatID& prn = pi1->first;
+         const SvObsEpoch& rotm1 = pi1->second;
 
          // Make sure the other receiver saw this SV
-         const gpstk::ObsEpoch::const_iterator pi2 = rod2.find(prn);
+         const ObsEpoch::const_iterator pi2 = rod2.find(prn);
          if (pi2 == rod2.end())
             continue;
-         const gpstk::SvObsEpoch& rotm2 = pi2->second;
+         const SvObsEpoch& rotm2 = pi2->second;
 
          // We need a doppler, and any one will do
-         gpstk::SvObsEpoch::const_iterator d;
+         SvObsEpoch::const_iterator d;
          for (d = rotm1.begin(); d != rotm1.end(); d++)
             if (d->first.type == ObsID::otDoppler)
                break;
@@ -105,27 +105,27 @@ void PhaseCleaner::addData(const gpstk::ObsEpochMap& rx1,
          if (d == rotm1.end())
             continue;
 
-         double freq = d->first.band == ObsID::cbL2 ? gpstk::L2_FREQ : gpstk::L1_FREQ;
-         rangeRate[prn][t] = d->second * gpstk::C_GPS_M/freq;
+         double freq = d->first.band == ObsID::cbL2 ? L2_FREQ : L1_FREQ;
+         rangeRate[prn][t] = d->second * C_GPS_M/freq;
 
-         gpstk::SvObsEpoch::const_iterator phase1;
+         SvObsEpoch::const_iterator phase1;
          for (phase1 = rotm1.begin(); phase1 != rotm1.end(); phase1++)
          {
-            const gpstk::ObsID& rot = phase1->first;
+            const ObsID& rot = phase1->first;
             if (rot.type != ObsID::otPhase)
                continue;
 
-            gpstk::SvObsEpoch::const_iterator phase2 = rotm2.find(rot);
+            SvObsEpoch::const_iterator phase2 = rotm2.find(rot);
             if (phase2 == rotm2.end())
                continue;
 
             // Don't use the data if we have an SN in the data and it looks
             // bogus.
             double snr=-1;
-            gpstk::ObsID srot = rot;
+            ObsID srot = rot;
                srot.type = ObsID::otSNR;
-            gpstk::SvObsEpoch::const_iterator snr1_itr = rotm1.find(srot);
-            gpstk::SvObsEpoch::const_iterator snr2_itr = rotm2.find(srot);
+            SvObsEpoch::const_iterator snr1_itr = rotm1.find(srot);
+            SvObsEpoch::const_iterator snr2_itr = rotm2.find(srot);
 
             if (snr1_itr != rotm1.end() && snr2_itr != rotm2.end() )
             {
@@ -176,8 +176,8 @@ bool PhaseCleaner::goodMaster::operator()(const SvDoubleMap::value_type& pdm)
 // from both the SVs.
 //-----------------------------------------------------------------------------
 void PhaseCleaner::selectMasters(
-   const gpstk::ObsID& rot, 
-   const gpstk::SatID& prn, 
+   const ObsID& rot, 
+   const SatID& prn, 
    SvElevationMap& pem)
 {
    PhaseResidual::ArcList& pral = pot[rot][prn];
@@ -186,7 +186,7 @@ void PhaseCleaner::selectMasters(
    {
       for (PhaseResidual::Arc::iterator i = arc->begin(); i != arc->end(); i++)
       {
-         const gpstk::DayTime& t = i->first;
+         const DayTime& t = i->first;
          PhaseResidual::Obs& obs = i->second;
 
          SvElevationMap::iterator j = pem.find(t);
@@ -209,7 +209,7 @@ void PhaseCleaner::selectMasters(
          // See if we need a new master...
          if (!haveMasterObs || pdm[arc->master] < 10)
          {
-            gpstk::SatID newMaster;
+            SatID newMaster;
             goodMaster gm = for_each(pdm.begin(), pdm.end(),
                                      goodMaster(15, prn, t, rangeRate));
             if (gm.bestPrn.id > 0)
@@ -271,8 +271,8 @@ void PhaseCleaner::selectMasters(
 // for the master SV.
 //-----------------------------------------------------------------------------
 void PhaseCleaner::doubleDifference(
-   const gpstk::ObsID& rot, 
-   const gpstk::SatID& prn,
+   const ObsID& rot, 
+   const SatID& prn,
    SvElevationMap& pem)
 {
    PhaseResidual::ArcList& pral = pot[rot][prn];
@@ -284,7 +284,7 @@ void PhaseCleaner::doubleDifference(
 
       for (PhaseResidual::Arc::iterator i = arc->begin(); i != arc->end(); i++)
       {
-         const gpstk::DayTime& t = i->first;
+         const DayTime& t = i->first;
          PhaseResidual::Obs& obs = i->second;
 
          PhaseResidual::Arc::const_iterator k;
@@ -322,11 +322,11 @@ void PhaseCleaner::debias(SvElevationMap& pem)
    // have the master prn set.
    for (PraPrnOt::iterator i = pot.begin(); i != pot.end(); i++)
    {
-      const gpstk::ObsID& rot = i->first;
+      const ObsID& rot = i->first;
       PraPrn& praPrn = i->second;
       for (PraPrn::iterator j = praPrn.begin(); j != praPrn.end(); j++)
       {
-         const gpstk::SatID& prn = j->first;
+         const SatID& prn = j->first;
          PhaseResidual::ArcList& pral = j->second;
          pral.splitOnGaps(maxGapTime);
          selectMasters(rot, prn, pem);
@@ -359,12 +359,12 @@ void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
    // Really should use pot to walk through the data...
    for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
-      const gpstk::ObsID& rot = i->first;
+      const ObsID& rot = i->first;
       const PraPrn& pp = i->second;
  
       for (PraPrn::const_iterator j = pp.begin(); j != pp.end(); j++)
       {
-         const gpstk::SatID& prn = j->first;
+         const SatID& prn = j->first;
          const PhaseResidual::ArcList& al = j->second;
 
          for (PhaseResidual::ArcList::const_iterator k = al.begin(); k != al.end(); k++)
@@ -373,7 +373,7 @@ void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
 
             for (PhaseResidual::Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
             {
-               const gpstk::DayTime& t = l->first;
+               const DayTime& t = l->first;
                const PhaseResidual::Obs& obs = l->second;
 
                // Whew! thats deep. Now to stuff the dd back in to the ddem
@@ -398,12 +398,12 @@ void PhaseCleaner::getSlips(
 {
    for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
-      const gpstk::ObsID& rot = i->first;
+      const ObsID& rot = i->first;
       const PraPrn& praPrn = i->second;
 
       for (PraPrn::const_iterator j = praPrn.begin(); j != praPrn.end(); j++)
       {
-         const gpstk::SatID& prn = j->first;
+         const SatID& prn = j->first;
          const PhaseResidual::ArcList& al = j->second;
 
          PhaseResidual::ArcList::const_iterator k = al.begin();
@@ -420,16 +420,16 @@ void PhaseCleaner::getSlips(
                 arc0.master != arc1.master)
                continue;
 
-            const gpstk::DayTime& t1Begin = arc1.begin()->first;
+            const DayTime& t1Begin = arc1.begin()->first;
             PhaseResidual::Arc::const_iterator l = arc0.end(); l--;
-            const gpstk::DayTime& t0End = l->first;
+            const DayTime& t0End = l->first;
             
             if (std::abs(t1Begin-t0End) > maxGapTime)
                continue;
 
             l = arc1.end(); l--;
-            const gpstk::DayTime& t1End = l->first;
-            const gpstk::DayTime& t0Begin = arc0.begin()->first;
+            const DayTime& t1End = l->first;
+            const DayTime& t0Begin = arc0.begin()->first;
             
             double t0Len = t0End - t0Begin;
             double t1Len = t1End - t1Begin;
@@ -467,12 +467,12 @@ void PhaseCleaner::dump(std::ostream& s) const
 
    for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
-      const gpstk::ObsID& rot = i->first;
+      const ObsID& rot = i->first;
       const PraPrn& pp = i->second;
  
       for (PraPrn::const_iterator j = pp.begin(); j != pp.end(); j++)
       {
-         const gpstk::SatID& prn = j->first;
+         const SatID& prn = j->first;
          const PhaseResidual::ArcList& al = j->second;
 
          for (PhaseResidual::ArcList::const_iterator k = al.begin(); k != al.end(); k++)
@@ -481,7 +481,7 @@ void PhaseCleaner::dump(std::ostream& s) const
 
             for (PhaseResidual::Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
             {
-               const gpstk::DayTime& t = l->first;
+               const DayTime& t = l->first;
                const PhaseResidual::Obs& obs = l->second;
 
                s.setf(ios::fixed, ios::floatfield);
@@ -523,7 +523,7 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
    // Now loop over all the epochs, pulling the data into the arcs
    for (ObsEpochMap::const_iterator ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
    {
-      DayTime t = ei1->first;
+      const DayTime& t = ei1->first;
       const ObsEpoch& oe1 = ei1->second;
       ObsEpochMap::const_iterator ei2 = rx2.find(t);
 
@@ -535,7 +535,7 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
       double clockOffset = oe1.rxClock - oe2.rxClock;
 
       // SV line-of-sight motion, in meters/second
-      map<gpstk::SatID, double> rangeRate;
+      map<SatID, double> rangeRate;
 
       // First we need to get a range rates for all SVs
       for (ObsEpoch::const_iterator i=oe1.begin(); i != oe1.end(); i++)
@@ -585,9 +585,6 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
 
             SatIdPair svPair(sv1, sv2);
 
-            if (debugLevel>2)
-               cout << t << "  " << sv1 << "-" << sv2 << endl;
-
             // Now go throgh all phase observations from SV #1, Rx #1
             SvObsEpoch::const_iterator phase11;
             for (phase11 = soe11.begin(); phase11 != soe11.end(); phase11++)
@@ -599,17 +596,32 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
                // Make sure that we have phase data from SV #1, Rx #2
                SvObsEpoch::const_iterator phase12 = soe12.find(rot);
                if (phase12 == soe12.end())
+               {
+                  if (debugLevel>2)
+                     cout << "Tossing " << rot << " between " << sv1 << " & "
+                          << sv2.id << " because sv 1 and rx 2 phase is missing." << endl;
                   continue;
+               }
 
                // Make sure that we have phase data from SV #2, Rx #1
                SvObsEpoch::const_iterator phase21 = soe21.find(rot);
                if (phase21 == soe21.end())
+               {
+                  if (debugLevel>2)
+                     cout << "Tossing " << rot << " between " << sv1 << " & "
+                          << sv2.id << " because sv 2 rx 1 phase is missing." << endl;
                   continue;
+               }
 
                // Make sure that we have phase data from SV #2, Rx #2
                SvObsEpoch::const_iterator phase22 = soe22.find(rot);
                if (phase22 == soe22.end())
+               {
+                  if (debugLevel>2)
+                     cout << "Tossing " << rot << " between " << sv1 << " & "
+                          << sv2.id << " because sv 2 rx 2 phase is missing." << endl;
                   continue;
+               }
 
                // Don't use the data if we have an SNR in the data and it looks
                // bogus.
@@ -622,14 +634,24 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
                {
                   snr = snr_itr->second;
                   if (std::abs(snr) < minimumSNR )
+                  {
+                     if (debugLevel>2)
+                        cout << "Tossing " << rot << " between " << sv1 << " & "
+                             << sv2.id << " because of low SNR." << endl;
                      continue;
+                  }
                }
 
                // And we can't compute our clock correction without the
                // doppler
                if (rangeRate[sv1] == 0 || rangeRate[sv2] ==0)
-                  continue;
-         
+                  {
+                     if (debugLevel>2)
+                        cout << "Tossing " << rot << " between " << sv1 << " & "
+                             << sv2.id << " because of no doppler." << endl;
+                     continue;
+                  }
+
                // Note that we need the phase in cycles to make the PhaseResidual
                // class work right.
                PhaseResidual::Arc& arc = pot[rot][svPair].front();
@@ -691,13 +713,13 @@ void PhaseCleanerA::debias(SvElevationMap& pem)
          pral.computeTD();
          pral.splitOnTD();
          pral.debiasDD();
-
          pral.mergeArcs(minArcLen, minArcTime, maxGapTime);
 
          if (debugLevel>2)
             cout << "Done cleaning " << svPair.first
                  << ":" << svPair.second
-                 << " on " << rot.type << endl;
+                 << " on " << rot << endl
+                 << pral;
       }
    }   
 }  // end of debias()
