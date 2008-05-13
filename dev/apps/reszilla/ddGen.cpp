@@ -80,7 +80,8 @@ private:
    unsigned long minArcLen; // epochs
    unsigned long msid;
    unsigned long window;    // seconds
-   unsigned long minSNR;    // dB
+   double noiseThreshold;   // cycles
+   double minSNR;    // dB
    double strip;
    Triple antennaPos;
    
@@ -94,8 +95,7 @@ private:
                     const XvtStore<SatID>& eph,
                     ObsEpochMap &oem);
    
-   void filterUnhealthyObs(const XvtStore<SatID>& eph,
-                           ObsEpochMap &oem);
+   void filterObs(const XvtStore<SatID>& eph, ObsEpochMap &oem);
    
 };
 
@@ -106,7 +106,8 @@ DDGen::DDGen() throw()
    : BasicFramework("ddGen", "Computes double-difference residuals from raw observations."),
      ddMode("all"), ordMode("smart"), minArcGap(60), minArcTime(60),
      minArcLen(5), msid(0), window(0), minSNR(20), strip(3.2),
-     outputRaw(false), computeAll(false), removeUnhealthy(false),
+     outputRaw(false), removeUnhealthy(false), computeAll(false),
+     noiseThreshold(0.1),
 
      obs1FileOption('1', "obs1", 
                     "Where to get the first receiver's obs data.", true),
@@ -124,7 +125,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    CommandOptionWithAnyArg
       ddModeOption('\0', "ddmode", "Specifies what observations are used to "
                    "compute the double difference residuals. Valid values are:"
-                   " all. The default is " + ddMode + "."),
+                   " all, phase. The default is " + ddMode + "."),
       ordModeOption('\0', "omode", "Specifies what observations to use to "
                     "compute the ORDs. Valid values are: "
                     "p1p2, z1z2, c1p2, c1y2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
@@ -141,6 +142,8 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
                       "epochs that can be considered an arc. The "
                       "default value is " + asString(minArcLen) +
                       " epochs."),
+      noiseOption('\0', "noise", "The noise threshold used in finding discontinuitites"
+                  ". The default is " + asString(noiseThreshold, 4) + " cycles"),
       elevBinsOption('b', "elev-bin",
                      "Range of elevations to use in  computing"
                      " the statistical summaries. Repeat to specify multiple "
@@ -153,7 +156,10 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
                       "RINEX navigation or FIC file(s). "),
       stripOption('\0',"strip","Factor used in stripping data prior to computing "
                   "descriptive statistics. The default value is "
-                  + asString(strip,1) + ".");
+                  + asString(strip,1) + "."),
+      phaseOption('\0',"phase","Only compute phase double differences."), 
+      SNRoption('S',"SNR","Only included observables with a raw signal strength, "
+                "or SNR, of at least this value, in dB. The default is 20 dB.");
 
    CommandOptionWithNumberArg
       msidOption('m', "msid", "Station to process data for. Used to "
@@ -161,9 +167,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
                  "from a SMODF file."),
       
       timeSpanOption('w',"window","Compute mean values of the double "
-                     "differences over this time span (seconds). (15 min = 900)"), 
-      SNRoption('S',"SNR","Only included observables with a raw signal strength, "
-                "or SNR, of at least this value, in dB. The default is 20 dB.");
+                     "differences over this time span (seconds). (15 min = 900)");
                     
    CommandOptionNoArg 
       rawOption('r', "raw", "Output the raw double differences in addition to the descriptive statistics."),
@@ -302,6 +306,9 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    if (minArcTimeOption.getCount())
       minArcTime = asDouble(minArcTimeOption.getValue().front());
    
+   if (noiseOption.getCount())
+      noiseThreshold = asDouble(noiseOption.getValue().front());
+   
    if (minArcLenOption.getCount())
       minArcLen = asUnsigned(minArcLenOption.getValue().front());
 
@@ -321,7 +328,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       window = asUnsigned(timeSpanOption.getValue().front());
       
    if (SNRoption.getCount())
-      minSNR = asUnsigned(SNRoption.getValue().front());
+      minSNR = asDouble(SNRoption.getValue().front());
 
    useNear = useNearOption.getCount();
 
@@ -339,18 +346,27 @@ void DDGen::spinUp()
            << "# Minimum arc time: " << minArcTime << " seconds" << endl
            << "# Minimum arc length: " << minArcLen << " epochs" << endl
            << "# Minimum gap length: " << minArcGap << " seconds" << endl
+           << "# Noise threshold: " << noiseThreshold << " cycles" << endl
            << "# Antenna Position: " << setprecision(8) << antennaPos << endl
            << "# Stripping factor: " << strip << endl;
+
       if (msid)
          cout << "# msid: " << msid << endl;
 
+      if (removeUnhealthy)
+         cout << "# ignoring unhealthy SVs" << endl;
+
+      if (minSNR >0)
+         cout << "# ignoring obs with SNR less than " << minSNR << endl;
+      
       if (computeAll)
          cout << "# Using all SV combinations." << endl;
       else
          cout << "# Using one master SV combinations." << endl;
          
       if (window)
-         cout << "# Computing mean values for " << window << " second windows" << endl;
+         cout << "# Computing mean values for " << window << " second windows"
+              << endl;
    }
 }
 
@@ -380,17 +396,13 @@ void DDGen::process()
 
    if (debugLevel || verboseLevel)
       cout << "# Reading obs from Rx1" << endl;
-   readObsFile(obs1FileOption, *ephReader.eph, oem1);
-   
-   if (removeUnhealthy)
-      filterUnhealthyObs(*healthSrcER.eph, oem1);
-   
+   readObsFile(obs1FileOption, *ephReader.eph, oem1);   
+   filterObs(*healthSrcER.eph, oem1);
+
    if (debugLevel || verboseLevel)
       cout << "# Reading obs from Rx2" << endl;
    readObsFile(obs2FileOption, *ephReader.eph, oem2);
-
-   if (removeUnhealthy)
-      filterUnhealthyObs(*healthSrcER.eph, oem2);
+   filterObs(*healthSrcER.eph, oem2);
 
    SvElevationMap pem = elevation_map(oem1, antennaPos, *ephReader.eph);
    DDEpochMap ddem;
@@ -403,27 +415,32 @@ void DDGen::process()
       ddem.useMasterSV = true;
 
    debugLevel = prevDebugLevel;
+
    ddem.compute(oem1, oem2, pem);
 
    // Here we compute a phase double difference that is Better(TM)    
    if (computeAll)
    {
-      PhaseCleanerA pc(minArcLen, minArcTime, minArcGap);
+      PhaseCleanerA pc(minArcLen, minArcTime, minArcGap, noiseThreshold);
       pc.debugLevel = debugLevel;
-      pc.addData(oem1, oem2, minSNR);
+      pc.addData(oem1, oem2);
       pc.debias(pem);
+      if (verboseLevel>1)
+         pc.summarize(cout);
       pc.getPhaseDD(ddem);          
    }
    else
    {
-      PhaseCleaner pc(minArcLen, minArcTime, minArcGap);
+      PhaseCleaner pc(minArcLen, minArcTime, minArcGap, noiseThreshold);
       pc.debugLevel = debugLevel;
-      pc.addData(oem1, oem2, minSNR);
+      pc.addData(oem1, oem2);
       pc.debias(pem);
       pc.getPhaseDD(ddem);
       CycleSlipList sl;
       pc.getSlips(sl, pem);
       dump(cout, sl);
+      if (verboseLevel>1)
+         pc.summarize(cout);
    }
     
    if (window)
@@ -498,33 +515,63 @@ void DDGen::readObsFile(
    }
 }
 
-void DDGen::filterUnhealthyObs(const XvtStore<SatID>& eph, ObsEpochMap &oem)
+void DDGen::filterObs(const XvtStore<SatID>& eph, ObsEpochMap &oem)
 {
    ObsEpochMap::iterator oemIter;   
+
    for (oemIter=oem.begin(); oemIter!=oem.end(); oemIter++)
    {
-      const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
       const DayTime& t = oemIter->first;
       ObsEpoch& obsEpoch = oemIter->second;
-      
       ObsEpoch::iterator oeIter;
-      for(oeIter=obsEpoch.begin(); oeIter!=obsEpoch.end();)
+      for(oeIter=obsEpoch.begin(); oeIter!=obsEpoch.end(); oeIter++)
       {
-         const SatID& svid = oeIter ->first;
-                 
-         try
+         const SatID& svid = oeIter->first;
+         SvObsEpoch& soe = oeIter->second;
+
+         if (removeUnhealthy)
          {
-            EngEphemeris ephTemp = bce.findEphemeris(svid, t);
-            short health =  ephTemp.getHealth();
-            if (health != 0)
-              obsEpoch.erase(oeIter++);
-            else
-              oeIter++;
+            try
+            {
+               const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
+               EngEphemeris ephTemp = bce.findEphemeris(svid, t);
+               short health =  ephTemp.getHealth();
+               if (health != 0)
+               {
+                  obsEpoch.erase(oeIter++);
+                  oeIter--;
+               }
+               continue;
+            }
+            catch (gpstk::Exception &exc)
+            { 
+               if (verboseLevel || debugLevel)
+                  cout << "# DDGen::filterObs: probably missing eph data" << endl;
+            }
          }
-         catch (gpstk::Exception &exc)
-         { 
-            if (verboseLevel || debugLevel)
-               cout << "# DDGen::filterUnhealthyObs - probably missing eph data\n";
+
+         if (minSNR > 0)
+         {
+            SvObsEpoch::iterator oi1, oi2;
+            for (oi1 = soe.begin(); oi1 != soe.end(); oi1++)
+            {
+               const ObsID& oid1 = oi1->first;
+               if (oid1.type != ObsID::otSNR)
+                  continue;
+
+               if (oi1->second < minSNR)
+               {
+                  // need to delete all obs for this code carrier combination
+                  for (oi2 = soe.begin(); oi2 != soe.end();)
+                  {
+                     const ObsID& oid2 = oi2->first;
+                     if (oid1.band == oid2.band && oid1.code == oid2.code)
+                        soe.erase(oi2++);
+                     else
+                        oi2++;
+                  }
+               }
+            }
          }
       }
    }

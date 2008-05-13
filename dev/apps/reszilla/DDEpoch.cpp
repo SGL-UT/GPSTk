@@ -178,7 +178,7 @@ void DDEpoch::doubleDifference(
          // Now compute the double differences
          // Note that for the master this will be a single diff
          OIDM::const_iterator i_masterDiff, i_otherDiff;
-         for (i_masterDiff = masterDiff.begin(); 
+         for (i_masterDiff = masterDiff.begin();
               i_masterDiff != masterDiff.end(); i_masterDiff++)
          {
             ObsID oid1  = i_masterDiff->first;

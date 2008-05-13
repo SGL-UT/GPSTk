@@ -59,12 +59,10 @@ namespace PhaseResidual
       double phase12;  // ditto for Sv1, Rx2
       double phase21;  // ditto for Sv2, Rx1
       double phase22;  // ditto for Sv2, Rx2
-      double dd;      // the double difference in cycles
+      double dd;       // the double difference in cycles
       double td;       // the triple difference in cycles
-      double snr1;
 
-      Obs() : phase11(0), phase12(0), phase21(0), phase22(0), 
-              dd(0), td(0), snr1(0)
+      Obs() : phase11(0), phase12(0), phase21(0), phase22(0), dd(0), td(0)
       {};
 
       void dump(std::ostream& s) const;
@@ -82,7 +80,8 @@ namespace PhaseResidual
       void dump(std::ostream& s) const;
 
       double ddBias;
-      gpstk::SatID master;
+      gpstk::SatID sv1,sv2;
+      gpstk::ObsID obsID;
 
       bool garbage;
 
@@ -112,7 +111,8 @@ namespace PhaseResidual
       void computeTD();
 
       // Split arcs based upon jumps in the triple differences.
-      void splitOnTD();
+      // threshold is the amount (in cycles) that should be considered a jump 
+      void splitOnTD(double threshold=0.45);
 
       // Search all arcs and find the first obs that matches the specified time.
       bool findObs(const gpstk::DayTime& t, Arc::const_iterator& obs);
@@ -121,7 +121,8 @@ namespace PhaseResidual
       // seconds) that have the same bias and master or are both shorter
       // than the specified arcLen/arcTime. The later will get marked
       // as garbage in the process.
-      void mergeArcs(long arcLen, double arcTime, double maxGapTime);
+      void mergeArcs(long arcLen, double arcTime, double maxGapTime,
+                     double threshold=0.45);
 
       // make each arc have a zero mean
       void debiasDD();

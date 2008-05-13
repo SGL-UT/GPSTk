@@ -49,12 +49,16 @@ typedef std::map<gpstk::DayTime, double> TimeDoubleMap;
 class PhaseCleaner
 {
 public:
-   PhaseCleaner(long al, double at, double gt);
+   PhaseCleaner(long al, double at, double gt, double nt)
+      : minArcLen(al), minArcTime(at), maxGapTime(gt), noiseThreshold(nt)
+   {
+      lamda[gpstk::ObsID::cbL1] = gpstk::C_GPS_M/gpstk::L1_FREQ;
+      lamda[gpstk::ObsID::cbL2] = gpstk::C_GPS_M/gpstk::L2_FREQ;
+   }
 
    void addData(
       const gpstk::ObsEpochMap& rx1, 
-      const gpstk::ObsEpochMap& rx2,
-      const unsigned long minimumSNR);
+      const gpstk::ObsEpochMap& rx2);
 
    void debias(SvElevationMap& pem);
 
@@ -71,6 +75,8 @@ public:
    void getSlips(
       CycleSlipList& csl,
       SvElevationMap& pem) const;
+
+   void summarize(std::ostream& s) const;
 
    void getPhaseDD(DDEpochMap& ddem) const;
 
@@ -94,6 +100,7 @@ public:
 
    long minArcLen;
    double minArcTime, maxGapTime;
+   double noiseThreshold;
 
    static unsigned debugLevel;
 
@@ -123,14 +130,13 @@ public:
 class PhaseCleanerA
 {
 public:
-   PhaseCleanerA(long al, double at, double gt)
-      : minArcLen(al), minArcTime(at), maxGapTime(gt)
+   PhaseCleanerA(long al, double at, double gt, double nt)
+      : minArcLen(al), minArcTime(at), maxGapTime(gt), noiseThreshold(nt)
    {}
 
    void addData(
       const gpstk::ObsEpochMap& rx1, 
-      const gpstk::ObsEpochMap& rx2,
-      const unsigned long minimumSNR);
+      const gpstk::ObsEpochMap& rx2);
 
    void debias(SvElevationMap& pem);
 
@@ -139,6 +145,8 @@ public:
       SvElevationMap& pem) const;
 
    void getPhaseDD(DDEpochMap& ddem) const;
+
+   void summarize(std::ostream& s) const;
 
    void dump(std::ostream& s) const;
 
@@ -151,6 +159,7 @@ public:
    
    long minArcLen;
    double minArcTime, maxGapTime;
+   double noiseThreshold;
 
    static unsigned debugLevel;
 };

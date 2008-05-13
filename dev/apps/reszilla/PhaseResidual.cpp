@@ -110,14 +110,16 @@ namespace PhaseResidual
         s << std::left
           << "Arc: " << t0.printf("%02H:%02M:%04.1f")
           << " - "   << t1.printf("%02H:%02M:%04.1f")
-          << "  N:" <<  std::setw(5) << stats.N();
+          << " sv1:" << std::setw(2) << sv1.id
+          << " sv2:" << std::setw(2) << sv2.id
+          << " obs:" << obsID 
+          << " N:" <<  std::setw(5) << stats.N();
       }
         
       
       if (!garbage)
       {
-         s << " master:" << std::setw(2) << master.id
-           << " sdev:"  << std::setprecision(3) << std::setw(8)  << stats.StdDev()
+         s << " sdev:"  << std::setprecision(6) << stats.StdDev()
            << " ddBias:"  << std::setprecision(12) << ddBias;
          if (stats.Average() > stats.StdDev()/sqrt((float)stats.N()))
             s << " avg:" << std::setprecision(4) << stats.Average();
@@ -167,7 +169,9 @@ namespace PhaseResidual
          iterator nextArc = arc;
          nextArc++;
          nextArc = insert(nextArc, Arc());
-         nextArc->master = arc->master;
+         nextArc->sv1 = arc->sv1;
+         nextArc->sv2 = arc->sv2;
+         nextArc->obsID = arc->obsID;
          nextArc->ddBias = arc->ddBias;
          nextArc->insert(++i, arc->end());
          arc->erase(i, arc->end());
@@ -189,21 +193,21 @@ namespace PhaseResidual
 //------------------------------------------------------------------------------
 // Break the arc on big triple differences
 //------------------------------------------------------------------------------
-   void ArcList::splitOnTD(void)
+   void ArcList::splitOnTD(double threshold)
    {
       for (iterator arc = begin(); arc != end(); arc++)
       {
          for (Arc::iterator i = arc->begin(); i != arc->end(); i++)
          {
             Obs& pr = i->second;
-            bool jump = std::abs(pr.td) > 0.45;
+            bool jump = std::abs(pr.td) > threshold;
 
             // If this followed by a equal and oppisite jump, it is an outlier,
             // not a real jump.
             if (jump)
             {
                Arc::iterator j = i; j++;
-               if (j != arc->end() && std::abs(pr.td + j->second.td) < 0.45)
+               if (j != arc->end() && std::abs(pr.td + j->second.td) < threshold)
                   jump = false;
             }
             
@@ -217,7 +221,9 @@ namespace PhaseResidual
                nextArc++;
                nextArc = insert(nextArc, Arc());
 
-               nextArc->master = arc->master;
+               nextArc->sv1 = arc->sv1;
+               nextArc->sv2 = arc->sv2;
+               nextArc->obsID = arc->obsID;
                nextArc->ddBias = arc->ddBias;
                nextArc->insert(i, arc->end());
                arc->erase(i, arc->end());
@@ -255,7 +261,7 @@ namespace PhaseResidual
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-   void ArcList::mergeArcs(long arcLen, double arcTime, double gapTime)
+   void ArcList::mergeArcs(long arcLen, double arcTime, double gapTime, double threshold)
    {
       // First mark arcs as garbage as appropriate
       for (iterator i = begin(); i != end(); i++)
@@ -283,8 +289,8 @@ namespace PhaseResidual
          Arc& curr = *i;
          bool merge=false;
 
-         if (std::abs(curr.ddBias - prev.ddBias) < 0.45 && 
-             curr.master == prev.master && !prev.garbage && !curr.garbage)
+         if (std::abs(curr.ddBias - prev.ddBias) < threshold && 
+             curr.sv1 == prev.sv1 && !prev.garbage && !curr.garbage)
             merge = true;
          else if (prev.garbage && curr.garbage &&
                   (curr.begin()->first - prev.rbegin()->first) < gapTime)

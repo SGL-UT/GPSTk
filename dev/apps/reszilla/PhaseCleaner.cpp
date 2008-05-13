@@ -44,27 +44,17 @@
 
 using namespace std;
 using namespace gpstk;
+using namespace PhaseResidual;
 
 
 unsigned PhaseCleaner::debugLevel;
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-PhaseCleaner::PhaseCleaner(long al, double at, double gt)
-   : minArcLen(al), minArcTime(at), maxGapTime(gt)
-{
-   lamda[ObsID::cbL1] = C_GPS_M/L1_FREQ;
-   lamda[ObsID::cbL2] = C_GPS_M/L2_FREQ;
-}
-
 
 //-----------------------------------------------------------------------------
 // Pulls the phase data data into arcs. Only data that exists on both receivers
 // is included
 //-----------------------------------------------------------------------------
 void PhaseCleaner::addData(const ObsEpochMap& rx1,
-                           const ObsEpochMap& rx2,
-                           const unsigned long minimumSNR)
+                           const ObsEpochMap& rx2)
 {
    if (debugLevel)
       cout << "PhaseCleaner::addData(), " 
@@ -119,28 +109,13 @@ void PhaseCleaner::addData(const ObsEpochMap& rx1,
             if (phase2 == rotm2.end())
                continue;
 
-            // Don't use the data if we have an SN in the data and it looks
-            // bogus.
-            double snr=-1;
-            ObsID srot = rot;
-               srot.type = ObsID::otSNR;
-            SvObsEpoch::const_iterator snr1_itr = rotm1.find(srot);
-            SvObsEpoch::const_iterator snr2_itr = rotm2.find(srot);
-
-            if (snr1_itr != rotm1.end() && snr2_itr != rotm2.end() )
-            {
-               snr = snr1_itr->second;
-               if (std::abs(snr) < minimumSNR || 
-                   std::abs(snr2_itr->second) < minimumSNR )
-                  continue;
-            }
-
             // Note that we need the phase in cycles to make the PhaseResidual
             // class work right.
-            PhaseResidual::Arc& arc = pot[rot][prn].front();
+            Arc& arc = pot[rot][prn].front();
+            arc.sv2 = prn;
+            arc.obsID = rot;
             arc[t].phase11 = phase1->second;
             arc[t].phase12 = phase2->second;
-            arc[t].snr1 = snr;
          }
       }
    }
@@ -180,14 +155,14 @@ void PhaseCleaner::selectMasters(
    const SatID& prn, 
    SvElevationMap& pem)
 {
-   PhaseResidual::ArcList& pral = pot[rot][prn];
+   ArcList& pral = pot[rot][prn];
 
-   for (PhaseResidual::ArcList::iterator arc = pral.begin(); arc != pral.end(); arc++)
+   for (ArcList::iterator arc = pral.begin(); arc != pral.end(); arc++)
    {
-      for (PhaseResidual::Arc::iterator i = arc->begin(); i != arc->end(); i++)
+      for (Arc::iterator i = arc->begin(); i != arc->end(); i++)
       {
          const DayTime& t = i->first;
-         PhaseResidual::Obs& obs = i->second;
+         Obs& obs = i->second;
 
          SvElevationMap::iterator j = pem.find(t);
          if (j == pem.end())
@@ -199,15 +174,15 @@ void PhaseCleaner::selectMasters(
 
          bool haveMasterObs = false;
 
-         if (arc->master.id > 0)
+         if (arc->sv1.id > 0)
          {
-            PhaseResidual::Arc::const_iterator k;
-            if (pot[rot][arc->master].findObs(t, k))
+            Arc::const_iterator k;
+            if (pot[rot][arc->sv1].findObs(t, k))
                haveMasterObs = true;
          }
          
          // See if we need a new master...
-         if (!haveMasterObs || pdm[arc->master] < 10)
+         if (!haveMasterObs || pdm[arc->sv1] < 10)
          {
             SatID newMaster;
             goodMaster gm = for_each(pdm.begin(), pdm.end(),
@@ -221,6 +196,7 @@ void PhaseCleaner::selectMasters(
                   cout << "Could not find a suitable master for prn " << prn.id
                        << " " << rot.type
                        << " at " << t
+
                        << endl;
                   SvDoubleMap::const_iterator e;
                   for (e = pdm.begin(); e != pdm.end(); e++)
@@ -233,7 +209,7 @@ void PhaseCleaner::selectMasters(
                return;
             }
 
-            PhaseResidual::Arc::const_iterator k;
+            Arc::const_iterator k;
             if (!pot[rot][newMaster].findObs(t, k))
             {
                if (debugLevel)
@@ -241,20 +217,22 @@ void PhaseCleaner::selectMasters(
                        << " Selected an invalid master." << endl;
                return;
             }
-               
+
             if (debugLevel)
                cout << t << " prn " << newMaster.id << " as master. (" << rot 
                     << ")" << endl;
             
-            if (arc->master.id < 1)
+            if (arc->sv1.id < 1)
             {
-               arc->master = newMaster;
+               arc->sv1 = newMaster;
             }
             else
             {
-               PhaseResidual::ArcList::iterator nextArc = arc; nextArc++;
-               nextArc = pral.insert(nextArc, PhaseResidual::Arc());
-               nextArc->master = newMaster;
+               ArcList::iterator nextArc = arc; nextArc++;
+               nextArc = pral.insert(nextArc, Arc());
+               nextArc->sv1 = newMaster;
+               nextArc->sv2 = arc->sv2;
+               nextArc->obsID = arc->obsID;
                nextArc->insert(i, arc->end());
                arc->erase(i, arc->end());
                break;
@@ -275,27 +253,27 @@ void PhaseCleaner::doubleDifference(
    const SatID& prn,
    SvElevationMap& pem)
 {
-   PhaseResidual::ArcList& pral = pot[rot][prn];
+   ArcList& pral = pot[rot][prn];
 
-   for (PhaseResidual::ArcList::iterator arc = pral.begin(); arc != pral.end(); arc++)
+   for (ArcList::iterator arc = pral.begin(); arc != pral.end(); arc++)
    {
-      if (arc->master.id <1)
+      if (arc->sv1.id < 1)
          continue;
 
-      for (PhaseResidual::Arc::iterator i = arc->begin(); i != arc->end(); i++)
+      for (Arc::iterator i = arc->begin(); i != arc->end(); i++)
       {
          const DayTime& t = i->first;
-         PhaseResidual::Obs& obs = i->second;
+         Obs& obs = i->second;
 
-         PhaseResidual::Arc::const_iterator k;
-         if (!pot[rot][arc->master].findObs(t, k))
+         Arc::const_iterator k;
+         if (!pot[rot][arc->sv1].findObs(t, k))
             continue;
          
-         const PhaseResidual::Obs& masterObs = k->second;
+         const Obs& masterObs = k->second;
          
          // Now compute the dd for this epoch
          double masterDiff = masterObs.phase11 - masterObs.phase12;
-         double coc = (clockOffset[t]) * (rangeRate[arc->master][t]) / lamda[rot.band];
+         double coc = (clockOffset[t]) * (rangeRate[arc->sv1][t]) / lamda[rot.band];
          masterDiff -= coc;
 
          double myDiff = obs.phase11 - obs.phase12;
@@ -315,7 +293,8 @@ void PhaseCleaner::doubleDifference(
 void PhaseCleaner::debias(SvElevationMap& pem)
 {
    if (debugLevel)
-      cout << "PhaseCleaner::debias()" << endl;
+      cout << "PhaseCleaner::debias() noiseThreshold:"
+           << setprecision(4) << noiseThreshold << endl;
 
    // At this point, the pot has only phase1 & phase2 set.
    // Also only one arc exists for each prn; and that arc doesn't even
@@ -327,21 +306,21 @@ void PhaseCleaner::debias(SvElevationMap& pem)
       for (PraPrn::iterator j = praPrn.begin(); j != praPrn.end(); j++)
       {
          const SatID& prn = j->first;
-         PhaseResidual::ArcList& pral = j->second;
+         ArcList& pral = j->second;
          pral.splitOnGaps(maxGapTime);
          selectMasters(rot, prn, pem);
          doubleDifference(rot, prn, pem);
          
          pral.computeTD();
-         pral.splitOnTD();
+         pral.splitOnTD(noiseThreshold);
          pral.debiasDD();
          pral.computeTD();
          pral.splitOnTD();
          pral.debiasDD();
-         pral.mergeArcs(minArcLen, minArcTime, maxGapTime);
+         pral.mergeArcs(minArcLen, minArcTime, maxGapTime, noiseThreshold);
 
          if (debugLevel>1)
-            cout << "Done cleaning " << prn.id << " on " << rot.type << endl
+            cout << "Done cleaning " << prn.id << " " << rot << endl
                  << pral;
       }
    }   
@@ -365,16 +344,16 @@ void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
       for (PraPrn::const_iterator j = pp.begin(); j != pp.end(); j++)
       {
          const SatID& prn = j->first;
-         const PhaseResidual::ArcList& al = j->second;
+         const ArcList& al = j->second;
 
-         for (PhaseResidual::ArcList::const_iterator k = al.begin(); k != al.end(); k++)
+         for (ArcList::const_iterator k = al.begin(); k != al.end(); k++)
          {
-            const PhaseResidual::Arc& arc = *k;
+            const Arc& arc = *k;
 
-            for (PhaseResidual::Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
+            for (Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
             {
                const DayTime& t = l->first;
-               const PhaseResidual::Obs& obs = l->second;
+               const Obs& obs = l->second;
 
                // Whew! thats deep. Now to stuff the dd back in to the ddem
                // remember that ddem has it's values in meters
@@ -404,24 +383,24 @@ void PhaseCleaner::getSlips(
       for (PraPrn::const_iterator j = praPrn.begin(); j != praPrn.end(); j++)
       {
          const SatID& prn = j->first;
-         const PhaseResidual::ArcList& al = j->second;
+         const ArcList& al = j->second;
 
-         PhaseResidual::ArcList::const_iterator k = al.begin();
+         ArcList::const_iterator k = al.begin();
          while (k != al.end())
          {
-            const PhaseResidual::Arc& arc0 = *k;
+            const Arc& arc0 = *k;
             k++;
             if (k == al.end())
                break;
 
-            const PhaseResidual::Arc& arc1 = *k;
+            const Arc& arc1 = *k;
 
             if (arc0.garbage || arc1.garbage ||
-                arc0.master != arc1.master)
+                arc0.sv1 != arc1.sv1)
                continue;
 
             const DayTime& t1Begin = arc1.begin()->first;
-            PhaseResidual::Arc::const_iterator l = arc0.end(); l--;
+            Arc::const_iterator l = arc0.end(); l--;
             const DayTime& t0End = l->first;
             
             if (std::abs(t1Begin-t0End) > maxGapTime)
@@ -442,7 +421,7 @@ void PhaseCleaner::getSlips(
             cs.oid = rot;
             cs.prn = prn;
             cs.elevation = pem[t1Begin][prn];
-            cs.masterPrn = arc1.master;
+            cs.masterPrn = arc1.sv1;
             cs.postCount = arc1.size();
             cs.preCount = arc0.size();
             cs.preGap = t1Begin - t0End;
@@ -459,6 +438,31 @@ void PhaseCleaner::getSlips(
 //-----------------------------------------------------------------------------
 // Dump the maps to the standard table format...
 //-----------------------------------------------------------------------------
+void PhaseCleaner::summarize(std::ostream& s) const
+{
+   for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
+   {
+      const ObsID& rot = i->first;
+      const PraPrn& pp = i->second;
+ 
+      for (PraPrn::const_iterator j = pp.begin(); j != pp.end(); j++)
+      {
+         const SatID& prn = j->first;
+         const ArcList& al = j->second;
+         ArcList::const_iterator k;
+         for (k = al.begin(); k != al.end(); k++)
+         {
+            const Arc& arc = *k;
+            s << ">" << arc;
+         }
+      }
+   }
+}
+
+
+ //-----------------------------------------------------------------------------
+// Dump the maps to the standard table format...
+//-----------------------------------------------------------------------------
 void PhaseCleaner::dump(std::ostream& s) const
 {
    s << "# time              PRN type  elev      clk(m)"
@@ -473,16 +477,16 @@ void PhaseCleaner::dump(std::ostream& s) const
       for (PraPrn::const_iterator j = pp.begin(); j != pp.end(); j++)
       {
          const SatID& prn = j->first;
-         const PhaseResidual::ArcList& al = j->second;
+         const ArcList& al = j->second;
 
-         for (PhaseResidual::ArcList::const_iterator k = al.begin(); k != al.end(); k++)
+         for (ArcList::const_iterator k = al.begin(); k != al.end(); k++)
          {
-            const PhaseResidual::Arc& arc = *k;
+            const Arc& arc = *k;
 
-            for (PhaseResidual::Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
+            for (Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
             {
                const DayTime& t = l->first;
-               const PhaseResidual::Obs& obs = l->second;
+               const Obs& obs = l->second;
 
                s.setf(ios::fixed, ios::floatfield);
                s << left << setw(20) << t << right
@@ -512,8 +516,7 @@ unsigned PhaseCleanerA::debugLevel;
 // is included
 //-----------------------------------------------------------------------------
 void PhaseCleanerA::addData(const ObsEpochMap& rx1, 
-                            const ObsEpochMap& rx2,
-                            const unsigned long minimumSNR)
+                            const ObsEpochMap& rx2)
 {
    if (debugLevel)
       cout << "PhaseCleanerA::addData(), " 
@@ -597,9 +600,10 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
                SvObsEpoch::const_iterator phase12 = soe12.find(rot);
                if (phase12 == soe12.end())
                {
-                  if (debugLevel>2)
+                  if (debugLevel>3)
                      cout << "Tossing " << rot << " between " << sv1 << " & "
-                          << sv2.id << " because sv 1 and rx 2 phase is missing." << endl;
+                          << sv2.id << " because sv 1 and rx 2 phase is missing."
+                          << endl;
                   continue;
                }
 
@@ -607,9 +611,10 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
                SvObsEpoch::const_iterator phase21 = soe21.find(rot);
                if (phase21 == soe21.end())
                {
-                  if (debugLevel>2)
+                  if (debugLevel>3)
                      cout << "Tossing " << rot << " between " << sv1 << " & "
-                          << sv2.id << " because sv 2 rx 1 phase is missing." << endl;
+                          << sv2.id << " because sv 2 rx 1 phase is missing."
+                          << endl;
                   continue;
                }
 
@@ -617,29 +622,10 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
                SvObsEpoch::const_iterator phase22 = soe22.find(rot);
                if (phase22 == soe22.end())
                {
-                  if (debugLevel>2)
+                  if (debugLevel>3)
                      cout << "Tossing " << rot << " between " << sv1 << " & "
                           << sv2.id << " because sv 2 rx 2 phase is missing." << endl;
                   continue;
-               }
-
-               // Don't use the data if we have an SNR in the data and it looks
-               // bogus.
-               double snr=-1;
-               ObsID srot = rot;
-               srot.type = ObsID::otSNR;
-               SvObsEpoch::const_iterator snr_itr = soe11.find(srot);
-
-               if (snr_itr != soe11.end())
-               {
-                  snr = snr_itr->second;
-                  if (std::abs(snr) < minimumSNR )
-                  {
-                     if (debugLevel>2)
-                        cout << "Tossing " << rot << " between " << sv1 << " & "
-                             << sv2.id << " because of low SNR." << endl;
-                     continue;
-                  }
                }
 
                // And we can't compute our clock correction without the
@@ -654,13 +640,14 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
 
                // Note that we need the phase in cycles to make the PhaseResidual
                // class work right.
-               PhaseResidual::Arc& arc = pot[rot][svPair].front();
-               PhaseResidual::Obs& obs = arc[t];
+               Arc& arc = pot[rot][svPair].front();
+               Obs& obs = arc[t];
+               arc.sv1 = svPair.first;
+               arc.sv2 = svPair.second;
                obs.phase11 = phase11->second;
                obs.phase12 = phase12->second;
                obs.phase21 = phase21->second;
                obs.phase22 = phase22->second;
-               obs.snr1 = snr;
 
                double lamdaInv;
                if (rot.band == ObsID::cbL1)
@@ -698,7 +685,7 @@ void PhaseCleanerA::debias(SvElevationMap& pem)
       cout << "PhaseCleanerA::debias()" << endl;
 
    // At this point, the pot has all phases set and the double difference
-   // computed. Only one arc exists for each prn pair.
+   // computed. Only one arc exists for each obs type/prn pair.
    for (PraSvPrOt::iterator i = pot.begin(); i != pot.end(); i++)
    {
       const ObsID& rot = i->first;
@@ -706,16 +693,16 @@ void PhaseCleanerA::debias(SvElevationMap& pem)
       for (PraSvPair::iterator j = praSv.begin(); j != praSv.end(); j++)
       {
          const SatIdPair& svPair = j->first;
-         PhaseResidual::ArcList& pral = j->second;
+         ArcList& pral = j->second;
 
          pral.splitOnGaps(maxGapTime);
 
          pral.computeTD();
-         pral.splitOnTD();
+         pral.splitOnTD(noiseThreshold);
          pral.debiasDD();
-         pral.mergeArcs(minArcLen, minArcTime, maxGapTime);
+         pral.mergeArcs(minArcLen, minArcTime, maxGapTime, noiseThreshold);
 
-         if (debugLevel>2)
+          if (debugLevel>2)
             cout << "Done cleaning " << svPair.first
                  << ":" << svPair.second
                  << " on " << rot << endl
@@ -750,16 +737,16 @@ void PhaseCleanerA::getPhaseDD(DDEpochMap& ddem) const
       for (PraSvPair::const_iterator j = pp.begin(); j != pp.end(); j++)
       {
          const SatIdPair& svPair = j->first;
-         const PhaseResidual::ArcList& al = j->second;
+         const ArcList& al = j->second;
 
-         for (PhaseResidual::ArcList::const_iterator k = al.begin(); k != al.end(); k++)
+         for (ArcList::const_iterator k = al.begin(); k != al.end(); k++)
          {
-            const PhaseResidual::Arc& arc = *k;
+            const Arc& arc = *k;
 
-            for (PhaseResidual::Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
+            for (Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
             {
                const DayTime& t = l->first;
-               const PhaseResidual::Obs& obs = l->second;
+               const Obs& obs = l->second;
 
                // Whew! thats deep. Now to stuff the dd back in to the ddem
                // remember that ddem has it's values in meters
@@ -799,16 +786,16 @@ void PhaseCleanerA::dump(std::ostream& s) const
       for (PraSvPair::const_iterator j = pp.begin(); j != pp.end(); j++)
       {
          const SatIdPair& svPair = j->first;
-         const PhaseResidual::ArcList& al = j->second;
+         const ArcList& al = j->second;
 
-         for (PhaseResidual::ArcList::const_iterator k = al.begin(); k != al.end(); k++)
+         for (ArcList::const_iterator k = al.begin(); k != al.end(); k++)
          {
-            const PhaseResidual::Arc& arc = *k;
+            const Arc& arc = *k;
 
-            for (PhaseResidual::Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
+            for (Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
             {
                const DayTime& t = l->first;
-               const PhaseResidual::Obs& obs = l->second;
+               const Obs& obs = l->second;
 
                s.setf(ios::fixed, ios::floatfield);
                s << left << setw(20) << t << right
@@ -821,6 +808,27 @@ void PhaseCleanerA::dump(std::ostream& s) const
                  << " " << setprecision(6) << setw(14) << obs.dd * lamda
                  << endl;
             }
+         }
+      }
+   }
+}
+
+void PhaseCleanerA::summarize(std::ostream& s) const
+{
+   for (PraSvPrOt::const_iterator i = pot.begin(); i != pot.end(); i++)
+   {
+      const ObsID& rot = i->first;
+      const PraSvPair& pp = i->second;
+ 
+       for (PraSvPair::const_iterator j = pp.begin(); j != pp.end(); j++)
+      {
+         const SatIdPair& svPair = j->first;
+         const ArcList& al = j->second;
+
+         for (ArcList::const_iterator k = al.begin(); k != al.end(); k++)
+         {
+            const Arc& arc = *k;
+            s << ">" << arc;
          }
       }
    }
