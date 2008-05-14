@@ -84,7 +84,7 @@ else if $(NT)
    # ------ MS VC++ 2005 : _MSC_VER >= 1400
    if $(MSCVER) >= 1400 {
       MSVCVersion = "VC++2005(VC8)" ;
-      LINKLIBS   =  ;
+      LINKLIBS   =  regex.lib ;
       # -wd turns off warnings; warning 4274 says its ignoring #ident
       # _CRT_SECURE... stops (many!) warnings
       # /Ox is max optimize for speed, /O2 opt for speed,
@@ -97,7 +97,7 @@ else if $(NT)
    # ------ MS VC++.NET 2003 : _MSC_VER >= 1300
    else if $(MSCVER) >= 1300 {
       MSVCVersion = "VC++.NET2003(VC7)" ;
-      LINKLIBS   =  ;
+      LINKLIBS   =  rebex.lib ;
       CCFLAGS    += /ML -wd4274 ;
       # use /O2 optimization
       C++FLAGS   += /O2 /ML -DWIN32 -D_USE_MATH_DEFINES /GX /GR -wd4274 -wd4675 ;

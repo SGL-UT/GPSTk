@@ -15,10 +15,6 @@ if $(NEED_GETOPT)
 if $(PREPROCESSING)
 {
 
-   if $(MSVCNT)
-   {
-      ObjectCcFlags regex.c : -D__STDC__ -D_POSIX_SOURCE -DREGEX_MALLOC -DSTDC_HEADERS ;
-   }
    GPSSetupLibrary gpstk ;
 }
 else
@@ -57,7 +53,7 @@ else
       TimeConverters.cpp TimeString.cpp TimeTag.cpp Triple.cpp
       TropModel.cpp TypeID.cpp UnixTime.cpp VectorBase.cpp
       WxObsMap.cpp X1Sequence.cpp X2Sequence.cpp  Xvt.cpp YDSTime.cpp 
-      YumaAlmanacStore.cpp YumaData.cpp regex.c
+      YumaAlmanacStore.cpp YumaData.cpp 
       $(GETOPT_SOURCE)
       ;
 
@@ -120,7 +116,7 @@ else
       YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp YumaHeader.hpp
       YumaStream.hpp convhelp.hpp geometry.hpp
       gps_constants.hpp gpstkplatform.h icd_200_constants.hpp
-      mergePCodeWords.h regex.h stl_helpers.hpp xregex2.h
+      mergePCodeWords.h stl_helpers.hpp 
       $(GETOPT_INC)
       ;
 }
