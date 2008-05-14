@@ -55,10 +55,12 @@
 #ifdef _MSC_VER
 // timeval is defined in winsock.h, which we don't want to include
 // because it breaks lots of this code
-struct timeval {
-  long    tv_sec;         /* seconds */
-  long    tv_usec;        /* and microseconds */
-};
+   #ifndef timeval
+   struct timeval {
+   long    tv_sec;         /* seconds */
+   long    tv_usec;        /* and microseconds */
+   };
+   #endif
 #else
 #include <sys/time.h>
 #endif
