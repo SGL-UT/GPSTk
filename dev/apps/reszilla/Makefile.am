@@ -1,5 +1,6 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../../lib/rxio
+INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../../lib/rxio \
+	-I$(srcdir)/../../lib/geomatics
 LDADD = ./librlib.la ../../lib/rxio/librxio.la ../../src/libgpstk.la
 
 lib_LTLIBRARIES = librlib.la
