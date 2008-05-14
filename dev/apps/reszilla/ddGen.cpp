@@ -204,10 +204,9 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       return false;
    }
    
-   if ((SNRoption.getCount() && asDouble(SNRoption.getValue()[0])<= 0 ))
+   if ((SNRoption.getCount() && asDouble(SNRoption.getValue()[0])< 0 ))
    {
-      cerr << "\n\n Please enter a SNR value >= 0 dB.\n "
-           << "Exiting....\n\n";
+      cerr << "Please enter a SNR value >= 0. Exiting." << endl;
       return false;
    }
 
@@ -570,6 +569,8 @@ void DDGen::filterObs(const XvtStore<SatID>& eph, ObsEpochMap &oem)
                      else
                         oi2++;
                   }
+                  // Gotta do this since we removed items from the object
+                  oi1 = soe.begin();
                }
             }
          }
