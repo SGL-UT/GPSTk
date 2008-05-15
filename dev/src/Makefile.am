@@ -5,7 +5,7 @@
 #
 lib_LTLIBRARIES = libgpstk.la
 libgpstk_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
-libgpstk_la_SOURCES = regex.c ANSITime.cpp AlmOrbit.cpp \
+libgpstk_la_SOURCES = ANSITime.cpp AlmOrbit.cpp \
 AstronomicalFunctions.cpp Bancroft.cpp BasicFramework.cpp BinUtils.cpp \
 BinexData.cpp  BLQDataReader.cpp CivilTime.cpp CodeBuffer.cpp \
 CommandOption.cpp CommandOptionParser.cpp CommandOptionWithCommonTimeArg.cpp \
@@ -35,7 +35,7 @@ TypeID.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp X1Sequence.cpp \
 X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp YumaData.cpp
 
 incldir = $(includedir)/gpstk
-incl_HEADERS = regex.h ANSITime.hpp AllanDeviation.hpp AlmOrbit.hpp \
+incl_HEADERS = ANSITime.hpp AllanDeviation.hpp AlmOrbit.hpp \
 AstronomicalFunctions.hpp \
 Bancroft.hpp BasicFramework.hpp BinUtils.hpp BinexData.hpp \
 BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp BLQDataReader.hpp \
@@ -85,4 +85,4 @@ WeightBase.hpp WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp Xvt.hpp \
 XvtStore.hpp YDSTime.hpp YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp \
 YumaHeader.hpp YumaStream.hpp \
 convhelp.hpp geometry.hpp gps_constants.hpp gpstkplatform.h \
-icd_200_constants.hpp mergePCodeWords.h stl_helpers.hpp xregex2.h
+icd_200_constants.hpp mergePCodeWords.h stl_helpers.hpp 

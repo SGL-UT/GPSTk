@@ -209,33 +209,27 @@ With  these batch  files the  whole process  is a  simple as  (a) open
 command window, (b)  type go2005 (or go2003), (c)  type jam. Type 'jam
 clean' to delete all the object (.obj) and executable (.exe) files.
 
-Note 2. In the past we have required the command
-
-set NEED_REGEX=yes
-
-under   Windows,   in   order   to  ensure   that   src\regex.c   gets
-compiled. However  this is  handled automatically within  the Jamrules
-file and so it is not necessary to type this on the command line.
-
-Note 3. The Jamrules file is where the MSCVER variable is required
+Note 2. The Jamrules file is where the MSCVER variable is required
 (unlike the MSVCNT variable, which the jam executable requires). If
 you use only one compiler exclusively, you might edit the Jamrules
 file and remove this version dependency; then you would not need
 MSCVER at all.
 
-Note 4. In any  case you ought to look at the  Jamrules file; look for
+Note 3. In any  case you ought to look at the  Jamrules file; look for
 $(NT),  which  the  Windows  executable  jam.exe  defines,  for  items
 relevant to  Windows. C++FLAGS contains C++  compiler options, CCFLAGS
 contains  C compiler  options (but  note  that CCFLAGS  is changed  in
 \src\Jamfile for compiling regex.c), LINKFLAGS are linker options, and
-LINKLIBS are extra libraries included in  the link.  # Note 5. We have
+LINKLIBS are extra libraries included in  the link.  
+
+Note 4. We have
 found  that optimization  is a  practical necessity  in  building with
 these compilers. The option /O2 (that's capital 'oh' not 'zero') seems
 to be  best for speed. Jamrules  now includes /O2 in  both versions of
 the MS  compilers. Of course you  may change this, or  any compiler or
 linker options, by editing Jamrules.
 
-Note 6.  In the  past one  of the problems  in using  jam with  the MS
+Note 5.  In the  past one  of the problems  in using  jam with  the MS
 compilers beyond version 6.0  has been that the libraries advapi32.lib
 and kernel32.lib seemed  to be missing. This, however,  comes from the
 jam  executable,  not  from  MS.  These libraries  are  required,  and
