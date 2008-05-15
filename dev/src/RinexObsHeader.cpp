@@ -781,7 +781,10 @@ namespace gpstk
          StringUtils::stripTrailing(line);
 
          if (line.length()==0)
-            continue;
+         {
+            FFStreamError e("No data read");
+            GPSTK_THROW(e);
+         }
          else if (line.length()<60 || line.length()>80)
          {
             FFStreamError e("Invalid line length");
