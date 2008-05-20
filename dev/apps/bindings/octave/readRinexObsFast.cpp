@@ -60,7 +60,7 @@ DEFUN_DLD (readRinexObsFast, args, , "Reads RINEX obs file and returns it as a m
 
    if (args.length() != 1)
    {
-      print_usage("readRinexObsFast");
+      print_usage();
       return octave_value(headerStruct); // 
    }
 
@@ -78,50 +78,54 @@ DEFUN_DLD (readRinexObsFast, args, , "Reads RINEX obs file and returns it as a m
       if (roh.isValid())
       {
          if (roh.valid & gpstk::RinexObsHeader::versionValid)
-            headerStruct["rinex_version_type"](0) = (roh.version);
+            headerStruct.assign("rinex_version_type", roh.version);
 
          if (roh.valid & gpstk::RinexObsHeader::runByValid)
 	 {
-            headerStruct["pgm"](0) = roh.fileProgram;
-            headerStruct["run_by"](0) = roh.fileAgency;
-            headerStruct["date"](0) = roh.date;
+            headerStruct.assign("pgm", roh.fileProgram);
+            headerStruct.assign("run_by", roh.fileAgency);
+            headerStruct.assign("date",roh.date);
          }
 
          if (roh.valid & gpstk::RinexObsHeader::markerNameValid)
 	 {
-	     headerStruct["marker_name"](0) = roh.markerName;
+	     headerStruct.assign("marker_name",roh.markerName);
 	 }
 
          if (roh.valid & gpstk::RinexObsHeader::markerNumberValid)
 	 {
-	     headerStruct["marker_number"](0) = roh.markerNumber;
+	     headerStruct.assign("marker_number",roh.markerNumber);
 	 }
 
          if (roh.valid & gpstk::RinexObsHeader::commentValid)
 	 {
-	    vector<string>::iterator i;
-            i = roh.commentList.begin();
-            int n = 0;
-            for (;
-                 i!=roh.commentList.end();
-		 i++,n++)
-               headerStruct["comment"](n) = *i;
+	   Octave_map commentmap;
+             
+	     vector<string>::iterator i;
+	     int n=0;
+	     for (i = roh.commentList.begin();
+                  i!=roh.commentList.end();
+	    	 i++,n++) 
+             commentmap.assign(gpstk::StringUtils::asString(n),*i);
+
+             headerStruct.assign("comments",commentmap);
 	 }
          
+         
          if (roh.valid & gpstk::RinexObsHeader::observerValid)
-	    headerStruct["observer"](0) = roh.observer;
+	    headerStruct.assign("observer", roh.observer);
 
          if (roh.valid & gpstk::RinexObsHeader::receiverValid)
 	 {
-	    headerStruct["receiver_number" ](0) = roh.recNo;
-	    headerStruct["receiver_type"   ](0) = roh.recType;
-            headerStruct["receiver_version"](0) = roh.recVers;
+	    headerStruct.assign("receiver_number", roh.recNo);
+	    headerStruct.assign("receiver_type",  roh.recType);
+            headerStruct.assign("receiver_version", roh.recVers);
          }
 
          if (roh.valid & gpstk::RinexObsHeader::antennaTypeValid)
 	 {
-            headerStruct["antenna_number"](0) = roh.antNo;
-	    headerStruct["antenna_type"  ](0) = roh.antType;
+            headerStruct.assign("antenna_number",roh.antNo);
+	    headerStruct.assign("antenna_type", roh.antType);
 	 }
 
          if (roh.valid & gpstk::RinexObsHeader::antennaPositionValid)
@@ -130,7 +134,7 @@ DEFUN_DLD (readRinexObsFast, args, , "Reads RINEX obs file and returns it as a m
             aPos(0) = roh.antennaPosition[0];
             aPos(1) = roh.antennaPosition[1];
             aPos(2) = roh.antennaPosition[2];
-            headerStruct["antenna_position"](0) = aPos;
+            headerStruct.assign("antenna_position", aPos);
 	 }
 
          if (roh.valid & gpstk::RinexObsHeader::antennaOffsetValid)
@@ -139,7 +143,7 @@ DEFUN_DLD (readRinexObsFast, args, , "Reads RINEX obs file and returns it as a m
 	   aOff(0) = roh.antennaOffset[0];
 	   aOff(1) = roh.antennaOffset[1];
 	   aOff(2) = roh.antennaOffset[2];
-	   headerStruct["antenna_offset"](0) = aOff;
+	   headerStruct.assign("antenna_offset", aOff);
 	 }
 
          if (roh.valid & gpstk::RinexObsHeader::waveFactValid)
@@ -147,7 +151,7 @@ DEFUN_DLD (readRinexObsFast, args, , "Reads RINEX obs file and returns it as a m
 	   ColumnVector waveFact(2);
 	   waveFact(0) = static_cast<short> (roh.wavelengthFactor[0]);
 	   waveFact(1) = static_cast<short> (roh.wavelengthFactor[1]);
-	   headerStruct["wavelength_factor"](0) = waveFact;
+	   headerStruct.assign("wavelength_factor",  waveFact);
 	 }
 
          // The extraWaveFactList code is untested for lack of 
@@ -168,19 +172,19 @@ DEFUN_DLD (readRinexObsFast, args, , "Reads RINEX obs file and returns it as a m
                  i!=roh.extraWaveFactList.end();
 	         i++)
 	    {
-               int nprns = (*i).prnList.size();
+               int nprns = (*i).satList.size();
                waveFactors.resize(nprnsTot+nprns, 4);
                for (int j=0; j<nprns; j++)
 	       {
-		  waveFactors(nprnsTot+j,0) = (*i).prnList[j].prn;
-	          waveFactors(nprnsTot+j,1) = (*i).prnList[j].system;
+		  waveFactors(nprnsTot+j,0) = (*i).satList[j].id;
+	          waveFactors(nprnsTot+j,1) = (*i).satList[j].system;
                   waveFactors(nprnsTot+j,2) = (*i).wavelengthFactor[0];
                   waveFactors(nprnsTot+j,3) = (*i).wavelengthFactor[1];
 	       }
                nprnsTot += nprns;
 	    }
 
-            headerStruct["wave_factors_by_prn"](0) = waveFactors;
+            headerStruct.assign("wave_factors_by_prn", waveFactors);
 	 }
 
          if (roh.valid & gpstk::RinexObsHeader::obsTypeValid)
@@ -190,14 +194,14 @@ DEFUN_DLD (readRinexObsFast, args, , "Reads RINEX obs file and returns it as a m
 	    {
 	      obsList += roh.obsTypeList[i].type + string(" ");
 	    }
-	    headerStruct["obs_types"](0)=obsList;
+	    headerStruct.assign("obs_types",obsList);
 
             numObsTypes = roh.obsTypeList.size();            
 	 }
 
          if (roh.valid & gpstk::RinexObsHeader::intervalValid)
 	 {
-            headerStruct["interval"](0) = static_cast<double> (roh.interval);
+            headerStruct.assign("interval",roh.interval);
 	 }
 
          if (roh.valid & gpstk::RinexObsHeader::firstTimeValid)
@@ -206,7 +210,7 @@ DEFUN_DLD (readRinexObsFast, args, , "Reads RINEX obs file and returns it as a m
             firstTime(0)=static_cast<short> (roh.firstObs.DOYyear());
             firstTime(1)=static_cast<short> (roh.firstObs.DOYday());
             firstTime(2)=static_cast<double> (roh.firstObs.DOYsecond());
-	    headerStruct["time_of_first_obs"](0) = firstTime;
+	    headerStruct.assign("time_of_first_obs",firstTime);
 	 }
 
 	 // Untested.
@@ -216,40 +220,40 @@ DEFUN_DLD (readRinexObsFast, args, , "Reads RINEX obs file and returns it as a m
             lastTime(0)=static_cast<short> (roh.lastObs.DOYyear());
             lastTime(1)=static_cast<short> (roh.lastObs.DOYday());
             lastTime(2)=static_cast<double> (roh.lastObs.DOYsecond());
-	    headerStruct["time_of_last_obs"](0) = lastTime;
+	    headerStruct.assign("time_of_last_obs", lastTime);
 	 }
 
          if (roh.valid & gpstk::RinexObsHeader::receiverOffsetValid)
 	 {
-	    headerStruct["receiver_offset"](0)=static_cast<int> (roh.receiverOffset);
+	    headerStruct.assign("receiver_offset",static_cast<int> (roh.receiverOffset));
 	 }
 
          if (roh.valid & gpstk::RinexObsHeader::leapSecondsValid)
 	 {
-	    headerStruct["leap_seconds"](0)=static_cast<int> (roh.leapSeconds);          }
+	    headerStruct.assign("leap_seconds",static_cast<int> (roh.leapSeconds));          }
 
          if (roh.valid & gpstk::RinexObsHeader::numSatsValid)
 	 {
-	    headerStruct["numSVs"](0)=static_cast<short> (roh.numSVs);
+	    headerStruct.assign("numSVs",static_cast<short> (roh.numSVs));
 	 }
 	 
          if (roh.valid & gpstk::RinexObsHeader::prnObsValid)
 	 {
-	    Matrix prnObs(roh.numObsForPrn.size(),numObsTypes+2);
-            map<gpstk::RinexPrn::RinexPrn, vector<int> >::iterator i;
+	    Matrix prnObs(roh.numObsForSat.size(),numObsTypes+2);
+            map<gpstk::SatID, vector<int> >::iterator i;
             int row=0;
-            for (i=roh.numObsForPrn.begin(),row=0;
-                 i!=roh.numObsForPrn.end();
+            for (i=roh.numObsForSat.begin(),row=0;
+                 i!=roh.numObsForSat.end();
                  i++,row++)
 	    {
-	      prnObs(row,0) = (*i).first.prn;
+	      prnObs(row,0) = (*i).first.id;
               prnObs(row,1) = (*i).first.system;
               if (numObsTypes==-1)
                  numObsTypes = (*i).second.size();
 	      for (int j=0;j<numObsTypes;j++)
 		prnObs(row,j+2)=(*i).second[j];
       	    }
-	    headerStruct["num_of_obs_for_prn"](0)=prnObs;            
+	    headerStruct.assign("num_of_obs_for_sat",prnObs);            
 	  }
 
       }
@@ -264,7 +268,7 @@ DEFUN_DLD (readRinexObsFast, args, , "Reads RINEX obs file and returns it as a m
             nrecs = nrecs + rod.numSvs;
       }
 
-      obsMatrix.resize(nrecs,numObsTypes+4,0);
+      obsMatrix.resize(nrecs,numObsTypes+5,0);
       // Second scan
       gpstk::RinexObsStream roffs2(obsfilename.data());
       roffs2.exceptions(ios::failbit);
@@ -280,13 +284,14 @@ DEFUN_DLD (readRinexObsFast, args, , "Reads RINEX obs file and returns it as a m
             short doy  = rod.time.DOYday();
 	    double sod = rod.time.DOYsecond();
 
-	    gpstk::RinexObsData::RinexPrnMap::iterator it;
+	    gpstk::RinexObsData::RinexSatMap::iterator it;
             for (it=rod.obs.begin(); it!=rod.obs.end(); it++) // PRN loop
 	    {
                obsMatrix(currentRec,0)=year;
                obsMatrix(currentRec,1)=doy;
                obsMatrix(currentRec,2)=sod;
-               obsMatrix(currentRec,3)=it->first.prn;
+               obsMatrix(currentRec,3)=it->first.id;
+               obsMatrix(currentRec,4)=it->first.system;
                // What to do with system information? sigh...a new matrix?
 
                gpstk::RinexObsData::RinexObsTypeMap::iterator jt;

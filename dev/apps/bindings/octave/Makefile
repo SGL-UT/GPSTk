@@ -7,8 +7,9 @@
 # library file resides
 #
 
-all :	readRinexObsFast.oct readRinexObsGeom.oct \
-	calculatePosition.oct
+all :	readRinexObsFast.oct 
+#readRinexObsGeom.oct \
+#	calculatePosition.oct
 
 readRinexObsFast.oct: readRinexObsFast.cpp
 	$(make_oct)
@@ -22,7 +23,7 @@ calculatePosition.oct: calculatePosition.cpp
 define make_oct
 	@echo "making oct file: $@"
 	@echo "mkoctfile $(CXXFLAGS) -o $@ $^ $(LDLIBS)"
-	mkoctfile -I../src -L../src -lgpstk -o $@ $^ $(LDLIBS)
+	mkoctfile -I../../../src -L../../../src -lgpstk -o $@ $^ $(LDLIBS)
 	chmod 755 $@
 	for file in $^ ; do $(RM) $$file.o ; done  
 endef
