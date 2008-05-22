@@ -176,8 +176,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       useNearOption('n', "near", "Allow the program to select an ephemeris that "
                     "is not strictly in the future. Only affects the selection of which broadcast "
                     "ephemeris to use. i.e. use a close ephemeris."),
-      zeroTropOption('\0', "zero-trop", "Disables trop corrections."),
-      cycleSlipOption('\0', "cycle-slips", "Output a list of cycle slips.");
+      zeroTropOption('\0', "zero-trop", "Disables trop corrections.");
 
    if (!BasicFramework::initialize(argc,argv)) 
       return false;
@@ -204,9 +203,10 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       return false;
    }
    
-   if ((SNRoption.getCount() && asDouble(SNRoption.getValue()[0])< 0 ))
+   if ((SNRoption.getCount() && asDouble(SNRoption.getValue()[0])<= 0 ))
    {
-      cerr << "Please enter a SNR value >= 0. Exiting." << endl;
+      cerr << "\n\n Please enter a SNR value >= 0 dB.\n "
+           << "Exiting....\n\n";
       return false;
    }
 
@@ -376,7 +376,7 @@ void DDGen::process()
    // The debug level is lowered for the first part since other programs (i.e.
    // ordGen) are better at debugging those algorithms
    int prevDebugLevel = debugLevel;
-   if (debugLevel>1)
+   if (debugLevel>4)
       debugLevel = 1;
 
    EphReader ephReader;
@@ -417,13 +417,17 @@ void DDGen::process()
 
    ddem.compute(oem1, oem2, pem);
 
-   // Here we compute a phase double difference that is Better(TM)    
+   // Here we compute a phase double difference that is Better(TM)
    if (computeAll)
    {
       PhaseCleanerA pc(minArcLen, minArcTime, minArcGap, noiseThreshold);
       pc.debugLevel = debugLevel;
       pc.addData(oem1, oem2);
       pc.debias(pem);
+      CycleSlipList sl;
+      pc.getSlips(sl, pem);
+      if (verboseLevel)
+         sl.dump(cout);
       if (verboseLevel>1)
          pc.summarize(cout);
       pc.getPhaseDD(ddem);          
@@ -434,12 +438,13 @@ void DDGen::process()
       pc.debugLevel = debugLevel;
       pc.addData(oem1, oem2);
       pc.debias(pem);
-      pc.getPhaseDD(ddem);
       CycleSlipList sl;
       pc.getSlips(sl, pem);
-      dump(cout, sl);
+      if (verboseLevel)
+         sl.dump(cout);
       if (verboseLevel>1)
          pc.summarize(cout);
+      pc.getPhaseDD(ddem);
    }
     
    if (window)
@@ -493,7 +498,7 @@ void DDGen::readObsFile(
       {
          ObsEpoch obs(obsReader.getObsEpoch());
          if (!obsReader())
-            break; 
+            break;
 
          ORDEpoch oe = ordEngine(obs);
          
@@ -508,7 +513,8 @@ void DDGen::readObsFile(
          else
          {
             if (verboseLevel>2)
-               cout << "# Could not estimate clock for epoch at " << obs.time << endl;
+               cout << "# Could not estimate clock for epoch at " << obs.time 
+                    << endl;
          }
       }
    }
@@ -516,66 +522,68 @@ void DDGen::readObsFile(
 
 void DDGen::filterObs(const XvtStore<SatID>& eph, ObsEpochMap &oem)
 {
+   if (verboseLevel)
+   {
+      if (removeUnhealthy)
+         cout << "# Filtering obs from unhealthy SVs." << endl;
+      if (minSNR>0)
+         cout << "# Filtering obs with low SNR." << endl;
+   }
+
    ObsEpochMap::iterator oemIter;   
 
    for (oemIter=oem.begin(); oemIter!=oem.end(); oemIter++)
    {
       const DayTime& t = oemIter->first;
       ObsEpoch& obsEpoch = oemIter->second;
-      ObsEpoch::iterator oeIter;
-      for(oeIter=obsEpoch.begin(); oeIter!=obsEpoch.end(); oeIter++)
-      {
-         const SatID& svid = oeIter->first;
-         SvObsEpoch& soe = oeIter->second;
-
-         if (removeUnhealthy)
+      if (removeUnhealthy)
+         try
          {
-            try
+            const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
+            for(ObsEpoch::iterator oeIter=obsEpoch.begin(); oeIter!=obsEpoch.end();)
             {
-               const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
+               const SatID& svid = oeIter->first;
+               SvObsEpoch& soe = oeIter->second;
+               
                EngEphemeris ephTemp = bce.findEphemeris(svid, t);
                short health =  ephTemp.getHealth();
                if (health != 0)
-               {
                   obsEpoch.erase(oeIter++);
-                  oeIter--;
-               }
-               continue;
-            }
-            catch (gpstk::Exception &exc)
-            { 
-               if (verboseLevel || debugLevel)
-                  cout << "# DDGen::filterObs: probably missing eph data" << endl;
-            }
+               else
+                  oeIter++;
+            } // end looping over all SVs in this epoch
+         }
+         catch (gpstk::Exception &exc)
+         { 
+            if (verboseLevel || debugLevel)
+               cout << "# DDGen::filterObs: probably missing eph data"
+                    << endl;
          }
 
-         if (minSNR > 0)
+      if (minSNR > 0)
+         for(ObsEpoch::iterator oeIter=obsEpoch.begin(); oeIter!=obsEpoch.end(); oeIter++)
          {
-            SvObsEpoch::iterator oi1, oi2;
-            for (oi1 = soe.begin(); oi1 != soe.end(); oi1++)
+            SvObsEpoch& soe = oeIter->second;
+            
+            // Find all the obs that deserve to die...
+            set<ObsID> killMe;
+            for (SvObsEpoch::iterator oi1 = soe.begin(); oi1 != soe.end(); oi1++)
+            if (oi1->first.type == ObsID::otSNR && oi1->second < minSNR)
+               killMe.insert(oi1->first);
+            
+            // Then terminate them!
+            for (SvObsEpoch::iterator oi1 = soe.begin(); oi1 != soe.end();)
             {
-               const ObsID& oid1 = oi1->first;
-               if (oid1.type != ObsID::otSNR)
-                  continue;
-
-               if (oi1->second < minSNR)
-               {
-                  // need to delete all obs for this code carrier combination
-                  for (oi2 = soe.begin(); oi2 != soe.end();)
-                  {
-                     const ObsID& oid2 = oi2->first;
-                     if (oid1.band == oid2.band && oid1.code == oid2.code)
-                        soe.erase(oi2++);
-                     else
-                        oi2++;
-                  }
-                  // Gotta do this since we removed items from the object
-                  oi1 = soe.begin();
-               }
+               ObsID oid(oi1->first);
+               oid.type = ObsID::otSNR;
+               if (killMe.find(oid) != killMe.end())
+                  soe.erase(oi1++);
+               else
+                  oi1++;
             }
-         }
-      }
-   }
+         } // end looping over all SVs in this epoch
+
+   } // end of looping over all epochs
 }
 
 //-----------------------------------------------------------------------------

@@ -50,6 +50,7 @@
 // This namespace is just to keep the identifiers meaninfull and short...
 namespace PhaseResidual
 {
+   extern int debugLevel;
    // The value of phase, double difference, triple difference for a single
    // sv observable at a point in time.
    class Obs
@@ -65,11 +66,8 @@ namespace PhaseResidual
       Obs() : phase11(0), phase12(0), phase21(0), phase22(0), dd(0), td(0)
       {};
 
-      void dump(std::ostream& s) const;
+      void dump(std::ostream& s, int detail=0) const;
    };
-
-   std::ostream& operator << (std::ostream& s, const Obs& pr);
-
 
    // This is a set of observations over time plus a bias that has been
    // removed from the double difference
@@ -77,7 +75,7 @@ namespace PhaseResidual
    {
      public:
       Arc():ddBias(0), garbage(false){};
-      void dump(std::ostream& s) const;
+      void dump(std::ostream& s, int detail=0) const;
 
       double ddBias;
       gpstk::SatID sv1,sv2;
@@ -93,8 +91,6 @@ namespace PhaseResidual
       bool operator<(const Arc& right) const
          { return (--end())->first < right.begin()->first;}
    };
-
-   std::ostream& operator << (std::ostream& s, const Arc& arc);
 
 
    // This is a set of arcs. While this class doesn't enforce it, the will
@@ -127,9 +123,16 @@ namespace PhaseResidual
       // make each arc have a zero mean
       void debiasDD();
 
-      void dump(std::ostream& s) const;
+      void dump(std::ostream& s, int detail=0) const;
    };
 
-   std::ostream& operator << (std::ostream& s, const ArcList& pral);
+   std::ostream& operator << (std::ostream& s, const PhaseResidual::Obs& pr);
+
+   std::ostream& operator << (std::ostream& s, const PhaseResidual::Arc& arc);
+
+   std::ostream& operator << (std::ostream& s, const PhaseResidual::ArcList& pral);
+
 }
+
+
 #endif

@@ -44,20 +44,22 @@
 
 namespace PhaseResidual
 {
+   int debugLevel=1;
+
+   using namespace std;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-   void Obs::dump(std::ostream& s) const
+   void Obs::dump(ostream& s, int detail) const
    {
-      s << "phase:" << phase11
+      s << " phase:" << phase11
         << " dd:" << dd
         << " td:" << td;
    }
 
-   std::ostream& operator << (std::ostream& s, const Obs& pr) 
-   { pr.dump(s); return s; }
-
 
 //------------------------------------------------------------------------------
+// Note that this really needs to be called before a pass of an SV gets broken
+// into multiple arcs
 //------------------------------------------------------------------------------
    void Arc::computeTD(void)
    {
@@ -65,13 +67,16 @@ namespace PhaseResidual
       while (i != end())
       {
          Obs& prev = i->second;
+         const gpstk::DayTime& t0 = i->first;
          i++;
          if (i == end())
             break;
          Obs& curr = i->second;
-         curr.td = curr.dd - prev.dd;
+         const gpstk::DayTime t1 = i->first;
+         curr.td = (curr.dd - prev.dd)/(t1 - t0);
       }
    }
+
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -81,6 +86,7 @@ namespace PhaseResidual
       for (iterator i = begin(); i != end(); i++)
          i->second.dd -= bias;
    }
+
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -94,47 +100,47 @@ namespace PhaseResidual
       return stats;
    }
 
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-   void Arc::dump(std::ostream& s) const
+   void Arc::dump(ostream& s, int detail) const
    {
+      if (size() == 0)
+      {
+         s << "# Arc: empty" << endl;
+         return;
+      }
+         
       gpstk::Stats<double> stats = statsDD();
-      const_iterator i=begin(); 
-      const gpstk::DayTime& t0=i->first;
-      i = end();
+      const gpstk::DayTime& t0=begin()->first;
+      const gpstk::DayTime& t1=rbegin()->first;
 
-      if (i != begin())
-      {
-        i--;
-        const gpstk::DayTime& t1=i->first;
-        s << std::left
-          << "Arc: " << t0.printf("%02H:%02M:%04.1f")
-          << " - "   << t1.printf("%02H:%02M:%04.1f")
-          << " sv1:" << std::setw(2) << sv1.id
-          << " sv2:" << std::setw(2) << sv2.id
-          << " obs:" << obsID 
-          << " N:" <<  std::setw(5) << stats.N();
-      }
-        
+      s << left
+        << "# Arc: " << t0.printf("%02H:%02M:%04.1f")
+        << " - "   << t1.printf("%02H:%02M:%04.1f")
+        << " SVs:" << sv1.id << "-" <<sv2.id
+        << " " << obsID 
+        << " N:" <<  setw(5) << stats.N() 
+        << " bias:"  << setprecision(12) << ddBias;
+
+      // Only output the standard deviation if it is valid
+      if (stats.N()>1)
+         s << " sdev:"  << setprecision(4) << stats.StdDev();        
+
+      if (garbage)
+         s << " garbage";
       
-      if (!garbage)
-      {
-         s << " sdev:"  << std::setprecision(6) << stats.StdDev()
-           << " ddBias:"  << std::setprecision(12) << ddBias;
-         if (stats.Average() > stats.StdDev()/sqrt((float)stats.N()))
-            s << " avg:" << std::setprecision(4) << stats.Average();
-         if (stats.StdDev() == 0)
-            s << " Suspect!";
-      }
-      else
-         s << " Garbage.";
-      s << std::endl;
-   }
+      // Only output the average if it is statistically non-zero
+      bool zero = stats.Average() <= stats.StdDev()/sqrt((float)stats.N());
+      if (!zero)
+         s << " avg:" << setprecision(4) << stats.Average();
+      s << endl;
 
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-   std::ostream& operator <<(std::ostream& s, const Arc& arc)
-   { arc.dump(s); return s; }
+      if ((!zero || stats.StdDev()>0.5 || garbage) && detail)
+         for (const_iterator i=begin(); i != end(); i++)
+            s << "# " << i->first.printf("%02H:%02M:%04.1f")
+              << " " << i->second << endl;
+   }
 
 
 //------------------------------------------------------------------------------
@@ -159,13 +165,15 @@ namespace PhaseResidual
    {
       for (iterator arc = begin(); arc != end(); arc++)
       {
-         Arc::iterator i = adjacent_find(arc->begin(), arc->end(), timeGap(gapSize));
+         Arc::iterator i = 
+            adjacent_find(arc->begin(), arc->end(), timeGap(gapSize));
+
          if (i == arc->end())
             continue;
 
          // Make a new empty arc immedietly after the current arc and
-         // move all the data from here to the end of the current arc into
-         // the new arc.
+         // move all the data from the break to the end of the current 
+         // arc into the new arc.
          iterator nextArc = arc;
          nextArc++;
          nextArc = insert(nextArc, Arc());
@@ -175,7 +183,6 @@ namespace PhaseResidual
          nextArc->ddBias = arc->ddBias;
          nextArc->insert(++i, arc->end());
          arc->erase(i, arc->end());
-         arc = nextArc;
       }
    }
 
@@ -202,12 +209,16 @@ namespace PhaseResidual
             Obs& pr = i->second;
             bool jump = std::abs(pr.td) > threshold;
 
-            // If this followed by a equal and oppisite jump, it is an outlier,
-            // not a real jump.
-            if (jump)
+            if (!jump)
+               continue;
+
+            // If the double difference returns to a similiar value
+            // withing several epochs, treat this as noise, not a real jump.
+            Arc::iterator j = i; j++;
+            for (int n=0; n<5 && jump && j != arc->end(); n++)
             {
-               Arc::iterator j = i; j++;
-               if (j != arc->end() && std::abs(pr.td + j->second.td) < threshold)
+               double quad = std::abs(pr.td + j->second.td);
+               if (quad < threshold)
                   jump = false;
             }
             
@@ -261,87 +272,110 @@ namespace PhaseResidual
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-   void ArcList::mergeArcs(long arcLen, double arcTime, double gapTime, double threshold)
+   void ArcList::mergeArcs(
+      long arcLen,
+      double arcTime,
+      double gapTime,
+      double threshold)
    {
       // First mark arcs as garbage as appropriate
       for (iterator i = begin(); i != end(); i++)
       {
-         Arc::iterator end_of_prev=i->end();
-         if (end_of_prev == i->begin())
+         if (i->size() < arcLen)
+         {
             i->garbage = true;
-         else
-            end_of_prev--;
-            Arc::iterator beg_of_curr=i->begin();
+            continue;
+         }
+         
+         const gpstk::DayTime& t0 = i->begin()->first;
+         const gpstk::DayTime& t1 = i->rbegin()->first;
             
-            double dt = end_of_prev->first - beg_of_curr->first;
-            
-            if (i->size() < arcLen || dt < arcTime)
-              i->garbage = true;
+         double dt = t1-t0;
+         if (dt < arcTime)
+            i->garbage = true;
       }
 
-      iterator i = begin();
-      while (i != end() )
+      // Now go through and do some merging
+      for(iterator i = begin(); i != end(); )
       {
          Arc& prev = *i;
          i++;
          if (i == end())
             break;
          Arc& curr = *i;
-         bool merge=false;
 
-         if (std::abs(curr.ddBias - prev.ddBias) < threshold && 
-             curr.sv1 == prev.sv1 && !prev.garbage && !curr.garbage)
-            merge = true;
-         else if (prev.garbage && curr.garbage &&
-                  (curr.begin()->first - prev.rbegin()->first) < gapTime)
-            merge = true;
+         // Can't merge unless both arcs are valid or both are invalid
+         if (prev.garbage != curr.garbage)
+            continue;
 
-         if (merge)
-         {
-            // First make the biases exactly the same
-            curr.debiasDD(prev.ddBias - curr.ddBias);
-            // Then put the data from the current arc into the previous
-            prev.insert(curr.begin(), curr.end());
-            // and kill the current arc
-            i = erase(i);
-            i--;
-         }
+         // Both arcs must have the same SVs
+         if (curr.sv1 != prev.sv1 || curr.sv2 != prev.sv2)
+            continue;
+
+         // And the arcs must be close enough together in time...
+         const gpstk::DayTime prev_end = prev.rbegin()->first;
+         const gpstk::DayTime curr_begin = curr.begin()->first;
+         double dt = curr_begin - prev_end;
+         if (dt >= gapTime)
+            continue;
+
+         // And the biases need to be close
+         if (std::abs(curr.ddBias - prev.ddBias) > threshold)
+            continue;
+
+         // Now the arcs can be merged..
+         // First make the biases exactly the same
+         curr.debiasDD(prev.ddBias - curr.ddBias);
+         // Then put the data from the current arc into the previous
+         prev.insert(curr.begin(), curr.end());
+         // and kill the current arc
+         i = erase(i);
+         i--;
       }
    }
 
 
 //------------------------------------------------------------------------------
-   void ArcList::dump(std::ostream& s) const
+//------------------------------------------------------------------------------
+   void ArcList::dump(ostream& s, int detail) const
    {
+      gpstk::Stats<double> stats;
+      for (const_iterator i = begin(); i != end(); i++)
+         if (!i->garbage)
+            for (Arc::const_iterator j = i->begin(); j != i->end(); j++)
+               stats.Add(j->second.dd);
+
+      s << "# ArcList N:" << stats.N()
+        << " sdev:" << setprecision(4) << stats.StdDev();
+
+      // We only output the average is it is statistically non zero
+      if (stats.Average() > stats.StdDev()/sqrt((float)stats.N()))
+         s << " avg:" << setprecision(4) << stats.Average();
+
+      s << endl;
+      
       for (const_iterator i = begin(); i != end(); i++)
       {
-         i->dump(s);
+         i->dump(s, detail);
          const_iterator j = i;
          if (++j != end())
          {
             // Yes, this is the dark side of the STL
             double gap = j->begin()->first - i->rbegin()->first;
             if (gap > 3)
-               s << "Gap: " << gap << " seconds" << std::endl;
+               s << "# " << setprecision(3) << gap << " seconds" << endl;
          }
       }
-         
-      gpstk::Stats<double> stats;
-      for (const_iterator i = begin(); i != end(); i++)
-         if (!i->garbage)
-            for (Arc::const_iterator j = (i->begin())++; j != i->end(); j++)
-               stats.Add(j->second.dd);
-
-      s << "ArcList N:" << stats.N()
-        << " sdev:" << std::setprecision(4) << stats.StdDev();
-
-      if (stats.Average() > stats.StdDev()/sqrt((float)stats.N()))
-         s << " avg:" << std::setprecision(4) << stats.Average();
-
-      s << std::endl;
    }
 
-   std::ostream& operator <<(std::ostream& s, const ArcList& al) 
-   { al.dump(s); return s; }
+   ostream& operator << (ostream& s, const Obs& pr)
+   { pr.dump(s); return s; }
+
+   ostream& operator << (ostream& s, const Arc& arc)
+   { arc.dump(s); return s; }
+
+   ostream& operator << (ostream& s, const ArcList& pral)
+   { pral.dump(s); return s; }
 
 } // end of PhaseResidual namespace
+

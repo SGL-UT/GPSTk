@@ -41,46 +41,67 @@
 using namespace std;
 using namespace gpstk;
 
+
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-void dump(std::ostream& s, const CycleSlipList& csl)
+void CycleSlipList::purgeDuplicates()
 {
-   s << "#  Total Cycle slips: " << csl.size() << endl;
+   // First make sure the list is sorted.
+   sort();
+   DayTime t(DayTime::BEGINNING_OF_TIME);
+   vector<int> svCount(MAX_PRN);
+   for (const_iterator i=begin(); i!=end(); i++)
+   {
+      const CycleSlipRecord& cs=*i;
+      if (t != cs.t)
+      {
+         for (int i=1; i<=MAX_PRN; i++)
+            svCount[i] = 0;
+         t = cs.t;
+      }
+   }
+}
 
-   CycleSlipList::const_iterator i;
+
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+void CycleSlipList::dump(std::ostream& s) const
+{
    long l1=0, l2=0;
-
-   for (i=csl.begin(); i!=csl.end(); i++)
+   for (const_iterator i=begin(); i!=end(); i++)
       if (i->oid.band == ObsID::cbL1)
          l1++;
       else if (i->oid.band == ObsID::cbL2)
          l2++;
          
-   s << "#  Cycle slips on L1: " << l1 << endl;
-   s << "#  Cycle slips on L2: " << l2 << endl;
+   s << "#  Total Cycle slips: " << size() << endl
+     << "#  Cycle slips on L1: " << l1 << endl
+     << "#  Cycle slips on L2: " << l2 << endl;
 
-   if (csl.size() == 0)
+   if (size() == 0)
       return;
 
    s << endl
-     << "#   time                prn obs type            cyles       elev     pre   post    gap  mstr " << endl;
+     << "#   time                sv1 sv2 obs type            cyles       el1    el2     pre   post    gap "
+     << endl;
 
    s.setf(ios::fixed, ios::floatfield);
    
-   for (i=csl.begin(); i!=csl.end(); i++)
+   for (const_iterator i=begin(); i!=end(); i++)
    {
       const CycleSlipRecord& cs=*i;
       string time=cs.t.printf("%4Y %3j %02H:%02M:%04.1f");
       
       s << ">c " << left << setw(20) << time
-        << "  " << right << setw(2) << cs.prn.id
+        << "  " << right << setw(2) << cs.sv1.id
+        << "  " << right << setw(2) << cs.sv2.id
         << " " << left << setw(14) << StringUtils::asString(cs.oid) << right
         << " " << setprecision(3) << setw(14) << cs.cycles
-        << "  " << std::setprecision(2) << setw(5) << cs.elevation
+        << "  " << std::setprecision(2) << setw(5) << cs.el1
+        << "  " << std::setprecision(2) << setw(5) << cs.el2
         << "  " << setw(5) << cs.preCount
         << "  " << setw(5) << cs.postCount
         << "  " << setw(5) << setprecision(1) << cs.preGap
-        << "  " << setw(2) << cs.masterPrn.id
         << endl;
    }
    s << endl;

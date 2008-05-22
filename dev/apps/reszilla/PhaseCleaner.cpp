@@ -56,8 +56,8 @@ unsigned PhaseCleaner::debugLevel;
 void PhaseCleaner::addData(const ObsEpochMap& rx1,
                            const ObsEpochMap& rx2)
 {
-   if (debugLevel)
-      cout << "PhaseCleaner::addData(), " 
+   if (debugLevel>1)
+      cout << "# PhaseCleaner::addData(), " 
            << rx1.size() << ", " << rx2.size() << " epochs" << endl;
 
    // Now loop over all the epochs, pulling the data into the arcs
@@ -193,7 +193,7 @@ void PhaseCleaner::selectMasters(
             {
                if (debugLevel)
                {
-                  cout << "Could not find a suitable master for prn " << prn.id
+                  cout << "# Could not find a suitable master for prn " << prn.id
                        << " " << rot.type
                        << " at " << t
 
@@ -218,8 +218,8 @@ void PhaseCleaner::selectMasters(
                return;
             }
 
-            if (debugLevel)
-               cout << t << " prn " << newMaster.id << " as master. (" << rot 
+            if (debugLevel>1)
+               cout << t << "# prn " << newMaster.id << " as master. (" << rot 
                     << ")" << endl;
             
             if (arc->sv1.id < 1)
@@ -292,9 +292,8 @@ void PhaseCleaner::doubleDifference(
 //-----------------------------------------------------------------------------
 void PhaseCleaner::debias(SvElevationMap& pem)
 {
-   if (debugLevel)
-      cout << "PhaseCleaner::debias() noiseThreshold:"
-           << setprecision(4) << noiseThreshold << endl;
+   if (debugLevel>1)
+      cout << "# PhaseCleaner::debias()" << endl;
 
    // At this point, the pot has only phase1 & phase2 set.
    // Also only one arc exists for each prn; and that arc doesn't even
@@ -310,18 +309,10 @@ void PhaseCleaner::debias(SvElevationMap& pem)
          pral.splitOnGaps(maxGapTime);
          selectMasters(rot, prn, pem);
          doubleDifference(rot, prn, pem);
-         
          pral.computeTD();
          pral.splitOnTD(noiseThreshold);
          pral.debiasDD();
-         pral.computeTD();
-         pral.splitOnTD();
-         pral.debiasDD();
          pral.mergeArcs(minArcLen, minArcTime, maxGapTime, noiseThreshold);
-
-         if (debugLevel>1)
-            cout << "Done cleaning " << prn.id << " " << rot << endl
-                 << pral;
       }
    }   
 }  // end of debias()
@@ -332,10 +323,6 @@ void PhaseCleaner::debias(SvElevationMap& pem)
 //-----------------------------------------------------------------------------
 void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
 {
-   if (debugLevel)
-      cout << "putting phases back into ddem" << endl;
-
-   // Really should use pot to walk through the data...
    for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
       const ObsID& rot = i->first;
@@ -377,7 +364,6 @@ void PhaseCleaner::getSlips(
 {
    for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
-      const ObsID& rot = i->first;
       const PraPrn& praPrn = i->second;
 
       for (PraPrn::const_iterator j = praPrn.begin(); j != praPrn.end(); j++)
@@ -385,19 +371,37 @@ void PhaseCleaner::getSlips(
          const SatID& prn = j->first;
          const ArcList& al = j->second;
 
-         ArcList::const_iterator k = al.begin();
-         while (k != al.end())
+         ArcList::const_iterator k;
+         for (k = al.begin(); k != al.end(); k++)
          {
+            // Make sure to start on a good arc
+            if (k->garbage)
+               continue;
+
             const Arc& arc0 = *k;
-            k++;
+
+            // Look for the next valid arc
+            for (k++; k != al.end() && k->garbage; k++);
+
             if (k == al.end())
                break;
 
             const Arc& arc1 = *k;
 
-            if (arc0.garbage || arc1.garbage ||
-                arc0.sv1 != arc1.sv1)
+            // If there is a change in the master SV, this can't be considered
+            // a cycle slip
+            if (arc0.sv1 != arc1.sv1)
                continue;
+
+            // There shouldn't be a change in the target SV
+            if (arc0.sv2 != arc1.sv2)
+            {
+               cout << "Arc: error, multiple SVs in one arc."
+                    << " arc0:" << arc0.sv1.id << "-" << arc0.sv2.id
+                    << " arc1:" << arc1.sv1.id << "-" << arc1.sv2.id
+                    << endl;
+               continue;
+            }
 
             const DayTime& t1Begin = arc1.begin()->first;
             Arc::const_iterator l = arc0.end(); l--;
@@ -415,13 +419,19 @@ void PhaseCleaner::getSlips(
             if (t0Len < minArcTime || t1Len < minArcTime)
                continue;
 
+            // If the two arcs have the same bias then there was no slip, just
+            // some garbage between them
+            if (std::abs(arc1.ddBias - arc0.ddBias) < noiseThreshold)
+               continue;
+
             CycleSlipRecord cs;
             cs.t = t1Begin;
             cs.cycles = (arc1.ddBias - arc0.ddBias);
-            cs.oid = rot;
-            cs.prn = prn;
-            cs.elevation = pem[t1Begin][prn];
-            cs.masterPrn = arc1.sv1;
+            cs.oid = i->first;
+            cs.sv1 = arc1.sv1;
+            cs.sv2 = arc1.sv2;
+            cs.el1 = pem[t1Begin][arc1.sv1];
+            cs.el2 = pem[t1Begin][arc1.sv2];
             cs.postCount = arc1.size();
             cs.preCount = arc0.size();
             cs.preGap = t1Begin - t0End;
@@ -429,39 +439,28 @@ void PhaseCleaner::getSlips(
          }
       }  
    }
-
-   // Now to sort these on time.
-   csl.sort();
+   csl.purgeDuplicates();
 }
 
 
 //-----------------------------------------------------------------------------
-// Dump the maps to the standard table format...
+// Prints a summary of all the arcs
 //-----------------------------------------------------------------------------
 void PhaseCleaner::summarize(std::ostream& s) const
 {
    for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
-      const ObsID& rot = i->first;
       const PraPrn& pp = i->second;
- 
+      s << "# " << i->first << " arcs" << endl;
       for (PraPrn::const_iterator j = pp.begin(); j != pp.end(); j++)
-      {
-         const SatID& prn = j->first;
-         const ArcList& al = j->second;
-         ArcList::const_iterator k;
-         for (k = al.begin(); k != al.end(); k++)
-         {
-            const Arc& arc = *k;
-            s << ">" << arc;
-         }
-      }
+         j->second.dump(s, debugLevel);
+      s << "# done with " << i->first << endl;
    }
 }
 
 
  //-----------------------------------------------------------------------------
-// Dump the maps to the standard table format...
+// Dump the double differences a standard table format...
 //-----------------------------------------------------------------------------
 void PhaseCleaner::dump(std::ostream& s) const
 {
@@ -519,7 +518,7 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
                             const ObsEpochMap& rx2)
 {
    if (debugLevel)
-      cout << "PhaseCleanerA::addData(), " 
+      cout << "# PhaseCleanerA::addData(), " 
            << rx1.size() << ", " << rx2.size() << " epochs" << endl;
 
 
@@ -644,6 +643,7 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
                Obs& obs = arc[t];
                arc.sv1 = svPair.first;
                arc.sv2 = svPair.second;
+               arc.obsID = rot;
                obs.phase11 = phase11->second;
                obs.phase12 = phase12->second;
                obs.phase21 = phase21->second;
@@ -682,7 +682,7 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
 void PhaseCleanerA::debias(SvElevationMap& pem)
 {
    if (debugLevel)
-      cout << "PhaseCleanerA::debias()" << endl;
+      cout << "# PhaseCleanerA::debias()" << endl;
 
    // At this point, the pot has all phases set and the double difference
    // computed. Only one arc exists for each obs type/prn pair.
@@ -696,17 +696,10 @@ void PhaseCleanerA::debias(SvElevationMap& pem)
          ArcList& pral = j->second;
 
          pral.splitOnGaps(maxGapTime);
-
          pral.computeTD();
          pral.splitOnTD(noiseThreshold);
          pral.debiasDD();
          pral.mergeArcs(minArcLen, minArcTime, maxGapTime, noiseThreshold);
-
-          if (debugLevel>2)
-            cout << "Done cleaning " << svPair.first
-                 << ":" << svPair.second
-                 << " on " << rot << endl
-                 << pral;
       }
    }   
 }  // end of debias()
@@ -717,10 +710,6 @@ void PhaseCleanerA::debias(SvElevationMap& pem)
 //-----------------------------------------------------------------------------
 void PhaseCleanerA::getPhaseDD(DDEpochMap& ddem) const
 {
-   if (debugLevel)
-      cout << "putting phases back into ddem" << endl;
-
-   // Really should use pot to walk through the data...
    for (PraSvPrOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
       const ObsID& rot = i->first;
@@ -813,23 +802,92 @@ void PhaseCleanerA::dump(std::ostream& s) const
    }
 }
 
+
 void PhaseCleanerA::summarize(std::ostream& s) const
 {
    for (PraSvPrOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
-      const ObsID& rot = i->first;
       const PraSvPair& pp = i->second;
- 
-       for (PraSvPair::const_iterator j = pp.begin(); j != pp.end(); j++)
+      for (PraSvPair::const_iterator j = pp.begin(); j != pp.end(); j++)
+         j->second.dump(s, debugLevel);
+      s << "# " << endl;
+   }
+   s << "# end of PhaseClearnerA::summarize()" << endl;
+}
+
+
+//-----------------------------------------------------------------------------
+// Make a list of "real" cycle slips
+//-----------------------------------------------------------------------------
+void PhaseCleanerA::getSlips(
+   CycleSlipList& csl, 
+   SvElevationMap& pem) const
+{
+   for (PraSvPrOt::const_iterator i = pot.begin(); i != pot.end(); i++)
+   {
+      const PraSvPair& pp = i->second;
+      for (PraSvPair::const_iterator j = pp.begin(); j != pp.end(); j++)
       {
          const SatIdPair& svPair = j->first;
          const ArcList& al = j->second;
 
-         for (ArcList::const_iterator k = al.begin(); k != al.end(); k++)
+         ArcList::const_iterator k;
+         for (k = al.begin(); k != al.end(); k++)
          {
-            const Arc& arc = *k;
-            s << ">" << arc;
+            // Make sure to start on a good arc
+            if (k->garbage)
+               continue;
+
+            const Arc& arc0 = *k;
+
+            // Look for the next good arc
+            for (k++; k != al.end() && k->garbage; k++);
+
+            if (k == al.end())
+               break;
+
+            const Arc& arc1 = *k;
+
+            if (arc0.sv1 != arc1.sv1 || arc0.sv2 != arc1.sv2)
+            {
+               cout << "Arc: error, multiple SVs in one arc."
+                    << " arc0:" << arc0.sv1.id << "-" << arc0.sv2.id
+                    << " arc1:" << arc1.sv1.id << "-" << arc1.sv2.id
+                    << endl;
+               continue;
+            }
+
+            const DayTime& t1Begin = arc1.begin()->first;
+            Arc::const_iterator l = arc0.end(); l--;
+            const DayTime& t0End = l->first;
+            
+            if (std::abs(t1Begin-t0End) > maxGapTime)
+               continue;
+
+            l = arc1.end(); l--;
+            const DayTime& t1End = l->first;
+            const DayTime& t0Begin = arc0.begin()->first;
+            
+            double t0Len = t0End - t0Begin;
+            double t1Len = t1End - t1Begin;
+            if (t0Len < minArcTime || t1Len < minArcTime)
+               continue;
+
+            CycleSlipRecord cs;
+            cs.t = t1Begin;
+            cs.cycles = (arc1.ddBias - arc0.ddBias);
+            cs.oid = i->first;
+            cs.sv1 = arc1.sv1;
+            cs.sv2 = arc1.sv2;
+            cs.el1 = pem[t1Begin][arc1.sv1];
+            cs.el2 = pem[t1Begin][arc1.sv2];
+            cs.postCount = arc1.size();
+            cs.preCount = arc0.size();
+            cs.preGap = t1Begin - t0End;
+            csl.push_back(cs);
          }
       }
    }
+
+   csl.purgeDuplicates();
 }

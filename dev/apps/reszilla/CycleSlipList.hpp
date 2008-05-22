@@ -46,9 +46,9 @@ struct CycleSlipRecord
 {
    gpstk::DayTime t;
    double cycles;
-   gpstk::SatID prn, masterPrn;
+   gpstk::SatID sv1,sv2;
    gpstk::ObsID oid;
-   double elevation;
+   double el1,el2;
    long preCount;  // for How many epochs had the bias been stable
    double preGap;  // time between the end of the previous arc and this point
    long postCount; // how long the arc after the slip is
@@ -57,8 +57,11 @@ struct CycleSlipRecord
    { return t < right.t; }
 };
 
-typedef std::list<CycleSlipRecord> CycleSlipList;
-
-void dump(std::ostream& s, const CycleSlipList& sl);
+class CycleSlipList : public std::list<CycleSlipRecord>
+{
+public:
+   void purgeDuplicates();
+   void dump(std::ostream& s) const;
+};
 
 #endif
