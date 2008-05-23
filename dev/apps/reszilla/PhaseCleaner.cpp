@@ -858,9 +858,6 @@ void PhaseCleanerA::getSlips(
             if (std::abs(arc1.ddBias - arc0.ddBias) < noiseThreshold)
                continue;
 
-            cout << "# Cycle slip between:" << endl
-                 << arc0 << arc1;
-
             CycleSlipRecord cs;
             cs.t = t1Begin;
             cs.cycles = (arc1.ddBias - arc0.ddBias);
