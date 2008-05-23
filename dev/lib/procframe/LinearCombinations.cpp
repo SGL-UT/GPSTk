@@ -46,6 +46,7 @@ namespace gpstk
       c1Prefit.body[TypeID::rho]          = -1.0;
       c1Prefit.body[TypeID::dtSat]        = +1.0;
       c1Prefit.body[TypeID::rel]          = -1.0;
+      c1Prefit.body[TypeID::gravDelay]    = -1.0;
       c1Prefit.body[TypeID::tropoSlant]   = -1.0;
       c1Prefit.body[TypeID::ionoSlant]    = -1.0;
       c1Prefit.body[TypeID::instC1]       = -1.0;
@@ -66,6 +67,7 @@ namespace gpstk
       pcPrefit.body[TypeID::rho]          = -1.0;
       pcPrefit.body[TypeID::dtSat]        = +1.0;
       pcPrefit.body[TypeID::rel]          = -1.0;
+      pcPrefit.body[TypeID::gravDelay]    = -1.0;
       pcPrefit.body[TypeID::tropoSlant]   = -1.0;
 
          // Definition to compute LC combination
@@ -79,6 +81,7 @@ namespace gpstk
       lcPrefit.body[TypeID::rho]          = -1.0;
       lcPrefit.body[TypeID::dtSat]        = +1.0;
       lcPrefit.body[TypeID::rel]          = -1.0;
+      lcPrefit.body[TypeID::gravDelay]    = -1.0;
       lcPrefit.body[TypeID::tropoSlant]   = -1.0;
          // Coefficient for LC windUp is LC wavelenght/2*PI
       lcPrefit.body[TypeID::windUp]       = -0.107/6.2831853071796;

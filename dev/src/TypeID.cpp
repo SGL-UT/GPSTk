@@ -94,6 +94,7 @@ namespace gpstk
       tStrings[rho]        = "rho";
       tStrings[dtSat]      = "dtSat";
       tStrings[rel]        = "rel";
+      tStrings[gravDelay]  = "gravDelay";
       tStrings[tropo]      = "tropo";
       tStrings[dryTropo]   = "dryTropo";
       tStrings[dryMap]     = "dryTropoMap";

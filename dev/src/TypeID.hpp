@@ -134,6 +134,7 @@ namespace gpstk
          rho,       ///< Geometric distance satellite-receiver
          dtSat,     ///< Satellite clock offset
          rel,       ///< Relativistic delay
+         gravDelay, ///< Gravitational delay
          tropo,     ///< Vertical tropospheric delay, total
          dryTropo,  ///< Vertical tropospheric delay, dry component
          dryMap,    ///< Tropospheric mapping function, dry component

@@ -260,6 +260,6 @@ namespace gpstk
 
 
       //@}
-   
+
 }
 #endif // COMPUTELINEAR_HPP
