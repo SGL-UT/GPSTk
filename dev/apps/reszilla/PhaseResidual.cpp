@@ -127,16 +127,13 @@ namespace PhaseResidual
       if (stats.N()>1)
          s << " sdev:"  << setprecision(4) << stats.StdDev();        
 
-      if (garbage)
-         s << " garbage";
-      
       // Only output the average if it is statistically non-zero
       bool zero = stats.Average() <= stats.StdDev()/sqrt((float)stats.N());
       if (!zero)
          s << " avg:" << setprecision(4) << stats.Average();
       s << endl;
 
-      if ((!zero || stats.StdDev()>0.5 || garbage) && detail)
+      if ((!zero || stats.StdDev()>0.5) && detail)
          for (const_iterator i=begin(); i != end(); i++)
             s << "# " << i->first.printf("%02H:%02M:%04.1f")
               << " " << i->second << endl;
@@ -215,7 +212,7 @@ namespace PhaseResidual
             // If the double difference returns to a similiar value
             // withing several epochs, treat this as noise, not a real jump.
             Arc::iterator j = i; j++;
-            for (int n=0; n<5 && jump && j != arc->end(); n++)
+            for (int n=0; n<4 && jump && j != arc->end(); n++)
             {
                double quad = std::abs(pr.td + j->second.td);
                if (quad < threshold)
@@ -278,24 +275,6 @@ namespace PhaseResidual
       double gapTime,
       double threshold)
    {
-      // First mark arcs as garbage as appropriate
-      for (iterator i = begin(); i != end(); i++)
-      {
-         if (i->size() < arcLen)
-         {
-            i->garbage = true;
-            continue;
-         }
-         
-         const gpstk::DayTime& t0 = i->begin()->first;
-         const gpstk::DayTime& t1 = i->rbegin()->first;
-            
-         double dt = t1-t0;
-         if (dt < arcTime)
-            i->garbage = true;
-      }
-
-      // Now go through and do some merging
       for(iterator i = begin(); i != end(); )
       {
          Arc& prev = *i;
@@ -303,10 +282,6 @@ namespace PhaseResidual
          if (i == end())
             break;
          Arc& curr = *i;
-
-         // Can't merge unless both arcs are valid or both are invalid
-         if (prev.garbage != curr.garbage)
-            continue;
 
          // Both arcs must have the same SVs
          if (curr.sv1 != prev.sv1 || curr.sv2 != prev.sv2)
@@ -319,8 +294,17 @@ namespace PhaseResidual
          if (dt >= gapTime)
             continue;
 
-         // And the biases need to be close
-         if (std::abs(curr.ddBias - prev.ddBias) > threshold)
+         // Now get the standard deviations of each arc
+         // and they are similiar relative to the threshold
+         gpstk::Stats<double> prev_stats = prev.statsDD();
+         gpstk::Stats<double> curr_stats = curr.statsDD();
+         double curr_std = curr_stats.StdDev();
+         double prev_std = prev_stats.StdDev();
+         if (curr_std > threshold || prev_std > threshold)
+            continue;
+
+         // And the biases need to be close, relative to the stddev
+         if (std::abs(curr.ddBias - prev.ddBias) > 2 * curr_std)
             continue;
 
          // Now the arcs can be merged..
@@ -341,9 +325,8 @@ namespace PhaseResidual
    {
       gpstk::Stats<double> stats;
       for (const_iterator i = begin(); i != end(); i++)
-         if (!i->garbage)
-            for (Arc::const_iterator j = i->begin(); j != i->end(); j++)
-               stats.Add(j->second.dd);
+         for (Arc::const_iterator j = i->begin(); j != i->end(); j++)
+            stats.Add(j->second.dd);
 
       s << "# ArcList N:" << stats.N()
         << " sdev:" << setprecision(4) << stats.StdDev();
@@ -355,17 +338,9 @@ namespace PhaseResidual
       s << endl;
       
       for (const_iterator i = begin(); i != end(); i++)
-      {
          i->dump(s, detail);
-         const_iterator j = i;
-         if (++j != end())
-         {
-            // Yes, this is the dark side of the STL
-            double gap = j->begin()->first - i->rbegin()->first;
-            if (gap > 3)
-               s << "# " << setprecision(3) << gap << " seconds" << endl;
-         }
-      }
+
+      s << "#" << endl;
    }
 
    ostream& operator << (ostream& s, const Obs& pr)

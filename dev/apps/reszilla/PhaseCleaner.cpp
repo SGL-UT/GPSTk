@@ -344,10 +344,7 @@ void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
 
                // Whew! thats deep. Now to stuff the dd back in to the ddem
                // remember that ddem has it's values in meters
-               if (arc.garbage)
-                  ddem[t].ddSvOIDM[prn][rot] = 0;
-               else
-                  ddem[t].ddSvOIDM[prn][rot] = obs.dd * lamda[rot.band];
+               ddem[t].ddSvOIDM[prn][rot] = obs.dd * lamda[rot.band];
             }
          }
       }
@@ -374,19 +371,22 @@ void PhaseCleaner::getSlips(
          ArcList::const_iterator k;
          for (k = al.begin(); k != al.end(); k++)
          {
-            // Make sure to start on a good arc
-            if (k->garbage)
+            // Make sure to start on a valid arc
+            if (k->len() < minArcTime || k->size() < minArcLen)
                continue;
 
             const Arc& arc0 = *k;
 
-            // Look for the next valid arc
-            for (k++; k != al.end() && k->garbage; k++);
+            // Find the next valid arc
+            for (k++; k != al.end(); k++)
+               if (k->len() > minArcTime && k->size() > minArcLen)
+                  break;
 
             if (k == al.end())
                break;
 
             const Arc& arc1 = *k;
+            --k;
 
             // If there is a change in the master SV, this can't be considered
             // a cycle slip
@@ -404,19 +404,9 @@ void PhaseCleaner::getSlips(
             }
 
             const DayTime& t1Begin = arc1.begin()->first;
-            Arc::const_iterator l = arc0.end(); l--;
-            const DayTime& t0End = l->first;
+            const DayTime& t0End   = arc0.rbegin()->first;
             
             if (std::abs(t1Begin-t0End) > maxGapTime)
-               continue;
-
-            l = arc1.end(); l--;
-            const DayTime& t1End = l->first;
-            const DayTime& t0Begin = arc0.begin()->first;
-            
-            double t0Len = t0End - t0Begin;
-            double t1Len = t1End - t1Begin;
-            if (t0Len < minArcTime || t1Len < minArcTime)
                continue;
 
             // If the two arcs have the same bias then there was no slip, just
@@ -739,10 +729,7 @@ void PhaseCleanerA::getPhaseDD(DDEpochMap& ddem) const
 
                // Whew! thats deep. Now to stuff the dd back in to the ddem
                // remember that ddem has it's values in meters
-               if (arc.garbage)
-                  ddem[t].ddPrOIDM[svPair][rot] = 0;
-               else
-                  ddem[t].ddPrOIDM[svPair][rot] = obs.dd * lamda;
+               ddem[t].ddPrOIDM[svPair][rot] = obs.dd * lamda;
             }
          }
       }
@@ -834,19 +821,22 @@ void PhaseCleanerA::getSlips(
          ArcList::const_iterator k;
          for (k = al.begin(); k != al.end(); k++)
          {
-            // Make sure to start on a good arc
-            if (k->garbage)
+            // Make sure to start on a valid arc
+            if (k->len() < minArcTime || k->size() < minArcLen)
                continue;
 
             const Arc& arc0 = *k;
 
-            // Look for the next good arc
-            for (k++; k != al.end() && k->garbage; k++);
+            // Find the next valid arc
+            for (k++; k != al.end(); k++)
+               if (k->len() > minArcTime && k->size() > minArcLen)
+                  break;
 
             if (k == al.end())
                break;
 
             const Arc& arc1 = *k;
+            --k;
 
             if (arc0.sv1 != arc1.sv1 || arc0.sv2 != arc1.sv2)
             {
@@ -858,20 +848,18 @@ void PhaseCleanerA::getSlips(
             }
 
             const DayTime& t1Begin = arc1.begin()->first;
-            Arc::const_iterator l = arc0.end(); l--;
-            const DayTime& t0End = l->first;
+            const DayTime& t0End   = arc0.rbegin()->first;
             
             if (std::abs(t1Begin-t0End) > maxGapTime)
                continue;
 
-            l = arc1.end(); l--;
-            const DayTime& t1End = l->first;
-            const DayTime& t0Begin = arc0.begin()->first;
-            
-            double t0Len = t0End - t0Begin;
-            double t1Len = t1End - t1Begin;
-            if (t0Len < minArcTime || t1Len < minArcTime)
+            // If the two arcs have the same bias then there was no slip, just
+            // some garbage between them
+            if (std::abs(arc1.ddBias - arc0.ddBias) < noiseThreshold)
                continue;
+
+            cout << "# Cycle slip between:" << endl
+                 << arc0 << arc1;
 
             CycleSlipRecord cs;
             cs.t = t1Begin;

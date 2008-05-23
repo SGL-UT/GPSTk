@@ -74,17 +74,18 @@ namespace PhaseResidual
    class Arc : public std::map<gpstk::DayTime, Obs>
    {
      public:
-      Arc():ddBias(0), garbage(false){};
+      Arc():ddBias(0){};
       void dump(std::ostream& s, int detail=0) const;
 
       double ddBias;
       gpstk::SatID sv1,sv2;
       gpstk::ObsID obsID;
 
-      bool garbage;
-
       void computeTD();
       void debiasDD(double bias);
+
+      double len() const
+      { return rbegin()->first - begin()->first; }
 
       gpstk::Stats<double> statsDD(void) const;
 

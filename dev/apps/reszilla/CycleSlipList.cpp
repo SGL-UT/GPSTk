@@ -48,6 +48,7 @@ void CycleSlipList::purgeDuplicates()
 {
    // First make sure the list is sorted.
    sort();
+   return;
    DayTime t(DayTime::BEGINNING_OF_TIME);
    vector<int> svCount(MAX_PRN);
    for (const_iterator i=begin(); i!=end(); i++)
@@ -56,9 +57,15 @@ void CycleSlipList::purgeDuplicates()
       if (t != cs.t)
       {
          for (int i=1; i<=MAX_PRN; i++)
+            cout << svCount[i] << " ";
+         cout << endl;
+         
+         for (int i=1; i<=MAX_PRN; i++)
             svCount[i] = 0;
          t = cs.t;
       }
+      svCount[cs.sv1.id]++;
+      svCount[cs.sv2.id]++;
    }
 }
 
