@@ -45,6 +45,7 @@
 
 #include "ElevationRange.hpp"
 #include "SvElevationMap.hpp"
+#include "CycleSlipList.hpp"
 
 typedef std::map<gpstk::ObsID, double> OIDM;
 typedef std::map<gpstk::SatID, OIDM > SvOIDM;
@@ -106,11 +107,13 @@ struct DDEpochMap : public std::map<gpstk::DayTime, DDEpoch>
    std::string computeStats(
       const gpstk::ObsID oid,
       const ElevationRange& er,
+      const CycleSlipList& csl,
       const double strip) const;
 
    void outputStats(
       std::ostream& s,
-      const ElevationRangeList elr,
+      const ElevationRangeList& elr,
+      const CycleSlipList& csl,
       const double strip) const;
 
    void outputAverages(std::ostream& s) const;
@@ -119,7 +122,6 @@ struct DDEpochMap : public std::map<gpstk::DayTime, DDEpoch>
    static unsigned debugLevel;
    static bool useMasterSV;
    unsigned long windowLength;    // seconds
-   //unsigned long minimumSNR;      // dB
 };
 
 

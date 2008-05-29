@@ -247,7 +247,7 @@ void DDEpoch::doubleDifference(
 // Criteria for the masterPrn:
 //   it has an elevation > the min, 
 //   it it on the way up (i.e. doppler>0),
-//   t4 is a record for it on the other receiver
+//   there is a record for it on the other receiver
 // ---------------------------------------------------------------------------
 void DDEpoch::selectMasterPrn(
    const ObsEpoch& rx1, 
@@ -467,12 +467,18 @@ void DDEpochMap::dump(std::ostream& s) const
 string DDEpochMap::computeStats(
    const ObsID oid,
    const ElevationRange& er,
+   const CycleSlipList& csl,
    const double strip) const
 {
    float minElevation = er.first;
    float maxElevation = er.second;
 
-   // First we pull all data in the elevation bin into a list
+   int slips=0;
+   for (CycleSlipList::const_iterator i=csl.begin(); i != csl.end(); i++)
+      if (i->oid == oid && i->el2 >= minElevation && i->el2 <= maxElevation)
+         slips++;
+
+   // Pull all double difference data in the elevation bin into a list
    list<double> dd;
    int zeroCount=0;
    for (const_iterator ei = begin(); ei != end(); ei++)
@@ -531,87 +537,34 @@ string DDEpochMap::computeStats(
       return "";
 
    dd.sort();
-   list<double>::const_iterator b=dd.begin(), e=dd.end();
    PowerSum f;
-   f.add(b,e);
-   vector<double> ddv(b,e);
-
-   // Now start removing outliers
-   while (f.size()>5 && f.kurtosis() > strip)
-   {
-      if (debugLevel>4)
-         cout << "n:" << f.size()
-              << " sdev:" << setprecision(8) << sqrt(f.variance())
-              << " kurt:"<< setprecision(4) << f.kurtosis();
-
-      double kill, dk;
-      e--;
-      if (std::abs(*b) > std::abs(*e))
-      {
-         kill = *b;
-         b++;
-         dk = std::abs((kill - *b)/ *b);
-      }
-      else
-      {
-         kill = *e;
-         e--;
-         dk = std::abs((kill - *e)/ *e);
-      }
-      e++;
-
-      // If we removed a number that significantly changes the range, we should
-      // recompute the sums since numerical error will creep in otherwise
-      if (dk>10)
-      {
-         f.clear();
-         f.add(b,e);
-      }
-      else
-         f.subtract(kill);
-   }
-
-   if (f.size()<5)
-      return "";
-
-   ostringstream oss;
+   f.add(dd.begin(), dd.end());
 
    double kurt = f.kurtosis();
-   double sdev = sqrt(f.variance());
-   double avg = f.average();
+   //double sdev = sqrt(f.variance());
+   //double avg = f.average();
    long n = f.size();
-   long nbad = dd.size()-f.size();
-   double pctbad = 100.0 * nbad/dd.size();
-   double range = *e - *b;
-
-   oss << ">s " 
-       << setw(17) << left << asString(oid) 
-       << right << fixed
-       << setw(2) << (int)minElevation << "-" << setw(2) << (int)maxElevation
-       << "   " << setprecision(7) << setw(11) << sdev/2
-       << scientific
-       << "  " << setprecision(4) << setw(11) << avg
-       << fixed
-       << "  " << setw(8) << f.size()
-       << "  " << setw(8) << nbad
-       << "  " << setprecision(5) << setw(10) << pctbad
-       << "  " << setprecision(5) << setw(7) << kurt << endl;
 
    double median;
+   vector<double> ddv(dd.begin(),dd.end());
    double mad = Robust::MedianAbsoluteDeviation(&ddv[0], ddv.size(), median);
-   vector<double> wts(ddv.size());
-   double mest = Robust::MEstimate(&ddv[0], ddv.size(), median , mad, &wts[0]);
 
-   oss << ">r " 
+   ostringstream oss;
+   oss << ">s " 
        << setw(17) << left << asString(oid) 
        << right << fixed
        << setw(2) << (int)minElevation << "-" << setw(2) << (int)maxElevation
        << "   " << setprecision(7) << setw(11) << mad/2
        << scientific
-       << "  " << setprecision(4) << setw(11) << mest
+       << "   " << setprecision(3) << setw(10) << median
        << fixed
-       << "  " << setw(8) << ddv.size()
-       << endl;
+       << "  " << setw(8) << f.size()
+       << "  ";
+   if (kurt<100)
+      oss << setprecision(2) << setw(6) << kurt;
+   else
+      oss << setprecision(0) << setw(6) << kurt;
+   oss << "  " << setw(3) << slips << endl;
 
    return oss.str();
 
@@ -622,7 +575,8 @@ string DDEpochMap::computeStats(
 //----------------------------------------------------------------------------
 void DDEpochMap::outputStats(
    ostream& s, 
-   const ElevationRangeList elr,
+   const ElevationRangeList& elr,
+   const CycleSlipList& csl,
    const double strip) const
 {
    // First figure out what obs types we have to work with
@@ -656,10 +610,8 @@ void DDEpochMap::outputStats(
    }
 
    s << endl
-     << ">s                   Included Observations                     |    Excluded Outliers      " << endl
-     << ">s  ObsID           elev       noise         mean        count     count       pcts    kurt " << endl
-     << ">r  ObsID           elev       mad           m-est       count      " << endl
-     << ">s -------------    -----     --------     --------     -------   -------    -------  ------"
+     << ">s  ObsID           elev      noise(mad)    median      # obs    kurt   jumps" << endl
+     << ">s -------------    -----     ----------  ----------   -------  ------  -----"
      << endl;
 
    // For convience, group these into L1
@@ -669,11 +621,11 @@ void DDEpochMap::outputStats(
       for (set<ObsID>::const_iterator j = obsSet.begin(); 
            j != obsSet.end(); j++)
          if (j->band == ObsID::cbL1)
-            s << computeStats(*j, *i, strip);
+            s << computeStats(*j, *i, csl, strip);
       s << endl;
    }
    
-   s << ">s ---------------------------------------------------------------------------------------"
+   s << ">s --------------------------------------------------------------------------"
      << endl;
 
    // and L2
@@ -683,11 +635,11 @@ void DDEpochMap::outputStats(
       for (set<ObsID>::const_iterator j = obsSet.begin(); 
            j != obsSet.end(); j++)
          if (j->band == ObsID::cbL2)
-            s << computeStats(*j, *i, strip);
+            s << computeStats(*j, *i, csl, strip);
       s << endl;
    }
    
-   s << ">s ---------------------------------------------------------------------------------------"
+   s << ">s --------------------------------------------------------------------------"
      << endl << endl;
      
 }  // end of DDEpochMap::outputStats()

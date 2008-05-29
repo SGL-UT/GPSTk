@@ -53,7 +53,7 @@ struct CycleSlipRecord
    double preGap;  // time between the end of the previous arc and this point
    long postCount; // how long the arc after the slip is
 
-   bool operator<(const CycleSlipRecord& right)
+   bool operator<(const CycleSlipRecord& right) const
    { return t < right.t; }
 };
 

@@ -418,16 +418,14 @@ void DDGen::process()
    ddem.compute(oem1, oem2, pem);
 
    // Here we compute a phase double difference that is Better(TM)
+   CycleSlipList sl;
    if (computeAll)
    {
       PhaseCleanerA pc(minArcLen, minArcTime, minArcGap, noiseThreshold);
       pc.debugLevel = debugLevel;
       pc.addData(oem1, oem2);
       pc.debias(pem);
-      CycleSlipList sl;
       pc.getSlips(sl, pem);
-      if (verboseLevel)
-         sl.dump(cout);
       if (verboseLevel>1)
          pc.summarize(cout);
       pc.getPhaseDD(ddem);          
@@ -438,14 +436,14 @@ void DDGen::process()
       pc.debugLevel = debugLevel;
       pc.addData(oem1, oem2);
       pc.debias(pem);
-      CycleSlipList sl;
       pc.getSlips(sl, pem);
-      if (verboseLevel)
-         sl.dump(cout);
       if (verboseLevel>1)
          pc.summarize(cout);
       pc.getPhaseDD(ddem);
    }
+
+   if (verboseLevel)
+      sl.dump(cout);
     
    if (window)
    {
@@ -455,7 +453,7 @@ void DDGen::process()
       ddem.outputAverages(cout);   
    }
    
-   ddem.outputStats(cout, elr, strip);
+   ddem.outputStats(cout, elr, sl, strip);
    if (outputRaw)
       ddem.dump(cout);
 }

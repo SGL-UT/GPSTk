@@ -57,7 +57,7 @@ void PhaseCleaner::addData(const ObsEpochMap& rx1,
                            const ObsEpochMap& rx2)
 {
    if (debugLevel>1)
-      cout << "# PhaseCleaner::addData(), " 
+      cout << "PhaseCleaner::addData(), " 
            << rx1.size() << ", " << rx2.size() << " epochs" << endl;
 
    // Now loop over all the epochs, pulling the data into the arcs
@@ -155,6 +155,9 @@ void PhaseCleaner::selectMasters(
    const SatID& prn, 
    SvElevationMap& pem)
 {
+   if (debugLevel>1)
+      cout << "Selecting master SV for " << prn << " " << rot << endl;
+
    ArcList& pral = pot[rot][prn];
 
    for (ArcList::iterator arc = pral.begin(); arc != pral.end(); arc++)
@@ -193,7 +196,7 @@ void PhaseCleaner::selectMasters(
             {
                if (debugLevel)
                {
-                  cout << "# Could not find a suitable master for prn " << prn.id
+                  cout << "Could not find a suitable master for prn " << prn.id
                        << " " << rot.type
                        << " at " << t
 
@@ -205,7 +208,6 @@ void PhaseCleaner::selectMasters(
                           << ", rate:" << rangeRate[e->first][t]
                           << endl;
                }
-
                return;
             }
 
@@ -213,14 +215,12 @@ void PhaseCleaner::selectMasters(
             if (!pot[rot][newMaster].findObs(t, k))
             {
                if (debugLevel)
-                  cout << t << " rot:" << rot << " newMaster:" << newMaster 
-                       << " Selected an invalid master." << endl;
+                  cout << t << " Selected an invalid master: " << newMaster.id << endl;
                return;
             }
 
             if (debugLevel>1)
-               cout << t << "# prn " << newMaster.id << " as master. (" << rot 
-                    << ")" << endl;
+               cout << t << " prn " << newMaster.id << " as master." << endl;
             
             if (arc->sv1.id < 1)
             {
@@ -253,6 +253,9 @@ void PhaseCleaner::doubleDifference(
    const SatID& prn,
    SvElevationMap& pem)
 {
+   if (debugLevel>1)
+      cout << "Computing double difference for " << prn << " " << rot << endl;
+
    ArcList& pral = pot[rot][prn];
 
    for (ArcList::iterator arc = pral.begin(); arc != pral.end(); arc++)
@@ -292,8 +295,9 @@ void PhaseCleaner::doubleDifference(
 //-----------------------------------------------------------------------------
 void PhaseCleaner::debias(SvElevationMap& pem)
 {
+   PhaseResidual::debugLevel = debugLevel;
    if (debugLevel>1)
-      cout << "# PhaseCleaner::debias()" << endl;
+      cout << "PhaseCleaner::debias()" << endl;
 
    // At this point, the pot has only phase1 & phase2 set.
    // Also only one arc exists for each prn; and that arc doesn't even
@@ -323,6 +327,9 @@ void PhaseCleaner::debias(SvElevationMap& pem)
 //-----------------------------------------------------------------------------
 void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
 {
+   if (debugLevel>1)
+      cout << "PhaseCleaner::getPhaseDD()" << endl;
+
    for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
       const ObsID& rot = i->first;
@@ -359,6 +366,9 @@ void PhaseCleaner::getSlips(
    CycleSlipList& csl, 
    SvElevationMap& pem) const
 {
+   if (debugLevel>1)
+      cout << "PhaseCleaner::getSlips()" << endl;
+
    for (PraPrnOt::const_iterator i = pot.begin(); i != pot.end(); i++)
    {
       const PraPrn& praPrn = i->second;
@@ -372,7 +382,7 @@ void PhaseCleaner::getSlips(
          for (k = al.begin(); k != al.end(); k++)
          {
             // Make sure to start on a valid arc
-            if (k->len() < minArcTime || k->size() < minArcLen)
+            if (k->size() < minArcLen || k->len() < minArcTime)
                continue;
 
             const Arc& arc0 = *k;
@@ -508,7 +518,7 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
                             const ObsEpochMap& rx2)
 {
    if (debugLevel)
-      cout << "# PhaseCleanerA::addData(), " 
+      cout << "PhaseCleanerA::addData(), " 
            << rx1.size() << ", " << rx2.size() << " epochs" << endl;
 
 
@@ -671,8 +681,9 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
 //-----------------------------------------------------------------------------
 void PhaseCleanerA::debias(SvElevationMap& pem)
 {
+   PhaseResidual::debugLevel = debugLevel;
    if (debugLevel)
-      cout << "# PhaseCleanerA::debias()" << endl;
+      cout << "PhaseCleanerA::debias()" << endl;
 
    // At this point, the pot has all phases set and the double difference
    // computed. Only one arc exists for each obs type/prn pair.

@@ -44,7 +44,7 @@
 
 namespace PhaseResidual
 {
-   int debugLevel=1;
+   int debugLevel=0;
 
    using namespace std;
 //------------------------------------------------------------------------------
@@ -63,6 +63,9 @@ namespace PhaseResidual
 //------------------------------------------------------------------------------
    void Arc::computeTD(void)
    {
+      if (debugLevel>1)
+         cout << "Computing Triple difference for "
+              << sv1 << " - " << sv2 << " " << obsID << endl;
       iterator i = begin();
       while (i != end())
       {
@@ -160,6 +163,11 @@ namespace PhaseResidual
 //------------------------------------------------------------------------------
    void ArcList::splitOnGaps(double gapSize)
    {
+      if (debugLevel>1)
+         cout << "Splitting on gaps " 
+              << begin()->sv1 << " - " << begin()->sv2
+              << " " << begin()->obsID << endl;
+
       for (iterator arc = begin(); arc != end(); arc++)
       {
          Arc::iterator i = 
@@ -199,6 +207,11 @@ namespace PhaseResidual
 //------------------------------------------------------------------------------
    void ArcList::splitOnTD(double threshold)
    {
+      if (debugLevel>1)
+         cout << "Splitting on TD " 
+              << begin()->sv1 << " - " << begin()->sv2
+              << " " << begin()->obsID << endl;
+
       for (iterator arc = begin(); arc != end(); arc++)
       {
          for (Arc::iterator i = arc->begin(); i != arc->end(); i++)
@@ -275,6 +288,11 @@ namespace PhaseResidual
       double gapTime,
       double threshold)
    {
+      if (debugLevel>1)
+         cout << "Merging arcs " 
+              << begin()->sv1 << " - " << begin()->sv2
+              << " " << begin()->obsID << endl;
+
       for(iterator i = begin(); i != end(); )
       {
          Arc& prev = *i;

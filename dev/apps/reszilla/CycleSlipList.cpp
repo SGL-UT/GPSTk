@@ -46,27 +46,75 @@ using namespace gpstk;
 // ---------------------------------------------------------------------
 void CycleSlipList::purgeDuplicates()
 {
-   // First make sure the list is sorted.
+   // First make sure the list is sorted by time.
    sort();
-   return;
-   DayTime t(DayTime::BEGINNING_OF_TIME);
-   vector<int> svCount(MAX_PRN);
-   for (const_iterator i=begin(); i!=end(); i++)
+
+   CycleSlipList purged;
+
+   typedef map<SatID, int> SatInt;
+   typedef map<ObsID, SatInt> ObsSatInt;
+   for (iterator i=begin(); i!=end();)
    {
-      const CycleSlipRecord& cs=*i;
-      if (t != cs.t)
+      ObsSatInt osi;
+      iterator j;
+      for (j=i; j != end() && j->t == i->t; j++)
       {
-         for (int i=1; i<=MAX_PRN; i++)
-            cout << svCount[i] << " ";
-         cout << endl;
-         
-         for (int i=1; i<=MAX_PRN; i++)
-            svCount[i] = 0;
-         t = cs.t;
+         osi[j->oid][j->sv1]++;
+         osi[j->oid][j->sv2]++;
       }
-      svCount[cs.sv1.id]++;
-      svCount[cs.sv2.id]++;
+
+      // Loop over each code/carrier combo that had a slip at this epoch
+      for (ObsSatInt::const_iterator k=osi.begin(); k != osi.end(); k++)
+      {
+         const ObsID& oid = k->first;
+         const SatInt& si = k->second;
+         SatID sv;
+         int cnt=0;
+
+         // Try to guess which SV actually had the slip
+         // No, this won't handle cycle slips from multiple SVs at a single epoch
+         for (SatInt::const_iterator l=si.begin(); l != si.end(); l++)
+         {
+            // Record which SV was seen the most
+            if (l->second > cnt)
+            {
+               cnt = l->second;
+               sv = l->first;
+            }
+         }
+
+         // Now select one entry to keep
+         iterator keeper=end();
+         for (iterator l=i; l != j && keeper==end(); l++)
+         {
+            if (l->oid != oid)
+               continue;
+            if (((cnt >1 && l->sv2 == sv) || cnt==1))
+               keeper = l;
+         }
+         // If none were found, we have to look on sv1
+         if (keeper==end())
+         {
+            for (iterator l=i; l != j && keeper==end(); l++)
+            {
+               if (l->oid != oid)
+                  continue;
+               if (cnt >1 && l->sv1 == sv)
+                  keeper = l;
+            }
+            // Need to exchange sv1 & sv2 since we think this was a slip on sv1
+            keeper->sv1 = keeper->sv2;
+            keeper->sv2 = sv;
+            double tmp = keeper->el1;
+            keeper->el1 = keeper->el2;
+            keeper->el2 = tmp;
+            keeper->cycles = - keeper->cycles;
+         }
+         purged.push_back(*keeper);
+      }
+      i=j;
    }
+   *this = purged;
 }
 
 
@@ -74,16 +122,19 @@ void CycleSlipList::purgeDuplicates()
 // ---------------------------------------------------------------------
 void CycleSlipList::dump(std::ostream& s) const
 {
-   long l1=0, l2=0;
+   typedef map<ObsID, int> ObsInt;
+   ObsInt oi;
    for (const_iterator i=begin(); i!=end(); i++)
-      if (i->oid.band == ObsID::cbL1)
-         l1++;
-      else if (i->oid.band == ObsID::cbL2)
-         l2++;
-         
-   s << "#  Total Cycle slips: " << size() << endl
-     << "#  Cycle slips on L1: " << l1 << endl
-     << "#  Cycle slips on L2: " << l2 << endl;
+      oi[i->oid]++;
+
+   int tcs=0;
+   for (ObsInt::const_iterator i=oi.begin(); i != oi.end(); i++)
+   {
+      tcs += i->second;
+      s << "#  Cycle slips on " << i->first << ": " << i->second << endl;
+   }
+
+   s << "#  Total cycle slips: " << tcs << endl;
 
    if (size() == 0)
       return;
