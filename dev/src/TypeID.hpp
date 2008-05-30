@@ -145,6 +145,7 @@ namespace gpstk
          ionoMap,   ///< Ionospheric mapping function
          ionoSlant, ///< Slant ionospheric delay
          windUp,    ///< Wind-up effect (in radians)
+         satPCenter,///< Satellite antenna phase center correction
          satX,      ///< Satellite position, X component
          satY,      ///< Satellite position, Y component
          satZ,      ///< Satellite position, Z component

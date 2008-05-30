@@ -1,8 +1,8 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: ComputeSatPCenter.cpp $"
 
 /**
- * @file ComputeWindUp.cpp
- * This class computes the wind-up effect on the phase observables, in radians.
+ * @file ComputeSatPCenter.cpp
+ * This class computes the satellite antenna phase correction, in meters.
  */
 
 //============================================================================
@@ -23,30 +23,29 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
 //
 //============================================================================
 
 
-#include "ComputeWindUp.hpp"
+#include "ComputeSatPCenter.hpp"
 
 
 namespace gpstk
 {
 
       // Index initially assigned to this class
-   int ComputeWindUp::classIndex = 1400000;
+   int ComputeSatPCenter::classIndex = 1500000;
 
 
       // Returns an index identifying this object.
-   int ComputeWindUp::getIndex() const
+   int ComputeSatPCenter::getIndex() const
    { return index; }
 
 
       // Returns a string identifying this object.
-   std::string ComputeWindUp::getClassName() const
-   { return "ComputeWindUp"; }
-
+   std::string ComputeSatPCenter::getClassName() const
+   { return "ComputeSatPCenter"; }
 
 
       /* Returns a satTypeValueMap object, adding the new data generated when
@@ -55,7 +54,7 @@ namespace gpstk
        * @param time      Epoch corresponding to the data.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ComputeWindUp::Process(const DayTime& time,
+   satTypeValueMap& ComputeSatPCenter::Process(const DayTime& time,
                                            satTypeValueMap& gData)
    {
 
@@ -117,10 +116,10 @@ namespace gpstk
             svPos[2] = (*it).second[TypeID::satZ];
          }
 
-            // Let's get wind-up value in radians, and insert it
-            // in GNSS data structure.
-         (*it).second[TypeID::windUp] =
-            getWindUp((*it).first, time, svPos, sunPos);
+            // Let's get the satellite antenna phase correction value in
+            // meters, and insert it in the GNSS data structure.
+         (*it).second[TypeID::satPCenter] = 
+            getSatPCenter((*it).first, time, svPos, sunPos);
 
       }
          // Remove satellites with missing data
@@ -134,7 +133,7 @@ namespace gpstk
       /* Sets name of "PRN_GPS"-like file containing satellite data.
        * @param name      Name of satellite data file.
        */
-   ComputeWindUp& ComputeWindUp::setFilename(const string& name)
+   ComputeSatPCenter& ComputeSatPCenter::setFilename(const string& name)
    {
       fileData = name;
       satData.open(fileData);
@@ -144,18 +143,18 @@ namespace gpstk
 
 
 
-      /* Compute the value of the wind-up, in radians.
-       * @param sat       Satellite IDmake
+      /* Compute the value of satellite antenna phase correction, in meters.
+       * @param sat       Satellite ID
        * @param time      Epoch of interest
        * @param satpos    Satellite position, as a Triple
        * @param sunpos    Sun position, as a Triple
        *
-       * @return Wind-up computation, in radians
+       * @return Satellite antenna phase correction, in meters.
        */
-   double ComputeWindUp::getWindUp( const SatID& satid,
-                                    const DayTime& time,
-                                    const Triple& sat,
-                                    const Triple& sunPosition )
+   double ComputeSatPCenter::getSatPCenter( const SatID& satid,
+                                            const DayTime& time,
+                                            const Triple& sat,
+                                            const Triple& sunPosition )
    {
 
          // Unitary vector from satellite to Earth mass center
@@ -167,16 +166,11 @@ namespace gpstk
          // rj = rk x ri
       Triple rj(rk.cross(ri));
 
-         // ri = rj x rk
+         // Redefine ri: ri = rj x rk
       ri = rj.cross(rk);
 
-         // Let's convert ri, rj to unitary vectors.
-         // Now ri, rj, rk form a base in the ECEF reference frame
+         // Let's convert ri to an unitary vector.
       ri = ri.unitVector();
-      rj = rj.unitVector();
-
-
-         // Get satellite rotation angle
 
          // Get vector from Earth mass center to receiver
       Triple rxPos(nominalPos.X(), nominalPos.Y(), nominalPos.Z());
@@ -184,103 +178,41 @@ namespace gpstk
          // Compute unitary vector vector from satellite to RECEIVER
       Triple rrho( (rxPos-sat).unitVector() );
 
-         // Vector from SV to Sun center of mass
-      Triple gps_sun( sunPosition-sat );
+         // If satellite belongs to block "IIR", its correction is 0.0,
+         // else, it will depend on satellite model.
+         // Variable that will hold the correction, 0.0 by default (IIR)
+      double svPCcorr(0.0);
 
-         // Redefine rk: Unitary vector from SV to Earth mass center
-      rk = (-1.0)*(sat.unitVector());
-
-         // Redefine rj: rj = rk x gps_sun, then make sure it is unitary
-      rj = (rk.cross(gps_sun)).unitVector();
-
-         // Redefine ri: ri = rj x rk, then make sure it is unitary
-         // Now, ri, rj, rk form a base in the satellite body reference 
-         // frame, expressed in the ECEF reference frame
-      ri = (rj.cross(rk)).unitVector();
-
-
-         // Projection of "rk" vector to line of sight vector (rrho)
-      double zk(rrho.dot(rk));
-
-         // Get a vector without components on rk (i.e., belonging 
-         // to ri, rj plane)
-      Triple dpp(rrho-zk*rk);
-
-         // Compute dpp components in ri, rj plane
-      double xk(dpp.dot(ri));
-      double yk(dpp.dot(rj));
-
-         // Compute satellite rotation angle, in radians
-      double alpha1(std::atan2(yk,xk));
-
-
-         // Get receiver rotation angle
-
-         // Redefine rk: Unitary vector from Receiver to Earth mass center
-      rk = (-1.0)*(rxPos.unitVector());
-
-         // Let's define a NORTH unitary vector in the Up, East, North 
-         // (UEN) topocentric reference frame
-      Triple delta(0.0, 0.0, 1.0);
-
-         // Rotate delta to XYZ reference frame
-      delta = 
-         (delta.R2(nominalPos.geodeticLatitude())).R3(-nominalPos.longitude());
-
-
-         // Computation of reference trame unitary vectors for receiver
-         // rj = rk x delta, and make it unitary
-      rj = (rk.cross(delta)).unitVector();
-
-         // ri = rj x rk, and make it unitary
-      ri = (rj.cross(rk)).unitVector();
-
-         // Projection of "rk" vector to line of sight vector (rrho)
-      zk = rrho.dot(rk);
-
-         // Get a vector without components on rk (i.e., belonging 
-         // to ri, rj plane)
-      dpp = rrho-zk*rk;
-
-         // Compute dpp components in ri, rj plane
-      xk = dpp.dot(ri);
-      yk = dpp.dot(rj);
-
-         // Compute receiver rotation angle, in radians
-      double alpha2(std::atan2(yk,xk));
-
-      double wind_up(0.0);
-
-         // Find out if satellite belongs to block "IIR", because
-         // satellites of block IIR have a 180 phase shift
-      if(satData.getBlock( satid, time ) == "IIR")
+         // For satellites II and IIA:
+      if( (satData.getBlock( satid, time ) == "II") ||
+          (satData.getBlock( satid, time ) == "IIA") )
       {
-         wind_up = PI;
+
+            // First, build satellite antenna vector for models II/IIA
+         Triple svAntenna(0.279*ri + 1.023*rk);
+
+            // Projection of "svAntenna" vector to line of sight vector (rrho)
+         svPCcorr =  (rrho.dot(svAntenna));
+
+      }
+      else
+      {
+         if( (satData.getBlock( satid, time ) == "I") )
+         {
+
+               // First, build satellite antenna vector for model I
+            Triple svAntenna(0.210*ri + 0.854*rk);
+
+               // Projection of "svAntenna" to line of sight vector (rrho)
+            svPCcorr =  (rrho.dot(svAntenna));
+         }
       }
 
-      alpha1 = alpha1 + wind_up; 
+         // This correction is interpreted as an "advance" in the signal,
+         // instead of a delay. Therefore, it has negative sign
+      return (-svPCcorr);
 
-      double da1(alpha1-phase_satellite[satid].previousPhase);
-
-      double da2(alpha2-phase_station[satid].previousPhase);
-
-         // Let's avoid problems when passing from 359 to 0 degrees.
-      phase_satellite[satid].previousPhase =
-         phase_satellite[satid].previousPhase + std::atan2( std::sin(da1),
-                                                            std::cos(da1) );
-
-      phase_station[satid].previousPhase =
-         phase_station[satid].previousPhase + std::atan2( std::sin(da2),
-                                                          std::cos(da2) );
-
-         // Compute wind up effect in radians
-      wind_up =
-         phase_satellite[satid].previousPhase -
-         phase_station[satid].previousPhase;
-
-      return wind_up;
-
-   } // End of ComputeWindUp::getWindUp()
+   } // End of ComputeSatPCenter::getSatPCenter()
 
 
 } // end namespace gpstk

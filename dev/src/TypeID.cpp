@@ -105,6 +105,7 @@ namespace gpstk
       tStrings[ionoMap]    = "ionoMap";
       tStrings[ionoSlant]  = "slantIono";
       tStrings[windUp]     = "windup";
+      tStrings[satPCenter] = "satPhaseCenter";
       tStrings[satX]       = "satX";
       tStrings[satY]       = "satY";
       tStrings[satZ]       = "satZ";

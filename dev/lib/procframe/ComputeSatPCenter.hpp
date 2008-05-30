@@ -1,12 +1,12 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: ComputeSatPCenter.hpp $"
 
 /**
- * @file ComputeWindUp.hpp
- * This class computes the wind-up effect on the phase observables, in radians.
+ * @file ComputeSatPCenter.hpp
+ * This class computes the satellite antenna phase correction, in meters.
  */
 
-#ifndef COMPUTEWINDUP_HPP
-#define COMPUTEWINDUP_HPP
+#ifndef COMPUTESATPCENTER_HPP
+#define COMPUTESATPCENTER_HPP
 
 //============================================================================
 //
@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
 //
 //============================================================================
 
@@ -50,8 +50,7 @@ namespace gpstk
       //@{
 
 
-      /** This class computes the wind-up effect on the phase observables, 
-       *  in radians.
+      /** This class computes the satellite antenna phase correction, in meters.
        *
        * This class is meant to be used with the GNSS data structures objects
        * found in "DataStructures" class.
@@ -70,33 +69,35 @@ namespace gpstk
        *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
        *
        *   gnssRinex gRin;
-       *   ComputeWindUp windup(SP3EphList, nominalPos);
+       *   ComputeSatPCenter svPcenter(SP3EphList, nominalPos);
        *
-       *   while(rin >> gRin) {
-       *      gRin >> windup;
+       *   while(rin >> gRin)
+       *   {
+       *      gRin >> svPcenter;
        *   }
        * @endcode
        *
-       * The "ComputeWindUp" object will visit every satellite in the GNSS 
+       * The "ComputeSatPCenter" object will visit every satellite in the GNSS 
        * data structure that is "gRin" and will compute the corresponding
-       * receiver-satellite wind-up effect, in radians.
+       * satellite antenna phase correction, in meters.
        *
        * When used with the ">>" operator, this class returns the same 
-       * incoming data structure with the wind-up inserted in it. Be warned
-       * that if a given satellite does not have the observations required, 
+       * incoming data structure with the "satPCenter" TypeID inserted in it.
+       * Be warned that if a given satellite does not have the required data, 
        * it will be summarily deleted from the data structure.
        *
-       * \warning ComputeWindUp objects store their internal state, so 
-       * you MUST NOT use the SAME object to process DIFFERENT data streams.
+       * \warning The ComputeSatPCenter objects generate corrections that are
+       * interpreted as an "advance" in the signal, instead of a delay.
+       * Therefore, those corrections always hava a negative sign.
        *
        */
-   class ComputeWindUp : public ProcessingClass
+   class ComputeSatPCenter : public ProcessingClass
    {
    public:
 
          /// Default constructor
-      ComputeWindUp()
-         : pEphemeris(NULL), nominalPos(0.0, 0.0, 0.0),
+      ComputeSatPCenter()
+         : pEphemeris(NULL), nominalPos(0.0, 0.0, 0.0), 
            satData("PRN_GPS"), fileData("PRN_GPS")
       { setIndex(); };
 
@@ -111,10 +112,26 @@ namespace gpstk
           * @warning If filename is not given, this class will look for a 
           * file named "PRN_GPS" in the current directory.
           */
-      ComputeWindUp( XvtStore<SatID>& ephem,
-                     const Position& stapos,
-                     string filename="PRN_GPS" )
+      ComputeSatPCenter( XvtStore<SatID>& ephem,
+                         const Position& stapos, 
+                         string filename="PRN_GPS" )
          : pEphemeris(&ephem), nominalPos(stapos), satData(filename),
+           fileData(filename)
+      { setIndex(); };
+
+
+         /** Common constructor
+          *
+          * @param stapos    Nominal position of receiver station.
+          * @param filename  Name of "PRN_GPS"-like file containing 
+          *                  satellite data.
+          *
+          * @warning If filename is not given, this class will look for a 
+          * file named "PRN_GPS" in the current directory.
+          */
+      ComputeSatPCenter( const Position& stapos,
+                         string filename="PRN_GPS" )
+         : pEphemeris(NULL), nominalPos(stapos), satData(filename),
            fileData(filename)
       { setIndex(); };
 
@@ -125,8 +142,8 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process(const DayTime& time,
-                                       satTypeValueMap& gData);
+      virtual satTypeValueMap& Process( const DayTime& time,
+                                        satTypeValueMap& gData );
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data 
@@ -155,7 +172,7 @@ namespace gpstk
          /** Sets name of "PRN_GPS"-like file containing satellite data.
           * @param name      Name of satellite data file.
           */
-      virtual ComputeWindUp& setFilename(const string& name);
+      virtual ComputeSatPCenter& setFilename(const string& name);
 
 
          /// Returns nominal position of receiver station.
@@ -166,7 +183,7 @@ namespace gpstk
          /** Sets  nominal position of receiver station.
           * @param stapos    Nominal position of receiver station.
           */
-      virtual ComputeWindUp& setNominalPosition(const Position& stapos)
+      virtual ComputeSatPCenter& setNominalPosition(const Position& stapos)
         { nominalPos = stapos; return (*this); };
 
 
@@ -179,7 +196,7 @@ namespace gpstk
          /** Sets satellite ephemeris object to be used.
           * @param ephem     Satellite ephemeris object.
           */
-      virtual ComputeWindUp& setEphemeris(XvtStore<SatID>& ephem)
+      virtual ComputeSatPCenter& setEphemeris(XvtStore<SatID>& ephem)
       { pEphemeris = &ephem; return (*this); };
 
 
@@ -192,7 +209,7 @@ namespace gpstk
 
 
          /// Destructor
-      virtual ~ComputeWindUp() {};
+      virtual ~ComputeSatPCenter() {};
 
 
    private:
@@ -214,36 +231,18 @@ namespace gpstk
       string fileData;
 
 
-         /// A structure used to store phase data.
-      struct phaseData
-      {
-            // Default constructor initializing the data in the structure
-         phaseData() : previousPhase(0.0) {};
-
-         double previousPhase;      ///< Previous phase.
-      };
-
-
-         /// Map to store station phase data
-      map<SatID, phaseData> phase_station;
-
-
-         /// Map to store satellite phase data
-      map<SatID, phaseData> phase_satellite;
-
-
-         /** Compute the value of the wind-up, in radians.
+         /** Compute the value of satellite antenna phase correction, in meters
           * @param sat       Satellite ID
           * @param time      Epoch of interest
           * @param satpos    Satellite position, as a Triple
           * @param sunpos    Sun position, as a Triple
           *
-          * @return Wind-up computation, in radians
+          * @return Satellite antenna phase correction, in meters.
           */
-      virtual double getWindUp( const SatID& sat,
-                                const DayTime& time,
-                                const Triple& satpos,
-                                const Triple& sunpos );
+      virtual double getSatPCenter( const SatID& sat,
+                                    const DayTime& time,
+                                    const Triple& sat,
+                                    const Triple& sunPosition );
 
 
          /// Initial index assigned to this class.
@@ -254,12 +253,12 @@ namespace gpstk
 
          /// Sets the index and increment classIndex.
       void setIndex(void)
-      { index = classIndex++; }; 
+      { index = classIndex++; };
 
 
-   }; // end class ComputeWindUp
+   }; // end class ComputeSatPCenter
 
       //@}
 
 }
-#endif // COMPUTEWINDUP_HPP
+#endif // COMPUTESATPCENTER_HPP
