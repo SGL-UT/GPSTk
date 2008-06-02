@@ -439,6 +439,14 @@ void PhaseCleaner::getSlips(
          }
       }  
    }
+
+   if (debugLevel)
+   {
+      cout << "Raw detected cycle slips" << endl;
+      csl.sort();
+      csl.dump(cout);
+   }
+
    csl.purgeDuplicates();
 }
 
@@ -807,7 +815,7 @@ void PhaseCleanerA::summarize(std::ostream& s) const
    {
       const PraSvPair& pp = i->second;
       for (PraSvPair::const_iterator j = pp.begin(); j != pp.end(); j++)
-         j->second.dump(s, debugLevel);
+         j->second.dump(s);
       s << "# " << endl;
    }
    s << "# end of PhaseClearnerA::summarize()" << endl;
@@ -883,6 +891,13 @@ void PhaseCleanerA::getSlips(
             csl.push_back(cs);
          }
       }
+   }
+
+   if (debugLevel)
+   {
+      cout << "Raw detected cycle slips" << endl;
+      csl.sort();
+      csl.dump(cout);
    }
 
    csl.purgeDuplicates();

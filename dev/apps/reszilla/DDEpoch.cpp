@@ -212,7 +212,7 @@ void DDEpoch::doubleDifference(
          OIDM d1 = singleDifference(rx1obs, rx2obs, rangeRate[sv1]);
          if (d1.size() == 0)
          {
-            if (debugLevel)
+            if (debugLevel>1)
                cout << "# DDEpoch::doubleDifferece(): empty d1" << endl;
             continue;
          }
