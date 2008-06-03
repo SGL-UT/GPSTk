@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
     { 
       cout << "Found " << numSVsAboveElv << " SVs above " << minEl << " degrees at " << t << endl;
       prn = 1;
-      while (prn < gpstk::MAX_PRN)
+      while (prn <= gpstk::MAX_PRN)
       {
         bool NoEph = false;
         Xvt peXVT;
