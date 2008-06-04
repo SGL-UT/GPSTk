@@ -25,12 +25,12 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
- 
+
 #include <cmath>
 #include <string>
 
@@ -46,27 +46,33 @@ namespace gpstk
 {
       /** @addtogroup GPSsolutions */
       //@{
-   
+
       /** This class computes the effect of pole tides, or more properly
        *  called, "rotational deformations due to polar motion" at a given
        *  position and epoch.
        *
-       * The model used is the one proposed by the "International Earth
-       * Rotation and Reference Systems Service" (IERS) in its upcomming
-       * "IERS Conventions" document (Chapter 7), available at:
+       *  The model used is the one proposed by the "International Earth
+       *  Rotation and Reference Systems Service" (IERS) in its upcomming
+       *  "IERS Conventions" document (Chapter 7), available at:
        *
-       * http://tai.bipm.org/iers/convupdt/convupdt.html
+       *  http://tai.bipm.org/iers/convupdt/convupdt.html
        *
-       * The pole movement parameters x, y for a given epoch may be
-       * found at:
+       *  The pole movement parameters x, y for a given epoch may be
+       *  found at:
        *
-       * ftp://hpiers.obspm.fr/iers/eop/eop.others
+       *  ftp://hpiers.obspm.fr/iers/eop/eop.others
        *
-       * Maximum displacements because of this effect are:
+       *  Maximum displacements because of this effect are:
        *
-       * \li Vertical:    2.5 cm
-       * \li Horizontal:  0.7 cm
+       *  \li Vertical:    2.5 cm
+       *  \li Horizontal:  0.7 cm
        *
+       *  For additional information you may consult: Wahr, J.M., 1985,
+       *  "Deformation Induced by Polar Motion", Journal of Geophysical
+       *  Research, Vol. 90, No B11, p. 9363-9368.
+       *
+       *  \warning Please take into account that pole tide equations in
+       *  IERS document use co-latitude instead of latitude.
        */
    class PoleTides
    {
@@ -127,10 +133,7 @@ namespace gpstk
                          const double& x,
                          const double& y)
          throw(InvalidRequest)
-      {
-         setXY(x,y);
-         return (getPoleTide(t, p));
-      };
+      { setXY(x,y); return (getPoleTide(t, p)); };
 
 
          /** Method to set the pole displacement parameters
@@ -168,6 +171,6 @@ namespace gpstk
 
 
       //@}
-   
+
 } // namespace gpstk
 #endif  // POLETIDES_HPP

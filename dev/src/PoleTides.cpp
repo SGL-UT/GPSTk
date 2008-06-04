@@ -22,8 +22,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -83,15 +83,19 @@ namespace gpstk
             // Now, compute useful values
          double sin2lat(std::sin(2.0*latitude));
          double cos2lat(std::cos(2.0*latitude));
-         double coslat(std::cos(latitude));
+         double sinlat(std::sin(latitude));
          double sinlon(std::sin(longitude));
          double coslon(std::cos(longitude));
 
             // Finally, get the pole tide values, in UEN reference 
             // frame and meters
          res[0] = -0.033 * sin2lat * ( m1*coslon + m2*sinlon );
-         res[1] = +0.009 * coslat  * ( m1*sinlon - m2*coslon );
-         res[2] = +0.009 * cos2lat * ( m1*coslon + m2*sinlon );
+         res[1] = +0.009 * sinlat  * ( m1*sinlon - m2*coslon );
+         res[2] = -0.009 * cos2lat * ( m1*coslon + m2*sinlon );
+
+            // Please be aware that the former equations take into account
+            // that the IERS pole tide equations use CO-LATITUDE instead
+            // of LATITUDE. See Wahr, 1985.
 
       } // End of try block
       catch(...)
