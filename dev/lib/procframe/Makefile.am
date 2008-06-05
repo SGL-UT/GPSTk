@@ -5,7 +5,7 @@ INCLUDES = -I$(srcdir)/../../src/
 lib_LTLIBRARIES = libprocframe.la
 libprocframe_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 libprocframe_la_SOURCES = BasicModel.cpp CodeKalmanSolver.cpp \
-CodeSmoother.cpp ComputeCombination.cpp \
+CodeSmoother.cpp ComputeCombination.cpp ComputeDOP.cpp \
 ComputeIURAWeights.cpp ComputeLC.cpp ComputeLdelta.cpp ComputeLI.cpp \
 ComputeLinear.cpp ComputeMelbourneWubbena.cpp ComputeMOPSWeights.cpp \
 ComputePC.cpp ComputePdelta.cpp ComputePI.cpp ComputeSatPCenter.cpp \
@@ -20,8 +20,8 @@ XYZ2NED.cpp XYZ2NEU.cpp
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = BasicModel.hpp CodeKalmanSolver.hpp CodeSmoother.hpp \
-ComputeCombination.hpp ComputeIURAWeights.hpp ComputeLC.hpp ComputeLdelta.hpp \
-ComputeLI.hpp ComputeLinear.hpp ComputeMelbourneWubbena.hpp \
+ComputeCombination.hpp ComputeDOP.hpp ComputeIURAWeights.hpp ComputeLC.hpp \
+ComputeLdelta.hpp ComputeLI.hpp ComputeLinear.hpp ComputeMelbourneWubbena.hpp \
 ComputeMOPSWeights.hpp ComputePC.hpp ComputePdelta.hpp ComputePI.hpp \
 ComputeSatPCenter.hpp \
 ComputeTropModel.hpp ComputeWindUp.hpp CorrectObservables.hpp Equation.hpp \
