@@ -9,8 +9,8 @@ CodeSmoother.cpp ComputeCombination.cpp ComputeDOP.cpp \
 ComputeIURAWeights.cpp ComputeLC.cpp ComputeLdelta.cpp ComputeLI.cpp \
 ComputeLinear.cpp ComputeMelbourneWubbena.cpp ComputeMOPSWeights.cpp \
 ComputePC.cpp ComputePdelta.cpp ComputePI.cpp ComputeSatPCenter.cpp \
-ComputeTropModel.cpp \
-ComputeWindUp.cpp CorrectObservables.cpp Equation.cpp DataHeaders.cpp \
+ComputeTropModel.cpp ComputeWindUp.cpp CorrectObservables.cpp \
+EclipsedSatFilter.cpp Equation.cpp DataHeaders.cpp \
 DataStructures.cpp DeltaOp.cpp GravitationalDelay.cpp LICSDetector.cpp \
 LinearCombinations.cpp ModeledPR.cpp ModeledReferencePR.cpp ModelObs.cpp \
 ModelObsFixedStation.cpp MWCSDetector.cpp NablaOp.cpp OneFreqCSDetector.cpp \
@@ -23,8 +23,8 @@ incl_HEADERS = BasicModel.hpp CodeKalmanSolver.hpp CodeSmoother.hpp \
 ComputeCombination.hpp ComputeDOP.hpp ComputeIURAWeights.hpp ComputeLC.hpp \
 ComputeLdelta.hpp ComputeLI.hpp ComputeLinear.hpp ComputeMelbourneWubbena.hpp \
 ComputeMOPSWeights.hpp ComputePC.hpp ComputePdelta.hpp ComputePI.hpp \
-ComputeSatPCenter.hpp \
-ComputeTropModel.hpp ComputeWindUp.hpp CorrectObservables.hpp Equation.hpp \
+ComputeSatPCenter.hpp ComputeTropModel.hpp ComputeWindUp.hpp \
+CorrectObservables.hpp EclipsedSatFilter.hpp Equation.hpp \
 DataHeaders.hpp DataStructures.hpp DeltaOp.hpp GravitationalDelay.hpp \
 LICSDetector.hpp LinearCombinations.hpp ModeledPR.hpp ModeledReferencePR.hpp \
 ModelObs.hpp ModelObsFixedStation.hpp MWCSDetector.hpp NablaOp.hpp \
