@@ -176,7 +176,7 @@ namespace gpstk
        * @param type    TypeID of the solution we are looking for.
        */
    double SolverLMS::getSolution(const TypeID& type) const
-      throw(InvalidSolver)
+      throw(InvalidRequest)
    {
 
          // Define iterator
@@ -187,7 +187,7 @@ namespace gpstk
       it = defaultEqDef.body.find(type);
       if( it == defaultEqDef.body.end() )
       {
-         InvalidSolver e("Type not found in solution vector.");
+         InvalidRequest e("Type not found in solution vector.");
          GPSTK_THROW(e);
       }
 
@@ -211,7 +211,7 @@ namespace gpstk
        * @param type    TypeID of the variance we are looking for.
        */
    double SolverLMS::getVariance(const TypeID& type) const
-      throw(InvalidSolver)
+      throw(InvalidRequest)
    {
 
          // Define iterator
@@ -222,7 +222,7 @@ namespace gpstk
       it = defaultEqDef.body.find(type);
       if( it == defaultEqDef.body.end() )
       {
-         InvalidSolver e("Type not found in covariance matrix.");
+         InvalidRequest e("Type not found in covariance matrix.");
          GPSTK_THROW(e);
       }
 

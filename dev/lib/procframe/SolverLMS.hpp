@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007
 //
 //============================================================================
@@ -169,14 +169,14 @@ namespace gpstk
           * @param type    TypeID of the solution we are looking for.
           */
       virtual double getSolution(const TypeID& type) const
-         throw(InvalidSolver);
+         throw(InvalidRequest);
 
 
          /** Returns the variance associated to a given TypeID.
           * @param type    TypeID of the variance we are looking for.
           */
       virtual double getVariance(const TypeID& type) const
-         throw(InvalidSolver);
+         throw(InvalidRequest);
 
 
          /** Method to set the default equation definition to be used 
