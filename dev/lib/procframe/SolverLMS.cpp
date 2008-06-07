@@ -107,7 +107,7 @@ namespace gpstk
 
       // Let's try to invert AT*A   matrix
       try
-      { 
+      {
          covMatrix = inverseChol( covMatrix );
       }
       catch(...)
@@ -170,6 +170,76 @@ namespace gpstk
       return gData;
 
    }   // End SolverLMS::Process(const DayTime& time, satTypeValueMap& gData)
+
+
+      /* Returns the solution associated to a given TypeID.
+       * @param type    TypeID of the solution we are looking for.
+       */
+   double SolverLMS::getSolution(const TypeID& type) const
+      throw(InvalidSolver)
+   {
+
+         // Define iterator
+      TypeIDSet::iterator it;
+
+         // Check if the provided type exists in the solution. If not,
+         // an InvalidSolver exception will be issued.
+      it = defaultEqDef.body.find(type);
+      if( it == defaultEqDef.body.end() )
+      {
+         InvalidSolver e("Type not found in solution vector.");
+         GPSTK_THROW(e);
+      }
+
+
+         // Define counter
+      int counter(0);
+
+         // Define a new iterator and count where the given type is
+      TypeIDSet::iterator it2;
+      for (it2 = defaultEqDef.body.begin(); it2!= it; it2++)
+      {
+         ++counter;
+      }
+
+      return solution(counter);
+
+   }
+
+
+      /* Returns the variance associated to a given TypeID.
+       * @param type    TypeID of the variance we are looking for.
+       */
+   double SolverLMS::getVariance(const TypeID& type) const
+      throw(InvalidSolver)
+   {
+
+         // Define iterator
+      TypeIDSet::iterator it;
+
+         // Check if the provided type exists in the covariance matrix. If not,
+         // an InvalidSolver exception will be issued.
+      it = defaultEqDef.body.find(type);
+      if( it == defaultEqDef.body.end() )
+      {
+         InvalidSolver e("Type not found in covariance matrix.");
+         GPSTK_THROW(e);
+      }
+
+
+         // Define counter
+      int counter(0);
+
+         // Define a new iterator and count where the given type is
+      TypeIDSet::iterator it2;
+      for (it2 = defaultEqDef.body.begin(); it2!= it; it2++)
+      {
+         ++counter;
+      }
+
+      return covMatrix(counter,counter);
+
+   }
 
 
 } // end namespace gpstk

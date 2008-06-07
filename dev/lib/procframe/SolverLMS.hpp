@@ -165,6 +165,20 @@ namespace gpstk
       { Process(gData.body); return gData; };
 
 
+         /** Returns the solution associated to a given TypeID.
+          * @param type    TypeID of the solution we are looking for.
+          */
+      virtual double getSolution(const TypeID& type) const
+         throw(InvalidSolver);
+
+
+         /** Returns the variance associated to a given TypeID.
+          * @param type    TypeID of the variance we are looking for.
+          */
+      virtual double getVariance(const TypeID& type) const
+         throw(InvalidSolver);
+
+
          /** Method to set the default equation definition to be used 
           *  when fed with GNSS data structures.
           * @param eqDef     gnssEquationDefinition to be used by default
