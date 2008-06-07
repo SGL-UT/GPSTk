@@ -284,6 +284,9 @@ namespace gpstk
          // Store the solution
       solution = kFilter.xhat;
 
+         // Store the covariance matrix of the solution
+      covMatrix = kFilter.P;
+
          // Compute the postfit residuals Vector
       postfitResiduals = prefitResiduals - designMatrix * solution;
 
