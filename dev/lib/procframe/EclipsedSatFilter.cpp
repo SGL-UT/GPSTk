@@ -48,6 +48,43 @@ namespace gpstk
    { return "EclipsedSatFilter"; }
 
 
+      /* Sets aperture of shadow cone, in degrees.
+       *
+       * @param angle   Aperture angle of shadow cone, in degrees.
+       *
+       * \warning Valid values are within 0 and 90 degrees.
+       */
+   EclipsedSatFilter& EclipsedSatFilter::setConeAngle(const double angle)
+   {
+         // Check that cone angle is within sane limits
+      if( (angle >= 0.0) && (angle < 90.0) )
+      {
+            // If angle is right, change cone aperture angle
+         coneAngle = angle;
+      }
+
+      return (*this);
+   }
+
+
+      /* Sets time after exiting shadow that satellite will still be 
+       *  filtered out, in seconds.
+       * @param pShTime    Time after exiting shadow that satellite will
+       *                   still be filtered out, in seconds.
+       */
+   EclipsedSatFilter& EclipsedSatFilter::setPostShadowPeriod(
+                                                         const double pShTime)
+   {
+         // Check that post shadow period is positive
+      if( pShTime >= 0.0 )
+      {
+         postShadowPeriod = pShTime;
+      }
+
+      return (*this);
+   }
+
+
       /* Returns a satTypeValueMap object, adding the new data generated
        *  when calling this object.
        *

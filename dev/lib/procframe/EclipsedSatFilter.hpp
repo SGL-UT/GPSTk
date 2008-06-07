@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
 //
 //============================================================================
@@ -152,10 +152,12 @@ namespace gpstk
 
 
          /** Sets aperture of shadow cone, in degrees.
+          *
           * @param angle   Aperture angle of shadow cone, in degrees.
+          *
+          * \warning Valid values are within 0 and 90 degrees.
           */
-      virtual EclipsedSatFilter& setConeAngle(const double angle)
-        { coneAngle = angle; return (*this); };
+      virtual EclipsedSatFilter& setConeAngle(const double angle);
 
 
          /// Returns time after exiting shadow that satellite will still be 
@@ -169,8 +171,7 @@ namespace gpstk
           * @param pShTime    Time after exiting shadow that satellite will
           *                   still be filtered out, in seconds.
           */
-      virtual EclipsedSatFilter& setPostShadowPeriod(const double pShTime)
-        { postShadowPeriod = pShTime; return (*this); };
+      virtual EclipsedSatFilter& setPostShadowPeriod(const double pShTime);
 
 
          /// Returns an index identifying this object.
