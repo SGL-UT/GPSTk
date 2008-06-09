@@ -1,4 +1,4 @@
-#pragma ident "$Id: EclipsedSatFilter.hpp $"
+#pragma ident "$Id$"
 
 /**
  * @file EclipsedSatFilter.hpp

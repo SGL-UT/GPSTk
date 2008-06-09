@@ -1,4 +1,4 @@
-#pragma ident "$Id: ComputeDOP.hpp $"
+#pragma ident "$Id$"
 
 /**
  * @file ComputeDOP.hpp

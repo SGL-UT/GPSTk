@@ -1,4 +1,4 @@
-#pragma ident "$Id: EclipsedSatFilter.cpp $"
+#pragma ident "$Id$"
 
 /**
  * @file EclipsedSatFilter.cpp

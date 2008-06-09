@@ -1,4 +1,4 @@
-#pragma ident "$Id: Decimate.hpp $"
+#pragma ident "$Id$"
 
 /**
  * @file Decimate.hpp

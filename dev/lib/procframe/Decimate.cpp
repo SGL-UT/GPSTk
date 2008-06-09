@@ -1,4 +1,4 @@
-#pragma ident "$Id: Decimate.cpp $"
+#pragma ident "$Id$"
 
 /**
  * @file Decimate.cpp
