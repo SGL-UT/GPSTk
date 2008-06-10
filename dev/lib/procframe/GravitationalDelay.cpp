@@ -1,4 +1,4 @@
-#pragma ident "$Id: GravitationalDelay.cpp $"
+#pragma ident "$Id$"
 
 /**
  * @file GravitationalDelay.cpp

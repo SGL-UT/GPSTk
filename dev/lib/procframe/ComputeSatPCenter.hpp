@@ -1,4 +1,4 @@
-#pragma ident "$Id: ComputeSatPCenter.hpp $"
+#pragma ident "$Id$"
 
 /**
  * @file ComputeSatPCenter.hpp
