@@ -183,8 +183,8 @@ int main(void)
 
       // Declare another SolverLMS object, but configure it to use a
       // topocentric reference system (North-East-Up: NEU)
-    SolverLMS solverNEU;
-    solverNEU.setDefaultEqDefinition(newEq);    // NEU reconfiguration
+   SolverLMS solverNEU;
+   solverNEU.setDefaultEqDefinition(newEq);    // NEU reconfiguration
 
       ////////////////////////////////////////
 
@@ -408,11 +408,11 @@ int main(void)
             // This is the line that will process all the GPS data
          gRin1 >> myFilter >> model >> solver;
 
-            // First, a basic filter to screen out very bad observables
-            // Second, apply a model to the observables (ionosphere,
-            // troposphere, relativity, etc.)
-            // Third, solve the equations using a simple Least-Mean-Squares
-            // solver
+            // - First, a basic filter to screen out very bad observables
+            // - Second, apply a model to the observables (ionosphere,
+            //   troposphere, relativity, etc.)
+            // - Third, solve the equations using a simple Least-Mean-Squares
+            //   solver
       }
       catch(...)
       {
@@ -466,9 +466,9 @@ int main(void)
          cerr << "Case 2. Exception at epoch: " << gRin2.header.epoch << endl;
       }
 
-      cout << solverNEU.solution[0] << "  ";  // dLat - Output field #5
-      cout << solverNEU.solution[1] << "  ";  // dLon - Output field #6
-      cout << solverNEU.solution[2] << "  ";  // dH   - Output field #7
+      cout << solverNEU.solution(0) << "  ";  // dLat - Output field #5
+      cout << solverNEU.solution(1) << "  ";  // dLon - Output field #6
+      cout << solverNEU.solution(2) << "  ";  // dH   - Output field #7
 
 
          // Quite easier with respect to CASE #1, isn't it?  ;-)
@@ -479,10 +479,12 @@ int main(void)
          //    instead of the dx, dy, dz, cdt (ECEF) system
          // - The other steps are exactly the same as case #1, and results
          //   MUST match
+         // - If you want to see an even easier method to report the solution,
+         //   please see Case #3.
 
-         // By the way, if you want to inspect what is inside the body of a 
+         // By the way, if you want to inspect what is inside the body of a
          // given GNSS data structure, you may write something like:
-         // 
+         //
          //      gRin2.body.dump(cout, 1);
 
    ////////////////////////// END OF CASE #2  //////////////////////////
@@ -510,9 +512,14 @@ int main(void)
          cerr << "Case 3. Exception at epoch: " << gRin3.header.epoch << endl;
       }
 
-      cout << solverWMS.solution[0] << "  ";  // dLat - Output field #8
-      cout << solverWMS.solution[1] << "  ";  // dLon - Output field #9
-      cout << solverWMS.solution[2] << "  ";  // dH   - Output field #10
+         // An alternative way to report the solution is to access it
+         // using the TypeID's defined in the "gnssEquationDefinition" object
+         // assigned to the solver.
+         // With this method we avoid the possibility of getting the wrong
+         // type of solution from the "solution" vector.
+      cout << solverWMS.getSolution(TypeID::dLat) << "  ";  // dLat - Field #8
+      cout << solverWMS.getSolution(TypeID::dLon) << "  ";  // dLon - Field #9
+      cout << solverWMS.getSolution(TypeID::dH) << "  ";    // dH   - Field #10
 
    ////////////////////////// END OF CASE #3  //////////////////////////
 
@@ -521,7 +528,7 @@ int main(void)
    //////////////////////////// CASE #4  ////////////////////////////
 
          // This case does about the same as a modern GPS aircraft receiver,
-         // except for SBAS corrections and RAIM: C1smoothed + MOPS weights 
+         // except for SBAS corrections and RAIM: C1smoothed + MOPS weights
          // + WMS
 
          // Let's make a working copy
@@ -546,9 +553,9 @@ int main(void)
          cerr << "Case 4. Exception at epoch: " << gRin4.header.epoch << endl;
       }
 
-      cout << solverWMS.solution[0] << "  ";  // dLat - Output field #11
-      cout << solverWMS.solution[1] << "  ";  // dLon - Output field #12
-      cout << solverWMS.solution[2] << "  ";  // dH   - Output field #13
+      cout << solverWMS.getSolution(TypeID::dLat) << "  ";  // dLat - Field #11
+      cout << solverWMS.getSolution(TypeID::dLon) << "  ";  // dLon - Field #12
+      cout << solverWMS.getSolution(TypeID::dH) << "  ";    // dH   - Field #13
 
    ////////////////////////// END OF CASE #4  //////////////////////////
 
@@ -589,9 +596,9 @@ int main(void)
          cerr << "Case 5. Exception at epoch: " << gRin5.header.epoch << endl;
       }
 
-      cout << solverWMS.solution[0] << "  ";  // dLat - Output field #14
-      cout << solverWMS.solution[1] << "  ";  // dLon - Output field #15
-      cout << solverWMS.solution[2] << "  ";  // dH   - Output field #16
+      cout << solverWMS.getSolution(TypeID::dLat) << "  ";  // dLat - Field #14
+      cout << solverWMS.getSolution(TypeID::dLon) << "  ";  // dLon - Field #15
+      cout << solverWMS.getSolution(TypeID::dH) << "  ";    // dH   - Field #16
 
    ////////////////////////// END OF CASE #5  //////////////////////////
 
@@ -622,9 +629,9 @@ int main(void)
          cerr << "Case 6. Exception at epoch: " << gRin6.header.epoch << endl;
       }
 
-      cout << solverWMS.solution[0] << "  ";  // dLat - Output field #17
-      cout << solverWMS.solution[1] << "  ";  // dLon - Output field #18
-      cout << solverWMS.solution[2] << "  ";  // dH   - Output field #19
+      cout << solverWMS.getSolution(TypeID::dLat) << "  ";  // dLat - Field #17
+      cout << solverWMS.getSolution(TypeID::dLon) << "  ";  // dLon - Field #18
+      cout << solverWMS.getSolution(TypeID::dH) << "  ";    // dH   - Field #19
 
    ////////////////////////// END OF CASE #6  //////////////////////////
 
@@ -646,8 +653,8 @@ int main(void)
             // In addition to PC, we will also neet LC ("getLC"), LI ("getLI")
             // and MW ("getMW") combinations:
             //
-            // - LC (as well as PC) is needed by "smoothPC" in order to smooth 
-            //   PC data. Also, the smoother works better with cycle slip 
+            // - LC (as well as PC) is needed by "smoothPC" in order to smooth
+            //   PC data. Also, the smoother works better with cycle slip
             //   information, and therefore:
             //
             //   - LI feeds "markCSLI": The LI-based cycle slip detector
@@ -660,9 +667,9 @@ int main(void)
          cerr << "Case 7. Exception at epoch: " << gRin7.header.epoch << endl;
       }
 
-      cout << solverWMS.solution[0] << "  ";  // dLat - Output field #20
-      cout << solverWMS.solution[1] << "  ";  // dLon - Output field #21
-      cout << solverWMS.solution[2] << "  ";  // dH   - Output field #22
+      cout << solverWMS.getSolution(TypeID::dLat) << "  ";  // dLat - Field #20
+      cout << solverWMS.getSolution(TypeID::dLon) << "  ";  // dLon - Field #21
+      cout << solverWMS.getSolution(TypeID::dH) << "  ";    // dH   - Field #22
 
    ////////////////////////// END OF CASE #7  //////////////////////////
 
@@ -701,9 +708,9 @@ int main(void)
          cerr << "Case 8. Exception at epoch: " << gRin8.header.epoch << endl;
       }
 
-      cout << solverWMS.solution[0] << "  ";  // dLat - Output field #23
-      cout << solverWMS.solution[1] << "  ";  // dLon - Output field #24
-      cout << solverWMS.solution[2] << "  ";  // dH   - Output field #25
+      cout << solverWMS.getSolution(TypeID::dLat) << "  ";  // dLat - Field #23
+      cout << solverWMS.getSolution(TypeID::dLon) << "  ";  // dLon - Field #24
+      cout << solverWMS.getSolution(TypeID::dH) << "  ";    // dH   - Field #25
 
    ////////////////////////// END OF CASE #8  //////////////////////////
 
@@ -732,9 +739,9 @@ int main(void)
          cerr << "Case 9. Exception at epoch: " << gRin9.header.epoch << endl;
       }
 
-      cout << solverK9.solution[0] << "  ";  // dLat - Output field #26
-      cout << solverK9.solution[1] << "  ";  // dLon - Output field #27
-      cout << solverK9.solution[2] << "  ";  // dH   - Output field #28
+      cout << solverK9.getSolution(TypeID::dLat) << "  ";  // dLat - Field #26
+      cout << solverK9.getSolution(TypeID::dLon) << "  ";  // dLon - Field #27
+      cout << solverK9.getSolution(TypeID::dH) << "  ";    // dH   - Field #28
 
    ////////////////////////// END OF CASE #9  //////////////////////////
 
@@ -756,12 +763,12 @@ int main(void)
          firstTime = false;  // Mark that the first data batch was read
       }
 
-         // Check that the reference data time stamp is not less than rover
-         // data's, and that tolerance is within limits. If not, keep reeding.
+         // Check that reference data time stamp is not less than rover
+         // data's, and that tolerance is within limits. If not, keep reading.
          // Note that if reference data time stamp is bigger, it will not
          // enter here, "waiting" for rover data to catch up.
-       while ( (gRef.header.epoch < gRin9.header.epoch) && 
-               (std::abs(gRef.header.epoch - gRin9.header.epoch)
+      while ( (gRef.header.epoch < gRin10.header.epoch) &&
+               (std::abs(gRef.header.epoch - gRin10.header.epoch)
                                                > timeTolerance ) )
       {
          rinRef >> gRef;
@@ -772,7 +779,7 @@ int main(void)
          // If we couldn't synchronize data streams (i.e.: "timeTolerance"
          // is not met), skip this epoch (no DGPS data processing will
          // be carried out).
-      if ( std::abs(gRef.header.epoch - gRin9.header.epoch) > timeTolerance )
+      if ( std::abs(gRef.header.epoch - gRin10.header.epoch) > timeTolerance )
       {
          cout << endl;
          continue;
@@ -814,10 +821,9 @@ at epoch: " << gRef.header.epoch << endl;
               << endl;
       }
 
-
-      cout << solverNEU.solution[0] << "  ";  // dLat - Output field #29
-      cout << solverNEU.solution[1] << "  ";  // dLon - Output field #30
-      cout << solverNEU.solution[2] << "  ";  // dH   - Output field #31
+      cout << solverNEU.getSolution(TypeID::dLat) << "  ";  // dLat - Field #29
+      cout << solverNEU.getSolution(TypeID::dLon) << "  ";  // dLon - Field #30
+      cout << solverNEU.getSolution(TypeID::dH) << "  ";    // dH   - Field #31
 
    ////////////////////////// END OF CASE #10  //////////////////////////
 
@@ -850,10 +856,9 @@ at epoch: " << gRef.header.epoch << endl;
               << endl;
       }
 
-
-      cout << solverWMS.solution[0] << "  ";  // dLat - Output field #32
-      cout << solverWMS.solution[1] << "  ";  // dLon - Output field #33
-      cout << solverWMS.solution[2] << "  ";  // dH   - Output field #34
+      cout << solverWMS.getSolution(TypeID::dLat) << "  ";  // dLat - Field #32
+      cout << solverWMS.getSolution(TypeID::dLon) << "  ";  // dLon - Field #33
+      cout << solverWMS.getSolution(TypeID::dH) << "  ";    // dH   - Field #34
 
    ////////////////////////// END OF CASE #11  //////////////////////////
 
@@ -889,10 +894,9 @@ at epoch: " << gRef.header.epoch << endl;
               << endl;
       }
 
-
-      cout << solverK12.solution[0] << "  ";  // dLat - Output field #35
-      cout << solverK12.solution[1] << "  ";  // dLon - Output field #36
-      cout << solverK12.solution[2] << "  ";  // dH   - Output field #37
+      cout << solverK12.getSolution(TypeID::dLat) << "  ";  // dLat - Field #35
+      cout << solverK12.getSolution(TypeID::dLon) << "  ";  // dLon - Field #36
+      cout << solverK12.getSolution(TypeID::dH) << "  ";    // dH   - Field #37
 
    ////////////////////////// END OF CASE #12  //////////////////////////
 
@@ -901,7 +905,6 @@ at epoch: " << gRef.header.epoch << endl;
       cout << endl;
 
    }
-
 
    exit(0);
 
