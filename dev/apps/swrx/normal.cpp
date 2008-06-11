@@ -28,8 +28,7 @@
 #include "normal.hpp"
 
 const int log_two_of_sum_count=4;  // Higher number means better approximation
-const double scaling_factor=sqrt((double) (1<<log_two_of_sum_count)/((double)RAND_MAX*sqrt(1.0/12.0)) );
-
+const double scaling_factor=sqrt(1<<log_two_of_sum_count)/((double)RAND_MAX*sqrt(1.0/12.0));
 double
 generate_normal_rv(void) {
   /* Generate a (mean=0, var=1) Gaussian RV approximation using central limit theorem */
