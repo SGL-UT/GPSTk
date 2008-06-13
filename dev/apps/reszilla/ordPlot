@@ -17,13 +17,13 @@ def main():
                       dest="inputFile", type="string", action="store")
 
     parser.add_option("-t", dest="title", type="string", action="store",
-                      help="Specify a title for the plot. \
-                      Defaults to the name of the input stream.")
+                      help="Specify a title for the plot. Defaults to the name \
+                      of the input stream.")
 
     parser.add_option("-l", "--legend", dest="legend", action="count",
                       help="Include a legend.")
 
-    parser.add_option("-p", "--prn-highlight", dest="prnHighlight", action="append",
+    parser.add_option("-p", dest="prnHL", action="append",
                      help="Highlight the indicated PRN. Specify all for all PRNs.")
 
     parser.add_option("-o", "--ords-only", help="Only plot the ords (types 0 & 1).",
@@ -36,11 +36,11 @@ def main():
                       dest="clockDelta", default=0, action="count")
 
     parser.add_option("-s", dest="saveFig", action="store", type="string",
-                      help="Save the figure to the indicated file")
+                      help="Save the figure to the indicated file.")
 
     parser.add_option("-y", dest="yRange", action="store", type="string",
-                      help="Fix the y range on the ords to be +- this value or include\
-                      the percentage data indicated.")
+                      help="Fix the y range on the ords to be +/- this value or\
+                      include the percentage data indicated.")
                       
     parser.add_option("--start-time", dest="tStart", action="store",
                       help="Start time. Format as \"YYYY DOY HH:MM:SS.S\" (Note\
@@ -80,11 +80,11 @@ def main():
 
     prns = range(1,33)
     highlightPrns = []
-    if options.prnHighlight:
-        if options.prnHighlight[0] == 'all':
+    if options.prnHL:
+        if options.prnHL[0] == 'all':
             highlightPrns = range(1,33)
         else:
-            highlightPrns = [int(p) for p in options.prnHighlight]
+            highlightPrns = [int(p) for p in options.prnHL]
 
     if options.debugLevel:
         print "Processing: %s" % inputFile.name
@@ -182,6 +182,7 @@ def main():
 
     if clocks.size==0 or options.ordsOnly: plotClocks = False
     if ((clocks.size==0 and options.clockDelta) and ords.size == 0 and warts.size == 0 and ocds.size == 0) or options.clocksOnly: plotOrds = False
+
     axesCount=0;
     if plotOrds: axesCount+=1
     if plotClocks: axesCount+=1
@@ -288,7 +289,7 @@ def main():
             ax1.set_ylabel('ord (meters)\nclock diff (10^-12)', **yprops)
     
         ax1.grid(True)
-        pylab.figtext(rExtent+.08, 0.95, "y range %s"%options.yRange,
+        pylab.figtext(rExtent+.08, 0.95, "y range +/- %s"%options.yRange,
                       **scale_props)
 
     # This allows the creation of futher axes that will share the x axis
@@ -307,7 +308,12 @@ def main():
         clockOffset = int(numpy.average(clocks[1]))
         clocks[1] = clocks[1] - clockOffset
 
-        pylab.figtext(rExtent+0.08, 0.49, 
+        # if only plotting clocks, put string at top. otherwise, put it above
+        # clock plot
+        clkStringLoc = 0.49
+        if not plotOrds : clkStringLoc = 0.95        
+
+        pylab.figtext(rExtent+0.08, clkStringLoc, 
                       "Clock offset removed: %d m"%clockOffset,
                       **scale_props)
 
