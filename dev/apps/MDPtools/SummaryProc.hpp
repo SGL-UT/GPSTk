@@ -66,7 +66,7 @@ public:
    gpstk::MDPSelftestStatus prevSelftestStatus;
 
    //
-   unsigned long navSowErrors, navSowMiscompares, navParityErrors;
+   unsigned long navSubframes, navSowErrors, navSowMiscompares, navParityErrors;
 
    // A list of all messages that had an error decoding them...
    typedef std::list<gpstk::MDPHeader> MDPList;

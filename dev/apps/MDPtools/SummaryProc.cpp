@@ -40,7 +40,11 @@ MDPSummaryProcessor::MDPSummaryProcessor(gpstk::MDPStream& in, std::ofstream& ou
      obsRateEst(0), pvtRateEst(0),
      prevObs(maxChannel+1),
      chanGapList(maxChannel+1),
-     svCountErrorCount(0)
+     svCountErrorCount(0),
+     navSowErrors(0),
+     navSowMiscompares(0),
+     navParityErrors(0),
+     navSubframes(0)
 {
    elevBins.push_back(elevationPair(10,90));
    elevBins.push_back(elevationPair( 0, 5));
@@ -151,11 +155,16 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
    else
    {
       double dt = lastNavTime - firstNavTime;
+      double parityErrorPct = 100.0 * navParityErrors / navSubframes;
+      double sowErrorPct = 100.0 * navSowErrors / navSubframes;
       out << "  Nav data spans " << firstNavTime.printf(timeFormat) 
           << " to " << lastNavTime.printf(timeFormat)
           << " (" << secondsAsHMS(dt) << ")" << endl
-          << setw(10) << navParityErrors   << "   Parity errors" << endl
-          << setw(10) << navSowErrors      << "   Bogus HOW SOWs" << endl
+          << setw(10) << navSubframes      << "   Subframes received" << endl
+          << setw(10) << navParityErrors   << "   Parity errors ("
+          << parityErrorPct << " %)" << endl
+          << setw(10) << navSowErrors      << "   Bogus HOW SOWs ("
+          << sowErrorPct << " %)" << endl
           << setw(10) << navSowMiscompares << "   SOW vs header time miscompares" << endl
           << endl;
    }
@@ -445,35 +454,37 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
    }
 
    gpstk::MDPNavSubframe umsg = msg;
+   navSubframes++;
+   string desc = msg.time.printf(timeFormat) + 
+      "  Subframe from " + leftJustify(asString(umsg.prn), 2) +
+      " " + leftJustify(asString(umsg.carrier), 2) +
+      " " + leftJustify(asString(umsg.range), 2);
 
    // First try the data assuming it is already upright
    umsg.cooked = true;
    bool parityGood = umsg.checkParity();
    if (!parityGood)
    {
-      if (verboseLevel>2)
-         out << msg.time.printf(timeFormat)
-             << "  Subframe appears raw" << endl;
+      desc += ", raw";
       umsg.cooked = false;
       umsg.cookSubframe();
       parityGood = umsg.checkParity();
+      if (umsg.inverted)
+         desc += ", inverted";
+      else
+         desc += ", upright";
    }
    else
    {
-      if (verboseLevel>2)
-         out << msg.time.printf(timeFormat)
-             << "  Subframe appears cooked" << endl;
+      desc += ", cooked";
    }
-
+   
    if (!(bugMask & 0x2) && !parityGood)
    {
       navParityErrors++;
+      desc += ", bad parity";
       if (verboseLevel>1)
-         out << msg.time.printf(timeFormat)
-             << "  Parity error on PRN " << umsg.prn
-             << ", " << asString(umsg.carrier)
-             << " " << asString(umsg.range)
-             << endl;
+         out << desc << endl;
       return;
    }
 
@@ -482,13 +493,9 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
    if (how_sow < 0 || how_sow >= 604800)
    {
       navSowErrors++;
+      desc += ", bogus HOW SOW(" + asString(how_sow) +")";
       if (verboseLevel>1)
-         out << msg.time.printf(timeFormat)
-             << "  Bogus HOW SOW on PRN " << umsg.prn
-             << ", " << asString(umsg.carrier)
-             << " " << asString(umsg.range)
-             << "  sow:" << how_sow
-             << endl;
+         out << desc << endl;
       return;
    }
 
@@ -496,14 +503,10 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
         (how_sow == hdr_sow && !(bugMask & 0x4))        )
    {
       navSowMiscompares++;
+      desc += ", HOW/header time miscompare, how:" +
+         asString(how_sow) + " header:" + asString(hdr_sow);
       if (verboseLevel>1)
-         out << msg.time.printf(timeFormat)
-             << "  Navigation subframe HOW/header time miscompare on PRN " << umsg.prn
-             << ", " << asString(umsg.carrier)
-             << " " << asString(umsg.range)
-             << "  how:" << how_sow
-             << ", header:" << hdr_sow
-             << endl;
+         out << desc << endl;
       return;
    }
 
@@ -511,10 +514,9 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
    {
       firstNav = false;
       firstNavTime = umsg.time;
+      desc += ", first good subframe";
       if (verboseLevel)
-         out << umsg.time.printf(timeFormat)
-             << "  Received first Navigation Subframe message"
-             << endl;
+         out << desc << endl;
    }
 
    lastNavTime = umsg.time;
