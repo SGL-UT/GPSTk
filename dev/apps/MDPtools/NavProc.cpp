@@ -50,52 +50,55 @@ MDPNavProcessor::~MDPNavProcessor()
    using gpstk::StringUtils::asString;
    
    out << "Done processing data." << endl << endl;
-
-   out << endl << "Navigation Subframe message summary:" << endl;
    if (firstNav)
-      out << "  No Navigation Subframe messages processed." << endl;
-   else
    {
-      out << "  navSubframeCount: " << navSubframeCount << endl
-          << "  badNavSubframeCount: " << badNavSubframeCount << endl
-          << "  percent bad: " << 100.0 * badNavSubframeCount/navSubframeCount << endl;
+      out << "  No Navigation Subframe messages processed." << endl;
+      return;
    }
 
-   cout << "Parity Errors" << endl;
-   cout << "# snr ";
+   out << endl
+       << "Navigation Subframe message summary:" << endl
+       << "  navSubframeCount: " << navSubframeCount << endl
+       << "  badNavSubframeCount: " << badNavSubframeCount << endl
+       << "  percent bad: " << setprecision(3)
+       << 100.0 * badNavSubframeCount/navSubframeCount << " %" << endl;
+
+   out << "Parity Errors" << endl;
+   out << "# elev";
    std::map<RangeCarrierPair, Histogram>::const_iterator peh_itr;
    for (peh_itr = peHist.begin(); peh_itr != peHist.end(); peh_itr++)
    {
       const RangeCarrierPair& rcp=peh_itr->first;
-      cout << "    " << asString(rcp.second)
+      out << "    " << asString(rcp.second)
            << "-"    << leftJustify(asString(rcp.first), 2);
    }
-   cout << endl;
+   out << endl;
 
    Histogram::BinRangeList::const_iterator brl_itr;
    for (brl_itr = bins.begin(); brl_itr != bins.end(); brl_itr++)
    {
       const Histogram::BinRange& br = *brl_itr ;
-      std::cout << right << setw(2) << br.first << "-"
-                << left  << setw(2) << br.second << ":";
+      out << setprecision(0)
+          << right << setw(2) << br.first << "-"
+          << left  << setw(2) << br.second << ":";
 
       for (peh_itr = peHist.begin(); peh_itr != peHist.end(); peh_itr++)
       {
          const RangeCarrierPair& rcp=peh_itr->first;
          Histogram h=peh_itr->second;
-         cout << right << setw(9) << h.bins[br];
+         out << right << setw(9) << h.bins[br];
       }
 
-      cout << endl;
+      out << endl;
    }
 
    // Whoever would write a reference like this should be shot...
-   cout << right << setw(2) << peHist.begin()->second.bins.begin()->first.first
+   out << right << setw(2) << peHist.begin()->second.bins.begin()->first.first
         << "-" << left  << setw(2) << peHist.begin()->second.bins.rbegin()->first.second
         << ":";
 
    for (peh_itr = peHist.begin(); peh_itr != peHist.end(); peh_itr++)
-      cout << right <<  setw(9) << peh_itr->second.total;
+      out << right <<  setw(9) << peh_itr->second.total;
       
    out << endl;
 }
@@ -201,6 +204,16 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
 
    prev[ni] = curr[ni];
    curr[ni] = umsg;
+
+   if (prev[ni].inverted != curr[ni].inverted && 
+       curr[ni].time - prev[ni].time <= 12)
+   {
+      if (verboseLevel)
+         out << msgPrefix << "Polarity inversion"
+             << " SNR:" << fixed << setprecision(1) << snr[ni]
+             << " EL:" << el[ni]
+             << endl;
+   }      
 
    if (isAlm && almOut)
    {
