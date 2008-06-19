@@ -66,10 +66,10 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
    out << "Done processing data." << endl << endl;
 
    out << endl << "Header summary:" << endl;
-   cout << "  Processed "<< msgCount << " headers." << endl
-        << "  First freshness count was " << hex << firstFC << dec << endl
-        << "  Last freshness count was  " << hex << lastFC << dec << endl
-        << "  Encountered " << fcErrorCount << " breaks in the freshness count" << endl;
+   out << "  Processed "<< msgCount << " headers." << endl
+       << "  First freshness count was " << hex << firstFC << dec << endl
+       << "  Last freshness count was  " << hex << lastFC << dec << endl
+       << "  Encountered " << fcErrorCount << " breaks in the freshness count" << endl;
 
    out << endl << "Observation Epoch message summary:" << endl;
 
@@ -130,8 +130,8 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
          out << endl;
       }
       
-      cout << "Encountered " << svCountErrorCount << " SV count errors." << endl
-           << endl;
+      out << "Encountered " << svCountErrorCount << " SV count errors." << endl
+          << endl;
    }
 
    out << endl << "PVT Solution message summary:" << endl;
@@ -346,9 +346,9 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
       {
          svCountErrorCount++;
          if (! (bugMask & 0x01))
-         cout << prevEpochTime.printf(timeFormat)
-              << "  Epoch claimed " << prevReported
-              << " SVs but only received " << prevActual << endl;
+            out << prevEpochTime.printf(timeFormat)
+                << "  Epoch claimed " << prevReported
+                << " SVs but only received " << prevActual << endl;
       }
    }
 
@@ -460,42 +460,30 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
       " " + leftJustify(asString(umsg.carrier), 2) +
       " " + leftJustify(asString(umsg.range), 2);
 
-   // First try the data assuming it is already upright
-   umsg.cooked = true;
-   bool parityGood = umsg.checkParity();
-   if (!parityGood)
-   {
-      desc += ", raw";
-      umsg.cooked = false;
-      umsg.cookSubframe();
-      parityGood = umsg.checkParity();
-      if (umsg.inverted)
-         desc += ", inverted";
-      else
-         desc += ", upright";
-   }
-   else
-   {
-      desc += ", cooked";
-   }
+   umsg.cookSubframe();   
    
-   if (!(bugMask & 0x2) && !parityGood)
+   if (!(bugMask & 0x2) && !umsg.parityGood)
    {
       navParityErrors++;
-      desc += ", bad parity";
       if (verboseLevel>1)
-         out << desc << endl;
+         out << desc << ", bad parity" << endl;
+      if (verboseLevel>2)
+         umsg.dump(out);
       return;
    }
+
+   if (umsg.inverted)
+      desc += ", inverted";
+   else
+      desc += ", upright";
 
    long how_sow = umsg.getHOWTime();
    long hdr_sow = static_cast<long>(umsg.time.GPSsow());
    if (how_sow < 0 || how_sow >= 604800)
    {
       navSowErrors++;
-      desc += ", bogus HOW SOW(" + asString(how_sow) +")";
       if (verboseLevel>1)
-         out << desc << endl;
+         out << desc << ", bogus HOW SOW(" << how_sow << ")" << endl;
       return;
    }
 
@@ -503,10 +491,9 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
         (how_sow == hdr_sow && !(bugMask & 0x4))        )
    {
       navSowMiscompares++;
-      desc += ", HOW/header time miscompare, how:" +
-         asString(how_sow) + " header:" + asString(hdr_sow);
       if (verboseLevel>1)
-         out << desc << endl;
+         out << desc << ", HOW/header time miscompare, how:" 
+             << how_sow << " header:" << hdr_sow << endl;
       return;
    }
 
@@ -515,9 +502,12 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
       firstNav = false;
       firstNavTime = umsg.time;
       desc += ", first good subframe";
-      if (verboseLevel)
+      if (verboseLevel && verboseLevel<=2)
          out << desc << endl;
    }
+
+   if (verboseLevel>2)
+      out << desc << endl;
 
    lastNavTime = umsg.time;
 }
