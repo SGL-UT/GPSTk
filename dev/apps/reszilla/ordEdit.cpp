@@ -372,7 +372,7 @@ void OrdEdit::process()
             const SatID& satId = iter->first;
             const ObsRngDev& ord = iter->second;
             iter++;
-            if (ord.getORD() < ordLimit)
+            if (std::abs(ord.getORD()) > ordLimit)
                ordEpoch.removeORD(satId);
          }
       } 
