@@ -1,6 +1,4 @@
-
-
-
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -37,11 +35,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-
-
-
-
 
 /**
  * @file TropModel.cpp
@@ -1524,7 +1517,7 @@ namespace gpstk
       }
 
       // press is zero for the wet component
-      double delay = 0.0022768 * humid * 1255/(temp+273.20)
+      double delay = 0.0022768 * humid * 1255/((temp+CELSIUS_TO_KELVIN) + 0.05)
             / (1 - 0.00266 * ::cos(2*latitude*DEG_TO_RAD) - 0.00028 * height/1000.);
 
       return delay;
