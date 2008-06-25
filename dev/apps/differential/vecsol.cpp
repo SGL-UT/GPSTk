@@ -585,7 +585,7 @@ Triple permanentTide(double const phi)
 		permanentTide(Position(roh2.antennaPosition).geodeticLatitude());
 	    cout << "Tides:" << PT1 << " " << PT2 << endl;
 #else
-	    Triple PT1, PT2;	    
+	    Triple PT1(0,0,0), PT2(0,0,0);	    
 #endif
 	    // t1, t2 represent now antenna (ARP) positions.
 	    // (roh1/2.antennaPosition is named wrong, it is benchmark pos!)
