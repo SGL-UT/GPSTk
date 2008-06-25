@@ -118,6 +118,7 @@ private:
    unsigned msid;
    string tropModel;
    bool useNear;
+   bool forceSvTime;
 
    CommandOptionWithAnyArg obsFileOption, ephFileOption, metFileOption;
 };
@@ -151,9 +152,10 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
       ordModeOption('\0', "omode", "Specifies what observations are used to "
                     "compute the ORDs. Valid values are:"
                     "p1p2, z1z2, c1p2, c1y2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
-                    "z2 smo, and smart. The default is " + ordMode),
+                    "z2, smo, dynamic, and smart. The default is " + ordMode),
    
-      tropModelOption('\0', "trop-model", "Specify the trop model to use. Options are zero, simple, nb, and gg. The default is nb."),
+      tropModelOption('\0', "trop-model", "Specify the trop model to use. "
+                      "Options are zero, simple, nb, and gg. The default is nb."),
 
       antennaPosOption('p', "pos", "Location of the antenna in meters ECEF.");
    
@@ -163,9 +165,13 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
                  "from a SMODF file.");
 
    CommandOptionNoArg
-      useNearOption('n', "near", "Allows the program to select an ephemeris that "
-                    "is not strictly in the future. Only affects the selection of which broadcast "
-                    "ephemeris to use. Use a close ephemeris");
+      useNearOption('n', "near", "Allows the program to select an ephemeris "
+                    "that is not strictly in the future. Only affects the "
+                    "selection of which broadcast ephemeris to use."),
+      
+      forceSvTimeOption('\0', "sv-time", "Assume that the data is time-tagged "
+                        "according to each SV's clock, not a common receiver "
+                        "clock. The is set by default only for omode=smo");
 
 
    if (!OrdApp::initialize(argc,argv)) return false;
@@ -213,6 +219,8 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
    }
 
    useNear = useNearOption.getCount();
+
+   forceSvTime = forceSvTimeOption.getCount();
 
    if (RSS(antennaPos[0], antennaPos[1], antennaPos[2]) < 1)
    {
@@ -290,6 +298,9 @@ void OrdGen::process()
    OrdEngine ordEngine(eph, wod, antennaPos, ordMode, *tm);
    ordEngine.verboseLevel = verboseLevel;
    ordEngine.debugLevel = debugLevel;
+   if (forceSvTime)
+      ordEngine.forceSvTime = true;
+
    ORDEpochMap ordEpochMap;
 
    // Walk through each obs file, reading and computing ords along the way.

@@ -66,7 +66,7 @@ public:
    const gpstk::WxObsData& wod;
    gpstk::TropModel& tm;
 
-   bool svTime;
+   bool svTime, forceSvTime;
    bool keepWarts;
    bool keepUnhealthy;
    unsigned long wartCount;

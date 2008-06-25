@@ -50,7 +50,7 @@ OrdEngine::OrdEngine(
    const string& mode,
    TropModel& t)
    : eph(e), wod(w), antennaPos(p), tm(t), mode(mode),
-     oidSet(false),
+     oidSet(false), forceSvTime(false),
      svTime(false), keepWarts(false), keepUnhealthy(false),
      wartCount(0), verboseLevel(0), debugLevel(0), dualFreq(false)
 {
@@ -152,7 +152,7 @@ void OrdEngine::setMode(const ObsEpoch& obs)
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL1L2,   ObsID::tcP);
       svTime = true;
    }
-   else if (mode=="smart")
+   else if (mode=="smart" || mode=="dynamic")
    {
       const SvObsEpoch& soe = obs.begin()->second;
       SvObsEpoch::const_iterator itr;
@@ -184,6 +184,9 @@ void OrdEngine::setMode(const ObsEpoch& obs)
    }
 
    oidSet = true;
+
+   if (forceSvTime)
+      svTime = true;
 
    if (verboseLevel)
    {
@@ -307,6 +310,18 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
          }
       } // end looping over each SV in this epoch
 
+      if (ordEpoch.ords.size() < obsEpoch.size())
+      {
+         if (verboseLevel>1)
+            cout << "# Only computed ords for " << ordEpoch.ords.size()
+                 << " of "<< obsEpoch.size() << " SVs in track" << endl; 
+         if (1.0*ordEpoch.ords.size() /obsEpoch.size() < 0.5 && mode == "dynamic")
+         {
+            if (verboseLevel)
+               cout << "# Re estimating omode" << endl; 
+            setMode(obs);
+         }
+      }
    }
    catch (gpstk::Exception& e)
    {
