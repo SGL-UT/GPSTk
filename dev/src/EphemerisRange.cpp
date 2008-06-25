@@ -150,6 +150,36 @@ namespace gpstk
    }  // end CorrectedEphemerisRange::ComputeAtTransmitTime
 
 
+
+   double CorrectedEphemerisRange::ComputeAtTransmitSvTime(
+      const DayTime& tt_nom,
+      const double& pr,
+      const Position& rx,
+      const SatID sat,
+      const XvtStore<SatID>& eph)
+   {
+      try {
+         svPosVel = eph.getXvt(sat, tt_nom);
+
+         // compute rotation angle in the time of signal transit
+         // While this is quite similiar to rotateEarth, its not the same and jcl doesn't
+         // know which is really correct
+         GPSGeoid gm;
+         double rotation_angle = -gm.angVelocity() * (pr/gm.c() - svPosVel.dtime);         
+         svPosVel.x[0] = svPosVel.x[0] - svPosVel.x[1] * rotation_angle;
+         svPosVel.x[1] = svPosVel.x[1] + svPosVel.x[0] * rotation_angle;
+         svPosVel.x[2] = svPosVel.x[2];
+
+         rawrange =rx.slantRange(svPosVel.x);
+         updateCER(rx);
+         
+         return rawrange - svclkbias - relativity;
+      }
+      catch (Exception& e) {
+         GPSTK_RETHROW(e);
+      }
+   }
+
    void CorrectedEphemerisRange::updateCER(const Position& Rx)
    {
       relativity = RelativityCorrection(svPosVel) * C_GPS_M;

@@ -212,44 +212,18 @@ namespace gpstk
    }
 
 
-// This should be used for obs in SV time
+// This should be used for obs tagged in SV time
    void ObsRngDev::computeOrdTx(
       double obs,
       const ECEF& rxpos,
       const XvtStore<SatID>& eph,
       const GeoidModel& gm)
    {
-      // Now, there was a receiver clock error so we need to account for that
-      // when we evaluate the sv position
-      Xvt svpos = eph.getXvt(svid,obstime);
-
-      // compute rotation angle in the time of signal transit
-      double rotation_angle = -gm.angVelocity() * (obs/gm.c() - svpos.dtime);
-
-      Triple xnew;
-      xnew[0] = svpos.x[0] - svpos.x[1] * rotation_angle;
-      xnew[1] = svpos.x[1] + svpos.x[0] * rotation_angle;
-      xnew[2] = svpos.x[2];   
-      double sr1 = rxpos.slantRange(xnew);
-
-      // Account for SV clock drift
-      rho = sr1 - (svpos.dtime * gm.c());
-
-      // and now calculate the ORD
+      CorrectedEphemerisRange cer;
+      rho = cer.ComputeAtTransmitSvTime(obstime, obs, rxpos, svid, eph);
+      azimuth = cer.azimuth;
+      elevation = cer.elevation;
       ord = obs - rho;
-
-      if (typeid(eph) == typeid(GPSEphemerisStore))
-      {
-         const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
-         const EngEphemeris& eph = bce.findEphemeris(svid, obstime);
-         iodc = eph.getIODC();
-         health = eph.getHealth();
-      }
-
-      // compute the azimuth and elevation of the SV
-      azimuth = rxpos.azAngle(svpos.x);
-      elevation = rxpos.elvAngle(svpos.x);
-
       if (debug)
       {
          std::ios::fmtflags oldFlags = std::cout.flags();
@@ -260,13 +234,13 @@ namespace gpstk
                    << ", obs-rho=" << (double)ord
                    << std::endl
                    << std::setprecision(3)
-                   << "  sv.x=" << svpos.x
-                   << ", sv.v=" << svpos.v
+                   << "  sv.x=" << cer.svPosVel.x
+                   << ", sv.v=" << cer.svPosVel.v
                    << std::endl
                    << "  rx.x=" << rxpos
                    << std::setprecision(4) << std::scientific
-                   << ", sv bias=" << svpos.dtime
-                   << ", sv drift=" << svpos.ddtime
+                   << ", sv bias=" << cer.svPosVel.dtime
+                   << ", sv drift=" << cer.svPosVel.ddtime
                    << std::endl;
          std::cout.flags(oldFlags);
       }

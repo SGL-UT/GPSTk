@@ -85,6 +85,17 @@ namespace gpstk
          const SatID sat,
          const XvtStore<SatID>& Eph);
 
+      /// Compute the corrected range at TRANSMIT time, from receiver at
+      /// position Rx, to the GPS satellite given by SatID sat, as well as all
+      /// the CER quantities, given the nominal transmit time tt_nom and
+      /// an EphemerisStore. This is used for data smoothed to transmit time.
+      double ComputeAtTransmitSvTime(
+         const DayTime& tt_nom,
+         const double& pr,
+         const Position& Rx,
+         const SatID sat,
+         const XvtStore<SatID>& Eph);
+
       /// The computed raw (geometric) range in meters.
       double rawrange;
       /// The satellite clock bias in meters.
