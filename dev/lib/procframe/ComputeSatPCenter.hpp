@@ -232,7 +232,7 @@ namespace gpstk
 
 
          /** Compute the value of satellite antenna phase correction, in meters
-          * @param sat       Satellite ID
+          * @param satid     Satellite ID
           * @param time      Epoch of interest
           * @param satpos    Satellite position, as a Triple
           * @param sunpos    Sun position, as a Triple
@@ -241,7 +241,7 @@ namespace gpstk
           */
       virtual double getSatPCenter( const SatID& satid,
                                     const DayTime& time,
-                                    const Triple& sat,
+                                    const Triple& satpos,
                                     const Triple& sunPosition );
 
 

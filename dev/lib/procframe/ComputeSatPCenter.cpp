@@ -144,7 +144,7 @@ namespace gpstk
 
 
       /* Compute the value of satellite antenna phase correction, in meters.
-       * @param sat       Satellite ID
+       * @param satid     Satellite ID
        * @param time      Epoch of interest
        * @param satpos    Satellite position, as a Triple
        * @param sunpos    Sun position, as a Triple
@@ -153,12 +153,12 @@ namespace gpstk
        */
    double ComputeSatPCenter::getSatPCenter( const SatID& satid,
                                             const DayTime& time,
-                                            const Triple& sat,
+                                            const Triple& satpos,
                                             const Triple& sunPosition )
    {
 
          // Unitary vector from satellite to Earth mass center
-      Triple rk( ( (-1.0)*(sat.unitVector()) ) );
+      Triple rk( ( (-1.0)*(satpos.unitVector()) ) );
 
          // Unitary vector from Earth mass center to Sun
       Triple ri( sunPosition.unitVector() );
@@ -176,7 +176,7 @@ namespace gpstk
       Triple rxPos(nominalPos.X(), nominalPos.Y(), nominalPos.Z());
 
          // Compute unitary vector vector from satellite to RECEIVER
-      Triple rrho( (rxPos-sat).unitVector() );
+      Triple rrho( (rxPos-satpos).unitVector() );
 
          // If satellite belongs to block "IIR", its correction is 0.0,
          // else, it will depend on satellite model.
