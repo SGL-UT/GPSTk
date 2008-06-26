@@ -43,7 +43,7 @@ public:
    // object
    CCReplica(double tickSize, double codeFreq, double carrierFreq, gpstk::CodeGenerator* code)
       : tickSize(tickSize),
-        codeChipLen(1/codeFreq),
+        codeChipLen(1.0/codeFreq),
         carrierFreq(carrierFreq),
         localTime(0),
         codePhase(0), codePhaseOffset(0), codeFreqOffset(0),

@@ -30,7 +30,7 @@
 #include <iostream>
 
 //-----------------------------------------------------------------------------
-// A correlator with a built in delay line to offset the incomming code.
+// A correlator with a built in delay line to offset the incoming code.
 //-----------------------------------------------------------------------------
 template <class C>
 class SimpleCorrelator

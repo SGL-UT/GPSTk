@@ -21,6 +21,7 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
+//*
 
 #include <math.h>
 #include <complex>
@@ -61,6 +62,8 @@ private:
    // number of seconds between samples
    double timeStep;
 
+   double interFreq; // Intermediate frequency from receiver
+
    CCReplica* cc;
 
    IQStream *input;
@@ -81,7 +84,7 @@ private:
 //-----------------------------------------------------------------------------
 Corltr::Corltr() throw() :
    BasicFramework("corltr", "A program to test out local replica generation and correlation."),
-   timeStep(50e-9), bands(2), steps(4092), peakOnly(false)
+   timeStep(50e-9), bands(2), steps(4092), peakOnly(false), interFreq(0.42e6)
 {}
 
 
@@ -94,12 +97,18 @@ bool Corltr::initialize(int argc, char *argv[]) throw()
                 "Specifies how wide a window to use, in us. The default "
                 "is 1023 us."),
 
-      timeStepOpt('t', "time-step",
-                  "Specifies the nominal interval between samples, in us. "
-                  "The default is 0.05 us."),
+      sampleRateOpt('r',"sample-rate",
+                    "Specifies the nominal sample rate, in MHz.  The "
+                    "default is 20 MHz."),
+
+      interFreqOpt('x',"inter-freq",
+                   "Specifies the intermediate frequency of the receiver,"
+                   " in MHz.  Default is 0.42 MHz. If there is no down-"
+                   "conversion, the IF should be the L1 or L2 carrier"
+                   " frequency" ),
 
       quantizationOpt('q', "quantization",
-                      "They quantization applied to the data. 1, 2 or f. "
+                      "The quantization applied to the data. 1, 2 or f. "
                       "The default is f."),
 
       codeOpt('c', "code",
@@ -135,9 +144,11 @@ bool Corltr::initialize(int argc, char *argv[]) throw()
 
    peakOnly = peakOnlyOpt.getCount()>0;
 
-   if (timeStepOpt.getCount())
-      timeStep = asDouble(timeStepOpt.getValue().front()) * 1e-6;
-   else
+   if (sampleRateOpt.getCount())
+      timeStep = 1/(asDouble(sampleRateOpt.getValue().front()) * 1e6 );
+
+   if (interFreqOpt.getCount())
+      interFreq = asDouble(interFreqOpt.getValue().front()) * 1e6;
 
    if (windowOpt.getCount())
       window = asDouble(windowOpt.getValue().front()) * 1e-6;
@@ -202,16 +213,6 @@ bool Corltr::initialize(int argc, char *argv[]) throw()
           offset =  asDouble(word(val, 3, delim)) * 1e-6;
           doppler = asDouble(word(val, 4, delim));
 
-   double interFreq;
-   switch (band)
-   {
-      case 1: interFreq = gpstk::L1_FREQ - 1575e6; break;
-      case 2: interFreq = gpstk::L2_FREQ - 1228e6; break;
-      default: 
-         cout << "Unsupported band: " << band << endl;
-         return false;
-   }
-
    CodeGenerator* codeGenPtr;
    double chipFreq;
    switch (code[0])
@@ -239,7 +240,7 @@ void Corltr::process()
 {
    const unsigned windowTicks = static_cast<unsigned>(window / timeStep);
    const unsigned maxSamp=windowTicks+1;
-   const double stepSize = cc->codeChipLen/4;
+   const double stepSize = cc->codeChipLen/4; 
    vector< complex<double> > in(maxSamp);
    unsigned numSamp = 0;
    complex<float> s;
@@ -267,7 +268,8 @@ void Corltr::process()
            << "# freqErr:" << freqErr * 1e6 << " ppm" << endl
            << "# offset:" << offset*1e6 << " usec" << endl
            << "# Input sumSq: " << sumSq << endl;
-
+   
+         
    cc->setCodeFreqOffsetHz(doppler);
    cc->setCarrierFreqOffsetHz(doppler);
 
@@ -308,11 +310,12 @@ void Corltr::process()
          maxR=r;
          maxDelay=delay;
       }
+         
       if (!peakOnly)
          cout << setprecision(9) << delay*1e6
               << " " << setprecision(4) << abs(sum())
               << " " << r << " " << snr << endl;
-   }
+      }
    if (peakOnly)
       cout << setprecision(9) << maxDelay*1e6
            << setprecision(4) << " " << maxR << " " << maxSnr << endl;

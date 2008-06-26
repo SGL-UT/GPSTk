@@ -76,7 +76,7 @@ public:
 
    std::complex<double> getSample() const
    {
-      double phase = zchip_fraction_accum*carrier_multiplier*2*gpstk::PI;
+      double phase = zchip_fraction_accum*carrier_multiplier*2.0*gpstk::PI;
       std::complex<double> carrier = sincos(phase);
 
       bool nav_bit=(*nav_codegen);

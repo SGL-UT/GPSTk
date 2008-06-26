@@ -68,16 +68,15 @@ public:
 
    bool initialize(int argc, char *argv[]) throw();
 
-   // Base frequency of receiver (in Hz)
-   const double RX_BASE_FREQ;
-
    // How many samples are taken in one base period
-   const int RX_SAMPLE_RATE_MULTIPLIER;
+   double samples_per_period;
+   double rx_sample_rate;
+
 
    // The multipliers applied to the base frequency to get the local
    // oscilator for the mixers.
-   const int RX_L1_LO_MULTIPLIER;
-   const int RX_L2_LO_MULTIPLIER;
+   double  rx_L1_LO;
+   double  rx_L2_LO;
 
    // Number of local oscilators
    const int LO_COUNT;
@@ -88,8 +87,11 @@ public:
    // A gain to apply to the 'final' signal
    double gain;
 
-   // number of seconds between samples
+   // Number of seconds between samples
    double time_step;
+
+   // Intermediate Frequency from receiver.
+   double interFreq;
 
    // One period is a tick of the RX_BASE_FREQ clock
    unsigned long periods_to_generate;
@@ -103,6 +105,9 @@ public:
    double freqErr;
 
    IQStream *output;
+
+   
+   
    
 protected:
    virtual void process();
@@ -113,18 +118,18 @@ GpsSim::GpsSim() throw() :
    BasicFramework("gpsSim", "A simple simulation of a the GPS signal."),
    periods_to_generate(4096),
    LO_COUNT(2),
-   RX_BASE_FREQ(1.0e6),
-   RX_SAMPLE_RATE_MULTIPLIER(20),
-   RX_L1_LO_MULTIPLIER(1575),
-   RX_L2_LO_MULTIPLIER(1228),
-   time_step(1.0/(RX_BASE_FREQ*RX_SAMPLE_RATE_MULTIPLIER)),
+   rx_sample_rate(20.0e6),
+   samples_per_period(20.0),
+   interFreq(0.42e6),
+   rx_L1_LO(gpstk::L1_FREQ - 0.42e6),
+   rx_L2_LO(gpstk::L2_FREQ - 0.42e6),
+   time_step(1.0/20e6),
    p_amplitude(0.1250*M_SQRT2),
    ca_amplitude(0.1767*M_SQRT2),
    noise_amplitude(2.805),
    codeOnly(false),
    gain(1)
 {}
-
 
 bool GpsSim::initialize(int argc, char *argv[]) throw()
 {
@@ -142,6 +147,16 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
    CommandOptionNoArg
       codeOnlyOpt('\0', "code-only",
                   "Only generate the codes. No carrier, no hetrodyning.");
+
+   CommandOptionWithAnyArg
+      sampleRateOpt('r',"sample-rate",
+                    "Specifies the nominal sample rate, in MHz.  The "
+                    "default is 20 MHz.");
+
+   CommandOptionWithAnyArg
+      interFreqOpt('x',"inter-freq",
+                   "Specifies the intermediate frequency of the receiver,"
+                   " in MHz.  Default is 0.42 MHz.");
 
    CommandOptionWithAnyArg
       quantizationOpt('q', "quantization",
@@ -177,7 +192,6 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
    char quantization='f';   
    if (quantizationOpt.getCount())
       quantization = quantizationOpt.getValue()[0][0];
-
    switch (quantization)
    {
       case '1': output = new IQ1Stream(); break;
@@ -185,6 +199,16 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
       case 'f':
       default:  output = new IQFloatStream(); break;
    }
+
+   if (sampleRateOpt.getCount()){
+      rx_sample_rate = asDouble(sampleRateOpt.getValue().front()) * 1e6;
+      time_step = 1.0/rx_sample_rate;
+      samples_per_period = rx_sample_rate / 1e6;}
+
+   if (interFreqOpt.getCount()){
+      interFreq = asDouble(interFreqOpt.getValue().front()) * 1e6;
+      rx_L1_LO = gpstk::L1_FREQ - interFreq;
+      rx_L2_LO = gpstk::L2_FREQ - interFreq;}
 
    if (outputOpt.getCount())
    {
@@ -232,18 +256,18 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
    if (runTimeOpt.getCount())
    {
       double rt = asDouble(runTimeOpt.getValue()[0]);
-      periods_to_generate = static_cast<long unsigned>(rt*RX_BASE_FREQ);
+      periods_to_generate = static_cast<long unsigned>(rt*1.0e6);
    }
 
    if (debugLevel)
       cout << "# Running for : " << periods_to_generate
-           << " periods (" << 1e3 * periods_to_generate/RX_BASE_FREQ
+           << " periods (" << 1e3 * periods_to_generate/1.0e6
            << " msec)" << endl;
 
    // Compute the local oscilator frequencies, units seem to be radians/sample
    omega_lo.resize(LO_COUNT);
-   omega_lo[0] = 2.0*PI*RX_L1_LO_MULTIPLIER/RX_SAMPLE_RATE_MULTIPLIER;
-   omega_lo[1] = 2.0*PI*RX_L2_LO_MULTIPLIER/RX_SAMPLE_RATE_MULTIPLIER;
+   omega_lo[0] = 2.0*gpstk::PI*rx_L1_LO/rx_sample_rate;
+   omega_lo[1] = 2.0*gpstk::PI*rx_L2_LO/rx_sample_rate;
    
    vector<double> lo(LO_COUNT);
    lo[0] = omega_lo[0]/time_step / 2 /PI;
@@ -285,7 +309,7 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
 
       // This is the number of P code chips in one sample. If this
       // is not around or less than 1/2, we have a problem
-      double sampleRate = 1/(RX_SAMPLE_RATE_MULTIPLIER*RX_BASE_FREQ); //sec
+      double sampleRate = 1.0/(rx_sample_rate); //sec
       double chips_per_sample_base = gpstk::PY_CHIP_FREQ * sampleRate;
       
       switch(band)
@@ -308,7 +332,7 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
       src->p_amplitude = p_amplitude;
       src->ca_amplitude = ca_amplitude;
       // offset needs to be provided to the SVSource in units of P chips
-      src->slewZChipFraction(offset * gpstk::PY_CHIP_FREQ * 1e-6);
+      src->slewZChipFraction(offset * gpstk::PY_CHIP_FREQ * 1.0e-6);
 
       if (codeOnlyOpt.getCount())
          src->code_only = true;
@@ -318,8 +342,8 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
          
       sv_sources.push_back(src);
    }
-
    return true;
+
 }
 
 void GpsSim::process()
@@ -329,50 +353,49 @@ void GpsSim::process()
 
    // simulation time, in seconds
    double rx_time = 0;
-
-   for(int period=0; period<periods_to_generate; ++period)
+   int max_samples = periods_to_generate*static_cast<int>(samples_per_period);
+     
+   for(int sample=0; sample < max_samples; ++sample)
    {
-      for(int sample=0; sample<RX_SAMPLE_RATE_MULTIPLIER; ++sample)
+      rx_time += time_step;
+
+      // Clear out our accumulators
+      for (int i=0; i < LO_COUNT; i++)
+         accum[i] = (0,0);
+
+      // Sum the signals from each SV
+      list<SVSource*>::iterator i;
+      for(i = sv_sources.begin(); i != sv_sources.end(); i++)
       {
-         rx_time += time_step;
+         SVSource* src = *i;
+         int band=src->band-1;
+         accum[band] += src->getSample();
+         src->incrementState();
+      }
 
-         // Clear out our accumulators
-         for (int i=0; i < LO_COUNT; i++)
-            accum[i] = (0,0);
-
-         // Sum the signals from each SV
-         list<SVSource*>::iterator i;
-         for(i = sv_sources.begin(); i != sv_sources.end(); i++)
-         {
-            SVSource* src = *i;
-            int band=src->band-1;
-            accum[band] += src->getSample();
-            src->incrementState();
-         }
-
-         // For each local oscilator frequency...
-         for (int i=0; i<LO_COUNT; i++)
-         {
-            // Compute the local oscilator and the sample noise
-            complex<double> lo = sincos(omega_lo[i] * sample);
-            complex<double> noise(generate_normal_rv()*noise_amplitude,
+      // For each local oscilator frequency...
+      for (int i=0; i<LO_COUNT; i++)
+      {
+         // Compute the local oscilator and the sample noise
+         complex<double> lo = sincos(omega_lo[i] * sample);
+         complex<double> noise(generate_normal_rv()*noise_amplitude,
                                   generate_normal_rv()*noise_amplitude);
             
-            // Heterodyne the signals
-            if (!codeOnly)
-               accum[i] *= conj(lo);
+         // Heterodyne the signals
+         if (!codeOnly)
+         accum[i] *= conj(lo);
 
-            // and add the noise
-            accum[i] += noise;
+         // and add the noise
+         accum[i] += noise;
 
-            // Apply receiver gain
-            accum[i] *= gain;
+         // Apply receiver gain
+         accum[i] *= gain;
 
-            // And output the samples
-            *output << accum[i];
-         }         
-      }
+         // And output the samples
+         *output << accum[i];
+      }         
    }
+         
 }
 
 int main(int argc, char *argv[])

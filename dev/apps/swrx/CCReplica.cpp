@@ -71,7 +71,7 @@ void CCReplica::reset()
 
 complex<double> CCReplica::getCarrier()
 {
-   return sincos(2*gpstk::PI*carrierPhase);
+   return sincos(2.0*gpstk::PI*carrierPhase);
 }
 
 
