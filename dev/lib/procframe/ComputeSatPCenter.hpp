@@ -239,7 +239,7 @@ namespace gpstk
           *
           * @return Satellite antenna phase correction, in meters.
           */
-      virtual double getSatPCenter( const SatID& sat,
+      virtual double getSatPCenter( const SatID& satid,
                                     const DayTime& time,
                                     const Triple& sat,
                                     const Triple& sunPosition );
