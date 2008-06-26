@@ -546,7 +546,8 @@ string DDEpochMap::computeStats(
    long n = f.size();
 
    double median;
-   vector<double> ddv(dd.begin(),dd.end());
+   vector<double> ddv(dd.size());
+   copy(dd.begin(),dd.end(),ddv.begin());
    double mad = Robust::MedianAbsoluteDeviation(&ddv[0], ddv.size(), median);
 
    ostringstream oss;
