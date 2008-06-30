@@ -34,9 +34,6 @@
    // Class to detect cycle slips using the Melbourne-Wubbena combination
 #include "MWCSDetector.hpp"
 
-   // Class to compute weights according to Appendix J of MOPS C (RTCA/DO-229C)
-#include "ComputeMOPSWeights.hpp"
-
    // Class to compute the effect of solid tides
 #include "SolidTides.hpp"
 
@@ -52,6 +49,9 @@
    // Class to compute the effect of wind-up
 #include "ComputeWindUp.hpp"
 
+   // Class to compute the effect of satellite antenna phase center
+#include "ComputeSatPCenter.hpp"
+
    // Class to compute the tropospheric data
 #include "ComputeTropModel.hpp"
 
@@ -60,6 +60,26 @@
 
    // This class pre-defines several handy linear combinations
 #include "LinearCombinations.hpp"
+
+   // Class to compute Dilution Of Precision values
+#include "ComputeDOP.hpp"
+
+   // Class to keep track of satellite arcs
+#include "SatArcMarker.hpp"
+
+   // Class to compute gravitational delays
+#include "GravitationalDelay.hpp"
+
+   // Compute statistical data
+#include "PowerSum.hpp"
+
+   // Used to delete satellites in eclipse
+#include "EclipsedSatFilter.hpp"
+
+   // Used to decimate data. This is important because RINEX observation
+   // data is provided with a 30 s sample rate, whereas SP3 files provide
+   // satellite clock information with a 900 s sample rate.
+#include "Decimate.hpp"
 
    // Class to compute the Precise Point Positioning (PPP) solution
 #include "SolverPPP.hpp"
@@ -108,10 +128,6 @@ int main(void)
    XYZ2NEU baseChange(nominalPos);
 
 
-      // This object will compute the appropriate MOPS weights
-   ComputeMOPSWeights mopsW(nominalPos, SP3EphList);
-
-
       // Declare a simple filter object to screen PC
    SimpleFilter pcFilter;
    pcFilter.setFilteredType(TypeID::PC);
@@ -156,6 +172,10 @@ int main(void)
    ComputeWindUp windup(SP3EphList, nominalPos,"PRN_GPS");
 
 
+      // Object to compute satellite antenna phase center effect
+   ComputeSatPCenter svPcenter(nominalPos);
+
+
       // Object to compute the tropospheric data
    ComputeTropModel computeTropo(neillTM);
 
@@ -179,8 +199,46 @@ int main(void)
       // to use a NEU system
    SolverPPP pppSolver(true);
 
+      // The real test for a PPP processing program is to handle coordinates
+      // as white noise. In such case, position error should be about 0.25 m or
+      // better. Uncomment the following couple of lines to test this.
+//   WhiteNoiseModel wnM(100.0);            // 100 m of sigma
+//   pppSolver.setCoordinatesModel(&wnM);
+
+
+      // Object to keep track of satellite arcs
+   SatArcMarker markArc;
+
+      // Object to compute gravitational delay effects
+   GravitationalDelay grDelay(nominalPos);
+
+      // Object to compute DOP values
+   ComputeDOP cDOP;
+
+      // Object to remove eclipsed satellites
+   EclipsedSatFilter eclipsedSV;
+
+      // Object to decimate data. This is important because RINEX observation
+      // data is provided with a 30 s sample rate, whereas SP3 files provide
+      // satellite clock information with a 900 s sample rate.
+   Decimate decimateData(900.0, 5.0, SP3EphList.getInitialTime());
+
+      // When you are printing the model, you may want to comment the previous
+      // line and uncomment the following one, generating a 30 s model
+//   Decimate decimateData(30.0, 1.0, SP3EphList.getInitialTime());
+
+      // Statistical summary objects
+   PowerSum errorVectorStats;
+
+
 
       /////////////////// PROCESING PART /////////////////////
+
+
+      // Use this variable to select between position printing or model printing
+   bool printPosition(true);     // By default, print position and associated
+                                 // parameters
+
 
 
       // Loop over all data epochs
@@ -200,18 +258,31 @@ int main(void)
       try
       {
 
-         gRin >> basic
-              >> corr
-              >> windup
-              >> computeTropo
-              >> linear
-              >> markCSLI
-              >> markCSMW
-              >> pcFilter
-              >> mopsW
-              >> baseChange
-              >> pppSolver;
+            // The following lines are indeed just one line
+         gRin >> basic           // Compute the basic components of model
+              >> eclipsedSV      // Remove satellites in eclipse
+              >> grDelay         // Compute gravitational delay
+              >> svPcenter       // Compute the effect of satellite phase center
+              >> corr            // Correct observables from tides, etc.
+              >> windup          // Compute wind-up effect
+              >> computeTropo    // Compute tropospheric effect
+              >> linear          // Compute common linear combinations
+              >> markCSLI        // Mark cycle slips: LI algorithm
+              >> markCSMW        // Mark cycle slips: Melbourne-Wubbena
+              >> markArc         // Keep track of satellite arcs
+              >> decimateData    // If not a multiple of 900 s, decimate
+              >> pcFilter        // Filter out spurious data
+              >> baseChange      // Prepare to use North-East-UP reference frame
+              >> cDOP            // Compute DOP figures
+              >> pppSolver;      // Solve equations with a Kalman filter
 
+      }
+      catch(DecimateEpoch& d)
+      {
+            // If 'decimateData' object detects that this epoch is not a
+            // multiple of 900 s, it issues a "DecimateEpoch" exception. Here
+            // we catch such exception, and just continue to process next epoch.
+         continue;
       }
       catch(Exception& e)
       {
@@ -225,16 +296,144 @@ int main(void)
       }
 
 
-         // Print here the results
-      cout << time.DOYsecond()      << "  ";  // epoch - Output field #1
-      cout << pppSolver.solution[1] << "  ";  // dLat  - Output field #2
-      cout << pppSolver.solution[2] << "  ";  // dLon  - Output field #3
-      cout << pppSolver.solution[3] << "  ";  // dH    - Output field #4
-      cout << pppSolver.solution[0] << "  ";  // Tropo - Output field #5
+         // Check if we want to print model or position
+      if(printPosition)
+      {
+            // Print here the position results
+         cout << time.DOYsecond()      << "  ";     // Epoch - Output field #1
 
-      cout << endl;
+         cout << pppSolver.getSolution(TypeID::dLat) << "  ";    // dLat  - #2
+         cout << pppSolver.getSolution(TypeID::dLon) << "  ";    // dLon  - #3
+         cout << pppSolver.getSolution(TypeID::dH) << "  ";      // dH    - #4
+         cout << pppSolver.getSolution(TypeID::wetMap) << "  ";  // Tropo - #5
 
+         cout << pppSolver.getVariance(TypeID::dLat) << "  "; // Cov dLat - #6
+         cout << pppSolver.getVariance(TypeID::dLon) << "  "; // Cov dLon - #7
+         cout << pppSolver.getVariance(TypeID::dH) << "  ";   // Cov dH   - #8
+         cout << pppSolver.getVariance(TypeID::wetMap) << "  ";//Cov Tropo- #9
+
+         cout << gRin.numSats()        << "  ";       // Satellite number - #10
+
+         cout << cDOP.getGDOP()        << "  ";                   // GDOP - #11
+         cout << cDOP.getPDOP()        << "  ";                   // PDOP - #12
+         cout << cDOP.getTDOP()        << "  ";                   // TDOP - #13
+         cout << cDOP.getHDOP()        << "  ";                   // HDOP - #14
+         cout << cDOP.getVDOP()        << "  ";                   // VDOP - #15
+
+         cout << endl;
+
+            // For statistical purposes we discard the first two hours of data
+         if (time.DOYsecond() > 7200.0)
+         {
+               // Statistical summary
+            double errorV( pppSolver.solution[1]*pppSolver.solution[1] +
+                           pppSolver.solution[2]*pppSolver.solution[2] +
+                           pppSolver.solution[3]*pppSolver.solution[3] );
+
+               // Get module of position error vector
+            errorV = std::sqrt(errorV);
+
+               // Add to statistical summary object
+            errorVectorStats.add(errorV);
+         }
+
+      }  // End of position printing
+      else
+      {
+            // Print here the model results
+            // First, define types we want to keep
+         TypeIDSet types;
+         types.insert(TypeID::L1);
+         types.insert(TypeID::L2);
+         types.insert(TypeID::P1);
+         types.insert(TypeID::P2);
+         types.insert(TypeID::PC);
+         types.insert(TypeID::LC);
+         types.insert(TypeID::rho);
+         types.insert(TypeID::dtSat);
+         types.insert(TypeID::rel);
+         types.insert(TypeID::gravDelay);
+         types.insert(TypeID::tropo);
+         types.insert(TypeID::dryTropo);
+         types.insert(TypeID::dryMap);
+         types.insert(TypeID::wetTropo);
+         types.insert(TypeID::wetMap);
+         types.insert(TypeID::tropoSlant);
+         types.insert(TypeID::windUp);
+         types.insert(TypeID::satPCenter);
+         types.insert(TypeID::satX);
+         types.insert(TypeID::satY);
+         types.insert(TypeID::satZ);
+         types.insert(TypeID::elevation);
+         types.insert(TypeID::azimuth);
+         types.insert(TypeID::satArc);
+         types.insert(TypeID::prefitC);
+         types.insert(TypeID::prefitL);
+         types.insert(TypeID::dx);
+         types.insert(TypeID::dy);
+         types.insert(TypeID::dz);
+         types.insert(TypeID::dLat);
+         types.insert(TypeID::dLon);
+         types.insert(TypeID::dH);
+         types.insert(TypeID::cdt);
+
+         gRin.keepOnlyTypeID(types);   // Delete the types not in 'types'
+
+            // Iterate through the GNSS Data Structure
+         satTypeValueMap::const_iterator it;
+         for (it = gRin.body.begin(); it!= gRin.body.end(); it++) 
+         {
+
+               // Print epoch
+            cout << time.year()        << " ";
+            cout << time.DOY()         << " ";
+            cout << time.DOYsecond()   << " ";
+
+            cout << cDOP.getGDOP()        << "  ";  // GDOP #4
+            cout << cDOP.getPDOP()        << "  ";  // PDOP #5
+            cout << cDOP.getTDOP()        << "  ";  // TDOP #6
+            cout << cDOP.getHDOP()        << "  ";  // HDOP #7
+            cout << cDOP.getVDOP()        << "  ";  // VDOP #8
+
+               // Print satellite information (system and PRN)
+            cout << (*it).first << " ";
+
+               // Print model values
+            typeValueMap::const_iterator itObs;
+            for( itObs  = (*it).second.begin(); 
+                 itObs != (*it).second.end();
+                 itObs++ )
+            {
+               bool printNames(true);  // Whether print types' names or not
+               if (printNames)
+               {
+                  cout << (*itObs).first << " ";
+               }
+
+               cout << (*itObs).second << " ";
+
+            }  // End for( itObs = ... )
+
+            cout << endl;
+
+         }  // End for (it = gRin.body.begin(); ... )
+
+      }  // End of model printing
+
+   }  // End of 'while(rin >> gRin)...'
+
+
+
+      // Print statistical summary in cerr
+   if(printPosition)
+   {
+      cerr << "Module of error vector: Average = "
+           << errorVectorStats.average() << " m    Std. dev. = "
+           << std::sqrt(errorVectorStats.variance()) << " m" << endl;
    }
 
-   exit(0);
+
+
+   exit(0);       // End of program
+
 }
