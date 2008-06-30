@@ -492,8 +492,8 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
             prev.smashCount++;
             prev.span = prev.smashCount * epochRate;
             prev.time = curr.time;
-            prev.elevation = curr.elevation;
-            prev.azimuth = curr.azimuth;
+            prev.last_elevation = curr.elevation;
+            prev.last_azimuth = curr.azimuth;
             prev.obs = curr.obs;
             prev.epochCount = curr.epochCount;
             prev.numAboveMaskAngle = 
@@ -744,8 +744,8 @@ void DataAvailabilityAnalyzer::shutDown()
    
    output << "\n Availability Raw Results :" << endl
           << endl
-          << "Start                 End        #     PRN    Elv    Az  Hlth  ama ata   ccid" << endl
-          << "=============================================================================" << endl;
+          << "Start                 End        #     PRN    Elv          Az  Hlth  ama ata   ccid" << endl
+          << "===================================================================================" << endl;
    
    for_each(sml.begin(), sml.end(), InView::dumper(output, timeFormat));
 
@@ -838,8 +838,12 @@ void DataAvailabilityAnalyzer::InView::dump(ostream& s, const string fmt)
    if (prn>0)
    {
       s << setw(3) << prn << " " << fixed << right
-        << setprecision(2) << setw(6) << elevation
-        << dir << "  "
+        << setprecision(2) << setw(6) << elevation;
+      if (smashCount)
+         s << " - " << setprecision(2) << left << setw(5) << last_elevation << right;
+      else
+         s << dir << setw(7) << " ";
+      s << "  "
         << setprecision(0) << setw(3) << azimuth << "  "
         << hex << setw(2) << health << "  " << dec
         << "   "
