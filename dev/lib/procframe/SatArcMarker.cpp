@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
 //
 //============================================================================
@@ -46,6 +46,56 @@ namespace gpstk
       // Returns a string identifying this object.
    std::string SatArcMarker::getClassName() const
    { return "SatArcMarker"; }
+
+
+      /* Common constructor
+       *
+       * @param watchFlag        Cycle slip flag to be watched.
+       * @param delUnstableSats  Whether unstable satellites will be deleted.
+       * @param unstableTime     Number of seconds since last arc change
+       *                         that a satellite will be considered as
+       *                         unstable.
+       */
+   SatArcMarker::SatArcMarker( const TypeID& watchFlag,
+                               const bool delUnstableSats,
+                               const double unstableTime )
+      : watchCSFlag(watchFlag), deleteUnstableSats(delUnstableSats)
+   {
+         // Check unstableTime value
+      if (unstableTime > 0.0)
+      {
+         unstablePeriod = unstableTime;
+      }
+      else
+      {
+         unstablePeriod = 0.0;
+      }
+
+      setIndex();
+   }
+
+
+      /* Method to set the number of seconds since last arc change that a
+       *  satellite will be considered as unstable.
+       *
+       * @param unstableTime     Number of seconds since last arc change
+       *                         that a satellite will be considered as
+       *                         unstable.
+       */
+   SatArcMarker& SatArcMarker::setUnstablePeriod(const double unstableTime)
+   {
+         // Check unstableTime value
+      if (unstableTime > 0.0)
+      {
+         unstablePeriod = unstableTime;
+      }
+      else
+      {
+         unstablePeriod = 0.0;
+      }
+
+      return (*this);
+   }
 
 
       /* Returns a satTypeValueMap object, adding the new data generated
@@ -90,6 +140,7 @@ namespace gpstk
             {
                   // If it doesn't have an entry, insert one
                satArcMap[ (*it).first ] = 0.0;
+               satArcChangeMap[ (*it).first ] = DayTime::BEGINNING_OF_TIME;
             };
 
             std::map<SatID, double>::const_iterator itFlag;
@@ -101,10 +152,26 @@ namespace gpstk
             };
 
                // Increase the satellite arc number if it wasn't done before
-            if ( prevCSFlagMap[ (*it).first ] < 1.0)
+               // and if "unstable period" is over
+            if( ( prevCSFlagMap[ (*it).first ] < 1.0 ) && 
+                (std::abs(epoch-satArcChangeMap[(*it).first])>unstablePeriod))
             {
                satArcMap[ (*it).first ] = satArcMap[ (*it).first ] + 1.0;
+
+                  // Update arc change epoch only if this is NOT the first arc
+               if( satArcMap[ (*it).first ] > 1.0 )
+               {
+                  satArcChangeMap[ (*it).first ] = epoch;
+               }
             }
+
+               // Check if satellite is unstable and if we want to remove it
+            if ( deleteUnstableSats &&
+                 (std::abs(epoch-satArcChangeMap[(*it).first])<=unstablePeriod))
+            {
+               satRejectedSet.insert( (*it).first );
+            }
+
          }
 
             // We will insert the satellite arc number

@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
 //
 //============================================================================
@@ -73,6 +73,17 @@ namespace gpstk
        * rarely necessary because CS detectors raise all flags when a cycle
        * slip happens.
        *
+       * An important feature of "SatArcMarker" objects is that they you can
+       * set a period after arc change when the affected satellite will be
+       * considered "unstable". This feature is disabled by default (unstable
+       * period is set to zero), but it may be activated using the appropriate
+       * constructor or using the "setUnstablePeriod()" method.
+       *
+       * Likewise, SatArcMarker" objects are also able to delete unstable
+       * satellites from GDS. This feature is also disabled by default, but may
+       * be activated using the appropriate constructor or using (both)
+       * methods "setDeleteUnstableSats()" and "setUnstablePeriod()".
+       *
        * \warning Be aware that this class DOES NOT apply cycle slip detection
        * algorithms, so you MUST invoke CS detection objects BEFORE calling
        * SatArcMarker objects.
@@ -82,24 +93,29 @@ namespace gpstk
        *
        * @sa LICSDetector.hpp and MWCSDetector.hpp for CS detection classes.
        *
-       */    
+       */
    class SatArcMarker : public ProcessingClass
    {
       public:
 
          /// Default constructor. It will only watch "TypeID::CSL1" flag.
       SatArcMarker()
-         : watchCSFlag(TypeID::CSL1)
+         : watchCSFlag(TypeID::CSL1), deleteUnstableSats(false),
+           unstablePeriod(0.0)
       { setIndex(); };
 
 
          /** Common constructor
           *
-          * @param watchFlag     Cycle slip flag to be watched.
+          * @param watchFlag        Cycle slip flag to be watched.
+          * @param delUnstableSats  Whether unstable satellites will be deleted.
+          * @param unstableTime     Number of seconds since last arc change
+          *                         that a satellite will be considered as
+          *                         unstable.
           */
-      SatArcMarker( const TypeID& watchFlag )
-         : watchCSFlag(watchFlag)
-      { setIndex(); };
+      SatArcMarker( const TypeID& watchFlag,
+                    const bool delUnstableSats,
+                    const double unstableTime );
 
 
          /// Method to get the default CS flag type being used.
@@ -113,6 +129,35 @@ namespace gpstk
           */
       virtual SatArcMarker& setCSFlag(const TypeID& watchFlag)
       { watchCSFlag = watchFlag; return (*this); };
+
+
+         /// Method to known if unstable satellites will be deleted.
+      virtual bool getDeleteUnstableSat() const
+      { return deleteUnstableSats; };
+
+
+         /** Method to set if unstable satellites will be deleted.
+          *
+          * @param delUnstableSats  Whether unstable satellites will be deleted.
+          */
+      virtual SatArcMarker& setDeleteUnstableSats(const bool delUnstableSats)
+      { deleteUnstableSats = delUnstableSats; return (*this); };
+
+
+         /// Method to get the number of seconds since last arc change that a
+         /// satellite will be considered as unstable.
+      virtual double getUnstablePeriod() const
+      { return unstablePeriod; };
+
+
+         /** Method to set the number of seconds since last arc change that a
+          *  satellite will be considered as unstable.
+          *
+          * @param unstableTime     Number of seconds since last arc change
+          *                         that a satellite will be considered as
+          *                         unstable.
+          */
+      virtual SatArcMarker& setUnstablePeriod(const double unstableTime);
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -161,12 +206,22 @@ namespace gpstk
 
          /// Cycle slip flag to be watched.
       TypeID watchCSFlag;
- 
+
+         /// Flag indicating if unstable satellites will be deleted.
+      bool deleteUnstableSats;
+
+         /// Number of seconds since arc change that a satellite will be
+         /// considered as unstable.
+      double unstablePeriod;
+
          /// Map holding information regarding every satellite
       std::map<SatID, double> satArcMap;
 
          /// Map holding information regarding previous CS flags
       std::map<SatID, double> prevCSFlagMap;
+
+         /// Map holding information about epoch of last arc change
+      std::map<SatID, DayTime> satArcChangeMap;
 
          /// Initial index assigned to this class.
       static int classIndex;
@@ -176,14 +231,14 @@ namespace gpstk
 
          /// Sets the index and increment classIndex.
       void setIndex(void)
-      { index = classIndex++; }; 
+      { index = classIndex++; };
 
 
    }; // end class SatArcMarker
 
 
    //@}
-   
+
 }
 
 #endif   // SATARCMARKER_HPP
