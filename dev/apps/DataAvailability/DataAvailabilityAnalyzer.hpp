@@ -171,6 +171,8 @@ public:
 
       // Number of epochs received from this SV during this pass
       unsigned epochCount;
+
+      // These values are from the first epoch when multiple epochs are smashed
       float elevation,azimuth;
       short health;
 
@@ -181,11 +183,14 @@ public:
       // Indicates the number of records merged.
       unsigned smashCount;
       double span;
+      float last_elevation,last_azimuth;
 
       // The number of SVs in track at this point in time.
       short inTrack;
 
       // The number of SVs physically above the mask angle at this time
+      // When multiple epochs are smashed, these are the max values seen
+      // durning the intervals smashed
       short numAboveMaskAngle, numAboveTrackAngle;
 
       // The most recent obs from this prn
