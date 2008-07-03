@@ -195,7 +195,6 @@ namespace gpstk
       // checks that the enum is defined
    bool TypeID::isValid() const
    {
-      // At some time this needs to be implemented.
       return !(type==Unknown);
    }
 

@@ -1,4 +1,10 @@
 #pragma ident "$Id$"
+
+/**
+ * @file ObsID.cpp
+ * gpstk::ObsID - Identifies types of observations
+ */
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -16,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -34,13 +40,11 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+
+
 #include "ObsID.hpp"
 
-
-/**
- * @file ObsID.cpp
- * gpstk::ObsID - Identifies types of observations
- */
 
 namespace gpstk
 {
@@ -52,6 +56,16 @@ namespace gpstk
 
    ObsID::Initializer::Initializer()
    {
+      otStrings[otUnknown] = "UnknownType";
+      otStrings[otRange]   = "range";
+      otStrings[otPhase]   = "phase";
+      otStrings[otDoppler] = "doppler";
+      otStrings[otSNR]     = "snr";
+      otStrings[otSSI]     = "ssi";
+      otStrings[otLLI]     = "lli";
+      otStrings[otLast]    = "otLast";
+      otStrings[otPlaceholder] = "otPlaceholder";
+
       cbStrings[cbUnknown] = "UnknownBand";
       cbStrings[cbL1]      = "L1";
       cbStrings[cbL2]      = "L2";
@@ -61,15 +75,8 @@ namespace gpstk
       cbStrings[cbG2]      = "G2";
       cbStrings[cbE5b]     = "E5b";
       cbStrings[cbE5ab]    = "L5a+b";
-      cbStrings[cbE6]      = "E6";
-
-      otStrings[otUnknown] = "UnknownType";
-      otStrings[otRange]   = "range";
-      otStrings[otPhase]   = "phase";
-      otStrings[otDoppler] = "doppler";
-      otStrings[otSNR]     = "snr";
-      otStrings[otSSI]     = "ssi";
-      otStrings[otLLI]     = "lli";
+      cbStrings[cbLast]    = "cbLast";
+      cbStrings[cbPlaceholder] = "cbPlaceholder";
 
       tcStrings[tcUnknown] = "UnknownCode";
       tcStrings[tcCA]      = "C/A";
@@ -89,9 +96,12 @@ namespace gpstk
       tcStrings[tcC]       = "C";
       tcStrings[tcBC]      = "B+C";
       tcStrings[tcABC]     = "A+B+C";
+      tcStrings[tcLast]    = "tcLast";
+      tcStrings[tcPlaceholder] = "tcPlaceholder";
    }
 
 
+      // Convenience output method
    std::ostream& ObsID::dump(std::ostream& s) const
    {
       s << ObsID::cbStrings[band] << " "
@@ -101,40 +111,64 @@ namespace gpstk
       return s;
    } // ObsID::dump()
 
+
    bool ObsID::isValid() const
    {
       // At some time this needs to be implimented.
       return false;
    }
 
-   ObsID::CarrierBand ObsID::newCarrierBand(const std::string& s)
 
-   {
-      CarrierBand newId = 
-         static_cast<CarrierBand>(ObsID::cbStrings.rbegin()->first + 1);
-      ObsID::cbStrings[newId] = s;
-      return newId;
-   }
-
+      /* Static method to add new ObservationType's
+       * @param s      Identifying string for the new ObservationType
+       */
    ObsID::ObservationType ObsID::newObservationType(const std::string& s)
    {
-      ObservationType newId = 
+      ObservationType newId =
          static_cast<ObservationType>(ObsID::otStrings.rbegin()->first + 1);
+
       ObsID::otStrings[newId] = s;
+
       return newId;
    }
 
+
+      /* Static method to add new CarrierBand's
+       * @param s      Identifying string for the new CarrierBand
+       */
+   ObsID::CarrierBand ObsID::newCarrierBand(const std::string& s)
+   {
+      CarrierBand newId =
+         static_cast<CarrierBand>(ObsID::cbStrings.rbegin()->first + 1);
+
+      ObsID::cbStrings[newId] = s;
+
+      return newId;
+   }
+
+
+      /* Static method to add new TrackingCode's
+       * @param s      Identifying string for the new TrackingCode
+       */
    ObsID::TrackingCode ObsID::newTrackingCode(const std::string& s)
    {
-      TrackingCode newId = 
+      TrackingCode newId =
          static_cast<TrackingCode>(ObsID::tcStrings.rbegin()->first + 1);
+
       ObsID::tcStrings[newId] = s;
+
       return newId;
    }
 
+
+      // Equality requires all fields to be the same
    bool ObsID::operator==(const ObsID& right) const
    { return type==right.type &&  band==right.band && code==right.code; }
 
+
+      // This ordering is somewhat arbitrary but is required to be able
+      // to use an ObsID as an index to a std::map. If an application needs
+      // some other ordering, inherit and override this function.
    bool ObsID::operator<(const ObsID& right) const
    {
       if (band == right.band)
@@ -149,18 +183,20 @@ namespace gpstk
       return false;
    }
 
+
    namespace StringUtils
    {
-      /// convert this object to a string representation
-      std::string asString(const ObsID& p)      
+         // convert this object to a string representation
+      std::string asString(const ObsID& p)
       {
          std::ostringstream oss;
          p.dump(oss);
          return oss.str();
       }
    }
-   
-   /// stream output for ObsID
+
+
+      // stream output for ObsID
    std::ostream& operator<<(std::ostream& s, const ObsID& p)
    {
       p.dump(s);

@@ -285,7 +285,7 @@ namespace gpstk
 
 
          /** Static method to add new TypeID's
-          * @param string      Identifying string for the new TypeID
+          * @param s      Identifying string for the new TypeID
           */
       static ValueType newValueType(const std::string& s);
 
