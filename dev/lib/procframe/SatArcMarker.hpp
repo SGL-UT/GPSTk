@@ -73,16 +73,16 @@ namespace gpstk
        * rarely necessary because CS detectors raise all flags when a cycle
        * slip happens.
        *
-       * An important feature of "SatArcMarker" objects is that they you can
+       * An important feature of "SatArcMarker" objects is that you can
        * set a period after arc change when the affected satellite will be
-       * considered "unstable". This feature is disabled by default (unstable
-       * period is set to zero), but it may be activated using the appropriate
-       * constructor or using the "setUnstablePeriod()" method.
+       * considered "unstable". By default, unstable period is set to 31 s,
+       * but it may be changed using the appropriate constructor or using
+       * the "setUnstablePeriod()" method.
        *
        * Likewise, SatArcMarker" objects are also able to delete unstable
-       * satellites from GDS. This feature is also disabled by default, but may
-       * be activated using the appropriate constructor or using (both)
-       * methods "setDeleteUnstableSats()" and "setUnstablePeriod()".
+       * satellites from GDS. This feature is disabled by default, but may
+       * be activated using the appropriate constructor or using the
+       * "setDeleteUnstableSats()".
        *
        * \warning Be aware that this class DOES NOT apply cycle slip detection
        * algorithms, so you MUST invoke CS detection objects BEFORE calling
@@ -101,7 +101,7 @@ namespace gpstk
          /// Default constructor. It will only watch "TypeID::CSL1" flag.
       SatArcMarker()
          : watchCSFlag(TypeID::CSL1), deleteUnstableSats(false),
-           unstablePeriod(0.0)
+           unstablePeriod(31.0)
       { setIndex(); };
 
 
@@ -216,9 +216,6 @@ namespace gpstk
 
          /// Map holding information regarding every satellite
       std::map<SatID, double> satArcMap;
-
-         /// Map holding information regarding previous CS flags
-      std::map<SatID, double> prevCSFlagMap;
 
          /// Map holding information about epoch of last arc change
       std::map<SatID, DayTime> satArcChangeMap;

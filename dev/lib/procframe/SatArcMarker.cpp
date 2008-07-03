@@ -115,7 +115,7 @@ namespace gpstk
 
          // Loop through all the satellites
       satTypeValueMap::iterator it;
-      for (it = gData.begin(); it != gData.end(); ++it) 
+      for (it = gData.begin(); it != gData.end(); ++it)
       {
          try
          {
@@ -130,55 +130,52 @@ namespace gpstk
             continue;
          }
 
-            // If there was a CS, then increment the value of "TypeID::satArc"
-         if ( flag > 0.0 )
+            // Check if satellite currently has entries
+         std::map<SatID, double>::const_iterator itArc;
+         itArc = satArcMap.find( (*it).first );
+         if( itArc == satArcMap.end() )
          {
-               // Check if satellite currently has entries
-            std::map<SatID, double>::const_iterator itArc;
-            itArc = satArcMap.find( (*it).first );
-            if( itArc == satArcMap.end() ) 
-            {
-                  // If it doesn't have an entry, insert one
-               satArcMap[ (*it).first ] = 0.0;
-               satArcChangeMap[ (*it).first ] = DayTime::BEGINNING_OF_TIME;
-            };
+               // If it doesn't have an entry, insert one
+            satArcMap[ (*it).first ] = 0.0;
+            satArcChangeMap[ (*it).first ] = DayTime::BEGINNING_OF_TIME;
+         };
 
-            std::map<SatID, double>::const_iterator itFlag;
-            itFlag = prevCSFlagMap.find( (*it).first );
-            if( itFlag == prevCSFlagMap.end() ) 
-            {
-                  // If it doesn't have an entry, insert one
-               prevCSFlagMap[ (*it).first ] = 0.0;
-            };
-
-               // Increase the satellite arc number if it wasn't done before
-               // and if "unstable period" is over
-            if( ( prevCSFlagMap[ (*it).first ] < 1.0 ) && 
-                (std::abs(epoch-satArcChangeMap[(*it).first])>unstablePeriod))
-            {
-               satArcMap[ (*it).first ] = satArcMap[ (*it).first ] + 1.0;
-
-                  // Update arc change epoch only if this is NOT the first arc
-               if( satArcMap[ (*it).first ] > 1.0 )
-               {
-                  satArcChangeMap[ (*it).first ] = epoch;
-               }
-            }
-
-               // Check if satellite is unstable and if we want to remove it
+            // Test if we are inside unstable period
+         if ( std::abs(epoch-satArcChangeMap[(*it).first])<=unstablePeriod )
+         {
+               // Test if we want to delete unstable satellites. Only do it
+               // if this is NOT the first arc.
             if ( deleteUnstableSats &&
-                 (std::abs(epoch-satArcChangeMap[(*it).first])<=unstablePeriod))
+                 (satArcMap[ (*it).first ] > 1.0) )
             {
                satRejectedSet.insert( (*it).first );
             }
+         }
+         else
+         {
+               // In this case, "unstable period" is over and we can do changes
+               // Check if there was a cycle slip
+            if ( flag > 0.0 )
+            {
+                  // Increment the value of "TypeID::satArc"
+               satArcMap[ (*it).first ] = satArcMap[ (*it).first ] + 1.0;
 
+                  // Update arc change epoch
+               satArcChangeMap[ (*it).first ] = epoch;
+
+                  // If we want to delete unstable satellites, we must do it
+                  // also when arc changes, but only if this isn't the first arc
+               if ( deleteUnstableSats  &&
+                    (satArcMap[ (*it).first ] > 1.0) )
+               {
+                  satRejectedSet.insert( (*it).first );
+               }
+
+            }
          }
 
-            // We will insert the satellite arc number
+            // We will insert satellite arc number
          (*it).second[TypeID::satArc] = satArcMap[ (*it).first ];
-
-            // Store the CS flag value
-         prevCSFlagMap[ (*it).first ] = (*it).second(watchCSFlag);
 
       }
 
@@ -187,7 +184,7 @@ namespace gpstk
 
       return gData;
 
-   }
+   }  // End of "SatArcMarker::Process()"
 
 
       /* Returns a gnnsRinex object, adding the new data generated when
