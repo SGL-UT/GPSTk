@@ -3,12 +3,11 @@
 /**
  * @file TypeID.hpp
  * gpstk::TypeID - This class was written taking as inspiration ObsID. The
-   objective of this class is to create an index able to represent any type 
-   of observation, correction, model parameter or other data value of interest 
-   for GNSS data processing. This class is extensible in run-time, so the 
-   programmer may add indexes on-demand.
+ * objective of this class is to create an index able to represent any type
+ * of observation, correction, model parameter or other data value of interest
+ * for GNSS data processing. This class is extensible in run-time, so the
+ * programmer may add indexes on-demand.
  */
-
 
 #ifndef TYPEID_HPP
 #define TYPEID_HPP
@@ -30,7 +29,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -47,24 +46,23 @@
 namespace gpstk
 {
 
-      /**
-       * This class creates an index able to represent any type of observation,
-       * correction, model parameter or other data value of interest for GNSS 
-       * data processing.
+      /** This class creates an index able to represent any type of observation,
+       *  correction, model parameter or other data value of interest for GNSS
+       *  data processing.
        *
-       * This class is exensible in run-time, so the programmer may add 
+       * This class is extensible in run-time, so the programmer may add
        * indexes on-demand. For instance, in order to create a new TypeID
-       * object referring INS-related data, and with "ins" as description
+       * object referring INS-related data, and with "Inertial" as description
        * string, you may write the following:
        *
        * @code
-       *    TypeID INS = TypeID::newValueType("ins");
+       *    TypeID INS = TypeID::newValueType("Inertial");
        * @endcode
        *
        * Or using the constructor:
        *
        * @code
-       *    TypeID INS(TypeID::newValueType("ins"));
+       *    TypeID INS(TypeID::newValueType("Inertial"));
        * @endcode
        *
        * From now on, you'll be able to use INS as TypeID when you need to
@@ -225,41 +223,48 @@ namespace gpstk
          : type(Unknown) {};
 
 
-         /// Explicit constructor
+         /** Explicit constructor
+          *
+          * @param vt   ValueType for the new TypeID. If you want to use the
+          *             next available ValueType, generate it using the
+          *             'newValueType()' method, as indicated in the example in
+          *             the documentation.
+          */
+
       TypeID(ValueType vt)
          : type(vt) {};
 
 
          /// Equality requires all fields to be the same
       virtual bool operator==(const TypeID& right) const
-      { return type==right.type; }
+      { return type==right.type; };
 
 
          /// This ordering is somewhat arbitrary but is required to be able
          /// to use an TypeID as an index to a std::map. If an application
          /// needs some other ordering, inherit and override this function.
       virtual bool operator<(const TypeID& right) const
-      { return type < right.type; }
+      { return type < right.type; };
 
 
-         /// Inequality operator   
+         /// Inequality operator
       bool operator!=(const TypeID& right) const
-      { return !(operator==(right)); }
+      { return !(operator==(right)); };
 
 
          /// Greater than operator
       bool operator>(const TypeID& right) const
-      {  return (!operator<(right) && !operator==(right)); }
+      {  return (!operator<(right) && !operator==(right)); };
 
 
          /// Less than or equal operator
       bool operator<=(const TypeID& right) const
-      { return (operator<(right) || operator==(right)); }
+      { return (operator<(right) || operator==(right)); };
 
 
          /// Greater than or equal operator
       bool operator>=(const TypeID& right) const
-      { return !(operator<(right)); }
+      { return !(operator<(right)); };
 
 
          /// Assignment operator
@@ -276,7 +281,7 @@ namespace gpstk
 
 
          /// Destructor
-      virtual ~TypeID() {}
+      virtual ~TypeID() {};
 
 
          /** Static method to add new TypeID's
@@ -286,7 +291,7 @@ namespace gpstk
 
 
          /// Type of the value
-      ValueType  type;
+      ValueType type;
 
 
          /// Map holding type descriptions
@@ -302,7 +307,9 @@ namespace gpstk
 
       static Initializer TypeIDsingleton;
 
+
    }; // End of class TypeID
+
 
 
    namespace StringUtils
@@ -310,14 +317,17 @@ namespace gpstk
          /// convert this object to a string representation
       std::string asString(const TypeID& p);
    }
-   
+
+
 
       /// stream output for TypeID
    std::ostream& operator<<(std::ostream& s, const TypeID& p);
 
 
+
       /// Conversion from RinexObsType to TypeID
    TypeID::ValueType RinexType2TypeID(const RinexObsHeader::RinexObsType& rot);
+
 
 
 } // namespace gpstk

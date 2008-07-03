@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -168,6 +168,8 @@ namespace gpstk
       tStrings[recH]       = "RxH";
       tStrings[sigma]      = "sigma";
       tStrings[iura]       = "iura";
+      tStrings[Last]       = "Last";
+      tStrings[Placeholder]= "Placeholder";
    }
 
 
@@ -203,9 +205,11 @@ namespace gpstk
        */
    TypeID::ValueType TypeID::newValueType(const std::string& s)
    {
-      ValueType newId = 
+      ValueType newId =
          static_cast<ValueType>(TypeID::tStrings.rbegin()->first + 1);
+
       TypeID::tStrings[newId] = s;
+
       return newId;
    }
 
@@ -214,7 +218,7 @@ namespace gpstk
    {
 
          // convert this object to a string representation
-      std::string asString(const TypeID& p)      
+      std::string asString(const TypeID& p)
       {
          std::ostringstream oss;
          p.dump(oss);
@@ -222,7 +226,7 @@ namespace gpstk
       }
 
    }  // End of namespace StringUtils
-   
+
 
       // stream output for TypeID
    std::ostream& operator<<(std::ostream& s, const TypeID& p)
