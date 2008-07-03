@@ -23,7 +23,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
 //============================================================================
@@ -82,7 +82,7 @@ namespace gpstk
 
          // Loop through all the satellites
       satTypeValueMap::iterator it;
-      for (it = gData.begin(); it != gData.end(); ++it) 
+      for (it = gData.begin(); it != gData.end(); ++it)
       {
 
             // Use ephemeris if satellite position is not already computed
@@ -102,7 +102,7 @@ namespace gpstk
                   // if it is not already computed
                try
                {
-                     // For our purposes, position at receive time 
+                     // For our purposes, position at receive time
                      // is fine enough
                   Xvt svPosVel(pEphemeris->getXvt( (*it).first, time ));
 
@@ -133,12 +133,12 @@ namespace gpstk
          Triple ray(svPos - staPos);
 
             // Rotate vector ray to UEN reference frame
-         ray = ray.R3(lon).R2(-lat);
+         ray = (ray.R3(lon)).R2(-lat);
 
             // Convert ray to an unitary vector
          ray = ray.unitVector();
 
-            // Compute corrections = displacement vectors components 
+            // Compute corrections = displacement vectors components
             // along ray direction.
          double corrL1(dispL1.dot(ray));
          double corrL2(dispL2.dot(ray));

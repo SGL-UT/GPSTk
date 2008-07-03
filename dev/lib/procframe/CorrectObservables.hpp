@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
 //============================================================================
@@ -50,8 +50,8 @@ namespace gpstk
 
 
       /** This class corrects observables from effects such as antenna
-       * excentricity, difference in phase centers, offsets due to 
-       * tidal effects, etc.
+       *  excentricity, difference in phase centers, offsets due to
+       *  tidal effects, etc.
        *
        * This class is meant to be used with the GNSS data structures objects
        * found in "DataStructures" class.
@@ -59,49 +59,50 @@ namespace gpstk
        * A typical way to use this class follows:
        *
        * @code
-       *   // Create the input obs file stream
-       *   RinexObsStream rin("ebre0300.02o");
+       *       // Create the input obs file stream
+       *    RinexObsStream rin("ebre0300.02o");
        *
-       *   // Loads precise ephemeris object with file data
-       *   SP3EphemerisStore SP3EphList;
-       *   SP3EphList.loadFile("igs11513.sp3");
+       *       // Loads precise ephemeris object with file data
+       *    SP3EphemerisStore SP3EphList;
+       *    SP3EphList.loadFile("igs11513.sp3");
        *
-       *   // Sets nominal position of receiver
-       *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
+       *       // Sets nominal position of receiver
+       *    Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
        *
-       *   // Vector from antenna ARP to L1 phase center [UEN] (Leica AT504)
-       *   Triple offsetL1(0.1093, -0.0003, 0.0003);   // Units in meters
+       *       // Vector from antenna ARP to L1 phase center [UEN] (Leica AT504)
+       *    Triple offsetL1(0.1093, -0.0003, 0.0003);        // Units in meters
        *
-       *   // Vector from antenna ARP to L2 phase center [UEN] (Leica AT504)
-       *   Triple offsetL2(0.1282, 0.0011, 0.0011);    // Units in meters
+       *       // Vector from antenna ARP to L2 phase center [UEN] (Leica AT504)
+       *    Triple offsetL2(0.1282, 0.0011, 0.0011);         // Units in meters
        *
-       *   // Vector from monument to antenna ARP [UEN] for this station
-       *   Triple offsetARP(2.510, 0.300, 1.045);    // Units in meters
+       *       // Vector from monument to antenna ARP [UEN] for this station
+       *    Triple offsetARP(2.510, 0.300, 1.045);           // Units in meters
        *
-       *   // Vector due to tidal effects (previously computed)
-       *   Triple tides(0.121, 0.033, -0.016);    // Units in meters
+       *       // Vector due to tidal effects (previously computed)
+       *    Triple tides(0.121, 0.033, -0.016);              // Units in meters
        *
        *
        *   gnssRinex gRin;
-       *   CorrectObservables corr(SP3EphList,
-       *                           nominalPos, 
-       *                           offsetL1,
-       *                           offsetL2,
-       *                           offsetARP,
-       *                           tides);
+       *   CorrectObservables corr( SP3EphList,
+       *                            nominalPos,
+       *                            offsetL1,
+       *                            offsetL2,
+       *                            offsetARP,
+       *                            tides       );
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> corr;
        *   }
        * @endcode
        *
-       * The "CorrectObservables" object will visit every satellite in the 
-       * GNSS data structure that is "gRin" and will correct the 
+       * The "CorrectObservables" object will visit every satellite in the
+       * GNSS data structure that is "gRin" and will correct the
        * corresponding observables from the given effects.
        *
-       * When used with the ">>" operator, this class returns the same 
+       * When used with the ">>" operator, this class returns the same
        * incoming data structure with the observables corrected. Be warned
-       * that if a given satellite does not have the observations required, 
+       * that if a given satellite does not have the observations required,
        * it will be summarily deleted from the data structure.
        *
        */
@@ -139,8 +140,8 @@ namespace gpstk
           * @param stapos    Nominal position of receiver station.
           *
           */
-      CorrectObservables(XvtStore<SatID>& ephem, 
-                         const Position& stapos) 
+      CorrectObservables( XvtStore<SatID>& ephem,
+                          const Position& stapos )
          : pEphemeris(&ephem), nominalPos(stapos),
            L1PhaseCenter(0.0, 0.0, 0.0), L2PhaseCenter(0.0, 0.0, 0.0),
            L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
@@ -154,12 +155,12 @@ namespace gpstk
           * @param ephem     Satellite ephemeris.
           * @param stapos    Nominal position of receiver station.
           * @param L1pc      Position of antenna L1 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           *
           */
-      CorrectObservables(XvtStore<SatID>& ephem, 
-                         const Position& stapos, 
-                         const Triple& L1pc) 
+      CorrectObservables( XvtStore<SatID>& ephem,
+                          const Position& stapos,
+                          const Triple& L1pc )
          : pEphemeris(&ephem), nominalPos(stapos),
            L1PhaseCenter(L1pc), L2PhaseCenter(0.0, 0.0, 0.0),
            L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
@@ -173,15 +174,15 @@ namespace gpstk
           * @param ephem     Satellite ephemeris.
           * @param stapos    Nominal position of receiver station.
           * @param L1pc      Position of antenna L1 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           * @param L2pc      Position of antenna L2 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           *
           */
-      CorrectObservables(XvtStore<SatID>& ephem, 
-                         const Position& stapos, 
-                         const Triple& L1pc, 
-                         const Triple& L2pc) 
+      CorrectObservables( XvtStore<SatID>& ephem,
+                          const Position& stapos,
+                          const Triple& L1pc,
+                          const Triple& L2pc )
          : pEphemeris(&ephem), nominalPos(stapos),
            L1PhaseCenter(L1pc), L2PhaseCenter(L2pc),
            L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
@@ -195,18 +196,18 @@ namespace gpstk
           * @param ephem     Satellite ephemeris.
           * @param stapos    Nominal position of receiver station.
           * @param L1pc      Position of antenna L1 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           * @param L2pc      Position of antenna L2 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           * @param extra     Extra biases affecting monument, such as tidal
-          *    effects ([UEN]).
+          *                  effects ([UEN]).
           *
           */
-      CorrectObservables(XvtStore<SatID>& ephem, 
-                         const Position& stapos, 
-                         const Triple& L1pc, 
-                         const Triple& L2pc,
-                         const Triple& extra) 
+      CorrectObservables( XvtStore<SatID>& ephem,
+                          const Position& stapos,
+                          const Triple& L1pc,
+                          const Triple& L2pc,
+                          const Triple& extra )
          : pEphemeris(&ephem), nominalPos(stapos),
            L1PhaseCenter(L1pc), L2PhaseCenter(L2pc),
            L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
@@ -220,20 +221,20 @@ namespace gpstk
           * @param ephem     Satellite ephemeris.
           * @param stapos    Nominal position of receiver station.
           * @param L1pc      Position of antenna L1 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           * @param L2pc      Position of antenna L2 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           * @param monument  Vector from monument to ARP ([UEN]).
           * @param extra     Extra biases affecting monument, such as tidal
-          *    effects ([UEN]).
+          *                  effects ([UEN]).
           *
           */
-      CorrectObservables(XvtStore<SatID>& ephem, 
-                         const Position& stapos, 
-                         const Triple& L1pc, 
-                         const Triple& L2pc,
-                         const Triple& monument,
-                         const Triple& extra) 
+      CorrectObservables( XvtStore<SatID>& ephem,
+                          const Position& stapos,
+                          const Triple& L1pc,
+                          const Triple& L2pc,
+                          const Triple& monument,
+                          const Triple& extra )
          : pEphemeris(&ephem), nominalPos(stapos),
            L1PhaseCenter(L1pc), L2PhaseCenter(L2pc),
            L5PhaseCenter(0.0, 0.0, 0.0), L6PhaseCenter(0.0, 0.0, 0.0),
@@ -247,32 +248,32 @@ namespace gpstk
           * @param ephem     Satellite ephemeris.
           * @param stapos    Nominal position of receiver station.
           * @param L1pc      Position of antenna L1 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           * @param L2pc      Position of antenna L2 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           * @param L5pc      Position of antenna L5 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           * @param L6pc      Position of antenna L6 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           * @param L7pc      Position of antenna L7 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           * @param L8pc      Position of antenna L8 phase center with respect
-          *    to ARP ([UEN]).
+          *                  to ARP ([UEN]).
           * @param monument  Vector from monument to ARP ([UEN]).
           * @param extra     Extra biases affecting monument, such as tidal
-          *    effects ([UEN]).
+          *                  effects ([UEN]).
           *
           */
-      CorrectObservables(XvtStore<SatID>& ephem, 
-                         const Position& stapos, 
-                         const Triple& L1pc,
-                         const Triple& L2pc,
-                         const Triple& L5pc,
-                         const Triple& L6pc,
-                         const Triple& L7pc,
-                         const Triple& L8pc,
-                         const Triple& monument,
-                         const Triple& extra) 
+      CorrectObservables( XvtStore<SatID>& ephem,
+                          const Position& stapos,
+                          const Triple& L1pc,
+                          const Triple& L2pc,
+                          const Triple& L5pc,
+                          const Triple& L6pc,
+                          const Triple& L7pc,
+                          const Triple& L8pc,
+                          const Triple& monument,
+                          const Triple& extra )
          : pEphemeris(&ephem), nominalPos(stapos),
            L1PhaseCenter(L1pc), L2PhaseCenter(L2pc),
            L5PhaseCenter(L5pc), L6PhaseCenter(L6pc),
@@ -282,17 +283,17 @@ namespace gpstk
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
-          * when calling this object.
+          *  when calling this object.
           *
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process(const DayTime& time,
-                                       satTypeValueMap& gData);
+      virtual satTypeValueMap& Process( const DayTime& time,
+                                        satTypeValueMap& gData );
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data generated
-          * when calling this object.
+          *  when calling this object.
           *
           * @param gData    Data object holding the data.
           */
@@ -301,7 +302,7 @@ namespace gpstk
 
 
          /** Returns a gnnsRinex object, adding the new data generated when
-          * calling this object.
+          *  calling this object.
           *
           * @param gData    Data object holding the data.
           */
@@ -321,8 +322,9 @@ namespace gpstk
       { nominalPos = stapos; return (*this); };
 
 
-         /// Returns a pointer to the satellite ephemeris object currently 
-         /// in use.
+         /** Returns a pointer to the satellite ephemeris object
+          *  currently in use.
+          */
       virtual XvtStore<SatID> *getEphemeris(void) const
       { return pEphemeris; };
 
@@ -438,14 +440,14 @@ namespace gpstk
 
 
          /** Returns extra biases affecting monument, such as tidal
-          *    effects ([UEN]).
+          *  effects ([UEN]).
           */
       virtual Triple getExtraBiases(void) const
       { return extraBiases; };
 
 
          /** Sets extra biases affecting monument, such as tidal
-          *    effects ([UEN]).
+          *  effects ([UEN]).
           * @param extra   Extra biases affecting monument, such as tidal
           *    effects ([UEN]).
           */
@@ -525,13 +527,13 @@ namespace gpstk
 
          /// Sets the index and increment classIndex.
       void setIndex(void)
-      { index = classIndex++; }; 
+      { index = classIndex++; };
 
 
    }; // end class CorrectObservables
 
 
       //@}
-   
+
 }
 #endif  // CORRECTOBSERVABLES_HPP
