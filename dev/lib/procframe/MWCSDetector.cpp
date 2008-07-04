@@ -23,7 +23,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -94,7 +94,7 @@ namespace gpstk
 
          // Loop through all the satellites
       satTypeValueMap::iterator it;
-      for (it = gData.begin(); it != gData.end(); ++it) 
+      for (it = gData.begin(); it != gData.end(); ++it)
       {
 
          try
@@ -137,8 +137,8 @@ namespace gpstk
             }
          }
 
-            // If everything is OK, then get the new values inside
-            // the structure. This way of doing it allows concatenation of
+            // If everything is OK, then get the new values inside the
+            // structure. This way of computing it allows concatenation of
             // several different cycle slip detectors
          (*it).second[resultType1] += getDetection( epoch,
                                                     (*it).first,
@@ -231,8 +231,8 @@ namespace gpstk
 
 
 
-      /* Returns a satTypeValueMap object, adding the new data generated
-       *  when calling this object.
+      /* Method that implements the Melbourne-Wubbena cycle slip
+       *  detection algorithm
        *
        * @param epoch     Time of observations.
        * @param sat       SatID.
@@ -308,7 +308,7 @@ namespace gpstk
       {
 
             // We reset the filter with this
-         MWData[sat].windowSize = 1;     
+         MWData[sat].windowSize = 1;
 
          reportCS = true;                // Report cycle slip
       }

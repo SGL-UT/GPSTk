@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -44,6 +44,7 @@ namespace gpstk
 
 
       /** This is a class to detect cycle slips using LI observables.
+       *
        * This class is meant to be used with the GNSS data structures objects
        * found in "DataStructures" class.
        *
@@ -56,7 +57,8 @@ namespace gpstk
        *   ComputeLI getLI;
        *   LICSDetector markCSLI;
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> getLI >> markCSLI;
        *   }
        * @endcode
@@ -66,18 +68,18 @@ namespace gpstk
        * in the given observable.
        *
        * The algorithm will use LI observables, and the LLI1 and LLI2 indexes.
-       * The result (a 0 if a cycle slip is found, 1 otherwise) will be stored
+       * The result (a 1 if a cycle slip is found, 0 otherwise) will be stored
        * in the data structure both as the CSL1 and CSL2 indexes.
        *
        * This algorithm will use some values as maximum interval of time
-       * between two successive epochs, minimum threshold for declaring cycle
+       * between two successive epochs, minimum threshold to declare cycle
        * slip and LI combination limit drift.
-       * 
-       * The default values are usually fine, but nevertheless you may change
-       * them with the appropriate methods. The former is of special importance
-       * for the maximum interval time, that should be adjusted to your
-       * sampling rate. By default it is 61 seconds, adapted to 30 seconds per
-       * sample RINEX files.
+       *
+       * The default values are usually fine, but you may change them with the
+       * appropriate methods. This is of special importance for the maximum
+       * interval time, that should be adjusted for your sampling rate. It is
+       * 61 seconds by default, which is appropriate for 30 seconds per sample
+       * RINEX observation files.
        *
        * When used with the ">>" operator, this class returns the same incoming
        * data structure with the cycle slip indexes inserted along their
@@ -97,7 +99,7 @@ namespace gpstk
        * state, so you MUST NOT use the SAME object to process DIFFERENT data
        * streams.
        *
-       */    
+       */
    class LICSDetector : public ProcessingClass
    {
    public:
@@ -112,8 +114,7 @@ namespace gpstk
 
          /** Common constructor
           *
-          * @param mThr    Minimum threshold for declaring cycle slip, in
-          *                meters.
+          * @param mThr    Minimum threshold to declare cycle slip, in meters.
           * @param drift   LI combination limit drift, in meters/second.
           * @param dtMax   Maximum interval of time allowed between two
           *                successive epochs, in seconds.
@@ -167,9 +168,7 @@ namespace gpstk
       virtual LICSDetector& setMinThreshold(const double& mThr);
 
 
-         /** Method to get the minimum threshold for cycle slip detection, in
-          *  meters.
-          */
+         /// Method to get the LI combination limit drift, in meters/second
       virtual double getLIDrift() const
       { return LIDrift; };
 
@@ -220,32 +219,28 @@ namespace gpstk
       virtual std::string getClassName(void) const;
 
 
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex   New integer index to be assigned to current
-          *                   object.
-          */
-      void setIndex(const int newindex)
-      { index = newindex; };
-
-
          /// Destructor
       virtual ~LICSDetector() {};
 
 
    private:
 
-         /// Type of code.
+
+         /// Type of observable.
       TypeID obsType;
+
 
          /// Type of LLI1 record.
       TypeID lliType1;
 
+
          /// Type of LLI2 record.
       TypeID lliType2;
 
+
          /// Type of result #1.
       TypeID resultType1;
+
 
          /// Type of result #2.
       TypeID resultType2;
@@ -256,7 +251,7 @@ namespace gpstk
       double deltaTMax;
 
 
-         /// Minimum threshold for declaring cycle slip, in meters.
+         /// Minimum threshold to declare cycle slip, in meters.
       double minThreshold;
 
 
@@ -290,8 +285,7 @@ namespace gpstk
       std::map<SatID, filterData> LIData;
 
 
-         /** Returns a satTypeValueMap object, adding the new data generated
-          *  when calling this object.
+         /** Method that implements the LI cycle slip detection algorithm
           *
           * @param epoch     Time of observations.
           * @param sat       SatID.
@@ -318,14 +312,14 @@ namespace gpstk
 
          /// Sets the index and increment classIndex.
       void setIndex(void)
-      { index = classIndex++; }; 
+      { index = classIndex++; };
 
 
    }; // end class LICSDetector
-   
+
 
    //@}
-   
+
 }
 
 #endif   // LICSDETECTOR_HPP

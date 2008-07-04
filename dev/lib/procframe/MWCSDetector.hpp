@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -45,7 +45,8 @@ namespace gpstk
 
 
       /** This is a class to detect cycle slips using MW observables.
-       *  This class is meant to be used with the GNSS data structures objects
+       *
+       * This class is meant to be used with the GNSS data structures objects
        * found in "DataStructures" class.
        *
        * A typical way to use this class follows:
@@ -57,7 +58,8 @@ namespace gpstk
        *   ComputeMelbourneWubbena getMW;
        *   MWCSDetector markCSMW;
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> getMW >> markCSMW;
        *   }
        * @endcode
@@ -67,19 +69,19 @@ namespace gpstk
        * in the given observable.
        *
        * The algorithm will use MW observables, and the LLI1 and LLI2 indexes.
-       * The result (a 0 if a cycle slip is found, 1 otherwise) will be stored
+       * The result (a 1 if a cycle slip is found, 0 otherwise) will be stored
        * in the data structure both as the CSL1 and CSL2 indexes.
        *
        * In taking the decision, this algorithm will use criteria as the
        * maximum interval of time between two successive epochs and the
        * maximum number of Melbourne-Wubbena wavelenghts allowed above or
        * below the MW combination average for that arc.
-       * 
-       * The default values are usually fine, but nevertheless you may change
-       * them with the appropriate methods. The former is of special
-       * importance for the maximum interval time, that should be adjusted to
-       * your sampling rate. By default it is 61 seconds, tuned for 30
-       * seconds per sample RINEX files.
+       *
+       * The default values are usually fine, but you may change them with the
+       * appropriate methods. This is of special importance for the maximum
+       * interval time, that should be adjusted for your sampling rate. It is
+       * 61 seconds by default, which is appropriate for 30 seconds per sample
+       * RINEX observation files.
        *
        * When used with the ">>" operator, this class returns the same
        * incoming data structure with the cycle slip indexes inserted along
@@ -106,7 +108,8 @@ namespace gpstk
        *   ComputeMelbourneWubbena getMW;
        *   MWCSDetector markCSMW;
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> getLI >> getMW >> markCSLI >> markCSMW;
        *   }
        * @endcode
@@ -117,7 +120,7 @@ namespace gpstk
        * state, so you MUST NOT use the SAME object to process DIFFERENT data
        * streams.
        *
-       */    
+       */
    class MWCSDetector : public ProcessingClass
    {
    public:
@@ -189,6 +192,7 @@ namespace gpstk
 
          /** Method to set whether the LLI indexes will be used as
           *  an aid or not.
+          *
           * @param use   Boolean value enabling/disabling LLI check
           */
       virtual MWCSDetector& setUseLLI(const bool& use)
@@ -232,7 +236,7 @@ namespace gpstk
    private:
 
 
-         /// Type of code.
+         /// Type of observation.
       TypeID obsType;
 
 
@@ -285,8 +289,8 @@ namespace gpstk
       std::map<SatID, filterData> MWData;
 
 
-         /** Returns a satTypeValueMap object, adding the new data generated
-          *  when calling this object.
+         /** Method that implements the Melbourne-Wubbena cycle slip
+          *  detection algorithm
           *
           * @param epoch     Time of observations.
           * @param sat       SatID.
@@ -315,14 +319,13 @@ namespace gpstk
 
          /// Sets the index and increment classIndex.
       void setIndex(void)
-      { (*this).index = classIndex++; }; 
+      { (*this).index = classIndex++; };
 
 
    }; // end class MWCSDetector
 
 
    //@}
-   
 }
 
 #endif   // MWCSDETECTOR_HPP

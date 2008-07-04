@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -50,8 +50,7 @@ namespace gpstk
 
       /* Common constructor
        *
-       * @param mThr    Minimum threshold for declaring cycle slip, in
-       *                meters.
+       * @param mThr    Minimum threshold to declare cycle slip, in meters.
        * @param drift   LI combination limit drift, in meters/second.
        * @param dtMax   Maximum interval of time allowed between two
        *                successive epochs, in seconds.
@@ -90,7 +89,7 @@ namespace gpstk
 
          // Loop through all the satellites
       satTypeValueMap::iterator it;
-      for (it = gData.begin(); it != gData.end(); ++it) 
+      for (it = gData.begin(); it != gData.end(); ++it)
       {
          try
          {
@@ -133,8 +132,8 @@ namespace gpstk
          }
 
             // If everything is OK, then get the new values inside the
-            // structure. This way of doing it allows concatenation of several
-            // different cycle slip detectors
+            // structure. This way of computing it allows concatenation of
+            // several different cycle slip detectors
          (*it).second[resultType1] += getDetection( epoch,
                                                     (*it).first,
                                                     (*it).second,
@@ -241,8 +240,7 @@ namespace gpstk
    }
 
 
-      /* Returns a satTypeValueMap object, adding the new data generated
-       *  when calling this object.
+      /* Method that implements the LI cycle slip detection algorithm
        *
        * @param epoch     Time of observations.
        * @param sat       SatID.
