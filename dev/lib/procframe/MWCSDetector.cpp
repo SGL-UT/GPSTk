@@ -268,8 +268,7 @@ namespace gpstk
 
          // Get the difference between current epoch and former epoch,
          // in seconds
-      currentDeltaT = ( epoch.MJDdate() -
-                        MWData[sat].formerEpoch.MJDdate() ) * DayTime::SEC_DAY;
+      currentDeltaT = ( epoch - MWData[sat].formerEpoch );
 
          // Store current epoch as former epoch
       MWData[sat].formerEpoch = epoch;
@@ -277,7 +276,7 @@ namespace gpstk
          // Difference between current value of MW and average value
       currentBias = std::abs(mw - MWData[sat].meanMW);
 
-         // Increment size of window
+         // Increment window size
       ++MWData[sat].windowSize;
 
          // Check if receiver already declared cycle slip or if too much time

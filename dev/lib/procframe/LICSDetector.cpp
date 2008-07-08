@@ -277,8 +277,7 @@ namespace gpstk
 
          // Get the difference between current epoch and former epoch,
          // in seconds
-      currentDeltaT = ( epoch.MJDdate() - LIData[sat].formerEpoch.MJDdate() )
-                      * DayTime::SEC_DAY;
+      currentDeltaT = ( epoch - LIData[sat].formerEpoch );
 
          // Store current epoch as former epoch
       LIData[sat].formerEpoch = epoch;
@@ -286,7 +285,7 @@ namespace gpstk
          // Current value of LI difference
       currentBias = li - LIData[sat].formerLI;
 
-         // Increment size of window
+         // Increment window size
       ++LIData[sat].windowSize;
 
          // Check if receiver already declared cycle slip or too much time
