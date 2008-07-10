@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
 //
 //============================================================================
@@ -46,27 +46,30 @@ namespace gpstk
 
       /** This class computes the code-based solution using a simple
        *  Kalman solver.
-       * 
+       *
        * This class may be used either in a Vector- and Matrix-oriented way, 
        * or with GNSS data structure objects from "DataStructures" class.
        *
        * A typical way to use this class with GNSS data structures follows:
        *
        * @code
-       *   RinexObsStream rin("ebre0300.02o");  // Data stream
+       *      // Data stream
+       *   RinexObsStream rin("ebre0300.02o");
        *
-       *   // More declarations here: Ionospheric and tropospheric models, 
-       *   // ephemeris, etc.
+       *      // More declarations here: Ionospheric and tropospheric models,
+       *      // ephemeris, etc.
        *
-       *   // Declare the modeler object, setting all the parameters in one
-       *   // pass
+       *      // Declare the modeler object, setting all the parameters in
+       *      // one pass
        *   ModelObs model(ionoStore, mopsTM, bceStore, TypeID::C1);
-       *   model.Prepare();     // Set initial position (Bancroft method)
        *
-       *   // Declare a CodeKalmanSolver object
+       *      // Set initial position (Bancroft method)
+       *   model.Prepare();
+       *
+       *      // Declare a CodeKalmanSolver object
        *   CodeKalmanSolver kSolver;
        *
-       *   // This object will compute the appropriate MOPS weights
+       *      // This object will compute the appropriate MOPS weights
        *   ComputeMOPSWeights mopsW(nominalPos, bceStore);
        *
        *   gnssRinex gRin;
@@ -79,16 +82,16 @@ namespace gpstk
        *
        * The "CodeKalmanSolver" object will extract all the data it needs
        * from the GNSS data structure that is "gRin" and will try to solve the
-       * code-based system of equations using a simple Kalman filter. It will 
+       * code-based system of equations using a simple Kalman filter. It will
        * also insert back postfit residual data into "gRin" if it successfully
        * solves the equation system.
        *
-       * Please note it needs some weights assigned to each satellite.
+       * This class may optionally use weights assigned to each satellite.
        * This can be achieved with objects from classes such as
-       * "ComputeIURAWeights", "ComputeMOPSWeights", etc., but in any case 
-       * this is a mandatory step.
+       * "ComputeIURAWeights", "ComputeMOPSWeights", etc., but in any case
+       * this is not mandatory.
        *
-       * By default, it will build the geometry matrix from the values of 
+       * By default, it will build the geometry matrix from the values of
        * coefficients dx, dy, dz and cdt, and the independent vector will be
        * composed of the code prefit residuals (TypeID::prefitC) values.
        *
@@ -96,17 +99,18 @@ namespace gpstk
        * definition to be used. For instance:
        *
        * @code
+       *      // Define our own set of unknowns
        *   TypeIDSet unknownsSet;
        *   unknownsSet.insert(TypeID::dLat);
        *   unknownsSet.insert(TypeID::dLon);
        *   unknownsSet.insert(TypeID::dH);
        *   unknownsSet.insert(TypeID::cdt);
        *
-       *   // Create a new equation definition
-       *   // newEq(independent value, set of unknowns)
+       *      // Create a new equation definition
+       *      // newEq(independent value, set of unknowns)
        *   gnssEquationDefinition newEq(TypeID::prefitC, unknownsSet);
        *
-       *   // Reconfigure solver
+       *      // Reconfigure solver
        *   kSolver.setDefaultEqDefinition(newEq);
        * @endcode
        *
@@ -126,7 +130,7 @@ namespace gpstk
       CodeKalmanSolver();
 
 
-         /** Explicit constructor. Sets the default equation definition 
+         /** Explicit constructor. Sets the default equation definition
           *  to be used when fed with GNSS data structures.
           *
           * @param eqDef     gnssEquationDefinition to be used
@@ -181,7 +185,7 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-         /** Returns a reference to a gnnsSatTypeValue object after 
+         /** Returns a reference to a gnnsSatTypeValue object after
           *  solving the previously defined equation system.
           *
           * @param gData    Data object holding the data.
@@ -190,7 +194,7 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-         /** Returns a reference to a gnnsRinex object after solving 
+         /** Returns a reference to a gnnsRinex object after solving
           *  the previously defined equation system.
           *
           * @param gData    Data object holding the data.
@@ -238,7 +242,7 @@ namespace gpstk
           *
           * \warning Process() methods set phiMatrix and qMatrix according to
           * the stochastic models already defined. Therefore, you must use
-          * the Compute() methods directly if you use this method. 
+          * the Compute() methods directly if you use this method.
           *
           */
       CodeKalmanSolver& setPhiMatrix(const Matrix<double> & pMatrix)
@@ -256,7 +260,7 @@ namespace gpstk
           *
           * \warning Process() methods set phiMatrix and qMatrix according to
           * the stochastic models already defined. Therefore, you must use
-          * the Compute() methods directly if you use this method. 
+          * the Compute() methods directly if you use this method.
           *
           */
       CodeKalmanSolver& setQMatrix(const Matrix<double> & pMatrix)
@@ -269,15 +273,6 @@ namespace gpstk
 
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
-
-
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex      New integer index to be assigned to 
-          *                      current object.
-          */
-      CodeKalmanSolver& setIndex(const int newindex)
-      { index = newindex; return (*this); };
 
 
          /// Destructor.
@@ -328,7 +323,7 @@ namespace gpstk
 
 
          /// Initializing method.
-      void Init(void); 
+      void Init(void);
 
 
          /// Constant stochastic model
@@ -347,7 +342,7 @@ namespace gpstk
 
          /// Sets the index and increment classIndex.
       void setIndex(void)
-      { index = classIndex++; }; 
+      { index = classIndex++; };
 
 
    }; // class CodeKalmanSolver

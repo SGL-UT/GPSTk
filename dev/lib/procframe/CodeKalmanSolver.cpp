@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
 //
 //============================================================================
@@ -60,6 +60,7 @@ namespace gpstk
       // Initializing method.
    void CodeKalmanSolver::Init()
    {
+
          // Set the class index
       setIndex();
 
@@ -87,7 +88,8 @@ namespace gpstk
 
 
       solution.resize(numUnknowns);
-   }
+
+   }  // End of 'CodeKalmanSolver::Init()'
 
 
       // Default constructor.
@@ -108,7 +110,7 @@ namespace gpstk
          // Call the initializing method
       Init();
 
-   }
+   }  // End of 'CodeKalmanSolver::CodeKalmanSolver()'
 
 
       /* Explicit constructor. Sets the default equation definition 
@@ -118,9 +120,11 @@ namespace gpstk
        */
    CodeKalmanSolver::CodeKalmanSolver(const gnssEquationDefinition& eqDef)
    {
+
       setDefaultEqDefinition(eqDef);
       Init();
-   }
+
+   }  // End of 'CodeKalmanSolver::CodeKalmanSolver()'
 
 
       /* Compute the code-based Kalman solution of the given equations set.
@@ -172,7 +176,8 @@ namespace gpstk
       return CodeKalmanSolver::Compute( prefitResiduals,
                                         designMatrix,
                                         wMatrix );
-   }
+
+   }  // End of 'CodeKalmanSolver::Compute()'
 
 
       // Compute the code-based Kalman solution of the given equations set.
@@ -211,7 +216,7 @@ namespace gpstk
       if (!(wRow==pRow))
       {
          InvalidSolver e("prefitResiduals size does not match dimension of \
-                          weightMatrix");
+weightMatrix");
          GPSTK_THROW(e);
       }
 
@@ -219,7 +224,7 @@ namespace gpstk
       if (!(gRow==pRow))
       {
          InvalidSolver e("prefitResiduals size does not match dimension \
-                          of designMatrix");
+of designMatrix");
          GPSTK_THROW(e);
       }
 
@@ -233,7 +238,7 @@ namespace gpstk
       if (!(phiRow==numUnknowns))
       {
          InvalidSolver e("prefitResiduals size does not match dimension \
-                          of phiMatrix");
+of phiMatrix");
          GPSTK_THROW(e);
       }
 
@@ -247,7 +252,7 @@ namespace gpstk
       if (!(qRow==numUnknowns))
       {
          InvalidSolver e("prefitResiduals size does not match dimension \
-                          of qMatrix");
+of qMatrix");
          GPSTK_THROW(e);
       }
 
@@ -263,7 +268,7 @@ namespace gpstk
       catch(...)
       {
          InvalidSolver e("Correct(): Unable to compute measurements noise \
-                          covariance matrix.");
+covariance matrix.");
          GPSTK_THROW(e);
       }
 
@@ -295,7 +300,7 @@ namespace gpstk
 
       return 0;
 
-   }  // end CodeKalmanSolver::Compute()
+   }  // End of 'CodeKalmanSolver::Compute()'
 
 
 
@@ -319,7 +324,7 @@ namespace gpstk
       gData.body = g1.body;
 
       return gData;
-   }
+   }   // End of 'CodeKalmanSolver::Process()'
 
 
       /* Returns a reference to a gnnsRinex object after solving 
@@ -330,6 +335,7 @@ namespace gpstk
    gnssRinex& CodeKalmanSolver::Process(gnssRinex& gData)
       throw(InvalidSolver)
    {
+
          // Number of measurements equals the number of visible satellites
       numMeas = gData.numSats();
 
@@ -351,12 +357,26 @@ namespace gpstk
          // Build the vector of measurements
       measVector = gData.getVectorOfTypeID(defaultEqDef.header);
 
+
          // Generate the appropriate weights matrix
-      Vector<double> weightsVector(gData.getVectorOfTypeID(TypeID::weight));
-      for (int i= 0; i<numMeas; i++)
+         // Try to extract weights from GDS
+      satTypeValueMap dummy(gData.body.extractTypeID(TypeID::weight));
+      int nW(dummy.numSats());   // Count the number of satellites with weights
+      for (int i=0; i<numMeas; i++)
       {
-         rMatrix(i,i) = weightsVector(i);
+         if (nW == numMeas)   // Check if weights match
+         {
+            Vector<double>
+               weightsVector(gData.getVectorOfTypeID(TypeID::weight));
+            rMatrix(i,i) = weightsVector(i);
+         }
+         else
+         {
+              // If weights don't match, assign generic weights
+            rMatrix(i,i) = 1.0;
+         }
       }
+
 
          // Generate the corresponding geometry/design matrix
       hMatrix = gData.body.getMatrixOfTypes((*this).defaultEqDef.body);
@@ -399,7 +419,7 @@ namespace gpstk
 
       return gData;
 
-   }   // End CodeKalmanSolver::Process()
+   }   // End of 'CodeKalmanSolver::Process()'
 
 
 } // end namespace gpstk
