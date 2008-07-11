@@ -68,7 +68,8 @@
 #include "RinexUtilities.hpp"
 #include "Position.hpp"
 
-#include <time.h>
+#include <ctime>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <map>
@@ -85,7 +86,7 @@ using namespace StringUtils;
 //------------------------------------------------------------------------------------
    // prgm data
 string PrgmName("ResCor");
-string PrgmVers("3.7 1/22/07");
+string PrgmVers("3.8 7/11/08");
 
 // data used in program
 const double CFF=C_GPS_M/OSC_FREQ;
@@ -114,7 +115,7 @@ const double TECUperM=FL1*FL1*1.e-16/40.28;  // 6.1617 TECU/m (0.16229 m/TECU)
 clock_t totaltime;
 string Title;
    // input flags and data
-bool Debug,Verbose,Callow,Cforce;
+bool Debug,Verbose,Callow,Cforce,doTgd;
 double IonoHt;
 RinexSatID SVonly;
 string LogFile;
@@ -322,6 +323,7 @@ try {
 
    Callow = true;
    Cforce = false;
+   doTgd = false;
 
    LogFile = string("ResCor.log");
 
@@ -414,6 +416,10 @@ try {
       " --IonoHt <ht>   Height of ionosphere in km (default 400) "
       "(needed for LA,LO,VR,VP)");
    dashih.setMaxCount(1);
+
+   CommandOptionNoArg dashtgd(0,"Tgd",
+      " --Tgd           Apply the Tgd from BC ephemeris to SR,SP,VR,VP");
+   dashtgd.setMaxCount(1);
 
    CommandOption dashSV(CommandOption::hasArgument, CommandOption::stdType, 0,"SVonly",
       " --SVonly <sat>  Process this satellite ONLY (use editing command -DS<Sat> to delete Sat)");
@@ -708,6 +714,10 @@ try {
       IonoHt = asDouble(values[0]);
       if(help) cout << "Set ionosphere height to " << values[0] << " km" << endl;
    }
+   if(dashtgd.getCount()) {
+      doTgd = true;
+      if(help) cout << "Apply Tgd correction when BC ephemeris is provided" << endl;
+   }
    if(dashSV.getCount()) {
       values = dashSV.getValue();
       SVonly.fromString(values[0]);
@@ -817,6 +827,7 @@ try {
       if(Callow) logof << "Allow C1 to be P1 when P1 not available\n";
       if(Cforce) logof << "Force C1 to replace P1 when C1 available\n";
       logof << "Ionosphere height is " << IonoHt << " km" << endl;
+      if(doTgd) logof << "Apply Tgd correction when BC ephemeris is provided" << endl;
       if(AllBiases.size()) {
          logof << "The list of de-biasing limits is:\n";
          map<RinexObsHeader::RinexObsType,map<RinexSatID,double> >::iterator it;
@@ -1785,7 +1796,7 @@ try {
                   // NB other trop models may require a different call,
                   // and will throw(InvalidTropModel) here
                Trop = ggtm.correction(CER.elevation);
-               if(BCEphList.size() > 0) {
+               if(doTgd && BCEphList.size() > 0) {
                   const EngEphemeris& eph = BCEphList.findEphemeris(sat,CurrentTime);
                   Tgd = C_GPS_M * eph.getTgd();
                }
@@ -1874,7 +1885,7 @@ try {
             ok = HaveP;
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
-                  (wl1*kt->second.L1 - wl2*kt->second.L2)*TECUperM/alpha);
+                  (wl1*kt->second.L1 - wl2*kt->second.L2 - Tgd)*TECUperM/alpha);
                if(reset) jt->second.lli |= 1;
             }
          }
@@ -1887,7 +1898,7 @@ try {
             ok = (HaveP && HaveEphRange);
             if(ok) {
                jt->second.data = removeBias(OTList[i], sat, reset, rod.time,
-                  ((wl1*kt->second.L1 - wl2*kt->second.L2 - Tgd)*TECUperM/alpha)*Obliq);
+                  ((wl1*kt->second.L1-wl2*kt->second.L2 - Tgd)*TECUperM/alpha)*Obliq);
                if(reset) jt->second.lli |= 1;
             }
          }
