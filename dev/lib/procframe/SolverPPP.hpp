@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
 //
 //============================================================================
@@ -45,8 +45,8 @@ namespace gpstk
       /** This class computes the Precise Point Positioning (PPP) solution
        *  using a Kalman solver that combines ionosphere-free code and phase
        *  measurements.
-       * 
-       * This class may be used either in a Vector- and Matrix-oriented way, 
+       *
+       * This class may be used either in a Vector- and Matrix-oriented way,
        * or with GNSS data structure objects from "DataStructures" class (much
        * more simple to use it this way).
        *
@@ -121,7 +121,7 @@ namespace gpstk
        * postfit residual data (both code and phase) into "gRin" if it
        * successfully solves the equation system.
        *
-       * By default, it will build the geometry matrix from the values of 
+       * By default, it will build the geometry matrix from the values of
        * coefficients wetMap, dx, dy, dz and cdt, IN THAT ORDER. Please note
        * that the first field of the solution will be the estimation of the
        * zenital wet tropospheric component (or at least, the part that wasn't
@@ -140,7 +140,8 @@ namespace gpstk
        *
        * If these weights are not assigned, then the "SolverPPP" object will
        * set a value of "1.0" to code measurements, and "weightFactor" to phase
-       * measurements. The default value of "weightFactor" is "1000.0".
+       * measurements. The default value of "weightFactor" is "10000.0". This
+       * implies that code sigma is 1 m, and phase sigma is 1 cm.
        *
        * By default, the stochastic models used for each type of variable are:
        *
@@ -189,9 +190,9 @@ namespace gpstk
           *  0 if OK
           *  -1 if problems arose
           */
-      virtual int Compute(const Vector<double>& prefitResiduals,
-                          const Matrix<double>& designMatrix,
-                          const Matrix<double>& weightMatrix)
+      virtual int Compute( const Vector<double>& prefitResiduals,
+                           const Matrix<double>& designMatrix,
+                           const Matrix<double>& weightMatrix )
          throw(InvalidSolver);
 
 
@@ -210,13 +211,13 @@ namespace gpstk
           *  0 if OK
           *  -1 if problems arose
           */
-      virtual int Compute(const Vector<double>& prefitResiduals,
-                          const Matrix<double>& designMatrix,
-                          const Vector<double>& weightVector)
+      virtual int Compute( const Vector<double>& prefitResiduals,
+                           const Matrix<double>& designMatrix,
+                           const Vector<double>& weightVector )
          throw(InvalidSolver);
 
 
-         /** Returns a reference to a gnnsSatTypeValue object after 
+         /** Returns a reference to a gnnsSatTypeValue object after
           *  solving the previously defined equation system.
           *
           * @param gData    Data object holding the data.
@@ -225,27 +226,13 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-         /** Returns a reference to a gnnsRinex object after solving 
+         /** Returns a reference to a gnnsRinex object after solving
           *  the previously defined equation system.
           *
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
          throw(InvalidSolver);
-
-
-         /** Resets the PPP internal Kalman filter.
-          *
-          * @param newState         System state vector
-          * @param newErrorCov      Error covariance matrix
-          *
-          * \warning Take care of dimensions: In this case newState must be 6x1
-          * and newErrorCov must be 6x6.
-          *
-          */
-      SolverPPP& Reset( const Vector<double>& newState,
-                        const Matrix<double>& newErrorCov )
-      { kFilter.Reset( newState, newErrorCov ); return (*this); };
 
 
          /** Sets if a NEU system will be used.
@@ -265,6 +252,11 @@ namespace gpstk
          /** Set the weight factor multiplying the phase measurements
           *
           * @param factor      Factor multiplying the phase measurements
+          *
+          * \warning This factor should be the square of the code sigma :
+          * phase sigma. For instance, if we assign a code sigma of 1 m, and
+          * a phase sigma of 10 cm, the ratio is 100 and weight factor should
+          * be 10000.
           */
       SolverPPP& setWeightFactor(double factor)
       { weightFactor = factor; return (*this); };
@@ -340,7 +332,7 @@ namespace gpstk
           *
           * \warning Process() methods set phiMatrix and qMatrix according to
           * the stochastic models already defined. Therefore, you must use
-          * the Compute() methods directly if you use this method. 
+          * the Compute() methods directly if you use this method.
           *
           */
       SolverPPP& setPhiMatrix(const Matrix<double> & pMatrix)
@@ -358,7 +350,7 @@ namespace gpstk
           *
           * \warning Process() methods set phiMatrix and qMatrix according to
           * the stochastic models already defined. Therefore, you must use
-          * the Compute() methods directly if you use this method. 
+          * the Compute() methods directly if you use this method.
           *
           */
       SolverPPP& setQMatrix(const Matrix<double> & pMatrix)
@@ -371,15 +363,6 @@ namespace gpstk
 
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
-
-
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex      New integer index to be assigned to 
-          *                      current object.
-          */
-      SolverPPP& setIndex(const int newindex)
-      { index = newindex; return (*this); };
 
 
          /// Destructor.
@@ -442,7 +425,7 @@ namespace gpstk
 
 
          /// Initializing method.
-      void Init(void); 
+      void Init(void);
 
 
          /// Constant stochastic model
@@ -473,7 +456,7 @@ namespace gpstk
 
          /// Sets the index and increment classIndex.
       void setIndex(void)
-      { index = classIndex++; }; 
+      { index = classIndex++; };
 
 
    }; // class SolverPPP

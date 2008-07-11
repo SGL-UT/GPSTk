@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
 //
 //============================================================================
@@ -78,6 +78,7 @@ namespace gpstk
 
       Vector<double> initialState(numUnknowns, 0.0);
       Matrix<double> initialErrorCovariance(numUnknowns, numUnknowns, 0.0);
+
          // Fill the initialErrorCovariance matrix
          // First, the zenital wet tropospheric delay
       initialErrorCovariance(0,0) = 0.25;          // (0.5 m)**2
@@ -110,11 +111,13 @@ namespace gpstk
          // Pointer to stochastic model for phase biases
       pBiasStoModel  = &biasModel;
 
-         // Set default factor that multiplies the phase weights
-      weightFactor = 1000.0;
+         // Set default factor that multiplies phase weights
+         // If code sigma is 1 m and phase sigma is 1 cm, the ratio is 1:100
+      weightFactor = 10000.0;       // 100^2
 
       solution.resize(numUnknowns);
-   }
+
+   }  // End of 'SolverPPP::Init()'
 
 
       /* Common constructor.
@@ -132,7 +135,8 @@ namespace gpstk
 
          // Call initializing method
       Init();
-   }
+
+   }  // End of 'SolverPPP::SolverPPP()'
 
 
       /* Compute the solution of the given equations set.
@@ -170,8 +174,8 @@ of weightVector");
 
       Matrix<double> wMatrix(wSize,wSize,0.0);  // Declare a weight matrix
 
-         // Fill the weight matrix diagonal with the content of 
-         // the weight vector
+         // Fill the weight matrix diagonal with the content of
+         // the weights vector
       for (int i=0; i<wSize; i++)
       {
          wMatrix(i,i) = weightVector(i);
@@ -181,7 +185,8 @@ of weightVector");
       return SolverPPP::Compute( prefitResiduals,
                                  designMatrix,
                                  wMatrix );
-   }
+
+   }  // End of 'SolverPPP::Compute()'
 
 
       // Compute the solution of the given equations set.
@@ -302,7 +307,7 @@ covariance matrix.");
 
       return 0;
 
-   }  // end SolverPPP::Compute()
+   }  // End of 'SolverPPP::Compute()'
 
 
 
@@ -326,7 +331,8 @@ covariance matrix.");
       gData.body = g1.body;
 
       return gData;
-   }
+
+   }  // End of 'SolverPPP::Process()'
 
 
       /* Returns a reference to a gnnsRinex object after solving 
@@ -337,6 +343,7 @@ covariance matrix.");
    gnssRinex& SolverPPP::Process(gnssRinex& gData)
       throw(InvalidSolver)
    {
+
          // Number of measurements is twice the number of visible satellites
       int numSV(gData.numSats());
       numMeas = 2 * numSV;
@@ -474,7 +481,7 @@ covariance matrix.");
 
       return gData;
 
-   }   // End SolverPPP::Process()
+   }  // End of 'SolverPPP::Process()'
 
 
       /* Sets if a NEU system will be used.
@@ -511,7 +518,8 @@ covariance matrix.");
       defaultEqDef.body = tempSet;
 
       return (*this);
-   }
+
+   }  // End of 'SolverPPP::setNEU()'
 
 
 } // end namespace gpstk
