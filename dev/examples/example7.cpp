@@ -9,7 +9,7 @@
    // Class for handling satellite observation parameters RINEX files
 #include "RinexObsStream.hpp"
 
-   // Classes for handling RINEX Broadcast ephemeris files 
+   // Classes for handling RINEX Broadcast ephemeris files
 #include "RinexNavStream.hpp"
 #include "RinexNavHeader.hpp"
 #include "RinexNavData.hpp"
@@ -133,13 +133,13 @@ int main(void)
       // Given that in this example we are using a fixed GPS station with known
       // coordinates, you could have used the "ModeledReferencePR" class, which
       // is a little bit simpler.
-      // However, for a rover is more appropriate to use a "ModelObs" object 
-      // because it allows to update the apriori position more easily (and it 
+      // However, for a rover is more appropriate to use a "ModelObs" object
+      // because it allows to update the apriori position more easily (and it
       // may automatically compute one, if needed, using Bancroft's method)
    ModelObs model(nominalPos, ionoStore, mopsTM, bceStore, TypeID::C1);
 
       // On the other hand, the usual way to use "ModelObs" is setting just the
-      // models in the constructor, and calling method "Prepare()" later, like 
+      // models in the constructor, and calling method "Prepare()" later, like
       // in the following lines:
       // ModelObs model(ionoStore, mopsTM, bceStore, TypeID::C1);
       // model.Prepare(nominalPos);       // Set the reference position
@@ -195,7 +195,7 @@ int main(void)
       // This object will compute the appropriate MOPS weights
    ComputeMOPSWeights mopsW(nominalPos, bceStore);
 
-      // Declare a solver object using Weighted-Least-Mean-Squares and 
+      // Declare a solver object using Weighted-Least-Mean-Squares and
       // a topocentric reference system (NEU)
    SolverWMS solverWMS;
    solverWMS.setDefaultEqDefinition(newEq);    // NEU reconfiguration
@@ -235,7 +235,7 @@ int main(void)
       // system "UserDefined"
    SatID satEq(1,SatID::systemUserDefined);
 
-      // Declare and fill a "typeValueMap" object that will hold 
+      // Declare and fill a "typeValueMap" object that will hold
       // the equation data
    typeValueMap equTVMap;
    equTVMap[TypeID::prefitC] = 0.0;    // Code prefit residual is zero
@@ -250,10 +250,12 @@ int main(void)
 
       // Assign a relatively high weight to this information (typical
       // MOPS weights range from 0.01 to 0.04)
-      // This means that this equation is very important for us, but it is 
+      // This means that this equation is very important for us, but it is
       // NOT ABSOLUTELY TRUE. Some variation is allowed
-      // Assigned weight is about 10 times bigger than typical MOPS weights
-   equTVMap[TypeID::weight]  = 0.2;
+      // Given that weights are indeed (1/variances), if we assign to our new
+      // equation a confidence of 0.5 m of sigma, it means that we should use
+      // a weight of (1/(0.5^2)) = 4 m^(-2)
+   equTVMap[TypeID::weight]  = 4.0;
 
       ////////////////////////////////////////
 
