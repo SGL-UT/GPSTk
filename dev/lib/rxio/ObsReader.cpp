@@ -197,7 +197,6 @@ namespace gpstk
       for (int i=0; i<100 && *this; i++)
       {
          double dt = oe.time - t0;
-         cout << "dt:" << dt << endl;
          if (std::abs(dt - epochRate) > 0.01)
          {
             epochRate = dt;
