@@ -194,9 +194,10 @@ namespace gpstk
       // We need 10 consecutive epochs with the same interval that occur
       // during the first 100 epochs of the input to get an acceptable estimate
       // of the obs rate
-      for (int i=0; i<100 && !(*this); i++)
+      for (int i=0; i<100 && *this; i++)
       {
          double dt = oe.time - t0;
+         cout << "dt:" << dt << endl;
          if (std::abs(dt - epochRate) > 0.01)
          {
             epochRate = dt;
