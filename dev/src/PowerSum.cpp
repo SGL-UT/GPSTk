@@ -89,6 +89,8 @@ namespace gpstk
       double ni=1.0/n;
       double s12 = s[1]*s[1];
 
+      if (i==1 && n>0)
+         m = ni*s[1];
       if (i==2 && n>1)
          m = ni*(s[2] - ni*s12);
       else if (i==3 && n>2)
@@ -139,9 +141,16 @@ namespace gpstk
          str << " s" << i << ":" << s[i];
       str << std::endl;
 
+      str << "m1:" << moment(1)
+          << " m2:" << moment(2)
+          << " m3:" << moment(3)
+          << " m4:" << moment(4)
+          << std::endl;
+
       str << "average:" << average()
           << " stddev:" << sqrt(variance()) 
           << " skew:" << skew()
-          << " kurtosis:" << kurtosis() << std::endl;
+          << " kurtosis:" << kurtosis()
+          << std::endl;
    }   
 }

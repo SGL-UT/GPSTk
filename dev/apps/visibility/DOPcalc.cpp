@@ -387,9 +387,9 @@ void DOPCalc::readObsFile(const CommandOptionWithAnyArg& obsFileOpt,
                  << rxPos << endl;
       }
       
-      while(obsReader())
+      while(obsReader)
       {
-         if (!obsReader())
+         if (!obsReader)
             break;
             
          ObsEpoch obsEpoch(obsReader.getObsEpoch());

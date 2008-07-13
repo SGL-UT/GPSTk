@@ -492,10 +492,10 @@ void DDGen::readObsFile(
       ObsReader obsReader(fn, verboseLevel);
       obsReader.msid = msid;
 
-      while (obsReader())
+      while (obsReader)
       {
          ObsEpoch obs(obsReader.getObsEpoch());
-         if (!obsReader())
+         if (!obsReader)
             break;
 
          ORDEpoch oe = ordEngine(obs);

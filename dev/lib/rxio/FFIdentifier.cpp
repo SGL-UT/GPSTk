@@ -40,6 +40,8 @@
 #include <iostream>
 #include <iomanip>
 
+#include "FileUtils.hpp"
+
 #include "FFIdentifier.hpp"
 
 #include "SP3EphemerisStore.hpp"
@@ -87,7 +89,15 @@ namespace gpstk
    int FFIdentifier::debugLevel = 0;
 
    FFIdentifier::FFIdentifier(const std::string& fn)
+      throw(FileMissingException)
    {
+
+      if (!FileUtils::fileAccessCheck(fn))
+      {
+         FileMissingException e("Cannot open " + fn);
+         GPSTK_THROW(e);
+      }
+
       using namespace std;
       fileType=tUnknown;
 

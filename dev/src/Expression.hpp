@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -41,6 +39,7 @@
 
 #include "RinexObsHeader.hpp"
 #include "RinexObsData.hpp"
+#include "ObsEpochMap.hpp"
 #include "Exception.hpp" 
 
 namespace gpstk
@@ -145,6 +144,15 @@ namespace gpstk
           */  
       bool setRinexObs(const RinexObsData::RinexObsTypeMap& rotm);
       
+         /**
+          * Sets multiple variables in the expression using values stored
+          * in a RinexObsType stucture. This structure is nested within the
+          * RinexObsData class.
+          * @param rotm Map of RinexObsType to RinexObsDatum
+          * @return True if an obs variable was found.
+          */  
+      bool setSvObsEpoch(const SvObsEpoch& soe);
+
          /**
           * Checks in advance if all variables have been set.
           * @return True if all variables are set.

@@ -42,6 +42,7 @@
 #ifndef OBSREADER_HPP
 #define OBSREADER_HPP
 
+#include "Exception.hpp"
 #include "ObsEpochMap.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
@@ -71,11 +72,14 @@ namespace gpstk
       int verboseLevel;
       unsigned long epochCount;
 
-      ObsReader(const std::string& str, int verbose=0);
+      ObsReader(const std::string& str, int verbose=0)
+         throw(FileMissingException);
    
       ObsEpoch getObsEpoch();
 
-      bool operator()();
+      operator bool ();
+
+      double estimateObsInterval();
       
       static std::string formatsUnderstood()
       { return "RINEX obs, MDP, smooth, Novatel, and raw Ashtech"; }
@@ -84,5 +88,9 @@ namespace gpstk
       SMODFData prevSMOD;
       bool usePrevSMOD;
    };
+
+   ObsReader& operator>>(ObsReader& obsReader, ObsEpoch& f)
+   throw();
+
 } // end of namespace gpstk
 #endif

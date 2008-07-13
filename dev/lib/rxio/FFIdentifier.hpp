@@ -70,14 +70,17 @@ namespace gpstk
 
       FFIdentifier()
          : fileType(tUnknown) {};
-      FFIdentifier(const std::string& fn);
+      FFIdentifier(const std::string& fn)
+         throw(FileMissingException);
       FFIdentifier(const FFIdentifier& right)
          : fileType(right.fileType) {};
 
-      FFType fileType;
       operator FFType() {return fileType;}
 
       static int debugLevel;
+
+   private:
+      FFType fileType;
    };
 }
 #endif

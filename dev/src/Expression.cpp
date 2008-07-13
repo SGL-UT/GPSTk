@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -42,8 +40,6 @@
 #include "icd_200_constants.hpp"
 #include "StringUtils.hpp"
 #include "Expression.hpp"
-#include "RinexObsData.hpp"
-#include "RinexObsHeader.hpp"
 
 namespace gpstk 
 {
@@ -521,7 +517,7 @@ namespace gpstk
             
          } // If this is an operator
 
-            // Are we done yet?
+         // Are we done yet?
          totalResolved = countResolvedTokens();
       }      
       
@@ -599,13 +595,72 @@ namespace gpstk
       
       RinexObsData::RinexObsTypeMap::const_iterator i;
       for (i=rotm.begin(); i!=rotm.end(); i++)
-      {
          gotSet |= set(i->first.type, i->second.data);
-      }
 
       return gotSet;
    }
-   
+
+   // We use the rinex 3 type identifiers for this since the rinex 2 will leave
+   // things ambigous. This is in contrast to the setRinexObs() method which
+   // uses the rinex 2 type identifiers.
+   bool Expression::setSvObsEpoch(const SvObsEpoch& soe)
+   {
+      bool gotSet = false;
+      for (SvObsEpoch::const_iterator i=soe.begin(); i != soe.end(); i++)
+      {
+
+         // Note that there are some combinations of the following that are not
+         // 'valid'. Well, they aren't defined in the RINEX 3 spec
+         // Also, this needs to be moved to another file once we have
+         // rinex 3 support in the src directory.
+         std::string type, band, attribute;
+         switch (i->first.type)
+         {
+            case ObsID::otRange:   type = "C"; break;
+            case ObsID::otPhase:   type = "L"; break;
+            case ObsID::otDoppler: type = "D"; break;
+            case ObsID::otSNR:     type = "S"; break;
+         }
+
+         switch (i->first.band)
+         {
+            case ObsID::cbL1:   band = "1"; break;
+            case ObsID::cbL2:   band = "2"; break;
+            case ObsID::cbL5:   band = "5"; break;
+            case ObsID::cbE6:   band = "6"; break;
+            case ObsID::cbE5b:  band = "7"; break;
+            case ObsID::cbE5ab: band = "8"; break;
+         }
+
+         switch (i->first.code)
+         {
+            case ObsID::tcCA:   attribute = "C"; break;
+            case ObsID::tcP:    attribute = "P"; break;
+            case ObsID::tcY:    attribute = "Y"; break;
+            case ObsID::tcW:    attribute = "W"; break;
+            case ObsID::tcN:    attribute = "N"; break;
+            case ObsID::tcM:    attribute = "M"; break;
+            case ObsID::tcC2M:  attribute = "S"; break;
+            case ObsID::tcC2L:  attribute = "L"; break;
+            case ObsID::tcC2LM: attribute = "X"; break;
+            case ObsID::tcI5:   attribute = "I"; break;
+            case ObsID::tcQ5:   attribute = "Q"; break;
+            case ObsID::tcIQ5:  attribute = "X"; break;
+            case ObsID::tcA:    attribute = "A"; break;
+            case ObsID::tcB:    attribute = "B"; break;
+            case ObsID::tcC:    attribute = "C"; break;
+            case ObsID::tcBC:   attribute = "X"; break;
+            case ObsID::tcABC:  attribute = "Z"; break;
+         }
+
+         std::string id = type + band + attribute;
+
+         if (id.length() != 3)
+               std::cout << "Unimplimented ObsID:" << i->first << std::endl;
+
+         gotSet |= set(id, i->second);
+      }
+      return gotSet;
+   }
       
 } // end namespace gpstk
- 

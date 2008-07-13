@@ -58,201 +58,206 @@
 #include "EphReader.hpp"
 
 using namespace std;
-using namespace gpstk;
 
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-void EphReader::read(const std::string& fn)
+namespace gpstk
 {
-   FFIdentifier ffid(fn);
 
-   switch (ffid)
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+   void EphReader::read(const std::string& fn)
+      throw(FileMissingException)
    {
-      case FFIdentifier::tRinexNav: read_rinex_nav_data(fn); break;
-      case FFIdentifier::tFIC:      read_fic_data(fn);       break;
-      case FFIdentifier::tSP3:      read_sp3_data(fn);       break;
-      case FFIdentifier::tYuma:     read_yuma_data(fn);      break;
-      case FFIdentifier::tSEM:      read_sem_data(fn);       break;
-      case FFIdentifier::tMDP:
-      default:
-         if (verboseLevel) 
-            cout << "# Could not determine the format of " << fn << endl;
-   }
+      FFIdentifier ffid(fn);
 
-   filesRead.push_back(fn);
-   if (verboseLevel>1)
-      cout << "# Ephemeris initial time: " << eph->getInitialTime() 
-           << ", final time: " << eph->getFinalTime() << endl;
-} // end of read()
+      switch (ffid)
+      {
+         case FFIdentifier::tRinexNav: read_rinex_nav_data(fn); break;
+         case FFIdentifier::tFIC:      read_fic_data(fn);       break;
+         case FFIdentifier::tSP3:      read_sp3_data(fn);       break;
+         case FFIdentifier::tYuma:     read_yuma_data(fn);      break;
+         case FFIdentifier::tSEM:      read_sem_data(fn);       break;
+         case FFIdentifier::tMDP:
+         default:
+            if (verboseLevel) 
+               cout << "# Could not determine the format of " << fn << endl;
+      }
+
+      filesRead.push_back(fn);
+      if (verboseLevel>1)
+         cout << "# Ephemeris initial time: " << eph->getInitialTime() 
+              << ", final time: " << eph->getFinalTime() << endl;
+   } // end of read()
 
 
 // ---------------------------------------------------------------------
 // Read in ephemeris data in rinex format
 // ---------------------------------------------------------------------
-void EphReader::read_rinex_nav_data(const string& fn)
-{
-   GPSEphemerisStore* bce;
-   if (eph == NULL)
+   void EphReader::read_rinex_nav_data(const string& fn)
    {
-      bce = new(GPSEphemerisStore);
-      eph = dynamic_cast<EphemerisStore*>(bce);
-   }
-   else
-   {
-      if (typeid(*eph) != typeid(GPSEphemerisStore))
-         throw(FFStreamError("Don't mix nav data types..."));
-      bce = dynamic_cast<GPSEphemerisStore*>(eph);
-   }
-   if (verboseLevel>2)
-      cout << "# Reading " << fn << " as RINEX nav."<< endl;
+      GPSEphemerisStore* bce;
+      if (eph == NULL)
+      {
+         bce = new(GPSEphemerisStore);
+         eph = dynamic_cast<EphemerisStore*>(bce);
+      }
+      else
+      {
+         if (typeid(*eph) != typeid(GPSEphemerisStore))
+            throw(FFStreamError("Don't mix nav data types..."));
+         bce = dynamic_cast<GPSEphemerisStore*>(eph);
+      }
+      if (verboseLevel>2)
+         cout << "# Reading " << fn << " as RINEX nav."<< endl;
          
-   RinexNavStream rns(fn.c_str(), ios::in);
-   rns.exceptions(ifstream::failbit);
-   RinexNavData rnd;
-   while (rns >> rnd)
-      bce->addEphemeris(rnd);
+      RinexNavStream rns(fn.c_str(), ios::in);
+      rns.exceptions(ifstream::failbit);
+      RinexNavData rnd;
+      while (rns >> rnd)
+         bce->addEphemeris(rnd);
 
-   if (verboseLevel>1)
-      cout << "# Read " << fn << " as RINEX nav. " << endl;
-} // end of read_rinex_nav_data()
+      if (verboseLevel>1)
+         cout << "# Read " << fn << " as RINEX nav. " << endl;
+   } // end of read_rinex_nav_data()
 
 
-void EphReader::read_fic_data(const string& fn)
-{
-   GPSEphemerisStore* bce;
-
-   if (eph == NULL)
+   void EphReader::read_fic_data(const string& fn)
    {
-      bce = new(GPSEphemerisStore);
-      eph = dynamic_cast<EphemerisStore*>(bce);
-   }
-   else
-   {
-      if (typeid(*eph) != typeid(GPSEphemerisStore))
-         throw(FFStreamError("Don't mix nav data types..."));
-      bce = dynamic_cast<GPSEphemerisStore*>(eph);
-   }
-   if (verboseLevel>2)
-      cout << "# Reading " << fn << " as FIC nav."<< endl;
+      GPSEphemerisStore* bce;
+
+      if (eph == NULL)
+      {
+         bce = new(GPSEphemerisStore);
+         eph = dynamic_cast<EphemerisStore*>(bce);
+      }
+      else
+      {
+         if (typeid(*eph) != typeid(GPSEphemerisStore))
+            throw(FFStreamError("Don't mix nav data types..."));
+         bce = dynamic_cast<GPSEphemerisStore*>(eph);
+      }
+      if (verboseLevel>2)
+         cout << "# Reading " << fn << " as FIC nav."<< endl;
       
-   FICStream fs(fn.c_str(), ios::in);
-   FICHeader header;
-   fs >> header;
+      FICStream fs(fn.c_str(), ios::in);
+      FICHeader header;
+      fs >> header;
       
-   FICData data;
-   while (fs >> data)
-      if (data.blockNum==9) // Only look at the eng ephemeris
-         bce->addEphemeris(data);
+      FICData data;
+      while (fs >> data)
+         if (data.blockNum==9) // Only look at the eng ephemeris
+            bce->addEphemeris(data);
 
-   if (verboseLevel>1)
-      cout << "# Read " << fn << " as FIC nav."<< endl;
-} // end of read_fic_data()
+      if (verboseLevel>1)
+         cout << "# Read " << fn << " as FIC nav."<< endl;
+   } // end of read_fic_data()
 
 
-void EphReader::read_sp3_data(const string& fn)
-{
-   SP3EphemerisStore* pe;
-
-   if (eph == NULL)
+   void EphReader::read_sp3_data(const string& fn)
    {
-      pe = new(SP3EphemerisStore);
-      eph = dynamic_cast<EphemerisStore*>(pe);
-   }
-   else
-   {
-      if (typeid(*eph) != typeid(SP3EphemerisStore))
-         throw(FFStreamError("Don't mix nav data types..."));
-      pe = dynamic_cast<SP3EphemerisStore*>(eph);
-   }
-   if (verboseLevel>2)
-      cout << "# Reading " << fn << " as SP3 ephemeris."<< endl;
+      SP3EphemerisStore* pe;
 
-   SP3Stream fs(fn.c_str(),ios::in);
-   fs.exceptions(ifstream::failbit);
+      if (eph == NULL)
+      {
+         pe = new(SP3EphemerisStore);
+         eph = dynamic_cast<EphemerisStore*>(pe);
+      }
+      else
+      {
+         if (typeid(*eph) != typeid(SP3EphemerisStore))
+            throw(FFStreamError("Don't mix nav data types..."));
+         pe = dynamic_cast<SP3EphemerisStore*>(eph);
+      }
+      if (verboseLevel>2)
+         cout << "# Reading " << fn << " as SP3 ephemeris."<< endl;
+
+      SP3Stream fs(fn.c_str(),ios::in);
+      fs.exceptions(ifstream::failbit);
       
-   SP3Header header;
-   fs >> header;
+      SP3Header header;
+      fs >> header;
 
-   SP3Data data;
-   data.version = header.version;
+      SP3Data data;
+      data.version = header.version;
    
-   while (fs >> data)
-      pe->addEphemeris(data);
+      while (fs >> data)
+         pe->addEphemeris(data);
 
-   if (verboseLevel>1)
-      cout << "# Read " << fn << " as SP3 ephemeris."<< endl;
-} // end of read_sp3_data()
+      if (verboseLevel>1)
+         cout << "# Read " << fn << " as SP3 ephemeris."<< endl;
+   } // end of read_sp3_data()
 
 
-void EphReader::read_yuma_data(const string& fn)
-{
-   YumaAlmanacStore* alm;
-
-   if (eph == NULL)
+   void EphReader::read_yuma_data(const string& fn)
    {
-      alm = new(YumaAlmanacStore);
-      eph = dynamic_cast<EphemerisStore*>(alm);
-   }
-   else
-   {
-      if (typeid(*eph) != typeid(YumaAlmanacStore))
-         throw(FFStreamError("Don't mix nav data types..."));
-      alm = dynamic_cast<YumaAlmanacStore*>(eph);
-   }
-   if (verboseLevel>2)
-      cout << "# Reading " << fn << " as Yuma almanc."<< endl;
+      YumaAlmanacStore* alm;
 
-   YumaStream fs(fn.c_str(),ios::in);
-   fs.exceptions(ifstream::failbit);
+      if (eph == NULL)
+      {
+         alm = new(YumaAlmanacStore);
+         eph = dynamic_cast<EphemerisStore*>(alm);
+      }
+      else
+      {
+         if (typeid(*eph) != typeid(YumaAlmanacStore))
+            throw(FFStreamError("Don't mix nav data types..."));
+         alm = dynamic_cast<YumaAlmanacStore*>(eph);
+      }
+      if (verboseLevel>2)
+         cout << "# Reading " << fn << " as Yuma almanc."<< endl;
+
+      YumaStream fs(fn.c_str(),ios::in);
+      fs.exceptions(ifstream::failbit);
       
-   YumaHeader header;
-   fs >> header;
+      YumaHeader header;
+      fs >> header;
 
-   YumaData data;
-   while (fs)
+      YumaData data;
+      while (fs)
+      {
+         fs >> data;
+         if (fs || fs.eof())
+            alm->addAlmanac(data);
+      }
+
+      if (verboseLevel>1)
+         cout << "# Read " << fn << " as Yuma almanac."<< endl;
+   } // end of read_yuma_data()
+
+
+   void EphReader::read_sem_data(const string& fn)
    {
-      fs >> data;
-      if (fs || fs.eof())
-         alm->addAlmanac(data);
-   }
+      SEMAlmanacStore* alm;
 
-   if (verboseLevel>1)
-      cout << "# Read " << fn << " as Yuma almanac."<< endl;
-} // end of read_yuma_data()
+      if (eph == NULL)
+      {
+         alm = new(SEMAlmanacStore);
+         eph = dynamic_cast<EphemerisStore*>(alm);
+      }
+      else
+      {
+         if (typeid(*eph) != typeid(SEMAlmanacStore))
+            throw(FFStreamError("Don't mix nav data types..."));
+         alm = dynamic_cast<SEMAlmanacStore*>(eph);
+      }
+      if (verboseLevel>2)
+         cout << "# Reading " << fn << " as SEM almanc."<< endl;
 
-
-void EphReader::read_sem_data(const string& fn)
-{
-   SEMAlmanacStore* alm;
-
-   if (eph == NULL)
-   {
-      alm = new(SEMAlmanacStore);
-      eph = dynamic_cast<EphemerisStore*>(alm);
-   }
-   else
-   {
-      if (typeid(*eph) != typeid(SEMAlmanacStore))
-         throw(FFStreamError("Don't mix nav data types..."));
-      alm = dynamic_cast<SEMAlmanacStore*>(eph);
-   }
-   if (verboseLevel>2)
-      cout << "# Reading " << fn << " as SEM almanc."<< endl;
-
-   SEMStream fs(fn.c_str(),ios::in);
-   fs.exceptions(ifstream::failbit);
+      SEMStream fs(fn.c_str(),ios::in);
+      fs.exceptions(ifstream::failbit);
       
-   SEMHeader header;
-   fs >> header;
+      SEMHeader header;
+      fs >> header;
 
-   SEMData data;
-   while (fs)
-   {
-      fs >> data;
-      if (fs || fs.eof())
-         alm->addAlmanac(data);
-   }
+      SEMData data;
+      while (fs)
+      {
+         fs >> data;
+         if (fs || fs.eof())
+            alm->addAlmanac(data);
+      }
 
-   if (verboseLevel>1)
-      cout << "# Read " << fn << " as Yuma almanac."<< endl;
-} // end of read_sem_data()
+      if (verboseLevel>1)
+         cout << "# Read " << fn << " as Yuma almanac."<< endl;
+   } // end of read_sem_data()
+
+}

@@ -369,7 +369,7 @@ void DataAvailabilityAnalyzer::spinUp()
    ObsEpoch oe;
    int i,j;
    
-   for (i=j=0; i<100 && j<10 && obsReader(); i++)
+   for (i=j=0; i<100 && j<10 && obsReader; i++)
    {
       oe = obsReader.getObsEpoch();
       double dt = oe.time - t0;
@@ -534,10 +534,10 @@ void DataAvailabilityAnalyzer::process()
 
    ObsEpoch oe, prev_oe;
 
-   while (obsReader())
+   while (obsReader)
    {
       oe = obsReader.getObsEpoch();
-      if (!obsReader())
+      if (!obsReader)
          break;
       if (startTime > oe.time)
          continue;

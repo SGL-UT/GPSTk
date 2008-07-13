@@ -49,35 +49,41 @@
 #include <string>
 #include <vector>
 
+#include "Exception.hpp"
 #include "XvtStore.hpp"
 #include "SatID.hpp"
 
-class EphReader
+namespace gpstk
 {
-public:
-   EphReader()
-      : verboseLevel(0), eph(NULL) {};
+   class EphReader
+   {
+   public:
+      EphReader()
+         : verboseLevel(0), eph(NULL) {};
 
-   EphReader(const std::string& fn)
-      : verboseLevel(0), eph(NULL) { read(fn); };
+      EphReader(const std::string& fn) 
+         throw(FileMissingException)
+         : verboseLevel(0), eph(NULL) { read(fn); };
+   
+      int verboseLevel;
 
-   int verboseLevel;
+      void read(const std::string& fn)
+         throw(FileMissingException);
 
-   void read(const std::string& fn);
+      std::vector<std::string> filesRead;
 
-   std::vector<std::string> filesRead;
+      typedef XvtStore<SatID> EphemerisStore;
+      EphemerisStore* eph;
 
-   typedef gpstk::XvtStore<gpstk::SatID> EphemerisStore;
-   EphemerisStore* eph;
+      static std::string formatsUnderstood()
+      { return "RINEX nav, FIC, SP3, YUMA, and SEM";}
 
-   static std::string formatsUnderstood()
-   { return "RINEX nav, FIC, SP3, YUMA, and SEM";}
-
-private:
-   void read_rinex_nav_data(const std::string& fn);
-   void read_fic_data(const std::string& fn);
-   void read_sp3_data(const std::string& fn);
-   void read_yuma_data(const std::string& fn);
-   void read_sem_data(const std::string& fn);
-};
+   private:
+      void read_rinex_nav_data(const std::string& fn);
+      void read_fic_data(const std::string& fn);
+      void read_sp3_data(const std::string& fn);
+      void read_yuma_data(const std::string& fn);
+      void read_sem_data(const std::string& fn);
+   };
+}
 #endif

@@ -54,6 +54,7 @@ namespace gpstk
 {
    //----------------------------------------------------------------------
    ObsReader::ObsReader(const string& str, int verbose)
+      throw(FileMissingException)
       : fn(str), inputType(str), verboseLevel(verbose), epochCount(0), msid(0),
         usePrevSMOD(false)
    {
@@ -183,8 +184,40 @@ namespace gpstk
    }
 
 
+   double ObsReader::estimateObsInterval()
+   {
+      int j=0;
+      double epochRate = 0;
+      ObsEpoch oe = getObsEpoch();
+      DayTime t0 = oe.time;
+   
+      // We need 10 consecutive epochs with the same interval that occur
+      // during the first 100 epochs of the input to get an acceptable estimate
+      // of the obs rate
+      for (int i=0; i<100 && !(*this); i++)
+      {
+         double dt = oe.time - t0;
+         if (std::abs(dt - epochRate) > 0.01)
+         {
+            epochRate = dt;
+            j = 0;
+         }
+         else
+            j++;
+
+         if (j >10)
+            return epochRate;
+
+         t0 = oe.time;
+         *this >> oe;
+      }
+      
+      return -1;
+   }
+
+
    //----------------------------------------------------------------------
-   bool ObsReader::operator()()
+   ObsReader::operator bool ()
    {
       if (inputType == FFIdentifier::tRinexObs)
          return ros;
@@ -198,4 +231,14 @@ namespace gpstk
          return ashs;
       return false;
    }
+
+
+   //----------------------------------------------------------------------
+   ObsReader& operator>>(ObsReader& obsReader, ObsEpoch& f)
+      throw()
+   {
+      f = obsReader.getObsEpoch();
+      return obsReader;
+   }
+
 } // end of namespace gpstk
