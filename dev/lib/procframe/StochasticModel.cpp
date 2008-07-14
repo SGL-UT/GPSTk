@@ -45,7 +45,7 @@ namespace gpstk
          // Return variance
       return variance;
 
-   }
+   }  // End of 'PhaseAmbiguityModel::getQ()'
 
 
 
@@ -67,13 +67,14 @@ namespace gpstk
       setCurrentTime(gData.header.epoch);
 
       return;
-   }
+
+   }  // End of 'PhaseAmbiguityModel::Prepare()'
 
 
 
       /* This method provides the stochastic model with all the available
        * information and takes appropriate actions. By default, it does
-       *  nothihg.
+       * nothing.
        *
        * @param type       Type of variable.
        * @param sat        Satellite.
@@ -90,7 +91,8 @@ namespace gpstk
       setCurrentTime(gData.header.epoch);
 
       return;
-   }
+
+   }  // End of 'RandomWalkModel::Prepare()'
 
 
 
@@ -108,7 +110,7 @@ namespace gpstk
          return 1.0;
       }
 
-   }
+   }  // End of 'PhaseAmbiguityModel::getPhi()'
 
 
 
@@ -126,7 +128,7 @@ namespace gpstk
          return 0.0;
       }
 
-   }
+   }  // End of 'PhaseAmbiguityModel::getQ()'
 
 
 
@@ -142,59 +144,19 @@ namespace gpstk
                                       const SatID& sat,
                                       gnssSatTypeValue& gData )
    {
-      try
-      {
 
-         if (!watchSatArc)
-         {
-               // In this case, we only use cycle slip flags
-               // Check if there was a cycle slip
-            if (gData(sat)(type) > 0.0)
-            {
-               setCS(true);
-            }
-            else
-            {
-               setCS(false);
-            }
-         }
-         else
-         {
-               // Check if this satellite has entries
-            std::map<SatID, double>::const_iterator itArc;
-            itArc = satArcMap.find( sat );
-            if( itArc == satArcMap.end() ) 
-            {
-                  // If it doesn't have an entry, insert one
-               satArcMap[ sat ] = 0.0;
-            };
-
-            if ( gData(sat)(TypeID::satArc) > satArcMap[sat] )
-            {
-               setCS(true);
-               satArcMap[ sat ] = gData(sat)(TypeID::satArc);
-            }
-            else
-            {
-               setCS(false);
-            }
-
-         }
-
-      }
-      catch(Exception& e)
-      {
-         setCS(true);
-      }
+         // Delegate this check
+      checkCS(type, sat, gData.body);
 
       return;
-   }
+
+   }  // End of 'PhaseAmbiguityModel::Prepare()'
 
 
 
       /* This method provides the stochastic model with all the available
        * information and takes appropriate actions. By default, it does
-       *  nothihg.
+       *  nothing.
        *
        * @param type       Type of variable.
        * @param sat        Satellite.
@@ -205,44 +167,75 @@ namespace gpstk
                                       const SatID& sat,
                                       gnssRinex& gData )
    {
+
+         // Delegate this check
+      checkCS(type, sat, gData.body);
+
+      return;
+
+   }  // End of 'PhaseAmbiguityModel::Prepare()'
+
+
+      /* This method checks if a cycle slip happened.
+       *
+       * @param type       Type of variable.
+       * @param sat        Satellite.
+       * @param data       Object holding the data.
+       *
+       */
+   void PhaseAmbiguityModel::checkCS( const TypeID& type,
+                                      const SatID& sat,
+                                      satTypeValueMap& data )
+   {
+
       try
       {
+
+            // By default, assume there is no cycle slip
+         setCS(false);
+
+            // Check if satellite is present at this epoch
+         satTypeValueMap::const_iterator itSat;
+         itSat = data.find( sat );
+         if( itSat == data.end() )
+         {
+            // If satellite is not present, declare CS and exit
+            setCS(true);
+
+            return;
+         }
+
 
          if (!watchSatArc)
          {
                // In this case, we only use cycle slip flags
                // Check if there was a cycle slip
-            if (gData(sat)(type) > 0.0)
+            if (data(sat)(type) > 0.0)
             {
                setCS(true);
             }
-            else
-            {
-               setCS(false);
-            }
+
          }
          else
          {
-               // Check if this satellite has entries
+               // Check if this satellite has previous entries
             std::map<SatID, double>::const_iterator itArc;
             itArc = satArcMap.find( sat );
-            if( itArc == satArcMap.end() ) 
+            if( itArc == satArcMap.end() )
             {
                   // If it doesn't have an entry, insert one
                satArcMap[ sat ] = 0.0;
             };
 
-            if ( gData(sat)(TypeID::satArc) > satArcMap[sat] )
+               // Check if arc number is greater than arc number in storage
+            if ( data(sat)(TypeID::satArc) > satArcMap[sat] )
             {
                setCS(true);
-               satArcMap[ sat ] = gData(sat)(TypeID::satArc);
-            }
-            else
-            {
-               setCS(false);
+               satArcMap[ sat ] = data(sat)(TypeID::satArc);
             }
 
          }
+
 
       }
       catch(Exception& e)
@@ -251,8 +244,8 @@ namespace gpstk
       }
 
       return;
-   }
 
+   } // End of 'PhaseAmbiguityModel::checkCS()'
 
 
 } // end namespace gpstk
