@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.5
+#!/usr/bin/env python
 # $Id$
 #
 # A routine to plot the output of the ord apps.
@@ -235,18 +235,18 @@ def main():
         for prn in prns:
             if prn in highlightPrns: continue
             onePrn = ords[:,ords[1]==prn]
-            smoothPlot(ax1, onePrn[0], onePrn[2], 'g,', label, options.smoothing)
+            smoothPlot(ax1, onePrn[0], onePrn[2], 'g.', label, options.smoothing)
             if options.wartiness and warts.size > 0:
                 oneWart = warts[:,warts[1]==prn]
-                smoothPlot(ax1, oneWart[0], oneWart[2], 'r,', label, 0)
+                smoothPlot(ax1, oneWart[0], oneWart[2], 'r.', label, 0)
             label="none"
 
         for prn in highlightPrns:
             onePrn = ords[:,ords[1]==prn]
-            smoothPlot(ax1, onePrn[0], onePrn[2], ',', "prn %2d"%prn, options.smoothing)
+            smoothPlot(ax1, onePrn[0], onePrn[2], '.', "prn %2d"%prn, options.smoothing)
             if options.wartiness and warts.size > 0:
                 oneWart = warts[:,warts[1]==prn]
-                smoothPlot(ax1, oneWart[0], oneWart[2], ',', "prn %2dW"%prn, 0)
+                smoothPlot(ax1, oneWart[0], oneWart[2], '.', "prn %2dW"%prn, 0)
 
         ylim=strip_lim(ords[2], options.yRange)
 
@@ -317,7 +317,7 @@ def main():
                       "Clock offset removed: %d m"%clockOffset,
                       **scale_props)
 
-        smoothPlot(ax2, clocks[0], clocks[1], 'g,', "clock offset", options.smoothing)
+        smoothPlot(ax2, clocks[0], clocks[1], 'g.', "clock offset", options.smoothing)
         ax2.set_ylim(strip_lim(clocks[1],options.yRange))
         ax2.grid(True)
         ax2.set_ylabel('clock (meters)', **yprops)
@@ -379,7 +379,7 @@ def main():
     if (options.saveFig == None):
         pylab.show()
     else:
-       pylab.savefig(options.saveFig)
+       pylab.savefig(options.saveFig, dpi=122)
 # end of main
 
 
@@ -430,9 +430,9 @@ def smoothPlot(ax, x, y, style="", txt="", window_len=0):
         x=x[n-1:-n+1]
 
     if txt == "none":
-        ax.plot_date(x, y, style)
+        ax.plot_date(x, y, style, markersize=1.5)
     else:
-        ax.plot_date(x, y, style, label=txt)
+        ax.plot_date(x, y, style, label=txt, markersize=1.5)
 
 
 if __name__ == "__main__":
