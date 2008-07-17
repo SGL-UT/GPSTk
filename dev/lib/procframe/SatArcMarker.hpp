@@ -165,11 +165,9 @@ namespace gpstk
           *
           * @param epoch     Time of observations.
           * @param gData     Data object holding the data.
-          * @param epochflag Epoch flag.
           */
       virtual satTypeValueMap& Process( const DayTime& epoch,
-                                        satTypeValueMap& gData,
-                                        const short& epochflag = 0 );
+                                        satTypeValueMap& gData );
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data generated
@@ -231,7 +229,7 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // end class SatArcMarker
+   }; // End of class 'SatArcMarker'
 
 
    //@}

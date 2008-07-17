@@ -72,7 +72,8 @@ namespace gpstk
       }
 
       setIndex();
-   }
+
+   }  // End of 'SatArcMarker::SatArcMarker()'
 
 
       /* Method to set the number of seconds since last arc change that a
@@ -84,6 +85,7 @@ namespace gpstk
        */
    SatArcMarker& SatArcMarker::setUnstablePeriod(const double unstableTime)
    {
+
          // Check unstableTime value
       if (unstableTime > 0.0)
       {
@@ -95,7 +97,8 @@ namespace gpstk
       }
 
       return (*this);
-   }
+
+   }// End of 'SatArcMarker::setUnstablePeriod()'
 
 
       /* Returns a satTypeValueMap object, adding the new data generated
@@ -103,11 +106,9 @@ namespace gpstk
        *
        * @param epoch     Time of observations.
        * @param gData     Data object holding the data.
-       * @param epochflag Epoch flag.
        */
    satTypeValueMap& SatArcMarker::Process( const DayTime& epoch,
-                                           satTypeValueMap& gData,
-                                           const short& epochflag )
+                                           satTypeValueMap& gData )
    {
       double flag(0.0);
 
@@ -184,7 +185,7 @@ namespace gpstk
 
       return gData;
 
-   }  // End of "SatArcMarker::Process()"
+   }  // End of 'SatArcMarker::Process()'
 
 
       /* Returns a gnnsRinex object, adding the new data generated when
@@ -194,9 +195,12 @@ namespace gpstk
        */
    gnssRinex& SatArcMarker::Process(gnssRinex& gData)
    {
-      Process(gData.header.epoch, gData.body, gData.header.epochFlag);
+
+      Process(gData.header.epoch, gData.body);
+
       return gData;
-   }
+
+   }// End of 'SatArcMarker::Process()'
 
 
 } // end namespace gpstk
