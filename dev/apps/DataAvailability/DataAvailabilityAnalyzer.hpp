@@ -129,7 +129,7 @@ public:
    // and when there is an obs that is missing. 
    struct InView
    {
-      InView() : up(false), aboveMask(false), smashCount(0), span(0){};
+      InView() : up(false), aboveMask(false), smashCount(0), span(0), health(0){};
 
       void update(
          short prn,

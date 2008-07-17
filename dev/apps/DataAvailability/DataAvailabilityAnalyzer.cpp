@@ -370,27 +370,11 @@ void DataAvailabilityAnalyzer::spinUp()
    if (obsReader.inputType == FFIdentifier::tSMODF)
       obsReader.msid = msid;
 
-   DayTime t0;
-   ObsEpoch oe;
-   int i,j;
-   
-   for (i=j=0; i<100 && j<10 && obsReader; i++)
+   epochRate = obsReader.estimateObsInterval();
+
+   if (epochRate < 0)
    {
-      oe = obsReader.getObsEpoch();
-      double dt = oe.time - t0;
-      if (std::abs(dt - epochRate) > 0.1)
-      {
-         epochRate = dt;
-         j = 0;
-      }
-      else
-         j++;
-      t0 = oe.time;
-   }
-      
-   if (j<10)
-   {
-      cout << "Could not determine data rate after " << i << " epochs. Sorry."
+      cout << "Could not determine data rate.  Sorry."
            << " This program is really\nwritten to just work with data that "
            << "is being collected at a fixed data rate.\nI guess it could be"
            << " re-written to work for changing data rates but I am too\n"
@@ -401,8 +385,7 @@ void DataAvailabilityAnalyzer::spinUp()
    }
 
    if (verboseLevel)
-      output << "Data rate is " << epochRate << " seconds after " << i 
-             << " epochs." << endl;
+      output << "Data rate is " << epochRate << " seconds." << endl;
 }
 
 
@@ -768,8 +751,8 @@ void DataAvailabilityAnalyzer::shutDown()
    
    output << "\n Availability Raw Results :" << endl
           << endl
-          << "Start                 End        #     PRN    Elv          Az  Hlth  ama ata   ccid" << endl
-          << "===================================================================================" << endl;
+          << "Start                 End        #     PRN    Elv          Az  Hlth  ama ata" << endl
+          << "============================================================================" << endl;
    
    for_each(sml.begin(), sml.end(), InView::dumper(output, timeFormat));
 
@@ -878,18 +861,20 @@ void DataAvailabilityAnalyzer::InView::dump(ostream& s, const string fmt)
          s << right << setw(9) << secAsHMS(timeUp)
            << " " << setw(9) << secAsHMS(timeUpMask) << " ";
 
-      if (obsLost.empty() || obsGained.empty())
-         s << " all";
-      else
-         s << " " << obsLost << " -> " << obsGained;
-
-      s << right << "  ";
+      if (!obsLost.empty())
+         s << "-" << obsLost;
+      if (!obsLost.empty() && !obsGained.empty())
+         s << ", ";
+      if (!obsGained.empty())
+         s << "+" << obsGained;
+      
+      s << right;
 
       if (!up)
-         s << "below horizon ";
+         s << " below horizon ";
 
       if (!aboveMask)
-         s << "below mask angle ";
+         s << " below mask angle ";
    }
    else
    {
