@@ -1,4 +1,4 @@
-#pragma ident "$Id: Synchronize.cpp  $"
+#pragma ident "$Id$"
 
 /**
  * @file Synchronize.cpp
