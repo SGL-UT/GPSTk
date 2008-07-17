@@ -154,7 +154,8 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
      smashAdjacentOpt('s', "smash-adjacent",
                       "Combine adjacent lines from the same PRN."),
 
-     maskAngle(10), trackAngle(0), badHealthMask(false), timeMask(0), smashAdjacent(false),
+     maskAngle(10), trackAngle(0), badHealthMask(false), timeMask(0),
+     smashAdjacent(false), ignoreEdges(true),
      epochRate(0), epochCounter(0), allMissingCounter(0), 
      anyMissingCounter(0), haveAntennaPos(false)
 {
@@ -303,6 +304,10 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
              << "Stop time is " << stopTime.printf(timeFormat) << endl
              << "Time span is " << timeSpan << " seconds" << endl;
       
+      if (smashAdjacent)
+         output << "Merging adjacent anomalies." << endl;
+      if (ignoreEdges && smashAdjacent)
+         output << "Ignoring single epoch anomalies close to the mask angle." << endl;
       if (badHealthMask)
          output << "Ignore anomalies associated with SVs marked unhealthy."
                 << endl;
@@ -429,6 +434,8 @@ std::string secAsHMS(double seconds, bool frac=false)
 
 
 //------------------------------------------------------------------------------
+// This is where we fill out additional data in the list, smash adjacent obs, 
+// and remove nuisance anomalies
 //------------------------------------------------------------------------------
 DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
    const MissingList& ml,
@@ -480,7 +487,6 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
 
       if (j == sml.rend())
       {
-         // Since there was no previous, go ahead and keep this one
          sml.push_back(curr);
       }
       else
@@ -506,6 +512,22 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
       }
    }
 
+   // Go through removing single epoch/prn anomolies that are close to the elevation
+   // mast angle.
+   if (ignoreEdges && smashAdjacent)
+   {
+      MissingList sml2;
+      
+      for (MissingList::const_iterator i = sml.begin(); i != sml.end(); i++)
+      {
+         InView curr = *i;
+         if (curr.elevation < maskAngle * 1.1 && curr.smashCount <2)
+            continue;
+         sml2.push_back(curr);
+      }
+      return sml2;
+   }
+   
    return sml;
 }
 
@@ -681,6 +703,8 @@ void DataAvailabilityAnalyzer::processEpoch(
                output << iv;
 
             // This adds obs that we receive that *aren't* supposed to be there
+            // Note that we don't flag obs that are present but below the 
+            // mask/track angle as being anomalous 
             if (!iv.up)
             {
                missingList.push_back(iv);

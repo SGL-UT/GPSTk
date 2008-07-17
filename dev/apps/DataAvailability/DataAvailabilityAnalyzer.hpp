@@ -112,7 +112,7 @@ private:
    ObsItemId obsItemId;
    ObsItemEnum oiX;    
 
-   bool badHealthMask, smashAdjacent;
+   bool badHealthMask, smashAdjacent, ignoreEdges;
 
    EphemerisStore* eph;
    gpstk::GPSGeoid gm;
