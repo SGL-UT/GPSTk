@@ -105,7 +105,7 @@ namespace gpstk
        *         continue;
        *      }
        *
-       *         // Print the results
+       *         // Print results
        *      cout << time.DOYsecond()      << "  "; // Output field #1
        *      cout << pppSolver.solution[1] << "  "; // dx: Output field #2
        *      cout << pppSolver.solution[2] << "  "; // dy: Output field #3
@@ -244,22 +244,23 @@ namespace gpstk
       SolverPPP& setNEU( bool useNEU );
 
 
-         /// Get the weight factor multiplying the phase measurements
+         /** Get the weight factor multiplying the phase measurements sigmas.
+          * This factor is the code_sigma/phase_sigma ratio.
+          */
       double getWeightFactor() const
-      { return weightFactor; };
+      { return std::sqrt(weightFactor); };
 
 
-         /** Set the weight factor multiplying the phase measurements
+         /** Set the weight factor multiplying the phase measurement sigma
           *
-          * @param factor      Factor multiplying the phase measurements
+          * @param factor      Factor multiplying the phase measurement sigma
           *
-          * \warning This factor should be the square of the code sigma :
-          * phase sigma. For instance, if we assign a code sigma of 1 m, and
-          * a phase sigma of 10 cm, the ratio is 100 and weight factor should
-          * be 10000.
+          * \warning This factor should be the code_sigma/phase_sigma ratio.
+          * For instance, if we assign a code sigma of 1 m and a phase sigma
+          * of 10 cm, the ratio is 100, and so should be "factor".
           */
       SolverPPP& setWeightFactor(double factor)
-      { weightFactor = factor; return (*this); };
+      { weightFactor = (factor*factor); return (*this); };
 
 
          /// Get coordinates stochastic model pointer

@@ -112,7 +112,7 @@ namespace gpstk
       pBiasStoModel  = &biasModel;
 
          // Set default factor that multiplies phase weights
-         // If code sigma is 1 m and phase sigma is 1 cm, the ratio is 1:100
+         // If code sigma is 1 m and phase sigma is 1 cm, the ratio is 100:1
       weightFactor = 10000.0;       // 100^2
 
       solution.resize(numUnknowns);
