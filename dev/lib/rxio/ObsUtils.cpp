@@ -117,7 +117,7 @@ namespace gpstk
          if (rd.lli>0)
          {
             oid.type = ObsID::otLLI;
-            soe[oid] = -1;
+            soe[oid] = rd.lli;
          }
       }
 
