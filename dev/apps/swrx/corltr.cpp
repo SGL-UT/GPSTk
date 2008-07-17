@@ -59,8 +59,7 @@ private:
 
    double window; // data window length, in ms
 
-   // number of seconds between samples
-   double timeStep;
+   double timeStep; // Time between samples
 
    double interFreq; // Intermediate frequency from receiver
 

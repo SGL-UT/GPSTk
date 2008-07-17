@@ -72,6 +72,9 @@ private:
    double gain;
    bool fakeL2;
 
+   double timeStep; // Time between samples
+   double interFreq; // Intermediate frequency from receive
+
    double timeLimit;
    IQStream *input;
    unsigned iadMax;
@@ -81,8 +84,8 @@ private:
 //-----------------------------------------------------------------------------
 RxSim::RxSim() throw() :
    BasicFramework("rxSim", "A simulation of a gps receiver."),
-   cc(NULL), tr(NULL), band(1), fakeL2(false), gain(1), timeLimit(9e99),
-   iadMax(20460)
+   cc(NULL), tr(NULL), band(1), timeStep(50e-9), interFreq(0.42e6), 
+   fakeL2(false), gain(1), timeLimit(9e99),iadMax(20460)
 {}
 
 
@@ -116,6 +119,16 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
                  "The gain on the frequency update for the carrier tracker. "
                  "The default is 0.1 cycles / iad_period"),
 
+      sampleRateOpt('r',"sample-rate",
+                    "Specifies the nominal sample rate, in MHz.  The "
+                    "default is 20 MHz."),
+
+      interFreqOpt('x',"inter-freq",
+                   "Specifies the intermediate frequency of the receiver,"
+                   " in MHz.  Default is 0.42 MHz. If there is no down-"
+                   "conversion, the IF should be the L1 or L2 carrier"
+                   " frequency" ),
+
       quantizationOpt('q', "quantization",
                       "They quantization applied to the data. 1, 2 or f. "
                       "The default is f."),
@@ -135,9 +148,6 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
 
    if (!BasicFramework::initialize(argc,argv)) 
       return false;
-
-   // Basic tick of the reciever, assumed to also be the sample rate
-   const double timeStep = 1/20e6;
 
    if (timeLimitOpt.getCount())
       timeLimit = asDouble(timeLimitOpt.getValue()[0]) * 1e-3;
@@ -162,16 +172,6 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
    double offset =  asDouble(word(val, 3, delim)) * 1e-6;
    double doppler = asDouble(word(val, 4, delim));
 
-   double interFreq;
-   switch (band)
-   {
-      case 1: interFreq = gpstk::L1_FREQ - 1575e6; break;
-      case 2: interFreq = gpstk::L2_FREQ - 1228e6; break;
-      default: 
-         cout << "Unsupported band: " << band << endl;
-         return false;
-   }
-
    CodeGenerator* codeGenPtr;
    double chipFreq;
    switch (code[0])
@@ -188,6 +188,12 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
          cout << "Unsupported code: " << code << endl;
          return false;
    }
+
+   if (sampleRateOpt.getCount())
+      timeStep = 1/(asDouble(sampleRateOpt.getValue().front()) * 1e6 );
+
+   if (interFreqOpt.getCount())
+      interFreq = asDouble(interFreqOpt.getValue().front()) * 1e6;
 
    // Note that this object is responsible for destroying
    // the codeGenPtr object
