@@ -69,8 +69,11 @@
 #include "ComputeLI.hpp"
 #include "ComputeMelbourneWubbena.hpp"
 
-   // Classes to compute single differences between receiver stations
+   // Class to compute single differences between receiver stations
 #include "DeltaOp.hpp"
+
+   // Class to synchronize two GNSS Data Structures data streams.
+#include "Synchronize.hpp"
 
 #include "geometry.hpp"                   // DEG_TO_RAD
 
@@ -364,12 +367,11 @@ int main(void)
       // Create an object to compute the single differences of prefit residuals
    DeltaOp delta;      // By default, it will work on code prefit residuals
 
-      // Flag for synchronization issues
-   bool firstTime(true);
-
-      // Allowed desynchronization between rover and reference
-      // data streams, in seconds
-   double timeTolerance(15.0);
+      // Create an object to synchronize rover and reference station
+      // data streams. This object will take data out from "rinRef" until
+      // it is synchronized with data in "gOriginal". Default synchronization
+      // tolerance is 1 s.
+   Synchronize synchro(rinRef, gOriginal);
 
       //////////////////////////////////////////////
 
@@ -758,41 +760,15 @@ int main(void)
       gnssRinex gRin10(gOriginal);
 
 
-         //// The following code makes sure the data streams are synchronized
-      if (firstTime)
-      {
-         rinRef >> gRef;     // Get data out of reference station RINEX file
-         firstTime = false;  // Mark that the first data batch was read
-      }
-
-         // Check that reference data time stamp is not less than rover
-         // data's, and that tolerance is within limits. If not, keep reading.
-         // Note that if reference data time stamp is bigger, it will not
-         // enter here, "waiting" for rover data to catch up.
-      while ( (gRef.header.epoch < gRin10.header.epoch) &&
-               (std::abs(gRef.header.epoch - gRin10.header.epoch)
-                                               > timeTolerance ) )
-      {
-         rinRef >> gRef;
-      }
-         //// End of synchronization code
-
-
-         // If we couldn't synchronize data streams (i.e.: "timeTolerance"
-         // is not met), skip this epoch (no DGPS data processing will
-         // be carried out).
-      if ( std::abs(gRef.header.epoch - gRin10.header.epoch) > timeTolerance )
-      {
-         cout << endl;
-         continue;
-      }
-
-
-         // If everything is OK, let's process reference station data
+         // First, let's synchronize and process reference station data
       try
       {
-         gRef >> myFilter >> modelRef;
-            // Remember that in simple DGPS, the differences are computed
+         gRef >> synchro >> myFilter >> modelRef;
+            // Please note that the FIRST STEP is to synchronize "gRef", the
+            // reference station data stream, with "gOriginal" (or with gRin10,
+            // which is the same), the rover receiver data stream.
+            //
+            // Also, remember that in simple DGPS the differences are computed
             // on code prefit residuals, so "modelRef" object is mandatory.
 
             // The "delta" object will take care of proper differencing.
@@ -801,6 +777,11 @@ int main(void)
          delta.setRefData(gRef.body);
 
       }
+      catch(SynchronizeException& e)   // THIS IS VERY IMPORTANT IN ORDER TO
+      {                                // MANAGE A POSSIBLE DESYNCHRONIZATION!!
+         cout << endl;
+         continue;
+      }
       catch(...)
       {
          cerr << "Case 10. Exception when processing reference station data \
@@ -808,13 +789,13 @@ at epoch: " << gRef.header.epoch << endl;
       }
 
 
-         // The rover data processing is done here:
+         // Rover data processing is done here:
       try
       {
 
          gRin10 >> myFilter >> model >> delta >> baseChange >> solverNEU;
-            // This is very similar to cases #1 and #2, but we insert a "delta" 
-            // object that will adjust code prefit residuals BEFORE solving the 
+            // This is very similar to cases #1 and #2, but we insert a "delta"
+            // object that will adjust code prefit residuals BEFORE solving the
             // system of equations.
       }
       catch(...)

@@ -9,7 +9,7 @@ if $(PREPROCESSING)
 }
 else
 {
-   GPSBuildLibrary procframe : 
+   GPSBuildLibrary procframe :
       BasicModel.cpp CodeKalmanSolver.cpp CodeSmoother.cpp
       ComputeCombination.cpp ComputeDOP.cpp ComputeIURAWeights.cpp
       ComputeLC.cpp ComputeLdelta.cpp ComputeLI.cpp ComputeLinear.cpp
@@ -22,8 +22,8 @@ else
       ModeledReferencePR.cpp ModelObs.cpp ModelObsFixedStation.cpp
       MWCSDetector.cpp NablaOp.cpp OneFreqCSDetector.cpp PCSmoother.cpp
       ProcessingVector.cpp SatArcMarker.cpp SimpleFilter.cpp SolverLMS.cpp
-      SolverPPP.cpp SolverWMS.cpp StochasticModel.cpp Variable.cpp XYZ2NED.cpp
-      XYZ2NEU.cpp
+      SolverPPP.cpp SolverWMS.cpp StochasticModel.cpp Synchronize.cpp
+      Variable.cpp XYZ2NED.cpp XYZ2NEU.cpp
       ;
 
    InstallFile $(INCDIR) :
@@ -40,6 +40,6 @@ else
       MWCSDetector.hpp NablaOp.hpp OneFreqCSDetector.hpp PCSmoother.hpp
       ProcessingClass.hpp ProcessingVector.hpp SatArcMarker.hpp
       SimpleFilter.hpp SolverLMS.hpp SolverPPP.hpp SolverWMS.hpp
-      StochasticModel.hpp Variable.hpp XYZ2NED.hpp XYZ2NEU.hpp
+      StochasticModel.hpp Synchronize.hpp Variable.hpp XYZ2NED.hpp XYZ2NEU.hpp
       ;
 }

@@ -16,7 +16,7 @@ LICSDetector2.cpp LinearCombinations.cpp ModeledPR.cpp ModeledReferencePR.cpp \
 ModelObs.cpp ModelObsFixedStation.cpp MWCSDetector.cpp NablaOp.cpp \
 OneFreqCSDetector.cpp PCSmoother.cpp ProcessingVector.cpp SatArcMarker.cpp \
 SimpleFilter.cpp SolverLMS.cpp SolverPPP.cpp SolverWMS.cpp StochasticModel.cpp \
-Variable.cpp XYZ2NED.cpp XYZ2NEU.cpp
+Synchronize.cpp Variable.cpp XYZ2NED.cpp XYZ2NEU.cpp
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = BasicModel.hpp CodeKalmanSolver.hpp CodeSmoother.hpp \
@@ -30,5 +30,5 @@ LICSDetector.hpp LICSDetector2.hpp LinearCombinations.hpp ModeledPR.hpp \
 ModeledReferencePR.hpp ModelObs.hpp ModelObsFixedStation.hpp MWCSDetector.hpp \
 NablaOp.hpp OneFreqCSDetector.hpp PCSmoother.hpp ProcessingClass.hpp \
 ProcessingVector.hpp SatArcMarker.hpp SimpleFilter.hpp SolverLMS.hpp \
-SolverPPP.hpp SolverWMS.hpp StochasticModel.hpp Variable.hpp XYZ2NED.hpp \
-XYZ2NEU.hpp
+SolverPPP.hpp SolverWMS.hpp StochasticModel.hpp Synchronize.hpp Variable.hpp \
+XYZ2NED.hpp XYZ2NEU.hpp

@@ -67,15 +67,16 @@ namespace gpstk
        *   SP3EphList.loadFile("igs11513.sp3");
        *   SP3EphList.loadFile("igs11514.sp3");
        *
+       *      // Set up Niell tropospheric model
        *   NeillTropModel neillTM( nominalPos.getAltitude(),
        *                           nominalPos.getGeodeticLatitude(), 30);
        *
-       *      // Objects to compute the tropospheric data
+       *      // Objects to compute the model
        *   BasicModel basicM(nominalPos, SP3EphList);
        *   ComputeTropModel computeTropo(neillTM);
        *
        *      // More declarations here: ComputeMOPSWeights, SimpleFilter,
-       *      // LICSDetector, MWCSDetector, SolidTides, OceanLoading, 
+       *      // LICSDetector, MWCSDetector, SolidTides, OceanLoading,
        *      // PoleTides, CorrectObservables, ComputeWindUp, ComputeLinear,
        *      // LinearCombinations, etc.
        *
@@ -117,7 +118,7 @@ namespace gpstk
        *         continue;
        *      }
        *
-       *         // Print the results
+       *         // Print results
        *      cout << time.DOYsecond()      << "  "; // Output field #1
        *      cout << pppSolver.solution[1] << "  "; // dx: Output field #2
        *      cout << pppSolver.solution[2] << "  "; // dy: Output field #3
@@ -132,10 +133,12 @@ namespace gpstk
        * incoming GNSS Data Structure without changes and the processing chain
        * continues.
        *
-       * Otherwise, it will stop the processing chain and throw a 
+       * Otherwise, it will stop the processing chain and throw a
        * "DecimateEpoch" exception. The program then must handle it
        * appropriately, usually just issuing a 'continue' statement in order to
        * process next epoch.
+       *
+       * @sa Synchronize.hpp for another time management class.
        *
        */
    class Decimate : public ProcessingClass
