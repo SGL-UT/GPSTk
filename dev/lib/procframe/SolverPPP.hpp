@@ -96,7 +96,8 @@ namespace gpstk
        *               >> pcFilter
        *               >> markCSLI
        *               >> markCSMW
-       *               >> mopsWeights
+       *               >> markArc
+       *               >> phaseAlign
        *               >> pppSolver;
        *      }
        *      catch(...)
@@ -110,7 +111,7 @@ namespace gpstk
        *      cout << pppSolver.solution[1] << "  "; // dx: Output field #2
        *      cout << pppSolver.solution[2] << "  "; // dy: Output field #3
        *      cout << pppSolver.solution[3] << "  "; // dz: Output field #4
-       *      cout << pppSolver.solution[0] << "  "; // wetMap: Output field #5
+       *      cout << pppSolver.solution[0] << "  "; // wetTropo: Out field #5
        *      cout << endl;
        *   }
        * @endcode

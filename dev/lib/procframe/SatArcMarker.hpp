@@ -64,7 +64,7 @@ namespace gpstk
        * @endcode
        *
        * The "SatArcMarker" object will visit every satellite in the GNSS
-       * data structure that is "gRin" and, if a cycle slip has happened 
+       * data structure that is "gRin" and, if a cycle slip has happened
        * (indicated by the corresponding CS flag), it will increase the
        * value of the corresponding "TypeID::satArc" type.
        *
