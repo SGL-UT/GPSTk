@@ -1,4 +1,4 @@
-#pragma ident "$Id: PhaseCodeAlignment.cpp $"
+#pragma ident "$Id$"
 
 /**
  * @file PhaseCodeAlignment.cpp

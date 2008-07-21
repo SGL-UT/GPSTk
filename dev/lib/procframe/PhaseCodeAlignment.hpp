@@ -1,4 +1,4 @@
-#pragma ident "$Id: PhaseCodeAlignment.hpp $"
+#pragma ident "$Id$"
 
 /**
  * @file PhaseCodeAlignment.hpp
