@@ -1509,7 +1509,7 @@ namespace gpstk
          {
                // figure out which char we found;
             inpos = inputChars.find(rv[aspos]);
-            if (outputChars.length() < inpos)
+            if ( (outputChars.length() - 1) < inpos)
                toc = pad;
             else
                toc = outputChars[inpos];
