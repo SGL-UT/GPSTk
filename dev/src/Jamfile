@@ -26,7 +26,7 @@ else
       BinexData.cpp BLQDataReader.cpp CivilTime.cpp CodeBuffer.cpp
       CommandOption.cpp CommandOptionParser.cpp
       CommandOptionWithCommonTimeArg.cpp CommandOptionWithPositionArg.cpp
-      CommandOptionWithTimeArg.cpp CommonTime.cpp DOP.cpp
+      CommandOptionWithTimeArg.cpp CommonTime.cpp ConfDataReader.cpp DOP.cpp
       DayTime.cpp ECEF.cpp EngAlmanac.cpp
       EngEphemeris.cpp EngNav.cpp ENUUtil.cpp EphemerisRange.cpp
       Epoch.cpp Exception.cpp Expression.cpp FFData.cpp
@@ -66,7 +66,7 @@ else
       CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp
       CommandOption.hpp CommandOptionParser.hpp
       CommandOptionWithCommonTimeArg.hpp CommandOptionWithPositionArg.hpp
-      CommandOptionWithTimeArg.hpp CommonTime.hpp DOP.hpp
+      CommandOptionWithTimeArg.hpp CommonTime.hpp ConfDataReader.hpp DOP.hpp
       DayTime.hpp ECEF.hpp EngAlmanac.hpp EngEphemeris.hpp EngNav.hpp 
       ENUUtil.hpp EphemerisRange.hpp Epoch.hpp 
       EpochClockModel.hpp Exception.hpp Expression.hpp
