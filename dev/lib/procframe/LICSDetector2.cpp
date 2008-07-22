@@ -1,4 +1,4 @@
-#pragma ident "$Id: LICSDetector2.cpp $"
+#pragma ident "$Id$"
 
 /**
  * @file LICSDetector2.cpp
@@ -36,7 +36,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int LICSDetector2::classIndex = 2700000;
+   int LICSDetector2::classIndex = 3200000;
 
 
       // Returns an index identifying this object.
@@ -74,6 +74,7 @@ namespace gpstk
    }
 
 
+
       /* Returns a satTypeValueMap object, adding the new data generated
        *  when calling this object.
        *
@@ -84,85 +85,102 @@ namespace gpstk
    satTypeValueMap& LICSDetector2::Process( const DayTime& epoch,
                                             satTypeValueMap& gData,
                                             const short& epochflag )
+      throw(ProcessingException)
    {
 
-      double value1(0.0);
-      double lli1(0.0);
-      double lli2(0.0);
-
-      SatIDSet satRejectedSet;
-
-         // Loop through all the satellites
-      satTypeValueMap::iterator it;
-      for (it = gData.begin(); it != gData.end(); ++it)
+      try
       {
-         try
-         {
-               // Try to extract the values
-            value1 = (*it).second(obsType);
-         }
-         catch(...)
-         {
-               // If some value is missing, then schedule this satellite
-               // for removal
-            satRejectedSet.insert( (*it).first );
-            continue;
-         }
 
-         if (useLLI)
+         double value1(0.0);
+         double lli1(0.0);
+         double lli2(0.0);
+
+         SatIDSet satRejectedSet;
+
+            // Loop through all the satellites
+         satTypeValueMap::iterator it;
+         for (it = gData.begin(); it != gData.end(); ++it)
          {
             try
             {
-                  // Try to get the LLI1 index
-               lli1  = (*it).second(lliType1);
+                  // Try to extract the values
+               value1 = (*it).second(obsType);
             }
             catch(...)
             {
-                  // If LLI #1 is not found, set it to zero
-                  // You REALLY want to have BOTH LLI indexes properly set
-               lli1 = 0.0;
+                  // If some value is missing, then schedule this satellite
+                  // for removal
+               satRejectedSet.insert( (*it).first );
+               continue;
             }
 
-            try
+            if (useLLI)
             {
-                  // Try to get the LLI2 index
-               lli2  = (*it).second(lliType2);
+               try
+               {
+                     // Try to get the LLI1 index
+                  lli1  = (*it).second(lliType1);
+               }
+               catch(...)
+               {
+                     // If LLI #1 is not found, set it to zero
+                     // You REALLY want to have BOTH LLI indexes properly set
+                  lli1 = 0.0;
+               }
+
+               try
+               {
+                     // Try to get the LLI2 index
+                  lli2  = (*it).second(lliType2);
+               }
+               catch(...)
+               {
+                     // If LLI #2 is not found, set it to zero
+                     // You REALLY want to have BOTH LLI indexes properly set
+                  lli2 = 0.0;
+               }
             }
-            catch(...)
+
+               // If everything is OK, then get the new values inside the
+               // structure. This way of computing it allows concatenation of
+               // several different cycle slip detectors
+            (*it).second[resultType1] += getDetection( epoch,
+                                                       (*it).first,
+                                                       (*it).second,
+                                                       epochflag,
+                                                       value1,
+                                                       lli1,
+                                                       lli2 );
+
+            if ( (*it).second[resultType1] > 1.0 )
             {
-                  // If LLI #2 is not found, set it to zero
-                  // You REALLY want to have BOTH LLI indexes properly set
-               lli2 = 0.0;
+               (*it).second[resultType1] = 1.0;
             }
+
+               // We will mark both cycle slip flags
+            (*it).second[resultType2] = (*it).second[resultType1];
+
          }
 
-            // If everything is OK, then get the new values inside the
-            // structure. This way of computing it allows concatenation of
-            // several different cycle slip detectors
-         (*it).second[resultType1] += getDetection( epoch,
-                                                    (*it).first,
-                                                    (*it).second,
-                                                    epochflag,
-                                                    value1,
-                                                    lli1,
-                                                    lli2 );
+            // Remove satellites with missing data
+         gData.removeSatID(satRejectedSet);
 
-         if ( (*it).second[resultType1] > 1.0 )
-         {
-            (*it).second[resultType1] = 1.0;
-         }
+         return gData;
 
-            // We will mark both cycle slip flags
-         (*it).second[resultType2] = (*it).second[resultType1];
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
 
       }
 
-         // Remove satellites with missing data
-      gData.removeSatID(satRejectedSet);
+   }  // End of method 'LICSDetector2::Process()'
 
-      return gData;
-
-   }
 
 
       /* Method to set the maximum interval of time allowed between two
@@ -184,7 +202,8 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'LICSDetector2::setDeltaTMax()'
+
 
 
       /* Method to set the saturation threshold for cycle slip detection, in
@@ -207,7 +226,8 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'LICSDetector2::setSatThreshold()'
+
 
 
       /* Method to set threshold time constant, in seconds
@@ -230,7 +250,8 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'LICSDetector2::setTimeConst()'
+
 
 
       /* Method to set the maximum buffer size for data, in samples.
@@ -254,7 +275,8 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'LICSDetector2::setMaxBufferSize()'
+
 
 
       /* Returns a gnnsRinex object, adding the new data generated when
@@ -263,12 +285,29 @@ namespace gpstk
        * @param gData    Data object holding the data.
        */
    gnssRinex& LICSDetector2::Process(gnssRinex& gData)
+      throw(ProcessingException)
    {
-      Process(gData.header.epoch, gData.body, gData.header.epochFlag);
 
-      return gData;
+      try
+      {
 
-   }
+         Process(gData.header.epoch, gData.body, gData.header.epochFlag);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'LICSDetector2::Process()'
 
 
       /* Method that implements the LI cycle slip detection algorithm
@@ -453,6 +492,7 @@ namespace gpstk
                LIData[sat].LIBuffer.clear();
 
                reportCS = true;
+
             }
 
          }
@@ -492,8 +532,8 @@ namespace gpstk
          return 0.0;
       }
 
-   }
+   }  // End of method 'LICSDetector2::getDetection()'
 
 
 
-} // end namespace gpstk
+}  // End of namespace gpstk

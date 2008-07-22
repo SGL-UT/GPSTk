@@ -37,7 +37,7 @@ namespace gpstk
 
 
       // Index initially assigned to this class
-   int MWCSDetector::classIndex = 2700000;
+   int MWCSDetector::classIndex = 3300000;
 
 
 
@@ -85,84 +85,101 @@ namespace gpstk
    satTypeValueMap& MWCSDetector::Process( const DayTime& epoch,
                                            satTypeValueMap& gData,
                                            const short& epochflag )
+      throw(ProcessingException)
    {
-      double value1(0.0);
-      double lli1(0.0);
-      double lli2(0.0);
 
-      SatIDSet satRejectedSet;
-
-         // Loop through all the satellites
-      satTypeValueMap::iterator it;
-      for (it = gData.begin(); it != gData.end(); ++it)
+      try
       {
 
-         try
-         {
-               // Try to extract the values
-            value1 = (*it).second(obsType);
-         }
-         catch(...)
-         {
-               // If some value is missing, then schedule this satellite
-               // for removal
-            satRejectedSet.insert( (*it).first );
-            continue;
-         }
+         double value1(0.0);
+         double lli1(0.0);
+         double lli2(0.0);
 
-         if (useLLI)
+         SatIDSet satRejectedSet;
+
+            // Loop through all the satellites
+         satTypeValueMap::iterator it;
+         for (it = gData.begin(); it != gData.end(); ++it)
          {
-            try
-            {
-                  // Try to get the LLI1 index
-               lli1  = (*it).second(lliType1);
-            }
-            catch(...)
-            {
-                  // If LLI #1 is not found, set it to zero
-                  // You REALLY want to have BOTH LLI indexes properly set
-               lli1 = 0.0;
-            }
 
             try
             {
-                  // Try to get the LLI2 index
-               lli2  = (*it).second(lliType2);
+                  // Try to extract the values
+               value1 = (*it).second(obsType);
             }
             catch(...)
             {
-                  // If LLI #2 is not found, set it to zero
-                  // You REALLY want to have BOTH LLI indexes properly set
-               lli2 = 0.0;
+                  // If some value is missing, then schedule this satellite
+                  // for removal
+               satRejectedSet.insert( (*it).first );
+               continue;
             }
+
+            if (useLLI)
+            {
+               try
+               {
+                     // Try to get the LLI1 index
+                  lli1  = (*it).second(lliType1);
+               }
+               catch(...)
+               {
+                     // If LLI #1 is not found, set it to zero
+                     // You REALLY want to have BOTH LLI indexes properly set
+                  lli1 = 0.0;
+               }
+
+               try
+               {
+                     // Try to get the LLI2 index
+                  lli2  = (*it).second(lliType2);
+               }
+               catch(...)
+               {
+                     // If LLI #2 is not found, set it to zero
+                     // You REALLY want to have BOTH LLI indexes properly set
+                  lli2 = 0.0;
+               }
+            }
+
+               // If everything is OK, then get the new values inside the
+               // structure. This way of computing it allows concatenation of
+               // several different cycle slip detectors
+            (*it).second[resultType1] += getDetection( epoch,
+                                                       (*it).first,
+                                                       (*it).second,
+                                                        epochflag,
+                                                        value1,
+                                                        lli1,
+                                                        lli2 );
+            if ( (*it).second[resultType1] > 1.0 )
+            {
+               (*it).second[resultType1] = 1.0;
+            }
+
+               // We will mark both cycle slip flags
+            (*it).second[resultType2] = (*it).second[resultType1];
+
          }
 
-            // If everything is OK, then get the new values inside the
-            // structure. This way of computing it allows concatenation of
-            // several different cycle slip detectors
-         (*it).second[resultType1] += getDetection( epoch,
-                                                    (*it).first,
-                                                    (*it).second,
-                                                     epochflag,
-                                                     value1,
-                                                     lli1,
-                                                     lli2 );
-         if ( (*it).second[resultType1] > 1.0 )
-         {
-            (*it).second[resultType1] = 1.0;
-         }
+            // Remove satellites with missing data
+         gData.removeSatID(satRejectedSet);
 
-            // We will mark both cycle slip flags
-         (*it).second[resultType2] = (*it).second[resultType1];
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
 
       }
 
-         // Remove satellites with missing data
-      gData.removeSatID(satRejectedSet);
-
-      return gData;
-
-   }
+   }  // End of method 'MWCSDetector::Process()'
 
 
 
@@ -185,7 +202,8 @@ namespace gpstk
       }
 
       return (*this);
-   }
+
+   }  // End of method 'MWCSDetector::setDeltaTMax()'
 
 
 
@@ -211,7 +229,7 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'MWCSDetector::setMaxNumLambdas()'
 
 
 
@@ -221,13 +239,29 @@ namespace gpstk
        * @param gData    Data object holding the data.
        */
    gnssRinex& MWCSDetector::Process(gnssRinex& gData)
+      throw(ProcessingException)
    {
 
-      Process(gData.header.epoch, gData.body, gData.header.epochFlag);
+      try
+      {
 
-      return gData;
+         Process(gData.header.epoch, gData.body, gData.header.epochFlag);
 
-   }
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'MWCSDetector::Process()'
 
 
 
@@ -325,6 +359,7 @@ namespace gpstk
             MWData[sat].windowSize = 1;
 
             reportCS = true;                // Report cycle slip
+
          }
       }
 
@@ -350,7 +385,7 @@ namespace gpstk
          return 0.0;
       }
 
-   }
+   }  // End of method 'MWCSDetector::getDetection()'
 
 
-} // end namespace gpstk
+}  // End of namespace gpstk

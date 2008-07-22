@@ -155,7 +155,8 @@ namespace gpstk
           */
       virtual satTypeValueMap& Process( const DayTime& epoch,
                                         satTypeValueMap& gData,
-                                        const short& epochflag = 0 );
+                                        const short& epochflag = 0 )
+         throw(ProcessingException);
 
 
          /** Method to set the maximum interval of time allowed between two
@@ -193,7 +194,7 @@ namespace gpstk
          /** Method to set whether the LLI indexes will be used as
           *  an aid or not.
           *
-          * @param use   Boolean value enabling/disabling LLI check
+          * @param use   Boolean value enabling/disabling LLI check.
           */
       virtual MWCSDetector& setUseLLI(const bool& use)
       { useLLI = use; return (*this); };
@@ -210,6 +211,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { (*this).Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -218,7 +220,8 @@ namespace gpstk
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssRinex& Process(gnssRinex& gData);
+      virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException);
 
 
          /// Returns an index identifying this object.
@@ -281,7 +284,7 @@ namespace gpstk
 
          DayTime formerEpoch;    ///< The previous epoch time stamp.
          int windowSize;         ///< Size of current window, in samples.
-         double meanMW;          ///< Accumulated mean value of combination
+         double meanMW;          ///< Accumulated mean value of combination.
       };
 
 
@@ -322,10 +325,9 @@ namespace gpstk
       { (*this).index = classIndex++; };
 
 
-   }; // end class MWCSDetector
+   }; // End of class 'MWCSDetector'
 
+      //@}
 
-   //@}
 }
-
 #endif   // MWCSDETECTOR_HPP

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
  * @file ComputeLI.cpp
@@ -21,8 +22,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -33,17 +34,28 @@
 namespace gpstk
 {
 
-    // Index initially assigned to this class
-    int ComputeLI::classIndex = 1900000;
+      // Index initially assigned to this class
+   int ComputeLI::classIndex = 2150000;
 
 
-    // Returns an index identifying this object.
-    int ComputeLI::getIndex() const { return (*this).index; }
+      // Returns an index identifying this object.
+   int ComputeLI::getIndex() const
+   { return index; }
 
 
-    // Returns a string identifying this object.
-    std::string ComputeLI::getClassName() const { return "ComputeLI"; }
+      // Returns a string identifying this object.
+   std::string ComputeLI::getClassName() const
+   { return "ComputeLI"; }
 
 
+      // Default constructor
+   ComputeLI::ComputeLI()
+   {
+      type1 = TypeID::L1;
+      type2 = TypeID::L2;
+      resultType = TypeID::LI;
+      setIndex();
+   }
 
-} // end namespace gpstk
+
+} // End of namespace gpstk

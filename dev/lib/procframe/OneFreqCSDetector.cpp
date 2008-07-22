@@ -23,7 +23,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -36,7 +36,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int OneFreqCSDetector::classIndex = 2500000;
+   int OneFreqCSDetector::classIndex = 3000000;
 
 
       // Returns an index identifying this object.
@@ -118,7 +118,9 @@ namespace gpstk
       };
 
       setIndex();
-   }
+
+   }  // End of constructor 'OneFreqCSDetector::OneFreqCSDetector()'
+
 
 
       /* Returns a satTypeValueMap object, adding the new data generated
@@ -131,53 +133,72 @@ namespace gpstk
    satTypeValueMap& OneFreqCSDetector::Process( const DayTime& epoch,
                                                 satTypeValueMap& gData,
                                                 const short& epochflag )
+      throw(ProcessingException)
    {
-      double value1(0.0);
-      double value2(0.0);
 
-      SatIDSet satRejectedSet;
-
-         // Loop through all the satellites
-      satTypeValueMap::iterator it;
-      for (it = gData.begin(); it != gData.end(); ++it) 
+      try
       {
-         try
+
+         double value1(0.0);
+         double value2(0.0);
+
+         SatIDSet satRejectedSet;
+
+            // Loop through all the satellites
+         satTypeValueMap::iterator it;
+         for (it = gData.begin(); it != gData.end(); ++it) 
          {
-               // Try to extract the values
-            value1 = (*it).second(codeType);
-            value2 = (*it).second(phaseType);
-         }
-         catch(...)
-         {
-               // If some value is missing, then schedule this satellite
-               // for removal
-            satRejectedSet.insert( (*it).first );
-            continue;
+            try
+            {
+                  // Try to extract the values
+               value1 = (*it).second(codeType);
+               value2 = (*it).second(phaseType);
+            }
+            catch(...)
+            {
+                  // If some value is missing, then schedule this satellite
+                  // for removal
+               satRejectedSet.insert( (*it).first );
+               continue;
+            }
+
+               // If everything is OK, then get the new value inside
+               // the structure.
+               // This way of doing it allows concatenation of several
+               // different cycle slip detectors
+            (*it).second[resultType] += getDetection( epoch,
+                                                      (*it).first,
+                                                      (*it).second,
+                                                      epochflag,
+                                                      value1,
+                                                      value2 );
+
+            if ( (*it).second[resultType] > 1.0 )
+            {
+               (*it).second[resultType] = 1.0;
+            }
+
          }
 
-            // If everything is OK, then get the new value inside the structure
-            // This way of doing it allows concatenation of several
-            // different cycle slip detectors
-         (*it).second[resultType] += getDetection( epoch,
-                                                   (*it).first,
-                                                   (*it).second,
-                                                   epochflag,
-                                                   value1,
-                                                   value2 );
+            // Remove satellites with missing data
+         gData.removeSatID(satRejectedSet);
 
-         if ( (*it).second[resultType] > 1.0 )
-         {
-            (*it).second[resultType] = 1.0;
-         }
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
 
       }
 
-         // Remove satellites with missing data
-      gData.removeSatID(satRejectedSet);
+   }  // End of method 'OneFreqCSDetector::Process()'
 
-      return gData;
-
-   }
 
 
       /* Method to set the maximum size of filter window, in samples.
@@ -199,7 +220,7 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'OneFreqCSDetector::setMaxWindowSize()'
 
 
       /* Returns a gnnsRinex object, adding the new data generated when
@@ -208,9 +229,28 @@ namespace gpstk
        * @param gData    Data object holding the data.
        */
    gnssRinex& OneFreqCSDetector::Process(gnssRinex& gData)
+      throw(ProcessingException)
    {
-      Process(gData.header.epoch, gData.body, gData.header.epochFlag);
-      return gData;
+
+      try
+      {
+
+         Process(gData.header.epoch, gData.body, gData.header.epochFlag);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
    }
 
 
@@ -280,10 +320,12 @@ namespace gpstk
 
       if (OneFreqData[sat].windowSize > 1)
       {
+
          deltaBias = (bias - OneFreqData[sat].meanBias);
 
             // Square difference between biases
          dif2 = deltaBias*deltaBias;
+
             // Compute threshold^2
          thr2 = OneFreqData[sat].meanSigma2 * maxNumSigmas * maxNumSigmas;
 
@@ -308,12 +350,15 @@ namespace gpstk
 
       if (OneFreqData[sat].windowSize <= 1)   // If a cycle-slip happened
       {
+
             // Set mean bias to current code-phase bias
          OneFreqData[sat].meanBias = bias;
 
             // Set mean variance to default variance
          OneFreqData[sat].meanSigma2 = defaultBiasSigma * defaultBiasSigma;
+
          reportCS = true;
+
       }
 
       if (reportCS)
@@ -325,7 +370,7 @@ namespace gpstk
          return 0.0;
       }
 
-   }
+   }  // End of method 'OneFreqCSDetector::getDetection()'
 
 
-} // end namespace gpstk
+}  // End of namespace gpstk

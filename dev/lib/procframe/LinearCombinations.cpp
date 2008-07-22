@@ -144,4 +144,4 @@ namespace gpstk
 
    }
 
-} // end namespace gpstk
+} // End of namespace gpstk

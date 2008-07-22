@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -44,6 +44,7 @@ namespace gpstk
 
       /** This class filters out satellites with observations grossly out of
        *  bounds.
+       *
        * This class is meant to be used with the GNSS data structures objects
        * found in "DataStructures" class.
        *
@@ -55,7 +56,8 @@ namespace gpstk
        *   gnssRinex gRin;
        *   SimpleFilter myFilter;
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> myFilter;
        *   }
        * @endcode
@@ -143,7 +145,8 @@ namespace gpstk
           *
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process(satTypeValueMap& gData);
+      virtual satTypeValueMap& Process(satTypeValueMap& gData)
+         throw(ProcessingException);
 
 
          /** Method to set the minimum limit.
@@ -203,14 +206,19 @@ namespace gpstk
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData);
+      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
+      { Process(gData.body); return gData; };
+
 
 
          /** Returns a gnnsRinex object, filtering the target observables.
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssRinex& Process(gnssRinex& gData);
+      virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException)
+      { Process(gData.body); return gData; };
 
 
          /// Returns an index identifying this object.
@@ -221,20 +229,12 @@ namespace gpstk
       virtual std::string getClassName(void) const;
 
 
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex      New integer index to be assigned to current
-          *                      object.
-          */
-      void setIndex(const int newindex)
-      { index = newindex; }; 
-
-
          /// Destructor
       virtual ~SimpleFilter() {};
 
 
    protected:
+
 
          /** Checks that the value is within the given limits.
           * @param value     The value to be test
@@ -258,6 +258,7 @@ namespace gpstk
 
    private:
 
+
          /// Initial index assigned to this class.
       static int classIndex;
 
@@ -266,12 +267,11 @@ namespace gpstk
 
          /// Sets the index and increment classIndex.
       void setIndex(void)
-      { index = classIndex++; }; 
+      { index = classIndex++; };
 
-   }; // end class SimpleFilter
+   }; // End of class 'SimpleFilter'
 
       //@}
 
 }
-
 #endif  // SIMPLEFILTER_HPP

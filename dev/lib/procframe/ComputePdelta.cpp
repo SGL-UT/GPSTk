@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
  * @file ComputePdelta.hpp
@@ -21,8 +22,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -33,17 +34,30 @@
 namespace gpstk
 {
 
-    // Index initially assigned to this class
-    int ComputePdelta::classIndex = 2000000;
+      // Index initially assigned to this class
+   int ComputePdelta::classIndex = 2300000;
 
 
-    // Returns an index identifying this object.
-    int ComputePdelta::getIndex() const { return (*this).index; }
+      // Returns an index identifying this object.
+   int ComputePdelta::getIndex() const
+   { return index; }
 
 
-    // Returns a string identifying this object.
-    std::string ComputePdelta::getClassName() const { return "ComputePdelta"; }
+      // Returns a string identifying this object.
+   std::string ComputePdelta::getClassName() const
+   { return "ComputePdelta"; }
+
+
+      // Default constructor
+   ComputePdelta::ComputePdelta()
+      : DEN(L1_FREQ + L2_FREQ)
+   {
+      type1 = TypeID::P1;
+      type2 = TypeID::P2;
+      resultType = TypeID::Pdelta;
+      setIndex();
+   }
 
 
 
-} // end namespace gpstk
+} // End of namespace gpstk

@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -58,7 +58,8 @@ namespace gpstk
        *   gnssRinex gRin;
        *   OneFreqCSDetector markCSC1;
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> markCSC1;
        *   }
        * @endcode
@@ -97,10 +98,10 @@ namespace gpstk
        *    markCSC1.setMaxWindowSize(20);
        * @endcode
        *
-       * Please be aware that the window size should not be too big, because 
+       * Please be aware that the window size should not be too big, because
        * other factors (such as the ionospheric drift) may show up in the bias,
        * affecting the algorithm. When using 1 Hz data sampling, a window size
-       * between 60 and 100 samples will be fine. 
+       * between 60 and 100 samples will be fine.
        *
        * When used with the ">>" operator, this class returns the same incoming
        * data structure with the cycle slip index inserted along their
@@ -115,7 +116,7 @@ namespace gpstk
        * state, so you MUST NOT use the SAME object to process DIFFERENT data
        * streams.
        *
-       */    
+       */
    class OneFreqCSDetector : public ProcessingClass
    {
       public:
@@ -157,7 +158,8 @@ namespace gpstk
           */
       virtual satTypeValueMap& Process( const DayTime& epoch,
                                         satTypeValueMap& gData,
-                                        const short& epochflag = 0 );
+                                        const short& epochflag = 0 )
+         throw(ProcessingException);
 
 
          /** Method to set the default code type to be used.
@@ -277,6 +279,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -285,7 +288,8 @@ namespace gpstk
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssRinex& Process(gnssRinex& gData);
+      virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException);
 
 
          /// Returns an index identifying this object.
@@ -376,19 +380,19 @@ namespace gpstk
          /// Initial index assigned to this class.
       static int classIndex;
 
+
          /// Index belonging to this object.
       int index;
 
+
          /// Sets the index and increment classIndex.
       void setIndex(void)
-      { index = classIndex++; }; 
+      { index = classIndex++; };
 
 
-   }; // end class OneFreqCSDetector
+   }; // End of class 'OneFreqCSDetector'
 
+      //@}
 
-   //@}
-   
 }
-
 #endif   // ONEFREQCSDETECTOR_HPP

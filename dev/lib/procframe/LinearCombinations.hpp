@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -89,7 +89,8 @@ namespace gpstk
        *
        *   gnssRinex gRin;
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *
        *      gRin >> basic >> computeTropo >> linear;
        *
@@ -153,7 +154,7 @@ namespace gpstk
          /// using C1 instead of P1
       gnssLinearCombination mwubbenaCombWithC1;
 
-   };
+   }; // End of class 'LinearCombinations'
 
       //@}
 

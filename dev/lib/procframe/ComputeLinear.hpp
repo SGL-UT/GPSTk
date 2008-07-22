@@ -25,8 +25,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -99,7 +99,8 @@ namespace gpstk
        *
        *   gnssRinex gRin;
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *
        *      gRin >> basic >> computeTropo >> linear;
        *
@@ -109,11 +110,11 @@ namespace gpstk
        *
        * @endcode
        *
-       * The "ComputeLinear" object will visit every satellite in the GNSS 
+       * The "ComputeLinear" object will visit every satellite in the GNSS
        * data structure that is "gRin" and will compute the previously defined
        * linear combination (or combinations).
        *
-       * When used with the ">>" operator, this class returns the same 
+       * When used with the ">>" operator, this class returns the same
        * incoming data structure with the results inserted in it. Be warned
        * that if a given satellite does not have the observations or data
        * required by the linear combination definition, such data will be
@@ -159,8 +160,9 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process(const DayTime& time,
-                                       satTypeValueMap& gData);
+      virtual satTypeValueMap& Process( const DayTime& time,
+                                        satTypeValueMap& gData )
+         throw(ProcessingException);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data 
@@ -169,6 +171,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -178,6 +181,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -192,16 +196,18 @@ namespace gpstk
 
 
          /** Sets a linear combinations to be computed.
+          *
           * @param linear    Linear combination definition to compute.
           *
           * @warning All previous linear combinations will be deleted.
           */
-      virtual ComputeLinear& setLinearCombination( 
+      virtual ComputeLinear& setLinearCombination(
                                        const gnssLinearCombination& linear )
       { clearAll(); linearList.push_back(linear); return (*this); };
 
 
          /** Sets the list of linear combinations to be computed.
+          *
           * @param list    List of linear combination definitions to compute.
           *
           * @warning All previous linear combinations will be deleted.
@@ -211,6 +217,7 @@ namespace gpstk
 
 
          /** Add a linear combination to be computed.
+          *
           * @param linear    Linear combination definitions to be added.
           */
       virtual ComputeLinear& addLinear(const gnssLinearCombination& linear)
@@ -223,15 +230,6 @@ namespace gpstk
 
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
-
-
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex      New integer index to be assigned to 
-          *                      current object.
-          */
-      ComputeLinear& setIndex(const int newindex)
-      { index = newindex; return (*this); };
 
 
          /// Destructor
@@ -253,7 +251,7 @@ namespace gpstk
 
          /// Sets the index and increment classIndex.
       void setIndex(void)
-      { index = classIndex++; }; 
+      { index = classIndex++; };
 
 
    }; // end class ComputeLinear

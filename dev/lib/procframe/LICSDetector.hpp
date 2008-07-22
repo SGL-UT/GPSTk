@@ -134,7 +134,9 @@ namespace gpstk
           */
       virtual satTypeValueMap& Process( const DayTime& epoch,
                                         satTypeValueMap& gData,
-                                        const short& epochflag = 0 );
+                                        const short& epochflag = 0 )
+         throw(ProcessingException);
+
 
 
          /** Method to get the maximum interval of time allowed between two
@@ -200,6 +202,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -208,7 +211,8 @@ namespace gpstk
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssRinex& Process(gnssRinex& gData);
+      virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException);
 
 
          /// Returns an index identifying this object.
@@ -307,19 +311,19 @@ namespace gpstk
          /// Initial index assigned to this class.
       static int classIndex;
 
+
          /// Index belonging to this object.
       int index;
+
 
          /// Sets the index and increment classIndex.
       void setIndex(void)
       { index = classIndex++; };
 
 
-   }; // end class LICSDetector
+   }; // End of class 'LICSDetector'
 
-
-   //@}
+      //@}
 
 }
-
 #endif   // LICSDETECTOR_HPP

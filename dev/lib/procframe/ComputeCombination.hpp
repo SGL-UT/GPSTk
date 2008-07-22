@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -45,6 +45,11 @@ namespace gpstk
 
       /** This class eases computing combination of data for GNSS data
        *  structures.
+       *
+       * All observations are in meters.
+       *
+       * @sa ComputeLinear.hpp and LinearCombinations.hpp for a different
+       * approach to the same task.
        */
    class ComputeCombination : public ProcessingClass
    {
@@ -59,7 +64,8 @@ namespace gpstk
           *
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process(satTypeValueMap& gData);
+      virtual satTypeValueMap& Process(satTypeValueMap& gData)
+         throw(ProcessingException);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data generated
@@ -68,6 +74,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { Process(gData.body); return gData; };
 
 
@@ -77,17 +84,16 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException)
       { Process(gData.body); return gData; };
 
 
          /// Returns an index identifying this object.
-      virtual int getIndex(void) const
-      { return 1599999; };
+      virtual int getIndex(void) const;
 
 
          /// Returns a string identifying this object.
-      virtual std::string getClassName(void) const
-      { return "ComputeCombination"; };
+      virtual std::string getClassName(void) const;
 
 
          /// Destructor
@@ -112,11 +118,25 @@ namespace gpstk
       TypeID resultType;
 
 
-   }; // end class ComputeCombination
-   
+   private:
+
+
+         /// Initial index assigned to this class.
+      static int classIndex;
+
+         /// Index belonging to this object.
+      int index;
+
+         /// Sets the index and increment classIndex.
+      void setIndex(void)
+      { index = classIndex++; };
+
+
+   }; // End of class 'ComputeCombination'
+
 
       //@}
-   
+
 }
 
 #endif   // COMPUTECOMBINATION_HPP

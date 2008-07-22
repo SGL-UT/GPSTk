@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
  * @file ComputeLC.cpp
@@ -21,8 +22,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -33,17 +34,31 @@
 namespace gpstk
 {
 
-    // Index initially assigned to this class
-    int ComputeLC::classIndex = 1700000;
+      // Index initially assigned to this class
+   int ComputeLC::classIndex = 2050000;
 
 
-    // Returns an index identifying this object.
-    int ComputeLC::getIndex() const { return (*this).index; }
+      // Returns an index identifying this object.
+   int ComputeLC::getIndex() const
+   { return index; }
 
 
-    // Returns a string identifying this object.
-    std::string ComputeLC::getClassName() const { return "ComputeLC"; }
+      // Returns a string identifying this object.
+   std::string ComputeLC::getClassName() const
+   { return "ComputeLC"; }
+
+
+      // Default constructor
+   ComputeLC::ComputeLC()
+      : DEN(0.646944444)
+   {
+      type1 = TypeID::L1;
+      type2 = TypeID::L2;
+      resultType = TypeID::LC;
+      setIndex();
+   }
 
 
 
-} // end namespace gpstk
+
+} // End of namespace gpstk
