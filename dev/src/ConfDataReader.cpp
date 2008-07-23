@@ -1,4 +1,4 @@
-#pragma ident "$Id: ConfDataReader.cpp $"
+#pragma ident "$Id$"
 
 /**
  * @file ConfDataReader.cpp

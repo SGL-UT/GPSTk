@@ -1,4 +1,4 @@
-#pragma ident "$Id: ConfDataReader.hpp $"
+#pragma ident "$Id$"
 
 /**
  * @file ConfDataReader.hpp
