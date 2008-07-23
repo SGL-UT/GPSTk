@@ -291,12 +291,8 @@ namespace gpstk
 
       bias = code - phase;       // Current value of code-phase bias
 
-         // Increment size of window and check limit
+         // Increment window size
       ++OneFreqData[sat].windowSize;
-      if (OneFreqData[sat].windowSize > maxWindowSize)
-      {
-         OneFreqData[sat].windowSize = maxWindowSize;
-      }
 
          // Check if receiver already declared cycle slip or too much time
          // has elapsed
@@ -327,7 +323,7 @@ namespace gpstk
          dif2 = deltaBias*deltaBias;
 
             // Compute threshold^2
-         thr2 = OneFreqData[sat].meanSigma2 * maxNumSigmas * maxNumSigmas;
+         thr2 = OneFreqData[sat].variance * maxNumSigmas * maxNumSigmas;
 
             // If difference in biases is bigger or equal to threshold,
             // then declare cycle slip
@@ -341,22 +337,62 @@ namespace gpstk
             OneFreqData[sat].meanBias = OneFreqData[sat].meanBias +
                   deltaBias/(static_cast<double>(OneFreqData[sat].windowSize));
 
-               // Update mean variance
-            OneFreqData[sat].meanSigma2 = OneFreqData[sat].meanSigma2 +
-                           ( (dif2-OneFreqData[sat].meanSigma2) ) /
+               // Update variance of bias
+            OneFreqData[sat].variance = OneFreqData[sat].variance +
+                           ( (dif2-OneFreqData[sat].variance) ) /
                            (static_cast<double>(OneFreqData[sat].windowSize));
+
+               // Update buffers storing values at the end of deques
+            OneFreqData[sat].biasBuffer.push_back(bias);
+            OneFreqData[sat].dif2Buffer.push_back(dif2);
+
+               // Check limit of window size
+            if (OneFreqData[sat].windowSize > maxWindowSize)
+            {
+
+                  // Correct window size
+               OneFreqData[sat].windowSize = maxWindowSize;
+
+                  // Correct values of meanBias and variance, because they
+                  // were computed with (maxWindowSize + 1)
+
+                  // First, let's do a cast of 'maxWindowSize'
+               double N((static_cast<double>(maxWindowSize)));
+
+                  // We need to remove the first element
+               OneFreqData[sat].meanBias = ( (N + 1.0)/N ) *
+                  ( OneFreqData[sat].meanBias
+                  - ( OneFreqData[sat].biasBuffer.front()/(N + 1.0) ) );
+
+               OneFreqData[sat].variance = ( (N + 1.0)/N ) *
+                  ( OneFreqData[sat].variance
+                  - ( OneFreqData[sat].dif2Buffer.front()/(N + 1.0) ) );
+
+                  // Finally, remove first elements from buffers (oldest data)
+               OneFreqData[sat].biasBuffer.pop_front();
+               OneFreqData[sat].dif2Buffer.pop_front();
+
+            }
+
          }
       }
 
       if (OneFreqData[sat].windowSize <= 1)   // If a cycle-slip happened
       {
 
+            // If a cycle slip happened, we must clear buffers
+         OneFreqData[sat].biasBuffer.clear();
+         OneFreqData[sat].dif2Buffer.clear();
+
             // Set mean bias to current code-phase bias
          OneFreqData[sat].meanBias = bias;
+         OneFreqData[sat].biasBuffer.push_back(bias);
 
             // Set mean variance to default variance
-         OneFreqData[sat].meanSigma2 = defaultBiasSigma * defaultBiasSigma;
+         OneFreqData[sat].variance = defaultBiasSigma * defaultBiasSigma;
+         OneFreqData[sat].dif2Buffer.push_back(0.0);
 
+            // Report cycle slip
          reportCS = true;
 
       }

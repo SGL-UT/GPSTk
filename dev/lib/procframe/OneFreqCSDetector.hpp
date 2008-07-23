@@ -33,6 +33,7 @@
 
 
 
+#include <deque>
 #include "ProcessingClass.hpp"
 
 
@@ -69,7 +70,7 @@ namespace gpstk
        * happened in the given observable.
        *
        * By default, the algorithm will use C1 and L1 observables, and the
-       * LLI1 index. The result (a 0 if a cycle slip is found, 1 otherwise)
+       * LLI1 index. The result (a 1 if a cycle slip is found, 0 otherwise)
        * will be stored in the data structure as the CSL1 index.
        *
        * Note that these data types may be changed using the appropriate
@@ -99,7 +100,7 @@ namespace gpstk
        * @endcode
        *
        * Please be aware that the window size should not be too big, because
-       * other factors (such as the ionospheric drift) may show up in the bias,
+       * other factors (such as ionospheric drift) may show up in the bias,
        * affecting the algorithm. When using 1 Hz data sampling, a window size
        * between 60 and 100 samples will be fine.
        *
@@ -110,7 +111,8 @@ namespace gpstk
        * Be warned that if a given satellite does not have the  observations
        * required, it will be summarily deleted from the data structure.
        *
-       * @sa LICSDetector.hpp and MWCSDetector.hpp for more information.
+       * @sa LICSDetector.hpp, LICSDetector2.hpp and MWCSDetector.hpp for other
+       * cycle slip detectors.
        *
        * \warning Cycle slip detectors are objets that store their internal
        * state, so you MUST NOT use the SAME object to process DIFFERENT data
@@ -140,7 +142,7 @@ namespace gpstk
           * @param mnSigmas      Maximum deviation allowed before declaring
           *                      cycle slip (in number of sigmas).
           * @param dbSigma       Default value assigned to sigma when filter
-          *                      starts.
+          *                      starts, in meters.
           */
       OneFreqCSDetector( const TypeID& codeT,
                          const double& dtMax = 31.0,
@@ -261,14 +263,14 @@ namespace gpstk
           *  starts.
           *
           * @param defSigma      Default value assigned to sigma when
-          *                      filter starts.
+          *                      filter starts, in meters.
           */
       virtual OneFreqCSDetector& setDefaultBiasSigma(const double& defSigma)
       { defaultBiasSigma = defSigma; return (*this); };
 
 
          /// Method to get the default value assigned to sigma when
-         /// filter starts.
+         /// filter starts, in meters.
       virtual double getDefaultBiasSigma() const
       { return defaultBiasSigma; };
 
@@ -345,13 +347,16 @@ namespace gpstk
       {
             // Default constructor initializing the data in the structure
          filterData() : previousEpoch(DayTime::BEGINNING_OF_TIME),
-                        windowSize(0), meanBias(0.0), meanSigma2(0.0)
+                        windowSize(0), meanBias(0.0), variance(0.0)
          {};
 
          DayTime previousEpoch;  ///< The previous epoch time stamp.
          int windowSize;         ///< The filter window size.
-         double meanBias;        ///< Accumulated mean bias (pseudorange-phase)
-         double meanSigma2;      ///< Accumulated mean bias sigma squared.
+         double meanBias;        ///< Accumulated mean bias
+         double variance;        ///< Accumulated variance of bias.
+
+         std::deque<double> biasBuffer;   ///< Values previous biases.
+         std::deque<double> dif2Buffer;   ///< Values of previous differences^2.
       };
 
 
