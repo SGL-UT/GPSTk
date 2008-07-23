@@ -35,7 +35,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int EclipsedSatFilter::classIndex = 3100000;
+   int EclipsedSatFilter::classIndex = 1100000;
 
 
       // Returns an index identifying this object.
@@ -46,6 +46,7 @@ namespace gpstk
       // Returns a string identifying this object.
    std::string EclipsedSatFilter::getClassName() const
    { return "EclipsedSatFilter"; }
+
 
 
       /* Sets aperture of shadow cone, in degrees.
@@ -64,7 +65,9 @@ namespace gpstk
       }
 
       return (*this);
-   }
+
+   }  // End of method 'EclipsedSatFilter::setConeAngle()'
+
 
 
       /* Sets time after exiting shadow that satellite will still be 
@@ -82,7 +85,9 @@ namespace gpstk
       }
 
       return (*this);
-   }
+
+   }  // End of method 'EclipsedSatFilter::setPostShadowPeriod()'
+
 
 
       /* Returns a satTypeValueMap object, adding the new data generated
@@ -92,94 +97,111 @@ namespace gpstk
        * @param gData     Data object holding the data.
        */
    satTypeValueMap& EclipsedSatFilter::Process( const DayTime& epoch,
-                                           satTypeValueMap& gData )
+                                                satTypeValueMap& gData )
+      throw(ProcessingException)
    {
 
-      SatIDSet satRejectedSet;
-
-         // Set the threshold to declare that satellites are in eclipse
-         // threshold = cos(180 - coneAngle/2)
-      double threshold( std::cos(PI - coneAngle/2.0*DEG_TO_RAD) );
-
-         // Compute Sun position at this epoch, and store it in a Triple
-      SunPosition sunPosition;
-      Triple sunPos(sunPosition.getPosition(epoch));
-
-         // Define a Triple that will hold satellite position, in ECEF
-      Triple svPos(0.0, 0.0, 0.0);
-
-         // Loop through all the satellites
-      satTypeValueMap::iterator it;
-      for (it = gData.begin(); it != gData.end(); ++it) 
+      try
       {
-            // Check if satellite position is not already computed
-         if( ( (*it).second.find(TypeID::satX) == (*it).second.end() ) ||
-             ( (*it).second.find(TypeID::satY) == (*it).second.end() ) ||
-             ( (*it).second.find(TypeID::satZ) == (*it).second.end() ) )
+
+         SatIDSet satRejectedSet;
+
+            // Set the threshold to declare that satellites are in eclipse
+            // threshold = cos(180 - coneAngle/2)
+         double threshold( std::cos(PI - coneAngle/2.0*DEG_TO_RAD) );
+
+            // Compute Sun position at this epoch, and store it in a Triple
+         SunPosition sunPosition;
+         Triple sunPos(sunPosition.getPosition(epoch));
+
+            // Define a Triple that will hold satellite position, in ECEF
+         Triple svPos(0.0, 0.0, 0.0);
+
+            // Loop through all the satellites
+         satTypeValueMap::iterator it;
+         for (it = gData.begin(); it != gData.end(); ++it) 
          {
-               // If satellite position is missing, then schedule this 
-               // satellite for removal
-            satRejectedSet.insert( (*it).first );
-            continue;
-         }
-         else
-         {
-               // Get satellite position out of GDS
-            svPos[0] = (*it).second[TypeID::satX];
-            svPos[1] = (*it).second[TypeID::satY];
-            svPos[2] = (*it).second[TypeID::satZ];
-         }
-
-            // Unitary vector from Earth mass center to satellite
-         Triple rk( svPos.unitVector() );
-
-            // Unitary vector from Earth mass center to Sun
-         Triple ri( sunPos.unitVector() );
-
-            // Get dot product between unitary vectors = cosine(angle)
-         double cosAngle(ri.dot(rk));
-
-            // Check if satellite is within shadow
-         if(cosAngle <= threshold)
-         {
-               // If satellite is eclipsed, then schedule it for removal
-            satRejectedSet.insert( (*it).first );
-
-               // Keep track of last known epoch the satellite was in eclipse
-            shadowEpoch[(*it).first] = epoch;
-
-            continue;
-         }
-         else
-         {
-               // Maybe the satellite is out fo shadow, but it was recently in
-               // eclipse. Check also that.
-            if( shadowEpoch.find( (*it).first ) != shadowEpoch.end() )
+               // Check if satellite position is not already computed
+            if( ( (*it).second.find(TypeID::satX) == (*it).second.end() ) ||
+                ( (*it).second.find(TypeID::satY) == (*it).second.end() ) ||
+                ( (*it).second.find(TypeID::satZ) == (*it).second.end() ) )
             {
-                  // If satellite was recently in eclipse, check if elapsed
-                  // time is less or equal than postShadowPeriod
-               if( std::abs( ( epoch - shadowEpoch[(*it).first] ) ) <=
-                             postShadowPeriod )
+
+                  // If satellite position is missing, then schedule this 
+                  // satellite for removal
+               satRejectedSet.insert( (*it).first );
+               continue;
+            }
+            else
+            {
+                  // Get satellite position out of GDS
+               svPos[0] = (*it).second[TypeID::satX];
+               svPos[1] = (*it).second[TypeID::satY];
+               svPos[2] = (*it).second[TypeID::satZ];
+            }
+
+               // Unitary vector from Earth mass center to satellite
+            Triple rk( svPos.unitVector() );
+
+               // Unitary vector from Earth mass center to Sun
+            Triple ri( sunPos.unitVector() );
+
+               // Get dot product between unitary vectors = cosine(angle)
+            double cosAngle(ri.dot(rk));
+
+               // Check if satellite is within shadow
+            if(cosAngle <= threshold)
+            {
+                  // If satellite is eclipsed, then schedule it for removal
+               satRejectedSet.insert( (*it).first );
+
+                  // Keep track of last known epoch the satellite was in eclipse
+               shadowEpoch[(*it).first] = epoch;
+
+               continue;
+            }
+            else
+            {
+                  // Maybe the satellite is out fo shadow, but it was recently
+                  // in eclipse. Check also that.
+               if( shadowEpoch.find( (*it).first ) != shadowEpoch.end() )
                {
-                     // Satellite left shadow, but too recently. Delete it
-                  satRejectedSet.insert( (*it).first );
-               }
-               else
-               {
-                     // If satellite left shadow a long time ago, set it free
-                  shadowEpoch.erase( (*it).first );
+                     // If satellite was recently in eclipse, check if elapsed
+                     // time is less or equal than postShadowPeriod
+                  if( std::abs( ( epoch - shadowEpoch[(*it).first] ) ) <=
+                                postShadowPeriod )
+                  {
+                        // Satellite left shadow, but too recently. Delete it
+                     satRejectedSet.insert( (*it).first );
+                  }
+                  else
+                  {
+                        // If satellite left shadow a long time ago, set it free
+                     shadowEpoch.erase( (*it).first );
+                  }
                }
             }
+
          }
+
+            // Remove satellites with missing data
+         gData.removeSatID(satRejectedSet);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
 
       }
 
-         // Remove satellites with missing data
-      gData.removeSatID(satRejectedSet);
-
-      return gData;
-
-   }
+   }  // End of 'EclipsedSatFilter::Process()'
 
 
       /* Returns a gnnsRinex object, adding the new data generated when
@@ -188,10 +210,29 @@ namespace gpstk
        * @param gData    Data object holding the data.
        */
    gnssRinex& EclipsedSatFilter::Process(gnssRinex& gData)
+      throw(ProcessingException)
    {
-      Process(gData.header.epoch, gData.body);
-      return gData;
-   }
+
+      try
+      {
+
+         Process(gData.header.epoch, gData.body);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of 'EclipsedSatFilter::Process()'
 
 
-} // end namespace gpstk
+} // End of namespace gpstk

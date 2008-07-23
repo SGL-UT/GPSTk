@@ -126,7 +126,8 @@ namespace gpstk
           * @param gData     Data object holding the data.
           */
       virtual satTypeValueMap& Process( const DayTime& epoch,
-                                        satTypeValueMap& gData );
+                                        satTypeValueMap& gData )
+         throw(ProcessingException);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data generated
@@ -135,6 +136,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -143,7 +145,8 @@ namespace gpstk
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssRinex& Process(gnssRinex& gData);
+      virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException);
 
 
          /// Returns aperture of shadow cone, in degrees.
@@ -210,11 +213,10 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // end class EclipsedSatFilter
+   }; // End of class 'EclipsedSatFilter'
 
 
-   //@}
+      //@}
 
 }
-
 #endif   // ECLIPSEDSATFILTER_HPP
