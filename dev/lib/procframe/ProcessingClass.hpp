@@ -141,7 +141,7 @@ namespace gpstk
       /// Input operator from gnssSatTypeValue to ProcessingClass.
    inline gnssSatTypeValue& operator>>( gnssSatTypeValue& gData,
                                         ProcessingClass& procClass )
-   { procClass.Process(gData); return gData; };
+   { procClass.Process(gData); return gData; }
 
 
       /// Input operator from gnssRinex to ProcessingClass.
@@ -152,6 +152,5 @@ namespace gpstk
 
    //@}
 
-}
-
+}  // End of namespace gpstk
 #endif   // PROCESSINGCLASS_HPP

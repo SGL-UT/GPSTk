@@ -58,18 +58,20 @@ namespace gpstk
        * A typical way to use this class follows:
        *
        * @code
-       *   // Create the input obs file stream
+       *      // Create the input obs file stream
        *   RinexObsStream rin("ebre0300.02o");
        *
-       *   // Loads precise ephemeris object with file data
+       *      // Loads precise ephemeris object with file data
        *   SP3EphemerisStore SP3EphList;
        *   SP3EphList.loadFile("igs11513.sp3");
        *
-       *   // Sets nominal position of receiver
+       *      // Sets nominal position of receiver
        *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
        *
        *   gnssRinex gRin;
-       *   ComputeSatPCenter svPcenter(SP3EphList, nominalPos);
+       *
+       *   ComputeSatPCenter svPcenter( SP3EphList,
+       *                                nominalPos );
        *
        *   while(rin >> gRin)
        *   {
@@ -77,13 +79,13 @@ namespace gpstk
        *   }
        * @endcode
        *
-       * The "ComputeSatPCenter" object will visit every satellite in the GNSS 
+       * The "ComputeSatPCenter" object will visit every satellite in the GNSS
        * data structure that is "gRin" and will compute the corresponding
        * satellite antenna phase correction, in meters.
        *
-       * When used with the ">>" operator, this class returns the same 
+       * When used with the ">>" operator, this class returns the same
        * incoming data structure with the "satPCenter" TypeID inserted in it.
-       * Be warned that if a given satellite does not have the required data, 
+       * Be warned that if a given satellite does not have the required data,
        * it will be summarily deleted from the data structure.
        *
        * \warning The ComputeSatPCenter objects generate corrections that are
@@ -97,7 +99,7 @@ namespace gpstk
 
          /// Default constructor
       ComputeSatPCenter()
-         : pEphemeris(NULL), nominalPos(0.0, 0.0, 0.0), 
+         : pEphemeris(NULL), nominalPos(0.0, 0.0, 0.0),
            satData("PRN_GPS"), fileData("PRN_GPS")
       { setIndex(); };
 
@@ -106,14 +108,14 @@ namespace gpstk
           *
           * @param ephem     Satellite ephemeris.
           * @param stapos    Nominal position of receiver station.
-          * @param filename  Name of "PRN_GPS"-like file containing 
+          * @param filename  Name of "PRN_GPS"-like file containing
           *                  satellite data.
           *
-          * @warning If filename is not given, this class will look for a 
+          * @warning If filename is not given, this class will look for a
           * file named "PRN_GPS" in the current directory.
           */
       ComputeSatPCenter( XvtStore<SatID>& ephem,
-                         const Position& stapos, 
+                         const Position& stapos,
                          string filename="PRN_GPS" )
          : pEphemeris(&ephem), nominalPos(stapos), satData(filename),
            fileData(filename)
@@ -123,10 +125,10 @@ namespace gpstk
          /** Common constructor
           *
           * @param stapos    Nominal position of receiver station.
-          * @param filename  Name of "PRN_GPS"-like file containing 
+          * @param filename  Name of "PRN_GPS"-like file containing
           *                  satellite data.
           *
-          * @warning If filename is not given, this class will look for a 
+          * @warning If filename is not given, this class will look for a
           * file named "PRN_GPS" in the current directory.
           */
       ComputeSatPCenter( const Position& stapos,
@@ -143,24 +145,27 @@ namespace gpstk
           * @param gData     Data object holding the data.
           */
       virtual satTypeValueMap& Process( const DayTime& time,
-                                        satTypeValueMap& gData );
+                                        satTypeValueMap& gData )
+         throw(ProcessingException);
 
 
-         /** Returns a gnnsSatTypeValue object, adding the new data 
+         /** Returns a gnnsSatTypeValue object, adding the new data
           *  generated when calling this object.
           *
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
-         /** Returns a gnnsRinex object, adding the new data generated 
+         /** Returns a gnnsRinex object, adding the new data generated
           *  when calling this object.
           *
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -187,7 +192,7 @@ namespace gpstk
         { nominalPos = stapos; return (*this); };
 
 
-         /// Returns a pointer to the satellite ephemeris object 
+         /// Returns a pointer to the satellite ephemeris object
          /// currently in use.
       virtual XvtStore<SatID> *getEphemeris(void) const
       { return pEphemeris; };
@@ -256,9 +261,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // end class ComputeSatPCenter
+   }; // End of class 'ComputeSatPCenter'
 
       //@}
 
-}
+}  // End of namespace gpstk
 #endif // COMPUTESATPCENTER_HPP

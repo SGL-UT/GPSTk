@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
 //
 //============================================================================
@@ -35,7 +35,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int ComputeSatPCenter::classIndex = 1500000;
+   int ComputeSatPCenter::classIndex = 4600000;
 
 
       // Returns an index identifying this object.
@@ -56,77 +56,107 @@ namespace gpstk
        */
    satTypeValueMap& ComputeSatPCenter::Process(const DayTime& time,
                                            satTypeValueMap& gData)
+      throw(ProcessingException)
    {
 
-         // Compute Sun position at this epoch
-      SunPosition sunPosition;
-      Triple sunPos(sunPosition.getPosition(time));
-
-         // Define a Triple that will hold satellite position, in ECEF
-      Triple svPos(0.0, 0.0, 0.0);
-
-      SatIDSet satRejectedSet;
-
-         // Loop through all the satellites
-      satTypeValueMap::iterator it;
-      for (it = gData.begin(); it != gData.end(); ++it) 
+      try
       {
 
-            // Use ephemeris if satellite position is not already computed
-         if( ( (*it).second.find(TypeID::satX) == (*it).second.end() ) ||
-             ( (*it).second.find(TypeID::satY) == (*it).second.end() ) ||
-             ( (*it).second.find(TypeID::satZ) == (*it).second.end() ) )
+            // Compute Sun position at this epoch
+         SunPosition sunPosition;
+         Triple sunPos(sunPosition.getPosition(time));
+
+            // Define a Triple that will hold satellite position, in ECEF
+         Triple svPos(0.0, 0.0, 0.0);
+
+         SatIDSet satRejectedSet;
+
+            // Loop through all the satellites
+         satTypeValueMap::iterator it;
+         for (it = gData.begin(); it != gData.end(); ++it)
          {
-            if(pEphemeris==NULL)
+
+               // Use ephemeris if satellite position is not already computed
+            if( ( (*it).second.find(TypeID::satX) == (*it).second.end() ) ||
+                ( (*it).second.find(TypeID::satY) == (*it).second.end() ) ||
+                ( (*it).second.find(TypeID::satZ) == (*it).second.end() ) )
             {
-                  // If ephemeris is missing, then remove all satellites
-               satRejectedSet.insert( (*it).first );
-               continue;
+
+               if(pEphemeris==NULL)
+               {
+
+                     // If ephemeris is missing, then remove all satellites
+                  satRejectedSet.insert( (*it).first );
+
+                  continue;
+               }
+               else
+               {
+
+                     // Try to get satellite position
+                     // if it is not already computed
+                  try
+                  {
+                        // For our purposes, position at receive time
+                        // is fine enough
+                     Xvt svPosVel(pEphemeris->getXvt( (*it).first, time ));
+
+                        // If everything is OK, then continue processing.
+                     svPos[0] = svPosVel.x.theArray[0];
+                     svPos[1] = svPosVel.x.theArray[1];
+                     svPos[2] = svPosVel.x.theArray[2];
+
+                  }
+                  catch(...)
+                  {
+
+                        // If satellite is missing, then schedule it
+                        // for removal
+                     satRejectedSet.insert( (*it).first );
+
+                     continue;
+                  }
+
+               }
+
             }
             else
             {
-                  // Try to get satellite position
-                  // if it is not already computed
-               try
-               {
-                     // For our purposes, position at receive time 
-                     // is fine enough
-                  Xvt svPosVel(pEphemeris->getXvt( (*it).first, time ));
 
-                     // If everything is OK, then continue processing.
-                  svPos[0] = svPosVel.x.theArray[0];
-                  svPos[1] = svPosVel.x.theArray[1];
-                  svPos[2] = svPosVel.x.theArray[2];
+                  // Get satellite position out of GDS
+               svPos[0] = (*it).second[TypeID::satX];
+               svPos[1] = (*it).second[TypeID::satY];
+               svPos[2] = (*it).second[TypeID::satZ];
 
-               }
-               catch(...)
-               {
-                     // If satellite is missing, then schedule it for removal
-                  satRejectedSet.insert( (*it).first );
-                  continue;
-               }
-            }
+            }  // End of 'if( ( (*it).second.find(TypeID::satX) == ...'
 
-         }
-         else
-         {
-               // Get satellite position out of GDS
-            svPos[0] = (*it).second[TypeID::satX];
-            svPos[1] = (*it).second[TypeID::satY];
-            svPos[2] = (*it).second[TypeID::satZ];
-         }
 
-            // Let's get the satellite antenna phase correction value in
-            // meters, and insert it in the GNSS data structure.
-         (*it).second[TypeID::satPCenter] = 
-            getSatPCenter((*it).first, time, svPos, sunPos);
+               // Let's get the satellite antenna phase correction value in
+               // meters, and insert it in the GNSS data structure.
+            (*it).second[TypeID::satPCenter] =
+               getSatPCenter((*it).first, time, svPos, sunPos);
+
+         }  // End of 'for (it = gData.begin(); it != gData.end(); ++it)'
+
+            // Remove satellites with missing data
+         gData.removeSatID(satRejectedSet);
+
+         return gData;
 
       }
-         // Remove satellites with missing data
-      gData.removeSatID(satRejectedSet);
+      catch(Exception& u)
+      {
 
-      return gData;
-   }
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'ComputeSatPCenter::Process()'
 
 
 
@@ -135,11 +165,13 @@ namespace gpstk
        */
    ComputeSatPCenter& ComputeSatPCenter::setFilename(const string& name)
    {
+
       fileData = name;
       satData.open(fileData);
 
       return (*this);
-   };
+
+   }  // End of method 'ComputeSatPCenter::setFilename()'
 
 
 
@@ -212,7 +244,8 @@ namespace gpstk
          // instead of a delay. Therefore, it has negative sign
       return (-svPCcorr);
 
-   } // End of ComputeSatPCenter::getSatPCenter()
+   }  // End of method 'ComputeSatPCenter::getSatPCenter()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk

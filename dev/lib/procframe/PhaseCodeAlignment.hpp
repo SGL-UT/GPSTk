@@ -64,7 +64,7 @@ namespace gpstk
        *   SP3EphList.loadFile("igs11514.sp3");
        *
        *      // More declarations here: ComputeMOPSWeights, SimpleFilter,
-       *      // LICSDetector, MWCSDetector, SolidTides, OceanLoading, 
+       *      // LICSDetector, MWCSDetector, SolidTides, OceanLoading,
        *      // PoleTides, CorrectObservables, ComputeWindUp, ComputeLinear,
        *      // LinearCombinations, SolverPPP, etc...
        *
@@ -229,7 +229,8 @@ namespace gpstk
           * @param gData     Data object holding the data.
           */
       virtual satTypeValueMap& Process( const DayTime& epoch,
-                                        satTypeValueMap& gData );
+                                        satTypeValueMap& gData )
+         throw(ProcessingException);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data generated
@@ -238,6 +239,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -246,7 +248,8 @@ namespace gpstk
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssRinex& Process(gnssRinex& gData);
+      virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException);
 
 
          /// Returns an index identifying this object.
@@ -314,8 +317,7 @@ namespace gpstk
    }; // End of class 'PhaseCodeAlignment'
 
 
-   //@}
+      //@}
 
-}
-
+}  // End of namespace gpstk
 #endif   // PHASECODEALIGNMENT_HPP

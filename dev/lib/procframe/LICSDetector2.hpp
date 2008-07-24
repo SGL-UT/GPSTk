@@ -239,7 +239,7 @@ namespace gpstk
           * \warning You must not set a value under minBufferSize, which
           * usually is 5.
           */
-      virtual LICSDetector2& setMaxBufferSize(const double& maxBufSize);
+      virtual LICSDetector2& setMaxBufferSize(const int& maxBufSize);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data generated
@@ -374,5 +374,5 @@ namespace gpstk
 
       //@}
 
-}
+}  // End of namespace gpstk
 #endif   // LICSDETECTOR2_HPP

@@ -26,8 +26,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
 //
 //============================================================================
 
@@ -44,11 +44,11 @@ namespace gpstk
       //@{
 
       /** This class compute modeled (corrected) observations from satellites
-       * to a mobile receiver using GNSS data structures (GDS).
+       *  to a mobile receiver using GNSS data structures (GDS).
        *
-       * The main difference between this class and ModelObsFixedStation is 
-       * that for a mobile receiver we should "prepare" the computation giving 
-       * an estimate of the mobile station position. This position may be the 
+       * The main difference between this class and ModelObsFixedStation is
+       * that for a mobile receiver we should "prepare" the computation giving
+       * an estimate of the mobile station position. This position may be the
        * last known position or it may be estimated using a method such as
        * Bancroft's.
        *
@@ -71,35 +71,40 @@ namespace gpstk
        *   ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
        *   ionoStore.addIonoModel(DayTime::BEGINNING_OF_TIME, ioModel);
        *
-       *   // EBRE station nominal position
+       *      // EBRE station nominal position
        *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
        *
-       *   // Declare a tropospheric model object, setting the defaults
+       *      // Declare a tropospheric model object, setting the defaults
        *   MOPSTropModel mopsTM( nominalPos.getAltitude(),
-       *                         nominalPos.getGeodeticLatitude(), 30);
+       *                         nominalPos.getGeodeticLatitude(),
+       *                         30 );
        *
-       *   // Declare the modeler object, setting all the parameters 
-       *   // in one pass
-       *   // As stated, it will compute the model using the C1 observable
-       *   ModelObs model(ionoStore, mopsTM, bceStore, TypeID::C1);
+       *      // Declare the modeler object, setting all the parameters
+       *      // in one pass
+       *      // As stated, it will compute the model using the C1 observable
+       *   ModelObs model( ionoStore,
+       *                   mopsTM,
+       *                   bceStore,
+       *                   TypeID::C1 );
        *
-       *   // Set the initial apriori position using the Bancroft method
+       *      // Set the initial apriori position using the Bancroft method
        *   model.Prepare();
        *
        *   gnssRinex gRin;
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> model;
        *   }
        * @endcode
        *
-       * The "ModelObs" object will visit every satellite in the 
-       * GNSS data structure that is "gRin" and will try to compute its 
+       * The "ModelObs" object will visit every satellite in the
+       * GNSS data structure that is "gRin" and will try to compute its
        * model: Prefit residual, geometric distance, relativity delay,
        * ionospheric/tropospheric corrections, geometry matrix, etc.
        *
-       * When used with the ">>" operator, this class returns the same 
-       * incoming data structure with the extra data inserted along their 
+       * When used with the ">>" operator, this class returns the same
+       * incoming data structure with the extra data inserted along their
        * corresponding satellites. Be warned that if a given satellite does
        * not have the observations required, it will be summarily deleted
        * from the data structure.
@@ -135,8 +140,7 @@ namespace gpstk
                 TropModel& dTropoModel,
                 XvtStore<SatID>& dEphemeris,
                 const TypeID& dObservable,
-                bool usetgd = true )
-         throw(Exception);
+                bool usetgd = true );
 
 
          /** Explicit constructor, taking as input initial receiver
@@ -156,8 +160,7 @@ namespace gpstk
                 IonoModelStore& dIonoModel,
                 XvtStore<SatID>& dEphemeris,
                 const TypeID& dObservable,
-                bool usetgd = true )
-         throw(Exception);
+                bool usetgd = true );
 
 
          /** Explicit constructor, taking as input initial receiver
@@ -177,8 +180,7 @@ namespace gpstk
                 TropModel& dTropoModel,
                 XvtStore<SatID>& dEphemeris,
                 const TypeID& dObservable,
-                bool usetgd = true )
-         throw(Exception);
+                bool usetgd = true );
 
 
          /** Explicit constructor, taking as input initial receiver
@@ -196,8 +198,7 @@ namespace gpstk
       ModelObs( const Position& RxCoordinates,
                 XvtStore<SatID>& dEphemeris,
                 const TypeID& dObservable,
-                bool usetgd = true )
-         throw(Exception);
+                bool usetgd = true );
 
 
          /** Explicit constructor, taking as input default ionospheric and
@@ -215,8 +216,7 @@ namespace gpstk
                 TropModel& dTropoModel,
                 XvtStore<SatID>& dEphemeris,
                 const TypeID& dObservable,
-                bool usetgd = true )
-         throw(Exception);
+                bool usetgd = true );
 
 
          /** Explicit constructor, taking as input default ionospheric model,
@@ -232,8 +232,7 @@ namespace gpstk
       ModelObs( IonoModelStore& dIonoModel,
                 XvtStore<SatID>& dEphemeris,
                 const TypeID& dObservable,
-                bool usetgd = true )
-         throw(Exception);
+                bool usetgd = true );
 
 
          /** Explicit constructor, taking as input default tropospheric model,
@@ -249,8 +248,7 @@ namespace gpstk
       ModelObs( TropModel& dTropoModel,
                 XvtStore<SatID>& dEphemeris,
                 const TypeID& dObservable,
-                bool usetgd = true )
-         throw(Exception);
+                bool usetgd = true );
 
 
          /** Method to set an a priori position of receiver using
@@ -299,7 +297,7 @@ namespace gpstk
       { return (Prepare(gData.header.epoch, gData.body)); };
 
 
-         /** Method to set the initial (a priori) position of receiver before 
+         /** Method to set the initial (a priori) position of receiver before
           *  Compute() method.
           * @return
           *  0 if OK
@@ -309,18 +307,16 @@ namespace gpstk
                            const double& bRx,
                            const double& cRx,
                            Position::CoordinateSystem s = Position::Cartesian,
-                           GeoidModel *geoid = NULL )
-         throw(GeometryException);
+                           GeoidModel *geoid = NULL );
 
 
-         /** Method to set the initial (a priori) position of receiver before 
+         /** Method to set the initial (a priori) position of receiver before
           *  Compute() method.
           * @return
           *  0 if OK
           *  -1 if problems arose
           */
-      virtual int Prepare(const Position& RxCoordinates)
-         throw(GeometryException);
+      virtual int Prepare(const Position& RxCoordinates);
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -331,7 +327,7 @@ namespace gpstk
           */
       virtual satTypeValueMap& Process( const DayTime& time,
                                         satTypeValueMap& gData )
-         throw(Exception);
+         throw(ProcessingException);
 
 
          /// Method to get if the model has been prepared.
@@ -356,17 +352,8 @@ namespace gpstk
       virtual std::string getClassName(void) const;
 
 
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex      New integer index to be assigned to
-          *                      current object.
-          */
-      ModelObs& setIndex(const int newindex)
-      { index = newindex; return (*this); };
-
-
          /// Destructor.
-      virtual ~ModelObs() throw() {};
+      virtual ~ModelObs() {};
 
 
    protected:
@@ -391,9 +378,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // class ModelObs
+   }; // End of class 'ModelObs'
 
       //@}
 
-} // namespace
+}  // End of namespace gpstk
 #endif // MODELOBS_HPP

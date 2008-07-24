@@ -35,7 +35,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int SatArcMarker::classIndex = 2900000;
+   int SatArcMarker::classIndex = 3400000;
 
 
       // Returns an index identifying this object.
@@ -43,9 +43,11 @@ namespace gpstk
    { return index; }
 
 
+
       // Returns a string identifying this object.
    std::string SatArcMarker::getClassName() const
    { return "SatArcMarker"; }
+
 
 
       /* Common constructor
@@ -73,7 +75,8 @@ namespace gpstk
 
       setIndex();
 
-   }  // End of 'SatArcMarker::SatArcMarker()'
+   }  // End of method 'SatArcMarker::SatArcMarker()'
+
 
 
       /* Method to set the number of seconds since last arc change that a
@@ -98,7 +101,8 @@ namespace gpstk
 
       return (*this);
 
-   }// End of 'SatArcMarker::setUnstablePeriod()'
+   }  // End of method 'SatArcMarker::setUnstablePeriod()'
+
 
 
       /* Returns a satTypeValueMap object, adding the new data generated
@@ -109,83 +113,103 @@ namespace gpstk
        */
    satTypeValueMap& SatArcMarker::Process( const DayTime& epoch,
                                            satTypeValueMap& gData )
+      throw(ProcessingException)
    {
-      double flag(0.0);
 
-      SatIDSet satRejectedSet;
-
-         // Loop through all the satellites
-      satTypeValueMap::iterator it;
-      for (it = gData.begin(); it != gData.end(); ++it)
+      try
       {
-         try
-         {
-               // Try to extract the CS flag value
-            flag = (*it).second(watchCSFlag);
-         }
-         catch(...)
-         {
-               // If flag is missing, then schedule this satellite
-               // for removal
-            satRejectedSet.insert( (*it).first );
-            continue;
-         }
 
-            // Check if satellite currently has entries
-         std::map<SatID, double>::const_iterator itArc;
-         itArc = satArcMap.find( (*it).first );
-         if( itArc == satArcMap.end() )
-         {
-               // If it doesn't have an entry, insert one
-            satArcMap[ (*it).first ] = 0.0;
-            satArcChangeMap[ (*it).first ] = DayTime::BEGINNING_OF_TIME;
-         };
+         double flag(0.0);
 
-            // Test if we are inside unstable period
-         if ( std::abs(epoch-satArcChangeMap[(*it).first])<=unstablePeriod )
+         SatIDSet satRejectedSet;
+
+            // Loop through all the satellites
+         satTypeValueMap::iterator it;
+         for (it = gData.begin(); it != gData.end(); ++it)
          {
-               // Test if we want to delete unstable satellites. Only do it
-               // if this is NOT the first arc.
-            if ( deleteUnstableSats &&
-                 (satArcMap[ (*it).first ] > 1.0) )
+            try
             {
-               satRejectedSet.insert( (*it).first );
+                  // Try to extract the CS flag value
+               flag = (*it).second(watchCSFlag);
             }
-         }
-         else
-         {
-               // In this case, "unstable period" is over and we can do changes
-               // Check if there was a cycle slip
-            if ( flag > 0.0 )
+            catch(...)
             {
-                  // Increment the value of "TypeID::satArc"
-               satArcMap[ (*it).first ] = satArcMap[ (*it).first ] + 1.0;
+                  // If flag is missing, then schedule this satellite
+                  // for removal
+               satRejectedSet.insert( (*it).first );
+               continue;
+            }
 
-                  // Update arc change epoch
-               satArcChangeMap[ (*it).first ] = epoch;
+               // Check if satellite currently has entries
+            std::map<SatID, double>::const_iterator itArc;
+            itArc = satArcMap.find( (*it).first );
+            if( itArc == satArcMap.end() )
+            {
+                  // If it doesn't have an entry, insert one
+               satArcMap[ (*it).first ] = 0.0;
+               satArcChangeMap[ (*it).first ] = DayTime::BEGINNING_OF_TIME;
+            }
 
-                  // If we want to delete unstable satellites, we must do it
-                  // also when arc changes, but only if this isn't the first arc
-               if ( deleteUnstableSats  &&
+               // Test if we are inside unstable period
+            if ( std::abs(epoch-satArcChangeMap[(*it).first])<=unstablePeriod )
+            {
+                  // Test if we want to delete unstable satellites. Only do it
+                  // if this is NOT the first arc.
+               if ( deleteUnstableSats &&
                     (satArcMap[ (*it).first ] > 1.0) )
                {
                   satRejectedSet.insert( (*it).first );
                }
-
             }
+            else
+            {
+                  // In this case, "unstable period" is over and we can
+                  // make changes.
+                  // Check if there was a cycle slip
+               if ( flag > 0.0 )
+               {
+                     // Increment the value of "TypeID::satArc"
+                  satArcMap[ (*it).first ] = satArcMap[ (*it).first ] + 1.0;
+
+                     // Update arc change epoch
+                  satArcChangeMap[ (*it).first ] = epoch;
+
+                     // If we want to delete unstable satellites, we must do it
+                     // also when arc changes, but only if this isn't the
+                     // first arc
+                  if ( deleteUnstableSats  &&
+                       (satArcMap[ (*it).first ] > 1.0) )
+                  {
+                     satRejectedSet.insert( (*it).first );
+                  }
+
+               }
+            }
+
+               // We will insert satellite arc number
+            (*it).second[TypeID::satArc] = satArcMap[ (*it).first ];
+
          }
 
-            // We will insert satellite arc number
-         (*it).second[TypeID::satArc] = satArcMap[ (*it).first ];
+            // Remove satellites with missing data
+         gData.removeSatID(satRejectedSet);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
 
       }
 
-         // Remove satellites with missing data
-      gData.removeSatID(satRejectedSet);
+   }  // End of method 'SatArcMarker::Process()'
 
-      return gData;
-
-   }  // End of 'SatArcMarker::Process()'
 
 
       /* Returns a gnnsRinex object, adding the new data generated when
@@ -194,13 +218,31 @@ namespace gpstk
        * @param gData    Data object holding the data.
        */
    gnssRinex& SatArcMarker::Process(gnssRinex& gData)
+      throw(ProcessingException)
    {
 
-      Process(gData.header.epoch, gData.body);
+      try
+      {
 
-      return gData;
+         Process(gData.header.epoch, gData.body);
 
-   }// End of 'SatArcMarker::Process()'
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
 
 
-} // end namespace gpstk
+   }  // End of method 'SatArcMarker::Process()'
+
+
+
+}  // End of namespace gpstk

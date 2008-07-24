@@ -26,8 +26,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -44,6 +44,7 @@
 
 namespace gpstk
 {
+
       /** @addtogroup GPSsolutions */
       //@{
 
@@ -54,16 +55,16 @@ namespace gpstk
        * A typical way to use this class follows:
        *
        * @code
-       *   // Input observation file stream
+       *      // Input observation file stream
        *   RinexObsStream rin("ebre0300.02o");
-       *   // Reference position of receiver station
+       *      // Reference position of receiver station
        *   Position nominalPos(4833520.2269, 41537.00768, 4147461.489);
        *
-       *   // Some more code and definitions here...
+       *      // Some more code and definitions here...
        *
-       *   gnssRinex gRin;  // GNSS data structure for fixed station data
+       *   gnssRinex gRin;      // GNSS data structure for fixed station data
        *
-       *   // Set defaults of models. A typical C1-based modeling is used
+       *      // Set defaults of models. A typical C1-based modeling is used
        *   ModelObsFixedStation model( nominalPos,
        *                               ionoStore,
        *                               mopsTM,
@@ -101,25 +102,24 @@ namespace gpstk
          /// Default constructor. Models C1 observations, use TGD,
          /// but doesn't apply atmospheric models
       ModelObsFixedStation()
-         throw(Exception)
          : minElev(10.0), useTGD(true), pDefaultIonoModel(NULL),
            pDefaultTropoModel(NULL), defaultObservable(TypeID::C1),
            pDefaultEphemeris(NULL)
       { InitializeValues(); setIndex(); };
 
 
-         /** Explicit constructor taking as input reference 
+         /** Explicit constructor taking as input reference
           *  station coordinates.
           *
           * Those coordinates may be Cartesian (X, Y, Z in meters) or Geodetic
-          * (Latitude, Longitude, Altitude), but defaults to Cartesian. 
+          * (Latitude, Longitude, Altitude), but defaults to Cartesian.
           *
           * Also, a pointer to GeoidModel may be specified, but default is
           * NULL (in which case WGS84 values will be used).
           *
           * @param aRx   first coordinate [ X(m), or latitude (degrees N) ]
           * @param bRx   second coordinate [ Y(m), or longitude (degrees E) ]
-          * @param cRx   third coordinate [ Z, height above ellipsoid or 
+          * @param cRx   third coordinate [ Z, height above ellipsoid or
           *              radius, in meters ]
           * @param s     coordinate system (default is Cartesian, may be set
           *              to Geodetic).
@@ -127,16 +127,14 @@ namespace gpstk
           */
       ModelObsFixedStation( const double& aRx,
                             const double& bRx,
-                            const double& cRx, 
+                            const double& cRx,
                             Position::CoordinateSystem s = Position::Cartesian,
-                            GeoidModel *geoid = NULL )
-         throw(Exception);
+                            GeoidModel *geoid = NULL );
 
 
          /// Explicit constructor, taking as input a Position object
          /// containing reference station coordinates.
-      ModelObsFixedStation(const Position& RxCoordinates)
-         throw(Exception);
+      ModelObsFixedStation(const Position& RxCoordinates);
 
 
          /** Explicit constructor, taking as input reference station
@@ -157,8 +155,7 @@ namespace gpstk
                             TropModel& dTropoModel,
                             XvtStore<SatID>& dEphemeris,
                             const TypeID& dObservable,
-                            bool usetgd = true )
-         throw(Exception);
+                            bool usetgd = true );
 
 
          /** Explicit constructor, taking as input reference station
@@ -178,8 +175,7 @@ namespace gpstk
                             IonoModelStore& dIonoModel,
                             XvtStore<SatID>& dEphemeris,
                             const TypeID& dObservable,
-                            bool usetgd = true )
-         throw(Exception);
+                            bool usetgd = true );
 
 
          /** Explicit constructor, taking as input reference station
@@ -196,11 +192,10 @@ namespace gpstk
           *
           */
       ModelObsFixedStation( const Position& RxCoordinates,
-                            TropModel& dTropoModel, 
+                            TropModel& dTropoModel,
                             XvtStore<SatID>& dEphemeris,
                             const TypeID& dObservable,
-                            bool usetgd = true )
-         throw(Exception);
+                            bool usetgd = true );
 
 
          /** Explicit constructor, taking as input reference station
@@ -218,8 +213,7 @@ namespace gpstk
       ModelObsFixedStation( const Position& RxCoordinates,
                             XvtStore<SatID>& dEphemeris,
                             const TypeID& dObservable,
-                            bool usetgd = true)
-         throw(Exception);
+                            bool usetgd = true);
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -230,7 +224,7 @@ namespace gpstk
           */
       virtual satTypeValueMap& Process( const DayTime& time,
                                         satTypeValueMap& gData )
-         throw(Exception);
+         throw(ProcessingException);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data generated
@@ -239,7 +233,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-         throw(Exception)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -249,7 +243,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
-         throw(Exception)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -348,15 +342,6 @@ namespace gpstk
       virtual std::string getClassName(void) const;
 
 
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex      New integer index to be assigned to
-          *                      current object.
-          */
-      ModelObsFixedStation& setIndex(const int newindex)
-      { index = newindex; return (*this); };
-
-
          /// Destructor.
       virtual ~ModelObsFixedStation() {};
 
@@ -414,7 +399,6 @@ namespace gpstk
 
          /// Initialization method
       virtual void InitializeValues()
-         throw(Exception)
       { setInitialRxPosition(); };
 
 
@@ -425,26 +409,22 @@ namespace gpstk
           */
       virtual int setInitialRxPosition( const double& aRx,
                                         const double& bRx,
-                                        const double& cRx, 
+                                        const double& cRx,
                            Position::CoordinateSystem s = Position::Cartesian,
-                                        GeoidModel *geoid = NULL )
-         throw(GeometryException);
+                                        GeoidModel *geoid = NULL );
 
 
          /// Method to set the initial (a priori) position of receiver.
-      virtual int setInitialRxPosition(const Position& RxCoordinates)
-         throw(GeometryException);
+      virtual int setInitialRxPosition(const Position& RxCoordinates);
 
 
          /// Method to set the initial (a priori) position of receiver.
-      virtual int setInitialRxPosition()
-         throw(GeometryException);
+      virtual int setInitialRxPosition();
 
 
          /// Method to get the tropospheric corrections.
       virtual double getTropoCorrections( TropModel *pTropModel,
-                                          double elevation )
-         throw();
+                                          double elevation );
 
 
          /// Method to get the ionospheric corrections.
@@ -452,15 +432,13 @@ namespace gpstk
                                          DayTime Tr,
                                          Geodetic rxGeo,
                                          double elevation,
-                                         double azimuth )
-         throw();
+                                         double azimuth );
 
 
          /// Method to get TGD corrections.
       virtual double getTGDCorrections( DayTime Tr,
                                         const XvtStore<SatID>& Eph,
-                                        SatID sat )
-         throw();
+                                        SatID sat );
 
 
    private:
@@ -477,9 +455,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // class ModelObsFixedStation
+   }; // End of class 'ModelObsFixedStation'
 
       //@}
 
-} // namespace
-#endif // MODELOBSFIXEDSTATION_HPP
+}  // End of namespace gpstk
+#endif   // MODELOBSFIXEDSTATION_HPP

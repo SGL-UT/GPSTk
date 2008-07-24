@@ -261,7 +261,7 @@ namespace gpstk
        * \warning You must not set a value under minBufferSize, which
        * usually is 5.
        */
-   LICSDetector2& LICSDetector2::setMaxBufferSize(const double& maxBufSize)
+   LICSDetector2& LICSDetector2::setMaxBufferSize(const int& maxBufSize)
    {
          // Don't allow buffer sizes less than minBufferSize
       if (maxBufSize >= minBufferSize)

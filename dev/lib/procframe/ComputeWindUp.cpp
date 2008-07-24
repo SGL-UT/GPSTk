@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -35,7 +35,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int ComputeWindUp::classIndex = 1400000;
+   int ComputeWindUp::classIndex = 4500000;
 
 
       // Returns an index identifying this object.
@@ -57,77 +57,108 @@ namespace gpstk
        */
    satTypeValueMap& ComputeWindUp::Process(const DayTime& time,
                                            satTypeValueMap& gData)
+      throw(ProcessingException)
    {
 
-         // Compute Sun position at this epoch
-      SunPosition sunPosition;
-      Triple sunPos(sunPosition.getPosition(time));
-
-         // Define a Triple that will hold satellite position, in ECEF
-      Triple svPos(0.0, 0.0, 0.0);
-
-      SatIDSet satRejectedSet;
-
-         // Loop through all the satellites
-      satTypeValueMap::iterator it;
-      for (it = gData.begin(); it != gData.end(); ++it) 
+      try
       {
 
-            // Use ephemeris if satellite position is not already computed
-         if( ( (*it).second.find(TypeID::satX) == (*it).second.end() ) ||
-             ( (*it).second.find(TypeID::satY) == (*it).second.end() ) ||
-             ( (*it).second.find(TypeID::satZ) == (*it).second.end() ) )
+            // Compute Sun position at this epoch
+         SunPosition sunPosition;
+         Triple sunPos(sunPosition.getPosition(time));
+
+            // Define a Triple that will hold satellite position, in ECEF
+         Triple svPos(0.0, 0.0, 0.0);
+
+         SatIDSet satRejectedSet;
+
+            // Loop through all the satellites
+         satTypeValueMap::iterator it;
+         for (it = gData.begin(); it != gData.end(); ++it)
          {
-            if(pEphemeris==NULL)
+
+               // Use ephemeris if satellite position is not already computed
+            if( ( (*it).second.find(TypeID::satX) == (*it).second.end() ) ||
+                ( (*it).second.find(TypeID::satY) == (*it).second.end() ) ||
+                ( (*it).second.find(TypeID::satZ) == (*it).second.end() ) )
             {
-                  // If ephemeris is missing, then remove all satellites
-               satRejectedSet.insert( (*it).first );
+
+               if(pEphemeris==NULL)
+               {
+
+                     // If ephemeris is missing, then remove all satellites
+                  satRejectedSet.insert( (*it).first );
+
                continue;
+
+               }
+               else
+               {
+
+                     // Try to get satellite position
+                     // if it is not already computed
+                  try
+                  {
+                        // For our purposes, position at receive time
+                        // is fine enough
+                     Xvt svPosVel(pEphemeris->getXvt( (*it).first, time ));
+
+                        // If everything is OK, then continue processing.
+                     svPos[0] = svPosVel.x.theArray[0];
+                     svPos[1] = svPosVel.x.theArray[1];
+                     svPos[2] = svPosVel.x.theArray[2];
+
+                  }
+                  catch(...)
+                  {
+
+                        // If satellite is missing, then schedule it
+                        // for removal
+                     satRejectedSet.insert( (*it).first );
+
+                     continue;
+
+                  }
+
+               }
+
             }
             else
             {
-                  // Try to get satellite position
-                  // if it is not already computed
-               try
-               {
-                     // For our purposes, position at receive time 
-                     // is fine enough
-                  Xvt svPosVel(pEphemeris->getXvt( (*it).first, time ));
 
-                     // If everything is OK, then continue processing.
-                  svPos[0] = svPosVel.x.theArray[0];
-                  svPos[1] = svPosVel.x.theArray[1];
-                  svPos[2] = svPosVel.x.theArray[2];
+                  // Get satellite position out of GDS
+               svPos[0] = (*it).second[TypeID::satX];
+               svPos[1] = (*it).second[TypeID::satY];
+               svPos[2] = (*it).second[TypeID::satZ];
 
-               }
-               catch(...)
-               {
-                     // If satellite is missing, then schedule it for removal
-                  satRejectedSet.insert( (*it).first );
-                  continue;
-               }
-            }
+            }  // End of 'if( ( (*it).second.find(TypeID::satX) == ...'
 
-         }
-         else
-         {
-               // Get satellite position out of GDS
-            svPos[0] = (*it).second[TypeID::satX];
-            svPos[1] = (*it).second[TypeID::satY];
-            svPos[2] = (*it).second[TypeID::satZ];
-         }
 
-            // Let's get wind-up value in radians, and insert it
-            // in GNSS data structure.
-         (*it).second[TypeID::windUp] =
-            getWindUp((*it).first, time, svPos, sunPos);
+               // Let's get wind-up value in radians, and insert it
+               // in GNSS data structure.
+            (*it).second[TypeID::windUp] =
+               getWindUp((*it).first, time, svPos, sunPos);
+
+         }  // End of 'for (it = gData.begin(); it != gData.end(); ++it)'
+
+            // Remove satellites with missing data
+         gData.removeSatID(satRejectedSet);
+
+         return gData;
 
       }
-         // Remove satellites with missing data
-      gData.removeSatID(satRejectedSet);
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
 
-      return gData;
-   }
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'ComputeWindUp::Process()'
 
 
 
@@ -136,11 +167,13 @@ namespace gpstk
        */
    ComputeWindUp& ComputeWindUp::setFilename(const string& name)
    {
+
       fileData = name;
       satData.open(fileData);
 
       return (*this);
-   };
+
+   }  // End of method 'ComputeWindUp::setFilename()'
 
 
 
@@ -194,7 +227,7 @@ namespace gpstk
       rj = (rk.cross(gps_sun)).unitVector();
 
          // Redefine ri: ri = rj x rk, then make sure it is unitary
-         // Now, ri, rj, rk form a base in the satellite body reference 
+         // Now, ri, rj, rk form a base in the satellite body reference
          // frame, expressed in the ECEF reference frame
       ri = (rj.cross(rk)).unitVector();
 
@@ -202,7 +235,7 @@ namespace gpstk
          // Projection of "rk" vector to line of sight vector (rrho)
       double zk(rrho.dot(rk));
 
-         // Get a vector without components on rk (i.e., belonging 
+         // Get a vector without components on rk (i.e., belonging
          // to ri, rj plane)
       Triple dpp(rrho-zk*rk);
 
@@ -219,12 +252,12 @@ namespace gpstk
          // Redefine rk: Unitary vector from Receiver to Earth mass center
       rk = (-1.0)*(rxPos.unitVector());
 
-         // Let's define a NORTH unitary vector in the Up, East, North 
+         // Let's define a NORTH unitary vector in the Up, East, North
          // (UEN) topocentric reference frame
       Triple delta(0.0, 0.0, 1.0);
 
          // Rotate delta to XYZ reference frame
-      delta = 
+      delta =
          (delta.R2(nominalPos.geodeticLatitude())).R3(-nominalPos.longitude());
 
 
@@ -238,7 +271,7 @@ namespace gpstk
          // Projection of "rk" vector to line of sight vector (rrho)
       zk = rrho.dot(rk);
 
-         // Get a vector without components on rk (i.e., belonging 
+         // Get a vector without components on rk (i.e., belonging
          // to ri, rj plane)
       dpp = rrho-zk*rk;
 
@@ -258,7 +291,7 @@ namespace gpstk
          wind_up = PI;
       }
 
-      alpha1 = alpha1 + wind_up; 
+      alpha1 = alpha1 + wind_up;
 
       double da1(alpha1-phase_satellite[satid].previousPhase);
 
@@ -280,7 +313,8 @@ namespace gpstk
 
       return wind_up;
 
-   } // End of ComputeWindUp::getWindUp()
+   }  // End of method 'ComputeWindUp::getWindUp()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk

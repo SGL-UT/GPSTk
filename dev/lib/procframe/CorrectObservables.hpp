@@ -27,7 +27,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -69,10 +69,10 @@ namespace gpstk
        *       // Sets nominal position of receiver
        *    Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
        *
-       *       // Vector from antenna ARP to L1 phase center [UEN] (Leica AT504)
+       *       // Vector from antenna ARP to L1 phase center [UEN](Leica AT504)
        *    Triple offsetL1(0.1093, -0.0003, 0.0003);        // Units in meters
        *
-       *       // Vector from antenna ARP to L2 phase center [UEN] (Leica AT504)
+       *       // Vector from antenna ARP to L2 phase center [UEN](Leica AT504)
        *    Triple offsetL2(0.1282, 0.0011, 0.0011);         // Units in meters
        *
        *       // Vector from monument to antenna ARP [UEN] for this station
@@ -289,7 +289,8 @@ namespace gpstk
           * @param gData     Data object holding the data.
           */
       virtual satTypeValueMap& Process( const DayTime& time,
-                                        satTypeValueMap& gData );
+                                        satTypeValueMap& gData )
+         throw(ProcessingException);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data generated
@@ -298,6 +299,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -307,6 +309,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -316,6 +319,7 @@ namespace gpstk
 
 
          /** Sets nominal position of receiver station.
+          *
           * @param stapos    Nominal position of receiver station.
           */
       virtual CorrectObservables& setNominalPosition(const Position& stapos)
@@ -330,6 +334,7 @@ namespace gpstk
 
 
          /** Sets satellite ephemeris object to be used.
+          *
           * @param ephem     Satellite ephemeris object.
           */
       virtual CorrectObservables& setEphemeris(XvtStore<SatID>& ephem)
@@ -345,6 +350,7 @@ namespace gpstk
 
          /** Sets position of antenna L1 phase center with respect
           *  to ARP ([UEN]).
+          *
           * @param L1pc    L1 phase center with respect to ARP ([UEN]).
           */
       virtual CorrectObservables& setL1pc(const Triple& L1pc)
@@ -360,6 +366,7 @@ namespace gpstk
 
          /** Sets position of antenna L2 phase center with respect
           *  to ARP ([UEN]).
+          *
           * @param L2pc    L2 phase center with respect to ARP ([UEN]).
           */
       virtual CorrectObservables& setL2pc(const Triple& L2pc)
@@ -375,6 +382,7 @@ namespace gpstk
 
          /** Sets position of antenna L5 phase center with respect
           *  to ARP ([UEN]).
+          *
           * @param L5pc    L5 phase center with respect to ARP ([UEN]).
           */
       virtual CorrectObservables& setL5pc(const Triple& L5pc)
@@ -390,6 +398,7 @@ namespace gpstk
 
          /** Sets position of antenna L6 phase center with respect
           *  to ARP ([UEN]).
+          *
           * @param L6pc    L6 phase center with respect to ARP ([UEN]).
           */
       virtual CorrectObservables& setL6pc(const Triple& L6pc)
@@ -405,6 +414,7 @@ namespace gpstk
 
          /** Sets position of antenna L7 phase center with respect
           *  to ARP ([UEN]).
+          *
           * @param L7pc    L7 phase center with respect to ARP ([UEN]).
           */
       virtual CorrectObservables& setL7pc(const Triple& L7pc)
@@ -420,6 +430,7 @@ namespace gpstk
 
          /** Sets position of antenna L8 phase center with respect
           *  to ARP ([UEN]).
+          *
           * @param L8pc    L8 phase center with respect to ARP ([UEN]).
           */
       virtual CorrectObservables& setL8pc(const Triple& L8pc)
@@ -433,6 +444,7 @@ namespace gpstk
 
 
          /** Sets vector from monument to ARP ([UEN]).
+          *
           * @param monument   Vector from monument to ARP ([UEN]).
           */
       virtual CorrectObservables& setMonument(const Triple& monument)
@@ -448,8 +460,9 @@ namespace gpstk
 
          /** Sets extra biases affecting monument, such as tidal
           *  effects ([UEN]).
+          *
           * @param extra   Extra biases affecting monument, such as tidal
-          *    effects ([UEN]).
+          *                effects ([UEN]).
           */
       virtual CorrectObservables& setExtraBiases(const Triple& extra)
       { extraBiases = extra; return (*this); };
@@ -461,15 +474,6 @@ namespace gpstk
 
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
-
-
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex      New integer index to be assigned to current
-          *                      object.
-          */
-      CorrectObservables& setIndex(const int newindex)
-      { index = newindex; return (*this); };
 
 
          /// Destructor
@@ -530,10 +534,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // end class CorrectObservables
-
+   }; // End of class 'CorrectObservables'
 
       //@}
 
-}
+}  // End of namespace gpstk
 #endif  // CORRECTOBSERVABLES_HPP

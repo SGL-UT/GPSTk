@@ -24,8 +24,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -38,7 +38,7 @@ namespace gpstk
 
 
       // Index initially assigned to this class
-   int BasicModel::classIndex = 3000000;
+   int BasicModel::classIndex = 4000000;
 
 
       // Returns an index identifying this object.
@@ -51,18 +51,19 @@ namespace gpstk
    { return "BasicModel"; }
 
 
-      /* Explicit constructor taking as input reference 
+
+      /* Explicit constructor taking as input reference
        * station coordinates.
        *
        * Those coordinates may be Cartesian (X, Y, Z in meters) or Geodetic
-       * (Latitude, Longitude, Altitude), but defaults to Cartesian. 
+       * (Latitude, Longitude, Altitude), but defaults to Cartesian.
        *
        * Also, a pointer to GeoidModel may be specified, but default is
        * NULL (in which case WGS84 values will be used).
        *
        * @param aRx   first coordinate [ X(m), or latitude (degrees N) ]
        * @param bRx   second coordinate [ Y(m), or longitude (degrees E) ]
-       * @param cRx   third coordinate [ Z, height above ellipsoid or 
+       * @param cRx   third coordinate [ Z, height above ellipsoid or
        *              radius, in meters ]
        * @param s     coordinate system (default is Cartesian, may be set
        *              to Geodetic).
@@ -73,29 +74,32 @@ namespace gpstk
                            const double& cRx,
                            Position::CoordinateSystem s,
                            GeoidModel *geoid )
-      throw(Exception)
-   { 
+   {
+
       minElev = 10.0;
       pDefaultEphemeris = NULL;
       defaultObservable = TypeID::C1;
       useTGD = false;
       setInitialRxPosition(aRx, bRx, cRx, s, geoid);
       setIndex();
-   }
+
+   }  // End of 'BasicModel::BasicModel()'
 
 
       // Explicit constructor, taking as input a Position object
       // containing reference station coordinates.
    BasicModel::BasicModel(const Position& RxCoordinates)
-      throw(Exception)
-   { 
+   {
+
       minElev = 10.0;
       pDefaultEphemeris = NULL;
       defaultObservable = TypeID::C1;
       useTGD = false;
       setInitialRxPosition(RxCoordinates);
       setIndex();
-   }
+
+   }  // End of 'BasicModel::BasicModel()'
+
 
 
       /* Explicit constructor, taking as input reference station
@@ -114,15 +118,17 @@ namespace gpstk
                            XvtStore<SatID>& dEphemeris,
                            const TypeID& dObservable,
                            const bool& applyTGD )
-      throw(Exception)
    {
+
       minElev = 10.0;
       setInitialRxPosition(RxCoordinates);
       setDefaultEphemeris(dEphemeris);
       defaultObservable = dObservable;
       useTGD = applyTGD;
       setIndex();
-   }
+
+   }  // End of 'BasicModel::BasicModel()'
+
 
 
       /* Returns a satTypeValueMap object, adding the new data generated when
@@ -133,17 +139,17 @@ namespace gpstk
        */
    satTypeValueMap& BasicModel::Process( const DayTime& time,
                                          satTypeValueMap& gData )
-      throw(Exception)
+      throw(ProcessingException)
    {
-
-      SatIDSet satRejectedSet;
 
       try
       {
 
+         SatIDSet satRejectedSet;
+
             // Loop through all the satellites
          satTypeValueMap::iterator stv;
-         for(stv = gData.begin(); stv != gData.end(); ++stv) 
+         for(stv = gData.begin(); stv != gData.end(); ++stv)
          {
                // Scalar to hold temporal value
             double observable( (*stv).second(defaultObservable) );
@@ -162,17 +168,24 @@ namespace gpstk
             }
             catch(InvalidRequest& e)
             {
-                  // If some problem appears, then schedule this satellite for removal
+
+                  // If some problem appears, then schedule this satellite
+                  // for removal
                satRejectedSet.insert( (*stv).first );
+
                continue;    // Skip this SV if problems arise
-            };
+
+            }
 
                // Let's test if satellite has enough elevation over horizon
             if ( rxPos.elevationGeodetic(cerange.svPosVel) < minElev )
             {
+
                   // Mark this satellite if it doesn't have enough elevation
                satRejectedSet.insert( (*stv).first );
+
                continue;
+
             }
 
                // Computing Total Group Delay (TGD - meters), if possible
@@ -222,12 +235,19 @@ namespace gpstk
          return gData;
 
       }   // End of try...
-      catch(Exception& e)
+      catch(Exception& u)
       {
-         GPSTK_RETHROW(e);
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
       }
 
-   } // End BasicModel::Process()
+   }  // End of method 'BasicModel::Process()'
+
 
 
       /* Method to set the initial (a priori) position of receiver.
@@ -240,7 +260,6 @@ namespace gpstk
                                          const double& cRx,
                                          Position::CoordinateSystem s,
                                          GeoidModel *geoid )
-      throw(GeometryException)
    {
 
       try
@@ -253,12 +272,13 @@ namespace gpstk
       {
          return -1;
       }
-   }
+
+   }  // End of method 'BasicModel::setInitialRxPosition()'
+
 
 
       // Method to set the initial (a priori) position of receiver.
    int BasicModel::setInitialRxPosition(const Position& RxCoordinates)
-      throw(GeometryException) 
    {
 
       try
@@ -270,12 +290,13 @@ namespace gpstk
       {
          return -1;
       }
-   }
+
+   }  // End of method 'BasicModel::setInitialRxPosition()'
+
 
 
       // Method to set the initial (a priori) position of receiver.
    int BasicModel::setInitialRxPosition()
-      throw(GeometryException) 
    {
       try
       {
@@ -287,7 +308,9 @@ namespace gpstk
       {
          return -1;
       }
-   }
+
+   }  // End of method 'BasicModel::setInitialRxPosition()'
+
 
 
       // Method to get TGD corrections.
@@ -311,7 +334,8 @@ namespace gpstk
          return 0.0;
       }
 
-   }
+   }  // End of method 'BasicModel::getTGDCorrections()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk

@@ -27,8 +27,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -105,24 +105,23 @@ namespace gpstk
          /// and satellites with elevation less than 10 degrees will be
          /// deleted.
       BasicModel()
-         throw(Exception)
          : minElev(10.0), pDefaultEphemeris(NULL),
            defaultObservable(TypeID::C1), useTGD(false)
       { setInitialRxPosition(); setIndex(); };
 
 
-         /** Explicit constructor taking as input reference 
+         /** Explicit constructor taking as input reference
           *  station coordinates.
           *
           * Those coordinates may be Cartesian (X, Y, Z in meters) or Geodetic
-          * (Latitude, Longitude, Altitude), but defaults to Cartesian. 
+          * (Latitude, Longitude, Altitude), but defaults to Cartesian.
           *
           * Also, a pointer to GeoidModel may be specified, but default is
           * NULL (in which case WGS84 values will be used).
           *
           * @param aRx   first coordinate [ X(m), or latitude (degrees N) ]
           * @param bRx   second coordinate [ Y(m), or longitude (degrees E) ]
-          * @param cRx   third coordinate [ Z, height above ellipsoid or 
+          * @param cRx   third coordinate [ Z, height above ellipsoid or
           *              radius, in meters ]
           * @param s     coordinate system (default is Cartesian, may be set
           *              to Geodetic).
@@ -130,16 +129,14 @@ namespace gpstk
           */
       BasicModel( const double& aRx,
                   const double& bRx,
-                  const double& cRx, 
+                  const double& cRx,
                   Position::CoordinateSystem s = Position::Cartesian,
-                  GeoidModel *geoid = NULL )
-         throw(Exception);
+                  GeoidModel *geoid = NULL );
 
 
          /// Explicit constructor, taking as input a Position object
          /// containing reference station coordinates.
-      BasicModel(const Position& RxCoordinates)
-         throw(Exception);
+      BasicModel(const Position& RxCoordinates);
 
 
          /** Explicit constructor, taking as input reference station
@@ -156,8 +153,7 @@ namespace gpstk
       BasicModel( const Position& RxCoordinates,
                   XvtStore<SatID>& dEphemeris,
                   const TypeID& dObservable = TypeID::C1,
-                  const bool& applyTGD = false )
-         throw(Exception);
+                  const bool& applyTGD = false );
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -168,7 +164,7 @@ namespace gpstk
           */
       virtual satTypeValueMap& Process( const DayTime& time,
                                         satTypeValueMap& gData )
-         throw(Exception);
+         throw(ProcessingException);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data generated
@@ -177,7 +173,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-         throw(Exception)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -187,7 +183,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
-         throw(Exception)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -243,41 +239,11 @@ namespace gpstk
       virtual std::string getClassName(void) const;
 
 
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex      New integer index to be assigned to
-          *                      current object.
-          */
-      BasicModel& setIndex(const int newindex)
-      { index = newindex; return (*this); };
-
-
          /// Destructor.
       virtual ~BasicModel() {};
 
 
    protected:
-
-
-         /** Compute the modeled pseudoranges, given satellite ID's,
-          *  pseudoranges and other data.
-          *
-          * @param Tr            Measured time of reception of the data.
-          * @param Satellite     Vector of satellites.
-          * @param Pseudorange   Vector of raw pseudoranges (parallel to
-          *                      satellite), in meters.
-          * @param Eph           EphemerisStore to be used.
-          *
-          * @return
-          *  Number of satellites with valid data
-          *
-          * @sa TropModel.hpp, IonoModelStore.hpp.
-          */
-      int Compute( const DayTime& Tr,
-                   Vector<SatID>& Satellite,
-                   Vector<double>& Pseudorange,
-                   const XvtStore<SatID>& Eph )
-         throw(Exception);
 
 
          /// The elevation cut-off angle for accepted satellites.
@@ -305,20 +271,17 @@ namespace gpstk
           */
       virtual int setInitialRxPosition( const double& aRx,
                                         const double& bRx,
-                                        const double& cRx, 
+                                        const double& cRx,
                            Position::CoordinateSystem s = Position::Cartesian,
-                                        GeoidModel *geoid = NULL )
-         throw(GeometryException);
+                                        GeoidModel *geoid = NULL );
 
 
          /// Method to set the initial (a priori) position of receiver.
-      virtual int setInitialRxPosition(const Position& RxCoordinates)
-         throw(GeometryException);
+      virtual int setInitialRxPosition(const Position& RxCoordinates);
 
 
          /// Method to set the initial (a priori) position of receiver.
-      virtual int setInitialRxPosition()
-         throw(GeometryException);
+      virtual int setInitialRxPosition();
 
 
          /// Method to get TGD corrections.
@@ -344,9 +307,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // class BasicModel
+   }; // End of class 'BasicModel'
 
       //@}
 
-} // namespace
-#endif // BASICMODEL_HPP
+}  // End of namespace gpstk
+#endif   // BASICMODEL_HPP

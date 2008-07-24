@@ -22,8 +22,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
 //
 //============================================================================
 
@@ -38,7 +38,7 @@ namespace gpstk
 
       /* Explicit constructor, taking as input reference station
        * coordinates, default ionospheric and tropospheric models,
-       * ephemeris to be used, default observable and whether TGD will 
+       * ephemeris to be used, default observable and whether TGD will
        * be computed or not.
        *
        * This constructor is meant to be used when working with GNSS data
@@ -59,8 +59,7 @@ namespace gpstk
                                            XvtStore<SatID>& dEphemeris,
                                            const TypeID& dObservable,
                                            bool usetgd )
-      throw(Exception)
-   { 
+   {
       init();
       setInitialRxPosition(RxCoordinates);
       setDefaultIonoModel(dIonoModel);
@@ -69,6 +68,7 @@ namespace gpstk
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
    }
+
 
 
       /* Explicit constructor, taking as input reference station
@@ -94,8 +94,7 @@ namespace gpstk
                                            XvtStore<SatID>& dEphemeris,
                                            const TypeID& dObservable,
                                            bool usetgd )
-      throw(Exception)
-   { 
+   {
       init();
       setInitialRxPosition(RxCoordinates);
       setDefaultIonoModel(dIonoModel);
@@ -106,13 +105,14 @@ namespace gpstk
    }
 
 
+
       /* Explicit constructor, taking as input reference station
        * coordinates, default tropospheric model, ephemeris to be used,
        * default observable and whether TGD will be computed or not.
        *
        * The default ionospheric model will be set to NULL.
        *
-       * This constructor is meant to be used when working with GNSS 
+       * This constructor is meant to be used when working with GNSS
        * data structures in order to set the basic parameters from the
        * beginning.
        *
@@ -129,7 +129,6 @@ namespace gpstk
                                            XvtStore<SatID>& dEphemeris,
                                            const TypeID& dObservable,
                                            bool usetgd )
-      throw(Exception)
    {
       init();
       setInitialRxPosition(RxCoordinates);
@@ -141,13 +140,14 @@ namespace gpstk
    }
 
 
+
       /* Explicit constructor, taking as input reference station
-       * coordinates, ephemeris to be used, default observable and 
+       * coordinates, ephemeris to be used, default observable and
        * whether TGD will be computed or not.
        *
        * Both the tropospheric and ionospheric models will be set to NULL.
        *
-       * This constructor is meant to be used when working with GNSS 
+       * This constructor is meant to be used when working with GNSS
        * data structures in order to set the basic parameters from the
        * beginning.
        *
@@ -162,7 +162,6 @@ namespace gpstk
                                            XvtStore<SatID>& dEphemeris,
                                            const TypeID& dObservable,
                                            bool usetgd )
-      throw(Exception)
    {
       init();
       setInitialRxPosition(RxCoordinates);
@@ -172,6 +171,7 @@ namespace gpstk
       pDefaultIonoModel = NULL;
       pDefaultTropoModel = NULL;
    }
+
 
 
       /* Compute the modeled pseudoranges, given satellite ID's,
@@ -191,7 +191,7 @@ namespace gpstk
        * @return Number of satellites with valid data.
        */
    int ModeledReferencePR::Compute( const DayTime& Tr,
-                                    Vector<SatID>& Satellite, 
+                                    Vector<SatID>& Satellite,
                                     Vector<double>& Pseudorange,
                                     const XvtStore<SatID>& Eph,
                                     const Vector<double>& extraBiases,
@@ -209,7 +209,7 @@ namespace gpstk
             // Maximum valid index of extraBiases vector
          int eN = int(extraBiases.size()) - 1;
          int validSats(0);
-            // Some std::vector to hold temporal values (do not confuse 
+            // Some std::vector to hold temporal values (do not confuse
             // with gpstk::Vector)
          vector<double> vPR;
          vector<double> vGeometricRho;
@@ -284,7 +284,7 @@ namespace gpstk
                }
                catch(InvalidRequest& e)
                {
-                     // If there were no ephemeris for this satellite, 
+                     // If there were no ephemeris for this satellite,
                      // let's mark it
                   vRejectedSV.push_back(Satellite[i]);
                   continue;
@@ -323,14 +323,14 @@ namespace gpstk
 
                tempModeledPR = tempPR + tempTrop + tempIono;
 
-                  // Check if there could be an extra bias defined for 
+                  // Check if there could be an extra bias defined for
                   // this satellite
                if (i <= eN )
                {
                   tempModeledPR += extraBiases(i);
                };
 
-                  // Computing Total Group Delay (TGD - meters) and adding 
+                  // Computing Total Group Delay (TGD - meters) and adding
                   // it to result
                if(useTGD)
                {
@@ -364,15 +364,15 @@ namespace gpstk
             }   // End of try
             catch(InvalidRequest& e)
             {
-                  // If there were no ephemeris for this satellite, 
+                  // If there were no ephemeris for this satellite,
                   // let's mark it
                vRejectedSV.push_back(Satellite[i]);
                continue;
             }
             catch(...)
             {
-               Exception unknownEx("An unknown exception has happened in \
-                                    ModeledReferencePR object.");
+               Exception unknownEx( "An unknown exception has happened in \
+ModeledReferencePR object." );
                GPSTK_THROW(unknownEx);
             }
 
@@ -421,7 +421,9 @@ namespace gpstk
       {
          GPSTK_RETHROW(e);
       }
-   }  // end ModeledReferencePR::Compute()
+
+   }  // End of method 'ModeledReferencePR::Compute()'
+
 
 
       // Compute the modeled pseudoranges, given satellite ID's,
@@ -432,6 +434,7 @@ namespace gpstk
                                     const XvtStore<SatID>& Eph )
       throw(Exception)
    {
+
          // Create missing parameters
       Vector<double> vectorBIAS(1, 0.0);
 
@@ -441,7 +444,9 @@ namespace gpstk
                                           Pseudorange,
                                           Eph,
                                           vectorBIAS );
-   }
+
+   }  // End of method 'ModeledReferencePR::Compute()'
+
 
 
       // Compute the modeled pseudoranges, given satellite ID's,
@@ -453,6 +458,7 @@ namespace gpstk
                                     TropModel *pTropModel )
       throw(Exception)
    {
+
          // Create missing parameters
       Vector<double> vectorBIAS(1, 0.0);
 
@@ -463,19 +469,22 @@ namespace gpstk
                                           Eph,
                                           vectorBIAS,
                                           pTropModel );
-   }
+
+   }  // End of method 'ModeledReferencePR::Compute()'
+
 
 
       // Compute the modeled pseudoranges, given satellite ID's,
       // pseudoranges and other data.
    int ModeledReferencePR::Compute( const DayTime& Tr,
-                                    Vector<SatID>& Satellite, 
+                                    Vector<SatID>& Satellite,
                                     Vector<double>& Pseudorange,
                                     const XvtStore<SatID>& Eph,
                                     const Vector<double>& extraBiases,
                                     IonoModelStore *pIonoModel )
       throw(Exception)
    {
+
          // Create missing parameters
       TropModel *pTropModel=NULL;
 
@@ -487,7 +496,9 @@ namespace gpstk
                                           extraBiases,
                                           pTropModel,
                                           pIonoModel );
-   }
+
+   }  // End of method 'ModeledReferencePR::Compute()'
+
 
 
       // Compute the modeled pseudoranges, given satellite ID's,
@@ -499,6 +510,7 @@ namespace gpstk
                                     IonoModelStore *pIonoModel )
       throw(Exception)
    {
+
          // Create missing parameters
       Vector<double> vectorBIAS(1, 0.0);
       TropModel *pTropModel=NULL;
@@ -511,19 +523,22 @@ namespace gpstk
                                           vectorBIAS,
                                           pTropModel,
                                           pIonoModel );
-   }
+
+   }  // End of method 'ModeledReferencePR::Compute()'
+
 
 
       // Compute the modeled pseudoranges, given satellite ID's,
       // pseudoranges and other data.
    int ModeledReferencePR::Compute( const DayTime& Tr,
-                                    Vector<SatID>& Satellite, 
+                                    Vector<SatID>& Satellite,
                                     Vector<double>& Pseudorange,
                                     const XvtStore<SatID>& Eph,
                                     TropModel *pTropModel,
                                     IonoModelStore *pIonoModel )
       throw(Exception)
    {
+
          // Create missing parameters
       Vector<double> vectorBIAS(1, 0.0);
 
@@ -535,7 +550,9 @@ namespace gpstk
                                           vectorBIAS,
                                           pTropModel,
                                           pIonoModel );
-   }
+
+   }  // End of method 'ModeledReferencePR::Compute()'
+
 
 
       /* Compute just one modeled pseudorange, given satellite ID's,
@@ -563,11 +580,12 @@ namespace gpstk
                                     IonoModelStore *pIonoModel )
       throw(Exception)
    {
+
          // Create Vectors from scalar values
       Vector<SatID> vectorSV(1, Satellite);
       Vector<double> vectorPR(1, Pseudorange);
       Vector<double> vectorBIAS(1, extraBiases);
-            
+
          // Now, let's call one of the Compute methods defined above
       return ModeledReferencePR::Compute( Tr,
                                           vectorSV,
@@ -576,7 +594,9 @@ namespace gpstk
                                           vectorBIAS,
                                           pTropModel,
                                           pIonoModel );
-   }
+
+   }  // End of method 'ModeledReferencePR::Compute()'
+
 
 
       /* Returns a satTypeValueMap object, adding the new data generated
@@ -595,8 +615,8 @@ namespace gpstk
 
       try
       {
-            // Call the Compute() method with the defaults. Those defaults 
-            // MUST HAVE BEEN previously set, usually when creating this 
+            // Call the Compute() method with the defaults. Those defaults
+            // MUST HAVE BEEN previously set, usually when creating this
             // object with the appropriate constructor.
          Compute( time,
                   Vsat,
@@ -606,7 +626,7 @@ namespace gpstk
                   getDefaultTropoModel(),
                   getDefaultIonoModel() );
 
-            // Once we get the result, it may be necessary to make 
+            // Once we get the result, it may be necessary to make
             // some satellite cleanup
          SatIDSet rejectedSet;
          for (size_t i = 0; i<rejectedSV.size(); ++i)
@@ -668,18 +688,21 @@ namespace gpstk
 
 
          return gData;
+
       }  // End of "try"
       catch(Exception& e)
       {
          GPSTK_RETHROW(e);
       }
 
-   }   // End ModeledReferencePR::processModel()
+   }  // End of method 'ModeledReferencePR::processModel()'
+
 
 
       // Initialization method
-   void ModeledReferencePR::init() throw(Exception)
+   void ModeledReferencePR::init()
    {
+
       setInitialRxPosition();
       geometricRho(0);
       svClockBiases(0);
@@ -693,7 +716,9 @@ namespace gpstk
       extraBiases(0);
       availableSV(0);
       rejectedSV(0);
-   }
+
+   }  // End of method 'ModeledReferencePR::init()'
+
 
 
       /* Method to set the initial (a priori) position of receiver.
@@ -703,10 +728,9 @@ namespace gpstk
        */
    int ModeledReferencePR::setInitialRxPosition( const double& aRx,
                                                  const double& bRx,
-                                                 const double& cRx, 
+                                                 const double& cRx,
                                                  Position::CoordinateSystem s,
                                                  GeoidModel *geoid )
-      throw(GeometryException) 
    {
 
       try
@@ -719,12 +743,13 @@ namespace gpstk
       {
          return -1;
       }
-   }
+
+   }  // End of method 'ModeledReferencePR::setInitialRxPosition()'
+
 
 
       // Method to set the initial (a priori) position of receiver.
    int ModeledReferencePR::setInitialRxPosition(const Position& RxCoordinates)
-      throw(GeometryException) 
    {
 
       try
@@ -736,11 +761,13 @@ namespace gpstk
       {
          return -1;
       }
-   }
+
+   }  // End of method 'ModeledReferencePR::setInitialRxPosition()'
+
 
 
       // Method to set the initial (a priori) position of receiver.
-   int ModeledReferencePR::setInitialRxPosition() throw(GeometryException) 
+   int ModeledReferencePR::setInitialRxPosition()
    {
 
       try
@@ -753,13 +780,14 @@ namespace gpstk
       {
          return -1;
       }
-   }
+
+   }  // End of method 'ModeledReferencePR::setInitialRxPosition()'
+
 
 
       // Method to get the tropospheric corrections.
    double ModeledReferencePR::getTropoCorrections( TropModel *pTropModel,
                                                    double elevation )
-      throw() 
    {
 
       double tropoCorr(0.0);
@@ -780,7 +808,8 @@ namespace gpstk
 
       return tropoCorr;
 
-   }
+   }  // End of method 'ModeledReferencePR::getTropoCorrections()'
+
 
 
       // Method to get the ionospheric corrections.
@@ -789,7 +818,6 @@ namespace gpstk
                                                   Geodetic rxGeo,
                                                   double elevation,
                                                   double azimuth )
-      throw()
    {
 
       double ionoCorr(0.0);
@@ -805,19 +833,19 @@ namespace gpstk
 
       return ionoCorr;
 
-   }
+   }  // End of method 'ModeledReferencePR::getIonoCorrections()'
+
 
 
       // Method to get TGD corrections.
    double ModeledReferencePR::getTGDCorrections( DayTime Tr,
                                                  const XvtStore<SatID>& Eph,
                                                  SatID sat )
-      throw() 
    {
 
       try
       {
-         const GPSEphemerisStore& bce = 
+         const GPSEphemerisStore& bce =
                                  dynamic_cast<const GPSEphemerisStore&>(Eph);
 
          const EngEphemeris& eph = bce.findEphemeris(sat,Tr);
@@ -829,7 +857,8 @@ namespace gpstk
       {
          return 0.0;
       }
-   }
+
+   }  // End of method 'ModeledReferencePR::getTropoCorrections()'
 
 
-} // namespace
+}  // End of namespace gpstk

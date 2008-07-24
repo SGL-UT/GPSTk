@@ -1,11 +1,12 @@
+#pragma ident "$Id$"
 
 /**
  * @file SolverBase.hpp
  * Abstract base class for solver algorithms.
  */
 
-#ifndef GPSTK_SOLVER_BASE_HPP
-#define GPSTK_SOLVER_BASE_HPP
+#ifndef SOLVERBASE_HPP
+#define SOLVERBASE_HPP
 
 //============================================================================
 //
@@ -24,8 +25,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
 //
 //============================================================================
 
@@ -38,50 +39,54 @@
 
 namespace gpstk
 {
-    /// Thrown when some problem appeared when solving a given equation set
-    /// @ingroup exceptiongroup
-    NEW_EXCEPTION_CLASS(InvalidSolver, gpstk::Exception);
+
+      /// Thrown when some problem appeared when solving a given
+      /// equation set
+      /// @ingroup exceptiongroup
+   NEW_EXCEPTION_CLASS(InvalidSolver, gpstk::Exception);
 
 
-    /** @addtogroup GPSsolutions */
-    /// @ingroup math
-    //@{
+      /** @addtogroup GPSsolutions */
+      /// @ingroup math
+      //@{
 
-    /**
-     * Abstract base class for solver algorithms.
-     */
-    class SolverBase
-    {
-    public:
-
-        /// Implicit constructor
-        SolverBase() : valid(false) {};
-
-        /// Return validity of results
-        bool isValid(void)
-            { return valid; }
-
-        /// Solution
-        Vector<double> solution;
-
-        /// Postfit-residuals.
-        Vector<double> postfitResiduals;
-
-        /// Covariance matrix
-        Matrix<double> covMatrix;
-
-        /// Destructor
-        virtual ~SolverBase() {};
+      /**
+       * Abstract base class for solver algorithms.
+       */
+   class SolverBase
+   {
+   public:
 
 
-    protected:
+         /// Implicit constructor
+      SolverBase() : valid(false) {};
+
+         /// Return validity of results
+      bool isValid(void)
+      { return valid; }
+
+         /// Solution
+      Vector<double> solution;
+
+         /// Postfit-residuals.
+      Vector<double> postfitResiduals;
+
+         /// Covariance matrix
+      Matrix<double> covMatrix;
+
+         /// Destructor
+      virtual ~SolverBase() {};
+
+
+   protected:
+
+
         bool valid;         // true only if results are valid
 
-   }; // end class SolverBase
-   
 
-   //@}
-   
-}
+   }; // End of class 'SolverBase'
 
-#endif
+      //@}
+
+}  // End of namespace gpstk
+#endif   // SOLVERBASE_HPP

@@ -25,8 +25,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
 //
 //============================================================================
 
@@ -44,10 +44,10 @@ namespace gpstk
       /** @addtogroup GPSsolutions */
       //@{
 
-      /** This class compute modeled pseudoranges from satellites to a 
+      /** This class compute modeled pseudoranges from satellites to a
        *  mobile receiver.
        *
-       * The main difference between this class and ModeledReferencePR is 
+       * The main difference between this class and ModeledReferencePR is
        * that for a mobile receiver we should "prepare" the computation
        * giving an estimate of the mobile station position. This position
        * may be the last known position or it may be estimated using a method
@@ -55,9 +55,9 @@ namespace gpstk
        *
        * Prepare() method is used for this.
        *
-       * This class may be used either in a Vector- and Matrix-oriented way, 
+       * This class may be used either in a Vector- and Matrix-oriented way,
        * or with GNSS data structure objects from "DataStructures" class. In
-       * any case, it is intented to be used with stations where the position 
+       * any case, it is intented to be used with stations where the position
        * changes with time.
        *
        * A typical way to use this class with GNSS data structures follows:
@@ -77,30 +77,34 @@ namespace gpstk
        *   ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
        *   ionoStore.addIonoModel(DayTime::BEGINNING_OF_TIME, ioModel);
        *
-       *   // EBRE station nominal position
+       *      // EBRE station nominal position
        *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
        *
-       *   // Declare a tropospheric model object, setting the defaults
+       *      // Declare a tropospheric model object, setting the defaults
        *   MOPSTropModel mopsTM( nominalPos.getAltitude(),
        *                         nominalPos.getGeodeticLatitude(), 30);
        *
-       *   // Declare the modeler object, setting all the parameters in 
-       *   // one pass
-       *   // As stated, it will compute the model using the C1 observable
-       *   ModeledPR model(ionoStore, mopsTM, bceStore, TypeID::C1);
+       *      // Declare the modeler object, setting all the parameters in
+       *      // one pass
+       *      // As stated, it will compute the model using the C1 observable
+       *   ModeledPR model( ionoStore,
+       *                    mopsTM,
+       *                    bceStore,
+       *                    TypeID::C1 );
        *
-       *   // Set the initial apriori position using the Bancroft method
+       *      // Set the initial apriori position using the Bancroft method
        *   model.Prepare();
        *
        *   gnssRinex gRin;
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> model;
        *   }
        * @endcode
        *
-       * The "ModeledPR" object will visit every satellite in the 
-       * GNSS data structure that is "gRin" and will try to compute its 
+       * The "ModeledPR" object will visit every satellite in the
+       * GNSS data structure that is "gRin" and will try to compute its
        * model: Prefit residual, geometric distance, relativity delay,
        * ionospheric/tropospheric corrections, geometry matrix, etc.
        *
@@ -110,7 +114,7 @@ namespace gpstk
        * not have the observations required, it will be summarily deleted
        * from the data structure.
        *
-       * @sa ModeledPseudorangeBase.hpp and ModeledReferencePR.hpp for 
+       * @sa ModeledPseudorangeBase.hpp and ModeledReferencePR.hpp for
        *     base classes.
        *
        */
@@ -127,7 +131,7 @@ namespace gpstk
           *  ephemeris to be used, default observable and whether TGD will
           *  be computed or not.
           *
-          * This constructor is meant to be used when working with GNSS 
+          * This constructor is meant to be used when working with GNSS
           * data structures in order to set the basic parameters from the
           * beginning.
           *
@@ -145,8 +149,7 @@ namespace gpstk
                  TropModel& dTropoModel,
                  XvtStore<SatID>& dEphemeris,
                  const TypeID& dObservable,
-                 bool usetgd = true )
-         throw(Exception);
+                 bool usetgd = true );
 
 
          /** Explicit constructor, taking as input initial receiver
@@ -155,7 +158,7 @@ namespace gpstk
           *
           * The default tropospheric model will be set to NULL.
           *
-          * This constructor is meant to be used when working with GNSS 
+          * This constructor is meant to be used when working with GNSS
           * data structures in order to set the basic parameters from the
           * beginning.
           *
@@ -171,8 +174,7 @@ namespace gpstk
                  IonoModelStore& dIonoModel,
                  XvtStore<SatID>& dEphemeris,
                  const TypeID& dObservable,
-                 bool usetgd = true )
-         throw(Exception);
+                 bool usetgd = true );
 
 
          /** Explicit constructor, taking as input initial receiver
@@ -197,12 +199,11 @@ namespace gpstk
                  TropModel& dTropoModel,
                  XvtStore<SatID>& dEphemeris,
                  const TypeID& dObservable,
-                 bool usetgd = true )
-         throw(Exception);
+                 bool usetgd = true );
 
 
          /** Explicit constructor, taking as input initial receiver
-          *  coordinates, ephemeris to be used, default observable and 
+          *  coordinates, ephemeris to be used, default observable and
           *  whether TGD will be computed or not.
           *
           * Both the tropospheric and ionospheric models will be set to NULL.
@@ -221,12 +222,11 @@ namespace gpstk
       ModeledPR( const Position& RxCoordinates,
                  XvtStore<SatID>& dEphemeris,
                  const TypeID& dObservable,
-                 bool usetgd = true )
-         throw(Exception);
+                 bool usetgd = true );
 
 
-         /** Explicit constructor, taking as input default ionospheric 
-          *  and tropospheric models, ephemeris to be used, default 
+         /** Explicit constructor, taking as input default ionospheric
+          *  and tropospheric models, ephemeris to be used, default
           *  observable and whether TGD will be computed or not.
           *
           * This constructor is meant to be used when working with GNSS
@@ -245,12 +245,11 @@ namespace gpstk
                  TropModel& dTropoModel,
                  XvtStore<SatID>& dEphemeris,
                  const TypeID& dObservable,
-                 bool usetgd = true )
-         throw(Exception);
+                 bool usetgd = true );
 
 
          /** Explicit constructor, taking as input default ionospheric
-          *  model, ephemeris to be used, default observable and whether 
+          *  model, ephemeris to be used, default observable and whether
           *  TGD will be computed or not.
           *
           * This constructor is meant to be used when working with GNSS
@@ -267,12 +266,11 @@ namespace gpstk
       ModeledPR( IonoModelStore& dIonoModel,
                  XvtStore<SatID>& dEphemeris,
                  const TypeID& dObservable,
-                 bool usetgd = true )
-         throw(Exception);
+                 bool usetgd = true );
 
 
-         /** Explicit constructor, taking as input default tropospheric 
-          *  model, ephemeris to be used, default observable and whether 
+         /** Explicit constructor, taking as input default tropospheric
+          *  model, ephemeris to be used, default observable and whether
           *  TGD will be computed or not.
           *
           * This constructor is meant to be used when working with GNSS
@@ -289,11 +287,10 @@ namespace gpstk
       ModeledPR( TropModel& dTropoModel,
                  XvtStore<SatID>& dEphemeris,
                  const TypeID& dObservable,
-                 bool usetgd = true )
-         throw(Exception);
+                 bool usetgd = true );
 
 
-         /** Method to set an a priori position of receiver using 
+         /** Method to set an a priori position of receiver using
           *  Bancroft's method.
           *
           * @param Tr            Time of observation
@@ -335,7 +332,7 @@ namespace gpstk
           *  method. Intended to be used with GNSS data structures.
           *
           * @param time      DayTime object for this epoch
-          * @param data      satTypeValueMap data structure holding 
+          * @param data      satTypeValueMap data structure holding
           *                  the data.
           *
           * @return
@@ -369,8 +366,7 @@ namespace gpstk
                            const double& bRx,
                            const double& cRx,
                            Position::CoordinateSystem s=Position::Cartesian,
-                           GeoidModel *geoid = NULL )
-         throw(GeometryException);
+                           GeoidModel *geoid = NULL );
 
 
          /** Method to set the initial (a priori) position of receiver before
@@ -379,8 +375,7 @@ namespace gpstk
           *  0 if OK
           *  -1 if problems arose
           */
-      virtual int Prepare(const Position& RxCoordinates)
-         throw(GeometryException);
+      virtual int Prepare(const Position& RxCoordinates);
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -409,17 +404,18 @@ namespace gpstk
 
 
          /// Destructor.
-      virtual ~ModeledPR() throw() {};
+      virtual ~ModeledPR() {};
 
 
    protected:
 
+
       bool modelPrepared;
 
 
-   }; // class ModeledPR
+   }; // End of class 'ModeledPR'
 
       //@}
 
-} // namespace
-#endif  // MODELEDPR_HPP
+}  // End of namespace gpstk
+#endif   // MODELEDPR_HPP

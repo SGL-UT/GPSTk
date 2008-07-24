@@ -35,7 +35,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int PhaseCodeAlignment::classIndex = 2950000;
+   int PhaseCodeAlignment::classIndex = 4400000;
 
 
       // Returns an index identifying this object.
@@ -78,6 +78,7 @@ namespace gpstk
    }  // End of 'PhaseCodeAlignment::PhaseCodeAlignment()'
 
 
+
       /* Method to set the phase wavelength to be used.
        *
        * @param wavelength       Phase wavelength, in meters.
@@ -97,7 +98,8 @@ namespace gpstk
 
       return (*this);
 
-   }// End of 'PhaseCodeAlignment::setPhaseWavelength()'
+   }  // End of 'PhaseCodeAlignment::setPhaseWavelength()'
+
 
 
       /* Returns a satTypeValueMap object, adding the new data generated
@@ -108,115 +110,150 @@ namespace gpstk
        */
    satTypeValueMap& PhaseCodeAlignment::Process( const DayTime& epoch,
                                            satTypeValueMap& gData )
+      throw(ProcessingException)
    {
 
-      SatIDSet satRejectedSet;
-
-         // Loop through all the satellites
-      satTypeValueMap::iterator it;
-      for (it = gData.begin(); it != gData.end(); ++it)
+      try
       {
 
-         bool csflag(false);
+         SatIDSet satRejectedSet;
 
-            // Check if we want to use satellite arcs of cycle slip flags
-         if(useSatArcs)
+            // Loop through all the satellites
+         satTypeValueMap::iterator it;
+         for (it = gData.begin(); it != gData.end(); ++it)
          {
 
-               // Check if satellite currently has entries
-            std::map<SatID, alignData>::const_iterator itDat;
-            itDat = svData.find( (*it).first );
-            if( itDat == svData.end() )
+            bool csflag(false);
+
+               // Check if we want to use satellite arcs of cycle slip flags
+            if(useSatArcs)
             {
-                  // If it doesn't have an entry, insert one
-               alignData a;
 
-               svData[ (*it).first ] = a;
-            };
+                  // Check if satellite currently has entries
+               std::map<SatID, alignData>::const_iterator itDat;
+               itDat = svData.find( (*it).first );
+               if( itDat == svData.end() )
+               {
 
-            double arcN(0.0);
+                     // If it doesn't have an entry, insert one
+                  alignData a;
 
-            try
+                  svData[ (*it).first ] = a;
+
+               }
+
+
+               double arcN(0.0);
+
+               try
+               {
+
+                     // Try to extract the satellite arc value
+                  arcN = (*it).second(TypeID::satArc);
+
+               }
+               catch(...)
+               {
+
+                     // If satellite arc is missing, then schedule this
+                     // satellite for removal
+                  satRejectedSet.insert( (*it).first );
+
+                  continue;
+
+               }
+
+
+                  // Check if satellite arc has changed
+               if( svData[(*it).first].arcNumber < arcN )
+               {
+
+                     // Set flag
+                  csflag = true;
+
+                     // Update satellite arc information
+                  svData[(*it).first].arcNumber = arcN;
+               }
+
+            }  // End of first part of 'if(useSatArcs)'
+            else
             {
-                  // Try to extract the satellite arc value
-               arcN = (*it).second(TypeID::satArc);
+
+               double flag(0.0);
+
+               try
+               {
+
+                     // Try to extract the CS flag value
+                  flag = (*it).second(watchCSFlag);
+
+               }
+               catch(...)
+               {
+
+                     // If flag is missing, then schedule this satellite
+                     // for removal
+                  satRejectedSet.insert( (*it).first );
+
+                  continue;
+
+               }
+
+                  // Check if there was a cycle slip
+               if( flag > 0.0)
+               {
+                     // Set flag
+                  csflag = true;
+               }
+
+            }  // End of second part of 'if(useSatArcs)...'
+
+
+               // If there was an arc change or cycle slip, let's
+               // compute the new offset
+            if(csflag)
+            {
+
+                  // Compute difference between code and phase measurements
+               double diff( (*it).second(codeType) - (*it).second(phaseType) );
+
+                  // Convert 'diff' to cycles
+               diff = diff/phaseWavelength;
+
+                  // Convert 'diff' to an INTEGER number of cycles
+               diff = std::floor(diff);
+
+                  // The new offset is the INTEGER number of cycles, in meters
+               svData[(*it).first].offset = diff * phaseWavelength;
+
             }
-            catch(...)
-            {
-                  // If satellite arc is missing, then schedule this satellite
-                  // for removal
-               satRejectedSet.insert( (*it).first );
-               continue;
-            }
 
-
-               // Check if satellite arc has changed
-            if( svData[(*it).first].arcNumber < arcN )
-            {
-                  // Set flag
-               csflag = true;
-
-                  // Update satellite arc information
-               svData[(*it).first].arcNumber = arcN;
-            }
+               // Let's align the phase measurement using the
+               // corresponding offset
+            (*it).second[phaseType] = (*it).second[phaseType]
+                                      + svData[(*it).first].offset;
 
          }
-         else
-         {
 
-            double flag(0.0);
+            // Remove satellites with missing data
+         gData.removeSatID(satRejectedSet);
 
-            try
-            {
-                  // Try to extract the CS flag value
-               flag = (*it).second(watchCSFlag);
-            }
-            catch(...)
-            {
-                  // If flag is missing, then schedule this satellite
-                  // for removal
-               satRejectedSet.insert( (*it).first );
-               continue;
-            }
+         return gData;
 
-               // Check if there was a cycle slip
-            if( flag > 0.0)
-            {
-                  // Set flag
-               csflag = true;
-            }
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
 
-         }  // End of 'if(useSatArcs)...'
-
-
-            // If there was an arc change or cycle slip, let's compute offset
-         if(csflag)
-         {
-               // Compute difference between code and phase measurements
-            double diff( (*it).second(codeType) -(*it).second(phaseType) );
-
-               // Convert 'diff' to cycles
-            diff = diff/phaseWavelength;
-
-               // Convert 'diff' to an INTEGER number of cycles
-            diff = std::floor(diff);
-
-               // The new offset is the INTEGER number of cycles, in meters
-            svData[(*it).first].offset = diff * phaseWavelength;
-         }
-
-            // Let's align the phase measurement using the corresponding offset
-         (*it).second[phaseType] = (*it).second[phaseType]
-                                   + svData[(*it).first].offset;
+         GPSTK_THROW(e);
 
       }
 
-         // Remove satellites with missing data
-      gData.removeSatID(satRejectedSet);
-
-      return gData;
-
    }  // End of 'PhaseCodeAlignment::Process()'
+
 
 
       /* Returns a gnnsRinex object, adding the new data generated when
@@ -225,13 +262,29 @@ namespace gpstk
        * @param gData    Data object holding the data.
        */
    gnssRinex& PhaseCodeAlignment::Process(gnssRinex& gData)
+      throw(ProcessingException)
    {
 
-      Process(gData.header.epoch, gData.body);
+      try
+      {
 
-      return gData;
+         Process(gData.header.epoch, gData.body);
 
-   }// End of 'PhaseCodeAlignment::Process()'
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of 'PhaseCodeAlignment::Process()'
 
 
 } // End of namespace gpstk

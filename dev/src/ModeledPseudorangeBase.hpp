@@ -1,10 +1,12 @@
+#pragma ident "$Id$"
+
 /**
  * @file ModeledPseudorangeBase.hpp
  * Abstract base class for modeled pseudoranges
  */
 
-#ifndef GPSTK_MODELEDPSEUDORANGEBASE_HPP
-#define GPSTK_MODELEDPSEUDORANGEBASE_HPP
+#ifndef MODELEDPSEUDORANGEBASE_HPP
+#define MODELEDPSEUDORANGEBASE_HPP
 
 //============================================================================
 //
@@ -23,8 +25,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE. 2006
+//
+//  Dagoberto Salazar - gAGE. 2006, 2008
 //
 //============================================================================
 
@@ -50,81 +52,90 @@ namespace gpstk
    {
    public:
 
-        /// Implicit constructor
-        ModeledPseudorangeBase() : minElev(10.0) {};
+         /// Implicit constructor
+      ModeledPseudorangeBase() : minElev(10.0) {};
 
-        /// Either estimated or "a priori" position of receiver
-        Position rxPos;
+         /// Either estimated or "a priori" position of receiver
+      Position rxPos;
 
-        /// Estimated geometric ranges from satellites to receiver
-        Vector<double> geometricRho;
+         /// Estimated geometric ranges from satellites to receiver
+      Vector<double> geometricRho;
 
-        /// Satellite clock biases, in meters
-        Vector<double> svClockBiases;
+         /// Satellite clock biases, in meters
+      Vector<double> svClockBiases;
 
-        /// Satellite ECEF positions (m) and velocities (m/s) at transmission time
-        Vector<Xvt> svXvt;
+         /// Satellite ECEF positions (m) and velocities (m/s) at
+         /// transmission time
+      Vector<Xvt> svXvt;
 
-        /// Epoch when the signal left the satellite (Transmission time)
-        Vector<DayTime> svTxTime;
+         /// Epoch when the signal left the satellite (Transmission time)
+      Vector<DayTime> svTxTime;
 
-        /// Total Group Delay (TGD) of satellites, in meters
-        Vector<double> svTGD;
+         /// Total Group Delay (TGD) of satellites, in meters
+      Vector<double> svTGD;
 
-        /// Relativity corrections of satellites, in meters
-        Vector<double> svRelativity;
+         /// Relativity corrections of satellites, in meters
+      Vector<double> svRelativity;
 
-        /// Ionospheric corrections in each receiver-satellite ray, in meters
-        Vector<double> ionoCorrections;
+         /// Ionospheric corrections in each receiver-satellite ray, in meters
+      Vector<double> ionoCorrections;
 
-        /// Tropospheric corrections in each receiver-satellite ray, in meters
-        Vector<double> tropoCorrections;
+         /// Tropospheric corrections in each receiver-satellite ray, in meters
+      Vector<double> tropoCorrections;
 
-        /// Observed (measured) pseudoranges from satellites to receiver
-        Vector<double> observedPseudoranges;
+         /// Observed (measured) pseudoranges from satellites to receiver
+      Vector<double> observedPseudoranges;
 
-        /// Modeled pseudoranges from satellites to receiver
-        Vector<double> modeledPseudoranges;
+         /// Modeled pseudoranges from satellites to receiver
+      Vector<double> modeledPseudoranges;
 
-        /// Prefit-residuals: Difference between Pseudoranges and ModeledPseudoranges
-        Vector<double> prefitResiduals;
+         /// Prefit-residuals: Difference between Pseudoranges and
+         /// ModeledPseudoranges
+      Vector<double> prefitResiduals;
 
-        /// Matrix of Geometry (director cosines from receiver to satellites)
-        Matrix<double> geoMatrix;
+         /// Matrix of Geometry (director cosines from receiver to satellites)
+      Matrix<double> geoMatrix;
 
-        /// The elevation cut-off angle for accepted satellites. By default is set to 10 degrees
-        double minElev;
+         /// The elevation cut-off angle for accepted satellites. By default
+         /// it is set to 10 degrees
+      double minElev;
 
-        /// Any other biases (in meters) that the user wants to include. Will be substracted from modeled pseudoranges.
-        Vector<double> extraBiases;
+         /// Any other biases (in meters) that the user wants to include. It
+         /// will be substracted from modeled pseudoranges.
+      Vector<double> extraBiases;
 
-        /// Boolean telling if there are available computed data for at least 4 satellites
-        bool validData;
+         /// Boolean telling if there are available computed data for at
+         /// least 4 satellites
+      bool validData;
 
-        /// Vector with the PRN of satellites available for computing.
-        Vector<SatID> availableSV;
+         /// Vector with the PRN of satellites available for computing.
+      Vector<SatID> availableSV;
 
-        /// Vector with the PRN of satellites rejected or not used in computing.
-        Vector<SatID> rejectedSV;
+         /// Vector with the PRN of satellites rejected or not used
+         /// in computing.
+      Vector<SatID> rejectedSV;
 
-        /// Vector with the geodetic elevation of satellites from the receiver point of view.
-        Vector<double> elevationSV;
+         /// Vector with the geodetic elevation of satellites from the
+         /// receiver point of view.
+      Vector<double> elevationSV;
 
-        /// Vector with the geodetic azimuth of satellites from the receiver point of view.
-        Vector<double> azimuthSV;
+         /// Vector with the geodetic azimuth of satellites from the
+         /// receiver point of view.
+      Vector<double> azimuthSV;
 
-        /// Destructor.
-        virtual ~ModeledPseudorangeBase() throw() {};
+         /// Destructor.
+      virtual ~ModeledPseudorangeBase() {};
+
 
    protected:
-        /// Method to set the initial (a priori) position of receiver.
-        virtual int setInitialRxPosition() throw(Exception) = 0;
+
+         /// Method to set the initial (a priori) position of receiver.
+      virtual int setInitialRxPosition() = 0;
 
 
-   }; // class ModeledPseudorangeBase
+   }; // End of class 'ModeledPseudorangeBase'
 
-   //@}
+      //@}
 
-} // namespace
-
-#endif
+}  // End of namespace gpstk
+#endif   // MODELEDPSEUDORANGEBASE_HPP

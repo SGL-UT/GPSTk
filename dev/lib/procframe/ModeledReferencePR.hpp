@@ -25,8 +25,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
 //
 //============================================================================
 
@@ -53,10 +53,10 @@ namespace gpstk
       /** @addtogroup GPSsolutions */
       //@{
 
-      /** This class compute modeled pseudoranges from satellites to 
+      /** This class compute modeled pseudoranges from satellites to
        *  a reference station.
        *
-       * This class may be used either in a Vector- and Matrix-oriented way, 
+       * This class may be used either in a Vector- and Matrix-oriented way,
        * or with GNSS data structure objects from "DataStructures" class. In
        * any case, it is intented to be used with stations where the position
        * is known (there comes the name: Modeled Reference station
@@ -79,35 +79,39 @@ namespace gpstk
        *   ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
        *   ionoStore.addIonoModel(DayTime::BEGINNING_OF_TIME, ioModel);
        *
-       *   // EBRE station nominal position
+       *      // EBRE station nominal position
        *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
        *
-       *   // Declare a tropospheric model object, setting the defaults
+       *      // Declare a tropospheric model object, setting the defaults
        *   MOPSTropModel mopsTM( nominalPos.getAltitude(),
        *                         nominalPos.getGeodeticLatitude(), 30);
        *
-       *   // Declare the modeler object, setting all the parameters in 
-       *   // one pass
-       *   // As stated, it will compute the model using the C1 observable
-       *   ModeledReferencePR modelRef( nominalPos, ionoStore, mopsTM, 
-       *                                bceStore, TypeID::C1 );
+       *      // Declare the modeler object, setting all the parameters in
+       *      // one pass
+       *      // As stated, it will compute the model using the C1 observable
+       *   ModeledReferencePR modelRef( nominalPos,
+       *                                ionoStore,
+       *                                mopsTM,
+       *                                bceStore,
+       *                                TypeID::C1 );
        *
        *   gnssRinex gRin;
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> modelRef;
        *   }
        * @endcode
        *
-       * The "ModeledReferencePR" object will visit every satellite in the 
-       * GNSS data structure that is "gRin" and will try to compute its 
+       * The "ModeledReferencePR" object will visit every satellite in the
+       * GNSS data structure that is "gRin" and will try to compute its
        * model: Prefit residual, geometric distance, relativity delay,
        * ionospheric/tropospheric corrections, geometry matrix, etc.
        *
-       * When used with the ">>" operator, this class returns the same 
+       * When used with the ">>" operator, this class returns the same
        * incoming data structure with the extra data inserted along their
-       * corresponding satellites. Be warned that if a given satellite does 
-       * not have the observations required, it will be summarily deleted 
+       * corresponding satellites. Be warned that if a given satellite does
+       * not have the observations required, it will be summarily deleted
        * from the data structure.
        *
        * @sa ModeledPseudorangeBase.hpp for base class.
@@ -118,7 +122,7 @@ namespace gpstk
    public:
 
          /// Implicit constructor
-      ModeledReferencePR() throw(Exception)
+      ModeledReferencePR()
          : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL),
            defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
       { init(); };
@@ -128,9 +132,9 @@ namespace gpstk
           *  coordinates.
           *
           * Those coordinates may be Cartesian (X, Y, Z in meters) or Geodetic
-          * (Latitude, Longitude, Altitude), but defaults to Cartesian. 
+          * (Latitude, Longitude, Altitude), but defaults to Cartesian.
           *
-          * Also, a pointer to GeoidModel may be specified, but default is 
+          * Also, a pointer to GeoidModel may be specified, but default is
           * NULL (in which case WGS84 values will be used).
           *
           * @param aRx   first coordinate [ X(m), or latitude (degrees N) ]
@@ -143,18 +147,17 @@ namespace gpstk
           */
       ModeledReferencePR( const double& aRx,
                           const double& bRx,
-                          const double& cRx, 
+                          const double& cRx,
                           Position::CoordinateSystem s = Position::Cartesian,
                           GeoidModel *geoid = NULL )
-         throw(Exception)
          : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL),
            defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
       { init(); setInitialRxPosition(aRx, bRx, cRx, s, geoid); };
 
 
-         /// Explicit constructor, taking as input a Position object 
+         /// Explicit constructor, taking as input a Position object
          /// containing reference station coordinates.
-      ModeledReferencePR(const Position& RxCoordinates) throw(Exception)
+      ModeledReferencePR(const Position& RxCoordinates)
          : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL),
            defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
       { init(); setInitialRxPosition(RxCoordinates); };
@@ -162,7 +165,7 @@ namespace gpstk
 
          /** Explicit constructor, taking as input reference station
           *  coordinates, default ionospheric and tropospheric models,
-          *  ephemeris to be used, default observable and whether TGD will 
+          *  ephemeris to be used, default observable and whether TGD will
           *  be computed or not.
           *
           * This constructor is meant to be used when working with GNSS data
@@ -182,8 +185,7 @@ namespace gpstk
                           TropModel& dTropoModel,
                           XvtStore<SatID>& dEphemeris,
                           const TypeID& dObservable,
-                          bool usetgd = true )
-         throw(Exception);
+                          bool usetgd = true );
 
 
          /** Explicit constructor, taking as input reference station
@@ -208,8 +210,7 @@ namespace gpstk
                           IonoModelStore& dIonoModel,
                           XvtStore<SatID>& dEphemeris,
                           const TypeID& dObservable,
-                          bool usetgd = true )
-         throw(Exception);
+                          bool usetgd = true );
 
 
          /** Explicit constructor, taking as input reference station
@@ -218,7 +219,7 @@ namespace gpstk
           *
           * The default ionospheric model will be set to NULL.
           *
-          * This constructor is meant to be used when working with GNSS 
+          * This constructor is meant to be used when working with GNSS
           * data structures in order to set the basic parameters from the
           * beginning.
           *
@@ -234,17 +235,16 @@ namespace gpstk
                           TropModel& dTropoModel,
                           XvtStore<SatID>& dEphemeris,
                           const TypeID& dObservable,
-                          bool usetgd = true )
-         throw(Exception);
+                          bool usetgd = true );
 
 
          /** Explicit constructor, taking as input reference station
-          *  coordinates, ephemeris to be used, default observable and 
+          *  coordinates, ephemeris to be used, default observable and
           *  whether TGD will be computed or not.
           *
           * Both the tropospheric and ionospheric models will be set to NULL.
           *
-          * This constructor is meant to be used when working with GNSS 
+          * This constructor is meant to be used when working with GNSS
           * data structures in order to set the basic parameters from the
           * beginning.
           *
@@ -258,8 +258,7 @@ namespace gpstk
       ModeledReferencePR( const Position& RxCoordinates,
                           XvtStore<SatID>& dEphemeris,
                           const TypeID& dObservable,
-                          bool usetgd = true )
-         throw(Exception);
+                          bool usetgd = true );
 
 
          /** Compute the modeled pseudoranges, given satellite ID's,
@@ -270,9 +269,9 @@ namespace gpstk
           * @param Pseudorange   Vector of raw pseudoranges (parallel to
           *                      satellite), in meters.
           * @param Eph           EphemerisStore to be used.
-          * @param extraBiases   Vector of extra biases to be added to 
+          * @param extraBiases   Vector of extra biases to be added to
           *                      the model.
-          * @param pTropModel    Pointer to tropospheric model to be used. 
+          * @param pTropModel    Pointer to tropospheric model to be used.
           *                      By default it points to NULL.
           * @param pIonoModel    Pointer to ionospheric model to be used.
           *                      By default it points to NULL.
@@ -347,7 +346,7 @@ namespace gpstk
           *
           * @param Tr            Measured time of reception of the data.
           * @param Satellite     ID's of satellite
-          * @param Pseudorange   Pseudorange (parallel to satellite), in 
+          * @param Pseudorange   Pseudorange (parallel to satellite), in
           *                      meters.
           * @param Eph           XvtStore<SatID> to be used.
           * @param pTropModel    Pointer to tropospheric model to be used.
@@ -371,7 +370,7 @@ namespace gpstk
          throw(Exception);
 
 
-         /** Returns a satTypeValueMap object, adding the new data 
+         /** Returns a satTypeValueMap object, adding the new data
           *  generated when calling a modeling object.
           *
           * @param time      Epoch.
@@ -382,7 +381,7 @@ namespace gpstk
          throw(Exception);
 
 
-         /** Returns a gnnsSatTypeValue object, adding the new data 
+         /** Returns a gnnsSatTypeValue object, adding the new data
           *  generated when calling a modeling object.
           *
           * @param gData    Data object holding the data.
@@ -402,18 +401,18 @@ namespace gpstk
       { processModel(gData.header.epoch, gData.body); return gData; };
 
 
-         /// Boolean variable indicating if SV instrumental delays (TGD) 
+         /// Boolean variable indicating if SV instrumental delays (TGD)
          /// will be included  in results. It is true by default.
       bool useTGD;
 
 
-         /// Method to get satellite elevation cut-off angle. By default, 
+         /// Method to get satellite elevation cut-off angle. By default,
          /// it is set to 10 degrees.
       virtual double getMinElev() const
       { return minElev; };
 
 
-         /// Method to set satellite elevation cut-off angle. By default, 
+         /// Method to set satellite elevation cut-off angle. By default,
          /// it is set to 10 degrees.
       virtual ModeledReferencePR& setMinElev(double newElevation)
       { minElev = newElevation; return (*this); };
@@ -465,13 +464,13 @@ namespace gpstk
       { extraBiases = eBiases; return (*this); };
 
 
-         /// Method to get the default observable being used with 
+         /// Method to get the default observable being used with
          /// GNSS data structures.
       virtual TypeID getDefaultObservable() const
       { return defaultObservable; };
 
 
-         /** Method to set the default observable to be used when fed with 
+         /** Method to set the default observable to be used when fed with
           *  GNSS data structures.
           *
           * @param type      TypeID object to be used by default
@@ -480,13 +479,13 @@ namespace gpstk
       { defaultObservable = type; return (*this); };
 
 
-         /// Method to get a pointer to the default XvtStore<SatID> to be 
+         /// Method to get a pointer to the default XvtStore<SatID> to be
          /// used with GNSS data structures.
       virtual XvtStore<SatID>* getDefaultEphemeris() const
       { return pDefaultEphemeris; };
 
 
-         /** Method to set the default XvtStore<SatID> to be used with 
+         /** Method to set the default XvtStore<SatID> to be used with
           *  GNSS data structures.
           *
           * @param ephem     XvtStore<SatID> object to be used by default
@@ -496,10 +495,11 @@ namespace gpstk
 
 
          /// Destructor.
-      virtual ~ModeledReferencePR() throw () {};
+      virtual ~ModeledReferencePR() {};
 
 
    protected:
+
 
          /// Pointer to default ionospheric model.
       IonoModelStore *pDefaultIonoModel;
@@ -510,12 +510,12 @@ namespace gpstk
          /// Default observable to be used when fed with GNSS data structures.
       TypeID defaultObservable;
 
-         /// Pointer to default XvtStore<SatID> object when working with 
+         /// Pointer to default XvtStore<SatID> object when working with
          /// GNSS data structures.
       XvtStore<SatID>* pDefaultEphemeris;
 
          /// Initialization method
-      virtual void init() throw(Exception);
+      virtual void init();
 
 
          /** Method to set the initial (a priori) position of receiver.
@@ -525,25 +525,22 @@ namespace gpstk
           */
       virtual int setInitialRxPosition( const double& aRx,
                                         const double& bRx,
-                                        const double& cRx, 
+                                        const double& cRx,
                            Position::CoordinateSystem s=Position::Cartesian,
-                                        GeoidModel *geoid = NULL )
-         throw(GeometryException);
+                                        GeoidModel *geoid = NULL );
 
 
          /// Method to set the initial (a priori) position of receiver.
-      virtual int setInitialRxPosition(const Position& RxCoordinates)
-         throw(GeometryException);
+      virtual int setInitialRxPosition(const Position& RxCoordinates);
 
 
          /// Method to set the initial (a priori) position of receiver.
-      virtual int setInitialRxPosition() throw(GeometryException);
+      virtual int setInitialRxPosition();
 
 
          /// Method to get the tropospheric corrections.
       virtual double getTropoCorrections( TropModel *pTropModel,
-                                          double elevation )
-         throw();
+                                          double elevation );
 
 
          /// Method to get the ionospheric corrections.
@@ -551,18 +548,16 @@ namespace gpstk
                                          DayTime Tr,
                                          Geodetic rxGeo,
                                          double elevation,
-                                         double azimuth )
-         throw();
+                                         double azimuth );
 
 
          /// Method to get TGD corrections.
       virtual double getTGDCorrections( DayTime Tr,
                                         const XvtStore<SatID>& Eph,
-                                        SatID sat )
-         throw();
+                                        SatID sat );
 
 
-   }; // End of class ModeledReferencePR
+   }; // End of class 'ModeledReferencePR'
 
 
       /// Input operator from gnssSatTypeValue to ModeledReferencePR.
@@ -581,5 +576,5 @@ namespace gpstk
 
       //@}
 
-} // namespace
-#endif // MODELEDREFERENCEPR_HPP
+}  // End of namespace gpstk
+#endif   // MODELEDREFERENCEPR_HPP

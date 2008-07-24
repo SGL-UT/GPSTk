@@ -23,8 +23,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -37,7 +37,7 @@ namespace gpstk
 
 
       // Index initially assigned to this class
-   int ModelObs::classIndex = 3100000;
+   int ModelObs::classIndex = 4200000;
 
 
       // Returns an index identifying this object.
@@ -48,6 +48,7 @@ namespace gpstk
       // Returns a string identifying this object.
    std::string ModelObs::getClassName() const
    { return "ModelObs"; }
+
 
 
       /* Explicit constructor, taking as input initial receiver
@@ -69,7 +70,6 @@ namespace gpstk
                        XvtStore<SatID>& dEphemeris,
                        const TypeID& dObservable,
                        bool usetgd )
-      throw(Exception)
    {
 
       InitializeValues();
@@ -80,7 +80,9 @@ namespace gpstk
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
       setIndex();
-   }
+
+   }  // End of 'ModelObs::ModelObs()'
+
 
 
       /* Explicit constructor, taking as input initial receiver
@@ -101,7 +103,6 @@ namespace gpstk
                        XvtStore<SatID>& dEphemeris,
                        const TypeID& dObservable,
                        bool usetgd )
-      throw(Exception)
    {
 
       InitializeValues();
@@ -113,7 +114,8 @@ namespace gpstk
       useTGD = usetgd;
       setIndex();
 
-   }
+   }  // End of 'ModelObs::ModelObs()'
+
 
 
       /* Explicit constructor, taking as input initial receiver
@@ -134,7 +136,6 @@ namespace gpstk
                        XvtStore<SatID>& dEphemeris,
                        const TypeID& dObservable,
                        bool usetgd )
-      throw(Exception)
    {
 
       InitializeValues();
@@ -146,7 +147,8 @@ namespace gpstk
       useTGD = usetgd;
       setIndex();
 
-   }
+   }  // End of 'ModelObs::ModelObs()'
+
 
 
       /* Explicit constructor, taking as input initial receiver
@@ -165,7 +167,6 @@ namespace gpstk
                        XvtStore<SatID>& dEphemeris,
                        const TypeID& dObservable,
                        bool usetgd )
-      throw(Exception)
    {
 
       InitializeValues();
@@ -177,7 +178,8 @@ namespace gpstk
       useTGD = usetgd;
       setIndex();
 
-   }
+   }  // End of 'ModelObs::ModelObs()'
+
 
 
       /* Explicit constructor, taking as input default ionospheric and
@@ -196,7 +198,6 @@ namespace gpstk
                        XvtStore<SatID>& dEphemeris,
                        const TypeID& dObservable,
                        bool usetgd )
-      throw(Exception)
    {
 
       InitializeValues();
@@ -207,7 +208,8 @@ namespace gpstk
       useTGD = usetgd;
       setIndex();
 
-   }
+   }  // End of 'ModelObs::ModelObs()'
+
 
 
       /* Explicit constructor, taking as input default ionospheric model,
@@ -224,7 +226,6 @@ namespace gpstk
                        XvtStore<SatID>& dEphemeris,
                        const TypeID& dObservable,
                        bool usetgd )
-      throw(Exception)
    {
 
       InitializeValues();
@@ -235,7 +236,8 @@ namespace gpstk
       useTGD = usetgd;
       setIndex();
 
-   }
+   }  // End of 'ModelObs::ModelObs()'
+
 
 
       /* Explicit constructor, taking as input default tropospheric model,
@@ -252,7 +254,6 @@ namespace gpstk
                        XvtStore<SatID>& dEphemeris,
                        const TypeID& dObservable,
                        bool usetgd )
-      throw(Exception)
    {
 
       InitializeValues();
@@ -263,7 +264,8 @@ namespace gpstk
       useTGD = usetgd;
       setIndex();
 
-   }
+   }  // End of 'ModelObs::ModelObs()'
+
 
 
       /* Method to set an a priori position of receiver using
@@ -284,11 +286,12 @@ namespace gpstk
                           std::vector<double>& Pseudorange,
                           const XvtStore<SatID>& Eph )
    {
+
       Matrix<double> SVP;
       Bancroft Ban;
       Vector<double> vPos;
       PRSolution raimObj;
-        
+
       try
       {
          raimObj.PrepareAutonomousSolution(Tr, Satellite, Pseudorange, Eph, SVP);
@@ -304,7 +307,8 @@ namespace gpstk
 
       return Prepare(vPos(0), vPos(1), vPos(2));
 
-   }
+   }  // End of method 'ModelObs::Prepare()'
+
 
 
       /* Method to set an a priori position of receiver using
@@ -341,7 +345,8 @@ namespace gpstk
 
       return Prepare(time, vSat, vPR, (*(getDefaultEphemeris())) );
 
-   }
+   }  // End of method 'ModelObs::Prepare()'
+
 
 
       /* Method to set the initial (a priori) position of receiver before
@@ -355,7 +360,6 @@ namespace gpstk
                           const double& cRx,
                           Position::CoordinateSystem s,
                           GeoidModel *geoid )
-      throw(GeometryException) 
    {
 
       int result = setInitialRxPosition(aRx, bRx, cRx, s, geoid);
@@ -372,7 +376,8 @@ namespace gpstk
 
       return result;
 
-   }
+   }  // End of method 'ModelObs::Prepare()'
+
 
 
       /* Method to set the initial (a priori) position of receiver before
@@ -382,9 +387,8 @@ namespace gpstk
        *  -1 if problems arose
        */
    int ModelObs::Prepare(const Position& RxCoordinates)
-      throw(GeometryException) 
    {
-        
+
       int result = setInitialRxPosition(RxCoordinates);
 
          // If everything is OK, the model is prepared
@@ -399,7 +403,8 @@ namespace gpstk
 
       return result;
 
-   }
+   }  // End of method 'ModelObs::Prepare()'
+
 
 
       /* Returns a satTypeValueMap object, adding the new data generated
@@ -410,20 +415,36 @@ namespace gpstk
        */
    satTypeValueMap& ModelObs::Process( const DayTime& time,
                                        satTypeValueMap& gData )
-      throw(Exception)
+      throw(ProcessingException)
    {
 
-         // First, if the model is not prepared let's take care of it
-      if( !getModelPrepared() )
+      try
       {
-         Prepare(time, gData);
+
+            // First, if the model is not prepared let's take care of it
+         if( !getModelPrepared() )
+         {
+            Prepare(time, gData);
+         }
+
+         ModelObsFixedStation::Process(time, gData);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
       }
 
-      ModelObsFixedStation::Process(time, gData);
-
-      return gData;
-
-   }   // End ModelObs::processModel()
+   }   // End of method 'ModelObs::Process()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk
