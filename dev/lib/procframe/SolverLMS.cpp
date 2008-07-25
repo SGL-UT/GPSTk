@@ -180,7 +180,7 @@ namespace gpstk
    {
 
          // Define iterator
-      TypeIDSet::iterator it;
+      TypeIDSet::const_iterator it;
 
          // Check if the provided type exists in the solution. If not,
          // an InvalidSolver exception will be issued.
@@ -196,7 +196,7 @@ namespace gpstk
       int counter(0);
 
          // Define a new iterator and count where the given type is
-      TypeIDSet::iterator it2;
+      TypeIDSet::const_iterator it2;
       for (it2 = defaultEqDef.body.begin(); it2!= it; it2++)
       {
          ++counter;
@@ -215,7 +215,7 @@ namespace gpstk
    {
 
          // Define iterator
-      TypeIDSet::iterator it;
+      TypeIDSet::const_iterator it;
 
          // Check if the provided type exists in the covariance matrix. If not,
          // an InvalidSolver exception will be issued.
@@ -231,7 +231,7 @@ namespace gpstk
       int counter(0);
 
          // Define a new iterator and count where the given type is
-      TypeIDSet::iterator it2;
+      TypeIDSet::const_iterator it2;
       for (it2 = defaultEqDef.body.begin(); it2!= it; it2++)
       {
          ++counter;
