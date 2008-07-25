@@ -1,23 +1,22 @@
-#pragma ident "$Id"
+#pragma ident "$Id$"
 
 /*
 FFT based acquisition for GPS L1 band.  (Parallel Code Phase Search).
-
 
 
 Example usage:
 
 ...$ hilbert | acquire -q 2 -x 4.092 -r 16.368 -b 1 -c 21 -p1 > output.txt
 
-= 2 bit quantization, 4.092 MHz IF, 16.368 MHz sample rate, one band, PRN 21, one period.
+      = 2 bit quantization, 4.092 MHz IF, 16.368 MHz sample rate, one band, PRN 21, one period.
 
 ...$ gpsSim -x 1.25 -r 5 -c c:1:21:50:13100:0 -t 4 | acquire -x 1.25 -r 5 -c 21 -p 5 > output1.txt
 
-= float quantization(default), 2 bands (default), 5 periods.
+      = float quantization(default), 2 bands (default), 5 periods.
 
 
 
-GCC commands:
+GCC commands: (not added to Jamfile yet, since this links to FFTW)
 
 g++ -c -o acquire.o -O -I. -I/.../gpstk/dev/apps/swrx -I/.../gpstk/dev/src acquire.cpp
 
@@ -68,7 +67,6 @@ private:
    int prn;
    int bands;
    int periods;
-
    int bins;
    
    CCReplica* cc;
@@ -82,12 +80,11 @@ Acquire::Acquire() throw() :
    prn(1),
    bands(2),
    periods(1),
-   freqSearchWidth(80000),
+   freqSearchWidth(20000),
    freqBinWidth(200),
    bins(freqSearchWidth / freqBinWidth + 1)
 {}
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
+
 //-----------------------------------------------------------------------------
 bool Acquire::initialize(int argc, char *argv[]) throw()
 {
@@ -123,7 +120,7 @@ bool Acquire::initialize(int argc, char *argv[]) throw()
       searchWidthOpt('w',"search-width",
                      "Width of the doppler search in Hz. "
                      "For example, 20000 would search from -10000 to 10000 Hz. "
-                     "Default is 80000."),
+                     "Default is 20000."),
 
       binWidthOpt('f',"bin-width",
                   "Width of the frequency bins in Hz. Default is 200. "
@@ -194,8 +191,7 @@ bool Acquire::initialize(int argc, char *argv[]) throw()
 
    return true;
 }
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
+
 //-----------------------------------------------------------------------------
 void Acquire::process()
 {   
@@ -320,7 +316,7 @@ void Acquire::process()
    }
    
    // Dump Information.
-   cout << "Bin: " << bin << " =  Doppler: " 
+   cout << "PRN: " << prn << " Bin: " << bin << " =  Doppler: " 
         << (bin*1e3)/(1000/freqBinWidth) - (freqSearchWidth/2)
         << " Offset: " << chip*1000/(sampleRate*1e-3)
         << " Height: " << max << endl;
@@ -335,8 +331,6 @@ void Acquire::process()
    fftw_free(IN); fftw_free(OUT); 
 }
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {

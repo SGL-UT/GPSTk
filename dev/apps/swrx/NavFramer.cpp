@@ -161,10 +161,22 @@ bool NavFramer::process(const EMLTracker& tr)
             subframes.push_back(*sf);
             howCurrent = true;
             how = sf->words[1];
-            if (debugLevel)
+               //if (debugLevel)
                cout << "# " << *sf << endl;
-            if (debugLevel>1)
+                  //if (debugLevel>1)
                sf->dump(cout,1);
+
+               long framesArrayFormat[10];
+               int gpsWeek = 1433;
+               double output[60];
+               for(int k = 0; k < 10; k++)
+               {
+                  framesArrayFormat[k] = sf->words[k];
+               }
+               EngNav::subframeConvert(framesArrayFormat, gpsWeek, output);
+   
+               for(int i = 0; i < 60; i++)
+                  cout << output[i] << endl;
          }
          else
          {
@@ -180,6 +192,32 @@ bool NavFramer::process(const EMLTracker& tr)
       else
          sf++;
    }
+
+// Following code needs to go somewhere else, not every iteration.  
+// Maybe execute after every found subframe?
+/*
+   vector<long[10]> framesArrayFormat;
+   int count = 0;
+   int gpsWeek = 1433;
+   double output[60];
+   for (sf = candidates.begin(); sf != candidates.end(); )
+   {
+      for(int k = 0; k < 10; k++)
+      {
+         framesArrayFormat[count][k] = sf->words[k];
+      }
+      sf++;
+      count++;
+   }
+   EngNav::subframeConvert(framesArrayFormat[0], gpsWeek, output);
+   
+   for(int i = 0; i < 60; i++)
+      cout << output[i] << endl;
+*/
+      // GPSWeek must be full (>10 bits) = 1433 for gnss.bin
+
+      
+
    return howCurrent;
 }
 

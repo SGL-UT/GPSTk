@@ -159,9 +159,58 @@ int main(int argc, char *argv[])
       {}
    }
 
+   for(int i = 1; i <= 32; i++)
+   {
+      if( i != 5 && i != 10 && i != 16 && i != 17 &&
+          i != 20 && i != 21 && i != 28 && i != 1 && i != 7)
+      {
+         SatID temp(0, SatID::systemGPS);
+         svVec[i-1] = temp;
+      }
+   }
+
+   
+
    // Replace this with the observed delays...
    vector<double> obsVec(expVec);
+      //   obsVec[7] = 0.0;
 
+
+   //for(int i = 0; i < 32; i++)
+   // cout << obsVec[i] << endl;
+   
+   // Delays for "gnss.bin", the OSGPS SiGe sim file.
+     
+   double delays[32] = {0, 0, 0, 0, 559.995, 0, 0, 0, 0, 347.263,
+                        0, 0, 0, 0, 0, 99.584, 535.191, 0, 0, 
+                        787.634, 503.910, 0, 0, 0, 0, 0, 0, 479.350, 0, 0,
+                           //0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0};
+   // Satellites used: 5, 10, 15, 17, 18, 21, 22, 29
+
+   for(int i = 0; i < 32; i++)
+   {
+      if(delays[i] != 0)
+      {
+         int count = 0;
+         delays[i] *= gpstk::C_GPS_M * 1e-6;
+         while((delays[i] + 150000) < obsVec[i])
+         {
+            delays[i] += 150000;
+            count++;
+         }
+         if(count%2 != 0){delays[i] += 150000;}
+         obsVec[i] = delays[i];
+      }
+   }
+      
+   
+ 
+   for(int i = 0; i < 32; i++)
+      cout << obsVec[i] << " " << svVec[i] << endl;
+
+   
+   
    try 
    {
       GGTropModel gg;
