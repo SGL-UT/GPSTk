@@ -23,8 +23,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
 //
 //============================================================================
 
@@ -36,7 +36,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int ComputeIURAWeights::classIndex = 4000000;
+   int ComputeIURAWeights::classIndex = 6000000;
 
 
       // Returns an index identifying this object.
@@ -49,6 +49,7 @@ namespace gpstk
    { return "ComputeIURAWeights"; }
 
 
+
       /* Returns a satTypeValueMap object, adding the new data generated
        * when calling this object.
        *
@@ -56,54 +57,76 @@ namespace gpstk
        */
    satTypeValueMap& ComputeIURAWeights::Process( const DayTime& time,
                                                  satTypeValueMap& gData )
+      throw(ProcessingException)
    {
 
-         // By default set a very small value to weight
-      double weight(0.000001);
-
-      SatIDSet satRejectedSet;
-
-            // Loop through all the satellites
-      satTypeValueMap::iterator it;
-      for( it = gData.begin(); it != gData.end(); ++it )
+      try
       {
 
-         try
+            // By default set the wight as a very small value
+         double weight(0.000001);
+
+         SatIDSet satRejectedSet;
+
+               // Loop through all the satellites
+         satTypeValueMap::iterator it;
+         for( it = gData.begin(); it != gData.end(); ++it )
          {
-               // Try to extract the weight value
-            if( pBCEphemeris != NULL )
+
+            try
             {
-               weight = getWeight( ((*it).first), time, pBCEphemeris );
-            }
-            else
-            {
-               if( pTabEphemeris != NULL )
+
+                  // Try to extract the weight value
+               if( pBCEphemeris != NULL )
                {
-                  weight = getWeight( ((*it).first), time, pTabEphemeris );
+                  weight = getWeight( ((*it).first), time, pBCEphemeris );
+               }
+               else
+               {
+
+                  if( pTabEphemeris != NULL )
+                  {
+                     weight = getWeight( ((*it).first), time, pTabEphemeris );
+                  }
                }
             }
-         }
-         catch(...)
-         {
-               // If some value is missing, then schedule this
-               // satellite for removal
-            satRejectedSet.insert( (*it).first );
-            continue;
+            catch(...)
+            {
 
-         }
+                  // If some value is missing, then schedule this
+                  // satellite for removal
+               satRejectedSet.insert( (*it).first );
 
-            // If everything is OK, then get the new value inside
-            // the GDS structure
-         (*it).second[TypeID::weight] = weight;
+               continue;
+
+            }
+
+               // If everything is OK, then get the new value inside
+               // the GDS structure
+            (*it).second[TypeID::weight] = weight;
+
+         }  // End of 'for( it = gData.begin(); it != gData.end(); ++it )'
+
+
+            // Remove satellites with missing data
+         gData.removeSatID(satRejectedSet);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
 
       }
 
-         // Remove satellites with missing data
-      gData.removeSatID(satRejectedSet);
+   }  // End of method 'ComputeIURAWeights::Process()'
 
-      return gData;
-
-   }
 
 
       /* Method to set the default ephemeris to be used with GNSS
@@ -111,7 +134,8 @@ namespace gpstk
        *
        * @param ephem     EphemerisStore object to be used
        */
-   void ComputeIURAWeights::setDefaultEphemeris(XvtStore<SatID>& ephem)
+   ComputeIURAWeights& ComputeIURAWeights::setDefaultEphemeris(
+                                                   XvtStore<SatID>& ephem )
    {
 
          // Let's check what type ephem belongs to
@@ -126,7 +150,10 @@ namespace gpstk
          pTabEphemeris = dynamic_cast<TabularEphemerisStore*>(&ephem);
       }
 
-   }
+      return (*this);
+
+   }  // End of method 'ComputeIURAWeights::setDefaultEphemeris()'
+
 
 
       /* Method to really get the weight of a given satellite.
@@ -156,7 +183,8 @@ namespace gpstk
          // so sigma = 0.1*0.1 = 0.01 m^2
       return 100.0;
 
-   }
+   }  // End of method 'ComputeIURAWeights::getWeight()'
+
 
 
       /* Method to really get the weight of a given satellite.
@@ -198,7 +226,8 @@ namespace gpstk
 
       return ( 1.0 / (sigma*sigma) );
 
-   }
+   }  // End of method 'ComputeIURAWeights::getWeight()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk

@@ -26,8 +26,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
 //
 //============================================================================
 
@@ -88,10 +88,14 @@ namespace gpstk
        *                       TypeID::C1,
        *                       true );
        *
+       *      // Declare a GDS object
        *   gnssRinex gRin;
+       *
+       *      // Create a 'ComputeMOPSWeights' object
        *   ComputeMOPSWeights mopsW(nominalPos, bceStore);
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> modelRef >> mopsW;
        *   }
        * @endcode
@@ -112,6 +116,7 @@ namespace gpstk
        * weight for a given satellite, it will be summarily deleted from
        * the data structure.
        *
+       * @sa ComputeIURAWeights.hpp.
        */
    class ComputeMOPSWeights : public ComputeIURAWeights
    {
@@ -156,7 +161,8 @@ namespace gpstk
           * @param gData     Data object holding the data.
           */
       virtual satTypeValueMap& Process( const DayTime& time,
-                                        satTypeValueMap& gData );
+                                        satTypeValueMap& gData )
+         throw(ProcessingException);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data
@@ -164,7 +170,8 @@ namespace gpstk
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData);
+      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException);
 
 
          /** Returns a gnnsRinex object, adding the new data generated
@@ -172,7 +179,8 @@ namespace gpstk
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssRinex& Process(gnssRinex& gData);
+      virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException);
 
 
          /** Method to set the default ephemeris to be used with
@@ -180,8 +188,35 @@ namespace gpstk
           *
           * @param ephem     TabularEphemerisStore object to be used
           */
-      virtual void setPosition(const Position& pos)
-      { nominalPos = pos; };
+      virtual ComputeMOPSWeights& setPosition(const Position& pos)
+      { nominalPos = pos; return (*this); };
+
+
+         /** Method to set the default ephemeris to be used with GNSS
+          *  data structures.
+          *
+          * @param ephem     EphemerisStore object to be used
+          */
+      virtual ComputeMOPSWeights& setDefaultEphemeris(XvtStore<SatID>& ephem);
+
+
+         /** Method to set the default ephemeris to be used with GNSS
+          *  data structures.
+          *
+          * @param ephem     GPSEphemerisStore object to be used
+          */
+      virtual ComputeMOPSWeights& setDefaultEphemeris(GPSEphemerisStore& ephem)
+      { pBCEphemeris = &ephem; pTabEphemeris = NULL; return (*this); };
+
+
+         /** Method to set the default ephemeris to be used with GNSS
+          *  data structures.
+          *
+          * @param ephem     TabularEphemerisStore object to be used
+          */
+      virtual ComputeMOPSWeights& setDefaultEphemeris(
+                                             TabularEphemerisStore& ephem )
+      { pBCEphemeris = NULL; pTabEphemeris = &ephem; return (*this); };
 
 
          /// Returns an index identifying this object.
@@ -190,15 +225,6 @@ namespace gpstk
 
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
-
-
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex      New integer index to be assigned
-          *                      to current object.
-          */
-      void setIndex(const int newindex)
-      { index = newindex; };
 
 
          /// Destructor
@@ -243,13 +269,12 @@ namespace gpstk
 
          /// Sets the index and increment classIndex.
       void setIndex(void)
-      { index = classIndex++; }; 
+      { index = classIndex++; };
 
 
-   }; // end class ComputeMOPSWeights
-
+   }; // End of class 'ComputeMOPSWeights'
 
       //@}
-   
-}
-#endif  // COMPUTEMOPSWEIGHTS_HPP
+
+}  // End of namespace gpstk
+#endif   // COMPUTEMOPSWEIGHTS_HPP

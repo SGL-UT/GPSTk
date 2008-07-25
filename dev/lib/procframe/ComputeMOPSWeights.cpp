@@ -23,8 +23,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
 //
 //============================================================================
 
@@ -36,7 +36,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int ComputeMOPSWeights::classIndex = 4100000;
+   int ComputeMOPSWeights::classIndex = 6100000;
 
 
       // Returns an index identifying this object.
@@ -49,6 +49,7 @@ namespace gpstk
    { return "ComputeMOPSWeights"; }
 
 
+
       /* Returns a satTypeValueMap object, adding the new data
        * generated when calling this object.
        *
@@ -57,42 +58,63 @@ namespace gpstk
        */
    satTypeValueMap& ComputeMOPSWeights::Process( const DayTime& time,
                                                  satTypeValueMap& gData )
+      throw(ProcessingException)
    {
-   
-         // IURA weights are needed, so they are inserted in GDS
-      ComputeIURAWeights::Process(time, gData);
 
-      double weight(0.000001);   // By default a very small value
-      SatIDSet satRejectedSet;
-
-         // Loop through all the satellites
-      satTypeValueMap::iterator it;
-      for( it = gData.begin(); it != gData.end(); ++it )
+      try
       {
-         try
+
+            // IURA weights are needed, so they are inserted in GDS
+         ComputeIURAWeights::Process(time, gData);
+
+         double weight(0.000001);   // By default a very small value
+         SatIDSet satRejectedSet;
+
+            // Loop through all the satellites
+         satTypeValueMap::iterator it;
+         for( it = gData.begin(); it != gData.end(); ++it )
          {
-            weight = getWeight( ((*it).first), ((*it).second) );
-         }
-         catch(...)
-         {
-               // If some value is missing, then schedule this satellite
-               // for removal
-            satRejectedSet.insert( (*it).first );
-            continue;
+
+            try
+            {
+               weight = getWeight( ((*it).first), ((*it).second) );
+            }
+            catch(...)
+            {
+
+                  // If some value is missing, then schedule this satellite
+                  // for removal
+               satRejectedSet.insert( (*it).first );
+
+               continue;
+
+            }
+
+               // If everything is OK, then get the new value inside
+               // the GDS structure
+            (*it).second[TypeID::weight] = weight;
+
          }
 
-            // If everything is OK, then get the new value inside
-            // the GDS structure
-         (*it).second[TypeID::weight] = weight;
+            // Remove satellites with missing data
+         gData.removeSatID(satRejectedSet);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
 
       }
 
-         // Remove satellites with missing data
-      gData.removeSatID(satRejectedSet);
+   }  // End of method 'ComputeMOPSWeightsWeights::Process()'
 
-      return gData;
-
-   }
 
 
       /* Returns a gnnsSatTypeValue object, adding the new data
@@ -101,12 +123,30 @@ namespace gpstk
        * @param gData    Data object holding the data.
        */
    gnssSatTypeValue& ComputeMOPSWeights::Process(gnssSatTypeValue& gData)
+      throw(ProcessingException)
    {
-      Process(gData.header.epoch, gData.body);
 
-      return gData;
+      try
+      {
 
-   }
+         Process(gData.header.epoch, gData.body);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'ComputeMOPSWeightsWeights::Process()'
+
 
 
       /* Returns a gnnsRinex object, adding the new data generated
@@ -115,12 +155,57 @@ namespace gpstk
        * @param gData    Data object holding the data.
        */
    gnssRinex& ComputeMOPSWeights::Process(gnssRinex& gData)
+      throw(ProcessingException)
    {
-      Process(gData.header.epoch, gData.body);
 
-      return gData;
+      try
+      {
 
-   }
+         Process(gData.header.epoch, gData.body);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'ComputeMOPSWeightsWeights::Process()'
+
+
+
+      /* Method to set the default ephemeris to be used with GNSS
+       * data structures.
+       *
+       * @param ephem     EphemerisStore object to be used
+       */
+   ComputeMOPSWeights& ComputeMOPSWeights::setDefaultEphemeris(
+                                                   XvtStore<SatID>& ephem )
+   {
+
+         // Let's check what type ephem belongs to
+      if( dynamic_cast<GPSEphemerisStore*>(&ephem) )
+      {
+         pBCEphemeris = dynamic_cast<GPSEphemerisStore*>(&ephem);
+         pTabEphemeris = NULL;
+      }
+      else
+      {
+         pBCEphemeris = NULL;
+         pTabEphemeris = dynamic_cast<TabularEphemerisStore*>(&ephem);
+      }
+
+      return (*this);
+
+   }  // End of method 'ComputeMOPSWeights::setDefaultEphemeris()'
+
 
 
       /* Method to really get the MOPS weight of a given satellite.
@@ -191,13 +276,14 @@ namespace gpstk
       catch(...)
       {
          InvalidWeights eWeight( "Problem when computing weights. Did you \
-                                  call a modeler class?." );
+call a modeler class?." );
          GPSTK_THROW(eWeight);
       }
 
       return weight;
 
-   }
+   }  // End of method 'ComputeMOPSWeightsWeights::getWeight()'
+
 
 
       // Compute ionospheric sigma^2 according to Appendix J.2.3
@@ -218,9 +304,9 @@ namespace gpstk
 
       double phi_u = rxPosition.getGeodeticLatitude() / 180.0; // Semi-circles
       double lambda_u = rxPosition.getLongitude() / 180.0;     // Semi-circles
-      
+
       double psi = (0.0137 / (svE + 0.11)) - 0.022;            // Semi-circles
-      
+
       double phi_i = phi_u + psi * std::cos(azRad);            // Semi-circles
 
       if( phi_i > 0.416 )
@@ -235,9 +321,9 @@ namespace gpstk
 
       double lambda_i = lambda_u +
             ( psi * std::sin(azRad) / std::cos(phi_i*PI) );    // Semi-circles
-      
+
          // Semi-circles
-      double phi_m = phi_i + 0.064 * std::cos((lambda_i - 1.617)*PI);    
+      double phi_m = phi_i + 0.064 * std::cos((lambda_i - 1.617)*PI);
 
          // Convert magnetic latitude to degrees
       phi_m = std::abs(phi_m * 180.0);
@@ -275,10 +361,8 @@ namespace gpstk
 
       return sigma2uire;
 
-   }  // End of sigma2iono()
+   }  // End of method 'ComputeMOPSWeightsWeights::sigma2iono()'
 
 
 
-
-
-} // end namespace gpstk
+}  // End of namespace gpstk

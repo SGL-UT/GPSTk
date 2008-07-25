@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
 //
 //============================================================================
@@ -87,16 +87,17 @@ namespace gpstk
        * caused by the change in the gravity field when the signal travels from
        * satellite to receiver.
        *
-       * This effect is small, ranging from about 0.01 to 0.02 m, and is only
+       * This effect is small, ranging from about 0.01 to 0.02 m, and it is only
        * used for precise positioning. The result is stored in the GDS with its
-       * own type: "TypeID::gravDelay" (in meters) and should be used in the 
+       * own type: "TypeID::gravDelay" (in meters) and should be used in the
        * prefit residual computation process, like the more general relativity
-       * effect. Class "LinearCombinations" takes it into account.
+       * effect (which is related but it is not the same). Class
+       * "LinearCombinations" takes it into account.
        *
        * \warning Be aware that this class DOES NEED both the receiver and
        * satellite position. The former is set with the common constructor or
        * the appropriate method, while you must use a class such a "BasicModel"
-       * to compute the former and add it to the GDS.
+       * to compute the later and add it to the GDS.
        *
        * @sa BasicModel.hpp and LinearCombinations.hpp.
        *
@@ -125,7 +126,8 @@ namespace gpstk
           * @param gData     Data object holding the data.
           */
       virtual satTypeValueMap& Process( const DayTime& epoch,
-                                        satTypeValueMap& gData );
+                                        satTypeValueMap& gData )
+         throw(ProcessingException);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data generated
@@ -134,6 +136,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -142,7 +145,8 @@ namespace gpstk
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssRinex& Process(gnssRinex& gData);
+      virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException);
 
 
          /// Returns nominal position of receiver station.
@@ -187,11 +191,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // end class GravitationalDelay
+   }; // End of class 'GravitationalDelay'
 
+      //@}
 
-   //@}
-
-}
-
+}  // End of namespace gpstk
 #endif   // GRAVITATIONALDELAY_HPP

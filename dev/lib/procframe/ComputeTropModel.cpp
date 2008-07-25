@@ -23,8 +23,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -37,7 +37,7 @@ namespace gpstk
 
 
       // Index initially assigned to this class
-   int ComputeTropModel::classIndex = 3000000;
+   int ComputeTropModel::classIndex = 5000000;
 
 
       // Returns an index identifying this object.
@@ -50,6 +50,7 @@ namespace gpstk
    { return "ComputeTropModel"; }
 
 
+
       /* Returns a satTypeValueMap object, adding the new data generated when
        * calling a modeling object.
        *
@@ -58,13 +59,13 @@ namespace gpstk
        */
    satTypeValueMap& ComputeTropModel::Process( const DayTime& time,
                                          satTypeValueMap& gData )
-      throw(Exception)
+      throw(ProcessingException)
    {
-
-      SatIDSet satRejectedSet;
 
       try
       {
+
+         SatIDSet satRejectedSet;
 
             // Loop through all the satellites
          satTypeValueMap::iterator stv;
@@ -130,7 +131,7 @@ namespace gpstk
 
             }
 
-         } // End of loop for(stv = gData.begin()...
+         }  // End of loop 'for(stv = gData.begin()...'
 
             // Remove satellites with missing data
          gData.removeSatID(satRejectedSet);
@@ -138,12 +139,19 @@ namespace gpstk
          return gData;
 
       }   // End of try...
-      catch(Exception& e)
+      catch(Exception& u)
       {
-         GPSTK_RETHROW(e);
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
       }
 
    } // End ComputeTropModel::Process()
 
 
-} // end namespace gpstk
+
+} // End of namespace gpstk

@@ -26,8 +26,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
 //
 //============================================================================
 
@@ -62,10 +62,14 @@ namespace gpstk
        *   while (rnavin >> rNavData) bceStore.addEphemeris(rNavData);
        *   bceStore.SearchPast();  // This is the default
        *
+       *      // Declare a GDS object
        *   gnssRinex gRin;
+       *
+       *      // Create a 'ComputeIURAWeights' object
        *   ComputeIURAWeights iuraW(bceStore);
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> iuraW;
        *   }
        * @endcode
@@ -81,6 +85,7 @@ namespace gpstk
        * weight for a given satellite, it will be summarily deleted from
        * the data structure.
        *
+       * @sa ComputeMOPSWeights.hpp.
        */
    class ComputeIURAWeights : public WeightBase, public ProcessingClass
    {
@@ -125,7 +130,8 @@ namespace gpstk
           * @param gData     Data object holding the data.
           */
       virtual satTypeValueMap& Process( const DayTime& time,
-                                        satTypeValueMap& gData );
+                                        satTypeValueMap& gData )
+         throw(ProcessingException);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data
@@ -134,6 +140,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -143,6 +150,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -151,7 +159,7 @@ namespace gpstk
           *
           * @param ephem     EphemerisStore object to be used
           */
-      virtual void setDefaultEphemeris(XvtStore<SatID>& ephem);
+      virtual ComputeIURAWeights& setDefaultEphemeris(XvtStore<SatID>& ephem);
 
 
          /** Method to set the default ephemeris to be used with GNSS
@@ -159,8 +167,8 @@ namespace gpstk
           *
           * @param ephem     GPSEphemerisStore object to be used
           */
-      virtual void setDefaultEphemeris(GPSEphemerisStore& ephem)
-      { pBCEphemeris = &ephem; pTabEphemeris = NULL; };
+      virtual ComputeIURAWeights& setDefaultEphemeris(GPSEphemerisStore& ephem)
+      { pBCEphemeris = &ephem; pTabEphemeris = NULL; return (*this); };
 
 
          /** Method to set the default ephemeris to be used with GNSS
@@ -168,8 +176,9 @@ namespace gpstk
           *
           * @param ephem     TabularEphemerisStore object to be used
           */
-      virtual void setDefaultEphemeris(TabularEphemerisStore& ephem)
-      { pBCEphemeris = NULL; pTabEphemeris = &ephem; };
+      virtual ComputeIURAWeights& setDefaultEphemeris(
+                                             TabularEphemerisStore& ephem )
+      { pBCEphemeris = NULL; pTabEphemeris = &ephem; return (*this); };
 
 
          /// Returns an index identifying this object.
@@ -178,15 +187,6 @@ namespace gpstk
 
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
-
-
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex      New integer index to be assigned to
-          *                      current object.
-          */
-      void setIndex(const int newindex)
-      { index = newindex; };
 
 
          /// Destructor
@@ -242,10 +242,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // end class ComputeIURAWeights
-
+   }; // End of class 'ComputeIURAWeights'
 
       //@}
-   
-}
+
+}  // End of namespace gpstk
 #endif // COMPUTEIURAWEIGHTS_HPP

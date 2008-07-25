@@ -35,11 +35,11 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int Synchronize::classIndex = 1600000;
+   int Synchronize::classIndex = 8100000;
 
 
       // Returns an index identifying this object.
-   int Synchronize::getIndex() const
+   int Synchronize::getIndex(void) const
    { return index; }
 
 
@@ -48,11 +48,14 @@ namespace gpstk
    { return "Synchronize"; }
 
 
+
       /* Sets tolerance, in seconds.
+       *
        * @param tol                 Tolerance, in seconds.
        */
    Synchronize& Synchronize::setTolerance(const double tol)
    {
+
          // Make sure that tolerance is positive
       if( tol >= 0.0 )
       {
@@ -60,11 +63,13 @@ namespace gpstk
       }
 
       return (*this);
-   }
+
+   }  // End of method 'Synchronize::setTolerance()'
+
 
 
       /* Returns a gnnsRinex object, adding the new data generated
-       *  when calling this object.
+       * when calling this object.
        *
        * @param gData    Data object holding the data.
        */
@@ -106,11 +111,12 @@ namespace gpstk
 
       return gData;
 
-   }  // End of method Synchronize::Process()
+   }  // End of method 'Synchronize::Process()'
+
 
 
       /* Returns a gnnsSatTypeValue object, adding the new data
-       *  generated when calling this object.
+       * generated when calling this object.
        *
        * @param gData    Data object holding the data.
        */
@@ -152,7 +158,8 @@ namespace gpstk
 
       return gData;
 
-   }  // End of method Synchronize::Process()
+   }  // End of method 'Synchronize::Process()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk

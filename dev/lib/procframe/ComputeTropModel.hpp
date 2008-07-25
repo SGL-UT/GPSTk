@@ -26,8 +26,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -39,6 +39,7 @@
 
 namespace gpstk
 {
+
       /** @addtogroup GPSsolutions */
       //@{
 
@@ -52,16 +53,16 @@ namespace gpstk
        * A typical way to use this class follows:
        *
        * @code
-       *   // Input observation file stream
+       *      // Input observation file stream
        *   RinexObsStream rin("ebre0300.02o");
        *
-       *   // Define the tropospheric model to be used
+       *      // Define the tropospheric model to be used
        *   NeillTropModel neillTM;
        *   neillTM.setReceiverLatitude(lat);
        *   neillTM.setReceiverHeight(height);
        *   neillTM.setDayOfYear(doy);
        *
-       *   // Now, create the ComputeTropModel object
+       *      // Now, create the ComputeTropModel object
        *   ComputeTropModel computeTropo(neillTM);
        *
        *   gnssRinex gRin;  // GNSS data structure for fixed station data
@@ -99,7 +100,6 @@ namespace gpstk
 
          /// Default constructor.
       ComputeTropModel()
-         throw(Exception)
          : pTropModel(NULL)
       { setIndex(); };
 
@@ -114,7 +114,6 @@ namespace gpstk
           *
           */
       ComputeTropModel(TropModel& tropoModel)
-         throw(Exception)
       { pTropModel = &tropoModel; setIndex(); };
 
 
@@ -126,7 +125,7 @@ namespace gpstk
           */
       virtual satTypeValueMap& Process( const DayTime& time,
                                         satTypeValueMap& gData )
-         throw(Exception);
+         throw(ProcessingException);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data generated
@@ -135,7 +134,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-         throw(Exception)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -145,7 +144,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
-         throw(Exception)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -170,15 +169,6 @@ namespace gpstk
 
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
-
-
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex      New integer index to be assigned to
-          *                      current object.
-          */
-      ComputeTropModel& setIndex(const int newindex)
-      { index = newindex; return (*this); };
 
 
          /// Destructor.
@@ -206,9 +196,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // class ComputeTropModel
+   }; // End of class 'ComputeTropModel'
 
       //@}
 
-} // namespace
-#endif // COMPUTETROPMODEL_HPP
+} // End of namespace gpstk
+#endif   // COMPUTETROPMODEL_HPP

@@ -88,8 +88,8 @@ namespace gpstk
        * geometric coefficients, ComputeDOP will return the corresponding
        * DOP values as -1.0.
        *
-       * \sa BasicModel, ModelObsFixedStation, ModelObs, ModeledReferencePR,
-       * ModeledPR, XYZ2NEU and XYZ2NED.
+       * \sa BasicModel.hpp, ModelObsFixedStation.hpp, ModelObs.hpp,
+       * ModeledReferencePR.hpp, ModeledPR.hpp, XYZ2NEU.hpp and XYZ2NED.hpp.
        *
        */
    class ComputeDOP : public ProcessingClass
@@ -109,7 +109,8 @@ namespace gpstk
           * @param gData     Data object holding the data.
           */
       virtual satTypeValueMap& Process( const DayTime& time,
-                                        satTypeValueMap& gData );
+                                        satTypeValueMap& gData )
+         throw(ProcessingException);
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data 
@@ -118,6 +119,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -127,6 +129,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException)
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
@@ -196,9 +199,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // end class ComputeDOP
+   }; // End of class 'ComputeDOP'
 
       //@}
 
-}
+}  // End of namespace gpstk
 #endif // COMPUTEDOP_HPP

@@ -26,8 +26,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -42,36 +42,42 @@
 
 namespace gpstk
 {
+
       /** @addtogroup GPSsolutions */
       //@{
 
-      /**
-       * This class changes the reference base from an Earth-Centered,
-       * Earth-Fixed (ECEF) system to a North-East-Up (NEU) topocentric
-       * system, centered at the provided reference location.
+      /** This class changes the reference base from an Earth-Centered,
+       *  Earth-Fixed (ECEF) system to a North-East-Up (NEU) topocentric
+       *  system, centered at the provided reference location.
        *
        * The NEU system is commonly used when comparing the relative accuracy
-       * of a given GNSS data processing strategy. Be mindful, however, that 
+       * of a given GNSS data processing strategy. Be mindful, however, that
        * NEU is a "left-handed" reference system, whereas geocentric ECEF and
        * topocentric North-East-Down (NED) are "right-handed" systems.
-       * 
+       *
        * A typical way to use this class follows:
        *
        * @code
        *   RinexObsStream rin("ebre0300.02o");
-       *   // Reference position of receiver station
+       *
+       *      // Reference position of receiver station
        *   Position nominalPos(4833520.2269, 41537.00768, 4147461.489);
        *
-       *   // Some more code and definitions here...
+       *      // Some more code and definitions here...
        *
+       *      // GDS object
        *   gnssRinex gRin;
        *
-       *   // Set defaults of model. A typical C1-based modeling is used
-       *   ModeledPR modelRef(nominalPos, ionoStore, mopsTM, bceStore,
-       *   TypeID::C1, true);
+       *      // Set model defaults. A typical C1-based modeling is used
+       *   ModeledPR modelRef( nominalPos,
+       *                       ionoStore,
+       *                       mopsTM,
+       *                       bceStore,
+       *                       TypeID::C1,
+       *                       true );
        *
-       *   // Let's define a new equation definition to adapt solver object 
-       *   // to base change
+       *      // Let's define a new equation definition to adapt
+       *      // solver object to base change
        *   TypeIDSet typeSet;
        *   typeSet.insert(TypeID::dLat);
        *   typeSet.insert(TypeID::dLon);
@@ -79,14 +85,15 @@ namespace gpstk
        *   typeSet.insert(TypeID::cdt);
        *   gnssEquationDefinition newEq(TypeID::prefitC, typeSet);
        *
-       *   // Declare (and tune) a SolverLMS object
+       *      // Declare (and tune) a SolverLMS object
        *   SolverLMS solver;
        *   solver.setDefaultEqDefinition(newEq);
        *
-       *   // Declare the base-changing object setting the reference position
+       *      // Declare the base-changing object setting the reference position
        *   XYZ2NEU baseChange(nominalPos);
        *
-       *   while(rin >> gRin) {
+       *   while(rin >> gRin)
+       *   {
        *      gRin >> modelRef >> baseChange >> solver;
        *   }
        *
@@ -96,7 +103,7 @@ namespace gpstk
        * structure that is "gRin" and will apply a rotation matrix to
        * coefficients dx, dy and dz of the design matrix, yielding
        * corresponding dLat, dLon and dH for each satellite.
-       * 
+       *
        * Take notice that the design matrix coefficients dx, dy and dz were
        * computed by the "ModeledPR" object, so that step is mandatory.
        *
@@ -117,7 +124,8 @@ namespace gpstk
    public:
 
          /// Default constructor.
-      XYZ2NEU() : refLat(0.0), refLon(0.0)
+      XYZ2NEU()
+         : refLat(0.0), refLon(0.0)
       { init(); setIndex(); };
 
 
@@ -126,8 +134,8 @@ namespace gpstk
           * @param lat       Latitude of the reference point.
           * @param lon       Longitude of the reference point.
           */
-      XYZ2NEU(const double& lat,
-              const double& lon)
+      XYZ2NEU( const double& lat,
+               const double& lon )
       { setLatLon(lat, lon); setIndex(); }
 
 
@@ -139,68 +147,74 @@ namespace gpstk
 
 
          /** Method to set the latitude of the reference point, in degrees.
+          *
           * @param lat      Latitude of the reference point, in degrees.
           *
-          * @warning If parameter lat is outside +90/-90 degrees range,
-          *    then latitude will be set to 0 degrees.
+          * @warning If parameter 'lat' is outside the +90/-90 degrees range,
+          * then latitude will be set to 0 degrees.
           */
       virtual XYZ2NEU& setLat(const double& lat);
 
 
          /// Method to get the latitude of the reference point, in degrees.
-      virtual double getLat() const
+      virtual double getLat(void) const
       { return (refLat*RAD_TO_DEG); };
 
 
          /** Method to set the longitude of the reference point, in degrees.
+          *
           * @param lon       Longitude of the reference point, in degrees.
           */
       virtual XYZ2NEU& setLon(const double& lon);
 
 
          /// Method to get the longitude of the reference point, in degrees.
-      virtual double getLon() const
+      virtual double getLon(void) const
       { return (refLon*RAD_TO_DEG); };
 
 
-         /** Method to set simultaneously the latitude and longitude of the
+         /** Method to simultaneously set the latitude and longitude of the
           *  reference point, in degrees.
-          * @param lat      Latitude of the reference point, in degrees.
-          * @param lon       Longitude of the reference point, in degrees.
           *
-          * @warning If parameter lat is outside +90/-90 degrees range,
-          *    then latitude will be set to 0 degrees.
+          * @param lat        Latitude of the reference point, in degrees.
+          * @param lon        Longitude of the reference point, in degrees.
+          *
+          * @warning If parameter 'lat' is outside the +90/-90 degrees range,
+          * then latitude will be set to 0 degrees.
           */
-      virtual XYZ2NEU& setLatLon(const double& lat,
-                                 const double& lon);
+      virtual XYZ2NEU& setLatLon( const double& lat,
+                                  const double& lon );
 
 
-         /** Returns a reference to a satTypeValueMap object after 
+         /** Returns a reference to a satTypeValueMap object after
           *  converting from a geocentric reference system to a topocentric
           *  reference system.
           *
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process(satTypeValueMap& gData);
+      virtual satTypeValueMap& Process(satTypeValueMap& gData)
+         throw(ProcessingException);
 
 
-         /** Returns a reference to a gnssSatTypeValue object after 
+         /** Returns a reference to a gnssSatTypeValue object after
           *  converting from a geocentric reference system to a topocentric
           *  reference system.
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData) 
+      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException)
       { Process(gData.body); return gData; };
 
 
-         /** Returns a reference to a gnnsRinex object after converting 
+         /** Returns a reference to a gnnsRinex object after converting
           *  from a geocentric reference system to a topocentric reference
           *  system.
           *
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException)
       { Process(gData.body); return gData; };
 
 
@@ -212,15 +226,6 @@ namespace gpstk
       virtual std::string getClassName(void) const;
 
 
-         /** Sets the index to a given arbitrary value. Use with caution.
-          *
-          * @param newindex      New integer index to be assigned to 
-          *                      current object.
-          */
-      XYZ2NEU& setIndex(const int newindex)
-      { index = newindex; return (*this); };
-
-
          /// Destructor.
       virtual ~XYZ2NEU() {};
 
@@ -228,12 +233,12 @@ namespace gpstk
    private:
 
 
-         /// Latitude of the reference point (topocentric reference), 
+         /// Latitude of the reference point (topocentric reference),
          /// in radians.
       double refLat;
 
 
-         /// Longitude of the reference point (topocentric reference), 
+         /// Longitude of the reference point (topocentric reference),
          /// in radians.
       double refLon;
 
@@ -242,18 +247,18 @@ namespace gpstk
       Matrix<double> rotationMatrix;
 
 
-         /// Set (TypeIDSet) containing the types of data to be converted 
+         /// Set (TypeIDSet) containing the types of data to be converted
          /// (dx, dy, dz).
       TypeIDSet inputSet;
 
 
-         /// Set (TypeIDSet) containing the resulting types of data 
+         /// Set (TypeIDSet) containing the resulting types of data
          /// (dLat, dLon, dH).
       TypeIDSet outputSet;
 
 
-         /// This method builds the rotation matrix according to refLat 
-         /// and refLon values.
+         /// This method builds the rotation matrix according to 'refLat'
+         /// and 'refLon' values.
       virtual void init();
 
 
@@ -270,10 +275,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // class XYZ2NEU
-
+   }; // End of class 'XYZ2NEU'
 
       //@}
 
-} // namespace
-#endif // XYZ2NEU_HPP
+}  // End of namespace gpstk
+#endif   // XYZ2NEU_HPP

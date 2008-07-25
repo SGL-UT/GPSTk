@@ -35,7 +35,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int ComputeDOP::classIndex = 1600000;
+   int ComputeDOP::classIndex= 4800000;
 
 
       // Returns an index identifying this object.
@@ -48,6 +48,7 @@ namespace gpstk
    { return "ComputeDOP"; }
 
 
+
       /* Returns a satTypeValueMap object, adding the new data generated when
        * calling this object.
        *
@@ -56,83 +57,107 @@ namespace gpstk
        */
    satTypeValueMap& ComputeDOP::Process( const DayTime& time,
                                          satTypeValueMap& gData)
+      throw(ProcessingException)
    {
 
-      bool valid1(false), valid2(false); 
-
-         // First, let's define a set with XYZt unknowns
-      TypeIDSet tempSet1;
-      tempSet1.insert(TypeID::dx);
-      tempSet1.insert(TypeID::dy);
-      tempSet1.insert(TypeID::dz);
-      tempSet1.insert(TypeID::cdt);
-
-         // Second, let's define a set with NEUt unknowns
-      TypeIDSet tempSet2;
-      tempSet2.insert(TypeID::dLat);
-      tempSet2.insert(TypeID::dLon);
-      tempSet2.insert(TypeID::dH);
-      tempSet2.insert(TypeID::cdt);
-
-         // Then, generate the corresponding geometry/design matrices
-      Matrix<double> dMatrix1(gData.getMatrixOfTypes(tempSet1));
-      Matrix<double> dMatrix2(gData.getMatrixOfTypes(tempSet2));
-
-         // Afterwards, compute the appropriate extra matrices
-      Matrix<double> AT1(transpose(dMatrix1));
-      Matrix<double> covM1(AT1 * dMatrix1);
-
-      Matrix<double> AT2(transpose(dMatrix2));
-      Matrix<double> covM2(AT2 * dMatrix2);
-
-         // Let's try to invert AT*A matrices
       try
       {
-         covM1 = inverseChol( covM1 );
-         valid1 = true;
+
+         bool valid1(false), valid2(false); 
+
+            // First, let's define a set with XYZt unknowns
+         TypeIDSet tempSet1;
+         tempSet1.insert(TypeID::dx);
+         tempSet1.insert(TypeID::dy);
+         tempSet1.insert(TypeID::dz);
+         tempSet1.insert(TypeID::cdt);
+
+            // Second, let's define a set with NEUt unknowns
+         TypeIDSet tempSet2;
+         tempSet2.insert(TypeID::dLat);
+         tempSet2.insert(TypeID::dLon);
+         tempSet2.insert(TypeID::dH);
+         tempSet2.insert(TypeID::cdt);
+
+            // Then, generate the corresponding geometry/design matrices
+         Matrix<double> dMatrix1(gData.getMatrixOfTypes(tempSet1));
+         Matrix<double> dMatrix2(gData.getMatrixOfTypes(tempSet2));
+
+            // Afterwards, compute the appropriate extra matrices
+         Matrix<double> AT1(transpose(dMatrix1));
+         Matrix<double> covM1(AT1 * dMatrix1);
+
+         Matrix<double> AT2(transpose(dMatrix2));
+         Matrix<double> covM2(AT2 * dMatrix2);
+
+            // Let's try to invert AT*A matrices
+         try
+         {
+
+            covM1 = inverseChol( covM1 );
+            valid1 = true;
+
+         }
+         catch(...)
+         {
+
+            valid1 = false;
+         }
+
+         try
+         {
+
+            covM2 = inverseChol( covM2 );
+            valid2 = true;
+
+         }
+         catch(...)
+         {
+            valid2 = false;
+         }
+
+         if( valid1 )
+         {
+
+            gdop = std::sqrt(covM1(0,0)+covM1(1,1)+covM1(2,2)+covM1(3,3));
+            pdop = std::sqrt(covM1(0,0)+covM1(1,1)+covM1(2,2));
+            tdop = std::sqrt(covM1(3,3));
+
+         }
+         else
+         {
+            gdop = -1.0;
+            pdop = -1.0;
+            tdop = -1.0;
+         }
+
+         if( valid2 )
+         {
+            hdop = std::sqrt(covM2(0,0)+covM2(1,1));
+            vdop = std::sqrt(covM2(2,2));
+         }
+         else
+         {
+            hdop = -1.0;
+            vdop = -1.0;
+         }
+
+         return gData;
+
       }
-      catch(...)
+      catch(Exception& u)
       {
-         valid1 = false;
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
       }
 
-      try
-      {
-         covM2 = inverseChol( covM2 );
-         valid2 = true;
-      }
-      catch(...)
-      {
-         valid2 = false;
-      }
-
-      if( valid1 )
-      {
-         gdop = std::sqrt(covM1(0,0)+covM1(1,1)+covM1(2,2)+covM1(3,3));
-         pdop = std::sqrt(covM1(0,0)+covM1(1,1)+covM1(2,2));
-         tdop = std::sqrt(covM1(3,3));
-      }
-      else
-      {
-         gdop = -1.0;
-         pdop = -1.0;
-         tdop = -1.0;
-      }
-
-      if( valid2 )
-      {
-         hdop = std::sqrt(covM2(0,0)+covM2(1,1));
-         vdop = std::sqrt(covM2(2,2));
-      }
-      else
-      {
-         hdop = -1.0;
-         vdop = -1.0;
-      }
-
-      return gData;
-
-   }  // End of method ComputeDOP::Process()
+   }  // End of method 'ComputeDOP::Process()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk

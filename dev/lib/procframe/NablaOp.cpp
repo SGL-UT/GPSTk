@@ -1,7 +1,9 @@
+#pragma ident "$Id$"
 
 /**
  * @file NablaOp.cpp
- * This is a class to apply the Nabla operator (differences on satellite-related data) to GNSS data structures.
+ * This is a class to apply the Nabla operator (differences on
+ * satellite-related data) to GNSS data structures.
  */
 
 //============================================================================
@@ -21,8 +23,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -33,6 +35,43 @@
 namespace gpstk
 {
 
+
+      // Index initially assigned to this class
+   int NablaOp::classIndex = 7100000;
+
+
+      // Returns an index identifying this object.
+   int NablaOp::getIndex() const
+   { return index; }
+
+
+      // Returns a string identifying this object.
+   std::string NablaOp::getClassName() const
+   { return "NablaOp"; }
+
+
+
+      /* Method to add a set of data value types to be differenced.
+       *
+       * @param diffSet    TypeIDSet of data values to be added to the
+       *                   ones being differenced.
+       */
+   NablaOp& NablaOp::addDiffTypeSet(const TypeIDSet& diffSet)
+   {
+
+         // Iterate over 'diffSet' to add its elements to 'diffTypes'
+      TypeIDSet::const_iterator pos;
+      for(pos = diffSet.begin(); pos != diffSet.end(); ++pos)
+      {
+         diffTypes.insert(*pos);
+      }
+
+      return (*this);
+
+   }  // End of method 'NablaOp::addDiffTypeSet()'
+
+
+
     // Returns a reference to a gnssSatTypeValue object after differencing the
     // data type values given in the diffTypes field with respect to reference
     // satellite data.
@@ -40,80 +79,110 @@ namespace gpstk
     // @param gData     Data object holding the data.
     //
     satTypeValueMap& NablaOp::Process(satTypeValueMap& gData)
-    {
+      throw(ProcessingException)
+   {
 
-        double maxElevation(0.0);
+      try
+      {
 
-        // If configured to do so, let's look for the reference satellite
-        if (lookReferenceSat) {
-            // Loop through all the satellites in the station data set, looking for the reference satellite
+         double maxElevation(0.0);
+
+
+            // If configured to do so, let's look for reference satellite
+         if (lookReferenceSat)
+         {
+
+               // Loop through all satellites in reference station data set,
+               // looking for reference satellite
             satTypeValueMap::iterator it;
-            for (it = gData.begin(); it != gData.end(); ++it) 
+            for (it = gData.begin(); it != gData.end(); ++it)
             {
-                if ( gData((*it).first)(TypeID::elevation) > maxElevation )
-                {
-                    refSat = (*it).first;
-                    maxElevation = gData((*it).first)(TypeID::elevation);
-                }
+
+                  // The satellite with the highest elevation will usually be
+                  // the reference satellite
+               if ( gData((*it).first)(TypeID::elevation) > maxElevation )
+               {
+
+                  refSat = (*it).first;
+                  maxElevation = gData((*it).first)(TypeID::elevation);
+
+               }
+
             }
-        }
 
-        // We will use the reference satellite data as reference data
-        satTypeValueMap refData(gData.extractSatID(refSat));
+         }  // End of 'if (lookReferenceSat)'
 
-        // We must remove the reference satellite data from the data set
-        gData.removeSatID(refSat);
 
-        SatIDSet satRejectedSet;
+            // We will use reference satellite data as reference data
+         satTypeValueMap refData(gData.extractSatID(refSat));
 
-        // Loop through all the satellites in the station data set
-        satTypeValueMap::iterator it;
-        for (it = gData.begin(); it != gData.end(); ++it) 
-        {
-            // We must compute the difference for all the types in diffTypes set
+            // We must remove reference satellite data from data set
+         gData.removeSatID(refSat);
+
+
+         SatIDSet satRejectedSet;
+
+
+            // Loop through all the satellites in station data set
+         satTypeValueMap::iterator it;
+         for (it = gData.begin(); it != gData.end(); ++it)
+         {
+
+               // We must compute the difference for all types in
+               // 'diffTypes' set
             TypeIDSet::const_iterator itType;
-            for (itType = diffTypes.begin(); itType != diffTypes.end(); ++itType)
+            for(itType = diffTypes.begin(); itType != diffTypes.end(); ++itType)
             {
 
-                double value1(0.0);
-                double value2(0.0);
+               double value1(0.0);
+               double value2(0.0);
 
-                try
-                {
-                    // Let's try to compute the difference
-                    value1 = gData((*it).first)(*itType);
-                    value2 = refData(refSat)(*itType);
+               try
+               {
 
-                    gData((*it).first)((*itType)) =  value1 - value2;
-                }
-                catch(...) 
-                {
-                    // If some value is missing, then schedule this satellite for removal
-                    satRejectedSet.insert( (*it).first );
-                    continue;
-                }
-            }
+                     // Let's try to compute the difference
+                  value1 = gData((*it).first)(*itType);
+                  value2 = refData(refSat)(*itType);
 
-        }
-        // Remove satellites with missing data
-        gData.removeSatID(satRejectedSet);
+                     // Get difference into data structure
+                  gData((*it).first)((*itType)) =  value1 - value2;
 
-        return gData;
+               }
+               catch(...)
+               {
 
-    }  // end NablaOp::Process()
+                     // If some value is missing, then schedule this satellite
+                     // for removal
+                  satRejectedSet.insert( (*it).first );
 
+                  continue;
 
-    // Index initially assigned to this class
-    int NablaOp::classIndex = 4600000;
+               }
+
+            }  // End of 'for(itType = diffTypes.begin(); ...'
+
+         }  // End of 'for (it = gData.begin(); it != gData.end(); ++it)'
 
 
-    // Returns an index identifying this object.
-    int NablaOp::getIndex() const { return (*this).index; }
+            // Remove satellites with missing data
+         gData.removeSatID(satRejectedSet);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'NablaOp::Process()'
 
 
-    // Returns a string identifying this object.
-    std::string NablaOp::getClassName() const { return "NablaOp"; }
 
-
-
-} // end namespace gpstk
+}  // End of namespace gpstk

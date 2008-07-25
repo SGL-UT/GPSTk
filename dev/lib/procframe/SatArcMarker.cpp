@@ -240,7 +240,6 @@ namespace gpstk
 
       }
 
-
    }  // End of method 'SatArcMarker::Process()'
 
 

@@ -38,6 +38,7 @@
 
 namespace gpstk
 {
+
       /// Thrown when synchronization was not possible at a given epoch
       /// @ingroup exceptiongroup
    NEW_EXCEPTION_CLASS(SynchronizeException, gpstk::Exception);
@@ -74,11 +75,13 @@ namespace gpstk
        *      // data streams. This object will take data out from "rinRef"
        *      // until it is synchronized with data in "gRin". Default
        *      // synchronization tolerance is 1 s, but we change it to 2.5 s.
-       *   Synchronize synchro(rinRef, gRin, 2.5);
+       *   Synchronize synchro( rinRef,
+       *                        gRin,
+       *                        2.5 );
        *
        *      // Create an object to compute the single differences of
        *      // prefit residuals
-       *   DeltaOp delta;     // By default, it'll work on code prefit residuals
+       *   DeltaOp delta;   // By default, it'll work on code prefit residuals
        *
        *
        *      // More declarations here....
@@ -91,8 +94,11 @@ namespace gpstk
        *         // First, let's synchronize and process reference station data
        *      try
        *      {
+       *
        *         gRef >> synchro >> myFilter >> modelRef;
+       *
        *         delta.setRefData(gRef.body);
+       *
        *      }
        *      catch(SynchronizeException& e)   // THIS IS VERY IMPORTANT IN
        *      {                                // ORDER TO MANAGE A POSSIBLE
@@ -105,10 +111,13 @@ namespace gpstk
        *              << "at epoch: " << gRef.header.epoch << endl;
        *      }
        *
+       *
        *         // Rover data processing is done here:
        *      try
        *      {
+       *
        *         gRin >> myFilter >> model >> delta >> baseChange >> solverNEU;
+       *
        *      }
        *      catch(...)
        *      {
@@ -196,6 +205,7 @@ namespace gpstk
 
 
          /** Sets tolerance, in seconds.
+          *
           * @param tol                 Tolerance, in seconds.
           */
       virtual Synchronize& setTolerance(const double tol);
@@ -207,24 +217,27 @@ namespace gpstk
 
 
          /** Sets the RinexObsStream object of reference data.
+          *
           * @param rinexObs      RinexObsStream object of reference data.
           */
       virtual Synchronize& setReferenceSource(RinexObsStream& rinexObs)
-      { pRinexRef = &rinexObs; return (*this);}
+      { pRinexRef = &rinexObs; return (*this); }
 
 
          /** Sets the gnssRinex that holds ROVER receiver data.
+          *
           * @param roverData     gnssRinex that holds ROVER receiver data
           */
       virtual Synchronize& setRoverData(gnssRinex& roverData)
-      { pgRov1 = &roverData; return (*this);}
+      { pgRov1 = &roverData; return (*this); }
 
 
          /** Sets the gnssSatTypeValue that holds ROVER receiver data.
+          *
           * @param roverData     gnssSatTypeValue that holds ROVER receiver data
           */
       virtual Synchronize& setRoverData(gnssSatTypeValue& roverData)
-      { pgRov2 = &roverData; return (*this);}
+      { pgRov2 = &roverData; return (*this); }
 
 
          /// Returns an index identifying this object.
@@ -242,20 +255,20 @@ namespace gpstk
    private:
 
 
-         /// Pointer to input observation file stream for reference station
+         /// Pointer to input observation file stream for reference station.
       RinexObsStream* pRinexRef;
 
-         /// Pointer to gnnsRinex data structure (GDS) that holds ROVER data
+         /// Pointer to gnnsRinex data structure (GDS) that holds ROVER data.
       gnssRinex* pgRov1;
 
          /// Pointer to gnnsSatTypeValue data structure (GDS) that holds
-         /// ROVER data
+         /// ROVER data.
       gnssSatTypeValue* pgRov2;
 
-         /// Tolerance, in seconds
+         /// Tolerance, in seconds.
       double tolerance;
 
-         /// Flag to mark that first data batch was read
+         /// Flag to mark that first data batch was read.
       bool firstTime;
 
          /// Initial index assigned to this class.
@@ -269,9 +282,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // End of class Synchronize
+   }; // End of class 'Synchronize'
 
       //@}
 
-}
+}  // End of namespace gpstk
 #endif   // SYNCHRONIZE_HPP

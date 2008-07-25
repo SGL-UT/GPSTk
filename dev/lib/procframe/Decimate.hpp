@@ -38,6 +38,7 @@
 
 namespace gpstk
 {
+
       /// Thrown when some epoch data must be decimated
       /// @ingroup exceptiongroup
     NEW_EXCEPTION_CLASS(DecimateEpoch, gpstk::Exception);
@@ -69,7 +70,8 @@ namespace gpstk
        *
        *      // Set up Niell tropospheric model
        *   NeillTropModel neillTM( nominalPos.getAltitude(),
-       *                           nominalPos.getGeodeticLatitude(), 30);
+       *                           nominalPos.getGeodeticLatitude(),
+       *                           30 );
        *
        *      // Objects to compute the model
        *   BasicModel basicM(nominalPos, SP3EphList);
@@ -84,7 +86,9 @@ namespace gpstk
        *   SolverPPP pppSolver;
        *
        *      // Object to decimate data: Take data each 900 s, tolerance 5 s
-       *   Decimate decimateData(900.0, 5.0, SP3EphList.getInitialTime());
+       *   Decimate decimateData( 900.0,
+       *                          5.0,
+       *                          SP3EphList.getInitialTime() );
        *
        *     // PROCESSING PART
        *
@@ -135,8 +139,8 @@ namespace gpstk
        *
        * Otherwise, it will stop the processing chain and throw a
        * "DecimateEpoch" exception. The program then must handle it
-       * appropriately, usually just issuing a 'continue' statement in order to
-       * process next epoch.
+       * appropriately, usually just issuing a 'continue' statement in order
+       * to process next epoch.
        *
        * @sa Synchronize.hpp for another time management class.
        *
@@ -175,7 +179,7 @@ namespace gpstk
          throw(DecimateEpoch);
 
 
-         /** Returns a gnnsSatTypeValue object, adding the new data 
+         /** Returns a gnnsSatTypeValue object, adding the new data
           *  generated when calling this object.
           *
           * @param gData    Data object holding the data.
@@ -185,7 +189,7 @@ namespace gpstk
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
-         /** Returns a gnnsRinex object, adding the new data generated 
+         /** Returns a gnnsRinex object, adding the new data generated
           *  when calling this object.
           *
           * @param gData    Data object holding the data.
@@ -201,6 +205,7 @@ namespace gpstk
 
 
          /** Sets sampling interval.
+          *
           * @param sampleInterval      Sampling interval, in seconds.
           */
       virtual Decimate& setSampleInterval(const double sampleInterval);
@@ -212,12 +217,14 @@ namespace gpstk
 
 
          /** Sets tolerance, in seconds.
+          *
           * @param tol                 Tolerance, in seconds.
           */
       virtual Decimate& setTolerance(const double tol);
 
 
          /** Sets epoch to start decimation.
+          *
           * @param initialEpoch        Epoch to start decimation.
           */
       virtual Decimate& setInitialEpoch(const DayTime& initialEpoch)
@@ -259,9 +266,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // end class Decimate
+   }; // End of class 'Decimate'
 
       //@}
 
-}
+}  // End of namespace gpstk
 #endif   // DECIMATE_HPP

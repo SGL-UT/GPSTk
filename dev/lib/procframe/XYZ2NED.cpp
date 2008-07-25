@@ -23,8 +23,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -36,16 +36,18 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int XYZ2NED::classIndex = 5100000;
+   int XYZ2NED::classIndex = 7300000;
 
 
       // Returns an index identifying this object.
-   int XYZ2NED::getIndex() const { return (*this).index; }
+   int XYZ2NED::getIndex() const
+   { return index; }
 
 
       // Returns a string identifying this object.
    std::string XYZ2NED::getClassName() const
    { return "XYZ2NED"; }
+
 
 
       /* Common constructor taking reference point Position object
@@ -54,19 +56,26 @@ namespace gpstk
        */
    XYZ2NED::XYZ2NED(const Position& refPos)
    {
-      setLatLon(refPos.getGeodeticLatitude(), refPos.getLongitude());
+
+      setLatLon( refPos.getGeodeticLatitude(),
+                 refPos.getLongitude() );
+
       setIndex();
-   }
+
+   }  // End of 'XYZ2NED::XYZ2NED()'
+
 
 
       /* Method to set the latitude of the reference point, in degrees.
+       *
        * @param lat      Latitude of the reference point, in degrees.
        *
-       * @warning If parameter lat is outside +90/-90 degrees range,
-       *    then latitude will be set to 0 degrees.
+       * @warning If parameter 'lat' is outside the +90/-90 degrees range,
+       * then latitude will be set to 0 degrees.
        */
    XYZ2NED& XYZ2NED::setLat(const double& lat)
    {
+
          // Don't allow latitudes out of the -90/+90 interval
       if ( (lat > 90.0) ||
            (lat < -90.0)  )
@@ -81,37 +90,46 @@ namespace gpstk
       init();
 
       return (*this);
-   }
+
+   }  // End of method 'XYZ2NED::setLat()'
+
 
 
       /* Method to set the longitude of the reference point, in degrees.
+       *
        * @param lon       Longitude of the reference point, in degrees.
        */
    XYZ2NED& XYZ2NED::setLon(const double& lon)
    {
+
       refLon = (lon*DEG_TO_RAD);
+
       init();
 
       return (*this);
-   }
+
+   }  // End of method 'XYZ2NED::setLon()'
 
 
-      /* Method to set simultaneously the latitude and longitude of 
-       *  the reference point, in degrees.
-       * @param lat      Latitude of the reference point, in degrees.
-       * @param lon       Longitude of the reference point, in degrees.
+
+      /* Method to simultaneously set the latitude and longitude of
+       * the reference point, in degrees.
        *
-       * @warning If parameter lat is outside +90/-90 degrees range,
-       *    then latitude will be set to 0 degrees.
+       * @param lat        Latitude of the reference point, in degrees.
+       * @param lon        Longitude of the reference point, in degrees.
+       *
+       * @warning If parameter 'lat' is outside the +90/-90 degrees range,
+       * then latitude will be set to 0 degrees.
        */
-   XYZ2NED& XYZ2NED::setLatLon(const double& lat,
-                               const double& lon)
+   XYZ2NED& XYZ2NED::setLatLon( const double& lat,
+                                const double& lon )
    {
+
          // Don't allow latitudes out of the -90/+90 interval
-      if ( (lat > 90.0) || 
+      if ( (lat > 90.0) ||
            (lat < -90.0)  )
       {
-         refLat = 0.0; 
+         refLat = 0.0;
       }
       else
       {
@@ -119,40 +137,61 @@ namespace gpstk
       }
 
       refLon = (lon*DEG_TO_RAD);
+
       init();
 
       return (*this);
-   }
+
+   }  // End of method 'XYZ2NED::setLatLon()'
 
 
-      // Returns a reference to a satTypeValueMap object after converting 
-      // from a geocentric reference
-      // system to a topocentric reference system.
+
+      // Returns a reference to a satTypeValueMap object after converting
+      // from a geocentric reference system to a topocentric reference system.
       //
       // @param gData     Data object holding the data.
       //
    satTypeValueMap& XYZ2NED::Process(satTypeValueMap& gData)
+      throw(ProcessingException)
    {
-      Matrix<double> neuMatrix;
 
-         // Get the corresponding geometry/design matrix data
-      Matrix<double> dMatrix(gData.getMatrixOfTypes(inputSet));
+      try
+      {
 
-         // Compute the base change. For convenience, we use the property:
-         // Y = A*B => Y^T = (A*B)^T => Y^T = B^T * A^T
-      neuMatrix = dMatrix*rotationMatrix;
+         Matrix<double> neuMatrix;
 
-      gData.insertMatrix(outputSet, neuMatrix);
+            // Get the corresponding geometry/design matrix data
+         Matrix<double> dMatrix(gData.getMatrixOfTypes(inputSet));
 
-      return gData;
+            // Compute the base change. For convenience, we use the property:
+            // Y = A*B => Y^T = (A*B)^T => Y^T = B^T * A^T
+         neuMatrix = dMatrix*rotationMatrix;
 
-   }  // end XYZ2NED::Process()
+         gData.insertMatrix(outputSet, neuMatrix);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'XYZ2NED::Process()'
 
 
-      // This method builds the rotation matrix according to refLat and 
-      // refLon values.
+
+      // This method builds the rotation matrix according to 'refLat' and
+      // 'refLon' values.
    void XYZ2NED::init()
    {
+
          // First, let's resize rotation matrix and assign the proper values
       rotationMatrix.resize(3,3);
 
@@ -178,7 +217,8 @@ namespace gpstk
       outputSet.insert(TypeID::dLon);
       outputSet.insert(TypeID::dH);
 
-   }  // end XYZ2NED::init()
+   }  // End of method 'XYZ2NED::init()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk

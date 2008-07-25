@@ -36,11 +36,11 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int Decimate::classIndex = 1600000;
+   int Decimate::classIndex = 8000000;
 
 
       // Returns an index identifying this object.
-   int Decimate::getIndex() const
+   int Decimate::getIndex(void) const
    { return index; }
 
 
@@ -49,11 +49,14 @@ namespace gpstk
    { return "Decimate"; }
 
 
+
       /* Sets sampling interval.
+       *
        * @param sampleInterval      Sampling interval, in seconds.
        */
    Decimate& Decimate::setSampleInterval(const double sampleInterval)
    {
+
          // Make sure that sample interval is positive
       if( sampleInterval >= 0.0 )
       {
@@ -61,14 +64,18 @@ namespace gpstk
       }
 
       return (*this);
-   }
+
+   }  // End of method 'Decimate::setSampleInterval()'
+
 
 
       /* Sets tolerance, in seconds.
+       *
        * @param tol                 Tolerance, in seconds.
        */
    Decimate& Decimate::setTolerance(const double tol)
    {
+
          // Make sure that tolerance is positive
       if( tol >= 0.0 )
       {
@@ -76,7 +83,9 @@ namespace gpstk
       }
 
       return (*this);
-   }
+
+   }  // End of method 'Decimate::setTolerance()'
+
 
 
       /* Returns a satTypeValueMap object, adding the new data generated when
@@ -86,7 +95,7 @@ namespace gpstk
        * @param gData     Data object holding the data.
        */
    satTypeValueMap& Decimate::Process( const DayTime& time,
-                                         satTypeValueMap& gData)
+                                       satTypeValueMap& gData )
       throw(DecimateEpoch)
    {
 
@@ -97,9 +106,12 @@ namespace gpstk
          // implying that it must be decimated
       if ( !(std::abs(time - lastEpoch) > threshold) )
       {
+
             // If epoch must be decimated, we issue an Exception
          DecimateEpoch e("This epoch must be decimated.");
+
          GPSTK_THROW(e);
+
       }
 
          // Update reference epoch
@@ -107,7 +119,8 @@ namespace gpstk
 
       return gData;
 
-   }  // End of method Decimate::Process()
+   }  // End of method 'Decimate::Process()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk
