@@ -192,7 +192,7 @@ namespace gpstk
           * @param csT   Cycle slip type to be used
           */
       virtual CodeSmoother& setCSFlag(const TypeID& csT)
-      { csFlag = csT; };
+      { csFlag = csT; return (*this); };
 
 
          /// Method to get the default return type being used.
