@@ -224,7 +224,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-         throw(InvalidSolver);
+         throw(ProcessingException);
 
 
          /** Returns a reference to a gnnsRinex object after solving
@@ -233,7 +233,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
-         throw(InvalidSolver);
+         throw(ProcessingException);
 
 
          /** Sets if a NEU system will be used.
@@ -265,7 +265,7 @@ namespace gpstk
 
 
          /// Get coordinates stochastic model pointer
-      StochasticModel* getCoordinatesModel() const
+      StochasticModel* getCoordinatesModel(void) const
       { return pCoordStoModel; };
 
 
@@ -279,7 +279,7 @@ namespace gpstk
 
 
          /// Get wet troposphere stochastic model pointer
-      StochasticModel* getTroposphereModel() const
+      StochasticModel* getTroposphereModel(void) const
       { return pTropoStoModel; };
 
 
@@ -293,7 +293,7 @@ namespace gpstk
 
 
          /// Get receiver clock stochastic model pointer
-      StochasticModel* getReceiverClockModel() const
+      StochasticModel* getReceiverClockModel(void) const
       { return pClockStoModel; };
 
 
@@ -307,7 +307,7 @@ namespace gpstk
 
 
          /// Get phase biases stochastic model pointer
-      StochasticModel* getPhaseBiasesModel() const
+      StochasticModel* getPhaseBiasesModel(void) const
       { return pBiasStoModel; };
 
 
@@ -324,7 +324,7 @@ namespace gpstk
 
 
          /// Get the State Transition Matrix (phiMatrix)
-      Matrix<double> getPhiMatrix() const
+      Matrix<double> getPhiMatrix(void) const
       { return phiMatrix; };
 
 
@@ -342,7 +342,7 @@ namespace gpstk
 
 
          /// Get the Noise covariance matrix (QMatrix)
-      Matrix<double> getQMatrix() const
+      Matrix<double> getQMatrix(void) const
       { return qMatrix; };
 
 
@@ -461,9 +461,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // class SolverPPP
+   }; // End of class 'SolverPPP'
 
       //@}
 
-} // namespace
-#endif // SOLVERPPP_HPP
+}  // End of namespace gpstk
+#endif   // SOLVERPPP_HPP

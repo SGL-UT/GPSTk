@@ -46,7 +46,7 @@ namespace gpstk
 
 
       /** This is a base class to define stochastic models. It computes the
-       *  elements of Phi and Q matrices corresponding  to a constant
+       *  elements of Phi and Q matrices corresponding to a constant
        *  stochastic model.
        *
        * @sa RandomWalkModel, WhiteNoiseModel, PhaseAmbiguityModel
@@ -103,7 +103,8 @@ namespace gpstk
          /// Destructor
       virtual ~StochasticModel() {};
 
-   };
+
+   }; // End of class 'StochasticModel'
 
 
 
@@ -150,7 +151,7 @@ namespace gpstk
           * @param prevTime   Value of previous epoch
           *
           */
-      RandomWalkModel& setPreviousTime(const DayTime& prevTime)
+      virtual RandomWalkModel& setPreviousTime(const DayTime& prevTime)
       { previousTime = prevTime; return (*this); }
 
 
@@ -159,7 +160,7 @@ namespace gpstk
           * @param currTime   Value of current epoch
           *
           */
-      RandomWalkModel& setCurrentTime(const DayTime& currTime)
+      virtual RandomWalkModel& setCurrentTime(const DayTime& currTime)
       { currentTime = currTime; return (*this); }
 
 
@@ -174,7 +175,7 @@ namespace gpstk
           * in SECONDS.
           *
           */
-      RandomWalkModel& setQprime(double qp)
+      virtual RandomWalkModel& setQprime(double qp)
       { qprime = qp; return (*this); }
 
 
@@ -214,6 +215,7 @@ namespace gpstk
 
    private:
 
+
          /// Process spectral density
       double qprime;
 
@@ -225,7 +227,8 @@ namespace gpstk
          /// Epoch of previous measurement
       DayTime currentTime;
 
-   };
+
+   }; // End of class 'RandomWalkModel'
 
 
 
@@ -250,7 +253,7 @@ namespace gpstk
 
 
          /// Set the value of white noise sigma
-      WhiteNoiseModel& setSigma(double sigma)
+      virtual WhiteNoiseModel& setSigma(double sigma)
       { variance = sigma*sigma; return (*this); }
 
 
@@ -274,7 +277,8 @@ namespace gpstk
          /// White noise variance
       double variance;
 
-   };
+
+   }; // End of class 'WhiteNoiseModel'
 
 
 
@@ -305,7 +309,7 @@ namespace gpstk
 
 
          /// Set the value of white noise sigma
-      PhaseAmbiguityModel& setSigma(double sigma)
+      virtual PhaseAmbiguityModel& setSigma(double sigma)
       { variance = sigma*sigma; return (*this); }
 
 
@@ -315,12 +319,12 @@ namespace gpstk
           *             epoch.
           *
           */
-      PhaseAmbiguityModel& setCS(bool cs)
+      virtual PhaseAmbiguityModel& setCS(bool cs)
       { cycleSlip = cs; return (*this); };
 
 
          /// Set whether satellite arc will be used instead of cycle slip flag
-      PhaseAmbiguityModel& setWatchSatArc(bool watchArc)
+      virtual PhaseAmbiguityModel& setWatchSatArc(bool watchArc)
       { watchSatArc = watchArc; return (*this); };
 
 
@@ -342,7 +346,8 @@ namespace gpstk
           */
       virtual void Prepare( const TypeID& type,
                             const SatID& sat,
-                            gnssSatTypeValue& gData );
+                            gnssSatTypeValue& gData )
+      { checkCS(type, sat, gData.body); return; };
 
 
          /** This method provides the stochastic model with all the available
@@ -355,7 +360,8 @@ namespace gpstk
           */
       virtual void Prepare( const TypeID& type,
                             const SatID& sat,
-                            gnssRinex& gData );
+                            gnssRinex& gData )
+      { checkCS(type, sat, gData.body); return; };
 
 
          /// Destructor
@@ -390,10 +396,9 @@ namespace gpstk
                             satTypeValueMap& data );
 
 
-   };
-
+   }; // End of class 'PhaseAmbiguityModel'
 
       //@}
 
-}
+}  // End of namespace gpstk
 #endif // STOCHASTICMODEL_HPP

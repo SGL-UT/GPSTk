@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
  * @file ProcessingVector.cpp
@@ -21,8 +22,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -33,16 +34,93 @@
 namespace gpstk
 {
 
-    // Index initially assigned to this class
-    int ProcessingVector::classIndex = 9500000;
+      // Index initially assigned to this class
+   int ProcessingVector::classIndex = 10500000;
 
 
-    // Returns an index identifying this object.
-    int ProcessingVector::getIndex() const { return (*this).index; }
+      // Returns an index identifying this object.
+   int ProcessingVector::getIndex(void) const
+   { return (*this).index; }
 
 
-    // Returns a string identifying this object.
-    std::string ProcessingVector::getClassName() const { return "ProcessingVector"; }
+      // Returns a string identifying this object.
+   std::string ProcessingVector::getClassName(void) const
+   { return "ProcessingVector"; }
 
 
-} // end namespace gpstk
+
+      /* Processing method. It returns a gnnsSatTypeValue object.
+       *
+       * @param gData    Data object holding the data.
+       */
+   gnssSatTypeValue& ProcessingVector::Process(gnssSatTypeValue& gData)
+      throw(ProcessingException)
+   {
+
+      try
+      {
+
+         std::vector<ProcessingClass*>::const_iterator pos;
+         for (pos = procvector.begin(); pos != procvector.end(); ++pos)
+         {
+            (*pos)->Process(gData);
+         }
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'ProcessingVector::Process()'
+
+
+
+      /* Processing method. It returns a gnnsRinex object.
+       *
+       * @param gData    Data object holding the data.
+       */
+   gnssRinex& ProcessingVector::Process(gnssRinex& gData)
+      throw(ProcessingException)
+   {
+
+      try
+      {
+
+         std::vector<ProcessingClass*>::const_iterator pos;
+         for (pos = procvector.begin(); pos != procvector.end(); ++pos)
+         {
+            (*pos)->Process(gData);
+         }
+
+         return gData;
+
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'ProcessingVector::Process()'
+
+
+
+
+
+
+}  // End of namespace gpstk

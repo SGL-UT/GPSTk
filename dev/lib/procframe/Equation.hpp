@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -74,10 +74,9 @@ namespace gpstk
 
 
          /// Default constructor
-      equationHeader() :
-         equationSource(Variable::allSources),
-         equationSat(Variable::allSats),
-         constWeight(1.0) {};
+      equationHeader()
+         : equationSource(Variable::allSources), equationSat(Variable::allSats),
+           constWeight(1.0) {};
 
 
          /** Explicit constructor
@@ -90,11 +89,9 @@ namespace gpstk
       equationHeader( const SourceID& source,
                       const SatID& sat,
                       const Variable indep,
-                      const double& cweight ) :
-         equationSource(source),
-         equationSat(sat),
-         indTerm(indep),
-         constWeight(cweight) {};
+                      const double& cweight )
+         : equationSource(source), equationSat(sat), indTerm(indep),
+           constWeight(cweight) {};
 
 
          /** Explicit constructor from a Variable
@@ -102,8 +99,7 @@ namespace gpstk
           * @param indep      Variable representing the independent term.
           */
       equationHeader(const Variable& indep)
-         : equationSource(Variable::allSources),
-           equationSat(Variable::allSats),
+         : equationSource(Variable::allSources), equationSat(Variable::allSats),
            indTerm(indep) {};
 
 
@@ -122,7 +118,7 @@ namespace gpstk
 
          /// Assignment operator
       virtual equationHeader& operator=(const equationHeader& right);
-      
+
 
          /** Assignment operator from a Variable
           *
@@ -135,7 +131,8 @@ namespace gpstk
          /// Destructor
       virtual ~equationHeader() {};
 
-   };
+
+   }; // End of struct 'equationHeader'
 
 
 
@@ -183,7 +180,7 @@ namespace gpstk
           * of TypeID's: The independent term (usually the prefit residual)
           * type in the header, and the variables' types in the body (or
           * 'unknowns').
-          * 
+          *
           * The resulting Equation object will honor this simple structure,
           * assigning white noise models to all variables, as well as declaring
           * them source-specific and satellite-independent (or 'UN-specific').
@@ -300,10 +297,9 @@ namespace gpstk
       virtual ~Equation() {};
 
 
-   };
-
+   }; // End of struct 'Equation'
 
       //@}
-   
-}
-#endif // EQUATION_HPP
+
+}  // End of namespace gpstk
+#endif   // EQUATION_HPP

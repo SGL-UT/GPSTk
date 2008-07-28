@@ -39,13 +39,14 @@ namespace gpstk
       // Get element of the process noise matrix Q
    double RandomWalkModel::getQ()
    {
+
          // Compute current variance
       double variance(qprime*(currentTime - previousTime));
 
          // Return variance
       return variance;
 
-   }  // End of 'PhaseAmbiguityModel::getQ()'
+   }  // End of method 'PhaseAmbiguityModel::getQ()'
 
 
 
@@ -61,6 +62,7 @@ namespace gpstk
                                   const SatID& sat,
                                   gnssSatTypeValue& gData )
    {
+
          // Update previous epoch
       setPreviousTime(currentTime);
 
@@ -68,7 +70,7 @@ namespace gpstk
 
       return;
 
-   }  // End of 'PhaseAmbiguityModel::Prepare()'
+   }  // End of method 'PhaseAmbiguityModel::Prepare()'
 
 
 
@@ -85,6 +87,7 @@ namespace gpstk
                                   const SatID& sat,
                                   gnssRinex& gData )
    {
+
          // Update previous epoch
       setPreviousTime(currentTime);
 
@@ -92,7 +95,7 @@ namespace gpstk
 
       return;
 
-   }  // End of 'RandomWalkModel::Prepare()'
+   }  // End of method 'RandomWalkModel::Prepare()'
 
 
 
@@ -110,7 +113,7 @@ namespace gpstk
          return 1.0;
       }
 
-   }  // End of 'PhaseAmbiguityModel::getPhi()'
+   }  // End of method 'PhaseAmbiguityModel::getPhi()'
 
 
 
@@ -128,52 +131,8 @@ namespace gpstk
          return 0.0;
       }
 
-   }  // End of 'PhaseAmbiguityModel::getQ()'
+   }  // End of method 'PhaseAmbiguityModel::getQ()'
 
-
-
-      /* This method provides the stochastic model with all the available
-       * information and takes appropriate actions.
-       *
-       * @param type       Type of variable.
-       * @param sat        Satellite.
-       * @param gData      Data object holding the data.
-       *
-       */
-   void PhaseAmbiguityModel::Prepare( const TypeID& type,
-                                      const SatID& sat,
-                                      gnssSatTypeValue& gData )
-   {
-
-         // Delegate this check
-      checkCS(type, sat, gData.body);
-
-      return;
-
-   }  // End of 'PhaseAmbiguityModel::Prepare()'
-
-
-
-      /* This method provides the stochastic model with all the available
-       * information and takes appropriate actions. By default, it does
-       *  nothing.
-       *
-       * @param type       Type of variable.
-       * @param sat        Satellite.
-       * @param gData      Data object holding the data.
-       *
-       */
-   void PhaseAmbiguityModel::Prepare( const TypeID& type,
-                                      const SatID& sat,
-                                      gnssRinex& gData )
-   {
-
-         // Delegate this check
-      checkCS(type, sat, gData.body);
-
-      return;
-
-   }  // End of 'PhaseAmbiguityModel::Prepare()'
 
 
       /* This method checks if a cycle slip happened.
@@ -248,4 +207,5 @@ namespace gpstk
    } // End of 'PhaseAmbiguityModel::checkCS()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk

@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -38,6 +38,7 @@ namespace gpstk
       // Assignment operator for equationHeader
    equationHeader& equationHeader::operator=(const equationHeader& right)
    {
+
       if ( this == &right )
       {
          return (*this);
@@ -48,17 +49,20 @@ namespace gpstk
       indTerm = right.indTerm;
 
       return (*this);
-   }
+
+   }  // End of 'equationHeader::operator='
+
 
 
       /* Common constructor. It takes a simple gnssEquationDefinition
-       *  object and creates an Equation.
+       * object and creates an Equation.
        *
        * @param gnssEq  gnssEquationDefinition object.
        *
        */
    Equation::Equation( const gnssEquationDefinition& gnssEq )
    {
+
          // Set the properties of the independent term. Defaults are OK except
          // for type
       header.indTerm.setType(gnssEq.header);
@@ -73,7 +77,8 @@ namespace gpstk
          body.insert(var);
       }
 
-   }
+   }  // End of 'Equation::Equation()'
+
 
 
       /* Add a variable (unknown) to this Equation
@@ -92,14 +97,17 @@ namespace gpstk
                                     bool sourceSpecific,
                                     bool satSpecific )
    {
+
       Variable var(type, pModel, sourceSpecific, satSpecific);
 
       return (addVariable(var));
-   }
+
+   }  // End of method 'Equation::addVariable()'
+
 
 
       /* Add a Variable to this Equation corresponding to an specific
-       *  data source and satellite
+       * data source and satellite
        *
        * @param type        TypeID of variable.
        * @param pModel      Pointer to StochasticModel associated with
@@ -113,14 +121,17 @@ namespace gpstk
                                     const SourceID& source,
                                     const SatID& satellite )
    {
+
       Variable var(type, pModel, source, satellite);
 
       return (addVariable(var));
-   }
+
+   }  // End of method 'Equation::addVariable()'
+
 
 
       /* Add a Variable to this equation corresponding to an specific
-       *  data source
+       * data source
        *
        * @param type        TypeID of variable.
        * @param pModel      Pointer to StochasticModel associated with
@@ -132,14 +143,17 @@ namespace gpstk
                                     StochasticModel* pModel,
                                    const SourceID& source )
    {
+
       Variable var(type, pModel, source);
 
       return (addVariable(var));
-   }
+
+   }  // End of method 'Equation::addVariable()'
+
 
 
       /* Add a Variable to this Equation corresponding to an specific
-       *  satellite
+       * satellite
        *
        * @param type        TypeID of variable.
        * @param pModel      Pointer to StochasticModel associated with
@@ -151,11 +165,13 @@ namespace gpstk
                                     StochasticModel* pModel,
                                     const SatID& satellite )
    {
+
       Variable var(type, pModel, satellite);
 
       return (addVariable(var));
-   }
+
+   }  // End of method 'Equation::addVariable()'
 
 
 
-} // end namespace gpstk
+}  // End of namespace gpstk

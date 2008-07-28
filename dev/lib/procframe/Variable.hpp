@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -138,7 +138,8 @@ namespace gpstk
           *                    this variable. By default, it is a white
           *                    noise model.
           */
-      Variable& setModel(StochasticModel* pModel);
+      Variable& setModel(StochasticModel* pModel)
+      { pVarModel = pModel; return (*this); };
 
 
          /// Get if this variable is source-specific
@@ -178,7 +179,9 @@ namespace gpstk
           *
           * @param source  Specific SourceID of variable.
           */
-      Variable& setSource(const SourceID& source);
+      Variable& setSource(const SourceID& source)
+      { varSource = source; setSourceSpecific(true); return (*this); };
+
 
 
          /// Get variable-specific satellite
@@ -190,7 +193,8 @@ namespace gpstk
           *
           * @param satellite  Specific SatID of variable.
           */
-      Variable& setSatellite(const SatID& satellite);
+      Variable& setSatellite(const SatID& satellite)
+      { varSat = satellite; setSatSpecific(true); return (*this); };
 
 
          /// Equality operator
@@ -266,10 +270,10 @@ namespace gpstk
           */
       SatID varSat;
 
-   };
 
+   }; // End of class 'Variable'
 
       //@}
-   
-}
-#endif // VARIABLE_HPP
+
+}  // End of namespace gpstk
+#endif   // VARIABLE_HPP

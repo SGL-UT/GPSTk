@@ -1,11 +1,12 @@
+#pragma ident "$Id$"
 
 /**
  * @file ProcessingVector.hpp
  * This is a class to store ProcessingClass objects in a vector.
  */
 
-#ifndef PROCESSING_VECTOR_GPSTK
-#define PROCESSING_VECTOR_GPSTK
+#ifndef PROCESSINGVECTOR_HPP
+#define PROCESSINGVECTOR_HPP
 
 //============================================================================
 //
@@ -24,8 +25,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -37,172 +38,143 @@
 namespace gpstk
 {
 
-    /** @addtogroup GPSsolutions */
-    //@{
+      /** @addtogroup GPSsolutions */
+      //@{
 
 
-    /** This is a class to store ProcessingClass objects in a vector.
-     * This class allows to create run-time std::vectors of processing actions to
-     * be applied to GNSS data structures (GDS). 
-     *
-     * A typical way to use this class follows:
-     *
-     * @code
-     *   RinexObsStream rin("ebre0300.02o");
-     *
-     *   gnssRinex gRin;        // This is a GDS object
-     *   SimpleFilter myFilter  // SimpleFilter is a child from ProcessingClass
-     *   ComputePC getPC;       // ComputePC is a child from ProcessingClass
-     *
-     *   ProcessingVector pVector;  // Declare a ProcessingVector object
-     *   pVector.push_back(myFilter);     // Add GDS processing objects to this vector
-     *   pVector.push_back(getPC);
-     *
-     *   while(rin >> gRin) {
-     *      gRin >> pVector;      // gRin is processed according to the vector
-     *   }
-     * @endcode
-     *
-     */    
-    class ProcessingVector : public ProcessingClass
-    {
-    public:
-
-        /// Default constructor.
-        ProcessingVector()
-        {
-            setIndex();
-        };
-
-
-        /** Processing method. It returns a gnnsSatTypeValue object.
-         *
-         * @param gData    Data object holding the data.
-         */
-        virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-        {
-            std::vector<ProcessingClass*>::iterator pos;
-            for (pos = procvector.begin(); pos != procvector.end(); ++pos)
-            {
-                (*pos)->Process(gData);                
-            }
-
-            return gData;
-        };
+      /** This is a class to store ProcessingClass objects in a vector.
+       *
+       * This class allows to create run-time std::vectors of processing
+       * actions to be applied to GNSS data structures (GDS).
+       *
+       * A typical way to use this class follows:
+       *
+       * @code
+       *      // Rinex data stream
+       *   RinexObsStream rin("ebre0300.02o");
+       *
+       *      // This is a GDS object
+       *   gnssRinex gRin;
+       *
+       *      // 'SimpleFilter' is a child from 'ProcessingClass'
+       *   SimpleFilter myFilter;
+       *
+       *      // 'ComputePC' is a child from 'ProcessingClass'
+       *   ComputePC getPC;
+       *
+       *      // Declare a 'ProcessingVector' object
+       *   ProcessingVector pVector;
+       *
+       *      // Add GDS processing objects to this vector
+       *   pVector.push_back(myFilter);
+       *   pVector.push_back(getPC);
+       *
+       *   while(rin >> gRin)
+       *   {
+       *         // gRin is processed according to the vector
+       *      gRin >> pVector;
+       *   }
+       * @endcode
+       *
+       */
+   class ProcessingVector : public ProcessingClass
+   {
+   public:
 
 
-        /** Processing method. It returns a gnnsRinex object.
-         *
-         * @param gData    Data object holding the data.
-         */
-        virtual gnssRinex& Process(gnssRinex& gData)
-        {
-            std::vector<ProcessingClass*>::iterator pos;
-            for (pos = procvector.begin(); pos != procvector.end(); ++pos)
-            {
-                (*pos)->Process(gData);                
-            }
-
-            return gData;
-        };
+         /// Default constructor.
+      ProcessingVector()
+      { setIndex(); };
 
 
-        /// Returns a pointer to the first element.
-        virtual ProcessingClass* front(void)
-        {
-            return (procvector.front());
-        };
+         /** Processing method. It returns a gnnsSatTypeValue object.
+          *
+          * @param gData    Data object holding the data.
+          */
+      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
+         throw(ProcessingException);
 
 
-        /// Returns a pointer to the last element.
-        virtual ProcessingClass* back(void)
-        {
-            return (procvector.back());
-        };
+         /** Processing method. It returns a gnnsRinex object.
+          *
+          * @param gData    Data object holding the data.
+          */
+      virtual gnssRinex& Process(gnssRinex& gData)
+         throw(ProcessingException);
 
 
-        /// Returns a pointer to the n'th element.
-        ProcessingClass* operator[](int n)
-        {
-            return (procvector[n]);
-        };
+         /// Returns a pointer to the first element.
+      virtual ProcessingClass* front(void)
+      { return (procvector.front()); };
 
 
-        /// Inserts a new element at the end.
-        virtual void push_back(ProcessingClass& pClass)
-        {
-            procvector.push_back( (&pClass) );
-            return;
-        };
+         /// Returns a pointer to the last element.
+      virtual ProcessingClass* back(void)
+      { return (procvector.back()); };
 
 
-        /// Removes the last element. It does NOT return it.
-        virtual void pop_back(void)
-        {
-            procvector.pop_back();
-            return;
-        };
+         /// Returns a pointer to the n'th element.
+      ProcessingClass* operator[](int n)
+      { return (procvector[n]); };
 
 
-        /// Returns TRUE if the ProcessingVector size is zero (0).
-        virtual bool empty(void) const
-        {
-            return (procvector.empty());
-        };
+         /// Inserts a new element at the end.
+      virtual void push_back(ProcessingClass& pClass)
+      { procvector.push_back( (&pClass) ); return; };
 
 
-        /// Returns the size of the ProcessingVector.
-        virtual int size(void) const
-        {
-            return (procvector.size());
-        };
+         /// Removes the last element. It does NOT return it.
+      virtual void pop_back(void)
+      { procvector.pop_back(); return; };
 
 
-        /// Removes all the elements from the ProcessingVector.
-        virtual void clear(void)
-        {
-            return (procvector.clear());
-        };
+         /// Returns TRUE if the ProcessingVector size is zero (0).
+      virtual bool empty(void) const
+      { return (procvector.empty()); };
 
 
-        /// Returns an index identifying this object.
-        virtual int getIndex(void) const;
+         /// Returns the size of the ProcessingVector.
+      virtual int size(void) const
+      { return (procvector.size()); };
 
 
-        /// Returns a string identifying this object.
-        virtual std::string getClassName(void) const;
+         /// Removes all the elements from the ProcessingVector.
+      virtual void clear(void)
+      { return (procvector.clear()); };
 
 
-        /** Sets the index to a given arbitrary value. Use with caution.
-         *
-         * @param newindex      New integer index to be assigned to current object.
-         */
-        void setIndex(const int newindex) { (*this).index = newindex; }; 
+         /// Returns an index identifying this object.
+      virtual int getIndex(void) const;
+
+
+         /// Returns a string identifying this object.
+      virtual std::string getClassName(void) const;
 
 
         /// Destructor
         virtual ~ProcessingVector() {};
 
 
-    private:
+   private:
 
-        /// stl::vector holding pointers to ProcessingClass objects.
-        std::vector<ProcessingClass*> procvector;
 
-        /// Initial index assigned to this class.
-        static int classIndex;
+         /// stl::vector holding pointers to ProcessingClass objects.
+      std::vector<ProcessingClass*> procvector;
 
-        /// Index belonging to this object.
-        int index;
+         /// Initial index assigned to this class.
+      static int classIndex;
 
-        /// Sets the index and increment classIndex.
-        void setIndex(void) { (*this).index = classIndex++; }; 
+         /// Index belonging to this object.
+      int index;
 
-   }; // end class ProcessingVector
-   
+         /// Sets the index and increment classIndex.
+      void setIndex(void)
+      { index = classIndex++; };
 
-   //@}
-   
-}
 
-#endif
+   }; // End of class 'ProcessingVector'
+
+      //@}
+
+}  // End of namespace gpstk
+#endif   // PROCESSINGVECTOR_HPP

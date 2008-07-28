@@ -36,7 +36,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int CodeKalmanSolver::classIndex = 8000000;
+   int CodeKalmanSolver::classIndex = 9200000;
 
 
       // Returns an index identifying this object.
@@ -55,6 +55,29 @@ namespace gpstk
 
       // White noise stochastic model
    WhiteNoiseModel CodeKalmanSolver::whitenoiseModel;
+
+
+      // Default constructor.
+   CodeKalmanSolver::CodeKalmanSolver()
+   {
+
+         // First, let's define a set with the typical code-based unknowns
+      TypeIDSet tempSet;
+      tempSet.insert(TypeID::dx);
+      tempSet.insert(TypeID::dy);
+      tempSet.insert(TypeID::dz);
+      tempSet.insert(TypeID::cdt);
+
+         // Now, we build the default definition for a common GNSS 
+         // code-based equation
+      defaultEqDef.header = TypeID::prefitC;
+      defaultEqDef.body = tempSet;
+
+         // Call the initializing method
+      Init();
+
+   }  // End of 'CodeKalmanSolver::CodeKalmanSolver()'
+
 
 
       // Initializing method.
@@ -89,31 +112,11 @@ namespace gpstk
 
       solution.resize(numUnknowns);
 
-   }  // End of 'CodeKalmanSolver::Init()'
+   }  // End of method 'CodeKalmanSolver::Init()'
 
 
-      // Default constructor.
-   CodeKalmanSolver::CodeKalmanSolver()
-   {
-         // First, let's define a set with the typical code-based unknowns
-      TypeIDSet tempSet;
-      tempSet.insert(TypeID::dx);
-      tempSet.insert(TypeID::dy);
-      tempSet.insert(TypeID::dz);
-      tempSet.insert(TypeID::cdt);
 
-         // Now, we build the default definition for a common GNSS 
-         // code-based equation
-      defaultEqDef.header = TypeID::prefitC;
-      defaultEqDef.body = tempSet;
-
-         // Call the initializing method
-      Init();
-
-   }  // End of 'CodeKalmanSolver::CodeKalmanSolver()'
-
-
-      /* Explicit constructor. Sets the default equation definition 
+      /* Explicit constructor. Sets the default equation definition
        * to be used when fed with GNSS data structures.
        *
        * @param eqDef     gnssEquationDefinition to be used
@@ -122,9 +125,11 @@ namespace gpstk
    {
 
       setDefaultEqDefinition(eqDef);
+
       Init();
 
    }  // End of 'CodeKalmanSolver::CodeKalmanSolver()'
+
 
 
       /* Compute the code-based Kalman solution of the given equations set.
@@ -150,6 +155,7 @@ namespace gpstk
                                   const Vector<double>& weightVector )
       throw(InvalidSolver)
    {
+
          // By default, results are invalid
       valid = false;
 
@@ -159,7 +165,8 @@ namespace gpstk
       if (!(wSize==pSize))
       {
          InvalidSolver e("prefitResiduals size does not match dimension \
-                          of weightVector");
+of weightVector");
+
          GPSTK_THROW(e);
       }
 
@@ -177,7 +184,8 @@ namespace gpstk
                                         designMatrix,
                                         wMatrix );
 
-   }  // End of 'CodeKalmanSolver::Compute()'
+   }  // End of method 'CodeKalmanSolver::Compute()'
+
 
 
       // Compute the code-based Kalman solution of the given equations set.
@@ -202,6 +210,7 @@ namespace gpstk
                                   const Matrix<double>& weightMatrix )
       throw(InvalidSolver)
    {
+
          // By default, results are invalid
       valid = false;
 
@@ -217,6 +226,7 @@ namespace gpstk
       {
          InvalidSolver e("prefitResiduals size does not match dimension of \
 weightMatrix");
+
          GPSTK_THROW(e);
       }
 
@@ -225,12 +235,14 @@ weightMatrix");
       {
          InvalidSolver e("prefitResiduals size does not match dimension \
 of designMatrix");
+
          GPSTK_THROW(e);
       }
 
       if (!(phiMatrix.isSquare()))
       {
          InvalidSolver e("phiMatrix is not square");
+
          GPSTK_THROW(e);
       }
 
@@ -239,12 +251,14 @@ of designMatrix");
       {
          InvalidSolver e("prefitResiduals size does not match dimension \
 of phiMatrix");
+
          GPSTK_THROW(e);
       }
 
       if (!(qMatrix.isSquare()))
       {
          InvalidSolver e("qMatrix is not square");
+
          GPSTK_THROW(e);
       }
 
@@ -253,6 +267,7 @@ of phiMatrix");
       {
          InvalidSolver e("prefitResiduals size does not match dimension \
 of qMatrix");
+
          GPSTK_THROW(e);
       }
 
@@ -269,6 +284,7 @@ of qMatrix");
       {
          InvalidSolver e("Correct(): Unable to compute measurements noise \
 covariance matrix.");
+
          GPSTK_THROW(e);
       }
 
@@ -300,126 +316,159 @@ covariance matrix.");
 
       return 0;
 
-   }  // End of 'CodeKalmanSolver::Compute()'
+   }  // End of method 'CodeKalmanSolver::Compute()'
 
 
 
-      /* Returns a reference to a gnnsSatTypeValue object after 
+      /* Returns a reference to a gnnsSatTypeValue object after
        * solving the previously defined equation system.
        *
        * @param gData    Data object holding the data.
        */
    gnssSatTypeValue& CodeKalmanSolver::Process(gnssSatTypeValue& gData)
-      throw(InvalidSolver)
+      throw(ProcessingException)
    {
-         // Build a gnssRinex object and fill it with data
-      gnssRinex g1;
-      g1.header = gData.header;
-      g1.body = gData.body;
 
-         // Call the Process() method with the appropriate input object
-      Process(g1);
+      try
+      {
 
-         // Update the original gnssSatTypeValue object with the results
-      gData.body = g1.body;
+            // Build a gnssRinex object and fill it with data
+         gnssRinex g1;
+         g1.header = gData.header;
+         g1.body = gData.body;
 
-      return gData;
-   }   // End of 'CodeKalmanSolver::Process()'
+            // Call the Process() method with the appropriate input object
+         Process(g1);
+
+            // Update the original gnssSatTypeValue object with the results
+         gData.body = g1.body;
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'CodeKalmanSolver::Process()'
 
 
-      /* Returns a reference to a gnnsRinex object after solving 
+
+      /* Returns a reference to a gnnsRinex object after solving
        * the previously defined equation system.
        *
        * @param gData     Data object holding the data.
        */
    gnssRinex& CodeKalmanSolver::Process(gnssRinex& gData)
-      throw(InvalidSolver)
+      throw(ProcessingException)
    {
-
-         // Number of measurements equals the number of visible satellites
-      numMeas = gData.numSats();
-
-         // State Transition Matrix (PhiMatrix)
-      phiMatrix.resize(numUnknowns, numUnknowns, 0.0);
-
-         // Noise covariance matrix (QMatrix)
-      qMatrix.resize(numUnknowns, numUnknowns, 0.0);
-
-         // Geometry matrix
-      hMatrix.resize(numMeas, numUnknowns, 0.0);
-
-         // Weights matrix
-      rMatrix.resize(numMeas, numMeas, 0.0);
-
-         // Measurements vector (Prefit-residuals)
-      measVector.resize(numMeas, 0.0);
-
-         // Build the vector of measurements
-      measVector = gData.getVectorOfTypeID(defaultEqDef.header);
-
-
-         // Generate the appropriate weights matrix
-         // Try to extract weights from GDS
-      satTypeValueMap dummy(gData.body.extractTypeID(TypeID::weight));
-      int nW(dummy.numSats());   // Count the number of satellites with weights
-      for (int i=0; i<numMeas; i++)
-      {
-         if (nW == numMeas)   // Check if weights match
-         {
-            Vector<double>
-               weightsVector(gData.getVectorOfTypeID(TypeID::weight));
-            rMatrix(i,i) = weightsVector(i);
-         }
-         else
-         {
-              // If weights don't match, assign generic weights
-            rMatrix(i,i) = 1.0;
-         }
-      }
-
-
-         // Generate the corresponding geometry/design matrix
-      hMatrix = gData.body.getMatrixOfTypes((*this).defaultEqDef.body);
-
-      SatID  dummySat;
-      TypeID dummyType;
-         // Now, let's fill the Phi and Q matrices
-         // First, the coordinates
-      pCoordStoModel->Prepare(dummyType, dummySat, gData);
-      for (int i=0; i<3; i++)
-      {
-         phiMatrix(i,i) = pCoordStoModel->getPhi();
-         qMatrix(i,i)   = pCoordStoModel->getQ();
-      }
-
-         // Now, the receiver clock
-      pClockStoModel->Prepare(dummyType, dummySat, gData);
-      phiMatrix(3,3) = pClockStoModel->getPhi();
-      qMatrix(3,3)   = pClockStoModel->getQ();
 
       try
       {
-            // Call the Compute() method with the defined equation model.
-            // This equation model MUST HAS BEEN previously set, usually when
-            // creating the CodeKalmanSolver object with the appropriate
-            // constructor.
+
+            // Number of measurements equals the number of visible satellites
+         numMeas = gData.numSats();
+
+            // State Transition Matrix (PhiMatrix)
+         phiMatrix.resize(numUnknowns, numUnknowns, 0.0);
+
+            // Noise covariance matrix (QMatrix)
+         qMatrix.resize(numUnknowns, numUnknowns, 0.0);
+
+            // Geometry matrix
+         hMatrix.resize(numMeas, numUnknowns, 0.0);
+
+            // Weights matrix
+         rMatrix.resize(numMeas, numMeas, 0.0);
+
+            // Measurements vector (Prefit-residuals)
+         measVector.resize(numMeas, 0.0);
+
+            // Build the vector of measurements
+         measVector = gData.getVectorOfTypeID(defaultEqDef.header);
+
+
+            // Generate the appropriate weights matrix
+            // Try to extract weights from GDS
+         satTypeValueMap dummy(gData.body.extractTypeID(TypeID::weight));
+
+            // Count the number of satellites with weights
+         int nW(dummy.numSats());
+         for (int i=0; i<numMeas; i++)
+         {
+            if (nW == numMeas)   // Check if weights match
+            {
+               Vector<double>
+                  weightsVector(gData.getVectorOfTypeID(TypeID::weight));
+
+               rMatrix(i,i) = weightsVector(i);
+            }
+            else
+            {
+
+                 // If weights don't match, assign generic weights
+               rMatrix(i,i) = 1.0;
+
+            }
+         }
+
+
+            // Generate the corresponding geometry/design matrix
+         hMatrix = gData.body.getMatrixOfTypes((*this).defaultEqDef.body);
+
+         SatID  dummySat;
+         TypeID dummyType;
+
+            // Now, let's fill the Phi and Q matrices
+            // First, the coordinates
+         pCoordStoModel->Prepare(dummyType, dummySat, gData);
+         for (int i=0; i<3; i++)
+         {
+            phiMatrix(i,i) = pCoordStoModel->getPhi();
+            qMatrix(i,i)   = pCoordStoModel->getQ();
+         }
+
+            // Now, the receiver clock
+         pClockStoModel->Prepare(dummyType, dummySat, gData);
+         phiMatrix(3,3) = pClockStoModel->getPhi();
+         qMatrix(3,3)   = pClockStoModel->getQ();
+
+             // Call the Compute() method with the defined equation model.
+             // This equation model MUST HAS BEEN previously set, usually
+             // when creating the CodeKalmanSolver object with the
+             // appropriate constructor.
          Compute(measVector, hMatrix, rMatrix);
+
+
+            // Now we have to add the new values to the data structure
+         if ( defaultEqDef.header == TypeID::prefitC )
+         {
+            gData.insertTypeIDVector(TypeID::postfitC, postfitResiduals);
+         }
+
+         return gData;
+
       }
-      catch(InvalidSolver& e)
+      catch(Exception& u)
       {
-         GPSTK_RETHROW(e);
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
       }
 
-
-         // Now we have to add the new values to the data structure
-      if ( defaultEqDef.header == TypeID::prefitC )
-      {
-         gData.insertTypeIDVector(TypeID::postfitC, postfitResiduals);
-      }
-
-      return gData;
-
-   }   // End of 'CodeKalmanSolver::Process()'
+   }  // End of method 'CodeKalmanSolver::Process()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk

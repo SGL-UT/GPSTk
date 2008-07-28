@@ -22,8 +22,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
 //
 //============================================================================
 
@@ -37,7 +37,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int SolverWMS::classIndex = 6100000;
+   int SolverWMS::classIndex = 9100000;
 
 
       // Returns an index identifying this object.
@@ -50,12 +50,14 @@ namespace gpstk
    { return "SolverWMS"; }
 
 
-      /* Default constructor. When fed with GNSS data structures, the 
-       *  default equation definition to be used is the common GNSS 
+
+      /* Default constructor. When fed with GNSS data structures, the
+       * default equation definition to be used is the common GNSS
        * code equation.
        */
    SolverWMS::SolverWMS()
    {
+
          // First, let's define a set with the typical unknowns
       TypeIDSet tempSet;
       tempSet.insert(TypeID::dx);
@@ -68,23 +70,30 @@ namespace gpstk
       defaultEqDef.header = TypeID::prefitC;
       defaultEqDef.body = tempSet;
       setIndex();
-   }
+
+   }  // End of 'SolverWMS::SolverWMS()'
 
 
-      /* Explicit constructor. Sets the default equation definition 
-       *  to be used when fed with GNSS data structures.
+
+      /* Explicit constructor. Sets the default equation definition
+       * to be used when fed with GNSS data structures.
        *
        * @param eqDef     gnssEquationDefinition to be used
        */
    SolverWMS::SolverWMS(const gnssEquationDefinition& eqDef)
    {
+
       setDefaultEqDefinition(eqDef);
+
       setIndex();
-   }
+
+   }  // End of 'SolverWMS::SolverWMS()'
+
 
 
       /* Compute the Weighted Least Mean Squares Solution of the given
-       *  equations set.
+       * equations set.
+       *
        * @param prefitResiduals   Vector of prefit residuals
        * @param designMatrix      Design matrix for the equation system
        * @param weightVector      Vector of weights assigned to each
@@ -94,11 +103,12 @@ namespace gpstk
        *  0 if OK
        *  -1 if problems arose
        */
-   int SolverWMS::Compute(const Vector<double>& prefitResiduals,
-                          const Matrix<double>& designMatrix,
-                          const Vector<double>& weightVector)
+   int SolverWMS::Compute( const Vector<double>& prefitResiduals,
+                           const Matrix<double>& designMatrix,
+                           const Vector<double>& weightVector )
       throw(InvalidSolver)
    {
+
          // By default, results are invalid
       valid = false;
 
@@ -108,7 +118,7 @@ namespace gpstk
       if (!(wSize==pSize))
       {
          InvalidSolver e("prefitResiduals size does not match dimension \
-                          of weightVector");
+of weightVector");
          GPSTK_THROW(e);
       }
 
@@ -123,11 +133,14 @@ namespace gpstk
 
          // Call the more general SolverWMS::Compute() method
       return SolverWMS::Compute(prefitResiduals, designMatrix, wMatrix);
-   }
+
+   }  // End of method 'SolverWMS::Compute()'
+
 
 
       // Compute the Weighted Least Mean Squares Solution of the given
-      //  equations set.
+      // equations set.
+      //
       // @param prefitResiduals   Vector of prefit residuals
       // @param designMatrix      Design matrix for equation system
       // @param weightMatrix      Matrix of weights
@@ -136,11 +149,12 @@ namespace gpstk
       //  0 if OK
       //  -1 if problems arose
       //
-   int SolverWMS::Compute(const Vector<double>& prefitResiduals,
-                          const Matrix<double>& designMatrix,
-                          const Matrix<double>& weightMatrix)
+   int SolverWMS::Compute( const Vector<double>& prefitResiduals,
+                           const Matrix<double>& designMatrix,
+                           const Matrix<double>& weightMatrix )
       throw(InvalidSolver)
    {
+
          // By default, results are invalid
       valid = false;
 
@@ -155,7 +169,7 @@ namespace gpstk
       if (!(wRow==pRow))
       {
          InvalidSolver e("prefitResiduals size does not match dimension of \
-                          weightMatrix");
+weightMatrix");
          GPSTK_THROW(e);
       }
 
@@ -165,7 +179,7 @@ namespace gpstk
       if (!(gRow==pRow))
       {
          InvalidSolver e("prefitResiduals size does not match dimension \
-                          of designMatrix");
+of designMatrix");
          GPSTK_THROW(e);
       }
 
@@ -211,51 +225,63 @@ namespace gpstk
 
       return 0;
 
-   }  // end SolverWMS::Compute()
+   }  // End of method 'SolverWMS::Compute()'
 
 
 
-      /* Returns a reference to a satTypeValueMap object after solving 
+      /* Returns a reference to a satTypeValueMap object after solving
        * the previously defined equation system.
        *
        * @param gData     Data object holding the data.
        */
    satTypeValueMap& SolverWMS::Process(satTypeValueMap& gData)
-      throw(InvalidSolver)
+      throw(ProcessingException)
    {
-         // First, let's fetch the vector of prefit residuals
-      Vector<double> prefit(gData.getVectorOfTypeID(defaultEqDef.header));
-         // Second, generate the corresponding geometry/design matrix
-      Matrix<double> dMatrix(gData.getMatrixOfTypes((*this).defaultEqDef.body));
-         // Third, generate the appropriate weights vector
-      Vector<double> weightsVector(gData.getVectorOfTypeID(TypeID::weight));
 
       try
       {
+
+            // First, let's fetch the vector of prefit residuals
+         Vector<double> prefit(gData.getVectorOfTypeID(defaultEqDef.header));
+
+            // Second, generate the corresponding geometry/design matrix
+         Matrix<double> dMatrix(gData.getMatrixOfTypes(defaultEqDef.body));
+
+            // Third, generate the appropriate weights vector
+         Vector<double> weightsVector(gData.getVectorOfTypeID(TypeID::weight));
+
             // Call the Compute() method with the defined equation model.
             // This equation model MUST HAS BEEN previously set, usually when
             // creating the SolverWMS object with the appropriate constructor.
          Compute(prefit, dMatrix, weightsVector);
+
+            // Now we have to add the new values to the data structure
+         if ( defaultEqDef.header == TypeID::prefitC )
+         {
+            gData.insertTypeIDVector(TypeID::postfitC, postfitResiduals);
+         }
+
+         if ( defaultEqDef.header == TypeID::prefitL )
+         {
+            gData.insertTypeIDVector(TypeID::postfitL, postfitResiduals);
+         }
+
+         return gData;
+
       }
-      catch(InvalidSolver& e)
+      catch(Exception& u)
       {
-         GPSTK_RETHROW(e);
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
       }
 
-         // Now we have to add the new values to the data structure
-      if ( defaultEqDef.header == TypeID::prefitC )
-      {
-         gData.insertTypeIDVector(TypeID::postfitC, postfitResiduals);
-      }
-
-      if ( defaultEqDef.header == TypeID::prefitL )
-      {
-         gData.insertTypeIDVector(TypeID::postfitL, postfitResiduals);
-      }
-
-      return gData;
-
-   }   // End SolverWMS::Process(const DayTime& time, satTypeValueMap& gData)
+   }   // End of method 'SolverWLMS::Process()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk

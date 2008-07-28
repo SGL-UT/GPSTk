@@ -36,7 +36,7 @@ namespace gpstk
 {
 
       // Index initially assigned to this class
-   int SolverPPP::classIndex = 8100000;
+   int SolverPPP::classIndex = 9300000;
 
 
       // Returns an index identifying this object.
@@ -69,7 +69,29 @@ namespace gpstk
    int SolverPPP::totalSVs(32);
 
 
-      /// Initializing method.
+
+      /* Common constructor.
+       *
+       * @param useNEU   If true, will compute dLat, dLon, dH coordinates;
+       *                 if false (the default), will compute dx, dy, dz.
+       */
+   SolverPPP::SolverPPP(bool useNEU)
+   {
+
+         // Set the equation system structure
+      setNEU(useNEU);
+
+         // Set the class index
+      setIndex();
+
+         // Call initializing method
+      Init();
+
+   }  // End of 'SolverPPP::SolverPPP()'
+
+
+
+      // Initializing method.
    void SolverPPP::Init(void)
    {
 
@@ -117,26 +139,8 @@ namespace gpstk
 
       solution.resize(numUnknowns);
 
-   }  // End of 'SolverPPP::Init()'
+   }  // End of method 'SolverPPP::Init()'
 
-
-      /* Common constructor.
-       *
-       * @param useNEU   If true, will compute dLat, dLon, dH coordinates;
-       *                 if false (the default), will compute dx, dy, dz.
-       */
-   SolverPPP::SolverPPP(bool useNEU)
-   {
-         // Set the equation system structure
-      setNEU(useNEU);
-
-         // Set the class index
-      setIndex();
-
-         // Call initializing method
-      Init();
-
-   }  // End of 'SolverPPP::SolverPPP()'
 
 
       /* Compute the solution of the given equations set.
@@ -159,6 +163,7 @@ namespace gpstk
                            const Vector<double>& weightVector )
       throw(InvalidSolver)
    {
+
          // By default, results are invalid
       valid = false;
 
@@ -186,7 +191,8 @@ of weightVector");
                                  designMatrix,
                                  wMatrix );
 
-   }  // End of 'SolverPPP::Compute()'
+   }  // End of method 'SolverPPP::Compute()'
+
 
 
       // Compute the solution of the given equations set.
@@ -208,6 +214,7 @@ of weightVector");
                            const Matrix<double>& weightMatrix )
       throw(InvalidSolver)
    {
+
          // By default, results are invalid
       valid = false;
 
@@ -307,181 +314,211 @@ covariance matrix.");
 
       return 0;
 
-   }  // End of 'SolverPPP::Compute()'
+   }  // End of method 'SolverPPP::Compute()'
 
 
 
-      /* Returns a reference to a gnnsSatTypeValue object after 
+      /* Returns a reference to a gnnsSatTypeValue object after
        * solving the previously defined equation system.
        *
        * @param gData    Data object holding the data.
        */
    gnssSatTypeValue& SolverPPP::Process(gnssSatTypeValue& gData)
-      throw(InvalidSolver)
+      throw(ProcessingException)
    {
-         // Build a gnssRinex object and fill it with data
-      gnssRinex g1;
-      g1.header = gData.header;
-      g1.body = gData.body;
 
-         // Call the Process() method with the appropriate input object
-      Process(g1);
+      try
+      {
 
-         // Update the original gnssSatTypeValue object with the results
-      gData.body = g1.body;
+            // Build a gnssRinex object and fill it with data
+         gnssRinex g1;
+         g1.header = gData.header;
+         g1.body = gData.body;
 
-      return gData;
+            // Call the Process() method with the appropriate input object
+         Process(g1);
 
-   }  // End of 'SolverPPP::Process()'
+            // Update the original gnssSatTypeValue object with the results
+         gData.body = g1.body;
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'SolverPPP::Process()'
 
 
-      /* Returns a reference to a gnnsRinex object after solving 
+
+      /* Returns a reference to a gnnsRinex object after solving
        * the previously defined equation system.
        *
        * @param gData     Data object holding the data.
        */
    gnssRinex& SolverPPP::Process(gnssRinex& gData)
-      throw(InvalidSolver)
+      throw(ProcessingException)
    {
-
-         // Number of measurements is twice the number of visible satellites
-      int numSV(gData.numSats());
-      numMeas = 2 * numSV;
-
-         // State Transition Matrix (PhiMatrix)
-      phiMatrix.resize(numUnknowns, numUnknowns, 0.0);
-
-         // Noise covariance matrix (QMatrix)
-      qMatrix.resize(numUnknowns, numUnknowns, 0.0);
-
-         // Geometry matrix
-      hMatrix.resize(numMeas, numUnknowns, 0.0);
-
-         // Weights matrix
-      rMatrix.resize(numMeas, numMeas, 0.0);
-
-         // Measurements vector (Prefit-residuals)
-      measVector.resize(numMeas, 0.0);
-
-         // Build the vector of measurements: Code + phase
-      Vector<double> prefitC(gData.getVectorOfTypeID(defaultEqDef.header));
-      Vector<double> prefitL(gData.getVectorOfTypeID(TypeID::prefitL));
-      for (int i= 0; i<numSV; i++)
-      {
-         measVector(i) = prefitC(i);
-         measVector(i+numSV) = prefitL(i);
-      }
-
-
-         // Generate the appropriate weights matrix
-         // Try to extract weights from GDS
-      satTypeValueMap dummy(gData.body.extractTypeID(TypeID::weight));
-      int nW(dummy.numSats());   // Count the number of satellites with weights
-      for (int i= 0; i<numSV; i++)
-      {
-         if (nW == numSV)   // Check if weights match
-         {
-            Vector<double>
-               weightsVector(gData.getVectorOfTypeID(TypeID::weight));
-            rMatrix(i,i) = weightsVector(i);
-            rMatrix(i+numSV,i+numSV) = weightsVector(i)*weightFactor;
-         }
-         else  // If weights don't match, assign generic weights
-         {     // Phases weights are bigger
-            rMatrix(i,i) = 1.0;
-            rMatrix(i+numSV,i+numSV) = 1.0*weightFactor;
-         }
-      }
-
-         // Generate the corresponding geometry/design matrix
-      Matrix<double> dMatrix(gData.body.getMatrixOfTypes(defaultEqDef.body));
-         // First, fill the coefficients related to tropo, coord and clock
-      for (int i= 0; i<numSV; i++)
-      {
-         for (int j= 0; j<(int)defaultEqDef.body.size(); j++)
-         {
-            hMatrix(i,j) = dMatrix(i,j);
-            hMatrix(i+numSV,j) = dMatrix(i,j);
-         }
-      }
-         // Then, fill the coefficients related to phase biases
-         // Get a set with all satellites present in this GDS
-      SatIDSet tempSat(gData.body.getSatID()); 
-      SatIDSet::const_iterator itSat;
-      int count(numSV);
-      int nUnk((int)defaultEqDef.body.size()-1);
-      for ( itSat = tempSat.begin(); itSat != tempSat.end(); ++itSat )
-      {
-         hMatrix( count , nUnk+(*itSat).id ) = 1.0;
-         ++count;
-      }
-
-
-      SatID  dummySat;
-      TypeID dummyType;
-         // Now, let's fill the Phi and Q matrices
-         // First, the troposphere
-      pTropoStoModel->Prepare( dummyType,
-                               dummySat,
-                               gData );
-      phiMatrix(0,0) = pTropoStoModel->getPhi();
-      qMatrix(0,0)   = pTropoStoModel->getQ();
-         // Second, the coordinates
-      pCoordStoModel->Prepare( dummyType,
-                               dummySat,
-                               gData );
-      for (int i=1; i<4; i++)
-      {
-         phiMatrix(i,i) = pCoordStoModel->getPhi();
-         qMatrix(i,i)   = pCoordStoModel->getQ();
-      }
-         // Third, the receiver clock
-      pClockStoModel->Prepare( dummyType,
-                               dummySat,
-                               gData );
-      phiMatrix(4,4) = pClockStoModel->getPhi();
-      qMatrix(4,4)   = pClockStoModel->getQ();
-         // Finally, the phase biases
-      for (int i=5; i<numUnknowns; i++)
-      {
-            // Create an appropriate satellite
-         SatID sat( (i-4), SatID::systemGPS);
-         pBiasStoModel->Prepare( TypeID::CSL1,
-                                 sat,
-                                 gData );
-         phiMatrix(i,i) = pBiasStoModel->getPhi();
-         qMatrix(i,i)   = pBiasStoModel->getQ();
-      }
-
 
       try
       {
+
+            // Number of measurements is twice the number of visible satellites
+         int numSV(gData.numSats());
+         numMeas = 2 * numSV;
+
+            // State Transition Matrix (PhiMatrix)
+         phiMatrix.resize(numUnknowns, numUnknowns, 0.0);
+
+            // Noise covariance matrix (QMatrix)
+         qMatrix.resize(numUnknowns, numUnknowns, 0.0);
+
+            // Geometry matrix
+         hMatrix.resize(numMeas, numUnknowns, 0.0);
+
+            // Weights matrix
+         rMatrix.resize(numMeas, numMeas, 0.0);
+
+            // Measurements vector (Prefit-residuals)
+         measVector.resize(numMeas, 0.0);
+
+            // Build the vector of measurements: Code + phase
+         Vector<double> prefitC(gData.getVectorOfTypeID(defaultEqDef.header));
+         Vector<double> prefitL(gData.getVectorOfTypeID(TypeID::prefitL));
+         for (int i= 0; i<numSV; i++)
+         {
+            measVector(i) = prefitC(i);
+            measVector(i+numSV) = prefitL(i);
+         }
+
+
+            // Generate the appropriate weights matrix
+            // Try to extract weights from GDS
+         satTypeValueMap dummy(gData.body.extractTypeID(TypeID::weight));
+
+            // Count the number of satellites with weights
+         int nW(dummy.numSats());
+         for (int i= 0; i<numSV; i++)
+         {
+            if (nW == numSV)   // Check if weights match
+            {
+               Vector<double>
+                  weightsVector(gData.getVectorOfTypeID(TypeID::weight));
+
+               rMatrix(i,i) = weightsVector(i);
+               rMatrix(i+numSV,i+numSV) = weightsVector(i)*weightFactor;
+            }
+            else  // If weights don't match, assign generic weights
+            {     // Phases weights are bigger
+               rMatrix(i,i) = 1.0;
+               rMatrix(i+numSV,i+numSV) = 1.0*weightFactor;
+            }
+         }
+
+            // Generate the corresponding geometry/design matrix
+         Matrix<double> dMatrix(gData.body.getMatrixOfTypes(defaultEqDef.body));
+            // First, fill the coefficients related to tropo, coord and clock
+         for (int i= 0; i<numSV; i++)
+         {
+            for (int j= 0; j<(int)defaultEqDef.body.size(); j++)
+            {
+               hMatrix(i,j) = dMatrix(i,j);
+               hMatrix(i+numSV,j) = dMatrix(i,j);
+            }
+         }
+            // Then, fill the coefficients related to phase biases
+            // Get a set with all satellites present in this GDS
+         SatIDSet tempSat(gData.body.getSatID()); 
+         SatIDSet::const_iterator itSat;
+         int count(numSV);
+         int nUnk((int)defaultEqDef.body.size()-1);
+         for ( itSat = tempSat.begin(); itSat != tempSat.end(); ++itSat )
+         {
+            hMatrix( count , nUnk+(*itSat).id ) = 1.0;
+            ++count;
+         }
+
+
+         SatID  dummySat;
+         TypeID dummyType;
+            // Now, let's fill the Phi and Q matrices
+            // First, the troposphere
+         pTropoStoModel->Prepare( dummyType,
+                                  dummySat,
+                                  gData );
+         phiMatrix(0,0) = pTropoStoModel->getPhi();
+         qMatrix(0,0)   = pTropoStoModel->getQ();
+            // Second, the coordinates
+         pCoordStoModel->Prepare( dummyType,
+                                  dummySat,
+                                  gData );
+         for (int i=1; i<4; i++)
+         {
+            phiMatrix(i,i) = pCoordStoModel->getPhi();
+            qMatrix(i,i)   = pCoordStoModel->getQ();
+         }
+            // Third, the receiver clock
+         pClockStoModel->Prepare( dummyType,
+                                  dummySat,
+                                  gData );
+         phiMatrix(4,4) = pClockStoModel->getPhi();
+         qMatrix(4,4)   = pClockStoModel->getQ();
+            // Finally, the phase biases
+         for (int i=5; i<numUnknowns; i++)
+         {
+               // Create an appropriate satellite
+            SatID sat( (i-4), SatID::systemGPS);
+            pBiasStoModel->Prepare( TypeID::CSL1,
+                                    sat,
+                                    gData );
+            phiMatrix(i,i) = pBiasStoModel->getPhi();
+            qMatrix(i,i)   = pBiasStoModel->getQ();
+         }
+
+
             // Call the Compute() method with the defined equation model.
             // This equation model MUST HAS BEEN previously set, usually when
             // creating the SolverPPP object with the appropriate
             // constructor.
          Compute(measVector, hMatrix, rMatrix);
+
+
+            // Now we have to add the new values to the data structure
+         Vector<double> postfitCode(numSV,0.0);
+         Vector<double> postfitPhase(numSV,0.0);
+         for (int i=0; i<numSV; i++)
+         {
+            postfitCode(i)  = postfitResiduals(i);
+            postfitPhase(i) = postfitResiduals(i+numSV);
+         }
+
+         gData.insertTypeIDVector(TypeID::postfitC, postfitCode);
+         gData.insertTypeIDVector(TypeID::postfitL, postfitPhase);
+
+         return gData;
+
       }
-      catch(InvalidSolver& e)
+      catch(Exception& u)
       {
-         GPSTK_RETHROW(e);
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::int2x( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
       }
 
+   }  // End of method 'SolverPPP::Process()'
 
-         // Now we have to add the new values to the data structure
-      Vector<double> postfitCode(numSV,0.0);
-      Vector<double> postfitPhase(numSV,0.0);
-      for (int i=0; i<numSV; i++)
-      {
-         postfitCode(i)  = postfitResiduals(i);
-         postfitPhase(i) = postfitResiduals(i+numSV);
-      }
-      gData.insertTypeIDVector(TypeID::postfitC, postfitCode);
-      gData.insertTypeIDVector(TypeID::postfitL, postfitPhase);
-
-      return gData;
-
-   }  // End of 'SolverPPP::Process()'
 
 
       /* Sets if a NEU system will be used.
@@ -519,7 +556,8 @@ covariance matrix.");
 
       return (*this);
 
-   }  // End of 'SolverPPP::setNEU()'
+   }  // End of method 'SolverPPP::setNEU()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk

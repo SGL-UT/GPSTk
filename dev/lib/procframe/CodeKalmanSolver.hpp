@@ -47,7 +47,7 @@ namespace gpstk
       /** This class computes the code-based solution using a simple
        *  Kalman solver.
        *
-       * This class may be used either in a Vector- and Matrix-oriented way, 
+       * This class may be used either in a Vector- and Matrix-oriented way,
        * or with GNSS data structure objects from "DataStructures" class.
        *
        * A typical way to use this class with GNSS data structures follows:
@@ -61,7 +61,10 @@ namespace gpstk
        *
        *      // Declare the modeler object, setting all the parameters in
        *      // one pass
-       *   ModelObs model(ionoStore, mopsTM, bceStore, TypeID::C1);
+       *   ModelObs model( ionoStore,
+       *                   mopsTM,
+       *                   bceStore,
+       *                   TypeID::C1 );
        *
        *      // Set initial position (Bancroft method)
        *   model.Prepare();
@@ -155,9 +158,9 @@ namespace gpstk
           *  0 if OK
           *  -1 if problems arose
           */
-      virtual int Compute(const Vector<double>& prefitResiduals,
-                          const Matrix<double>& designMatrix,
-                          const Matrix<double>& weightMatrix)
+      virtual int Compute( const Vector<double>& prefitResiduals,
+                           const Matrix<double>& designMatrix,
+                           const Matrix<double>& weightMatrix )
          throw(InvalidSolver);
 
 
@@ -179,9 +182,9 @@ namespace gpstk
           *  0 if OK
           *  -1 if problems arose
           */
-      virtual int Compute(const Vector<double>& prefitResiduals,
-                          const Matrix<double>& designMatrix,
-                          const Vector<double>& weightVector)
+      virtual int Compute( const Vector<double>& prefitResiduals,
+                           const Matrix<double>& designMatrix,
+                           const Vector<double>& weightVector )
          throw(InvalidSolver);
 
 
@@ -191,7 +194,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-         throw(InvalidSolver);
+         throw(ProcessingException);
 
 
          /** Returns a reference to a gnnsRinex object after solving
@@ -200,7 +203,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssRinex& Process(gnssRinex& gData)
-         throw(InvalidSolver);
+         throw(ProcessingException);
 
 
          /// Get coordinates stochastic model pointer
@@ -345,9 +348,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // class CodeKalmanSolver
+   }; // End of class 'CodeKalmanSolver'
 
       //@}
 
-} // namespace
-#endif // CODEKALMANSOLVER_HPP
+}  // End of namespace gpstk
+#endif   // CODEKALMANSOLVER_HPP

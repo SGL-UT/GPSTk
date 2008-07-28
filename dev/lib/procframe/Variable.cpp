@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
@@ -52,6 +52,7 @@ namespace gpstk
       // Default constructor for Variable
    Variable::Variable()
    {
+
       TypeID type;   // Unknown/undefined variable type
       varType = type;
 
@@ -66,7 +67,9 @@ namespace gpstk
 
          // By default, the satellite associated to this variable is unspecific
       varSat = allSats;
-   }
+
+   }  // End of 'Variable::Variable()'
+
 
 
       /* Common constructor for Variable
@@ -85,6 +88,7 @@ namespace gpstk
                        bool sourceSpecific,
                        bool satSpecific )
    {
+
       varType = type;
 
       if(pModel == NULL)
@@ -105,7 +109,9 @@ namespace gpstk
 
          // By default, the satellite associated to this variable is unspecific
       varSat = allSats;
-   }
+
+   }  // End of 'Variable::Variable()'
+
 
 
       /* Constructor for a Variable corresponding to an specific
@@ -123,6 +129,7 @@ namespace gpstk
                        const SourceID& source,
                        const SatID& satellite )
    {
+
       varType = type;
 
       pVarModel = pModel;
@@ -136,10 +143,11 @@ namespace gpstk
 
          // Set the satellite associated to this variable
       varSat = satellite;
-   }
+
+   }  // End of 'Variable::Variable()'
 
 
-   
+
       /* Constructor for a Variable corresponding to an specific
        * data source
        *
@@ -153,12 +161,15 @@ namespace gpstk
                        StochasticModel* pModel,
                        const SourceID& source )
    {
+
          // Call general constructor setting a generic satellite
       Variable::Variable( type,
                           pModel,
                           source,
                           allSats );
-   }
+
+   }  // End of 'Variable::Variable()'
+
 
 
       /* Constructor for a Variable corresponding to an specific
@@ -174,66 +185,30 @@ namespace gpstk
                        StochasticModel* pModel,
                        const SatID& satellite )
    {
+
          // Call general constructor setting a generic source
       Variable::Variable( type,
                           pModel,
                           allSources,
                           satellite );
 
-   }
+   }  // End of 'Variable::Variable()'
 
-      /* Set variable model
-       *
-       * @param pModel      Pointer to StochasticModel associated with
-       *                    this variable. By default, it is a white
-       *                    noise model.
-       */
-   Variable& Variable::setModel(StochasticModel* pModel)
-   {
-      pVarModel = pModel;
-
-      return (*this);
-   }
-
-
-      /* Set variable-specific source
-       *
-       * @param source  Specific SourceID of variable.
-       */
-   Variable& Variable::setSource(const SourceID& source)
-   {
-      varSource = source;
-
-      setSourceSpecific(true);
-
-      return (*this);
-   }
-
-
-      /* Set variable-specific satellite
-       *
-       * @param satellite  Specific SatID of variable.
-       */
-   Variable& Variable::setSatellite(const SatID& satellite)
-   {
-      varSat = satellite;
-
-      setSatSpecific(true);
-
-      return (*this);
-   }
 
 
       // Equality operator
    bool Variable::operator==(const Variable& right) const
    {
+
       return ( ( varType == right.getType() )                     &&
                ( pVarModel == right.getModel() )                  &&
                ( isSourceSpecific == right.getSourceSpecific() )  &&
                ( isSatSpecific == right.getSatSpecific() )        &&
                ( varSource == right.getSource() )                 &&
                ( varSat == right.getSatellite() ) );
-   }
+
+   }  // End of 'Variable::operator=='
+
 
 
       // This ordering is somewhat arbitrary, but is required to be able
@@ -241,6 +216,7 @@ namespace gpstk
       // std::set.
    bool Variable::operator<(const Variable& right) const
    {
+
       if( varType == right.getType() )
       {
          if( varSource == right.getSource() )
@@ -256,12 +232,15 @@ namespace gpstk
       {
          return (varType < right.getType());
       }
-   }
+
+   }  // End of 'Variable::operator<'
+
 
 
       // Assignment operator.
    Variable& Variable::operator=(const Variable& right)
    {
+
          // First check if these Variables are the same
       if ( this == &right ) return (*this);
 
@@ -279,8 +258,8 @@ namespace gpstk
 
       return *this;
 
-   }
+   }  // End of 'Variable::operator='
 
 
 
-} // end namespace gpstk
+}  // End of namespace gpstk
