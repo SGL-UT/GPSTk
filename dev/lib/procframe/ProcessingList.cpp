@@ -1,8 +1,8 @@
 #pragma ident "$Id$"
 
 /**
- * @file ProcessingVector.cpp
- * This is a class to store ProcessingClass objects in a vector.
+ * @file ProcessingList.cpp
+ * This is a class to store ProcessingClass objects in a list.
  */
 
 //============================================================================
@@ -28,24 +28,24 @@
 //============================================================================
 
 
-#include "ProcessingVector.hpp"
+#include "ProcessingList.hpp"
 
 
 namespace gpstk
 {
 
       // Index initially assigned to this class
-   int ProcessingVector::classIndex = 10500000;
+   int ProcessingList::classIndex = 10000000;
 
 
       // Returns an index identifying this object.
-   int ProcessingVector::getIndex(void) const
-   { return (*this).index; }
+   int ProcessingList::getIndex() const
+   { return index; }
 
 
       // Returns a string identifying this object.
-   std::string ProcessingVector::getClassName(void) const
-   { return "ProcessingVector"; }
+   std::string ProcessingList::getClassName() const
+   { return "ProcessingList"; }
 
 
 
@@ -53,15 +53,15 @@ namespace gpstk
        *
        * @param gData    Data object holding the data.
        */
-   gnssSatTypeValue& ProcessingVector::Process(gnssSatTypeValue& gData)
+   gnssSatTypeValue& ProcessingList::Process(gnssSatTypeValue& gData)
       throw(ProcessingException)
    {
 
       try
       {
 
-         std::vector<ProcessingClass*>::const_iterator pos;
-         for (pos = procvector.begin(); pos != procvector.end(); ++pos)
+         std::list<ProcessingClass*>::const_iterator pos;
+         for (pos = proclist.begin(); pos != proclist.end(); ++pos)
          {
             (*pos)->Process(gData);
          }
@@ -80,7 +80,7 @@ namespace gpstk
 
       }
 
-   }  // End of method 'ProcessingVector::Process()'
+   }  // End of method 'ProcessingList::Process()'
 
 
 
@@ -88,21 +88,20 @@ namespace gpstk
        *
        * @param gData    Data object holding the data.
        */
-   gnssRinex& ProcessingVector::Process(gnssRinex& gData)
+   gnssRinex& ProcessingList::Process(gnssRinex& gData)
       throw(ProcessingException)
    {
 
       try
       {
 
-         std::vector<ProcessingClass*>::const_iterator pos;
-         for (pos = procvector.begin(); pos != procvector.end(); ++pos)
+         std::list<ProcessingClass*>::const_iterator pos;
+         for (pos = proclist.begin(); pos != proclist.end(); ++pos)
          {
             (*pos)->Process(gData);
          }
 
          return gData;
-
 
       }
       catch(Exception& u)
@@ -116,7 +115,7 @@ namespace gpstk
 
       }
 
-   }  // End of method 'ProcessingVector::Process()'
+   }  // End of method 'ProcessingList::Process()'
 
 
 
