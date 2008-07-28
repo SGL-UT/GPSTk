@@ -280,6 +280,16 @@ namespace gpstk
       { confData.clear(); return (*this); };
 
 
+         /// Method to get the name of each section in order.
+      virtual string getEachSection(void);
+
+
+         /// Method to reset the iterator traversing section names. This method
+         /// is intended to be used complementing method 'getEachSection()'.
+      virtual void resetSection(void)
+      { itCurrentSection = confData.begin(); return; };
+
+
          /** Operator to get the value of a given variable as a string
           *
           * @param variable   Variable name.
@@ -326,6 +336,10 @@ namespace gpstk
 
          /// Map holding the configuration information
       confMap confData;
+
+
+         /// Iterator pointing to the current section
+      confMap::const_iterator itCurrentSection;
 
 
          /** Method to check if the given parameter name is properly formed.

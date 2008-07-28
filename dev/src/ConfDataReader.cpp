@@ -223,7 +223,12 @@ namespace gpstk
          }
          catch (EndOfFile& e)
          {
+
+               // Initialize itCurrentSection
+            itCurrentSection = confData.begin();
+
             return;
+
          }
          catch (...)
          {
@@ -501,6 +506,34 @@ namespace gpstk
       return;
 
    }  // End of 'ConfDataReader::open()'
+
+
+
+      // Method to get the name of each section in order.
+   string ConfDataReader::getEachSection(void)
+   {
+
+      if ( itCurrentSection != confData.end() )
+      {
+
+            // Store result
+         string result( (*itCurrentSection).first );
+
+            // Increment iterator for next time
+         ++itCurrentSection;
+
+            // Return result
+         return result;
+
+      }
+      else
+      {
+            // If we are at the end, return an empty string
+         return "";
+      }
+
+   }  // End of method 'ConfDataReader::getEachSection()'
+
 
 
       /* Method to check if the given name is properly formed.
