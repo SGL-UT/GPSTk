@@ -172,7 +172,7 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::int2x( getIndex() ) + ":"
+                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -300,7 +300,7 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::int2x( getIndex() ) + ":"
+                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
