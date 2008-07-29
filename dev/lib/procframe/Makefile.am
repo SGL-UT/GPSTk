@@ -1,4 +1,4 @@
-# $Id: $
+#pragma ident "$Id$"
 
 # please add in alphabetic order
 INCLUDES = -I$(srcdir)/../../src/

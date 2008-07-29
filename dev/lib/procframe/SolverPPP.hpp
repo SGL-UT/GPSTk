@@ -66,7 +66,8 @@ namespace gpstk
        *   SP3EphList.loadFile("igs11514.sp3");
        *
        *   NeillTropModel neillTM( nominalPos.getAltitude(),
-       *                           nominalPos.getGeodeticLatitude(), 30);
+       *                           nominalPos.getGeodeticLatitude(),
+       *                           30 );
        *
        *      // Objects to compute the tropospheric data
        *   BasicModel basicM(nominalPos, SP3EphList);
@@ -236,6 +237,20 @@ namespace gpstk
          throw(ProcessingException);
 
 
+         /** Resets the PPP internal Kalman filter.
+          *
+          * @param newState         System state vector
+          * @param newErrorCov      Error covariance matrix
+          *
+          * \warning Take care of dimensions: In this case newState must be 6x1
+          * and newErrorCov must be 6x6.
+          *
+          */
+      SolverPPP& Reset( const Vector<double>& newState,
+                        const Matrix<double>& newErrorCov )
+      { kFilter.Reset( newState, newErrorCov ); return (*this); };
+
+
          /** Sets if a NEU system will be used.
           *
           * @param useNEU  Boolean value indicating if a NEU system will
@@ -246,9 +261,9 @@ namespace gpstk
 
 
          /** Get the weight factor multiplying the phase measurements sigmas.
-          * This factor is the code_sigma/phase_sigma ratio.
+          *  This factor is the code_sigma/phase_sigma ratio.
           */
-      double getWeightFactor() const
+      double getWeightFactor(void) const
       { return std::sqrt(weightFactor); };
 
 
@@ -374,6 +389,10 @@ namespace gpstk
    private:
 
 
+         /// Number of variables
+      int numVar;
+
+
          /// Number of unknowns
       int numUnknowns;
 
@@ -422,6 +441,27 @@ namespace gpstk
       Vector<double> measVector;
 
 
+         /// Boolean indicating if this filter was run at least once
+      bool firstTime;
+
+
+         /// A structure used to store Kalman filter data.
+      struct filterData
+      {
+            // Default constructor initializing the data in the structure
+         filterData() : ambiguity(0.0) {};
+
+         double ambiguity;                  ///< Ambiguity value.
+         std::map<TypeID, double> vCovMap;  ///< Variables covariance values.
+         std::map<SatID,  double> aCovMap;  ///< Ambiguities covariance values.
+
+      };
+
+
+         /// Map holding the information regarding every satellite
+      std::map<SatID, filterData> KalmanData;
+
+
          /// General Kalman filter object
       SimpleKalmanFilter kFilter;
 
@@ -444,10 +484,6 @@ namespace gpstk
 
          /// Phase biases stochastic model (constant + white noise)
       static PhaseAmbiguityModel biasModel;
-
-
-         /// Total number of satellites
-      static int totalSVs;
 
 
          /// Initial index assigned to this class.

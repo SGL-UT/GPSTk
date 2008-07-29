@@ -65,10 +65,6 @@ namespace gpstk
    PhaseAmbiguityModel SolverPPP::biasModel;
 
 
-      // Total number of satellites
-   int SolverPPP::totalSVs(32);
-
-
 
       /* Common constructor.
        *
@@ -76,6 +72,7 @@ namespace gpstk
        *                 if false (the default), will compute dx, dy, dz.
        */
    SolverPPP::SolverPPP(bool useNEU)
+      : firstTime(true)
    {
 
          // Set the equation system structure
@@ -95,32 +92,6 @@ namespace gpstk
    void SolverPPP::Init(void)
    {
 
-         // Total number of unknowns is defined unknowns + total number of SVs
-      numUnknowns = defaultEqDef.body.size() + totalSVs;
-
-      Vector<double> initialState(numUnknowns, 0.0);
-      Matrix<double> initialErrorCovariance(numUnknowns, numUnknowns, 0.0);
-
-         // Fill the initialErrorCovariance matrix
-         // First, the zenital wet tropospheric delay
-      initialErrorCovariance(0,0) = 0.25;          // (0.5 m)**2
-         // Second, the coordinates
-      for (int i=1; i<4; i++)
-      {
-         initialErrorCovariance(i,i) = 10000.0;    // (100 m)**2
-      }
-         // Third, the receiver clock
-      initialErrorCovariance(4,4) = 9.0e10;        // (300 km)**2
-         // Finally, the phase biases
-      for (int i=5; i<numUnknowns; i++)
-      {
-         initialErrorCovariance(i,i) = 4.0e16;     // (20000 km)**2
-      }
-
-
-      kFilter.Reset( initialState, initialErrorCovariance );
-
-
          // Pointer to default stochastic model for troposphere (random walk)
       pTropoStoModel = &rwalkModel;
 
@@ -137,7 +108,6 @@ namespace gpstk
          // If code sigma is 1 m and phase sigma is 1 cm, the ratio is 100:1
       weightFactor = 10000.0;       // 100^2
 
-      solution.resize(numUnknowns);
 
    }  // End of method 'SolverPPP::Init()'
 
@@ -181,7 +151,7 @@ of weightVector");
 
          // Fill the weight matrix diagonal with the content of
          // the weights vector
-      for (int i=0; i<wSize; i++)
+      for( int i=0; i<wSize; i++ )
       {
          wMatrix(i,i) = weightVector(i);
       }
@@ -288,12 +258,14 @@ covariance matrix.");
 
       try
       {
+
             // Call the Kalman filter object.
          kFilter.Compute( phiMatrix,
                           qMatrix,
                           prefitResiduals,
                           designMatrix,
                           measNoiseMatrix );
+
       }
       catch(InvalidSolver& e)
       {
@@ -371,9 +343,17 @@ covariance matrix.");
       try
       {
 
-            // Number of measurements is twice the number of visible satellites
+            // Get the number of satellites currently visible
          int numSV(gData.numSats());
+
+            // Number of measurements is twice the number of visible satellites
          numMeas = 2 * numSV;
+
+            // Number of variables
+         numVar = defaultEqDef.body.size();
+
+            // Total number of unknowns is defined as variables + visible SVs
+         numUnknowns = numVar + numSV;
 
             // State Transition Matrix (PhiMatrix)
          phiMatrix.resize(numUnknowns, numUnknowns, 0.0);
@@ -381,24 +361,21 @@ covariance matrix.");
             // Noise covariance matrix (QMatrix)
          qMatrix.resize(numUnknowns, numUnknowns, 0.0);
 
-            // Geometry matrix
-         hMatrix.resize(numMeas, numUnknowns, 0.0);
+
+            // Build the vector of measurements (Prefit-residuals): Code + phase
+         measVector.resize(numMeas, 0.0);
+
+         Vector<double> prefitC(gData.getVectorOfTypeID(defaultEqDef.header));
+         Vector<double> prefitL(gData.getVectorOfTypeID(TypeID::prefitL));
+         for( int i=0; i<numSV; i++ )
+         {
+            measVector( i         ) = prefitC(i);
+            measVector( numSV + i ) = prefitL(i);
+         }
+
 
             // Weights matrix
          rMatrix.resize(numMeas, numMeas, 0.0);
-
-            // Measurements vector (Prefit-residuals)
-         measVector.resize(numMeas, 0.0);
-
-            // Build the vector of measurements: Code + phase
-         Vector<double> prefitC(gData.getVectorOfTypeID(defaultEqDef.header));
-         Vector<double> prefitL(gData.getVectorOfTypeID(TypeID::prefitL));
-         for (int i= 0; i<numSV; i++)
-         {
-            measVector(i) = prefitC(i);
-            measVector(i+numSV) = prefitL(i);
-         }
-
 
             // Generate the appropriate weights matrix
             // Try to extract weights from GDS
@@ -406,82 +383,198 @@ covariance matrix.");
 
             // Count the number of satellites with weights
          int nW(dummy.numSats());
-         for (int i= 0; i<numSV; i++)
+         for( int i=0; i<numSV; i++ )
          {
             if (nW == numSV)   // Check if weights match
             {
                Vector<double>
                   weightsVector(gData.getVectorOfTypeID(TypeID::weight));
 
-               rMatrix(i,i) = weightsVector(i);
-               rMatrix(i+numSV,i+numSV) = weightsVector(i)*weightFactor;
+               rMatrix( i        , i         ) = weightsVector(i);
+               rMatrix( i + numSV, i + numSV ) = weightsVector(i)*weightFactor;
             }
             else  // If weights don't match, assign generic weights
             {     // Phases weights are bigger
-               rMatrix(i,i) = 1.0;
-               rMatrix(i+numSV,i+numSV) = 1.0*weightFactor;
+               rMatrix( i        , i         ) = 1.0;
+               rMatrix( i + numSV, i + numSV ) = 1.0 * weightFactor;
             }
          }
+
 
             // Generate the corresponding geometry/design matrix
+         hMatrix.resize(numMeas, numUnknowns, 0.0);
+
          Matrix<double> dMatrix(gData.body.getMatrixOfTypes(defaultEqDef.body));
-            // First, fill the coefficients related to tropo, coord and clock
-         for (int i= 0; i<numSV; i++)
+         for( int i=0; i<numSV; i++ )
          {
-            for (int j= 0; j<(int)defaultEqDef.body.size(); j++)
+
+               // First, fill the coefficients related to tropo, coord and clock
+            for( int j=0; j<numVar; j++ )
             {
-               hMatrix(i,j) = dMatrix(i,j);
-               hMatrix(i+numSV,j) = dMatrix(i,j);
+               hMatrix( i        , j ) = dMatrix(i,j);
+               hMatrix( i + numSV, j ) = dMatrix(i,j);
             }
-         }
-            // Then, fill the coefficients related to phase biases
-            // Get a set with all satellites present in this GDS
-         SatIDSet tempSat(gData.body.getSatID()); 
-         SatIDSet::const_iterator itSat;
-         int count(numSV);
-         int nUnk((int)defaultEqDef.body.size()-1);
-         for ( itSat = tempSat.begin(); itSat != tempSat.end(); ++itSat )
-         {
-            hMatrix( count , nUnk+(*itSat).id ) = 1.0;
-            ++count;
+
+               // Second, fill the coefficients related to phase biases
+            hMatrix( numSV + i , numVar + i ) = 1.0;
+
          }
 
 
+            // Now, let's fill the Phi and Q matrices
          SatID  dummySat;
          TypeID dummyType;
-            // Now, let's fill the Phi and Q matrices
+
             // First, the troposphere
          pTropoStoModel->Prepare( dummyType,
                                   dummySat,
                                   gData );
          phiMatrix(0,0) = pTropoStoModel->getPhi();
          qMatrix(0,0)   = pTropoStoModel->getQ();
+
             // Second, the coordinates
          pCoordStoModel->Prepare( dummyType,
                                   dummySat,
                                   gData );
-         for (int i=1; i<4; i++)
+         for( int i=1; i<4; i++ )
          {
             phiMatrix(i,i) = pCoordStoModel->getPhi();
             qMatrix(i,i)   = pCoordStoModel->getQ();
          }
+
             // Third, the receiver clock
          pClockStoModel->Prepare( dummyType,
                                   dummySat,
                                   gData );
          phiMatrix(4,4) = pClockStoModel->getPhi();
          qMatrix(4,4)   = pClockStoModel->getQ();
+
+
             // Finally, the phase biases
-         for (int i=5; i<numUnknowns; i++)
+            // Get a set with all satellites present in this GDS
+         SatIDSet satSet(gData.body.getSatID());
+         SatIDSet::const_iterator itSat;
+         int count(5);     // numVar must always be 5!!!
+         for( itSat = satSet.begin(); itSat != satSet.end(); ++itSat )
          {
-               // Create an appropriate satellite
-            SatID sat( (i-4), SatID::systemGPS);
+
+               // Prepare stochastic model
             pBiasStoModel->Prepare( TypeID::CSL1,
-                                    sat,
+                                    *itSat,
                                     gData );
-            phiMatrix(i,i) = pBiasStoModel->getPhi();
-            qMatrix(i,i)   = pBiasStoModel->getQ();
+
+               // Get values into phi and q matrices
+            phiMatrix(count,count) = pBiasStoModel->getPhi();
+            qMatrix(count,count)   = pBiasStoModel->getQ();
+
+            ++count;
          }
+
+
+
+            // Feed the filter with the correct state and covariance matrix
+         if(firstTime)
+         {
+
+            Vector<double> initialState(numUnknowns, 0.0);
+            Matrix<double> initialErrorCovariance( numUnknowns,
+                                                   numUnknowns,
+                                                   0.0 );
+
+
+               // Fill the initialErrorCovariance matrix
+
+               // First, the zenital wet tropospheric delay
+            initialErrorCovariance(0,0) = 0.25;          // (0.5 m)**2
+
+               // Second, the coordinates
+            for( int i=1; i<4; i++ )
+            {
+               initialErrorCovariance(i,i) = 10000.0;    // (100 m)**2
+            }
+
+               // Third, the receiver clock
+            initialErrorCovariance(4,4) = 9.0e10;        // (300 km)**2
+
+               // Finally, the phase biases
+            for( int i=5; i<numUnknowns; i++ )
+            {
+               initialErrorCovariance(i,i) = 4.0e16;     // (20000 km)**2
+            }
+
+
+               // Reset Kalman filter
+            kFilter.Reset( initialState, initialErrorCovariance );
+
+               // No longer first time
+            firstTime = false;
+
+         }
+         else
+         {
+
+               // Adapt the size to the current number of unknowns
+            Vector<double> currentState(numUnknowns, 0.0);
+            Matrix<double> currentErrorCov(numUnknowns, numUnknowns, 0.0);
+
+
+               // Set first part of current state vector and covariance matrix
+            for( int i=0; i<numVar; i++ )
+            {
+               currentState(i) = solution(i);
+
+               for( int j=0; j<numVar; j++ )
+               {
+                  currentErrorCov(i,j) =  covMatrix(i,j);
+               }
+            }
+
+
+               // Fill in the rest of state vector and covariance matrix
+               // These are values that depend on satellites currently in view
+            int c1(numVar);
+            for( itSat = satSet.begin(); itSat != satSet.end(); ++itSat )
+            {
+
+                  // Put ambiguities into state vector
+               currentState(c1) = KalmanData[*itSat].ambiguity;
+
+                  // Put ambiguities covariance values into covariance matrix
+               int c2(numVar);
+               SatIDSet::const_iterator itSat2;
+               for( itSat2 = satSet.begin(); itSat2 != satSet.end(); ++itSat2 )
+               {
+
+                  currentErrorCov(c1,c2) = KalmanData[*itSat].aCovMap[*itSat2];
+                  currentErrorCov(c2,c1) = KalmanData[*itSat].aCovMap[*itSat2];
+
+                  ++c2;
+               }
+
+                  // Put variables X ambiguities covariances into
+                  // covariance matrix
+               int c3(0);
+               TypeIDSet::const_iterator itType;
+               for( itType  = defaultEqDef.body.begin();
+                    itType != defaultEqDef.body.end();
+                    ++itType )
+               {
+
+                  currentErrorCov(c1,c3) = KalmanData[*itSat].vCovMap[*itType];
+                  currentErrorCov(c3,c1) = KalmanData[*itSat].vCovMap[*itType];
+
+                  ++c3;
+               }
+
+               ++c1;
+            }
+
+
+               // Reset Kalman filter to current state and covariance matrix
+            kFilter.Reset( currentState, currentErrorCov );
+
+         }  // End of 'if(firstTime)'
+
 
 
             // Call the Compute() method with the defined equation model.
@@ -491,10 +584,49 @@ covariance matrix.");
          Compute(measVector, hMatrix, rMatrix);
 
 
+
+            // Store those values of current state and covariance matrix
+            // that depend on satellites currently in view
+         int c1(numVar);
+         for( itSat = satSet.begin(); itSat != satSet.end(); ++itSat )
+         {
+
+               // Store ambiguities
+            KalmanData[*itSat].ambiguity = solution(c1);
+
+               // Store ambiguities covariance values
+            int c2(numVar);
+            SatIDSet::const_iterator itSat2;
+            for( itSat2 = satSet.begin(); itSat2 != satSet.end(); ++itSat2 )
+            {
+
+               KalmanData[*itSat].aCovMap[*itSat2] = covMatrix(c1,c2);
+
+               ++c2;
+            }
+
+               // Store variables X ambiguities covariances
+            int c3(0);
+            TypeIDSet::const_iterator itType;
+            for( itType  = defaultEqDef.body.begin();
+                 itType != defaultEqDef.body.end();
+                 ++itType )
+            {
+
+               KalmanData[*itSat].vCovMap[*itType] = covMatrix(c1,c3);
+
+               ++c3;
+            }
+
+            ++c1;
+
+         }  // End of 'for( itSat = satSet.begin(); ...'
+
+
             // Now we have to add the new values to the data structure
          Vector<double> postfitCode(numSV,0.0);
          Vector<double> postfitPhase(numSV,0.0);
-         for (int i=0; i<numSV; i++)
+         for( int i=0; i<numSV; i++ )
          {
             postfitCode(i)  = postfitResiduals(i);
             postfitPhase(i) = postfitResiduals(i+numSV);
