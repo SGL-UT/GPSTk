@@ -22,8 +22,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -41,20 +41,23 @@ namespace gpstk
        * This method will reset the filter, setting new values for initial
        * system state vector and the a posteriori error covariance matrix.
        *
-       * @param initialState      Vector setting the initial state of 
+       * @param initialState      Vector setting the initial state of
        *                          the system.
-       * @param initialErrorCovariance    Matrix setting the initial 
+       * @param initialErrorCovariance    Matrix setting the initial
        *                   values of the a posteriori error covariance.
        */
    void SimpleKalmanFilter::Reset( const Vector<double>& initialState,
                                 const Matrix<double>& initialErrorCovariance )
    {
+
       xhat = initialState;
       P = initialErrorCovariance;
       xhatminus.resize(initialState.size(), 0.0);
       Pminus.resize( initialErrorCovariance.rows(),
                      initialErrorCovariance.cols(), 0.0);
-   }
+
+   }  // End of method 'SimpleKalmanFilter::Reset()'
+
 
 
       /* Reset method.
@@ -70,14 +73,17 @@ namespace gpstk
    void SimpleKalmanFilter::Reset( const double& initialValue,
                                    const double& initialErrorVariance )
    {
+
       xhat.resize(1, initialValue);
       P.resize(1,1, initialErrorVariance);
       xhatminus.resize(1, 0.0);
       Pminus.resize(1, 1, 0.0);
-   }
+
+   }  // End of method 'SimpleKalmanFilter::Reset()'
 
 
-      // Compute the a posteriori estimate of the system state, as well as 
+
+      // Compute the a posteriori estimate of the system state, as well as
       // the a posteriori estimate error covariance matrix.
       //
       // @param phiMatrix         State transition matrix.
@@ -89,11 +95,11 @@ namespace gpstk
       //                              matrix in GNSS.
       // @param measurementsNoiseCovariance   Measurements noise covariance
       //                                      matrix.
-       //
-       // @return
-       //  0 if OK
-       //  -1 if problems arose
-       //
+      //
+      // @return
+      //  0 if OK
+      //  -1 if problems arose
+      //
    int SimpleKalmanFilter::Compute( const Matrix<double>& phiMatrix,
                                     const Matrix<double>& controlMatrix,
                                     const Vector<double>& controlInput,
@@ -124,10 +130,11 @@ namespace gpstk
 
       return 0;
 
-   }  // end SimpleKalmanFilter::Compute()
+   }  // End of method 'SimpleKalmanFilter::Compute()'
 
 
-      // Compute the a posteriori estimate of the system state, as well as 
+
+      // Compute the a posteriori estimate of the system state, as well as
       // the a posteriori estimate error covariance matrix. This version
       // assumes that no control inputs act on the system.
       //
@@ -169,11 +176,12 @@ namespace gpstk
 
       return 0;
 
-   }  // end SimpleKalmanFilter::Compute()
+   }  // End of method 'SimpleKalmanFilter::Compute()'
 
 
-      // Compute the a posteriori estimate of the system state, as well as 
-      // the a posteriori estimate error variance. Version for 
+
+      // Compute the a posteriori estimate of the system state, as well as
+      // the a posteriori estimate error variance. Version for
       // one-dimensional systems.
       //
       // @param phiValue          State transition gain.
@@ -218,11 +226,12 @@ namespace gpstk
 
       return 0;
 
-   }  // end SimpleKalmanFilter::Compute()
+   }  // End of method 'SimpleKalmanFilter::Compute()'
 
 
-      // Compute the a posteriori estimate of the system state, as well as 
-      // the a posteriori estimate error variance. Version for 
+
+      // Compute the a posteriori estimate of the system state, as well as
+      // the a posteriori estimate error variance. Version for
       // one-dimensional systems without control input on the system.
       //
       // @param phiValue          State transition gain.
@@ -261,10 +270,11 @@ namespace gpstk
 
       return 0;
 
-   }  // end SimpleKalmanFilter::Compute()
+   }  // End of method 'SimpleKalmanFilter::Compute()'
 
 
-      /* Predicts (or "time updates") the a priori estimate of the 
+
+      /* Predicts (or "time updates") the a priori estimate of the
        * system state, as well as the a priori estimate error variance.
        * Version for one-dimensional systems.
        *
@@ -287,7 +297,7 @@ namespace gpstk
       throw(InvalidSolver)
    {
 
-         // Create dummy matrices and vectors and call the full 
+         // Create dummy matrices and vectors and call the full
          // Predict() method
       Matrix<double> dummyPhiMatrix(1,1,phiValue);
       Vector<double> dummyPreviousState(1,previousState);
@@ -301,16 +311,17 @@ namespace gpstk
                         dummyControlInput,
                         dummyProcessNoiseCovariance ) );
 
-   }
+   }  // End of method 'SimpleKalmanFilter::Predict()'
 
 
-      /* Predicts (or "time updates") the a priori estimate of the 
-       * system state, as well as the a priori estimate error 
-       * covariance matrix. 
+
+      /* Predicts (or "time updates") the a priori estimate of the
+       * system state, as well as the a priori estimate error
+       * covariance matrix.
        * This version assumes that no control inputs act on the system.
        *
        * @param phiMatrix         State transition matrix.
-       * @param previousState     Previous system state vector. It is 
+       * @param previousState     Previous system state vector. It is
        *                          the last computed xhat.
        * @param processNoiseCovariance    Process noise covariance matrix.
        *
@@ -324,7 +335,7 @@ namespace gpstk
       throw(InvalidSolver)
    {
 
-         // Create dummy matrices and vectors and call the full 
+         // Create dummy matrices and vectors and call the full
          // Predict() method
       int stateRow(previousState.size());
 
@@ -337,12 +348,13 @@ namespace gpstk
                         dummyControlInput,
                         processNoiseCovariance ) );
 
-   }
+   }  // End of method 'SimpleKalmanFilter::Predict()'
 
 
-      /* Predicts (or "time updates") the a priori estimate of the 
+
+      /* Predicts (or "time updates") the a priori estimate of the
        * system state, as well as the a priori estimate error variance.
-       * Version for one-dimensional systems and no control input acting 
+       * Version for one-dimensional systems and no control input acting
        * on the system.
        *
        * @param phiValue          State transition gain.
@@ -360,7 +372,7 @@ namespace gpstk
       throw(InvalidSolver)
    {
 
-         // Create dummy matrices and vectors and call the full 
+         // Create dummy matrices and vectors and call the full
          // Predict() method
       Matrix<double> dummyPhiMatrix(1,1,phiValue);
       Vector<double> dummyPreviousState(1,previousState);
@@ -374,14 +386,15 @@ namespace gpstk
                         dummyControlInput,
                         dummyProcessNoiseCovariance ) );
 
-   }
+   }  // End of method 'SimpleKalmanFilter::Predict()'
 
 
-      // Predicts (or "time updates") the a priori estimate of the system 
+
+      // Predicts (or "time updates") the a priori estimate of the system
       // state, as well as the a priori estimate error covariance matrix.
       //
       // @param phiMatrix         State transition matrix.
-      // @param previousState     Previous system state vector. It is the 
+      // @param previousState     Previous system state vector. It is the
       //                          last computed xhat.
       // @param controlMatrix     Control matrix.
       // @param controlInput      Control input vector.
@@ -413,35 +426,35 @@ namespace gpstk
       if ( phiCol != phiRow )
       {
          InvalidSolver e("Predict(): State transition matrix is not square, \
-                          and it must be.");
+and it must be.");
          GPSTK_THROW(e);
       }
 
       if ( phiCol != aposterioriStateRow )
       {
          InvalidSolver e("Predict(): Sizes of state transition matrix and \
-                          a posteriori state estimation vector do not match.");
+a posteriori state estimation vector do not match.");
          GPSTK_THROW(e);
       }
 
       if ( controlCol != controlInputRow )
       {
          InvalidSolver e("Predict(): Sizes of control matrix and a control \
-                          input vector do not match.");
+input vector do not match.");
          GPSTK_THROW(e);
       }
 
       if ( aposterioriStateRow != controlRow )
       {
          InvalidSolver e("Predict(): Sizes of control matrix and a \
-                          posteriori state estimation vector do not match.");
+posteriori state estimation vector do not match.");
          GPSTK_THROW(e);
       }
 
       if ( phiRow != processNoiseRow )
       {
          InvalidSolver e("Predict(): Sizes of state transition matrix and \
-                          process noise covariance matrix do not match.");
+process noise covariance matrix do not match.");
          GPSTK_THROW(e);
       }
 
@@ -465,13 +478,14 @@ namespace gpstk
 
       return 0;
 
-   }   // end SimpleKalmanFilter::Predict()
+   }  // End of method 'SimpleKalmanFilter::Predict()'
 
 
-      // Corrects (or "measurement updates") the a posteriori estimate of 
+
+      // Corrects (or "measurement updates") the a posteriori estimate of
       // the system state vector, as well as the a posteriori estimate error
       // covariance matrix, using as input the predicted a priori state vector
-      // and error covariance matrix, plus measurements and associated 
+      // and error covariance matrix, plus measurements and associated
       // matrices.
       //
       // @param measurements      Measurements vector.
@@ -505,28 +519,28 @@ namespace gpstk
            ( pMCol != pMRow )      )
       {
          InvalidSolver e("Correct(): Either Pminus or measurement covariance \
-            matrices are not square, and therefore not invertible.");
+matrices are not square, and therefore not invertible.");
          GPSTK_THROW(e);
       }
 
       if ( mMRow != mNCRow )
       {
          InvalidSolver e("Correct(): Sizes of measurements matrix and \
-                          measurements noise covariance matrix do not match.");
+measurements noise covariance matrix do not match.");
          GPSTK_THROW(e);
       }
 
       if ( mNCCol != measRow )
       {
          InvalidSolver e("Correct(): Sizes of measurements matrix and \
-                          measurements vector do not match.");
+measurements vector do not match.");
          GPSTK_THROW(e);
       }
 
       if ( pMCol != aprioriStateRow )
       {
          InvalidSolver e("Correct(): Sizes of a priori error covariance \
-                  matrix and a priori state estimation vector do not match.");
+matrix and a priori state estimation vector do not match.");
          GPSTK_THROW(e);
       }
 
@@ -568,10 +582,11 @@ namespace gpstk
 
       return 0;
 
-   }  // end SimpleKalmanFilter::Correct()
+   }  // End of method 'SimpleKalmanFilter::Correct()'
 
 
-      /* Corrects (or "measurement updates") the a posteriori estimate 
+
+      /* Corrects (or "measurement updates") the a posteriori estimate
        * of the system state value, as well as the a posteriori estimate
        * error variance, using as input the predicted a priori state and
        * error variance values, plus measurement and associated gain and
@@ -591,7 +606,7 @@ namespace gpstk
       throw(InvalidSolver)
    {
 
-         // Create dummy matrices and vectors and call the full 
+         // Create dummy matrices and vectors and call the full
          // Correct() method
       Vector<double> dummyMeasurements(1,measurement);
       Matrix<double> dummyMeasurementsMatrix(1,1,measurementsGain);
@@ -601,9 +616,9 @@ namespace gpstk
                         dummyMeasurementsMatrix,
                         dummyMeasurementsNoise ) );
 
-   }
+   }  // End of method 'SimpleKalmanFilter::Correct()'
 
 
 
 
-} // end namespace gpstk
+}  // End of namespace gpstk

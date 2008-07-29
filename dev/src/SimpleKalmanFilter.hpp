@@ -25,8 +25,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -75,12 +75,12 @@ namespace gpstk
        *    }
        * @endcode
        *
-       * More information about the Kalman filter may be found in the 
-       * excellent and easy introduction by Welch, G. and G. Bishop. 
+       * More information about the Kalman filter may be found in the
+       * excellent and easy introduction by Welch, G. and G. Bishop.
        * "An Introduction to the Kalman Filter", at:
        * http://www.cs.unc.edu/~welch/kalman/kalmanIntro.html.
        *
-       * However, be aware that the algorithm used here is the modified 
+       * However, be aware that the algorithm used here is the modified
        * version presented in G. J. Bierman. "Factorization Methods for
        * Discrete Sequential Estimation". Mathematics in Science and
        * Engineering, Vol. 128. Academic Press, New York, 1977. This version
@@ -98,9 +98,9 @@ namespace gpstk
 
          /** Common constructor.
           *
-          * @param initialState     Vector setting the initial state of 
+          * @param initialState     Vector setting the initial state of
           *                         the system.
-          * @param initialErrorCovariance    Matrix setting the initial 
+          * @param initialErrorCovariance    Matrix setting the initial
           *                values of the a posteriori error covariance.
           */
       SimpleKalmanFilter( const Vector<double>& initialState,
@@ -130,9 +130,9 @@ namespace gpstk
           * This method will reset the filter, setting new values for initial
           * system state vector and the a posteriori error covariance matrix.
           *
-          * @param initialState      Vector setting the initial state of 
+          * @param initialState      Vector setting the initial state of
           *                          the system.
-          * @param initialErrorCovariance    Matrix setting the initial 
+          * @param initialErrorCovariance    Matrix setting the initial
           *                   values of the a posteriori error covariance.
           */
       virtual void Reset( const Vector<double>& initialState,
@@ -153,7 +153,7 @@ namespace gpstk
                           const double& initialErrorVariance );
 
 
-         /** Compute the a posteriori estimate of the system state, as well 
+         /** Compute the a posteriori estimate of the system state, as well
           *  as the a posteriori estimate error covariance matrix.
           *
           * @param phiMatrix         State transition matrix.
@@ -180,8 +180,8 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-         /** Compute the a posteriori estimate of the system state, as well 
-          *  as the a posteriori estimate error covariance matrix. This 
+         /** Compute the a posteriori estimate of the system state, as well
+          *  as the a posteriori estimate error covariance matrix. This
           *  version assumes that no control inputs act on the system.
           *
           * @param phiMatrix         State transition matrix.
@@ -204,7 +204,7 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-         /** Compute the a posteriori estimate of the system state, as well 
+         /** Compute the a posteriori estimate of the system state, as well
           *  as the a posteriori estimate error variance. Version for
           *  one-dimensional systems.
           *
@@ -230,7 +230,7 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-         /** Compute the a posteriori estimate of the system state, as well 
+         /** Compute the a posteriori estimate of the system state, as well
           *  as the a posteriori estimate error variance. Version for
           *  one-dimensional systems without control input on the system.
           *
@@ -275,7 +275,7 @@ namespace gpstk
    private:
 
 
-         /** Predicts (or "time updates") the a priori estimate of the 
+         /** Predicts (or "time updates") the a priori estimate of the
           *  system state, as well as the a priori estimate error covariance
           *  matrix.
           *
@@ -298,7 +298,7 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-         /** Predicts (or "time updates") the a priori estimate of the 
+         /** Predicts (or "time updates") the a priori estimate of the
           *  system state, as well as the a priori estimate error variance.
           *  Version for one-dimensional systems.
           *
@@ -321,13 +321,13 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-         /** Predicts (or "time updates") the a priori estimate of the 
-          *  system state, as well as the a priori estimate error 
-          *  covariance matrix. 
+         /** Predicts (or "time updates") the a priori estimate of the
+          *  system state, as well as the a priori estimate error
+          *  covariance matrix.
           *  This version assumes that no control inputs act on the system.
           *
           * @param phiMatrix         State transition matrix.
-          * @param previousState     Previous system state vector. It is 
+          * @param previousState     Previous system state vector. It is
           *                          the last computed xhat.
           * @param processNoiseCovariance    Process noise covariance matrix.
           *
@@ -341,9 +341,9 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-         /** Predicts (or "time updates") the a priori estimate of the 
+         /** Predicts (or "time updates") the a priori estimate of the
           *  system state, as well as the a priori estimate error variance.
-          *  Version for one-dimensional systems and no control input acting 
+          *  Version for one-dimensional systems and no control input acting
           *  on the system.
           *
           * @param phiValue          State transition gain.
@@ -361,7 +361,7 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-         /** Corrects (or "measurement updates") the a posteriori estimate 
+         /** Corrects (or "measurement updates") the a posteriori estimate
           *  of the system state vector, as well as the a posteriori estimate
           *  error covariance matrix, using as input the predicted a priori
           *  state vector and error covariance matrix, plus measurements and
@@ -383,7 +383,7 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-         /** Corrects (or "measurement updates") the a posteriori estimate 
+         /** Corrects (or "measurement updates") the a posteriori estimate
           *  of the system state value, as well as the a posteriori estimate
           *  error variance, using as input the predicted a priori state and
           *  error variance values, plus measurement and associated gain and
@@ -403,10 +403,9 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-   }; // class SimpleKalmanFilter
-
+   }; // End of class 'SimpleKalmanFilter'
 
       //@}
 
-} // namespace
+}  // End of namespace gpstk
 #endif // SIMPLEKALMANFILTER_HPP
