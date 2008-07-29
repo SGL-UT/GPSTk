@@ -41,7 +41,7 @@ namespace gpstk
    {
 
          // Compute current variance
-      double variance(qprime*(currentTime - previousTime));
+      double variance(qprime*std::abs(currentTime - previousTime));
 
          // Return variance
       return variance;
@@ -186,8 +186,8 @@ namespace gpstk
                satArcMap[ sat ] = 0.0;
             };
 
-               // Check if arc number is greater than arc number in storage
-            if ( data(sat)(TypeID::satArc) > satArcMap[sat] )
+               // Check if arc number is different than arc number in storage
+            if ( data(sat)(TypeID::satArc) != satArcMap[sat] )
             {
                setCS(true);
                satArcMap[ sat ] = data(sat)(TypeID::satArc);

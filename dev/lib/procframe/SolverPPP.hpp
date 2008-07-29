@@ -163,7 +163,8 @@ namespace gpstk
        * are objets that store their internal state, so you MUST NOT use the
        * SAME object to process DIFFERENT data streams.
        *
-       * @sa SolverBase.hpp, SolverLMS and CodeKalmanSolver for base classes.
+       * @sa SolverBase.hpp, SolverLMS.hpp and CodeKalmanSolver.hpp for
+       * base classes.
        *
        */
    class SolverPPP : public CodeKalmanSolver
@@ -246,8 +247,8 @@ namespace gpstk
           * and newErrorCov must be 6x6.
           *
           */
-      SolverPPP& Reset( const Vector<double>& newState,
-                        const Matrix<double>& newErrorCov )
+      virtual SolverPPP& Reset( const Vector<double>& newState,
+                                const Matrix<double>& newErrorCov )
       { kFilter.Reset( newState, newErrorCov ); return (*this); };
 
 
@@ -257,13 +258,13 @@ namespace gpstk
           *                be used
           *
           */
-      SolverPPP& setNEU( bool useNEU );
+      virtual SolverPPP& setNEU( bool useNEU );
 
 
          /** Get the weight factor multiplying the phase measurements sigmas.
           *  This factor is the code_sigma/phase_sigma ratio.
           */
-      double getWeightFactor(void) const
+      virtual double getWeightFactor(void) const
       { return std::sqrt(weightFactor); };
 
 
@@ -275,12 +276,12 @@ namespace gpstk
           * For instance, if we assign a code sigma of 1 m and a phase sigma
           * of 10 cm, the ratio is 100, and so should be "factor".
           */
-      SolverPPP& setWeightFactor(double factor)
+      virtual SolverPPP& setWeightFactor(double factor)
       { weightFactor = (factor*factor); return (*this); };
 
 
          /// Get coordinates stochastic model pointer
-      StochasticModel* getCoordinatesModel(void) const
+      virtual StochasticModel* getCoordinatesModel(void) const
       { return pCoordStoModel; };
 
 
@@ -289,12 +290,12 @@ namespace gpstk
           * @param pModel      Pointer to StochasticModel associated with
           *                    coordinates.
           */
-      SolverPPP& setCoordinatesModel(StochasticModel* pModel)
+      virtual SolverPPP& setCoordinatesModel(StochasticModel* pModel)
       { pCoordStoModel = pModel; return (*this); };
 
 
          /// Get wet troposphere stochastic model pointer
-      StochasticModel* getTroposphereModel(void) const
+      virtual StochasticModel* getTroposphereModel(void) const
       { return pTropoStoModel; };
 
 
@@ -303,12 +304,12 @@ namespace gpstk
           * @param pModel      Pointer to StochasticModel associated with
           *                    wet troposphere.
           */
-      SolverPPP& setTroposphereModel(StochasticModel* pModel)
+      virtual SolverPPP& setTroposphereModel(StochasticModel* pModel)
       { pTropoStoModel = pModel; return (*this); };
 
 
          /// Get receiver clock stochastic model pointer
-      StochasticModel* getReceiverClockModel(void) const
+      virtual StochasticModel* getReceiverClockModel(void) const
       { return pClockStoModel; };
 
 
@@ -317,12 +318,12 @@ namespace gpstk
           * @param pModel      Pointer to StochasticModel associated with
           *                    receiver clock.
           */
-      SolverPPP& setReceiverClockModel(StochasticModel* pModel)
+      virtual SolverPPP& setReceiverClockModel(StochasticModel* pModel)
       { pClockStoModel = pModel; return (*this); };
 
 
          /// Get phase biases stochastic model pointer
-      StochasticModel* getPhaseBiasesModel(void) const
+      virtual StochasticModel* getPhaseBiasesModel(void) const
       { return pBiasStoModel; };
 
 
@@ -334,12 +335,12 @@ namespace gpstk
           * \warning This method should be used with caution, because model
           * must be of PhaseAmbiguityModel class in order to make sense.
           */
-      SolverPPP& setPhaseBiasesModel(StochasticModel* pModel)
+      virtual SolverPPP& setPhaseBiasesModel(StochasticModel* pModel)
       { pBiasStoModel = pModel; return (*this); };
 
 
          /// Get the State Transition Matrix (phiMatrix)
-      Matrix<double> getPhiMatrix(void) const
+      virtual Matrix<double> getPhiMatrix(void) const
       { return phiMatrix; };
 
 
@@ -352,12 +353,12 @@ namespace gpstk
           * the Compute() methods directly if you use this method.
           *
           */
-      SolverPPP& setPhiMatrix(const Matrix<double> & pMatrix)
+      virtual SolverPPP& setPhiMatrix(const Matrix<double> & pMatrix)
       { phiMatrix = pMatrix; return (*this); };
 
 
          /// Get the Noise covariance matrix (QMatrix)
-      Matrix<double> getQMatrix(void) const
+      virtual Matrix<double> getQMatrix(void) const
       { return qMatrix; };
 
 
@@ -370,7 +371,7 @@ namespace gpstk
           * the Compute() methods directly if you use this method.
           *
           */
-      SolverPPP& setQMatrix(const Matrix<double> & pMatrix)
+      virtual SolverPPP& setQMatrix(const Matrix<double> & pMatrix)
       { qMatrix = pMatrix; return (*this); };
 
 
