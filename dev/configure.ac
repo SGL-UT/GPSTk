@@ -53,6 +53,7 @@ AC_CONFIG_FILES([Makefile
 		 apps/Makefile
 		 apps/DataAvailability/Makefile
 		 apps/MDPtools/Makefile
+		 apps/ObsArrayEvaluator/Makefile
 		 apps/Rinextools/Makefile
 		 apps/checktools/Makefile
 		 apps/clocktools/Makefile
