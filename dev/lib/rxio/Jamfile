@@ -8,12 +8,13 @@ if $(PREPROCESSING)
 }
 else
 {
-# Please add in alphabetic order
+  # Please add in alphabetic order
   GPSBuildLibrary rxio : AshtechALB.cpp AshtechData.cpp 
     AshtechEPB.cpp AshtechMBEN.cpp AshtechPBEN.cpp
     ATSData.cpp EphReader.cpp FFIdentifier.cpp MDPHeader.cpp
     MDPNavSubframe.cpp MDPObsEpoch.cpp MDPPVTSolution.cpp
     MDPSelftestStatus.cpp MetReader.cpp NovatelData.cpp 
+    ObsEphReaderFramework.cpp
     ObsReader.cpp ObsUtils.cpp RinexConverters.cpp
     ;
 
@@ -23,6 +24,7 @@ else
     EphReader.hpp FFIdentifier.hpp MDPHeader.hpp MDPNavSubframe.hpp
     MDPObsEpoch.hpp MDPPVTSolution.hpp MDPSelftestStatus.hpp MetReader.hpp
     NovatelData.hpp NovatelStream.hpp
+    ObsEphReaderFramework.hpp
     ObsReader.hpp ObsUtils.hpp RinexConverters.hpp miscenum.hpp MDPStream.hpp
     miscdefs.hpp
     ;

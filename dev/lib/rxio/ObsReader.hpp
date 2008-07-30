@@ -69,10 +69,10 @@ namespace gpstk
 
       unsigned msid;
       RinexObsHeader roh;
-      int verboseLevel;
+      int debugLevel;
       unsigned long epochCount;
 
-      ObsReader(const std::string& str, int verbose=0)
+      ObsReader(const std::string& str, int debug=0)
          throw(FileMissingException);
    
       ObsEpoch getObsEpoch();

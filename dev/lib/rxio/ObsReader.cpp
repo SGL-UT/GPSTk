@@ -53,44 +53,44 @@ using namespace std;
 namespace gpstk
 {
    //----------------------------------------------------------------------
-   ObsReader::ObsReader(const string& str, int verbose)
+   ObsReader::ObsReader(const string& str, int debug)
       throw(FileMissingException)
-      : fn(str), inputType(str), verboseLevel(verbose), epochCount(0), msid(0),
+      : fn(str), inputType(str), debugLevel(debug), epochCount(0), msid(0),
         usePrevSMOD(false)
    {
       if (inputType == FFIdentifier::tRinexObs)
       {
-         if (verboseLevel)
-            cout << "# Reading " << fn << " as RINEX obs data." << endl;
+         if (debugLevel)
+            cout << "Reading " << fn << " as RINEX obs data." << endl;
          ros.open(fn.c_str(), ios::in);
          ros.exceptions(fstream::failbit);
          ros >> roh;
       }
       else if (inputType == FFIdentifier::tMDP)
       {
-         if (verboseLevel)
-            cout << "# Reading " << fn << " as MDP data." << endl;
+         if (debugLevel)
+            cout << "Reading " << fn << " as MDP data." << endl;
          mdps.open(fn.c_str(), ios::in);
          mdps.exceptions(fstream::failbit);
       }
       else if (inputType == FFIdentifier::tSMODF)
       {
-         if (verboseLevel)
-            cout << "# Reading " << fn << " as SMODF data." << endl;
+         if (debugLevel)
+            cout << "Reading " << fn << " as SMODF data." << endl;
          smos.open(fn.c_str(), ios::in);
          smos.exceptions(fstream::failbit);
       }
       else if (inputType == FFIdentifier::tNovatelOem)
       {
-         if (verboseLevel)
-            cout << "# Reading " << fn << " as Novatel OEM data." << endl;
+         if (debugLevel)
+            cout << "Reading " << fn << " as Novatel OEM data." << endl;
          novas.open(fn.c_str(), ios::in);
          novas.exceptions(fstream::failbit);
       }
       else if (inputType == FFIdentifier::tAshtechSerial)
       {
-         if (verboseLevel)
-            cout << "# Reading " << fn << " as Ashtech serial data." << endl;
+         if (debugLevel)
+            cout << "Reading " << fn << " as Ashtech serial data." << endl;
          ashs.open(fn.c_str(), ios::in);
          ashs.exceptions(fstream::failbit);
       }

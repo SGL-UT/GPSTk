@@ -36,8 +36,8 @@
 //
 //=============================================================================
 
-#ifndef EPHREADER_HPP
-#define EPHREADER_HPP
+#ifndef GPSTK_EPHREADER_HPP
+#define GPSTK_EPHREADER_HPP
 
 /** @file This is a class that reads in ephemeris data without the
     caller needing to know the format the data is suppllied in. The 
