@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -39,10 +37,6 @@
 //=============================================================================
 
 
-
-
-
-
 /**
  *  @file LoopedFramework.cpp
  *  Basic framework for programs processing loops in the GPS toolkit
@@ -52,9 +46,8 @@
 
 namespace gpstk
 {
-   using namespace gpstk;
 
-   void LoopedFramework :: completeProcessing()
+   void LoopedFramework::completeProcessing()
    {
       additionalSetup();
 
@@ -62,7 +55,6 @@ namespace gpstk
 
       while (!timeToDie)
          process();
+   }
 
-   } // LoopedFramework::run()
-
-} // namespace sglmsn
+}

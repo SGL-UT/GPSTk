@@ -45,7 +45,7 @@ namespace gpstk
 {
    
    double Expression::BinOpNode::getValue() 
-      throw (gpstk::Expression::ExpressionException) 
+      throw (ExpressionException) 
    {
 
       // To get the value, compute the value of the left and
@@ -59,12 +59,12 @@ namespace gpstk
       if (op=="/") return leftVal / rightVal;
 
       // else THROW exception
-      GPSTK_THROW(gpstk::Expression::ExpressionException());
+      GPSTK_THROW(ExpressionException());
 
    }
 
    double Expression::FuncOpNode::getValue()
-      throw (gpstk::Expression::ExpressionException) 
+      throw (ExpressionException) 
    {
       // To get the value, compute the value of the right first
       double rightVal = right->getValue();
@@ -82,7 +82,7 @@ namespace gpstk
       if (op=="log10") return log10(rightVal);
 
       // else THROW exception
-      GPSTK_THROW(gpstk::Expression::ExpressionException());
+      GPSTK_THROW(ExpressionException());
    }
 
    std::ostream& Expression::FuncOpNode::print(std::ostream& ostr) {
@@ -109,12 +109,11 @@ namespace gpstk
    };
          
    double Expression::VarNode::getValue(void) 
-      throw (gpstk::Expression::ExpressionException)
+      throw (ExpressionException)
    {
       if (!hasValue) 
       { 
-         Expression::ExpressionException 
-            ee("Variable " + name + " undefined."); 
+         ExpressionException ee("Variable " + name + " undefined."); 
          GPSTK_THROW(ee);
       }
       
@@ -614,12 +613,15 @@ namespace gpstk
          // Also, this needs to be moved to another file once we have
          // rinex 3 support in the src directory.
          std::string type, band, attribute;
+         bool ignore=false;
          switch (i->first.type)
          {
             case ObsID::otRange:   type = "C"; break;
             case ObsID::otPhase:   type = "L"; break;
             case ObsID::otDoppler: type = "D"; break;
             case ObsID::otSNR:     type = "S"; break;
+            case ObsID::otSSI:     ignore = true; break;
+            case ObsID::otLLI:     ignore = true; break;
          }
 
          switch (i->first.band)
@@ -652,6 +654,8 @@ namespace gpstk
             case ObsID::tcBC:   attribute = "X"; break;
             case ObsID::tcABC:  attribute = "Z"; break;
          }
+         if (ignore)
+            continue;
 
          std::string id = type + band + attribute;
 

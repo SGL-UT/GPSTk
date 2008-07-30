@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,11 +36,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file BasicFramework.cpp
  * Basic framework for programs in the GPS toolkit
@@ -68,12 +61,12 @@ namespace gpstk
    {
    }
 
+
    bool BasicFramework :: initialize(int argc, char *argv[])
       throw()
    {
-         // Making this a pointer and moving it here ensures that the
-         // constructor will not occur until all the command line
-         // option objects are constructed in the sub-classes.
+      // Creating the parser here ensures that all the subclasses'
+      // option objects are constructed.
       CommandOptionParser cop(appDesc);
 
       cop.parseOptions(argc, argv);
@@ -97,6 +90,7 @@ namespace gpstk
       return true;
    }
 
+
    bool BasicFramework :: run()
       throw()
    {
@@ -119,6 +113,7 @@ namespace gpstk
 
       return true;
    } // BasicFramework::run()
+
 
    void BasicFramework :: completeProcessing()
    {

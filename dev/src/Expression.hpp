@@ -70,12 +70,11 @@ namespace gpstk
        *
        */  
 
+   NEW_EXCEPTION_CLASS(ExpressionException, Exception);
+
    class Expression 
    {
    public:
-
-      NEW_EXCEPTION_CLASS(ExpressionException, gpstk::Exception);
-
         
          /**
           * Empty constructor
@@ -164,7 +163,7 @@ namespace gpstk
           * if the expression contains variables, those variables must
           * be set.
           */
-      double evaluate(void)  throw (gpstk::Expression::ExpressionException)
+      double evaluate(void)  throw (ExpressionException)
          { return root->getValue(); }
 
          /**
@@ -181,7 +180,7 @@ namespace gpstk
 
          // Compute and return the numerical value of this node
          virtual double getValue()
-            throw (gpstk::Expression::ExpressionException) =0;
+            throw (ExpressionException) =0;
          
   
          // Write out this node to a stream
@@ -196,7 +195,7 @@ namespace gpstk
             // Constructor.  Create a node to hold val.
             ConstNode( double theNum ): number(theNum) {}
 
-            double getValue()  throw (gpstk::Expression::ExpressionException)
+            double getValue()  throw (ExpressionException)
                { return number; }
 
             std::ostream& print(std::ostream& ostr) {
@@ -215,7 +214,7 @@ namespace gpstk
             VarNode(std::string theName ): name(theName), hasValue(false)
                 {}
 
-            double getValue()  throw (gpstk::Expression::ExpressionException);
+            double getValue()  throw (ExpressionException);
 
             std::ostream& print(std::ostream& ostr) {
                ostr << name;
@@ -242,7 +241,7 @@ namespace gpstk
                     op(theOp), left(theLeft), right(theRight){}
 
             double getValue()
-               throw (gpstk::Expression::ExpressionException);
+               throw (ExpressionException);
 
             std::ostream& print(std::ostream& ostr);
 
@@ -261,7 +260,7 @@ namespace gpstk
                     op(theOp), right(theRight){}
 
             double getValue() 
-               throw (gpstk::Expression::ExpressionException);
+               throw (ExpressionException);
 
             std::ostream& print(std::ostream& ostr);
 

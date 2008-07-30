@@ -1,15 +1,5 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file BasicFramework.hpp
- * Basic framework for programs in the GPS toolkit
- */
-
-#ifndef GPSTK_BASICFRAMEWORK_HPP
-#define GPSTK_BASICFRAMEWORK_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -45,84 +35,85 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+#ifndef GPSTK_BASICFRAMEWORK_HPP
+#define GPSTK_BASICFRAMEWORK_HPP
 
-
-
-
-
+/**
+ * @file BasicFramework.hpp
+ * Basic framework for programs in the GPS toolkit
+ */
 
 #include "CommandOptionParser.hpp"
 
 namespace gpstk
 {
-      /** @defgroup appframegroup Framework for Applications
-       *
-       * The application frameworks provide a set of classes that
-       * perform the basic functions of applications within the GPS
-       * toolkit.  That is, they provide a framework for applications
-       * so that the applications only have to implement those
-       * features which are unique to that application.
-       *
-       * The classes are defined in a tree of increasing capability,
-       * that is, the BasicFramework class at the root of the tree
-       * does very little and implements only those functions which
-       * are common to all programs within the toolkit.  Each
-       * subsequent subclass adds additional layers to these basic
-       * capabilities.
-       *
-       * The end user is expected to create a class, which inherits
-       * from one of these frameworks, and override the appropriate
-       * methods in order to perform the necessary function of that
-       * program.  The methods to be overridden depend on the
-       * framework being used and what the program is intended to
-       * do.
-       */
-      //@{
+   /** @defgroup appframegroup Framework for Applications
+    *
+    * The application frameworks provide a set of classes that
+    * perform the basic functions of applications within the GPS
+    * toolkit.  That is, they provide a framework for applications
+    * so that the applications only have to implement those
+    * features which are unique to that application.
+    *
+    * The classes are defined in a tree of increasing capability,
+    * that is, the BasicFramework class at the root of the tree
+    * does very little and implements only those functions which
+    * are common to all programs within the toolkit.  Each
+    * subsequent subclass adds additional layers to these basic
+    * capabilities.
+    *
+    * The end user is expected to create a class, which inherits
+    * from one of these frameworks, and override the appropriate
+    * methods in order to perform the necessary function of that
+    * program.  The methods to be overridden depend on the
+    * framework being used and what the program is intended to
+    * do.
+    */
+   //@{
 
-      /**
-       * This is a (very) basic framework for programs in the GPS
-       * toolkit.  It is meant to be used by programs that start up,
-       * do some processing, and quit.
-       *
-       * The end user should define subclasses of this class,
-       * implementing those methods described as being meant to be
-       * overridden.  When implementing these virtual functions in
-       * subclasses, do not forget to call the parent class'
-       * implementation of that virtual function first.
-       *
-       * In use, the user will construct an object of the class
-       * derived from this, then call the initialize() and run()
-       * methods in that order.
-       */
+   /**
+    * This is a (very) basic framework for programs in the GPS
+    * toolkit.  It is meant to be used by programs that start up,
+    * do some processing, and quit.
+    *
+    * The end user should define subclasses of this class,
+    * implementing those methods described as being meant to be
+    * overridden; initialize(), additionalSetup(), spinUp(), process(),
+    * and shutDown().
+    *
+    * In use, the user will construct an object of the class
+    * derived from this, then call the run() method.
+    */
    class BasicFramework
    {
    public:
-         /**
-          * Constructor for BasicFramework.
-          * @param applName name of the program (argv[0]).
-          * @param applDesc text description of program's function
-          * (used by CommandOption help).
-          */
+      /**
+       * Constructor for BasicFramework.
+       * @param applName name of the program (argv[0]).
+       * @param applDesc text description of program's function
+       * (used by CommandOption help).
+       */
       BasicFramework(const std::string& applName, const std::string& applDesc)
          throw();
 
-         /// Destructor.
+      /// Destructor.
       virtual ~BasicFramework() {}
 
-         /**
-          * Process command line arguments.
-          * @param argc same as main() argc.
-          * @param argv same as main() argv.
-          * @return true if normal processing should proceed (i.e. no
-          *   command line errors or help requests).
-          */
+      /**
+       * Process command line arguments. When this method is overridden, make
+       * sure to call the parent class's initialize().
+       * @param argc same as main() argc.
+       * @param argv same as main() argv.
+       * @return true if normal processing should proceed (i.e. no
+       *   command line errors or help requests).
+       */
       virtual bool initialize(int argc, char *argv[]) throw();
 
-         /**
-          * Run the program. Processes only once (refer to subclasses
-          * for looped processing).
-          * @return false if an exception occurred
-          */
+      /**
+       * Run the program. Processes only once (refer to subclasses
+       * for looped processing).
+       * @return false if an exception occurred
+       */
       bool run() throw();
 
    protected:
@@ -131,49 +122,49 @@ namespace gpstk
       std::string argv0;        ///< Name of the program.
       std::string appDesc;      ///< Description of program's function.
 
-         /// Command-line options.
-         //@{
+      /// Command-line options.
+      //@{
       CommandOptionNoArg debugOption; ///< Enable debugging output and syslog message cloning to stdout.
       CommandOptionNoArg verboseOption;
       CommandOptionNoArg helpOption;
-         //@}
+      //@}
 
-         /**
-          * Called by the run() method; calls additionalSetup(),
-          * spinUp(), and process(), in that order.  Generally should
-          * not be overridden.
-          */
+      /**
+       * Called by the run() method; calls additionalSetup(),
+       * spinUp(), and process(), in that order.  Generally should
+       * not be overridden.
+       */
       virtual void completeProcessing();
 
-         /**
-          * Additional set-up to be performed before starting
-          * processing.  This generally involves things that are
-          * necessary for either the spinUp processing or main
-          * processing.
-          */
+      /**
+       * Additional set-up to be performed before starting
+       * processing.  This generally involves things that are
+       * necessary for either the spinUp processing or main
+       * processing. This method should be implemeneted by the end-user.
+       */
       virtual void additionalSetup() { }
 
-         /**
-          * Code to be executed AFTER initialization.  This method
-          * should be implemeneted by the end-user.
-          */
+      /**
+       * Code to be executed AFTER initialize() and additionalSetup().
+       * This method should be implemeneted by the end-user.
+       */
       virtual void spinUp() { }
 
-         /**
-          * Processing to be performed.  This method should be
-          * implemeneted by the end-user.
-          */
+      /**
+       * Processing to be performed.  This method should be
+       * implemeneted by the end-user.
+       */
       virtual void process() { }
 
-         /**
-          * Clean-up processing to be done before the program ends.
-          * This method is executed outside of a try block and should
-          * be implemeneted by the end-user.
-          */
+      /**
+       * Clean-up processing to be done before the program ends.
+       * This method is executed outside of a try block and should
+       * be implemeneted by the end-user.
+       */
       virtual void shutDown() { }
 
    private:
-         // Do not allow the use of the default constructor.
+      // Do not allow the use of the default constructor.
       BasicFramework();
    }; // class BasicFramework
 
