@@ -70,6 +70,9 @@
    // Class to compute gravitational delays
 #include "GravitationalDelay.hpp"
 
+   // Class to align phases with code measurements
+#include "PhaseCodeAlignment.hpp"
+
    // Compute statistical data
 #include "PowerSum.hpp"
 
@@ -184,15 +187,17 @@ int main(void)
    LinearCombinations comb;
 
       // Object to compute linear combinations of data
-   ComputeLinear linear(comb.pcCombination);
+   ComputeLinear linear1(comb.pcCombination);
 
-   linear.addLinear(comb.lcCombination);
-   linear.addLinear(comb.pcPrefit);
-   linear.addLinear(comb.lcPrefit);
-   linear.addLinear(comb.pdeltaCombWithC1);
-   linear.addLinear(comb.ldeltaCombination);
-   linear.addLinear(comb.mwubbenaCombWithC1);
-   linear.addLinear(comb.liCombination);
+   linear1.addLinear(comb.lcCombination);
+   linear1.addLinear(comb.pdeltaCombWithC1);
+   linear1.addLinear(comb.ldeltaCombination);
+   linear1.addLinear(comb.mwubbenaCombWithC1);
+   linear1.addLinear(comb.liCombination);
+
+      // Let's use a different object to compute prefit residuals
+   ComputeLinear linear2(comb.pcPrefit);
+   linear2.addLinear(comb.lcPrefit);
 
 
       // Declare an object to process the data using PPP. It is set
@@ -211,6 +216,9 @@ int main(void)
 
       // Object to compute gravitational delay effects
    GravitationalDelay grDelay(nominalPos);
+
+      // Object to align phase with code measurements
+   PhaseCodeAlignment phaseAlign;
 
       // Object to compute DOP values
    ComputeDOP cDOP;
@@ -266,10 +274,12 @@ int main(void)
               >> corr            // Correct observables from tides, etc.
               >> windup          // Compute wind-up effect
               >> computeTropo    // Compute tropospheric effect
-              >> linear          // Compute common linear combinations
+              >> linear1         // Compute common linear combinations
               >> markCSLI        // Mark cycle slips: LI algorithm
               >> markCSMW        // Mark cycle slips: Melbourne-Wubbena
               >> markArc         // Keep track of satellite arcs
+              >> phaseAlign      // Align phases with codes
+              >> linear2         // Compute prefit residuals
               >> decimateData    // If not a multiple of 900 s, decimate
               >> pcFilter        // Filter out spurious data
               >> baseChange      // Prepare to use North-East-UP reference frame

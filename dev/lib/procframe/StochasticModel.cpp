@@ -70,7 +70,7 @@ namespace gpstk
 
       return;
 
-   }  // End of method 'PhaseAmbiguityModel::Prepare()'
+   }  // End of method 'RandomWalkModel::Prepare()'
 
 
 
