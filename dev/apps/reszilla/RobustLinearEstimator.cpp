@@ -44,7 +44,6 @@
 
 // A little bit of syntatical sugar...
 typedef DoubleDoubleVec::const_iterator DDVci;
-#define SIGN(a,b) ((b) >= 0.0 ? std::abs(a) : -std::abs(a))
 
 using namespace std;
 
@@ -82,6 +81,12 @@ void RobustLinearEstimator::process(const DoubleDoubleVec& d)
 {
    std::vector<double> y(d.size());
    size_t j=0;
+
+   baseX = d.begin()->first;
+
+   if (debugLevel)
+      cout << "processing " << d.size() << " elements" << endl;
+
    for (DDVci i=d.begin(); i!=d.end(); i++,j++)
       y[j] = i->second;
 
@@ -94,9 +99,10 @@ void RobustLinearEstimator::process(const DoubleDoubleVec& d)
    {
       if (std::abs(i->second - medianY) > stripY)
          continue;
-      data.push_back(*i);
-      double x = i->first;
+
+      double x = i->first-baseX;
       double y = i->second;
+      data.push_back(DoubleDouble(x, y));
       sumX += x;
       sumY += y;
       sumXY += x*y;
@@ -105,6 +111,7 @@ void RobustLinearEstimator::process(const DoubleDoubleVec& d)
 
    if (data.size()<3)
       return;
+
    double n = static_cast<double>(data.size());
    double del = n*sumXX - sumX*sumX;
    a = (sumXX*sumY - sumX*sumXY) / del;
@@ -125,20 +132,19 @@ void RobustLinearEstimator::process(const DoubleDoubleVec& d)
    double sig_b = std::sqrt(chisq/del);
    double b1 = b;
 
-   if (debugLevel)
+   if (debugLevel>1)
       cout << setprecision(3) << fixed
            << "n=" << (int)n << " sig_b=" << sig_b << " chisq=" << chisq << endl
            << "a="<< a << " b=" << b << endl;
 
-   double f1 = rofunc(b1);
-
-   valid = true;
    // If the sigma on b is already zero, then the current values of a & b are
    // perfect. This should never happen with N>3, I think.
    if (sig_b == 0.0)
       return;
 
-   double b2 = b + SIGN(1*sig_b, f1);
+   valid = true;
+   double f1 = rofunc(b1);
+   double b2 = b + (f1>=0 ? 3:-3) * sig_b;
    double f2 = rofunc(b2);
 
    if (b2 == b1)
@@ -146,7 +152,9 @@ void RobustLinearEstimator::process(const DoubleDoubleVec& d)
 
    while (f1*f2 > 0)
    {
-      b  = b2 + 1.6*(b2-b1);
+      if (debugLevel>1)
+         cout << "f1=" << f1 << " f2=" << f2 << endl;
+      b  = b2 + 2*(b2-b1);
       b1 = b2;
       f1 = f2;
       b2 = b;
@@ -192,8 +200,6 @@ double RobustLinearEstimator::rofunc(const double b_est)
    sort(abxVec.begin(), abxVec.end());
    a = median(abxVec);
 
-   std::numeric_limits<double> dl;
-   const double eps=dl.epsilon();
    abdev=0;
    double sum=0;
    for (DDVci i=data.begin(); i != data.end(); i++)
@@ -202,15 +208,12 @@ double RobustLinearEstimator::rofunc(const double b_est)
       double y=i->second;
       double d = y - (b_est * x + a);
       abdev += std::abs(d);
-      if (y != 0)
-         d /= std::abs(y);
-      if (std::abs(d) > eps)
-         sum += (d >= 0 ? x : -x);
+      sum += d >= 0 ? x : -x;
    }
 
    abdev /= data.size();
 
-   if (debugLevel)
+   if (debugLevel>1)
       cout <<"a="<< a << " b=" << b << " b_est=" << b_est 
            << " f=" << sum << " abdev=" << abdev << endl;
 

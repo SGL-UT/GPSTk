@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -55,12 +56,12 @@ struct BigRateOperator :
 
    bool operator() (const DoubleDouble& l, const DoubleDouble& r) const
    {
-      double dt = l.first - r.first;
-      double dy = l.second - r.second;
+      double dx = r.first - l.first;
+      double dy = r.second - l.second;
       double rate = 0;
-      if (dt != 0.0) 
-         rate = dy/dt;
-      return abs(rate) > maxRate;
+      if (std::abs(dx) > 0)
+         rate = dy/dx;
+      return dy > 1 && abs(rate) > maxRate;
    }
 
    const double maxRate;
@@ -137,7 +138,6 @@ OrdLinEst::OrdLinEst() throw()
    : OrdApp("ordLinEst", "Computes a linear clock estimate. "),
      maxRateOption('m', "max-rate",
         "Rate used to detect a clock jump. default is 10,000 m/day")
-
 {}
 
 //-----------------------------------------------------------------------------
@@ -181,11 +181,13 @@ void OrdLinEst::process()
    {
       j = adjacent_find( i, clocks.end(), bro);
       ClockSegment seg;
+      seg.debugLevel = debugLevel;
       seg.startTime = DayTime(i->first+1e-9);
       if (j != clocks.end())
          seg.endTime = DayTime(j->first+1e-9);
       else
          seg.endTime = DayTime(clocks.rbegin()->first+1e-9);
+
       seg.process(i, j);
       csl.push_back(seg);
       if (j == clocks.end())

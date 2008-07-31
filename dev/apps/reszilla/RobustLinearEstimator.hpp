@@ -61,6 +61,7 @@ public:
       :a(0), b(0), abdev(0), stripPercent(0.995),
       sumX(0), sumY(0), sumXX(0), sumXY(0),
        medianY(0), stripY(0), debugLevel(0),
+       baseX(0),
        valid(false)
    {};
 
@@ -69,11 +70,11 @@ public:
                 DoubleDoubleVec::const_iterator e);
 
    double a, b, abdev;
-   double medianY, stripY;
+   double medianY, stripY, baseX;
    int debugLevel;
    double stripPercent;
    bool valid;
-   double eval(const double x) const {return a+b*x;};
+   double eval(const double x) const {return a+b*(x-baseX);};
 
 private:
    DoubleDoubleVec data;
