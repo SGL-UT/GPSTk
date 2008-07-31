@@ -93,10 +93,18 @@ struct ClockSegmentList : public list<ClockSegment>
       return offset;
    }
 
-   void dump(ostream& output, string timeFormat) const
+   void dump(ostream& output, string timeFormat, bool reportMeters=true) const
    {
-      output << "#  t0                   t1                   t0 offset(m)"
-             << "  t1 offset(m)  slope(m/d)  abdev(m)" << endl;
+      double scale=1;
+      if (reportMeters)
+         output << "#  t0                   t1                   t0 offset(m)"
+                << "  t1 offset(m)  slope(m/d)  abdev(m)" << endl;
+      else
+      {
+         output << "#  t0                   t1                   t0 offset(ns)"
+                << "  t1 offset(ns)  slope(ns/d)  abdev(ns)" << endl;
+         scale = 1e9/C_GPS_M;
+      }
       output << "#  -------------------  -------------------  "
              << "------------  ------------  ----------  --------" << endl;
       for (const_iterator k=begin(); k != end(); k++)
@@ -107,10 +115,10 @@ struct ClockSegmentList : public list<ClockSegment>
          output << ">c " << cs.startTime.printf(timeFormat)
                 << "  " << cs.endTime.printf(timeFormat)
                 << fixed
-                << " " << setprecision(3) << setw(12) << cs.eval(t0)
-                << " " << setprecision(3) << setw(12) << cs.eval(tf)
-                << " " << setprecision(3) << setw(12) << cs.b
-                << " " << setprecision(3) << setw(10) << cs.abdev
+                << " " << setprecision(3) << setw(12) << cs.eval(t0) * scale
+                << " " << setprecision(3) << setw(12) << cs.eval(tf) * scale
+                << " " << setprecision(3) << setw(12) << cs.b * scale
+                << " " << setprecision(3) << setw(10) << cs.abdev * scale
                 << endl;
       }
       output << "#" << endl;
@@ -128,7 +136,7 @@ public:
 protected:
    virtual void process();
    CommandOptionWithAnyArg maxRateOption;
-
+   CommandOptionNoArg reportNsOption;
 };
 
 //-----------------------------------------------------------------------------
@@ -137,7 +145,9 @@ protected:
 OrdLinEst::OrdLinEst() throw()
    : OrdApp("ordLinEst", "Computes a linear clock estimate. "),
      maxRateOption('m', "max-rate",
-        "Rate used to detect a clock jump. default is 10,000 m/day")
+                   "Rate used to detect a clock jump. default is 10,000 m/day"),
+     reportNsOption('\0', "ns",
+                    "Report clock model lines in ns, not meters")
 {}
 
 //-----------------------------------------------------------------------------
@@ -195,7 +205,8 @@ void OrdLinEst::process()
       i = j;
    }
 
-   csl.dump(output, timeFormat);
+   bool reportNs = reportNsOption.getCount() >0;
+   csl.dump(output, timeFormat, !reportNs);
 
    ORDEpochMap::iterator l;
    for (l=oem.begin(); l != oem.end(); l++)
