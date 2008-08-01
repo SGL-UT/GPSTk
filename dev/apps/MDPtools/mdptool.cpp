@@ -55,7 +55,8 @@ class MDPTool : public gpstk::BasicFramework
 public:
    MDPTool(const std::string& applName)
       throw()
-      : BasicFramework(
+      : timeFormat("%4Y %3j %02H:%02M:%04.1f"),
+        BasicFramework(
          applName,
          "Perform various functions on a stream of MDP "
          "data. In the summary mode, the default is to only "
@@ -67,7 +68,7 @@ public:
            "Where to get the MDP data from. The default is to use stdin."),
         followOpt(
            'f', "follow", 
-           "Follow the input file as it grow."),
+           "Follow the input file as it grows."),
         outputOpt(
            '\0', "output",
            "Where to send the output. The default is stdout."),
@@ -116,6 +117,10 @@ public:
 
    bool initialize(int argc, char *argv[]) throw()
    {
+      CommandOptionWithAnyArg timeFormatOpt(
+         '\0', "time-format", "Daytime format specifier used for times in the "
+         "output. The default is \""+timeFormat + "\".");
+
       using std::basic_ios;
       if (!BasicFramework::initialize(argc,argv)) return false;
 
@@ -160,6 +165,9 @@ public:
          output.basic_ios<char>::rdbuf(std::cout.rdbuf());
       }
 
+      if (timeFormatOpt.getCount())
+         timeFormat = timeFormatOpt.getValue()[0];
+
       style = "summary";
       if (styleOpt.getCount())
          style = styleOpt.getValue()[0];
@@ -192,6 +200,7 @@ public:
       processor->navOut |= navOpt;
       processor->tstOut |= tstOpt;
       processor->processBad |= badOpt;
+      processor->timeFormat = timeFormat;
       
       // Some nav specific options
       if (style == "nav")
@@ -293,7 +302,7 @@ private:
 
    gpstk::CommandOptionRest extraOpt;
 
-   string style;
+   string style, timeFormat;
 
    MDPProcessor* processor;
 };
