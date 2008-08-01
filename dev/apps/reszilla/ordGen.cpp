@@ -213,7 +213,7 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
    else
    {
       string fn = (obsFileOption.getValue())[0];
-      ObsReader obsReader(fn, verboseLevel);
+      ObsReader obsReader(fn, debugLevel);
       if (obsReader.inputType == FFIdentifier::tRinexObs)
          antennaPos = obsReader.roh.antennaPosition;
    }
@@ -307,7 +307,7 @@ void OrdGen::process()
    for (int i=0; i<obsFileOption.getCount(); i++)
    {
       string fn = (obsFileOption.getValue())[i];
-      ObsReader obsReader(fn, verboseLevel);
+      ObsReader obsReader(fn, debugLevel);
       obsReader.msid = msid;
 
       while (obsReader)
