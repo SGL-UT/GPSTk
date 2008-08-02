@@ -47,7 +47,7 @@ namespace gpstk
       //@{
 
       /** This class computes the solution using a Kalman filter.
-       * 
+       *
        * A typical way to use this class follows:
        *
        * @code
@@ -67,7 +67,7 @@ namespace gpstk
        *          kalman.Compute(phimatrix, qmatrix, meas, hmatrix, rmatrix);
        *
        *          cout << kalman.xhat(0) << " " << kalman.xhat(1) << endl;
-       *       } 
+       *       }
        *       catch (Exception e)
        *       {
        *          cout << e;

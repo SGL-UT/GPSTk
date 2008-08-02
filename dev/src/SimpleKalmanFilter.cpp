@@ -553,12 +553,37 @@ matrix and a priori state estimation vector do not match.");
       {
 
          invR = inverseChol(measurementsNoiseCovariance);
+
+      }
+      catch(...)
+      {
+         InvalidSolver e("Correct(): Unable to compute invR matrix.");
+         GPSTK_THROW(e);
+         return -1;
+      }
+
+      try
+      {
+
          invPMinus = inverseChol(Pminus);
+
+      }
+      catch(...)
+      {
+         InvalidSolver e("Correct(): Unable to compute invPMinus matrix.");
+         GPSTK_THROW(e);
+         return -1;
+      }
+
+      try
+      {
+
          Matrix<double> invTemp( measMatrixT*invR*measurementsMatrix +
                                  invPMinus );
 
             // Compute the a posteriori error covariance matrix
          P = inverseChol( invTemp );
+
       }
       catch(...)
       {
@@ -569,9 +594,11 @@ matrix and a priori state estimation vector do not match.");
 
       try
       {
+
             // Compute the a posteriori state estimation
          xhat = P * ( (measMatrixT * invR * measurements) + 
                       (invPMinus * xhatminus) );
+
       }
       catch(Exception e)
       {
