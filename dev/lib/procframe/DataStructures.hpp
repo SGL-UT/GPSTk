@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -53,7 +53,7 @@ namespace gpstk
 
       /** @defgroup DataStructures GPSTk data structures 
        *
-       * This is a set of several data structures to be used by other 
+       * This is a set of several data structures to be used by other
        * GPSTk classes.
        *
        * Each data structure is composed of a header and a body. The header
@@ -1139,6 +1139,6 @@ namespace gpstk
 
 
       //@}
-   
-} // namespace gpstk
+
+}  // End of namespace gpstk
 #endif // DATASTRUCTURES_HPP

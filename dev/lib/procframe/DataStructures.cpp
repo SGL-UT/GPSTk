@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -46,32 +46,42 @@ namespace gpstk
       // this object.
    TypeIDSet typeValueMap::getTypeID() const
    {
+
       TypeIDSet typeSet;
       typeValueMap::const_iterator pos;
       for (pos = (*this).begin(); pos != (*this).end(); ++pos)
       {
          typeSet.insert( (*pos).first );
       }
+
       return typeSet;
-   }
+
+   }  // End of method 'typeValueMap::getTypeID()'
+
 
 
       // Returns a typeValueMap with only this type of data.
       // @param type Type of value to be extracted.
    typeValueMap typeValueMap::extractTypeID(const TypeID& type) const
    {
+
       TypeIDSet typeSet;
       typeSet.insert(type);
+
       return extractTypeID(typeSet);
-   }
+
+   }  // End of method 'typeValueMap::extractTypeID()'
+
 
 
       // Returns a typeValueMap with only these types of data.
-      // @param typeSet Set (TypeIDSet) containing the types of data to 
+      // @param typeSet Set (TypeIDSet) containing the types of data to
       //                be extracted.
    typeValueMap typeValueMap::extractTypeID(const TypeIDSet& typeSet) const
    {
+
       typeValueMap tvMap;
+
       TypeIDSet::const_iterator pos;
       for(pos = typeSet.begin(); pos != typeSet.end(); ++pos)
       {
@@ -85,7 +95,7 @@ namespace gpstk
 
       return tvMap;
 
-   }
+   }  // End of method 'typeValueMap::extractTypeID()'
 
 
 
@@ -93,24 +103,29 @@ namespace gpstk
       // @param type Type of value to be kept.
    typeValueMap& typeValueMap::keepOnlyTypeID(const TypeID& type)
    {
+
       TypeIDSet typeSet;
       typeSet.insert(type);
 
       return (keepOnlyTypeID(typeSet));
-   }
+
+   }  // End of method 'typeValueMap::keepOnlyTypeID()'
+
 
 
       // Modifies this object, keeping only these types of data.
-      // @param typeSet Set (TypeIDSet) containing the types of data 
+      // @param typeSet Set (TypeIDSet) containing the types of data
       //                to be kept.
    typeValueMap& typeValueMap::keepOnlyTypeID(const TypeIDSet& typeSet)
    {
+
       typeValueMap tvMap( (*this).extractTypeID(typeSet) );
       (*this) = tvMap;
 
       return (*this);
 
-   }
+   }  // End of method 'typeValueMap::keepOnlyTypeID()'
+
 
 
       // Modifies this object, removing these types of data.
@@ -118,6 +133,7 @@ namespace gpstk
       //                to be kept.
    typeValueMap& typeValueMap::removeTypeID(const TypeIDSet& typeSet)
    {
+
       TypeIDSet::const_iterator pos;
       for( pos = typeSet.begin(); pos != typeSet.end(); ++pos )
       {
@@ -126,7 +142,8 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'typeValueMap::removeTypeID()'
+
 
 
       // Returns a reference to the data value (double) with
@@ -135,6 +152,7 @@ namespace gpstk
    double& typeValueMap::operator()(const TypeID& type)
       throw(TypeIDNotFound)
    {
+
       typeValueMap::iterator itObs;
       itObs = (*this).find(type);
 
@@ -147,7 +165,7 @@ namespace gpstk
          GPSTK_THROW(TypeIDNotFound("TypeID not found in map"));
       }
 
-   }
+   }  // End of method 'typeValueMap::operator()'
 
 
 
@@ -157,6 +175,7 @@ namespace gpstk
       // Returns a SatIDSet with all the satellites present in this object.
    SatIDSet satValueMap::getSatID() const
    {
+
       SatIDSet satSet;
 
       satValueMap::const_iterator pos;
@@ -167,12 +186,14 @@ namespace gpstk
 
       return satSet;
 
-   }
+   }  // End of method 'satValueMap::getSatID()'
+
 
 
       // Returns a Vector with all the satellites present in this object.
    Vector<SatID> satValueMap::getVectorOfSatID() const
    {
+
       std::vector<SatID> temp;
 
       satValueMap::const_iterator pos;
@@ -186,19 +207,22 @@ namespace gpstk
 
       return result;
 
-   }
+   }  // End of method 'satValueMap::getVectorOfSatID()'
+
 
 
       // Returns a satValueMap with only this satellite.
       // @param satellite Satellite to be extracted.
    satValueMap satValueMap::extractSatID(const SatID& satellite) const
    {
+
       SatIDSet satSet;
       satSet.insert(satellite);
 
       return extractSatID(satSet);
 
-   }
+   }  // End of method 'satValueMap::extractSatID()'
+
 
 
       // Returns a satValueMap with only one satellite, identified by
@@ -208,11 +232,13 @@ namespace gpstk
    satValueMap satValueMap::extractSatID( const int& p,
                                      const SatID::SatelliteSystem& s ) const
    {
+
       SatID tempSatellite(p, s);  // We build a temporary SatID object
 
       return extractSatID(tempSatellite);
 
-   }
+   }  // End of method 'satValueMap::extractSatID()'
+
 
 
       // Returns a satValueMap with only these satellites.
@@ -220,6 +246,7 @@ namespace gpstk
       //               be extracted.
    satValueMap satValueMap::extractSatID(const SatIDSet& satSet) const
    {
+
       satValueMap svMap;
 
       SatIDSet::const_iterator pos;
@@ -236,19 +263,22 @@ namespace gpstk
 
       return svMap;
 
-   }
+   }  // End of method 'satValueMap::extractSatID()'
+
 
 
       // Modifies this object, keeping only this satellite.
       // @param satellite Satellite to be kept.
    satValueMap& satValueMap::keepOnlySatID(const SatID& satellite)
    {
+
       SatIDSet satSet;
       satSet.insert(satellite);
 
       return keepOnlySatID(satSet);
 
-   }
+   }  // End of method 'satValueMap::keepOnlySatID()'
+
 
 
       // Modifies this object, keeping only this satellite.
@@ -257,23 +287,27 @@ namespace gpstk
    satValueMap& satValueMap::keepOnlySatID( const int& p,
                                             const SatID::SatelliteSystem& s )
    {
+
       SatID tempSatellite(p, s);  // We build a temporary SatID object
 
       return keepOnlySatID(tempSatellite);
 
-   }
+   }  // End of method 'satValueMap::keepOnlySatID()'
+
 
 
       // Modifies this object, keeping only these satellites.
       // @param satSet Set (SatIDSet) containing the satellites to be kept.
    satValueMap& satValueMap::keepOnlySatID(const SatIDSet& satSet)
    {
+
       satValueMap svMap = extractSatID(satSet);
       (*this) = svMap;
 
       return (*this);
 
-   }
+   }  // End of method 'satValueMap::keepOnlySatID()'
+
 
 
       // Modifies this object, removing these satellites.
@@ -281,6 +315,7 @@ namespace gpstk
       //               be removed.
    satValueMap& satValueMap::removeSatID(const SatIDSet& satSet)
    {
+
       SatIDSet::const_iterator pos;
       for( pos = satSet.begin(); pos != satSet.end(); ++pos )
       {
@@ -289,7 +324,8 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'satValueMap::removeSatID()'
+
 
 
       // Returns a reference to the data value (double) with
@@ -298,6 +334,7 @@ namespace gpstk
    double& satValueMap::operator()(const SatID& satellite)
       throw(SatIDNotFound)
    {
+
       satValueMap::iterator itObs;
       itObs = (*this).find(satellite);
 
@@ -310,7 +347,7 @@ namespace gpstk
          GPSTK_THROW(SatIDNotFound("SatID not found in map"));
       }
 
-   }
+   }  // End of method 'satValueMap::operator()'
 
 
 
@@ -334,12 +371,14 @@ namespace gpstk
 
          return numEle;
 
-   }
+   }  // End of method 'satTypeValueMap::numElements()'
+
 
 
       // Returns a SatIDSet with all the satellites present in this object.
    SatIDSet satTypeValueMap::getSatID() const
    {
+
       SatIDSet satSet;
 
       satTypeValueMap::const_iterator pos;
@@ -350,12 +389,14 @@ namespace gpstk
 
       return satSet;
 
-   }
+   }  // End of method 'satTypeValueMap::getSatID()'
+
 
 
       // Returns a Vector with all the satellites present in this object.
    Vector<SatID> satTypeValueMap::getVectorOfSatID() const
    {
+
       std::vector<SatID> temp;
 
       satTypeValueMap::const_iterator pos;
@@ -369,7 +410,8 @@ namespace gpstk
 
       return result;
 
-   }
+   }  // End of method 'satTypeValueMap::getVectorOfSatID()'
+
 
 
       // Returns a TypeIDSet with all the data types present in
@@ -391,19 +433,22 @@ namespace gpstk
 
       return typeSet;
 
-   }
+   }  // End of method 'satTypeValueMap::getTypeID()'
+
 
 
       // Returns a satTypeValueMap with only this satellite.
       // @param satellite Satellite to be extracted.
    satTypeValueMap satTypeValueMap::extractSatID(const SatID& satellite) const
    {
+
       SatIDSet satSet;
       satSet.insert(satellite);
 
       return extractSatID(satSet);
 
-   }
+   }  // End of method 'satTypeValueMap::extractSatID()'
+
 
 
       // Returns a satTypeValueMap with only one satellite, identified
@@ -413,11 +458,13 @@ namespace gpstk
    satTypeValueMap satTypeValueMap::extractSatID( const int& p,
                                         const SatID::SatelliteSystem& s) const
    {
+
       SatID tempSatellite(p, s);  // We build a temporary SatID object
 
       return extractSatID(tempSatellite);
 
-   }
+   }  // End of method 'satTypeValueMap::extractSatID()'
+
 
 
       // Returns a satTypeValueMap with only these satellites.
@@ -425,6 +472,7 @@ namespace gpstk
       //               be extracted.
    satTypeValueMap satTypeValueMap::extractSatID(const SatIDSet& satSet) const
    {
+
       satTypeValueMap stvMap;
 
       SatIDSet::const_iterator pos;
@@ -440,19 +488,22 @@ namespace gpstk
 
       return stvMap;
 
-   }
+   }  // End of method 'satTypeValueMap::extractSatID()'
+
 
 
       // Modifies this object, keeping only this satellite.
       // @param satellite Satellite to be kept.
    satTypeValueMap& satTypeValueMap::keepOnlySatID(const SatID& satellite)
    {
+
       SatIDSet satSet;
       satSet.insert(satellite);
 
       return keepOnlySatID(satSet);
 
-   }
+   }  // End of method 'satTypeValueMap::keepOnlySatID()'
+
 
 
       // Modifies this object, keeping only this satellite.
@@ -461,35 +512,41 @@ namespace gpstk
    satTypeValueMap& satTypeValueMap::keepOnlySatID( const int& p,
                                              const SatID::SatelliteSystem& s )
    {
+
       SatID tempSatellite(p, s);  // We build a temporary SatID object
 
       return keepOnlySatID(tempSatellite);
 
-   }
+   }  // End of method 'satTypeValueMap::keepOnlySatID()'
+
 
 
       // Modifies this object, keeping only these satellites.
       // @param satSet Set (SatIDSet) containing the satellites to be kept.
    satTypeValueMap& satTypeValueMap::keepOnlySatID(const SatIDSet& satSet)
    {
+
       satTypeValueMap stvMap( extractSatID(satSet) );
       (*this) = stvMap;
 
       return (*this);
 
-   }
+   }  // End of method 'satTypeValueMap::keepOnlySatID()'
+
 
 
       // Returns a satTypeValueMap with only this type of value.
       // @param type Type of value to be extracted.
    satTypeValueMap satTypeValueMap::extractTypeID(const TypeID& type) const
    {
+
       TypeIDSet typeSet;
       typeSet.insert(type);
 
       return extractTypeID(typeSet);
 
-   }
+   }  // End of method 'satTypeValueMap::extractTypeID()'
+
 
 
       // Returns a satTypeValueMap with only these types of data.
@@ -498,6 +555,7 @@ namespace gpstk
    satTypeValueMap satTypeValueMap::extractTypeID(const TypeIDSet& typeSet)
       const
    {
+
       satTypeValueMap theMap;
 
       satTypeValueMap::const_iterator it;
@@ -512,19 +570,22 @@ namespace gpstk
 
       return theMap;
 
-   }
+   }  // End of method 'satTypeValueMap::extractTypeID()'
+
 
 
       // Modifies this object, keeping only this type of data.
       // @param type Type of value to be kept.
    satTypeValueMap& satTypeValueMap::keepOnlyTypeID(const TypeID& type)
    {
+
       TypeIDSet typeSet;
       typeSet.insert(type);
 
       return keepOnlyTypeID(typeSet);
 
-   }
+   }  // End of method 'satTypeValueMap::keepOnlyTypeID()'
+
 
 
       // Modifies this object, keeping only these types of data.
@@ -532,12 +593,14 @@ namespace gpstk
       //                to be kept.
    satTypeValueMap& satTypeValueMap::keepOnlyTypeID(const TypeIDSet& typeSet)
    {
+
       satTypeValueMap stvMap( extractTypeID(typeSet) );
       (*this) = stvMap;
 
       return (*this);
 
-   }
+   }  // End of method 'satTypeValueMap::keepOnlyTypeID()'
+
 
 
       // Modifies this object, removing these satellites.
@@ -545,6 +608,7 @@ namespace gpstk
       //               to be removed.
    satTypeValueMap& satTypeValueMap::removeSatID(const SatIDSet& satSet)
    {
+
       SatIDSet::const_iterator pos;
       for( pos = satSet.begin(); pos != satSet.end(); ++pos )
       {
@@ -553,13 +617,15 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'satTypeValueMap::removeSatID()'
+
 
 
       // Modifies this object, removing this type of data.
       // @param type Type of value to be removed.
    satTypeValueMap& satTypeValueMap::removeTypeID(const TypeID& type)
    {
+
       satTypeValueMap::iterator it;
       for( it = (*this).begin(); it != (*this).end(); ++it )
       {
@@ -568,7 +634,8 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'satTypeValueMap::removeTypeID()'
+
 
 
       // Modifies this object, removing these types of data.
@@ -576,6 +643,7 @@ namespace gpstk
       //                to be kept.
    satTypeValueMap& satTypeValueMap::removeTypeID(const TypeIDSet& typeSet)
    {
+
       TypeIDSet::const_iterator pos;
       for( pos = typeSet.begin(); pos != typeSet.end(); ++pos )
       {
@@ -584,7 +652,8 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'satTypeValueMap::removeTypeID()'
+
 
 
       // Returns a GPSTk::Vector containing the data values with this type.
@@ -615,7 +684,8 @@ namespace gpstk
 
       return result;
 
-   }
+   }  // End of method 'satTypeValueMap::getVectorOfTypeID()'
+
 
 
       // Returns a GPSTk::Matrix containing the data values in this set.
@@ -623,6 +693,7 @@ namespace gpstk
    Matrix<double> satTypeValueMap::getMatrixOfTypes(const TypeIDSet& typeSet)
       const
    {
+
          // First, let's create a Matrix<double> of the proper size
       Matrix<double> tempMat( (*this).numSats(), typeSet.size(), 0.0 );
 
@@ -652,7 +723,8 @@ namespace gpstk
 
       return tempMat;
 
-   }   // End getMatrixOfTypes(const TypeIDSet& typeSet)
+   }  // End of method 'satTypeValueMap::getMatrixOfTypes()'
+
 
 
       /* Modifies this object, adding one vector of data with this type,
@@ -692,10 +764,11 @@ namespace gpstk
       else
       {
          GPSTK_THROW( NumberOfSatsMismatch(" Number of data values in vector \
-                                    and number of satellites do not match") );
+and number of satellites do not match") );
       }
 
-   }
+   }  // End of method 'satTypeValueMap::insertTypeIDVector()'
+
 
 
       /* Modifies this object, adding a matrix of data, one vector
@@ -725,7 +798,7 @@ namespace gpstk
       if( dataMatrix.rows() != (*this).numSats() )
       {
          GPSTK_THROW( NumberOfSatsMismatch("Number of rows in matrix and \
-                                         number of satellites do not match") );
+number of satellites do not match") );
       }
 
       if( dataMatrix.cols() == typeSet.size() )
@@ -756,10 +829,11 @@ namespace gpstk
       else
       {
          GPSTK_THROW( NumberOfTypesMismatch("Number of data values per row \
-                               in matrix and number of types do not match") );
+in matrix and number of types do not match") );
       }
 
-   }
+   }  // End of method 'satTypeValueMap::insertMatrix()'
+
 
 
       // Returns a reference to the typeValueMap with corresponding SatID.
@@ -767,6 +841,7 @@ namespace gpstk
    typeValueMap& satTypeValueMap::operator()(const SatID& satellite)
       throw(SatIDNotFound)
    {
+
       satTypeValueMap::iterator itObs;
       itObs = (*this).find(satellite);
       if( itObs != (*this).end() ) 
@@ -778,7 +853,7 @@ namespace gpstk
          GPSTK_THROW(SatIDNotFound("SatID not found in map"));
       }
 
-   }
+   }  // End of method 'satTypeValueMap::operator()'
 
 
 
@@ -790,13 +865,15 @@ namespace gpstk
       // @param satellite Satellite to be extracted.
    gnssSatValue gnssSatValue::extractSatID(const SatID& satellite) const
    {
+
       gnssSatValue result;
       result.header = (*this).header;
       result.body = (*this).body.extractSatID(satellite);
 
       return result;
 
-   }
+   }  // End of method 'gnssSatValue::extractSatID()'
+
 
 
       // Returns a gnssSatValue with only one satellite, identified by
@@ -806,11 +883,13 @@ namespace gpstk
    gnssSatValue gnssSatValue::extractSatID( const int& p,
                                        const SatID::SatelliteSystem& s ) const
    {
+
       SatID tempSatellite(p, s);  // We build a temporary SatID object
 
       return extractSatID(tempSatellite);
 
-   }
+   }  // End of method 'gnssSatValue::extractSatID()'
+
 
 
       // Returns a gnssSatValue with only these satellites.
@@ -818,25 +897,29 @@ namespace gpstk
       //               to be extracted.
    gnssSatValue gnssSatValue::extractSatID(const SatIDSet& satSet) const
    {
+
       gnssSatValue result;
       result.header = (*this).header;
       result.body = (*this).body.extractSatID(satSet);
 
       return result;
 
-   }
+   }  // End of method 'gnssSatValue::extractSatID()'
+
 
 
       // Modifies this object, keeping only this satellite.
       // @param satellite Satellite to be kept.
    gnssSatValue& gnssSatValue::keepOnlySatID(const SatID& satellite)
    {
+
       SatIDSet satSet;
       satSet.insert(satellite);
 
       return keepOnlySatID(satSet);
 
-   }
+   }  // End of method 'gnssSatValue::keepOnlySatID()'
+
 
 
       // Modifies this object, keeping only this satellite.
@@ -845,23 +928,27 @@ namespace gpstk
    gnssSatValue& gnssSatValue::keepOnlySatID( const int& p,
                                               const SatID::SatelliteSystem& s )
    {
+
       SatID tempSatellite(p, s);  // We build a temporary SatID object
 
       return keepOnlySatID(tempSatellite);
 
-   }
+   }  // End of method 'gnssSatValue::keepOnlySatID()'
+
 
 
       // Modifies this object, keeping only these satellites.
       // @param satSet Set (SatIDSet) containing the satellites to be kept.
    gnssSatValue& gnssSatValue::keepOnlySatID(const SatIDSet& satSet)
    {
+
       satValueMap svMap ( (*this).body.extractSatID(satSet) );
       (*this).body = svMap;
 
       return (*this);
 
-   }
+   }  // End of method 'gnssSatValue::keepOnlySatID()'
+
 
 
       // Modifies this object, removing these satellites.
@@ -869,6 +956,7 @@ namespace gpstk
       //               to be removed.
    gnssSatValue& gnssSatValue::removeSatID(const SatIDSet& satSet)
    {
+
       SatIDSet::const_iterator pos;
       for( pos = satSet.begin(); pos != satSet.end(); ++pos )
       {
@@ -877,7 +965,7 @@ namespace gpstk
 
          return (*this);
 
-   }
+   }  // End of method 'gnssSatValue::removeSatID()'
 
 
 
@@ -889,13 +977,15 @@ namespace gpstk
       // @param type Type of value to be extracted.
    gnssTypeValue gnssTypeValue::extractTypeID(const TypeID& type) const
    {
+
       gnssTypeValue result;
       result.header = (*this).header;
       result.body = (*this).body.extractTypeID(type);
 
       return result;
 
-   }
+   }  // End of method 'gnssTypeValue::extractTypeID()'
+
 
 
       // Returns a gnssTypeValue with only these types of data.
@@ -903,25 +993,29 @@ namespace gpstk
       //                to be extracted.
    gnssTypeValue gnssTypeValue::extractTypeID(const TypeIDSet& typeSet) const
    {
+
       gnssTypeValue result;
       result.header = (*this).header;
       result.body = (*this).body.extractTypeID(typeSet);
 
       return result;
 
-   }
+   }  // End of method 'gnssTypeValue::extractTypeID()'
+
 
 
       // Modifies this object, keeping only this type of data.
       // @param type Type of value to be kept.
    gnssTypeValue& gnssTypeValue::keepOnlyTypeID(const TypeID& type)
    {
+
       TypeIDSet typeSet;
       typeSet.insert(type);
 
       return keepOnlyTypeID(typeSet);
 
-   }
+   }  // End of method 'gnssTypeValue::keepOnlyTypeID()'
+
 
 
       // Modifies this object, keeping only these types of data.
@@ -929,12 +1023,14 @@ namespace gpstk
       //                to be kept.
    gnssTypeValue& gnssTypeValue::keepOnlyTypeID(const TypeIDSet& typeSet)
    {
+
       typeValueMap tvMap( (*this).body.extractTypeID(typeSet) );
       (*this).body = tvMap;
 
       return (*this);
 
-   }
+   }  // End of method 'gnssTypeValue::keepOnlyTypeID()'
+
 
 
       // Modifies this object, removing these types of data.
@@ -942,6 +1038,7 @@ namespace gpstk
       //                to be kept.
    gnssTypeValue& gnssTypeValue::removeTypeID(const TypeIDSet& typeSet)
    {
+
       TypeIDSet::const_iterator pos;
       for( pos = typeSet.begin(); pos != typeSet.end(); ++pos )
       {
@@ -950,7 +1047,7 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'gnssTypeValue::removeTypeID()'
 
 
 
@@ -963,13 +1060,15 @@ namespace gpstk
    gnssSatTypeValue gnssSatTypeValue::extractSatID(const SatID& satellite)
       const
    {
+
       gnssSatTypeValue result;
       result.header = (*this).header;
       result.body = (*this).body.extractSatID(satellite);
 
       return result;
 
-   }
+   }  // End of method 'gnssSatTypeValue::extractSatID()'
+
 
 
       // Returns a gnssSatTypeValue with only one satellite, identified
@@ -979,38 +1078,43 @@ namespace gpstk
    gnssSatTypeValue gnssSatTypeValue::extractSatID( const int& p,
                                        const SatID::SatelliteSystem& s ) const
    {
+
       SatID tempSatellite(p, s);  // We build a temporary SatID object
 
       return extractSatID(tempSatellite);
 
-   }
+   }  // End of method 'gnssSatTypeValue::extractSatID()'
+
 
 
       // Returns a gnssSatTypeValue with only these satellites.
       // @param satSet Set (SatIDSet) containing the satellites
       //               to be extracted.
-   gnssSatTypeValue gnssSatTypeValue::extractSatID(const SatIDSet& satSet)
-      const
+   gnssSatTypeValue gnssSatTypeValue::extractSatID(const SatIDSet& satSet) const
    {
+
       gnssSatTypeValue result;
       result.header = (*this).header;
       result.body = (*this).body.extractSatID(satSet);
 
       return result;
 
-   }
+   }  // End of method 'gnssSatTypeValue::extractSatID()'
+
 
 
       // Modifies this object, keeping only this satellite.
       // @param satellite Satellite to be kept.
    gnssSatTypeValue& gnssSatTypeValue::keepOnlySatID(const SatID& satellite)
    {
+
       SatIDSet satSet;
       satSet.insert(satellite);
 
       return keepOnlySatID(satSet);
 
-   }
+   }  // End of method 'gnssSatTypeValue::keepOnlySatID()'
+
 
 
       // Modifies this object, keeping only this satellite.
@@ -1019,36 +1123,42 @@ namespace gpstk
    gnssSatTypeValue& gnssSatTypeValue::keepOnlySatID( const int& p,
                                              const SatID::SatelliteSystem& s )
    {
+
       SatID tempSatellite(p, s);  // We build a temporary SatID object
 
       return keepOnlySatID(tempSatellite);
 
-   }
+   }  // End of method 'gnssSatTypeValue::keepOnlySatID()'
+
 
 
       // Modifies this object, keeping only these satellites.
       // @param satSet Set (SatIDSet) containing the satellites to be kept.
    gnssSatTypeValue& gnssSatTypeValue::keepOnlySatID(const SatIDSet& satSet)
    {
+
       satTypeValueMap stvMap( (*this).body.extractSatID(satSet) );
       (*this).body = stvMap;
 
       return (*this);
 
-   }
+   }  // End of method 'gnssSatTypeValue::keepOnlySatID()'
+
 
 
       // Returns a gnssSatTypeValue with only this type of data.
       // @param type Type of value to be extracted.
    gnssSatTypeValue gnssSatTypeValue::extractTypeID(const TypeID& type) const
    {
+
       gnssSatTypeValue result;
       result.header = (*this).header;
       result.body = (*this).body.extractTypeID(type);
 
       return result;
 
-   }
+   }  // End of method 'gnssSatTypeValue::extractTypeID()'
+
 
 
       // Returns a gnssSatTypeValue with only these types of data.
@@ -1057,25 +1167,29 @@ namespace gpstk
    gnssSatTypeValue gnssSatTypeValue::extractTypeID(const TypeIDSet& typeSet)
       const
    {
+
       gnssSatTypeValue result;
       result.header = (*this).header;
       result.body = (*this).body.extractTypeID(typeSet);
 
       return result;
 
-   }
+   }  // End of method 'gnssSatTypeValue::extractTypeID()'
+
 
 
       // Modifies this object, keeping only this type of data.
       // @param type Type of value to be kept.
    gnssSatTypeValue& gnssSatTypeValue::keepOnlyTypeID(const TypeID& type)
    {
+
       TypeIDSet typeSet;
       typeSet.insert(type);
 
       return keepOnlyTypeID(typeSet);
 
-   }
+   }  // End of method 'gnssSatTypeValue::keepOnlyTypeID()'
+
 
 
       // Modifies this object, keeping only these types of data.
@@ -1083,12 +1197,14 @@ namespace gpstk
       //                to be kept.
    gnssSatTypeValue& gnssSatTypeValue::keepOnlyTypeID(const TypeIDSet& typeSet)
    {
+
       satTypeValueMap stvMap( (*this).body.extractTypeID(typeSet) );
       (*this).body = stvMap;
 
       return (*this);
 
-   }
+   }  // End of method 'gnssSatTypeValue::keepOnlyTypeID()'
+
 
 
       // Modifies this object, removing these satellites.
@@ -1096,15 +1212,17 @@ namespace gpstk
       //               to be removed.
    gnssSatTypeValue& gnssSatTypeValue::removeSatID(const SatIDSet& satSet)
    {
+
       SatIDSet::const_iterator pos;
       for( pos = satSet.begin(); pos != satSet.end(); ++pos )
       {
          (*this).body.erase(*pos);
       }
 
-         return (*this);
+      return (*this);
 
-   }
+   }  // End of method 'gnssSatTypeValue::removeSatID()'
+
 
 
       // Modifies this object, removing these types of data
@@ -1121,7 +1239,7 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'gnssSatTypeValue::removeTypeID()'
 
 
 
@@ -1133,13 +1251,15 @@ namespace gpstk
       // @param satellite Satellite to be extracted.
    gnssRinex gnssRinex::extractSatID(const SatID& satellite) const
    {
+
       gnssRinex result;
       result.header = (*this).header;
       result.body = (*this).body.extractSatID(satellite);
 
       return result;
 
-   }
+   }  // End of method 'gnssRinex::extractSatID()'
+
 
 
       // Returns a gnssRinex with only one satellite, identified by
@@ -1154,7 +1274,8 @@ namespace gpstk
 
       return extractSatID(tempSatellite);
 
-   }
+   }  // End of method 'gnssRinex::extractSatID()'
+
 
 
       // Returns a gnssRinex with only these satellites.
@@ -1169,7 +1290,8 @@ namespace gpstk
 
       return result;
 
-   }
+   }  // End of method 'gnssRinex::extractSatID()'
+
 
 
       // Modifies this object, keeping only this satellite.
@@ -1182,7 +1304,8 @@ namespace gpstk
 
       return keepOnlySatID(satSet);
 
-   }
+   }  // End of method 'gnssRinex::keepOnlySatID()'
+
 
 
       // Modifies this object, keeping only this satellite.
@@ -1196,7 +1319,8 @@ namespace gpstk
 
       return keepOnlySatID(tempSatellite);
 
-   }
+   }  // End of method 'gnssRinex::keepOnlySatID()'
+
 
 
       // Modifies this object, keeping only these satellites.
@@ -1209,7 +1333,8 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'gnssRinex::keepOnlySatID()'
+
 
 
       // Returns a gnssRinex with only this type of data.
@@ -1223,7 +1348,8 @@ namespace gpstk
 
       return result;
 
-   }
+   }  // End of method 'gnssRinex::extractTypeID()'
+
 
 
       // Returns a gnssRinex with only these types of data.
@@ -1238,7 +1364,8 @@ namespace gpstk
 
       return result;
 
-   }
+   }  // End of method 'gnssRinex::extractTypeID()'
+
 
 
       // Modifies this object, keeping only this type of data.
@@ -1251,7 +1378,8 @@ namespace gpstk
 
       return keepOnlyTypeID(typeSet);
 
-   }
+   }  // End of method 'gnssRinex::keepOnlyTypeID()'
+
 
 
       // Modifies this object, keeping only these types of data.
@@ -1265,7 +1393,7 @@ namespace gpstk
 
       return (*this);
 
-   }
+   }  // End of method 'gnssRinex::keepOnlyTypeID()'
 
 
 
@@ -1278,9 +1406,11 @@ namespace gpstk
    std::ostream& satTypeValueMap::dump( std::ostream& s,
                                         int mode ) const
    {
+
       satTypeValueMap::const_iterator it;
-      for (it = (*this).begin(); it!= (*this).end(); it++) 
+      for (it = (*this).begin(); it!= (*this).end(); it++)
       {
+
             // First, print satellite (system and PRN)
          s << (*it).first << " ";
 
@@ -1289,6 +1419,7 @@ namespace gpstk
               itObs != (*it).second.end();
               itObs++ )
          {
+
             if (mode==1)
             {
                s << (*itObs).first << " ";
@@ -1303,7 +1434,8 @@ namespace gpstk
       }
 
       return s;
-   } // satTypeValueMap::dump()
+
+   }  // End of method 'satTypeValueMap::dump()'
 
 
 
@@ -1311,10 +1443,11 @@ namespace gpstk
    std::ostream& operator<<( std::ostream& s,
                              const satTypeValueMap& stvMap )
    {
+
       stvMap.dump(s);
       return s;
-   }
 
+   }  // End of 'operator<<'
 
 
 
@@ -1330,7 +1463,8 @@ namespace gpstk
       f.header.source.sourceName = roh.markerName;
 
       return f;
-   }
+
+   }  // End of 'operator>>'
 
 
 
@@ -1352,7 +1486,8 @@ namespace gpstk
       f.header.antennaPosition = roh.antennaPosition;
 
       return f;
-   }
+
+   }  // End of 'operator>>'
 
 
 
@@ -1368,7 +1503,8 @@ namespace gpstk
       f.body = FillsatTypeValueMapwithRinexObsData(rod);
 
       return f;
-   }
+
+   }  // End of 'operator>>'
 
 
 
@@ -1387,7 +1523,8 @@ namespace gpstk
       f.body = FillsatTypeValueMapwithRinexObsData(rod);
 
       return f;
-   }
+
+   }  // End of 'operator>>'
 
 
 
@@ -1403,7 +1540,7 @@ namespace gpstk
          try
          {
             RinexObsStream& strm = dynamic_cast<RinexObsStream&>(*ffs);
-      
+
                // If the header hasn't been read, read it...
             if(!strm.headerRead) strm >> strm.header;
 
@@ -1411,11 +1548,11 @@ namespace gpstk
             RinexObsHeader& hdr = strm.header;
 
             hdr >> f;
-      
+
             std::string line;
 
             strm.formattedGetLine(line, true);
-      
+
             if( line.size()>80 ||
                 line[0] != ' ' ||
                 line[3] != ' ' ||
@@ -1445,12 +1582,14 @@ namespace gpstk
                 epochFlag==1 ||
                 epochFlag==6 )
             {
+
                int isv, ndx, line_ndx;
                vector<SatID> satIndex(numSvs);
                int col=30;
 
                for (isv=1, ndx=0; ndx<numSvs; isv++, ndx++)
                {
+
                   if( !(isv % 13) )
                   {
                      strm.formattedGetLine(line);
@@ -1467,11 +1606,12 @@ namespace gpstk
                      satIndex[ndx] = RinexSatID( line.substr(col+isv*3-1,3) );
                   }
                   catch (Exception& e)
-                  { 
+                  {
                      FFStreamError ffse(e);
                      GPSTK_THROW(ffse);
                   }
-               } // End of for(isv=1, ... )
+
+               } // End of 'for (isv=1, ndx=0; ndx<numSvs; isv++, ndx++)'
 
 
                for (isv=0; isv < numSvs; isv++)
@@ -1479,6 +1619,7 @@ namespace gpstk
                   short numObs = hdr.obsTypeList.size();
                   for(ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++)
                   {
+
                      SatID sat = satIndex[isv];
                      RinexObsHeader::RinexObsType obs_type =
                                                          hdr.obsTypeList[ndx];
@@ -1493,9 +1634,9 @@ namespace gpstk
                            GPSTK_THROW(err);
                         }
                      }
-               
+
                      line.resize(80, ' ');
-               
+
                      rod.obs[sat][obs_type].data =
                                  asDouble( line.substr(line_ndx*16,   14) );
 
@@ -1505,11 +1646,11 @@ namespace gpstk
                      rod.obs[sat][obs_type].ssi =
                                     asInt( line.substr(line_ndx*16+15, 1) );
 
-                  }  // End of for(ndx=0, ... )
+                  }  // End of 'for(ndx=0, line_ndx=0; ndx < numObs; ...)'
 
-               }  // End of for (isv=0; ... )
+               }  // End of 'for (isv=0; isv < numSvs; isv++)'
 
-            }  // End of if( epochFlag==0 || ... )
+            }  // End of 'if( epochFlag==0 || ... )'
 
             f.body = FillsatTypeValueMapwithRinexObsData(rod);
 
@@ -1539,7 +1680,7 @@ namespace gpstk
          FFStreamError e("operator<< stream argument must be an FFStream");
          GPSTK_THROW(e);
       }
-        
+
    }  // End of stream input for gnssSatTypeValue
 
 
@@ -1554,9 +1695,9 @@ namespace gpstk
       if(ffs)
       {
          try
-         {         
+         {
             RinexObsStream& strm = dynamic_cast<RinexObsStream&>(*ffs);
-      
+
                // If the header hasn't been read, read it...
             if(!strm.headerRead) strm >> strm.header;
 
@@ -1564,11 +1705,11 @@ namespace gpstk
             RinexObsHeader& hdr = strm.header;
 
             hdr >> f;
-      
+
             std::string line;
 
             strm.formattedGetLine(line, true);
-      
+
             if( line.size()>80 ||
                 line[0] != ' ' ||
                 line[3] != ' ' ||
@@ -1623,7 +1764,7 @@ namespace gpstk
                      satIndex[ndx] = RinexSatID( line.substr(col+isv*3-1, 3) );
                   }
                   catch (Exception& e)
-                  { 
+                  {
                      FFStreamError ffse(e);
                      GPSTK_THROW(ffse);
                   }
@@ -1649,9 +1790,9 @@ namespace gpstk
                            GPSTK_THROW(err);
                         }
                      }
-               
+
                      line.resize(80, ' ');
-               
+
                      rod.obs[sat][obs_type].data =
                                     asDouble( line.substr(line_ndx*16, 14) );
 
@@ -1694,7 +1835,7 @@ namespace gpstk
          FFStreamError e("operator<< stream argument must be an FFStream");
          GPSTK_THROW(e);
       }
-        
+
    }  // End of stream input for gnssRinex
 
 
@@ -1731,7 +1872,9 @@ namespace gpstk
          default:
             return SourceID::Unknown;
       }
+
    } // End SatIDsystem2SourceIDtype(const SatID& sid)
+
 
 
       // Convenience function to fill a typeValueMap with data
@@ -1795,11 +1938,13 @@ namespace gpstk
             tvMap[TypeID::SSI8] = (*itObs).second.ssi; 
             tvMap[ type ] = tvMap[ type ] * L8_WAVELENGTH;
          }
+
       }  // End of "for( itObs = otmap.begin(); ..."
 
       return tvMap;
 
    } // End FilltypeValueMapwithRinexObsTypeMap()
+
 
 
       // Convenience function to fill a satTypeValueMap with data
@@ -1812,7 +1957,7 @@ namespace gpstk
       satTypeValueMap theMap;
 
          // Let's define the "it" iterator to visit the observations PRN map
-         // RinexSatMap is a map from SatID to RinexObsTypeMap: 
+         // RinexSatMap is a map from SatID to RinexObsTypeMap:
          //      std::map<SatID, RinexObsTypeMap>
       RinexObsData::RinexSatMap::const_iterator it;
       for( it = rod.obs.begin(); it!= rod.obs.end(); ++it )
@@ -1832,8 +1977,9 @@ namespace gpstk
    } // End FillsatTypeValueMapwithRinexObsData(const RinexObsData& rod)
 
 
+
       /* This function constructs a DayTime object from the given parameters.
-       * 
+       *
        * @param line    the encoded time string found in the RINEX record.
        * @param hdr     the RINEX Observation Header object for the current
        *                RINEX file.
@@ -1868,7 +2014,7 @@ namespace gpstk
          double sec;
          int yy = hdr.firstObs.year()/100;
          yy *= 100;
-   
+
          year  = StringUtils::asInt(   line.substr(1,  2 ));
          month = StringUtils::asInt(   line.substr(4,  2 ));
          day   = StringUtils::asInt(   line.substr(7,  2 ));
@@ -1902,5 +2048,4 @@ namespace gpstk
    }  // End of parseTime()
 
 
-
-}
+}  // End of namespace gpstk
