@@ -343,16 +343,25 @@ covariance matrix.");
       try
       {
 
+            // Get a set with all satellites present in this GDS
+         SatIDSet currSatSet( gData.body.getSatID() );
+
             // Get the number of satellites currently visible
-         int numSV(gData.numSats());
+         int numCurrentSV( gData.numSats() );
+
+            // Update set with satellites being processed so far
+         satSet.insert( currSatSet.begin(), currSatSet.end() );
+
+            // Get the number of satellites to be processed
+         int numSV( satSet.size() );
 
             // Number of measurements is twice the number of visible satellites
-         numMeas = 2 * numSV;
+         numMeas = 2 * numCurrentSV;
 
-            // Number of variables
+            // Number of 'core' variables: Coordinates, RX clock, troposphere
          numVar = defaultEqDef.body.size();
 
-            // Total number of unknowns is defined as variables + visible SVs
+            // Total number of unknowns is defined as variables + processed SVs
          numUnknowns = numVar + numSV;
 
             // State Transition Matrix (PhiMatrix)
@@ -367,10 +376,10 @@ covariance matrix.");
 
          Vector<double> prefitC(gData.getVectorOfTypeID(defaultEqDef.header));
          Vector<double> prefitL(gData.getVectorOfTypeID(TypeID::prefitL));
-         for( int i=0; i<numSV; i++ )
+         for( int i=0; i<numCurrentSV; i++ )
          {
-            measVector( i         ) = prefitC(i);
-            measVector( numSV + i ) = prefitL(i);
+            measVector( i                ) = prefitC(i);
+            measVector( numCurrentSV + i ) = prefitL(i);
          }
 
 
@@ -383,42 +392,81 @@ covariance matrix.");
 
             // Count the number of satellites with weights
          int nW(dummy.numSats());
-         for( int i=0; i<numSV; i++ )
+         for( int i=0; i<numCurrentSV; i++ )
          {
-            if (nW == numSV)   // Check if weights match
+            if (nW == numCurrentSV)   // Check if weights match
             {
+
                Vector<double>
                   weightsVector(gData.getVectorOfTypeID(TypeID::weight));
 
-               rMatrix( i        , i         ) = weightsVector(i);
-               rMatrix( i + numSV, i + numSV ) = weightsVector(i)*weightFactor;
+               rMatrix( i               , i         ) = weightsVector(i);
+               rMatrix( i + numCurrentSV, i + numCurrentSV )
+                                             = weightsVector(i) * weightFactor;
+
             }
             else  // If weights don't match, assign generic weights
-            {     // Phases weights are bigger
-               rMatrix( i        , i         ) = 1.0;
-               rMatrix( i + numSV, i + numSV ) = 1.0 * weightFactor;
-            }
-         }
+            {
+
+               rMatrix( i               , i         ) = 1.0;
+
+                  // Phases weights are bigger
+               rMatrix( i + numCurrentSV, i + numCurrentSV )
+                                                         = 1.0 * weightFactor;
+
+            }  // End of 'if (nW == numCurrentSV)'
+
+         }  // End of 'for( int i=0; i<numCurrentSV; i++ )'
 
 
             // Generate the corresponding geometry/design matrix
          hMatrix.resize(numMeas, numUnknowns, 0.0);
 
+            // Get the values corresponding to 'core' variables
          Matrix<double> dMatrix(gData.body.getMatrixOfTypes(defaultEqDef.body));
-         for( int i=0; i<numSV; i++ )
+
+            // Let's fill 'hMatrix'
+         for( int i=0; i<numCurrentSV; i++ )
          {
 
                // First, fill the coefficients related to tropo, coord and clock
             for( int j=0; j<numVar; j++ )
             {
-               hMatrix( i        , j ) = dMatrix(i,j);
-               hMatrix( i + numSV, j ) = dMatrix(i,j);
+
+               hMatrix( i               , j ) = dMatrix(i,j);
+               hMatrix( i + numCurrentSV, j ) = dMatrix(i,j);
+
             }
 
-               // Second, fill the coefficients related to phase biases
-            hMatrix( numSV + i , numVar + i ) = 1.0;
+         }  // End of 'for( int i=0; i<numCurrentSV; i++ )'
 
-         }
+
+            // Now, fill the coefficients related to phase biases
+            // We must be careful because not all processed satellites
+            // are currently visible
+         int count1(0);
+         SatIDSet::const_iterator itSat;
+         for( itSat = currSatSet.begin(); itSat != currSatSet.end(); ++itSat )
+         {
+
+               // Find in which position of 'satSet' is the current '(*itSat)'
+               // Please note that 'currSatSet' is a subset of 'satSet'
+            int j(0);
+            SatIDSet::const_iterator itSat2( satSet.begin() );
+            while( (*itSat2) != (*itSat) )
+            {
+               ++j;
+               ++itSat2;
+            }
+
+
+               // Put coefficient in the right place
+            hMatrix( count1 + numCurrentSV, j + numVar ) = 1.0;
+
+            ++count1;
+
+         }  // End of 'for( itSat = satSet.begin(); ... )'
+
 
 
             // Now, let's fill the Phi and Q matrices
@@ -451,10 +499,7 @@ covariance matrix.");
 
 
             // Finally, the phase biases
-            // Get a set with all satellites present in this GDS
-         SatIDSet satSet(gData.body.getSatID());
-         SatIDSet::const_iterator itSat;
-         int count(5);     // numVar must always be 5!!!
+         int count2(numVar);     // Note that for PPP, 'numVar' is always 5!!!
          for( itSat = satSet.begin(); itSat != satSet.end(); ++itSat )
          {
 
@@ -464,10 +509,10 @@ covariance matrix.");
                                     gData );
 
                // Get values into phi and q matrices
-            phiMatrix(count,count) = pBiasStoModel->getPhi();
-            qMatrix(count,count)   = pBiasStoModel->getQ();
+            phiMatrix(count2,count2) = pBiasStoModel->getPhi();
+            qMatrix(count2,count2)   = pBiasStoModel->getQ();
 
-            ++count;
+            ++count2;
          }
 
 
@@ -531,7 +576,7 @@ covariance matrix.");
 
 
                // Fill in the rest of state vector and covariance matrix
-               // These are values that depend on satellites currently in view
+               // These are values that depend on satellites being processed
             int c1(numVar);
             for( itSat = satSet.begin(); itSat != satSet.end(); ++itSat )
             {
@@ -581,7 +626,9 @@ covariance matrix.");
             // This equation model MUST HAS BEEN previously set, usually when
             // creating the SolverPPP object with the appropriate
             // constructor.
-         Compute(measVector, hMatrix, rMatrix);
+         Compute( measVector,
+                  hMatrix,
+                  rMatrix );
 
 
 
@@ -624,16 +671,19 @@ covariance matrix.");
 
 
             // Now we have to add the new values to the data structure
-         Vector<double> postfitCode(numSV,0.0);
-         Vector<double> postfitPhase(numSV,0.0);
-         for( int i=0; i<numSV; i++ )
+         Vector<double> postfitCode(numCurrentSV,0.0);
+         Vector<double> postfitPhase(numCurrentSV,0.0);
+         for( int i=0; i<numCurrentSV; i++ )
          {
-            postfitCode(i)  = postfitResiduals(i);
-            postfitPhase(i) = postfitResiduals(i+numSV);
+            postfitCode(i)  = postfitResiduals( i                );
+            postfitPhase(i) = postfitResiduals( i + numCurrentSV );
          }
 
          gData.insertTypeIDVector(TypeID::postfitC, postfitCode);
          gData.insertTypeIDVector(TypeID::postfitL, postfitPhase);
+
+            // Update set of satellites to be used in next epoch
+         satSet = currSatSet;
 
          return gData;
 

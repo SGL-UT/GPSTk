@@ -446,6 +446,10 @@ namespace gpstk
       bool firstTime;
 
 
+         /// Set with all satellites being processed this epoch
+      SatIDSet satSet;
+
+
          /// A structure used to store Kalman filter data.
       struct filterData
       {
