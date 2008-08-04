@@ -1,12 +1,12 @@
 #pragma ident "$Id$"
 
 /**
- * @file SolverPPP.hpp
- * Class to compute the PPP Solution.
+ * @file SolverPPPFB.hpp
+ * Class to compute the PPP solution in forwards-backwards mode.
  */
 
-#ifndef SOLVERPPP_HPP
-#define SOLVERPPP_HPP
+#ifndef SOLVERPPPFB_HPP
+#define SOLVERPPPFB_HPP
 
 //============================================================================
 //
@@ -31,7 +31,8 @@
 //============================================================================
 
 
-#include "CodeKalmanSolver.hpp"
+#include "SolverPPP.hpp"
+#include <list>
 
 
 namespace gpstk
@@ -44,13 +45,39 @@ namespace gpstk
 
       /** This class computes the Precise Point Positioning (PPP) solution
        *  using a Kalman solver that combines ionosphere-free code and phase
-       *  measurements.
+       *  measurements. Also, this class uses the 'forwards-backwards'
+       *  approach, where the provided data set is processed from 'past to
+       *  future' and from 'future to past' several times.
        *
-       * This class may be used either in a Vector- and Matrix-oriented way,
-       * or with GNSS data structure objects from "DataStructures" class (much
-       * more simple to use it this way).
+       * This approach improves the final solution because it takes advantage
+       * of a better phase ambiguity resolution. On the other hand, it is only
+       * applicable in post-process mode (of course).
        *
-       * A typical way to use this class with GNSS data structures follows:
+       * In reality, "SolverPPPFB.hpp" objects are really "SolverPPP.hpp"
+       * objects at their core, with some wrapper code that takes 'normal'
+       * forwards input data, stores them, and feeds the internal "SolverPPP"
+       * object with a continuous data stream formed by several instances of
+       * forwards input data, "mirrored" input data (oldest is newest and
+       * viceversa), forwards input data again, and so on.
+       *
+       * In order to achieve this, SolverPPPFB.hpp" objects work in three
+       * distinct phases:
+       *
+       *    \li Initial "Process()" phase: This does a "normal" forward
+       *        processing, like the "SolverPPP.hpp" objects. Data feed during
+       *        this phase are internally stored for later phases.
+       *    \li "ReProcess()" phase: In this phase the filter will process the
+       *        stored data in "backwards-forwards" fashion as many times as
+       *        set by the provided "cycles" parameter (by default, "cycles" is
+       *        equal to 1). This phase always ends in backwards processing.
+       *    \li "LastProcess()" phase: This is the last phase and it is always
+       *        done in forwards mode. During this phase you will get your
+       *        final results.
+       *
+       * Take due note that the "SolverPPPFB.hpp" class is designed to be used
+       * ONLY with GNSS data structure objects from "DataStructures" class.
+       *
+       * A typical way to use this class follows:
        *
        * @code
        *      // INITIALIZATION PART
@@ -78,12 +105,14 @@ namespace gpstk
        *      // PoleTides, CorrectObservables, ComputeWindUp, ComputeLinear,
        *      // LinearCombinations, etc.
        *
-       *      // Declare a SolverPPP object
-       *   SolverPPP pppSolver;
+       *      // Declare a SolverPPPFB object
+       *   SolverPPPFB pppSolver;
        *
        *     // PROCESSING PART
        *
        *   gnssRinex gRin;
+       *
+       *      // --->>> Process() phase <<<--- //
        *
        *   while(rin >> gRin)
        *   {
@@ -108,21 +137,47 @@ namespace gpstk
        *         continue;
        *      }
        *
+       *   }   // End of 'while(rin >> gRin)'
+       *
+       *
+       *      // --->>> ReProcess() phase <<<--- //
+       *
+       *   try
+       *   {
+       *
+       *         // Now, let's do the forward-backward cycles (4)
+       *      pppSolver.ReProcess(4);
+       *
+       *   }
+       *   catch(Exception& e)
+       *   {
+       *      cerr << "Exception: " << e << endl;
+       *   }
+       *
+       *
+       *      // --->>> LastProcess() phase <<<--- //
+       *
+       *      // Loop over all data epochs, again
+       *   while( pppSolver.LastProcess(gRin) )  // True while there are data
+       *   {
+       *
+       *         // In this case, gRin is an output from 'LastProcess()'
+       *      DayTime time(gRin.header.epoch);
+       *
        *         // Print results
-       *      cout << time.DOYsecond()      << "  "; // Output field #1
-       *      cout << pppSolver.solution[1] << "  "; // dx: Output field #2
-       *      cout << pppSolver.solution[2] << "  "; // dy: Output field #3
-       *      cout << pppSolver.solution[3] << "  "; // dz: Output field #4
-       *      cout << pppSolver.solution[0] << "  "; // wetTropo: Out field #5
-       *      cout << endl;
+       *      cout << time.DOYsecond() << "  ";     // Epoch - Output field #1
+       *
+       *      cout << pppSolver.getSolution(TypeID::dLat) << "  "; // dLat - #2
+       *      cout << pppSolver.getSolution(TypeID::dLon) << "  "; // dLon - #3
+       *      cout << pppSolver.getSolution(TypeID::dH) << "  ";   // dH   - #4
+       *      cout << pppSolver.getSolution(TypeID::wetMap) << "  "; // Tropo-#5
+       *
        *   }
        * @endcode
        *
-       * The "SolverPPP" object will extract all the data it needs from the
-       * GNSS data structure that is "gRin" and will try to solve the PPP
-       * system of equations using a Kalman filter. It will also insert back
-       * postfit residual data (both code and phase) into "gRin" if it
-       * successfully solves the equation system.
+       * The "SolverPPPFB" object will also insert back postfit residual data
+       * (both code and phase) into "gRin" if it successfully solves the
+       * equation system.
        *
        * By default, it will build the geometry matrix from the values of
        * coefficients wetMap, dx, dy, dz and cdt, IN THAT ORDER. Please note
@@ -133,7 +188,7 @@ namespace gpstk
        * You may configure the solver to work with a NEU system in the class
        * constructor or using the "setNEU()" method.
        *
-       * In any case, the "SolverPPP" object will also automatically add and
+       * In any case, the "SolverPPPFB" object will also automatically add and
        * estimate the ionosphere-free phase ambiguities. The independent vector
        * is composed of the code and phase prefit residuals.
        *
@@ -141,7 +196,7 @@ namespace gpstk
        * be achieved with objects from classes such as "ComputeIURAWeights",
        * "ComputeMOPSWeights", etc.
        *
-       * If these weights are not assigned, then the "SolverPPP" object will
+       * If these weights are not assigned, then the "SolverPPPFB" object will
        * set a value of "1.0" to code measurements, and "weightFactor" to phase
        * measurements. The default value of "weightFactor" is "10000.0". This
        * implies that code sigma is 1 m, and phase sigma is 1 cm.
@@ -160,15 +215,15 @@ namespace gpstk
        * "setTroposphereModel()" and "setReceiverClockModel()". However, you
        * are not allowed to change the phase biases stochastic model.
        *
-       * \warning "SolverPPP" is based on a Kalman filter, and Kalman filters
+       * \warning "SolverPPPFB" is based on a Kalman filter, and Kalman filters
        * are objets that store their internal state, so you MUST NOT use the
        * SAME object to process DIFFERENT data streams.
        *
        * @sa SolverBase.hpp, SolverLMS.hpp and CodeKalmanSolver.hpp for
-       * base classes.
+       * base classes, as well as SolverPPP.hpp for a similar class.
        *
        */
-   class SolverPPP : public CodeKalmanSolver
+   class SolverPPPFB : public ProcessingClass
    {
    public:
 
@@ -177,48 +232,7 @@ namespace gpstk
           * @param useNEU   If true, will compute dLat, dLon, dH coordinates;
           *                 if false (the default), will compute dx, dy, dz.
           */
-      SolverPPP(bool useNEU = false);
-
-
-         /** Compute the PPP Solution of the given equations set.
-          *
-          * @param prefitResiduals   Vector of prefit residuals
-          * @param designMatrix      Design matrix for the equation system
-          * @param weightMatrix      Matrix of weights
-          *
-          * \warning A typical Kalman filter works with the measurements noise
-          * covariance matrix, instead of the matrix of weights. Beware of this
-          * detail, because this method uses the later.
-          *
-          * @return
-          *  0 if OK
-          *  -1 if problems arose
-          */
-      virtual int Compute( const Vector<double>& prefitResiduals,
-                           const Matrix<double>& designMatrix,
-                           const Matrix<double>& weightMatrix )
-         throw(InvalidSolver);
-
-
-         /** Compute the PPP Solution of the given equations set.
-          *
-          * @param prefitResiduals   Vector of prefit residuals
-          * @param designMatrix      Design matrix for the equation system
-          * @param weightVector      Vector of weights assigned to each
-          *                          satellite.
-          *
-          * \warning A typical Kalman filter works with the measurements noise
-          * covariance matrix, instead of the vector of weights. Beware of this
-          * detail, because this method uses the later.
-          *
-          * @return
-          *  0 if OK
-          *  -1 if problems arose
-          */
-      virtual int Compute( const Vector<double>& prefitResiduals,
-                           const Matrix<double>& designMatrix,
-                           const Vector<double>& weightVector )
-         throw(InvalidSolver);
+      SolverPPPFB(bool useNEU = false);
 
 
          /** Returns a reference to a gnnsSatTypeValue object after
@@ -239,18 +253,34 @@ namespace gpstk
          throw(ProcessingException);
 
 
-         /** Resets the PPP internal Kalman filter.
+         /** Reprocess the data stored during a previous 'Process()' call.
           *
-          * @param newState         System state vector
-          * @param newErrorCov      Error covariance matrix
-          *
-          * \warning Take care of dimensions: In this case newState must be 6x1
-          * and newErrorCov must be 6x6.
-          *
+          * @param cycles     Number of forward-backward cycles (1 by default).
           */
-      virtual SolverPPP& Reset( const Vector<double>& newState,
-                                const Matrix<double>& newErrorCov )
-      { kFilter.Reset( newState, newErrorCov ); return (*this); };
+      virtual void ReProcess(const int cycles = 1)
+         throw(ProcessingException);
+
+
+         /** Process the data stored during a previous 'ReProcess()' call, one
+          *  item at a time, and always in forward mode.
+          *
+          * @param gData      Data object that will hold the resulting data.
+          *
+          * @return FALSE when all data is processed, TRUE otherwise.
+          */
+      virtual bool LastProcess(gnssSatTypeValue& gData)
+         throw(ProcessingException);
+
+
+         /** Process the data stored during a previous 'ReProcess()' call, one
+          *  item at a time, and always in forward mode.
+          *
+          * @param gData      Data object that will hold the resulting data.
+          *
+          * @return FALSE when all data is processed, TRUE otherwise.
+          */
+      virtual bool LastProcess(gnssRinex& gData)
+         throw(ProcessingException);
 
 
          /** Sets if a NEU system will be used.
@@ -259,14 +289,14 @@ namespace gpstk
           *                be used
           *
           */
-      virtual SolverPPP& setNEU( bool useNEU );
+      virtual SolverPPPFB& setNEU( bool useNEU );
 
 
          /** Get the weight factor multiplying the phase measurements sigmas.
           *  This factor is the code_sigma/phase_sigma ratio.
           */
       virtual double getWeightFactor(void) const
-      { return std::sqrt(weightFactor); };
+      { return pppFilter.getWeightFactor(); };
 
 
          /** Set the weight factor multiplying the phase measurement sigma
@@ -277,13 +307,13 @@ namespace gpstk
           * For instance, if we assign a code sigma of 1 m and a phase sigma
           * of 10 cm, the ratio is 100, and so should be "factor".
           */
-      virtual SolverPPP& setWeightFactor(double factor)
-      { weightFactor = (factor*factor); return (*this); };
+      virtual SolverPPPFB& setWeightFactor(double factor)
+      { pppFilter.setWeightFactor(factor); return (*this); };
 
 
          /// Get coordinates stochastic model pointer
       virtual StochasticModel* getCoordinatesModel(void) const
-      { return pCoordStoModel; };
+      { return pppFilter.getCoordinatesModel(); };
 
 
          /** Set coordinates stochastic model
@@ -291,13 +321,13 @@ namespace gpstk
           * @param pModel      Pointer to StochasticModel associated with
           *                    coordinates.
           */
-      virtual SolverPPP& setCoordinatesModel(StochasticModel* pModel)
-      { pCoordStoModel = pModel; return (*this); };
+      virtual SolverPPPFB& setCoordinatesModel(StochasticModel* pModel)
+      { pppFilter.setCoordinatesModel(pModel); return (*this); };
 
 
          /// Get wet troposphere stochastic model pointer
       virtual StochasticModel* getTroposphereModel(void) const
-      { return pTropoStoModel; };
+      { return pppFilter.getTroposphereModel(); };
 
 
          /** Set wet troposphere stochastic model
@@ -305,13 +335,13 @@ namespace gpstk
           * @param pModel      Pointer to StochasticModel associated with
           *                    wet troposphere.
           */
-      virtual SolverPPP& setTroposphereModel(StochasticModel* pModel)
-      { pTropoStoModel = pModel; return (*this); };
+      virtual SolverPPPFB& setTroposphereModel(StochasticModel* pModel)
+      { pppFilter.setTroposphereModel(pModel); return (*this); };
 
 
          /// Get receiver clock stochastic model pointer
       virtual StochasticModel* getReceiverClockModel(void) const
-      { return pClockStoModel; };
+      { return pppFilter.getReceiverClockModel(); };
 
 
          /** Set receiver clock stochastic model
@@ -319,13 +349,13 @@ namespace gpstk
           * @param pModel      Pointer to StochasticModel associated with
           *                    receiver clock.
           */
-      virtual SolverPPP& setReceiverClockModel(StochasticModel* pModel)
-      { pClockStoModel = pModel; return (*this); };
+      virtual SolverPPPFB& setReceiverClockModel(StochasticModel* pModel)
+      { pppFilter.setReceiverClockModel(pModel); return (*this); };
 
 
          /// Get phase biases stochastic model pointer
       virtual StochasticModel* getPhaseBiasesModel(void) const
-      { return pBiasStoModel; };
+      { return pppFilter.getPhaseBiasesModel(); };
 
 
          /** Set phase biases stochastic model.
@@ -336,44 +366,31 @@ namespace gpstk
           * \warning This method should be used with caution, because model
           * must be of PhaseAmbiguityModel class in order to make sense.
           */
-      virtual SolverPPP& setPhaseBiasesModel(StochasticModel* pModel)
-      { pBiasStoModel = pModel; return (*this); };
+      virtual SolverPPPFB& setPhaseBiasesModel(StochasticModel* pModel)
+      { pppFilter.setPhaseBiasesModel(pModel); return (*this); };
 
 
          /// Get the State Transition Matrix (phiMatrix)
       virtual Matrix<double> getPhiMatrix(void) const
-      { return phiMatrix; };
+      { return pppFilter.getPhiMatrix(); };
 
 
-         /** Set the State Transition Matrix (phiMatrix)
+         /** Returns the solution associated to a given TypeID.
           *
-          * @param pMatrix     State Transition matrix.
-          *
-          * \warning Process() methods set phiMatrix and qMatrix according to
-          * the stochastic models already defined. Therefore, you must use
-          * the Compute() methods directly if you use this method.
-          *
+          * @param type    TypeID of the solution we are looking for.
           */
-      virtual SolverPPP& setPhiMatrix(const Matrix<double> & pMatrix)
-      { phiMatrix = pMatrix; return (*this); };
+      virtual double getSolution(const TypeID& type) const
+         throw(InvalidRequest)
+      { return pppFilter.getSolution(type); };
 
 
-         /// Get the Noise covariance matrix (QMatrix)
-      virtual Matrix<double> getQMatrix(void) const
-      { return qMatrix; };
-
-
-         /** Set the Noise Covariance Matrix (QMatrix)
+         /** Returns the variance associated to a given TypeID.
           *
-          * @param pMatrix     Noise Covariance matrix.
-          *
-          * \warning Process() methods set phiMatrix and qMatrix according to
-          * the stochastic models already defined. Therefore, you must use
-          * the Compute() methods directly if you use this method.
-          *
+          * @param type    TypeID of the variance we are looking for.
           */
-      virtual SolverPPP& setQMatrix(const Matrix<double> & pMatrix)
-      { qMatrix = pMatrix; return (*this); };
+      virtual double getVariance(const TypeID& type) const
+         throw(InvalidRequest)
+      {  return pppFilter.getVariance(type); };
 
 
          /// Returns an index identifying this object.
@@ -385,111 +402,26 @@ namespace gpstk
 
 
          /// Destructor.
-      virtual ~SolverPPP() {};
+      virtual ~SolverPPPFB() {};
 
 
    private:
 
 
-         /// Number of variables
-      int numVar;
+         /// Boolean indicating if this is the first iteration of this filter
+      bool firstIteration;
 
 
-         /// Number of unknowns
-      int numUnknowns;
+         /// List holding the information regarding every observation
+      std::list<gnssRinex> ObsData;
 
 
-         /// Number of measurements
-      int numMeas;
+         /// Set storing the TypeID's that we want to keep
+      TypeIDSet keepTypeSet;
 
 
-         /// Weight factor for phase measurements
-      double weightFactor;
-
-
-         /// Pointer to stochastic model for coordinates
-      StochasticModel* pCoordStoModel;
-
-
-         /// Pointer to stochastic model for troposphere
-      StochasticModel* pTropoStoModel;
-
-
-         /// Pointer to stochastic model for receiver clock
-      StochasticModel* pClockStoModel;
-
-
-         /// Pointer to stochastic model for phase biases
-      StochasticModel* pBiasStoModel;
-
-
-         /// State Transition Matrix (PhiMatrix)
-      Matrix<double> phiMatrix;
-
-
-         /// Noise covariance matrix (QMatrix)
-      Matrix<double> qMatrix;
-
-
-         /// Geometry matrix
-      Matrix<double> hMatrix;
-
-
-         /// Weights matrix
-      Matrix<double> rMatrix;
-
-
-         /// Measurements vector (Prefit-residuals)
-      Vector<double> measVector;
-
-
-         /// Boolean indicating if this filter was run at least once
-      bool firstTime;
-
-
-         /// Set with all satellites being processed this epoch
-      SatIDSet satSet;
-
-
-         /// A structure used to store Kalman filter data.
-      struct filterData
-      {
-            // Default constructor initializing the data in the structure
-         filterData() : ambiguity(0.0) {};
-
-         double ambiguity;                  ///< Ambiguity value.
-         std::map<TypeID, double> vCovMap;  ///< Variables covariance values.
-         std::map<SatID,  double> aCovMap;  ///< Ambiguities covariance values.
-
-      };
-
-
-         /// Map holding the information regarding every satellite
-      std::map<SatID, filterData> KalmanData;
-
-
-         /// General Kalman filter object
-      SimpleKalmanFilter kFilter;
-
-
-         /// Initializing method.
-      void Init(void);
-
-
-         /// Constant stochastic model
-      static StochasticModel constantModel;
-
-
-         /// Random Walk stochastic model
-      static RandomWalkModel rwalkModel;
-
-
-         /// White noise stochastic model
-      static WhiteNoiseModel whitenoiseModel;
-
-
-         /// Phase biases stochastic model (constant + white noise)
-      static PhaseAmbiguityModel biasModel;
+         /// General PPP Kalman filter object
+      SolverPPP pppFilter;
 
 
          /// Initial index assigned to this class.
@@ -503,9 +435,9 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // End of class 'SolverPPP'
+   }; // End of class 'SolverPPPFB'
 
       //@}
 
 }  // End of namespace gpstk
-#endif   // SOLVERPPP_HPP
+#endif   // SOLVERPPPFB_HPP
