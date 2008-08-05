@@ -260,7 +260,7 @@ namespace gpstk
           * \warning The minimum number of cycles allowed is "1". In fact, if
           * you introduce a smaller number, 'cycles' will be set to "1".
           */
-      virtual void ReProcess(const int cycles = 1)
+      virtual void ReProcess(int cycles = 1)
          throw(ProcessingException);
 
 

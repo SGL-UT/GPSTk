@@ -185,7 +185,7 @@ namespace gpstk
        * \warning The minimum number of cycles allowed is "1". In fact, if
        * you introduce a smaller number, 'cycles' will be set to "1".
        */
-   void SolverPPPFB::ReProcess(const int cycles)
+   void SolverPPPFB::ReProcess(int cycles)
       throw(ProcessingException)
    {
 
