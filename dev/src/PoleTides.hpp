@@ -44,11 +44,12 @@
 
 namespace gpstk
 {
+
       /** @addtogroup GPSsolutions */
       //@{
 
       /** This class computes the effect of pole tides, or more properly
-       *  called, "rotational deformations due to polar motion" at a given
+       *  called "rotational deformations due to polar motion", at a given
        *  position and epoch.
        *
        *  The model used is the one proposed by the "International Earth
@@ -81,36 +82,36 @@ namespace gpstk
          /// Default constructor. Sets zero pole displacement
       PoleTides() : xdisp(0.0), ydisp(0.0) {};
 
+
          /** Common constructor
+          *
           * @param x     Pole displacement x, in arcseconds
           * @param y     Pole displacement y, in arcseconds
           */
-      PoleTides(const double& x, 
-                const double& y) : xdisp(x), ydisp(y) {};
-
-         /// Destructor
-      virtual ~PoleTides() {};
+      PoleTides( const double& x,
+                 const double& y )
+         : xdisp(x), ydisp(y) {};
 
 
          /** Returns the effect of pole tides (meters) at the given
           *  position and epoch, in the Up-East-North (UEN) reference frame.
           *
-          * @param[in] t Epoch to look up
-          * @param[in] p Position of interest
+          * @param[in]  t Epoch to look up
+          * @param[in]  p Position of interest
           *
           * @return a Triple with the pole tide effect, in meters and in
           *    the UEN reference frame.
           *
           * @throw InvalidRequest If the request can not be completed for any
-          *    reason, this is thrown. The text may have additional 
-          *    information as to why the request failed.
+          *    reason, this is thrown. The text may have additional
+          *    information about the reason the request failed.
           *
           * @warning In order to use this method, you must have previously
-          *    set the current pole displacement parameters
+          *    set the current pole displacement parameters.
           *
           */
-      Triple getPoleTide(const DayTime& t, 
-                         const Position& p)
+      Triple getPoleTide( const DayTime& t,
+                          const Position& p )
          throw(InvalidRequest);
 
 
@@ -124,14 +125,14 @@ namespace gpstk
           * @return a Triple with the pole tide effect, in meters and in
           *    the UEN reference frame.
           *
-          * @throw InvalidRequest If the request can not be completed for 
+          * @throw InvalidRequest If the request can not be completed for
           *    any reason, this is thrown. The text may have additional
-          *    information as to why the request failed.
+          *    information about the reason the request failed.
           */
-      Triple getPoleTide(const DayTime& t,
-                         const Position& p,
-                         const double& x,
-                         const double& y)
+      Triple getPoleTide( const DayTime& t,
+                          const Position& p,
+                          const double& x,
+                          const double& y )
          throw(InvalidRequest)
       { setXY(x,y); return (getPoleTide(t, p)); };
 
@@ -143,21 +144,26 @@ namespace gpstk
           *
           * @return This same object
           */
-      PoleTides& setXY(const double& x,
-                       const double& y);
+      PoleTides& setXY( const double& x,
+                        const double& y );
 
 
-         /// Method to get the x pole displacement parameter
+         /// Method to get the x pole displacement parameter, in arcseconds
       double getX(void) const
       { return xdisp; };
 
 
-         /// Method to get the y pole displacement parameter
+         /// Method to get the y pole displacement parameter, in arcseconds
       double getY(void) const
       { return ydisp; };
 
 
+         /// Destructor
+      virtual ~PoleTides() {};
+
+
    private:
+
 
          /// Pole displacement x, in arcseconds
       double xdisp;
@@ -167,10 +173,9 @@ namespace gpstk
       double ydisp;
 
 
-   }; // end class PoleTides
-
+   }; // End of class 'PoleTides'
 
       //@}
 
-} // namespace gpstk
-#endif  // POLETIDES_HPP
+}  // End of namespace gpstk
+#endif   // POLETIDES_HPP

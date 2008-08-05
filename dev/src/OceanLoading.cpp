@@ -2,7 +2,8 @@
 
 /**
  * @file OceanLoading.cpp
- * This class computes the wind-up effect on the phase observables, in radians.
+ * This class computes the effect of ocean tides at a given position
+ * and epoch.
  */
 
 //============================================================================
@@ -22,8 +23,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
 
@@ -33,6 +34,7 @@
 
 namespace gpstk
 {
+
 
       /* Returns the effect of ocean tides loading (meters) at the given
        * station and epoch, in the Up-East-North (UEN) reference frame.
@@ -45,10 +47,10 @@ namespace gpstk
        *
        * @throw InvalidRequest If the request can not be completed for any
        * reason, this is thrown. The text may have additional information
-       * as to why the request failed.
+       * about the reason the request failed.
        */
-   Triple OceanLoading::getOceanLoading(const string& name,
-                                        const DayTime& t)
+   Triple OceanLoading::getOceanLoading( const string& name,
+                                         const DayTime& t )
       throw(InvalidRequest)
    {
 
@@ -56,10 +58,12 @@ namespace gpstk
       const int NUM_HARMONICS = 11;
 
       Matrix<double> harmonics(6,11,0.0);
+
          // Get harmonics data from file
       harmonics = blqData.getTideHarmonics(name);
 
       Vector<double> arguments(11,0.0);
+
          // Compute arguments
       arguments = getArg(t);
 
@@ -67,15 +71,20 @@ namespace gpstk
 
       for(int i=0; i<NUM_COMPONENTS;  i++)
       {
+
          double temp(0.0);
          for(int k=0; k<NUM_HARMONICS; k++)
          {
+
             temp += harmonics(i,k) * 
                     std::cos( arguments(k) - harmonics( (i+3),k)*DEG_TO_RAD );
+
          }
+
             // This Triple is in Up, West, South reference frame
          oLoading[i] = temp;
-      }
+
+      }  // End of 'for(int i=0; i<NUM_COMPONENTS;  i++)'
 
          // Let's change Triple to Up, East, North [UEN] reference frame
       oLoading[1] = -oLoading[1];
@@ -83,24 +92,32 @@ namespace gpstk
 
       return oLoading;
 
-   } // End of OceanLoading::getOceanLoading()
+   }  // End of method 'OceanLoading::getOceanLoading()'
 
 
-      /* Sets name of BLQ file containing ocean tides harmonics data.
+
+      /* Sets the name of BLQ file containing ocean tides harmonics data.
+       *
        * @param name      Name of BLQ tides harmonics data file.
        */
    OceanLoading& OceanLoading::setFilename(const string& name)
    {
+
       fileData = name;
+
       blqData.open(fileData);
 
       return (*this);
-   } // End of OceanLoading::setFilename()
+
+   }  // End of meters 'OceanLoading::setFilename()'
 
 
-      /* Compute the value of the corresponding astronomical arguments, 
+
+      /* Compute the value of the corresponding astronomical arguments,
        * in radians. This routine is based on IERS routine ARG.f.
+       *
        * @param time      Epoch of interest
+       *
        * @return A Vector<double> of 11 elements with the corresponding
        * astronomical arguments to be used in ocean loading model.
        */
@@ -153,38 +170,43 @@ namespace gpstk
          // Get day of year
       short year(time.year());
 
-        // Fractional part of day, in seconds
+         // Fractional part of day, in seconds
       double fday(time.DOYsecond());
 
-      // Compute time
+         // Compute time
       double d(time.DOY()+365.0*(year-1975.0)+floor((year-1973.0)/4.0));
       double t((27392.500528+1.000000035*d)/36525.0);
 
-         // Mean longitude of Sun at beggining of day
+         // Mean longitude of Sun at beginning of day
       double H0((279.69668+(36000.768930485+3.03e-4*t)*t)*DEG_TO_RAD);
 
-         // Mean longitude of Moon at beggining of day
-      double S0( (((1.9e-6*t - 0.001133)*t + 
+         // Mean longitude of Moon at beginning of day
+      double S0( (((1.9e-6*t - 0.001133)*t +
                     481267.88314137)*t + 270.434358)*DEG_TO_RAD );
 
-         // Mean longitude of lunar perigee at beggining of day
-      double P0( (((-1.2e-5*t - 0.010325)*t + 
+         // Mean longitude of lunar perigee at beginning of day
+      double P0( (((-1.2e-5*t - 0.010325)*t +
                     4069.0340329577)*t + 334.329653)*DEG_TO_RAD );
 
       for(int k=0; k<NUM_HARMONICS; k++)
       {
+
          double temp( sig(k)*fday + angfac(0,k)*H0 + 
                       angfac(1,k)*S0 + angfac(2,k)*P0 + angfac(3,k)*TWO_PI );
+
          arguments(k) = fmod(temp,TWO_PI);
+
          if (arguments(k) < 0.0)
          {
             arguments(k) = arguments(k) + TWO_PI;
          }
-      }
+
+      }  // End of 'for(int k=0; k<NUM_HARMONICS; k++)'
 
       return arguments;
 
-   } // End of OceanLoading::getArg()
+   }  // End of method 'OceanLoading::getArg()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk

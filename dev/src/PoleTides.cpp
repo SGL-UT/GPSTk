@@ -37,21 +37,22 @@ namespace gpstk
       /* Returns the effect of pole tides (meters) at the given
        * position and epoch, in the Up-East-North (UEN) reference frame.
        *
-       * @param[in] p Position of interest
+       * @param[in]  t Epoch to look up
+       * @param[in]  p Position of interest
        *
        * @return a Triple with the pole tide effect, in meters and in
        *    the UEN reference frame.
        *
-       * @throw InvalidRequest If the request can not be completed for 
+       * @throw InvalidRequest If the request can not be completed for
        *    any reason, this is thrown. The text may have additional
-       *    information as to why the request failed.
+       *    information about the reason the request failed.
        *
        * @warning In order to use this method, you must have previously
        *    set the current pole displacement parameters
        *
        */
-   Triple PoleTides::getPoleTide(const DayTime& t,
-                                 const Position& p)
+   Triple PoleTides::getPoleTide( const DayTime& t,
+                                  const Position& p )
       throw(InvalidRequest)
    {
 
@@ -59,17 +60,18 @@ namespace gpstk
       Triple res(0.0, 0.0, 0.0);
 
          // Declare J2000 reference time: January 1st, 2000, at noon
-      const DayTime j2000(2000, 1, 1, 12, 00, 0.0);
+      const DayTime j2000(2000, 1, 1, 12, 0, 0.0);
 
 
       try
       {
+
             // Get current position's latitude and longitude, in radians
          double latitude(p.geodeticLatitude()*DEG_TO_RAD);
          double longitude(p.longitude()*DEG_TO_RAD);
 
             // Compute appropriate running averages
-            // Get time difference between current epoch and 
+            // Get time difference between current epoch and
             // J2000.0, in years
          double timedif((t.MJD() - j2000.MJD())/365.25);
 
@@ -80,14 +82,14 @@ namespace gpstk
          double m1(xdisp-xpbar);
          double m2(ypbar-ydisp);
 
-            // Now, compute useful values
+            // Now, compute some useful values
          double sin2lat(std::sin(2.0*latitude));
          double cos2lat(std::cos(2.0*latitude));
          double sinlat(std::sin(latitude));
          double sinlon(std::sin(longitude));
          double coslon(std::cos(longitude));
 
-            // Finally, get the pole tide values, in UEN reference 
+            // Finally, get the pole tide values, in UEN reference
             // frame and meters
          res[0] = -0.033 * sin2lat * ( m1*coslon + m2*sinlon );
          res[1] = +0.009 * sinlat  * ( m1*sinlon - m2*coslon );
@@ -100,13 +102,16 @@ namespace gpstk
       } // End of try block
       catch(...)
       {
+
          InvalidRequest ir("Unknown error when computing pole tides.");
          GPSTK_THROW(ir);
+
       }
 
       return res;
 
-   } // End PoleTides::getPoleTide
+   }  // End of method 'PoleTides::getPoleTide()'
+
 
 
       /* Method to set the pole displacement parameters
@@ -116,14 +121,17 @@ namespace gpstk
        *
        * @return This same object
        */
-   PoleTides& PoleTides::setXY(const double& x,
-                               const double& y)
+   PoleTides& PoleTides::setXY( const double& x,
+                                const double& y )
    {
+
       xdisp = x;
       ydisp = y;
 
       return (*this);
-   };
+
+   }  // End of method 'PoleTides::setXY()'
 
 
-} // end namespace gpstk
+
+}  // End of namespace gpstk
