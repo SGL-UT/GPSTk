@@ -243,6 +243,93 @@ namespace gpstk
          throw(ConfFileException);
 
 
+         /** Method to fetch (as string) the first value of a given
+          *  variable list.
+          *
+          * In this context, a variable list is the same as a variable but
+          * it is composed of several parts (words), separated by spaces.
+          *
+          * @param variableList   Variable list name.
+          * @param section        Section the variable list belongs to.
+          *
+          * \warning This method will MODIFY the original content of
+          * 'variableList'.
+          */
+      virtual string fetchListValue( string variableList,
+                                     string section = "DEFAULT" )
+         throw(ConfFileException);
+
+
+         /** Method to fetch (as double) the first value of a given
+          *  variable list.
+          *
+          * In this context, a variable list is the same as a variable but
+          * it is composed of several parts (words), separated by spaces.
+          *
+          * @param variableList   Variable list name.
+          * @param section        Section the variable list belongs to.
+          *
+          * \warning This method will MODIFY the original content of
+          * 'variableList'.
+          */
+      virtual double fetchListValueAsDouble( string variableList,
+                                             string section = "DEFAULT" )
+         throw(ConfFileException)
+      { return StringUtils::asDouble( fetchListValue(variableList,section) ); };
+
+
+         /** Method to fetch (as integer) the first value of a given
+          *  variable list.
+          *
+          * In this context, a variable list is the same as a variable but
+          * it is composed of several parts (words), separated by spaces.
+          *
+          * @param variableList   Variable list name.
+          * @param section        Section the variable list belongs to.
+          *
+          * \warning This method will MODIFY the original content of
+          * 'variableList'.
+          */
+      virtual int fetchListValueAsInt( string variableList,
+                                       string section = "DEFAULT" )
+         throw(ConfFileException)
+      { return StringUtils::asInt( fetchListValue(variableList,section) ); };
+
+
+         /** Method to fetch (as boolean) the first value of a given
+          *  variable list.
+          *
+          * In this context, a variable list is the same as a variable but
+          * it is composed of several parts (words), separated by spaces.
+          *
+          * @param variableList   Variable list name.
+          * @param section        Section the variable list belongs to.
+          *
+          * \warning This method will MODIFY the original content of
+          * 'variableList'.
+          *
+          * \warning If variable list is empty, it will return FALSE.
+          */
+      virtual bool fetchListValueAsBoolean( string variableList,
+                                            string section = "DEFAULT" )
+         throw(ConfFileException);
+
+
+         /** Method to get the number of items in a given variable list.
+          *
+          * In this context, a variable list is the same as a variable but
+          * it is composed of several parts (words), separated by spaces.
+          *
+          * @param variableList   Variable list name.
+          * @param section        Section the variable list belongs to.
+          *
+          */
+      virtual int getNumItem( string variableList,
+                              string section = "DEFAULT" )
+         throw(ConfFileException)
+      { return StringUtils::numWords( getValue( variableList, section ) ); };
+
+
          /** Method to get the description of a given variable
           *
           * @param variable   Variable name.

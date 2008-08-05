@@ -258,6 +258,7 @@ namespace gpstk
 
       try
       {
+
             // Check if section and variable exist
          if( ifExist(variable, section) )
          {
@@ -267,6 +268,7 @@ namespace gpstk
          {
             return "";
          }
+
       }
       catch (ConfFileException& e)
       {
@@ -294,9 +296,11 @@ namespace gpstk
 
       try
       {
+
             // Check if section and variable exist
          if( ifExist(variable, section) )
          {
+
                // Get value and convert to uppercase
             string result(confData[section][variable].value);
 
@@ -305,16 +309,22 @@ namespace gpstk
                // Test if it is "TRUE" or "FALSE"
             if( result == "TRUE" )
             {
+
                return true;
+
             }
             else
             {
+
                if( result == "FALSE" )
                {
+
                   return false;
+
                }
                else
                {
+
                      // Throw an exception if value is neither TRUE nor FALSE
                   ConfFileException e( "Variable name '" +
                                        variable + "' in configuration file '" +
@@ -322,14 +332,18 @@ namespace gpstk
                                        "' is neither TRUE nor FALSE.");
 
                   GPSTK_THROW(e);
-               }
-            }
 
-         }
+               }  // End of 'if( result == "FALSE" )'
+
+            }  // End of 'if( result == "TRUE" )'
+
+         }  // End of 'if( ifExist(variable, section) )'
          else
          {
+
                // Return false by default if variable does not exist
             return false;
+
          }
 
       }
@@ -339,6 +353,124 @@ namespace gpstk
       }
 
    }  // End of 'ConfDataReader::getValueAsBoolean()'
+
+
+
+      /* Method to fetch (as string) the first value of a given
+       * variable list.
+       *
+       * In this context, a variable list is the same as a variable but
+       * it is composed of several parts (words), separated by spaces.
+       *
+       * @param variableList   Variable list name.
+       * @param section        Section the variable list belongs to.
+       *
+       * \warning This method will MODIFY the original content of
+       * 'variableList'.
+       */
+   string ConfDataReader::fetchListValue( string variableList,
+                                          string section )
+      throw(ConfFileException)
+   {
+
+      try
+      {
+
+            // Let's make sure that section and variable names are uppercase
+         section      = StringUtils::upperCase(section);
+         variableList = StringUtils::upperCase(variableList);
+
+            // Store the original value of 'variableList'
+         string origValue( getValue(variableList, section) );
+
+            // Get the first word in 'originalValue'
+         string firstValue( StringUtils::stripFirstWord(origValue) );
+
+            // Modify the originalValue value
+         confData[section][variableList].value = StringUtils::strip(origValue);
+
+            // Return the first value
+         return ( StringUtils::strip(firstValue) );
+
+      }
+      catch (ConfFileException& e)
+      {
+         GPSTK_RETHROW(e);
+      }
+
+   }  // End of method 'ConfDataReader::fetchListValue()'
+
+
+
+      /* Method to fetch (as boolean) the first value of a given
+       * variable list.
+       *
+       * In this context, a variable list is the same as a variable but
+       * it is composed of several parts (words), separated by spaces.
+       *
+       * @param variableList   Variable list name.
+       * @param section        Section the variable list belongs to.
+       *
+       * \warning This method will MODIFY the original content of
+       * 'variableList'.
+       */
+   bool ConfDataReader::fetchListValueAsBoolean( string variableList,
+                                                 string section )
+      throw(ConfFileException)
+   {
+
+      try
+      {
+
+            // Let's make sure that section and variable names are uppercase
+         section      = StringUtils::upperCase(section);
+         variableList = StringUtils::upperCase(variableList);
+
+            // Get first value in 'variableList' and make it uppercase
+         string result( fetchListValue(variableList,section) );
+
+         result = StringUtils::upperCase(result);
+
+            // Test if it is "TRUE" or "FALSE"
+         if( result == "TRUE" )
+         {
+
+            return true;
+
+         }
+         else
+         {
+
+            if( (result == "FALSE") ||
+                (result == "") )    // If list is empty return false
+            {
+
+               return false;
+
+            }
+            else
+            {
+
+                  // Throw an exception if value is neither TRUE nor FALSE
+               ConfFileException e( "Variable list '" +
+                                    variableList + "' in configuration file '" +
+                                    filename +
+                                    "' have a value that is neither TRUE " +
+                                    "nor FALSE.");
+
+               GPSTK_THROW(e);
+
+            }  // End of 'if( result == "FALSE" )'
+
+         }  // End of 'if( result == "TRUE" )'
+
+      }
+      catch (ConfFileException& e)
+      {
+         GPSTK_RETHROW(e);
+      }
+
+   }  // End of method 'ConfDataReader::fetchListValueAsBoolean()'
 
 
 
