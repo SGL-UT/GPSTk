@@ -256,6 +256,9 @@ namespace gpstk
          /** Reprocess the data stored during a previous 'Process()' call.
           *
           * @param cycles     Number of forward-backward cycles (1 by default).
+          *
+          * \warning The minimum number of cycles allowed is "1". In fact, if
+          * you introduce a smaller number, 'cycles' will be set to "1".
           */
       virtual void ReProcess(const int cycles = 1)
          throw(ProcessingException);

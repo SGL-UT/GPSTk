@@ -181,11 +181,22 @@ namespace gpstk
       /* Reprocess the data stored during a previous 'Process()' call.
        *
        * @param cycles     Number of forward-backward cycles, 1 by default.
+       *
+       * \warning The minimum number of cycles allowed is "1". In fact, if
+       * you introduce a smaller number, 'cycles' will be set to "1".
        */
    void SolverPPPFB::ReProcess(const int cycles)
       throw(ProcessingException)
    {
 
+         // Check number of cycles. The minimum allowed is "1".
+      if (cycles < 1)
+      {
+         cycles = 1;
+      }
+
+         // This will prevent further storage of input data when calling
+         // method 'Process()'
       firstIteration = false;
 
       try
