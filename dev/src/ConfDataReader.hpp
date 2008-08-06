@@ -452,9 +452,9 @@ namespace gpstk
          throw(ConfFileException);
 
 
-   };
+   }; // End of class 'ConfDataReader'
 
       //@}
 
-} // namespace
+}  // End of namespace gpstk
 #endif  // CONFDATAREADER_HPP

@@ -232,7 +232,9 @@ namespace gpstk
          }
          catch (...)
          {
+
             return;
+
          }
 
       } // End of 'while(1)'
@@ -596,12 +598,32 @@ namespace gpstk
 
          if(issueException)
          {
-               // Throw an exception if section name doesn't exist
-            ConfFileException e( "Section '" + section
-                                 + "' in configuration file '" + filename
-                                 + "' does not exist.");
 
-            GPSTK_THROW(e);
+               // Check if problem is with section "DEFAULT"
+            if ( section == "DEFAULT" )
+            {
+
+                  // Throw an exception if section name doesn't exist
+               ConfFileException e( "Section '" + section
+                                    + "' in configuration file '" + filename
+                                    + "' does not exist. Does file '"
+                                    + filename + "' exist?. Do you have "
+                                    + "permission to read it?." );
+
+               GPSTK_THROW(e);
+
+            }
+            else
+            {
+
+                  // Throw an exception if section name doesn't exist
+               ConfFileException e( "Section '" + section
+                                    + "' in configuration file '" + filename
+                                    + "' does not exist.");
+
+               GPSTK_THROW(e);
+
+            }
          }
          else
          {
@@ -705,6 +727,7 @@ namespace gpstk
    }  // End of 'ConfDataReader::checkName()'
 
 
-} // namespace
+
+}  // End of namespace gpstk
 
 
