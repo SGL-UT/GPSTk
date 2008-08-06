@@ -377,6 +377,17 @@ namespace gpstk
       { itCurrentSection = confData.begin(); return; };
 
 
+         /** Method to check if a given section/variable pair exists.
+          *
+          * @param variable   Variable name.
+          * @param section    Section the variable belongs to.
+          *
+          */
+      virtual bool ifExist( string variable,
+                            string section )
+         throw(ConfFileException);
+
+
          /** Operator to get the value of a given variable as a string
           *
           * @param variable   Variable name.
@@ -434,17 +445,6 @@ namespace gpstk
           * @param name    Name to the checked.
           */
       virtual bool checkName(string name);
-
-
-         /** Method to check if a given section/variable pair exists.
-          *
-          * @param variable   Variable name.
-          * @param section    Section the variable belongs to.
-          *
-          */
-      virtual bool ifExist( string variable,
-                            string section )
-         throw(ConfFileException);
 
 
          /// Method to store conf data in this class' data map
