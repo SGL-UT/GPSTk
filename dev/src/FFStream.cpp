@@ -1,6 +1,9 @@
 #pragma ident "$Id$"
 
-
+/**
+ * @file FFStream.cpp
+ * Formatted File Stream base class
+ */
 
 //============================================================================
 //
@@ -19,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,33 +30,32 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
 
 
 
-
-
-
-/**
- * @file FFStream.cpp
- * Formatted File Stream base class
- */
-
 #include "FFStream.hpp"
 
 namespace gpstk
 {
-   void FFStream::open(const char* fn, std::ios::openmode mode)
+
+      /*
+       * Overrides fstream:open so derived classes can make appropriate
+       * internal changes (line count, header info, etc).
+       */
+   void FFStream::open( const char* fn,
+                        std::ios::openmode mode )
    {
+
 #ifdef _MSC_VER
       fstream::open(fn, mode);
 #else
@@ -62,32 +64,43 @@ namespace gpstk
       filename = std::string(fn);
       recordNumber = 0;
       clear();
-   }
 
+   }  // End of method 'FFStream::open()'
+
+
+
+      // A function to help debug FFStreams
    void FFStream::dumpState(std::ostream& s) const
    {
+
       s << "filename:" << filename
         << ", recordNumber:" << recordNumber;
       s << ", exceptions:";
+
       if (exceptions() & std::ios::badbit)  s << "bad ";
       if (exceptions() & std::ios::failbit) s << "fail ";
       if (exceptions() & std::ios::eofbit)  s << "eof ";
       if (exceptions() == 0) s << "none";
+
       s << ", rdstate:";
+
       if (rdstate() & std::ios::badbit)  s << "bad ";
       if (rdstate() & std::ios::failbit) s << "fail ";
       if (rdstate() & std::ios::eofbit)  s << "eof ";
       if (rdstate() == 0)  s << "none";
       s << std::endl;
-   }
+
+   }  // End of method 'FFStream::dumpState()'
 
 
-      // the crazy double try block is so that no gpstk::Exception throws 
+
+      // the crazy double try block is so that no gpstk::Exception throws
       // get masked, allowing all exception information (line numbers, text,
       // etc) to be retained.
    void FFStream::tryFFStreamGet(FFData& rec)
       throw(FFStreamError, gpstk::StringUtils::StringException)
    {
+
          // Mark where we start in case there is an error.
       long initialPosition = tellg();
       unsigned long initialRecordNumber = recordNumber;
@@ -104,9 +117,9 @@ namespace gpstk
          {
             mostRecentException = FFStreamError("std::exception thrown: " +
                                                 std::string(e.what()));
-            mostRecentException.addText("In record " + 
+            mostRecentException.addText("In record " +
                   gpstk::StringUtils::asString(recordNumber));
-            mostRecentException.addText("In file " + filename);            
+            mostRecentException.addText("In file " + filename);
             mostRecentException.addLocation(FILE_LOCATION);
             clear();
             seekg(initialPosition);
@@ -118,15 +131,15 @@ namespace gpstk
             // is handled by std::fstream
          catch (EndOfFile& e)
          {
-            e.addText("In record " + 
+            e.addText("In record " +
                       gpstk::StringUtils::asString(recordNumber));
             e.addText("In file " + filename);
             e.addLocation(FILE_LOCATION);
             mostRecentException = e;
          }
-         catch (gpstk::StringUtils::StringException& e)  
+         catch (gpstk::StringUtils::StringException& e)
          {
-            e.addText("In record " + 
+            e.addText("In record " +
                       gpstk::StringUtils::asString(recordNumber));
             e.addText("In file " + filename);
             e.addLocation(FILE_LOCATION);
@@ -136,11 +149,11 @@ namespace gpstk
             recordNumber = initialRecordNumber;
             setstate(std::ios::failbit);
             conditionalThrow();
-         } 
+         }
             // catches some errors we can encounter
-         catch (FFStreamError& e)  
+         catch (FFStreamError& e)
          {
-            e.addText("In record " + 
+            e.addText("In record " +
                       gpstk::StringUtils::asString(recordNumber));
             e.addText("In file " + filename);
             e.addLocation(FILE_LOCATION);
@@ -150,7 +163,7 @@ namespace gpstk
             recordNumber = initialRecordNumber;
             setstate(std::ios::failbit);
             conditionalThrow();
-         } 
+         }
       }
          // this is if you throw an FFStream error in the above catch
          // block because the catch(...) below will mask it otherwise.
@@ -176,7 +189,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         mostRecentException = FFStreamError("std::exception thrown: " + 
+         mostRecentException = FFStreamError("std::exception thrown: " +
                                              std::string(e.what()));
          mostRecentException.addText("In file " + filename);
          mostRecentException.addLocation(FILE_LOCATION);
@@ -190,8 +203,11 @@ namespace gpstk
          mostRecentException.addLocation(FILE_LOCATION);
          setstate(std::ios::failbit);
          conditionalThrow();
-      }  
-   }
+      }
+
+   }  // End of method 'FFStream::tryFFStreamGet()'
+
+
 
       // the crazy double try block is so that no gpstk::Exception throws 
       // get masked, allowing all exception information (line numbers, text,
@@ -228,7 +244,7 @@ namespace gpstk
          }
          catch (gpstk::StringUtils::StringException& e)  
          {
-            e.addText("In record " + 
+            e.addText("In record " +
                       gpstk::StringUtils::asString(recordNumber));
             e.addText("In file " + filename);
             e.addLocation(FILE_LOCATION);
@@ -239,9 +255,9 @@ namespace gpstk
             conditionalThrow();
          } 
             // catches some errors we can encounter
-         catch (FFStreamError& e)  
+         catch (FFStreamError& e)
          {
-            e.addText("In record " + 
+            e.addText("In record " +
                       gpstk::StringUtils::asString(recordNumber));
             e.addText("In file " + filename);
             e.addLocation(FILE_LOCATION);
@@ -250,7 +266,7 @@ namespace gpstk
             recordNumber = initialRecordNumber;
             setstate(std::ios::failbit);
             conditionalThrow();
-         }         
+         }
       }
          // this is if you throw an FFStream error in the above catch
          // block because the catch(...) below will mask it otherwise.
@@ -276,7 +292,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         mostRecentException = FFStreamError("std::exception thrown: " + 
+         mostRecentException = FFStreamError("std::exception thrown: " +
                                              std::string(e.what()));
          mostRecentException.addText("In file " + filename);
          mostRecentException.addLocation(FILE_LOCATION);
@@ -290,8 +306,11 @@ namespace gpstk
          mostRecentException.addLocation(FILE_LOCATION);
          setstate(std::ios::failbit);
          conditionalThrow();
-      }  
-   }
+      }
 
-}
+   }  // End of method 'FFStream::tryFFStreamPut()'
+
+
+
+}  // End of namespace gpstk
 

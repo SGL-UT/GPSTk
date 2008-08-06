@@ -1,10 +1,9 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file FFStream.hpp
- * Formatted File Stream, root class to provide formatted I/O operators ('<<' & '>>')
+ * Formatted File Stream, root class to provide formatted I/O
+ * operators ('<<' & '>>')
  */
 
 #ifndef GPSTK_FFSTREAM_HPP
@@ -27,7 +26,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -35,19 +34,16 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-
-
 
 
 
@@ -73,10 +69,10 @@ namespace gpstk
       /// This gets thrown if a valid EOF occurs on formattedGetLine.
       /// @ingroup exceptionclass
    NEW_EXCEPTION_CLASS(EndOfFile, gpstk::FFStreamError);
-   
+
       /**
        * Formatted File Stream (FFStream).
-       * This is just a root class to provice the single point formatted i/o
+       * This is just a root class to provide the single point formatted i/o
        * operators (such as '<<' & '>>' ).
        *
        * As a special design consideration,
@@ -106,19 +102,19 @@ namespace gpstk
        *
        * Many file types have header data as part of the file format. When
        * reading the file, the reader is not required to explicitly read in
-       * the header to access the data.  To facilitate this, each of these 
+       * the header to access the data.  To facilitate this, each of these
        * stream classes has an internal header object that will store the
        * header. The stream keeps track of whether it read the
        * header or not, and reads the header if the internal state says
-       * it hasn't been read.  When writing a file, the stream's 
+       * it hasn't been read.  When writing a file, the stream's
        * internal header is used for those formats which use header information
        * to determine what data is in the records.
-       * See RinexObsHeader::reallyGetRecord() and 
+       * See RinexObsHeader::reallyGetRecord() and
        * RinexObsData::reallyGetRecord()
        * for an example of this.
        *
        * \sa FFData for more information
-       * \sa RinexObsData::reallyGetRecord() and 
+       * \sa RinexObsData::reallyGetRecord() and
        *     RinexObsHeader::reallyGetRecord() for more information for files
        *     that read header data.
        *
@@ -128,39 +124,72 @@ namespace gpstk
    class FFStream : public std::fstream
    {
    public:
-         /// virtual desctructor
-      virtual ~FFStream(void) {}
+
+         /// Virtual destructor
+      virtual ~FFStream(void) {};
+
 
          /**
           * Default constructor
           */
       FFStream()
-            : recordNumber(0)
-         {}
+            : recordNumber(0) {};
 
-         /**
-          * Constructor.
+
+         /** Common constructor.
+          *
           * @param fn file name.
           * @param mode file open mode (std::ios)
           */
-      FFStream(const char* fn, std::ios::openmode mode=std::ios::in)
-         : 
+      FFStream( const char* fn,
+                std::ios::openmode mode=std::ios::in )
+         :
 #ifdef _MSC_VER
-            fstream(fn, mode), 
+            fstream(fn, mode),
 #else
-            std::fstream(fn, mode), 
+            std::fstream(fn, mode),
 #endif
-            recordNumber(0), filename(fn) 
-         {clear();}
+            recordNumber(0), filename(fn)
+      { clear(); }
+
+
+         /** Common constructor.
+          *
+          * @param fn file name.
+          * @param mode file open mode (std::ios)
+          */
+      FFStream( const std::string& fn,
+                std::ios::openmode mode=std::ios::in )
+         :
+#ifdef _MSC_VER
+            fstream(fn.c_str(), mode),
+#else
+            std::fstream(fn.c_str(), mode),
+#endif
+            recordNumber(0), filename(fn)
+      { clear(); };
+
 
          /**
           * Overrides fstream:open so derived classes can make appropriate
           * internal changes (line count, header info, etc).
           */
-      virtual void open(const char* fn, std::ios::openmode mode);
+      virtual void open( const char* fn,
+                         std::ios::openmode mode );
 
-      /// A function to help debug FFStreams
+
+         /**
+          * Overrides fstream:open so derived classes can make appropriate
+          * internal changes (line count, header info, etc).
+          */
+      virtual void open( const std::string& fn,
+                         std::ios::openmode mode )
+      { open( fn.c_str(), mode ); };
+
+
+         /// A function to help debug FFStreams
       void dumpState(std::ostream& s = std::cout) const;
+
 
          /**
           * Throws \a mostRecentException only if the stream is enabled
@@ -172,43 +201,55 @@ namespace gpstk
           * where \a ffstreamobject is the name of your stream object.
           */
       inline void conditionalThrow(void) throw(FFStreamError)
-         { 
-            if (exceptions() & std::fstream::failbit)
-               GPSTK_THROW(mostRecentException); 
-         } 
+      {
+
+         if (exceptions() & std::fstream::failbit)
+         {
+            GPSTK_THROW(mostRecentException);
+         }
+
+      };
+
 
          ///@name Data members
          ///@{
          /// This stores the most recently thrown exception.
       FFStreamError mostRecentException;
 
+
          /// keeps track of the number of records read
       unsigned int recordNumber;
 
+
          /// file name
       std::string filename;
+
          //@}
-      
+
+
          /// FFData is a friend so it can access the try* functions.
       friend class FFData;
 
+
    protected:
-         /// Encapsulates shared try/catch blocks for all file types
-         /// to hide std::exception.
-      virtual void tryFFStreamGet(FFData& rec) 
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+
 
          /// Encapsulates shared try/catch blocks for all file types
          /// to hide std::exception.
-      virtual void tryFFStreamPut(const FFData& rec) 
+      virtual void tryFFStreamGet(FFData& rec)
          throw(FFStreamError, gpstk::StringUtils::StringException);
 
-   };   
-   
-   //@}
 
-} // end of namespace
+         /// Encapsulates shared try/catch blocks for all file types
+         /// to hide std::exception.
+      virtual void tryFFStreamPut(const FFData& rec)
+         throw(FFStreamError, gpstk::StringUtils::StringException);
 
 
-#endif
+   }; // End of class 'FFStream'
+
+      //@}
+
+}  // End of namespace gpstk
+#endif   // GPSTK_FFSTREAM_HPP
 

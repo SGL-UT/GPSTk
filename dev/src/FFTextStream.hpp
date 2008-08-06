@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file FFTextStream.hpp
  * An FFStream for text files
@@ -27,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -35,19 +33,16 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-
-
 
 
 
@@ -55,45 +50,71 @@
 
 namespace gpstk
 {
-   /** @addtogroup formattedfile */
-   //@{
+
+      /** @addtogroup formattedfile */
+      //@{
 
       /**
-       * An FFStream that is meant for reading text.  This also includes
-       * an internal line count and a read line method. When reading and
+       * An FFStream is meant for reading text.  This also includes an
+       * internal line count and a read line method. When reading and
        * using the formattedGetLine() call, the lineNumber automatically
        * increments.  However, any other read and all write calls do not
        * update the line number - the derived class or programmer
-       * needs to make sure
-       * that the reader or writer increments lineNumber in these cases.
+       * needs to make sure that the reader or writer increments
+       * lineNumber in these cases.
        */
    class FFTextStream : public FFStream
    {
    public:
-         /// destructor
-      virtual ~FFTextStream() {}
-      
+
+
+         /// Destructor
+      virtual ~FFTextStream() {};
+
+
          /// Default constructor
       FFTextStream()
-            : lineNumber(0)
-         {}
+            : lineNumber(0) {};
 
-         /**
-          * Constructor.
+
+         /** Common constructor.
+          *
           * @param fn file name.
           * @param mode file open mode (std::ios)
           */
-      FFTextStream(const char* fn, std::ios::openmode mode=std::ios::in)
+      FFTextStream( const char* fn,
+                    std::ios::openmode mode=std::ios::in )
          : FFStream(fn, mode), lineNumber(0)
-         {}
+      {};
+
+
+         /** Common constructor.
+          *
+          * @param fn file name.
+          * @param mode file open mode (std::ios)
+          */
+      FFTextStream( const std::string& fn,
+                    std::ios::openmode mode=std::ios::in )
+         : FFStream( fn.c_str(), mode ), lineNumber(0)
+      {};
+
 
          /// Overrides open to reset the line number.
-      virtual void open(const char* fn, std::ios::openmode mode)
-         { FFStream::open(fn, mode); lineNumber = 0; }
+      virtual void open( const char* fn,
+                         std::ios::openmode mode )
+      { FFStream::open(fn, mode); lineNumber = 0; };
 
-         /// the internal line count. When writing, make sure
+
+         /// Overrides open to reset the line number.
+      virtual void open( const std::string& fn,
+                         std::ios::openmode mode )
+      { open(fn.c_str(), mode); };
+
+
+         /// The internal line count. When writing, make sure
          /// to increment this.
       unsigned int lineNumber;
+
 
          /**
           * Like std::istream::getline but checks for EOF and removes '/r'.
@@ -110,63 +131,73 @@ namespace gpstk
           * @warning There is a maximum line length of 256 characters when
           * using this function.
           */
-      inline void formattedGetLine(std::string& line, 
-                                   const bool expectEOF = false)
+      inline void formattedGetLine( std::string& line,
+                                    const bool expectEOF = false )
          throw(EndOfFile, FFStreamError, gpstk::StringUtils::StringException);
-   
+
 
    protected:
-         /// calls FFStream::tryFFStreamGet and adds line number information
-      virtual void tryFFStreamGet(FFData& rec) 
-         throw(FFStreamError, gpstk::StringUtils::StringException)
-         {
-            unsigned int initialLineNumber = lineNumber;
 
-            try
-            {
-               FFStream::tryFFStreamGet(rec);
-            }
-            catch(gpstk::Exception& e)
-            {
-               e.addText(std::string("Near file line ") + 
-                         gpstk::StringUtils::asString(lineNumber));
-               lineNumber = initialLineNumber;
-               mostRecentException = e;
-               conditionalThrow();
-            }
+
+         /// calls FFStream::tryFFStreamGet and adds line number information
+      virtual void tryFFStreamGet(FFData& rec)
+         throw(FFStreamError, gpstk::StringUtils::StringException)
+      {
+
+         unsigned int initialLineNumber = lineNumber;
+
+         try
+         {
+            FFStream::tryFFStreamGet(rec);
          }
+         catch(gpstk::Exception& e)
+         {
+            e.addText( std::string("Near file line ") +
+                       gpstk::StringUtils::asString(lineNumber) );
+            lineNumber = initialLineNumber;
+            mostRecentException = e;
+            conditionalThrow();
+         }
+
+       };
+
 
          /// calls FFStream::tryFFStreamPut and adds line number information
-      virtual void tryFFStreamPut(const FFData& rec) 
+      virtual void tryFFStreamPut(const FFData& rec)
          throw(FFStreamError, gpstk::StringUtils::StringException)
-         {
-            unsigned int initialLineNumber = lineNumber;
+      {
 
-            try
-            {
-               FFStream::tryFFStreamPut(rec);
-            }
-            catch(gpstk::Exception& e)
-            {
-               e.addText(std::string("Near file line ") + 
-                         gpstk::StringUtils::asString(lineNumber));
-               lineNumber = initialLineNumber;
-               mostRecentException = e;
-               conditionalThrow();
-            }
+         unsigned int initialLineNumber = lineNumber;
+
+         try
+         {
+            FFStream::tryFFStreamPut(rec);
+         }
+         catch(gpstk::Exception& e)
+         {
+            e.addText( std::string("Near file line ") +
+                       gpstk::StringUtils::asString(lineNumber) );
+            lineNumber = initialLineNumber;
+            mostRecentException = e;
+            conditionalThrow();
          }
 
-   };
+      }
+
+   }; // End of class 'FFTextStream'
+
+
 
       // the reason for checking ffs.eof() in the try AND catch block is
       // because if the user enabled exceptions on the stream with exceptions()
       // then eof could throw an exception, in which case we need to catch it
       // and rethrow an EOF or FFStream exception.  In any event, EndOfFile
       // gets thrown whenever there's an EOF and expectEOF is true
-   void FFTextStream::formattedGetLine(std::string& line, 
-                                       const bool expectEOF)
+   void FFTextStream::formattedGetLine( std::string& line,
+                                        const bool expectEOF )
          throw(EndOfFile, FFStreamError, gpstk::StringUtils::StringException)
    {
+
       try
       {
          const int MAX_LINE_LENGTH = 256;
@@ -192,6 +223,7 @@ namespace gpstk
       }
       catch(std::exception &e)
       {
+
             // catch EOF when exceptions are enabled
          if ( (gcount() == 0) && eof())
          {
@@ -205,18 +237,19 @@ namespace gpstk
                FFStreamError err("Unexpected EOF");
                GPSTK_THROW(err);
             }
-         } 
+         }
          else
          {
             FFStreamError err("Critical file error: " +
                               std::string(e.what()));
             GPSTK_THROW(err);
-         }
-      }
-   }
+         }  // End of 'if ( (gcount() == 0) && eof())'
 
-   //@}
+      }  // End of 'try-catch' block
 
-}  // namespace
+   }  // End of method 'FFTextStream::formattedGetLine()'
 
-#endif
+      //@}
+
+}  // End of namespace gpstk
+#endif   // GPSTK_FFTEXTSTREAM_HPP
