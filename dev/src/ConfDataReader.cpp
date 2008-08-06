@@ -239,7 +239,7 @@ namespace gpstk
 
       } // End of 'while(1)'
 
-   }  // End of ConfDataReader::loadData()
+   }  // End of method 'ConfDataReader::loadData()'
 
 
 
@@ -258,26 +258,77 @@ namespace gpstk
       section  = StringUtils::upperCase(section);
       variable = StringUtils::upperCase(variable);
 
+
       try
       {
+
+            // Auxiliar variable to store current 'issueException' state
+         bool exceptionState( getIssueException() );
+
+            // If 'fallback2Default' is set, and this is NOT the 'DEFAULT'
+            // section, we need to temporarily disable 'issueException'.
+            // This implies that there is no fallback for 'DEFAULT' variables
+         if( (section != "DEFAULT") && (section != "") )
+         {
+            if( getFallback2Default() )
+            {
+               setIssueException(false);
+            }
+         }
+
 
             // Check if section and variable exist
          if( ifExist(variable, section) )
          {
+
+               // Reset 'issueException' to its correct value before continue
+            setIssueException( exceptionState );
+
             return confData[section][variable].value;
+
          }
          else
          {
-            return "";
-         }
+
+               // Reset 'issueException' to its correct value before continue
+            setIssueException( exceptionState );
+
+               // If 'fallback2Default' is set, check also in 'DEFAULT' section
+            if ( getFallback2Default() )
+            {
+
+               if( ifExist(variable) )
+               {
+
+                  return confData["DEFAULT"][variable].value;
+
+               }
+               else
+               {
+
+                  return "";
+
+               }
+
+            }
+            else
+            {
+
+               return "";
+
+            }  // End of 'if ( getFallback2Default() )'
+
+         }  // End of 'if( ifExist(variable, section) )'
 
       }
       catch (ConfFileException& e)
       {
-         GPSTK_RETHROW(e);
-      }
 
-   }  // End of 'ConfDataReader::getValue()'
+         GPSTK_RETHROW(e);
+
+      }  // End of 'try-catch' block
+
+   }  // End of method 'ConfDataReader::getValue()'
 
 
 
@@ -299,54 +350,53 @@ namespace gpstk
       try
       {
 
-            // Check if section and variable exist
-         if( ifExist(variable, section) )
+            // Declare result variable
+         string result( getValue( variable, section ) );
+
+
+            // Test if result is empty (variable does not exist)
+         if( result == "" )
+         {
+               // Return false if variable is empty. Be aware that an empty
+               // variable is NOT the same as an unexistent variable
+            return false;
+
+         }
+
+
+            // 'result' isn't empty. Convert it to uppercase
+         result = StringUtils::upperCase(result);
+
+            // Test if it is "TRUE" or "FALSE"
+         if( result == "TRUE" )
          {
 
-               // Get value and convert to uppercase
-            string result(confData[section][variable].value);
+            return true;
 
-            result = StringUtils::upperCase(result);
+         }
+         else
+         {
 
-               // Test if it is "TRUE" or "FALSE"
-            if( result == "TRUE" )
+            if( result == "FALSE" )
             {
 
-               return true;
+               return false;
 
             }
             else
             {
 
-               if( result == "FALSE" )
-               {
+                  // Throw an exception if value is neither TRUE nor FALSE
+               ConfFileException e( "Variable name '" +
+                                    variable + "' in configuration file '" +
+                                    filename +
+                                    "' is neither TRUE nor FALSE.");
 
-                  return false;
+               GPSTK_THROW(e);
 
-               }
-               else
-               {
+            }  // End of 'if( result == "FALSE" )'
 
-                     // Throw an exception if value is neither TRUE nor FALSE
-                  ConfFileException e( "Variable name '" +
-                                       variable + "' in configuration file '" +
-                                       filename +
-                                       "' is neither TRUE nor FALSE.");
-
-                  GPSTK_THROW(e);
-
-               }  // End of 'if( result == "FALSE" )'
-
-            }  // End of 'if( result == "TRUE" )'
-
-         }  // End of 'if( ifExist(variable, section) )'
-         else
-         {
-
-               // Return false by default if variable does not exist
-            return false;
-
-         }
+         }  // End of 'if( result == "TRUE" )'
 
       }
       catch (ConfFileException& e)
@@ -354,7 +404,7 @@ namespace gpstk
          GPSTK_RETHROW(e);
       }
 
-   }  // End of 'ConfDataReader::getValueAsBoolean()'
+   }  // End of method 'ConfDataReader::getValueAsBoolean()'
 
 
 
@@ -444,7 +494,7 @@ namespace gpstk
          {
 
             if( (result == "FALSE") ||
-                (result == "") )    // If list is empty return false
+                (result == "") )    // If list is empty returns false
             {
 
                return false;
@@ -466,7 +516,7 @@ namespace gpstk
 
          }  // End of 'if( result == "TRUE" )'
 
-      }
+      }  // End of 'try' block
       catch (ConfFileException& e)
       {
          GPSTK_RETHROW(e);
@@ -493,22 +543,72 @@ namespace gpstk
 
       try
       {
+
+            // Auxiliar variable to store current 'issueException' state
+         bool exceptionState( getIssueException() );
+
+            // If 'fallback2Default' is set, and this is NOT the 'DEFAULT'
+            // section, we need to temporarily disable 'issueException'.
+            // This implies that there is no fallback for 'DEFAULT' variables
+         if( (section != "DEFAULT") && (section != "") )
+         {
+            if( getFallback2Default() )
+            {
+               setIssueException(false);
+            }
+         }
+
+
             // Check if section and variable exist
          if( ifExist(variable, section) )
          {
+
+               // Reset 'issueException' to its correct value before continue
+            setIssueException( exceptionState );
+
             return confData[section][variable].varComment;
+
          }
          else
          {
-            return "";
-         }
+
+               // Reset 'issueException' to its correct value before continue
+            setIssueException( exceptionState );
+
+               // If 'fallback2Default' is set, check also in 'DEFAULT' section
+            if ( getFallback2Default() )
+            {
+
+               if( ifExist(variable) )
+               {
+
+                  return confData["DEFAULT"][variable].varComment;
+
+               }
+               else
+               {
+
+                  return "";
+
+               }
+
+            }
+            else
+            {
+
+               return "";
+
+            }  // End of 'if ( getFallback2Default() )'
+
+         }  // End of 'if( ifExist(variable, section) )'
+
       }
       catch (ConfFileException& e)
       {
          GPSTK_RETHROW(e);
       }
 
-   }  // End of 'ConfDataReader::getVariableDescription()'
+   }  // End of method 'ConfDataReader::getVariableDescription()'
 
 
 
@@ -529,22 +629,73 @@ namespace gpstk
 
       try
       {
+
+            // Auxiliar variable to store current 'issueException' state
+         bool exceptionState( getIssueException() );
+
+            // If 'fallback2Default' is set, and this is NOT the 'DEFAULT'
+            // section, we need to temporarily disable 'issueException'.
+            // This implies that there is no fallback for 'DEFAULT' variables
+         if( (section != "DEFAULT") && (section != "") )
+         {
+            if( getFallback2Default() )
+            {
+               setIssueException(false);
+            }
+         }
+
+
             // Check if section and variable exist
          if( ifExist(variable, section) )
          {
+
+               // Reset 'issueException' to its correct value before continue
+            setIssueException( exceptionState );
+
             return confData[section][variable].valueComment;
+
          }
          else
          {
-            return "";
-         }
+
+               // Reset 'issueException' to its correct value before continue
+            setIssueException( exceptionState );
+
+               // If 'fallback2Default' is set, check also in 'DEFAULT' section
+            if ( getFallback2Default() )
+            {
+
+               if( ifExist(variable) )
+               {
+
+                  return confData["DEFAULT"][variable].valueComment;
+
+               }
+               else
+               {
+
+                  return "";
+
+               }
+
+            }
+            else
+            {
+
+               return "";
+
+            }  // End of 'if ( getFallback2Default() )'
+
+         }  // End of 'if( ifExist(variable, section) )'
+
       }
       catch (ConfFileException& e)
       {
          GPSTK_RETHROW(e);
       }
 
-   }  // End of 'ConfDataReader::getVariableDescription()'
+   }  // End of method 'ConfDataReader::getValueDescription()'
+
 
 
       /* Method to check if a given section/variable pair exists.
@@ -571,27 +722,35 @@ namespace gpstk
          it2 = (*it).second.find(variable);
          if( it2 != (*it).second.end() )
          {
+
             // Return the corresponding value, if it exists
             return true;
+
          }
          else
          {
 
             if(issueException)
             {
+
                   // Throw an exception if variable name doesn't exist
                ConfFileException e( "Variable '" + variable
-                                    + "' in configuration file '" + filename
+                                    + "' in section '" + section
+                                    + "' of configuration file '" + filename
                                     + "' does not exist.");
 
                GPSTK_THROW(e);
+
             }
             else
             {
-               return false;
-            }
 
-         }
+               return false;
+
+            }  // End of 'if(issueException)'
+
+         }  // End of 'if( it2 != (*it).second.end() )'
+
       }
       else
       {
@@ -604,8 +763,8 @@ namespace gpstk
             {
 
                   // Throw an exception if section name doesn't exist
-               ConfFileException e( "Section '" + section
-                                    + "' in configuration file '" + filename
+               ConfFileException e( "Section 'DEFAULT' in configuration file '"
+                                    + filename
                                     + "' does not exist. Does file '"
                                     + filename + "' exist?. Do you have "
                                     + "permission to read it?." );
@@ -623,16 +782,19 @@ namespace gpstk
 
                GPSTK_THROW(e);
 
-            }
+            }  // End of 'if ( section == "DEFAULT" )'
+
          }
          else
          {
+
             return false;
-         }
 
-      }
+         }  // End of 'if(issueException)'
 
-   }  // End of 'ConfDataReader::ifExist()'
+      }  // End of 'if( it != confData.end() )'
+
+   }  // End of method 'ConfDataReader::ifExist()'
 
 
 
@@ -640,26 +802,14 @@ namespace gpstk
    void ConfDataReader::open(const char* fn)
    {
 
+         // We always open configuration file as "read-only"
       FFTextStream::open(fn, std::ios::in);
 
       loadData();
 
       return;
 
-   }  // End of 'ConfDataReader::open()'
-
-
-      // Method to open AND load configuration data file.
-   void ConfDataReader::open(const string& fn)
-   {
-
-      FFTextStream::open(fn.c_str(), std::ios::in);
-
-      loadData();
-
-      return;
-
-   }  // End of 'ConfDataReader::open()'
+   }  // End of method 'ConfDataReader::open()'
 
 
 
@@ -724,7 +874,7 @@ namespace gpstk
          return false;
       }
 
-   }  // End of 'ConfDataReader::checkName()'
+   }  // End of method 'ConfDataReader::checkName()'
 
 
 

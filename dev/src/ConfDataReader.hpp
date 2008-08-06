@@ -164,7 +164,8 @@ namespace gpstk
    public:
 
          /// Default constructor
-      ConfDataReader() : issueException(true) {};
+      ConfDataReader()
+         : issueException(true), fallback2Default(false) {};
 
 
          /** Common constructor. It will always open 'file' for read and will
@@ -174,7 +175,8 @@ namespace gpstk
           *
           */
       ConfDataReader(const char* file)
-         : FFTextStream(file, std::ios::in), issueException(true)
+         : FFTextStream(file, std::ios::in), issueException(true),
+           fallback2Default(false)
       { loadData(); };
 
 
@@ -185,7 +187,8 @@ namespace gpstk
           *
           */
       ConfDataReader(const string& file)
-         : FFTextStream(file.c_str(), std::ios::in), issueException(true)
+         : FFTextStream(file.c_str(), std::ios::in), issueException(true),
+           fallback2Default(false)
       { loadData(); };
 
 
@@ -194,7 +197,8 @@ namespace gpstk
 
 
          /// Method to open AND load configuration data file.
-      virtual void open(const string& fn);
+      virtual void open(const string& fn)
+      { open( fn.c_str() ); };
 
 
          /** Method to get the value of a given variable as a string
@@ -352,14 +356,38 @@ namespace gpstk
          throw(ConfFileException);
 
 
+         /** Method to get whether an exception will be issued
+          *  when requesting an invalid variable (or section), or not.
+          */
+      virtual bool getIssueException( void ) const
+      { return issueException; };
+
+
          /** Method to set whether an exception will be issued
-          * when requesting an invalid variable (or section), or not.
+          *  when requesting an invalid variable (or section), or not.
           *
           * @param issueEx    Whether an exception will be issued or not
           *
           */
       ConfDataReader& setIssueException(bool issueEx)
       { issueException = issueEx; return (*this); }
+
+
+         /** Method to get whether when a variable is looked for in a given
+          *  section and not found, it will also be looked for in 'DEFAULT'.
+          */
+      virtual bool getFallback2Default( void ) const
+      { return fallback2Default; };
+
+
+         /** Method to set whether when a variable is looked for in a given
+          *  section and not found, it will also be looked for in 'DEFAULT'.
+          *
+          * @param fallback    Whether we will fallback to 'DEFAULT' or not
+          *
+          */
+      ConfDataReader& setFallback2Default(bool fallback)
+      { fallback2Default = fallback; return (*this); }
 
 
          /// Method to clear the stored variables.
@@ -384,7 +412,7 @@ namespace gpstk
           *
           */
       virtual bool ifExist( string variable,
-                            string section )
+                            string section = "DEFAULT" )
          throw(ConfFileException);
 
 
@@ -410,6 +438,11 @@ namespace gpstk
          /// This boolean field determines whether an exception will be issued
          /// when requesting an invalid variable (or section), or not
       bool issueException;
+
+
+         /// This boolean field determines if when a variable doesn't exist
+         /// in a given section, it will also be looked for in 'DEFAULT'
+      bool fallback2Default;
 
 
          /// A structure used to store variable's data.
