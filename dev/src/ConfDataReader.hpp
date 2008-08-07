@@ -44,10 +44,6 @@ using namespace std;
 
 namespace gpstk
 {
-      /// Thrown when there is a problem reading a configuration file
-      /// @ingroup exceptiongroup
-   NEW_EXCEPTION_CLASS(ConfFileException, gpstk::Exception);
-
 
       /** @addtogroup formattedfile */
       //@{
@@ -151,13 +147,13 @@ namespace gpstk
        * available to get them as booleans, integers and doubles. Comments are
        * always returned as std::string's.
        *
-       * This class is very strict and throws a 'ConfFileException' exception
-       * when trying to access variables that don't exist in the configuration
-       * file. This behaviour may be changed with the 'setIssueException()'
-       * method.
+       * This class is very strict and throws a 'ConfigurationException'
+       * exception when trying to access variables that don't exist in the
+       * configuration file. This default behaviour may be changed with the
+       *'setIssueException()' method.
        *
        * The format of the Variable/Value pairs is inspired in the options file
-       * used in the GNSSTk project. Thanks folks!.
+       * used in the GNSSTk project.
        */
    class ConfDataReader : public FFTextStream
    {
@@ -209,7 +205,7 @@ namespace gpstk
           */
       virtual string getValue( string variable,
                                string section = "DEFAULT" )
-         throw(ConfFileException);
+         throw(ConfigurationException);
 
 
          /** Method to get the value of a given variable as a double
@@ -220,7 +216,7 @@ namespace gpstk
           */
       virtual double getValueAsDouble( string variable,
                                        string section = "DEFAULT" )
-         throw(ConfFileException)
+         throw(ConfigurationException)
       { return StringUtils::asDouble( getValue(variable, section) ); };
 
 
@@ -232,7 +228,7 @@ namespace gpstk
           */
       virtual int getValueAsInt( string variable,
                                  string section = "DEFAULT" )
-         throw(ConfFileException)
+         throw(ConfigurationException)
       { return StringUtils::asInt( getValue(variable, section) ); };
 
 
@@ -244,7 +240,7 @@ namespace gpstk
           */
       virtual bool getValueAsBoolean( string variable,
                                       string section = "DEFAULT" )
-         throw(ConfFileException);
+         throw(ConfigurationException);
 
 
          /** Method to fetch (as string) the first value of a given
@@ -261,7 +257,7 @@ namespace gpstk
           */
       virtual string fetchListValue( string variableList,
                                      string section = "DEFAULT" )
-         throw(ConfFileException);
+         throw(ConfigurationException);
 
 
          /** Method to fetch (as double) the first value of a given
@@ -278,7 +274,7 @@ namespace gpstk
           */
       virtual double fetchListValueAsDouble( string variableList,
                                              string section = "DEFAULT" )
-         throw(ConfFileException)
+         throw(ConfigurationException)
       { return StringUtils::asDouble( fetchListValue(variableList,section) ); };
 
 
@@ -296,7 +292,7 @@ namespace gpstk
           */
       virtual int fetchListValueAsInt( string variableList,
                                        string section = "DEFAULT" )
-         throw(ConfFileException)
+         throw(ConfigurationException)
       { return StringUtils::asInt( fetchListValue(variableList,section) ); };
 
 
@@ -316,7 +312,7 @@ namespace gpstk
           */
       virtual bool fetchListValueAsBoolean( string variableList,
                                             string section = "DEFAULT" )
-         throw(ConfFileException);
+         throw(ConfigurationException);
 
 
          /** Method to get the number of items in a given variable list.
@@ -330,7 +326,7 @@ namespace gpstk
           */
       virtual int getNumItem( string variableList,
                               string section = "DEFAULT" )
-         throw(ConfFileException)
+         throw(ConfigurationException)
       { return StringUtils::numWords( getValue( variableList, section ) ); };
 
 
@@ -342,7 +338,7 @@ namespace gpstk
           */
       virtual string getVariableDescription( string variable,
                                              string section = "DEFAULT" )
-         throw(ConfFileException);
+         throw(ConfigurationException);
 
 
          /** Method to get the description of a given value
@@ -353,7 +349,7 @@ namespace gpstk
           */
       virtual string getValueDescription( string variable,
                                           string section = "DEFAULT" )
-         throw(ConfFileException);
+         throw(ConfigurationException);
 
 
          /** Method to get whether an exception will be issued
@@ -413,7 +409,7 @@ namespace gpstk
           */
       virtual bool ifExist( string variable,
                             string section = "DEFAULT" )
-         throw(ConfFileException);
+         throw(ConfigurationException);
 
 
          /** Operator to get the value of a given variable as a string
@@ -424,7 +420,7 @@ namespace gpstk
           */
       virtual string operator()( string variable,
                                  string section = "DEFAULT" )
-         throw(ConfFileException)
+         throw(ConfigurationException)
       { return getValue(variable, section); };
 
 
@@ -482,7 +478,7 @@ namespace gpstk
 
          /// Method to store conf data in this class' data map
       virtual void loadData(void)
-         throw(ConfFileException);
+         throw(ConfigurationException);
 
 
    }; // End of class 'ConfDataReader'

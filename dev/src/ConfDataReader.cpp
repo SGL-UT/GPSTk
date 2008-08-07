@@ -39,7 +39,7 @@ namespace gpstk
 
       // Method to store conf data in this class' data map
    void ConfDataReader::loadData(void)
-      throw(ConfFileException)
+      throw(ConfigurationException)
    {
 
          // By default, section name is "DEFAULT"
@@ -60,8 +60,9 @@ namespace gpstk
                // If line is too long, we throw an exception
             if (line.size()>255)
             {
-               ConfFileException e( "Line too long in configuration file '" +
-                                     filename + "'." );
+               ConfigurationException e(
+                                    "Line too long in configuration file '" +
+                                    filename + "'." );
                GPSTK_THROW(e);
             }
 
@@ -122,7 +123,8 @@ namespace gpstk
                   else
                   {
                         // Throw an exception if section name isn't appropriate
-                     ConfFileException e( "Section name '" +
+                     ConfigurationException e(
+                                          "Section name '" +
                                           line + "' in configuration file '" +
                                           filename +
                                           "' does not comply with rules.");
@@ -137,7 +139,8 @@ namespace gpstk
                else
                {
                      // Throw an exception if section line is not closed
-                  ConfFileException e( "Section line '" +
+                  ConfigurationException e(
+                                       "Section line '" +
                                        line +
                                        "' in configuration file '" +
                                        filename +
@@ -188,7 +191,8 @@ namespace gpstk
                else
                {
                      // Throw an exception if variable name isn't appropriate
-                  ConfFileException e( "Variable name '" +
+                  ConfigurationException e(
+                                       "Variable name '" +
                                        variable + "' in configuration file '" +
                                        filename +
                                        "' does not comply with rules.");
@@ -217,7 +221,7 @@ namespace gpstk
             }
 
          }  // End of try block
-         catch (ConfFileException& e)
+         catch (ConfigurationException& e)
          {
             GPSTK_THROW(e);
          }
@@ -251,7 +255,7 @@ namespace gpstk
        */
    string ConfDataReader::getValue( string variable,
                                     string section )
-      throw(ConfFileException)
+      throw(ConfigurationException)
    {
 
          // Let's make sure that section and variable names are uppercase
@@ -321,7 +325,7 @@ namespace gpstk
          }  // End of 'if( ifExist(variable, section) )'
 
       }
-      catch (ConfFileException& e)
+      catch (ConfigurationException& e)
       {
 
          GPSTK_RETHROW(e);
@@ -340,7 +344,7 @@ namespace gpstk
        */
    bool ConfDataReader::getValueAsBoolean( string variable,
                                            string section )
-      throw(ConfFileException)
+      throw(ConfigurationException)
    {
 
          // Let's make sure that section and variable names are uppercase
@@ -387,7 +391,8 @@ namespace gpstk
             {
 
                   // Throw an exception if value is neither TRUE nor FALSE
-               ConfFileException e( "Variable name '" +
+               ConfigurationException e(
+                                    "Variable name '" +
                                     variable + "' in configuration file '" +
                                     filename +
                                     "' is neither TRUE nor FALSE.");
@@ -399,7 +404,7 @@ namespace gpstk
          }  // End of 'if( result == "TRUE" )'
 
       }
-      catch (ConfFileException& e)
+      catch (ConfigurationException& e)
       {
          GPSTK_RETHROW(e);
       }
@@ -422,7 +427,7 @@ namespace gpstk
        */
    string ConfDataReader::fetchListValue( string variableList,
                                           string section )
-      throw(ConfFileException)
+      throw(ConfigurationException)
    {
 
       try
@@ -445,7 +450,7 @@ namespace gpstk
          return ( StringUtils::strip(firstValue) );
 
       }
-      catch (ConfFileException& e)
+      catch (ConfigurationException& e)
       {
          GPSTK_RETHROW(e);
       }
@@ -468,7 +473,7 @@ namespace gpstk
        */
    bool ConfDataReader::fetchListValueAsBoolean( string variableList,
                                                  string section )
-      throw(ConfFileException)
+      throw(ConfigurationException)
    {
 
       try
@@ -504,7 +509,8 @@ namespace gpstk
             {
 
                   // Throw an exception if value is neither TRUE nor FALSE
-               ConfFileException e( "Variable list '" +
+               ConfigurationException e(
+                                    "Variable list '" +
                                     variableList + "' in configuration file '" +
                                     filename +
                                     "' have a value that is neither TRUE " +
@@ -517,7 +523,7 @@ namespace gpstk
          }  // End of 'if( result == "TRUE" )'
 
       }  // End of 'try' block
-      catch (ConfFileException& e)
+      catch (ConfigurationException& e)
       {
          GPSTK_RETHROW(e);
       }
@@ -534,7 +540,7 @@ namespace gpstk
        */
    string ConfDataReader::getVariableDescription( string variable,
                                                   string section )
-      throw(ConfFileException)
+      throw(ConfigurationException)
    {
 
          // Let's make sure that section and variable names are uppercase
@@ -603,7 +609,7 @@ namespace gpstk
          }  // End of 'if( ifExist(variable, section) )'
 
       }
-      catch (ConfFileException& e)
+      catch (ConfigurationException& e)
       {
          GPSTK_RETHROW(e);
       }
@@ -620,7 +626,7 @@ namespace gpstk
        */
    string ConfDataReader::getValueDescription( string variable,
                                                string section )
-      throw(ConfFileException)
+      throw(ConfigurationException)
    {
 
          // Let's make sure that section and variable names are uppercase
@@ -689,7 +695,7 @@ namespace gpstk
          }  // End of 'if( ifExist(variable, section) )'
 
       }
-      catch (ConfFileException& e)
+      catch (ConfigurationException& e)
       {
          GPSTK_RETHROW(e);
       }
@@ -706,7 +712,7 @@ namespace gpstk
        */
    bool ConfDataReader::ifExist( string variable,
                                  string section )
-      throw(ConfFileException)
+      throw(ConfigurationException)
    {
 
          // Let's make sure that section and variable names are uppercase
@@ -734,7 +740,8 @@ namespace gpstk
             {
 
                   // Throw an exception if variable name doesn't exist
-               ConfFileException e( "Variable '" + variable
+               ConfigurationException e(
+                                    "Variable '" + variable
                                     + "' in section '" + section
                                     + "' of configuration file '" + filename
                                     + "' does not exist.");
@@ -763,7 +770,8 @@ namespace gpstk
             {
 
                   // Throw an exception if section name doesn't exist
-               ConfFileException e( "Section 'DEFAULT' in configuration file '"
+               ConfigurationException e(
+                                    "Section 'DEFAULT' in configuration file '"
                                     + filename
                                     + "' does not exist. Does file '"
                                     + filename + "' exist?. Do you have "
@@ -776,7 +784,8 @@ namespace gpstk
             {
 
                   // Throw an exception if section name doesn't exist
-               ConfFileException e( "Section '" + section
+               ConfigurationException e(
+                                    "Section '" + section
                                     + "' in configuration file '" + filename
                                     + "' does not exist.");
 
