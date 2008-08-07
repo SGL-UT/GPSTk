@@ -54,7 +54,6 @@ namespace gpstk
        * @param gData    Data object holding the data.
        */
    gnssSatTypeValue& ProcessingList::Process(gnssSatTypeValue& gData)
-      throw(ProcessingException)
    {
 
       try
@@ -69,14 +68,12 @@ namespace gpstk
          return gData;
 
       }
-      catch(Exception& u)
+      catch(...)
       {
-            // Throw an exception if something unexpected happens
-         ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
-                                + u.what() );
 
-         GPSTK_THROW(e);
+            // This method must throw the same exceptions it may get from
+            // the 'ProcessingList' elements, without altering them.
+         throw;
 
       }
 
@@ -89,7 +86,6 @@ namespace gpstk
        * @param gData    Data object holding the data.
        */
    gnssRinex& ProcessingList::Process(gnssRinex& gData)
-      throw(ProcessingException)
    {
 
       try
@@ -104,14 +100,12 @@ namespace gpstk
          return gData;
 
       }
-      catch(Exception& u)
+      catch(...)
       {
-            // Throw an exception if something unexpected happens
-         ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
-                                + u.what() );
 
-         GPSTK_THROW(e);
+            // This method must throw the same exceptions it may get from
+            // the 'ProcessingList' elements, without altering them.
+         throw;
 
       }
 

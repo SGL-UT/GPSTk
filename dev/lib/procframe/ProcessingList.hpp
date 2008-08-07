@@ -92,16 +92,14 @@ namespace gpstk
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-         throw(ProcessingException);
+      virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData);
 
 
          /** Processing method. It returns a gnnsRinex object.
           *
           * @param gData    Data object holding the data.
           */
-      virtual gnssRinex& Process(gnssRinex& gData)
-         throw(ProcessingException);
+      virtual gnssRinex& Process(gnssRinex& gData);
 
 
          /// Returns a pointer to the first element.
