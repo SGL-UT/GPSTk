@@ -223,7 +223,7 @@ namespace gpstk
        * base classes, as well as SolverPPP.hpp for a similar class.
        *
        */
-   class SolverPPPFB : public ProcessingClass
+   class SolverPPPFB : public SolverLMS
    {
    public:
 

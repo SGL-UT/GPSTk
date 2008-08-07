@@ -321,6 +321,15 @@ namespace gpstk
                // memory and preparing for next epoch
             ObsData.pop_front();
 
+
+               // Update some inherited fields
+            solution = pppFilter.solution;
+            covMatrix = pppFilter.covMatrix;
+            postfitResiduals = pppFilter.postfitResiduals;
+
+               // If everything is fine so far, then results should be valid
+            valid = true;
+
             return true;
 
          }
