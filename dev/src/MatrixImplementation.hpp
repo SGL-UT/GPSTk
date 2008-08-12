@@ -56,6 +56,14 @@ namespace gpstk
    {}
 
    template <class T>
+   Matrix<T>::Matrix(size_t rows, size_t cols,
+                     const T* vec)
+         : v(rows * cols), r(rows), c(cols), s(rows * cols)
+   {
+      assignFrom(vec);
+   }
+
+   template <class T>
    MatrixRowSlice<T> Matrix<T>::rowRef(size_t rowNum, const std::slice& s)
    {
       return MatrixRowSlice<T>(*this, rowNum, s);
