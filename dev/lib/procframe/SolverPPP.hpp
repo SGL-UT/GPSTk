@@ -523,6 +523,19 @@ namespace gpstk
       { index = classIndex++; };
 
 
+         // Some methods that we want to hide
+      virtual int Compute( const Vector<double>& prefitResiduals,
+                           const Matrix<double>& designMatrix )
+         throw(InvalidSolver)
+      { return 0; };
+
+
+      virtual SolverPPP& setDefaultEqDefinition(
+                                       const gnssEquationDefinition& eqDef )
+      { return (*this); };
+
+
+
    }; // End of class 'SolverPPP'
 
       //@}

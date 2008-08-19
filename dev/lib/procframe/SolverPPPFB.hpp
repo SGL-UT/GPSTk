@@ -219,11 +219,11 @@ namespace gpstk
        * are objets that store their internal state, so you MUST NOT use the
        * SAME object to process DIFFERENT data streams.
        *
-       * @sa SolverBase.hpp, SolverLMS.hpp and CodeKalmanSolver.hpp for
-       * base classes, as well as SolverPPP.hpp for a similar class.
+       * @sa SolverBase.hpp, SolverLMS.hpp, CodeKalmanSolver.hpp and
+       * SolverPPP.hpp for base classes.
        *
        */
-   class SolverPPPFB : public SolverLMS
+   class SolverPPPFB : public SolverPPP
    {
    public:
 
@@ -295,107 +295,6 @@ namespace gpstk
       virtual SolverPPPFB& setNEU( bool useNEU );
 
 
-         /** Get the weight factor multiplying the phase measurements sigmas.
-          *  This factor is the code_sigma/phase_sigma ratio.
-          */
-      virtual double getWeightFactor(void) const
-      { return pppFilter.getWeightFactor(); };
-
-
-         /** Set the weight factor multiplying the phase measurement sigma
-          *
-          * @param factor      Factor multiplying the phase measurement sigma
-          *
-          * \warning This factor should be the code_sigma/phase_sigma ratio.
-          * For instance, if we assign a code sigma of 1 m and a phase sigma
-          * of 10 cm, the ratio is 100, and so should be "factor".
-          */
-      virtual SolverPPPFB& setWeightFactor(double factor)
-      { pppFilter.setWeightFactor(factor); return (*this); };
-
-
-         /// Get coordinates stochastic model pointer
-      virtual StochasticModel* getCoordinatesModel(void) const
-      { return pppFilter.getCoordinatesModel(); };
-
-
-         /** Set coordinates stochastic model
-          *
-          * @param pModel      Pointer to StochasticModel associated with
-          *                    coordinates.
-          */
-      virtual SolverPPPFB& setCoordinatesModel(StochasticModel* pModel)
-      { pppFilter.setCoordinatesModel(pModel); return (*this); };
-
-
-         /// Get wet troposphere stochastic model pointer
-      virtual StochasticModel* getTroposphereModel(void) const
-      { return pppFilter.getTroposphereModel(); };
-
-
-         /** Set wet troposphere stochastic model
-          *
-          * @param pModel      Pointer to StochasticModel associated with
-          *                    wet troposphere.
-          */
-      virtual SolverPPPFB& setTroposphereModel(StochasticModel* pModel)
-      { pppFilter.setTroposphereModel(pModel); return (*this); };
-
-
-         /// Get receiver clock stochastic model pointer
-      virtual StochasticModel* getReceiverClockModel(void) const
-      { return pppFilter.getReceiverClockModel(); };
-
-
-         /** Set receiver clock stochastic model
-          *
-          * @param pModel      Pointer to StochasticModel associated with
-          *                    receiver clock.
-          */
-      virtual SolverPPPFB& setReceiverClockModel(StochasticModel* pModel)
-      { pppFilter.setReceiverClockModel(pModel); return (*this); };
-
-
-         /// Get phase biases stochastic model pointer
-      virtual StochasticModel* getPhaseBiasesModel(void) const
-      { return pppFilter.getPhaseBiasesModel(); };
-
-
-         /** Set phase biases stochastic model.
-          *
-          * @param pModel      Pointer to StochasticModel associated with
-          *                    receiver clock.
-          *
-          * \warning This method should be used with caution, because model
-          * must be of PhaseAmbiguityModel class in order to make sense.
-          */
-      virtual SolverPPPFB& setPhaseBiasesModel(StochasticModel* pModel)
-      { pppFilter.setPhaseBiasesModel(pModel); return (*this); };
-
-
-         /// Get the State Transition Matrix (phiMatrix)
-      virtual Matrix<double> getPhiMatrix(void) const
-      { return pppFilter.getPhiMatrix(); };
-
-
-         /** Returns the solution associated to a given TypeID.
-          *
-          * @param type    TypeID of the solution we are looking for.
-          */
-      virtual double getSolution(const TypeID& type) const
-         throw(InvalidRequest)
-      { return pppFilter.getSolution(type); };
-
-
-         /** Returns the variance associated to a given TypeID.
-          *
-          * @param type    TypeID of the variance we are looking for.
-          */
-      virtual double getVariance(const TypeID& type) const
-         throw(InvalidRequest)
-      {  return pppFilter.getVariance(type); };
-
-
          /// Returns an index identifying this object.
       virtual int getIndex(void) const;
 
@@ -423,10 +322,6 @@ namespace gpstk
       TypeIDSet keepTypeSet;
 
 
-         /// General PPP Kalman filter object
-      SolverPPP pppFilter;
-
-
          /// Initial index assigned to this class.
       static int classIndex;
 
@@ -436,6 +331,21 @@ namespace gpstk
          /// Sets the index and increment classIndex.
       void setIndex(void)
       { index = classIndex++; };
+
+
+         // Some methods that we want to hide
+      virtual int Compute( const Vector<double>& prefitResiduals,
+                           const Matrix<double>& designMatrix )
+         throw(InvalidSolver)
+      { return 0; };
+
+      virtual SolverPPPFB& setDefaultEqDefinition(
+                                       const gnssEquationDefinition& eqDef )
+      { return (*this); };
+
+      virtual SolverPPPFB& Reset( const Vector<double>& newState,
+                                  const Matrix<double>& newErrorCov )
+      { return (*this); };
 
 
    }; // End of class 'SolverPPPFB'

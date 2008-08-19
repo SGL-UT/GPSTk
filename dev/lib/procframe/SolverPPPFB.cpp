@@ -58,7 +58,7 @@ namespace gpstk
    {
 
          // Set the equation system structure
-      pppFilter.setNEU(useNEU);
+      SolverPPP::setNEU(useNEU);
 
          // Set the class index
       setIndex();
@@ -145,7 +145,7 @@ namespace gpstk
       try
       {
 
-         pppFilter.Process(gData);
+         SolverPPP::Process(gData);
 
 
             // Before returning, store the results for a future iteration
@@ -209,7 +209,7 @@ namespace gpstk
          for (rpos = ObsData.rbegin(); rpos != ObsData.rend(); ++rpos)
          {
 
-            pppFilter.Process( (*rpos) );
+            SolverPPP::Process( (*rpos) );
 
          }
 
@@ -220,13 +220,13 @@ namespace gpstk
                // Forwards iteration
             for (pos = ObsData.begin(); pos != ObsData.end(); ++pos)
             {
-               pppFilter.Process( (*pos) );
+               SolverPPP::Process( (*pos) );
             }
 
                // Backwards iteration.
             for (rpos = ObsData.rbegin(); rpos != ObsData.rend(); ++rpos)
             {
-               pppFilter.Process( (*rpos) );
+               SolverPPP::Process( (*rpos) );
             }
 
          }  // End of 'for (int i=0; i<(cycles-1), i++)'
@@ -315,7 +315,7 @@ namespace gpstk
 
                // Get the first data epoch in 'ObsData' and process it. The
                // result will be stored in 'gData'
-            gData = pppFilter.Process( ObsData.front() );
+            gData = SolverPPP::Process( ObsData.front() );
 
                // Remove the first data epoch in 'ObsData', freeing some
                // memory and preparing for next epoch
@@ -323,9 +323,9 @@ namespace gpstk
 
 
                // Update some inherited fields
-            solution = pppFilter.solution;
-            covMatrix = pppFilter.covMatrix;
-            postfitResiduals = pppFilter.postfitResiduals;
+            solution = SolverPPP::solution;
+            covMatrix = SolverPPP::covMatrix;
+            postfitResiduals = SolverPPP::postfitResiduals;
 
                // If everything is fine so far, then results should be valid
             valid = true;
@@ -366,8 +366,8 @@ namespace gpstk
    SolverPPPFB& SolverPPPFB::setNEU( bool useNEU )
    {
 
-         // Set internal SolverPPP filter
-      pppFilter.setNEU(useNEU);
+         // Set the SolverPPP filter
+      SolverPPP::setNEU(useNEU);
 
 
          // Clear current 'keepTypeSet' and indicate the TypeID's that
