@@ -1,5 +1,10 @@
 #pragma ident "$Id$"
 
+/**
+ * @file BasicFramework.cpp
+ * Basic framework for programs in the GPS toolkit
+ */
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -17,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,31 +30,30 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
 
-/**
- * @file BasicFramework.cpp
- * Basic framework for programs in the GPS toolkit
- */
 
 #include "Exception.hpp"
 #include "BasicFramework.hpp"
 
+
 namespace gpstk
 {
+
    using namespace std;
 
-   BasicFramework :: BasicFramework(const string& applName,
-                                    const string& applDesc)
+
+   BasicFramework :: BasicFramework( const string& applName,
+                                     const string& applDesc )
       throw()
          : debugLevel(0),
            verboseLevel(0),
@@ -58,29 +62,32 @@ namespace gpstk
            debugOption('d', "debug", "Increase debug level"),
            verboseOption('v', "verbose", "Increase verbosity"),
            helpOption('h', "help", "Print help usage")
-   {
-   }
+   {} // End of constructor 'BasicFramework::BasicFramework()'
 
 
-   bool BasicFramework :: initialize(int argc, char *argv[])
+
+   bool BasicFramework :: initialize( int argc,
+                                      char *argv[],
+                                      bool pretty )
       throw()
    {
-      // Creating the parser here ensures that all the subclasses'
-      // option objects are constructed.
+
+         // Creating the parser here ensures that all the subclasses'
+         // option objects are constructed.
       CommandOptionParser cop(appDesc);
 
       cop.parseOptions(argc, argv);
 
       if (helpOption.getCount())
       {
-         cop.displayUsage(cerr);
+         cop.displayUsage(cerr, pretty);
          return false;
       }
 
       if (cop.hasErrors())
       {
          cop.dumpErrors(cerr);
-         cop.displayUsage(cerr);
+         cop.displayUsage(cerr, pretty);
          return false;
       }
 
@@ -88,12 +95,15 @@ namespace gpstk
       verboseLevel = verboseOption.getCount();
 
       return true;
-   }
+
+   }  // End of method 'BasicFramework::initialize()'
+
 
 
    bool BasicFramework :: run()
       throw()
    {
+
       try
       {
          completeProcessing();
@@ -112,7 +122,9 @@ namespace gpstk
       shutDown();
 
       return true;
-   } // BasicFramework::run()
+
+   }  // End of method 'BasicFramework::run()'
+
 
 
    void BasicFramework :: completeProcessing()
@@ -122,6 +134,8 @@ namespace gpstk
       spinUp();
 
       process();
-   }
 
-} // namespace
+   }  // End of method 'BasicFramework::completeProcessing()'
+
+
+}  // End of namespace gpstk
