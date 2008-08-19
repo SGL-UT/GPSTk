@@ -157,6 +157,7 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
      maskAngle(10), trackAngle(0), badHealthMask(false), timeMask(0),
      smashAdjacent(false), ignoreEdges(true),
      epochRate(0), epochCounter(0), allMissingCounter(0), 
+     totalSvEpochCounter(0), expectedSvEpochCounter(0), receivedSvEpochCounter(0),
      anyMissingCounter(0), haveAntennaPos(false)
 {
    // Set up a couple of helper arrays to map from enum <-> string
@@ -489,6 +490,8 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
                max(curr.numAboveMaskAngle, prev.numAboveMaskAngle);
             prev.numAboveTrackAngle = 
                max(curr.numAboveTrackAngle, prev.numAboveTrackAngle);
+            prev.receivedCount = curr.receivedCount;
+            prev.expectedCount = curr.expectedCount;
          }
          else
             sml.push_back(curr);
@@ -646,6 +649,14 @@ void DataAvailabilityAnalyzer::processEpoch(
          output << endl;
       }
 
+      // Figure out how many SVs could and should have been tracked
+      int ata=0;
+      for (int prn=1; prn<=32; prn++)
+         if (inView[prn].elevation > maskAngle)
+            ata++;
+      totalSvEpochCounter += ata;
+      expectedSvEpochCounter += std::min(ata, 12);
+
       if (t != oe.time)
       {
          InView iv;
@@ -678,12 +689,17 @@ void DataAvailabilityAnalyzer::processEpoch(
                missingList.push_back(iv);
             }
          }
-         else // There is data from this SV
+         else // There is at least some data from this SV
          {
             if (verboseLevel>3)
                output << oei->first << " " << oei->second << endl;
             if (verboseLevel>3)
                output << iv;
+
+            receivedSvEpochCounter++;
+
+            if (iv.health == 0)
+               iv.receivedCount++;
 
             // This adds obs that we receive that *aren't* supposed to be there
             // Note that we don't flag obs that are present but below the 
@@ -808,6 +824,8 @@ void DataAvailabilityAnalyzer::InView::update(
          const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
          health = bce.getSatHealth(svid, time);
       }
+      if (health == 0 && el > maskAngle)
+         expectedCount++;
    }
    catch (InvalidRequest& e)
    {
@@ -889,13 +907,44 @@ void DataAvailabilityAnalyzer::InView::dump(ostream& s, const string fmt)
 
 void DataAvailabilityAnalyzer::outputSummary()
 {
+   vector<long> missed(32);
+   for (int prn=1; prn<=32; prn++)
+      if (inView[prn].expectedCount)
+         missed[prn] = inView[prn].expectedCount - inView[prn].receivedCount;
+      else
+         missed[prn] = 0;
+
+   unsigned long channelLoss = totalSvEpochCounter - expectedSvEpochCounter;
+   unsigned long missedSvEpochCounter = expectedSvEpochCounter - receivedSvEpochCounter;
+   double pctMiss = 100.0 * missedSvEpochCounter / expectedSvEpochCounter;
+
    output << endl
           << " Summary:" << endl
           << endl
-          << "Analysis spans " <<  firstEpochTime << " through " << lastEpochTime << endl
+          << "Analysis spans " <<  firstEpochTime
+          << " through " << lastEpochTime << endl
+          << left << fixed
           << "Total number of epochs with data: " << epochCounter << endl
           << "Epochs with any data missing: " << anyMissingCounter << endl
-          << "Epochs without data from any SV: " << allMissingCounter << endl;
+          << "Epochs without data from any SV: " << allMissingCounter << endl
+          << "SV-Epochs expected: " << expectedSvEpochCounter << endl
+          << setprecision(5)
+          << "Channel Loss: " << 100.0*channelLoss/totalSvEpochCounter
+          << " % (" << channelLoss << ")" << endl
+          << "SV-Epochs missed: " << 100.0* missedSvEpochCounter/expectedSvEpochCounter
+          << " % (" << missedSvEpochCounter << ")" << endl;
+
+   if (verboseLevel)
+   {
+      output << endl << "prn expected    missed" << endl;
+      for (int prn=1; prn<=32; prn++)
+         if (inView[prn].expectedCount)
+            output << setw(2) << prn << "    "
+                   << setw(8) << inView[prn].expectedCount << "  "
+                   << setw(8) << setprecision(5)
+                   << 100.0*missed[prn] / inView[prn].expectedCount << " %"
+                   << " (" << missed[prn] << ")" << endl;
+   }
 }
 
 

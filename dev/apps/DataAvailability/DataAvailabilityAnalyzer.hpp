@@ -101,6 +101,16 @@ private:
    unsigned long allMissingCounter;
    unsigned long anyMissingCounter;
 
+   // Sum of the number of SVs above the mask angle at each epoch
+   unsigned long totalSvEpochCounter;
+
+   // Sum of the number of SVs above the mask angle and at each epoch, limited to the
+   // maximum number of channels available
+   unsigned long expectedSvEpochCounter;
+
+   // Sum of the number of SVs for which some data was received at each epoch
+   unsigned long receivedSvEpochCounter;
+
    enum ObsItemEnum {oiUnknown, oiElevation, oiAzimuth, oiTime, oiPRN, oiCCID,
                      oiSNR, oiHealth, oiTrackCount};
 
@@ -129,7 +139,8 @@ public:
    // and when there is an obs that is missing. 
    struct InView
    {
-      InView() : up(false), aboveMask(false), smashCount(0), span(0), health(0){};
+      InView() : up(false), aboveMask(false), smashCount(0), span(0), health(0),
+                 expectedCount(0), receivedCount(0) {};
 
       void update(
          short prn,
@@ -150,11 +161,11 @@ public:
       // available for an SV
       ObsSet obsLost;
       ObsSet obsGained;
-      
+
       // Set true when this SV has an elevation greater than 0
       // If this is false, no other fields are valid.
       bool up;
-      
+
       // true when the sv is rising
       bool rising;
 
@@ -170,7 +181,14 @@ public:
       gpstk::DayTime firstEpochAboveMask;
 
       // Number of epochs received from this SV during this pass
-      unsigned epochCount;
+      unsigned long epochCount;
+
+      // Total number of epochs for which this SV was above the output mask and this sv
+      // was marked as healthy
+      unsigned long expectedCount;
+
+      // Total number of epochs where at least some data was received from this SV
+      unsigned long receivedCount;
 
       // These values are from the first epoch when multiple epochs are smashed
       float elevation,azimuth;
