@@ -12,7 +12,7 @@ example5_SOURCES = example5.cpp
 example6_SOURCES = example6.cpp
 example7_SOURCES = example7.cpp
 example8_SOURCES = example8.cpp
-example8_SOURCES = example9.cpp
+example9_SOURCES = example9.cpp
 
 EXTRA_DIST = bahr1620.04m bahr1620.04o bahr1620.04n ebre030a.02o bell030a.02o \
 brdc0300.02n onsa2240.05o OCEAN-GOT00.dat PRN_GPS igs13356.sp3 igs13355.sp3 \
