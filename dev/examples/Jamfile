@@ -4,10 +4,10 @@
 
 SubDir TOP examples ;
 
-GPSLinkLibraries RungeKuttaTest example1 example2 example3 example4 example5 
+GPSLinkLibraries RungeKuttaTest example1 example2 example3 example4 example5
 example6 example7 example8 : gpstk procframe ;
 
-# Note that we use the Main rule here as opposed to the GPSMain rule. That is 
+# Note that we use the Main rule here as opposed to the GPSMain rule. That is
 # to prevent these binaries from getting installed as part of the Jam install
 # commnad
 Main example1 : example1.cpp ;

@@ -29,7 +29,7 @@
 #include "XYZ2NEU.hpp"
 
    // Class to detect cycle slips using LI combination
-#include "LICSDetector.hpp"
+#include "LICSDetector2.hpp"
 
    // Class to detect cycle slips using the Melbourne-Wubbena combination
 #include "MWCSDetector.hpp"
@@ -122,7 +122,7 @@ int main(void)
                            nominalPos.getGeodeticLatitude(), 224);
 
 
-      // This is the GNSS data structure that will hold all the 
+      // This is the GNSS data structure that will hold all the
       // GNSS-related information
    gnssRinex gRin;
 
@@ -141,7 +141,7 @@ int main(void)
 
 
       // Objects to mark cycle slips
-   LICSDetector markCSLI;      // Checks LI cycle slips
+   LICSDetector2 markCSLI;     // Checks LI cycle slips
    MWCSDetector markCSMW;      // Checks Merbourne-Wubbena cycle slips
 
 
@@ -149,7 +149,7 @@ int main(void)
    SolidTides  solid;
 
       // Ocean loading model
-   OceanLoading ocean("ONSA-GOT00.dat");
+   OceanLoading ocean("OCEAN-GOT00.dat");
 
       // Numerical values are x,y pole displacements for Aug/12/2005 (arcsec).
    PoleTides   pole(0.020840, 0.427601);
@@ -172,7 +172,7 @@ int main(void)
 
 
       // Object to compute wind-up effect
-   ComputeWindUp windup(SP3EphList, nominalPos,"PRN_GPS");
+   ComputeWindUp windup(SP3EphList, nominalPos, "PRN_GPS");
 
 
       // Object to compute satellite antenna phase center effect
@@ -213,6 +213,8 @@ int main(void)
 
       // Object to keep track of satellite arcs
    SatArcMarker markArc;
+   markArc.setDeleteUnstableSats(true);
+   markArc.setUnstablePeriod(151.0);
 
       // Object to compute gravitational delay effects
    GravitationalDelay grDelay(nominalPos);
