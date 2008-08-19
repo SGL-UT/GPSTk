@@ -1,0 +1,98 @@
+# THIS IN AN EXAMPLE OF A CONFIGURATION FILE.
+# THIS FILE WILL BE USED BY THE 'example9' APPLICATION.
+# CASE IS InDiFfErEnT FOR VARIABLE NAMES.
+
+# ALL SECTIONS OF THIS FILE, EXCEPT FOR "Default" SECTION, CORRESPOND TO
+# THE NAME OF A GIVEN GPS RECEIVER.
+
+# We curently are at "Default" section, because no section has been
+# declared so far...
+
+# Warning: You must use square brackets '[]' ONLY to declare section names!!!
+
+# Default variables. If field 'ConfDataReader::fallback2Default' is set to
+# TRUE, these variables are valid for ALL receivers unless one of them
+# declares its own version.
+
+oceanLoadingFile = OCEAN-GOT00.dat  , file with ocean loading parameters
+satDataFile      = PRN_GPS          , constellation data file
+precision        = 4                , number of decimal places in output file
+cutOffElevation, minimum allowed satellite elevation = 10.0, in degrees
+
+
+
+###
+### Application "example9" demands one section (and only one)
+### per GPS receiver station
+###
+
+[ONSA]         # Configuration data for 'ONSA' station
+
+rinexObsFile, Rinex observation file = onsa2240.05o
+
+dayOfYear = 224, days of year for Aug/12/2005.
+
+
+# VERY IMPORTANT!: Note that there are no commas separating list members in
+#                  the following variables, which are called 'variable lists'
+
+SP3List, SP3 ephemeris file list    = igs13354.sp3 igs13355.sp3 igs13356.sp3
+
+poleDisplacements, for Aug/12/2005  = 0.020840 0.427601, arcsec
+
+nominalPosition, ECEF = 3370658.5419 711877.1496 5349786.9542, meters
+
+# Antenna parameters
+offsetL1 , dH dLon dLat (UEN) = 0.078  0.000  0.000, meters
+offsetL2 , dH dLon dLat (UEN) = 0.096  0.000  0.000, meters
+offsetARP, dH dLon dLat (UEN) = 0.995  0.000  0.000, meters
+
+
+# Solver-related variables
+
+coordinatesAsWhiteNoise = TRUE
+
+forwardBackwardCycles = 0, an integer < 1 means forwards processing only
+
+# The following variable, if true, sets a NEU system. If false, an XYZ system
+USENEU = TRUE, results will be given in dLat, dLon, dH
+
+# Output
+outputFile = onsa2240-05.out
+
+
+
+[COCO]            # Configuration data for 'COCO' station
+
+rinexObsFile, Rinex observation file = coco2370.04o
+
+dayOfYear = 237, days of year for Aug/24/2004.
+
+
+# VERY IMPORTANT!: Note that there are no commas separating list members in
+#                  the following variables, which are called 'variable lists'
+SP3List, SP3 ephemeris file list    = igs12851.sp3 igs12852.sp3 igs12853.sp3
+
+poleDisplacements, for Aug/24/2004  = 0.13348 0.50552, arcsec
+
+nominalPosition, ECEF = -741950.562 6190961.667 -1337768.010, meters
+
+# Antenna parameters
+offsetL1 , dH dLon dLat (UEN) = 0.110  0.000  0.000, meters
+offsetL2 , dH dLon dLat (UEN) = 0.128  0.000  0.000, meters
+offsetARP, dH dLon dLat (UEN) = 0.004  0.000  0.000, meters
+
+
+# Solver-related variables
+
+coordinatesAsWhiteNoise = FALSE
+
+forwardBackwardCycles = 4, an integer < 1 means forwards processing only
+
+USENEU = TRUE, results will be given in dLat, dLon, dH
+
+# Output
+outputFile = coco2370-05.out
+
+
+# End of configuration file
