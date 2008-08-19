@@ -49,23 +49,6 @@ namespace gpstk
    { return "SolverPPP"; }
 
 
-      // Constant stochastic model
-   StochasticModel SolverPPP::constantModel;
-
-
-      // White noise stochastic model
-   WhiteNoiseModel SolverPPP::whitenoiseModel;
-
-
-      // Random Walk stochastic model
-   RandomWalkModel SolverPPP::rwalkModel(3e-8);
-
-
-      // Phase biases stochastic model (constant + white noise)
-   PhaseAmbiguityModel SolverPPP::biasModel;
-
-
-
       /* Common constructor.
        *
        * @param useNEU   If true, will compute dLat, dLon, dH coordinates;
@@ -91,6 +74,9 @@ namespace gpstk
       // Initializing method.
    void SolverPPP::Init(void)
    {
+
+         // Set qdot value for default random walk stochastic model
+      rwalkModel.setQprime(3e-8);
 
          // Pointer to default stochastic model for troposphere (random walk)
       pTropoStoModel = &rwalkModel;

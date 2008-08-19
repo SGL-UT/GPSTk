@@ -290,6 +290,11 @@ namespace gpstk
           *
           * @param pModel      Pointer to StochasticModel associated with
           *                    coordinates.
+          *
+          * \warning Be aware that some stochastic models store their internal
+          * state (for instance, 'RandomWalkModel' and 'PhaseAmbiguityModel').
+          * If that is your case, you MUST NOT use the SAME model in DIFFERENT
+          * solver objects.
           */
       virtual SolverPPP& setCoordinatesModel(StochasticModel* pModel)
       { pCoordStoModel = pModel; return (*this); };
@@ -304,6 +309,11 @@ namespace gpstk
           *
           * @param pModel      Pointer to StochasticModel associated with
           *                    wet troposphere.
+          *
+          * \warning Be aware that some stochastic models store their internal
+          * state (for instance, 'RandomWalkModel' and 'PhaseAmbiguityModel').
+          * If that is your case, you MUST NOT use the SAME model in DIFFERENT
+          * solver objects.
           */
       virtual SolverPPP& setTroposphereModel(StochasticModel* pModel)
       { pTropoStoModel = pModel; return (*this); };
@@ -318,6 +328,11 @@ namespace gpstk
           *
           * @param pModel      Pointer to StochasticModel associated with
           *                    receiver clock.
+          *
+          * \warning Be aware that some stochastic models store their internal
+          * state (for instance, 'RandomWalkModel' and 'PhaseAmbiguityModel').
+          * If that is your case, you MUST NOT use the SAME model in DIFFERENT
+          * solver objects.
           */
       virtual SolverPPP& setReceiverClockModel(StochasticModel* pModel)
       { pClockStoModel = pModel; return (*this); };
@@ -332,6 +347,11 @@ namespace gpstk
           *
           * @param pModel      Pointer to StochasticModel associated with
           *                    receiver clock.
+          *
+          * \warning Be aware that some stochastic models store their internal
+          * state (for instance, 'RandomWalkModel' and 'PhaseAmbiguityModel').
+          * If that is your case, you MUST NOT use the SAME model in DIFFERENT
+          * solver objects.
           *
           * \warning This method should be used with caution, because model
           * must be of PhaseAmbiguityModel class in order to make sense.
@@ -477,19 +497,19 @@ namespace gpstk
 
 
          /// Constant stochastic model
-      static StochasticModel constantModel;
+      StochasticModel constantModel;
 
 
          /// Random Walk stochastic model
-      static RandomWalkModel rwalkModel;
+      RandomWalkModel rwalkModel;
 
 
          /// White noise stochastic model
-      static WhiteNoiseModel whitenoiseModel;
+      WhiteNoiseModel whitenoiseModel;
 
 
          /// Phase biases stochastic model (constant + white noise)
-      static PhaseAmbiguityModel biasModel;
+      PhaseAmbiguityModel biasModel;
 
 
          /// Initial index assigned to this class.
