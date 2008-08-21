@@ -174,7 +174,7 @@ public:
 
       // Set true when this SV has risen above the 'mask angle'
       // It is not cleared when the SV goes back below the mask angle.
-      bool aboveMask;
+      bool aboveMask,aboveTrack;
 
       // First epoch when this SV had an elevation greater than the
       // 'mask angle'. Not valid unles aboveMask is true.
@@ -203,13 +203,17 @@ public:
       double span;
       float last_elevation,last_azimuth;
 
-      // The number of SVs in track at this point in time.
+      // The number of SVs actually in track at this point in time.
       short inTrack;
 
-      // The number of SVs physically above the mask angle at this time
+      // The number of SVs physically above the angle at this time
       // When multiple epochs are smashed, these are the max values seen
       // durning the intervals smashed
       short numAboveMaskAngle, numAboveTrackAngle;
+
+      // The number of SVs we expect data from; those that are above the mask
+      // angle, are healthy, and no more than the number of channels
+      short numExpected;
 
       // The most recent obs from this prn
       gpstk::SvObsEpoch obs;

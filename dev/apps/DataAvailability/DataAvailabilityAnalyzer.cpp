@@ -636,26 +636,44 @@ void DataAvailabilityAnalyzer::processEpoch(
    
    for (DayTime t = prev_oe.time + epochRate; t <= oe.time; t += epochRate)
    {
-      for (int prn=1; prn<=32; prn++)
-         inView[prn].update(prn, t, rxpos, *eph, gm, maskAngle, trackAngle);
-      
-      if (verboseLevel>3)
+      // Update the SV positions and compute how many are above the tracking
+      // elevation, above the mask elevation, and are expected to to be
+      // output by the receiver.
+      int n_ata=0,n_ama=0,n_exp=0;
+      for (int prn=1; prn<=MAX_PRN; prn++)
       {
+         InView& iv = inView[prn];
+         iv.update(prn, t, rxpos, *eph, gm, maskAngle, trackAngle);
+         if (iv.aboveTrack)
+            n_ata++;
+         if (iv.aboveMask)
+            n_ama++;
+         if (iv.aboveMask && iv.health==0)
+            n_exp++;
+      }
+      n_exp = std::min(n_exp, 12);
+
+      if (verboseLevel>3)
          output << t.printf(timeFormat) << "  SVs in view: ";
-         for (int prn=1; prn<=32; prn++)
-            if (inView[prn].up)
-               output << prn << "(" << setprecision(3)
-                      << inView[prn].elevation << ") ";
-         output << endl;
+
+      for (int prn=1; prn<=MAX_PRN; prn++)
+      {
+         InView& iv = inView[prn];
+         iv.numAboveMaskAngle = n_ama;
+         iv.numAboveTrackAngle = n_ata;
+         iv.numExpected = n_exp;
+         if (verboseLevel>3 && iv.up)
+            output << prn << "(" << setprecision(3)
+                   << inView[prn].elevation << ") ";
       }
 
-      // Figure out how many SVs could and should have been tracked
-      int ata=0;
-      for (int prn=1; prn<=32; prn++)
-         if (inView[prn].elevation > maskAngle)
-            ata++;
-      totalSvEpochCounter += ata;
-      expectedSvEpochCounter += std::min(ata, 12);
+      if (verboseLevel>3)
+         output << endl;
+
+      totalSvEpochCounter += n_ama;
+      expectedSvEpochCounter += n_exp;
+      if (verboseLevel>2 && (n_ama>12 || n_ata>12))
+         cout << t << " n_ata:" << n_ata << " n_ama:" << n_ama << endl;
 
       if (t != oe.time)
       {
@@ -666,7 +684,7 @@ void DataAvailabilityAnalyzer::processEpoch(
          continue;
       }
 
-      for (int prn=1; prn<=32; prn++)
+      for (int prn=1; prn<=MAX_PRN; prn++)
       {
          if (ignorePrn.find(prn) != ignorePrn.end())
             continue;
@@ -677,7 +695,7 @@ void DataAvailabilityAnalyzer::processEpoch(
          oei = oe.find(svid);
          InView& iv=inView[prn];
 
-	 if (iv.elevation < maskAngle)
+	 if (!iv.aboveMask)
 	    continue;
 
          iv.inTrack = oe.size();
@@ -685,9 +703,7 @@ void DataAvailabilityAnalyzer::processEpoch(
          if (oei == oe.end())  // No data from this SV
          {
             if (oe.size()<12 && (!iv.health || !badHealthMask))
-            {
                missingList.push_back(iv);
-            }
          }
          else // There is at least some data from this SV
          {
@@ -696,10 +712,11 @@ void DataAvailabilityAnalyzer::processEpoch(
             if (verboseLevel>3)
                output << iv;
 
-            receivedSvEpochCounter++;
-
             if (iv.health == 0)
+            {
+               receivedSvEpochCounter++;
                iv.receivedCount++;
+            }
 
             // This adds obs that we receive that *aren't* supposed to be there
             // Note that we don't flag obs that are present but below the 
@@ -754,7 +771,7 @@ void DataAvailabilityAnalyzer::processEpoch(
                }
             } // else
          }    // else      
-      }       // for (int prn=1; prn<=32; prn++)
+      }       // for (int prn=1; prn<=MAX_PRN; prn++)
    }          // for (DayTime t=prev_oe.time+epochRate;t<=oe.time;t+= epochRate)
 }             // void DataAvailabilityAnalyzer::processEpoch()
 
@@ -802,7 +819,6 @@ void DataAvailabilityAnalyzer::InView::update(
          {
             firstEpoch = time;
             up = true;
-            aboveMask = false;
             epochCount = 0;
             obs = SvObsEpoch();
             inTrack = 0;
@@ -811,12 +827,20 @@ void DataAvailabilityAnalyzer::InView::update(
          {
             rising = el > elevation;
          }
+
          if (el > maskAngle && !aboveMask)
-         {
-            aboveMask = true;
             firstEpochAboveMask = time;
-         }
+
+         aboveMask  = el > maskAngle;
+         aboveTrack = el > trackAngle;
       }
+      else
+      {
+         up = false;
+         aboveTrack = false;
+         aboveMask=false;
+      }
+
       elevation = el;
       azimuth = rx.azimuth(sv);
       if (typeid(eph) == typeid(GPSEphemerisStore))
@@ -831,6 +855,7 @@ void DataAvailabilityAnalyzer::InView::update(
    {
       up = false;
       aboveMask = false;
+      aboveTrack = false;
       elevation = 0;
       azimuth = 0;
       health = 0;
@@ -907,8 +932,8 @@ void DataAvailabilityAnalyzer::InView::dump(ostream& s, const string fmt)
 
 void DataAvailabilityAnalyzer::outputSummary()
 {
-   vector<long> missed(32);
-   for (int prn=1; prn<=32; prn++)
+   vector<long> missed(MAX_PRN);
+   for (int prn=1; prn<=MAX_PRN; prn++)
       if (inView[prn].expectedCount)
          missed[prn] = inView[prn].expectedCount - inView[prn].receivedCount;
       else
@@ -916,7 +941,6 @@ void DataAvailabilityAnalyzer::outputSummary()
 
    unsigned long channelLoss = totalSvEpochCounter - expectedSvEpochCounter;
    unsigned long missedSvEpochCounter = expectedSvEpochCounter - receivedSvEpochCounter;
-   double pctMiss = 100.0 * missedSvEpochCounter / expectedSvEpochCounter;
 
    output << endl
           << " Summary:" << endl
@@ -937,7 +961,7 @@ void DataAvailabilityAnalyzer::outputSummary()
    if (verboseLevel)
    {
       output << endl << "prn expected    missed" << endl;
-      for (int prn=1; prn<=32; prn++)
+      for (int prn=1; prn<=MAX_PRN; prn++)
          if (inView[prn].expectedCount)
             output << setw(2) << prn << "    "
                    << setw(8) << inView[prn].expectedCount << "  "
