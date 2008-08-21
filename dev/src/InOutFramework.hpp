@@ -73,7 +73,7 @@ namespace gpstk
    public:
 
 
-      /** Constructor for LoopedFramework.
+      /** Constructor for InOutFramework.
        *
        * @param applName   name of the program (argv[0]).
        * @param applDesc   text description of program's function
@@ -86,8 +86,76 @@ namespace gpstk
       {};
 
 
-         /// Destructor
+      /// Destructor
       virtual ~InOutFramework() {};
+
+
+      bool initialize( int argc,
+                       char *argv[],
+                       bool pretty = true )
+         throw()
+      {
+         using std::ios;
+
+         CommandOptionWithAnyArg
+            inputOpt('i', "input",
+                     "A file to take the input from. The default is stdin."),
+            outputOpt('o', "output",
+                      "A file to receive the output. The default is stdout.");
+
+         if (!LoopedFramework::initialize(argc, argv, pretty))
+            return false;
+
+         if (inputOpt.getCount())
+            inputFn = inputOpt.getValue()[0];
+
+
+         if (inputFn=="-" || inputFn=="")
+         {
+            input.copyfmt(std::cin);
+            input.clear(std::cin.rdstate());
+            input.ios::rdbuf(std::cin.rdbuf());
+            inputFn = "<stdin>";
+         }
+         else
+         {
+            input.open(inputFn.c_str(), std::ios::in);
+         }
+
+
+         if (!input)
+         {
+            std::cerr << "Could not open: " << inputFn << std::endl;
+            return false;
+         }
+
+         if (outputOpt.getCount())
+            outputFn = outputOpt.getValue()[0];
+
+         if (outputFn=="-" || outputFn=="")
+         {
+            output.copyfmt(std::cout);
+            output.clear(std::cout.rdstate());
+            output.ios::rdbuf(std::cout.rdbuf());
+            outputFn = "<stdout>";
+         }
+         else
+         {
+            output.open(outputFn.c_str(), std::ios::out);
+         }
+
+         if (!output)
+         {
+            std::cerr << "Could not open: " << outputFn << std::endl;
+            return false;
+         }
+
+         if (debugLevel)
+            std::cout << "Sending output to " << outputFn << std::endl
+                      << "Reading input from " << inputFn << std::endl;
+
+         return true;
+      }  // End of method 'InOutFramework::initialize()'
 
 
       IType input;
@@ -100,7 +168,7 @@ namespace gpstk
    private:
 
 
-         // Do not allow the use of the default constructor.
+      // Do not allow the use of the default constructor.
       InOutFramework();
 
 
