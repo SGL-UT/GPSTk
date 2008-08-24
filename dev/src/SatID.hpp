@@ -42,7 +42,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <gps_constants.hpp>
+#include "gps_constants.hpp"
 
 /**
  * @file SatID.hpp
