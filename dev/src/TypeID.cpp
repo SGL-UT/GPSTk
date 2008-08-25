@@ -104,6 +104,12 @@ namespace gpstk
       tStrings[iono]       = "verticalIono";
       tStrings[ionoMap]    = "ionoMap";
       tStrings[ionoSlant]  = "slantIono";
+      tStrings[ionoL1]     = "slantIonoL1";
+      tStrings[ionoL2]     = "slantIonoL2";
+      tStrings[ionoL5]     = "slantIonoL5";
+      tStrings[ionoL6]     = "slantIonoL6";
+      tStrings[ionoL7]     = "slantIonoL7";
+      tStrings[ionoL8]     = "slantIonoL8";
       tStrings[windUp]     = "windup";
       tStrings[satPCenter] = "satPhaseCenter";
       tStrings[satX]       = "satX";
