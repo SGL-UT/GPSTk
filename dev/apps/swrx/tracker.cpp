@@ -275,6 +275,7 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
 void RxSim::process()
 {
    NavFramer nf;
+   long int dataPoint =0;
    nf.debugLevel = debugLevel;
    nf.dump(cout);
 
@@ -289,7 +290,7 @@ void RxSim::process()
          {
             if (verboseLevel)
                tr->dump(cout);
-            nf.process(*tr);
+            nf.process(*tr, dataPoint);
          }
       }
       b++;
@@ -297,6 +298,10 @@ void RxSim::process()
 
       if (cc->localTime > timeLimit)
          break;
+
+      dataPoint++;
+         //if(dataPoint > 16367)
+         //dataPoint = 0;
    }
 }
 

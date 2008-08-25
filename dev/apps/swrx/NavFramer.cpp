@@ -37,6 +37,7 @@ void NavFramer::Subframe::dump(std::ostream& s, int detail) const
       s << "t:" << fixed << setprecision(1) << t * 1e3
         << ", ni:" << ni
         << ", ci:" << ci
+        << ", dp:" << dataPoint
         << ", inv:" << inverted
         << ", prevD30:" << prevD30;
       
@@ -113,20 +114,24 @@ NavFramer::NavFramer()
 {}
 
 
-bool NavFramer::process(const EMLTracker& tr)
+bool NavFramer::process(const EMLTracker& tr, long int dp)
 {
    // number of code chips that go into each bit
    const unsigned long chipsPerBit = 
       static_cast<unsigned long>(bitLength / tr.localReplica.codeChipLen);
+
+      // CAN WE REPLACE FOLLOWING TWO LINES WITH SOMETHING MORE ACCURATE?
+      // DON'T THINK SO...we need to do it in the tracker
    const CodeIndex now = tr.localReplica.codeGenPtr->getChipCount();
    const unsigned navCount = now/chipsPerBit;
 
    if (navCount == prevNavCount)
       return howCurrent;
-
+   
    prevNavCount = navCount;
    navBuffer[navIndex] = tr.getNav();
    codeIndex[navIndex] = now;
+   startDP.push_back(dp);
    navIndex++;
    navIndex %= navBuffer.size();
    lastEight <<= 1;
@@ -142,6 +147,7 @@ bool NavFramer::process(const EMLTracker& tr)
       Subframe sf;
       sf.ni = (navIndex-8) % 1500;
       sf.ci = codeIndex[sf.ni];
+      sf.dataPoint = startDP[sf.ni];
       sf.prevD30 = navBuffer[(navIndex-9)%1500];
       sf.t = tr.localReplica.localTime;
       sf.inverted = lastEight != eightBaker;
@@ -161,10 +167,23 @@ bool NavFramer::process(const EMLTracker& tr)
             subframes.push_back(*sf);
             howCurrent = true;
             how = sf->words[1];
-            if (debugLevel)
+               //if (debugLevel)
                cout << "# " << *sf << endl;
-            if (debugLevel>1)
+                  //if (debugLevel>1)
                sf->dump(cout,1);
+/*
+               long framesArrayFormat[10];
+               int gpsWeek = 1433;
+               double output[60];
+               for(int k = 0; k < 10; k++)
+               {
+                  framesArrayFormat[k] = sf->words[k];
+               }
+               EngNav::subframeConvert(framesArrayFormat, gpsWeek, output);
+   
+               for(int i = 0; i < 60; i++)
+                  cout << output[i] << endl;
+*/
          }
          else
          {
