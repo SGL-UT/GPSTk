@@ -290,7 +290,8 @@ void RxSim::process()
          {
             if (verboseLevel)
                tr->dump(cout);
-            nf.process(*tr, dataPoint);
+	    //if (tr->navChange)
+	       nf.process(*tr, dataPoint);
          }
       }
       b++;

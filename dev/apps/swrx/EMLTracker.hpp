@@ -77,6 +77,7 @@ public:
    void dump(std::ostream& s, int detail=0) const;
 
    double pllAlpha, pllBeta, dllAlpha, dllBeta;
+   bool navChange;
 
    enum DllMode {dmFar, dmClose, dmOnTop};
    enum PllMode {pmUnlocked, pmLocked};
@@ -107,6 +108,8 @@ private:
    PllMode pllMode;
 
    bool nav;
+   bool prevNav;
+  
 
    SimpleCorrelator<double> early, prompt, late;
    double emag, pmag, lmag, pI, pQ;

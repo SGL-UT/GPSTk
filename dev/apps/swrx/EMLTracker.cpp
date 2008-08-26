@@ -38,7 +38,7 @@ EMLTracker::EMLTracker(CCReplica& localReplica, double codeSpacing) :
    dllError(0), dllAlpha(/*6*/3), dllBeta(/*0.01*/0.005),
    iadCount(0), nav(false), baseGain(1.0/(0.1767*1.404)),
    inSumSq(0), lrSumSq(0),iadThreshold(0.02),
-   dllMode(dmFar), pllMode(pmUnlocked)
+   dllMode(dmFar), pllMode(pmUnlocked), navChange(true), prevNav(true)
 {
    early.setDelay(2*eplSpacing);
    prompt.setDelay(eplSpacing);
@@ -143,7 +143,12 @@ void EMLTracker::updateLoop()
            << " ms, dll:" << asString(dllMode) << endl;
 
    // At this point all that is left on the inphase is the nav data
+   prevNav = nav;
    nav = prompt().real() > 0;
+   if(prevNav != nav)
+     navChange = true;
+   else
+     navChange = false;
 
    // Close the loop on the dll
    if (dllMode == dmOnTop || dllMode == dmClose)

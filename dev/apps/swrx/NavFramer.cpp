@@ -119,14 +119,12 @@ bool NavFramer::process(const EMLTracker& tr, long int dp)
    // number of code chips that go into each bit
    const unsigned long chipsPerBit = 
       static_cast<unsigned long>(bitLength / tr.localReplica.codeChipLen);
-
-      // CAN WE REPLACE FOLLOWING TWO LINES WITH SOMETHING MORE ACCURATE?
-      // DON'T THINK SO...we need to do it in the tracker
+   
    const CodeIndex now = tr.localReplica.codeGenPtr->getChipCount();
    const unsigned navCount = now/chipsPerBit;
 
    if (navCount == prevNavCount)
-      return howCurrent;
+     return howCurrent;
    
    prevNavCount = navCount;
    navBuffer[navIndex] = tr.getNav();
@@ -144,6 +142,7 @@ bool NavFramer::process(const EMLTracker& tr, long int dp)
 
    if (lastEight == eightBaker || ~lastEight == eightBaker)
    {
+     //cout << "FOUND CANDIDATE" << endl ;
       Subframe sf;
       sf.ni = (navIndex-8) % 1500;
       sf.ci = codeIndex[sf.ni];
