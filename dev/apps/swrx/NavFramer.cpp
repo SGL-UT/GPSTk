@@ -122,10 +122,19 @@ bool NavFramer::process(const EMLTracker& tr, long int dp)
    
    const CodeIndex now = tr.localReplica.codeGenPtr->getChipCount();
    const unsigned navCount = now/chipsPerBit;
-
-   if (navCount == prevNavCount)
-     return howCurrent;
    
+// Code below can be uncommented if the NavFramer needs to count on it's own 
+// to know when there is a new nav bit.  Right now it is only called when the
+// tracker says there is one.
+/*
+   if (navCount == prevNavCount)
+   {
+         //cout << "skipping" << endl;
+      return howCurrent;
+   }
+*/
+
+      //cout << "doing" << endl;
    prevNavCount = navCount;
    navBuffer[navIndex] = tr.getNav();
    codeIndex[navIndex] = now;
@@ -170,6 +179,8 @@ bool NavFramer::process(const EMLTracker& tr, long int dp)
                cout << "# " << *sf << endl;
                   //if (debugLevel>1)
                sf->dump(cout,1);
+
+// Following block pulls nav data from subframes, just playing around for now.
 /*
                long framesArrayFormat[10];
                int gpsWeek = 1433;

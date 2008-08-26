@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
       catch (Exception& e)
       {}
    }
-
+/*
    for(int i = 1; i <= 32; i++)
    {
       if( i != 5 && i != 10 && i != 16 && i != 17 &&
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
          svVec[i-1] = temp;
       }
    }
-
+*/
    // Replace this with the observed delays...
    vector<double> obsVec(expVec);
    

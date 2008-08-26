@@ -276,6 +276,7 @@ void RxSim::process()
 {
    NavFramer nf;
    long int dataPoint =0;
+   int count = 0;
    nf.debugLevel = debugLevel;
    nf.dump(cout);
 
@@ -290,8 +291,20 @@ void RxSim::process()
          {
             if (verboseLevel)
                tr->dump(cout);
-	    //if (tr->navChange)
-	       nf.process(*tr, dataPoint);
+
+// Following two if statements are specific to tracker updating every 
+// 1 ms. We also still need to add the code offset to the dataPoint...
+            if(tr->navChange)
+            {
+               nf.process(*tr, dataPoint);
+               count = 0;
+            }
+            if(count == 20)
+            {
+               count = 0;
+               nf.process(*tr, dataPoint);
+            }
+            count++;
          }
       }
       b++;
