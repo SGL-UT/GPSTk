@@ -168,7 +168,7 @@ void DDEpoch::doubleDifference(
          oi2 = rx2.find(prn);
          if (oi2 == rx2.end())
             continue;
-         
+
          if (prn == masterPrn)
             continue;
             
@@ -208,7 +208,7 @@ void DDEpoch::doubleDifference(
 
          const SvObsEpoch& rx1obs = oi0->second;
          const SvObsEpoch& rx2obs = oi2->second;
-   
+
          OIDM d1 = singleDifference(rx1obs, rx2obs, rangeRate[sv1]);
          if (d1.size() == 0)
          {
@@ -481,15 +481,25 @@ string DDEpochMap::computeStats(
    // Pull all double difference data in the elevation bin into a list
    list<double> dd;
    int zeroCount=0;
+   unsigned long svEpochCount=0;
    for (const_iterator ei = begin(); ei != end(); ei++)
    {
+      const DDEpoch& dde = ei->second;
+
+      // Determine how many SVs were present in this elevation range
+      for (int prn=1; prn <= MAX_PRN; prn++)
+      {
+         float elev = dde.elevation[SatID(prn,SatID::systemGPS)];
+         if (elev>minElevation && elev<maxElevation)
+            svEpochCount++;
+      }
+
       if (useMasterSV)
       {
          SvOIDM::const_iterator pi;
-         const DDEpoch& dde = ei->second;
          for (pi = dde.ddSvOIDM.begin(); pi != dde.ddSvOIDM.end(); pi++)
          {
-            const gpstk::SatID& prn = pi->first;
+            const SatID& prn = pi->first;
             const OIDM& ddr = pi->second;
             if (prn == dde.masterPrn ||
                 dde.elevation[prn]<minElevation || 
@@ -543,7 +553,7 @@ string DDEpochMap::computeStats(
    double kurt = f.kurtosis();
    //double sdev = sqrt(f.variance());
    //double avg = f.average();
-   long n = f.size();
+   //long n = f.size();
 
    double median;
    vector<double> ddv(dd.size());
@@ -560,6 +570,7 @@ string DDEpochMap::computeStats(
        << "   " << setprecision(3) << setw(10) << median
        << fixed
        << "  " << setw(8) << f.size()
+       << "  " << setw(8) << svEpochCount
        << "  ";
    if (kurt<100)
       oss << setprecision(2) << setw(6) << kurt;
@@ -611,8 +622,8 @@ void DDEpochMap::outputStats(
    }
 
    s << endl
-     << ">s  ObsID           elev      noise(mad)    median      # obs    kurt   jumps" << endl
-     << ">s -------------    -----     ----------  ----------   -------  ------  -----"
+     << ">s  ObsID           elev      noise(mad)    median      # DDE     # SVE    kurt   jumps" << endl
+     << ">s -------------    -----     ----------  ----------   -------   -------  ------  -----"
      << endl;
 
    // For convience, group these into L1

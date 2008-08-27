@@ -127,9 +127,9 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
                    "compute the double difference residuals. Valid values are:"
                    " all, phase. The default is " + ddMode + "."),
       ordModeOption('\0', "omode", "Specifies what observations to use to "
-                    "compute the ORDs. Valid values are: "
-                    "p1p2, z1z2, c1p2, c1y2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
-                    "z2 smo, and smart. The default is " + ordMode + "."),
+                    "compute the ORDs. Valid values are: p1p2, z1z2, c1p2, "
+                    "c1y2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
+                    "z2 smo, dynamic, and smart. The default is " + ordMode + "."),
       minArcTimeOption('\0', "min-arc-time", "The minimum length of time "
                        "(in seconds) that a sequence of observations must "
                        "span to be considered as an arc. The default "
@@ -428,7 +428,7 @@ void DDGen::process()
       pc.getSlips(sl, pem);
       if (verboseLevel>1)
          pc.summarize(cout);
-      pc.getPhaseDD(ddem);          
+      pc.getPhaseDD(ddem); // This stuffs the better phase double diff back into ddem
    }
    else
    {
@@ -439,7 +439,7 @@ void DDGen::process()
       pc.getSlips(sl, pem);
       if (verboseLevel>1)
          pc.summarize(cout);
-      pc.getPhaseDD(ddem);
+      pc.getPhaseDD(ddem); // This stuffs the better phase double diff back into ddem
    }
 
    if (verboseLevel)
