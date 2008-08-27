@@ -385,6 +385,9 @@ namespace gpstk
          LIData[sat].LIEpoch.clear();
          LIData[sat].LIBuffer.clear();
 
+            // current buffer size should be updated
+         s = LIData[sat].LIEpoch.size();
+
             // Report cycle slip
          reportCS = true;
       }
