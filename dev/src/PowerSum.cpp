@@ -36,7 +36,7 @@
 //
 //=============================================================================
 
-#include <PowerSum.hpp>
+#include "PowerSum.hpp"
 #include <math.h>
 
 namespace gpstk
