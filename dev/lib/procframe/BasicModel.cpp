@@ -103,9 +103,8 @@ namespace gpstk
 
 
       /* Explicit constructor, taking as input reference station
-       * coordinates, default ionospheric and tropospheric models,
-       * ephemeris to be used, default observable and whether TGD will
-       * be computed or not.
+       * coordinates, ephemeris to be used, default observable
+       * and whether TGD will be computed or not.
        *
        * @param RxCoordinates Reference station coordinates.
        * @param dEphemeris    EphemerisStore object to be used by default.
