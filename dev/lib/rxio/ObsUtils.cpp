@@ -87,11 +87,11 @@ namespace gpstk
             default:         tc = ObsID::tcUnknown;
          }
 
-         obs[ObsID(ObsID::otRange,   cb, tc)] = mdp_obs.pseudorange;
-         obs[ObsID(ObsID::otPhase,   cb, tc)] = mdp_obs.phase;
-         obs[ObsID(ObsID::otDoppler, cb, tc)] = mdp_obs.doppler;
-         obs[ObsID(ObsID::otSNR,     cb, tc)] = mdp_obs.snr;
-         obs[ObsID(ObsID::otLLI,     cb, tc)] = mdp_obs.lockCount;
+         obs[ObsID(ObsID::otRange,    cb, tc)] = mdp_obs.pseudorange;
+         obs[ObsID(ObsID::otPhase,    cb, tc)] = mdp_obs.phase;
+         obs[ObsID(ObsID::otDoppler,  cb, tc)] = mdp_obs.doppler;
+         obs[ObsID(ObsID::otSNR,      cb, tc)] = mdp_obs.snr;
+         obs[ObsID(ObsID::otTrackLen, cb, tc)] = mdp_obs.lockCount;
       }
       return obs;
    }
