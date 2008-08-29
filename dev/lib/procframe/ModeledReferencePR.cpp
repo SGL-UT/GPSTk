@@ -642,41 +642,65 @@ ModeledReferencePR object." );
          gData.insertTypeIDVector(TypeID::rho, geometricRho);
          gData.insertTypeIDVector(TypeID::dtSat, svClockBiases);
          gData.insertTypeIDVector(TypeID::rel, svRelativity);
-         gData.insertTypeIDVector(TypeID::ionoSlant, ionoCorrections);
          gData.insertTypeIDVector(TypeID::tropoSlant, tropoCorrections);
          gData.insertTypeIDVector(TypeID::elevation, elevationSV);
          gData.insertTypeIDVector(TypeID::azimuth, azimuthSV);
 
-            // Get the instrumental delays right
-         if (useTGD)
-         {
-            TypeID instDelayType;
-            switch ( getDefaultObservable().type )
-            {
-               case TypeID::C1:
-                  instDelayType = TypeID::instC1;
-                  break;
-               case TypeID::C2:
-                  instDelayType = TypeID::instC2;
-                  break;
-               case TypeID::C5:
-                  instDelayType = TypeID::instC5;
-                  break;
-               case TypeID::C6:
-                  instDelayType = TypeID::instC6;
-                  break;
-               case TypeID::C7:
-                  instDelayType = TypeID::instC7;
-                  break;
-               case TypeID::C8:
-                  instDelayType = TypeID::instC8;
-                  break;
-               default:
-                  instDelayType = TypeID::instC1;
-            };  // End "switch"
 
+            // Get iono and instrumental delays right
+         TypeID ionoDelayType, instDelayType;
+
+         switch ( getDefaultObservable().type )
+         {
+
+            case TypeID::C1:
+            case TypeID::P1:
+               ionoDelayType = TypeID::ionoL1;
+               instDelayType = TypeID::instC1;
+               break;
+
+            case TypeID::C2:
+            case TypeID::P2:
+               ionoDelayType = TypeID::ionoL2;
+               instDelayType = TypeID::instC2;
+               break;
+
+            case TypeID::C5:
+               ionoDelayType = TypeID::ionoL5;
+               instDelayType = TypeID::instC5;
+               break;
+
+            case TypeID::C6:
+               ionoDelayType = TypeID::ionoL6;
+               instDelayType = TypeID::instC6;
+               break;
+
+            case TypeID::C7:
+               ionoDelayType = TypeID::ionoL7;
+               instDelayType = TypeID::instC7;
+               break;
+
+            case TypeID::C8:
+               ionoDelayType = TypeID::ionoL8;
+               instDelayType = TypeID::instC8;
+               break;
+
+            default:
+               ionoDelayType = TypeID::ionoL1;
+               instDelayType = TypeID::instC1;
+
+         }  // End of 'switch ( getDefaultObservable().type )...'
+
+
+            // Store ionospheric values in GDS
+         gData.insertTypeIDVector(ionoDelayType, ionoCorrections);
+
+            // Store TGD values in GDS
+         if( useTGD )
+         {
             gData.insertTypeIDVector(instDelayType, svTGD);
-         } // End "if"
+         }
+
 
             // Now, lets insert the geometry matrix
          TypeIDSet tSet;

@@ -123,7 +123,7 @@ namespace gpstk
    public:
 
          /// Default constructor. Generates an invalid object.
-      ComputeMOPSWeights() : receiverClass(2)
+      ComputeMOPSWeights() : receiverClass(2), defaultIono(TypeID::ionoL1)
       { pBCEphemeris = NULL; pTabEphemeris = NULL; setIndex(); }
 
 
@@ -136,7 +136,7 @@ namespace gpstk
       ComputeMOPSWeights( const Position& pos,
                           GPSEphemerisStore& bcephem,
                           int rxClass = 2 )
-         : receiverClass(rxClass), nominalPos(pos)
+         : receiverClass(rxClass), nominalPos(pos), defaultIono(TypeID::ionoL1)
       { setDefaultEphemeris(bcephem); setIndex(); };
 
 
@@ -150,7 +150,7 @@ namespace gpstk
       ComputeMOPSWeights( const Position& pos,
                           TabularEphemerisStore& tabephem,
                           int rxClass = 2 )
-         : receiverClass(rxClass), nominalPos(pos)
+         : receiverClass(rxClass), nominalPos(pos), defaultIono(TypeID::ionoL1)
       { setDefaultEphemeris(tabephem); setIndex(); };
 
 
@@ -219,6 +219,19 @@ namespace gpstk
       { pBCEphemeris = NULL; pTabEphemeris = &ephem; return (*this); };
 
 
+         /// Method to get the default ionospheric TypeID value to be used.
+      virtual TypeID getDefaultIono() const
+      { return defaultIono; };
+
+
+         /** Method to set the default ionospheric TypeID value to be used.
+          *
+          * @param type      TypeID of ionospheric values to be used by default
+          */
+      virtual ComputeMOPSWeights& setDefaultIono(const TypeID& type)
+      { defaultIono = type; return (*this); };
+
+
          /// Returns an index identifying this object.
       virtual int getIndex(void) const;
 
@@ -240,6 +253,10 @@ namespace gpstk
 
          /// Nominal position used for computing weights.
       Position nominalPos;
+
+
+         /// Default ionospheric values to be used.
+      TypeID defaultIono;
 
 
          /** Method to really get the MOPS weight of a given satellite.

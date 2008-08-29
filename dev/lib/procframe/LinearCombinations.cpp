@@ -49,7 +49,7 @@ namespace gpstk
       c1Prefit.body[TypeID::gravDelay]    = -1.0;
       c1Prefit.body[TypeID::satPCenter]   = -1.0;
       c1Prefit.body[TypeID::tropoSlant]   = -1.0;
-      c1Prefit.body[TypeID::ionoSlant]    = -1.0;
+      c1Prefit.body[TypeID::ionoL1]       = -1.0;
       c1Prefit.body[TypeID::instC1]       = -1.0;
 
          // Definition to compute PC combination

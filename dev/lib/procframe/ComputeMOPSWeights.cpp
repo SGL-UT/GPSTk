@@ -258,10 +258,10 @@ namespace gpstk
             // Use MOPSTropModel object to compute tropospheric noise
          sigma2trop = mopsTrop.MOPSsigma2(tvMap(TypeID::elevation));
 
-            // Check if ionoSlant was already computed
-         if( tvMap.find(TypeID::ionoSlant) != tvMap.end() )
+            // Check if ionosphere values were already computed
+         if( tvMap.find(defaultIono) != tvMap.end() )
          {
-            ionocorr = tvMap(TypeID::ionoSlant);
+            ionocorr = tvMap(defaultIono);
          }
 
          sigma2uire = sigma2iono( ionocorr,

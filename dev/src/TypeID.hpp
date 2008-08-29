@@ -141,7 +141,6 @@ namespace gpstk
          tropoSlant, ///< Slant tropospheric delay, total
          iono,      ///< Vertical ionospheric delay
          ionoMap,   ///< Ionospheric mapping function
-         ionoSlant, ///< Slant ionospheric delay
          ionoL1,    ///< Slant ionospheric delay, frequency L1
          ionoL2,    ///< Slant ionospheric delay, frequency L2
          ionoL5,    ///< Slant ionospheric delay, frequency L5

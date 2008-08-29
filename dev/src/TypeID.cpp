@@ -103,7 +103,6 @@ namespace gpstk
       tStrings[tropoSlant] = "slantTropo";
       tStrings[iono]       = "verticalIono";
       tStrings[ionoMap]    = "ionoMap";
-      tStrings[ionoSlant]  = "slantIono";
       tStrings[ionoL1]     = "slantIonoL1";
       tStrings[ionoL2]     = "slantIonoL2";
       tStrings[ionoL5]     = "slantIonoL5";

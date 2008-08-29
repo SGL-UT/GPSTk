@@ -336,13 +336,7 @@ namespace gpstk
                                               cerange.elevationGeodetic,
                                               cerange.azimuthGeodetic );
 
-               (*stv).second[TypeID::ionoSlant] = tempIono;
-
-            }
-            else
-            {
-               (*stv).second[TypeID::ionoSlant] = 0.0;
-            }
+            }  // End of 'if( pDefaultIonoModel )...'
 
 
             tempModeledPR = tempPR + tempTrop + tempIono;
@@ -359,7 +353,7 @@ namespace gpstk
 
                tempModeledPR += tempTGD;
 
-            }
+            }  // End of 'if( useTGD )...'
 
 
             tempPrefit = observable - tempModeledPR;
@@ -382,48 +376,61 @@ namespace gpstk
             (*stv).second[TypeID::elevation] = cerange.elevationGeodetic;
             (*stv).second[TypeID::azimuth] = cerange.azimuthGeodetic;
 
-               // Get the instrumental delays right
-            if( useTGD )
+
+               // Get iono and instrumental delays right
+            TypeID ionoDelayType, instDelayType;
+
+            switch ( getDefaultObservable().type )
             {
 
-               TypeID instDelayType;
+               case TypeID::C1:
+               case TypeID::P1:
+                  ionoDelayType = TypeID::ionoL1;
+                  instDelayType = TypeID::instC1;
+                  break;
 
-               switch ( getDefaultObservable().type )
-               {
+               case TypeID::C2:
+               case TypeID::P2:
+                  ionoDelayType = TypeID::ionoL2;
+                  instDelayType = TypeID::instC2;
+                  break;
 
-                  case TypeID::C1:
-                     instDelayType = TypeID::instC1;
-                     break;
+               case TypeID::C5:
+                  ionoDelayType = TypeID::ionoL5;
+                  instDelayType = TypeID::instC5;
+                  break;
 
-                  case TypeID::C2:
-                     instDelayType = TypeID::instC2;
-                     break;
+               case TypeID::C6:
+                  ionoDelayType = TypeID::ionoL6;
+                  instDelayType = TypeID::instC6;
+                  break;
 
-                  case TypeID::C5:
-                     instDelayType = TypeID::instC5;
-                     break;
+               case TypeID::C7:
+                  ionoDelayType = TypeID::ionoL7;
+                  instDelayType = TypeID::instC7;
+                  break;
 
-                  case TypeID::C6:
-                     instDelayType = TypeID::instC6;
-                     break;
+               case TypeID::C8:
+                  ionoDelayType = TypeID::ionoL8;
+                  instDelayType = TypeID::instC8;
+                  break;
 
-                  case TypeID::C7:
-                     instDelayType = TypeID::instC7;
-                     break;
+               default:
+                  ionoDelayType = TypeID::ionoL1;
+                  instDelayType = TypeID::instC1;
 
-                  case TypeID::C8:
-                     instDelayType = TypeID::instC8;
-                     break;
+            }  // End of 'switch ( getDefaultObservable().type )...'
 
-                  default:
-                     instDelayType = TypeID::instC1;
 
-               }
+            if( pDefaultIonoModel )
+            {
+               (*stv).second[ionoDelayType] = tempIono;
+            }
 
+            if( useTGD )
+            {
                (*stv).second[instDelayType] = tempTGD;
-
-
-            } // End of if
+            }
 
 
          } // End of loop for (stv = gData.begin()...
