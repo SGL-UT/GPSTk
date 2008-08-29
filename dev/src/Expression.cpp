@@ -616,12 +616,13 @@ namespace gpstk
          bool ignore=false;
          switch (i->first.type)
          {
-            case ObsID::otRange:   type = "C"; break;
-            case ObsID::otPhase:   type = "L"; break;
-            case ObsID::otDoppler: type = "D"; break;
-            case ObsID::otSNR:     type = "S"; break;
-            case ObsID::otSSI:     ignore = true; break;
-            case ObsID::otLLI:     ignore = true; break;
+            case ObsID::otRange:    type = "C"; break;
+            case ObsID::otPhase:    type = "L"; break;
+            case ObsID::otDoppler:  type = "D"; break;
+            case ObsID::otSNR:      type = "S"; break;
+            case ObsID::otSSI:      ignore = true; break;
+            case ObsID::otLLI:      ignore = true; break;
+            case ObsID::otTrackLen: ignore = true; break;
          }
 
          switch (i->first.band)
