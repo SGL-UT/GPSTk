@@ -70,8 +70,9 @@ namespace gpstk
          otPhase,     ///< accumulated phase, in meters
          otDoppler,   ///< Doppler, in Hz
          otSNR,       ///< Signal strength, in dB-Hz
-         otSSI,       ///< Signal strength indicator/inded (kinda a rinex thing)
-         otLLI,       ///< loss of lock indicator/ lock count
+         otSSI,       ///< Signal Strength Indicator (kinda a rinex thing)
+         otLLI,       ///< Loss of Lock Indicator (another rinex thing)
+         otTrackLen,  ///< Number of continuous epochs of 'good' tracking
          otLast,      ///< used to extend this...
          otPlaceholder = otLast+1000
       };

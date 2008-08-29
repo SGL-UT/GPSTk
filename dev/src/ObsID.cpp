@@ -56,14 +56,15 @@ namespace gpstk
 
    ObsID::Initializer::Initializer()
    {
-      otStrings[otUnknown] = "UnknownType";
-      otStrings[otRange]   = "range";
-      otStrings[otPhase]   = "phase";
-      otStrings[otDoppler] = "doppler";
-      otStrings[otSNR]     = "snr";
-      otStrings[otSSI]     = "ssi";
-      otStrings[otLLI]     = "lli";
-      otStrings[otLast]    = "otLast";
+      otStrings[otUnknown]  = "UnknownType";
+      otStrings[otRange]    = "range";
+      otStrings[otPhase]    = "phase";
+      otStrings[otDoppler]  = "doppler";
+      otStrings[otSNR]      = "snr";
+      otStrings[otSSI]      = "ssi";
+      otStrings[otLLI]      = "lli";
+      otStrings[otTrackLen] = "tlen";
+      otStrings[otLast]     = "otLast";
       otStrings[otPlaceholder] = "otPlaceholder";
 
       cbStrings[cbUnknown] = "UnknownBand";
