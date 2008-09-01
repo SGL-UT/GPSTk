@@ -29,10 +29,11 @@ RinexSatID.cpp RinexUtilities.cpp RungeKutta4.cpp SEMAlmanacStore.cpp \
 SEMData.cpp SEMHeader.cpp SMODFData.cpp SP3Data.cpp SP3EphemerisStore.cpp \
 SP3Header.cpp SP3SatID.cpp SVExclusionList.cpp SVNumXRef.cpp SVPCodeGen.cpp \
 SatDataReader.cpp SimpleIURAWeight.cpp SimpleKalmanFilter.cpp SolidTides.cpp \
-SourceID.cpp SunPosition.cpp SystemTime.cpp TabularEphemerisStore.cpp \
-TimeConverters.cpp TimeString.cpp TimeTag.cpp Triple.cpp TropModel.cpp \
-TypeID.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp X1Sequence.cpp \
-X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp YumaData.cpp
+SourceID.cpp SpecialFunctions.cpp SunPosition.cpp SystemTime.cpp \
+TabularEphemerisStore.cpp TimeConverters.cpp TimeString.cpp TimeTag.cpp \
+Triple.cpp TropModel.cpp TypeID.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp \
+X1Sequence.cpp X2Sequence.cpp Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp \
+YumaData.cpp
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = ANSITime.hpp AllanDeviation.hpp AlmOrbit.hpp \
@@ -76,13 +77,13 @@ SEMHeader.hpp SEMStream.hpp \
 SMODFData.hpp SMODFStream.hpp SP3Base.hpp SP3Data.hpp SP3EphemerisStore.hpp \
 SP3Header.hpp SP3SatID.hpp SP3Stream.hpp SVExclusionList.hpp SVNumXRef.hpp \
 SVPCodeGen.hpp SatID.hpp SimpleIURAWeight.hpp SimpleKalmanFilter.hpp \
-SolidTides.hpp SolverBase.hpp SourceID.hpp Stats.hpp StringUtils.hpp \
-SunPosition.hpp SystemTime.hpp TabularEphemerisStore.hpp TimeConstants.hpp \
-TimeConverters.hpp TimeNamedFileStream.hpp TimeString.hpp TimeTag.hpp \
-Triple.hpp TropModel.hpp TypeID.hpp UnixTime.hpp ValidType.hpp Vector.hpp \
-VectorBase.hpp VectorBaseOperators.hpp VectorOperators.hpp WGS84Geoid.hpp \
-WeightBase.hpp WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp Xvt.hpp \
-XvtStore.hpp YDSTime.hpp YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp \
-YumaHeader.hpp YumaStream.hpp \
+SolidTides.hpp SolverBase.hpp SourceID.hpp SpecialFunctions.hpp Stats.hpp \
+StringUtils.hpp SunPosition.hpp SystemTime.hpp TabularEphemerisStore.hpp \
+TimeConstants.hpp TimeConverters.hpp TimeNamedFileStream.hpp TimeString.hpp \
+TimeTag.hpp Triple.hpp TropModel.hpp TypeID.hpp UnixTime.hpp ValidType.hpp \
+Vector.hpp VectorBase.hpp VectorBaseOperators.hpp VectorOperators.hpp \
+WGS84Geoid.hpp WeightBase.hpp WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp \
+Xvt.hpp XvtStore.hpp YDSTime.hpp YumaAlmanacStore.hpp YumaBase.hpp \
+YumaData.hpp YumaHeader.hpp YumaStream.hpp \
 convhelp.hpp geometry.hpp gps_constants.hpp gpstkplatform.h \
-icd_200_constants.hpp mergePCodeWords.h stl_helpers.hpp 
+icd_200_constants.hpp mergePCodeWords.h stl_helpers.hpp
