@@ -34,7 +34,7 @@ else
       FICData62.cpp FICData9.cpp FICHeader.cpp FileHunter.cpp
       FileSpec.cpp GPSAlmanacStore.cpp GPSEphemerisStore.cpp
       GPSWeek.cpp GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp
-      GenXSequence.cpp Geodetic.cpp IonoModel.cpp
+      GaussianDistribution.cpp GenXSequence.cpp Geodetic.cpp IonoModel.cpp
       IonoModelStore.cpp JulianDate.cpp LinearClockModel.cpp
       LoopedFramework.cpp MJD.cpp MOPSWeight.cpp MSCData.cpp MSCStore.cpp
       MoonPosition.cpp NEDUtil.cpp ObsClockModel.cpp ObsEpochMap.cpp
@@ -80,18 +80,18 @@ else
       FileFilterFrameWithHeader.hpp FileHunter.hpp FileSpec.hpp
       FileStore.hpp FileUtils.hpp GPSAlmanacStore.hpp
       GPSEphemerisStore.hpp GPSGeoid.hpp GPSWeek.hpp GPSWeekSecond.hpp
-      GPSWeekZcount.hpp GPSZcount.hpp GenXSequence.hpp Geodetic.hpp
-      GeoidModel.hpp InOutFramework.hpp IonoModel.hpp IonoModelStore.hpp
-      JulianDate.hpp LinearClockModel.hpp LoopedFramework.hpp MJD.hpp
-      MOPSWeight.hpp MSCBase.hpp MSCData.hpp MSCHeader.hpp MSCStore.hpp
-      MSCStream.hpp MathBase.hpp Matrix.hpp MatrixBase.hpp
-      MatrixBaseOperators.hpp MatrixFunctors.hpp MatrixImplementation.hpp
-      MatrixOperators.hpp MiscMath.hpp ModeledPseudorangeBase.hpp
-      MoonPosition.hpp NEDUtil.hpp ORDEpoch.hpp 
-      ObsClockModel.hpp ObsEpochMap.hpp
-      ObsID.hpp ObsRngDev.hpp OceanLoading.hpp PCodeConst.hpp
-      PRSolution.hpp PoleTides.hpp PolyFit.hpp Position.hpp PowerSum.hpp
-      RACRotation.hpp RTFileFrame.hpp RinexEphemerisStore.hpp RinexMetBase.hpp
+      GPSWeekZcount.hpp GPSZcount.hpp GaussianDistribution.hpp
+      GenXSequence.hpp Geodetic.hpp GeoidModel.hpp InOutFramework.hpp
+      IonoModel.hpp IonoModelStore.hpp JulianDate.hpp LinearClockModel.hpp
+      LoopedFramework.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp MSCData.hpp
+      MSCHeader.hpp MSCStore.hpp MSCStream.hpp MathBase.hpp Matrix.hpp
+      MatrixBase.hpp MatrixBaseOperators.hpp MatrixFunctors.hpp
+      MatrixImplementation.hpp MatrixOperators.hpp MiscMath.hpp
+      ModeledPseudorangeBase.hpp MoonPosition.hpp NEDUtil.hpp ORDEpoch.hpp
+      ObsClockModel.hpp ObsEpochMap.hpp ObsID.hpp ObsRngDev.hpp
+      OceanLoading.hpp PCodeConst.hpp PRSolution.hpp PoleTides.hpp
+      PolyFit.hpp Position.hpp PowerSum.hpp RACRotation.hpp
+      RTFileFrame.hpp RinexEphemerisStore.hpp RinexMetBase.hpp
       RinexMetData.hpp RinexMetFilterOperators.hpp RinexMetHeader.hpp
       RinexMetStream.hpp RinexNavBase.hpp RinexNavData.hpp
       RinexNavFilterOperators.hpp RinexNavHeader.hpp RinexNavStream.hpp

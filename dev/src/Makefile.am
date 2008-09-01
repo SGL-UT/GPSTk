@@ -16,7 +16,7 @@ Expression.cpp FFData.cpp FFStream.cpp FICData.cpp FICData109.cpp \
 FICData162.cpp FICData62.cpp FICData9.cpp \
 FICHeader.cpp FileHunter.cpp FileSpec.cpp \
 GPSAlmanacStore.cpp GPSEphemerisStore.cpp GPSWeek.cpp \
-GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp \
+GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp GaussianDistribution.cpp \
 GenXSequence.cpp Geodetic.cpp IonoModel.cpp \
 IonoModelStore.cpp JulianDate.cpp LinearClockModel.cpp LoopedFramework.cpp \
 MJD.cpp MOPSWeight.cpp MSCData.cpp MSCStore.cpp \
@@ -55,7 +55,7 @@ FICFilterOperators.hpp FICHeader.hpp FICStream.hpp FICStreamBase.hpp \
 FileFilter.hpp FileFilterFrame.hpp FileFilterFrameWithHeader.hpp \
 FileHunter.hpp FileSpec.hpp FileStore.hpp FileUtils.hpp GPSAlmanacStore.hpp \
 GPSEphemerisStore.hpp GPSWeek.hpp GPSGeoid.hpp \
-GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp \
+GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp GaussianDistribution.hpp\
 GenXSequence.hpp Geodetic.hpp GeoidModel.hpp \
 InOutFramework.hpp IonoModel.hpp IonoModelStore.hpp JulianDate.hpp \
 LinearClockModel.hpp LoopedFramework.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp \
