@@ -426,9 +426,9 @@ namespace gpstk
          // Get the base-2 exponent of input 'x'
       frexp (x , &i);
 
-      if ( fabs(i) > 28.0 )
+      if ( fabs( static_cast<double>(i) ) > 28.0 )
       {
-         if( fabs(i) > 57.0 )
+         if( fabs( static_cast<double>(i) ) > 57.0 )
          {
             return ( 1.128379167095512586316e+0 * x );
          }
