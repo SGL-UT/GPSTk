@@ -23,8 +23,8 @@ else
    GPSBuildLibrary gpstk :
       ANSITime.cpp AlmOrbit.cpp AstronomicalFunctions.cpp
       Bancroft.cpp BasicFramework.cpp BinUtils.cpp
-      BinexData.cpp BLQDataReader.cpp CivilTime.cpp CodeBuffer.cpp
-      CommandOption.cpp CommandOptionParser.cpp
+      BinexData.cpp BLQDataReader.cpp Chi2Distribution.cpp CivilTime.cpp
+      CodeBuffer.cpp CommandOption.cpp CommandOptionParser.cpp
       CommandOptionWithCommonTimeArg.cpp CommandOptionWithPositionArg.cpp
       CommandOptionWithTimeArg.cpp CommonTime.cpp ConfDataReader.cpp DOP.cpp
       DayTime.cpp ECEF.cpp EngAlmanac.cpp
@@ -62,8 +62,8 @@ else
       AllanDeviation.hpp ANSITime.hpp AlmOrbit.hpp AstronomicalFunctions.hpp
       BaseDistribution.hpp Bancroft.hpp BasicFramework.hpp BinUtils.hpp
       BinexData.hpp BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp
-      BLQDataReader.hpp CheckPRData.hpp CivilTime.hpp ClockModel.hpp
-      CodeBuffer.hpp CommandOption.hpp CommandOptionParser.hpp
+      BLQDataReader.hpp CheckPRData.hpp Chi2Distribution.hpp CivilTime.hpp
+      ClockModel.hpp CodeBuffer.hpp CommandOption.hpp CommandOptionParser.hpp
       CommandOptionWithCommonTimeArg.hpp CommandOptionWithPositionArg.hpp
       CommandOptionWithTimeArg.hpp CommonTime.hpp ConfDataReader.hpp DOP.hpp
       DayTime.hpp ECEF.hpp EngAlmanac.hpp EngEphemeris.hpp EngNav.hpp

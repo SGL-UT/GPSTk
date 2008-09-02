@@ -33,6 +33,7 @@
 
 #include <cmath>
 #include "SpecialFunctions.hpp"
+#include "Exception.hpp"
 
 
 namespace gpstk

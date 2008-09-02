@@ -7,13 +7,13 @@ lib_LTLIBRARIES = libgpstk.la
 libgpstk_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 libgpstk_la_SOURCES = ANSITime.cpp AlmOrbit.cpp \
 AstronomicalFunctions.cpp Bancroft.cpp BasicFramework.cpp BinUtils.cpp \
-BinexData.cpp  BLQDataReader.cpp CivilTime.cpp CodeBuffer.cpp \
-CommandOption.cpp CommandOptionParser.cpp CommandOptionWithCommonTimeArg.cpp \
-CommandOptionWithPositionArg.cpp CommandOptionWithTimeArg.cpp CommonTime.cpp \
-ConfDataReader.cpp DOP.cpp DayTime.cpp ECEF.cpp EngAlmanac.cpp \
-EngEphemeris.cpp EngNav.cpp ENUUtil.cpp EphemerisRange.cpp Exception.cpp \
-Expression.cpp FFData.cpp FFStream.cpp FICData.cpp FICData109.cpp \
-FICData162.cpp FICData62.cpp FICData9.cpp \
+BinexData.cpp  BLQDataReader.cpp Chi2Distribution.cpp CivilTime.cpp \
+CodeBuffer.cpp CommandOption.cpp CommandOptionParser.cpp \
+CommandOptionWithCommonTimeArg.cpp CommandOptionWithPositionArg.cpp \
+CommandOptionWithTimeArg.cpp CommonTime.cpp ConfDataReader.cpp DOP.cpp \
+DayTime.cpp ECEF.cpp EngAlmanac.cpp EngEphemeris.cpp EngNav.cpp ENUUtil.cpp \
+EphemerisRange.cpp Exception.cpp Expression.cpp FFData.cpp FFStream.cpp \
+FICData.cpp FICData109.cpp FICData162.cpp FICData62.cpp FICData9.cpp \
 FICHeader.cpp FileHunter.cpp FileSpec.cpp \
 GPSAlmanacStore.cpp GPSEphemerisStore.cpp GPSWeek.cpp \
 GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp GaussianDistribution.cpp \
@@ -40,12 +40,12 @@ incl_HEADERS = ANSITime.hpp AllanDeviation.hpp AlmOrbit.hpp \
 AstronomicalFunctions.hpp BaseDistribution.hpp \
 Bancroft.hpp BasicFramework.hpp BinUtils.hpp BinexData.hpp \
 BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp BLQDataReader.hpp \
-CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp \
-CommandOption.hpp CommandOptionParser.hpp CommandOptionWithCommonTimeArg.hpp \
-CommandOptionWithPositionArg.hpp CommandOptionWithTimeArg.hpp CommonTime.hpp \
-ConfDataReader.hpp DOP.hpp DayTime.hpp ECEF.hpp EngAlmanac.hpp \
-EngEphemeris.hpp EngNav.hpp ENUUtil.hpp EphemerisRange.hpp \
-EpochClockModel.hpp Exception.hpp Expression.hpp \
+CheckPRData.hpp Chi2Distribution.hpp CivilTime.hpp ClockModel.hpp \
+CodeBuffer.hpp CommandOption.hpp CommandOptionParser.hpp \
+CommandOptionWithCommonTimeArg.hpp CommandOptionWithPositionArg.hpp \
+CommandOptionWithTimeArg.hpp CommonTime.hpp ConfDataReader.hpp DOP.hpp \
+DayTime.hpp ECEF.hpp EngAlmanac.hpp EngEphemeris.hpp EngNav.hpp ENUUtil.hpp \
+EphemerisRange.hpp EpochClockModel.hpp Exception.hpp Expression.hpp \
 ExtractC1.hpp ExtractCombinationData.hpp ExtractD1.hpp ExtractD2.hpp \
 ExtractData.hpp ExtractL1.hpp ExtractL2.hpp ExtractLC.hpp ExtractP1.hpp \
 ExtractP2.hpp ExtractPC.hpp FFBinaryStream.hpp FFData.hpp FFStream.hpp \

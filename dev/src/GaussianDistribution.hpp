@@ -68,7 +68,8 @@ namespace gpstk
        *
        * @endcode
        *
-       * @sa SpecialFunctions.hpp for useful functions.
+       * @sa SpecialFunctions.hpp for useful functions, and
+       *     Chi2Distribution.hpp for a Chi-square distribution.
        *
        */
    class GaussianDistribution : public BaseDistribution
