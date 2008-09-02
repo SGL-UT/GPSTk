@@ -37,7 +37,7 @@ YumaData.cpp
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = ANSITime.hpp AllanDeviation.hpp AlmOrbit.hpp \
-AstronomicalFunctions.hpp \
+AstronomicalFunctions.hpp BaseDistribution.hpp \
 Bancroft.hpp BasicFramework.hpp BinUtils.hpp BinexData.hpp \
 BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp BLQDataReader.hpp \
 CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp \

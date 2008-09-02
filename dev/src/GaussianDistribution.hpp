@@ -31,8 +31,7 @@
 //============================================================================
 
 
-#include <cmath>
-#include "SpecialFunctions.hpp"
+#include "BaseDistribution.hpp"
 
 
 namespace gpstk
@@ -72,7 +71,7 @@ namespace gpstk
        * @sa SpecialFunctions.hpp for useful functions.
        *
        */
-   class GaussianDistribution
+   class GaussianDistribution : public BaseDistribution
    {
    public:
 

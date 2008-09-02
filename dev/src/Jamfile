@@ -60,10 +60,10 @@ else
    InstallFile $(INCDIR) :
 # please add in alphabetical order
       AllanDeviation.hpp ANSITime.hpp AlmOrbit.hpp AstronomicalFunctions.hpp
-      Bancroft.hpp BasicFramework.hpp BinUtils.hpp BinexData.hpp
-      BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp BLQDataReader.hpp
-      CheckPRData.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp
-      CommandOption.hpp CommandOptionParser.hpp
+      BaseDistribution.hpp Bancroft.hpp BasicFramework.hpp BinUtils.hpp
+      BinexData.hpp BinexFilterOperators.hpp BinexStream.hpp BivarStats.hpp
+      BLQDataReader.hpp CheckPRData.hpp CivilTime.hpp ClockModel.hpp
+      CodeBuffer.hpp CommandOption.hpp CommandOptionParser.hpp
       CommandOptionWithCommonTimeArg.hpp CommandOptionWithPositionArg.hpp
       CommandOptionWithTimeArg.hpp CommonTime.hpp ConfDataReader.hpp DOP.hpp
       DayTime.hpp ECEF.hpp EngAlmanac.hpp EngEphemeris.hpp EngNav.hpp
