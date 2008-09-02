@@ -105,7 +105,7 @@ namespace gpstk
        *
        * \warning This version does not work for values <= 0.0
        */
-   double lgamma(double val)
+   double lngamma(double val)
    {
 
       double inf( 9.0e+99 );
@@ -129,7 +129,8 @@ namespace gpstk
 
       if(val < 0.5)
       {
-         return ( 1.1447298858494002 - ( log(sin(PI*val)) + lgamma(1.0-val) ) );
+         return ( 1.1447298858494002 - ( log(sin(PI*val)) + lngamma(1.0-val) )
+);
       }
       else
       {
@@ -148,7 +149,7 @@ namespace gpstk
       }
 
 
-   }  // End of function 'lgamma()'
+   }  // End of function 'lngamma()'
 
 
 
@@ -595,7 +596,36 @@ namespace gpstk
 
       return ( 1.0 - erf(x) );
 
-   }
+   }  // End of function 'erfc()'
+
+
+
+      /** Beta function.
+       *
+       * \warning This version may not work for values > 130.0
+       */
+   double beta(const double x, const double y)
+   {
+
+      return ( gamma(x) * gamma(y) / gamma( x + y ) );
+
+   }  // End of function 'beta()'
+
+
+
+      /* Computes the natural logarithm of Beta function
+       *
+       * \warning This version does not work for values <= 0.0
+       */
+   double lnbeta(double x, double y)
+   {
+
+      x = fabs(x);
+      y = fabs(y);
+
+      return ( lngamma(x) + lngamma(y) - lngamma( x + y ) );
+
+   }  // End of function 'lbeta()'
 
 
 

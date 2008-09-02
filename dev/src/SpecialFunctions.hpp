@@ -59,7 +59,7 @@ namespace gpstk
        *
        * \warning This version does not work for values <= 0.0
        */
-   double lgamma(double val);
+   double lngamma(double val);
 
 
       /// Lower incomplete gamma function.
@@ -100,6 +100,20 @@ namespace gpstk
 
       /// Complementary error function.
    double erfc(const double x);
+
+
+      /** Beta function.
+       *
+       * \warning This version may not work for values > 130.0
+       */
+   double beta(const double x, const double y);
+
+
+      /** Computes the natural logarithm of Beta function
+       *
+       * \warning This version does not work for values <= 0.0
+       */
+   double lnbeta(double x, double y);
 
 
       //@}
