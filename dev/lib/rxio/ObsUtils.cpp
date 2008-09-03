@@ -329,7 +329,7 @@ namespace gpstk
          else if (std::abs(t - t0) > 0.1)
          {
             if (ats.debugLevel>1)
-               cout << "Epoch with inconsistent times t:" << t
+               cout << "# Epoch with inconsistent times t:" << t
                     << ", t0:" << t0 << endl;
             continue;
          }

@@ -76,7 +76,7 @@ namespace gpstk
       EphemerisStore* eph;
 
       static std::string formatsUnderstood()
-      { return "RINEX nav, FIC, SP3, YUMA, and SEM";}
+      { return "RINEX nav, FIC, MDP, SP3, YUMA, and SEM";}
 
    private:
       void read_rinex_nav_data(const std::string& fn);
@@ -84,6 +84,7 @@ namespace gpstk
       void read_sp3_data(const std::string& fn);
       void read_yuma_data(const std::string& fn);
       void read_sem_data(const std::string& fn);
+      void read_mdp_data(const std::string& fn);
    };
 }
 #endif

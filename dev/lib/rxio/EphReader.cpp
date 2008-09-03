@@ -48,6 +48,10 @@
 #include "FICStream.hpp"
 #include "FICData.hpp"
 
+#include "MDPStream.hpp"
+#include "MDPNavSubframe.hpp"
+#include "RinexConverters.hpp"
+
 #include "YumaStream.hpp"
 #include "YumaData.hpp"
 
@@ -76,7 +80,7 @@ namespace gpstk
          case FFIdentifier::tSP3:      read_sp3_data(fn);       break;
          case FFIdentifier::tYuma:     read_yuma_data(fn);      break;
          case FFIdentifier::tSEM:      read_sem_data(fn);       break;
-         case FFIdentifier::tMDP:
+         case FFIdentifier::tMDP:      read_mdp_data(fn);       break;
          default:
             if (verboseLevel) 
                cout << "# Could not determine the format of " << fn << endl;
@@ -150,6 +154,113 @@ namespace gpstk
       if (verboseLevel>1)
          cout << "# Read " << fn << " as FIC nav."<< endl;
    } // end of read_fic_data()
+
+
+   void EphReader::read_mdp_data(const string& fn)
+   {
+      GPSEphemerisStore* bce;
+
+      if (eph == NULL)
+      {
+         bce = new(GPSEphemerisStore);
+         eph = dynamic_cast<EphemerisStore*>(bce);
+      }
+      else
+      {
+         if (typeid(*eph) != typeid(GPSEphemerisStore))
+            throw(FFStreamError("Don't mix nav data types..."));
+         bce = dynamic_cast<GPSEphemerisStore*>(eph);
+      }
+      if (verboseLevel>2)
+         cout << "# Reading " << fn << " as MDP nav."<< endl;
+
+      MDPStream mdps(fn.c_str(), ios::in);
+      MDPHeader header;
+      MDPNavSubframe nav;
+      typedef pair<RangeCode, CarrierCode> RangeCarrierPair;
+      typedef pair<RangeCarrierPair, short> NavIndex;
+      typedef map<NavIndex, MDPNavSubframe> NavMap;
+      NavMap ephData;
+      map<NavIndex, EphemerisPages> ephPageStore;
+      map<NavIndex, EngEphemeris> ephStore;
+      bool firstEph=true;
+
+      while (mdps >> header)
+         if (header.id == MDPNavSubframe::myId)
+         {
+            mdps >> nav;
+            if (!nav)
+            {
+               if (mdps && verboseLevel>2)
+                  cout << "# Error decoding nav " << endl;
+            }
+            else
+            {
+               MDPNavSubframe tmp = nav;
+
+               // First try the data assuming it is already upright
+               tmp.cooked = true;
+               bool parityGood = tmp.checkParity();
+               if (!parityGood)
+               {
+                  if (verboseLevel>3 && firstEph)
+                     cout << "# Raw subframe" << endl;
+                  nav.cooked = false;
+                  nav.cookSubframe();
+                  parityGood = nav.checkParity();
+               }
+               else
+               {
+                  if (verboseLevel>3 && firstEph)
+                     cout << "# Cooked subframe" << endl;
+               }
+
+               firstEph = false;
+
+               if (!parityGood)
+               {
+                  if (verboseLevel>2)
+                     cout << "# Parity error" << endl;
+                  return;
+               }
+
+               short sfid = nav.getSFID();
+               if (sfid > 3)
+                  return;
+
+               short week = nav.time.GPSfullweek();
+               long sow = nav.getHOWTime();
+               if (sow > DayTime::FULLWEEK)
+               {
+                  if (verboseLevel>2)
+                     cout << "# Bad week" << endl;
+                  return;
+               }
+
+               if (verboseLevel>3)
+                  nav.dump(cout);
+
+               DayTime howTime(week, sow);
+
+               if (nav.range != rcCA || nav.carrier != ccL1)
+                  return;
+
+               NavIndex ni(RangeCarrierPair(nav.range, nav.carrier), nav.prn);
+               ephData[ni] = nav;
+
+               ephPageStore[ni][sfid] = nav;
+               EngEphemeris engEph;
+               if (makeEngEphemeris(engEph, ephPageStore[ni]))
+               {
+                  bce->addEphemeris(engEph);
+                  ephPageStore[ni].clear();
+               }
+            }
+         }
+
+      if (verboseLevel>1)
+         cout << "# Read " << fn << " as MDP nav."<< endl;
+   } // end of read_mdp_data()
 
 
    void EphReader::read_sp3_data(const string& fn)
