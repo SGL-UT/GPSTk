@@ -102,6 +102,13 @@ namespace gpstk
    double erfc(const double x);
 
 
+      /** Inverse of error function.
+       *
+       * \ warning Value "z" must be in the range (-1, 1)
+       */
+   double inverf(const double z);
+
+
       /** Beta function.
        *
        * \warning This version may not work for values > 130.0

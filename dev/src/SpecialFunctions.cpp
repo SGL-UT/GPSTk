@@ -600,7 +600,57 @@ namespace gpstk
 
 
 
-      /** Beta function.
+      /* Inverse of error function.
+       *
+       * \ warning Value "z" must be in the range (-1, 1)
+       */
+   double inverf(const double z)
+   {
+
+      double inf( 9.0e+99 );
+
+         // Check limits
+      if( z >= 1.0 ) return inf;
+      if( z <= -1.0 ) return -inf;
+
+      double z2PI( z*z*PI );
+
+         // Compute the approximation found in:
+         //    http://en.wikipedia.org/wiki/Error_function
+         // The module of this approximation is always under fabs(inverf())
+      double x( 0.88622692545275794 * z
+              * ( 1.0 + z2PI * ( 0.083333333333333333
+                      + z2PI * ( 0.014583333333333334
+                      + z2PI * ( 0.0031498015873015874
+                      + z2PI * ( 0.00075248704805996468
+                      + z2PI * ( 0.0001907475361251403
+                      + z2PI * ( 1.8780048076923078e-5
+                      + z2PI * ( 1.3623642420578133e-5 ) ) ) ) ) ) ) ) );
+
+      double delta(1.0);
+      double threshold( 1.0e-10 );
+      int iter( 0 );
+
+      while ( ( fabs(delta) > threshold ) &&
+              ( iter < 100 ) )
+      {
+
+            // Use the Newton-Raphson method. Denominator is d(erf(x))/dx
+         delta = (z - gpstk::erf(x)) / (1.1283791670955126*std::exp(-x*x));
+
+         x = x + delta;
+
+         ++iter;
+
+      }
+
+      return x;
+
+   }  // End of function 'inverf()'
+
+
+
+      /* Beta function.
        *
        * \warning This version may not work for values > 130.0
        */
