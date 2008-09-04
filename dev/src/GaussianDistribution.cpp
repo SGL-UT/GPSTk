@@ -97,6 +97,37 @@ namespace gpstk
 
 
 
+      /* Computes the quantile function ( cdf^-1() )
+       *
+       * @param p    Probability value
+       *
+       * \ warning Value "p" must be in the range (0, 1)
+       */
+   double GaussianDistribution::invcdf(double p)
+      throw(InvalidParameter)
+   {
+
+      double inf( 9.0e+99 );
+
+         // Check limits
+      if( ( p < 0.0 ) ||
+          ( p > 1.0 ) )
+      {
+         InvalidParameter e( "Invalid input value for 'p'." );
+         GPSTK_THROW(e);
+      }
+
+      if( p == 0.0 ) return -inf;
+      if( p == 1.0 ) return inf;
+
+         // Compute invcdf
+      return ( mean
+             + 1.4142135623730951 * sigma * gpstk::inverf( 2.0 * p - 1.0 ) );
+
+   }  // End of method 'GaussianDistribution::invcdf()'
+
+
+
       /* Sets the standard deviation
        *
        * @param sig     Standard deviation

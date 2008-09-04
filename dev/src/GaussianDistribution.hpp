@@ -117,6 +117,16 @@ namespace gpstk
       { return ( 1.0 - cdf(x) ); };
 
 
+         /** Computes the quantile function ( cdf^-1() )
+          *
+          * @param p    Probability value
+          *
+          * \ warning Value "p" must be in the range (0, 1)
+          */
+      virtual double invcdf(double p)
+         throw(InvalidParameter);
+
+
          /// Get mean
       virtual double getMean(void) const
       { return mean; };
