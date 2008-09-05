@@ -34,12 +34,18 @@ void NavFramer::Subframe::dump(std::ostream& s, int detail) const
 {
    if (detail==0)
    {
-      s << "t:" << fixed << setprecision(1) << t * 1e3
+      s << "RxTime: " << (float)dataPoint / 16368 << " ms"
+        << ", CodePO: " << codePO << " us" << endl
+        << "NOTE: PO includes initial offset passed to tracker." << endl
+// RxTime is measured from the start of the input file.
+        << "# t:" << fixed << setprecision(8) << t * 1e3
         << ", ni:" << ni
         << ", ci:" << ci
         << ", dp:" << dataPoint
         << ", inv:" << inverted
         << ", prevD30:" << prevD30;
+      
+        
       
       if (!complete)
          return;
@@ -114,7 +120,7 @@ NavFramer::NavFramer()
 {}
 
 
-bool NavFramer::process(const EMLTracker& tr, long int dp)
+bool NavFramer::process(const EMLTracker& tr, long int dp, float cPO)
 {
    // number of code chips that go into each bit
    const unsigned long chipsPerBit = 
@@ -139,6 +145,7 @@ bool NavFramer::process(const EMLTracker& tr, long int dp)
    navBuffer[navIndex] = tr.getNav();
    codeIndex[navIndex] = now;
    startDP.push_back(dp);
+   codePO.push_back(cPO);
    navIndex++;
    navIndex %= navBuffer.size();
    lastEight <<= 1;
@@ -156,6 +163,7 @@ bool NavFramer::process(const EMLTracker& tr, long int dp)
       sf.ni = (navIndex-8) % 1500;
       sf.ci = codeIndex[sf.ni];
       sf.dataPoint = startDP[sf.ni];
+      sf.codePO = codePO[sf.ni];
       sf.prevD30 = navBuffer[(navIndex-9)%1500];
       sf.t = tr.localReplica.localTime;
       sf.inverted = lastEight != eightBaker;

@@ -145,33 +145,55 @@ int main(int argc, char *argv[])
       try 
       {
          Xvt svpos = bce.getXvt(sv, time);
-         double el = antennaPos.elvAngle(svpos.x);
-         double az = antennaPos.azAngle(svpos.x);
+            //double el = antennaPos.elvAngle(svpos.x);
+            //double az = antennaPos.azAngle(svpos.x);
 
          double pr = svpos.preciseRho(ecef, gm, 0);
-         double ic = iono.getCorrection(time, ecef, el, az);
+            //double ic = iono.getCorrection(time, ecef, el, az);
 
          expVec.push_back(pr);
          svVec.push_back(sv);
-         ionoVec.push_back(ic);
+            //ionoVec.push_back(ic);
       }
       catch (Exception& e)
       {}
    }
-/*
+
    for(int i = 1; i <= 32; i++)
    {
-      if( i != 5 && i != 10 && i != 16 && i != 17 &&
-          i != 20 && i != 21 && i != 28 && i != 1 && i != 7)
+      if( i != 3 && i != 16 && i != 7 && i != 10 && i != 25 && i != 26 && i != 27)
       {
          SatID temp(0, SatID::systemGPS);
          svVec[i-1] = temp;
       }
    }
-*/
+
    // Replace this with the observed delays...
    vector<double> obsVec(expVec);
+
+   for(int i = 0; i < 31; i++)
+      obsVec[i] = 0;
+
+   // relative pseudoranges using .073 second as tof for PRN 4
+   obsVec[2]=2.1884849434e7; // .073 * c
+   obsVec[6]=1.8969162643e7;
+   obsVec[15]=1.8938392156e7;
+   obsVec[9]=2.0410888164e7;
+   obsVec[24]=2.1665078558e7;
+   obsVec[25]=2.0679891819e7;
+   obsVec[26]=1.9236407985e7;
    
+
+/*
+   // pseudoranges using known tof for PRN 4 
+   obsVec[2]=2.37815e7;
+   obsVec[6]=2.0783e7;
+   obsVec[15]=2.07284e7;
+   obsVec[9]=2.22505e7;
+*/
+   for(int i = 0; i < 32; i++)
+      cout << svVec[i] << " "  << obsVec[i] << endl;
+
    try 
    {
       GGTropModel gg;

@@ -296,13 +296,15 @@ void RxSim::process()
 // 1 ms. We also still need to add the code offset to the dataPoint...
             if(tr->navChange)
             {
-               nf.process(*tr, dataPoint);
+               nf.process(*tr, dataPoint, 
+                          (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
                count = 0;
             }
             if(count == 20)
             {
                count = 0;
-               nf.process(*tr, dataPoint);
+               nf.process(*tr, dataPoint, 
+                          (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
             }
             count++;
          }

@@ -42,7 +42,7 @@ public:
    // This takes a tracker, just after it has been dumped and
    // accumulates the nav bit from it. It returns true when there is a
    // current HOW
-   virtual bool process(const EMLTracker& tr, long int dp);
+   virtual bool process(const EMLTracker& tr, long int dp, float cPO);
 
    void dump(std::ostream& s, int detail=0) const;
 
@@ -56,6 +56,7 @@ public:
       size_t ni;
       gpstk::CodeIndex ci;
       int dataPoint;
+      float codePO;
       bool inverted;
       bool prevD30;
       bool complete;
@@ -71,6 +72,7 @@ private:
    std::bitset<5 * 300> navBuffer;
    std::vector<gpstk::CodeIndex> codeIndex;
    std::vector<int> startDP; //data point of beginning of each nav bit
+   std::vector<float> codePO;
    std::bitset<8> eightBaker, lastEight;
    size_t navIndex;
    gpstk::CodeIndex prevNavCount;
