@@ -172,7 +172,7 @@ namespace gpstk
          /// STL const front
       const_reference front() const { return v[s-1];}
          /// STL empty
-      bool empty() const { return size == 0; }
+      bool empty() const { return size() == 0; }
          /// STL size
       size_t size() const {return s; }
          /// STL max_size
