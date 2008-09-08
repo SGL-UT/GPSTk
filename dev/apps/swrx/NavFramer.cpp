@@ -34,26 +34,22 @@ void NavFramer::Subframe::dump(std::ostream& s, int detail) const
 {
    if (detail==0)
    {
-      s << "RxTime: " << (float)dataPoint / 16368 << " ms"
-        << ", CodePO: " << codePO << " us" << endl
-        << "NOTE: PO includes initial offset passed to tracker." << endl
-// RxTime is measured from the start of the input file.
-        << "# t:" << fixed << setprecision(8) << t * 1e3
-        << ", ni:" << ni
-        << ", ci:" << ci
-        << ", dp:" << dataPoint
-        << ", inv:" << inverted
-        << ", prevD30:" << prevD30;
-      
-        
-      
       if (!complete)
          return;
       if (checkParity())
-         s << ", SFID:" << EngNav::getSFID(words[1])
-           << ", Z:" << EngNav::getHOWTime(words[1]);
+         s << fixed << setprecision(2) << "SFID:" << EngNav::getSFID(words[1])
+           << ", Z:" << EngNav::getHOWTime(words[1])
+           << ", Start Data Point:" << dataPoint << endl;
       else
          s << ", Parity:" << checkWords();
+
+      s << "# RxTime: " << (float)dataPoint / 16368 << " ms"
+        << ", CodePO: " << codePO << " us" << endl
+        << "# t:" << t * 1e3
+        << ", ni:" << ni
+        << ", ci:" << ci
+        << ", inv:" << inverted
+        << ", prevD30:" << prevD30 << endl << endl;
    }
    else
    {
@@ -185,7 +181,7 @@ bool NavFramer::process(const EMLTracker& tr, long int dp, float cPO)
             how = sf->words[1];
                //if (debugLevel)
                cout << "# " << *sf << endl;
-                  //if (debugLevel>1)
+            if (debugLevel>1)
                sf->dump(cout,1);
 
 // Following block pulls nav data from subframes, just playing around for now.
