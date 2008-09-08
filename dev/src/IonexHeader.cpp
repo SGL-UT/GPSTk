@@ -1,4 +1,4 @@
-#pragma ident "$Id: IonexHeader.cpp 20 2008-09-01 16:05:49Z octavian $"
+#pragma ident "$Id$"
 
 /**
  * @file IonexHeader.cpp
