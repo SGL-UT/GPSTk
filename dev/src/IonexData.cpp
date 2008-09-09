@@ -136,7 +136,10 @@ namespace gpstk
          for (int ilon = 0; ilon < nlon; ilon++)
          {
             int index = ilat*dim[1]+ilon;
-            double val = (data[index] != 999.9) ? std::pow(10.0,-exponent)*data[index] : 9999;
+
+            double val = (data[index] != 999.9) ?
+                         std::pow(10.0,-exponent)*data[index] : 9999.0;
+
             line += rightJustify( asString<short>(val), 5 );
 
             if (line.size() == 80)  // maximum 16 values per record
@@ -692,6 +695,7 @@ namespace gpstk
           * @param dt    time to be written into a IONEX data record.
           */
    string IonexData::writeTime(const DayTime& dt) const
+      throw(gpstk::StringUtils::StringException)
    {
       if (dt == DayTime::BEGINNING_OF_TIME)
       {
