@@ -83,7 +83,7 @@ namespace gpstk
       lat[0] = lat[1] = lat[2] = 0.0;
       lon[0] = lon[1] = lon[2] = 0.0;
 
-      exponent = -1;
+      exponent = -1;    // that's the default value
       svsmap.clear();
       valid = auxDataFlag = false;
 
@@ -123,6 +123,7 @@ namespace gpstk
       os << "LON1 / LON2 / DLON     : " << lon[0] << " / "
                                         << lon[1] << " / "
                                         << lon[2] << endl;
+      os << "Valid object?          : " << valid  << endl;
 
       os << "-------------------------------- END OF HEADER"
          << "-------------------------------" << endl;
@@ -660,7 +661,7 @@ namespace gpstk
 
             // write # of maps
          line.clear();
-         line += rightJustify( asString(numMaps), 6 );
+         line += rightJustify( asString<short>(numMaps), 6 );
          line += string(54, ' ');
          line += leftJustify(numMapsString,20);
          strm << line << endl;
@@ -698,7 +699,7 @@ namespace gpstk
          if (numStations > 0)
          {
             line.clear();
-            line += rightJustify( asString(numStations), 6 );
+            line += rightJustify( asString<short>(numStations), 6 );
             line += string(54, ' ');
             line += leftJustify(numStationsString,20);
             strm << line << endl;
@@ -710,7 +711,7 @@ namespace gpstk
          if (numSVs > 0)
          {
             line.clear();
-            line += rightJustify( asString(numSVs), 6 );
+            line += rightJustify( asString<short>(numSVs), 6 );
             line += string(54, ' ');
             line += leftJustify(numSatsString,20);
             strm << line << endl;

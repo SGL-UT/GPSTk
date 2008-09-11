@@ -92,7 +92,7 @@ namespace gpstk
       }
       else
       {
-         FFStreamError err("This isn't a valid standard IONEX value type:  " + 
+         FFStreamError err("This isn't a valid standard IONEX value type: " + 
             asString(type.description) );
          GPSTK_THROW(err);
       }
@@ -386,7 +386,10 @@ namespace gpstk
          else if (label == endOfFile)
          {
 
-            //strm.formattedGetLine(line);//get a new line. This should be EOF
+            // Remember that there is one more line in Ionex definition
+            // before EOF. The IonexData object has been initialized already
+            // but we mark the flag 'valid' as false. This helps when we shall
+            // store this data into an IonexStore object.
             ityp = 0;
             valid = false;
 
@@ -408,19 +411,21 @@ namespace gpstk
 
 
       // A debug output function.
-   void IonexData::dump(std::ostream& s) const
+   void IonexData::dump(std::ostream& os) const
    {
 
-      std::cout << "IonexData dump() function"      << std::endl;
-      std::cout << "Epoch                       : " << time << std::endl;
-      std::cout << "Map index                   : " << mapID << std::endl;
-      std::cout << "Data type                   : " << type.type
+      os << endl;
+      os << "IonexData dump() function"      << std::endl;
+      os << "Epoch                       : " << time << std::endl;
+      os << "Map index                   : " << mapID << std::endl;
+      os << "Data type                   : " << type.type
                 << " (" << type.units << ")" << std::endl;
-      std::cout << "Grid size (lat x lon x hgt) : " << dim[0]
+      os << "Grid size (lat x lon x hgt) : " << dim[0]
                 << " x " << dim[1]
-                << " y " << dim[2] << std::endl;
-      std::cout << "Number of values            : " << data.size()
+                << " x " << dim[2] << std::endl;
+      os << "Number of values            : " << data.size()
                 << " values." << std::endl;
+      os << "Valid object?               : " << isValid() << endl;
 
       return;
 
@@ -573,7 +578,7 @@ namespace gpstk
        *
        * @return ionexHeight    Nominal height for which the maps are given
        *                        (as in IONEX file).
-       * @return                Computed TEC or RMS value.
+       * @return                Computed TEC or RMS value (TECU).
        *
        * @warning Keep in mind that Position objects HAVE to be whithin area
        *          delimited by latitude = [-87.5, -87.5] and

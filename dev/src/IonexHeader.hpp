@@ -58,7 +58,7 @@ namespace gpstk
    public:
 
          /// Default constructor
-      IonexHeader() : version(1.0), valid(false) {}
+      IonexHeader() : version(1.0), exponent(-1), valid(false) {}
 
 
          /// Clear (empty out) header
@@ -159,7 +159,7 @@ namespace gpstk
             line += StringUtils::rightJustify( 
                                  StringUtils::asString(rms, 3), 10 );
 
-             return line;
+            return line;
 
          }  // End of method 'DCB::toString()'
 
@@ -191,7 +191,7 @@ namespace gpstk
       std::string observablesUsed;  ///< One-line specification of used obs.
 
       size_t numStations;       ///< Number of contributing stations (optional)
-      size_t numSVs;            ///< Number of contributing satellites
+      size_t numSVs;            ///< Number of contributing satellites (opt)
 
       double baseRadius;  ///< Mean earth radius, or bottom of height grid (km)
       size_t mapDims;     ///< Dimension of maps (2 or 3)
@@ -205,7 +205,7 @@ namespace gpstk
                         /// 'lon[0]' to 'lon[1]' with increment 'hon[2]' in deg
 
       int exponent;    ///< Exponent defining the unit of the values (optional)
-      std::string auxData;          ///< Type of auxiliar data
+      std::string auxData;          ///< Type of auxiliar data (optional)
 
          /// The key to this map is the svid of the satellite (usually the prn)
       typedef std::map<SatID,DCB> SatDCBMap;
