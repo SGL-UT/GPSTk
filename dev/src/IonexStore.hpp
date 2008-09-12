@@ -35,7 +35,6 @@
 
 #include <map>
 
-#include "DataStructures.hpp"
 #include "FileStore.hpp"
 #include "IonexData.hpp"
 
@@ -137,10 +136,27 @@ namespace gpstk
          throw(InvalidRequest);
 
 
-         /// The next 6 functions define the interface for calculating
-         /// the ionospheric slant delay for a specific frequency
+         /** Get ionospheric slant delay for a given frequency
+          *
+          * @param elevation     Time tag of signal (DayTime object)
+          * @param tecval        TEC value as derived from IONEX file (TECU)
+          * @param ionoHeight    Ionosphere height as derived from IONEX file
+          *                      (KM).
+          * @param freq          Frequency value, in Hz
+          *
+          * @return              Ionosphere slant delay (meters)
+          */
+      double getIono( const double& elevation,
+                      const double& tecval,
+                      const double& ionoHeight,
+                      const double& freq ) const
+         throw (InvalidParameter);
 
-         /** Get ionospheric slant delay 
+
+         // The next 6 functions define the interface for calculating
+         // the ionospheric slant delay for a specific frequency
+
+         /** Get ionospheric slant delay for L1 frequency
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
@@ -152,37 +168,88 @@ namespace gpstk
       double getIonoL1( const double& elevation,
                         const double& tecval,
                         const double& ionoHeight) const
-         throw (InvalidParameter);
+         throw (InvalidParameter)
+      { return getIono(elevation, tecval, ionoHeight, L1_FREQ); };
 
 
+         /** Get ionospheric slant delay for L2 frequency
+          *
+          * @param elevation     Time tag of signal (DayTime object)
+          * @param tecval        TEC value as derived from IONEX file (TECU)
+          * @param ionoHeight    Ionosphere height as derived from IONEX file
+          *                      (KM).
+          *
+          * @return              Ionosphere slant delay (meters)
+          */
       double getIonoL2( const double& elevation,
                         const double& tecval,
                         const double& ionoHeight) const
-         throw (InvalidParameter);
+         throw (InvalidParameter)
+      { return getIono(elevation, tecval, ionoHeight, L2_FREQ); };
 
 
+         /** Get ionospheric slant delay for L5 frequency
+          *
+          * @param elevation     Time tag of signal (DayTime object)
+          * @param tecval        TEC value as derived from IONEX file (TECU)
+          * @param ionoHeight    Ionosphere height as derived from IONEX file
+          *                      (KM).
+          *
+          * @return              Ionosphere slant delay (meters)
+          */
       double getIonoL5( const double& elevation,
                         const double& tecval,
                         const double& ionoHeight) const
-         throw (InvalidParameter);
+         throw (InvalidParameter)
+      { return getIono(elevation, tecval, ionoHeight, L5_FREQ); };
 
 
+         /** Get ionospheric slant delay for L6 frequency
+          *
+          * @param elevation     Time tag of signal (DayTime object)
+          * @param tecval        TEC value as derived from IONEX file (TECU)
+          * @param ionoHeight    Ionosphere height as derived from IONEX file
+          *                      (KM).
+          *
+          * @return              Ionosphere slant delay (meters)
+          */
       double getIonoL6( const double& elevation,
                         const double& tecval,
                         const double& ionoHeight) const
-         throw (InvalidParameter);
+         throw (InvalidParameter)
+      { return getIono(elevation, tecval, ionoHeight, L6_FREQ); };
 
 
+         /** Get ionospheric slant delay for L7 frequency
+          *
+          * @param elevation     Time tag of signal (DayTime object)
+          * @param tecval        TEC value as derived from IONEX file (TECU)
+          * @param ionoHeight    Ionosphere height as derived from IONEX file
+          *                      (KM).
+          *
+          * @return              Ionosphere slant delay (meters)
+          */
       double getIonoL7( const double& elevation,
                         const double& tecval,
                         const double& ionoHeight) const
-         throw (InvalidParameter);
+         throw (InvalidParameter)
+      { return getIono(elevation, tecval, ionoHeight, L7_FREQ); };
 
 
+         /** Get ionospheric slant delay for L8 frequency
+          *
+          * @param elevation     Time tag of signal (DayTime object)
+          * @param tecval        TEC value as derived from IONEX file (TECU)
+          * @param ionoHeight    Ionosphere height as derived from IONEX file
+          *                      (KM).
+          *
+          * @return              Ionosphere slant delay (meters)
+          */
       double getIonoL8( const double& elevation,
                         const double& tecval,
                         const double& ionoHeight) const
-         throw (InvalidParameter);
+         throw (InvalidParameter)
+      { return getIono(elevation, tecval, ionoHeight, L8_FREQ); };
 
 
          /** Ionosphere mapping function

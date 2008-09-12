@@ -401,10 +401,21 @@ namespace gpstk
    }  // End of method 'IonexStore::getIonexValue()'
 
 
-      // Ionospheric slant delay for basic L1 GPS frequency
-   double IonexStore::getIonoL1( const double& elevation,
-                                 const double& tecval,
-                                 const double& ionoHeight) const
+
+      /* Get ionospheric slant delay for a given frequency
+       *
+       * @param elevation     Time tag of signal (DayTime object)
+       * @param tecval        TEC value as derived from IONEX file (TECU)
+       * @param ionoHeight    Ionosphere height as derived from IONEX file
+       *                      (KM).
+       * @param freq          Frequency value, in Hz
+       *
+       * @return              Ionosphere slant delay (meters)
+       */
+   double IonexStore::getIono( const double& elevation,
+                               const double& tecval,
+                               const double& ionoHeight,
+                               const double& freq ) const
       throw (InvalidParameter)
    {
 
@@ -428,193 +439,14 @@ namespace gpstk
       }
       else
       {
-         
-         return ( C2_FACT / (L1_FREQ * L1_FREQ) * tecval 
+
+         return ( C2_FACT / (freq * freq) * tecval
                          * iono_mapping_function(elevation, ionoHeight) );
 
       }
 
-   }  // End of method 'IonexStore::getIonoL1()'
+   }  // End of method 'IonexStore::getIono()'
 
-
-      // Ionospheric slant delay for basic L2 GPS frequency
-   double IonexStore::getIonoL2( const double& elevation,
-                                 const double& tecval,
-                                 const double& ionoHeight) const
-      throw (InvalidParameter)
-   {
-
-      if (tecval < 0)
-      {
-         InvalidParameter e("Invalid TEC parameter.");
-         GPSTK_THROW(e);
-      }
-
-      if (ionoHeight < 0)
-      {
-         InvalidParameter e("Invalid IONEX height of the ionosphere.");
-         GPSTK_THROW(e);
-      }
-
-      if (elevation < 0.0)
-      {
-
-         return 0.0;
-
-      }
-      else
-      {
-         
-         return ( C2_FACT / (L2_FREQ * L2_FREQ) * tecval 
-                         * iono_mapping_function(elevation, ionoHeight) );
-
-      }
-
-   }  // End of method 'IonexStore::getIonoL2()'
-
-
-      // Ionospheric slant delay for Modernized L5 GPS frequency
-   double IonexStore::getIonoL5( const double& elevation,
-                                 const double& tecval,
-                                 const double& ionoHeight) const
-      throw (InvalidParameter)
-   {
-
-      if (tecval < 0)
-      {
-         InvalidParameter e("Invalid TEC parameter.");
-         GPSTK_THROW(e);
-      }
-
-      if (ionoHeight < 0)
-      {
-         InvalidParameter e("Invalid IONEX height of the ionosphere.");
-         GPSTK_THROW(e);
-      }
-
-      if (elevation < 0.0)
-      {
-
-         return 0.0;
-
-      }
-      else
-      {
-         
-         return ( C2_FACT / (L5_FREQ * L5_FREQ) * tecval 
-                         * iono_mapping_function(elevation, ionoHeight) );
-
-      }
-
-   }  // End of method 'IonexStore::getIonoL5()'
-
-
-      // Ionospheric slant delay for Galileo-related L6 frequency
-   double IonexStore::getIonoL6( const double& elevation,
-                                 const double& tecval,
-                                 const double& ionoHeight) const
-      throw (InvalidParameter)
-   {
-
-      if (tecval < 0)
-      {
-         InvalidParameter e("Invalid TEC parameter.");
-         GPSTK_THROW(e);
-      }
-
-      if (ionoHeight < 0)
-      {
-         InvalidParameter e("Invalid IONEX height of the ionosphere.");
-         GPSTK_THROW(e);
-      }
-
-      if (elevation < 0.0)
-      {
-
-         return 0.0;
-
-      }
-      else
-      {
-         
-         return ( C2_FACT / (L6_FREQ * L6_FREQ) * tecval 
-                         * iono_mapping_function(elevation, ionoHeight) );
-
-      }
-
-   }  // End of method 'IonexStore::getIonoL6()'
-
-
-      // Ionospheric slant delay for Galileo-related L7 frequency
-   double IonexStore::getIonoL7( const double& elevation,
-                                 const double& tecval,
-                                 const double& ionoHeight) const
-      throw (InvalidParameter)
-   {
-
-      if (tecval < 0)
-      {
-         InvalidParameter e("Invalid TEC parameter.");
-         GPSTK_THROW(e);
-      }
-
-      if (ionoHeight < 0)
-      {
-         InvalidParameter e("Invalid IONEX height of the ionosphere.");
-         GPSTK_THROW(e);
-      }
-
-      if (elevation < 0.0)
-      {
-
-         return 0.0;
-
-      }
-      else
-      {
-         
-         return ( C2_FACT / (L7_FREQ * L7_FREQ) * tecval 
-                         * iono_mapping_function(elevation, ionoHeight) );
-
-      }
-
-   }  // End of method 'IonexStore::getIonoL7()'
-
-
-      // Ionospheric slant delay for Galileo-related L8 frequency
-   double IonexStore::getIonoL8( const double& elevation,
-                                 const double& tecval,
-                                 const double& ionoHeight) const
-      throw (InvalidParameter)
-   {
-
-      if (tecval < 0)
-      {
-         InvalidParameter e("Invalid TEC parameter.");
-         GPSTK_THROW(e);
-      }
-
-      if (ionoHeight < 0)
-      {
-         InvalidParameter e("Invalid IONEX height of the ionosphere.");
-         GPSTK_THROW(e);
-      }
-
-      if (elevation < 0.0)
-      {
-
-         return 0.0;
-
-      }
-      else
-      {
-         
-         return ( C2_FACT / (L8_FREQ * L8_FREQ) * tecval 
-                         * iono_mapping_function(elevation, ionoHeight) );
-
-      }
-
-   }  // End of method 'IonexStore::getIonoL8()'
 
 
       // ionosphere mapping function
@@ -639,6 +471,7 @@ namespace gpstk
       return map;
 
    }  // End of method 'IonexStore::iono_mapping_function()'
+
 
 
       /* Find a DCB value
@@ -729,5 +562,7 @@ namespace gpstk
       return 0.0;
 
    }  // End of method 'IonexStore::findDCB()'
+
+
 
 }  // End of namespace gpstk
