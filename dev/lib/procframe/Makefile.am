@@ -11,8 +11,9 @@ ComputeLinear.cpp ComputeMelbourneWubbena.cpp ComputeMOPSWeights.cpp \
 ComputePC.cpp ComputePdelta.cpp ComputePI.cpp ComputeSatPCenter.cpp \
 ComputeTropModel.cpp ComputeWindUp.cpp CorrectObservables.cpp \
 DataHeaders.cpp DataStructures.cpp Decimate.cpp DeltaOp.cpp \
-EclipsedSatFilter.cpp Equation.cpp GravitationalDelay.cpp LICSDetector.cpp \
-LICSDetector2.cpp LinearCombinations.cpp ModeledPR.cpp ModeledReferencePR.cpp \
+EclipsedSatFilter.cpp Equation.cpp GravitationalDelay.cpp IonexModel.cpp \
+LICSDetector.cpp LICSDetector2.cpp \
+LinearCombinations.cpp ModeledPR.cpp ModeledReferencePR.cpp \
 ModelObs.cpp ModelObsFixedStation.cpp MWCSDetector.cpp NablaOp.cpp \
 OneFreqCSDetector.cpp PhaseCodeAlignment.cpp PCSmoother.cpp \
 ProcessingList.cpp ProcessingVector.cpp SatArcMarker.cpp SimpleFilter.cpp \
@@ -26,7 +27,8 @@ ComputeLdelta.hpp ComputeLI.hpp ComputeLinear.hpp ComputeMelbourneWubbena.hpp \
 ComputeMOPSWeights.hpp ComputePC.hpp ComputePdelta.hpp ComputePI.hpp \
 ComputeSatPCenter.hpp ComputeTropModel.hpp ComputeWindUp.hpp \
 CorrectObservables.hpp DataHeaders.hpp DataStructures.hpp Decimate.hpp \
-DeltaOp.hpp GravitationalDelay.hpp EclipsedSatFilter.hpp Equation.hpp \
+DeltaOp.hpp EclipsedSatFilter.hpp Equation.hpp \
+GravitationalDelay.hpp IonexModel.hpp \
 LICSDetector.hpp LICSDetector2.hpp LinearCombinations.hpp ModeledPR.hpp \
 ModeledReferencePR.hpp ModelObs.hpp ModelObsFixedStation.hpp MWCSDetector.hpp \
 NablaOp.hpp OneFreqCSDetector.hpp PhaseCodeAlignment.hpp PCSmoother.hpp \

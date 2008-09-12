@@ -140,6 +140,7 @@ namespace gpstk
          wetMap,    ///< Tropospheric mapping function, wet component
          tropoSlant, ///< Slant tropospheric delay, total
          iono,      ///< Vertical ionospheric delay
+         ionoTEC,   ///< Total Electron Content (in TECU), 1TECU = 1e+16 electrons per m**2
          ionoMap,   ///< Ionospheric mapping function
          ionoL1,    ///< Slant ionospheric delay, frequency L1
          ionoL2,    ///< Slant ionospheric delay, frequency L2
