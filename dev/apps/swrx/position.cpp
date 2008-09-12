@@ -4,7 +4,7 @@
 
 TO DO:
 
-parameterize input
+parameterize input (want to input each subframe, or try to correlate with tracker output files?)
 
 convert zcount into time instead of making user figure it out?
 
@@ -46,6 +46,13 @@ We then solve for position.  Not sure if we want to stay with that or generate a
 #include <GPSGeoid.hpp>
 #include <PRSolution.hpp>
 
+#include "GPSWeekSecond.hpp"
+#include "GPSWeekZcount.hpp"
+#include "SystemTime.hpp"
+#include "YDSTime.hpp"
+#include "CivilTime.hpp"
+#include "TimeString.hpp"
+
 using namespace gpstk;
 using namespace std;
 
@@ -65,6 +72,9 @@ private:
    GPSEphemerisStore bce;
    IonoModel iono;
    DayTime time;
+
+   double zCount;
+   int gpsWeek;
 
    GPSGeoid gm;
    ECEF ecef;
@@ -90,9 +100,13 @@ bool P::initialize(int argc, char *argv[]) throw()
                     "Specifies the nominal sample rate, in MHz.  The "
                     "default is 16.368 MHz.");
 
-   CommandOptionWithTimeArg
-      timeOption('t', "time", "%m/%d/%Y %H:%M:%S",
-                 "Time estimate for start of data (MM/DD/YYYY HH:MM:SS).");
+   CommandOptionWithAnyArg
+      zCountOpt('z',"z-count",
+                "The Z-Count of the subframe to be used.", true);
+
+   CommandOptionWithAnyArg
+      gpsWeekOpt('w',"gps-week",
+                "The GPSWeek", true);
 
    if (!BasicFramework::initialize(argc,argv)) 
       return false;
@@ -101,9 +115,20 @@ bool P::initialize(int argc, char *argv[]) throw()
    {
       sampleRate = asDouble(sampleRateOpt.getValue().front());
    }
-   
 
+   if(gpsWeekOpt.getCount())
+   {
+         gpsWeek = asInt(gpsWeekOpt.getValue().front());
+   }
 
+   if(zCountOpt.getCount())
+   {
+         zCount = asDouble(zCountOpt.getValue().front());
+         zCount -= 6.0;
+         DayTime t(gpsWeek,zCount);
+         time = t;
+   }
+ 
    for (int i=0; i < ephFileOption.getCount(); i++)
    {
       string fn = ephFileOption.getValue()[i];
@@ -126,7 +151,6 @@ bool P::initialize(int argc, char *argv[]) throw()
       cout << "Have ephemeris data from " << bce.getInitialTime() 
            << " through " << bce.getFinalTime() << endl;
 
-   time = timeOption.getTime()[0];
    if (verboseLevel)
       cout << "Initial time estimate: " << time << endl;
 
@@ -218,12 +242,30 @@ void P::process()
 
    cout << endl << "Position (ECEF): " << fixed << sol[0] << " " << sol[1] 
         << " " << sol[2] << endl << "Receiver Clock Error: " 
-        << sol[3]/gpstk::C_GPS_M << " seconds (convert to current receiver time...includes error caused by blindly picking reference pseudorange)" << endl;
-   cout << "Covariance: " << fixed << setprecision(3) << endl 
-        << prSolver.Covariance << endl
+        << sol[3]*1000/gpstk::C_GPS_M << " ms" << endl;
+   cout //<< "Covariance: " << fixed << setprecision(3) << endl 
+        //<< prSolver.Covariance << endl
         << "# good SV's: " << prSolver.Nsvs << endl
         << "RMSResidual: " << prSolver.RMSResidual << " meters" << endl << endl;
-}   
+
+   // Recalculate position using time corrected by clock error.
+   time += (0.073 + sol[3]/gpstk::C_GPS_M);
+   GGTropModel gg2;
+   gg2.setWeather(20., 1000., 50.);    
+   PRSolution prSolver2;
+   prSolver2.RMSLimit = 400;
+   prSolver2.RAIMCompute(time, svVec, obsVec, bce, &gg2);
+   Vector<double> sol2 = prSolver2.Solution;
+   cout << "Recomputing position with refined time:" << fixed << setprecision(6);
+   cout << endl << "Position (ECEF): " << fixed << sol2[0] << " " << sol2[1] 
+        << " " << sol2[2] << endl << "Receiver Clock Error: " 
+        << sol2[3]*1000/gpstk::C_GPS_M << " ms" << endl;
+   cout //<< "Covariance: " << fixed << setprecision(3) << endl 
+        //<< prSolver2.Covariance << endl
+        << "# good SV's: " << prSolver2.Nsvs << endl
+        << "RMSResidual: " << prSolver2.RMSResidual << " meters" << endl << endl;
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 int main(int argc, char *argv[])
