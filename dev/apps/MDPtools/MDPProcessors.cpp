@@ -96,14 +96,14 @@ void MDPProcessor::process()
       {
          startTime = header.time;
          if (debugLevel)
-            cout << "startTime: " << startTime << endl;
+            out << "startTime: " << startTime << endl;
       }
       
       if (stopTime == DayTime(DayTime::END_OF_TIME) && timeSpan>0)
       {
          stopTime = startTime + timeSpan;
          if (debugLevel)
-            cout << "stopTime: " << stopTime << endl;
+            out << "stopTime: " << stopTime << endl;
       }
 
       if (header.time > stopTime)
@@ -126,9 +126,9 @@ void MDPProcessor::process()
          {
             fcErrorCount++;
             if (verboseLevel)
-               cout << header.time.printf(timeFormat)
-                    <<"  Freshness count error.  Previous was " << lastFC
-                    << " current is " << in.header.freshnessCount << endl;
+               out << header.time.printf(timeFormat)
+                   <<"  Freshness count error.  Previous was " << lastFC
+                   << " current is " << in.header.freshnessCount << endl;
          }
          lastFC = in.header.freshnessCount;
       }
@@ -292,8 +292,8 @@ void MDPTableProcessor::process(const gpstk::MDPSelftestStatus& sts)
    out << sts.time.printf(timeFormat)
        << fixed
        << ", " << setw(3) << sts.id
-       << ", " << sts.selfTestTime.printf("%4F/%9.2g")
-       << ", " << sts.firstPVTTime.printf("%4F/%9.2g")
+       << ", " << sts.selfTestTime.printf(timeFormat)
+       << ", " << sts.firstPVTTime.printf(timeFormat) //"%4F/%9.2g")
        << ", " << setprecision(1) << sts.antennaTemp
        << ", " << setprecision(1) << sts.receiverTemp
        << ", " << hex << sts.status << dec
