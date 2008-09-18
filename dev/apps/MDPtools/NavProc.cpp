@@ -17,7 +17,7 @@ using namespace gpstk::StringUtils;
 
 
 //-----------------------------------------------------------------------------
-MDPNavProcessor::MDPNavProcessor(gpstk::MDPStream& in, std::ofstream& out)
+MDPNavProcessor::MDPNavProcessor(MDPStream& in, std::ofstream& out)
    : MDPProcessor(in, out),
      firstNav(true), almOut(false), ephOut(false), minimalAlm(false),
      badNavSubframeCount(0), navSubframeCount(0)
@@ -105,7 +105,7 @@ MDPNavProcessor::~MDPNavProcessor()
 
 
 //-----------------------------------------------------------------------------
-void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
+void MDPNavProcessor::process(const MDPNavSubframe& msg)
 {
    if (firstNav)
    {
@@ -120,7 +120,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    RangeCarrierPair rcp(msg.range, msg.carrier);
    NavIndex ni(rcp, msg.prn);
 
-   gpstk::MDPNavSubframe umsg = msg;
+   MDPNavSubframe umsg = msg;
 
    ostringstream oss;
    oss << umsg.time.printf(timeFormat)
@@ -205,7 +205,8 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
    prev[ni] = curr[ni];
    curr[ni] = umsg;
 
-   if (prev[ni].inverted != curr[ni].inverted && 
+   if (prev[ni].parityGood && 
+       prev[ni].inverted != curr[ni].inverted && 
        curr[ni].time - prev[ni].time <= 12)
    {
       if (verboseLevel)
@@ -253,7 +254,7 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
             ephStore[ni] = engEph;
          }
       }
-      catch (gpstk::Exception& e)
+      catch (Exception& e)
       {
          out << e << endl;
       }
@@ -262,15 +263,15 @@ void MDPNavProcessor::process(const gpstk::MDPNavSubframe& msg)
 }  // end of process()
 
 
-void  MDPNavProcessor::process(const gpstk::MDPObsEpoch& msg)
+void  MDPNavProcessor::process(const MDPObsEpoch& msg)
 {
    if (!msg)
       return;
 
-   for (gpstk::MDPObsEpoch::ObsMap::const_iterator i = msg.obs.begin();
+   for (MDPObsEpoch::ObsMap::const_iterator i = msg.obs.begin();
         i != msg.obs.end(); i++)
    {
-      const gpstk::MDPObsEpoch::Observation& obs=i->second;      
+      const MDPObsEpoch::Observation& obs=i->second;      
       NavIndex ni(RangeCarrierPair(obs.range, obs.carrier), msg.prn);
       snr[ni] = obs.snr;
       el[ni] = msg.elevation;
