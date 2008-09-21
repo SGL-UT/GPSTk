@@ -77,7 +77,7 @@ namespace gpstk
 
       if(val < 0.5)
       {
-         return (PI / (sin(PI*val)*gamma(1.0-val)) );
+         return ( PI / (sin(PI*val)*gamma(1.0-val)) );
       }
       else
       {
@@ -129,8 +129,7 @@ namespace gpstk
 
       if(val < 0.5)
       {
-         return ( 1.1447298858494002 - ( log(sin(PI*val)) + lngamma(1.0-val) )
-);
+         return ( 1.1447298858494002 - (log(sin(PI*val)) + lngamma(1.0-val)) );
       }
       else
       {
@@ -238,6 +237,35 @@ namespace gpstk
    double gammaQ(const double a, const double z)
    {
       return ( 1.0 - gammaP(a,z) );
+   }
+
+
+
+      /* Computes factorial of integer number n.
+       *
+       * This implementation typically gives 15 correct decimal places, and
+       * returns the result as double.
+       */
+   double factorial(const int n)
+   {
+
+         // Return 0 if n<0
+      if( n < 0 ) return 0.0;
+
+      double facttable[] = { 1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0,
+                             40320.0, 362880.0, 3628800.0, 39916800.0,
+                             479001600.0, 6227020800.0, 87178291200.0,
+                             1307674368000.0 };
+
+         // Use a look-up table for small values of n
+      if( (n >= 0) && (n <= 15) )
+      {
+         return facttable[n];
+      }
+
+         // Use gamma function properties for big values of n
+      return gamma(n+1.0);
+
    }
 
 

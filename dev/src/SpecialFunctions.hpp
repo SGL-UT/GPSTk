@@ -78,6 +78,14 @@ namespace gpstk
    double gammaQ(const double a, const double z);
 
 
+      /** Computes factorial of integer number n.
+       *
+       * This implementation typically gives 15 correct decimal places, and
+       * returns the result as double.
+       */
+   double factorial(const int n);
+
+
       /** Error function.
        *
        * This is a C++ implementation of the free Python code found in:
