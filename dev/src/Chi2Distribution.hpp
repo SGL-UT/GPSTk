@@ -40,7 +40,7 @@ namespace gpstk
       /** @addtogroup math */
       //@{
 
-      /** This class implements the Gaussian (or normal) distribution.
+      /** This class implements the Chi-square distribution.
        *
        * A typical way to use this class follows:
        *
@@ -79,7 +79,7 @@ namespace gpstk
           *
           * @param n       Degrees of freedom
           *
-          * \warning "n" must be > 0.0, otherwise n = |n|.
+          * \warning "n" must be > 0, otherwise n = |n|.
           */
       Chi2Distribution( int n )
       { setNDF(n); };
@@ -97,7 +97,7 @@ namespace gpstk
           * @param x       Value
           * @param n       Degrees of freedom
           *
-          * \warning "n" must be > 0.0, otherwise n = |n|.
+          * \warning "n" must be > 0, otherwise n = |n|.
           */
       virtual double pdf(double x, int n)
       { setNDF(n); return pdf(x); };
@@ -115,7 +115,7 @@ namespace gpstk
           * @param x       Value
           * @param n       Degrees of freedom
           *
-          * \warning "n" must be > 0.0, otherwise n = |n|.
+          * \warning "n" must be > 0, otherwise n = |n|.
           */
       virtual double cdf(double x, int n)
       { setNDF(n); return cdf(x); };
@@ -136,7 +136,7 @@ namespace gpstk
           * @param x       Value
           * @param n       Degrees of freedom
           *
-          * \warning "n" must be > 0.0, otherwise n = |n|.
+          * \warning "n" must be > 0, otherwise n = |n|.
           */
       virtual double Q(double x, int n)
       { return ( 1.0 - cdf(x,n) ); };
