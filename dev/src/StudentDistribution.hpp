@@ -1,12 +1,12 @@
 #pragma ident "$Id$"
 
 /**
- * @file Chi2Distribution.hpp
- * This class implements the Chi-square distribution.
+ * @file StudentDistribution.hpp
+ * This class implements the t-Student distribution.
  */
 
-#ifndef CHI2DISTRIBUTION_HPP
-#define CHI2DISTRIBUTION_HPP
+#ifndef STUDENTDISTRIBUTION_HPP
+#define STUDENTDISTRIBUTION_HPP
 
 //============================================================================
 //
@@ -40,25 +40,26 @@ namespace gpstk
       /** @addtogroup math */
       //@{
 
-      /** This class implements the Chi-square distribution.
+      /** This class implements the t-Student distribution.
        *
        * A typical way to use this class follows:
        *
        * @code
        *
-       *      // Declare a 'Chi2Distribution' object with 2 degrees of freedom
-       *   Chi2Distribution chiObj;
+       *      // Declare a 'StudentDistribution' object with
+       *      // 1 degree of freedom (default)
+       *   StudentDistribution stuObj;
        *
        *   double x(5.7);
        *
-       *   cout << chiObj.pdf(x) << " | "
-       *        << chiObj.cdf(x) << " | "
-       *        << chiObj.Q(x) << endl;
+       *   cout << stuObj.pdf(x) << " | "
+       *        << stuObj.cdf(x) << " | "
+       *        << stuObj.Q(x) << endl;
        *
        *      // Now, the same but with four degrees of freedom
-       *   cout << chiObj.pdf(x, 4) << " | "
-       *        << chiObj.cdf(x, 4) << " | "
-       *        << chiObj.Q(x, 4) << endl;
+       *   cout << stuObj.pdf(x, 4) << " | "
+       *        << stuObj.cdf(x, 4) << " | "
+       *        << stuObj.Q(x, 4) << endl;
        *
        * @endcode
        *
@@ -66,13 +67,13 @@ namespace gpstk
        *     GaussianDistribution.hpp for a normal distribution.
        *
        */
-   class Chi2Distribution : public BaseDistribution
+   class StudentDistribution : public BaseDistribution
    {
    public:
 
 
-         /// Default constructor. Sets the number of degrees of freedom to 2.
-      Chi2Distribution() : ndf(2) {};
+         /// Default constructor. Sets the number of degrees of freedom to 1.
+      StudentDistribution() : ndf(1) {};
 
 
          /** Explicit constructor.
@@ -81,7 +82,7 @@ namespace gpstk
           *
           * \warning "n" must be > 0, otherwise n = |n|.
           */
-      Chi2Distribution( int n )
+      StudentDistribution( int n )
       { setNDF(n); };
 
 
@@ -121,7 +122,7 @@ namespace gpstk
       { setNDF(n); return cdf(x); };
 
 
-         /** Computes the upper tail of the Chi-square probability
+         /** Computes the upper tail of the t-student probability
           *  function Q(x, ndf).
           *
           * @param x       Value
@@ -130,7 +131,7 @@ namespace gpstk
       { return ( 1.0 - cdf(x) ); };
 
 
-         /** Computes the upper tail of the Chi-square probability
+         /** Computes the upper tail of the t-student probability
           *  function Q(x, n).
           *
           * @param x       Value
@@ -153,7 +154,7 @@ namespace gpstk
           *
           * \warning "n" must be > 0, otherwise n = |n|.
           */
-      virtual Chi2Distribution& setNDF(int n)
+      virtual StudentDistribution& setNDF(int n)
          throw(InvalidParameter);
 
 
@@ -164,9 +165,9 @@ namespace gpstk
       int ndf;
 
 
-   };  // End of class "Chi2Distribution"
+   };  // End of class "StudentDistribution"
 
       //@}
 
 }  // End of namespace gpstk
-#endif   // CHI2DISTRIBUTION_HPP
+#endif   // STUDENTDISTRIBUTION_HPP
