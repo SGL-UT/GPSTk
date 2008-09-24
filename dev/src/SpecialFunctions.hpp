@@ -33,6 +33,7 @@
 
 #include <cmath>
 #include "icd_200_constants.hpp"
+#include "Exception.hpp"
 
 
 namespace gpstk
@@ -129,6 +130,16 @@ namespace gpstk
        * \warning This version does not work for values <= 0.0
        */
    double lnbeta(double x, double y);
+
+
+      /** Computes the regularized incomplete Beta function Ix(a,b).
+       *
+       * This code is a C++ implementation and adaptation from code found
+       * in Cephes Math Library Release 2.8, copyright by Stephen L. Moshier,
+       * released under a BSD license.
+       */
+   double regIncompleteBeta(const double x, const double a, const double b)
+      throw(InvalidParameter);
 
 
       //@}

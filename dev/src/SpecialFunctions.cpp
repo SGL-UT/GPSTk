@@ -707,4 +707,424 @@ namespace gpstk
 
 
 
+      /* Auxiliar function to compute incomplete beta function.
+       * Power series for incomplete beta integral.
+       * Use when b*x is small and x not too close to 1.
+       */
+   double incompletebetaps(const double x, const double a, const double b)
+   {
+
+         // Declare working variables
+      double epsilon(1.0e-30);
+      double big(1.0e99);
+      double small(1.0e-99);
+      double maxgam(171.0);   // Approximate maximum input for gamma function
+      double ai( 1.0/a );
+      double u( (1.0-b) * x );
+      double v( u / (a+1.0) );
+      double t1(v);
+      double t(u);
+      double n(2.0);
+      double s(0.0);
+      double z( epsilon*ai );
+
+      while( std::fabs(v) > z )
+      {
+         u = (n-b) * x / n;
+         t = t * u;
+         v = t/(a+n);
+         s = s+v;
+         n = n+1.0;
+      }
+
+      s = s + t1 + ai;
+      u = a * std::log(x);
+
+         // Check if we can compute gamma values
+      if( (a+b < maxgam) &&
+          ( std::fabs(u) < std::log(big) ) )
+      {
+
+         t = gamma(a+b) / ( gamma(a) * gamma(b) );
+         s = s * t * pow(x, a);
+
+      }
+      else
+      {
+
+         t = lngamma(a+b) - lngamma(a)- lngamma(b) + u + std::log(s);
+
+         if( t < std::log(small) )
+         {
+            s = 0.0;
+         }
+         else
+         {
+            s = std::exp(t);
+         }
+
+      }  // End of block 'if( (a+b < maxgam) && ( std::fabs(u) ...'
+
+      return s;
+
+   }  // End of function 'incompletebetaps()'
+
+
+
+      // Auxiliar function to compute incomplete beta function.
+   double incompletebetafe(const double x, const double a, const double b)
+   {
+
+         // Declare auxiliar parameters
+      double epsilon(1.0e-30);
+      double big( 1.0e16 );
+      double biginv( 1.0/big );
+
+      double k1( a );
+      double k2( a+b );
+      double k3( a );
+      double k4( a+1.0 );
+      double k5( 1.0 );
+      double k6( b-1.0 );
+      double k7( k4 );
+      double k8( a+2.0 );
+
+      double pkm1( 1.0 );
+      double pkm2( 0.0 );
+      double qkm1( 1.0 );
+      double qkm2( 1.0 );
+
+      double ans( 1.0 );
+      double r( 1.0 );
+      double thresh( 3.0 * epsilon );
+
+      int n( 0 );
+
+         // Start iteration
+      do
+      {
+
+         double xk( -x * k1 * k2 / (k3*k4) );
+         double pk( pkm1 + pkm2 * xk );
+         double qk( qkm1 + qkm2 * xk );
+
+         pkm2 = pkm1;
+         pkm1 = pk;
+         qkm2 = qkm1;
+         qkm1 = qk;
+
+         xk = x * k5 * k6 / (k7*k8);
+         pk = pkm1 + pkm2 * xk;
+         qk = qkm1 + qkm2 * xk;
+
+         pkm2 = pkm1;
+         pkm1 = pk;
+         qkm2 = qkm1;
+         qkm1 = qk;
+
+         if( qk != 0.0 )
+         {
+            r = pk/qk;
+         }
+
+         double t;
+
+         if( r != 0.0 )
+         {
+            t = std::fabs( (ans-r)/r );
+            ans = r;
+         }
+         else
+         {
+            t = 1.0;
+         }
+
+            // Exit if we are under threshold
+         if( t < thresh )
+         {
+            break;
+         }
+
+            // Recompute auxiliar parameters
+         k1 = k1 + 1.0;
+         k2 = k2 + 1.0;
+         k3 = k3 + 2.0;
+         k4 = k4 + 2.0;
+         k5 = k5 + 1.0;
+         k6 = k6 - 1.0;
+         k7 = k7 + 2.0;
+         k8 = k8 + 2.0;
+
+            // Check if qk, pk are too big
+         if( (std::fabs(qk) + std::fabs(pk)) > big )
+         {
+            pkm2 = pkm2 * biginv;
+            pkm1 = pkm1 * biginv;
+            qkm2 = qkm2 * biginv;
+            qkm1 = qkm1 * biginv;
+         }
+
+            // Check if qk, pk are too small
+         if( (std::fabs(qk) < biginv) ||
+             (std::fabs(pk) < biginv ) )
+         {
+            pkm2 = pkm2 * big;
+            pkm1 = pkm1 * big;
+            qkm2 = qkm2 * big;
+            qkm1 = qkm1 * big;
+         }
+
+            // Increase n
+         n = n+1;
+
+      }
+      while( n < 300 );
+
+         // Return result
+      return ans;
+
+   }  // End of function 'incompletebetafe()'
+
+
+
+      // Auxiliar function to compute incomplete beta function.
+   double incompletebetafe2(const double x, const double a, const double b)
+   {
+
+         // Declare auxiliar parameters
+      double epsilon(1.0e-30);
+      double big( 1.0e16 );
+      double biginv( 1.0/big );
+
+      double k1( a );
+      double k2( b-1.0 );
+      double k3( a );
+      double k4( a+1.0 );
+      double k5( 1.0 );
+      double k6( a+b );
+      double k7( a+1.0 );
+      double k8( a+2.0 );
+
+      double pkm1( 1.0 );
+      double pkm2( 0.0 );
+      double qkm1( 1.0 );
+      double qkm2( 1.0 );
+
+      double z( x / (1.0-x) );
+      double ans( 1.0 );
+      double r( 1.0 );
+      double thresh( 3.0 * epsilon );
+
+      int n( 0 );
+
+         // Start iteration
+      do
+      {
+
+         double xk( -z * k1 * k2 / (k3*k4) );
+         double pk( pkm1 + pkm2 * xk );
+         double qk( qkm1 + qkm2 * xk );
+
+         pkm2 = pkm1;
+         pkm1 = pk;
+         qkm2 = qkm1;
+         qkm1 = qk;
+
+         xk = z * k5 * k6 / (k7*k8);
+         pk = pkm1 + pkm2 * xk;
+         qk = qkm1 + qkm2 * xk;
+
+         pkm2 = pkm1;
+         pkm1 = pk;
+         qkm2 = qkm1;
+         qkm1 = qk;
+
+         if( qk != 0.0 )
+         {
+            r = pk/qk;
+         }
+
+         double t;
+
+         if( r != 0.0 )
+         {
+            t = std::fabs( (ans-r) / r );
+            ans = r;
+         }
+         else
+         {
+            t = 1.0;
+         }
+
+            // Exit if we are under threshold
+         if( t < thresh )
+         {
+            break;
+         }
+
+
+            // Recompute auxiliar parameters
+         k1 = k1 + 1.0;
+         k2 = k2 - 1.0;
+         k3 = k3 + 2.0;
+         k4 = k4 + 2.0;
+         k5 = k5 + 1.0;
+         k6 = k6 + 1.0;
+         k7 = k7 + 2.0;
+         k8 = k8 + 2.0;
+
+            // Check if qk, pk are too big
+         if( (std::fabs(qk) + std::fabs(pk)) > big )
+         {
+            pkm2 = pkm2 * biginv;
+            pkm1 = pkm1 * biginv;
+            qkm2 = qkm2 * biginv;
+            qkm1 = qkm1 * biginv;
+         }
+
+            // Check if qk, pk are too small
+         if( (std::fabs(qk) < biginv) ||
+             (std::fabs(pk) < biginv ) )
+         {
+            pkm2 = pkm2 * big;
+            pkm1 = pkm1 * big;
+            qkm2 = qkm2 * big;
+            qkm1 = qkm1 * big;
+         }
+
+            // Increase n
+         n = n+1;
+
+      }
+      while( n < 300 );
+
+         // Return result
+      return ans;
+
+   }  // End of function 'incompletebetafe2()'
+
+
+
+      /* Computes the regularized incomplete Beta function Ix(a,b).
+       *
+       * This code is a C++ implementation and adaptation from code found
+       * in Cephes Math Library Release 2.8, copyright by Stephen L. Moshier,
+       * released under a BSD license.
+       */
+   double regIncompleteBeta(const double x, const double a, const double b)
+      throw(InvalidParameter)
+   {
+
+         // Let's do some basic checks
+      if( (a <= 0.0) || (b <= 0.0) )
+      {
+         InvalidParameter e("Function 'regIncompleteBeta()': 'a' and 'b' must \
+be greater than zero." );
+         GPSTK_THROW(e);
+      }
+
+      if( (x < 0.0) || (x > 1.0) )
+      {
+         InvalidParameter e("Function 'regIncompleteBeta()': 'x' must be \
+within the interval [0,1]." );
+         GPSTK_THROW(e);
+      }
+
+      if (x == 0.0) return 0.0;
+      if (x == 1.0) return 1.0;
+
+         // Declare working parameters
+      int flag(0);
+      double epsilon(1.0e-30);
+      double xx(x);
+      double aa(a);
+      double bb(b);
+
+
+         // Check if bb*xx is small and xx not too close to 1.
+      if( (bb*xx <= 1.0) &&
+          (xx <= 0.95) )
+      {
+         return incompletebetaps(xx, aa, bb);
+      }
+
+      double w( 1.0-xx );
+      double t, xc;
+
+      if( xx > (aa/(aa+bb)) )
+      {
+         flag = 1;
+         t = aa;
+         aa = bb;
+         bb = t;
+         xc = xx;
+         xx = w;
+      }
+      else
+      {
+         xc = w;
+      }
+
+      double result(0.0);
+
+      if( (flag==1)      &&
+          (bb*xx <= 1.0) &&
+          (xx <= 0.95) )
+      {
+
+            // bb*xx is small and xx not too close to 1.
+         t = incompletebetaps(xx, aa, bb);
+
+         if( t <= epsilon )
+         {
+            result = 1.0 - epsilon;
+         }
+         else
+         {
+            result = 1.0 - t;
+         }
+
+         return result;
+
+      }
+
+      double y( xx * (aa+bb-2.0) - (aa-1.0) );
+
+      if( y < 0.0 )
+      {
+         w = incompletebetafe(xx, aa, bb);
+      }
+      else
+      {
+         w = incompletebetafe2(xx, aa, bb) / xc;
+      }
+
+      t = std::pow(xc, bb);
+      t = t * std::pow(xx, aa);
+      t = t/aa;
+      t = t*w;
+      t = t * ( gamma(aa+bb) / ( gamma(aa) * gamma(bb) ) );
+
+      if( flag==1 )
+      {
+         if( t <= epsilon )
+         {
+            result = 1.0 - epsilon;
+         }
+         else
+         {
+            result = 1.0 - t;
+         }
+      }
+      else
+      {
+         result = t;
+      }
+
+      return result;
+
+   }  // End of function 'incompleteBeta()'
+
+
+
 }  // End of namespace gpstk
