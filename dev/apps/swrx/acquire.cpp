@@ -322,10 +322,12 @@ void Acquire::process()
         << " Height: " << max << endl;
 
    // Output correlation curve for graphing purposes. 
+   /*
    for(int k = 0; k < numSamples; k++)
    {
       cout << float((k/16.368)*1.023) << " " << real(l[bin][k]) << endl;
    }
+   */
 
    fftw_destroy_plan(p2);fftw_destroy_plan(p);
    fftw_free(IN); fftw_free(OUT); 

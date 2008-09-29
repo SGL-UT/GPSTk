@@ -5,7 +5,6 @@ TO DO:
 
 parameterize input (want to input each subframe, or try to correlate with tracker output files?)
 
-pull pseudoranges from PRSolve so we have more than just a final position
 */
 
 
@@ -147,7 +146,9 @@ void P::process()
 
    vector<int> dataPoints(32);
    float refDataPoint;
-
+// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
+// Following tables hold the data sets that we have for now.
 /*
    //subframe 2 data points from gnssGood.bin (coords within 60 meters)
    dataPoints[3]=14155198; 
@@ -168,7 +169,7 @@ void P::process()
    dataPoints[26]=112295602; //***
    dataPoints[27]=112216567;
 */
-
+/*
   // subframe four data points (coords all within 35 meters)
    dataPoints[3]=210566750; 
    dataPoints[7]=210408312;
@@ -178,8 +179,126 @@ void P::process()
    dataPoints[26]=210501810;
    dataPoints[27]=210422535;
    // sample usage (for gnssGood.bin and a rinex nav file from the date shown)
-   // ./position -e rin_207.08n -t "07/25/2008 01:05:18"
-  
+   // ./position -e rin207.08n -z 435924 -w 1489
+*/
+//---------------------------------------------------------------------------
+/*
+// subframe three data points from gnss.bin (simulation file): FAKE EPH?
+   dataPoints[4]=41122671; 
+   dataPoints[9]=40962424;
+   dataPoints[14]=41008214;
+   dataPoints[16]=40999190;
+   dataPoints[17]=41024757;
+   dataPoints[20]=41020645;
+   dataPoints[21]=41172620;
+   dataPoints[28]=41074850;
+*/
+//---------------------------------------------------------------------------
+/*
+// subframe three data points from gnssDavisHouseCar2.bin: (z=360198) CRUMMY
+   dataPoints[1]=29487862; 
+   dataPoints[9]=29415434;
+   dataPoints[14]=29393435;
+   dataPoints[23]=29360589;
+   dataPoints[25]=29365069;
+   dataPoints[28]=29328671;
+   dataPoints[29]=29471399;
+*/
+// subframe four data points from gnssDavisHouseCar2.bin: (z=360204) GOOD
+/*
+// position -e rin269.08n -z 360204 -w 1498
+   dataPoints[1]=127694006; 
+   dataPoints[9]=127621626;
+   dataPoints[14]=127599323;
+   dataPoints[23]=127566573;
+   dataPoints[25]=127570973;
+   dataPoints[28]=127530991;
+   dataPoints[29]=127677575;
+*/
+/*
+// subframe five dp's         PRETTY GOOD
+   dataPoints[1]=225900166; 
+   dataPoints[9]=225827834;
+   dataPoints[14]=225805195;
+   dataPoints[23]=225772557;
+   dataPoints[25]=225776877;
+   dataPoints[28]=225736943;
+   dataPoints[29]=225883751;
+*/
+/*
+// subframe one dp's   360216   CRUMMY
+   dataPoints[1]=4106310; 
+   dataPoints[9]=4034026;
+   dataPoints[14]=4011083;
+   dataPoints[23]=3982189;
+   dataPoints[25]=3982765;
+   dataPoints[28]=3942911;
+   dataPoints[29]=4089927;
+*/
+/*
+// subframe three dp's (z=360228)   CRUMMY
+   dataPoints[1]=29487862; 
+   dataPoints[9]=29415434;
+   dataPoints[14]=29393435;
+   dataPoints[23]=29360589;
+   dataPoints[25]=29365069;
+   dataPoints[28]=29328671;
+   dataPoints[29]=29471399;
+*/
+//---------------------------------------------------------------------------
+// Data Points from ARL-SW: position -e rin273Sep29.08n -z ***** -w 1499
+
+// SF5 - zcount says 636966, but all or part of it is inverted...
+   dataPoints[2]=63032180; 
+   dataPoints[6]=62890253;
+   dataPoints[7]=62986055;
+   dataPoints[10]=63047187;
+   dataPoints[12]=62918683;
+   dataPoints[18]=62930554;
+   dataPoints[22]=63017141;
+   dataPoints[24]=62909420;
+   dataPoints[26]=62929226;
+
+/*
+// SF1
+   dataPoints[2]=161238404; 
+   dataPoints[6]=161096221;
+   dataPoints[7]=161191911;
+   dataPoints[10]=161253027;
+   dataPoints[12]=161124843;
+   dataPoints[18]=161136666;
+   dataPoints[22]=161223381;
+   dataPoints[24]=161115452;
+   dataPoints[26]=161135146;
+*/
+/*
+// SF2
+   dataPoints[2]=259448260; 
+   dataPoints[6]=259302189;
+   dataPoints[7]=259401399;
+   dataPoints[10]=259458867;
+   dataPoints[12]=259331019;
+   dataPoints[18]=259342778;
+   dataPoints[22]=259433269;
+   dataPoints[24]=259321468;
+   dataPoints[26]=259341066;
+*/
+/*
+// SF3
+   dataPoints[2]=357650836; 
+   dataPoints[6]=357508157;
+   dataPoints[7]=357603607;
+   dataPoints[10]=357664723;
+   dataPoints[12]=357537179;
+   dataPoints[18]=357548874;
+   dataPoints[22]=357635877;
+   dataPoints[24]=357527500;
+   dataPoints[26]=357546986;
+*/
+
+// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
+
    long int total = 0;
    int numberSVs = 0;
    for(int i=0; i<32;i++)
@@ -286,9 +405,15 @@ void P::process()
 // position
    PRSolution prSolver3; 
    vector<double> S;
-   S.push_back(-756736.1300);
+
+   S.push_back(-756736.1300); // my house
    S.push_back(-5465547.0217);
    S.push_back(3189100.6012);
+/*
+   S.push_back(-2485034.2628); // pos from gnss.bin
+   S.push_back(4673669.7053);
+   S.push_back(3546446.5638);
+*/
    S.push_back(0.0);
    prSolver3.Solution = S;
    prSolver3.ResidualCriterion = false;
@@ -296,6 +421,7 @@ void P::process()
    prSolver3.RAIMCompute(time, svVec, obsVec, bce, &gg2);
    cout << "RMSResidual from known position: " << prSolver3.RMSResidual
         << " meters" << endl << endl;
+// Do I even want this?  Want to just compute distance myself?
 }
 
 //-----------------------------------------------------------------------------

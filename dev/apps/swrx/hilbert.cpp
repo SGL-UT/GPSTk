@@ -21,23 +21,64 @@ g++ -o hilbert hilbert.o /.../gpstk/dev/apps/swrx/simlib.a /.../gpstk/dev/src/li
 #include <complex>
 #include <fftw3.h>
 #include <vector>
+#include <CommandOption.hpp>
+#include <CommandOptionParser.hpp>
 
 #include "BasicFramework.hpp"
 #include "IQStream.hpp"
 
+
 using namespace gpstk;
 using namespace std;
+using namespace gpstk::StringUtils;
 
 int main(int argc, char *argv[])
 {
-   int N = 16; // Number of samples per transform.
-   int count = 0;
-   long int total = 16368*59000; // Total number of samples.
-      // This is about the number of samples from a 60 sec SiGe file..
-   
-   FILE * in;
-   char R[N];
+   CommandOptionWithAnyArg
+      inputOpt('i', "input", "Location of input data file.",true);
+   CommandOptionNoArg
+      helpOption('h', "help", "Print usage. Repeat for more info. ");
 
+   CommandOptionWithAnyArg
+      timeOpt('t', "number-samples", "Number of C/A periods to input.");
+   
+   string appDesc("Performs hilbert transform on GPS1A data.");
+   CommandOptionParser cop(appDesc);
+   cop.parseOptions(argc, argv);
+
+   if (helpOption.getCount() || cop.hasErrors())
+   {
+      if (cop.hasErrors() && helpOption.getCount()==0)
+      {
+         cop.dumpErrors(cout);
+         cout << "Use -h for help." << endl;
+      }
+      else
+      {
+         cop.displayUsage(cout);
+      }
+      exit(0);
+   } 
+
+   char f[] = "";
+   sprintf(f,inputOpt.getValue()[0].c_str());
+   FILE * in = fopen(f,"rb");
+   if(in==NULL)
+   {  cerr << "Could not open input file, exiting..." << endl;
+      return 0;}
+
+   int numPeriods=59000;
+   if(timeOpt.getCount())
+   {numPeriods=asInt(timeOpt.getValue().front());}
+
+//--------------------------------------------------------------------------
+//-------------------------------------------------------------------------- 
+  
+   int N = 16; // Default number of samples per transform.
+   int count = 0;
+   long int total = 16368*numPeriods; // Total number of samples.
+      // This is about the number of samples from a 60 sec SiGe file..
+   char R[N];
 
    fftw_complex *REAL; // Real input.
    fftw_complex *IQ; // I and Q output.
@@ -51,17 +92,11 @@ int main(int argc, char *argv[])
    output->basic_ios<char>::rdbuf(std::cout.rdbuf());
    output->filename = "<stdout>";
 
-
    REAL = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N); 
    IQ = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N); 
    X = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N); 
    p = fftw_plan_dft_1d(N, REAL, X, FFTW_FORWARD, FFTW_MEASURE);
    pb = fftw_plan_dft_1d(N, X, IQ, FFTW_BACKWARD, FFTW_MEASURE);
-
-   in = fopen("gnssGood.bin","rb");
-   if(in==NULL)
-   {  cerr << "Could not open input file, exiting..." << endl;
-      return 0;}
 
 /*
    // Sloppy way to get samples from middle of file.
@@ -74,14 +109,21 @@ int main(int argc, char *argv[])
 
    while(count < total)
    {
-      
+      if(feof(in))
+      {
+         fftw_destroy_plan(p);fftw_destroy_plan(pb);
+         fftw_free(REAL); fftw_free(IQ); fftw_free(X);
+         return 0;
+      }
       // Read data into input array.
       for(int i=0 ; i < N ; i++) 
       {
          R[i] = fgetc(in);
+         
          REAL[i][0] = R[i];
          REAL[i][1] = 0.0;
       }
+ 
 
       // Execute FFT.
       fftw_execute(p);  
@@ -142,7 +184,6 @@ int main(int argc, char *argv[])
       *output << o[N];
    }
 */
-
    fftw_destroy_plan(p);fftw_destroy_plan(pb);
    fftw_free(REAL); fftw_free(IQ); fftw_free(X);
 }
