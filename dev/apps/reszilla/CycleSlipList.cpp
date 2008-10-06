@@ -139,7 +139,8 @@ void CycleSlipList::dump(std::ostream& s) const
    if (size() == 0)
       return;
 
-   s << endl
+   s << "#  sv1 is reference SV and sv2 is slipped SV" << endl
+     << endl
      << "#   time                sv1 sv2 obs type            cyles       el1    el2     pre   post    gap "
      << endl;
 
