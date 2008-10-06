@@ -83,12 +83,12 @@ namespace gpstk
          case FFIdentifier::tMDP:      read_mdp_data(fn);       break;
          default:
             if (verboseLevel) 
-               cout << "# Could not determine the format of " << fn << endl;
+               cout << "Could not determine the format of " << fn << endl;
       }
 
       filesRead.push_back(fn);
       if (verboseLevel>1)
-         cout << "# Ephemeris initial time: " << eph->getInitialTime() 
+         cout << "Ephemeris initial time: " << eph->getInitialTime() 
               << ", final time: " << eph->getFinalTime() << endl;
    } // end of read()
 
@@ -111,7 +111,7 @@ namespace gpstk
          bce = dynamic_cast<GPSEphemerisStore*>(eph);
       }
       if (verboseLevel>2)
-         cout << "# Reading " << fn << " as RINEX nav."<< endl;
+         cout << "Reading " << fn << " as RINEX nav."<< endl;
          
       RinexNavStream rns(fn.c_str(), ios::in);
       rns.exceptions(ifstream::failbit);
@@ -120,7 +120,7 @@ namespace gpstk
          bce->addEphemeris(rnd);
 
       if (verboseLevel>1)
-         cout << "# Read " << fn << " as RINEX nav. " << endl;
+         cout << "Read " << fn << " as RINEX nav. " << endl;
    } // end of read_rinex_nav_data()
 
 
@@ -140,7 +140,7 @@ namespace gpstk
          bce = dynamic_cast<GPSEphemerisStore*>(eph);
       }
       if (verboseLevel>2)
-         cout << "# Reading " << fn << " as FIC nav."<< endl;
+         cout << "Reading " << fn << " as FIC nav."<< endl;
       
       FICStream fs(fn.c_str(), ios::in);
       FICHeader header;
@@ -152,7 +152,7 @@ namespace gpstk
             bce->addEphemeris(data);
 
       if (verboseLevel>1)
-         cout << "# Read " << fn << " as FIC nav."<< endl;
+         cout << "Read " << fn << " as FIC nav."<< endl;
    } // end of read_fic_data()
 
 
@@ -172,7 +172,7 @@ namespace gpstk
          bce = dynamic_cast<GPSEphemerisStore*>(eph);
       }
       if (verboseLevel>2)
-         cout << "# Reading " << fn << " as MDP nav."<< endl;
+         cout << "Reading " << fn << " as MDP nav."<< endl;
 
       MDPStream mdps(fn.c_str(), ios::in);
       MDPHeader header;
@@ -192,7 +192,7 @@ namespace gpstk
             if (!nav)
             {
                if (mdps && verboseLevel>2)
-                  cout << "# Error decoding nav " << endl;
+                  cout << "Error decoding nav " << endl;
             }
             else
             {
@@ -204,7 +204,7 @@ namespace gpstk
                if (!parityGood)
                {
                   if (verboseLevel>3 && firstEph)
-                     cout << "# Raw subframe" << endl;
+                     cout << "Raw subframe" << endl;
                   nav.cooked = false;
                   nav.cookSubframe();
                   parityGood = nav.checkParity();
@@ -212,7 +212,7 @@ namespace gpstk
                else
                {
                   if (verboseLevel>3 && firstEph)
-                     cout << "# Cooked subframe" << endl;
+                     cout << "Cooked subframe" << endl;
                }
 
                firstEph = false;
@@ -220,7 +220,7 @@ namespace gpstk
                if (!parityGood)
                {
                   if (verboseLevel>2)
-                     cout << "# Parity error" << endl;
+                     cout << "Parity error" << endl;
                   return;
                }
 
@@ -233,7 +233,7 @@ namespace gpstk
                if (sow > DayTime::FULLWEEK)
                {
                   if (verboseLevel>2)
-                     cout << "# Bad week" << endl;
+                     cout << "Bad week" << endl;
                   return;
                }
 
@@ -259,7 +259,7 @@ namespace gpstk
          }
 
       if (verboseLevel>1)
-         cout << "# Read " << fn << " as MDP nav."<< endl;
+         cout << "Read " << fn << " as MDP nav."<< endl;
    } // end of read_mdp_data()
 
 
@@ -279,7 +279,7 @@ namespace gpstk
          pe = dynamic_cast<SP3EphemerisStore*>(eph);
       }
       if (verboseLevel>2)
-         cout << "# Reading " << fn << " as SP3 ephemeris."<< endl;
+         cout << "Reading " << fn << " as SP3 ephemeris."<< endl;
 
       SP3Stream fs(fn.c_str(),ios::in);
       fs.exceptions(ifstream::failbit);
@@ -294,7 +294,7 @@ namespace gpstk
          pe->addEphemeris(data);
 
       if (verboseLevel>1)
-         cout << "# Read " << fn << " as SP3 ephemeris."<< endl;
+         cout << "Read " << fn << " as SP3 ephemeris."<< endl;
    } // end of read_sp3_data()
 
 
@@ -314,7 +314,7 @@ namespace gpstk
          alm = dynamic_cast<YumaAlmanacStore*>(eph);
       }
       if (verboseLevel>2)
-         cout << "# Reading " << fn << " as Yuma almanc."<< endl;
+         cout << "Reading " << fn << " as Yuma almanc."<< endl;
 
       YumaStream fs(fn.c_str(),ios::in);
       fs.exceptions(ifstream::failbit);
@@ -331,7 +331,7 @@ namespace gpstk
       }
 
       if (verboseLevel>1)
-         cout << "# Read " << fn << " as Yuma almanac."<< endl;
+         cout << "Read " << fn << " as Yuma almanac."<< endl;
    } // end of read_yuma_data()
 
 
@@ -351,7 +351,7 @@ namespace gpstk
          alm = dynamic_cast<SEMAlmanacStore*>(eph);
       }
       if (verboseLevel>2)
-         cout << "# Reading " << fn << " as SEM almanc."<< endl;
+         cout << "Reading " << fn << " as SEM almanc."<< endl;
 
       SEMStream fs(fn.c_str(),ios::in);
       fs.exceptions(ifstream::failbit);
@@ -368,7 +368,7 @@ namespace gpstk
       }
 
       if (verboseLevel>1)
-         cout << "# Read " << fn << " as Yuma almanac."<< endl;
+         cout << "Read " << fn << " as Yuma almanac."<< endl;
    } // end of read_sem_data()
 
 }

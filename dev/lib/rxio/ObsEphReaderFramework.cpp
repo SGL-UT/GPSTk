@@ -75,13 +75,14 @@ namespace gpstk
 
       CommandOptionWithAnyArg mscFileOption(
          'c', "msc", "Station coordinate file.");
-      mscFileOption.setMaxCount(1);
-         
+      mscFileOption.setMaxCount(1);         
 
       CommandOptionWithAnyArg  msidOption(
          'm', "msid", "Station to process data for. Used to select "
          "a station position from the msc file.");
       msidOption.setMaxCount(1);
+
+      CommandOptionNoArg searchNearOption('\0', "search-near", "Specify search near option when determining SV position with a broadcast ephemers. Usefull when ephemers data starts soon *after* the start of the observation data.");
 
       CommandOptionParser cop(appDesc);
 
@@ -126,9 +127,9 @@ namespace gpstk
       ephFiles = ephFileOption.getValue();
 
       if (verboseLevel)
-         output << "# Reading Observation data from: " << obsFiles << endl
-                << "# Reading Ephemeris data from: " << ephFiles << endl
-                << "# Writing output to " << outputFn << endl;
+         output << "Reading Observation data from: " << obsFiles << endl
+                << "Reading Ephemeris data from: " << ephFiles << endl
+                << "Writing output to " << outputFn << endl;
 
 
       // Read in all the ephemeris data
@@ -137,19 +138,20 @@ namespace gpstk
          ephReader.read(ephFiles[i]);
       gpstk::XvtStore<SatID>& eph = *ephReader.eph;
 
-      bool useNear = false;
-      if (useNear && typeid(eph) == typeid(GPSEphemerisStore))
+      bool searchNear = searchNearOption.getCount() > 0;
+      if (searchNear && typeid(eph) == typeid(GPSEphemerisStore))
       {
          GPSEphemerisStore& bce = dynamic_cast<GPSEphemerisStore&>(eph);
          bce.SearchNear();
+         if (verboseLevel)
+            output << "Using SearchNear() for ephemers" << endl;
       }
-
 
       if (msidOption.getCount())
       {
          msid = msidOption.getValue()[0];
          if (verboseLevel)
-            output << "# Monitor station ID:" << msid << endl;
+            output << "Monitor station ID:" << msid << endl;
       }
 
       // Get the receiver position, trying the following sources, in order:
@@ -164,7 +166,7 @@ namespace gpstk
          change(aps, ",", " ");
          if (numWords(aps) != 3)
          {
-            output << "# Please specify three coordinates in the antenna postion." << endl;
+            output << "Please specify three coordinates in the antenna postion." << endl;
             return false;
          }
          else
@@ -207,13 +209,13 @@ namespace gpstk
       }
 
       if (verboseLevel)
-         output << "# Receier position : " << rxPos
+         output << "Receier position : " << rxPos
                 << " (from " << rxPosSource << ")" << endl;
 
       if (rxPos.radius() < 1)
-         output << "# Warning! The antenna appears to be within one meter of the" << endl
-                << "# center of the geoid.  If this location is correct, the " << endl
-                << "# antenna is probably no longer functional." << endl;
+         output << "Warning! The antenna appears to be within one meter of the" << endl
+                << "center of the geoid.  If this location is correct, the " << endl
+                << "antenna is probably no longer functional." << endl;
 
       return true;
    }

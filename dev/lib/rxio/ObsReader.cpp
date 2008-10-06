@@ -61,7 +61,7 @@ namespace gpstk
       if (inputType == FFIdentifier::tRinexObs)
       {
          if (debugLevel)
-            cout << "# Reading " << fn << " as RINEX obs data." << endl;
+            cout << "Reading " << fn << " as RINEX obs data." << endl;
          ros.open(fn.c_str(), ios::in);
          ros.exceptions(fstream::failbit);
          ros >> roh;
@@ -69,28 +69,28 @@ namespace gpstk
       else if (inputType == FFIdentifier::tMDP)
       {
          if (debugLevel)
-            cout << "# Reading " << fn << " as MDP data." << endl;
+            cout << "Reading " << fn << " as MDP data." << endl;
          mdps.open(fn.c_str(), ios::in);
          mdps.exceptions(fstream::failbit);
       }
       else if (inputType == FFIdentifier::tSMODF)
       {
          if (debugLevel)
-            cout << "# Reading " << fn << " as SMODF data." << endl;
+            cout << "Reading " << fn << " as SMODF data." << endl;
          smos.open(fn.c_str(), ios::in);
          smos.exceptions(fstream::failbit);
       }
       else if (inputType == FFIdentifier::tNovatelOem)
       {
          if (debugLevel)
-            cout << "# Reading " << fn << " as Novatel OEM data." << endl;
+            cout << "Reading " << fn << " as Novatel OEM data." << endl;
          novas.open(fn.c_str(), ios::in);
          novas.exceptions(fstream::failbit);
       }
       else if (inputType == FFIdentifier::tAshtechSerial)
       {
          if (debugLevel)
-            cout << "# Reading " << fn << " as Ashtech serial data." << endl;
+            cout << "Reading " << fn << " as Ashtech serial data." << endl;
          ashs.open(fn.c_str(), ios::in);
          ashs.exceptions(fstream::failbit);
       }
