@@ -188,7 +188,7 @@ namespace gpstk
       for (int i=2; i<=10; i++)
          if (getd30(subframe[i-1]))
          {
-            subframe[i] = (~subframe[i] & 0x3fffffc0) | (subframe[i] & 0x3f);
+            subframe[i] = subframe[i] ^ 0x3fffffc0;
             neededCooking = true;
          }
 
