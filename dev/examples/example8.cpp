@@ -106,8 +106,15 @@ int main(void)
    RinexObsStream rin("onsa2240.05o");
 
 
-      // load all the SP3 ephemerides files
+      // Declare a "SP3EphemerisStore" object to handle precise ephemeris
    SP3EphemerisStore SP3EphList;
+
+      // Set flags to reject satellites with bad or absent positional
+      // values or clocks
+   SP3EphList.dumpBadPositions(true);
+   SP3EphList.dumpBadClocks(true);
+
+      // Load all the SP3 ephemerides files
    SP3EphList.loadFile("igs13354.sp3");
    SP3EphList.loadFile("igs13355.sp3");
    SP3EphList.loadFile("igs13356.sp3");

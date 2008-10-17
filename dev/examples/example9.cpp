@@ -397,9 +397,16 @@ void example9::process()
       }  // End of 'try-catch' block
 
 
-         // Load all the SP3 ephemerides files from variable list
+         // Declare a "SP3EphemerisStore" object to handle precise ephemeris
       SP3EphemerisStore SP3EphList;
 
+         // Set flags to reject satellites with bad or absent positional
+         // values or clocks
+      SP3EphList.dumpBadPositions(true);
+      SP3EphList.dumpBadClocks(true);
+
+
+         // Load all the SP3 ephemerides files from variable list
       string sp3File;
       while ( (sp3File = confReader.fetchListValue("SP3List",station) ) != "" )
       {

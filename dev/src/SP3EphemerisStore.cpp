@@ -1,6 +1,11 @@
 #pragma ident "$Id$"
 
 
+/**
+ * @file SP3EphemerisStore.cpp
+ * Read & store SP3 formated ephemeris data
+ */
+
 
 //============================================================================
 //
@@ -19,7 +24,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,26 +32,18 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
 
 
-
-
-
-
-/**
- * @file SP3EphemerisStore.cpp
- * Read & store SP3 formated ephemeris data
- */
 
 #include "SP3EphemerisStore.hpp"
 #include "MiscMath.hpp"
@@ -57,53 +54,90 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-   //-----------------------------------------------------------------------------
-   //-----------------------------------------------------------------------------
+
+      // Load the given SP3 file
    void SP3EphemerisStore::loadFile(const std::string& filename)
       throw(FileMissingException)
    {
+
       try
       {
+
          SP3Stream strm(filename.c_str());
          if (!strm)
          {
-            FileMissingException e("File " + filename + " could not be opened.");
+            FileMissingException e("File " +filename+ " could not be opened.");
             GPSTK_THROW(e);
          }
-      
+
          SP3Header header;
          strm >> header;
 
          addFile(filename, header);
 
-         /// If any file doesn't have the velocity data, clear the
-         /// the flag indicating that there is any velocity data
+            // If any file doesn't have the velocity data, clear the
+            // the flag indicating that there is any velocity data
          if (tolower(header.pvFlag) != 'v')
+         {
             haveVelocity = false;
+         }
 
          SP3Data rec;
-         while(strm >> rec) {
+         while(strm >> rec)
+         {
+
+            // If there are bad or absent positional values, and
+            // corresponding flag is set, then continue
+            if( ( (rec.x[0] == 0.0)    ||
+                  (rec.x[1] == 0.0)    ||
+                  (rec.x[2] == 0.0) )  &&
+                ( dumpBadPosFlag) )
+            {
+               continue;
+            }
+
+               // If there is a bad or absent clock value, and
+               // corresponding flag is set, then continue
+            if( (rec.clk == 999999.999999) &&
+                ( dumpBadClockFlag ) )
+            {
+               continue;
+            }
+
+               // Ephemeris and clock are valid, then add them
             rec.version = header.version;
             addEphemeris(rec);
-         }
+
+         }  // end of 'while(strm >> rec)'
+
       }
       catch (gpstk::Exception& e)
       {
          GPSTK_RETHROW(e);
       }
-   }  // end SP3EphemerisStore::load
+
+   }  // End of method 'SP3EphemerisStore::loadFile()'
 
 
-   //--------------------------------------------------------------------------
-   //--------------------------------------------------------------------------
-   void SP3EphemerisStore::dump(std::ostream& s, short detail)
+
+      /* Dump the store to cout.
+       * @param detail determines how much detail to include in the output
+       *   0 list of filenames with their start, stop times.
+       *   1 list of filenames with their start, stop times,
+       *     other header information and prns/accuracy.
+       *   2 above, plus dump all the PVT data (use judiciously).
+       */
+   void SP3EphemerisStore::dump( std::ostream& s,
+                                 short detail )
       const throw()
    {
+
       s << "Dump of SP3EphemerisStore:" << std::endl;
       std::vector<std::string> fileNames = getFileNames();
       std::vector<std::string>::const_iterator f=fileNames.begin();
       for (f=fileNames.begin(); f!=fileNames.end(); f++)
          s << *f << std::endl;
+
 /*
   Add this back in when/if we add header info to the file store.
       while(fmi != fm.end()) {
@@ -134,8 +168,11 @@ namespace gpstk
          fmi++;
       }
 */
+
       TabularEphemerisStore::dump(s, detail);
 
-   } // end of SP3EphemerisStore::dump
+   }  // End of method 'SP3EphemerisStore::dump()'
 
-}  // namespace gpstk
+
+
+}  // End of namespace gpstk
