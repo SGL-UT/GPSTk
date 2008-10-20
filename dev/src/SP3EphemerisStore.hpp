@@ -99,13 +99,13 @@ namespace gpstk
          /// Set if satellites with bad or absent positional values will be
          /// dumped. It is false by default when object is constructed.
       virtual SP3EphemerisStore& dumpBadPositions(const bool flag)
-      { dumpBadPosFlag = true; };
+      { dumpBadPosFlag = true; return (*this); };
 
 
          /// Set if satellites with bad or absent clock values will be
          /// dumped. It is false by default when object is constructed.
       virtual SP3EphemerisStore& dumpBadClocks(const bool flag)
-      { dumpBadClockFlag = true; };
+      { dumpBadClockFlag = true; return (*this); };
 
 
    private:
