@@ -63,6 +63,9 @@ MDPNavProcessor::~MDPNavProcessor()
        << "  percent bad: " << setprecision(3)
        << 100.0 * badNavSubframeCount/navSubframeCount << " %" << endl;
 
+   if (badNavSubframeCount==0)
+       return;
+
    out << "Parity Errors" << endl;
    out << "# elev";
    std::map<RangeCarrierPair, Histogram>::const_iterator peh_itr;
