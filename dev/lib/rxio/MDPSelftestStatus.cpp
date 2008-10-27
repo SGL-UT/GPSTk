@@ -77,6 +77,7 @@ namespace gpstk
       str += encodeVar( (uint16_t) firstPVTTime.GPSfullweek());
       str += encodeVar( (uint32_t) 100*firstPVTTime.GPSsecond());
       str += encodeVar( (uint16_t) extFreqStatus);
+      str += encodeVar( (uint16_t) saasmStatusWord);
       return str;
    } // MDPSelftestStatus::encode()
 
