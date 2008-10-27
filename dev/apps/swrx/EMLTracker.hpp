@@ -78,6 +78,8 @@ public:
 
    double pllAlpha, pllBeta, dllAlpha, dllBeta;
    bool navChange;
+   int periodCount;
+   int prn;
 
    enum DllMode {dmFar, dmClose, dmOnTop};
    enum PllMode {pmUnlocked, pmLocked};

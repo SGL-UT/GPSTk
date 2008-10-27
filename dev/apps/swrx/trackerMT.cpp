@@ -1,5 +1,11 @@
 #pragma ident "$Id$"
 
+/*
+g++ -c -o trackerMT.o -O -I. -I/.../gpstk/dev/apps/swrx -I/.../gpstk/dev/src trackerMT.cpp
+
+g++ -o trackerMT trackerMT.o /.../gpstk/dev/apps/swrx/simlib.a /.../gpstk/dev/src/libgpstk.a -lm -lstdc++ -lfftw3 -lm -lpthread
+*/
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -23,19 +29,20 @@
 //============================================================================
 
 /*
-  The first cut at an object-oriented receiver simulator. This is intended
-  to accept the output from gpsSim and produce neat stuff.
+  The first cut at a tracker for multiple PRNs. 
 */
 
 #include <math.h>
 #include <complex>
 #include <iostream>
 #include <list>
+#include <pthread.h>
 
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 #include "StringUtils.hpp"
 #include "icd_200_constants.hpp"
+
 
 #include "EMLTracker.hpp"
 #include "CCReplica.hpp"
@@ -53,6 +60,21 @@ using namespace std;
 #define exp10(x) (exp((x)*log(10.)))
 #endif
 
+#define errexit(code,str) fprintf(stderr,"%s: %s\n",(str),strerror(code)); exit(1);
+
+struct Par
+   {
+      int dp;
+      EMLTracker *tr;
+      complex<float> s;
+      int *count;
+      NavFramer *nf;
+   };
+
+void *Cfunction(void*); // function to be called with pthreads
+void *Function2(void*); // copy of pthread function for testing purposes
+
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 class RxSim : public BasicFramework
@@ -61,16 +83,19 @@ public:
    RxSim() throw();
 
    bool initialize(int argc, char *argv[]) throw();
+   void function(EMLTracker *tr, int dp, int *count, 
+                     complex<double> s, NavFramer *nf);
 
 protected:
    virtual void process();
 
 private:
    CCReplica* cc;
-   EMLTracker* tr;
+   vector<EMLTracker*> tr;
    int band;
    double gain;
    bool fakeL2;
+   int sat;
 
    double timeStep; // Time between samples
    double interFreq; // Intermediate frequency from receive
@@ -78,6 +103,7 @@ private:
    double timeLimit;
    IQStream *input;
    unsigned iadMax;
+   int numTrackers;
 };
 
 
@@ -157,73 +183,81 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
       cout << "Must specify a code/carrier to track. Bye." << endl;
       return false;
    }
-
-   string val=codeOpt.getValue()[0];
-   const char delim(':');
-   if (numWords(val, delim) != 5)
-   {
-      cout << "Error in code parameter:" << val << endl;
-      return false;
-   }
-
-   string code =   lowerCase(word(val, 0, delim));
-          band =       asInt(word(val, 1, delim));
-   int    prn =        asInt(word(val, 2, delim));
-   double offset =  asDouble(word(val, 3, delim)) * 1e-6;
-   double doppler = asDouble(word(val, 4, delim));
-
-   CodeGenerator* codeGenPtr;
-   double chipFreq;
-   switch (code[0])
-   {
-      case 'c':
-         codeGenPtr = new CACodeGenerator(prn);
-         chipFreq = CA_CHIP_FREQ;
-         break;
-      case 'p':
-         codeGenPtr = new PCodeGenerator(prn);
-         chipFreq = PY_CHIP_FREQ;
-         break;
-      default:
-         cout << "Unsupported code: " << code << endl;
-         return false;
-   }
-
    if (sampleRateOpt.getCount())
-      timeStep = 1/(asDouble(sampleRateOpt.getValue().front()) * 1e6 );
+         timeStep = 1/(asDouble(sampleRateOpt.getValue().front()) * 1e6 );
 
    if (interFreqOpt.getCount())
       interFreq = asDouble(interFreqOpt.getValue().front()) * 1e6;
 
-   // Note that this object is responsible for destroying
-   // the codeGenPtr object
-   cc = new CCReplica(timeStep, chipFreq, interFreq, codeGenPtr);
+   numTrackers = codeOpt.getCount();
+   for (int i=0; i < codeOpt.getCount(); i++)
+   {
+      string val=codeOpt.getValue()[i];
+      const char delim(':');
+      if (numWords(val, delim) != 5)
+      {
+         cout << "Error in code parameter:" << val << endl;
+         return false;
+      }
 
-   double chips = offset / cc->codeChipLen;
-   cc->moveCodePhase(chips);
+      string code =   lowerCase(word(val, 0, delim));
+             band =       asInt(word(val, 1, delim));
+      int    prn =        asInt(word(val, 2, delim));
+      double offset =  asDouble(word(val, 3, delim)) * 1e-6;
+      double doppler = asDouble(word(val, 4, delim));
 
-   cc->setCodeFreqOffsetHz(doppler);
-   cc->setCarrierFreqOffsetHz(doppler);
+      CodeGenerator* codeGenPtr;
+      double chipFreq;
 
-   double spacing = 0.5 * cc->codeChipLen;
-   if (spacing < timeStep)
-      spacing = timeStep;
+      switch (code[0])
+      {
+         case 'c':
+            codeGenPtr = new CACodeGenerator(prn);
+            chipFreq = CA_CHIP_FREQ;
+            break;
+         case 'p':
+            codeGenPtr = new PCodeGenerator(prn);
+            chipFreq = PY_CHIP_FREQ;
+            break;
+         default:
+            cout << "Unsupported code: " << code << endl;
+            return false;
+      }
 
-   tr = new EMLTracker(*cc, spacing);
+      // Note that this object is responsible for destroying
+      // the codeGenPtr object
+      cc = new CCReplica(timeStep, chipFreq, interFreq, codeGenPtr);
 
-   if (dllAlphaOpt.getCount())
-      tr->dllAlpha = asDouble(dllAlphaOpt.getValue()[0]);
+      double chips = offset / cc->codeChipLen;
+      cc->moveCodePhase(chips);
 
-   if (dllBetaOpt.getCount())
-      tr->dllBeta = asDouble(dllBetaOpt.getValue()[0]);
+      cc->setCodeFreqOffsetHz(doppler);
+      cc->setCarrierFreqOffsetHz(doppler);
 
-   if (pllAlphaOpt.getCount())
-      tr->pllAlpha = asDouble(pllAlphaOpt.getValue()[0]);
+      double spacing = 0.5 * cc->codeChipLen;
+      if (spacing < timeStep)
+         spacing = timeStep;
 
-   if (pllBetaOpt.getCount())
-      tr->pllBeta = asDouble(pllBetaOpt.getValue()[0]);
+      tr[i] = new EMLTracker(*cc, spacing);
 
-   tr->debugLevel = debugLevel;
+      if (dllAlphaOpt.getCount())
+         tr[i]->dllAlpha = asDouble(dllAlphaOpt.getValue()[0]);
+
+      if (dllBetaOpt.getCount())
+         tr[i]->dllBeta = asDouble(dllBetaOpt.getValue()[0]);
+
+      if (pllAlphaOpt.getCount())
+         tr[i]->pllAlpha = asDouble(pllAlphaOpt.getValue()[0]);
+
+      if (pllBetaOpt.getCount())
+         tr[i]->pllBeta = asDouble(pllBetaOpt.getValue()[0]);
+
+      tr[i]->debugLevel = debugLevel;
+         //tr[i]->dump(cout, 1);
+
+      tr[i]->prn = prn;
+   }
+   
 
    char quantization='f';   
    if (quantizationOpt.getCount())
@@ -264,7 +298,7 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
       cout << "# Taking input from " << input->filename
            << " (" << input->bands << " samples/epoch)" << endl
            << "# Rx gain level: " << gain << endl;
-      tr->dump(cout, 1);
+         //tr->dump(cout, 1);
    }
 
    return true;
@@ -274,59 +308,64 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
 //-----------------------------------------------------------------------------
 void RxSim::process()
 {
-   NavFramer nf;
+   pthread_t thread_id[numTrackers];
+   pthread_attr_t attr;
+   int rc;
+   void *status;
+
+   vector<Par> p(numTrackers);
+
+   vector<NavFramer> nf(numTrackers);
    long int dataPoint =0;
-   int count = 0;
-   nf.debugLevel = debugLevel;
-   nf.dump(cout);
+   vector<int> count(numTrackers); 
+   
+   pthread_attr_init(&attr);
+   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+   for(int i=0;i<numTrackers;i++)
+   {
+      nf[i].debugLevel = debugLevel;
+      nf[i].dump(cout);
+      count[i]=0;
+   }
 
    complex<float> s;
    int b=0;
+   // ADD ERROR CODE for pthreads
    while (*input >> s)
    {
-      if (b == band-1 || input->bands==1)
+      for(int i = 0; i < numTrackers; i++)
       {
-         s *= gain;
-         if (tr->process(s))
+         p[i].dp = dataPoint;
+         p[i].s = s;
+         p[i].count = &count[i];
+         p[i].tr = tr[i];
+         p[i].nf = &nf[i];
+         
+         Function2(&p[i]); // same function, just no pthread
+            /*rc = pthread_create( &thread_id[i], &attr, Cfunction, &p[i] ) ;
+         if (rc)
          {
-            if (verboseLevel)
-               tr->dump(cout);
-
-               // Test code to skip input to speed up tracking.
-               /* int count = 0;
-            while(count < 0*16367)
-            {
-               count++;
-               *input >> s;
-               }*/
-
-// Following two if statements are specific to tracker updating every 
-// 1 ms. 
-            if(tr->navChange)
-            {
-               nf.process(*tr, dataPoint, 
-                          (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
-               count = 0;
-            }
-            if(count == 20)
-            {
-               count = 0;
-               nf.process(*tr, dataPoint, 
-                          (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
-            }
-            count++;
-         }
+            printf("ERROR; return code from pthread_create() is %d\n", rc);
+            exit(-1);
+            }*/
       }
-      b++;
-      b %= input->bands;
-
+         /*
+      for(int i = 0; i < numTrackers; i++)
+      {
+         rc = pthread_join( thread_id[i], &status) ;
+         if (rc)
+         {
+            printf("ERROR; return code from pthread_join() is %d\n", rc);
+            exit(-1);
+         }
+         }*/
       if (cc->localTime > timeLimit)
          break;
-
       dataPoint++;
    }
+   pthread_attr_destroy(&attr);
 }
-
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -345,4 +384,84 @@ int main(int argc, char *argv[])
    { cerr << "Caught std::exception " << exc.what() << endl; }
    catch (...)
    { cerr << "Caught unknown exception" << endl; }
+}
+
+void *Function2(void* p)
+{
+   Par *par = (Par*)p;
+      //cout << par->dp << " " <<  par->count << " " <<  par->s << endl;
+   EMLTracker *tr = par->tr;
+   int *count = par->count;
+   NavFramer *nf = par->nf;
+   int dp = par->dp;
+   complex<double> s = par->s;
+   
+   if (tr->process(s))
+   {
+         //tr->dump(cout);
+
+// Following two if statements are specific to tracker updating every 
+// 1 ms. We also still need to add the code offset to the dataPoint...
+      if(tr->navChange)
+      {
+         //cout << *count << "CHANGE" << endl;
+         nf->process(*tr, dp, 
+                     (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
+         *count = 0;
+      }
+      if(*count == 20)
+      {
+            //cout << *count << "TWENTY" << endl;
+         *count = 0;
+         nf->process(*tr, dp, 
+                     (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
+      }
+         
+      *count = *count + 1;
+      //cout << *count << "COUNT" << endl;
+      }
+      //cout << "calling" << pthread_self() << endl;
+   return NULL;
+}
+
+
+void *Cfunction(void* p)
+{
+      //cout << "c" << endl;
+      
+   Par *par = (Par*)p;
+      //cout << par->dp << " " <<  par->count << " " <<  par->s << endl;
+   EMLTracker *tr = par->tr;
+   int *count = par->count;
+   NavFramer *nf = par->nf;
+   int dp = par->dp;
+   complex<double> s = par->s;
+   
+   if (tr->process(s))
+   {   
+      tr->dump(cout);
+
+// Following two if statements are specific to tracker updating every 
+// 1 ms. We also still need to add the code offset to the dataPoint...
+      if(tr->navChange)
+      {
+         //cout << *count << "CHANGE" << endl;
+         nf->process(*tr, dp, 
+                     (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
+         *count = 0;
+      }
+      if(*count == 20)
+      {
+            //cout << *count << "TWENTY" << endl;
+         *count = 0;
+         nf->process(*tr, dp, 
+                     (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
+      }
+         
+      *count = *count + 1;
+      //cout << *count << "COUNT" << endl;
+      }
+      //cout << "calling" << pthread_self() << endl;
+      //return NULL;
+   pthread_exit(NULL);
 }

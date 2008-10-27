@@ -56,6 +56,7 @@ public:
       size_t ni;
       gpstk::CodeIndex ci;
       int dataPoint;
+      int prn;
       float codePO;
       bool inverted;
       bool prevD30;

@@ -1,13 +1,5 @@
 #pragma ident "$Id$"
 
-/*
-TO DO:
-
-parameterize input (want to input each subframe, or try to correlate with tracker output files?)
-
-*/
-
-
 /* 
 Program takes information from our tracker (subframe information like 
 zcount, starting data point of the sf, sf #, prn) and an ephemeris file.  
@@ -246,8 +238,10 @@ void P::process()
    dataPoints[29]=29471399;
 */
 //---------------------------------------------------------------------------
-// Data Points from ARL-SW: position -e rin273Sep29.08n -z ***** -w 1499
-
+// Data Points from ARL-SW: 
+// position -e rin273Sep29.08n -z 149460 -w 1499
+// position -e s011273a.08n -z 149478 -w 1499
+/*
 // SF5 - zcount says 636966, but all or part of it is inverted...
    dataPoints[2]=63032180; 
    dataPoints[6]=62890253;
@@ -258,7 +252,7 @@ void P::process()
    dataPoints[22]=63017141;
    dataPoints[24]=62909420;
    dataPoints[26]=62929226;
-
+*/
 /*
 // SF1
    dataPoints[2]=161238404; 
@@ -283,7 +277,7 @@ void P::process()
    dataPoints[24]=259321468;
    dataPoints[26]=259341066;
 */
-/*
+
 // SF3
    dataPoints[2]=357650836; 
    dataPoints[6]=357508157;
@@ -294,8 +288,61 @@ void P::process()
    dataPoints[22]=357635877;
    dataPoints[24]=357527500;
    dataPoints[26]=357546986;
-*/
 
+//---------------------------------------------------------------------------
+// Data Points from ARL-SW - 6oct08: 
+// position -e u112280a.08n -z 153168 -w 1500
+// GETTING SEG FAULT ON ALL OF THESE NOT SURE WHY
+/*
+// SF2
+   dataPoints[6]=36002136; 
+   dataPoints[7]=35965978;
+   dataPoints[10]=36030694;
+   dataPoints[16]=36084115;
+   dataPoints[24]=36072115;
+   dataPoints[26]=35983593;
+   dataPoints[27]=36062260;
+*/
+/*
+// SF3
+   dataPoints[6]=134208248; 
+   dataPoints[7]=134175562;
+   dataPoints[10]=134236678;
+   dataPoints[16]=134289971;
+   dataPoints[24]=134278275;
+   dataPoints[26]=134189625;
+   dataPoints[27]=134268212;
+*/
+/*
+// SF4
+   dataPoints[6]=232418008; 
+   dataPoints[7]=232377866;
+   dataPoints[10]=232442646;
+   dataPoints[16]=232495811;
+   dataPoints[24]=232484451;
+   dataPoints[26]=232395673;
+   dataPoints[27]=232474164;
+*/
+/*
+// SF5
+   dataPoints[6]=330620488; 
+   dataPoints[7]=330583818;
+   dataPoints[10]=330648614;
+   dataPoints[16]=330701667;
+   dataPoints[24]=330690611;
+   dataPoints[26]=330601721;
+   dataPoints[27]=330680116;
+*/
+/*
+// SF1
+   dataPoints[6]=428826600; 
+   dataPoints[7]=428789770;
+   dataPoints[10]=428854598;
+   dataPoints[16]=428907523;
+   dataPoints[24]=428896771;
+   //dataPoints[26]=;
+   dataPoints[27]=428886068;
+*/
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 
@@ -385,10 +432,10 @@ void P::process()
       obsVec[i] += ionoVec[i]; // make iono correction to ranges.
    }
    
-// Recalculate position using time corrected by clock error.
-   time += (0.073 + sol[3] / gpstk::C_GPS_M);
+// Recalculate position using time corrected by clock error + ionosphere.
+   time -= (sol[3] / gpstk::C_GPS_M);
    GGTropModel gg2;
-   gg2.setWeather(30.,1000., 50.); /*(Temp(C),Pressure(mbar),Humidity(%))*/    
+   gg2.setWeather(30.,1000., 20.); /*(Temp(C),Pressure(mbar),Humidity(%))*/    
    PRSolution prSolver2;
    prSolver2.RMSLimit = 400;
    prSolver2.RAIMCompute(time, svVec, obsVec, bce, &gg2);
@@ -405,15 +452,16 @@ void P::process()
 // position
    PRSolution prSolver3; 
    vector<double> S;
-
+/*
    S.push_back(-756736.1300); // my house
    S.push_back(-5465547.0217);
    S.push_back(3189100.6012);
-/*
-   S.push_back(-2485034.2628); // pos from gnss.bin
-   S.push_back(4673669.7053);
-   S.push_back(3546446.5638);
 */
+
+   S.push_back(-740314.1444); // ARLSW antenna
+   S.push_back(-5457066.8902);
+   S.push_back(3207241.5759);
+
    S.push_back(0.0);
    prSolver3.Solution = S;
    prSolver3.ResidualCriterion = false;
@@ -421,7 +469,6 @@ void P::process()
    prSolver3.RAIMCompute(time, svVec, obsVec, bce, &gg2);
    cout << "RMSResidual from known position: " << prSolver3.RMSResidual
         << " meters" << endl << endl;
-// Do I even want this?  Want to just compute distance myself?
 }
 
 //-----------------------------------------------------------------------------

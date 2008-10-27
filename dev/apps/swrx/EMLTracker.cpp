@@ -38,7 +38,7 @@ EMLTracker::EMLTracker(CCReplica& localReplica, double codeSpacing) :
    dllError(0), dllAlpha(/*6*/3), dllBeta(/*0.01*/0.005),
    iadCount(0), nav(false), baseGain(1.0/(0.1767*1.404)),
    inSumSq(0), lrSumSq(0),iadThreshold(0.02),
-   dllMode(dmFar), pllMode(pmUnlocked), navChange(true), prevNav(true)
+   dllMode(dmFar), pllMode(pmUnlocked), navChange(true), prevNav(true),periodCount(10),prn(0)
 {
    early.setDelay(2*eplSpacing);
    prompt.setDelay(eplSpacing);
@@ -62,8 +62,13 @@ EMLTracker::EMLTracker(CCReplica& localReplica, double codeSpacing) :
 
 bool EMLTracker::process(complex<double> in)
 {
-   integrate(in);
-   
+      //if(periodCount%10 == 0)
+      //{
+      integrate(in);
+         //}
+         //else if(periodCount%10 != 0)
+         //periodCount++;
+
    if (++iadCount == iadCountMax)
    {
       updateLoop();
@@ -74,8 +79,11 @@ bool EMLTracker::process(complex<double> in)
       inSumSq = 0;
       lrSumSq = 0;
       iadCount=0;
+         //periodCount++;
       return true;
    }
+   
+   
 
    return false;
 }
@@ -179,8 +187,8 @@ void EMLTracker::updateLoop()
    CodeIndex indx = localReplica.codeGenPtr->getIndex() % sync;
    unsigned chips = sync - indx;
    iadCountMax = static_cast<unsigned long>(chips / localReplica.chipsPerTick);
-   if (iadCountMax < 10000) // I believe these two lines are hardcoded for a 20
-      iadCountMax += 20000; // MHz sample rate, not sure exactly what they're
+   if (iadCountMax < 8184/*10000*/) // I believe these two lines are hardcoded for a 20
+      iadCountMax += 16368/*20000*/; // MHz sample rate, not sure exactly what they're
       // for, except to correct an error.  Doesn't ever affect me tracking
       // a 16 MHz signal. -- MD
 }
@@ -208,6 +216,7 @@ void EMLTracker::dump(std::ostream& s, int detail) const
    if (detail==0)
    {
       s << left << fixed 
+        << setw(8) << prn 
         << setprecision(1) << setw(8) << localReplica.localTime * 1e3
         << setprecision(2) << right
         << " " << setw(6) << getDllError() * 100

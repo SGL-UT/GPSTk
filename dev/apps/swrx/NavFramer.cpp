@@ -37,7 +37,9 @@ void NavFramer::Subframe::dump(std::ostream& s, int detail) const
       if (!complete)
          return;
       if (checkParity())
-         s << fixed << setprecision(2) << "SFID:" << EngNav::getSFID(words[1])
+         s << endl << endl << fixed
+           << "# PRN:" << prn 
+           << setprecision(2) << ", SFID:" << EngNav::getSFID(words[1])
            << ", Z:" << EngNav::getHOWTime(words[1])
            << ", Start Data Point:" << dataPoint << endl;
       else
@@ -49,7 +51,7 @@ void NavFramer::Subframe::dump(std::ostream& s, int detail) const
         << ", ni:" << ni
         << ", ci:" << ci
         << ", inv:" << inverted
-        << ", prevD30:" << prevD30 << endl << endl;
+        << ", prevD30:" << prevD30;
    }
    else
    {
@@ -68,7 +70,7 @@ std::ostream& operator<<(std::ostream& s, const NavFramer::Subframe& sf)
 
 bool NavFramer::Subframe::checkParity(bool knownUpright) const
 {
-   return EngNav::checkParity(words, false);
+   return EngNav::checkParity(words, /*true*/false);
 }
 
 
@@ -159,6 +161,7 @@ bool NavFramer::process(const EMLTracker& tr, long int dp, float cPO)
       sf.ni = (navIndex-8) % 1500;
       sf.ci = codeIndex[sf.ni];
       sf.dataPoint = startDP[sf.ni];
+      sf.prn = tr.prn;
       sf.codePO = codePO[sf.ni];
       sf.prevD30 = navBuffer[(navIndex-9)%1500];
       sf.t = tr.localReplica.localTime;
@@ -181,7 +184,7 @@ bool NavFramer::process(const EMLTracker& tr, long int dp, float cPO)
             how = sf->words[1];
                //if (debugLevel)
                cout << "# " << *sf << endl;
-            if (debugLevel>1)
+                  //if (debugLevel>1)
                sf->dump(cout,1);
 
 // Following block pulls nav data from subframes, just playing around for now.
