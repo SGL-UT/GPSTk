@@ -48,9 +48,9 @@
 #include <iostream>
 #include <string>
 #include <list>
-#include <map>
+#include <map> 
 
-#include "KepEphStore.hpp"
+#include "KeplerianEphemerisStore.hpp"
 #include "SatID.hpp"
 #include "EngEphemeris.hpp"
 #include "icd_200_constants.hpp"
@@ -63,7 +63,7 @@ namespace gpstk
    /// Store GPS broadcast ephemeris information (i.e. like the data in
    /// subframes 1-3) and computes satellite Xvt based upon this data and the
    /// algorithms defined for that data in the IS-GPS-200.
-   class GPSEphemerisStore : public KepEphStore<SatID>
+   class GPSEphemerisStore : public KeplerianEphemerisStore
    {
    public:
 

@@ -37,7 +37,7 @@
 //=============================================================================
 
 /**
- * @file XvtStore.hpp
+ * @file KeplerianEphemerisStore.hpp
  * Abstract base class for storing and/or computing position, velocity, 
  * and clock data.
  */
@@ -53,7 +53,7 @@
 #include "Exception.hpp"
 #include "SatID.hpp"
 #include "DayTime.hpp"
-#include "Xvt.hpp"
+#include "XvtStore.hpp"
 
 namespace gpstk
 {
@@ -63,59 +63,11 @@ namespace gpstk
    /// Abstract base class for storing and accessing an objects position, 
    /// velocity, and clock data. Also defines a simple interface to remove
    /// data that has been added.
-   class KeplerianEphemerisStore : public XvtStore
+   class KeplerianEphemerisStore : public XvtStore<SatID>
    {
    public:
       virtual ~KeplerianEphemerisStore()
       {}
-      
-      /// Returns the position, velocity, and clock offset of the indicated
-      /// object in ECEF coordinates (meters) at the indicated time.
-      /// @param[in] id the object's identifier
-      /// @param[in] t the time to look up
-      /// @return the Xvt of the object at the indicated time
-      /// @throw InvalidRequest If the request can not be completed for any
-      ///    reason, this is thrown. The text may have additional
-      ///    information as to why the request failed.
-      virtual Xvt getXvt(const IndexType id, const DayTime& t)
-         const throw(InvalidRequest)
-         = 0;
-      
-
-      /// A debugging function that outputs in human readable form,
-      /// all data stored in this object.
-      /// @param[in] s the stream to receive the output; defaults to cout
-      /// @param[in] detail the level of detail to provide
-      virtual void dump(std::ostream& s = std::cout, short detail = 0)
-         const throw()
-      {}
-
-
-      /// Edit the dataset, removing data outside the indicated time interval
-      /// @param[in] tmin defines the beginning of the time interval
-      /// @param[in] tmax defines the end of the time interval
-      virtual void edit(const DayTime& tmin, 
-                        const DayTime& tmax = DayTime(DayTime::END_OF_TIME))
-         throw()
-         = 0;
-
-
-      /// Determine the earliest time for which this object can successfully 
-      /// determine the Xvt for any object.
-      /// @return The initial time
-      /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual DayTime getInitialTime()
-         const throw(InvalidRequest)
-         = 0;
-
-      
-      /// Determine the latest time for which this object can successfully 
-      /// determine the Xvt for any object.
-      /// @return The final time
-      /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual DayTime getFinalTime()
-         const throw(InvalidRequest)
-         = 0;
 
       bool velocityIsPresent()
          const throw()
