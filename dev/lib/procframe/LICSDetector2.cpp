@@ -515,6 +515,8 @@ namespace gpstk
          // Store current value of LI at the end of deque
       LIData[sat].LIBuffer.push_back(li);
 
+         // Update current buffer size
+      s = LIData[sat].LIEpoch.size();
 
          // Check if we have exceeded maximum window size
       if(s > maxBufferSize)
