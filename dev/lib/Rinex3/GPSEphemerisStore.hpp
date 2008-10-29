@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: GPSEphemerisStore.hpp 1177 2008-04-04 00:11:41Z ocibu $"
 
 //============================================================================
 //
@@ -50,7 +50,7 @@
 #include <list>
 #include <map>
 
-#include "XvtStore.hpp"
+#include "KepEphStore.hpp"
 #include "SatID.hpp"
 #include "EngEphemeris.hpp"
 #include "icd_200_constants.hpp"
@@ -63,7 +63,7 @@ namespace gpstk
    /// Store GPS broadcast ephemeris information (i.e. like the data in
    /// subframes 1-3) and computes satellite Xvt based upon this data and the
    /// algorithms defined for that data in the IS-GPS-200.
-   class GPSEphemerisStore : public KepEphemerisStore<SatID>
+   class GPSEphemerisStore : public KepEphStore<SatID>
    {
    public:
 
@@ -123,16 +123,6 @@ namespace gpstk
       DayTime getFinalTime()
          const throw(InvalidRequest)
       {return finalTime;}
-
-
-      bool velocityIsPresent()
-         const throw()
-      {return true;}
-
-
-      bool clockIsPresent()
-         const throw()
-      {return true;}
 
 
       //---------------------------------------------------------------
