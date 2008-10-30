@@ -523,11 +523,28 @@ void example9::process()
 
 
          // Object to compute observable combinations
-      ComputeLinear linear1(comb.pcCombination);
+      ComputeLinear linear1;
+
+         // Read if we should use C1 instead of P1
+      if ( confReader.getValueAsBoolean( "useC1", station ) )
+      {
+            // WARNING: When using C1 instead of P1 to compute PC combination,
+            //          be aware that instrumental errors will NOT cancel,
+            //          introducing a bias that must be taken into account by
+            //          other means. This won't be taken into account in this
+            //          example.
+         linear1.addLinear(comb.pcCombWithC1);
+         linear1.addLinear(comb.pdeltaCombWithC1);
+         linear1.addLinear(comb.mwubbenaCombWithC1);
+      }
+      else
+      {
+         linear1.addLinear(comb.pcCombination);
+         linear1.addLinear(comb.pdeltaCombination);
+         linear1.addLinear(comb.mwubbenaCombination);
+      }
       linear1.addLinear(comb.lcCombination);
-      linear1.addLinear(comb.pdeltaCombination);
       linear1.addLinear(comb.ldeltaCombination);
-      linear1.addLinear(comb.mwubbenaCombination);
       linear1.addLinear(comb.liCombination);
       pList.push_back(linear1);       // Add to processing list
 

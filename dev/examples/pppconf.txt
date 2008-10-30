@@ -19,6 +19,14 @@ satDataFile      = PRN_GPS          , constellation data file
 precision        = 4                , number of decimal places in output file
 cutOffElevation, minimum allowed satellite elevation = 10.0, in degrees
 
+# Change the following parameter to TRUE if your RINEX observation files
+# don't include P1, and you want to use C1 instead. Please be aware that
+# if you use C1 instead of P1 to compute PC combination, instrumental errors
+# will NOT cancel, introducing a bias that must be taken into account by
+# other means. This bias won't be corrected in this application.
+
+useC1 = FALSE
+
 
 
 ###
