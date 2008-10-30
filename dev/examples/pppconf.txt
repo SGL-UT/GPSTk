@@ -19,6 +19,7 @@ satDataFile      = PRN_GPS          , constellation data file
 precision        = 4                , number of decimal places in output file
 cutOffElevation, minimum allowed satellite elevation = 10.0, in degrees
 
+
 # Change the following parameter to TRUE if your RINEX observation files
 # don't include P1, and you want to use C1 instead. Please be aware that
 # if you use C1 instead of P1 to compute PC combination, instrumental errors
@@ -26,6 +27,16 @@ cutOffElevation, minimum allowed satellite elevation = 10.0, in degrees
 # other means. This bias won't be corrected in this application.
 
 useC1 = FALSE
+
+
+# The following parameters control some sanity checks for SP3 data. The values
+# are typical for 15-minutes-per-sample SP3 files
+
+checkGaps = TRUE, check for data gaps bigger than 901 seconds
+SP3GapInterval = 901, seconds
+
+checkInterval = TRUE, don't allow interpolation intervals bigger than 8105 s
+maxSP3Interval = 8105, seconds
 
 
 

@@ -405,6 +405,22 @@ void example9::process()
       SP3EphList.dumpBadPositions(true);
       SP3EphList.dumpBadClocks(true);
 
+         // Read if we should check for data gaps.
+      if ( confReader.getValueAsBoolean( "checkGaps", station ) )
+      {
+         SP3EphList.enableDataGapCheck();
+        SP3EphList.setGapInterval(
+                     confReader.getValueAsDouble("SP3GapInterval",station) );
+      }
+
+         // Read if we should check for too wide interpolation intervals
+      if ( confReader.getValueAsBoolean( "checkInterval", station ) )
+      {
+         SP3EphList.enableIntervalCheck();
+         SP3EphList.setMaxInterval(
+                     confReader.getValueAsDouble("maxSP3Interval",station) );
+      }
+
 
          // Load all the SP3 ephemerides files from variable list
       string sp3File;

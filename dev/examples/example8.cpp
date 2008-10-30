@@ -114,6 +114,12 @@ int main(void)
    SP3EphList.dumpBadPositions(true);
    SP3EphList.dumpBadClocks(true);
 
+      // Set flags to check for data gaps and too wide interpolation intervals.
+      // Default values for "gapInterval" (901.0 s) and "maxInterval"
+      // (8105.0 s) will be used.
+   SP3EphList.enableDataGapCheck();
+   SP3EphList.enableIntervalCheck();
+
       // Load all the SP3 ephemerides files
    SP3EphList.loadFile("igs13354.sp3");
    SP3EphList.loadFile("igs13355.sp3");
