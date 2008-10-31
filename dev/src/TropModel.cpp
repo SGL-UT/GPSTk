@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -157,7 +157,7 @@ namespace gpstk
          GPSTK_THROW(InvalidParameter("Invalid weather data"));
       }
    }
-
+         
    // -----------------------------------------------------------------------
    // Simple Black model. This has been used as the 'default' for many years.
 
@@ -624,7 +624,7 @@ namespace gpstk
          //normalize
       zen *= (ho-height)/5;
       return zen;
-
+      
    }  // end GGHeightTropModel::wet_zenith_delay()
 
       // Compute and return the mapping function for dry component
@@ -761,14 +761,14 @@ namespace gpstk
 
       // Re-define the tropospheric model with explicit weather data.
       // Typically called just before correction().
-      // @param wx the weather to use for this correction
+      // @param wx the weather to use for this correction       
    void GGHeightTropModel::setWeather(const WxObservation& wx)
       throw(InvalidParameter)
    {
       try
       {
          TropModel::setWeather(wx);
-         validWeather = true;
+         validWeather = true;         
          valid = validWeather && validHeights && validRxHeight;
       }
       catch(InvalidParameter& e)
@@ -777,7 +777,7 @@ namespace gpstk
          GPSTK_RETHROW(e);
       }
    }
-
+   
 
       // Re-define the heights at which the weather parameters apply.
       // Typically called just before correction().
@@ -910,7 +910,7 @@ namespace gpstk
          if(entry < Maw)
             ret -= pamp[i]*std::cos(TWO_PI*(day-28.0)/365.25);
       }
-
+   
       return ret;
 
    }  // end double NB_Interpolate(lat,doy,entry)
@@ -1023,7 +1023,7 @@ namespace gpstk
    {
       if(!valid) {
          if(!validWeather)
-
+            
          if(!validRxLatitude)
             GPSTK_THROW(InvalidTropModel("Invalid NB trop model: Rx Latitude"));
          if(!validRxHeight)
@@ -1204,7 +1204,7 @@ namespace gpstk
       valid = validWeather && validRxHeight && validRxLatitude && validDOY;
 
    }  // end NBTropModel::setWeather()
-
+   
       // Re-define the tropospheric model with explicit weather data.
       // Typically called just before correction().
       // @param wx the weather to use for this correction       
@@ -1227,7 +1227,7 @@ namespace gpstk
          GPSTK_RETHROW(e);
       }
    }
-
+   
       // configure the model to estimate the weather from the internal model,
       // using lat and doy
    void NBTropModel::setWeather()
@@ -1287,7 +1287,10 @@ namespace gpstk
    }  // end NBTropModel::setDayOfYear(doy)
 
    // ------------------------------------------------------------------------
-   // Saastamoinen tropospheric model based on Saastamoinen, J., 'Atmospheric
+   // Saastamoinen tropospheric model.
+   // This model needs work; it is not the Saastamoinen model, but appears to be
+   // a combination of the Neill mapping functions and an unknown delay model.
+   // Based on Saastamoinen, J., 'Atmospheric
    // Correction for the Troposphere and Stratosphere in Radio Ranging of
    // Satellites,' Geophysical Monograph 15, American Geophysical Union, 1972,
    // and Ch. 9 of McCarthy, D. and Petit, G., IERS Conventions (2003), IERS
@@ -1489,10 +1492,10 @@ namespace gpstk
       }
 
       // correct pressure for height
-      double press_at_h =
-         press * std::pow((temp+273.16-4.5*height/1000.0)/(temp+273.16),34.1/4.5);
+      //double press_at_h =
+      //   press * std::pow((temp+273.16-4.5*height/1000.0)/(temp+273.16),34.1/4.5);
       // humid is zero for the dry component
-      double delay = 0.0022768 * press_at_h
+      double delay = 0.0022768 * press //_at_h
             / (1 - 0.00266 * ::cos(2*latitude*DEG_TO_RAD) - 0.00028 * height/1000.);
 
       return delay;
@@ -1652,10 +1655,10 @@ namespace gpstk
       valid = (validWeather && validRxHeight && validRxLatitude && validDOY);
 
    }  // end SaasTropModel::setWeather()
-
+   
       // Re-define the tropospheric model with explicit weather data.
       // Typically called just before correction().
-      // @param wx the weather to use for this correction
+      // @param wx the weather to use for this correction       
    void SaasTropModel::setWeather(const WxObservation& wx)
       throw(InvalidParameter)
    {
@@ -1669,7 +1672,7 @@ namespace gpstk
          GPSTK_RETHROW(e);
       }
    }
-
+   
       // Define the receiver height; this required before calling
       // correction() or any of the zenith_delay or mapping_function routines.
    void SaasTropModel::setReceiverHeight(const double& ht)
@@ -1740,7 +1743,7 @@ namespace gpstk
 
       // Constructor to create a GCAT trop model providing  the height of the
       // receiver above mean sea level (as defined by ellipsoid model).
-      //
+      // 
       // @param ht Height of the receiver above mean sea level, in meters.
    GCATTropModel::GCATTropModel(const double& ht)
    {
@@ -1759,15 +1762,9 @@ namespace gpstk
    double GCATTropModel::correction(double elevation) const
       throw(TropModel::InvalidTropModel)
    {
-      if(!valid)
-      {
-         throw InvalidTropModel("Invalid model");
-      }
+      if(!valid) throw InvalidTropModel("Invalid model");
 
-      if(elevation < 5.0)
-      {
-         throw InvalidTropModel("GCAT Trop model works down to 5 degrees.");
-      }
+      if(elevation < 5.0) return 0.0;
 
       return ( (dry_zenith_delay() + wet_zenith_delay()) *
                mapping_function(elevation));
@@ -1796,7 +1793,7 @@ namespace gpstk
       {
          valid = false;
       }
-
+        
       if(!valid) throw InvalidTropModel("Invalid model");
 
       double c;
@@ -1861,15 +1858,9 @@ namespace gpstk
    double GCATTropModel::mapping_function(double elevation) const
       throw(TropModel::InvalidTropModel)
    {
-      if(!valid)
-      {
-         throw InvalidTropModel("Invalid model");
-      }
+      if(!valid) throw InvalidTropModel("Invalid model");
 
-      if(elevation < 5.0)
-      {
-         throw InvalidTropModel("GCAT Trop model works down to 5 degrees.");
-      }
+      if(elevation < 5.0) return 0.0;
 
       double d = std::sin(elevation*DEG_TO_RAD);
       d = SQRT(0.002001+(d*d));
@@ -1905,7 +1896,7 @@ namespace gpstk
        * On the other hand, the outputs are the tropospheric correction (in
        * meters) and the sigma-squared of tropospheric delay residual error
        * (meters^2).
-       *
+       * 
        * A typical way to use this model follows:
        *
        * @code
@@ -1980,7 +1971,7 @@ namespace gpstk
       // appropriate constructor or the provided methods.
       // @param elevation Elevation of satellite as seen at receiver, in
       // degrees
-   double MOPSTropModel::correction(double elevation) const
+   double MOPSTropModel::correction(double elevation) const       
       throw(TropModel::InvalidTropModel)
    {
       if(!valid)
@@ -1993,10 +1984,7 @@ namespace gpstk
             throw InvalidTropModel("Invalid MOPS trop model: day of year");
       }
 
-      if(elevation < 5.0)
-      {
-         throw InvalidTropModel("MOPS Trop model works down to 5 degrees");
-      }
+      if(elevation < 5.0) return 0.0;
 
       double map = MOPSTropModel::mapping_function(elevation);
 
@@ -2366,7 +2354,7 @@ namespace gpstk
          // If elevation is below bounds, fail in a sensible way returning a 
          // very big sigma value
       if(elevation < 5.0)
-      {
+      {       
          return 9.9e9;
       }
       else
@@ -2607,7 +2595,7 @@ namespace gpstk
       //
       // @param elevation Elevation of satellite as seen at receiver,
       // in degrees
-   double NeillTropModel::correction(double elevation) const
+   double NeillTropModel::correction(double elevation) const       
       throw(TropModel::InvalidTropModel)
    {
 
@@ -2632,7 +2620,7 @@ namespace gpstk
          // Neill mapping functions work down to 3 degrees of elevation
       if(elevation < 3.0)
       {
-         throw InvalidTropModel("Neill mapping function works down to 3 degrees");
+         return 0.0;
       }
 
       double map_dry(NeillTropModel::dry_mapping_function(elevation));
@@ -2869,9 +2857,8 @@ namespace gpstk
 
       if(elevation < 3.0)
       {
-         throw InvalidTropModel("Neill mapping function works down to 3 degrees");
+         return 0.0;
       }
-
 
       double lat, t, ct;
       lat = fabs(NeillLat);         // degrees
@@ -2957,7 +2944,7 @@ namespace gpstk
 
       if(elevation < 3.0)
       {
-         throw InvalidTropModel("Neill mapping function works down to 3 degrees");
+         return 0.0;
       }
 
       double a,b,c,lat;
