@@ -554,6 +554,7 @@ covariance matrix.");
             {
                currentState(i) = solution(i);
 
+                  // This fills the upper left quadrant of covariance matrix
                for( int j=0; j<numVar; j++ )
                {
                   currentErrorCov(i,j) =  covMatrix(i,j);
@@ -571,6 +572,7 @@ covariance matrix.");
                currentState(c1) = KalmanData[*itSat].ambiguity;
 
                   // Put ambiguities covariance values into covariance matrix
+                  // This fills the lower right quadrant of covariance matrix
                int c2(numVar);
                SatIDSet::const_iterator itSat2;
                for( itSat2 = satSet.begin(); itSat2 != satSet.end(); ++itSat2 )
@@ -583,7 +585,8 @@ covariance matrix.");
                }
 
                   // Put variables X ambiguities covariances into
-                  // covariance matrix
+                  // covariance matrix. This fills the lower left and upper
+                  // right quadrants of covariance matrix
                int c3(0);
                TypeIDSet::const_iterator itType;
                for( itType  = defaultEqDef.body.begin();
