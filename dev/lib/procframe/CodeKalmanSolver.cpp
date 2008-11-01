@@ -49,14 +49,6 @@ namespace gpstk
    { return "CodeKalmanSolver"; }
 
 
-      // Constant stochastic model
-   StochasticModel CodeKalmanSolver::constantModel;
-
-
-      // White noise stochastic model
-   WhiteNoiseModel CodeKalmanSolver::whitenoiseModel;
-
-
       // Default constructor.
    CodeKalmanSolver::CodeKalmanSolver()
    {

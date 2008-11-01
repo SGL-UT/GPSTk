@@ -330,11 +330,11 @@ namespace gpstk
 
 
          /// Constant stochastic model
-      static StochasticModel constantModel;
+      StochasticModel constantModel;
 
 
          /// White noise stochastic model
-      static WhiteNoiseModel whitenoiseModel;
+      WhiteNoiseModel whitenoiseModel;
 
 
          /// Initial index assigned to this class.
