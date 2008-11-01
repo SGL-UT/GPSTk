@@ -1,4 +1,4 @@
-#pragma ident "$Id: TabularEphemerisStore.cpp 1181 2008-04-04 13:53:36Z btolman $"
+#pragma ident "$Id: TabularEphemerisStore.cpp 1430 2008-10-30 20:59:14Z architest $"
 
 //============================================================================
 //
@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,20 +25,23 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
 
 /**
  * @file TabularEphemerisStore.cpp
- * Store & access a list of SV pvts
+ * Store a tabular list of Xvt data (such as a table of precise ephemeris data
+ * in an SP3 file) and compute Xvt from this table. A Lagrange interpolation
+ * is used to compute the Xvt for times that are not in the table but do have
+ * sufficient data.
  */
 
 #include "TabularEphemerisStore.hpp"
@@ -50,24 +53,42 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-   //--------------------------------------------------------------------------
-   //--------------------------------------------------------------------------
-   void TabularEphemerisStore::dump(std::ostream& s, short detail)
+
+
+      /* A debugging function that outputs in human readable form,
+       * all data stored in this object.
+       *
+       * @param[in] s the stream to receive the output; defaults to cout
+       * @param[in] detail the level of detail to provide
+       */
+   void TabularEphemerisStore::dump( std::ostream& s,
+                                     short detail )
       const throw()
    {
+
       s << "Dump of TabularEphemerisStore:" << std::endl;
-      if(detail >= 0) {
+
+      if(detail >= 0)
+      {
+
          EphMap::const_iterator it;
+
          s << " Data stored for " << pe.size() << " satellites, over time span "
-            << initialTime << " to " << finalTime << "." << std::endl;
+           << initialTime << " to " << finalTime << "." << std::endl;
+
          if(detail == 0) return;
-         for(it=pe.begin(); it!=pe.end(); it++) {
+
+         for(it=pe.begin(); it!=pe.end(); it++)
+         {
+
             s << "  PRN " << it->first << " : "
               << it->second.size() << " records.";
             if(detail == 1) { s << std::endl; continue; }
             s << "  Data:" << std::endl;
             SvEphMap::const_iterator jt;
-            for(jt=it->second.begin(); jt!=it->second.end(); jt++) {
+
+            for(jt=it->second.begin(); jt!=it->second.end(); jt++)
+            {
                s << " " << jt->first << " P "
                  << std::fixed << std::setprecision(6)
                  << std::setw(13) << jt->second.x[0] << " "
@@ -81,46 +102,84 @@ namespace gpstk
                  << std::setw(13) << jt->second.ddtime
                  << std::endl;
             }
+
          }
-      }
-      
-   } // end of TabularEphemerisStore::dump
+
+      }  // End of 'if(detail >= 0)...'
+
+   }  // End of method 'TabularEphemerisStore::dump()'
 
 
-   //--------------------------------------------------------------------------
-   //--------------------------------------------------------------------------
-   void TabularEphemerisStore::edit(const DayTime& tmin, const DayTime& tmax)
+
+      /* Edit the dataset, removing data outside the indicated time
+       * interval.
+       *
+       * @param[in] tmin defines the beginning of the time interval
+       * @param[in] tmax defines the end of the time interval
+       */
+   void TabularEphemerisStore::edit( const DayTime& tmin,
+                                     const DayTime& tmax )
       throw()
    {
+
       EphMap::iterator kt;
-      for(kt=pe.begin(); kt!=pe.end(); kt++) {
+
+      for(kt=pe.begin(); kt!=pe.end(); kt++)
+      {
+
          SvEphMap::reverse_iterator jt=(kt->second).rbegin();
-         while(jt != (kt->second).rend()) {
-            if(jt->first < tmin || jt->first > tmax) (kt->second).erase(jt->first);
+
+         while(jt != (kt->second).rend())
+         {
+
+            if(jt->first < tmin || jt->first > tmax)
+            {
+               (kt->second).erase(jt->first);
+            }
+
             jt ++;
+
          }
+
       }
+
       initialTime = tmin;
       finalTime = tmax;
-   }  // end TabularEphemerisStore::edit
+
+   }  // End of method 'TabularEphemerisStore::edit()'
 
 
-   //--------------------------------------------------------------------------
-   //--------------------------------------------------------------------------
-   // Remove all data
+
+      // Remove all data
    void TabularEphemerisStore::clear()
       throw()
    {
+
       pe.clear();
       initialTime = DayTime::END_OF_TIME;
       finalTime = DayTime::BEGINNING_OF_TIME;
-   }
 
-   //--------------------------------------------------------------------------
-   //--------------------------------------------------------------------------
-   Xvt TabularEphemerisStore::getXvt(const SatID sat, const DayTime& t)
+   }  // End of method 'TabularEphemerisStore::clear()'
+
+
+
+      /* Returns the position, velocity, and clock offset of the indicated
+       * object in ECEF coordinates (meters) at the indicated time.
+       *
+       * @param[in] id the object's identifier
+       * @param[in] t the time to look up
+       *
+       * @return the Xvt of the object at the indicated time
+       *
+       * @throw InvalidRequest If the request can not be completed for any
+       *    reason, this is thrown. The text may have additional
+       *    information as to why the request failed.
+       */
+   Xvt TabularEphemerisStore::getXvt( const SatID sat,
+                                      const DayTime& t )
       const throw(InvalidRequest)
    {
+
       EphMap::const_iterator svmap = pe.find(sat);
       if (svmap==pe.end()) {
          InvalidRequest e("Ephemeris for satellite  " + asString(sat)
@@ -148,12 +207,15 @@ namespace gpstk
          return sv;
       }
 
-      /// Note that the order of the Lagrange interpolation is twice this value
+         // Note that the order of the Lagrange interpolation
+         // is twice this value
       const int half=5;
 
-      //  i will be the lower bound, j the upper (in time).
+         //  i will be the lower bound, j the upper (in time).
       i = sem.lower_bound(t); // i points to first element with key >= t
+
       SvEphMap::const_iterator j=i;
+
       if(i == sem.begin() || --i == sem.begin()) {
          InvalidRequest e("Inadequate data before requested time, satellite "
                           + asString(sat));
@@ -164,11 +226,27 @@ namespace gpstk
                           + asString(sat));
          GPSTK_THROW(e);
       }
-      // t is now between i and j
 
-      for(int k=0; k<half-1; k++) {
+         // "t" is now just between "i" and "j"; therefore, it is time to check
+         // for data gaps ("checkDataGap" must be enabled for this).
+      if ( checkDataGap                               &&
+           ( std::abs( t - i->first ) > gapInterval ) &&
+           ( std::abs( j->first - t ) > gapInterval ) )
+      {
+            // There was a data gap
+         InvalidRequest e( "Data gap too wide detected for satellite "
+                           + asString(sat) );
+         GPSTK_THROW(e);
+      }
+
+      for(int k=0; k<half-1; k++)
+      {
+
          i--;
-         if(i == sem.begin() && k<half-2) {  // if k==half-2, this is last iteration
+
+            // if k==half-2, this is last iteration
+         if(i == sem.begin() && k<half-2)
+         {
             InvalidRequest e("Inadequate data before requested time, satellite "
                              + asString(sat));
             GPSTK_THROW(e);
@@ -181,7 +259,20 @@ namespace gpstk
          }
       }
 
-      // pull data and interpolate
+         // Now that we have fully defined the i-j interval, let's check if
+         // the interpolation interval is too wide ("checkInterval" must be
+         // enabled for this).
+      if ( checkInterval                                     &&
+           ( std::abs( j->first - i->first ) > maxInterval ) )
+      {
+            // There was a data gap
+         InvalidRequest e( "Interpolation interval too wide detected for SV "
+                           + asString(sat) );
+         GPSTK_THROW(e);
+      }
+
+
+         // pull data and interpolate
       SvEphMap::const_iterator itr;
       DayTime t0=i->first;
       double dt=t-t0,err;
@@ -240,14 +331,13 @@ namespace gpstk
          -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
          -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
 
-      return sv;  // Xvt object
+      return sv;
 
    }  // end Xvt TabularEphemerisStore::getSatXvt
 
 
    //-----------------------------------------------------------------------------
-   // This is valid only for the SP3 derived class.  Need to copy for GLONASS.
-
+   //-----------------------------------------------------------------------------
    void TabularEphemerisStore::addEphemeris(const SP3Data& data)
       throw()
    {
