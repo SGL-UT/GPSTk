@@ -329,6 +329,16 @@ covariance matrix.");
       try
       {
 
+            // Please note that there are two different sets being defined:
+            //
+            // - "currSatSet" stores satellites currently in view, and it is
+            //   related with the number of measurements.
+            //
+            // - "satSet" stores satellites being processed; this set is
+            //   related with the number of unknowns.
+            //
+
+
             // Get a set with all satellites present in this GDS
          SatIDSet currSatSet( gData.body.getSatID() );
 
@@ -431,8 +441,9 @@ covariance matrix.");
             // We must be careful because not all processed satellites
             // are currently visible
          int count1(0);
-         SatIDSet::const_iterator itSat;
-         for( itSat = currSatSet.begin(); itSat != currSatSet.end(); ++itSat )
+         for( SatIDSet::const_iterator itSat = currSatSet.begin();
+              itSat != currSatSet.end();
+              ++itSat )
          {
 
                // Find in which position of 'satSet' is the current '(*itSat)'
@@ -486,7 +497,9 @@ covariance matrix.");
 
             // Finally, the phase biases
          int count2(numVar);     // Note that for PPP, 'numVar' is always 5!!!
-         for( itSat = satSet.begin(); itSat != satSet.end(); ++itSat )
+         for( SatIDSet::const_iterator itSat = satSet.begin();
+              itSat != satSet.end();
+              ++itSat )
          {
 
                // Prepare stochastic model
@@ -565,7 +578,9 @@ covariance matrix.");
                // Fill in the rest of state vector and covariance matrix
                // These are values that depend on satellites being processed
             int c1(numVar);
-            for( itSat = satSet.begin(); itSat != satSet.end(); ++itSat )
+            for( SatIDSet::const_iterator itSat = satSet.begin();
+                 itSat != satSet.end();
+                 ++itSat )
             {
 
                   // Put ambiguities into state vector
@@ -624,7 +639,9 @@ covariance matrix.");
             // Store those values of current state and covariance matrix
             // that depend on satellites currently in view
          int c1(numVar);
-         for( itSat = satSet.begin(); itSat != satSet.end(); ++itSat )
+         for( SatIDSet::const_iterator itSat = satSet.begin();
+              itSat != satSet.end();
+              ++itSat )
          {
 
                // Store ambiguities
