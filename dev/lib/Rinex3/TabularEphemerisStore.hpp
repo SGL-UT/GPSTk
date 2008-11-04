@@ -1,4 +1,4 @@
-#pragma ident "$Id: TabularEphemerisStore.hpp 1430 2008-10-30 20:59:14Z architest $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
