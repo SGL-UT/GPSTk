@@ -58,9 +58,9 @@ namespace gpstk
 
       pVarModel = &defaultModel;
 
-      isSourceSpecific = true;
+      isSourceIndexed = true;
 
-      isSatSpecific = false;
+      isSatIndexed = false;
 
          // By default, the source associated to this variable is unspecific
       varSource = allSources;
@@ -72,21 +72,22 @@ namespace gpstk
 
 
 
-      /* Common constructor for Variable
+      /* Common constructor for Variable.
+       *  By default, it is indexed by SourceID.
        *
-       * @param type        TypeID of variable.
-       * @param pModel      Pointer to stochasticModel associated with
-       *                    this variable. By default, it is a white
-       *                    noise model.
-       * @param sourceSpecific Whether this variable is source-specific
-       *                    or not. By default, it IS source-specific.
-       * @param satSpecific Whether this variable is satellite-specific
-       *                    or not. By default, it is NOT.
+       * @param type             TypeID of variable.
+       * @param pModel           Pointer to StochasticModel associated with
+       *                         this variable. By default, it is a white
+       *                         noise model.
+       * @param sourceIndexed    Whether this variable is SourceID-indexed
+       *                         or not. By default, it IS SourceID-indexed.
+       * @param satIndexed       Whether this variable is SatID-indexed
+       *                         or not. By default, it is NOT.
        */
    Variable::Variable( const TypeID& type,
                        StochasticModel* pModel,
-                       bool sourceSpecific,
-                       bool satSpecific )
+                       bool sourceIndexed,
+                       bool satIndexed )
    {
 
       varType = type;
@@ -100,9 +101,9 @@ namespace gpstk
          pVarModel = pModel;
       }
 
-      isSourceSpecific = sourceSpecific;
+      isSourceIndexed = sourceIndexed;
 
-      isSatSpecific = satSpecific;
+      isSatIndexed = satIndexed;
 
          // By default, the source associated to this variable is unspecific
       varSource = allSources;
@@ -134,9 +135,9 @@ namespace gpstk
 
       pVarModel = pModel;
 
-      isSourceSpecific = true;
+      isSourceIndexed = true;
 
-      isSatSpecific = true;
+      isSatIndexed = true;
 
          // Set the source associated to this variable
       varSource = source;
@@ -202,8 +203,8 @@ namespace gpstk
 
       return ( ( varType == right.getType() )                     &&
                ( pVarModel == right.getModel() )                  &&
-               ( isSourceSpecific == right.getSourceSpecific() )  &&
-               ( isSatSpecific == right.getSatSpecific() )        &&
+               ( isSourceIndexed == right.getSourceIndexed() )    &&
+               ( isSatIndexed == right.getSatIndexed() )          &&
                ( varSource == right.getSource() )                 &&
                ( varSat == right.getSatellite() ) );
 
@@ -248,9 +249,9 @@ namespace gpstk
 
       setModel(right.getModel());
 
-      setSourceSpecific(right.getSourceSpecific());
+      setSourceIndexed(right.getSourceIndexed());
 
-      setSatSpecific(right.getSatSpecific());
+      setSatIndexed(right.getSatIndexed());
 
       setSource(right.getSource());
 

@@ -53,21 +53,22 @@ namespace gpstk
       Variable();
 
 
-         /** Common constructor for Variable
+         /** Common constructor for Variable.
+          *  By default, it is indexed by SourceID.
           *
-          * @param type        TypeID of variable.
-          * @param pModel      Pointer to StochasticModel associated with
-          *                    this variable. By default, it is a white
-          *                    noise model.
-          * @param sourceSpecific Whether this variable is source-specific
-          *                    or not. By default, it IS source-specific.
-          * @param satSpecific Whether this variable is satellite-specific
-          *                    or not. By default, it is NOT.
+          * @param type             TypeID of variable.
+          * @param pModel           Pointer to StochasticModel associated with
+          *                         this variable. By default, it is a white
+          *                         noise model.
+          * @param sourceIndexed    Whether this variable is SourceID-indexed
+          *                         or not. By default, it IS SourceID-indexed.
+          * @param satIndexed       Whether this variable is SatID-indexed
+          *                         or not. By default, it is NOT.
           */
       Variable( const TypeID& type,
                 StochasticModel* pModel = NULL,
-                bool sourceSpecific = true,
-                bool satSpecific = false );
+                bool sourceIndexed = true,
+                bool satIndexed    = false );
 
 
          /** Constructor for a Variable corresponding to an specific
@@ -142,45 +143,45 @@ namespace gpstk
       { pVarModel = pModel; return (*this); };
 
 
-         /// Get if this variable is source-specific
-      bool getSourceSpecific() const
-      { return isSourceSpecific; };
+         /// Get if this variable is SourceID-indexed
+      bool getSourceIndexed() const
+      { return isSourceIndexed; };
 
 
-         /** Set if this variable is source-specific
+         /** Set if this variable is SourceID-indexed.
           *
-          * @param sourceSpecific Whether this variable is source-specific
-          *                    or not. By default, it IS source-specific.
+          * @param sourceIndexed    Whether this variable is SourceID-indexed
+          *                         or not. By default, it IS SourceID-indexed.
           */
-      Variable& setSourceSpecific(bool sourceSpecific)
-      { isSourceSpecific = sourceSpecific; return (*this); };
+      Variable& setSourceIndexed(bool sourceIndexed)
+      { isSourceIndexed = sourceIndexed; return (*this); };
 
 
-         /// Get if this variable is satellite-specific
-      bool getSatSpecific() const
-      { return isSatSpecific; };
+         /// Get if this variable is SatID-indexed.
+      bool getSatIndexed() const
+      { return isSatIndexed; };
 
 
-         /** Set if this variable is satellite-specific
+         /** Set if this variable is SatID-indexed.
           *
-          * @param satSpecific Whether this variable is satellite-specific
-          *                    or not. By default, it is NOT.
+          * @param satIndexed       Whether this variable is SatID-indexed
+          *                         or not. By default, it is NOT.
           */
-      Variable& setSatSpecific(bool satSpecific)
-      { isSatSpecific = satSpecific; return (*this); };
+      Variable& setSatIndexed(bool satIndexed)
+      { isSatIndexed = satIndexed; return (*this); };
 
 
-         /// Get variable-specific source
+         /// Get the SourceID
       SourceID getSource() const
       { return varSource; };
 
 
-         /** Set variable-specific source
+         /** Set this variable's SourceID
           *
-          * @param source  Specific SourceID of variable.
+          * @param source     Specific SourceID of variable.
           */
       Variable& setSource(const SourceID& source)
-      { varSource = source; setSourceSpecific(true); return (*this); };
+      { varSource = source; setSourceIndexed(true); return (*this); };
 
 
 
@@ -194,7 +195,7 @@ namespace gpstk
           * @param satellite  Specific SatID of variable.
           */
       Variable& setSatellite(const SatID& satellite)
-      { varSat = satellite; setSatSpecific(true); return (*this); };
+      { varSat = satellite; setSatIndexed(true); return (*this); };
 
 
          /// Equality operator
@@ -207,7 +208,7 @@ namespace gpstk
       virtual bool operator<(const Variable& right) const;
 
 
-         /// Inequality operator   
+         /// Inequality operator
       bool operator!=(const Variable& right) const
       { return !(operator==(right)); }
 
@@ -226,28 +227,28 @@ namespace gpstk
       static SatID allSats;
 
 
-         /// Default stochastic model to be assigned to variables.
-      static WhiteNoiseModel defaultModel;
-
-
          /// Destructor
       virtual ~Variable() {};
 
 
    private:
 
+
          /// Type of the variable
       TypeID varType;
 
+
          /// Pointer stochastic model applying to variable
       StochasticModel* pVarModel;
+
 
          /** Whether this variable is or not source-specific. By default
           *  it is true, which means that this variable is different for
           *  each source (p.e., the TypeID::dx position variable of a given
           *  station).
           */
-      bool isSourceSpecific;
+      bool isSourceIndexed;
+
 
          /** Whether this variable is or not satellite-specific. By default
           *  it is false, which means that this variable is the same
@@ -258,17 +259,23 @@ namespace gpstk
           *  for each satellite on view; for instance, the TypeID::dtSat
           *  satellite clock offset variable.
           */
-      bool isSatSpecific;
+      bool isSatIndexed;
+
 
          /** In case the value of this variable belongs to a specific
           *  source, the corresponding SourceID is stored here.
           */
       SourceID varSource;
 
+
          /** In case the value of this variable belongs to a specific
           *  satellite, the corresponding SatID is stored here.
           */
       SatID varSat;
+
+
+         /// Default stochastic model to be assigned to variables.
+      static WhiteNoiseModel defaultModel;
 
 
    }; // End of class 'Variable'
