@@ -117,9 +117,6 @@ namespace gpstk
          /// Flag to dump satellites with bad or absent clock values
       bool dumpBadClockFlag;
 
-         /// Flag indicating that velocity data present in all datasets loaded.
-      bool haveVelocity;
-
    }; // End of class 'SP3EphemerisStore'
 
       //@}
