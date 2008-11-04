@@ -71,8 +71,8 @@ namespace gpstk
          /// Constructor.
       SP3EphemerisStore()
          throw()
-	: dumpBadPosFlag(false), dumpBadClockFlag(false), haveVelocity(true)
-      { TabularEphemerisStore(); };
+	: dumpBadPosFlag(false), dumpBadClockFlag(false)
+      { TabularEphemerisStore(); haveVelocity = true;};
 
 
          /// Destructor.
