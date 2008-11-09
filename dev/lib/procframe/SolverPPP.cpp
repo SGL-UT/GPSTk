@@ -543,7 +543,7 @@ covariance matrix.");
                // Finally, the phase biases
             for( int i=5; i<numUnknowns; i++ )
             {
-               initialErrorCovariance(i,i) = 4.0e16;     // (20000 km)**2
+               initialErrorCovariance(i,i) = 4.0e14;     // (20000 km)**2
             }
 
 
