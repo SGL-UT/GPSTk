@@ -93,7 +93,7 @@ try {
          // remove isolated points (single points with gaps > CI.MaxGap on both sides
       for(it=st.RawDataBuffers.begin(); it != st.RawDataBuffers.end(); it++) {
          RawData& rd=it->second;
-         vector<int>::iterator cit, cjt;
+         vector<int>::iterator cit;
          vector<double>::iterator ditL1=rd.L1.begin();
          vector<double>::iterator ditL2=rd.L2.begin();
          vector<double>::iterator ditP1=rd.P1.begin();
@@ -103,21 +103,29 @@ try {
          vector<double>::iterator ditER=rd.ER.begin();
          vector<double>::iterator ditEL=rd.elev.begin();
          vector<double>::iterator ditAZ=rd.az.begin();
-         k = CI.MaxGap+1;      // k is the gap behind point i
-         cjt = cit = rd.count.begin();
-         cjt++;
-         while(1) {
-            // gap or begin before &&    end            or     gap    after
-            if(k >= CI.MaxGap && (cjt == rd.count.end() || *cjt - *cit > CI.MaxGap)) {
+         cit = rd.count.begin();
+         while(cit != rd.count.end()) {
+            if(rd.count.size() == 1 ||       // single point
+                                             // or isolated point at begin
+               (cit == rd.count.begin() && *(cit+1) - *cit > CI.MaxGap) ||
+                                             // or isolated point at end
+               (cit+1 == rd.count.end() && *cit - *(cit-1) > CI.MaxGap) ||
+                                             // or isolated point not at either end
+               (cit+1 != rd.count.end() && cit != rd.count.begin() &&
+                  *(cit+1) - *cit > CI.MaxGap && *cit - *(cit-1) > CI.MaxGap))
+            {
                if(CI.Debug) {
-                  oflog << "Found isolated point with gap " << k
-                     << " pts before and ";
-                  if(cjt != rd.count.end()) oflog << *cjt - *cit << " pts after, ";
-                  else oflog << " end point after, ";
+                  oflog << "Found isolated point with ";
+                  if(cit != rd.count.begin())
+                     oflog << *cit - *(cit-1) << " pt gap before and ";
+                  else
+                     oflog << "begin pt before and ";
+                  if(cit+1 != rd.count.end())
+                     oflog << *(cit+1) - *cit << " pt gap after, ";
+                  else
+                     oflog << "end pt after, ";
                   oflog << "at " << *cit << endl;
                }
-               // this is an isolated pt
-               if(cjt != rd.count.end()) k = *cjt - *cit;
                cit = rd.count.erase(cit);    // cit now pts to the following element
                ditL1 = rd.L1.erase(ditL1);
                ditL2 = rd.L2.erase(ditL2);
@@ -128,11 +136,8 @@ try {
                ditER = rd.ER.erase(ditER);
                ditEL = rd.elev.erase(ditEL);
                ditAZ = rd.az.erase(ditAZ);
-               if(cit == rd.count.end()) break;
             }
             else {
-               if(cjt == rd.count.end()) break;
-               k = *cjt - *cit;
                cit++;
                ditL1++;
                ditL2++;
@@ -144,7 +149,6 @@ try {
                ditEL++;
                ditAZ++;
             }
-            cjt++;                           // cjt points to the next count
          }
       }
 

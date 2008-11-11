@@ -57,7 +57,11 @@ using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
-string Version("4.4 6/28/07");
+string Version("4.5 11/11/08");
+// 4.5 11/11/08 Fixed bug in EditRawDataBuffers.cpp
+//     10/31/07 Moved ClockModel back to before Synchronize, and SNR diagnostic output
+//               (PlayWithSNRData) from ClockModel to Synchronization.
+// 4.4  4/20/07 Removed BINEX support
 //     10/31/07 Moved ClockModel back to before Synchronize
 // 4.4  4/20/07 Removed BINEX support
 // 4.3  4/20/07 Add BINEX support - must remain consistent with novaRinex
