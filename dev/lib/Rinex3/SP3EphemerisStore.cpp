@@ -52,7 +52,7 @@
 
 using namespace gpstk::StringUtils;
 
-namespace gpstk
+namespace Rinex3
 {
 
       // Load the given SP3 file

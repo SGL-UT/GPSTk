@@ -55,7 +55,9 @@
 #include "DayTime.hpp"
 #include "XvtStore.hpp"
 
-namespace gpstk
+using namespace gpstk;
+
+namespace Rinex3
 {
    /** @addtogroup ephemstore */
    //@{

@@ -54,7 +54,9 @@
 #include "SP3Data.hpp"
 #include "SP3Header.hpp"
 
-namespace gpstk
+using namespace gpstk;
+
+namespace Rinex3
 {
 
       /** @addtogroup ephemstore */
@@ -63,7 +65,7 @@ namespace gpstk
       /**
        * This adds the interface to read SP3 files into a TabularEphemerisStore
        */
-   class SP3EphemerisStore : public TabularEphemerisStore,
+   class SP3EphemerisStore : public Rinex3::TabularEphemerisStore,
                              public FileStore<SP3Header>
    {
    public:

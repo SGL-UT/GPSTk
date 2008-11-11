@@ -39,7 +39,7 @@ using namespace std;
 using namespace gpstk;
 using gpstk::StringUtils::asString;
 
-namespace gpstk
+namespace Rinex3
 {
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------

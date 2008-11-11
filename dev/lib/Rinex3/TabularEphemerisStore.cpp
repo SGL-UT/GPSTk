@@ -51,7 +51,7 @@
 
 using namespace gpstk::StringUtils;
 
-namespace gpstk
+namespace Rinex3
 {
 
 

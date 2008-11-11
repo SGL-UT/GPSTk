@@ -54,7 +54,9 @@
 #include "XvtStore.hpp"
 #include "SP3Data.hpp"
 
-namespace gpstk
+using namespace gpstk;
+
+namespace Rinex3
 {
 
       /** @addtogroup ephemstore */

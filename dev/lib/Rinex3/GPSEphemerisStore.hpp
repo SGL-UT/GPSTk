@@ -55,7 +55,9 @@
 #include "EngEphemeris.hpp"
 #include "icd_200_constants.hpp"
 
-namespace gpstk
+using namespace gpstk;
+
+namespace Rinex3
 {
    /** @addtogroup ephemstore */
    //@{
@@ -63,7 +65,7 @@ namespace gpstk
    /// Store GPS broadcast ephemeris information (i.e. like the data in
    /// subframes 1-3) and computes satellite Xvt based upon this data and the
    /// algorithms defined for that data in the IS-GPS-200.
-   class GPSEphemerisStore : public KeplerianEphemerisStore
+   class GPSEphemerisStore : public Rinex3::KeplerianEphemerisStore
    {
    public:
 
