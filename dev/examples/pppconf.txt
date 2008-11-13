@@ -57,7 +57,7 @@ dayOfYear = 224, days of year for Aug/12/2005.
 
 SP3List, SP3 ephemeris file list    = igs13354.sp3 igs13355.sp3 igs13356.sp3
 
-poleDisplacements, for Aug/12/2005  = 0.020840 0.427601, arcsec
+poleDisplacements, for Aug/12/2005  = 0.02094 0.42728, arcsec
 
 nominalPosition, ECEF-IGS = 3370658.5419 711877.1496 5349786.9542, meters
 

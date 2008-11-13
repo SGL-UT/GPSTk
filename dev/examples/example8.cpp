@@ -165,7 +165,7 @@ int main(void)
    OceanLoading ocean("OCEAN-GOT00.dat");
 
       // Numerical values are x,y pole displacements for Aug/12/2005 (arcsec).
-   PoleTides   pole(0.020840, 0.427601);
+   PoleTides   pole(0.02094, 0.42728);
 
 
       // Vector from ONSA antenna ARP to L1 phase center [UEN] (AOAD/M_B)
