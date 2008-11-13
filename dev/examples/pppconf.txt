@@ -59,7 +59,8 @@ SP3List, SP3 ephemeris file list    = igs13354.sp3 igs13355.sp3 igs13356.sp3
 
 poleDisplacements, for Aug/12/2005  = 0.020840 0.427601, arcsec
 
-nominalPosition, ECEF = 3370658.5419 711877.1496 5349786.9542, meters
+nominalPosition, ECEF-IGS = 3370658.5419 711877.1496 5349786.9542, meters
+
 
 # Antenna parameters
 offsetL1 , dH dLon dLat (UEN) = 0.078  0.000  0.000, meters
@@ -94,7 +95,8 @@ SP3List, SP3 ephemeris file list    = igs12851.sp3 igs12852.sp3 igs12853.sp3
 
 poleDisplacements, for Aug/24/2004  = 0.13348 0.50552, arcsec
 
-nominalPosition, ECEF = -741950.562 6190961.667 -1337768.010, meters
+nominalPosition, ECEF-IGS = -741950.3850 6190961.6631 -1337768.2263, meters
+
 
 # Antenna parameters
 offsetL1 , dH dLon dLat (UEN) = 0.110  0.000  0.000, meters

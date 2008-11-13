@@ -409,7 +409,7 @@ void example9::process()
       if ( confReader.getValueAsBoolean( "checkGaps", station ) )
       {
          SP3EphList.enableDataGapCheck();
-        SP3EphList.setGapInterval(
+         SP3EphList.setGapInterval(
                      confReader.getValueAsDouble("SP3GapInterval",station) );
       }
 
@@ -565,6 +565,12 @@ void example9::process()
       pList.push_back(linear1);       // Add to processing list
 
 
+         // Declare a simple filter object to screen PC
+      SimpleFilter pcFilter;
+      pcFilter.setFilteredType(TypeID::PC);
+      pList.push_back(pcFilter);       // Add to processing list
+
+
          // Objects to mark cycle slips
       LICSDetector2 markCSLI2;      // Checks LI cycle slips
       pList.push_back(markCSLI2);       // Add to processing list
@@ -593,12 +599,6 @@ void example9::process()
          // Object to decimate data
       Decimate decimateData(900.0, 5.0, SP3EphList.getInitialTime());
       pList.push_back(decimateData);       // Add to processing list
-
-
-         // Declare a simple filter object to screen PC
-      SimpleFilter pcFilter;
-      pcFilter.setFilteredType(TypeID::PC);
-      pList.push_back(pcFilter);       // Add to processing list
 
 
          // Declare a base-changing object: From ECEF to North-East-Up (NEU)

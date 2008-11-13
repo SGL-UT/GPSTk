@@ -290,13 +290,13 @@ int main(void)
               >> windup          // Compute wind-up effect
               >> computeTropo    // Compute tropospheric effect
               >> linear1         // Compute common linear combinations
+              >> pcFilter        // Filter out spurious data
               >> markCSLI        // Mark cycle slips: LI algorithm
               >> markCSMW        // Mark cycle slips: Melbourne-Wubbena
               >> markArc         // Keep track of satellite arcs
               >> phaseAlign      // Align phases with codes
               >> linear2         // Compute prefit residuals
               >> decimateData    // If not a multiple of 900 s, decimate
-              >> pcFilter        // Filter out spurious data
               >> baseChange      // Prepare to use North-East-UP reference frame
               >> cDOP            // Compute DOP figures
               >> pppSolver;      // Solve equations with a Kalman filter
