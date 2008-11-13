@@ -50,7 +50,7 @@
 #include <iostream>
 
 #include "SatID.hpp"
-#include "DayTime.hpp"
+#include "CivilTime.hpp"
 #include "XvtStore.hpp"
 #include "SP3Data.hpp"
 
@@ -73,8 +73,8 @@ namespace Rinex3
          /// Default constructor
       TabularEphemerisStore()
          throw()
-         : haveVelocity(true), initialTime(DayTime::END_OF_TIME),
-           finalTime(DayTime::BEGINNING_OF_TIME), checkDataGap(false),
+         : haveVelocity(true), initialTime(CivilTime::END_OF_TIME),
+           finalTime(CivilTime::BEGINNING_OF_TIME), checkDataGap(false),
            gapInterval(901.0), checkInterval(false), maxInterval(8105.0)
       {};
 
@@ -96,7 +96,7 @@ namespace Rinex3
           *    information as to why the request failed.
           */
       virtual Xvt getXvt( const SatID id,
-                          const DayTime& t )
+                          const CivilTime& t )
          const throw(InvalidRequest);
 
 
@@ -117,8 +117,8 @@ namespace Rinex3
           * @param[in] tmin defines the beginning of the time interval
           * @param[in] tmax defines the end of the time interval
           */
-      virtual void edit( const DayTime& tmin,
-                         const DayTime& tmax = DayTime(DayTime::END_OF_TIME) )
+      virtual void edit( const CivilTime& tmin,
+                         const CivilTime& tmax = CivilTime(CivilTime::END_OF_TIME) )
          throw();
 
 
@@ -129,7 +129,7 @@ namespace Rinex3
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      virtual DayTime getInitialTime()
+      virtual CivilTime getInitialTime()
          const throw(InvalidRequest)
       { return initialTime; };
 
@@ -141,7 +141,7 @@ namespace Rinex3
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      virtual DayTime getFinalTime()
+      virtual CivilTime getFinalTime()
          const throw(InvalidRequest)
       { return finalTime; };
 
@@ -224,7 +224,7 @@ namespace Rinex3
 
 
          /// The key to this map is the time
-      typedef std::map<DayTime, Xvt> SvEphMap;
+      typedef std::map<CivilTime, Xvt> SvEphMap;
 
 
          /// The key to this map is the svid of the satellite (usually the prn)
@@ -240,7 +240,7 @@ namespace Rinex3
           * NB there may be gaps in the data, i.e. the data may not be
           * continuous.
           */
-      DayTime initialTime, finalTime;
+      CivilTime initialTime, finalTime;
 
 
          /** Flag to check for data gaps.

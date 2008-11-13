@@ -117,8 +117,8 @@ namespace Rinex3
        * @param[in] tmin defines the beginning of the time interval
        * @param[in] tmax defines the end of the time interval
        */
-   void TabularEphemerisStore::edit( const DayTime& tmin,
-                                     const DayTime& tmax )
+   void TabularEphemerisStore::edit( const CivilTime& tmin,
+                                     const CivilTime& tmax )
       throw()
    {
 
@@ -156,8 +156,8 @@ namespace Rinex3
    {
 
       pe.clear();
-      initialTime = DayTime::END_OF_TIME;
-      finalTime = DayTime::BEGINNING_OF_TIME;
+      initialTime = CivilTime::END_OF_TIME;
+      finalTime = CivilTime::BEGINNING_OF_TIME;
 
    }  // End of method 'TabularEphemerisStore::clear()'
 
@@ -176,7 +176,7 @@ namespace Rinex3
        *    information as to why the request failed.
        */
    Xvt TabularEphemerisStore::getXvt( const SatID sat,
-                                      const DayTime& t )
+                                      const CivilTime& t )
       const throw(InvalidRequest)
    {
 
@@ -274,7 +274,7 @@ namespace Rinex3
 
          // pull data and interpolate
       SvEphMap::const_iterator itr;
-      DayTime t0=i->first;
+      CivilTime t0=i->first;
       double dt=t-t0,err;
       std::vector<double> times,X,Y,Z,T,VX,VY,VZ,F;
 
@@ -341,7 +341,7 @@ namespace Rinex3
    void TabularEphemerisStore::addEphemeris(const SP3Data& data)
       throw()
    {
-      DayTime t = data.time;
+      CivilTime t = data.time;
       SatID sat = data.sat;
       Xvt&  xvt = pe[sat][t];
 
