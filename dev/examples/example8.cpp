@@ -203,9 +203,9 @@ int main(void)
    ComputeLinear linear1(comb.pcCombination);
 
    linear1.addLinear(comb.lcCombination);
-   linear1.addLinear(comb.pdeltaCombWithC1);
+   linear1.addLinear(comb.pdeltaCombination);
    linear1.addLinear(comb.ldeltaCombination);
-   linear1.addLinear(comb.mwubbenaCombWithC1);
+   linear1.addLinear(comb.mwubbenaCombination);
    linear1.addLinear(comb.liCombination);
 
       // Let's use a different object to compute prefit residuals
