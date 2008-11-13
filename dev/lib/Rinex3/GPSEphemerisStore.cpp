@@ -43,7 +43,7 @@ namespace Rinex3
 {
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt GPSEphemerisStore::getXvt(const SatID sat, const DayTime& t)
+   Xvt GPSEphemerisStore::getXvt(const SatID sat, const CivilTime& t)
       const throw(InvalidRequest)
    {
       short ref;
@@ -53,7 +53,7 @@ namespace Rinex3
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt GPSEphemerisStore::getXvt(const SatID sat, const DayTime& t, short& ref)
+   Xvt GPSEphemerisStore::getXvt(const SatID sat, const CivilTime& t, short& ref)
       const throw(InvalidRequest)
    {
       try
@@ -74,7 +74,7 @@ namespace Rinex3
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    const EngEphemeris&
-   GPSEphemerisStore::findEphemeris(const SatID sat, const DayTime& t) 
+   GPSEphemerisStore::findEphemeris(const SatID sat, const CivilTime& t) 
       const throw(InvalidRequest)
    {
       try
@@ -90,7 +90,7 @@ namespace Rinex3
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   short GPSEphemerisStore::getSatHealth(const SatID sat, const DayTime& t)
+   short GPSEphemerisStore::getSatHealth(const SatID sat, const CivilTime& t)
       const throw(InvalidRequest)
    {
       try
@@ -160,9 +160,10 @@ namespace Rinex3
       throw()
    {
       bool rc = false;
-      DayTime t(0.L);
+      CivilTime t(0.L);
       t =  eph.getEphemerisEpoch();
       t -= 0.5*3600.0*eph.getFitInterval();
+      t.setTimeFrame("GPS_Receiver");
    
       EngEphMap& eem = ube[eph.getPRNID()];
       EngEphMap::iterator sfi = eem.find(t);
@@ -175,7 +176,7 @@ namespace Rinex3
       {
          // Store the new eph only if it has a later transmit time
          EngEphemeris& current = sfi->second;
-         DayTime ephTot, currentTot;
+         CivilTime ephTot, currentTot;
          ephTot = eph.getTransmitTime();
          currentTot = current.getTransmitTime();
 
@@ -207,10 +208,10 @@ namespace Rinex3
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-   void GPSEphemerisStore::edit(const DayTime& tmin, const DayTime& tmax)
+   void GPSEphemerisStore::edit(const CivilTime& tmin, const CivilTime& tmax)
       throw()
    {
-      DayTime test;
+      CivilTime test;
       for(UBEMap::iterator i = ube.begin(); i != ube.end(); i++)
       {
          EngEphMap& eMap = i->second;
@@ -243,10 +244,10 @@ namespace Rinex3
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
    const EngEphemeris&
-   GPSEphemerisStore::findUserEphemeris(const SatID sat, const DayTime& t) 
+   GPSEphemerisStore::findUserEphemeris(const SatID sat, const CivilTime& t) 
       const throw(InvalidRequest)
    {
-      DayTime test;
+      CivilTime test;
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
       {
@@ -255,7 +256,7 @@ namespace Rinex3
       }
 
       const EngEphMap& em = prn_i->second;
-      DayTime t1(0.0L), t2(0.0L), Tot = DayTime::BEGINNING_OF_TIME;
+      CivilTime t1(0.0L), t2(0.0L), Tot = CivilTime::BEGINNING_OF_TIME;
       EngEphMap::const_iterator it = em.end();
 
       // Find eph with (Toe-(fitint/2)) > t - 4 hours
@@ -314,10 +315,10 @@ namespace Rinex3
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
    const EngEphemeris&
-   GPSEphemerisStore::findNearEphemeris(const SatID sat, const DayTime& t) 
+   GPSEphemerisStore::findNearEphemeris(const SatID sat, const CivilTime& t) 
       const throw(InvalidRequest)
    {
-      DayTime test;
+      CivilTime test;
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
       {
@@ -327,7 +328,7 @@ namespace Rinex3
 
       const EngEphMap& em = prn_i->second;
       double dt2min = -1;
-      DayTime tstart, how;
+      CivilTime tstart, how;
       EngEphMap::const_iterator it = em.end();
 
       // Find eph with (Toe-(fitint/2)) > t - 4 hours
@@ -401,7 +402,7 @@ namespace Rinex3
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 //   const EngEphMap 
-   const std::map<DayTime, EngEphemeris>& 
+   const std::map<CivilTime, EngEphemeris>& 
    GPSEphemerisStore::getEphMap( const SatID sat )
             const throw(InvalidRequest)
    {
