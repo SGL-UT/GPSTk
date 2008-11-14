@@ -40,12 +40,6 @@ namespace Rinex3
    {
    public:
 
-         /// earliest representable CivilTime
-      static const CivilTime BEGINNING_OF_TIME;
-
-         /// latest representable CivilTime
-      static const CivilTime END_OF_TIME;
-
          /**
           * @defgroup caltbo CivilTime Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.

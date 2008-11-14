@@ -46,13 +46,6 @@ namespace Rinex3
              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
    };
    
-      // earliest representable CivilTime
-   const CivilTime CivilTime::BEGINNING_OF_TIME =
-      CivilTime(-4713, 1, 1, 0, 0, 0.0, Unknown);
-      // latest representable CivilTime
-   const CivilTime CivilTime::END_OF_TIME =
-      CivilTime( 4713, 1, 1, 0, 0, 0.0, Unknown);
-
    CivilTime& CivilTime::operator=( const CivilTime& right )
       throw()
    {

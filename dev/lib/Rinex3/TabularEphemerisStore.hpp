@@ -73,8 +73,8 @@ namespace Rinex3
          /// Default constructor
       TabularEphemerisStore()
          throw()
-         : haveVelocity(true), initialTime(CivilTime::END_OF_TIME),
-           finalTime(CivilTime::BEGINNING_OF_TIME), checkDataGap(false),
+         : haveVelocity(true), initialTime(CommonTime::END_OF_TIME),
+           finalTime(CommonTime::BEGINNING_OF_TIME), checkDataGap(false),
            gapInterval(901.0), checkInterval(false), maxInterval(8105.0)
       {};
 

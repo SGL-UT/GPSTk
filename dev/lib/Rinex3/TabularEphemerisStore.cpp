@@ -156,8 +156,8 @@ namespace Rinex3
    {
 
       pe.clear();
-      initialTime = CivilTime::END_OF_TIME;
-      finalTime = CivilTime::BEGINNING_OF_TIME;
+      initialTime = CommonTime::END_OF_TIME;
+      finalTime = CommonTime::BEGINNING_OF_TIME;
 
    }  // End of method 'TabularEphemerisStore::clear()'
 

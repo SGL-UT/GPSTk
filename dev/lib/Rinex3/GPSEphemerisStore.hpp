@@ -71,8 +71,8 @@ namespace Rinex3
 
       GPSEphemerisStore()
          throw()
-         : initialTime(CivilTime::END_OF_TIME), 
-           finalTime(CivilTime::BEGINNING_OF_TIME),
+         : initialTime(CommonTime::END_OF_TIME), 
+           finalTime(CommonTime::BEGINNING_OF_TIME),
            method(0)
       {}
 
