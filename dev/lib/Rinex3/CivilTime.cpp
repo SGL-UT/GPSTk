@@ -48,10 +48,10 @@ namespace Rinex3
    
       // earliest representable CivilTime
    const CivilTime CivilTime::BEGINNING_OF_TIME =
-      CivilTime(CivilTime::BEGIN_LIMIT_JDAY, 0, 0, 0, 0, 0.0, Unknown);
+      CivilTime(-4713, 1, 1, 0, 0, 0.0, Unknown);
       // latest representable CivilTime
    const CivilTime CivilTime::END_OF_TIME =
-      CivilTime(CivilTime::END_LIMIT_JDAY,  0, 0, 0, 0, 0.0, Unknown);
+      CivilTime( 4713, 1, 1, 0, 0, 0.0, Unknown);
 
    CivilTime& CivilTime::operator=( const CivilTime& right )
       throw()
