@@ -6,4 +6,4 @@ SubInclude TOP lib rxio ;
 SubInclude TOP lib vplot ;
 SubInclude TOP lib geomatics ;
 SubInclude TOP lib procframe ;
-SubInclude TOP lib Rinex3 ;
+#SubInclude TOP lib Rinex3 ;
