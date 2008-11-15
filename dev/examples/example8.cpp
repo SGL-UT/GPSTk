@@ -22,6 +22,9 @@
    // Class defining the GNSS data structures
 #include "DataStructures.hpp"
 
+   // Class to filter out satellites without required observables
+#include "RequireObservables.hpp"
+
    // Class to filter out observables grossly out of limits
 #include "SimpleFilter.hpp"
 
@@ -142,6 +145,13 @@ int main(void)
 
       // Declare a base-changing object: From ECEF to North-East-Up (NEU)
    XYZ2NEU baseChange(nominalPos);
+
+
+      // Declare an object to check that all required observables are present
+   RequireObservables requireObs(TypeID::P1);
+   requireObs.addRequiredType(TypeID::P2);
+   requireObs.addRequiredType(TypeID::L1);
+   requireObs.addRequiredType(TypeID::L2);
 
 
       // Declare a simple filter object to screen PC
@@ -282,7 +292,8 @@ int main(void)
       {
 
             // The following lines are indeed just one line
-         gRin >> basic           // Compute the basic components of model
+         gRin >> requireObs      // Check if required observations are present
+              >> basic           // Compute the basic components of model
               >> eclipsedSV      // Remove satellites in eclipse
               >> grDelay         // Compute gravitational delay
               >> svPcenter       // Compute the effect of satellite phase center
@@ -337,7 +348,7 @@ int main(void)
          cout << pppSolver.getVariance(TypeID::dH) << "  ";   // Cov dH   - #8
          cout << pppSolver.getVariance(TypeID::wetMap) << "  ";//Cov Tropo- #9
 
-         cout << gRin.numSats()        << "  ";       // Satellite number - #10
+         cout << gRin.numSats()        << "  ";     // Visible satellites - #10
 
          cout << cDOP.getGDOP()        << "  ";                   // GDOP - #11
          cout << cDOP.getPDOP()        << "  ";                   // PDOP - #12

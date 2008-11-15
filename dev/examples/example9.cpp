@@ -35,6 +35,9 @@
    // Class defining the GNSS data structures
 #include "DataStructures.hpp"
 
+   // Class to filter out satellites without required observables
+#include "RequireObservables.hpp"
+
    // Class to filter out observables grossly out of limits
 #include "SimpleFilter.hpp"
 
@@ -461,6 +464,26 @@ void example9::process()
          // Create a 'ProcessingList' object where we'll store
          // the processing objects in order
       ProcessingList pList;
+
+
+         // This object will check that all required observables are present
+      RequireObservables requireObs;
+      requireObs.addRequiredType(TypeID::P2);
+      requireObs.addRequiredType(TypeID::L1);
+      requireObs.addRequiredType(TypeID::L2);
+
+         // Read if we should use C1 instead of P1
+      if ( confReader.getValueAsBoolean( "useC1", station ) )
+      {
+         requireObs.addRequiredType(TypeID::C1);
+      }
+      else
+      {
+         requireObs.addRequiredType(TypeID::P1);
+      }
+
+         // Add 'requireObs' to processing list (it is the first)
+      pList.push_back(requireObs);
 
 
          // Declare a basic modeler
