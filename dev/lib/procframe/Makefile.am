@@ -16,9 +16,10 @@ LICSDetector.cpp LICSDetector2.cpp \
 LinearCombinations.cpp ModeledPR.cpp ModeledReferencePR.cpp \
 ModelObs.cpp ModelObsFixedStation.cpp MWCSDetector.cpp NablaOp.cpp \
 OneFreqCSDetector.cpp PhaseCodeAlignment.cpp PCSmoother.cpp \
-ProcessingList.cpp ProcessingVector.cpp SatArcMarker.cpp SimpleFilter.cpp \
-SolverLMS.cpp SolverPPP.cpp SolverPPPFB.cpp SolverWMS.cpp StochasticModel.cpp \
-Synchronize.cpp Variable.cpp XYZ2NED.cpp XYZ2NEU.cpp
+ProcessingList.cpp ProcessingVector.cpp RequireObservables.cpp \
+SatArcMarker.cpp SimpleFilter.cpp SolverLMS.cpp SolverPPP.cpp SolverPPPFB.cpp \
+SolverWMS.cpp StochasticModel.cpp Synchronize.cpp Variable.cpp XYZ2NED.cpp \
+XYZ2NEU.cpp
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = BasicModel.hpp CodeKalmanSolver.hpp CodeSmoother.hpp \
@@ -32,6 +33,7 @@ GravitationalDelay.hpp IonexModel.hpp \
 LICSDetector.hpp LICSDetector2.hpp LinearCombinations.hpp ModeledPR.hpp \
 ModeledReferencePR.hpp ModelObs.hpp ModelObsFixedStation.hpp MWCSDetector.hpp \
 NablaOp.hpp OneFreqCSDetector.hpp PhaseCodeAlignment.hpp PCSmoother.hpp \
-ProcessingClass.hpp ProcessingList.hpp ProcessingVector.hpp SatArcMarker.hpp \
-SimpleFilter.hpp SolverLMS.hpp SolverPPP.hpp SolverPPPFB.hpp SolverWMS.hpp \
-StochasticModel.hpp Synchronize.hpp Variable.hpp XYZ2NED.hpp XYZ2NEU.hpp
+ProcessingClass.hpp ProcessingList.hpp ProcessingVector.hpp \
+RequireObservables.hpp SatArcMarker.hpp SimpleFilter.hpp SolverLMS.hpp \
+SolverPPP.hpp SolverPPPFB.hpp SolverWMS.hpp StochasticModel.hpp \
+Synchronize.hpp Variable.hpp XYZ2NED.hpp XYZ2NEU.hpp
