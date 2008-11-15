@@ -104,6 +104,7 @@ namespace gpstk
 
                      // It is not necessary to keep looking
                   typeIt = requiredTypeSet.end();
+                  --typeIt;
                }
 
             }
