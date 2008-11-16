@@ -293,6 +293,13 @@ namespace gpstk
       { body.clear(); return (*this); };
 
 
+         /// This ordering is somewhat arbitrary, but is required to be able
+         /// to use an Equation as an index to a std::map, or as part of a
+         /// std::set.
+      virtual bool operator<(const Equation& right) const
+      { return (header.indTerm < right.header.indTerm); };
+
+
          /// Destructor
       virtual ~Equation() {};
 

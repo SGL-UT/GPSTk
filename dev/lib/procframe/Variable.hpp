@@ -71,7 +71,7 @@ namespace gpstk
                 bool satIndexed    = false );
 
 
-         /** Constructor for a Variable corresponding to an specific
+         /** Constructor for a Variable corresponding to a specific
           *  data source and satellite
           *
           * @param type        TypeID of variable.
@@ -87,7 +87,7 @@ namespace gpstk
                 const SatID& satellite );
 
 
-         /** Constructor for a Variable corresponding to an specific
+         /** Constructor for a Variable corresponding to a specific
           *  data source
           *
           * @param type        TypeID of variable.
@@ -101,7 +101,7 @@ namespace gpstk
                 const SourceID& source );
 
 
-         /** Constructor for a Variable corresponding to an specific
+         /** Constructor for a Variable corresponding to a specific
           *  satellite
           *
           * @param type        TypeID of variable.
