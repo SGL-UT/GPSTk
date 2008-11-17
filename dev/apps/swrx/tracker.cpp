@@ -73,7 +73,7 @@ private:
    bool fakeL2;
 
    double timeStep; // Time between samples
-   double interFreq; // Intermediate frequency from receive
+   double interFreq; // Intermediate frequency from receiver
 
    double timeLimit;
    IQStream *input;
@@ -293,10 +293,10 @@ void RxSim::process()
                tr->dump(cout);
 
                // Test code to skip input to speed up tracking.
-               /* int count = 0;
-            while(count < 0*16367)
+               /*int count2 = 0;
+            while(count2 < 3*16367)
             {
-               count++;
+               count2++;
                *input >> s;
                }*/
 

@@ -1,10 +1,12 @@
 #pragma ident "$Id$"
 
+
 /*
 g++ -c -o trackerMT.o -O -I. -I/.../gpstk/dev/apps/swrx -I/.../gpstk/dev/src trackerMT.cpp
 
 g++ -o trackerMT trackerMT.o /.../gpstk/dev/apps/swrx/simlib.a /.../gpstk/dev/src/libgpstk.a -lm -lstdc++ -lfftw3 -lm -lpthread
 */
+
 
 //============================================================================
 //
@@ -29,7 +31,7 @@ g++ -o trackerMT trackerMT.o /.../gpstk/dev/apps/swrx/simlib.a /.../gpstk/dev/sr
 //============================================================================
 
 /*
-  The first cut at a tracker for multiple PRNs. 
+  The first cut at a parallel tracker for multiple PRNs. 
 */
 
 #include <math.h>
@@ -60,20 +62,22 @@ using namespace std;
 #define exp10(x) (exp((x)*log(10.)))
 #endif
 
-#define errexit(code,str) fprintf(stderr,"%s: %s\n",(str),strerror(code)); exit(1);
+struct Buffer // input buffer
+{
+   vector< complex<float> > arr;
+}; 
 
-struct Par
-   {
-      int dp;
-      EMLTracker *tr;
-      complex<float> s;
-      int *count;
-      NavFramer *nf;
-   };
+struct Par // Parameters to pass to Pthread function.
+{
+   int dp;
+   EMLTracker *tr;
+   Buffer *s;
+   int *count;
+   NavFramer *nf;
+   bool v;
+};
 
-void *Cfunction(void*); // function to be called with pthreads
-void *Function2(void*); // copy of pthread function for testing purposes
-
+void *Cfunction(void*); // C-style function to be called with pthreads
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -95,7 +99,7 @@ private:
    int band;
    double gain;
    bool fakeL2;
-   int sat;
+   int sat; 
 
    double timeStep; // Time between samples
    double interFreq; // Intermediate frequency from receive
@@ -252,12 +256,12 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
       if (pllBetaOpt.getCount())
          tr[i]->pllBeta = asDouble(pllBetaOpt.getValue()[0]);
 
-      tr[i]->debugLevel = debugLevel;
-         //tr[i]->dump(cout, 1);
-
       tr[i]->prn = prn;
+      tr[i]->debugLevel = debugLevel;
+      
+      if(verboseLevel)
+         tr[i]->dump(cout, 1);
    }
-   
 
    char quantization='f';   
    if (quantizationOpt.getCount())
@@ -298,7 +302,6 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
       cout << "# Taking input from " << input->filename
            << " (" << input->bands << " samples/epoch)" << endl
            << "# Rx gain level: " << gain << endl;
-         //tr->dump(cout, 1);
    }
 
    return true;
@@ -330,27 +333,38 @@ void RxSim::process()
    }
 
    complex<float> s;
-   int b=0;
-   // ADD ERROR CODE for pthreads
    while (*input >> s)
    {
+      Buffer b;
+      b.arr.push_back(s);
+      dataPoint++;
+      int index = 0;
+      while(index < 20*16367) // Fill input buffer
+      {   
+         *input >> s;
+         b.arr.push_back(s);   
+         index++;
+         dataPoint++;
+      }
       for(int i = 0; i < numTrackers; i++)
       {
-         p[i].dp = dataPoint;
-         p[i].s = s;
+         p[i].dp = dataPoint; // Set parameters for each tracker.
+         p[i].s = &b;
          p[i].count = &count[i];
          p[i].tr = tr[i];
          p[i].nf = &nf[i];
+         p[i].v = (verboseLevel);
          
-         Function2(&p[i]); // same function, just no pthread
-            /*rc = pthread_create( &thread_id[i], &attr, Cfunction, &p[i] ) ;
+   // Split
+         rc = pthread_create( &thread_id[i], &attr, Cfunction, &p[i] ) ;
          if (rc)
          {
             printf("ERROR; return code from pthread_create() is %d\n", rc);
             exit(-1);
-            }*/
+         }
       }
-         /*
+
+   // Join
       for(int i = 0; i < numTrackers; i++)
       {
          rc = pthread_join( thread_id[i], &status) ;
@@ -359,10 +373,9 @@ void RxSim::process()
             printf("ERROR; return code from pthread_join() is %d\n", rc);
             exit(-1);
          }
-         }*/
+      }
       if (cc->localTime > timeLimit)
          break;
-      dataPoint++;
    }
    pthread_attr_destroy(&attr);
 }
@@ -386,82 +399,43 @@ int main(int argc, char *argv[])
    { cerr << "Caught unknown exception" << endl; }
 }
 
-void *Function2(void* p)
-{
-   Par *par = (Par*)p;
-      //cout << par->dp << " " <<  par->count << " " <<  par->s << endl;
-   EMLTracker *tr = par->tr;
-   int *count = par->count;
-   NavFramer *nf = par->nf;
-   int dp = par->dp;
-   complex<double> s = par->s;
-   
-   if (tr->process(s))
-   {
-         //tr->dump(cout);
-
-// Following two if statements are specific to tracker updating every 
-// 1 ms. We also still need to add the code offset to the dataPoint...
-      if(tr->navChange)
-      {
-         //cout << *count << "CHANGE" << endl;
-         nf->process(*tr, dp, 
-                     (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
-         *count = 0;
-      }
-      if(*count == 20)
-      {
-            //cout << *count << "TWENTY" << endl;
-         *count = 0;
-         nf->process(*tr, dp, 
-                     (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
-      }
-         
-      *count = *count + 1;
-      //cout << *count << "COUNT" << endl;
-      }
-      //cout << "calling" << pthread_self() << endl;
-   return NULL;
-}
-
-
 void *Cfunction(void* p)
 {
-      //cout << "c" << endl;
-      
    Par *par = (Par*)p;
-      //cout << par->dp << " " <<  par->count << " " <<  par->s << endl;
+   
    EMLTracker *tr = par->tr;
    int *count = par->count;
    NavFramer *nf = par->nf;
    int dp = par->dp;
-   complex<double> s = par->s;
+   Buffer *b = par->s;
+   bool v = par->v;
    
-   if (tr->process(s))
-   {   
-      tr->dump(cout);
-
-// Following two if statements are specific to tracker updating every 
-// 1 ms. We also still need to add the code offset to the dataPoint...
-      if(tr->navChange)
+   int index = 0; //
+   
+   while(index < 20*16367 + 1) // number of data points to track before join.
+   {
+      if (tr->process(b->arr[index]))
       {
-         //cout << *count << "CHANGE" << endl;
-         nf->process(*tr, dp, 
-                     (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
-         *count = 0;
-      }
-      if(*count == 20)
-      {
-            //cout << *count << "TWENTY" << endl;
-         *count = 0;
-         nf->process(*tr, dp, 
-                     (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
-      }
+         if(v)
+            tr->dump(cout);
          
-      *count = *count + 1;
-      //cout << *count << "COUNT" << endl;
+         if(tr->navChange)
+         {
+            nf->process(*tr, dp, 
+                     (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
+            *count = 0;
+         }
+         if(*count == 20)
+         // The *20* depends on the tracker updating every C/A period.
+         {
+            *count = 0;
+            nf->process(*tr, dp, 
+                     (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
+         }
+         
+         *count = *count + 1;
       }
-      //cout << "calling" << pthread_self() << endl;
-      //return NULL;
+      index++;
+   } 
    pthread_exit(NULL);
 }

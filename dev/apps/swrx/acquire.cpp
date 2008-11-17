@@ -6,7 +6,7 @@ FFT based acquisition for GPS L1 band.  (Parallel Code Phase Search).
 
 Example usage:
 
-...$ hilbert | acquire -q 2 -x 4.092 -r 16.368 -b 1 -c 21 -p1 > output.txt
+...$ hilbert | acquire -q 2 -x 4.092 -r 16.368 -b 1 -c 21 -p 1 
 
       = 2 bit quantization, 4.092 MHz IF, 16.368 MHz sample rate, one band, PRN 21, one period.
 
@@ -15,36 +15,38 @@ Example usage:
       = float quantization(default), 2 bands (default), 5 periods.
 
 
-
 GCC commands: (not added to Jamfile yet, since this links to FFTW)
 
-g++ -c -o acquire.o -O -I. -I/.../gpstk/dev/apps/swrx -I/.../gpstk/dev/src acquire.cpp
+g++ -c -o acquireMT.o -O -I. -I/.../gpstk/dev/apps/swrx -I/.../gpstk/dev/src acquireMT.cpp
 
-g++ -o acquire acquire.o /.../gpstk/dev/apps/swrx/simlib.a /.../gpstk/dev/src/libgpstk.a -lm -lstdc++ -lfftw3 -lm
+g++ -o acquireMT acquireMT.o /.../gpstk/dev/apps/swrx/simlib.a /.../gpstk/dev/src/libgpstk.a -lm -lstdc++ -lfftw3 -lm -lpthread
 
+GetAllPRNs.sh is a bash script to search for all GPS satellites.
 */
 
 #include <math.h>
 #include <complex>
 #include <iostream>
 #include <vector>
-
-
 #include <fftw3.h>
 
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 #include "StringUtils.hpp"
 #include "icd_200_constants.hpp"
-
 #include "CCReplica.hpp"
 #include "CACodeGenerator.hpp"
 #include "complex_math.h"
-
 #include "IQStream.hpp"
 
 using namespace gpstk;
 using namespace std;
+
+struct Par
+{
+   fftw_plan plan;
+};
+void *compute(void*);
 
 class Acquire : public BasicFramework
 {
@@ -198,24 +200,73 @@ void Acquire::process()
    CACodeGenerator* codeGenPtr = new CACodeGenerator(prn);
    float chipFreq = gpstk::CA_CHIP_FREQ;
 
-   vector< complex<float> > v(numSamples);
-   vector< vector <complex<float> > > l(bins, v); // local code bins
-   vector< complex<float> >in(numSamples); // input
-   
+// -------------------------------------------------------------------
+// Set up all arrays:
+// fftw_complex data type is a double[2] where the 0 element is the real
+// part and the 1 element is the imaginary part.
+
+// Local code replicas in time domain
+   vector< fftw_complex* > l(bins);
+   for(int i=0;i<bins;i++)
+   {
+      fftw_complex* v;
+      v = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
+      l[i] = v;
+   }
+// Input data in time domain
+   fftw_complex* in;
+   in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
+// Local code replicas in frequency domain
+   vector< fftw_complex* > L(bins);
+   for(int i=0;i<bins;i++)
+   {
+      fftw_complex* v2;
+      v2 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
+      L[i] = v2;
+   }
+// Input data in frequency domain
+   fftw_complex* IN;
+   IN = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
+
+   fftw_complex* I;
+   fftw_complex* O;
+
+// Input * local replica in frequency domain.
+   vector< fftw_complex* > MULT(bins);
+   for(int i=0;i<bins;i++)
+   {
+      fftw_complex* v3;
+      v3 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
+      MULT[i] = v3;
+   }
+// Final results in time domain
+   vector< fftw_complex* > fin(bins);
+   for(int i=0;i<bins;i++)
+   {
+      fftw_complex* v4;
+      v4 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
+      fin[i] = v4;
+   }
+// -------------------------------------------------------------------
+
    // Get input code
    int sample = 0;  
    complex<float> s;
    while (*input >> s && sample < numSamples)
    {
-      in[sample] = (s); 
+      in[sample][0] = real(s); 
+      in[sample][1] = imag(s);
       sample ++;
-
       for(int i = 1; i < bands; i++)
       {*input >> s;} // gpsSim outputs 2 bands (L1 and L2), one after the other.
          // This program currently supports L1 only, this loop throws away
          // the input from L2, or any other bands.
    }
-  
+
+   // Convert input code to frequency domain.
+   fftw_plan p;
+   p = fftw_plan_dft_1d(numSamples, in, IN, FFTW_FORWARD, FFTW_ESTIMATE);
+   fftw_execute(p);
 
    // Create local code replicas for each frequency bin.
    float f = -(freqSearchWidth/2); // initial doppler offset
@@ -227,110 +278,115 @@ void Acquire::process()
       {
          complex<double> carrier = cc->getCarrier();
          complex<double> code = cc->getCode() ? 1 : -1;
-         l[i][k] = (code) * (carrier); 
+         l[i][k][0] = real((complex<double>)((code) * (carrier))); 
+         l[i][k][1] = imag((complex<double>)((code) * (carrier))); 
          cc->tick();
       }
       f += freqBinWidth;
    }
-   
+
    // Convert local code replicas to frequency domain.
-   vector< complex<float> > v2(numSamples);
-   vector< vector <complex<float> > > L(bins, v2); // Transforms of local codes
-   fftw_complex *IN;
-   fftw_complex *OUT;
-   fftw_plan p; 
-   fftw_plan p2;
-   IN = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
-   OUT = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
-   p = fftw_plan_dft_1d(numSamples, IN, OUT, FFTW_FORWARD, FFTW_MEASURE);
+   fftw_plan plans[bins];
+   pthread_t thread_id[bins];
+   vector<Par> par(bins);
+   int rc;
    for(int i = 0; i < bins; i++)
    {
-      for(int k = 0; k < numSamples; k++)
-      {
-         IN[k][0] = real(l[i][k]);
-         IN[k][1] = imag(l[i][k]); 
-      }
-      fftw_execute(p);
-      for(int k = 0; k < numSamples; k++)
-      {
-         L[i][k] = (complex<float>(OUT[k][0],OUT[k][1]) / (float)sqrt(numSamples));
-      }
+      plans[i] = fftw_plan_dft_1d
+         (numSamples, l[i], L[i], FFTW_FORWARD, FFTW_ESTIMATE);
+      par[i].plan = plans[i];
    }
-                                                                         
-   p = fftw_plan_dft_1d(numSamples, IN, OUT, FFTW_FORWARD, FFTW_MEASURE);
-
-   // Convert input code to frequency domain. 
-   complex<float>X[numSamples];  // Transform of input code.
-   for(int i = 0; i < numSamples; i++)
+   for(int i = 0; i < bins; i++)
    {
-      IN[i][0] = real(in[i]);
-      IN[i][1] = imag(in[i]); 
-   }
-   fftw_execute(p);
-   for(int i = 0; i < numSamples; i++)
-   {
-      X[i] = (complex<float>(OUT[i][0],OUT[i][1]) / (float)sqrt(numSamples));
+      rc = pthread_create( &thread_id[i], NULL, compute, &par[i] ) ;
+      if (rc)
+      {
+         printf("ERROR; return code from pthread_create() is %d\n", rc);
+         exit(-1);
+      }
    }
    
-  
+   for(int i = 0; i < bins; i++)
+   {
+      rc = pthread_join( thread_id[i], NULL) ;
+      if (rc)
+      {
+         printf("ERROR; return code from pthread_join() is %d\n", rc);
+         exit(-1);
+      }
+   }
+   
+      // NOTE: may want to put following  multiplication into the pthread 
+      // function.
+      // Will need to pass #bins, #samples and pointers to vectors in a Par.
+
+      // Right now we're only using pthreads to compute FFT's of local codes 
+      // in parallel, and there is hardly any performance increase.
+
    // Multiply conjugate of input frequency samples by 
    // local frequency samples (point by point).
+   complex<double> lo;
+   complex<double> input;
+   complex<double> temp;
    for(int i = 0; i < bins; i++)
    {
       for(int k = 0; k < numSamples; k++)
       {
-         L[i][k] = L[i][k] * (conj(X[k]));
+         lo = (complex<double>(L[i][k][0],L[i][k][1]))
+            /(double)sqrt(numSamples);
+         input = conj(complex<double>(IN[k][0],IN[k][1]))
+            /(double)sqrt(numSamples);
+         temp = lo * input;  
+         MULT[i][k][0] = real(temp);
+         MULT[i][k][1] = imag(temp);
       }
    }
-
-   float max = 0.0;
-   int bin, chip;
-
    // Convert back to time domain and find peak.
-   p2 = fftw_plan_dft_1d(numSamples, IN, OUT, 1, FFTW_MEASURE);
+   for(int i = 0; i < bins; i++)
+   {
+      p = fftw_plan_dft_1d(numSamples, MULT[i], fin[i], 1, FFTW_ESTIMATE);
+      fftw_execute(p);
+   }
+   double max = 0.0;
+   int bin, shift;
    for(int i = 0; i < bins; i++)
    {
       for(int k = 0; k < numSamples; k++)
-      {
-         IN[k][0] = real(L[i][k]);
-         IN[k][1] = imag(L[i][k]);
-      }
-      fftw_execute(p2);
-      for(int k = 0; k < numSamples; k++)
-      {
-         l[i][k] = abs(complex<float>(OUT[k][0],OUT[k][1]) / 
-                       (float)sqrt(numSamples)); 
-         if(real(l[i][k]) > max) 
+      { 
+         fin[i][k][0] = abs(complex<double>
+                                       (fin[i][k][0],fin[i][k][1])
+                                       / (double)sqrt(numSamples));
+         if(real(complex<double>(fin[i][k][0],fin[i][k][1])) > max) 
          {
-            max = real(l[i][k]);
-            chip = k;
+            max = real(complex<double>(fin[i][k][0],fin[i][k][1]));
+            shift = k;
             bin = i;
          }
-      }     
+      }
    }
 
    // Adjust code phase value for multiple periods in time domain. 
-   while(chip > (sampleRate*1e-3))
+   while(shift > (sampleRate*1e-3))
    {
-      chip = chip - (sampleRate*1e-3);
+      shift = shift - (sampleRate*1e-3);
    }
    
    // Dump Information.
-   cout << "PRN: " << prn << " Bin: " << bin << " =  Doppler: " 
+   if(max < 50)
+      cout << "PRN: " << prn << " Unable to acquire." << endl;
+   if(max >= 50)
+      cout << "PRN: " << prn << " Doppler: " 
         << (bin*1e3)/(1000/freqBinWidth) - (freqSearchWidth/2)
-        << " Offset: " << chip*1000/(sampleRate*1e-3)
+        << " Offset: " << shift*1000/(sampleRate*1e-3)
         << " Height: " << max << endl;
 
-   // Output correlation curve for graphing purposes. 
-   /*
-   for(int k = 0; k < numSamples; k++)
+   // Output correlation curve for graphing purposes.
+   /*for(int k = 0; k < numSamples; k++)
    {
-      cout << float((k/16.368)*1.023) << " " << real(l[bin][k]) << endl;
-   }
-   */
-
-   fftw_destroy_plan(p2);fftw_destroy_plan(p);
-   fftw_free(IN); fftw_free(OUT); 
+      cout << float((k/16.368)*1.023) << " " << (fin[bin][k][0]) << endl;
+   }*/
+   fftw_destroy_plan(p);
+   fftw_free(IN); fftw_free(in);
 }
 
 //-----------------------------------------------------------------------------
@@ -349,4 +405,11 @@ int main(int argc, char *argv[])
    { cerr << "Caught std::exception " << exc.what() << endl; }
    catch (...)
    { cerr << "Caught unknown exception" << endl; }
+}
+
+void *compute(void *par)
+{
+   Par *p = (Par*)par;
+   fftw_plan plan = p->plan;
+   fftw_execute(plan);
 }
