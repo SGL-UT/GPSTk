@@ -89,7 +89,7 @@ namespace Rinex3
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      Xvt getXvt(const SatID sat, const CivilTime& t)
+      Xvt getXvt(const SatID sat, const CommonTime& t)
          const throw(InvalidRequest);
       
 
@@ -104,8 +104,8 @@ namespace Rinex3
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param tmin defines the beginning of the time interval
       /// @param tmax defines the end of the time interval
-      void edit(const CivilTime& tmin, 
-                const CivilTime& tmax = CivilTime(CivilTime::END_OF_TIME) )
+      void edit(const CommonTime& tmin, 
+                const CommonTime& tmax = CommonTime(CommonTime::END_OF_TIME) )
          throw();
 
 
@@ -113,7 +113,7 @@ namespace Rinex3
       /// determine the Xvt for any satellite.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      CivilTime getInitialTime()
+      CommonTime getInitialTime()
          const throw(InvalidRequest)
       {return initialTime;}
 
@@ -122,7 +122,7 @@ namespace Rinex3
       /// determine the Xvt for any satellite.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      CivilTime getFinalTime()
+      CommonTime getFinalTime()
          const throw(InvalidRequest)
       {return finalTime;}
 
@@ -137,7 +137,7 @@ namespace Rinex3
       /// @param t the time to look up
       /// @return the SV health bits
       /// @throw InvalidRequest no matching ephemeris found in the store
-      short getSatHealth(const SatID sat, const CivilTime& t)
+      short getSatHealth(const SatID sat, const CommonTime& t)
          const throw(InvalidRequest);
 
 
@@ -150,14 +150,14 @@ namespace Rinex3
       
       /// Remove EngEphemeris objects older than t.
       /// @param t remove EngEphemeris objects older than this
-      void wiper(const CivilTime& t)
+      void wiper(const CommonTime& t)
          throw()
       {edit(t);}
       
       /// Remove all data from this collection.   
       void clear()
          throw()
-      {edit(CivilTime(CivilTime::END_OF_TIME));}
+      {edit(CommonTime(CommonTime::END_OF_TIME));}
       
       /** This returns the pvt of the sv in ecef coordinates
        * (units m, s, m/s, s/s) at the indicated time.
@@ -166,7 +166,7 @@ namespace Rinex3
        * @param ref a place to return the IODC for future reference.
        * @return the Xvt of the SV at time t
        */
-      Xvt getXvt(const SatID sat, const CivilTime& t, short& ref)
+      Xvt getXvt(const SatID sat, const CommonTime& t, short& ref)
          const throw(InvalidRequest);
 
       /// Get the number of EngEphemeris objects in this collection.
@@ -184,7 +184,7 @@ namespace Rinex3
       /// @param t time with which to search for ephemeris
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findEphemeris(const SatID sat, const CivilTime& t)
+      const EngEphemeris& findEphemeris(const SatID sat, const CommonTime& t)
          const throw(InvalidRequest);
       
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
@@ -195,7 +195,7 @@ namespace Rinex3
       /// @param t the time of interest
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findUserEphemeris(const SatID sat, const CivilTime& t)
+      const EngEphemeris& findUserEphemeris(const SatID sat, const CommonTime& t)
          const throw(InvalidRequest);
 
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
@@ -205,7 +205,7 @@ namespace Rinex3
       /// @param t the time of interest
       /// @return a reference to desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findNearEphemeris(const SatID sat, const CivilTime& t)
+      const EngEphemeris& findNearEphemeris(const SatID sat, const CommonTime& t)
          const throw(InvalidRequest);
 
       /// Add all ephemerides to an existing list<EngEphemeris>.
@@ -225,7 +225,7 @@ namespace Rinex3
 
       /// This is intended to just store sets of unique EngEphemerides
       /// for a single SV.  The key is the Toe - 1/2 the fit interval.
-      typedef std::map<CivilTime, EngEphemeris> EngEphMap;
+      typedef std::map<CommonTime, EngEphemeris> EngEphMap;
       
       /// Returns a map of the ephemerides available for the specified
       /// satellite.  Note that the return is specifically chosen as a 
@@ -243,8 +243,8 @@ namespace Rinex3
       /// The map where all EngEphemerides are stored.
       UBEMap ube;
       
-      CivilTime initialTime; //< Time of the first EngEphemeris
-      CivilTime finalTime;   //< Time of the last EngEphemeris
+      CommonTime initialTime; //< Time of the first EngEphemeris
+      CommonTime finalTime;   //< Time of the last EngEphemeris
       
       /// flag indicating search method (find...Eph) to use in getSatXvt 
       ///  and getSatHealth

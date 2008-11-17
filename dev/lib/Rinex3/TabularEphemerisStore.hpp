@@ -50,7 +50,7 @@
 #include <iostream>
 
 #include "SatID.hpp"
-#include "CivilTime.hpp"
+#include "CommonTime.hpp"
 #include "XvtStore.hpp"
 #include "SP3Data.hpp"
 
@@ -96,7 +96,7 @@ namespace Rinex3
           *    information as to why the request failed.
           */
       virtual Xvt getXvt( const SatID id,
-                          const CivilTime& t )
+                          const CommonTime& t )
          const throw(InvalidRequest);
 
 
@@ -117,8 +117,8 @@ namespace Rinex3
           * @param[in] tmin defines the beginning of the time interval
           * @param[in] tmax defines the end of the time interval
           */
-      virtual void edit( const CivilTime& tmin,
-                         const CivilTime& tmax = CivilTime(CivilTime::END_OF_TIME) )
+      virtual void edit( const CommonTime& tmin,
+                         const CommonTime& tmax = CommonTime(CommonTime::END_OF_TIME) )
          throw();
 
 
@@ -129,7 +129,7 @@ namespace Rinex3
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      virtual CivilTime getInitialTime()
+      virtual CommonTime getInitialTime()
          const throw(InvalidRequest)
       { return initialTime; };
 
@@ -141,7 +141,7 @@ namespace Rinex3
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      virtual CivilTime getFinalTime()
+      virtual CommonTime getFinalTime()
          const throw(InvalidRequest)
       { return finalTime; };
 
@@ -224,7 +224,7 @@ namespace Rinex3
 
 
          /// The key to this map is the time
-      typedef std::map<CivilTime, Xvt> SvEphMap;
+      typedef std::map<CommonTime, Xvt> SvEphMap;
 
 
          /// The key to this map is the svid of the satellite (usually the prn)
@@ -240,7 +240,7 @@ namespace Rinex3
           * NB there may be gaps in the data, i.e. the data may not be
           * continuous.
           */
-      CivilTime initialTime, finalTime;
+      CommonTime initialTime, finalTime;
 
 
          /** Flag to check for data gaps.
