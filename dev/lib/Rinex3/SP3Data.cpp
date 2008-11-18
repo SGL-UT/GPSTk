@@ -61,8 +61,8 @@ namespace gpstk
       string line;
       if(flag == '*') {// output Epoch Header Record
          line = "* ";
-         line += time.printf(" %4Y %2m %2d %2H %2M");
-         line += " " + rightJustify(time.printf("%.8f"),11);
+//         line += time.printf(" %4Y %2m %2d %2H %2M");
+//         line += " " + rightJustify(time.printf("%.8f"),11);
       }
       else {           // output Position and Clock OR Velocity and Clock Rate Record
          line = flag;
@@ -116,8 +116,8 @@ namespace gpstk
 
    void SP3Data::dump(ostream& s) const 
    {
-      s << flag << " " << sat
-         << " " << time.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g");
+      s << flag << " " << sat;
+//         << " " << time.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g");
       if(flag != '*') {
          s << fixed << setprecision(6)
            << " X=" << setw(14) << x[0]
