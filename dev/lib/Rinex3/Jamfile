@@ -12,7 +12,7 @@ if $(TEST) = 1
 	{
 	  # Please add in alphabetic order
 	  GPSBuildLibrary Rinex3 : 
-	  GPSEphemerisStore.cpp  SP3EphemerisStore.cpp  TabularEphemerisStore.cpp
+	  CommonTime.cpp DayTime.cpp GPSEphemerisStore.cpp  SP3EphemerisStore.cpp  TabularEphemerisStore.cpp
 	    ;
 
 	  InstallFile $(INCDIR) : 
