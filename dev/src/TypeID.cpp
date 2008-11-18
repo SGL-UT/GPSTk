@@ -130,6 +130,7 @@ namespace gpstk
       tStrings[BL6]        = "ambiguityL6";
       tStrings[BL7]        = "ambiguityL7";
       tStrings[BL8]        = "ambiguityL8";
+      tStrings[BLC]        = "ambiguityLC";
       tStrings[mpC1]       = "multipathC1";
       tStrings[mpC2]       = "multipathC2";
       tStrings[mpC5]       = "multipathC5";
