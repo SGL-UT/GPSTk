@@ -163,7 +163,7 @@ namespace Rinex3
       CommonTime t(0,0,0.0);
       t =  eph.getEphemerisEpoch();
       t -= 0.5*3600.0*eph.getFitInterval();
-      t.setTimeFrame("GPS_Receiver");
+//      t.setTimeFrame("GPS_Receiver");
    
       EngEphMap& eem = ube[eph.getPRNID()];
       EngEphMap::iterator sfi = eem.find(t);
@@ -302,10 +302,10 @@ namespace Rinex3
 
       if (it == em.end())
       {
-         string mess = "No eph found for satellite "
-            + asString(sat) + " at " + t.printf("%03j %02H:%02M:%02S");
-         InvalidRequest e(mess);
-         GPSTK_THROW(e);
+//         string mess = "No eph found for satellite "
+//            + asString(sat) + " at " + t.printf("%03j %02H:%02M:%02S");
+//         InvalidRequest e(mess);
+//         GPSTK_THROW(e);
       }
 
       return it->second;
@@ -370,10 +370,10 @@ namespace Rinex3
 
       if (it == em.end())
       {
-         string mess = "No eph found for satellite "
-            + asString(sat) + " at " + t.printf("%03j %02H:%02M:%02S");
-         InvalidRequest e(mess);
-         GPSTK_THROW(e);
+//         string mess = "No eph found for satellite "
+//            + asString(sat) + " at " + t.printf("%03j %02H:%02M:%02S");
+//         InvalidRequest e(mess);
+//         GPSTK_THROW(e);
       }
 
       return it->second;
