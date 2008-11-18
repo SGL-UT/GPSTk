@@ -46,6 +46,7 @@
 //------------------------------------------------------------------------------------
 // includes
 // system
+#include <cstring>
 
 // GPSTk
 #include "CommandOption.hpp"

@@ -27,6 +27,8 @@
  * Read and summarize Rinex observation files, optionally fill header in-place.
  */
 
+#include <cstring>
+
 #include "MathBase.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"

@@ -36,6 +36,8 @@
 //
 //=============================================================================
 
+#include <cstring>
+
 #include "StringUtils.hpp"
 #include "BinUtils.hpp"
 
@@ -268,7 +270,7 @@ namespace gpstk
          {
             fw = ffs.getData<uint16_t>();
             fw = netToHost(fw);
-            memcpy(buff, &fw, sizeof(fw));
+            std::memcpy(buff, &fw, sizeof(fw));
             if (fw==frameWord)
                break;
          }

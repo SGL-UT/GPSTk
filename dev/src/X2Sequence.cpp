@@ -44,12 +44,8 @@
 //
 //=============================================================================
 
-
-
-
-
-
    // Language headers
+#include <cstring>
 #include <stdio.h>
 #include <string>
 
@@ -211,7 +207,7 @@ namespace gpstk
          // appropriate place.
       const size_t numBytesPerWord = 4;
       size_t numBytes = NUM_X2_WORDS * numBytesPerWord;
-      memcpy( X2BitsEOW, X2Bits, numBytes );
+      std::memcpy( X2BitsEOW, X2Bits, numBytes );
       numBytes = LENGTH_OF_EOW_OVERLAP * numBytesPerWord;
       memcpy( (void *) &X2BitsEOW[OVERLAP_WORD_POSITION], EOWEndOfSequence, numBytes );
    

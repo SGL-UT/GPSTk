@@ -27,6 +27,8 @@
  * pseudorange position solution, using a RAIM-like algorithm to eliminate outliers.
  */
 
+#include <cstring>
+
 #define RANGECHECK 1        // make Matrix and Vector check limits
 #include "Exception.hpp"
 #include "StringUtils.hpp"

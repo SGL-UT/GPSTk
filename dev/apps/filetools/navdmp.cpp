@@ -41,10 +41,7 @@
 //
 //=============================================================================
 
-
-
-
-
+#include <iterator>
 
 #include "CommandOptionWithTimeArg.hpp"
 #include "FileFilterFrame.hpp"
@@ -145,7 +142,7 @@ void NavDump::printCurrentFilter()
       cout << "using all PRNs";
    else
       copy(prnFilterList.begin(), prnFilterList.end(),
-           ostream_iterator<long>(cout, " "));
+           std::ostream_iterator<long>(cout, " "));
    if (!isRinexInput)
    {
       cout << endl

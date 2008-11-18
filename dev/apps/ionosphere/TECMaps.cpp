@@ -30,6 +30,8 @@
  *    model, and the type of data (VTEC, MUF or F0F2) to be used. TD ...
  */
 
+#include <cstring>
+
 #include "StringUtils.hpp"
 #include "DayTime.hpp"
 #include "RinexSatID.hpp"

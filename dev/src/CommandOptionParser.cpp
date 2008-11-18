@@ -48,6 +48,7 @@
  * Parse command line options.
  */
 
+#include <cstring>
 #include "CommandOptionParser.hpp"
 
 #include "StringUtils.hpp"
@@ -350,7 +351,7 @@ namespace gpstk
                                                unsigned long& oldSize)
    {
       struct option* newArray = new struct option[1 + oldSize];
-      memcpy(newArray, oldArray, oldSize * sizeof(struct option));
+      std::memcpy(newArray, oldArray, oldSize * sizeof(struct option));
       delete [] oldArray;
       oldArray = newArray;
       newArray = NULL;

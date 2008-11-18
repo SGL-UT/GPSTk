@@ -1,7 +1,6 @@
 #pragma ident "$Id$"
 
 
-
 /**
  * @file FICData.cpp
  * gpstk::FICData - container for the FIC file data.
@@ -43,10 +42,7 @@
 //
 //=============================================================================
 
-
-
-
-
+#include <cstring>
 
 #include "StringUtils.hpp"
 #include "BinUtils.hpp"
@@ -852,7 +848,7 @@ namespace gpstk
       if (headerFlag)
          os << "              Week(10bt)     SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS\n";
       os << legend;
-      slen = strlen(legend);
+      slen = std::strlen(legend);
       for (j=1;j<(15-slen);j++) os << " ";
 
          // Convert to daytime struct from GPS wk,SOW to M/D/Y, H:M:S.

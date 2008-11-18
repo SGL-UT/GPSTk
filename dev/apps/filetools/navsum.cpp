@@ -40,6 +40,8 @@
 //
 //=============================================================================
 
+#include <iterator>
+
 #include "CommandOptionWithTimeArg.hpp"
 #include "FileFilterFrame.hpp"
 #include "BasicFramework.hpp"

@@ -42,6 +42,7 @@
  * binary data files to Rinex
  */
 
+#include <cstring>
 #include "BinUtils.hpp"
 #include "StringUtils.hpp"
 #include "DayTime.hpp"
@@ -298,7 +299,7 @@ namespace gpstk
                if(rectype != Unknown) {
 
                      // get the size of the record
-                  memmove(&datasize, &(buffer[8]), 4);
+                  std::memmove(&datasize, &(buffer[8]), 4);
                   intelToHost(datasize);
                   if (debug)
                      cout << "datasize:" << datasize << endl;
@@ -383,15 +384,15 @@ namespace gpstk
                   // (only need some of the data here - cast to Rinex functions
                   // will parse the whole thing)
                unsigned char headerLength;
-               memmove(&headerLength, &(buffer[3]), 1);  intelToHost(headerLength);
+               std::memmove(&headerLength, &(buffer[3]), 1);  intelToHost(headerLength);
                short messageID;
-               memmove(&messageID, &(buffer[4]), 2);     intelToHost(messageID);
+               std::memmove(&messageID, &(buffer[4]), 2);     intelToHost(messageID);
                //char messageType;
                //memmove(&messageType, &(buffer[6]), 1);   intelToHost(messageType);
                //char portAddress;
                //memmove(&portAddress, &(buffer[7]), 1);   intelToHost(portAddress);
                short messageLength;
-               memmove(&messageLength, &(buffer[8]), 2); intelToHost(messageLength);
+               std::memmove(&messageLength, &(buffer[8]), 2); intelToHost(messageLength);
                //short sequence;
                //memmove(&sequence, &(buffer[10]), 2);     intelToHost(sequence);
                //char idleTime;
@@ -556,31 +557,31 @@ namespace gpstk
             // parse header
             // Ref OEM4 Manual pg 16
          unsigned char headerLength;
-         memmove(&headerLength,  &(buffer[3]), 1); intelToHost(headerLength);
+         std::memmove(&headerLength,  &(buffer[3]), 1); intelToHost(headerLength);
          short messageID;
-         memmove(&messageID,     &(buffer[4]), 2); intelToHost(messageID);
+         std::memmove(&messageID,     &(buffer[4]), 2); intelToHost(messageID);
          char messageType;
-         memmove(&messageType,   &(buffer[6]), 1); intelToHost(messageType);
+         std::memmove(&messageType,   &(buffer[6]), 1); intelToHost(messageType);
          char portAddress;
-         memmove(&portAddress,   &(buffer[7]), 1); intelToHost(portAddress);
+         std::memmove(&portAddress,   &(buffer[7]), 1); intelToHost(portAddress);
          short messageLength;
-         memmove(&messageLength, &(buffer[8]), 2); intelToHost(messageLength);
+         std::memmove(&messageLength, &(buffer[8]), 2); intelToHost(messageLength);
          short sequence;
-         memmove(&sequence,     &(buffer[10]), 2); intelToHost(sequence);
+         std::memmove(&sequence,     &(buffer[10]), 2); intelToHost(sequence);
          char idleTime;
-         memmove(&idleTime,     &(buffer[12]), 1); intelToHost(idleTime);
+         std::memmove(&idleTime,     &(buffer[12]), 1); intelToHost(idleTime);
          char timeStatus;
-         memmove(&timeStatus,   &(buffer[13]), 1); intelToHost(timeStatus);
+         std::memmove(&timeStatus,   &(buffer[13]), 1); intelToHost(timeStatus);
          short week;
-         memmove(&week,         &(buffer[14]), 2); intelToHost(week);
+         std::memmove(&week,         &(buffer[14]), 2); intelToHost(week);
          long msecOfWeek;
-         memmove(&msecOfWeek,   &(buffer[16]), 4); intelToHost(msecOfWeek);
+         std::memmove(&msecOfWeek,   &(buffer[16]), 4); intelToHost(msecOfWeek);
          long rxStatus;
-         memmove(&rxStatus,     &(buffer[20]), 4); intelToHost(rxStatus);
+         std::memmove(&rxStatus,     &(buffer[20]), 4); intelToHost(rxStatus);
          short reserved;
-         memmove(&reserved,     &(buffer[24]), 2); intelToHost(reserved);
+         std::memmove(&reserved,     &(buffer[24]), 2); intelToHost(reserved);
          short rxSWVersion;
-         memmove(&rxSWVersion,  &(buffer[26]), 2); intelToHost(rxSWVersion);
+         std::memmove(&rxSWVersion,  &(buffer[26]), 2); intelToHost(rxSWVersion);
                
             // parse data
             // Ref OEM4 Manual pg 206
@@ -588,12 +589,12 @@ namespace gpstk
          long gpsSOW;
 
             // get PRN and timetag 
-         memmove(&templ, &(buffer[28]), 4);
+         std::memmove(&templ, &(buffer[28]), 4);
          intelToHost(templ);
          prn = short(templ);
-         memmove(&gpsWeek, &(buffer[32]), 4);      // long gpsWeek is member data
+         std::memmove(&gpsWeek, &(buffer[32]), 4);      // long gpsWeek is member data
          intelToHost(gpsWeek);
-         memmove(&gpsSOW, &(buffer[36]), 4);
+         std::memmove(&gpsSOW, &(buffer[36]), 4);
          intelToHost(gpsSOW);
       
             // convert the 3 subframes and create EngEphemeris
@@ -626,7 +627,7 @@ namespace gpstk
          short track=1;
 
          // get PRN
-         memmove(&prn,&(buffer[12]), 4);
+         std::memmove(&prn,&(buffer[12]), 4);
          intelToHost(prn);
 
          // be sure week is defined
@@ -700,12 +701,12 @@ namespace gpstk
          }
 
             // number of observation records to follow
-         memmove(&temps, &(buffer[12]), 2);
+         std::memmove(&temps, &(buffer[12]), 2);
          intelToHost(temps);
          nobs = int32_t(temps);
 
             // GPS week (long gpsWeek is member data)
-         memmove(&temps, &(buffer[14]), 2);
+         std::memmove(&temps, &(buffer[14]), 2);
          intelToHost(temps);
 
             // resolve the week number ambiguity
@@ -717,12 +718,12 @@ namespace gpstk
 
             // seconds of week * 100
          int32_t gpsSOW;
-         memmove(&gpsSOW, &(buffer[16]), 4);
+         std::memmove(&gpsSOW, &(buffer[16]), 4);
          intelToHost(gpsSOW);
 
             // receiver status
          int32_t rxStatus;
-         memmove(&rxStatus, &(buffer[20]), 4);
+         std::memmove(&rxStatus, &(buffer[20]), 4);
          
             // put timetag into rod
          if (debug)
@@ -736,7 +737,7 @@ namespace gpstk
          for(i=0; i<nobs; i++) {
             uint32_t data[5];
             for(j=0; j<5; j++)
-               memmove(&data[j], &(buffer[24+i*20+j*4]), 4);
+               std::memmove(&data[j], &(buffer[24+i*20+j*4]), 4);
 
             int prn         =     int(data[0] & 0x0000003FL);
 
@@ -754,7 +755,7 @@ namespace gpstk
             if(data[2] & 0x80000000L)     // 2s complement
                Doppler = -double((((data[2] & 0xFFFFFFF0L) ^ 0xFFFFFFF0L) >> 4)+1);
    
-            //                                               this is 0xFFFFFFFF + 1
+            //                                               this is 0c++/4.3.2/tr1/exp_integral.tcc:xFFFFFFFF + 1
             double Pr       =  double(data[2] & 0x0000000FL) * 4294967296.
                              + double(data[3]);
             // could the pseudorange ever be negative?
@@ -858,31 +859,31 @@ namespace gpstk
             // header
             // Ref OEM4 Manual pg 16
          uint8_t headerLength;
-         memmove(&headerLength, &(buffer[3]), 1);  intelToHost(headerLength);
+         std::memmove(&headerLength, &(buffer[3]), 1);  intelToHost(headerLength);
          int16_t messageID;
-         memmove(&messageID, &(buffer[4]), 2);     intelToHost(messageID);
+         std::memmove(&messageID, &(buffer[4]), 2);     intelToHost(messageID);
          int8_t messageType;
-         memmove(&messageType, &(buffer[6]), 1);   intelToHost(messageType);
+         std::memmove(&messageType, &(buffer[6]), 1);   intelToHost(messageType);
          int8_t portAddress;
-         memmove(&portAddress, &(buffer[7]), 1);   intelToHost(portAddress);
+         std::memmove(&portAddress, &(buffer[7]), 1);   intelToHost(portAddress);
          int16_t messageLength;
-         memmove(&messageLength, &(buffer[8]), 2); intelToHost(messageLength);
+         std::memmove(&messageLength, &(buffer[8]), 2); intelToHost(messageLength);
          int16_t sequence;
-         memmove(&sequence, &(buffer[10]), 2);     intelToHost(sequence);
+         std::memmove(&sequence, &(buffer[10]), 2);     intelToHost(sequence);
          int8_t idleTime;
-         memmove(&idleTime, &(buffer[12]), 1);     intelToHost(idleTime);
+         std::memmove(&idleTime, &(buffer[12]), 1);     intelToHost(idleTime);
          int8_t timeStatus;
-         memmove(&timeStatus, &(buffer[13]), 1);   intelToHost(timeStatus);
+         std::memmove(&timeStatus, &(buffer[13]), 1);   intelToHost(timeStatus);
          int16_t week;
-         memmove(&week, &(buffer[14]), 2);         intelToHost(week);
+         std::memmove(&week, &(buffer[14]), 2);         intelToHost(week);
          int32_t msecOfWeek;
-         memmove(&msecOfWeek, &(buffer[16]), 4);   intelToHost(msecOfWeek);
+         std::memmove(&msecOfWeek, &(buffer[16]), 4);   intelToHost(msecOfWeek);
          int32_t rxStatus;
-         memmove(&rxStatus, &(buffer[20]), 4);     intelToHost(rxStatus);
+         std::memmove(&rxStatus, &(buffer[20]), 4);     intelToHost(rxStatus);
          int16_t reserved;
-         memmove(&reserved, &(buffer[24]), 2);     intelToHost(reserved);
+         std::memmove(&reserved, &(buffer[24]), 2);     intelToHost(reserved);
          int16_t rxSWVersion;
-         memmove(&rxSWVersion, &(buffer[26]), 2);  intelToHost(rxSWVersion);
+         std::memmove(&rxSWVersion, &(buffer[26]), 2);  intelToHost(rxSWVersion);
                
             // put timetag into rod
          rod.time = DayTime(week,double(msecOfWeek)/1000.);
@@ -893,7 +894,7 @@ namespace gpstk
             // Ref OEM4 Manual pg 198-201
 
             nobs = 0;
-            memmove(&nobs, &(buffer[28]), 4);
+            std::memmove(&nobs, &(buffer[28]), 4);
             intelToHost(nobs);
 
             rod.numSvs = 0;
@@ -903,25 +904,25 @@ namespace gpstk
                float PrStd,PhStd,Doppler,SNR,locktime;
                double Pr,Ph;
 
-               memmove(&prn,         &(buffer[32+i*44]), 2);
+               std::memmove(&prn,         &(buffer[32+i*44]), 2);
                intelToHost(prn);
-               memmove(&reserved,    &(buffer[34+i*44]), 2);
+               std::memmove(&reserved,    &(buffer[34+i*44]), 2);
                intelToHost(reserved);
-               memmove(&Pr,          &(buffer[36+i*44]), 8);
+               std::memmove(&Pr,          &(buffer[36+i*44]), 8);
                intelToHost(Pr);
-               memmove(&PrStd,       &(buffer[44+i*44]), 4);
+               std::memmove(&PrStd,       &(buffer[44+i*44]), 4);
                intelToHost(PrStd);
-               memmove(&Ph,          &(buffer[48+i*44]), 8);
+               std::memmove(&Ph,          &(buffer[48+i*44]), 8);
                intelToHost(Ph);
-               memmove(&PhStd,       &(buffer[56+i*44]), 4);
+               std::memmove(&PhStd,       &(buffer[56+i*44]), 4);
                intelToHost(PhStd);
-               memmove(&Doppler,     &(buffer[60+i*44]), 4);
+               std::memmove(&Doppler,     &(buffer[60+i*44]), 4);
                intelToHost(Doppler);
-               memmove(&SNR,         &(buffer[64+i*44]), 4);
+               std::memmove(&SNR,         &(buffer[64+i*44]), 4);
                intelToHost(SNR);
-               memmove(&locktime,    &(buffer[68+i*44]), 4);
+               std::memmove(&locktime,    &(buffer[68+i*44]), 4);
                intelToHost(locktime);
-               memmove(&TrackStatus, &(buffer[72+i*44]), 4);
+               std::memmove(&TrackStatus, &(buffer[72+i*44]), 4);
                intelToHost(TrackStatus);
 
                // break out the TrackStatus
@@ -985,14 +986,14 @@ namespace gpstk
             // Ref OEM4 Manual pg 202-203
 
             nobs = 0;
-            memmove(&nobs, &(buffer[28]), 4);
+            std::memmove(&nobs, &(buffer[28]), 4);
             intelToHost(nobs);
 
             rod.numSvs = 0;
             for(i=0; i<nobs; i++) {
                uint32_t data[6];
                for(j=0; j<6; j++)
-                  memmove(&data[j], &(buffer[32+i*24+j*4]), 4);
+                  std::memmove(&data[j], &(buffer[32+i*24+j*4]), 4);
 
                long TrackStatus =        data[0];
                // this is what is in the manual - its wrong

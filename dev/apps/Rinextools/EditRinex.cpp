@@ -27,6 +27,8 @@
  * Edit a Rinex observation file using the RinexEditor in gpstk.
  */
 
+#include <cstring>
+
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"

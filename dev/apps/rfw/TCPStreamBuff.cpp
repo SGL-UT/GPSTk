@@ -1,5 +1,7 @@
 #pragma ident "$Id$"
 
+#include <cstring>
+
 #include <sstream>
 #include <errno.h>
 #include <stdlib.h>

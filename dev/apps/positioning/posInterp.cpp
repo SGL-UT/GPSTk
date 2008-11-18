@@ -31,6 +31,8 @@
  * to an output RINEX observation file.
  */
 
+#include <cstring>
+
 #include "DayTime.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"

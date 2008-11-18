@@ -46,6 +46,7 @@
 #ifndef GPSTK_EXCEPTION_HPP
 #define GPSTK_EXCEPTION_HPP
 
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -199,7 +200,7 @@ namespace gpstk
           */
       void terminate()
          throw()
-      { exit(1); };
+      { ::exit(1); };
 
          /// Returns the error ID of the exception. 
       unsigned long getErrorId() const 

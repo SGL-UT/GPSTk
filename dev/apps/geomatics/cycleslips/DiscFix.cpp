@@ -57,6 +57,7 @@
 #include "SatPass.hpp"
 #include "DiscCorr.hpp"
 
+#include <cstring>
 #include <time.h>
 #include <string>
 #include <vector>

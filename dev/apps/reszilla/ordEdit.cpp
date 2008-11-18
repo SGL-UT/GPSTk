@@ -36,6 +36,8 @@
 //
 //=============================================================================
 
+#include <typeinfo>
+
 #include <EpochClockModel.hpp>
 #include <vector>
 #include <set>

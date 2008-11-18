@@ -32,6 +32,7 @@
 //
 //============================================================================
 
+#include <limits>
 #include "VectorBase.hpp"
 
 namespace gpstk

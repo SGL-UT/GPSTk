@@ -5,6 +5,8 @@
  * @file BinexData.cpp
  * Encapsulate BINEX file data, including I/O
  */
+
+#include <cstring>
  
 #include "DayTime.hpp"
 #include "BinexData.hpp"
@@ -635,7 +637,7 @@ namespace gpstk
             {
                reverseBuffer( (unsigned char*)&us, 2);
             }
-            memcpy((void*)buffer, (const void*)&us, 2);
+            std::memcpy((void*)buffer, (const void*)&us, 2);
             break;
 
          case 3:
@@ -654,7 +656,7 @@ namespace gpstk
             {
                reverseBuffer( (unsigned char*)&ul, 4);
             }
-            memcpy((void*)buffer, (const void*)&ul, 3);
+            std::memcpy((void*)buffer, (const void*)&ul, 3);
             break;
 
          case 4:
@@ -1304,7 +1306,7 @@ namespace gpstk
                FFStreamError err("Error reading BINEX CRC");
                GPSTK_THROW(err);
             }
-            if (memcmp(crc, expectedCrc.data(), crcLen) )
+            if (std::memcmp(crc, expectedCrc.data(), crcLen) )
             {
                FFStreamError err("Bad BINEX CRC");
                GPSTK_THROW(err);

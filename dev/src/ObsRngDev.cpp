@@ -41,6 +41,8 @@
  * Observed range deviation computation & storage.
  */
 
+#include <typeinfo>
+
 #include "EphemerisRange.hpp"
 #include "EngEphemeris.hpp"
 #include "GPSEphemerisStore.hpp"

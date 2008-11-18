@@ -58,6 +58,7 @@
     tama    Time above mask angle
 */
 
+#include <iterator>
 #include <map>
 #include <set>
 #include <vector>

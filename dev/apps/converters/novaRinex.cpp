@@ -41,6 +41,8 @@
  * gpstk::novaRinex - convert Novatel binary data files to RINEX format
  */
 
+#include <cstring>
+
 #include <iostream>
 #include <iomanip>
 #include <time.h>
@@ -833,7 +835,7 @@ try {
    for(j=1; j<argc; j++) {
       CArgs[j] = new char[Args[j-1].size()+1];
       if(!CArgs[j]) { cerr << "Failed to allocate CArgs[j]\n"; return -1; }
-      strcpy(CArgs[j],Args[j-1].c_str());
+      std::strcpy(CArgs[j],Args[j-1].c_str());
    }
 
    if(Debug) {

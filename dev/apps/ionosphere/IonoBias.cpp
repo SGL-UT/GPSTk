@@ -30,6 +30,8 @@
  */
 
 //------------------------------------------------------------------------------------
+#include <cstring>
+
 #include "StringUtils.hpp"
 #include "DayTime.hpp"
 #include "RinexSatID.hpp"
