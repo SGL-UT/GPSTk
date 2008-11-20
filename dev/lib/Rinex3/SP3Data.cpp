@@ -50,6 +50,7 @@
 
 using namespace gpstk::StringUtils;
 using namespace std;
+using namespace gpstk;
 
 namespace Rinex3
 {

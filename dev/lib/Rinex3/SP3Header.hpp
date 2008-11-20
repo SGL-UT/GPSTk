@@ -51,6 +51,8 @@
 #include "SP3Base.hpp"
 #include "SP3SatID.hpp"
 
+using namespace gpstk;
+
 namespace Rinex3
 {
    /** @addtogroup SP3ephem */

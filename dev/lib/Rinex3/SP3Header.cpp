@@ -45,6 +45,8 @@
 #include "SP3Stream.hpp"
 #include "SP3Header.hpp"
 
+using namespace gpstk;
+
 namespace Rinex3
 {
    using namespace StringUtils;

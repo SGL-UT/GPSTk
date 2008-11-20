@@ -51,6 +51,7 @@
 #include "icd_200_constants.hpp"
 
 using namespace gpstk::StringUtils;
+using namespace gpstk;
 
 namespace Rinex3
 {

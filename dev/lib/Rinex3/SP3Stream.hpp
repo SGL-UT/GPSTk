@@ -47,6 +47,8 @@
 #include "CommonTime.hpp"
 #include "FFTextStream.hpp"
 
+using namespace gpstk;
+
 namespace Rinex3
 {
    /** @addtogroup SP3ephem */
