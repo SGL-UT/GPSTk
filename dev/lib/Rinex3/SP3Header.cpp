@@ -44,6 +44,7 @@
 #include "StringUtils.hpp"
 #include "SP3Stream.hpp"
 #include "SP3Header.hpp"
+#include "CivilTime.hpp"
 
 using namespace gpstk;
 
@@ -73,8 +74,8 @@ namespace Rinex3
       line = "#";
       line += version;
       line += pvFlag;
-      line += time.printf("%4Y %2m %2d %2H %2M");
-      line += " " + rightJustify(time.printf("%f"),11);
+      line += time.asString();
+      line += " " + rightJustify(time.asString(),11);
       line += " " + rightJustify(asString(numberOfEpochs),7);
       line += " " + rightJustify(dataUsed,5);
       line += " " + rightJustify(coordSystem,5);
@@ -84,11 +85,11 @@ namespace Rinex3
 
       // line 2
       line = "##";
-      line += rightJustify(time.printf("%F"),5);
-      line += rightJustify(time.printf("%g"),16);
+      line += rightJustify(time.asString(),5);
+      line += rightJustify(time.asString(),16);
       line += " " + rightJustify(asString(epochInterval,8),14);
-      line += " " + time.printf("%5.0Q");
-      line += " " + rightJustify(asString(time.DOYsecond()/86400.,13),15);
+      line += " " + time.asString();
+      line += " " + rightJustify(asString(time.getSecondOfDay()/86400.,13),15);
       strm << line << endl;
 
       // lines 3-7 and 8-12
@@ -222,10 +223,12 @@ namespace Rinex3
          int hour = asInt(line.substr(14,2));
          int minute = asInt(line.substr(17,2));
          double second = asInt(line.substr(20,10));
+         CivilTime t;
          try {
-            time = DayTime(year, month, dom, hour, minute, second);
+            t = CivilTime(year, month, dom, hour, minute, second);
+            time = CommonTime(t);
          }
-         catch (DayTime::DayTimeException& e) {
+         catch (gpstk::Exception& e) {
             FFStreamError fe("Invalid time:" + string(1, line[0]));
             GPSTK_THROW(fe);
          }

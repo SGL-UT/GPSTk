@@ -302,10 +302,10 @@ namespace Rinex3
 
       if (it == em.end())
       {
-//         string mess = "No eph found for satellite "
-//            + asString(sat) + " at " + t.printf("%03j %02H:%02M:%02S");
-//         InvalidRequest e(mess);
-//         GPSTK_THROW(e);
+         string mess = "No eph found for satellite "
+            + asString(sat) + " at " + t.asString();
+         InvalidRequest e(mess);
+         GPSTK_THROW(e);
       }
 
       return it->second;
@@ -370,10 +370,10 @@ namespace Rinex3
 
       if (it == em.end())
       {
-//         string mess = "No eph found for satellite "
-//            + asString(sat) + " at " + t.printf("%03j %02H:%02M:%02S");
-//         InvalidRequest e(mess);
-//         GPSTK_THROW(e);
+         string mess = "No eph found for satellite "
+            + asString(sat) + " at " + t.asString();
+         InvalidRequest e(mess);
+         GPSTK_THROW(e);
       }
 
       return it->second;

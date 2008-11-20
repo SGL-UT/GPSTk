@@ -47,7 +47,6 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "DayTime.hpp"
 #include "SP3Base.hpp"
 #include "SP3SatID.hpp"
 
@@ -108,7 +107,7 @@ namespace Rinex3
       char version;             ///< Version of the SP3 File, 'a' or 'c'
       char pvFlag;              ///< P or V: File contains positions only (P)
                                 ///<         or positions and velocities (V)
-      DayTime time;             ///< Time of first Epoch in file
+      CommonTime time;          ///< Time of first Epoch in file
       double epochInterval;     ///< Duration of Epoch in seconds
       int numberOfEpochs;       ///< Number of Epochs in this file
       std::string dataUsed;     ///< Types of data input into the positions
