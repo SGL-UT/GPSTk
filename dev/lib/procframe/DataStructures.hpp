@@ -926,6 +926,18 @@ namespace gpstk
       sourceEpochRinexHeader header;
 
 
+         /// Default constructor.
+      gnssRinex() {};
+
+
+         /** Explicit constructor from parent class
+          *
+          * @param gds      gnssSatTypeValue to build this gnssRinex from.
+          */
+      gnssRinex(const gnssSatTypeValue& gds)
+      { header = gds.header; body = gds.body; };
+
+
          /// Returns a gnssRinex with only this satellite.
          /// @param satellite Satellite to be extracted.
       gnssRinex extractSatID(const SatID& satellite) const;

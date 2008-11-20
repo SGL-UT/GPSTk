@@ -1,3 +1,9 @@
+#pragma ident "$Id$"
+
+/**
+ * @file DataHeaders.cpp
+ * Set of several headers to be used by data structures.
+ */
 
 //============================================================================
 //
@@ -16,137 +22,354 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE. 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
 //============================================================================
+
 
 #include "DataHeaders.hpp"
 
 
-/**
- * @file DataHeaders.cpp
- * gpstk::DataHeaders: Set of several headers to be used by data structures.
- */
-
-//using namespace gpstk::StringUtils;
 using namespace std;
 
 
 namespace gpstk
 {
 
-    // Convenience output method for sourceHeader
-    std::ostream& sourceHeader::dump(std::ostream& s) const
-    {
-        s << source;
-        return s;
-    } // sourceHeader::dump()
+
+      // Assignment operator
+   sourceHeader& sourceHeader::operator=(const sourceHeader& right)
+   {
+
+      if ( this == &right )
+      {
+         return (*this);
+      }
+
+      source = right.source;
+
+      return (*this);
+
+   }  // End of operator 'sourceHeader::operator=()'
 
 
-    // stream output for sourceHeader
-    std::ostream& operator<<(std::ostream& s, const sourceHeader& sh)
-    {
-        sh.dump(s);
-        return s;
-    }
+
+      // Convenience output method for sourceHeader
+   std::ostream& sourceHeader::dump(std::ostream& s) const
+   {
+
+      s << source;
+
+      return s;
+
+   }  // End of method 'sourceHeader::dump()'
 
 
-    // Convenience output method for sourceEpochHeader
-    std::ostream& sourceEpochHeader::dump(std::ostream& s) const
-    {
-        s << source << " " << epoch;
-        return s;
-    } // sourceEpochHeader::dump()
+
+      // stream output for sourceHeader
+   std::ostream& operator<<( std::ostream& s,
+                             const sourceHeader& sh )
+   {
+
+      sh.dump(s);
+
+      return s;
+
+   }  // End of 'operator<<' for sourceHeader
 
 
-    // stream output for sourceEpochHeader
-    std::ostream& operator<<(std::ostream& s, const sourceEpochHeader& seh)
-    {
+
+      // Assignment operator
+   sourceEpochHeader& sourceEpochHeader::operator=(
+                                                const sourceEpochHeader& right )
+   {
+
+      if ( this == &right )
+      {
+         return (*this);
+      }
+
+      source = right.source;
+      epoch = right.epoch;
+
+      return (*this);
+
+   }  // End of 'sourceEpochHeader::operator=()'
+
+
+
+      // Convenience output method for sourceEpochHeader
+   std::ostream& sourceEpochHeader::dump(std::ostream& s) const
+   {
+
+      s << source << " " << epoch;
+
+      return s;
+
+   }  // End of method 'sourceEpochHeader::dump()'
+
+
+
+      // stream output for sourceEpochHeader
+   std::ostream& operator<<( std::ostream& s,
+                             const sourceEpochHeader& seh )
+   {
+
         seh.dump(s);
+
         return s;
-    }
+
+   }  // End of 'operator<<' for sourceEpochHeader
 
 
-    // Convenience output method for sourceEpochRinexHeader
-    std::ostream& sourceEpochRinexHeader::dump(std::ostream& s) const
-    {
-        s << source << " " << epoch << " " << antennaType << " " << antennaPosition << " " << epochFlag;
+
+      // Explicit constructor
+   sourceEpochRinexHeader::sourceEpochRinexHeader( const sourceHeader& sh,
+                                                   const DayTime& time,
+                                                   const std::string& antType,
+                                                   const Triple& antPos,
+                                                   const short& flag )
+      : antennaType(antType), antennaPosition(antPos), epochFlag(flag)
+   {
+
+      source.sourceName = sh.source.sourceName;
+      source.type = sh.source.type;
+      epoch = time;
+
+   }  // End of constructor 'sourceEpochRinexHeader::sourceEpochRinexHeader()'
+
+
+
+      // Assignment operator
+   sourceEpochRinexHeader& sourceEpochRinexHeader::operator=(
+                                          const sourceEpochRinexHeader& right)
+   {
+
+      if ( this == &right )
+      {
+         return (*this);
+      }
+
+      source = right.source;
+      epoch = right.epoch;
+      antennaType = right.antennaType;
+      antennaPosition = right.antennaPosition;
+      epochFlag = right.epochFlag;
+
+      return (*this);
+
+   }  // End of operator 'sourceEpochRinexHeader::operator=()'
+
+
+
+      // Convenience output method for sourceEpochRinexHeader
+   std::ostream& sourceEpochRinexHeader::dump(std::ostream& s) const
+   {
+
+      s << source          << " "
+        << epoch           << " "
+        << antennaType     << " "
+        << antennaPosition << " "
+        << epochFlag;
+
         return s;
-    } // sourceEpochRinexHeader::dump()
 
-
-    // stream output for sourceEpochRinexHeader
-    std::ostream& operator<<(std::ostream& s, const sourceEpochRinexHeader& serh)
-    {
-        serh.dump(s);
-        return s;
-    }
-
-
-    // Convenience output method for sourceTypeHeader
-    std::ostream& sourceTypeHeader::dump(std::ostream& s) const
-    {
-        s << source << " " << type;
-        return s;
-    } // sourceTypeHeader::dump()
-
-
-    // stream output for sourceTypeHeader
-    std::ostream& operator<<(std::ostream& s, const sourceTypeHeader& sth)
-    {
-        sth.dump(s);
-        return s;
-    }
-
-
-    // Convenience output method for sourceSatHeader
-    std::ostream& sourceSatHeader::dump(std::ostream& s) const
-    {
-        s << source << " " << satellite;
-        return s;
-    } // sourceSatHeader::dump()
-
-
-    // stream output for sourceSatHeader
-    std::ostream& operator<<(std::ostream& s, const sourceSatHeader& ssh)
-    {
-        ssh.dump(s);
-        return s;
-    }
-
-
-    // Convenience output method for sourceEpochSatHeader
-    std::ostream& sourceEpochSatHeader::dump(std::ostream& s) const
-    {
-        s << source << " " << epoch << " " << satellite;
-        return s;
-    } // sourceEpochSatHeader::dump()
-
-
-    // stream output for sourceEpochSatHeader
-    std::ostream& operator<<(std::ostream& s, const sourceEpochSatHeader& sesh)
-    {
-        sesh.dump(s);
-        return s;
-    }
-
-
-    // Convenience output method for sourceEpochTypeHeader
-    std::ostream& sourceEpochTypeHeader::dump(std::ostream& s) const
-    {
-        s << source << " " << epoch << " " << type;
-        return s;
-    } // sourceEpochTypeHeader::dump()
-
-
-    // stream output for sourceEpochTypeHeader
-    std::ostream& operator<<(std::ostream& s, const sourceEpochTypeHeader& seth)
-    {
-        seth.dump(s);
-        return s;
-    }
+   }  // End of method 'sourceEpochRinexHeader::dump()'
 
 
 
-}
+      // stream output for sourceEpochRinexHeader
+   std::ostream& operator<<( std::ostream& s,
+                             const sourceEpochRinexHeader& serh )
+   {
+
+      serh.dump(s);
+
+      return s;
+
+   }  // End of 'operator<<' for sourceEpochRinexHeader
+
+
+
+      // Assignment operator from a sourceTypeHeader
+   sourceTypeHeader& sourceTypeHeader::operator=(const sourceTypeHeader& right)
+   {
+
+      if ( this == &right )
+      {
+         return (*this);
+      }
+
+      source = right.source;
+      type = right.type;
+
+      return (*this);
+
+   }  // End of operator 'sourceTypeHeader::operator=()'
+
+
+
+      // Convenience output method for sourceTypeHeader
+   std::ostream& sourceTypeHeader::dump(std::ostream& s) const
+   {
+
+      s << source << " " << type;
+
+      return s;
+
+   }  // End of method 'sourceTypeHeader::dump()'
+
+
+
+      // stream output for sourceTypeHeader
+   std::ostream& operator<<( std::ostream& s,
+                             const sourceTypeHeader& sth )
+   {
+
+      sth.dump(s);
+
+      return s;
+
+   }  // End of 'operator<<' for sourceTypeHeader
+
+
+
+      // Assignment operator from a sourceSatHeader
+   sourceSatHeader& sourceSatHeader::operator=(const sourceSatHeader& right)
+   {
+
+      if ( this == &right )
+      {
+         return (*this);
+      }
+
+      source = right.source;
+      satellite = right.satellite;
+
+      return (*this);
+
+   }  // End of operator 'sourceSatHeader::operator=()'
+
+
+
+      // Convenience output method for sourceSatHeader
+   std::ostream& sourceSatHeader::dump(std::ostream& s) const
+   {
+
+      s << source << " " << satellite;
+
+      return s;
+
+   }  // End of method 'sourceSatHeader::dump()'
+
+
+
+      // stream output for sourceSatHeader
+   std::ostream& operator<<( std::ostream& s,
+                             const sourceSatHeader& ssh )
+   {
+
+      ssh.dump(s);
+
+      return s;
+
+   }  // End of 'operator<<' for sourceSatHeader
+
+
+
+      // Assignment operator from a sourceEpochSatHeader
+   sourceEpochSatHeader& sourceEpochSatHeader::operator=(
+                                             const sourceEpochSatHeader& right )
+   {
+
+      if ( this == &right )
+      {
+         return (*this);
+      }
+
+      source = right.source;
+      epoch = right.epoch;
+      satellite = right.satellite;
+
+      return (*this);
+
+   }  // End of operator 'sourceEpochSatHeader::operator=()'
+
+
+
+      // Convenience output method for sourceEpochSatHeader
+   std::ostream& sourceEpochSatHeader::dump(std::ostream& s) const
+   {
+
+      s << source << " "
+        << epoch  << " "
+        << satellite;
+
+      return s;
+
+   }  // End of method 'sourceEpochSatHeader::dump()'
+
+
+
+      // stream output for sourceEpochSatHeader
+   std::ostream& operator<<( std::ostream& s,
+                             const sourceEpochSatHeader& sesh )
+   {
+
+      sesh.dump(s);
+
+      return s;
+
+   }  // End of 'operator<<' for sourceEpochSatHeader
+
+
+
+      // Assignment operator from a sourceEpochTypeHeader
+   sourceEpochTypeHeader& sourceEpochTypeHeader::operator=(
+                                          const sourceEpochTypeHeader& right )
+   {
+
+      if ( this == &right )
+      {
+         return (*this);
+      }
+
+      source = right.source;
+      epoch = right.epoch;
+      type = right.type;
+
+      return (*this);
+
+   }  // End of operator 'sourceEpochTypeHeader::operator=()'
+
+
+
+      // Convenience output method for sourceEpochTypeHeader
+   std::ostream& sourceEpochTypeHeader::dump(std::ostream& s) const
+   {
+
+      s << source << " "
+        << epoch  << " "
+        << type;
+
+      return s;
+
+   }  // End of method 'sourceEpochTypeHeader::dump()'
+
+
+
+      // stream output for sourceEpochTypeHeader
+   std::ostream& operator<<( std::ostream& s,
+                             const sourceEpochTypeHeader& seth )
+   {
+
+      seth.dump(s);
+
+      return s;
+
+   }  // End of 'operator<<' for sourceEpochTypeHeader
+
+
+
+}  // End of namespace gpstk
