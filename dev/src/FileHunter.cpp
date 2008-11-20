@@ -567,9 +567,9 @@ namespace gpstk
                // DEBUG
             //printf("Testing '%s'\n",filename.c_str());
             
-            if (isLike(filename, searchString, '*', '+', '?') &&
-                (filename.length() == searchString.length()) &&
-                (filename != ".") && (filename != ".."))
+            if ((filename.length() == searchString.length()) &&
+                (filename != ".") && (filename != "..") && 
+                isLike(filename, searchString, '*', '+', '?'))
             {
                toReturn.push_back(filename);
             }
