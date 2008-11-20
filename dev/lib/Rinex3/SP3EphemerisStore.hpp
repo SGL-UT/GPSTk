@@ -74,7 +74,7 @@ namespace Rinex3
       SP3EphemerisStore()
          throw()
 	: dumpBadPosFlag(false), dumpBadClockFlag(false)
-      { TabularEphemerisStore(); haveVelocity = true;};
+      { TabularEphemerisStore(); haveVelocity = true; };
 
 
          /// Destructor.

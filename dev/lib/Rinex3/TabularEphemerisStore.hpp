@@ -73,8 +73,8 @@ namespace Rinex3
          /// Default constructor
       TabularEphemerisStore()
          throw()
-         : haveVelocity(true), initialTime(CommonTime::END_OF_TIME),
-           finalTime(CommonTime::BEGINNING_OF_TIME), checkDataGap(false),
+         : haveVelocity(true), initialTimeCT(CommonTime::END_OF_TIME),
+           finalTimeCT(CommonTime::BEGINNING_OF_TIME), checkDataGap(false),
            gapInterval(901.0), checkInterval(false), maxInterval(8105.0)
       {};
 
@@ -129,9 +129,13 @@ namespace Rinex3
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      virtual CommonTime getInitialTime()
+//      virtual DayTime getInitialTime()
+//         const throw(InvalidRequest)
+//      { return initialTime; };
+
+      virtual CommonTime getInitialTimeCT()
          const throw(InvalidRequest)
-      { return initialTime; };
+      { return initialTimeCT; };
 
 
          /** Determine the latest time for which this object can successfully
@@ -141,9 +145,13 @@ namespace Rinex3
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      virtual CommonTime getFinalTime()
+//      virtual DayTime getFinalTime()
+//         const throw(InvalidRequest)
+//      { return finalTime; };
+
+      virtual CommonTime getFinalTimeCT()
          const throw(InvalidRequest)
-      { return finalTime; };
+      { return finalTimeCT; };
 
 
          /// Check if this ephemeris contains velocity information in all
@@ -240,7 +248,8 @@ namespace Rinex3
           * NB there may be gaps in the data, i.e. the data may not be
           * continuous.
           */
-      CommonTime initialTime, finalTime;
+//      DayTime initialTime, finalTime;
+      CommonTime initialTimeCT, finalTimeCT;
 
 
          /** Flag to check for data gaps.

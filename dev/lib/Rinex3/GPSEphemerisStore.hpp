@@ -113,7 +113,7 @@ namespace Rinex3
       /// determine the Xvt for any satellite.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      CommonTime getInitialTime()
+      CommonTime getInitialTimeCT()
          const throw(InvalidRequest)
       {return initialTime;}
 
@@ -122,7 +122,7 @@ namespace Rinex3
       /// determine the Xvt for any satellite.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      CommonTime getFinalTime()
+      CommonTime getFinalTimeCT()
          const throw(InvalidRequest)
       {return finalTime;}
 

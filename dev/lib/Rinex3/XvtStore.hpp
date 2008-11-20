@@ -52,6 +52,7 @@
 
 #include "Exception.hpp"
 #include "SatID.hpp"
+#include "DayTime.hpp"
 #include "CommonTime.hpp"
 #include "Xvt.hpp"
 
@@ -62,9 +63,9 @@ namespace Rinex3
    /** @addtogroup ephemstore */
    //@{
 
-   /// Abstract base class for storing and accessing an objects position, 
+   /// Abstract base class for storing and accessing an object's position, 
    /// velocity, and clock data. Also defines a simple interface to remove
-   /// data that has been added.
+   /// data that had been added.
    template <class IndexType>
    class XvtStore
    {
@@ -115,15 +116,15 @@ namespace Rinex3
       /// determine the Xvt for any object.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
-//      virtual DayTime getInitialTime()
-//         const throw(InvalidRequest)
-//         = 0;
+      virtual DayTime getInitialTime()
+         const throw(InvalidRequest)
+         = 0;
 
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual CommonTime getInitialTime()
+      virtual CommonTime getInitialTimeCT()
          const throw(InvalidRequest)
          = 0;
 
@@ -131,15 +132,15 @@ namespace Rinex3
       /// determine the Xvt for any object.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
-//      virtual DayTime getFinalTime()
-//         const throw(InvalidRequest)
-//         = 0;
+      virtual DayTime getFinalTime()
+         const throw(InvalidRequest)
+         = 0;
 
       /// Determine the latest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual CommonTime getFinalTime()
+      virtual CommonTime getFinalTimeCT()
          const throw(InvalidRequest)
          = 0;
 
