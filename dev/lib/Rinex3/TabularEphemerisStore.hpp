@@ -96,6 +96,10 @@ namespace Rinex3
           *    information as to why the request failed.
           */
       virtual Xvt getXvt( const SatID id,
+                          const DayTime& t )
+         const throw(InvalidRequest);
+
+      virtual Xvt getXvt( const SatID id,
                           const CommonTime& t )
          const throw(InvalidRequest);
 
@@ -117,6 +121,10 @@ namespace Rinex3
           * @param[in] tmin defines the beginning of the time interval
           * @param[in] tmax defines the end of the time interval
           */
+      virtual void edit( const DayTime& tmin,
+                         const DayTime& tmax = DayTime(DayTime::END_OF_TIME) )
+         throw();
+
       virtual void edit( const CommonTime& tmin,
                          const CommonTime& tmax = CommonTime(CommonTime::END_OF_TIME) )
          throw();

@@ -81,9 +81,9 @@ namespace Rinex3
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-//      virtual Xvt getXvt(const IndexType id, const DayTime& t)
-//         const throw(InvalidRequest)
-//         = 0;
+      virtual Xvt getXvt(const IndexType id, const DayTime& t)
+         const throw(InvalidRequest)
+         = 0;
       virtual Xvt getXvt(const IndexType id, const CommonTime& t)
          const throw(InvalidRequest)
          = 0;
@@ -99,10 +99,10 @@ namespace Rinex3
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param[in] tmin defines the beginning of the time interval
       /// @param[in] tmax defines the end of the time interval
-//      virtual void edit(const DayTime& tmin, 
-//                        const DayTime& tmax = DayTime(DayTime::END_OF_TIME))
-//         throw()
-//         = 0;
+      virtual void edit(const DayTime& tmin, 
+                        const DayTime& tmax = DayTime(DayTime::END_OF_TIME))
+         throw()
+         = 0;
 
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param[in] tmin defines the beginning of the time interval
