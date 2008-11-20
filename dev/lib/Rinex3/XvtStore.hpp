@@ -81,9 +81,6 @@ namespace Rinex3
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xvt getXvt(const IndexType id, const DayTime& t)
-         const throw(InvalidRequest)
-         = 0;
       virtual Xvt getXvt(const IndexType id, const CommonTime& t)
          const throw(InvalidRequest)
          = 0;
@@ -99,14 +96,6 @@ namespace Rinex3
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param[in] tmin defines the beginning of the time interval
       /// @param[in] tmax defines the end of the time interval
-      virtual void edit(const DayTime& tmin, 
-                        const DayTime& tmax = DayTime(DayTime::END_OF_TIME))
-         throw()
-         = 0;
-
-      /// Edit the dataset, removing data outside the indicated time interval
-      /// @param[in] tmin defines the beginning of the time interval
-      /// @param[in] tmax defines the end of the time interval
       virtual void edit(const CommonTime& tmin, 
                         const CommonTime& tmax = CommonTime(CommonTime::END_OF_TIME))
          throw()
@@ -116,15 +105,7 @@ namespace Rinex3
       /// determine the Xvt for any object.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual DayTime getInitialTime()
-         const throw(InvalidRequest)
-         = 0;
-
-      /// Determine the earliest time for which this object can successfully 
-      /// determine the Xvt for any object.
-      /// @return The initial time
-      /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual CommonTime getInitialTimeCT()
+      virtual CommonTime getInitialTime()
          const throw(InvalidRequest)
          = 0;
 
@@ -132,15 +113,7 @@ namespace Rinex3
       /// determine the Xvt for any object.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual DayTime getFinalTime()
-         const throw(InvalidRequest)//
-         = 0;
-
-      /// Determine the latest time for which this object can successfully 
-      /// determine the Xvt for any object.
-      /// @return The final time
-      /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual CommonTime getFinalTimeCT()
+      virtual CommonTime getFinalTime()
          const throw(InvalidRequest)
          = 0;
 

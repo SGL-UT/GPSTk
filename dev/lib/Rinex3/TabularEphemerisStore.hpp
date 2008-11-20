@@ -73,8 +73,8 @@ namespace Rinex3
          /// Default constructor
       TabularEphemerisStore()
          throw()
-         : haveVelocity(true), initialTimeCT(CommonTime::END_OF_TIME),
-           finalTimeCT(CommonTime::BEGINNING_OF_TIME), checkDataGap(false),
+         : haveVelocity(true), initialTime(CommonTime::END_OF_TIME),
+           finalTime(CommonTime::BEGINNING_OF_TIME), checkDataGap(false),
            gapInterval(901.0), checkInterval(false), maxInterval(8105.0)
       {};
 
@@ -95,10 +95,6 @@ namespace Rinex3
           *    reason, this is thrown. The text may have additional
           *    information as to why the request failed.
           */
-      virtual Xvt getXvt( const SatID id,
-                          const DayTime& t )
-         const throw(InvalidRequest);
-
       virtual Xvt getXvt( const SatID id,
                           const CommonTime& t )
          const throw(InvalidRequest);
@@ -121,10 +117,6 @@ namespace Rinex3
           * @param[in] tmin defines the beginning of the time interval
           * @param[in] tmax defines the end of the time interval
           */
-      virtual void edit( const DayTime& tmin,
-                         const DayTime& tmax = DayTime(DayTime::END_OF_TIME) )
-         throw();
-
       virtual void edit( const CommonTime& tmin,
                          const CommonTime& tmax = CommonTime(CommonTime::END_OF_TIME) )
          throw();
@@ -137,13 +129,9 @@ namespace Rinex3
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      virtual DayTime getInitialTime()
+      virtual CommonTime getInitialTime()
          const throw(InvalidRequest)
       { return initialTime; };
-
-      virtual CommonTime getInitialTimeCT()
-         const throw(InvalidRequest)
-      { return initialTimeCT; };
 
 
          /** Determine the latest time for which this object can successfully
@@ -153,13 +141,9 @@ namespace Rinex3
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      virtual DayTime getFinalTime()
+      virtual CommonTime getFinalTime()
          const throw(InvalidRequest)
       { return finalTime; };
-
-      virtual CommonTime getFinalTimeCT()
-         const throw(InvalidRequest)
-      { return finalTimeCT; };
 
 
          /// Check if this ephemeris contains velocity information in all
@@ -256,8 +240,7 @@ namespace Rinex3
           * NB there may be gaps in the data, i.e. the data may not be
           * continuous.
           */
-      DayTime initialTime, finalTime;
-      CommonTime initialTimeCT, finalTimeCT;
+      CommonTime initialTime, finalTime;
 
 
          /** Flag to check for data gaps.
