@@ -46,12 +46,12 @@
 #include "SP3Header.hpp"
 #include "SP3Data.hpp"
 #include "StringUtils.hpp"
-#include "CommonTime.hpp"
+#include "CivilTime.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;
 
-namespace gpstk
+namespace Rinex3
 {
    void SP3Data::reallyPutRecord(FFStream& ffs) const 
       throw(std::exception, FFStreamError, StringException)
@@ -203,12 +203,12 @@ namespace gpstk
             int hour = asInt(strm.buffer.substr(14,2));
             int minute = asInt(strm.buffer.substr(17,2));
             double second = asInt(strm.buffer.substr(20,10));
-            DayTime t;
+            CivilTime t;
             CommonTime tt;
             try {
-               t = DayTime(year, month, dom, hour, minute, second);
+               t = CivilTime(year, month, dom, hour, minute, second);
                tt = CommonTime(t);
-            } catch (Exception& e) {
+            } catch (gpstk::Exception& e) {
                FFStreamError fe("Invalid time in:" + strm.buffer);
                GPSTK_THROW(fe);
             }               
