@@ -133,7 +133,7 @@ namespace Rinex3
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual DayTime getFinalTime()
-         const throw(InvalidRequest)
+         const throw(InvalidRequest)//
          = 0;
 
       /// Determine the latest time for which this object can successfully 

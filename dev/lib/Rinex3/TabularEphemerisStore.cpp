@@ -74,7 +74,7 @@ namespace Rinex3
          EphMap::const_iterator it;
 
          s << " Data stored for " << pe.size() << " satellites, over time span "
-           << initialTime << " to " << finalTime << "." << std::endl;
+           << initialTimeCT << " to " << finalTimeCT << "." << std::endl;
 
          if(detail == 0) return;
 
@@ -143,8 +143,8 @@ namespace Rinex3
 
       }
 
-      initialTime = tmin;
-      finalTime = tmax;
+      initialTimeCT = tmin;
+      finalTimeCT = tmax;
 
    }  // End of method 'TabularEphemerisStore::edit()'
 
@@ -156,8 +156,8 @@ namespace Rinex3
    {
 
       pe.clear();
-      initialTime = CommonTime::END_OF_TIME;
-      finalTime = CommonTime::BEGINNING_OF_TIME;
+      initialTimeCT = CommonTime::END_OF_TIME;
+      finalTimeCT = CommonTime::BEGINNING_OF_TIME;
 
    }  // End of method 'TabularEphemerisStore::clear()'
 
@@ -358,10 +358,10 @@ namespace Rinex3
          haveVelocity=true;
       }
       
-      if (t<initialTime)
-         initialTime = t;
-      else if (t>finalTime)
-         finalTime = t;
+      if (t<initialTimeCT)
+         initialTimeCT = t;
+      else if (t>finalTimeCT)
+         finalTimeCT = t;
    }
 
 }  // namespace gpstk

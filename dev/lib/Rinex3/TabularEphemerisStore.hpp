@@ -129,9 +129,9 @@ namespace Rinex3
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-//      virtual DayTime getInitialTime()
-//         const throw(InvalidRequest)
-//      { return initialTime; };
+      virtual DayTime getInitialTime()
+         const throw(InvalidRequest)
+      { return initialTime; };
 
       virtual CommonTime getInitialTimeCT()
          const throw(InvalidRequest)
@@ -145,9 +145,9 @@ namespace Rinex3
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-//      virtual DayTime getFinalTime()
-//         const throw(InvalidRequest)
-//      { return finalTime; };
+      virtual DayTime getFinalTime()
+         const throw(InvalidRequest)
+      { return finalTime; };
 
       virtual CommonTime getFinalTimeCT()
          const throw(InvalidRequest)
@@ -248,7 +248,7 @@ namespace Rinex3
           * NB there may be gaps in the data, i.e. the data may not be
           * continuous.
           */
-//      DayTime initialTime, finalTime;
+      DayTime initialTime, finalTime;
       CommonTime initialTimeCT, finalTimeCT;
 
 
