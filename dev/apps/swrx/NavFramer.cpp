@@ -37,14 +37,14 @@ void NavFramer::Subframe::dump(std::ostream& s, int detail) const
       if (!complete)
          return;
       if (checkParity())
-         s << endl << endl << fixed
+         s << endl << fixed
            << "# PRN:" << prn 
            << setprecision(2) << ", SFID:" << EngNav::getSFID(words[1])
            << ", Z:" << EngNav::getHOWTime(words[1])
            << ", Start Data Point:" << dataPoint << endl;
       else
          s << ", Parity:" << checkWords();
-
+      if(0) // not using this output for now.
       s << "# RxTime: " << (float)dataPoint / 16368 << " ms"
         << ", CodePO: " << codePO << " us" << endl
         << "# t:" << t * 1e3
@@ -183,8 +183,8 @@ bool NavFramer::process(const EMLTracker& tr, long int dp, float cPO)
             howCurrent = true;
             how = sf->words[1];
                //if (debugLevel)
-               cout << "# " << *sf << endl;
-                  //if (debugLevel>1)
+               cout << *sf << endl;
+            if (debugLevel)
                sf->dump(cout,1);
 
 // Following block pulls nav data from subframes, just playing around for now.

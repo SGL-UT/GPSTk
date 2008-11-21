@@ -70,6 +70,7 @@ struct Buffer // input buffer
 struct Par // Parameters to pass to Pthread function.
 {
    int dp;
+   int bufferSize;
    EMLTracker *tr;
    Buffer *s;
    int *count;
@@ -339,7 +340,8 @@ void RxSim::process()
       b.arr.push_back(s);
       dataPoint++;
       int index = 0;
-      while(index < 20*16367) // Fill input buffer
+      int bufferSize = 20*16367;
+      while(index < bufferSize) // Fill input buffer
       {   
          *input >> s;
          b.arr.push_back(s);   
@@ -349,6 +351,7 @@ void RxSim::process()
       for(int i = 0; i < numTrackers; i++)
       {
          p[i].dp = dataPoint; // Set parameters for each tracker.
+         p[i].bufferSize = bufferSize;
          p[i].s = &b;
          p[i].count = &count[i];
          p[i].tr = tr[i];
@@ -406,13 +409,14 @@ void *Cfunction(void* p)
    EMLTracker *tr = par->tr;
    int *count = par->count;
    NavFramer *nf = par->nf;
-   int dp = par->dp;
+   int bufferSize = par->bufferSize;
+   int dp = par->dp - bufferSize;
    Buffer *b = par->s;
    bool v = par->v;
    
-   int index = 0; //
+   int index = 0; 
    
-   while(index < 20*16367 + 1) // number of data points to track before join.
+   while(index < bufferSize + 1) // number of data points to track before join.
    {
       if (tr->process(b->arr[index]))
       {
@@ -436,6 +440,7 @@ void *Cfunction(void* p)
          *count = *count + 1;
       }
       index++;
+      dp++;
    } 
    pthread_exit(NULL);
 }
