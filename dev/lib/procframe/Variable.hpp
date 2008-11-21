@@ -171,7 +171,8 @@ namespace gpstk
       { isSatIndexed = satIndexed; return (*this); };
 
 
-         /// Get the SourceID
+         /// Get SourceID. If this value is equal to "Variable::someSources"
+         /// then you should also check "varSourceList".
       SourceID getSource() const
       { return varSource; };
 
@@ -217,9 +218,21 @@ namespace gpstk
       virtual Variable& operator=(const Variable& right);
 
 
+         /** In case the value of this variable belongs to SOME specific
+          *  sources ("Variable::someSources" in "varSource"), then the
+          *  corresponding SourceID list is stored here.
+          */
+      std::list<SourceID> varSourceList;
+
+
          /// SourceID object representing all sources : type(Unknown),
          /// sourceName("").
       static SourceID allSources;
+
+
+         /// SourceID object representing "some" sources : type(Mixed),
+         /// sourceName("").
+      static SourceID someSources;
 
 
          /// SatID object representing all satellites : type(Unknown),
@@ -254,6 +267,7 @@ namespace gpstk
           *  it is false, which means that this variable is the same
           *  independently from the satellites involved (p.e., the TypeID::dx
           *  position variable of a given station).
+          *
           *  On the other hand, if this variable is satellite-specific (i.e.,
           *  this field is true), this means that this variable is different
           *  for each satellite on view; for instance, the TypeID::dtSat
