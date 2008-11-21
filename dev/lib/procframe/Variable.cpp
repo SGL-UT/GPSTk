@@ -141,7 +141,7 @@ namespace gpstk
       pVarModel = pModel;
 
          // Check if the source is unspecific
-      if( source == allSources )
+      if( (source == allSources) || (source == someSources) )
       {
          isSourceIndexed = true;
       }
