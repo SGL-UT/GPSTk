@@ -8,7 +8,7 @@ libsimlib_la_SOURCES = normal.cpp CCReplica.cpp EMLTracker.cpp \
 IQStream.cpp NavFramer.cpp ;
 
 
-bin_PROGRAMS = codeDump corltr gpsSim iqdump simpleNav tracker  
+bin_PROGRAMS = codeDump corltr gpsSim iqdump simpleNav tracker position
 
 codeDump_SOURCES = codeDump.cpp
 corltr_SOURCES = corltr.cpp
@@ -16,4 +16,4 @@ gpsSim_SOURCES = gpsSim.cpp
 iqdump_SOURCES = iqdump.cpp
 simpleNav_SOURCES = simpleNav.cpp
 tracker_SOURCES = tracker.cpp
-
+position_SOURCES = position.cpp
