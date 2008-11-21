@@ -372,13 +372,21 @@ void Acquire::process()
    }
    
    // Dump Information.
-   if(max < 50)
-      cout << "PRN: " << prn << " Unable to acquire." << endl;
-   if(max >= 50)
-      cout << "PRN: " << prn << " Doppler: " 
+   if(max < 40)
+      cout << "PRN: " << prn << " - Unable to acquire." << endl;
+   if(max >= 40)
+   {
+      cout << "PRN: " << prn << " - Doppler: " 
         << (bin*1e3)/(1000/freqBinWidth) - (freqSearchWidth/2)
         << " Offset: " << shift*1000/(sampleRate*1e-3)
         << " Height: " << max << endl;
+      cout << "       - Tracker Input: -c c:1:" << prn << ":" 
+        <<  shift*1000/(sampleRate*1e-3) << ":" 
+        << (bin*1e3)/(1000/freqBinWidth) - (freqSearchWidth/2) << endl;
+   }
+   // At some point need to add a more sophisticated check for successful 
+   // acquisition like a snr measure, although a simple cutoff works well.
+  
 
    // Output correlation curve for graphing purposes.
    /*for(int k = 0; k < numSamples; k++)

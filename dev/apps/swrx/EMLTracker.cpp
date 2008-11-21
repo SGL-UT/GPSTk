@@ -187,10 +187,10 @@ void EMLTracker::updateLoop()
    CodeIndex indx = localReplica.codeGenPtr->getIndex() % sync;
    unsigned chips = sync - indx;
    iadCountMax = static_cast<unsigned long>(chips / localReplica.chipsPerTick);
-   if (iadCountMax < 8184/*10000*/) // I believe these two lines are hardcoded for a 20
-      iadCountMax += 16368/*20000*/; // MHz sample rate, not sure exactly what they're
-      // for, except to correct an error.  Doesn't ever affect me tracking
-      // a 16 MHz signal. -- MD
+   if (iadCountMax < static_cast<double>((1/localReplica.tickSize)/2.0)*1e-3 ) 
+   {
+      iadCountMax += static_cast<double>(1 / localReplica.tickSize )* 1e-3;
+   }
 }
 
 

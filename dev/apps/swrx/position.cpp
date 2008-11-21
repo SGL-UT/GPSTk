@@ -253,7 +253,7 @@ void P::process()
    dataPoints[24]=62909420;
    dataPoints[26]=62929226;
 */
-/*
+
 // SF1
    dataPoints[2]=161238404; 
    dataPoints[6]=161096221;
@@ -264,7 +264,7 @@ void P::process()
    dataPoints[22]=161223381;
    dataPoints[24]=161115452;
    dataPoints[26]=161135146;
-*/
+
 /*
 // SF2
    dataPoints[2]=259448260; 
@@ -277,7 +277,7 @@ void P::process()
    dataPoints[24]=259321468;
    dataPoints[26]=259341066;
 */
-
+/*
 // SF3
    dataPoints[2]=357650836; 
    dataPoints[6]=357508157;
@@ -288,7 +288,7 @@ void P::process()
    dataPoints[22]=357635877;
    dataPoints[24]=357527500;
    dataPoints[26]=357546986;
-
+*/
 //---------------------------------------------------------------------------
 // Data Points from ARL-SW - 6oct08: 
 // position -e u112280a.08n -z 153168 -w 1500
@@ -362,7 +362,7 @@ void P::process()
       if(dataPoints[i] != 0)
          numberSVs++;
    }
-   refDataPoint = total/numberSVs; // average data point.
+   refDataPoint = total/numberSVs; // average data point to be reference.
    
    vector<double> obsVec(32);
    for(int i=0; i<32; i++)
@@ -385,6 +385,8 @@ void P::process()
       for(int i = 0; i < 32; i++)
          cout << svVec[i] << " "  << obsVec[i] << endl;
    }
+
+//-----------------------------------------------------------------------------
 // Calculate initial position solution.
    GGTropModel gg;
    gg.setWeather(30., 1000., 50.);    
@@ -398,7 +400,7 @@ void P::process()
         << sol[3]*1000/gpstk::C_GPS_M << " ms" << endl;
    cout << "# good SV's: " << prSolver.Nsvs << endl
         << "RMSResidual: " << prSolver.RMSResidual << " meters" << endl << endl;
-   
+//----------------------------------------------------------------------------- 
 // Calculate Ionosphere correction.
    antennaPos[0] = sol[0];
    antennaPos[1] = sol[1];
@@ -431,7 +433,8 @@ void P::process()
       obsVec[i] -= sol[3]; // convert pseudoranges to ranges
       obsVec[i] += ionoVec[i]; // make iono correction to ranges.
    }
-   
+
+//----------------------------------------------------------------------------- 
 // Recalculate position using time corrected by clock error + ionosphere.
    time -= (sol[3] / gpstk::C_GPS_M);
    GGTropModel gg2;
@@ -448,6 +451,7 @@ void P::process()
    cout << "# good SV's: " << prSolver2.Nsvs << endl
         << "RMSResidual: " << prSolver2.RMSResidual << " meters" << endl;
 
+//-----------------------------------------------------------------------------
 // Following block will make PRSolve compute residual from a known hardcoded
 // position
    PRSolution prSolver3; 
@@ -470,6 +474,7 @@ void P::process()
    cout << "RMSResidual from known position: " << prSolver3.RMSResidual
         << " meters" << endl << endl;
 }
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
