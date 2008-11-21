@@ -340,7 +340,7 @@ void RxSim::process()
       b.arr.push_back(s);
       dataPoint++;
       int index = 0;
-      int bufferSize = 20*16367;
+      int bufferSize = 40*16367;
       while(index < bufferSize) // Fill input buffer
       {   
          *input >> s;

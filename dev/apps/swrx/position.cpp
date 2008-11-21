@@ -186,6 +186,8 @@ void P::process()
    dataPoints[28]=41074850;
 */
 //---------------------------------------------------------------------------
+
+// NOW CARDATA.bin
 /*
 // subframe three data points from gnssDavisHouseCar2.bin: (z=360198) CRUMMY
    dataPoints[1]=29487862; 
@@ -237,9 +239,75 @@ void P::process()
    dataPoints[28]=29328671;
    dataPoints[29]=29471399;
 */
+
+// NEW TRACKING SOFTWARE RESULTS
+/*
+// sf3 
+// position -e rin269.08n -z 360204 -r 8.184 -w 1498
+// GOOD results: rms 55 rmsknown 62
+   dataPoints[1]=14743933; 
+   dataPoints[9]=14707720;
+   dataPoints[14]=14696721;
+   dataPoints[17]=14745155;
+   dataPoints[23]=14680297;
+   dataPoints[25]=14682538;
+   dataPoints[28]=14662516;
+   dataPoints[29]=14735701;
+*/
+/*
+// sf4 GOOD ALSO
+   dataPoints[1]=63847008; 
+   dataPoints[9]=63810816;
+   dataPoints[14]=63799663;
+   dataPoints[17]=63848083;
+   dataPoints[23]=63783288;
+   dataPoints[25]=63785487;
+   dataPoints[28]=63765493;
+   dataPoints[29]=63838790;
+*/
+/*
+// sf 5   90 meters
+   dataPoints[1]=112950083; 
+   dataPoints[9]=112913912;
+   dataPoints[14]=112902598;
+   dataPoints[17]=112951011;
+   dataPoints[23]=112886279;
+   dataPoints[25]=112888436;
+   dataPoints[28]=112868477;
+   dataPoints[29]=112941879;
+*/
+/*
+// sf 1  140 m, 220 m (only 7 sats)
+   dataPoints[1]=162053158; 
+   dataPoints[9]=162017008;
+   dataPoints[14]=162005540;
+   dataPoints[17]=162053932;
+   dataPoints[23]=161989277;
+   dataPoints[25]=161991385;
+   dataPoints[29]=162044968;
+*/
+/*
+// sf 2   90m and 130m
+   dataPoints[1]=211156226; 
+   dataPoints[9]=211120111;
+   dataPoints[14]=211108482;
+   dataPoints[17]=211156860;
+   dataPoints[23]=211092268;
+   dataPoints[25]=211094333;
+   dataPoints[29]=211148057;
+*/
+
+
+// AFTER LUNCH FINISH THIS AND THEN GO BACK AND DO ARL-SW DATA WITH RIGHT -r
+
+
+
+
+
+
 //---------------------------------------------------------------------------
 // Data Points from ARL-SW: 
-// position -e rin273Sep29.08n -z 149460 -w 1499
+// position -e rin273Sep29.08n -z 149466 -w 1499
 // position -e s011273a.08n -z 149478 -w 1499
 /*
 // SF5 - zcount says 636966, but all or part of it is inverted...
@@ -253,7 +321,7 @@ void P::process()
    dataPoints[24]=62909420;
    dataPoints[26]=62929226;
 */
-
+/*
 // SF1
    dataPoints[2]=161238404; 
    dataPoints[6]=161096221;
@@ -264,7 +332,7 @@ void P::process()
    dataPoints[22]=161223381;
    dataPoints[24]=161115452;
    dataPoints[26]=161135146;
-
+*/
 /*
 // SF2
    dataPoints[2]=259448260; 
@@ -288,6 +356,54 @@ void P::process()
    dataPoints[22]=357635877;
    dataPoints[24]=357527500;
    dataPoints[26]=357546986;
+*/
+// SAME DATA, NEW TRACKING CODE
+/*
+// SF5 - zcount 149466
+   dataPoints[2]=31516095; 
+   dataPoints[6]=31445126;
+   dataPoints[7]=31493027;
+   dataPoints[10]=31523593;
+   dataPoints[12]=31459346;
+   dataPoints[18]=31465277;
+   dataPoints[22]=31508576;
+   dataPoints[24]=31454714;
+   dataPoints[26]=31464613;
+*/
+    // 137m and 30m
+      // position -e s011273a.08n -r 8.184 -z 149466 -w 1499
+   dataPoints[2]=80619205; 
+   dataPoints[6]=80548110;
+   dataPoints[7]=80595955;
+   dataPoints[10]=80626514;
+   dataPoints[12]=80562428;
+   dataPoints[18]=80568331;
+   dataPoints[22]=80611693;
+   dataPoints[24]=80557726;
+   dataPoints[26]=80567576; 
+
+/*
+      // 70 and 203
+   dataPoints[2]=129722308; 
+   dataPoints[6]=129651094;
+   dataPoints[7]=129698883;
+   dataPoints[10]=129729435;
+   dataPoints[12]=129665510;
+   dataPoints[18]=129671385;
+   dataPoints[22]=129714817;
+   dataPoints[24]=129660738;
+   dataPoints[26]=129670538; 
+*/
+/*      // 139 and 260
+   dataPoints[2]=178825418; 
+   dataPoints[6]=178754078;
+   dataPoints[7]=178801804;
+   dataPoints[10]=178832363;
+   dataPoints[12]=178768592;
+   dataPoints[18]=178774438;
+   dataPoints[22]=178817934;
+   dataPoints[24]=178763750;
+   dataPoints[26]=178773494; 
 */
 //---------------------------------------------------------------------------
 // Data Points from ARL-SW - 6oct08: 
