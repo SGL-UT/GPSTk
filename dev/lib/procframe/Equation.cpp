@@ -46,11 +46,79 @@ namespace gpstk
 
       equationSource = right.equationSource;
       equationSat = right.equationSat;
+      equationSourceSet = right.equationSourceSet;
       indTerm = right.indTerm;
+      constWeight = right.constWeight;
 
       return (*this);
 
    }  // End of 'equationHeader::operator='
+
+
+
+      /* Assignment operator from a Variable
+       *
+       * @param indep      Variable representing the independent term.
+       */
+   equationHeader& equationHeader::operator=(const Variable& indep)
+   {
+
+      equationSource = indep.getSource();
+      equationSat = indep.getSatellite();
+      equationSourceSet = indep.getSourceSet();
+      indTerm = indep;
+      constWeight = 1.0;
+
+      return (*this);
+
+   }  // End of 'equationHeader::operator=()'
+
+
+
+      // Default constructor.
+   Equation::Equation()
+   {
+
+      header.equationSource = Variable::allSources;
+      header.equationSat = Variable::allSats;
+      header.constWeight = 1.0;
+
+   }  // End of 'Equation::Equation()'
+
+
+
+      /* Common constructor. It defines an Equation from its independent
+       * term. You must later use other methods to input the variables.
+       *
+       * @param indep     Variable object describing the independent term.
+       */
+   Equation::Equation( const Variable& indep )
+   {
+
+      header.equationSource = indep.getSource();
+      header.equationSat = indep.getSatellite();
+      header.equationSourceSet = indep.getSourceSet();
+      header.indTerm = indep;
+      header.constWeight = 1.0;
+
+   }  // End of 'Equation::Equation()'
+
+
+
+      /* Common constructor. It defines an Equation from its independent
+       * term. You must later use other methods to input the variables.
+       *
+       * @param var     TypeID object describing the independent term.
+       */
+   Equation::Equation( const TypeID& type )
+   {
+
+      header.equationSource = Variable::allSources;
+      header.equationSat = Variable::allSats;
+      header.indTerm.setType(type);
+      header.constWeight = 1.0;
+
+   }  // End of 'Equation::Equation()'
 
 
 
@@ -63,19 +131,27 @@ namespace gpstk
    Equation::Equation( const gnssEquationDefinition& gnssEq )
    {
 
+      header.equationSource = Variable::allSources;
+      header.equationSat = Variable::allSats;
+      header.constWeight = 1.0;
+
          // Set the properties of the independent term. Defaults are OK except
          // for type
       header.indTerm.setType(gnssEq.header);
 
          // Now, get the types of the variables
-      TypeIDSet::const_iterator pos;
-      for( pos = gnssEq.body.begin(); pos != gnssEq.body.end(); ++pos )
+      for( TypeIDSet::const_iterator pos = gnssEq.body.begin();
+           pos != gnssEq.body.end();
+           ++pos )
       {
+
             // Create a default Variable object with this type
          Variable var(*pos);
+
             // Insert this variable in this Equation's 'body' field
          body.insert(var);
-      }
+
+      }  // End of 'for( TypeIDSet::const_iterator pos = gnssEq.body.begin();'
 
    }  // End of 'Equation::Equation()'
 

@@ -1,3 +1,13 @@
+#pragma ident "$Id"
+
+/**
+ * @file SourceID.hpp
+ * gpstk::SourceID - Simple index to represent the source of data.
+ */
+
+#ifndef GPSTK_SOURCEID_HPP
+#define GPSTK_SOURCEID_HPP
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -15,14 +25,11 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE. 2006
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
 //
 //============================================================================
 
-
-#ifndef GPSTK_SOURCEID_HPP
-#define GPSTK_SOURCEID_HPP
 
 #include <iostream>
 #include <iomanip>
@@ -30,19 +37,18 @@
 #include <string>
 #include <map>
 
-/**
- * @file SourceID.hpp
- * gpstk::SourceID - Simple index to represent source of the data.
- */
+
 
 namespace gpstk
 {
-    /** @addtogroup DataStructures */
+
+      /** @addtogroup DataStructures */
 
    class SourceID
    {
    public:
-      /// The type of source.
+
+         /// The type of source.
       enum SourceType
       {
          Unknown,
@@ -60,69 +66,95 @@ namespace gpstk
          Placeholder = Last+1000
       };
 
-      /// empty constructor, creates an unknown source data object
+
+         /// empty constructor, creates an unknown source data object
       SourceID()
-         : type(Unknown), sourceName("") {};
+         : type(Unknown), sourceName("")
+      {};
 
-      /// Explicit constructor
-      SourceID(SourceType st, std::string name)
-         : type(st), sourceName(name) {};
 
-      /// Copy constructor
+         /// Explicit constructor
+      SourceID( SourceType st,
+                std::string name )
+         : type(st), sourceName(name)
+      {};
+
+
+         /// Copy constructor
       SourceID(const SourceID& s)
-         : type(s.type), sourceName(s.sourceName) {};
+         : type(s.type), sourceName(s.sourceName)
+      {};
 
-      /// Equality requires all fields to be the same
+
+         /// Equality operator requires all fields to be the same.
       virtual bool operator==(const SourceID& right) const;
 
-      /// Ordering is arbitrary but required to be able to use a SourceID
-      /// as an index to a std::map. If an application needs
-      /// some other ordering, inherit and override this function.
+
+         /// Ordering is arbitrary but required to be able to use a SourceID
+         /// as an index to a std::map. If an application needs
+         /// some other ordering, inherit and override this function.
       virtual bool operator<(const SourceID& right) const;
 
+
+         /// Inequality operator
       bool operator!=(const SourceID& right) const
       { return !(operator==(right)); }
 
+
+         /// 'Greater than' operator
       bool operator>(const SourceID& right) const
       {  return (!operator<(right) && !operator==(right)); }
 
+
+         /// 'Less or equal than' operator
       bool operator<=(const SourceID& right) const
       { return (operator<(right) || operator==(right)); }
 
+
+         /// 'Greater or equal than' operator
       bool operator>=(const SourceID& right) const
       { return !(operator<(right)); }
 
-      /// Assignment operator
-      SourceID& operator=(const SourceID& right)
-      {
-        if ( this == &right ) return (*this);
-        (*this).type = right.type;
-        (*this).sourceName = right.sourceName;
-        return *this;
-      }
 
-      /// Convenience output method
+         /// Assignment operator
+      SourceID& operator=(const SourceID& right);
+
+
+         /// Convenience output method
       virtual std::ostream& dump(std::ostream& s) const;
 
-      /// Returns true if this is a valid SourceID. Basically just
-      /// checks that none of the fields are undefined
+
+         /// Returns true if this is a valid SourceID. Basically just
+         /// checks that none of the fields are undefined.
       virtual bool isValid() const;
 
-      /// Destructor
-      virtual ~SourceID() {}
 
+         /// Destructor
+      virtual ~SourceID() {};
+
+
+         /// Method to create a new source type.
       static SourceType newSourceType(const std::string& s);
 
-      // Fields
-      /// Type of the data source (GPS receiver, Inertial system, etc)
+
+         // Fields
+
+         /// Type of the data source (GPS receiver, Inertial system, etc)
       SourceType  type;
-      /// Name of the data source
+
+
+         /// Name of the data source
       std::string sourceName;
 
+
    private:
+
+
       static std::map< SourceType, std::string > stStrings;
 
+
    public:
+
       class Initializer
       {
       public:
@@ -131,16 +163,25 @@ namespace gpstk
 
       static Initializer SourceIDsingleton;
 
-   }; // class SourceID
+   }; // End of class 'SourceID'
+
+
 
    namespace StringUtils
    {
-      /// convert this object to a string representation
-      std::string asString(const SourceID& p);
-   }
-   
-   /// stream output for SourceID
-   std::ostream& operator<<(std::ostream& s, const SourceID& p);
 
-} // namespace gpstk
-#endif
+         /// Convert this object to a string representation
+      std::string asString(const SourceID& p);
+
+   }
+
+
+
+      /// Stream output for SourceID
+   std::ostream& operator<<( std::ostream& s,
+                             const SourceID& p );
+
+
+
+}  // End of namespace gpstk
+#endif   // GPSTK_SOURCEID_HPP

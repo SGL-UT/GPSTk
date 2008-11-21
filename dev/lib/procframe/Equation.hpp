@@ -62,6 +62,13 @@ namespace gpstk
       SatID equationSat;
 
 
+         /** In case this variable is associated to SOME specific
+          *  sources ("Variable::someSources" in "equationSource"),
+          *  then the corresponding SourceID set is stored here.
+          */
+      std::set<SourceID> equationSourceSet;
+
+
          /// Independent term
       Variable indTerm;
 
@@ -103,19 +110,6 @@ namespace gpstk
            indTerm(indep) {};
 
 
-         /// Get the value of the constant weight associated to this equation
-      virtual double getWeight() const
-      { return constWeight; };
-
-
-         /** Set the value of the constant weight associated to this equation
-          *
-          * @param cweight    Value of constant weight.
-          */
-      virtual equationHeader& setWeight(const double& cweight)
-      { constWeight = cweight; return (*this); };
-
-
          /// Assignment operator
       virtual equationHeader& operator=(const equationHeader& right);
 
@@ -124,8 +118,7 @@ namespace gpstk
           *
           * @param indep      Variable representing the independent term.
           */
-      virtual equationHeader& operator=(const Variable& right)
-      { indTerm = right; return (*this); };
+      virtual equationHeader& operator=(const Variable& indep);
 
 
          /// Destructor
@@ -140,8 +133,8 @@ namespace gpstk
    struct Equation : gnssData<equationHeader, VariableSet>
    {
 
-         /// Default constructor
-      Equation() {};
+         /// Default constructor.
+      Equation();
 
 
          /** Common constructor. It defines an Equation from its header. You
@@ -156,10 +149,9 @@ namespace gpstk
          /** Common constructor. It defines an Equation from its independent
           *  term. You must later use other methods to input the variables.
           *
-          * @param var     Variable object describing the independent term.
+          * @param indep     Variable object describing the independent term.
           */
-      Equation( const Variable& var )
-      { header.indTerm = var; };
+      Equation( const Variable& indep );
 
 
          /** Common constructor. It defines an Equation from its independent
@@ -167,8 +159,7 @@ namespace gpstk
           *
           * @param var     TypeID object describing the independent term.
           */
-      Equation( const TypeID& type )
-      { header.indTerm.setType(type); };
+      Equation( const TypeID& type );
 
 
          /** Common constructor. It takes a simple gnssEquationDefinition
@@ -204,6 +195,19 @@ namespace gpstk
           */
       virtual Equation& setIndependentTerm(const Variable& var)
       { header = var; return (*this); };
+
+
+         /// Get the value of the constant weight associated to this equation
+      virtual double getWeight() const
+      { return header.constWeight; };
+
+
+         /** Set the value of the constant weight associated to this equation
+          *
+          * @param cweight    Value of constant weight.
+          */
+      virtual Equation& setWeight(const double& cweight)
+      { header.constWeight = cweight; return (*this); };
 
 
          /** Add a variable (unknown) to this Equation
@@ -291,6 +295,27 @@ namespace gpstk
           */
       virtual Equation& clear()
       { body.clear(); return (*this); };
+
+
+         /** Get SourceID set. This is only meaningful if "equationSource" in
+          *  header is set to "Variable::someSources".
+          */
+      std::set<SourceID> getSourceSet() const
+      { return header.equationSourceSet; };
+
+
+         /** Add a source to SourceID set. This is only meaningful if
+          * "equationSource" in header is set to "Variable::someSources".
+          */
+      Equation& addSource2Set( const SourceID& source )
+      { header.equationSourceSet.insert(source); return (*this); };
+
+
+         /** Clear SourceID set. This is only meaningful if "equationSource"
+          *  in header is set to "Variable::someSources".
+          */
+      Equation& clearSourceSet()
+      { header.equationSourceSet.clear(); return (*this); };
 
 
          /// This ordering is somewhat arbitrary, but is required to be able

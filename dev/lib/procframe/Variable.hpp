@@ -66,7 +66,7 @@ namespace gpstk
           *                         or not. By default, it is NOT.
           */
       Variable( const TypeID& type,
-                StochasticModel* pModel = NULL,
+                StochasticModel* pModel = &Variable::defaultModel,
                 bool sourceIndexed = true,
                 bool satIndexed    = false );
 
@@ -172,7 +172,7 @@ namespace gpstk
 
 
          /// Get SourceID. If this value is equal to "Variable::someSources"
-         /// then you should also check "varSourceList".
+         /// then you should also check "varSourceSet".
       SourceID getSource() const
       { return varSource; };
 
@@ -182,7 +182,7 @@ namespace gpstk
           * @param source     Specific SourceID of variable.
           */
       Variable& setSource(const SourceID& source)
-      { varSource = source; setSourceIndexed(true); return (*this); };
+      { varSource = source; setSourceIndexed(false); return (*this); };
 
 
 
@@ -196,7 +196,25 @@ namespace gpstk
           * @param satellite  Specific SatID of variable.
           */
       Variable& setSatellite(const SatID& satellite)
-      { varSat = satellite; setSatIndexed(true); return (*this); };
+      { varSat = satellite; setSatIndexed(false); return (*this); };
+
+
+         /// Get SourceID set. This is only meaningful if "varSource" is set
+         /// to "Variable::someSources".
+      std::set<SourceID> getSourceSet() const
+      { return varSourceSet; };
+
+
+         /// Add a source to SourceID set. This is only meaningful if
+         /// "varSource" is set to "Variable::someSources".
+      Variable& addSource2Set( const SourceID& source )
+      { varSourceSet.insert(source); return (*this); };
+
+
+         /// Clear SourceID set. This is only meaningful if "varSource" is set
+         /// to "Variable::someSources".
+      Variable& clearSourceSet()
+      { varSourceSet.clear(); return (*this); };
 
 
          /// Equality operator
@@ -216,13 +234,6 @@ namespace gpstk
 
          /// Assignment operator.
       virtual Variable& operator=(const Variable& right);
-
-
-         /** In case the value of this variable belongs to SOME specific
-          *  sources ("Variable::someSources" in "varSource"), then the
-          *  corresponding SourceID list is stored here.
-          */
-      std::list<SourceID> varSourceList;
 
 
          /// SourceID object representing all sources : type(Unknown),
@@ -286,6 +297,13 @@ namespace gpstk
           *  satellite, the corresponding SatID is stored here.
           */
       SatID varSat;
+
+
+         /** In case the value of this variable belongs to SOME specific
+          *  sources ("Variable::someSources" in "varSource"), then the
+          *  corresponding SourceID set is stored here.
+          */
+      std::set<SourceID> varSourceSet;
 
 
          /// Default stochastic model to be assigned to variables.

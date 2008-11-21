@@ -42,11 +42,11 @@ namespace gpstk
 
       // SourceID object representing "some" sources : type(Mixed),
       // sourceName("").
-   SourceID Variable::someSources;
+   SourceID Variable::someSources(SourceID::Mixed, "");
 
 
-      // SatID object representing all satellites : type(Unknown),
-      // sourceName("").
+      // SatID object representing all satellites : id(-1),
+      // system(systemGPS).
    SatID Variable::allSats;
 
 
@@ -140,9 +140,26 @@ namespace gpstk
 
       pVarModel = pModel;
 
-      isSourceIndexed = false;
+         // Check if the source is unspecific
+      if( source == allSources )
+      {
+         isSourceIndexed = true;
+      }
+      else
+      {
+         isSourceIndexed = false;
+      }
 
-      isSatIndexed = false;
+
+         // Check if the satellite is unspecific
+      if( satellite == allSats )
+      {
+         isSatIndexed = true;
+      }
+      else
+      {
+         isSatIndexed = false;
+      }
 
          // Set the source associated to this variable
       varSource = source;
