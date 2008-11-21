@@ -117,8 +117,7 @@ namespace Rinex3
 
    void SP3Data::dump(ostream& s) const 
    {
-      s << flag << " " << sat
-        << " " << time.asString();
+      s << flag << " " << sat << " " << time.asString();
       if(flag != '*') {
          s << fixed << setprecision(6)
            << " X=" << setw(14) << x[0]
