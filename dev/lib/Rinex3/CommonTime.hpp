@@ -179,6 +179,19 @@ namespace gpstk
                                TimeFrame timeFrame = Unknown )
          throw( gpstk::InvalidParameter );
 
+      CommonTime& setTimeFrame( TimeFrame timeFrame )
+         throw( gpstk::InvalidParameter );
+
+         /**
+          * Get method.  Obtain values in days, second of day and fractional
+          * second of day, plus the time frame.
+          */
+      void get( long& day, 
+                long& sod,
+                double& fsod,
+                TimeFrame& timeFrame ) const
+         throw();
+
          /**
           * Get method.  Obtain values in days, second of day and fractional
           * second of day.
@@ -190,19 +203,37 @@ namespace gpstk
 
          /**
           * Get method through which one may obtain values for day and
+          * second of day which includes the fractional second of day,
+          * plus the time frame.
+          */
+      void get( long& day,
+                double& sod,
+                TimeFrame& timeFrame ) const
+         throw();
+
+         /**
+          * Get method through which one may obtain values for day and
           * second of day which includes the fractional second of day.
           */
       void get( long& day,
                 double& sod ) const
          throw();
-      
+
+         /**
+          * Get method through which one may obtain a value for day which
+          * includes the fraction of a day, plus the time frame.
+          */
+      void get( double& day,
+                TimeFrame& timeFrame ) const
+         throw();
+
          /**
           * Get method through which one may obtain a value for day which
           * includes the fraction of a day.
           */
       void get( double& day ) const
          throw();
-      
+
          /** 
           * Get internal values method.  Obtain the values stored within this
           * object.
@@ -220,6 +251,9 @@ namespace gpstk
 
          /// Obtain the seconds of day ( ignoring the day ).
       double getSecondOfDay() const
+         throw();
+
+      TimeFrame getTimeFrame() const
          throw();
 
          //@}

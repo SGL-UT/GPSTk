@@ -160,10 +160,9 @@ namespace Rinex3
       throw()
    {
       bool rc = false;
-      CommonTime t(0,0,0.0);
+      CommonTime t(0,0,0.0,GPS_Receiver);  // use GPS_Receiver for default?
       t =  eph.getEphemerisEpoch();
       t -= 0.5*3600.0*eph.getFitInterval();
-//      t.setTimeFrame("GPS_Receiver");
    
       EngEphMap& eem = ube[eph.getPRNID()];
       EngEphMap::iterator sfi = eem.find(t);
@@ -211,7 +210,6 @@ namespace Rinex3
    void GPSEphemerisStore::edit(const CommonTime& tmin, const CommonTime& tmax)
       throw()
    {
-      CommonTime test;
       for(UBEMap::iterator i = ube.begin(); i != ube.end(); i++)
       {
          EngEphMap& eMap = i->second;
@@ -247,7 +245,6 @@ namespace Rinex3
    GPSEphemerisStore::findUserEphemeris(const SatID sat, const CommonTime& t) 
       const throw(InvalidRequest)
    {
-      CommonTime test;
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
       {
@@ -256,7 +253,8 @@ namespace Rinex3
       }
 
       const EngEphMap& em = prn_i->second;
-      CommonTime t1(0,0,0.0), t2(0,0,0.0), Tot = CommonTime::BEGINNING_OF_TIME;
+      CommonTime t1(0,0,0.0,GPS_Receiver), t2(0,0,0.0,GPS_Receiver),
+                 Tot = CommonTime::BEGINNING_OF_TIME;
       EngEphMap::const_iterator it = em.end();
 
       // Find eph with (Toe-(fitint/2)) > t - 4 hours
@@ -318,7 +316,6 @@ namespace Rinex3
    GPSEphemerisStore::findNearEphemeris(const SatID sat, const CommonTime& t) 
       const throw(InvalidRequest)
    {
-      CommonTime test;
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
       {

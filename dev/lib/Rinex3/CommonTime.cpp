@@ -35,15 +35,15 @@ namespace gpstk
 {
       // 'julian day' of earliest epoch expressible by CommonTime; 1/1/4713 B.C.
    const long CommonTime::BEGIN_LIMIT_JDAY = 0;
-      // 'julian day' of latest 'julian day' expressible by CommonTime, 
+      // 'julian day' of latest 'julian day' expressible by CommonTime,
       // 1/1/4713 A.D.
    const long CommonTime::END_LIMIT_JDAY = 3442448;
 
       // earliest representable CommonTime
-   const CommonTime 
+   const CommonTime
    CommonTime::BEGINNING_OF_TIME( CommonTime::BEGIN_LIMIT_JDAY, 0, 0.0, Unknown );
       // latest representable CommonTime
-   const CommonTime 
+   const CommonTime
    CommonTime::END_OF_TIME( CommonTime::END_LIMIT_JDAY, 0, 0.0, Unknown ) ;
 
    CommonTime::CommonTime( const CommonTime& right )
@@ -59,7 +59,7 @@ namespace gpstk
       m_msod = right.m_msod;
       m_fsod = right.m_fsod;
       m_timeFrame = right.m_timeFrame;
-      return *this; 
+      return *this;
    }
 
    CommonTime& CommonTime::set( long day,
@@ -76,14 +76,14 @@ namespace gpstk
                                      + gpstk::StringUtils::asString( day ) );
          GPSTK_THROW( ip );
       }
-      
+
       if( sod < 0 || sod >= SEC_PER_DAY )
       {
          gpstk::InvalidParameter ip( "Invalid seconds of day: "
                                      + gpstk::StringUtils::asString( sod ) );
          GPSTK_THROW( ip );
       }
-      
+
       if( fsod < 0.0 || fsod >= 1 )
       {
          gpstk::InvalidParameter ip( "Invalid fractional-seconds: "
@@ -140,31 +140,50 @@ namespace gpstk
                                      + gpstk::StringUtils::asString( day ) );
          GPSTK_THROW( ip );
       }
-      
+
       if( msod < 0 || msod >= MS_PER_DAY )
       {
          gpstk::InvalidParameter ip( "Invalid milliseconds of day: "
                                      + gpstk::StringUtils::asString( msod ) );
          GPSTK_THROW( ip );
       }
-      
+
       if( fsod < 0.0 || fsod >= SEC_PER_MS )
       {
          gpstk::InvalidParameter ip( "Invalid fractional-milliseconds: "
                                      + gpstk::StringUtils::asString( fsod ) );
          GPSTK_THROW( ip );
       }
-      
+
       m_day  = day;
       m_msod = msod;
       m_fsod = fsod;
 
       m_timeFrame = timeFrame;
-      
+
       return *this;
    }
 
-   void CommonTime::get( long& day, 
+   CommonTime& CommonTime::setTimeFrame( TimeFrame timeFrame )
+      throw( gpstk::InvalidParameter )
+   {
+      m_timeFrame = timeFrame;
+   }
+
+   void CommonTime::get( long& day,
+                         long& sod,
+                         double& fsod,
+                         TimeFrame& timeFrame ) const
+      throw()
+   {
+      day = m_day;
+      sod = m_msod / MS_PER_SEC;
+      long msec = m_msod - sod * MS_PER_SEC;  // m_msod % MS_PER_SEC
+      fsod = static_cast<double>( msec ) * SEC_PER_MS + m_fsod;
+      timeFrame = m_timeFrame;
+   }
+
+   void CommonTime::get( long& day,
                          long& sod,
                          double& fsod ) const
       throw()
@@ -174,15 +193,36 @@ namespace gpstk
       long msec = m_msod - sod * MS_PER_SEC;  // m_msod % MS_PER_SEC
       fsod = static_cast<double>( msec ) * SEC_PER_MS + m_fsod;
    }
-   
+
    void CommonTime::get( long& day,
-                         double& sod ) const
+                         double& sod,
+                         TimeFrame& timeFrame ) const
       throw()
    {
       day = m_day;
       sod = m_msod / MS_PER_SEC + m_fsod;
+      timeFrame = m_timeFrame;
    }
-   
+
+   void CommonTime::get( long& day,
+                         double& sod ) const
+      throw()
+   {
+     day = m_day;
+      sod = m_msod / MS_PER_SEC + m_fsod;
+   }
+
+  void CommonTime::get( double& day,
+                        TimeFrame& timeFrame ) const
+      throw()
+   {
+         // convert everything to days
+      day = static_cast<double>( m_day ) + 
+            static_cast<double>( m_msod ) * MS_PER_DAY +
+            m_fsod * SEC_PER_DAY;
+      timeFrame = m_timeFrame;
+   }
+
    void CommonTime::get( double& day ) const
       throw()
    {
@@ -199,7 +239,7 @@ namespace gpstk
       get( day );
       return day;
    }
-   
+
    double CommonTime::getSecondOfDay() const
       throw()
    {
@@ -207,6 +247,12 @@ namespace gpstk
       double sod;
       get( day, sod );
       return sod;
+   }
+
+   TimeFrame CommonTime::getTimeFrame() const
+      throw()
+   {
+      return m_timeFrame;
    }
 
    double CommonTime::operator-( const CommonTime& right ) const
@@ -242,14 +288,14 @@ namespace gpstk
    {
       return CommonTime( *this ).addSeconds( -sec );
    }
-   
+
    CommonTime& CommonTime::operator+=( double sec )
       throw( gpstk::InvalidRequest )
    {
       addSeconds( sec );
       return *this;
    }
-   
+
    CommonTime& CommonTime::operator-=( double sec )
       throw( gpstk::InvalidRequest )
    {
@@ -287,7 +333,7 @@ namespace gpstk
          seconds -= days * SEC_PER_DAY;  // seconds %= SEC_PER_DAY
       }
       add( days, seconds * MS_PER_SEC, 0. );
-      
+
          // How about this?
          // add( seconds / SEC_PER_DAY,
          //      seconds % SEC_PER_DAY * MS_PER_SEC,
@@ -302,7 +348,7 @@ namespace gpstk
       add( days, 0, 0.0 );
       return *this;
    }
-   
+
    CommonTime& CommonTime::addMilliseconds( long msec )
       throw( InvalidRequest )
    {
@@ -340,10 +386,10 @@ namespace gpstk
          return true;
       if (m_msod > right.m_msod)
          return false;
-      
+
       if (m_fsod < right.m_fsod)
          return true;
-      
+
       return false;
    }
 
@@ -379,7 +425,7 @@ namespace gpstk
    }
 
       /// protected functions
-   bool CommonTime::add( long days, 
+   bool CommonTime::add( long days,
                          long msod,
                          double fsod )
       throw()
@@ -399,7 +445,7 @@ namespace gpstk
          m_msod += ms;
          m_fsod -= static_cast<double>( ms ) * SEC_PER_MS;
       }
-      
+
       if( ABS( m_msod ) >= MS_PER_DAY )
       {
          long day = m_msod / MS_PER_DAY;
@@ -411,19 +457,19 @@ namespace gpstk
       {
          m_fsod = 0.0;
       }
-      
+
       if( m_fsod < 0 )
       {
          m_fsod += 1;
          --m_msod;
       }
-      
+
       if( m_msod < 0 )
       {
          m_msod = m_msod + MS_PER_DAY;
          --m_day;
       }
-      
+
       return ( ( m_day >= BEGIN_LIMIT_JDAY ) && 
                ( m_day <  END_LIMIT_JDAY   ) );
    }
