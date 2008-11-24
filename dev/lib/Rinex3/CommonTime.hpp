@@ -84,7 +84,7 @@ namespace gpstk
          //@{
          /**
           * Default Constructor.
-          * All elements default to zero (or "Unknown" for time frame).
+          * All numerical elements default to zero, "Unknown" for time frame.
           * @see CommonTime::set()
           */
       CommonTime( long day = 0, 
@@ -96,20 +96,22 @@ namespace gpstk
 
          /**
           * Constructor that accepts days and second of day.
-          * All elements default to zero.
+          * All elements default to zero and Unknown.
           */
       CommonTime( long day,
-                  double sod )
+                  double sod,
+                  TimeFrame timeFrame )
          throw( gpstk::InvalidParameter )
-      { set( day, sod ); }
+     { set( day, sod, timeFrame ); }
       
          /** 
           * Constructor that accepts days only.
-          * All elements default to zero.
+          * All elements default to zero and Unknown.
           */
-      CommonTime( double day )
+      CommonTime( double day,
+                  TimeFrame timeFrame )
          throw( gpstk::InvalidParameter )
-      { set( day ); }
+      { set( day, timeFrame ); }
       
          /**
           * Copy Constructor.
@@ -153,7 +155,8 @@ namespace gpstk
           * values are out of bounds.
           */
       CommonTime& set( long day,
-                       double sod = 0.0 )
+                       double sod = 0.0,
+                       TimeFrame timeFrame = Unknown )
          throw( gpstk::InvalidParameter );
       
          /**
@@ -161,7 +164,8 @@ namespace gpstk
           * validity of the argument and throws an exception if its value is
           * out of bounds.
           */
-      CommonTime& set( double day )
+      CommonTime& set( double day,
+                       TimeFrame timeFrame = Unknown )
          throw( gpstk::InvalidParameter );
 
          /**
@@ -171,7 +175,8 @@ namespace gpstk
           */
       CommonTime& setInternal( long day = 0,
                                long msod = 0,
-                               double fsod = 0.0 )
+                               double fsod = 0.0,
+                               TimeFrame timeFrame = Unknown )
          throw( gpstk::InvalidParameter );
 
          /**
@@ -204,9 +209,10 @@ namespace gpstk
           */
       void getInternal( long& day,
                         long& msod,
-                        double& fsod ) const
+                        double& fsod,
+                        TimeFrame& timeFrame ) const
          throw()
-      { day = m_day; msod = m_msod; fsod = m_fsod; }
+      { day = m_day; msod = m_msod; fsod = m_fsod; timeFrame = m_timeFrame; }
 
          /// Obtain the time, in days, including the fraction of a day.
       double getDays() const 
@@ -329,7 +335,7 @@ namespace gpstk
 
       void reset()
          throw()
-      { m_day = m_msod = 0; m_fsod = 0.0; }
+      { m_day = m_msod = 0; m_fsod = 0.0; m_timeFrame = Unknown; }
 
       std::string asString() const
          throw();

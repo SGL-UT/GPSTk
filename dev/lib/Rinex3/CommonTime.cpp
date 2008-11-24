@@ -107,29 +107,31 @@ namespace gpstk
    }
 
    CommonTime& CommonTime::set( long day,
-                                double sod )
+                                double sod,
+                                TimeFrame timeFrame )
       throw( gpstk::InvalidParameter )
    {
          // separate whole and fractional seconds, then use set()
       long sec = static_cast<long>( sod );
       sod -= sec;
 
-      return set( day, sec, sod );
+      return set( day, sec, sod, timeFrame );
    }
 
-   CommonTime& CommonTime::set( double day = 0.0 )
+  CommonTime& CommonTime::set( double day = 0.0,
+                               TimeFrame timeFrame )
       throw( gpstk::InvalidParameter )
    {
          // separate whole and fractional days
       long lday = static_cast<long>( day );
       double sec = ( day - lday ) * SEC_PER_DAY;
-      return set( lday, sec );
+      return set( lday, sec, timeFrame );
    }
 
    CommonTime& CommonTime::setInternal( long day,
                                         long msod,
-                                        double fsod )
-//                                        TimeFrame timeFrame )
+                                        double fsod,
+                                        TimeFrame timeFrame )
       throw( gpstk::InvalidParameter )
    {
       if( day < BEGIN_LIMIT_JDAY || day > END_LIMIT_JDAY )
@@ -153,12 +155,11 @@ namespace gpstk
          GPSTK_THROW( ip );
       }
       
-      m_day = day;
+      m_day  = day;
       m_msod = msod;
       m_fsod = fsod;
 
-      m_timeFrame = Unknown;
-//      m_timeFrame = timeFrame;
+      m_timeFrame = timeFrame;
       
       return *this;
    }
@@ -187,8 +188,8 @@ namespace gpstk
    {
          // convert everything to days
       day = static_cast<double>( m_day ) + 
-         static_cast<double>( m_msod ) * MS_PER_DAY +
-         m_fsod * SEC_PER_DAY;
+            static_cast<double>( m_msod ) * MS_PER_DAY +
+            m_fsod * SEC_PER_DAY;
    }
 
    double CommonTime::getDays() const
@@ -211,9 +212,23 @@ namespace gpstk
    double CommonTime::operator-( const CommonTime& right ) const
       throw()
    {
-      return ( SEC_PER_DAY * static_cast<double>( m_day - right.m_day ) +
-               SEC_PER_MS * static_cast<double>( m_msod - right.m_msod ) + 
-               m_fsod - right.m_fsod  ) ;
+//      TimeFrame timeFrame;
+//      if ( m_timeFrame == right.m_timeFrame )
+//      { timeFrame = m_timeFrame; }
+//      else
+//      { timeFrame = Unknown; }
+
+//      double temp = SEC_PER_DAY * static_cast<double>( m_day  - right.m_day  ) +
+//                    SEC_PER_MS  * static_cast<double>( m_msod - right.m_msod ) + 
+//                    m_fsod - right.m_fsod ;
+
+//      CommonTime Temp( temp, timeFrame );
+//      return Temp;
+
+      return( SEC_PER_DAY * static_cast<double>( m_day  - right.m_day  ) +
+              SEC_PER_MS  * static_cast<double>( m_msod - right.m_msod ) + 
+              m_fsod - right.m_fsod ) ;
+
    }
    
    CommonTime CommonTime::operator+( double sec ) const
@@ -245,7 +260,7 @@ namespace gpstk
    CommonTime& CommonTime::addSeconds( double seconds )
       throw( InvalidRequest )
    {
-      long days=0, ms=0;
+      long days = 0, ms = 0;
       if ( ABS(seconds) >= SEC_PER_DAY )
       {
          days = static_cast<long>( seconds * DAY_PER_SEC );
@@ -298,9 +313,10 @@ namespace gpstk
    bool CommonTime::operator==( const CommonTime& right ) const
       throw()
    {
-      return (m_day == right.m_day &&
-              m_msod == right.m_msod &&
-              m_fsod == right.m_fsod );
+      return (m_day       == right.m_day       &&
+              m_msod      == right.m_msod      &&
+              m_fsod      == right.m_fsod      &&
+              m_timeFrame == right.m_timeFrame   );
    }
 
    bool CommonTime::operator!=( const CommonTime& right ) const
@@ -312,6 +328,9 @@ namespace gpstk
    bool CommonTime::operator<( const CommonTime& right ) const
       throw()
    {
+      if (m_timeFrame != right.m_timeFrame )
+         return false;
+
       if (m_day < right.m_day)
          return true;
       if (m_day > right.m_day)
@@ -352,9 +371,10 @@ namespace gpstk
       using namespace std;
       ostringstream oss;
       oss << setfill('0') 
-          << setw(7) << m_day << " "
+          << setw(7) << m_day  << " "
           << setw(8) << m_msod << " "
-          << fixed << setprecision(15) << setw(17) << m_fsod;
+          << fixed << setprecision(15) << setw(17) << m_fsod
+          << " in frame " << m_timeFrame ;
       return oss.str();
    }
 
@@ -364,7 +384,7 @@ namespace gpstk
                          double fsod )
       throw()
    {
-      m_day += days;
+      m_day  += days;
       m_msod += msod;
       m_fsod += fsod;
       return normalize();
@@ -383,7 +403,7 @@ namespace gpstk
       if( ABS( m_msod ) >= MS_PER_DAY )
       {
          long day = m_msod / MS_PER_DAY;
-         m_day += day;
+         m_day  += day;
          m_msod -= day * MS_PER_DAY;
       }
 
@@ -405,7 +425,7 @@ namespace gpstk
       }
       
       return ( ( m_day >= BEGIN_LIMIT_JDAY ) && 
-               ( m_day <  END_LIMIT_JDAY ) );
+               ( m_day <  END_LIMIT_JDAY   ) );
    }
 
    std::ostream& operator<<(std::ostream& o, const CommonTime& ct)

@@ -44,7 +44,7 @@ else
 	      ../../src/BinexData.cpp ../../src/BLQDataReader.cpp ../../src/Chi2Distribution.cpp ../../src/CivilTime.cpp
 	      ../../src/CodeBuffer.cpp ../../src/CommandOption.cpp ../../src/CommandOptionParser.cpp
 	      ../../src/CommandOptionWithCommonTimeArg.cpp ../../src/CommandOptionWithPositionArg.cpp
-	      ../../src/CommandOptionWithTimeArg.cpp ../../src/CommonTime.cpp ../../src/ConfDataReader.cpp ../../src/DOP.cpp
+	      ../../src/CommandOptionWithTimeArg.cpp ../../src/ConfDataReader.cpp ../../src/DOP.cpp
 	      ../../src/DayTime.cpp ../../src/ECEF.cpp ../../src/EngAlmanac.cpp
 	      ../../src/EngEphemeris.cpp ../../src/EngNav.cpp ../../src/ENUUtil.cpp ../../src/EphemerisRange.cpp
 	      ../../src/Epoch.cpp ../../src/Exception.cpp ../../src/Expression.cpp ../../src/FFData.cpp
@@ -91,7 +91,7 @@ else
 	      ../../src/BLQDataReader.hpp ../../src/CheckPRData.hpp ../../src/Chi2Distribution.hpp ../../src/CivilTime.hpp
 	      ../../src/ClockModel.hpp ../../src/CodeBuffer.hpp ../../src/CommandOption.hpp ../../src/CommandOptionParser.hpp
 	      ../../src/CommandOptionWithCommonTimeArg.hpp ../../src/CommandOptionWithPositionArg.hpp
-	      ../../src/CommandOptionWithTimeArg.hpp ../../src/CommonTime.hpp ../../src/ConfDataReader.hpp ../../src/DOP.hpp
+	      ../../src/CommandOptionWithTimeArg.hpp ../../src/ConfDataReader.hpp ../../src/DOP.hpp
 	      ../../src/DayTime.hpp ../../src/ECEF.hpp ../../src/EngAlmanac.hpp ../../src/EngEphemeris.hpp ../../src/EngNav.hpp
 	      ../../src/ENUUtil.hpp ../../src/EphemerisRange.hpp ../../src/Epoch.hpp
 	      ../../src/EpochClockModel.hpp ../../src/Exception.hpp ../../src/Expression.hpp
