@@ -3,6 +3,7 @@
 SubDir TOP lib ;
 
 SubInclude TOP lib rxio ;
+SubInclude TOP lib vdraw ;
 SubInclude TOP lib vplot ;
 SubInclude TOP lib geomatics ;
 SubInclude TOP lib procframe ;
