@@ -23,7 +23,7 @@
 
 using namespace std;
 using namespace gpstk;
-using namespace vplot;
+using namespace vdraw;
 
 void printMonth(short month, short year)
 {
