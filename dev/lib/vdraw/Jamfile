@@ -26,7 +26,7 @@ else
         Adler32.hpp Base64Encoder.hpp BasicShape.hpp 
         Bitmap.hpp BorderLayout.hpp 
         Canvas.hpp Circle.hpp Color.hpp 
-        ColorMap.hpp Comment.hpp CRC32.hppEPSImage.hpp 
+        ColorMap.hpp Comment.hpp CRC32.hpp EPSImage.hpp 
         Fillable.hpp Frame.hpp GraphicsConstants.hpp
         GridLayout.hpp HLayout.hpp Helper.hpp # IndexedColorMap.hpp
         InterpolatedColorMap.hpp Layout.hpp
