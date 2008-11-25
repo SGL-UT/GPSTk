@@ -253,7 +253,7 @@ namespace vdraw
   {
     // TODO There are limits to IDAT length...check and split
     int len = str.size();
-    int cmp = (int)(log(len)/log(2))-8;
+    int cmp = (int)(log((double)len)/log(2.0))-8;
     if(cmp<0) cmp = 0;
     else if(cmp>7) cmp = 7;
     cmp = (cmp<<4) | 0x08;
