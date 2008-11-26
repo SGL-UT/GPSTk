@@ -118,7 +118,7 @@ namespace Rinex3
           * @param[in] tmax defines the end of the time interval
           */
       virtual void edit( const CommonTime& tmin,
-                         const CommonTime& tmax = CommonTime(CommonTime::END_OF_TIME) )
+                         const CommonTime& tmax = CommonTime::END_OF_TIME )
          throw();
 
 
