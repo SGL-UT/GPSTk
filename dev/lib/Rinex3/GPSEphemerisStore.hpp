@@ -105,7 +105,7 @@ namespace Rinex3
       /// @param tmin defines the beginning of the time interval
       /// @param tmax defines the end of the time interval
       void edit(const CommonTime& tmin, 
-                const CommonTime& tmax = CommonTime(CommonTime::END_OF_TIME) )
+                const CommonTime& tmax = CommonTime::END_OF_TIME )
          throw();
 
 
@@ -157,7 +157,7 @@ namespace Rinex3
       /// Remove all data from this collection.   
       void clear()
          throw()
-      {edit(CommonTime(CommonTime::END_OF_TIME));}
+      {edit(CommonTime::END_OF_TIME);}
       
       /** This returns the pvt of the sv in ecef coordinates
        * (units m, s, m/s, s/s) at the indicated time.
