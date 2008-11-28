@@ -140,7 +140,10 @@ namespace gpstk
             double val = (data[index] != 999.9) ?
                          std::pow(10.0,-exponent)*data[index] : 9999.0;
 
-            line += rightJustify( asString<short>(val), 5 );
+               // we need to put there an integer, i.e., the neareast integer
+            int valint = (val > 0.0) ? 
+                         static_cast<int>(val+0.5) : static_cast<int>(val-0.5);
+            line += rightJustify( asString<short>(valint), 5 );
 
             if (line.size() == 80)  // maximum 16 values per record
             {
