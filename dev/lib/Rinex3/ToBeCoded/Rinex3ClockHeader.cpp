@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
  * @file Rinex3ClockHeader.cpp

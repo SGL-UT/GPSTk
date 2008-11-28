@@ -1,4 +1,4 @@
-
+#pragma ident "$Id$"
 
 /**
  * @file Rinex3ClockBase.hpp
