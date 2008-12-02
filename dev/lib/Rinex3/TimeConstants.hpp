@@ -73,17 +73,12 @@ namespace gpstk
       /// Weeks in a Zcount.
    const double WEEK_PER_ZCOUNT = 1.0/ZCOUNT_PER_WEEK;
 
-      /// The various time frames
-   enum TimeFrame
+      /// The various time systems (representations)
+   enum TimeSystem
    {
      Unknown,    /**< unknown time frame */
-     UTC,        /**< Coordinated Universal Time (e.g., from NTP) */
-     LocalSystem,/**< time from a local system clock */
-     GPS_Tx,     /**< GPS transmit Time (paper clock) (e.g., 15 smooth) */
-     GPS_Rx,     /**< GPS receive time (paper clock) */
-                 // (e.g., rx data if clock bias is applied)
-     GPS_SV,     /**< SV time frame (e.g., 211 1.5s/6packs) */
-     GPS_Receiver/**< Receiver time (e.g., 30s, raw 1.5s) */
+     GPS,        /**< GPS system time */
+     UTC         /**< Coordinated Universal Time (e.g., from NTP) */
    };
 
 } // namespace

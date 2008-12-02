@@ -160,7 +160,7 @@ namespace Rinex3
       throw()
    {
       bool rc = false;
-      CommonTime t(0,0,0.0,GPS_Receiver);  // use GPS_Receiver for default?
+      CommonTime t(0,0,0.0,GPS);  // use GPS for default
       t =  eph.getEphemerisEpoch();
       t -= 0.5*3600.0*eph.getFitInterval();
    
@@ -253,7 +253,7 @@ namespace Rinex3
       }
 
       const EngEphMap& em = prn_i->second;
-      CommonTime t1(0,0,0.0,GPS_Receiver), t2(0,0,0.0,GPS_Receiver),
+      CommonTime t1(0,0,0.0,GPS), t2(0,0,0.0,GPS),
                  Tot = CommonTime::BEGINNING_OF_TIME;
       EngEphMap::const_iterator it = em.end();
 
