@@ -74,7 +74,8 @@ namespace gpstk
       static const CommonTime BEGINNING_OF_TIME;
          /// latest representable CommonTime
       static const CommonTime END_OF_TIME;
-  
+         /// Default tolerance for time equality in days.
+      static const double COMMONTIME_TOLERANCE;
          //@}
 
          /**
@@ -179,6 +180,9 @@ namespace gpstk
                                TimeSystem timeSystem = Unknown )
          throw( gpstk::InvalidParameter );
 
+         /**
+          * Set method for internal variable m_timeSystem.
+          */
       CommonTime& setTimeSystem( TimeSystem timeSystem )
          throw( gpstk::InvalidParameter );
 
@@ -249,16 +253,17 @@ namespace gpstk
       double getDays() const 
          throw();
 
-         /// Obtain the seconds of day ( ignoring the day ).
+         /// Obtain the seconds of day (ignoring the day).
       double getSecondOfDay() const
          throw();
 
+         /// Obtain time system info (enum).
       TimeSystem getTimeSystem() const
          throw();
 
          //@}
-      
-         /** 
+
+         /**
           * @defgroup ctao CommonTime Arithmetic Operations
           */
          //@{
@@ -269,8 +274,8 @@ namespace gpstk
           */
       double operator-( const CommonTime& right ) const
          throw();
-      
-         /** 
+
+         /**
           * Add seconds to a copy of this CommonTime.
           * @param sec the number of seconds to add to a copy of this CommonTime
           * @return the new CommonTime object

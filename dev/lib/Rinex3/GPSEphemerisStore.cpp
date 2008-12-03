@@ -48,7 +48,7 @@ namespace Rinex3
    {
       short ref;
       return getXvt(sat, t, ref);
-   } // end of GPSEphemerisStore::getXvt()
+   }
 
 
    //--------------------------------------------------------------------------
@@ -68,7 +68,7 @@ namespace Rinex3
       {
          GPSTK_RETHROW(ir);
       }
-   } // end of GPSEphemerisStore::getXvt()
+   }
 
 
    //--------------------------------------------------------------------------
@@ -149,7 +149,7 @@ namespace Rinex3
    
          s << "  End of GPSEphemerisStore data." << std::endl << std::endl;
       }
-   } // end of GPSEphemerisStore::dump()
+   }
 
 
    //--------------------------------------------------------------------------
@@ -307,7 +307,7 @@ namespace Rinex3
       }
 
       return it->second;
-   } // end of GPSEphemerisStore::findEphemeris()
+   }
 
 
 //-----------------------------------------------------------------------------
@@ -374,7 +374,7 @@ namespace Rinex3
       }
 
       return it->second;
-   } // end of GPSEphemerisStore::findNearEphemeris()
+   }
 
 
 //-----------------------------------------------------------------------------
@@ -394,7 +394,7 @@ namespace Rinex3
          }
       }
       return n;
-   } // end of GPSEphemerisStore::addToList(list<EngEphemeris>&)
+   }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -410,7 +410,7 @@ namespace Rinex3
          GPSTK_THROW(e);
       }
       return(prn_i->second);
-   } // end of GPSEphemerisStore::getEphMap(const SatID sat)
+   }
    
 } // namespace
  
