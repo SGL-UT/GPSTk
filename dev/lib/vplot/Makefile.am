@@ -1,18 +1,11 @@
 # $Id: Makefile.am 741 2007-09-15 16:14:43Z mvermeer $
 # please add in alphabetic order
-INCLUDES = -I$(srcdir)/../../src
+INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../vdraw
 lib_LTLIBRARIES = libvplot.la
 libvplot_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
-libvplot_la_SOURCES = BorderLayout.cpp Color.cpp Comment.cpp \
-EPSImage.cpp Frame.cpp GraphicsConstants.cpp GridLayout.cpp \
-HLayout.cpp Line.cpp Marker.cpp PSImage.cpp PSImageBase.cpp \
-Path.cpp Rectangle.cpp SVGImage.cpp StrokeStyle.cpp \
-Text.cpp TextStyle.cpp VGImage.cpp VLayout.cpp ViewerManager.cpp 
+libvplot_la_SOURCES = Axis.cpp LinePlot.cpp Plot.cpp ScatterPlot.cpp \
+SeriesList.cpp Splitter.cpp SurfacePlot.cpp
 
 incldir = $(includedir)/gpstk
-incl_HEADERS = BasicShape.hpp BorderLayout.hpp Circle.hpp Color.hpp \
-Comment.hpp EPSImage.hpp Fillable.hpp Frame.hpp GraphicsConstants.hpp \
-GridLayout.hpp HLayout.hpp Helper.hpp Layout.hpp Line.hpp \
-Markable.hpp Marker.hpp PSImage.hpp PSImageBase.hpp Path.hpp Polygon.hpp \
-Rectangle.hpp SVGImage.hpp StrokeStyle.hpp Text.hpp TextStyle.hpp VGImage.hpp \
-VLayout.hpp VPlotException.hpp ViewerManager.hpp 
+incl_HEADERS = Axis.hpp AxisStyle.hpp LinePlot.hpp Plot.hpp ScatterPlot.hpp \
+SeriesList.hpp Splitter.hpp SurfacePlot.hpp

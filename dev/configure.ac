@@ -47,6 +47,7 @@ AC_CONFIG_FILES([Makefile
 		 lib/Makefile
 		 lib/rxio/Makefile
 		 lib/vplot/Makefile
+		 lib/vdraw/Makefile
 		 lib/geomatics/Makefile
 		 lib/procframe/Makefile
 		 lib/Rinex3/Makefile
