@@ -46,7 +46,8 @@ namespace Rinex3
       {
          return CommonTime( ( MJD_JDAY + UNIX_MJD + tv.tv_sec / SEC_PER_DAY ),
                             ( tv.tv_sec % SEC_PER_DAY ),
-                            ( static_cast<double>( tv.tv_usec ) * 1e-6 ) );
+                            ( static_cast<double>( tv.tv_usec ) * 1e-6 ),
+                            timeSystem );
       }
       catch (InvalidParameter& ip)
       {
@@ -72,7 +73,8 @@ namespace Rinex3
                              
       long jday, sod;
       double fsod;
-      ct.get( jday, sod, fsod );
+      TimeSystem timeSys;
+      ct.get( jday, sod, fsod, timeSys );
       
       tv.tv_sec = (jday - MJD_JDAY - UNIX_MJD) * SEC_PER_DAY + sod;
       
@@ -84,6 +86,8 @@ namespace Rinex3
          tv.tv_usec -= 1000000; 
          ++tv.tv_sec; 
       }
+
+      timeSystem = timeSys;
    }
    
    std::string UnixTime::printf( const std::string& fmt ) const
@@ -173,8 +177,9 @@ namespace Rinex3
    bool UnixTime::operator==( const UnixTime& right ) const
       throw()
    {
-      if( tv.tv_sec == right.tv.tv_sec &&
-          tv.tv_usec == right.tv.tv_usec )
+      if( timeSystem == right.timeSystem &&
+          tv.tv_sec  == right.tv.tv_sec  &&
+          tv.tv_usec == right.tv.tv_usec   )
       {
          return true;
       }
@@ -190,12 +195,14 @@ namespace Rinex3
    bool UnixTime::operator<( const UnixTime& right ) const
       throw()
    {
-      if( tv.tv_sec < right.tv.tv_sec )
+      if( timeSystem == right.timeSystem &&
+          tv.tv_sec  <  right.tv.tv_sec    )
       {
          return true;
       }
-      if( tv.tv_sec == right.tv.tv_sec &&
-          tv.tv_usec < right.tv.tv_usec )
+      if( timeSystem == right.timeSystem &&
+          tv.tv_sec  == right.tv.tv_sec  &&
+          tv.tv_usec <  right.tv.tv_usec   )
       {
          return true;
       }

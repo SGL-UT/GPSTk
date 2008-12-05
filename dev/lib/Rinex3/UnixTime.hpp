@@ -61,19 +61,21 @@ namespace Rinex3
           * All elements are initialized to zero.
           */
       UnixTime( int sec = 0, 
-                int usec = 0 )
+                int usec = 0,
+                TimeSystem ts = Unknown )
          throw()
       {
-         tv.tv_sec = sec;  tv.tv_usec = usec;                 
+         tv.tv_sec = sec;  tv.tv_usec = usec;  timeSystem = ts;               
       }
 
          /** struct timeval Constructor.
           * Sets time according to the given struct timeval.
           */
-      UnixTime( struct timeval t )
+      UnixTime( struct timeval t,
+                TimeSystem ts = Unknown )
          throw()
       {
-         tv.tv_sec = t.tv_sec;  tv.tv_usec = t.tv_usec;
+         tv.tv_sec = t.tv_sec;  tv.tv_usec = t.tv_usec;  timeSystem = ts;
       }
       
          /** 
@@ -83,7 +85,7 @@ namespace Rinex3
       UnixTime( const UnixTime& right )
          throw()
             : tv( right.tv )
-      {}
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.
@@ -166,10 +168,10 @@ namespace Rinex3
          return "%U %u";
       }
 
-      void setTimeSytem( const TimeSystem& timeSystem )
+      void setTimeSytem( const TimeSystem& timeSys )
          throw()
       {
-         m_timeSystem = timeSystem;
+         timeSystem = timeSys;
       }
 
       virtual bool isValid() const

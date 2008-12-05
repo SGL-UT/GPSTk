@@ -35,6 +35,7 @@ namespace Rinex3
       throw()
    {
       mjd = right.mjd;
+      timeSystem = right.timeSystem;
       return *this;
    }
    
@@ -54,7 +55,8 @@ namespace Rinex3
       
          return CommonTime( jday,
                             static_cast<long>( tmp ),
-                            tmp - static_cast<long>( tmp ) );
+                            tmp - static_cast<long>( tmp ),
+                            timeSystem );
       }
       catch (InvalidParameter& ip)
       {
@@ -69,11 +71,14 @@ namespace Rinex3
    {
       long jday, sod;
       double fsod;
-      ct.get( jday, sod, fsod );
+      TimeSystem timeSys;
+      ct.get( jday, sod, fsod, timeSys );
      
-      mjd = static_cast<long double>( jday - MJD_JDAY ) +
-         ( static_cast<long double>( sod ) 
-           + static_cast<long double>( fsod ) ) * DAY_PER_SEC;
+      mjd =  static_cast<long double>( jday - MJD_JDAY ) +
+           (  static_cast<long double>( sod ) 
+            + static_cast<long double>( fsod ) ) * DAY_PER_SEC;
+
+      timeSystem = timeSys;
    }
    
    std::string MJD::printf( const std::string& fmt ) const
@@ -147,7 +152,8 @@ namespace Rinex3
    bool MJD::operator==( const MJD& right ) const
       throw()
    {
-      if( mjd == right.mjd )
+      if( timeSystem == right.timeSystem &&
+          mjd == right.mjd )
       {
          return true;
       }
@@ -163,7 +169,8 @@ namespace Rinex3
    bool MJD::operator<( const MJD& right ) const
       throw()
    {
-      if( mjd < right.mjd )
+      if( timeSystem == right.timeSystem &&
+          mjd < right.mjd )
       {
          return true;
       }

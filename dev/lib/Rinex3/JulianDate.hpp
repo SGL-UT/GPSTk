@@ -48,10 +48,10 @@ namespace Rinex3
           * Default Constructor.
           * All elements are initialized to zero.
           */
-      JulianDate( long double j = 0. )
+      JulianDate( long double j = 0., TimeSystem ts = Unknown )
          throw()
             : jd( j )
-      {}
+      { timeSystem = ts; }
       
          /** 
           * Copy Constructor.
@@ -60,7 +60,7 @@ namespace Rinex3
       JulianDate( const JulianDate& right )
          throw()
             : jd( right.jd )
-      {}
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.
@@ -143,10 +143,10 @@ namespace Rinex3
          return "%J";
       }
 
-      void setTimeSytem( const TimeSystem& timeSystem )
+      void setTimeSytem( const TimeSystem& timeSys )
          throw()
       {
-         m_timeSystem = timeSystem;
+         timeSystem = timeSys;
       }
 
       virtual bool isValid() const

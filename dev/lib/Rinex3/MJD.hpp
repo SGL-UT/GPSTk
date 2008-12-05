@@ -48,10 +48,10 @@ namespace Rinex3
           * Default Constructor.
           * All elements are initialized to zero.
           */
-      MJD( long double m = 0. )
+      MJD( long double m = 0., TimeSystem ts = Unknown )
          throw()
             : mjd( m )
-      {}
+      { timeSystem = ts; }
       
          /** 
           * Copy Constructor.
@@ -60,7 +60,7 @@ namespace Rinex3
       MJD( const MJD& right )
          throw()
             : mjd( right.mjd )
-      {}
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.
@@ -143,10 +143,10 @@ namespace Rinex3
          return "%.9Q";
       }
 
-      void setTimeSytem( const TimeSystem& timeSystem )
+      void setTimeSytem( const TimeSystem& timeSys )
          throw()
       {
-         m_timeSystem = timeSystem;
+         timeSystem = timeSys;
       }
 
       virtual bool isValid() const

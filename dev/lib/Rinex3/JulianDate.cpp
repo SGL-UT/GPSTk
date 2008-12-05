@@ -35,6 +35,7 @@ namespace Rinex3
       throw()
    {
       jd = right.jd;
+      timeSystem = right.timeSystem;
       return *this;
    }
    
@@ -50,7 +51,8 @@ namespace Rinex3
          
          return CommonTime( jday, 
                             static_cast<long>( sod ),
-                            static_cast<double>( sod - static_cast<long>( sod ) ));
+                            static_cast<double>( sod - static_cast<long>( sod ) ),
+                            timeSystem );
       }
       catch (InvalidParameter& ip)
       {
@@ -64,12 +66,15 @@ namespace Rinex3
    {
       long jday, sod;
       double fsod;
-      ct.get( jday, sod, fsod );
+      TimeSystem timeSys;
+      ct.get( jday, sod, fsod, timeSys );
      
-      jd = static_cast<long double>( jday ) +
-         ( static_cast<long double>( sod ) 
-           + static_cast<long double>( fsod ) ) * DAY_PER_SEC 
-         - 0.5;
+      jd =   static_cast<long double>( jday ) +
+           (   static_cast<long double>( sod ) 
+             + static_cast<long double>( fsod ) ) * DAY_PER_SEC 
+           - 0.5;
+
+      timeSystem = timeSys;
    }
    
    std::string JulianDate::printf( const std::string& fmt ) const
@@ -143,7 +148,8 @@ namespace Rinex3
    bool JulianDate::operator==( const JulianDate& right ) const
       throw()
    {
-      if( jd == right.jd )
+      if( timeSystem == right.timeSystem &&
+          jd == right.jd )
       {
          return true;
       }
@@ -159,7 +165,8 @@ namespace Rinex3
    bool JulianDate::operator<( const JulianDate& right ) const
       throw()
    {
-      if( jd < right.jd )
+      if( timeSystem == right.timeSystem &&
+          jd < right.jd )
       {
          return true;
       }

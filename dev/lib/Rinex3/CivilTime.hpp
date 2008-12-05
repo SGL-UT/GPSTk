@@ -1,7 +1,5 @@
 #pragma ident "$Id: CivilTime.hpp 1162 2008-03-27 21:18:13Z snelsen $"
 
-
-
 #ifndef GPSTK_CIVILTIME_HPP
 #define GPSTK_CIVILTIME_HPP
 
@@ -41,6 +39,7 @@ namespace Rinex3
    class CivilTime : public TimeTag
    {
    public:
+
          /**
           * @defgroup caltbo CivilTime Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
@@ -55,10 +54,11 @@ namespace Rinex3
                  int dy = 0,
                  int hr = 0,
                  int mn = 0,
-                 double s = 0.0 )
+                 double s = 0.0,
+                 TimeSystem ts = Unknown )
          throw()
-            : year(yr), month(mo), day(dy), hour(hr), minute(mn), second(s) 
-      {}
+            : year(yr), month(mo), day(dy), hour(hr), minute(mn), second(s)
+      { timeSystem = ts; }
       
          /**
           * Copy Constructor.
@@ -66,10 +66,9 @@ namespace Rinex3
           */
       CivilTime( const CivilTime& right )
          throw()
-            : year( right.year ), month( right.month ), day( right.day ),
-              hour( right.hour ), minute( right.minute ), 
-              second( right.second )
-      {}
+            : year( right.year ), month( right.month )  , day( right.day ),
+              hour( right.hour ), minute( right.minute ), second( right.second )
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.
@@ -158,10 +157,10 @@ namespace Rinex3
          return "%02m/%02d/%04Y %02H:%02M:%02S";
       }
 
-      void setTimeSytem( const TimeSystem& timeSystem )
+      void setTimeSytem( const TimeSystem& timeSys )
          throw()
       {
-         m_timeSystem = timeSystem;
+         timeSystem = timeSys;
       }
 
       virtual bool isValid() const

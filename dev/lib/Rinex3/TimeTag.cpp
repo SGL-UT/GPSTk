@@ -163,7 +163,7 @@ namespace gpstk
    TimeSystem TimeTag::getTimeSystem() const
       throw()
    {
-      return m_timeSystem;
+      return timeSystem;
    }
 
 } // namespace

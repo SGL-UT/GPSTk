@@ -51,10 +51,11 @@ namespace Rinex3
           */
       YDSTime( long y = 0, 
                long d = 0, 
-               double s = 0.)
+               double s = 0.,
+               TimeSystem ts = Unknown )
          throw()
             : year(y), doy(d), sod(s) 
-      {}
+      { timeSystem = ts; }
       
          /** Copy Constructor.
           * @param right a const reference to the YDSTime object to copy
@@ -62,7 +63,7 @@ namespace Rinex3
       YDSTime( const YDSTime& right )
          throw()
             : year( right.year ), doy( right.doy ), sod( right.sod )
-      {}
+      { timeSystem = right.timeSystem; }
       
          /** 
           * Alternate Copy Constructor.
@@ -145,10 +146,10 @@ namespace Rinex3
          return "%04Y/%03j %s";
       }
 
-      void setTimeSystem( const TimeSystem& timeSystem )
+      void setTimeSystem( const TimeSystem& timeSys )
          throw()
       {
-         m_timeSystem = timeSystem;
+         timeSystem = timeSys;
       }
 
       virtual bool isValid() const

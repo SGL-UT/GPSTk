@@ -51,10 +51,11 @@ namespace Rinex3
           * Default Constructor.
           * All elements are initialized to zero.
           */
-      ANSITime( time_t t = 0 )
+     ANSITime( time_t t = 0, TimeSystem ts = Unknown )
          throw()
       {
          time = t;
+         timeSystem = ts;
       }
 
          /** 
@@ -63,8 +64,8 @@ namespace Rinex3
           */
       ANSITime( const ANSITime& right )
          throw()
-            : time( right.time )
-      {}
+	: time( right.time )
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.
@@ -147,10 +148,10 @@ namespace Rinex3
          return "%K";
       }
 
-      void setTimeSystem( const TimeSystem& timeSystem )
+      void setTimeSystem( const TimeSystem& timeSys )
          throw()
       {
-         m_timeSystem = timeSystem;
+         timeSystem = timeSys;
       }
 
       virtual bool isValid() const

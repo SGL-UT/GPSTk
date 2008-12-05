@@ -35,8 +35,9 @@ namespace Rinex3
       throw()
    {
       year = right.year;
-      doy = right.doy;
-      sod = right.sod;
+      doy  = right.doy;
+      sod  = right.sod;
+      timeSystem = right.timeSystem;
       return *this;
    }
    
@@ -46,7 +47,7 @@ namespace Rinex3
       try
       {
          long jday = convertCalendarToJD( year, 1, 1 ) + doy - 1;
-         return CommonTime( jday, sod );
+         return CommonTime( jday, sod, timeSystem );
       }
       catch (InvalidParameter& ip)
       {
@@ -60,12 +61,15 @@ namespace Rinex3
    {
       long jday, secDay;
       double fsecDay;
-      ct.get( jday, secDay, fsecDay );
+      TimeSystem timeSys;
+      ct.get( jday, secDay, fsecDay, timeSys );
       sod = static_cast<double>( secDay ) + fsecDay;
 
       int month, day;
       convertJDtoCalendar( jday, year, month, day );
       doy = jday - convertCalendarToJD( year, 1, 1 ) + 1;
+
+      timeSystem = timeSys;
    }
    
    std::string YDSTime::printf( const std::string& fmt ) const
@@ -78,8 +82,8 @@ namespace Rinex3
          
          rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
                               "Yd", year );
-         rv = formattedPrint(rv, getFormatPrefixInt() + "y",
-                             "yd", static_cast<short>(year % 100) );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "y",
+                              "yd", static_cast<short>(year % 100) );
          rv = formattedPrint( rv, getFormatPrefixInt() + "j",
                               "ju", doy );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "s",
@@ -102,8 +106,8 @@ namespace Rinex3
          
          rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
                               "Ys", getError().c_str() );
-         rv = formattedPrint(rv, getFormatPrefixInt() + "y",
-                             "ys", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "y",
+                              "ys", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "j",
                               "js", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "s",
@@ -188,9 +192,10 @@ namespace Rinex3
    bool YDSTime::operator==( const YDSTime& right ) const
       throw()
    {
-      if( year == right.year && 
-          doy == right.doy &&
-          sod == right.sod )
+      if( timeSystem == right.timeSystem &&
+          year == right.year &&
+          doy  == right.doy  &&
+          sod  == right.sod    )
       {
          return true;
       }
@@ -206,6 +211,8 @@ namespace Rinex3
    bool YDSTime::operator<( const YDSTime& right ) const
       throw()
    {
+      if ( timeSystem != right.timeSystem ) return false;
+
       if( year < right.year )
       {
          return true;

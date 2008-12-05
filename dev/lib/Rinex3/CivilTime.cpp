@@ -1,7 +1,5 @@
 #pragma ident "$Id: CivilTime.cpp 1162 2008-03-27 21:18:13Z snelsen $"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -44,19 +42,20 @@ namespace Rinex3
       /// Short month names for converstion from numbers to strings
    const char * CivilTime::MonthAbbrevNames[] = 
    {
-      "err", "Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul",
-      "Aug", "Sep", "Oct", "Nov", "Dec"
+      "err", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
    };
    
    CivilTime& CivilTime::operator=( const CivilTime& right )
       throw()
    {
-      year = right.year;
-      month = right.month;
-      day = right.day;
-      hour = right.hour;
-      minute = right.minute;
-      second = right.second;
+      year       = right.year;
+      month      = right.month;
+      day        = right.day;
+      hour       = right.hour;
+      minute     = right.minute;
+      second     = right.second;
+      timeSystem = right.timeSystem;
       return *this;
    }
    
@@ -71,8 +70,9 @@ namespace Rinex3
          double sod = convertTimeToSOD( hour, minute, second );
             // make a CommonTime with jd, whole sod, and 
             // fractional second of day
-         return CommonTime( jday, static_cast<long>( sod ),
-                            ( sod - static_cast<long>( sod ) ) );
+         return CommonTime(  jday, static_cast<long>(sod) ,
+                            (sod - static_cast<long>(sod)),
+                            timeSystem );
       }
       catch (InvalidParameter& ip)
       {
@@ -86,14 +86,16 @@ namespace Rinex3
    {
       long jday, sod;
       double fsod;
+      TimeSystem timeSys;
          // get the julian day, second of day, and fractional second of day
-      ct.get( jday, sod, fsod );
+      ct.get( jday, sod, fsod, timeSys );
          // convert the julian day to calendar "year/month/day of month"
       convertJDtoCalendar( jday, year, month, day );
          // convert the (whole) second of day to "hour/minute/second"
       convertSODtoTime( static_cast<double>( sod ), hour, minute, second );
          // add the fractional second of day to "second"
       second += fsod;
+      timeSystem = timeSys;
    }
    
    std::string CivilTime::printf( const std::string& fmt ) const
@@ -124,6 +126,9 @@ namespace Rinex3
                               "Su", static_cast<short>( second ) );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "f",
                               "ff", second );
+//         rv = formattedPrint( rv, " in time system ", timeSystem );
+         rv += " in time system " + timeSystem;
+
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -160,6 +165,9 @@ namespace Rinex3
                               "Ss", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "f",
                               "fs", getError().c_str() );
+//         rv = formattedPrint( rv, " in time system ", timeSystem );
+         rv += " in time system " + timeSystem;
+
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -281,12 +289,13 @@ namespace Rinex3
    bool CivilTime::operator==( const CivilTime& right ) const
       throw()
    {
-      if( year == right.year &&
-          month == right.month && 
-          day == right.day &&
-          hour == right.hour &&
-          minute == right.minute &&
-          second == right.second )
+      if( year       == right.year   &&
+          month      == right.month  && 
+          day        == right.day    &&
+          hour       == right.hour   &&
+          minute     == right.minute &&
+          second     == right.second &&
+          timeSystem == right.timeSystem )
       {
          return true;
       }
@@ -302,6 +311,8 @@ namespace Rinex3
    bool CivilTime::operator<( const CivilTime& right ) const
       throw()
    {
+      if( timeSystem != right.timeSystem ) return false;
+
       if( year < right.year )
       {
          return true;

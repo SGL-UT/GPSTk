@@ -151,8 +151,8 @@ namespace gpstk
       static inline std::string getError()
       { return "ErrorBadTime"; }
 
-         /// Set method for internal variable m_timeSystem.
-      virtual void setTimeSystem( TimeSystem timeSystem )
+         /// Set method for internal variable timeSystem.
+      virtual void setTimeSystem( TimeSystem timeSys )
          throw( gpstk::InvalidParameter );
 
          /// Obtain time system info (enum).
@@ -161,7 +161,7 @@ namespace gpstk
 
    protected:
 
-      TimeSystem m_timeSystem; // time system (representation) of the data
+      TimeSystem timeSystem; // time system (representation) of the data
    };
 
 } // namespace

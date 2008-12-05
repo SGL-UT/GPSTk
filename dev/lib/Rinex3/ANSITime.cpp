@@ -45,7 +45,8 @@ namespace Rinex3
       {
          return CommonTime( ( MJD_JDAY + UNIX_MJD + time / SEC_PER_DAY ),
                             ( time % SEC_PER_DAY ),
-                            0 );
+                            0,
+                            timeSystem );
       }
       catch (InvalidParameter& ip)
       {
@@ -71,10 +72,13 @@ namespace Rinex3
 
       long jday, sod;
       double fsod;
-      ct.get( jday, sod, fsod );
+      TimeSystem timeSys;
+      ct.get( jday, sod, fsod, timeSys );
       
       time = 
          static_cast<time_t>((jday - MJD_JDAY - UNIX_MJD) * SEC_PER_DAY + sod);
+
+      timeSystem = timeSys;
    }
    
    std::string ANSITime::printf( const std::string& fmt) const
@@ -148,7 +152,8 @@ namespace Rinex3
    bool ANSITime::operator==( const ANSITime& right ) const
       throw()
    {
-      if( time == right.time )
+      if( time == right.time &&
+          timeSystem == right.timeSystem )
       {
          return true;
       }
@@ -164,7 +169,8 @@ namespace Rinex3
    bool ANSITime::operator<( const ANSITime& right ) const
       throw()
    {
-      return ( time < right.time );
+      return ( timeSystem == right.timeSystem &&
+               time < right.time );
    }
 
    bool ANSITime::operator>( const ANSITime& right ) const
