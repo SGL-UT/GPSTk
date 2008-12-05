@@ -358,31 +358,31 @@ try {
    }
 
    // temp - sanity check
-   for(int i=0; i<StateNL.size(); i++) {
-      string site1,site2;
-      GSatID sat1,sat2;
-      DecomposeName(StateNL.getName(i), site1, site2, sat1, sat2);
-      oflog << "State name (" << setw(2) << i << ") decomposes as "
-         << site1 << " " << site2 << " " << sat1 << " " << sat2;
+   //for(int i=0; i<StateNL.size(); i++) {
+   //   string site1,site2;
+   //   GSatID sat1,sat2;
+   //   DecomposeName(StateNL.getName(i), site1, site2, sat1, sat2);
+   //   oflog << "State name (" << setw(2) << i << ") decomposes as "
+   //      << site1 << " " << site2 << " " << sat1 << " " << sat2;
 
-         // interpret it
-      oflog << " [ " << site1;
-      if(site2 == string("X") || site2 == string("Y") || site2 == string("Z")) {
-         oflog << " : " << site2 << "-component position";
-      }
-      else if(site2.substr(0,3) == "RZD") {
-         oflog << " : trop delay #" << site2.substr(3,site2.size()-3);
-      }
-      else if(Stations.find(site2) != Stations.end() &&
-              sat1.id != -1 &&
-              sat2.id != -1) {
-         oflog << " " << site2 << " " << sat1 << " " << sat2 << " : bias";
-      }
-      else
-         oflog << " : unknown!";
+   //      // interpret it
+   //   oflog << " [ " << site1;
+   //   if(site2 == string("X") || site2 == string("Y") || site2 == string("Z")) {
+   //      oflog << " : " << site2 << "-component position";
+   //   }
+   //   else if(site2.substr(0,3) == "RZD") {
+   //      oflog << " : trop delay #" << site2.substr(3,site2.size()-3);
+   //   }
+   //   else if(Stations.find(site2) != Stations.end() &&
+   //           sat1.id != -1 &&
+   //           sat2.id != -1) {
+   //      oflog << " " << site2 << " " << sat1 << " " << sat2 << " : bias";
+   //   }
+   //   else
+   //      oflog << " : unknown!";
 
-      oflog << " ]" << endl;
-   }
+   //   oflog << " ]" << endl;
+   //}
 
    // dimensions
    // state N, data M, NState=N but if biases are fixed N=non-bias states only

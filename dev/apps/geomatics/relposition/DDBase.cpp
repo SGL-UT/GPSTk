@@ -57,7 +57,8 @@ using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
-string Version("4.5 11/11/08");
+string Version("4.6 12/5/08");
+// 4.6 11/11/08 Removed clock jump code in ClockModel.cpp
 // 4.5 11/11/08 Fixed bug in EditRawDataBuffers.cpp
 //     10/31/07 Moved ClockModel back to before Synchronize, and SNR diagnostic output
 //               (PlayWithSNRData) from ClockModel to Synchronization.

@@ -123,10 +123,10 @@ try {
                   IODEmap[sat] = i;
                }
                if(IODEmap[sat] != i) {
-                  oflog << "Satellite " << sat
-                        << " changes ephemeris (" << IODEmap[sat]
-                        << " -> " << i << ") at epoch "
-                        << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
+                  //oflog << "Satellite " << sat
+                  //    << " changes ephemeris (" << IODEmap[sat]
+                  //    << " -> " << i << ") at epoch "
+                  //    << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
                   IODEmap[sat] = i;
                }
             }

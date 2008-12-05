@@ -140,10 +140,10 @@ try {
    deque<int> dc;     // the sliding window : time -- keep the deques 
    deque<double> dp;  // the sliding window : data -- parallel
 
-   if(CI.Verbose) oflog << "BEGIN FitPhasesAndMoveData() for site " << site
-      << " and sat " << sat << " at total time " << fixed << setprecision(3)
-      << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
-      << endl;
+   //if(CI.Verbose) oflog << "BEGIN FitPhasesAndMoveData() for site " << site
+   //   << " and sat " << sat << " at total time " << fixed << setprecision(3)
+   //   << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
+   //   << endl;
 
       // starting: nend is before the current point (0)
    nbeg = 0;
