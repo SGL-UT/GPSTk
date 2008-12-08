@@ -1,7 +1,5 @@
 #pragma ident "$Id: CommonTime.hpp 1162 2008-03-27 21:18:13Z snelsen $"
 
-
-
 #ifndef GPSTK_COMMONTIME_HPP
 #define GPSTK_COMMONTIME_HPP
 
@@ -27,10 +25,11 @@
 //
 //============================================================================
 
+#include <limits>
 #include "Exception.hpp"
 #include "TimeConstants.hpp"
 
-//using namespace gpstk;
+using namespace std;
 
 namespace gpstk
 {
@@ -75,7 +74,7 @@ namespace gpstk
          /// latest representable CommonTime
       static const CommonTime END_OF_TIME;
          /// Default tolerance for time equality in days.
-      static const double COMMONTIME_TOLERANCE;
+      static const double eps;
          //@}
 
          /**

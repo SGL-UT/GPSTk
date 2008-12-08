@@ -1,7 +1,5 @@
 #pragma ident "$Id: CommonTime.cpp 1162 2008-03-27 21:18:13Z snelsen $"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -24,8 +22,8 @@
 //
 //============================================================================
 
+#include <cmath>
 #include "CommonTime.hpp"
-
 #include "MathBase.hpp"
 #include "StringUtils.hpp"
 
@@ -46,8 +44,10 @@ namespace gpstk
    const CommonTime
    CommonTime::END_OF_TIME( CommonTime::END_LIMIT_JDAY, 0, 0.0, Unknown ) ;
 
-      // 0.01 ns tolerance (is applied to fmsod)
-   const double CommonTime::COMMONTIME_TOLERANCE = 1e-8;
+   //@{
+   /// Default tolerance for time equality, applied to milliseconds.
+   const double CommonTime::eps = 4.*std::numeric_limits<double>::epsilon();
+   //@}
 
 
    CommonTime::CommonTime( const CommonTime& right )
@@ -363,10 +363,10 @@ namespace gpstk
    bool CommonTime::operator==( const CommonTime& right ) const
       throw()
    {
-      return (m_day        == right.m_day  &&
-              m_msod       == right.m_msod &&
-              abs(m_fsod-right.m_fsod) < COMMONTIME_TOLERANCE &&
-              m_timeSystem == right.m_timeSystem                );
+      return (m_timeSystem == right.m_timeSystem &&
+              m_day        == right.m_day        &&
+              m_msod       == right.m_msod       &&
+              fabs(m_fsod-right.m_fsod) < eps      );
    }
 
    bool CommonTime::operator!=( const CommonTime& right ) const

@@ -24,6 +24,7 @@
 //
 //============================================================================
 
+#include <cmath>
 #include "ANSITime.hpp"
 #include "TimeConstants.hpp"
 
@@ -152,8 +153,8 @@ namespace Rinex3
    bool ANSITime::operator==( const ANSITime& right ) const
       throw()
    {
-      if( time == right.time &&
-          timeSystem == right.timeSystem )
+      if( timeSystem == right.timeSystem &&
+          fabs(time - right.time) < CommonTime::eps )
       {
          return true;
       }

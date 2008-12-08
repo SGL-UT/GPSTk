@@ -24,6 +24,7 @@
 //
 //============================================================================
 
+#include <cmath>
 #include "MJD.hpp"
 #include "TimeConstants.hpp"
 
@@ -153,7 +154,7 @@ namespace Rinex3
       throw()
    {
       if( timeSystem == right.timeSystem &&
-          mjd == right.mjd )
+          fabs(mjd - right.mjd) < CommonTime::eps )
       {
          return true;
       }

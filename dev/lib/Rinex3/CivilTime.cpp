@@ -289,13 +289,13 @@ namespace Rinex3
    bool CivilTime::operator==( const CivilTime& right ) const
       throw()
    {
-      if( year       == right.year   &&
-          month      == right.month  && 
-          day        == right.day    &&
-          hour       == right.hour   &&
-          minute     == right.minute &&
-          second     == right.second &&
-          timeSystem == right.timeSystem )
+      if( timeSystem == right.timeSystem &&
+          year       == right.year       &&
+          month      == right.month      &&
+          day        == right.day        &&
+          hour       == right.hour       &&
+          minute     == right.minute     &&
+          fabs(second - right.second) < CommonTime::eps )
       {
          return true;
       }

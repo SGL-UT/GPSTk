@@ -24,6 +24,7 @@
 //
 //============================================================================
 
+#include <cmath>
 #include "YDSTime.hpp"
 #include "TimeConverters.hpp"
 
@@ -195,7 +196,7 @@ namespace Rinex3
       if( timeSystem == right.timeSystem &&
           year == right.year &&
           doy  == right.doy  &&
-          sod  == right.sod    )
+          fabs(sod - right.sod) < CommonTime::eps )
       {
          return true;
       }

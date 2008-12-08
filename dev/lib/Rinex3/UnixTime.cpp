@@ -179,7 +179,7 @@ namespace Rinex3
    {
       if( timeSystem == right.timeSystem &&
           tv.tv_sec  == right.tv.tv_sec  &&
-          tv.tv_usec == right.tv.tv_usec   )
+          abs(tv.tv_usec - right.tv.tv_usec) < CommonTime::eps )
       {
          return true;
       }

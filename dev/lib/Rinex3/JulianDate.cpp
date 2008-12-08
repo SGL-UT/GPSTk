@@ -24,6 +24,7 @@
 //
 //============================================================================
 
+#include <cmath>
 #include "JulianDate.hpp"
 #include "TimeConstants.hpp"
 
@@ -149,7 +150,7 @@ namespace Rinex3
       throw()
    {
       if( timeSystem == right.timeSystem &&
-          jd == right.jd )
+          fabs(jd - right.jd) < CommonTime::eps )
       {
          return true;
       }
