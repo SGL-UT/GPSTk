@@ -148,6 +148,7 @@ namespace Rinex3
       throw()
    {
       time = 0;
+      timeSystem = Unknown;
    }
 
    bool ANSITime::operator==( const ANSITime& right ) const

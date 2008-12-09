@@ -171,7 +171,8 @@ namespace Rinex3
    void UnixTime::reset()
       throw()
    {
-      tv.tv_sec  = tv.tv_usec = 0;
+      tv.tv_sec = tv.tv_usec = 0;
+      timeSystem = Unknown;
    }
    
    bool UnixTime::operator==( const UnixTime& right ) const

@@ -284,6 +284,7 @@ namespace Rinex3
       month = day = 1;
       hour = minute = 0;
       second = 0.0;
+      timeSystem = Unknown;
    }
 
    bool CivilTime::operator==( const CivilTime& right ) const

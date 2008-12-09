@@ -148,6 +148,7 @@ namespace Rinex3
       throw()
    {
       mjd = 0.0;
+      timeSystem = Unknown;
    }
 
    bool MJD::operator==( const MJD& right ) const

@@ -188,6 +188,7 @@ namespace Rinex3
    {
       year = doy = 0;
       sod = 0.0;
+      timeSystem = Unknown;
    }
 
    bool YDSTime::operator==( const YDSTime& right ) const

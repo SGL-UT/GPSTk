@@ -144,6 +144,7 @@ namespace Rinex3
       throw()
    {
       jd = 0.0;
+      timeSystem = Unknown;
    }
 
    bool JulianDate::operator==( const JulianDate& right ) const
