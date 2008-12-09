@@ -5,6 +5,7 @@
 SubDir TOP apps ;
 
 SubInclude TOP apps checktools ;
+SubInclude TOP apps clocktools ;
 SubInclude TOP apps converters ;
 SubInclude TOP apps DataAvailability ;
 SubInclude TOP apps differential ;
