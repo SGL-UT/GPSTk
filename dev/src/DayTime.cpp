@@ -107,7 +107,7 @@ namespace gpstk
       // Conversion offset, Julian Date to Modified Julian Date.
    const double DayTime::JD_TO_MJD = 2400000.5;
       // 'Julian day' offset from MJD
-   const long DayTime::MJD_JDAY = 2400001;
+   const long DayTime::MJD_JDAY = 2400001L;
       // 'Julian day' of GPS epoch (Jan. 1, 1980).
    const long DayTime::GPS_EPOCH_JDAY = 2444245L;
       // Modified Julian Date of GPS epoch (Jan. 1, 1980).
