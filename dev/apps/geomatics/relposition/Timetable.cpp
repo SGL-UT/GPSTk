@@ -405,6 +405,7 @@ int TTComputeSingleDifferences(const string& bl, const double ElevLimit)
 {
 try {
    int i,j,k;
+   static const int MinSize = 10;
    double elevi,elevj;
    GSatID sat;
    map<GSatID,RawData>::const_iterator it,jt;
@@ -432,6 +433,13 @@ try {
 
       if(CI.Verbose) oflog << " (raw buffers size: " << it->second.count.size()
          << " " << jt->second.count.size() << ")";
+
+      // is there enough data in the buffers?
+      if(it->second.count.size() < MinSize || jt->second.count.size() < MinSize) {
+         if(CI.Verbose) oflog << " raw buffers size too small: "
+            << it->second.count.size() << " and " << jt->second.count.size() << endl;
+         continue;
+      }
 
       // compute continuous segments of SD data
       // sdd.count is the intersection of the two count vectors
@@ -462,7 +470,7 @@ try {
                j < jt->second.count.size() );
 
       // TD ?
-      if(sdd.count.size() < 10) {
+      if(sdd.count.size() < MinSize) {
          if(CI.Verbose) oflog << " size is too small ("
             << sdd.count.size() << ")" << endl;
          continue;

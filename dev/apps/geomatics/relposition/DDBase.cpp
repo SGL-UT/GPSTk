@@ -57,18 +57,23 @@ using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
-string Version("4.6 12/5/08");
-// 4.6 11/11/08 Removed clock jump code in ClockModel.cpp
+#ifdef StochasticModelTest
+string Version("4.5a 11/11/08");
+#else // StochasticModelTest
+// This is the regular version:
+string Version("4.7 12/12/08");
+#endif // StochasticModelTest 1
+// 4.7 12/10/08 Fix empty buffers bug (131) in Timetable
+// 4.6 12/5/08  Remove clock jump code in ClockModel.cpp
 // 4.5 11/11/08 Fixed bug in EditRawDataBuffers.cpp
 //     10/31/07 Moved ClockModel back to before Synchronize, and SNR diagnostic output
 //               (PlayWithSNRData) from ClockModel to Synchronization.
 // 4.4  4/20/07 Removed BINEX support
-//     10/31/07 Moved ClockModel back to before Synchronize
-// 4.4  4/20/07 Removed BINEX support
 // 4.3  4/20/07 Add BINEX support - must remain consistent with novaRinex
 //4.2c 12/01/06 Reject small segments in EditDDs before calling Robust to avoid error.
 //4.2b 12/01/06 Fix DT blunder in 4.2a
-//4.2a 12/01/06 Read some data when reading headers, and intelligently choose DT.
+//4.2a 12/01/06 Add SNR stochastic model, stochastic model input. Read some data
+//               when reading headers, and intelligently choose DT.
 // 4.1  2/16/07 Enforce --Freq inside FillRawData(); earlier versions used other data.
 //     11/08/06 Move clock and ephemeris processing to after synchronization,
 //               pass pointer to ofstream for PRS output.
