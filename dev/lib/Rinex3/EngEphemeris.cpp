@@ -303,7 +303,7 @@ namespace Rinex3
       accFlag = gpstk::accuracy2ura(acc);
    }
 
-   Xvt EngEphemeris :: svXvt(const DayTime& t) const
+   Xvt EngEphemeris :: svXvt(const CommonTime& t) const
       throw(InvalidRequest)
    {
       Xvt sv;
@@ -466,7 +466,7 @@ namespace Rinex3
       return sv;
    }
 
-   double EngEphemeris::svRelativity(const DayTime& t) const
+   double EngEphemeris::svRelativity(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
       GPSGeoid geoid;
@@ -495,7 +495,7 @@ namespace Rinex3
       return dtr;
    }
 
-   double EngEphemeris::svClockBias(const DayTime& t) const
+   double EngEphemeris::svClockBias(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
       double dtc,elaptc;
@@ -505,7 +505,7 @@ namespace Rinex3
       return dtc;
    }
 
-   double EngEphemeris::svClockDrift(const DayTime& t) const
+   double EngEphemeris::svClockDrift(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
       double drift,elaptc;
@@ -608,34 +608,34 @@ namespace Rinex3
       return tlm_message[subframe-1];
    }
       
-    DayTime EngEphemeris::getTransmitTime() const
+    CommonTime EngEphemeris::getTransmitTime() const
        throw(InvalidRequest)
     {
-       DayTime toReturn(0.L);
+       CommonTime toReturn(0.);
        toReturn.setGPSfullweek(getFullWeek(), (double)getTot());
        return toReturn;
     }
 
-   DayTime EngEphemeris::getEpochTime() const
+   CommonTime EngEphemeris::getEpochTime() const
       throw(InvalidRequest)
    {
-      DayTime toReturn(0.L);
-      if ( (getToc() - getHOWTime(1)) < -DayTime::HALFWEEK)
+      CommonTime toReturn(0.);
+      if ( (getToc() - getHOWTime(1)) < -CommonTime::HALFWEEK)
          toReturn.setGPSfullweek(getFullWeek() + 1, getToc());
-      else if ( (getToc() - getHOWTime(1)) > DayTime::HALFWEEK)
+      else if ( (getToc() - getHOWTime(1)) > CommonTime::HALFWEEK)
          toReturn.setGPSfullweek(getFullWeek() - 1, getToc());
       else
          toReturn.setGPSfullweek(getFullWeek(), getToc());
       return toReturn;
    }
 
-   DayTime EngEphemeris::getEphemerisEpoch() const
+   CommonTime EngEphemeris::getEphemerisEpoch() const
       throw(InvalidRequest)
    {
-      DayTime toReturn(0.L);
-      if ( (getToe() - getHOWTime(1)) < -DayTime::HALFWEEK)
+      CommonTime toReturn(0.);
+      if ( (getToe() - getHOWTime(1)) < -CommonTime::HALFWEEK)
          toReturn.setGPSfullweek(getFullWeek() + 1, getToe());
-      else if ( (getToe() - getHOWTime(1)) > DayTime::HALFWEEK)
+      else if ( (getToe() - getHOWTime(1)) > CommonTime::HALFWEEK)
          toReturn.setGPSfullweek(getFullWeek() - 1, getToe());
       else
          toReturn.setGPSfullweek(getFullWeek(), getToe());
@@ -673,8 +673,9 @@ namespace Rinex3
                             " not stored.");
          GPSTK_THROW(exc);
       }
-         // this return as a double is necessary for sets into DayTime 
+         // this return as a double is necessary for sets into CommonTime 
          // to not get confused.  Ints are Zcounts whereas doubles are seconds
+         // Is this true after DayTime -> CommonTime change?? [DR]
       return (double) HOWtime[subframe-1];
    }
 
@@ -1153,11 +1154,12 @@ namespace Rinex3
       return *this;
    }
    
-   static void timeDisplay( ostream & os, const gpstk::DayTime& t)
+   static void timeDisplay( ostream & os, const gpstk::CommonTime& t)
    {
-         // Convert to daytime struct from GPS wk,SOW to M/D/Y, H:M:S.
-      os << setw(4) << t.GPSfullweek() << "(";
-      os << setw(4) << t.GPS10bitweek() << ")  ";
+         // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
+      os << setw(4) << t.GPSfullweek();
+//      os << setw(4) << t.GPSfullweek() << "(";
+//      os << setw(4) << t.GPS10bitweek() << ")  ";
       os << setw(6) << setfill(' ') << t.GPSsecond() << "   ";
 
       switch (t.GPSday())
@@ -1171,7 +1173,7 @@ namespace Rinex3
          case 6: os << "Sat-6"; break;
          default: break;
       }
-      os << "   " << t.printf("%3j   %5.0s   %02m/%02d/%04Y   %02H:%02M:%02S");
+//      os << "   " << t.printf("%3j   %5.0s   %02m/%02d/%04Y   %02H:%02M:%02S");
    }
 
 
@@ -1182,8 +1184,8 @@ namespace Rinex3
       short SOH;
       
       SOW = static_cast<long>( HOW );
-      DOW = static_cast<short>( SOW / DayTime::SEC_DAY );
-      SOD = SOW - static_cast<long>( DOW * DayTime::SEC_DAY );
+      DOW = static_cast<short>( SOW / CommonTime::SEC_DAY );
+      SOD = SOW - static_cast<long>( DOW * CommonTime::SEC_DAY );
       hour = static_cast<short>( SOD/3600 );
 
       SOH = static_cast<short>( SOD - (hour*3600) );

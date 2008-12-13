@@ -31,11 +31,22 @@
 
 namespace gpstk
 {
+      // mSod is sod*FACTOR and mSec is seconds*FACTOR
+      // NB FACTOR must be <, and a factor of, 1,000,000
+   const long CommonTime::FACTOR = 1000L;
+
+      // Seconds per half a GPS week.
+   const long CommonTime::HALFWEEK = 302400L;
+      // Seconds per whole GPS week.
+   const long CommonTime::FULLWEEK = 604800L;
+
       // 'julian day' of earliest epoch expressible by CommonTime; 1/1/4713 B.C.
-   const long CommonTime::BEGIN_LIMIT_JDAY = 0;
+   const long CommonTime::BEGIN_LIMIT_JDAY = 0L;
       // 'julian day' of latest 'julian day' expressible by CommonTime,
       // 1/1/4713 A.D.
-   const long CommonTime::END_LIMIT_JDAY = 3442448;
+   const long CommonTime::END_LIMIT_JDAY = 3442448L;
+      // 'Julian day' of GPS epoch (Jan. 1, 1980).
+   const long CommonTime::GPS_EPOCH_JDAY = 2444245L;
 
       // earliest representable CommonTime
    const CommonTime
@@ -43,6 +54,9 @@ namespace gpstk
       // latest representable CommonTime
    const CommonTime
    CommonTime::END_OF_TIME( CommonTime::END_LIMIT_JDAY, 0, 0.0, Unknown ) ;
+
+      // Seconds per day.
+   const long CommonTime::SEC_DAY = 86400L;
 
    //@{
    /// Default tolerance for time equality, applied to milliseconds.
@@ -174,6 +188,35 @@ namespace gpstk
       m_timeSystem = timeSystem;
    }
 
+      // Set the object's time using GPS time.
+      // @param fullweek Full (i.e. >10bits) GPS week number.
+      // @param sow Seconds of week.
+      // @param ts Time system (see #TimeSystem).
+      // @return a reference to this object.
+   CommonTime& CommonTime::setGPSfullweek(short fullweek,
+                                          double sow, 
+                                          TimeSystem ts)
+      throw( gpstk::InvalidParameter )
+   {
+      if(fullweek < 0 || 
+         sow < 0.0 || 
+         sow >= double(FULLWEEK))
+      {
+         using gpstk::StringUtils::asString ;
+         Exception e("Invalid week/seconds-of-week: " 
+                     + asString<short>(fullweek)+ "/" 
+                     + asString(sow));
+         GPSTK_THROW(e);
+      }
+      m_day = GPS_EPOCH_JDAY + 7 * long(fullweek) + long(sow / SEC_DAY);
+      double sod = sow - SEC_DAY * long(sow / SEC_DAY);
+      m_msod = long(FACTOR * sod);
+      m_fsod = FACTOR * sod - double(m_msod);
+//      realignInternals();
+      m_timeSystem = ts;
+      return *this;
+   }
+
    void CommonTime::get( long& day,
                          long& sod,
                          double& fsod,
@@ -253,6 +296,20 @@ namespace gpstk
       return sod;
    }
 
+      // Get seconds of week.
+   double CommonTime::GPSsow() const
+      throw()
+   {
+      return double(GPSday() * SEC_DAY) + secOfDay() ;
+   }
+
+      // Get full (>10 bits) week 
+   short CommonTime::GPSfullweek() const
+      throw()
+   {
+      return short(double(m_day - GPS_EPOCH_JDAY) / 7) ;
+   }
+
    TimeSystem CommonTime::getTimeSystem() const
       throw()
    {
@@ -262,23 +319,9 @@ namespace gpstk
    double CommonTime::operator-( const CommonTime& right ) const
       throw()
    {
-//      TimeSystem timeSystem;
-//      if ( m_timeSystem == right.m_timeSystem )
-//      { timeSystem = m_timeSystem; }
-//      else
-//      { timeSystem = Unknown; }
-
-//      double temp = SEC_PER_DAY * static_cast<double>( m_day  - right.m_day  ) +
-//                    SEC_PER_MS  * static_cast<double>( m_msod - right.m_msod ) + 
-//                    m_fsod - right.m_fsod ;
-
-//      CommonTime Temp( temp, timeSystem );
-//      return Temp;
-
       return( SEC_PER_DAY * static_cast<double>( m_day  - right.m_day  ) +
               SEC_PER_MS  * static_cast<double>( m_msod - right.m_msod ) + 
               m_fsod - right.m_fsod ) ; // returns difference regardless of timeSystem
-
    }
    
    CommonTime CommonTime::operator+( double sec ) const
@@ -337,11 +380,6 @@ namespace gpstk
          seconds -= days * SEC_PER_DAY;  // seconds %= SEC_PER_DAY
       }
       add( days, seconds * MS_PER_SEC, 0. );
-
-         // How about this?
-         // add( seconds / SEC_PER_DAY,
-         //      seconds % SEC_PER_DAY * MS_PER_SEC,
-         //      0 );
 
       return *this;
    }

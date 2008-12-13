@@ -12,7 +12,7 @@ if $(TEST) = 1
 	{
 	  # Please add in alphabetic order
 	  GPSBuildLibrary Rinex3 : 
-	  ANSITime.cpp  CivilTime.cpp  CommonTime.cpp  GPSEphemerisStore.cpp  JulianDate.cpp  MJD.cpp  SP3Data.cpp  SP3EphemerisStore.cpp  SP3Header.cpp  TabularEphemerisStore.cpp  TimeTag.cpp  UnixTime.cpp  YDSTime.cpp
+	  ANSITime.cpp  CivilTime.cpp  CommonTime.cpp  EngEphemeris.cpp  GPSEphemerisStore.cpp  JulianDate.cpp  MJD.cpp  SP3Data.cpp  SP3EphemerisStore.cpp  SP3Header.cpp  TabularEphemerisStore.cpp  TimeTag.cpp  UnixTime.cpp  YDSTime.cpp
 	    ;
 
 	  InstallFile $(INCDIR) : 
@@ -39,9 +39,11 @@ else
 	{
 	# Please add in alphabetical order
 	   GPSBuildLibrary gpstkRinex3 :
-	      ../../src/ANSITime.cpp ../../src/AlmOrbit.cpp ../../src/AstronomicalFunctions.cpp
+	     #../../src/ANSITime.cpp
+	      ../../src/AlmOrbit.cpp ../../src/AstronomicalFunctions.cpp
 	      ../../src/Bancroft.cpp ../../src/BasicFramework.cpp ../../src/BinUtils.cpp
-	      ../../src/BinexData.cpp ../../src/BLQDataReader.cpp ../../src/Chi2Distribution.cpp ../../src/CivilTime.cpp
+	      ../../src/BinexData.cpp ../../src/BLQDataReader.cpp ../../src/Chi2Distribution.cpp
+	     #../../src/CivilTime.cpp
 	      ../../src/CodeBuffer.cpp ../../src/CommandOption.cpp ../../src/CommandOptionParser.cpp
 	      ../../src/CommandOptionWithCommonTimeArg.cpp ../../src/CommandOptionWithPositionArg.cpp
 	      ../../src/CommandOptionWithTimeArg.cpp ../../src/ConfDataReader.cpp ../../src/DOP.cpp
@@ -55,8 +57,12 @@ else
 	      ../../src/GPSWeek.cpp ../../src/GPSWeekSecond.cpp ../../src/GPSWeekZcount.cpp ../../src/GPSZcount.cpp
 	      ../../src/GaussianDistribution.cpp ../../src/GenXSequence.cpp ../../src/Geodetic.cpp 
 	      ../../src/IonexData.cpp ../../src/IonexHeader.cpp ../../src/IonexStore.cpp
-	      ../../src/IonoModel.cpp ../../src/IonoModelStore.cpp ../../src/JulianDate.cpp ../../src/LinearClockModel.cpp
-	      ../../src/LoopedFramework.cpp ../../src/MJD.cpp ../../src/MOPSWeight.cpp ../../src/MSCData.cpp ../../src/MSCStore.cpp
+	      ../../src/IonoModel.cpp ../../src/IonoModelStore.cpp
+	     #../../src/JulianDate.cpp
+	      ../../src/LinearClockModel.cpp
+	      ../../src/LoopedFramework.cpp
+	     #../../src/MJD.cpp
+	      ../../src/MOPSWeight.cpp ../../src/MSCData.cpp ../../src/MSCStore.cpp
 	      ../../src/MoonPosition.cpp ../../src/NEDUtil.cpp ../../src/ObsClockModel.cpp ../../src/ObsEpochMap.cpp
 	      ../../src/ObsID.cpp ../../src/ObsRngDev.cpp ../../src/OceanLoading.cpp ../../src/PRSolution.cpp
 	      ../../src/PoleTides.cpp ../../src/Position.cpp ../../src/PowerSum.cpp
@@ -74,9 +80,13 @@ else
 	      ../../src/SunPosition.cpp ../../src/SystemTime.cpp
 	     #../../src/TabularEphemerisStore.cpp 
               ../../src/TimeConverters.cpp ../../src/TimeString.cpp
-	      ../../src/TimeTag.cpp ../../src/Triple.cpp ../../src/TropModel.cpp ../../src/TypeID.cpp ../../src/UnixTime.cpp
+	     #../../src/TimeTag.cpp
+	      ../../src/Triple.cpp ../../src/TropModel.cpp ../../src/TypeID.cpp
+	     #../../src/UnixTime.cpp
 	      ../../src/VectorBase.cpp ../../src/WxObsMap.cpp ../../src/X1Sequence.cpp ../../src/X2Sequence.cpp
-	      ../../src/Xvt.cpp ../../src/YDSTime.cpp ../../src/YumaAlmanacStore.cpp ../../src/YumaData.cpp
+	      ../../src/Xvt.cpp
+	     #../../src/YDSTime.cpp
+	      ../../src/YumaAlmanacStore.cpp ../../src/YumaData.cpp
               GPSEphemerisStore.cpp  SP3EphemerisStore.cpp  TabularEphemerisStore.cpp
 	      $(GETOPT_SOURCE)
 	      ;

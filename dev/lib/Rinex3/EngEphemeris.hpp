@@ -181,17 +181,17 @@ namespace Rinex3
             
          /// Extracts the epoch time from this ephemeris, correcting
          /// for half weeks and HOW time
-      DayTime getEphemerisEpoch() const throw(InvalidRequest);
+      CommonTime getEphemerisEpoch() const throw(InvalidRequest);
 
          /// Extracts the epoch time (time of clock) from this ephemeris, correcting
          /// for half weeks and HOW time
-      DayTime getEpochTime() const throw(gpstk::InvalidRequest);
+      CommonTime getEpochTime() const throw(gpstk::InvalidRequest);
 
          /// Extracts the transmit time from the ephemeris using the Tot
-      DayTime getTransmitTime() const throw(gpstk::InvalidRequest);
+      CommonTime getTransmitTime() const throw(gpstk::InvalidRequest);
       
          /// used for template functions
-      DayTime getTimestamp() const throw(gpstk::InvalidRequest)
+      CommonTime getTimestamp() const throw(gpstk::InvalidRequest)
          { return getEpochTime(); }
      
          /** This function returns the PRN ID of the SV. */
@@ -330,22 +330,22 @@ namespace Rinex3
           * using this ephemeris.
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      Xvt svXvt(const DayTime& t) const throw(gpstk::InvalidRequest);
+      Xvt svXvt(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** Compute satellite relativity correction (sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      double svRelativity(const DayTime& t) const throw(gpstk::InvalidRequest);
+      double svRelativity(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** Compute the satellite clock bias (sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      double svClockBias(const DayTime& t) const throw(gpstk::InvalidRequest);
+      double svClockBias(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** Compute the satellite clock drift (sec/sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      double svClockDrift(const DayTime& t) const throw(gpstk::InvalidRequest);
+      double svClockDrift(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** This function returns the value of the fit interval
           * flag. */
