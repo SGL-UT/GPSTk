@@ -70,14 +70,15 @@ public:
       CommandOptionWithAnyArg 
          navFileOpt('n', "nav",
                     "Filename to write RINEX nav data to."),
-         c2Opt('c', "l2c",
-               "Enable output of L2C data in C2"),
          antPosOpt('p',"pos",
                    "Antenna position to write into obs file header. "
                    "Format as string: \"X Y Z\"."),
          thinningOpt('t', "thinning", 
                      "A thinning factor for the data, specified in seconds "
                      "between points. Default: none.");
+      CommandOptionNoArg
+         c2Opt('c', "l2c",
+               "Enable output of L2C data in C2");
 
       if (!InOutFramework<MDPStream, RinexObsStream>::initialize(argc,argv))
          return false;
