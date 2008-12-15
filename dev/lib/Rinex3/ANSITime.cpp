@@ -46,7 +46,7 @@ namespace Rinex3
       {
          return CommonTime( ( MJD_JDAY + UNIX_MJD + time / SEC_PER_DAY ),
                             ( time % SEC_PER_DAY ),
-                            0,
+                            0.,
                             timeSystem );
       }
       catch (InvalidParameter& ip)
