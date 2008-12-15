@@ -290,6 +290,13 @@ namespace gpstk
       return sod;
    }
 
+      // Get day of week
+   short CommonTime::dayOfWeek() const 
+      throw()
+   {
+      return (((m_day % 7) + 1) % 7) ;
+   }
+
       // Get seconds of week.
    double CommonTime::GPSsow() const
       throw()
