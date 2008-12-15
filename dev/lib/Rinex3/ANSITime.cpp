@@ -135,8 +135,13 @@ namespace Rinex3
    bool ANSITime::isValid() const
       throw()
    {
+      CommonTime tempCT;
       ANSITime temp;
-      temp.convertFromCommonTime( convertToCommonTime() );
+      tempCT = temp.convertToCommonTime();
+      cout << "ANSITime: convertToCommonTime() called ok";
+      temp.convertFromCommonTime( tempCT );
+      cout << "ANSITime: convertFromCommonTime() called ok";
+//      temp.convertFromCommonTime( convertToCommonTime() );
       if( *this == temp )
       {
          return true;
