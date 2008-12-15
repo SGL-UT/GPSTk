@@ -146,12 +146,6 @@ namespace Rinex3
          return "%04Y/%03j %s";
       }
 
-      void setTimeSystem( const TimeSystem& timeSys )
-         throw()
-      {
-         timeSystem = timeSys;
-      }
-
       virtual bool isValid() const
          throw();
       

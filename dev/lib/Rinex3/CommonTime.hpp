@@ -198,8 +198,9 @@ namespace gpstk
          /**
           * Set method for internal variable m_timeSystem.
           */
-      CommonTime& setTimeSystem( TimeSystem timeSystem )
-         throw( gpstk::InvalidParameter );
+      void setTimeSystem( const TimeSystem& timeSystem )
+         throw( gpstk::InvalidParameter )
+      { m_timeSystem = timeSystem; }
 
          /**
           * Set the object's time using GPS time.

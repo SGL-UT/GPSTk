@@ -182,12 +182,6 @@ namespace gpstk
       return *this;
    }
 
-   CommonTime& CommonTime::setTimeSystem( TimeSystem timeSystem )
-      throw( gpstk::InvalidParameter )
-   {
-      m_timeSystem = timeSystem;
-   }
-
       // Set the object's time using GPS time.
       // @param fullweek Full (i.e. >10bits) GPS week number.
       // @param sow Seconds of week.

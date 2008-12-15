@@ -152,9 +152,9 @@ namespace gpstk
       { return "ErrorBadTime"; }
 
          /// Set method for internal variable timeSystem.
-      static inline setTimeSystem( TimeSystem timeSys )
-         throw( gpstk::InvalidParameter );
-     { timeSystem = timeSys; }
+      void setTimeSystem( const TimeSystem& timeSys )
+         throw( gpstk::InvalidParameter )
+      { timeSystem = timeSys; }
 
          /// Obtain time system info (enum).
       TimeSystem getTimeSystem() const
