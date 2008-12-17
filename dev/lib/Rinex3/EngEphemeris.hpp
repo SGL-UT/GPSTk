@@ -46,7 +46,6 @@
 
 #include "EngNav.hpp"
 #include "Exception.hpp"
-#include "DayTime.hpp"
 #include "CommonTime.hpp"
 #include "Xvt.hpp"
 
