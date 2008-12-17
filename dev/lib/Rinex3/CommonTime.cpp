@@ -417,8 +417,7 @@ namespace gpstk
    bool CommonTime::operator<( const CommonTime& right ) const
       throw()
    {
-      if (m_timeSystem != right.m_timeSystem ||
-          m_timeSystem == Unknown || right.m_timeSystem == Unknown)
+      if (m_timeSystem != right.m_timeSystem)
          throw InvalidRequest("CommonTime objects not in same time system");
 
       if (m_day < right.m_day)
