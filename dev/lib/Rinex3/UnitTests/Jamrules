@@ -1,6 +1,6 @@
-PATH_TO_CURRENT =  ; #Current directory; Main testing directory
-CPPUNIT_LIB =  ; #Directory which holds the CppUnit Libraries
-CPPUNIT_INC =  ; #Directory which holds the CppUnit 
+#PATH_TO_CURRENT =  ; #Current directory; Main testing directory
+#CPPUNIT_LIB =  ; #Directory which holds the CppUnit Libraries
+#CPPUNIT_INC =  ; #Directory which holds the CppUnit 
 
 STD_LINK_LIBS = -ldl -lstdc++ ; 
 LINKFLAGS = -fprofile-arcs -ftest-coverage ; #Gcov required flags
