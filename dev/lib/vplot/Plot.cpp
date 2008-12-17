@@ -79,8 +79,8 @@ namespace vplot
   {
     Frame innerFrame = getPlotArea(frame);
 
-    double left = innerFrame.lx() - frame->lx();
-    double bottom = innerFrame.ly() - frame->ly();
+    double left = innerFrame.actualX() - frame->actualX();
+    double bottom = innerFrame.actualY() - frame->actualY();
     double top = frame->getHeight() - bottom - innerFrame.getHeight();
     double right = frame->getWidth() - left - innerFrame.getWidth();
 
@@ -103,11 +103,22 @@ namespace vplot
 
     // Draw Labels
     if(xlabel.size())
-      *frame << Text(xlabel.c_str(),left+(frame->getWidth()-left-right)/2,0,label_style,Text::CENTER);
+      *frame << 
+        Text(xlabel.c_str(),
+          left+innerFrame.getWidth()/2,
+          0,
+          label_style,
+          Text::CENTER);
 
     if(ylabel.size())
-      *frame << Text(ylabel.c_str(),label_style.getPointSize(),
-          bottom+(frame->getHeight()-top-bottom)/2,label_style,Text::CENTER,90); 
+      *frame << 
+        Text(
+          ylabel.c_str(),
+          label_style.getPointSize(),
+          bottom+innerFrame.getHeight()/2,
+          label_style,
+          Text::CENTER,
+          90); 
   }
 
 }

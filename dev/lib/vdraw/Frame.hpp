@@ -121,6 +121,11 @@ namespace vdraw
 
       inline bool isLL() { return display->isLL(); }
 
+      /// Returns x coordinate of the left edge of the frame in image coordinates.
+      inline double actualX(void) const { return originX;}
+      /// Returns y coordinate of the lower edge of the frame in image coordinates.
+      inline double actualY(void) const { return originY;}
+
     protected:
       /// If this frame's parent is the VGImage, not another frame or a layout.
       bool isTopLevel;
