@@ -1,6 +1,6 @@
-PATH_TO_CURRENT = /home/rain/gpstk/dev/lib/Rinex3/UnitTests ; #Current directory; Main testing directory
-CPPUNIT_LIB = /home/rain/lib ; #Directory which holds the CppUnit Libraries
-CPPUNIT_INC = /home/rain/include ; #Directory which holds the CppUnit 
+PATH_TO_CURRENT =  ; #Current directory; Main testing directory
+CPPUNIT_LIB =  ; #Directory which holds the CppUnit Libraries
+CPPUNIT_INC =  ; #Directory which holds the CppUnit 
 
 STD_LINK_LIBS = -ldl -lstdc++ ; 
 LINKFLAGS = -fprofile-arcs -ftest-coverage ; #Gcov required flags
