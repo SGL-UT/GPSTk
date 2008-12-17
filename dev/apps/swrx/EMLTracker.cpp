@@ -154,7 +154,10 @@ void EMLTracker::updateLoop()
    prevNav = nav;
    nav = prompt().real() > 0;
    if(prevNav != nav)
+   {
      navChange = true;
+     prevNav = nav;
+   }
    else
      navChange = false;
 

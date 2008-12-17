@@ -118,7 +118,7 @@ NavFramer::NavFramer()
 {}
 
 
-bool NavFramer::process(const EMLTracker& tr, long int dp, float cPO)
+long int NavFramer::process(const EMLTracker& tr, long int dp, float cPO)
 {
    // number of code chips that go into each bit
    const unsigned long chipsPerBit = 
@@ -139,6 +139,7 @@ bool NavFramer::process(const EMLTracker& tr, long int dp, float cPO)
 */
 
       //cout << "doing" << endl;
+   howCurrent = false;
    prevNavCount = navCount;
    navBuffer[navIndex] = tr.getNav();
    codeIndex[navIndex] = now;
@@ -180,12 +181,12 @@ bool NavFramer::process(const EMLTracker& tr, long int dp, float cPO)
          if (sf->checkParity())
          {
             subframes.push_back(*sf);
-            howCurrent = true;
             how = sf->words[1];
                //if (debugLevel)
-               cout << *sf << endl;
-            if (debugLevel)
-               sf->dump(cout,1);
+               //cout << *sf << endl;
+               //if (debugLevel)
+               //sf->dump(cout,1);
+               howCurrent = true;
 
 // Following block pulls nav data from subframes, just playing around for now.
 /*

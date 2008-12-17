@@ -42,11 +42,12 @@ public:
    // This takes a tracker, just after it has been dumped and
    // accumulates the nav bit from it. It returns true when there is a
    // current HOW
-   virtual bool process(const EMLTracker& tr, long int dp, float cPO);
+   virtual long int process(const EMLTracker& tr, long int dp, float cPO);
 
    void dump(std::ostream& s, int detail=0) const;
 
    int debugLevel;
+   
 
    // A subclass to help keep track of the subframes found
    struct Subframe
@@ -67,6 +68,7 @@ public:
       void load(const std::bitset<5 * 300>& bs);
       const char* checkWords() const;
    };
+   std::list<Subframe> subframes;
 
 private:
    // This buffer holds 5 300 bit subframes of nav data
@@ -82,7 +84,7 @@ private:
    double bitLength;
 
    std::list<Subframe> candidates;
-   std::list<Subframe> subframes;
+   
 
    // This is used to indicate that we have found a TLM and HOW
    // that have passed parity
