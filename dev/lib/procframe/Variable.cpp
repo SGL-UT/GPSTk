@@ -45,9 +45,24 @@ namespace gpstk
    SourceID Variable::someSources(SourceID::Mixed, "");
 
 
-      // SatID object representing all satellites : id(-1),
-      // system(systemGPS).
-   SatID Variable::allSats;
+      // SatID object representing all satellites:
+      // system(systemUnknown), id(-1).
+   SatID Variable::allSats( -1, SatID::systemUnknown );
+
+
+      // SatID object representing all satellites of GPS System:
+      // system(systemGPS), id(-1).
+   SatID Variable::allGPSSats;
+
+
+      // SatID object representing all satellites of Galileo System:
+      // system(systemGalileo), id(-1).
+   SatID Variable::allGalileoSats( -1, SatID::systemGalileo );
+
+
+      // SatID object representing all satellites of Glonass System:
+      // system(systemGlonass), id(-1).
+   SatID Variable::allGlonassSats( -1, SatID::systemGlonass );
 
 
       // Default stochastic model to be assigned to variables.

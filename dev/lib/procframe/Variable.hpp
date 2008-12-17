@@ -246,9 +246,24 @@ namespace gpstk
       static SourceID someSources;
 
 
-         /// SatID object representing all satellites : type(Unknown),
-         /// sourceName("").
+         /// SatID object representing all satellites:
+         /// system(systemUnknown), id(-1).
       static SatID allSats;
+
+
+         /// SatID object representing all satellites of GPS System:
+         /// system(systemGPS), id(-1).
+      static SatID allGPSSats;
+
+
+         /// SatID object representing all satellites of Galileo System:
+         /// system(systemGalileo), id(-1).
+      static SatID allGalileoSats;
+
+
+         /// SatID object representing all satellites of Glonass System:
+         /// system(systemGlonass), id(-1).
+      static SatID allGlonassSats;
 
 
          /// Destructor
