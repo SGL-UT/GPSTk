@@ -64,6 +64,12 @@ namespace vdraw
     {
     }
 
+    /// Copy Constructor
+    Point(const Point& p)
+      : std::pair<double,double>(p.x,p.y), x(first), y(second)
+    {
+    }
+
     /// Conversion constructor.
     Point(const std::pair<double,double>& o)
       : std::pair<double,double>(o), x(first), y(second)
@@ -140,8 +146,12 @@ namespace vdraw
         std::vector< std::pair<double,double> >::const_iterator i;
         for(i=v.begin(); i!=v.end(); i++)
         {
-          push_back(Point(*i));
+          if(size()==0 
+              || (i->first != (*this)[size()-1].x) 
+              || (i->second != (*this)[size()-1].y))
+            push_back(Point(*i));
         }
+        tighten();
       }
 
       /**
