@@ -73,30 +73,30 @@ void xCommonTime :: setTest (void)
 
 void xCommonTime :: arithmiticTest (void)
 {
-	CommonTime Arith1(700000,1,0.);
-	CommonTime Arith2(700000,0,0.);
+	CommonTime Arith1(700000,0,0.);
+	CommonTime Arith2(Arith1);
 	double day;
 	long day2;
 	double sod;
 	double fsod;
 	//- between two CommonTimes
-	CPPUNIT_ASSERT_EQUAL(1.,Arith1-Arith2);
+	CPPUNIT_ASSERT_EQUAL(0.,Arith1-Arith2);
 	
 	//Add Seconds with +
 	Arith2 = Arith2 + 1;
-	CPPUNIT_ASSERT_EQUAL(0.,Arith1-Arith2);
+	CPPUNIT_ASSERT_EQUAL(-1.,Arith1-Arith2);
 	
 	//Subtract seconds with -
 	Arith2 = Arith2 - 1;
-	CPPUNIT_ASSERT_EQUAL(1.,Arith1-Arith2);
+	CPPUNIT_ASSERT_EQUAL(0.,Arith1-Arith2);
 	
 	//Add seconds with +=
 	Arith2 += 1;
-	CPPUNIT_ASSERT_EQUAL(0.,Arith1-Arith2);
+	CPPUNIT_ASSERT_EQUAL(-1.,Arith1-Arith2);
 	
 	//Subtract seconds with -=
 	Arith2 -= 1;
-	CPPUNIT_ASSERT_EQUAL(1.,Arith1-Arith2);
+	CPPUNIT_ASSERT_EQUAL(0.,Arith1-Arith2);
 	
 	//Add days with addDays
 	Arith2.addDays((long)1);
@@ -106,7 +106,7 @@ void xCommonTime :: arithmiticTest (void)
 
 	//Add seconds with addSeconds(double)
 	Arith2.addSeconds(86400000.+1000.);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(86401000.,Arith2-Arith1,10e-3);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(86401000,Arith2-Arith1,10e-3);
 
 	//Add seconds with addSeconds(long)
 	Arith2.addSeconds((long)-86401000);
@@ -114,7 +114,7 @@ void xCommonTime :: arithmiticTest (void)
 	
 	Arith2.get(day2,sod);
 	CPPUNIT_ASSERT_EQUAL((long)700000,day2);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL((double).001,sod,1e-6);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL((double)0.,sod,1e-6);
 	//Check seconds using getSecondOfDay()
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(sod,Arith2.getSecondOfDay(),1e-6);
 	
