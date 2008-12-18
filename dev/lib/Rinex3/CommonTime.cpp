@@ -50,10 +50,10 @@ namespace gpstk
 
       // earliest representable CommonTime
    const CommonTime
-   CommonTime::BEGINNING_OF_TIME( CommonTime::BEGIN_LIMIT_JDAY, 0, 0.0, Unknown );
+   CommonTime::BEGINNING_OF_TIME( CommonTime::BEGIN_LIMIT_JDAY, 0, 0.0, Constant );
       // latest representable CommonTime
    const CommonTime
-   CommonTime::END_OF_TIME( CommonTime::END_LIMIT_JDAY, 0, 0.0, Unknown ) ;
+   CommonTime::END_OF_TIME( CommonTime::END_LIMIT_JDAY, 0, 0.0, Constant ) ;
 
       // Seconds per day.
    const long CommonTime::SEC_DAY = 86400L;
@@ -417,7 +417,9 @@ namespace gpstk
    bool CommonTime::operator<( const CommonTime& right ) const
       throw()
    {
-      if (m_timeSystem != right.m_timeSystem)
+     /// Constant type exception used to allow comparison with BEG/END_OF_TIME constant
+     if ((m_timeSystem != Constant && right.m_timeSystem != Constant) &&
+          m_timeSystem != right.m_timeSystem)
          throw InvalidRequest("CommonTime objects not in same time system");
 
       if (m_day < right.m_day)
