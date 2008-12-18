@@ -16,6 +16,7 @@ void xANSITime :: setFromInfoTest (void)
 	Rinex3::ANSITime setFromInfo2;
 	
 	gpstk::TimeTag::IdToValue Id;
+
 	Id.insert(make_pair('K',"13500000"));
 	CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
 	Id.erase('K');
@@ -31,10 +32,9 @@ void xANSITime :: operatorTest (void)
 	
 	Rinex3::ANSITime Compare(13500000);
 	Rinex3::ANSITime LessThan(13400000);
-	
 	Rinex3::ANSITime CompareCopy(Compare);
-	
 	Rinex3::ANSITime CompareCopy2;
+
 	//Assignment
 	CompareCopy2 = CompareCopy;
 	//Equality Assertion
@@ -59,7 +59,7 @@ void xANSITime :: operatorTest (void)
 void xANSITime :: resetTest (void)
 {
 	Rinex3::ANSITime Compare(13500000,gpstk::GPS);
-	
+
 	CPPUNIT_ASSERT_EQUAL(gpstk::GPS,Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(13500000,(int)Compare.time);
 
@@ -78,7 +78,6 @@ void xANSITime :: timeSystemTest (void)
 	CPPUNIT_ASSERT(GPS1 != GPS2);
 	CPPUNIT_ASSERT(GPS1 != UTC);
 	CPPUNIT_ASSERT(GPS1 != UNKNOWN);
-	CPPUNIT_ASSERT(GPS1 > gpstk::CommonTime::BEGINNING_OF_TIME);
-
+	CPPUNIT_ASSERT(GPS1.convertToCommonTime() > gpstk::CommonTime::BEGINNING_OF_TIME);
+	CPPUNIT_ASSERT(gpstk::CommonTime::BEGINNING_OF_TIME < GPS1);
 }
-
