@@ -101,6 +101,15 @@ namespace vdraw
        */
       TextStyle(double ips, short istyle, const Color& icolor, Font ifont=MONOSPACE);
 
+      /**
+       * Constructor. Defines a text style.
+       * @param ips Font size in points
+       * @param icolor Color of the text
+       * @param ifont Font desired
+       * @see setStyle
+       */
+      TextStyle(double ips, const Color& icolor, Font ifont=MONOSPACE);
+
       /*
        * Modifiers
        */

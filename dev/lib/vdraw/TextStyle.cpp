@@ -52,6 +52,11 @@ namespace vdraw
     setStyle(istyle);
   }
 
+  TextStyle::TextStyle(double ips, const Color& icolor, Font ifont)
+    :font(ifont), color(icolor), pointSize(ips)
+  {
+  }
+
   /*
    * Methods
    */
