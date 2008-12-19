@@ -1,12 +1,13 @@
-/*******************************************************************************/
-/* This program reads in clock phase data provided by any of the phase parsers */
-/*  and calculates the Allan Deviation, outputting the results to              */
-/*  the standard output in a format that can be used by allanplot to view the  */
-/*  data.                                                                      */
-/*                                                                             */
-/* Written by Alex Hu                                                          */
-/* Last Updated June 27, 2008                                                 */
-/*******************************************************************************/
+/**********************************************
+/ GPSTk: Clock Tools
+/ nallandev.cpp
+/ 
+/ Computes the normal Allan deviation
+/ (reference)
+/ 
+/ Written by Alex Hu
+/ Last Updated: Dec. 11, 2008
+**********************************************/
 
 #include <iostream>
 #include <vector>
@@ -39,10 +40,7 @@ int main()
 	}
 	
 	numPoints = i-1;
-      
-	/*************
-	*************/
- 	
+	
 	// Variables used in Overlapping Allan Deviation calculations
 	double Tau, Tau0, sum, sigma;
 	int N, m;

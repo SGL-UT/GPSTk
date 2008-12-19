@@ -1,12 +1,13 @@
-/*******************************************************************************/
-/* This program reads in clock phase data provided by any of the phase parsers */
-/*  and calculates the Overlapping Allan Deviation, outputting the results to  */
-/*  the standard output in a format that can be used by allanplot to view the  */
-/*  data.                                                                      */
-/*                                                                             */
-/* Written by Tim Craddock                                                     */
-/* Last Updated March 20, 2008                                                 */
-/*******************************************************************************/
+/**********************************************
+/ GPSTk: Clock Tools
+/ oallandev.cpp
+/ 
+/ Computes the overlapping Allan deviation
+/ (reference)
+/
+/ Written by Timothy J.H. Craddock (tjhcraddock@gmail.com)
+/ Last Updated: Dec. 11, 2008
+**********************************************/
 
 #include <iostream>
 #include <vector>
@@ -39,10 +40,7 @@ int main()
 	}
 	
 	numPoints = i-1;
-      
-	/*************
-	*************/
- 	
+	
 	// Variables used in Overlapping Allan Deviation calculations
 	double Tau, Tau0, sum, sigma;
 	int N, m;

@@ -1,3 +1,15 @@
+/**********************************************
+/ GPSTk: Clock Tools
+/ dallandev.cpp
+/ 
+/ Computes the dynamic Allan deviation
+/ (reference)
+/
+/ Written by Timothy J.H. Craddock (tjhcraddock@gmail.com)
+/ Last Updated: Dec. 11, 2008
+**********************************************/
+
+
 #include <iostream>
 #include <vector>
 
@@ -13,7 +25,8 @@ int main(int argv, char **argc)
 	vector <double> phaseArray;
 	long double time, phase;
 	long unsigned int numPoints;
-
+	
+	// input time tag & phase data from the standard input
 	while(!feof(stdin))
 	{
 		cin >> time >> phase;
@@ -24,10 +37,10 @@ int main(int argv, char **argc)
 	
 	numPoints = phaseArray.size();
 	
-
 	long unsigned int N;
 	double Tau0;
-
+	
+	// determine Tau0 based on time tags
 	N = numPoints;
 	if(N > 1) Tau0 = timeArray[1] - timeArray[0];
 	else
@@ -35,9 +48,10 @@ int main(int argv, char **argc)
 		cout << "Not Enough Points to Calculate Tau0" << endl;
 		Tau0;
 	}
-
+	
 	long unsigned int n, k, m, Nw, ns;
-
+	
+	// get windowing information from command line options
 	if(argv > 2)
 	{
 		Nw = atoi(argc[1]);
@@ -53,9 +67,10 @@ int main(int argv, char **argc)
 		Nw = N/10;
 		ns = Nw/10;
 	}
-
+	
 	double sum;
-
+	
+	// calculation of the dynamic Allan deviation
 	for(n = Nw; n <= N-Nw; n += ns)
 	{
 	

@@ -1,3 +1,14 @@
+/**********************************************
+/ GPSTk: Clock Tools
+/ rmoutlier.cpp
+/ 
+/ Removes outliers within phase data
+/ (reference)
+/
+/ Written by Timothy J.H. Craddock (tjhcraddock@gmail.com)
+/ Last Updated: Dec. 11, 2008
+**********************************************/
+
 #include <iostream>
 #include <vector>
 
@@ -14,6 +25,7 @@ int main()
 	vector <double> phase;
 	vector <double> params;
 	
+	// inputs time tag & phase data from the standard input
 	while(!feof(stdin))
 	{
 		cin >> data[0] >> data[1];
@@ -27,6 +39,7 @@ int main()
 	unsigned long int i = 0;
 	double ff;
 	
+	// convert phase data to fractional frequency data
 	for(i = 0; i < phase.size(); i++)
 	{
 		if(i != 0)
@@ -47,12 +60,14 @@ int main()
 	unsigned long int outliers, totaliers, gaps;
 	double m, s;
 	
-	
+	// remove outliers
 	totaliers = 0;
 	do
 	{
 		outliers = 0;
 		gaps = 0;
+		
+		// calculate mean
 		m = 0.0;
 		for(i = 0; i < params.size(); i++)
 		{
@@ -67,6 +82,7 @@ int main()
 		}
 		m = m / double(params.size()-gaps);
 		
+		// calculate standard deviation
 		s = 0.0;
 		for(i = 0; i < params.size(); i++)
 		{
@@ -80,6 +96,7 @@ int main()
 		}
 		s = sqrt(s/(double(params.size()-1)-gaps));
 		
+		// remove outlying points
 		for(i = 0; i < params.size(); i++)
 		{
 			if(i != 0 && i != params.size()-1 && params[i] == 0.0)
@@ -87,18 +104,18 @@ int main()
 			}
 			else
 			{
-			if((params[i]-m)*(params[i]-m) > 15.6*s*s)
-			{
-				params[i] = 0.0;
-				outliers++;
-				totaliers++;
-			}
+				if((params[i]-m)*(params[i]-m) > 15.6*s*s)
+				{
+					params[i] = 0.0;
+					outliers++;
+					totaliers++;
+				}
 			}
 		}
 		
 	} while(outliers > 0);
 	
-	// interpolation
+	// interpolate gaps
 	if(params[0] == 0.0) params[0] = params[1];
 	for(i = 1; i < params.size()-1; i++)
 	{
@@ -106,6 +123,7 @@ int main()
 	}
 	if(params[params.size()-1] == 0.0) params[params.size()-1] = params[params.size()-2];
 	
+	// convert fractional frequency data back to phase data and output
 	double x0 = 0.0;
 	for(i = 0; i < params.size(); i++)
 	{

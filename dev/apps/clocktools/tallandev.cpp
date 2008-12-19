@@ -1,12 +1,13 @@
-/*******************************************************************************/
-/* This program reads in clock phase data provided by any of the phase parsers */
-/*  and calculates the Total Variance, outputting the results to               */
-/*  the standard output in a format that can be used by allanplot to view the  */
-/*  data.                                                                      */
-/*                                                                             */
-/* Written by Alex Hu                                                          */
-/* Last Updated June 25, 2008                                                  */
-/*******************************************************************************/
+/**********************************************
+/ GPSTk: Clock Tools
+/ tallandev.cpp
+/ 
+/ Computes the total Allan deviation
+/ (reference)
+/
+/ Written by Alex Hu
+/ Last Updated: Dec. 11, 2008
+**********************************************/
 
 #include <iostream>
 #include <vector>

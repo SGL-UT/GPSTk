@@ -1,12 +1,13 @@
-/*******************************************************************************/
-/* This program reads in clock phase data provided by any of the phase parsers */
-/*  and calculates the Modified Allan Deviation, outputting the results to     */
-/*  the standard output in a format that can be used by allanplot to view the  */
-/*  data.                                                                      */
-/*                                                                             */
-/* Written by Tim Craddock                                                     */
-/* Last Updated July 29, 2008                                                 */
-/*******************************************************************************/
+/**********************************************
+/ GPSTk: Clock Tools
+/ mallandev.cpp
+/ 
+/ Computes the modified Allan deviation
+/ (reference)
+/ 
+/ Written by Alex Hu
+/ Last Updated: Dec. 11, 2008
+**********************************************/
 
 #include <iostream>
 #include <vector>
@@ -39,10 +40,7 @@ int main()
 	}
 	
 	numPoints = i-1;
-      
-	/*************
-	*************/
- 	
+	
 	// Variables used in Overlapping Allan Deviation calculations
 	double Tau, Tau0, sum, sigma1, sigma2;
 	int N, m;
@@ -68,7 +66,7 @@ int main()
                 Tau = m*Tau0;
 		sigma1 = 0;
 		sigma2 = 0;
-		int y=0;//counts number of times a value is added to sigma
+		int y=0; //counts number of times a value is added to sigma
 		
 		for(int j=0; j < (N-3*m+1); j=j+1)
 		{
