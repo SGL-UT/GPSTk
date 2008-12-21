@@ -140,11 +140,13 @@ namespace gpstk
        * @param type       Type of variable.
        * @param sat        Satellite.
        * @param data       Object holding the data.
+       * @param source     Object holding the source of data.
        *
        */
    void PhaseAmbiguityModel::checkCS( const TypeID& type,
                                       const SatID& sat,
-                                      satTypeValueMap& data )
+                                      satTypeValueMap& data,
+                                      SourceID& source )
    {
 
       try
@@ -154,9 +156,7 @@ namespace gpstk
          setCS(false);
 
             // Check if satellite is present at this epoch
-         satTypeValueMap::const_iterator itSat;
-         itSat = data.find( sat );
-         if( itSat == data.end() )
+         if( data.find(sat) == data.end() )
          {
             // If satellite is not present, declare CS and exit
             setCS(true);
@@ -178,19 +178,17 @@ namespace gpstk
          else
          {
                // Check if this satellite has previous entries
-            std::map<SatID, double>::const_iterator itArc;
-            itArc = satArcMap.find( sat );
-            if( itArc == satArcMap.end() )
+            if( satArcMap[ source ].find(sat) == satArcMap[ source ].end() )
             {
                   // If it doesn't have an entry, insert one
-               satArcMap[ sat ] = 0.0;
+               satArcMap[ source ][ sat ] = 0.0;
             };
 
                // Check if arc number is different than arc number in storage
-            if ( data(sat)(TypeID::satArc) != satArcMap[sat] )
+            if ( data(sat)(TypeID::satArc) != satArcMap[ source ][ sat ] )
             {
                setCS(true);
-               satArcMap[ sat ] = data(sat)(TypeID::satArc);
+               satArcMap[ source ][ sat ] = data(sat)(TypeID::satArc);
             }
 
          }

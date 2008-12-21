@@ -347,7 +347,7 @@ namespace gpstk
       virtual void Prepare( const TypeID& type,
                             const SatID& sat,
                             gnssSatTypeValue& gData )
-      { checkCS(type, sat, gData.body); return; };
+      { checkCS(type, sat, gData.body, gData.header.source); return; };
 
 
          /** This method provides the stochastic model with all the available
@@ -361,7 +361,7 @@ namespace gpstk
       virtual void Prepare( const TypeID& type,
                             const SatID& sat,
                             gnssRinex& gData )
-      { checkCS(type, sat, gData.body); return; };
+      { checkCS(type, sat, gData.body, gData.header.source); return; };
 
 
          /// Destructor
@@ -381,7 +381,7 @@ namespace gpstk
       bool watchSatArc;
 
          /// Map holding information regarding every satellite
-      std::map<SatID, double> satArcMap;
+      std::map<SourceID, std::map<SatID, double> > satArcMap;
 
 
          /** This method checks if a cycle slip happened.
@@ -389,11 +389,13 @@ namespace gpstk
           * @param type       Type of variable.
           * @param sat        Satellite.
           * @param data       Object holding the data.
+          * @param source     Object holding the source of data.
           *
           */
       virtual void checkCS( const TypeID& type,
                             const SatID& sat,
-                            satTypeValueMap& data );
+                            satTypeValueMap& data,
+                            SourceID& source );
 
 
    }; // End of class 'PhaseAmbiguityModel'
