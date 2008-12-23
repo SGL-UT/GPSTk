@@ -6,8 +6,8 @@
  * of common ones.
  */
 
-#ifndef STOCHASTICMODEL_HPP
-#define STOCHASTICMODEL_HPP
+#ifndef GPSTK_STOCHASTICMODEL_HPP
+#define GPSTK_STOCHASTICMODEL_HPP
 
 //============================================================================
 //
@@ -224,7 +224,7 @@ namespace gpstk
       DayTime previousTime;
 
 
-         /// Epoch of previous measurement
+         /// Epoch of current measurement
       DayTime currentTime;
 
 
@@ -400,7 +400,174 @@ namespace gpstk
 
    }; // End of class 'PhaseAmbiguityModel'
 
+
+
+      /** This class compute the elements of Phi and Q matrices corresponding
+       *  to zenital tropospheric wet delays, modeled as a random walk
+       *  stochastic model.
+       *
+       * This class is designed to support multiple stations simultaneously
+       *
+       * @sa RandomWalkModel, StochasticModel, ConstantModel, WhiteNoiseModel
+       *
+       */
+   class TropoRandomWalkModel : public StochasticModel
+   {
+   public:
+
+         /// Default constructor.
+      TropoRandomWalkModel() {};
+
+
+         /** Set the value of previous epoch for a given source
+          *
+          * @param source     SourceID whose previous epoch will be set
+          * @param prevTime   Value of previous epoch
+          *
+          */
+      virtual TropoRandomWalkModel& setPreviousTime( const SourceID& source,
+                                                     const DayTime& prevTime )
+      { tmData[source].previousTime = prevTime; return (*this); };
+
+
+         /** Set the value of current epoch for a given source
+          *
+          * @param source     SourceID whose current epoch will be set
+          * @param currTime   Value of current epoch
+          *
+          */
+      virtual TropoRandomWalkModel& setCurrentTime( const SourceID& source,
+                                                    const DayTime& currTime )
+      { tmData[source].currentTime = currTime; return (*this); };
+
+
+         /** Set the value of process spectral density for ALL current sources.
+          *
+          * @param qp         Process spectral density: d(variance)/d(time) or
+          *                   d(sigma*sigma)/d(time).
+          *
+          * \warning Beware of units: Process spectral density units are
+          * sigma*sigma/time, while other models take plain sigma as input.
+          * Sigma units are usually given in meters, but time units MUST BE
+          * in SECONDS.
+          *
+          * \warning New sources being added for processing AFTER calling
+          * method 'setQprime()' will still be processed at the default process
+          * spectral density for zenital wet tropospheric delay, which is set
+          * to 3e-8 m*m/s (equivalent to about 1.0 cm*cm/h).
+          *
+          */
+      virtual TropoRandomWalkModel& setQprime(double qp);
+
+
+         /** Set the value of process spectral density for a given source.
+          *
+          * @param source     SourceID whose process spectral density will
+          *                   be set.
+          * @param qp         Process spectral density: d(variance)/d(time) or
+          *                   d(sigma*sigma)/d(time).
+          *
+          * \warning Beware of units: Process spectral density units are
+          * sigma*sigma/time, while other models take plain sigma as input.
+          * Sigma units are usually given in meters, but time units MUST BE
+          * in SECONDS.
+          *
+          * \warning New sources being added for processing AFTER calling
+          * method 'setQprime()' will still be processed at the default process
+          * spectral density for zenital wet tropospheric delay, which is set
+          * to 3e-8 m*m/s (equivalent to about 1.0 cm*cm/h).
+          *
+          */
+      virtual TropoRandomWalkModel& setQprime( const SourceID& source,
+                                               double qp )
+      { tmData[source].qprime = qp; return (*this); };
+
+
+
+         /** Get element of the process noise matrix Q.
+          *
+          * \warning The element of process noise matrix Q to be returned
+          * will correspond to the last "prepared" SourceID (using "Prepare()"
+          * method).
+          *
+          */
+      virtual double getQ()
+      { return variance; };
+
+
+         /** This method provides the stochastic model with all the available
+          *  information and takes appropriate actions.
+          *
+          * @param type       Type of variable.
+          * @param sat        Satellite.
+          * @param gData      Data object holding the data.
+          *
+          */
+      virtual void Prepare( const TypeID& type,
+                            const SatID& sat,
+                            gnssSatTypeValue& gData );
+
+
+         /** This method provides the stochastic model with all the available
+          *  information and takes appropriate actions.
+          *
+          * @param type       Type of variable.
+          * @param sat        Satellite.
+          * @param gData      Data object holding the data.
+          *
+          */
+      virtual void Prepare( const TypeID& type,
+                            const SatID& sat,
+                            gnssRinex& gData );
+
+
+         /// Destructor
+      virtual ~TropoRandomWalkModel() {};
+
+
+   private:
+
+
+         /// Structure holding object data
+      struct tropModelData
+      {
+            // Default constructor initializing the data in the structure
+         tropModelData() : qprime(3e-8),
+                           previousTime(DayTime::BEGINNING_OF_TIME) {};
+
+         double qprime;          ///< Process spectral density
+         DayTime previousTime;   ///< Epoch of previous measurement
+         DayTime currentTime;    ///< Epoch of current measurement
+
+      }; // End of struct 'tropModelData'
+
+
+         /// Map holding the information regarding each source
+      std::map<SourceID, tropModelData> tmData;
+
+
+         /// Field holding value of current variance
+      double variance;
+
+
+         /** This method computes the right variance value to be returned
+          *  by method 'getQ()'.
+          *
+          * @param type       Type of variable.
+          * @param sat        Satellite.
+          * @param data       Object holding the data.
+          * @param source     Object holding the source of data.
+          *
+          */
+      virtual void computeQ( const TypeID& type,
+                             const SatID& sat,
+                             satTypeValueMap& data,
+                             SourceID& source );
+
+
+   }; // End of class 'TropoRandomWalkModel'
+
       //@}
 
 }  // End of namespace gpstk
-#endif // STOCHASTICMODEL_HPP
+#endif // GPSTK_STOCHASTICMODEL_HPP

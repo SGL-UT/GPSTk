@@ -202,7 +202,128 @@ namespace gpstk
 
       return;
 
-   } // End of 'PhaseAmbiguityModel::checkCS()'
+   } // End of method 'PhaseAmbiguityModel::checkCS()'
+
+
+
+      /* Set the value of process spectral density for ALL current sources.
+       *
+       * @param qp         Process spectral density: d(variance)/d(time) or
+       *                   d(sigma*sigma)/d(time).
+       *
+       * \warning Beware of units: Process spectral density units are
+       * sigma*sigma/time, while other models take plain sigma as input.
+       * Sigma units are usually given in meters, but time units MUST BE
+       * in SECONDS.
+       *
+       * \warning By default, process spectral density for zenital wet
+       * tropospheric delay is set to 3e-8 m*m/s (equivalent to about
+       * 1.0 cm*cm/h).
+       *
+       */
+   TropoRandomWalkModel& TropoRandomWalkModel::setQprime(double qp)
+   {
+
+         // Look at each source being currently managed
+      for( std::map<SourceID, tropModelData>::iterator it = tmData.begin();
+           it != tmData.end();
+           ++it )
+      {
+            // Assign new process spectral density value
+         (*it).second.qprime = qp;
+      }
+
+      return (*this);
+
+   }  // End of method 'TropoRandomWalkModel::setQprime()'
+
+
+
+      /* This method provides the stochastic model with all the available
+       *  information and takes appropriate actions.
+       *
+       * @param type       Type of variable.
+       * @param sat        Satellite.
+       * @param gData      Data object holding the data.
+       *
+       */
+   void TropoRandomWalkModel::Prepare( const TypeID& type,
+                                       const SatID& sat,
+                                       gnssSatTypeValue& gData )
+   {
+
+         // First, get current source
+      SourceID source( gData.header.source );
+
+         // Second, let's update current epoch for this source
+      setCurrentTime(source, gData.header.epoch );
+
+         // Third, compute Q value
+      computeQ(type, sat, gData.body, source);
+
+         // Fourth, prepare for next iteration updating previous epoch
+      setPreviousTime(source, tmData[source].currentTime);
+
+      return;
+
+   }  // End of method 'TropoRandomWalkModel::Prepare()'
+
+
+
+      /* This method provides the stochastic model with all the available
+       *  information and takes appropriate actions.
+       *
+       * @param type       Type of variable.
+       * @param sat        Satellite.
+       * @param gData      Data object holding the data.
+       *
+       */
+   void TropoRandomWalkModel::Prepare( const TypeID& type,
+                                       const SatID& sat,
+                                       gnssRinex& gData )
+   {
+
+         // First, get current source
+      SourceID source( gData.header.source );
+
+         // Second, let's update current epoch for this source
+      setCurrentTime(source, gData.header.epoch );
+
+         // Third, compute Q value
+      computeQ(type, sat, gData.body, source);
+
+         // Fourth, prepare for next iteration updating previous epoch
+      setPreviousTime(source, tmData[source].currentTime);
+
+      return;
+
+   }  // End of method 'TropoRandomWalkModel::Prepare()'
+
+
+
+      /* This method computes the right variance value to be returned
+       *  by method 'getQ()'.
+       *
+       * @param type       Type of variable.
+       * @param sat        Satellite.
+       * @param data       Object holding the data.
+       * @param source     Object holding the source of data.
+       *
+       */
+   void TropoRandomWalkModel::computeQ( const TypeID& type,
+                                        const SatID& sat,
+                                        satTypeValueMap& data,
+                                        SourceID& source )
+   {
+
+         // Compute current variance
+      variance = tmData[ source ].qprime
+                 * std::abs( tmData[ source ].currentTime
+                           - tmData[ source ].previousTime );
+
+      return;
+
+   }  // End of method 'TropoRandomWalkModel::computeQ()'
 
 
 
