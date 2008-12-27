@@ -5,8 +5,8 @@
  * Class to compute the PPP Solution.
  */
 
-#ifndef SOLVERPPP_HPP
-#define SOLVERPPP_HPP
+#ifndef GPSTK_SOLVERPPP_HPP
+#define GPSTK_SOLVERPPP_HPP
 
 //============================================================================
 //
@@ -305,10 +305,10 @@ namespace gpstk
       { return pTropoStoModel; };
 
 
-         /** Set wet troposphere stochastic model
+         /** Set zenital wet troposphere stochastic model
           *
           * @param pModel      Pointer to StochasticModel associated with
-          *                    wet troposphere.
+          *                    zenital wet troposphere.
           *
           * \warning Be aware that some stochastic models store their internal
           * state (for instance, 'RandomWalkModel' and 'PhaseAmbiguityModel').
@@ -346,7 +346,7 @@ namespace gpstk
          /** Set phase biases stochastic model.
           *
           * @param pModel      Pointer to StochasticModel associated with
-          *                    receiver clock.
+          *                    phase biases.
           *
           * \warning Be aware that some stochastic models store their internal
           * state (for instance, 'RandomWalkModel' and 'PhaseAmbiguityModel').
@@ -541,4 +541,4 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
-#endif   // SOLVERPPP_HPP
+#endif   // GPSTK_SOLVERPPP_HPP
