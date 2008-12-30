@@ -5,8 +5,8 @@
  * Class to define and handle GNSS variables.
  */
 
-#ifndef VARIABLE_HPP
-#define VARIABLE_HPP
+#ifndef GPSTK_VARIABLE_HPP
+#define GPSTK_VARIABLE_HPP
 
 //============================================================================
 //
@@ -64,11 +64,13 @@ namespace gpstk
           *                         or not. By default, it IS SourceID-indexed.
           * @param satIndexed       Whether this variable is SatID-indexed
           *                         or not. By default, it is NOT.
+          * @param variance         Initial variance assigned to this variable.
           */
       Variable( const TypeID& type,
-                StochasticModel* pModel = &Variable::defaultModel,
-                bool sourceIndexed = true,
-                bool satIndexed    = false );
+                StochasticModel* pModel   = &Variable::defaultModel,
+                bool sourceIndexed        = true,
+                bool satIndexed           = false,
+                double variance           = 4.0e14 );
 
 
          /** Constructor for a Variable corresponding to a specific
@@ -80,11 +82,13 @@ namespace gpstk
           *                    noise model.
           * @param source      Data source this variable belongs to.
           * @param satellite   Satellite this variable belongs to.
+          * @param variance    Initial variance assigned to this variable.
           */
       Variable( const TypeID& type,
                 StochasticModel* pModel,
                 const SourceID& source,
-                const SatID& satellite );
+                const SatID& satellite,
+                double variance = 4.0e14 );
 
 
          /** Constructor for a Variable corresponding to a specific
@@ -217,6 +221,19 @@ namespace gpstk
       { varSourceSet.clear(); return (*this); };
 
 
+         /// Get value of initial variance assigned to this variable.
+      double getInitialVariance() const
+      { return initialVariance; };
+
+
+         /** Set value of initial variance assigned to this variable.
+          *
+          * @param variance      Initial variance assigned to this variable.
+          */
+      Variable& setInitialVariance(double variance)
+      { initialVariance = variance; return (*this); };
+
+
          /// Equality operator
       virtual bool operator==(const Variable& right) const;
 
@@ -321,6 +338,10 @@ namespace gpstk
       std::set<SourceID> varSourceSet;
 
 
+         /// Value of initial variance assigned to this variable.
+      double initialVariance;
+
+
          /// Default stochastic model to be assigned to variables.
       static WhiteNoiseModel defaultModel;
 
@@ -330,4 +351,4 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
-#endif   // VARIABLE_HPP
+#endif   // GPSTK_VARIABLE_HPP

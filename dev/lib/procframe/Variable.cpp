@@ -88,6 +88,9 @@ namespace gpstk
          // By default, the satellite associated to this variable is unspecific
       varSat = allSats;
 
+         // Be default, set a very high initialVariance: (20000 km)**2
+      initialVariance = 4.0e14;
+
    }  // End of 'Variable::Variable()'
 
 
@@ -103,11 +106,13 @@ namespace gpstk
        *                         or not. By default, it IS SourceID-indexed.
        * @param satIndexed       Whether this variable is SatID-indexed
        *                         or not. By default, it is NOT.
+       * @param variance         Initial variance assigned to this variable.
        */
    Variable::Variable( const TypeID& type,
                        StochasticModel* pModel,
                        bool sourceIndexed,
-                       bool satIndexed )
+                       bool satIndexed,
+                       double variance )
    {
 
       varType = type;
@@ -131,6 +136,8 @@ namespace gpstk
          // By default, the satellite associated to this variable is unspecific
       varSat = allSats;
 
+      initialVariance = variance;
+
    }  // End of 'Variable::Variable()'
 
 
@@ -144,11 +151,13 @@ namespace gpstk
        *                    noise model.
        * @param source      Data source this variable belongs to.
        * @param satellite   Satellite this variable belongs to.
+       * @param variance    Initial variance assigned to this variable.
        */
    Variable::Variable( const TypeID& type,
                        StochasticModel* pModel,
                        const SourceID& source,
-                       const SatID& satellite )
+                       const SatID& satellite,
+                       double variance )
    {
 
       varType = type;
@@ -181,6 +190,8 @@ namespace gpstk
 
          // Set the satellite associated to this variable
       varSat = satellite;
+
+      initialVariance = variance;
 
    }  // End of 'Variable::Variable()'
 
