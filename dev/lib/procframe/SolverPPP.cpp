@@ -206,7 +206,7 @@ of designMatrix");
       int phiRow = static_cast<int>(phiMatrix.rows());
       if (!(phiRow==numUnknowns))
       {
-         InvalidSolver e("prefitResiduals size does not match dimension \
+         InvalidSolver e("Number of unknowns does not match dimension \
 of phiMatrix");
          GPSTK_THROW(e);
       }
@@ -220,7 +220,7 @@ of phiMatrix");
       int qRow = static_cast<int>(qMatrix.rows());
       if (!(qRow==numUnknowns))
       {
-         InvalidSolver e("prefitResiduals size does not match dimension \
+         InvalidSolver e("Number of unknowns does not match dimension \
 of qMatrix");
          GPSTK_THROW(e);
       }
