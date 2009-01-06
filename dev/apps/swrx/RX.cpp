@@ -8,12 +8,12 @@
 /*
 
 COMPILE:
-g++ -c -o trackerN.o -O -I. -I/home/mdavis/svn/clau/gpstk/dev/apps/swrx -I/home/mdavis/svn/clau/gpstk/dev/src trackerN.cpp
+g++ -c -o RX.o -O -I. -I/.../gpstk/dev/apps/swrx -I/.../gpstk/dev/src RX.cpp
 
-g++ -o trackerN trackerN.o /home/mdavis/svn/clau/gpstk/dev/apps/swrx/simlib.a /home/mdavis/svn/clau/gpstk/dev/src/libgpstk.a -lm -lstdc++ -lfftw3 -lm -lpthread
+g++ -o RX RX.o /.../gpstk/dev/apps/swrx/simlib.a /.../gpstk/dev/src/libgpstk.a -lm -lstdc++ -lfftw3 -lm -lpthread
 
 SAMPLE USAGE:
-hilbert -i /home/mdavis/docs/CarData/CarData.bin | ./trackerN -b 1 -q 2 -x 4.13 -r 8.184 -c c:1:30:416.789:-8800 -c c:1:2:410.191:-8300 -c c:1:10:836.144:-9000 -c c:1:15:174.609:-4000 -c c:1:18:255.254:-3500 -c c:1:24:183.284:-5700 -c c:1:26:907.747:-4300 -c c:1:29:355.327:-5400 -p 1 -e rin269.08n -w 1498  
+hilbert -i data.bin | ./RX -b 1 -q 2 -x 4.13 -r 8.184 -c c:1:30:416.789:-8800 -c c:1:2:410.191:-8300 -c c:1:10:836.144:-9000 -c c:1:15:174.609:-4000 -c c:1:18:255.254:-3500 -c c:1:24:183.284:-5700 -c c:1:26:907.747:-4300 -c c:1:29:355.327:-5400 -p 1 -e rin269.08n -w 1498  
   
 */
 
@@ -66,7 +66,6 @@ hilbert -i /home/mdavis/docs/CarData/CarData.bin | ./trackerN -b 1 -q 2 -x 4.13 
 #include <IonoModel.hpp>
 #include <GPSGeoid.hpp>
 #include <PRSolution.hpp>
-
 using namespace gpstk;
 using namespace std;
 
@@ -461,7 +460,7 @@ void RxSim::process()
             iono = IonoModel(hdr.ionAlpha, hdr.ionBeta);
             RinexNavData rnd;
             while (rns >> rnd)
-               bce.addEphemeris(rnd); // PUT INPUT STUFF UP AT BEGINNING
+               bce.addEphemeris(rnd);
             if (time < bce.getInitialTime() || time > bce.getFinalTime())
                cout << "Warning: Initial time does not appear to be "
                     << "within the provided ephemeris data." << endl;
@@ -511,18 +510,20 @@ void RxSim::process()
             Vector<double> sol = prSolver.Solution;
             cout << endl << "Position (ECEF): " << fixed << sol[0] 
                  << " " << sol[1] 
-                 << " " << sol[2] << endl 
-                 << "Clock Error (includes that caused by guess): " 
-                 << sol[3]*1000/gpstk::C_GPS_M << " ms" << endl;
+                 << " " << sol[2] << endl;
+            time -= (sol[3] / gpstk::C_GPS_M);
+            cout << "Time: " << time << endl;  
+               //cout << "Clock Error (includes that caused by guess): " 
+               //<< sol[3]*1000/gpstk::C_GPS_M << " ms" << endl;
             cout << "# good SV's: " << prSolver.Nsvs << endl
                  << "RMSResidual: " << prSolver.RMSResidual << " meters" 
-                 << endl << endl;
+                 << endl;
 
             for(int i = 0; i < 32; i++)
                dataPoints[i] = 0;
 
 // Calculate Ionosphere correction.
-/*            antennaPos[0] = sol[0];
+/*          antennaPos[0] = sol[0];
             antennaPos[1] = sol[1];
             antennaPos[2] = sol[2];
             ECEF ecef(antennaPos);
@@ -552,7 +553,8 @@ void RxSim::process()
             {
                obsVec[i] -= sol[3]; // convert pseudoranges to ranges
                obsVec[i] += ionoVec[i]; // make iono correction to ranges.
-               }*/
+            }*/
+               // Then plug back into RAIMCompute...
          }
       }
 //---------------------------------------------------------------------------

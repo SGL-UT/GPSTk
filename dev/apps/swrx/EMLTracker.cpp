@@ -212,14 +212,13 @@ void EMLTracker::dump(std::ostream& s, int detail) const
         << "# -- dll: alpha=" << dllAlpha << " beta=" << dllBeta << endl
         << "# -- pll: alpha=" << pllAlpha <<  " beta=" << pllBeta << endl
         << "#" << endl
-        << "#h time  dllErr    codePO    codeFO pllErr   carrPO   carrFO  nav cp   iad   ely   pmt   lat    pmtI   pmtQ"  << endl
+        << "#h time  dllErr    codePO    codeFO pllErr   carrPO   carrFO  nav cp   iad   ely   pmt   lat    pmtI   pmtQ    prn"  << endl
         << "#u ms      %         us        Hz    cyc      cyc       Hz     -  --   cnt    %     %     %     cnt    cnt";
    }
 
    if (detail==0)
    {
       s << left << fixed 
-        << setw(8) << prn 
         << setprecision(1) << setw(8) << localReplica.localTime * 1e3
         << setprecision(2) << right
         << " " << setw(6) << getDllError() * 100
@@ -246,7 +245,8 @@ void EMLTracker::dump(std::ostream& s, int detail) const
       if (true)
          s << setprecision(0)
            << " " << setw(6) << pI
-           << " " << setw(6) << pQ;
+           << " " << setw(6) << pQ
+           << setw(8) << prn ;
    }
 
    s << endl;

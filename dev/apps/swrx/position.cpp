@@ -1,11 +1,12 @@
 #pragma ident "$Id$"
 
 /* 
+Position solution.  Hardcode output data from tracker into arrays below. 
+
 Program takes information from our tracker (subframe information like 
 zcount, starting data point of the sf, sf #, prn) and an ephemeris file.  
 (We have the values to generate our own ephemeris, just not the formatting code)
-We then solve for position.  Not sure if we want to stay with that or generate a
- RINEX file.
+We then solve for position.
 */
 
 #include "BasicFramework.hpp"
@@ -141,52 +142,6 @@ void P::process()
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 // Following tables hold the data sets that we have for now.
-/*
-   //subframe 2 data points from gnssGood.bin (coords within 60 meters)
-   dataPoints[3]=14155198; 
-   dataPoints[7]=13996008;
-   dataPoints[16]=13994328;
-   dataPoints[10]=14074723;
-   dataPoints[25]=14143199;
-   dataPoints[26]=14089410;
-   dataPoints[27]=14010599;
-*/
-/*
-  // subframe three data points (not very good pos)
-   dataPoints[3]=112360974; 
-   dataPoints[7]=112202168;
-   dataPoints[16]=112200312; //***
-   dataPoints[10]=112280883;
-   dataPoints[25]=112349295;
-   dataPoints[26]=112295602; //***
-   dataPoints[27]=112216567;
-*/
-/*
-  // subframe four data points (coords all within 35 meters)
-   dataPoints[3]=210566750; 
-   dataPoints[7]=210408312;
-   dataPoints[16]=210406280;
-   dataPoints[10]=210487043;
-   dataPoints[25]=210555407;
-   dataPoints[26]=210501810;
-   dataPoints[27]=210422535;
-   // sample usage (for gnssGood.bin and a rinex nav file from the date shown)
-   // ./position -e rin207.08n -z 435924 -w 1489
-*/
-//---------------------------------------------------------------------------
-/*
-// subframe three data points from gnss.bin (simulation file): FAKE EPH?
-   dataPoints[4]=41122671; 
-   dataPoints[9]=40962424;
-   dataPoints[14]=41008214;
-   dataPoints[16]=40999190;
-   dataPoints[17]=41024757;
-   dataPoints[20]=41020645;
-   dataPoints[21]=41172620;
-   dataPoints[28]=41074850;
-*/
-//---------------------------------------------------------------------------
-
 // NOW CARDATA.bin
 /*
 // subframe three data points from gnssDavisHouseCar2.bin: (z=360198) CRUMMY
@@ -198,49 +153,7 @@ void P::process()
    dataPoints[28]=29328671;
    dataPoints[29]=29471399;
 */
-// subframe four data points from gnssDavisHouseCar2.bin: (z=360204) GOOD
-/*
 // position -e rin269.08n -z 360204 -w 1498
-   dataPoints[1]=127694006; 
-   dataPoints[9]=127621626;
-   dataPoints[14]=127599323;
-   dataPoints[23]=127566573;
-   dataPoints[25]=127570973;
-   dataPoints[28]=127530991;
-   dataPoints[29]=127677575;
-*/
-/*
-// subframe five dp's         PRETTY GOOD
-   dataPoints[1]=225900166; 
-   dataPoints[9]=225827834;
-   dataPoints[14]=225805195;
-   dataPoints[23]=225772557;
-   dataPoints[25]=225776877;
-   dataPoints[28]=225736943;
-   dataPoints[29]=225883751;
-*/
-/*
-// subframe one dp's   360216   CRUMMY
-   dataPoints[1]=4106310; 
-   dataPoints[9]=4034026;
-   dataPoints[14]=4011083;
-   dataPoints[23]=3982189;
-   dataPoints[25]=3982765;
-   dataPoints[28]=3942911;
-   dataPoints[29]=4089927;
-*/
-/*
-// subframe three dp's (z=360228)   CRUMMY
-   dataPoints[1]=29487862; 
-   dataPoints[9]=29415434;
-   dataPoints[14]=29393435;
-   dataPoints[23]=29360589;
-   dataPoints[25]=29365069;
-   dataPoints[28]=29328671;
-   dataPoints[29]=29471399;
-*/
-
-// NEW TRACKING SOFTWARE RESULTS
 /*
 // sf3 
 // position -e rin269.08n -z 360204 -r 8.184 -w 1498
@@ -295,169 +208,6 @@ void P::process()
    dataPoints[23]=211092268;
    dataPoints[25]=211094333;
    dataPoints[29]=211148057;
-*/
-
-
-// AFTER LUNCH FINISH THIS AND THEN GO BACK AND DO ARL-SW DATA WITH RIGHT -r
-
-
-
-
-
-
-//---------------------------------------------------------------------------
-// Data Points from ARL-SW: 
-// position -e rin273Sep29.08n -z 149466 -w 1499
-// position -e s011273a.08n -z 149478 -w 1499
-/*
-// SF5 - zcount says 636966, but all or part of it is inverted...
-   dataPoints[2]=63032180; 
-   dataPoints[6]=62890253;
-   dataPoints[7]=62986055;
-   dataPoints[10]=63047187;
-   dataPoints[12]=62918683;
-   dataPoints[18]=62930554;
-   dataPoints[22]=63017141;
-   dataPoints[24]=62909420;
-   dataPoints[26]=62929226;
-*/
-/*
-// SF1
-   dataPoints[2]=161238404; 
-   dataPoints[6]=161096221;
-   dataPoints[7]=161191911;
-   dataPoints[10]=161253027;
-   dataPoints[12]=161124843;
-   dataPoints[18]=161136666;
-   dataPoints[22]=161223381;
-   dataPoints[24]=161115452;
-   dataPoints[26]=161135146;
-*/
-/*
-// SF2
-   dataPoints[2]=259448260; 
-   dataPoints[6]=259302189;
-   dataPoints[7]=259401399;
-   dataPoints[10]=259458867;
-   dataPoints[12]=259331019;
-   dataPoints[18]=259342778;
-   dataPoints[22]=259433269;
-   dataPoints[24]=259321468;
-   dataPoints[26]=259341066;
-*/
-/*
-// SF3
-   dataPoints[2]=357650836; 
-   dataPoints[6]=357508157;
-   dataPoints[7]=357603607;
-   dataPoints[10]=357664723;
-   dataPoints[12]=357537179;
-   dataPoints[18]=357548874;
-   dataPoints[22]=357635877;
-   dataPoints[24]=357527500;
-   dataPoints[26]=357546986;
-*/
-// SAME DATA, NEW TRACKING CODE
-/*
-// SF5 - zcount 149466
-   dataPoints[2]=31516095; 
-   dataPoints[6]=31445126;
-   dataPoints[7]=31493027;
-   dataPoints[10]=31523593;
-   dataPoints[12]=31459346;
-   dataPoints[18]=31465277;
-   dataPoints[22]=31508576;
-   dataPoints[24]=31454714;
-   dataPoints[26]=31464613;
-*/
-    // 137m and 30m
-      // position -e s011273a.08n -r 8.184 -z 149466 -w 1499
-   dataPoints[2]=80619205; 
-   dataPoints[6]=80548110;
-   dataPoints[7]=80595955;
-   dataPoints[10]=80626514;
-   dataPoints[12]=80562428;
-   dataPoints[18]=80568331;
-   dataPoints[22]=80611693;
-   dataPoints[24]=80557726;
-   dataPoints[26]=80567576; 
-
-/*
-      // 70 and 203
-   dataPoints[2]=129722308; 
-   dataPoints[6]=129651094;
-   dataPoints[7]=129698883;
-   dataPoints[10]=129729435;
-   dataPoints[12]=129665510;
-   dataPoints[18]=129671385;
-   dataPoints[22]=129714817;
-   dataPoints[24]=129660738;
-   dataPoints[26]=129670538; 
-*/
-/*      // 139 and 260
-   dataPoints[2]=178825418; 
-   dataPoints[6]=178754078;
-   dataPoints[7]=178801804;
-   dataPoints[10]=178832363;
-   dataPoints[12]=178768592;
-   dataPoints[18]=178774438;
-   dataPoints[22]=178817934;
-   dataPoints[24]=178763750;
-   dataPoints[26]=178773494; 
-*/
-//---------------------------------------------------------------------------
-// Data Points from ARL-SW - 6oct08: 
-// position -e u112280a.08n -z 153168 -w 1500
-// GETTING SEG FAULT ON ALL OF THESE NOT SURE WHY
-/*
-// SF2
-   dataPoints[6]=36002136; 
-   dataPoints[7]=35965978;
-   dataPoints[10]=36030694;
-   dataPoints[16]=36084115;
-   dataPoints[24]=36072115;
-   dataPoints[26]=35983593;
-   dataPoints[27]=36062260;
-*/
-/*
-// SF3
-   dataPoints[6]=134208248; 
-   dataPoints[7]=134175562;
-   dataPoints[10]=134236678;
-   dataPoints[16]=134289971;
-   dataPoints[24]=134278275;
-   dataPoints[26]=134189625;
-   dataPoints[27]=134268212;
-*/
-/*
-// SF4
-   dataPoints[6]=232418008; 
-   dataPoints[7]=232377866;
-   dataPoints[10]=232442646;
-   dataPoints[16]=232495811;
-   dataPoints[24]=232484451;
-   dataPoints[26]=232395673;
-   dataPoints[27]=232474164;
-*/
-/*
-// SF5
-   dataPoints[6]=330620488; 
-   dataPoints[7]=330583818;
-   dataPoints[10]=330648614;
-   dataPoints[16]=330701667;
-   dataPoints[24]=330690611;
-   dataPoints[26]=330601721;
-   dataPoints[27]=330680116;
-*/
-/*
-// SF1
-   dataPoints[6]=428826600; 
-   dataPoints[7]=428789770;
-   dataPoints[10]=428854598;
-   dataPoints[16]=428907523;
-   dataPoints[24]=428896771;
-   //dataPoints[26]=;
-   dataPoints[27]=428886068;
 */
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------

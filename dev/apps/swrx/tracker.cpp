@@ -25,6 +25,10 @@
 /*
   The first cut at an object-oriented receiver simulator. This is intended
   to accept the output from gpsSim and produce neat stuff.
+
+  NOTE: trackerMT.cpp is the most up to date tracker including multithreading, 
+  but this tracker is left as an example of the algorithm.  RX.cpp integrates
+  position solutions into the tracker as well.
 */
 
 #include <math.h>
