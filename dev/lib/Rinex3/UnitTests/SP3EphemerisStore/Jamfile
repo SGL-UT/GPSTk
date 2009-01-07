@@ -1,0 +1,5 @@
+SubDir TOP SP3EphemerisStore ;
+
+
+
+TestMain SP3EphemerisStore/xSP3EphemerisStore.tst : SP3EphemerisStore/xSP3EphemerisStoreM.cpp SP3EphemerisStore/xSP3EphemerisStore.cpp SP3EphemerisStore/SP3EphemerisStore.cpp ;
