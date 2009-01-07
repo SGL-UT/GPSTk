@@ -13,7 +13,7 @@ if $(TEST) = 1
 	  # Please add in alphabetic order
 	  GPSBuildLibrary Rinex3 : 
 	  ANSITime.cpp  CivilTime.cpp  CommonTime.cpp  EngEphemeris.cpp  GPSEphemerisStore.cpp  JulianDate.cpp  MJD.cpp  SP3Data.cpp     SP3EphemerisStore.cpp  SP3Header.cpp  TabularEphemerisStore.cpp  TimeTag.cpp  UnixTime.cpp  YDSTime.cpp ../../src/SP3SatID.cpp ../../src/Triple.cpp
-../../src/ECEF.cpp ../../src/Geodetic.cpp
+../../src/ECEF.cpp ../../src/Geodetic.cpp ../../src/TimeConverters.cpp
 	    ;
 
 	  InstallFile $(INCDIR) : 
