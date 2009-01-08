@@ -320,9 +320,14 @@ namespace gpstk
    double CommonTime::operator-( const CommonTime& right ) const
       throw()
    {
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
+           m_timeSystem != right.m_timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be differenced");
+
       return( SEC_PER_DAY * static_cast<double>( m_day  - right.m_day  ) +
               SEC_PER_MS  * static_cast<double>( m_msod - right.m_msod ) + 
-              m_fsod - right.m_fsod ) ; // returns difference regardless of timeSystem
+              m_fsod - right.m_fsod ) ;
    }
    
    CommonTime CommonTime::operator+( double sec ) const
