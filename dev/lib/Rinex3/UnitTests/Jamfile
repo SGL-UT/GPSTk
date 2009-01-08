@@ -7,7 +7,7 @@ SubInclude TOP CommonTime ;
 SubInclude TOP JulianDate ;
 #SubInclude TOP KeplerianEphemerisStore ;
 SubInclude TOP MJD ;
-#SubInclude TOP SP3EphemerisStore ;
+SubInclude TOP SP3EphemerisStore ;
 #SubInclude TOP TabularEphemerisStore ;
 SubInclude TOP TimeTag ;
 SubInclude TOP UnixTime ;

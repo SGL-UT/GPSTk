@@ -402,18 +402,10 @@ namespace gpstk
    bool CommonTime::operator==( const CommonTime& right ) const
       throw()
    {
-//      if ((m_timeSystem != Constant && right.m_timeSystem != Constant) &&
-//           m_timeSystem != right.m_timeSystem)
-//         throw InvalidRequest("CommonTime objects not in same time system");
-
       return (m_timeSystem == right.m_timeSystem &&
               m_day        == right.m_day        &&
               m_msod       == right.m_msod       &&
               fabs(m_fsod-right.m_fsod) < eps      );
-
-//      return (m_day        == right.m_day        &&
-//              m_msod       == right.m_msod       &&
-//              fabs(m_fsod-right.m_fsod) < eps      );
    }
 
    bool CommonTime::operator!=( const CommonTime& right ) const
