@@ -12,8 +12,25 @@ if $(TEST) = 1
 	{
 	  # Please add in alphabetic order
 	  GPSBuildLibrary Rinex3 : 
-	  ANSITime.cpp  CivilTime.cpp  CommonTime.cpp  EngEphemeris.cpp  GPSEphemerisStore.cpp  JulianDate.cpp  MJD.cpp  SP3Data.cpp     SP3EphemerisStore.cpp  SP3Header.cpp  TabularEphemerisStore.cpp  TimeTag.cpp  UnixTime.cpp  YDSTime.cpp ../../src/SP3SatID.cpp ../../src/Triple.cpp
-../../src/ECEF.cpp ../../src/Geodetic.cpp ../../src/TimeConverters.cpp
+	  ANSITime.cpp
+          CivilTime.cpp
+          CommonTime.cpp
+          EngEphemeris.cpp
+          GPSEphemerisStore.cpp
+          GPSWeek.cpp
+          GPSWeekSecond.cpp
+          GPSWeekZcount.cpp
+          JulianDate.cpp
+          MJD.cpp
+          SP3Data.cpp
+          SP3EphemerisStore.cpp
+          SP3Header.cpp
+          TabularEphemerisStore.cpp
+          TimeTag.cpp
+          UnixTime.cpp
+          YDSTime.cpp
+          ../../src/SP3SatID.cpp ../../src/Triple.cpp ../../src/ECEF.cpp
+          ../../src/Geodetic.cpp ../../src/TimeConverters.cpp
 	    ;
 
 	  InstallFile $(INCDIR) : 
@@ -55,7 +72,7 @@ else
 	      ../../src/FICData62.cpp ../../src/FICData9.cpp ../../src/FICHeader.cpp ../../src/FileHunter.cpp
 	      ../../src/FileSpec.cpp ../../src/GPSAlmanacStore.cpp 
              #../../src/GPSEphemerisStore.cpp
-	      ../../src/GPSWeek.cpp ../../src/GPSWeekSecond.cpp ../../src/GPSWeekZcount.cpp ../../src/GPSZcount.cpp
+	     #../../src/GPSWeek.cpp ../../src/GPSWeekSecond.cpp ../../src/GPSWeekZcount.cpp ../../src/GPSZcount.cpp
 	      ../../src/GaussianDistribution.cpp ../../src/GenXSequence.cpp ../../src/Geodetic.cpp 
 	      ../../src/IonexData.cpp ../../src/IonexHeader.cpp ../../src/IonexStore.cpp
 	      ../../src/IonoModel.cpp ../../src/IonoModelStore.cpp
@@ -78,7 +95,8 @@ else
 	      ../../src/SVNumXRef.cpp ../../src/SVPCodeGen.cpp ../../src/SatDataReader.cpp
 	      ../../src/SimpleIURAWeight.cpp ../../src/SimpleKalmanFilter.cpp ../../src/SolidTides.cpp
 	      ../../src/SourceID.cpp ../../src/SpecialFunctions.cpp ../../src/StudentDistribution.cpp
-	      ../../src/SunPosition.cpp ../../src/SystemTime.cpp
+	      ../../src/SunPosition.cpp
+              ../../src/SystemTime.cpp
 	     #../../src/TabularEphemerisStore.cpp 
               ../../src/TimeConverters.cpp ../../src/TimeString.cpp
 	     #../../src/TimeTag.cpp
