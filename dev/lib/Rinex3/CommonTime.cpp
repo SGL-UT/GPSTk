@@ -50,10 +50,10 @@ namespace gpstk
 
       // earliest representable CommonTime
    const CommonTime
-   CommonTime::BEGINNING_OF_TIME( CommonTime::BEGIN_LIMIT_JDAY, 0, 0.0, Constant );
+   CommonTime::BEGINNING_OF_TIME( CommonTime::BEGIN_LIMIT_JDAY, 0, 0.0, Any );
       // latest representable CommonTime
    const CommonTime
-   CommonTime::END_OF_TIME( CommonTime::END_LIMIT_JDAY, 0, 0.0, Constant ) ;
+   CommonTime::END_OF_TIME( CommonTime::END_LIMIT_JDAY, 0, 0.0, Any ) ;
 
       // Seconds per day.
    const long CommonTime::SEC_DAY = 86400L;
@@ -402,10 +402,14 @@ namespace gpstk
    bool CommonTime::operator==( const CommonTime& right ) const
       throw()
    {
-      return (m_timeSystem == right.m_timeSystem &&
-              m_day        == right.m_day        &&
-              m_msod       == right.m_msod       &&
-              fabs(m_fsod-right.m_fsod) < eps      );
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
+           m_timeSystem != right.m_timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+
+      return (m_day        == right.m_day     &&
+              m_msod       == right.m_msod    &&
+              fabs(m_fsod-right.m_fsod) < eps   );
    }
 
    bool CommonTime::operator!=( const CommonTime& right ) const
@@ -417,10 +421,10 @@ namespace gpstk
    bool CommonTime::operator<( const CommonTime& right ) const
       throw()
    {
-     /// Constant type exception used to allow comparison with BEG/END_OF_TIME constant
-//      if ((m_timeSystem != Constant && right.m_timeSystem != Constant) &&
-//           m_timeSystem != right.m_timeSystem)
-//         throw InvalidRequest("CommonTime objects not in same time system");
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
+           m_timeSystem != right.m_timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
 
       if (m_day < right.m_day)
          return true;
@@ -465,7 +469,7 @@ namespace gpstk
           << setw(7) << m_day  << " "
           << setw(8) << m_msod << " "
           << fixed << setprecision(15) << setw(17) << m_fsod
-          << " in frame " << m_timeSystem ;
+          << "set to time system " << m_timeSystem ;
       return oss.str();
    }
 

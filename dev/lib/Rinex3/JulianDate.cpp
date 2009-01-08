@@ -150,8 +150,12 @@ namespace Rinex3
    bool JulianDate::operator==( const JulianDate& right ) const
       throw()
    {
-      if( timeSystem == right.timeSystem &&
-          fabs(jd - right.jd) < CommonTime::eps )
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != Any && right.timeSystem != Any) &&
+           timeSystem != right.timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+
+      if( fabs(jd - right.jd) < CommonTime::eps )
       {
          return true;
       }
@@ -167,8 +171,12 @@ namespace Rinex3
    bool JulianDate::operator<( const JulianDate& right ) const
       throw()
    {
-      if( timeSystem == right.timeSystem &&
-          jd < right.jd )
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != Any && right.timeSystem != Any) &&
+           timeSystem != right.timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+
+      if( jd < right.jd )
       {
          return true;
       }

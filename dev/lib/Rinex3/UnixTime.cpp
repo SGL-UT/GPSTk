@@ -34,7 +34,7 @@ namespace Rinex3
    UnixTime& UnixTime::operator=( const UnixTime& right )
       throw()
    {
-      tv.tv_sec = right.tv.tv_sec;
+      tv.tv_sec  = right.tv.tv_sec ;
       tv.tv_usec = right.tv.tv_usec;
       return *this;
    }
@@ -60,10 +60,10 @@ namespace Rinex3
       throw( InvalidRequest )
    {
          /// This is the earliest CommonTime for which UnixTimes are valid.
-      static const CommonTime MIN_CT = UnixTime();
+     static const CommonTime MIN_CT = UnixTime(0, 0, Any);
          /// This is the latest CommonTime for which UnixTimes are valid.
          /// (2^31 - 1) s and 999999 us
-      static const CommonTime MAX_CT = UnixTime(2147483647, 999999);
+       static const CommonTime MAX_CT = UnixTime(2147483647, 999999, Any);
 
       if ( ct < MIN_CT || ct > MAX_CT )
       {
@@ -178,8 +178,12 @@ namespace Rinex3
    bool UnixTime::operator==( const UnixTime& right ) const
       throw()
    {
-      if( timeSystem == right.timeSystem &&
-          tv.tv_sec  == right.tv.tv_sec  &&
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != Any && right.timeSystem != Any) &&
+           timeSystem != right.timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+
+      if( tv.tv_sec  == right.tv.tv_sec  &&
           abs(tv.tv_usec - right.tv.tv_usec) < CommonTime::eps )
       {
          return true;
@@ -196,13 +200,16 @@ namespace Rinex3
    bool UnixTime::operator<( const UnixTime& right ) const
       throw()
    {
-      if( timeSystem == right.timeSystem &&
-          tv.tv_sec  <  right.tv.tv_sec    )
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != Any && right.timeSystem != Any) &&
+           timeSystem != right.timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+
+      if( tv.tv_sec  <  right.tv.tv_sec )
       {
          return true;
       }
-      if( timeSystem == right.timeSystem &&
-          tv.tv_sec  == right.tv.tv_sec  &&
+      if( tv.tv_sec  == right.tv.tv_sec  &&
           tv.tv_usec <  right.tv.tv_usec   )
       {
          return true;

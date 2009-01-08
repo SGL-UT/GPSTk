@@ -194,8 +194,12 @@ namespace Rinex3
    bool YDSTime::operator==( const YDSTime& right ) const
       throw()
    {
-      if( timeSystem == right.timeSystem &&
-          year == right.year &&
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != Any && right.timeSystem != Any) &&
+           timeSystem != right.timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+
+      if( year == right.year &&
           doy  == right.doy  &&
           fabs(sod - right.sod) < CommonTime::eps )
       {
@@ -213,7 +217,10 @@ namespace Rinex3
    bool YDSTime::operator<( const YDSTime& right ) const
       throw()
    {
-      if ( timeSystem != right.timeSystem ) return false;
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != Any && right.timeSystem != Any) &&
+           timeSystem != right.timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
 
       if( year < right.year )
       {

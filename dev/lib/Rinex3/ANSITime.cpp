@@ -60,10 +60,10 @@ namespace Rinex3
       throw(InvalidRequest)
    {
          /// This is the earliest CommonTime for which ANSITimes are valid.
-      static const CommonTime MIN_CT = ANSITime(0);
+     static const CommonTime MIN_CT = ANSITime(0, Any);
          /// This is the latest CommonTime for which ANSITimes are valid.
          /// 2^31 - 1 seconds
-      static const CommonTime MAX_CT = ANSITime(2147483647);
+       static const CommonTime MAX_CT = ANSITime(2147483647, Any);
 
       if ( ct < MIN_CT || ct > MAX_CT )
       {
@@ -154,8 +154,12 @@ namespace Rinex3
    bool ANSITime::operator==( const ANSITime& right ) const
       throw()
    {
-      if( timeSystem == right.timeSystem &&
-          fabs(time - right.time) < CommonTime::eps )
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != Any && right.timeSystem != Any) &&
+           timeSystem != right.timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+
+      if( fabs(time - right.time) < CommonTime::eps )
       {
          return true;
       }
@@ -171,6 +175,11 @@ namespace Rinex3
    bool ANSITime::operator<( const ANSITime& right ) const
       throw()
    {
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != Any && right.timeSystem != Any) &&
+           timeSystem != right.timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+
       return ( timeSystem == right.timeSystem &&
                time < right.time );
    }

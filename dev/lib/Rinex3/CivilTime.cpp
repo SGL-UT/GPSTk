@@ -290,12 +290,16 @@ namespace Rinex3
    bool CivilTime::operator==( const CivilTime& right ) const
       throw()
    {
-      if( timeSystem == right.timeSystem &&
-          year       == right.year       &&
-          month      == right.month      &&
-          day        == right.day        &&
-          hour       == right.hour       &&
-          minute     == right.minute     &&
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != Any && right.timeSystem != Any) &&
+           timeSystem != right.timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+
+      if( year   == right.year    &&
+          month  == right.month   &&
+          day    == right.day     &&
+          hour   == right.hour    &&
+          minute == right.minute  &&
           fabs(second - right.second) < CommonTime::eps )
       {
          return true;
@@ -312,7 +316,10 @@ namespace Rinex3
    bool CivilTime::operator<( const CivilTime& right ) const
       throw()
    {
-      if( timeSystem != right.timeSystem ) return false;
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != Any && right.timeSystem != Any) &&
+           timeSystem != right.timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
 
       if( year < right.year )
       {

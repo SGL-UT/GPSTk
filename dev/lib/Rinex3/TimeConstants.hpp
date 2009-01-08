@@ -76,8 +76,8 @@ namespace gpstk
       /// The various time systems (representations)
    enum TimeSystem
    {
-     Unknown,    /**< unknown time frame */
-     Constant,   /**< for use with BEGINNING/END_OF_TIME only, so math operators work */
+     Unknown,    /**< unknown time frame; mostly for legacy code compatibility */
+     Any,        /**< wildcard; allows comparison with any other type */
      GPS,        /**< GPS system time */
      UTC         /**< Coordinated Universal Time (e.g., from NTP) */
    };

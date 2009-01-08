@@ -154,8 +154,12 @@ namespace Rinex3
    bool MJD::operator==( const MJD& right ) const
       throw()
    {
-      if( timeSystem == right.timeSystem &&
-          fabs(mjd - right.mjd) < CommonTime::eps )
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != Any && right.timeSystem != Any) &&
+           timeSystem != right.timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+
+      if( fabs(mjd - right.mjd) < CommonTime::eps )
       {
          return true;
       }
@@ -171,8 +175,12 @@ namespace Rinex3
    bool MJD::operator<( const MJD& right ) const
       throw()
    {
-      if( timeSystem == right.timeSystem &&
-          mjd < right.mjd )
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != Any && right.timeSystem != Any) &&
+           timeSystem != right.timeSystem)
+         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+
+      if( mjd < right.mjd )
       {
          return true;
       }
@@ -188,8 +196,8 @@ namespace Rinex3
    bool MJD::operator<=( const MJD& right ) const
       throw()
    {
-      return ( operator<( right ) ||
-               operator==( right ) );
+      return ( operator<(  right ) ||
+               operator==( right )   );
    }
 
    bool MJD::operator>=( const MJD& right ) const
