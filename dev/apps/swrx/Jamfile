@@ -7,8 +7,10 @@ GPSLinkLibraries simlib : gpstk ;
 Library simlib : normal.cpp CCReplica.cpp IQStream.cpp EMLTracker.cpp 
    NavFramer.cpp ;
 
-LinkLibraries gpsSim tracker corltr iqdump codeDump position : simlib ;
-GPSLinkLibraries gpsSim tracker corltr iqdump codeDump simpleNav position : gpstk ;
+LinkLibraries gpsSim tracker corltr iqdump codeDump position 
+	      trackerMT RX : simlib ;
+GPSLinkLibraries gpsSim tracker corltr iqdump codeDump simpleNav 
+		 position trackerMT RX : gpstk ;
 
 Main gpsSim : gpsSim.cpp ;
 
@@ -23,3 +25,9 @@ Main iqdump : iqdump.cpp ;
 Main codeDump : codeDump.cpp ;
 
 Main position : position.cpp ;
+
+LINKFLAGS += -lpthread ;
+
+Main trackerMT : trackerMT.cpp ;
+
+Main RX : RX.cpp ;
