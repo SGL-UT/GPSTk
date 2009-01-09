@@ -59,6 +59,13 @@ void xANSITime :: resetTest (void)
 {
 	Rinex3::ANSITime Compare(13500000,gpstk::GPS);
 
+	CommonTime Test = Compare.convertToCommonTime();
+
+	Rinex3::ANSITime Test2;
+	Test2.convertFromCommonTime(Test);
+
+	CPPUNIT_ASSERT_EQUAL(Test2,Compare);
+
 	CPPUNIT_ASSERT_EQUAL(gpstk::GPS,Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(13500000,(int)Compare.time);
 
@@ -87,6 +94,9 @@ void xANSITime :: timeSystemTest (void)
 	CPPUNIT_ASSERT(GPS2 != ANY);
 	CPPUNIT_ASSERT(GPS2 < GPS1);
 	CPPUNIT_ASSERT(GPS2 < ANY);
+
+	UNKNOWN.setTimeSystem(gpstk::GPS);
+	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),gpstk::GPS);
 }
 
 void xANSITime :: printfTest (void)
