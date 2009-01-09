@@ -14,6 +14,7 @@ class xANSITime: public CPPUNIT_NS :: TestFixture
 	CPPUNIT_TEST (operatorTest);
         CPPUNIT_TEST (resetTest);
 	CPPUNIT_TEST (timeSystemTest);
+	CPPUNIT_TEST (printfTest);
 	CPPUNIT_TEST_SUITE_END ();
 
 	public:
@@ -24,7 +25,7 @@ class xANSITime: public CPPUNIT_NS :: TestFixture
 		void setFromInfoTest (void);
 		void resetTest (void);
 		void timeSystemTest (void);
-
+		void printfTest (void);
 	private:
 
 };
