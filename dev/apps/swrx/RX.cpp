@@ -89,6 +89,7 @@ struct Par // Parameters to pass to Pthread function.
    NavFramer *nf;
    bool v;       // verbose
    int prn;
+   bool solvePos;
 };
 
 void *Cfunction(void*); // C-style function to be called with pthreads
@@ -414,6 +415,7 @@ void RxSim::process()
          p[i].nf = &nf[i];
          p[i].v = (verboseLevel);
          p[i].prn = tr[i]->prn;
+         p[i].solvePos = solvePos;
          
    // Split
          rc = pthread_create( &thread_id[i], &attr, Cfunction, &p[i] ) ;
@@ -519,6 +521,9 @@ void RxSim::process()
                  << "RMSResidual: " << prSolver.RMSResidual << " meters" 
                  << endl;
 
+// If we wanted to just output ranges, we can correct the obsVector
+// using the clock error and have the range to each sat.
+
             for(int i = 0; i < 32; i++)
                dataPoints[i] = 0;
 
@@ -597,6 +602,7 @@ void *Cfunction(void* p)
    Buffer *b = par->s;
    bool v = par->v;
    int prn = par->prn;
+   bool solvePos = par->solvePos;
    
    int index = 0;
    pthread_mutex_lock (&mutexVec);
@@ -620,6 +626,13 @@ void *Cfunction(void* p)
                edgeFound = true;
                ZCount = EngNav::getHOWTime(nf->subframes.back().words[1]);
                pthread_mutex_unlock (&mutexVec);
+               if(!solvePos)
+               {nf->subframes.back().dump(cout,1);}
+               
+/*cout << "DataPoint: " << nf->subframes.back().dataPoint 
+                     << "Zcount: " 
+                     << EngNav::getHOWTime(nf->subframes.back().words[1])
+                     << */
             }
             
             *count = 0;
@@ -636,6 +649,8 @@ void *Cfunction(void* p)
                edgeFound = true;
                ZCount = EngNav::getHOWTime(nf->subframes.back().words[1]);
                pthread_mutex_unlock (&mutexVec);
+               if(!solvePos)
+               {nf->subframes.back().dump(cout,0);}
             }
          }
          *count = *count + 1;

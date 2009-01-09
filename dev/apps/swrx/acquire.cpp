@@ -67,6 +67,7 @@ private:
    int bands;
    int periods;
    int bins;
+   int height;
    
    CCReplica* cc;
 };
@@ -81,7 +82,8 @@ Acquire::Acquire() throw() :
    periods(1),
    freqSearchWidth(20000),
    freqBinWidth(200),
-   bins(freqSearchWidth / freqBinWidth + 1)
+   bins(freqSearchWidth / freqBinWidth + 1),
+   height(40)
 {}
 
 //-----------------------------------------------------------------------------
@@ -125,7 +127,12 @@ bool Acquire::initialize(int argc, char *argv[]) throw()
       binWidthOpt('f',"bin-width",
                   "Width of the frequency bins in Hz. Default is 200. "
                   "Bin width should be at most 1000Hz/numPeriods, so "
-                  "the default is for up to 5 periods.");
+                  "the default is for up to 5 periods."),
+
+      heightOpt('z',"height",
+                "The cutoff correlation height for acquisition.  This only "
+                "affects our output.  A SNR measure should replace this "
+                "eventually.  Default is 40");
    
 
    if (!BasicFramework::initialize(argc,argv)) 
@@ -187,6 +194,12 @@ bool Acquire::initialize(int argc, char *argv[]) throw()
       freqBinWidth = asDouble(binWidthOpt.getValue().front());
       bins = freqSearchWidth / freqBinWidth + 1;
    }
+
+   if(heightOpt.getCount())
+   {
+      height = asInt(heightOpt.getValue().front());
+   }
+                
    
 
    return true;
@@ -195,8 +208,71 @@ bool Acquire::initialize(int argc, char *argv[]) throw()
 //-----------------------------------------------------------------------------
 void Acquire::process()
 {
-   int count;
-   if(prn == 0)
+// Set up all arrays:
+// fftw_complex data type is a double[2] where the 0 element is the real
+// part and the 1 element is the imaginary part.
+
+// Local code replicas in time domain
+   vector< fftw_complex* > l(bins);
+   for(int i=0;i<bins;i++)
+   {
+      fftw_complex* v;
+      v = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
+      l[i] = v;
+   }
+// Input data in time domain
+   fftw_complex* in;
+   in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
+// Local code replicas in frequency domain
+   vector< fftw_complex* > L(bins);
+   for(int i=0;i<bins;i++)
+   {
+      fftw_complex* v2;
+      v2 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
+      L[i] = v2;
+   }
+// Input data in frequency domain
+   fftw_complex* IN;
+   IN = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
+   
+   fftw_complex* I;
+   fftw_complex* O;
+   
+// Input * local replica in frequency domain.
+   vector< fftw_complex* > MULT(bins);
+   for(int i=0;i<bins;i++)
+   {
+      fftw_complex* v3;
+      v3 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
+      MULT[i] = v3;
+   }
+// Final results in time domain
+   vector< fftw_complex* > fin(bins);
+   for(int i=0;i<bins;i++)
+   {
+      fftw_complex* v4;
+      v4 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
+      fin[i] = v4;
+   }
+// -------------------------------------------------------------------
+   
+   // Get input code
+   int sample = 0;  
+   complex<float> s;
+   while (*input >> s && sample < numSamples)
+   {
+      in[sample][0] = real(s); 
+      in[sample][1] = imag(s);
+      sample ++;
+      for(int i = 1; i < bands; i++)
+      {*input >> s;} // gpsSim outputs 2 bands (L1 and L2), 
+         //one after the other.
+         // This program currently supports L1 only, this loop throws away
+         // the input from L2, or any other bands.
+   }
+
+   int count; 
+   if(prn == 0)  // Check if we are tracking all prns or just one.
    {
       count = 32;
       prn = 1;
@@ -209,70 +285,6 @@ void Acquire::process()
       count--;
       CACodeGenerator* codeGenPtr = new CACodeGenerator(prn);
       float chipFreq = gpstk::CA_CHIP_FREQ;
-
-// -------------------------------------------------------------------
-// Set up all arrays:
-// fftw_complex data type is a double[2] where the 0 element is the real
-// part and the 1 element is the imaginary part.
-
-// Local code replicas in time domain
-      vector< fftw_complex* > l(bins);
-      for(int i=0;i<bins;i++)
-      {
-         fftw_complex* v;
-         v = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
-         l[i] = v;
-      }
-// Input data in time domain
-      fftw_complex* in;
-      in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
-// Local code replicas in frequency domain
-      vector< fftw_complex* > L(bins);
-      for(int i=0;i<bins;i++)
-      {
-         fftw_complex* v2;
-         v2 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
-         L[i] = v2;
-      }
-// Input data in frequency domain
-      fftw_complex* IN;
-      IN = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
-
-      fftw_complex* I;
-      fftw_complex* O;
-
-// Input * local replica in frequency domain.
-      vector< fftw_complex* > MULT(bins);
-      for(int i=0;i<bins;i++)
-      {
-         fftw_complex* v3;
-         v3 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
-         MULT[i] = v3;
-      }
-// Final results in time domain
-      vector< fftw_complex* > fin(bins);
-      for(int i=0;i<bins;i++)
-      {
-         fftw_complex* v4;
-         v4 = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
-         fin[i] = v4;
-      }
-// -------------------------------------------------------------------
-
-      // Get input code
-      int sample = 0;  
-      complex<float> s;
-      while (*input >> s && sample < numSamples)
-      {
-         in[sample][0] = real(s); 
-         in[sample][1] = imag(s);
-         sample ++;
-         for(int i = 1; i < bands; i++)
-         {*input >> s;} // gpsSim outputs 2 bands (L1 and L2), 
-         //one after the other.
-         // This program currently supports L1 only, this loop throws away
-         // the input from L2, or any other bands.
-      }
 
       // Convert input code to frequency domain.
       fftw_plan p;
@@ -307,6 +319,8 @@ void Acquire::process()
             (numSamples, l[i], L[i], FFTW_FORWARD, FFTW_ESTIMATE);
          par[i].plan = plans[i];
       }
+      
+      // Execute FFTs
       for(int i = 0; i < bins; i++)
       {
          rc = pthread_create( &thread_id[i], NULL, compute, &par[i] ) ;
@@ -326,6 +340,12 @@ void Acquire::process()
             exit(-1);
          }
       }
+
+         // above code replaces following block which = no multithreading.
+      /*for(int i = 0; i < bins ; i++)
+      {
+         fftw_execute(plans[i]);
+      } */
    
       // NOTE: may want to put following  multiplication into the pthread 
       // function.
@@ -383,16 +403,18 @@ void Acquire::process()
       }
    
       // Dump Information.
-      if(max < 40)
+      if(max < height)
          cout << "PRN: " << prn << " - Unable to acquire." << endl;
-      if(max >= 40)
+      if(max >= height)
       {
          cout << "PRN: " << prn << " - Doppler: " 
               << (bin*1e3)/(1000/freqBinWidth) - (freqSearchWidth/2)
               << " Offset: " << shift*1000/(sampleRate*1e-3)
               << " Height: " << max << endl;
          cout << "       - Tracker Input: -c c:1:" << prn << ":" 
-              <<  shift*1000/(sampleRate*1e-3) << ":" 
+              <<  shift*1000/(sampleRate*1e-3)-5 << ":" 
+               // Subtracting 5 right now to make sure the tracker starts 
+               // on the "left side" of the peak.
               << (bin*1e3)/(1000/freqBinWidth) - (freqSearchWidth/2) << endl;
       }
       // At some point need to add a more sophisticated check for successful 
@@ -406,8 +428,8 @@ void Acquire::process()
       }*/
       prn++;
       fftw_destroy_plan(p);
-      fftw_free(IN); fftw_free(in);
-   }
+   } //while
+   fftw_free(IN); fftw_free(in); 
 }
 
 //-----------------------------------------------------------------------------
