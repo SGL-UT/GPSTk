@@ -64,7 +64,8 @@ void xUnixTime :: operatorTest (void)
 
 void xUnixTime :: resetTest (void)
 {
-	Rinex3::UnixTime Compare(1350000,gpstk::GPS);
+        Rinex3::UnixTime Compare(1350000,0,gpstk::GPS);
+	std::cout << Compare.getTimeSystem() << std::endl;
 
 	CommonTime Test = Compare.convertToCommonTime();
 
@@ -73,6 +74,7 @@ void xUnixTime :: resetTest (void)
 
 	CPPUNIT_ASSERT_EQUAL(Test2,Compare);
 
+	std::cout << Compare.getTimeSystem() << std::endl;
 	CPPUNIT_ASSERT_EQUAL(gpstk::GPS,Compare.getTimeSystem());
 /*
 	CPPUNIT_ASSERT_EQUAL(1350000,(int)Compare.tv.tv_sec);
@@ -114,14 +116,12 @@ void xUnixTime :: timeSystemTest (void)
 
 void xUnixTime :: printfTest (void)
 {
-/*
+
 	Rinex3::UnixTime GPS1(1350000,gpstk::GPS);
 	Rinex3::UnixTime UTC(1350000,gpstk::UTC);
 
-
-	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%07U %02u %02P"),(std::string)"1350000 0.0 02");
+//	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%07U %02u %02P"),(std::string)"1350000 0.0 02");
 	CPPUNIT_ASSERT_EQUAL(UTC.printf("%08J %02u %02P"),(std::string)"1350000.000000 0.0 03");
 	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08J %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
 	CPPUNIT_ASSERT_EQUAL(UTC.printError("%08J %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
-*/
 }

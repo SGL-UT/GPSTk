@@ -36,6 +36,7 @@ namespace Rinex3
    {
       tv.tv_sec  = right.tv.tv_sec ;
       tv.tv_usec = right.tv.tv_usec;
+      timeSystem = right.timeSystem;
       return *this;
    }
    
@@ -60,10 +61,10 @@ namespace Rinex3
       throw( InvalidRequest )
    {
          /// This is the earliest CommonTime for which UnixTimes are valid.
-     static const CommonTime MIN_CT = UnixTime(0, 0, Any);
+      static const CommonTime MIN_CT = UnixTime(0, 0, Any);
          /// This is the latest CommonTime for which UnixTimes are valid.
          /// (2^31 - 1) s and 999999 us
-       static const CommonTime MAX_CT = UnixTime(2147483647, 999999, Any);
+      static const CommonTime MAX_CT = UnixTime(2147483647, 999999, Any);
 
       if ( ct < MIN_CT || ct > MAX_CT )
       {
@@ -187,7 +188,7 @@ namespace Rinex3
            timeSystem != right.timeSystem)
          return false;
 
-      if( tv.tv_sec  == right.tv.tv_sec  &&
+      if( tv.tv_sec == right.tv.tv_sec  &&
           abs(tv.tv_usec - right.tv.tv_usec) < CommonTime::eps )
       {
          return true;
