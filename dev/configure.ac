@@ -42,6 +42,10 @@ AC_FUNC_REALLOC
 AC_FUNC_STAT
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([bzero floor ftime getcwd gettimeofday memset mkdir modf pow re_comp regcomp sqrt strstr strtol strtoul])
+AC_CHECK_LIB(pthread, pthread_setcancelstate,
+	[LIBPTHREAD="-lpthread"
+	AC_DEFINE([HAVE_LIBPTHREAD], [], [pthread libraries are present])])
+AC_SUBST(LIBPTHREAD)
 
 AC_CONFIG_FILES([Makefile
 		 lib/Makefile
