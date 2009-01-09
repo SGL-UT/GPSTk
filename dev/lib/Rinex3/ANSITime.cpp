@@ -162,7 +162,6 @@ namespace Rinex3
       if ((timeSystem != Any && right.timeSystem != Any) &&
            timeSystem != right.timeSystem)
          return false;
-//         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
 
       if( fabs(time - right.time) < CommonTime::eps )
       {

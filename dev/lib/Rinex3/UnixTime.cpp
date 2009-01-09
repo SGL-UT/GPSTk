@@ -185,7 +185,7 @@ namespace Rinex3
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != Any && right.timeSystem != Any) &&
            timeSystem != right.timeSystem)
-         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+         return false;
 
       if( tv.tv_sec  == right.tv.tv_sec  &&
           abs(tv.tv_usec - right.tv.tv_usec) < CommonTime::eps )

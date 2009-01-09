@@ -410,7 +410,7 @@ namespace gpstk
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
            m_timeSystem != right.m_timeSystem)
-         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+         return false;
 
       return (m_day        == right.m_day     &&
               m_msod       == right.m_msod    &&
