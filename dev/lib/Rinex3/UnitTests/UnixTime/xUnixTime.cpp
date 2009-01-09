@@ -55,17 +55,12 @@ void xUnixTime :: operatorTest (void)
 	CPPUNIT_ASSERT(Compare >= LessThanSec);
 	CPPUNIT_ASSERT(Compare >= CompareCopy);
 	
-	//gpstk::CommonTime Rollover(1,1,.9999999999999);
-	//Rinex3::UnixTime Temp;
-	//Temp.convertFromCommonTime(Rollover);
-	
 	CPPUNIT_ASSERT(Compare.isValid());
 }
 
 void xUnixTime :: resetTest (void)
 {
         Rinex3::UnixTime Compare(1350000,0,gpstk::GPS);
-	std::cout << Compare.getTimeSystem() << std::endl;
 
 	CommonTime Test = Compare.convertToCommonTime();
 
@@ -74,9 +69,8 @@ void xUnixTime :: resetTest (void)
 
 	CPPUNIT_ASSERT_EQUAL(Test2,Compare);
 
-	std::cout << Compare.getTimeSystem() << std::endl;
 	CPPUNIT_ASSERT_EQUAL(gpstk::GPS,Compare.getTimeSystem());
-/*
+
 	CPPUNIT_ASSERT_EQUAL(1350000,(int)Compare.tv.tv_sec);
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.tv.tv_usec);
 
@@ -84,17 +78,16 @@ void xUnixTime :: resetTest (void)
 	CPPUNIT_ASSERT_EQUAL(gpstk::Unknown,Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.tv.tv_sec);
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.tv.tv_usec);
-*/
 }
 
 void xUnixTime :: timeSystemTest (void)
 {
-/*
-	Rinex3::UnixTime GPS1(1350000,gpstk::GPS);
-	Rinex3::UnixTime GPS2(1340000,gpstk::GPS);
-	Rinex3::UnixTime UTC(1350000,gpstk::UTC);
-	Rinex3::UnixTime UNKNOWN(1350000,gpstk::Unknown);
-	Rinex3::UnixTime ANY(1350000,gpstk::Any);
+
+	Rinex3::UnixTime GPS1(1350000,0,gpstk::GPS);
+	Rinex3::UnixTime GPS2(1340000,0,gpstk::GPS);
+	Rinex3::UnixTime UTC(1350000,0,gpstk::UTC);
+	Rinex3::UnixTime UNKNOWN(1350000,0,gpstk::Unknown);
+	Rinex3::UnixTime ANY(1350000,0,gpstk::Any);
 
 	CPPUNIT_ASSERT(GPS1 != GPS2);
 	CPPUNIT_ASSERT_EQUAL(GPS1.getTimeSystem(),GPS2.getTimeSystem());
@@ -111,17 +104,16 @@ void xUnixTime :: timeSystemTest (void)
 
 	UNKNOWN.setTimeSystem(gpstk::GPS);
 	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),gpstk::GPS);
-*/
 }
 
 void xUnixTime :: printfTest (void)
 {
 
-	Rinex3::UnixTime GPS1(1350000,gpstk::GPS);
-	Rinex3::UnixTime UTC(1350000,gpstk::UTC);
+	Rinex3::UnixTime GPS1(1350000,0,gpstk::GPS);
+	Rinex3::UnixTime UTC(1350000,0,gpstk::UTC);
 
-//	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%07U %02u %02P"),(std::string)"1350000 0.0 02");
-	CPPUNIT_ASSERT_EQUAL(UTC.printf("%08J %02u %02P"),(std::string)"1350000.000000 0.0 03");
-	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08J %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
-	CPPUNIT_ASSERT_EQUAL(UTC.printError("%08J %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
+	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%07U %02u %02P"),(std::string)"1350000 00 02");
+	CPPUNIT_ASSERT_EQUAL(UTC.printf("%07U %02u %02P"), (std::string)"1350000 00 03");
+	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%07U %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
+	CPPUNIT_ASSERT_EQUAL(UTC.printError("%07U %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
 }
