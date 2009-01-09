@@ -161,7 +161,8 @@ namespace Rinex3
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != Any && right.timeSystem != Any) &&
            timeSystem != right.timeSystem)
-         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+         return false;
+//         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
 
       if( fabs(time - right.time) < CommonTime::eps )
       {
@@ -184,8 +185,7 @@ namespace Rinex3
            timeSystem != right.timeSystem)
          throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
 
-      return ( timeSystem == right.timeSystem &&
-               time < right.time );
+      return ( time < right.time );
    }
 
    bool ANSITime::operator>( const ANSITime& right ) const
