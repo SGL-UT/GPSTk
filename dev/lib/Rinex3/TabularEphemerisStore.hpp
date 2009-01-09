@@ -66,7 +66,7 @@ namespace Rinex3
       /// ephemeris data in an SP3 file) and compute Xvt from this table.
       /// A Lagrange interpolation is used to compute the Xvt for times that
       /// are not in the table but do have sufficient data.
-   class TabularEphemerisStore : public XvtStore<SatID>
+   class TabularEphemerisStore : public Rinex3::XvtStore<SatID>
    {
    public:
 

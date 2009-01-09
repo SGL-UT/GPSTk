@@ -101,7 +101,9 @@ namespace Rinex3
          rv = formattedPrint(rv, getFormatPrefixInt() + "U",
                              "Ulu", tv.tv_sec);
          rv = formattedPrint(rv, getFormatPrefixInt() + "u",
-                             "ulu", tv.tv_usec);         
+                             "ulu", tv.tv_usec);
+         rv = formattedPrint(rv, getFormatPrefixInt() + "P",
+                             "Pu", timeSystem);         
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& se )
@@ -121,7 +123,9 @@ namespace Rinex3
          rv = formattedPrint(rv, getFormatPrefixInt() + "U",
                              "Us", getError().c_str());
          rv = formattedPrint(rv, getFormatPrefixInt() + "u",
-                             "us", getError().c_str());         
+                             "us", getError().c_str());  
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                             "Ps", getError().c_str());           
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& se )

@@ -88,6 +88,8 @@ namespace Rinex3
          
          rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
                               "JLf", jd );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Pu", timeSystem );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& se )
@@ -106,6 +108,8 @@ namespace Rinex3
          
          rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
                               "Js", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", getError().c_str() );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& se )

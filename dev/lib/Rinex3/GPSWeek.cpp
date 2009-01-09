@@ -54,6 +54,8 @@ namespace Rinex3
                               "Fu", week );
          rv = formattedPrint( rv, getFormatPrefixInt() + "G", 
                               "Gu", getWeek10() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Pu", timeSystem );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -76,6 +78,8 @@ namespace Rinex3
                               "Fs", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "G", 
                               "Gs", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", getError().c_str() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )

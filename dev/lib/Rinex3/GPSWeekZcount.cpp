@@ -109,6 +109,8 @@ namespace Rinex3
                               "cu", getZcount29() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "C",
                               "Cu", getZcount32() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Pu", timeSystem );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -136,6 +138,8 @@ namespace Rinex3
                               "cs", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "C",
                               "Cs", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", getError().c_str() );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& exc )

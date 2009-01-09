@@ -91,4 +91,8 @@ void xCivilTime :: operatorTest (void)
 	
 	CPPUNIT_ASSERT(Aug21.isValid());
 	CPPUNIT_ASSERT(!Zero.isValid());
+
+	std::cout << Aug21.printf("%02m/%02d/%04Y %02H:%02M:%02S  %02P") << std::endl;
+	Aug21.setTimeSystem(gpstk::GPS);
+	std::cout << Aug21.printf("%02m/%02d/%04Y %02H:%02M:%02S  %02P") << std::endl;
 }

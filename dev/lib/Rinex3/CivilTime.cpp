@@ -126,9 +126,8 @@ namespace Rinex3
                               "Su", static_cast<short>( second ) );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "f",
                               "ff", second );
-//         rv = formattedPrint( rv, " in time system ", timeSystem );
-         rv += " in time system " + timeSystem;
-
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Pu", timeSystem );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -165,9 +164,8 @@ namespace Rinex3
                               "Ss", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "f",
                               "fs", getError().c_str() );
-//         rv = formattedPrint( rv, " in time system ", timeSystem );
-         rv += " in time system " + timeSystem;
-
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", getError().c_str() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )

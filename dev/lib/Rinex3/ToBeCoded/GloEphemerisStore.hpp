@@ -60,8 +60,7 @@ namespace gpstk
       /**
        * This adds the interface to read GLO files into a TabularEphemerisStore
        */
-   class GloEphemerisStore : public TabularEphemerisStore, 
-                             public FileStore<SP3Header>
+   class GloEphemerisStore : public Rinex3::TabularEphemerisStore
    {
    public:
       /// Constructor.

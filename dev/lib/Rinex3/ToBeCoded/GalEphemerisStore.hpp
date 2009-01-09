@@ -63,7 +63,7 @@ namespace gpstk
    /// Store GPS broadcast ephemeris information (i.e. like the data in
    /// subframes 1-3) and computes satellite Xvt based upon this data and the
    /// algorithms defined for that data in the IS-GPS-200.
-   class GalEphemerisStore : public KepEphemerisStore<SatID>
+   class GalEphemerisStore : public Rinex3::KeplerianEphemerisStore<SatID>
    {
    public:
 
@@ -251,8 +251,8 @@ namespace gpstk
       /// The map where all EngEphemerides are stored.
       UBEMap ube;
       
-      DayTime initialTime; //< Time of the first EngEphemeris
-      DayTime finalTime;   //< Time of the last EngEphemeris
+      CommonTime initialTime; //< Time of the first EngEphemeris
+      CommonTime finalTime;   //< Time of the last EngEphemeris
       
       /// flag indicating search method (find...Eph) to use in getSatXvt 
       ///  and getSatHealth

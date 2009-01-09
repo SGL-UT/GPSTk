@@ -102,6 +102,8 @@ namespace Rinex3
                               "wu", getDayOfWeek() );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
                               "gf", sow);
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Pu", timeSystem );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -122,7 +124,9 @@ namespace Rinex3
          rv = formattedPrint( rv, getFormatPrefixInt() + "w",
                               "ws", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
-                              "gs", getError().c_str() );               
+                              "gs", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", getError().c_str() );               
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
