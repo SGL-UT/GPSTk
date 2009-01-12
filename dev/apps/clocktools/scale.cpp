@@ -2,7 +2,7 @@
 / GPSTk: Clock Tools
 / scale.cpp
 / 
-/ Scales phase data by factor specified by the command line input
+/ Scales kalman phase data for use with the Clock Tools.
 / (reference)
 /
 / Written by Timothy J.H. Craddock (tjhcraddock@gmail.com)

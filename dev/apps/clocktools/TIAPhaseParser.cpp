@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		fprintf(stdout, "usage: TIAPhaseParser <filename>\n");
-		fprintf(stdout, " Formats phase data from the 5110A Timing Interval Analyzer for use with Ghetto32\n");
+		fprintf(stdout, " Formats phase data from the 5110A Timing Interval Analyzer for use with the Clock Tools suite\n");
 		return(0);
 	}
 	
@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
 			{
 				phase = atof(dummy);
 				
-				// print scaled data
-				fprintf(stdout, "%.1Lf %.25Lf\n", 1.0*(long double)j, phase);
+				// print time tagged data
+				fprintf(stdout, "%.1Lf %.25Lf\n", 1.0*(long double)j, phase); // n*j is the scaling factor based on data rate
 				
 				j++;
 			}

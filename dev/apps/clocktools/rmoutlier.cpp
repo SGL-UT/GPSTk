@@ -104,7 +104,7 @@ int main()
 			}
 			else
 			{
-				if((params[i]-m)*(params[i]-m) > 15.6*s*s)
+				if((params[i]-m)*(params[i]-m) > 15.6*s*s) // outlying data larger that n^2*s*s is removed.
 				{
 					params[i] = 0.0;
 					outliers++;

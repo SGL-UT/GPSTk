@@ -127,7 +127,7 @@ int main()
 					tintSet = true;
 				}
 				
-				// spit out data in proper format for use by Ghetto32
+				// spit out data in proper format for use by Clock Tools
 				fprintf(stdout, "%.1f %.25f\n", tinterval*(double)point, adata);
 				point++;
 			}

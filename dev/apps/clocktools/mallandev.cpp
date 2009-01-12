@@ -3,7 +3,7 @@
 / mallandev.cpp
 / 
 / Computes the modified Allan deviation
-/ (reference)
+/ (reference)if(feof(stdin)) break;
 / 
 / Written by Alex Hu
 / Last Updated: Dec. 11, 2008

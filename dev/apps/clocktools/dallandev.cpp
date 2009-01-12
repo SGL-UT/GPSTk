@@ -52,6 +52,9 @@ int main(int argv, char **argc)
 	long unsigned int n, k, m, Nw, ns;
 	
 	// get windowing information from command line options
+	// Nw is the windowing size
+	// Ns is the step size
+	// if neither Nw or Ns are specified, they are computed by the code
 	if(argv > 2)
 	{
 		Nw = atoi(argc[1]);
@@ -71,6 +74,7 @@ int main(int argv, char **argc)
 	double sum;
 	
 	// calculation of the dynamic Allan deviation
+	// see "L. Galleani, and P. Tavella, 2008, "Identifying Nonstationary Clock Noises in Navigation Systems," International Journal of Navigation and Observation, 2008."  for further explanation
 	for(n = Nw; n <= N-Nw; n += ns)
 	{
 	
