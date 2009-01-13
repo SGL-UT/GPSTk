@@ -35,6 +35,11 @@
 #include "Frame.hpp"
 #include "StrokeStyle.hpp"
 #include "Marker.hpp"
+#include "Text.hpp"
+#include "TextStyle.hpp"
+#include "Color.hpp"
+#include "Line.hpp"
+#include "GridLayout.hpp"
 
 using namespace std;
 using namespace vdraw;
@@ -163,6 +168,14 @@ namespace vplot
       /// Draw all of the series in innerFrame
       void drawInFrame(Frame& innerFrame, double minX, double maxX, double minY, double maxY);
 
+      /**
+       * Draw the legend in the frame with the given point size.
+       * @param frame Frame to draw in
+       * @param pointsize The font's point size for the legend text
+       * @param columns The number of columns to split the legend to
+       */
+      void drawLegend(Frame& frame, double pointsize, unsigned int columns = 1);
+
     protected:
 
 
@@ -179,6 +192,7 @@ namespace vplot
       /// List of markers indexed by number
       vector< Marker > markers;
 
+      /// This struct helps in translating coordinates for a set of points
       struct map_object
       {
         double multX,minX,multY,minY;
@@ -195,6 +209,11 @@ namespace vplot
           p.y = multY*(p.y-minY);
         }
       };
+
+      /// Draw a segment of a legend from begin for n indexes
+      void drawLegendSegment(Frame& frame, double pointsize, 
+          unsigned int begin, unsigned int n);
+
   };
 
 }

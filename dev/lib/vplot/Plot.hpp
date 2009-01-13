@@ -36,6 +36,7 @@
 
 #include "Axis.hpp"
 #include "AxisStyle.hpp"
+#include "SeriesList.hpp"
 
 using namespace std;
 using namespace vdraw;
@@ -139,8 +140,16 @@ namespace vplot
       /// Gap from minimum y
       double ygap;
 
-    private:
-
+      /**
+       * Draw the legend in this Frame to some degree.
+       * Since it is difficult to determine the width of a specific string, for
+       * now this merely makes a single column of legend.  This should be good
+       * for most generic plots.
+       */
+      void drawLegend(Frame* frame, SeriesList* sl, unsigned int columns = 1)
+      {
+        sl->drawLegend(*frame, 10, columns);
+      }
   };
 
 }

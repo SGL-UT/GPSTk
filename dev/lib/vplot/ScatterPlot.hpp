@@ -67,19 +67,19 @@ namespace vplot
       Marker pickNextMarker(int idx);
 
       /// Add a series with this label
-      void addSeries(string label, vector<pair<double,double> >& series)
+      inline void addSeries(string label, vector<pair<double,double> >& series)
       {
         addSeries(label,series,pickNextMarker());
       }
 
       /// Add a series with this label and this Marker
-      void addSeries(string label, vector<pair<double,double> >& series, Marker m)
+      inline void addSeries(string label, vector<pair<double,double> >& series, Marker m)
       {
         sl.addSeries(label,series,m);
       }
 
       /// Draw the Plot to this frame
-      void drawPlot(Frame& frame)
+      inline void drawPlot(Frame& frame)
       {
         drawPlot(&frame);
       }
@@ -99,6 +99,29 @@ namespace vplot
 
         drawAxis(frame);
       }
+
+      /** 
+       * Draw the Palette key to this frame. dir is the direction from negative
+       * to positive for the key.  You probably want to supply a tall, skinny
+       * frame for North or South directions and a short and wide frame for East 
+       * and West directions. 
+       */
+      inline void drawKey(Frame& frame, unsigned int columns = 1) 
+      {
+        drawKey(&frame, columns);
+      }
+
+      /** 
+       * Draw the Palette key to this frame. dir is the direction from negative
+       * to positive for the key.  You probably want to supply a tall, skinny
+       * frame for North or South directions and a short and wide frame for East 
+       * and West directions. 
+       */
+      inline void drawKey(Frame* frame, unsigned int columns = 1) 
+      {
+        drawLegend(frame,&sl, columns);
+      }
+
 
     protected:
 

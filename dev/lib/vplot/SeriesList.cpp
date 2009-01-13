@@ -115,4 +115,91 @@ namespace vplot
       innerFrame.pop_state();
     }
   }
+
+  void SeriesList::drawLegend(Frame& frame, double pointsize, unsigned int columns)
+  {
+    if(columns <= 1)
+      drawLegendSegment(frame,pointsize,0,titles.size());
+    else
+    {
+      // Make a grid with one row and the correct number of columns
+      GridLayout gl(frame,1,columns);
+      // The number of elements in each column will be the same for all
+      // columns but the last.
+      unsigned int n = (titles.size()/columns) + (titles.size()%columns?1:0);
+      // Add the legend segment for each column
+      for(int i=0; i<columns; i++)
+      {
+        Frame t(gl.getFrame(0,i));
+        drawLegendSegment(t,pointsize,i*n,min(n,(unsigned int)(titles.size()-i*n)));
+      }
+    }
+  }
+
+  void SeriesList::drawLegendSegment(Frame& frame, double pointsize, 
+      unsigned int begin, unsigned int n)
+  {
+    // If we aren't drawing anything, don't bother with all the effort :)
+    if(n == 0)
+      return;
+    // Spacer is the number of points between the drawn segment and the text
+    // of the label as well as the added number of spacing between each
+    // series in the list
+    double spacer = 5;
+    // Test to see if we are dealing with a scatter plot or not
+    // as this determines what is drawn on the left
+    bool lines = false;
+    double mwidth = 0;
+    double height = pointsize;
+    for(unsigned int i=0;i<styles.size();i++)
+    {
+      if(!markers[i].getColor().isClear())
+      {
+        mwidth = max(mwidth,markers[i].getRange()*2);
+        height = max(height,mwidth);
+      }
+
+      if(!styles[i].getColor().isClear())
+        lines = true;
+    }
+    // Add spacer to the height
+    height += spacer;
+    // width = width needed to draw this
+    // lbegin = x offset where line will begin
+    // lwidth = length of the lines to draw the sample
+    double width = 30;
+    double lbegin = 0;
+    double lwidth = 30;
+    if(mwidth) // If we have markers...
+    {
+      lbegin = mwidth/2; 
+      if(lines)
+      {
+        width = mwidth*3;
+        lwidth = mwidth*2;
+      }
+      else
+      {
+        width = mwidth;
+        lwidth = 0;
+      }
+    }
+    // TextStyle
+    TextStyle style;
+    style.setPointSize(pointsize);
+
+    // Begin drawing?
+    for(unsigned int i=begin;i<begin+n;i++)
+    {
+      // Draw the sample:
+      double y = frame.getHeight() - height/2.0 - height*i;
+      Line l(lbegin+spacer,y,lbegin+lwidth+spacer,y);
+      l.setStrokeStyle(styles[i]);
+      l.setMarker(markers[i]);
+      frame << l;
+
+      // Add the series title
+      frame <<  Text(titles[i].c_str(),width+spacer*2,(y-(pointsize/2.0)),style,Text::LEFT);
+    }
+  }
 }

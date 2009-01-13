@@ -84,19 +84,19 @@ namespace vplot
       StrokeStyle pickNextSS(int idx);
 
       /// Add a series with this label
-      void addSeries(string label, vector<pair<double,double> >& series)
+      inline void addSeries(string label, vector<pair<double,double> >& series)
       {
         addSeries(label,series,pickNextSS());
       }
 
       /// Add a series with this label and this StrokeStyle      
-      void addSeries(string label, vector<pair<double,double> >& series, StrokeStyle ss)
+      inline void addSeries(string label, vector<pair<double,double> >& series, StrokeStyle ss)
       {
         sl.addSeries(label,series,ss);
       }
 
       /// Draw the Plot to this frame, with the key on the dir side
-      void draw(Frame& frame, int dir)
+      inline void draw(Frame& frame, int dir)
       {
         draw(&frame,dir);
       }
@@ -105,7 +105,7 @@ namespace vplot
       void draw(Frame *frame, int dir);
 
       /// Draw the Plot to this frame
-      void drawPlot(Frame& frame)
+      inline void drawPlot(Frame& frame)
       {
         drawPlot(&frame);
       }
@@ -119,9 +119,9 @@ namespace vplot
        * frame for North or South directions and a short and wide frame for East 
        * and West directions. 
        */
-      void drawKey(Frame& frame) //, int dir);
+      inline void drawKey(Frame& frame, unsigned int columns = 1)
       {
-        drawKey(&frame);
+        drawKey(&frame,columns);
       }
 
       /** 
@@ -130,9 +130,9 @@ namespace vplot
        * frame for North or South directions and a short and wide frame for East 
        * and West directions. 
        */
-      void drawKey(Frame* frame) //, int dir);
+      inline void drawKey(Frame* frame, unsigned int columns = 1)
       {
-        // TODO 
+        drawLegend(frame,&sl, columns);
       }
 
     protected:
