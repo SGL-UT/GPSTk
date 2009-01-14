@@ -253,6 +253,9 @@ namespace Rinex3
                if (i->first == 'S')
                   second = floor(second);
                break;
+            
+            case 'P':
+               timeSystem = (TimeSystem) asInt( i->second );
                
             default:
                   // do nothing

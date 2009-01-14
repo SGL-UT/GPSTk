@@ -25,7 +25,11 @@ void xCivilTime :: setFromInfoTest (void)
 	Id.insert(make_pair('H',"12"));
 	Id.insert(make_pair('M',"00"));
 	Id.insert(make_pair('S',"00"));
+	Id.insert(make_pair('P',"02"));
 	CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
+
+	Rinex3::CivilTime Check(2008,12,31,12,0,0,GPS);
+	CPPUNIT_ASSERT_EQUAL(setFromInfo1,Check);
 	Id.erase('b');
 	Id.erase('Y');
 	Id.insert(make_pair('m',"12"));

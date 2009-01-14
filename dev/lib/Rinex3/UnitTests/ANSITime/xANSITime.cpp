@@ -104,8 +104,8 @@ void xANSITime :: printfTest (void)
 	Rinex3::ANSITime GPS1(13500000,gpstk::GPS);
 	Rinex3::ANSITime UTC(13500000,gpstk::UTC);
 
-	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08K %02P"),(std::string)"13500000 02");
-	CPPUNIT_ASSERT_EQUAL(UTC.printf("%08K %02P"),(std::string)"13500000 03");
-	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08K %02P"),(std::string)"ErrorBadTime ErrorBadTime");
-	CPPUNIT_ASSERT_EQUAL(UTC.printError("%08K %02P"),(std::string)"ErrorBadTime ErrorBadTime");
+	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08J %02P"),(std::string)"13500000 02");
+	CPPUNIT_ASSERT_EQUAL(UTC.printf("%08J %02P"),(std::string)"13500000 03");
+	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08J %02P"),(std::string)"ErrorBadTime ErrorBadTime");
+	CPPUNIT_ASSERT_EQUAL(UTC.printError("%08J %02P"),(std::string)"ErrorBadTime ErrorBadTime");
 }
