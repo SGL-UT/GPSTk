@@ -14,10 +14,13 @@ void xMJD :: setFromInfoTest (void)
 {
 	Rinex3::MJD setFromInfo1;
 	Rinex3::MJD setFromInfo2;
+	Rinex3::MJD Compare(135000.0,GPS);
 	
 	gpstk::TimeTag::IdToValue Id;
-	Id.insert(make_pair('Q',"135000"));
+	Id.insert(make_pair('Q',"135000.0"));
+	Id.insert(make_pair('P',"02"));
 	CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
+	CPPUNIT_ASSERT_EQUAL(setFromInfo1,Compare);
 	Id.erase('Q');
 	CPPUNIT_ASSERT(setFromInfo2.setFromInfo(Id));
 }

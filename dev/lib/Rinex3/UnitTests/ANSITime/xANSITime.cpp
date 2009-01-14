@@ -14,17 +14,15 @@ void xANSITime :: setFromInfoTest (void)
 {
 	Rinex3::ANSITime setFromInfo1;
 	Rinex3::ANSITime setFromInfo2;
-	
+	Rinex3::ANSITime Compare(13500000,GPS);
 	gpstk::TimeTag::IdToValue Id;
 
 	Id.insert(make_pair('K',"13500000"));
+	Id.insert(make_pair('P',"02"));
 	CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
+	CPPUNIT_ASSERT_EQUAL(setFromInfo1,Compare);
 	Id.erase('K');
 	CPPUNIT_ASSERT(setFromInfo2.setFromInfo(Id));
-	ofstream out("Logs/printfOutput");
-	
-	out << setFromInfo1 << endl;
-	out << setFromInfo2 << endl;
 }
 
 void xANSITime :: operatorTest (void)
@@ -104,8 +102,8 @@ void xANSITime :: printfTest (void)
 	Rinex3::ANSITime GPS1(13500000,gpstk::GPS);
 	Rinex3::ANSITime UTC(13500000,gpstk::UTC);
 
-	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08J %02P"),(std::string)"13500000 02");
-	CPPUNIT_ASSERT_EQUAL(UTC.printf("%08J %02P"),(std::string)"13500000 03");
-	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08J %02P"),(std::string)"ErrorBadTime ErrorBadTime");
-	CPPUNIT_ASSERT_EQUAL(UTC.printError("%08J %02P"),(std::string)"ErrorBadTime ErrorBadTime");
+	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08K %02P"),(std::string)"13500000 02");
+	CPPUNIT_ASSERT_EQUAL(UTC.printf("%08K %02P"),(std::string)"13500000 03");
+	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08K %02P"),(std::string)"ErrorBadTime ErrorBadTime");
+	CPPUNIT_ASSERT_EQUAL(UTC.printError("%08K %02P"),(std::string)"ErrorBadTime ErrorBadTime");
 }

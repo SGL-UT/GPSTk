@@ -17,12 +17,15 @@ void xYDSTime :: setFromInfoTest (void)
 	Rinex3::YDSTime setFromInfo3;
 	Rinex3::YDSTime setFromInfo4;
 	Rinex3::YDSTime setFromInfo5;
+	Rinex3::YDSTime Compare(2008,2,1,GPS);
 	
 	gpstk::TimeTag::IdToValue Id;
 	Id.insert(make_pair('Y',"2008"));
-	Id.insert(make_pair('j',"1"));
-	Id.insert(make_pair('s',"0"));
+	Id.insert(make_pair('j',"2"));
+	Id.insert(make_pair('s',"1"));
+	Id.insert(make_pair('P',"02"));
 	CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
+	CPPUNIT_ASSERT_EQUAL(setFromInfo1,Compare);
 	Id.erase('Y');
 	Id.insert(make_pair('y',"06"));
 	CPPUNIT_ASSERT(setFromInfo2.setFromInfo(Id));

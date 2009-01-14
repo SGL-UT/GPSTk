@@ -14,16 +14,15 @@ void xJulianDate :: setFromInfoTest (void)
 {
 	Rinex3::JulianDate setFromInfo1;
 	Rinex3::JulianDate setFromInfo2;
-	
+	Rinex3::JulianDate Compare(1350000,GPS);	
+
 	gpstk::TimeTag::IdToValue Id;
 	Id.insert(make_pair('J',"1350000"));
+	Id.insert(make_pair('P',"02"));
 	CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
+	CPPUNIT_ASSERT_EQUAL(setFromInfo1,Compare);
 	Id.erase('J');
 	CPPUNIT_ASSERT(setFromInfo2.setFromInfo(Id));
-	ofstream out("Logs/printfOutput");
-	
-	out << setFromInfo1 << endl;
-	out << setFromInfo2 << endl;
 }
 
 void xJulianDate :: operatorTest (void)
