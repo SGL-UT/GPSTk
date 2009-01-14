@@ -70,12 +70,15 @@ namespace Rinex3
          GPSTK_THROW(e);
       }
 
+      Rinex3::CivilTime civtime;
+      civtime.convertFromCommonTime(time);
+
       // line 1
       line = "#";
       line += version;
       line += pvFlag;
-      line += time.asString();
-      line += " " + rightJustify(time.asString(),11);
+      line += civtime.printf("%4Y %2m %2d %2H %2M");
+      line += " " + rightJustify(civtime.printf("%f"),11);
       line += " " + rightJustify(asString(numberOfEpochs),7);
       line += " " + rightJustify(dataUsed,5);
       line += " " + rightJustify(coordSystem,5);
@@ -85,10 +88,10 @@ namespace Rinex3
 
       // line 2
       line = "##";
-      line += rightJustify(time.asString(),5);
-      line += rightJustify(time.asString(),16);
+      line += rightJustify(civtime.printf("%F"),5);
+      line += rightJustify(civtime.printf("%g"),16);
       line += " " + rightJustify(asString(epochInterval,8),14);
-      line += " " + time.asString();
+      line += " " + civtime.printf("%5.0Q");
       line += " " + rightJustify(asString(time.getSecondOfDay()/86400.,13),15);
       strm << line << endl;
 
