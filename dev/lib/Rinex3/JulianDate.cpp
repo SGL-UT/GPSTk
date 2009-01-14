@@ -123,11 +123,23 @@ namespace Rinex3
    {
       using namespace gpstk::StringUtils;
       
-      IdToValue::const_iterator itr = info.find('J');
-      if( itr != info.end() )
+      for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
-         jd = gpstk::StringUtils::asLongDouble( itr->second );
-      }
+         switch( i->first )
+         {
+            case 'J':
+               jd = asLongDouble( i->second );
+               break;
+
+            case 'P':
+               timeSystem = (TimeSystem) asInt( i->second );
+               break;
+
+            default:
+                  // do nothing
+               break;
+         };
+      }     
       
       return true;
    }

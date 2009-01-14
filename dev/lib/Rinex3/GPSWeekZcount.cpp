@@ -175,6 +175,10 @@ namespace Rinex3
                setZcount32( asInt( i->second ) );
                break;
 
+            case 'P':
+               timeSystem = (TimeSystem) asInt( i->second );
+               break;
+
             default:
                   // do nothing
                break;

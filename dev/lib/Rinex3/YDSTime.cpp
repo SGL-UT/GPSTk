@@ -165,6 +165,10 @@ namespace Rinex3
             case 's':
                sod = asDouble( i->second );
                break;
+
+            case 'P':
+               timeSystem = (TimeSystem) asInt( i->second );
+               break;
             
             default:
                   // do nothing

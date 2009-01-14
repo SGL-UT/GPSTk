@@ -113,6 +113,9 @@ namespace Rinex3
             case 'G':
                setWeek10( asInt( i->second ) );
                break;
+            case 'P':
+               timeSystem = (TimeSystem) asInt( i->second );
+               break;
             default:
                   // do nothing
                break;

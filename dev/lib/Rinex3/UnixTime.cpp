@@ -151,6 +151,10 @@ namespace Rinex3
             case 'u':
                tv.tv_usec = asInt( i->second );
                break;
+
+            case 'P':
+               timeSystem = (TimeSystem) asInt( i->second );
+               break;
                
             default:
                   // do nothing

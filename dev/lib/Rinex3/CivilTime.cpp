@@ -256,6 +256,7 @@ namespace Rinex3
             
             case 'P':
                timeSystem = (TimeSystem) asInt( i->second );
+               break;
                
             default:
                   // do nothing
