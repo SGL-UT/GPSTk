@@ -168,12 +168,6 @@ namespace Rinex3
          return "%U %u";
       }
 
-      void setTimeSytem( const TimeSystem& timeSys )
-         throw()
-      {
-         timeSystem = timeSys;
-      }
-
       virtual bool isValid() const
          throw();
 
