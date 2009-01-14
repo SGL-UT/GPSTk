@@ -1,4 +1,5 @@
 #include "xCivilTime.hpp"
+#include "UnixTime.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -43,6 +44,12 @@ void xCivilTime :: setFromInfoTest (void)
 	Id.erase('m');
 	Id.insert(make_pair('b',"AAA"));
 	CPPUNIT_ASSERT(!(setFromInfo5.setFromInfo(Id)));
+
+	CommonTime time;
+	time = Check.convertToCommonTime();
+	std::cout << Check.printf("%04Y %02m %02d %02H %02M") << std::endl;
+	std::cout << ((Rinex3::CivilTime)(time)).printf("%04Y %02m %02d %02H %02M")<< std::endl;
+	std::cout << ((Rinex3::UnixTime)(time)).printf("%010U")<< std::endl;
 }
 
 void xCivilTime :: operatorTest (void)
