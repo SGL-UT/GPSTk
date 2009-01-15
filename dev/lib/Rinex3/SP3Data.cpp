@@ -47,10 +47,10 @@
 #include "SP3Data.hpp"
 #include "StringUtils.hpp"
 #include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;
-using namespace gpstk;
 
 namespace Rinex3
 {
@@ -62,8 +62,8 @@ namespace Rinex3
       string line;
       if(flag == '*') {// output Epoch Header Record
          line = "* ";
-         line += time.asString();
-         line += " " + rightJustify(time.asString(),11);
+         line += ((CivilTime)time).printf(" %4Y %2m %2d %2H %2M");
+         line += " " + rightJustify(((CivilTime)time).printf("%.8f"),11);
       }
       else {           // output Position and Clock OR Velocity and Clock Rate Record
          line = flag;
@@ -117,7 +117,8 @@ namespace Rinex3
 
    void SP3Data::dump(ostream& s) const 
    {
-      s << flag << " " << sat << " " << time.asString();
+      s << flag << " " << sat
+         << " " << ((CivilTime)time).printf("%Y/%02m/%02d %2H:%02M:%06.3f = ") << ((GPSWeekSecond)time).printf("%F/%10.3g");
       if(flag != '*') {
          s << fixed << setprecision(6)
            << " X=" << setw(14) << x[0]
@@ -204,15 +205,14 @@ namespace Rinex3
             int minute = asInt(strm.buffer.substr(17,2));
             double second = asInt(strm.buffer.substr(20,10));
             CivilTime t;
-            CommonTime tt;
             try {
                t = CivilTime(year, month, dom, hour, minute, second);
-               tt = CommonTime(t);
-            } catch (gpstk::Exception& e) {
+            }
+            catch (gpstk::Exception& e) {
                FFStreamError fe("Invalid time in:" + strm.buffer);
                GPSTK_THROW(fe);
-            }               
-            time = strm.currentEpoch = tt;
+            }          
+            time = strm.currentEpoch = t;
          }
 
          else if(strm.buffer[0] == 'P' || strm.buffer[0] == 'V') {// P|V record
