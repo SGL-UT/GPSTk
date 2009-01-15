@@ -60,6 +60,7 @@ namespace Rinex3
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);
       
       string line;
+      cout << flag << endl;
       if(flag == '*') {// output Epoch Header Record
          line = "* ";
          line += ((CivilTime)time).printf(" %4Y %2m %2d %2H %2M");
@@ -198,6 +199,9 @@ namespace Rinex3
             }
 
             // parse the epoch line
+	    
+            flag = strm.buffer[0];
+		cout << "WE GOT HERE" << flag << endl;
             int year = asInt(strm.buffer.substr(3,4));
             int month = asInt(strm.buffer.substr(8,2));
             int dom = asInt(strm.buffer.substr(11,2));
@@ -218,7 +222,7 @@ namespace Rinex3
          else if(strm.buffer[0] == 'P' || strm.buffer[0] == 'V') {// P|V record
             // if nothing, or epoch record, was processed during this call,
             // process this P|V, otherwise (P|V or EP|V were processed), quit now
-            if(status > 1) break;
+            if(status > 0) break;
             status = 2;                                           // P|V status = 2
 
             flag = strm.buffer[0];     // P or V

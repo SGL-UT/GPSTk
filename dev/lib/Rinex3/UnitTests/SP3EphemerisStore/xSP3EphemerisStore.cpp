@@ -35,7 +35,7 @@ void xSP3EphemerisStore :: RESTest (void)
 
       roffs >> roh;
       out << roh;
-      roh.dump(cout);
+      //roh.dump(cout);
 
       while (roffs >> roe)
       {

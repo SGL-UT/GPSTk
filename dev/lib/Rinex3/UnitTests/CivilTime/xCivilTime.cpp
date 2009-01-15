@@ -51,14 +51,14 @@ void xCivilTime :: setFromInfoTest (void)
 	CommonTime time;
 	time = Check.convertToCommonTime();
 	std::cout << Check.printf("%04Y %02m %02d %02H %02M") << std::endl;
-	std::cout << ((Rinex3::CivilTime)(time)).printf("%04Y %02m %02d %02H %02M")<< std::endl;
+	std::cout << ((Rinex3::CivilTime)time).printf("%04Y %02m %02d %02H %02M")<< std::endl;
 	std::cout << ((Rinex3::YDSTime)(time)).printf("%10Y")<< std::endl;
-	std::cout << ((Rinex3::GPSWeekSecond)(time)).printf("%02w")<< std::endl;
+	std::cout << ((Rinex3::GPSWeekSecond)(time)).printf("%02F")<< std::endl;
 
 	Rinex3::GPSWeekSecond time2;
 	std::cout << time2.printf("%02w") << std::endl;
 	time = time2.convertToCommonTime();
-	std::cout << ((Rinex3::GPSWeekSecond)(time)).printf("%02w")<< std::endl;
+	std::cout << ((Rinex3::GPSWeekSecond)(time)).printf("%02F")<< std::endl;
 }
 
 void xCivilTime :: operatorTest (void)
