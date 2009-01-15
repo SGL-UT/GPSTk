@@ -45,11 +45,11 @@ namespace vplot
     for(unsigned int i=0; i<pointlists.size(); i++)
     {
       vector<pair<double, double> >& series = pointlists[i];
-      vector<pair<double, double> >::iterator i;
-      for (i = series.begin(); i!=series.end(); i++)
+      vector<pair<double, double> >::iterator it;
+      for (it = series.begin(); it!=series.end(); it++)
       {
-        double x = i->first;
-        double y = i->second;
+        double x = it->first;
+        double y = it->second;
         maxX = (x>maxX ? x : maxX); 
         minX = (x<minX ? x : minX); 
         maxY = (y>maxY ? y : maxY); 
