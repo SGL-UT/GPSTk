@@ -3,6 +3,9 @@
 #include "xSP3EphemerisStore.hpp"
 #include "SatID.hpp"
 #include "Exception.hpp"
+#include "SP3Data.hpp"
+#include "SP3Header.hpp"
+#include "SP3Stream.hpp"
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xSP3EphemerisStore);
 
@@ -21,28 +24,25 @@ void xSP3EphemerisStore :: setUp (void)
 
 void xSP3EphemerisStore :: RESTest (void)
 {
-	ofstream DumpData;
-	DumpData.open ("DumpData.txt");
-	
-	CPPUNIT_ASSERT_NO_THROW(Rinex3::SP3EphemerisStore Store);
-	Rinex3::SP3EphemerisStore Store;
-//No idea why this doesn't throw an exception
-/*
-	try
-	{
-	  CPPUNIT_ASSERT_THROW(Store.loadFile("NotAFile"),gpstk::FileMissingException);
-	}
-	catch (gpstk::Exception& e)
-	{
-	  cout << "unexpected exception thrown" << endl;
-	  cout << e << endl;
-	}
-*/
-	CPPUNIT_ASSERT_NO_THROW(Store.loadFile("NGA15081Test.SP3"));
-	Store.loadFile("NGA15081Test.SP3");
-	Store.dump(DumpData,1);
-	DumpData.close();
-	
+      using namespace std;
+      cout << "Reading " << "NGA15081Test.SP3" << endl;
+      Rinex3::SP3Stream roffs("NGA15081Test.SP3");
+      cout << "Writing " << "Output.txt" << endl;
+      Rinex3::SP3Stream out("Output1.txt");
+      //out.exceptions(fstream::failbit);
+      Rinex3::SP3Header roh;
+      Rinex3::SP3Data roe;
+
+      roffs >> roh;
+      out << roh;
+      roh.dump(cout);
+
+      while (roffs >> roe)
+      {
+         out << roe;
+	 roe.dump(cout);
+      }
+
 }
 
 /*
@@ -58,51 +58,6 @@ void xSP3EphemerisStore :: RESTest (void)
 */
 void xSP3EphemerisStore :: getXvtTest (void)
 {
-
-	ofstream fPRN1;
-	ofstream fPRN15;
-	ofstream fPRN32;
-
-	fPRN1.open ("Logs/getXvt1.txt");
-	fPRN15.open ("Logs/getXvt15.txt");
-	fPRN32.open ("Logs/getXvt32.txt");
-	
-	Rinex3::SP3EphemerisStore Store;
-	Store.loadFile("NGA15081Test.SP3");
-	
-	const short PRN0 = 0; // Zero PRN (Border test case)
-	const short PRN1 = 1;
-	const short PRN15 = 15;
-	const short PRN32 = 32;
-	const short PRN33 = 33;  //Top PRN (33) (Border test case);
-        gpstk::SatID sid0(PRN0,gpstk::SatID::systemGPS);
-   	gpstk::SatID sid1(PRN1,gpstk::SatID::systemGPS);
-   	gpstk::SatID sid15(PRN15,gpstk::SatID::systemGPS);
-   	gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
-   	gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
-	
-	gpstk::CivilTime Time(2008,12,1,11,45,0);
-	gpstk::CivilTime bTime(2008,12,1,2,0,0); //Border Time (Time of Border test cases)
-	
-	try
-	{
-		CPPUNIT_ASSERT_NO_THROW(Store.getXvt(sid1,Time));
-
-		fPRN1 << Store.getXvt(sid1,Time) << endl;
-		fPRN15 << Store.getXvt(sid15,Time) << endl;
-		fPRN32 << Store.getXvt(sid32,Time) << endl;
-
-		CPPUNIT_ASSERT_THROW(Store.getXvt(sid0,bTime),gpstk::InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.getXvt(sid33,bTime),gpstk::InvalidRequest);	
-	}
-	catch (gpstk::Exception& e)
-	{
-		//cout << e;
-	}
-
-	//CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt1.txt","Checks/getPrnXvt1.chk"));
-	//CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt15.txt","Checks/getPrnXvt15.chk"));
-	//CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt32.txt","Checks/getPrnXvt32.chk"));
 
 }
 /*
@@ -120,34 +75,7 @@ void xSP3EphemerisStore :: getXvtTest (void)
 
 void xSP3EphemerisStore :: dumpTest (void)
 {
-/*
-	ofstream DumpData0;
-	ofstream DumpData1;
-	ofstream DumpData2;
-	DumpData0.open ("Logs/DumpData0.txt");
-	DumpData1.open ("Logs/DumpData1.txt");
-	DumpData2.open ("Logs/DumpData2.txt");
-		
-	Rinex3::SP3EphemerisStore Store;
-	Store.loadFile("NGA15081Test.SP3");
 
-	try
-	{
-		CPPUNIT_ASSERT_NO_THROW(Store.dump(DumpData0,0));
-		CPPUNIT_ASSERT_NO_THROW(Store.dump(DumpData1,1));
-		//Code outputs to cout but does pass, just dont want to run that every time
-		//CPPUNIT_ASSERT_NO_THROW(Store.dump(2,DumpData2));
-		//Store.dump(2,DumpData2);
-		
-	}
-	catch (gpstk::Exception& e)
-	{
-		//cout << e;
-	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/DumpData0.txt","Checks/DumpData0.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/DumpData1.txt","Checks/DumpData1.chk"));
-	//CPPUNIT_ASSERT(fileEqualTest("Logs/DumpData2.txt","Checks/DumpData2.chk"));
-*/
 }
 
 /*
@@ -162,37 +90,7 @@ void xSP3EphemerisStore :: dumpTest (void)
 
 void xSP3EphemerisStore :: addEphemerisTest (void)
 {
-/*
-	ofstream DumpData;
-	DumpData.open ("Logs/addEphemerisTest.txt");
 
-
-	Rinex3::SP3EphemerisStore Blank;
-	Rinex3::SP3EphemerisStore Store;
-	Store.loadFile("NGA15081Test.SP3");
-	short PRN = 1;
-   	gpstk::SatID sid(PRN,gpstk::SatID::systemGPS);
-	
-	gpstk::DayTime Time(2006,1,31,11,45,0);
-	gpstk::DayTime TimeB(2006,1,31,9,59,44);
-	const gpstk::EngEphemeris& eph = Store.findEphemeris(sid,Time);
-
-	try
-	{
-		CPPUNIT_ASSERT_NO_THROW(Blank.addEphemeris(eph));
-		Blank.addEphemeris(eph);
-		
-		CPPUNIT_ASSERT_EQUAL(TimeB,Blank.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL(TimeB,Blank.getFinalTime());
-		
-		Blank.dump(DumpData,1);
-	}
-	catch (gpstk::Exception& e)
-	{
-		//cout << e;
-	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/addEphemerisTest.txt","Checks/addEphemerisTest.chk"));
-*/
 }
 
 /*
@@ -207,31 +105,7 @@ void xSP3EphemerisStore :: addEphemerisTest (void)
 
 void xSP3EphemerisStore :: editTest (void)
 {
-/*
-	ofstream DumpData;
-	DumpData.open ("Logs/editTest.txt");
 
-	Rinex3::SP3EphemerisStore Store;
-	Store.loadFile("NGA15081Test.SP3");
-	
-	gpstk::DayTime TimeMax(2006,1,31,15,45,0);
-	gpstk::DayTime TimeMin(2006,1,31,3,0,0);
-
-	try
-	{
-		CPPUNIT_ASSERT_NO_THROW(Store.edit(TimeMin, TimeMax));
-		Store.edit(TimeMin, TimeMax);
-		CPPUNIT_ASSERT_EQUAL(TimeMin,Store.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL(TimeMax,Store.getFinalTime());
-		Store.dump(DumpData,1);
-		
-	}
-	catch (gpstk::Exception& e)
-	{
-		//cout << e;
-	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/editTest.txt","Checks/editTest.chk"));
-*/
 }
 
 /*
@@ -246,28 +120,7 @@ void xSP3EphemerisStore :: editTest (void)
 
 void xSP3EphemerisStore :: clearTest (void)
 {
-/*
-	ofstream DumpData;
-	DumpData.open ("Logs/clearTest.txt");
 
-	Rinex3::SP3EphemerisStore Store;
-	Store.loadFile("NGA15081Test.SP3");
-	
-	try
-	{
-		CPPUNIT_ASSERT_NO_THROW(Store.clear());
-		
-		CPPUNIT_ASSERT_EQUAL(gpstk::DayTime::END_OF_TIME,Store.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL(gpstk::DayTime::END_OF_TIME,Store.getFinalTime());
-		Store.dump(DumpData,1);
-		
-	}
-	catch (gpstk::Exception& e)
-	{
-		//cout << e;
-	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/clearTest.txt","Checks/clearTest.chk"));
-*/
 }
 
 void xSP3EphemerisStore :: dumpBadPositionsTest (void)
