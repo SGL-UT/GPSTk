@@ -45,7 +45,7 @@ namespace vplot
 
     Path* current = new Path(0,0);
 
-    Path::iterator i=p->begin(),j=(Path::iterator)0;
+    Path::iterator i=p->begin();
     bool above = i->second > splitter;
 
     if(above && top) current->addPointAbsolute(i->first, i->second);
@@ -62,7 +62,7 @@ namespace vplot
         {
           if(continuous) 
           {
-            j = i;
+            Path::iterator j = i;
             j--;
             tdouble = intersecth(splitter,*i,*j);
             current->addPointAbsolute(tdouble,splitter);
@@ -82,7 +82,7 @@ namespace vplot
         {
           if(continuous) 
           {
-            j = i;
+            Path::iterator j = i;
             j--;
             tdouble = intersecth(splitter,*i,*j);
             current->addPointAbsolute(tdouble,splitter);
