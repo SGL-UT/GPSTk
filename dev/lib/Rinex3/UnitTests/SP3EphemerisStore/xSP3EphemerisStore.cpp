@@ -28,7 +28,7 @@ void xSP3EphemerisStore :: RESTest (void)
       cout << "Reading " << "NGA15081Test.SP3" << endl;
       Rinex3::SP3Stream roffs("NGA15081Test.SP3");
       cout << "Writing " << "Output.txt" << endl;
-      Rinex3::SP3Stream out("Output1.txt");
+      Rinex3::SP3Stream out("Output1.txt",ios::out);
       //out.exceptions(fstream::failbit);
       Rinex3::SP3Header roh;
       Rinex3::SP3Data roe;
@@ -42,6 +42,7 @@ void xSP3EphemerisStore :: RESTest (void)
          out << roe;
 	 roe.dump(cout);
       }
+      CPPUNIT_ASSERT(fileEqualTest("NGA15081Test.SP3","Output1.txt"));
 
 }
 
