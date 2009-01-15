@@ -64,7 +64,7 @@ namespace Rinex3
       throw(InvalidRequest)
    {
          /// This is the earliest CommonTime representable by GPSWeekZcount.
-      static const CommonTime MIN_CT = GPSWeekZcount();
+      static const CommonTime MIN_CT = GPSWeekZcount(0,0,Any);
 
       if (ct < MIN_CT)
       {

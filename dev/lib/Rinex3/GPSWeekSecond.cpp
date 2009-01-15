@@ -64,7 +64,7 @@ namespace Rinex3
       throw(InvalidRequest)
    {
          /// This is the earliest CommonTime convertible to GPSWeekSecond.
-      static const CommonTime MIN_CT = GPSWeekSecond(0,0.,gpstk::Any);
+      static const CommonTime MIN_CT = GPSWeekSecond(0,0.,Any);
 
       if (ct < MIN_CT)
       {
