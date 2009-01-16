@@ -30,6 +30,7 @@
 #ifndef GPSTK_MATRIX_OPERATORS_HPP
 #define GPSTK_MATRIX_OPERATORS_HPP
 
+#include <limits>
 #include "MiscMath.hpp"
 #include "MatrixFunctors.hpp"
 
@@ -333,10 +334,12 @@ namespace gpstk
    {
       SVD<T> svd;
       svd(m);
-      // SVD will sort singular values in descending order
+      // SVD will not always sort singular values in descending order
+      svd.sort(true);
       big = svd.S(0);
       small = svd.S(svd.S.size()-1);
-      if(fabs(small) <= T(1.e-15)) return T(0);// TD replace with ~ machine precision
+      if(small <= std::numeric_limits<T>::epsilon())
+         return T(0);
       return big/small;
    }
 
@@ -510,7 +513,8 @@ namespace gpstk
       Matrix<T> inv(m);
       SVD<T> svd;
       svd(m);
-      // svd will sort the singular values in descending order
+      // SVD will not always sort singular values in descending order
+      svd.sort(true);
       if(svd.S(0) == T(0)) {
          MatrixException e("Input is the zero matrix");
          GPSTK_THROW(e);
