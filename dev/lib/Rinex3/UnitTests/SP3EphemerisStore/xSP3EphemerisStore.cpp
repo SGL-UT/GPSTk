@@ -27,7 +27,7 @@ void xSP3EphemerisStore :: RESTest (void)
       using namespace std;
       cout << "Reading " << "NGA15081Test.SP3" << endl;
       Rinex3::SP3Stream roffs("NGA15081Test.SP3");
-      cout << "Writing " << "Output.txt" << endl;
+      cout << "Writing " << "Output1.txt" << endl;
       Rinex3::SP3Stream out("Output1.txt",ios::out);
       //out.exceptions(fstream::failbit);
       Rinex3::SP3Header roh;
@@ -40,10 +40,8 @@ void xSP3EphemerisStore :: RESTest (void)
       while (roffs >> roe)
       {
          out << roe;
-	 roe.dump(cout);
+	 //roe.dump(cout);
       }
-      CPPUNIT_ASSERT(fileEqualTest("NGA15081Test.SP3","Output1.txt"));
-
 }
 
 /*
@@ -59,7 +57,24 @@ void xSP3EphemerisStore :: RESTest (void)
 */
 void xSP3EphemerisStore :: getXvtTest (void)
 {
+      using namespace std;
+      cout << "Reading " << "Output1.txt" << endl;
+      Rinex3::SP3Stream roffs("Output1.txt");
+      cout << "Writing " << "Output2.txt" << endl;
+      Rinex3::SP3Stream out("Output2.txt",ios::out);
+      out.exceptions(fstream::failbit);
+      Rinex3::SP3Header roh;
+      Rinex3::SP3Data roe;
 
+      roffs >> roh;
+      out << roh;
+      //roh.dump(cout);
+
+      while (roffs >> roe)
+      {
+         out << roe;
+	 //roe.dump(cout);
+      }
 }
 /*
 **** Test to assure the quality of SP3EphemerisStore class member dump()

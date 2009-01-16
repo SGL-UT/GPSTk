@@ -58,7 +58,6 @@ namespace Rinex3
       throw(std::exception, FFStreamError, StringException)
    {
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);
-      
       string line;
       if(flag == '*') {// output Epoch Header Record
          line = "* ";
@@ -113,6 +112,8 @@ namespace Rinex3
 
       // write the line
       strm << line << endl;
+      if(eof)
+         strm << "EOF";
    }
 
    void SP3Data::dump(ostream& s) const 
@@ -160,6 +161,7 @@ namespace Rinex3
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);
 
       correlationFlag = false;
+      eof = false;
       int status = 0;                                          // initial status = 0
       while(1) {
          // set the time in the record
@@ -176,14 +178,15 @@ namespace Rinex3
             // if a data record has been processed during this call, then
             // return and let the next call process this EOF.
             //if(status == 1) throw - found EOF right after an epoch record
+            eof = true;
             if(status > 1) break;
 
             // this next read had better fail - if it does, an exception will
             // be thrown, and the FFStreamError created next won't get thrown
-            strm.formattedGetLine(strm.buffer, true);
+            //strm.formattedGetLine(strm.buffer, true);
          
-            FFStreamError err("EOF text found but file didn't end");
-            GPSTK_THROW(err);
+            //FFStreamError err("EOF text found but file didn't end");
+            //GPSTK_THROW(err);
          }
 
          else if(strm.buffer[0] == '*') {                         // Epoch record
