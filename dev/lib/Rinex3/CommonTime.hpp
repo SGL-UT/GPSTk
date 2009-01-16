@@ -64,17 +64,6 @@ namespace gpstk
           */
          //@{
 
-         /// time-of-day is stored as long (seconds-of-day)*FACTOR
-         /// plus double (remaining seconds)/FACTOR
-      static const long FACTOR;
-
-         /// Seconds per half a GPS week.
-      static const long HALFWEEK;
-         /// Seconds per whole GPS week.
-      static const long FULLWEEK;
-
-         /// 'Julian day' of GPS epoch (Jan. 1, 1980).
-      static const long GPS_EPOCH_JDAY;
          /// 'julian day' of earliest epoch expressible by CommonTime:
          /// 1/1/4713 B.C.
       static const long BEGIN_LIMIT_JDAY;
@@ -87,8 +76,6 @@ namespace gpstk
          /// latest representable CommonTime
       static const CommonTime END_OF_TIME;
 
-         /// Seconds per day.
-      static const long SEC_DAY;
          /// Default tolerance for time equality in days.
       static const double eps;
          //@}
@@ -203,18 +190,6 @@ namespace gpstk
       { m_timeSystem = timeSystem; }
 
          /**
-          * Set the object's time using GPS time.
-          * @param fullweek Full (i.e. >10bits) GPS week number.
-          * @param sow Seconds of week.
-          * @param ts Time system (see #TimeSystem)
-          * @return a reference to this object.
-          */
-      CommonTime& setGPSfullweek(short fullweek,
-                                 double sow,
-                                 TimeSystem ts = GPS)
-         throw( gpstk::InvalidParameter );
-
-         /**
           * Get method.  Obtain values in days, second of day and fractional
           * second of day, plus the time frame.
           */
@@ -283,33 +258,6 @@ namespace gpstk
 
          /// Obtain the seconds of day (ignoring the day).
       double getSecondOfDay() const
-         throw();
-
-         /// Get seconds of week.
-      double GPSsecond() const
-         throw() 
-      { return GPSsow(); }
-
-         /// Get GPS second of week.
-      double GPSsow() const
-         throw();
-
-         /// Get day of week.
-      short GPSday() const
-         throw() 
-      { return dayOfWeek(); }
-
-         /// Get day of week
-      short dayOfWeek() const
-         throw();
-
-         /// Get seconds of day.
-      double secOfDay() const
-         throw() 
-      { return (double(m_msod) + m_fsod) / FACTOR ; }
-
-         /// Get full (>10 bits) week 
-      short GPSfullweek() const
          throw();
 
          /// Obtain time system info (enum).

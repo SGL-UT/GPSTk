@@ -31,22 +31,11 @@
 
 namespace gpstk
 {
-      // mSod is sod*FACTOR and mSec is seconds*FACTOR
-      // NB FACTOR must be <, and a factor of, 1,000,000
-   const long CommonTime::FACTOR = 1000L;
-
-      // Seconds per half a GPS week.
-   const long CommonTime::HALFWEEK = 302400L;
-      // Seconds per whole GPS week.
-   const long CommonTime::FULLWEEK = 604800L;
-
       // 'julian day' of earliest epoch expressible by CommonTime; 1/1/4713 B.C.
    const long CommonTime::BEGIN_LIMIT_JDAY = 0L;
       // 'julian day' of latest 'julian day' expressible by CommonTime,
       // 1/1/4713 A.D.
    const long CommonTime::END_LIMIT_JDAY = 3442448L;
-      // 'Julian day' of GPS epoch (Jan. 1, 1980).
-   const long CommonTime::GPS_EPOCH_JDAY = 2444245L;
 
       // earliest representable CommonTime
    const CommonTime
@@ -54,9 +43,6 @@ namespace gpstk
       // latest representable CommonTime
    const CommonTime
    CommonTime::END_OF_TIME( CommonTime::END_LIMIT_JDAY, 0, 0.0, Any ) ;
-
-      // Seconds per day.
-   const long CommonTime::SEC_DAY = 86400L;
 
    //@{
    /// Default tolerance for time equality, applied to milliseconds.
@@ -182,35 +168,6 @@ namespace gpstk
       return *this;
    }
 
-      // Set the object's time using GPS time.
-      // @param fullweek Full (i.e. >10bits) GPS week number.
-      // @param sow Seconds of week.
-      // @param ts Time system (see #TimeSystem).
-      // @return a reference to this object.
-   CommonTime& CommonTime::setGPSfullweek(short fullweek,
-                                          double sow, 
-                                          TimeSystem ts)
-      throw( gpstk::InvalidParameter )
-   {
-      if(fullweek < 0 || 
-         sow < 0.0 || 
-         sow >= double(FULLWEEK))
-      {
-         using gpstk::StringUtils::asString ;
-         Exception e("Invalid week/seconds-of-week: " 
-                     + asString<short>(fullweek)+ "/" 
-                     + asString(sow));
-         GPSTK_THROW(e);
-      }
-      m_day = GPS_EPOCH_JDAY + 7 * long(fullweek) + long(sow / SEC_DAY);
-      double sod = sow - SEC_DAY * long(sow / SEC_DAY);
-      m_msod = long(FACTOR * sod);
-      m_fsod = FACTOR * sod - double(m_msod);
-//      realignInternals();
-      m_timeSystem = ts;
-      return *this;
-   }
-
    void CommonTime::get( long& day,
                          long& sod,
                          double& fsod,
@@ -288,27 +245,6 @@ namespace gpstk
       double sod;
       get( day, sod );
       return sod;
-   }
-
-      // Get day of week
-   short CommonTime::dayOfWeek() const 
-      throw()
-   {
-      return (((m_day % 7) + 1) % 7) ;
-   }
-
-      // Get seconds of week.
-   double CommonTime::GPSsow() const
-      throw()
-   {
-      return double(GPSday() * SEC_DAY) + secOfDay() ;
-   }
-
-      // Get full (>10 bits) week 
-   short CommonTime::GPSfullweek() const
-      throw()
-   {
-      return short(double(m_day - GPS_EPOCH_JDAY) / 7) ;
    }
 
    TimeSystem CommonTime::getTimeSystem() const

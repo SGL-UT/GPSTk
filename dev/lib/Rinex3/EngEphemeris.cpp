@@ -45,6 +45,7 @@
 #include "icd_200_constants.hpp"
 #include "GPSGeoid.hpp"
 #include "EngEphemeris.hpp"
+#include "GPSWeekSecond.hpp"
 
 #include <cmath>
 
@@ -612,7 +613,7 @@ namespace Rinex3
        throw(InvalidRequest)
     {
        CommonTime toReturn(0.);
-       toReturn.setGPSfullweek(getFullWeek(), (double)getTot());
+       toReturn = GPSWeekSecond(getFullWeek(), (double)getTot());
        return toReturn;
     }
 
@@ -620,12 +621,12 @@ namespace Rinex3
       throw(InvalidRequest)
    {
       CommonTime toReturn(0.);
-      if ( (getToc() - getHOWTime(1)) < -CommonTime::HALFWEEK)
-         toReturn.setGPSfullweek(getFullWeek() + 1, getToc());
-      else if ( (getToc() - getHOWTime(1)) > CommonTime::HALFWEEK)
-         toReturn.setGPSfullweek(getFullWeek() - 1, getToc());
+      if ( (getToc() - getHOWTime(1)) < -HALFWEEK)
+         toReturn = GPSWeekSecond(getFullWeek() + 1, getToc());
+      else if ( (getToc() - getHOWTime(1)) > HALFWEEK)
+         toReturn = GPSWeekSecond(getFullWeek() - 1, getToc());
       else
-         toReturn.setGPSfullweek(getFullWeek(), getToc());
+         toReturn = GPSWeekSecond(getFullWeek(), getToc());
       return toReturn;
    }
 
@@ -633,12 +634,12 @@ namespace Rinex3
       throw(InvalidRequest)
    {
       CommonTime toReturn(0.);
-      if ( (getToe() - getHOWTime(1)) < -CommonTime::HALFWEEK)
-         toReturn.setGPSfullweek(getFullWeek() + 1, getToe());
-      else if ( (getToe() - getHOWTime(1)) > CommonTime::HALFWEEK)
-         toReturn.setGPSfullweek(getFullWeek() - 1, getToe());
+      if ( (getToe() - getHOWTime(1)) < -HALFWEEK)
+         toReturn = GPSWeekSecond(getFullWeek() + 1, getToe());
+      else if ( (getToe() - getHOWTime(1)) > HALFWEEK)
+         toReturn = GPSWeekSecond(getFullWeek() - 1, getToe());
       else
-         toReturn.setGPSfullweek(getFullWeek(), getToe());
+         toReturn = GPSWeekSecond(getFullWeek(), getToe());
       return toReturn;
    }
 
@@ -1154,15 +1155,15 @@ namespace Rinex3
       return *this;
    }
    
-   static void timeDisplay( ostream & os, const gpstk::CommonTime& t)
+   static void timeDisplay( ostream & os, const gpstk::CommonTime& t )
    {
          // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
-      os << setw(4) << t.GPSfullweek();
-//      os << setw(4) << t.GPSfullweek() << "(";
+      os << setw(4) << GPSWeekSecond(t).week;
+//      os << setw(4) << GPSWeekSecond(t).week << "(";
 //      os << setw(4) << t.GPS10bitweek() << ")  ";
-      os << setw(6) << setfill(' ') << t.GPSsecond() << "   ";
+      os << setw(6) << setfill(' ') << GPSWeekSecond(t).sow << "   ";
 
-      switch (t.GPSday())
+      switch (GPSWeekSecond(t).getDayOfWeek())
       {
          case 0: os << "Sun-0"; break;
          case 1: os << "Mon-1"; break;
@@ -1184,8 +1185,8 @@ namespace Rinex3
       short SOH;
       
       SOW = static_cast<long>( HOW );
-      DOW = static_cast<short>( SOW / CommonTime::SEC_DAY );
-      SOD = SOW - static_cast<long>( DOW * CommonTime::SEC_DAY );
+      DOW = static_cast<short>( SOW / SEC_PER_DAY );
+      SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
       hour = static_cast<short>( SOD/3600 );
 
       SOH = static_cast<short>( SOD - (hour*3600) );
