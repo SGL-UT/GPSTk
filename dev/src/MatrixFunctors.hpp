@@ -96,7 +96,7 @@ namespace gpstk
             }
 
             size_t n(U.cols()), m(U.rows());
-            size_t i, j, k, l, nm, jj, kk;
+            size_t i, j, k, l, nm, jj;
             T anorm(0), scale(0), g(0), s, f, h, c, x, y, z;
 
             V = Matrix<T>(n, n, T(0));
@@ -294,7 +294,7 @@ namespace gpstk
             if(U.cols() > U.rows()) {
                for(i=1; i<S.size(); i++) {   // sort in descending order
                   T sv=S[i],svj;
-                  kk = i-1;
+                  int kk = i-1;  // not size_t ~ unsigned
                   while(kk >= 0) {
                      svj = S[kk];
                      if(sv < svj) break;
