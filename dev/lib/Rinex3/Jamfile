@@ -1,183 +1,33 @@
 SubDir TOP lib Rinex3 ;
 
-TEST = 1 ;
-
-if $(TEST) = 1 
+if $(PREPROCESSING)
 {
-	if $(PREPROCESSING)
-	{
-	   GPSSetupLibrary Rinex3 : gpstk ;
-	}
-	else
-	{
-	  # Please add in alphabetic order
-	  GPSBuildLibrary Rinex3 : 
-	  ANSITime.cpp
-          CivilTime.cpp
-          CommonTime.cpp
-          EngEphemeris.cpp
-          GPSEphemerisStore.cpp
-          GPSWeek.cpp
-          GPSWeekSecond.cpp
-          GPSWeekZcount.cpp
-          JulianDate.cpp
-          MJD.cpp
-          SP3Data.cpp
-          SP3EphemerisStore.cpp
-          SP3Header.cpp
-          TabularEphemerisStore.cpp
-          TimeTag.cpp
-          UnixTime.cpp
-          YDSTime.cpp
-          ../../src/SP3SatID.cpp ../../src/Triple.cpp ../../src/ECEF.cpp
-          ../../src/Geodetic.cpp ../../src/TimeConverters.cpp
-	    ;
-
-	  InstallFile $(INCDIR) : 
-	  CommonTime.cpp  GPSEphemerisStore.hpp  KeplerianEphemerisStore.hpp  SP3EphemerisStore.hpp  TabularEphemerisStore.hpp
-	    ;
-	}
+   GPSSetupLibrary Rinex3 : gpstk ;
 }
 else
 {
-	BonkForte ;
-
-	if $(NEED_GETOPT)
-	{
-	   GETOPT_SOURCE = ../../src/getopt.c ../../src/getopt1.c ;
-	   GETOPT_INC    = ../../src/getopt.h ;
-	}
-
-	if $(PREPROCESSING)
-	{
-
-	   GPSSetupLibrary gpstk ;
-	}
-	else
-	{
-	# Please add in alphabetical order
-	   GPSBuildLibrary gpstkRinex3 :
-	     #../../src/ANSITime.cpp
-	      ../../src/AlmOrbit.cpp ../../src/AstronomicalFunctions.cpp
-	      ../../src/Bancroft.cpp ../../src/BasicFramework.cpp ../../src/BinUtils.cpp
-	      ../../src/BinexData.cpp ../../src/BLQDataReader.cpp ../../src/Chi2Distribution.cpp
-	     #../../src/CivilTime.cpp
-	      ../../src/CodeBuffer.cpp ../../src/CommandOption.cpp ../../src/CommandOptionParser.cpp
-	      ../../src/CommandOptionWithCommonTimeArg.cpp ../../src/CommandOptionWithPositionArg.cpp
-	      ../../src/CommandOptionWithTimeArg.cpp ../../src/ConfDataReader.cpp ../../src/DOP.cpp
-	      ../../src/DayTime.cpp ../../src/ECEF.cpp ../../src/EngAlmanac.cpp
-	      ../../src/EngEphemeris.cpp ../../src/EngNav.cpp ../../src/ENUUtil.cpp ../../src/EphemerisRange.cpp
-	      ../../src/Epoch.cpp ../../src/Exception.cpp ../../src/Expression.cpp ../../src/FFData.cpp
-	      ../../src/FFStream.cpp ../../src/FICData.cpp ../../src/FICData109.cpp ../../src/FICData162.cpp
-	      ../../src/FICData62.cpp ../../src/FICData9.cpp ../../src/FICHeader.cpp ../../src/FileHunter.cpp
-	      ../../src/FileSpec.cpp ../../src/GPSAlmanacStore.cpp 
-             #../../src/GPSEphemerisStore.cpp
-	     #../../src/GPSWeek.cpp ../../src/GPSWeekSecond.cpp ../../src/GPSWeekZcount.cpp ../../src/GPSZcount.cpp
-	      ../../src/GaussianDistribution.cpp ../../src/GenXSequence.cpp ../../src/Geodetic.cpp 
-	      ../../src/IonexData.cpp ../../src/IonexHeader.cpp ../../src/IonexStore.cpp
-	      ../../src/IonoModel.cpp ../../src/IonoModelStore.cpp
-	     #../../src/JulianDate.cpp
-	      ../../src/LinearClockModel.cpp
-	      ../../src/LoopedFramework.cpp
-	     #../../src/MJD.cpp
-	      ../../src/MOPSWeight.cpp ../../src/MSCData.cpp ../../src/MSCStore.cpp
-	      ../../src/MoonPosition.cpp ../../src/NEDUtil.cpp ../../src/ObsClockModel.cpp ../../src/ObsEpochMap.cpp
-	      ../../src/ObsID.cpp ../../src/ObsRngDev.cpp ../../src/OceanLoading.cpp ../../src/PRSolution.cpp
-	      ../../src/PoleTides.cpp ../../src/Position.cpp ../../src/PowerSum.cpp
-	      ../../src/RACRotation.cpp ../../src/RinexEphemerisStore.cpp ../../src/RinexMetData.cpp
-	      ../../src/RinexMetHeader.cpp ../../src/RinexNavData.cpp ../../src/RinexNavHeader.cpp
-	      ../../src/RinexObsData.cpp ../../src/RinexObsHeader.cpp ../../src/RinexObsID.cpp
-	      ../../src/RinexSatID.cpp ../../src/RinexUtilities.cpp ../../src/RungeKutta4.cpp
-	      ../../src/SEMAlmanacStore.cpp ../../src/SEMData.cpp ../../src/SEMHeader.cpp
-	      ../../src/SMODFData.cpp ../../src/SP3Data.cpp 
-             #../../src/SP3EphemerisStore.cpp
-	      ../../src/SP3Header.cpp ../../src/SP3SatID.cpp ../../src/SVExclusionList.cpp
-	      ../../src/SVNumXRef.cpp ../../src/SVPCodeGen.cpp ../../src/SatDataReader.cpp
-	      ../../src/SimpleIURAWeight.cpp ../../src/SimpleKalmanFilter.cpp ../../src/SolidTides.cpp
-	      ../../src/SourceID.cpp ../../src/SpecialFunctions.cpp ../../src/StudentDistribution.cpp
-	      ../../src/SunPosition.cpp
-              ../../src/SystemTime.cpp
-	     #../../src/TabularEphemerisStore.cpp 
-              ../../src/TimeConverters.cpp ../../src/TimeString.cpp
-	     #../../src/TimeTag.cpp
-	      ../../src/Triple.cpp ../../src/TropModel.cpp ../../src/TypeID.cpp
-	     #../../src/UnixTime.cpp
-	      ../../src/VectorBase.cpp ../../src/WxObsMap.cpp ../../src/X1Sequence.cpp ../../src/X2Sequence.cpp
-	      ../../src/Xvt.cpp
-	     #../../src/YDSTime.cpp
-	      ../../src/YumaAlmanacStore.cpp ../../src/YumaData.cpp
-              GPSEphemerisStore.cpp  SP3EphemerisStore.cpp  TabularEphemerisStore.cpp
-	      $(GETOPT_SOURCE)
-	      ;
-
-           ObjectHdrs gpstkRinex3 : ../../src ;
-	   
-           InstallFile $(INCDIR) :
-	# please add in alphabetical order
-	      ../../src/AllanDeviation.hpp ../../src/ANSITime.hpp ../../src/AlmOrbit.hpp ../../src/AstronomicalFunctions.hpp
-	      ../../src/BaseDistribution.hpp ../../src/Bancroft.hpp ../../src/BasicFramework.hpp ../../src/BinUtils.hpp
-	      ../../src/BinexData.hpp ../../src/BinexFilterOperators.hpp ../../src/BinexStream.hpp ../../src/BivarStats.hpp
-	      ../../src/BLQDataReader.hpp ../../src/CheckPRData.hpp ../../src/Chi2Distribution.hpp ../../src/CivilTime.hpp
-	      ../../src/ClockModel.hpp ../../src/CodeBuffer.hpp ../../src/CommandOption.hpp ../../src/CommandOptionParser.hpp
-	      ../../src/CommandOptionWithCommonTimeArg.hpp ../../src/CommandOptionWithPositionArg.hpp
-	      ../../src/CommandOptionWithTimeArg.hpp ../../src/ConfDataReader.hpp ../../src/DOP.hpp
-	      ../../src/DayTime.hpp ../../src/ECEF.hpp ../../src/EngAlmanac.hpp ../../src/EngEphemeris.hpp ../../src/EngNav.hpp
-	      ../../src/ENUUtil.hpp ../../src/EphemerisRange.hpp ../../src/Epoch.hpp
-	      ../../src/EpochClockModel.hpp ../../src/Exception.hpp ../../src/Expression.hpp
-	      ../../src/ExtractC1.hpp ../../src/ExtractCombinationData.hpp ../../src/ExtractD1.hpp
-	      ../../src/ExtractD2.hpp ../../src/ExtractData.hpp ../../src/ExtractL1.hpp ../../src/ExtractL2.hpp
-	      ../../src/ExtractLC.hpp ../../src/ExtractP1.hpp ../../src/ExtractP2.hpp ../../src/ExtractPC.hpp
-	      ../../src/FFBinaryStream.hpp ../../src/FFData.hpp ../../src/FFStream.hpp ../../src/FFStreamError.hpp
-	      ../../src/FFTextStream.hpp ../../src/FICAStream.hpp ../../src/FICBase.hpp ../../src/FICData.hpp
-	      ../../src/FICData109.hpp ../../src/FICData162.hpp ../../src/FICData62.hpp ../../src/FICData9.hpp
-	      ../../src/FICFilterOperators.hpp ../../src/FICHeader.hpp ../../src/FICStream.hpp
-	      ../../src/FICStreamBase.hpp ../../src/FileFilter.hpp ../../src/FileFilterFrame.hpp
-	      ../../src/FileFilterFrameWithHeader.hpp ../../src/FileHunter.hpp ../../src/FileSpec.hpp
-	      ../../src/FileStore.hpp ../../src/FileUtils.hpp ../../src/GPSAlmanacStore.hpp
-	      #../../src/GPSEphemerisStore.hpp 
-              ../../src/GPSGeoid.hpp ../../src/GPSWeek.hpp ../../src/GPSWeekSecond.hpp
-	      ../../src/GPSWeekZcount.hpp ../../src/GPSZcount.hpp ../../src/GaussianDistribution.hpp
-	      ../../src/GenXSequence.hpp ../../src/Geodetic.hpp ../../src/GeoidModel.hpp ../../src/InOutFramework.hpp
-	      ../../src/IonexBase.hpp ../../src/IonexData.hpp ../../src/IonexHeader.hpp ../../src/IonexStore.hpp ../../src/IonexStream.hpp
-	      ../../src/IonoModel.hpp ../../src/IonoModelStore.hpp ../../src/JulianDate.hpp ../../src/LinearClockModel.hpp
-	      ../../src/LoopedFramework.hpp ../../src/MJD.hpp ../../src/MOPSWeight.hpp ../../src/MSCBase.hpp ../../src/MSCData.hpp
-	      ../../src/MSCHeader.hpp ../../src/MSCStore.hpp ../../src/MSCStream.hpp ../../src/MathBase.hpp ../../src/Matrix.hpp
-	      ../../src/MatrixBase.hpp ../../src/MatrixBaseOperators.hpp ../../src/MatrixFunctors.hpp
-	      ../../src/MatrixImplementation.hpp ../../src/MatrixOperators.hpp ../../src/MiscMath.hpp
-	      ../../src/ModeledPseudorangeBase.hpp ../../src/MoonPosition.hpp ../../src/NEDUtil.hpp ../../src/ORDEpoch.hpp
-	      ../../src/ObsClockModel.hpp ../../src/ObsEpochMap.hpp ../../src/ObsID.hpp ../../src/ObsRngDev.hpp
-	      ../../src/OceanLoading.hpp ../../src/PCodeConst.hpp ../../src/PRSolution.hpp ../../src/PoleTides.hpp
-	      ../../src/PolyFit.hpp ../../src/Position.hpp ../../src/PowerSum.hpp ../../src/RACRotation.hpp
-	      ../../src/RTFileFrame.hpp ../../src/RinexEphemerisStore.hpp ../../src/RinexMetBase.hpp
-	      ../../src/RinexMetData.hpp ../../src/RinexMetFilterOperators.hpp ../../src/RinexMetHeader.hpp
-	      ../../src/RinexMetStream.hpp ../../src/RinexNavBase.hpp ../../src/RinexNavData.hpp
-	      ../../src/RinexNavFilterOperators.hpp ../../src/RinexNavHeader.hpp ../../src/RinexNavStream.hpp
-	      ../../src/RinexObsBase.hpp ../../src/RinexObsData.hpp ../../src/RinexObsFilterOperators.hpp
-	      ../../src/RinexObsHeader.hpp ../../src/RinexObsID.hpp ../../src/RinexObsStream.hpp
-	      ../../src/RinexSatID.hpp ../../src/RinexUtilities.hpp ../../src/RungeKutta4.hpp
-	      ../../src/SEMAlmanacStore.hpp ../../src/SEMBase.hpp ../../src/SEMData.hpp ../../src/SEMHeader.hpp
-	      ../../src/SEMStream.hpp ../../src/SMODFData.hpp ../../src/SMODFStream.hpp ../../src/SP3Base.hpp
-	      ../../src/SP3Data.hpp 
-              #../../src/SP3EphemerisStore.hpp 
-              ../../src/SP3Header.hpp ../../src/SP3SatID.hpp
-	      ../../src/SP3Stream.hpp ../../src/SVExclusionList.hpp ../../src/SVNumXRef.hpp ../../src/SVPCodeGen.hpp
-	      ../../src/SatDataReader.hpp ../../src/SatID.hpp ../../src/SimpleIURAWeight.hpp
-	      ../../src/SimpleKalmanFilter.hpp ../../src/SolidTides.hpp ../../src/SolverBase.hpp
-	      ../../src/SourceID.hpp ../../src/SpecialFunctions.hpp ../../src/Stats.hpp ../../src/StringUtils.hpp
-	      ../../src/StudentDistribution.hpp ../../src/SunPosition.hpp ../../src/SystemTime.hpp
-	      #../../src/TabularEphemerisStore.hpp 
-              ../../src/TimeConstants.hpp ../../src/TimeConverters.hpp
-	      ../../src/TimeNamedFileStream.hpp ../../src/TimeString.hpp ../../src/TimeTag.hpp ../../src/Triple.hpp
-	      ../../src/TropModel.hpp ../../src/TypeID.hpp ../../src/UnixTime.hpp ../../src/ValidType.hpp ../../src/Vector.hpp
-	      ../../src/VectorBase.hpp ../../src/VectorBaseOperators.hpp ../../src/VectorOperators.hpp
-	      ../../src/WGS84Geoid.hpp ../../src/WeightBase.hpp ../../src/WxObsMap.hpp ../../src/X1Sequence.hpp
-	      ../../src/X2Sequence.hpp ../../src/Xvt.hpp ../../src/XvtStore.hpp ../../src/YDSTime.hpp
-	      ../../src/YumaAlmanacStore.hpp ../../src/YumaBase.hpp ../../src/YumaData.hpp ../../src/YumaHeader.hpp
-	      ../../src/YumaStream.hpp ../../src/convhelp.hpp ../../src/geometry.hpp
-	      ../../src/gps_constants.hpp ../../src/gpstkplatform.h ../../src/icd_200_constants.hpp
-	      ../../src/mergePCodeWords.h ../../src/stl_helpers.hpp
-	      GPSEphemerisStore.hpp  KeplerianEphemerisStore.hpp  SP3EphemerisStore.hpp  TabularEphemerisStore.hpp
-	      $(GETOPT_INC)
-	      ;
-	}
+   # Please add in alphabetic order
+   GPSBuildLibrary Rinex3 : 
+   ANSITime.cpp
+   CivilTime.cpp
+   CommonTime.cpp
+   EngEphemeris.cpp
+   GPSEphemerisStore.cpp
+   GPSWeek.cpp
+   GPSWeekSecond.cpp
+   GPSWeekZcount.cpp
+   JulianDate.cpp
+   MJD.cpp
+   SP3Data.cpp
+   SP3EphemerisStore.cpp
+   SP3Header.cpp
+   TabularEphemerisStore.cpp
+   TimeTag.cpp
+   UnixTime.cpp
+   YDSTime.cpp
+   ../../src/SP3SatID.cpp ../../src/Triple.cpp ../../src/ECEF.cpp
+   ../../src/Geodetic.cpp ../../src/TimeConverters.cpp
+   ;
+   InstallFile $(INCDIR) :
+   ;
 }
