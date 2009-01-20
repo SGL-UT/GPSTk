@@ -30,6 +30,7 @@
 
 #include<string>
 #include<list>
+#include<cstdlib>
 
 namespace vdraw
 {
