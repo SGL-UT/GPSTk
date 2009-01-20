@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -263,8 +263,13 @@ namespace gpstk
       static SourceID someSources;
 
 
-         /// SatID object representing all satellites:
+         /// SatID object representing no satellites:
          /// system(systemUnknown), id(-1).
+      static SatID noSats;
+
+
+         /// SatID object representing all satellites:
+         /// system(systemMixed), id(-1).
       static SatID allSats;
 
 
@@ -344,6 +349,23 @@ namespace gpstk
 
          /// Default stochastic model to be assigned to variables.
       static WhiteNoiseModel defaultModel;
+
+
+         /** Initializing function
+          *
+          * @param type        TypeID of variable.
+          * @param pModel      Pointer to StochasticModel associated with
+          *                    this variable. By default, it is a white
+          *                    noise model.
+          * @param source      Data source this variable belongs to.
+          * @param satellite   Satellite this variable belongs to.
+          * @param variance    Initial variance assigned to this variable.
+          */
+      void Init( const TypeID& type,
+                 StochasticModel* pModel = &Variable::defaultModel,
+                 const SourceID& source  = allSources,
+                 const SatID& satellite  = noSats,
+                 double variance = 4.0e14 );
 
 
    }; // End of class 'Variable'

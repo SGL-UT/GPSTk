@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -45,9 +45,14 @@ namespace gpstk
    SourceID Variable::someSources(SourceID::Mixed, "");
 
 
-      // SatID object representing all satellites:
+      // SatID object representing no satellites:
       // system(systemUnknown), id(-1).
-   SatID Variable::allSats( -1, SatID::systemUnknown );
+   SatID Variable::noSats( -1, SatID::systemUnknown );
+
+
+      // SatID object representing all satellites:
+      // system(systemMixed), id(-1).
+   SatID Variable::allSats( -1, SatID::systemMixed );
 
 
       // SatID object representing all satellites of GPS System:
@@ -74,22 +79,9 @@ namespace gpstk
    {
 
       TypeID type;   // Unknown/undefined variable type
-      varType = type;
 
-      pVarModel = &defaultModel;
-
-      isSourceIndexed = true;
-
-      isSatIndexed = false;
-
-         // By default, the source associated to this variable is unspecific
-      varSource = allSources;
-
-         // By default, the satellite associated to this variable is unspecific
-      varSat = allSats;
-
-         // Be default, set a very high initialVariance: (20000 km)**2
-      initialVariance = 4.0e14;
+         // Call Init method
+      Init( type );
 
    }  // End of 'Variable::Variable()'
 
@@ -115,28 +107,16 @@ namespace gpstk
                        double variance )
    {
 
-      varType = type;
+         // Call Init method
+      Init( type,
+            pModel,
+            allSources,
+            noSats,
+            variance );
 
-      if(pModel == NULL)
-      {
-         pVarModel = &defaultModel;
-      }
-      else
-      {
-         pVarModel = pModel;
-      }
-
+         // This couple lines override settings by Init.
       isSourceIndexed = sourceIndexed;
-
       isSatIndexed = satIndexed;
-
-         // By default, the source associated to this variable is unspecific
-      varSource = allSources;
-
-         // By default, the satellite associated to this variable is unspecific
-      varSat = allSats;
-
-      initialVariance = variance;
 
    }  // End of 'Variable::Variable()'
 
@@ -160,38 +140,12 @@ namespace gpstk
                        double variance )
    {
 
-      varType = type;
-
-      pVarModel = pModel;
-
-         // Check if the source is unspecific
-      if( (source == allSources) || (source == someSources) )
-      {
-         isSourceIndexed = true;
-      }
-      else
-      {
-         isSourceIndexed = false;
-      }
-
-
-         // Check if the satellite is unspecific
-      if( satellite == allSats )
-      {
-         isSatIndexed = true;
-      }
-      else
-      {
-         isSatIndexed = false;
-      }
-
-         // Set the source associated to this variable
-      varSource = source;
-
-         // Set the satellite associated to this variable
-      varSat = satellite;
-
-      initialVariance = variance;
+         // Call Init method
+      Init( type,
+            pModel,
+            source,
+            satellite,
+            variance );
 
    }  // End of 'Variable::Variable()'
 
@@ -211,11 +165,10 @@ namespace gpstk
                        const SourceID& source )
    {
 
-         // Call general constructor setting a generic satellite
-      Variable::Variable( type,
-                          pModel,
-                          source,
-                          allSats );
+         // Call Init method
+      Init( type,
+            pModel,
+            source );
 
    }  // End of 'Variable::Variable()'
 
@@ -235,13 +188,81 @@ namespace gpstk
                        const SatID& satellite )
    {
 
-         // Call general constructor setting a generic source
-      Variable::Variable( type,
-                          pModel,
-                          allSources,
-                          satellite );
+         // Call Init method
+      Init( type,
+            pModel,
+            allSources,
+            satellite );
 
    }  // End of 'Variable::Variable()'
+
+
+
+      /* Initializing function
+       *
+       * @param type        TypeID of variable.
+       * @param pModel      Pointer to StochasticModel associated with
+       *                    this variable. By default, it is a white
+       *                    noise model.
+       * @param source      Data source this variable belongs to.
+       * @param satellite   Satellite this variable belongs to.
+       * @param variance    Initial variance assigned to this variable.
+       */
+   void Variable::Init( const TypeID& type,
+                        StochasticModel* pModel,
+                        const SourceID& source,
+                        const SatID& satellite,
+                        double variance )
+   {
+
+      varType = type;
+
+      if(pModel == NULL)
+      {
+         pVarModel = &defaultModel;
+      }
+      else
+      {
+         pVarModel = pModel;
+      }
+
+         // Check if the source is unspecific
+      if( (source == allSources) ||
+          (source == someSources) )
+      {
+         isSourceIndexed = true;
+      }
+      else
+      {
+         isSourceIndexed = false;
+      }
+
+
+         // Check if the satellite is unspecific
+      if( satellite == allSats        ||
+          satellite == allGPSSats     ||
+          satellite == allGalileoSats ||
+          satellite == allGlonassSats )
+      {
+         isSatIndexed = true;
+      }
+      else
+      {
+         isSatIndexed = false;
+      }
+
+         // Set the source associated to this variable
+      varSource = source;
+
+         // Set the satellite associated to this variable
+      varSat = satellite;
+
+         // Set initial variance
+      initialVariance = variance;
+
+      return;
+
+   }  // End of method 'Variable::Init()'
 
 
 
