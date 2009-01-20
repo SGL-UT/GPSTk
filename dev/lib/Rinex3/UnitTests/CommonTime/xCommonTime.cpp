@@ -3,7 +3,7 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xCommonTime);
 
-using namespace gpstk;
+using namespace Rinex3;
 
 void xCommonTime :: setUp (void)
 {
