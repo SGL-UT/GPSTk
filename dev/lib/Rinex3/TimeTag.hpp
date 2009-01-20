@@ -31,7 +31,9 @@
 #include "StringUtils.hpp"
 #include <map>
 
-namespace gpstk
+using namespace gpstk;
+
+namespace Rinex3
 {
       /** This class is an abstract base class inherited by all the classes
        * that provide a specific time representation.
@@ -168,6 +170,6 @@ namespace gpstk
 } // namespace
 
 std::ostream& operator<<( std::ostream& s,
-                          const gpstk::TimeTag& t );
+                          const Rinex3::TimeTag& t );
 
 #endif // GPSTK_BASETIME_HPP

@@ -8,7 +8,7 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xCivilTime);
 
-using namespace gpstk;
+using namespace Rinex3;
 
 void xCivilTime :: setUp (void)
 {
@@ -16,13 +16,13 @@ void xCivilTime :: setUp (void)
 
 void xCivilTime :: setFromInfoTest (void)
 {
-	Rinex3::CivilTime setFromInfo1;
-	Rinex3::CivilTime setFromInfo2;
-	Rinex3::CivilTime setFromInfo3;
-	Rinex3::CivilTime setFromInfo4;
-	Rinex3::CivilTime setFromInfo5;
+	CivilTime setFromInfo1;
+	CivilTime setFromInfo2;
+	CivilTime setFromInfo3;
+	CivilTime setFromInfo4;
+	CivilTime setFromInfo5;
 	
-	gpstk::TimeTag::IdToValue Id;
+	TimeTag::IdToValue Id;
 	Id.insert(make_pair('b',"Dec"));
 	Id.insert(make_pair('d',"31"));
 	Id.insert(make_pair('Y',"2008"));
@@ -32,7 +32,7 @@ void xCivilTime :: setFromInfoTest (void)
 	Id.insert(make_pair('P',"02"));
 	CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
 
-	Rinex3::CivilTime Check(2008,12,31,12,0,0,GPS);
+	CivilTime Check(2008,12,31,12,0,0,GPS);
 	CPPUNIT_ASSERT_EQUAL(setFromInfo1,Check);
 	Id.erase('b');
 	Id.erase('Y');
@@ -51,31 +51,31 @@ void xCivilTime :: setFromInfoTest (void)
 	CommonTime time;
 	time = Check.convertToCommonTime();
 	std::cout << Check.printf("%04Y %02m %02d %02H %02M") << std::endl;
-	std::cout << ((Rinex3::CivilTime)time).printf("%04Y %02m %02d %02H %02M")<< std::endl;
-	std::cout << ((Rinex3::YDSTime)(time)).printf("%10Y")<< std::endl;
-	std::cout << ((Rinex3::GPSWeekSecond)(time)).printf("%02F")<< std::endl;
+	std::cout << ((CivilTime)time).printf("%04Y %02m %02d %02H %02M")<< std::endl;
+	std::cout << ((YDSTime)(time)).printf("%10Y")<< std::endl;
+	std::cout << ((GPSWeekSecond)(time)).printf("%02F")<< std::endl;
 
-	Rinex3::GPSWeekSecond time2;
+	GPSWeekSecond time2;
 	std::cout << time2.printf("%02w") << std::endl;
 	time = time2.convertToCommonTime();
-	std::cout << ((Rinex3::GPSWeekSecond)(time)).printf("%02F")<< std::endl;
+	std::cout << ((GPSWeekSecond)(time)).printf("%02F")<< std::endl;
 }
 
 void xCivilTime :: operatorTest (void)
 {
-	Rinex3::CivilTime Zero;
+	CivilTime Zero;
 	
-	Rinex3::CivilTime Aug21(2008,8,21,13,30,15.);
-	Rinex3::CivilTime LessThanYear(2005,8,21,13,30,15.);
-	Rinex3::CivilTime LessThanMonth(2008,7,21,13,30,15.);
-	Rinex3::CivilTime LessThanDay(2008,8,20,13,30,15.);
-	Rinex3::CivilTime LessThanHour(2008,8,21,12,30,15.);
-	Rinex3::CivilTime LessThanMinute(2008,8,21,13,20,15.);
-	Rinex3::CivilTime LessThanSecond(2008,8,21,13,30,0.);
+	CivilTime Aug21(2008,8,21,13,30,15.);
+	CivilTime LessThanYear(2005,8,21,13,30,15.);
+	CivilTime LessThanMonth(2008,7,21,13,30,15.);
+	CivilTime LessThanDay(2008,8,20,13,30,15.);
+	CivilTime LessThanHour(2008,8,21,12,30,15.);
+	CivilTime LessThanMinute(2008,8,21,13,20,15.);
+	CivilTime LessThanSecond(2008,8,21,13,30,0.);
 	
-	Rinex3::CivilTime Aug21Copy(Aug21);
+	CivilTime Aug21Copy(Aug21);
 	
-	Rinex3::CivilTime Aug21Copy2 = Aug21Copy;
+	CivilTime Aug21Copy2 = Aug21Copy;
 	Aug21Copy2 = Aug21Copy;
 	//Equality Assertion
 	CPPUNIT_ASSERT_EQUAL(Aug21,Aug21Copy);
@@ -109,18 +109,18 @@ void xCivilTime :: operatorTest (void)
 
 void xCivilTime :: resetTest (void)
 {
-	Rinex3::CivilTime Aug21(2008,8,21,13,30,15.,gpstk::GPS);
+	CivilTime Aug21(2008,8,21,13,30,15.,GPS);
 
 	CommonTime Test = Aug21.convertToCommonTime();
 
-	Rinex3::CivilTime Test2;
+	CivilTime Test2;
 	Test2.convertFromCommonTime(Test);
 
 	CPPUNIT_ASSERT_EQUAL(Test2,Aug21);
-	CPPUNIT_ASSERT_EQUAL(gpstk::GPS,Aug21.getTimeSystem());
+	CPPUNIT_ASSERT_EQUAL(GPS,Aug21.getTimeSystem());
 
 	Aug21.reset();
-	CPPUNIT_ASSERT_EQUAL(gpstk::Unknown,Aug21.getTimeSystem());
+	CPPUNIT_ASSERT_EQUAL(Unknown,Aug21.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(0,(int)Aug21.year);
 	CPPUNIT_ASSERT_EQUAL(1,(int)Aug21.month);
 	CPPUNIT_ASSERT_EQUAL(1,(int)Aug21.day);
@@ -132,37 +132,37 @@ void xCivilTime :: resetTest (void)
 void xCivilTime :: timeSystemTest (void)
 {
 
-	Rinex3::CivilTime GPS1(   2008,8,21,13,30,15.,gpstk::GPS);
-	Rinex3::CivilTime GPS2(   2005,8,21,13,30,15.,gpstk::GPS);
-	Rinex3::CivilTime UTC(    2008,8,21,13,30,15.,gpstk::UTC);
-	Rinex3::CivilTime UNKNOWN(2008,8,21,13,30,15.,gpstk::Unknown);
-	Rinex3::CivilTime ANY(    2008,8,21,13,30,15.,gpstk::Any);
+	CivilTime GPS1(   2008,8,21,13,30,15.,GPS);
+	CivilTime GPS2(   2005,8,21,13,30,15.,GPS);
+	CivilTime UTC1(    2008,8,21,13,30,15.,UTC);
+	CivilTime UNKNOWN(2008,8,21,13,30,15.,Unknown);
+	CivilTime ANY(    2008,8,21,13,30,15.,Any);
 
 	CPPUNIT_ASSERT(GPS1 != GPS2);
 	CPPUNIT_ASSERT_EQUAL(GPS1.getTimeSystem(),GPS2.getTimeSystem());
-	CPPUNIT_ASSERT(GPS1 != UTC);
+	CPPUNIT_ASSERT(GPS1 != UTC1);
 	CPPUNIT_ASSERT(GPS1 != UNKNOWN);
-	CPPUNIT_ASSERT(GPS1.convertToCommonTime() > gpstk::CommonTime::BEGINNING_OF_TIME);
-	CPPUNIT_ASSERT(gpstk::CommonTime::BEGINNING_OF_TIME < GPS1);
+	CPPUNIT_ASSERT(GPS1.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
+	CPPUNIT_ASSERT(CommonTime::BEGINNING_OF_TIME < GPS1);
 	CPPUNIT_ASSERT_EQUAL(GPS1,ANY);
-	CPPUNIT_ASSERT_EQUAL(UTC,ANY);
+	CPPUNIT_ASSERT_EQUAL(UTC1,ANY);
 	CPPUNIT_ASSERT_EQUAL(UNKNOWN,ANY);
 	CPPUNIT_ASSERT(GPS2 != ANY);
 	CPPUNIT_ASSERT(GPS2 < GPS1);
 	CPPUNIT_ASSERT(GPS2 < ANY);
 
-	UNKNOWN.setTimeSystem(gpstk::GPS);
-	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),gpstk::GPS);
+	UNKNOWN.setTimeSystem(GPS);
+	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),GPS);
 
 }
 
 void xCivilTime :: printfTest (void)
 {
-	Rinex3::CivilTime GPS1(2008,8,21,13,30,15.,gpstk::GPS);
-	Rinex3::CivilTime UTC(2008,8,21,13,30,15.,gpstk::UTC);
+	CivilTime GPS1(2008,8,21,13,30,15.,GPS);
+	CivilTime UTC1(2008,8,21,13,30,15.,UTC);
 
 	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),(std::string)"2008 08 08 Aug 21 13 30 15 15.000000 02");
-	CPPUNIT_ASSERT_EQUAL(UTC.printf("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),(std::string)"2008 08 08 Aug 21 13 30 15 15.000000 03");
+	CPPUNIT_ASSERT_EQUAL(UTC1.printf("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),(std::string)"2008 08 08 Aug 21 13 30 15 15.000000 03");
 	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
-	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
+	CPPUNIT_ASSERT_EQUAL(UTC1.printError("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
 }

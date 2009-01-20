@@ -27,7 +27,9 @@
 #include "TimeTag.hpp"
 #include "StringUtils.hpp"
 
-namespace gpstk
+using namespace gpstk;
+
+namespace Rinex3
 {
    void TimeTag::scanf( const std::string& str,
                         const std::string& fmt )
@@ -169,7 +171,7 @@ namespace gpstk
 } // namespace
 
 std::ostream& operator<<( std::ostream& s,
-                          const gpstk::TimeTag& t )
+                          const Rinex3::TimeTag& t )
 {
    s << t.printf( t.getDefaultFormat() );
    return s;

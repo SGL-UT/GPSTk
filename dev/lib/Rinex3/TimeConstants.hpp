@@ -27,7 +27,7 @@
 //
 //============================================================================
 
-namespace gpstk
+namespace Rinex3
 {
       /// Add this offset to convert Modified Julian Date to Julian Date.
    const double MJD_TO_JD = 2400000.5;

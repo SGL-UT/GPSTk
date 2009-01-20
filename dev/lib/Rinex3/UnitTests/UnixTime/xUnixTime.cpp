@@ -4,7 +4,7 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xUnixTime);
 
-using namespace gpstk;
+using namespace Rinex3;
 
 void xUnixTime :: setUp (void)
 {
@@ -12,11 +12,11 @@ void xUnixTime :: setUp (void)
 
 void xUnixTime :: setFromInfoTest (void)
 {
-	Rinex3::UnixTime setFromInfo1;
-	Rinex3::UnixTime setFromInfo2;
-        Rinex3::UnixTime Compare(1350000,0,GPS);
+	UnixTime setFromInfo1;
+	UnixTime setFromInfo2;
+        UnixTime Compare(1350000,0,GPS);
 	
-	gpstk::TimeTag::IdToValue Id;
+	TimeTag::IdToValue Id;
 	Id.insert(make_pair('U',"1350000"));
 	Id.insert(make_pair('u',"0"));
         Id.insert(make_pair('P',"02"));
@@ -33,13 +33,13 @@ void xUnixTime :: setFromInfoTest (void)
 void xUnixTime :: operatorTest (void)
 {
 	
-	Rinex3::UnixTime Compare(1350000, 100);
-	Rinex3::UnixTime LessThanSec(1340000, 100);
-	Rinex3::UnixTime LessThanMicroSec(1350000,0);
+	UnixTime Compare(1350000, 100);
+	UnixTime LessThanSec(1340000, 100);
+	UnixTime LessThanMicroSec(1350000,0);
 	
-	Rinex3::UnixTime CompareCopy(Compare);
+	UnixTime CompareCopy(Compare);
 	
-	Rinex3::UnixTime CompareCopy2;
+	UnixTime CompareCopy2;
 	CompareCopy2 = CompareCopy;
 	//Equality Assertion
 	CPPUNIT_ASSERT_EQUAL(Compare,CompareCopy);
@@ -63,22 +63,22 @@ void xUnixTime :: operatorTest (void)
 
 void xUnixTime :: resetTest (void)
 {
-        Rinex3::UnixTime Compare(1350000,0,gpstk::GPS);
+        UnixTime Compare(1350000,0,GPS);
 
 	CommonTime Test = Compare.convertToCommonTime();
 
-	Rinex3::UnixTime Test2;
+	UnixTime Test2;
 	Test2.convertFromCommonTime(Test);
 
 	CPPUNIT_ASSERT_EQUAL(Test2,Compare);
 
-	CPPUNIT_ASSERT_EQUAL(gpstk::GPS,Compare.getTimeSystem());
+	CPPUNIT_ASSERT_EQUAL(GPS,Compare.getTimeSystem());
 
 	CPPUNIT_ASSERT_EQUAL(1350000,(int)Compare.tv.tv_sec);
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.tv.tv_usec);
 
 	Compare.reset();
-	CPPUNIT_ASSERT_EQUAL(gpstk::Unknown,Compare.getTimeSystem());
+	CPPUNIT_ASSERT_EQUAL(Unknown,Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.tv.tv_sec);
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.tv.tv_usec);
 }
@@ -86,37 +86,37 @@ void xUnixTime :: resetTest (void)
 void xUnixTime :: timeSystemTest (void)
 {
 
-	Rinex3::UnixTime GPS1(1350000,0,gpstk::GPS);
-	Rinex3::UnixTime GPS2(1340000,0,gpstk::GPS);
-	Rinex3::UnixTime UTC(1350000,0,gpstk::UTC);
-	Rinex3::UnixTime UNKNOWN(1350000,0,gpstk::Unknown);
-	Rinex3::UnixTime ANY(1350000,0,gpstk::Any);
+	UnixTime GPS1(1350000,0,GPS);
+	UnixTime GPS2(1340000,0,GPS);
+	UnixTime UTC1(1350000,0,UTC);
+	UnixTime UNKNOWN(1350000,0,Unknown);
+	UnixTime ANY(1350000,0,Any);
 
 	CPPUNIT_ASSERT(GPS1 != GPS2);
 	CPPUNIT_ASSERT_EQUAL(GPS1.getTimeSystem(),GPS2.getTimeSystem());
-	CPPUNIT_ASSERT(GPS1 != UTC);
+	CPPUNIT_ASSERT(GPS1 != UTC1);
 	CPPUNIT_ASSERT(GPS1 != UNKNOWN);
-	CPPUNIT_ASSERT(GPS1.convertToCommonTime() > gpstk::CommonTime::BEGINNING_OF_TIME);
-	CPPUNIT_ASSERT(gpstk::CommonTime::BEGINNING_OF_TIME < GPS1);
+	CPPUNIT_ASSERT(GPS1.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
+	CPPUNIT_ASSERT(CommonTime::BEGINNING_OF_TIME < GPS1);
 	CPPUNIT_ASSERT_EQUAL(GPS1,ANY);
-	CPPUNIT_ASSERT_EQUAL(UTC,ANY);
+	CPPUNIT_ASSERT_EQUAL(UTC1,ANY);
 	CPPUNIT_ASSERT_EQUAL(UNKNOWN,ANY);
 	CPPUNIT_ASSERT(GPS2 != ANY);
 	CPPUNIT_ASSERT(GPS2 < GPS1);
 	CPPUNIT_ASSERT(GPS2 < ANY);
 
-	UNKNOWN.setTimeSystem(gpstk::GPS);
-	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),gpstk::GPS);
+	UNKNOWN.setTimeSystem(GPS);
+	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),GPS);
 }
 
 void xUnixTime :: printfTest (void)
 {
 
-	Rinex3::UnixTime GPS1(1350000,0,gpstk::GPS);
-	Rinex3::UnixTime UTC(1350000,0,gpstk::UTC);
+	UnixTime GPS1(1350000,0,GPS);
+	UnixTime UTC1(1350000,0,UTC);
 
 	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%07U %02u %02P"),(std::string)"1350000 00 02");
-	CPPUNIT_ASSERT_EQUAL(UTC.printf("%07U %02u %02P"), (std::string)"1350000 00 03");
+	CPPUNIT_ASSERT_EQUAL(UTC1.printf("%07U %02u %02P"), (std::string)"1350000 00 03");
 	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%07U %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
-	CPPUNIT_ASSERT_EQUAL(UTC.printError("%07U %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
+	CPPUNIT_ASSERT_EQUAL(UTC1.printError("%07U %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
 }

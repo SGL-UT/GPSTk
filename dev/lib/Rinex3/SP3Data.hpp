@@ -80,7 +80,7 @@ namespace Rinex3
    {
    public:
          /// Constructor.
-      SP3Data() : version('a'),flag('\000'), time(gpstk::CommonTime::BEGINNING_OF_TIME),
+      SP3Data() : version('a'),flag('\000'), time(Rinex3::CommonTime::BEGINNING_OF_TIME),
                   clockEventFlag(false),clockPredFlag(false),orbitManeuverFlag(false),
                   orbitPredFlag(false),correlationFlag(false)
          {}

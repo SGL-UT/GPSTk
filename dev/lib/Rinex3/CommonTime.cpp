@@ -27,9 +27,9 @@
 #include "MathBase.hpp"
 #include "StringUtils.hpp"
 
-//using namespace gpstk;
+using namespace gpstk;
 
-namespace gpstk
+namespace Rinex3
 {
       // 'julian day' of earliest epoch expressible by CommonTime; 1/1/4713 B.C.
    const long CommonTime::BEGIN_LIMIT_JDAY = 0L;

@@ -4,7 +4,7 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xYDSTime);
 
-using namespace gpstk;
+using namespace Rinex3;
 
 void xYDSTime :: setUp (void)
 {
@@ -12,14 +12,14 @@ void xYDSTime :: setUp (void)
 
 void xYDSTime :: setFromInfoTest (void)
 {
-	Rinex3::YDSTime setFromInfo1;
-	Rinex3::YDSTime setFromInfo2;
-	Rinex3::YDSTime setFromInfo3;
-	Rinex3::YDSTime setFromInfo4;
-	Rinex3::YDSTime setFromInfo5;
-	Rinex3::YDSTime Compare(2008,2,1,GPS);
+	YDSTime setFromInfo1;
+	YDSTime setFromInfo2;
+	YDSTime setFromInfo3;
+	YDSTime setFromInfo4;
+	YDSTime setFromInfo5;
+	YDSTime Compare(2008,2,1,GPS);
 	
-	gpstk::TimeTag::IdToValue Id;
+	TimeTag::IdToValue Id;
 	Id.insert(make_pair('Y',"2008"));
 	Id.insert(make_pair('j',"2"));
 	Id.insert(make_pair('s',"1"));
@@ -42,14 +42,14 @@ void xYDSTime :: setFromInfoTest (void)
 void xYDSTime :: operatorTest (void)
 {
 	
-	Rinex3::YDSTime Compare(2008,2,1);
-	Rinex3::YDSTime LessThanYear(2005,2,1);
-	Rinex3::YDSTime LessThanDOY(2008,1,1);
-	Rinex3::YDSTime LessThanSOD(2008,2,0);
+	YDSTime Compare(2008,2,1);
+	YDSTime LessThanYear(2005,2,1);
+	YDSTime LessThanDOY(2008,1,1);
+	YDSTime LessThanSOD(2008,2,0);
 	
-	Rinex3::YDSTime CompareCopy(Compare);
+	YDSTime CompareCopy(Compare);
 	
-	Rinex3::YDSTime CompareCopy2;
+	YDSTime CompareCopy2;
 	//Assignment
 	CompareCopy2 = CompareCopy;
 	//Equality Assertion
@@ -79,23 +79,23 @@ void xYDSTime :: operatorTest (void)
 
 void xYDSTime :: resetTest (void)
 {
-        Rinex3::YDSTime Compare(2008,2,1,gpstk::GPS);
+        YDSTime Compare(2008,2,1,GPS);
 
 	CommonTime Test = Compare.convertToCommonTime();
 
-	Rinex3::YDSTime Test2;
+	YDSTime Test2;
 	Test2.convertFromCommonTime(Test);
 
 	CPPUNIT_ASSERT_EQUAL(Test2,Compare);
 
-	CPPUNIT_ASSERT_EQUAL(gpstk::GPS,Compare.getTimeSystem());
+	CPPUNIT_ASSERT_EQUAL(GPS,Compare.getTimeSystem());
 
 	CPPUNIT_ASSERT_EQUAL(2008,(int)Compare.year);
 	CPPUNIT_ASSERT_EQUAL(2,(int)Compare.doy);
 	CPPUNIT_ASSERT_EQUAL(1,(int)Compare.sod);
 
 	Compare.reset();
-	CPPUNIT_ASSERT_EQUAL(gpstk::Unknown,Compare.getTimeSystem());
+	CPPUNIT_ASSERT_EQUAL(Unknown,Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.year);	
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.doy);
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.sod);
@@ -104,37 +104,37 @@ void xYDSTime :: resetTest (void)
 void xYDSTime :: timeSystemTest (void)
 {
 
-	Rinex3::YDSTime GPS1(2008,2,1,gpstk::GPS);
-	Rinex3::YDSTime GPS2(2005,2,1,gpstk::GPS);
-	Rinex3::YDSTime UTC(2008,2,1,gpstk::UTC);
-	Rinex3::YDSTime UNKNOWN(2008,2,1,gpstk::Unknown);
-	Rinex3::YDSTime ANY(2008,2,1,gpstk::Any);
+	YDSTime GPS1(2008,2,1,GPS);
+	YDSTime GPS2(2005,2,1,GPS);
+	YDSTime UTC1(2008,2,1,UTC);
+	YDSTime UNKNOWN(2008,2,1,Unknown);
+	YDSTime ANY(2008,2,1,Any);
 
 	CPPUNIT_ASSERT(GPS1 != GPS2);
 	CPPUNIT_ASSERT_EQUAL(GPS1.getTimeSystem(),GPS2.getTimeSystem());
-	CPPUNIT_ASSERT(GPS1 != UTC);
+	CPPUNIT_ASSERT(GPS1 != UTC1);
 	CPPUNIT_ASSERT(GPS1 != UNKNOWN);
-	CPPUNIT_ASSERT(GPS1.convertToCommonTime() > gpstk::CommonTime::BEGINNING_OF_TIME);
-	CPPUNIT_ASSERT(gpstk::CommonTime::BEGINNING_OF_TIME < GPS1);
+	CPPUNIT_ASSERT(GPS1.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
+	CPPUNIT_ASSERT(CommonTime::BEGINNING_OF_TIME < GPS1);
 	CPPUNIT_ASSERT_EQUAL(GPS1,ANY);
-	CPPUNIT_ASSERT_EQUAL(UTC,ANY);
+	CPPUNIT_ASSERT_EQUAL(UTC1,ANY);
 	CPPUNIT_ASSERT_EQUAL(UNKNOWN,ANY);
 	CPPUNIT_ASSERT(GPS2 != ANY);
 	CPPUNIT_ASSERT(GPS2 < GPS1);
 	CPPUNIT_ASSERT(GPS2 < ANY);
 
-	UNKNOWN.setTimeSystem(gpstk::GPS);
-	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),gpstk::GPS);
+	UNKNOWN.setTimeSystem(GPS);
+	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),GPS);
 }
 
 void xYDSTime :: printfTest (void)
 {
 
-	Rinex3::YDSTime GPS1(2008,2,1,gpstk::GPS);
-	Rinex3::YDSTime UTC(2008,2,1,gpstk::UTC);
+	YDSTime GPS1(2008,2,1,GPS);
+	YDSTime UTC1(2008,2,1,UTC);
 
 	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%04Y %02y %03j %02s %02P"),(std::string)"2008 08 002 1.000000 02");
-	CPPUNIT_ASSERT_EQUAL(UTC.printf("%04Y %02y %03j %02s %02P"), (std::string)"2008 08 002 1.000000 03");
+	CPPUNIT_ASSERT_EQUAL(UTC1.printf("%04Y %02y %03j %02s %02P"), (std::string)"2008 08 002 1.000000 03");
 	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%04Y %02y %03j %02s %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
-	CPPUNIT_ASSERT_EQUAL(UTC.printError("%04Y %02y %03j %02s %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
+	CPPUNIT_ASSERT_EQUAL(UTC1.printError("%04Y %02y %03j %02s %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
 }

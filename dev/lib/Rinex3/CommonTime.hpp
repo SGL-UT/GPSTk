@@ -30,8 +30,10 @@
 #include "TimeConstants.hpp"
 
 using namespace std;
+using namespace gpstk;
 
-namespace gpstk
+
+namespace Rinex3
 {
       /** 
        * This is the common time format that all time formats convert to when

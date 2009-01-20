@@ -4,7 +4,7 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xANSITime);
 
-using namespace gpstk;
+using namespace Rinex3;
 
 void xANSITime :: setUp (void)
 {
@@ -12,10 +12,10 @@ void xANSITime :: setUp (void)
 
 void xANSITime :: setFromInfoTest (void)
 {
-	Rinex3::ANSITime setFromInfo1;
-	Rinex3::ANSITime setFromInfo2;
-	Rinex3::ANSITime Compare(13500000,GPS);
-	gpstk::TimeTag::IdToValue Id;
+	ANSITime setFromInfo1;
+	ANSITime setFromInfo2;
+	ANSITime Compare(13500000,GPS);
+	TimeTag::IdToValue Id;
 
 	Id.insert(make_pair('K',"13500000"));
 	Id.insert(make_pair('P',"02"));
@@ -27,10 +27,10 @@ void xANSITime :: setFromInfoTest (void)
 
 void xANSITime :: operatorTest (void)
 {
-	Rinex3::ANSITime Compare(13500000);
-	Rinex3::ANSITime LessThan(13400000);
-	Rinex3::ANSITime CompareCopy(Compare);
-	Rinex3::ANSITime CompareCopy2;
+	ANSITime Compare(13500000);
+	ANSITime LessThan(13400000);
+	ANSITime CompareCopy(Compare);
+	ANSITime CompareCopy2;
 
 	//Assignment
 	CompareCopy2 = CompareCopy;
@@ -55,55 +55,55 @@ void xANSITime :: operatorTest (void)
 
 void xANSITime :: resetTest (void)
 {
-	Rinex3::ANSITime Compare(13500000,gpstk::GPS);
+	ANSITime Compare(13500000,GPS);
 
 	CommonTime Test = Compare.convertToCommonTime();
 
-	Rinex3::ANSITime Test2;
+	ANSITime Test2;
 	Test2.convertFromCommonTime(Test);
 
 	CPPUNIT_ASSERT_EQUAL(Test2,Compare);
 
-	CPPUNIT_ASSERT_EQUAL(gpstk::GPS,Compare.getTimeSystem());
+	CPPUNIT_ASSERT_EQUAL(GPS,Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(13500000,(int)Compare.time);
 
 	Compare.reset();
-	CPPUNIT_ASSERT_EQUAL(gpstk::Unknown,Compare.getTimeSystem());
+	CPPUNIT_ASSERT_EQUAL(Unknown,Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.time);
 }
 
 void xANSITime :: timeSystemTest (void)
 {
-	Rinex3::ANSITime GPS1(13500000,gpstk::GPS);
-	Rinex3::ANSITime GPS2(13400000,gpstk::GPS);
-	Rinex3::ANSITime UTC(13500000,gpstk::UTC);
-	Rinex3::ANSITime UNKNOWN(13500000,gpstk::Unknown);
-	Rinex3::ANSITime ANY(13500000,gpstk::Any);
+	ANSITime GPS1(13500000,GPS);
+	ANSITime GPS2(13400000,GPS);
+	ANSITime UTC1(13500000,UTC);
+	ANSITime UNKNOWN(13500000,Unknown);
+	ANSITime ANY(13500000,Any);
 
 	CPPUNIT_ASSERT(GPS1 != GPS2);
 	CPPUNIT_ASSERT_EQUAL(GPS1.getTimeSystem(),GPS2.getTimeSystem());
-	CPPUNIT_ASSERT(GPS1 != UTC);
+	CPPUNIT_ASSERT(GPS1 != UTC1);
 	CPPUNIT_ASSERT(GPS1 != UNKNOWN);
-	CPPUNIT_ASSERT(GPS1.convertToCommonTime() > gpstk::CommonTime::BEGINNING_OF_TIME);
-	CPPUNIT_ASSERT(gpstk::CommonTime::BEGINNING_OF_TIME < GPS1);
+	CPPUNIT_ASSERT(GPS1.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
+	CPPUNIT_ASSERT(CommonTime::BEGINNING_OF_TIME < GPS1);
 	CPPUNIT_ASSERT_EQUAL(GPS1,ANY);
-	CPPUNIT_ASSERT_EQUAL(UTC,ANY);
+	CPPUNIT_ASSERT_EQUAL(UTC1,ANY);
 	CPPUNIT_ASSERT_EQUAL(UNKNOWN,ANY);
 	CPPUNIT_ASSERT(GPS2 != ANY);
 	CPPUNIT_ASSERT(GPS2 < GPS1);
 	CPPUNIT_ASSERT(GPS2 < ANY);
 
-	UNKNOWN.setTimeSystem(gpstk::GPS);
-	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),gpstk::GPS);
+	UNKNOWN.setTimeSystem(GPS);
+	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),GPS);
 }
 
 void xANSITime :: printfTest (void)
 {
-	Rinex3::ANSITime GPS1(13500000,gpstk::GPS);
-	Rinex3::ANSITime UTC(13500000,gpstk::UTC);
+	ANSITime GPS1(13500000,GPS);
+	ANSITime UTC1(13500000,UTC);
 
 	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08K %02P"),(std::string)"13500000 02");
-	CPPUNIT_ASSERT_EQUAL(UTC.printf("%08K %02P"),(std::string)"13500000 03");
+	CPPUNIT_ASSERT_EQUAL(UTC1.printf("%08K %02P"),(std::string)"13500000 03");
 	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08K %02P"),(std::string)"ErrorBadTime ErrorBadTime");
-	CPPUNIT_ASSERT_EQUAL(UTC.printError("%08K %02P"),(std::string)"ErrorBadTime ErrorBadTime");
+	CPPUNIT_ASSERT_EQUAL(UTC1.printError("%08K %02P"),(std::string)"ErrorBadTime ErrorBadTime");
 }

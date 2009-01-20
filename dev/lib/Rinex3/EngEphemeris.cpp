@@ -1155,7 +1155,7 @@ namespace Rinex3
       return *this;
    }
    
-   static void timeDisplay( ostream & os, const gpstk::CommonTime& t )
+   static void timeDisplay( ostream & os, const Rinex3::CommonTime& t )
    {
          // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
       os << setw(4) << GPSWeekSecond(t).week;
