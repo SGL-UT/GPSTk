@@ -167,7 +167,7 @@ namespace Rinex3
       bool operator!=( const ANSITime& right ) const
          throw();
       bool operator<( const ANSITime& right ) const
-         throw();
+         throw(InvalidRequest);
       bool operator>( const ANSITime& right ) const
          throw();
       bool operator<=( const ANSITime& right ) const

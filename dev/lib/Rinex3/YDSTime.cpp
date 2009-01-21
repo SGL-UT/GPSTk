@@ -223,7 +223,7 @@ namespace Rinex3
    }
 
    bool YDSTime::operator<( const YDSTime& right ) const
-      throw()
+      throw(InvalidRequest)
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != Any && right.timeSystem != Any) &&

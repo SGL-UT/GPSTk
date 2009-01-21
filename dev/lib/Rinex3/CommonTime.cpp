@@ -254,7 +254,7 @@ namespace Rinex3
    }
 
    double CommonTime::operator-( const CommonTime& right ) const
-      throw()
+      throw(InvalidRequest)
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
@@ -360,7 +360,7 @@ namespace Rinex3
    }
 
    bool CommonTime::operator<( const CommonTime& right ) const
-      throw()
+      throw(InvalidRequest)
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
@@ -410,7 +410,7 @@ namespace Rinex3
           << setw(7) << m_day  << " "
           << setw(8) << m_msod << " "
           << fixed << setprecision(15) << setw(17) << m_fsod
-          << "set to time system " << m_timeSystem ;
+          << " set to time system " << m_timeSystem ;
       return oss.str();
    }
 

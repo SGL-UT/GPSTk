@@ -187,7 +187,7 @@ namespace Rinex3
       virtual bool operator!=( const UnixTime& right ) const
          throw();
       virtual bool operator<( const UnixTime& right ) const
-         throw();
+         throw(InvalidRequest);
       virtual bool operator>( const UnixTime& right ) const
          throw();
       virtual bool operator<=( const UnixTime& right ) const

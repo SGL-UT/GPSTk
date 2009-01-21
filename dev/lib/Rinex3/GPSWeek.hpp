@@ -103,7 +103,7 @@ namespace Rinex3
       }
       
       inline bool operator!=(const GPSWeek& right) const
-         throw()
+         throw(InvalidRequest)
       {
         /// Any (wildcard) type exception allowed, otherwise must be same time systems
          if ((timeSystem != Any && right.timeSystem != Any) &&
@@ -114,7 +114,7 @@ namespace Rinex3
       }
       
       inline bool operator<(const GPSWeek& right) const
-         throw()
+         throw(InvalidRequest)
       {
         /// Any (wildcard) type exception allowed, otherwise must be same time systems
          if ((timeSystem != Any && right.timeSystem != Any) &&
@@ -125,7 +125,7 @@ namespace Rinex3
       }
       
       inline bool operator<=(const GPSWeek& right) const
-         throw()
+         throw(InvalidRequest)
       {
         /// Any (wildcard) type exception allowed, otherwise must be same time systems
          if ((timeSystem != Any && right.timeSystem != Any) &&
@@ -136,7 +136,7 @@ namespace Rinex3
       }
       
       inline bool operator>(const GPSWeek& right) const
-         throw()
+         throw(InvalidRequest)
       {
         /// Any (wildcard) type exception allowed, otherwise must be same time systems
          if ((timeSystem != Any && right.timeSystem != Any) &&
@@ -147,7 +147,7 @@ namespace Rinex3
       }
       
       inline bool operator>=(const GPSWeek& right) const
-         throw()
+         throw(InvalidRequest)
       {
         /// Any (wildcard) type exception allowed, otherwise must be same time systems
          if ((timeSystem != Any && right.timeSystem != Any) &&

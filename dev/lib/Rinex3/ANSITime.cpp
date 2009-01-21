@@ -175,7 +175,7 @@ namespace Rinex3
            timeSystem != right.timeSystem)
          return false;
 
-      if( fabs(time - right.time) < CommonTime::eps )
+      if( fabs(double(time - right.time)) < CommonTime::eps )
       {
          return true;
       }
@@ -189,7 +189,7 @@ namespace Rinex3
    }
 
    bool ANSITime::operator<( const ANSITime& right ) const
-      throw()
+      throw(InvalidRequest)
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != Any && right.timeSystem != Any) &&

@@ -185,7 +185,7 @@ namespace Rinex3
    }
 
    bool JulianDate::operator<( const JulianDate& right ) const
-      throw()
+      throw(InvalidRequest)
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != Any && right.timeSystem != Any) &&
