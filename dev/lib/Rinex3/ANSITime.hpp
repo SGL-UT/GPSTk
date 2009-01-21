@@ -32,6 +32,10 @@
 
 using namespace gpstk;
 
+
+      /**
+       * Development namespace for Rinex3 upgrades to the GPSTk
+       */
 namespace Rinex3
 {
       /**
