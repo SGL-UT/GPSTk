@@ -1,3 +1,5 @@
+# $Id$
+
 SubDir TOP lib Rinex3 ;
 
 if $(PREPROCESSING)
@@ -31,6 +33,3 @@ else
    InstallFile $(INCDIR) :
    ;
 }
-
-GPSLinkLibraries ttime : Rinex3 ;
-GPSMain ttime : ttime.cpp ;
