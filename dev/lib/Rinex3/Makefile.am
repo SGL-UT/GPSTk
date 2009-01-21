@@ -1,4 +1,4 @@
-# $Id: Makefile.am 1182 2008-04-04 14:07:43Z btolman $
+# $Id$
 # please add in alphabetic order
 INCLUDES = -I$(srcdir)/../../src/ -I.
 lib_LTLIBRARIES = libRinex3.la

@@ -1,4 +1,4 @@
-#pragma ident "$Id: CommonTime.hpp 1162 2008-03-27 21:18:13Z snelsen $"
+#pragma ident "$Id$"
 
 #ifndef GPSTK_COMMONTIME_HPP
 #define GPSTK_COMMONTIME_HPP

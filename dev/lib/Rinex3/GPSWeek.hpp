@@ -1,4 +1,4 @@
-#pragma ident "$Id: GPSWeek.hpp 1225 2008-05-06 17:53:22Z vorce $"
+#pragma ident "$Id$"
 
 #ifndef GPSTK_GPSWEEK_HPP
 #define GPSTK_GPSWEEK_HPP
