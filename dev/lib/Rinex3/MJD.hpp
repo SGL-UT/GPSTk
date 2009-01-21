@@ -162,7 +162,7 @@ namespace Rinex3
       bool operator!=( const MJD& right ) const
          throw();
       bool operator<( const MJD& right ) const
-         throw();
+         throw(gpstk::InvalidRequest);
       bool operator>( const MJD& right ) const
          throw();
       bool operator<=( const MJD& right ) const

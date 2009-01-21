@@ -254,7 +254,7 @@ namespace Rinex3
    }
 
    double CommonTime::operator-( const CommonTime& right ) const
-      throw(InvalidRequest)
+      throw(gpstk::InvalidRequest)
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
@@ -293,7 +293,7 @@ namespace Rinex3
    }
 
    CommonTime& CommonTime::addSeconds( double seconds )
-      throw( InvalidRequest )
+      throw( gpstk::InvalidRequest )
    {
       long days = 0, ms = 0;
       if ( ABS(seconds) >= SEC_PER_DAY )

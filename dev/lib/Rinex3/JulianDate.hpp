@@ -158,17 +158,17 @@ namespace Rinex3
           */
          //@{
       bool operator==( const JulianDate& right ) const
-         throw(InvalidRequest);
+         throw();
       bool operator!=( const JulianDate& right ) const
-         throw(InvalidRequest);
+         throw();
       bool operator<( const JulianDate& right ) const
          throw(InvalidRequest);
       bool operator>( const JulianDate& right ) const
-         throw(InvalidRequest);
+         throw();
       bool operator<=( const JulianDate& right ) const
-         throw(InvalidRequest);
+         throw();
       bool operator>=( const JulianDate& right ) const
-         throw(InvalidRequest);
+         throw();
          //@}
 
       long double jd;

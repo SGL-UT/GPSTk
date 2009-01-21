@@ -278,7 +278,7 @@ namespace Rinex3
           * @param reutrn difference in seconds
           */
       double operator-( const CommonTime& right ) const
-         throw();
+         throw(InvalidRequest);
 
          /**
           * Add seconds to a copy of this CommonTime.
@@ -368,7 +368,7 @@ namespace Rinex3
       bool operator!=( const CommonTime& right ) const
          throw();
       bool operator<( const CommonTime& right ) const
-         throw();
+         throw(InvalidRequest);
       bool operator>( const CommonTime& right ) const
          throw();
       bool operator<=( const CommonTime& right ) const
