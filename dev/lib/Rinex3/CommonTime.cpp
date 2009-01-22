@@ -257,9 +257,12 @@ namespace Rinex3
       throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
-           m_timeSystem != right.m_timeSystem)
-         GPSTK_THROW InvalidRequest("CommonTime objects not in same time system, cannot be differenced");
+      if ( (m_timeSystem != Any && right.m_timeSystem != Any) &&
+            m_timeSystem != right.m_timeSystem )
+      {
+         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be differenced");
+         GPSTK_THROW( ir );
+      }
 
       return( SEC_PER_DAY * static_cast<double>( m_day  - right.m_day  ) +
               SEC_PER_MS  * static_cast<double>( m_msod - right.m_msod ) + 
@@ -365,7 +368,10 @@ namespace Rinex3
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
            m_timeSystem != right.m_timeSystem)
-         GPSTK_THROW InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+      {
+         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+         GPSTK_THROW( ir );
+      }
 
       if (m_day < right.m_day)
          return true;
