@@ -115,6 +115,12 @@ void OrdEngine::setMode(const ObsEpoch& obs)
       oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcY);
       dualFreq = true;
    }
+   else if (mode=="c1c2")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
+      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2LM);
+      dualFreq = true;
+   }
    else if (mode=="c1")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);

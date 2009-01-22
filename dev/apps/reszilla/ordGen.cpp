@@ -151,7 +151,7 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
 
       ordModeOption('\0', "omode", "Specifies what observations are used to "
                     "compute the ORDs. Valid values are:"
-                    "p1p2, z1z2, c1p2, c1y2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
+                    "p1p2, z1z2, c1p2, c1c2, c1y2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
                     "z2, smo, dynamic, and smart. The default is " + ordMode),
    
       tropModelOption('\0', "trop-model", "Specify the trop model to use. "
