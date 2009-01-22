@@ -64,9 +64,7 @@ namespace Rinex3
                 int usec = 0,
                 TimeSystem ts = Unknown )
          throw()
-      {
-         tv.tv_sec = sec;  tv.tv_usec = usec;  timeSystem = ts;               
-      }
+      { tv.tv_sec = sec;  tv.tv_usec = usec;  timeSystem = ts; }
 
          /** struct timeval Constructor.
           * Sets time according to the given struct timeval.

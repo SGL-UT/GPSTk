@@ -186,10 +186,8 @@ namespace Rinex3
                          double& fsod ) const
       throw()
    {
-      day = m_day;
-      sod = m_msod / MS_PER_SEC;
-      long msec = m_msod - sod * MS_PER_SEC;  // m_msod % MS_PER_SEC
-      fsod = static_cast<double>( msec ) * SEC_PER_MS + m_fsod;
+      TimeSystem ts;
+      CommonTime::get( day, sod, fsod, ts );
    }
 
    void CommonTime::get( long& day,

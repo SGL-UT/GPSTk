@@ -57,10 +57,8 @@ namespace Rinex3
           */
      ANSITime( time_t t = 0, TimeSystem ts = Unknown )
          throw()
-      {
-         time = t;
-         timeSystem = ts;
-      }
+        : time(t)
+      { timeSystem = ts; }
 
          /** 
           * Copy Constructor.
