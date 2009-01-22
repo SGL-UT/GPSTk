@@ -158,7 +158,7 @@ namespace Rinex3
       virtual std::string getPrintChars() const
          throw()
       { 
-         return "Uu";
+         return "UuP";
       }
 
          /// Return a string containing the default format to use in printing.

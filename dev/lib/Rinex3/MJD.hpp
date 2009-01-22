@@ -133,7 +133,7 @@ namespace Rinex3
       virtual std::string getPrintChars() const
          throw()
       { 
-         return "Q";
+         return "QP";
       }
 
          /// Return a string containing the default format to use in printing.

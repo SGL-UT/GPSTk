@@ -228,7 +228,7 @@ namespace Rinex3
       inline virtual std::string getPrintChars() const
          throw()
       { 
-         return "EFG";
+         return "EFGP";
       }
          
          /// Return a string containing the default format to use in printing.
