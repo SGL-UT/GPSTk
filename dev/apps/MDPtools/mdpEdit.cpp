@@ -80,6 +80,8 @@ public:
          " this time. Format as string: \"yyyy ddd HH:MM:SS\" ");
       CommandOptionWithAnyArg endOpt('e',"end","Throw out data after this"
          " time. Format as string: \"yyyy ddd HH:MM:SS\" ");
+      CommandOptionWithAnyArg minSNROpt('\0',"snr","Throw out data with an SNR lower"
+         " than this value. (dBHz)");
       CommandOptionWithNumberArg prnOpt('p',"PRN","Throw out obs data from"
          " this PRN. Repeat option for mutiple SVs.");
       CommandOptionWithNumberArg recordStartOpt('\0',"record-start","Throw"
@@ -156,6 +158,14 @@ public:
          if (debugLevel || verboseLevel)
             cout << "Throwing out data after record number "
                  << recordEnd << endl;
+      }
+
+      minSNR = 0.0;
+      if (minSNROpt.getCount())
+      {
+         minSNR = asDouble(minSNROpt.getValue().front());
+         if (debugLevel || verboseLevel)
+            cout << "Throwing out data with SNR < " << minSNR << endl;
       }
 
       // see if any message types should be removed
@@ -239,6 +249,21 @@ protected:
                   input >> obs;
                   if (obs)
                   {
+                     MDPObsEpoch::ObsMap::iterator i;
+                     for (i = obs.obs.begin(); i != obs.obs.end(); )
+                     {
+                        MDPObsEpoch::Observation& o = i->second;
+                        if (o.snr < minSNR)
+                        {
+                           obs.obs.erase(i++);
+                           if (debugLevel > 2)
+                           cout << "Dropping " << obs.prn
+                                << " " << o.carrier << "," << o.range
+                                << ", snr=" << o.snr << endl;
+                        }
+                        else
+                           i++;
+                     }
                      if (prnSetToToss.size())
                      {
                         // If we have moved on to a new time, output the previous epoch
@@ -401,6 +426,7 @@ private:
    set<int> prnSetToToss;
    unsigned int recordStart, recordEnd;
    unsigned long msgCount, fcErrorCount;
+   double minSNR;
    unsigned short firstFC, lastFC;
    MDPHeader header;
    

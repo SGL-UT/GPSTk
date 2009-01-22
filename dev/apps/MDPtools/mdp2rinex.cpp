@@ -62,7 +62,8 @@ public:
    MDP2Rinex(const string& applName)
       throw()
       : InOutFramework<MDPStream, RinexObsStream>(
-         applName, "Converts an MDP stream to RINEX.")
+         applName, "Converts an MDP stream to RINEX."),
+        anyNav(false)
    {}
 
    bool initialize(int argc, char *argv[]) throw()
@@ -78,7 +79,9 @@ public:
                      "between points. Default: none.");
       CommandOptionNoArg
          c2Opt('c', "l2c",
-               "Enable output of L2C data in C2");
+               "Enable output of L2C data in C2"),
+         anyNavOpt('a',"any-nav-source", 
+                "Accept subframes from any code/carrier");
 
       if (!InOutFramework<MDPStream, RinexObsStream>::initialize(argc,argv))
          return false;
@@ -98,6 +101,8 @@ public:
       else
          thin = false;
 
+      if (anyNavOpt.getCount())
+         anyNav = true;
 
       roh.valid |= RinexObsHeader::allValid21;
       roh.fileType = "Observation";
@@ -227,7 +232,7 @@ protected:
          nav.dump(cout);
       DayTime howTime(week, sow);
 
-      if (nav.range != rcCA || nav.carrier != ccL1)
+      if (!anyNav && (nav.range != rcCA || nav.carrier != ccL1))
          return;
 
       NavIndex ni(RangeCarrierPair(nav.range, nav.carrier), nav.prn);
@@ -335,6 +340,7 @@ private:
    map<NavIndex, EngEphemeris> ephStore;
 
    bool thin;
+   bool anyNav;
    int thinning;
    bool firstObs, firstEph;
    DayTime prevTime;
