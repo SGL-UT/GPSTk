@@ -221,7 +221,7 @@ namespace Rinex3
          }
 
          else if(strm.buffer[0] == 'P' || strm.buffer[0] == 'V') {// P|V record
-            // if nothing, or epoch record, was processed during this call,
+            // if nothing was processed during this call,
             // process this P|V, otherwise (P|V or EP|V were processed), quit now
             if(status > 0) break;
             status = 2;                                           // P|V status = 2
