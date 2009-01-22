@@ -67,15 +67,12 @@ namespace Rinex3
    {
       long jday, sod;
       double fsod;
-      TimeSystem timeSys;
-      ct.get( jday, sod, fsod, timeSys );
+      ct.get( jday, sod, fsod, timeSystem );
      
       jd =   static_cast<long double>( jday ) +
            (   static_cast<long double>( sod ) 
              + static_cast<long double>( fsod ) ) * DAY_PER_SEC 
            - 0.5;
-
-      timeSystem = timeSys;
    }
    
    std::string JulianDate::printf( const std::string& fmt ) const

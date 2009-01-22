@@ -74,8 +74,7 @@ namespace Rinex3
 
       long day, sod;
       double fsod;
-      TimeSystem timeSys;
-      ct.get( day, sod, fsod, timeSys );
+      ct.get( day, sod, fsod, timeSystem );
       
          // find the number of days since the beginning of the GPS Epoch
       day -= GPS_EPOCH_JDAY;
@@ -86,8 +85,6 @@ namespace Rinex3
 
       zcount = static_cast<long>( day * ZCOUNT_PER_DAY ) 
          + static_cast<long>( static_cast<double>( sod + fsod ) / 1.5 );      
-
-      timeSystem = timeSys;
    }
 
    std::string GPSWeekZcount::printf( const std::string& fmt ) const

@@ -122,7 +122,7 @@ namespace Rinex3
       return set( day, sec, sod, timeSystem );
    }
 
-  CommonTime& CommonTime::set( double day = 0.0,
+  CommonTime& CommonTime::set( double day,
                                TimeSystem timeSystem )
       throw( gpstk::InvalidParameter )
    {

@@ -86,16 +86,14 @@ namespace Rinex3
    {
       long jday, sod;
       double fsod;
-      TimeSystem timeSys;
          // get the julian day, second of day, and fractional second of day
-      ct.get( jday, sod, fsod, timeSys );
+      ct.get( jday, sod, fsod, timeSystem );
          // convert the julian day to calendar "year/month/day of month"
       convertJDtoCalendar( jday, year, month, day );
          // convert the (whole) second of day to "hour/minute/second"
       convertSODtoTime( static_cast<double>( sod ), hour, minute, second );
          // add the fractional second of day to "second"
       second += fsod;
-      timeSystem = timeSys;
    }
    
    std::string CivilTime::printf( const std::string& fmt ) const

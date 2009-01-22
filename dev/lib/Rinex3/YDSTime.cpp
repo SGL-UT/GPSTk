@@ -62,15 +62,12 @@ namespace Rinex3
    {
       long jday, secDay;
       double fsecDay;
-      TimeSystem timeSys;
-      ct.get( jday, secDay, fsecDay, timeSys );
+      ct.get( jday, secDay, fsecDay, timeSystem );
       sod = static_cast<double>( secDay ) + fsecDay;
 
       int month, day;
       convertJDtoCalendar( jday, year, month, day );
       doy = jday - convertCalendarToJD( year, 1, 1 ) + 1;
-
-      timeSystem = timeSys;
    }
    
    std::string YDSTime::printf( const std::string& fmt ) const

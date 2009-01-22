@@ -73,13 +73,10 @@ namespace Rinex3
 
       long jday, sod;
       double fsod;
-      TimeSystem timeSys;
-      ct.get( jday, sod, fsod, timeSys );
+      ct.get( jday, sod, fsod, timeSystem );
       
       time = 
          static_cast<time_t>((jday - MJD_JDAY - UNIX_MJD) * SEC_PER_DAY + sod);
-
-      timeSystem = timeSys;
    }
    
    std::string ANSITime::printf( const std::string& fmt) const

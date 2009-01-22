@@ -74,8 +74,7 @@ namespace Rinex3
                              
       long jday, sod;
       double fsod;
-      TimeSystem timeSys;
-      ct.get( jday, sod, fsod, timeSys );
+      ct.get( jday, sod, fsod, timeSystem );
       
       tv.tv_sec = (jday - MJD_JDAY - UNIX_MJD) * SEC_PER_DAY + sod;
       
@@ -87,8 +86,6 @@ namespace Rinex3
          tv.tv_usec -= 1000000; 
          ++tv.tv_sec; 
       }
-
-      timeSystem = timeSys;
    }
    
    std::string UnixTime::printf( const std::string& fmt ) const

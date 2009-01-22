@@ -72,14 +72,11 @@ namespace Rinex3
    {
       long jday, sod;
       double fsod;
-      TimeSystem timeSys;
-      ct.get( jday, sod, fsod, timeSys );
+      ct.get( jday, sod, fsod, timeSystem );
      
       mjd =  static_cast<long double>( jday - MJD_JDAY ) +
            (  static_cast<long double>( sod ) 
             + static_cast<long double>( fsod ) ) * DAY_PER_SEC;
-
-      timeSystem = timeSys;
    }
    
    std::string MJD::printf( const std::string& fmt ) const
