@@ -612,7 +612,7 @@ namespace Rinex3
     CommonTime EngEphemeris::getTransmitTime() const
        throw(InvalidRequest)
     {
-       CommonTime toReturn(0.);
+       CommonTime toReturn;
        toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()));
        return toReturn;
     }
@@ -620,7 +620,7 @@ namespace Rinex3
    CommonTime EngEphemeris::getEpochTime() const
       throw(InvalidRequest)
    {
-      CommonTime toReturn(0.);
+      CommonTime toReturn;
       if ( (getToc() - getHOWTime(1)) < -HALFWEEK)
          toReturn = GPSWeekSecond(getFullWeek() + 1, getToc());
       else if ( (getToc() - getHOWTime(1)) > HALFWEEK)
@@ -633,7 +633,7 @@ namespace Rinex3
    CommonTime EngEphemeris::getEphemerisEpoch() const
       throw(InvalidRequest)
    {
-      CommonTime toReturn(0.);
+      CommonTime toReturn;
       if ( (getToe() - getHOWTime(1)) < -HALFWEEK)
          toReturn = GPSWeekSecond(getFullWeek() + 1, getToe());
       else if ( (getToe() - getHOWTime(1)) > HALFWEEK)
