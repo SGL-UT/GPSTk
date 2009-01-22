@@ -49,6 +49,8 @@
 #include "CommonTime.hpp"
 #include "Xvt.hpp"
 
+#include <iomanip>
+
 using namespace gpstk;
 
 namespace Rinex3

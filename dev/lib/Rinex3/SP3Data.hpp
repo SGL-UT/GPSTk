@@ -46,6 +46,7 @@
 
 #include "SatID.hpp"
 #include "SP3Base.hpp"
+#include <iomanip>
 
 using namespace gpstk;
 

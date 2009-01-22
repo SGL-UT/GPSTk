@@ -26,6 +26,7 @@
 //============================================================================
 
 #include <limits>
+#include <iomanip>
 #include "Exception.hpp"
 #include "TimeConstants.hpp"
 

@@ -48,6 +48,7 @@
 #define GPSTK_TABULAR_EPHEMERIS_STORE_HPP
 
 #include <iostream>
+#include <iomanip>
 
 #include "SatID.hpp"
 #include "CommonTime.hpp"

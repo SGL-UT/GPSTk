@@ -47,6 +47,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <iomanip>
 #include "SP3Base.hpp"
 #include "SP3SatID.hpp"
 
