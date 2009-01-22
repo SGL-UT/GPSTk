@@ -188,7 +188,7 @@ namespace Rinex3
           * Set method for internal variable m_timeSystem.
           */
       void setTimeSystem( const TimeSystem& timeSystem )
-         throw( gpstk::InvalidParameter )
+         throw()
       { m_timeSystem = timeSystem; }
 
          /**
@@ -278,7 +278,7 @@ namespace Rinex3
           * @param reutrn difference in seconds
           */
       double operator-( const CommonTime& right ) const
-         throw(InvalidRequest);
+         throw( InvalidRequest );
 
          /**
           * Add seconds to a copy of this CommonTime.
@@ -287,8 +287,8 @@ namespace Rinex3
           * @throws InvalidRequest on over-/under-flow
           */
       CommonTime operator+( double seconds ) const
-         throw( InvalidRequest );
-      
+         throw();
+
          /**
           * Subtract seconds from a copy of this CommonTime.
           * @param sec the number of seconds to subtract from a copy of this
@@ -297,8 +297,8 @@ namespace Rinex3
           * @throws InvalidRequest on over-/under-flow
           */
       CommonTime operator-( double seconds ) const
-         throw( InvalidRequest );
-      
+         throw();
+
          /** 
           * Add seconds to this CommonTime.
           * @param sec the number of seconds to add to this CommonTime.
@@ -306,8 +306,8 @@ namespace Rinex3
           * @throws InvalidRequest on over-/under-flow
           */
       CommonTime& operator+=( double seconds )
-         throw( InvalidRequest );
-      
+         throw();
+
          /**
           * Subtract seconds from this CommonTime.
           * @param sec the number of seconds to subtract from this CommonTime
@@ -315,8 +315,8 @@ namespace Rinex3
           * @throws InvalidRequest on over-/under-flow
           */
       CommonTime& operator-=( double seconds )
-         throw( InvalidRequest );
-      
+         throw();
+
          /** 
           * Add seconds to this CommonTime object.
           * This is the workhorse for the addition/subtraction operators.
@@ -325,7 +325,7 @@ namespace Rinex3
           * @throws InvalidRequest on over-/under-flow
           */
       CommonTime& addSeconds( double seconds )
-         throw( InvalidRequest );
+         throw();
 
          /** 
           * Add integer days to this CommonTime object.
@@ -334,8 +334,8 @@ namespace Rinex3
           * @throws InvalidRequest on over-/under-flow
           */
       CommonTime& addDays( long days )
-         throw( InvalidRequest );
-      
+         throw();
+
          /** 
           * Add integer seconds to this CommonTime object.
           * @param sec the number of seconds to add to this CommonTime
@@ -343,8 +343,8 @@ namespace Rinex3
           * @throws InvalidRequest on over-/under-flow
           */
       CommonTime& addSeconds( long seconds )
-         throw( InvalidRequest );
-      
+         throw();
+
          /** 
           * Add integer milliseconds to this CommonTime object.
           * @param ms the number of milliseconds to add to this CommonTime
@@ -352,7 +352,7 @@ namespace Rinex3
           * @throws InvalidRequest on over-/under-flow
           */
       CommonTime& addMilliseconds( long ms )
-         throw( InvalidRequest );
+         throw();
          //@}
 
          /**
@@ -368,13 +368,13 @@ namespace Rinex3
       bool operator!=( const CommonTime& right ) const
          throw();
       bool operator<( const CommonTime& right ) const
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
       bool operator>( const CommonTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator<=( const CommonTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator>=( const CommonTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
          //@}
 
       void reset()

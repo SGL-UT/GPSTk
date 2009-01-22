@@ -206,7 +206,7 @@ namespace Rinex3
                          double& sod ) const
       throw()
    {
-     day = m_day;
+      day = m_day;
       sod = m_msod / MS_PER_SEC + m_fsod;
    }
 
@@ -254,12 +254,12 @@ namespace Rinex3
    }
 
    double CommonTime::operator-( const CommonTime& right ) const
-      throw(gpstk::InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
            m_timeSystem != right.m_timeSystem)
-         throw InvalidRequest("CommonTime objects not in same time system, cannot be differenced");
+         GPSTK_THROW InvalidRequest("CommonTime objects not in same time system, cannot be differenced");
 
       return( SEC_PER_DAY * static_cast<double>( m_day  - right.m_day  ) +
               SEC_PER_MS  * static_cast<double>( m_msod - right.m_msod ) + 
@@ -267,33 +267,33 @@ namespace Rinex3
    }
    
    CommonTime CommonTime::operator+( double sec ) const
-      throw( gpstk::InvalidRequest )
+      throw()
    {
       return CommonTime( *this ).addSeconds( sec );
    }
 
    CommonTime CommonTime::operator-( double sec ) const
-      throw( gpstk::InvalidRequest )
+      throw()
    {
       return CommonTime( *this ).addSeconds( -sec );
    }
 
    CommonTime& CommonTime::operator+=( double sec )
-      throw( gpstk::InvalidRequest )
+      throw()
    {
       addSeconds( sec );
       return *this;
    }
 
    CommonTime& CommonTime::operator-=( double sec )
-      throw( gpstk::InvalidRequest )
+      throw()
    {
       addSeconds( -sec );
       return *this;
    }
 
    CommonTime& CommonTime::addSeconds( double seconds )
-      throw( gpstk::InvalidRequest )
+      throw()
    {
       long days = 0, ms = 0;
       if ( ABS(seconds) >= SEC_PER_DAY )
@@ -308,12 +308,12 @@ namespace Rinex3
          seconds -= static_cast<double>( ms ) * SEC_PER_MS;
       }
 
-      add(days, ms, seconds);
+      add( days, ms, seconds );
       return *this;
    }
 
    CommonTime& CommonTime::addSeconds( long seconds )
-      throw( gpstk::InvalidRequest )
+      throw()
    {
       long days( 0 );
       if( ABS( seconds ) > SEC_PER_DAY )
@@ -327,14 +327,14 @@ namespace Rinex3
    }
 
    CommonTime& CommonTime::addDays( long days )
-      throw( gpstk::InvalidRequest )
+      throw()
    {
       add( days, 0, 0.0 );
       return *this;
    }
 
    CommonTime& CommonTime::addMilliseconds( long msec )
-      throw( InvalidRequest )
+      throw()
    {
       add( 0, msec, 0.0 );
       return *this;
@@ -360,12 +360,12 @@ namespace Rinex3
    }
 
    bool CommonTime::operator<( const CommonTime& right ) const
-      throw(InvalidRequest)
+     throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
            m_timeSystem != right.m_timeSystem)
-         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+         GPSTK_THROW InvalidRequest("CommonTime objects not in same time system, cannot be compared");
 
       if (m_day < right.m_day)
          return true;
@@ -384,19 +384,19 @@ namespace Rinex3
    }
 
    bool CommonTime::operator>( const CommonTime& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return !operator <=(right);
    }
 
    bool CommonTime::operator<=( const CommonTime& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return (operator<(right) || operator==(right));
    }
 
    bool CommonTime::operator>=( const CommonTime& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return !operator<(right);
    }
