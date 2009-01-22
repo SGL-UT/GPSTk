@@ -54,6 +54,7 @@
 #include "SatID.hpp"
 #include "EngEphemeris.hpp"
 #include "icd_200_constants.hpp"
+#include "CivilTime.hpp"
 
 using namespace gpstk;
 
