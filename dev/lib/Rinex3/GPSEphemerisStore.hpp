@@ -90,7 +90,7 @@ namespace Rinex3
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      Xvt getXvt(const SatID sat, const CommonTime& t)
+      Xvt getXvt(const SatID& sat, const CommonTime& t)
          const throw(InvalidRequest);
       
 
@@ -138,7 +138,7 @@ namespace Rinex3
       /// @param t the time to look up
       /// @return the SV health bits
       /// @throw InvalidRequest no matching ephemeris found in the store
-      short getSatHealth(const SatID sat, const CommonTime& t)
+      short getSatHealth(const SatID& sat, const CommonTime& t)
          const throw(InvalidRequest);
 
 
@@ -167,7 +167,7 @@ namespace Rinex3
        * @param ref a place to return the IODC for future reference.
        * @return the Xvt of the SV at time t
        */
-      Xvt getXvt(const SatID sat, const CommonTime& t, short& ref)
+      Xvt getXvt(const SatID& sat, const CommonTime& t, short& ref)
          const throw(InvalidRequest);
 
       /// Get the number of EngEphemeris objects in this collection.
@@ -185,7 +185,7 @@ namespace Rinex3
       /// @param t time with which to search for ephemeris
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findEphemeris(const SatID sat, const CommonTime& t)
+      const EngEphemeris& findEphemeris(const SatID& sat, const CommonTime& t)
          const throw(InvalidRequest);
       
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
@@ -196,7 +196,7 @@ namespace Rinex3
       /// @param t the time of interest
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findUserEphemeris(const SatID sat, const CommonTime& t)
+      const EngEphemeris& findUserEphemeris(const SatID& sat, const CommonTime& t)
          const throw(InvalidRequest);
 
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
@@ -206,7 +206,7 @@ namespace Rinex3
       /// @param t the time of interest
       /// @return a reference to desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findNearEphemeris(const SatID sat, const CommonTime& t)
+      const EngEphemeris& findNearEphemeris(const SatID& sat, const CommonTime& t)
          const throw(InvalidRequest);
 
       /// Add all ephemerides to an existing list<EngEphemeris>.
@@ -232,7 +232,7 @@ namespace Rinex3
       /// satellite.  Note that the return is specifically chosen as a 
       /// const reference.  The intent is to provide "read only" access
       /// for analysis.  If the map needs to be modified, see other methods.
-      const EngEphMap& getEphMap( const SatID sat )
+      const EngEphMap& getEphMap( const SatID& sat )
                const throw(InvalidRequest);
 
    private:

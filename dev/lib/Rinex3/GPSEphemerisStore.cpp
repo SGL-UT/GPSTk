@@ -43,7 +43,7 @@ namespace Rinex3
 {
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt GPSEphemerisStore::getXvt(const SatID sat, const CommonTime& t)
+   Xvt GPSEphemerisStore::getXvt(const SatID& sat, const CommonTime& t)
       const throw(InvalidRequest)
    {
       short ref;
@@ -53,7 +53,7 @@ namespace Rinex3
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt GPSEphemerisStore::getXvt(const SatID sat, const CommonTime& t, short& ref)
+   Xvt GPSEphemerisStore::getXvt(const SatID& sat, const CommonTime& t, short& ref)
       const throw(InvalidRequest)
    {
       try
@@ -74,7 +74,7 @@ namespace Rinex3
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    const EngEphemeris&
-   GPSEphemerisStore::findEphemeris(const SatID sat, const CommonTime& t) 
+   GPSEphemerisStore::findEphemeris(const SatID& sat, const CommonTime& t) 
       const throw(InvalidRequest)
    {
       try
@@ -90,7 +90,7 @@ namespace Rinex3
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   short GPSEphemerisStore::getSatHealth(const SatID sat, const CommonTime& t)
+   short GPSEphemerisStore::getSatHealth(const SatID& sat, const CommonTime& t)
       const throw(InvalidRequest)
    {
       try
@@ -242,7 +242,7 @@ namespace Rinex3
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
    const EngEphemeris&
-   GPSEphemerisStore::findUserEphemeris(const SatID sat, const CommonTime& t) 
+   GPSEphemerisStore::findUserEphemeris(const SatID& sat, const CommonTime& t) 
       const throw(InvalidRequest)
    {
       UBEMap::const_iterator prn_i = ube.find(sat.id);
@@ -313,7 +313,7 @@ namespace Rinex3
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
    const EngEphemeris&
-   GPSEphemerisStore::findNearEphemeris(const SatID sat, const CommonTime& t) 
+   GPSEphemerisStore::findNearEphemeris(const SatID& sat, const CommonTime& t) 
       const throw(InvalidRequest)
    {
       UBEMap::const_iterator prn_i = ube.find(sat.id);
@@ -400,7 +400,7 @@ namespace Rinex3
 //-----------------------------------------------------------------------------
 //   const EngEphMap 
    const std::map<CommonTime, EngEphemeris>& 
-   GPSEphemerisStore::getEphMap( const SatID sat )
+   GPSEphemerisStore::getEphMap( const SatID& sat )
             const throw(InvalidRequest)
    {
       UBEMap::const_iterator prn_i = ube.find(sat.id);
