@@ -207,7 +207,8 @@ def main():
     yprops = dict(rotation=90,
                   horizontalalignment='right',
                   verticalalignment='center',
-                  family='monospace',
+                  family='sans-serif',
+                  fontsize=12,
                   x=-0.01)
 
     scale_props = dict(horizontalalignment="right",
@@ -273,21 +274,22 @@ def main():
                 ax1.axvline(t0, label='_nolegend_')
 
         if options.legend:
-            ax1.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005,
-                       handletextsep=0.01, axespad=0.0, loc=(1,0))
+            ax1.legend(numpoints=1, markerscale=100, loc=(1,0),
+                       handlelength=0.5, handletextpad=0.3, labelspacing=0)
             leg = pylab.gca().get_legend()
             ltext = leg.get_texts()
             llines = leg.get_lines()
             lframe = leg.get_frame()
             lframe.set_facecolor('0.4')
             pylab.setp(ltext, size=8, family="sans-serif")
-            pylab.setp(llines, linewidth=2)
+            pylab.setp(llines, linewidth=4)
             leg.draw_frame(False)
         if not options.clockDelta:
             ax1.set_ylabel('ord (meters)', **yprops)
         else:
             ax1.set_ylabel('ord (meters)\nclock diff (10^-12)', **yprops)
     
+        pylab.setp(ax1.get_yticklabels(), fontsize=10, family='sans-serif')
         ax1.grid(True)
         pylab.figtext(rExtent+.08, 0.95, "y range +/- %s"%options.yRange,
                       **scale_props)
@@ -336,8 +338,8 @@ def main():
             ax2.fill(tt, yy, facecolor='b', alpha=0.4, label='_nolegend_')
             
         if options.legend:
-            ax2.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005,
-                       handletextsep=0.01, axespad=0.0, loc=(1,0))
+            ax2.legend(numpoints=1, markerscale=100,  loc=(1,0),
+                       handlelength=0.5, handletextpad=0.3, labelspacing=0)
             leg = pylab.gca().get_legend()
             pylab.setp(leg.get_texts(), size=8, family="sans-serif")
             leg.draw_frame(False)
@@ -430,9 +432,10 @@ def smoothPlot(ax, x, y, style="", txt="", window_len=0):
         x=x[n-1:-n+1]
 
     if txt == "none":
-        ax.plot_date(x, y, style, markersize=1.5)
+        ax.plot_date(x, y, style, markersize=2)
     else:
-        ax.plot_date(x, y, style, label=txt, markersize=1.5)
+        ax.plot_date(x, y, style, label=txt, markersize=2)
+#
 
 
 if __name__ == "__main__":
