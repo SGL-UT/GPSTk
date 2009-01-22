@@ -613,7 +613,7 @@ namespace Rinex3
        throw(InvalidRequest)
     {
        CommonTime toReturn(0.);
-       toReturn = GPSWeekSecond(getFullWeek(), (double)getTot());
+       toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()));
        return toReturn;
     }
 
@@ -677,7 +677,7 @@ namespace Rinex3
          // this return as a double is necessary for sets into CommonTime 
          // to not get confused.  Ints are Zcounts whereas doubles are seconds
          // Is this true after DayTime -> CommonTime change?? [DR]
-      return (double) HOWtime[subframe-1];
+      return static_cast<double>(HOWtime[subframe-1]);
    }
 
    short EngEphemeris::getASAlert(short subframe)  const

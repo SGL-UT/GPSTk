@@ -61,8 +61,8 @@ namespace Rinex3
       string line;
       if(flag == '*') {// output Epoch Header Record
          line = "* ";
-         line += ((CivilTime)time).printf(" %4Y %2m %2d %2H %2M");
-         line += " " + rightJustify(((CivilTime)time).printf("%.8f"),11);
+         line += (static_cast<CivilTime>(time)).printf(" %4Y %2m %2d %2H %2M");
+         line += " " + rightJustify((static_cast<CivilTime>(time)).printf("%.8f"),11);
       }
       else {           // output Position and Clock OR Velocity and Clock Rate Record
          line = flag;
@@ -119,7 +119,7 @@ namespace Rinex3
    void SP3Data::dump(ostream& s) const 
    {
       s << flag << " " << sat
-         << " " << ((CivilTime)time).printf("%Y/%02m/%02d %2H:%02M:%06.3f = ") << ((GPSWeekSecond)time).printf("%F/%10.3g");
+         << " " << (static_cast<CivilTime>(time)).printf("%Y/%02m/%02d %2H:%02M:%06.3f = ") << (static_cast<GPSWeekSecond>(time)).printf("%F/%10.3g");
       if(flag != '*') {
          s << fixed << setprecision(6)
            << " X=" << setw(14) << x[0]

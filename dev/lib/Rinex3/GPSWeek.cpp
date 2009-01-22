@@ -114,7 +114,7 @@ namespace Rinex3
                setWeek10( asInt( i->second ) );
                break;
             case 'P':
-               timeSystem = (TimeSystem) asInt( i->second );
+               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
                break;
             default:
                   // do nothing
