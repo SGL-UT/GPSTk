@@ -104,7 +104,7 @@ namespace Rinex3
 
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
          throw();
@@ -162,13 +162,13 @@ namespace Rinex3
       bool operator!=( const MJD& right ) const
          throw();
       bool operator<( const MJD& right ) const
-         throw(gpstk::InvalidRequest);
+         throw( gpstk::InvalidRequest );
       bool operator>( const MJD& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator<=( const MJD& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator>=( const MJD& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
          //@}
 
       long double mjd;

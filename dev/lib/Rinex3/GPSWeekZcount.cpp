@@ -41,7 +41,7 @@ namespace Rinex3
    }
    
    CommonTime GPSWeekZcount::convertToCommonTime() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -61,7 +61,7 @@ namespace Rinex3
    }
    
    void GPSWeekZcount::convertFromCommonTime( const CommonTime& ct )
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
          /// This is the earliest CommonTime representable by GPSWeekZcount.
       static const CommonTime MIN_CT = GPSWeekZcount(0,0,Any);

@@ -70,7 +70,7 @@ namespace Rinex3
           * @throw InvalidRequest on over-/under-flow
           */
       JulianDate( const TimeTag& right )
-         throw( gpstk::InvalidRequest )
+         throw()
       { 
          convertFromCommonTime( right.convertToCommonTime() ); 
       }
@@ -83,7 +83,7 @@ namespace Rinex3
           * @throw InvalidRequest on over-/under-flow
           */
       JulianDate( const CommonTime& right )
-         throw( )
+         throw()
       {
          convertFromCommonTime( right );
       }
@@ -104,7 +104,7 @@ namespace Rinex3
 
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw( InvalidRequest );
+         throw( gpstk::InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
          throw();
@@ -162,13 +162,13 @@ namespace Rinex3
       bool operator!=( const JulianDate& right ) const
          throw();
       bool operator<( const JulianDate& right ) const
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
       bool operator>( const JulianDate& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator<=( const JulianDate& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator>=( const JulianDate& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
          //@}
 
       long double jd;

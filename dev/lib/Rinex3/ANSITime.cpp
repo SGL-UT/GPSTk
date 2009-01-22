@@ -40,7 +40,7 @@ namespace Rinex3
    }
    
    CommonTime ANSITime::convertToCommonTime() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -57,7 +57,7 @@ namespace Rinex3
    }
    
    void ANSITime::convertFromCommonTime( const CommonTime& ct )
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
          /// This is the earliest CommonTime for which ANSITimes are valid.
      static const CommonTime MIN_CT = ANSITime(0, Any);
@@ -189,31 +189,34 @@ namespace Rinex3
    }
 
    bool ANSITime::operator<( const ANSITime& right ) const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != Any && right.timeSystem != Any) &&
            timeSystem != right.timeSystem)
-         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+      {
+         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+         GPSTK_THROW(ir);
+      }
 
       return ( time < right.time );
    }
 
    bool ANSITime::operator>( const ANSITime& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( !operator<=( right ) );
    }
 
    bool ANSITime::operator<=( const ANSITime& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( operator<( right ) ||
                operator==( right ) );
    }
 
    bool ANSITime::operator>=( const ANSITime& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( !operator<( right ) );
    }

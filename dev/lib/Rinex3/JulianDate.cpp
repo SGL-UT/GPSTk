@@ -41,7 +41,7 @@ namespace Rinex3
    }
    
    CommonTime JulianDate::convertToCommonTime() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -185,12 +185,15 @@ namespace Rinex3
    }
 
    bool JulianDate::operator<( const JulianDate& right ) const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != Any && right.timeSystem != Any) &&
            timeSystem != right.timeSystem)
-         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+      {
+         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+         GPSTK_THROW(ir);
+      }
 
       if( jd < right.jd )
       {
@@ -200,20 +203,20 @@ namespace Rinex3
    }
 
    bool JulianDate::operator>( const JulianDate& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( !operator<=( right ) );
    }
 
    bool JulianDate::operator<=( const JulianDate& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( operator<( right ) ||
                operator==( right ) );
    }
 
    bool JulianDate::operator>=( const JulianDate& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( !operator<( right ) );
    }

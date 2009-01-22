@@ -41,7 +41,7 @@ namespace Rinex3
    }
    
    CommonTime MJD::convertToCommonTime() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -189,12 +189,15 @@ namespace Rinex3
    }
 
    bool MJD::operator<( const MJD& right ) const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != Any && right.timeSystem != Any) &&
            timeSystem != right.timeSystem)
-         throw InvalidRequest("CommonTime objects not in same time system, cannot be compared");
+      {
+         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+         GPSTK_THROW(ir);
+      }
 
       if( mjd < right.mjd )
       {
@@ -204,20 +207,20 @@ namespace Rinex3
    }
 
    bool MJD::operator>( const MJD& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( !operator<=( right ) );
    }
 
    bool MJD::operator<=( const MJD& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( operator<(  right ) ||
                operator==( right )   );
    }
 
    bool MJD::operator>=( const MJD& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( !operator<( right ) );
    }

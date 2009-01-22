@@ -136,7 +136,7 @@ namespace Rinex3
          /// Hey, it's an implicit casting operator!  Basically just a lazy
          /// way to get at convertToCommonTime().
       virtual operator CommonTime() const
-         throw(InvalidRequest)
+         throw( gpstk::InvalidRequest )
       { return convertToCommonTime(); }
 
          /// This returns the regular expression prefix that is used when 
@@ -155,12 +155,13 @@ namespace Rinex3
 
          /// Set method for internal variable timeSystem (enum).
       void setTimeSystem( const TimeSystem& timeSys )
-         throw( gpstk::InvalidParameter )
+         throw()
       { timeSystem = timeSys; }
 
          /// Obtain time system info (enum).
       TimeSystem getTimeSystem() const
-         throw();
+         throw()
+      { return timeSystem; }
 
    protected:
 

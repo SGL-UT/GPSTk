@@ -162,12 +162,6 @@ namespace Rinex3
       }
    }
 
-   TimeSystem TimeTag::getTimeSystem() const
-      throw()
-   {
-      return timeSystem;
-   }
-
 } // namespace
 
 std::ostream& operator<<( std::ostream& s,

@@ -41,7 +41,7 @@ namespace Rinex3
    }
    
    CommonTime GPSWeekSecond::convertToCommonTime() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -61,7 +61,7 @@ namespace Rinex3
    }
    
    void GPSWeekSecond::convertFromCommonTime( const CommonTime& ct )
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
          /// This is the earliest CommonTime convertible to GPSWeekSecond.
       static const CommonTime MIN_CT = GPSWeekSecond(0,0.,Any);
@@ -192,7 +192,7 @@ namespace Rinex3
    GPSWeekSecond::operator!=( const GPSWeekSecond& right ) const
       throw()
    {
-      return (! operator==( right ) );
+      return ( !operator==( right ) );
    }
 
    bool 
@@ -218,7 +218,7 @@ namespace Rinex3
    GPSWeekSecond::operator>( const GPSWeekSecond& right ) const
       throw()
    {
-      return (! operator<=( right ) );
+      return ( !operator<=( right ) );
    }
 
    bool 
@@ -232,7 +232,7 @@ namespace Rinex3
    GPSWeekSecond::operator>=( const GPSWeekSecond& right ) const
       throw()
    {
-      return (! operator<( right ) );
+      return ( !operator<( right ) );
    }
 
 } // namespace

@@ -73,8 +73,8 @@ namespace Rinex3
           * @throw InvalidRequest on over-/under-flow
           */
       YDSTime( const TimeTag& right )
-         throw( InvalidRequest )
-      { 
+         throw( gpstk::InvalidRequest )
+      {
          convertFromCommonTime( right.convertToCommonTime() ); 
       }
       
@@ -107,7 +107,7 @@ namespace Rinex3
       
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
       
       virtual void convertFromCommonTime( const CommonTime& ct )
          throw();
@@ -165,13 +165,13 @@ namespace Rinex3
       bool operator!=( const YDSTime& right ) const
          throw();
       bool operator<( const YDSTime& right ) const
-         throw(InvalidRequest);
+	throw( gpstk::InvalidRequest );
       bool operator>( const YDSTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator<=( const YDSTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator>=( const YDSTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
          //@}
 
       int year;

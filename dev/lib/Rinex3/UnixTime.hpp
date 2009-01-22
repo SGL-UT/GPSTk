@@ -37,7 +37,7 @@ struct timeval {
   long    tv_usec;        /* and microseconds */
 };
 #else
-#include <sys/time.h>     // for struct timeval
+#include <ctime>     // for struct timeval
 #endif
 
 using namespace gpstk;
@@ -108,7 +108,7 @@ namespace Rinex3
           * @throw InvalidRequest on over-/under-flow
           */
       UnixTime( const CommonTime& right )
-         throw( InvalidRequest )
+         throw( gpstk::InvalidRequest )
       {
          convertFromCommonTime( right );
       }
@@ -129,10 +129,10 @@ namespace Rinex3
 
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw( InvalidRequest );
+         throw( gpstk::InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
-         throw( InvalidRequest );
+         throw( gpstk::InvalidRequest );
 
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
@@ -187,13 +187,13 @@ namespace Rinex3
       virtual bool operator!=( const UnixTime& right ) const
          throw();
       virtual bool operator<( const UnixTime& right ) const
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
       virtual bool operator>( const UnixTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       virtual bool operator<=( const UnixTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       virtual bool operator>=( const UnixTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
          //@}
 
       struct timeval tv;

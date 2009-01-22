@@ -278,7 +278,7 @@ namespace Rinex3
           * @param reutrn difference in seconds
           */
       double operator-( const CommonTime& right ) const
-         throw( InvalidRequest );
+         throw( gpstk::InvalidRequest );
 
          /**
           * Add seconds to a copy of this CommonTime.

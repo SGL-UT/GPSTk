@@ -60,7 +60,7 @@ namespace Rinex3
    }
    
    CommonTime CivilTime::convertToCommonTime() const
-      throw( InvalidRequest )
+      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -312,16 +312,19 @@ namespace Rinex3
    bool CivilTime::operator!=( const CivilTime& right ) const
       throw()
    {
-      return (! operator==( right ) );
+      return ( !operator==( right ) );
    }
 
    bool CivilTime::operator<( const CivilTime& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != Any && right.timeSystem != Any) &&
            timeSystem != right.timeSystem)
-         return false;
+      {
+         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+         GPSTK_THROW(ir);
+      }
 
       if( year < right.year )
       {
@@ -372,21 +375,21 @@ namespace Rinex3
    }
 
    bool CivilTime::operator>( const CivilTime& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
-      return (! operator<=( right ) );
+      return ( !operator<=( right ) );
    }
 
    bool CivilTime::operator<=( const CivilTime& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( operator<( right ) || operator==( right ) );
    } 
 
    bool CivilTime::operator>=( const CivilTime& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
-      return (! operator<( right ) );
+      return ( !operator<( right ) );
    }
    
 } // namespace

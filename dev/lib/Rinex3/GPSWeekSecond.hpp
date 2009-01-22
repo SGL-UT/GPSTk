@@ -87,7 +87,7 @@ namespace Rinex3
           * @throw InvalidRequest on over-/under-flow
           */
       GPSWeekSecond( const CommonTime& right )
-         throw( InvalidRequest )
+         throw( gpstk::InvalidRequest )
       {
          convertFromCommonTime( right );
       }
@@ -108,10 +108,10 @@ namespace Rinex3
 
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
 
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
