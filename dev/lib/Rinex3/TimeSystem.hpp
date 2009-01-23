@@ -45,13 +45,23 @@ namespace TimeSystem
    class TimeSystem
    {
    public:
+         //Constructor
+      TimeSystem()
+         throw()
+      {}
+         //Copy Constructor
+      TimeSystem( const TimeSystem& right )
+         throw()
+      {}
 
-
+        //Assignment Opperator
+      TimeSystem& operator=( const TimeSystem& right )
+         throw()
+      {}
 
    private:
 
-
-   }//class
+   };//class
 
 }//namespace
 

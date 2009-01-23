@@ -24,6 +24,7 @@ else
    SP3EphemerisStore.cpp
    SP3Header.cpp
    TabularEphemerisStore.cpp
+   TimeSystem.cpp
    TimeTag.cpp
    UnixTime.cpp
    YDSTime.cpp
