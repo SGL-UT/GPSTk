@@ -204,8 +204,8 @@ namespace Rinex3
                          double& sod ) const
       throw()
    {
-      day = m_day;
-      sod = m_msod / MS_PER_SEC + m_fsod;
+      TimeSystem ts;
+      CommonTime::get( day, sod, ts );
    }
 
   void CommonTime::get( double& day,
@@ -222,10 +222,8 @@ namespace Rinex3
    void CommonTime::get( double& day ) const
       throw()
    {
-         // convert everything to days
-      day = static_cast<double>( m_day ) + 
-            static_cast<double>( m_msod ) * MS_PER_DAY +
-            m_fsod * SEC_PER_DAY;
+      TimeSystem ts;
+      CommonTime::get( day, ts );
    }
 
    double CommonTime::getDays() const
