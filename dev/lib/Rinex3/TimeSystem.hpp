@@ -39,6 +39,9 @@
 //
 //=============================================================================
 
+#include <iostream>
+#include <iomanip>
+
 namespace TimeSystem
 {
 
@@ -48,10 +51,12 @@ namespace TimeSystem
          //Constructor
       TimeSystem()
          throw()
+         : ts(Unknown)
       {}
          //Copy Constructor
       TimeSystem( const TimeSystem& right )
          throw()
+         : ts(right.ts)
       {}
 
         //Assignment Opperator
@@ -61,7 +66,17 @@ namespace TimeSystem
         return *this;
       }
 
+      //std::string printf
+
    private:
+
+      enum Systems
+      {
+         Unknown,    /**< unknown time frame; mostly for legacy code compatibility */
+         Any,        /**< wildcard; allows comparison with any other type */
+         GPS,        /**< GPS system time */
+         UTC         /**< Coordinated Universal Time (e.g., from NTP) */
+      } ts ;
 
    };//class
 

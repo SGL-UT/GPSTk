@@ -186,6 +186,10 @@ namespace Rinex3
 
             // this next read had better fail - if it does, an exception will
             // be thrown, and the FFStreamError created next won't get thrown
+            
+            //As of right now we are not using an exception to exit this logic.
+            //Further disucssion of this class is being undertaken at this time...
+
             //strm.formattedGetLine(strm.buffer, true);
          
             //FFStreamError err("EOF text found but file didn't end");
