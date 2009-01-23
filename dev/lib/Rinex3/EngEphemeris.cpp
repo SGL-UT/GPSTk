@@ -46,6 +46,8 @@
 #include "GPSGeoid.hpp"
 #include "EngEphemeris.hpp"
 #include "GPSWeekSecond.hpp"
+#include "YDSTime.hpp"
+#include "CivilTime.hpp"
 
 #include <cmath>
 
@@ -1178,7 +1180,8 @@ namespace Rinex3
          case 6: os << "Sat-6"; break;
          default: break;
       }
-//      os << "   " << t.printf("%3j   %5.0s   %02m/%02d/%04Y   %02H:%02M:%02S");
+      os << "   " << (static_cast<YDSTime>(t)).printf("%3j   %5.0s  ") 
+         << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y   %02H:%02M:%02S");
    }
 
 

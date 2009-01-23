@@ -43,7 +43,12 @@ namespace Rinex3
    class TimeTag
    {
    public:
-      
+
+         /// Constructor
+      TimeTag( TimeSystem ts = Unknown ) 
+         throw()
+      {}
+
          /// Virtual Destructor.
       virtual ~TimeTag() 
          throw()

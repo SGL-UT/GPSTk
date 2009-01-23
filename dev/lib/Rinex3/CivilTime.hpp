@@ -57,8 +57,8 @@ namespace Rinex3
                  double s = 0.0,
                  TimeSystem ts = Unknown )
          throw()
-            : year(yr), month(mo), day(dy), hour(hr), minute(mn), second(s)
-      { timeSystem = ts; }
+	    : year(yr), month(mo), day(dy), hour(hr), minute(mn), second(s), TimeTag(ts)
+      {}
       
          /**
           * Copy Constructor.
@@ -67,8 +67,9 @@ namespace Rinex3
       CivilTime( const CivilTime& right )
          throw()
             : year( right.year ), month( right.month )  , day( right.day ),
-              hour( right.hour ), minute( right.minute ), second( right.second )
-      { timeSystem = right.timeSystem; }
+              hour( right.hour ), minute( right.minute ), second( right.second ),
+              TimeTag( right.timeSystem )
+      {}
       
          /**
           * Alternate Copy Constructor.

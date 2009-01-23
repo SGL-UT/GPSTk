@@ -60,9 +60,12 @@ namespace Rinex3
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);
       string line;
       if(flag == '*') {// output Epoch Header Record
+         CivilTime civtime(time);
          line = "* ";
-         line += (static_cast<CivilTime>(time)).printf(" %4Y %2m %2d %2H %2M");
-         line += " " + rightJustify((static_cast<CivilTime>(time)).printf("%.8f"),11);
+//         line += (static_cast<CivilTime>(time)).printf(" %4Y %2m %2d %2H %2M");
+//         line += " " + rightJustify((static_cast<CivilTime>(time)).printf("%.8f"),11);
+         line += civtime.printf(" %4Y %2m %2d %2H %2M");
+         line += " " + rightJustify(civtime.printf("%.8f"),11);
       }
       else {           // output Position and Clock OR Velocity and Clock Rate Record
          line = flag;
