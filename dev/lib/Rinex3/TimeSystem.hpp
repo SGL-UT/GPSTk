@@ -48,11 +48,29 @@ namespace TimeSystem
    class TimeSystem
    {
    public:
+
+      enum Systems
+      {
+         Unknown,    /**< unknown time frame; mostly for legacy code compatibility */
+         Any,        /**< wildcard; allows comparison with any other type */
+         GPS,        /**< GPS system time */
+         UTC         /**< Coordinated Universal Time (e.g., from NTP) */
+      };
+
          //Constructor
-      TimeSystem()
+      TimeSystem(Systems sys = Unknown)
          throw()
-         : ts(Unknown)
-      {}
+      {
+         if (sys < 0 || sys > 3)
+         {
+            ts = Unknown;
+         }
+         else
+         {
+            ts = sys;
+         }
+      }
+
          //Copy Constructor
       TimeSystem( const TimeSystem& right )
          throw()
@@ -66,17 +84,20 @@ namespace TimeSystem
         return *this;
       }
 
-      //std::string printf
+      std::string printf() const
+         throw();
 
+      Systems getTimeSystem() const
+         throw()
+      { return ts; }
+
+      void setTimeSystem( const Systems& sys )
+         throw()
+      { ts = sys; }
+      
    private:
 
-      enum Systems
-      {
-         Unknown,    /**< unknown time frame; mostly for legacy code compatibility */
-         Any,        /**< wildcard; allows comparison with any other type */
-         GPS,        /**< GPS system time */
-         UTC         /**< Coordinated Universal Time (e.g., from NTP) */
-      } ts ;
+      Systems ts;
 
    };//class
 
