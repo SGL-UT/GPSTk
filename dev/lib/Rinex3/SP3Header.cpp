@@ -73,11 +73,12 @@ namespace Rinex3
       }
 
       // line 1
+      CivilTime civTime(time);
       line = "#";
       line += version;
       line += pvFlag;
-      line += (static_cast<CivilTime>(time)).printf("%4Y %2m %2d %2H %2M");
-      line += " " + rightJustify((static_cast<CivilTime>(time)).printf("%f"),11);
+      line += civTime.printf("%4Y %2m %2d %2H %2M");
+      line += " " + rightJustify(civTime.printf("%f"),11);
       line += " " + rightJustify(asString(numberOfEpochs),7);
       line += " " + rightJustify(dataUsed,5);
       line += " " + rightJustify(coordSystem,5);
@@ -86,9 +87,10 @@ namespace Rinex3
       strm << line << endl;
 
       // line 2
+      GPSWeekSecond gpsWS(time);
       line = "##";
-      line += rightJustify((static_cast<GPSWeekSecond>(time)).printf("%F"),5);
-      line += rightJustify((static_cast<GPSWeekSecond>(time)).printf("%g"),16);
+      line += rightJustify(gpsWS.printf("%F"),5);
+      line += rightJustify(gpsWS.printf("%g"),16);
       line += " " + rightJustify(asString(epochInterval,8),14);
       line += " " + (static_cast<MJD>(time)).printf("%5.0Q");
       line += " " + rightJustify(asString(time.getSecondOfDay()/86400.,13),15);
