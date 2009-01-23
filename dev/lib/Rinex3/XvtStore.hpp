@@ -81,7 +81,7 @@ namespace Rinex3
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
       virtual Xvt getXvt(const IndexType id, const CommonTime& t)
-         const throw(InvalidRequest)
+         const throw( gpstk::InvalidRequest )
          = 0;
 
       /// A debugging function that outputs in human readable form,
@@ -96,7 +96,7 @@ namespace Rinex3
       /// @param[in] tmin defines the beginning of the time interval
       /// @param[in] tmax defines the end of the time interval
       virtual void edit(const CommonTime& tmin, 
-                        const CommonTime& tmax = CommonTime(CommonTime::END_OF_TIME))
+                        const CommonTime& tmax = CommonTime::END_OF_TIME)
          throw()
          = 0;
 
@@ -104,16 +104,16 @@ namespace Rinex3
       /// determine the Xvt for any object.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual CommonTime getInitialTime()
-         const throw(InvalidRequest)
+      virtual CommonTime getInitialTime() const
+         throw()
          = 0;
 
       /// Determine the latest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual CommonTime getFinalTime()
-         const throw(InvalidRequest)
+      virtual CommonTime getFinalTime() const
+         throw()
          = 0;
 
       virtual bool velocityIsPresent()

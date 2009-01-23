@@ -78,7 +78,7 @@ namespace Rinex3
 
    bool EngEphemeris::addSubframe(const long subframe[10], const int gpsWeek,
                                   short PRN, short track)
-      throw(InvalidParameter)
+      throw( gpstk::InvalidParameter )
    {
       double ficked[60];
 
@@ -158,7 +158,7 @@ namespace Rinex3
                                const long gpsWeek,
                                const short PRN,
                                const short track)
-      throw(InvalidParameter)
+      throw( gpstk::InvalidParameter )
    {
       long paddedSF[10];
       short PRNArg;
@@ -179,6 +179,7 @@ namespace Rinex3
       const long sf1[8], const long sf2[8], const long sf3[8], 
       const long sf1TransmitSOW, const int gpsWeek,
       const short PRN, const short track)
+      throw()
    {
       double ficked[60];
 
@@ -278,8 +279,8 @@ namespace Rinex3
       return true;
    }
 
-   bool EngEphemeris :: isData(short subframe) const
-      throw(gpstk::InvalidRequest)
+   bool EngEphemeris::isData(short subframe) const
+      throw( gpstk::InvalidRequest )
    {
       if ((subframe < 1) || (subframe > 3))
       {
@@ -291,8 +292,8 @@ namespace Rinex3
       return haveSubframe[subframe-1];
    }
 
-   void EngEphemeris :: setAccuracy(const double& acc)
-      throw(gpstk::InvalidParameter)
+   void EngEphemeris::setAccuracy(const double& acc)
+      throw( gpstk::InvalidParameter )
    {
       if( acc < 0 )
       {
@@ -304,8 +305,90 @@ namespace Rinex3
       accFlag = gpstk::accuracy2ura(acc);
    }
 
-   Xvt EngEphemeris :: svXvt(const CommonTime& t) const
-      throw(InvalidRequest)
+   short EngEphemeris :: getFitInterval() const
+      throw( gpstk::InvalidRequest )
+   {
+      short iodc = getIODC();
+      short fiti = getFitInt();
+
+         /* check the IODC */
+      if (iodc < 0 || iodc > 1023)
+      {
+            /* error in iodc, return minimum fit */
+         return 4;
+      }
+      
+      if (((fiti == 0) &&
+           (iodc & 0xFF) < 240 || (iodc & 0xFF) > 255 ))
+      {
+            /* fit interval of 4 hours */
+         return 4;
+      }
+      else if (fiti == 1)
+      {
+         if( ((iodc & 0xFF) < 240 || (iodc & 0xFF) > 255))
+         {
+               /* fit interval of 6 hours */
+            return 6;
+         }
+         else if(iodc >=240 && iodc <=247)
+         {
+               /* fit interval of 8 hours */
+            return 8;
+         }
+         else if(iodc >= 248 && iodc <= 255 || iodc == 496)
+         {
+               /* fit interval of 14 hours */
+            return 14;
+         }
+         else if(iodc >= 497 && iodc <=503)
+         {
+               /* fit interval of 26 hours */
+            return 26;
+         }
+         else if(iodc >= 504 && iodc <=510)
+         {
+               /* fit interval of 50 hours */
+            return 50;
+         }
+         else if(iodc == 511 || iodc >= 752 && iodc <= 756)
+         {
+               /* fit interval of 74 hours */
+            return 74;
+         }
+         else if(iodc >= 757 && iodc <= 763)
+         {
+               /* fit interval of 98 hours */
+            return 98;
+         }
+         else if(iodc >= 764 && iodc <=767 || iodc >=1008 && iodc <=1010)
+         {
+               /* fit interval of 122 hours */
+            return 122;
+         }
+         else if(iodc >= 1011 && iodc <=1020)
+         {
+               /* fit interval of 146 hours */
+            return 146;
+         }
+         else
+         {
+               /* error in the iodc or ephemeris, return minimum
+                  fit */
+            return 4;
+         }
+      }
+      else
+      {
+            /* error in ephemeris/iodc, return minimum fit */
+         return 4;
+      }
+      
+      return 0; // never reached
+   }
+
+   Xvt EngEphemeris::svXvt(const CommonTime& t) const
+      throw( gpstk::InvalidRequest )
    {
       Xvt sv;
 
@@ -332,7 +415,7 @@ namespace Rinex3
       bool igtran;              // ground transmitter flag
       double lecc;               // eccentricity
       double tdrinc;            // dt inclination
-      if (getAhalf() < 2550.0e0 )
+      if ( getAhalf() < 2550.0e0 )
       {
          igtran = true;
          lecc = 0.0e0;
@@ -468,7 +551,7 @@ namespace Rinex3
    }
 
    double EngEphemeris::svRelativity(const CommonTime& t) const
-      throw(gpstk::InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       GPSGeoid geoid;
       double twoPI = 2.0e0 * PI;
@@ -497,7 +580,7 @@ namespace Rinex3
    }
 
    double EngEphemeris::svClockBias(const CommonTime& t) const
-      throw(gpstk::InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       double dtc,elaptc;
       elaptc = t - getEpochTime();
@@ -507,7 +590,7 @@ namespace Rinex3
    }
 
    double EngEphemeris::svClockDrift(const CommonTime& t) const
-      throw(gpstk::InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       double drift,elaptc;
       elaptc = t - getEpochTime();
@@ -515,90 +598,8 @@ namespace Rinex3
       return drift;
    }
 
-   short EngEphemeris :: getFitInterval() const
-      throw(InvalidRequest)
-   {
-      short iodc = getIODC();
-      short fiti = getFitInt();
-
-         /* check the IODC */
-      if (iodc < 0 || iodc > 1023)
-      {
-            /* error in iodc, return minimum fit */
-         return 4;
-      }
-      
-      if (((fiti == 0) &&
-           (iodc & 0xFF) < 240 || (iodc & 0xFF) > 255 ))
-      {
-            /* fit interval of 4 hours */
-         return 4;
-      }
-      else if (fiti == 1)
-      {
-         if( ((iodc & 0xFF) < 240 || (iodc & 0xFF) > 255))
-         {
-               /* fit interval of 6 hours */
-            return 6;
-         }
-         else if(iodc >=240 && iodc <=247)
-         {
-               /* fit interval of 8 hours */
-            return 8;
-         }
-         else if(iodc >= 248 && iodc <= 255 || iodc == 496)
-         {
-               /* fit interval of 14 hours */
-            return 14;
-         }
-         else if(iodc >= 497 && iodc <=503)
-         {
-               /* fit interval of 26 hours */
-            return 26;
-         }
-         else if(iodc >= 504 && iodc <=510)
-         {
-               /* fit interval of 50 hours */
-            return 50;
-         }
-         else if(iodc == 511 || iodc >= 752 && iodc <= 756)
-         {
-               /* fit interval of 74 hours */
-            return 74;
-         }
-         else if(iodc >= 757 && iodc <= 763)
-         {
-               /* fit interval of 98 hours */
-            return 98;
-         }
-         else if(iodc >= 764 && iodc <=767 || iodc >=1008 && iodc <=1010)
-         {
-               /* fit interval of 122 hours */
-            return 122;
-         }
-         else if(iodc >= 1011 && iodc <=1020)
-         {
-               /* fit interval of 146 hours */
-            return 146;
-         }
-         else
-         {
-               /* error in the iodc or ephemeris, return minimum
-                  fit */
-            return 4;
-         }
-      }
-      else
-      {
-            /* error in ephemeris/iodc, return minimum fit */
-         return 4;
-      }
-      
-      return 0; // never reached
-   }
-   
    unsigned EngEphemeris::getTLMMessage(short subframe) const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[subframe-1])
       {
@@ -609,16 +610,16 @@ namespace Rinex3
       return tlm_message[subframe-1];
    }
       
-    CommonTime EngEphemeris::getTransmitTime() const
-       throw(InvalidRequest)
-    {
-       CommonTime toReturn;
-       toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()));
-       return toReturn;
-    }
+   CommonTime EngEphemeris::getTransmitTime() const
+      throw()
+   {
+      CommonTime toReturn;
+      toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()));
+      return toReturn;
+   }
 
    CommonTime EngEphemeris::getEpochTime() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       CommonTime toReturn;
       if ( (getToc() - getHOWTime(1)) < -HALFWEEK)
@@ -631,7 +632,7 @@ namespace Rinex3
    }
 
    CommonTime EngEphemeris::getEphemerisEpoch() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       CommonTime toReturn;
       if ( (getToe() - getHOWTime(1)) < -HALFWEEK)
@@ -644,7 +645,7 @@ namespace Rinex3
    }
 
    short EngEphemeris::getPRNID() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if(!haveSubframe[0])
       {
@@ -655,7 +656,7 @@ namespace Rinex3
    }
    
    short EngEphemeris::getTracker() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if(!haveSubframe[0])
       {
@@ -666,7 +667,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getHOWTime(short subframe) const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[subframe-1])
       {
@@ -674,14 +675,15 @@ namespace Rinex3
                             " not stored.");
          GPSTK_THROW(exc);
       }
-         // this return as a double is necessary for sets into CommonTime 
-         // to not get confused.  Ints are Zcounts whereas doubles are seconds
-         // Is this true after DayTime -> CommonTime change?? [DR]
+         // This return as a double is necessary for sets into CommonTime 
+         // to not get confused.  Ints are Zcounts whereas doubles are seconds.
+         // This should still return a double after DayTime->CommonTime
+         // conversion, for backwards compatibility. [DR]
       return static_cast<double>(HOWtime[subframe-1]);
    }
 
    short EngEphemeris::getASAlert(short subframe)  const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[subframe-1])
       {
@@ -693,7 +695,7 @@ namespace Rinex3
    }
    
    short EngEphemeris::getFullWeek()  const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -704,7 +706,7 @@ namespace Rinex3
    }
    
    short EngEphemeris::getCodeFlags()  const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -715,7 +717,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getAccuracy()  const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -726,7 +728,7 @@ namespace Rinex3
    }
    
    short EngEphemeris::getAccFlag()  const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -737,7 +739,7 @@ namespace Rinex3
    }
    
    short EngEphemeris::getHealth() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -748,7 +750,7 @@ namespace Rinex3
    }
    
    short EngEphemeris::getL2Pdata() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -759,7 +761,7 @@ namespace Rinex3
    }
    
    short EngEphemeris::getIODC() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -770,7 +772,7 @@ namespace Rinex3
    }
    
    short EngEphemeris::getIODE() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -781,7 +783,7 @@ namespace Rinex3
    }
    
    long EngEphemeris::getAODO() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -792,7 +794,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getToc() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -803,7 +805,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getAf0() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -814,7 +816,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getAf1() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -825,7 +827,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getAf2() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -836,7 +838,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getTgd() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[0])
       {
@@ -847,7 +849,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getCus() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -858,7 +860,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getCrs() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -869,7 +871,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getCis() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -880,7 +882,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getCrc() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -891,7 +893,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getCuc() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -902,7 +904,7 @@ namespace Rinex3
    }
   
    double EngEphemeris::getCic() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -913,7 +915,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getToe() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -924,7 +926,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getM0() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -935,7 +937,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getDn() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -946,7 +948,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getEcc() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -957,7 +959,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getAhalf() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -968,7 +970,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getA() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -979,7 +981,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getOmega0() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -990,7 +992,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getI0() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -1001,7 +1003,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getW() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -1012,7 +1014,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getOmegaDot() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -1023,7 +1025,7 @@ namespace Rinex3
    }
    
    double EngEphemeris::getIDot() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[2])
       {
@@ -1034,7 +1036,7 @@ namespace Rinex3
    }
    
    short EngEphemeris::getFitInt() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if (!haveSubframe[1])
       {
@@ -1045,7 +1047,7 @@ namespace Rinex3
    }
 
    long EngEphemeris::getTot() const 
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       if(!haveSubframe[0])
       {
@@ -1158,12 +1160,14 @@ namespace Rinex3
    static void timeDisplay( ostream & os, const Rinex3::CommonTime& t )
    {
          // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
-      os << setw(4) << GPSWeekSecond(t).week;
-//      os << setw(4) << GPSWeekSecond(t).week << "(";
+      GPSWeekSecond dummyTime;
+      dummyTime = GPSWeekSecond(t);
+      os << setw(4) << dummyTime.week;
+//      os << setw(4) << dummyTime.week << "(";
 //      os << setw(4) << t.GPS10bitweek() << ")  ";
-      os << setw(6) << setfill(' ') << GPSWeekSecond(t).sow << "   ";
+      os << setw(6) << setfill(' ') << dummyTime.sow << "   ";
 
-      switch (GPSWeekSecond(t).getDayOfWeek())
+      switch (dummyTime.getDayOfWeek())
       {
          case 0: os << "Sun-0"; break;
          case 1: os << "Mon-1"; break;
@@ -1213,6 +1217,7 @@ namespace Rinex3
    }
 
    void EngEphemeris :: dump(ostream& s) const
+      throw()
    {
       ios::fmtflags oldFlags = s.flags();
    

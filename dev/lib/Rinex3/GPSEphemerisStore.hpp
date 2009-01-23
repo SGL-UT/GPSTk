@@ -90,16 +90,16 @@ namespace Rinex3
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      Xvt getXvt(const SatID& sat, const CommonTime& t)
-         const throw(InvalidRequest);
+      Xvt getXvt(const SatID& sat, const CommonTime& t) const
+         throw( gpstk::InvalidRequest );
       
 
       /// A debugging function that outputs in human readable form,
       /// all data stored in this object.
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
-      void dump(std::ostream& s = std::cout, short detail = 0)
-         const throw();
+      void dump(std::ostream& s = std::cout, short detail = 0) const
+         throw();
 
 
       /// Edit the dataset, removing data outside the indicated time interval
@@ -114,18 +114,18 @@ namespace Rinex3
       /// determine the Xvt for any satellite.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      CommonTime getInitialTime()
-         const throw(InvalidRequest)
-      {return initialTime;}
+      CommonTime getInitialTime() const
+         throw()
+      { return initialTime; }
 
       
       /// Determine the latest time for which this object can successfully 
       /// determine the Xvt for any satellite.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      CommonTime getFinalTime()
-         const throw(InvalidRequest)
-      {return finalTime;}
+      CommonTime getFinalTime() const
+         throw()
+      { return finalTime; }
 
 
       //---------------------------------------------------------------
@@ -138,8 +138,8 @@ namespace Rinex3
       /// @param t the time to look up
       /// @return the SV health bits
       /// @throw InvalidRequest no matching ephemeris found in the store
-      short getSatHealth(const SatID& sat, const CommonTime& t)
-         const throw(InvalidRequest);
+      short getSatHealth(const SatID& sat, const CommonTime& t) const
+         throw( gpstk::InvalidRequest );
 
 
       /// Add an EngEphemeris object to this collection.
@@ -148,7 +148,7 @@ namespace Rinex3
       bool addEphemeris(const EngEphemeris& eph)
          throw();
 
-      
+
       /// Remove EngEphemeris objects older than t.
       /// @param t remove EngEphemeris objects older than this
       void wiper(const CommonTime& t)
@@ -167,16 +167,16 @@ namespace Rinex3
        * @param ref a place to return the IODC for future reference.
        * @return the Xvt of the SV at time t
        */
-      Xvt getXvt(const SatID& sat, const CommonTime& t, short& ref)
-         const throw(InvalidRequest);
+      Xvt getXvt(const SatID& sat, const CommonTime& t, short& ref) const
+         throw( gpstk::InvalidRequest);
 
       /// Get the number of EngEphemeris objects in this collection.
       /// @return the number of EngEphemeris records in the map
-      unsigned ubeSize()
-         const throw();
-      
-      unsigned size()
-         const throw()
+      unsigned ubeSize() const
+         throw();
+
+      unsigned size() const
+         throw()
       { return ubeSize(); };
       
       /// Find an ephemeris based upon the search method configured
@@ -185,9 +185,9 @@ namespace Rinex3
       /// @param t time with which to search for ephemeris
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findEphemeris(const SatID& sat, const CommonTime& t)
-         const throw(InvalidRequest);
-      
+      const EngEphemeris& findEphemeris(const SatID& sat, const CommonTime& t) const
+         throw( gpstk::InvalidRequest );
+
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
       /// is chosen to be the one that 1) is within the fit interval
       /// for the given time of interest, and 2) is the last ephemeris
@@ -196,8 +196,8 @@ namespace Rinex3
       /// @param t the time of interest
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findUserEphemeris(const SatID& sat, const CommonTime& t)
-         const throw(InvalidRequest);
+      const EngEphemeris& findUserEphemeris(const SatID& sat, const CommonTime& t) const
+         throw( gpstk::InvalidRequest );
 
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
       /// chosen is the one with HOW time closest to the time t, (i.e. with
@@ -206,13 +206,13 @@ namespace Rinex3
       /// @param t the time of interest
       /// @return a reference to desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findNearEphemeris(const SatID& sat, const CommonTime& t)
-         const throw(InvalidRequest);
+      const EngEphemeris& findNearEphemeris(const SatID& sat, const CommonTime& t) const
+         throw( gpstk::InvalidRequest );
 
       /// Add all ephemerides to an existing list<EngEphemeris>.
       /// @return the number of ephemerides added.
-      int addToList(std::list<EngEphemeris>& v)
-         const throw();
+      int addToList(std::list<EngEphemeris>& v) const
+         throw();
 
       /// use findNearEphemeris() in the getSat...() routines
       void SearchNear(void)
@@ -232,8 +232,8 @@ namespace Rinex3
       /// satellite.  Note that the return is specifically chosen as a 
       /// const reference.  The intent is to provide "read only" access
       /// for analysis.  If the map needs to be modified, see other methods.
-      const EngEphMap& getEphMap( const SatID& sat )
-               const throw(InvalidRequest);
+      const EngEphMap& getEphMap( const SatID& sat ) const
+         throw( gpstk::InvalidRequest );
 
    private:
       

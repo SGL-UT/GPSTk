@@ -98,7 +98,7 @@ namespace Rinex3
                   double fsod = 0.0,
                   TimeSystem timeSystem = Unknown )
          throw( gpstk::InvalidParameter )
-       { set( day, sod, fsod, timeSystem ); }
+      { set( day, sod, fsod, timeSystem ); }
 
          /**
           * Constructor that accepts days and second of day.
@@ -108,7 +108,7 @@ namespace Rinex3
                   double sod,
                   TimeSystem timeSystem )
          throw( gpstk::InvalidParameter )
-     { set( day, sod, timeSystem ); }
+      { set( day, sod, timeSystem ); }
       
          /** 
           * Constructor that accepts days only.

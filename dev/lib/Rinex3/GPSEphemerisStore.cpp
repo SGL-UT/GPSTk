@@ -43,8 +43,8 @@ namespace Rinex3
 {
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt GPSEphemerisStore::getXvt(const SatID& sat, const CommonTime& t)
-      const throw(InvalidRequest)
+   Xvt GPSEphemerisStore::getXvt(const SatID& sat, const CommonTime& t) const
+      throw( gpstk::InvalidRequest )
    {
       short ref;
       return getXvt(sat, t, ref);
@@ -53,8 +53,8 @@ namespace Rinex3
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt GPSEphemerisStore::getXvt(const SatID& sat, const CommonTime& t, short& ref)
-      const throw(InvalidRequest)
+   Xvt GPSEphemerisStore::getXvt(const SatID& sat, const CommonTime& t, short& ref) const
+      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -74,8 +74,8 @@ namespace Rinex3
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    const EngEphemeris&
-   GPSEphemerisStore::findEphemeris(const SatID& sat, const CommonTime& t) 
-      const throw(InvalidRequest)
+   GPSEphemerisStore::findEphemeris(const SatID& sat, const CommonTime& t) const
+      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -90,8 +90,8 @@ namespace Rinex3
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   short GPSEphemerisStore::getSatHealth(const SatID& sat, const CommonTime& t)
-      const throw(InvalidRequest)
+   short GPSEphemerisStore::getSatHealth(const SatID& sat, const CommonTime& t) const
+      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -230,7 +230,8 @@ namespace Rinex3
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-   unsigned GPSEphemerisStore::ubeSize() const throw()
+   unsigned GPSEphemerisStore::ubeSize() const
+      throw()
    {
       unsigned counter = 0;
       for(UBEMap::const_iterator i = ube.begin(); i != ube.end(); i++)
@@ -242,8 +243,8 @@ namespace Rinex3
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
    const EngEphemeris&
-   GPSEphemerisStore::findUserEphemeris(const SatID& sat, const CommonTime& t) 
-      const throw(InvalidRequest)
+   GPSEphemerisStore::findUserEphemeris(const SatID& sat, const CommonTime& t) const
+      throw( gpstk::InvalidRequest )
    {
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
@@ -313,8 +314,8 @@ namespace Rinex3
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
    const EngEphemeris&
-   GPSEphemerisStore::findNearEphemeris(const SatID& sat, const CommonTime& t) 
-      const throw(InvalidRequest)
+   GPSEphemerisStore::findNearEphemeris(const SatID& sat, const CommonTime& t) const
+      throw( gpstk::InvalidRequest )
    {
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
@@ -379,7 +380,8 @@ namespace Rinex3
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-   int GPSEphemerisStore::addToList(std::list<EngEphemeris>& v) const throw()
+   int GPSEphemerisStore::addToList(std::list<EngEphemeris>& v) const
+      throw()
    {
       int n=0;
       UBEMap::const_iterator prn_i;
@@ -400,8 +402,8 @@ namespace Rinex3
 //-----------------------------------------------------------------------------
 //   const EngEphMap 
    const std::map<CommonTime, EngEphemeris>& 
-   GPSEphemerisStore::getEphMap( const SatID& sat )
-            const throw(InvalidRequest)
+   GPSEphemerisStore::getEphMap( const SatID& sat ) const
+      throw( gpstk::InvalidRequest )
    {
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())

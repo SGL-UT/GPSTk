@@ -58,7 +58,7 @@ namespace Rinex3
 
       // Load the given SP3 file
    void SP3EphemerisStore::loadFile(const std::string& filename)
-      throw(FileMissingException)
+      throw( FileMissingException )
    {
 
       try

@@ -74,7 +74,7 @@ namespace Rinex3
       SP3EphemerisStore()
          throw()
 	: dumpBadPosFlag(false), dumpBadClockFlag(false)
-     { Rinex3::TabularEphemerisStore(); haveVelocity = true; };
+     { Rinex3::TabularEphemerisStore(); };
 
 
          /// Destructor.
@@ -95,7 +95,7 @@ namespace Rinex3
 
          /// Load the given SP3 file
       virtual void loadFile(const std::string& filename)
-         throw(FileMissingException);
+         throw( FileMissingException );
 
 
          /// Set if satellites with bad or absent positional values will be

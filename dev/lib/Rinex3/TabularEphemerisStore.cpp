@@ -177,7 +177,7 @@ namespace Rinex3
        */
    Xvt TabularEphemerisStore::getXvt( const SatID sat,
                                       const CommonTime& t )
-      const throw(InvalidRequest)
+      const throw( gpstk::InvalidRequest )
    {
 
       EphMap::const_iterator svmap = pe.find(sat);

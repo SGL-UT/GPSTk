@@ -98,7 +98,7 @@ namespace Rinex3
           */
       virtual Xvt getXvt( const SatID id,
                           const CommonTime& t )
-         const throw(InvalidRequest);
+         const throw( gpstk::InvalidRequest );
 
 
          /** A debugging function that outputs in human readable form,
@@ -131,7 +131,7 @@ namespace Rinex3
           * @throw InvalidRequest This is thrown if the object has no data.
           */
       virtual CommonTime getInitialTime()
-         const throw(InvalidRequest)
+         const throw()
       { return initialTime; };
 
 
@@ -143,7 +143,7 @@ namespace Rinex3
           * @throw InvalidRequest This is thrown if the object has no data.
           */
       virtual CommonTime getFinalTime()
-         const throw(InvalidRequest)
+         const throw()
       { return finalTime; };
 
 
