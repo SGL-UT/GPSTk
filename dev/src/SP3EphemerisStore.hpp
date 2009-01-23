@@ -71,7 +71,7 @@ namespace gpstk
          /// Constructor.
       SP3EphemerisStore()
          throw()
-         : dumpBadPosFlag(false), dumpBadClockFlag(false)
+         : rejectBadPosFlag(false), rejectBadClockFlag(false)
       { TabularEphemerisStore(); };
 
 
@@ -97,26 +97,26 @@ namespace gpstk
 
 
          /// Set if satellites with bad or absent positional values will be
-         /// dumped. It is false by default when object is constructed.
-      virtual SP3EphemerisStore& dumpBadPositions(const bool flag)
-      { dumpBadPosFlag = true; return (*this); };
+         /// rejected. It is false by default when object is constructed.
+      virtual SP3EphemerisStore& rejectBadPositions(const bool flag)
+      { rejectBadPosFlag = true; return (*this); };
 
 
          /// Set if satellites with bad or absent clock values will be
-         /// dumped. It is false by default when object is constructed.
-      virtual SP3EphemerisStore& dumpBadClocks(const bool flag)
-      { dumpBadClockFlag = true; return (*this); };
+         /// rejected. It is false by default when object is constructed.
+      virtual SP3EphemerisStore& rejectBadClocks(const bool flag)
+      { rejectBadClockFlag = true; return (*this); };
 
 
    private:
 
 
-         /// Flag to dump satellites with bad or absent positional values
-      bool dumpBadPosFlag;
+         /// Flag to reject satellites with bad or absent positional values
+      bool rejectBadPosFlag;
 
 
-         /// Flag to dump satellites with bad or absent clock values
-      bool dumpBadClockFlag;
+         /// Flag to reject satellites with bad or absent clock values
+      bool rejectBadClockFlag;
 
 
    }; // End of class 'SP3EphemerisStore'

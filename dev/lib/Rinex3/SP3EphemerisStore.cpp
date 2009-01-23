@@ -87,20 +87,20 @@ namespace Rinex3
          while(strm >> rec)
          {
 
+            // If there is a bad or absent clock value, and
+            // corresponding flag is set, then continue
+            if( (rec.clk == 999999.999999) &&
+                ( rejectBadClockFlag ) )
+            {
+               continue;
+            }
+
             // If there are bad or absent positional values, and
             // corresponding flag is set, then continue
             if( ( (rec.x[0] == 0.0)    ||
                   (rec.x[1] == 0.0)    ||
                   (rec.x[2] == 0.0) )  &&
-                ( dumpBadPosFlag) )
-            {
-               continue;
-            }
-
-               // If there is a bad or absent clock value, and
-               // corresponding flag is set, then continue
-            if( (rec.clk == 999999.999999) &&
-                ( dumpBadClockFlag ) )
+                ( rejectBadPosFlag) )
             {
                continue;
             }
