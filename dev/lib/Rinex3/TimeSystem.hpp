@@ -57,7 +57,9 @@ namespace TimeSystem
         //Assignment Opperator
       TimeSystem& operator=( const TimeSystem& right )
          throw()
-      {}
+      {
+        return *this;
+      }
 
    private:
 
