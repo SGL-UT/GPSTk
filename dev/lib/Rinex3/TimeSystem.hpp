@@ -84,16 +84,15 @@ namespace TimeSystem
         return *this;
       }
 
-      std::string printf() const
-         throw();
-
       Systems getTimeSystem() const
          throw()
       { return ts; }
-
+      
       void setTimeSystem( const Systems& sys )
-         throw()
-      { ts = sys; }
+         throw();
+      
+      std::string printf() const
+         throw();
       
    private:
 

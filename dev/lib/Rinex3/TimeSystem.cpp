@@ -42,6 +42,19 @@
 
 namespace TimeSystem
 {
+   void TimeSystem::setTimeSystem( const Systems& sys )
+      throw()
+   {         
+      if (sys < 0 || sys > 3)
+      {
+         ts = Unknown;
+      }
+      else
+      {
+         ts = sys;
+      }
+   }
+
    std::string TimeSystem::printf() const
       throw()
    {
