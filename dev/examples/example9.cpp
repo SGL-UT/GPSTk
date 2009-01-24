@@ -405,8 +405,8 @@ void example9::process()
 
          // Set flags to reject satellites with bad or absent positional
          // values or clocks
-      SP3EphList.dumpBadPositions(true);
-      SP3EphList.dumpBadClocks(true);
+      SP3EphList.rejectBadPositions(true);
+      SP3EphList.rejectBadClocks(true);
 
          // Read if we should check for data gaps.
       if ( confReader.getValueAsBoolean( "checkGaps", station ) )

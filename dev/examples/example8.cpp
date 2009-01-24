@@ -114,8 +114,8 @@ int main(void)
 
       // Set flags to reject satellites with bad or absent positional
       // values or clocks
-   SP3EphList.dumpBadPositions(true);
-   SP3EphList.dumpBadClocks(true);
+   SP3EphList.rejectBadPositions(true);
+   SP3EphList.rejectBadClocks(true);
 
       // Set flags to check for data gaps and too wide interpolation intervals.
       // Default values for "gapInterval" (901.0 s) and "maxInterval"
