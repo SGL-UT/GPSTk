@@ -46,43 +46,43 @@ namespace vdraw
   //@{
 
   /**
-   * This class describes a point as an (x,y) coordinate.  As it inherits from
-   * std::pair<double,double>, "x" is a reference to first and "y" is a
-   * reference to second.
+   * This class describes a point as an (x,y) coordinate.  
+   * Previously this had a reference for x and y to first and second, but that
+   * seems to be a memory waste.  So those were replaced with methods x() and
+   * y().
    */
   struct Point : public std::pair<double, double>
   {
-    /// X coordinate or abscissa
-    double& x;
-
-    /// Y coordinate or ordinate
-    double& y;
-
     /// Constructor
     Point(double ix=0.0, double iy=0.0)
-      : std::pair<double,double>(ix,iy), x(first), y(second)
+      : std::pair<double,double>(ix,iy)
     {
     }
 
     /// Copy Constructor
     Point(const Point& p)
-      : std::pair<double,double>(p.x,p.y), x(first), y(second)
+      : std::pair<double,double>(p.x(),p.y())
     {
     }
 
     /// Conversion constructor.
     Point(const std::pair<double,double>& o)
-      : std::pair<double,double>(o), x(first), y(second)
+      : std::pair<double,double>(o)
     {
     }
 
-    /// Operator= 
-    Point& operator=(const Point& b)
-    {
-      x = b.x;
-      y = b.y;
-      return *this;
-    }
+    /// Get a reference to x value
+    double& x() { return first; }
+
+    /// Get a constant reference to x value
+    const double& x() const { return first; }
+
+    /// Get a reference to y value
+    double& y() { return second; }
+
+    /// Get a constant reference to y value
+    const double& y() const { return second; }
+
   };
 
   /**
@@ -147,8 +147,8 @@ namespace vdraw
         for(i=v.begin(); i!=v.end(); i++)
         {
           if(size()==0 
-              || (i->first != (*this)[size()-1].x) 
-              || (i->second != (*this)[size()-1].y))
+              || (i->first != (*this)[size()-1].x()) 
+              || (i->second != (*this)[size()-1].y()))
             push_back(Point(*i));
         }
         tighten();

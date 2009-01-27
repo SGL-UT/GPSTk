@@ -205,8 +205,8 @@ namespace vplot
         }
         void operator() (Point& p)
         {
-          p.x = multX*(p.x-minX);
-          p.y = multY*(p.y-minY);
+          p.x() = multX*(p.x()-minX);
+          p.y() = multY*(p.y()-minY);
         }
       };
 
