@@ -62,7 +62,7 @@ namespace Rinex3
           * Default Constructor.
           * All elements are initialized to zero.
           */
-      JulianDate( long double j = 0., TimeSystem ts = Unknown )
+      JulianDate( long double j = 0., TimeSys ts = TimeSys::Unknown )
          throw()
             : jd( j )
       { timeSystem = ts; }

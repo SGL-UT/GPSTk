@@ -13,17 +13,17 @@ else
    ANSITime.cpp
    CivilTime.cpp
    CommonTime.cpp
-   EngEphemeris.cpp
-   GPSEphemerisStore.cpp
+#   EngEphemeris.cpp
+#   GPSEphemerisStore.cpp
    GPSWeek.cpp
    GPSWeekSecond.cpp
    GPSWeekZcount.cpp
    JulianDate.cpp
    MJD.cpp
-   SP3Data.cpp
-   SP3EphemerisStore.cpp
-   SP3Header.cpp
-   TabularEphemerisStore.cpp
+#   SP3Data.cpp
+#   SP3EphemerisStore.cpp
+#   SP3Header.cpp
+#   TabularEphemerisStore.cpp
    TimeSystem.cpp
    TimeTag.cpp
    UnixTime.cpp

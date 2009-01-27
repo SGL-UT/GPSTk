@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 #ifndef GPSTK_TIMETAG_HPP
 #define GPSTK_TIMETAG_HPP
 
@@ -42,6 +40,7 @@
 //=============================================================================
 
 #include "CommonTime.hpp"
+#include "TimeSystem.hpp"
 #include "StringUtils.hpp"
 #include <map>
 
@@ -58,10 +57,15 @@ namespace Rinex3
    {
    public:
 
-         /// Constructor
-      TimeTag( TimeSystem ts = Unknown ) 
+     // Default constructor
+      TimeTag()
          throw()
       {}
+
+         /// Constructor
+      TimeTag( TimeSys ts ) 
+         throw()
+      { timeSystem = ts; }
 
          /// Virtual Destructor.
       virtual ~TimeTag() 
@@ -173,18 +177,18 @@ namespace Rinex3
       { return "ErrorBadTime"; }
 
          /// Set method for internal variable timeSystem (enum).
-      void setTimeSystem( const TimeSystem& timeSys )
+      void setTimeSystem( const TimeSys& timeSys )
          throw()
       { timeSystem = timeSys; }
 
          /// Obtain time system info (enum).
-      TimeSystem getTimeSystem() const
+      TimeSys::Systems getTimeSystem() const
          throw()
-      { return timeSystem; }
+      { return timeSystem.getTimeSystem(); }
 
    protected:
 
-      TimeSystem timeSystem; // time system (representation) of the data
+      TimeSys timeSystem; // time system (representation) of the data
    };
 
 } // namespace

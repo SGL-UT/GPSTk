@@ -69,7 +69,7 @@ namespace Rinex3
          rv = formattedPrint( rv, getFormatPrefixInt() + "G", 
                               "Gu", getWeek10() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Pu", timeSystem );
+                              "Pu", timeSystem.getTimeSystem() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -128,7 +128,7 @@ namespace Rinex3
                setWeek10( asInt( i->second ) );
                break;
             case 'P':
-               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem = static_cast<TimeSys::Systems>(asInt( i->second ));
                break;
             default:
                   // do nothing

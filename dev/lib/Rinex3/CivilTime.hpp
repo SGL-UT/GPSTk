@@ -40,6 +40,7 @@
 //=============================================================================
 
 #include "TimeTag.hpp"
+#include "TimeSystem.hpp"
 
 using namespace gpstk;
 
@@ -69,10 +70,10 @@ namespace Rinex3
                  int hr = 0,
                  int mn = 0,
                  double s = 0.0,
-                 TimeSystem ts = Unknown )
+                 TimeSys ts = TimeSys::Unknown )
          throw()
 	    : year(yr), month(mo), day(dy), hour(hr), minute(mn), second(s)
-      {timeSystem = ts;}
+      { timeSystem = ts; }
       
          /**
           * Copy Constructor.
@@ -82,7 +83,7 @@ namespace Rinex3
          throw()
             : year( right.year ), month( right.month )  , day( right.day ),
               hour( right.hour ), minute( right.minute ), second( right.second )
-      {timeSystem = right.timeSystem;}
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.

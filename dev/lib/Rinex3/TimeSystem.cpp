@@ -1,7 +1,6 @@
 #pragma ident "$Id$"
 
 
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -40,9 +39,9 @@
 
 #include "TimeSystem.hpp"
 
-namespace TimeSystem
+namespace Rinex3
 {
-   void TimeSystem::setTimeSystem( const Systems& sys )
+   void TimeSys::setTimeSystem( const Systems& sys )
       throw()
    {         
       if (sys < 0 || sys > 3)
@@ -55,7 +54,7 @@ namespace TimeSystem
       }
    }
 
-   std::string TimeSystem::printf() const
+   std::string TimeSys::printf() const
       throw()
    {
       switch(ts)
@@ -64,7 +63,7 @@ namespace TimeSystem
             return("in Unknown timesystem");
             break;
          case Any:
-            return("in Any(wildcard) timesystem");
+            return("in Any (wildcard) timesystem");
             break;
          case GPS:
             return("in GPS timesystem");

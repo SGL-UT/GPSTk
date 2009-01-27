@@ -43,6 +43,7 @@
 
 #include "GPSWeek.hpp"
 #include "TimeConstants.hpp"
+#include "TimeSystem.hpp"
 
 using namespace gpstk;
 
@@ -69,7 +70,7 @@ namespace Rinex3
           */
       GPSWeekZcount( int w = 0,
                      int z = 0,
-                     TimeSystem ts = Unknown )
+                     TimeSys ts = TimeSys::Unknown )
          throw()
             : GPSWeek( w ), zcount( z )
       { timeSystem = ts; }

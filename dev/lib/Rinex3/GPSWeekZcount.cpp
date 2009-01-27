@@ -78,7 +78,7 @@ namespace Rinex3
       throw( gpstk::InvalidRequest )
    {
          /// This is the earliest CommonTime representable by GPSWeekZcount.
-      static const CommonTime MIN_CT = GPSWeekZcount(0,0,Any);
+     static const CommonTime MIN_CT = GPSWeekZcount(0,0,TimeSys::Any);
 
       if (ct < MIN_CT)
       {
@@ -121,7 +121,7 @@ namespace Rinex3
          rv = formattedPrint( rv, getFormatPrefixInt() + "C",
                               "Cu", getZcount32() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Pu", timeSystem );
+                              "Pu", timeSystem.getTimeSystem() );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -187,7 +187,7 @@ namespace Rinex3
                break;
 
             case 'P':
-               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem = static_cast<TimeSys::Systems>(asInt( i->second ));
                break;
 
             default:

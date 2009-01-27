@@ -42,6 +42,7 @@
 //=============================================================================
 
 #include "TimeTag.hpp"
+#include "TimeSystem.hpp"
 #include <ctime>      // for ctime
 
 using namespace gpstk;
@@ -69,7 +70,7 @@ namespace Rinex3
           * Default Constructor.
           * All elements are initialized to zero.
           */
-     ANSITime( time_t t = 0, TimeSystem ts = Unknown )
+     ANSITime( time_t t = 0, TimeSys ts = TimeSys::Unknown )
          throw()
         : time(t)
       { timeSystem = ts; }

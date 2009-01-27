@@ -66,7 +66,7 @@ namespace Rinex3
       YDSTime( long y = 0, 
                long d = 0, 
                double s = 0.,
-               TimeSystem ts = Unknown )
+               TimeSys ts = TimeSys::Unknown )
          throw()
             : year(y), doy(d), sod(s) 
       { timeSystem = ts; }

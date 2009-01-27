@@ -42,10 +42,10 @@
 #include <iostream>
 #include <iomanip>
 
-namespace TimeSystem
+namespace Rinex3
 {
 
-   class TimeSystem
+   class TimeSys
    {
    public:
 
@@ -57,8 +57,13 @@ namespace TimeSystem
          UTC         /**< Coordinated Universal Time (e.g., from NTP) */
       };
 
-         //Constructor
-      TimeSystem(Systems sys = Unknown)
+     // Default constructor
+      TimeSys()
+         throw()
+      { ts = Unknown; }
+
+     // Constructor
+      TimeSys( Systems sys )
          throw()
       {
          if (sys < 0 || sys > 3)
@@ -71,16 +76,17 @@ namespace TimeSystem
          }
       }
 
-         //Copy Constructor
-      TimeSystem( const TimeSystem& right )
+     // Copy Constructor
+      TimeSys( const TimeSys& right )
          throw()
          : ts(right.ts)
       {}
 
-        //Assignment Opperator
-      TimeSystem& operator=( const TimeSystem& right )
+     // Assignment Opperator
+      TimeSys& operator=( const TimeSys& right )
          throw()
       {
+        ts = right.ts;
         return *this;
       }
 
@@ -94,6 +100,23 @@ namespace TimeSystem
       std::string printf() const
          throw();
       
+         /**
+          * @defgroup ctco TimeSys Comparison Operators
+          * All comparison operators have a parameter "right" which corresponds
+          *  to the Timesys object to the right of the symbol.
+          * All comparison operators are const and return true on success
+          *  and false on failure.
+          */
+         //@{
+
+      bool operator==( const TimeSys& right ) const
+         throw()
+      { return ( ts == right.ts ); }
+
+      bool operator!=( const TimeSys& right ) const
+         throw()
+      { return !operator==(right); }
+
    private:
 
       Systems ts;

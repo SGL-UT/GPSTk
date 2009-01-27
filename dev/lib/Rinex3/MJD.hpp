@@ -42,6 +42,7 @@
 //=============================================================================
 
 #include "TimeTag.hpp"
+#include "TimeSystem.hpp"
 
 using namespace gpstk;
 
@@ -62,7 +63,8 @@ namespace Rinex3
           * Default Constructor.
           * All elements are initialized to zero.
           */
-      MJD( long double m = 0., TimeSystem ts = Unknown )
+      MJD( long double m = 0.,
+           TimeSys ts = TimeSys::Unknown )
          throw()
             : mjd( m )
       { timeSystem = ts; }

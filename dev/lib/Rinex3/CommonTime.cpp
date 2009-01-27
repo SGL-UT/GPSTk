@@ -53,10 +53,10 @@ namespace Rinex3
 
       // earliest representable CommonTime
    const CommonTime
-   CommonTime::BEGINNING_OF_TIME( CommonTime::BEGIN_LIMIT_JDAY, 0, 0.0, Any );
+   CommonTime::BEGINNING_OF_TIME( CommonTime::BEGIN_LIMIT_JDAY, 0, 0.0, TimeSys::Any );
       // latest representable CommonTime
    const CommonTime
-   CommonTime::END_OF_TIME( CommonTime::END_LIMIT_JDAY, 0, 0.0, Any ) ;
+   CommonTime::END_OF_TIME( CommonTime::END_LIMIT_JDAY, 0, 0.0, TimeSys::Any ) ;
 
    //@{
    /// Default tolerance for time equality, applied to milliseconds.
@@ -83,7 +83,7 @@ namespace Rinex3
    CommonTime& CommonTime::set( long day,
                                 long sod,
                                 double fsod,
-                                TimeSystem timeSystem )
+                                TimeSys timeSystem )
       throw( gpstk::InvalidParameter )
    {
          // Use temp variables so that we don't modify our
@@ -126,7 +126,7 @@ namespace Rinex3
 
    CommonTime& CommonTime::set( long day,
                                 double sod,
-                                TimeSystem timeSystem )
+                                TimeSys timeSystem )
       throw( gpstk::InvalidParameter )
    {
          // separate whole and fractional seconds, then use set()
@@ -137,7 +137,7 @@ namespace Rinex3
    }
 
   CommonTime& CommonTime::set( double day,
-                               TimeSystem timeSystem )
+                               TimeSys timeSystem )
       throw( gpstk::InvalidParameter )
    {
          // separate whole and fractional days
@@ -149,7 +149,7 @@ namespace Rinex3
    CommonTime& CommonTime::setInternal( long day,
                                         long msod,
                                         double fsod,
-                                        TimeSystem timeSystem )
+                                        TimeSys timeSystem )
       throw( gpstk::InvalidParameter )
    {
       if( day < BEGIN_LIMIT_JDAY || day > END_LIMIT_JDAY )
@@ -185,7 +185,7 @@ namespace Rinex3
    void CommonTime::get( long& day,
                          long& sod,
                          double& fsod,
-                         TimeSystem& timeSystem ) const
+                         TimeSys& timeSystem ) const
       throw()
    {
       day = m_day;
@@ -200,13 +200,13 @@ namespace Rinex3
                          double& fsod ) const
       throw()
    {
-      TimeSystem ts;
+      TimeSys ts;
       CommonTime::get( day, sod, fsod, ts );
    }
 
    void CommonTime::get( long& day,
                          double& sod,
-                         TimeSystem& timeSystem ) const
+                         TimeSys& timeSystem ) const
       throw()
    {
       day = m_day;
@@ -218,12 +218,12 @@ namespace Rinex3
                          double& sod ) const
       throw()
    {
-      TimeSystem ts;
+      TimeSys ts;
       CommonTime::get( day, sod, ts );
    }
 
   void CommonTime::get( double& day,
-                        TimeSystem& timeSystem ) const
+                        TimeSys& timeSystem ) const
       throw()
    {
          // convert everything to days
@@ -236,7 +236,7 @@ namespace Rinex3
    void CommonTime::get( double& day ) const
       throw()
    {
-      TimeSystem ts;
+      TimeSys ts;
       CommonTime::get( day, ts );
    }
 
@@ -257,18 +257,18 @@ namespace Rinex3
       return sod;
    }
 
-   TimeSystem CommonTime::getTimeSystem() const
+  TimeSys::Systems CommonTime::getTimeSystem() const
       throw()
    {
-      return m_timeSystem;
+      return m_timeSystem.getTimeSystem();
    }
 
    double CommonTime::operator-( const CommonTime& right ) const
       throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ( (m_timeSystem != Any && right.m_timeSystem != Any) &&
-            m_timeSystem != right.m_timeSystem )
+      if ( (m_timeSystem.getTimeSystem() != TimeSys::Any && right.m_timeSystem.getTimeSystem() != TimeSys::Any) &&
+            m_timeSystem.getTimeSystem() != right.m_timeSystem.getTimeSystem() )
       {
          gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be differenced");
          GPSTK_THROW( ir );
@@ -357,8 +357,9 @@ namespace Rinex3
       throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
-           m_timeSystem != right.m_timeSystem)
+      if ((m_timeSystem.getTimeSystem() != TimeSys::Any &&
+           right.m_timeSystem.getTimeSystem() != TimeSys::Any) &&
+          m_timeSystem != right.m_timeSystem)
          return false;
 
       return (m_day        == right.m_day     &&
@@ -376,8 +377,9 @@ namespace Rinex3
      throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((m_timeSystem != Any && right.m_timeSystem != Any) &&
-           m_timeSystem != right.m_timeSystem)
+      if ((m_timeSystem.getTimeSystem() != TimeSys::Any &&
+           right.m_timeSystem.getTimeSystem() != TimeSys::Any) &&
+          m_timeSystem != right.m_timeSystem)
       {
          gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
          GPSTK_THROW( ir );
@@ -426,7 +428,7 @@ namespace Rinex3
           << setw(7) << m_day  << " "
           << setw(8) << m_msod << " "
           << fixed << setprecision(15) << setw(17) << m_fsod
-          << " set to time system " << m_timeSystem ;
+          << " set to time system " << m_timeSystem.printf() ;
       return oss.str();
    }
 

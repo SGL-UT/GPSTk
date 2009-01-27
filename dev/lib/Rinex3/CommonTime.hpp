@@ -43,6 +43,7 @@
 #include <iomanip>
 #include "Exception.hpp"
 #include "TimeConstants.hpp"
+#include "TimeSystem.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -110,7 +111,7 @@ namespace Rinex3
       CommonTime( long day = 0, 
                   long sod = 0,
                   double fsod = 0.0,
-                  TimeSystem timeSystem = Unknown )
+                  TimeSys timeSystem = TimeSys::Unknown )
          throw( gpstk::InvalidParameter )
       { set( day, sod, fsod, timeSystem ); }
 
@@ -120,7 +121,7 @@ namespace Rinex3
           */
       CommonTime( long day,
                   double sod,
-                  TimeSystem timeSystem )
+                  TimeSys timeSystem )
          throw( gpstk::InvalidParameter )
       { set( day, sod, timeSystem ); }
       
@@ -129,7 +130,7 @@ namespace Rinex3
           * All elements default to zero and Unknown.
           */
       CommonTime( double day,
-                  TimeSystem timeSystem )
+                  TimeSys timeSystem )
          throw( gpstk::InvalidParameter )
       { set( day, timeSystem ); }
       
@@ -166,7 +167,7 @@ namespace Rinex3
       CommonTime& set( long day, 
                        long sod,
                        double fsod = 0.0,
-                       TimeSystem timeSystem = Unknown )
+                       TimeSys timeSystem = TimeSys::Unknown )
          throw( gpstk::InvalidParameter );
 
          /**
@@ -176,7 +177,7 @@ namespace Rinex3
           */
       CommonTime& set( long day,
                        double sod = 0.0,
-                       TimeSystem timeSystem = Unknown )
+                       TimeSys timeSystem = TimeSys::Unknown )
          throw( gpstk::InvalidParameter );
       
          /**
@@ -185,7 +186,7 @@ namespace Rinex3
           * out of bounds.
           */
       CommonTime& set( double day,
-                       TimeSystem timeSystem = Unknown )
+                       TimeSys timeSys = TimeSys::Unknown )
          throw( gpstk::InvalidParameter );
 
          /**
@@ -196,13 +197,13 @@ namespace Rinex3
       CommonTime& setInternal( long day = 0,
                                long msod = 0,
                                double fsod = 0.0,
-                               TimeSystem timeSystem = Unknown )
+                               TimeSys timeSys = TimeSys::Unknown )
          throw( gpstk::InvalidParameter );
 
          /**
           * Set method for internal variable m_timeSystem.
           */
-      void setTimeSystem( const TimeSystem& timeSystem )
+      void setTimeSystem( const TimeSys& timeSystem )
          throw()
       { m_timeSystem = timeSystem; }
 
@@ -213,7 +214,7 @@ namespace Rinex3
       void get( long& day, 
                 long& sod,
                 double& fsod,
-                TimeSystem& timeSystem ) const
+                TimeSys& timeSystem ) const
          throw();
 
          /**
@@ -232,7 +233,7 @@ namespace Rinex3
           */
       void get( long& day,
                 double& sod,
-                TimeSystem& timeSystem ) const
+                TimeSys& timeSystem ) const
          throw();
 
          /**
@@ -248,7 +249,7 @@ namespace Rinex3
           * includes the fraction of a day, plus the time frame.
           */
       void get( double& day,
-                TimeSystem& timeSystem ) const
+                TimeSys& timeSystem ) const
          throw();
 
          /**
@@ -265,7 +266,7 @@ namespace Rinex3
       void getInternal( long& day,
                         long& msod,
                         double& fsod,
-                        TimeSystem& timeSystem ) const
+                        TimeSys& timeSystem ) const
          throw()
       { day = m_day; msod = m_msod; fsod = m_fsod; timeSystem = m_timeSystem; }
 
@@ -278,7 +279,7 @@ namespace Rinex3
          throw();
 
          /// Obtain time system info (enum).
-      TimeSystem getTimeSystem() const
+      TimeSys::Systems getTimeSystem() const
          throw();
 
          //@}
@@ -394,7 +395,7 @@ namespace Rinex3
 
       void reset()
          throw()
-      { m_day = m_msod = 0; m_fsod = 0.0; m_timeSystem = Unknown; }
+      { m_day = m_msod = 0; m_fsod = 0.0; m_timeSystem = TimeSys::Unknown; }
 
       std::string asString() const
          throw();
@@ -423,7 +424,7 @@ namespace Rinex3
       long m_msod;    //< milliseconds-of-day        0 <= val < 86400000
       double m_fsod;  //< fractional seconds-of-day  0 <= val < 0.001
 
-      TimeSystem m_timeSystem; // time frame (system representation) of the data
+      TimeSys m_timeSystem; // time frame (system representation) of the data
    };
 
    std::ostream& operator<<(std::ostream& o, const CommonTime& ct);

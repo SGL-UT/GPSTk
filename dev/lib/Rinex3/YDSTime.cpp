@@ -64,7 +64,7 @@ namespace Rinex3
          long jday = convertCalendarToJD( year, 1, 1 ) + doy - 1;
          return CommonTime( jday, sod, timeSystem );
       }
-      catch (InvalidParameter& ip)
+      catch ( InvalidParameter& ip )
       {
          InvalidRequest ir(ip);
          GPSTK_THROW(ir);
@@ -101,7 +101,7 @@ namespace Rinex3
          rv = formattedPrint( rv, getFormatPrefixFloat() + "s",
                               "sf", sod );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Pu", timeSystem );
+                              "Pu", timeSystem.getTimeSystem() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc)
@@ -178,7 +178,7 @@ namespace Rinex3
                break;
 
             case 'P':
-               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem = static_cast<TimeSys::Systems>(asInt( i->second ));
                break;
             
             default:
@@ -207,15 +207,16 @@ namespace Rinex3
    {
       year = doy = 0;
       sod = 0.0;
-      timeSystem = Unknown;
+      timeSystem = TimeSys::Unknown;
    }
 
    bool YDSTime::operator==( const YDSTime& right ) const
       throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem != Any && right.timeSystem != Any) &&
-           timeSystem != right.timeSystem)
+      if ((timeSystem.getTimeSystem() != TimeSys::Any &&
+           right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+          timeSystem != right.timeSystem)
          return false;
 
       if( year == right.year &&
@@ -237,8 +238,9 @@ namespace Rinex3
       throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem != Any && right.timeSystem != Any) &&
-           timeSystem != right.timeSystem)
+      if ((timeSystem.getTimeSystem() != TimeSys::Any &&
+           right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+          timeSystem != right.timeSystem)
       {
          gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
 	 GPSTK_THROW(ir);

@@ -89,7 +89,7 @@ namespace Rinex3
 
          /// Constructor.
       GPSWeek( int w = 0,
-               TimeSystem ts = Unknown )
+               TimeSys ts = TimeSys::Unknown )
          throw()
             : week(w) 
       { timeSystem = ts; }
@@ -109,8 +109,9 @@ namespace Rinex3
          throw()
       {
         /// Any (wildcard) type exception allowed, otherwise must be same time systems
-         if ((timeSystem != Any && right.timeSystem != Any) &&
-              timeSystem != right.timeSystem)
+         if ((timeSystem.getTimeSystem() != TimeSys::Any &&
+              right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+             timeSystem.getTimeSystem() != right.timeSystem.getTimeSystem())
             return false;
 
          return week == right.week;
@@ -120,8 +121,9 @@ namespace Rinex3
          throw( gpstk::InvalidRequest )
       {
         /// Any (wildcard) type exception allowed, otherwise must be same time systems
-         if ((timeSystem != Any && right.timeSystem != Any) &&
-              timeSystem != right.timeSystem)
+         if ((timeSystem.getTimeSystem() != TimeSys::Any &&
+              right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+             timeSystem.getTimeSystem() != right.timeSystem.getTimeSystem())
 	 {
             gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
             GPSTK_THROW(ir);
@@ -134,8 +136,9 @@ namespace Rinex3
          throw( gpstk::InvalidRequest )
       {
         /// Any (wildcard) type exception allowed, otherwise must be same time systems
-         if ((timeSystem != Any && right.timeSystem != Any) &&
-              timeSystem != right.timeSystem)
+         if ((timeSystem.getTimeSystem() != TimeSys::Any &&
+              right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+             timeSystem.getTimeSystem() != right.timeSystem.getTimeSystem())
 	 {
             gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
             GPSTK_THROW(ir);
@@ -148,8 +151,9 @@ namespace Rinex3
          throw( gpstk::InvalidRequest )
       {
         /// Any (wildcard) type exception allowed, otherwise must be same time systems
-         if ((timeSystem != Any && right.timeSystem != Any) &&
-              timeSystem != right.timeSystem)
+         if ((timeSystem.getTimeSystem() != TimeSys::Any &&
+              right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+             timeSystem.getTimeSystem() != right.timeSystem.getTimeSystem())
 	 {
             gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
             GPSTK_THROW(ir);
@@ -162,8 +166,9 @@ namespace Rinex3
          throw( gpstk::InvalidRequest )
       {
         /// Any (wildcard) type exception allowed, otherwise must be same time systems
-         if ((timeSystem != Any && right.timeSystem != Any) &&
-              timeSystem != right.timeSystem)
+         if ((timeSystem.getTimeSystem() != TimeSys::Any &&
+              right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+             timeSystem.getTimeSystem() != right.timeSystem.getTimeSystem())
 	 {
             gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
             GPSTK_THROW(ir);
@@ -176,8 +181,9 @@ namespace Rinex3
          throw( gpstk::InvalidRequest )
       {
         /// Any (wildcard) type exception allowed, otherwise must be same time systems
-         if ((timeSystem != Any && right.timeSystem != Any) &&
-              timeSystem != right.timeSystem)
+         if ((timeSystem.getTimeSystem() != TimeSys::Any &&
+              right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+             timeSystem.getTimeSystem() != right.timeSystem.getTimeSystem())
 	 {
             gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
             GPSTK_THROW(ir);

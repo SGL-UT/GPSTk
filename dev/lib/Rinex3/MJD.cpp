@@ -104,8 +104,8 @@ namespace Rinex3
          rv = formattedPrint( rv, getFormatPrefixFloat() + "Q",
                               "QLf", mjd );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Pu", timeSystem );
-         return rv;         
+                              "Pu", timeSystem.getTimeSystem() );
+         return rv;
       }
       catch( gpstk::StringUtils::StringException& se )
       {
@@ -147,7 +147,7 @@ namespace Rinex3
                break;
 
             case 'P':
-               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem = static_cast<TimeSys::Systems>(asInt( i->second ));
                break;
 
             default:
@@ -175,15 +175,16 @@ namespace Rinex3
       throw()
    {
       mjd = 0.0;
-      timeSystem = Unknown;
+      timeSystem = TimeSys::Unknown;
    }
 
    bool MJD::operator==( const MJD& right ) const
       throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem != Any && right.timeSystem != Any) &&
-           timeSystem != right.timeSystem)
+      if ((timeSystem.getTimeSystem() != TimeSys::Any &&
+           right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+          timeSystem != right.timeSystem)
          return false;
 
       if( fabs(mjd - right.mjd) < CommonTime::eps )
@@ -203,8 +204,9 @@ namespace Rinex3
       throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem != Any && right.timeSystem != Any) &&
-           timeSystem != right.timeSystem)
+      if ((timeSystem.getTimeSystem() != TimeSys::Any &&
+           right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+          timeSystem != right.timeSystem)
       {
          gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
          GPSTK_THROW(ir);

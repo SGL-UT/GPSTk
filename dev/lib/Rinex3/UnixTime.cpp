@@ -75,10 +75,10 @@ namespace Rinex3
       throw( gpstk::InvalidRequest )
    {
          /// This is the earliest CommonTime for which UnixTimes are valid.
-      static const CommonTime MIN_CT = UnixTime(0, 0, Any);
+      static const CommonTime MIN_CT = UnixTime(0, 0, TimeSys::Any);
          /// This is the latest CommonTime for which UnixTimes are valid.
          /// (2^31 - 1) s and 999999 us
-      static const CommonTime MAX_CT = UnixTime(2147483647, 999999, Any);
+      static const CommonTime MAX_CT = UnixTime(2147483647, 999999, TimeSys::Any);
 
       if ( ct < MIN_CT || ct > MAX_CT )
       {
@@ -115,7 +115,7 @@ namespace Rinex3
          rv = formattedPrint(rv, getFormatPrefixInt() + "u",
                              "ulu", tv.tv_usec);
          rv = formattedPrint(rv, getFormatPrefixInt() + "P",
-                             "Pu", timeSystem);         
+                             "Pu", timeSystem.getTimeSystem() );         
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& se )
@@ -164,7 +164,7 @@ namespace Rinex3
                break;
 
             case 'P':
-               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem = static_cast<TimeSys::Systems>(asInt( i->second ));
                break;
                
             default:
@@ -192,15 +192,16 @@ namespace Rinex3
       throw()
    {
       tv.tv_sec = tv.tv_usec = 0;
-      timeSystem = Unknown;
+      timeSystem = TimeSys::Unknown;
    }
    
    bool UnixTime::operator==( const UnixTime& right ) const
       throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem != Any && right.timeSystem != Any) &&
-           timeSystem != right.timeSystem)
+      if ((timeSystem.getTimeSystem() != TimeSys::Any &&
+           right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+          timeSystem != right.timeSystem)
          return false;
 
       if( tv.tv_sec == right.tv.tv_sec  &&
@@ -221,8 +222,9 @@ namespace Rinex3
       throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem != Any && right.timeSystem != Any) &&
-           timeSystem != right.timeSystem)
+      if ((timeSystem.getTimeSystem() != TimeSys::Any &&
+           right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+          timeSystem != right.timeSystem)
       {
          gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
          GPSTK_THROW(ir)

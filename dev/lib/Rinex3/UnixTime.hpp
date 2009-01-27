@@ -76,7 +76,7 @@ namespace Rinex3
           */
       UnixTime( int sec = 0, 
                 int usec = 0,
-                TimeSystem ts = Unknown )
+                TimeSys ts = TimeSys::Unknown )
          throw()
       { tv.tv_sec = sec;  tv.tv_usec = usec;  timeSystem = ts; }
 
@@ -84,7 +84,7 @@ namespace Rinex3
           * Sets time according to the given struct timeval.
           */
       UnixTime( struct timeval t,
-                TimeSystem ts = Unknown )
+                TimeSys ts = TimeSys::Unknown )
          throw()
       {
          tv.tv_sec = t.tv_sec;  tv.tv_usec = t.tv_usec;  timeSystem = ts;
