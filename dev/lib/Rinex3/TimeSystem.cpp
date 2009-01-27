@@ -60,19 +60,19 @@ namespace Rinex3
       switch(ts)
       {
          case Unknown:
-            return("in Unknown timesystem");
+            return(" in Unknown timesystem");
             break;
          case Any:
-            return("in Any (wildcard) timesystem");
+            return(" in Any (wildcard) timesystem");
             break;
          case GPS:
-            return("in GPS timesystem");
+            return(" in GPS timesystem");
             break;
          case UTC:
-            return("in UTC timesystem");
+            return(" in UTC timesystem");
             break;
          default:
-            return("Error in time system");
+            return(" Error: timesystem set to unknown value: " + ts);
             break;
       }
    }
