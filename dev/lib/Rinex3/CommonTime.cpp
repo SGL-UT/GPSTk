@@ -428,7 +428,7 @@ namespace Rinex3
           << setw(7) << m_day  << " "
           << setw(8) << m_msod << " "
           << fixed << setprecision(15) << setw(17) << m_fsod
-          << m_timeSystem.printf() ;
+          << " " << m_timeSystem.asString() ;
       return oss.str();
    }
 

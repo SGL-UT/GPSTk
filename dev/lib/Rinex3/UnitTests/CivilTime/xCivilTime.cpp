@@ -65,7 +65,7 @@ void xCivilTime :: setFromInfoTest (void)
   std::cout << std::endl;
   TimeSys test;
   test.setTimeSystem(Check.getTimeSystem());
-  std::cout << test.printf() << std::endl;
+  std::cout << test.asString() << std::endl;
 }
 
 void xCivilTime :: operatorTest (void)
@@ -166,8 +166,12 @@ void xCivilTime :: printfTest (void)
   CivilTime GPS1(2008,8,21,13,30,15.,TimeSys::GPS);
   CivilTime UTC1(2008,8,21,13,30,15.,TimeSys::UTC);
 
-  CPPUNIT_ASSERT_EQUAL(GPS1.printf("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),(std::string)"2008 08 08 Aug 21 13 30 15 15.000000 02");
-  CPPUNIT_ASSERT_EQUAL(UTC1.printf("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),(std::string)"2008 08 08 Aug 21 13 30 15 15.000000 03");
-  CPPUNIT_ASSERT_EQUAL(GPS1.printError("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
-  CPPUNIT_ASSERT_EQUAL(UTC1.printError("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
+  CPPUNIT_ASSERT_EQUAL(GPS1.printf("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),
+                       (std::string)"2008 08 08 Aug 21 13 30 15 15.000000 [GPS]");
+  CPPUNIT_ASSERT_EQUAL(UTC1.printf("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),
+                       (std::string)"2008 08 08 Aug 21 13 30 15 15.000000 [UTC]");
+  CPPUNIT_ASSERT_EQUAL(GPS1.printError("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),
+                       (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
+  CPPUNIT_ASSERT_EQUAL(UTC1.printError("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),
+                       (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
 }

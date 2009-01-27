@@ -18,7 +18,7 @@ void xANSITime :: setFromInfoTest (void)
   TimeTag::IdToValue Id;
 
   Id.insert(make_pair('K',"13500000"));
-  Id.insert(make_pair('P',"02"));
+  Id.insert(make_pair('P',"2"));
   CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
   CPPUNIT_ASSERT_EQUAL(setFromInfo1,Compare);
   Id.erase('K');
@@ -102,8 +102,8 @@ void xANSITime :: printfTest (void)
   ANSITime GPS1(13500000,TimeSys::GPS);
   ANSITime UTC1(13500000,TimeSys::UTC);
 
-  CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08K %02P"),(std::string)"13500000 02");
-  CPPUNIT_ASSERT_EQUAL(UTC1.printf("%08K %02P"),(std::string)"13500000 03");
+  CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08K %02P"),(std::string)"13500000 [GPS]");
+  CPPUNIT_ASSERT_EQUAL(UTC1.printf("%08K %02P"),(std::string)"13500000 [UTC]");
   CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08K %02P"),(std::string)"ErrorBadTime ErrorBadTime");
   CPPUNIT_ASSERT_EQUAL(UTC1.printError("%08K %02P"),(std::string)"ErrorBadTime ErrorBadTime");
 }

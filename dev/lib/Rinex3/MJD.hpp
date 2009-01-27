@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 #ifndef GPSTK_MJD_HPP
 #define GPSTK_MJD_HPP
 
@@ -156,7 +154,7 @@ namespace Rinex3
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%.9Q";
+         return "%.9Q %P";
       }
 
       virtual bool isValid() const

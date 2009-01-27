@@ -116,8 +116,8 @@ void xUnixTime :: printfTest (void)
 	UnixTime GPS1(1350000,0,TimeSys::GPS);
 	UnixTime UTC1(1350000,0,TimeSys::UTC);
 
-	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%07U %02u %02P"),(std::string)"1350000 00 02");
-	CPPUNIT_ASSERT_EQUAL(UTC1.printf("%07U %02u %02P"),(std::string)"1350000 00 03");
+	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%07U %02u %02P"),(std::string)"1350000 00 [GPS]");
+	CPPUNIT_ASSERT_EQUAL(UTC1.printf("%07U %02u %02P"),(std::string)"1350000 00 [UTC]");
 	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%07U %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
 	CPPUNIT_ASSERT_EQUAL(UTC1.printError("%07U %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
 }

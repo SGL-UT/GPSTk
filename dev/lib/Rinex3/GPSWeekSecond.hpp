@@ -159,7 +159,7 @@ namespace Rinex3
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return GPSWeek::getDefaultFormat() + " %010.3g";
+         return GPSWeek::getDefaultFormat() + " %010.3g %P";
       }
 
       virtual bool isValid() const

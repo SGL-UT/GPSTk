@@ -162,7 +162,7 @@ namespace Rinex3
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%K";
+         return "%K %P";
       }
 
       virtual bool isValid() const

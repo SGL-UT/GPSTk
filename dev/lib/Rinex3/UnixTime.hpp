@@ -177,7 +177,7 @@ namespace Rinex3
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%U %u";
+         return "%U %u %P";
       }
 
       virtual bool isValid() const

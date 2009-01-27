@@ -169,7 +169,7 @@ namespace Rinex3
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%02m/%02d/%04Y %02H:%02M:%02S";
+         return "%02m/%02d/%04Y %02H:%02M:%02S %P";
       }
 
       virtual bool isValid() const

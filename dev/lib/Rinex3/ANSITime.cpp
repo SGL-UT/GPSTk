@@ -105,7 +105,7 @@ namespace Rinex3
          rv = formattedPrint( rv, getFormatPrefixInt() + "K",
                               "Klu", time );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Pu", timeSystem.getTimeSystem() );
+                              "Ps", timeSystem.asString().c_str() );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& se )
@@ -148,7 +148,7 @@ namespace Rinex3
                break;
 
             case 'P':
-	      timeSystem = static_cast<TimeSys::Systems>(asInt( i->second ));
+               timeSystem = static_cast<TimeSys::Systems>(asInt( i->second ));
                break;
 
             default:

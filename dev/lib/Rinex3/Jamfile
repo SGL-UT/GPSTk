@@ -11,23 +11,23 @@ else
    # Please add in alphabetic order
    GPSBuildLibrary Rinex3 : 
    ANSITime.cpp
-   CivilTime.cpp
+#   CivilTime.cpp
    CommonTime.cpp
    EngEphemeris.cpp
    GPSEphemerisStore.cpp
    GPSWeek.cpp
    GPSWeekSecond.cpp
    GPSWeekZcount.cpp
-   JulianDate.cpp
-   MJD.cpp
+#   JulianDate.cpp
+#   MJD.cpp
    SP3Data.cpp
    SP3EphemerisStore.cpp
    SP3Header.cpp
    TabularEphemerisStore.cpp
    TimeSystem.cpp
    TimeTag.cpp
-   UnixTime.cpp
-   YDSTime.cpp
+#   UnixTime.cpp
+#   YDSTime.cpp
    ../../src/SP3SatID.cpp ../../src/Triple.cpp ../../src/ECEF.cpp
    ../../src/Geodetic.cpp ../../src/TimeConverters.cpp
    ;

@@ -104,7 +104,7 @@ namespace Rinex3
          rv = formattedPrint( rv, getFormatPrefixFloat() + "Q",
                               "QLf", mjd );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Pu", timeSystem.getTimeSystem() );
+                              "Ps", timeSystem.asString().c_str() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& se )

@@ -97,7 +97,7 @@ namespace Rinex3
       void setTimeSystem( const Systems& sys )
          throw();
       
-      std::string printf() const
+      std::string asString() const
          throw();
       
          /**

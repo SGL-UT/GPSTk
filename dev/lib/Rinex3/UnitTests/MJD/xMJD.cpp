@@ -105,8 +105,8 @@ void xMJD :: printfTest (void)
 	MJD UTC1(135000,TimeSys::UTC);
 
 
-	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08Q %02P"),(std::string)"135000.000000 02");
-	CPPUNIT_ASSERT_EQUAL(UTC1.printf("%08Q %02P"),(std::string)"135000.000000 03");
+	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08Q %02P"),(std::string)"135000.000000 [GPS]");
+	CPPUNIT_ASSERT_EQUAL(UTC1.printf("%08Q %02P"),(std::string)"135000.000000 [UTC]");
 	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08Q %02P"),(std::string)"ErrorBadTime ErrorBadTime");
 	CPPUNIT_ASSERT_EQUAL(UTC1.printError("%08Q %02P"),(std::string)"ErrorBadTime ErrorBadTime");
 }

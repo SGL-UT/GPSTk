@@ -54,25 +54,25 @@ namespace Rinex3
       }
    }
 
-   std::string TimeSys::printf() const
+   std::string TimeSys::asString() const
       throw()
    {
       switch(ts)
       {
          case Unknown:
-            return(" in Unknown timesystem");
+            return("[Unknown]");
             break;
          case Any:
-            return(" in Any (wildcard) timesystem");
+            return("[Any (wildcard)]");
             break;
          case GPS:
-            return(" in GPS timesystem");
+            return("[GPS]");
             break;
          case UTC:
-            return(" in UTC timesystem");
+            return("[UTC]");
             break;
          default:
-            return(" Error: timesystem set to unknown value: " + ts);
+            return("Error: timesystem set to unknown value: " + ts);
             break;
       }
    }

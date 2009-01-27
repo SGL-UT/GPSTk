@@ -104,8 +104,8 @@ void xJulianDate :: printfTest (void)
   JulianDate GPS1(1350000,TimeSys::GPS);
   JulianDate UTC1(1350000,TimeSys::UTC);
 
-  CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08J %02P"),(std::string)"1350000.000000 02");
-  CPPUNIT_ASSERT_EQUAL(UTC1.printf("%08J %02P"),(std::string)"1350000.000000 03");
+  CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08J %02P"),(std::string)"1350000.000000 [GPS]");
+  CPPUNIT_ASSERT_EQUAL(UTC1.printf("%08J %02P"),(std::string)"1350000.000000 [UTC]");
   CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08J %02P"),(std::string)"ErrorBadTime ErrorBadTime");
   CPPUNIT_ASSERT_EQUAL(UTC1.printError("%08J %02P"),(std::string)"ErrorBadTime ErrorBadTime");
 }
