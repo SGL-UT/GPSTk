@@ -87,15 +87,6 @@ namespace Rinex3
       /// Weeks in a Zcount.
    const double WEEK_PER_ZCOUNT = 1.0/ZCOUNT_PER_WEEK;
 
-      /// The various time systems (representations)
-   enum TimeSystem
-   {
-     Unknown,    /**< unknown time frame; mostly for legacy code compatibility */
-     Any,        /**< wildcard; allows comparison with any other type */
-     GPS,        /**< GPS system time */
-     UTC         /**< Coordinated Universal Time (e.g., from NTP) */
-   };
-
 } // namespace
 
 #endif // GPSTK_TIMECONSTANTS_HPP
