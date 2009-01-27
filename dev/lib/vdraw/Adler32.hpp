@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id:$"
 
 /// @file Adler32.hpp Used to calculate an Adler-32 checksum. Class declarations.
 
