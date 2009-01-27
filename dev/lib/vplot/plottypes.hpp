@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/plot/plottypes.hpp#2 $"
+#pragma ident "$Id$"
 
 #define xypoint pair<double, double>
 #define xylist vector<xypoint>

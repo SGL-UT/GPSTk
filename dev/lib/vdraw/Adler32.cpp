@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Adler32.cpp#2 $"
+#pragma ident "$Id$"
 
 /// @file Adler32.cpp Used to calculate an Adler-32 checksum. Class definitions.
 

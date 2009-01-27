@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/plot/ScatterPlot.cpp#2 $"
+#pragma ident "$Id$"
 
 /// @file ScatterPlot.cpp Used to draw a scatter plot. Class definitions.
 

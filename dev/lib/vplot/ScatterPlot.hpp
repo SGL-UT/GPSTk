@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/plot/ScatterPlot.hpp#2 $"
+#pragma ident "$Id$"
 
 /// @file ScatterPlot.hpp Used to draw a scatter plot. Class declarations.
 

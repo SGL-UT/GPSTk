@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Palette.cpp#2 $"
+#pragma ident "$Id$"
 
 /// @file Palette.cpp Defines a color palette. Class defintions.
 

@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/TextStyle.cpp#2 $"
+#pragma ident "$Id$"
 
 /// @file TextStyle.cpp Defines how text appears. Class definitions
 

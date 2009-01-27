@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/GridLayout.hpp#1 $"
+#pragma ident "$Id$"
 
 /// @file GridLayout.hpp Class to lay out graphic elements on a grid (declarations).
 

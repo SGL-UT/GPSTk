@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/plot/Axis.cpp#10 $"
+#pragma ident "$Id$"
 
 /// @file Axis.cpp Used to draw an axis. Class definitions.
 

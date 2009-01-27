@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/VGState.hpp#1 $"
+#pragma ident "$Id$"
 
 ///@file VGState.hpp Maintains style state. Class declarations.
 

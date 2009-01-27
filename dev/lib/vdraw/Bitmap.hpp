@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Bitmap.hpp#1 $"
+#pragma ident "$Id$"
 
 /// @file Bitmap.hpp Defines a simple bitmap. Class declarations.
 

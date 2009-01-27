@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/plot/SurfacePlot.cpp#10 $"
+#pragma ident "$Id$"
 
 /// @file SurfacePlot.cpp Used to draw a surface plot. Class definitions.
 

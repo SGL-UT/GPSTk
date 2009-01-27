@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/PNG.hpp#2 $"
+#pragma ident "$Id$"
 
 /// @file PNG.hpp Create PNG images.  Class declarations.
 

@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Markable.hpp#1 $"
+#pragma ident "$Id$"
 
 ///@file Markable.hpp Interface for all markable basic shapes.  
 

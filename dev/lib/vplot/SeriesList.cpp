@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/plot/SeriesList.cpp#5 $"
+#pragma ident "$Id$"
 
 /// @file SeriesList.cpp Used to maintain series information for some types of
 /// plots. Class definitions.

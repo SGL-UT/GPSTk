@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Helper.hpp#1 $"
+#pragma ident "$Id$"
 
 ///@file Helper.hpp Helper functions.
 

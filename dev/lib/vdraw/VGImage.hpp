@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/VGImage.hpp#2 $"
+#pragma ident "$Id$"
 
 ///@file VGImage.hpp Common interface to all vector plot formats. Class declarations.
 

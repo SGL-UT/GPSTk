@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Line.cpp#1 $"
+#pragma ident "$Id$"
 
 /// @file Line.cpp Defines a simple line. Class definitions.
 

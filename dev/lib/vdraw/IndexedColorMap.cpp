@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/IndexedColorMap.cpp#1 $"
+#pragma ident "$Id$"
 
 /// @file IndexedColorMap.cpp Defines an indexed color map. Class defintions.
 

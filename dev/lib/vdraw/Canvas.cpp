@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Canvas.cpp#1 $"
+#pragma ident "$Id$"
 
 ///@file Canvas.cpp Common interface to all canvases that can be draw in. 
 ///  Class definitions.

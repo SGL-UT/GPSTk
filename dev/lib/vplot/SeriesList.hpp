@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/plot/SeriesList.hpp#6 $"
+#pragma ident "$Id$"
 
 /// @file SeriesList.hpp Used to maintain series information for some types of
 /// plots. Class declarations.

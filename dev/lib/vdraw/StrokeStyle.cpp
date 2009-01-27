@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/StrokeStyle.cpp#1 $"
+#pragma ident "$Id$"
 
 /// @file StrokeStyle.cpp Defines line appearance: width, etc. Class definitions.
 

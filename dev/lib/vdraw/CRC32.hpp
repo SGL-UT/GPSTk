@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/CRC32.hpp#1 $"
+#pragma ident "$Id$"
 
 /// @file CRC32.hpp Used to calculate a CRC-32 checksum. Class declarations.
 

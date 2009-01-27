@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Base64Encoder.cpp#2 $"
+#pragma ident "$Id$"
 
 /// @file Base64Encoder.cpp Used to encode values into Base64.  Class
 /// definitions.

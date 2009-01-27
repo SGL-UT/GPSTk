@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/EPSImage.hpp#1 $"
+#pragma ident "$Id$"
 
 ///@file EPSImage.hpp Vector plotting in Encapsulated Postscript. Class declarations.
 

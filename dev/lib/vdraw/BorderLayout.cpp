@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/BorderLayout.cpp#2 $"
+#pragma ident "$Id$"
 
 /// @file BorderLayout.cpp Class to create frame within a frame, with a border or margin. (definition)
 

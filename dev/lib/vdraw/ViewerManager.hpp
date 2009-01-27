@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/ViewerManager.hpp#1 $"
+#pragma ident "$Id$"
 
 /// @file ViewerManager.hpp Launches graphic viewers. Class declarations.
 

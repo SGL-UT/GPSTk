@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/InterpolatedColorMap.hpp#2 $"
+#pragma ident "$Id$"
 
 /// @file InterpolatedColorMap.hpp Defines an interpolated color map. Class declarations.
 

@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/BorderLayout.hpp#2 $"
+#pragma ident "$Id$"
 
 /// @file BorderLayout.hpp Class to create frame within a frame, with a border or margin. (declarations).
 

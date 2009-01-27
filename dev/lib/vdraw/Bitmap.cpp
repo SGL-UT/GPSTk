@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Bitmap.cpp#2 $"
+#pragma ident "$Id$"
 
 /// @file Bitmap.cpp Defines a simple bitmap. Class definitions.
 

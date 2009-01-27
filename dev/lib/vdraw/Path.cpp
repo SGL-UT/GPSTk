@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Path.cpp#2 $"
+#pragma ident "$Id$"
 
 /// @file Path.cpp Class to represent a series of points. Class definitions.
 

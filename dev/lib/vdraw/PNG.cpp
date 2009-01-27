@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/PNG.cpp#3 $"
+#pragma ident "$Id$"
 
 /// @file PNG.cpp Create PNG images.  Class defintions.
 

@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/plot/LinePlot.cpp#7 $"
+#pragma ident "$Id$"
 
 /// @file LinePlot.cpp Used to draw a line plot. Class definitions.
 

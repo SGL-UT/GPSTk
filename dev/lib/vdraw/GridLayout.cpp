@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/GridLayout.cpp#1 $"
+#pragma ident "$Id$"
 
 /// @file GridLayout.cpp Class to lay out graphic elements vertially (definitions).
 

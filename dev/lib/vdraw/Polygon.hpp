@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Polygon.hpp#1 $"
+#pragma ident "$Id$"
 
 /// @file Polygon.hpp Defines a simple line. Class declarations.
 

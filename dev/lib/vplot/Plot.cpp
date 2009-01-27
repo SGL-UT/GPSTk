@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/plot/Plot.cpp#3 $"
+#pragma ident "$Id$"
 
 /// @file Plot.cpp Basic plot information. Class definitions.
 

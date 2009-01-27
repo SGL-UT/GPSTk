@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Marker.hpp#3 $"
+#pragma ident "$Id$"
 
 /// @file Marker.hpp Defines marker appearance. Class declarations.
 

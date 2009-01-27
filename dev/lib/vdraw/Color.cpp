@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Color.cpp#2 $"
+#pragma ident "$Id$"
 
 /// @file Color.hpp Defines colors. Class declarations.
 

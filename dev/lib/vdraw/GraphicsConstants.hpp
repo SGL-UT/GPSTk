@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/GraphicsConstants.hpp#1 $"
+#pragma ident "$Id$"
 
 /// @file GraphicsConstants.hpp Declares constants. 
 

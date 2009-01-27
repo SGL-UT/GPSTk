@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/plot/LinePlot.hpp#7 $"
+#pragma ident "$Id$"
 
 /// @file LinePlot.hpp Used to draw a line plot. Class declarations.
 

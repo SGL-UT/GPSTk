@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/Frame.cpp#4 $"
+#pragma ident "$Id$"
 
 /// @file Frame.cpp Class to represent a region to draw in. Class definitions.
 

@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/VLayout.cpp#3 $"
+#pragma ident "$Id$"
 
 /// @file VLayout.cpp Class to lay out graphic elements vertically (definitions).
 

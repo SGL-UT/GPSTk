@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/VDrawException.hpp#1 $"
+#pragma ident "$Id$"
 
 /// @file VDrawException.hpp Declare exception class
 

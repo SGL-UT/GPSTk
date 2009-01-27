@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/plot/Splitter.hpp#5 $"
+#pragma ident "$Id$"
 
 /// @file Splitter.hpp Used to help with splitting sets of points. Class
 /// declarations.

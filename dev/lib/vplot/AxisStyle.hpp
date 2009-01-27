@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/plot/AxisStyle.hpp#3 $"
+#pragma ident "$Id$"
 
 /// @file AxisStyle.hpp Used to describe an axis' traits. Class declarations.
 

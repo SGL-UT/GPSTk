@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/main/wonky/gpstkplot/lib/draw/PSImageBase.cpp#4 $"
+#pragma ident "$Id$"
 
 ///@file PSImageBase.cpp Common functionality between EPS and PS formats. Class definitions.
 
