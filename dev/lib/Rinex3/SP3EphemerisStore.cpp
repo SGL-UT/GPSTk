@@ -89,7 +89,7 @@ namespace Rinex3
 
             // If there is a bad or absent clock value, and
             // corresponding flag is set, then continue
-            if( rejectBadClockFlag && (rec.clk == 999999.999999) )
+            if( rejectBadClockFlag && (rec.clk >= 999999.) )
             {
                continue;
             }
