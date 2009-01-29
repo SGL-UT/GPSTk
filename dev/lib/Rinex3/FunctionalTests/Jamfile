@@ -1,0 +1,7 @@
+STD_LINK_LIBS = -ldl -lstdc++ ; 
+SEARCH = ../../../src ../ ../../rxio/ ;
+
+
+Main wheresat : WhereSat.cpp ;
+ObjectHdrs wheresat WhereSat.cpp : ../. ../../../src ../../rxio/ ;
+LinkLibraries wheresat : ../../../src/libgpstk ../libRinex3 ;
