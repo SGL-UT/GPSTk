@@ -117,7 +117,6 @@ namespace Rinex3
       unsigned sdev[4];  ///< std dev of 3 positions (XYZ,mm) and clock (psec)
                          ///< or velocities(10^-4 mm/sec) and clock rate (10^-4 ps/s)
       int correlation[6];///< elements of correlation matrix: xy,xz,xc,yz,yc,zc
-      bool eof;
          //@}
       
    protected:
