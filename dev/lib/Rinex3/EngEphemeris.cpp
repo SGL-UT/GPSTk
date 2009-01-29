@@ -48,6 +48,7 @@
 #include "GPSWeekSecond.hpp"
 #include "YDSTime.hpp"
 #include "CivilTime.hpp"
+#include "TimeSystem.hpp"
 
 #include <cmath>
 
@@ -157,9 +158,9 @@ namespace Rinex3
    }
 
    bool EngEphemeris::addSubframeNoParity(const long subframe[10],
-                               const long gpsWeek,
-                               const short PRN,
-                               const short track)
+                                          const long gpsWeek,
+                                          const short PRN,
+                                          const short track)
       throw( gpstk::InvalidParameter )
    {
       long paddedSF[10];
@@ -616,7 +617,7 @@ namespace Rinex3
       throw()
    {
       CommonTime toReturn;
-      toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()));
+      toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()), TimeSys::GPS);
       return toReturn;
    }
 
@@ -625,11 +626,11 @@ namespace Rinex3
    {
       CommonTime toReturn;
       if ( (getToc() - getHOWTime(1)) < -HALFWEEK)
-         toReturn = GPSWeekSecond(getFullWeek() + 1, getToc());
+         toReturn = GPSWeekSecond(getFullWeek() + 1, getToc(), TimeSys::GPS);
       else if ( (getToc() - getHOWTime(1)) > HALFWEEK)
-         toReturn = GPSWeekSecond(getFullWeek() - 1, getToc());
+         toReturn = GPSWeekSecond(getFullWeek() - 1, getToc(), TimeSys::GPS);
       else
-         toReturn = GPSWeekSecond(getFullWeek(), getToc());
+         toReturn = GPSWeekSecond(getFullWeek(), getToc(), TimeSys::GPS);
       return toReturn;
    }
 
@@ -638,11 +639,11 @@ namespace Rinex3
    {
       CommonTime toReturn;
       if ( (getToe() - getHOWTime(1)) < -HALFWEEK)
-         toReturn = GPSWeekSecond(getFullWeek() + 1, getToe());
+         toReturn = GPSWeekSecond(getFullWeek() + 1, getToe(), TimeSys::GPS);
       else if ( (getToe() - getHOWTime(1)) > HALFWEEK)
-         toReturn = GPSWeekSecond(getFullWeek() - 1, getToe());
+         toReturn = GPSWeekSecond(getFullWeek() - 1, getToe(), TimeSys::GPS);
       else
-         toReturn = GPSWeekSecond(getFullWeek(), getToe());
+         toReturn = GPSWeekSecond(getFullWeek(), getToe(), TimeSys::GPS);
       return toReturn;
    }
 
