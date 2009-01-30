@@ -52,6 +52,7 @@
 #include "Exception.hpp"
 #include "XvtStore.hpp"
 #include "SatID.hpp"
+#include "DayTime.hpp"
 
 namespace gpstk
 {
