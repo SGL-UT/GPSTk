@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
 	EphReader ephReader;
 	for (int i=0; i<ephFiles.getCount(); i++)
 	ephReader.read(ephFiles.getValue()[i]);
-	XvtStore<SatID>& ephStore = *ephReader.eph;
+	Rinex3::XvtStore<SatID>& ephStore = *ephReader.eph;
   
 	DayTime tStart,tEnd;
 	if (startTimeOpt.getCount())

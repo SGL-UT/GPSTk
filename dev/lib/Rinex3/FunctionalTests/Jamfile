@@ -3,6 +3,6 @@ STD_LINK_LIBS = -ldl -lstdc++ -lm ;
 
 
 Main wheresat : WhereSat.cpp ;
-ObjectHdrs wheresat WhereSat.cpp : ../../../src ../../rxio/ ;
+ObjectHdrs wheresat WhereSat.cpp : ../. ../../../src ../../rxio/ ;
 LINKLIBS on wheresat =  $(STD_LINK_LIBS) ;
-LinkLibraries wheresat : ../../rxio/librxio ../../../src/libgpstk ;
+LinkLibraries wheresat : ../libRinex3 ../../rxio/librxio ../../../src/libgpstk ;
