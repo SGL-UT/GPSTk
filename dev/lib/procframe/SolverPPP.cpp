@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 //
 //============================================================================
 
@@ -386,13 +386,13 @@ covariance matrix.");
             // Try to extract weights from GDS
          satTypeValueMap dummy(gData.body.extractTypeID(TypeID::weight));
 
-            // Count the number of satellites with weights
-         int nW(dummy.numSats());
-         for( int i=0; i<numCurrentSV; i++ )
+            // Check if weights match
+         if ( dummy.numSats() == numCurrentSV )
          {
-            if (nW == numCurrentSV)   // Check if weights match
-            {
 
+               // If we have weights information, let's load it
+            for( int i=0; i<numCurrentSV; i++ )
+            {
                Vector<double>
                   weightsVector(gData.getVectorOfTypeID(TypeID::weight));
 
@@ -400,19 +400,25 @@ covariance matrix.");
                rMatrix( i + numCurrentSV, i + numCurrentSV )
                                              = weightsVector(i) * weightFactor;
 
-            }
-            else  // If weights don't match, assign generic weights
-            {
+            }  // End of 'for( int i=0; i<numCurrentSV; i++ )'
 
+         }
+         else
+         {
+
+               // If weights don't match, assign generic weights
+            for( int i=0; i<numCurrentSV; i++ )
+            {
                rMatrix( i               , i         ) = 1.0;
 
                   // Phases weights are bigger
                rMatrix( i + numCurrentSV, i + numCurrentSV )
                                                          = 1.0 * weightFactor;
 
-            }  // End of 'if (nW == numCurrentSV)'
+            }  // End of 'for( int i=0; i<numCurrentSV; i++ )'
 
-         }  // End of 'for( int i=0; i<numCurrentSV; i++ )'
+         }  // End of 'if ( dummy.numSats() == numCurrentSV )'
+
 
 
             // Generate the corresponding geometry/design matrix
