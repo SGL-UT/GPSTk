@@ -1,7 +1,14 @@
 // Example program Nro 8 for GPSTk
+//
 // This program shows how to use GNSS Data Structures (GDS) to obtain
 // "Precise Point Positioning" (PPP).
-// Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//
+// For details on the PPP algorithm please consult:
+//
+//    Kouba, J. and P. Heroux. "Precise Point Positioning using IGS Orbit
+//       and Clock Products". GPS Solutions, vol 5, pp 2-28. October, 2001.
+//
+// Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 
 #include <iostream>
 #include <iomanip>
@@ -209,18 +216,23 @@ int main(void)
       // This object defines several handy linear combinations
    LinearCombinations comb;
 
-      // Object to compute linear combinations of data
-   ComputeLinear linear1(comb.pcCombination);
 
-   linear1.addLinear(comb.lcCombination);
-   linear1.addLinear(comb.pdeltaCombination);
+      // Object to compute linear combinations for cycle slip detection
+   ComputeLinear linear1(comb.pdeltaCombination);
    linear1.addLinear(comb.ldeltaCombination);
    linear1.addLinear(comb.mwubbenaCombination);
    linear1.addLinear(comb.liCombination);
 
+
+      // This object computes the ionosphere-free combinations to be used
+      // as observables in the PPP processing
+   ComputeLinear linear2(comb.pcCombination);
+   linear2.addLinear(comb.lcCombination);
+
+
       // Let's use a different object to compute prefit residuals
-   ComputeLinear linear2(comb.pcPrefit);
-   linear2.addLinear(comb.lcPrefit);
+   ComputeLinear linear3(comb.pcPrefit);
+   linear3.addLinear(comb.lcPrefit);
 
 
       // Declare an object to process the data using PPP. It is set
@@ -293,6 +305,11 @@ int main(void)
 
             // The following lines are indeed just one line
          gRin >> requireObs      // Check if required observations are present
+              >> linear1         // Compute linear combinations to detect CS
+              >> markCSLI        // Mark cycle slips: LI algorithm
+              >> markCSMW        // Mark cycle slips: Melbourne-Wubbena
+              >> markArc         // Keep track of satellite arcs
+              >> decimateData    // If not a multiple of 900 s, decimate
               >> basic           // Compute the basic components of model
               >> eclipsedSV      // Remove satellites in eclipse
               >> grDelay         // Compute gravitational delay
@@ -300,14 +317,10 @@ int main(void)
               >> corr            // Correct observables from tides, etc.
               >> windup          // Compute wind-up effect
               >> computeTropo    // Compute tropospheric effect
-              >> linear1         // Compute common linear combinations
+              >> linear2         // Compute ionosphere-free combinations
               >> pcFilter        // Filter out spurious data
-              >> markCSLI        // Mark cycle slips: LI algorithm
-              >> markCSMW        // Mark cycle slips: Melbourne-Wubbena
-              >> markArc         // Keep track of satellite arcs
               >> phaseAlign      // Align phases with codes
-              >> linear2         // Compute prefit residuals
-              >> decimateData    // If not a multiple of 900 s, decimate
+              >> linear3         // Compute prefit residuals
               >> baseChange      // Prepare to use North-East-UP reference frame
               >> cDOP            // Compute DOP figures
               >> pppSolver;      // Solve equations with a Kalman filter

@@ -4,7 +4,12 @@
 // to build a reasonable complete application that computes "Precise Point
 // Positioning" (PPP).
 //
-// Dagoberto Salazar - gAGE. 2008
+// For details on the PPP algorithm please consult:
+//
+//    Kouba, J. and P. Heroux. "Precise Point Positioning using IGS Orbit
+//       and Clock Products". GPS Solutions, vol 5, pp 2-28. October, 2001.
+//
+// Dagoberto Salazar - gAGE. 2008, 2009
 
 
 // Basic input/output C++ classes
@@ -486,6 +491,48 @@ void example9::process()
       pList.push_back(requireObs);
 
 
+         // This object defines several handy linear combinations
+      LinearCombinations comb;
+
+
+         // Object to compute linear combinations for cycle slip detection
+      ComputeLinear linear1;
+
+         // Read if we should use C1 instead of P1
+      if ( confReader.getValueAsBoolean( "useC1", station ) )
+      {
+         linear1.addLinear(comb.pdeltaCombWithC1);
+         linear1.addLinear(comb.mwubbenaCombWithC1);
+      }
+      else
+      {
+         linear1.addLinear(comb.pdeltaCombination);
+         linear1.addLinear(comb.mwubbenaCombination);
+      }
+      linear1.addLinear(comb.ldeltaCombination);
+      linear1.addLinear(comb.liCombination);
+      pList.push_back(linear1);       // Add to processing list
+
+
+         // Objects to mark cycle slips
+      LICSDetector2 markCSLI2;         // Checks LI cycle slips
+      pList.push_back(markCSLI2);      // Add to processing list
+      MWCSDetector  markCSMW;          // Checks Merbourne-Wubbena cycle slips
+      pList.push_back(markCSMW);       // Add to processing list
+
+
+         // Object to keep track of satellite arcs
+      SatArcMarker markArc;
+      markArc.setDeleteUnstableSats(true);
+      markArc.setUnstablePeriod(151.0);
+      pList.push_back(markArc);       // Add to processing list
+
+
+         // Object to decimate data
+      Decimate decimateData(900.0, 5.0, SP3EphList.getInitialTime());
+      pList.push_back(decimateData);       // Add to processing list
+
+
          // Declare a basic modeler
       BasicModel basic(nominalPos, SP3EphList);
          // Set the minimum elevation
@@ -557,12 +604,9 @@ void example9::process()
       pList.push_back(computeTropo);       // Add to processing list
 
 
-         // This object defines several handy linear combinations
-      LinearCombinations comb;
-
-
-         // Object to compute observable combinations
-      ComputeLinear linear1;
+         // Object to compute ionosphere-free combinations to be used
+         // as observables in the PPP processing
+      ComputeLinear linear2;
 
          // Read if we should use C1 instead of P1
       if ( confReader.getValueAsBoolean( "useC1", station ) )
@@ -572,20 +616,14 @@ void example9::process()
             //          introducing a bias that must be taken into account by
             //          other means. This won't be taken into account in this
             //          example.
-         linear1.addLinear(comb.pcCombWithC1);
-         linear1.addLinear(comb.pdeltaCombWithC1);
-         linear1.addLinear(comb.mwubbenaCombWithC1);
+         linear2.addLinear(comb.pcCombWithC1);
       }
       else
       {
-         linear1.addLinear(comb.pcCombination);
-         linear1.addLinear(comb.pdeltaCombination);
-         linear1.addLinear(comb.mwubbenaCombination);
+         linear2.addLinear(comb.pcCombination);
       }
-      linear1.addLinear(comb.lcCombination);
-      linear1.addLinear(comb.ldeltaCombination);
-      linear1.addLinear(comb.liCombination);
-      pList.push_back(linear1);       // Add to processing list
+      linear2.addLinear(comb.lcCombination);
+      pList.push_back(linear2);       // Add to processing list
 
 
          // Declare a simple filter object to screen PC
@@ -594,34 +632,15 @@ void example9::process()
       pList.push_back(pcFilter);       // Add to processing list
 
 
-         // Objects to mark cycle slips
-      LICSDetector2 markCSLI2;      // Checks LI cycle slips
-      pList.push_back(markCSLI2);       // Add to processing list
-      MWCSDetector  markCSMW;       // Checks Merbourne-Wubbena cycle slips
-      pList.push_back(markCSMW);        // Add to processing list
-
-
-         // Object to keep track of satellite arcs
-      SatArcMarker markArc;
-      markArc.setDeleteUnstableSats(true);
-      markArc.setUnstablePeriod(151.0);
-      pList.push_back(markArc);       // Add to processing list
-
-
          // Object to align phase with code measurements
       PhaseCodeAlignment phaseAlign;
       pList.push_back(phaseAlign);       // Add to processing list
 
 
          // Object to compute prefit-residuals
-      ComputeLinear linear2(comb.pcPrefit);
-      linear2.addLinear(comb.lcPrefit);
-      pList.push_back(linear2);       // Add to processing list
-
-
-         // Object to decimate data
-      Decimate decimateData(900.0, 5.0, SP3EphList.getInitialTime());
-      pList.push_back(decimateData);       // Add to processing list
+      ComputeLinear linear3(comb.pcPrefit);
+      linear3.addLinear(comb.lcPrefit);
+      pList.push_back(linear3);       // Add to processing list
 
 
          // Declare a base-changing object: From ECEF to North-East-Up (NEU)
