@@ -73,7 +73,7 @@ namespace Rinex3
          /// Constructor.
       SP3EphemerisStore()
          throw()
-	: rejectBadPosFlag(false), rejectBadClockFlag(false)
+	: rejectBadPosFlag(true), rejectBadClockFlag(true)
      { Rinex3::TabularEphemerisStore(); };
 
 
