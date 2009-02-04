@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -55,8 +55,8 @@ namespace gpstk
        * @param time      Epoch corresponding to the data.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ComputeWindUp::Process(const DayTime& time,
-                                           satTypeValueMap& gData)
+   satTypeValueMap& ComputeWindUp::Process( const DayTime& time,
+                                            satTypeValueMap& gData )
       throw(ProcessingException)
    {
 
@@ -73,9 +73,33 @@ namespace gpstk
          SatIDSet satRejectedSet;
 
             // Loop through all the satellites
-         satTypeValueMap::iterator it;
-         for (it = gData.begin(); it != gData.end(); ++it)
+         for ( satTypeValueMap::iterator it = gData.begin();
+               it != gData.end();
+               ++it )
          {
+
+               // First check if this satellite has previous arc information
+            if( satArcMap.find( (*it).first ) == satArcMap.end() )
+            {
+                  // If it doesn't have an entry, insert one
+               satArcMap[ (*it).first ] = 0.0;
+            };
+
+               // Then, check both if there is arc information, and if current
+               // arc number is different from arc number in storage (which
+               // means a cycle slip happened)
+            if ( (*it).second.find(TypeID::satArc) != (*it).second.end() &&
+                 (*it).second(TypeID::satArc) != satArcMap[ (*it).first ] )
+            {
+                  // If different, update satellite arc in storage
+               satArcMap[ (*it).first ] = (*it).second(TypeID::satArc);
+
+                  // Reset phase information
+               phase_satellite[ (*it).first ].previousPhase = 0.0;
+               phase_station[ (*it).first ].previousPhase = 0.0;
+
+            }
+
 
                // Use ephemeris if satellite position is not already computed
             if( ( (*it).second.find(TypeID::satX) == (*it).second.end() ) ||
@@ -89,7 +113,7 @@ namespace gpstk
                      // If ephemeris is missing, then remove all satellites
                   satRejectedSet.insert( (*it).first );
 
-               continue;
+                  continue;
 
                }
                else
@@ -135,7 +159,7 @@ namespace gpstk
 
 
                // Let's get wind-up value in radians, and insert it
-               // in GNSS data structure.
+               // into GNSS data structure.
             (*it).second[TypeID::windUp] =
                getWindUp((*it).first, time, svPos, sunPos);
 
@@ -298,18 +322,15 @@ namespace gpstk
       double da2(alpha2-phase_station[satid].previousPhase);
 
          // Let's avoid problems when passing from 359 to 0 degrees.
-      phase_satellite[satid].previousPhase =
-         phase_satellite[satid].previousPhase + std::atan2( std::sin(da1),
-                                                            std::cos(da1) );
+      phase_satellite[satid].previousPhase += std::atan2( std::sin(da1),
+                                                          std::cos(da1) );
 
-      phase_station[satid].previousPhase =
-         phase_station[satid].previousPhase + std::atan2( std::sin(da2),
-                                                          std::cos(da2) );
+      phase_station[satid].previousPhase += std::atan2( std::sin(da2),
+                                                        std::cos(da2) );
 
          // Compute wind up effect in radians
-      wind_up =
-         phase_satellite[satid].previousPhase -
-         phase_station[satid].previousPhase;
+      wind_up = phase_satellite[satid].previousPhase -
+                phase_station[satid].previousPhase;
 
       return wind_up;
 

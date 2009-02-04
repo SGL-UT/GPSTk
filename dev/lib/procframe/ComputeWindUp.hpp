@@ -5,8 +5,8 @@
  * This class computes the wind-up effect on the phase observables, in radians.
  */
 
-#ifndef COMPUTEWINDUP_HPP
-#define COMPUTEWINDUP_HPP
+#ifndef GPSTK_COMPUTEWINDUP_HPP
+#define GPSTK_COMPUTEWINDUP_HPP
 
 //============================================================================
 //
@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -92,6 +92,10 @@ namespace gpstk
        * \warning ComputeWindUp objects store their internal state, so
        * you MUST NOT use the SAME object to process DIFFERENT data streams.
        *
+       * \warning It is recommended that ComputeWindUp objects are used after
+       * calling a SatArcMarker object, because they work better when cycle
+       * slips are properly tracked.
+       *
        */
    class ComputeWindUp : public ProcessingClass
    {
@@ -128,8 +132,8 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process(const DayTime& time,
-                                       satTypeValueMap& gData)
+      virtual satTypeValueMap& Process( const DayTime& time,
+                                        satTypeValueMap& gData )
          throw(ProcessingException);
 
 
@@ -238,6 +242,10 @@ namespace gpstk
       map<SatID, phaseData> phase_satellite;
 
 
+         /// Map to store satellite arc data
+      map<SatID, double> satArcMap;
+
+
          /** Compute the value of the wind-up, in radians.
           * @param sat       Satellite ID
           * @param time      Epoch of interest
@@ -265,7 +273,10 @@ namespace gpstk
 
    }; // End of class 'ComputeWindUp'
 
+
       //@}
 
+
 }  // End of namespace gpstk
-#endif // COMPUTEWINDUP_HPP
+
+#endif // GPSTK_COMPUTEWINDUP_HPP
