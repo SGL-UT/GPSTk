@@ -19,6 +19,7 @@ else
    GPSWeekSecond.cpp
    GPSWeekZcount.cpp
    JulianDate.cpp
+   KeplerianEphemerisStore.cpp
    MJD.cpp
    SP3Data.cpp
    SP3EphemerisStore.cpp
