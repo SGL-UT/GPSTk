@@ -391,10 +391,11 @@ covariance matrix.");
          {
 
                // If we have weights information, let's load it
+            Vector<double>
+               weightsVector(gData.getVectorOfTypeID(TypeID::weight));
+
             for( int i=0; i<numCurrentSV; i++ )
             {
-               Vector<double>
-                  weightsVector(gData.getVectorOfTypeID(TypeID::weight));
 
                rMatrix( i               , i         ) = weightsVector(i);
                rMatrix( i + numCurrentSV, i + numCurrentSV )
