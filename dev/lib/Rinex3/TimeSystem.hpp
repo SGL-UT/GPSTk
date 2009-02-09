@@ -52,9 +52,12 @@ namespace Rinex3
       enum Systems
       {
          Unknown,    /**< unknown time frame; mostly for legacy code compatibility */
-         Any,        /**< wildcard; allows comparison with any other type */
-         GPS,        /**< GPS system time */
-         UTC         /**< Coordinated Universal Time (e.g., from NTP) */
+         Any,        /**< wildcard; allows comparison with any other type          */
+         GPS,        /**< GPS     time system                                      */
+         GLO,        /**< GLONASS time system (UTC[SU])                            */
+         GAL,        /**< Galileo time system (not yet established)                */
+         TAI,        /**< International Atomic Time                                */
+         UTC         /**< Coordinated Universal Time (e.g., from NTP)              */
       };
 
      // Default constructor
@@ -82,7 +85,7 @@ namespace Rinex3
          : ts(right.ts)
       {}
 
-     // Assignment Opperator
+     // Assignment Operator
       TimeSys& operator=( const TimeSys& right )
          throw()
       {
