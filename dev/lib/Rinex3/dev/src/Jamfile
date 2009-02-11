@@ -2,7 +2,7 @@
 # $Id: Jamfile 1409 2008-09-24 16:56:22Z architest $
 #
 
-SubDir TOP R3 ;
+SubDir TOP lib Rinex3 dev src ;
 
 BonkForte ;
 
