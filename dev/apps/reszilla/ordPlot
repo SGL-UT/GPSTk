@@ -215,11 +215,6 @@ def main():
                        verticalalignment="bottom",
                        size=8, family="sans-serif")
 
-    xMajorFmt=pylab.DateFormatter("%H:%M\n%j")
-    xMinorFmt=pylab.NullFormatter()
-    xMajorLoc=matplotlib.dates.DayLocator()
-    xMinorLoc=matplotlib.dates.HourLocator()
-
     rExtent=0.89
     if options.legend:
         rExtent=0.82
@@ -344,14 +339,16 @@ def main():
             pylab.setp(leg.get_texts(), size=8, family="sans-serif")
             leg.draw_frame(False)
 
+    ax2.xaxis.set_major_formatter(pylab.DateFormatter("%H:%M\n%j"))
+    ax2.xaxis.set_minor_formatter(pylab.NullFormatter())
+    ax2.xaxis.set_major_locator(pylab.MaxNLocator(10))
+    ax2.xaxis.set_minor_locator(pylab.MaxNLocator(50))
 
-    ax2.xaxis.set_major_formatter(xMajorFmt)
     xlabels=ax2.get_xticklabels()
     ylabels=ax2.get_yticklabels()
     pylab.setp(xlabels, fontsize=10, family='sans-serif')
     pylab.setp(ylabels, fontsize=10, family='sans-serif')
 
-    ax2.xaxis.set_minor_formatter(xMinorFmt)
     
     # set x axis range
     if options.tStart:
