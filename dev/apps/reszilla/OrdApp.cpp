@@ -54,7 +54,8 @@ OrdApp::OrdApp(
    throw()
    : BasicFramework(applName, appDesc),
      timeFormat("%4Y %3j %02H:%02M:%04.1f"),
-     headerWritten(false)
+     headerWritten(false),
+     outputClockInNs(false)
 {}
 
 
@@ -71,6 +72,11 @@ bool OrdApp::initialize(int argc, char *argv[]) throw()
       timeFormatOpt('t', "time-format", "Daytime format specifier used for "
                     "times in the output. "
                     "The default is \""+timeFormat + "\".");
+
+   CommandOptionNoArg
+      outputClockInNsOption('\0', "ns",
+                            "Report the clock in ns, not meters.");
+
 
    if (!BasicFramework::initialize(argc,argv))
       return false;
@@ -115,6 +121,16 @@ bool OrdApp::initialize(int argc, char *argv[]) throw()
    if (timeFormatOpt.getCount())
       timeFormat = timeFormatOpt.getValue()[0];
 
+   if (outputClockInNsOption.getCount())
+   {
+      outputClockInNs = true;
+      if (debugLevel)
+         cout << "# Reporting clock in ns." << endl;
+   }
+   else
+      if (debugLevel)
+         cout << "# Reporting clock in meters." << endl;
+
    return true;
 }
 
@@ -153,8 +169,11 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
       int wart = 0;
       if (ordEpoch.wonky)
          wart = 1;
+      double clk = ordEpoch.clockResidual;
+      if (outputClockInNs)
+         clk *=  1e9/C_GPS_M;
       s << time << " " << setw(4) << type
-        << " " << setprecision(5) << setw(24) << ordEpoch.clockResidual
+        << " " << setprecision(5) << setw(24) << clk
         << setw(6) << wart << endl;
    }
 
@@ -164,8 +183,11 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
       int wart = 0;
       if (ordEpoch.wonky)
          wart = 1;
+      double clk = ordEpoch.clockOffset;
+      if (outputClockInNs)
+         clk *= 1e9 / C_GPS_M;
       s << time << " " << setw(4) << type
-        << " " << setprecision(5) << setw(24) << ordEpoch.clockOffset
+        << " " << setprecision(5) << setw(24) << clk
         << setw(6) << wart << endl;
    }
 }

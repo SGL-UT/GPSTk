@@ -62,6 +62,9 @@ public:
    std::ofstream output;
    std::string timeFormat;
 
+protected:
+   bool outputClockInNs;
+
 private:
    bool headerWritten;
    std::string readBuffer;

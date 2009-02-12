@@ -136,7 +136,6 @@ public:
 protected:
    virtual void process();
    CommandOptionWithAnyArg maxRateOption;
-   CommandOptionNoArg reportNsOption;
 };
 
 //-----------------------------------------------------------------------------
@@ -145,9 +144,7 @@ protected:
 OrdLinEst::OrdLinEst() throw()
    : OrdApp("ordLinEst", "Computes a linear clock estimate. "),
      maxRateOption('m', "max-rate",
-                   "Rate used to detect a clock jump. default is 10,000 m/day"),
-     reportNsOption('\0', "ns",
-                    "Report clock model lines in ns, not meters")
+                   "Rate used to detect a clock jump. default is 10,000 m/day")
 {}
 
 //-----------------------------------------------------------------------------
@@ -205,8 +202,7 @@ void OrdLinEst::process()
       i = j;
    }
 
-   bool reportNs = reportNsOption.getCount() >0;
-   csl.dump(output, timeFormat, !reportNs);
+   csl.dump(output, timeFormat, !outputClockInNs);
 
    ORDEpochMap::iterator l;
    for (l=oem.begin(); l != oem.end(); l++)
