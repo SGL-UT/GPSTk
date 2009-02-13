@@ -45,7 +45,9 @@ else
       RACRotation.cpp RinexEphemerisStore.cpp RinexMetData.cpp
       RinexMetHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
       RinexObsData.cpp RinexObsHeader.cpp RinexObsID.cpp
-      RinexSatID.cpp RinexUtilities.cpp RungeKutta4.cpp
+      RinexSatID.cpp RinexUtilities.cpp
+      Rinex3NavHeader.cpp
+      RungeKutta4.cpp
       SEMAlmanacStore.cpp SEMData.cpp SEMHeader.cpp
       SMODFData.cpp SP3Data.cpp SP3EphemerisStore.cpp
       SP3Header.cpp SP3SatID.cpp SVExclusionList.cpp
