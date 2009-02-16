@@ -92,7 +92,7 @@ namespace gpstk
 
     if (valid & versionValid)
       {
-        line  = rightJustify(asString(version,4), 10);
+        line  = rightJustify(asString(version,2), 10);
         line += string(10, ' ');
         line += leftJustify(fileType, 20);
         line += satSys.substr(0,1) + string(19, ' ');
