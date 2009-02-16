@@ -219,7 +219,7 @@ protected:
          if (!input)
             break;
          else if (header.time > tEnd)
-            return;
+            continue;
          else if (recordEnd && (input.recordNumber > recordEnd))
 	    return;
 	 else if (header.time < tStart)
