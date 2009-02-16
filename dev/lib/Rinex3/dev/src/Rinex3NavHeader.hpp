@@ -82,12 +82,11 @@ namespace gpstk
      enum validBits
      {
        versionValid     = 0x01,   ///< Set if the RINEX 3 version is valid.
-       satSystem        = 0x02,   ///< Set if the Satellite System is valid.
-       runByValid       = 0x04,   ///< Set if the Run-by value is valid.
-       commentValid     = 0x08,   ///< Set if the Comments are valid -- very subjective.
-       ionoCorrValid    = 0x010,  ///< Set if the Iono Correction data is valid.
-       timeSysCorrValid = 0x020,  ///< Set if the Time System Correction is valid.
-       leapSecondsValid = 0x040,  ///< Set if the Leap Seconds value is valid.
+       runByValid       = 0x02,   ///< Set if the Run-by value is valid.
+       commentValid     = 0x04,   ///< Set if the Comments are valid -- very subjective.
+       ionoCorrValid    = 0x08,   ///< Set if the Iono Correction data is valid.
+       timeSysCorrValid = 0x010,  ///< Set if the Time System Correction is valid.
+       leapSecondsValid = 0x020,  ///< Set if the Leap Seconds value is valid.
        endValid = 0x080000000,    ///< Set if the end value is valid.
 
             /// This bitset checks that all required header items are available
