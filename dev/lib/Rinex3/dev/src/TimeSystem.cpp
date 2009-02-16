@@ -60,16 +60,16 @@ namespace gpstk
       switch(ts)
       {
          case Unknown:
-            return("[Unknown]");
+            return("Unknown");
             break;
          case Any:
-            return("[Any (wildcard)]");
+            return("Any (wildcard)");
             break;
          case GPS:
-            return("[GPS]");
+            return("GPS");
             break;
          case UTC:
-            return("[UTC]");
+            return("UTC");
             break;
          default:
             return("Error: timesystem set to unknown value: " + ts);

@@ -95,7 +95,6 @@ namespace gpstk
         line  = rightJustify(asString(version,4), 10);
         line += string(10, ' ');
         line += leftJustify(fileType, 20);
-        line += string(19, ' ');
         line += satSys.substr(0,1) + string(19, ' ');
         line += versionString;
         strm << line << endl;
