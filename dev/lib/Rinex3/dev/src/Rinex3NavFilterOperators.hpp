@@ -67,10 +67,8 @@ namespace gpstk
       bool operator()(const gpstk::Rinex3NavData& l,
                       const gpstk::Rinex3NavData& r) const
          {
-            gpstk::GPSWeekSecond lXmitTime(0.L);
-            lXmitTime.setGPSfullweek(l.weeknum, (double)l.HOWtime);
-            gpstk::GPSWeekSecond rXmitTime(0.L);
-            rXmitTime.setGPSfullweek(r.weeknum, (double)r.HOWtime);
+            gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
+            gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
 
             if (lXmitTime < rXmitTime)
                return true;
@@ -152,10 +150,8 @@ namespace gpstk
       bool operator()(const gpstk::Rinex3NavData& l,
                       const gpstk::Rinex3NavData& r) const
          {
-            gpstk::GPSWeekSecond lXmitTime(0.L);
-            lXmitTime.setGPSfullweek(l.weeknum, (double)l.HOWtime);
-            gpstk::GPSWeekSecond rXmitTime(0.L);
-            rXmitTime.setGPSfullweek(r.weeknum, (double)r.HOWtime);
+            gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
+            gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
             if (lXmitTime < rXmitTime)
                return true;
             return false;
