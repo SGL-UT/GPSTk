@@ -64,7 +64,7 @@ namespace gpstk
    public:
 
          /// Constructor
-     Rinex3NavHeader(void) : valid(0), version(2.1) {}
+     Rinex3NavHeader(void) : valid(0), version(3.0) {}
 
          /// Destructor
      virtual ~Rinex3NavHeader() {}
