@@ -264,9 +264,9 @@ namespace gpstk
          ffs.streamState = MDPStream::outOfSync;
 
          if (debugLevel>2)
-            cout << "Reading frame word" << endl;;
+            cout << "Scanning for frame word" << endl;;
          uint16_t fw=0;
-         for (int i=0; i<128; i++)
+         for (int i=0; i<1024; i++)
          {
             fw = ffs.getData<uint16_t>();
             fw = netToHost(fw);
@@ -277,6 +277,8 @@ namespace gpstk
 
          if (fw!=frameWord)
          {
+            if (debugLevel>2)
+               cout << "Failed to find frame word." << endl;;
             FFStreamError err("Failed to find frame word.");
             GPSTK_THROW(err);
          }
@@ -296,6 +298,13 @@ namespace gpstk
             if (debugLevel>2)
                cout << "Got header for id " << id
                     << " body, length=" << length << endl;
+
+            if (length > 1024)
+            {
+               if (debugLevel>2)
+                  cout << "Insane length (" << length << "), ignoring." << endl;
+               length = myLength;
+            }
          }
       }
    }
@@ -350,7 +359,7 @@ namespace gpstk
          return;
 
       // Make sure that we have a header for this correct message.
-      while (stream.header.id != reqId) // && stream) // && stream is invalid C++
+      while (stream.header.id != reqId  && stream)
          readHeader(stream);
 
       // Now get the header values from the most recently read header
@@ -360,6 +369,9 @@ namespace gpstk
       // read in the message body
       string body = readBody(stream);
 
+      // We don't want to count the body in addition to the header
+      stream.recordNumber--;
+
       if (stream.fail())
          return;
 
@@ -367,7 +379,7 @@ namespace gpstk
       checkCRC(stream.rawHeader+body);
 
       decode(body);
-         
+
       if (debugLevel && (rdstate() || stream.rdstate()))
          MDPHeader::dump(cout);
 
