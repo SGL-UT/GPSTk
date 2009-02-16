@@ -55,8 +55,6 @@
 #include "CommonTime.hpp"
 #include "Xvt.hpp"
 
-
-
 namespace gpstk
 {
    /** @addtogroup ephemstore */

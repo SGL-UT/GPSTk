@@ -2,7 +2,7 @@
 
 /**
  * @file SP3Data.hpp
- * Encapsulate SP3 file data, including I/O
+ * Encapsulate SP3 file data, versions a,b,c, including I/O
  */
 
 #ifndef GPSTK_SP3DATA_HPP
@@ -44,11 +44,10 @@
 //
 //=============================================================================
 
-#include "SatID.hpp"
+#include "SP3SatID.hpp"
 #include "SP3Base.hpp"
+#include "CommonTime.hpp"
 #include <iomanip>
-
-
 
 namespace gpstk
 {
@@ -56,9 +55,17 @@ namespace gpstk
    //@{
 
       /**
-       * This class models Satellite Position in Three Dimensions.
-       * When using this class it's version member needs to be set correctly.
-       * This is best done using the header. For example: 
+       * This class encapsulates data for satellite orbits and clocks, including
+       * positions, velocities and other orbit and estimation information read
+       * as found in I/O of SP3 format (versions a, b, or c) files.
+       *
+       * This class is used in conjuction with class SP3Stream, which handles the I/O,
+       * and SP3Header, which holds information from the SP3 file header.
+       * Note that the version of SP3 is stored ONLY in the SP3Header object.
+       * This version is set when an SP3 header is read into SP3Header, and it may
+       * be set by the user using SP3Header::setVersion().
+       * On output, SP3Stream uses the version stored in the SP3Header to determine
+       * how SP3Data (this object) is output.
        *
        * @code
        * SP3Stream ss("igr14080.sp3");
@@ -66,12 +73,19 @@ namespace gpstk
        * SP3Data sd;
        *
        * ss >> sh;
-       * sd.version = sh.version;
        *
        * while (ss >> sd)
        * {
        *    // Interesting stuff...
        * }    
+       *
+       * SP3Stream ssout("myfile.sp3", ios::out);
+       * sh.setVersion(SP3Header::SP3c);
+       * ssout << sh;
+       * for(...) {
+       *    // perhaps modify sd
+       *    ssout << sd
+       * }
        * @endcode
        *
        * @sa gpstk::SP3Header and gpstk::SP3Stream for more information.
@@ -81,7 +95,7 @@ namespace gpstk
    {
    public:
          /// Constructor.
-      SP3Data() : version('a'),flag('\000'), time(CommonTime::BEGINNING_OF_TIME),
+      SP3Data() : RecType(' '), time(CommonTime::BEGINNING_OF_TIME),
                   clockEventFlag(false),clockPredFlag(false),orbitManeuverFlag(false),
                   orbitPredFlag(false),correlationFlag(false)
          {}
@@ -94,26 +108,27 @@ namespace gpstk
       virtual bool isData() const {return true;}
 
          /// Debug output function.
-      virtual void dump(std::ostream& s) const;
+      virtual void dump(std::ostream& s=std::cout, bool includeC=true) const throw();
 
          ///@name data members
          //@{
-      char version; ///< Version of SP3, 'a' or 'c' ONLY
-      char flag;    ///< Data type indicator. P for position or V for velocity ONLY
-      SatID sat;    ///< Satellite ID
+      char RecType;    ///< Data type indicator. P position, V velocity, * epoch
+      SatID sat;       ///< Satellite ID
       CommonTime time; ///< Time of epoch for this record
-      double x[3];  ///< The three-vector for position | velocity (m | dm/s).
-      double clk;   ///< The clock bias or drift for P|V (microsec|1).
-      int sig[4];   ///< (c) Four-vector of integer exponents for estimated sigma of
-                    ///< position,clock | velocity,clock rate; sigma = base**n
-                    ///< (mm,psec | 10^-4 mm/sec,psec/sec); base in header
-      bool clockEventFlag; ///< clock event flag, 'E' in file, version c only
-      bool clockPredFlag;  ///< clock prediction flag, 'P' in file, version c only
-      bool orbitManeuverFlag; ///< orbit maneuver flag, 'M' in file, version c only
-      bool orbitPredFlag;  ///< orbit prediction flag, 'P' in file, version c only
-      /// data for optional P|V Correlation record, version c only
-      bool correlationFlag; ///< If true, on input: a correlation record was read;
-                            ///< on output: stream should output correlation.
+      double x[3];     ///< The three-vector for position | velocity (m | dm/s).
+      double clk;      ///< The clock bias or drift for P|V (microsec|1).
+
+      /// the rest of the member are for version c only
+      int sig[4];      ///< Four-vector of integer exponents for estimated sigma 
+                       ///< of position,clock | velocity,clock rate; sigma = base**n
+                       ///< (mm,psec | 10^-4 mm/sec,psec/sec); base in header
+      bool clockEventFlag;    ///< clock event flag, 'E' in file
+      bool clockPredFlag;     ///< clock prediction flag, 'P' in file
+      bool orbitManeuverFlag; ///< orbit maneuver flag, 'M' in file
+      bool orbitPredFlag;     ///< orbit prediction flag, 'P' in file
+      /// data for optional P|V Correlation record
+      bool correlationFlag;   ///< If true, on input: a correlation record was read;
+                              ///< on output: stream should output correlation.
       unsigned sdev[4];  ///< std dev of 3 positions (XYZ,mm) and clock (psec)
                          ///< or velocities(10^-4 mm/sec) and clock rate (10^-4 ps/s)
       int correlation[6];///< elements of correlation matrix: xy,xz,xc,yz,yc,zc

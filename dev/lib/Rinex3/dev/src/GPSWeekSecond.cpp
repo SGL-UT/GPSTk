@@ -41,8 +41,6 @@
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 
-
-
 namespace gpstk
 {
    GPSWeekSecond& 
@@ -78,7 +76,7 @@ namespace gpstk
       throw( gpstk::InvalidRequest )
    {
          /// This is the earliest CommonTime convertible to GPSWeekSecond.
-      static const CommonTime MIN_CT = GPSWeekSecond(0,0.,TimeSys::Any);
+      static const CommonTime MIN_CT = GPSWeekSecond(0,0.,TimeSystem::Any);
 
       if (ct < MIN_CT)
       {
@@ -108,7 +106,7 @@ namespace gpstk
          using gpstk::StringUtils::formattedPrint;
          
          std::string rv = GPSWeek::printf( fmt );
-         
+
          rv = formattedPrint( rv, getFormatPrefixInt() + "w",
                               "wu", getDayOfWeek() );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
@@ -165,7 +163,7 @@ namespace gpstk
                sow = asDouble( i->second );
                break;
             case 'P':
-	      timeSystem = static_cast<TimeSys::Systems>(asInt( i->second ));
+	            timeSystem = static_cast<TimeSystem>(asInt( i->second ));
                break;
             default:
                   // do nothing

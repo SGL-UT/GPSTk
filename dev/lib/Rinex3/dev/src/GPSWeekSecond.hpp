@@ -45,8 +45,6 @@
 #include "TimeConstants.hpp"
 #include "TimeSystem.hpp"
 
-
-
 namespace gpstk
 {
       /** 
@@ -67,7 +65,7 @@ namespace gpstk
           */
       GPSWeekSecond( unsigned int w = 0,
                      double s = 0.,
-                     TimeSys ts = TimeSys::Unknown )
+                     TimeSystem ts = TimeSystem::Unknown )
          throw()
             : GPSWeek(w), sow(s)
       { timeSystem = ts; }

@@ -54,8 +54,6 @@
 #include "SP3Data.hpp"
 #include "SP3Header.hpp"
 
-
-
 namespace gpstk
 {
 
@@ -98,16 +96,19 @@ namespace gpstk
          throw( FileMissingException );
 
 
+         // TODO why virtual? why return *this? Wouldn't this be better:
+         // void rejectBadPositions(const bool flag) { rejectBadPosFlag=flag; } ?
+         //
          /// Set if satellites with bad or absent positional values will be
          /// rejected. It is false by default when object is constructed.
       virtual SP3EphemerisStore& rejectBadPositions(const bool flag)
-      { rejectBadPosFlag = true; return (*this); };
+      { rejectBadPosFlag = flag; return (*this); };
 
 
          /// Set if satellites with bad or absent clock values will be
          /// rejected. It is false by default when object is constructed.
       virtual SP3EphemerisStore& rejectBadClocks(const bool flag)
-      { rejectBadClockFlag = true; return (*this); };
+      { rejectBadClockFlag = flag; return (*this); };
 
 
    private:

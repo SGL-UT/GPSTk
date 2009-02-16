@@ -42,8 +42,6 @@
 #include "YDSTime.hpp"
 #include "TimeConverters.hpp"
 
-
-
 namespace gpstk
 {
    YDSTime& YDSTime::operator=( const YDSTime& right )
@@ -178,7 +176,7 @@ namespace gpstk
                break;
 
             case 'P':
-               timeSystem = static_cast<TimeSys::Systems>(asInt( i->second ));
+               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
                break;
             
             default:
@@ -207,15 +205,15 @@ namespace gpstk
    {
       year = doy = 0;
       sod = 0.0;
-      timeSystem = TimeSys::Unknown;
+      timeSystem = TimeSystem::Unknown;
    }
 
    bool YDSTime::operator==( const YDSTime& right ) const
       throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem.getTimeSystem() != TimeSys::Any &&
-           right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+      if ((timeSystem != TimeSystem::Any &&
+           right.timeSystem != TimeSystem::Any) &&
           timeSystem != right.timeSystem)
          return false;
 
@@ -238,8 +236,8 @@ namespace gpstk
       throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem.getTimeSystem() != TimeSys::Any &&
-           right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+      if ((timeSystem != TimeSystem::Any &&
+           right.timeSystem != TimeSystem::Any) &&
           timeSystem != right.timeSystem)
       {
          gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");

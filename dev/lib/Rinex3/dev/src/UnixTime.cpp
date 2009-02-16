@@ -41,8 +41,6 @@
 #include "UnixTime.hpp"
 #include "TimeConstants.hpp"
 
-
-
 namespace gpstk
 {
    UnixTime& UnixTime::operator=( const UnixTime& right )
@@ -75,10 +73,10 @@ namespace gpstk
       throw( gpstk::InvalidRequest )
    {
          /// This is the earliest CommonTime for which UnixTimes are valid.
-      static const CommonTime MIN_CT = UnixTime(0, 0, TimeSys::Any);
+      static const CommonTime MIN_CT = UnixTime(0, 0, TimeSystem::Any);
          /// This is the latest CommonTime for which UnixTimes are valid.
          /// (2^31 - 1) s and 999999 us
-      static const CommonTime MAX_CT = UnixTime(2147483647, 999999, TimeSys::Any);
+      static const CommonTime MAX_CT = UnixTime(2147483647, 999999, TimeSystem::Any);
 
       if ( ct < MIN_CT || ct > MAX_CT )
       {
@@ -164,7 +162,7 @@ namespace gpstk
                break;
 
             case 'P':
-               timeSystem = static_cast<TimeSys::Systems>(asInt( i->second ));
+               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
                break;
                
             default:
@@ -192,15 +190,15 @@ namespace gpstk
       throw()
    {
       tv.tv_sec = tv.tv_usec = 0;
-      timeSystem = TimeSys::Unknown;
+      timeSystem = TimeSystem::Unknown;
    }
    
    bool UnixTime::operator==( const UnixTime& right ) const
       throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem.getTimeSystem() != TimeSys::Any &&
-           right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+      if ((timeSystem != TimeSystem::Any &&
+           right.timeSystem != TimeSystem::Any) &&
           timeSystem != right.timeSystem)
          return false;
 
@@ -222,8 +220,8 @@ namespace gpstk
       throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((timeSystem.getTimeSystem() != TimeSys::Any &&
-           right.timeSystem.getTimeSystem() != TimeSys::Any) &&
+      if ((timeSystem != TimeSystem::Any &&
+           right.timeSystem != TimeSystem::Any) &&
           timeSystem != right.timeSystem)
       {
          gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");

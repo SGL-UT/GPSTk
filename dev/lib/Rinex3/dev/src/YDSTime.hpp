@@ -43,8 +43,6 @@
 
 #include "TimeTag.hpp"
 
-
-
 namespace gpstk
 {
       /**
@@ -66,7 +64,7 @@ namespace gpstk
       YDSTime( long y = 0, 
                long d = 0, 
                double s = 0.,
-               TimeSys ts = TimeSys::Unknown )
+               TimeSystem ts = TimeSystem::Unknown )
          throw()
             : year(y), doy(d), sod(s) 
       { timeSystem = ts; }

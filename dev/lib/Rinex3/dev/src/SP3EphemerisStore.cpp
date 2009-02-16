@@ -1,11 +1,9 @@
 #pragma ident "$Id: SP3EphemerisStore.cpp 1652 2009-01-29 21:31:54Z raindave $"
 
-
 /**
  * @file SP3EphemerisStore.cpp
  * Read & store SP3 formated ephemeris data
  */
-
 
 //============================================================================
 //
@@ -43,8 +41,6 @@
 //
 //=============================================================================
 
-
-
 #include "SP3EphemerisStore.hpp"
 #include "MiscMath.hpp"
 #include "ECEF.hpp"
@@ -52,15 +48,12 @@
 
 using namespace gpstk::StringUtils;
 
-
 namespace gpstk
 {
-
       // Load the given SP3 file
    void SP3EphemerisStore::loadFile(const std::string& filename)
       throw( FileMissingException )
    {
-
       try
       {
 
@@ -78,7 +71,7 @@ namespace gpstk
 
             // If any file doesn't have the velocity data, clear the
             // the flag indicating that there is any velocity data
-         if (tolower(header.pvFlag) != 'v')
+         if (!header.containsVelocity)
          {
             haveVelocity = false;
          }
@@ -86,6 +79,8 @@ namespace gpstk
          SP3Data rec;
          while(strm >> rec)
          {
+            // reject when satellite undefined (e.g. first Epoch record)
+            if(rec.sat.id <= 0) continue;
 
             // If there is a bad or absent clock value, and
             // corresponding flag is set, then continue
@@ -105,7 +100,6 @@ namespace gpstk
             }
 
                // Ephemeris and clock are valid, then add them
-            rec.version = header.version;
             addEphemeris(rec);
 
          }  // end of 'while(strm >> rec)'
@@ -132,7 +126,7 @@ namespace gpstk
       const throw()
    {
 
-      s << "Dump of SP3EphemerisStore:" << std::endl;
+      s << "Dump of SP3EphemerisStore, built from file(s) :" << std::endl;
       std::vector<std::string> fileNames = getFileNames();
       std::vector<std::string>::const_iterator f=fileNames.begin();
       for (f=fileNames.begin(); f!=fileNames.end(); f++)

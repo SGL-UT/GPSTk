@@ -47,8 +47,13 @@
 #include "TabularEphemerisStore.hpp"
 #include "MiscMath.hpp"
 #include "ECEF.hpp"
+#include "CivilTime.hpp"
+#include "SP3SatID.hpp"
 #include "icd_200_constants.hpp"
 
+#include <vector>
+
+using namespace std;
 using namespace gpstk::StringUtils;
 
 namespace gpstk
@@ -61,51 +66,64 @@ namespace gpstk
        * @param[in] s the stream to receive the output; defaults to cout
        * @param[in] detail the level of detail to provide
        */
-   void TabularEphemerisStore::dump( std::ostream& s,
+   void TabularEphemerisStore::dump( ostream& s,
                                      short detail )
       const throw()
    {
+      // for ref: typedef std::map<CommonTime, Xvt> SvEphMap;
+      // for ref: typedef std::map<SatID, SvEphMap> EphMap;
 
-      s << "Dump of TabularEphemerisStore:" << std::endl;
+      s << "Dump of TabularEphemerisStore:" << endl;
 
       if(detail >= 0)
       {
-
+         const char *fmt="%4Y/%02m/%02d %2H:%02M:%02S (%P)";
          EphMap::const_iterator it;
 
          s << " Data stored for " << pe.size() << " satellites, over time span "
-           << initialTime << " to " << finalTime << "." << std::endl;
+           << static_cast<CivilTime>(initialTime).printf(fmt) << " to "
+           << static_cast<CivilTime>(finalTime).printf(fmt) << "." << endl;
 
          if(detail == 0) return;
+
+         s << " Gap interval = " << gapInterval
+            << "; checking gaps is " << (checkDataGap ? "on" : "off") << endl;
+         s << " Max interval = " << maxInterval
+            << "; checking interval is " << (checkInterval ? "on" : "off") << endl;
+         s << " Interpolation order is " << interpOrder << endl;
+
+         if(detail == 1) return;
 
          for(it=pe.begin(); it!=pe.end(); it++)
          {
 
-            s << "  PRN " << it->first << " : "
+            s << "  Satellite map for sat " << SP3SatID(it->first) << " : "
               << it->second.size() << " records.";
-            if(detail == 1) { s << std::endl; continue; }
-            s << "  Data:" << std::endl;
+            if(detail == 1) { s << endl; continue; }
+            s << "  Data:" << endl;
             SvEphMap::const_iterator jt;
 
             for(jt=it->second.begin(); jt!=it->second.end(); jt++)
             {
-               s << " " << jt->first << " P "
-                 << std::fixed << std::setprecision(6)
-                 << std::setw(13) << jt->second.x[0] << " "
-                 << std::setw(13) << jt->second.x[1] << " "
-                 << std::setw(13) << jt->second.x[2] << " "
-                 << std::setw(13) << jt->second.dtime
-                 << " V "
-                 << std::setw(13) << jt->second.v[0] << " "
-                 << std::setw(13) << jt->second.v[1] << " "
-                 << std::setw(13) << jt->second.v[2] << " "
-                 << std::setw(13) << jt->second.ddtime
-                 << std::endl;
+               s << " " << static_cast<CivilTime>(jt->first).printf(fmt) << " P "
+                  << fixed << setprecision(6)
+                  << setw(13) << jt->second.x[0] << " "
+                  << setw(13) << jt->second.x[1] << " "
+                  << setw(13) << jt->second.x[2] << " "
+                  << setw(13) << jt->second.dtime;
+               if(haveVelocity) s << " V "
+                  << setw(13) << jt->second.v[0] << " "
+                  << setw(13) << jt->second.v[1] << " "
+                  << setw(13) << jt->second.v[2] << " "
+                  << setw(13) << jt->second.ddtime;
+               s << endl;
             }
 
          }
 
       }  // End of 'if(detail >= 0)...'
+
+      s << "End of Dump of TabularEphemerisStore." << endl;
 
    }  // End of method 'TabularEphemerisStore::dump()'
 
@@ -209,7 +227,7 @@ namespace gpstk
 
          // Note that the order of the Lagrange interpolation
          // is twice this value
-      const int half=5;
+      const int half=interpOrder/2;
 
          //  i will be the lower bound, j the upper (in time).
       i = sem.lower_bound(t); // i points to first element with key >= t
@@ -276,7 +294,7 @@ namespace gpstk
       SvEphMap::const_iterator itr;
       CommonTime t0=i->first;
       double dt=t-t0,err;
-      std::vector<double> times,X,Y,Z,T,VX,VY,VZ,F;
+      vector<double> times,X,Y,Z,T,VX,VY,VZ,F;
 
       for (itr=i; itr!=sem.end(); itr++)
       {
@@ -345,17 +363,15 @@ namespace gpstk
       SatID sat = data.sat;
       Xvt&  xvt = pe[sat][t];
 
-      if (data.flag=='P')
+      if (data.RecType=='P')
       {
          xvt.x = ECEF(data.x[0], data.x[1], data.x[2]);
          xvt.dtime = data.clk;
-         haveVelocity=false;
       }
-      else if (data.flag=='V')
+      else if (haveVelocity && data.RecType=='V')
       {
          xvt.v = Triple(data.x[0],data.x[1],data.x[2]);
          xvt.ddtime = data.clk;
-         haveVelocity=true;
       }
       
       if (t<initialTime)

@@ -42,8 +42,6 @@
 #include "TimeTag.hpp"
 #include "TimeSystem.hpp"
 
-
-
 namespace gpstk
 {
       /**
@@ -62,7 +60,7 @@ namespace gpstk
           * All elements are initialized to zero.
           */
       MJD( long double m = 0.,
-           TimeSys ts = TimeSys::Unknown )
+           TimeSystem ts = TimeSystem::Unknown )
          throw()
             : mjd( m )
       { timeSystem = ts; }

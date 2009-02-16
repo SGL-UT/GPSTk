@@ -1,12 +1,9 @@
-#pragma ident "$Id: SP3Stream.hpp 1609 2009-01-21 17:33:54Z ehagen $"
+#pragma ident "$Id: $"
 
 /**
  * @file SP3Stream.hpp
- * File stream for SP3 format files
+ * gpstk::SP3Stream - SP3[abc] format file stream
  */
-
-#ifndef GPSTK_SP3STREAM_HPP
-#define GPSTK_SP3STREAM_HPP
 
 //============================================================================
 //
@@ -44,42 +41,97 @@
 //
 //=============================================================================
 
-#include "CommonTime.hpp"
+#ifndef SP3STREAM_INCLUDE
+#define SP3STREAM_INCLUDE
+
 #include "FFTextStream.hpp"
-
-
+#include "SP3Header.hpp"
 
 namespace gpstk
 {
-   /** @addtogroup SP3ephem */
+   /// @addtogroup SP3
    //@{
 
-      /**
-       * This class provides access to SP3 files.
-       *
-       * @sa gpstk::SP3Header and gpstk::SP3Data for more information.
-       * @sa petest.cpp for an example.
-       */
+       /// This class performs file I/O on an SP3 file for the SP3Header
+       /// and SP3Data classes.
+       /// Note that the file format (a, b or c) is stored in the SP3Header (only).
+       /// On input it is set by SP3Header::reallyGetRecord() by the file content;
+       /// for output it may be set (SP3Header::setVersion()) before streaming.
    class SP3Stream : public FFTextStream
    {
    public:
-      SP3Stream() : buffer(std::string()) {}
+         /// Default constructor
+      SP3Stream() 
+         : headerRead(false),
+           lastLine(std::string()),
+           wroteEOF(false),
+           writingMode(false)
+         {}
       
-         /** Constructor
-          * Opens file \a fn using ios::openmode \a mode.
-          */
-      SP3Stream(const char* fn, std::ios::openmode mode=std::ios::in)
-            : FFTextStream(fn, mode) {}
+         /// Common constructor: open (default: to read)
+         /// @param filename the name of the ASCII SP3 format file to be opened
+         /// @param mode the ios::openmode to be used
+      SP3Stream(const char* filename,
+                std::ios::openmode mode=std::ios::in)
+            : FFTextStream(filename, mode)
+            { open(filename, mode); }
 
-         /// destructor
-      virtual ~SP3Stream() {}
-      
+         /// destructor; override to force 'close'
+      virtual ~SP3Stream()
+      {
+         if(writingMode && !wroteEOF) close();
+      }
+
+         /// override close() to write EOF line
+      virtual void close(void) throw(Exception)
+      {
+         try {
+            // if writing, add the final line
+            if(writingMode && !wroteEOF) {
+               (*this) << "EOF\n"; 
+               wroteEOF = true;
+            }
+            FFTextStream::close();
+         }
+         catch(std::exception& e) {
+            Exception ge(e.what());
+            GPSTK_THROW(ge);
+         }
+      }
+
+         /// override open() to reset the header
+         /// @param filename the name of the ASCII SP3 format file to be opened
+         /// @param mode the ios::openmode to be used
+      virtual void open(const char* filename, std::ios::openmode mode)
+      {
+         FFTextStream::open(filename, mode);
+         headerRead = false;
+         header = SP3Header();
+
+         // for close() later
+         wroteEOF = writingMode = false;
+         if( (mode & std::ios::out) && !(mode & std::ios::in) )
+            writingMode = true;
+
+         // this is necessary in order for SP3Data::reallyGetRecord() to
+         // process the last line in the file when there is no EOF record...why?
+         if(mode & std::ios::in) exceptions(ifstream::failbit);
+      }
+
+         ///@name data members
+         //@{
+      SP3Header header;     ///< SP3Header for this file
+      bool headerRead;      ///< True if the header has been read.
+      bool wroteEOF;        ///< True if the final 'EOF' has been read.
+      bool writingMode;     ///< True if the stream is open in 'out', not 'in', mode
       CommonTime currentEpoch;   ///< Time from last epoch record read
-      std::string buffer;        ///< Last line read, not yet processed
-   };
+      std::string lastLine;      ///< Last line read, perhaps not yet processed
+         //@{
 
+   }; // class SP3Stream
+   
    //@}
+   
+} // namespace gpstk
 
-}  // namespace
-
-#endif
+#endif // SP3STREAM_INCLUDE

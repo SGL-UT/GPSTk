@@ -51,10 +51,8 @@ struct timeval {
   long    tv_usec;        /* and microseconds */
 };
 #else
-#include <ctime>     // for struct timeval
+#include <sys/time.h>     // for struct timeval
 #endif
-
-
 
 namespace gpstk
 {
@@ -76,7 +74,7 @@ namespace gpstk
           */
       UnixTime( int sec = 0, 
                 int usec = 0,
-                TimeSys ts = TimeSys::Unknown )
+                TimeSystem ts = TimeSystem::Unknown )
          throw()
       { tv.tv_sec = sec;  tv.tv_usec = usec;  timeSystem = ts; }
 
@@ -84,7 +82,7 @@ namespace gpstk
           * Sets time according to the given struct timeval.
           */
       UnixTime( struct timeval t,
-                TimeSys ts = TimeSys::Unknown )
+                TimeSystem ts = TimeSystem::Unknown )
          throw()
       {
          tv.tv_sec = t.tv_sec;  tv.tv_usec = t.tv_usec;  timeSystem = ts;

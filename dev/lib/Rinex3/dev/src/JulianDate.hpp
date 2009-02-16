@@ -43,8 +43,6 @@
 
 #include "TimeTag.hpp"
 
-
-
 namespace gpstk
 {
       /**
@@ -62,7 +60,7 @@ namespace gpstk
           * Default Constructor.
           * All elements are initialized to zero.
           */
-      JulianDate( long double j = 0., TimeSys ts = TimeSys::Unknown )
+      JulianDate( long double j = 0., TimeSystem ts = TimeSystem::Unknown )
          throw()
             : jd( j )
       { timeSystem = ts; }

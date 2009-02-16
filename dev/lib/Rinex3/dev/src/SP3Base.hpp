@@ -1,6 +1,4 @@
-#pragma ident "$Id: SP3Base.hpp 70 2006-08-01 18:36:21Z ehagen $"
-
-
+#pragma ident "$Id: SP3Base.hpp $"
 
 /**
  * @file SP3Base.hpp
@@ -46,11 +44,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #include "FFData.hpp"
 
 namespace gpstk
@@ -58,7 +51,7 @@ namespace gpstk
    /** @defgroup SP3ephem SP3 format file I/O */
    //@{
 
-  /// This class is here to make readable inheritance diagrams.
+   /// This class is here to make readable inheritance diagrams.
    class SP3Base : public FFData
    {
    public:
@@ -70,4 +63,4 @@ namespace gpstk
 
 }  // namespace
 
-#endif
+#endif   // GPSTK_SP3BASE_HPP
