@@ -73,8 +73,7 @@ namespace gpstk
     strm.header = (*this);
 
     unsigned long allValid;
-    if (version == 3.0)        allValid = allValid30;
-    else if (version == 3.00)  allValid = allValid30;
+    if (version == 3.0 || version == 3.00) allValid = allValid30;
     else
       {
         FFStreamError err("Unknown RINEX version: " + asString(version,3));
@@ -93,10 +92,10 @@ namespace gpstk
 
     if (valid & versionValid)
       {
-        line  = rightJustify(asString(version,3), 10);
+        line  = rightJustify(asString(version,4), 10);
         line += string(10, ' ');
-        line += string("NAVIGATION"); //leftJustify(fileType, 20);
-        line += string(10, ' ');
+        line += leftJustify(fileType, 20);
+        line += string(19, ' ');
         line += satSys.substr(0,1) + string(19, ' ');
         line += versionString;
         strm << line << endl;
@@ -106,9 +105,9 @@ namespace gpstk
     if (valid & runByValid) 
       {
         line  = leftJustify(fileProgram,20);
-        line += leftJustify(fileAgency,20);
+        line += leftJustify(fileAgency ,20);
         SystemTime sysTime;
-        string curDate = (static_cast<CivilTime>(sysTime)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P"); // ** Thisi s kind of ugly. -DR **
+        string curDate = (static_cast<CivilTime>(sysTime)).printf("%04Y$02m%02d %02H:%02M:%02S %P");
         line += leftJustify(curDate, 20);
         line += runByString;
         strm << line << endl;
@@ -180,20 +179,23 @@ namespace gpstk
         if ( timeSysCorrSBAS != "" )
           {
             line += string(1, ' ');
-            line += timeSysCorrSBAS;
+            line += leftJustify(asString(timeSysCorrSBAS),5);
             line += string(1, ' ');
-            line += timeSysUTCid;
+            line += leftJustify(asString(timeSysUTCid),2);
             line += string(1, ' ');
           }
         else
-          line += string(10, ' ');
+          {
+            line += string(10, ' ');
+          }
         line += timeSysCorrString;
         strm << line << endl;
         strm.lineNumber++;
       }
+
     if (valid & leapSecondsValid)
       {
-        line  = rightJustify(asString(leapSeconds), 6);
+        line  = rightJustify(asString(leapSeconds),6);
         line += string(54, ' ');
         line += leapSecondsString;
         strm << line << endl;
@@ -245,22 +247,16 @@ namespace gpstk
             version = asDouble(line.substr(0,20));
             fileType =  strip(line.substr(20,20));
             satSys   =  strip(line.substr(40,20));
-            if ( (fileType[0] != 'N') &&
-                 (fileType[0] != 'n'))
+            if ( fileType[0] != 'N' && fileType[0] != 'n')
               {
                 FFStreamError e("This isn't a RINEX Nav file.");
                 GPSTK_THROW(e);
               }
-            if ( (satSys[0] != 'G') &&
-                 (satSys[0] != 'g') &&
-                 (satSys[0] != 'R') &&
-                 (satSys[0] != 'r') &&
-                 (satSys[0] != 'E') &&
-                 (satSys[0] != 'e') &&
-                 (satSys[0] != 'S') &&
-                 (satSys[0] != 's') &&
-                 (satSys[0] != 'M') &&
-                 (satSys[0] != 'm')    )
+            if ( satSys[0] != 'G' && satSys[0] != 'g' &&
+                 satSys[0] != 'R' && satSys[0] != 'r' &&
+                 satSys[0] != 'E' && satSys[0] != 'e' &&
+                 satSys[0] != 'S' && satSys[0] != 's' &&
+                 satSys[0] != 'M' && satSys[0] != 'm'    )
               {
                 FFStreamError e("The satellite system isn't valid.");
                 GPSTK_THROW(e);
@@ -285,17 +281,17 @@ namespace gpstk
             if ( ionoCorrType == "GAL" )
               {
                 for(int i = 0; i < 3; i++)
-                  ionoParam1[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12 * i,12));
+                  ionoParam1[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12*i, 12));
               }
             else if ( ionoCorrType == "GPSA" )
               {
                 for(int i = 0; i < 4; i++)
-                  ionoParam1[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12 * i,12));
+                  ionoParam1[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12*i, 12));
               }
             else if ( ionoCorrType == "GPSB" )
               {
                 for(int i = 0; i < 4; i++)
-                  ionoParam2[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12 * i,12));
+                  ionoParam2[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12*i, 12));
               }
             else
               {
@@ -332,8 +328,7 @@ namespace gpstk
       }
 
     unsigned long allValid;
-    if      (version == 3.0)  allValid = allValid30;
-    else if (version == 3.00) allValid = allValid30;
+    if (version == 3.0 && version == 3.00) allValid = allValid30;
     else
       {
         FFStreamError e("Unknown or unsupported RINEX version " + asString(version));
