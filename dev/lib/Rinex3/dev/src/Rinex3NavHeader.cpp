@@ -96,7 +96,7 @@ namespace gpstk
         line += string(10, ' ');
         line += leftJustify(fileType, 20);
         line += satSys.substr(0,1) + string(19, ' ');
-        line += versionString;
+        line += leftJustify(versionString,20);
         strm << line << endl;
         strm.lineNumber++;
       }
@@ -108,7 +108,7 @@ namespace gpstk
         SystemTime sysTime;
         string curDate = (static_cast<CivilTime>(sysTime)).printf("%04Y%02m%02d %02H%02M%02S %P");
         line += leftJustify(curDate, 20);
-        line += runByString;
+        line += leftJustify(runByString,20);
         strm << line << endl;
         strm.lineNumber++;
       }
@@ -119,7 +119,7 @@ namespace gpstk
         while (itr != commentList.end())
           {
             line  = leftJustify((*itr), 60);
-            line += commentString;
+            line += leftJustify(commentString,20);
             strm << line << endl;
             strm.lineNumber++;
             itr++;
@@ -137,7 +137,7 @@ namespace gpstk
                 line += rightJustify(doub2for(ionoParam1[i], 12, 2),12);  // should be 12.4
               }
             line += string(19, ' ');
-            line += ionoCorrString;
+            line += leftJustify(ionoCorrString,20);
             strm << line << endl;
             strm.lineNumber++;
           }
@@ -150,7 +150,7 @@ namespace gpstk
                 line += rightJustify(doub2for(ionoParam1[i], 12, 2),12);  // should be 12.4
               }          
             line += string(7, ' ');
-            line += ionoCorrString;
+            line += leftJustify(ionoCorrString,20);
             strm << line << endl;
             strm.lineNumber++;
 
@@ -161,7 +161,7 @@ namespace gpstk
                 line += rightJustify(doub2for(ionoParam2[i], 12, 2),12);  // should be 12.4
               }          
             line += string(7, ' ');
-            line += ionoCorrString;
+            line += leftJustify(ionoCorrString,20);
             strm << line << endl;
             strm.lineNumber++;
           }
@@ -187,7 +187,7 @@ namespace gpstk
           {
             line += string(10, ' ');
           }
-        line += timeSysCorrString;
+        line += leftJustify(timeSysCorrString,20);
         strm << line << endl;
         strm.lineNumber++;
       }
@@ -196,7 +196,7 @@ namespace gpstk
       {
         line  = rightJustify(asString(leapSeconds),6);
         line += string(54, ' ');
-        line += leapSecondsString;
+        line += leftJustify(leapSecondsString,20);
         strm << line << endl;
         strm.lineNumber++;
       }
@@ -204,7 +204,7 @@ namespace gpstk
     if (valid & endValid)
       {
         line  = string(60,' ');
-        line += endOfHeader;
+        line += leftJustify(endOfHeader,20);
         strm << line << endl;
         strm.lineNumber++;
       }
