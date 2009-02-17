@@ -53,13 +53,13 @@ namespace gpstk
       /// list of time systems supported by this class
       enum SystemsEnum
       {
-         Unknown=0,  ///< unknown time frame; for legacy code compatibility
-         Any,        ///< wildcard; allows comparison with any other type
-         GPS,        ///< GPS system time
-         GLO,        ///< GLONASS system time
-         GAL,        ///< Galileo system time
-         UTC,        ///< Coordinated Universal Time (e.g., from NTP)
-         TAI         ///< International Atomic Time
+         Unknown = 0, ///< unknown time frame; for legacy code compatibility
+         Any,         ///< wildcard; allows comparison with any other type
+         GPS,         ///< GPS system time
+         GLO,         ///< GLONASS system time
+         GAL,         ///< Galileo system time
+         UTC,         ///< Coordinated Universal Time (e.g., from NTP)
+         TAI          ///< International Atomic Time
 
          // Add new GNSS systems *before* UTC, or other new time systems
          // before TAI, then modify Strings[] in TimeSystem.cpp.
@@ -87,6 +87,9 @@ namespace gpstk
 
       // (copy constructor and operator= are defined by compiler)
       
+      void setTimeSystem( const SystemsEnum& sys )
+         throw();
+
       /// Return a std::string for each system (these strings are const and static).
       /// @return the std::string
       std::string asString() const
