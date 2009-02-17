@@ -55,7 +55,7 @@ namespace gpstk
        std::string("TAI")
      };
 
-   void TimeSys::setTimeSystem( const SystemsEnum& sys )
+   void TimeSystem::setTimeSystem( const SystemsEnum& sys )
       throw()
    {
       if (sys < 0 || sys > TAI)
