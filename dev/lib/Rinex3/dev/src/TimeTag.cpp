@@ -41,8 +41,6 @@
 #include "TimeTag.hpp"
 #include "StringUtils.hpp"
 
-
-
 namespace gpstk
 {
    void TimeTag::scanf( const std::string& str,

@@ -42,8 +42,6 @@
 #include "TimeConstants.hpp"
 #include "TimeConverters.hpp"
 
-
-
 namespace gpstk
 {
    GPSWeekZcount& GPSWeekZcount::operator=( const GPSWeekZcount& right )
@@ -78,7 +76,7 @@ namespace gpstk
       throw( gpstk::InvalidRequest )
    {
          /// This is the earliest CommonTime representable by GPSWeekZcount.
-     static const CommonTime MIN_CT = GPSWeekZcount(0,0,TimeSys::Any);
+     static const CommonTime MIN_CT = GPSWeekZcount(0,0,TimeSystem::Any);
 
       if (ct < MIN_CT)
       {
@@ -121,7 +119,7 @@ namespace gpstk
          rv = formattedPrint( rv, getFormatPrefixInt() + "C",
                               "Cu", getZcount32() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Pu", timeSystem.getTimeSystem() );
+                              "Ps", timeSystem.asString().c_str() );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -187,7 +185,7 @@ namespace gpstk
                break;
 
             case 'P':
-               timeSystem = static_cast<TimeSys::Systems>(asInt( i->second ));
+               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
                break;
 
             default:

@@ -53,7 +53,7 @@ namespace gpstk
       SystemTime()
          throw()
       {
-         setTimeSystem(TimeSys::UTC);
+         setTimeSystem(TimeSystem::UTC);
          update();
       }
       

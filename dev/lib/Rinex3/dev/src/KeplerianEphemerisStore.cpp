@@ -136,7 +136,7 @@ namespace gpstk
       throw()
    {
       bool rc = false;
-      CommonTime t(0,0,0.0,TimeSys::GPS);  // use GPS for default
+      CommonTime t(0,0,0.0,TimeSystem::GPS);  // use GPS for default
       t =  eph.getEphemerisEpoch();
       t -= 0.5*3600.0*eph.getFitInterval();
    
@@ -230,7 +230,7 @@ namespace gpstk
       }
 
       const EngEphMap& em = prn_i->second;
-      CommonTime t1(0,0,0.0,TimeSys::GPS), t2(0,0,0.0,TimeSys::GPS),
+      CommonTime t1(0,0,0.0,TimeSystem::GPS), t2(0,0,0.0,TimeSystem::GPS),
                  Tot = CommonTime::BEGINNING_OF_TIME;
       EngEphMap::const_iterator it = em.end();
 

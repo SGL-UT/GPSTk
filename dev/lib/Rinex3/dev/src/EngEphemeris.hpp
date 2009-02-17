@@ -51,8 +51,6 @@
 
 #include <iomanip>
 
-
-
 namespace gpstk
 {
    /** @addtogroup ephemcalc */

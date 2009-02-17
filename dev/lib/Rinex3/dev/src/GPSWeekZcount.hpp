@@ -45,8 +45,6 @@
 #include "TimeConstants.hpp"
 #include "TimeSystem.hpp"
 
-
-
 namespace gpstk
 {
       /**
@@ -70,7 +68,7 @@ namespace gpstk
           */
       GPSWeekZcount( int w = 0,
                      int z = 0,
-                     TimeSys ts = TimeSys::Unknown )
+                     TimeSystem ts = TimeSystem::Unknown )
          throw()
             : GPSWeek( w ), zcount( z )
       { timeSystem = ts; }
@@ -162,7 +160,7 @@ namespace gpstk
       inline virtual std::string getDefaultFormat() const
          throw()
       {
-         return GPSWeek::getDefaultFormat() + " %06Z";
+         return GPSWeek::getDefaultFormat() + " %06Z %P";
       }
 
       virtual bool isValid() const

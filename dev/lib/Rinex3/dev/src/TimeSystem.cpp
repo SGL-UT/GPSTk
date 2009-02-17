@@ -41,40 +41,30 @@
 
 namespace gpstk
 {
-   void TimeSys::setTimeSystem( const Systems& sys )
-      throw()
-   {         
-      if (sys < 0 || sys > 3)
-      {
-         ts = Unknown;
-      }
-      else
-      {
-         ts = sys;
-      }
-   }
+   // Static initialization of const std::strings for asString().
+   // Must parallel enum SystemsEnum in TimeSystem.hpp.
+   // NB: DO NOT use std::map here; on some systems initialization fails.
+   const std::string TimeSystem::Strings[TAI+1] =
+     {
+       std::string("Unknown"),
+       std::string("Any"),
+       std::string("GPS"),
+       std::string("GLO"),
+       std::string("GAL"),
+       std::string("UTC"),
+       std::string("TAI")
+     };
 
-   std::string TimeSys::asString() const
+   void TimeSystem::fromString(const std::string str)
       throw()
    {
-      switch(ts)
-      {
-         case Unknown:
-            return("Unknown");
+      system = Unknown;
+      for(int i=0; i<=TAI; i++) {
+         if(Strings[i] == str) {
+            system = static_cast<SystemsEnum>(i);
             break;
-         case Any:
-            return("Any (wildcard)");
-            break;
-         case GPS:
-            return("GPS");
-            break;
-         case UTC:
-            return("UTC");
-            break;
-         default:
-            return("Error: timesystem set to unknown value: " + ts);
-            break;
+         }
       }
    }
 
-} //namespace
+}   // end namespace

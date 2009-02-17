@@ -44,8 +44,6 @@
 #include "StringUtils.hpp"
 #include <map>
 
-
-
 namespace gpstk
 {
       /** This class is an abstract base class inherited by all the classes
@@ -63,7 +61,7 @@ namespace gpstk
       {}
 
          /// Constructor
-      TimeTag( TimeSys ts ) 
+      TimeTag( TimeSystem ts ) 
          throw()
       { timeSystem = ts; }
 
@@ -177,18 +175,18 @@ namespace gpstk
       { return "ErrorBadTime"; }
 
          /// Set method for internal variable timeSystem (enum).
-      void setTimeSystem( const TimeSys& timeSys )
+      void setTimeSystem( const TimeSystem& timeSys )
          throw()
       { timeSystem = timeSys; }
 
          /// Obtain time system info (enum).
-      TimeSys::Systems getTimeSystem() const
+      TimeSystem getTimeSystem() const
          throw()
-      { return timeSystem.getTimeSystem(); }
+      { return timeSystem; }
 
    protected:
 
-      TimeSys timeSystem; // time system (representation) of the data
+      TimeSystem timeSystem; // time system (representation) of the data
    };
 
 } // namespace

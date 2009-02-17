@@ -47,8 +47,6 @@
 
 using namespace std;
 
-
-
 namespace gpstk
 {
       /** 
@@ -103,6 +101,7 @@ namespace gpstk
           * Default and Copy Constructors, Assignment Operator and Destructor.
           */
          //@{
+
          /**
           * Default Constructor.
           * All numerical elements default to zero, "Unknown" for time frame.
@@ -111,8 +110,8 @@ namespace gpstk
       CommonTime( long day = 0, 
                   long sod = 0,
                   double fsod = 0.0,
-                  TimeSys timeSystem = TimeSys::Unknown )
-         throw( gpstk::InvalidParameter )
+                  TimeSystem timeSystem = TimeSystem::Unknown )
+         throw( InvalidParameter )
       { set( day, sod, fsod, timeSystem ); }
 
          /**
@@ -121,8 +120,8 @@ namespace gpstk
           */
       CommonTime( long day,
                   double sod,
-                  TimeSys timeSystem )
-         throw( gpstk::InvalidParameter )
+                  TimeSystem timeSystem )
+         throw( InvalidParameter )
       { set( day, sod, timeSystem ); }
       
          /** 
@@ -130,8 +129,8 @@ namespace gpstk
           * All elements default to zero and Unknown.
           */
       CommonTime( double day,
-                  TimeSys timeSystem )
-         throw( gpstk::InvalidParameter )
+                  TimeSystem timeSystem )
+         throw( InvalidParameter )
       { set( day, timeSystem ); }
       
          /**
@@ -153,6 +152,7 @@ namespace gpstk
       virtual ~CommonTime()
          throw()
       {}
+
          //@}
 
          /** 
@@ -167,8 +167,8 @@ namespace gpstk
       CommonTime& set( long day, 
                        long sod,
                        double fsod = 0.0,
-                       TimeSys timeSystem = TimeSys::Unknown )
-         throw( gpstk::InvalidParameter );
+                       TimeSystem timeSystem = TimeSystem::Unknown )
+         throw( InvalidParameter );
 
          /**
           * Set method that accepts values for day and seconds of day.  It also
@@ -177,8 +177,8 @@ namespace gpstk
           */
       CommonTime& set( long day,
                        double sod = 0.0,
-                       TimeSys timeSystem = TimeSys::Unknown )
-         throw( gpstk::InvalidParameter );
+                       TimeSystem timeSystem = TimeSystem::Unknown )
+         throw( InvalidParameter );
       
          /**
           * Set method that accepts a value for day.  It also checks the
@@ -186,8 +186,8 @@ namespace gpstk
           * out of bounds.
           */
       CommonTime& set( double day,
-                       TimeSys timeSys = TimeSys::Unknown )
-         throw( gpstk::InvalidParameter );
+                       TimeSystem timeSys = TimeSystem::Unknown )
+         throw( InvalidParameter );
 
          /**
           * Set internal values method.  Set the data members of this object
@@ -197,13 +197,13 @@ namespace gpstk
       CommonTime& setInternal( long day = 0,
                                long msod = 0,
                                double fsod = 0.0,
-                               TimeSys timeSys = TimeSys::Unknown )
-         throw( gpstk::InvalidParameter );
+                               TimeSystem timeSys = TimeSystem::Unknown )
+         throw( InvalidParameter );
 
          /**
           * Set method for internal variable m_timeSystem.
           */
-      void setTimeSystem( const TimeSys& timeSystem )
+      void setTimeSystem( const TimeSystem& timeSystem )
          throw()
       { m_timeSystem = timeSystem; }
 
@@ -214,7 +214,7 @@ namespace gpstk
       void get( long& day, 
                 long& sod,
                 double& fsod,
-                TimeSys& timeSystem ) const
+                TimeSystem& timeSystem ) const
          throw();
 
          /**
@@ -233,7 +233,7 @@ namespace gpstk
           */
       void get( long& day,
                 double& sod,
-                TimeSys& timeSystem ) const
+                TimeSystem& timeSystem ) const
          throw();
 
          /**
@@ -249,7 +249,7 @@ namespace gpstk
           * includes the fraction of a day, plus the time frame.
           */
       void get( double& day,
-                TimeSys& timeSystem ) const
+                TimeSystem& timeSystem ) const
          throw();
 
          /**
@@ -266,7 +266,7 @@ namespace gpstk
       void getInternal( long& day,
                         long& msod,
                         double& fsod,
-                        TimeSys& timeSystem ) const
+                        TimeSystem& timeSystem ) const
          throw()
       { day = m_day; msod = m_msod; fsod = m_fsod; timeSystem = m_timeSystem; }
 
@@ -279,7 +279,7 @@ namespace gpstk
          throw();
 
          /// Obtain time system info (enum).
-      TimeSys::Systems getTimeSystem() const
+      TimeSystem getTimeSystem() const
          throw();
 
          //@}
@@ -294,7 +294,7 @@ namespace gpstk
           * @param reutrn difference in seconds
           */
       double operator-( const CommonTime& right ) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
 
          /**
           * Add seconds to a copy of this CommonTime.
@@ -384,18 +384,18 @@ namespace gpstk
       bool operator!=( const CommonTime& right ) const
          throw();
       bool operator<( const CommonTime& right ) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
       bool operator>( const CommonTime& right ) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
       bool operator<=( const CommonTime& right ) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
       bool operator>=( const CommonTime& right ) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
          //@}
 
       void reset()
          throw()
-      { m_day = m_msod = 0; m_fsod = 0.0; m_timeSystem = TimeSys::Unknown; }
+      { m_day = m_msod = 0; m_fsod = 0.0; m_timeSystem = TimeSystem::Unknown; }
 
       std::string asString() const
          throw();
@@ -424,8 +424,9 @@ namespace gpstk
       long m_msod;    //< milliseconds-of-day        0 <= val < 86400000
       double m_fsod;  //< fractional seconds-of-day  0 <= val < 0.001
 
-      TimeSys m_timeSystem; // time frame (system representation) of the data
-   };
+      TimeSystem m_timeSystem; // time frame (system representation) of the data
+
+   }; // end class CommonTime
 
    std::ostream& operator<<(std::ostream& o, const CommonTime& ct);
 

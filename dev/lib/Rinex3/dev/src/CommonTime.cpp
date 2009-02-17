@@ -51,10 +51,10 @@ namespace gpstk
 
       // earliest representable CommonTime
    const CommonTime
-   CommonTime::BEGINNING_OF_TIME( CommonTime::BEGIN_LIMIT_JDAY, 0, 0.0, TimeSys::Any );
+   CommonTime::BEGINNING_OF_TIME(CommonTime::BEGIN_LIMIT_JDAY,0,0.0,TimeSystem::Any);
       // latest representable CommonTime
    const CommonTime
-   CommonTime::END_OF_TIME( CommonTime::END_LIMIT_JDAY, 0, 0.0, TimeSys::Any ) ;
+   CommonTime::END_OF_TIME(CommonTime::END_LIMIT_JDAY,0,0.0,TimeSystem::Any) ;
 
    //@{
    /// Default tolerance for time equality, applied to milliseconds.
@@ -81,29 +81,29 @@ namespace gpstk
    CommonTime& CommonTime::set( long day,
                                 long sod,
                                 double fsod,
-                                TimeSys timeSystem )
-      throw( gpstk::InvalidParameter )
+                                TimeSystem timeSystem )
+      throw( InvalidParameter )
    {
          // Use temp variables so that we don't modify our
          // data members until we know these values are good.
       if( day < BEGIN_LIMIT_JDAY || day > END_LIMIT_JDAY )
       {
-         gpstk::InvalidParameter ip( "Invalid day: " 
-                                     + gpstk::StringUtils::asString( day ) );
+         InvalidParameter ip( "Invalid day: " 
+                                     + StringUtils::asString( day ) );
          GPSTK_THROW( ip );
       }
 
       if( sod < 0 || sod >= SEC_PER_DAY )
       {
-         gpstk::InvalidParameter ip( "Invalid seconds of day: "
-                                     + gpstk::StringUtils::asString( sod ) );
+         InvalidParameter ip( "Invalid seconds of day: "
+                                     + StringUtils::asString( sod ) );
          GPSTK_THROW( ip );
       }
 
       if( fsod < 0.0 || fsod >= 1 )
       {
-         gpstk::InvalidParameter ip( "Invalid fractional-seconds: "
-                                     + gpstk::StringUtils::asString( fsod ) );
+         InvalidParameter ip( "Invalid fractional-seconds: "
+                                     + StringUtils::asString( fsod ) );
          GPSTK_THROW( ip );
       }
 
@@ -124,8 +124,8 @@ namespace gpstk
 
    CommonTime& CommonTime::set( long day,
                                 double sod,
-                                TimeSys timeSystem )
-      throw( gpstk::InvalidParameter )
+                                TimeSystem timeSystem )
+      throw( InvalidParameter )
    {
          // separate whole and fractional seconds, then use set()
       long sec = static_cast<long>( sod );
@@ -135,8 +135,8 @@ namespace gpstk
    }
 
   CommonTime& CommonTime::set( double day,
-                               TimeSys timeSystem )
-      throw( gpstk::InvalidParameter )
+                               TimeSystem timeSystem )
+      throw( InvalidParameter )
    {
          // separate whole and fractional days
       long lday = static_cast<long>( day );
@@ -147,27 +147,27 @@ namespace gpstk
    CommonTime& CommonTime::setInternal( long day,
                                         long msod,
                                         double fsod,
-                                        TimeSys timeSystem )
-      throw( gpstk::InvalidParameter )
+                                        TimeSystem timeSystem )
+      throw( InvalidParameter )
    {
       if( day < BEGIN_LIMIT_JDAY || day > END_LIMIT_JDAY )
       {
-         gpstk::InvalidParameter ip( "Invalid day: " 
-                                     + gpstk::StringUtils::asString( day ) );
+         InvalidParameter ip( "Invalid day: " 
+                                     + StringUtils::asString( day ) );
          GPSTK_THROW( ip );
       }
 
       if( msod < 0 || msod >= MS_PER_DAY )
       {
-         gpstk::InvalidParameter ip( "Invalid milliseconds of day: "
-                                     + gpstk::StringUtils::asString( msod ) );
+         InvalidParameter ip( "Invalid milliseconds of day: "
+                                     + StringUtils::asString( msod ) );
          GPSTK_THROW( ip );
       }
 
       if( fsod < 0.0 || fsod >= SEC_PER_MS )
       {
-         gpstk::InvalidParameter ip( "Invalid fractional-milliseconds: "
-                                     + gpstk::StringUtils::asString( fsod ) );
+         InvalidParameter ip( "Invalid fractional-milliseconds: "
+                                     + StringUtils::asString( fsod ) );
          GPSTK_THROW( ip );
       }
 
@@ -183,7 +183,7 @@ namespace gpstk
    void CommonTime::get( long& day,
                          long& sod,
                          double& fsod,
-                         TimeSys& timeSystem ) const
+                         TimeSystem& timeSystem ) const
       throw()
    {
       day = m_day;
@@ -198,13 +198,13 @@ namespace gpstk
                          double& fsod ) const
       throw()
    {
-      TimeSys ts;
+      TimeSystem ts;
       CommonTime::get( day, sod, fsod, ts );
    }
 
    void CommonTime::get( long& day,
                          double& sod,
-                         TimeSys& timeSystem ) const
+                         TimeSystem& timeSystem ) const
       throw()
    {
       day = m_day;
@@ -216,12 +216,12 @@ namespace gpstk
                          double& sod ) const
       throw()
    {
-      TimeSys ts;
+      TimeSystem ts;
       CommonTime::get( day, sod, ts );
    }
 
   void CommonTime::get( double& day,
-                        TimeSys& timeSystem ) const
+                        TimeSystem& timeSystem ) const
       throw()
    {
          // convert everything to days
@@ -234,7 +234,7 @@ namespace gpstk
    void CommonTime::get( double& day ) const
       throw()
    {
-      TimeSys ts;
+      TimeSystem ts;
       CommonTime::get( day, ts );
    }
 
@@ -255,20 +255,21 @@ namespace gpstk
       return sod;
    }
 
-  TimeSys::Systems CommonTime::getTimeSystem() const
+   TimeSystem CommonTime::getTimeSystem() const
       throw()
    {
-      return m_timeSystem.getTimeSystem();
+      return m_timeSystem;
    }
 
    double CommonTime::operator-( const CommonTime& right ) const
-      throw( gpstk::InvalidRequest )
+      throw( InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ( (m_timeSystem.getTimeSystem() != TimeSys::Any && right.m_timeSystem.getTimeSystem() != TimeSys::Any) &&
-            m_timeSystem.getTimeSystem() != right.m_timeSystem.getTimeSystem() )
+      if ( (m_timeSystem != TimeSystem::Any &&
+               right.m_timeSystem != TimeSystem::Any) &&
+               m_timeSystem != right.m_timeSystem )
       {
-         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be differenced");
+         InvalidRequest ir("CommonTime objects not in same time system, cannot be differenced");
          GPSTK_THROW( ir );
       }
 
@@ -355,8 +356,8 @@ namespace gpstk
       throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((m_timeSystem.getTimeSystem() != TimeSys::Any &&
-           right.m_timeSystem.getTimeSystem() != TimeSys::Any) &&
+      if ((m_timeSystem != TimeSystem::Any &&
+           right.m_timeSystem != TimeSystem::Any) &&
           m_timeSystem != right.m_timeSystem)
          return false;
 
@@ -372,14 +373,14 @@ namespace gpstk
    }
 
    bool CommonTime::operator<( const CommonTime& right ) const
-     throw( gpstk::InvalidRequest )
+     throw( InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
-      if ((m_timeSystem.getTimeSystem() != TimeSys::Any &&
-           right.m_timeSystem.getTimeSystem() != TimeSys::Any) &&
+      if ((m_timeSystem != TimeSystem::Any &&
+           right.m_timeSystem != TimeSystem::Any) &&
           m_timeSystem != right.m_timeSystem)
       {
-         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+         InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
          GPSTK_THROW( ir );
       }
 
@@ -400,19 +401,19 @@ namespace gpstk
    }
 
    bool CommonTime::operator>( const CommonTime& right ) const
-      throw( gpstk::InvalidRequest )
+      throw( InvalidRequest )
    {
       return !operator <=(right);
    }
 
    bool CommonTime::operator<=( const CommonTime& right ) const
-      throw( gpstk::InvalidRequest )
+      throw( InvalidRequest )
    {
       return (operator<(right) || operator==(right));
    }
 
    bool CommonTime::operator>=( const CommonTime& right ) const
-      throw( gpstk::InvalidRequest )
+      throw( InvalidRequest )
    {
       return !operator<(right);
    }

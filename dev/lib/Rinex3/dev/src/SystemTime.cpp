@@ -27,6 +27,7 @@
 #include "gpstkplatform.h"
 #include "SystemTime.hpp"
 #include "ANSITime.hpp"
+//#include <sys/time.h> // #include <ctime>      // for gettimeofday()
 
 namespace gpstk
 {

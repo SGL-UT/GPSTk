@@ -39,8 +39,6 @@
 #include "GPSWeek.hpp"
 #include "TimeConstants.hpp"
 
-
-
 namespace gpstk
 {
    const int GPSWeek::MAX_WEEK = 
@@ -69,7 +67,7 @@ namespace gpstk
          rv = formattedPrint( rv, getFormatPrefixInt() + "G", 
                               "Gu", getWeek10() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                              "Pu", timeSystem.getTimeSystem() );
+                              "Ps", timeSystem.asString().c_str() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -128,7 +126,7 @@ namespace gpstk
                setWeek10( asInt( i->second ) );
                break;
             case 'P':
-               timeSystem = static_cast<TimeSys::Systems>(asInt( i->second ));
+               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
                break;
             default:
                   // do nothing

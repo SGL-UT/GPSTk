@@ -41,89 +41,89 @@
 
 #include <iostream>
 #include <iomanip>
+#include <string>
 
 namespace gpstk
 {
-
-   class TimeSys
+   /// This class encapsulates time systems, including std::string I/O
+   class TimeSystem
    {
    public:
 
-      enum Systems
+      /// list of time systems supported by this class
+      enum SystemsEnum
       {
-         Unknown,    /**< unknown time frame; mostly for legacy code compatibility */
-         Any,        /**< wildcard; allows comparison with any other type */
-         GPS,        /**< GPS system time */
-         UTC         /**< Coordinated Universal Time (e.g., from NTP) */
+         Unknown=0,  ///< unknown time frame; for legacy code compatibility
+         Any,        ///< wildcard; allows comparison with any other type
+         GPS,        ///< GPS system time
+         GLO,        ///< GLONASS system time
+         GAL,        ///< Galileo system time
+         UTC,        ///< Coordinated Universal Time (e.g., from NTP)
+         TAI         ///< International Atomic Time
+
+         // Add new GNSS systems *before* UTC, or other new time systems
+         // before TAI, then modify Strings[] in TimeSystem.cpp.
       };
 
-     // Default constructor
-      TimeSys()
-         throw()
-      { ts = Unknown; }
-
-     // Constructor
-      TimeSys( Systems sys )
+      /// Constructor, including empty constructor
+      TimeSystem(SystemsEnum sys = Unknown)
          throw()
       {
-         if (sys < 0 || sys > 3)
-         {
-            ts = Unknown;
-         }
+         if(sys < 0 || sys > TAI)
+            system = Unknown;
          else
-         {
-            ts = sys;
-         }
+            system = sys;
       }
 
-     // Copy Constructor
-      TimeSys( const TimeSys& right )
-         throw()
-         : ts(right.ts)
-      {}
-
-     // Assignment Opperator
-      TimeSys& operator=( const TimeSys& right )
+      /// constructor from int
+      TimeSystem(int i)
          throw()
       {
-        ts = right.ts;
-        return *this;
+         if(i < 0 || i > TAI)
+            system = Unknown;
+         else
+            system = static_cast<SystemsEnum>(i);
       }
 
-      Systems getTimeSystem() const
-         throw()
-      { return ts; }
+      // (copy constructor and operator= are defined by compiler)
       
-      void setTimeSystem( const Systems& sys )
-         throw();
-      
+      /// Return a std::string for each system (these strings are const and static).
+      /// @return the std::string
       std::string asString() const
+         throw()
+      { return Strings[system]; }
+
+      /// define system based on input string
+      /// @param str input string, expected to match output string for given system
+      void fromString(const std::string str)
          throw();
       
-         /**
-          * @defgroup ctco TimeSys Comparison Operators
-          * All comparison operators have a parameter "right" which corresponds
-          *  to the Timesys object to the right of the symbol.
-          * All comparison operators are const and return true on success
-          *  and false on failure.
-          */
-         //@{
-
-      bool operator==( const TimeSys& right ) const
+      /// boolean operator==
+      bool operator==(const TimeSystem& right) const
          throw()
-      { return ( ts == right.ts ); }
+      { return system == right.system; }
 
-      bool operator!=( const TimeSys& right ) const
+      /// boolean operator!=
+      bool operator!=(const TimeSystem& right) const
          throw()
-      { return !operator==(right); }
+      { return system != right.system; }
+
+      /// boolean operator< (used by STL to sort)
+      bool operator<(const TimeSystem& right) const
+         throw()
+      { return system < right.system; }
+
 
    private:
 
-      Systems ts;
+      /// time system (= element of SystemsEnum enum) for this object
+      SystemsEnum system;
 
-   };//class
+      /// set of string labels for elements of SystemsEnum
+      static const std::string Strings[];
 
-}//namespace
+   };   // end class TimeSystem
 
+}   // end namespace
 
 #endif // GPSTK_TIMESYSTEM_HPP
