@@ -5,7 +5,7 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xMJD);
 
-using namespace Rinex3;
+using namespace gpstk;
 
 void xMJD :: setUp (void)
 {
@@ -15,7 +15,7 @@ void xMJD :: setFromInfoTest (void)
 {
 	MJD setFromInfo1;
 	MJD setFromInfo2;
-	MJD Compare(135000.0,TimeSys::GPS);
+	MJD Compare(135000.0,TimeSystem::GPS);
 	
 	TimeTag::IdToValue Id;
 	Id.insert(make_pair('Q',"135000.0"));
@@ -57,7 +57,7 @@ void xMJD :: operatorTest (void)
 
 void xMJD :: resetTest (void)
 {
-	MJD Compare(135000,TimeSys::GPS);
+	MJD Compare(135000,TimeSystem::GPS);
 
 	CommonTime Test = Compare.convertToCommonTime();
 
@@ -66,21 +66,21 @@ void xMJD :: resetTest (void)
 
 	CPPUNIT_ASSERT_EQUAL(Test2,Compare);
 
-	CPPUNIT_ASSERT_EQUAL(TimeSys::GPS,Compare.getTimeSystem());
+	CPPUNIT_ASSERT_EQUAL(TimeSystem::GPS,Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(135000,(int)Compare.mjd);
 
 	Compare.reset();
-	CPPUNIT_ASSERT_EQUAL(TimeSys::Unknown,Compare.getTimeSystem());
+	CPPUNIT_ASSERT_EQUAL(TimeSystem::Unknown,Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.mjd);
 }
 
 void xMJD :: timeSystemTest (void)
 {
-	MJD GPS1(135000,TimeSys::GPS);
-	MJD GPS2(134000,TimeSys::GPS);
-	MJD UTC1(135000,TimeSys::UTC);
-	MJD UNKNOWN(135000,TimeSys::Unknown);
-	MJD ANY(135000,TimeSys::Any);
+	MJD GPS1(135000,TimeSystem::GPS);
+	MJD GPS2(134000,TimeSystem::GPS);
+	MJD UTC1(135000,TimeSystem::UTC);
+	MJD UNKNOWN(135000,TimeSystem::Unknown);
+	MJD ANY(135000,TimeSystem::Any);
 
 	CPPUNIT_ASSERT(GPS1 != GPS2);
 	CPPUNIT_ASSERT_EQUAL(GPS1.getTimeSystem(),GPS2.getTimeSystem());
@@ -95,18 +95,18 @@ void xMJD :: timeSystemTest (void)
 	CPPUNIT_ASSERT(GPS2 < GPS1);
 	CPPUNIT_ASSERT(GPS2 < ANY);
 
-	UNKNOWN.setTimeSystem(TimeSys::GPS);
-	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),TimeSys::GPS);
+	UNKNOWN.setTimeSystem(TimeSystem::GPS);
+	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),TimeSystem::GPS);
 }
 
 void xMJD :: printfTest (void)
 {
-	MJD GPS1(135000,TimeSys::GPS);
-	MJD UTC1(135000,TimeSys::UTC);
+	MJD GPS1(135000,TimeSystem::GPS);
+	MJD UTC1(135000,TimeSystem::UTC);
 
 
-	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08Q %02P"),(std::string)"135000.000000 [GPS]");
-	CPPUNIT_ASSERT_EQUAL(UTC1.printf("%08Q %02P"),(std::string)"135000.000000 [UTC]");
+	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08Q %02P"),(std::string)"135000.000000 GPS");
+	CPPUNIT_ASSERT_EQUAL(UTC1.printf("%08Q %02P"),(std::string)"135000.000000 UTC");
 	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08Q %02P"),(std::string)"ErrorBadTime ErrorBadTime");
 	CPPUNIT_ASSERT_EQUAL(UTC1.printError("%08Q %02P"),(std::string)"ErrorBadTime ErrorBadTime");
 }
