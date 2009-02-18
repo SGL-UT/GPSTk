@@ -90,6 +90,10 @@ namespace gpstk
       void setTimeSystem( const SystemsEnum& sys )
          throw();
 
+      SystemsEnum getTimeSystem() const
+         throw()
+      { return system; }
+
       /// Return a std::string for each system (these strings are const and static).
       /// @return the std::string
       std::string asString() const
