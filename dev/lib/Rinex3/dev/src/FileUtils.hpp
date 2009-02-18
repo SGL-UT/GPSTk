@@ -1,4 +1,4 @@
-#pragma ident "$Id: FileUtils.hpp 79 2006-08-10 15:45:45Z pben $"
+#pragma ident "$Id$"
 
 
 

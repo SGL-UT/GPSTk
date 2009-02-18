@@ -1,4 +1,4 @@
-#pragma ident "$Id: FileHunter.cpp 1470 2008-11-20 00:35:59Z ckiesch $"
+#pragma ident "$Id$"
 
 
 

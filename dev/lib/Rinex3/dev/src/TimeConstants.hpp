@@ -1,4 +1,4 @@
-#pragma ident "$Id: TimeConstants.hpp 1647 2009-01-27 19:48:00Z raindave $"
+#pragma ident "$Id$"
 
 
 

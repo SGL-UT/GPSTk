@@ -1,4 +1,4 @@
-#pragma ident "$Id: ObsID.hpp 1377 2008-08-29 04:31:32Z ocibu $"
+#pragma ident "$Id$"
 
 /**
  * @file ObsID.hpp

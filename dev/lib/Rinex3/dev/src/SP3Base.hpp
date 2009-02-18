@@ -1,4 +1,4 @@
-#pragma ident "$Id: SP3Base.hpp $"
+#pragma ident "$Id$"
 
 /**
  * @file SP3Base.hpp

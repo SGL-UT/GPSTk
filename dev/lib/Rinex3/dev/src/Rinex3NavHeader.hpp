@@ -1,4 +1,4 @@
-#pragma ident "$Id: Rinex3NavHeader.hpp 588 2007-06-09 09:30:31Z dlrain $"
+#pragma ident "$Id$"
 
 /**
  * @file Rinex3NavHeader.hpp

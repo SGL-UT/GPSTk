@@ -1,4 +1,4 @@
-#pragma ident "$Id: Bancroft.hpp 1161 2008-03-27 17:16:22Z ckiesch $"
+#pragma ident "$Id$"
 
 /**
  * @file Bancroft.hpp 

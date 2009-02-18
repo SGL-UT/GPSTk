@@ -1,4 +1,4 @@
-#pragma ident "$Id: MOPSWeight.cpp 1375 2008-08-28 19:04:30Z architest $"
+#pragma ident "$Id$"
 
 /**
  * @file MOPSWeight.cpp

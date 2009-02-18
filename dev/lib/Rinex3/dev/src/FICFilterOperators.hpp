@@ -1,4 +1,4 @@
-#pragma ident "$Id: FICFilterOperators.hpp 1222 2008-04-28 23:26:59Z tconn $"
+#pragma ident "$Id$"
 
 
 

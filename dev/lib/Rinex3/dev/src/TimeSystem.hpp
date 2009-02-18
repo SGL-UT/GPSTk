@@ -1,4 +1,4 @@
-#pragma ident "$Id: TimeSystem.hpp 1649 2009-01-27 23:53:20Z raindave $"
+#pragma ident "$Id$"
 
 #ifndef GPSTK_TIMESYSTEM_HPP
 #define GPSTK_TIMESYSTEM_HPP

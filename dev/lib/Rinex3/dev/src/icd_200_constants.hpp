@@ -1,4 +1,4 @@
-#pragma ident "$Id: icd_200_constants.hpp 591 2007-06-10 17:50:56Z architest $"
+#pragma ident "$Id$"
 
 
 

@@ -1,4 +1,4 @@
-#pragma ident "$Id: WhereSat.cpp 1129 2008-03-19 18:08:46Z tconn $"
+#pragma ident "$Id$"
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.

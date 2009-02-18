@@ -1,4 +1,4 @@
-#pragma ident "$Id: LinearClockModel.cpp 229 2006-10-13 17:13:41Z ocibu $"
+#pragma ident "$Id$"
 
 
 

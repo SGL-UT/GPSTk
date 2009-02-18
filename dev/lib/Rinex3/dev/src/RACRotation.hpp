@@ -1,4 +1,4 @@
-#pragma ident "$Id: RACRotation.hpp 81 2006-08-10 16:45:12Z ehagen $"
+#pragma ident "$Id$"
 
 
 

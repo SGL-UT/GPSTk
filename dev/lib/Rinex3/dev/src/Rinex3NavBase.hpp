@@ -1,4 +1,4 @@
-#pragma ident "$Id: Rinex3NavBase.hpp 70 2006-08-01 18:36:21Z dlrain $"
+#pragma ident "$Id$"
 
 
 /**

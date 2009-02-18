@@ -1,4 +1,4 @@
-#pragma ident "$Id: InOutFramework.hpp 1363 2008-08-21 02:55:57Z ocibu $"
+#pragma ident "$Id$"
 
 /**
  *  @file InOutFramework.hpp

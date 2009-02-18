@@ -1,4 +1,4 @@
-#pragma ident "$Id: RTFileFrame.hpp 70 2006-08-01 18:36:21Z ehagen $"
+#pragma ident "$Id$"
 
 
 

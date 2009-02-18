@@ -1,4 +1,4 @@
-#pragma ident "$Id: gpstkplatform.h 733 2007-09-12 13:54:22Z pben $"
+#pragma ident "$Id$"
 
 
 

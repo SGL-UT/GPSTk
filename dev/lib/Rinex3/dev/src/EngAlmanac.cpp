@@ -1,4 +1,4 @@
-#pragma ident "$Id: EngAlmanac.cpp 667 2007-07-03 15:18:43Z ocibu $"
+#pragma ident "$Id$"
 
 
 

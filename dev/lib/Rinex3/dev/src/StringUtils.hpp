@@ -1,4 +1,4 @@
-#pragma ident "$Id: StringUtils.hpp 1305 2008-07-21 12:49:06Z architest $"
+#pragma ident "$Id$"
 
 
 

@@ -1,4 +1,4 @@
-#pragma ident "$Id: SimpleKalmanFilter.cpp 1339 2008-08-02 19:57:50Z architest $"
+#pragma ident "$Id$"
 
 /**
  * @file SimpleKalmanFilter.cpp

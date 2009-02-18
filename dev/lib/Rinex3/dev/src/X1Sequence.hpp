@@ -1,4 +1,4 @@
-#pragma ident "$Id: X1Sequence.hpp 70 2006-08-01 18:36:21Z ehagen $"
+#pragma ident "$Id$"
 
 
 // X1Sequence.cpp - GPS X1 Seqeuncer

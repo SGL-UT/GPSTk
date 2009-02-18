@@ -1,4 +1,4 @@
-#pragma ident "$Id: FileSpec.hpp 930 2007-11-27 16:57:42Z snelsen $"
+#pragma ident "$Id$"
 
 
 

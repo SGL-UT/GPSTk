@@ -1,4 +1,4 @@
-#pragma ident "$Id: BinUtils.hpp 439 2007-03-21 19:54:55Z ocibu $"
+#pragma ident "$Id$"
 
 
 

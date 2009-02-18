@@ -1,4 +1,4 @@
-#pragma ident "$Id: KeplerianEphemerisStore.hpp 1459 2008-11-17 22:39:55Z raindave $"
+#pragma ident "$Id$"
 
 //============================================================================
 //

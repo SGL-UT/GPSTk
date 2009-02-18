@@ -1,4 +1,4 @@
-#pragma ident "$Id: StudentDistribution.hpp 1409 2008-09-24 16:56:22Z architest $"
+#pragma ident "$Id$"
 
 /**
  * @file StudentDistribution.hpp

@@ -1,4 +1,4 @@
-#pragma ident "$Id: RinexNavHeader.hpp 588 2007-06-09 09:30:31Z architest $"
+#pragma ident "$Id$"
 
 
 

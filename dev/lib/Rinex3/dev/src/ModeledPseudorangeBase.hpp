@@ -1,4 +1,4 @@
-#pragma ident "$Id: ModeledPseudorangeBase.hpp 1312 2008-07-24 18:15:26Z architest $"
+#pragma ident "$Id$"
 
 /**
  * @file ModeledPseudorangeBase.hpp

@@ -1,4 +1,4 @@
-#pragma ident "$Id: OceanLoading.cpp 1346 2008-08-05 14:59:55Z architest $"
+#pragma ident "$Id$"
 
 /**
  * @file OceanLoading.cpp

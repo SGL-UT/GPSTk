@@ -1,4 +1,4 @@
-#pragma ident "$Id: IonoModel.cpp 164 2006-09-29 16:57:16Z architest $"
+#pragma ident "$Id$"
 
 
 

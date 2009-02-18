@@ -1,4 +1,4 @@
-#pragma ident "$Id: AllanDeviation.hpp 1209 2008-04-22 03:45:34Z ocibu $"
+#pragma ident "$Id$"
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.

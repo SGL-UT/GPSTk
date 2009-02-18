@@ -1,4 +1,4 @@
-#pragma ident "$Id: IonexStream.hpp 1393 2008-09-08 06:25:55Z coandrei $"
+#pragma ident "$Id$"
 
 /**
  * @file IonexStream.hpp

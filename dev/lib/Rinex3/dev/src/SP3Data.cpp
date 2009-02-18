@@ -1,4 +1,4 @@
-#pragma ident "$Id: SP3Data.cpp 1651 2009-01-29 20:45:29Z ehagen $"
+#pragma ident "$Id$"
 
 /**
  * @file SP3Data.cpp

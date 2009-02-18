@@ -1,4 +1,4 @@
-#pragma ident "$Id: Chi2Distribution.cpp 1389 2008-09-04 17:06:43Z ckiesch $"
+#pragma ident "$Id$"
 
 /**
  * @file Chi2Distribution.cpp

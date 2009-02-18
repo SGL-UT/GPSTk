@@ -1,4 +1,4 @@
-#pragma ident "$Id: SpecialFunctions.cpp 1408 2008-09-24 15:18:16Z architest $"
+#pragma ident "$Id$"
 
 /**
  * @file SpecialFunctions.cpp

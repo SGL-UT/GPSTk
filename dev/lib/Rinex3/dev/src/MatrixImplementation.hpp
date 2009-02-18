@@ -1,4 +1,4 @@
-#pragma ident "$Id: MatrixImplementation.hpp 1355 2008-08-12 18:34:06Z snelsen $"
+#pragma ident "$Id$"
 
 
 

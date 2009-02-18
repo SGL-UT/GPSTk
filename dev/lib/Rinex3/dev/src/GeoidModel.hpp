@@ -1,4 +1,4 @@
-#pragma ident "$Id: GeoidModel.hpp 153 2006-09-26 18:02:11Z architest $"
+#pragma ident "$Id$"
 
 
 

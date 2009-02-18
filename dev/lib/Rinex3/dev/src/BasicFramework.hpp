@@ -1,4 +1,4 @@
-#pragma ident "$Id: BasicFramework.hpp 1356 2008-08-19 16:01:12Z architest $"
+#pragma ident "$Id$"
 
 /**
  * @file BasicFramework.hpp

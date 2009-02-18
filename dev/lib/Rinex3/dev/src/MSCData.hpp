@@ -1,4 +1,4 @@
-#pragma ident "$Id: MSCData.hpp 1067 2008-01-24 17:29:54Z renfroba $"
+#pragma ident "$Id$"
 
 
 

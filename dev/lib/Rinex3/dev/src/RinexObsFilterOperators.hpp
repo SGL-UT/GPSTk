@@ -1,4 +1,4 @@
-#pragma ident "$Id: RinexObsFilterOperators.hpp 297 2006-11-11 10:13:33Z architest $"
+#pragma ident "$Id$"
 
 
 

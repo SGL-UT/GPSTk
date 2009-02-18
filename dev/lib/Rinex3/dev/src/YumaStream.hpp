@@ -1,4 +1,4 @@
-#pragma ident "$Id: YumaStream.hpp 383 2007-01-30 16:23:29Z ehagen $"
+#pragma ident "$Id$"
 
 
 /**

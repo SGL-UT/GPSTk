@@ -1,4 +1,4 @@
-#pragma ident "$Id: MatrixBase.hpp 1220 2008-04-28 20:24:31Z architest $"
+#pragma ident "$Id$"
 
 
 

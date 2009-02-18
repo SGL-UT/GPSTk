@@ -1,4 +1,4 @@
-#pragma ident "$Id: TimeTag.cpp 1631 2009-01-23 18:51:30Z ehagen $"
+#pragma ident "$Id$"
 
 
 

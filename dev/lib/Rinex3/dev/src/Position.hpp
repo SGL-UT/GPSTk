@@ -1,4 +1,4 @@
-#pragma ident "$Id: Position.hpp 693 2007-07-19 14:56:11Z pben $"
+#pragma ident "$Id$"
 
 
 

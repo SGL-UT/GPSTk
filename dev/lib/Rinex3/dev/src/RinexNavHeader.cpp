@@ -1,5 +1,5 @@
 
-#pragma ident "$Id: RinexNavHeader.cpp 766 2007-09-20 18:32:38Z snelsen $"
+#pragma ident "$Id$"
 
 
 

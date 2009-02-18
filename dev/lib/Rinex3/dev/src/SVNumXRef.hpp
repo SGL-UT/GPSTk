@@ -1,4 +1,4 @@
-/** $Id: SVNumXRef.hpp 1161 2008-03-27 17:16:22Z ckiesch $
+/** $Id$
 *   SVNumXRef.hpp
 *
 *   Applied Research Laboratories, The University of Texas at Austin

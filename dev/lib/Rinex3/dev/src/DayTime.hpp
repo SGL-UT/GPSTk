@@ -1,4 +1,4 @@
-#pragma ident "$Id: DayTime.hpp 1231 2008-05-14 19:09:57Z rickmach $"
+#pragma ident "$Id$"
 
 
 

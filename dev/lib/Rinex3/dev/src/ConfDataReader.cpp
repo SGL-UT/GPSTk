@@ -1,4 +1,4 @@
-#pragma ident "$Id: ConfDataReader.cpp 1352 2008-08-07 19:17:10Z architest $"
+#pragma ident "$Id$"
 
 /**
  * @file ConfDataReader.cpp

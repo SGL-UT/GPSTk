@@ -1,4 +1,4 @@
-#pragma ident "$Id: PolyFit.hpp 96 2006-08-22 17:15:20Z btolman $"
+#pragma ident "$Id$"
 
 
 

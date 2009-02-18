@@ -1,4 +1,4 @@
-#pragma ident "$Id: FFStream.cpp 1349 2008-08-06 19:33:13Z architest $"
+#pragma ident "$Id$"
 
 /**
  * @file FFStream.cpp

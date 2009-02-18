@@ -1,4 +1,4 @@
-#pragma ident "$Id: RinexMetHeader.hpp 438 2007-03-21 17:22:21Z btolman $"
+#pragma ident "$Id$"
 
 
 

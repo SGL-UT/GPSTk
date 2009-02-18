@@ -1,4 +1,4 @@
-#pragma ident "$Id: CommandOption.cpp 274 2006-10-27 14:24:35Z rickmach $"
+#pragma ident "$Id$"
 
 
 

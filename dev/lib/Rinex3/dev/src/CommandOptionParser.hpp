@@ -1,4 +1,4 @@
-#pragma ident "$Id: CommandOptionParser.hpp 160 2006-09-29 14:51:56Z architest $"
+#pragma ident "$Id$"
 
 
 
