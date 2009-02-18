@@ -5,7 +5,7 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xJulianDate);
 
-using namespace Rinex3;
+using namespace gpstk;
 
 void xJulianDate :: setUp (void)
 {
@@ -15,7 +15,7 @@ void xJulianDate :: setFromInfoTest (void)
 {
   JulianDate setFromInfo1;
   JulianDate setFromInfo2;
-  JulianDate Compare(1350000,TimeSys::GPS);	
+  JulianDate Compare(1350000,TimeSystem::GPS);	
 
   TimeTag::IdToValue Id;
   Id.insert(make_pair('J',"1350000"));
@@ -56,7 +56,7 @@ void xJulianDate :: operatorTest (void)
 
 void xJulianDate :: resetTest (void)
 {
-  JulianDate Compare(1350000,TimeSys::GPS);
+  JulianDate Compare(1350000,TimeSystem::GPS);
 
   CommonTime Test = Compare.convertToCommonTime();
 
@@ -65,22 +65,22 @@ void xJulianDate :: resetTest (void)
 
   CPPUNIT_ASSERT_EQUAL(Test2,Compare);
 
-  CPPUNIT_ASSERT_EQUAL(TimeSys::GPS,Compare.getTimeSystem());
+  CPPUNIT_ASSERT_EQUAL(TimeSystem::GPS,Compare.getTimeSystem());
   CPPUNIT_ASSERT_EQUAL(1350000,(int)Compare.jd);
 
   Compare.reset();
-  CPPUNIT_ASSERT_EQUAL(TimeSys::Unknown,Compare.getTimeSystem());
+  CPPUNIT_ASSERT_EQUAL(TimeSystem::Unknown,Compare.getTimeSystem());
   CPPUNIT_ASSERT_EQUAL(0,(int)Compare.jd);
 }
 
 void xJulianDate :: timeSystemTest (void)
 {
 
-	JulianDate GPS1(1350000,TimeSys::GPS);
-	JulianDate GPS2(1340000,TimeSys::GPS);
-	JulianDate UTC1(1350000,TimeSys::UTC);
-	JulianDate UNKNOWN(1350000,TimeSys::Unknown);
-	JulianDate ANY(1350000,TimeSys::Any);
+	JulianDate GPS1(1350000,TimeSystem::GPS);
+	JulianDate GPS2(1340000,TimeSystem::GPS);
+	JulianDate UTC1(1350000,TimeSystem::UTC);
+	JulianDate UNKNOWN(1350000,TimeSystem::Unknown);
+	JulianDate ANY(1350000,TimeSystem::Any);
 
 	CPPUNIT_ASSERT(GPS1 != GPS2);
 	CPPUNIT_ASSERT_EQUAL(GPS1.getTimeSystem(),GPS2.getTimeSystem());
@@ -95,17 +95,17 @@ void xJulianDate :: timeSystemTest (void)
 	CPPUNIT_ASSERT(GPS2 < GPS1);
 	CPPUNIT_ASSERT(GPS2 < ANY);
 
-	UNKNOWN.setTimeSystem(TimeSys::GPS);
-	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),TimeSys::GPS);
+	UNKNOWN.setTimeSystem(TimeSystem::GPS);
+	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),TimeSystem::GPS);
 }
 
 void xJulianDate :: printfTest (void)
 {
-  JulianDate GPS1(1350000,TimeSys::GPS);
-  JulianDate UTC1(1350000,TimeSys::UTC);
+  JulianDate GPS1(1350000,TimeSystem::GPS);
+  JulianDate UTC1(1350000,TimeSystem::UTC);
 
-  CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08J %02P"),(std::string)"1350000.000000 [GPS]");
-  CPPUNIT_ASSERT_EQUAL(UTC1.printf("%08J %02P"),(std::string)"1350000.000000 [UTC]");
+  CPPUNIT_ASSERT_EQUAL(GPS1.printf("%08J %02P"),(std::string)"1350000.000000 GPS");
+  CPPUNIT_ASSERT_EQUAL(UTC1.printf("%08J %02P"),(std::string)"1350000.000000 UTC");
   CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08J %02P"),(std::string)"ErrorBadTime ErrorBadTime");
   CPPUNIT_ASSERT_EQUAL(UTC1.printError("%08J %02P"),(std::string)"ErrorBadTime ErrorBadTime");
 }
