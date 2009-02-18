@@ -180,9 +180,9 @@ namespace gpstk
       { timeSystem = timeSys; }
 
          /// Obtain time system info (enum).
-      TimeSystem::SystemsEnum getTimeSystem() const
+      TimeSystem getTimeSystem() const
          throw()
-      { return timeSystem.getTimeSystem(); }
+      { return timeSystem ; }
 
    protected:
 

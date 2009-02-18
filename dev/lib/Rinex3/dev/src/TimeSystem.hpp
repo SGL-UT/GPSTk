@@ -120,7 +120,6 @@ namespace gpstk
          throw()
       { return system < right.system; }
 
-
    private:
 
       /// time system (= element of SystemsEnum enum) for this object
