@@ -22,8 +22,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2009
 //
 //============================================================================
 
@@ -37,10 +37,10 @@
 namespace gpstk
 {
 
-      // Method to store load ocean tide harmonics data in this class' 
+      // Method to store load ocean tide harmonics data in this class'
       // data map
    void BLQDataReader::loadData(void)
-      throw(FFStreamError, gpstk::StringUtils::StringException)
+      throw( FFStreamError, gpstk::StringUtils::StringException )
    {
 
          // Counter of valid data lines
@@ -55,12 +55,13 @@ namespace gpstk
          // Do this until end-of-file reached or something else happens
       while(1)
       {
+
          try
          {
 
             if(row>6)
             {
-                  // If row>6, all station harmonics are already read, 
+                  // If row>6, all station harmonics are already read,
                   // so let's store tide data in data map
                setData(nameString, data);
 
@@ -107,21 +108,25 @@ namespace gpstk
                // If this is the first valid line, it contains station name
             if (row==0)
             {
-               nameString = 
+
+               nameString =
                   StringUtils::upperCase(StringUtils::stripFirstWord(line));
+
                ++row;
+
                continue;
+
             }
             else
             {
+
                   // 2nd to 7th valid lines contains tide harmonics
                if ( (row>0) && (row<=6) )
                {
                   for(int col=0; col<11; col++)
                   {
                      string value(StringUtils::stripFirstWord(line));
-                     data.harmonics( (row-1),col) = 
-                        StringUtils::asDouble(value);
+                     data.harmonics((row-1),col) = StringUtils::asDouble(value);
                   }
                   ++row;
                   continue;
@@ -131,16 +136,25 @@ namespace gpstk
          }  // End of try block
          catch (EndOfFile& e)
          {
+
+               // We should close this data stream before returning
+            (*this).close();
+
             return;
          }
          catch (...)
          {
+
+               // We should close this data stream before returning
+            (*this).close();
+
             return;
+
          }
 
-      } // End of while(1)
+      }  // End of 'while(1)...'
 
-   } // End of BLQDataReader::loadData()
+   }  // End of method 'BLQDataReader::loadData()'
 
 
 
@@ -151,7 +165,7 @@ namespace gpstk
       loadData();
 
       return;
-   }
+   }  // End of method 'BLQDataReader::open()'
 
 
       // Method to open AND load ocean tide harmonics data file.
@@ -159,30 +173,29 @@ namespace gpstk
    {
       FFTextStream::open(fn.c_str(), std::ios::in);
       loadData();
-            
+
       return;
-   }
+   }  // End of method 'BLQDataReader::open()'
 
 
 
-      /* Method to get the ocean tide harmonics corresponding to a 
+      /* Method to get the ocean tide harmonics corresponding to a
        * given station.
        *
        * @param station   Station name (case is NOT relevant).
        *
-       * @return A Matrix<double> of siw rows and eleven columns 
+       * @return A Matrix<double> of siw rows and eleven columns
        * containing tide harmonics M2, S2, N2, K2, K1, O1, P1, Q1, MF,
        * MM and SSA for amplitudes (radial, west, south, in meters) and
-       * phases (radial, west, south, in degrees). If station is 
+       * phases (radial, west, south, in degrees). If station is
        * not found, this method will return a matrix full of zeros.
        */
    Matrix<double> BLQDataReader::getTideHarmonics(const string& station)
    {
 
          // First, look if such station exist in data map
-      tideDataIt iter;
-      iter = OceanTidesData.find( StringUtils::upperCase(station) );
-      if ( iter != OceanTidesData.end() ) 
+      tideDataIt iter( OceanTidesData.find( StringUtils::upperCase(station) ) );
+      if ( iter != OceanTidesData.end() )
       {
             // if found, return corresponding harmonics matrix
          return (*iter).second.harmonics;
@@ -194,9 +207,9 @@ namespace gpstk
          return dummy;
       };
 
-   } // End of BLQDataReader::getTideHarmonics()
+   }  // End of method 'BLQDataReader::getTideHarmonics()'
 
 
-} // namespace
 
+}  // End of namespace gpstk
 

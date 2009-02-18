@@ -5,8 +5,8 @@
  * File stream for ocean tides harmonics data in BLQ file format.
  */
 
-#ifndef BLQDATAREADER_HPP
-#define BLQDATAREADER_HPP
+#ifndef GPSTK_BLQDATAREADER_HPP
+#define GPSTK_BLQDATAREADER_HPP
 
 //============================================================================
 //
@@ -25,16 +25,16 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2009
 //
 //============================================================================
 
 
 
-
 #include <string>
 #include <map>
+
 #include "FFTextStream.hpp"
 #include "StringUtils.hpp"
 #include "Matrix.hpp"
@@ -47,16 +47,16 @@ namespace gpstk
       /** @addtogroup formattedfile */
       //@{
 
-      /** This is a class to read and parse ocean tides harmonics data 
+      /** This is a class to read and parse ocean tides harmonics data
        *  in BLQ file format.
        *
-       * Ocean loading displacement models usually use the ocean tide 
+       * Ocean loading displacement models usually use the ocean tide
        * harmonics in order to compute station biases due to this effect.
        *
-       * A common format to encode such information is the so-called BLQ 
-       * format, where each station name is associated to a matrix with 
-       * 11 columns (corresponding to the most important harmonics) and 
-       * six rows: Three for amplitudes (radial, west, south), and three 
+       * A common format to encode such information is the so-called BLQ
+       * format, where each station name is associated to a matrix with
+       * 11 columns (corresponding to the most important harmonics) and
+       * six rows: Three for amplitudes (radial, west, south), and three
        * for phases (radial, west, south).
        *
        * You may find this data using the "Ocean tide loading provider" at:
@@ -98,26 +98,29 @@ namespace gpstk
    public:
 
          /// Default constructor
-      BLQDataReader() {}
+      BLQDataReader()
+      {};
 
          /** Common constructor. It will always open file a for read and will
-          * load ocean tide harmonics data in one pass.
+          *  load ocean tide harmonics data in one pass.
           *
           * @param fn   BLQ data file to read
           *
           */
-      BLQDataReader(const char* fn) : FFTextStream(fn, std::ios::in)
-      { loadData(); }
+      BLQDataReader(const char* fn)
+         : FFTextStream(fn, std::ios::in)
+      { loadData(); };
 
 
          /** Common constructor. It will always open file for read and will
-          * load ocean tide harmonics data in one pass.
+          *  load ocean tide harmonics data in one pass.
           *
           * @param fn   BLQ data file to read
           *
           */
-      BLQDataReader(const string& fn) : FFTextStream(fn.c_str(), std::ios::in)
-      { loadData(); }
+      BLQDataReader(const string& fn)
+         : FFTextStream(fn.c_str(), std::ios::in)
+      { loadData(); };
 
 
          /// Method to open AND load ocean tide harmonics data file.
@@ -128,12 +131,12 @@ namespace gpstk
       virtual void open(const string& fn);
 
 
-         /** Method to get the ocean tide harmonics corresponding to a 
+         /** Method to get the ocean tide harmonics corresponding to a
           *  given station.
           *
           * @param station   Station name (case is NOT relevant).
           *
-          * @return A Matrix<double> of siw rows and eleven columns 
+          * @return A Matrix<double> of siw rows and eleven columns
           * containing tide harmonics M2, S2, N2, K2, K1, O1, P1, Q1, MF,
           * MM and SSA for amplitudes (radial, west, south, in meters) and
           * phases (radial, west, south, in degrees). If station is 
@@ -143,7 +146,7 @@ namespace gpstk
 
 
          /// Destructor
-      virtual ~BLQDataReader() {}
+      virtual ~BLQDataReader() {};
 
 
    private:
@@ -167,25 +170,27 @@ namespace gpstk
       std::map<string, tideData> OceanTidesData;
 
 
-         /** Method to store ocean tide harmonics data in this class' 
+         /** Method to store ocean tide harmonics data in this class'
           *  data map
+          *
           * @param stationName String holding station name.
           * @param data        tideData structure holding the harmonics data
           */
-      void setData(const string& stationName, 
-                   const tideData& data)
-      { OceanTidesData.insert(pair<string, tideData>(stationName, data)); }
+      void setData( const string& stationName,
+                    const tideData& data )
+      { OceanTidesData.insert(pair<string, tideData>(stationName, data)); };
 
 
          /// Method to store ocean tide harmonics data in this class' data map
       virtual void loadData(void)
-         throw(FFStreamError, gpstk::StringUtils::StringException);
+         throw( FFStreamError, gpstk::StringUtils::StringException );
 
 
-   };
+   }; // End of class 'BLQDataReader'
 
 
       //@}
 
-} // namespace
-#endif  // BLQDATAREADER_HPP
+}  // End of namespace gpstk
+
+#endif  // GPSTK_BLQDATAREADER_HPP
