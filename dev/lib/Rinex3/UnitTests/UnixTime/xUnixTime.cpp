@@ -5,7 +5,7 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xUnixTime);
 
-using namespace Rinex3;
+using namespace gpstk;
 
 void xUnixTime :: setUp (void)
 {
@@ -15,7 +15,7 @@ void xUnixTime :: setFromInfoTest (void)
 {
 	UnixTime setFromInfo1;
 	UnixTime setFromInfo2;
-        UnixTime Compare(1350000,0,TimeSys::GPS);
+        UnixTime Compare(1350000,0,TimeSystem::GPS);
 	
 	TimeTag::IdToValue Id;
 	Id.insert(make_pair('U',"1350000"));
@@ -64,7 +64,7 @@ void xUnixTime :: operatorTest (void)
 
 void xUnixTime :: resetTest (void)
 {
-        UnixTime Compare(1350000,0,TimeSys::GPS);
+        UnixTime Compare(1350000,0,TimeSystem::GPS);
 
 	CommonTime Test = Compare.convertToCommonTime();
 
@@ -73,13 +73,13 @@ void xUnixTime :: resetTest (void)
 
 	CPPUNIT_ASSERT_EQUAL(Test2,Compare);
 
-	CPPUNIT_ASSERT_EQUAL(TimeSys::GPS,Compare.getTimeSystem());
+	CPPUNIT_ASSERT_EQUAL(TimeSystem::GPS,Compare.getTimeSystem());
 
 	CPPUNIT_ASSERT_EQUAL(1350000,(int)Compare.tv.tv_sec);
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.tv.tv_usec);
 
 	Compare.reset();
-	CPPUNIT_ASSERT_EQUAL(TimeSys::Unknown,Compare.getTimeSystem());
+	CPPUNIT_ASSERT_EQUAL(TimeSystem::Unknown,Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.tv.tv_sec);
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.tv.tv_usec);
 }
@@ -87,11 +87,11 @@ void xUnixTime :: resetTest (void)
 void xUnixTime :: timeSystemTest (void)
 {
 
-	UnixTime GPS1(1350000,0,TimeSys::GPS);
-	UnixTime GPS2(1340000,0,TimeSys::GPS);
-	UnixTime UTC1(1350000,0,TimeSys::UTC);
-	UnixTime UNKNOWN(1350000,0,TimeSys::Unknown);
-	UnixTime ANY(1350000,0,TimeSys::Any);
+	UnixTime GPS1(1350000,0,TimeSystem::GPS);
+	UnixTime GPS2(1340000,0,TimeSystem::GPS);
+	UnixTime UTC1(1350000,0,TimeSystem::UTC);
+	UnixTime UNKNOWN(1350000,0,TimeSystem::Unknown);
+	UnixTime ANY(1350000,0,TimeSystem::Any);
 
 	CPPUNIT_ASSERT(GPS1 != GPS2);
 	CPPUNIT_ASSERT_EQUAL(GPS1.getTimeSystem(),GPS2.getTimeSystem());
@@ -106,18 +106,18 @@ void xUnixTime :: timeSystemTest (void)
 	CPPUNIT_ASSERT(GPS2 < GPS1);
 	CPPUNIT_ASSERT(GPS2 < ANY);
 
-	UNKNOWN.setTimeSystem(TimeSys::GPS);
-	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),TimeSys::GPS);
+	UNKNOWN.setTimeSystem(TimeSystem::GPS);
+	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),TimeSystem::GPS);
 }
 
 void xUnixTime :: printfTest (void)
 {
 
-	UnixTime GPS1(1350000,0,TimeSys::GPS);
-	UnixTime UTC1(1350000,0,TimeSys::UTC);
+	UnixTime GPS1(1350000,0,TimeSystem::GPS);
+	UnixTime UTC1(1350000,0,TimeSystem::UTC);
 
-	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%07U %02u %02P"),(std::string)"1350000 00 [GPS]");
-	CPPUNIT_ASSERT_EQUAL(UTC1.printf("%07U %02u %02P"),(std::string)"1350000 00 [UTC]");
+	CPPUNIT_ASSERT_EQUAL(GPS1.printf("%07U %02u %02P"),(std::string)"1350000 00 GPS");
+	CPPUNIT_ASSERT_EQUAL(UTC1.printf("%07U %02u %02P"),(std::string)"1350000 00 UTC");
 	CPPUNIT_ASSERT_EQUAL(GPS1.printError("%07U %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
 	CPPUNIT_ASSERT_EQUAL(UTC1.printError("%07U %02u %02P"),(std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
 }
