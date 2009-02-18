@@ -75,7 +75,7 @@ namespace gpstk
           * @warning CHECK THE PRNID TO SEE IF THIS DATA IS VALID BEFORE USING!!
           */
       Rinex3NavData(void)
-        : time(gpstk::DayTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
+        : time(gpstk::CommonTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
       {}
 
          /// Initializes the nav data with an EngEphemeris
@@ -100,8 +100,7 @@ namespace gpstk
       operator EngEphemeris() const throw();
 
          /**
-          * Converts the (non-DayTime) data to a list for easy
-          * comparison operators.
+          * Converts the (non-CommonTime) data to an easy list for comparison operators.
           */
       std::list<double> toList() const;
 
@@ -116,8 +115,6 @@ namespace gpstk
                            ///< (N.B.: in RINEX files, week number corresponds to ToE.)
       double accuracy;     ///< SV accuracy (m)
       short health;        ///< SV health
-      double IODC;         ///< Index of data-clock
-      double IODE;         ///< Index of data-eph
          //@}
 
          /** @name EpochDataGPS
@@ -133,7 +130,7 @@ namespace gpstk
           */
          //@{
       short   freqNum;     ///< Frequency number (-7..+12)
-      double  ageOfInfo    ///< Age of oper. information (days)
+      double  ageOfInfo;   ///< Age of oper. information (days)
          //@}
 
          /** @name EpochDataGAL

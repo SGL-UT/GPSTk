@@ -44,7 +44,8 @@
  */
 
 #include "StringUtils.hpp"
-#include "CommonTime.hpp"
+#include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
 #include "Rinex3NavData.hpp"
 #include "Rinex3NavStream.hpp"
 #include "icd_200_constants.hpp"
@@ -228,20 +229,21 @@ namespace gpstk
       throw(StringException)
    {
       string line;
+      CivilTime civtime = time;
 
       line += rightJustify(asString(PRNID), 2);
       line += string(1, ' ');
          // year is padded with 0s but none of the rest are
-      line += rightJustify(asString<short>(time.year()), 2, '0');
+      line += rightJustify(asString<short>(civtime.year), 2, '0');
       line += string(1, ' ');
-      line += rightJustify(asString<short>(time.month()), 2);
+      line += rightJustify(asString<short>(civtime.month), 2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(time.day()), 2);
+      line += rightJustify(asString<short>(civtime.day), 2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(time.hour()), 2);
+      line += rightJustify(asString<short>(civtime.hour), 2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(time.minute()), 2);
-      line += rightJustify(asString(time.second(), 1), 5);
+      line += rightJustify(asString<short>(civtime.minute), 2);
+      line += rightJustify(asString(civtime.second, 1), 5);
       line += string(1, ' ');
       line += doub2for(af0, 18, 2);
       line += string(1, ' ');
@@ -330,9 +332,9 @@ namespace gpstk
          // Internally (Rinex3NavData and EngEphemeris), weeknum is the week of HOW
          // In RIENX 3 *files*, weeknum is the week of TOE
       double wk=double(weeknum);
-      if(HOWtime - Toe > DayTime::HALFWEEK)
+      if(HOWtime - Toe > HALFWEEK)
          wk++;
-      else if(HOWtime - Toe < -(DayTime::HALFWEEK))
+      else if(HOWtime - Toe < -(HALFWEEK))
          wk--;
 
       string line;
@@ -414,10 +416,10 @@ namespace gpstk
          // Real RINEX has epochs 'yy mm dd hr 59 60.0' surprisingly often...
          double ds=0;
          if(sec >= 60.) { ds=sec; sec=0.0; }
-         time = DayTime(yr,mo,day,hr,min,sec);
+         time = CivilTime(yr,mo,day,hr,min,sec).convertToCommonTime();
          if(ds != 0) time += ds;
 
-         Toc = time.GPSsecond();
+         Toc = ((GPSWeekSecond)time).sow;
          af0 = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
          af1 = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
          af2 = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
@@ -558,14 +560,14 @@ namespace gpstk
 
          // In RINEX *files*, weeknum is the week of TOE.
          // Internally (Rinex3NavData and EngEphemeris), weeknum is the week of HOW.
-         if(HOWtime - Toe > DayTime::HALFWEEK)
+         if(HOWtime - Toe > HALFWEEK)
             weeknum--;
-         else if(HOWtime - Toe < -(DayTime::HALFWEEK))
+         else if(HOWtime - Toe < -(HALFWEEK))
             weeknum++;
 
          // Some RINEX files have HOW < 0.
          while(HOWtime < 0) {
-	   HOWtime += (long) DayTime::FULLWEEK;
+	   HOWtime += (long)FULLWEEK;
             weeknum--;
          }
 
