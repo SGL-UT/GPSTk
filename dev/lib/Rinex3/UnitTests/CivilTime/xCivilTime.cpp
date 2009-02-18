@@ -9,7 +9,7 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xCivilTime);
 
-using namespace Rinex3;
+using namespace gpstk;
 
 void xCivilTime :: setUp (void)
 {
@@ -33,7 +33,7 @@ void xCivilTime :: setFromInfoTest (void)
   Id.insert(make_pair('P',"02"));
   CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
 
-  CivilTime Check(2008,12,31,12,0,0,TimeSys::GPS);
+  CivilTime Check(2008,12,31,12,0,0,TimeSystem::GPS);
   CPPUNIT_ASSERT_EQUAL(setFromInfo1,Check);
   Id.erase('b');
   Id.erase('Y');
@@ -63,7 +63,7 @@ void xCivilTime :: setFromInfoTest (void)
 //  std::cout << ((GPSWeekSecond)(time)).printf("%02F")<< std::endl;
 
   std::cout << std::endl;
-  TimeSys test;
+  TimeSystem test;
   test.setTimeSystem(Check.getTimeSystem());
   std::cout << test.asString() << std::endl;
 }
@@ -116,7 +116,7 @@ void xCivilTime :: operatorTest (void)
 
 void xCivilTime :: resetTest (void)
 {
-  CivilTime Aug21(2008,8,21,13,30,15.,TimeSys::GPS);
+  CivilTime Aug21(2008,8,21,13,30,15.,TimeSystem::GPS);
 
   CommonTime Test = Aug21.convertToCommonTime();
 
@@ -124,10 +124,10 @@ void xCivilTime :: resetTest (void)
   Test2.convertFromCommonTime(Test);
 
   CPPUNIT_ASSERT_EQUAL(Test2,Aug21);
-  CPPUNIT_ASSERT_EQUAL(TimeSys::GPS,Aug21.getTimeSystem());
+  CPPUNIT_ASSERT_EQUAL(TimeSystem::GPS,Aug21.getTimeSystem());
 
   Aug21.reset();
-  CPPUNIT_ASSERT_EQUAL(TimeSys::Unknown,Aug21.getTimeSystem());
+  CPPUNIT_ASSERT_EQUAL(TimeSystem::Unknown,Aug21.getTimeSystem());
   CPPUNIT_ASSERT_EQUAL(0,(int)Aug21.year);
   CPPUNIT_ASSERT_EQUAL(1,(int)Aug21.month);
   CPPUNIT_ASSERT_EQUAL(1,(int)Aug21.day);
@@ -138,11 +138,11 @@ void xCivilTime :: resetTest (void)
 
 void xCivilTime :: timeSystemTest (void)
 {
-  CivilTime GPS1(   2008,8,21,13,30,15.,TimeSys::GPS);
-  CivilTime GPS2(   2005,8,21,13,30,15.,TimeSys::GPS);
-  CivilTime UTC1(    2008,8,21,13,30,15.,TimeSys::UTC);
-  CivilTime UNKNOWN(2008,8,21,13,30,15.,TimeSys::Unknown);
-  CivilTime ANY(    2008,8,21,13,30,15.,TimeSys::Any);
+  CivilTime GPS1(   2008,8,21,13,30,15.,TimeSystem::GPS);
+  CivilTime GPS2(   2005,8,21,13,30,15.,TimeSystem::GPS);
+  CivilTime UTC1(   2008,8,21,13,30,15.,TimeSystem::UTC);
+  CivilTime UNKNOWN(2008,8,21,13,30,15.,TimeSystem::Unknown);
+  CivilTime ANY(    2008,8,21,13,30,15.,TimeSystem::Any);
 
   CPPUNIT_ASSERT(GPS1 != GPS2);
   CPPUNIT_ASSERT_EQUAL(GPS1.getTimeSystem(),GPS2.getTimeSystem());
@@ -157,19 +157,19 @@ void xCivilTime :: timeSystemTest (void)
   CPPUNIT_ASSERT(GPS2 < GPS1);
   CPPUNIT_ASSERT(GPS2 < ANY);
 
-  UNKNOWN.setTimeSystem(TimeSys::GPS);
-  CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),TimeSys::GPS);
+  UNKNOWN.setTimeSystem(TimeSystem::GPS);
+  CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),TimeSystem::GPS);
 }
 
 void xCivilTime :: printfTest (void)
 {
-  CivilTime GPS1(2008,8,21,13,30,15.,TimeSys::GPS);
-  CivilTime UTC1(2008,8,21,13,30,15.,TimeSys::UTC);
+  CivilTime GPS1(2008,8,21,13,30,15.,TimeSystem::GPS);
+  CivilTime UTC1(2008,8,21,13,30,15.,TimeSystem::UTC);
 
   CPPUNIT_ASSERT_EQUAL(GPS1.printf("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),
-                       (std::string)"2008 08 08 Aug 21 13 30 15 15.000000 [GPS]");
+                       (std::string)"2008 08 08 Aug 21 13 30 15 15.000000 GPS");
   CPPUNIT_ASSERT_EQUAL(UTC1.printf("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),
-                       (std::string)"2008 08 08 Aug 21 13 30 15 15.000000 [UTC]");
+                       (std::string)"2008 08 08 Aug 21 13 30 15 15.000000 UTC");
   CPPUNIT_ASSERT_EQUAL(GPS1.printError("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),
                        (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
   CPPUNIT_ASSERT_EQUAL(UTC1.printError("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P"),
