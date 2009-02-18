@@ -1,10 +1,10 @@
-#PATH_TO_CURRENT =  ; #Current directory; Main testing directory
-#CPPUNIT_LIB =  ; #Directory which holds the CppUnit Libraries
-#CPPUNIT_INC =  ; #Directory which holds the CppUnit 
+PATH_TO_CURRENT = /home/rain/gpstk/dev/lib/Rinex3/dev/src/UnitTests ; #Current directory; Main testing directory
+CPPUNIT_LIB = /home/rain/lib ; #Directory which holds the CppUnit Libraries
+CPPUNIT_INC = /home/rain/include ; #Directory which holds the CppUnit 
 
 STD_LINK_LIBS = -ldl -lstdc++ ; 
 LINKFLAGS = -fprofile-arcs -ftest-coverage ; #Gcov required flags
-SEARCH = $(CPPUNIT_LIB) $(PATH_TO_CURRENT)/../../../src $(PATH_TO_CURRENT)/../ ;
+SEARCH = $(CPPUNIT_LIB) $(PATH_TO_CURRENT) $(PATH_TO_CURRENT)/../../ ;
 
 rule Clean
 {
@@ -17,6 +17,6 @@ rule TestMain
 	ObjectHdrs $(PATH_TO_CURRENT)/$(<) $(PATH_TO_CURRENT)/$(>) : $(CPPUNIT_INC) $(PATH_TO_CURRENT)/../. $(PATH_TO_CURRENT)/../../../src ;
 	ObjectC++Flags $(PATH_TO_CURRENT)/$(>) : -fprofile-arcs -ftest-coverage ;
 	LINKLIBS on $(PATH_TO_CURRENT)/$(<) = $(STD_LINK_LIBS) ;
-	LinkLibraries $(PATH_TO_CURRENT)/$(<) : libcppunit $(PATH_TO_CURRENT)/../../../src/libgpstk $(PATH_TO_CURRENT)/../libRinex3 ;
+	LinkLibraries $(PATH_TO_CURRENT)/$(<) : libcppunit $(PATH_TO_CURRENT)/../libgpstk-R3 ;
 	
 }
