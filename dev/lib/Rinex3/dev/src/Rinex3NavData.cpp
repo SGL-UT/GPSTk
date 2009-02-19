@@ -58,10 +58,11 @@ namespace gpstk
    Rinex3NavData::Rinex3NavData(const EngEphemeris& ee)
    {
       time = ee.getEpochTime();
+      satSys = ee.getSatSys();
       PRNID = ee.getPRNID();
       HOWtime = long(ee.getHOWTime(1));
       weeknum = ee.getFullWeek();
-      codeflgs = ee.getCodeFlags();
+      codeflgs = ee.getCodeFlags(); // GPS only
       accuracy = ee.getAccuracy();
       health = ee.getHealth();
       L2Pdata = ee.getL2Pdata();
@@ -540,8 +541,7 @@ namespace gpstk
       }
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " +
-                           string(e.what()));
+         FFStreamError err("std::exception: " + string(e.what()));
          GPSTK_THROW(err);
       }
    }
@@ -556,26 +556,26 @@ namespace gpstk
          HOW_sec = gpstk::StringUtils::for2doub(currentLine.substr( 3,19));
          fitint  = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
 
-         HOWtime = (long) HOW_sec;
+         HOWtime = (long)HOW_sec;
 
          // In RINEX *files*, weeknum is the week of TOE.
          // Internally (Rinex3NavData and EngEphemeris), weeknum is the week of HOW.
-         if(HOWtime - Toe > HALFWEEK)
+         if (HOWtime - Toe > HALFWEEK)
             weeknum--;
-         else if(HOWtime - Toe < -(HALFWEEK))
+         else if (HOWtime - Toe < -HALFWEEK)
             weeknum++;
 
          // Some RINEX files have HOW < 0.
-         while(HOWtime < 0) {
-	   HOWtime += (long)FULLWEEK;
-            weeknum--;
-         }
+         while(HOWtime < 0)
+           {
+             HOWtime += (long)FULLWEEK;
+             weeknum--;
+           }
 
       }
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " +
-                           string(e.what()));
+         FFStreamError err("std::exception: " + string(e.what()));
          GPSTK_THROW(err);
       }
    }

@@ -75,7 +75,7 @@ namespace gpstk
           * @warning CHECK THE PRNID TO SEE IF THIS DATA IS VALID BEFORE USING!!
           */
       Rinex3NavData(void)
-        : time(gpstk::CommonTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
+        : time(CommonTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
       {}
 
          /// Initializes the nav data with an EngEphemeris
@@ -143,7 +143,7 @@ namespace gpstk
          /** @name ClockInformation
           */
          //@{
-      double  Toc;         ///< Clock epoch (sec of week) (found in epoch line of RINEX 3 Nav file)
+      double  Toc;         ///< Clock epoch (sec of week) (derived from epoch line of RINEX 3 Nav file)
       double  af0;         ///< SV clock error (sec)
       double  af1;         ///< SV clock drift (sec/sec)
       double  af2;         ///< SV clock drift rate (sec/sec**2)
@@ -181,9 +181,9 @@ namespace gpstk
          /** @name TabularEphemerisParameters
           */
          //@{
-      double   px, py, pz; ///< SV position
-      double   vx, vy, vz; ///< SV velocity
-      double   ax, ay, az; ///< SV acceleration
+      double  px, py, pz;  ///< SV position
+      double  vx, vy, vz;  ///< SV velocity
+      double  ax, ay, az;  ///< SV acceleration
          //@}
 
    private:
