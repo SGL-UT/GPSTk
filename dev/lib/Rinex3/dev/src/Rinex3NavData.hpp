@@ -129,6 +129,10 @@ namespace gpstk
          /** @name EpochDataGLO
           */
          //@{
+      double  TauN;        ///< SV clock bias (sec)
+      double  GammaN;      ///< SV relative frequency bias
+      double  MFTraw;      ///< Message frame time (sec of UTC week) <double>
+      short   MFtime;      ///< Message frame time (sec of UTC week) <short>
       short   freqNum;     ///< Frequency number (-7..+12)
       double  ageOfInfo;   ///< Age of oper. information (days)
          //@}

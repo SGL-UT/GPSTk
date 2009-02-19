@@ -211,6 +211,11 @@ namespace gpstk
          throw()
       { return getEpochTime(); }
 
+         /** This functions returns the GNSS type (satellite system code) */
+      std::string getSatSys() const
+         throw()
+      { return satSys; }
+
          /** This function returns the PRN ID of the SV. */
       short getPRNID() const
          throw( gpstk::InvalidRequest );
@@ -490,6 +495,7 @@ namespace gpstk
          /// Ephemeris overhead information
          //@{
       unsigned short tlm_message[3];
+      std::string satSys;  /**< GNSS (satellite system) */
       short PRNID;         /**< SV PRN ID */
       short tracker;       /**< Tracker number */
       long HOWtime[3];     /**< Time of subframe 1-3 (sec of week) */

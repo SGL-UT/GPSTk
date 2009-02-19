@@ -57,42 +57,86 @@ namespace gpstk
 
    Rinex3NavData::Rinex3NavData(const EngEphemeris& ee)
    {
-      time = ee.getEpochTime();
+      // universal epoch info
+
       satSys = ee.getSatSys();
-      PRNID = ee.getPRNID();
+      PRNID  = ee.getPRNID();
+      time   = ee.getEpochTime();
+
+      Toc     = ee.getToc();
       HOWtime = long(ee.getHOWTime(1));
       weeknum = ee.getFullWeek();
-      codeflgs = ee.getCodeFlags(); // GPS only
+
       accuracy = ee.getAccuracy();
-      health = ee.getHealth();
-      L2Pdata = ee.getL2Pdata();
-      IODC = ee.getIODC();
-      IODE = ee.getIODE();
+      health   = ee.getHealth();
 
-      Toc = ee.getToc();
-      af0 = ee.getAf0();
-      af1 = ee.getAf1();
-      af2 = ee.getAf2();
-      Tgd = ee.getTgd();
+      // GPS or Galileo data
 
-      Cuc = ee.getCuc();
-      Cus = ee.getCus();
-      Crc = ee.getCrc();
-      Crs = ee.getCrs();
-      Cic = ee.getCic();
-      Cis = ee.getCis();
+      af0 = ee.getAf0(); // GPS and Galileo only
+      af1 = ee.getAf1(); // GPS and Galileo only
+      af2 = ee.getAf2(); // GPS and Galileo only
 
-      Toe = ee.getToe();
-      M0 = ee.getM0();
-      dn = ee.getDn();
-      ecc = ee.getEcc();
-      Ahalf = ee.getAhalf();
-      OMEGA0 = ee.getOmega0();
-      i0 = ee.getI0();
-      w = ee.getW();
-      OMEGAdot = ee.getOmegaDot();
-      idot = ee.getIDot();
-      fitint = ee.getFitInterval();
+      Crs = ee.getCrs(); // GPS and Galileo only
+      dn  = ee.getDn();  // GPS and Galileo only
+      M0  = ee.getM0();  // GPS and Galileo only
+
+      Cuc   = ee.getCuc();   // GPS and Galileo only
+      ecc   = ee.getEcc();   // GPS and Galileo only
+      Cus   = ee.getCus();   // GPS and Galileo only
+      Ahalf = ee.getAhalf(); // GPS and Galileo only
+
+      Toe    = ee.getToe();    // GPS and Galileo only
+      Cic    = ee.getCic();    // GPS and Galileo only
+      OMEGA0 = ee.getOmega0(); // GPS and Galileo only
+      Cis    = ee.getCis();    // GPS and Galileo only
+
+      i0       = ee.getI0();       // GPS and Galileo only
+      Crc      = ee.getCrc();      // GPS and Galileo only
+      w        = ee.getW();        // GPS and Galileo only
+      OMEGAdot = ee.getOmegaDot(); // GPS and Galileo only
+
+      idot = ee.getIDot(); // GPS and Galileo only
+
+      // GPS-only data
+
+      IODE = ee.getIODE(); // GPS only
+
+      codeflgs = ee.getCodeFlags(); // GPS only
+      L2Pdata  = ee.getL2Pdata();   // GPS only
+
+      Tgd  = ee.getTgd();  // GPS only
+      IODC = ee.getIODC(); // GPS only
+
+      fitint = ee.getFitInterval(); // GPS only
+
+      // Galileo-only data
+
+      IODnav = ee.getIODnav(); // Galileo only
+
+      datasources = ee.getDatasources(); // Galileo only
+
+      BGDa = ee.getBGDa(); // Galileo only
+      BGDb = ee.getBGDb(); // Galileo only
+
+      // GLONASS-only data
+
+      TauN   = ee.getTauN();   // GLONASS only
+      GammaN = ee.getGammaN(); // GLONASS only
+      MFtime = ee.getMFtime(); // GLONASS only
+
+      px = ee.getpx(); // GLONASS only
+      vx = ee.getvx(); // GLONASS only
+      ax = ee.getax(); // GLONASS only
+      py = ee.getpy(); // GLONASS only
+      vy = ee.getvy(); // GLONASS only
+      ay = ee.getay(); // GLONASS only
+      pz = ee.getpz(); // GLONASS only
+      vz = ee.getvz(); // GLONASS only
+      az = ee.getaz(); // GLONASS only
+
+      freqNum   = ee.getFreqNum();   // GLONASS only
+      ageOfInfo = ee.getAgeOfInfo(); // GLONASS only
+
    }
 
    void Rinex3NavData::reallyPutRecord(FFStream& ffs) const
@@ -108,14 +152,17 @@ namespace gpstk
       strm.lineNumber++;
       strm << putBroadcastOrbit3() << endl;
       strm.lineNumber++;
-      strm << putBroadcastOrbit4() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit5() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit6() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit7(strm.header.version) << endl;
-      strm.lineNumber++;
+      if ( satSys == "G" || satSys == "E" ) // GPS and Galileo have 7 B.O.'s
+        {
+          strm << putBroadcastOrbit4() << endl;
+          strm.lineNumber++;
+          strm << putBroadcastOrbit5() << endl;
+          strm.lineNumber++;
+          strm << putBroadcastOrbit6() << endl;
+          strm.lineNumber++;
+          strm << putBroadcastOrbit7(strm.header.version) << endl;
+          strm.lineNumber++;
+        }
    }
 
    void Rinex3NavData::reallyGetRecord(FFStream& ffs) 
@@ -156,7 +203,8 @@ namespace gpstk
 
    void Rinex3NavData::dump(ostream& s) const
    {
-      s << "PRN: " << setw(2) << PRNID
+      s << "SatSys: " << satSys
+        << "PRN: " << setw(2) << PRNID
         << " TOE: " << time
         << " TOC: " << setw(4) << weeknum << " " 
         << fixed << setw(10) << setprecision(3) << Toc
@@ -232,25 +280,39 @@ namespace gpstk
       string line;
       CivilTime civtime = time;
 
+      line += satSys;
       line += rightJustify(asString(PRNID), 2);
       line += string(1, ' ');
-         // year is padded with 0s but none of the rest are
-      line += rightJustify(asString<short>(civtime.year), 2, '0');
+      line += rightJustify(asString<short>(civtime.year  ), 4);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(civtime.month), 2);
+      line += rightJustify(asString<short>(civtime.month ), 2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(civtime.day), 2);
+      line += rightJustify(asString<short>(civtime.day   ), 2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(civtime.hour), 2);
+      line += rightJustify(asString<short>(civtime.hour  ), 2);
       line += string(1, ' ');
       line += rightJustify(asString<short>(civtime.minute), 2);
-      line += rightJustify(asString(civtime.second, 1), 5);
       line += string(1, ' ');
-      line += doub2for(af0, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(af1, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(af2, 18, 2);
+      line += rightJustify(asString<short>(civtime.second), 2);
+
+      if ( satSys == "R" ) // GLONASS
+        {
+          line += string(1, ' ');
+          line += doub2for(TauN          , 18, 2);
+          line += string(1, ' ');
+          line += doub2for(GammaN        , 18, 2);
+          line += string(1, ' ');
+          line += doub2for((double)MFtime, 18, 2);
+        }
+      else                 // GPS or Galileo
+        {
+          line += string(1, ' ');
+          line += doub2for(af0, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(af1, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(af2, 18, 2);
+        }
 
       return line;
    }
@@ -260,15 +322,40 @@ namespace gpstk
    {
       string line;
 
-      line += string(3, ' ');
-      line += string(1, ' ');
-      line += doub2for(IODE, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Crs, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(dn, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(M0, 18, 2);
+      line += string(4, ' ');
+      if ( satSys == "R" )      // GLONASS
+        {
+          line += string(1, ' ');
+          line += doub2for(px, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(vx, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(ax, 18, 2);
+          line += string(1, ' ');
+          line += doub2for((double)health, 18, 2);
+        }
+      else if ( satSys == "G" ) // GPS
+        {
+          line += string(1, ' ');
+          line += doub2for(IODE, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(Crs , 18, 2);
+          line += string(1, ' ');
+          line += doub2for(dn  , 18, 2);
+          line += string(1, ' ');
+          line += doub2for(M0  , 18, 2);
+        }
+      else if ( satSys == "E" ) // Galileo
+        {
+          line += string(1, ' ');
+          line += doub2for(IODnav, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(Crs   , 18, 2);
+          line += string(1, ' ');
+          line += doub2for(dn    , 18, 2);
+          line += string(1, ' ');
+          line += doub2for(M0    , 18, 2);
+        }
 
       return line;
    }
@@ -278,15 +365,29 @@ namespace gpstk
    {
       string line;
 
-      line += string(3, ' ');
-      line += string(1, ' ');
-      line += doub2for(Cuc, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(ecc, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Cus, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Ahalf, 18, 2);
+      line += string(4, ' ');
+      if ( satSys == "R" )
+        {
+          line += string(1, ' ');
+          line += doub2for(py, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(vy, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(ay, 18, 2);
+          line += string(1, ' ');
+          line += doub2for((double)freqNum, 18, 2);
+        }
+      else
+        {
+          line += string(1, ' ');
+          line += doub2for(Cuc  , 18, 2);
+          line += string(1, ' ');
+          line += doub2for(ecc  , 18, 2);
+          line += string(1, ' ');
+          line += doub2for(Cus  , 18, 2);
+          line += string(1, ' ');
+          line += doub2for(Ahalf, 18, 2);
+        }
 
       return line;
    }
@@ -296,15 +397,29 @@ namespace gpstk
    {
       string line;
 
-      line += string(3, ' ');
-      line += string(1, ' ');
-      line += doub2for(Toe, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Cic, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(OMEGA0, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Cis, 18, 2);
+      line += string(4, ' ');
+      if ( satSys == "R" )
+        {
+          line += string(1, ' ');
+          line += doub2for(pz, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(vz, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(az, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(ageOfInfo, 18, 2);
+        }
+      else
+        {
+          line += string(1, ' ');
+          line += doub2for(Toe   , 18, 2);
+          line += string(1, ' ');
+          line += doub2for(Cic   , 18, 2);
+          line += string(1, ' ');
+          line += doub2for(OMEGA0, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(Cis   , 18, 2);
+        }
 
       return line;
    }
@@ -314,7 +429,7 @@ namespace gpstk
    {
       string line;
 
-      line += string(3, ' ');
+      line += string(4, ' ');
       line += string(1, ' ');
       line += doub2for(i0, 18, 2);
       line += string(1, ' ');
@@ -330,9 +445,9 @@ namespace gpstk
    string Rinex3NavData::putBroadcastOrbit5(void) const
       throw(StringException)
    {
-         // Internally (Rinex3NavData and EngEphemeris), weeknum is the week of HOW
-         // In RIENX 3 *files*, weeknum is the week of TOE
-      double wk=double(weeknum);
+      // Internally (Rinex3NavData and EngEphemeris), weeknum is the week of HOW.
+      // In RIENX 3 *files*, weeknum is the week of TOE.
+      double wk = double(weeknum);
       if(HOWtime - Toe > HALFWEEK)
          wk++;
       else if(HOWtime - Toe < -(HALFWEEK))
@@ -340,15 +455,26 @@ namespace gpstk
 
       string line;
 
-      line += string(3, ' ');
+      line += string(4, ' ');
       line += string(1, ' ');
       line += doub2for(idot, 18, 2);
-      line += string(1, ' ');
-      line += doub2for((double)codeflgs, 18, 2);
+      if ( satSys == "G" )      // GPS
+        {
+          line += string(1, ' ');
+          line += doub2for((double)codeflgs, 18, 2);
+        }
+      else if ( satSys == "E" ) // Galileo
+        {
+          line += string(1, ' ');
+          line += doub2for((double)datasources, 18, 2);
+        }
       line += string(1, ' ');
       line += doub2for(wk, 18, 2);
-      line += string(1, ' ');
-      line += doub2for((double)L2Pdata, 18, 2);
+      if ( satSys == "G" )      // GPS
+        {
+          line += string(1, ' ');
+          line += doub2for((double)L2Pdata, 18, 2);
+        }
 
       return line;
    }
@@ -358,15 +484,26 @@ namespace gpstk
    {
       string line;
 
-      line += string(3, ' ');
+      line += string(4, ' ');
       line += string(1, ' ');
       line += doub2for(accuracy, 18, 2);
       line += string(1, ' ');
       line += doub2for((double)health, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Tgd, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(IODC, 18, 2);
+
+      if ( satSys == "G" )      // GPS
+        {
+          line += string(1, ' ');
+          line += doub2for(Tgd, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(IODC, 18, 2);
+        }
+      else if ( satSys == "E" ) // Galileo
+        {
+          line += string(1, ' ');
+          line += doub2for(BGDa, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(BGDb, 18, 2);
+        }
 
       return line;
    }
@@ -376,15 +513,14 @@ namespace gpstk
    {
       string line;
 
-      line += string(3, ' ');
+      line += string(4, ' ');
       line += string(1, ' ');
       line += doub2for(HOWtime, 18, 2);
-
-      if (ver >= 2.1)
-      {
-         line += string(1, ' ');
-         line += doub2for(fitint, 18, 2);         
-      }
+      if ( satSys == "G" )
+        {
+          line += string(1, ' ');
+          line += doub2for(fitint, 18, 2);         
+        }
 
       return line;
    }
@@ -394,41 +530,40 @@ namespace gpstk
    {
       try
       {
-            // check for spaces in the right spots...
-         for (int i = 2; i <= 17; i += 3)
+         // check for spaces in the right spots...
+         if (currentLine[3] != ' ')
+            throw( FFStreamError("Badly formatted line") );
+         for (int i = 8; i <= 23; i += 3)
             if (currentLine[i] != ' ')
-               throw(FFStreamError("Badly formatted line"));
+               throw( FFStreamError("Badly formatted line") );
 
-         PRNID = asInt(currentLine.substr(0,2));
+         satSys = currentLine.substr(0,1);
 
-         short  yr  = asInt(   currentLine.substr( 2,3));
-         short  mo  = asInt(   currentLine.substr( 5,3));
-         short  day = asInt(   currentLine.substr( 8,3));
-         short  hr  = asInt(   currentLine.substr(11,3));
-         short  min = asInt(   currentLine.substr(14,3));
-         double sec = asDouble(currentLine.substr(17,5));
+         PRNID = asInt(currentLine.substr(1,2));
 
-            // years 80-99 represent 1980-1999
-         const int rolloverYear = 80;
-         if (yr < rolloverYear)
-            yr += 100;
-         yr += 1900;
+         short yr  = asInt(currentLine.substr( 4,4));
+         short mo  = asInt(currentLine.substr( 7,2));
+         short day = asInt(currentLine.substr(10,2));
+         short hr  = asInt(currentLine.substr(13,2));
+         short min = asInt(currentLine.substr(16,2));
+         short sec = asInt(currentLine.substr(19,2));
 
-         // Real RINEX has epochs 'yy mm dd hr 59 60.0' surprisingly often...
-         double ds=0;
-         if(sec >= 60.) { ds=sec; sec=0.0; }
-         time = CivilTime(yr,mo,day,hr,min,sec).convertToCommonTime();
-         if(ds != 0) time += ds;
+         // Real RINEX 2 had epochs 'yy mm dd hr 59 60.0' surprisingly often.
+         // Keep this in place (as Int) to be cautious.
+         short ds = 0;
+         if (sec >= 60) { ds=sec; sec=0; }
+         time = CivilTime(yr,mo,day,hr,min,(double)sec).convertToCommonTime();
+         if (ds != 0) time += ds;
 
          Toc = ((GPSWeekSecond)time).sow;
-         af0 = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         af1 = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         af2 = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+
+         af0 = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
+         af1 = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
+         af2 = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
       }
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " +
-                           string(e.what()));
+         FFStreamError err("std::exception: " + string(e.what()));
          GPSTK_THROW(err);
       }
    }
@@ -438,15 +573,14 @@ namespace gpstk
    {
       try
       {
-         IODE = gpstk::StringUtils::for2doub(currentLine.substr( 3,19));
-         Crs  = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         dn   = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         M0   = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         IODE = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
+         Crs  = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
+         dn   = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
+         M0   = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
       }
       catch (std::exception &e)
       {
-         FFStreamError err("std::exception: " +
-                           string(e.what()));
+         FFStreamError err("std::exception: " + string(e.what()));
          GPSTK_THROW(err);
       }
    }
@@ -456,10 +590,10 @@ namespace gpstk
    {
       try
       {
-         Cuc   = gpstk::StringUtils::for2doub(currentLine.substr( 3,19));
-         ecc   = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         Cus   = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         Ahalf = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         Cuc   = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
+         ecc   = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
+         Cus   = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
+         Ahalf = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
       }
       catch (std::exception &e)
       {
@@ -473,10 +607,10 @@ namespace gpstk
    {
       try
       {
-         Toe    = gpstk::StringUtils::for2doub(currentLine.substr( 3,19));
-         Cic    = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         OMEGA0 = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         Cis    = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         Toe    = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
+         Cic    = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
+         OMEGA0 = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
+         Cis    = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
       }
       catch (std::exception &e)
       {
@@ -490,10 +624,10 @@ namespace gpstk
    {
       try
       {
-         i0       = gpstk::StringUtils::for2doub(currentLine.substr( 3,19));
-         Crc      = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         w        = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         OMEGAdot = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         i0       = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
+         Crc      = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
+         w        = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
+         OMEGAdot = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
       }
       catch (std::exception &e)
       {
@@ -509,10 +643,10 @@ namespace gpstk
       {
          double codeL2, L2P, toe_wn;
 
-         idot   = gpstk::StringUtils::for2doub(currentLine.substr( 3,19));
-         codeL2 = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         toe_wn = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         L2P    = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         idot   = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
+         codeL2 = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
+         toe_wn = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
+         L2P    = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
 
          codeflgs = (short)codeL2;
          L2Pdata  = (short)L2P;
@@ -532,10 +666,10 @@ namespace gpstk
       {
          double SV_acc, SV_health;
 
-         accuracy  = gpstk::StringUtils::for2doub(currentLine.substr( 3,19));
-         SV_health = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-         Tgd       = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
-         IODC      = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
+         accuracy  = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
+         SV_health = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
+         Tgd       = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
+         IODC      = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
 
          health = (short)SV_health;
       }
@@ -553,8 +687,8 @@ namespace gpstk
       {
          double HOW_sec;
 
-         HOW_sec = gpstk::StringUtils::for2doub(currentLine.substr( 3,19));
-         fitint  = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
+         HOW_sec = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
+         fitint  = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
 
          HOWtime = (long)HOW_sec;
 
