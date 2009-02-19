@@ -29,7 +29,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008
+//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009
 //
 //============================================================================
 
@@ -95,10 +95,10 @@ namespace gpstk
        * corresponding satellites.
        *
        * Be warned that if a given satellite does NOT have the information
-       * needed (elevation IS REQUIRED), it will be summarily deleted from the
-       * data structure. This also implies that if you try to use a
-       * "IonexModel" object without first defining the IONEX model, then
-       * ALL satellites will be deleted.
+       * needed (elevation and azimuth ARE REQUIRED), it will be summarily 
+       * deleted from the data structure. This also implies that if you try 
+       * to use a "IonexModel" object without first defining the IONEX model, 
+       * then ALL satellites will be deleted.
        *
        * @sa IonexStore.hpp
        *
@@ -127,12 +127,13 @@ namespace gpstk
           * @param dObservable      Observable type to be used by default.
           * @param applyDCB         Whether or not P1 observable will be
           *                         corrected from DCB effect.
-          *
+          * @ionoHgt						the height of the ionospheric layer
           */
       IonexModel( const Position& RxCoordinates,
                   IonexStore& istore,
                   const TypeID& dObservable = TypeID::P1,
-                  const bool& applyDCB = true )
+                  const bool& applyDCB = true,
+                  const double& ionoHgt = 450000.0)
          throw(Exception);
 
 
@@ -224,6 +225,20 @@ namespace gpstk
          throw(GeometryException);
 
 
+         /// Method to get the default height of the ionosphere, in meters.
+      virtual double getIonoHeight() const
+      { return ionoHeight; };
+
+
+         /** Method to set the default height of the ionosphere to be used 
+          *  with GNSS data structures. If a negative value is given, a
+          *  mean value of 450000 meters for the height of ionosphere is set. 
+          *
+          * @param ionoHgt   height of the ionosphere, in meters
+          */
+      virtual IonexModel& setIonoHeight(const double& ionoHgt);
+
+
          /** Method to get DCB corrections.
           *
           * @param time       Epoch.
@@ -270,6 +285,11 @@ namespace gpstk
          /// P1-code measurements (to make them consistent with LC 
          /// satellite clocks).
       bool useDCB;
+
+
+         /// the mean value for the height of the ionosphere for which 
+         /// the TEC values are extracted.
+      double ionoHeight;
 
 
    private:

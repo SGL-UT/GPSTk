@@ -594,10 +594,17 @@ namespace gpstk
 
       double xsum = 0;
 
+         // the object is required for AEarth to be consistent with 
+         // Position::getIonosphericPiercePoint()
+      WGS84Geoid WGS84;
+
          // computation of TEC values requires GEOCENTRIC latitude
-      double beta    = p.getGeocentricLatitude();
-      double lambda  = p.getLongitude();
-      double height  = p.getHeight();
+      Position tmp(p);
+      tmp.transformTo(Position::Geocentric);
+      
+      double beta    = tmp.theArray[0];
+      double lambda  = tmp.theArray[0];
+      double height  = tmp.theArray[2]-WGS84.a();
 
       Triple ABC[4], inarg;
       int e[4];

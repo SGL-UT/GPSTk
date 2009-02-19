@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008
+//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009
 //
 //============================================================================
 
@@ -60,6 +60,7 @@ namespace gpstk
       pDefaultMaps = NULL;
       defaultObservable = TypeID::P1;
       useDCB = true;
+      ionoHeight = 450000.0;
       setInitialRxPosition(RxCoordinates);
       setIndex();
 
@@ -75,12 +76,14 @@ namespace gpstk
        * @param dObservable      Observable type to be used by default.
        * @param applyDCB         Whether or not C1 observable will be
        *                         corrected from DCB effect.
+       * @ionoHgt						the height of the ionospheric layer
        *
        */
    IonexModel::IonexModel( const Position& RxCoordinates,
                            IonexStore& istore,
                            const TypeID& dObservable,
-                           const bool& applyDCB )
+                           const bool& applyDCB,
+                           const double& ionoHgt)
          throw(Exception)
       {
 
@@ -88,6 +91,7 @@ namespace gpstk
          setDefaultMaps(istore);
          defaultObservable = dObservable;
          useDCB = applyDCB;
+         ionoHeight = ionoHgt;
          setIndex();
 
       }  // End of constructor 'IonexModel::IonexModel()'
@@ -104,14 +108,6 @@ namespace gpstk
                                          satTypeValueMap& gData )
       throw(Exception)
    {
-
-         // Let's get TEC, RMS and ionosphere height for current receiver
-         // position at current epoch
-      Vector<double> val = pDefaultMaps->getIonexValue(time, rxPos);
-
-         // make it handy for future use
-      double tecval = val[0];
-      double ionoHeight = val[2];
 
       SatIDSet satRejectedSet;
 
@@ -134,12 +130,9 @@ namespace gpstk
 
             }
 
-               // If satellite coordinates or elevation is missing, then
-               // remove satellite
-            if( (*stv).second.find(TypeID::satX)      == (*stv).second.end() ||
-                (*stv).second.find(TypeID::satY)      == (*stv).second.end() ||
-                (*stv).second.find(TypeID::satZ)      == (*stv).second.end() ||
-                (*stv).second.find(TypeID::elevation) == (*stv).second.end() )
+               // If elevation or azimuth is missing, then remove satellite
+            if( (*stv).second.find(TypeID::elevation) == (*stv).second.end() ||
+                (*stv).second.find(TypeID::azimuth)   == (*stv).second.end() )
             {
 
                satRejectedSet.insert( (*stv).first );
@@ -150,17 +143,35 @@ namespace gpstk
             else
             {
 
-                  // Satellite position object
-               Position SV( (*stv).second(TypeID::satX),
-                            (*stv).second(TypeID::satY),
-                            (*stv).second(TypeID::satZ) );
-
-                  // Scalars to hold satellite elevation, ionospheric map and 
-                  // ionospheric slant delays
+                  // Scalars to hold satellite elevation, azimuth, ionospheric 
+                  // map and ionospheric slant delays
                double elevation( (*stv).second(TypeID::elevation) );
+               double azimuth(   (*stv).second(TypeID::azimuth) );
                double ionoMap(0.0);
                double ionexL1(0.0), ionexL2(0.0), ionexL5(0.0);   // GPS
                double ionexL6(0.0), ionexL7(0.0), ionexL8(0.0);   // Galileo
+
+               //todo
+               //calculate the position of the ionospheric pierce-point corresponding to the receiver-satellite ray
+                  // use sinus theorem
+                  // base radius from header as earth radius
+                  // 
+               //extract the VTEC for this position
+                  // Vector<double> val = pDefaultMaps->getIonexValue(time, ippPos, elevation);
+                  // double tecval = val[0];
+                  // double ionoHeight = val[2];
+
+
+                  //	calculate the position of the ionospheric pierce-point 
+                  // corresponding to the receiver-satellite ray
+               Position IPP = rxPos.getIonosphericPiercePoint(elevation,azimuth,ionoHeight);
+
+                  // Let's get TEC, RMS and ionosphere height for IPP 
+                  // at current epoch
+               Vector<double> val = pDefaultMaps->getIonexValue(time, IPP);
+
+                  // just to make it handy for useage
+               double tecval = val[0];
 
                try
                {
@@ -335,6 +346,21 @@ namespace gpstk
       }
 
    }  // End of method 'IonexModel::setInitialRxPosition()'
+
+
+
+         /** Method to set the default height of the ionosphere to be used 
+          *  with GNSS data structures. If a negative value is given, a
+          *  mean value of 450000 meters for the height of ionosphere is set. 
+          *
+          * @param ionoHgt   height of the ionosphere, in meters
+          */
+   IonexModel& IonexModel::setIonoHeight(const double& ionoHgt)
+   { 
+      ionoHeight = (ionoHgt > 0.0) ? ionoHgt : 450000.0; 
+      
+      return (*this);
+   }
 
 
 

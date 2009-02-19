@@ -263,7 +263,7 @@ namespace gpstk
        *
        * @return values    TEC, RMS and ionosphere height values
        *                   (Vector object with 3 elements: TEC and RMS are in
-       *                   TECU and ionosphere height in KM)
+       *                   TECU and the ionosphere height in meters)
        */
    Vector<double> IonexStore::getIonexValue( const DayTime& t,
                                              const Position& RX,
@@ -393,8 +393,8 @@ namespace gpstk
       }  // End of 'for(int imap = 0; imap < nmap; imap++)...'
 
 
-         // ionosphere height
-      tecval[2] = ionexHeight;
+         // ionosphere height as given in Ionex maps in meters
+      tecval[2] = ionexHeight*1000.0;
 
       return tecval;
 
@@ -462,9 +462,7 @@ namespace gpstk
          // zenith angle of the ionospheric point (IP)
          // As explained in: Hofmann-Wellenhof et al. (2004) - GPS Theory and
          // practice, 5th edition, SpringerWienNewYork, Chapter 6.3, pg. 102
-         //
-         // NB: ionoHeight is in km, thus it has to be converted to meters
-      double sinzip  = Re / (Re + ionoHeight*1000.0) * std::sin(z0*DEG_TO_RAD);
+      double sinzip  = Re / (Re + ionoHeight) * std::sin(z0*DEG_TO_RAD);
       double ziprad  = std::asin(sinzip);
       double map     = 1.0/std::cos(ziprad);
 

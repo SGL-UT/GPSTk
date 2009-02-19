@@ -128,7 +128,7 @@ namespace gpstk
           *
           * @return values    TEC, RMS and ionosphere height values
           *                   (Vector object with 3 elements: TEC and RMS are in
-          *                   TECU and ionosphere height in KM)
+          *                   TECU and the ionosphere height in meters)
           */
       Vector<double> getIonexValue( const DayTime& t,
                                     const Position& RX,
@@ -140,8 +140,7 @@ namespace gpstk
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    Ionosphere height as derived from IONEX file
-          *                      (KM).
+          * @param ionoHeight    height of the ionosphere (meters).
           * @param freq          Frequency value, in Hz
           *
           * @return              Ionosphere slant delay (meters)
@@ -160,8 +159,7 @@ namespace gpstk
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    Ionosphere height as derived from IONEX file
-          *                      (KM).
+          * @param ionoHeight    height of the ionosphere (meters).
           *
           * @return              Ionosphere slant delay (meters)
           */
@@ -176,8 +174,7 @@ namespace gpstk
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    Ionosphere height as derived from IONEX file
-          *                      (KM).
+          * @param ionoHeight    height of the ionosphere (meters)..
           *
           * @return              Ionosphere slant delay (meters)
           */
@@ -192,8 +189,7 @@ namespace gpstk
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    Ionosphere height as derived from IONEX file
-          *                      (KM).
+          * @param ionoHeight    height of the ionosphere (meters).
           *
           * @return              Ionosphere slant delay (meters)
           */
@@ -208,8 +204,7 @@ namespace gpstk
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    Ionosphere height as derived from IONEX file
-          *                      (KM).
+          * @param ionoHeight    height of the ionosphere (meters).
           *
           * @return              Ionosphere slant delay (meters)
           */
@@ -224,8 +219,7 @@ namespace gpstk
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    Ionosphere height as derived from IONEX file
-          *                      (KM).
+          * @param ionoHeight    height of the ionosphere (meters).
           *
           * @return              Ionosphere slant delay (meters)
           */
@@ -240,8 +234,7 @@ namespace gpstk
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    Ionosphere height as derived from IONEX file
-          *                      (KM).
+          * @param ionoHeight    height of the ionosphere (meters).
           *
           * @return              Ionosphere slant delay (meters)
           */
@@ -256,7 +249,7 @@ namespace gpstk
           *
           * @param elevation     Elevation of satellite as seen at receiver
           *                      (degrees).
-          * @param tecval        TEC value as derived from IONEX file (TECU)
+          * @param ionoHeight    height of the ionosphere (meters).
           *
           * WARNING: CODE's approach is different: To convert line-of-sight TEC
           * into vertical TEC, a modified single-layer model (MSLM) mapping
