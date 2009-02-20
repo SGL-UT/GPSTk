@@ -79,26 +79,6 @@ namespace gpstk
          SP3Data rec;
          while(strm >> rec)
          {
-            // reject when satellite undefined (e.g. first Epoch record)
-            if(rec.sat.id <= 0) continue;
-
-            // If there is a bad or absent clock value, and
-            // corresponding flag is set, then continue
-            if( rejectBadClockFlag && (rec.clk >= 999999.) )
-            {
-               continue;
-            }
-
-            // If there are bad or absent positional values, and
-            // corresponding flag is set, then continue
-            if( rejectBadPosFlag        &&
-                ( (rec.x[0] == 0.0) ||
-                  (rec.x[1] == 0.0) ||
-                  (rec.x[2] == 0.0)    )   )
-            {
-               continue;
-            }
-
                // Ephemeris and clock are valid, then add them
             addEphemeris(rec);
 
@@ -112,8 +92,6 @@ namespace gpstk
 
    }  // End of method 'SP3EphemerisStore::loadFile()'
 
-
-
       /* Dump the store to cout.
        * @param detail determines how much detail to include in the output
        *   0 list of filenames with their start, stop times.
@@ -125,12 +103,11 @@ namespace gpstk
                                  short detail )
       const throw()
    {
-
       s << "Dump of SP3EphemerisStore, built from file(s) :" << std::endl;
       std::vector<std::string> fileNames = getFileNames();
       std::vector<std::string>::const_iterator f=fileNames.begin();
       for (f=fileNames.begin(); f!=fileNames.end(); f++)
-         s << *f << std::endl;
+         s << "  " << *f << std::endl;
 
 /*
   Add this back in when/if we add header info to the file store.
@@ -167,6 +144,25 @@ namespace gpstk
 
    }  // End of method 'SP3EphemerisStore::dump()'
 
+   void SP3EphemerisStore::addEphemeris(const SP3Data& rec)
+      throw()
+   {
+      // reject when satellite undefined (e.g. first Epoch record)
+      if(rec.sat.id <= 0) return;
 
+      // If flag is set and there is a bad or absent clock value, reject
+      if(rejectBadClockFlag && (rec.clk >= 999999.)) return;
+
+      // If flag is set and there are bad or absent coordinate values, reject
+      if(rejectBadPosFlag && ( (rec.x[0] == 0.0) ||
+                               (rec.x[1] == 0.0) ||
+                               (rec.x[2] == 0.0)    )) return;
+
+      if(rec.RecType=='P')
+         addPositionData(rec.time, rec.sat, rec.x[0], rec.x[1], rec.x[2], rec.clk);
+
+      else if(haveVelocity && rec.RecType=='V')
+         addVelocityData(rec.time, rec.sat, rec.x[0], rec.x[1], rec.x[2], rec.clk);
+   }
 
 }  // End of namespace gpstk

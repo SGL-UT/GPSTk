@@ -71,6 +71,7 @@ namespace gpstk
 
       // correlation flag will be set if there is an EP/EV record
       correlationFlag = false;
+
       // default for the 'c' arrays is all zeros
       sdev[0] = sdev[1] = sdev[2] = sdev[3] = 0;
       sig[0] = sig[1] = sig[2] = sig[3] = 0;
@@ -142,6 +143,11 @@ namespace gpstk
 
             // mark this record as non-data, in case another P|V record is not read
             sat = SatID();
+
+            // warn if the line is short but not too short
+            if(strm.lastLine.size() <= 30 && strm.lastLine.size() > 26)
+               strm.warnings.push_back(string("Warning (SP3 std): short epoch line: ")
+                                       + strm.lastLine);
 
             // throw if the line is short
             if(strm.lastLine.size() <= 26) { // some igs files cut seconds short 30)
@@ -264,8 +270,12 @@ namespace gpstk
          // be tolerant of files without EOF -- IGS!
          // if previous iteration of the loop found unexpected EOF, then quit here.
          if(unexpectedEOF) {
+            // add a warning
+            strm.warnings.push_back(string("Warning (SP3 std): Unexpected EOF"));
+
             // clear the buffer so it won't be (re)processed next call
             strm.lastLine = string("EOF");
+
             // clear the eof bit and return, so the user will process this SP3Data
             strm.clear(ios::eofbit);
             status = 3;

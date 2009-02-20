@@ -58,8 +58,6 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-
-
       /* A debugging function that outputs in human readable form,
        * all data stored in this object.
        *
@@ -355,25 +353,58 @@ namespace gpstk
 
 
    //-----------------------------------------------------------------------------
-   //-----------------------------------------------------------------------------
-   void TabularEphemerisStore::addEphemeris(const SP3Data& data)
+   // units are km and microsec
+   void TabularEphemerisStore::addPositionData(const CommonTime& t,
+                                               const SatID& sat,
+                                               const double& x,
+                                               const double& y,
+                                               const double& z,
+                                               const double& c)
       throw()
    {
-      CommonTime t = data.time;
-      SatID sat = data.sat;
-      Xvt&  xvt = pe[sat][t];
+      // TODO ? test input for validity here?
+      Xvt& xvt = pe[sat][t];  // find or create pair
+      xvt.x = ECEF(x,y,z);
+      xvt.dtime = c;
 
-      if (data.RecType=='P')
-      {
-         xvt.x = ECEF(data.x[0], data.x[1], data.x[2]);
-         xvt.dtime = data.clk;
-      }
-      else if (haveVelocity && data.RecType=='V')
-      {
-         xvt.v = Triple(data.x[0],data.x[1],data.x[2]);
-         xvt.ddtime = data.clk;
-      }
-      
+      // update time limits
+      if (t<initialTime)
+         initialTime = t;
+      else if (t>finalTime)
+         finalTime = t;
+   }
+
+   // units are decimeters/sec and 1.e-4 microsec/sec
+   void TabularEphemerisStore::addVelocityData(const CommonTime& t,
+                                               const SatID& sat,
+                                               const double& vx,
+                                               const double& vy,
+                                               const double& vz,
+                                               const double& vc)
+      throw()
+   {
+      // TODO ? test input for validity here?
+      Xvt& xvt = pe[sat][t];  // find or create pair
+      xvt.v = Triple(vx,vy,vz);
+      xvt.ddtime = vc;
+
+      // update time limits
+      if (t<initialTime)
+         initialTime = t;
+      else if (t>finalTime)
+         finalTime = t;
+   }
+
+   void TabularEphemerisStore::addData(const CommonTime& t,
+                                       const SatID& sat,
+                                       const Xvt& pv)
+      throw()
+   {
+      // TODO ? test input for validity here?
+      Xvt& xvt = pe[sat][t];  // find or create pair
+      xvt = pv;
+
+      // update time limits
       if (t<initialTime)
          initialTime = t;
       else if (t>finalTime)

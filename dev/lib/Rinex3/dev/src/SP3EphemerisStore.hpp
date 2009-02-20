@@ -96,24 +96,26 @@ namespace gpstk
          throw( FileMissingException );
 
 
-         // TODO why virtual? why return *this? Wouldn't this be better:
-         // void rejectBadPositions(const bool flag) { rejectBadPosFlag=flag; } ?
-         //
-         /// Set if satellites with bad or absent positional values will be
+         /// Set if satellites with bad or absent position values will be
          /// rejected. It is false by default when object is constructed.
-      virtual SP3EphemerisStore& rejectBadPositions(const bool flag)
-      { rejectBadPosFlag = flag; return (*this); };
-
+      void rejectBadPositions(const bool flag) { rejectBadPosFlag=flag; }
 
          /// Set if satellites with bad or absent clock values will be
          /// rejected. It is false by default when object is constructed.
-      virtual SP3EphemerisStore& rejectBadClocks(const bool flag)
-      { rejectBadClockFlag = flag; return (*this); };
+      void rejectBadClocks(const bool flag) { rejectBadClockFlag=flag; }
 
+         // why virtual? why return *this? Wouldn't the above be better?
+      //virtual SP3EphemerisStore& rejectBadPositions(const bool flag)
+      //{ rejectBadPosFlag = flag; return (*this); };
+
+      //virtual SP3EphemerisStore& rejectBadClocks(const bool flag)
+      //{ rejectBadClockFlag = flag; return (*this); };
+
+         /// Insert a new SP3Data object into the store
+      void addEphemeris(const SP3Data& data)
+         throw();
 
    private:
-
-
          /// Flag to reject satellites with bad or absent positional values
       bool rejectBadPosFlag;
 

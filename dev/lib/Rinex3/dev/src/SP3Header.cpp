@@ -76,7 +76,8 @@ namespace gpstk
          }
 
          // are V records present?
-         if(line[2] == 'V') containsVelocity=true; else containsVelocity=false;
+         if(line[2] == 'V') containsVelocity = true;
+         else               containsVelocity = false;
 
          // parse the rest of the line
          int year = asInt(line.substr(3,4));

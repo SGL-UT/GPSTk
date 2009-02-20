@@ -103,7 +103,7 @@ namespace gpstk
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getInitialTime() const
-         throw()
+         throw(InvalidRequest)
          = 0;
 
       /// Determine the latest time for which this object can successfully 
@@ -111,7 +111,7 @@ namespace gpstk
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getFinalTime() const
-         throw()
+         throw(InvalidRequest)
          = 0;
 
       virtual bool velocityIsPresent()

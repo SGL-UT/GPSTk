@@ -107,6 +107,7 @@ namespace gpstk
          FFTextStream::open(filename, mode);
          headerRead = false;
          header = SP3Header();
+         warnings.clear();
 
          // for close() later
          wroteEOF = writingMode = false;
@@ -126,7 +127,8 @@ namespace gpstk
       bool writingMode;     ///< True if the stream is open in 'out', not 'in', mode
       CommonTime currentEpoch;   ///< Time from last epoch record read
       std::string lastLine;      ///< Last line read, perhaps not yet processed
-         //@{
+      std::vector<std::string> warnings; ///< warnings produced by reallyGetRecord()s
+         //@}
 
    }; // class SP3Stream
    

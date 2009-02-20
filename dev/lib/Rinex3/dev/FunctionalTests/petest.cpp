@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -46,19 +44,19 @@ int main(int argc, char *argv[])
          SP3Data data;
          
          // you can't open, close, and reopen a file w/o abort on second open...
-         SP3Stream pefile;
-         // SP3Stream does this ... pefile.exceptions(ifstream::failbit);
+         SP3Stream pestrm;
+         // SP3Stream does this ... pestrm.exceptions(ifstream::failbit);
          cout << "Reading SP3 file " << argv[i] << "." << endl;
-         pefile.open(argv[i],ios::in);
+         pestrm.open(argv[i],ios::in);
 
-         pefile >> header;
+         pestrm >> header;
          
          header.dump(cout);
 
          ip = it = 0;
          CommonTime ttag(CommonTime::BEGINNING_OF_TIME);
 
-         while(pefile >> data) {
+         while(pestrm >> data) {
             data.dump(cout, header.version==SP3Header::SP3c);
 
             if(firstEpochFound && data.RecType == '*') {  
@@ -80,7 +78,10 @@ int main(int argc, char *argv[])
          }
          cout << "\nDone with file " << argv[i] << ": read "
               << ip << " P/V records and " << it << " epochs." << endl;
-         pefile.close();
+         for(int j=0; j<pestrm.warnings.size(); j++)
+            cout << pestrm.warnings[j] << endl;
+
+         pestrm.close();
          nf++;
 
          // add to store
