@@ -5,7 +5,7 @@
 SubDir TOP examples ;
 
 GPSLinkLibraries example1 example2 example3 example4 example5
-example6 example7 example8 example9 : gpstk procframe ;
+example6 example7 example8 example9 example10 : gpstk procframe ;
 
 # Note that we use the Main rule here as opposed to the GPSMain rule. That is
 # to prevent these binaries from getting installed as part of the Jam install
@@ -19,6 +19,7 @@ Main example6 : example6.cpp ;
 Main example7 : example7.cpp ;
 Main example8 : example8.cpp ;
 Main example9 : example9.cpp ;
+Main example10 : example10.cpp ;
 
 # SubInclude TOP examples foo ;
 
