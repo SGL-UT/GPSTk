@@ -123,12 +123,19 @@ namespace gpstk
       { loadData(); };
 
 
-         /// Method to open AND load ocean tide harmonics data file.
+         /// Method to open AND load ocean tide harmonics data file. It doesn't
+         /// clear data previously loaded.
       virtual void open(const char* fn);
 
 
-         /// Method to open AND load ocean tide harmonics data file.
+         /// Method to open AND load ocean tide harmonics data file. It doesn't
+         /// clear data previously loaded.
       virtual void open(const string& fn);
+
+
+         /// Method to clear all previously loaded ocean tide harmonics data.
+      virtual BLQDataReader& clearData()
+      { OceanTidesData.clear(); return (*this); };
 
 
          /** Method to get the ocean tide harmonics corresponding to a

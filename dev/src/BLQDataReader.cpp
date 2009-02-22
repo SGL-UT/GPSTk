@@ -158,9 +158,15 @@ namespace gpstk
 
 
 
-      // Method to open AND load ocean tide harmonics data file.
+      // Method to open AND load ocean tide harmonics data file. It doesn't
+      // clear data previously loaded.
    void BLQDataReader::open(const char* fn)
    {
+
+         // We need to be sure current data stream is closed
+      (*this).close();
+
+         // Open data stream
       FFTextStream::open(fn, std::ios::in);
       loadData();
 
@@ -168,9 +174,16 @@ namespace gpstk
    }  // End of method 'BLQDataReader::open()'
 
 
-      // Method to open AND load ocean tide harmonics data file.
+
+      // Method to open AND load ocean tide harmonics data file. It doesn't
+      // clear data previously loaded.
    void BLQDataReader::open(const string& fn)
    {
+
+         // We need to be sure current data stream is closed
+      (*this).close();
+
+         // Open data stream
       FFTextStream::open(fn.c_str(), std::ios::in);
       loadData();
 
