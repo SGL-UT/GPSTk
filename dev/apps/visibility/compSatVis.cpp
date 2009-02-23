@@ -1,4 +1,25 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2008, The University of Texas at Austin
+//
+//============================================================================
 //
 // Compute number of stations visible to a set of space vehicles (SV) 
 // over a requested period (default 23:56).  Accept FIC 
@@ -28,6 +49,7 @@
 // Project
 #include "VisSupport.hpp"
 #include "StaStats.hpp"
+#include "DiscreteVisibleCounts.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -85,11 +107,21 @@ protected:
 
    StaPosList stationPositions;
       
-
+      // Storage for min, max , avg. statistics.  Storage is both by-SV 
+      // and over the entire constellation
    typedef map<int,StaStats> StaStatsList;
    StaStatsList staStatsList;
    StaStats statsOverAllPRNs;
    int epochCount;
+   
+     // Storage for the literal count of number of epochs with a particular
+     // number of stations in view.  It turns out we frequently care not
+     // only about min/max/avg but the fraction of time a typical SV is in
+     // view of "at least X" number of stations.  This is partially addressed
+     // by the -m option which allows the user to specify a particular number
+     // of interest, but we frequently want to know this information for the 
+     // full range of stations.
+   map <int,DiscreteVisibleCounts> dvcList;
    
    DayTime startT;
    DayTime endT;
@@ -220,15 +252,22 @@ bool compSatVis::initialize(int argc, char *argv[])
       minStationCount = StringUtils::asInt( values[0] );
    }
 
-      // Initialize the statistics objecst==   
+      // Initialize the statistics objects   
    for (int PRNID=1;PRNID<=gpstk::MAX_PRN;++PRNID)
    {
-       StaStats temp = StaStats( StringUtils::asString(PRNID), 0, minStationCount );
-       pair<int,StaStats> node( PRNID, temp );
-       staStatsList.insert( node );
+      StaStats temp = StaStats( StringUtils::asString(PRNID), 0, minStationCount );
+      pair<int,StaStats> node( PRNID, temp );
+      staStatsList.insert( node );
+       
+      DiscreteVisibleCounts dvcTemp = DiscreteVisibleCounts();
+      pair<int,DiscreteVisibleCounts> dvcNode(PRNID, dvcTemp);
+      dvcList.insert(dvcNode);
    }
    statsOverAllPRNs.updateMinStations( minStationCount );
-   
+   DiscreteVisibleCounts dvcTemp = DiscreteVisibleCounts();
+   pair<int,DiscreteVisibleCounts> dvcNode(0, dvcTemp);
+   dvcList.insert(dvcNode);
+  
       // If the user SPECIFIED a start time for the evaluation, store that
       // time and set the flag.
    evalStartTimeSet = false;
@@ -469,7 +508,7 @@ void compSatVis::generateHeader( gpstk::DayTime currT )
    DayTime now;
    string tform = "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w";
    fprintf(logfp,"compSatVis output file.  Generated at %s\n",
-           now.printf("%02H:%02m on %02m/%02d/%02y").c_str() );
+           now.printf("%02H:%02M on %02m/%02d/%02y").c_str() );
    fprintf(logfp,"Program arguments:\n");
    fprintf(logfp,"  Navigation file         : ",nFileNameOpt.getValue().front().c_str());
    vector<std::string> values = nFileNameOpt.getValue();
@@ -530,6 +569,44 @@ void compSatVis::generateTrailer( )
       }
    }
    fprintf(logfp,"%s\n",statsOverAllPRNs.getSatAvgStr( ).c_str());
+   
+      // Now output the percentages related to the fraction of time
+      // a particular number of stations see a SV and the average
+      //
+   const DiscreteVisibleCounts& dvc0 = dvcList.find(0)->second;
+   int max = dvc0.getMaxCount();
+   fprintf(logfp,"\n Fraction of time an SV is visible to a given number of stations.\n");
+   fprintf(logfp,"PRN ID ");
+   for (int i=0;i<=max;++i) fprintf(logfp,"    =%2d",i);
+   fprintf(logfp,"\n");
+   map<int,DiscreteVisibleCounts>::const_iterator CI;
+   for (CI=dvcList.begin();CI!=dvcList.end();++CI)
+   {
+      int PRNID = CI->first;
+      const DiscreteVisibleCounts& dvcR = (DiscreteVisibleCounts)CI->second;
+      string str = dvcR.dumpCountsAsPercentages(max,7);
+      if (PRNID==0)
+         fprintf(logfp,"   Avg:%s\n",str.c_str());
+       else
+         fprintf(logfp,"    %02d:%s\n",PRNID,str.c_str());
+   }
+   fprintf(logfp,"\n");
+   
+   fprintf(logfp,"\n Fraction of time an SV is visible to >= a given number of stations.\n");
+   fprintf(logfp,"PRN ID ");
+   for (int i=0;i<=max;++i) fprintf(logfp,"   >=%2d",i);
+   fprintf(logfp,"\n");
+   for (CI=dvcList.begin();CI!=dvcList.end();++CI)
+   {
+      int PRNID = CI->first;
+      const DiscreteVisibleCounts& dvcR = (DiscreteVisibleCounts)CI->second;
+      string str = dvcR.dumpCumulativeCountsAsPercentages(max,7);
+      if (PRNID==0)
+         fprintf(logfp,"   Avg:%s\n",str.c_str());
+       else
+         fprintf(logfp,"    %02d:%s\n",PRNID,str.c_str());
+   }
+   fprintf(logfp,"\n");
 }
 
 void compSatVis::computeVisibility( gpstk::DayTime currT )
@@ -601,6 +678,8 @@ void compSatVis::computeVisibility( gpstk::DayTime currT )
    int maxNum = 0;
    int minNum = stationPositions.size() + 1; 
    StaPosList::const_iterator splCI;
+   DiscreteVisibleCounts& dvc0 = dvcList.find(0)->second;
+   
    for (PRNID=1;PRNID<=gpstk::MAX_PRN;++PRNID)
    {
       if (!SVAvail[PRNID]) continue;
@@ -626,6 +705,9 @@ void compSatVis::computeVisibility( gpstk::DayTime currT )
       StaStats& ss = sslI->second;
       ss.addEpochInfo( numVis, epochCount );
       statsOverAllPRNs.addEpochInfo( numVis, epochCount );
+      DiscreteVisibleCounts& dvc = dvcList.find(PRNID)->second;
+      dvc.addCount(numVis);
+      dvc0.addCount(numVis);
    }
    if (detailPrint) fprintf(logfp,"    %2d,    %2d\n",maxNum,minNum);
 }

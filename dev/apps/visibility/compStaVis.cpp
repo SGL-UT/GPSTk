@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -48,6 +48,7 @@
 // Project
 #include "VisSupport.hpp"
 #include "StaStats.hpp"
+#include "DiscreteVisibleCounts.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -109,6 +110,15 @@ protected:
    typedef map<string,StaStats> StaStatsList;
    StaStatsList staStatsList;
    int epochCount;
+   
+     // Storage for the literal count of number of epochs with a particular
+     // number of stations in view.  It turns out we frequently care not
+     // only about min/max/avg but the fraction of time a typical SV is in
+     // view of "at least X" number of stations.  This is partially addressed
+     // by the -m option which allows the user to specify a particular number
+     // of interest, but we frequently want to know this information for the 
+     // full range of stations.
+   map <string,DiscreteVisibleCounts> dvcList;
    
    DayTime startT;
    DayTime endT;
@@ -467,7 +477,17 @@ void compStaVis::process()
        StaStats temp = StaStats( name, maxSVCount, 0 );
        pair<string,StaStats> node( name, temp );
        staStatsList.insert( node );
+
+      DiscreteVisibleCounts dvcTemp = DiscreteVisibleCounts();
+      pair<string,DiscreteVisibleCounts> dvcNode(name, dvcTemp);
+      dvcList.insert(dvcNode);
    }
+      // The following "extra" DiscreteVisibleCounts object will be used
+      // to hold the average across all stations.  The six "!" name is selected
+      // to be lower on the ASCII list that any practical name.
+   DiscreteVisibleCounts dvcTemp = DiscreteVisibleCounts();
+   pair<string,DiscreteVisibleCounts> dvcNode("!!!!!!", dvcTemp);
+   dvcList.insert(dvcNode);
    
       // Generate the header
    generateHeader( startT ); 
@@ -505,7 +525,7 @@ void compStaVis::generateHeader( gpstk::DayTime currT )
    DayTime now;
    string tform = "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w";
    fprintf(logfp,"compStaVis output file.  Generated at %s\n",
-           now.printf("%02H:%02m on %02m/%02d/%02y").c_str() );
+           now.printf("%02H:%02M on %02m/%02d/%02y").c_str() );
    fprintf(logfp,"Program arguments\n");
    fprintf(logfp,"  Navigation file         : ",nFileNameOpt.getValue().front().c_str());
    vector<std::string> values = nFileNameOpt.getValue();
@@ -592,6 +612,44 @@ void compStaVis::generateTrailer( )
       std::string dummy = ss.getElvBinValues();
       fprintf(logfp,"%s\n",dummy.c_str());
    }
+   
+      // Now output the percentages related to the fraction of time
+      // a particular number of SVs are visible to each station and the average
+      //
+   const DiscreteVisibleCounts& dvc0 = dvcList.find("!!!!!!")->second;
+   int max = dvc0.getMaxCount();
+   fprintf(logfp,"\n Fraction of time a station is visible to a given number of SVs.\n");
+   fprintf(logfp,"Station ");
+   for (int i=0;i<=max;++i) fprintf(logfp,"    =%2d",i);
+   fprintf(logfp,"\n");
+   map<string,DiscreteVisibleCounts>::const_iterator CI;
+   for (CI=dvcList.begin();CI!=dvcList.end();++CI)
+   {
+      string staName = CI->first;
+      const DiscreteVisibleCounts& dvcR = (DiscreteVisibleCounts)CI->second;
+      string str = dvcR.dumpCountsAsPercentages(max,7);
+      if (staName.compare("!!!!!!")==0)
+         fprintf(logfp,"    Avg:%s\n",str.c_str());
+       else
+         fprintf(logfp," %6s:%s\n",staName.c_str(),str.c_str());
+   }
+   fprintf(logfp,"\n");
+   
+   fprintf(logfp,"\n Fraction of time a station is visible to >= a given number of SVs.\n");
+   fprintf(logfp,"Station ");
+   for (int i=0;i<=max;++i) fprintf(logfp,"   >=%2d",i);
+   fprintf(logfp,"\n");
+   for (CI=dvcList.begin();CI!=dvcList.end();++CI)
+   {
+      string staName = CI->first;
+      const DiscreteVisibleCounts& dvcR = (DiscreteVisibleCounts)CI->second;
+      string str = dvcR.dumpCumulativeCountsAsPercentages(max,7);
+      if (staName.compare("!!!!!!")==0)
+         fprintf(logfp,"    Avg:%s\n",str.c_str());
+       else
+         fprintf(logfp," %6s:%s\n",staName.c_str(),str.c_str());
+   }
+   fprintf(logfp,"\n");
 }
 
 void compStaVis::computeVisibility( gpstk::DayTime currT )
@@ -652,7 +710,10 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
 
    string SVList;       // We'll build a list of SVs in view in this string
                         // We'll only use it if there's only one station selected.
-   
+
+      // Handy reference to the "average over all stations" visibility stats.
+   DiscreteVisibleCounts& dvcAVG = dvcList.find("!!!!!!")->second;
+                        
       // Now count number of SVs visible at each station
    int maxNum = 0;
    int minNum = gpstk::MAX_PRN + 1; 
@@ -705,6 +766,9 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
          }
       }
       if (detailPrint) fprintf(logfp,"    %2d",numVis);
+      DiscreteVisibleCounts& dvcR = dvcList.find(staName)->second;
+      dvcR.addCount(numVis);
+      dvcAVG.addCount(numVis);
       if (numVis>maxNum) maxNum = numVis;
       if (numVis<minNum) minNum = numVis;
       
