@@ -1,0 +1,43 @@
+# $Id$
+
+SubDir TOP apps MDPtools ;
+
+# Note that the local library needs to be declaired and built prior to anything
+# else is done.
+
+GPSLinkLibraries mdplib : rxio gpstk ;
+Library mdplib : MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp ;
+
+# Now we can set up the things that depend upon the local library. Note that
+# the LinkLibraries rule for mdplib must preceede the GPSLinkLibraries rule
+# for things to build properly
+
+LinkLibraries mdptool mdp2rinex mdpEdit : mdplib ;
+GPSLinkLibraries mdptool mdp2rinex mdpEdit : rxio gpstk ;
+
+BonkForte ;
+
+GPSMain mdptool : mdptool.cpp ;
+
+GPSMain mdp2rinex : mdp2rinex.cpp ;
+
+GPSMain mdpEdit : mdpEdit.cpp ;
+
+if $(UNIX)
+{
+  if $(OS) = SOLARIS  {
+    LINKLIBS on mdpscreenx$(SUFEXE) += -lstdc++ -lcurses ;
+  }
+  else {
+    LINKLIBS on mdpscreenx$(SUFEXE) += -lstdc++ -lncurses ;
+  }
+
+  LinkLibraries mdpscreenx : mdplib ;
+  GPSLinkLibraries mdpscreenx : gpstk rxio ;
+
+  GPSMain mdpscreenx : mdpscreen.cpp ScreenProc.cpp ;
+
+  if $(OS) != CYGWIN  {
+  InstallBin $(BINDIR) : mdpscreen mdpscreenx ;
+  }
+}

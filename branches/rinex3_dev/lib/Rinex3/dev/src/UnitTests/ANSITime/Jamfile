@@ -1,0 +1,2 @@
+SubDir TOP ANSITime ;
+TestMain ANSITime/xANSITime.tst : ANSITime/xANSITimeM.cpp ANSITime/xANSITime.cpp ANSITime/ANSITime.cpp ;

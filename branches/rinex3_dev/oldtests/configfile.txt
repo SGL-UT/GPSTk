@@ -1,0 +1,52 @@
+# $Id$
+# Configuration file for GPSTk regression test script
+#
+AnotherFileFilterTest;
+#
+DayTimeConversionTest;
+#
+DayTimeIncrementTest;
+#
+DayTimeIncrementTest2;
+#
+daytimetest;
+#
+DayTimeToleranceTest;
+#
+EphComp -p $datdir/nga12600.apc -p $datdir/nga12601.apc -b $datdir/merge.n
+#
+exceptiontest;
+#
+FileSpecTest.pl $exedir
+#
+gpszcounttest;
+#
+MatrixTest $datdir/anotsym.dat $datdir/cov.dat $datdir/dia.dat $datdir/lt.dat\
+           $datdir/partials.dat $datdir/squ.dat $datdir/sym.dat $datdir/tmatrix.dat\
+           $datdir/ut.dat, MatrixTest.scr:MatrixTest.ref;
+#
+petest $datdir/nga12600.apc;
+#
+positiontest, positiontest.scr:positiontest.ref;
+#
+rinex_met_read_write $datdir/405_077A.02M $outdir/rinex_met.out;
+#
+rinex_met_test $datdir/405_077A.02M;
+#
+rinex_nav_read_write $datdir/suwn0770.02n.Z $outdir/rinex_nav.out;
+#
+rinex_nav_test $datdir/suwn0770.02n.Z;
+#
+rinex_obs_read_write $datdir/s1110770.02o.Z $outdir/rinex_obs.out;
+#
+rinex_obs_test $datdir/s1110770.02o.Z
+#
+RungeKuttaTest, RungeKuttaTest.scr:rktest.ref;
+#
+stringutiltest, stringutiltest.scr:stringutiltest.ref;
+#
+Xbegweek $outdir/Xbegweek.out, Xbegweek.out:Xbegweek.can;
+#
+Xendweek $outdir/Xendweek.out, Xendweek.out:Xendweek.can;
+#
+# End of File

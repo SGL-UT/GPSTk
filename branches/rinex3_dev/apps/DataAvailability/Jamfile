@@ -1,0 +1,7 @@
+# $Id:$
+
+SubDir TOP apps DataAvailability ;
+
+GPSLinkLibraries daa : rxio gpstk ;
+
+GPSMain daa : daa.cpp DataAvailabilityAnalyzer.cpp ;
