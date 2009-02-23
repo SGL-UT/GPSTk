@@ -7,7 +7,7 @@ bin_PROGRAMS = svvis wheresat findMoreThan12 compStaVis compSatVis DOPcalc
 svvis_SOURCES = svvis.cpp
 wheresat_SOURCES = WhereSat.cpp
 findMoreThan12_SOURCES = findMoreThan12.cpp
-compStaVis_SOURCES = compStaVis.cpp VisSupport.cpp StaStats.cpp
-compSatVis_SOURCES = compSatVis.cpp VisSupport.cpp StaStats.cpp
+compStaVis_SOURCES = compStaVis.cpp VisSupport.cpp StaStats.cpp DiscreteVisibleCounts.cpp
+compSatVis_SOURCES = compSatVis.cpp VisSupport.cpp StaStats.cpp DiscreteVisibleCounts.cpp
 DOPcalc_SOURCES = DOPcalc.cpp
 

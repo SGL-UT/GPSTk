@@ -12,9 +12,9 @@ GPSMain svvis : svvis.cpp ;
 
 GPSMain findMoreThan12 : findMoreThan12.cpp ;
 
-GPSMain compSatVis : compSatVis.cpp StaStats.cpp VisSupport.cpp ;
+GPSMain compSatVis : compSatVis.cpp StaStats.cpp VisSupport.cpp DiscreteVisibleCounts.cpp ;
 
-GPSMain compStaVis : compStaVis.cpp StaStats.cpp VisSupport.cpp ;
+GPSMain compStaVis : compStaVis.cpp StaStats.cpp VisSupport.cpp DiscreteVisibleCounts.cpp ;
 
 GPSMain DOPcalc : DOPcalc.cpp ;
 
