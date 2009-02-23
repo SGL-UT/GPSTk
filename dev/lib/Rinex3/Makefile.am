@@ -11,5 +11,4 @@ libRinex3_la_SOURCES = ANSITime.cpp CivilTime.cpp CommonTime.cpp \
    ../../src/ECEF.cpp ../../src/Geodetic.cpp ../../src/TimeConverters.cpp
 
 incldir = $(includedir)/gpstk
-incl_HEADERS = CommonTime.hpp GPSEphemerisStore.hpp \
-KeplerianEphemerisStore.hpp SP3EphemerisStore.hpp TabularEphemerisStore.hpp
+incl_HEADERS =
