@@ -477,18 +477,43 @@ void example9::process()
       requireObs.addRequiredType(TypeID::L1);
       requireObs.addRequiredType(TypeID::L2);
 
+         // This object will check that code observations are within
+         // reasonable limits
+      SimpleFilter pObsFilter;
+      pObsFilter.setFilteredType(TypeID::P2);
+
          // Read if we should use C1 instead of P1
       if ( confReader.getValueAsBoolean( "useC1", station ) )
       {
          requireObs.addRequiredType(TypeID::C1);
+         pObsFilter.addFilteredType(TypeID::C1);
       }
       else
       {
          requireObs.addRequiredType(TypeID::P1);
+         pObsFilter.addFilteredType(TypeID::P1);
       }
 
          // Add 'requireObs' to processing list (it is the first)
       pList.push_back(requireObs);
+
+         // IMPORTANT NOTE:
+         // It turns out that some receivers don't correct their clocks
+         // from drift.
+         // When this happens, their code observations may drift well beyond
+         // what it is usually expected from a pseudorange. In turn, this
+         // effect causes that "SimpleFilter" objects start to reject a lot of
+         // satellites.
+         // Thence, the "filterCode" option allows you to deactivate the
+         // "SimpleFilter" object that filters out C1, P1 and P2, in case you
+         // need to.
+      bool filterCode( confReader.getValueAsBoolean( "filterCode", station ) );
+
+         // Check if we are going to use this "SimpleFilter" object or not
+      if( filterCode )
+      {
+         pList.push_back(pObsFilter);       // Add to processing list
+      }
 
 
          // This object defines several handy linear combinations
@@ -629,7 +654,18 @@ void example9::process()
          // Declare a simple filter object to screen PC
       SimpleFilter pcFilter;
       pcFilter.setFilteredType(TypeID::PC);
-      pList.push_back(pcFilter);       // Add to processing list
+
+         // IMPORTANT NOTE:
+         // Like in the "filterCode" case, the "filterPC" option allows you to
+         // deactivate the "SimpleFilter" object that filters out PC, in case
+         // you need to.
+      bool filterPC( confReader.getValueAsBoolean( "filterPC", station ) );
+
+         // Check if we are going to use this "SimpleFilter" object or not
+      if( filterPC )
+      {
+         pList.push_back(pcFilter);       // Add to processing list
+      }
 
 
          // Object to align phase with code measurements

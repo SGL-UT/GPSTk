@@ -38,6 +38,20 @@ SP3GapInterval = 901, seconds
 checkInterval = TRUE, don't allow interpolation intervals bigger than 8105 s
 maxSP3Interval = 8105, seconds
 
+# IMPORTANT NOTE:
+# It turns out that some receivers don't correct their clocks from drift.
+# When this happens, their code observations may drift well beyond what it is
+# usually expected from a pseudorange. In turn, this effect causes that
+# "SimpleFilter" objects start to reject a lot of satellites.
+# Thence, the "filterCode" option allows you to deactivate the "SimpleFilter"
+# object that filters out C1, P1 and P2, in case you need to.
+
+filterCode = FALSE
+
+# Like in the "filterCode" case, the "filterPC" option allows you to deactivate
+# the "SimpleFilter" object that filters out PC, in case you need to.
+
+filterPC = TRUE
 
 
 ###
