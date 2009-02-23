@@ -1,0 +1,10 @@
+Scanning over prnSet.
+Scan complete, size = 0
+Scanning over PRNs indices.
+Scan complete, size = 32
+Set timeFormat to %02m/%02d/%04Y %02H:%02M:%04.1f
+positionOpt has count = 0
+# time, PRN, X(m), Y(m), Z(m), Clock Correction(ms)
+File read by EphReader.
+12/31/2006 20:30:00.0
+12/31/2006 23:30:00.0
