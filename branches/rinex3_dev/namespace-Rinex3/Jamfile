@@ -1,6 +1,6 @@
 # $Id: Jamfile 1663 2009-02-06 00:26:34Z raindave $
 
-SubDir TOP lib Rinex3 ;
+SubDir TOP namespace-Rinex3 ;
 
 if $(PREPROCESSING)
 {
@@ -29,8 +29,8 @@ else
    TimeTag.cpp
    UnixTime.cpp
    YDSTime.cpp
-   ../../src/SP3SatID.cpp ../../src/Triple.cpp ../../src/ECEF.cpp
-   ../../src/Geodetic.cpp ../../src/TimeConverters.cpp
+   ../src/SP3SatID.cpp ../src/Triple.cpp ../src/ECEF.cpp
+   ../src/Geodetic.cpp ../src/TimeConverters.cpp
    ;
    InstallFile $(INCDIR) :
    ;
