@@ -89,14 +89,14 @@ void xYDSTime :: resetTest (void)
 
 	CPPUNIT_ASSERT_EQUAL(Test2,Compare);
 
-	CPPUNIT_ASSERT_EQUAL(TimeSystem::GPS,Compare.getTimeSystem());
+	CPPUNIT_ASSERT(TimeSystem(TimeSystem::GPS) == Compare.getTimeSystem());
 
 	CPPUNIT_ASSERT_EQUAL(2008,(int)Compare.year);
 	CPPUNIT_ASSERT_EQUAL(2,(int)Compare.doy);
 	CPPUNIT_ASSERT_EQUAL(1,(int)Compare.sod);
 
 	Compare.reset();
-	CPPUNIT_ASSERT_EQUAL(TimeSystem::Unknown,Compare.getTimeSystem());
+	CPPUNIT_ASSERT(TimeSystem(TimeSystem::Unknown) == Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.year);	
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.doy);
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.sod);
@@ -105,14 +105,14 @@ void xYDSTime :: resetTest (void)
 void xYDSTime :: timeSystemTest (void)
 {
 
-	YDSTime GPS1(2008,2,1,TimeSystem::GPS);
-	YDSTime GPS2(2005,2,1,TimeSystem::GPS);
-	YDSTime UTC1(2008,2,1,TimeSystem::UTC);
+	YDSTime GPS1(   2008,2,1,TimeSystem::GPS    );
+	YDSTime GPS2(   2005,2,1,TimeSystem::GPS    );
+	YDSTime UTC1(   2008,2,1,TimeSystem::UTC    );
 	YDSTime UNKNOWN(2008,2,1,TimeSystem::Unknown);
-	YDSTime ANY(2008,2,1,TimeSystem::Any);
+	YDSTime ANY(    2008,2,1,TimeSystem::Any    );
 
 	CPPUNIT_ASSERT(GPS1 != GPS2);
-	CPPUNIT_ASSERT_EQUAL(GPS1.getTimeSystem(),GPS2.getTimeSystem());
+	CPPUNIT_ASSERT(GPS1.getTimeSystem() == GPS2.getTimeSystem());
 	CPPUNIT_ASSERT(GPS1 != UTC1);
 	CPPUNIT_ASSERT(GPS1 != UNKNOWN);
 	CPPUNIT_ASSERT(GPS1.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
@@ -125,7 +125,7 @@ void xYDSTime :: timeSystemTest (void)
 	CPPUNIT_ASSERT(GPS2 < ANY);
 
 	UNKNOWN.setTimeSystem(TimeSystem::GPS);
-	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),TimeSystem::GPS);
+	CPPUNIT_ASSERT(UNKNOWN.getTimeSystem() == TimeSystem(TimeSystem::GPS));
 }
 
 void xYDSTime :: printfTest (void)

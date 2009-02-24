@@ -66,11 +66,11 @@ void xMJD :: resetTest (void)
 
 	CPPUNIT_ASSERT_EQUAL(Test2,Compare);
 
-	CPPUNIT_ASSERT_EQUAL(TimeSystem::GPS,Compare.getTimeSystem());
+	CPPUNIT_ASSERT(TimeSystem(TimeSystem::GPS) == Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(135000,(int)Compare.mjd);
 
 	Compare.reset();
-	CPPUNIT_ASSERT_EQUAL(TimeSystem::Unknown,Compare.getTimeSystem());
+	CPPUNIT_ASSERT(TimeSystem(TimeSystem::Unknown) == Compare.getTimeSystem());
 	CPPUNIT_ASSERT_EQUAL(0,(int)Compare.mjd);
 }
 
@@ -83,7 +83,7 @@ void xMJD :: timeSystemTest (void)
 	MJD ANY(135000,TimeSystem::Any);
 
 	CPPUNIT_ASSERT(GPS1 != GPS2);
-	CPPUNIT_ASSERT_EQUAL(GPS1.getTimeSystem(),GPS2.getTimeSystem());
+	CPPUNIT_ASSERT(GPS1.getTimeSystem() == GPS2.getTimeSystem());
 	CPPUNIT_ASSERT(GPS1 != UTC1);
 	CPPUNIT_ASSERT(GPS1 != UNKNOWN);
 	CPPUNIT_ASSERT(GPS1.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
@@ -96,7 +96,7 @@ void xMJD :: timeSystemTest (void)
 	CPPUNIT_ASSERT(GPS2 < ANY);
 
 	UNKNOWN.setTimeSystem(TimeSystem::GPS);
-	CPPUNIT_ASSERT_EQUAL(UNKNOWN.getTimeSystem(),TimeSystem::GPS);
+	CPPUNIT_ASSERT(UNKNOWN.getTimeSystem() == TimeSystem(TimeSystem::GPS));
 }
 
 void xMJD :: printfTest (void)
