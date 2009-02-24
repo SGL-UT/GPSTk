@@ -98,18 +98,11 @@ namespace gpstk
 
          /// Set if satellites with bad or absent position values will be
          /// rejected. It is false by default when object is constructed.
-      void rejectBadPositions(const bool flag) { rejectBadPosFlag=flag; }
+      void rejectBadPositions(const bool flag) { rejectBadPosFlag = flag; }
 
          /// Set if satellites with bad or absent clock values will be
          /// rejected. It is false by default when object is constructed.
-      void rejectBadClocks(const bool flag) { rejectBadClockFlag=flag; }
-
-         // why virtual? why return *this? Wouldn't the above be better?
-      //virtual SP3EphemerisStore& rejectBadPositions(const bool flag)
-      //{ rejectBadPosFlag = flag; return (*this); };
-
-      //virtual SP3EphemerisStore& rejectBadClocks(const bool flag)
-      //{ rejectBadClockFlag = flag; return (*this); };
+      void rejectBadClocks(const bool flag) { rejectBadClockFlag = flag; }
 
          /// Insert a new SP3Data object into the store
       void addEphemeris(const SP3Data& data)

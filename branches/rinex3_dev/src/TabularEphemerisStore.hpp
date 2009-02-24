@@ -158,12 +158,12 @@ namespace gpstk
          /// @param y   Y component of position in km
          /// @param z   Z component of position in km
          /// @param c   Clock bias in microsec
-      void addPositionData(const CommonTime& t,
-                           const SatID& sat,
-                           const double& x,
-                           const double& y,
-                           const double& z,
-                           const double& c)
+      void addPositionData( const CommonTime& t,
+                            const SatID& sat,
+                            const double& x,
+                            const double& y,
+                            const double& z,
+                            const double& c      )
          throw();
 
          /// Insert velocity data into the store at time t
@@ -173,12 +173,12 @@ namespace gpstk
          /// @param vy  Y component of velocity in decimeters/sec
          /// @param vz  Z component of velocity in decimeters/sec
          /// @param vc  Clock drift in 1.e-4 microsec/sec
-      void addVelocityData(const CommonTime& t,
-                           const SatID& sat,
-                           const double& vx,
-                           const double& vy,
-                           const double& vz,
-                           const double& vc)
+      void addVelocityData( const CommonTime& t,
+                            const SatID& sat,
+                            const double& vx,
+                            const double& vy,
+                            const double& vz,
+                            const double& vc     )
          throw();
 
          /// Insert position and velocity data into the store at time t
@@ -190,7 +190,8 @@ namespace gpstk
          throw();
 
          /// Remove all data
-      void clear() throw();
+      void clear()
+         throw();
 
          /// Enable checking of data gaps.
       void enableDataGapCheck(void)
