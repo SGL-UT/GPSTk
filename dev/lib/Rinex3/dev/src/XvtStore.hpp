@@ -79,7 +79,7 @@ namespace gpstk
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
       virtual Xvt getXvt(const IndexType id, const CommonTime& t)
-         const throw( gpstk::InvalidRequest )
+         const throw( InvalidRequest )
          = 0;
 
       /// A debugging function that outputs in human readable form,
@@ -103,7 +103,7 @@ namespace gpstk
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getInitialTime() const
-         throw(InvalidRequest)
+         throw()
          = 0;
 
       /// Determine the latest time for which this object can successfully 
@@ -111,7 +111,7 @@ namespace gpstk
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getFinalTime() const
-         throw(InvalidRequest)
+         throw()
          = 0;
 
       virtual bool velocityIsPresent()

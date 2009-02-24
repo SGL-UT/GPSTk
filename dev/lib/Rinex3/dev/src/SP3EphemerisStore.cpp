@@ -106,7 +106,7 @@ namespace gpstk
       s << "Dump of SP3EphemerisStore, built from file(s) :" << std::endl;
       std::vector<std::string> fileNames = getFileNames();
       std::vector<std::string>::const_iterator f=fileNames.begin();
-      for (f=fileNames.begin(); f!=fileNames.end(); f++)
+      for (f = fileNames.begin(); f != fileNames.end(); f++)
          s << "  " << *f << std::endl;
 
 /*
@@ -148,20 +148,20 @@ namespace gpstk
       throw()
    {
       // reject when satellite undefined (e.g. first Epoch record)
-      if(rec.sat.id <= 0) return;
+      if (rec.sat.id <= 0) return;
 
       // If flag is set and there is a bad or absent clock value, reject
-      if(rejectBadClockFlag && (rec.clk >= 999999.)) return;
+      if (rejectBadClockFlag && (rec.clk >= 999999.)) return;
 
       // If flag is set and there are bad or absent coordinate values, reject
-      if(rejectBadPosFlag && ( (rec.x[0] == 0.0) ||
-                               (rec.x[1] == 0.0) ||
-                               (rec.x[2] == 0.0)    )) return;
+      if (rejectBadPosFlag && ( (rec.x[0] == 0.0) ||
+                                (rec.x[1] == 0.0) ||
+                                (rec.x[2] == 0.0)    )) return;
 
-      if(rec.RecType=='P')
+      if (rec.RecType == 'P')
          addPositionData(rec.time, rec.sat, rec.x[0], rec.x[1], rec.x[2], rec.clk);
 
-      else if(haveVelocity && rec.RecType=='V')
+      else if (haveVelocity && rec.RecType == 'V')
          addVelocityData(rec.time, rec.sat, rec.x[0], rec.x[1], rec.x[2], rec.clk);
    }
 
