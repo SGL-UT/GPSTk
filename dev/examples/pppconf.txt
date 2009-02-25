@@ -53,6 +53,11 @@ filterCode = FALSE
 
 filterPC = TRUE
 
+# By default, we won't print the model.
+
+printModel = FALSE
+
+
 
 ###
 ### Application "example9" demands one section (and only one)
@@ -94,6 +99,11 @@ USENEU = TRUE, results will be given in dLat, dLon, dH
 # Output
 outputFile = onsa2240-05.out
 
+
+# In the case of ONSA, we will print the model.
+
+printModel = TRUE
+modelFile  = onsa2240-05.model
 
 
 [COCO]            # Configuration data for 'COCO' station

@@ -151,7 +151,8 @@ private:
    ConfDataReader confReader;
 
 
-      // Declare our own method to handle output
+      // Declare our own methods to handle output
+
 
       // Method to print solution values
    void printSolution( ofstream& outfile,
@@ -161,6 +162,12 @@ private:
                        bool  useNEU,
                        int   numSats,
                        int   precision = 3 );
+
+
+      // Method to print model values
+   void printModel( ofstream& modelfile,
+                    const gnssRinex& gData,
+                    int   precision = 4 );
 
 
 }; // End of 'example9' class declaration
@@ -276,6 +283,54 @@ void example9::printSolution( ofstream& outfile,
 
 
 }  // End of method 'example9::printSolution()'
+
+
+
+   // Method to print model values
+void example9::printModel( ofstream& modelfile,
+                           const gnssRinex& gData,
+                           int   precision )
+{
+
+      // Prepare for printing
+   modelfile << fixed << setprecision( precision );
+
+      // Get epoch out of GDS
+   DayTime time(gData.header.epoch);
+
+      // Iterate through the GNSS Data Structure
+   for ( satTypeValueMap::const_iterator it = gData.body.begin();
+         it!= gData.body.end();
+         it++ )
+   {
+
+         // Print epoch
+      modelfile << time.year()         << "  ";    // Year           #1
+      modelfile << time.DOY()          << "  ";    // DayOfYear      #2
+      modelfile << time.DOYsecond()    << "  ";    // SecondsOfDay   #3
+
+         // Print satellite information (Satellite system and ID number)
+      modelfile << (*it).first << " ";             // System         #4
+                                                   // ID number      #5
+
+         // Print model values
+      for( typeValueMap::const_iterator itObs  = (*it).second.begin();
+           itObs != (*it).second.end();
+           itObs++ )
+      {
+            // Print type names and values
+         modelfile << (*itObs).first << " ";
+         modelfile << (*itObs).second << " ";
+
+      }  // End of 'for( typeValueMap::const_iterator itObs = ...'
+
+      modelfile << endl;
+
+   }  // End for (it = gData.body.begin(); ... )
+
+}  // End of method 'example9::printModel()'
+
+
 
 
 
@@ -781,6 +836,19 @@ void example9::process()
       ofstream outfile;
       outfile.open( outName.c_str(), ios::out );
 
+         // Let's check if we are going to print the model
+      bool printmodel( confReader.getValueAsBoolean( "printModel", station ) );
+
+      string modelName;
+      ofstream modelfile;
+
+         // Prepare for model printing
+      if( printmodel )
+      {
+         modelName = confReader.getValue( "modelFile", station );
+         modelfile.open( modelName.c_str(), ios::out );
+      }
+
 
          //// *** Now comes the REAL forwards processing part *** ////
 
@@ -828,6 +896,14 @@ void example9::process()
          }
 
 
+            // Ask if we are going to print the model
+         if ( printmodel )
+         {
+            printModel( modelfile,
+                        gRin );
+
+         }
+
             // Check what type of solver we are using
          if ( cycles < 1 )
          {
@@ -851,9 +927,16 @@ void example9::process()
       }  // End of 'while(rin >> gRin)'
 
 
-
          // Close current Rinex observation stream
       rin.close();
+
+
+         // If we printed the model, we must close the file
+      if ( printmodel )
+      {
+            // Close model file for this station
+         modelfile.close();
+      }
 
 
          // Clear content of SP3 ephemerides object
