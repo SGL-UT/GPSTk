@@ -2,7 +2,7 @@
 
 /**
  * @file GloRecord.hpp
- * Geometric vector and clock data as Triple and double.
+ * Information encapsulated in a Glonass Nav Record
  */
 
 #ifndef GPSTK_GloRecord_HPP
@@ -62,7 +62,7 @@ namespace gpstk
 
     /// Default constructor
     GloRecord()
-         : v(0,0,0), a(0,0,0), TauN(0.), GammaN(0.),
+         : v(0.,0.,0.), a(0.,0.,0.), TauN(0.), GammaN(0.),
            MFtime(0), health(0), freqNum(0), ageOfInfo(0.)
     {};
 

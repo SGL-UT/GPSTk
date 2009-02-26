@@ -1,8 +1,8 @@
 #pragma ident "$Id$"
 
 /**
- * @file Xt.cpp
- * Position (or velocity or acceleration) and clock representation as Position and double.
+ * @file GloRecord.cpp
+ * Information encapsulated in a Glonass Nav Record
  */
 
 //============================================================================

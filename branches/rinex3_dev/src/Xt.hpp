@@ -60,7 +60,9 @@ namespace gpstk
   public:
 
     /// Default constructor
-    Xt() {}
+    Xt()
+       : x(0.,0.,0.), dtime(0.) 
+    {};
 
     /// Destructor.
     virtual ~Xt() {};
