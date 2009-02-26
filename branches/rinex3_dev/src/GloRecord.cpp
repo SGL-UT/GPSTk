@@ -54,12 +54,14 @@ namespace gpstk
       s << "freqNum:" << freqNum << "ageOfInfo:" << ageOfInfo;
    }
 
-    GloRecord& GloRecord::setRecord(Triple vel, Triple acc, double taun, double gamman,
-                      short mftime, short h, short freqnum,
+    GloRecord& GloRecord::setRecord(Triple pos, Triple vel, Triple acc, double dTime, 
+                      double taun, double gamman, short mftime, short h, short freqnum,
                       double ageofinfo)
    {
+       x = pos;
        v = vel;
        a = acc;
+       dtime = dTime;
        TauN = taun;
        GammaN = gamman;
        MFtime = mftime;
@@ -69,7 +71,6 @@ namespace gpstk
 
        return *this;
    }
-
 
    ostream& operator<<(ostream& s, const GloRecord& glo)
    {
