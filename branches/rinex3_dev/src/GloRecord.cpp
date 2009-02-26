@@ -45,7 +45,6 @@
 
 namespace gpstk
 {
-
    void GloRecord :: dump(ostream& s) const
       throw()
    {
@@ -54,6 +53,23 @@ namespace gpstk
       s << "MFTime:" << MFtime<< "health:" << health;
       s << "freqNum:" << freqNum << "ageOfInfo:" << ageOfInfo;
    }
+
+    GloRecord& GloRecord::setRecord(Triple vel, Triple acc, double taun, double gamman,
+                      short mftime, short h, short freqnum,
+                      double ageofinfo)
+   {
+       v = vel;
+       a = acc;
+       TauN = taun;
+       GammaN = gamman;
+       MFtime = mftime;
+       health = h;
+       freqNum = freqnum;
+       ageOfInfo = ageOfInfo;
+
+       return *this;
+   }
+
 
    ostream& operator<<(ostream& s, const GloRecord& glo)
    {
