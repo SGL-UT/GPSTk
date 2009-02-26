@@ -1,6 +1,9 @@
 #pragma ident "$Id$"
 
-
+/**
+ * @file Xvt.cpp
+ * Position, velocity, and clock representation as ECEF, Triple and double
+ */
 
 //============================================================================
 //
@@ -39,15 +42,6 @@
 //=============================================================================
 
 
-
-
-
-
-/**
- * @file Xvt.cpp
- * Position, velocity, and clock representation as ECEF, Triple and double
- */
-
 #include "GeoidModel.hpp"
 #include "Xvt.hpp"
 
@@ -64,9 +58,9 @@ namespace gpstk
        * the initial time of flight with the new estimate.  Then
        * correct the rotation by a small amount.
        */
-   double Xvt :: preciseRho(const ECEF& rxPos,
-                            const GeoidModel& geoid,
-                            double correction) const 
+   double Xvt::preciseRho( const ECEF& rxPos,
+                           const GeoidModel& geoid,
+                           double correction        ) const 
       throw()
    {
          // Compute initial time of flight estimate using the
@@ -112,7 +106,8 @@ namespace gpstk
       double rho = sr1 - (dtime * geoid.c()) - correction;
       return rho;
    } // end of preciseRho()
-} 
+
+} // end of namespace gpstk
 
 std::ostream& operator<<( std::ostream& s, 
                           const gpstk::Xvt& xvt )

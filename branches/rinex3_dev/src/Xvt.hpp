@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file Xvt.hpp
  * Position, velocity, and clock representation as ECEF, Triple and double
@@ -47,10 +45,6 @@
 //=============================================================================
 
 
-
-
-
-
 #include <iostream>
 #include "Triple.hpp"
 #include "ECEF.hpp"
@@ -61,12 +55,12 @@ namespace gpstk
     /** @addtogroup geodeticgroup */
     //@{
 
-      /// An Earth-Centered, Earth-Fixed position/velocity/clock representation
+      /// An Earth-Centered, Earth-Fixed position/velocity/clock representation.
    class Xvt
    {
    public:
          /// Default constructor
-      Xvt() { }
+      Xvt() {}
 
       ECEF x;         ///< SV position (x,y,z). Earth-fixed. meters
       Triple v;       ///< SV velocity. Earth-fixed, including rotation. meters/sec
@@ -82,9 +76,9 @@ namespace gpstk
           * than the SV clock correction).
           * @return Range in meters
           */
-      double preciseRho(const ECEF& rxPos, 
-                        const GeoidModel& geoid,
-                        double correction = 0) const
+      double preciseRho( const ECEF& rxPos, 
+                         const GeoidModel& geoid,
+                         double correction = 0    ) const
          throw();
    }; 
 
