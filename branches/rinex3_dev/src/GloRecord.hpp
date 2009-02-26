@@ -1,12 +1,12 @@
-#pragma ident "$Id: Xt.hpp 1709 2009-02-18 20:27:47Z rain $"
+#pragma ident "$Id$"
 
 /**
- * @file Xt.hpp
+ * @file GloRecord.hpp
  * Geometric vector and clock data as Triple and double.
  */
 
-#ifndef GPSTK_XT_HPP
-#define GPSTK_XT_HPP
+#ifndef GPSTK_GloRecord_HPP
+#define GPSTK_GloRecord_HPP
 
 //============================================================================
 //
@@ -47,6 +47,7 @@
 
 #include <iostream>
 #include "Triple.hpp"
+#include "TabularEphemerisStore.hpp"
 
 namespace gpstk
 {
@@ -55,44 +56,66 @@ namespace gpstk
 
   /// An Earth-Centered, Earth-Fixed position/clock representation.
   /// May also be used for velocity or acceleration in the vector.
-  class Xt
+  class GloRecord : public TabularEphemerisStore::Record
   {
   public:
 
     /// Default constructor
-    Xt() {}
+    GloRecord()
+         : v(0,0,0), a(0,0,0), TauN(0.), GammaN(0.),
+           MFtime(0), health(0), freqNum(0), ageOfInfo(0.)
+    {};
 
     /// Destructor.
-    virtual ~Xt() {};
+    virtual ~GloRecord() {};
 
-    Triple x;       ///< SV position, velocity or acceleration (x,y,z). Earth-fixed. meters
-    double dtime;   ///< SV clock correction in seconds or sec/sec.
+    Triple getVel()
+    { return v;}
 
-    /**
-     * Given the position of a ground location, compute the range
-     * to the spacecraft position.
-     * @param rxPos ground position at broadcast time in ECEF.
-     * @param geoid geodetic parameters.
-     * @param correction offset in meters (include any factors other
-     * than the SV clock correction).
-     * @return Range in meters
-     */
-    double preciseRho( const Triple& rxPos, 
-                       const GeoidModel& geoid,
-                       double correction = 0    ) const
-      throw();
-  }; 
+    Triple getAcc()
+    { return a;}
+
+    double getTauN()
+    { return TauN;}
+
+    double getGammaN()
+    { return GammaN;}
+    
+    short getMFtime()
+    { return MFtime;}
+
+    short getHealth()
+    { return health;}
+
+    short getfreqNum()
+    { return freqNum;}
+
+    double getAgeOfInfo()
+    { return ageOfInfo;}
+
+    /// Output the contents of this ephemeris to the given stream.
+    void dump(std::ostream& s = std::cout) const
+         throw();
+
+  private:
+
+    Triple v;       ///< SV velocity (x,y,z). Earth-fixed. meters
+    Triple a;       ///< SV acceleration (x,y,z). Earth-fixed. meters
+    double TauN;
+    double GammaN;
+    short MFtime;
+    short health;
+    short freqNum;
+    double ageOfInfo;
+
+    /// Output the contents of this ephemeris to the given stream.
+    friend std::ostream& operator<<(std::ostream& s, 
+                                      const GloRecord& glo);
 
   //@}
 
-}
+   };
 
-/**
- * Output operator for Xt
- * @param s output stream to which \c xt is sent
- * @param xt Xt that is sent to \c s
- */
-std::ostream& operator<<( std::ostream& s, 
-                          const gpstk::Xt& xt );
+}
 
 #endif

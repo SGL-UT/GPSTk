@@ -1,12 +1,9 @@
-#pragma ident "$Id: Xt.hpp 1709 2009-02-18 20:27:47Z rain $"
+#pragma ident "$Id$"
 
 /**
- * @file Xt.hpp
- * Geometric vector and clock data as Triple and double.
+ * @file Xt.cpp
+ * Position (or velocity or acceleration) and clock representation as Position and double.
  */
-
-#ifndef GPSTK_XT_HPP
-#define GPSTK_XT_HPP
 
 //============================================================================
 //
@@ -44,55 +41,25 @@
 //
 //=============================================================================
 
-
-#include <iostream>
-#include "Triple.hpp"
+#include "GloRecord.hpp"
 
 namespace gpstk
 {
-  /** @addtogroup geodeticgroup */
-  //@{
 
-  /// An Earth-Centered, Earth-Fixed position/clock representation.
-  /// May also be used for velocity or acceleration in the vector.
-  class Xt
-  {
-  public:
+   void GloRecord :: dump(ostream& s) const
+      throw()
+   {
+      s << "vel:" << v << "acc:" << a;
+      s << "TauN:" << TauN << "GammaN:" << GammaN;
+      s << "MFTime:" << MFtime<< "health:" << health;
+      s << "freqNum:" << freqNum << "ageOfInfo:" << ageOfInfo;
+   }
 
-    /// Default constructor
-    Xt() {}
+   ostream& operator<<(ostream& s, const GloRecord& glo)
+   {
+      glo.dump(s);
+      return s;
+   }
 
-    /// Destructor.
-    virtual ~Xt() {};
+} // end of namespace gpstk
 
-    Triple x;       ///< SV position, velocity or acceleration (x,y,z). Earth-fixed. meters
-    double dtime;   ///< SV clock correction in seconds or sec/sec.
-
-    /**
-     * Given the position of a ground location, compute the range
-     * to the spacecraft position.
-     * @param rxPos ground position at broadcast time in ECEF.
-     * @param geoid geodetic parameters.
-     * @param correction offset in meters (include any factors other
-     * than the SV clock correction).
-     * @return Range in meters
-     */
-    double preciseRho( const Triple& rxPos, 
-                       const GeoidModel& geoid,
-                       double correction = 0    ) const
-      throw();
-  }; 
-
-  //@}
-
-}
-
-/**
- * Output operator for Xt
- * @param s output stream to which \c xt is sent
- * @param xt Xt that is sent to \c s
- */
-std::ostream& operator<<( std::ostream& s, 
-                          const gpstk::Xt& xt );
-
-#endif

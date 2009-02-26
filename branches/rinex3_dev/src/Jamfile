@@ -33,6 +33,7 @@ else
       FileSpec.cpp GPSAlmanacStore.cpp GPSEphemerisStore.cpp
       GPSWeek.cpp GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp
       GaussianDistribution.cpp GenXSequence.cpp Geodetic.cpp 
+      GloRecord.cpp
       IonexData.cpp IonexHeader.cpp IonexStore.cpp
       IonoModel.cpp IonoModelStore.cpp JulianDate.cpp
       KeplerianEphemerisStore.cpp LinearClockModel.cpp
