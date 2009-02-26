@@ -8,7 +8,6 @@
 #ifndef GPSTK_SP3_EPHEMERIS_STORE_HPP
 #define GPSTK_SP3_EPHEMERIS_STORE_HPP
 
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -79,6 +78,24 @@ namespace gpstk
       virtual ~SP3EphemerisStore() {};
 
 
+         /// Returns the position, velocity, and clock offset of the indicated
+         ///  object in ECEF coordinates (meters) at the indicated time.
+         /// Uses Lagrange interpolation; call setInterpolationOrder() to change
+         /// the order.
+         /// 
+         /// @param[in] id the object's identifier
+         /// @param[in] t the time to look up
+         /// 
+         /// @return the Xvt of the object at the indicated time
+         /// 
+         /// @throw InvalidRequest If the request can not be completed for any
+         ///    reason, this is thrown. The text may have additional
+         ///    information as to why the request failed.
+      virtual Xvt getXvt( const SatID id,
+                          const CommonTime& t )
+         const throw( gpstk::InvalidRequest );
+
+
          /** Dump the store to cout.
           * @param detail determines how much detail to include in the output
           *   0 list of filenames with their start, stop times.
@@ -89,6 +106,16 @@ namespace gpstk
       virtual void dump( std::ostream& s=std::cout,
                          short detail = 0 )
          const throw();
+
+
+         /// Edit the dataset, removing data outside the indicated time
+         ///  interval.
+         /// 
+         /// @param[in] tmin defines the beginning of the time interval
+         /// @param[in] tmax defines the end of the time interval
+      virtual void edit( const CommonTime& tmin,
+                         const CommonTime& tmax = CommonTime::END_OF_TIME )
+         throw();
 
 
          /// Load the given SP3 file
@@ -108,7 +135,102 @@ namespace gpstk
       void addEphemeris(const SP3Data& data)
          throw();
 
+         /// Insert position data into the store at time t
+         /// @param t   Time of the data
+         /// @param sat Satellite id of the data
+         /// @param x   X component of position in km
+         /// @param y   Y component of position in km
+         /// @param z   Z component of position in km
+         /// @param c   Clock bias in microsec
+      void addPositionData( const CommonTime& t,
+                            const SatID& sat,
+                            const double& x,
+                            const double& y,
+                            const double& z,
+                            const double& c      )
+         throw();
+
+         /// Insert velocity data into the store at time t
+         /// @param t   Time of the data
+         /// @param sat Satellite id of the data
+         /// @param vx  X component of velocity in decimeters/sec
+         /// @param vy  Y component of velocity in decimeters/sec
+         /// @param vz  Z component of velocity in decimeters/sec
+         /// @param vc  Clock drift in 1.e-4 microsec/sec
+      void addVelocityData( const CommonTime& t,
+                            const SatID& sat,
+                            const double& vx,
+                            const double& vy,
+                            const double& vz,
+                            const double& vc     )
+         throw();
+
+         /// Insert position and velocity data into the store at time t
+         /// @param t   Time of the data
+         /// @param sat Satellite id of the data
+         /// @param xvt Xvt containing position, velocity, clk bias and drift,
+         ///      in the units specified in addPositionData() and addVelocityData()
+      void addData(const CommonTime& t, const SatID& sat, const Xvt& xvt)
+         throw();
+
+         /// Remove all data
+      void clear()
+         throw();
+
+         /// Enable checking of data gaps.
+      void enableDataGapCheck(void)
+      { checkDataGap = true; };
+
+         /// Disable checking of data gaps.
+      void disableDataGapCheck(void)
+      { checkDataGap = false; };
+
+         /// Get current gap interval.
+      double getGapInterval(void)
+      { return gapInterval; };
+
+         /// Set gap interval.
+      void setGapInterval(double interval)
+      { gapInterval = interval; return; };
+
+         /// Enable checking of maximum interval.
+      void enableIntervalCheck(void)
+      { checkInterval = true; };
+
+         /// Disable checking of maximum interval.
+      void disableIntervalCheck(void)
+      { checkInterval = false; };
+
+         /// Get current maximum interval.
+      double getMaxInterval(void)
+      { return maxInterval; };
+
+         /// Set maximum interval.
+      void setMaxInterval(double interval)
+      { maxInterval = interval; return; };
+
+         /// Get current interpolation order.
+      unsigned int getInterpolationOrder(void)
+      { return interpOrder; }
+
+         /// Set the interpolation order.
+         /// This routine forces the order to be even.
+      void setInterpolationOrder(unsigned int order)
+      { interpOrder = 2*((order+1)/2); }
+
+//   private:
+
+         /// The key to this map is the time
+      typedef std::map<CommonTime, Xvt> SvEphMap;
+
+         /// The key to this map is the svid of the satellite (usually the prn)
+      typedef std::map<SatID, SvEphMap> EphMap;
+
+         /// the map of SVs and XVTs
+      EphMap pe;
+
    private:
+
          /// Flag to reject satellites with bad or absent positional values
       bool rejectBadPosFlag;
 
