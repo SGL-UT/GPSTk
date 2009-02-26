@@ -97,9 +97,10 @@ namespace gpstk
     void dump(std::ostream& s = std::cout) const
       throw();
     
-    GloRecord& setRecord(Triple pos, Triple vel, Triple acc, double dTime, 
-                      double taun, double gamman, short mftime, short h, short freqnum,
-                      double ageofinfo);
+    GloRecord& setRecord( Triple pos, Triple vel, Triple acc,
+                          double dTime, double taun, double gamman,
+                          short mftime, short h, short freqnum,
+                          double ageofinfo                         );
 
   private:
 
