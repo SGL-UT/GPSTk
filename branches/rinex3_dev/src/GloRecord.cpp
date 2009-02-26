@@ -2,7 +2,7 @@
 
 /**
  * @file GloRecord.cpp
- * Information encapsulated in a Glonass Nav Record
+ * Information encapsulated in a Glonass Nav record.
  */
 
 //============================================================================

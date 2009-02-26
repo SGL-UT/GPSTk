@@ -2,7 +2,7 @@
 
 /**
  * @file GloRecord.hpp
- * Information encapsulated in a Glonass Nav Record
+ * Information encapsulated in a Glonass Nav record.
  */
 
 #ifndef GPSTK_GloRecord_HPP
@@ -62,59 +62,59 @@ namespace gpstk
 
     /// Default constructor
     GloRecord()
-         : v(0.,0.,0.), a(0.,0.,0.), TauN(0.), GammaN(0.),
-           MFtime(0), health(0), freqNum(0), ageOfInfo(0.)
+      : v(0.,0.,0.), a(0.,0.,0.), TauN(0.), GammaN(0.),
+        MFtime(0), health(0), freqNum(0), ageOfInfo(0.)
     {};
 
     /// Destructor.
     virtual ~GloRecord() {};
 
     Triple getVel()
-    { return v;}
+    { return v; }
 
     Triple getAcc()
-    { return a;}
+    { return a; }
 
     double getTauN()
-    { return TauN;}
+    { return TauN; }
 
     double getGammaN()
-    { return GammaN;}
+    { return GammaN; }
     
     short getMFtime()
-    { return MFtime;}
+    { return MFtime; }
 
     short getHealth()
-    { return health;}
+    { return health; }
 
     short getfreqNum()
-    { return freqNum;}
+    { return freqNum; }
 
     double getAgeOfInfo()
-    { return ageOfInfo;}
+    { return ageOfInfo; }
 
     /// Output the contents of this ephemeris to the given stream.
     void dump(std::ostream& s = std::cout) const
-         throw();
+      throw();
 
   private:
 
-    Triple v;       ///< SV velocity (x,y,z). Earth-fixed. meters
-    Triple a;       ///< SV acceleration (x,y,z). Earth-fixed. meters
-    double TauN;
-    double GammaN;
-    short MFtime;
-    short health;
-    short freqNum;
-    double ageOfInfo;
+    Triple v;         ///< SV velocity     (x,y,z), Earth-fixed [meters]
+    Triple a;         ///< SV acceleration (x,y,z), Earth-fixed [meters]
+    double TauN;      ///< SV clock bias [sec]
+    double GammaN;    ///< SV relative frequency bias
+    short MFtime;     ///< Message frame time [sec of UTC week]
+    short health;     ///< SV health
+    short freqNum;    ///< Frequency (channel) number (-7..+12)
+    double ageOfInfo; ///< Age of oper. information [days]
 
     /// Output the contents of this ephemeris to the given stream.
     friend std::ostream& operator<<(std::ostream& s, 
-                                      const GloRecord& glo);
+                                    const GloRecord& glo);
 
   //@}
 
-   };
+  };
 
 }
 

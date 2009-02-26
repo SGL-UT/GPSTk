@@ -61,7 +61,7 @@ namespace gpstk
 
     /// Default constructor
     Xt()
-       : x(0.,0.,0.), dtime(0.) 
+      : x(0.,0.,0.), dtime(0.)
     {};
 
     /// Destructor.
