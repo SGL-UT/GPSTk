@@ -153,8 +153,6 @@ namespace gpstk
       // in the parent class)
       //---------------------------------------------------------------
 
-      typedef Xt Record;
-
    protected:
 
          /// Flag indicating that velocity data present in all datasets loaded.
@@ -210,7 +208,7 @@ namespace gpstk
          /// Usually for 15 minute data, this is 10. 
       unsigned int interpOrder;
 
-      std::map<CommonTime,Record *> recordMap;
+//      std::map<CommonTime, Xt> recordMap;
 
    }; // end class TabularEphemerisStore
 

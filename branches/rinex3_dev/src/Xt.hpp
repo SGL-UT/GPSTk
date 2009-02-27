@@ -47,6 +47,7 @@
 
 #include <iostream>
 #include "Triple.hpp"
+#include "GeoidModel.hpp"
 
 namespace gpstk
 {
@@ -67,8 +68,8 @@ namespace gpstk
     /// Destructor.
     virtual ~Xt() {};
 
-    Triple x;       ///< SV position, velocity or acceleration (x,y,z). Earth-fixed. meters
-    double dtime;   ///< SV clock correction in seconds or sec/sec.
+    Triple x;      ///< SV position, velocity or acceleration (x,y,z), Earth-fixed. [meters]
+    double dtime;  ///< SV clock correction. [sec] or [sec/sec]
 
     /**
      * Given the position of a ground location, compute the range

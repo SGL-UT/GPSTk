@@ -56,7 +56,7 @@ namespace gpstk
 
   /// An Earth-Centered, Earth-Fixed position/clock representation.
   /// May also be used for velocity or acceleration in the vector.
-  class GloRecord : public TabularEphemerisStore::Record
+  class GloRecord : public Xt
   {
   public:
 
@@ -80,7 +80,7 @@ namespace gpstk
 
     double getGammaN()
     { return GammaN; }
-    
+
     short getMFtime()
     { return MFtime; }
 
@@ -100,7 +100,7 @@ namespace gpstk
     GloRecord& setRecord( Triple pos, Triple vel, Triple acc,
                           double dTime, double taun, double gamman,
                           short mftime, short h, short freqnum,
-                          double ageofinfo                         );
+                          double ageofinfo                          );
 
   private:
 
