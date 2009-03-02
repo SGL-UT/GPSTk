@@ -68,8 +68,13 @@ namespace gpstk
     /// Destructor.
     virtual ~Xt() {};
 
-    Triple x;      ///< SV position, velocity or acceleration (x,y,z), Earth-fixed. [meters]
-    double dtime;  ///< SV clock correction. [sec] or [sec/sec]
+    Triple getPos()
+      throw()
+    { return x; }
+
+    double getDtime()
+      throw()
+    { return dtime; }
 
     /**
      * Given the position of a ground location, compute the range
@@ -84,6 +89,11 @@ namespace gpstk
                        const GeoidModel& geoid,
                        double correction = 0    ) const
       throw();
+
+//  protected:
+
+    Triple x;      ///< SV position, velocity or acceleration (x,y,z), Earth-fixed. [meters]
+    double dtime;  ///< SV clock correction. [sec] or [sec/sec]
   }; 
 
   //@}

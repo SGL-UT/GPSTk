@@ -64,6 +64,19 @@ namespace gpstk
       : v(0.,0.,0.), ddtime(0.)
     {}
 
+    /// Destructor.
+    virtual ~Xvt() {};
+
+    Triple getVel()
+      throw()
+    { return v; }
+
+    double getDDtime()
+      throw()
+    { return ddtime; }
+
+//  protected:
+
     Triple v;       ///< SV velocity, Earth-fixed, including rotation. [m/s]
     double ddtime;  ///< SV clock drift. [sec/sec]
   };

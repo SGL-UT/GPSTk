@@ -85,9 +85,10 @@ namespace gpstk
 
             rotateEarth(Rx);
             // update raw range and time of flight
-            rawrange = RSS(svPosVel.x[0]-Rx.X(),
-                           svPosVel.x[1]-Rx.Y(),
-                           svPosVel.x[2]-Rx.Z());
+            Triple svPosVelvec = svPosVel.getPos();
+            rawrange = RSS(svPosVelvec[0]-Rx.X(),
+                           svPosVelvec[1]-Rx.Y(),
+                           svPosVelvec[2]-Rx.Z());
             tof = rawrange/geoid.c();
 
          } while(ABS(tof-tof_old)>1.e-13 && ++nit<5);

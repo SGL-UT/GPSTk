@@ -56,41 +56,44 @@ namespace gpstk
 
   /// An Earth-Centered, Earth-Fixed position/clock representation.
   /// May also be used for velocity or acceleration in the vector.
-  class GloRecord : public Xt
+  class GloRecord : public Xvt
   {
   public:
 
     /// Default constructor
     GloRecord()
-      : v(0.,0.,0.), a(0.,0.,0.), TauN(0.), GammaN(0.),
-        MFtime(0), health(0), freqNum(0), ageOfInfo(0.)
+      : MFtime(0), health(0), freqNum(0), ageOfInfo(0.)
     {};
 
     /// Destructor.
     virtual ~GloRecord() {};
 
-    Triple getVel()
-    { return v; }
-
     Triple getAcc()
+      throw()
     { return a; }
 
     double getTauN()
-    { return TauN; }
+      throw()
+    { return dtime; }
 
     double getGammaN()
-    { return GammaN; }
+      throw()
+    { return ddtime; }
 
     short getMFtime()
+      throw()
     { return MFtime; }
 
     short getHealth()
+      throw()
     { return health; }
 
     short getfreqNum()
+      throw()
     { return freqNum; }
 
     double getAgeOfInfo()
+      throw()
     { return ageOfInfo; }
 
     /// Output the contents of this ephemeris to the given stream.
@@ -98,16 +101,13 @@ namespace gpstk
       throw();
     
     GloRecord& setRecord( Triple pos, Triple vel, Triple acc,
-                          double dTime, double taun, double gamman,
+                          double dtime, double ddtime,
                           short mftime, short h, short freqnum,
                           double ageofinfo                          );
 
   private:
 
-    Triple v;         ///< SV velocity     (x,y,z), Earth-fixed [meters]
     Triple a;         ///< SV acceleration (x,y,z), Earth-fixed [meters]
-    double TauN;      ///< SV clock bias [sec]
-    double GammaN;    ///< SV relative frequency bias
     short MFtime;     ///< Message frame time [sec of UTC week]
     short health;     ///< SV health
     short freqNum;    ///< Frequency (channel) number (-7..+12)

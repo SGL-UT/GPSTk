@@ -49,22 +49,21 @@ namespace gpstk
       throw()
    {
       s << "vel:" << v << "acc:" << a;
-      s << "TauN:" << TauN << "GammaN:" << GammaN;
+      s << "TauN:" << dtime << "GammaN:" << ddtime;
       s << "MFTime:" << MFtime<< "health:" << health;
       s << "freqNum:" << freqNum << "ageOfInfo:" << ageOfInfo;
    }
 
     GloRecord& GloRecord::setRecord( Triple pos, Triple vel, Triple acc,
-                                     double dT, double tau, double gamma,
+                                     double tau, double gamma,
                                      short mftime, short h, short freqnum,
                                      double age                            )
    {
        x = pos;
        v = vel;
        a = acc;
-       dtime = dT;
-       TauN = tau;
-       GammaN = gamma;
+       dtime = tau;
+       ddtime = gamma;
        MFtime = mftime;
        health = h;
        freqNum = freqnum;
