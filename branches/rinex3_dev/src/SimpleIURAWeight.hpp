@@ -89,7 +89,7 @@ namespace gpstk
          * This method assigns an URA of 0.1 m to all satellites.
          *
          */
-        virtual int getWeights(DayTime& time, Vector<SatID>& Satellites, TabularEphemerisStore& preciseEph) throw(InvalidWeights);
+        virtual int getWeights(DayTime& time, Vector<SatID>& Satellites, TabularEphemerisStore<Xvt>& preciseEph) throw(InvalidWeights);
 
 
         /// Vector of weights for these satellites

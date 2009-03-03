@@ -65,6 +65,7 @@ namespace gpstk
       /// ephemeris data in an SP3 file) and compute Xvt from this table.
       /// A Lagrange interpolation is used to compute the Xvt for times that
       /// are not in the table but do have sufficient data.
+   template <class T>
    class TabularEphemerisStore : public XvtStore<SatID>
    {
    public:

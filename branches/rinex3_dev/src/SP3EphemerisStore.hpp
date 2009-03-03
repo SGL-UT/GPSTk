@@ -62,7 +62,7 @@ namespace gpstk
       /**
        * This adds the interface to read SP3 files into a TabularEphemerisStore
        */
-   class SP3EphemerisStore : public TabularEphemerisStore,
+   class SP3EphemerisStore : public TabularEphemerisStore<Xvt>,
                              public FileStore<SP3Header>
    {
    public:
@@ -71,7 +71,7 @@ namespace gpstk
       SP3EphemerisStore()
          throw()
 	: rejectBadPosFlag(true), rejectBadClockFlag(true)
-     { TabularEphemerisStore(); };
+     { TabularEphemerisStore<Xvt>(); };
 
 
          /// Destructor.

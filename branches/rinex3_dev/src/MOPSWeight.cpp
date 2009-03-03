@@ -141,7 +141,7 @@ compute weights.");
        */
    int MOPSWeight::getWeights( DayTime& time,
                                Vector<SatID>& Satellites,
-                               TabularEphemerisStore& preciseEph,
+                               TabularEphemerisStore<Xvt>& preciseEph,
                                Vector<double>& ionoCorrections,
                                Vector<double>& elevationVector,
                                Vector<double>& azimuthVector,
