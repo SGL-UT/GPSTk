@@ -1,5 +1,5 @@
 /**
- * @file KeplerianEphemerisStore.cpp
+ * @file OrbElemStore.cpp
  * Store GPS broadcast ephemeris information, and access by satellite and time
  */
 
@@ -8,7 +8,7 @@
 #include <iomanip>
 
 #include "StringUtils.hpp"
-#include "KeplerianEphemerisStore.hpp"
+#include "OrbElemStore.hpp"
 #include "MathBase.hpp"
 
 using namespace std;
@@ -19,8 +19,8 @@ namespace gpstk
 {
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt KeplerianEphemerisStore::getXvt(const SatID sat, const CommonTime& t) const
-      throw( gpstk::InvalidRequest )
+   Xvt OrbElemStore::getXvt(const SatID sat, const CommonTime& t) const
+      throw( InvalidRequest )
    {
       short ref;
       return getXvt(sat, t, ref);
@@ -29,8 +29,8 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt KeplerianEphemerisStore::getXvt(const SatID& sat, const CommonTime& t, short& ref) const
-      throw( gpstk::InvalidRequest )
+   Xvt OrbElemStore::getXvt(const SatID& sat, const CommonTime& t, short& ref) const
+      throw( InvalidRequest )
    {
       try
       {
@@ -50,8 +50,8 @@ namespace gpstk
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    const EngEphemeris&
-   KeplerianEphemerisStore::findEphemeris(const SatID& sat, const CommonTime& t) const
-      throw( gpstk::InvalidRequest )
+   OrbElemStore::findEphemeris(const SatID& sat, const CommonTime& t) const
+      throw( InvalidRequest )
    {
       try
       {
@@ -66,8 +66,8 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   short KeplerianEphemerisStore::getSatHealth(const SatID& sat, const CommonTime& t) const
-      throw( gpstk::InvalidRequest )
+   short OrbElemStore::getSatHealth(const SatID& sat, const CommonTime& t) const
+      throw( InvalidRequest )
    {
       try
       {
@@ -80,17 +80,17 @@ namespace gpstk
       {
          GPSTK_RETHROW(ir);
       }
-   } // end of KeplerianEphemerisStore::getHealth()
+   } // end of OrbElemStore::getHealth()
 
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   void KeplerianEphemerisStore::dump(std::ostream& s, short detail) const
+   void OrbElemStore::dump(std::ostream& s, short detail) const
       throw()
    {
       UBEMap::const_iterator it;
 
-      s << "Dump of KeplerianEphemerisStore:\n";
+      s << "Dump of OrbElemStore:\n";
       if (detail==0)
       {
          unsigned bce_count=0;
@@ -123,7 +123,7 @@ namespace gpstk
                   ei->second.dump();
          }
    
-         s << "  End of KeplerianEphemerisStore data." << std::endl << std::endl;
+         s << "  End of OrbElemStore data." << std::endl << std::endl;
       }
    }
 
@@ -132,7 +132,7 @@ namespace gpstk
    // Only keeps one ephemeris with a given IODC/time
    // It should keep the one with the latest transmit time
    //--------------------------------------------------------------------------
-   bool KeplerianEphemerisStore::addEphemeris(const EngEphemeris& eph)
+   bool OrbElemStore::addEphemeris(const EngEphemeris& eph)
       throw()
    {
       bool rc = false;
@@ -183,7 +183,7 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-   void KeplerianEphemerisStore::edit(const CommonTime& tmin, const CommonTime& tmax)
+   void OrbElemStore::edit(const CommonTime& tmin, const CommonTime& tmax)
       throw()
    {
       for(UBEMap::iterator i = ube.begin(); i != ube.end(); i++)
@@ -206,7 +206,7 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-   unsigned KeplerianEphemerisStore::ubeSize() const
+   unsigned OrbElemStore::ubeSize() const
       throw()
    {
       unsigned counter = 0;
@@ -219,8 +219,8 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
    const EngEphemeris&
-   KeplerianEphemerisStore::findUserEphemeris(const SatID& sat, const CommonTime& t) const
-      throw( gpstk::InvalidRequest )
+   OrbElemStore::findUserEphemeris(const SatID& sat, const CommonTime& t) const
+      throw( InvalidRequest )
    {
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
@@ -290,8 +290,8 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
    const EngEphemeris&
-   KeplerianEphemerisStore::findNearEphemeris(const SatID& sat, const CommonTime& t) const
-      throw( gpstk::InvalidRequest )
+   OrbElemStore::findNearEphemeris(const SatID& sat, const CommonTime& t) const
+      throw( InvalidRequest )
    {
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
@@ -356,7 +356,7 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-   int KeplerianEphemerisStore::addToList(std::list<EngEphemeris>& v) const
+   int OrbElemStore::addToList(std::list<EngEphemeris>& v) const
       throw()
    {
       int n=0;
@@ -378,8 +378,8 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 //   const EngEphMap 
    const std::map<CommonTime, EngEphemeris>& 
-   KeplerianEphemerisStore::getEphMap( const SatID& sat ) const
-      throw( gpstk::InvalidRequest )
+   OrbElemStore::getEphMap( const SatID& sat ) const
+      throw( InvalidRequest )
    {
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())

@@ -124,12 +124,6 @@ namespace gpstk
          const throw()
       {return true;}
 
-      
-      virtual bool clockIsPresent()
-         const throw()
-      {return true;}
-
-
       //---------------------------------------------------------------
       // Below are interfaces that are unique to this class (i.e. not 
       // in the parent class)

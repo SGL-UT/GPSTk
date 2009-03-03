@@ -45,7 +45,7 @@
 #ifndef GPSTK_GPSEPHEMERISSTORE_HPP
 #define GPSTK_GPSEPHEMERISSTORE_HPP
 
-#include "KeplerianEphemerisStore.hpp"
+#include "OrbElemStore.hpp"
 
 namespace gpstk
 {
@@ -56,13 +56,13 @@ namespace gpstk
    /// subframes 1-3) and computes satellite Xvt based upon this data and the
    /// algorithms defined for that data in the IS-GPS-200.
 
-   class GPSEphemerisStore : public KeplerianEphemerisStore
+   class GPSEphemerisStore : public OrbElemStore
    {
    public:
 
       GPSEphemerisStore()
          throw()
-      { KeplerianEphemerisStore(); }
+      { OrbElemStore(); }
 
       virtual ~GPSEphemerisStore()
       {}

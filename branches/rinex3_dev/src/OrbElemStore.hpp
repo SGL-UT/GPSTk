@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: OrbElemStore.hpp 1709 2009-02-18 20:27:47Z btolman $"
 
 //============================================================================
 //
@@ -37,13 +37,13 @@
 //=============================================================================
 
 /**
- * @file KeplerianEphemerisStore.hpp
+ * @file OrbElemStore.hpp
  * Abstract base class for storing and/or computing position, velocity, 
  * and clock data.
  */
  
-#ifndef GPSTK_KEPLERIANEPHEMERISSTORE_HPP
-#define GPSTK_KEPLERIANEPHEMERISSTORE_HPP
+#ifndef GPSTK_ORBELEMSTORE_HPP
+#define GPSTK_ORBELEMSTORE_HPP
 
 #include <iostream>
 #include <string>
@@ -66,11 +66,11 @@ namespace gpstk
    /// Abstract base class for storing and accessing an objects position, 
    /// velocity, and clock data. Also defines a simple interface to remove
    /// data that has been added.
-   class KeplerianEphemerisStore : public XvtStore<SatID>
+   class OrbElemStore : public XvtStore<SatID>
    {
    public:
       
-      KeplerianEphemerisStore()
+      OrbElemStore()
          throw()
          : initialTime(CommonTime::END_OF_TIME), 
            finalTime(CommonTime::BEGINNING_OF_TIME),
@@ -78,8 +78,20 @@ namespace gpstk
       {}
 
 
-      virtual ~KeplerianEphemerisStore()
+      virtual ~OrbElemStore()
       {}
+
+      /// Returns the position and clock offset of the indicated
+      /// satellite in ECEF coordinates (meters) at the indicated time.
+      /// @param[in] sat the SV's SatID
+      /// @param[in] t the time to look up
+      /// @return the Xt of the SV at time
+      /// @throw InvalidRequest If the request can not be completed for any
+      ///    reason, this is thrown. The text may have additional
+      ///    information as to why the request failed.
+      virtual Xt getXt(const SatID sat, const CommonTime& t) const
+         throw( InvalidRequest );
+
 
       /// Returns the position, velocity, and clock offset of the indicated
       /// satellite in ECEF coordinates (meters) at the indicated time.
@@ -90,8 +102,8 @@ namespace gpstk
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
       virtual Xvt getXvt(const SatID sat, const CommonTime& t) const
-         throw( gpstk::InvalidRequest );
-      
+         throw( InvalidRequest );
+
 
       /// A debugging function that outputs in human readable form,
       /// all data stored in this object.
@@ -130,10 +142,6 @@ namespace gpstk
          const throw()
       {return true;}
 
-      virtual bool clockIsPresent()
-         const throw()
-      {return true;}
-
       //---------------------------------------------------------------
       // Below are interfaces that are unique to this class (i.e. not 
       // in the parent class)
@@ -145,7 +153,7 @@ namespace gpstk
       /// @return the SV health bits
       /// @throw InvalidRequest no matching ephemeris found in the store
       short getSatHealth(const SatID& sat, const CommonTime& t) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
 
 
       /// Add an EngEphemeris object to this collection.
@@ -173,7 +181,7 @@ namespace gpstk
        * @return the Xvt of the SV at time t
        */
       Xvt getXvt(const SatID& sat, const CommonTime& t, short& ref) const
-         throw( gpstk::InvalidRequest);
+         throw( InvalidRequest);
 
       /// Get the number of EngEphemeris objects in this collection.
       /// @return the number of EngEphemeris records in the map
@@ -191,7 +199,7 @@ namespace gpstk
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
       const EngEphemeris& findEphemeris(const SatID& sat, const CommonTime& t) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
 
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
       /// is chosen to be the one that 1) is within the fit interval
@@ -202,7 +210,7 @@ namespace gpstk
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
       const EngEphemeris& findUserEphemeris(const SatID& sat, const CommonTime& t) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
 
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
       /// chosen is the one with HOW time closest to the time t, (i.e. with
@@ -212,7 +220,7 @@ namespace gpstk
       /// @return a reference to desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
       const EngEphemeris& findNearEphemeris(const SatID& sat, const CommonTime& t) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
 
       /// Add all ephemerides to an existing list<EngEphemeris>.
       /// @return the number of ephemerides added.
@@ -238,7 +246,7 @@ namespace gpstk
       /// const reference.  The intent is to provide "read only" access
       /// for analysis.  If the map needs to be modified, see other methods.
       const EngEphMap& getEphMap( const SatID& sat ) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
 
       protected:
 

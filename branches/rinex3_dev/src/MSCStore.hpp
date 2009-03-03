@@ -138,11 +138,6 @@ namespace gpstk
          const throw()
       {return true;}
 
-
-      bool clockIsPresent()
-         const throw()
-      {return false;}
-
       //---------------------------------------------------------------
       // FileStore interfaces
       //---------------------------------------------------------------

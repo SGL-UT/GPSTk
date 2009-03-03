@@ -70,6 +70,18 @@ namespace gpstk
       virtual ~XvtStore()
       {}
       
+      /// Returns the position and clock offset of the indicated
+      /// object in ECEF coordinates (meters) at the indicated time.
+      /// @param[in] id the object's identifier
+      /// @param[in] t the time to look up
+      /// @return the Xt of the object at the indicated time
+      /// @throw InvalidRequest If the request can not be completed for any
+      ///    reason, this is thrown. The text may have additional
+      ///    information as to why the request failed.
+      virtual Xt getXt(const IndexType id, const CommonTime& t)
+         const throw( InvalidRequest )
+         = 0;
+
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.
       /// @param[in] id the object's identifier
@@ -118,9 +130,6 @@ namespace gpstk
          const throw()
          = 0;
 
-      virtual bool clockIsPresent()
-         const throw()
-         = 0;
    }; // end class XvtStore
 
    //@}

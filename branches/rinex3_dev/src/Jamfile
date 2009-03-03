@@ -36,11 +36,12 @@ else
       GloRecord.cpp
       IonexData.cpp IonexHeader.cpp IonexStore.cpp
       IonoModel.cpp IonoModelStore.cpp JulianDate.cpp
-      KeplerianEphemerisStore.cpp LinearClockModel.cpp
+      LinearClockModel.cpp
       LoopedFramework.cpp MJD.cpp MOPSWeight.cpp MSCData.cpp MSCStore.cpp
       MoonPosition.cpp NEDUtil.cpp ObsClockModel.cpp ObsEpochMap.cpp
-      ObsID.cpp ObsRngDev.cpp OceanLoading.cpp PRSolution.cpp
-      PoleTides.cpp Position.cpp PowerSum.cpp
+      ObsID.cpp ObsRngDev.cpp OceanLoading.cpp
+      OrbElemStore.cpp
+      PRSolution.cpp PoleTides.cpp Position.cpp PowerSum.cpp
       RACRotation.cpp RinexEphemerisStore.cpp RinexMetData.cpp
       RinexMetHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
       RinexObsData.cpp RinexObsHeader.cpp RinexObsID.cpp
