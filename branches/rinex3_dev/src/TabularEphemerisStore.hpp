@@ -55,6 +55,7 @@
 #include "SatID.hpp"
 #include "XvtStore.hpp"
 #include "Xt.hpp"
+#include "SP3Data.hpp"
 
 namespace gpstk
 {
@@ -65,7 +66,7 @@ namespace gpstk
       /// ephemeris data in an SP3 file) and compute Xvt from this table.
       /// A Lagrange interpolation is used to compute the Xvt for times that
       /// are not in the table but do have sufficient data.
-   template <class T>
+   template <class DataRecord>
    class TabularEphemerisStore : public XvtStore<SatID>
    {
    public:
@@ -159,19 +160,83 @@ namespace gpstk
          /// datasets loaded.
       virtual bool velocityIsPresent()
          const throw()
-      { return haveVelocity; }
-
-         /// Check if this ephemeris contains clock information.
-      virtual bool clockIsPresent()
-         const throw()
-      { return true; };
+      { 
+        return haveVelocity; 
+      }
 
       //---------------------------------------------------------------
       // Below are interfaces that are unique to this class (i.e. not
       // in the parent class)
       //---------------------------------------------------------------
 
+         /// Insert a new SP3Data object into the store
+      void addEphemeris(const SP3Data& data)
+         throw();
+
+         /// Remove all data
+      void clear()
+         throw()
+   {
+      pe.clear();
+
+      EphMap::const_iterator it;
+      initialTime = CommonTime::END_OF_TIME;
+      finalTime = CommonTime::BEGINNING_OF_TIME;
+   }
+
+         /// Enable checking of data gaps.
+      void enableDataGapCheck(void)
+      { checkDataGap = true; };
+
+         /// Disable checking of data gaps.
+      void disableDataGapCheck(void)
+      { checkDataGap = false; };
+
+         /// Get current gap interval.
+      double getGapInterval(void)
+      { return gapInterval; };
+
+         /// Set gap interval.
+      void setGapInterval(double interval)
+      { gapInterval = interval; return; };
+
+         /// Enable checking of maximum interval.
+      void enableIntervalCheck(void)
+      { checkInterval = true; };
+
+         /// Disable checking of maximum interval.
+      void disableIntervalCheck(void)
+      { checkInterval = false; };
+
+         /// Get current maximum interval.
+      double getMaxInterval(void)
+      { return maxInterval; };
+
+         /// Set maximum interval.
+      void setMaxInterval(double interval)
+      { maxInterval = interval; return; };
+
+         /// Get current interpolation order.
+      unsigned int getInterpolationOrder(void)
+      { return interpOrder; }
+
+         /// Set the interpolation order.
+         /// This routine forces the order to be even.
+      void setInterpolationOrder(unsigned int order)
+      { interpOrder = 2*((order+1)/2); }
+
    protected:
+
+         /// The key to this map is the time
+      typedef std::map<CommonTime, DataRecord> SvEphMap;
+
+
+         /// The key to this map is the svid of the satellite (usually the prn)
+      typedef std::map<SatID, SvEphMap> EphMap;
+
+
+         /// the map of SVs and XVTs
+      EphMap pe;
 
          /// Flag indicating that velocity data present in all datasets loaded.
       bool haveVelocity;
@@ -225,8 +290,6 @@ namespace gpstk
          /// Order of Lagrange interpolation used in getXvt(), should be even.
          /// Usually for 15 minute data, this is 10. 
       unsigned int interpOrder;
-
-//      std::map<CommonTime, Xt> recordMap;
 
    }; // end class TabularEphemerisStore
 

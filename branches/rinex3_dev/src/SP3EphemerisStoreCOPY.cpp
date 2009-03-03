@@ -93,6 +93,185 @@ namespace gpstk
 
    }  // End of method 'SP3EphemerisStore::loadFile()'
 
+
+   /* Returns the position, velocity, and clock offset of the indicated
+    * object in ECEF coordinates (meters) at the indicated time.
+    *
+    * @param[in] id the object's identifier
+    * @param[in] t the time to look up
+    *
+    * @return the Xvt of the object at the indicated time
+    *
+    * @throw InvalidRequest If the request can not be completed for any
+    *    reason, this is thrown. The text may have additional
+    *    information as to why the request failed.
+    */
+   Xvt SP3EphemerisStore::getXvt( const SatID sat,
+                                  const CommonTime& t )
+      const throw( gpstk::InvalidRequest )
+   {
+
+      EphMap::const_iterator svmap = pe.find(sat);
+      if (svmap==pe.end())
+      {
+         InvalidRequest e("Ephemeris for satellite  " + asString(sat)
+                            + " not found.");
+         GPSTK_THROW(e);
+      }
+
+      const SvEphMap& sem=svmap->second;
+      SvEphMap::const_iterator i=sem.find(t);
+      Xvt sv;
+      if (i!= sem.end() && haveVelocity)      // exact match of t
+      {
+         sv = i->second;
+         sv.x[0]   *= 1.e3;   // m
+         sv.x[1]   *= 1.e3;   // m
+         sv.x[2]   *= 1.e3;   // m
+         sv.dtime  *= 1.e-6;  // sec
+         sv.v[0]   *= 1.e-1;  // m/sec
+         sv.v[1]   *= 1.e-1;  // m/sec
+         sv.v[2]   *= 1.e-1;  // m/sec
+         sv.ddtime *= 1.e-10; // sec/sec
+
+         sv.dtime += -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)
+                     -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
+                     -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
+         return sv;
+      }
+
+         // Note that the order of the Lagrange interpolation
+         // is twice this value
+      const int half=interpOrder/2;
+
+         //  i will be the lower bound, j the upper (in time).
+      i = sem.lower_bound(t); // i points to first element with key >= t
+
+      SvEphMap::const_iterator j=i;
+
+      if (i == sem.begin() || --i == sem.begin())
+      {
+         InvalidRequest e("Inadequate data before requested time, satellite "
+                          + asString(sat));
+         GPSTK_THROW(e);
+      }
+      if (j == sem.end())
+      {
+         InvalidRequest e("Inadequate data after requested time, satellite "
+                          + asString(sat));
+         GPSTK_THROW(e);
+      }
+
+         // "t" is now just between "i" and "j"; therefore, it is time to check
+         // for data gaps ("checkDataGap" must be enabled for this).
+      if ( checkDataGap                               &&
+           ( std::abs( t - i->first ) > gapInterval ) &&
+           ( std::abs( j->first - t ) > gapInterval )    )
+      {
+            // There was a data gap
+         InvalidRequest e( "Data gap too wide detected for satellite "
+                           + asString(sat) );
+         GPSTK_THROW(e);
+      }
+
+      for(int k=0; k<half-1; k++)
+      {
+
+         i--;
+
+            // if k==half-2, this is last iteration
+         if (i == sem.begin() && k<half-2)
+         {
+            InvalidRequest e("Inadequate data before requested time, satellite "
+                             + asString(sat));
+            GPSTK_THROW(e);
+         }
+         j++;
+         if (j == sem.end() && k<half-2)
+         {
+            InvalidRequest e("Inadequate data after requested time, satellite "
+                               + asString(sat));
+            GPSTK_THROW(e);
+         }
+      }
+
+         // Now that we have fully defined the i-j interval, let's check if
+         // the interpolation interval is too wide ("checkInterval" must be
+         // enabled for this).
+      if ( checkInterval                                     &&
+           ( std::abs( j->first - i->first ) > maxInterval ) )
+      {
+            // There was a data gap
+         InvalidRequest e( "Interpolation interval too wide detected for SV "
+                           + asString(sat) );
+         GPSTK_THROW(e);
+      }
+
+
+         // pull data and interpolate
+      SvEphMap::const_iterator itr;
+      CommonTime t0=i->first;
+      double dt=t-t0,err;
+      vector<double> times,X,Y,Z,T,VX,VY,VZ,F;
+
+      for (itr=i; itr!=sem.end(); itr++)
+      {
+         times.push_back(itr->first - t0);      // sec
+         X.push_back(itr->second.x[0]);         // km
+         Y.push_back(itr->second.x[1]);         // km
+         Z.push_back(itr->second.x[2]);         // km
+         T.push_back(itr->second.dtime);        // microsec
+         VX.push_back(itr->second.v[0]);        // decimeters/sec
+         VY.push_back(itr->second.v[1]);        // decimeters/sec
+         VZ.push_back(itr->second.v[2]);        // decimeters/sec
+         F.push_back(itr->second.ddtime);       // 1.e-4 microsec/sec
+         if (itr == j) break;
+      }
+
+      if (haveVelocity)
+      {
+         sv.x[0] = LagrangeInterpolation(times,X,dt,err);
+         sv.x[1] = LagrangeInterpolation(times,Y,dt,err);
+         sv.x[2] = LagrangeInterpolation(times,Z,dt,err);
+         sv.dtime = LagrangeInterpolation(times,T,dt,err);
+         sv.v[0] = LagrangeInterpolation(times,VX,dt,err);
+         sv.v[1] = LagrangeInterpolation(times,VY,dt,err);
+         sv.v[2] = LagrangeInterpolation(times,VZ,dt,err);
+         sv.ddtime = LagrangeInterpolation(times,F,dt,err);
+      }
+      else {
+         LagrangeInterpolation(times,X,dt,sv.x[0],sv.v[0]);
+         LagrangeInterpolation(times,Y,dt,sv.x[1],sv.v[1]);
+         LagrangeInterpolation(times,Z,dt,sv.x[2],sv.v[2]);
+         LagrangeInterpolation(times,T,dt,sv.dtime,sv.ddtime);
+         sv.v[0] *= 1.e4;              // decimeters/sec
+         sv.v[1] *= 1.e4;              // decimeters/sec
+         sv.v[2] *= 1.e4;              // decimeters/sec
+         sv.ddtime *= 1.e4;            // 1.e-4 microsec/sec
+      }
+
+      sv.x[0] *= 1.e3;     // m
+      sv.x[1] *= 1.e3;     // m
+      sv.x[2] *= 1.e3;     // m
+      sv.dtime *= 1.e-6;   // sec
+      sv.v[0] *= 1.e-1;    // m/sec
+      sv.v[1] *= 1.e-1;    // m/sec
+      sv.v[2] *= 1.e-1;    // m/sec
+      sv.ddtime *= 1.e-10; // sec/sec
+
+      // add relativity correction to dtime
+      // this only for consistency with GPSEphemerisStore::getSatXvt ....
+      // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10 * ecc * sqrt(A(m))*sinE
+      // (do it this way for numerical reasons)
+      sv.dtime += -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)
+         -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
+         -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
+
+      return sv;
+
+   }  // end Xvt SP3EphemerisStore::getXvt
+
+
       /* A debugging function that outputs in human readable form,
        * all data stored in this object: dump the store to cout.
        *
@@ -198,6 +377,79 @@ namespace gpstk
       s << "End of Dump of SP3EphemerisStore." << endl;
 
    }  // End of method 'SP3EphemerisStore::dump()'
+
+
+      /* Edit the dataset, removing data outside the indicated time
+       * interval.
+       *
+       * @param[in] tmin defines the beginning of the time interval
+       * @param[in] tmax defines the end of the time interval
+       */
+   void SP3EphemerisStore::edit( const CommonTime& tmin,
+                                 const CommonTime& tmax  )
+      throw()
+   {
+
+      EphMap::iterator kt;
+
+      for(kt=pe.begin(); kt!=pe.end(); kt++)
+      {
+
+         SvEphMap::reverse_iterator jt=(kt->second).rbegin();
+
+         while(jt != (kt->second).rend())
+         {
+
+            if (jt->first < tmin || jt->first > tmax)
+            {
+               (kt->second).erase(jt->first);
+            }
+
+            jt ++;
+
+         }
+
+      }
+
+      initialTime = tmin;
+      finalTime = tmax;
+
+   }  // End of method 'SP3EphemerisStore::edit()'
+
+
+
+      // Remove all data
+   void SP3EphemerisStore::clear()
+      throw()
+   {
+      pe.clear();
+      initialTime = CommonTime::END_OF_TIME;
+      finalTime = CommonTime::BEGINNING_OF_TIME;
+   }
+
+
+   void SP3EphemerisStore::addEphemeris(const SP3Data& rec)
+      throw()
+   {
+      // reject when satellite undefined (e.g. first Epoch record)
+      if (rec.sat.id <= 0) return;
+
+      // If flag is set and there is a bad or absent clock value, reject
+      if (rejectBadClockFlag && (rec.clk >= 999999.)) return;
+
+      // If flag is set and there are bad or absent coordinate values, reject
+      if (rejectBadPosFlag && ( (rec.x[0] == 0.0) ||
+                                (rec.x[1] == 0.0) ||
+                                (rec.x[2] == 0.0)    )) return;
+
+      if (rec.RecType == 'P')
+         addPositionData(rec.time, rec.sat, rec.x[0], rec.x[1], rec.x[2], rec.clk);
+
+      else if (haveVelocity && rec.RecType == 'V')
+         addVelocityData(rec.time, rec.sat, rec.x[0], rec.x[1], rec.x[2], rec.clk);
+   }
+
+   //-----------------------------------------------------------------------------
 
    // units are km and microsec
    void SP3EphemerisStore::addPositionData( const CommonTime& t,
