@@ -97,7 +97,7 @@ else if $(NT)
    # ------ MS VC++.NET 2003 : _MSC_VER >= 1300
    else if $(MSCVER) >= 1300 {
       MSVCVersion = "VC++.NET2003(VC7)" ;
-      LINKLIBS   =  rebex.lib ;
+      LINKLIBS   =  regex.lib ;
       CCFLAGS    += /ML -wd4274 ;
       # use /O2 optimization
       C++FLAGS   += /O2 /ML -DWIN32 -D_USE_MATH_DEFINES /GX /GR -wd4274 -wd4675 ;
