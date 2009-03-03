@@ -1,0 +1,7 @@
+SubDir TOP apps performance ;
+
+GPSLinkLibraries ConstellationList : gpstk ;
+BonkForte ; # bleah.
+
+GPSMain ConstellationList : ConstellationList.cpp ConstellationSet.cpp ConstellationDefinition.cpp ;
+
