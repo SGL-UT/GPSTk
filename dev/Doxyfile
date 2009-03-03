@@ -459,7 +459,6 @@ RECURSIVE              = YES
 EXCLUDE                = ./tests \
                          ./examples \
                          ./apps \
-                         ./lib/Rinex3 \
                          ./R3
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or directories 

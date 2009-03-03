@@ -54,7 +54,6 @@ AC_CONFIG_FILES([Makefile
 		 lib/vdraw/Makefile
 		 lib/geomatics/Makefile
 		 lib/procframe/Makefile
-		 lib/Rinex3/Makefile
 		 src/Makefile
 		 apps/Makefile
 		 apps/DataAvailability/Makefile
