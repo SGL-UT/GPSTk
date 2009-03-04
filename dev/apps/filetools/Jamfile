@@ -15,5 +15,5 @@ GPSMain sp3version : sp3version.cpp ;
 GPSMain bc2sp3 : bc2sp3.cpp ;
 GPSMain navsum : navsum.cpp ;
 #GPSMain sp32bc : sp32bc.cpp ;
-GPSMain ephsum : EphSum.cpp ;
+#GPSMain ephsum : EphSum.cpp ;
 
