@@ -58,6 +58,12 @@ filterPC = TRUE
 printModel = FALSE
 
 
+# Antex-related variables
+useAntex, this variable tells if we'll use Antex files               = FALSE
+usePCPatterns, this variable activates use of Antex patterns         = FALSE
+useAzim, this variable activates use of azimuth-dependent patterns   = FALSE
+
+
 
 ###
 ### Application "example9" demands one section (and only one)
@@ -89,7 +95,7 @@ offsetARP, dH dLon dLat (UEN) = 0.995  0.000  0.000, meters
 
 # Solver-related variables
 
-coordinatesAsWhiteNoise = TRUE
+coordinatesAsWhiteNoise = TRUE               # Kinematic positioning
 
 forwardBackwardCycles = 0, an integer < 1 means forwards processing only
 
@@ -104,6 +110,7 @@ outputFile = onsa2240-05.out
 
 printModel = TRUE
 modelFile  = onsa2240-05.model
+
 
 
 [COCO]            # Configuration data for 'COCO' station
@@ -130,7 +137,7 @@ offsetARP, dH dLon dLat (UEN) = 0.004  0.000  0.000, meters
 
 # Solver-related variables
 
-coordinatesAsWhiteNoise = FALSE
+coordinatesAsWhiteNoise = FALSE           # Static positioning
 
 forwardBackwardCycles = 4, an integer < 1 means forwards processing only
 
@@ -138,6 +145,56 @@ USENEU = TRUE, results will be given in dLat, dLon, dH
 
 # Output
 outputFile = coco2370-05.out
+
+
+
+[MADR]
+
+rinexObsFile, Rinex observation file = madr1480.08o
+
+dayOfYear = 148, days of year for May/27/2008.
+
+
+SP3List, SP3 ephemeris file list    = igs14811.sp3 igs14812.sp3 igs14813.sp3
+
+poleDisplacements, for May/27/2008  = 0.105648   0.541502, arcsec
+
+nominalPosition, ECEF-IGS = 4849202.3419  -360328.9019  4114913.2429, meters
+
+
+# Antenna parameters
+useAntex          = TRUE                  # We will use Antex files
+
+antexFile      = igs05.atx                # Name of Antex file (absolute PC)
+antennaModel   = AOAD/M_T        NONE     # Antenna model (with radome), in
+                                          # strict IGS format
+
+# Should we use antenna phase variation patterns or just eccentricity?
+usePCPatterns = TRUE
+
+# Should we use elevation/azimuth patterns or just elevation?
+useAzim = TRUE
+
+offsetARP, dH dLon dLat (UEN) = 0.0254  0.000  0.000, meters
+
+
+# Solver-related variables
+
+coordinatesAsWhiteNoise = FALSE           # Static positioning
+
+forwardBackwardCycles = 0, an integer < 1 means forwards processing only
+
+# The following variable, if true, sets a NEU system. If false, an XYZ system
+USENEU = TRUE, results will be given in dLat, dLon, dH
+
+
+# Output
+outputFile = madr1480-08.out
+
+
+printModel = TRUE
+modelFile  = madr1480-08.model
+
 
 
 # End of configuration file
