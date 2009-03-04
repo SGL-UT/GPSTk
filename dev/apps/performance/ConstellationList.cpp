@@ -11,7 +11,7 @@
 *  "excess" above the baseline, or both.
 *
 *  USAGE:
-*  >ConstellationList -i<definitionFile> -y<year> -j<DOY> [-b] [-x]
+*  >ConstellationList -i<definitionFile> -y<year> -j<DOY> [-b] [-x] [-n] [-O]
 *  -i : Constellation defintion file
 *  -y : year (2-digit or 4-digit)
 *  -j : day of year (0-365|366)
@@ -19,6 +19,8 @@
 *  -x : List PRN IDs "in excess of" the baseline 24, but in-use on orbit
 *  -n : List PRN IDs that are current not in baseline 24, either on-orbit 
 *       "excess" or simply not in use at this time. 
+*  -O : Assume input file is in form of USCG Ops Advisory.  By default a 
+*       comma separated value file is assumed.
 *
 */
 //============================================================================
@@ -82,7 +84,7 @@ public:
 protected:
    virtual void process();
    gpstk::CommandOptionWithAnyArg inputOption;
-   gpstk::CommandOptionWithAnyArg typeOption;
+   gpstk::CommandOptionNoArg typeOption;
    gpstk::CommandOptionWithAnyArg yearOption;
    gpstk::CommandOptionWithAnyArg DOYOption;
    gpstk::CommandOptionNoArg base24Option;
@@ -121,18 +123,17 @@ ConstellationList::ConstellationList(const std::string& applName,
                        const std::string& applDesc) throw()
           :BasicFramework(applName, applDesc),
            inputOption('i', "input-file", "The name of the ConstallationDefinition file(s) to read.", true),
-           typeOption('t', "type","The type of input file: ARL (A), Op Advisory (O), or CSV (C)",true),
+           typeOption('O', "OpsAd","Assume input file is Op Advisory format (CSV is default)",false),
            yearOption('y', "year", "Year of interest.", true),
            DOYOption('j',"day-of-year","Day of year.", true),
-           SVNOption('s',"SVN Output","Output SVN in place of PRN (only valid fo -tC)",false),
-           base24Option('b',"base24", "List PRNs in baseline 24 constellation", false),
-           notBase24Option('n',"notBase24","List PRNs NOT used in baseline 24 constellation",false),
-           excessOption('x',"excessSVs","List PRNs in use, but in excess of the baseline 24 constellation",false)
+           SVNOption('s',"SVN Output","Output SVN in place of PRN (only valid fo -O)",false),
+           base24Option('b',"Base24", "List PRNs in Base 24 constellation", false),
+           notBase24Option('n',"notBase24","List PRNs NOT used in Base 24 constellation",false),
+           excessOption('x',"excessSVs","List PRNs in use, but in excess of the Base 24 constellation",false)
 {
    inputOption.setMaxCount(10);
    yearOption.setMaxCount(1);
    DOYOption.setMaxCount(1);
-   typeOption.setMaxCount(1);
 }
 
 bool ConstellationList::initialize(int argc, char *argv[])
@@ -144,13 +145,13 @@ bool ConstellationList::initialize(int argc, char *argv[])
    int totalCount = 0;
    
    vector<string> values;
-   
-   values = typeOption.getValue();
-   string fileType = values[0];
-   ConstellationSet::FileType ft = ConstellationSet::ARLFileType;
-   if (fileType.compare("O")==0) ft = ConstellationSet::OpAdvisory;
-    else if (fileType.compare("C")==0) ft = ConstellationSet::CSV;
-   
+
+   ConstellationSet::FileType ft = ConstellationSet::CSV;   
+   if (typeOption.getCount()>0)
+   {
+      ft = ConstellationSet::OpAdvisory;
+   } 
+
    values = inputOption.getValue();
    vector<string>::const_iterator vi;
    for (vi=values.begin();vi!=values.end();++vi)
@@ -159,7 +160,11 @@ bool ConstellationList::initialize(int argc, char *argv[])
       int count = cs.loadFile( filename, ft );
       totalCount += count;
    }
-   if (totalCount<1) return false;
+   if (totalCount<1) 
+   {
+      cout << "Failure reading input file." << endl;
+      return false;
+   }
    
    outputPRN = true;
    if (ft==ConstellationSet::CSV && SVNOption.getCount()>0) outputPRN = false;
