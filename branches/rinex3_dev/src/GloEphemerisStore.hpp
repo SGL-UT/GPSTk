@@ -75,11 +75,13 @@ namespace gpstk
       GloRecord getNearGloRecord(SatID sat, CommonTime t)
          throw (gpstk::InvalidRequest);
 
-      GloRecord getFirstGloRecord(SatID sat, CommonTime t)
-         throw (gpstk::InvalidRequest);
+      GloRecord getFirstGloRecord(SatID sat)
+         throw (gpstk::InvalidRequest)
+      {return getNearGloRecord(sat, CommonTime::BEGINNING_OF_TIME);};
       
-      GloRecord getLastGloRecord(SatID sat, CommonTime t)
-         throw (gpstk::InvalidRequest);
+      GloRecord getLastGloRecord(SatID sat)
+         throw (gpstk::InvalidRequest)
+      {return getNearGloRecord(sat, CommonTime::END_OF_TIME);};
 
    };
 
