@@ -126,7 +126,7 @@ ConstellationList::ConstellationList(const std::string& applName,
            typeOption('O', "OpsAd","Assume input file is Op Advisory format (CSV is default)",false),
            yearOption('y', "year", "Year of interest.", true),
            DOYOption('j',"day-of-year","Day of year.", true),
-           SVNOption('s',"SVN Output","Output SVN in place of PRN (only valid fo -O)",false),
+           SVNOption('s',"SVN Output","Output SVN in place of PRN (not valid for -O)",false),
            base24Option('b',"Base24", "List PRNs in Base 24 constellation", false),
            notBase24Option('n',"notBase24","List PRNs NOT used in Base 24 constellation",false),
            excessOption('x',"excessSVs","List PRNs in use, but in excess of the Base 24 constellation",false)
