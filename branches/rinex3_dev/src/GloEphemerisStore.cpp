@@ -45,3 +45,20 @@
 
 namespace gpstk
 {
+
+      GloRecord getNearGloRecord(SatID sat, CommonTime t)
+         throw (gpstk::InvalidRequest)
+      {}
+
+      GloRecord getFirstGloRecord(SatID sat, CommonTime t)
+         throw (gpstk::InvalidRequest)
+      {}
+      
+      GloRecord getLastGloRecord(SatID sat, CommonTime t)
+         throw (gpstk::InvalidRequest)
+      {}
+
+
+}
+
+

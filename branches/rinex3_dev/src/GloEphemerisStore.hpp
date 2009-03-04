@@ -1,9 +1,10 @@
 #pragma ident "$Id"
 
 /**
- * @file SP3EphemerisStore.hpp
- * Read and store SP3 formated ephemeris data
+ * @file GloEphemerisStore.hpp
+ * Get GLONASS ephemeris data information
  */
+
 
 #ifndef GPSTK_GLO_EPHEMERIS_STORE_HPP
 #define GPSTK_GLO_EPHEMERIS_STORE_HPP
@@ -47,11 +48,7 @@
 #include <iostream>
 
 #include "TabularEphemerisStore.hpp"
-#include "FileStore.hpp"
-
-#include "SP3Stream.hpp"
-#include "SP3Data.hpp"
-#include "SP3Header.hpp"
+#include "GloRecord.hpp"
 
 namespace gpstk
 {
@@ -64,7 +61,27 @@ namespace gpstk
        */
    class GloEphemerisStore : public TabularEphemerisStore<GloRecord>
    {
-   }
+
+   public:
+
+         /// Constructor.
+      GloEphemerisStore()
+         throw()
+      { TabularEphemerisStore<GloRecord>(); };
+
+         /// Destructor.
+      virtual ~GloEphemerisStore() {};
+
+      GloRecord getNearGloRecord(SatID sat, CommonTime t)
+         throw (gpstk::InvalidRequest);
+
+      GloRecord getFirstGloRecord(SatID sat, CommonTime t)
+         throw (gpstk::InvalidRequest);
+      
+      GloRecord getLastGloRecord(SatID sat, CommonTime t)
+         throw (gpstk::InvalidRequest);
+
+   };
 
 }  // End of namespace gpstk
 

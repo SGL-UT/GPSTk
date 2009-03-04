@@ -30,7 +30,8 @@ else
       Epoch.cpp Exception.cpp Expression.cpp FFData.cpp
       FFStream.cpp FICData.cpp FICData109.cpp FICData162.cpp
       FICData62.cpp FICData9.cpp FICHeader.cpp FileHunter.cpp
-      FileSpec.cpp GPSAlmanacStore.cpp GPSEphemerisStore.cpp
+      FileSpec.cpp 
+      GloEphemerisStore.cpp GPSAlmanacStore.cpp GPSEphemerisStore.cpp
       GPSWeek.cpp GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp
       GaussianDistribution.cpp GenXSequence.cpp Geodetic.cpp 
       GloRecord.cpp
@@ -46,7 +47,7 @@ else
       RinexMetHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
       RinexObsData.cpp RinexObsHeader.cpp RinexObsID.cpp
       RinexSatID.cpp RinexUtilities.cpp
-#      Rinex3NavData.cpp Rinex3NavHeader.cpp
+#     Rinex3NavData.cpp Rinex3NavHeader.cpp
       RungeKutta4.cpp
       SEMAlmanacStore.cpp SEMData.cpp SEMHeader.cpp
       SMODFData.cpp SP3Data.cpp SP3EphemerisStore.cpp
