@@ -175,14 +175,13 @@ namespace gpstk
 
          /// Remove all data
       void clear()
-         throw()
-   {
-      pe.clear();
-
-      EphMap::const_iterator it;
-      initialTime = CommonTime::END_OF_TIME;
-      finalTime = CommonTime::BEGINNING_OF_TIME;
-   }
+        throw()
+      {
+        pe.clear();
+        typename EphMap::iterator it;
+        initialTime = CommonTime::END_OF_TIME;
+        finalTime = CommonTime::BEGINNING_OF_TIME;
+      };
 
          /// Enable checking of data gaps.
       void enableDataGapCheck(void)
