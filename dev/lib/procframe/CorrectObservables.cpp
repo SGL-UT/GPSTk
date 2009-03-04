@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -56,8 +56,8 @@ namespace gpstk
        * @param time      Epoch corresponding to the data.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& CorrectObservables::Process(const DayTime& time,
-                                                satTypeValueMap& gData)
+   satTypeValueMap& CorrectObservables::Process( const DayTime& time,
+                                                 satTypeValueMap& gData )
       throw(ProcessingException)
    {
 
@@ -73,13 +73,26 @@ namespace gpstk
                         nominalPos.getY(),
                         nominalPos.getZ() );
 
-            // Compute displacement vectors for L1 and L2, in meters [UEN]
-         Triple dispL1(extraBiases + monumentVector + L1PhaseCenter);
-         Triple dispL2(extraBiases + monumentVector + L2PhaseCenter);
-         Triple dispL5(extraBiases + monumentVector + L5PhaseCenter);
-         Triple dispL6(extraBiases + monumentVector + L6PhaseCenter);
-         Triple dispL7(extraBiases + monumentVector + L7PhaseCenter);
-         Triple dispL8(extraBiases + monumentVector + L8PhaseCenter);
+
+            // Compute initial displacement vectors, in meters [UEN]
+         Triple initialBias( extraBiases + monumentVector );
+         Triple dispL1( initialBias );
+         Triple dispL2( initialBias );
+         Triple dispL5( initialBias );
+         Triple dispL6( initialBias );
+         Triple dispL7( initialBias );
+         Triple dispL8( initialBias );
+
+
+            // Check if we have a valid Antenna object
+         if( antenna.isValid() )
+         {
+               // Compute phase center offsets
+            L1PhaseCenter = antenna.getAntennaEccentricity( Antenna::G01 );
+            L2PhaseCenter = antenna.getAntennaEccentricity( Antenna::G02 );
+         }
+
+
 
             // Define a Triple that will hold satellite position, in ECEF
          Triple svPos(0.0, 0.0, 0.0);
@@ -144,6 +157,149 @@ namespace gpstk
 
             }
 
+
+               // Declare the variables where antenna PC variations
+               // will be stored. Only values for L1 and L2 will be
+               // computed, in UEN system
+            Triple L1Var( 0.0, 0.0, 0.0 );
+            Triple L2Var( 0.0, 0.0, 0.0 );
+
+               // Check if we have a valid Antenna object
+            if( antenna.isValid() )
+            {
+
+                  // Check if we have elevation information
+               if( (*it).second.find(TypeID::elevation) != (*it).second.end() )
+               {
+
+                     // Get elevation value
+                  double elev( (*it).second[TypeID::elevation] );
+
+                     // Check if azimuth is also required
+                  if( !useAzimuth )
+                  {
+
+                        // In this case, use methods that only need elevation
+                     try
+                     {
+
+                           // Compute phase center variation values
+                        L1Var = antenna.getAntennaPCVariation( Antenna::G01,
+                                                               elev );
+                        L2Var = antenna.getAntennaPCVariation( Antenna::G02,
+                                                               elev );
+
+                     }
+                     catch(InvalidRequest& ir)
+                     {
+                           // Throw an exception if something unexpected
+                           // happens
+                        ProcessingException e( getClassName() + ":"
+                           + StringUtils::asString( getIndex() ) + ":"
+                           + "Unexpected problem found when trying to "
+                           + "compute antenna offsets" );
+
+                        GPSTK_THROW(e);
+                     }  // End fo 'try'
+
+                  }
+                  else
+                  {
+
+                        // Check if we have azimuth information
+                     if( (*it).second.find(TypeID::azimuth) !=
+                                                            (*it).second.end() )
+                     {
+
+                           // Get azimuth value
+                        double azim( (*it).second[TypeID::azimuth] );
+
+                           // Use a gentle fallback mechanism to get antenna
+                           // phase center variations
+                        try
+                        {
+                              // Compute phase center variation values
+                           L1Var = antenna.getAntennaPCVariation( Antenna::G01,
+                                                                  elev,
+                                                                  azim );
+
+                           L2Var = antenna.getAntennaPCVariation( Antenna::G02,
+                                                                  elev,
+                                                                  azim );
+
+                        }
+                        catch(InvalidRequest& ir)
+                        {
+                              // We  "graceful degrade" to a simpler mechanism
+                           try
+                           {
+
+                                 // Compute phase center variation values
+                              L1Var =
+                                 antenna.getAntennaPCVariation( Antenna::G01,
+                                                                elev );
+
+                              L2Var =
+                                 antenna.getAntennaPCVariation( Antenna::G02,
+                                                                elev );
+
+                           }
+                           catch(InvalidRequest& ir)
+                           {
+                                 // Throw an exception if something unexpected
+                                 // happens
+                              ProcessingException e( getClassName() + ":"
+                                 + StringUtils::asString( getIndex() ) + ":"
+                                 + "Unexpected problem found when trying to "
+                                 + "compute antenna offsets" );
+
+                              GPSTK_THROW(e);
+                           }  // End fo 'try'
+
+                        }  // End fo 'try'
+
+                     }
+                     else
+                     {
+
+                           // Throw an exception if something unexpected happens
+                        ProcessingException e( getClassName() + ":"
+                                 + StringUtils::asString( getIndex() ) + ":"
+                                 + "Azimuth information could not be found, "
+                                 + "so antenna PC offsets can not be computed");
+
+                        GPSTK_THROW(e);
+
+                     }  // End of 'if( (*it).second.find(TypeID::azimuth) !=...'
+
+                  }  // End of 'if( !useAzimuth )'
+
+               }
+               else
+               {
+
+                     // Throw an exception if there is no elevation data
+                  ProcessingException e( getClassName() + ":"
+                              + StringUtils::asString( getIndex() ) + ":"
+                              + "Elevation information could not be found, "
+                              + "so antenna PC offsets can not be computed" );
+
+                  GPSTK_THROW(e);
+
+               }  // End of 'if( (*it).second.find(TypeID::elevation) != ...'
+
+
+            }  // End of 'if( antenna.isValid() )...'
+
+
+               // Update displacement vectors with current phase centers
+            Triple dL1( dispL1 + L1PhaseCenter - L1Var );
+            Triple dL2( dispL2 + L2PhaseCenter - L2Var );
+            Triple dL5( dispL5 + L5PhaseCenter );
+            Triple dL6( dispL6 + L6PhaseCenter );
+            Triple dL7( dispL7 + L7PhaseCenter );
+            Triple dL8( dispL8 + L8PhaseCenter );
+
                // Compute vector station-satellite, in ECEF
             Triple ray(svPos - staPos);
 
@@ -155,12 +311,12 @@ namespace gpstk
 
                // Compute corrections = displacement vectors components
                // along ray direction.
-            double corrL1(dispL1.dot(ray));
-            double corrL2(dispL2.dot(ray));
-            double corrL5(dispL5.dot(ray));
-            double corrL6(dispL6.dot(ray));
-            double corrL7(dispL7.dot(ray));
-            double corrL8(dispL8.dot(ray));
+            double corrL1(dL1.dot(ray));
+            double corrL2(dL2.dot(ray));
+            double corrL5(dL5.dot(ray));
+            double corrL6(dL6.dot(ray));
+            double corrL7(dL7.dot(ray));
+            double corrL8(dL8.dot(ray));
 
 
                // Find which observables are present, and then

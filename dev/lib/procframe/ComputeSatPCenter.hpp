@@ -5,8 +5,8 @@
  * This class computes the satellite antenna phase correction, in meters.
  */
 
-#ifndef COMPUTESATPCENTER_HPP
-#define COMPUTESATPCENTER_HPP
+#ifndef GPSTK_COMPUTESATPCENTER_HPP
+#define GPSTK_COMPUTESATPCENTER_HPP
 
 //============================================================================
 //
@@ -26,20 +26,24 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 //
 //============================================================================
 
 
 
+#include <cmath>
 #include <string>
+#include <sstream>
 #include "ProcessingClass.hpp"
 #include "Triple.hpp"
 #include "Position.hpp"
 #include "SunPosition.hpp"
 #include "XvtStore.hpp"
 #include "SatDataReader.hpp"
+#include "AntexReader.hpp"
 #include "geometry.hpp"
+#include "StringUtils.hpp"
 
 
 
@@ -100,7 +104,7 @@ namespace gpstk
          /// Default constructor
       ComputeSatPCenter()
          : pEphemeris(NULL), nominalPos(0.0, 0.0, 0.0),
-           satData("PRN_GPS"), fileData("PRN_GPS")
+           satData("PRN_GPS"), fileData("PRN_GPS"), pAntexReader(NULL)
       { setIndex(); };
 
 
@@ -118,7 +122,7 @@ namespace gpstk
                          const Position& stapos,
                          string filename="PRN_GPS" )
          : pEphemeris(&ephem), nominalPos(stapos), satData(filename),
-           fileData(filename)
+           fileData(filename), pAntexReader(NULL)
       { setIndex(); };
 
 
@@ -134,7 +138,39 @@ namespace gpstk
       ComputeSatPCenter( const Position& stapos,
                          string filename="PRN_GPS" )
          : pEphemeris(NULL), nominalPos(stapos), satData(filename),
-           fileData(filename)
+           fileData(filename), pAntexReader(NULL)
+      { setIndex(); };
+
+
+         /** Common constructor. Uses satellite antenna data from an Antex file.
+          *
+          * @param ephem     Satellite ephemeris.
+          * @param stapos    Nominal position of receiver station.
+          * @param antexObj  AntexReader object containing satellite
+          *                  antenna data.
+          *
+          * @warning If 'AntexReader' object holds an Antex file with relative
+          * antenna data, a simple satellite phase center model will be used.
+          */
+      ComputeSatPCenter( XvtStore<SatID>& ephem,
+                         const Position& stapos,
+                         AntexReader& antexObj )
+         : pEphemeris(&ephem), nominalPos(stapos), pAntexReader(&antexObj)
+      { setIndex(); };
+
+
+         /** Common constructor. Uses satellite antenna data from an Antex file.
+          *
+          * @param stapos    Nominal position of receiver station.
+          * @param antexObj  AntexReader object containing satellite
+          *                  antenna data.
+          *
+          * @warning If 'AntexReader' object holds an Antex file with relative
+          * antenna data, a simple satellite phase center model will be used.
+          */
+      ComputeSatPCenter( const Position& stapos,
+                         AntexReader& antexObj )
+         : pEphemeris(NULL), nominalPos(stapos), pAntexReader(&antexObj)
       { setIndex(); };
 
 
@@ -199,10 +235,25 @@ namespace gpstk
 
 
          /** Sets satellite ephemeris object to be used.
+          *
           * @param ephem     Satellite ephemeris object.
           */
       virtual ComputeSatPCenter& setEphemeris(XvtStore<SatID>& ephem)
       { pEphemeris = &ephem; return (*this); };
+
+
+         /// Returns a pointer to the AntexReader object currently in use.
+      virtual AntexReader *getAntexReader(void) const
+      { return pAntexReader; };
+
+
+         /** Sets AntexReader object to be used.
+          *
+          * @param antexObj  AntexReader object containing satellite
+          *                  antenna data.
+          */
+      virtual ComputeSatPCenter& setAntexReader(AntexReader& antexObj)
+      { pAntexReader = &antexObj; return (*this); };
 
 
          /// Returns an index identifying this object.
@@ -236,6 +287,10 @@ namespace gpstk
       string fileData;
 
 
+         /// Pointer to object containing satellite antenna data, if available.
+      AntexReader* pAntexReader;
+
+
          /** Compute the value of satellite antenna phase correction, in meters
           * @param satid     Satellite ID
           * @param time      Epoch of interest
@@ -266,4 +321,5 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
-#endif // COMPUTESATPCENTER_HPP
+
+#endif // GPSTK_COMPUTESATPCENTER_HPP

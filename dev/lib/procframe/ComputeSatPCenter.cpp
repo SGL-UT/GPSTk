@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 //
 //============================================================================
 
@@ -189,19 +189,19 @@ namespace gpstk
                                             const Triple& sunPosition )
    {
 
-         // Unitary vector from satellite to Earth mass center
+         // Unitary vector from satellite to Earth mass center (ECEF)
       Triple rk( ( (-1.0)*(satpos.unitVector()) ) );
 
-         // Unitary vector from Earth mass center to Sun
+         // Unitary vector from Earth mass center to Sun (ECEF)
       Triple ri( sunPosition.unitVector() );
 
-         // rj = rk x ri
+         // rj = rk x ri: Rotation axis of solar panels (ECEF)
       Triple rj(rk.cross(ri));
 
-         // Redefine ri: ri = rj x rk
+         // Redefine ri: ri = rj x rk (ECEF)
       ri = rj.cross(rk);
 
-         // Let's convert ri to an unitary vector.
+         // Let's convert ri to an unitary vector. (ECEF)
       ri = ri.unitVector();
 
          // Get vector from Earth mass center to receiver
@@ -210,35 +210,143 @@ namespace gpstk
          // Compute unitary vector vector from satellite to RECEIVER
       Triple rrho( (rxPos-satpos).unitVector() );
 
-         // If satellite belongs to block "IIR", its correction is 0.0,
-         // else, it will depend on satellite model.
-         // Variable that will hold the correction, 0.0 by default (IIR)
+         // When not using Antex information, if satellite belongs to block
+         // "IIR" its correction is 0.0, else it will depend on satellite model.
+
+         // This variable that will hold the correction, 0.0 by default
       double svPCcorr(0.0);
 
-         // For satellites II and IIA:
-      if( (satData.getBlock( satid, time ) == "II") ||
-          (satData.getBlock( satid, time ) == "IIA") )
+         // Check is Antex antenna information is available or not, and if
+         // available, whether satellite phase center information is absolute
+         // or relative
+      bool absoluteModel( false );
+      if( pAntexReader != NULL )
+      {
+         absoluteModel = pAntexReader->isAbsolute();
+      }
+
+      if( absoluteModel )
       {
 
-            // First, build satellite antenna vector for models II/IIA
-         Triple svAntenna(0.279*ri + 1.023*rk);
+            // We will need the elevation, in degrees. It is found using
+            // dot product and the corresponding unitary angles
+         double elev( 90.0 - (std::acos( rrho.dot(rk) ) * RAD_TO_DEG) );
 
-            // Projection of "svAntenna" vector to line of sight vector (rrho)
-         svPCcorr =  (rrho.dot(svAntenna));
+            // Get satellite information in Antex format. Currently this
+            // only works for GPS and Glonass.
+         if( satid.system == SatID::systemGPS )
+         {
+            std::stringstream sat;
+            sat << "G";
+            if( satid.id < 10 )
+            {
+               sat << "0";
+            }
+            sat << satid.id;
+
+               // Get satellite antenna information out of AntexReader object
+            Antenna antenna( pAntexReader->getAntenna( sat.str(), time ) );
+
+               // Get antenna eccentricity for frequency "G01" (L1), in
+               // satellite reference system.
+               // NOTE: It is NOT in ECEF, it is in UEN!!!
+            Triple satAnt( antenna.getAntennaEccentricity( Antenna::G01) );
+
+               // Now, get the phase center variation.
+            Triple var( antenna.getAntennaPCVariation( Antenna::G01, elev) );
+
+               // We must substract them
+            satAnt = satAnt - var;
+
+                  // Change to ECEF
+            Triple svAntenna( satAnt[2]*ri + satAnt[1]*rj + satAnt[0]*rk );
+
+               // Projection of "svAntenna" vector to line of sight vector rrho
+            svPCcorr =  (rrho.dot(svAntenna));
+
+         }
+         else
+         {
+               // Check if this satellite belongs to Glonass system
+            if( satid.system == SatID::systemGlonass )
+            {
+               std::stringstream sat;
+               sat << "R";
+               if( satid.id < 10 )
+               {
+                  sat << "0";
+               }
+               sat << satid.id;
+
+                  // Get satellite antenna information out of AntexReader object
+               Antenna antenna( pAntexReader->getAntenna( sat.str(), time ) );
+
+                  // Get antenna offset for frequency "R01" (Glonass), in
+                  // satellite reference system.
+                  // NOTE: It is NOT in ECEF, it is in UEN!!!
+               Triple satAnt( antenna.getAntennaEccentricity( Antenna::R01) );
+
+                  // Now, get the phase center variation.
+               Triple var( antenna.getAntennaPCVariation( Antenna::R01, elev) );
+
+                  // We must substract them
+               satAnt = satAnt - var;
+
+                     // Change to ECEF
+               Triple svAntenna( satAnt[2]*ri + satAnt[1]*rj + satAnt[0]*rk );
+
+                  // Project "svAntenna" vector to line of sight vector rrho
+               svPCcorr = (rrho.dot(svAntenna));
+
+            }
+            else
+            {
+                  // In this case no correction will be computed
+               svPCcorr = 0.0;
+            }
+
+         }  // End of 'if( satid.system == SatID::systemGPS )...'
 
       }
       else
       {
-         if( (satData.getBlock( satid, time ) == "I") )
+            // If no Antex information is given, or if phase center information
+            // uses a relative model, then use a simpler, older approach
+
+            // Please note that in this case all GLONASS satellite are
+            // considered as having phase center at (0.0, 0.0, 0.0). The former
+            // is not true for 'GLONASS-M' satellites (-0.545, 0.0, 0.0 ), but
+            // currently there is no simple way to take this into account.
+
+            // For satellites II and IIA:
+         if( (satData.getBlock( satid, time ) == "II") ||
+             (satData.getBlock( satid, time ) == "IIA") )
          {
 
-               // First, build satellite antenna vector for model I
-            Triple svAntenna(0.210*ri + 0.854*rk);
+               // First, build satellite antenna vector for models II/IIA
+            Triple svAntenna(0.279*ri + 1.023*rk);
 
-               // Projection of "svAntenna" to line of sight vector (rrho)
+               // Projection of "svAntenna" vector to line of sight vector rrho
             svPCcorr =  (rrho.dot(svAntenna));
+
          }
-      }
+         else
+         {
+               // For satellites belonging to block "I"
+            if( (satData.getBlock( satid, time ) == "I") )
+            {
+
+                  // First, build satellite antenna vector for model I
+               Triple svAntenna(0.210*ri + 0.854*rk);
+
+                  // Projection of "svAntenna" to line of sight vector (rrho)
+               svPCcorr =  (rrho.dot(svAntenna));
+            }
+
+         }  // End of 'if( (satData.getBlock( satid, time ) == "II") ||...'
+
+      }  // End of 'if( absoluteModel )...'
+
 
          // This correction is interpreted as an "advance" in the signal,
          // instead of a delay. Therefore, it has negative sign
