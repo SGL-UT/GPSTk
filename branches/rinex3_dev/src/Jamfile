@@ -41,7 +41,6 @@ else
       LoopedFramework.cpp MJD.cpp MOPSWeight.cpp MSCData.cpp MSCStore.cpp
       MoonPosition.cpp NEDUtil.cpp ObsClockModel.cpp ObsEpochMap.cpp
       ObsID.cpp ObsRngDev.cpp OceanLoading.cpp
-      OrbElemStore.cpp
       PRSolution.cpp PoleTides.cpp Position.cpp PowerSum.cpp
       RACRotation.cpp RinexEphemerisStore.cpp RinexMetData.cpp
       RinexMetHeader.cpp RinexNavData.cpp RinexNavHeader.cpp

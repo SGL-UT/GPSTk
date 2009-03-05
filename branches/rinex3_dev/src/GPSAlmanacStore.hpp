@@ -53,6 +53,7 @@
 #include "SatID.hpp"
 #include "AlmOrbit.hpp"
 #include "EngAlmanac.hpp"
+#include "OrbElemStore.hpp"
 
 namespace gpstk
 {
@@ -62,7 +63,7 @@ namespace gpstk
    /// Store GPS almanac information (i.e. like the data in subframes 4&5) and 
    /// compute satellite Xvt based upon this data and the algorithms defined
    /// in the IS-GPS-200.
-   class GPSAlmanacStore : public XvtStore<SatID>
+   class GPSAlmanacStore : public OrbElemStore
    {
    public:
 
