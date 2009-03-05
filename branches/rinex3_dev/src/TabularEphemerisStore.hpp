@@ -521,6 +521,14 @@ namespace gpstk
          const throw()
       { return haveVelocity; }
 
+         /// Set if satellites with bad or absent position values will be
+         /// rejected. It is false by default when object is constructed.
+      void rejectBadPositions(const bool flag) { rejectBadPosFlag = flag; }
+
+         /// Set if satellites with bad or absent clock values will be
+         /// rejected. It is false by default when object is constructed.
+      void rejectBadClocks(const bool flag) { rejectBadClockFlag = flag; }
+
 
       //---------------------------------------------------------------
       // Below are interfaces that are unique to this class (i.e. not
@@ -667,6 +675,12 @@ namespace gpstk
       /// Order of Lagrange interpolation used in getXvt(), should be even.
       /// Usually for 15 minute data, this is 10. 
       unsigned int interpOrder;
+
+         /// Flag to reject satellites with bad or absent positional values
+      bool rejectBadPosFlag;
+
+         /// Flag to reject satellites with bad or absent clock values
+      bool rejectBadClockFlag;
 
    }; // end class TabularEphemerisStore
 

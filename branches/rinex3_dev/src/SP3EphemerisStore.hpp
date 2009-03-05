@@ -85,16 +85,6 @@ namespace gpstk
       virtual void loadFile(const std::string& filename)
          throw( FileMissingException );
 
-
-         /// Set if satellites with bad or absent position values will be
-         /// rejected. It is false by default when object is constructed.
-      void rejectBadPositions(const bool flag) { rejectBadPosFlag = flag; }
-
-         /// Set if satellites with bad or absent clock values will be
-         /// rejected. It is false by default when object is constructed.
-      void rejectBadClocks(const bool flag) { rejectBadClockFlag = flag; }
-
-
          /// Insert position data into the store at time t
          /// @param t   Time of the data
          /// @param sat Satellite id of the data
@@ -132,15 +122,6 @@ namespace gpstk
          ///      in the units specified in addPositionData() and addVelocityData()
       void addData(const CommonTime& t, const SatID& sat, const Xvt& xvt)
          throw();
-
-
-   private:
-
-         /// Flag to reject satellites with bad or absent positional values
-      bool rejectBadPosFlag;
-
-         /// Flag to reject satellites with bad or absent clock values
-      bool rejectBadClockFlag;
 
    }; // End of class 'SP3EphemerisStore'
 

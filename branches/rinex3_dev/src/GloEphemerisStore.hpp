@@ -67,6 +67,7 @@ namespace gpstk
          /// Constructor.
       GloEphemerisStore()
          throw()
+         : rejectBadPosFlag(true), rejectBadClockFlag(true)
       { TabularEphemerisStore<GloRecord>(); };
 
          /// Destructor.
