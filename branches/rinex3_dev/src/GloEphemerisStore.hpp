@@ -49,6 +49,7 @@
 
 #include "TabularEphemerisStore.hpp"
 #include "GloRecord.hpp"
+#include "Rinex3NavData.hpp"
 
 namespace gpstk
 {
@@ -67,22 +68,13 @@ namespace gpstk
          /// Constructor.
       GloEphemerisStore()
          throw()
-         : rejectBadPosFlag(true), rejectBadClockFlag(true)
       { TabularEphemerisStore<GloRecord>(); };
 
          /// Destructor.
       virtual ~GloEphemerisStore() {};
 
-      GloRecord getNearGloRecord(SatID sat, CommonTime t)
-         throw (gpstk::InvalidRequest);
-
-      GloRecord getFirstGloRecord(SatID sat)
-         throw (gpstk::InvalidRequest)
-      {return getNearGloRecord(sat, CommonTime::BEGINNING_OF_TIME);};
-      
-      GloRecord getLastGloRecord(SatID sat)
-         throw (gpstk::InvalidRequest)
-      {return getNearGloRecord(sat, CommonTime::END_OF_TIME);};
+      void addEphemeris(const Rinex3NavData& data)
+         throw();
 
    };
 

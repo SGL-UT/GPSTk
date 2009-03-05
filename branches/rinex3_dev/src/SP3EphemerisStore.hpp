@@ -70,7 +70,6 @@ namespace gpstk
          /// Constructor.
       SP3EphemerisStore()
          throw()
-	: rejectBadPosFlag(true), rejectBadClockFlag(true)
      { TabularEphemerisStore<Xvt>(); };
 
 

@@ -105,8 +105,6 @@ namespace gpstk
                           short mftime, short h, short freqnum,
                           double ageofinfo                          );
 
-  private:
-
     Triple a;         ///< SV acceleration (x,y,z), Earth-fixed [meters]
     short MFtime;     ///< Message frame time [sec of UTC week]
     short health;     ///< SV health

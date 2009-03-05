@@ -81,7 +81,7 @@ namespace gpstk
          : haveVelocity(true), initialTime(CommonTime::END_OF_TIME),
            finalTime(CommonTime::BEGINNING_OF_TIME), checkDataGap(false),
            gapInterval(901.0), checkInterval(false), maxInterval(8105.0),
-           interpOrder(10)
+           interpOrder(10), rejectBadPosFlag(true), rejectBadClockFlag(true)
       {};
 
       /// Destructor

@@ -45,11 +45,31 @@
 
 namespace gpstk
 {
+   //-----------------------------------------------------------------------------
+   //-----------------------------------------------------------------------------
+   void GloEphemerisStore::addEphemeris(const Rinex3NavData& data)
+      throw()
+   {
+      CommonTime t = data.time;
+      SatID sat = data.sat;
+      GloRecord&  glorecord = pe[sat][t];
 
-      GloRecord GloEphemerisStore::getNearGloRecord(SatID sat, CommonTime t)
-         throw (gpstk::InvalidRequest)
-      {}
+      glorecord.x = ECEF(data.px,data.py,data.pz);
+      glorecord.v = ECEF(data.vx,data.vy,data.vz);
+      glorecord.a = ECEF(data.ax,data.ay,data.az);
 
+      glorecord.dtime = data.TauN;
+      glorecord.ddtime = data.GammaN;
+      glorecord.MFtime = data.MFtime;
+      glorecord.health = data.health;
+      glorecord.freqNum = data.freqNum;
+      glorecord.ageOfInfo = data.ageOfInfo;
+      
+      if (t<initialTime)
+         initialTime = t;
+      else if (t>finalTime)
+         finalTime = t;
+   }
 }
 
 
