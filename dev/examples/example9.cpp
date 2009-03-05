@@ -9,7 +9,7 @@
 //    Kouba, J. and P. Heroux. "Precise Point Positioning using IGS Orbit
 //       and Clock Products". GPS Solutions, vol 5, pp 2-28. October, 2001.
 //
-// Dagoberto Salazar - gAGE. 2008, 2009
+// Dagoberto Salazar - gAGE. 2008, 2009.
 
 
 // Basic input/output C++ classes
@@ -548,7 +548,8 @@ void example9::process()
       pObsFilter.setFilteredType(TypeID::P2);
 
          // Read if we should use C1 instead of P1
-      if ( confReader.getValueAsBoolean( "useC1", station ) )
+      bool usingC1( confReader.getValueAsBoolean( "useC1", station ) );
+      if ( usingC1 )
       {
          requireObs.addRequiredType(TypeID::C1);
          pObsFilter.addFilteredType(TypeID::C1);
@@ -589,7 +590,7 @@ void example9::process()
       ComputeLinear linear1;
 
          // Read if we should use C1 instead of P1
-      if ( confReader.getValueAsBoolean( "useC1", station ) )
+      if ( usingC1 )
       {
          linear1.addLinear(comb.pdeltaCombWithC1);
          linear1.addLinear(comb.mwubbenaCombWithC1);
@@ -625,8 +626,16 @@ void example9::process()
 
          // Declare a basic modeler
       BasicModel basic(nominalPos, SP3EphList);
+
          // Set the minimum elevation
       basic.setMinElev(confReader.getValueAsDouble("cutOffElevation",station));
+
+         // If we are going to use P1 instead of C1, we must reconfigure 'basic'
+      if ( !usingC1 )
+      {
+         basic.setDefaultObservable(TypeID::P1);
+      }
+
 
          // Add to processing list
       pList.push_back(basic);
@@ -740,7 +749,7 @@ void example9::process()
       ComputeLinear linear2;
 
          // Read if we should use C1 instead of P1
-      if ( confReader.getValueAsBoolean( "useC1", station ) )
+      if ( usingC1 )
       {
             // WARNING: When using C1 instead of P1 to compute PC combination,
             //          be aware that instrumental errors will NOT cancel,
