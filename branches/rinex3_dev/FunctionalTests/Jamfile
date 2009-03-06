@@ -1,29 +1,12 @@
 SEARCH =  ../lib/rxio ../src/. ;
-STD_LINK_LIBS = -ldl -lstdc++ -lm ; 
+STD_LINK_LIBS = -ldl -lstdc++ -lm ;       
 
+Main Rinex3NavTest : Rinex3NavTest.cpp ;
+ObjectHdrs Rinex3NavTest Rinex3NavTest.cpp : ../src ;
+LINKLIBS on Rinex3NavTest =  $(STD_LINK_LIBS) ;
+LinkLibraries Rinex3NavTest : ../src/libgpstk-R3.a ;   
 
-Main wheresat : WhereSat.cpp EphReader.cpp ;
-ObjectHdrs wheresat WhereSat.cpp : ../lib/rxio/ ../src/. ;
-ObjectHdrs wheresat EphReader.cpp : ../lib/rxio/  ../src/. ;
-LINKLIBS on wheresat =  $(STD_LINK_LIBS) ;
-LinkLibraries wheresat : ../lib/rxio/librxio ../src/libgpstk-R3.a ;
-
-Main rinex_nav_test : rinex_nav_test.cpp ;
-ObjectHdrs rinex_nav_test rinex_nav_test.cpp : ../src ;
-LINKLIBS on rinex_nav_test =  $(STD_LINK_LIBS) ;
-LinkLibraries rinex_nav_test : ../src/libgpstk-R3.a ;        
-
-Main sp3version : sp3version.cpp ;
-ObjectHdrs sp3version sp3version.cpp : ../src ;
-LINKLIBS on sp3version =  $(STD_LINK_LIBS) ;
-LinkLibraries sp3version : ../src/libgpstk-R3.a ;        
-
-Main petest : petest.cpp ;
-ObjectHdrs petest petest.cpp : ../src ;
-LINKLIBS on petest =  $(STD_LINK_LIBS) ;
-LinkLibraries petest : ../src/libgpstk-R3.a ;        
-
-Main ttime : ttime.cpp ;
-ObjectHdrs ttime ttime.cpp : ../src ;
-LINKLIBS on ttime =  $(STD_LINK_LIBS) ;
-LinkLibraries ttime : ../src/libgpstk-R3.a ;        
+Main Rinex3NavStoreTest : Rinex3NavStoreTest.cpp ;
+ObjectHdrs Rinex3NavStoreTest Rinex3NavStoreTest.cpp : ../src ;
+LINKLIBS on Rinex3NavStoreTest =  $(STD_LINK_LIBS) ;
+LinkLibraries Rinex3NavStoreTest : ../src/libgpstk-R3.a ;   
