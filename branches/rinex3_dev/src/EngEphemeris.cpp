@@ -387,6 +387,146 @@ namespace gpstk
       return 0; // never reached
    }
 
+   Xt EngEphemeris::svXt(const CommonTime& t) const
+      throw( InvalidRequest )
+   {
+      Xt sv;
+
+      double ea;              /* eccentric anomaly */
+      double delea;           /* delta eccentric anomaly during iteration */
+      double elapte;          /* elapsed time since Toe */
+      double elaptc;          /* elapsed time since Toc */
+      double dtc,dtr,q,sinea,cosea;
+      double GSTA,GCTA;
+      double A;               /* semi-major axis */
+      double amm;
+      double meana;           /* mean anomaly */
+      double F,G;             /* temporary real variables */
+      double alat,talat,c2al,s2al,du,dr,di,U,R,truea,AINC;
+      double ANLON,cosu,sinu,xip,yip,can,san,cinc,sinc;
+      double xef,yef,zef;
+      double ddtime;
+      GPSGeoid geoid;
+
+      double sqrtgm = sqrt(geoid.gm());
+
+         // Check for ground transmitter
+      double twoPI = 2.0e0 * PI;
+      bool igtran;              // ground transmitter flag
+      double lecc;               // eccentricity
+      double tdrinc;            // dt inclination
+
+      if ( getAhalf() < 2550.0e0 )
+      {
+         igtran = true;
+         lecc = 0.0e0;
+         tdrinc = 0.0e0;
+      }
+      else
+      {
+         igtran = false;
+         lecc = getEcc();
+         tdrinc = getIDot();
+      }
+
+         // Compute time since ephemeris & clock epochs
+      elapte = t - getEphemerisEpoch();
+      elaptc = t - getEpochTime();
+   
+
+         // Compute mean motion
+      A = getA();
+      amm  = (sqrtgm / (A*getAhalf())) + getDn();
+
+
+         // In-plane angles
+         //     meana - Mean anomaly
+         //     ea    - Eccentric anomaly
+         //     truea - True anomaly
+      if (!igtran)
+         meana = getM0() + elapte * amm;
+      else
+         meana = getM0();
+      meana = fmod(meana, twoPI);
+   
+      ea = meana + lecc * sin(meana);
+
+      int loop_cnt = 1;
+      do
+      {
+         F = meana - ( ea - lecc * sin(ea));
+         G = 1.0 - lecc * cos(ea);
+         delea = F/G;
+         ea = ea + delea;
+         loop_cnt++;
+      } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
+
+         // Compute clock corrections
+      ddtime = getAf1() + elaptc * getAf2();
+      dtc = getAf0() + elaptc * ( ddtime );
+      dtr = REL_CONST * lecc * getAhalf() * sin(ea);
+      sv.dtime = dtc + dtr;
+   
+         // Compute true anomaly
+      q = sqrt ( 1.0e0 - lecc*lecc);
+      sinea = sin(ea);
+      cosea = cos(ea);
+      G = 1.0e0 - lecc * cosea;
+   
+         //  G*SIN(TA) AND G*COS(TA)
+      GSTA  = q * sinea;
+      GCTA  = cosea - lecc;
+
+         //  True anomaly
+      truea = atan2 ( GSTA, GCTA );
+
+         // Argument of lat and correction terms (2nd harmonic)
+      alat = truea + getW();
+      talat = 2.0e0 * alat;
+      c2al = cos( talat );
+      s2al = sin( talat );
+
+      du  = c2al * getCuc() +  s2al * getCus();
+      dr  = c2al * getCrc() +  s2al * getCrs();
+      di  = c2al * getCic() +  s2al * getCis();
+
+         // U = updated argument of lat, R = radius, AINC = inclination
+      U    = alat + du;
+      R    = getA()*G  + dr;
+      AINC = getI0() + tdrinc * elapte  +  di;
+
+         //  Longitude of ascending node (ANLON)
+      if (!igtran)
+         ANLON = getOmega0() + (getOmegaDot() - geoid.angVelocity()) *
+                 elapte - geoid.angVelocity() * getToe();
+      else
+         ANLON = getOmega0() - getOmegaDot() * getToe();
+
+         // In plane location
+      cosu = cos( U );
+      sinu = sin( U );
+
+      xip  = R * cosu;
+      yip  = R * sinu;
+
+         //  Angles for rotation to earth fixed
+      can  = cos( ANLON );
+      san  = sin( ANLON );
+      cinc = cos( AINC  );
+      sinc = sin( AINC  );
+ 
+         // Earth fixed - meters
+      xef  =  xip*can  -  yip*cinc*san;
+      yef  =  xip*san  +  yip*cinc*can;
+      zef  =              yip*sinc;
+
+      sv.x[0] = xef;
+      sv.x[1] = yef;
+      sv.x[2] = zef;
+
+      return sv;
+   }
+
    Xvt EngEphemeris::svXvt(const CommonTime& t) const
       throw( InvalidRequest )
    {
@@ -451,7 +591,8 @@ namespace gpstk
       ea = meana + lecc * sin(meana);
 
       int loop_cnt = 1;
-      do  {
+      do
+      {
          F = meana - ( ea - lecc * sin(ea));
          G = 1.0 - lecc * cos(ea);
          delea = F/G;
@@ -496,7 +637,7 @@ namespace gpstk
          //  Longitude of ascending node (ANLON)
       if (!igtran)
          ANLON = getOmega0() + (getOmegaDot() - geoid.angVelocity()) *
-            elapte - geoid.angVelocity() * getToe();
+                 elapte - geoid.angVelocity() * getToe();
       else
          ANLON = getOmega0() - getOmegaDot() * getToe();
 

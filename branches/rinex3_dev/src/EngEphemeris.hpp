@@ -175,7 +175,14 @@ namespace gpstk
       short getFitInterval() const
          throw( gpstk::InvalidRequest );
 
-         /** Compute satellite velocity/position at the given time
+         /** Compute satellite position at the given time
+          * using this ephemeris.
+          * @throw InvalidRequest if a required subframe has not been stored.
+          */
+      Xt svXt(const CommonTime& t) const
+         throw( gpstk::InvalidRequest );
+
+         /** Compute satellite position & velocity at the given time
           * using this ephemeris.
           * @throw InvalidRequest if a required subframe has not been stored.
           */

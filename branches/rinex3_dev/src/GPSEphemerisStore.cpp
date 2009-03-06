@@ -57,6 +57,36 @@ namespace gpstk
 {
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
+   Xt GPSEphemerisStore::getXt(const SatID sat, const CommonTime& t) const
+      throw( InvalidRequest )
+   {
+      short ref;
+      return getXt(sat, t, ref);
+   }
+
+
+   //--------------------------------------------------------------------------
+   //--------------------------------------------------------------------------
+   Xt GPSEphemerisStore::getXt(const SatID& sat, const CommonTime& t, short& ref) const
+      throw( InvalidRequest )
+   {
+      try
+      {
+         // test for GPS satellite system in sat?
+         const EngEphemeris& eph = findEphemeris(sat,t);
+         ref = eph.getIODC();
+         Xt sv = eph.svXvt(t);
+         return sv;
+      }
+      catch(InvalidRequest& ir)
+      {
+         GPSTK_RETHROW(ir);
+      }
+   }
+
+
+   //--------------------------------------------------------------------------
+   //--------------------------------------------------------------------------
    Xvt GPSEphemerisStore::getXvt(const SatID sat, const CommonTime& t) const
       throw( InvalidRequest )
    {
