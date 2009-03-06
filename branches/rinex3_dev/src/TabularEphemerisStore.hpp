@@ -535,33 +535,6 @@ namespace gpstk
       // in the parent class)
       //---------------------------------------------------------------
 
-
-      /// Insert a new SP3Data object into the store
-      void addEphemeris(const SP3Data& data)
-         throw()
-      {  
-        CommonTime t = data.time;
-        SatID sat = data.sat;
-        Xvt&  xvt = pe[sat][t];
-
-        if (data.RecType == 'P')
-        {
-          xvt.x = ECEF(data.x[0], data.x[1], data.x[2]);
-          xvt.dtime = data.clk;
-          haveVelocity = false;
-        }
-        else if (data.RecType == 'V')
-        {
-          xvt.v = Triple(data.x[0],data.x[1],data.x[2]);
-          xvt.ddtime = data.clk;
-          haveVelocity = true;
-        }
-
-        if (t < initialTime) initialTime = t;
-        else if (t > finalTime) finalTime = t;
-      };
-
-
       /// Remove all data
       void clear()
          throw()

@@ -93,6 +93,32 @@ namespace gpstk
 
    }  // End of method 'SP3EphemerisStore::loadFile()'
 
+
+      /// Insert a new SP3Data object into the store
+      void SP3EphemerisStore::addEphemeris(const SP3Data& data)
+         throw()
+      {  
+        CommonTime t = data.time;
+        SatID sat = data.sat;
+        Xvt&  xvt = pe[sat][t];
+
+        if (data.RecType == 'P')
+        {
+          xvt.x = ECEF(data.x[0], data.x[1], data.x[2]);
+          xvt.dtime = data.clk;
+          haveVelocity = false;
+        }
+        else if (data.RecType == 'V')
+        {
+          xvt.v = Triple(data.x[0],data.x[1],data.x[2]);
+          xvt.ddtime = data.clk;
+          haveVelocity = true;
+        }
+
+        if (t < initialTime) initialTime = t;
+        else if (t > finalTime) finalTime = t;
+      };
+
       /* A debugging function that outputs in human readable form,
        * all data stored in this object: dump the store to cout.
        *

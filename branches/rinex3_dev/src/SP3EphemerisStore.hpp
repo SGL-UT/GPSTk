@@ -84,6 +84,11 @@ namespace gpstk
       virtual void loadFile(const std::string& filename)
          throw( FileMissingException );
 
+
+      /// Insert a new SP3Data object into the store
+      void addEphemeris(const SP3Data& data)
+         throw();
+
          /// Insert position data into the store at time t
          /// @param t   Time of the data
          /// @param sat Satellite id of the data
