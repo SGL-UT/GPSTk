@@ -186,7 +186,7 @@ namespace gpstk
    void Rinex3NavData::dump(ostream& s) const
    {
       s << "SatSys: " << satSys
-        << "PRN: " << setw(2) << PRNID
+        << " PRN: " << setw(2) << PRNID
         << " TOE: " << time
         << " TOC: " << setw(4) << weeknum << " " 
         << fixed << setw(10) << setprecision(3) << Toc
@@ -515,7 +515,7 @@ namespace gpstk
          // check for spaces in the right spots...
          if (currentLine[3] != ' ')
             throw( FFStreamError("Badly formatted line") );
-         for (int i = 8; i <= 23; i += 3)
+         for (int i = 8; i <= 20; i += 3)
             if (currentLine[i] != ' ')
                throw( FFStreamError("Badly formatted line") );
 
