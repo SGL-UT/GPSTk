@@ -111,7 +111,7 @@ namespace gpstk
       CommonTime time;     ///< Time according to the record
       std::string satSys;  ///< Satellite system of Epoch
       short PRNID;         ///< SV PRN ID
-      SatID sat;           ///TODO THIS NEEDS TO BE CODED
+      SatID sat;           ///< SatID (from PRNID & satSys)
       long HOWtime;        ///< Time of subframe 1-3 (sec of week)
       short weeknum;       ///< GPS full week number that corresponds to the HOWtime of SF1
                            ///< (N.B.: in RINEX files, week number corresponds to ToE.)

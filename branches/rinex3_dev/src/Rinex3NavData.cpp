@@ -55,12 +55,13 @@ namespace gpstk
    using namespace gpstk::StringUtils;
    using namespace std;
 
-   Rinex3NavData::Rinex3NavData(const EngEphemeris& ee)
+  Rinex3NavData::Rinex3NavData(const EngEphemeris& ee) // GPS only
    {
-      // universal epoch info
+      // epoch info
 
       satSys = ee.getSatSys();
       PRNID  = ee.getPRNID();
+      sat    = SatID(PRNID,SatID::systemGPS);
       time   = ee.getEpochTime();
 
       Toc     = ee.getToc();
@@ -111,31 +112,12 @@ namespace gpstk
 
       // Galileo-only data
 
-      IODnav = ee.getIODnav(); // Galileo only
+//      IODnav = ee.getIODnav(); // Galileo only
 
-      datasources = ee.getDatasources(); // Galileo only
+//      datasources = ee.getDatasources(); // Galileo only
 
-      BGDa = ee.getBGDa(); // Galileo only
-      BGDb = ee.getBGDb(); // Galileo only
-
-      // GLONASS-only data
-
-      TauN   = ee.getTauN();   // GLONASS only
-      GammaN = ee.getGammaN(); // GLONASS only
-      MFtime = ee.getMFtime(); // GLONASS only
-
-      px = ee.getpx(); // GLONASS only
-      vx = ee.getvx(); // GLONASS only
-      ax = ee.getax(); // GLONASS only
-      py = ee.getpy(); // GLONASS only
-      vy = ee.getvy(); // GLONASS only
-      ay = ee.getay(); // GLONASS only
-      pz = ee.getpz(); // GLONASS only
-      vz = ee.getvz(); // GLONASS only
-      az = ee.getaz(); // GLONASS only
-
-      freqNum   = ee.getFreqNum();   // GLONASS only
-      ageOfInfo = ee.getAgeOfInfo(); // GLONASS only
+//      BGDa = ee.getBGDa(); // Galileo only
+//      BGDb = ee.getBGDb(); // Galileo only
 
    }
 
