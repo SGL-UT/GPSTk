@@ -28,14 +28,15 @@ int main(int argc, char *argv[])
    try
    {
 
-      bool firstEpochFound=true;
-      CommonTime firstTime;
-      CommonTime lastTime;
+      bool firstEpochFound = true;
+      CommonTime firstTime(0,0,0.,TimeSystem::Any);
+      CommonTime lastTime(0,0,0.,TimeSystem::Any);
       SatID firstSat;
          
       int i,ip,it,nf=0,np=0,nt=0;
       Rinex3EphemerisStore EphList;
-      for(i=1; i<argc; i++) {
+      for(i = 1; i < argc; i++)
+      {
          Rinex3NavHeader header;
          Rinex3NavData data;
          
@@ -54,23 +55,32 @@ int main(int argc, char *argv[])
          ip = it = 0;
          CommonTime t(CommonTime::BEGINNING_OF_TIME);
 
-         while(pefile >> data) {
+         while (pefile >> data) 
+         {
             if (firstEpochFound)
             {  
                firstSat = data.sat;
                firstTime = data.time;
                lastTime = firstTime;
                
-               firstEpochFound=false;
+               firstEpochFound = false;
             }
+
+            /*
+            cout << "Comparing data.time and lastTime." << endl;
 
             if (data.time > lastTime) lastTime = data.time;
             
-            if(data.time > t) {
+            cout << "Comparing data.time and t." << endl;
+
+            if (data.time > t)
+            {
                cout << "Epoch " << data.time << endl;
                t = data.time;
                it++; nt++;
             }
+            */
+
             data.dump(cout);
             ip++; np++;
          }
