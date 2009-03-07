@@ -46,9 +46,9 @@
 
 namespace gpstk
 {
-      /// load the given Rinex file
+   /// load the given Rinex file
    void Rinex3EphemerisStore::loadFile(const std::string& filename) 
-      throw(FileMissingException)
+      throw( FileMissingException )
    {
       try
       {
@@ -68,17 +68,14 @@ namespace gpstk
          Rinex3NavData rec;
          while(strm >> rec)
          {
-            if (rec.satSys=="G") 
-                  // Ephemeris and clock are valid, then add them
+//            cout << "*** Rinex3EphStore(): read a data record" << endl;
+            if (rec.satSys=="G") // Ephemeris and clock are valid, then add them
                GPSstore.addEphemeris(rec);
-            if (rec.satSys=="R") 
-                  // Ephemeris and clock are valid, then add them
+            if (rec.satSys=="R") // Ephemeris and clock are valid, then add them
                GLOstore.addEphemeris(rec);
-            //if (rec.satSys=="L") 
-                  // Ephemeris and clock are valid, then add them
-               //GLOstore.addEphemeris(rec);
-
-         }  // end of 'while(strm >> rec)'
+            //if (rec.satSys=="E") // Ephemeris and clock are valid, then add them
+               //GALstore.addEphemeris(rec);
+         }
 
       }
       catch (gpstk::Exception& e)
@@ -88,9 +85,10 @@ namespace gpstk
 
    }  // End of method 'SP3EphemerisStore::loadFile()'
 
+
    void Rinex3EphemerisStore::dump( std::ostream& s,
-                                       short detail )
-         const throw()
+                                    short detail    )
+      const throw()
    {
       GPSstore.dump();
       GLOstore.dump();

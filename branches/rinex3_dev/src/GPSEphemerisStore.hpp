@@ -90,7 +90,7 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xt getXt(const SatID sat, const CommonTime& t) const
+      virtual Xt getXt( const SatID sat, const CommonTime& t ) const
          throw( InvalidRequest );
 
 
@@ -101,7 +101,7 @@ namespace gpstk
        * @param ref a place to return the IODC for future reference.
        * @return the Xt of the SV at time t
        */
-      virtual Xt getXt(const SatID& sat, const CommonTime& t, short& ref) const
+      virtual Xt getXt( const SatID& sat, const CommonTime& t, short& ref ) const
          throw( InvalidRequest );
 
 
@@ -113,7 +113,7 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xvt getXvt(const SatID sat, const CommonTime& t) const
+      virtual Xvt getXvt( const SatID sat, const CommonTime& t ) const
          throw( InvalidRequest );
 
 
@@ -124,7 +124,7 @@ namespace gpstk
        * @param ref a place to return the IODC for future reference.
        * @return the Xvt of the SV at time t
        */
-      virtual Xvt getXvt(const SatID& sat, const CommonTime& t, short& ref) const
+      virtual Xvt getXvt( const SatID& sat, const CommonTime& t, short& ref ) const
          throw( InvalidRequest );
 
 
@@ -132,15 +132,15 @@ namespace gpstk
       /// all data stored in this object.
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
-      virtual void dump(std::ostream& s = std::cout, short detail = 0) const
+      virtual void dump( std::ostream& s = std::cout, short detail = 0 ) const
          throw();
 
 
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param tmin defines the beginning of the time interval
       /// @param tmax defines the end of the time interval
-      virtual void edit(const CommonTime& tmin, 
-                const CommonTime& tmax = CommonTime::END_OF_TIME )
+      virtual void edit( const CommonTime& tmin, 
+                         const CommonTime& tmax = CommonTime::END_OF_TIME )
          throw();
 
 
@@ -163,7 +163,7 @@ namespace gpstk
 
       virtual bool velocityIsPresent()
          const throw()
-      {return true;}
+      { return true; }
 
       //---------------------------------------------------------------
       // Below are interfaces that are unique to this class (i.e. not 
@@ -175,26 +175,26 @@ namespace gpstk
       /// @param t the time to look up
       /// @return the SV health bits
       /// @throw InvalidRequest no matching ephemeris found in the store
-      short getSatHealth(const SatID& sat, const CommonTime& t) const
+      short getSatHealth( const SatID& sat, const CommonTime& t ) const
          throw( InvalidRequest );
 
 
       /// Add an EngEphemeris object to this collection.
       /// @param eph the EngEphemeris to add
       /// @return true if ephemeris was added, false otherwise
-      bool addEphemeris(const EngEphemeris& eph)
+      bool addEphemeris( const EngEphemeris& eph )
          throw();
 
       /// Remove EngEphemeris objects older than t.
       /// @param t remove EngEphemeris objects older than this
-      void wiper(const CommonTime& t)
+      void wiper( const CommonTime& t )
          throw()
-      {edit(t);}
+      { edit(t); }
       
       /// Remove all data from this collection.   
       void clear()
          throw()
-      {edit(CommonTime::END_OF_TIME);}
+      { edit(CommonTime::END_OF_TIME); }
       
       /// Get the number of EngEphemeris objects in this collection.
       /// @return the number of EngEphemeris records in the map
@@ -211,7 +211,7 @@ namespace gpstk
       /// @param t time with which to search for ephemeris
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findEphemeris(const SatID& sat, const CommonTime& t) const
+      const EngEphemeris& findEphemeris( const SatID& sat, const CommonTime& t ) const
          throw( InvalidRequest );
 
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
@@ -222,7 +222,7 @@ namespace gpstk
       /// @param t the time of interest
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findUserEphemeris(const SatID& sat, const CommonTime& t) const
+      const EngEphemeris& findUserEphemeris( const SatID& sat, const CommonTime& t ) const
          throw( InvalidRequest );
 
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
@@ -232,23 +232,23 @@ namespace gpstk
       /// @param t the time of interest
       /// @return a reference to desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findNearEphemeris(const SatID& sat, const CommonTime& t) const
+      const EngEphemeris& findNearEphemeris( const SatID& sat, const CommonTime& t ) const
          throw( InvalidRequest );
 
       /// Add all ephemerides to an existing list<EngEphemeris>.
       /// @return the number of ephemerides added.
-      int addToList(std::list<EngEphemeris>& v) const
+      int addToList( std::list<EngEphemeris>& v ) const
          throw();
 
       /// use findNearEphemeris() in the getSat...() routines
       void SearchNear(void)
          throw()
-      {method = 1;}
+      { method = 1; }
 
       /// use findEphemeris() in the getSat...() routines (the default)
       void SearchPast(void)
          throw()
-      {method = 0;}
+      { method = 0; }
 
       /// This is intended to just store sets of unique EngEphemerides
       /// for a single SV.  The key is the Toe - 1/2 the fit interval.

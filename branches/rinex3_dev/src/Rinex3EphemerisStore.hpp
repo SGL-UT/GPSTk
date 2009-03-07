@@ -48,8 +48,8 @@
 #include <iostream>
 
 #include "GPSEphemerisStore.hpp"
-//#include "GalileoEphemerisStore.hpp"
 #include "GloEphemerisStore.hpp"
+//#include "GalEphemerisStore.hpp"
 #include "FileStore.hpp"
 #include "Rinex3NavStream.hpp"
 #include "Rinex3NavData.hpp"
@@ -90,9 +90,9 @@ namespace gpstk
 
       GPSEphemerisStore GPSstore;
 
-      //GalileoEphemerisStore GALstore;
-
       GloEphemerisStore GLOstore;
+
+      //GalEphemerisStore GALstore;
 
    };
 

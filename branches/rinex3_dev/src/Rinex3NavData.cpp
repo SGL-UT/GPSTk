@@ -152,14 +152,19 @@ namespace gpstk
    {
       Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
 
-         // If the header hasn't been read, read it...
-      if(!strm.headerRead)
-         strm >> strm.header;
+      cout << "*** reallyGetRecord() ***" << endl;
+
+      cout << strm.headerRead << endl;
+
+      // If the header hasn't been read, read it...
+      if( !strm.headerRead ) strm >> strm.header;
 
       string line;
 
       strm.formattedGetLine(line, true);
       getPRNEpoch(line);
+
+      cout << "reallyGetRecord(): Sat Sys = " << satSys << endl;
 
       strm.formattedGetLine(line);
       getBroadcastOrbit1(line);
@@ -170,17 +175,23 @@ namespace gpstk
       strm.formattedGetLine(line);
       getBroadcastOrbit3(line);
 
-      strm.formattedGetLine(line);
-      getBroadcastOrbit4(line);
+      cout << "reallyGetRecord(): got 3 B.O.'s" << endl;
 
-      strm.formattedGetLine(line);
-      getBroadcastOrbit5(line);
+      if ( satSys == "G" || satSys == "E" )
+      {
+        strm.formattedGetLine(line);
+        getBroadcastOrbit4(line);
 
-      strm.formattedGetLine(line);
-      getBroadcastOrbit6(line);
+        strm.formattedGetLine(line);
+        getBroadcastOrbit5(line);
 
-      strm.formattedGetLine(line);
-      getBroadcastOrbit7(line);
+        strm.formattedGetLine(line);
+        getBroadcastOrbit6(line);
+
+        strm.formattedGetLine(line);
+        getBroadcastOrbit7(line);
+      }
+
    }
 
    void Rinex3NavData::dump(ostream& s) const
@@ -512,6 +523,8 @@ namespace gpstk
    {
       try
       {
+//         cout << "*** getPRNEpoch() ***" << endl;
+
          // check for spaces in the right spots...
          if (currentLine[3] != ' ')
             throw( FFStreamError("Badly formatted line") );
@@ -523,6 +536,12 @@ namespace gpstk
 
          PRNID = asInt(currentLine.substr(1,2));
 
+         if      ( satSys == "G" ) sat = SatID(PRNID,SatID::systemGPS    );
+         else if ( satSys == "R" ) sat = SatID(PRNID,SatID::systemGlonass);
+         else if ( satSys == "E" ) sat = SatID(PRNID,SatID::systemGalileo);
+
+//         cout << "Sat Sys " << satSys << " & PRN-ID " << PRNID << endl;
+
          short yr  = asInt(currentLine.substr( 4,4));
          short mo  = asInt(currentLine.substr( 7,2));
          short day = asInt(currentLine.substr(10,2));
@@ -533,8 +552,12 @@ namespace gpstk
          // Real RINEX 2 had epochs 'yy mm dd hr 59 60.0' surprisingly often.
          // Keep this in place (as Int) to be cautious.
          short ds = 0;
-         if (sec >= 60) { ds=sec; sec=0; }
+         if (sec >= 60) { ds = sec; sec = 0; }
          time = CivilTime(yr,mo,day,hr,min,(double)sec).convertToCommonTime();
+         if      ( satSys == "G" ) time.setTimeSystem(TimeSystem::GPS);
+         else if ( satSys == "R" ) time.setTimeSystem(TimeSystem::GLO);
+         else if ( satSys == "E" ) time.setTimeSystem(TimeSystem::GAL);
+         cout << time << endl;
          if (ds != 0) time += ds;
 
          Toc = ((GPSWeekSecond)time).sow;

@@ -218,8 +218,7 @@ namespace gpstk
     Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
 
     // if already read, just return
-    if (strm.headerRead == true)
-      return;
+    if (strm.headerRead == true) return;
 
     valid = 0;
 
