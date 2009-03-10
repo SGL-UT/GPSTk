@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstring>
 using std::istream;
 using std::cout;
 using std::endl;

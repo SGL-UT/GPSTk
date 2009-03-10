@@ -13,9 +13,10 @@
 #include <iostream>
 #include <vector>
 
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
+#include <cstdio>
+#include <cstring>
+#include <cmath>
+#include <cstdlib>
 
 using namespace std;
 

@@ -11,7 +11,8 @@
 **********************************************/
 
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
+#include <cstdlib>
 
 using namespace std;
 
