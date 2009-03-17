@@ -59,26 +59,30 @@ namespace gpstk
        * \sa rinex3_nav_test.cpp and rinex3_nav_read_write.cpp for examples.
        * \sa gpstk::Rinex3NavData and gpstk::Rinex3NavStream classes.
        */
+
    class Rinex3NavHeader : public Rinex3NavBase
    {
    public:
 
-         /// Constructor
-     Rinex3NavHeader(void) : valid(0), version(3.0) {}
+     /// Constructor
+     Rinex3NavHeader(void)
+       : valid(0), version(3.0)
+     {}
 
-         /// Destructor
-     virtual ~Rinex3NavHeader() {}
+     /// Destructor
+     virtual ~Rinex3NavHeader()
+     {}
 
-         /// Rinex3NavHeader is a "header" so this function always returns true.
+     /// Rinex3NavHeader is a "header" so this function always returns true.
      virtual bool isHeader(void) const {return true;}
 
-         /// This function dumps the contents of the header.
+     /// This function dumps the contents of the header.
      virtual void dump(std::ostream& s) const;
 
-         /// Tell me, Am I valid?
+     /// Tell me, Am I valid?
      unsigned long valid;
 
-         /// These are validity bits used in checking the RINEX NAV header.
+     /// These are validity bits used in checking the RINEX NAV header.
      enum validBits
      {
        versionValid     = 0x01,   ///< Set if the RINEX 3 version is valid.
@@ -89,14 +93,14 @@ namespace gpstk
        leapSecondsValid = 0x020,  ///< Set if the Leap Seconds value is valid.
        endValid = 0x080000000,    ///< Set if the end value is valid.
 
-            /// This bitset checks that all required header items are available
-            /// for a Rinex 3.0 version file
+       /// This bitset checks that all required header items are available
+       /// for a Rinex 3.0 (3.00) version file.
        allValid30 = 0x080000003
      };
 
-         /** @name HeaderValues
-          */
-         //@{
+     /** @name HeaderValues
+      */
+     //@{
      double version;           ///< RINEX Version
      std::string fileType, satSys, fileProgram, fileAgency, date;
      std::vector<std::string> commentList;
@@ -108,11 +112,11 @@ namespace gpstk
      std::string timeSysCorrSBAS;
      long timeSysUTCid;
      long leapSeconds;
-         //@}
+     //@}
 
-         /** @name FormattingStd::Strings
-          */
-         //@{
+     /** @name FormattingStd::Strings
+      */
+     //@{
      static const std::string versionString;     // "RINEX VERSION / TYPE"
      static const std::string runByString;       // "PGM / RUN BY / DATE"
      static const std::string commentString;     // "COMMENT"
@@ -120,24 +124,24 @@ namespace gpstk
      static const std::string timeSysCorrString; // "TIME SYSTEM CORR"
      static const std::string leapSecondsString; // "LEAP SECONDS"
      static const std::string endOfHeader;       // "END OF HEADER"
-         //@}
+     //@}
 
    protected:
 
-         /// Writes a correctly formatted record from this data to stream \a s.
+     /// Writes a correctly formatted record from this data to stream \a s.
      virtual void reallyPutRecord(FFStream& s) const
        throw(std::exception, FFStreamError,
              gpstk::StringUtils::StringException);
 
-         /**
-          * This function reads the RINEX 3 NAV header from the given FFStream.
-          * If an error is encountered in reading from the stream, the stream
-          * is reset to its original position and its fail-bit is set.
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and a read
-          *         or formatting error occurs.  This also resets the stream
-          *         to its pre-read position.
-          */
+     /**
+      * This function reads the RINEX 3 NAV header from the given FFStream.
+      * If an error is encountered in reading from the stream, the stream
+      * is reset to its original position and its fail-bit is set.
+      * @throws StringException when a StringUtils function fails
+      * @throws FFStreamError when exceptions(failbit) is set and a read
+      *         or formatting error occurs.  This also resets the stream
+      *         to its pre-read position.
+      */
      virtual void reallyGetRecord(FFStream& s)
        throw(std::exception, FFStreamError,
              gpstk::StringUtils::StringException);
