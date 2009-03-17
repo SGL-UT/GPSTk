@@ -25,17 +25,16 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008
+//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009
 //
 //============================================================================
 
 
 #include "IonexStore.hpp"
-#include "GPSGeoid.hpp"                   // geoid.a() = R earth
-
 
 using namespace gpstk::StringUtils;
 using namespace gpstk;
+using namespace std;
 
 namespace gpstk
 {
@@ -128,7 +127,7 @@ namespace gpstk
 
 
 
-      /* Dump the store to the provided std::ostream (std::cout by default).
+      /** Dump the store to the provided std::ostream (std::cout by default).
        *
        * @param s       std::ostream object to dump the data to.
        * @param detail  Determines how much detail to include in the output:
@@ -242,8 +241,8 @@ namespace gpstk
 
 
 
-      /* Get IONEX TEC, RMS and ionosphere height values as a function of
-       * epoch and receiver's position.
+      /** Get IONEX TEC, RMS and ionosphere height values as a function of
+       *  epoch and receiver's position.
        *
        * Four interpolation strategies are suported  (see also Ionex manual:
        * http://igscb.jpl.nasa.gov/igscb/data/format/ionex1.pdf )
@@ -252,8 +251,7 @@ namespace gpstk
        * points. See more at IonexData::getValue()
        *
        * @param t          Time tag of signal (DayTime object)
-       * @param RX         Receiver position in ECEF cartesian coordinates
-       *                   (meters).
+       * @param RX         Receiver position in GEOCENTRIC coordinates
        * @param strategy   Interpolation strategy
        *                   (1) take neareast map,
        *                   (2) interpolate between two consecutive maps,
@@ -262,18 +260,18 @@ namespace gpstk
        *                   (4) take neareast rotated map.
        *
        * @return values    TEC, RMS and ionosphere height values
-       *                   (Vector object with 3 elements: TEC and RMS are in
+       *                   (Triple object with: TEC and RMS in
        *                   TECU and the ionosphere height in meters)
        */
-   Vector<double> IonexStore::getIonexValue( const DayTime& t,
-                                             const Position& RX,
-                                             int strategy ) const
+   Triple IonexStore::getIonexValue( const DayTime& t,
+                                     const Position& RX,
+                                     int strategy ) const
       throw(InvalidRequest)
    {
 
-         // Here we store the necessary IONEX-extracted values
-      Vector<double> tecval(3,0.0);
-      double ionexHeight;
+         // Here we store the necessary IONEX-extracted values 
+         // (i.e, TEC, RMS, ionosphere height)
+      Triple tecval(0.0,0.0,0.0);
 
          // current time check
       if (t < getInitialTime())
@@ -288,6 +286,17 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
+         // this never should happen but just in case
+      Position pos(RX);
+      if ( pos.getSystemName() != "Geocentric" )
+      {
+
+         InvalidRequest e("Position object is not in GEOCENTRIC coordinates");
+
+         GPSTK_THROW(e);
+
+      }
+
          //let's define the number of maps to be considered
       int nmap;
       if      (strategy == 1) nmap = 1;
@@ -300,84 +309,103 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-         // look for valid Ionex maps
+         // let's look for valid Ionex maps
       DayTime T[2];
-
+         // iterator
       IonexMap::const_iterator itm = inxMaps.find(t);
-
-      if (itm != inxMaps.end())              // exact match of t
-      {
-
-         itm = inxMaps.lower_bound(t);
-
-         T[0] = itm->first;
-         T[1] = (++itm)->first;
-
-      }
-      else
-      {
-
-         itm = inxMaps.lower_bound(t);
-
-         T[1] = itm->first;
-         T[0] = (--itm)->first;
-
-      }
-
-         // factors (As in Eq.(3), pag.2 of the manual)
-      double f[2];
       try
       {
 
-         f[0] = (T[1]-t) / (T[1]-T[0]);
-         f[1] = (t-T[0]) / (T[1]-T[0]);
+         if( itm != inxMaps.end() )              // exact match of t
+         {
+
+               // get the current map
+            itm = inxMaps.lower_bound(t);
+               // store current and next epoch
+            T[0] = itm->first;
+            T[1] = (++itm)->first;
+
+         }
+         else                                   // t is between two maps
+         {
+
+               // get the next valid map
+            itm = inxMaps.lower_bound(t);
+               // store the next and previous epoch
+            T[1] = itm->first;
+            T[0] = (--itm)->first;
+
+         }  // end of 'if( itm != inxMaps.end() ) ... else ... '' 
+
       }
-      catch(...)
+      catch (...)
       {
-         InvalidRequest e("Problems computing 'f[]' parameters.");
+         InvalidRequest e("IonexStore::getIonexValue() ... Invalid time!");
          GPSTK_THROW(e);
       }
 
+
+         // factors (As in Eq.(3), pag.2 of the manual)
+      double f[2];
+      f[0] = (T[1]-t   ) / (T[1]-T[0]);
+      f[1] = (t   -T[0]) / (T[1]-T[0]);
+
+         // if only one map, then we have to use the neareast
+      if( nmap == 1 )
+      {
+
+            // closer to the next map
+         if( f[1] > f[0] )
+         {
+            T[0] = T[1];
+         }
+
+            // than the factor is unit
+         f[0] = 1.0;
+
+      }  // if( nmap == 1 )
 
          // loop over the number of maps considered
       for(int imap = 0; imap < nmap; imap++)
       {
 
-         itm = inxMaps.find(T[imap]);
-
-         IonexValTypeMap ivtm = (*itm).second;
-
-         IonexData iod;
+            // now let's determine if we keep fixed position or 
+            // take into account the rotation around the Sun
          Position pos;
-
-         if (strategy == 1 || strategy == 2)    // keep fixed position
+         if (strategy == 1 || strategy == 2)    // fixed position
          {
 
-            pos = Position( RX.geodeticLatitude(),
-                            RX.getLongitude(),
-                            RX.getHeight(),
-                            Position::Geodetic );
+            pos = RX;
+
          }
-         else     // take into account the rotation around the Sun
+         else                                   // rotate the position
          {
 
                // seconds of time to degree (360.0 / 86400.0)
             double sec2deg( 4.16666666666667e-3 );
 
-            pos = Position( RX.geodeticLatitude(),
-                            RX.getLongitude() + ( t - T[imap] ) * sec2deg,
-                            RX.getHeight(),
-                            Position::Geodetic );
+               // count the rotation
+            pos = RX;
+            pos.theArray[1] = pos.theArray[1] + ( t - T[imap] ) * sec2deg;
 
          }  // End of 'if (strategy == 1 || strategy == 2)...'
 
+
+            // iterator to the current map
+         itm = inxMaps.find(T[imap]);
+
+            // map to hold the IONEX types for the current map
+         IonexValTypeMap ivtm = (*itm).second;
+
+            // object to hold the corresponding data to the current map
+         IonexData iod;
 
             // Compute TEC value
          if ( ivtm.find(IonexData::TEC) != ivtm.end() )
          {
 
             iod = ivtm[IonexData::TEC];
-            tecval[0] = tecval[0] + f[imap]*iod.getValue(pos,ionexHeight);
+            tecval[0] = tecval[0] + f[imap]*iod.getValue(pos);
 
          }
 
@@ -386,15 +414,15 @@ namespace gpstk
          {
 
             iod = ivtm[IonexData::RMS];
-            tecval[1] = tecval[1] + f[imap]*iod.getValue(pos, ionexHeight);
+            tecval[1] = tecval[1] + f[imap]*iod.getValue(pos);
 
          }
 
       }  // End of 'for(int imap = 0; imap < nmap; imap++)...'
 
 
-         // ionosphere height as given in Ionex maps in meters
-      tecval[2] = ionexHeight*1000.0;
+         // ionosphere height in meters
+      tecval[2] = RX.theArray[2];
 
       return tecval;
 
@@ -402,20 +430,21 @@ namespace gpstk
 
 
 
-      /* Get ionospheric slant delay for a given frequency
+      /** Get slant total electron content (STEC) in TECU
        *
        * @param elevation     Time tag of signal (DayTime object)
        * @param tecval        TEC value as derived from IONEX file (TECU)
-       * @param ionoHeight    Ionosphere height as derived from IONEX file
-       *                      (KM).
-       * @param freq          Frequency value, in Hz
+       * @param ionoMapType   Type of ionosphere mapping function (string)
+       *                      (0) NONE no mapping function is applied
+       *                      (1) SLM  Single Layer Model (IGS)
+       *                      (2) MSLM Modified Single Layer Model (CODE)
+       *                      (3) ESM  Extended Slab Model (JLP)
        *
-       * @return              Ionosphere slant delay (meters)
+       * @return              slant total electron content (TECU)
        */
-   double IonexStore::getIono( const double& elevation,
+   double IonexStore::getSTEC( const double& elevation,
                                const double& tecval,
-                               const double& ionoHeight,
-                               const double& freq ) const
+                               const std::string& ionoMapType ) const
       throw (InvalidParameter)
    {
 
@@ -425,9 +454,57 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      if (ionoHeight < 0)
+      if( ionoMapType != "NONE" && ionoMapType != "SLM" && 
+          ionoMapType != "MSLM" && ionoMapType != "ESM" )
       {
-         InvalidParameter e("Invalid IONEX height of the ionosphere.");
+         InvalidParameter e("Invalid ionosphere mapping function.");
+         GPSTK_THROW(e);
+      }
+
+      if (elevation < 0.0)
+      {
+
+         return 0.0;
+
+      }
+      else
+      {
+
+         return ( tecval * iono_mapping_function(elevation, ionoMapType) );
+
+      }
+
+   }  // End of method 'IonexStore::getSTEC()'
+
+
+
+      /** Get ionospheric slant delay for a given frequency
+       *
+       * @param elevation     Time tag of signal (DayTime object)
+       * @param tecval        TEC value as derived from IONEX file (TECU)
+       * @param freq          Frequency value, in Hz
+       * @param ionoMapType   Type of ionosphere mapping function (string)
+       *                      @sa IonexStore::iono_mapping_function
+       *
+       * @return              Ionosphere slant delay (meters)
+       */
+   double IonexStore::getIono( const double& elevation,
+                               const double& tecval,
+                               const double& freq,
+                               const std::string& ionoMapType ) const
+      throw (InvalidParameter)
+   {
+
+      if (tecval < 0)
+      {
+         InvalidParameter e("Invalid TEC parameter.");
+         GPSTK_THROW(e);
+      }
+
+      if( ionoMapType != "NONE" && ionoMapType != "SLM" && 
+          ionoMapType != "MSLM" && ionoMapType != "ESM" )
+      {
+         InvalidParameter e("Invalid ionosphere mapping function.");
          GPSTK_THROW(e);
       }
 
@@ -441,7 +518,7 @@ namespace gpstk
       {
 
          return ( C2_FACT / (freq * freq) * tecval
-                         * iono_mapping_function(elevation, ionoHeight) );
+                         * iono_mapping_function(elevation, ionoMapType) );
 
       }
 
@@ -449,22 +526,74 @@ namespace gpstk
 
 
 
-      // ionosphere mapping function
+      /** Ionosphere mapping function
+       *
+       * @param elevation     Elevation of satellite as seen at receiver
+       *                      (degrees).
+       * @param ionoMapType   Type of ionosphere mapping function (string)
+       *                      (0) NONE no mapping function is applied
+       *                      (1) SLM  Single Layer Model (IGS)
+       *                      (2) MSLM Modified Single Layer Model (CODE)
+       *                      (3) ESM  Extended Slab Model (JLP)
+       *
+       * Details at: http://aiuws.unibe.ch/ionosphere/mslm.pdf
+       *
+       * @warning No implementation for JPL's mapping function.
+       */
    double IonexStore::iono_mapping_function( const double& elevation,
-                                             const double& ionoHeight) const
+                                       const std::string& ionoMapType ) const
    {
 
-         // Need Earth's radius to compute zenith angle at the observing site
-      GPSGeoid geoid;
-      double Re = geoid.a();          // Earth's radius is in meters
+         // map
+      double map(1.0);
+         // Earth's radius in KM
+      double Re = 6371.0;
+         // zenith angle
       double z0 = 90.0 - elevation;
 
-         // zenith angle of the ionospheric point (IP)
-         // As explained in: Hofmann-Wellenhof et al. (2004) - GPS Theory and
-         // practice, 5th edition, SpringerWienNewYork, Chapter 6.3, pg. 102
-      double sinzip  = Re / (Re + ionoHeight) * std::sin(z0*DEG_TO_RAD);
-      double ziprad  = std::asin(sinzip);
-      double map     = 1.0/std::cos(ziprad);
+      if( ionoMapType == "SLM" )
+      {
+
+            // As explained in: Hofmann-Wellenhof et al. (2004) - GPS Theory and
+            // practice, 5th edition, SpringerWienNewYork, Chapter 6.3, pg. 102
+
+            // ionosphere height in KM
+         double ionoHeight = 450.0;
+            // zenith angle of the ionospheric pierce point (IPP)
+         double sinzipp  = Re / (Re + ionoHeight) * std::sin(z0*DEG_TO_RAD);
+         double zipprad  = std::asin(sinzipp);
+
+         map      = 1.0/std::cos(zipprad);
+
+      }
+      else if( ionoMapType == "MSLM" )
+      {
+            // maximum zenith distance is 80 degrees
+         if( z0 > 80.0 )
+         {
+            map = 1.0;
+         }
+
+            // ionosphere height in KM
+         double ionoHeight = 506.7;
+         double alfa       = 0.9782;
+            // zenith angle of the ionospheric pierce point (IPP)
+         double sinzipp  = Re / (Re + ionoHeight) * 
+                                 std::sin( alfa * z0 * DEG_TO_RAD );
+         double zipprad  = std::asin(sinzipp);
+
+         map      = 1.0/std::cos(zipprad);
+
+      }
+      else if( ionoMapType == "ESM" )
+      {
+         //TODO
+      }
+      else  // that means ionoMapType == "NONE"
+      {
+         // TODO
+      }
+
 
       return map;
 
@@ -472,7 +601,7 @@ namespace gpstk
 
 
 
-      /* Find a DCB value
+      /** Find a DCB value
        *
        * @param sat     SatID of satellite of interest
        * @param t       Time to search for DCB
@@ -509,8 +638,8 @@ namespace gpstk
             // let's get the relative reference
          dt = time - itm->first;
 
-            // this means we dont have maps for this day and there is a gap
-         if (dt < 0 )
+            // this means we don't have maps for this day and there is a gap
+         if( dt < 0.0 )
          {
 
             InvalidRequest e( "Inadequate data after requested time: " +
@@ -521,7 +650,7 @@ namespace gpstk
          else
          {
 
-            if (dt < 86400)
+            if( dt < 86400.0 )
             {
 
                IonexHeader::SatDCBMap satdcb( itm->second );
@@ -549,9 +678,9 @@ namespace gpstk
 
                itm++;
 
-            }  // End of 'if (dt < 86400) ... else ...'
+            }  // End of 'if( dt < 86400.0 ) ... else ...'
 
-         }  // End of 'if (dt < 0 ) ... else ...'
+         }  // End of 'if( dt < 0.0 ) ... else ...'
 
       }  // End of 'while ( itm != inxDCBMap.end() )'
 
@@ -560,7 +689,6 @@ namespace gpstk
       return 0.0;
 
    }  // End of method 'IonexStore::findDCB()'
-
 
 
 }  // End of namespace gpstk

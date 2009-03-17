@@ -28,7 +28,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008
+//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009
 //
 //============================================================================
 
@@ -40,7 +40,7 @@
 
 #include "geometry.hpp"                   // DEG_TO_RAD
 #include "icd_200_constants.hpp"          // LX_FREQ, with X = 1,2,5,6,7,8
-
+#include "Triple.hpp"
 
 namespace gpstk
 {
@@ -127,28 +127,46 @@ namespace gpstk
           *                   (4) take neareast rotated map.
           *
           * @return values    TEC, RMS and ionosphere height values
-          *                   (Vector object with 3 elements: TEC and RMS are in
-          *                   TECU and the ionosphere height in meters)
+          *                   (Triple object with: TEC and RMS in TECU and 
+          *                   the ionosphere height in meters)
           */
-      Vector<double> getIonexValue( const DayTime& t,
-                                    const Position& RX,
-                                    int strategy = 3 ) const
+      Triple getIonexValue( const DayTime& t,
+                            const Position& RX,
+                            int strategy = 3 ) const
          throw(InvalidRequest);
+
+
+
+      /** Get slant total electron content (STEC) in TECU
+       *
+       * @param elevation     Time tag of signal (DayTime object)
+       * @param tecval        TEC value as derived from IONEX file (TECU)
+       * @param ionoMapType   Type of ionosphere mapping function (string)
+       *                      @sa IonexStore::iono_mapping_function
+       *
+       * @return              slant total electron content (TECU)
+       */
+   double getSTEC( const double& elevation,
+                   const double& tecval,
+                   const std::string& ionoMapType ) const
+      throw (InvalidParameter);
+
 
 
          /** Get ionospheric slant delay for a given frequency
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    height of the ionosphere (meters).
           * @param freq          Frequency value, in Hz
+          * @param ionoMapType   Type of ionosphere mapping function (string)
+          *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
           */
       double getIono( const double& elevation,
                       const double& tecval,
-                      const double& ionoHeight,
-                      const double& freq ) const
+                      const double& freq,
+                      const std::string& ionoMapType ) const
          throw (InvalidParameter);
 
 
@@ -159,106 +177,114 @@ namespace gpstk
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    height of the ionosphere (meters).
+          * @param ionoMapType   Type of ionosphere mapping function (string)
+          *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
           */
       double getIonoL1( const double& elevation,
                         const double& tecval,
-                        const double& ionoHeight) const
+                        const std::string& ionoMapType ) const
          throw (InvalidParameter)
-      { return getIono(elevation, tecval, ionoHeight, L1_FREQ); };
+      { return getIono(elevation, tecval, L1_FREQ, ionoMapType); };
 
 
          /** Get ionospheric slant delay for L2 frequency
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    height of the ionosphere (meters)..
+          * @param ionoMapType   Type of ionosphere mapping function (string)
+          *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
           */
       double getIonoL2( const double& elevation,
                         const double& tecval,
-                        const double& ionoHeight) const
+                        const std::string& ionoMapType ) const
          throw (InvalidParameter)
-      { return getIono(elevation, tecval, ionoHeight, L2_FREQ); };
+      { return getIono(elevation, tecval, L2_FREQ, ionoMapType); };
 
 
          /** Get ionospheric slant delay for L5 frequency
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    height of the ionosphere (meters).
+          * @param ionoMapType   Type of ionosphere mapping function (string)
+          *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
           */
       double getIonoL5( const double& elevation,
                         const double& tecval,
-                        const double& ionoHeight) const
+                        const std::string& ionoMapType ) const
          throw (InvalidParameter)
-      { return getIono(elevation, tecval, ionoHeight, L5_FREQ); };
+      { return getIono(elevation, tecval, L5_FREQ, ionoMapType); };
 
 
          /** Get ionospheric slant delay for L6 frequency
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    height of the ionosphere (meters).
+          * @param ionoMapType   Type of ionosphere mapping function (string)
+          *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
           */
       double getIonoL6( const double& elevation,
                         const double& tecval,
-                        const double& ionoHeight) const
+                        const std::string& ionoMapType ) const
          throw (InvalidParameter)
-      { return getIono(elevation, tecval, ionoHeight, L6_FREQ); };
+      { return getIono(elevation, tecval, L6_FREQ, ionoMapType); };
 
 
          /** Get ionospheric slant delay for L7 frequency
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    height of the ionosphere (meters).
+          * @param ionoMapType   Type of ionosphere mapping function (string)
+          *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
           */
       double getIonoL7( const double& elevation,
                         const double& tecval,
-                        const double& ionoHeight) const
+                        const std::string& ionoMapType ) const
          throw (InvalidParameter)
-      { return getIono(elevation, tecval, ionoHeight, L7_FREQ); };
+      { return getIono(elevation, tecval, L7_FREQ, ionoMapType); };
 
 
          /** Get ionospheric slant delay for L8 frequency
           *
           * @param elevation     Time tag of signal (DayTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
-          * @param ionoHeight    height of the ionosphere (meters).
+          * @param ionoMapType   Type of ionosphere mapping function (string)
+          *                      @sa IonexStore::iono_mapping_function
           *
           * @return              Ionosphere slant delay (meters)
           */
       double getIonoL8( const double& elevation,
                         const double& tecval,
-                        const double& ionoHeight) const
+                        const std::string& ionoMapType ) const
          throw (InvalidParameter)
-      { return getIono(elevation, tecval, ionoHeight, L8_FREQ); };
+      { return getIono(elevation, tecval, L8_FREQ, ionoMapType); };
 
 
          /** Ionosphere mapping function
           *
           * @param elevation     Elevation of satellite as seen at receiver
           *                      (degrees).
-          * @param ionoHeight    height of the ionosphere (meters).
+          * @param ionoMapType   Type of ionosphere mapping function (string)
+          *                      (0) NONE no mapping function is applied
+          *                      (1) SLM  Single Layer Model (IGS)
+          *                      (2) MSLM Modified Single Layer Model (CODE)
+          *                      (3) ESM  Extended Slab Model (JLP)
           *
-          * WARNING: CODE's approach is different: To convert line-of-sight TEC
-          * into vertical TEC, a modified single-layer model (MSLM) mapping
-          * function approximating the JPL extended slab model mapping function
           * Details at: http://aiuws.unibe.ch/ionosphere/mslm.pdf
           *
+          * @warning No implementation for JPL's mapping function.
           */
       double iono_mapping_function( const double& elevation,
-                                    const double& ionoHeight) const;
+                                    const std::string& ionoMapType ) const;
 
 
          /** Determine the earliest time for which this object can
