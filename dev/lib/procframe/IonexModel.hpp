@@ -127,13 +127,14 @@ namespace gpstk
           * @param dObservable      Observable type to be used by default.
           * @param applyDCB         Whether or not P1 observable will be
           *                         corrected from DCB effect.
-          * @ionoHgt						the height of the ionospheric layer
+          * @param ionoMap          Type of ionosphere mapping function (string)
+          *                         @sa IonexStore::iono_mapping_function
           */
       IonexModel( const Position& RxCoordinates,
                   IonexStore& istore,
                   const TypeID& dObservable = TypeID::P1,
                   const bool& applyDCB = true,
-                  const double& ionoHgt = 450000.0)
+                  const std::string& ionoMap = "SLM" )
          throw(Exception);
 
 
@@ -225,18 +226,19 @@ namespace gpstk
          throw(GeometryException);
 
 
-         /// Method to get the default height of the ionosphere, in meters.
-      virtual double getIonoHeight() const
-      { return ionoHeight; };
+         /// Method to get the default ionosphere mapping function type.
+      virtual std::string getIonoMapType() const
+      { return ionoMapType; };
 
 
-         /** Method to set the default height of the ionosphere to be used 
-          *  with GNSS data structures. If a negative value is given, a
-          *  mean value of 450000 meters for the height of ionosphere is set. 
+         /** Method to set the default ionosphere mapping function type. 
           *
-          * @param ionoHgt   height of the ionosphere, in meters
+          * @param ionoMapType      Type of ionosphere mapping function (string)
+          *                         @sa IonexStore::iono_mapping_function
+          *
+          * @warning No implementation for JPL's mapping function.
           */
-      virtual IonexModel& setIonoHeight(const double& ionoHgt);
+      virtual IonexModel& setIonoMapType(const std::string& ionoMap);
 
 
          /** Method to get DCB corrections.
@@ -245,7 +247,7 @@ namespace gpstk
           * @param Maps       Store that contains the Ionex maps.
           * @param sat        SatID of satellite of interest
           *
-          * @ return          Differential Code Bias (seconds)
+          * @ return          Differential Code Bias (nano-seconds)
           */
       virtual double getDCBCorrections( const DayTime& time,
                                         const IonexStore& Maps,
@@ -285,6 +287,11 @@ namespace gpstk
          /// P1-code measurements (to make them consistent with LC 
          /// satellite clocks).
       bool useDCB;
+
+
+         /// Type of ionosphere mapping function 
+         ///  @sa IonexStore::iono_mapping_function
+      std::string ionoMapType;
 
 
          /// the mean value for the height of the ionosphere for which 

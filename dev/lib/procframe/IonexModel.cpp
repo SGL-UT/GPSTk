@@ -60,7 +60,7 @@ namespace gpstk
       pDefaultMaps = NULL;
       defaultObservable = TypeID::P1;
       useDCB = true;
-      ionoHeight = 450000.0;
+      setIonoMapType("NONE");
       setInitialRxPosition(RxCoordinates);
       setIndex();
 
@@ -68,22 +68,22 @@ namespace gpstk
 
 
 
-      /* Explicit constructor, taking as input reference station
+      /** Explicit constructor, taking as input reference station
        * coordinates and ionex maps (Ionex Store object) to be used.
        *
        * @param RxCoordinates    Receiver coordinates.
        * @param istore           IonexStore object to be used by default.
        * @param dObservable      Observable type to be used by default.
-       * @param applyDCB         Whether or not C1 observable will be
+       * @param applyDCB         Whether or not P1 observable will be
        *                         corrected from DCB effect.
-       * @ionoHgt						the height of the ionospheric layer
-       *
+       * @param ionoMapType      Type of ionosphere mapping function (string)
+       *                         @sa IonexStore::iono_mapping_function
        */
    IonexModel::IonexModel( const Position& RxCoordinates,
                            IonexStore& istore,
                            const TypeID& dObservable,
                            const bool& applyDCB,
-                           const double& ionoHgt)
+                           const std::string& ionoMap)
          throw(Exception)
       {
 
@@ -91,14 +91,14 @@ namespace gpstk
          setDefaultMaps(istore);
          defaultObservable = dObservable;
          useDCB = applyDCB;
-         ionoHeight = ionoHgt;
+         setIonoMapType(ionoMap);
          setIndex();
 
       }  // End of constructor 'IonexModel::IonexModel()'
 
 
 
-      /* Returns a satTypeValueMap object, adding the new data generated when
+      /** Returns a satTypeValueMap object, adding the new data generated when
        * calling a modeling object.
        *
        * @param time      Epoch.
@@ -124,18 +124,18 @@ namespace gpstk
             {
 
                   // If ionex maps are missing, then remove all satellites
-               satRejectedSet.insert( (*stv).first );
+               satRejectedSet.insert( stv->first );
 
                continue;
 
             }
 
                // If elevation or azimuth is missing, then remove satellite
-            if( (*stv).second.find(TypeID::elevation) == (*stv).second.end() ||
-                (*stv).second.find(TypeID::azimuth)   == (*stv).second.end() )
+            if( stv->second.find(TypeID::elevation) == stv->second.end() ||
+                stv->second.find(TypeID::azimuth)   == stv->second.end() )
             {
 
-               satRejectedSet.insert( (*stv).first );
+               satRejectedSet.insert( stv->first );
 
                continue;
 
@@ -145,30 +145,27 @@ namespace gpstk
 
                   // Scalars to hold satellite elevation, azimuth, ionospheric 
                   // map and ionospheric slant delays
-               double elevation( (*stv).second(TypeID::elevation) );
-               double azimuth(   (*stv).second(TypeID::azimuth) );
+               double elevation( stv->second(TypeID::elevation) );
+               double azimuth(   stv->second(TypeID::azimuth)   );
                double ionoMap(0.0);
                double ionexL1(0.0), ionexL2(0.0), ionexL5(0.0);   // GPS
                double ionexL6(0.0), ionexL7(0.0), ionexL8(0.0);   // Galileo
 
-               //todo
-               //calculate the position of the ionospheric pierce-point corresponding to the receiver-satellite ray
-                  // use sinus theorem
-                  // base radius from header as earth radius
-                  // 
-               //extract the VTEC for this position
-                  // Vector<double> val = pDefaultMaps->getIonexValue(time, ippPos, elevation);
-                  // double tecval = val[0];
-                  // double ionoHeight = val[2];
-
-
                   //	calculate the position of the ionospheric pierce-point 
                   // corresponding to the receiver-satellite ray
-               Position IPP = rxPos.getIonosphericPiercePoint(elevation,azimuth,ionoHeight);
+               Position IPP = rxPos.getIonosphericPiercePoint( elevation,
+                                                               azimuth,
+                                                               ionoHeight);
+
+                  // TODO
+                  // Checking the collinearity of rxPos, IPP and SV
+
 
                   // Let's get TEC, RMS and ionosphere height for IPP 
                   // at current epoch
-               Vector<double> val = pDefaultMaps->getIonexValue(time, IPP);
+               Position pos(IPP);
+               pos.transformTo(Position::Geocentric);
+               Triple val = pDefaultMaps->getIonexValue( time, pos );
 
                   // just to make it handy for useage
                double tecval = val[0];
@@ -177,32 +174,32 @@ namespace gpstk
                {
 
                   ionoMap = pDefaultMaps->iono_mapping_function( elevation,
-                                                                 ionoHeight);
+                                                                 ionoMapType);
 
                      // Compute ionospheric slant correction
                   ionexL1 = pDefaultMaps->getIonoL1( elevation,
                                                      tecval,
-                                                     ionoHeight);
+                                                     ionoMapType);
 
                   ionexL2 = pDefaultMaps->getIonoL2( elevation,
                                                      tecval,
-                                                     ionoHeight);
+                                                     ionoMapType);
 
                   ionexL5 = pDefaultMaps->getIonoL5( elevation,
                                                      tecval,
-                                                     ionoHeight);
+                                                     ionoMapType);
 
                   ionexL6 = pDefaultMaps->getIonoL6( elevation,
                                                      tecval,
-                                                     ionoHeight);
+                                                     ionoMapType);
 
                   ionexL7 = pDefaultMaps->getIonoL7( elevation,
                                                      tecval,
-                                                     ionoHeight);
+                                                     ionoMapType);
 
                   ionexL8 = pDefaultMaps->getIonoL8( elevation,
                                                      tecval,
-                                                     ionoHeight);
+                                                     ionoMapType);
 
                }
                catch(InvalidRequest)
@@ -210,11 +207,11 @@ namespace gpstk
 
                      // If some problem appears, then schedule this
                      // satellite for removal
-                  satRejectedSet.insert( (*stv).first );
+                  satRejectedSet.insert( stv->first );
 
                   continue;    // Skip this SV if problems arise
 
-               };
+               }
 
                   // Now we have to add the new values (i.e., ionosphere delays)
                   // to the data structure
@@ -226,8 +223,7 @@ namespace gpstk
                (*stv).second[TypeID::ionoL6]  = ionexL6;
                (*stv).second[TypeID::ionoL7]  = ionexL7;
                (*stv).second[TypeID::ionoL8]  = ionexL8;
-               
-               
+
 
                   // DCB corrections for P1 measurements and satellite clock
                   // values should be considered because precise ephemerides
@@ -238,46 +234,34 @@ namespace gpstk
 
       // http://www.ngs.noaa.gov/IGSWorkshop2008/docs/Schaer_DCB_IGSWS2008.ppt
 
-                  // Computing Differential Code Biases (DCB - meters)
+                  // Computing Differential Code Biases (DCB - nanoseconds)
                double tempDCB( getDCBCorrections( time,
                                                  (*pDefaultMaps),
-                                                 (*stv).first ) );
+                                                  stv->first) );
 
 
-                  // Apply correction to P1 observable, if appropriate
+                  // add to the GDS the  corresponding correction, 
+                  // if appropriate
                if(useDCB)
                {
+
                      // the second LC factor (see gpstk::LinearCombinations.cpp)
+                     // see pg.14, Ionex manual
                   double kappa2(-1.0/0.646944444);
+                  double dcb(tempDCB * C_GPS_M * 1e-9);  // meters
 
-                     // Look for P1
-                  if( (*stv).second.find(TypeID::P1) != (*stv).second.end() )
+                  if( stv->second.find(TypeID::instC1) == stv->second.end() )
                   {
-                     (*stv).second[TypeID::P1] -= (kappa2 * C_GPS_M * tempDCB);
+                     stv->second[TypeID::instC1] = (kappa2 * dcb);
                   }
-
-                     // what about LC satellite clock values?. Must they
-                     // be corrected?
-                     // Below is Stefan Schaer's answer to my question
-                     // Stefan Schaer: "Satellite-specific P1-P2 corrections 
-                     // have to be applied only once (either with respect to 
-                     // the pseudorange observations or the satellite 
-                     // clock offsets)".
-
-                     // Look for dtSat
-             /*   if( (*stv).second.find(TypeID::dtSat) != (*stv).second.end())
+                  else
                   {
-                        // should be in meters due to 'TypeID::dSat'
-                     double corr = kappa2* tempDCB * C_GPS_M;
-
-                     (*stv).second[TypeID::dtSat] += corr;
-                  }*/
-
-                  (*stv).second[TypeID::instC1] = tempDCB * C_GPS_M;
+                     stv->second[TypeID::instC1] += (kappa2 * dcb);
+                  }
 
                }  // End of 'if(useDCB)...'
 
-            }  // End of 'if( (*stv).second.find(TypeID::satX) == ... else ...'
+            }  // End of 'if( stv->second.find(TypeID::elevation) == ... '
 
          }  // End of loop 'for(stv = gData.begin()...'
 
@@ -349,17 +333,27 @@ namespace gpstk
 
 
 
-         /** Method to set the default height of the ionosphere to be used 
-          *  with GNSS data structures. If a negative value is given, a
-          *  mean value of 450000 meters for the height of ionosphere is set. 
-          *
-          * @param ionoHgt   height of the ionosphere, in meters
-          */
-   IonexModel& IonexModel::setIonoHeight(const double& ionoHgt)
+      /** Method to set the default ionosphere mapping function type.
+       *  If no valid type than NONE is set.
+       *
+       * @param ionoMapType   Type of ionosphere mapping function (string)
+       *                      @sa IonexStore::iono_mapping_function
+       *
+       * @warning No implementation for JPL's mapping function.
+       */
+   IonexModel& IonexModel::setIonoMapType(const std::string& ionoMap)
    { 
-      ionoHeight = (ionoHgt > 0.0) ? ionoHgt : 450000.0; 
-      
+
+         // here we set the type
+      ionoMapType = ( ionoMap != "NONE" && ionoMap != "SLM" && 
+                      ionoMap != "MSLM" && ionoMap != "ESM") ? "NONE" : 
+                                                               ionoMap;
+
+         // and here the ionosphere height, in meters
+      ionoHeight = (ionoMap == "MSLM") ? 506700.0 : 450000.0;
+
       return (*this);
+
    }
 
 
@@ -370,7 +364,7 @@ namespace gpstk
           * @param Maps       Store that contains the Ionex maps.
           * @param sat        SatID of satellite of interest
           *
-          * @ return          Differential Code Bias (seconds)
+          * @ return          Differential Code Bias (nanoseconds)
           */
    double IonexModel::getDCBCorrections( const DayTime& time,
                                          const IonexStore& Maps,
@@ -383,7 +377,7 @@ namespace gpstk
 
          double dcb = Maps.findDCB(sat,time);   // nanoseconds
 
-         return dcb*1e-9;
+         return dcb;
 
       }
       catch(...)
