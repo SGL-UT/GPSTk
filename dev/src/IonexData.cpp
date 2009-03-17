@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008
+//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009
 //
 //============================================================================
 
@@ -179,7 +179,7 @@ namespace gpstk
       }
       else
       {
-         FFStreamError err("This isn't a valid standard IONEX value type:  " + 
+         FFStreamError err("This isn't a valid standard IONEX value type: " + 
             asString(type.description) );
          GPSTK_THROW(err);
       }
@@ -190,7 +190,7 @@ namespace gpstk
 
 
 
-      /* This function obtains a IONEX Data record from
+      /** This function obtains a IONEX Data record from
        * the given FFStream.
        *
        * If there is an error reading the stream, it is reset
@@ -436,7 +436,7 @@ namespace gpstk
 
 
 
-      /* Get the position of a grid point based on input position
+      /** Get the position of a grid point based on input position
        *
        * @param in     input lat, lon and height (Triple object)
        * @param type   grid point to be returned
@@ -567,8 +567,8 @@ namespace gpstk
 
 
 
-      /* Get IONEX TEC or RMS value as a function of the position
-       * and nominal height.
+      /** Get IONEX TEC or RMS value as a function of the position
+       *  and nominal height.
        *
        * A simple 4-point formula is applied to interpolate between
        * grid points.
@@ -579,39 +579,41 @@ namespace gpstk
        *
        * @param pos             input position (Position object).
        *
-       * @return ionexHeight    Nominal height for which the maps are given
-       *                        (as in IONEX file).
-       * @return                Computed TEC or RMS value (TECU).
+       * @return                Computed TEC or RMS value.
        *
-       * @warning Keep in mind that Position objects HAVE to be whithin area
-       *          delimited by latitude = [-87.5, -87.5] and
-       *          longitude = [-180, 180].
        */
-   double IonexData::getValue( const Position& p,
-                               double& ionexHeight ) const
-      throw(FFStreamError)
+   double IonexData::getValue( const Position& p ) const
+      throw(InvalidRequest,FFStreamError)
    {
 
-      double xsum = 0;
+         // this never should happen but just in case
+      Position pos(p);
+      if ( pos.getSystemName() != "Geocentric" )
+      {
+
+         InvalidRequest e( "Position object is not in GEOCENTRIC coordinates");
+
+         GPSTK_THROW(e);
+
+      }
+
+         // some useful declarations
+      Triple ABC[4], inarg;
+      int e[4];
+      double xsum = 0.0;
 
          // the object is required for AEarth to be consistent with 
          // Position::getIonosphericPiercePoint()
       WGS84Geoid WGS84;
 
-         // computation of TEC values requires GEOCENTRIC latitude
-      Position tmp(p);
-      tmp.transformTo(Position::Geocentric);
-      
-      double beta    = tmp.theArray[0];
-      double lambda  = tmp.theArray[0];
-      double height  = tmp.theArray[2]-WGS84.a();
+         // let's fetch the data
+      double beta    = p.theArray[0];
+      double lambda  = p.theArray[1];
+      double height  = p.theArray[2]-WGS84.a();
 
-      Triple ABC[4], inarg;
-      int e[4];
-
-         // While getGeocentricLatitude() returns geocentric latitude in deg N,
-         // getLongitude() returns longitude in deg E. This is the reason why
-         // this step is needed (see IONEX manual: lon = [-180 180])
+         // we need this step because in the Position object the longitude is 
+         // expressed in degrees E (i.e., [0 +360]), while in IONEX files 
+         // longitude takes values within [-180 180]) (see IONEX manual) 
       if (lambda > 180.0)
       {
          lambda = lambda - 360.0;
@@ -624,7 +626,7 @@ namespace gpstk
 
          // compute factors P and Q
       double xp( (inarg[1] - ABC[0][1]) / lon[2] );
-      double xq( (inarg[0]-ABC[0][0]) / lat[2] );
+      double xq( (inarg[0] - ABC[0][0]) / lat[2] );
 
          // this never should happen but just in case
       if ( (xp < 0) || (xp > 1) || (xq < 0) || (xq > 1) )
@@ -634,20 +636,19 @@ namespace gpstk
 
       }
 
-
-         // get E10's position
+         // get E10's position index
       inarg = Triple( ABC[0][0], ABC[0][1]+lon[2], ABC[0][2] );
       e[1] = getIndex( inarg, 1, ABC[1] );
 
-         // get E01's position
+         // get E01's position index
       inarg = Triple( ABC[0][0]+lat[2], ABC[0][1], ABC[0][2] );
       e[2] = getIndex( inarg, 1, ABC[2] );
 
-         // get E11's position
+         // get E11's position index
       inarg = Triple( ABC[0][0]+lat[2], ABC[0][1]+lon[2], ABC[0][2] );
       e[3] = getIndex( inarg, 1, ABC[3] );
 
-         // let's get the values
+         // let's fetch the values
       double pntval[4];
       for (int i = 0; i < 4; i++)
       {
@@ -666,14 +667,10 @@ namespace gpstk
 
       }  // End of 'for (int i = 0; i < 4; i++)...'
 
-
-         // now let's return the ionosphere height as in IONEX files
-      ionexHeight = ABC[0][2];
-
          // bivariate interpolation (pag.3, IONEX manual)
       xsum = (1.0-xp) * (1.0-xq) * pntval[0] +
                   xp  * (1.0-xq) * pntval[1] +
-                  xq  * (1.0-xp) * pntval[2] +
+             (1.0-xp) *      xq  * pntval[2] +
                   xp  *      xq  * pntval[3];
 
       return xsum;
@@ -682,7 +679,7 @@ namespace gpstk
 
 
 
-      /* This function constructs a DayTime object from the given
+      /** This function constructs a DayTime object from the given
        * parameters.
        *
        * @param line    Encoded time string found in the IONEX record.
@@ -704,14 +701,16 @@ namespace gpstk
    }  // End of method 'IonexData::parseTime()'
 
 
-         /** Writes the daytime object into IONEX format. If it's a bad time,
-          * it will return blanks.
-          *
-          * @param dt    time to be written into a IONEX data record.
-          */
+
+      /** Writes the daytime object into IONEX format. If it's a bad time,
+       * it will return blanks.
+       *
+       * @param dt    time to be written into a IONEX data record.
+       */
    string IonexData::writeTime(const DayTime& dt) const
       throw(gpstk::StringUtils::StringException)
    {
+
       if (dt == DayTime::BEGINNING_OF_TIME)
       {
          return string(36, ' ');

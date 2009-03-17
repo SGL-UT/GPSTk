@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008
+//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009
 //
 //============================================================================
 
@@ -129,7 +129,7 @@ namespace gpstk
 
          /// Default constructor.
       IonexData()
-         : time(DayTime::BEGINNING_OF_TIME), type(IonexData::UN), mapID(-1) {};
+         : time(DayTime::BEGINNING_OF_TIME), valid(false) {};
 
 
          /// Destructor
@@ -182,16 +182,11 @@ namespace gpstk
           *
           * @param pos             input position (Position object).
           *
-          * @return ionexHeight    Nominal height for which the maps are given
-          *                        (as in IONEX file).
           * @return                Computed TEC or RMS value.
           *
-          * @warning Keep in mind that Position objects HAVE to be whithin area
-          *          delimited by latitude = [-87.5, -87.5] and
-          *          longitude = [-180, 180].
           */
-      double getValue(const Position& pos, double& ionexHeight) const
-         throw(FFStreamError);
+      double getValue(const Position& pos) const
+         throw(InvalidRequest,FFStreamError);
 
 
    protected:
