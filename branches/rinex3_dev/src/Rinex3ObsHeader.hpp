@@ -50,7 +50,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include "CommonTime.hpp"
+#include "CivilTime.hpp"
 #include "FFStream.hpp"
 #include "Rinex3ObsBase.hpp"
 #include "Triple.hpp"
@@ -164,24 +164,36 @@ namespace gpstk
        allValid30 = 0x080002FEB,
      };
 
-     /// RINEX Observation Types
+     /// RINEX 3 observation types
      struct Rinex3ObsType
      {
-       std::string type;          ///< 2- char type e.g. L1, P2
-       std::string description;   ///< 20- char description (optional) e.g. "L1 pseudorange"
-       std::string units;         ///< 10- char units (optional) e.g. "meters"
-       unsigned int depend;
-       Rinex3ObsType() : type(std::string("UN")),description(std::string("Unknown or Invalid")),
-                         units(std::string("")),depend(0) {}
-       Rinex3ObsType(std::string t, std::string d, std::string u, unsigned int dep = 0) :
-         type(t),description(d),units(u),depend(dep) {}
-       static const unsigned int C1depend;
-       static const unsigned int L1depend;
-       static const unsigned int L2depend;
-       static const unsigned int P1depend;
-       static const unsigned int P2depend;
-       static const unsigned int EPdepend;
-       static const unsigned int PSdepend;
+       std::string type;          ///<  3-char type                  ; e.g. C1C, D2P, L5Q, S2M, etc.
+       std::string description;   ///< 20-char description (optional); e.g. "L1 pseudorange"
+       std::string units;         ///< 10-char units       (optional); e.g. "meters"
+       int scaleFactor;           ///< factor to divide stored observations with before use
+       Rinex3ObsType()
+         : type(std::string("UN")),description(std::string("Unknown or Invalid")),
+           units(std::string("")),kscaleFactor(1)
+       {}
+       Rinex3ObsType(std::string t, std::string d, std::string u, int sf = 1)
+         : type(t),description(d),units(u),scaleFactor(sf)
+       {}
+     };
+
+     /// RINEX 3 DCBS info (differential code bias corrections)
+     struct Rinex3DCBSinfo
+     {
+       std::string satSys,  ///< 1-char SV system (G/R/E/S)
+                   name,    ///< program name used to apply corrections
+                   source;  ///< source of corrections (URL)
+     };
+
+     /// RINEX 3 PCVS info (phase center variation corrections)
+     struct Rinex3PCVSinfo
+     {
+       std::string satSys,  ///< 1-char SV system (G/R/E/S)
+                   name,    ///< program name used to apply corrections
+                   source;  ///< source of corrections (URL)
      };
 
      /** @name Standard RINEX observation types
@@ -245,18 +257,27 @@ namespace gpstk
                  recVers;                           ///< RECEIVER VERSION
      std::string antNo,                             ///< ANTENNA NUMBER
                  antType;                           ///< ANTENNA TYPE
-     gpstk::Triple antennaPosition;                 ///< APPROXIMATE POSITION XYZ
-     gpstk::Triple antennaOffset;                   ///< ANTENNA: DELTA H/E/N
+     gpstk::Triple antennaPosition,                 ///< APPROXIMATE POSITION XYZ
+                   antennaDeltaHEN,                 ///< ANTENNA: DELTA H/E/N
+                   antennaDeltaXYZ;                 ///< ANTENNA: DELTA X/Y/Z
+     std::string antennaSatSys,                     ///< ANTENNA PHASECENTER BLOCK: SAT SYSTEM
+                 antennaObsCode;                    ///< ANTENNA PHASECENTER BLOCK: OBS CODE
+     gpstk::Triple antennaPhaseCtr;                 ///< ANTENNA PHASECENTER BLOCK: PHASE CENTER POSITION
+     gpstk::Triple antennaBsight;                   ///< ANTENNA BORESIGHT XYZ
+     double        antennaZerodirAzi;               ///< ANTENNA ZERO DIRECTION AZIMUTH (deg from north)
+     gpstk::Triple antennaZerodirXYZ;               ///< ANTENNA ZERO DIRECTION XYZ
+     gpstk::Triple centerOfMass;                    ///< VEHICLE CENTER OF MASS XYZ
      std::vector<Rinex3ObsType> obsTypeList;        ///< NUMBER & TYPES OF OBSERV
+     std::string sigStrengthUnit;                   ///< SIGNAL STRENGTH UNIT (optional)
      double interval;                               ///< INTERVAL (optional)
-     CommonTime firstObs ;                          ///< TIME OF FIRST OBS
-     RinexSatID firstSystem;                        ///< RINEX satellite system of FIRST OBS timetag
-     CommonTime lastObs ;                           ///< TIME OF LAST OBS (optional)
-     RinexSatID lastSystem;                         ///< RINEX satellite system of LAST OBS timetag
+     CivilTime firstObs,                            ///< TIME OF FIRST OBS
+                lastObs;                            ///< TIME OF LAST OBS (optional)
      int receiverOffset;                            ///< RCV CLOCK OFFS APPL (optional)
+     Rinex3DCBSinfo infoDCBS;                       ///< DCBS INFO
+     Rinex3PCVSinfo infoPCVS;                       ///< PCVS INFO
      int leapSeconds;                               ///< LEAP SECONDS (optional)
      short numSVs;                                  ///< NUMBER OF SATELLITES in following map (optional)
-     std::map<SatID,std::vector<int>> numObsForSat; ///<  PRN / # OF OBS (optional)
+     std::map<SatID,std::vector<int>> numObsForSat; ///< PRN / # OF OBS (optional)
      unsigned long valid;                           ///< Bits set when individual header members are present and valid
      int numObs;                                    ///< used to save the number of obs on # / TYPES continuation lines
      RinexSatID lastPRN;                            ///< used to save the current PRN while reading PRN/OBS continuation lines

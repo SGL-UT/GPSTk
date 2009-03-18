@@ -50,34 +50,26 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-   const string RinexObsHeader::versionString =         "RINEX VERSION / TYPE";
-   const string RinexObsHeader::runByString =           "PGM / RUN BY / DATE";
-   const string RinexObsHeader::commentString =         "COMMENT";
-   const string RinexObsHeader::markerNameString =      "MARKER NAME";
-   const string RinexObsHeader::markerNumberString =    "MARKER NUMBER";
-   const string RinexObsHeader::observerString =        "OBSERVER / AGENCY";
-   const string RinexObsHeader::receiverString =        "REC # / TYPE / VERS";
-   const string RinexObsHeader::antennaTypeString =     "ANT # / TYPE";
-   const string RinexObsHeader::antennaPositionString = "APPROX POSITION XYZ";
-   const string RinexObsHeader::antennaOffsetString =   "ANTENNA: DELTA H/E/N";
-   const string RinexObsHeader::waveFactString =        "WAVELENGTH FACT L1/2";
-   const string RinexObsHeader::numObsString =          "# / TYPES OF OBSERV";
-   const string RinexObsHeader::intervalString =        "INTERVAL";
-   const string RinexObsHeader::firstTimeString =       "TIME OF FIRST OBS";
-   const string RinexObsHeader::lastTimeString =        "TIME OF LAST OBS";
-   const string RinexObsHeader::receiverOffsetString =  "RCV CLOCK OFFS APPL";
-   const string RinexObsHeader::leapSecondsString =     "LEAP SECONDS";
-   const string RinexObsHeader::numSatsString =         "# OF SATELLITES";
-   const string RinexObsHeader::prnObsString =          "PRN / # OF OBS";
-   const string RinexObsHeader::endOfHeader =           "END OF HEADER";
-
-   const unsigned int RinexObsHeader::RinexObsType::C1depend=0x01;
-   const unsigned int RinexObsHeader::RinexObsType::L1depend=0x02;
-   const unsigned int RinexObsHeader::RinexObsType::L2depend=0x04;
-   const unsigned int RinexObsHeader::RinexObsType::P1depend=0x08;
-   const unsigned int RinexObsHeader::RinexObsType::P2depend=0x10;
-   const unsigned int RinexObsHeader::RinexObsType::EPdepend=0x20;
-   const unsigned int RinexObsHeader::RinexObsType::PSdepend=0x40;
+   const string Rinex3ObsHeader::stringVersion =         "RINEX VERSION / TYPE";
+   const string Rinex3ObsHeader::stringRunBy =           "PGM / RUN BY / DATE";
+   const string Rinex3ObsHeader::stringComment =         "COMMENT";
+   const string Rinex3ObsHeader::stringMarkerName =      "MARKER NAME";
+   const string Rinex3ObsHeader::stringMarkerNumber =    "MARKER NUMBER";
+   const string Rinex3ObsHeader::stringObserver =        "OBSERVER / AGENCY";
+   const string Rinex3ObsHeader::stringReceiver =        "REC # / TYPE / VERS";
+   const string Rinex3ObsHeader::stringAntennaType =     "ANT # / TYPE";
+   const string Rinex3ObsHeader::stringAntennaPosition = "APPROX POSITION XYZ";
+   const string Rinex3ObsHeader::stringAntennaOffset =   "ANTENNA: DELTA H/E/N";
+   const string Rinex3ObsHeader::stringWaveFact =        "WAVELENGTH FACT L1/2";
+   const string Rinex3ObsHeader::stringNumObs =          "# / TYPES OF OBSERV";
+   const string Rinex3ObsHeader::stringInterval =        "INTERVAL";
+   const string Rinex3ObsHeader::stringFirstTime =       "TIME OF FIRST OBS";
+   const string Rinex3ObsHeader::stringLastTime =        "TIME OF LAST OBS";
+   const string Rinex3ObsHeader::stringReceiverOffset =  "RCV CLOCK OFFS APPL";
+   const string Rinex3ObsHeader::stringLeapSeconds =     "LEAP SECONDS";
+   const string Rinex3ObsHeader::stringNumSats =         "# OF SATELLITES";
+   const string Rinex3ObsHeader::stringPrnObs =          "PRN / # OF OBS";
+   const string Rinex3ObsHeader::stringEndOfHeader =     "END OF HEADER";
 
    const RinexObsHeader::RinexObsType RinexObsHeader::UN("UN", "Unknown or Invalid",   "unknown", 0);
    const RinexObsHeader::RinexObsType RinexObsHeader::L1("L1", "L1 Carrier Phase",     "L1 cycles",
