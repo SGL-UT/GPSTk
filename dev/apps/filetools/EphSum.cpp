@@ -1,9 +1,47 @@
-#pragma ident "$Id: //depot/msn/prototype/brent/IGEB_Demo/EphSum.cpp#1 $"
+#pragma ident "$Id: //depot/msn/prototype/brent/IGEB_Demo/EphSum.cpp#3 $"
 /**
-*  Given a PRN ID and a date (DOY, Year), read the appropriate FIC data file(s)
-*  and assemble a summary of all ephemerides relevant to the day for the PRN. 
+*  Given a PRN ID and a date (DOY, Year), one or more navigation
+*  message data file(s) and assemble a summary of all ephemerides relevant
+*  to the day for the PRN.  Display the summary as a one-line-per-ephemeris
+*  data set that shows the transmit time, the time of effectivity, the end
+*  of effectivity, the IODC, and the health.
 *  
 */
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//  Copyright 2009, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software.
+//
+//Pursuant to DoD Directive 523024
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 // System
 #include <stdio.h>
 
@@ -17,16 +55,13 @@
 #include "FICStream.hpp"
 #include "FICHeader.hpp"
 #include "FICData.hpp"
-#include "FICFilterOperators.hpp"
 
 #include "RinexNavStream.hpp"
 #include "RinexNavData.hpp"
 #include "RinexNavHeader.hpp"
-#include "RinexNavFilterOperators.hpp"
 
 using namespace std;
 using namespace gpstk;
-
 
 class EphSum : public gpstk::BasicFramework
 {
@@ -42,11 +77,9 @@ protected:
    gpstk::CommandOptionWithAnyArg inputOption;
    gpstk::CommandOptionWithAnyArg outputOption;
    gpstk::CommandOptionWithAnyArg prnOption;
-   gpstk::CommandOptionNoArg FICOption;
-   std::list<long> blocklist;
-   std::list<long> prnlist;
 
    FILE *logfp;
+   FILE *out2fp; 
    GPSEphemerisStore ges;
    
    int numFICErrors;
@@ -56,7 +89,15 @@ int main( int argc, char*argv[] )
 {
    try
    {
-      EphSum fc("EphSum", "Summarize contents of a navigation message file.");
+      string applDesc = "\nSummarize contents of a navigation message file.  "
+        "EphSum works on either RINEX navigation message files or FIC files.  "
+        "The summary is in a text output file.  The summary contains the transmit "
+        "time, time of effectivity, end of effectivity, IODC, and health as a "
+        "one-line-per ephemeris summary.  The number of ephemerides found per SV "
+        "is also provided.  The number of ephemerides per SV is also summarized at the end.  "
+        "The default is to summarize all SVs found. If a specific PRN ID is provided, "
+        "only data for that PRN ID will be sumarized.";
+      EphSum fc("EphSum", applDesc);
       if (!fc.initialize(argc, argv)) return(false);
       fc.run();
    }
@@ -78,13 +119,11 @@ EphSum::EphSum(const std::string& applName,
           :BasicFramework(applName, applDesc),
            inputOption('i', "input-file", "The name of the navigation message file(s) to read.", true),
            outputOption('o', "output-file", "The name of the output file to write.", true),
-           FICOption('f', "FIC","Assuming FIC input rather than Rinex(default).",false), 
-           prnOption('p', "PRNID","The PRN ID of the SV to process",false)
+           prnOption('p', "PRNID","The PRN ID of the SV to process (default is all SVs)",false)
 {
-   inputOption.setMaxCount(2);
+   inputOption.setMaxCount(8);
    outputOption.setMaxCount(1);
    prnOption.setMaxCount(1);
-   FICOption.setMaxCount(1);
    numFICErrors = 0;
 }
 
@@ -106,7 +145,6 @@ bool EphSum::initialize(int argc, char *argv[])
       {
          cout << "PRN ID     : " <<    prnOption.getValue().front() << endl;
       }
-      if (FICOption.getCount()==0) cout << "Processing FIC input" << endl;
    }
    
       // Open the output file
@@ -117,7 +155,7 @@ bool EphSum::initialize(int argc, char *argv[])
       return 1;
    }
    fprintf(logfp,"# Output file from EphSum\n");
-   
+
    return true;   
 }
 
@@ -126,77 +164,110 @@ void EphSum::process()
    int countByPRN[gpstk::MAX_PRN+1];
    for (int i1=0;i1<=gpstk::MAX_PRN+1;++i1) countByPRN[i1] = 0;
    
+   bool successAtLeastOnce = false;
+   
    vector<string> values;
    values = inputOption.getValue();
-   if (FICOption.getCount()>0)
+   for (int it=0;it<values.size();++it)
    {
-      FileFilterFrame<FICStream, FICData> input(values);
-      for (int it=0;it<values.size();++it)
+      bool successOnThisFile = false;
+         // Leave a record in the output file so we can verify what
+         // ephemeris files were processed.
+      fprintf(logfp,"# Processing input specification: %s",
+                   values[it].c_str());
+      // 
+      // Try processing as a RINEX file
+      try
       {
-         fprintf(logfp,"# Processing FIC input specification: %s\n",
-                      values[it].c_str());
-      }
-   
-      if(debugLevel)
-      {
-         cout << " input.getDataCount() after init: " << input.getDataCount() << endl;
-         cout << "Setting up output file: "
-              << outputOption.getValue().front() << endl;
-      }
-         // filter the FIC data for the requested block(s)
-      std::list<long> blockList;
-      blockList.push_back(9);
-      input.filter(FICDataFilterBlock(blockList));
-   
-         //some hand waving for the data conversion
-      if(debugLevel)
-         cout << "Reading the input data." << endl;
-      list<FICData>& ficList = input.getData();
-      list<FICData>::iterator itr = ficList.begin();
-      int count9 = 0;
-      while (itr != ficList.end())
-      {
-         count9++;
-         FICData& r = *itr;
-         if ( r.blockNum == 9)
+         RinexNavHeader rnh;
+         RinexNavData rnd;
+         
+         RinexNavStream RNFileIn( values[it].c_str() );
+         if (RNFileIn)
          {
-            EngEphemeris ee(r);
-            ges.addEphemeris(ee);
+            RNFileIn.exceptions(fstream::failbit);
+            RNFileIn >> rnh;
+         
+            while (RNFileIn >> rnd)
+            {
+               EngEphemeris ee(rnd);
+               ges.addEphemeris(ee);
+            }
+            successOnThisFile = true;
+            fprintf(logfp," - Success(RINEX)\n");
          }
-         itr++;
       }
+      catch(gpstk::Exception& exc)
+      {
+         // do nothing
+      }
+      //if (successOnThisFile) cout << "Succeeded reading RINEX" << endl; 
+         
+         // If RINEX failed, try as FIC input file
+      if (!successOnThisFile)
+      {
+      try
+      {
+         FICHeader fich;
+         FICData ficd;
+         
+         FICStream FICFileIn( values[it].c_str() );
+         if (FICFileIn)
+         {
+            FICFileIn.exceptions(fstream::failbit);
+            FICFileIn >> fich;
+         
+            int recNum = 0;
+            int recNum9 = 0;
+            while (FICFileIn >> ficd)
+            {
+               if (ficd.blockNum==9)
+               {
+                  EngEphemeris ee(ficd);
+                  ges.addEphemeris(ee);
+                  recNum9++;
+               }
+               recNum++;
+               //cout << "Processed rec#, rec9#  " << recNum << ", " << recNum9 << ", " << endl; 
+            }
+         }
+         successOnThisFile = true;
+         fprintf(logfp," - Success(FIC)\n");
+         //if (successOnThisFile) cout << "Succeeded reading FIC" << endl; 
+      }
+      catch(gpstk::Exception& exc)
+      {
+         //cout << "Caught exception during FIC read." << endl;
+         //cout << "Exception: " << exc << endl;
+         // do nothing
+      }
+      }
+      if (successOnThisFile) successAtLeastOnce = true;
+       else fprintf(logfp," - FAILURE\n");
    }
-   else
+   
+   if (!successAtLeastOnce)
    {
-      FileFilterFrame<RinexNavStream, RinexNavData> data(values);
-      for (int it=0;it<values.size();++it)
-      {
-         fprintf(logfp,"# Processing Rinex input specification: %s\n",
-                      values[it].c_str());
-      }
-      list<RinexNavData>& rnavlist = data.getData();
-      list<RinexNavData>::iterator itr = rnavlist.begin();
-      while (itr!=rnavlist.end())
-      {
-         RinexNavData& r = *itr;
-         EngEphemeris ee(r);
-         ges.addEphemeris(ee);
-         itr++;
-      }
+      cout << "Read no ephemeris data." << endl;
+      cout << "EphSum will terminate." << endl;
+      exit(1);
    }
    
    string tform = "%04F %6.0g %02m/%02d/%02y %03j %02H:%02M:%02S";
    
    GPSEphemerisStore::EngEphMap eemap;
-   long prnid=1;
    long maxprn = gpstk::MAX_PRN;
+   
+   bool singleSV = false; 
+   int singlePRNID = 0;
    if (prnOption.getCount()>0)
    {
-      prnid = StringUtils::asInt(prnOption.getValue().front());
-      maxprn = prnid;
+      singlePRNID = StringUtils::asInt(prnOption.getValue().front());
+      singleSV = true;
    }
-   for (int i=prnid;i<=maxprn;++i) 
+   for (int i=1;i<=maxprn;++i) 
    {
+      GPSEphemerisStore::EngEphMap::const_iterator ci;
       SatID sat = SatID( i, SatID::systemGPS);
       try
       {
@@ -205,17 +276,21 @@ void EphSum::process()
       catch(InvalidRequest)
       {
          // simply go on to the next PRN
-         fprintf(logfp,"#\n");
-         fprintf(logfp,"#PRN: %02d,  # of eph: NONE\n",i);
+         if (!singleSV || (singleSV && i==singlePRNID))
+         {
+            fprintf(logfp,"#\n");
+            fprintf(logfp,"#PRN: %02d,  # of eph: NONE\n",i);
+         }
          continue;
       }
+      countByPRN[i] = eemap.size();
+ 
+      if (singleSV && singlePRNID!=i) continue;
       
          // Header
       fprintf(logfp,"#\n");
       fprintf(logfp,"#PRN: %02d,  # of eph: %02d\n",i,eemap.size());
       fprintf(logfp,"#PRN !               Xmit                !             Toe/Toc               !            End of Eff             !  IODC   Health\n");
-      countByPRN[i] = eemap.size();
-      GPSEphemerisStore::EngEphMap::const_iterator ci;
       for (ci=eemap.begin(); ci!=eemap.end(); ++ci)
       {
          EngEphemeris ee = ci->second;
