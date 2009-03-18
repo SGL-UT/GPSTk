@@ -45,7 +45,7 @@ namespace vdraw
         c[row][col] = base;
   }
 
-  IndexedColorMap::reset()
+  void IndexedColorMap::reset()
   {
     if(c)
     {
