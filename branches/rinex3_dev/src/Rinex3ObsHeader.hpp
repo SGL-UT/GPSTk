@@ -93,72 +93,72 @@ namespace gpstk
       * RINEX 3 observation file header formatting strings
       */
      //@{
-     static const std::string stringVersion;            ///< "RINEX VERSION / TYPE"
-     static const std::string stringRunBy;              ///< "PGM / RUN BY / DATE"
-     static const std::string stringComment;            ///< "COMMENT"
-     static const std::string stringMarkerName;         ///< "MARKER NAME"
-     static const std::string stringMarkerNumber;       ///< "MARKER NUMBER"
-     static const std::string stringMarkerType;         ///< "MARKER TYPE"
-     static const std::string stringObserver;           ///< "OBSERVER / AGENCY"
-     static const std::string stringReceiver;           ///< "REC # / TYPE / VERS"
-     static const std::string stringAntennaType;        ///< "ANT # / TYPE"
-     static const std::string stringAntennaPosition;    ///< "APPROX POSITION XYZ"
-     static const std::string stringAntennaDeltaHEN;    ///< "ANTENNA: DELTA H/E/N"
-     static const std::string stringAntennaDeltaXYX;    ///< "ANTENNA: DELTA X/Y/Z"
-     static const std::string stringAntennaPhaseCenter; ///< "ANTENNA: PHASECENTER"
-     static const std::string stringAntennaBsightXYZ;   ///< "ANTENNA: BORESIGHT XYZ"
-     static const std::string stringAntennaZeroDirAzi;  ///< "ANTENNA: ZERODIR AZIMUTH"
-     static const std::string stringAntennaZeroDirXYZ;  ///< "ANTENNA: ZERODIR XYZ"
-     static const std::string stringAntennaCoM;         ///< "ANTENNA: CENTER OF MASS"
-     static const std::string stringSystemNumObs;       ///< "SYS / # / TYPES OF OBSERV"
-     static const std::string stringSignalStrengthUnit; ///< "SIGNAL STRENGTH UNITS"
-     static const std::string stringInterval;           ///< "INTERVAL"
-     static const std::string stringFirstTime;          ///< "TIME OF FIRST OBS"
-     static const std::string stringLastTime;           ///< "TIME OF LAST OBS"
-     static const std::string stringReceiverOffset;     ///< "RCV CLOCK OFFS APPL"
-     static const std::string stringSystemDCBSapplied;  ///< "SYSTEM DCBS APPLIED"
-     static const std::string stringSystemPCVSapplied;  ///< "SYSTEM PCVS APPLIED"
-     static const std::string stringSystemScaleFac;     ///< "SYSTEM SCALE FACTOR"
-     static const std::string stringLeapSeconds;        ///< "LEAP SECONDS"
-     static const std::string stringNumSats;            ///< "# OF SATELLITES"
-     static const std::string stringPrnObs;             ///< "PRN / # OF OBS"
-     static const std::string stringEndOfHeader;        ///< "END OF HEADER"
+     static const std::string stringVersion;           ///< "RINEX VERSION / TYPE"
+     static const std::string stringRunBy;             ///< "PGM / RUN BY / DATE"
+     static const std::string stringComment;           ///< "COMMENT"
+     static const std::string stringMarkerName;        ///< "MARKER NAME"
+     static const std::string stringMarkerNumber;      ///< "MARKER NUMBER"
+     static const std::string stringMarkerType;        ///< "MARKER TYPE"
+     static const std::string stringObserver;          ///< "OBSERVER / AGENCY"
+     static const std::string stringReceiver;          ///< "REC # / TYPE / VERS"
+     static const std::string stringAntennaType;       ///< "ANT # / TYPE"
+     static const std::string stringAntennaPosition;   ///< "APPROX POSITION XYZ"
+     static const std::string stringAntennaDeltaHEN;   ///< "ANTENNA: DELTA H/E/N"
+     static const std::string stringAntennaDeltaXYZ;   ///< "ANTENNA: DELTA X/Y/Z"
+     static const std::string stringAntennaPhaseCtr;   ///< "ANTENNA: PHASECENTER"
+     static const std::string stringAntennaBsightXYZ;  ///< "ANTENNA: BORESIGHT XYZ"
+     static const std::string stringAntennaZeroDirAzi; ///< "ANTENNA: ZERODIR AZIMUTH"
+     static const std::string stringAntennaZeroDirXYZ; ///< "ANTENNA: ZERODIR XYZ"
+     static const std::string stringAntennaCoM;        ///< "ANTENNA: CENTER OF MASS"
+     static const std::string stringSystemNumObs;      ///< "SYS / # / TYPES OF OBSERV"
+     static const std::string stringSigStrengthUnit;   ///< "SIGNAL STRENGTH UNITS"
+     static const std::string stringInterval;          ///< "INTERVAL"
+     static const std::string stringFirstTime;         ///< "TIME OF FIRST OBS"
+     static const std::string stringLastTime;          ///< "TIME OF LAST OBS"
+     static const std::string stringReceiverOffset;    ///< "RCV CLOCK OFFS APPL"
+     static const std::string stringSystemDCBSapplied; ///< "SYSTEM DCBS APPLIED"
+     static const std::string stringSystemPCVSapplied; ///< "SYSTEM PCVS APPLIED"
+     static const std::string stringSystemScaleFac;    ///< "SYSTEM SCALE FACTOR"
+     static const std::string stringLeapSeconds;       ///< "LEAP SECONDS"
+     static const std::string stringNumSats;           ///< "# OF SATELLITES"
+     static const std::string stringPrnObs;            ///< "PRN / # OF OBS"
+     static const std::string stringEoH;               ///< "END OF HEADER"
      //@}
 
      /// Validity bits for the RINEX Observation Header
      enum validBits
      {
-       validVersion = 0x01,           ///< "RINEX VERSION / TYPE"
-       validRunBy = 0x02,             ///< "PGM / RUN BY / DATE"
-       validComment = 0x04,           ///< "COMMENT"
-       validMarkerName = 0x08,        ///< "MARKER NAME"
-       validMarkerNumber = 0x010,     ///< "MARKER NUMBER"
-       validMarkerType = 0x,         ///< "MARKER TYPE"
-       validObserver = 0x020,         ///< "OBSERVER / AGENCY"
-       validReceiver = 0x040,         ///< "REC # / TYPE / VERS"
-       validAntennaType = 0x080,      ///< "ANT # / TYPE"
-       validAntennaPosition = 0x0100, ///< "APPROX POSITION XYZ"
-       validAntennaDeltaHEN = 0x0200, ///< "ANTENNA: DELTA H/E/N"
-       validAntennaDeltaXYZ = 0x0400, ///< "ANTENNA: DELTA X/Y/Z"
-       validAntennaPhaseCenter = 0x, ///< "ANTENNA: PHASECENTER"
-       validAntennaBsightXYZ = 0x,   ///< "ANTENNA: BORESIGHT XYZ"
-       validAntennaZeroDirAzi = 0x,        ///< "ANTENNA: ZERODIR AZIMUTH"
-       validAntennaZeroDirXYZ = 0x,        ///< "ANTENNA: ZERODIR XYZ"
-       validAntennaCoM = 0x,         ///< "ANTENNA: CENTER OF MASS"
-       validObsType = 0x0800,         ///< "SYS / # / TYPES OF OBSERV"
-       validSigStrengthUnit = 0x,  ///< "SIGNAL STRENGTH UNITS"
-       validInterval = 0x01000,       ///< "INTERVAL"
-       validFirstTime = 0x02000,      ///< "TIME OF FIRST OBS"
-       validLastTime = 0x04000,       ///< "TIME OF LAST OBS"
-       validReceiverOffset = 0x08000, ///< "RCV CLOCK OFFS APPL"
-       validSystemDCBSapplied = 0x,  ///< "SYSTEM DCBS APPLIED"
-       validSystemPCVSapplied = 0x,  ///< "SYSTEM PCVS APPLIED"
-       validSystemScaleFac = 0x,     ///< "SYSTEM SCALE FACTOR"
-       validLeapSeconds = 0x0100000,  ///< "LEAP SECONDS"
-       validNumSats = 0x0200000,      ///< "# OF SATELLITES"
-       validPrnObs = 0x0400000,       ///< "PRN / # OF OBS"
+       validVersion           = 0x01,        ///< "RINEX VERSION / TYPE"
+       validRunBy             = 0x02,        ///< "PGM / RUN BY / DATE"
+       validComment           = 0x04,        ///< "COMMENT"
+       validMarkerName        = 0x08,        ///< "MARKER NAME"
+       validMarkerNumber      = 0x010,       ///< "MARKER NUMBER"
+       validMarkerType        = 0x020,       ///< "MARKER TYPE"
+       validObserver          = 0x040,       ///< "OBSERVER / AGENCY"
+       validReceiver          = 0x080,       ///< "REC # / TYPE / VERS"
+       validAntennaType       = 0x0100,      ///< "ANT # / TYPE"
+       validAntennaPosition   = 0x0200,      ///< "APPROX POSITION XYZ"
+       validAntennaDeltaHEN   = 0x0400,      ///< "ANTENNA: DELTA H/E/N"
+       validAntennaDeltaXYZ   = 0x0800,      ///< "ANTENNA: DELTA X/Y/Z"
+       validAntennaPhaseCtr   = 0x01000,     ///< "ANTENNA: PHASECENTER"
+       validAntennaBsightXYZ  = 0x02000,     ///< "ANTENNA: BORESIGHT XYZ"
+       validAntennaZeroDirAzi = 0x04000,     ///< "ANTENNA: ZERODIR AZIMUTH"
+       validAntennaZeroDirXYZ = 0x08000,     ///< "ANTENNA: ZERODIR XYZ"
+       validAntennaCoM        = 0x010000,    ///< "ANTENNA: CENTER OF MASS"
+       validObsType           = 0x020000,    ///< "SYS / # / TYPES OF OBSERV"
+       validSigStrengthUnit   = 0x040000,    ///< "SIGNAL STRENGTH UNITS"
+       validInterval          = 0x080000,    ///< "INTERVAL"
+       validFirstTime         = 0x0100000,   ///< "TIME OF FIRST OBS"
+       validLastTime          = 0x0200000,   ///< "TIME OF LAST OBS"
+       validReceiverOffset    = 0x0400000,   ///< "RCV CLOCK OFFS APPL"
+       validSystemDCBSapplied = 0x0800000,   ///< "SYSTEM DCBS APPLIED"
+       validSystemPCVSapplied = 0x01000000,  ///< "SYSTEM PCVS APPLIED"
+       validSystemScaleFac    = 0x02000000,  ///< "SYSTEM SCALE FACTOR"
+       validLeapSeconds       = 0x04000000,  ///< "LEAP SECONDS"
+       validNumSats           = 0x08000000,  ///< "# OF SATELLITES"
+       validPrnObs            = 0x010000000, ///< "PRN / # OF OBS"
 
-       validEoH = 0x080000000,        ///< "END OF HEADER"
+       validEoH = 0x080000000,               ///< "END OF HEADER"
 
        /// This mask is for all required valid fields for RINEX 3.0 (3.00)
        allValid30 = 0x080002FEB,
@@ -173,7 +173,7 @@ namespace gpstk
        int scaleFactor;           ///< factor to divide stored observations with before use
        Rinex3ObsType()
          : type(std::string("UN")),description(std::string("Unknown or Invalid")),
-           units(std::string("")),kscaleFactor(1)
+           units(std::string("")),scaleFactor(1)
        {}
        Rinex3ObsType(std::string t, std::string d, std::string u, int sf = 1)
          : type(t),description(d),units(u),scaleFactor(sf)
@@ -238,49 +238,49 @@ namespace gpstk
      /** @name Rinex3ObsHeaderValues
       */ 
      //@{
-     double version;                                ///< RINEX 3 VERSION & TYPE
-     std::string fileType,                          ///< RINEX 3 FILETYPE
-                 satSys;                            ///< RINEX 3 SATELLITE SYSTEM
-     //std::string system_str;                      ///< The string (for file i/o) giving the RINEX system 
-     RinexSatID system;                             ///< The RINEX satellite system (derived type, enum)
-     std::string fileProgram,                       ///< The program used to generate this file
-                 fileAgency,                        ///< Who ran the program.
-                 date;                              ///< When the program was run.
-     std::vector<std::string> commentList;          ///< Comments in header (optional)
-     std::string markerName,                        ///< MARKER NAME
-                 markerNumber,                      ///< MARKER NUMBER (optional)
-                 markerType;                        ///< MARKER TYPE   (optional)
-     std::string observer,                          ///< OBSERVER : who collected the data
-                 agency;                            ///< OBSERVER'S AGENCY
-     std::string recNo,                             ///< RECEIVER NUMBER
-                 recType,                           ///< RECEIVER TYPE
-                 recVers;                           ///< RECEIVER VERSION
-     std::string antNo,                             ///< ANTENNA NUMBER
-                 antType;                           ///< ANTENNA TYPE
-     gpstk::Triple antennaPosition,                 ///< APPROXIMATE POSITION XYZ
-                   antennaDeltaHEN,                 ///< ANTENNA: DELTA H/E/N
-                   antennaDeltaXYZ;                 ///< ANTENNA: DELTA X/Y/Z
-     std::string antennaSatSys,                     ///< ANTENNA PHASECENTER BLOCK: SAT SYSTEM
-                 antennaObsCode;                    ///< ANTENNA PHASECENTER BLOCK: OBS CODE
-     gpstk::Triple antennaPhaseCtr;                 ///< ANTENNA PHASECENTER BLOCK: PHASE CENTER POSITION
-     gpstk::Triple antennaBsight;                   ///< ANTENNA BORESIGHT XYZ
-     double        antennaZerodirAzi;               ///< ANTENNA ZERO DIRECTION AZIMUTH (deg from north)
-     gpstk::Triple antennaZerodirXYZ;               ///< ANTENNA ZERO DIRECTION XYZ
-     gpstk::Triple centerOfMass;                    ///< VEHICLE CENTER OF MASS XYZ
-     std::vector<Rinex3ObsType> obsTypeList;        ///< NUMBER & TYPES OF OBSERV
-     std::string sigStrengthUnit;                   ///< SIGNAL STRENGTH UNIT (optional)
-     double interval;                               ///< INTERVAL (optional)
-     CivilTime firstObs,                            ///< TIME OF FIRST OBS
-                lastObs;                            ///< TIME OF LAST OBS (optional)
-     int receiverOffset;                            ///< RCV CLOCK OFFS APPL (optional)
-     Rinex3DCBSinfo infoDCBS;                       ///< DCBS INFO
-     Rinex3PCVSinfo infoPCVS;                       ///< PCVS INFO
-     int leapSeconds;                               ///< LEAP SECONDS (optional)
-     short numSVs;                                  ///< NUMBER OF SATELLITES in following map (optional)
-     std::map<SatID,std::vector<int>> numObsForSat; ///< PRN / # OF OBS (optional)
-     unsigned long valid;                           ///< Bits set when individual header members are present and valid
-     int numObs;                                    ///< used to save the number of obs on # / TYPES continuation lines
-     RinexSatID lastPRN;                            ///< used to save the current PRN while reading PRN/OBS continuation lines
+     double version;                                 ///< RINEX 3 VERSION & TYPE
+     std::string fileType,                           ///< RINEX 3 FILETYPE
+                 satSys;                             ///< RINEX 3 SATELLITE SYSTEM
+     //std::string system_str;                       ///< The string (for file i/o) giving the RINEX system 
+     RinexSatID system;                              ///< The RINEX satellite system (derived type, enum)
+     std::string fileProgram,                        ///< The program used to generate this file
+                 fileAgency,                         ///< Who ran the program.
+                 date;                               ///< When the program was run.
+     std::vector<std::string> commentList;           ///< Comments in header (optional)
+     std::string markerName,                         ///< MARKER NAME
+                 markerNumber,                       ///< MARKER NUMBER (optional)
+                 markerType;                         ///< MARKER TYPE   (optional)
+     std::string observer,                           ///< OBSERVER : who collected the data
+                 agency;                             ///< OBSERVER'S AGENCY
+     std::string recNo,                              ///< RECEIVER NUMBER
+                 recType,                            ///< RECEIVER TYPE
+                 recVers;                            ///< RECEIVER VERSION
+     std::string antNo,                              ///< ANTENNA NUMBER
+                 antType;                            ///< ANTENNA TYPE
+     gpstk::Triple antennaPosition,                  ///< APPROXIMATE POSITION XYZ
+                   antennaDeltaHEN,                  ///< ANTENNA: DELTA H/E/N
+                   antennaDeltaXYZ;                  ///< ANTENNA: DELTA X/Y/Z
+     std::string antennaSatSys,                      ///< ANTENNA PHASECENTER BLOCK: SAT SYSTEM
+                 antennaObsCode;                     ///< ANTENNA PHASECENTER BLOCK: OBS CODE
+     gpstk::Triple antennaPhaseCtr;                  ///< ANTENNA PHASECENTER BLOCK: PHASE CENTER POSITION
+     gpstk::Triple antennaBsight;                    ///< ANTENNA BORESIGHT XYZ
+     double        antennaZeroDirAzi;                ///< ANTENNA ZERO DIRECTION AZIMUTH (deg from north)
+     gpstk::Triple antennaZeroDirXYZ;                ///< ANTENNA ZERO DIRECTION XYZ
+     gpstk::Triple centerOfMass;                     ///< VEHICLE CENTER OF MASS XYZ
+     std::vector<Rinex3ObsType> obsTypeList;         ///< NUMBER & TYPES OF OBSERV
+     std::string sigStrengthUnit;                    ///< SIGNAL STRENGTH UNIT (optional)
+     double interval;                                ///< INTERVAL (optional)
+     CivilTime firstObs,                             ///< TIME OF FIRST OBS
+                lastObs;                             ///< TIME OF LAST OBS (optional)
+     int receiverOffset;                             ///< RCV CLOCK OFFS APPL (optional)
+     Rinex3DCBSinfo infoDCBS;                        ///< DCBS INFO
+     Rinex3PCVSinfo infoPCVS;                        ///< PCVS INFO
+     int leapSeconds;                                ///< LEAP SECONDS (optional)
+     short numSVs;                                   ///< NUMBER OF SATELLITES in following map (optional)
+     std::map<SatID,std::vector<int> > numObsForSat; ///< PRN / # OF OBS (optional)
+     unsigned long valid;                            ///< Bits set when individual header members are present and valid
+     int numObs;                                     ///< used to save the number of obs on # / TYPES continuation lines
+     RinexSatID lastPRN;                             ///< used to save the current PRN while reading PRN/OBS continuation lines
      //@}
 
      /// Destructor
@@ -361,13 +361,13 @@ namespace gpstk
 
      /// Converts the daytime \a dt into a Rinex Obs time
      /// string for the header
-     std::string writeTime(const CommonTime& dt) const;
+     std::string writeTime(const CivilTime& civtime) const;
 
      /**
       * This function sets the time for this header.
       * It looks at \a line to obtain the needed information.
       */
-     CommonTime parseTime(const std::string& line) const;
+     CivilTime parseTime(const std::string& line) const;
 
    }; // end class Rinex3ObsHeader
 

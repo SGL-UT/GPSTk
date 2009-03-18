@@ -1,4 +1,4 @@
-#pragma ident "$Id: RinexObsHeader.cpp 1709 2009-02-18 20:27:47Z btolman $"
+#pragma ident "$Id: Rinex3ObsHeader.cpp 1709 2009-02-18 20:27:47Z btolman $"
 
 //============================================================================
 //
@@ -37,112 +37,115 @@
 //=============================================================================
 
 /**
- * @file RinexObsHeader.cpp
+ * @file Rinex3ObsHeader.cpp
  * Encapsulate header of Rinex observation file, including I/O
  */
 
 #include "StringUtils.hpp"
-#include "RinexObsHeader.hpp"
-#include "RinexObsStream.hpp"
+#include "Rinex3ObsStream.hpp"
+#include "Rinex3ObsHeader.hpp"
 
 using namespace std;
 using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-   const string Rinex3ObsHeader::stringVersion =         "RINEX VERSION / TYPE";
-   const string Rinex3ObsHeader::stringRunBy =           "PGM / RUN BY / DATE";
-   const string Rinex3ObsHeader::stringComment =         "COMMENT";
-   const string Rinex3ObsHeader::stringMarkerName =      "MARKER NAME";
-   const string Rinex3ObsHeader::stringMarkerNumber =    "MARKER NUMBER";
-   const string Rinex3ObsHeader::stringObserver =        "OBSERVER / AGENCY";
-   const string Rinex3ObsHeader::stringReceiver =        "REC # / TYPE / VERS";
-   const string Rinex3ObsHeader::stringAntennaType =     "ANT # / TYPE";
+   const string Rinex3ObsHeader::stringVersion         = "RINEX VERSION / TYPE";
+   const string Rinex3ObsHeader::stringRunBy           = "PGM / RUN BY / DATE";
+   const string Rinex3ObsHeader::stringComment         = "COMMENT";
+   const string Rinex3ObsHeader::stringMarkerName      = "MARKER NAME";
+   const string Rinex3ObsHeader::stringMarkerNumber    = "MARKER NUMBER";
+   const string Rinex3ObsHeader::stringObserver        = "OBSERVER / AGENCY";
+   const string Rinex3ObsHeader::stringReceiver        = "REC # / TYPE / VERS";
+   const string Rinex3ObsHeader::stringAntennaType     = "ANT # / TYPE";
    const string Rinex3ObsHeader::stringAntennaPosition = "APPROX POSITION XYZ";
-   const string Rinex3ObsHeader::stringAntennaOffset =   "ANTENNA: DELTA H/E/N";
-   const string Rinex3ObsHeader::stringWaveFact =        "WAVELENGTH FACT L1/2";
-   const string Rinex3ObsHeader::stringNumObs =          "# / TYPES OF OBSERV";
-   const string Rinex3ObsHeader::stringInterval =        "INTERVAL";
-   const string Rinex3ObsHeader::stringFirstTime =       "TIME OF FIRST OBS";
-   const string Rinex3ObsHeader::stringLastTime =        "TIME OF LAST OBS";
-   const string Rinex3ObsHeader::stringReceiverOffset =  "RCV CLOCK OFFS APPL";
-   const string Rinex3ObsHeader::stringLeapSeconds =     "LEAP SECONDS";
-   const string Rinex3ObsHeader::stringNumSats =         "# OF SATELLITES";
-   const string Rinex3ObsHeader::stringPrnObs =          "PRN / # OF OBS";
-   const string Rinex3ObsHeader::stringEndOfHeader =     "END OF HEADER";
+   const string Rinex3ObsHeader::stringAntennaDeltaHEN = "ANTENNA: DELTA H/E/N";
+   const string Rinex3ObsHeader::stringAntennaDeltaXYZ = "ANTENNA: DELTA X/Y/Z";
+   const string Rinex3ObsHeader::stringSystemNumObs    = "SYS / # / TYPES OF OBSERV";
+   const string Rinex3ObsHeader::stringInterval        = "INTERVAL";
+   const string Rinex3ObsHeader::stringFirstTime       = "TIME OF FIRST OBS";
+   const string Rinex3ObsHeader::stringLastTime        = "TIME OF LAST OBS";
+   const string Rinex3ObsHeader::stringReceiverOffset  = "RCV CLOCK OFFS APPL";
+   const string Rinex3ObsHeader::stringLeapSeconds     = "LEAP SECONDS";
+   const string Rinex3ObsHeader::stringNumSats         = "# OF SATELLITES";
+   const string Rinex3ObsHeader::stringPrnObs          = "PRN / # OF OBS";
+   const string Rinex3ObsHeader::stringEoH             = "END OF HEADER";
 
-   const RinexObsHeader::RinexObsType RinexObsHeader::UN("UN", "Unknown or Invalid",   "unknown", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L1("L1", "L1 Carrier Phase",     "L1 cycles",
-      RinexObsHeader::RinexObsType::L1depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L2("L2", "L2 Carrier Phase",     "L2 cycles",
-      RinexObsHeader::RinexObsType::L2depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::C1("C1", "C/A-code pseudorange", "meters",
-      RinexObsHeader::RinexObsType::C1depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::C2("C2", "L2C-code pseudorange", "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::P1("P1", "Pcode L1 pseudorange", "meters",
-      RinexObsHeader::RinexObsType::P1depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::P2("P2", "Pcode L2 pseudorange", "meters",
-      RinexObsHeader::RinexObsType::P2depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::D1("D1", "Doppler Frequency L1", "Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::D2("D2", "Doppler Frequency L2", "Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::S1("S1", "Signal-to-Noise L1",   "dB-Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::S2("S2", "Signal-to-Noise L2",   "dB-Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::T1("T1", "Transit 150 MHz",      "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::T2("T2", "Transit 400 MHz",      "meters", 0);
+  /*
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::UN("UN", "Unknown or Invalid",   "unknown", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::L1("L1", "L1 Carrier Phase",     "L1 cycles",
+      Rinex3ObsHeader::Rinex3ObsType::L1depend);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::L2("L2", "L2 Carrier Phase",     "L2 cycles",
+      Rinex3ObsHeader::Rinex3ObsType::L2depend);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::C1("C1", "C/A-code pseudorange", "meters",
+      Rinex3ObsHeader::Rinex3ObsType::C1depend);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::C2("C2", "L2C-code pseudorange", "meters", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::P1("P1", "Pcode L1 pseudorange", "meters",
+      Rinex3ObsHeader::Rinex3ObsType::P1depend);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::P2("P2", "Pcode L2 pseudorange", "meters",
+      Rinex3ObsHeader::Rinex3ObsType::P2depend);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::D1("D1", "Doppler Frequency L1", "Hz", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::D2("D2", "Doppler Frequency L2", "Hz", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::S1("S1", "Signal-to-Noise L1",   "dB-Hz", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::S2("S2", "Signal-to-Noise L2",   "dB-Hz", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::T1("T1", "Transit 150 MHz",      "meters", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::T2("T2", "Transit 400 MHz",      "meters", 0);
    // v 2.11
-   const RinexObsHeader::RinexObsType RinexObsHeader::C5("C5", "L5C-code pseudorange", "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L5("L5", "L5 Carrier Phase",     "L5 cycles", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::D5("D5", "Doppler Frequency L5", "Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::S5("S5", "Signal-to-Noise L5",   "dB-Hz", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::C5("C5", "L5C-code pseudorange", "meters", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::L5("L5", "L5 Carrier Phase",     "L5 cycles", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::D5("D5", "Doppler Frequency L5", "Hz", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::S5("S5", "Signal-to-Noise L5",   "dB-Hz", 0);
    // Galileo only
-   const RinexObsHeader::RinexObsType RinexObsHeader::C6("C6", "E6-code pseudorange",  "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L6("L6", "E6 Carrier Phase",     "L6 cycles", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::D6("D6", "Doppler Frequency E6", "Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::S6("S6", "Signal-to-Noise E6",   "dB-Hz", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::C6("C6", "E6-code pseudorange",  "meters", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::L6("L6", "E6 Carrier Phase",     "L6 cycles", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::D6("D6", "Doppler Frequency E6", "Hz", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::S6("S6", "Signal-to-Noise E6",   "dB-Hz", 0);
 
-   const RinexObsHeader::RinexObsType RinexObsHeader::C7("C7", "E5b-code pseudorange",  "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L7("L7", "E5b Carrier Phase",     "L7 cycles", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::D7("D7", "Doppler Frequency E5b", "Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::S7("S7", "Signal-to-Noise E5b",   "dB-Hz", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::C7("C7", "E5b-code pseudorange",  "meters", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::L7("L7", "E5b Carrier Phase",     "L7 cycles", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::D7("D7", "Doppler Frequency E5b", "Hz", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::S7("S7", "Signal-to-Noise E5b",   "dB-Hz", 0);
 
-   const RinexObsHeader::RinexObsType RinexObsHeader::C8("C8", "E5a+b-code pseudorange", "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L8("L8", "E5a+b Carrier Phase",    "L8 cycles", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::D8("D8", "Doppler Frequency E5a+b","Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::S8("S8", "Signal-to-Noise E5a+b",  "dB-Hz", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::C8("C8", "E5a+b-code pseudorange", "meters", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::L8("L8", "E5a+b Carrier Phase",    "L8 cycles", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::D8("D8", "Doppler Frequency E5a+b","Hz", 0);
+   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::S8("S8", "Signal-to-Noise E5a+b",  "dB-Hz", 0);
+  */
 
-   RinexObsHeader::RinexObsType sot[29] =
+   Rinex3ObsHeader::Rinex3ObsType sot[29] =
    { 
-      RinexObsHeader::UN,
-      RinexObsHeader::L1, RinexObsHeader::L2,
-      RinexObsHeader::C1, RinexObsHeader::C2,
-      RinexObsHeader::P1, RinexObsHeader::P2,
-      RinexObsHeader::D1, RinexObsHeader::D2,
-      RinexObsHeader::S1, RinexObsHeader::S2,
-      RinexObsHeader::T1, RinexObsHeader::T2,
-      RinexObsHeader::C5, RinexObsHeader::L5, RinexObsHeader::D5, RinexObsHeader::S5,
-      RinexObsHeader::C6, RinexObsHeader::L6, RinexObsHeader::D6, RinexObsHeader::S6,
-      RinexObsHeader::C7, RinexObsHeader::L7, RinexObsHeader::D7, RinexObsHeader::S7,
-      RinexObsHeader::C8, RinexObsHeader::L8, RinexObsHeader::D8, RinexObsHeader::S8
+      Rinex3ObsHeader::UN,
+      Rinex3ObsHeader::L1, Rinex3ObsHeader::L2,
+      Rinex3ObsHeader::C1, Rinex3ObsHeader::C2,
+      Rinex3ObsHeader::P1, Rinex3ObsHeader::P2,
+      Rinex3ObsHeader::D1, Rinex3ObsHeader::D2,
+      Rinex3ObsHeader::S1, Rinex3ObsHeader::S2,
+      Rinex3ObsHeader::T1, Rinex3ObsHeader::T2,
+      Rinex3ObsHeader::C5, Rinex3ObsHeader::L5, Rinex3ObsHeader::D5, Rinex3ObsHeader::S5,
+      Rinex3ObsHeader::C6, Rinex3ObsHeader::L6, Rinex3ObsHeader::D6, Rinex3ObsHeader::S6,
+      Rinex3ObsHeader::C7, Rinex3ObsHeader::L7, Rinex3ObsHeader::D7, Rinex3ObsHeader::S7,
+      Rinex3ObsHeader::C8, Rinex3ObsHeader::L8, Rinex3ObsHeader::D8, Rinex3ObsHeader::S8
    };
 
-   // Warning: the size of the above sot array needs to be put
-   // in this initializer.
-   const std::vector<RinexObsHeader::RinexObsType> RinexObsHeader::StandardRinexObsTypes(sot,sot+29);
 
-   std::vector<RinexObsHeader::RinexObsType> RinexObsHeader::RegisteredRinexObsTypes
-      = RinexObsHeader::StandardRinexObsTypes;
+   // Warning: the size of the above sot array needs to be put in this initializer.
+   const std::vector<Rinex3ObsHeader::Rinex3ObsType> Rinex3ObsHeader::StandardRinex3ObsTypes(sot,sot+29);
 
-   void RinexObsHeader::reallyPutRecord(FFStream& ffs) const 
+
+   std::vector<Rinex3ObsHeader::Rinex3ObsType> Rinex3ObsHeader::RegisteredRinex3ObsTypes
+      = Rinex3ObsHeader::StandardRinex3ObsTypes;
+
+
+   void Rinex3ObsHeader::reallyPutRecord(FFStream& ffs) const 
       throw(std::exception, FFStreamError, StringException)
    {
-      RinexObsStream& strm = dynamic_cast<RinexObsStream&>(ffs);
+      Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
       
       strm.header = *this;
       
       unsigned long allValid;
-      if (version == 2.0)        allValid = allValid20;
-      else if (version == 2.1)   allValid = allValid21;
-      else if (version == 2.11)  allValid = allValid211;
+      if      (version == 3.0)   allValid = allValid30;
+      else if (version == 3.00)  allValid = allValid30;
       else
       {
          FFStreamError err("Unknown RINEX version: " + asString(version,2));
@@ -170,47 +173,45 @@ namespace gpstk
          GPSTK_RETHROW(e);
       }
 
-   }  // end RinexObsHeader::reallyPutRecord
+   }  // end Rinex3ObsHeader::reallyPutRecord
       
 
-      // this function computes the number of valid header records which WriteHeaderRecords will write
-   int RinexObsHeader::NumberHeaderRecordsToBeWritten(void) const throw()
+   // This function computes the number of valid header records which WriteHeaderRecords will write.
+   int Rinex3ObsHeader::NumberHeaderRecordsToBeWritten(void) const throw()
    {
       int n=0;
-      if(valid & RinexObsHeader::versionValid) n++;
-      if(valid & RinexObsHeader::runByValid) n++;
-      if(valid & RinexObsHeader::markerNameValid) n++;
-      if(valid & RinexObsHeader::observerValid) n++;
-      if(valid & RinexObsHeader::receiverValid) n++;
-      if(valid & RinexObsHeader::antennaTypeValid) n++;
-      if(valid & RinexObsHeader::antennaPositionValid) n++;
-      if(valid & RinexObsHeader::antennaOffsetValid) n++;
-      if(valid & RinexObsHeader::waveFactValid) {
-         n++;
-         if(extraWaveFactList.size()) n += 1 + (extraWaveFactList.size()-1)/7;
-      }
-      if(valid & RinexObsHeader::obsTypeValid) n += 1 + (obsTypeList.size()-1)/9;
-      if(valid & RinexObsHeader::intervalValid) n++;
-      if(valid & RinexObsHeader::firstTimeValid) n++;
-      if(valid & RinexObsHeader::lastTimeValid) n++;
-      if(valid & RinexObsHeader::markerNumberValid) n++;
-      if(valid & RinexObsHeader::receiverOffsetValid) n++;
-      if(valid & RinexObsHeader::leapSecondsValid) n++;
-      if(valid & RinexObsHeader::commentValid) n += commentList.size();
-      if(valid & RinexObsHeader::numSatsValid) n++;
-      if(valid & RinexObsHeader::prnObsValid)
+      if (valid & Rinex3ObsHeader::validVersion) n++;
+      if (valid & Rinex3ObsHeader::validRunBy) n++;
+      if (valid & Rinex3ObsHeader::validMarkerName) n++;
+      if (valid & Rinex3ObsHeader::validObserver) n++;
+      if (valid & Rinex3ObsHeader::validReceiver) n++;
+      if (valid & Rinex3ObsHeader::validAntennaType) n++;
+      if (valid & Rinex3ObsHeader::validAntennaPosition) n++;
+      if (valid & Rinex3ObsHeader::validAntennaDeltaHEN) n++;
+      if (valid & Rinex3ObsHeader::validAntennaDeltaXYZ) n++;
+      if (valid & Rinex3ObsHeader::validObsType) n += 1 + (obsTypeList.size()-1)/9;
+      if (valid & Rinex3ObsHeader::validInterval) n++;
+      if (valid & Rinex3ObsHeader::validFirstTime) n++;
+      if (valid & Rinex3ObsHeader::validLastTime) n++;
+      if (valid & Rinex3ObsHeader::validMarkerNumber) n++;
+      if (valid & Rinex3ObsHeader::validReceiverOffset) n++;
+      if (valid & Rinex3ObsHeader::validLeapSeconds) n++;
+      if (valid & Rinex3ObsHeader::validComment) n += commentList.size();
+      if (valid & Rinex3ObsHeader::validNumSats) n++;
+      if (valid & Rinex3ObsHeader::validPrnObs)
          n += numObsForSat.size() * (1+numObsForSat.begin()->second.size()/9);
-      if(valid & RinexObsHeader::endValid) n++;
+      if (valid & Rinex3ObsHeader::validEoH) n++;
       return n;
    }
 
-      // this function writes all valid header records
-   void RinexObsHeader::WriteHeaderRecords(FFStream& ffs) const
+
+   // This function writes all valid header records.
+   void Rinex3ObsHeader::WriteHeaderRecords(FFStream& ffs) const
       throw(FFStreamError, StringException)
    {
-      RinexObsStream& strm = dynamic_cast<RinexObsStream&>(ffs);
+      Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
       string line;
-      if (valid & versionValid)
+      if (valid & validVersion)
       {
          line  = rightJustify(asString(version,2), 9);
          line += string(11, ' ');
@@ -232,131 +233,92 @@ namespace gpstk
          str = system.systemChar();
          str = str + " (" + system.systemString() + ")";
          line += leftJustify(str, 20);
-         line += versionString;
+         line += stringVersion;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & runByValid)
+      if (valid & validRunBy)
       {
          line  = leftJustify(fileProgram,20);
-         line += leftJustify(fileAgency,20);
-         DayTime dt;
-         dt.setLocalTime();
-         string dat = dt.printf("%02m/%02d/%04Y %02H:%02M:%02S");
+         line += leftJustify(fileAgency, 20);
+         CivilTime dt;
+//         dt.setLocalTime(); ***** NEED TO REPLACE WITH LOCAL SYSTEM TIME CALL
+         string dat = dt.printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
          line += leftJustify(dat, 20);
-         line += runByString;
+         line += stringRunBy;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & markerNameValid)
+      if (valid & validMarkerName)
       {
          line  = leftJustify(markerName, 60);
-         line += markerNameString;
+         line += stringMarkerName;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & observerValid)
+      if (valid & validObserver)
       {
          line  = leftJustify(observer, 20);
          line += leftJustify(agency, 40);
-         line += observerString;
+         line += stringObserver;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & receiverValid)
+      if (valid & validReceiver)
       {
          line  = leftJustify(recNo, 20);
          line += leftJustify(recType, 20);
          line += leftJustify(recVers, 20);
-         line += receiverString;
+         line += stringReceiver;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & antennaTypeValid)
+      if (valid & validAntennaType)
       {
          line  = leftJustify(antNo, 20);
          line += leftJustify(antType, 20);
          line += string(20, ' ');
-         line += antennaTypeString;
+         line += stringAntennaType;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & antennaPositionValid)
+      if (valid & validAntennaPosition)
       {
          line  = rightJustify(asString(antennaPosition[0], 4), 14);
          line += rightJustify(asString(antennaPosition[1], 4), 14);
          line += rightJustify(asString(antennaPosition[2], 4), 14);
          line += string(18, ' ');
-         line += antennaPositionString;
+         line += stringAntennaPosition;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & antennaOffsetValid)
+      if (valid & validAntennaDeltaHEN)
       {
-         line  = rightJustify(asString(antennaOffset[0], 4), 14);
-         line += rightJustify(asString(antennaOffset[1], 4), 14);
-         line += rightJustify(asString(antennaOffset[2], 4), 14);
+         line  = rightJustify(asString(antennaDeltaHEN[0], 4), 14);
+         line += rightJustify(asString(antennaDeltaHEN[1], 4), 14);
+         line += rightJustify(asString(antennaDeltaHEN[2], 4), 14);
          line += string(18, ' ');
-         line += antennaOffsetString;
+         line += stringAntennaDeltaHEN;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & waveFactValid)
+      if (valid & validAntennaDeltaXYZ)
       {
-         line  = rightJustify(asString<short>(wavelengthFactor[0]),6);
-         line += rightJustify(asString<short>(wavelengthFactor[1]),6);
-         line += string(48, ' ');
-         line += waveFactString;
+         line  = rightJustify(asString(antennaDeltaXYZ[0], 4), 14);
+         line += rightJustify(asString(antennaDeltaXYZ[1], 4), 14);
+         line += rightJustify(asString(antennaDeltaXYZ[2], 4), 14);
+         line += string(18, ' ');
+         line += stringAntennaDeltaXYZ;
          strm << line << endl;
          strm.lineNumber++;
-         
-            // handle continuation lines
-         if (!extraWaveFactList.empty())
-         {
-            vector<ExtraWaveFact>::const_iterator itr = extraWaveFactList.begin();
-            
-            while (itr != extraWaveFactList.end())
-            {
-               const int maxSatsPerLine = 7;
-               short satsWritten = 0, satsLeft = (*itr).satList.size(), satsThisLine;
-               vector<SatID>::const_iterator vecItr = (*itr).satList.begin();
-
-               while ((vecItr != (*itr).satList.end())) {
-                  if(satsWritten == 0) {
-                     line  = rightJustify(asString<short>((*itr).wavelengthFactor[0]),6);
-                     line += rightJustify(asString<short>((*itr).wavelengthFactor[1]),6);
-                     satsThisLine = (satsLeft > maxSatsPerLine ? maxSatsPerLine : satsLeft);
-                     line += rightJustify(asString<short>(satsThisLine),6);
-                  }
-                  try {
-                     line += string(3, ' ') + RinexSatID(*vecItr).toString();
-                  }
-                  catch (Exception& e) {
-                     FFStreamError ffse(e);
-                     GPSTK_THROW(ffse);
-                  }
-                  satsWritten++;
-                  satsLeft--;
-                  if(satsWritten==maxSatsPerLine || satsLeft==0) {      // output a complete line
-                     line += string(60 - line.size(), ' ');
-                     line += waveFactString;
-                     strm << line << endl;
-                     strm.lineNumber++;
-                     satsWritten = 0;
-                  }
-                  vecItr++;
-               }
-               itr++;
-            }
-         }
       }
-      if (valid & obsTypeValid)
+      if (valid & validObsType)
       {
          const int maxObsPerLine = 9;
          int obsWritten = 0;
          line = ""; // make sure the line contents are reset.
          
-         vector<RinexObsType>::const_iterator itr = obsTypeList.begin();
+         vector<Rinex3ObsType>::const_iterator itr = obsTypeList.begin();
          
          while (itr != obsTypeList.end())
          {
@@ -366,7 +328,7 @@ namespace gpstk
                // if you hit 9, write out the line and start a new one
             else if ((obsWritten % maxObsPerLine) == 0)
             {
-               line += numObsString;
+               line += stringSystemNumObs;
                strm << line << endl;
                strm.lineNumber++;
                line  = string(6, ' ');
@@ -376,87 +338,79 @@ namespace gpstk
             itr++;
          }
          line += string(60 - line.size(), ' ');
-         line += numObsString;
+         line += stringSystemNumObs;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & intervalValid)
+      if (valid & validInterval)
       {
          line  = rightJustify(asString(interval, 3), 10);
          line += string(50, ' ');
-         line += intervalString;
+         line += stringInterval;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & firstTimeValid)
+      if (valid & validFirstTime)
       {
          line  = writeTime(firstObs);
-         line += string(48-line.size(),' ');
-         if(firstSystem.system == RinexSatID::systemGPS) line += "GPS";
-         if(firstSystem.system == RinexSatID::systemGlonass) line += "GLO";
-         if(firstSystem.system == RinexSatID::systemGalileo) line += "GAL";
          line += string(60 - line.size(), ' ');
-         line += firstTimeString;
+         line += stringFirstTime;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & lastTimeValid)
+      if (valid & validLastTime)
       {
          line  = writeTime(lastObs);
-         line += string(48-line.size(),' ');
-         if(lastSystem.system == RinexSatID::systemGPS) line += "GPS";
-         if(lastSystem.system == RinexSatID::systemGlonass) line += "GLO";
-         if(lastSystem.system == RinexSatID::systemGalileo) line += "GAL";
          line += string(60 - line.size(), ' ');
-         line += lastTimeString;
+         line += stringLastTime;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & markerNumberValid)
+      if (valid & validMarkerNumber)
       {
          line  = leftJustify(markerNumber, 20);
          line += string(40, ' ');
-         line += markerNumberString;
+         line += stringMarkerNumber;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & receiverOffsetValid)
+      if (valid & validReceiverOffset)
       {
          line  = rightJustify(asString(receiverOffset),6);
          line += string(54, ' ');
-         line += receiverOffsetString;
+         line += stringReceiverOffset;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & leapSecondsValid)
+      if (valid & validLeapSeconds)
       {
          line  = rightJustify(asString(leapSeconds),6);
          line += string(54, ' ');
-         line += leapSecondsString;
+         line += stringLeapSeconds;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & commentValid)
+      if (valid & validComment)
       {
          vector<string>::const_iterator itr = commentList.begin();
          while (itr != commentList.end())
          {
             line  = leftJustify((*itr), 60);
-            line += commentString;
+            line += stringComment;
             strm << line << endl;
             strm.lineNumber++;
             itr++;
          }
       }
-      if (valid & numSatsValid)
+      if (valid & validNumSats)
       {
          line  = rightJustify(asString(numSVs), 6);
          line += string(54, ' ');
-         line += numSatsString;
+         line += stringNumSats;
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & prnObsValid)
+      if (valid & validPrnObs)
       {
          const int maxObsPerLine = 9;
          map<SatID, vector<int> >::const_iterator itr = numObsForSat.begin();
@@ -480,7 +434,7 @@ namespace gpstk
                }
                else if ((numObsWritten % maxObsPerLine)  == 0)
                {
-                  line += prnObsString;
+                  line += stringPrnObs;
                   strm << line << endl;
                   strm.lineNumber++;
                   line  = string(6, ' ');
@@ -490,40 +444,40 @@ namespace gpstk
                ++numObsWritten;
             }
             line += string(60 - line.size(), ' ');
-            line += prnObsString;
+            line += stringPrnObs;
             strm << line << endl;
             strm.lineNumber++;
             itr++;
          }
       }
-      if (valid & endValid)
+      if (valid & validEoH)
       {
          line  = string(60, ' ');
-         line += endOfHeader;
+         line += stringEoH;
          strm << line << endl;
          strm.lineNumber++;               
       }   
-   }   // end RinexObsHeader::WriteHeaderRecords()
+   }   // end Rinex3ObsHeader::WriteHeaderRecords()
 
 
-      // this function parses a single header record
-   void RinexObsHeader::ParseHeaderRecord(string& line)
+   // This function parses a single header record.
+   void Rinex3ObsHeader::ParseHeaderRecord(string& line)
       throw(FFStreamError)
    {
       string label(line, 60, 20);
          
-      if (label == versionString)
+      if (label == stringVersion)
       {
          version = asDouble(line.substr(0,20));
-         fileType = strip(line.substr(20, 20));
-         if ( (fileType[0] != 'O') &&
-              (fileType[0] != 'o'))
+         fileType = strip(line.substr(20,20));
+         if ( fileType[0] != 'O' && fileType[0] != 'o')
          {
-            FFStreamError e("This isn't a Rinex Obs file");
+            FFStreamError e("This isn't a RINEX 3 Obs file.");
             GPSTK_THROW(e);
          }
-         string system_str = strip(line.substr(40, 20));
-         try {
+         string system_str = strip(line.substr(40,20));
+         try
+         {
             system.fromString(system_str);
          }
          catch (Exception& e)
@@ -531,119 +485,86 @@ namespace gpstk
             FFStreamError ffse("Input satellite system is unsupported: " + system_str);
             GPSTK_THROW(ffse);
          }
-         valid |= versionValid;
+         valid |= validVersion;
       }
-      else if (label == runByString )
+      else if (label == stringRunBy)
       {
-         fileProgram =    strip(line.substr(0, 20));
-         fileAgency =  strip(line.substr(20, 20));
-         date =   strip(line.substr(40, 20));
-         valid |= runByValid;
+         fileProgram = strip(line.substr( 0,20));
+         fileAgency  = strip(line.substr(20,20));
+         date        = strip(line.substr(40,20));
+         valid |= validRunBy;
       }
-      else if (label == commentString)
+      else if (label == stringComment)
       {
-         string s = strip(line.substr(0, 60));
+         string s = strip(line.substr(0,60));
          commentList.push_back(s);
-         valid |= commentValid;
+         valid |= validComment;
       }
-      else if (label == markerNameString)
+      else if (label == stringMarkerName)
       {
          markerName = strip(line.substr(0,60));
-         valid |= markerNameValid;
+         valid |= validMarkerName;
       }
-      else if (label == markerNumberString)
+      else if (label == stringMarkerNumber)
       {
          markerNumber = strip(line.substr(0,20));
-         valid |= markerNumberValid;
+         valid |= validMarkerNumber;
       }
-      else if (label == observerString)
+      else if (label == stringObserver)
       {
-         observer = strip(line.substr(0,20));
-         agency = strip(line.substr(20,40));
-         valid |= observerValid;
+         observer = strip(line.substr( 0,20));
+         agency   = strip(line.substr(20,40));
+         valid |= validObserver;
       }
-      else if (label == receiverString)
+      else if (label == stringReceiver)
       {
-         recNo   = strip(line.substr(0, 20));
+         recNo   = strip(line.substr( 0,20));
          recType = strip(line.substr(20,20));
          recVers = strip(line.substr(40,20));
-         valid |= receiverValid;
+         valid |= validReceiver;
       }
-      else if (label ==antennaTypeString)
+      else if (label ==stringAntennaType)
       {
-         antNo =   strip(line.substr(0, 20));
-         antType = strip(line.substr(20, 20));
-         valid |= antennaTypeValid;
+         antNo   = strip(line.substr( 0,20));
+         antType = strip(line.substr(20,20));
+         valid |= validAntennaType;
       }
-      else if (label == antennaPositionString)
+      else if (label == stringAntennaPosition)
       {
-         antennaPosition[0] = asDouble(line.substr(0,  14));
-         antennaPosition[1] = asDouble(line.substr(14, 14));
-         antennaPosition[2] = asDouble(line.substr(28, 14));
-         valid |= antennaPositionValid;
+         antennaPosition[0] = asDouble(line.substr( 0,14));
+         antennaPosition[1] = asDouble(line.substr(14,14));
+         antennaPosition[2] = asDouble(line.substr(28,14));
+         valid |= validAntennaPosition;
       }
-      else if (label == antennaOffsetString)
+      else if (label == stringAntennaDeltaHEN)
       {
-         antennaOffset[0] = asDouble(line.substr(0,  14));
-         antennaOffset[1] = asDouble(line.substr(14, 14));
-         antennaOffset[2] = asDouble(line.substr(28, 14));
-         valid |= antennaOffsetValid;
+         antennaDeltaHEN[0] = asDouble(line.substr( 0,14));
+         antennaDeltaHEN[1] = asDouble(line.substr(14,14));
+         antennaDeltaHEN[2] = asDouble(line.substr(28,14));
+         valid |= validAntennaDeltaHEN;
       }
-      else if (label == waveFactString)
+      else if (label == stringAntennaDeltaXYZ)
       {
-            // first time reading this
-         if (! (valid & waveFactValid))
-         {
-            wavelengthFactor[0] = asInt(line.substr(0,6));
-            wavelengthFactor[1] = asInt(line.substr(6,6));
-            valid |= waveFactValid;
-         }
-            // additional wave fact lines
-         else
-         {
-            const int maxSatsPerLine = 7;
-            int Nsats;
-            ExtraWaveFact ewf;
-            ewf.wavelengthFactor[0] = asInt(line.substr(0,6));
-            ewf.wavelengthFactor[1] = asInt(line.substr(6,6));
-            Nsats = asInt(line.substr(12,6));
-               
-            if (Nsats > maxSatsPerLine)   // > not >=
-            {
-               FFStreamError e("Invalid number of Sats for " + waveFactString);
-               GPSTK_THROW(e);
-            }
-               
-            for (int i = 0; i < Nsats; i++)
-            {
-               try {
-                  RinexSatID prn(line.substr(21+i*6,3));
-                  ewf.satList.push_back(prn); 
-               }
-               catch (Exception& e){
-                  FFStreamError ffse(e);
-                  GPSTK_RETHROW(ffse);
-               }
-            }
-               
-            extraWaveFactList.push_back(ewf);
-         }
+         antennaDeltaXYZ[0] = asDouble(line.substr( 0,14));
+         antennaDeltaXYZ[1] = asDouble(line.substr(14,14));
+         antennaDeltaXYZ[2] = asDouble(line.substr(28,14));
+         valid |= validAntennaDeltaXYZ;
       }
-      else if (label == numObsString)
+      else if (label == stringSystemNumObs)
       {
          const int maxObsPerLine = 9;
             // process the first line
-         if (! (valid & obsTypeValid))
+         if (! (valid & validObsType))
          {
             numObs = asInt(line.substr(0,6));
             
             for (int i = 0; (i < numObs) && (i < maxObsPerLine); i++)
             {
                int position = i * 6 + 6 + 4;
-               RinexObsType rt = convertObsType(line.substr(position,2));
+               Rinex3ObsType rt = convertObsType(line.substr(position,2));
                obsTypeList.push_back(rt);
             }
-            valid |= obsTypeValid;
+            valid |= validObsType;
          }
             // process continuation lines
          else
@@ -652,73 +573,67 @@ namespace gpstk
                  (i < numObs) && ( (i % maxObsPerLine) < maxObsPerLine); i++)
             {
                int position = (i % maxObsPerLine) * 6 + 6 + 4;
-               RinexObsType rt = convertObsType(line.substr(position,2));
+               Rinex3ObsType rt = convertObsType(line.substr(position,2));
                obsTypeList.push_back(rt);
             }
          }
       }
-      else if (label == intervalString)
+      else if (label == stringInterval)
       {
          interval = asDouble(line.substr(0, 10));
-         valid |= intervalValid;
+         valid |= validInterval;
       }
-      else if (label == firstTimeString)
+      else if (label == stringFirstTime)
       {
          firstObs = parseTime(line);
-         firstSystem.system = RinexSatID::systemGPS;
-         if(line.substr(48,3)=="GLO") firstSystem.system=RinexSatID::systemGlonass;
-         if(line.substr(48,3)=="GAL") firstSystem.system=RinexSatID::systemGalileo;
-         valid |= firstTimeValid;
+         valid |= validFirstTime;
       }
-      else if (label == lastTimeString)
+      else if (label == stringLastTime)
       {
          lastObs = parseTime(line);
-         lastSystem.system = RinexSatID::systemGPS;
-         if(line.substr(48,3)=="GLO") lastSystem.system=RinexSatID::systemGlonass;
-         if(line.substr(48,3)=="GAL") lastSystem.system=RinexSatID::systemGalileo;
-         valid |= lastTimeValid;
+         valid |= validLastTime;
       }
-      else if (label == receiverOffsetString)
+      else if (label == stringReceiverOffset)
       {
          receiverOffset = asInt(line.substr(0,6));
-         valid |= receiverOffsetValid;
+         valid |= validReceiverOffset;
       }
-      else if (label == leapSecondsString)
+      else if (label == stringLeapSeconds)
       {
          leapSeconds = asInt(line.substr(0,6));
-         valid |= leapSecondsValid;
+         valid |= validLeapSeconds;
       }
-      else if (label == numSatsString)
+      else if (label == stringNumSats)
       {
          numSVs = asInt(line.substr(0,6)) ;
-         valid |= numSatsValid;
+         valid |= validNumSats;
       }
-      else if (label == prnObsString)
+      else if (label == stringPrnObs)
       {
          const int maxObsPerLine = 9;
-            // continuation lines... you have to know what PRN
-            // this is continuing for, hence lastPRN
-         if ((lastPRN.id != -1) &&
-             (numObsForSat[lastPRN].size() != obsTypeList.size()))
+         // continuation lines... you have to know what PRN
+         // this is continuing for, hence lastPRN
+         if ( lastPRN.id != -1 && numObsForSat[lastPRN].size() != obsTypeList.size() )
          {
-            for(int i = numObsForSat[lastPRN].size(); 
-                (i < obsTypeList.size()) && 
-                   ( (i % maxObsPerLine) < maxObsPerLine); i++)
+            for (int i = numObsForSat[lastPRN].size(); 
+                 (i < obsTypeList.size()) && ( (i % maxObsPerLine) < maxObsPerLine); i++)
             {
                numObsForSat[lastPRN].push_back(asInt(line.substr((i%maxObsPerLine)*6+6,6)));
             }
          }
          else
          {
-            try { 
+            try
+            { 
                lastPRN.fromString(line.substr(3,3));
             }
-            catch (Exception& e) {
+            catch (Exception& e)
+            {
                FFStreamError ffse(e);
                GPSTK_RETHROW(ffse);
             }
             vector<int> numObsList;
-            for(int i = 0; 
+            for (int i = 0; 
                    (i < obsTypeList.size()) && (i < maxObsPerLine); i++)
             {
                numObsList.push_back(asInt(line.substr(i*6+6,6)));
@@ -726,39 +641,37 @@ namespace gpstk
 
             numObsForSat[lastPRN] = numObsList;
          }
-         valid |= prnObsValid;
+         valid |= validPrnObs;
       }
-      else if (label == endOfHeader)
+      else if (label == stringEoH)
       {
-         valid |= endValid;
+         valid |= validEoH;
       }
       else
       {
          FFStreamError e("Unidentified label: " + label);
          GPSTK_THROW(e);
       }
-   }   // end of RinexObsHeader::ParseHeaderRecord(string& line)
+   }   // end of Rinex3ObsHeader::ParseHeaderRecord(string& line)
 
 
-      // This function parses the entire header from the given stream
-   void RinexObsHeader::reallyGetRecord(FFStream& ffs)
+   // This function parses the entire header from the given stream
+   void Rinex3ObsHeader::reallyGetRecord(FFStream& ffs)
       throw(std::exception, FFStreamError, 
             gpstk::StringUtils::StringException)
    {
-      RinexObsStream& strm = dynamic_cast<RinexObsStream&>(ffs);
+      Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
       
-         // if already read, just return
+      // if already read, just return
       if (strm.headerRead == true)
          return;
 
-         // since we're reading a new header, we need to reinitialize
-         // all our list structures.  all the other objects should be ok.
-         // this also applies if we threw an exception the first time we read
-         // the header and are now re-reading it. some of these could be full
-         // and we need to empty them.
+      // since we're reading a new header, we need to reinitialize
+      // all our list structures.  all the other objects should be ok.
+      // this also applies if we threw an exception the first time we read
+      // the header and are now re-reading it. some of these could be full
+      // and we need to empty them.
       commentList.clear();
-      wavelengthFactor[0] = wavelengthFactor[1] = 1;
-      extraWaveFactList.clear();
       obsTypeList.clear();
       numObsForSat.clear();
       valid = 0;
@@ -767,7 +680,7 @@ namespace gpstk
       
       string line;
       
-      while (!(valid & endValid))
+      while (!(valid & validEoH))
       {
          strm.formattedGetLine(line);
          StringUtils::stripTrailing(line);
@@ -795,9 +708,8 @@ namespace gpstk
       }   // end while(not end of header)
 
       unsigned long allValid;
-      if      (version == 2.0)      allValid = allValid20;
-      else if (version == 2.1)      allValid = allValid21;
-      else if (version == 2.11)     allValid = allValid211;
+      if      (version == 3.0)  allValid = allValid30;
+      else if (version == 3.00) allValid = allValid30;
       else
       {
          FFStreamError e("Unknown or unsupported RINEX version " + 
@@ -811,22 +723,21 @@ namespace gpstk
          GPSTK_THROW(e);               
       }
             
-         // If we get here, we should have reached the end of header line
+      // If we get here, we should have reached the end of header line
       strm.header = *this;
       strm.headerRead = true;
             
    }  // end of reallyGetRecord()
 
 
-
-   RinexObsHeader::RinexObsType 
-   RinexObsHeader::convertObsType(const string& oneObs)
+   Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::convertObsType(const string& oneObs)
       throw(FFStreamError)
    {
-      RinexObsType ot(RegisteredRinexObsTypes[0]);   // Unknown type
-      for(int i=0; i<RegisteredRinexObsTypes.size(); i++) {
-         if(RegisteredRinexObsTypes[i].type == oneObs) {
-            ot = RegisteredRinexObsTypes[i];
+      Rinex3ObsType ot(RegisteredRinex3ObsTypes[0]);   // Unknown type
+      for (int i=0; i<RegisteredRinex3ObsTypes.size(); i++) {
+         if (RegisteredRinex3ObsTypes[i].type == oneObs)
+         {
+            ot = RegisteredRinex3ObsTypes[i];
             break;
          }
          //FFStreamError e("Bad obs type: " + oneObs);
@@ -834,15 +745,16 @@ namespace gpstk
       }
       return ot;
    }
-   string 
-   RinexObsHeader::convertObsType(const RinexObsHeader::RinexObsType& oneObs)
+
+
+   string Rinex3ObsHeader::convertObsType(const Rinex3ObsHeader::Rinex3ObsType& oneObs)
       throw(FFStreamError)
    {
       return oneObs.type;
    }
 
 
-   DayTime RinexObsHeader::parseTime(const string& line) const
+   CivilTime Rinex3ObsHeader::parseTime(const string& line) const
    {
       int year, month, day, hour, min;
       double sec;
@@ -853,22 +765,25 @@ namespace gpstk
       hour  = asInt(   line.substr(18, 6 ));
       min   = asInt(   line.substr(24, 6 ));
       sec   = asDouble(line.substr(30, 13));
-      return DayTime(year, month, day, hour, min, sec);
+
+      return CivilTime(year, month, day, hour, min, sec);
    }
 
-   string RinexObsHeader::writeTime(const DayTime& dt) const
+
+   string Rinex3ObsHeader::writeTime(const CivilTime& civtime) const
    {
       string line;
-      line  = rightJustify(asString<short>(dt.year()), 6);
-      line += rightJustify(asString<short>(dt.month()), 6);
-      line += rightJustify(asString<short>(dt.day()), 6);
-      line += rightJustify(asString<short>(dt.hour()), 6);
-      line += rightJustify(asString<short>(dt.minute()), 6);
-      line += rightJustify(asString(dt.second(), 7), 13);
+      line  = rightJustify(asString<short>(civtime.year    ),  6);
+      line += rightJustify(asString<short>(civtime.month   ),  6);
+      line += rightJustify(asString<short>(civtime.day     ),  6);
+      line += rightJustify(asString<short>(civtime.hour    ),  6);
+      line += rightJustify(asString<short>(civtime.minute  ),  6);
+      line += rightJustify(asString(       civtime.second,7), 13);
       return line;
    }
 
-   void RinexObsHeader::dump(ostream& s) const
+
+   void Rinex3ObsHeader::dump(ostream& s) const
    {
       int i,j;
       s << "---------------------------------- REQUIRED ----------------------------------\n";
@@ -883,140 +798,133 @@ namespace gpstk
       s << "Rec#: " << recNo << ",  Type: " << recType << ",  Vers: " << recVers << endl;
       s << "Antenna # : " << antNo << ",  Type : " << antType << endl;
       s << "Position (XYZ,m) : " << setprecision(4) << antennaPosition << ".\n";
-      s << "Antenna offset (ENU,m) : " << setprecision(4) << antennaOffset << ".\n";
-      s << "Wavelength factors (default) L1:" << wavelengthFactor[0]
-         << ", L2: " << wavelengthFactor[1] << ".\n";
-      for(i=0; i<extraWaveFactList.size(); i++) {
-         s << "Wavelength factors (extra)   L1:"
-            << extraWaveFactList[i].wavelengthFactor[0]
-            << ", L2: " << extraWaveFactList[i].wavelengthFactor[1]
-            << ", for Sats";
-         for(j=0; j<extraWaveFactList[i].satList.size(); j++)
-            s << " " << extraWaveFactList[i].satList[j];
-         s << endl;
-      }
+      s << "Antenna Delta (HEN,m) : " << setprecision(4) << antennaDeltaHEN << ".\n";
+      s << "Antenna Delta (XYZ,m) : " << setprecision(4) << antennaDeltaXYZ << ".\n";
       s << "Observation types (" << obsTypeList.size() << ") :\n";
-      for(i=0; i<obsTypeList.size(); i++) 
+      for (i = 0; i < obsTypeList.size(); i++) 
          s << " Type #" << i << " = "
-            << gpstk::RinexObsHeader::convertObsType(obsTypeList[i])
+            << gpstk::Rinex3ObsHeader::convertObsType(obsTypeList[i])
             << " " << obsTypeList[i].description
             << " (" << obsTypeList[i].units << ")." << endl;
-      s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (firstSystem.system==RinexSatID::systemGlonass ? "GLO" :
-                   (firstSystem.system==RinexSatID::systemGalileo ? "GAL" : "GPS")) << endl;
+      s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P");
       s << "(This header is ";
-      if((valid & allValid211) == allValid211) s << "VALID 2.11";
-      else if((valid & allValid21) == allValid21) s << "VALID 2.1";
-      else if((valid & allValid20) == allValid20) s << "VALID 2.0";
+      if ((valid & allValid30) == allValid30) s << "VALID 3.00";
       else s << "NOT VALID";
       s << " Rinex.)\n";
 
-      if(!(valid & versionValid)) s << " Version is NOT valid\n";
-      if(!(valid & runByValid)) s << " Run by is NOT valid\n";
-      if(!(valid & markerNameValid)) s << " Marker Name is NOT valid\n";
-      if(!(valid & observerValid)) s << " Observer is NOT valid\n";
-      if(!(valid & receiverValid)) s << " Receiver is NOT valid\n";
-      if(!(valid & antennaTypeValid)) s << " Antenna Type is NOT valid\n";
-      if(!(valid & antennaPositionValid)) s << " Ant Position is NOT valid\n";
-      if(!(valid & antennaOffsetValid)) s << " Antenna Offset is NOT valid\n";
-      if(!(valid & waveFactValid)) s << " Wavelength factor is NOT valid\n";
-      if(!(valid & obsTypeValid)) s << " Obs Type is NOT valid\n";
-      if(!(valid & firstTimeValid)) s << " First time is NOT valid\n";
-      if(!(valid & endValid)) s << " End is NOT valid\n";
+      if (!(valid & validVersion        )) s << " Version is NOT valid\n";
+      if (!(valid & validRunBy          )) s << " Run by is NOT valid\n";
+      if (!(valid & validMarkerName     )) s << " Marker Name is NOT valid\n";
+      if (!(valid & validObserver       )) s << " Observer is NOT valid\n";
+      if (!(valid & validReceiver       )) s << " Receiver is NOT valid\n";
+      if (!(valid & validAntennaType    )) s << " Antenna Type is NOT valid\n";
+      if (!(valid & validAntennaPosition)) s << " Antenna Position is NOT valid\n";
+      if (!(valid & validAntennaDeltaHEN)) s << " Antenna Delta HEN is NOT valid\n";
+      if (!(valid & validAntennaDeltaXYZ)) s << " Antenna Delta XYZ is NOT valid\n";
+      if (!(valid & validObsType        )) s << " Obs Type is NOT valid\n";
+      if (!(valid & validFirstTime      )) s << " First time is NOT valid\n";
+      if (!(valid & validEoH            )) s << " End is NOT valid\n";
 
       s << "---------------------------------- OPTIONAL ----------------------------------\n";
-      if(valid & markerNumberValid) s << "Marker number : " << markerNumber << endl;
-      if(valid & intervalValid) s << "Interval = "
-         << fixed << setw(7) << setprecision(3) << interval << endl;
-      if(valid & lastTimeValid) s << "Time of last obs "
-         << lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
-         << " " << (lastSystem.system==RinexSatID::systemGlonass ? "GLO":
-                   (lastSystem.system==RinexSatID::systemGalileo ? "GAL" : "GPS")) << endl;
-      if(valid & leapSecondsValid) s << "Leap seconds: " << leapSeconds << endl;
-      if(valid & receiverOffsetValid) s << "Clock offset record is present and offsets "
-         << (receiverOffset?"ARE":"are NOT") << " applied." << endl;
-      if(valid & numSatsValid) s << "Number of Satellites with data : " << numSVs << endl;
-      if(valid & prnObsValid) {
+      if (valid & validMarkerNumber) s << "Marker number : " << markerNumber << endl;
+      if (valid & validInterval) s << "Interval = "
+                                   << fixed << setw(7) << setprecision(3) << interval << endl;
+      if (valid & validLastTime) s << "Time of last obs "
+                                   << lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P");
+      if (valid & validLeapSeconds) s << "Leap seconds: " << leapSeconds << endl;
+      if (valid & validReceiverOffset) s << "Clock offset record is present and offsets "
+                                         << (receiverOffset?"ARE":"are NOT") << " applied." << endl;
+      if (valid & validNumSats) s << "Number of Satellites with data : " << numSVs << endl;
+      if (valid & validPrnObs)
+      {
          s << "SAT  ";
-         for(i=0; i<obsTypeList.size(); i++)
+         for (i=0; i<obsTypeList.size(); i++)
             s << setw(7) << convertObsType(obsTypeList[i]);
          s << endl;
          map<SatID, vector<int> >::const_iterator sat_itr = numObsForSat.begin();
          while (sat_itr != numObsForSat.end()) {
             vector<int> obsvec=sat_itr->second;
             s << " " << RinexSatID(sat_itr->first) << " ";
-            for(i=0; i<obsvec.size(); i++) s << " " << setw(6) << obsvec[i];
+            for (i=0; i<obsvec.size(); i++) s << " " << setw(6) << obsvec[i];
             s << endl;
             sat_itr++;
          }
       }
-      if(commentList.size() && !(valid & commentValid)) s << " Comment is NOT valid\n";
+      if (commentList.size() && !(valid & validComment)) s << " Comment is NOT valid\n";
       s << "Comments (" << commentList.size() << ") :\n";
-      for(i=0; i<commentList.size(); i++)
+      for (i=0; i<commentList.size(); i++)
          s << commentList[i] << endl;
       s << "-------------------------------- END OF HEADER -------------------------------\n";
    }
 
+
    // return 1 if type already defined,
    //        0 if successful
    //       -1 if not successful - invalid input
-   int RegisterExtendedRinexObsType(string t, string d, string u, unsigned int dep)
+   int RegisterExtendedRinex3ObsType(string t, string d, string u, unsigned int dep)
    {
-      if(t.empty()) return -1;
+      if (t.empty()) return -1;
       // throw if t="UN" ?
       // check that it is not duplicated
-      for(int i=0; i<RinexObsHeader::RegisteredRinexObsTypes.size(); i++) {
-         if(RinexObsHeader::RegisteredRinexObsTypes[i].type == t) { return 1; }
+      for (int i = 0; i < Rinex3ObsHeader::RegisteredRinex3ObsTypes.size(); i++)
+      {
+         if (Rinex3ObsHeader::RegisteredRinex3ObsTypes[i].type == t) { return 1; }
       }
-      RinexObsHeader::RinexObsType ot;
-      if(t.size()>2) t.resize(2,' '); ot.type = stripTrailing(t);
-      if(d.size()>20) d.resize(20,' '); ot.description = stripTrailing(d);
-      if(u.size()>10) u.resize(10,' '); ot.units = stripTrailing(u);
-      ot.depend = dep;
-      RinexObsHeader::RegisteredRinexObsTypes.push_back(ot);
+      Rinex3ObsHeader::Rinex3ObsType ot;
+      if (t.size()>2) t.resize(2,' '); ot.type = stripTrailing(t);
+      if (d.size()>20) d.resize(20,' '); ot.description = stripTrailing(d);
+      if (u.size()>10) u.resize(10,' '); ot.units = stripTrailing(u);
+//      ot.depend = dep;
+      Rinex3ObsHeader::RegisteredRinex3ObsTypes.push_back(ot);
       return 0;
    }
 
-      // Pretty print a list of standard Rinex observation types
-   void DisplayStandardRinexObsTypes(ostream& s)
+
+   // Pretty print a list of standard Rinex observation types
+   void DisplayStandardRinex3ObsTypes(ostream& s)
    {
       s << "The list of standard Rinex obs types:\n";
       s << "  OT Description          Units\n";
       s << "  -- -------------------- ---------\n";
-      for(int i=0; i<RinexObsHeader::StandardRinexObsTypes.size(); i++) {
+      for (int i = 0; i < Rinex3ObsHeader::StandardRinex3ObsTypes.size(); i++)
+      {
          string line;
-         line = string("  ")+RinexObsHeader::StandardRinexObsTypes[i].type;
-         line += leftJustify(string(" ")+RinexObsHeader::StandardRinexObsTypes[i].description,21);
-         line += leftJustify(string(" ")+RinexObsHeader::StandardRinexObsTypes[i].units,11);
+         line = string("  ")+Rinex3ObsHeader::StandardRinex3ObsTypes[i].type;
+         line += leftJustify(string(" ")+Rinex3ObsHeader::StandardRinex3ObsTypes[i].description,21);
+         line += leftJustify(string(" ")+Rinex3ObsHeader::StandardRinex3ObsTypes[i].units,11);
          s << line << endl;
       }
    }
 
-      // Pretty print a list of registered extended Rinex observation types
-   void DisplayExtendedRinexObsTypes(ostream& s)
+
+   // Pretty print a list of registered extended Rinex observation types
+   void DisplayExtendedRinex3ObsTypes(ostream& s)
    {
       s << "The list of available extended Rinex obs types:\n";
       s << "  OT Description          Units     Required input (EP=ephemeris,PS=Rx Position)\n";
       s << "  -- -------------------- --------- ------------------\n";
-      for(int i=RinexObsHeader::StandardRinexObsTypes.size();
-               i<RinexObsHeader::RegisteredRinexObsTypes.size(); i++) {
+      for (int i = Rinex3ObsHeader::StandardRinex3ObsTypes.size();
+               i < Rinex3ObsHeader::RegisteredRinex3ObsTypes.size(); i++)
+      {
          string line;
-         line = string("  ")+RinexObsHeader::RegisteredRinexObsTypes[i].type;
-         line += leftJustify(string(" ")+RinexObsHeader::RegisteredRinexObsTypes[i].description,21);
-         line += leftJustify(string(" ")+RinexObsHeader::RegisteredRinexObsTypes[i].units,11);
-         for(int j=1; j<=6; j++) {
-            if(j==3 || j==4) continue;
-            if(RinexObsHeader::RegisteredRinexObsTypes[i].depend &
-               RinexObsHeader::StandardRinexObsTypes[j].depend)
-                  line += string(" ")+RinexObsHeader::StandardRinexObsTypes[j].type;
-            else line += string("   ");
+         line = string("  ")+Rinex3ObsHeader::RegisteredRinex3ObsTypes[i].type;
+         line += leftJustify(string(" ")+Rinex3ObsHeader::RegisteredRinex3ObsTypes[i].description,21);
+         line += leftJustify(string(" ")+Rinex3ObsHeader::RegisteredRinex3ObsTypes[i].units,11);
+         for (int j = 1; j <= 6; j++)
+         {
+            if (j==3 || j==4) continue;
+//            if (Rinex3ObsHeader::RegisteredRinex3ObsTypes[i].depend &
+//                Rinex3ObsHeader::StandardRinex3ObsTypes[j].depend    )
+//                  line += string(" ")+Rinex3ObsHeader::StandardRinex3ObsTypes[j].type;
+//            else line += string("   ");
          }
-         if(RinexObsHeader::RegisteredRinexObsTypes[i].depend & RinexObsHeader::RinexObsType::EPdepend)
-            line += string(" EP"); else line += string("   ");
-         if(RinexObsHeader::RegisteredRinexObsTypes[i].depend & RinexObsHeader::RinexObsType::PSdepend)
-            line += string(" PS"); else line += string("   ");
+//         if (Rinex3ObsHeader::RegisteredRinex3ObsTypes[i].depend & Rinex3ObsHeader::Rinex3ObsType::EPdepend)
+//            line += string(" EP"); else line += string("   ");
+//         if (Rinex3ObsHeader::RegisteredRinex3ObsTypes[i].depend & Rinex3ObsHeader::Rinex3ObsType::PSdepend)
+//            line += string(" PS"); else line += string("   ");
          s << line << endl;
       }
    }
+
 
 } // namespace gpstk
