@@ -80,10 +80,10 @@ namespace gpstk
      inline void clear()
      {
        version = 3.0;
-       valid = 0;
        commentList.clear();
        obsTypeList.clear();
        numObsForSat.clear();
+       valid  = 0;
        numObs = 0;
        lastPRN.id = -1;
      }
@@ -106,19 +106,19 @@ namespace gpstk
      static const std::string stringAntennaDeltaHEN;   ///< "ANTENNA: DELTA H/E/N"
      static const std::string stringAntennaDeltaXYZ;   ///< "ANTENNA: DELTA X/Y/Z"
      static const std::string stringAntennaPhaseCtr;   ///< "ANTENNA: PHASECENTER"
-     static const std::string stringAntennaBsightXYZ;  ///< "ANTENNA: BORESIGHT XYZ"
-     static const std::string stringAntennaZeroDirAzi; ///< "ANTENNA: ZERODIR AZIMUTH"
+     static const std::string stringAntennaBsightXYZ;  ///< "ANTENNA: B.SIGHT XYZ"
+     static const std::string stringAntennaZeroDirAzi; ///< "ANTENNA: ZERODIR AZI"
      static const std::string stringAntennaZeroDirXYZ; ///< "ANTENNA: ZERODIR XYZ"
-     static const std::string stringAntennaCoM;        ///< "ANTENNA: CENTER OF MASS"
-     static const std::string stringSystemNumObs;      ///< "SYS / # / TYPES OF OBSERV"
-     static const std::string stringSigStrengthUnit;   ///< "SIGNAL STRENGTH UNITS"
+     static const std::string stringCenterOfMass;      ///< "CENTER OF MASS: XYZ"
+     static const std::string stringSystemNumObs;      ///< "SYS / # / OBS TYPES"
+     static const std::string stringSigStrengthUnit;   ///< "SIGNAL STRENGTH UNIT"
      static const std::string stringInterval;          ///< "INTERVAL"
      static const std::string stringFirstTime;         ///< "TIME OF FIRST OBS"
      static const std::string stringLastTime;          ///< "TIME OF LAST OBS"
      static const std::string stringReceiverOffset;    ///< "RCV CLOCK OFFS APPL"
-     static const std::string stringSystemDCBSapplied; ///< "SYSTEM DCBS APPLIED"
-     static const std::string stringSystemPCVSapplied; ///< "SYSTEM PCVS APPLIED"
-     static const std::string stringSystemScaleFac;    ///< "SYSTEM SCALE FACTOR"
+     static const std::string stringSystemDCBSapplied; ///< "SYS / DCBS APPLIED"
+     static const std::string stringSystemPCVSapplied; ///< "SYS / PCVS APPLIED"
+     static const std::string stringSystemScaleFac;    ///< "SYS / SCALE FACTOR"
      static const std::string stringLeapSeconds;       ///< "LEAP SECONDS"
      static const std::string stringNumSats;           ///< "# OF SATELLITES"
      static const std::string stringPrnObs;            ///< "PRN / # OF OBS"
@@ -144,7 +144,7 @@ namespace gpstk
        validAntennaBsightXYZ  = 0x02000,     ///< "ANTENNA: BORESIGHT XYZ"
        validAntennaZeroDirAzi = 0x04000,     ///< "ANTENNA: ZERODIR AZIMUTH"
        validAntennaZeroDirXYZ = 0x08000,     ///< "ANTENNA: ZERODIR XYZ"
-       validAntennaCoM        = 0x010000,    ///< "ANTENNA: CENTER OF MASS"
+       validCenterOfMass      = 0x010000,    ///< "CENTER OF MASS: XYZ"
        validObsType           = 0x020000,    ///< "SYS / # / TYPES OF OBSERV"
        validSigStrengthUnit   = 0x040000,    ///< "SIGNAL STRENGTH UNITS"
        validInterval          = 0x080000,    ///< "INTERVAL"
@@ -157,78 +157,42 @@ namespace gpstk
        validLeapSeconds       = 0x04000000,  ///< "LEAP SECONDS"
        validNumSats           = 0x08000000,  ///< "# OF SATELLITES"
        validPrnObs            = 0x010000000, ///< "PRN / # OF OBS"
-
-       validEoH = 0x080000000,               ///< "END OF HEADER"
+       validEoH               = 0x080000000, ///< "END OF HEADER"
 
        /// This mask is for all required valid fields for RINEX 3.0 (3.00)
-       allValid30 = 0x080002FEB,
+       allValid30 = 0x080002FEB,  // ***** NEED TO FIGURE OUT AND RESET
      };
 
-     /// RINEX 3 observation types
+     /// RINEX 3 observation types (struct declaration)
      struct Rinex3ObsType
      {
-       std::string type;          ///<  3-char type                  ; e.g. C1C, D2P, L5Q, S2M, etc.
-       std::string description;   ///< 20-char description (optional); e.g. "L1 pseudorange"
-       std::string units;         ///< 10-char units       (optional); e.g. "meters"
+       std::string type,          ///<  3-char type                  ; e.g. C1C, D2P, L5Q, S2M, etc.
+                   description,   ///< 20-char description (optional); e.g. "L1 pseudorange"
+                   units;         ///< 10-char units       (optional); e.g. "meters"
        int scaleFactor;           ///< factor to divide stored observations with before use
+
        Rinex3ObsType()
          : type(std::string("UN")),description(std::string("Unknown or Invalid")),
            units(std::string("")),scaleFactor(1)
        {}
+
        Rinex3ObsType(std::string t, std::string d, std::string u, int sf = 1)
          : type(t),description(d),units(u),scaleFactor(sf)
        {}
      };
 
-     /// RINEX 3 DCBS info (differential code bias corrections)
-     struct Rinex3DCBSinfo
+     /// RINEX 3 DCBS info (for differential code bias and phase center variations corrections)
+     struct Rinex3CorrInfo
      {
        std::string satSys,  ///< 1-char SV system (G/R/E/S)
                    name,    ///< program name used to apply corrections
                    source;  ///< source of corrections (URL)
      };
 
-     /// RINEX 3 PCVS info (phase center variation corrections)
-     struct Rinex3PCVSinfo
-     {
-       std::string satSys,  ///< 1-char SV system (G/R/E/S)
-                   name,    ///< program name used to apply corrections
-                   source;  ///< source of corrections (URL)
-     };
 
      /** @name Standard RINEX observation types
       */
      //@{
-     static const Rinex3ObsType UN;
-     static const Rinex3ObsType L1;
-     static const Rinex3ObsType L2;
-     static const Rinex3ObsType C1;
-     static const Rinex3ObsType C2;
-     static const Rinex3ObsType P1;
-     static const Rinex3ObsType P2;
-     static const Rinex3ObsType D1;
-     static const Rinex3ObsType D2;
-     static const Rinex3ObsType S1;
-     static const Rinex3ObsType S2;
-     static const Rinex3ObsType T1;
-     static const Rinex3ObsType T2;
-     static const Rinex3ObsType C5;
-     static const Rinex3ObsType L5;
-     static const Rinex3ObsType D5;
-     static const Rinex3ObsType S5;
-     // Galileo only
-     static const Rinex3ObsType C6;
-     static const Rinex3ObsType L6;
-     static const Rinex3ObsType D6;
-     static const Rinex3ObsType S6;
-     static const Rinex3ObsType C7;
-     static const Rinex3ObsType L7;
-     static const Rinex3ObsType D7;
-     static const Rinex3ObsType S7;
-     static const Rinex3ObsType C8;
-     static const Rinex3ObsType L8;
-     static const Rinex3ObsType D8;
-     static const Rinex3ObsType S8;
 
      //@}
 
@@ -273,8 +237,8 @@ namespace gpstk
      CivilTime firstObs,                             ///< TIME OF FIRST OBS
                 lastObs;                             ///< TIME OF LAST OBS (optional)
      int receiverOffset;                             ///< RCV CLOCK OFFS APPL (optional)
-     Rinex3DCBSinfo infoDCBS;                        ///< DCBS INFO
-     Rinex3PCVSinfo infoPCVS;                        ///< PCVS INFO
+     Rinex3CorrInfo infoDCBS;                        ///< DCBS INFO
+     Rinex3CorrInfo infoPCVS;                        ///< PCVS INFO
      int leapSeconds;                                ///< LEAP SECONDS (optional)
      short numSVs;                                   ///< NUMBER OF SATELLITES in following map (optional)
      std::map<SatID,std::vector<int> > numObsForSat; ///< PRN / # OF OBS (optional)
@@ -351,7 +315,7 @@ namespace gpstk
       *  a read or formatting error occurs.  This also resets the
       *  stream to its pre-read position.
       */
-     virtual void reallyGetRecord(FFStream& s) 
+     virtual void reallyGetRecord(FFStream& s)
        throw(std::exception, FFStreamError,
              gpstk::StringUtils::StringException);
 

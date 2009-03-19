@@ -231,8 +231,8 @@ namespace gpstk
         strm.formattedGetLine(line);
         StringUtils::stripTrailing(line);
 
-        if (line.length()==0) continue;
-        else if (line.length()<60 || line.length()>80)
+        if (line.length() == 0) continue;
+        else if (line.length() < 60 || line.length() > 80)
           {
             FFStreamError e("Invalid line length");
             GPSTK_THROW(e);
@@ -247,7 +247,7 @@ namespace gpstk
             satSys   =  strip(line.substr(40,20));
             if ( fileType[0] != 'N' && fileType[0] != 'n')
               {
-                FFStreamError e("This isn't a RINEX Nav file.");
+                FFStreamError e("This isn't a RINEX 3 Nav file.");
                 GPSTK_THROW(e);
               }
             if ( satSys[0] != 'G' && satSys[0] != 'g' &&
@@ -263,9 +263,9 @@ namespace gpstk
           }
         else if (thisLabel == runByString)
           {
-            fileProgram = strip(line.substr(0,20));
-            fileAgency = strip(line.substr(20,20));
-            date = strip(line.substr(40,20));
+            fileProgram = strip(line.substr( 0,20));
+            fileAgency  = strip(line.substr(20,20));
+            date        = strip(line.substr(40,20));
             valid |= runByValid;
           }
         else if (thisLabel == commentString)

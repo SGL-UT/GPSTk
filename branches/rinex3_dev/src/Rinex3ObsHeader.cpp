@@ -50,99 +50,49 @@ using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-   const string Rinex3ObsHeader::stringVersion         = "RINEX VERSION / TYPE";
-   const string Rinex3ObsHeader::stringRunBy           = "PGM / RUN BY / DATE";
-   const string Rinex3ObsHeader::stringComment         = "COMMENT";
-   const string Rinex3ObsHeader::stringMarkerName      = "MARKER NAME";
-   const string Rinex3ObsHeader::stringMarkerNumber    = "MARKER NUMBER";
-   const string Rinex3ObsHeader::stringObserver        = "OBSERVER / AGENCY";
-   const string Rinex3ObsHeader::stringReceiver        = "REC # / TYPE / VERS";
-   const string Rinex3ObsHeader::stringAntennaType     = "ANT # / TYPE";
-   const string Rinex3ObsHeader::stringAntennaPosition = "APPROX POSITION XYZ";
-   const string Rinex3ObsHeader::stringAntennaDeltaHEN = "ANTENNA: DELTA H/E/N";
-   const string Rinex3ObsHeader::stringAntennaDeltaXYZ = "ANTENNA: DELTA X/Y/Z";
-   const string Rinex3ObsHeader::stringSystemNumObs    = "SYS / # / TYPES OF OBSERV";
-   const string Rinex3ObsHeader::stringInterval        = "INTERVAL";
-   const string Rinex3ObsHeader::stringFirstTime       = "TIME OF FIRST OBS";
-   const string Rinex3ObsHeader::stringLastTime        = "TIME OF LAST OBS";
-   const string Rinex3ObsHeader::stringReceiverOffset  = "RCV CLOCK OFFS APPL";
-   const string Rinex3ObsHeader::stringLeapSeconds     = "LEAP SECONDS";
-   const string Rinex3ObsHeader::stringNumSats         = "# OF SATELLITES";
-   const string Rinex3ObsHeader::stringPrnObs          = "PRN / # OF OBS";
-   const string Rinex3ObsHeader::stringEoH             = "END OF HEADER";
-
-  /*
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::UN("UN", "Unknown or Invalid",   "unknown", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::L1("L1", "L1 Carrier Phase",     "L1 cycles",
-      Rinex3ObsHeader::Rinex3ObsType::L1depend);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::L2("L2", "L2 Carrier Phase",     "L2 cycles",
-      Rinex3ObsHeader::Rinex3ObsType::L2depend);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::C1("C1", "C/A-code pseudorange", "meters",
-      Rinex3ObsHeader::Rinex3ObsType::C1depend);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::C2("C2", "L2C-code pseudorange", "meters", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::P1("P1", "Pcode L1 pseudorange", "meters",
-      Rinex3ObsHeader::Rinex3ObsType::P1depend);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::P2("P2", "Pcode L2 pseudorange", "meters",
-      Rinex3ObsHeader::Rinex3ObsType::P2depend);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::D1("D1", "Doppler Frequency L1", "Hz", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::D2("D2", "Doppler Frequency L2", "Hz", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::S1("S1", "Signal-to-Noise L1",   "dB-Hz", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::S2("S2", "Signal-to-Noise L2",   "dB-Hz", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::T1("T1", "Transit 150 MHz",      "meters", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::T2("T2", "Transit 400 MHz",      "meters", 0);
-   // v 2.11
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::C5("C5", "L5C-code pseudorange", "meters", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::L5("L5", "L5 Carrier Phase",     "L5 cycles", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::D5("D5", "Doppler Frequency L5", "Hz", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::S5("S5", "Signal-to-Noise L5",   "dB-Hz", 0);
-   // Galileo only
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::C6("C6", "E6-code pseudorange",  "meters", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::L6("L6", "E6 Carrier Phase",     "L6 cycles", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::D6("D6", "Doppler Frequency E6", "Hz", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::S6("S6", "Signal-to-Noise E6",   "dB-Hz", 0);
-
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::C7("C7", "E5b-code pseudorange",  "meters", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::L7("L7", "E5b Carrier Phase",     "L7 cycles", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::D7("D7", "Doppler Frequency E5b", "Hz", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::S7("S7", "Signal-to-Noise E5b",   "dB-Hz", 0);
-
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::C8("C8", "E5a+b-code pseudorange", "meters", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::L8("L8", "E5a+b Carrier Phase",    "L8 cycles", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::D8("D8", "Doppler Frequency E5a+b","Hz", 0);
-   const Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::S8("S8", "Signal-to-Noise E5a+b",  "dB-Hz", 0);
-  */
-
-   Rinex3ObsHeader::Rinex3ObsType sot[29] =
-   { 
-      Rinex3ObsHeader::UN,
-      Rinex3ObsHeader::L1, Rinex3ObsHeader::L2,
-      Rinex3ObsHeader::C1, Rinex3ObsHeader::C2,
-      Rinex3ObsHeader::P1, Rinex3ObsHeader::P2,
-      Rinex3ObsHeader::D1, Rinex3ObsHeader::D2,
-      Rinex3ObsHeader::S1, Rinex3ObsHeader::S2,
-      Rinex3ObsHeader::T1, Rinex3ObsHeader::T2,
-      Rinex3ObsHeader::C5, Rinex3ObsHeader::L5, Rinex3ObsHeader::D5, Rinex3ObsHeader::S5,
-      Rinex3ObsHeader::C6, Rinex3ObsHeader::L6, Rinex3ObsHeader::D6, Rinex3ObsHeader::S6,
-      Rinex3ObsHeader::C7, Rinex3ObsHeader::L7, Rinex3ObsHeader::D7, Rinex3ObsHeader::S7,
-      Rinex3ObsHeader::C8, Rinex3ObsHeader::L8, Rinex3ObsHeader::D8, Rinex3ObsHeader::S8
-   };
-
-
-   // Warning: the size of the above sot array needs to be put in this initializer.
-   const std::vector<Rinex3ObsHeader::Rinex3ObsType> Rinex3ObsHeader::StandardRinex3ObsTypes(sot,sot+29);
+   const string Rinex3ObsHeader::stringVersion           = "RINEX VERSION / TYPE";
+   const string Rinex3ObsHeader::stringRunBy             = "PGM / RUN BY / DATE";
+   const string Rinex3ObsHeader::stringComment           = "COMMENT";
+   const string Rinex3ObsHeader::stringMarkerName        = "MARKER NAME";
+   const string Rinex3ObsHeader::stringMarkerNumber      = "MARKER NUMBER";
+   const string Rinex3ObsHeader::stringMarkerType        = "MARKER TYPE";
+   const string Rinex3ObsHeader::stringObserver          = "OBSERVER / AGENCY";
+   const string Rinex3ObsHeader::stringReceiver          = "REC # / TYPE / VERS";
+   const string Rinex3ObsHeader::stringAntennaType       = "ANT # / TYPE";
+   const string Rinex3ObsHeader::stringAntennaPosition   = "APPROX POSITION XYZ";
+   const string Rinex3ObsHeader::stringAntennaDeltaHEN   = "ANTENNA: DELTA H/E/N";
+   const string Rinex3ObsHeader::stringAntennaDeltaXYZ   = "ANTENNA: DELTA X/Y/Z";
+   const string Rinex3ObsHeader::stringAntennaPhaseCtr   = "ANTENNA: PHASECENTER";
+   const string Rinex3ObsHeader::stringAntennaBsightXYZ  = "ANTENNA: B.SIGHT XYZ";
+   const string Rinex3ObsHeader::stringAntennaZeroDirAzi = "ANTENNA: ZERODIR AZI";
+   const string Rinex3ObsHeader::stringAntennaZeroDirXYZ = "ANTENNA: ZERODIR XYZ";
+   const string Rinex3ObsHeader::stringCenterOfMass      = "CENTER OF MASS: XYZ";
+   const string Rinex3ObsHeader::stringSystemNumObs      = "SYS / # / OBS TYPES";
+   const string Rinex3ObsHeader::stringSigStrengthUnit   = "SIGNAL STRENGTH UNIT";
+   const string Rinex3ObsHeader::stringInterval          = "INTERVAL";
+   const string Rinex3ObsHeader::stringFirstTime         = "TIME OF FIRST OBS";
+   const string Rinex3ObsHeader::stringLastTime          = "TIME OF LAST OBS";
+   const string Rinex3ObsHeader::stringReceiverOffset    = "RCV CLOCK OFFS APPL";
+   const string Rinex3ObsHeader::stringSystemDCBSapplied = "SYS / DCBS APPLIED";
+   const string Rinex3ObsHeader::stringSystemPCVSapplied = "SYS / PCVS APPLIED";
+   const string Rinex3ObsHeader::stringSystemScaleFac    = "SYS / SCALE FACTOR";
+   const string Rinex3ObsHeader::stringLeapSeconds       = "LEAP SECONDS";
+   const string Rinex3ObsHeader::stringNumSats           = "# OF SATELLITES";
+   const string Rinex3ObsHeader::stringPrnObs            = "PRN / # OF OBS";
+   const string Rinex3ObsHeader::stringEoH               = "END OF HEADER";
 
 
    std::vector<Rinex3ObsHeader::Rinex3ObsType> Rinex3ObsHeader::RegisteredRinex3ObsTypes
       = Rinex3ObsHeader::StandardRinex3ObsTypes;
 
 
-   void Rinex3ObsHeader::reallyPutRecord(FFStream& ffs) const 
+   void Rinex3ObsHeader::reallyPutRecord(FFStream& ffs) const
       throw(std::exception, FFStreamError, StringException)
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
-      
+
       strm.header = *this;
-      
+
       unsigned long allValid;
       if      (version == 3.0)   allValid = allValid30;
       else if (version == 3.00)  allValid = allValid30;
@@ -152,14 +102,14 @@ namespace gpstk
          err.addText("Make sure to set the version correctly.");
          GPSTK_THROW(err);
       }
-      
+
       if ((valid & allValid) != allValid)
       {
          FFStreamError err("Incomplete or invalid header.");
          err.addText("Make sure you set all header valid bits for all of the available data.");
          GPSTK_THROW(err);
       }
-      
+
       try
       {
          WriteHeaderRecords(strm);
@@ -174,33 +124,45 @@ namespace gpstk
       }
 
    }  // end Rinex3ObsHeader::reallyPutRecord
-      
+
 
    // This function computes the number of valid header records which WriteHeaderRecords will write.
    int Rinex3ObsHeader::NumberHeaderRecordsToBeWritten(void) const throw()
    {
-      int n=0;
-      if (valid & Rinex3ObsHeader::validVersion) n++;
-      if (valid & Rinex3ObsHeader::validRunBy) n++;
-      if (valid & Rinex3ObsHeader::validMarkerName) n++;
-      if (valid & Rinex3ObsHeader::validObserver) n++;
-      if (valid & Rinex3ObsHeader::validReceiver) n++;
-      if (valid & Rinex3ObsHeader::validAntennaType) n++;
-      if (valid & Rinex3ObsHeader::validAntennaPosition) n++;
-      if (valid & Rinex3ObsHeader::validAntennaDeltaHEN) n++;
-      if (valid & Rinex3ObsHeader::validAntennaDeltaXYZ) n++;
-      if (valid & Rinex3ObsHeader::validObsType) n += 1 + (obsTypeList.size()-1)/9;
-      if (valid & Rinex3ObsHeader::validInterval) n++;
-      if (valid & Rinex3ObsHeader::validFirstTime) n++;
-      if (valid & Rinex3ObsHeader::validLastTime) n++;
-      if (valid & Rinex3ObsHeader::validMarkerNumber) n++;
-      if (valid & Rinex3ObsHeader::validReceiverOffset) n++;
-      if (valid & Rinex3ObsHeader::validLeapSeconds) n++;
-      if (valid & Rinex3ObsHeader::validComment) n += commentList.size();
-      if (valid & Rinex3ObsHeader::validNumSats) n++;
-      if (valid & Rinex3ObsHeader::validPrnObs)
+      int n = 0;
+
+      if (valid & Rinex3ObsHeader::validVersion          ) n++;
+      if (valid & Rinex3ObsHeader::validRunBy            ) n++;
+      if (valid & Rinex3ObsHeader::validComment          ) n += commentList.size();
+      if (valid & Rinex3ObsHeader::validMarkerName       ) n++;
+      if (valid & Rinex3ObsHeader::validMarkerNumber     ) n++;
+      if (valid & Rinex3ObsHeader::validMarkerType       ) n++;
+      if (valid & Rinex3ObsHeader::validObserver         ) n++;
+      if (valid & Rinex3ObsHeader::validReceiver         ) n++;
+      if (valid & Rinex3ObsHeader::validAntennaType      ) n++;
+      if (valid & Rinex3ObsHeader::validAntennaPosition  ) n++;
+      if (valid & Rinex3ObsHeader::validAntennaDeltaHEN  ) n++;
+      if (valid & Rinex3ObsHeader::validAntennaDeltaXYZ  ) n++;
+      if (valid & Rinex3ObsHeader::validAntennaPhaseCtr  ) n++;
+      if (valid & Rinex3ObsHeader::validAntennaBsightXYZ ) n++;
+      if (valid & Rinex3ObsHeader::validAntennaZeroDirAzi) n++;
+      if (valid & Rinex3ObsHeader::validAntennaZeroDirXYZ) n++;
+      if (valid & Rinex3ObsHeader::validCenterOfmass     ) n++;
+      if (valid & Rinex3ObsHeader::validObsType          ) n += 1 + (obsTypeList.size()-1)/9;
+      if (valid & Rinex3ObsHeader::validSigStrengthUnit  ) n++;
+      if (valid & Rinex3ObsHeader::validInterval         ) n++;
+      if (valid & Rinex3ObsHeader::validFirstTime        ) n++;
+      if (valid & Rinex3ObsHeader::validLastTime         ) n++;
+      if (valid & Rinex3ObsHeader::validReceiverOffset   ) n++;
+      if (valid & Rinex3ObsHeader::validSystemDCBSapplied) n++;
+      if (valid & Rinex3ObsHeader::validSystemPCVSapplied) n++;
+      if (valid & Rinex3ObsHeader::validSystemScaleFac   ) n++;
+      if (valid & Rinex3ObsHeader::validLeapSeconds      ) n++;
+      if (valid & Rinex3ObsHeader::validNumSats          ) n++;
+      if (valid & Rinex3ObsHeader::validPrnObs           )
          n += numObsForSat.size() * (1+numObsForSat.begin()->second.size()/9);
-      if (valid & Rinex3ObsHeader::validEoH) n++;
+      if (valid & Rinex3ObsHeader::validEoH              ) n++;
+
       return n;
    }
 
@@ -217,7 +179,7 @@ namespace gpstk
          line += string(11, ' ');
          if ((fileType[0] != 'O') && (fileType[0] != 'o'))
          {
-            FFStreamError err("This isn't a Rinex Observation file: " + 
+            FFStreamError err("This isn't a Rinex Observation file: " +
                               fileType.substr(0,1));
             GPSTK_THROW(err);
          }
@@ -317,9 +279,9 @@ namespace gpstk
          const int maxObsPerLine = 9;
          int obsWritten = 0;
          line = ""; // make sure the line contents are reset.
-         
+
          vector<Rinex3ObsType>::const_iterator itr = obsTypeList.begin();
-         
+
          while (itr != obsTypeList.end())
          {
                // the first line needs to have the # of obs
@@ -455,7 +417,7 @@ namespace gpstk
          line  = string(60, ' ');
          line += stringEoH;
          strm << line << endl;
-         strm.lineNumber++;               
+         strm.lineNumber++;
       }   
    }   // end Rinex3ObsHeader::WriteHeaderRecords()
 
@@ -470,20 +432,20 @@ namespace gpstk
       {
          version = asDouble(line.substr(0,20));
          fileType = strip(line.substr(20,20));
+         satSys   = strip(line.substr(40,20));
          if ( fileType[0] != 'O' && fileType[0] != 'o')
          {
             FFStreamError e("This isn't a RINEX 3 Obs file.");
             GPSTK_THROW(e);
          }
-         string system_str = strip(line.substr(40,20));
-         try
+         if ( satSys[0] != 'G' && satSys[0] != 'g' &&
+              satSys[0] != 'R' && satSys[0] != 'r' &&
+              satSys[0] != 'E' && satSys[0] != 'e' &&
+              satSys[0] != 'S' && satSys[0] != 's' &&
+              satSys[0] != 'M' && satSys[0] != 'm'    )
          {
-            system.fromString(system_str);
-         }
-         catch (Exception& e)
-         {
-            FFStreamError ffse("Input satellite system is unsupported: " + system_str);
-            GPSTK_THROW(ffse);
+           FFStreamError e("The satellite system isn't valid.");
+           GPSTK_THROW(e);
          }
          valid |= validVersion;
       }
@@ -496,8 +458,7 @@ namespace gpstk
       }
       else if (label == stringComment)
       {
-         string s = strip(line.substr(0,60));
-         commentList.push_back(s);
+         commentList.push_back(strip(line.substr(0,60)));
          valid |= validComment;
       }
       else if (label == stringMarkerName)
@@ -509,6 +470,11 @@ namespace gpstk
       {
          markerNumber = strip(line.substr(0,20));
          valid |= validMarkerNumber;
+      }
+      else if (label == stringMarkerType)
+      {
+         markerType = strip(line.substr(0,20));
+         valid |= validMarkerType;
       }
       else if (label == stringObserver)
       {
@@ -549,6 +515,41 @@ namespace gpstk
          antennaDeltaXYZ[1] = asDouble(line.substr(14,14));
          antennaDeltaXYZ[2] = asDouble(line.substr(28,14));
          valid |= validAntennaDeltaXYZ;
+      }
+      else if (label == stringAntennaPhaseCtr)
+      {
+         antennaSatSys  = strip(line.substr(0,2));
+         antennaObsCode = strip(line.substr(2,3));
+         antennaPhaseCtr[0] = asDouble(line.substr( 5, 9));
+         antennaPhaseCtr[1] = asDouble(line.substr(14,14));
+         antennaPhaseCtr[2] = asDouble(line.substr(14,14));
+         valid |= validAntennaPhaseCtr;
+      }
+      else if (label == stringAntennaBsightXYZ)
+      {
+         antennaBsight[0] = asDouble(line.substr( 0,14));
+         antennaBsight[1] = asDouble(line.substr(14,14));
+         antennaBsight[2] = asDouble(line.substr(28,14));
+         valid |= validAntennaBsightXYZ;
+      }
+      else if (label == stringAntennaZeroDirAzi)
+      {
+         antennaZeroDirAzi = asDouble(line.substr(0,14));
+         valid |= validAntennaBsightXYZ;
+      }
+      else if (label == stringAntennaZeroDirXYZ)
+      {
+         antennaZeroDirXYZ[0] = asDouble(line.substr( 0,14));
+         antennaZeroDirXYZ[1] = asDouble(line.substr(14,14));
+         antennaZeroDirXYZ[2] = asDouble(line.substr(28,14));
+         valid |= validAntennaBsightXYZ;
+      }
+      else if (label == stringCenterOfMass)
+      {
+         centerOfMass[0] = asDouble(line.substr( 0,14));
+         centerOfMass[1] = asDouble(line.substr(14,14));
+         centerOfMass[2] = asDouble(line.substr(28,14));
+         valid |= validCenterOfMass;
       }
       else if (label == stringSystemNumObs)
       {
@@ -624,7 +625,7 @@ namespace gpstk
          else
          {
             try
-            { 
+            {
                lastPRN.fromString(line.substr(3,3));
             }
             catch (Exception& e)
@@ -661,36 +662,29 @@ namespace gpstk
             gpstk::StringUtils::StringException)
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
-      
-      // if already read, just return
-      if (strm.headerRead == true)
-         return;
 
-      // since we're reading a new header, we need to reinitialize
-      // all our list structures.  all the other objects should be ok.
-      // this also applies if we threw an exception the first time we read
-      // the header and are now re-reading it. some of these could be full
-      // and we need to empty them.
-      commentList.clear();
-      obsTypeList.clear();
-      numObsForSat.clear();
-      valid = 0;
-      numObs = 0;
-      lastPRN.id = -1;
-      
+      // If already read, just return.
+      if (strm.headerRead == true) return;
+
+      // Since we're reading a new header, we need to reinitialize all our list structures.
+      // All the other objects should be ok.  This also applies if we threw an exception
+      // the first time we read the header and are now re-reading it.  Some of these could
+      // be full and we need to empty them.
+      clear();
+
       string line;
-      
+
       while (!(valid & validEoH))
       {
          strm.formattedGetLine(line);
          StringUtils::stripTrailing(line);
 
-         if (line.length()==0)
+         if (line.length() == 0)
          {
             FFStreamError e("No data read");
             GPSTK_THROW(e);
          }
-         else if (line.length()<60 || line.length()>80)
+         else if (line.length() < 60 || line.length() > 80)
          {
             FFStreamError e("Invalid line length");
             GPSTK_THROW(e);
@@ -704,7 +698,7 @@ namespace gpstk
          {
             GPSTK_RETHROW(e);
          }
-         
+
       }   // end while(not end of header)
 
       unsigned long allValid;
@@ -716,17 +710,17 @@ namespace gpstk
                          asString(version));
          GPSTK_THROW(e);
       }
-            
+
       if ( (allValid & valid) != allValid)
       {
          FFStreamError e("Incomplete or invalid header");
          GPSTK_THROW(e);               
       }
-            
+
       // If we get here, we should have reached the end of header line
       strm.header = *this;
       strm.headerRead = true;
-            
+
    }  // end of reallyGetRecord()
 
 
@@ -734,7 +728,7 @@ namespace gpstk
       throw(FFStreamError)
    {
       Rinex3ObsType ot(RegisteredRinex3ObsTypes[0]);   // Unknown type
-      for (int i=0; i<RegisteredRinex3ObsTypes.size(); i++) {
+      for (int i = 0; i < RegisteredRinex3ObsTypes.size(); i++) {
          if (RegisteredRinex3ObsTypes[i].type == oneObs)
          {
             ot = RegisteredRinex3ObsTypes[i];
@@ -751,6 +745,28 @@ namespace gpstk
       throw(FFStreamError)
    {
       return oneObs.type;
+   }
+
+
+   // return 1 if type already defined,
+   //        0 if successful
+   //       -1 if not successful - invalid input
+   int RegisterExtendedRinex3ObsType(string t, string d, string u, unsigned int dep)
+   {
+      if (t.empty()) return -1;
+      // throw if t="UN" ?
+      // check that it is not duplicated
+      for (int i = 0; i < Rinex3ObsHeader::RegisteredRinex3ObsTypes.size(); i++)
+      {
+         if (Rinex3ObsHeader::RegisteredRinex3ObsTypes[i].type == t) { return 1; }
+      }
+      Rinex3ObsHeader::Rinex3ObsType ot;
+      if (t.size()>2) t.resize(2,' '); ot.type = stripTrailing(t);
+      if (d.size()>20) d.resize(20,' '); ot.description = stripTrailing(d);
+      if (u.size()>10) u.resize(10,' '); ot.units = stripTrailing(u);
+//      ot.depend = dep;
+      Rinex3ObsHeader::RegisteredRinex3ObsTypes.push_back(ot);
+      return 0;
    }
 
 
@@ -773,12 +789,14 @@ namespace gpstk
    string Rinex3ObsHeader::writeTime(const CivilTime& civtime) const
    {
       string line;
+
       line  = rightJustify(asString<short>(civtime.year    ),  6);
       line += rightJustify(asString<short>(civtime.month   ),  6);
       line += rightJustify(asString<short>(civtime.day     ),  6);
       line += rightJustify(asString<short>(civtime.hour    ),  6);
       line += rightJustify(asString<short>(civtime.minute  ),  6);
       line += rightJustify(asString(       civtime.second,7), 13);
+
       return line;
    }
 
@@ -791,7 +809,7 @@ namespace gpstk
       str = system.systemChar();
       str = str + " (" + system.systemString() + ")";
       s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
-         << ",  File type " << fileType << ",  System " << str << ".\n";
+        << ",  File type " << fileType << ",  System " << str << ".\n";
       s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: " << fileAgency << endl;
       s << "Marker name: " << markerName << ".\n";
       s << "Obs'r : " << observer << ",  Agency: " << agency << endl;
@@ -803,9 +821,9 @@ namespace gpstk
       s << "Observation types (" << obsTypeList.size() << ") :\n";
       for (i = 0; i < obsTypeList.size(); i++) 
          s << " Type #" << i << " = "
-            << gpstk::Rinex3ObsHeader::convertObsType(obsTypeList[i])
-            << " " << obsTypeList[i].description
-            << " (" << obsTypeList[i].units << ")." << endl;
+           << gpstk::Rinex3ObsHeader::convertObsType(obsTypeList[i])
+           << " " << obsTypeList[i].description
+           << " (" << obsTypeList[i].units << ")." << endl;
       s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P");
       s << "(This header is ";
       if ((valid & allValid30) == allValid30) s << "VALID 3.00";
@@ -838,11 +856,12 @@ namespace gpstk
       if (valid & validPrnObs)
       {
          s << "SAT  ";
-         for (i=0; i<obsTypeList.size(); i++)
+         for (i = 0; i < obsTypeList.size(); i++)
             s << setw(7) << convertObsType(obsTypeList[i]);
          s << endl;
          map<SatID, vector<int> >::const_iterator sat_itr = numObsForSat.begin();
-         while (sat_itr != numObsForSat.end()) {
+         while (sat_itr != numObsForSat.end())
+         {
             vector<int> obsvec=sat_itr->second;
             s << " " << RinexSatID(sat_itr->first) << " ";
             for (i=0; i<obsvec.size(); i++) s << " " << setw(6) << obsvec[i];
@@ -852,31 +871,10 @@ namespace gpstk
       }
       if (commentList.size() && !(valid & validComment)) s << " Comment is NOT valid\n";
       s << "Comments (" << commentList.size() << ") :\n";
-      for (i=0; i<commentList.size(); i++)
+      for (i = 0; i < commentList.size(); i++)
          s << commentList[i] << endl;
+
       s << "-------------------------------- END OF HEADER -------------------------------\n";
-   }
-
-
-   // return 1 if type already defined,
-   //        0 if successful
-   //       -1 if not successful - invalid input
-   int RegisterExtendedRinex3ObsType(string t, string d, string u, unsigned int dep)
-   {
-      if (t.empty()) return -1;
-      // throw if t="UN" ?
-      // check that it is not duplicated
-      for (int i = 0; i < Rinex3ObsHeader::RegisteredRinex3ObsTypes.size(); i++)
-      {
-         if (Rinex3ObsHeader::RegisteredRinex3ObsTypes[i].type == t) { return 1; }
-      }
-      Rinex3ObsHeader::Rinex3ObsType ot;
-      if (t.size()>2) t.resize(2,' '); ot.type = stripTrailing(t);
-      if (d.size()>20) d.resize(20,' '); ot.description = stripTrailing(d);
-      if (u.size()>10) u.resize(10,' '); ot.units = stripTrailing(u);
-//      ot.depend = dep;
-      Rinex3ObsHeader::RegisteredRinex3ObsTypes.push_back(ot);
-      return 0;
    }
 
 
