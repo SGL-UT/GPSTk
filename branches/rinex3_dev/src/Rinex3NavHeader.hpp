@@ -85,13 +85,14 @@ namespace gpstk
      /// These are validity bits used in checking the RINEX NAV header.
      enum validBits
      {
-       versionValid     = 0x01,   ///< Set if the RINEX 3 version is valid.
-       runByValid       = 0x02,   ///< Set if the Run-by value is valid.
-       commentValid     = 0x04,   ///< Set if the Comments are valid -- very subjective.
-       ionoCorrValid    = 0x08,   ///< Set if the Iono Correction data is valid.
-       timeSysCorrValid = 0x010,  ///< Set if the Time System Correction is valid.
-       leapSecondsValid = 0x020,  ///< Set if the Leap Seconds value is valid.
-       endValid = 0x080000000,    ///< Set if the end value is valid.
+       validVersion     = 0x01,         ///< Set if the RINEX 3 version is valid.
+       validRunBy       = 0x02,         ///< Set if the Run-by value is valid.
+       validComment     = 0x04,         ///< Set if the Comments are valid -- very subjective.
+       validIonoCorrGPS = 0x08,         ///< Set if GPS Iono Correction data is valid.
+       validIonoCorrGal = 0x010,        ///< Set if Gal Iono Correction data is valid.
+       validTimeSysCorr = 0x020,        ///< Set if the Time System Correction is valid.
+       validLeapSeconds = 0x040,        ///< Set if the Leap Seconds value is valid.
+       validEoH         = 0x080000000,  ///< Set if the End of Header is valid.
 
        /// This bitset checks that all required header items are available
        /// for a Rinex 3.0 (3.00) version file.
@@ -106,7 +107,7 @@ namespace gpstk
      std::vector<std::string> commentList;
      std::string ionoCorrType;
      std::string timeSysCorrType;
-     double ionoParam1[4], ionoParam2[4];
+     double ionoParam1[4], ionoParam2[4], ionoParamGal[3];
      double A0, A1;
      long timeSysRefTime, timeSysRefWeek;
      std::string timeSysCorrSBAS;
@@ -117,13 +118,13 @@ namespace gpstk
      /** @name FormattingStd::Strings
       */
      //@{
-     static const std::string versionString;     // "RINEX VERSION / TYPE"
-     static const std::string runByString;       // "PGM / RUN BY / DATE"
-     static const std::string commentString;     // "COMMENT"
-     static const std::string ionoCorrString;    // "IONOSPHERIC CORR"
-     static const std::string timeSysCorrString; // "TIME SYSTEM CORR"
-     static const std::string leapSecondsString; // "LEAP SECONDS"
-     static const std::string endOfHeader;       // "END OF HEADER"
+     static const std::string stringVersion;     // "RINEX VERSION / TYPE"
+     static const std::string stringRunBy;       // "PGM / RUN BY / DATE"
+     static const std::string stringComment;     // "COMMENT"
+     static const std::string stringIonoCorr;    // "IONOSPHERIC CORR"
+     static const std::string stringTimeSysCorr; // "TIME SYSTEM CORR"
+     static const std::string stringLeapSeconds; // "LEAP SECONDS"
+     static const std::string stringEoH;         // "END OF HEADER"
      //@}
 
    protected:

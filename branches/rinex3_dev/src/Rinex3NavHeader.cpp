@@ -56,13 +56,13 @@ using namespace std;
 
 namespace gpstk
 {
-  const string Rinex3NavHeader::versionString     = "RINEX VERSION / TYPE";
-  const string Rinex3NavHeader::runByString       = "PGM / RUN BY / DATE";
-  const string Rinex3NavHeader::commentString     = "COMMENT";
-  const string Rinex3NavHeader::ionoCorrString    = "IONOSPHERIC CORR";
-  const string Rinex3NavHeader::timeSysCorrString = "TIME SYSTEM CORR";
-  const string Rinex3NavHeader::leapSecondsString = "LEAP SECONDS";
-  const string Rinex3NavHeader::endOfHeader       = "END OF HEADER";
+  const string Rinex3NavHeader::stringVersion     = "RINEX VERSION / TYPE";
+  const string Rinex3NavHeader::stringRunBy       = "PGM / RUN BY / DATE";
+  const string Rinex3NavHeader::stringComment     = "COMMENT";
+  const string Rinex3NavHeader::stringIonoCorr    = "IONOSPHERIC CORR";
+  const string Rinex3NavHeader::stringTimeSysCorr = "TIME SYSTEM CORR";
+  const string Rinex3NavHeader::stringLeapSeconds = "LEAP SECONDS";
+  const string Rinex3NavHeader::stringEoH         = "END OF HEADER";
 
 
   void Rinex3NavHeader::reallyPutRecord(FFStream& ffs) const 
@@ -90,84 +90,79 @@ namespace gpstk
 
     string line;
 
-    if (valid & versionValid)
+    if (valid & validVersion)
       {
         line  = rightJustify(asString(version,2), 10);
         line += string(10, ' ');
         line += leftJustify(fileType, 20);
         line += satSys.substr(0,1) + string(19, ' ');
-        line += leftJustify(versionString,20);
+        line += leftJustify(stringVersion,20);
         strm << line << endl;
         strm.lineNumber++;
       }
 
-    if (valid & runByValid) 
+    if (valid & validRunBy) 
       {
         line  = leftJustify(fileProgram,20);
         line += leftJustify(fileAgency ,20);
         SystemTime sysTime;
         string curDate = (static_cast<CivilTime>(sysTime)).printf("%04Y%02m%02d %02H%02M%02S %P");
         line += leftJustify(curDate, 20);
-        line += leftJustify(runByString,20);
+        line += leftJustify(stringRunBy,20);
         strm << line << endl;
         strm.lineNumber++;
       }
 
-    if (valid & commentValid)
+    if (valid & validComment)
       {
         vector<string>::const_iterator itr = commentList.begin();
         while (itr != commentList.end())
           {
             line  = leftJustify((*itr), 60);
-            line += leftJustify(commentString,20);
+            line += leftJustify(stringComment,20);
             strm << line << endl;
             strm.lineNumber++;
             itr++;
           }
       }
 
-    if (valid & ionoCorrValid)
+    if (valid & validIonoCorrGal)
       {
-        if ( ionoCorrType == "GAL" )
+        line  = "GAL  ";
+        for (int i = 0; i < 3; i++)
           {
-            line  = ionoCorrType;
-            line += string(2, ' ');
-            for (int i = 0; i < 3; i++)
-              {
-                line += rightJustify(doub2for(ionoParam1[i], 12, 2),12);  // should be 12.4
-              }
-            line += string(19, ' ');
-            line += leftJustify(ionoCorrString,20);
-            strm << line << endl;
-            strm.lineNumber++;
+            line += rightJustify(doub2for(ionoParamGal[i], 12, 2),12);  // should be 12.4
           }
-        else if ( ionoCorrType.substr(0,3) == "GPS" )
-          {
-            line  = ionoCorrType.substr(0,3) + "A";
-            line += string(1, ' ');
-            for (int i = 0; i < 4; i++)
-              {
-                line += rightJustify(doub2for(ionoParam1[i], 12, 2),12);  // should be 12.4
-              }          
-            line += string(7, ' ');
-            line += leftJustify(ionoCorrString,20);
-            strm << line << endl;
-            strm.lineNumber++;
-
-            line  = ionoCorrType.substr(0,3) + "B";
-            line += string(1, ' ');
-            for (int i = 0; i < 4; i++)
-              {
-                line += rightJustify(doub2for(ionoParam2[i], 12, 2),12);  // should be 12.4
-              }          
-            line += string(7, ' ');
-            line += leftJustify(ionoCorrString,20);
-            strm << line << endl;
-            strm.lineNumber++;
-          }
+        line += string(19, ' ');
+        line += leftJustify(stringIonoCorr,20);
+        strm << line << endl;
+        strm.lineNumber++;
       }
 
-    if (valid & timeSysCorrValid)
+    if (valid & validIonoCorrGPS)
+      {
+        line  = "GPSA ";
+        for (int i = 0; i < 4; i++)
+          {
+            line += rightJustify(doub2for(ionoParam1[i], 12, 2),12);  // should be 12.4
+          }          
+        line += string(7, ' ');
+        line += leftJustify(stringIonoCorr,20);
+        strm << line << endl;
+        strm.lineNumber++;
+
+        line  = "GPSB ";
+        for (int i = 0; i < 4; i++)
+          {
+            line += rightJustify(doub2for(ionoParam2[i], 12, 2),12);  // should be 12.4
+          }          
+        line += string(7, ' ');
+        line += leftJustify(stringIonoCorr,20);
+        strm << line << endl;
+        strm.lineNumber++;
+      }
+
+    if (valid & validTimeSysCorr)
       {
         line  = timeSysCorrType;
         line += string(1, ' ');
@@ -187,24 +182,24 @@ namespace gpstk
           {
             line += string(10, ' ');
           }
-        line += leftJustify(timeSysCorrString,20);
+        line += leftJustify(stringTimeSysCorr,20);
         strm << line << endl;
         strm.lineNumber++;
       }
 
-    if (valid & leapSecondsValid)
+    if (valid & validLeapSeconds)
       {
         line  = rightJustify(asString(leapSeconds),6);
         line += string(54, ' ');
-        line += leftJustify(leapSecondsString,20);
+        line += leftJustify(stringLeapSeconds,20);
         strm << line << endl;
         strm.lineNumber++;
       }
 
-    if (valid & endValid)
+    if (valid & validEoH)
       {
         line  = string(60,' ');
-        line += leftJustify(endOfHeader,20);
+        line += leftJustify(stringEoH,20);
         strm << line << endl;
         strm.lineNumber++;
       }
@@ -225,7 +220,7 @@ namespace gpstk
     // clear out anything that was unsuccessfully read first
     commentList.clear();
 
-    while (!(valid & endValid))
+    while (!(valid & validEoH))
       {
         string line;
         strm.formattedGetLine(line);
@@ -240,7 +235,7 @@ namespace gpstk
 
         string thisLabel(line, 60, 20);
 
-        if (thisLabel == versionString)
+        if (thisLabel == stringVersion)
           {
             version = asDouble(line.substr(0,20));
             fileType =  strip(line.substr(20,20));
@@ -259,27 +254,28 @@ namespace gpstk
                 FFStreamError e("The satellite system isn't valid.");
                 GPSTK_THROW(e);
               }
-            valid |= versionValid;
+            valid |= validVersion;
           }
-        else if (thisLabel == runByString)
+        else if (thisLabel == stringRunBy)
           {
             fileProgram = strip(line.substr( 0,20));
             fileAgency  = strip(line.substr(20,20));
             date        = strip(line.substr(40,20));
-            valid |= runByValid;
+            valid |= validRunBy;
           }
-        else if (thisLabel == commentString)
+        else if (thisLabel == stringComment)
           {
             commentList.push_back(strip(line.substr(0,60)));
-            valid |= commentValid;
+            valid |= validComment;
           }
-        else if (thisLabel == ionoCorrString)
+        else if (thisLabel == stringIonoCorr)
           {
             ionoCorrType = strip(line.substr(0,4));
             if ( ionoCorrType == "GAL" )
               {
                 for(int i = 0; i < 3; i++)
-                  ionoParam1[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12*i, 12));
+                  ionoParamGal[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12*i, 12));
+                valid |= validIonoCorrGal;
               }
             else if ( ionoCorrType == "GPSA" )
               {
@@ -290,15 +286,15 @@ namespace gpstk
               {
                 for(int i = 0; i < 4; i++)
                   ionoParam2[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12*i, 12));
+                valid |= validIonoCorrGPS; /// Assumes that GPSA always appears first. [DR]
               }
             else
               {
                 FFStreamError e("The ionospheric correction data isn't valid.");
                 GPSTK_THROW(e);
               }
-            valid |= ionoCorrValid;
           }
-        else if (thisLabel == timeSysCorrString)
+        else if (thisLabel == stringTimeSysCorr)
           {
             timeSysCorrType = strip(line.substr(0,4));
             A0 = gpstk::StringUtils::for2doub(line.substr(5,17));
@@ -307,16 +303,16 @@ namespace gpstk
             timeSysRefWeek  = asInt(line.substr(45,5));
             timeSysCorrSBAS = strip(line.substr(51,6));
             timeSysUTCid    = asInt(line.substr(57,2));
-            valid |= timeSysCorrValid;
+            valid |= validTimeSysCorr;
           }
-        else if (thisLabel == leapSecondsString)
+        else if (thisLabel == stringLeapSeconds)
           {
             leapSeconds = asInt(line.substr(0,6));
-            valid |= leapSecondsValid;
+            valid |= validLeapSeconds;
           }
-        else if (thisLabel == endOfHeader)
+        else if (thisLabel == stringEoH)
           {
-            valid |= endValid;
+            valid |= validEoH;
           }
         else
           {
@@ -361,44 +357,45 @@ namespace gpstk
     else s << "NOT VALID";
     s << " Rinex.)\n";
 
-    if (!(valid & versionValid)) s << " Version is NOT valid\n";
-    if (!(valid & runByValid  )) s << " Run by is NOT valid\n";
-    if (!(valid & endValid    )) s << " End is NOT valid\n";
+    if (!(valid & validVersion)) s << " Version is NOT valid\n";
+    if (!(valid & validRunBy  )) s << " Run by is NOT valid\n";
+    if (!(valid & validEoH    )) s << " End of Header is NOT valid\n";
 
     s << "---------------------------------- OPTIONAL ----------------------------------\n";
 
-    if (valid & ionoCorrValid)
+    if (valid & validIonoCorrGal)
       {
-        if ( ionoCorrType == "GAL" )
-          {
-            s << "Iono Corr for Galileo:";
-            for(i=0; i<3; i++) s << " " << scientific << setprecision(4) << ionoParam1[i];
-          }
-        else if ( ionoCorrType.substr(0,3) == "GPS" )
-          {
-            s << "Iono Corr Alpha for GPS:";
-            for(i=0; i<4; i++) s << " " << scientific << setprecision(4) << ionoParam1[i];
-            s << endl;
-            s << "Iono Corr Beta afor GPS:";
-            for(i=0; i<4; i++) s << " " << scientific << setprecision(4) << ionoParam2[i];
-          }
+        s << "Iono Corr for Galileo:";
+        for(i=0; i<3; i++) s << " " << scientific << setprecision(4) << ionoParamGal[i];
         s << endl;
       }
-    else s << " Iono Corr is NOT valid\n";
 
-    if(valid & timeSysCorrValid) s << "Time System Corr type " << timeSysCorrType << ", A0="
+    if (valid & validIonoCorrGPS)
+      {
+        s << "Iono Corr Alpha for GPS:";
+        for(i=0; i<4; i++) s << " " << scientific << setprecision(4) << ionoParam1[i];
+        s << endl;
+        s << "Iono Corr Beta afor GPS:";
+        for(i=0; i<4; i++) s << " " << scientific << setprecision(4) << ionoParam2[i];
+        s << endl;
+      }
+
+    if ( !(valid & validIonoCorrGal) && !(valid & validIonoCorrGPS) )
+      s << "Iono Corr is NOT valid\n";
+
+    if(valid & validTimeSysCorr) s << "Time System Corr type " << timeSysCorrType << ", A0="
                                    << scientific << setprecision(12) << A0 << ", A1="
                                    << scientific << setprecision(12) << A1 << ", UTC ref = ("
                                    << timeSysRefWeek << "," << timeSysRefTime << ")\n";
     else s << " Time System Corr is NOT valid\n";
 
-    if (valid & leapSecondsValid) s << "Leap seconds: " << leapSeconds << endl;
+    if (valid & validLeapSeconds) s << "Leap seconds: " << leapSeconds << endl;
     else s << " Leap seconds is NOT valid\n";
 
     if (commentList.size() > 0)
       {
         s << "Comments (" << commentList.size() << ") :\n";
-        for (int i=0; i<commentList.size(); i++)
+        for (int i = 0; i < commentList.size(); i++)
           s << commentList[i] << endl;
       }
 
