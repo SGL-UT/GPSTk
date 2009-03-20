@@ -1,4 +1,4 @@
-#pragma ident "$Id: //depot/msn/prototype/brent/IGEB_Demo/EphSum.cpp#3 $"
+#pragma ident "$Id: $"
 /**
 *  Given a PRN ID and a date (DOY, Year), one or more navigation
 *  message data file(s) and assemble a summary of all ephemerides relevant
@@ -77,6 +77,7 @@ protected:
    gpstk::CommandOptionWithAnyArg inputOption;
    gpstk::CommandOptionWithAnyArg outputOption;
    gpstk::CommandOptionWithAnyArg prnOption;
+   gpstk::CommandOptionNoArg  	  xmitOption; // added 3/18/2009
 
    FILE *logfp;
    FILE *out2fp; 
@@ -119,11 +120,13 @@ EphSum::EphSum(const std::string& applName,
           :BasicFramework(applName, applDesc),
            inputOption('i', "input-file", "The name of the navigation message file(s) to read.", true),
            outputOption('o', "output-file", "The name of the output file to write.", true),
-           prnOption('p', "PRNID","The PRN ID of the SV to process (default is all SVs)",false)
+           prnOption('p', "PRNID","The PRN ID of the SV to process (default is all SVs)",false),
+           xmitOption('x', "xmit", "List in order of transmission (default is TOE.", false)
 {
    inputOption.setMaxCount(8);
    outputOption.setMaxCount(1);
    prnOption.setMaxCount(1);
+   xmitOption.setMaxCount(1);
    numFICErrors = 0;
 }
 
@@ -255,7 +258,7 @@ void EphSum::process()
    
    string tform = "%04F %6.0g %02m/%02d/%02y %03j %02H:%02M:%02S";
    
-   GPSEphemerisStore::EngEphMap eemap;
+   GPSEphemerisStore::EngEphMap eemap, eemapXmit;
    long maxprn = gpstk::MAX_PRN;
    
    bool singleSV = false; 
@@ -287,6 +290,21 @@ void EphSum::process()
  
       if (singleSV && singlePRNID!=i) continue;
       
+	  // sort by time of transmission (default is TOE) 
+      if (xmitOption.getCount() > 0)
+      {
+         eemapXmit.clear();
+         for (ci=eemap.begin(); ci!=eemap.end(); ++ci)
+         {
+            EngEphemeris ee = ci ->second;
+            DayTime xmit = ee.getTransmitTime();
+            eemapXmit.insert(make_pair(xmit,ee));
+         } 
+         
+         eemap = eemapXmit;
+      }
+      
+
          // Header
       fprintf(logfp,"#\n");
       fprintf(logfp,"#PRN: %02d,  # of eph: %02d\n",i,eemap.size());
