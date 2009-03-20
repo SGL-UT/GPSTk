@@ -31,10 +31,20 @@ main(int argc, char *argv[])
       gpstk::Rinex3NavStream out(argv[2], ios::out);
       gpstk::Rinex3NavHeader rnh;
       gpstk::Rinex3NavData rne;
-      
+
+      cout << "Stream, Header, Data declarations made." << endl;
+
       rnffs >> rnh;
+
+      cout << "Header read in." << endl;
+
+      rnh.dump(cout);
+
+      cout << "Header dumped." << endl;
+
       out << rnh;
 
+      cout << "Header written out." << endl;
 
       int i = 0;
       while (rnffs >> rne)
