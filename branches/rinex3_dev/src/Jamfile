@@ -46,7 +46,8 @@ else
       RinexMetHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
       RinexObsData.cpp RinexObsHeader.cpp RinexObsID.cpp
       RinexSatID.cpp RinexUtilities.cpp
-      Rinex3NavHeader.cpp Rinex3NavData.cpp Rinex3EphemerisStore.cpp
+      Rinex3EphemerisStore.cpp
+      Rinex3NavHeader.cpp Rinex3NavData.cpp
       Rinex3ObsHeader.cpp
       RungeKutta4.cpp
       SEMAlmanacStore.cpp SEMData.cpp SEMHeader.cpp

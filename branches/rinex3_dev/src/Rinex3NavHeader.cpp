@@ -111,141 +111,141 @@ namespace gpstk
     unsigned long allValid;
     if (version == 3.0 || version == 3.00) allValid = allValid30;
     else
-      {
-        FFStreamError err("Unknown RINEX version: " + asString(version,3));
-        err.addText("Make sure to set the version correctly.");
-        GPSTK_THROW(err);
-      }
+    {
+      FFStreamError err("Unknown RINEX version: " + asString(version,3));
+      err.addText("Make sure to set the version correctly.");
+      GPSTK_THROW(err);
+    }
 
     if ((valid & allValid) != allValid)
-      {
-        FFStreamError err("Incomplete or invalid header.");
-        err.addText("Make sure you set all header valid bits for all of the available data.");
-        GPSTK_THROW(err);
-      }
+    {
+      FFStreamError err("Incomplete or invalid header.");
+      err.addText("Make sure you set all header valid bits for all of the available data.");
+      GPSTK_THROW(err);
+    }
 
     string line;
 
     if (valid & validVersion)
-      {
-        line  = rightJustify(asString(version,2), 10);
-        line += string(10, ' ');
-        line += leftJustify(fileType, 20);
-        line += satSys.substr(0,1) + string(19, ' ');
-        line += leftJustify(stringVersion,20);
-        strm << line << endl;
-        strm.lineNumber++;
-      }
+    {
+      line  = rightJustify(asString(version,2), 10);
+      line += string(10, ' ');
+      line += leftJustify(fileType, 20);
+      line += satSys.substr(0,1) + string(19, ' ');
+      line += leftJustify(stringVersion,20);
+      strm << line << endl;
+      strm.lineNumber++;
+    }
 
     if (valid & validRunBy) 
-      {
-        line  = leftJustify(fileProgram,20);
-        line += leftJustify(fileAgency ,20);
-        SystemTime sysTime;
-        string curDate = (static_cast<CivilTime>(sysTime)).printf("%04Y%02m%02d %02H%02M%02S %P");
-        line += leftJustify(curDate, 20);
-        line += leftJustify(stringRunBy,20);
-        strm << line << endl;
-        strm.lineNumber++;
-      }
+    {
+      line  = leftJustify(fileProgram,20);
+      line += leftJustify(fileAgency ,20);
+      SystemTime sysTime;
+      string curDate = (static_cast<CivilTime>(sysTime)).printf("%04Y%02m%02d %02H%02M%02S %P");
+      line += leftJustify(curDate, 20);
+      line += leftJustify(stringRunBy,20);
+      strm << line << endl;
+      strm.lineNumber++;
+    }
 
     if (valid & validComment)
+    {
+      vector<string>::const_iterator itr = commentList.begin();
+      while (itr != commentList.end())
       {
-        vector<string>::const_iterator itr = commentList.begin();
-        while (itr != commentList.end())
-          {
-            line  = leftJustify((*itr), 60);
-            line += leftJustify(stringComment,20);
-            strm << line << endl;
-            strm.lineNumber++;
-            itr++;
-          }
+        line  = leftJustify((*itr), 60);
+        line += leftJustify(stringComment,20);
+        strm << line << endl;
+        strm.lineNumber++;
+        itr++;
       }
+    }
 
     if (valid & validIonoCorrGal)
+    {
+      line  = "GAL  ";
+      for (int i = 0; i < 3; i++)
       {
-        line  = "GAL  ";
-        for (int i = 0; i < 3; i++)
-          {
-            line += rightJustify(doub2for(ionoParamGal[i], 12, 2),12);  // should be 12.4
-          }
-        line += string(19, ' ');
-        line += leftJustify(stringIonoCorr,20);
-        strm << line << endl;
-        strm.lineNumber++;
+        line += rightJustify(doub2for(ionoParamGal[i], 12, 2),12);  // should be 12.4
       }
+      line += string(19, ' ');
+      line += leftJustify(stringIonoCorr,20);
+      strm << line << endl;
+      strm.lineNumber++;
+    }
 
     if (valid & validIonoCorrGPS)
+    {
+      line  = "GPSA ";
+      for (int i = 0; i < 4; i++)
       {
-        line  = "GPSA ";
-        for (int i = 0; i < 4; i++)
-          {
-            line += rightJustify(doub2for(ionoParam1[i], 12, 2),12);  // should be 12.4
-          }          
-        line += string(7, ' ');
-        line += leftJustify(stringIonoCorr,20);
-        strm << line << endl;
-        strm.lineNumber++;
+        line += rightJustify(doub2for(ionoParam1[i], 12, 2),12);  // should be 12.4
+      }          
+      line += string(7, ' ');
+      line += leftJustify(stringIonoCorr,20);
+      strm << line << endl;
+      strm.lineNumber++;
 
-        line  = "GPSB ";
-        for (int i = 0; i < 4; i++)
-          {
-            line += rightJustify(doub2for(ionoParam2[i], 12, 2),12);  // should be 12.4
-          }          
-        line += string(7, ' ');
-        line += leftJustify(stringIonoCorr,20);
-        strm << line << endl;
-        strm.lineNumber++;
-      }
+      line  = "GPSB ";
+      for (int i = 0; i < 4; i++)
+      {
+        line += rightJustify(doub2for(ionoParam2[i], 12, 2),12);  // should be 12.4
+      }          
+      line += string(7, ' ');
+      line += leftJustify(stringIonoCorr,20);
+      strm << line << endl;
+      strm.lineNumber++;
+    }
 
     if (valid & validTimeSysCorr)
+    {
+      TimeSysCorrMap::const_iterator iter;
+
+      for (iter = tscMap.begin(); iter != tscMap.end(); iter++)
       {
-        TimeSysCorrMap::const_iterator iter;
+        TimeSysCorrInfo info = iter->second;
 
-        for (iter = tscMap.begin(); iter != tscMap.end(); iter++)
+        line  = info.timeSysCorrType;
+        line += string(1, ' ');
+        line += doub2for(info.A0, 17, 2); // These look suspicious.
+        line += doub2for(info.A1, 16, 2); // Do they give 17.10 and 16.9? -DR
+        line += rightJustify(asString(info.timeSysRefTime),7);
+        line += rightJustify(asString(info.timeSysRefWeek),5);
+        if ( info.timeSysCorrSBAS != "" )
         {
-          TimeSysCorrInfo info = iter->second;
-
-          line  = info.timeSysCorrType;
           line += string(1, ' ');
-          line += doub2for(info.A0, 17, 2); // These look suspicious.
-          line += doub2for(info.A1, 16, 2); // Do they give 17.10 and 16.9? -DR
-          line += rightJustify(asString(info.timeSysRefTime),7);
-          line += rightJustify(asString(info.timeSysRefWeek),5);
-          if ( info.timeSysCorrSBAS != "" )
-          {
-            line += string(1, ' ');
-            line += leftJustify(asString(info.timeSysCorrSBAS),5);
-            line += string(1, ' ');
-            line += leftJustify(asString(info.timeSysUTCid),2);
-            line += string(1, ' ');
-          }
-          else
-          {
-            line += string(10, ' ');
-          }
-          line += leftJustify(stringTimeSysCorr,20);
-          strm << line << endl;
-          strm.lineNumber++;
+          line += leftJustify(asString(info.timeSysCorrSBAS),5);
+          line += string(1, ' ');
+          line += leftJustify(asString(info.timeSysUTCid),2);
+          line += string(1, ' ');
         }
+        else
+        {
+          line += string(10, ' ');
+        }
+        line += leftJustify(stringTimeSysCorr,20);
+        strm << line << endl;
+        strm.lineNumber++;
       }
+    }
 
     if (valid & validLeapSeconds)
-      {
-        line  = rightJustify(asString(leapSeconds),6);
-        line += string(54, ' ');
-        line += leftJustify(stringLeapSeconds,20);
-        strm << line << endl;
-        strm.lineNumber++;
-      }
+    {
+      line  = rightJustify(asString(leapSeconds),6);
+      line += string(54, ' ');
+      line += leftJustify(stringLeapSeconds,20);
+      strm << line << endl;
+      strm.lineNumber++;
+    }
 
     if (valid & validEoH)
-      {
-        line  = string(60,' ');
-        line += leftJustify(stringEoH,20);
-        strm << line << endl;
-        strm.lineNumber++;
-      }
+    {
+      line  = string(60,' ');
+      line += leftJustify(stringEoH,20);
+      strm << line << endl;
+      strm.lineNumber++;
+    }
 
   } // end of reallyPutRecord
 
@@ -264,125 +264,125 @@ namespace gpstk
     commentList.clear();
 
     while (!(valid & validEoH))
+    {
+      string line;
+      strm.formattedGetLine(line);
+      StringUtils::stripTrailing(line);
+
+      if (line.length() == 0) continue;
+      else if (line.length() < 60 || line.length() > 80)
       {
-        string line;
-        strm.formattedGetLine(line);
-        StringUtils::stripTrailing(line);
-
-        if (line.length() == 0) continue;
-        else if (line.length() < 60 || line.length() > 80)
-          {
-            FFStreamError e("Invalid line length");
-            GPSTK_THROW(e);
-          }
-
-        string thisLabel(line, 60, 20);
-
-        if (thisLabel == stringVersion)
-          {
-            version = asDouble(line.substr(0,20));
-            fileType =  strip(line.substr(20,20));
-            satSys   =  strip(line.substr(40,20));
-            if ( fileType[0] != 'N' && fileType[0] != 'n')
-              {
-                FFStreamError e("This isn't a RINEX 3 Nav file.");
-                GPSTK_THROW(e);
-              }
-            if ( satSys[0] != 'G' && satSys[0] != 'g' &&
-                 satSys[0] != 'R' && satSys[0] != 'r' &&
-                 satSys[0] != 'E' && satSys[0] != 'e' &&
-                 satSys[0] != 'S' && satSys[0] != 's' &&
-                 satSys[0] != 'M' && satSys[0] != 'm'    )
-              {
-                FFStreamError e("The satellite system isn't valid.");
-                GPSTK_THROW(e);
-              }
-            valid |= validVersion;
-          }
-        else if (thisLabel == stringRunBy)
-          {
-            fileProgram = strip(line.substr( 0,20));
-            fileAgency  = strip(line.substr(20,20));
-            date        = strip(line.substr(40,20));
-            valid |= validRunBy;
-          }
-        else if (thisLabel == stringComment)
-          {
-            commentList.push_back(strip(line.substr(0,60)));
-            valid |= validComment;
-          }
-        else if (thisLabel == stringIonoCorr)
-          {
-            ionoCorrType = strip(line.substr(0,4));
-            if ( ionoCorrType == "GAL" )
-              {
-                for(int i = 0; i < 3; i++)
-                  ionoParamGal[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12*i, 12));
-                valid |= validIonoCorrGal;
-              }
-            else if ( ionoCorrType == "GPSA" )
-              {
-                for(int i = 0; i < 4; i++)
-                  ionoParam1[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12*i, 12));
-              }
-            else if ( ionoCorrType == "GPSB" )
-              {
-                for(int i = 0; i < 4; i++)
-                  ionoParam2[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12*i, 12));
-                valid |= validIonoCorrGPS; /// Assumes that GPSA always appears first. [DR]
-              }
-            else
-              {
-                FFStreamError e("The ionospheric correction data isn't valid.");
-                GPSTK_THROW(e);
-              }
-          }
-        else if (thisLabel == stringTimeSysCorr)
-          {
-            TimeSysCorrInfo info;
-
-            timeSysCorrType = strip(line.substr(0,4));
-            info.timeSysCorrType = timeSysCorrType;
-            info.A0 = gpstk::StringUtils::for2doub(line.substr(5,17));
-            info.A1 = gpstk::StringUtils::for2doub(line.substr(22,16));
-            info.timeSysRefTime  = asInt(line.substr(38,7));
-            info.timeSysRefWeek  = asInt(line.substr(45,5));
-            info.timeSysCorrSBAS = strip(line.substr(51,6));
-            info.timeSysUTCid    = asInt(line.substr(57,2));
-            valid |= validTimeSysCorr;
-
-            setTimeSysCorrFromString(timeSysCorrType);
-            addTimeSysCorr(info);
-          }
-        else if (thisLabel == stringLeapSeconds)
-          {
-            leapSeconds = asInt(line.substr(0,6));
-            valid |= validLeapSeconds;
-          }
-        else if (thisLabel == stringEoH)
-          {
-            valid |= validEoH;
-          }
-        else
-          {
-            throw(FFStreamError("Unknown header label at line " + 
-                                asString<size_t>(strm.lineNumber)));
-          }
+        FFStreamError e("Invalid line length");
+        GPSTK_THROW(e);
       }
+
+      string thisLabel(line, 60, 20);
+
+      if (thisLabel == stringVersion)
+      {
+        version  = asDouble(line.substr( 0,20));
+        fileType =    strip(line.substr(20,20));
+        satSys   =    strip(line.substr(40,20));
+        if ( fileType[0] != 'N' && fileType[0] != 'n' )
+        {
+          FFStreamError e("This isn't a RINEX 3 Nav file.");
+          GPSTK_THROW(e);
+        }
+        if ( satSys[0] != 'G' && satSys[0] != 'g' &&
+             satSys[0] != 'R' && satSys[0] != 'r' &&
+             satSys[0] != 'E' && satSys[0] != 'e' &&
+             satSys[0] != 'S' && satSys[0] != 's' &&
+             satSys[0] != 'M' && satSys[0] != 'm'    )
+        {
+          FFStreamError e("The satellite system isn't valid.");
+          GPSTK_THROW(e);
+        }
+        valid |= validVersion;
+      }
+      else if (thisLabel == stringRunBy)
+      {
+        fileProgram = strip(line.substr( 0,20));
+        fileAgency  = strip(line.substr(20,20));
+        date        = strip(line.substr(40,20));
+        valid |= validRunBy;
+      }
+      else if (thisLabel == stringComment)
+      {
+        commentList.push_back(strip(line.substr(0,60)));
+        valid |= validComment;
+      }
+      else if (thisLabel == stringIonoCorr)
+      {
+        ionoCorrType = strip(line.substr(0,4));
+        if ( ionoCorrType == "GAL" )
+        {
+          for (int i = 0; i < 3; i++)
+            ionoParamGal[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12*i, 12));
+          valid |= validIonoCorrGal;
+        }
+        else if ( ionoCorrType == "GPSA" )
+        {
+          for (int i = 0; i < 4; i++)
+            ionoParam1[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12*i, 12));
+        }
+        else if ( ionoCorrType == "GPSB" )
+        {
+          for (int i = 0; i < 4; i++)
+            ionoParam2[i] = gpstk::StringUtils::for2doub(line.substr(5 + 12*i, 12));
+          valid |= validIonoCorrGPS; /// Assumes that GPSA always appears first. [DR]
+        }
+        else
+        {
+          FFStreamError e("The ionospheric correction data isn't valid.");
+          GPSTK_THROW(e);
+        }
+      }
+      else if (thisLabel == stringTimeSysCorr)
+      {
+        TimeSysCorrInfo info;
+
+        timeSysCorrType = strip(line.substr(0,4));
+        info.timeSysCorrType = timeSysCorrType;
+        info.A0 = gpstk::StringUtils::for2doub(line.substr(5,17));
+        info.A1 = gpstk::StringUtils::for2doub(line.substr(22,16));
+        info.timeSysRefTime  = asInt(line.substr(38,7));
+        info.timeSysRefWeek  = asInt(line.substr(45,5));
+        info.timeSysCorrSBAS = strip(line.substr(51,6));
+        info.timeSysUTCid    = asInt(line.substr(57,2));
+        valid |= validTimeSysCorr;
+
+        setTimeSysCorrFromString(timeSysCorrType);
+        addTimeSysCorr(info);
+      }
+      else if (thisLabel == stringLeapSeconds)
+      {
+        leapSeconds = asInt(line.substr(0,6));
+        valid |= validLeapSeconds;
+      }
+      else if (thisLabel == stringEoH)
+      {
+        valid |= validEoH;
+      }
+      else
+      {
+        throw(FFStreamError("Unknown header label at line " + 
+                            asString<size_t>(strm.lineNumber)));
+      }
+    }
 
     unsigned long allValid;
     if (version == 3.0 && version == 3.00) allValid = allValid30;
     else
-      {
-        FFStreamError e("Unknown or unsupported RINEX version " + asString(version));
-        GPSTK_THROW(e);
-      }
+    {
+      FFStreamError e("Unknown or unsupported RINEX version " + asString(version));
+      GPSTK_THROW(e);
+    }
 
     if ( (allValid & valid) != allValid)
-      {
-        FFStreamError e("Incomplete or invalid header");
-        GPSTK_THROW(e);
-      }
+    {
+      FFStreamError e("Incomplete or invalid header");
+      GPSTK_THROW(e);
+    }
 
     // we got here, so something must be right...
     strm.header = *this;

@@ -42,6 +42,7 @@
  */
 
 #include "StringUtils.hpp"
+#include "SystemTime.hpp"
 #include "Rinex3ObsStream.hpp"
 #include "Rinex3ObsHeader.hpp"
 
@@ -147,7 +148,7 @@ namespace gpstk
       if (valid & Rinex3ObsHeader::validAntennaBsightXYZ ) n++;
       if (valid & Rinex3ObsHeader::validAntennaZeroDirAzi) n++;
       if (valid & Rinex3ObsHeader::validAntennaZeroDirXYZ) n++;
-      if (valid & Rinex3ObsHeader::validCenterOfmass     ) n++;
+      if (valid & Rinex3ObsHeader::validCenterOfMass     ) n++;
       if (valid & Rinex3ObsHeader::validObsType          ) n += 1 + (obsTypeList.size()-1)/9;
       if (valid & Rinex3ObsHeader::validSigStrengthUnit  ) n++;
       if (valid & Rinex3ObsHeader::validInterval         ) n++;
@@ -177,6 +178,7 @@ namespace gpstk
       {
          line  = rightJustify(asString(version,2), 9);
          line += string(11, ' ');
+
          if ((fileType[0] != 'O') && (fileType[0] != 'o'))
          {
             FFStreamError err("This isn't a Rinex Observation file: " +
@@ -190,7 +192,7 @@ namespace gpstk
             GPSTK_THROW(err);
          }
 
-         line += leftJustify(string("Observation"), 20);
+         line += leftJustify(string("Observation data"), 20);
          std::string str;
          str = system.systemChar();
          str = str + " (" + system.systemString() + ")";
@@ -201,15 +203,26 @@ namespace gpstk
       }
       if (valid & validRunBy)
       {
-         line  = leftJustify(fileProgram,20);
-         line += leftJustify(fileAgency, 20);
-         CivilTime dt;
-//         dt.setLocalTime(); ***** NEED TO REPLACE WITH LOCAL SYSTEM TIME CALL
-         string dat = dt.printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
-         line += leftJustify(dat, 20);
+         line  = leftJustify(fileProgram, 20);
+         line += leftJustify(fileAgency , 20);
+         SystemTime sysTime;
+         string curDate = (static_cast<CivilTime>(sysTime)).printf("%04Y%02m%02d %02H%02M%02S %P");
+         line += leftJustify(curDate, 20);
          line += stringRunBy;
          strm << line << endl;
          strm.lineNumber++;
+      }
+      if (valid & validComment)
+      {
+         vector<string>::const_iterator itr = commentList.begin();
+         while (itr != commentList.end())
+         {
+            line  = leftJustify((*itr), 60);
+            line += stringComment;
+            strm << line << endl;
+            strm.lineNumber++;
+            itr++;
+         }
       }
       if (valid & validMarkerName)
       {
@@ -218,17 +231,33 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+      if (valid & validMarkerNumber)
+      {
+         line  = leftJustify(markerNumber, 20);
+         line += string(40, ' ');
+         line += stringMarkerNumber;
+         strm << line << endl;
+         strm.lineNumber++;
+      }
+      if (valid & validMarkerType)
+      {
+         line  = leftJustify(markerType, 20);
+         line += string(40, ' ');
+         line += stringMarkerType;
+         strm << line << endl;
+         strm.lineNumber++;
+      }
       if (valid & validObserver)
       {
          line  = leftJustify(observer, 20);
-         line += leftJustify(agency, 40);
+         line += leftJustify(agency  , 40);
          line += stringObserver;
          strm << line << endl;
          strm.lineNumber++;
       }
       if (valid & validReceiver)
       {
-         line  = leftJustify(recNo, 20);
+         line  = leftJustify(recNo  , 20);
          line += leftJustify(recType, 20);
          line += leftJustify(recVers, 20);
          line += stringReceiver;
@@ -237,7 +266,7 @@ namespace gpstk
       }
       if (valid & validAntennaType)
       {
-         line  = leftJustify(antNo, 20);
+         line  = leftJustify(antNo  , 20);
          line += leftJustify(antType, 20);
          line += string(20, ' ');
          line += stringAntennaType;
@@ -274,9 +303,59 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+      if (valid & validAntennaPhaseCtr)
+      {
+         line  =  leftJustify(antennaSatSys , 1);
+         line += rightJustify(antennaObsCode, 3);
+         line += rightJustify(asString(antennaPhaseCtr[0], 4),  9);
+         line += rightJustify(asString(antennaPhaseCtr[1], 4), 14);
+         line += rightJustify(asString(antennaPhaseCtr[2], 4), 14);
+         line += string(18, ' ');
+         line += stringAntennaPhaseCtr;
+         strm << line << endl;
+         strm.lineNumber++;
+      }
+      if (valid & validAntennaBsightXYZ)
+      {
+         line  = rightJustify(asString(antennaBsightXYZ[0], 4), 14);
+         line += rightJustify(asString(antennaBsightXYZ[1], 4), 14);
+         line += rightJustify(asString(antennaBsightXYZ[2], 4), 14);
+         line += string(18, ' ');
+         line += stringAntennaBsightXYZ;
+         strm << line << endl;
+         strm.lineNumber++;
+      }
+      if (valid & validAntennaZeroDirAzi)
+      {
+         line  = rightJustify(asString(antennaZeroDirAzi, 4), 14);
+         line += string(46, ' ');
+         line += stringAntennaZeroDirAzi;
+         strm << line << endl;
+         strm.lineNumber++;
+      }
+      if (valid & validAntennaZeroDirXYZ)
+      {
+         line  = rightJustify(asString(antennaZeroDirXYZ[0], 4), 14);
+         line += rightJustify(asString(antennaZeroDirXYZ[1], 4), 14);
+         line += rightJustify(asString(antennaZeroDirXYZ[2], 4), 14);
+         line += string(18, ' ');
+         line += stringAntennaZeroDirXYZ;
+         strm << line << endl;
+         strm.lineNumber++;
+      }
+      if (valid & validCenterOfMass)
+      {
+         line  = rightJustify(asString(centerOfMass[0], 4), 14);
+         line += rightJustify(asString(centerOfMass[1], 4), 14);
+         line += rightJustify(asString(centerOfMass[2], 4), 14);
+         line += string(18, ' ');
+         line += stringCenterOfMass;
+         strm << line << endl;
+         strm.lineNumber++;
+      }
       if (valid & validObsType)
       {
-         const int maxObsPerLine = 9;
+         const int maxObsPerLine = 13;
          int obsWritten = 0;
          line = ""; // make sure the line contents are reset.
 
@@ -284,10 +363,10 @@ namespace gpstk
 
          while (itr != obsTypeList.end())
          {
-               // the first line needs to have the # of obs
+            // the first line needs to have the # of obs
             if (obsWritten == 0)
                line  = rightJustify(asString(obsTypeList.size()), 6);
-               // if you hit 9, write out the line and start a new one
+            // if you hit 13, write out the line and start a new one
             else if ((obsWritten % maxObsPerLine) == 0)
             {
                line += stringSystemNumObs;
@@ -301,6 +380,14 @@ namespace gpstk
          }
          line += string(60 - line.size(), ' ');
          line += stringSystemNumObs;
+         strm << line << endl;
+         strm.lineNumber++;
+      }
+      if (valid & validSigStrengthUnit)
+      {
+         line  = leftJustify(sigStrengthUnit, 20);
+         line += string(40, ' ');
+         line += stringSigStrengthUnit;
          strm << line << endl;
          strm.lineNumber++;
       }
@@ -328,41 +415,51 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & validMarkerNumber)
-      {
-         line  = leftJustify(markerNumber, 20);
-         line += string(40, ' ');
-         line += stringMarkerNumber;
-         strm << line << endl;
-         strm.lineNumber++;
-      }
       if (valid & validReceiverOffset)
       {
-         line  = rightJustify(asString(receiverOffset),6);
+         line  = rightJustify(asString(receiverOffset), 6);
          line += string(54, ' ');
          line += stringReceiverOffset;
          strm << line << endl;
          strm.lineNumber++;
       }
+      if (valid & validSystemDCBSapplied)
+      {
+         line  = rightJustify(infoDCBS.satSys,  1);
+         line += string(1, ' ');
+         line += rightJustify(infoDCBS.name  , 17);
+         line += string(1, ' ');
+         line += rightJustify(infoDCBS.source, 40);
+         line += stringSystemDCBSapplied;
+         strm << line << endl;
+         strm.lineNumber++;
+      }
+      if (valid & validSystemPCVSapplied)
+      {
+         line  = rightJustify(infoPCVS.satSys,  1);
+         line += string(1, ' ');
+         line += rightJustify(infoPCVS.name  , 17);
+         line += string(1, ' ');
+         line += rightJustify(infoPCVS.source, 40);
+         line += stringSystemPCVSapplied;
+         strm << line << endl;
+         strm.lineNumber++;
+      }
+
+      if (valid & validSystemScaleFac)
+      {
+         line += stringSystemScaleFac;
+         strm << line << endl;
+         strm.lineNumber++;
+      }
+
       if (valid & validLeapSeconds)
       {
-         line  = rightJustify(asString(leapSeconds),6);
+         line  = rightJustify(asString(leapSeconds), 6);
          line += string(54, ' ');
          line += stringLeapSeconds;
          strm << line << endl;
          strm.lineNumber++;
-      }
-      if (valid & validComment)
-      {
-         vector<string>::const_iterator itr = commentList.begin();
-         while (itr != commentList.end())
-         {
-            line  = leftJustify((*itr), 60);
-            line += stringComment;
-            strm << line << endl;
-            strm.lineNumber++;
-            itr++;
-         }
       }
       if (valid & validNumSats)
       {
@@ -394,7 +491,7 @@ namespace gpstk
                      GPSTK_RETHROW(ffse); 
                   }
                }
-               else if ((numObsWritten % maxObsPerLine)  == 0)
+               else if ((numObsWritten % maxObsPerLine) == 0)
                {
                   line += stringPrnObs;
                   strm << line << endl;
@@ -527,9 +624,9 @@ namespace gpstk
       }
       else if (label == stringAntennaBsightXYZ)
       {
-         antennaBsight[0] = asDouble(line.substr( 0,14));
-         antennaBsight[1] = asDouble(line.substr(14,14));
-         antennaBsight[2] = asDouble(line.substr(28,14));
+         antennaBsightXYZ[0] = asDouble(line.substr( 0,14));
+         antennaBsightXYZ[1] = asDouble(line.substr(14,14));
+         antennaBsightXYZ[2] = asDouble(line.substr(28,14));
          valid |= validAntennaBsightXYZ;
       }
       else if (label == stringAntennaZeroDirAzi)
@@ -790,12 +887,13 @@ namespace gpstk
    {
       string line;
 
-      line  = rightJustify(asString<short>(civtime.year    ),  6);
-      line += rightJustify(asString<short>(civtime.month   ),  6);
-      line += rightJustify(asString<short>(civtime.day     ),  6);
-      line += rightJustify(asString<short>(civtime.hour    ),  6);
-      line += rightJustify(asString<short>(civtime.minute  ),  6);
-      line += rightJustify(asString(       civtime.second,7), 13);
+      line  = rightJustify(asString<short>(civtime.year    )   ,  6);
+      line += rightJustify(asString<short>(civtime.month   )   ,  6);
+      line += rightJustify(asString<short>(civtime.day     )   ,  6);
+      line += rightJustify(asString<short>(civtime.hour    )   ,  6);
+      line += rightJustify(asString<short>(civtime.minute  )   ,  6);
+      line += rightJustify(asString(       civtime.second,7)   , 13);
+      line += rightJustify((civtime.getTimeSystem()).asString(),  8);
 
       return line;
    }
