@@ -44,6 +44,7 @@
 //
 //=============================================================================
 
+#include <map>
 
 #include "FFStream.hpp"
 #include "Rinex3NavBase.hpp"
@@ -99,6 +100,17 @@ namespace gpstk
        allValid30 = 0x080000003
      };
 
+     /// Enum of Time System Correction types.
+     enum TimeSysCorrEnum
+     {
+       GAUT,  /// GAL  to UTC using A0, A1
+       GPUT,  /// GPS  to UTC using A0, A1
+       SBUT,  /// SBAS to UTC using A0, A1
+       GLUT,  /// GLO  to UTC using A0 = TauC  , A1 = 0
+       GPGA,  /// GPS  to GAL using A0 = A0G   , A1 = A1G
+       GLGP   /// GLO  to GPS using A0 = TauGPS, A1 = 0
+     };
+
      /** @name HeaderValues
       */
      //@{
@@ -106,14 +118,29 @@ namespace gpstk
      std::string fileType, satSys, fileProgram, fileAgency, date;
      std::vector<std::string> commentList;
      std::string ionoCorrType;
-     std::string timeSysCorrType;
      double ionoParam1[4], ionoParam2[4], ionoParamGal[3];
+     long leapSeconds;
+     std::string timeSysCorrType;
+     TimeSysCorrEnum timeSysCorrEnum;
      double A0, A1;
      long timeSysRefTime, timeSysRefWeek;
      std::string timeSysCorrSBAS;
      long timeSysUTCid;
-     long leapSeconds;
+     struct TimeSysCorrInfo
+     {
+       std::string timeSysCorrType;
+       double A0, A1;
+       long timeSysRefTime, timeSysRefWeek;
+       std::string timeSysCorrSBAS;
+       long timeSysUTCid;
+     };
      //@}
+
+     /// Map for Time System Correction info.
+     typedef std::map<TimeSysCorrEnum, TimeSysCorrInfo> TimeSysCorrMap;
+
+     /// Instance of the map.
+     TimeSysCorrMap tscMap;
 
      /** @name FormattingStd::Strings
       */
@@ -126,6 +153,16 @@ namespace gpstk
      static const std::string stringLeapSeconds; // "LEAP SECONDS"
      static const std::string stringEoH;         // "END OF HEADER"
      //@}
+
+     /// Define timeSysCorrType based on input string from RINEX 3 file read.
+     /// @param str input string, expected to match output string for given system
+     void setTimeSysCorrFromString(const std::string str)
+       throw();
+      
+     /// Add a TimeSysCorrInfo object to the map.
+     /// @param tsci the TimeSysCorrInfo to add
+     void addTimeSysCorr( const TimeSysCorrInfo& tsci )
+       throw();
 
    protected:
 
@@ -146,6 +183,10 @@ namespace gpstk
      virtual void reallyGetRecord(FFStream& s)
        throw(std::exception, FFStreamError,
              gpstk::StringUtils::StringException);
+
+   private:
+
+     static const std::string timeSysCorrStrings[];
 
    }; // class Rinex3NavHeader
 

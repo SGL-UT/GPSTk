@@ -64,6 +64,42 @@ namespace gpstk
   const string Rinex3NavHeader::stringLeapSeconds = "LEAP SECONDS";
   const string Rinex3NavHeader::stringEoH         = "END OF HEADER";
 
+  /// Strings list for above Time System Correction enum.
+  const std::string Rinex3NavHeader::timeSysCorrStrings[GLGP+1] =
+  {
+    std::string("GAUT"),
+    std::string("GPUT"),
+    std::string("SBUT"),
+    std::string("GLUT"),
+    std::string("GPGA"),
+    std::string("GLGP")
+  };
+
+
+  void Rinex3NavHeader::setTimeSysCorrFromString(const std::string str)
+    throw()
+  {
+    for (int i = 0; i <= GLGP; i++)
+    {
+      if (timeSysCorrStrings[i] == str)
+      {
+        timeSysCorrEnum = static_cast<TimeSysCorrEnum>(i);
+        break;
+      }
+    }
+  }
+
+
+  //--------------------------------------------------------------------------
+  // Only keeps one ephemeris with a given IODC/time
+  // It should keep the one with the latest transmit time
+  //--------------------------------------------------------------------------
+  void Rinex3NavHeader::addTimeSysCorr(const TimeSysCorrInfo& tsci)
+    throw()
+  {
+    tscMap[timeSysCorrEnum] = tsci;
+  }
+
 
   void Rinex3NavHeader::reallyPutRecord(FFStream& ffs) const 
     throw(std::exception, FFStreamError, StringException)
@@ -164,27 +200,34 @@ namespace gpstk
 
     if (valid & validTimeSysCorr)
       {
-        line  = timeSysCorrType;
-        line += string(1, ' ');
-        line += doub2for(A0, 17, 2); // These look suspicious.
-        line += doub2for(A1, 16, 2); // Do they give 17.10 and 16.9? -DR
-        line += rightJustify(asString(timeSysRefTime),7);
-        line += rightJustify(asString(timeSysRefWeek),5);
-        if ( timeSysCorrSBAS != "" )
+        TimeSysCorrMap::const_iterator iter;
+
+        for (iter = tscMap.begin(); iter != tscMap.end(); iter++)
+        {
+          TimeSysCorrInfo info = iter->second;
+
+          line  = info.timeSysCorrType;
+          line += string(1, ' ');
+          line += doub2for(info.A0, 17, 2); // These look suspicious.
+          line += doub2for(info.A1, 16, 2); // Do they give 17.10 and 16.9? -DR
+          line += rightJustify(asString(info.timeSysRefTime),7);
+          line += rightJustify(asString(info.timeSysRefWeek),5);
+          if ( info.timeSysCorrSBAS != "" )
           {
             line += string(1, ' ');
-            line += leftJustify(asString(timeSysCorrSBAS),5);
+            line += leftJustify(asString(info.timeSysCorrSBAS),5);
             line += string(1, ' ');
-            line += leftJustify(asString(timeSysUTCid),2);
+            line += leftJustify(asString(info.timeSysUTCid),2);
             line += string(1, ' ');
           }
-        else
+          else
           {
             line += string(10, ' ');
           }
-        line += leftJustify(stringTimeSysCorr,20);
-        strm << line << endl;
-        strm.lineNumber++;
+          line += leftJustify(stringTimeSysCorr,20);
+          strm << line << endl;
+          strm.lineNumber++;
+        }
       }
 
     if (valid & validLeapSeconds)
@@ -296,14 +339,20 @@ namespace gpstk
           }
         else if (thisLabel == stringTimeSysCorr)
           {
+            TimeSysCorrInfo info;
+
             timeSysCorrType = strip(line.substr(0,4));
-            A0 = gpstk::StringUtils::for2doub(line.substr(5,17));
-            A1 = gpstk::StringUtils::for2doub(line.substr(22,16));
-            timeSysRefTime  = asInt(line.substr(38,7));
-            timeSysRefWeek  = asInt(line.substr(45,5));
-            timeSysCorrSBAS = strip(line.substr(51,6));
-            timeSysUTCid    = asInt(line.substr(57,2));
+            info.timeSysCorrType = timeSysCorrType;
+            info.A0 = gpstk::StringUtils::for2doub(line.substr(5,17));
+            info.A1 = gpstk::StringUtils::for2doub(line.substr(22,16));
+            info.timeSysRefTime  = asInt(line.substr(38,7));
+            info.timeSysRefWeek  = asInt(line.substr(45,5));
+            info.timeSysCorrSBAS = strip(line.substr(51,6));
+            info.timeSysUTCid    = asInt(line.substr(57,2));
             valid |= validTimeSysCorr;
+
+            setTimeSysCorrFromString(timeSysCorrType);
+            addTimeSysCorr(info);
           }
         else if (thisLabel == stringLeapSeconds)
           {
@@ -364,40 +413,50 @@ namespace gpstk
     s << "---------------------------------- OPTIONAL ----------------------------------\n";
 
     if (valid & validIonoCorrGal)
-      {
-        s << "Iono Corr for Galileo:";
-        for(i=0; i<3; i++) s << " " << scientific << setprecision(4) << ionoParamGal[i];
-        s << endl;
-      }
+    {
+      s << "Iono Corr for Galileo:";
+      for(i=0; i<3; i++) s << " " << scientific << setprecision(4) << ionoParamGal[i];
+      s << endl;
+    }
 
     if (valid & validIonoCorrGPS)
-      {
-        s << "Iono Corr Alpha for GPS:";
-        for(i=0; i<4; i++) s << " " << scientific << setprecision(4) << ionoParam1[i];
-        s << endl;
-        s << "Iono Corr Beta afor GPS:";
-        for(i=0; i<4; i++) s << " " << scientific << setprecision(4) << ionoParam2[i];
-        s << endl;
-      }
+    {
+      s << "Iono Corr Alpha for GPS:";
+      for(i=0; i<4; i++) s << " " << scientific << setprecision(4) << ionoParam1[i];
+      s << endl;
+      s << "Iono Corr Beta afor GPS:";
+      for(i=0; i<4; i++) s << " " << scientific << setprecision(4) << ionoParam2[i];
+      s << endl;
+    }
 
     if ( !(valid & validIonoCorrGal) && !(valid & validIonoCorrGPS) )
       s << "Iono Corr is NOT valid\n";
 
-    if(valid & validTimeSysCorr) s << "Time System Corr type " << timeSysCorrType << ", A0="
-                                   << scientific << setprecision(12) << A0 << ", A1="
-                                   << scientific << setprecision(12) << A1 << ", UTC ref = ("
-                                   << timeSysRefWeek << "," << timeSysRefTime << ")\n";
+    if(valid & validTimeSysCorr)
+    {
+      TimeSysCorrMap::const_iterator iter;
+
+      for (iter = tscMap.begin(); iter != tscMap.end(); iter++)
+      {
+        TimeSysCorrInfo info = iter->second;
+
+        s << "Time System Corr type " << info.timeSysCorrType << ", A0="
+          << scientific << setprecision(12) << info.A0 << ", A1="
+          << scientific << setprecision(12) << info.A1 << ", UTC ref = ("
+          << info.timeSysRefWeek << "," << info.timeSysRefTime << ")\n";
+      }
+    }
     else s << " Time System Corr is NOT valid\n";
 
     if (valid & validLeapSeconds) s << "Leap seconds: " << leapSeconds << endl;
     else s << " Leap seconds is NOT valid\n";
 
     if (commentList.size() > 0)
-      {
-        s << "Comments (" << commentList.size() << ") :\n";
-        for (int i = 0; i < commentList.size(); i++)
-          s << commentList[i] << endl;
-      }
+    {
+      s << "Comments (" << commentList.size() << ") :\n";
+      for (int i = 0; i < commentList.size(); i++)
+        s << commentList[i] << endl;
+    }
 
     s << "-------------------------------- END OF HEADER -------------------------------\n";
   } // end of dump
