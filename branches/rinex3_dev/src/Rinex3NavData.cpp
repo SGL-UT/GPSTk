@@ -152,10 +152,6 @@ namespace gpstk
    {
       Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
 
-      cout << "*** reallyGetRecord() ***" << endl;
-
-      cout << strm.headerRead << endl;
-
       // If the header hasn't been read, read it...
       if( !strm.headerRead ) strm >> strm.header;
 
@@ -163,8 +159,6 @@ namespace gpstk
 
       strm.formattedGetLine(line, true);
       getPRNEpoch(line);
-
-      cout << "reallyGetRecord(): Sat Sys = " << satSys << endl;
 
       strm.formattedGetLine(line);
       getBroadcastOrbit1(line);
@@ -174,8 +168,6 @@ namespace gpstk
 
       strm.formattedGetLine(line);
       getBroadcastOrbit3(line);
-
-      cout << "reallyGetRecord(): got 3 B.O.'s" << endl;
 
       if ( satSys == "G" || satSys == "E" )
       {
@@ -201,7 +193,7 @@ namespace gpstk
         << " TOE: " << time
         << " TOC: " << setw(4) << weeknum << " " 
         << fixed << setw(10) << setprecision(3) << Toc
-        << " IODE: " << setw(4) << int(IODE)            // IODE should be int
+        << " IODE: " << setw(4) << static_cast<int>(IODE)            // IODE should be int
         << " HOWtime: " << setw(6) << HOWtime           // HOW should be double
         << endl;
         //<< ios::hex << IODE << " HOWtime: " << HOWtime << endl; ?? IODE is double
@@ -217,8 +209,8 @@ namespace gpstk
          // the accuracy flag.  We'll give it zero and pass the accuracy
          // separately via the setAccuracy() method.
       ee.setSF1(0, HOWtime, 0, weeknum, codeflgs, 0, health,
-                short(IODC), L2Pdata, Tgd, Toc, af2, af1, af0, 0, PRNID);
-      ee.setSF2(0, HOWtime, 0, short(IODE), Crs, dn, M0, Cuc, ecc, Cus, Ahalf,
+                static_cast<short>(IODC), L2Pdata, Tgd, Toc, af2, af1, af0, 0, PRNID);
+      ee.setSF2(0, HOWtime, 0, static_cast<short>(IODE), Crs, dn, M0, Cuc, ecc, Cus, Ahalf,
                 Toe, (fitint > 4) ? 1 : 0);
       ee.setSF3(0, HOWtime, 0, Cic, OMEGA0, Cis, i0, Crc, w, OMEGAdot,
                 idot);
@@ -228,6 +220,8 @@ namespace gpstk
       return ee;
    }
 
+
+      ///TODO: Add in extra variables to this list and find out if/when it is used
    list<double> Rinex3NavData::toList() const
    {
       list<double> l;
@@ -300,7 +294,7 @@ namespace gpstk
           line += string(1, ' ');
           line += doub2for(GammaN        , 18, 2);
           line += string(1, ' ');
-          line += doub2for((double)MFtime, 18, 2);
+          line += doub2for(static_cast<double>(MFtime), 18, 2);
         }
       else                 // GPS or Galileo
         {
@@ -330,7 +324,7 @@ namespace gpstk
           line += string(1, ' ');
           line += doub2for(ax, 18, 2);
           line += string(1, ' ');
-          line += doub2for((double)health, 18, 2);
+          line += doub2for(static_cast<double>(health), 18, 2);
         }
       else if ( satSys == "G" ) // GPS
         {
@@ -373,7 +367,7 @@ namespace gpstk
           line += string(1, ' ');
           line += doub2for(ay, 18, 2);
           line += string(1, ' ');
-          line += doub2for((double)freqNum, 18, 2);
+          line += doub2for(static_cast<double>(freqNum), 18, 2);
         }
       else
         {
@@ -445,7 +439,7 @@ namespace gpstk
    {
       // Internally (Rinex3NavData and EngEphemeris), weeknum is the week of HOW.
       // In RIENX 3 *files*, weeknum is the week of TOE.
-      double wk = double(weeknum);
+      double wk = static_cast<double>(weeknum);
       if(HOWtime - Toe > HALFWEEK)
          wk++;
       else if(HOWtime - Toe < -(HALFWEEK))
@@ -459,19 +453,19 @@ namespace gpstk
       if ( satSys == "G" )      // GPS
         {
           line += string(1, ' ');
-          line += doub2for((double)codeflgs, 18, 2);
+          line += doub2for(static_cast<double>(codeflgs), 18, 2);
         }
       else if ( satSys == "E" ) // Galileo
         {
           line += string(1, ' ');
-          line += doub2for((double)datasources, 18, 2);
+          line += doub2for(static_cast<double>(datasources), 18, 2);
         }
       line += string(1, ' ');
       line += doub2for(wk, 18, 2);
       if ( satSys == "G" )      // GPS
         {
           line += string(1, ' ');
-          line += doub2for((double)L2Pdata, 18, 2);
+          line += doub2for(static_cast<double>(L2Pdata), 18, 2);
         }
 
       return line;
@@ -486,7 +480,7 @@ namespace gpstk
       line += string(1, ' ');
       line += doub2for(accuracy, 18, 2);
       line += string(1, ' ');
-      line += doub2for((double)health, 18, 2);
+      line += doub2for(static_cast<double>(health), 18, 2);
 
       if ( satSys == "G" )      // GPS
         {
@@ -554,7 +548,7 @@ namespace gpstk
          // Keep this in place (as Int) to be cautious.
          short ds = 0;
          if (sec >= 60) { ds = sec; sec = 0; }
-         time = CivilTime(yr,mo,day,hr,min,(double)sec).convertToCommonTime();
+         time = CivilTime(yr,mo,day,hr,min,static_cast<double>(sec)).convertToCommonTime();
          if      ( satSys == "G" ) time.setTimeSystem(TimeSystem::GPS);
          else if ( satSys == "R" ) time.setTimeSystem(TimeSystem::GLO);
          else if ( satSys == "E" ) time.setTimeSystem(TimeSystem::GAL);
@@ -573,7 +567,7 @@ namespace gpstk
          {
            TauN   =        gpstk::StringUtils::for2doub(currentLine.substr(23,19));
            GammaN =        gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           MFtime = (short)gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           MFtime = static_cast<short>(gpstk::StringUtils::for2doub(currentLine.substr(61,19)));
          }
       }
       catch (std::exception &e)
@@ -607,7 +601,7 @@ namespace gpstk
            px     =        gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
            vx     =        gpstk::StringUtils::for2doub(currentLine.substr(23,19));
            ax     =        gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           health = (short)gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           health = static_cast<short>(gpstk::StringUtils::for2doub(currentLine.substr(61,19)));
          }
       }
       catch (std::exception &e)
@@ -634,7 +628,7 @@ namespace gpstk
            py      =        gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
            vy      =        gpstk::StringUtils::for2doub(currentLine.substr(23,19));
            ay      =        gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           freqNum = (short)gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           freqNum = static_cast<short>(gpstk::StringUtils::for2doub(currentLine.substr(61,19)));
          }
       }
       catch (std::exception &e)
@@ -696,15 +690,15 @@ namespace gpstk
          if ( satSys == "G" )
          {
            idot     =        gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-           codeflgs = (short)gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           weeknum  = (short)gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           L2Pdata  = (short)gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           codeflgs = static_cast<short>(gpstk::StringUtils::for2doub(currentLine.substr(23,19)));
+           weeknum  = static_cast<short>(gpstk::StringUtils::for2doub(currentLine.substr(42,19)));
+           L2Pdata  = static_cast<short>(gpstk::StringUtils::for2doub(currentLine.substr(61,19)));
          }
          else if ( satSys == "E" )
          {
            idot        =        gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-           datasources = (short)gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           weeknum     = (short)gpstk::StringUtils::for2doub(currentLine.substr(42,19));
+           datasources = static_cast<short>(gpstk::StringUtils::for2doub(currentLine.substr(23,19)));
+           weeknum     = static_cast<short>(gpstk::StringUtils::for2doub(currentLine.substr(42,19)));
          }
       }
       catch (std::exception &e)
@@ -726,7 +720,7 @@ namespace gpstk
          Tgd       = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
          IODC      = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
 
-         health = (short)SV_health;
+         health = static_cast<short>(SV_health);
       }
       catch (std::exception &e)
       {
@@ -745,7 +739,7 @@ namespace gpstk
          HOW_sec = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
          fitint  = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
 
-         HOWtime = (long)HOW_sec;
+         HOWtime = static_cast<long>(HOW_sec);
 
          // In RINEX *files*, weeknum is the week of TOE.
          // Internally (Rinex3NavData and EngEphemeris), weeknum is the week of HOW.
@@ -757,7 +751,7 @@ namespace gpstk
          // Some RINEX files have HOW < 0.
          while(HOWtime < 0)
          {
-           HOWtime += (long)FULLWEEK;
+           HOWtime += static_cast<long>(FULLWEEK);
            weeknum--;
          }
 

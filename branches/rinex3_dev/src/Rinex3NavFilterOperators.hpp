@@ -150,8 +150,8 @@ namespace gpstk
       bool operator()(const gpstk::Rinex3NavData& l,
                       const gpstk::Rinex3NavData& r) const
          {
-            gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
-            gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
+            gpstk::GPSWeekSecond lXmitTime(l.weeknum, static_cast<double>(l.HOWtime));
+            gpstk::GPSWeekSecond rXmitTime(r.weeknum, static_cast<double>(r.HOWtime));
             if (lXmitTime < rXmitTime)
                return true;
             return false;
@@ -215,7 +215,7 @@ namespace gpstk
          /// This should return true when the data are to be erased
       bool operator()(const gpstk::Rinex3NavData& l) const
          {
-            long testValue = (long) l.PRNID;
+            long testValue = static_cast<long>(l.PRNID);
             return find(prnList.begin(), prnList.end(), testValue )
                                                        == prnList.end();
          }
