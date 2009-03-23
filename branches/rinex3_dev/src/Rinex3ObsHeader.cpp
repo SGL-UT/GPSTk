@@ -149,7 +149,7 @@ namespace gpstk
       if (valid & Rinex3ObsHeader::validAntennaZeroDirAzi) n++;
       if (valid & Rinex3ObsHeader::validAntennaZeroDirXYZ) n++;
       if (valid & Rinex3ObsHeader::validCenterOfMass     ) n++;
-      if (valid & Rinex3ObsHeader::validObsType          ) n += 1 + (obsTypeList.size()-1)/9;
+      if (valid & Rinex3ObsHeader::validSystemObsType    ) n += 1 + (obsTypeList.size()-1)/9;
       if (valid & Rinex3ObsHeader::validSigStrengthUnit  ) n++;
       if (valid & Rinex3ObsHeader::validInterval         ) n++;
       if (valid & Rinex3ObsHeader::validFirstTime        ) n++;
@@ -353,35 +353,46 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
-      if (valid & validObsType)
+      if (valid & validSystemObsType)
       {
          const int maxObsPerLine = 13;
-         int obsWritten = 0;
-         line = ""; // make sure the line contents are reset.
 
-         vector<Rinex3ObsType>::const_iterator itr = obsTypeList.begin();
-
-         while (itr != obsTypeList.end())
+         std::map<std::string,vector<Rinex3ObsType> >::iterator mapIter;
+         for (mapIter == mapObsTypes.begin(); mapIter != mapObsTypes.end(); mapIter++)
          {
-            // the first line needs to have the # of obs
-            if (obsWritten == 0)
-               line  = rightJustify(asString(obsTypeList.size()), 6);
-            // if you hit 13, write out the line and start a new one
-            else if ((obsWritten % maxObsPerLine) == 0)
+            int obsWritten = 0;
+            line = ""; // make sure the line contents are reset.
+
+            vector<Rinex3ObsType>::const_iterator listItr = (mapIter->second).begin();
+
+            while (listItr != (mapIter->second).end())
             {
-               line += stringSystemNumObs;
-               strm << line << endl;
-               strm.lineNumber++;
-               line  = string(6, ' ');
+               // the first line needs to have the GNSS type and # of obs
+               if (obsWritten == 0)
+               {
+                  line +=  leftJustify(mapIter->first, 1);
+                  line += string(2, ' ');
+                  line  = rightJustify(asString(obsTypeList.size()), 3);
+               }
+               // if you hit 13, write out the line and start a new one
+               else if ((obsWritten % maxObsPerLine) == 0)
+               {
+                  line += stringSystemNumObs;
+                  strm << line << endl;
+                  strm.lineNumber++;
+                  line  = string(6, ' ');
+               }
+               line += string(1, ' ');
+               line += rightJustify(convertObsType(*listItr), 3);
+               obsWritten++;
+               listItr++;
             }
-            line += rightJustify(convertObsType(*itr), 6);
-            obsWritten++;
-            itr++;
+            line += string(60 - line.size(), ' ');
+            line += stringSystemNumObs;
+            strm << line << endl;
+            strm.lineNumber++;
+
          }
-         line += string(60 - line.size(), ' ');
-         line += stringSystemNumObs;
-         strm << line << endl;
-         strm.lineNumber++;
       }
       if (valid & validSigStrengthUnit)
       {
@@ -658,29 +669,36 @@ namespace gpstk
       {
          const int maxObsPerLine = 13;
 
-         if (!(valid & validObsType)) // process the first line
+         prevSatSys = tempSatSys;
+         tempSatSys = strip(line.substr(0,1));
+         numObs     = asInt(line.substr(3,3));
+
+         if ( tempSatSys == " " ) // it's a continuation line; use previous info.
          {
-            tempSatSys = strip(line.substr(0,1));
-            numObs     = asInt(line.substr(3,3));
-            
-            for (int i = 0; (i < numObs) && (i < maxObsPerLine); i++)
-            {
-               int position = 4*i + 6;
-               Rinex3ObsType rt = convertObsType(line.substr(position,4));
-               obsTypeList.push_back(rt);
-            }
-            valid |= validObsType;
-         }
-         else                         // process continuation lines
-         {
+            tempSatSys = prevSatSys;
+            numObs = numObsPrev;
+            std::vector<Rinex3ObsType> newTypeList = mapObsTypes.find(tempSatSys)->second;
             for (int i = obsTypeList.size();
                  (i < numObs) && ( (i % maxObsPerLine) < maxObsPerLine); i++)
             {
-               int position = 4*(i % maxObsPerLine) + 6;
-               Rinex3ObsType rt = convertObsType(line.substr(position,4));
-               obsTypeList.push_back(rt);
+               int position = 4*(i % maxObsPerLine) + 6 + 1;
+               Rinex3ObsType rt = convertObsType(line.substr(position,3));
+               newTypeList.push_back(rt);
             }
          }
+         else
+         {
+            std::vector<Rinex3ObsType> newTypeList;
+            for (int i = 0; (i < numObs) && (i < maxObsPerLine); i++)
+            {
+               int position = 4*i + 6 + 1;
+               Rinex3ObsType rt = convertObsType(line.substr(position,3));
+               newTypeList.push_back(rt);
+            }
+            mapObsTypes[tempSatSys] = newTypeList;
+         }
+
+         valid |= validSystemObsType;
       }
       else if (label == stringSigStrengthUnit)
       {
@@ -975,7 +993,7 @@ namespace gpstk
       if (!(valid & validAntennaPosition)) s << " Antenna Position is NOT valid\n";
       if (!(valid & validAntennaDeltaHEN)) s << " Antenna Delta HEN is NOT valid\n";
       if (!(valid & validAntennaDeltaXYZ)) s << " Antenna Delta XYZ is NOT valid\n";
-      if (!(valid & validObsType        )) s << " Obs Type is NOT valid\n";
+      if (!(valid & validSystemObsType  )) s << " Obs Type is NOT valid\n";
       if (!(valid & validFirstTime      )) s << " First time is NOT valid\n";
       if (!(valid & validEoH            )) s << " End is NOT valid\n";
 

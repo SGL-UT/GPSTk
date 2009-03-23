@@ -145,7 +145,7 @@ namespace gpstk
        validAntennaZeroDirAzi = 0x04000,     ///< "ANTENNA: ZERODIR AZI"  (optional)
        validAntennaZeroDirXYZ = 0x08000,     ///< "ANTENNA: ZERODIR XYZ"  (optional)
        validCenterOfMass      = 0x010000,    ///< "CENTER OF MASS: XYZ"   (optional)
-       validObsType           = 0x020000,    ///< "SYS / # / OBS TYPES"
+       validSystemObsType     = 0x020000,    ///< "SYS / # / OBS TYPES"
        validSigStrengthUnit   = 0x040000,    ///< "SIGNAL STRENGTH UNIT"  (optional)
        validInterval          = 0x080000,    ///< "INTERVAL"
        validFirstTime         = 0x0100000,   ///< "TIME OF FIRST OBS"
@@ -160,8 +160,9 @@ namespace gpstk
        validEoH               = 0x080000000, ///< "END OF HEADER"
 
        /// This mask is for all required valid fields for RINEX 3.0 (3.00)
-       allValid30 = 0x0801A07EB,  // case for static receivers
-//       allValid30 = 0x0801A05EB,  // case for moving receivers
+//       allValid30 = 0x0801A07EB,  // case for static receivers
+       allValid30 = 0x0801A05EB,  // case for moving receivers -- make default
+                                  // if validAntennaPosition is present, we know it's static
      };
 
      /// RINEX 3 observation types (struct declaration)
@@ -170,19 +171,18 @@ namespace gpstk
        std::string type,          ///<  3-char type                  ; e.g. C1C, D2P, L5Q, S2M, etc.
                    description,   ///< 20-char description (optional); e.g. "L1 pseudorange"
                    units;         ///< 10-char units       (optional); e.g. "meters"
-       int scaleFactor;           ///< factor to divide stored observations with before use
 
        Rinex3ObsType()
          : type(std::string("UN")),description(std::string("Unknown or Invalid")),
-           units(std::string("")),scaleFactor(1)
+           units(std::string(""))
        {}
 
-       Rinex3ObsType(std::string t, std::string d, std::string u, int sf = 1)
-         : type(t),description(d),units(u),scaleFactor(sf)
+       Rinex3ObsType(std::string t, std::string d, std::string u)
+         : type(t),description(d),units(u)
        {}
      };
 
-     /// RINEX 3 DCBS info (for differential code bias and phase center variations corrections)
+     /// RINEX 3 DCBS/PCVS info (for differential code bias and phase center variations corrections)
      struct Rinex3CorrInfo
      {
        std::string satSys,  ///< 1-char SV system (G/R/E/S)
@@ -190,6 +190,13 @@ namespace gpstk
                    source;  ///< source of corrections (URL)
      };
 
+     /// Scale Factor corrections for observations
+     struct Rinex3ScaleFactors
+     {
+       std::string satSys;                         ///< 1-char SV system (G/R/E/S)
+       typedef std::map<std::string,int> sfacMap;  ///< scale factor map <ObsType, ScaleFactor>
+       std::map<std::string,sfacMap>      sysMap;  ///< sat. system map of scale factor maps
+     };
 
      /** @name Standard RINEX observation types
       */
@@ -232,6 +239,7 @@ namespace gpstk
      gpstk::Triple antennaZeroDirXYZ;                ///< ANTENNA ZERODIR XYZ            (optional)
      gpstk::Triple centerOfMass;                     ///< vehicle CENTER OF MASS: XYZ    (optional)
      std::vector<Rinex3ObsType> obsTypeList;         ///< number & types of observations
+     std::map<std::string,vector<Rinex3ObsType> > mapObsTypes;  ///< map for different sat. systems
      std::string sigStrengthUnit;                    ///< SIGNAL STRENGTH UNIT           (optional)
      double interval;                                ///< INTERVAL                       (optional)
      CivilTime firstObs,                             ///< TIME OF FIRST OBS
@@ -244,8 +252,10 @@ namespace gpstk
      short numSVs;                                   ///< # OF SATELLITES                (optional)
      std::map<SatID,std::vector<int> > numObsForSat; ///< PRN / # OF OBS                 (optional)
      unsigned long valid;                            ///< bits set when header members present & valid
-     std::string tempSatSys;                         ///< used to save the Sat Sys char while reading Scale Factor lines
-     int numObs;                                     ///< used to save number of obs on # / TYPES and Sys / SCALE FACTOR continuation lines
+     std::string tempSatSys,                         ///< used to save the Sat Sys char while reading Scale Factor lines
+                 prevSatSys;                         ///< used to recall the previous sat. sys for continuation lines
+     int numObs,                                     ///< used to save number of obs on # / TYPES and Sys / SCALE FACTOR continuation lines
+         numObsPrev;                                 ///< used to recall the previous # obs for continuation lines
      RinexSatID lastPRN;                             ///< used to save current PRN while reading PRN/OBS continuation lines
      //@}
 
