@@ -425,25 +425,31 @@ namespace gpstk
       }
       if (valid & validSystemDCBSapplied)
       {
-         line  = rightJustify(infoDCBS.satSys,  1);
-         line += string(1, ' ');
-         line += rightJustify(infoDCBS.name  , 17);
-         line += string(1, ' ');
-         line += rightJustify(infoDCBS.source, 40);
-         line += stringSystemDCBSapplied;
-         strm << line << endl;
-         strm.lineNumber++;
+         for (int i = 0; i < infoDCBS.size(); i++)
+         {
+           line  = rightJustify(infoDCBS[i].satSys,  1);
+           line += string(1, ' ');
+           line += rightJustify(infoDCBS[i].name  , 17);
+           line += string(1, ' ');
+           line += rightJustify(infoDCBS[i].source, 40);
+           line += stringSystemDCBSapplied;
+           strm << line << endl;
+           strm.lineNumber++;
+         }
       }
       if (valid & validSystemPCVSapplied)
       {
-         line  = rightJustify(infoPCVS.satSys,  1);
-         line += string(1, ' ');
-         line += rightJustify(infoPCVS.name  , 17);
-         line += string(1, ' ');
-         line += rightJustify(infoPCVS.source, 40);
-         line += stringSystemPCVSapplied;
-         strm << line << endl;
-         strm.lineNumber++;
+         for (int i = 0; i < infoPCVS.size(); i++)
+         {
+           line  = rightJustify(infoPCVS[i].satSys,  1);
+           line += string(1, ' ');
+           line += rightJustify(infoPCVS[i].name  , 17);
+           line += string(1, ' ');
+           line += rightJustify(infoPCVS[i].source, 40);
+           line += stringSystemPCVSapplied;
+           strm << line << endl;
+           strm.lineNumber++;
+         }
       }
 
       if (valid & validSystemScaleFac)
@@ -527,9 +533,9 @@ namespace gpstk
          
       if (label == stringVersion)
       {
-         version = asDouble(line.substr(0,20));
-         fileType = strip(line.substr(20,20));
-         satSys   = strip(line.substr(40,20));
+         version  = asDouble(line.substr( 0,20));
+         fileType = strip(   line.substr(20,20));
+         satSys   = strip(   line.substr(40,20));
          if ( fileType[0] != 'O' && fileType[0] != 'o')
          {
             FFStreamError e("This isn't a RINEX 3 Obs file.");
@@ -619,7 +625,7 @@ namespace gpstk
          antennaObsCode = strip(line.substr(2,3));
          antennaPhaseCtr[0] = asDouble(line.substr( 5, 9));
          antennaPhaseCtr[1] = asDouble(line.substr(14,14));
-         antennaPhaseCtr[2] = asDouble(line.substr(14,14));
+         antennaPhaseCtr[2] = asDouble(line.substr(28,14));
          valid |= validAntennaPhaseCtr;
       }
       else if (label == stringAntennaBsightXYZ)
@@ -650,35 +656,40 @@ namespace gpstk
       }
       else if (label == stringSystemNumObs)
       {
-         const int maxObsPerLine = 9;
-            // process the first line
-         if (! (valid & validObsType))
+         const int maxObsPerLine = 13;
+
+         if (!(valid & validObsType)) // process the first line
          {
-            numObs = asInt(line.substr(0,6));
+            tempSatSys = strip(line.substr(0,1));
+            numObs     = asInt(line.substr(3,3));
             
             for (int i = 0; (i < numObs) && (i < maxObsPerLine); i++)
             {
-               int position = i * 6 + 6 + 4;
-               Rinex3ObsType rt = convertObsType(line.substr(position,2));
+               int position = 4*i + 6;
+               Rinex3ObsType rt = convertObsType(line.substr(position,4));
                obsTypeList.push_back(rt);
             }
             valid |= validObsType;
          }
-            // process continuation lines
-         else
+         else                         // process continuation lines
          {
             for (int i = obsTypeList.size();
                  (i < numObs) && ( (i % maxObsPerLine) < maxObsPerLine); i++)
             {
-               int position = (i % maxObsPerLine) * 6 + 6 + 4;
-               Rinex3ObsType rt = convertObsType(line.substr(position,2));
+               int position = 4*(i % maxObsPerLine) + 6;
+               Rinex3ObsType rt = convertObsType(line.substr(position,4));
                obsTypeList.push_back(rt);
             }
          }
       }
+      else if (label == stringSigStrengthUnit)
+      {
+         sigStrengthUnit = strip(line.substr(0,20));
+         valid |= validSigStrengthUnit;
+      }
       else if (label == stringInterval)
       {
-         interval = asDouble(line.substr(0, 10));
+         interval = asDouble(line.substr(0,10));
          valid |= validInterval;
       }
       else if (label == stringFirstTime)
@@ -696,6 +707,33 @@ namespace gpstk
          receiverOffset = asInt(line.substr(0,6));
          valid |= validReceiverOffset;
       }
+
+      else if (label == stringSystemDCBSapplied)
+      {
+         Rinex3CorrInfo tempInfo;
+         tempInfo.satSys = strip(line.substr( 0, 1));
+         tempInfo.name   = strip(line.substr( 2,17));
+         tempInfo.source = strip(line.substr(20,40));
+         infoDCBS.push_back(tempInfo);
+         valid |= validSystemDCBSapplied;
+      }
+      else if (label == stringSystemPCVSapplied)
+      {
+         Rinex3CorrInfo tempInfo;
+         tempInfo.satSys = strip(line.substr( 0, 1));
+         tempInfo.name   = strip(line.substr( 2,17));
+         tempInfo.source = strip(line.substr(20,40));
+         infoPCVS.push_back(tempInfo);
+         valid |= validSystemPCVSapplied;
+      }
+      else if (label == stringSystemScaleFac)
+      {
+         tempSatSys = strip(line.substr(0,1));
+         factor     = asInt(line.substr(2,4));
+         numObs     = asInt(line.substr(8,2));
+         valid |= validSystemScaleFac;
+      }
+
       else if (label == stringLeapSeconds)
       {
          leapSeconds = asInt(line.substr(0,6));

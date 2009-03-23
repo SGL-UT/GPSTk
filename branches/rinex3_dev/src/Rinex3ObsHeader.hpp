@@ -237,13 +237,15 @@ namespace gpstk
      CivilTime firstObs,                             ///< TIME OF FIRST OBS
                 lastObs;                             ///< TIME OF LAST OBS               (optional)
      int receiverOffset;                             ///< RCV CLOCK OFFS APPL            (optional)
-     Rinex3CorrInfo infoDCBS;                        ///< DCBS INFO                      (optional)
-     Rinex3CorrInfo infoPCVS;                        ///< PCVS INFO                      (optional)
+     std::vector<Rinex3CorrInfo> infoDCBS;           ///< DCBS INFO                      (optional)
+     std::vector<Rinex3CorrInfo> infoPCVS;           ///< PCVS INFO                      (optional)
+     int factor;                                     ///< scale factor (temp holder)
      int leapSeconds;                                ///< LEAP SECONDS                   (optional)
      short numSVs;                                   ///< # OF SATELLITES                (optional)
      std::map<SatID,std::vector<int> > numObsForSat; ///< PRN / # OF OBS                 (optional)
      unsigned long valid;                            ///< bits set when header members present & valid
-     int numObs;                                     ///< used to save number of obs on # / TYPES continuation lines
+     std::string tempSatSys;                         ///< used to save the Sat Sys char while reading Scale Factor lines
+     int numObs;                                     ///< used to save number of obs on # / TYPES and Sys / SCALE FACTOR continuation lines
      RinexSatID lastPRN;                             ///< used to save current PRN while reading PRN/OBS continuation lines
      //@}
 
