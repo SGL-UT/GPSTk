@@ -162,7 +162,7 @@ namespace gpstk
        /// This mask is for all required valid fields for RINEX 3.0 (3.00)
 //       allValid30 = 0x0801A07EB,  // case for static receivers
        allValid30 = 0x0801A05EB,  // case for moving receivers -- make default
-                                  // if validAntennaPosition is present, we know it's static
+                                  // if validAntennaPosition is present, we know it's static (??)
      };
 
      /// RINEX 3 observation types (struct declaration)
@@ -236,7 +236,7 @@ namespace gpstk
      gpstk::Triple antennaZeroDirXYZ;                ///< ANTENNA ZERODIR XYZ            (optional)
      gpstk::Triple centerOfMass;                     ///< vehicle CENTER OF MASS: XYZ    (optional)
      std::vector<Rinex3ObsType> obsTypeList;         ///< number & types of observations
-     std::map<std::string,vector<Rinex3ObsType> > mapObsTypes;  ///< map for different sat. systems
+     map<string,vector<Rinex3ObsType> > mapObsTypes; ///< map for different sat. systems
      std::string sigStrengthUnit;                    ///< SIGNAL STRENGTH UNIT           (optional)
      double interval;                                ///< INTERVAL                       (optional)
      CivilTime firstObs,                             ///< TIME OF FIRST OBS

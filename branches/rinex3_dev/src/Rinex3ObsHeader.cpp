@@ -83,8 +83,8 @@ namespace gpstk
    const string Rinex3ObsHeader::stringEoH               = "END OF HEADER";
 
 
-   std::vector<Rinex3ObsHeader::Rinex3ObsType> Rinex3ObsHeader::RegisteredRinex3ObsTypes
-      = Rinex3ObsHeader::StandardRinex3ObsTypes;
+//   std::vector<Rinex3ObsHeader::Rinex3ObsType> Rinex3ObsHeader::RegisteredRinex3ObsTypes
+//      = Rinex3ObsHeader::StandardRinex3ObsTypes;
 
 
    void Rinex3ObsHeader::reallyPutRecord(FFStream& ffs) const
@@ -462,12 +462,57 @@ namespace gpstk
            strm.lineNumber++;
          }
       }
-
       if (valid & validSystemScaleFac)
       {
-         line += stringSystemScaleFac;
-         strm << line << endl;
-         strm.lineNumber++;
+         static const int maxObsPerLine = 12;
+
+         static const int size = 4;
+         int factors[size] = {1,10,100,1000};
+         vector<std::string> obsTypes;
+
+         std::map<std::string, sfacMap>::const_iterator mapIter;
+         for (mapIter == sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++) // loop over GNSSes
+         {
+            std::map<Rinex3ObsType, int>::const_iterator iter;
+
+            for (int i = 0; i < size; i++) // loop over possible factors (above)
+            {
+               int count = 0;
+               obsTypes.clear(); // clear the list of Obs Types we're going to make
+
+               for (iter == mapIter->second.begin(); iter != mapIter->second.end(); iter++) // loop over scale factor map
+               {
+                  if ( iter->second == factors[i] )
+                  {
+                     count++;
+                     obsTypes.push_back(iter->first.type);
+                  }
+               }
+               if ( count == 0 ) continue; // no entries with this factor
+
+               line  =  leftJustify(mapIter->first, 1);
+               line += string(1, ' ');
+               line += rightJustify(asString(factors[i]), 4);
+               line += string(2, ' ');
+               line += rightJustify(asString(count     ), 2);
+
+               for (i = 0; i < count; i++)
+               {
+                  if (i > 0 && (i % maxObsPerLine) == 0 )
+                  {
+                     line += stringSystemScaleFac;
+                     strm << line << endl;
+                     strm.lineNumber++;
+                     line  = string(6, ' ');
+                  }
+                  line += string(1, ' ');
+                  line += rightJustify(iter->first.type, 3);
+               }
+               line += stringSystemScaleFac;
+               strm << line << endl;
+               strm.lineNumber++;
+            }
+         }
       }
 
       if (valid & validLeapSeconds)
@@ -669,7 +714,7 @@ namespace gpstk
       }
       else if (label == stringSystemNumObs)
       {
-         const int maxObsPerLine = 13;
+         static const int maxObsPerLine = 13;
 
          satSysPrev = satSysTemp;
          satSysTemp = strip(line.substr(0,1));
@@ -749,7 +794,7 @@ namespace gpstk
       }
       else if (label == stringSystemScaleFac)
       {
-         const int maxObsPerLine = 12;
+         static const int maxObsPerLine = 12;
 
          satSysTemp = strip(line.substr(0,1));
          factor     = asInt(line.substr(2,4));
@@ -795,7 +840,7 @@ namespace gpstk
       }
       else if (label == stringPrnObs)
       {
-         const int maxObsPerLine = 9;
+         static const int maxObsPerLine = 9;
          // continuation lines:
          // you have to know what PRN this is continuing for, hence lastPRN
          std::string GNSS(1, lastPRN.systemChar());
@@ -910,6 +955,8 @@ namespace gpstk
    }  // end of reallyGetRecord()
 
 
+  /*
+
    Rinex3ObsHeader::Rinex3ObsType Rinex3ObsHeader::convertObsType(const string& oneObs)
       throw(FFStreamError)
    {
@@ -955,6 +1002,7 @@ namespace gpstk
       return 0;
    }
 
+  */
 
    CivilTime Rinex3ObsHeader::parseTime(const string& line) const
    {
@@ -991,58 +1039,113 @@ namespace gpstk
    void Rinex3ObsHeader::dump(ostream& s) const
    {
       int i,j;
+
+      string str = system.systemChar() + " (" + system.systemString() + ")";
+
       s << "---------------------------------- REQUIRED ----------------------------------\n";
-      string str;
-      str = system.systemChar();
-      str = str + " (" + system.systemString() + ")";
       s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
         << ",  File type " << fileType << ",  System " << str << ".\n";
       s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: " << fileAgency << endl;
-      s << "Marker name: " << markerName << ".\n";
-      s << "Obs'r : " << observer << ",  Agency: " << agency << endl;
+      s << "Marker name: " << markerName << ",";
+      s << "Marker type: " << markerType << ".\n";
+      s << "Observer : " << observer << ",  Agency: " << agency << endl;
       s << "Rec#: " << recNo << ",  Type: " << recType << ",  Vers: " << recVers << endl;
       s << "Antenna # : " << antNo << ",  Type : " << antType << endl;
-      s << "Position (XYZ,m) : " << setprecision(4) << antennaPosition << ".\n";
+      s << "Position      (XYZ,m) : " << setprecision(4) << antennaPosition << ".\n";
       s << "Antenna Delta (HEN,m) : " << setprecision(4) << antennaDeltaHEN << ".\n";
-      s << "Antenna Delta (XYZ,m) : " << setprecision(4) << antennaDeltaXYZ << ".\n";
-      s << "Observation types (" << obsTypeList.size() << ") :\n";
-      for (i = 0; i < obsTypeList.size(); i++) 
-         s << " Type #" << i << " = "
-           << gpstk::Rinex3ObsHeader::convertObsType(obsTypeList[i])
-           << " " << obsTypeList[i].description
-           << " (" << obsTypeList[i].units << ")." << endl;
+      map<string,vector<Rinex3ObsType> >::const_iterator iter;
+      for (iter = mapObsTypes.begin(); iter != mapObsTypes.end(); iter++)
+      {
+         RinexSatID rsid;
+         rsid.fromString(iter->first);
+         s << rsid.systemString() << " Observation types (" << iter->second.size() << "):\n";
+         for (i = 0; i < iter->second.size(); i++) 
+            s << " Type #" << i << " = "
+              << gpstk::Rinex3ObsHeader::convertObsType(iter->second[i])
+              << " "  << iter->second[i].description
+              << " (" << iter->second[i].units << ")." << endl;
+      }
       s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P");
       s << "(This header is ";
       if ((valid & allValid30) == allValid30) s << "VALID 3.00";
       else s << "NOT VALID";
-      s << " Rinex.)\n";
+      s << " RINEX 3.)\n";
 
-      if (!(valid & validVersion        )) s << " Version is NOT valid\n";
-      if (!(valid & validRunBy          )) s << " Run by is NOT valid\n";
-      if (!(valid & validMarkerName     )) s << " Marker Name is NOT valid\n";
-      if (!(valid & validObserver       )) s << " Observer is NOT valid\n";
-      if (!(valid & validReceiver       )) s << " Receiver is NOT valid\n";
-      if (!(valid & validAntennaType    )) s << " Antenna Type is NOT valid\n";
-      if (!(valid & validAntennaPosition)) s << " Antenna Position is NOT valid\n";
-      if (!(valid & validAntennaDeltaHEN)) s << " Antenna Delta HEN is NOT valid\n";
-      if (!(valid & validAntennaDeltaXYZ)) s << " Antenna Delta XYZ is NOT valid\n";
-      if (!(valid & validSystemObsType  )) s << " Obs Type is NOT valid\n";
-      if (!(valid & validFirstTime      )) s << " First time is NOT valid\n";
-      if (!(valid & validEoH            )) s << " End is NOT valid\n";
+      if (!(valid & validVersion        )) s << " Version / Type      is NOT valid\n";
+      if (!(valid & validRunBy          )) s << " Pgm / Run By / Date is NOT valid\n";
+      if (!(valid & validMarkerName     )) s << " Marker Name         is NOT valid\n";
+      if (!(valid & validMarkerType     )) s << " Marker Type         is NOT valid\n";
+      if (!(valid & validObserver       )) s << " Observer / Agency   is NOT valid\n";
+      if (!(valid & validReceiver       )) s << " Receiver # / Type   is NOT valid\n";
+      if (!(valid & validAntennaType    )) s << " Antenna Type        is NOT valid\n";
+//      if (!(valid & validAntennaPosition)) s << " Antenna Position    is NOT valid\n";
+      if (!(valid & validAntennaDeltaHEN)) s << " Antenna Delta HEN   is NOT valid\n";
+      if (!(valid & validSystemObsType  )) s << " Sys / # / Obs Type  is NOT valid\n";
+      if (!(valid & validFirstTime      )) s << " Time of First Obs   is NOT valid\n";
+      if (!(valid & validEoH            )) s << " End of Header       is NOT valid\n";
 
       s << "---------------------------------- OPTIONAL ----------------------------------\n";
-      if (valid & validMarkerNumber) s << "Marker number : " << markerNumber << endl;
-      if (valid & validInterval) s << "Interval = "
-                                   << fixed << setw(7) << setprecision(3) << interval << endl;
-      if (valid & validLastTime) s << "Time of last obs "
-                                   << lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P");
-      if (valid & validLeapSeconds) s << "Leap seconds: " << leapSeconds << endl;
-      if (valid & validReceiverOffset) s << "Clock offset record is present and offsets "
-                                         << (receiverOffset?"ARE":"are NOT") << " applied." << endl;
-      if (valid & validNumSats) s << "Number of Satellites with data : " << numSVs << endl;
-      if (valid & validPrnObs)
+      if (valid & validMarkerNumber     ) s << "Marker number : " << markerNumber << endl;
+      if (valid & validAntennaDeltaXYZ  ) s << "Antenna Delta    (XYZ,m) : "
+                                            << setprecision(4) << antennaDeltaXYZ   << endl;
+      if (valid & validAntennaPhaseCtr  ) s << "Antenna PhaseCtr (XYZ,m) : "
+                                            << setprecision(4) << antennaPhaseCtr   << endl;
+      if (valid & validAntennaBsightXYZ ) s << "Antenna B.sight  (XYZ,m) : "
+                                            << setprecision(4) << antennaBsightXYZ  << endl;
+      if (valid & validAntennaZeroDirAzi) s << "Antenna ZeroDir  (deg)   : "
+                                            << setprecision(4) << antennaZeroDirAzi << endl;
+      if (valid & validAntennaZeroDirXYZ) s << "Antenna ZeroDir  (XYZ,m) : "
+                                            << setprecision(4) << antennaZeroDirXYZ << endl;
+      if (valid & validCenterOfMass     ) s << "Center of Mass   (XYZ,m) : "
+                                            << setprecision(4) << antennaPhaseCtr   << endl;
+      if (valid & validSigStrengthUnit  ) s << "Signal Strenth Unit = " << sigStrengthUnit << endl;
+      if (valid & validInterval         ) s << "Interval = "
+                                            << fixed << setw(7) << setprecision(3) << interval << endl;
+      if (valid & validLastTime         ) s << "Time of Last Obs "
+                                            << lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P");
+      if (valid & validReceiverOffset   ) s << "Clock offset record is present and offsets "
+                                            << (receiverOffset?"ARE":"are NOT") << " applied." << endl;
+      if (valid & validSystemDCBSapplied)
       {
-         s << "SAT  ";
+         for (i = 0; i < infoDCBS.size(); i++)
+         {
+            RinexSatID rsid;
+            rsid.fromString(infoDCBS[i].satSys);
+            s << "System DCBS Correction Applied to " << rsid.systemString()
+              << " data using program " << infoDCBS[i].name << endl;
+            s << " from source " << infoDCBS[i].source << "." << endl;
+         }
+      }
+      if (valid & validSystemPCVSapplied)
+      {
+         for (i = 0; i < infoPCVS.size(); i++)
+         {
+            RinexSatID rsid;
+            rsid.fromString(infoPCVS[i].satSys);
+            s << "System PCVS Correction Applied to " << rsid.systemString()
+              << " data using program " << infoPCVS[i].name << endl;
+            s << " from source " << infoPCVS[i].source << "." << endl;
+         }
+      }
+      if (valid & validSystemScaleFac)
+      {
+         std::map<std::string, sfacMap>::const_iterator mapIter;
+         for (mapIter == sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++) // loop over GNSSes
+         {
+            RinexSatID rsid;
+            rsid.fromString(mapIter->first);
+            s << rsid.systemString() << " scale factors applied:" << endl;
+            std::map<Rinex3ObsType, int>::const_iterator iter;
+            for (iter == mapIter->second.begin(); iter != mapIter->second.end(); iter++) // loop over scale factor map
+               s << "   " << iter->first.type << " " << iter->second << endl;
+         }
+      }
+      if (valid & validLeapSeconds    ) s << "Leap seconds: " << leapSeconds << endl;
+      if (valid & validNumSats        ) s << "Number of Satellites with data : " << numSVs << endl;
+      if (valid & validPrnObs         )
+      {
+         s << " PRN and number of observations for each obs type:" << endl;
+         s << "   ";
          for (i = 0; i < obsTypeList.size(); i++)
             s << setw(7) << convertObsType(obsTypeList[i]);
          s << endl;
@@ -1064,6 +1167,8 @@ namespace gpstk
       s << "-------------------------------- END OF HEADER -------------------------------\n";
    }
 
+
+  /*
 
    // Pretty print a list of standard Rinex observation types
    void DisplayStandardRinex3ObsTypes(ostream& s)
@@ -1110,6 +1215,8 @@ namespace gpstk
          s << line << endl;
       }
    }
+
+  */
 
 
 } // namespace gpstk
