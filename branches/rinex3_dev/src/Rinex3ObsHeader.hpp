@@ -191,12 +191,9 @@ namespace gpstk
      };
 
      /// Scale Factor corrections for observations
-     struct Rinex3ScaleFactors
-     {
-       std::string satSys;                         ///< 1-char SV system (G/R/E/S)
-       typedef std::map<std::string,int> sfacMap;  ///< scale factor map <ObsType, ScaleFactor>
-       std::map<std::string,sfacMap>      sysMap;  ///< sat. system map of scale factor maps
-     };
+     typedef std::map<Rinex3ObsType,int> sfacMap;  ///< scale factor map <ObsType, ScaleFactor>
+     std::map<std::string,sfacMap>    sysSfacMap;  ///< sat. system map of scale factor maps
+                                                   ///< <(G/R/E/S), <Rinex3ObsType, scalefactor>>
 
      /** @name Standard RINEX observation types
       */
@@ -247,13 +244,13 @@ namespace gpstk
      int receiverOffset;                             ///< RCV CLOCK OFFS APPL            (optional)
      std::vector<Rinex3CorrInfo> infoDCBS;           ///< DCBS INFO                      (optional)
      std::vector<Rinex3CorrInfo> infoPCVS;           ///< PCVS INFO                      (optional)
-     int factor;                                     ///< scale factor (temp holder)
+     int factor, factorPrev;                         ///< scale factor (temp holders)
      int leapSeconds;                                ///< LEAP SECONDS                   (optional)
      short numSVs;                                   ///< # OF SATELLITES                (optional)
      std::map<SatID,std::vector<int> > numObsForSat; ///< PRN / # OF OBS                 (optional)
      unsigned long valid;                            ///< bits set when header members present & valid
-     std::string tempSatSys,                         ///< used to save the Sat Sys char while reading Scale Factor lines
-                 prevSatSys;                         ///< used to recall the previous sat. sys for continuation lines
+     std::string satSysTemp,                         ///< used to save the Sat Sys char while reading Scale Factor lines
+                 satSysPrev;                         ///< used to recall the previous sat. sys for continuation lines
      int numObs,                                     ///< used to save number of obs on # / TYPES and Sys / SCALE FACTOR continuation lines
          numObsPrev;                                 ///< used to recall the previous # obs for continuation lines
      RinexSatID lastPRN;                             ///< used to save current PRN while reading PRN/OBS continuation lines

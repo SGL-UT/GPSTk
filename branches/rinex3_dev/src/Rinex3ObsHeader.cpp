@@ -499,11 +499,13 @@ namespace gpstk
             {
                if (numObsWritten == 0)
                {
-                  try {
+                  try
+                  {
                      RinexSatID prn((*itr).first);
-                     line  = string(3, ' ') + prn.toString();
+                     line = string(3, ' ') + prn.toString();
                   }
-                  catch (Exception& e) {
+                  catch (Exception& e)
+                  {
                      FFStreamError ffse(e);
                      GPSTK_RETHROW(ffse); 
                   }
@@ -669,15 +671,16 @@ namespace gpstk
       {
          const int maxObsPerLine = 13;
 
-         prevSatSys = tempSatSys;
-         tempSatSys = strip(line.substr(0,1));
+         satSysPrev = satSysTemp;
+         satSysTemp = strip(line.substr(0,1));
+         numObsPrev = numObs;
          numObs     = asInt(line.substr(3,3));
 
-         if ( tempSatSys == " " ) // it's a continuation line; use previous info.
+         if ( satSysTemp == " " ) // it's a continuation line; use previous info.
          {
-            tempSatSys = prevSatSys;
+            satSysTemp = satSysPrev;
             numObs = numObsPrev;
-            std::vector<Rinex3ObsType> newTypeList = mapObsTypes.find(tempSatSys)->second;
+            std::vector<Rinex3ObsType> newTypeList = mapObsTypes.find(satSysTemp)->second;
             for (int i = obsTypeList.size();
                  (i < numObs) && ( (i % maxObsPerLine) < maxObsPerLine); i++)
             {
@@ -695,7 +698,7 @@ namespace gpstk
                Rinex3ObsType rt = convertObsType(line.substr(position,3));
                newTypeList.push_back(rt);
             }
-            mapObsTypes[tempSatSys] = newTypeList;
+            mapObsTypes[satSysTemp] = newTypeList;
          }
 
          valid |= validSystemObsType;
@@ -746,12 +749,40 @@ namespace gpstk
       }
       else if (label == stringSystemScaleFac)
       {
-         tempSatSys = strip(line.substr(0,1));
+         const int maxObsPerLine = 12;
+
+         satSysTemp = strip(line.substr(0,1));
          factor     = asInt(line.substr(2,4));
          numObs     = asInt(line.substr(8,2));
+
+         int startPosition = 0;
+
+         if ( satSysTemp == " " ) // it's a continuation line; use prev. info., end pt. to start
+         {
+            satSysTemp = satSysPrev;
+            factor     = factorPrev;
+            numObs     = numObsPrev;
+
+            startPosition = sysSfacMap[satSysTemp].size();
+         }
+
+         // 0/blank numObs means factor applies to all obs types in appropriate obsTypeList
+         if (numObs == 0) numObs = mapObsTypes[satSysTemp].size();
+
+         for (int i = startPosition; (i < numObs) && (i % maxObsPerLine < maxObsPerLine); i++)
+         {
+            int position = 4*i + 10 + 1;
+            Rinex3ObsType tempType = convertObsType(strip(line.substr(position,3)));
+            sysSfacMap[satSysTemp].insert(make_pair(tempType, factor));
+         }
+
+         // save values in case next line is a continuation line
+         satSysPrev = satSysTemp;
+         factorPrev = factor;
+         numObsPrev = numObs;
+
          valid |= validSystemScaleFac;
       }
-
       else if (label == stringLeapSeconds)
       {
          leapSeconds = asInt(line.substr(0,6));
@@ -765,14 +796,16 @@ namespace gpstk
       else if (label == stringPrnObs)
       {
          const int maxObsPerLine = 9;
-         // continuation lines... you have to know what PRN
-         // this is continuing for, hence lastPRN
-         if ( lastPRN.id != -1 && numObsForSat[lastPRN].size() != obsTypeList.size() )
+         // continuation lines:
+         // you have to know what PRN this is continuing for, hence lastPRN
+         std::string GNSS(1, lastPRN.systemChar());
+         if ( lastPRN.id != -1 && numObsForSat[lastPRN].size() != mapObsTypes[GNSS].size() )
          {
             for (int i = numObsForSat[lastPRN].size(); 
-                 (i < obsTypeList.size()) && ( (i % maxObsPerLine) < maxObsPerLine); i++)
+                 (i < mapObsTypes[GNSS].size()) && ( (i % maxObsPerLine) < maxObsPerLine);
+                 i++                                                                                      )
             {
-               numObsForSat[lastPRN].push_back(asInt(line.substr((i%maxObsPerLine)*6+6,6)));
+               numObsForSat[lastPRN].push_back(asInt(line.substr(6*(i%maxObsPerLine)+6,6)));
             }
          }
          else
@@ -788,9 +821,9 @@ namespace gpstk
             }
             vector<int> numObsList;
             for (int i = 0; 
-                   (i < obsTypeList.size()) && (i < maxObsPerLine); i++)
+                 (i < obsTypeList.size()) && (i < maxObsPerLine); i++)
             {
-               numObsList.push_back(asInt(line.substr(i*6+6,6)));
+               numObsList.push_back(asInt(line.substr(6*i+6,6)));
             }
 
             numObsForSat[lastPRN] = numObsList;
