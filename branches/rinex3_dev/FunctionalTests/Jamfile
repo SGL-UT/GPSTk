@@ -10,3 +10,8 @@ Main Rinex3NavStoreTest : Rinex3NavStoreTest.cpp ;
 ObjectHdrs Rinex3NavStoreTest Rinex3NavStoreTest.cpp : ../src ;
 LINKLIBS on Rinex3NavStoreTest =  $(STD_LINK_LIBS) ;
 LinkLibraries Rinex3NavStoreTest : ../src/libgpstk-R3.a ;   
+
+Main Rinex3ObsTest : Rinex3ObsTest.cpp ;
+ObjectHdrs Rinex3ObsTest Rinex3ObsTest.cpp : ../src ;
+LINKLIBS on Rinex3ObsTest =  $(STD_LINK_LIBS) ;
+LinkLibraries Rinex3ObsTest : ../src/libgpstk-R3.a ;
