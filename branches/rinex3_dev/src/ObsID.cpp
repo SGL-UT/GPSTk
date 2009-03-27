@@ -56,21 +56,21 @@ namespace gpstk
 
    ObsID::Initializer::Initializer()
    {
-      otStrings[otUnknown]  = "UnknownType";
-      otStrings[otRange]    = "range";
+      otStrings[otUnknown]  = "Unknown Type";
+      otStrings[otRange]    = "pseudorange";
       otStrings[otPhase]    = "phase";
-      otStrings[otDoppler]  = "doppler";
-      otStrings[otSNR]      = "snr";
-      otStrings[otSSI]      = "ssi";
-      otStrings[otLLI]      = "lli";
-      otStrings[otTrackLen] = "tlen";
+      otStrings[otDoppler]  = "Doppler";
+      otStrings[otSNR]      = "SNR";
+      otStrings[otSSI]      = "SSI";
+      otStrings[otLLI]      = "LLI";
+      otStrings[otTrackLen] = "Track Length";
       otStrings[otLast]     = "otLast";
       otStrings[otPlaceholder] = "otPlaceholder";
 
-      cbStrings[cbUnknown] = "UnknownBand";
-      cbStrings[cbL1]      = "L1";
+      cbStrings[cbUnknown] = "Unknown Band";
+      cbStrings[cbL1]      = "L1/E1";
       cbStrings[cbL2]      = "L2";
-      cbStrings[cbL5]      = "L5";
+      cbStrings[cbL5]      = "L5/E5a";
       cbStrings[cbL1L2]    = "L1+L2";
       cbStrings[cbG1]      = "G1";
       cbStrings[cbG2]      = "G2";
@@ -79,7 +79,7 @@ namespace gpstk
       cbStrings[cbLast]    = "cbLast";
       cbStrings[cbPlaceholder] = "cbPlaceholder";
 
-      tcStrings[tcUnknown] = "UnknownCode";
+      tcStrings[tcUnknown] = "Unknown Code";
       tcStrings[tcCA]      = "C/A";
       tcStrings[tcP]       = "P";
       tcStrings[tcY]       = "Y";
@@ -102,7 +102,7 @@ namespace gpstk
    }
 
 
-      // Convenience output method
+   // Convenience output method
    std::ostream& ObsID::dump(std::ostream& s) const
    {
       s << ObsID::cbStrings[band] << " "
@@ -110,7 +110,7 @@ namespace gpstk
         << ObsID::otStrings[type];
 
       return s;
-   } // ObsID::dump()
+   }
 
 
    bool ObsID::isValid() const
@@ -120,9 +120,9 @@ namespace gpstk
    }
 
 
-      /* Static method to add new ObservationType's
-       * @param s      Identifying string for the new ObservationType
-       */
+   /* Static method to add new ObservationType's
+    * @param s      Identifying string for the new ObservationType
+    */
    ObsID::ObservationType ObsID::newObservationType(const std::string& s)
    {
       ObservationType newId =
@@ -134,9 +134,9 @@ namespace gpstk
    }
 
 
-      /* Static method to add new CarrierBand's
-       * @param s      Identifying string for the new CarrierBand
-       */
+   /* Static method to add new CarrierBand's
+    * @param s      Identifying string for the new CarrierBand
+    */
    ObsID::CarrierBand ObsID::newCarrierBand(const std::string& s)
    {
       CarrierBand newId =
@@ -148,9 +148,9 @@ namespace gpstk
    }
 
 
-      /* Static method to add new TrackingCode's
-       * @param s      Identifying string for the new TrackingCode
-       */
+   /* Static method to add new TrackingCode's
+    * @param s      Identifying string for the new TrackingCode
+    */
    ObsID::TrackingCode ObsID::newTrackingCode(const std::string& s)
    {
       TrackingCode newId =
@@ -162,14 +162,14 @@ namespace gpstk
    }
 
 
-      // Equality requires all fields to be the same
+   // Equality requires all fields to be the same
    bool ObsID::operator==(const ObsID& right) const
    { return type==right.type &&  band==right.band && code==right.code; }
 
 
-      // This ordering is somewhat arbitrary but is required to be able
-      // to use an ObsID as an index to a std::map. If an application needs
-      // some other ordering, inherit and override this function.
+   // This ordering is somewhat arbitrary but is required to be able to
+   // use an ObsID as an index to a std::map.  If an application needs
+   // some other ordering, inherit and override this function.
    bool ObsID::operator<(const ObsID& right) const
    {
       if (band == right.band)
@@ -187,7 +187,7 @@ namespace gpstk
 
    namespace StringUtils
    {
-         // convert this object to a string representation
+      // convert this object to a string representation
       std::string asString(const ObsID& p)
       {
          std::ostringstream oss;
@@ -197,7 +197,7 @@ namespace gpstk
    }
 
 
-      // stream output for ObsID
+   // stream output for ObsID
    std::ostream& operator<<(std::ostream& s, const ObsID& p)
    {
       p.dump(s);

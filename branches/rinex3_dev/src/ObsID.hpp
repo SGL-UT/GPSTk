@@ -62,22 +62,23 @@ namespace gpstk
    class ObsID
    {
    public:
-         /// The type of observation.
+
+      /// The type of observation.
       enum ObservationType
       {
          otUnknown,
-         otRange,     ///< pseudorange, in meters
-         otPhase,     ///< accumulated phase, in meters
-         otDoppler,   ///< Doppler, in Hz
-         otSNR,       ///< Signal strength, in dB-Hz
-         otSSI,       ///< Signal Strength Indicator (kinda a rinex thing)
-         otLLI,       ///< Loss of Lock Indicator (another rinex thing)
-         otTrackLen,  ///< Number of continuous epochs of 'good' tracking
-         otLast,      ///< used to extend this...
-         otPlaceholder = otLast+1000
+         otRange,     ///< pseudorange [m]
+         otPhase,     ///< accumulated phase [m]
+         otDoppler,   ///< Doppler [Hz]
+         otSNR,       ///< signal strength [dB-Hz]
+         otSSI,       ///< Signal Strength Indicator (a RINEX thing)
+         otLLI,       ///< Loss of Lock Indicator (another RINEX thing)
+         otTrackLen,  ///< number of continuous epochs of 'good' tracking
+         otLast,      ///< used to extend this enum...
+         otPlaceholder = otLast + 1000
       };
 
-         /// The frequency band this obs was collected from.
+      /// The frequency band this Obs was collected from.
       enum CarrierBand
       {
          cbUnknown,
@@ -90,14 +91,14 @@ namespace gpstk
          cbE5b,  ///< Galileo E5b
          cbE5ab, ///< Galileo E5a+b
          cbE6,   ///< Galileo E6
-         cbLast, ///< Used to extend this...
-         cbPlaceholder = cbLast+1000
+         cbLast, ///< Used to extend this enum...
+         cbPlaceholder = cbLast + 1000
       };
 
-         /// The code used to collect the observation. This generally follows
-         /// the attributes in section 5.1 of RINEX 3. Note that these need to
-         /// be interpreted in conjunction with the satellite system that
-         /// is in the svid variable.
+      /// The code used to collect the observation.  This generally follows
+      /// the attributes in section 5.1 of RINEX 3.  Note that these need to
+      /// be interpreted in conjunction with the satellite system in the
+      /// svid variable.
       enum TrackingCode
       {
          tcUnknown,
@@ -109,33 +110,33 @@ namespace gpstk
          tcM,       ///< Encrypted modernized precise code
          tcC2M,     ///< L2 civil M code
          tcC2L,     ///< L2 civil L code
-         tcC2LM,    ///< L2 civil M+L combined tracking (such as Trimble NetRS, Septrentrio, and ITT)
+         tcC2LM,    ///< L2 civil M+L combined tracking (e.g. Trimble NetRS, Septrentrio, ITT)
          tcI5,      ///< L5 civil in-phase
          tcQ5,      ///< L5 civil quadrature
          tcIQ5,     ///< L5 civil I+Q combined tracking
          tcA,       ///< Galileo L1 PRS code
          tcB,       ///< Galileo OS/CS/SoL code
-         tcC,       ///< Galileo Dataless code
+         tcC,       ///< Galileo dataless code
          tcBC,      ///< Galileo B+C combined tracking
          tcABC,     ///< Galileo A+B+C combined tracking
-         tcLast,    ///< Used to extend this...
-         tcPlaceholder = tcLast+1000
+         tcLast,    ///< Used to extend this enum...
+         tcPlaceholder = tcLast + 1000
       };
 
-         /// empty constructor, creates an invalid object
+      /// empty constructor, creates an invalid object
       ObsID()
          : type(otUnknown), band(cbUnknown), code(tcUnknown) {};
 
-         /// Explicit constructor
+      /// Explicit constructor
       ObsID(ObservationType ot, CarrierBand cb, TrackingCode tc)
          : type(ot), band(cb), code(tc) {};
 
-         /// Equality requires all fields to be the same
+      /// Equality requires all fields to be the same
       virtual bool operator==(const ObsID& right) const;
 
-         /// This ordering is somewhat arbitrary but is required to be able
-         /// to use an ObsID as an index to a std::map. If an application needs
-         /// some other ordering, inherit and override this function.
+      /// This ordering is somewhat arbitrary but is required to be able
+      /// to use an ObsID as an index to a std::map. If an application needs
+      /// some other ordering, inherit and override this function.
       virtual bool operator<(const ObsID& right) const;
 
       bool operator!=(const ObsID& right) const
@@ -151,30 +152,30 @@ namespace gpstk
       { return !(operator<(right)); };
 
 
-         /// Convenience output method
+      /// Convenience output method
       virtual std::ostream& dump(std::ostream& s) const;
 
-         /// Return true if this is a valid ObsID. Basically just
-         /// checks that none of the enums are undefined
+      /// Return true if this is a valid ObsID. Basically just
+      /// checks that none of the enums are undefined
       virtual bool isValid() const;
 
-         /// Destructor
+      /// Destructor
       virtual ~ObsID() {};
 
 
-         /** Static method to add new ObservationType's
-          * @param s      Identifying string for the new ObservationType
-          */
+      /** Static method to add new ObservationType's
+       * @param s      Identifying string for the new ObservationType
+       */
       static ObservationType newObservationType(const std::string& s);
 
-         /** Static method to add new CarrierBand's
-          * @param s      Identifying string for the new CarrierBand
-          */
+      /** Static method to add new CarrierBand's
+       * @param s      Identifying string for the new CarrierBand
+       */
       static CarrierBand newCarrierBand(const std::string& s);
 
-         /** Static method to add new TrackingCode's
-          * @param s      Identifying string for the new TrackingCode
-          */
+      /** Static method to add new TrackingCode's
+       * @param s      Identifying string for the new TrackingCode
+       */
       static TrackingCode newTrackingCode(const std::string& s);
 
 
@@ -182,11 +183,11 @@ namespace gpstk
       CarrierBand      band;
       TrackingCode     code;
 
-      static std::map< TrackingCode,    std::string > tcStrings;
-      static std::map< CarrierBand,     std::string > cbStrings;
       static std::map< ObservationType, std::string > otStrings;
+      static std::map< CarrierBand    , std::string > cbStrings;
+      static std::map< TrackingCode   , std::string > tcStrings;
 
-   public:
+
       class Initializer
       {
       public:
@@ -200,12 +201,12 @@ namespace gpstk
 
    namespace StringUtils
    {
-         /// convert this object to a string representation
+      /// convert this object to a string representation
       std::string asString(const ObsID& p);
    }
 
 
-      /// stream output for ObsID
+   /// stream output for ObsID
    std::ostream& operator<<(std::ostream& s, const ObsID& p);
 
 

@@ -55,6 +55,7 @@
 #include "Rinex3ObsBase.hpp"
 #include "Triple.hpp"
 #include "RinexSatID.hpp"
+#include "ObsID.hpp"
 
 namespace gpstk
 {
@@ -165,23 +166,6 @@ namespace gpstk
                                   // if validAntennaPosition is present, we know it's static (??)
      };
 
-     /// RINEX 3 observation types (struct declaration)
-     struct Rinex3ObsType
-     {
-       std::string type,          ///<  3-char type                  ; e.g. C1C, D2P, L5Q, S2M, etc.
-                   description,   ///< 20-char description (optional); e.g. "L1 pseudorange"
-                   units;         ///< 10-char units       (optional); e.g. "meters"
-
-       Rinex3ObsType()
-         : type(std::string("UN")),description(std::string("Unknown or Invalid")),
-           units(std::string(""))
-       {}
-
-       Rinex3ObsType(std::string t, std::string d, std::string u)
-         : type(t),description(d),units(u)
-       {}
-     };
-
      /// RINEX 3 DCBS/PCVS info (for differential code bias and phase center variations corrections)
      struct Rinex3CorrInfo
      {
@@ -191,18 +175,12 @@ namespace gpstk
      };
 
      /// Scale Factor corrections for observations
-     typedef std::map<Rinex3ObsType,int> sfacMap;  ///< scale factor map <ObsType, ScaleFactor>
-     std::map<std::string,sfacMap>    sysSfacMap;  ///< sat. system map of scale factor maps
-                                                   ///< <(G/R/E/S), <Rinex3ObsType, scalefactor>>
+     typedef std::map<ObsID,int>      sfacMap; ///< scale factor map <ObsType, ScaleFactor>
+     std::map<std::string,sfacMap> sysSfacMap; ///< sat. system map of scale factor maps
+                                               ///< <(G/R/E/S), <Rinex3ObsType, scalefactor>>
 
-     /** @name Standard RINEX observation types
-      */
-     //@{
-
-     //@}
-
-     static const std::vector<Rinex3ObsType> StandardRinex3ObsTypes;
-     static       std::vector<Rinex3ObsType> RegisteredRinex3ObsTypes;
+//     static const std::vector<Rinex3ObsType> StandardRinex3ObsTypes;
+//     static       std::vector<Rinex3ObsType> RegisteredRinex3ObsTypes;
 
      /** @name Rinex3ObsHeaderValues
       */ 
@@ -235,8 +213,8 @@ namespace gpstk
      double        antennaZeroDirAzi;                ///< ANTENNA ZERODIR AZI            (optional)
      gpstk::Triple antennaZeroDirXYZ;                ///< ANTENNA ZERODIR XYZ            (optional)
      gpstk::Triple centerOfMass;                     ///< vehicle CENTER OF MASS: XYZ    (optional)
-     std::vector<Rinex3ObsType> obsTypeList;         ///< number & types of observations
-     map<string,vector<Rinex3ObsType> > mapObsTypes; ///< map for different sat. systems
+     std::vector<ObsID> obsTypeList;                 ///< number & types of observations
+     map<string,vector<ObsID> > mapObsTypes;         ///< map for different sat. systems
      std::string sigStrengthUnit;                    ///< SIGNAL STRENGTH UNIT           (optional)
      double interval;                                ///< INTERVAL                       (optional)
      CivilTime firstObs,                             ///< TIME OF FIRST OBS
@@ -276,14 +254,14 @@ namespace gpstk
      /**
       * This function converts the string in \a oneObs to a Rinex3ObsType.
       */
-     static Rinex3ObsType convertObsType(const std::string& oneObs)
-       throw(FFStreamError);
+//     static Rinex3ObsType convertObsType(const std::string& oneObs)
+//       throw(FFStreamError);
 
      /**
       * This function converts the Rinex3ObsType in \a oneObs to a string.
       */
-     static std::string convertObsType(const Rinex3ObsType& oneObs) 
-       throw(FFStreamError);
+//     static std::string convertObsType(const Rinex3ObsType& oneObs) 
+//       throw(FFStreamError);
 
      /**
       * Parse a single header record, and modify valid accordingly.
@@ -311,9 +289,9 @@ namespace gpstk
      /**
       * outputs this record to the stream correctly formatted.
       */
-      virtual void reallyPutRecord(FFStream& s) const
-        throw(std::exception, FFStreamError,
-              gpstk::StringUtils::StringException);
+     virtual void reallyPutRecord(FFStream& s) const
+       throw(std::exception, FFStreamError,
+             gpstk::StringUtils::StringException);
 
      /**
       * This function retrieves the RINEX Header from the given FFStream.
@@ -344,6 +322,8 @@ namespace gpstk
 
    }; // end class Rinex3ObsHeader
 
+  /*
+
    /// operator == for Rinex3ObsHeader::Rinex3ObsType
    inline bool operator==(const Rinex3ObsHeader::Rinex3ObsType& x,
                           const Rinex3ObsHeader::Rinex3ObsType& y )
@@ -358,9 +338,9 @@ namespace gpstk
    inline std::ostream& operator<<(std::ostream& s,
                                    const Rinex3ObsHeader::Rinex3ObsType rot)
    {
-     return s << "Type=" << rot.type
-              << ", Description=" << rot.description
-              << ", Units=" << rot.units;
+     return s << "Type = " << rot.type
+              << ", Description = " << rot.description
+              << ", Units = " << rot.units;
    }
 
    /// Function to allow user to define a new RINEX observation type
@@ -374,6 +354,8 @@ namespace gpstk
 
    /// Pretty print a list of registered extended Rinex observation types
    void DisplayExtendedRinex3ObsTypes(std::ostream& s);
+
+  */
 
   //@}
 
