@@ -48,128 +48,245 @@
 
 namespace gpstk
 {
-   std::map< ObsID::TrackingCode,    std::string > ObsID::tcStrings;
-   std::map< ObsID::CarrierBand,     std::string > ObsID::cbStrings;
-   std::map< ObsID::ObservationType, std::string > ObsID::otStrings;
+   std::map< ObsID::TrackingCode,    std::string > ObsID::tcDesc;
+   std::map< ObsID::CarrierBand,     std::string > ObsID::cbDesc;
+   std::map< ObsID::ObservationType, std::string > ObsID::otDesc;
+   std::map< char, ObsID::ObservationType> ObsID::rinex2ot;
+   std::map< char, ObsID::CarrierBand> ObsID::rinex2cb;
+   std::map< char, ObsID::TrackingCode> ObsID::rinex2tc;
+   std::map< ObsID::ObservationType, char > ObsID::ot2Rinex;
+   std::map< ObsID::CarrierBand, char > ObsID::cb2Rinex;
+   std::map< ObsID::TrackingCode, char> ObsID::tc2Rinex;
+
 
    ObsID::Initializer singleton;
 
    ObsID::Initializer::Initializer()
    {
-      otStrings[otUnknown]  = "UnknownType";
-      otStrings[otRange]    = "range";
-      otStrings[otPhase]    = "phase";
-      otStrings[otDoppler]  = "doppler";
-      otStrings[otSNR]      = "snr";
-      otStrings[otSSI]      = "ssi";
-      otStrings[otLLI]      = "lli";
-      otStrings[otTrackLen] = "tlen";
-      otStrings[otLast]     = "otLast";
-      otStrings[otPlaceholder] = "otPlaceholder";
+      otDesc[otUnknown]  = "UnknownType";
+      otDesc[otRange]    = "range";
+      otDesc[otPhase]    = "phase";
+      otDesc[otDoppler]  = "doppler";
+      otDesc[otSNR]      = "snr";
+      otDesc[otSSI]      = "ssi";
+      otDesc[otLLI]      = "lli";
+      otDesc[otTrackLen] = "tlen";
 
-      cbStrings[cbUnknown] = "UnknownBand";
-      cbStrings[cbL1]      = "L1";
-      cbStrings[cbL2]      = "L2";
-      cbStrings[cbL5]      = "L5";
-      cbStrings[cbL1L2]    = "L1+L2";
-      cbStrings[cbG1]      = "G1";
-      cbStrings[cbG2]      = "G2";
-      cbStrings[cbE5b]     = "E5b";
-      cbStrings[cbE5ab]    = "L5a+b";
-      cbStrings[cbLast]    = "cbLast";
-      cbStrings[cbPlaceholder] = "cbPlaceholder";
+      cbDesc[cbUnknown] = "UnknownBand";
+      cbDesc[cbL1]      = "L1";
+      cbDesc[cbL2]      = "L2";
+      cbDesc[cbL5]      = "L5";
+      cbDesc[cbL1L2]    = "L1+L2";
+      cbDesc[cbG1]      = "G1";
+      cbDesc[cbG2]      = "G2";
+      cbDesc[cbE5b]     = "E5b";
+      cbDesc[cbE5ab]    = "L5a+b";
+      cbDesc[cbE6]      = "E6";
 
-      tcStrings[tcUnknown] = "UnknownCode";
-      tcStrings[tcCA]      = "C/A";
-      tcStrings[tcP]       = "P";
-      tcStrings[tcY]       = "Y";
-      tcStrings[tcW]       = "W";
-      tcStrings[tcN]       = "N";
-      tcStrings[tcM]       = "M";
-      tcStrings[tcC2M]     = "C2M";
-      tcStrings[tcC2L]     = "C2L";
-      tcStrings[tcC2LM]    = "C2L+M";
-      tcStrings[tcI5]      = "I5";
-      tcStrings[tcQ5]      = "Q5";
-      tcStrings[tcIQ5]     = "I+Q";
-      tcStrings[tcA]       = "A";
-      tcStrings[tcB]       = "B";
-      tcStrings[tcC]       = "C";
-      tcStrings[tcBC]      = "B+C";
-      tcStrings[tcABC]     = "A+B+C";
-      tcStrings[tcLast]    = "tcLast";
-      tcStrings[tcPlaceholder] = "tcPlaceholder";
+      tcDesc[tcUnknown] = "UnknownCode";
+      tcDesc[tcCA]      = "C/A";
+      tcDesc[tcP]       = "P";
+      tcDesc[tcY]       = "Y";
+      tcDesc[tcW]       = "W";
+      tcDesc[tcN]       = "N";
+      tcDesc[tcD]       = "D";
+      tcDesc[tcM]       = "M";
+      tcDesc[tcC2M]     = "C2M";
+      tcDesc[tcC2L]     = "C2L";
+      tcDesc[tcC2LM]    = "C2L+M";
+      tcDesc[tcI5]      = "I5";
+      tcDesc[tcQ5]      = "Q5";
+      tcDesc[tcIQ5]     = "I+Q5";
+      tcDesc[tcGCA]     = "C/A";
+      tcDesc[tcGP]      = "P";
+      tcDesc[tcA]       = "A";
+      tcDesc[tcB]       = "B";
+      tcDesc[tcC]       = "C";
+      tcDesc[tcBC]      = "B+C";
+      tcDesc[tcABC]     = "A+B+C";
+      tcDesc[tcIE5]     = "IE5";
+      tcDesc[tcQE5]     = "QE5";
+      tcDesc[tcIQE5]    = "I+QE5";
+
+      if (otDesc.size() != (int)otLast)
+         std::cout << "Error in otDesc" << std::endl;
+      if (cbDesc.size() != (int)cbLast)
+         std::cout << "Error in cbDesc" << std::endl;
+      if (tcDesc.size() != (int)tcLast)
+         std::cout << "Error in tcDesc" << std::endl;
+      
+      rinex2ot['C'] = otRange;
+      rinex2ot['L'] = otPhase;
+      rinex2ot['D'] = otDoppler;
+      rinex2ot['S'] = otSNR;
+
+      rinex2cb['1'] = cbL1;
+      rinex2cb['2'] = cbL1;
+      rinex2cb['5'] = cbL5;
+      rinex2cb['6'] = cbE6;
+      rinex2cb['7'] = cbE5b;
+      rinex2cb['8'] = cbE5ab;
+
+      rinex2tc['C'] = tcCA;
+      rinex2tc['P'] = tcP;  
+      rinex2tc['W'] = tcW;
+      rinex2tc['Y'] = tcY;
+      rinex2tc['M'] = tcM;
+      rinex2tc['N'] = tcN;
+      rinex2tc['D'] = tcD;
+      rinex2tc['S'] = tcC2M;
+      rinex2tc['L'] = tcC2L;
+      rinex2tc['X'] = tcC2LM;
+      rinex2tc['I'] = tcI5;
+      rinex2tc['Q'] = tcQ5;
+      rinex2tc['A'] = tcA;
+      rinex2tc['B'] = tcB;
+      rinex2tc['Z'] = tcABC;
+
+      for (int i=otUnknown; i<otLast; i++) ot2Rinex[(ObservationType)i] = ' ';
+      for (int i=cbUnknown; i<cbLast; i++) cb2Rinex[(CarrierBand)i] = ' ';
+      for (int i=tcUnknown; i<tcLast; i++) tc2Rinex[(TrackingCode)i] = ' ';
+
+      // Here the above three maps are reversed to speed up the runtime
+      for (std::map< char, ObservationType>::const_iterator i=rinex2ot.begin();
+           i != rinex2ot.end(); i++)
+         ot2Rinex[i->second] = i->first;
+
+      for (std::map< char, CarrierBand>::const_iterator i=rinex2cb.begin();
+           i != rinex2cb.end(); i++)
+         cb2Rinex[i->second] = i->first;
+
+      for (std::map< char, TrackingCode>::const_iterator i=rinex2tc.begin();
+           i != rinex2tc.end(); i++)
+         tc2Rinex[i->second] = i->first;
+
+      // And add the couple 'special' cases
+      tc2Rinex[tcC] = 'C';
+      tc2Rinex[tcIE5] = 'I';
+      tc2Rinex[tcQE5] = 'Q';
+      tc2Rinex[tcIQE5] = 'X';
+      tc2Rinex[tcIQ5] = 'X';
+      tc2Rinex[tcBC] = 'X';
    }
 
 
-      // Convenience output method
+   // Construct this object from the rinex3 specifier
+   ObsID::ObsID(const std::string& id) throw(InvalidParameter)
+   {
+      int i = id.length() - 3;
+      if ( i < 0 || i > 1)
+      {
+         InvalidParameter e("identifier must be 3 or 4 characters long");
+         GPSTK_THROW(e);
+      }
+
+      type = rinex2ot[ id[i] ];
+      band = rinex2cb[ id[i+1] ];
+      code = rinex2tc[ id[i+2] ];
+
+      /// This next block takes care of fixing up the codes that are reused
+      /// betweern the various signals
+      if (i==0 || id[0] == 'G') // GPS
+      {
+         if (id[i+2]=='X' && band==cbL5)
+            code = tcIQ5;
+      }
+      if (id[0] == 'E') // Galileo
+      {
+         switch (code)
+         {
+            case tcCA: code = tcC; break;
+            case tcI5: code = tcIE5; break;
+            case tcQ5: code = tcQE5; break;
+         }
+         if (id[i+2] == 'X')
+         {
+            if (band == cbL1 || band == cbE6)
+               code = tcBC;
+            else if (band == cbL5 || band == cbE5b || band == cbE5ab)
+               code = tcIQE5;
+         }
+      }
+      else if (id[0] == 'R') // Glonass
+      {
+         switch (code)
+         {
+            case tcCA: code = tcGCA; break;
+            case tcP: code = tcGP; break;
+         }
+      }
+   }
+
+
+   // Convenience output method
    std::ostream& ObsID::dump(std::ostream& s) const
    {
-      s << ObsID::cbStrings[band] << " "
-        << ObsID::tcStrings[code] << " "
-        << ObsID::otStrings[type];
-
+      s << ObsID::cbDesc[band] << " "
+        << ObsID::tcDesc[code] << " "
+        << ObsID::otDesc[type];
       return s;
    } // ObsID::dump()
 
 
-   bool ObsID::isValid() const
+
+   // Represent this object using the Rinex3 notation
+   std::string ObsID::asRinex3ID() const
    {
-      // At some time this needs to be implimented.
-      return false;
+      char buff[4];
+      buff[0] = ot2Rinex[type];
+      buff[1] = cb2Rinex[band];
+      buff[2] = tc2Rinex[code];
+      buff[3] = 0;
+      return std::string(buff);
    }
 
 
-      /* Static method to add new ObservationType's
-       * @param s      Identifying string for the new ObservationType
-       */
-   ObsID::ObservationType ObsID::newObservationType(const std::string& s)
+   // This is used to register a new ObsID & Rinex 3 identifier.  The syntax for the
+   // Rinex 3 identifier is the same as for the ObsID constructor.  If there are spaces
+   // the provided identifier, they are ignored
+   ObsID ObsID::newID(const std::string& rinexID, const std::string& desc)
+      throw(InvalidParameter)
    {
-      ObservationType newId =
-         static_cast<ObservationType>(ObsID::otStrings.rbegin()->first + 1);
+      using namespace std;
+      ObsID oid(rinexID);
+      // At least one parameter needs to be unknown 
+      if (oid.type != otUnknown && oid.band != cbUnknown && oid.code != tcUnknown)
+         GPSTK_THROW(InvalidParameter("Identifier " + rinexID + " is already defined"));
 
-      ObsID::otStrings[newId] = s;
-
-      return newId;
+      int i = rinexID.length() - 3;
+      if (oid.type == otUnknown && rinexID[i] != ' ')
+      {
+         oid.type = (ObservationType)otDesc.size();
+         otDesc[oid.type] = desc;
+         rinex2ot[rinexID[i]] = oid.type;
+         ot2Rinex[oid.type] = rinexID[i];
+      }
+      if (oid.band == cbUnknown && rinexID[i+1] != ' ')
+      {
+         oid.band = (CarrierBand)cbDesc.size();
+         cbDesc[oid.band] = desc;
+         rinex2cb[rinexID[i+1]] = oid.band;
+         cb2Rinex[oid.band] = rinexID[i+1];
+      }
+      if (oid.code == tcUnknown && rinexID[i+2] != ' ')
+      {
+         oid.code = (TrackingCode) tcDesc.size();
+         tcDesc[oid.code];
+         rinex2tc[rinexID[i+2]] = oid.code;
+         tc2Rinex[oid.code] = rinexID[i+2];
+      }
+      return oid;
    }
 
 
-      /* Static method to add new CarrierBand's
-       * @param s      Identifying string for the new CarrierBand
-       */
-   ObsID::CarrierBand ObsID::newCarrierBand(const std::string& s)
-   {
-      CarrierBand newId =
-         static_cast<CarrierBand>(ObsID::cbStrings.rbegin()->first + 1);
-
-      ObsID::cbStrings[newId] = s;
-
-      return newId;
-   }
-
-
-      /* Static method to add new TrackingCode's
-       * @param s      Identifying string for the new TrackingCode
-       */
-   ObsID::TrackingCode ObsID::newTrackingCode(const std::string& s)
-   {
-      TrackingCode newId =
-         static_cast<TrackingCode>(ObsID::tcStrings.rbegin()->first + 1);
-
-      ObsID::tcStrings[newId] = s;
-
-      return newId;
-   }
-
-
-      // Equality requires all fields to be the same
+   // Equality requires all fields to be the same
    bool ObsID::operator==(const ObsID& right) const
    { return type==right.type &&  band==right.band && code==right.code; }
 
 
-      // This ordering is somewhat arbitrary but is required to be able
-      // to use an ObsID as an index to a std::map. If an application needs
-      // some other ordering, inherit and override this function.
+   // This ordering is somewhat arbitrary but is required to be able
+   // to use an ObsID as an index to a std::map. If an application needs
+   // some other ordering, inherit and override this function.
    bool ObsID::operator<(const ObsID& right) const
    {
       if (band == right.band)
@@ -187,17 +304,23 @@ namespace gpstk
 
    namespace StringUtils
    {
-         // convert this object to a string representation
+      // convert this object to a string representation
       std::string asString(const ObsID& p)
       {
          std::ostringstream oss;
          p.dump(oss);
          return oss.str();
       }
+
+      // convert this object to a string representation
+      std::string asRinex3ID(const ObsID& p)
+      {
+         return p.asRinex3ID();
+      }
    }
 
 
-      // stream output for ObsID
+   // stream output for ObsID
    std::ostream& operator<<(std::ostream& s, const ObsID& p)
    {
       p.dump(s);
