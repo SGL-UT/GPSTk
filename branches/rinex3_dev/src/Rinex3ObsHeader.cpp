@@ -90,15 +90,9 @@ namespace gpstk
    void Rinex3ObsHeader::reallyPutRecord(FFStream& ffs) const
       throw(std::exception, FFStreamError, StringException)
    {
-      cout << "***** Rinex3ObsHeader::reallyPutRecord():" << endl;
-
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
 
-      cout << "      dynamic cast for Rinex3ObsStream" << endl;
-
-//      strm.header = *this;
-
-      cout << "      strm.header assigned to *this" << endl;
+      strm.header = *this;
 
       unsigned long allValid;
       if      (version == 3.0)   allValid = allValid30;
@@ -109,8 +103,6 @@ namespace gpstk
          err.addText("Make sure to set the version correctly.");
          GPSTK_THROW(err);
       }
-
-      cout << "      allValid assigned" << endl;
 
       if ((valid & allValid) != allValid)
       {
@@ -138,7 +130,6 @@ namespace gpstk
 
       try
       {
-         cout << "      trying to call WriteheaderRecords(strm)" << endl;
          WriteHeaderRecords(strm);
       }
       catch(FFStreamError& e)
@@ -200,9 +191,9 @@ namespace gpstk
    {
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
       string line;
+
       if (valid & validVersion)
       {
-         cout << "*** Version" << endl;
          line  = rightJustify(asString(version,2), 9);
          line += string(11, ' ');
 
@@ -219,7 +210,7 @@ namespace gpstk
             GPSTK_THROW(err);
          }
 
-         line += leftJustify(string("Observation data"), 20);
+         line += leftJustify(string("OBSERVATION DATA"), 20);
          std::string str;
          str = system.systemChar();
          str = str + " (" + system.systemString() + ")";
@@ -230,7 +221,6 @@ namespace gpstk
       }
       if (valid & validRunBy)
       {
-         cout << "*** Run By" << endl;
          line  = leftJustify(fileProgram, 20);
          line += leftJustify(fileAgency , 20);
          SystemTime sysTime;
@@ -242,7 +232,6 @@ namespace gpstk
       }
       if (valid & validComment)
       {
-         cout << "*** Comments" << endl;
          vector<string>::const_iterator itr = commentList.begin();
          while (itr != commentList.end())
          {
@@ -255,7 +244,6 @@ namespace gpstk
       }
       if (valid & validMarkerName)
       {
-         cout << "*** Marker Name" << endl;
          line  = leftJustify(markerName, 60);
          line += stringMarkerName;
          strm << line << endl;
@@ -263,7 +251,6 @@ namespace gpstk
       }
       if (valid & validMarkerNumber)
       {
-         cout << "*** Marker Number" << endl;
          line  = leftJustify(markerNumber, 20);
          line += string(40, ' ');
          line += stringMarkerNumber;
@@ -272,7 +259,6 @@ namespace gpstk
       }
       if (valid & validMarkerType)
       {
-         cout << "*** Marker Type" << endl;
          line  = leftJustify(markerType, 20);
          line += string(40, ' ');
          line += stringMarkerType;
@@ -281,7 +267,6 @@ namespace gpstk
       }
       if (valid & validObserver)
       {
-         cout << "*** Observer" << endl;
          line  = leftJustify(observer, 20);
          line += leftJustify(agency  , 40);
          line += stringObserver;
@@ -290,7 +275,6 @@ namespace gpstk
       }
       if (valid & validReceiver)
       {
-         cout << "*** Receiver" << endl;
          line  = leftJustify(recNo  , 20);
          line += leftJustify(recType, 20);
          line += leftJustify(recVers, 20);
@@ -300,7 +284,6 @@ namespace gpstk
       }
       if (valid & validAntennaType)
       {
-         cout << "*** Antenna Type" << endl;
          line  = leftJustify(antNo  , 20);
          line += leftJustify(antType, 20);
          line += string(20, ' ');
@@ -310,7 +293,6 @@ namespace gpstk
       }
       if (valid & validAntennaPosition)
       {
-         cout << "*** Antenna Position" << endl;
          line  = rightJustify(asString(antennaPosition[0], 4), 14);
          line += rightJustify(asString(antennaPosition[1], 4), 14);
          line += rightJustify(asString(antennaPosition[2], 4), 14);
@@ -321,7 +303,6 @@ namespace gpstk
       }
       if (valid & validAntennaDeltaHEN)
       {
-         cout << "*** Antenna Delta HEN" << endl;
          line  = rightJustify(asString(antennaDeltaHEN[0], 4), 14);
          line += rightJustify(asString(antennaDeltaHEN[1], 4), 14);
          line += rightJustify(asString(antennaDeltaHEN[2], 4), 14);
@@ -332,7 +313,6 @@ namespace gpstk
       }
       if (valid & validAntennaDeltaXYZ)
       {
-         cout << "*** Antenna Delta XYZ" << endl;
          line  = rightJustify(asString(antennaDeltaXYZ[0], 4), 14);
          line += rightJustify(asString(antennaDeltaXYZ[1], 4), 14);
          line += rightJustify(asString(antennaDeltaXYZ[2], 4), 14);
@@ -343,7 +323,6 @@ namespace gpstk
       }
       if (valid & validAntennaPhaseCtr)
       {
-         cout << "*** Antenna Phase Center" << endl;
          line  =  leftJustify(antennaSatSys , 1);
          line += rightJustify(antennaObsCode, 3);
          line += rightJustify(asString(antennaPhaseCtr[0], 4),  9);
@@ -356,7 +335,6 @@ namespace gpstk
       }
       if (valid & validAntennaBsightXYZ)
       {
-         cout << "*** Antenna Boresight XYZ" << endl;
          line  = rightJustify(asString(antennaBsightXYZ[0], 4), 14);
          line += rightJustify(asString(antennaBsightXYZ[1], 4), 14);
          line += rightJustify(asString(antennaBsightXYZ[2], 4), 14);
@@ -367,7 +345,6 @@ namespace gpstk
       }
       if (valid & validAntennaZeroDirAzi)
       {
-         cout << "*** Antenna Zero Dir Azi" << endl;
          line  = rightJustify(asString(antennaZeroDirAzi, 4), 14);
          line += string(46, ' ');
          line += stringAntennaZeroDirAzi;
@@ -376,7 +353,6 @@ namespace gpstk
       }
       if (valid & validAntennaZeroDirXYZ)
       {
-         cout << "*** Antenna Zero Dir XYZ" << endl;
          line  = rightJustify(asString(antennaZeroDirXYZ[0], 4), 14);
          line += rightJustify(asString(antennaZeroDirXYZ[1], 4), 14);
          line += rightJustify(asString(antennaZeroDirXYZ[2], 4), 14);
@@ -387,7 +363,6 @@ namespace gpstk
       }
       if (valid & validCenterOfMass)
       {
-         cout << "*** Center of Mass" << endl;
          line  = rightJustify(asString(centerOfMass[0], 4), 14);
          line += rightJustify(asString(centerOfMass[1], 4), 14);
          line += rightJustify(asString(centerOfMass[2], 4), 14);
@@ -398,25 +373,24 @@ namespace gpstk
       }
       if (valid & validSystemObsType)
       {
-         cout << "*** System Obs Type" << endl;
          const int maxObsPerLine = 13;
 
-         std::map<std::string,vector<ObsID> >::iterator mapIter;
-         for (mapIter == mapObsTypes.begin(); mapIter != mapObsTypes.end(); mapIter++)
+         map<std::string,vector<ObsID> >::const_iterator mapIter;
+         for (mapIter = mapObsTypes.begin(); mapIter != mapObsTypes.end(); mapIter++)
          {
             int obsWritten = 0;
-            line = ""; // make sure the line contents are reset.
+            line = ""; // make sure the line contents are reset
 
-            vector<ObsID>::const_iterator listItr = (mapIter->second).begin();
+            vector<ObsID> ObsTypeList = mapIter->second;
 
-            while (listItr != (mapIter->second).end())
+            for (int i = 0; i < ObsTypeList.size(); i++)
             {
                // the first line needs to have the GNSS type and # of obs
                if (obsWritten == 0)
                {
-                  line +=  leftJustify(mapIter->first, 1);
+                  line  =  leftJustify(mapIter->first, 1);
                   line += string(2, ' ');
-                  line  = rightJustify(asString(obsTypeList.size()), 3);
+                  line += rightJustify(asString(ObsTypeList.size()), 3);
                }
                // if you hit 13, write out the line and start a new one
                else if ((obsWritten % maxObsPerLine) == 0)
@@ -427,15 +401,13 @@ namespace gpstk
                   line  = string(6, ' ');
                }
                line += string(1, ' ');
-               line += rightJustify(asString(*listItr), 3);
+               line += rightJustify(ObsTypeList[i].asRinex3ID(), 3);
                obsWritten++;
-               listItr++;
             }
             line += string(60 - line.size(), ' ');
             line += stringSystemNumObs;
             strm << line << endl;
             strm.lineNumber++;
-
          }
       }
       if (valid & validSigStrengthUnit)
@@ -484,9 +456,9 @@ namespace gpstk
          {
            line  = rightJustify(infoDCBS[i].satSys,  1);
            line += string(1, ' ');
-           line += rightJustify(infoDCBS[i].name  , 17);
+           line +=  leftJustify(infoDCBS[i].name  , 17);
            line += string(1, ' ');
-           line += rightJustify(infoDCBS[i].source, 40);
+           line +=  leftJustify(infoDCBS[i].source, 40);
            line += stringSystemDCBSapplied;
            strm << line << endl;
            strm.lineNumber++;
@@ -558,7 +530,6 @@ namespace gpstk
             }
          }
       }
-
       if (valid & validLeapSeconds)
       {
          line  = rightJustify(asString(leapSeconds), 6);
@@ -638,6 +609,7 @@ namespace gpstk
          version  = asDouble(line.substr( 0,20));
          fileType = strip(   line.substr(20,20));
          satSys   = strip(   line.substr(40,20));
+         system.fromString(satSys);
          if ( fileType[0] != 'O' && fileType[0] != 'o')
          {
             FFStreamError e("This isn't a RINEX 3 Obs file.");
@@ -678,12 +650,8 @@ namespace gpstk
       }
       else if (label == stringMarkerType)
       {
-         cout << "*** Trying to read MarkerType" << endl;
          markerType = strip(line.substr(0,20));
-         cout << "*** Read MarkerType" << endl;
-         cout << "*** MarkerType = " << markerType << endl;
          valid |= validMarkerType;
-         cout << "*** Set validMarkerType" << endl;
       }
       else if (label == stringObserver)
       {
@@ -779,7 +747,7 @@ namespace gpstk
             {
                int position = 4*(i % maxObsPerLine) + 6 + 1;
 //               ObsID rt = convertObsType(line.substr(position,3));
-               ObsID rt(ObsID::otPhase, ObsID::cbL1, ObsID::tcCA);
+               ObsID rt(line.substr(position,3));
                newTypeList.push_back(rt);
             }
          }
@@ -790,7 +758,7 @@ namespace gpstk
             {
                int position = 4*i + 6 + 1;
 //               ObsID rt = convertObsType(line.substr(position,3));
-               ObsID rt(ObsID::otPhase, ObsID::cbL1, ObsID::tcCA);
+               ObsID rt(line.substr(position,3));
                newTypeList.push_back(rt);
             }
             mapObsTypes[satSysTemp] = newTypeList;
@@ -928,7 +896,6 @@ namespace gpstk
       }
       else if (label == stringEoH)
       {
-         cout << "Found End of Header" << endl;
          valid |= validEoH;
       }
       else
@@ -982,9 +949,7 @@ namespace gpstk
             GPSTK_RETHROW(e);
          }
 
-      }   // end while(not end of header)
-
-      cout << "*** Finished reading Header lines." << endl;
+      } // end while(not end of header)
 
       unsigned long allValid;
       if      (version == 3.0)  allValid = allValid30;
@@ -1002,7 +967,7 @@ namespace gpstk
          GPSTK_THROW(e);               
       }
 
-      // If we get here, we should have reached the end of header line
+      // If we get here, we should have reached the end of header line.
       strm.header = *this;
       strm.headerRead = true;
 
@@ -1062,15 +1027,20 @@ namespace gpstk
    {
       int year, month, day, hour, min;
       double sec;
+      string tsys;
+      TimeSystem ts;
    
-      year  = asInt(   line.substr(0,  6 ));
-      month = asInt(   line.substr(6,  6 ));
-      day   = asInt(   line.substr(12, 6 ));
-      hour  = asInt(   line.substr(18, 6 ));
-      min   = asInt(   line.substr(24, 6 ));
+      year  = asInt(   line.substr(0,   6));
+      month = asInt(   line.substr(6,   6));
+      day   = asInt(   line.substr(12,  6));
+      hour  = asInt(   line.substr(18,  6));
+      min   = asInt(   line.substr(24,  6));
       sec   = asDouble(line.substr(30, 13));
+      tsys  =          line.substr(48,  3) ;
 
-      return CivilTime(year, month, day, hour, min, sec);
+      ts.fromString(tsys);
+
+      return CivilTime(year, month, day, hour, min, sec, ts);
    }
 
 
@@ -1119,7 +1089,7 @@ namespace gpstk
 //              << " "  << iter->second[i].description
 //              << " (" << iter->second[i].units << ")." << endl;
       }
-      s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P");
+      s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P") << "\n";
       s << "(This header is ";
       if ((valid & allValid30) == allValid30) s << "VALID 3.00";
       else s << "NOT VALID";
@@ -1206,9 +1176,10 @@ namespace gpstk
          map<SatID, vector<int> >::const_iterator sat_itr = numObsForSat.begin();
          while (sat_itr != numObsForSat.end())
          {
-            vector<int> obsvec=sat_itr->second;
+            vector<int> obsvec = sat_itr->second;
             s << " " << RinexSatID(sat_itr->first) << " ";
-            for (i=0; i<obsvec.size(); i++) s << " " << setw(6) << obsvec[i];
+            for (i = 0; i < obsvec.size(); i++)
+              s << " " << setw(6) << obsvec[i];
             s << endl;
             sat_itr++;
          }

@@ -214,7 +214,7 @@ namespace gpstk
      gpstk::Triple antennaZeroDirXYZ;                ///< ANTENNA ZERODIR XYZ            (optional)
      gpstk::Triple centerOfMass;                     ///< vehicle CENTER OF MASS: XYZ    (optional)
      std::vector<ObsID> obsTypeList;                 ///< number & types of observations
-     map<string,vector<ObsID> > mapObsTypes;         ///< map for different sat. systems
+     map<std::string,vector<ObsID> > mapObsTypes;    ///< map for different sat. systems
      std::string sigStrengthUnit;                    ///< SIGNAL STRENGTH UNIT           (optional)
      double interval;                                ///< INTERVAL                       (optional)
      CivilTime firstObs,                             ///< TIME OF FIRST OBS
