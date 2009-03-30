@@ -25,25 +25,17 @@ main(int argc, char *argv[])
    try
    {
       cout << "Reading " << argv[1] << endl;
-      gpstk::Rinex3ObsStream roffs(argv[1]);
+      gpstk::Rinex3ObsStream roffs(argv[1],ios::in);
       cout << "Writing " << argv[2] << endl;
-      gpstk::Rinex3ObsStream out(argv[2], ios::out);
+      gpstk::Rinex3ObsStream rout3(argv[2],ios::out);
       gpstk::Rinex3ObsHeader roh;
 //      gpstk::Rinex3NavData roe;
 
-      cout << "Stream, Header, Data declarations made." << endl;
-
       roffs >> roh;
-
-      cout << "Header read in." << endl;
 
       roh.dump(cout);
 
-      cout << "Header dumped." << endl;
-
-      out << roh;
-
-      cout << "Header written out." << endl;
+      rout3 << roh;
 
       /*
       int i = 0;
