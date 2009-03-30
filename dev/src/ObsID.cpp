@@ -114,19 +114,26 @@ namespace gpstk
          std::cout << "Error in cbDesc" << std::endl;
       if (tcDesc.size() != (int)tcLast)
          std::cout << "Error in tcDesc" << std::endl;
-      
+
+      // The following definitions really should only describe the items that are
+      // in the Rinex 3 specification. If an application needs additional ObsID
+      // types to be able to be translated to/from Rinex3, the additional types
+      // must be added by the application.
+      rinex2ot[' '] = otUnknown;
       rinex2ot['C'] = otRange;
       rinex2ot['L'] = otPhase;
       rinex2ot['D'] = otDoppler;
       rinex2ot['S'] = otSNR;
 
+      rinex2cb[' '] = cbUnknown;
       rinex2cb['1'] = cbL1;
-      rinex2cb['2'] = cbL1;
+      rinex2cb['2'] = cbL2;
       rinex2cb['5'] = cbL5;
       rinex2cb['6'] = cbE6;
       rinex2cb['7'] = cbE5b;
       rinex2cb['8'] = cbE5ab;
 
+      rinex2tc[' '] = tcUnknown;
       rinex2tc['C'] = tcCA;
       rinex2tc['P'] = tcP;  
       rinex2tc['W'] = tcW;
@@ -171,27 +178,35 @@ namespace gpstk
 
 
    // Construct this object from the rinex3 specifier
-   ObsID::ObsID(const std::string& id) throw(InvalidParameter)
+   ObsID::ObsID(const std::string& rinexID) throw(InvalidParameter)
    {
-      int i = id.length() - 3;
+      int i = rinexID.length() - 3;
       if ( i < 0 || i > 1)
       {
          InvalidParameter e("identifier must be 3 or 4 characters long");
          GPSTK_THROW(e);
       }
 
-      type = rinex2ot[ id[i] ];
-      band = rinex2cb[ id[i+1] ];
-      code = rinex2tc[ id[i+2] ];
+      char sys = i ? rinexID[0] : 'G';
+      char ot = rinexID[i];
+      char cb = rinexID[i+1];
+      char tc = rinexID[i+2];
+      
+      if (!rinex2ot.count(ot) || !rinex2cb.count(cb) || !rinex2tc.count(tc))
+         idCreator(rinexID.substr(i,3));
+
+      type = rinex2ot[ ot ];
+      band = rinex2cb[ cb ];
+      code = rinex2tc[ tc ];
 
       /// This next block takes care of fixing up the codes that are reused
       /// betweern the various signals
-      if (i==0 || id[0] == 'G') // GPS
+      if (sys == 'G') // GPS
       {
-         if (id[i+2]=='X' && band==cbL5)
+         if (tc=='X' && band==cbL5)
             code = tcIQ5;
       }
-      if (id[0] == 'E') // Galileo
+      if (sys == 'E') // Galileo
       {
          switch (code)
          {
@@ -199,7 +214,7 @@ namespace gpstk
             case tcI5: code = tcIE5; break;
             case tcQ5: code = tcQE5; break;
          }
-         if (id[i+2] == 'X')
+         if (tc == 'X')
          {
             if (band == cbL1 || band == cbE6)
                code = tcBC;
@@ -207,7 +222,7 @@ namespace gpstk
                code = tcIQE5;
          }
       }
-      else if (id[0] == 'R') // Glonass
+      else if (sys == 'R') // Glonass
       {
          switch (code)
          {
@@ -233,6 +248,7 @@ namespace gpstk
    std::string ObsID::asRinex3ID() const
    {
       char buff[4];
+
       buff[0] = ot2Rinex[type];
       buff[1] = cb2Rinex[band];
       buff[2] = tc2Rinex[code];
@@ -242,46 +258,71 @@ namespace gpstk
 
 
    // This is used to register a new ObsID & Rinex 3 identifier.  The syntax for the
-   // Rinex 3 identifier is the same as for the ObsID constructor.  If there are spaces
-   // the provided identifier, they are ignored
+   // Rinex 3 identifier is the same as for the ObsID constructor. Four character 
+   // identifiers (like are allowed in the constructor) are not allowed. 
+   // If there are spaces in the provided identifier, they are ignored
    ObsID ObsID::newID(const std::string& rinexID, const std::string& desc)
       throw(InvalidParameter)
    {
-      using namespace std;
-      ObsID oid(rinexID);
-      // At least one parameter needs to be unknown 
-      if (oid.type != otUnknown && oid.band != cbUnknown && oid.code != tcUnknown)
-         GPSTK_THROW(InvalidParameter("Identifier " + rinexID + " is already defined"));
+      if (rinex2ot.count(rinexID[0]) && 
+          rinex2cb.count(rinexID[1]) && 
+          rinex2tc.count(rinexID[2]))
+          GPSTK_THROW(InvalidParameter("Identifier " + rinexID + " is already defined"));
 
-      int i = rinexID.length() - 3;
-      if (oid.type == otUnknown && rinexID[i] != ' ')
-      {
-         oid.type = (ObservationType)otDesc.size();
-         otDesc[oid.type] = desc;
-         rinex2ot[rinexID[i]] = oid.type;
-         ot2Rinex[oid.type] = rinexID[i];
-      }
-      if (oid.band == cbUnknown && rinexID[i+1] != ' ')
-      {
-         oid.band = (CarrierBand)cbDesc.size();
-         cbDesc[oid.band] = desc;
-         rinex2cb[rinexID[i+1]] = oid.band;
-         cb2Rinex[oid.band] = rinexID[i+1];
-      }
-      if (oid.code == tcUnknown && rinexID[i+2] != ' ')
-      {
-         oid.code = (TrackingCode) tcDesc.size();
-         tcDesc[oid.code];
-         rinex2tc[rinexID[i+2]] = oid.code;
-         tc2Rinex[oid.code] = rinexID[i+2];
-      }
-      return oid;
+      return idCreator(rinexID, desc);
    }
 
 
-   // Equality requires all fields to be the same
+   ObsID ObsID::idCreator(const std::string& rinexID, const std::string& desc)
+   {
+      char ot = rinexID[0];
+      ObservationType type;
+      if (!rinex2ot.count(ot))
+      {
+         type = (ObservationType)otDesc.size();
+         otDesc[type] = desc;
+         rinex2ot[ot] = type;
+         ot2Rinex[type] = ot;
+      }
+      else
+         type = rinex2ot[ot];
+
+      char cb = rinexID[1];
+      CarrierBand band;
+      if (!rinex2cb.count(cb))
+      {
+         band = (CarrierBand)cbDesc.size();
+         cbDesc[band] = desc;
+         rinex2cb[cb] = band;
+         cb2Rinex[band] = cb;
+      }
+      else
+         band = rinex2cb[cb];
+
+      char tc = rinexID[2];
+      TrackingCode code;
+      if (!rinex2tc.count(tc))
+      {
+         code = (TrackingCode) tcDesc.size();
+         tcDesc[code] = desc;
+         rinex2tc[tc] = code;
+         tc2Rinex[code] = tc;
+      }
+      else
+         code = rinex2tc[tc];
+      
+      return ObsID(type, band, code);
+   }
+
+
+   // Equality requires all fields to be the same unless the field is unknown
    bool ObsID::operator==(const ObsID& right) const
-   { return type==right.type &&  band==right.band && code==right.code; }
+   {
+      bool ot = type == otUnknown || right.type == otUnknown || type == right.type;
+      bool cb = band == cbUnknown || right.band == cbUnknown || band == right.band;
+      bool tc = code == tcUnknown || right.code == tcUnknown || code == right.code;
+      return ot && cb && tc;
+   }
 
 
    // This ordering is somewhat arbitrary but is required to be able

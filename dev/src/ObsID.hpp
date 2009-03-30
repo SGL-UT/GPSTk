@@ -88,8 +88,7 @@ namespace gpstk
          otSSI,       ///< Signal Strength Indicator (kinda a rinex thing)
          otLLI,       ///< Loss of Lock Indicator (another rinex thing)
          otTrackLen,  ///< Number of continuous epochs of 'good' tracking
-         otLast,      ///< used to extend this list
-         otPlaceholder = otLast+1000
+         otLast       ///< Used to verify that all items are described at compile time
       };
 
 
@@ -106,8 +105,7 @@ namespace gpstk
          cbE5ab, ///< Galileo E5a+b
          cbE6,   ///< Galileo E6
          cbL1L2, ///< Combined L1L2 (like an ionosphere free obs)
-         cbLast, ///< Used to extend this list
-         cbPlaceholder = cbLast+1000
+         cbLast  ///< Used to verify that all items are described at compile time
       };
 
 
@@ -146,11 +144,10 @@ namespace gpstk
          tcIE5,     ///< Galileo L5 I code
          tcQE5,     ///< Galileo L5 Q code
          tcIQE5,    ///< Galileo L5 I+Q combined tracking
-         tcLast,    ///< Used to extend this list
-         tcPlaceholder = tcLast+1000
+         tcLast     ///< Used to verify that all items are described at compile time
       };
 
-      /// empty constructor, creates an invalid object
+      /// empty constructor, creates a wildcard object.
       ObsID()
          : type(otUnknown), band(cbUnknown), code(tcUnknown) {};
 
@@ -161,7 +158,9 @@ namespace gpstk
       /// Constructor from a Rinex 3 style descriptor. If this string is 3 characters
       /// long, the system is assumed to be GPS. If this string is 4 characters long,
       /// the first character is the system designator as described in the Rinex 3
-      /// specification.
+      /// specification. If the Rinex 3 style descriptor isn't currently defined,
+      /// a new one is silently automatically created with a blank description for
+      /// the new characters.
       ObsID(const std::string& id) throw(InvalidParameter);
       ObsID(const char* id) throw(InvalidParameter)
       { *this=ObsID(std::string(id));};
@@ -171,7 +170,11 @@ namespace gpstk
 
       /// This ordering is somewhat arbitrary but is required to be able
       /// to use an ObsID as an index to a std::map. If an application needs
-      /// some other ordering, inherit and override this function.
+      /// some other ordering, inherit and override this function. One 'feature'
+      /// that has been added is that an Unknown code/carrier/type will match
+      /// any other code/carrier/type in the equality operator. The intent is to support
+      //  performing an operation like "tell me if this is a pseudorange that was
+      /// collected on L1 from *any* code".
       virtual bool operator<(const ObsID& right) const;
 
       bool operator!=(const ObsID& right) const
@@ -209,7 +212,7 @@ namespace gpstk
       // is examined and the new ones are created. The returned ObsID can then be
       // examined for the assigned values.
       static ObsID newID(const std::string& id,
-                         const std::string& desc) throw(InvalidParameter);
+                         const std::string& desc="") throw(InvalidParameter);
 
       // Note that these are the only data members of objects of this class.
       ObservationType  type;
@@ -238,6 +241,9 @@ namespace gpstk
       };
       
       static Initializer singleton;
+
+   private:
+      static ObsID idCreator(const std::string& id, const std::string& desc="");
 
    }; // class ObsID
 
