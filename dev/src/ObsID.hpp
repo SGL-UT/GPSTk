@@ -1,18 +1,5 @@
 #pragma ident "$Id$"
 
-/**
- * @file ObsID.hpp
- * gpstk::ObsID - navigation system, receiver, and file specification
- * independent representation of the types of observation data that can
- * be collected.  This class is analogous to the RinexObsType class that
- * is used to represent the observation codes in a RINEX file. It is
- * intended to support at least everything in section 5.1 of the RINEX 3
- * specifications.
- */
-
-#ifndef OBSID_HPP
-#define OBSID_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -49,6 +36,18 @@
 //
 //=============================================================================
 
+/**
+ * @file ObsID.hpp
+ * gpstk::ObsID - navigation system, receiver, and file specification
+ * independent representation of the types of observation data that can
+ * be collected.  This class is analogous to the RinexObsType class that
+ * is used to represent the observation codes in a RINEX file. It is
+ * intended to support at least everything in section 5.1 of the RINEX 3
+ * specifications.
+ */
+
+#ifndef OBSID_HPP
+#define OBSID_HPP
 
 #include <iostream>
 #include <iomanip>
@@ -81,13 +80,17 @@ namespace gpstk
       enum ObservationType
       {
          otUnknown,
+         otAny,       ///< Used to match any observation type
          otRange,     ///< pseudorange, in meters
          otPhase,     ///< accumulated phase, in meters
          otDoppler,   ///< Doppler, in Hz
          otSNR,       ///< Signal strength, in dB-Hz
+         otChannel,   ///< Channel number
+         otIono,      ///< Ionospheric delay (see rinex3 section 5.12)
          otSSI,       ///< Signal Strength Indicator (kinda a rinex thing)
          otLLI,       ///< Loss of Lock Indicator (another rinex thing)
          otTrackLen,  ///< Number of continuous epochs of 'good' tracking
+         otUndefined,
          otLast       ///< Used to verify that all items are described at compile time
       };
 
@@ -96,6 +99,8 @@ namespace gpstk
       enum CarrierBand
       {
          cbUnknown,
+         cbAny,  ///< Used to match any carrier band
+         cbZero, ///< Used with the channel observation type (see rinex3 section 5.13)
          cbL1,   ///< GPS L1, Galileo E2-L1-E1, SBAS L1
          cbL2,   ///< GPS L2
          cbL5,   ///< GPS L5, Galileo E5a, SBAS L5
@@ -105,13 +110,14 @@ namespace gpstk
          cbE5ab, ///< Galileo E5a+b
          cbE6,   ///< Galileo E6
          cbL1L2, ///< Combined L1L2 (like an ionosphere free obs)
+         cbUndefined,
          cbLast  ///< Used to verify that all items are described at compile time
       };
 
 
-      /// The code used to collect the observation. Each of these should uniquely identify
-      /// a code that was correlated against to track the signal.  While the notation
-      /// generally follows section 5.1 of RINEX 3, due to ambiguities in that
+      /// The code used to collect the observation. Each of these should uniquely
+      /// identify a code that was correlated against to track the signal. While the
+      /// notation generally follows section 5.1 of RINEX 3, due to ambiguities in that
       /// specification some extensions are made. Note that as concrete specifications
       /// for the codes are released, this list may need to be adjusted. Specifically,
       /// this lists assumes that the same I & Q codes will be used on all three of the
@@ -119,6 +125,7 @@ namespace gpstk
       enum TrackingCode
       {
          tcUnknown,
+         tcAny,     ///< Used to match any tracking code
          tcCA,      ///< Legacy GPS civil code
          tcP,       ///< Legacy GPS precise code
          tcY,       ///< Encrypted legacy GPS precise code
@@ -144,6 +151,7 @@ namespace gpstk
          tcIE5,     ///< Galileo L5 I code
          tcQE5,     ///< Galileo L5 Q code
          tcIQE5,    ///< Galileo L5 I+Q combined tracking
+         tcUndefined,
          tcLast     ///< Used to verify that all items are described at compile time
       };
 
@@ -171,10 +179,10 @@ namespace gpstk
       /// This ordering is somewhat arbitrary but is required to be able
       /// to use an ObsID as an index to a std::map. If an application needs
       /// some other ordering, inherit and override this function. One 'feature'
-      /// that has been added is that an Unknown code/carrier/type will match
-      /// any other code/carrier/type in the equality operator. The intent is to support
-      //  performing an operation like "tell me if this is a pseudorange that was
-      /// collected on L1 from *any* code".
+      /// that has been added is that an Any code/carrier/type will match
+      /// any other code/carrier/type in the equality operator. The intent is to
+      /// support performing an operation like "tell me if this is a pseudorange 
+      /// that was collected on L1 from *any* code".
       virtual bool operator<(const ObsID& right) const;
 
       bool operator!=(const ObsID& right) const

@@ -63,27 +63,35 @@ namespace gpstk
 
    ObsID::Initializer::Initializer()
    {
-      otDesc[otUnknown]  = "UnknownType";
-      otDesc[otRange]    = "range";
-      otDesc[otPhase]    = "phase";
-      otDesc[otDoppler]  = "doppler";
-      otDesc[otSNR]      = "snr";
-      otDesc[otSSI]      = "ssi";
-      otDesc[otLLI]      = "lli";
-      otDesc[otTrackLen] = "tlen";
+      otDesc[otUnknown]   = "UnknownType";
+      otDesc[otAny]       = "AnyType";
+      otDesc[otRange]     = "range";
+      otDesc[otPhase]     = "phase";
+      otDesc[otDoppler]   = "doppler";
+      otDesc[otSNR]       = "snr";
+      otDesc[otChannel]   = "channel";
+      otDesc[otIono]      = "iono";
+      otDesc[otSSI]       = "ssi";
+      otDesc[otLLI]       = "lli";
+      otDesc[otTrackLen]  = "tlen";
+      otDesc[otUndefined] = "undefined";
 
-      cbDesc[cbUnknown] = "UnknownBand";
-      cbDesc[cbL1]      = "L1";
-      cbDesc[cbL2]      = "L2";
-      cbDesc[cbL5]      = "L5";
-      cbDesc[cbL1L2]    = "L1+L2";
-      cbDesc[cbG1]      = "G1";
-      cbDesc[cbG2]      = "G2";
-      cbDesc[cbE5b]     = "E5b";
-      cbDesc[cbE5ab]    = "L5a+b";
-      cbDesc[cbE6]      = "E6";
+      cbDesc[cbUnknown]   = "UnknownBand";
+      cbDesc[cbAny]       = "AnyBand";
+      cbDesc[cbZero]      = "";
+      cbDesc[cbL1]        = "L1";
+      cbDesc[cbL2]        = "L2";
+      cbDesc[cbL5]        = "L5";
+      cbDesc[cbL1L2]      = "L1+L2";
+      cbDesc[cbG1]        = "G1";
+      cbDesc[cbG2]        = "G2";
+      cbDesc[cbE5b]       = "E5b";
+      cbDesc[cbE5ab]      = "L5a+b";
+      cbDesc[cbE6]        = "E6";
+      cbDesc[cbUndefined] = "undefined";
 
       tcDesc[tcUnknown] = "UnknownCode";
+      tcDesc[tcAny]     = "AnyCode";
       tcDesc[tcCA]      = "C/A";
       tcDesc[tcP]       = "P";
       tcDesc[tcY]       = "Y";
@@ -107,6 +115,7 @@ namespace gpstk
       tcDesc[tcIE5]     = "IE5";
       tcDesc[tcQE5]     = "QE5";
       tcDesc[tcIQE5]    = "I+QE5";
+      tcDesc[tcUndefined] = "undefined";
 
       if (otDesc.size() != (int)otLast)
          std::cout << "Error in otDesc" << std::endl;
@@ -120,20 +129,25 @@ namespace gpstk
       // types to be able to be translated to/from Rinex3, the additional types
       // must be added by the application.
       rinex2ot[' '] = otUnknown;
+      rinex2ot['*'] = otAny;
       rinex2ot['C'] = otRange;
       rinex2ot['L'] = otPhase;
       rinex2ot['D'] = otDoppler;
       rinex2ot['S'] = otSNR;
+      rinex2ot['-'] = otUndefined;
 
       rinex2cb[' '] = cbUnknown;
+      rinex2cb['*'] = cbAny;
       rinex2cb['1'] = cbL1;
       rinex2cb['2'] = cbL2;
       rinex2cb['5'] = cbL5;
       rinex2cb['6'] = cbE6;
       rinex2cb['7'] = cbE5b;
       rinex2cb['8'] = cbE5ab;
+      rinex2cb['-'] = cbUndefined;
 
       rinex2tc[' '] = tcUnknown;
+      rinex2tc['*'] = tcAny;
       rinex2tc['C'] = tcCA;
       rinex2tc['P'] = tcP;  
       rinex2tc['W'] = tcW;
@@ -149,6 +163,7 @@ namespace gpstk
       rinex2tc['A'] = tcA;
       rinex2tc['B'] = tcB;
       rinex2tc['Z'] = tcABC;
+      rinex2tc['-'] = tcUndefined;
 
       for (int i=otUnknown; i<otLast; i++) ot2Rinex[(ObservationType)i] = ' ';
       for (int i=cbUnknown; i<cbLast; i++) cb2Rinex[(CarrierBand)i] = ' ';
@@ -267,7 +282,7 @@ namespace gpstk
       if (rinex2ot.count(rinexID[0]) && 
           rinex2cb.count(rinexID[1]) && 
           rinex2tc.count(rinexID[2]))
-          GPSTK_THROW(InvalidParameter("Identifier " + rinexID + " is already defined"));
+          GPSTK_THROW(InvalidParameter("Identifier " + rinexID + " already defined."));
 
       return idCreator(rinexID, desc);
    }
@@ -318,9 +333,9 @@ namespace gpstk
    // Equality requires all fields to be the same unless the field is unknown
    bool ObsID::operator==(const ObsID& right) const
    {
-      bool ot = type == otUnknown || right.type == otUnknown || type == right.type;
-      bool cb = band == cbUnknown || right.band == cbUnknown || band == right.band;
-      bool tc = code == tcUnknown || right.code == tcUnknown || code == right.code;
+      bool ot = type == otAny || right.type == otAny || type == right.type;
+      bool cb = band == cbAny || right.band == cbAny || band == right.band;
+      bool tc = code == tcAny || right.code == tcAny || code == right.code;
       return ot && cb && tc;
    }
 
