@@ -324,6 +324,7 @@ namespace gpstk
       if (valid & validAntennaPhaseCtr)
       {
          line  =  leftJustify(antennaSatSys , 1);
+         line += string( 1, ' ');
          line += rightJustify(antennaObsCode, 3);
          line += rightJustify(asString(antennaPhaseCtr[0], 4),  9);
          line += rightJustify(asString(antennaPhaseCtr[1], 4), 14);
@@ -373,7 +374,7 @@ namespace gpstk
       }
       if (valid & validSystemObsType)
       {
-         const int maxObsPerLine = 13;
+         static const int maxObsPerLine = 13;
 
          map<std::string,vector<ObsID> >::const_iterator mapIter;
          for (mapIter = mapObsTypes.begin(); mapIter != mapObsTypes.end(); mapIter++)
@@ -395,6 +396,7 @@ namespace gpstk
                // if you hit 13, write out the line and start a new one
                else if ((obsWritten % maxObsPerLine) == 0)
                {
+                  line += string(2, ' ');
                   line += stringSystemNumObs;
                   strm << line << endl;
                   strm.lineNumber++;
@@ -454,11 +456,11 @@ namespace gpstk
       {
          for (int i = 0; i < infoDCBS.size(); i++)
          {
-           line  = rightJustify(infoDCBS[i].satSys,  1);
+           line  = leftJustify(infoDCBS[i].satSys,  1);
            line += string(1, ' ');
-           line +=  leftJustify(infoDCBS[i].name  , 17);
+           line += leftJustify(infoDCBS[i].name  , 17);
            line += string(1, ' ');
-           line +=  leftJustify(infoDCBS[i].source, 40);
+           line += leftJustify(infoDCBS[i].source, 40);
            line += stringSystemDCBSapplied;
            strm << line << endl;
            strm.lineNumber++;
@@ -468,11 +470,11 @@ namespace gpstk
       {
          for (int i = 0; i < infoPCVS.size(); i++)
          {
-           line  = rightJustify(infoPCVS[i].satSys,  1);
+           line  = leftJustify(infoPCVS[i].satSys,  1);
            line += string(1, ' ');
-           line += rightJustify(infoPCVS[i].name  , 17);
+           line += leftJustify(infoPCVS[i].name  , 17);
            line += string(1, ' ');
-           line += rightJustify(infoPCVS[i].source, 40);
+           line += leftJustify(infoPCVS[i].source, 40);
            line += stringSystemPCVSapplied;
            strm << line << endl;
            strm.lineNumber++;
@@ -483,11 +485,11 @@ namespace gpstk
          static const int maxObsPerLine = 12;
 
          static const int size = 4;
-         int factors[size] = {1,10,100,1000};
+         static const int factors[size] = {1,10,100,1000};
          vector<std::string> obsTypes;
 
          std::map<std::string, sfacMap>::const_iterator mapIter;
-         for (mapIter == sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++) // loop over GNSSes
+         for (mapIter = sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++) // loop over GNSSes
          {
             std::map<ObsID, int>::const_iterator iter;
 
@@ -496,34 +498,38 @@ namespace gpstk
                int count = 0;
                obsTypes.clear(); // clear the list of Obs Types we're going to make
 
-               for (iter == mapIter->second.begin(); iter != mapIter->second.end(); iter++) // loop over scale factor map
+               for (iter = mapIter->second.begin(); iter != mapIter->second.end(); iter++) // loop over scale factor map
                {
                   if ( iter->second == factors[i] )
                   {
                      count++;
-                     obsTypes.push_back(asString(iter->first.type));
+                     obsTypes.push_back(iter->first.asRinex3ID());
                   }
                }
-               if ( count == 0 ) continue; // no entries with this factor
 
-               line  =  leftJustify(mapIter->first, 1);
+               if ( count == 0 ) continue;
+
+               line  =  leftJustify(mapIter->first      , 1);
                line += string(1, ' ');
                line += rightJustify(asString(factors[i]), 4);
                line += string(2, ' ');
                line += rightJustify(asString(count     ), 2);
 
-               for (i = 0; i < count; i++)
+               for (int j = 0; j < count; j++)
                {
-                  if (i > 0 && (i % maxObsPerLine) == 0 )
+                  if (j > maxObsPerLine-1 && (j % maxObsPerLine) == 0 ) // need continuation; end current line
                   {
+                     line += string(2, ' ');
                      line += stringSystemScaleFac;
                      strm << line << endl;
                      strm.lineNumber++;
-                     line  = string(6, ' ');
+                     line  = string(10, ' ');
                   }
                   line += string(1, ' ');
-                  line += rightJustify(asString(iter->first.type), 3);
+                  line += rightJustify(obsTypes[j], 3);
                }
+               int space = 60 - 10 - 4*(count % maxObsPerLine);
+               line += string(space, ' ');
                line += stringSystemScaleFac;
                strm << line << endl;
                strm.lineNumber++;
@@ -548,7 +554,7 @@ namespace gpstk
       }
       if (valid & validPrnObs)
       {
-         const int maxObsPerLine = 9;
+         static const int maxObsPerLine = 9;
          map<SatID, vector<int> >::const_iterator itr = numObsForSat.begin();
          while (itr != numObsForSat.end())
          {
@@ -732,37 +738,38 @@ namespace gpstk
       {
          static const int maxObsPerLine = 13;
 
-         satSysPrev = satSysTemp;
          satSysTemp = strip(line.substr(0,1));
-         numObsPrev = numObs;
          numObs     = asInt(line.substr(3,3));
 
-         if ( satSysTemp == " " ) // it's a continuation line; use previous info.
+         if ( satSysTemp == "" ) // it's a continuation line; use previous info.
          {
             satSysTemp = satSysPrev;
             numObs = numObsPrev;
             std::vector<ObsID> newTypeList = mapObsTypes.find(satSysTemp)->second;
-            for (int i = obsTypeList.size();
+            for (int i = newTypeList.size();
                  (i < numObs) && ( (i % maxObsPerLine) < maxObsPerLine); i++)
             {
                int position = 4*(i % maxObsPerLine) + 6 + 1;
-//               ObsID rt = convertObsType(line.substr(position,3));
-               ObsID rt(line.substr(position,3));
-               newTypeList.push_back(rt);
-            }
-         }
-         else
-         {
-            std::vector<ObsID> newTypeList;
-            for (int i = 0; (i < numObs) && (i < maxObsPerLine); i++)
-            {
-               int position = 4*i + 6 + 1;
-//               ObsID rt = convertObsType(line.substr(position,3));
                ObsID rt(line.substr(position,3));
                newTypeList.push_back(rt);
             }
             mapObsTypes[satSysTemp] = newTypeList;
          }
+         else                    // it's a new line, use info. read in
+         {
+            std::vector<ObsID> newTypeList;
+            for (int i = 0; (i < numObs) && (i < maxObsPerLine); i++)
+            {
+               int position = 4*i + 6 + 1;
+               ObsID rt(line.substr(position,3));
+               newTypeList.push_back(rt);
+            }
+            mapObsTypes[satSysTemp] = newTypeList;
+         }
+
+         // save values in case next line is a continuation line
+         satSysPrev = satSysTemp;
+         numObsPrev = numObs;
 
          valid |= validSystemObsType;
       }
@@ -820,7 +827,7 @@ namespace gpstk
 
          int startPosition = 0;
 
-         if ( satSysTemp == " " ) // it's a continuation line; use prev. info., end pt. to start
+         if ( satSysTemp == "" ) // it's a continuation line; use prev. info., end pt. to start
          {
             satSysTemp = satSysPrev;
             factor     = factorPrev;
@@ -832,13 +839,18 @@ namespace gpstk
          // 0/blank numObs means factor applies to all obs types in appropriate obsTypeList
          if (numObs == 0) numObs = mapObsTypes[satSysTemp].size();
 
-         for (int i = startPosition; (i < numObs) && (i % maxObsPerLine < maxObsPerLine); i++)
+         sfacMap tempSfacMap = sysSfacMap[satSysTemp];
+         for (int i = startPosition; (i < numObs) && ((i % maxObsPerLine) < maxObsPerLine); i++)
          {
-            int position = 4*i + 10 + 1;
-//            ObsID tempType = convertObsType(strip(line.substr(position,3)));
-            ObsID tempType(ObsID::otPhase, ObsID::cbL1, ObsID::tcCA);
-            sysSfacMap[satSysTemp].insert(make_pair(tempType, factor));
+            int position = 4*(i % maxObsPerLine) + 10 + 1;
+            ObsID tempType(strip(line.substr(position,3)));
+            tempSfacMap.insert(make_pair(tempType,factor));
          }
+         sysSfacMap[satSysTemp] = tempSfacMap;
+
+         sfacMap::const_iterator iter;
+         sfacMap tempmap;
+         tempmap = sysSfacMap[satSysTemp];
 
          // save values in case next line is a continuation line
          satSysPrev = satSysTemp;
@@ -1154,14 +1166,14 @@ namespace gpstk
       if (valid & validSystemScaleFac)
       {
          std::map<std::string, sfacMap>::const_iterator mapIter;
-         for (mapIter == sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++) // loop over GNSSes
+         for (mapIter = sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++) // loop over GNSSes
          {
             RinexSatID rsid;
             rsid.fromString(mapIter->first);
             s << rsid.systemString() << " scale factors applied:" << endl;
-            std::map<ObsID, int>::const_iterator iter;
-            for (iter == mapIter->second.begin(); iter != mapIter->second.end(); iter++) // loop over scale factor map
-               s << "   " << iter->first.type << " " << iter->second << endl;
+            std::map<ObsID,int>::const_iterator iter;
+            for (iter = mapIter->second.begin(); iter != mapIter->second.end(); iter++) // loop over scale factor map
+               s << "   " << iter->first.asRinex3ID() << " " << iter->second << endl;
          }
       }
       if (valid & validLeapSeconds    ) s << "Leap seconds: " << leapSeconds << endl;
