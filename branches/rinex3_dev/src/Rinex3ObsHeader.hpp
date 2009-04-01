@@ -225,7 +225,7 @@ namespace gpstk
      int factor, factorPrev;                         ///< scale factor (temp holders)
      int leapSeconds;                                ///< LEAP SECONDS                   (optional)
      short numSVs;                                   ///< # OF SATELLITES                (optional)
-     std::map<SatID,std::vector<int> > numObsForSat; ///< PRN / # OF OBS                 (optional)
+     std::map<RinexSatID,vector<int> > numObsForSat; ///< PRN / # OF OBS                 (optional)
      unsigned long valid;                            ///< bits set when header members present & valid
      std::string satSysTemp,                         ///< used to save the Sat Sys char while reading Scale Factor lines
                  satSysPrev;                         ///< used to recall the previous sat. sys for continuation lines

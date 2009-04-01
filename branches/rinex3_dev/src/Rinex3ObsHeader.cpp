@@ -555,7 +555,7 @@ namespace gpstk
       if (valid & validPrnObs)
       {
          static const int maxObsPerLine = 9;
-         map<SatID, vector<int> >::const_iterator itr = numObsForSat.begin();
+         map<RinexSatID, vector<int> >::const_iterator itr = numObsForSat.begin();
          while (itr != numObsForSat.end())
          {
             int numObsWritten = 0;
@@ -567,8 +567,9 @@ namespace gpstk
                {
                   try
                   {
-                     RinexSatID prn((*itr).first);
-                     line = string(3, ' ') + prn.toString();
+//                     RinexSatID prn((*itr).first);
+//                     line = string(3, ' ') + prn.toString();
+                     line = string(3, ' ') + (*itr).first.toString();
                   }
                   catch (Exception& e)
                   {
@@ -872,38 +873,48 @@ namespace gpstk
       else if (label == stringPrnObs)
       {
          static const int maxObsPerLine = 9;
-         // continuation lines:
-         // you have to know what PRN this is continuing for, hence lastPRN
-         std::string GNSS(1, lastPRN.systemChar());
-         if ( lastPRN.id != -1 && numObsForSat[lastPRN].size() != mapObsTypes[GNSS].size() )
+
+         RinexSatID PRN;
+         std::string prn, GNSS;
+         int otsize;
+         vector<int> numObsList;
+
+         prn = strip(line.substr(3,3));
+
+         if ( prn == "" ) // this is a continuation line; use last PRN
          {
-            for (int i = numObsForSat[lastPRN].size(); 
-                 (i < mapObsTypes[GNSS].size()) && ( (i % maxObsPerLine) < maxObsPerLine);
-                 i++                                                                                      )
+            PRN = lastPRN;
+            GNSS = PRN.systemChar();
+
+            numObsList = numObsForSat[PRN]; // grab the existing list
+
+            otsize = mapObsTypes.find(GNSS)->second.size();
+            if ( otsize > numObsList.size() )    // there aren't too many entries, so ok
             {
-               numObsForSat[lastPRN].push_back(asInt(line.substr(6*(i%maxObsPerLine)+6,6)));
+               for (int i = numObsList.size();
+                    (i < otsize) && ((i % maxObsPerLine) < maxObsPerLine); i++)
+                  numObsList.push_back(asInt(line.substr(6*(i % maxObsPerLine) + 6, 6)));
+
+               numObsForSat[PRN] = numObsList;
             }
          }
-         else
+         else             // this is a new PRN line
          {
-            try
+            PRN = RinexSatID(prn);
+            GNSS = PRN.systemChar();
+
+            otsize = mapObsTypes.find(GNSS)->second.size();
+            if ( otsize > 0 )    // if no [SYS / # / OBS TYPE] for this GNSS, this entry is bogus
             {
-               lastPRN.fromString(line.substr(3,3));
-            }
-            catch (Exception& e)
-            {
-               FFStreamError ffse(e);
-               GPSTK_RETHROW(ffse);
-            }
-            vector<int> numObsList;
-            for (int i = 0; 
-                 (i < obsTypeList.size()) && (i < maxObsPerLine); i++)
-            {
-               numObsList.push_back(asInt(line.substr(6*i+6,6)));
+               for (int i = 0; (i < otsize) && (i < maxObsPerLine); i++)
+                  numObsList.push_back(asInt(line.substr(6*i + 6, 6)));
+
+               numObsForSat[PRN] = numObsList;
             }
 
-            numObsForSat[lastPRN] = numObsList;
+            lastPRN = PRN;
          }
+
          valid |= validPrnObs;
       }
       else if (label == stringEoH)
@@ -1163,7 +1174,7 @@ namespace gpstk
             s << " from source " << infoPCVS[i].source << "." << endl;
          }
       }
-      if (valid & validSystemScaleFac)
+      if (valid & validSystemScaleFac   )
       {
          std::map<std::string, sfacMap>::const_iterator mapIter;
          for (mapIter = sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++) // loop over GNSSes
@@ -1176,20 +1187,16 @@ namespace gpstk
                s << "   " << iter->first.asRinex3ID() << " " << iter->second << endl;
          }
       }
-      if (valid & validLeapSeconds    ) s << "Leap seconds: " << leapSeconds << endl;
-      if (valid & validNumSats        ) s << "Number of Satellites with data : " << numSVs << endl;
-      if (valid & validPrnObs         )
+      if (valid & validLeapSeconds      ) s << "Leap seconds: " << leapSeconds << endl;
+      if (valid & validNumSats          ) s << "Number of Satellites with data : " << numSVs << endl;
+      if (valid & validPrnObs           )
       {
          s << " PRN and number of observations for each obs type:" << endl;
-         s << "   ";
-         for (i = 0; i < obsTypeList.size(); i++)
-            s << setw(7) << asString(obsTypeList[i]);
-         s << endl;
-         map<SatID, vector<int> >::const_iterator sat_itr = numObsForSat.begin();
+         map<RinexSatID, vector<int> >::const_iterator sat_itr = numObsForSat.begin();
          while (sat_itr != numObsForSat.end())
          {
             vector<int> obsvec = sat_itr->second;
-            s << " " << RinexSatID(sat_itr->first) << " ";
+            s << " " << sat_itr->first.toString() << " ";
             for (i = 0; i < obsvec.size(); i++)
               s << " " << setw(6) << obsvec[i];
             s << endl;
