@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -93,6 +93,7 @@ int main()
                        TextStyle::BOLD,
                        Color::BLACK,
                        TextStyle::SANSSERIF );
+
       // Fill frame with "Text" object.
    titleFrame << Text( "Examples of Native GPSTk Plotting", // Text to display
                        titleFrame.cx(),      // x coordinate of center of frame
