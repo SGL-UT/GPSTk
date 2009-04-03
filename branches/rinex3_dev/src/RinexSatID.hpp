@@ -182,9 +182,8 @@ namespace gpstk
       {
          std::ostringstream oss;
          oss.fill(fillchar);
-         oss << systemChar()
-             << std::setw(2) << id;
-          return oss.str();
+         oss << systemChar() << std::setw(2) << id;
+         return oss.str();
       }
 
    private:

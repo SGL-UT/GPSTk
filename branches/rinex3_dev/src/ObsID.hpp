@@ -77,6 +77,7 @@ namespace gpstk
    class ObsID
    {
    public:
+
       /// The type of observation.
       enum ObservationType
       {
@@ -203,8 +204,8 @@ namespace gpstk
 
       /// The next three methods are deprecated
       static ObservationType newObservationType(const std::string& s){};
-      static CarrierBand newCarrierBand(const std::string& s){};
-      static TrackingCode newTrackingCode(const std::string& s){};
+      static CarrierBand     newCarrierBand(const std::string& s){};
+      static TrackingCode    newTrackingCode(const std::string& s){};
 
       // Extend the standard identifiers with a new Rinex 3 style identifier. If the
       // specified id is already defined, an exception is thrown and the existing
@@ -234,6 +235,7 @@ namespace gpstk
       static std::map< TrackingCode, char> tc2Rinex;
 
    public:
+
       class Initializer
       {
       public:
