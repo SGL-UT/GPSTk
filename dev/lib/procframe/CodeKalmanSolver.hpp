@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 //
 //============================================================================
 
@@ -115,6 +115,47 @@ namespace gpstk
        *
        *      // Reconfigure solver
        *   kSolver.setDefaultEqDefinition(newEq);
+       * @endcode
+       *
+       * By default, this class assigns a 'constant' stochastic model
+       * (StochasticModel) to coordinates and a 'white noise' stochastic model
+       * (WhiteNoiseModel) to the receiver clock (cdt). This may be changed at
+       * will using the appropriate methods.
+       *
+       * For instance, in orden to use a 'full kinematic' mode we assign a white
+       * noise model to all the coordinates:
+       *
+       * @code
+       *      // Define a white noise model with 100 m of sigma
+       *   WhiteNoiseModel wnM(100.0);
+       *
+       *      // Configure the solver to use this model for all coordinates
+       *   kSolver.setCoordinatesModel(&wnM);
+       * @endcode
+       *
+       * Be aware, however, that you MUST NOT use this method to set a
+       * state-aware stochastic model (like RandomWalkModel, for instance)
+       * to ALL coordinates, because the results will certainly be erroneous.
+       * Use this method ONLY with non-state-aware stochastic models like
+       * 'StochasticModel' (constant coordinates) or 'WhiteNoiseModel'.
+       *
+       * In order to overcome the former limitation, this class provides methods
+       * to set different, specific stochastic models for each coordinate, like:
+       *
+       * @code
+       *      // Define a white noise model with 2 m of sigma for horizontal
+       *      // coordinates (in this case, the solver is previously set to use
+       *      // dLat, dLon and dH).
+       *   WhiteNoiseModel wnHorizontalModel(2.0);
+       *
+       *      // Define a random walk model with 0.04 m*m/s of process spectral
+       *      // density for vertical coordinates.
+       *   RandomWalkModel rwVerticalModel(0.04);
+       *
+       *      // Configure the solver to use these models
+       *   kSolver.setXCoordinatesModel(&wnHorizontalModel);
+       *   kSolver.setYCoordinatesModel(&wnHorizontalModel);
+       *   kSolver.setZCoordinatesModel(&rwVerticalModel);
        * @endcode
        *
        *
@@ -206,18 +247,60 @@ namespace gpstk
          throw(ProcessingException);
 
 
-         /// Get coordinates stochastic model pointer
-      StochasticModel* getCoordinatesModel() const
-      { return pCoordStoModel; };
+         /// Get stochastic model pointer for dx (or dLat) coordinate
+      StochasticModel* getXCoordinatesModel() const
+      { return pCoordXStoModel; };
 
 
-         /** Set coordinates stochastic model
+         /** Set coordinates stochastic model for dx (or dLat) coordinate
+          *
+          * @param pModel      Pointer to StochasticModel associated with
+          *                    dx (or dLat) coordinate.
+          */
+      CodeKalmanSolver& setXCoordinatesModel(StochasticModel* pModel)
+      { pCoordXStoModel = pModel; return (*this); };
+
+
+         /// Get stochastic model pointer for dy (or dLon) coordinate
+      StochasticModel* getYCoordinatesModel() const
+      { return pCoordYStoModel; };
+
+
+         /** Set coordinates stochastic model for dy (or dLon) coordinate
+          *
+          * @param pModel      Pointer to StochasticModel associated with
+          *                    dy (or dLon) coordinate.
+          */
+      CodeKalmanSolver& setYCoordinatesModel(StochasticModel* pModel)
+      { pCoordYStoModel = pModel; return (*this); };
+
+
+         /// Get stochastic model pointer for dz (or dH) coordinate
+      StochasticModel* getZCoordinatesModel() const
+      { return pCoordZStoModel; };
+
+
+         /** Set coordinates stochastic model for dz (or dH) coordinate
+          *
+          * @param pModel      Pointer to StochasticModel associated with
+          *                    dz (or dH) coordinate.
+          */
+      CodeKalmanSolver& setZCoordinatesModel(StochasticModel* pModel)
+      { pCoordZStoModel = pModel; return (*this); };
+
+
+         /** Set a single coordinates stochastic model to ALL coordinates.
           *
           * @param pModel      Pointer to StochasticModel associated with
           *                    coordinates.
+          *
+          * @warning Do NOT use this method to set the SAME state-aware
+          * stochastic model (like RandomWalkModel, for instance) to ALL
+          * coordinates, because the results will certainly be erroneous. Use
+          * this method only with non-state-aware stochastic models like
+          * 'StochasticModel' (constant coordinates) or 'WhiteNoiseModel'.
           */
-      CodeKalmanSolver& setCoordinatesModel(StochasticModel* pModel)
-      { pCoordStoModel = pModel; return (*this); };
+      CodeKalmanSolver& setCoordinatesModel(StochasticModel* pModel);
 
 
          /// Get receiver clock stochastic model pointer
@@ -293,8 +376,16 @@ namespace gpstk
       int numMeas;
 
 
-         /// Pointer to stochastic model for coordinates
-      StochasticModel* pCoordStoModel;
+         /// Pointer to stochastic model for dx (or dLat) coordinate
+      StochasticModel* pCoordXStoModel;
+
+
+         /// Pointer to stochastic model for dy (or dLon) coordinate
+      StochasticModel* pCoordYStoModel;
+
+
+         /// Pointer to stochastic model for dz (or dH) coordinate
+      StochasticModel* pCoordZStoModel;
 
 
          /// Pointer to stochastic model for receiver clock

@@ -81,8 +81,8 @@ namespace gpstk
          // Pointer to default stochastic model for troposphere (random walk)
       pTropoStoModel = &rwalkModel;
 
-         // Pointer to default coordinates stochastic model (constant)
-      pCoordStoModel = &constantModel;
+         // Set default coordinates stochastic model (constant)
+      setCoordinatesModel( &constantModel );
 
          // Pointer to default receiver clock stochastic model (white noise)
       pClockStoModel = &whitenoiseModel;
@@ -484,15 +484,20 @@ covariance matrix.");
          phiMatrix(0,0) = pTropoStoModel->getPhi();
          qMatrix(0,0)   = pTropoStoModel->getQ();
 
+
             // Second, the coordinates
-         pCoordStoModel->Prepare( dummyType,
-                                  dummySat,
-                                  gData );
-         for( int i=1; i<4; i++ )
-         {
-            phiMatrix(i,i) = pCoordStoModel->getPhi();
-            qMatrix(i,i)   = pCoordStoModel->getQ();
-         }
+         pCoordXStoModel->Prepare(dummyType, dummySat, gData);
+         phiMatrix(1,1) = pCoordXStoModel->getPhi();
+         qMatrix(1,1)   = pCoordXStoModel->getQ();
+
+         pCoordYStoModel->Prepare(dummyType, dummySat, gData);
+         phiMatrix(2,2) = pCoordYStoModel->getPhi();
+         qMatrix(2,2)   = pCoordYStoModel->getQ();
+
+         pCoordZStoModel->Prepare(dummyType, dummySat, gData);
+         phiMatrix(3,3) = pCoordZStoModel->getPhi();
+         qMatrix(3,3)   = pCoordZStoModel->getQ();
+
 
             // Third, the receiver clock
          pClockStoModel->Prepare( dummyType,
@@ -752,6 +757,31 @@ covariance matrix.");
       return (*this);
 
    }  // End of method 'SolverPPP::setNEU()'
+
+
+
+      /* Set a single coordinates stochastic model to ALL coordinates.
+       *
+       * @param pModel      Pointer to StochasticModel associated with
+       *                    coordinates.
+       *
+       * @warning Do NOT use this method to set the SAME state-aware
+       * stochastic model (like RandomWalkModel, for instance) to ALL
+       * coordinates, because the results will certainly be erroneous. Use
+       * this method only with non-state-aware stochastic models like
+       * 'StochasticModel' (constant coordinates) or 'WhiteNoiseModel'.
+       */
+   SolverPPP& SolverPPP::setCoordinatesModel( StochasticModel* pModel )
+   {
+
+         // All coordinates will have the same model
+      pCoordXStoModel = pModel;
+      pCoordYStoModel = pModel;
+      pCoordZStoModel = pModel;
+
+      return (*this);
+
+   }  // End of method 'SolverPPP::setCoordinatesModel()'
 
 
 

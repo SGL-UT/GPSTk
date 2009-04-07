@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 //
 //============================================================================
 
@@ -94,8 +94,8 @@ namespace gpstk
 
       kFilter.Reset( initialState, initialErrorCovariance );
 
-         // Pointer to default coordinates stochastic model (constant)
-      pCoordStoModel = &constantModel;
+         // Set default coordinates stochastic model (constant)
+      setCoordinatesModel(&constantModel);
 
 
          // Pointer to default receiver clock stochastic model (white noise)
@@ -420,12 +420,18 @@ covariance matrix.");
 
             // Now, let's fill the Phi and Q matrices
             // First, the coordinates
-         pCoordStoModel->Prepare(dummyType, dummySat, gData);
-         for (int i=0; i<3; i++)
-         {
-            phiMatrix(i,i) = pCoordStoModel->getPhi();
-            qMatrix(i,i)   = pCoordStoModel->getQ();
-         }
+         pCoordXStoModel->Prepare(dummyType, dummySat, gData);
+         phiMatrix(0,0) = pCoordXStoModel->getPhi();
+         qMatrix(0,0)   = pCoordXStoModel->getQ();
+
+         pCoordYStoModel->Prepare(dummyType, dummySat, gData);
+         phiMatrix(1,1) = pCoordYStoModel->getPhi();
+         qMatrix(1,1)   = pCoordYStoModel->getQ();
+
+         pCoordZStoModel->Prepare(dummyType, dummySat, gData);
+         phiMatrix(2,2) = pCoordZStoModel->getPhi();
+         qMatrix(2,2)   = pCoordZStoModel->getQ();
+
 
             // Now, the receiver clock
          pClockStoModel->Prepare(dummyType, dummySat, gData);
@@ -460,6 +466,32 @@ covariance matrix.");
       }
 
    }  // End of method 'CodeKalmanSolver::Process()'
+
+
+
+      /* Set a single coordinates stochastic model to ALL coordinates.
+       *
+       * @param pModel      Pointer to StochasticModel associated with
+       *                    coordinates.
+       *
+       * @warning Do NOT use this method to set the SAME state-aware
+       * stochastic model (like RandomWalkModel, for instance) to ALL
+       * coordinates, because the results will certainly be erroneous. Use
+       * this method only with non-state-aware stochastic models like
+       * 'StochasticModel' (constant coordinates) or 'WhiteNoiseModel'.
+       */
+   CodeKalmanSolver& CodeKalmanSolver::setCoordinatesModel(
+                                                   StochasticModel* pModel)
+   {
+
+         // All coordinates will have the same model
+      pCoordXStoModel = pModel;
+      pCoordYStoModel = pModel;
+      pCoordZStoModel = pModel;
+
+      return (*this);
+
+   }  // End of method 'CodeKalmanSolver::setCoordinatesModel()'
 
 
 

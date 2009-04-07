@@ -157,8 +157,47 @@ namespace gpstk
        *        (PhaseAmbiguityModel).
        *
        * You may change this assignment with methods "setCoordinatesModel()",
-       * "setTroposphereModel()" and "setReceiverClockModel()". However, you
-       * are not allowed to change the phase biases stochastic model.
+       * "setXCoordinatesModel()", "setYCoordinatesModel()",
+       * "setZCoordinatesModel()", "setTroposphereModel()" and
+       * "setReceiverClockModel()". However, you are not allowed to change the
+       * phase biases stochastic model.
+       *
+       * For instance, in orden to use a 'full kinematic' mode we assign a white
+       * noise model to all the coordinates:
+       *
+       * @code
+       *      // Define a white noise model with 100 m of sigma
+       *   WhiteNoiseModel wnM(100.0);
+       *
+       *      // Configure the solver to use this model for all coordinates
+       *   pppSolver.setCoordinatesModel(&wnM);
+       * @endcode
+       *
+       * Be aware, however, that you MUST NOT use this method to set a
+       * state-aware stochastic model (like RandomWalkModel, for instance)
+       * to ALL coordinates, because the results will certainly be erroneous.
+       * Use this method ONLY with non-state-aware stochastic models like
+       * 'StochasticModel' (constant coordinates) or 'WhiteNoiseModel'.
+       *
+       * In order to overcome the former limitation, this class provides methods
+       * to set different, specific stochastic models for each coordinate, like:
+       *
+       * @code
+       *      // Define a white noise model with 2 m of sigma for horizontal
+       *      // coordinates (in this case, the solver is previously set to use
+       *      // dLat, dLon and dH).
+       *   WhiteNoiseModel wnHorizontalModel(2.0);
+       *
+       *      // Define a random walk model with 0.04 m*m/s of process spectral
+       *      // density for vertical coordinates.
+       *   RandomWalkModel rwVerticalModel(0.04);
+       *
+       *      // Configure the solver to use these models
+       *   pppSolver.setXCoordinatesModel(&wnHorizontalModel);
+       *   pppSolver.setYCoordinatesModel(&wnHorizontalModel);
+       *   pppSolver.setZCoordinatesModel(&rwVerticalModel);
+       * @endcode
+       *
        *
        * \warning "SolverPPP" is based on a Kalman filter, and Kalman filters
        * are objets that store their internal state, so you MUST NOT use the
@@ -281,23 +320,60 @@ namespace gpstk
       { weightFactor = (factor*factor); return (*this); };
 
 
-         /// Get coordinates stochastic model pointer
-      virtual StochasticModel* getCoordinatesModel(void) const
-      { return pCoordStoModel; };
+         /// Get stochastic model pointer for dx (or dLat) coordinate
+      StochasticModel* getXCoordinatesModel() const
+      { return pCoordXStoModel; };
 
 
-         /** Set coordinates stochastic model
+         /** Set coordinates stochastic model for dx (or dLat) coordinate
+          *
+          * @param pModel      Pointer to StochasticModel associated with
+          *                    dx (or dLat) coordinate.
+          */
+      SolverPPP& setXCoordinatesModel(StochasticModel* pModel)
+      { pCoordXStoModel = pModel; return (*this); };
+
+
+         /// Get stochastic model pointer for dy (or dLon) coordinate
+      StochasticModel* getYCoordinatesModel() const
+      { return pCoordYStoModel; };
+
+
+         /** Set coordinates stochastic model for dy (or dLon) coordinate
+          *
+          * @param pModel      Pointer to StochasticModel associated with
+          *                    dy (or dLon) coordinate.
+          */
+      SolverPPP& setYCoordinatesModel(StochasticModel* pModel)
+      { pCoordYStoModel = pModel; return (*this); };
+
+
+         /// Get stochastic model pointer for dz (or dH) coordinate
+      StochasticModel* getZCoordinatesModel() const
+      { return pCoordZStoModel; };
+
+
+         /** Set coordinates stochastic model for dz (or dH) coordinate
+          *
+          * @param pModel      Pointer to StochasticModel associated with
+          *                    dz (or dH) coordinate.
+          */
+      SolverPPP& setZCoordinatesModel(StochasticModel* pModel)
+      { pCoordZStoModel = pModel; return (*this); };
+
+
+         /** Set a single coordinates stochastic model to ALL coordinates.
           *
           * @param pModel      Pointer to StochasticModel associated with
           *                    coordinates.
           *
-          * \warning Be aware that some stochastic models store their internal
-          * state (for instance, 'RandomWalkModel' and 'PhaseAmbiguityModel').
-          * If that is your case, you MUST NOT use the SAME model in DIFFERENT
-          * solver objects.
+          * @warning Do NOT use this method to set the SAME state-aware
+          * stochastic model (like RandomWalkModel, for instance) to ALL
+          * coordinates, because the results will certainly be erroneous. Use
+          * this method only with non-state-aware stochastic models like
+          * 'StochasticModel' (constant coordinates) or 'WhiteNoiseModel'.
           */
-      virtual SolverPPP& setCoordinatesModel(StochasticModel* pModel)
-      { pCoordStoModel = pModel; return (*this); };
+      virtual SolverPPP& setCoordinatesModel(StochasticModel* pModel);
 
 
          /// Get wet troposphere stochastic model pointer
@@ -427,8 +503,16 @@ namespace gpstk
       double weightFactor;
 
 
-         /// Pointer to stochastic model for coordinates
-      StochasticModel* pCoordStoModel;
+         /// Pointer to stochastic model for dx (or dLat) coordinate
+      StochasticModel* pCoordXStoModel;
+
+
+         /// Pointer to stochastic model for dy (or dLon) coordinate
+      StochasticModel* pCoordYStoModel;
+
+
+         /// Pointer to stochastic model for dz (or dH) coordinate
+      StochasticModel* pCoordZStoModel;
 
 
          /// Pointer to stochastic model for troposphere
