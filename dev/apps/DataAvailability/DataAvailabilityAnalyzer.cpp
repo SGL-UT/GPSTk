@@ -987,7 +987,7 @@ void dump(ostream& s, const ObsSet& obs, int detail)
             {
                if (i != obs.begin())
                   s << ",";
-               s << ObsID::cbStrings[i->band] << " " << ObsID::tcStrings[i->code];
+               s << ObsID::cbDesc[i->band] << " " << ObsID::tcDesc[i->code];
             }
    }
 }

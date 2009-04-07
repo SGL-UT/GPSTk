@@ -499,7 +499,7 @@ void PhaseCleaner::dump(std::ostream& s) const
                s << left << setw(20) << t << right
                  << setfill(' ')
                  << " " << setw(2) << prn.id
-                 << " " << ObsID::cbStrings[rot.band]
+                 << " " << ObsID::cbDesc[rot.band]
                  << " " << setprecision(1) << setw(5)  << 0  // elevation
                  << " " << setprecision(3) << setw(12)  << 0 // clock
                  << " " << setprecision(6) << setw(14) << obs.dd * lamda[rot.band]
@@ -797,7 +797,7 @@ void PhaseCleanerA::dump(std::ostream& s) const
                  << setfill(' ')
                  << " " << setw(2) << svPair.first.id
                  << " " << setw(2) << svPair.second.id
-                 << " " << ObsID::cbStrings[rot.band]
+                 << " " << ObsID::cbDesc[rot.band]
                  << " " << setprecision(1) << setw(5)  << 0  // elevation
                  << " " << setprecision(3) << setw(12)  << 0 // clock
                  << " " << setprecision(6) << setw(14) << obs.dd * lamda

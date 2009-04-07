@@ -34,7 +34,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 void CCReplica::dump(std::ostream& s) const
 {
-   s << "# " << codeGenPtr->sv << " " << ObsID::tcStrings[codeGenPtr->code]
+   s << "# " << codeGenPtr->sv << " " << ObsID::tcDesc[codeGenPtr->code]
      << ":" << endl
      << setprecision(4)
      << "# -- tickSize: " << tickSize * 1e6 << " us"
