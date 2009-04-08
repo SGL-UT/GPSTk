@@ -65,58 +65,14 @@ namespace gpstk
           * @param satIndexed       Whether this variable is SatID-indexed
           *                         or not. By default, it is NOT.
           * @param variance         Initial variance assigned to this variable.
+          * @param coef             Default coefficient assigned.
           */
       Variable( const TypeID& type,
                 StochasticModel* pModel   = &Variable::defaultModel,
                 bool sourceIndexed        = true,
                 bool satIndexed           = false,
-                double variance           = 4.0e14 );
-
-
-         /** Constructor for a Variable corresponding to a specific
-          *  data source and satellite
-          *
-          * @param type        TypeID of variable.
-          * @param pModel      Pointer to StochasticModel associated with
-          *                    this variable. By default, it is a white
-          *                    noise model.
-          * @param source      Data source this variable belongs to.
-          * @param satellite   Satellite this variable belongs to.
-          * @param variance    Initial variance assigned to this variable.
-          */
-      Variable( const TypeID& type,
-                StochasticModel* pModel,
-                const SourceID& source,
-                const SatID& satellite,
-                double variance = 4.0e14 );
-
-
-         /** Constructor for a Variable corresponding to a specific
-          *  data source
-          *
-          * @param type        TypeID of variable.
-          * @param pModel      Pointer to StochasticModel associated with
-          *                    this variable. By default, it is a white
-          *                    noise model.
-          * @param source      Data source this variable belongs to.
-          */
-      Variable( const TypeID& type,
-                StochasticModel* pModel,
-                const SourceID& source );
-
-
-         /** Constructor for a Variable corresponding to a specific
-          *  satellite
-          *
-          * @param type        TypeID of variable.
-          * @param pModel      Pointer to StochasticModel associated with
-          *                    this variable. By default, it is a white
-          *                    noise model.
-          * @param satellite   Satellite this variable belongs to.
-          */
-      Variable( const TypeID& type,
-                StochasticModel* pModel,
-                const SatID& satellite );
+                double variance           = 4.0e14,
+                double coef               = 1.0 );
 
 
          /// Get variable type
@@ -175,52 +131,6 @@ namespace gpstk
       { isSatIndexed = satIndexed; return (*this); };
 
 
-         /// Get SourceID. If this value is equal to "Variable::someSources"
-         /// then you should also check "varSourceSet".
-      SourceID getSource() const
-      { return varSource; };
-
-
-         /** Set this variable's SourceID
-          *
-          * @param source     Specific SourceID of variable.
-          */
-      Variable& setSource(const SourceID& source)
-      { varSource = source; setSourceIndexed(false); return (*this); };
-
-
-
-         /// Get variable-specific satellite
-      SatID getSatellite() const
-      { return varSat; };
-
-
-         /** Set variable-specific satellite
-          *
-          * @param satellite  Specific SatID of variable.
-          */
-      Variable& setSatellite(const SatID& satellite)
-      { varSat = satellite; setSatIndexed(false); return (*this); };
-
-
-         /// Get SourceID set. This is only meaningful if "varSource" is set
-         /// to "Variable::someSources".
-      std::set<SourceID> getSourceSet() const
-      { return varSourceSet; };
-
-
-         /// Add a source to SourceID set. This is only meaningful if
-         /// "varSource" is set to "Variable::someSources".
-      Variable& addSource2Set( const SourceID& source )
-      { varSourceSet.insert(source); return (*this); };
-
-
-         /// Clear SourceID set. This is only meaningful if "varSource" is set
-         /// to "Variable::someSources".
-      Variable& clearSourceSet()
-      { varSourceSet.clear(); return (*this); };
-
-
          /// Get value of initial variance assigned to this variable.
       double getInitialVariance() const
       { return initialVariance; };
@@ -232,6 +142,19 @@ namespace gpstk
           */
       Variable& setInitialVariance(double variance)
       { initialVariance = variance; return (*this); };
+
+
+         /// Get value of default coefficient assigned to this variable.
+      double getDefaultCoefficient() const
+      { return defaultCoefficient; };
+
+
+         /** Set value of default coefficient assigned to this variable.
+          *
+          * @param coef    Default coefficient assigned to this variable.
+          */
+      Variable& setDefaultCoefficient(double coef)
+      { defaultCoefficient = coef; return (*this); };
 
 
          /// Equality operator
@@ -288,6 +211,10 @@ namespace gpstk
       static SatID allGlonassSats;
 
 
+         /// Default stochastic model to be assigned to variables.
+      static WhiteNoiseModel defaultModel;
+
+
          /// Destructor
       virtual ~Variable() {};
 
@@ -324,31 +251,12 @@ namespace gpstk
       bool isSatIndexed;
 
 
-         /** In case the value of this variable belongs to a specific
-          *  source, the corresponding SourceID is stored here.
-          */
-      SourceID varSource;
-
-
-         /** In case the value of this variable belongs to a specific
-          *  satellite, the corresponding SatID is stored here.
-          */
-      SatID varSat;
-
-
-         /** In case the value of this variable belongs to SOME specific
-          *  sources ("Variable::someSources" in "varSource"), then the
-          *  corresponding SourceID set is stored here.
-          */
-      std::set<SourceID> varSourceSet;
-
-
          /// Value of initial variance assigned to this variable.
       double initialVariance;
 
 
-         /// Default stochastic model to be assigned to variables.
-      static WhiteNoiseModel defaultModel;
+         /// Value of default coefficient assigned to this variable.
+      double defaultCoefficient;
 
 
          /** Initializing function
@@ -357,15 +265,13 @@ namespace gpstk
           * @param pModel      Pointer to StochasticModel associated with
           *                    this variable. By default, it is a white
           *                    noise model.
-          * @param source      Data source this variable belongs to.
-          * @param satellite   Satellite this variable belongs to.
           * @param variance    Initial variance assigned to this variable.
+          * @param coef        Default coefficient assigned.
           */
       void Init( const TypeID& type,
                  StochasticModel* pModel = &Variable::defaultModel,
-                 const SourceID& source  = allSources,
-                 const SatID& satellite  = noSats,
-                 double variance = 4.0e14 );
+                 double variance = 4.0e14,
+                 double coef     = 1.0 );
 
 
    }; // End of class 'Variable'

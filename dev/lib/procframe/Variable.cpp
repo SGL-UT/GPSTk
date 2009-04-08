@@ -74,6 +74,7 @@ namespace gpstk
    WhiteNoiseModel Variable::defaultModel;
 
 
+
       // Default constructor for Variable
    Variable::Variable()
    {
@@ -99,100 +100,25 @@ namespace gpstk
        * @param satIndexed       Whether this variable is SatID-indexed
        *                         or not. By default, it is NOT.
        * @param variance         Initial variance assigned to this variable.
+       * @param coef             Default coefficient assigned.
        */
    Variable::Variable( const TypeID& type,
                        StochasticModel* pModel,
                        bool sourceIndexed,
                        bool satIndexed,
-                       double variance )
+                       double variance,
+                       double coef )
    {
 
          // Call Init method
       Init( type,
             pModel,
-            allSources,
-            noSats,
-            variance );
+            variance,
+            coef );
 
          // This couple lines override settings by Init.
       isSourceIndexed = sourceIndexed;
       isSatIndexed = satIndexed;
-
-   }  // End of 'Variable::Variable()'
-
-
-
-      /* Constructor for a Variable corresponding to an specific
-       * data source and satellite
-       *
-       * @param type        TypeID of variable.
-       * @param pModel      Pointer to StochasticModel associated with
-       *                    this variable. By default, it is a white
-       *                    noise model.
-       * @param source      Data source this variable belongs to.
-       * @param satellite   Satellite this variable belongs to.
-       * @param variance    Initial variance assigned to this variable.
-       */
-   Variable::Variable( const TypeID& type,
-                       StochasticModel* pModel,
-                       const SourceID& source,
-                       const SatID& satellite,
-                       double variance )
-   {
-
-         // Call Init method
-      Init( type,
-            pModel,
-            source,
-            satellite,
-            variance );
-
-   }  // End of 'Variable::Variable()'
-
-
-
-      /* Constructor for a Variable corresponding to an specific
-       * data source
-       *
-       * @param type        TypeID of variable.
-       * @param pModel      Pointer to StochasticModel associated with
-       *                    this variable. By default, it is a white
-       *                    noise model.
-       * @param source      Data source this variable belongs to.
-       */
-   Variable::Variable( const TypeID& type,
-                       StochasticModel* pModel,
-                       const SourceID& source )
-   {
-
-         // Call Init method
-      Init( type,
-            pModel,
-            source );
-
-   }  // End of 'Variable::Variable()'
-
-
-
-      /* Constructor for a Variable corresponding to an specific
-       * satellite
-       *
-       * @param type        TypeID of variable.
-       * @param pModel      Pointer to StochasticModel associated with
-       *                    this variable. By default, it is a white
-       *                    noise model.
-       * @param satellite   Satellite this variable belongs to.
-       */
-   Variable::Variable( const TypeID& type,
-                       StochasticModel* pModel,
-                       const SatID& satellite )
-   {
-
-         // Call Init method
-      Init( type,
-            pModel,
-            allSources,
-            satellite );
 
    }  // End of 'Variable::Variable()'
 
@@ -204,15 +130,13 @@ namespace gpstk
        * @param pModel      Pointer to StochasticModel associated with
        *                    this variable. By default, it is a white
        *                    noise model.
-       * @param source      Data source this variable belongs to.
-       * @param satellite   Satellite this variable belongs to.
        * @param variance    Initial variance assigned to this variable.
+       * @param coef        Default coefficient assigned.
        */
    void Variable::Init( const TypeID& type,
                         StochasticModel* pModel,
-                        const SourceID& source,
-                        const SatID& satellite,
-                        double variance )
+                        double variance,
+                        double coef )
    {
 
       varType = type;
@@ -226,39 +150,16 @@ namespace gpstk
          pVarModel = pModel;
       }
 
-         // Check if the source is unspecific
-      if( (source == allSources) ||
-          (source == someSources) )
-      {
-         isSourceIndexed = true;
-      }
-      else
-      {
-         isSourceIndexed = false;
-      }
+         // By default, it is source-indexed
+      isSourceIndexed = true;
 
-
-         // Check if the satellite is unspecific
-      if( satellite == allSats        ||
-          satellite == allGPSSats     ||
-          satellite == allGalileoSats ||
-          satellite == allGlonassSats )
-      {
-         isSatIndexed = true;
-      }
-      else
-      {
-         isSatIndexed = false;
-      }
-
-         // Set the source associated to this variable
-      varSource = source;
-
-         // Set the satellite associated to this variable
-      varSat = satellite;
+         // By default, it is not source indexed
+      isSatIndexed = false;
 
          // Set initial variance
       initialVariance = variance;
+
+      defaultCoefficient = coef;
 
       return;
 
@@ -270,12 +171,12 @@ namespace gpstk
    bool Variable::operator==(const Variable& right) const
    {
 
-      return ( ( varType == right.getType() )                     &&
-               ( pVarModel == right.getModel() )                  &&
-               ( isSourceIndexed == right.getSourceIndexed() )    &&
-               ( isSatIndexed == right.getSatIndexed() )          &&
-               ( varSource == right.getSource() )                 &&
-               ( varSat == right.getSatellite() ) );
+      return ( ( varType == right.getType() )                           &&
+               ( pVarModel == right.getModel() )                        &&
+               ( isSourceIndexed == right.getSourceIndexed() )          &&
+               ( isSatIndexed == right.getSatIndexed() )                &&
+               ( initialVariance == right.getInitialVariance() )        &&
+               ( defaultCoefficient == right.getDefaultCoefficient() ) );
 
    }  // End of 'Variable::operator=='
 
@@ -289,13 +190,41 @@ namespace gpstk
 
       if( varType == right.getType() )
       {
-         if( varSource == right.getSource() )
+         if( pVarModel == right.getModel() )
          {
-            return (varSat < right.getSatellite());
+
+            if( isSourceIndexed == right.getSourceIndexed() )
+            {
+
+               if( isSatIndexed == right.getSatIndexed() )
+               {
+
+                  if( initialVariance == right.getInitialVariance() )
+                  {
+                     return ( defaultCoefficient <
+                              right.getDefaultCoefficient() );
+                  }
+                  else
+                  {
+                     return (initialVariance < right.getInitialVariance());
+                  }
+
+               }
+               else
+               {
+                  return (isSatIndexed < right.getSatIndexed());
+               }
+
+            }
+            else
+            {
+               return (isSourceIndexed < right.getSourceIndexed());
+            }
+
          }
          else
          {
-            return (varSource < right.getSource());
+            return (pVarModel < right.getModel());
          }
       }
       else
@@ -322,9 +251,9 @@ namespace gpstk
 
       setSatIndexed(right.getSatIndexed());
 
-      setSource(right.getSource());
+      setInitialVariance(right.getInitialVariance());
 
-      setSatellite(right.getSatellite());
+      setDefaultCoefficient(right.getDefaultCoefficient());
 
       return *this;
 

@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -107,7 +107,7 @@ namespace gpstk
           */
       equationHeader(const Variable& indep)
          : equationSource(Variable::allSources), equationSat(Variable::allSats),
-           indTerm(indep) {};
+           indTerm(indep), constWeight(1.0) {};
 
 
          /// Assignment operator
@@ -118,7 +118,8 @@ namespace gpstk
           *
           * @param indep      Variable representing the independent term.
           */
-      virtual equationHeader& operator=(const Variable& indep);
+      virtual equationHeader& operator=(const Variable& indep)
+      { indTerm = indep; return (*this); };
 
 
          /// Destructor
@@ -220,63 +221,24 @@ namespace gpstk
 
          /** Add a variable (unknown) to this Equation
           *
-          * @param type        TypeID of variable.
-          * @param pModel      Pointer to StochasticModel associated with
-          *                    this variable. By default, it is a white
-          *                    noise model.
-          * @param sourceSpecific Whether this variable is source-specific
-          *                    or not. By default, it IS source-specific.
-          * @param satSpecific Whether this variable is satellite-specific
-          *                    or not. By default, it is NOT.
+          * @param type             TypeID of variable.
+          * @param pModel           Pointer to StochasticModel associated with
+          *                         this variable. By default, it is a white
+          *                         noise model.
+          * @param sourceIndexed    Whether this variable is SourceID-indexed
+          *                         or not. By default, it IS SourceID-indexed.
+          * @param satIndexed       Whether this variable is SatID-indexed
+          *                         or not. By default, it is NOT.
+          * @param variance         Initial variance assigned to this variable.
+          * @param coef             Default coefficient assigned.
           */
       virtual Equation& addVariable( const TypeID& type,
-                                     StochasticModel* pModel = NULL,
-                                     bool sourceSpecific = true,
-                                     bool satSpecific = false );
-
-
-         /** Add a Variable to this Equation corresponding to an specific
-          *  data source and satellite
-          *
-          * @param type        TypeID of variable.
-          * @param pModel      Pointer to StochasticModel associated with
-          *                    this variable. By default, it is a white
-          *                    noise model.
-          * @param source      Data source this variable belongs to.
-          * @param satellite   Satellite this variable belongs to.
-          */
-      virtual Equation& addVariable( const TypeID& type,
-                                     StochasticModel* pModel,
-                                     const SourceID& source,
-                                     const SatID& satellite );
-
-
-         /** Add a Variable to this equation corresponding to an specific
-          *  data source
-          *
-          * @param type        TypeID of variable.
-          * @param pModel      Pointer to StochasticModel associated with
-          *                    this variable. By default, it is a white
-          *                    noise model.
-          * @param source      Data source this variable belongs to.
-          */
-      virtual Equation& addVariable( const TypeID& type,
-                                     StochasticModel* pModel,
-                                     const SourceID& source );
-
-
-         /** Add a Variable to this Equation corresponding to an specific
-          *  satellite
-          *
-          * @param type        TypeID of variable.
-          * @param pModel      Pointer to StochasticModel associated with
-          *                    this variable. By default, it is a white
-          *                    noise model.
-          * @param satellite   Satellite this variable belongs to.
-          */
-      virtual Equation& addVariable( const TypeID& type,
-                                     StochasticModel* pModel,
-                                     const SatID& satellite );
+                                     StochasticModel* pModel   =
+                                                      &Variable::defaultModel,
+                                     bool sourceIndexed        = true,
+                                     bool satIndexed           = false,
+                                     double variance           = 4.0e14,
+                                     double coef               = 1.0 );
 
 
          /** Remove a variable (unknown) from this Equation
