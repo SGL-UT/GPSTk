@@ -15,3 +15,8 @@ Main Rinex3ObsTest : Rinex3ObsTest.cpp ;
 ObjectHdrs Rinex3ObsTest Rinex3ObsTest.cpp : ../src ;
 LINKLIBS on Rinex3ObsTest =  $(STD_LINK_LIBS) ;
 LinkLibraries Rinex3ObsTest : ../src/libgpstk-R3.a ;
+
+Main RinexObsTest : RinexObsTest.cpp ;
+ObjectHdrs RinexObsTest RinexObsTest.cpp : ../src ;
+LINKLIBS on RinexObsTest =  $(STD_LINK_LIBS) ;
+LinkLibraries RinexObsTest : ../src/libgpstk-R3.a ;

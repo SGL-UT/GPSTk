@@ -8,8 +8,9 @@
  */
 
 #include "Rinex3ObsBase.hpp"
-#include "Rinex3ObsHeader.hpp"
 #include "Rinex3ObsStream.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsData.hpp"
 
 using namespace std;
 
@@ -24,29 +25,28 @@ main(int argc, char *argv[])
 
    try
    {
-      cout << "Reading " << argv[1] << endl;
+      cout << "Reading from " << argv[1] << endl;
       gpstk::Rinex3ObsStream roffs(argv[1],ios::in);
-      cout << "Writing " << argv[2] << endl;
-      gpstk::Rinex3ObsStream rout3(argv[2],ios::out);
+      cout << "Writing to   " << argv[2] << endl;
+      gpstk::Rinex3ObsStream r3out(argv[2],ios::out);
       gpstk::Rinex3ObsHeader roh;
-//      gpstk::Rinex3NavData roe;
+      gpstk::Rinex3ObsData roe;
 
       roffs >> roh;
 
       roh.dump(cout);
 
-      rout3 << roh;
+      r3out << roh;
 
-      /*
       int i = 0;
       while (roffs >> roe)
       {
-         out << roe;
+//         roe.dump(cout);
+         r3out << roe;
          i++;
       }
 
       cout << "Read " << i << " records.  Done."  << endl;
-      */
 
       exit(0);
    }
