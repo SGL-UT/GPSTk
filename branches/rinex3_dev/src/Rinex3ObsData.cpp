@@ -57,61 +57,72 @@ namespace gpstk
   {
     // is there anything to write?
     if ( (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
-         && (numSVs==0 || obs.empty())                       ) return;
+         && (numSVs==0 || obs.empty())                        ) return;
     if ( (epochFlag >= 2 && epochFlag <= 5) &&
          auxHeader.NumberHeaderRecordsToBeWritten() == 0 ) return;
 
     Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
     string line;
 
-    // first the epoch line
-    line  = writeTime(time);
-    line += string(2, ' ');
-    line += rightJustify(asString<short>(epochFlag), 1);
-    line += rightJustify(asString<short>(numSVs   ), 3);
-
-    // write SV IDs
-    const int maxPrnsPerLine = 12;
-    int satsWritten = 0;
-    Rinex3SatMap::const_iterator obsItr = obs.begin();
-
     if (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
     {
-      while ( obsItr != obs.end() && satsWritten < maxPrnsPerLine )
-      {
-        line += (*obsItr).first.toString();
-        satsWritten++;
-        obsItr++;
-      }
+      // first the epoch line
 
-      // add clock offset
-      if (clockOffset != 0.0)
-      {
-        line += string(68 - line.size(), ' ');
-        line += rightJustify(asString(clockOffset, 9), 12);
-      }
+      EpochMap::const_iterator epochItr; // point to start of data map
 
-      // continuation lines
-      while (satsWritten != obs.size())
+      for (epochItr = obs.begin(); epochItr != obs.end(); epochItr++)
       {
-        if ((satsWritten % maxPrnsPerLine) == 0)
+        line  = ">";
+        line += writeTime(epochItr->first);
+        line += string(2, ' ');
+        line += rightJustify(asString<short>(epochFlag), 1);
+        line += rightJustify(asString<short>(numSVs   ), 3);
+        line += string(6, ' ');
+        if (clockOffset != 0.0) // optional data; need to test for its existence
         {
+          line += rightJustify(asString(clockOffset, 12), 15);
+        }
+        strm << line << endl;
+        strm.lineNumber++;
+        line.erase();
+
+        // next the data lines
+
+        DataMap::const_iterator satIDItr = epochItr->second.begin();
+
+        while (satIDItr != epochItr->second.end())
+        {
+          line = satIDItr->first.toString();
+
+          for (int i = 0; i < satIDItr->second.size(); i++)
+          {
+            RinexDatum thisData = satIDItr->second[i];
+
+            line += rightJustify(asString(thisData.data,3),14);
+
+            if (thisData.lli == 0)
+              line += string(1, ' ');
+            else
+              line += rightJustify(asString<short>(thisData.lli),1);
+            if (thisData.ssi == 0)
+              line += string(1, ' ');
+            else
+              line += rightJustify(asString<short>(thisData.ssi),1);
+          }
+
+          // write the data line out
           strm << line << endl;
           strm.lineNumber++;
-          line  = string(32, ' ');
-        }
-        line += obsItr->first.toString();
-        satsWritten++;
-        obsItr++;
-      }
+          line.erase();
+
+          satIDItr++;
+        } // end loop through satIDItr
+
+      } // end of loop over epochs (the EpochMap)
+
     }
-
-    // write the epoch line
-    strm << line << endl;
-    strm.lineNumber++;
-
     // write the auxiliary header records, if any
-    if (epochFlag >= 2 && epochFlag <= 5)
+    else if (epochFlag >= 2 && epochFlag <= 5)
     {
       try
       {
@@ -127,54 +138,6 @@ namespace gpstk
       }
     }
 
-    // write the obs data
-    else if (!obs.empty())
-    {
-      // write out the observations themselves
-      obsItr = obs.begin();
-
-      const int maxObsPerLine = 5;
-
-      /*
-      while(obsItr != obs.end())
-      {
-        vector<Rinex3ObsHeader::ObsID>::iterator obsTypeItr =
-          strm.header.obsTypeList.begin();
-
-        line.erase();
-        int obsWritten = 0;
-
-        while (obsTypeItr != strm.header.obsTypeList.end())
-        {
-          if ( (obsWritten % maxObsPerLine) == 0 && obsWritten != 0 )
-          {
-            strm << line << endl;
-            strm.lineNumber++;
-            line.erase();
-          }
-
-          ObsIDMap::const_iterator rotmi(obsItr->second.find(*obsTypeItr));
-          RinexDatum thisData;
-          if (rotmi != obsItr->second.end())
-            thisData = rotmi->second;
-          line += rightJustify(asString(thisData.data,3),14);
-          if (thisData.lli == 0)
-            line += string(1, ' ');
-          else
-            line += rightJustify(asString<short>(thisData.lli),1);
-          if (thisData.ssi == 0)
-            line += string(1, ' ');
-          else
-            line += rightJustify(asString<short>(thisData.ssi),1);
-          obsWritten++;
-          obsTypeItr++;
-        }
-        strm << line << endl;
-        strm.lineNumber++;
-        obsItr++;
-      }
-      */
-    }      
   }   // end Rinex3ObsData::reallyPutRecord
 
 
@@ -222,13 +185,13 @@ namespace gpstk
 
     // Now read the observations: SV ID and data.
 
-    if (epochFlag == 0 || epochFlag == 1 || epochFlag == 6) // *** What are these?? [DR]
+    if (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
     {
       int isv;
       vector<RinexSatID> satIndex(numSVs);
-      int col = 30;
+      std::map<RinexSatID, vector<RinexDatum> > tempDataMap;
 
-      for (isv; isv < numSVs; isv++)
+      for (isv = 0; isv < numSVs; isv++)
       {
         strm.formattedGetLine(line);
 
@@ -244,21 +207,26 @@ namespace gpstk
         }
 
         // get the data (# entries in ObsType map of maps from header)
+        vector<RinexDatum> data;
         std::string gnss = asString(satIndex[isv].systemChar());
-        vector<ObsID> obsTypes = hdr.mapObsTypes[gnss];
-        int size = obsTypes.size();
+        int size = hdr.mapObsTypes.find(gnss)->second.size();
         for (int i = 0; i < size; i++)
         {
           line.resize(80, ' ');
 
           int pos = 3 + 16*i;
-          obs[satIndex[isv]][obsTypes[i]].data = asDouble(line.substr(pos  , 14));
-          obs[satIndex[isv]][obsTypes[i]].lli  = asInt(   line.substr(pos+1,  1));
-          obs[satIndex[isv]][obsTypes[i]].ssi  = asInt(   line.substr(pos+2,  1));
+          
+          RinexDatum tempData;
+          tempData.data = asDouble(line.substr(pos  , 14));
+          tempData.lli  = asInt(   line.substr(pos+1,  1));
+          tempData.ssi  = asInt(   line.substr(pos+2,  1));
+          data.push_back(tempData);
         }
-
+        tempDataMap[satIndex[isv]] = data;
       }
 
+      // put the SV/data map into the epoch map
+      obs[time] = tempDataMap;
     }
     // ... or the auxiliary header information
     else if (numSVs > 0)
@@ -358,17 +326,17 @@ namespace gpstk
     string line;
 
     line  = string(1, ' ');
-    line += rightJustify(asString<short>(civtime.year  ), 4);
+    line += rightJustify(asString<short>(civtime.year    ), 4);
     line += string(1, ' ');
-    line += rightJustify(asString<short>(civtime.month ), 2);
+    line += rightJustify(asString<short>(civtime.month   ), 2);
     line += string(1, ' ');
-    line += rightJustify(asString<short>(civtime.day   ), 2);
+    line += rightJustify(asString<short>(civtime.day     ), 2);
     line += string(1, ' ');
-    line += rightJustify(asString<short>(civtime.hour  ), 2);
+    line += rightJustify(asString<short>(civtime.hour    ), 2);
     line += string(1, ' ');
-    line += rightJustify(asString<short>(civtime.minute), 2);
+    line += rightJustify(asString<short>(civtime.minute  ), 2);
     line += string(1, ' ');
-    line += rightJustify(asString       (civtime.second),11);
+    line += rightJustify(asString       (civtime.second,7),11);
 
     return line;
   }
@@ -379,25 +347,29 @@ namespace gpstk
     if (obs.empty())
       return;
 
-    s << "Dump of Rinex3ObsData - time: " << writeTime(time)
+    s << "Dump of Rinex3ObsData" << endl << " - time: " << writeTime(time)
       << " epochFlag: " << " " << epochFlag
       << " numSVs: " << numSVs 
       << fixed << setprecision(6) << " clk offset: " << clockOffset << endl;
 
     if (epochFlag == 0 || epochFlag == 1) 
     {
-      Rinex3SatMap::const_iterator it;
+      EpochMap::const_iterator it;
       for (it = obs.begin(); it != obs.end(); it++)
       {
-        s << "Sat " << setw(2) << it->first.toString();
-        ObsIDMap::const_iterator jt;
+        CivilTime civtime(it->first);
+        s << "Sat " << setw(2) << civtime.printf("%02m/%02d/%04Y %02H:%02M:%02S %P") << endl;;
+        DataMap::const_iterator jt;
         for (jt = it->second.begin(); jt != it->second.end(); jt++) 
         {
-          s << " " << jt->first.asRinex3ID() << ":" << fixed << setprecision(3)
-            << " " << setw(12) << jt->second.data
-            << "/" << jt->second.lli << "/" << jt->second.ssi;
+          s << " " << (jt->first).toString() << ":" << fixed << setprecision(3);
+          for (int i = 0; i < jt->second.size(); i++)
+          {
+            s << " " << setw(12) << jt->second[i].data
+              << "/" << jt->second[i].lli << "/" << jt->second[i].ssi;
+          }
+          s << endl;
         }
-        s << endl;
       }
     }
     else

@@ -87,11 +87,11 @@ namespace gpstk
     };
 
     /// map from ObsID to RinexDatum
-    typedef std::map<ObsID, RinexDatum> ObsIDMap;
+    typedef std::map<RinexSatID, vector<RinexDatum> > DataMap;
     /// map from SatID to ObsIDMap
-    typedef std::map<RinexSatID, ObsIDMap> Rinex3SatMap;
+    typedef std::map<CommonTime, DataMap> EpochMap;
 
-    gpstk::CommonTime time;    ///< the time corresponding to the observations
+    CommonTime time;  ///< the time corresponding to the observations
 
     /** Epoch flag has the following values
      * 0 ok
@@ -112,7 +112,7 @@ namespace gpstk
     short numSVs;
 
     double clockOffset;        ///< optional clock offset
-    Rinex3SatMap obs;          ///< the map of observations
+    EpochMap obs;              ///< the map of observations
     Rinex3ObsHeader auxHeader; ///< auxiliary header records (epochFlag 2-5)
 
     /**
