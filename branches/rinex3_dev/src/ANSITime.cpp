@@ -53,7 +53,7 @@ namespace gpstk
    }
    
    CommonTime ANSITime::convertToCommonTime() const
-      throw( gpstk::InvalidRequest )
+      throw( InvalidRequest )
    {
       try
       {
@@ -70,7 +70,7 @@ namespace gpstk
    }
    
    void ANSITime::convertFromCommonTime( const CommonTime& ct )
-      throw( gpstk::InvalidRequest )
+      throw( InvalidRequest )
    {
          /// This is the earliest CommonTime for which ANSITimes are valid.
       static const CommonTime MIN_CT = ANSITime(0, TimeSystem::Any);
@@ -93,11 +93,11 @@ namespace gpstk
    }
    
    std::string ANSITime::printf( const std::string& fmt) const
-      throw( gpstk::StringUtils::StringException )
+      throw( StringUtils::StringException )
    {
       try
       {
-         using gpstk::StringUtils::formattedPrint;
+         using StringUtils::formattedPrint;
          std::string rv( fmt );
          
          rv = formattedPrint( rv, getFormatPrefixInt() + "K",
@@ -106,18 +106,18 @@ namespace gpstk
                               "Ps", timeSystem.asString().c_str() );
          return rv;         
       }
-      catch( gpstk::StringUtils::StringException& se )
+      catch( StringUtils::StringException& se )
       {
          GPSTK_RETHROW( se );
       }
    }
    
    std::string ANSITime::printError( const std::string& fmt) const
-      throw( gpstk::StringUtils::StringException )
+      throw( StringUtils::StringException )
    {
       try
       {
-         using gpstk::StringUtils::formattedPrint;
+         using StringUtils::formattedPrint;
          std::string rv( fmt );
          
          rv = formattedPrint( rv, getFormatPrefixInt() + "K",
@@ -126,7 +126,7 @@ namespace gpstk
                               "Ps", getError().c_str() );
          return rv;         
       }
-      catch( gpstk::StringUtils::StringException& se )
+      catch( StringUtils::StringException& se )
       {
          GPSTK_RETHROW( se );
       }
@@ -135,7 +135,7 @@ namespace gpstk
    bool ANSITime::setFromInfo( const IdToValue& info )
       throw()
    {
-      using namespace gpstk::StringUtils;
+      using namespace StringUtils;
       
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
@@ -200,14 +200,14 @@ namespace gpstk
    }
 
    bool ANSITime::operator<( const ANSITime& right ) const
-      throw( gpstk::InvalidRequest )
+      throw( InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
      if ((timeSystem != TimeSystem::Any &&
           right.timeSystem != TimeSystem::Any) &&
          timeSystem != right.timeSystem)
       {
-         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+         InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
          GPSTK_THROW(ir);
       }
 
@@ -215,20 +215,20 @@ namespace gpstk
    }
 
    bool ANSITime::operator>( const ANSITime& right ) const
-      throw( gpstk::InvalidRequest )
+      throw( InvalidRequest )
    {
       return ( !operator<=( right ) );
    }
 
    bool ANSITime::operator<=( const ANSITime& right ) const
-      throw( gpstk::InvalidRequest )
+      throw( InvalidRequest )
    {
       return ( operator<( right ) ||
                operator==( right ) );
    }
 
    bool ANSITime::operator>=( const ANSITime& right ) const
-      throw( gpstk::InvalidRequest )
+      throw( InvalidRequest )
    {
       return ( !operator<( right ) );
    }
