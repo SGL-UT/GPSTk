@@ -4,6 +4,8 @@
 
 SubDir TOP src ;
 
+BonkForte ;
+
 if $(NEED_GETOPT)
 {
    GETOPT_SOURCE = getopt.c getopt1.c ;

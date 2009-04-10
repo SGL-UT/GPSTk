@@ -37,6 +37,7 @@
 // Find all the combinations of n things taken k at a time.
 
 #include "Exception.hpp"
+#include "ECEF.hpp"
 
 /// Class Combinations will compute C(n,k), all the combinations of n things
 /// taken k at a time (where k <= n).

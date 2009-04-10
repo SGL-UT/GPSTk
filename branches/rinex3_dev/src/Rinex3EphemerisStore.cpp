@@ -43,6 +43,7 @@
  */
 
 #include "Rinex3EphemerisStore.hpp"
+#include "Rinex3NavStream.hpp"
 
 namespace gpstk
 {

@@ -48,10 +48,10 @@ namespace gpstk
    void GloRecord :: dump(ostream& s) const
       throw()
    {
-      s << "vel:" << v << "acc:" << a;
-      s << "TauN:" << dtime << "GammaN:" << ddtime;
-      s << "MFTime:" << MFtime<< "health:" << health;
-      s << "freqNum:" << freqNum << "ageOfInfo:" << ageOfInfo;
+     s << "vel:" << v << ", acc:" << a << endl
+       << "TauN:" << dtime << ", GammaN:" << ddtime << endl
+       << "MFTime:" << MFtime<< ", health:" << health << endl
+       << "freqNum:" << freqNum << ", ageOfInfo:" << ageOfInfo;
    }
 
     GloRecord& GloRecord::setRecord( Triple pos, Triple vel, Triple acc,

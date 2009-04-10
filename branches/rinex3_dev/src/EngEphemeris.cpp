@@ -41,16 +41,18 @@
  * Ephemeris data encapsulated in engineering terms
  */
 
+#include <iomanip>
+#include <cmath>
+
 #include "StringUtils.hpp"
 #include "icd_200_constants.hpp"
+#include "MathBase.hpp"
 #include "GPSGeoid.hpp"
 #include "EngEphemeris.hpp"
 #include "GPSWeekSecond.hpp"
 #include "YDSTime.hpp"
 #include "CivilTime.hpp"
 #include "TimeSystem.hpp"
-
-#include <cmath>
 
 namespace gpstk
 {
@@ -179,7 +181,6 @@ namespace gpstk
       const long sf1[8], const long sf2[8], const long sf3[8], 
       const long sf1TransmitSOW, const int gpsWeek,
       const short PRN, const short track)
-      throw()
    {
       double ficked[60];
 
@@ -213,13 +214,13 @@ namespace gpstk
 
       tlm_message[0] = 0;
       HOWtime[0] = SF1HOWTime;
-      ASalert[0] = (short)ficked[3];
-      weeknum    = (short)ficked[5];
-      codeflags  = (short)ficked[6];
-      accFlag    = (short)ficked[7];
-      health     = (short)ficked[8];
-      IODC       = (short)ldexp(ficked[9],-11);
-      L2Pdata    = (short)ficked[10];
+      ASalert[0] = static_cast<short>(ficked[3]);
+      weeknum    = static_cast<short>(ficked[5]);
+      codeflags  = static_cast<short>(ficked[6]);
+      accFlag    = static_cast<short>(ficked[7]);
+      health     = static_cast<short>(ficked[8]);
+      IODC       = static_cast<short>(ldexp(ficked[9],-11));
+      L2Pdata    = static_cast<short>(ficked[10]);
       Tgd        = ficked[11];
       Toc        = ficked[12];
       af2        = ficked[13];
@@ -242,8 +243,8 @@ namespace gpstk
       
       tlm_message[1] = 0;
       HOWtime[1] = SF1HOWTime + 6;
-      ASalert[1] = (short)ficked[3];
-      IODE       = (short)ldexp(ficked[5],-11);
+      ASalert[1] = static_cast<short>(ficked[3]);
+      IODE       = static_cast<short>(ldexp(ficked[5],-11));
       Crs        = ficked[6];
       dn         = ficked[7];
       M0         = ficked[8];
@@ -252,7 +253,7 @@ namespace gpstk
       Cus        = ficked[11];
       Ahalf      = ficked[12];
       Toe        = ficked[13];
-      fitint     = (short)ficked[14];
+      fitint     = static_cast<short>(ficked[14]);
       haveSubframe[1] = true;
       
          // Convert subframe 3 parameters
@@ -265,7 +266,7 @@ namespace gpstk
       
       tlm_message[2] = 0;
       HOWtime[2] = SF1HOWTime + 12;
-      ASalert[2] = (short)ficked[3];
+      ASalert[2] = static_cast<short>(ficked[3]);
       Cic        = ficked[5];
       OMEGA0     = ficked[6];
       Cis        = ficked[7];
@@ -408,12 +409,12 @@ namespace gpstk
       double ddtime;
       GPSGeoid geoid;
 
-      double sqrtgm = sqrt(geoid.gm());
+      double sqrtgm = SQRT(geoid.gm());
 
-         // Check for ground transmitter
+      // Check for ground transmitter
       double twoPI = 2.0e0 * PI;
       bool igtran;              // ground transmitter flag
-      double lecc;               // eccentricity
+      double lecc;              // eccentricity
       double tdrinc;            // dt inclination
 
       if ( getAhalf() < 2550.0e0 )
@@ -429,20 +430,20 @@ namespace gpstk
          tdrinc = getIDot();
       }
 
-         // Compute time since ephemeris & clock epochs
+      // Compute time since ephemeris & clock epochs
       elapte = t - getEphemerisEpoch();
       elaptc = t - getEpochTime();
    
 
-         // Compute mean motion
+      // Compute mean motion
       A = getA();
       amm  = (sqrtgm / (A*getAhalf())) + getDn();
 
 
-         // In-plane angles
-         //     meana - Mean anomaly
-         //     ea    - Eccentric anomaly
-         //     truea - True anomaly
+      // In-plane angles
+      //     meana - Mean anomaly
+      //     ea    - Eccentric anomaly
+      //     truea - True anomaly
       if (!igtran)
          meana = getM0() + elapte * amm;
       else
@@ -459,28 +460,28 @@ namespace gpstk
          delea = F/G;
          ea = ea + delea;
          loop_cnt++;
-      } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
+      } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
 
-         // Compute clock corrections
+      // Compute clock corrections
       ddtime = getAf1() + elaptc * getAf2();
       dtc = getAf0() + elaptc * ( ddtime );
       dtr = REL_CONST * lecc * getAhalf() * sin(ea);
       sv.dtime = dtc + dtr;
    
-         // Compute true anomaly
-      q = sqrt ( 1.0e0 - lecc*lecc);
+      // Compute true anomaly
+      q = SQRT(1.0e0 - lecc*lecc);
       sinea = sin(ea);
       cosea = cos(ea);
       G = 1.0e0 - lecc * cosea;
    
-         //  G*SIN(TA) AND G*COS(TA)
+      // G*SIN(TA) AND G*COS(TA)
       GSTA  = q * sinea;
       GCTA  = cosea - lecc;
 
-         //  True anomaly
+      // True anomaly
       truea = atan2 ( GSTA, GCTA );
 
-         // Argument of lat and correction terms (2nd harmonic)
+      // Argument of lat and correction terms (2nd harmonic)
       alat = truea + getW();
       talat = 2.0e0 * alat;
       c2al = cos( talat );
@@ -490,32 +491,32 @@ namespace gpstk
       dr  = c2al * getCrc() +  s2al * getCrs();
       di  = c2al * getCic() +  s2al * getCis();
 
-         // U = updated argument of lat, R = radius, AINC = inclination
+      // U = updated argument of lat, R = radius, AINC = inclination
       U    = alat + du;
       R    = getA()*G  + dr;
       AINC = getI0() + tdrinc * elapte  +  di;
 
-         //  Longitude of ascending node (ANLON)
+      // Longitude of ascending node (ANLON)
       if (!igtran)
          ANLON = getOmega0() + (getOmegaDot() - geoid.angVelocity()) *
                  elapte - geoid.angVelocity() * getToe();
       else
          ANLON = getOmega0() - getOmegaDot() * getToe();
 
-         // In plane location
+      // In plane location
       cosu = cos( U );
       sinu = sin( U );
 
       xip  = R * cosu;
       yip  = R * sinu;
 
-         //  Angles for rotation to earth fixed
+      // Angles for rotation to earth fixed
       can  = cos( ANLON );
       san  = sin( ANLON );
       cinc = cos( AINC  );
       sinc = sin( AINC  );
  
-         // Earth fixed - meters
+      // Earth fixed - meters
       xef  =  xip*can  -  yip*cinc*san;
       yef  =  xip*san  +  yip*cinc*can;
       zef  =              yip*sinc;
@@ -548,12 +549,12 @@ namespace gpstk
       double dxp,dyp,vxef,vyef,vzef;
       GPSGeoid geoid;
 
-      double sqrtgm = sqrt(geoid.gm());
+      double sqrtgm = SQRT(geoid.gm());
 
-         // Check for ground transmitter
+      // Check for ground transmitter
       double twoPI = 2.0e0 * PI;
       bool igtran;              // ground transmitter flag
-      double lecc;               // eccentricity
+      double lecc;              // eccentricity
       double tdrinc;            // dt inclination
       if ( getAhalf() < 2550.0e0 )
       {
@@ -568,20 +569,20 @@ namespace gpstk
          tdrinc = getIDot();
       }
 
-         // Compute time since ephemeris & clock epochs
+      // Compute time since ephemeris & clock epochs
       elapte = t - getEphemerisEpoch();
       elaptc = t - getEpochTime();
    
 
-         // Compute mean motion
+      // Compute mean motion
       A = getA();
       amm  = (sqrtgm / (A*getAhalf())) + getDn();
 
 
-         // In-plane angles
-         //     meana - Mean anomaly
-         //     ea    - Eccentric anomaly
-         //     truea - True anomaly
+      // In-plane angles
+      //     meana - Mean anomaly
+      //     ea    - Eccentric anomaly
+      //     truea - True anomaly
       if (!igtran)
          meana = getM0() + elapte * amm;
       else
@@ -598,28 +599,28 @@ namespace gpstk
          delea = F/G;
          ea = ea + delea;
          loop_cnt++;
-      } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
+      } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
 
-         // Compute clock corrections
+      // Compute clock corrections
       sv.ddtime = getAf1() + elaptc * getAf2();
       dtc = getAf0() + elaptc * ( sv.ddtime );
       dtr = REL_CONST * lecc * getAhalf() * sin(ea);
       sv.dtime = dtc + dtr;
    
-         // Compute true anomaly
-      q = sqrt ( 1.0e0 - lecc*lecc);
+      // Compute true anomaly
+      q = SQRT(1.0e0 - lecc*lecc);
       sinea = sin(ea);
       cosea = cos(ea);
       G = 1.0e0 - lecc * cosea;
    
-         //  G*SIN(TA) AND G*COS(TA)
+      // G*SIN(TA) AND G*COS(TA)
       GSTA  = q * sinea;
       GCTA  = cosea - lecc;
 
-         //  True anomaly
+      // True anomaly
       truea = atan2 ( GSTA, GCTA );
 
-         // Argument of lat and correction terms (2nd harmonic)
+      // Argument of lat and correction terms (2nd harmonic)
       alat = truea + getW();
       talat = 2.0e0 * alat;
       c2al = cos( talat );
@@ -629,32 +630,32 @@ namespace gpstk
       dr  = c2al * getCrc() +  s2al * getCrs();
       di  = c2al * getCic() +  s2al * getCis();
 
-         // U = updated argument of lat, R = radius, AINC = inclination
+      // U = updated argument of lat, R = radius, AINC = inclination
       U    = alat + du;
       R    = getA()*G  + dr;
       AINC = getI0() + tdrinc * elapte  +  di;
 
-         //  Longitude of ascending node (ANLON)
+      // Longitude of ascending node (ANLON)
       if (!igtran)
          ANLON = getOmega0() + (getOmegaDot() - geoid.angVelocity()) *
                  elapte - geoid.angVelocity() * getToe();
       else
          ANLON = getOmega0() - getOmegaDot() * getToe();
 
-         // In plane location
+      // In plane location
       cosu = cos( U );
       sinu = sin( U );
 
       xip  = R * cosu;
       yip  = R * sinu;
 
-         //  Angles for rotation to earth fixed
+      // Angles for rotation to earth fixed
       can  = cos( ANLON );
       san  = sin( ANLON );
       cinc = cos( AINC  );
       sinc = sin( AINC  );
  
-         // Earth fixed - meters
+      // Earth fixed - meters
       xef  =  xip*can  -  yip*cinc*san;
       yef  =  xip*san  +  yip*cinc*can;
       zef  =              yip*sinc;
@@ -663,7 +664,7 @@ namespace gpstk
       sv.x[1] = yef;
       sv.x[2] = zef;
 
-         // Compute velocity of rotation coordinates
+      // Compute velocity of rotation coordinates
       dek = amm * A / R;
       dlk = getAhalf() * q * sqrtgm / (R*R);
       div = tdrinc - 2.0e0 * dlk *
@@ -676,14 +677,14 @@ namespace gpstk
       dxp = drv*cosu - R*sinu*duv;
       dyp = drv*sinu + R*cosu*duv;
 
-         // Calculate velocities
+      // Calculate velocities
       vxef = dxp*can - xip*san*domk - dyp*cinc*san
          + yip*( sinc*san*div - cinc*can*domk);
       vyef = dxp*san + xip*can*domk + dyp*cinc*can
          - yip*( sinc*can*div + cinc*san*domk);
       vzef = dyp*sinc + yip*cinc*div;
 
-         // Move results into output variables
+      // Move results into output variables
       sv.v[0] = vxef;
       sv.v[1] = vyef;
       sv.v[2] = vzef;
@@ -696,7 +697,7 @@ namespace gpstk
    {
       GPSGeoid geoid;
       double twoPI = 2.0e0 * PI;
-      double sqrtgm = sqrt(geoid.gm());
+      double sqrtgm = SQRT(geoid.gm());
       double elapte = t - getEphemerisEpoch();
       double elaptc = t - getEpochTime();
       double A = getA();
@@ -715,7 +716,7 @@ namespace gpstk
          delea = F/G;
          ea = ea + delea;
          loop_cnt++;
-      } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
+      } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
       double dtr = REL_CONST * lecc * getAhalf() * sin(ea);
       return dtr;
    }
@@ -790,7 +791,7 @@ namespace gpstk
    {
       if(!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getPRNID(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return PRNID;
@@ -801,7 +802,7 @@ namespace gpstk
    {
       if(!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getTracker(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return tracker;
@@ -812,8 +813,8 @@ namespace gpstk
    {
       if (!haveSubframe[subframe-1])
       {
-         InvalidRequest exc("Subframe "+StringUtils::asString(subframe)+
-                            " not stored.");
+         InvalidRequest exc("getHOWTime(): Subframe "
+                            +StringUtils::asString(subframe)+" not stored.");
          GPSTK_THROW(exc);
       }
          // This return as a double is necessary for sets into CommonTime 
@@ -828,8 +829,8 @@ namespace gpstk
    {
       if (!haveSubframe[subframe-1])
       {
-         InvalidRequest exc("Subframe "+StringUtils::asString(subframe)+
-                            " not stored.");
+         InvalidRequest exc("getASAlert(): Subframe "
+                            +StringUtils::asString(subframe)+" not stored.");
          GPSTK_THROW(exc);
       }
       return ASalert[subframe-1];
@@ -840,7 +841,7 @@ namespace gpstk
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getFullWeek(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return weeknum;
@@ -851,7 +852,7 @@ namespace gpstk
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getCodeFlags(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return codeflags;
@@ -862,7 +863,7 @@ namespace gpstk
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getAccuracy(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return accuracy;
@@ -873,7 +874,7 @@ namespace gpstk
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getAccFlag(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return accFlag;
@@ -884,7 +885,7 @@ namespace gpstk
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getHealth(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return health;
@@ -895,7 +896,7 @@ namespace gpstk
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getL2Pdata(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return L2Pdata;
@@ -906,10 +907,10 @@ namespace gpstk
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getIODC(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
-      return (short)IODC;
+      return static_cast<short>(IODC);
    }
    
    short EngEphemeris::getIODE() const
@@ -917,10 +918,10 @@ namespace gpstk
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getIODE(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
-      return (short)IODE;
+      return static_cast<short>(IODE);
    }
    
    long EngEphemeris::getAODO() const
@@ -928,7 +929,7 @@ namespace gpstk
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getAODO(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return AODO;
@@ -939,7 +940,7 @@ namespace gpstk
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getToc(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return Toc;
@@ -950,7 +951,7 @@ namespace gpstk
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getAf0(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return af0;
@@ -961,7 +962,7 @@ namespace gpstk
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getAf1(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return af1;
@@ -972,7 +973,7 @@ namespace gpstk
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getAf1(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return af2;
@@ -983,7 +984,7 @@ namespace gpstk
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getTgd(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return Tgd;
@@ -994,7 +995,7 @@ namespace gpstk
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getCus(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return Cus;
@@ -1005,7 +1006,7 @@ namespace gpstk
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getCrs(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return Crs;
@@ -1016,7 +1017,7 @@ namespace gpstk
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getCis(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return Cis;
@@ -1027,7 +1028,7 @@ namespace gpstk
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getCrc(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return Crc;
@@ -1038,7 +1039,7 @@ namespace gpstk
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getCuc(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return Cuc;
@@ -1049,7 +1050,7 @@ namespace gpstk
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getCic(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return Cic;
@@ -1060,7 +1061,7 @@ namespace gpstk
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getToe(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return Toe;
@@ -1071,7 +1072,7 @@ namespace gpstk
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getM0(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return M0;
@@ -1082,7 +1083,7 @@ namespace gpstk
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getDn(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return dn;
@@ -1093,7 +1094,7 @@ namespace gpstk
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getEcc(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return ecc;
@@ -1104,7 +1105,7 @@ namespace gpstk
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getAhalf(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return Ahalf;
@@ -1115,7 +1116,7 @@ namespace gpstk
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getA(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return Ahalf * Ahalf;
@@ -1126,7 +1127,7 @@ namespace gpstk
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getOmega0(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return OMEGA0;
@@ -1137,7 +1138,7 @@ namespace gpstk
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getI0(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return i0;
@@ -1148,7 +1149,7 @@ namespace gpstk
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getW(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return w;
@@ -1159,7 +1160,7 @@ namespace gpstk
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getOmegaDot(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return OMEGAdot;
@@ -1170,7 +1171,7 @@ namespace gpstk
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getIDot(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return idot;
@@ -1181,7 +1182,7 @@ namespace gpstk
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getFitInt(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return fitint;
@@ -1192,17 +1193,17 @@ namespace gpstk
    {
       if(!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getTot(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       if(!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getTot(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       if(!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getTot(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       

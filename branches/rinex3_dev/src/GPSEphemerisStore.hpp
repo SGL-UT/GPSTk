@@ -46,7 +46,6 @@
 #define GPSTK_GPSEPHEMERISSTORE_HPP
 
 #include <iostream>
-#include <string>
 #include <list>
 #include <map>
 
@@ -55,8 +54,6 @@
 #include "CommonTime.hpp"
 #include "XvtStore.hpp"
 #include "EngEphemeris.hpp"
-#include "icd_200_constants.hpp"
-#include "CivilTime.hpp"
 #include "OrbElemStore.hpp"
 
 namespace gpstk
@@ -75,7 +72,7 @@ namespace gpstk
          throw()
          : initialTime(CommonTime::END_OF_TIME), 
            finalTime(CommonTime::BEGINNING_OF_TIME),
-           method(0)
+           strictMethod(true)
       {}
 
 
@@ -90,7 +87,7 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xt getXt( const SatID sat, const CommonTime& t ) const
+      virtual Xt getXt( const SatID& sat, const CommonTime& t ) const
          throw( InvalidRequest );
 
 
@@ -113,7 +110,7 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xvt getXvt( const SatID sat, const CommonTime& t ) const
+      virtual Xvt getXvt( const SatID& sat, const CommonTime& t ) const
          throw( InvalidRequest );
 
 
@@ -194,7 +191,11 @@ namespace gpstk
       /// Remove all data from this collection.   
       void clear()
          throw()
-      { edit(CommonTime::END_OF_TIME); }
+      {
+        ube.clear();
+        initialTime = CommonTime::END_OF_TIME;
+        finalTime = CommonTime::BEGINNING_OF_TIME;
+      }
       
       /// Get the number of EngEphemeris objects in this collection.
       /// @return the number of EngEphemeris records in the map
@@ -243,12 +244,12 @@ namespace gpstk
       /// use findNearEphemeris() in the getSat...() routines
       void SearchNear(void)
          throw()
-      { method = 1; }
+      { strictMethod = false; }
 
       /// use findEphemeris() in the getSat...() routines (the default)
       void SearchPast(void)
          throw()
-      { method = 0; }
+      { strictMethod = true; }
 
       /// This is intended to just store sets of unique EngEphemerides
       /// for a single SV.  The key is the Toe - 1/2 the fit interval.
@@ -275,7 +276,7 @@ namespace gpstk
       
       /// flag indicating search method (find...Eph) to use in getSatXvt 
       ///  and getSatHealth
-      int method;
+      bool strictMethod;
 
    }; // end class
 

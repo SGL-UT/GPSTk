@@ -51,8 +51,6 @@
 #include "GloEphemerisStore.hpp"
 //#include "GalEphemerisStore.hpp"
 #include "FileStore.hpp"
-#include "Rinex3NavStream.hpp"
-#include "Rinex3NavData.hpp"
 #include "Rinex3NavHeader.hpp"
 
 namespace gpstk

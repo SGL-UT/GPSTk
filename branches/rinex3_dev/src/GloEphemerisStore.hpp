@@ -54,29 +54,30 @@
 namespace gpstk
 {
 
-      /** @addtogroup ephemstore */
-      //@{
+  /** @addtogroup ephemstore */
+  //@{
 
-      /**
-       * This adds the interface to get Glonass Ephemeris Information
-       */
-   class GloEphemerisStore : public TabularEphemerisStore<GloRecord>
-   {
+  /**
+   * This adds the interface to get Glonass Ephemeris Information
+   */
 
-   public:
+  class GloEphemerisStore : public TabularEphemerisStore<GloRecord>
+  {
 
-         /// Constructor.
-      GloEphemerisStore()
-         throw()
-      { TabularEphemerisStore<GloRecord>(); };
+  public:
 
-         /// Destructor.
-      virtual ~GloEphemerisStore() {};
+    /// Constructor.
+    GloEphemerisStore()
+      throw()
+    { TabularEphemerisStore<GloRecord>(); };
 
-      void addEphemeris(const Rinex3NavData& data)
-         throw();
+    /// Destructor.
+    virtual ~GloEphemerisStore() {};
 
-   };
+    void addEphemeris(const Rinex3NavData& data)
+      throw();
+
+  };
 
 }  // End of namespace gpstk
 

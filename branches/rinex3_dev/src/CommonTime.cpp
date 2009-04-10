@@ -36,6 +36,8 @@
 //
 //=============================================================================
 
+#include <limits>
+#include <iomanip>
 #include <cmath>
 #include "CommonTime.hpp"
 #include "MathBase.hpp"

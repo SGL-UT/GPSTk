@@ -42,13 +42,13 @@
 //=============================================================================
 
 #include "GloEphemerisStore.hpp"
+#include "ECEF.hpp"
 
 namespace gpstk
 {
    void GloEphemerisStore::addEphemeris(const Rinex3NavData& data)
       throw()
    {
-      cout << "GloEphemerisStore:addEphemeris() called" << endl;
       CommonTime t = data.time;
       SatID sat = data.sat;
       GloRecord& glorecord = pe[sat][t]; // find or add entry
@@ -68,7 +68,5 @@ namespace gpstk
          initialTime = t;
       else if (t > finalTime)
          finalTime = t;
-
-      cout << "GloEphemerisStore:addEphemeris() finished" << endl;
    }
 }

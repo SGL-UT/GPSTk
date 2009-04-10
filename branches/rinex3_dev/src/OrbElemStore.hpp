@@ -46,17 +46,11 @@
 #define GPSTK_ORBELEMSTORE_HPP
 
 #include <iostream>
-#include <string>
-#include <list>
-#include <map>
 
 #include "Exception.hpp"
 #include "SatID.hpp"
 #include "CommonTime.hpp"
 #include "XvtStore.hpp"
-#include "EngEphemeris.hpp"
-#include "icd_200_constants.hpp"
-#include "CivilTime.hpp"
 
 namespace gpstk
 {
@@ -86,7 +80,7 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xt getXt(const SatID id, const CommonTime& t)
+      virtual Xt getXt(const SatID& id, const CommonTime& t)
          const throw( InvalidRequest )
          = 0;
 
@@ -98,7 +92,7 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xvt getXvt(const SatID id, const CommonTime& t)
+      virtual Xvt getXvt(const SatID& id, const CommonTime& t)
          const throw( InvalidRequest )
          = 0;
 

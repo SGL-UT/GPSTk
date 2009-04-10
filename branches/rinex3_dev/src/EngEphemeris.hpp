@@ -49,8 +49,6 @@
 #include "CommonTime.hpp"
 #include "Xvt.hpp"
 
-#include <iomanip>
-
 namespace gpstk
 {
    /** @addtogroup ephemcalc */
@@ -133,8 +131,7 @@ namespace gpstk
       bool addIncompleteSF1Thru3(
          const long sf1[8], const long sf2[8], const long sf3[8], 
          const long sf1TransmitSOW, const int gpsWeek,
-         const short PRN, const short track)
-         throw();
+         const short PRN, const short track);
 
          /**
           * Query presence of subframe in this object.
