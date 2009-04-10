@@ -22,8 +22,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2009
 //
 //============================================================================
 
@@ -97,7 +97,7 @@ namespace gpstk
             string block(StringUtils::upperCase(
                StringUtils::stripFirstWord(line)));
 
-               // Get satellite id. If it doesn't fit GPS or Glonass, it is 
+               // Get satellite id. If it doesn't fit GPS or Glonass, it is
                // marked as unknown
             SatID sat(StringUtils::asInt(prn),SatID::systemUnknown);
                // Let's identify satellite system
@@ -140,37 +140,59 @@ namespace gpstk
          }  // End of try block
          catch (EndOfFile& e)
          {
+               // Close this data stream
+            (*this).close();
+
             return;
          }
          catch (...)
          {
+               // Close this data stream
+            (*this).close();
+
             return;
          }
 
       } // End of while(1)
 
-   } // End of SatDataReader::loadData()
+   }  // End of method 'SatDataReader::loadData()'
 
 
 
       // Method to open AND load satellite data file.
    void SatDataReader::open(const char* fn)
    {
+
+         // We need to be sure current data stream is closed
+      (*this).close();
+
+         // Open data stream
       FFTextStream::open(fn, std::ios::in);
+
+         // Load data
       loadData();
 
       return;
-   }
+
+   }  // End of method 'SatDataReader::open()'
 
 
       // Method to open AND load satellite data file.
    void SatDataReader::open(const string& fn)
    {
+
+         // We need to be sure current data stream is closed
+      (*this).close();
+
+         // Open data stream
       FFTextStream::open(fn.c_str(), std::ios::in);
+
+         // Load data
       loadData();
-            
+
       return;
-   }
+
+   }  // End of method 'SatDataReader::open()'
 
 
 
@@ -179,8 +201,8 @@ namespace gpstk
        * @param sat   Satellite ID.
        * @param epoch Epoch of interest.
        *
-       * @return String containing satellite's block. If satellite is 
-       * not found or epoch is out of proper launch/deactivation bounds, 
+       * @return String containing satellite's block. If satellite is
+       * not found or epoch is out of proper launch/deactivation bounds,
        * this method will return an empty string.
        */
    string SatDataReader::getBlock(const SatID& sat,
@@ -216,11 +238,12 @@ namespace gpstk
       {
          return "";
       }
-        
+
 
       return ((*iter).second.block);
 
-   } // End of SatDataReader::getBlock()
+   }  // End of method 'SatDataReader::getBlock()'
+
 
 
       /* Method to get the GPS number of a given SV at a given epoch.
@@ -228,12 +251,12 @@ namespace gpstk
        * @param sat   Satellite ID.
        * @param epoch Epoch of interest.
        *
-       * @return Integer containing satellite's block. If satellite is 
-       * not found or epoch is out of proper launch/deactivation bounds, 
+       * @return Integer containing satellite's block. If satellite is
+       * not found or epoch is out of proper launch/deactivation bounds,
        * this method will return -1.
        */
    int SatDataReader::getGPSNumber(const SatID& sat,
-                                   const DayTime& epoch) const 
+                                   const DayTime& epoch) const
    {
 
          // Create a pair of range belonging to this SatID
@@ -265,11 +288,12 @@ namespace gpstk
       {
          return -1;
       }
-        
+
 
       return ((*iter).second.gpsNumber);
 
-   } // End of SatDataReader::getGPSNumber()
+   }  // End of method 'SatDataReader::getGPSNumber()'
+
 
 
       /* Method to get the launch date of a given SV.
@@ -277,12 +301,12 @@ namespace gpstk
        * @param sat   Satellite ID.
        * @param epoch Epoch of interest.
        *
-       * @return DayTime object containing satellite's launch date. If 
-       * satellite is not found or epoch is out of proper launch/deactivation 
+       * @return DayTime object containing satellite's launch date. If
+       * satellite is not found or epoch is out of proper launch/deactivation
        * bounds, this method will return DayTime::END_OF_TIME.
        */
    DayTime SatDataReader::getLaunchDate(const SatID& sat,
-                                        const DayTime& epoch) const 
+                                        const DayTime& epoch) const
    {
 
          // Create a pair of range belonging to this SatID
@@ -317,7 +341,8 @@ namespace gpstk
 
       return ((*iter).second.launchDate);
 
-   } // End of SatDataReader::getLaunchDate()
+   }  // End of method 'SatDataReader::getLaunchDate()'
+
 
 
       /* Method to get the deactivation date of a given SV.
@@ -325,13 +350,13 @@ namespace gpstk
        * @param sat   Satellite ID.
        * @param epoch Epoch of interest.
        *
-       * @return DayTime object containing satellite's deactivation date. If 
-       * satellite is not found, epoch is out of proper launch/deactivation 
-       * bounds or satellite is still active, this method will return 
+       * @return DayTime object containing satellite's deactivation date. If
+       * satellite is not found, epoch is out of proper launch/deactivation
+       * bounds or satellite is still active, this method will return
        * DayTime::BEGINNING_OF_TIME.
        */
    DayTime SatDataReader::getDeactivationDate(const SatID& sat,
-                                              const DayTime& epoch) const 
+                                              const DayTime& epoch) const
    {
 
          // Create a pair of range belonging to this SatID
@@ -366,7 +391,8 @@ namespace gpstk
 
       return ((*iter).second.deactivationDate);
 
-   } // End of SatDataReader::getDeactivationDate()
+   }  // End of method 'SatDataReader::getDeactivationDate()'
 
 
-} // namespace
+
+}  // End of namespace gpstk
