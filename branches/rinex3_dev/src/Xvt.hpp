@@ -47,7 +47,6 @@
 
 #include <iostream>
 #include "Xt.hpp"
-#include "ECEF.hpp"
 
 namespace gpstk
 {

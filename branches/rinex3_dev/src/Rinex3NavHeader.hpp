@@ -44,26 +44,30 @@
 //
 //=============================================================================
 
+#include <iostream>
+#include <string>
+#include <vector>
 #include <map>
 
+#include "StringUtils.hpp"
 #include "FFStream.hpp"
 #include "Rinex3NavBase.hpp"
 
 namespace gpstk
 {
-   /** @addtogroup Rinex3Nav */
-   //@{
+  /** @addtogroup Rinex3Nav */
+  //@{
 
-      /**
-       * This class models the RINEX 3 NAV header for a RINEX 3 NAV file.
-       *
-       * \sa rinex3_nav_test.cpp and rinex3_nav_read_write.cpp for examples.
-       * \sa gpstk::Rinex3NavData and gpstk::Rinex3NavStream classes.
-       */
+  /**
+   * This class models the RINEX 3 NAV header for a RINEX 3 NAV file.
+   *
+   * \sa rinex3_nav_test.cpp and rinex3_nav_read_write.cpp for examples.
+   * \sa gpstk::Rinex3NavData and gpstk::Rinex3NavStream classes.
+   */
 
-   class Rinex3NavHeader : public Rinex3NavBase
-   {
-   public:
+  class Rinex3NavHeader : public Rinex3NavBase
+  {
+  public:
 
      /// Constructor
      Rinex3NavHeader(void)
@@ -184,13 +188,13 @@ namespace gpstk
        throw(std::exception, FFStreamError,
              gpstk::StringUtils::StringException);
 
-   private:
+  private:
 
-     static const std::string timeSysCorrStrings[];
+    static const std::string timeSysCorrStrings[];
 
-   }; // class Rinex3NavHeader
+  }; // class Rinex3NavHeader
 
-   //@}
+  //@}
 
 } // namespace
 

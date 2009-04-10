@@ -89,11 +89,10 @@ namespace gpstk
     }
   }
 
+  //--------------------------------------------------------------------------
+  // Keeps only one ephemeris with a given IODC/time.
+  //--------------------------------------------------------------------------
 
-  //--------------------------------------------------------------------------
-  // Only keeps one ephemeris with a given IODC/time
-  // It should keep the one with the latest transmit time
-  //--------------------------------------------------------------------------
   void Rinex3NavHeader::addTimeSysCorr(const TimeSysCorrInfo& tsci)
     throw()
   {
@@ -109,7 +108,7 @@ namespace gpstk
     strm.header = (*this);
 
     unsigned long allValid;
-    if (version == 3.0 || version == 3.00) allValid = allValid30;
+    if (version == 3.0) allValid = allValid30;
     else
     {
       FFStreamError err("Unknown RINEX version: " + asString(version,3));
@@ -167,7 +166,7 @@ namespace gpstk
       line  = "GAL  ";
       for (int i = 0; i < 3; i++)
       {
-        line += rightJustify(doub2for(ionoParamGal[i], 12, 2),12);  // should be 12.4
+        line += rightJustify(doub2for(ionoParamGal[i], 12, 2),12);
       }
       line += string(19, ' ');
       line += leftJustify(stringIonoCorr,20);
@@ -180,7 +179,7 @@ namespace gpstk
       line  = "GPSA ";
       for (int i = 0; i < 4; i++)
       {
-        line += rightJustify(doub2for(ionoParam1[i], 12, 2),12);  // should be 12.4
+        line += rightJustify(doub2for(ionoParam1[i], 12, 2),12);
       }          
       line += string(7, ' ');
       line += leftJustify(stringIonoCorr,20);
@@ -190,7 +189,7 @@ namespace gpstk
       line  = "GPSB ";
       for (int i = 0; i < 4; i++)
       {
-        line += rightJustify(doub2for(ionoParam2[i], 12, 2),12);  // should be 12.4
+        line += rightJustify(doub2for(ionoParam2[i], 12, 2),12);
       }          
       line += string(7, ' ');
       line += leftJustify(stringIonoCorr,20);
@@ -208,8 +207,8 @@ namespace gpstk
 
         line  = info.timeSysCorrType;
         line += string(1, ' ');
-        line += doub2for(info.A0, 17, 2); // These look suspicious.
-        line += doub2for(info.A1, 16, 2); // Do they give 17.10 and 16.9? -DR
+        line += doub2for(info.A0, 17, 2);
+        line += doub2for(info.A1, 16, 2);
         line += rightJustify(asString(info.timeSysRefTime),7);
         line += rightJustify(asString(info.timeSysRefWeek),5);
         if ( info.timeSysCorrSBAS != "" )
@@ -371,7 +370,7 @@ namespace gpstk
     }
 
     unsigned long allValid;
-    if (version == 3.0 && version == 3.00) allValid = allValid30;
+    if (version == 3.0) allValid = allValid30;
     else
     {
       FFStreamError e("Unknown or unsupported RINEX version " + asString(version));

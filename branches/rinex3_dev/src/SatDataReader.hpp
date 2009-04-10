@@ -5,8 +5,8 @@
  * File stream for satellite file data in PRN_GPS-like format.
  */
 
-#ifndef SATDATAREADER_HPP
-#define SATDATAREADER_HPP
+#ifndef GPSTK_SATDATAREADER_HPP
+#define GPSTK_SATDATAREADER_HPP
 
 //============================================================================
 //
@@ -25,8 +25,8 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
+//
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2009
 //
 //============================================================================
 
@@ -48,9 +48,9 @@ namespace gpstk
       /** @addtogroup formattedfile */
       //@{
 
-      /** This is a class to read and parse satellite data from 
+      /** This is a class to read and parse satellite data from
        *  PRN_GPS-like files.
-       * 
+       *
        *
        * Jet Propulsion Laboratory (JPL) provides a file called "PRN_GPS"
        * with satellite information such as launch and deactivation dates,
@@ -78,9 +78,9 @@ namespace gpstk
        *   // From 1992 to 1997, PRN 28 belonged to a block IIA satellite
        * @endcode
        *
-       * @warning Be aware that PRN numbers are recycled, so several 
+       * @warning Be aware that PRN numbers are recycled, so several
        * different satellites may have the same PRN number at different
-       * epochs. Therefore, you must provide the epoch of interest when 
+       * epochs. Therefore, you must provide the epoch of interest when
        * calling get methods.
        */
    class SatDataReader : public FFTextStream
@@ -118,17 +118,22 @@ namespace gpstk
       virtual void open(const string& fn);
 
 
+         /// Method to clear all previously loaded satellite data.
+      virtual SatDataReader& clearData()
+      { SatelliteData.clear(); return (*this); };
+
+
          /** Method to get the block type of a given SV at a given epoch.
           *
           * @param sat   Satellite ID.
           * @param epoch Epoch of interest.
           *
-          * @return String containing satellite's block. If satellite is 
-          * not found or epoch is out of proper launch/deactivation bounds, 
+          * @return String containing satellite's block. If satellite is
+          * not found or epoch is out of proper launch/deactivation bounds,
           * this method will return an empty string.
           */
       virtual string getBlock(const SatID& sat,
-                              const DayTime& epoch) const ;
+                              const DayTime& epoch) const;
 
 
          /** Method to get the GPS number of a given SV at a given epoch.
@@ -136,12 +141,12 @@ namespace gpstk
           * @param sat   Satellite ID.
           * @param epoch Epoch of interest.
           *
-          * @return Integer containing satellite's block. If satellite is 
-          * not found or epoch is out of proper launch/deactivation bounds, 
+          * @return Integer containing satellite's block. If satellite is
+          * not found or epoch is out of proper launch/deactivation bounds,
           * this method will return -1.
           */
       virtual int getGPSNumber(const SatID& sat,
-                               const DayTime& epoch) const ;
+                               const DayTime& epoch) const;
 
 
          /** Method to get the launch date of a given SV.
@@ -149,13 +154,13 @@ namespace gpstk
           * @param sat   Satellite ID.
           * @param epoch Epoch of interest.
           *
-          * @return DayTime object containing satellite's launch date. If 
-          * satellite is not found or epoch is out of proper 
-          * launch/deactivation bounds, this method will return 
+          * @return DayTime object containing satellite's launch date. If
+          * satellite is not found or epoch is out of proper
+          * launch/deactivation bounds, this method will return
           * DayTime::END_OF_TIME.
           */
       virtual DayTime getLaunchDate(const SatID& sat,
-                                    const DayTime& epoch) const ;
+                                    const DayTime& epoch) const;
 
 
          /** Method to get the deactivation date of a given SV.
@@ -163,13 +168,13 @@ namespace gpstk
           * @param sat   Satellite ID.
           * @param epoch Epoch of interest.
           *
-          * @return DayTime object containing satellite's deactivation date. 
-          * If satellite is not found, epoch is out of proper 
-          * launch/deactivation bounds or satellite is still active, this 
+          * @return DayTime object containing satellite's deactivation date.
+          * If satellite is not found, epoch is out of proper
+          * launch/deactivation bounds or satellite is still active, this
           * method will return DayTime::BEGINNING_OF_TIME.
           */
       virtual DayTime getDeactivationDate(const SatID& sat,
-                                          const DayTime& epoch) const ;
+                                          const DayTime& epoch) const;
 
 
          /// Destructor
@@ -183,7 +188,7 @@ namespace gpstk
       struct svData
       {
             // Default constructor initializing the data in the structure
-         svData() : launchDate(DayTime::BEGINNING_OF_TIME),  
+         svData() : launchDate(DayTime::BEGINNING_OF_TIME),
                     deactivationDate(DayTime::END_OF_TIME),
                     gpsNumber(0),
                     block("") {};
@@ -217,10 +222,11 @@ namespace gpstk
          throw(FFStreamError, gpstk::StringUtils::StringException);
 
 
-   };
+   }; // End of class 'SatDataReader'
 
 
       //@}
 
-} // namespace
-#endif  // SATDATAREADER_HPP
+}  // End of namespace gpstk
+
+#endif  // GPSTK_SATDATAREADER_HPP
