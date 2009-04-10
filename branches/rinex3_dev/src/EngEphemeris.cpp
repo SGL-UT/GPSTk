@@ -79,7 +79,7 @@ namespace gpstk
    }
 
    bool EngEphemeris::addSubframe(const long subframe[10], const int gpsWeek,
-                                  short PRN, short track)
+                                  const short PRN, const short track)
       throw( InvalidParameter )
    {
       double ficked[60];
@@ -157,7 +157,7 @@ namespace gpstk
    }
 
    bool EngEphemeris::addSubframeNoParity(const long subframe[10],
-                                          const long gpsWeek,
+                                          const int  gpsWeek,
                                           const short PRN,
                                           const short track)
       throw( InvalidParameter )

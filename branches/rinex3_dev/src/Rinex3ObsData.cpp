@@ -320,13 +320,13 @@ namespace gpstk
     line  = string(1, ' ');
     line += rightJustify(asString<short>(civtime.year    ), 4);
     line += string(1, ' ');
-    line += rightJustify(asString<short>(civtime.month   ), 2);
+    line += rightJustify(asString<short>(civtime.month   ), 2, '0');
     line += string(1, ' ');
-    line += rightJustify(asString<short>(civtime.day     ), 2);
+    line += rightJustify(asString<short>(civtime.day     ), 2, '0');
     line += string(1, ' ');
-    line += rightJustify(asString<short>(civtime.hour    ), 2);
+    line += rightJustify(asString<short>(civtime.hour    ), 2, '0');
     line += string(1, ' ');
-    line += rightJustify(asString<short>(civtime.minute  ), 2);
+    line += rightJustify(asString<short>(civtime.minute  ), 2, '0');
     line += rightJustify(asString       (civtime.second,7),11);
 
     return line;

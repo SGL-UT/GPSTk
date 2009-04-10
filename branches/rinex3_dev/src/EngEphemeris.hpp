@@ -44,6 +44,9 @@
 //
 //=============================================================================
 
+#include <string>
+#include <iostream>
+
 #include "EngNav.hpp"
 #include "Exception.hpp"
 #include "CommonTime.hpp"
@@ -80,8 +83,10 @@ namespace gpstk
           * @return true if successful.
           * @throw InvalidParameter if subframe is valid but not subframe 1-3.
           */
-      bool addSubframe(const long subframe[10], const int gpsWeek,
-                       short PRN, short track)
+      bool addSubframe(const long  subframe[10],
+                       const int   gpsWeek,
+                       const short PRN,
+                       const short track)
          throw( gpstk::InvalidParameter );
 
          /**
@@ -98,8 +103,8 @@ namespace gpstk
           * @return true if successful.
           * @throw InvalidParameter if subframe is valid but not subframe 1-3.
           */
-      bool addSubframeNoParity(const long subframe[10],
-                               const long gpsWeek,
+      bool addSubframeNoParity(const long  subframe[10],
+                               const int   gpsWeek,
                                const short PRN,
                                const short track)
          throw( gpstk::InvalidParameter );
@@ -128,10 +133,13 @@ namespace gpstk
           * @param track tracker number (typically receiver channel number).
           * @return true if successful.
           */
-      bool addIncompleteSF1Thru3(
-         const long sf1[8], const long sf2[8], const long sf3[8], 
-         const long sf1TransmitSOW, const int gpsWeek,
-         const short PRN, const short track);
+      bool addIncompleteSF1Thru3(const long  sf1[8],
+                                 const long  sf2[8],
+                                 const long  sf3[8], 
+                                 const long  sf1TransmitSOW,
+                                 const int   gpsWeek,
+                                 const short PRN,
+                                 const short track);
 
          /**
           * Query presence of subframe in this object.
