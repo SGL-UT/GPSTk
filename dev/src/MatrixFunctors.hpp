@@ -494,7 +494,7 @@ namespace gpstk
          }
 
          bool first=true;
-         size_t N=LU.rows(),i,j,ii;
+         size_t N=LU.rows(),i,j,ii(0);
          T sum;
 
          // un-pivot
