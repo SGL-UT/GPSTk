@@ -165,25 +165,26 @@ void TimCvt::process()
       string eight(8, ' '); // eight spaces
       
       GPSWeekZcount wz(ct);
+      CivilTime civ(ct);
 
       cout << endl
            << eight << leftJustify("Month/Day/Year H:M:S", 32) 
            << CivilTime(ct) << endl
 
            << eight << leftJustify("Modified Julian Date", 32)
-           << setprecision(15) << MJD(ct).printf("%.15Q") << endl
+           << setprecision(15) << MJD(ct) << endl
 
            << eight << leftJustify("GPSweek DayOfWeek SecOfWeek", 32)
-           << GPSWeekSecond(ct).printf("%G %w %013.6g") << endl
+           << GPSWeekSecond(ct).printf("%G %w % 13.6g") << endl
 
            << eight << leftJustify("FullGPSweek Zcount", 32)
-           << wz.printf("%F %06z") << endl
+           << wz.printf("%F % 6z") << endl
 
            << eight << leftJustify("Year DayOfYear SecondOfDay", 32)
-           << YDSTime(ct).printf("%Y %03j %012.6s") << endl
+           << YDSTime(ct).printf("%Y %03j % 12.6s") << endl
 
            << eight << leftJustify("Unix: Second Microsecond", 32)
-           << UnixTime(ct).printf("%U %06u") << endl
+           << UnixTime(ct).printf("%U % 6u") << endl
 
            << eight << leftJustify("Zcount: 29-bit (32-bit)", 32)
            << wz.printf("%c (%C)") << endl

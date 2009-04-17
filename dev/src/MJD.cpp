@@ -49,10 +49,13 @@ namespace gpstk
          tmp -= static_cast<long>( tmp );
             // convert tmp to seconds of day
          tmp *= SEC_PER_DAY;
-      
+            // Lose excess precision in 'tmp' because it may cause rounding
+            // problems in the conversion to CommonTime.
+         double dTmp( static_cast<double>( tmp ) );
+
          return CommonTime( jday,
-                            static_cast<long>( tmp ),
-                            tmp - static_cast<long>( tmp ) );
+                            static_cast<long>( dTmp ),
+                            dTmp - static_cast<long>( dTmp ) );
       }
       catch (InvalidParameter& ip)
       {
