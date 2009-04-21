@@ -368,7 +368,7 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
 //-----------------------------------------------------------------------------
 void RxSim::process()
 {
-   pthread_t thread_id[numTrackers];
+   pthread_t *thread_id = new pthread_t[numTrackers];
    pthread_attr_t attr;
    int rc;
    void *status;
@@ -567,6 +567,7 @@ void RxSim::process()
       if (cc->localTime > timeLimit)
          break;
    }
+   delete thread_id;
    pthread_attr_destroy(&attr);
    pthread_exit(NULL);
 }
@@ -660,4 +661,5 @@ void *Cfunction(void* p)
    }
 
    pthread_exit((void*) 0);
+   return NULL;
 }
