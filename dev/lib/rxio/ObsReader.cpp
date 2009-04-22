@@ -158,11 +158,23 @@ namespace gpstk
             {
                ObsID oid(ObsID::otRange, ObsID::cbL1L2, ObsID::tcP);
                soe[oid] = smod.obs * 1000;
+
+               if (smod.lol!=0)
+	       {
+                  ObsID oid(ObsID::otLLI, ObsID::cbL1L2, ObsID::tcP);
+                  soe[oid] = smod.lol;
+	       }
             }
             else if (smod.type==9)
             {
                ObsID oid(ObsID::otPhase, ObsID::cbL1L2, ObsID::tcP);
                soe[oid] = smod.obs;
+
+               if (smod.lol!=0)
+	       {
+                  ObsID oid(ObsID::otLLI, ObsID::cbL1L2, ObsID::tcP);
+                  soe[oid] = smod.lol;
+               }
             }
          }
       }
