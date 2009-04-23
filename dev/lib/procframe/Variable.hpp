@@ -157,6 +157,33 @@ namespace gpstk
       { defaultCoefficient = coef; return (*this); };
 
 
+         /// Get internal source this variable is assigned to (if any).
+      SourceID getSource() const
+      { return varSource; };
+
+
+         /** Set internal source this variable is assigned to.
+          *
+          * @param source     Internal, specific SourceID of variable.
+          */
+      Variable& setSource(const SourceID& source)
+      { varSource = source; return (*this); };
+
+
+
+         /// Get internal satellite this variable is assigned to (if any).
+      SatID getSatellite() const
+      { return varSat; };
+
+
+         /** SSet internal satellite this variable is assigned to.
+          *
+          * @param satellite  Internal, specific SatID of variable.
+          */
+      Variable& setSatellite(const SatID& satellite)
+      { varSat = satellite; return (*this); };
+
+
          /// Equality operator
       virtual bool operator==(const Variable& right) const;
 
@@ -257,6 +284,14 @@ namespace gpstk
 
          /// Value of default coefficient assigned to this variable.
       double defaultCoefficient;
+
+
+         /// Internal source this variable is assigned to (if any).
+      SourceID varSource;
+
+
+         /// Internal satellite this variable is assigned to (if any).
+      SatID varSat;
 
 
          /** Initializing function
