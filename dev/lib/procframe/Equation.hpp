@@ -259,6 +259,11 @@ namespace gpstk
       { body.clear(); return (*this); };
 
 
+         /// Get equation SourceID.
+      SourceID getEquationSource() const
+      { return header.equationSource; };
+
+
          /** Get SourceID set. This is only meaningful if "equationSource" in
           *  header is set to "Variable::someSources".
           */
