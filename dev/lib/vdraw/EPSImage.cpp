@@ -92,8 +92,8 @@ namespace vdraw
 
      // Register viewers in case they haven't been registered.
      viewerManager.registerViewer("ggv");
+     viewerManager.registerViewer("kghostview --portrait");
      viewerManager.registerViewer("ghostview");
-     viewerManager.registerViewer("kghostview");
      viewerManager.registerViewer("gv");
      viewerManager.registerViewer("evince");
 
