@@ -176,7 +176,7 @@ namespace gpstk
       { return varSat; };
 
 
-         /** SSet internal satellite this variable is assigned to.
+         /** Set internal satellite this variable is assigned to.
           *
           * @param satellite  Internal, specific SatID of variable.
           */

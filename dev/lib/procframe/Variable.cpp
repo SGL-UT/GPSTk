@@ -176,7 +176,9 @@ namespace gpstk
                ( isSourceIndexed == right.getSourceIndexed() )          &&
                ( isSatIndexed == right.getSatIndexed() )                &&
                ( initialVariance == right.getInitialVariance() )        &&
-               ( defaultCoefficient == right.getDefaultCoefficient() ) );
+               ( defaultCoefficient == right.getDefaultCoefficient() )  &&
+               ( varSource == right.getSource() )                       &&
+               ( varSat == right.getSatellite() )                       );
 
    }  // End of 'Variable::operator=='
 
@@ -188,8 +190,10 @@ namespace gpstk
    bool Variable::operator<(const Variable& right) const
    {
 
+         // Compare each field in turn
       if( varType == right.getType() )
       {
+
          if( pVarModel == right.getModel() )
          {
 
@@ -201,8 +205,28 @@ namespace gpstk
 
                   if( initialVariance == right.getInitialVariance() )
                   {
-                     return ( defaultCoefficient <
-                              right.getDefaultCoefficient() );
+
+                     if ( defaultCoefficient == right.getDefaultCoefficient() )
+                     {
+
+                        if ( varSource == right.getSource() )
+                        {
+
+                           return ( varSat < right.getSatellite() );
+
+                        }
+                        else
+                        {
+                           return ( varSource < right.getSource() );
+                        }
+
+                     }
+                     else
+                     {
+                        return ( defaultCoefficient <
+                                 right.getDefaultCoefficient() );
+                     }
+
                   }
                   else
                   {
@@ -243,17 +267,22 @@ namespace gpstk
          // First check if these Variables are the same
       if ( this == &right ) return (*this);
 
-      setType(right.getType());
+         // If Variables are different, then set values of all fields
+      setType( right.getType() );
 
-      setModel(right.getModel());
+      setModel( right.getModel() );
 
-      setSourceIndexed(right.getSourceIndexed());
+      setSourceIndexed( right.getSourceIndexed() );
 
-      setSatIndexed(right.getSatIndexed());
+      setSatIndexed( right.getSatIndexed() );
 
-      setInitialVariance(right.getInitialVariance());
+      setInitialVariance( right.getInitialVariance() );
 
-      setDefaultCoefficient(right.getDefaultCoefficient());
+      setDefaultCoefficient( right.getDefaultCoefficient() );
+
+      setSource( right.getSource() );
+
+      setSatellite( right.getSatellite() );
 
       return *this;
 
