@@ -251,14 +251,14 @@ namespace gpstk
           gpstk::StringUtils::StringException)
   {
     RinexMetStream& strm = dynamic_cast<RinexMetStream&>(ffs);
+
     // if already read, just return
     if (strm.headerRead == true)
       return;
 
     valid = 0;
 
-    // clear out structures in case the last read was a partial header
-    // and there's cruft left
+    // Clear out structures in case the last read was a partial header.
     commentList.clear();
     obsTypeList.clear();
     sensorTypeList.clear();
@@ -277,8 +277,8 @@ namespace gpstk
         GPSTK_THROW(e);
       }
 
-      string thisLabel(line, 60, 20);
-         
+      string thisLabel = strip(line.substr(60,20));
+
       if (thisLabel == stringVersion)
       {
         version = asDouble(line.substr(0,20));
