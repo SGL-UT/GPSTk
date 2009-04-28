@@ -44,7 +44,8 @@
 #include <algorithm>       // for find
 
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "SystemTime.hpp"
+#include "CivilTime.hpp"
 #include "RinexMetHeader.hpp"
 #include "RinexMetStream.hpp"
 
@@ -132,10 +133,9 @@ namespace gpstk
     {
       line  = leftJustify(fileProgram,20);
       line += leftJustify(fileAgency,20);
-      DayTime dt;
-      dt.setLocalTime();
-      string dat = dt.printf("%02m/%02d/%04Y %02H:%02M:%02S");
-      line += leftJustify(dat, 20);
+      SystemTime sysTime;
+      string curDate = (static_cast<CivilTime>(sysTime)).printf("%04Y%02m%02d %02H%02M%02S %P");
+      line += leftJustify(curDate, 20);
       line += stringRunBy;
       strm << line << endl;
       strm.lineNumber++;

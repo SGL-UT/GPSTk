@@ -249,7 +249,7 @@ namespace gpstk
       }
       year += 1900;
 
-      CivilTime rv(year, month, day, hour, min, sec);
+      CivilTime rv(year, month, day, hour, min, sec, TimeSystem::Any);
       return CommonTime(rv);
     }
     catch (std::exception &e)
