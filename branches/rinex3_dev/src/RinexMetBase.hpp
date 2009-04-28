@@ -1,10 +1,8 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file RinexMetBase.hpp
- * Base class for RINEX meteorological file data
+ * Base class for RINEX 2 & 3 Met file data.
  */
 
 #ifndef GPSTK_RINEXMETBASE_HPP
@@ -45,11 +43,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-
-
-
-
 
 #include "FFData.hpp"
 
