@@ -1,4 +1,24 @@
 /** $Id$
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+// //  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
 *   SVNumXRef.hpp
 *
 *   Applied Research Laboratories, The University of Texas at Austin
@@ -7,10 +27,11 @@
 *   This class implements a cross-reference between PRN numbers and NAVSTAR IDs.
 *   Since PRN numbers are re-used (historically, there's a limit of 1-32 in
 *   the PRN IDs) it's necessary provide a several->one PRN ID ->NAVSTAR mapping.
-*   On the other hand, the NAVSTAR->PRN ID mapping is unique.
+*   Originally, the NAVSTAR->PRN ID mapping is unique. However, this is no longer
+*   true and several -> one mapping now necessary in both directions.
 *
-*   As a result, the PRN ID->NAVSTAR cross reference supports the ability to 
-*   provide a date so the cross-reference can select.
+*   As a result, the cross reference methods support the ability to provide a
+*   date so the method can select between multiple options.
 *
 *   Note: Thie information is not contained anywhere in the navigation message.
 *   Therefore, it needs to come from "outside the system".  The information 
@@ -21,24 +42,29 @@
 *  MEMBER METHODS
 *     SVNumXRef( ); - Constructor.  Works from a fixed table that is compiled
 *                     into the code.
-*     int getNAVSTAR( const int PRNID ) const; - Given a PRNID, return the 
-*                     NAVSTAR number.  Assumes the relationship at the 
-*                     current date/time is the relationship of interest.
-*                     May throw "NoNAVSTARNumFound" error.
 *     int getNAVSTAR( const int PRNID, const gpstk::DayTime dt ) const; -
 *                     Given a PRNID and a date, return the NAVSTAR number
 *                     related to thsat PRNID at the date provided.  May 
-*                     throw "NoNAVSTARNumFound" error.
-*     int getPRNID( const int NAVSTARID ) const; - GIven a NAVSTAR Number
-*                     return the corresponding PRNID.
+*                     throw "NoNAVSTARNumFound" error. The date defaults to
+*                     the current date if one is not provided.
+*     int getPRNID( const int NAVSTARID, const gpstk::DayTime dt ) const; -
+*                     Given a NAVSTAR Number and a date, return the corresponding
+*                     PRNID related to the NAVSTAR Number on the specified date.
+*                     May throw "No PRNNumberFound" error." The date defaults to
+*                     the current date if one is not provided.
 *
-*  The following three members parallel the preceding three and provide a 
+*  The following four members parallel the preceding four and provide a 
 *  means of determining is the specified information is available prior to
 *  making a "get" call.  This is useful if you want to avoid writing 
 *  "try/catch" blocks. 
-*     bool PRNIDavailable(  const int NAVSTARID ) const;
+*     bool PRNIDavailable( const int NAVSTARID, const gpstk::DayTme dt ) const;
 *     bool NAVSTARIDAvailable( const int PRNID, const gpstk::DayTime dt ) const;
-*     bool NAVSTARIDAvailable( const int PRNID ) const;
+*
+*
+*     bool NAVSTARIDActive( const int NAVSTARID, const gpstk::DayTime dt ) const; -
+*     Given a NAVSTAR ID and a date, return true if the specified NAVSTAR ID was
+*     active on the date provided. The date defaults to the current date if one
+*     is not provided.
 *
 */
 #ifndef SVNUMXREF_HPP
@@ -58,26 +84,28 @@
 namespace gpstk
 {
 
-class SVNumXRefNode
+class XRefNode
 {
    public:
-      SVNumXRefNode( const int NAVSTARNumArg,
+      XRefNode( const int NumArg,
                      const gpstk::DayTime begDT,
                      const gpstk::DayTime endDT );
       int getNAVSTARNum() const;
+      int getPRNNum() const;
       gpstk::DayTime getBeginTime() const;
       gpstk::DayTime getEndTime() const;
       bool isApplicable( gpstk::DayTime dt ) const;
                   
    protected:
-      int NAVSTARNum;
+      int Num;
       gpstk::DayTime begValid;
       gpstk::DayTime endValid;
 };
 
-typedef std::multimap<int, SVNumXRefNode>::const_iterator SVNumXRefListCI;
+typedef std::multimap<int, XRefNode>::const_iterator SVNumXRefListCI;
 typedef std::pair<SVNumXRefListCI,SVNumXRefListCI> SVNumXRefPair;
-typedef std::map<int,int>::const_iterator NAVNumXRefCI;
+typedef std::multimap<int, XRefNode>::const_iterator NAVNumXRefCI;
+typedef std::pair<NAVNumXRefCI,NAVNumXRefCI> NAVNumXRefPair;
 
 class SVNumXRef
 {
@@ -87,34 +115,34 @@ class SVNumXRef
 
       enum BlockType 
       {
-	I,
-	II,
-	IIA,
-	IIR,
-	IIR_M
+      I,
+      II,
+      IIA,
+      IIR,
+      IIR_M,
+      IIF
       };  
       SVNumXRef( );
       ~SVNumXRef() {}
       BlockType getBlockType( const int NAVSTARID ) const;
       std::string getBlockTypeString( const int NAVSTARID ) const;
-      int getNAVSTAR( const int PRNID ) const;
-      int getNAVSTAR( const int PRNID, const gpstk::DayTime dt ) const;
-      int getPRNID( const int NAVSTARID ) const;
-      bool PRNIDAvailable(  const int NAVSTARID ) const;
-      bool NAVSTARIDAvailable( const int PRNID, const gpstk::DayTime dt ) const;
+      int getNAVSTAR( const int PRNID, const gpstk::DayTime dt = gpstk::DayTime() ) const;
+      int getPRNID( const int NAVSTARID, const gpstk::DayTime dt = gpstk::DayTime() ) const;
+      bool PRNIDAvailable( const int NAVSTARID, const gpstk::DayTime dt = gpstk::DayTime() ) const;
+      bool NAVSTARIDAvailable( const int PRNID, const gpstk::DayTime dt = gpstk::DayTime() ) const;
       bool BlockTypeAvailable( const int NAVSTARID ) const;
-      bool NAVSTARIDAvailable( const int PRNID ) const;
-      bool NAVSTARIDActive( const int NAVSTARID, const gpstk::DayTime dt ) const;
+      bool NAVSTARIDActive( const int NAVSTARID, const gpstk::DayTime dt = gpstk::DayTime() ) const;
       
    protected:
-      std::map<int,int> NtoPMap;
-      std::multimap<int,SVNumXRefNode> PtoNMap;
+      std::multimap<int,XRefNode> NtoPMap;
+      std::multimap<int,XRefNode> PtoNMap;
       std::map<int,BlockType> NtoBMap;
 };
 
-inline int SVNumXRefNode::getNAVSTARNum() const { return(NAVSTARNum); }
-inline gpstk::DayTime SVNumXRefNode::getBeginTime() const { return( begValid ); }
-inline gpstk::DayTime SVNumXRefNode::getEndTime() const { return( endValid ); }
+inline int XRefNode::getNAVSTARNum() const { return(Num); }
+inline int XRefNode::getPRNNum() const { return(Num); }
+inline gpstk::DayTime XRefNode::getBeginTime() const { return( begValid ); }
+inline gpstk::DayTime XRefNode::getEndTime() const { return( endValid ); }
 
 
 }
