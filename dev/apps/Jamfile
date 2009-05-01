@@ -22,6 +22,7 @@ if $(UNIX)
 }
 SubInclude TOP apps multipath ;
 SubInclude TOP apps positioning ;
+SubInclude TOP apps performance ;
 SubInclude TOP apps reszilla ;
 SubInclude TOP apps Rinextools ;
 SubInclude TOP apps swrx ;

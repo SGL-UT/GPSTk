@@ -74,6 +74,7 @@ AC_CONFIG_FILES([Makefile
 		 apps/ionosphere/Makefile
 		 apps/mergetools/Makefile
 		 apps/multipath/Makefile
+		 apps/performance/Makefile
 		 apps/positioning/Makefile
 		 apps/qa/Makefile
 		 apps/receiver/Makefile
