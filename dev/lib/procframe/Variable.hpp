@@ -2,7 +2,7 @@
 
 /**
  * @file Variable.hpp
- * Class to define and handle GNSS variables.
+ * Class to define and handle 'descriptions' of GNSS variables.
  */
 
 #ifndef GPSTK_VARIABLE_HPP
@@ -44,7 +44,7 @@ namespace gpstk
       //@{
 
 
-      /// Class to define and handle GNSS variables.
+      /// Class to define and handle 'descriptions' of GNSS variables.
    class Variable
    {
    public:
@@ -66,13 +66,15 @@ namespace gpstk
           *                         or not. By default, it is NOT.
           * @param variance         Initial variance assigned to this variable.
           * @param coef             Default coefficient assigned.
+          * @param forceCoef        Always use default coefficient.
           */
       Variable( const TypeID& type,
                 StochasticModel* pModel   = &Variable::defaultModel,
                 bool sourceIndexed        = true,
                 bool satIndexed           = false,
                 double variance           = 4.0e14,
-                double coef               = 1.0 );
+                double coef               = 1.0,
+                bool forceCoef            = false );
 
 
          /// Get variable type
@@ -155,6 +157,19 @@ namespace gpstk
           */
       Variable& setDefaultCoefficient(double coef)
       { defaultCoefficient = coef; return (*this); };
+
+
+         /// Ask if default coefficient will always be used.
+      bool isDefaultForced() const
+      { return forceDefault; };
+
+
+         /** Set if default coefficient will always be used.
+          *
+          * @param forceCoef     Always use default coefficient.
+          */
+      Variable& setDefaultForced(bool forceCoef)
+      { forceDefault = forceCoef; return (*this); };
 
 
          /// Get internal source this variable is assigned to (if any).
@@ -286,6 +301,10 @@ namespace gpstk
       double defaultCoefficient;
 
 
+         /// Boolean indicating if default coefficient is always used
+      bool forceDefault;
+
+
          /// Internal source this variable is assigned to (if any).
       SourceID varSource;
 
@@ -302,11 +321,13 @@ namespace gpstk
           *                    noise model.
           * @param variance    Initial variance assigned to this variable.
           * @param coef        Default coefficient assigned.
+          * @param forceCoef   Always use default coefficient.
           */
       void Init( const TypeID& type,
                  StochasticModel* pModel = &Variable::defaultModel,
                  double variance = 4.0e14,
-                 double coef     = 1.0 );
+                 double coef     = 1.0,
+                 bool forceCoef  = false );
 
 
    }; // End of class 'Variable'

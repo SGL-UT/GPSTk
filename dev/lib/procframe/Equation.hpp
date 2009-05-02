@@ -2,7 +2,7 @@
 
 /**
  * @file Equation.hpp
- * GNSS Data Structure to define and handle GNSS equations.
+ * GNSS Data Structure to define and handle 'descriptions' of GNSS equations.
  */
 
 #ifndef EQUATION_HPP
@@ -130,7 +130,9 @@ namespace gpstk
 
 
 
-      /// GNSS Data Structure to define and handle GNSS equations.
+      /** GNSS Data Structure to define and handle 'descriptions' of GNSS
+       *  equations.
+       */
    struct Equation : gnssData<equationHeader, VariableSet>
    {
 

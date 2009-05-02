@@ -2,7 +2,7 @@
 
 /**
  * @file Equation.cpp
- * GNSS Data Structure to define and handle GNSS equations.
+ * GNSS Data Structure to define and handle 'descriptions' of GNSS equations.
  */
 
 //============================================================================

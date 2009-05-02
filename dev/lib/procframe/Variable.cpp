@@ -2,7 +2,7 @@
 
 /**
  * @file Variable.cpp
- * Class to define and handle GNSS variables.
+ * Class to define and handle 'descriptions' of GNSS variables.
  */
 
 //============================================================================
@@ -101,20 +101,23 @@ namespace gpstk
        *                         or not. By default, it is NOT.
        * @param variance         Initial variance assigned to this variable.
        * @param coef             Default coefficient assigned.
+       * @param forceCoef        Always use default coefficient.
        */
    Variable::Variable( const TypeID& type,
                        StochasticModel* pModel,
                        bool sourceIndexed,
                        bool satIndexed,
                        double variance,
-                       double coef )
+                       double coef,
+                       bool forceCoef )
    {
 
          // Call Init method
       Init( type,
             pModel,
             variance,
-            coef );
+            coef,
+            forceCoef );
 
          // This couple lines override settings by Init.
       isSourceIndexed = sourceIndexed;
@@ -132,11 +135,13 @@ namespace gpstk
        *                    noise model.
        * @param variance    Initial variance assigned to this variable.
        * @param coef        Default coefficient assigned.
+       * @param forceCoef   Always use default coefficient.
        */
    void Variable::Init( const TypeID& type,
                         StochasticModel* pModel,
                         double variance,
-                        double coef )
+                        double coef,
+                        bool forceCoef )
    {
 
       varType = type;
@@ -161,6 +166,8 @@ namespace gpstk
 
       defaultCoefficient = coef;
 
+      forceDefault = forceCoef;
+
       return;
 
    }  // End of method 'Variable::Init()'
@@ -177,6 +184,7 @@ namespace gpstk
                ( isSatIndexed == right.getSatIndexed() )                &&
                ( initialVariance == right.getInitialVariance() )        &&
                ( defaultCoefficient == right.getDefaultCoefficient() )  &&
+               ( forceDefault == right.isDefaultForced() )              &&
                ( varSource == right.getSource() )                       &&
                ( varSat == right.getSatellite() )                       );
 
@@ -209,15 +217,24 @@ namespace gpstk
                      if ( defaultCoefficient == right.getDefaultCoefficient() )
                      {
 
-                        if ( varSource == right.getSource() )
+                        if ( forceDefault == right.isDefaultForced() )
                         {
 
-                           return ( varSat < right.getSatellite() );
+                           if ( varSource == right.getSource() )
+                           {
+
+                              return ( varSat < right.getSatellite() );
+
+                           }
+                           else
+                           {
+                              return ( varSource < right.getSource() );
+                           }
 
                         }
                         else
                         {
-                           return ( varSource < right.getSource() );
+                           return ( forceDefault < right.isDefaultForced() );
                         }
 
                      }
@@ -230,30 +247,30 @@ namespace gpstk
                   }
                   else
                   {
-                     return (initialVariance < right.getInitialVariance());
+                     return ( initialVariance < right.getInitialVariance() );
                   }
 
                }
                else
                {
-                  return (isSatIndexed < right.getSatIndexed());
+                  return ( isSatIndexed < right.getSatIndexed() );
                }
 
             }
             else
             {
-               return (isSourceIndexed < right.getSourceIndexed());
+               return ( isSourceIndexed < right.getSourceIndexed() );
             }
 
          }
          else
          {
-            return (pVarModel < right.getModel());
+            return ( pVarModel < right.getModel() );
          }
       }
       else
       {
-         return (varType < right.getType());
+         return ( varType < right.getType() );
       }
 
    }  // End of 'Variable::operator<'
@@ -279,6 +296,8 @@ namespace gpstk
       setInitialVariance( right.getInitialVariance() );
 
       setDefaultCoefficient( right.getDefaultCoefficient() );
+
+      setDefaultForced( right.isDefaultForced() );
 
       setSource( right.getSource() );
 
