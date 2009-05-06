@@ -52,9 +52,7 @@ namespace gpstk
       CommandOptionNoArg helpOption('h', "help", "Print help usage");
 
       CommandOptionWithAnyArg obsFileOption(
-         'o', "obs","Where to get the observation data. The "
-         "defaults are any remaining args on the command line "
-         "Specifying '-' will take the input fom stdin. "
+         'o', "obs","Where to get the observation data. "
          "Supported formats are " + 
          ObsReader::formatsUnderstood() + ".", true);
 
