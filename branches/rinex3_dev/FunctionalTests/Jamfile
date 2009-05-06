@@ -25,3 +25,13 @@ Main RinexMetTest : RinexMetTest.cpp ;
 ObjectHdrs RinexMetTest RinexMetTest.cpp : ../src ;
 LINKLIBS on RinexMetTest =  $(STD_LINK_LIBS) ;
 LinkLibraries RinexMetTest : ../src/libgpstk-R3.a ;
+
+Main sp3version : sp3version.cpp ;
+ObjectHdrs sp3version sp3version.cpp : ../src ;
+LINKLIBS on sp3version =  $(STD_LINK_LIBS) ;
+LinkLibraries sp3version : ../src/libgpstk-R3.a ;
+
+Main petest : petest.cpp ;
+ObjectHdrs petest petest.cpp : ../src ;
+LINKLIBS on petest =  $(STD_LINK_LIBS) ;
+LinkLibraries petest : ../src/libgpstk-R3.a ;

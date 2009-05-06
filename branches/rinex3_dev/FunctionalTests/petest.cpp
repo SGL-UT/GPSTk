@@ -1,3 +1,31 @@
+#pragma ident "$Id$"
+
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+/**
+ * @file petest.cpp Read an SP3 format file into SP3EphemerisStore, edit and dump.
+ */
+
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -9,10 +37,6 @@
 #include "SP3Header.hpp"
 #include "SP3EphemerisStore.hpp"
 #include "SatID.hpp"
-
-/**
- * @file petest.cpp
- */
 
 using namespace std;
 using namespace gpstk;
@@ -96,7 +120,29 @@ int main(int argc, char *argv[])
       cout << "Set order to 17" << endl;
       EphList.setInterpolationOrder(17);
       EphList.dump(cout, 2);
+ 
+      const char *fmt="%4Y/%02m/%02d %2H:%02M:%02S (%P)";
+      CommonTime ttf = firstTime + 3600., ttl = lastTime - 3600.;
+      cout << "\nNow edit the store to cut out the first and last hours: "
+         << static_cast<CivilTime>(ttf).printf(fmt) << " to "
+         << static_cast<CivilTime>(ttl).printf(fmt) << ".\n";
+      EphList.edit(ttf,ttl);
+      EphList.dump(cout, 2);
 
+      ttf = ttf + 3600.;
+      cout << "\nNow edit the store to cut out another hour at the first only: "
+         << static_cast<CivilTime>(ttf).printf(fmt) << " to "
+         << static_cast<CivilTime>(ttl).printf(fmt) << ".\n";
+      EphList.edit(ttf);
+      EphList.dump(cout, 2);
+
+      ttf = CommonTime::BEGINNING_OF_TIME;
+      ttl = ttf + 14400.;
+      cout << "\nNow edit the store using bogus times: "
+         << static_cast<CivilTime>(ttf).printf(fmt) << " to "
+         << static_cast<CivilTime>(ttl).printf(fmt) << "\n";
+      EphList.edit(ttf,ttl);
+      EphList.dump(cout, 2);
 /*
       unsigned long ref;
       // choose a time tag within the data....

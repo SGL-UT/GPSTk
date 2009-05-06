@@ -41,11 +41,17 @@
 //
 //=============================================================================
 
+#include <vector>
+
 #include "SP3EphemerisStore.hpp"
+#include "Triple.hpp"
+#include "SatID.hpp"
+#include "SP3Data.hpp"
+#include "SP3Header.hpp"
+#include "Xvt.hpp"
+#include "CommonTime.hpp"
 #include "CivilTime.hpp"
-#include "MiscMath.hpp"
 #include "ECEF.hpp"
-#include "icd_200_constants.hpp"
 
 using namespace gpstk::StringUtils;
 
@@ -94,41 +100,42 @@ namespace gpstk
    }  // End of method 'SP3EphemerisStore::loadFile()'
 
 
-      /// Insert a new SP3Data object into the store
-      void SP3EphemerisStore::addEphemeris(const SP3Data& data)
-         throw()
-      {  
-        CommonTime t = data.time;
-        SatID sat = data.sat;
-        Xvt&  xvt = pe[sat][t];
+   /// Insert a new SP3Data object into the store
+   void SP3EphemerisStore::addEphemeris(const SP3Data& data)
+      throw()
+   {  
+     CommonTime t = data.time;
+     SatID sat = data.sat;
+     if(sat.id <= 0) return;
+     Xvt&  xvt = pe[sat][t];
 
-        if (data.RecType == 'P')
-        {
-          xvt.x = ECEF(data.x[0], data.x[1], data.x[2]);
-          xvt.dtime = data.clk;
-          haveVelocity = false;
-        }
-        else if (data.RecType == 'V')
-        {
-          xvt.v = Triple(data.x[0],data.x[1],data.x[2]);
-          xvt.ddtime = data.clk;
-          haveVelocity = true;
-        }
+     if (data.RecType == 'P')
+     {
+       xvt.x = ECEF(data.x[0], data.x[1], data.x[2]);
+       xvt.dtime = data.clk;
+       haveVelocity = false;
+     }
+     else if (data.RecType == 'V')
+     {
+       xvt.v = Triple(data.x[0],data.x[1],data.x[2]);
+       xvt.ddtime = data.clk;
+       haveVelocity = true;
+     }
 
-        if (t < initialTime) initialTime = t;
-        else if (t > finalTime) finalTime = t;
-      };
+     if (t < initialTime) initialTime = t;
+     else if (t > finalTime) finalTime = t;
+   };
 
-      /* A debugging function that outputs in human readable form,
-       * all data stored in this object: dump the store to cout.
-       *
-       * @param[in] s the stream to receive the output; defaults to cout
-       * @param detail determines how much detail to include in the output
-       *   0 list of filenames with their start, stop times.
-       *   1 list of filenames with their start, stop times,
-       *     other header information and prns/accuracy.
-       *   2 above, plus dump all the PVT data (use judiciously).
-       */
+   /* A debugging function that outputs in human readable form,
+    * all data stored in this object: dump the store to cout.
+    *
+    * @param[in] s the stream to receive the output; defaults to cout
+    * @param detail determines how much detail to include in the output
+    *   0 list of filenames with their start, stop times.
+    *   1 list of filenames with their start, stop times,
+    *     other header information and prns/accuracy.
+    *   2 above, plus dump all the PVT data (use judiciously).
+    */
 
    void SP3EphemerisStore::dump( ostream& s,
                                  short detail )
@@ -194,7 +201,6 @@ namespace gpstk
 
          for (it=pe.begin(); it!=pe.end(); it++)
          {
-
             s << "  Satellite map for sat " << SP3SatID(it->first) << " : "
               << it->second.size() << " records.";
             if (detail == 1) { s << endl; continue; }
@@ -216,7 +222,6 @@ namespace gpstk
                   << setw(13) << jt->second.ddtime;
                s << endl;
             }
-
          }
 
       }  // End of 'if (detail >= 0)...'
@@ -234,7 +239,7 @@ namespace gpstk
                                             const double& c      )
       throw()
    {
-      // TODO ? test input for validity here?
+      if(sat.id <= 0) return;
       Xvt& xvt = pe[sat][t];  // find or create pair
       xvt.x = ECEF(x,y,z);
       xvt.dtime = c;
@@ -255,7 +260,7 @@ namespace gpstk
                                             const double& vc     )
       throw()
    {
-      // TODO ? test input for validity here?
+      if(sat.id <= 0) return;
       Xvt& xvt = pe[sat][t];  // find or create pair
       xvt.v = Triple(vx,vy,vz);
       xvt.ddtime = vc;
@@ -272,7 +277,7 @@ namespace gpstk
                                     const Xvt& pv        )
       throw()
    {
-      // TODO ? test input for validity here?
+      if(sat.id <= 0) return;
       Xvt& xvt = pe[sat][t];  // find or create pair
       xvt = pv;
 

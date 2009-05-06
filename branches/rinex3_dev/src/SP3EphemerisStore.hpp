@@ -45,13 +45,16 @@
 
 
 #include <iostream>
+#include <string>
 
 #include "TabularEphemerisStore.hpp"
 #include "FileStore.hpp"
-
-#include "SP3Stream.hpp"
+#include "CommonTime.hpp"
+#include "SatID.hpp"
+#include "Xvt.hpp"
 #include "SP3Data.hpp"
 #include "SP3Header.hpp"
+#include "SP3Stream.hpp"
 
 namespace gpstk
 {
