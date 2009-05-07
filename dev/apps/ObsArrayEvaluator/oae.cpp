@@ -172,7 +172,6 @@ void ObsArrayEvaluator::run(int argc, char *argv[])
       {
          valarray<bool> passMask = (oa.pass==*iPass);
          valarray<double> mpVals = oa.observation[passMask];
-         valarray<double> binVals(mpVals.size());
          double mean = mpVals.sum() / mpVals.size();
          mpVals -= mean;
          oa.observation[passMask]=mpVals;
