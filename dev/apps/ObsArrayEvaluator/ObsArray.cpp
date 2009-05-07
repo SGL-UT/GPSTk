@@ -106,6 +106,7 @@ namespace gpstk
       if (debugLevel)
          cout << newSize-numSatEpochs << " observations in file" << endl;
 
+      // Note that this won't work since resize doesn't preserve data
       observation.resize(newSize*numObsTypes);
       epoch.resize(newSize);
       satellite.resize(newSize);
@@ -138,7 +139,15 @@ namespace gpstk
                for (j = soe.begin(); j != soe.end() && !thislli; j++)
                   thislli = j->first.type == ObsID::otLLI &&
                      (int(j->second) & ~0x4);
+
+               // Go through it again looking for a zero lock count
+               if (!thislli)
+                  for (j = soe.begin(); j != soe.end() && !thislli; j++)
+                     thislli = j->first.type == ObsID::otTrackLen &&
+                        (int(j->second) == 0);
+
                lli[numSatEpochs] = thislli;
+
 
                map<SatID, DayTime>::const_iterator it2 = lastObsTime.find(svid);
                if (it2==lastObsTime.end() || thislli ||  
@@ -170,11 +179,22 @@ namespace gpstk
                   }
                } // end of walk through observations to record for this epoch
 
-               // Now compute a 'good' az/el for the SV
-               Xvt svPos = eph.getXvt(svid, oe.time);
-               elevation[numSatEpochs]= rxPos.elvAngle(svPos.x);
-               azimuth[numSatEpochs]  = rxPos.azAngle( svPos.x);
-               validAzEl[numSatEpochs]=true;
+               try
+               {
+                  // Now compute a 'good' az/el for the SV
+                  Xvt svPos = eph.getXvt(svid, oe.time);
+                  elevation[numSatEpochs] = rxPos.elvAngle(svPos.x);
+                  azimuth[numSatEpochs]   = rxPos.azAngle( svPos.x);
+                  validAzEl[numSatEpochs] =true;
+               }
+               catch (Exception& e)
+               {
+                  if (debugLevel>2)
+                     cout << e;
+                  elevation[numSatEpochs] = 0;
+                  azimuth[numSatEpochs]   = 0;
+                  validAzEl[numSatEpochs] = false;
+               }
 
                numSatEpochs++;
             } // end of walk through prns at this epoch
