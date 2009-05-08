@@ -124,7 +124,7 @@ ConstellationDefinition ConstellationSet::findCD( const gpstk::DayTime dt ) cons
       if (localDT>getLatestDate())
       {
          ConstellationSet::NoConstellationFound exc("All Constellation Definitions Too Early");
-         GPSTK_THROW(exc);   
+         GPSTK_THROW(exc);
       }
       
          // If not, start at the day of interest and back up until we
@@ -152,140 +152,108 @@ ConstellationDefinition ConstellationSet::findCD( const gpstk::DayTime dt ) cons
 int ConstellationSet::loadFileOpAdvisory( const std::string filename )
   throw(InvalidDateString, MismatchSize)
 {
-  FILE* inf = fopen(filename.c_str(), "rt");
-  if (inf==0)    return (0);
-  int numDefFound = 0;
-  list<string> data;
-  list<int> LineCount;
-  bool inDefinition = false;
-  char fileLine[101];
-  int lineCount = 0;
+   FILE* inf = fopen(filename.c_str(), "rt");
+   if (inf==NULL) return (1);
+   int numDefFound = 0;
+   char fileLine[101];
+   gpstk::DayTime date;
+   list<string> PRNs;
+   list<string> SLOTs;
+   ConstellationDefinition cd;
 
-  while (fgets(fileLine, 100, inf))
-  {
-    lineCount++;
-    string lineIn = fileLine;
-
-    if (lineIn.find("SUBJ: GPS STATUS") != string::npos)
-    {
-      if (inDefinition)
+   while (fgets(fileLine, 100, inf))
+   {
+      string currentLine = fileLine;
+      if (currentLine.find("SUBJ: GPS STATUS") != string::npos)
       {
-	if (parseDefinition(data, LineCount)) numDefFound++;
-	inDefinition = false;
+         if(cd.getDate() != DayTime::BEGINNING_OF_TIME)
+         {
+            //cout << date.asString() << endl;
+            cdMap.insert( make_pair( date, cd ) );
+            numDefFound++;
+            cd.clearDefinition();
+            PRNs.clear();
+            SLOTs.clear();
+         }
+         date = parseDate(currentLine);
+         cd.setEffectiveTime(date);
       }
-      data.clear();
-      inDefinition = true;
-      data.push_back(lineIn);
-      LineCount.push_back(lineCount);
-    }
-    if (lineIn.find("PRNS") != string::npos && inDefinition)
-    {
-      data.push_back(lineIn);
-      LineCount.push_back(lineCount);
-    }
-    if (lineIn.find("SLOT") != string::npos && inDefinition)
-    {
-      data.push_back(lineIn);
-      LineCount.push_back(lineCount);
-    }
-  }
-  if (inDefinition)
-  {
-    if (parseDefinition(data, LineCount))
-    {
+      if (currentLine.find("PRNS") != string::npos)
+      {
+         PRNs = parseNums(currentLine, "PRNS");
+      }
+      if (currentLine.find("SLOT") != string::npos)
+      {
+         SLOTs = parseNums(currentLine, "SLOT");
+         if (SLOTs.size()!=PRNs.size())
+         {
+            ConstellationSet::MismatchSize exc("PRNs and Slots disagree.");
+            GPSTK_THROW(exc);
+         }
+         list<string>::const_iterator prnI;
+         list<string>::const_iterator slotI;
+         slotI = SLOTs.begin();
+         for (prnI = PRNs.begin(); prnI!=PRNs.end(); prnI++)
+         {
+            int prnInt = StringUtils::asInt(*prnI);
+            SatID SV(prnInt, SatID::systemGPS);
+            string slotString = *slotI;
+            int slotNum = StringUtils::asInt(slotString.substr(1,1));
+            cd.setPlaneSlot(SV, slotString[0], slotNum);
+            slotI++;
+         }
+      }
+   }
+   if(cd.getDate() != DayTime::BEGINNING_OF_TIME)
+   {
+      //cout << date.asString() << endl;
+      cdMap.insert( make_pair( date, cd ) );
       numDefFound++;
-    }
-  }
-  return(numDefFound);
+   }
+   //cout << numDefFound << endl;
+   return(numDefFound);
 }
 
-bool ConstellationSet::parseDefinition(list<string> data, list<int> lineCount)
-  throw(InvalidDateString, MismatchSize)
+gpstk::DayTime ConstellationSet::parseDate(string date)
+  throw(InvalidDateString)
 {
-     //get date
-  string dateLine = data.front();
-  data.pop_front();
-  int DateLineNum = lineCount.front();
-  lineCount.pop_front();
-  string whitespace = " \t\r\n";
-  string numbers = "0123456789";
-  string::size_type end  = dateLine.find_last_not_of(whitespace);
-  string::size_type front = dateLine.find("STATUS");
-  front += 6;
-  front = dateLine.find_first_not_of(whitespace, front);
-  string dateString = dateLine.substr(front, end-front+1);
-  DayTime dt;
-  try
-  {
-    dt.setToString(dateString, "%d %b %Y");
-    dt.setSecOfDay(  (DayTime::SEC_DAY/2) );
-  }
-  catch(DayTime::DayTimeException exc)
-  {
-    string LnCnt = StringUtils::asString(DateLineNum);
-    string s = "Invalid date: '" + dateString + "' at line " + LnCnt;
-    //cout << s << endl;
-    ConstellationSet::InvalidDateString excids(s);
-    GPSTK_THROW(excids);
-  }
-     //get PRNs and their associated Slots 
-  list<string>::const_iterator ci;
-  list<string> PRNs;
-  list<string> SLOTs;
-  for (ci=data.begin(); ci!=data.end(); ci++)
-  {
-    string tmp = *ci;
-    string::size_type NEWfront1 = tmp.find_first_of(numbers);
+   string whitespace = " \t\r\n";
+   string::size_type end  = date.find_last_not_of(whitespace);
+   string::size_type front = date.find("STATUS");
+   front = date.find_first_not_of(whitespace, front+6);
+   string dateString = date.substr(front, end-front+1);
+   DayTime dt;
+   try
+   {
+      //cout << dateString << endl;
+      dt.setToString(dateString, "%d %b %Y");
+      dt.setSecOfDay(  (DayTime::SEC_DAY/2) );
+      return dt;
+   }
+   catch(DayTime::DayTimeException exc)
+   {
+      string s = "Invalid date: '" + dateString + "'";
+      //cout << s << endl;
+      ConstellationSet::InvalidDateString excids(s);
+      GPSTK_THROW(excids);
+   }
+}
 
-    if (tmp.find("PRNS")!= string::npos)
-    {
-      while (NEWfront1!=string::npos)
-      {
-	string::size_type NEWend1 = tmp.find_first_not_of(numbers, NEWfront1);
-	string prnstr = tmp.substr(NEWfront1, NEWend1-NEWfront1);
-	PRNs.push_back(prnstr);
-	NEWfront1 = tmp.find_first_of(numbers, NEWend1+1);
-      }
-    }
-    if (tmp.find("SLOT")!= string::npos)
-    {
-      while (NEWfront1!=string::npos)
-      {
-	string slotstr = tmp.substr(NEWfront1-1, 2);
-	SLOTs.push_back(slotstr);
-	NEWfront1 = tmp.find_first_of(numbers, NEWfront1+1);
-      }
-    }
-  }
-  if (SLOTs.size()!=PRNs.size())
-  {
-    string tmp1 = StringUtils::asString(lineCount.front());
-    lineCount.pop_front();
-    string tmp2 = StringUtils::asString(lineCount.front());
-    string sout = "PRNs and Slots disagree, lines: " + tmp1 + ", " + tmp2;
-    //cout << sout << endl;
-    ConstellationSet::MismatchSize exc(sout);
-    GPSTK_THROW(exc);
-  }
-  typedef list<string>::const_iterator CSI;
-  ConstellationDefinition cd;
-  cd.setEffectiveTime(dt);
-  CSI prnI;
-  CSI slotI;
-  slotI = SLOTs.begin();
-  for (prnI = PRNs.begin(); prnI!=PRNs.end(); prnI++)
-  {
-      int prnInt = StringUtils::asInt(*prnI);
-      SatID SV(prnInt, SatID::systemGPS);
-      string slotString = *slotI;
-      int slotNum = StringUtils::asInt(slotString.substr(1,1));
-      cd.setPlaneSlot(SV, slotString[0], slotNum);
-      slotI++;
-  }
+list<string> ConstellationSet::parseNums(string data, string searching)
+{
+   string vals = "ABCDEF0123456789";
+   list<string> nums;
 
-  cdMap.insert( make_pair( dt, cd ) );
-  CI ci1 = cdMap.find(dt);
-  return true;
+   string::size_type frontIndex = data.find(searching);
+   frontIndex = data.find_first_of(vals, frontIndex+4);
+   while (frontIndex!=string::npos)
+   {
+      string::size_type endIndex = data.find_first_not_of(vals, frontIndex);
+      string numstring = data.substr(frontIndex, endIndex-frontIndex);
+      nums.push_back(numstring);
+      frontIndex = data.find_first_of(vals, endIndex+1);
+   }
+   return nums;
 }
 
 int ConstellationSet::loadFileARL( const std::string filename )

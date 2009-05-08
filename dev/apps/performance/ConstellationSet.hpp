@@ -94,13 +94,13 @@ class ConstellationSet
       typedef std::map<gpstk::DayTime,ConstellationDefinition>::const_iterator CI;
       std::map<gpstk::DayTime,ConstellationDefinition> cdMap;
 
+      gpstk::DayTime parseDate(std::string date)
+        throw(InvalidDateString);
+      std::list<std::string> parseNums(std::string data, std::string searching);
       int loadFileARL( const std::string filename );
       int loadFileOpAdvisory( const std::string filename )
-	 throw(InvalidDateString, MismatchSize);
+         throw(InvalidDateString, MismatchSize);
       int loadFileCSV( const std::string filename );
-      bool parseDefinition( std::list< std::string > data , std::list<int> lineCount )  
-	throw(InvalidDateString, MismatchSize);
-
 };
 
 inline int ConstellationSet::getTotalNum( ) const 
