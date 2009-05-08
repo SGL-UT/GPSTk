@@ -225,8 +225,8 @@ bool ConstellationSet::parseDefinition(list<string> data, list<int> lineCount)
     string LnCnt = StringUtils::asString(DateLineNum);
     string s = "Invalid date: '" + dateString + "' at line " + LnCnt;
     //cout << s << endl;
-    ConstellationSet::InvalidDateString exc(s);
-    GPSTK_THROW(exc);
+    ConstellationSet::InvalidDateString excids(s);
+    GPSTK_THROW(excids);
   }
      //get PRNs and their associated Slots 
   list<string>::const_iterator ci;
@@ -285,6 +285,7 @@ bool ConstellationSet::parseDefinition(list<string> data, list<int> lineCount)
 
   cdMap.insert( make_pair( dt, cd ) );
   CI ci1 = cdMap.find(dt);
+  return true;
 }
 
 int ConstellationSet::loadFileARL( const std::string filename )
