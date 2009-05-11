@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 /**********************************************
 / GPSTk: Clock Tools
 / TIAPhaseParser.cpp

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "datapoint.h"
 
 dataPoint::dataPoint()

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef RINEXPVT_HPP
 #define RINEXPVT_HPP
 

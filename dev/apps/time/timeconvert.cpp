@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 //lgpl-license START
 //lgpl-license END
 

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "result.h"
 
 result::result()

@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 /**
 *  Given a PRN ID and a date (DOY, Year), one or more navigation
 *  message data file(s) and assemble a summary of all ephemerides relevant

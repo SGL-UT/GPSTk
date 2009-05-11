@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // Some operator<< are not wrapped.  Even some that are not nested.
 
 #include <iostream>

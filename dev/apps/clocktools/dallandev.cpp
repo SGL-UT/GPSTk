@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 /**********************************************
 / GPSTk: Clock Tools
 / dallandev.cpp

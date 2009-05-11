@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include <fstream>
 #include <string>
 #include <sstream>

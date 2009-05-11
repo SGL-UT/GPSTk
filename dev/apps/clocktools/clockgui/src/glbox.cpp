@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "glbox.h"
 #include <iostream>
 using namespace std;

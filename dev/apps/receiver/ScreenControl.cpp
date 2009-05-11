@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "ScreenControl.hpp"
 
 using namespace std;

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 /* vim: set cindent shiftwidth=4: */
 #include <string>
 #include <vector>

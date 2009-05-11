@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // GPSTk wrap for Python through SWIG
 // These are functions I wrote to make the binding work better
 

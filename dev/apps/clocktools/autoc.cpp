@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 /*******************************************************************************/
 /* This program reads in clock phase data provided by any of the phase parsers */
 /*  and calculates the autocorrelation function, outputting the the alpha value*/
