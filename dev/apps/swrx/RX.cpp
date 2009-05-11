@@ -138,7 +138,7 @@ private:
 //-----------------------------------------------------------------------------
 RxSim::RxSim() throw() :
    BasicFramework("rxSim", "A simulation of a gps receiver."),
-   cc(NULL), tr(NULL), band(1), timeStep(50e-9), interFreq(0.42e6), 
+   cc(NULL), tr(0), band(1), timeStep(50e-9), interFreq(0.42e6), 
    fakeL2(false), gain(1), timeLimit(9e99), iadMax(20460), solvePos(false)
 {}
 
