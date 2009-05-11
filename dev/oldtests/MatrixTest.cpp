@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "Vector.hpp"
 #include "Matrix.hpp"
 #include "PolyFit.hpp"

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // EphComp.cpp compare BC and SP3 ephemerides
 //
 #include <iostream>

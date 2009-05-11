@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
  * @file ExtractD2.hpp

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // C++ includes
 #include <iostream>
 #include <fstream>
