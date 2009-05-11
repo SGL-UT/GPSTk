@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
 /**
 *  ConstellationList - Produce comma separated list of PRN ID values for
 *  the SVs that are in the constellation.  In order to do this, the program
