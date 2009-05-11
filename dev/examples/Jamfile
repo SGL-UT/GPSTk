@@ -23,7 +23,6 @@ Main example8 : example8.cpp ;
 Main example9 : example9.cpp ;
 Main example10 : example10.cpp ;
 Main example11 : example11.cpp ;
-Main example11 : example11.cpp ;
 Main example12 : example12.cpp ;
 Main example13 : example13.cpp ;
 # SubInclude TOP examples foo ;
