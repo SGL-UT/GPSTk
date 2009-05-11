@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // file: xRinexEphemerisStore.hpp
 
 #ifndef XRINEXEPHEMERISSTORE_HPP

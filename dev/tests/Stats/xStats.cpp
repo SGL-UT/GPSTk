@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // file: xStats.cpp
 
 #include "xStats.hpp"

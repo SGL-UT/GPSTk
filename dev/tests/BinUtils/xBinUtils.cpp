@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // file: xBinUtils.cpp
 
 #include "xBinUtils.hpp"

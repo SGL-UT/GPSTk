@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // file: xStats.hpp
 
 #ifndef XSTATS_HPP

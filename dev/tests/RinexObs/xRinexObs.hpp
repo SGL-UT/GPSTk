@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XRINEXOBS_HPP
 #define XRINEXOBS_HPP
 

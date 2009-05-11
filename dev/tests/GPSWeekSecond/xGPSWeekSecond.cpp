@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "xGPSWeekSecond.hpp"
 #include <iostream>
 #include <fstream>

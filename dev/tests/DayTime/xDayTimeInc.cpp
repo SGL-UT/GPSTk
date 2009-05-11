@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "xDayTimeInc.hpp"
       
 CPPUNIT_TEST_SUITE_REGISTRATION (xINCDayTime);

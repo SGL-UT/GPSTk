@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // file: xINCDayTime.hpp
 
 // This test provides the same functionality as DayTimeConversionTest.cpp

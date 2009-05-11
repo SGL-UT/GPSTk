@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XANSITIME_HPP
 #define XANSITIME_HPP
 

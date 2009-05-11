@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "xRinexNav.hpp"
 #include "Exception.hpp"
 #include "RinexEphemerisStore.hpp"

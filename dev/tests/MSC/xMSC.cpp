@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "xMSC.hpp"
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xMSC);

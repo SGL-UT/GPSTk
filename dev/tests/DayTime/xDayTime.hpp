@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XDAYTIME_HPP
 #define XDAYTIME_HPP
 

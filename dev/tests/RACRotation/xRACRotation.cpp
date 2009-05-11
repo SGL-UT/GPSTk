@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "xRACRotation.hpp"
 #include <stdio.h>
 

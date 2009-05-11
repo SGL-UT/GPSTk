@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XYDSTIME_HPP
 #define XYDSTIME_HPP
 

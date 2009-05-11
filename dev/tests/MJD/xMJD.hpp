@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XMJD_HPP
 #define XMJD_HPP
 

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XJULIANDATE_HPP
 #define XJULIANDATE_HPP
 

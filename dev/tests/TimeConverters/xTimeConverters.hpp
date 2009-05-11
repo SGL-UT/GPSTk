@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XTIMECONVERTERS_HPP
 #define XTIMECONVERTERS_HPP
 

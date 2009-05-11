@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XUNIXTIME_HPP
 #define XUNIXTIME_HPP
 

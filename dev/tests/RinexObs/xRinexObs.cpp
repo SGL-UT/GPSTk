@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "xRinexObs.hpp"
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xRinexObs);

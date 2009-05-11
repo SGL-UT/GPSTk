@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XCIVILTIME_HPP
 #define XCIVILTIME_HPP
 

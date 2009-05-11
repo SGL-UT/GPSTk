@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // file: xBinUtils.hpp
 
 #ifndef XBINUTILS_HPP

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XMSC_HPP
 #define XMSC_HPP
 

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "xYDSTime.hpp"
 #include <iostream>
 #include <fstream>

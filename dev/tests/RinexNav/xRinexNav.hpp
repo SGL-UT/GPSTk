@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XRINEXNAV_HPP
 #define XRINEXNAV_HPP
 

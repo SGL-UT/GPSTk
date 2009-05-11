@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // file: xPolyFit.hpp
 
 #ifndef XPOLYFIT_HPP

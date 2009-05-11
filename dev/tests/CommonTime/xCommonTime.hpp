@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XCOMMONTIME_HPP
 #define XCOMMONTIME_HPP
 

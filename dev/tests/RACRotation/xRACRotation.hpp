@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XRACROTATION_HPP
 #define XRACROTATION_HPP
 

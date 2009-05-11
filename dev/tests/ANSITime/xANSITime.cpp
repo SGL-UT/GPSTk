@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "xANSITime.hpp"
 #include <iostream>
 #include <fstream>

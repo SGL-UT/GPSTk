@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "xTimeConverters.hpp"
 #include <iostream>
 

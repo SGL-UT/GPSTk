@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // CppUnit-Tutorial
 // file: ftest.cc
 #include <cppunit/CompilerOutputter.h>

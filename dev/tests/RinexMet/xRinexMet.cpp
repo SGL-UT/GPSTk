@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "xRinexMet.hpp"
 #include "StringUtils.hpp"
 

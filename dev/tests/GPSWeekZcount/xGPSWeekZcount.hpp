@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef XGPSWEEKZCOUNT_HPP
 #define XGPSWEEKZCOUNT_HPP
 

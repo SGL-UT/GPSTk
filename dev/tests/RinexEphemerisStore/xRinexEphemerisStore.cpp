@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // file: xRinexEphemerisStore.cpp
 
 #include "xRinexEphemerisStore.hpp"
