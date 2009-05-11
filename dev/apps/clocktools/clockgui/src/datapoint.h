@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef _DATAPOINT_
 #define _DATAPOINT_
 

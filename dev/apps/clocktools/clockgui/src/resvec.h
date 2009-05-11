@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef _RESVEC_
 #define _RESVEC_
 

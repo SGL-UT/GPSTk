@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef GLBOX_H
 #define GLBOX_H
 

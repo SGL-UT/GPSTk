@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 /* Declarations for getopt.
    Copyright (C) 1989-1994, 1996-1999, 2001 Free Software Foundation, Inc.
    This file is part of the GNU C Library.

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #ifndef _RESULT_
 #define _RESULT_
 
