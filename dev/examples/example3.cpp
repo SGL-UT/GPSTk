@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"

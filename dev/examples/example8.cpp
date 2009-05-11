@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // Example program Nro 8 for GPSTk
 //
 // This program shows how to use GNSS Data Structures (GDS) to obtain

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // Example program Nro 10 for GPSTk
 // This program shows how to use GNSS Data Structures (GDS) to obtain
 // phase-based differential positioning (single-differences).

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // Example program Nro 5 for GPSTk
 // This program shows how to use some high-level GPSTk classes
 // Dagoberto Salazar - gAGE. 2006

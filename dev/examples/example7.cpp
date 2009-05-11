@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // Example program Nro 7 for GPSTk
 // This program shows several different ways to process GPS data
 // using GNSS Data Structures (DataStructures.hpp).

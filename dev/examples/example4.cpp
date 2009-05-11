@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 // GPSTk example program #4
 
 // First, let's include Standard Template Library classes
