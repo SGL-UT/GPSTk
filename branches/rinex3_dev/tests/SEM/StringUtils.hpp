@@ -51,12 +51,6 @@
 #ifndef GPSTK_STRINGUTILS_HPP
 #define GPSTK_STRINGUTILS_HPP
 
-//lgpl-license START
-//lgpl-license END
-
-//dod-release-statement START
-//dod-release-statement END
-
 #include <string>
 #include <sstream>
 #include <iomanip>

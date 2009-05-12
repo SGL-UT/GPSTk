@@ -1,13 +1,5 @@
 #pragma ident "$Id$"
 
-/**
- * @file IonexStream.hpp
- * File stream for IONEX format files
- */
-
-#ifndef GPSTK_IONEXSTREAM_HPP
-#define GPSTK_IONEXSTREAM_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -30,6 +22,13 @@
 //
 //============================================================================
 
+/**
+ * @file IonexStream.hpp
+ * File stream for IONEX format files
+ */
+
+#ifndef GPSTK_IONEXSTREAM_HPP
+#define GPSTK_IONEXSTREAM_HPP
 
 #include "FFTextStream.hpp"
 #include "IonexHeader.hpp"

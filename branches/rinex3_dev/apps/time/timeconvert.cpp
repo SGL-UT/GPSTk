@@ -1,8 +1,40 @@
-//lgpl-license START
-//lgpl-license END
+#pragma ident "$Id$"
 
-//dod-release-statement START
-//dod-release-statement END
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//  Copyright 2009, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 
 #include "BasicFramework.hpp"
 
@@ -165,25 +197,26 @@ void TimCvt::process()
       string eight(8, ' '); // eight spaces
       
       GPSWeekZcount wz(ct);
+      CivilTime civ(ct);
 
       cout << endl
            << eight << leftJustify("Month/Day/Year H:M:S", 32) 
            << CivilTime(ct) << endl
 
            << eight << leftJustify("Modified Julian Date", 32)
-           << setprecision(15) << MJD(ct).printf("%.15Q") << endl
+           << setprecision(15) << MJD(ct) << endl
 
            << eight << leftJustify("GPSweek DayOfWeek SecOfWeek", 32)
-           << GPSWeekSecond(ct).printf("%G %w %013.6g") << endl
+           << GPSWeekSecond(ct).printf("%G %w % 13.6g") << endl
 
            << eight << leftJustify("FullGPSweek Zcount", 32)
-           << wz.printf("%F %06z") << endl
+           << wz.printf("%F % 6z") << endl
 
            << eight << leftJustify("Year DayOfYear SecondOfDay", 32)
-           << YDSTime(ct).printf("%Y %03j %012.6s") << endl
+           << YDSTime(ct).printf("%Y %03j % 12.6s") << endl
 
            << eight << leftJustify("Unix: Second Microsecond", 32)
-           << UnixTime(ct).printf("%U %06u") << endl
+           << UnixTime(ct).printf("%U % 6u") << endl
 
            << eight << leftJustify("Zcount: 29-bit (32-bit)", 32)
            << wz.printf("%c (%C)") << endl

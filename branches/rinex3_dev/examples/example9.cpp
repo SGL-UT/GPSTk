@@ -1,3 +1,25 @@
+#pragma ident "$Id$"
+
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//============================================================================
+
 // Example program Nro 9 for GPSTk
 //
 // This program shows how to use GNSS Data Structures (GDS) and other classes
@@ -9,7 +31,7 @@
 //    Kouba, J. and P. Heroux. "Precise Point Positioning using IGS Orbit
 //       and Clock Products". GPS Solutions, vol 5, pp 2-28. October, 2001.
 //
-// Dagoberto Salazar - gAGE. 2008, 2009
+// Dagoberto Salazar - gAGE. 2008, 2009.
 
 
 // Basic input/output C++ classes
@@ -66,6 +88,10 @@
 
    // Class to correct observables
 #include "CorrectObservables.hpp"
+
+   // Classes to deal with Antex antenna parameters
+#include "Antenna.hpp"
+#include "AntexReader.hpp"
 
    // Class to compute the effect of wind-up
 #include "ComputeWindUp.hpp"
@@ -151,16 +177,24 @@ private:
    ConfDataReader confReader;
 
 
-      // Declare our own method to handle output
+      // Declare our own methods to handle output
+
 
       // Method to print solution values
    void printSolution( ofstream& outfile,
-                       const SolverLMS& solver,
-                       const DayTime& time,
-                       const ComputeDOP& cDOP,
-                       bool  useNEU,
-                       int   numSats,
-                       int   precision = 3 );
+                       const  SolverLMS& solver,
+                       const  DayTime& time,
+                       const  ComputeDOP& cDOP,
+                       bool   useNEU,
+                       int    numSats,
+                       double dryTropo,
+                       int    precision = 3 );
+
+
+      // Method to print model values
+   void printModel( ofstream& modelfile,
+                    const gnssRinex& gData,
+                    int   precision = 4 );
 
 
 }; // End of 'example9' class declaration
@@ -182,7 +216,7 @@ example9::example9(char* arg0)
 " 4) dx/dLat (m)\n"
 " 5) dy/dLon (m)\n"
 " 6) dz/dH (m)\n"
-" 7) Zenital Tropospheric Delay - ztd (m)\n"
+" 7) Zenital Tropospheric Delay - zpd (m)\n"
 " 8) Covariance of dx/dLat (m*m)\n"
 " 9) Covariance of dy/dLon (m*m)\n"
 "10) Covariance of dz/dH (m*m)\n"
@@ -215,6 +249,7 @@ void example9::printSolution( ofstream& outfile,
                               const ComputeDOP& cDOP,
                               bool  useNEU,
                               int   numSats,
+                              double dryTropo,
                               int   precision )
 {
 
@@ -234,8 +269,10 @@ void example9::printSolution( ofstream& outfile,
       outfile << solver.getSolution(TypeID::dLon) << "  ";       // dLon  - #5
       outfile << solver.getSolution(TypeID::dH) << "  ";         // dH    - #6
          // We add 0.1 meters to 'wetMap' because 'NeillTropModel' sets a
-         // nominal value of 0.1 m.
-      outfile << solver.getSolution(TypeID::wetMap) + 0.1 << "  "; // ztd - #7
+         // nominal value of 0.1 m. Also to get the total we have to add the
+         // dry tropospheric delay value
+                                                                 // ztd - #7
+      outfile << solver.getSolution(TypeID::wetMap) + 0.1 + dryTropo << "  ";
 
       outfile << solver.getVariance(TypeID::dLat) << "  ";   // Cov dLat  - #8
       outfile << solver.getVariance(TypeID::dLon) << "  ";   // Cov dLon  - #9
@@ -250,8 +287,10 @@ void example9::printSolution( ofstream& outfile,
       outfile << solver.getSolution(TypeID::dy) << "  ";         // dy    - #5
       outfile << solver.getSolution(TypeID::dz) << "  ";         // dz    - #6
          // We add 0.1 meters to 'wetMap' because 'NeillTropModel' sets a
-         // nominal value of 0.1 m.
-      outfile << solver.getSolution(TypeID::wetMap) + 0.1 << "  "; // ztd - #7
+         // nominal value of 0.1 m. Also to get the total we have to add the
+         // dry tropospheric delay value
+                                                                 // ztd - #7
+      outfile << solver.getSolution(TypeID::wetMap) + 0.1 + dryTropo << "  ";
 
       outfile << solver.getVariance(TypeID::dx) << "  ";     // Cov dx    - #8
       outfile << solver.getVariance(TypeID::dy) << "  ";     // Cov dy    - #9
@@ -276,6 +315,54 @@ void example9::printSolution( ofstream& outfile,
 
 
 }  // End of method 'example9::printSolution()'
+
+
+
+   // Method to print model values
+void example9::printModel( ofstream& modelfile,
+                           const gnssRinex& gData,
+                           int   precision )
+{
+
+      // Prepare for printing
+   modelfile << fixed << setprecision( precision );
+
+      // Get epoch out of GDS
+   DayTime time(gData.header.epoch);
+
+      // Iterate through the GNSS Data Structure
+   for ( satTypeValueMap::const_iterator it = gData.body.begin();
+         it!= gData.body.end();
+         it++ )
+   {
+
+         // Print epoch
+      modelfile << time.year()         << "  ";    // Year           #1
+      modelfile << time.DOY()          << "  ";    // DayOfYear      #2
+      modelfile << time.DOYsecond()    << "  ";    // SecondsOfDay   #3
+
+         // Print satellite information (Satellite system and ID number)
+      modelfile << (*it).first << " ";             // System         #4
+                                                   // ID number      #5
+
+         // Print model values
+      for( typeValueMap::const_iterator itObs  = (*it).second.begin();
+           itObs != (*it).second.end();
+           itObs++ )
+      {
+            // Print type names and values
+         modelfile << (*itObs).first << " ";
+         modelfile << (*itObs).second << " ";
+
+      }  // End of 'for( typeValueMap::const_iterator itObs = ...'
+
+      modelfile << endl;
+
+   }  // End for (it = gData.body.begin(); ... )
+
+}  // End of method 'example9::printModel()'
+
+
 
 
 
@@ -483,7 +570,8 @@ void example9::process()
       pObsFilter.setFilteredType(TypeID::P2);
 
          // Read if we should use C1 instead of P1
-      if ( confReader.getValueAsBoolean( "useC1", station ) )
+      bool usingC1( confReader.getValueAsBoolean( "useC1", station ) );
+      if ( usingC1 )
       {
          requireObs.addRequiredType(TypeID::C1);
          pObsFilter.addFilteredType(TypeID::C1);
@@ -524,7 +612,7 @@ void example9::process()
       ComputeLinear linear1;
 
          // Read if we should use C1 instead of P1
-      if ( confReader.getValueAsBoolean( "useC1", station ) )
+      if ( usingC1 )
       {
          linear1.addLinear(comb.pdeltaCombWithC1);
          linear1.addLinear(comb.mwubbenaCombWithC1);
@@ -560,8 +648,16 @@ void example9::process()
 
          // Declare a basic modeler
       BasicModel basic(nominalPos, SP3EphList);
+
          // Set the minimum elevation
       basic.setMinElev(confReader.getValueAsDouble("cutOffElevation",station));
+
+         // If we are going to use P1 instead of C1, we must reconfigure 'basic'
+      if ( !usingC1 )
+      {
+         basic.setDefaultObservable(TypeID::P1);
+      }
+
 
          // Add to processing list
       pList.push_back(basic);
@@ -577,25 +673,6 @@ void example9::process()
       pList.push_back(grDelay);       // Add to processing list
 
 
-         // Object to compute satellite antenna phase center effect
-      ComputeSatPCenter svPcenter(nominalPos);
-      pList.push_back(svPcenter);       // Add to processing list
-
-
-         // Vector from antenna ARP to L1 phase center [UEN], in meters
-      double uL1(confReader.fetchListValueAsDouble( "offsetL1", station ) );
-      double eL1(confReader.fetchListValueAsDouble( "offsetL1", station ) );
-      double nL1(confReader.fetchListValueAsDouble( "offsetL1", station ) );
-      Triple offsetL1( uL1, eL1, nL1 );
-
-
-         // Vector from antenna ARP to L2 phase center [UEN], in meters
-      double uL2(confReader.fetchListValueAsDouble( "offsetL2", station ) );
-      double eL2(confReader.fetchListValueAsDouble( "offsetL2", station ) );
-      double nL2(confReader.fetchListValueAsDouble( "offsetL2", station ) );
-      Triple offsetL2( uL2, eL2, nL2 );
-
-
          // Vector from monument to antenna ARP [UEN], in meters
       double uARP(confReader.fetchListValueAsDouble( "offsetARP", station ) );
       double eARP(confReader.fetchListValueAsDouble( "offsetARP", station ) );
@@ -603,11 +680,68 @@ void example9::process()
       Triple offsetARP( uARP, eARP, nARP );
 
 
+         // Declare some antenna-related variables
+      Triple offsetL1( 0.0, 0.0, 0.0 ), offsetL2( 0.0, 0.0, 0.0 );
+      AntexReader antexReader;
+      Antenna receiverAntenna;
+
+         // Check if we want to use Antex information
+      bool useantex( confReader.getValueAsBoolean( "useAntex", station ) );
+      if( useantex )
+      {
+            // Feed Antex reader object with Antex file
+         antexReader.open( confReader.getValue( "antexFile", station ) );
+
+            // Get receiver antenna parameters
+         receiverAntenna =
+            antexReader.getAntenna( confReader.getValue( "antennaModel",
+                                                         station ) );
+
+      }
+
+
+         // Object to compute satellite antenna phase center effect
+      ComputeSatPCenter svPcenter(nominalPos);
+      if( useantex )
+      {
+            // Feed 'ComputeSatPCenter' object with 'AntexReader' object
+         svPcenter.setAntexReader( antexReader );
+      }
+
+      pList.push_back(svPcenter);       // Add to processing list
+
+
          // Declare an object to correct observables to monument
       CorrectObservables corr(SP3EphList);
-      (corr.setNominalPosition(nominalPos)).setL1pc( offsetL1 );
-      corr.setL2pc( offsetL2 );
+      corr.setNominalPosition(nominalPos);
       corr.setMonument( offsetARP );
+
+         // Check if we want to use Antex patterns
+      bool usepatterns(confReader.getValueAsBoolean("usePCPatterns", station ));
+      if( useantex && usepatterns )
+      {
+         corr.setAntenna( receiverAntenna );
+
+            // Should we use elevation/azimuth patterns or just elevation?
+         corr.setUseAzimuth(confReader.getValueAsBoolean("useAzim", station));
+      }
+      else
+      {
+            // Fill vector from antenna ARP to L1 phase center [UEN], in meters
+         offsetL1[0] = confReader.fetchListValueAsDouble("offsetL1", station);
+         offsetL1[1] = confReader.fetchListValueAsDouble("offsetL1", station);
+         offsetL1[2] = confReader.fetchListValueAsDouble("offsetL1", station);
+
+            // Vector from antenna ARP to L2 phase center [UEN], in meters
+         offsetL2[0] = confReader.fetchListValueAsDouble("offsetL2", station);
+         offsetL2[1] = confReader.fetchListValueAsDouble("offsetL2", station);
+         offsetL2[2] = confReader.fetchListValueAsDouble("offsetL2", station);
+
+         corr.setL1pc( offsetL1 );
+         corr.setL2pc( offsetL2 );
+
+      }
+
       pList.push_back(corr);       // Add to processing list
 
 
@@ -623,6 +757,9 @@ void example9::process()
                               nominalPos.getGeodeticLatitude(),
                               confReader.getValueAsInt("dayOfYear", station) );
 
+         // We will need this value later for printing
+      double drytropo( neillTM.dry_zenith_delay() );
+
 
          // Object to compute the tropospheric data
       ComputeTropModel computeTropo(neillTM);
@@ -634,7 +771,7 @@ void example9::process()
       ComputeLinear linear2;
 
          // Read if we should use C1 instead of P1
-      if ( confReader.getValueAsBoolean( "useC1", station ) )
+      if ( usingC1 )
       {
             // WARNING: When using C1 instead of P1 to compute PC combination,
             //          be aware that instrumental errors will NOT cancel,
@@ -781,6 +918,19 @@ void example9::process()
       ofstream outfile;
       outfile.open( outName.c_str(), ios::out );
 
+         // Let's check if we are going to print the model
+      bool printmodel( confReader.getValueAsBoolean( "printModel", station ) );
+
+      string modelName;
+      ofstream modelfile;
+
+         // Prepare for model printing
+      if( printmodel )
+      {
+         modelName = confReader.getValue( "modelFile", station );
+         modelfile.open( modelName.c_str(), ios::out );
+      }
+
 
          //// *** Now comes the REAL forwards processing part *** ////
 
@@ -828,6 +978,14 @@ void example9::process()
          }
 
 
+            // Ask if we are going to print the model
+         if ( printmodel )
+         {
+            printModel( modelfile,
+                        gRin );
+
+         }
+
             // Check what type of solver we are using
          if ( cycles < 1 )
          {
@@ -840,6 +998,7 @@ void example9::process()
                            cDOP,
                            isNEU,
                            gRin.numSats(),
+                           drytropo,
                            precision );
 
          }  // End of 'if ( cycles < 1 )'
@@ -851,9 +1010,16 @@ void example9::process()
       }  // End of 'while(rin >> gRin)'
 
 
-
          // Close current Rinex observation stream
       rin.close();
+
+
+         // If we printed the model, we must close the file
+      if ( printmodel )
+      {
+            // Close model file for this station
+         modelfile.close();
+      }
 
 
          // Clear content of SP3 ephemerides object
@@ -924,6 +1090,7 @@ void example9::process()
                         cDOP,
                         isNEU,
                         gRin.numSats(),
+                        drytropo,
                         precision );
 
       }  // End of 'while( fbpppSolver.LastProcess(gRin) )'
