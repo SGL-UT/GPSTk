@@ -18,11 +18,13 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
+//  Copyright Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006
+//
 //============================================================================
 
 // Example program Nro 5 for GPSTk
 // This program shows how to use some high-level GPSTk classes
-// Dagoberto Salazar - gAGE. 2006
+
 
 // Basic input/output C++ class
 #include <iostream>

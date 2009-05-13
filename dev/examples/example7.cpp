@@ -18,12 +18,14 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
+//  Copyright Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//
 //============================================================================
 
 // Example program Nro 7 for GPSTk
 // This program shows several different ways to process GPS data
 // using GNSS Data Structures (DataStructures.hpp).
-// Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+
 
 #include <iostream>
 #include <iomanip>

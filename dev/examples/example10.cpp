@@ -18,6 +18,8 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
+//  Copyright Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//
 //============================================================================
 
 // Example program Nro 10 for GPSTk
@@ -36,7 +38,7 @@
 //   4th. ESA Workshop on Satellite Navigation User Equipment Technologies
 //   NAVITEC 2008. Noordwijk. The Netherlands. December 2008.
 //
-// Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+
 
 #include <iostream>
 #include <iomanip>

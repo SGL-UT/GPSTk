@@ -18,6 +18,8 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
+//  Copyright Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//
 //============================================================================
 
 // Example program Nro 8 for GPSTk
@@ -30,7 +32,7 @@
 //    Kouba, J. and P. Heroux. "Precise Point Positioning using IGS Orbit
 //       and Clock Products". GPS Solutions, vol 5, pp 2-28. October, 2001.
 //
-// Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+
 
 #include <iostream>
 #include <iomanip>
