@@ -579,8 +579,9 @@ namespace gpstk
       gotSet |= set("pi",PI);
       gotSet |= set("c",C_GPS_M);
       gotSet |= set("c_gps_m",C_GPS_M);
-      gotSet |= set("f1",L1_FREQ);
-      gotSet |= set("f2",L2_FREQ);
+      gotSet |= set("l0",OSC_FREQ);
+      gotSet |= set("f1",L1_MULT);
+      gotSet |= set("f2",L2_MULT);
       gotSet |= set("l1",L1_FREQ);
       gotSet |= set("l2",L2_FREQ);
       gotSet |= set("wl1",C_GPS_M/L1_FREQ);

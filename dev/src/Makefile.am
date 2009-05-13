@@ -73,7 +73,8 @@ RinexMetFilterOperators.hpp RinexMetHeader.hpp RinexMetStream.hpp \
 RinexNavBase.hpp RinexNavData.hpp RinexNavFilterOperators.hpp \
 RinexNavHeader.hpp RinexNavStream.hpp RinexObsBase.hpp RinexObsData.hpp \
 RinexObsFilterOperators.hpp RinexObsHeader.hpp RinexObsID.hpp \
-RinexObsStream.hpp RinexSatID.hpp RinexUtilities.hpp RungeKutta4.hpp \
+RinexObsStream.hpp RinexSatID.hpp RinexUtilities.hpp \
+RKIntegrator.hpp RungeKutta4.hpp \
 SatDataReader.hpp SEMAlmanacStore.hpp SEMBase.hpp SEMData.hpp \
 SEMHeader.hpp SEMStream.hpp \
 SMODFData.hpp SMODFStream.hpp SP3Base.hpp SP3Data.hpp SP3EphemerisStore.hpp \
