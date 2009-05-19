@@ -44,6 +44,8 @@
 //
 //=============================================================================
 
+#include <vector>
+
 #include "StringUtils.hpp"
 #include "FFStream.hpp"
 #include "RinexMetBase.hpp"

@@ -59,7 +59,7 @@ namespace gpstk
    {
    public:
 
-     /// Destructor per the coding standards
+     /// Destructor
      virtual ~Rinex3ObsBase() {}
    };
 

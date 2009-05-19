@@ -57,7 +57,8 @@ namespace gpstk
    class RinexMetBase : public FFData
    {
    public:
-         /// Destructor per our coding standards
+
+      /// Destructor
       virtual ~RinexMetBase() {}
    };
 

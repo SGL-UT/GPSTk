@@ -60,8 +60,7 @@ namespace gpstk
   /**
    * This class reads RINEX 3 Obs files.
    *
-   * @sa gpstk::Rinex3ObsData and gpstk::Rinex3ObsHeader.
-   * @sa rinex_obs_test.cpp and rinex_obs_read_write.cpp for examples.
+   * @sa Rinex3ObsData and Rinex3ObsHeader.
    */
 
    class Rinex3ObsStream : public FFTextStream
@@ -70,7 +69,8 @@ namespace gpstk
 
      /// Default constructor
      Rinex3ObsStream()
-       : headerRead(false) {};
+       : headerRead(false)
+     {};
 
 
      /** Common constructor.
@@ -108,7 +108,7 @@ namespace gpstk
        FFTextStream::open(fn, mode);
        headerRead = false;
        header = Rinex3ObsHeader();
-     };
+     }
 
 
      /** Overrides open to reset the header
@@ -129,10 +129,10 @@ namespace gpstk
      Rinex3ObsHeader header;
 
 
-   }; // End of class 'Rinex3ObsStream'
+   }; // class 'Rinex3ObsStream'
 
-      //@}
+  //@} doxygen code block
 
-}  // End of namespace gpstk
+} // namespace gpstk
 
-#endif   // GPSTK_RINEX3OBSSTREAM_HPP
+#endif // GPSTK_RINEX3OBSSTREAM_HPP

@@ -1,7 +1,5 @@
 #pragma ident "$Id: Rinex3ObsFilterOperators.hpp 1709 2009-02-18 20:27:47Z btolman $"
 
-
-
 /**
  * @file Rinex3ObsFilterOperators.hpp
  * Operators for FileFilter using Rinex observation data
@@ -46,17 +44,12 @@
 //
 //=============================================================================
 
-
-
-
-
+#include <set>
+#include <algorithm>
 
 #include "FileFilter.hpp"
 #include "Rinex3ObsData.hpp"
 #include "Rinex3ObsHeader.hpp"
-
-#include <set>
-#include <algorithm>
 
 namespace gpstk
 {
@@ -66,20 +59,18 @@ namespace gpstk
       /// This compares all elements of the Rinex3ObsData with less than
       /// (only for those fields which the two obs data share).
    struct Rinex3ObsDataOperatorLessThanFull : 
-      public std::binary_function<gpstk::Rinex3ObsData, 
-         gpstk::Rinex3ObsData, bool>
+      public std::binary_function<Rinex3ObsData, Rinex3ObsData, bool>
    {
    public:
          /// The set is a set of Rinex3ObsType that the two files have in 
          /// common.  This is easily generated with the set_intersection
          /// STL function.  See difftools/rowdiff.cpp for an example.
       Rinex3ObsDataOperatorLessThanFull
-      (const std::set<gpstk::Rinex3ObsHeader::Rinex3ObsType>& rohset)
-            : obsSet(rohset)
-         {}
+      (const std::set<Rinex3ObsHeader::Rinex3ObsType>& rohset)
+         : obsSet(rohset)
+      {}
 
-      bool operator()(const gpstk::Rinex3ObsData& l,
-                      const gpstk::Rinex3ObsData& r) const
+      bool operator()(const Rinex3ObsData& l, const Rinex3ObsData& r) const
          {
                // compare the times, offsets, then only those elements
                // that are common to both.  this ignores the flags
@@ -113,10 +104,9 @@ namespace gpstk
 
                // then check that each PRN has the same data for each of the 
                // shared fields
-            gpstk::Rinex3ObsData::RinexSatMap::const_iterator lItr = 
-               l.obs.begin(), rItr;
+            Rinex3ObsData::RinexSatMap::const_iterator lItr = l.obs.begin(), rItr;
          
-            gpstk::SatID sat;
+            SatID sat;
 
             while (lItr != l.obs.end())
             {
@@ -125,27 +115,26 @@ namespace gpstk
                if (rItr == r.obs.end())
                   return false;
          
-               gpstk::Rinex3ObsData::Rinex3ObsTypeMap 
-                  lObs = (*lItr).second, 
-                  rObs = (*rItr).second;
+               Rinex3ObsData::Rinex3ObsTypeMap lObs = (*lItr).second, 
+                                               rObs = (*rItr).second;
 
-               std::set<gpstk::Rinex3ObsHeader::Rinex3ObsType>::const_iterator obsItr = 
+               std::set<Rinex3ObsHeader::Rinex3ObsType>::const_iterator obsItr = 
                   obsSet.begin();
          
                while (obsItr != obsSet.end())
                {
-                  gpstk::Rinex3ObsData::RinexDatum lData, rData;
+                  Rinex3ObsData::RinexDatum lData, rData;
                   lData = lObs[*obsItr];
                   rData = rObs[*obsItr];
 
                   if (lData.data < rData.data)
                      return true;
                
-                  if ( (lData.lli != 0) && (rData.lli != 0) )
+                  if ( lData.lli != 0 && rData.lli != 0 )
                      if (lData.lli < rData.lli)
                         return true;
                
-                  if ( (lData.ssi != 0) && (rData.ssi != 0) )
+                  if ( lData.ssi != 0 && rData.ssi != 0 )
                      if (lData.ssi < rData.ssi)
                         return true;
                
@@ -160,18 +149,16 @@ namespace gpstk
          }
 
    private:
-      std::set<gpstk::Rinex3ObsHeader::Rinex3ObsType> obsSet;
+      std::set<Rinex3ObsHeader::Rinex3ObsType> obsSet;
    };
 
       /// This is a much faster less than operator for Rinex3ObsData,
       /// only checking time
    struct Rinex3ObsDataOperatorLessThanSimple : 
-      public std::binary_function<gpstk::Rinex3ObsData, 
-         gpstk::Rinex3ObsData, bool>
+      public std::binary_function<Rinex3ObsData, Rinex3ObsData, bool>
    {
    public:
-      bool operator()(const gpstk::Rinex3ObsData& l,
-                      const gpstk::Rinex3ObsData& r) const
+      bool operator()(const Rinex3ObsData& l, const Rinex3ObsData& r) const
          {
             if (l.time < r.time)
                return true;
@@ -182,12 +169,10 @@ namespace gpstk
       /// This simply compares the times of the two records
       /// for equality
    struct Rinex3ObsDataOperatorEqualsSimple : 
-      public std::binary_function<gpstk::Rinex3ObsData, 
-         gpstk::Rinex3ObsData, bool>
+      public std::binary_function<Rinex3ObsData, Rinex3ObsData, bool>
    {
    public:
-      bool operator()(const gpstk::Rinex3ObsData& l,
-                      const gpstk::Rinex3ObsData& r) const
+      bool operator()(const Rinex3ObsData& l, const Rinex3ObsData& r) const
          {
             if (l.time == r.time)
                return true;
@@ -203,14 +188,14 @@ namespace gpstk
       /// those files and obsSet will be the set of Rinex3ObsTypes that
       /// will be printed to the file.
    struct Rinex3ObsHeaderTouchHeaderMerge :
-      public std::unary_function<gpstk::Rinex3ObsHeader, bool>
+      public std::unary_function<Rinex3ObsHeader, bool>
    {
    public:
       Rinex3ObsHeaderTouchHeaderMerge()
-            : firstHeader(true)
-         {}
+         : firstHeader(true)
+      {}
 
-      bool operator()(const gpstk::Rinex3ObsHeader& l)
+      bool operator()(const Rinex3ObsHeader& l)
          {
             if (firstHeader)
             {
@@ -219,8 +204,7 @@ namespace gpstk
             }
             else
             {
-               std::set<gpstk::Rinex3ObsHeader::Rinex3ObsType> thisObsSet, 
-                  tempObsSet;
+               std::set<Rinex3ObsHeader::Rinex3ObsType> thisObsSet, tempObsSet;
                std::set<std::string> commentSet;
                obsSet.clear();
 
@@ -258,13 +242,12 @@ namespace gpstk
          }
 
       bool firstHeader;
-      gpstk::Rinex3ObsHeader theHeader;
-      std::set<gpstk::Rinex3ObsHeader::Rinex3ObsType> obsSet;
+      Rinex3ObsHeader theHeader;
+      std::set<Rinex3ObsHeader::Rinex3ObsType> obsSet;
    };
 
    //@}
 
-}
+} // namespace gpstk
 
-
-#endif
+#endif // GPSTK_RINEX3OBSFILTEROPERATORS_HPP

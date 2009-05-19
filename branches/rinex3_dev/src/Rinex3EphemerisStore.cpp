@@ -38,7 +38,8 @@
 
 /**
  * @file Rinex3EphemerisStore.cpp
- * Read and store Rinex3 formated ephemeris data
+ * Read and store RINEX 3 formated ephemeris data.
+ * Note the commented-out Galileo placeholder code.  Do not delete!!
  */
 
 #include <string>
@@ -96,4 +97,4 @@ namespace gpstk
       //GALstore.dump();
    }
 
-}  // namespace
+}  // namespace gpstk

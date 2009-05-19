@@ -62,16 +62,14 @@ namespace gpstk
 
    /// This compares all elements of the Rinex3NavData with less than.
    struct Rinex3NavDataOperatorLessThanFull :
-      public std::binary_function<gpstk::Rinex3NavData, 
-                                  gpstk::Rinex3NavData, bool>
+      public std::binary_function<Rinex3NavData, Rinex3NavData, bool>
    {
    public:
 
-     bool operator()(const gpstk::Rinex3NavData& l,
-                     const gpstk::Rinex3NavData& r) const
+     bool operator()(const Rinex3NavData& l, const Rinex3NavData& r) const
      {
-       gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
-       gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
+       GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
+       GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
 
        if (lXmitTime < rXmitTime)
          return true;
@@ -111,13 +109,11 @@ namespace gpstk
 
    /// This compares all elements of the Rinex3NavData with equals
    struct Rinex3NavDataOperatorEqualsFull :
-      public std::binary_function<gpstk::Rinex3NavData, 
-                                  gpstk::Rinex3NavData, bool>
+      public std::binary_function<Rinex3NavData, Rinex3NavData, bool>
    {
    public:
 
-     bool operator()(const gpstk::Rinex3NavData& l,
-                     const gpstk::Rinex3NavData& r) const
+     bool operator()(const Rinex3NavData& l, const Rinex3NavData& r) const
      {
        // compare the times and all data members
        if (l.time != r.time)
@@ -147,32 +143,18 @@ namespace gpstk
 
    /// Only compares time.  Suitable for sorting a Rinex3Nav file.
    struct Rinex3NavDataOperatorLessThanSimple :
-      public std::binary_function<gpstk::Rinex3NavData, 
-                                  gpstk::Rinex3NavData, bool>
+      public std::binary_function<Rinex3NavData, Rinex3NavData, bool>
    {
    public:
-<<<<<<< .mine
 
-     bool operator()(const gpstk::Rinex3NavData& l,
-                     const gpstk::Rinex3NavData& r) const
+     bool operator()(const Rinex3NavData& l, const Rinex3NavData& r) const
      {
-       gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
-       gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
+       GPSWeekSecond lXmitTime(l.weeknum, static_cast<double>(l.HOWtime));
+       GPSWeekSecond rXmitTime(r.weeknum, static_cast<double>(r.HOWtime));
        if (lXmitTime < rXmitTime)
          return true;
        return false;
      }
-=======
-      bool operator()(const gpstk::Rinex3NavData& l,
-                      const gpstk::Rinex3NavData& r) const
-         {
-            gpstk::GPSWeekSecond lXmitTime(l.weeknum, static_cast<double>(l.HOWtime));
-            gpstk::GPSWeekSecond rXmitTime(r.weeknum, static_cast<double>(r.HOWtime));
-            if (lXmitTime < rXmitTime)
-               return true;
-            return false;
-         }
->>>>>>> .r1855
    };
 
    /// Combines Rinex3NavHeaders into a single header, combining comments.
@@ -181,7 +163,7 @@ namespace gpstk
    /// Rinex3NavHeader, the internal theHeader will be the merged header
    /// data for those files.
    struct Rinex3NavHeaderTouchHeaderMerge :
-      public std::unary_function<gpstk::Rinex3NavHeader, bool>
+      public std::unary_function<Rinex3NavHeader, bool>
    {
    public:
 
@@ -189,7 +171,7 @@ namespace gpstk
        : firstHeader(true)
      {}
 
-     bool operator()(const gpstk::Rinex3NavHeader& l)
+     bool operator()(const Rinex3NavHeader& l)
      {
        if (firstHeader)
        {
@@ -218,47 +200,35 @@ namespace gpstk
      }
 
      bool firstHeader;
-     gpstk::Rinex3NavHeader theHeader;
+     Rinex3NavHeader theHeader;
    };
 
    /// Filter based on PRN ID.
    struct Rinex3NavDataFilterPRN :
-      public std::unary_function<gpstk::Rinex3NavData, bool>
+      public std::unary_function<Rinex3NavData, bool>
    {
    public:
 
-      Rinex3NavDataFilterPRN(const std::list<long>& lst )
-<<<<<<< .mine
-        :prnList(lst)
+     Rinex3NavDataFilterPRN(const std::list<long>& lst )
+       :prnList(lst)
      {}
 
      /// This should return true when the data are to be erased
-     bool operator()(const gpstk::Rinex3NavData& l) const
+     bool operator()(const Rinex3NavData& l) const
      {
        long testValue = (long) l.PRNID;
        return find(prnList.begin(), prnList.end(), testValue )
          == prnList.end();
      }
 
-=======
-         :prnList(lst)
-         {}
-         /// This should return true when the data are to be erased
-      bool operator()(const gpstk::Rinex3NavData& l) const
-         {
-            long testValue = static_cast<long>(l.PRNID);
-            return find(prnList.begin(), prnList.end(), testValue )
-                                                       == prnList.end();
-         }
->>>>>>> .r1855
    private:
 
      std::list<long> prnList;
+
    };
 
    //@}
 
 }
 
-
-#endif
+#endif // GPSTK_RINEXNAVFILTEROPERATORS_HPP

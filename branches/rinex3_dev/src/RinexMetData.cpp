@@ -59,9 +59,6 @@ namespace gpstk
     throw(std::exception, FFStreamError, 
           gpstk::StringUtils::StringException)
   {
-    const int maxObsPerOutputLine = 8;
-    const int maxObsPerOutputContLine = 10;
-
     RinexMetStream& strm = dynamic_cast<RinexMetStream&>(ffs);
     string line;
 
@@ -82,7 +79,7 @@ namespace gpstk
     line += rightJustify(asString<short>(civtime.second),2);
 
     for (int i = 0;
-         (i < strm.header.obsTypeList.size()) && (i < maxObsPerOutputLine);
+         (i < strm.header.obsTypeList.size()) && (i < maxObsPerLine);
          i++)
     {
       RinexMetHeader::RinexMetType thistype = strm.header.obsTypeList[i];
@@ -97,13 +94,13 @@ namespace gpstk
     }
 
     // Do we need continuation lines?
-    if (strm.header.obsTypeList.size() > maxObsPerOutputLine)
+    if (strm.header.obsTypeList.size() > maxObsPerLine)
     {
-      for (int i = maxObsPerOutputLine;
+      for (int i = maxObsPerLine;
            i < strm.header.obsTypeList.size();
            i++)
       {
-        if (((i - maxObsPerOutputLine) % maxObsPerOutputContLine) == 0)
+        if (((i - maxObsPerLine) % maxObsPerContinuationLine) == 0)
         {
           ffs << line << endl;
           strm.lineNumber++;

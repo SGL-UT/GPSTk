@@ -2,7 +2,7 @@
 
 /**
  * @file Rinex3NavHeader.hpp
- * Encapsulate header of Rinex navigation file
+ * Encapsulate header of RINEX 3 navigation file.
  */
 
 #ifndef GPSTK_RINEX3NAVHEADER_HPP
@@ -59,10 +59,9 @@ namespace gpstk
   //@{
 
   /**
-   * This class models the RINEX 3 NAV header for a RINEX 3 NAV file.
+   * This class models the RINEX 3 Nav header for a RINEX 3 Nav file.
    *
-   * \sa rinex3_nav_test.cpp and rinex3_nav_read_write.cpp for examples.
-   * \sa gpstk::Rinex3NavData and gpstk::Rinex3NavStream classes.
+   * \sa Rinex3NavData and Rinex3NavStream classes.
    */
 
   class Rinex3NavHeader : public Rinex3NavBase
@@ -198,4 +197,4 @@ namespace gpstk
 
 } // namespace
 
-#endif
+#endif // GPSTK_RINEX3NAVHEADER_HPP

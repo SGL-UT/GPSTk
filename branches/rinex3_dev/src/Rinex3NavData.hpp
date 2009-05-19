@@ -61,10 +61,10 @@ namespace gpstk
    //@{
 
       /**
-       * This class models a RINEX 3 NAV record.
+       * This class models a RINEX 3 Nav record.
        *
-       * \sa rinex_nav_test.cpp and rinex_nav_read_write.cpp for examples.
-       * \sa gpstk::Rinex3NavHeader and gpstk::Rinex3NavStream classes.
+       * \sa FunctionalTests/Rinex3NavText for example.
+       * \sa Rinex3NavHeader and Rinex3NavStream classes.
        */
 
    class Rinex3NavData : public Rinex3NavBase
@@ -196,7 +196,7 @@ namespace gpstk
 
    /// Parses string \a currentLine to obtain PRN id and epoch.
      void getPRNEpoch(const std::string& currentLine)
-       throw(gpstk::StringUtils::StringException, FFStreamError);
+       throw(StringUtils::StringException, FFStreamError);
 
      /** @name OrbitParameters
       * Obtain orbit parameters from strint \a currentLine.
@@ -204,30 +204,30 @@ namespace gpstk
      //@{
      /// Reads line 1 of the Nav Data record
      void getBroadcastOrbit1(const std::string& currentLine)
-       throw(gpstk::StringUtils::StringException, FFStreamError);
+       throw(StringUtils::StringException, FFStreamError);
      /// Reads line 2 of the Nav Data record
      void getBroadcastOrbit2(const std::string& currentLine)
-       throw(gpstk::StringUtils::StringException, FFStreamError);
+       throw(StringUtils::StringException, FFStreamError);
      /// Reads line 3 of the Nav Data record
      void getBroadcastOrbit3(const std::string& currentLine)
-       throw(gpstk::StringUtils::StringException, FFStreamError);
+       throw(StringUtils::StringException, FFStreamError);
      /// Reads line 4 of the Nav Data record
      void getBroadcastOrbit4(const std::string& currentLine)
-       throw(gpstk::StringUtils::StringException, FFStreamError);
+       throw(StringUtils::StringException, FFStreamError);
      /// Reads line 5 of the Nav Data record
      void getBroadcastOrbit5(const std::string& currentLine)
-       throw(gpstk::StringUtils::StringException, FFStreamError);
+       throw(StringUtils::StringException, FFStreamError);
      /// Reads line 6 of the Nav Data record
      void getBroadcastOrbit6(const std::string& currentLine)
-       throw(gpstk::StringUtils::StringException, FFStreamError);
+       throw(StringUtils::StringException, FFStreamError);
      /// Reads line 7 of the Nav Data record
      void getBroadcastOrbit7(const std::string& currentLine)
-       throw(gpstk::StringUtils::StringException, FFStreamError);
+       throw(StringUtils::StringException, FFStreamError);
      //@}
 
      /// generates a line to be output to a file for the PRN/epoch line
      std::string putPRNEpoch(void) const
-       throw(gpstk::StringUtils::StringException);
+       throw(StringUtils::StringException);
 
      /** @name OrbitParameters
       * Generate orbit parameter lines from data to be output to a file
@@ -235,27 +235,27 @@ namespace gpstk
      //@{
      /// Writes line 1 of the Nav Data record
      std::string putBroadcastOrbit1(void) const
-       throw(gpstk::StringUtils::StringException);
+       throw(StringUtils::StringException);
      /// Writes line 2 of the Nav Data record
      std::string putBroadcastOrbit2(void) const
-       throw(gpstk::StringUtils::StringException);
+       throw(StringUtils::StringException);
      /// Writes line 3 of the Nav Data record
      std::string putBroadcastOrbit3(void) const
-       throw(gpstk::StringUtils::StringException);
+       throw(StringUtils::StringException);
      /// Writes line 4 of the Nav Data record
      std::string putBroadcastOrbit4(void) const
-       throw(gpstk::StringUtils::StringException);
+       throw(StringUtils::StringException);
      /// Writes line 5 of the Nav Data record
      std::string putBroadcastOrbit5(void) const
-       throw(gpstk::StringUtils::StringException);
+       throw(StringUtils::StringException);
      /// Writes line 6 of the Nav Data record
      std::string putBroadcastOrbit6(void) const
-       throw(gpstk::StringUtils::StringException);
+       throw(StringUtils::StringException);
      /// Writes line 7 of the Nav Data record
      /// @warning Pass in version to decide wheter or not
      ///          to write fit interval.
      std::string putBroadcastOrbit7(const double ver) const
-       throw(gpstk::StringUtils::StringException);
+       throw(StringUtils::StringException);
      //@}
 
    protected:
@@ -263,7 +263,7 @@ namespace gpstk
      /// Outputs the record to the FFStream \a s.
      virtual void reallyPutRecord(FFStream& s) const 
        throw(std::exception, FFStreamError,
-             gpstk::StringUtils::StringException);
+             StringUtils::StringException);
 
      /**
       * This function retrieves a RINEX 3 NAV record from the given FFStream.
@@ -276,7 +276,7 @@ namespace gpstk
       */
      virtual void reallyGetRecord(FFStream& s)
        throw(std::exception, FFStreamError,
-             gpstk::StringUtils::StringException);
+             StringUtils::StringException);
 
    };  // class Rinex3NavData
 

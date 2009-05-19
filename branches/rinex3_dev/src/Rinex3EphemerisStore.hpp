@@ -39,11 +39,12 @@
 
 /**
  * @file Rinex3EphemerisStore.hpp
- * Read and store Rinex formated ephemeris data
+ * Read and store RINEX formated ephemeris data.
+ * Note Galileo placeholder code that is commented out; do not remove!!
  */
 
-#ifndef GPSTK_RINEX3_EPHEMERIS_STORE_HPP
-#define GPSTK_RINEX3_EPHEMERIS_STORE_HPP
+#ifndef GPSTK_RINEX3EPHEMERISSTORE_HPP
+#define GPSTK_RINEX3EPHEMERISSTORE_HPP
 
 #include <iostream>
 
@@ -69,18 +70,17 @@ namespace gpstk
       /// destructor
       virtual ~Rinex3EphemerisStore() {};
       
-      /** Dump the store to cout.
+      /** Dump the store to a stream.
        * @param detail determines how much detail to include in the output
        *   0 list of filenames with their start, stop times.
        *   1 list of filenames with their start, stop times,
        *     other header information and prns/accuracy.
        *   2 above, plus dump all the PVT data (use judiciously).
        */
-      virtual void dump( std::ostream& s=std::cout,
-                         short detail = 0 )
+      virtual void dump( std::ostream& s=std::cout, short detail = 0 )
          const throw();
 
-      /// load the given Rinex file
+      /// load the given RINEX file
       virtual void loadFile(const std::string& filename)
         throw( FileMissingException );
 
@@ -99,4 +99,4 @@ namespace gpstk
 
 }  // namespace
 
-#endif
+#endif // GPSTK_RINEX3EPHEMERISSTORE_HPP

@@ -181,11 +181,10 @@ namespace gpstk
 
     if (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
     {
-      int isv;
       vector<RinexSatID> satIndex(numSVs);
       std::map<RinexSatID, vector<RinexDatum> > tempDataMap;
 
-      for (isv = 0; isv < numSVs; isv++)
+      for (int isv = 0; isv < numSVs; isv++)
       {
         strm.formattedGetLine(line);
 

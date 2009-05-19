@@ -56,8 +56,8 @@ namespace gpstk
   /** @addtogroup RinexMet */
   //@{
 
-  typedef std::unary_function<gpstk::RinexMetHeader, bool> RinexMetDataUnaryOperator;
-  typedef std::binary_function<gpstk::RinexMetData, gpstk::RinexMetData, bool> RinexMetDataBinaryOperator;
+  typedef std::unary_function<RinexMetHeader, bool> RinexMetDataUnaryOperator;
+  typedef std::binary_function<RinexMetData, RinexMetData, bool> RinexMetDataBinaryOperator;
 
   /// This compares all elements of the RinexMetData with less than
   /// (only for those fields which the two obs data share).
@@ -69,12 +69,11 @@ namespace gpstk
     /// common.  This is easily generated with the set_intersection
     /// STL function.  See difftools/rmwdiff.cpp for an example.
     RinexMetDataOperatorLessThanFull
-    (const std::set<gpstk::RinexMetHeader::RinexMetType>& rmhset)
+    (const std::set<RinexMetHeader::RinexMetType>& rmhset)
       : obsSet(rmhset)
     {}
 
-    bool operator()(const gpstk::RinexMetData& l,
-                    const gpstk::RinexMetData& r) const
+    bool operator()(const RinexMetData& l, const RinexMetData& r) const
     {
       // Compare the times, offsets, then only those elements
       // common to both.  This ignores the flags set to 0.
@@ -87,9 +86,9 @@ namespace gpstk
       // Then check that each observation has the same data
       // for each item in the set of common observations.
 
-      gpstk::RinexMetData::RinexMetMap::const_iterator 
+      RinexMetData::RinexMetMap::const_iterator 
         lItr, rItr;
-      std::set<gpstk::RinexMetHeader::RinexMetType>::const_iterator
+      std::set<RinexMetHeader::RinexMetType>::const_iterator
         obsItr = obsSet.begin();
 
       while (obsItr != obsSet.end())
@@ -115,7 +114,7 @@ namespace gpstk
     }
 
   private:
-    std::set<gpstk::RinexMetHeader::RinexMetType> obsSet;
+    std::set<RinexMetHeader::RinexMetType> obsSet;
   };
 
   /// Compares only times.
@@ -123,8 +122,7 @@ namespace gpstk
   {
   public:
 
-    bool operator()(const gpstk::RinexMetData& l,
-                    const gpstk::RinexMetData& r) const
+    bool operator()(const RinexMetData& l, const RinexMetData& r) const
     {
       if (l.time < r.time)
         return true;
@@ -137,8 +135,7 @@ namespace gpstk
   {
   public:
 
-    bool operator()(const gpstk::RinexMetData& l,
-                    const gpstk::RinexMetData& r) const
+    bool operator()(const RinexMetData& l, const RinexMetData& r) const
     {
       if (l.time == r.time)
         return true;
@@ -160,7 +157,7 @@ namespace gpstk
       : firstHeader(true)
     {}
 
-    bool operator()(const gpstk::RinexMetHeader& l)
+    bool operator()(const RinexMetHeader& l)
     {
       if (firstHeader)
       {
@@ -169,7 +166,7 @@ namespace gpstk
       }
       else
       {
-        std::set<gpstk::RinexMetHeader::RinexMetType> thisMetSet, 
+        std::set<RinexMetHeader::RinexMetType> thisMetSet, 
           tempMetSet;
         std::set<std::string> commentSet;
         obsSet.clear();
@@ -207,34 +204,36 @@ namespace gpstk
     }
 
     bool firstHeader;
-    gpstk::RinexMetHeader theHeader;
-    std::set<gpstk::RinexMetHeader::RinexMetType> obsSet;
+    RinexMetHeader theHeader;
+    std::set<RinexMetHeader::RinexMetType> obsSet;
   };
 
-  /// This filter will remove any data not within the specified time range.
+  /// This filter will return true for any data not within the specified time range.
   struct RinexMetDataFilterTime : public RinexMetDataUnaryOperator
   {
+
   public:
 
-    RinexMetDataFilterTime(const gpstk::CommonTime& startTime,
-                           const gpstk::CommonTime& endTime)
+    RinexMetDataFilterTime(const CommonTime& startTime,
+                           const CommonTime& endTime   )
       : start(startTime), end(endTime)
     {}
 
-    bool operator() (const gpstk::RinexMetData& l) const
+    bool operator() (const RinexMetData& l) const
     {
-      if ( (l.time < start) ||
-           (l.time >= end))
+      if ( l.time < start || l.time >= end )
         return true;
       return false;
     }
 
   private:
-    gpstk::CommonTime start, end;
+
+    CommonTime start, end;
+
   };
 
   //@}
 
-}
+} // namespace gpstk
 
 #endif

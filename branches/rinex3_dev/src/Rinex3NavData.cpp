@@ -40,7 +40,7 @@
 
 /**
  * @file Rinex3NavData.cpp
- * Encapsulates RINEX 3 Navigation data
+ * Encapsulates RINEX 3 Navigation data.
  */
 
 #include "StringUtils.hpp"
@@ -52,7 +52,7 @@
 
 namespace gpstk
 {
-   using namespace gpstk::StringUtils;
+   using namespace StringUtils;
    using namespace std;
 
 
@@ -341,17 +341,17 @@ namespace gpstk
           line += string(1, ' ');
           line += doub2for(M0  , 18, 2);
         }
-      else if ( satSys == "E" ) // Galileo
-        {
-          line += string(1, ' ');
-          line += doub2for(IODnav, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(Crs   , 18, 2);
-          line += string(1, ' ');
-          line += doub2for(dn    , 18, 2);
-          line += string(1, ' ');
-          line += doub2for(M0    , 18, 2);
-        }
+//      else if ( satSys == "E" ) // Galileo
+//        {
+//          line += string(1, ' ');
+//          line += doub2for(IODnav, 18, 2);
+//          line += string(1, ' ');
+//          line += doub2for(Crs   , 18, 2);
+//          line += string(1, ' ');
+//          line += doub2for(dn    , 18, 2);
+//          line += string(1, ' ');
+//          line += doub2for(M0    , 18, 2);
+//        }
 
       return line;
    }
@@ -562,15 +562,15 @@ namespace gpstk
 
          if ( satSys == "G" || satSys == "E" )
          {
-           af0 = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           af1 = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           af2 = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           af0 = StringUtils::for2doub(currentLine.substr(23,19));
+           af1 = StringUtils::for2doub(currentLine.substr(42,19));
+           af2 = StringUtils::for2doub(currentLine.substr(61,19));
          }
          else if ( satSys == "R" )
          {
-           TauN   =        gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           GammaN =        gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           MFtime = (short)gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           TauN   =        StringUtils::for2doub(currentLine.substr(23,19));
+           GammaN =        StringUtils::for2doub(currentLine.substr(42,19));
+           MFtime = (short)StringUtils::for2doub(currentLine.substr(61,19));
          }
       }
       catch (std::exception &e)
@@ -587,24 +587,24 @@ namespace gpstk
       {
          if ( satSys == "G" )
          {
-           IODE = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-           Crs  = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           dn   = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           M0   = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           IODE = StringUtils::for2doub(currentLine.substr( 4,19));
+           Crs  = StringUtils::for2doub(currentLine.substr(23,19));
+           dn   = StringUtils::for2doub(currentLine.substr(42,19));
+           M0   = StringUtils::for2doub(currentLine.substr(61,19));
          }
          else if ( satSys == "E" )
          {
-           IODnav = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-           Crs    = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           dn     = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           M0     = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           IODnav = StringUtils::for2doub(currentLine.substr( 4,19));
+           Crs    = StringUtils::for2doub(currentLine.substr(23,19));
+           dn     = StringUtils::for2doub(currentLine.substr(42,19));
+           M0     = StringUtils::for2doub(currentLine.substr(61,19));
          }
          else if ( satSys == "R" )
          {
-           px     =        gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-           vx     =        gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           ax     =        gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           health = (short)gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           px     =        StringUtils::for2doub(currentLine.substr( 4,19));
+           vx     =        StringUtils::for2doub(currentLine.substr(23,19));
+           ax     =        StringUtils::for2doub(currentLine.substr(42,19));
+           health = (short)StringUtils::for2doub(currentLine.substr(61,19));
          }
       }
       catch (std::exception &e)
@@ -621,17 +621,17 @@ namespace gpstk
       {
          if ( satSys == "G" || satSys == "E" )
          {
-           Cuc   = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-           ecc   = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           Cus   = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           Ahalf = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           Cuc   = StringUtils::for2doub(currentLine.substr( 4,19));
+           ecc   = StringUtils::for2doub(currentLine.substr(23,19));
+           Cus   = StringUtils::for2doub(currentLine.substr(42,19));
+           Ahalf = StringUtils::for2doub(currentLine.substr(61,19));
          }
          else if ( satSys == "R" )
          {
-           py      =        gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-           vy      =        gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           ay      =        gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           freqNum = (short)gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           py      =        StringUtils::for2doub(currentLine.substr( 4,19));
+           vy      =        StringUtils::for2doub(currentLine.substr(23,19));
+           ay      =        StringUtils::for2doub(currentLine.substr(42,19));
+           freqNum = (short)StringUtils::for2doub(currentLine.substr(61,19));
          }
       }
       catch (std::exception &e)
@@ -648,17 +648,17 @@ namespace gpstk
       {
          if ( satSys == "G" || satSys == "E" )
          {
-           Toe    = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-           Cic    = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           OMEGA0 = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           Cis    = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           Toe    = StringUtils::for2doub(currentLine.substr( 4,19));
+           Cic    = StringUtils::for2doub(currentLine.substr(23,19));
+           OMEGA0 = StringUtils::for2doub(currentLine.substr(42,19));
+           Cis    = StringUtils::for2doub(currentLine.substr(61,19));
          }
          else if ( satSys == "R" )
          {
-           pz        = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-           vz        = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           az        = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           ageOfInfo = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           pz        = StringUtils::for2doub(currentLine.substr( 4,19));
+           vz        = StringUtils::for2doub(currentLine.substr(23,19));
+           az        = StringUtils::for2doub(currentLine.substr(42,19));
+           ageOfInfo = StringUtils::for2doub(currentLine.substr(61,19));
          }
       }
       catch (std::exception &e)
@@ -673,10 +673,10 @@ namespace gpstk
    {
       try
       {
-         i0       = gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-         Crc      = gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-         w        = gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-         OMEGAdot = gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+         i0       = StringUtils::for2doub(currentLine.substr( 4,19));
+         Crc      = StringUtils::for2doub(currentLine.substr(23,19));
+         w        = StringUtils::for2doub(currentLine.substr(42,19));
+         OMEGAdot = StringUtils::for2doub(currentLine.substr(61,19));
       }
       catch (std::exception &e)
       {
@@ -692,16 +692,16 @@ namespace gpstk
       {
          if ( satSys == "G" )
          {
-           idot     =        gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-           codeflgs = (short)gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           weeknum  = (short)gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-           L2Pdata  = (short)gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+           idot     =        StringUtils::for2doub(currentLine.substr( 4,19));
+           codeflgs = (short)StringUtils::for2doub(currentLine.substr(23,19));
+           weeknum  = (short)StringUtils::for2doub(currentLine.substr(42,19));
+           L2Pdata  = (short)StringUtils::for2doub(currentLine.substr(61,19));
          }
          else if ( satSys == "E" )
          {
-           idot        =        gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-           datasources = (short)gpstk::StringUtils::for2doub(currentLine.substr(23,19));
-           weeknum     = (short)gpstk::StringUtils::for2doub(currentLine.substr(42,19));
+           idot        =        StringUtils::for2doub(currentLine.substr( 4,19));
+           datasources = (short)StringUtils::for2doub(currentLine.substr(23,19));
+           weeknum     = (short)StringUtils::for2doub(currentLine.substr(42,19));
          }
       }
       catch (std::exception &e)
@@ -716,10 +716,10 @@ namespace gpstk
    {
       try
       {
-         accuracy  =                    gpstk::StringUtils::for2doub(currentLine.substr( 4,19));
-         health    = static_cast<short>(gpstk::StringUtils::for2doub(currentLine.substr(23,19)));
-         Tgd       =                    gpstk::StringUtils::for2doub(currentLine.substr(42,19));
-         IODC      =                    gpstk::StringUtils::for2doub(currentLine.substr(61,19));
+         accuracy  =                    StringUtils::for2doub(currentLine.substr( 4,19));
+         health    = static_cast<short>(StringUtils::for2doub(currentLine.substr(23,19)));
+         Tgd       =                    StringUtils::for2doub(currentLine.substr(42,19));
+         IODC      =                    StringUtils::for2doub(currentLine.substr(61,19));
       }
       catch (std::exception &e)
       {
@@ -733,8 +733,8 @@ namespace gpstk
    {
       try
       {
-         HOWtime = static_cast<short>(gpstk::StringUtils::for2doub(currentLine.substr( 4,19)));
-         fitint  =                    gpstk::StringUtils::for2doub(currentLine.substr(23,19));
+         HOWtime = static_cast<short>(StringUtils::for2doub(currentLine.substr( 4,19)));
+         fitint  =                    StringUtils::for2doub(currentLine.substr(23,19));
 
          // In RINEX *files*, weeknum is the week of TOE.
          // Internally (Rinex3NavData and EngEphemeris), weeknum is the week of HOW.

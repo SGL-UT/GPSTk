@@ -60,7 +60,8 @@ namespace gpstk
    class Rinex3NavBase : public FFData
    {
    public:
-         /// in deference to our coding standards, this is declared virtual
+
+      /// Destructor
       virtual ~Rinex3NavBase() {}
    };
 

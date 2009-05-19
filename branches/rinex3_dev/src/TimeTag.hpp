@@ -194,4 +194,4 @@ namespace gpstk
 std::ostream& operator<<( std::ostream& s,
                           const gpstk::TimeTag& t );
 
-#endif // GPSTK_BASETIME_HPP
+#endif // GPSTK_TIMETAG_HPP

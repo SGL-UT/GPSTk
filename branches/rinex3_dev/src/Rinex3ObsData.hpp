@@ -167,6 +167,6 @@ namespace gpstk
 
   //@}
 
-} // namespace
+} // namespace gpstk
 
-#endif
+#endif // GPSTK_RINEX3OBSDATA_HPP
