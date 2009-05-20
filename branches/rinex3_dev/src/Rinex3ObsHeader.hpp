@@ -179,9 +179,6 @@ namespace gpstk
      std::map<std::string,sfacMap> sysSfacMap; ///< sat. system map of scale factor maps
                                                ///< <(G/R/E/S), <Rinex3ObsType, scalefactor>>
 
-//     static const std::vector<Rinex3ObsType> StandardRinex3ObsTypes;
-//     static       std::vector<Rinex3ObsType> RegisteredRinex3ObsTypes;
-
      /** @name Rinex3ObsHeaderValues
       */ 
      //@{
@@ -252,18 +249,6 @@ namespace gpstk
      virtual void dump(std::ostream& s) const;
 
      /**
-      * This function converts the string in \a oneObs to a Rinex3ObsType.
-      */
-//     static Rinex3ObsType convertObsType(const std::string& oneObs)
-//       throw(FFStreamError);
-
-     /**
-      * This function converts the Rinex3ObsType in \a oneObs to a string.
-      */
-//     static std::string convertObsType(const Rinex3ObsType& oneObs) 
-//       throw(FFStreamError);
-
-     /**
       * Parse a single header record, and modify valid accordingly.
       * Used by reallyGetRecord for both Rinex3ObsHeader and Rinex3ObsData.
       */
@@ -321,41 +306,6 @@ namespace gpstk
      CivilTime parseTime(const std::string& line) const;
 
    }; // end class Rinex3ObsHeader
-
-  /*
-
-   /// operator == for Rinex3ObsHeader::Rinex3ObsType
-   inline bool operator==(const Rinex3ObsHeader::Rinex3ObsType& x,
-                          const Rinex3ObsHeader::Rinex3ObsType& y )
-   { return (x.type == y.type); }
-
-   /// operator < for Rinex3ObsHeader::Rinex3ObsType
-   inline bool operator<(const Rinex3ObsHeader::Rinex3ObsType& x,
-                         const Rinex3ObsHeader::Rinex3ObsType& y )
-   { return (x.type < y.type); }
-
-   /// operator << for Rinex3ObsHeader::Rinex3ObsType
-   inline std::ostream& operator<<(std::ostream& s,
-                                   const Rinex3ObsHeader::Rinex3ObsType rot)
-   {
-     return s << "Type = " << rot.type
-              << ", Description = " << rot.description
-              << ", Units = " << rot.units;
-   }
-
-   /// Function to allow user to define a new RINEX observation type
-   int RegisterExtendedRinex3ObsType(std::string t,
-                                     std::string d = std::string("(undefined)"),
-                                     std::string u = std::string("undefined"),
-                                     unsigned int dep = 0                       );
-
-   /// Pretty print a list of standard Rinex observation types
-   void DisplayStandardRinex3ObsTypes(std::ostream& s);
-
-   /// Pretty print a list of registered extended Rinex observation types
-   void DisplayExtendedRinex3ObsTypes(std::ostream& s);
-
-  */
 
   //@}
 
