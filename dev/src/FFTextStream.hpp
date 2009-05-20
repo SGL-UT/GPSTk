@@ -204,6 +204,12 @@ namespace gpstk
          char templine[MAX_LINE_LENGTH + 1];
          getline(templine, MAX_LINE_LENGTH);
          lineNumber++;
+            //check if line was longer than 256 characters, if so error
+         if(fail() && !eof())
+         {
+            FFStreamError err("Line too long");
+            GPSTK_THROW(err);
+         }
          line = templine;
          gpstk::StringUtils::stripTrailing(line, '\r');
             // catch EOF when stream exceptions are disabled
