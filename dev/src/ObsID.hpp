@@ -163,12 +163,12 @@ namespace gpstk
       ObsID(ObservationType ot, CarrierBand cb, TrackingCode tc)
          : type(ot), band(cb), code(tc) {};
 
-      /// Constructor from a Rinex 3 style descriptor. If this string is 3 characters
-      /// long, the system is assumed to be GPS. If this string is 4 characters long,
-      /// the first character is the system designator as described in the Rinex 3
-      /// specification. If the Rinex 3 style descriptor isn't currently defined,
-      /// a new one is silently automatically created with a blank description for
-      /// the new characters.
+      /// Constructor from a Rinex 3 style descriptor. If this string is 3 
+      /// characters long, the system is assumed to be GPS. If this string is 4
+      /// characters long, the first character is the system designator as
+      /// described in the Rinex 3 specification. If the Rinex 3 style descriptor
+      /// isn't currently defined, a new one is silently automatically created
+      /// with a blank description for the new characters.
       ObsID(const std::string& id) throw(InvalidParameter);
       ObsID(const char* id) throw(InvalidParameter)
       { *this=ObsID(std::string(id));};
@@ -214,11 +214,11 @@ namespace gpstk
       static CarrierBand newCarrierBand(const std::string& s);
       static TrackingCode newTrackingCode(const std::string& s);
 
-      // Extend the standard identifiers with a new Rinex 3 style identifier. If the
-      // specified id is already defined, an exception is thrown and the existing
-      // definitions are not touched. If not then each character of the specification
-      // is examined and the new ones are created. The returned ObsID can then be
-      // examined for the assigned values.
+      // Extend the standard identifiers with a new Rinex 3 style identifier. If
+      // the specified id is already defined, an exception is thrown and the
+      // existing definitions are not touched. If not then each character of the
+      // specification is examined and the new ones are created. The returned
+      // ObsID can then be examined for the assigned values.
       static ObsID newID(const std::string& id,
                          const std::string& desc="") throw(InvalidParameter);
 
@@ -241,7 +241,6 @@ namespace gpstk
       static std::map< CarrierBand, char > cb2Rinex;
       static std::map< TrackingCode, char> tc2Rinex;
 
-   public:
       class Initializer
       {
       public:
