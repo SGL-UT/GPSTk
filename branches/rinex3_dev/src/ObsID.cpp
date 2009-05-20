@@ -118,11 +118,11 @@ namespace gpstk
       tcDesc[tcUndefined] = "undefined";
 
       if (otDesc.size() != (int)otLast)
-         std::cout << "Error in otDesc" << std::endl;
+         std::cerr << "Error in otDesc" << std::endl;
       if (cbDesc.size() != (int)cbLast)
-         std::cout << "Error in cbDesc" << std::endl;
+         std::cerr << "Error in cbDesc" << std::endl;
       if (tcDesc.size() != (int)tcLast)
-         std::cout << "Error in tcDesc" << std::endl;
+         std::cerr << "Error in tcDesc" << std::endl;
 
       // The following definitions really should only describe the items that are
       // in the Rinex 3 specification. If an application needs additional ObsID
@@ -165,6 +165,8 @@ namespace gpstk
       rinex2tc['Z'] = tcABC;
       rinex2tc['-'] = tcUndefined;
 
+      // Since some of the items in the enums don't have corresponding rinex
+      // definitions, make sure there is an entry for all values
       for (int i=otUnknown; i<otLast; i++) ot2Rinex[(ObservationType)i] = ' ';
       for (int i=cbUnknown; i<cbLast; i++) cb2Rinex[(CarrierBand)i] = ' ';
       for (int i=tcUnknown; i<tcLast; i++) tc2Rinex[(TrackingCode)i] = ' ';
@@ -244,7 +246,7 @@ namespace gpstk
             case tcCA: code = tcGCA; break;
             case tcP: code = tcGP; break;
          }
-      }
+      } // end of checking which GNSS system this obs is for
    }
 
 
