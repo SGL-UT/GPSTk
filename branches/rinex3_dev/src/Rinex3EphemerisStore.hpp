@@ -71,6 +71,7 @@ namespace gpstk
       virtual ~Rinex3EphemerisStore() {};
       
       /** Dump the store to a stream.
+       * @param s stream to output
        * @param detail determines how much detail to include in the output
        *   0 list of filenames with their start, stop times.
        *   1 list of filenames with their start, stop times,
