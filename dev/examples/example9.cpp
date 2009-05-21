@@ -644,7 +644,11 @@ void example9::process()
 
 
          // Object to decimate data
-      Decimate decimateData(900.0, 5.0, SP3EphList.getInitialTime());
+      Decimate decimateData(
+               confReader.getValueAsDouble( "decimationInterval", station ),
+               confReader.getValueAsDouble( "decimationTolerance", station ),
+                  SP3EphList.getInitialTime() );
+//      Decimate decimateData(900.0, 5.0, SP3EphList.getInitialTime());
       pList.push_back(decimateData);       // Add to processing list
 
 

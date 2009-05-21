@@ -38,6 +38,13 @@ SP3GapInterval = 901, seconds
 checkInterval = TRUE, don't allow interpolation intervals bigger than 8105 s
 maxSP3Interval = 8105, seconds
 
+
+# Decimation parameters. Typical values for 15-minutes-per-sample SP3 files
+
+decimationInterval, interval between processed data   = 900, seconds
+decimationTolerance, tolerance allowed for decimation = 5, seconds
+
+
 # IMPORTANT NOTE:
 # It turns out that some receivers don't correct their clocks from drift.
 # When this happens, their code observations may drift well beyond what it is
