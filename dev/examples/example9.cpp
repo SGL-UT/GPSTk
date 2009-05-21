@@ -647,8 +647,7 @@ void example9::process()
       Decimate decimateData(
                confReader.getValueAsDouble( "decimationInterval", station ),
                confReader.getValueAsDouble( "decimationTolerance", station ),
-                  SP3EphList.getInitialTime() );
-//      Decimate decimateData(900.0, 5.0, SP3EphList.getInitialTime());
+               SP3EphList.getInitialTime() );
       pList.push_back(decimateData);       // Add to processing list
 
 
