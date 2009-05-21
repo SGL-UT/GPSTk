@@ -59,81 +59,123 @@
 namespace gpstk
 {
 
-      /** @addtogroup ephemstore */
-      //@{
+  /** @addtogroup ephemstore */
+  //@{
 
-      /**
-       * This adds the interface to read SP3 files into a TabularEphemerisStore
-       */
-   class SP3EphemerisStore : public TabularEphemerisStore<Xvt>,
-                             public FileStore<SP3Header>
-   {
-   public:
+  /**
+   * This adds the interface to read SP3 files into a TabularEphemerisStore
+   */
+  class SP3EphemerisStore : public TabularEphemerisStore<Xvt>,
+                            public FileStore<SP3Header>
+  {
+  public:
 
-         /// Constructor.
-      SP3EphemerisStore()
-         throw()
-     { TabularEphemerisStore<Xvt>(); };
-
-
-         /// Destructor.
-      virtual ~SP3EphemerisStore() {};
-
-      virtual void dump( std::ostream& s=std::cout,
-                         short detail = 0 )
-         const throw();
-
-         /// Load the given SP3 file
-      virtual void loadFile(const std::string& filename)
-         throw( FileMissingException );
+    /// Constructor.
+    SP3EphemerisStore()
+      throw()
+    { TabularEphemerisStore<Xvt>(); };
 
 
-      /// Insert a new SP3Data object into the store
-      void addEphemeris(const SP3Data& data)
-         throw();
+    /// Destructor.
+    virtual ~SP3EphemerisStore() {};
 
-         /// Insert position data into the store at time t
-         /// @param t   Time of the data
-         /// @param sat Satellite id of the data
-         /// @param x   X component of position in km
-         /// @param y   Y component of position in km
-         /// @param z   Z component of position in km
-         /// @param c   Clock bias in microsec
-      void addPositionData( const CommonTime& t,
-                            const SatID& sat,
-                            const double& x,
-                            const double& y,
-                            const double& z,
-                            const double& c      )
-         throw();
 
-         /// Insert velocity data into the store at time t
-         /// @param t   Time of the data
-         /// @param sat Satellite id of the data
-         /// @param vx  X component of velocity in decimeters/sec
-         /// @param vy  Y component of velocity in decimeters/sec
-         /// @param vz  Z component of velocity in decimeters/sec
-         /// @param vc  Clock drift in 1.e-4 microsec/sec
-      void addVelocityData( const CommonTime& t,
-                            const SatID& sat,
-                            const double& vx,
-                            const double& vy,
-                            const double& vz,
-                            const double& vc     )
-         throw();
+    /// Load the given SP3 file
+    virtual void loadFile(const std::string& filename)
+      throw( FileMissingException );
 
-         /// Insert position and velocity data into the store at time t
-         /// @param t   Time of the data
-         /// @param sat Satellite id of the data
-         /// @param xvt Xvt containing position, velocity, clk bias and drift,
-         ///      in the units specified in addPositionData() and addVelocityData()
-      void addData(const CommonTime& t, const SatID& sat, const Xvt& xvt)
-         throw();
+
+    /// Insert a new SP3Data object into the store
+    void addEphemeris(const SP3Data& data)
+      throw();
+
+
+    /// Insert position data into the store at time t
+    /// @param t   Time of the data
+    /// @param sat Satellite id of the data
+    /// @param x   X component of position in km
+    /// @param y   Y component of position in km
+    /// @param z   Z component of position in km
+    /// @param c   Clock bias in microsec
+    void addPositionData( const CommonTime& t,
+                          const SatID& sat,
+                          const double& x,
+                          const double& y,
+                          const double& z,
+                          const double& c      )
+      throw();
+
+
+    /// Insert velocity data into the store at time t
+    /// @param t   Time of the data
+    /// @param sat Satellite id of the data
+    /// @param vx  X component of velocity in decimeters/sec
+    /// @param vy  Y component of velocity in decimeters/sec
+    /// @param vz  Z component of velocity in decimeters/sec
+    /// @param vc  Clock drift in 1.e-4 microsec/sec
+    void addVelocityData( const CommonTime& t,
+                          const SatID& sat,
+                          const double& vx,
+                          const double& vy,
+                          const double& vz,
+                          const double& vc     )
+      throw();
+
+
+    /// Insert position and velocity data into the store at time t
+    /// @param t   Time of the data
+    /// @param sat Satellite id of the data
+    /// @param xvt Xvt containing position, velocity, clk bias and drift,
+    ///      in the units specified in addPositionData() and addVelocityData()
+    void addData(const CommonTime& t, const SatID& sat, const Xvt& xvt)
+      throw();
+
+
+    /// Returns the position and clock offset of the indicated
+    /// object in ECEF coordinates (meters) at the indicated time.
+    /// Uses Lagrange interpolation; call setInterpolationOrder() to change
+    /// the order.
+    /// 
+    /// @param[in] id the object's identifier
+    /// @param[in] t the time to look up
+    /// 
+    /// @return the Xt of the object at the indicated time
+    /// 
+    /// @throw InvalidRequest If the request can not be completed for any
+    ///    reason, this is thrown. The text may have additional
+    ///    information as to why the request failed.
+    virtual Xt getXt( const SatID& sat,
+                      const CommonTime& t ) const
+      throw( InvalidRequest );
+
+
+    /// Returns the position, velocity, and clock offset of the indicated
+    ///  object in ECEF coordinates (meters) at the indicated time.
+    /// Uses Lagrange interpolation; call setInterpolationOrder() to change
+    /// the order.
+    /// 
+    /// @param[in] id the object's identifier
+    /// @param[in] t the time to look up
+    /// 
+    /// @return the Xvt of the object at the indicated time
+    /// 
+    /// @throw InvalidRequest If the request can not be completed for any
+    ///    reason, this is thrown. The text may have additional
+    ///    information as to why the request failed.
+    virtual Xvt getXvt( const SatID& sat,
+                        const CommonTime& t ) const
+      throw( InvalidRequest );
+
+
+    virtual void dump( std::ostream& s=std::cout,
+                       short detail = 0 ) const
+      throw();
+
 
    }; // End of class 'SP3EphemerisStore'
 
-      //@}
+  //@}
 
-}  // End of namespace gpstk
+} // End of namespace gpstk
 
-#endif   // GPSTK_SP3_EPHEMERIS_STORE_HPP
+#endif  // GPSTK_SP3_EPHEMERIS_STORE_HPP

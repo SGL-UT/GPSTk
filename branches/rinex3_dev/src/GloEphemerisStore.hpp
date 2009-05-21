@@ -66,16 +66,54 @@ namespace gpstk
 
   public:
 
-    /// Constructor.
+    /// Constructor
     GloEphemerisStore()
       throw()
     { TabularEphemerisStore<GloRecord>(); };
 
-    /// Destructor.
+
+    /// Destructor
     virtual ~GloEphemerisStore() {};
+
 
     void addEphemeris(const Rinex3NavData& data)
       throw();
+
+
+    /// Returns the position and clock offset of the indicated
+    /// object in ECEF coordinates (meters) at the indicated time.
+    /// Uses Lagrange interpolation; call setInterpolationOrder() to change
+    /// the order.
+    /// 
+    /// @param[in] id the object's identifier
+    /// @param[in] t the time to look up
+    /// 
+    /// @return the Xt of the object at the indicated time
+    /// 
+    /// @throw InvalidRequest If the request can not be completed for any
+    ///    reason, this is thrown. The text may have additional
+    ///    information as to why the request failed.
+    virtual Xt getXt( const SatID& sat,
+                      const CommonTime& t ) const
+      throw( InvalidRequest );
+
+
+    /// Returns the position, velocity, and clock offset of the indicated
+    ///  object in ECEF coordinates (meters) at the indicated time.
+    /// Uses Lagrange interpolation; call setInterpolationOrder() to change
+    /// the order.
+    /// 
+    /// @param[in] id the object's identifier
+    /// @param[in] t the time to look up
+    /// 
+    /// @return the Xvt of the object at the indicated time
+    /// 
+    /// @throw InvalidRequest If the request can not be completed for any
+    ///    reason, this is thrown. The text may have additional
+    ///    information as to why the request failed.
+    virtual Xvt getXvt( const SatID& sat,
+                        const CommonTime& t ) const
+      throw( InvalidRequest );
 
   };
 

@@ -85,9 +85,11 @@ namespace gpstk
            interpOrder(10), rejectBadPosFlag(true), rejectBadClockFlag(true)
       {};
 
+
       /// Destructor
       virtual ~TabularEphemerisStore()
       {};
+
 
       /// Returns the position and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.
@@ -103,137 +105,8 @@ namespace gpstk
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
       virtual Xt getXt( const SatID& sat,
-                        const CommonTime& t )
-         const throw( InvalidRequest )
-      {
-         typename EphMap::const_iterator svmap = pe.find(sat);
-         if (svmap == pe.end())
-         {
-           InvalidRequest e("Ephemeris for satellite  "
-                            + StringUtils::asString(sat) + " not found.");
-           GPSTK_THROW(e);
-         }
-
-         const SvEphMap& sem = svmap->second;
-         typename SvEphMap::const_iterator i = sem.find(t);
-         Xt sv;
-         if (i != sem.end())      // exact match of t
-         {
-           sv = i->second;
-
-           sv.x[0]  *= 1.e3;    // m
-           sv.x[1]  *= 1.e3;    // m
-           sv.x[2]  *= 1.e3;    // m
-           sv.dtime *= 1.e-6;   // sec
-
-           // there is a major problem here b/c the relativity correction cannot
-           // be removed without the velocity. This makes dtime inconsistent with
-           // dtime returned by getXvt(). This is another reason to remove it from
-           // the definition of dtime.
-
-           return sv;
-         }
-
-         // Note that the order of the Lagrange interpolation
-         // is twice this value
-         const int half = interpOrder/2;
-
-         //  i will be the lower bound, j the upper (in time).
-         i = sem.lower_bound(t); // i points to first element with key >= t
-
-         typename SvEphMap::const_iterator j = i;
-
-         if (i == sem.begin() || --i == sem.begin())
-         {
-           InvalidRequest e("Inadequate data before requested time, satellite "
-                            + StringUtils::asString(sat));
-           GPSTK_THROW(e);
-         }
-         if (j == sem.end())
-         {
-           InvalidRequest e("Inadequate data after requested time, satellite "
-                            + StringUtils::asString(sat));
-           GPSTK_THROW(e);
-         }
-
-         // "t" is now just between "i" and "j"; therefore, it is time to check
-         // for data gaps ("checkDataGap" must be enabled for this).
-         if ( checkDataGap                               &&
-              ( ABS( t - i->first ) > gapInterval ) &&
-              ( ABS( j->first - t ) > gapInterval )    )
-         {
-           // There was a data gap
-           InvalidRequest e( "Data gap too wide detected for satellite "
-                             + StringUtils::asString(sat) );
-           GPSTK_THROW(e);
-         }
-
-         for (int k=0; k<half-1; k++)
-         {
-           i--;
-
-           // if k==half-2, this is last iteration
-           if (i == sem.begin() && k < half-2)
-           {
-             InvalidRequest e("Inadequate data before requested time, satellite "
-                              + StringUtils::asString(sat));
-             GPSTK_THROW(e);
-           }
-           j++;
-           if (j == sem.end() && k < half-2)
-           {
-             InvalidRequest e("Inadequate data after requested time, satellite "
-                              + StringUtils::asString(sat));
-             GPSTK_THROW(e);
-           }
-         }
-
-         // Now that we have fully defined the i-j interval, let's check if
-         // the interpolation interval is too wide ("checkInterval" must be
-         // enabled for this).
-         if ( checkInterval                                     &&
-              ( ABS( j->first - i->first ) > maxInterval )    )
-         {
-           // There was a data gap
-           InvalidRequest e( "Interpolation interval too wide detected for SV "
-                             + StringUtils::asString(sat) );
-           GPSTK_THROW(e);
-         }
-
-         // pull data and interpolate
-         typename SvEphMap::const_iterator itr;
-         CommonTime t0 = i->first;
-         double dt = t-t0,err;
-         std::vector<double> times,X,Y,Z,T;
-
-         for (itr = i; itr != sem.end(); itr++)
-         {
-           times.push_back(itr->first - t0);      // sec
-
-           X.push_back(itr->second.x[0]);         // km
-           Y.push_back(itr->second.x[1]);         // km
-           Z.push_back(itr->second.x[2]);         // km
-           T.push_back(itr->second.dtime);        // microsec
-
-           if(itr == j) break;
-         }
-
-         LagrangeInterpolation(times,X,dt,sv.x[0]);
-         LagrangeInterpolation(times,Y,dt,sv.x[1]);
-         LagrangeInterpolation(times,Z,dt,sv.x[2]);
-         LagrangeInterpolation(times,T,dt,sv.dtime);
-
-         sv.x[0]  *= 1.e3;    // m
-         sv.x[1]  *= 1.e3;    // m
-         sv.x[2]  *= 1.e3;    // m
-         sv.dtime *= 1.e-6;   // sec
-
-         // again, there is a problem here b/c the relativity correction cannot be
-         // computed without the velocity. See note above.
-
-         return sv;
-
-     };  // end Xt TabularEphemerisStore::getXt
+                        const CommonTime& t ) const
+         throw( InvalidRequest );
 
 
       /// Returns the position, velocity, and clock offset of the indicated
@@ -250,172 +123,8 @@ namespace gpstk
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
       virtual Xvt getXvt( const SatID& sat,
-                          const CommonTime& t )
-         const throw( InvalidRequest )
-      {
-        typename EphMap::const_iterator svmap = pe.find(sat);
-        if (svmap == pe.end())
-        {
-            InvalidRequest e("Ephemeris for satellite  " + StringUtils::asString(sat)
-                             + " not found.");
-            GPSTK_THROW(e);
-        }
-
-        const SvEphMap& sem = svmap->second;
-        typename SvEphMap::const_iterator i = sem.find(t);
-        Xvt sv;
-
-        if (i != sem.end() && haveVelocity)      // exact match of t
-        {
-          sv = i->second;
-
-          sv.x[0]   *= 1.e3;   // m
-          sv.x[1]   *= 1.e3;   // m
-          sv.x[2]   *= 1.e3;   // m
-          sv.dtime  *= 1.e-6;  // sec
-
-          sv.v[0]   *= 1.e-1;  // m/sec
-          sv.v[1]   *= 1.e-1;  // m/sec
-          sv.v[2]   *= 1.e-1;  // m/sec
-          sv.ddtime *= 1.e-10; // sec/sec
-
-          if(sat.system != SatID::systemGlonass)
-            sv.dtime += -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)
-                        -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
-                        -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
-          return sv;
-        }
-
-        // Note that the order of the Lagrange interpolation is twice this value
-        const int half = interpOrder/2;
-
-        //  i will be the lower bound, j the upper (in time).
-        i = sem.lower_bound(t); // i points to first element with key >= t
-
-        typename SvEphMap::const_iterator j = i;
-
-        if (i == sem.begin() || --i == sem.begin())
-        {
-          InvalidRequest e("Inadequate data before requested time, satellite "
-                           + StringUtils::asString(sat));
-          GPSTK_THROW(e);
-        }
-        if (j == sem.end())
-        {
-          InvalidRequest e("Inadequate data after requested time, satellite "
-                           + StringUtils::asString(sat));
-          GPSTK_THROW(e);
-        }
-
-        // "t" is now just between "i" and "j"; therefore, it is time to check
-        // for data gaps ("checkDataGap" must be enabled for this).
-        if ( checkDataGap                               &&
-             ( ABS( t - i->first ) > gapInterval ) &&
-             ( ABS( j->first - t ) > gapInterval )    )
-        {
-          // There was a data gap
-          InvalidRequest e( "Data gap too wide detected for satellite "
-                            + StringUtils::asString(sat) );
-          GPSTK_THROW(e);
-        }
-
-        for(int k = 0; k < half-1; k++)
-        {
-          i--;
-
-          // if k==half-2, this is last iteration
-          if(i == sem.begin() && k<half-2)
-          {
-            InvalidRequest e("Inadequate data before requested time, satellite "
-                             + StringUtils::asString(sat));
-            GPSTK_THROW(e);
-          }
-          j++;
-          if(j == sem.end() && k<half-2)
-          {
-            InvalidRequest e("Inadequate data after requested time, satellite "
-                             + StringUtils::asString(sat));
-            GPSTK_THROW(e);
-          }
-        }
-
-        // Now that we have fully defined the i-j interval, let's check if
-        // the interpolation interval is too wide ("checkInterval" must be
-        // enabled for this).
-        if ( checkInterval                                     &&
-             ( ABS( j->first - i->first ) > maxInterval )    )
-        {
-          // There was a data gap
-          InvalidRequest e( "Interpolation interval too wide detected for SV "
-                            + StringUtils::asString(sat) );
-          GPSTK_THROW(e);
-        }
-
-        // pull data and interpolate
-        typename SvEphMap::const_iterator itr;
-        CommonTime t0 = i->first;
-        double dt = t-t0,err;
-        std::vector<double> times,X,Y,Z,T,VX,VY,VZ,F;
-
-        for (itr = i; itr != sem.end(); itr++)
-        {
-          times.push_back(itr->first - t0);      // sec
-          X.push_back(itr->second.x[0]);         // km
-          Y.push_back(itr->second.x[1]);         // km
-          Z.push_back(itr->second.x[2]);         // km
-          T.push_back(itr->second.dtime);        // microsec
-          VX.push_back(itr->second.v[0]);        // decimeters/sec
-          VY.push_back(itr->second.v[1]);        // decimeters/sec
-          VZ.push_back(itr->second.v[2]);        // decimeters/sec
-          F.push_back(itr->second.ddtime);       // 1.e-4 microsec/sec
-
-          if(itr == j) break;
-        }
-
-        if (haveVelocity)
-        {
-          sv.x[0]   = LagrangeInterpolation(times,X,dt,err);
-          sv.x[1]   = LagrangeInterpolation(times,Y,dt,err);
-          sv.x[2]   = LagrangeInterpolation(times,Z,dt,err);
-          sv.dtime  = LagrangeInterpolation(times,T,dt,err);
-          sv.v[0]   = LagrangeInterpolation(times,VX,dt,err);
-          sv.v[1]   = LagrangeInterpolation(times,VY,dt,err);
-          sv.v[2]   = LagrangeInterpolation(times,VZ,dt,err);
-          sv.ddtime = LagrangeInterpolation(times,F,dt,err);
-        }
-        else
-        {
-          LagrangeInterpolation(times,X,dt,sv.x[0],sv.v[0]);
-          LagrangeInterpolation(times,Y,dt,sv.x[1],sv.v[1]);
-          LagrangeInterpolation(times,Z,dt,sv.x[2],sv.v[2]);
-          LagrangeInterpolation(times,T,dt,sv.dtime,sv.ddtime);
-          sv.v[0]   *= 1.e4;            // decimeters/sec
-          sv.v[1]   *= 1.e4;            // decimeters/sec
-          sv.v[2]   *= 1.e4;            // decimeters/sec
-          sv.ddtime *= 1.e4;            // 1.e-4 microsec/sec
-        }
-
-        sv.x[0]   *= 1.e3;   // m
-        sv.x[1]   *= 1.e3;   // m
-        sv.x[2]   *= 1.e3;   // m
-        sv.dtime  *= 1.e-6;  // sec
-        sv.v[0]   *= 1.e-1;  // m/sec
-        sv.v[1]   *= 1.e-1;  // m/sec
-        sv.v[2]   *= 1.e-1;  // m/sec
-        sv.ddtime *= 1.e-10; // sec/sec
-
-        // add relativity correction to dtime
-        // this only for consistency with GPSEphemerisStore::getSatXvt ....
-        // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10 * ecc * sqrt(A(m))*sinE
-        // (do it this way for numerical reasons)
-        if(sat.system != SatID::systemGlonass)
-          sv.dtime += -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)
-                      -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
-                      -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
-
-        return sv;
-
-      };  // end Xvt TabularEphemerisStore::getXvt
+                          const CommonTime& t ) const
+         throw( InvalidRequest );
 
 
       /// A debugging function that outputs in human readable form,
@@ -424,8 +133,8 @@ namespace gpstk
       /// @param[in] s the stream to receive the output; defaults to cout
       /// @param[in] detail the level of detail to provide
       virtual void dump( std::ostream& s = std::cout,
-                         short detail = 0             )
-         const throw()
+                         short detail = 0             ) const
+         throw()
       {
 
         s << "Dump of TabularEphemerisStore:" << std::endl;
