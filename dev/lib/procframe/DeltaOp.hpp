@@ -6,8 +6,8 @@
  * ground-related data) to GNSS data structures.
  */
 
-#ifndef DELTAOP_HPP
-#define DELTAOP_HPP
+#ifndef GPSTK_DELTAOP_HPP
+#define GPSTK_DELTAOP_HPP
 
 //============================================================================
 //
@@ -27,7 +27,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -330,6 +330,26 @@ namespace gpstk
       { refData = gData; return (*this); };
 
 
+         /** Method to set the gnssSatTypeValue data object holding reference
+          *  station data.
+          *
+          * @param gData      gnssSatTypeValue data object holding reference
+          *                   station data.
+          */
+      virtual DeltaOp& setRefData(const gnssSatTypeValue& gData)
+      { return setRefData( gData.body ); };
+
+
+         /** Method to set the gnssRinex data object holding reference
+          *  station data.
+          *
+          * @param gData      gnssRinex data object holding reference
+          *                   station data.
+          */
+      virtual DeltaOp& setRefData(const gnssRinex& gData)
+      { return setRefData( gData.body ); };
+
+
          /// Method to get the satTypeValueMap data object holding reference
          /// station data.
       virtual satTypeValueMap getRefData(void) const
@@ -473,4 +493,4 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
-#endif   // DELTAOP_HPP
+#endif   // GPSTK_DELTAOP_HPP
