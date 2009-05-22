@@ -44,8 +44,8 @@ using namespace gpstk;
 int main(int argc, char *argv[])
 {
    if(argc<2) {
-      cout << "Usage: petest <SP3-format files ...>\n";
-      return -1;
+     cout << "Usage: petest <SP3-format files ...>" << endl;
+     return -1;
    }
 
    try
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
             }
             ip++; np++;
          }
-         cout << "\nDone with file " << argv[i] << ": read "
+         cout << endl << "Done with file " << argv[i] << ": read "
               << ip << " P/V records and " << it << " epochs." << endl;
          for(int j=0; j<pestrm.warnings.size(); j++)
             cout << pestrm.warnings[j] << endl;
@@ -109,11 +109,11 @@ int main(int argc, char *argv[])
          nf++;
 
          // add to store
-         cout << "\nNow load the file using SP3Ephemeris::loadFile()" << endl;
+         cout << endl << "Now load the file using SP3Ephemeris::loadFile()" << endl;
          EphList.loadFile(string(argv[i]));
       }
       
-      cout << "\nDone with " << nf << " files: read "
+      cout << endl << "Done with " << nf << " files: read "
            << np << " P/V records and " << nt << " epochs." << endl;
 
       cout << "Interpolation order is " << EphList.getInterpolationOrder() << endl;
@@ -123,24 +123,24 @@ int main(int argc, char *argv[])
  
       const char *fmt="%4Y/%02m/%02d %2H:%02M:%02S (%P)";
       CommonTime ttf = firstTime + 3600., ttl = lastTime - 3600.;
-      cout << "\nNow edit the store to cut out the first and last hours: "
-         << static_cast<CivilTime>(ttf).printf(fmt) << " to "
-         << static_cast<CivilTime>(ttl).printf(fmt) << ".\n";
+      cout << endl << "Now edit the store to cut out the first and last hours: "
+           << static_cast<CivilTime>(ttf).printf(fmt) << " to "
+           << static_cast<CivilTime>(ttl).printf(fmt) << "." << endl;
       EphList.edit(ttf,ttl);
       EphList.dump(cout, 2);
 
       ttf = ttf + 3600.;
-      cout << "\nNow edit the store to cut out another hour at the first only: "
-         << static_cast<CivilTime>(ttf).printf(fmt) << " to "
-         << static_cast<CivilTime>(ttl).printf(fmt) << ".\n";
+      cout << endl << "Now edit the store to cut out another hour at the first only: "
+           << static_cast<CivilTime>(ttf).printf(fmt) << " to "
+           << static_cast<CivilTime>(ttl).printf(fmt) << "." << endl;
       EphList.edit(ttf);
       EphList.dump(cout, 2);
 
       ttf = CommonTime::BEGINNING_OF_TIME;
       ttl = ttf + 14400.;
-      cout << "\nNow edit the store using bogus times: "
-         << static_cast<CivilTime>(ttf).printf(fmt) << " to "
-         << static_cast<CivilTime>(ttl).printf(fmt) << "\n";
+      cout << endl << "Now edit the store using bogus times: "
+           << static_cast<CivilTime>(ttf).printf(fmt) << " to "
+           << static_cast<CivilTime>(ttl).printf(fmt) << endl;
       EphList.edit(ttf,ttl);
       EphList.dump(cout, 2);
 /*

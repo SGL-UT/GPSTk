@@ -8,6 +8,7 @@
 #include "Rinex3NavData.hpp"
 #include "Rinex3NavHeader.hpp"
 #include "Rinex3EphemerisStore.hpp"
+#include "GloEphemerisStore.hpp"
 #include "SatID.hpp"
 
 /**
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
 
       bool firstEpochFound = true;
       CommonTime firstTime(0,0,0.,TimeSystem::Any);
-      CommonTime lastTime(0,0,0.,TimeSystem::Any);
+      CommonTime  lastTime(0,0,0.,TimeSystem::Any);
       SatID firstSat;
          
       int i,ip,it,nf=0,np=0,nt=0;
@@ -41,14 +42,14 @@ int main(int argc, char *argv[])
          Rinex3NavData data;
          
          // you can't open, close, and reopen a file w/o abort on second open...
-         Rinex3NavStream pefile;
-         pefile.exceptions(ifstream::failbit);
+         Rinex3NavStream pefile(argv[i]);
+         pefile.exceptions(ifstream::failbit); // causes fatal linking error
          cout << "Reading Rinex3Nav file " << argv[i] << "." << endl;
          pefile.open(argv[i],ios::in);
 
          pefile >> header;
          
-         cout << "Dump header:\n";
+         cout << "Dump header:" << endl;
          header.dump(cout);
          cout << endl;
 
@@ -62,7 +63,7 @@ int main(int argc, char *argv[])
                firstSat = data.sat;
                firstTime = data.time;
                lastTime = firstTime;
-               
+
                firstEpochFound = false;
             }
 
@@ -84,7 +85,7 @@ int main(int argc, char *argv[])
             data.dump(cout);
             ip++; np++;
          }
-         cout << "\nDone with file " << argv[i] << ": read "
+         cout << endl << "Done with file " << argv[i] << ": read "
               << ip << " P/V records and " << it << " epochs." << endl;
          pefile.close();
          nf++;
@@ -93,7 +94,7 @@ int main(int argc, char *argv[])
          EphList.loadFile(string(argv[i]));
       }
       
-      cout << "\nDone with " << nf << " files: read "
+      cout << endl << "Done with " << nf << " files: read "
            << np << " P/V records and " << nt << " epochs." << endl;
 
       EphList.dump();
