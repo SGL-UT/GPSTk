@@ -106,7 +106,8 @@ namespace gpstk
       ///    information as to why the request failed.
       virtual Xt getXt( const SatID& sat,
                         const CommonTime& t ) const
-         throw( InvalidRequest );
+         throw( InvalidRequest )
+      {}
 
 
       /// Returns the position, velocity, and clock offset of the indicated
@@ -124,7 +125,8 @@ namespace gpstk
       ///    information as to why the request failed.
       virtual Xvt getXvt( const SatID& sat,
                           const CommonTime& t ) const
-         throw( InvalidRequest );
+         throw( InvalidRequest )
+      {}
 
 
       /// A debugging function that outputs in human readable form,

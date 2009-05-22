@@ -172,7 +172,7 @@ namespace gpstk
       throw();
 
 
-   }; // End of class 'SP3EphemerisStore'
+  }; // End of class 'SP3EphemerisStore'
 
   //@}
 

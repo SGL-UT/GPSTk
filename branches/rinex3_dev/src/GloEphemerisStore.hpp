@@ -93,8 +93,8 @@ namespace gpstk
     /// @throw InvalidRequest If the request can not be completed for any
     ///    reason, this is thrown. The text may have additional
     ///    information as to why the request failed.
-    virtual Xt getXt( const SatID& sat,
-                      const CommonTime& t ) const
+    Xt getXt( const SatID& sat,
+              const CommonTime& t ) const
       throw( InvalidRequest );
 
 
@@ -111,9 +111,10 @@ namespace gpstk
     /// @throw InvalidRequest If the request can not be completed for any
     ///    reason, this is thrown. The text may have additional
     ///    information as to why the request failed.
-    virtual Xvt getXvt( const SatID& sat,
-                        const CommonTime& t ) const
+    Xvt getXvt( const SatID& sat,
+                const CommonTime& t ) const
       throw( InvalidRequest );
+
 
   };
 

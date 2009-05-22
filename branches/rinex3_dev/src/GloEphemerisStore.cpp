@@ -84,7 +84,7 @@ namespace gpstk
    ///    reason, this is thrown. The text may have additional
    ///    information as to why the request failed.
    Xt GloEphemerisStore::getXt( const SatID& sat,
-             const CommonTime& t ) const
+                                const CommonTime& t ) const
      throw( InvalidRequest )
    {
      EphMap::const_iterator svmap = pe.find(sat);
@@ -241,8 +241,8 @@ namespace gpstk
 
        if (sat.system != SatID::systemGlonass)
          sv.dtime += -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)
-           -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
-           -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
+                     -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
+                     -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
        return sv;
      }
 
@@ -360,8 +360,8 @@ namespace gpstk
      // (do it this way for numerical reasons).
      if (sat.system != SatID::systemGlonass)
        sv.dtime += -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)
-         -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
-         -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
+                   -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
+                   -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
 
      return sv;
 
