@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 //
 //============================================================================
 
@@ -56,6 +56,12 @@ namespace gpstk
    SolverPPPFB::SolverPPPFB(bool useNEU)
       : firstIteration(true)
    {
+
+         // Initialize the counter of processed measurements
+      processedMeasurements = 0;
+
+         // Initialize the counter of rejected measurements
+      rejectedMeasurements = 0;
 
          // Set the equation system structure
       SolverPPP::setNEU(useNEU);
@@ -158,6 +164,9 @@ namespace gpstk
                // Store observation data
             ObsData.push_back(gBak);
 
+            // Update the number of processed measurements
+            processedMeasurements += gData.numSats();
+
          }
 
          return gData;
@@ -226,6 +235,116 @@ namespace gpstk
                // Backwards iteration.
             for (rpos = ObsData.rbegin(); rpos != ObsData.rend(); ++rpos)
             {
+               SolverPPP::Process( (*rpos) );
+            }
+
+         }  // End of 'for (int i=0; i<(cycles-1), i++)'
+
+         return;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::asString( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of method 'SolverPPPFB::ReProcess()'
+
+
+
+      /* Reprocess the data stored during a previous 'Process()' call.
+       *
+       * This method will reprocess data trimming satellites whose postfit
+       * residual is bigger than the limits indicated by limitsCodeList and
+       * limitsPhaseList.
+       */
+   void SolverPPPFB::ReProcess( void )
+      throw(ProcessingException)
+   {
+
+         // Let's use a copy of the lists
+      std::list<double> codeList( limitsCodeList );
+      std::list<double> phaseList( limitsPhaseList );
+
+         // Get maximum size
+      int maxSize( codeList.size() );
+      if( maxSize < phaseList.size() ) maxSize = phaseList.size();
+
+         // This will prevent further storage of input data when calling
+         // method 'Process()'
+      firstIteration = false;
+
+      try
+      {
+
+         std::list<gnssRinex>::iterator pos;
+         std::list<gnssRinex>::reverse_iterator rpos;
+
+            // Backwards iteration. We must do this at least once
+         for (rpos = ObsData.rbegin(); rpos != ObsData.rend(); ++rpos)
+         {
+
+            SolverPPP::Process( (*rpos) );
+
+         }
+
+            // If both sizes are '0', let's return
+         if( maxSize == 0 )
+         {
+            return;
+         }
+
+            // We will store the limits here. By default we use very big values
+         double codeLimit( 1000000.0 );
+         double phaseLimit( 1000000.0 );
+
+            // If 'maxSize > 0', let's do the other iterations
+         for (int i = 0; i < maxSize; i++)
+         {
+
+               // Update current limits, if available
+            if( codeList.size() > 0 )
+            {
+                  // Get the first element from the list
+               codeLimit = codeList.front();
+
+                  // Delete the first element from the list
+               codeList.pop_front();
+            }
+
+            if( phaseList.size() > 0 )
+            {
+                  // Get the first element from the list
+               phaseLimit = phaseList.front();
+
+                  // Delete the first element from the list
+               phaseList.pop_front();
+            }
+
+
+               // Forwards iteration
+            for (pos = ObsData.begin(); pos != ObsData.end(); ++pos)
+            {
+                  // Let's check limits
+               checkLimits( (*pos), codeLimit, phaseLimit );
+
+                  // Process data
+               SolverPPP::Process( (*pos) );
+            }
+
+               // Backwards iteration.
+            for (rpos = ObsData.rbegin(); rpos != ObsData.rend(); ++rpos)
+            {
+                  // Let's check limits
+               checkLimits( (*rpos), codeLimit, phaseLimit );
+
+                  // Process data
                SolverPPP::Process( (*rpos) );
             }
 
@@ -354,6 +473,47 @@ namespace gpstk
       }
 
    }  // End of method 'SolverPPPFB::LastProcess()'
+
+
+
+      // This method checks the limits and modifies 'gData' accordingly.
+   void SolverPPPFB::checkLimits( gnssRinex& gData,
+                                  double codeLimit,
+                                  double phaseLimit )
+   {
+
+         // Set to store rejected satellites
+      SatIDSet satRejectedSet;
+
+         // Let's check limits
+      for( satTypeValueMap::iterator it = gData.body.begin();
+           it != gData.body.end();
+           ++it )
+      {
+
+            // Check postfit values and mark satellites as rejected
+         if( (*it).second( TypeID::postfitC ) > codeLimit )
+         {
+            satRejectedSet.insert( (*it).first );
+         }
+
+         if( (*it).second( TypeID::postfitL ) > phaseLimit )
+         {
+            satRejectedSet.insert( (*it).first );
+         }
+
+      }  // End of 'for( satTypeValueMap::iterator it = gds.body.begin();...'
+
+
+         // Update the number of rejected measurements
+      rejectedMeasurements += satRejectedSet.size();
+
+         // Remove satellites with missing data
+      gData.removeSatID(satRejectedSet);
+
+      return;
+
+   }  // End of method 'SolverPPPFB::checkLimits()'
 
 
 

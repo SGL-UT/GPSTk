@@ -5,8 +5,8 @@
  * Class to compute the PPP solution in forwards-backwards mode.
  */
 
-#ifndef SOLVERPPPFB_HPP
-#define SOLVERPPPFB_HPP
+#ifndef GPSTK_SOLVERPPPFB_HPP
+#define GPSTK_SOLVERPPPFB_HPP
 
 //============================================================================
 //
@@ -26,13 +26,14 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 //
 //============================================================================
 
 
 #include "SolverPPP.hpp"
 #include <list>
+#include <set>
 
 
 namespace gpstk
@@ -215,6 +216,64 @@ namespace gpstk
        * "setTroposphereModel()" and "setReceiverClockModel()". However, you
        * are not allowed to change the phase biases stochastic model.
        *
+       * Given the nature of this solver, it is possible for it to trim data
+       * according to some preset postfit residuals limits, deleting out
+       * potential outliers.
+       *
+       * The former is achieved by setting a couple lists of limits (one for
+       * code postfit residuals and the other for phase ones) that will be
+       * applied, one forward-backward cycle for each, in the same order they
+       * where added. One code limit and one phase limit are applied
+       * simultaneously per cycle.
+       *
+       * In this case you must call the "ReProcess(void)" method instead of the
+       * "ReProcess(int)" method.
+       *
+       * A way to apply this feature follows:
+       *
+       * @code
+       *      // INITIALIZATION PART
+       *
+       *      // INITIALIZATION CODE HERE...
+       *
+       *      // Declare a SolverPPPFB object
+       *   SolverPPPFB pppSolver;
+       *
+       *      // Add limits to solver. Let's start with pseudorange limits
+       *   pppSolver.addCodeLimit(10.0);     // 10 m
+       *   pppSolver.addCodeLimit(5.0);      //  5 m
+       *   pppSolver.addCodeLimit(2.0);      //  2 m
+       *
+       *      // Now, let's follow with phase limits
+       *   pppSolver.addPhaseLimit(0.10);    // 10 cm
+       *   pppSolver.addPhaseLimit(0.05);    //  5 cm
+       *   pppSolver.addPhaseLimit(0.02);    //  2 cm
+       *
+       *      // PROCESSING PART CODE HERE...
+       *
+       *
+       *      // --->>> ReProcess() phase <<<--- //
+       *
+       *   try
+       *   {
+       *
+       *         // Now, let's do the forward-backward cycles.
+       *         // Please note that this method needs no parameters.
+       *         // Three forwards-backwards cycles will be made because
+       *         // maximum limits list size is 3.
+       *      pppSolver.ReProcess();
+       *
+       *   }
+       *   catch(Exception& e)
+       *   {
+       *      cerr << "Exception: " << e << endl;
+       *   }
+       *
+       *
+       *      // LastProcess() PHASE CODE HERE ...
+       *
+       * @endcode
+       *
        * \warning "SolverPPPFB" is based on a Kalman filter, and Kalman filters
        * are objets that store their internal state, so you MUST NOT use the
        * SAME object to process DIFFERENT data streams.
@@ -260,7 +319,17 @@ namespace gpstk
           * \warning The minimum number of cycles allowed is "1". In fact, if
           * you introduce a smaller number, 'cycles' will be set to "1".
           */
-      virtual void ReProcess(int cycles = 1)
+      virtual void ReProcess( int cycles )
+         throw(ProcessingException);
+
+
+         /** Reprocess the data stored during a previous 'Process()' call.
+          *
+          * This method will reprocess data trimming satellites whose postfit
+          * residual is bigger than the limits indicated by limitsCodeList and
+          * limitsPhaseList.
+          */
+      virtual void ReProcess( void )
          throw(ProcessingException);
 
 
@@ -284,6 +353,77 @@ namespace gpstk
           */
       virtual bool LastProcess(gnssRinex& gData)
          throw(ProcessingException);
+
+
+         /// Gets the list storing the limits for postfit residuals in code.
+      virtual std::list<double> getCodeList( void ) const
+      { return limitsCodeList; };
+
+
+         /** Sets a list storing the limits for postfit residuals in code.
+          *
+          * @param codeList   List with limits for postfit residuals in code.
+          *
+          * \warning Limits will be applied in the same order they were added.
+          */
+      virtual SolverPPPFB& setCodeList( std::list<double> codeList )
+      { limitsCodeList = codeList; return (*this); };
+
+
+         /** Adds a postfit residuals limit to list storing limits for code.
+          *
+          * @param codeLimit   New limit for postfit residuals in code.
+          *
+          * \warning Limits will be applied in the same order they were added.
+          */
+      virtual SolverPPPFB& addCodeLimit( double codeLimit )
+      { limitsCodeList.push_back( codeLimit ); return (*this); };
+
+
+         /// Clears the list storing the limits for postfit residuals in code.
+      virtual SolverPPPFB& clearCodeList( void )
+      { limitsCodeList.clear(); return (*this); };
+
+
+         /// Gets the list storing the limits for postfit residuals in phase.
+      virtual std::list<double> getPhaseList( void ) const
+      { return limitsPhaseList; };
+
+
+         /** Sets a list storing the limits for postfit residuals in phase.
+          *
+          * @param phaseList   List with limits for postfit residuals in phase.
+          *
+          * \warning Limits will be applied in the same order they were added.
+          */
+      virtual SolverPPPFB& setPhaseList( std::list<double> phaseList )
+      { limitsPhaseList = phaseList; return (*this); };
+
+
+         /** Adds a postfit residuals limit to list storing limits for phase.
+          *
+          * @param phaseLimit   New limit for postfit residuals in phase.
+          *
+          * \warning Limits will be applied in the same order they were added.
+          */
+      virtual SolverPPPFB& addPhaseLimit( double phaseLimit )
+      { limitsPhaseList.push_back( phaseLimit ); return (*this); };
+
+
+         /// Clears the list storing the limits for postfit residuals in phase.
+      virtual SolverPPPFB& clearPhaseList( void )
+      { limitsPhaseList.clear(); return (*this); };
+
+
+         /// Returns the number of processed measurements.
+      virtual int getProcessedMeasurements(void) const
+      { return processedMeasurements; };
+
+
+         /// Returns the number of measurements rejected because they were
+         /// off limits.
+      virtual int getRejectedMeasurements(void) const
+      { return rejectedMeasurements; };
 
 
          /** Sets if a NEU system will be used.
@@ -310,20 +450,41 @@ namespace gpstk
    private:
 
 
-         /// Boolean indicating if this is the first iteration of this filter
+         /// Boolean indicating if this is the first iteration of this filter.
       bool firstIteration;
 
 
-         /// List holding the information regarding every observation
+         /// List holding the information regarding every observation.
       std::list<gnssRinex> ObsData;
 
 
-         /// Set storing the TypeID's that we want to keep
+         /// Set storing the TypeID's that we want to keep.
       TypeIDSet keepTypeSet;
+
+
+         /// Number of processed measurements.
+      int processedMeasurements;
+
+
+         /// Number of measurements rejected because they were off limits.
+      int rejectedMeasurements;
+
+
+         /// List storing the limits for postfit residuals in code.
+      std::list<double> limitsCodeList;
+
+
+         /// List storing the limits for postfit residuals in phase.
+      std::list<double> limitsPhaseList;
 
 
          /// Initial index assigned to this class.
       static int classIndex;
+
+
+         /// This method checks the limits and modifies 'gData' accordingly.
+      void checkLimits( gnssRinex& gData, double codeLimit, double phaseLimit );
+
 
          /// Index belonging to this object.
       int index;
@@ -339,9 +500,11 @@ namespace gpstk
          throw(InvalidSolver)
       { return 0; };
 
+
       virtual SolverPPPFB& setDefaultEqDefinition(
                                        const gnssEquationDefinition& eqDef )
       { return (*this); };
+
 
       virtual SolverPPPFB& Reset( const Vector<double>& newState,
                                   const Matrix<double>& newErrorCov )
@@ -350,7 +513,9 @@ namespace gpstk
 
    }; // End of class 'SolverPPPFB'
 
+
       //@}
 
 }  // End of namespace gpstk
-#endif   // SOLVERPPPFB_HPP
+
+#endif   // GPSTK_SOLVERPPPFB_HPP
