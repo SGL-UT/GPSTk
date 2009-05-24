@@ -5,8 +5,8 @@
  * This class keeps track of satellite arcs caused by cycle slips.
  */
 
-#ifndef SATARCMARKER_HPP
-#define SATARCMARKER_HPP
+#ifndef GPSTK_SATARCMARKER_HPP
+#define GPSTK_SATARCMARKER_HPP
 
 //============================================================================
 //
@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 //
 //============================================================================
 
@@ -177,8 +177,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-         throw(ProcessingException)
-      { Process(gData.header.epoch, gData.body); return gData; };
+         throw(ProcessingException);
 
 
          /** Returns a gnnsRinex object, adding the new data generated when
@@ -208,24 +207,35 @@ namespace gpstk
          /// Cycle slip flag to be watched.
       TypeID watchCSFlag;
 
+
          /// Flag indicating if unstable satellites will be deleted.
       bool deleteUnstableSats;
+
 
          /// Number of seconds since arc change that a satellite will be
          /// considered as unstable.
       double unstablePeriod;
 
+
          /// Map holding information regarding every satellite
       std::map<SatID, double> satArcMap;
+
 
          /// Map holding information about epoch of last arc change
       std::map<SatID, DayTime> satArcChangeMap;
 
+
+         /// Map keeping track if this satellite is new or not
+      std::map<SatID, bool> satIsNewMap;
+
+
          /// Initial index assigned to this class.
       static int classIndex;
 
+
          /// Index belonging to this object.
       int index;
+
 
          /// Sets the index and increment classIndex.
       void setIndex(void)
@@ -238,4 +248,5 @@ namespace gpstk
    //@}
 
 }  // End of namespace gpstk
-#endif   // SATARCMARKER_HPP
+
+#endif   // GPSTK_SATARCMARKER_HPP
