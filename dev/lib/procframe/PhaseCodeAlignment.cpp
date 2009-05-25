@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 //
 //============================================================================
 
@@ -63,15 +63,8 @@ namespace gpstk
         watchCSFlag(TypeID::CSL1)
    {
 
-         // Check that wavelength is bigger than zero
-      if (wavelength > 0.0)
-      {
-         phaseWavelength = wavelength;
-      }
-      else
-      {
-         phaseWavelength = 0.107;   // Be default, LC wavelength
-      }
+         // Set the wavelength
+      setPhaseWavelength(wavelength);
 
       setIndex();
 
@@ -93,7 +86,7 @@ namespace gpstk
       }
       else
       {
-         phaseWavelength = 0.107;   // Be default, LC wavelength
+         phaseWavelength = 0.1069533781421467;   // Be default, LC wavelength
       }
 
       return (*this);
@@ -119,29 +112,32 @@ namespace gpstk
          SatIDSet satRejectedSet;
 
             // Loop through all the satellites
-         satTypeValueMap::iterator it;
-         for (it = gData.begin(); it != gData.end(); ++it)
+         for( satTypeValueMap::iterator it = gData.begin();
+              it != gData.end();
+              ++it )
          {
 
+               // Check if satellite currently has entries
+            std::map<SatID, alignData>::const_iterator itDat(
+                                                svData.find( (*it).first ) );
+            if( itDat == svData.end() )
+            {
+
+                  // If it doesn't have an entry, insert one
+               alignData aData;
+
+               svData[ (*it).first ] = aData;
+
+            }
+
+
+               // Place to store if there was a cycle slip. False by default
             bool csflag(false);
+
 
                // Check if we want to use satellite arcs of cycle slip flags
             if(useSatArcs)
             {
-
-                  // Check if satellite currently has entries
-               std::map<SatID, alignData>::const_iterator itDat;
-               itDat = svData.find( (*it).first );
-               if( itDat == svData.end() )
-               {
-
-                     // If it doesn't have an entry, insert one
-                  alignData a;
-
-                  svData[ (*it).first ] = a;
-
-               }
-
 
                double arcN(0.0);
 
@@ -165,7 +161,7 @@ namespace gpstk
 
 
                   // Check if satellite arc has changed
-               if( svData[(*it).first].arcNumber < arcN )
+               if( svData[(*it).first].arcNumber != arcN )
                {
 
                      // Set flag
@@ -256,6 +252,38 @@ namespace gpstk
 
 
 
+      /* Returns a gnnsSatTypeValue object, adding the new data generated
+       *  when calling this object.
+       *
+       * @param gData    Data object holding the data.
+       */
+   gnssSatTypeValue& PhaseCodeAlignment::Process(gnssSatTypeValue& gData)
+      throw(ProcessingException)
+   {
+
+      try
+      {
+
+         Process(gData.header.epoch, gData.body);
+
+         return gData;
+
+      }
+      catch(Exception& u)
+      {
+            // Throw an exception if something unexpected happens
+         ProcessingException e( getClassName() + ":"
+                                + StringUtils::asString( getIndex() ) + ":"
+                                + u.what() );
+
+         GPSTK_THROW(e);
+
+      }
+
+   }  // End of 'PhaseCodeAlignment::Process()'
+
+
+
       /* Returns a gnnsRinex object, adding the new data generated when
        *  calling this object.
        *
@@ -285,6 +313,7 @@ namespace gpstk
       }
 
    }  // End of 'PhaseCodeAlignment::Process()'
+
 
 
 } // End of namespace gpstk

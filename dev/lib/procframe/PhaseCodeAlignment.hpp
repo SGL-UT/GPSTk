@@ -5,8 +5,8 @@
  * This class aligns phase with code measurements.
  */
 
-#ifndef PHASECODEALIGNMENT_HPP
-#define PHASECODEALIGNMENT_HPP
+#ifndef GPSTK_PHASECODEALIGNMENT_HPP
+#define GPSTK_PHASECODEALIGNMENT_HPP
 
 //============================================================================
 //
@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 //
 //============================================================================
 
@@ -137,8 +137,9 @@ namespace gpstk
 
          /// Default constructor. It will only watch "TypeID::CSL1" flag.
       PhaseCodeAlignment()
-         : phaseType(TypeID::LC), codeType(TypeID::PC), phaseWavelength(0.107),
-           useSatArcs(true), watchCSFlag(TypeID::CSL1)
+         : phaseType(TypeID::LC), codeType(TypeID::PC),
+           phaseWavelength(0.1069533781421467), useSatArcs(true),
+           watchCSFlag(TypeID::CSL1)
       { setIndex(); };
 
 
@@ -239,8 +240,7 @@ namespace gpstk
           * @param gData    Data object holding the data.
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
-         throw(ProcessingException)
-      { Process(gData.header.epoch, gData.body); return gData; };
+         throw(ProcessingException);
 
 
          /** Returns a gnnsRinex object, adding the new data generated when
@@ -320,4 +320,5 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
-#endif   // PHASECODEALIGNMENT_HPP
+
+#endif   // GPSTK_PHASECODEALIGNMENT_HPP
