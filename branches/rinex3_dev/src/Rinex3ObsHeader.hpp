@@ -161,8 +161,8 @@ namespace gpstk
        validEoH               = 0x080000000, ///< "END OF HEADER"
 
        /// This mask is for all required valid fields for RINEX 3.0 (3.00)
-//       allValid30 = 0x0801A07EB,  // case for static receivers
-       allValid30 = 0x0801A05EB,  // case for moving receivers -- make default
+//       allValid30 = 0x0801207EB,  // case for static receivers
+       allValid30 = 0x0801205EB,  // case for moving receivers -- make default
                                   // if validAntennaPosition is present, we know it's static (??)
      };
 

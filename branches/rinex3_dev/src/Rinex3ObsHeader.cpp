@@ -1061,9 +1061,13 @@ namespace gpstk
       }
       s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P") << endl;
       s << "(This header is ";
-      if ((valid & allValid30) == allValid30) s << "VALID 3.00";
+      if ((valid & allValid30) == allValid30) s << "VALID";
       else s << "NOT VALID";
       s << " RINEX 3.)" << endl;
+      s << "Valid    = " << hex << valid << endl;
+      s << "Allvalid = " << hex << allValid30 << endl;
+      s << "V & AV   = " << hex << (valid & allValid30) << endl;
+      s << dec;
 
       if (!(valid & validVersion        )) s << " Version / Type      is NOT valid" << endl;
       if (!(valid & validRunBy          )) s << " Pgm / Run By / Date is NOT valid" << endl;
@@ -1096,7 +1100,7 @@ namespace gpstk
       if (valid & validInterval         ) s << "Interval = "
                                             << fixed << setw(7) << setprecision(3) << interval << endl;
       if (valid & validLastTime         ) s << "Time of Last Obs "
-                                            << lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P");
+                                            << lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P") << endl;
       if (valid & validReceiverOffset   ) s << "Clock offset record is present and offsets "
                                             << (receiverOffset?"ARE":"are NOT") << " applied." << endl;
       if (valid & validSystemDCBSapplied)
