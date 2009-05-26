@@ -134,7 +134,7 @@ namespace gpstk
        validComment           = 0x04,        ///< "COMMENT"               (optional)
        validMarkerName        = 0x08,        ///< "MARKER NAME"
        validMarkerNumber      = 0x010,       ///< "MARKER NUMBER"         (optional)
-       validMarkerType        = 0x020,       ///< "MARKER TYPE"
+       validMarkerType        = 0x020,       ///< "MARKER TYPE"           (optional)
        validObserver          = 0x040,       ///< "OBSERVER / AGENCY"
        validReceiver          = 0x080,       ///< "REC # / TYPE / VERS"
        validAntennaType       = 0x0100,      ///< "ANT # / TYPE"
@@ -161,8 +161,8 @@ namespace gpstk
        validEoH               = 0x080000000, ///< "END OF HEADER"
 
        /// This mask is for all required valid fields for RINEX 3.0 (3.00)
-//       allValid30 = 0x0801207EB,  // case for static receivers
-       allValid30 = 0x0801205EB,  // case for moving receivers -- make default
+//       allValid30 = 0x0801207CB,  // case for static receivers
+       allValid30 = 0x0801205CB,  // case for moving receivers -- make default
                                   // if validAntennaPosition is present, we know it's static (??)
      };
 

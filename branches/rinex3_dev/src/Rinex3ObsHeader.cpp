@@ -1072,7 +1072,6 @@ namespace gpstk
       if (!(valid & validVersion        )) s << " Version / Type      is NOT valid" << endl;
       if (!(valid & validRunBy          )) s << " Pgm / Run By / Date is NOT valid" << endl;
       if (!(valid & validMarkerName     )) s << " Marker Name         is NOT valid" << endl;
-      if (!(valid & validMarkerType     )) s << " Marker Type         is NOT valid" << endl;
       if (!(valid & validObserver       )) s << " Observer / Agency   is NOT valid" << endl;
       if (!(valid & validReceiver       )) s << " Receiver # / Type   is NOT valid" << endl;
       if (!(valid & validAntennaType    )) s << " Antenna Type        is NOT valid" << endl;
@@ -1084,6 +1083,7 @@ namespace gpstk
 
       s << "---------------------------------- OPTIONAL ----------------------------------" << endl;
       if (valid & validMarkerNumber     ) s << "Marker number : " << markerNumber << endl;
+      if (valid & validMarkerType       ) s << "Marker Type : " << markerType << endl;
       if (valid & validAntennaDeltaXYZ  ) s << "Antenna Delta    (XYZ,m) : "
                                             << setprecision(4) << antennaDeltaXYZ   << endl;
       if (valid & validAntennaPhaseCtr  ) s << "Antenna PhaseCtr (XYZ,m) : "
