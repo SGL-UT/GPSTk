@@ -354,7 +354,11 @@ namespace gpstk
          throw(DayTimeException);
 
          /**
-          * Calendar time constructor.
+          * Calendar time constructor. This assumes the dates are being specified in Gregorian calender so
+          * the days October 5-14 1582 don't exist. Constructing a DayTime with these days will cause
+          * an exception to be thrown. See 
+          * http://www.usno.navy.mil/USNO/astronomical-applications/data-services/jul-date
+          * for a reference that this implimentation matches.
           * @param year four-digit year.
           * @param month month of year (1-based).
           * @param day day of month (1-based).
