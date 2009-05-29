@@ -26,10 +26,10 @@ GPSMain mdpEdit : mdpEdit.cpp ;
 if $(UNIX)
 {
   if $(OS) = SOLARIS  {
-    LINKLIBS on mdpscreenx$(SUFEXE) += -lstdc++ -lcurses ;
+    LINKLIBS on mdpscreenx$(SUFEXE) += -lcurses ;
   }
   else {
-    LINKLIBS on mdpscreenx$(SUFEXE) += -lstdc++ -lncurses ;
+    LINKLIBS on mdpscreenx$(SUFEXE) += -lncurses ;
   }
 
   LinkLibraries mdpscreenx : mdplib ;
