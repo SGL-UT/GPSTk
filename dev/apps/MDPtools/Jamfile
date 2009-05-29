@@ -29,7 +29,7 @@ if $(UNIX)
     LINKLIBS on mdpscreenx$(SUFEXE) += -lcurses ;
   }
   else {
-    LINKLIBS on mdpscreenx$(SUFEXE) += -lncurses ;
+    LINKLIBS on mdpscreenx$(SUFEXE) += -lstdc++ -lncurses ;
   }
 
   LinkLibraries mdpscreenx : mdplib ;
