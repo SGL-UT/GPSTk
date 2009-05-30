@@ -133,7 +133,7 @@ namespace gpstk
        *
        * A nice feature of "Dumper" objects is that they return the incoming
        * GDS without altering it, so they can be inserted wherever you need
-      *  them.
+       * them.
        */
    class Dumper : public ProcessingClass
    {
