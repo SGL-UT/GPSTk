@@ -61,8 +61,11 @@ namespace gpstk
       try
       {
 
-            // Call appropriate GDS method
-         gData.keepOnlyTypeID( keepTypeSet );
+            // Call appropriate GDS method ONLY if we have a proper set
+         if( keepTypeSet.size() > 0 )
+         {
+            gData.keepOnlyTypeID( keepTypeSet );
+         }
 
          return gData;
 
