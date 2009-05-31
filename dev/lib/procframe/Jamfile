@@ -25,7 +25,6 @@ else
       RequireObservables.cpp SatArcMarker.cpp SimpleFilter.cpp SolverLMS.cpp
       SolverPPP.cpp SolverPPPFB.cpp SolverWMS.cpp StochasticModel.cpp
       Synchronize.cpp Variable.cpp XYZ2NED.cpp XYZ2NEU.cpp
-      EquationSystem.cpp SolverGeneral.cpp
       ;
 
    InstallFile $(INCDIR) :
@@ -45,6 +44,5 @@ else
       SimpleFilter.hpp SolverLMS.hpp SolverPPP.hpp SolverPPPFB.hpp
       SolverWMS.hpp StochasticModel.hpp Synchronize.hpp Variable.hpp
       XYZ2NED.hpp XYZ2NEU.hpp
-      EquationSystem.hpp SolverGeneral.hpp
       ;
 }
