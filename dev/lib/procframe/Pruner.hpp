@@ -1,13 +1,13 @@
 #pragma ident "$Id$"
 
 /**
- * @file Keeper.hpp
- * This class examines a GNSS Data Structure (GDS) and keeps only specific
+ * @file Pruner.hpp
+ * This class examines a GNSS Data Structure (GDS) and prunes specific
  * values according to their TypeIDs.
  */
 
-#ifndef GPSTK_KEEPER_HPP
-#define GPSTK_KEEPER_HPP
+#ifndef GPSTK_PRUNER_HPP
+#define GPSTK_PRUNER_HPP
 
 //============================================================================
 //
@@ -43,8 +43,8 @@ namespace gpstk
       //@{
 
 
-      /** This class examines a GNSS Data Structure (GDS) and keeps only
-       *  specific values according to their TypeIDs.
+      /** This class examines a GNSS Data Structure (GDS) and prunes specific
+       * values according to their TypeIDs.
        *
        * A typical way to use this class follows:
        *
@@ -54,42 +54,42 @@ namespace gpstk
        *
        *   gnssRinex gRin;
        *
-       *   Keeper keeperObj;
-       *   keeperObj.setType( TypeID::C1 );
-       *   keeperObj.addType( TypeID::L1 );
+       *   Pruner prunerObj;
+       *   prunerObj.setType( TypeID::C1 );
+       *   prunerObj.addType( TypeID::L1 );
        *
        *   while(rin >> gRin)
        *   {
-       *      gRin >> keeperObj;
+       *      gRin >> prunerObj;
        *   }
        * @endcode
        *
-       * The "Keeper" object "keeperObj" will visit every satellite in the GNSS
-       * Data Structure that is "gRin" and will keep only the information
+       * The "Pruner" object "prunerObj" will visit every satellite in the GNSS
+       * Data Structure that is "gRin" and will delete only the information
        * associated with a configured TypeID set, trimming the incoming GDS.
        *
        * \warning If no TypeIDs are specified, then ALL TypeIDs present in
        * the GDS will be kept, and this class would have been ineffective.
        */
-   class Keeper : public ProcessingClass
+   class Pruner : public ProcessingClass
    {
    public:
 
          /// Default constructor
-      Keeper()
+      Pruner()
       { setIndex(); };
 
 
          /** Common constructor
           *
-          * @param keepSet       TypeIDSet of data values to be kept.
+          * @param deleteSet       TypeIDSet of data values to be deleted.
           */
-      Keeper( const TypeIDSet& keepSet )
-         : keepTypeSet(keepSet)
+      Pruner( const TypeIDSet& deleteSet )
+         : deleteTypeSet(deleteSet)
       { setIndex(); };
 
 
-         /** Keeps data from a satTypeValueMap object.
+         /** Prunes data from a satTypeValueMap object.
           *
           * @param gData     Data object holding the data.
           */
@@ -97,7 +97,7 @@ namespace gpstk
          throw(ProcessingException);
 
 
-         /** Keeps data from a gnnsSatTypeValue object.
+         /** Prunes data from a gnnsSatTypeValue object.
           *
           * @param gData    Data object holding the data.
           */
@@ -106,7 +106,7 @@ namespace gpstk
       { Process(gData.body); return gData; };
 
 
-         /** Keeps data from a gnnsRinex object.
+         /** Prunes data from a gnnsRinex object.
           *
           * @param gData    Data object holding the data.
           */
@@ -115,9 +115,9 @@ namespace gpstk
       { Process(gData.body); return gData; };
 
 
-         /** Method to set the TypeID to be kept.
+         /** Method to set the TypeID to be deleted.
           *
-          * @param type      TypeID of data values to be kept.
+          * @param type      TypeID of data values to be deleted.
           *
           * \warning The previously set type values will be deleted. If this
           * is not what you want, see method addType.
@@ -125,49 +125,49 @@ namespace gpstk
           * \warning If no TypeIDs are specified, then ALL TypeIDs present in
           * the GDS will be kept, and this class would have been ineffective.
           */
-      virtual Keeper& setType( const TypeID& type )
-      { keepTypeSet.clear(); keepTypeSet.insert(type); return (*this); };
+      virtual Pruner& setType( const TypeID& type )
+      { deleteTypeSet.clear(); deleteTypeSet.insert(type); return (*this); };
 
 
-         /** Method to add a TypeID to be kept.
+         /** Method to add a TypeID to be deleted.
           *
           * @param type          TypeID of data values to be added to the ones
-          *                      being kept.
+          *                      being deleted.
           */
-      virtual Keeper& addType( const TypeID& type )
-      { keepTypeSet.insert(type); return (*this); };
+      virtual Pruner& addType( const TypeID& type )
+      { deleteTypeSet.insert(type); return (*this); };
 
 
-         /** Method to establish a set of TypeIDs to be kept.
+         /** Method to specify a set of TypeIDs to be deleted.
           *
-          * @param keepSet       TypeIDSet of data values to be kept.
+          * @param deleteSet       TypeIDSet of data values to be deleted.
           *
           * \warning The previously set type values will be deleted. If this
           * is not what you want, see method addTypeSet.
           */
-      virtual Keeper& setTypeSet( const TypeIDSet& keepSet )
-      { keepTypeSet.clear(); keepTypeSet = keepSet; return (*this); };
+      virtual Pruner& setTypeSet( const TypeIDSet& deleteSet )
+      { deleteTypeSet.clear(); deleteTypeSet = deleteSet; return (*this); };
 
 
-         /** Method to add a set of TypeIDs to be kept.
+         /** Method to add a set of TypeIDs to be deleted.
           *
-          * @param keepSet       TypeIDSet of data values to be added to the
-          *                      ones being kept.
+          * @param deleteSet     TypeIDSet of data values to be added to the
+          *                      ones being deleted.
           */
-      virtual Keeper& addTypeSet( const TypeIDSet& keepSet );
+      virtual Pruner& addTypeSet( const TypeIDSet& deletepSet );
 
 
-         /** Method to clear the set of TypeIDs to be kept. If you do this,
+         /** Method to clear the set of TypeIDs to be deleted. If you do this,
           *  all TypeIDs that are present in GDS will be kept, and this class
           *  would have been ineffective.
           */
-      virtual Keeper& clearTypeSet( void )
-      { keepTypeSet.clear(); return (*this); };
+      virtual Pruner& clearTypeSet( void )
+      { deleteTypeSet.clear(); return (*this); };
 
 
-         /// Method to get the set of TypeIDs to be kept.
+         /// Method to get the set of TypeIDs to be deleted.
       virtual TypeIDSet getTypeSet(void) const
-      { return keepTypeSet; };
+      { return deleteTypeSet; };
 
 
          /// Returns an index identifying this object.
@@ -179,14 +179,14 @@ namespace gpstk
 
 
          /// Destructor
-      virtual ~Keeper() {};
+      virtual ~Pruner() {};
 
 
    private:
 
 
-         /// Set of TypeID's to keep.
-      TypeIDSet keepTypeSet;
+         /// Set of TypeID's to delete.
+      TypeIDSet deleteTypeSet;
 
 
          /// Initial index assigned to this class.
@@ -201,11 +201,11 @@ namespace gpstk
       { index = classIndex++; };
 
 
-   }; // End of class 'Keeper'
+   }; // End of class 'Pruner'
 
 
       //@}
 
 }  // End of namespace gpstk
 
-#endif  // GPSTK_KEEPER_HPP
+#endif  // GPSTK_PRUNER_HPP
