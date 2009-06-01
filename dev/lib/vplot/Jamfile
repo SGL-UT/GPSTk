@@ -16,7 +16,7 @@ else
 
   InstallFile $(INCDIR) :
         Axis.hpp AxisStyle.hpp LinePlot.hpp Plot.hpp 
-        ScatterPlot.hpp SeriesList.hpp Splitter.hpp 
-        SurfacePlot.hpp 
+        plottypes.hpp ScatterPlot.hpp SeriesList.hpp
+        Splitter.hpp SurfacePlot.hpp 
   ;
 }

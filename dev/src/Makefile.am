@@ -12,9 +12,9 @@ CodeBuffer.cpp CommandOption.cpp CommandOptionParser.cpp \
 CommandOptionWithCommonTimeArg.cpp CommandOptionWithPositionArg.cpp \
 CommandOptionWithTimeArg.cpp CommonTime.cpp ConfDataReader.cpp DOP.cpp \
 DayTime.cpp ECEF.cpp EngAlmanac.cpp EngEphemeris.cpp EngNav.cpp ENUUtil.cpp \
-EphemerisRange.cpp Exception.cpp Expression.cpp FFData.cpp FFStream.cpp \
-FICData.cpp FICData109.cpp FICData162.cpp FICData62.cpp FICData9.cpp \
-FICHeader.cpp FileHunter.cpp FileSpec.cpp \
+EphemerisRange.cpp Epoch.cpp Exception.cpp Expression.cpp FFData.cpp \
+FFStream.cpp FICData.cpp FICData109.cpp FICData162.cpp FICData62.cpp \
+FICData9.cpp FICHeader.cpp FileHunter.cpp FileSpec.cpp \
 GPSAlmanacStore.cpp GPSEphemerisStore.cpp GPSWeek.cpp \
 GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp GaussianDistribution.cpp \
 GenXSequence.cpp Geodetic.cpp \
@@ -56,7 +56,7 @@ FICFilterOperators.hpp FICHeader.hpp FICStream.hpp FICStreamBase.hpp \
 FileFilter.hpp FileFilterFrame.hpp FileFilterFrameWithHeader.hpp \
 FileHunter.hpp FileSpec.hpp FileStore.hpp FileUtils.hpp GPSAlmanacStore.hpp \
 GPSEphemerisStore.hpp GPSWeek.hpp GPSGeoid.hpp \
-GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp GaussianDistribution.hpp\
+GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp GaussianDistribution.hpp \
 GenXSequence.hpp Geodetic.hpp GeoidModel.hpp InOutFramework.hpp \
 IonexBase.hpp IonexData.hpp IonexHeader.hpp IonexStore.hpp IonexStream.hpp \
 IonoModel.hpp IonoModelStore.hpp JulianDate.hpp \
