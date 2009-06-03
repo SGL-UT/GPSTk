@@ -27,8 +27,7 @@
 
 namespace gpstk
 {
-   const int GPSWeek::MAX_WEEK = 
-   static_cast<int>(CommonTime::END_OF_TIME.getDays() - GPS_EPOCH_JDAY) / 7;
+   const int GPSWeek::MAX_WEEK = (CommonTime::END_LIMIT_JDAY - GPS_EPOCH_JDAY)/7;
 
    GPSWeek& GPSWeek::operator=(const GPSWeek& right)
       throw()
