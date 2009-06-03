@@ -79,10 +79,10 @@ void xUnixTime :: operatorTest (void)
 	CPPUNIT_ASSERT(Compare >= LessThanSec);
 	CPPUNIT_ASSERT(Compare >= CompareCopy);
 	
-	gpstk::CommonTime Rollover(1,1,.9999999999999);
+	gpstk::CommonTime Rollover(2451871,1,.9999999999999);
 	gpstk::UnixTime Temp;
-	Temp.convertFromCommonTime(Rollover);
-	
+  	Temp.convertFromCommonTime(Rollover);
+
 	CPPUNIT_ASSERT(Compare.isValid());
 }
 
