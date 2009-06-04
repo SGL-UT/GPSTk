@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -159,7 +159,7 @@ namespace gpstk
    {
       char line[180];
       //cout << "StaNum, Total Obs = " << staNum << ", " << totalObsCount << endl;
-      sprintf( line, " %5s  %6d %5d %5d %5d %5d %5d %5d %5d %5d %5d %5d %5d %5d %5d %5d %5d %5d %5d %5d",
+      sprintf( line, " %5s  %6ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld",
          staName.c_str(),totalObsCount,
          obsCountByBin[ 0],obsCountByBin[ 1],obsCountByBin[ 2],obsCountByBin[ 3],
          obsCountByBin[ 4],obsCountByBin[ 5],obsCountByBin[ 6],obsCountByBin[ 7],
