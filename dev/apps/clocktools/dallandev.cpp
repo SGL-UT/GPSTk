@@ -110,7 +110,7 @@ int main(int argv, char **argc)
 				       (phaseArray[m+k]-2.0*phaseArray[m]+phaseArray[m-k]);
 			}
 			sum = sum / (2.0*k*k*Tau0*Tau0) / (N-2.0*k);
-			printf("%i %i %.4e\n", (n-Nw)/ns+1, k, sum);
+			printf("%lu %lu %.4e\n", (n-Nw)/ns+1, k, sum);
 		}
 		printf("\n");
 	}

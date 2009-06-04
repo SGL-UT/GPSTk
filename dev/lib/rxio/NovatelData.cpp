@@ -747,7 +747,7 @@ namespace gpstk
 
             double Ph;
             if(data[1] & 0x80000000L)     // 2s complement
-               Ph =  double(data[1] ^ 0x7FFFFFFFL + 1);
+               Ph =  double((data[1] ^ 0x7FFFFFFFL) + 1);
             else
                Ph =  double(data[1]);
 

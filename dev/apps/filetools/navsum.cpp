@@ -424,7 +424,7 @@ void NavSum::process()
 				if (diff > (double) DayTime::HALFWEEK) xMitWeek--;
 				XMitT = DayTime( xMitWeek, HOW-6.0 );
 				EpochT = DayTime( EpochWeek, Toe );
-				sprintf(line," %5d  %3d    %02d    %s ! %s 0x%03X %1d",
+				sprintf(line," %5d  %3d    %02d    %s ! %s 0x%03lX %1d",
 					count,blockType,PRNID,
 					XMitT.printf(xmitFmt).c_str(),
 					EpochT.printf(epochFmt).c_str(),
