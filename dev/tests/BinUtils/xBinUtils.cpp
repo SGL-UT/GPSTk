@@ -24,6 +24,7 @@
 //============================================================================
 
 #include "xBinUtils.hpp"
+#include <iostream>
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xBinUtils);
 
@@ -36,7 +37,7 @@ void xBinUtils :: firstTest (void)
 { 
 	cout.setf(ios_base::hex,ios_base::basefield);
 	
-	unsigned char Store[12] = {0x11,0x33,0x77,0xFF,0xBB,0x22,0xDD,0x44,0x66,0xEE,0x99,0x66};
+	unsigned char Store[16] = {0x11,0x33,0x77,0xFF,0xBB,0x22,0xDD,0x44,0x00,0x00,0xDD,0xAA,0x44,0x22,0xBB,0xAA};
 	
 	char a;
 	unsigned char *ptra = (unsigned char *)& a;
