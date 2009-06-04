@@ -430,8 +430,8 @@ namespace gpstk
          // NB FACTOR must be <, and a factor of, 1000000 :
       long ldd, lds, mult = (1000000 / FACTOR);
       double ds;
-      ldd = usec / (1000000 * SEC_DAY) ;        // days
-      usec %= (1000000 * SEC_DAY) ;             // usec-of-day
+      ldd = usec / (1000000ll * SEC_DAY);        // days
+      usec %= (1000000ll * SEC_DAY);             // usec-of-day
       lds = usec / mult;                        // long sec/FACTOR's
       ds = double(usec % mult) / mult;          // frac sec/FACTOR's
       addLongDeltaTime(ldd, lds, ds);
