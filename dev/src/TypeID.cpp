@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -175,6 +175,16 @@ namespace gpstk
       tStrings[recH]       = "RxH";
       tStrings[sigma]      = "sigma";
       tStrings[iura]       = "iura";
+      tStrings[dummy0]     = "dummy0";
+      tStrings[dummy1]     = "dummy1";
+      tStrings[dummy2]     = "dummy2";
+      tStrings[dummy3]     = "dummy3";
+      tStrings[dummy4]     = "dummy4";
+      tStrings[dummy5]     = "dummy5";
+      tStrings[dummy6]     = "dummy6";
+      tStrings[dummy7]     = "dummy7";
+      tStrings[dummy8]     = "dummy8";
+      tStrings[dummy9]     = "dummy9";
       tStrings[Last]       = "Last";
       tStrings[Placeholder]= "Placeholder";
    }

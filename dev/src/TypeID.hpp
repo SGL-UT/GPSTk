@@ -9,8 +9,8 @@
  * programmer may add indexes on-demand.
  */
 
-#ifndef TYPEID_HPP
-#define TYPEID_HPP
+#ifndef GPSTK_TYPEID_HPP
+#define GPSTK_TYPEID_HPP
 
 //============================================================================
 //
@@ -30,7 +30,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -220,6 +220,18 @@ namespace gpstk
          recH,      ///< Receiver position, Height component
          sigma,     ///< Standard deviation
          iura,      ///< Index User Range Accuracy
+            // Handy dummy types for non-standard processing
+         dummy0,    ///< Generic, undefined type #0
+         dummy1,    ///< Generic, undefined type #1
+         dummy2,    ///< Generic, undefined type #2
+         dummy3,    ///< Generic, undefined type #3
+         dummy4,    ///< Generic, undefined type #4
+         dummy5,    ///< Generic, undefined type #5
+         dummy6,    ///< Generic, undefined type #6
+         dummy7,    ///< Generic, undefined type #7
+         dummy8,    ///< Generic, undefined type #8
+         dummy9,    ///< Generic, undefined type #9
+
          Last,      ///< used to extend this...
          Placeholder = Last+1000
       };
@@ -315,7 +327,7 @@ namespace gpstk
       static Initializer TypeIDsingleton;
 
 
-   }; // End of class TypeID
+   }; // End of class 'TypeID'
 
 
 
@@ -337,5 +349,6 @@ namespace gpstk
 
 
 
-} // namespace gpstk
-#endif  // TYPEID_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_TYPEID_HPP
