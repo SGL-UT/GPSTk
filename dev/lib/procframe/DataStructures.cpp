@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -42,14 +42,16 @@ namespace gpstk
       ////// typeValueMap //////
 
 
-      // Returns a TypeIDSet with all the data types present in 
+      // Returns a TypeIDSet with all the data types present in
       // this object.
    TypeIDSet typeValueMap::getTypeID() const
    {
 
       TypeIDSet typeSet;
-      typeValueMap::const_iterator pos;
-      for (pos = (*this).begin(); pos != (*this).end(); ++pos)
+
+      for( typeValueMap::const_iterator pos = (*this).begin();
+           pos != (*this).end();
+           ++pos )
       {
          typeSet.insert( (*pos).first );
       }
@@ -82,12 +84,13 @@ namespace gpstk
 
       typeValueMap tvMap;
 
-      TypeIDSet::const_iterator pos;
-      for(pos = typeSet.begin(); pos != typeSet.end(); ++pos)
+      for( TypeIDSet::const_iterator pos = typeSet.begin();
+           pos != typeSet.end();
+           ++pos )
       {
-         typeValueMap::const_iterator itObs;
-         itObs = (*this).find(*pos);
-         if( itObs != (*this).end() ) 
+
+         typeValueMap::const_iterator itObs( (*this).find(*pos) );
+         if( itObs != (*this).end() )
          {
             tvMap[ (*itObs).first ] = (*itObs).second;
          };
@@ -134,8 +137,9 @@ namespace gpstk
    typeValueMap& typeValueMap::removeTypeID(const TypeIDSet& typeSet)
    {
 
-      TypeIDSet::const_iterator pos;
-      for( pos = typeSet.begin(); pos != typeSet.end(); ++pos )
+      for( TypeIDSet::const_iterator pos = typeSet.begin();
+           pos != typeSet.end();
+           ++pos )
       {
          (*this).erase(*pos);
       }
@@ -146,6 +150,28 @@ namespace gpstk
 
 
 
+      /* Returns the data value (double) corresponding to provided type.
+       *
+       * @param type       Type of value to be looked for.
+       */
+   double typeValueMap::getValue(const TypeID& type) const
+      throw(TypeIDNotFound)
+   {
+
+      typeValueMap::const_iterator itObs( (*this).find(type) );
+      if ( itObs != (*this).end() )
+      {
+         return (*itObs).second;
+      }
+      else
+      {
+         GPSTK_THROW(TypeIDNotFound("TypeID not found in map"));
+      }
+
+   }  // End of method 'typeValueMap::getValue()'
+
+
+
       // Returns a reference to the data value (double) with
       // corresponding type.
       // @param type Type of value to be looked for.
@@ -153,10 +179,9 @@ namespace gpstk
       throw(TypeIDNotFound)
    {
 
-      typeValueMap::iterator itObs;
-      itObs = (*this).find(type);
+      typeValueMap::iterator itObs ( (*this).find(type) );
 
-      if ( itObs != (*this).end() ) 
+      if ( itObs != (*this).end() )
       {
          return (*itObs).second;
       }
@@ -178,8 +203,9 @@ namespace gpstk
 
       SatIDSet satSet;
 
-      satValueMap::const_iterator pos;
-      for( pos = (*this).begin(); pos != (*this).end(); ++pos )
+      for( satValueMap::const_iterator pos = (*this).begin();
+           pos != (*this).end();
+           ++pos )
       {
          satSet.insert( (*pos).first );
       }
@@ -196,8 +222,9 @@ namespace gpstk
 
       std::vector<SatID> temp;
 
-      satValueMap::const_iterator pos;
-      for( pos = (*this).begin(); pos != (*this).end(); ++pos )
+      for( satValueMap::const_iterator pos = (*this).begin();
+           pos != (*this).end();
+           ++pos )
       {
          temp.push_back( (*pos).first );
       }
@@ -249,13 +276,13 @@ namespace gpstk
 
       satValueMap svMap;
 
-      SatIDSet::const_iterator pos;
-      for( pos = satSet.begin(); pos != satSet.end(); ++pos )
+      for( SatIDSet::const_iterator pos = satSet.begin();
+           pos != satSet.end();
+           ++pos )
       {
-         satValueMap::const_iterator itObs;
-         itObs = (*this).find(*pos);
+         satValueMap::const_iterator itObs( (*this).find(*pos) );
 
-         if( itObs != (*this).end() ) 
+         if( itObs != (*this).end() )
          {
             svMap[ (*itObs).first ] = (*itObs).second;
          };
@@ -316,8 +343,9 @@ namespace gpstk
    satValueMap& satValueMap::removeSatID(const SatIDSet& satSet)
    {
 
-      SatIDSet::const_iterator pos;
-      for( pos = satSet.begin(); pos != satSet.end(); ++pos )
+      for( SatIDSet::const_iterator pos = satSet.begin();
+           pos != satSet.end();
+           ++pos )
       {
          (*this).erase(*pos);
       }
@@ -328,6 +356,28 @@ namespace gpstk
 
 
 
+      /* Returns the data value (double) corresponding to provided SatID.
+       *
+       * @param satellite     Satellite to be looked for.
+       */
+   double satValueMap::getValue(const SatID& satellite) const
+      throw(TypeIDNotFound)
+   {
+
+      satValueMap::const_iterator itObs( (*this).find(satellite) );
+      if ( itObs != (*this).end() )
+      {
+         return (*itObs).second;
+      }
+      else
+      {
+         GPSTK_THROW(SatIDNotFound("SatID not found in map"));
+      }
+
+   }  // End of method 'satValueMap::getValue()'
+
+
+
       // Returns a reference to the data value (double) with
       // corresponding SatID.
       // @param satellite Satellite to be looked for.
@@ -335,10 +385,9 @@ namespace gpstk
       throw(SatIDNotFound)
    {
 
-      satValueMap::iterator itObs;
-      itObs = (*this).find(satellite);
+      satValueMap::iterator itObs( (*this).find(satellite) );
 
-      if ( itObs != (*this).end() ) 
+      if ( itObs != (*this).end() )
       {
          return (*itObs).second;
       }
@@ -358,18 +407,19 @@ namespace gpstk
        * This method DOES NOT suppose that all the satellites have
        * the same number of type values.
        */
-   size_t satTypeValueMap::numElements() const 
+   size_t satTypeValueMap::numElements() const
    {
 
       size_t numEle(0);
 
-      satTypeValueMap::const_iterator it;
-      for( it = (*this).begin(); it != (*this).end(); ++it )
+      for( satTypeValueMap::const_iterator it = (*this).begin();
+           it != (*this).end();
+           ++it )
       {
          numEle = numEle + (*it).second.size();
       }
 
-         return numEle;
+      return numEle;
 
    }  // End of method 'satTypeValueMap::numElements()'
 
@@ -381,8 +431,9 @@ namespace gpstk
 
       SatIDSet satSet;
 
-      satTypeValueMap::const_iterator pos;
-      for( pos = (*this).begin(); pos != (*this).end(); ++pos )
+      for( satTypeValueMap::const_iterator pos = (*this).begin();
+           pos != (*this).end();
+           ++pos )
       {
          satSet.insert( (*pos).first );
       }
@@ -399,8 +450,9 @@ namespace gpstk
 
       std::vector<SatID> temp;
 
-      satTypeValueMap::const_iterator pos;
-      for( pos = (*this).begin(); pos != (*this).end(); ++pos )
+      for( satTypeValueMap::const_iterator pos = (*this).begin();
+           pos != (*this).end();
+           ++pos )
       {
          temp.push_back( (*pos).first );
       }
@@ -421,14 +473,18 @@ namespace gpstk
 
       TypeIDSet typeSet;
 
-      satTypeValueMap::const_iterator pos;
-      for( pos = (*this).begin(); pos != (*this).end(); ++pos )
+      for( satTypeValueMap::const_iterator pos = (*this).begin();
+           pos != (*this).end();
+           ++pos )
       {
-         typeValueMap::const_iterator it;
-         for( it = (*pos).second.begin(); it != (*pos).second.end(); ++it )
+
+         for( typeValueMap::const_iterator it = (*pos).second.begin();
+              it != (*pos).second.end();
+              ++it )
          {
             typeSet.insert( (*it).first );
          }
+
       }
 
       return typeSet;
@@ -475,12 +531,12 @@ namespace gpstk
 
       satTypeValueMap stvMap;
 
-      SatIDSet::const_iterator pos;
-      for( pos = satSet.begin(); pos != satSet.end(); ++pos )
+      for( SatIDSet::const_iterator pos = satSet.begin();
+           pos != satSet.end();
+           ++pos )
       {
-         satTypeValueMap::const_iterator itObs;
-         itObs = (*this).find(*pos);
-         if( itObs != (*this).end() ) 
+         satTypeValueMap::const_iterator itObs( (*this).find(*pos) );
+         if( itObs != (*this).end() )
          {
             stvMap[ (*itObs).first ] = (*itObs).second;
          };
@@ -558,14 +614,17 @@ namespace gpstk
 
       satTypeValueMap theMap;
 
-      satTypeValueMap::const_iterator it;
-      for( it = (*this).begin(); it != (*this).end(); ++it )
+      for( satTypeValueMap::const_iterator it = (*this).begin();
+           it != (*this).end();
+           ++it )
       {
-         typeValueMap tvMap = (*it).second.extractTypeID(typeSet);
+
+         typeValueMap tvMap( (*it).second.extractTypeID(typeSet) );
          if( tvMap.size() > 0 )
          {
             theMap[(*it).first] = tvMap;
          };
+
       };
 
       return theMap;
@@ -609,8 +668,9 @@ namespace gpstk
    satTypeValueMap& satTypeValueMap::removeSatID(const SatIDSet& satSet)
    {
 
-      SatIDSet::const_iterator pos;
-      for( pos = satSet.begin(); pos != satSet.end(); ++pos )
+      for( SatIDSet::const_iterator pos = satSet.begin();
+           pos != satSet.end();
+           ++pos )
       {
          (*this).erase(*pos);
       }
@@ -626,8 +686,9 @@ namespace gpstk
    satTypeValueMap& satTypeValueMap::removeTypeID(const TypeID& type)
    {
 
-      satTypeValueMap::iterator it;
-      for( it = (*this).begin(); it != (*this).end(); ++it )
+      for( satTypeValueMap::iterator it = (*this).begin();
+           it != (*this).end();
+           ++it )
       {
          (*it).second.removeTypeID(type);
       }
@@ -644,8 +705,9 @@ namespace gpstk
    satTypeValueMap& satTypeValueMap::removeTypeID(const TypeIDSet& typeSet)
    {
 
-      TypeIDSet::const_iterator pos;
-      for( pos = typeSet.begin(); pos != typeSet.end(); ++pos )
+      for( TypeIDSet::const_iterator pos = typeSet.begin();
+           pos != typeSet.end();
+           ++pos )
       {
          removeTypeID(*pos);
       }
@@ -662,13 +724,15 @@ namespace gpstk
    Vector<double> satTypeValueMap::getVectorOfTypeID(const TypeID& type) const
    {
 
+         // Let's declare a STL vector
       std::vector<double> temp;
 
-      typeValueMap::const_iterator itObs;
-      satTypeValueMap::const_iterator it;
-      for( it = (*this).begin(); it != (*this).end(); ++it )
+      for( satTypeValueMap::const_iterator it = (*this).begin();
+           it != (*this).end();
+           ++it )
       {
-         itObs = (*it).second.find(type);
+
+         typeValueMap::const_iterator itObs( (*it).second.find(type) );
          if ( itObs != (*it).second.end() )
          {
             temp.push_back( (*itObs).second );
@@ -677,9 +741,13 @@ namespace gpstk
          {
             temp.push_back( 0.0 );
          }
+
       }
 
+         // Let's declare a GPSTk Vector
       Vector<double> result;
+
+         // Transform STL vector into GPSTk Vector
       result = temp;
 
       return result;
@@ -699,16 +767,18 @@ namespace gpstk
 
       size_t numRow(0), numCol(0);
 
-      satTypeValueMap::const_iterator it;
-      for( it = (*this).begin(); it != (*this).end(); ++it )
+      for( satTypeValueMap::const_iterator it = (*this).begin();
+           it != (*this).end();
+           ++it )
       {
          numCol=0;
 
-         typeValueMap::const_iterator itObs;
-         TypeIDSet::const_iterator pos;
-         for( pos = typeSet.begin(); pos != typeSet.end(); ++pos )
+         for( TypeIDSet::const_iterator pos = typeSet.begin();
+              pos != typeSet.end();
+              ++pos )
          {
-            itObs = (*it).second.find(*pos);
+
+            typeValueMap::const_iterator itObs( (*it).second.find(*pos) );
             if( itObs != (*it).second.end() )
             {
                tempMat(numRow, numCol) = (*itObs).second;
@@ -751,8 +821,9 @@ namespace gpstk
       {
          size_t pos = 0;
 
-         satTypeValueMap::iterator it;
-         for( it = (*this).begin(); it != (*this).end(); ++it )
+         for( satTypeValueMap::iterator it = (*this).begin();
+              it != (*this).end();
+              ++it )
          {
             (*it).second[type] = dataVector[pos];
             ++pos;
@@ -806,14 +877,16 @@ number of satellites do not match") );
 
          size_t pos(0);
 
-         satTypeValueMap::iterator it;
-         for( it = (*this).begin(); it != (*this).end(); ++it )
+         for( satTypeValueMap::iterator it = (*this).begin();
+              it != (*this).end();
+              ++it )
          {
 
             size_t idx(0);
 
-            TypeIDSet::const_iterator itSet;
-            for( itSet = typeSet.begin(); itSet != typeSet.end(); ++itSet )
+            for( TypeIDSet::const_iterator itSet = typeSet.begin();
+                 itSet != typeSet.end();
+                 ++itSet )
             {
                (*it).second[(*itSet)] = dataMatrix(pos,idx);
                ++idx;
@@ -836,15 +909,39 @@ in matrix and number of types do not match") );
 
 
 
+      /* Returns the data value (double) corresponding to provided SatID
+       * and TypeID.
+       *
+       * @param satellite     Satellite to be looked for.
+       * @param type          Type to be looked for.
+       */
+   double satTypeValueMap::getValue( const SatID& satellite,
+                                     const TypeID& type ) const
+      throw( SatIDNotFound, TypeIDNotFound )
+   {
+
+      satTypeValueMap::const_iterator itObs( (*this).find(satellite) );
+      if( itObs != (*this).end() )
+      {
+         return (*itObs).second.getValue( type );
+      }
+      else
+      {
+         GPSTK_THROW(SatIDNotFound("SatID not found in map"));
+      }
+
+   }  // End of method 'satTypeValueMap::getValue()'
+
+
+
       // Returns a reference to the typeValueMap with corresponding SatID.
       // @param type Type of value to be looked for.
    typeValueMap& satTypeValueMap::operator()(const SatID& satellite)
       throw(SatIDNotFound)
    {
 
-      satTypeValueMap::iterator itObs;
-      itObs = (*this).find(satellite);
-      if( itObs != (*this).end() ) 
+      satTypeValueMap::iterator itObs( (*this).find(satellite) );
+      if( itObs != (*this).end() )
       {
          return (*itObs).second;
       }
@@ -957,8 +1054,9 @@ in matrix and number of types do not match") );
    gnssSatValue& gnssSatValue::removeSatID(const SatIDSet& satSet)
    {
 
-      SatIDSet::const_iterator pos;
-      for( pos = satSet.begin(); pos != satSet.end(); ++pos )
+      for( SatIDSet::const_iterator pos = satSet.begin();
+           pos != satSet.end();
+           ++pos )
       {
          (*this).body.erase(*pos);
       }
@@ -1039,8 +1137,9 @@ in matrix and number of types do not match") );
    gnssTypeValue& gnssTypeValue::removeTypeID(const TypeIDSet& typeSet)
    {
 
-      TypeIDSet::const_iterator pos;
-      for( pos = typeSet.begin(); pos != typeSet.end(); ++pos )
+      for( TypeIDSet::const_iterator pos = typeSet.begin();
+           pos != typeSet.end();
+           ++pos )
       {
          (*this).body.erase(*pos);
       }
@@ -1213,8 +1312,9 @@ in matrix and number of types do not match") );
    gnssSatTypeValue& gnssSatTypeValue::removeSatID(const SatIDSet& satSet)
    {
 
-      SatIDSet::const_iterator pos;
-      for( pos = satSet.begin(); pos != satSet.end(); ++pos )
+      for( SatIDSet::const_iterator pos = satSet.begin();
+           pos != satSet.end();
+           ++pos )
       {
          (*this).body.erase(*pos);
       }
@@ -1231,8 +1331,9 @@ in matrix and number of types do not match") );
    gnssSatTypeValue& gnssSatTypeValue::removeTypeID(const TypeIDSet& typeSet)
    {
 
-      TypeIDSet::const_iterator pos;
-      for( pos = typeSet.begin(); pos != typeSet.end(); ++pos )
+      for( TypeIDSet::const_iterator pos = typeSet.begin();
+           pos != typeSet.end();
+           ++pos )
       {
          (*this).body.removeTypeID(*pos);
       }
@@ -1407,15 +1508,15 @@ in matrix and number of types do not match") );
                                         int mode ) const
    {
 
-      satTypeValueMap::const_iterator it;
-      for (it = (*this).begin(); it!= (*this).end(); it++)
+      for( satTypeValueMap::const_iterator it = (*this).begin();
+           it!= (*this).end();
+           it++ )
       {
 
             // First, print satellite (system and PRN)
          s << (*it).first << " ";
 
-         typeValueMap::const_iterator itObs;
-         for( itObs  = (*it).second.begin(); 
+         for( typeValueMap::const_iterator itObs = (*it).second.begin();
               itObs != (*it).second.end();
               itObs++ )
          {
@@ -1886,14 +1987,13 @@ in matrix and number of types do not match") );
          // RinexObsTypeMap is a map from RinexObsType to RinexDatum:
          //   std::map<RinexObsHeader::RinexObsType, RinexDatum>
 
-         // Let's define a iterator to visit the observations type map
-      RinexObsData::RinexObsTypeMap::const_iterator itObs;
-
          // We will need a typeValueMap
       typeValueMap tvMap;
 
          // Let's visit the RinexObsTypeMap (RinexObsType -> RinexDatum)
-      for( itObs = otmap.begin(); itObs!= otmap.end(); ++itObs )
+      for( RinexObsData::RinexObsTypeMap::const_iterator itObs = otmap.begin();
+           itObs!= otmap.end();
+           ++itObs )
       {
 
          TypeID type( RinexType2TypeID( (*itObs).first ) );
@@ -1911,31 +2011,31 @@ in matrix and number of types do not match") );
          if( type == TypeID::L2 )
          {
             tvMap[TypeID::LLI2] = (*itObs).second.lli;
-            tvMap[TypeID::SSI2] = (*itObs).second.ssi; 
+            tvMap[TypeID::SSI2] = (*itObs).second.ssi;
             tvMap[ type ] = tvMap[ type ] * L2_WAVELENGTH;
          }
          if( type == TypeID::L5 )
          {
             tvMap[TypeID::LLI5] = (*itObs).second.lli;
-            tvMap[TypeID::SSI5] = (*itObs).second.ssi; 
+            tvMap[TypeID::SSI5] = (*itObs).second.ssi;
             tvMap[ type ] = tvMap[ type ] * L5_WAVELENGTH;
          }
          if( type == TypeID::L6 )
          {
             tvMap[TypeID::LLI6] = (*itObs).second.lli;
-            tvMap[TypeID::SSI6] = (*itObs).second.ssi; 
+            tvMap[TypeID::SSI6] = (*itObs).second.ssi;
             tvMap[ type ] = tvMap[ type ] * L6_WAVELENGTH;
          }
          if( type == TypeID::L7 )
          {
             tvMap[TypeID::LLI7] = (*itObs).second.lli;
-            tvMap[TypeID::SSI7] = (*itObs).second.ssi; 
+            tvMap[TypeID::SSI7] = (*itObs).second.ssi;
             tvMap[ type ] = tvMap[ type ] * L7_WAVELENGTH;
          }
          if( type == TypeID::L8 )
          {
             tvMap[TypeID::LLI8] = (*itObs).second.lli;
-            tvMap[TypeID::SSI8] = (*itObs).second.ssi; 
+            tvMap[TypeID::SSI8] = (*itObs).second.ssi;
             tvMap[ type ] = tvMap[ type ] * L8_WAVELENGTH;
          }
 
@@ -1959,8 +2059,9 @@ in matrix and number of types do not match") );
          // Let's define the "it" iterator to visit the observations PRN map
          // RinexSatMap is a map from SatID to RinexObsTypeMap:
          //      std::map<SatID, RinexObsTypeMap>
-      RinexObsData::RinexSatMap::const_iterator it;
-      for( it = rod.obs.begin(); it!= rod.obs.end(); ++it )
+      for( RinexObsData::RinexSatMap::const_iterator it = rod.obs.begin();
+           it!= rod.obs.end();
+           ++it )
       {
             // RinexObsTypeMap is a map from RinexObsType to RinexDatum:
             //   std::map<RinexObsHeader::RinexObsType, RinexDatum>

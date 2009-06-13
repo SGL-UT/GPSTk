@@ -5,8 +5,8 @@
  * Set of several data structures to be used by other GPSTk classes.
  */
 
-#ifndef DATASTRUCTURES_HPP
-#define DATASTRUCTURES_HPP
+#ifndef GPSTK_DATASTRUCTURES_HPP
+#define GPSTK_DATASTRUCTURES_HPP
 
 //============================================================================
 //
@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -158,7 +158,7 @@ namespace gpstk
       { return (*this).size(); }
 
 
-         /// Returns a TypeIDSet with all the data types present in 
+         /// Returns a TypeIDSet with all the data types present in
          /// this object.
       TypeIDSet getTypeID() const;
 
@@ -169,7 +169,7 @@ namespace gpstk
 
 
          /// Returns a typeValueMap with only these types of data.
-         /// @param typeSet Set (TypeIDSet) containing the types of data to 
+         /// @param typeSet Set (TypeIDSet) containing the types of data to
          ///                be extracted.
       typeValueMap extractTypeID(const TypeIDSet& typeSet) const;
 
@@ -180,7 +180,7 @@ namespace gpstk
 
 
          /// Modifies this object, keeping only these types of data.
-         /// @param typeSet Set (TypeIDSet) containing the types of data 
+         /// @param typeSet Set (TypeIDSet) containing the types of data
          ///                to be kept.
       typeValueMap& keepOnlyTypeID(const TypeIDSet& typeSet);
 
@@ -195,6 +195,14 @@ namespace gpstk
          /// @param typeSet Set (TypeIDSet) containing the types of data
          ///                to be kept.
       typeValueMap& removeTypeID(const TypeIDSet& typeSet);
+
+
+         /** Returns the data value (double) corresponding to provided type.
+          *
+          * @param type       Type of value to be looked for.
+          */
+      double getValue(const TypeID& type) const
+         throw(TypeIDNotFound);
 
 
          /// Returns a reference to the data value (double) with
@@ -274,6 +282,14 @@ namespace gpstk
          /// @param satSet Set (SatIDSet) containing the satellites to
          ///               be removed.
       satValueMap& removeSatID(const SatIDSet& satSet);
+
+
+         /** Returns the data value (double) corresponding to provided SatID.
+          *
+          * @param satellite     Satellite to be looked for.
+          */
+      double getValue(const SatID& satellite) const
+         throw(TypeIDNotFound);
 
 
          /// Returns a reference to the data value (double) with
@@ -457,6 +473,17 @@ namespace gpstk
          throw(NumberOfSatsMismatch, NumberOfTypesMismatch);
 
 
+         /** Returns the data value (double) corresponding to provided SatID
+          *  and TypeID.
+          *
+          * @param satellite     Satellite to be looked for.
+          * @param type          Type to be looked for.
+          */
+      double getValue( const SatID& satellite,
+                       const TypeID& type ) const
+         throw( SatIDNotFound, TypeIDNotFound );
+
+
          /// Returns a reference to the typeValueMap with corresponding SatID.
          /// @param type Type of value to be look for.
       typeValueMap& operator()(const SatID& satellite)
@@ -609,6 +636,15 @@ namespace gpstk
       gnssSatValue& removeSatID(const SatIDSet& satSet);
 
 
+         /** Returns the data value (double) corresponding to provided SatID.
+          *
+          * @param satellite     Satellite to be looked for.
+          */
+      double getValue(const SatID& satellite) const
+         throw(SatIDNotFound)
+      { return (*this).body.getValue(satellite); }
+
+
          /// Returns a reference to the value (double) with corresponding
          /// satellite.
          /// @param satellite Satellite to be looked for.
@@ -675,6 +711,15 @@ namespace gpstk
          /// @param typeSet Set (TypeIDSet) containing the types of data
          ///                to be kept.
       gnssTypeValue& removeTypeID(const TypeIDSet& typeSet);
+
+
+         /** Returns the data value (double) corresponding to provided TypeID.
+          *
+          * @param type    Type to be looked for.
+          */
+      double getValue(const TypeID& type) const
+         throw(TypeIDNotFound)
+      { return (*this).body.getValue(type); }
 
 
          /// Returns a reference to the value (double) with corresponding type.
@@ -861,6 +906,18 @@ namespace gpstk
       { (*this).body.insertMatrix(typeSet, dataMatrix); return (*this); }
 
 
+         /** Returns the data value (double) corresponding to provided SatID
+          *  and TypeID.
+          *
+          * @param satellite     Satellite to be looked for.
+          * @param type          Type to be looked for.
+          */
+      double getValue( const SatID& satellite,
+                       const TypeID& type ) const
+         throw( SatIDNotFound, TypeIDNotFound )
+      { return (*this).body.getValue( satellite, type ); }
+
+
          /** Returns a reference to the typeValueMap with corresponding
           *  satellite.
           *
@@ -902,6 +959,11 @@ namespace gpstk
           * @endcode
           *
           * @param satellite Satellite to be looked for.
+          *
+          * @warning Please be aware that this operator doesn't mantain the
+          * 'constness' of the data structure, allowing direct access to all
+          * data (including editing). If this is not what you want, use method
+          * 'getValue()' instead.
           */
       typeValueMap& operator()(const SatID& satellite)
          throw(SatIDNotFound)
@@ -1014,7 +1076,8 @@ namespace gpstk
 
 
          /// Common constructor.
-      gnssEquationDefinition(const TypeID& h, const TypeIDSet& b)
+      gnssEquationDefinition( const TypeID& h,
+                              const TypeIDSet& b )
       {
          header = h;
          body   = b;
@@ -1040,7 +1103,8 @@ namespace gpstk
 
 
          /// Common constructor.
-      gnssLinearCombination(const TypeID& h, const typeValueMap& b)
+      gnssLinearCombination( const TypeID& h,
+                             const typeValueMap& b )
       {
          header = h;
          body   = b;
@@ -1063,7 +1127,7 @@ namespace gpstk
       /// @param i Input stream.
       /// @param f gnssSatTypeValue receiving the data.
    std::istream& operator>>( std::istream& i,
-                             gnssSatTypeValue& f)
+                             gnssSatTypeValue& f )
       throw(FFStreamError, gpstk::StringUtils::StringException);
 
 
@@ -1109,7 +1173,7 @@ namespace gpstk
       /// Convenience function to fill a satTypeValueMap with data
       /// from RinexObsData.
       /// @param rod RinexObsData holding the data.
-   satTypeValueMap FillsatTypeValueMapwithRinexObsData( 
+   satTypeValueMap FillsatTypeValueMapwithRinexObsData(
                                                    const RinexObsData& rod );
 
 
@@ -1153,4 +1217,5 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
-#endif // DATASTRUCTURES_HPP
+
+#endif // GPSTK_DATASTRUCTURES_HPP
