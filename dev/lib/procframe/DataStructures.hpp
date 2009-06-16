@@ -289,7 +289,7 @@ namespace gpstk
           * @param satellite     Satellite to be looked for.
           */
       double getValue(const SatID& satellite) const
-         throw(TypeIDNotFound);
+         throw(SatIDNotFound);
 
 
          /// Returns a reference to the data value (double) with

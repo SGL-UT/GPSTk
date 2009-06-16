@@ -361,7 +361,7 @@ namespace gpstk
        * @param satellite     Satellite to be looked for.
        */
    double satValueMap::getValue(const SatID& satellite) const
-      throw(TypeIDNotFound)
+      throw(SatIDNotFound)
    {
 
       satValueMap::const_iterator itObs( (*this).find(satellite) );
