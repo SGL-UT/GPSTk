@@ -706,7 +706,7 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
       }
    }
    
-   if (detailPrint) fprintf(logfp,"%s ",currT.printf("T%03j:%02H:%02M:%02S").c_str());
+   if (detailPrint) fprintf(logfp,"%s ",currT.printf("T%04Y:%03j:%02H:%02M:%02S").c_str());
 
    string SVList;       // We'll build a list of SVs in view in this string
                         // We'll only use it if there's only one station selected.
