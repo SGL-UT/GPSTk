@@ -41,8 +41,8 @@
  * WGS 1984 model of the Ellipsoid
  */
 
-#ifndef GPSTK_WGS84Ellipsoid_HPP
-#define GPSTK_WGS84Ellipsoid_HPP
+#ifndef GPSTK_WGS84ELLIPSOID_HPP
+#define GPSTK_WGS84ELLIPSOID_HPP
 
 #include "EllipsoidModel.hpp"
 
@@ -51,7 +51,7 @@ namespace gpstk
     /** @addtogroup geodeticgroup */
     //@{
 
-      /// This class represents the geodetic model defined in NIMA
+      /// This class represents the ellipsoid model defined in NIMA
       /// TR8350.2, "Department of Defense World Geodetic System 1984".
    class WGS84Ellipsoid : public EllipsoidModel
    {

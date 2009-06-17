@@ -7,8 +7,8 @@
  * The GPS Ellipsoid defined in ICD-GPS-200
  */
 
-#ifndef GPSTK_GPSEllipsoid_HPP
-#define GPSTK_GPSEllipsoid_HPP
+#ifndef GPSTK_GPSELLIPSOID_HPP
+#define GPSTK_GPSELLIPSOID_HPP
 
 //============================================================================
 //
@@ -41,13 +41,13 @@ namespace gpstk
        //@{ 
 
       /**
-       * This class represents the geodetic model defined in
-       * ICD-GPS-200.  This geodetic model was based on the WGS 84
+       * This class represents the ellipsoidal model defined in
+       * ICD-GPS-200.  This ellipsoid model was based on the WGS 84
        * model, which has changed since the ICD-GPS-200 was written.
        * To save the cost of having to update all of the fielded
        * receivers, these constants were kept for GPS purposes.
        *
-       * Only some of the WGS 84 geodetic model parameters are defined
+       * Only some of the WGS 84 ellipsoid model parameters are defined
        * as part of the 200.  These parameters are explicitly defined
        * here.  Other parameters are inherited from the WGS84Ellipsoid
        * definition.

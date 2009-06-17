@@ -7,8 +7,8 @@
  * Abstract base class modeling a Ellipsoid
  */
 
-#ifndef GPSTK_EllipsoidMODEL_HPP
-#define GPSTK_EllipsoidMODEL_HPP
+#ifndef GPSTK_ELLIPSOIDMODEL_HPP
+#define GPSTK_ELLIPSOIDMODEL_HPP
 
 //============================================================================
 //
@@ -54,7 +54,7 @@ namespace gpstk
       //@{
 
       /**
-       * This abstract class encapsulates geodetic models (e.g. WGS84,
+       * This abstract class encapsulates ellipsoid models (e.g. WGS84,
        * GPS, etc).
        */
    class EllipsoidModel

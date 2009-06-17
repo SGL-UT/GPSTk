@@ -1,5 +1,15 @@
 #pragma ident "$Id$"
 
+#ifdef _MSC_VER
+#pragma message ( "WGS84Geoid.hpp:  WARNING: This class is being renamed to" )
+#pragma message ( "WGS84Ellipsoid.hpp and will be removed in the next" )
+#pragma message ( "major revision. Please update your includes." )
+#else
+#warning "WGS84Geoid.hpp.hpp:  WARNING: This class is being renamed to"
+#warning "WGS84Ellipsoid.hpp and will be removed in the next major revision."
+#warning "Please update your includes."
+#endif
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
