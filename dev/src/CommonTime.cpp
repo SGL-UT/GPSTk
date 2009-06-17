@@ -169,7 +169,7 @@ namespace gpstk
       throw()
    {
       day = m_day;
-      sod = m_msod / MS_PER_SEC + m_fsod;
+      sod = (double)m_msod / MS_PER_SEC + m_fsod;
    }
    
    void CommonTime::get( double& day ) const
@@ -245,7 +245,7 @@ namespace gpstk
       if ( ABS(seconds) >= SEC_PER_MS )
       {
          ms = static_cast<long>( seconds * MS_PER_SEC );
-         seconds -= static_cast<double>( ms ) * SEC_PER_MS;
+         seconds -= static_cast<double>( ms ) / MS_PER_SEC;
       }
 
       add(days, ms, seconds);
@@ -384,7 +384,7 @@ namespace gpstk
       
       if( m_fsod < 0 )
       {
-         m_fsod += 1;
+         m_fsod += SEC_PER_MS;
          --m_msod;
       }
       
