@@ -1,19 +1,11 @@
 #pragma ident "$Id$"
 
+
+
 /**
  * @file GeoidModel.hpp
  * Abstract base class modeling a geoid
  */
-
-#ifdef _MSC_VER
-#pragma message ( "GeoidModel.hpp:  WARNING: This class is being renamed to" )
-#pragma message ( "EllipsoidModel.hpp and will be removed in the next" )
-#pragma message ( "major revision. Please update your includes." )
-#else
-#warning "GeoidModel.hpp:  WARNING: This class is being renamed to"
-#warning "EllipsoidModel.hpp and will be removed in the next major revision."
-#warning "Please update your includes."
-#endif
 
 #ifndef GPSTK_GEOIDMODEL_HPP
 #define GPSTK_GEOIDMODEL_HPP

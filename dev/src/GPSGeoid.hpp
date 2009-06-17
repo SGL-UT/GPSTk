@@ -1,5 +1,7 @@
 #pragma ident "$Id$"
 
+
+
 /**
  * @file GPSGeoid.hpp
  * The GPS geoid defined in ICD-GPS-200
@@ -7,16 +9,6 @@
 
 #ifndef GPSTK_GPSGEOID_HPP
 #define GPSTK_GPSGEOID_HPP
-
-#ifdef _MSC_VER
-#pragma message ( "GPSGeoid.hpp:  WARNING: This class is being renamed to" )
-#pragma message ( "GPSEllipsoid.hpp and will be removed in the next" )
-#pragma message ( "major revision. Please update your includes." )
-#else
-#warning "GPSGeoid.hpp:  WARNING: This class is being renamed to"
-#warning "GPSEllipsoid.hpp and will be removed in the next major revision."
-#warning "Please update your includes."
-#endif
 
 //============================================================================
 //
