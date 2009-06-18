@@ -45,17 +45,18 @@ CheckPRData.hpp Chi2Distribution.hpp CivilTime.hpp ClockModel.hpp \
 CodeBuffer.hpp CommandOption.hpp CommandOptionParser.hpp \
 CommandOptionWithCommonTimeArg.hpp CommandOptionWithPositionArg.hpp \
 CommandOptionWithTimeArg.hpp CommonTime.hpp ConfDataReader.hpp DOP.hpp \
-DayTime.hpp ECEF.hpp EngAlmanac.hpp EngEphemeris.hpp EngNav.hpp ENUUtil.hpp \
-EphemerisRange.hpp EpochClockModel.hpp Exception.hpp Expression.hpp \
-ExtractC1.hpp ExtractCombinationData.hpp ExtractD1.hpp ExtractD2.hpp \
-ExtractData.hpp ExtractL1.hpp ExtractL2.hpp ExtractLC.hpp ExtractP1.hpp \
-ExtractP2.hpp ExtractPC.hpp FFBinaryStream.hpp FFData.hpp FFStream.hpp \
+DayTime.hpp ECEF.hpp EllipsoidModel.hpp EngAlmanac.hpp EngEphemeris.hpp \
+EngNav.hpp ENUUtil.hpp EphemerisRange.hpp EpochClockModel.hpp Exception.hpp \
+Expression.hpp ExtractC1.hpp ExtractCombinationData.hpp ExtractD1.hpp \
+ExtractD2.hpp ExtractData.hpp ExtractL1.hpp ExtractL2.hpp ExtractLC.hpp \
+ExtractP1.hpp ExtractP2.hpp ExtractPC.hpp \
+FFBinaryStream.hpp FFData.hpp FFStream.hpp \
 FFStreamError.hpp FFTextStream.hpp FICAStream.hpp FICBase.hpp FICData.hpp \
 FICData109.hpp FICData162.hpp FICData62.hpp FICData9.hpp \
 FICFilterOperators.hpp FICHeader.hpp FICStream.hpp FICStreamBase.hpp \
 FileFilter.hpp FileFilterFrame.hpp FileFilterFrameWithHeader.hpp \
 FileHunter.hpp FileSpec.hpp FileStore.hpp FileUtils.hpp GPSAlmanacStore.hpp \
-GPSEphemerisStore.hpp GPSWeek.hpp GPSGeoid.hpp \
+GPSEllipsoid.hpp GPSEphemerisStore.hpp GPSGeoid.hpp GPSWeek.hpp \
 GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp GaussianDistribution.hpp \
 GenXSequence.hpp Geodetic.hpp GeoidModel.hpp InOutFramework.hpp \
 IonexBase.hpp IonexData.hpp IonexHeader.hpp IonexStore.hpp IonexStream.hpp \
@@ -85,8 +86,9 @@ StringUtils.hpp StudentDistribution.hpp SunPosition.hpp SystemTime.hpp \
 TabularEphemerisStore.hpp TimeConstants.hpp TimeConverters.hpp \
 TimeNamedFileStream.hpp TimeString.hpp TimeTag.hpp Triple.hpp TropModel.hpp \
 TypeID.hpp UnixTime.hpp ValidType.hpp Vector.hpp VectorBase.hpp \
-VectorBaseOperators.hpp VectorOperators.hpp WGS84Geoid.hpp WeightBase.hpp \
-WxObsMap.hpp X1Sequence.hpp X2Sequence.hpp Xvt.hpp XvtStore.hpp YDSTime.hpp \
+VectorBaseOperators.hpp VectorOperators.hpp WGS84Ellipsoid.hpp WGS84Geoid.hpp \
+WeightBase.hpp WxObsMap.hpp \
+X1Sequence.hpp X2Sequence.hpp Xvt.hpp XvtStore.hpp YDSTime.hpp \
 YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp YumaHeader.hpp YumaStream.hpp \
 convhelp.hpp geometry.hpp gps_constants.hpp gpstkplatform.h \
 icd_200_constants.hpp mergePCodeWords.h stl_helpers.hpp
