@@ -124,7 +124,7 @@ namespace gpstk
       enum CoordinateSystem
       {
          Unknown=0,  ///< unknown coordinate system
-         Geodetic,   ///< geodetic latitude, longitude, and height above geoid
+         Geodetic,   ///< geodetic latitude, longitude, and height above ellipsoid
          Geocentric, ///< geocentric (regular spherical coordinates)
          Cartesian,  ///< cartesian (Earth-centered, Earth-fixed)
          Spherical   ///< spherical coordinates (theta,phi,radius)
