@@ -29,12 +29,16 @@ Version 1.6   Tuesday, June 19, 2009
             This class implements the Chi-square distribution.
          ConfDataReader.[h|c]pp
             This is a class to parse and manage configuration data files.
+         EllipsoidModel.hpp
+            This is a copy of GeoidModel.hpp with the proper name.
          ENUUtil.[h|c]pp
             Converts from Cartesian in XZY to East-North-Up (ENU).
          Epoch.[h|c]pp
             Time representation class for common time formats, including GPS.
          GaussianDistribution.[h|c]pp
             This class implements the Gaussian (or normal) distribution.
+         GPSEllipsoid.hpp
+            This is a copy of GPSGeoid.hpp with the proper name.
          GPSEphemerisStore.[h|c]pp
             Store GPS broadcast ephemeris information.
          GPSWeek.[h|c]pp
@@ -67,6 +71,8 @@ Version 1.6   Tuesday, June 19, 2009
          TabularEphemerisStore.[h|c]pp
             Store a tabular list of Xvt data (such as a table of precise
             ephemeris data in an SP3 file) and compute Xvt from this table.
+         WGS84Ellipsoid.hpp
+            This is a copy of WGS84Geoid.hpp with the proper name.
 
    - Modified in src
          CommonTime.[h|c]pp
@@ -125,16 +131,22 @@ Version 1.6   Tuesday, June 19, 2009
          - /procframe/EclipsedSatFilter.[h|c]pp
             Filters out satellites that are eclipsed by Earth shadow.
          - /procframe/GravitationalDelay.[h|c]pp
-            Computes the delay in the signal due to the gravity field. 
+            Computes the delay in the signal due to the gravity field.
          - /procframe/IonexModel.[h|c]pp
             Computes the main values related to a given GNSS IONEX model, i.e.,
             TEC value, ionospheric mapping function, slant ionospheric delay.
+         - /procframe/Keeper.[h|c]pp
+            This class examines a GNSS Data Structure (GDS) and keeps only
+            specific values according to their TypeIDs.
          - /procframe/LICSDetector2.[h|c]pp
             Detects cycle slips using LI observables
          - /procframe/PhaseCodeAlignment.[h|c]pp
             Aligns phase with code measurements.
          - /procframe/ProcessingList.[h|c]pp
             Stores ProcessingClass objects in a list.
+         - /procfrane/Pruner.[h|c]pp
+            This class examines a GNSS Data Structure (GDS) and prunes specific
+            values according to their TypeIDs.
          - /procframe/RequireObservables.[h|c]pp
             Filters out satellites that don't have the required observations.
          - /procframe/SatArcMarker.[h|c]pp
@@ -186,11 +198,19 @@ Version 1.6   Tuesday, June 19, 2009
    -------------------------
    - Added in apps
          - /clocktools
+            Implements clock time-domain frequency stability metrics as well as
+            data editing, noise identification, and plotting routines. Allows
+            for basic clock stability analyses and is interoperable with other
+            GPSTk programs. Run from the command line with output piped to
+            other GPSTk programs.
          - /ObsArrayEvaluator
-            
+            Refactoring of mpsolve whic is the GPSTk Multipath Environment
+            Evaluator. Computes statistical model of a dual frequency multipath
+            combination. The model is a function of azimuth and/or elevation.
          - /performance
-            Tool for determining if satellites are in or out of the Base24
-            constellation at any given time.
+            Determines the slot numbers of satellites given input files. Also
+            determines if satellites are in or out of the Base24 constellation
+            at any given time.
          - /filetools/EphSum.cpp
             Summary of all ephemerides relevant to the day for a PRN.
          - /geomatics/relposition/StochasticModels.cpp
