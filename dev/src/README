@@ -196,6 +196,43 @@
  */
 
 /**
+ * @example example8.cpp
+ * This program shows how to use GNSS Data Structures (GDS) in a basic way to
+ * obtain 'Precise Point Positioning' (PPP). (@DataStructures.hpp).
+ */
+
+/**
+ * @example example9.cpp
+ * This program shows how to use GNSS Data Structures (GDS) and other classes
+ * to build a reasonable complete application that computes 'Precise Point
+ * Positioning' (PPP). (@DataStructures.hpp).
+ */
+
+/**
+ * @example example10.cpp
+ * This program shows how to use GNSS Data Structures to obtain phase-based
+ * differential positioning (single-differences). (@DataStructures.hpp).
+ */
+
+/**
+ * @example example11.cpp
+ * Example of GPSTk's built-in postscript plotting routines.
+ */
+
+/**
+ * @example example12.cpp
+ * This is a example program to demonstrate some of the functionality of the
+ * ObsID class. The intent is to use ObsID as a key in a STL map of gps data.
+ * ObsID supports identifying the data in a manner that is similiar but can
+ * extend the Rinex 3 specification.
+ */
+
+/**
+ * @example example13.cpp
+ * Example of native surface plots.
+ */
+
+/**
  * @example DayTimeToleranceTest.cpp
  * Tests DayTime for user-defined comparison tolerances.
  */

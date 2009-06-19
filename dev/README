@@ -68,29 +68,31 @@ of functions in the GPSTk library:
    4. Position solution. Includes an implementation of a Receiver Autonomous 
       Integrity Monitoring algorithm.
 
-   5. Mathematics. Includes Matrix and Vector implementations, as well as 
+   5. Mathematics. Includes Matrix and Vector implementations, as well as
       interpolation and numerical integration.
 
-   6. GNSS data structure. Data structures that contain observations mapped
-      to satellites.
+   6. GNSS data structures. Data structures that contain observations mapped
+      according to epochs, satellites, sources and types of observations.
+      Appropriate processing classes are also provided, including a complete
+      'Precise Point Positioning' (PPP) processing chain.
 
-   7. Application framework. Includes processing command lines options, 
+   7. Application framework. Includes processing command lines options,
       providing interactive help and working with file systems.
 
 A more detailed description of the functionality provided by the GPSTk library 
 can be found in the Doxygen documentation on the GPSTk website.
 
 The GPSTk Core Library and its associated test programs can be built 
-independently of building the GPSTk Applications or Auxiliary Libraries.  
-The GPSTk Core Library source code contains no dependencies outside of the 
+independently of building the GPSTk Applications or Auxiliary Libraries.
+The GPSTk Core Library source code contains no dependencies outside of the
 GPSTk Core Library and Standard C++ and will build cleanly on all 
-supported platforms. 
+supported platforms.
 
 
 GPSTk Auxiliary Libraries
 -------------------------
 The auxiliary libraries contains code that could be useful in GNSS processing 
-but do not fit this description and portability of the core library. This code 
+but do not fit this description and portability of the core library. This code
 could contain highly specialized algorithms or be related to the message 
 format of a specific receiver. The code could require libraries or system 
 functions that are broadly available but not part of the C++ standard.  
@@ -99,7 +101,8 @@ Currently the auxiliary libraries are:
    1. rxio - Receiver and input/output library
    2. vplot - Vector graphics library
    3. geomatics - Precise positioning library
-   4. procframe - framework for storage and filtering observations
+   4. procframe - Framework for storage, filtering and processing of
+                  observations, including 'PPP' processing.
 
 GPSTk Applications
 ------------------
