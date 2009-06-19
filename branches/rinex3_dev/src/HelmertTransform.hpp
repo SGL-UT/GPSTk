@@ -62,7 +62,7 @@ namespace gpstk{
    
    class HelmertTransform{
       public:
-      ~HelmertTransform() {	};
+      ~HelmertTransform() {   };
       
       static const HelmertTransform& instance()
                         throw();
@@ -119,21 +119,11 @@ namespace gpstk{
       
       protected:
       
-         //resolve and hand off the Transform struct
+         //This function does the work for the other functions.
       Vector<double>& helperTransform(ReferenceFrame& from,
                                        ReferenceFrame& to,
                                        Vector<double>& vec,
                                        bool translate)
-                        throw();
-      
-      Vector<double>& helperTransformNormal(const Transform& tran,
-                                             Vector<double>& vec
-                                             bool translate)
-                        throw();
-      
-      Vector<double>& helperTransformInverse(const Transform& tran,
-                                             Vector<double>& vec
-                                             bool translate)
                         throw();
       
       LookupMap fromMap;
