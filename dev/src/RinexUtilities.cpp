@@ -221,23 +221,26 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void sortRinexObsFiles(vector<string>& files)
 {
 try {
+   if(files.size() <= 1) return;
    // build a hash with key = start time, value = filename
-   map<DayTime,string> hash;
+   multimap<DayTime,string> hash;
    for(int n=0; n<files.size(); n++) {
-      RinexObsHeader header;
-      RinexObsStream rostream(files[n].c_str());
-      rostream.exceptions(fstream::failbit);
-      try { rostream >> header; } catch(Exception& e) {
+      try {
+         RinexObsHeader header;
+         RinexObsStream rostream(files[n].c_str());
+         rostream.exceptions(fstream::failbit);
+         rostream >> header;
          rostream.close();
-         continue;
+         if(!header.isValid()) continue;
+         //hash[header.firstObs] = files[n];
+         hash.insert(multimap<DayTime,string>::value_type(header.firstObs,files[n]));
       }
-      rostream.close();
-      if(!header.isValid()) continue;
-      hash[header.firstObs] = files[n];
+      catch(Exception& e) { continue; }
    }
+
    // return the sorted file names
    files.clear();
-   map<DayTime,string>::const_iterator it = hash.begin();
+   multimap<DayTime,string>::const_iterator it = hash.begin();
    while(it != hash.end()) {
       files.push_back(it->second);
       it++;
