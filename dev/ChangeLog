@@ -1,3 +1,264 @@
+Version 1.6   Tuesday, June 19, 2009
+
+   General modifications
+   ---------------------
+
+   - Majority of version 1.6 comprised of revision number 19XX, branching
+     took place under revision 11XX from dev/ to RC1.6/
+   - There is now a Rinex3 development branch. This release does not include
+     support for Rinex3 but we hope to include it in the future.
+   - Major improvements in readability of code by adding new comments and
+     rearraging a lot of code
+   - Added the LGPL to serveral files from which it was missing.
+   
+
+   Library modifications
+   ---------------------
+   - Additions to src
+         AllanDeviation.hpp
+            Compute the overlapping Allan variance of the phase data provided.
+         Antenna.[h|c]pp
+            This class encapsulates the data related to GNSS antennas according
+            to IGS standards.
+         AntexReader.[h|c]pp
+            This is a class to read and parse antenna data in Antex file
+            format.
+         BaseDistribution.hpp
+            This is a base class for statistical distributions.
+         Chi2Distribution.[h|c]pp
+            This class implements the Chi-square distribution.
+         ConfDataReader.[h|c]pp
+            This is a class to parse and manage configuration data files.
+         ENUUtil.[h|c]pp
+            Converts from Cartesian in XZY to East-North-Up (ENU).
+         Epoch.[h|c]pp
+            Time representation class for common time formats, including GPS.
+         GaussianDistribution.[h|c]pp
+            This class implements the Gaussian (or normal) distribution.
+         GPSEphemerisStore.[h|c]pp
+            Store GPS broadcast ephemeris information.
+         GPSWeek.[h|c]pp
+            This class is an abstract base class inherited by other
+            GPS-time-related classes.
+         InOutFramework.cpp
+            Framework for programs that take a single type of input data and
+            output a single stream of output.
+         IonexBase.hpp
+            Does not served any purpose other than to make readable inheritance
+            diagrams.
+         IonexData.[h|c]pp
+            Models a IONEX Data Record.
+         IonexHeader.[h|c]pp
+            Models the header for a IONEX file.
+         IonexStore.[h|c]pp
+            Reads and stores Ionosphere maps.
+         IonexStream.hpp
+            Provides access to IONEX files.
+         NEDUtil.[h|c]pp
+            Converts from Cartesian in XZY to North-East-Down (NED).
+         PowerSum.[h|c]pp
+            Computes the power sum of a list of numbers.
+         RKIntegrator.[h|c]pp
+            A virtual base class for the Rune Kutta family of integrators.
+         SP3EphemerisStore.[h|c]pp
+            Interface to read SP3 files into a TabularEphemerisStore.
+         SpecialFunctions.[h|c]pp
+            Contains handy special functions: gamma, erf, erfc, etc.
+         StudentDistribution.[h|c]pp
+            This class implements the t-Student distribution.
+         TabularEphemerisStore.[h|c]pp
+            Store a tabular list of Xvt data (such as a table of precise
+            ephemeris data in an SP3 file) and compute Xvt from this table.
+
+   - Modified in src
+         CommonTime.[h|c]pp
+            Added operator<<() and asString() functions as well as a couple
+            bug fixes.
+         GPSWeekSecond.cpp
+            Fix for 32-bit round off error during day of week calculation.
+         FFTextStream.hpp
+            Fixing a bug when a line of input has more than 256 characters. It
+            now throws an exception when a line has more than 256 characters.
+         MatrixBase.hpp
+            Fixed unary minux operations to return an lvalue.
+         MJD.cpp
+            Fixed a floating-point rounding error problem which could cause
+            exceptions to be thrown when converting to CommonTime.
+         ObsID.[h|c]pp
+            Fixed an error associated with string values for ValueTypes 'Last'
+            and 'Placeholder' not being defined.
+         SP3EphemerisStore.[h|c]pp
+            Modified in order to implement rejection of satellites with bad or
+            absent positional values or clocks. Feature disabled by default.
+         StringUtils.hpp
+            Improved error reporting and slimmed formattedPrint(). Fixed
+            possible "undefined" behavior in matches(). Corrected a bug in
+            translate() which allowed index 'inpos' to access 'outputChars'
+            beyond its length.
+         SVNumXRef.[h|c]pp
+            Modified to account for new data since the last update and to allow
+            a single SVN to have multiple PRNs over time.
+         TimeTag.hpp
+            Throw exceptions on invalid conversions and added a printError()
+            function.
+         TypeID.[h|c]pp
+            Fixed and error associated with string values for ValueTypes 'Last'
+            and 'Placeholder' not being defined.
+
+   - Added in lib
+         - /vdraw
+            vdraw is a modification to vplot and much of the code in vdraw was
+            moved over from vplot. This library allows drawing shapes and text
+            in a vector format and outputting them to files.
+         - /geomatics/SRIleastSquares.[h|c]pp
+            Implements a general least squares algorithm using SRI, including
+            weighted, linear or linearized, robust or sequential algorithms.
+         - /procframe/CodeKalmanSolver.[h|c]pp
+            Computes the code-based solution using a simple Kalman solver.
+         - /procframe/ComputeDOP.[h|c]pp
+            Computes the usual DOP values: GDOP, PDOP, TDOP, HDOP and VDOP.
+         - /procframe/ComputeSatPCenter.[h|c]pp
+            Computes the satellite antenna phase correction, in meters.
+         - /procframe/Decimate.[h|c]pp
+            Decimates GNSS Data Structures data.
+         - /procframe/Dumper.[h|c]pp
+            Dumps the values inside a GNSS Data Structure (GDS), and therefore
+            is meant to be used with the GDS objects found in DataStructures.
+         - /procframe/EclipsedSatFilter.[h|c]pp
+            Filters out satellites that are eclipsed by Earth shadow.
+         - /procframe/GravitationalDelay.[h|c]pp
+            Computes the delay in the signal due to the gravity field. 
+         - /procframe/IonexModel.[h|c]pp
+            Computes the main values related to a given GNSS IONEX model, i.e.,
+            TEC value, ionospheric mapping function, slant ionospheric delay.
+         - /procframe/LICSDetector2.[h|c]pp
+            Detects cycle slips using LI observables
+         - /procframe/PhaseCodeAlignment.[h|c]pp
+            Aligns phase with code measurements.
+         - /procframe/ProcessingList.[h|c]pp
+            Stores ProcessingClass objects in a list.
+         - /procframe/RequireObservables.[h|c]pp
+            Filters out satellites that don't have the required observations.
+         - /procframe/SatArcMarker.[h|c]pp
+            Keeps track of satellite arcs caused by cycle slips.
+         - /procframe/SolverPPP.[h|c]pp
+            Computes the Precise Point Positioning (PPP) solution using Kalman
+            solver that combines ionosphere-free code and phase measurements.
+         - /procframe/SolverPPPFB.[h|c]pp
+            Computes the Precise Point Positioning (PPP) solution using Kalman
+            solver that combines ionosphere-free code and phase measurements
+            and has forwards backwards mode.
+         - /procframe/Synchronize.[h|c]pp
+            Synchronizes two GNSS Data Structures data streams.
+         - /rxio/ObsEphReaderFramework.[h|c]pp
+            Object intened to be created in place of a CommandOptionParser.
+         - /vplot/Axis.[h|c]pp
+            Used to draw a simple axis.
+         - /vplot/AxisStyle.hpp
+            Used to describe an Axis's style.
+         - /vplot/LinePlot.[h|c]pp
+            Used to draw a lineplot.
+         - /vplot/Plot.[h|c]pp
+            Basic plot information.
+         - /vplot/plottypes.hpp
+            Defines plot types.
+         - /vplot/ScatterPlot.[h|c]pp
+            Used to draw a scatter plot.
+         - /vplot/SeriesList.[h|c]pp
+            Used to maintain series information for some types of plots.
+         - /vplot/Splitter.[h|c]pp
+            Used to help with splitting sets of points.
+         - /vplot/SurfacePlot.[h|c]pp
+            Used to draw a surface plot.
+
+   - Changes in lib
+         - /geomatics
+            Major changes to the entire library. Adding new features as
+            described in DDBase.cpp
+         - /procframe/Equation.hpp
+            Added '<' operator.
+         - /procframe/LICSDetector.cpp
+            Simpler method to compute 'currentDeltaT' is now used.
+         - /procframe/MWCSDetector.cpp
+            Simpler method to compute 'currentDeltaT' is now used.
+         - /procframe/Variable.hpp
+            Added '<' operator.
+
+   Application modifications
+   -------------------------
+   - Added in apps
+         - /clocktools
+         - /ObsArrayEvaluator
+         - /performance
+            Tool for determining if satellites are in or out of the Base24
+            constellation at any given time.
+         - /filetools/EphSum.cpp
+            Summary of all ephemerides relevant to the day for a PRN.
+         - /geomatics/relposition/StochasticModels.cpp
+            Stochastic model for measurement errors used in estimation.
+         - /geomatics/robust/lsfilt.cpp
+            Read the data in one column of a file, and output as least-squares.
+            filtered version of the data.
+         - /swrx/acquire.cpp
+            FFT based acquisition for GPS L1 band.
+         - /swrx/hilbert.cpp
+            Hilbert transform on samples from output file generated by SiGe
+            SE4110L.
+         - /swrx/position.cpp
+            Position solution.
+         - /swrx/RX.cpp
+            Integrates position solutions into the tracking algorithm.
+         - /swrx/trackerMT.cpp
+            Parallel tracker for multiple PRNs.
+         - /visibility/CalcDOPs.cpp
+            Compute and display satellite visibility information.
+         - /visibility/DiscreteVisibleCounts.[h|c]pp
+            Discrete counts of how many SVs/stations are visible to a
+            station/SV.
+         - /visibility/DOPcalc.cpp
+            Computes several dilution of precision (DOP) parameters.
+
+   - Changes in apps
+         - /geomatics
+            Major changes to the entire application. Added new features in
+            order to match the geomatics library changes.
+         - /MDPtools/SummaryProc.[h|c]pp
+            Better accounting of subframe errors.
+         - /positioning/PRSolve.cpp
+            Added option to process L1 only, L2 only, or iono-free.
+
+   Example modifications
+   -------------------------
+   - Added in examples
+         example8.cpp
+            This program shows how to use GNSS Data Structures (GDS) to obtain
+            "Precise Point Positioning" (PPP).
+         example9.cpp
+            This program shows how to use GNSS Data Structures (GDS) and other
+            classes to build a reasonable complete application that computes
+            "Precise Point Positioning" (PPP).
+         example10.cpp
+            This program shows how to use GNSS Data Structures (GDS) to obtain
+            phase-based differential positioning (single-differences).
+         example11.cpp
+            Example of GPSTk's built-in postscript plotting routines.
+         example12.cpp
+            This is a example program to demonstrate some of the functionality
+            of the ObsID class. The intent is to use ObsID as a key in a STL
+            map of gps data. ObsID supports identifying the data in a manner
+            that is similiar but can extend the Rinex 3 specification.
+         example13.cpp
+            Example of native surface plots.
+   - Changes in examples
+         example7.cpp
+            Added example useage of code-based kalman filtering. Example 7 has
+            also become a showcase for several of the new classes added since
+            the last release.
+   - Cleaned up and added comments to various examples to make them more useful
+
+
+	#################################################
+
 Version 1.5   Tuesday, March 11, 2008
 
 	General modifications
