@@ -4,7 +4,7 @@ Version 1.6   Tuesday, June 19, 2009
    ---------------------
 
    - Majority of version 1.6 comprised of revision number 19XX, branching
-     took place under revision 11XX from dev/ to RC1.6/
+     took place under revision 19XX from dev/ to RC1.6/
    - There is now a Rinex3 development branch. This release does not include
      support for Rinex3 but we hope to include it in the future.
    - Major improvements in readability of code by adding new comments and
@@ -58,8 +58,6 @@ Version 1.6   Tuesday, June 19, 2009
             Converts from Cartesian in XZY to North-East-Down (NED).
          PowerSum.[h|c]pp
             Computes the power sum of a list of numbers.
-         RKIntegrator.[h|c]pp
-            A virtual base class for the Rune Kutta family of integrators.
          SP3EphemerisStore.[h|c]pp
             Interface to read SP3 files into a TabularEphemerisStore.
          SpecialFunctions.[h|c]pp
@@ -189,6 +187,7 @@ Version 1.6   Tuesday, June 19, 2009
    - Added in apps
          - /clocktools
          - /ObsArrayEvaluator
+            
          - /performance
             Tool for determining if satellites are in or out of the Base24
             constellation at any given time.

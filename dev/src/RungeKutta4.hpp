@@ -36,7 +36,7 @@
 #ifndef GPSTK_RUNGEKUTTA4_H
 #define GPSTK_RUNGEKUTTA4_H
 
-#include "RKIntegrator.hpp"
+#include "Matrix.hpp"
 
 namespace gpstk
 {
@@ -44,9 +44,10 @@ namespace gpstk
    /** @addtogroup math */
    //@{
 
-      /** The RungeKutta4 class provides a fourth (and fifth) order integrator, a good general purpose integrator for non-stiff problems.
+      /** The RungeKutta4 class provides a collection of integration routines
+       * that work on a Matrix of doubles.  Integrations use a fixed step-size.
        */
-  class RungeKutta4: public RKIntegrator
+   class RungeKutta4 
    {
    public:
          /** Constructor.
@@ -59,8 +60,9 @@ namespace gpstk
       RungeKutta4(const Matrix<double>& initialState,
                   double initialTime=0,
                   double timeEpsilon=1e-18)
-	: RKIntegrator(initialState, initialTime, timeEpsilon),
-          k1(M,N), k2(M,N), k3(M,N), k4(M,N), yn(M,N), tempy(M,N)
+            : currentState(initialState), currentTime(initialTime), 
+              teps(timeEpsilon), M(initialState.rows()), N(initialState.cols()),
+              k1(M,N), k2(M,N), k3(M,N), k4(M,N), yn(M,N), tempy(M,N)
          { }     
 
          /** The classic Runge Kutta 4th Order Integration Algorithm.
@@ -97,8 +99,25 @@ namespace gpstk
                  const gpstk::Matrix<double>& inState,
                  gpstk::Matrix<double>& inStateDot) = 0;
 
+         /// Return the currnet time of the system.
+      double getTime(void) 
+      { return currentTime; }
+
+         /// Return the current state of the system.
+      const Matrix<double>& getState(void) 
+      { return currentState; }
+
    protected:
       
+         /// Current time of the system
+      double currentTime;
+
+         /// State of the system at the current time
+      gpstk::Matrix<double> currentState;
+
+      double teps;   //< Precision for time calculations and comparisons
+      int M;         //< Number of rows in the state
+      int N;         //< Number of columns in the state
 
    private:
 
