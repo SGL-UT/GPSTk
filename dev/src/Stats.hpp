@@ -39,11 +39,11 @@ namespace gpstk
    /** @addtogroup math */
    //@{
  
-/** Conventional statistics for one sample.  Constructor does the same as
- * Reset(); use this when starting a new series of input samples.
- * Results are available at any time by calling N(), Minimum(), Maximum(),
- * Average(), Variance() and StdDev().
- */
+   /// Conventional statistics for one sample.  Constructor does the same as
+   /// Reset(); use this when starting a new series of input samples.
+   /// Results are available at any time by calling N(), Minimum(), Maximum(),
+   /// Average(), Variance() and StdDev().
+   /// NB. Normalization of 1/(n-1) (only!) is applied to Variance
    template <class T>
 
    class Stats
@@ -75,68 +75,61 @@ namespace gpstk
       /// return computed average
       inline T Average(void) const
       {
-         // normalization constant is (W=sum wts)/n, -> 1 when all wts=1
-         if(n == 0)
-            return T();
-         if(weighted)
-            return (T(n)*ave/W);
+         if(n == 0) return T();
          return ave;
       }
 
       /// return computed variance
       inline T Variance(void) const
       {
-         if(n == 0)
-            return T();
-         if(weighted) {
-            T wn=W/T(n);
-            return (var/wn/wn/wn/wn);
-         }
-         return var;
+         if(n <= 1) return T();
+         return (var/T(n-1));
       }
 
       /// return computed standard deviation
       inline T StdDev(void) const
       {
-         if(n == 0)
-            return T();
-         if(weighted) {
-            T wn=W/T(n);
-            return SQRT(ABS(var))/wn/wn;
-         }
+         if(n == 0) return T();
          return SQRT(ABS(var));
       }
 
       /// return the normalization constant = sum weights
-      inline T Normalization(void) const
-      { return W; }
+      inline T Normalization(void) const { return W; }
 
       /// return weight flag
-      inline bool Weighted(void) const
-      { return weighted; }
+      inline bool Weighted(void) const { return weighted; }
 
       /// add a single sample to the computation of statistics, with optional weight
-      void Add(const T& x, const T& wt=T())
+      void Add(const T& x, const T& wt_in=T())
       {
-         if(wt != T()) weighted=true;
+         T wt(ABS(wt_in));
+         if(wt != T()) { weighted=true; }
 
-         T xx(x);
-         n++;
-         if(n == 1) {
-            min = max = ave = xx;
-            if(weighted) ave *= wt;
+         if(n == 0) {
+            min = max = ave = x;
+            //if(weighted) ave *= wt;
             var = T();
             W = T();
          }
          else {
-            if(xx < min) min=xx;
-            if(xx > max) max=xx;
+            if(x < min) min=x;
+            if(x > max) max=x;
          }
 
-         if(weighted) { xx *= wt;  W += wt; }
-         ave += (xx-ave)/T(n);
-         if(n > 1)
-            var = (var*T(n-2) + T(n)*(xx-ave)*(xx-ave)/T(n-1))/T(n-1);
+         if(weighted) {
+            if(W+wt > 1.e-10)       // if W+wt=0, nothing yet has had non-zero weight
+               ave += (x-ave)*(wt/(W+wt));
+            if(n > 0 && W > 1.e-10)
+               var = (W/(W+wt))*var + (x-ave)*(x-ave)*(wt/W);
+            W += wt;
+         }
+         else {
+            ave += (x-ave)/(n+1);
+            if(n > 0)
+               var = n*var/(n+1) + (x-ave)*(x-ave)/n;
+         }
+
+         n++;
       }
 
       /// add a Vector<T> of samples to the computation of statistics,
@@ -156,16 +149,27 @@ namespace gpstk
       }
 
       /// remove a sample from the computation of statistics (can't do min and max).
-      void Subtract(T x)
+      void Subtract(const T x, const T wt_in=T())
       {
-         T dn=T(n);
-         if(n > 2) var=(var*(dn-T(1))-dn*(x-ave)*(x-ave)/(dn-T(1)))/(dn-T(2));
-         else var=T();
-        
-         if(n > 1) ave=(ave*dn-x)/(dn-T(1));
-         else if(n==1) ave=x;
-         else ave=T();
-
+         if(n == 0) return;
+         if(weighted) {
+            if(W > 1.e-10) {
+               T wt(ABS(wt_in));
+               if(W-wt > 1.e-10)
+                  var = (var - (wt/(W-wt))*(x-ave)*(x-ave)) * (W/(W-wt));
+               else
+                  var = T();
+               ave = (ave - wt*x/W)*W/(W-wt);
+               W -= wt;
+            }
+            else { ave = var = W = T(); }
+         }
+         else {
+            T dn(n);
+            if(n > 1) var = (var - (x-ave)*(x-ave)/(n-1))*dn/(dn-1.0);
+            else var = T();
+            ave = dn*(ave - x/dn)/(dn-1.0);
+         }
          n--;
       }
 
@@ -194,10 +198,7 @@ namespace gpstk
       Stats<T>& operator+=(const Stats<T>& S)
       {
          if(S.n == 0) return *this;
-         if(n==0) {
-            *this = S;
-            return *this;
-         }
+         if(n==0) { *this = S; return *this; }
          if((weighted && !S.weighted) || (!weighted && S.weighted)) {
             Exception e("Stats::operator+= : operands have inconsistent weighting");
             GPSTK_THROW(e);
@@ -206,23 +207,23 @@ namespace gpstk
          if(S.min < min) min=S.min;
          if(S.max > max) max=S.max;
 
+         T newave, newvar;
          if(weighted) {
-            T W1 = W/n;
-            T W2 = S.W/S.n;
-            var  = W1*W1*((n-T(1))*var + n*ave*ave)
-                 + W2*W2*((S.n-T(1))*S.var + S.n*S.ave*S.ave);
-            var *= (n+S.n)/(W+S.W);
-            var *= (n+S.n)/(W+S.W);
-            W += S.W;
+            if(W + S.W > 1.e-10) {
+               newave = W*ave + S.W*S.ave;
+               newvar = W*var + S.W*S.var + W*ave*ave + S.W*S.ave*S.ave;
+               W += S.W;
+               ave = newave/W;
+               var = (newvar-W*ave*ave)/W;
+            }
          }
          else {
-            var  = ((n-T(1))*var + n*ave*ave);
-            var += ((S.n-T(1))*S.var + S.n*S.ave*S.ave);
+            newave = n*ave + S.n*ave;
+            newvar = n*var + S.n*S.var + n*ave*ave + S.n*S.ave*S.ave;
+            ave = newave/n;
+            var = (newvar-n*ave*ave)/n;
          }
-         ave = (n*ave + S.n*S.ave)/(n+S.n);
          n += S.n;
-         var -= n*ave*ave;
-         var /= (n-T(1));
 
          return *this;
 
@@ -233,18 +234,25 @@ namespace gpstk
    private:
       /// Number of samples added to the statistics so far
       unsigned int n;
+
       /// Minimum value
       T min;
+
       /// Maximum value
       T max;
+
       /// Average value
       T var;
+
       /// Variance (square of the standard deviation)
       T ave;
+
       /// Normalization constant = sum weights
       T W;
+
       /// Flag weighted input; ALL input must be consistently weighted or not
       bool weighted;
+
    }; // end class Stats
 
    /// Output operator for Stats class
@@ -261,11 +269,10 @@ namespace gpstk
       return s;
    }
 
-/** Conventional statistics for two samples.  Constructor does the same as
- * Reset(); use this when starting a new series of input samples.
- * Results are available at any time by calling N(), Minimum(), Maximum(),
- * Average(), Variance() and StdDev().
- */
+   /// Conventional statistics for two samples.  Constructor does the same as
+   /// Reset(); use this when starting a new series of input samples.
+   /// Results are available at any time by calling N(), Minimum(), Maximum(),
+   /// Average(), Variance() and StdDev().
    template <class T>
    class TwoSampleStats
    {
@@ -478,7 +485,7 @@ namespace gpstk
       return s;
    }
 
-   /** Compute the median of a vector */
+   /// Compute the median of a vector
    template <class T>
    inline T median(const Vector<T>& v)
    {
