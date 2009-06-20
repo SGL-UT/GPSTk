@@ -93,7 +93,7 @@ int  main ()
                        Text::CENTER );
 
       // Let's define a simple interpolated palette of colors
-   Palette p( Color(Color::GREY), -1, 1);       // Grey will be at the extremes
+   Palette p( Color::GREY, -1, 1);           // Grey will be at the extremes
 
       // Add colors to the palette, with matching indexes
    p.setColor( 0.00, Color(Color::BLUE)   );
