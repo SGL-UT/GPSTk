@@ -1,0 +1,4 @@
+SubDir TOP PolyFit ;
+
+TestMain PolyFit/xPolyFit.tst : PolyFit/xPolyFitM.cpp PolyFit/xPolyFit.cpp PolyFit/PolyFit.cpp ;
+

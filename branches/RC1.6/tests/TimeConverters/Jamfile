@@ -1,0 +1,2 @@
+SubDir TOP TimeConverters ;
+TestMain TimeConverters/xTimeConverters.tst : TimeConverters/xTimeConvertersM.cpp TimeConverters/xTimeConverters.cpp TimeConverters/TimeConverters.cpp ;

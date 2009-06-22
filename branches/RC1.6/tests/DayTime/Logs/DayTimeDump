@@ -1,0 +1,58 @@
+  double JD(): 2453969.062500
+  double MJD(): 53968.562500
+  short year(): 2006
+  short month(): 8
+  short day(): 21
+  short dayOfWeek(): 1
+  void getYMD(int& yy, int& mm, int& dd): 2006 8 21
+  short hour(): 13
+  short minute(): 30
+  double second(): 0.000000
+  double secOfDay(): 48600.000000
+  short GPS10bitweek(): 365
+  long GPSzcount(): 90000
+  long GPSzcountFloor(): 90000
+  double GPSsecond(): 135000.000000
+  double GPSsow(): 135000.000000
+  short GPSday(): 1
+  short GPSfullweek(): 1389
+  short GPSyear(): 2006
+  short DOYyear(): 2006
+  short DOYday(): 233
+  short DOY(): 233
+  double DOYsecond(): 48600.000000
+  double MJDdate(): 53968.562500
+  long double getMJDasLongDouble(): 53968.562500
+  struct timeval unixTime(): 1156167000 0
+  unsigned long fullZcount(): 191455120
+  unsigned long fullZcountFloor(): 191455120
+  double JD(): 2453969.062500
+  double MJD(): 53968.562500
+  short year(): 2006
+  short month(): 8
+  short day(): 21
+  short dayOfWeek(): 1
+  void getYMD(int& yy, int& mm, int& dd): 2006 8 21
+  short hour(): 13
+  short minute(): 30
+  double second(): 0.000000
+  double secOfDay(): 48600.000000
+  short GPS10bitweek(): 365
+  long GPSzcount(): 90000
+  long GPSzcountFloor(): 90000
+  double GPSsecond(): 135000.000000
+  double GPSsow(): 135000.000000
+  short GPSday(): 1
+  short GPSfullweek(): 1389
+  short GPSyear(): 2006
+  short DOYyear(): 2006
+  short DOYday(): 233
+  short DOY(): 233
+  double DOYsecond(): 48600.000000
+  double MJDdate(): 53968.562500
+  long double getMJDasLongDouble(): 53968.562500
+  struct timeval unixTime(): 1156167000 0
+  unsigned long fullZcount(): 191455120
+  unsigned long fullZcountFloor(): 191455120
+08/21/2006 13:30:00
+08/21/2006 13:30:00

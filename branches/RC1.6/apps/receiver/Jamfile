@@ -1,0 +1,12 @@
+# $Id$
+
+SubDir TOP apps receiver ;
+
+GPSLinkLibraries rtAshtech : gpstk rxio ;
+
+# This is just a quick hack to get the build working again
+SEARCH_SOURCE += $(TOP)/apps/rfw ;
+
+BonkForte ; # bleah.
+
+GPSMain rtAshtech : AshtechMessage.cpp rtAshtech.cpp ScreenControl.cpp ;

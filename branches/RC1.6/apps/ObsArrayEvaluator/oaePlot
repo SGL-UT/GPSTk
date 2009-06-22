@@ -1,0 +1,127 @@
+#!/usr/bin/env python
+
+import sys, string, time, datetime, numpy, matplotlib, pylab
+
+from optparse import OptionParser
+parser = OptionParser(usage="usage: %prog [options]\nA program to plot a table of numbers using matplotlib.")
+parser.set_description
+parser.add_option("-d", "--debug", default=0, dest="debugLevel", action="count",
+                  help="Increase the debugLevel")
+
+parser.add_option("-i", "--input", dest="inputFile", type="string", action="store", 
+                  help="Input data file, defaults to stdin.")
+
+parser.add_option("-t", "--title", dest="title", type="string", action="store",
+                  help="Specify a title for the plot. Defaults ot the stream name.")
+
+parser.add_option("-x", "--x-col", dest="xcol", type="int", action="store",
+                  help="Selects the column to use as the x axis with 0 being the first column. The default is to use the row number")
+
+parser.add_option("-y", "--y-cols", dest="ycols", action="append", type="int",
+                  help="Selects a column to be plotted on the y axis with 0 being the first column. The default is to plot  all columns.")
+
+parser.add_option("-s", "--save-figure", dest="saveFig", action="store",
+                  type="string",
+		  help="Save the figure to the indicated file")
+
+(options, args) = parser.parse_args()
+
+if len(args) and options.inputFile == None:
+    options.inputFile = args[0]
+
+inputFile = sys.stdin
+if (options.inputFile):
+    inputFile = open(options.inputFile)
+
+if options.title == None:
+    options.title = inputFile.name
+
+cols = 0;
+data =[]
+labels =[]
+
+for line in inputFile:
+    line = line.strip()
+
+    if len(line)==0: continue
+    
+    words=line.split()
+
+    if line[0] == "#":
+        labels = [w for w in words[1:]]
+        if options.debugLevel:
+            print labels
+        continue
+
+    if cols == 0:
+        cols = len(words)
+    elif cols != len(words):
+        print "change in cols"
+        continue
+
+    row = [float(w) for w in words]
+    data.append(row)
+
+# A key handler for matplotlib
+def press(event):
+    if event.key=='q' or event.key==' ':
+        pylab.close()
+
+# Here we start generating the plots
+pylab.connect('key_press_event', press)
+
+data = numpy.array(data)
+
+ax=pylab.subplot(111)
+
+(rows,cols) = data.shape;
+if len(labels)<cols:
+    labels =['time']
+    labels += ['%d'%c for c in xrange(1,cols)]
+
+use_date = False
+
+xlabel = 'row'
+if options.xcol:
+    xlabel = labels[options.xcol]
+elif use_date:
+    xlabel = 'time'
+
+if options.xcol:
+    if options.debugLevel:
+        print "Using column",options.xcol,"for x axis."
+    xdata = data[:,options.xcol]
+elif cols>1:
+    if options.debugLevel:
+        print "Using column 0 for x axis."
+    xdata=data[:0]
+else:
+    xdata=range(0,len(data))
+
+if not options.ycols:
+    options.ycols=xrange(1,cols)
+
+for c in options.ycols:
+    pylab.plot(xdata, data[:,c], '.', label=labels[c], markersize=1.25)
+    
+pylab.legend()
+pylab.xlabel(xlabel)
+
+if use_date:
+    xMajorFmt=pylab.DateFormatter("%b %d")
+    xMinorFmt=pylab.NullFormatter()
+    xMajorLoc=matplotlib.dates.DayLocator()
+    xMinorLoc=matplotlib.dates.HourLocator()
+    ax.xaxis.set_major_formatter(xMajorFmt)
+    ax.xaxis.set_minor_formatter(xMinorFmt)
+
+    labels = ax.get_xticklabels()
+    pylab.setp(labels, 'rotation', 45, fontsize=9)
+
+ax.autoscale_view()
+pylab.grid()
+
+if (options.saveFig == None):
+    pylab.show()
+else:
+   pylab.savefig(options.saveFig)
