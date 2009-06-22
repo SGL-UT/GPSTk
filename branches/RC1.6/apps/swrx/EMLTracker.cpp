@@ -192,7 +192,7 @@ void EMLTracker::updateLoop()
    iadCountMax = static_cast<unsigned long>(chips / localReplica.chipsPerTick);
    if (iadCountMax < static_cast<unsigned long>((1/localReplica.tickSize)/2.0)*1e-3 ) 
    {
-      iadCountMax += static_cast<unsigned long>(1 / localReplica.tickSize )* 1e-3;
+      iadCountMax += static_cast<unsigned long>((1 / localReplica.tickSize )* 1e-3);
    }
 }
 

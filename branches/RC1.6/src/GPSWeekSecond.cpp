@@ -44,7 +44,7 @@ namespace gpstk
       try
       {
 	//int dow = static_cast<int>( sow * DAY_PER_SEC ); // Appears to have rounding issues on 32-bit platforms
-         int dow = sow / SEC_PER_DAY;
+         int dow = static_cast<int>( sow / SEC_PER_DAY );
          int jday = GPS_EPOCH_JDAY + ( 7 * week ) + dow;
          double sod(  sow - SEC_PER_DAY * dow );
          return CommonTime( jday, 
