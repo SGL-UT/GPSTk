@@ -14,17 +14,17 @@ HelmertTransform::HelmertTransform()
 	populateTransformMaps();
 }
 
-HelmertTransform::HelmertTransform(const HelmertTransform& ht)
+HelmertTransform::HelmertTransform( const HelmertTransform& ht )
 	throw()
 {
 	//Do nothing
 }
 
-HelmertTransform& HelmertTransform::operator=(const HelmertTransform& ht)
+HelmertTransform& HelmertTransform::operator=( const HelmertTransform& right )
 	throw()
 {
-	HelmertTransform ret(ht);
-	return ret;
+   fromMap = right.fromMap;
+   return *this;
 }/**/
 
 const HelmertTransform& HelmertTransform::instance()
@@ -261,9 +261,35 @@ void HelmertTransform::populateTransformMaps()
    fromMap[ReferenceFrame::PZ90] = pz90;
 }
 
-Transform& buildTransform(TransformParameters& tp)
+Transform& HelmertTransform::buildTransform(TransformParameters& tp)
 	throw()
 {
+/*
+	params = tp;
+
+	rotation = Matrix<double>(3,3,0.0);
+		rotation(0,0) = tp.scale + 1;
+		rotation(0,1) = -tp.r3;
+		rotation(0,2) = tp.r2;
+		
+		rotation(1,0) = tp.r3;
+		rotation(1,1) = tp.scale + 1;
+		rotation(1,2) = -tp.r1;
+		
+		rotation(2,0) = -tp.r2;
+		rotation(2,1) = tp.r1;
+		rotation(2,2) = tp.scale + 1;
+	
+	translation = Vector<double>(3,0.0);
+		translation(0) = tp.t1;
+		translation(1) = tp.t2;
+		translation(2) = tp.t3;
+	
+	inverseRotation = inverse(rotation);
+	
+	return *this;
+*/
+
 	Transform trans;
 	trans.params = tp;
 	trans.rotation = Matrix<double>(3,3,0.0);
@@ -286,5 +312,5 @@ Transform& buildTransform(TransformParameters& tp)
 	
 	trans.inverseRotation = inverse(trans.rotation);
 	
-	return trans;
+	return *trans;
 }
