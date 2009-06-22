@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <string>
+#include <map>
 
 #include "Exception.hpp"
 
@@ -28,6 +29,12 @@ namespace gpstk{
       ReferenceFrame(int index)
          throw();
       
+      ReferenceFrame(const char str[])
+      	throw();
+      
+      ReferenceFrame(const std::string str)
+      	throw();
+      
       virtual ~ReferenceFrame() {   };
       
       void setReferenceFrame(const FramesEnum reference)
@@ -39,7 +46,9 @@ namespace gpstk{
       
       std::string& asString() const
          throw();
-      void fromString(std::string& name) const
+      void fromString(const char name[])
+      	throw();
+      void fromString(const std::string& name)
          throw();
       
       bool operator==(const ReferenceFrame right) const
@@ -56,6 +65,9 @@ namespace gpstk{
          throw();
       
       private:
+      
+      void initialize()
+      	throw();
       
       FramesEnum frame;
       static std::map<FramesEnum, std::string> names;

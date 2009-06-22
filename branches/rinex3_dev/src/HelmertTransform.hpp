@@ -64,6 +64,9 @@ namespace gpstk{
       public:
       ~HelmertTransform() {   };
       
+      static const double MAS;
+      static const double PPB;
+      
       static const HelmertTransform& instance()
                         throw();
       
@@ -71,10 +74,10 @@ namespace gpstk{
          //from/to do not exist this function defines a new Transform
          //mapping. Otherwise, this function redefines the current
          //mapping to use the provided transform parameters.
-      void defineTransform(const struct TransformParameters& tp,
+      void defineTransform(struct TransformParameters& tp,
                            const ReferenceFrame& to,
                            const ReferenceFrame& from)
-                        throw();
+                        throw(InvalidParameter&);
       
       struct Transform& getTransform(const ReferenceFrame& from,
                                        const ReferenceFrame& to)
@@ -120,19 +123,29 @@ namespace gpstk{
       protected:
       
          //This function does the work for the other functions.
-      Vector<double>& helperTransform(ReferenceFrame& from,
-                                       ReferenceFrame& to,
+      Vector<double>& helperTransform(const ReferenceFrame& from,
+                                       const ReferenceFrame& to,
                                        Vector<double>& vec,
                                        bool translate)
-                        throw();
+                        throw(InvalidParameter&);
+      
+      //Initializer
+      void populateTransformMaps()
+      						throw();
+      
+      Transform& buildTransform(TransformParameters& tp)
+      	throw();
       
       LookupMap fromMap;
       
          //Constructors. Because we want this class to be a singleton,
          //these need to be private or protected.
-      HelmertTransform();
-      HelmertTransform(const HelmertTransform& ht) {   };
-      HelmertTransform& operator=(const HelmertTransform& ht);
+      HelmertTransform()
+      	throw();
+      HelmertTransform(const HelmertTransform& ht)
+      	throw();
+      HelmertTransform& operator=(const HelmertTransform& ht)
+      	throw();
    };//class HelmertTransform
    
 }//namespace gpstk

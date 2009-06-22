@@ -2,6 +2,31 @@
 
 #include "HelmertTransform.hpp"
 
+using namespace gpstk;
+
+const double HelmertTransform::MAS = 7.71605e-10;
+const double HelmertTransform::PPB = 1e-9;
+
+/**/
+HelmertTransform::HelmertTransform()
+	throw()
+{
+	populateTransformMaps();
+}
+
+HelmertTransform::HelmertTransform(const HelmertTransform& ht)
+	throw()
+{
+	//Do nothing
+}
+
+HelmertTransform& HelmertTransform::operator=(const HelmertTransform& ht)
+	throw()
+{
+	HelmertTransform ret(ht);
+	return ret;
+}/**/
+
 const HelmertTransform& HelmertTransform::instance()
                   throw()
 {
@@ -9,7 +34,7 @@ const HelmertTransform& HelmertTransform::instance()
    return inst;
 }
 
-void HelmertTransform::defineTransform(const TransformParameters& tp,
+void HelmertTransform::defineTransform(TransformParameters& tp,
                                        const ReferenceFrame& to,
                                        const ReferenceFrame& from)
                   throw(InvalidParameter&)
@@ -27,7 +52,7 @@ void HelmertTransform::defineTransform(const TransformParameters& tp,
                                  " to " + to.asString() + " already exists...");
       }
       //I think...
-      tmap[to] = tp;
+      tmap[to] = buildTransform(tp);
    }
    else
    {
@@ -36,7 +61,7 @@ void HelmertTransform::defineTransform(const TransformParameters& tp,
          throw InvalidParameter("Cannot define transformation backwards. A transformation is already defined in the reverse order.");
          //Since it didn't trip that trap...
       TransformMap tmap;
-      tmap[to] = tp;
+      tmap[to] = buildTransform(tp);
       fromMap[from] = tmap;
    }
 }
@@ -121,7 +146,7 @@ Triple& HelmertTransform::posTransform(const ReferenceFrame& from,
    
    newPos = velTransform(from, to, newPos);
    
-   pos = Triple(newPos(0), newPos(1), newPos(2))
+   pos = Triple(newPos(0), newPos(1), newPos(2));
    return pos;
 }
 
@@ -139,7 +164,7 @@ Triple& HelmertTransform::velTransform(const ReferenceFrame& from,
    
    newVel = velTransform(from, to, newVel);
    
-   vel = Triple(newVel(0), newVel(1), newVel(2))
+   vel = Triple(newVel(0), newVel(1), newVel(2));
    return vel;
 }
 
@@ -159,13 +184,13 @@ Vector<double> HelmertTransform::velTransform(const ReferenceFrame& from,
                                                 Vector<double>& vel)
                   throw(InvalidParameter&)
 {
-   if(from == Unknown || to == Unknown)
+   if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
       throw InvalidParameter("Unknown ReferenceFrame - Cannot perform Helmert Transformation.");
    return helperTransform(from, to, vel, false);
 }
 
-Vector<double>& helperTransform(ReferenceFrame& from,
-                                 ReferenceFrame& to,
+Vector<double>& HelmertTransform::helperTransform(const ReferenceFrame& from,
+                                 const ReferenceFrame& to,
                                  Vector<double>& vec,
                                  bool translate)
                   throw(InvalidParameter&)
@@ -208,7 +233,7 @@ Vector<double>& helperTransform(ReferenceFrame& from,
          {
             vec -= t.translation;
          }
-         vec = vec * inverseRotation;
+         vec = vec * t.inverseRotation;
       }
       else
       {
@@ -217,3 +242,49 @@ Vector<double>& helperTransform(ReferenceFrame& from,
       }
    }
 }//End helperTransform();
+
+void HelmertTransform::populateTransformMaps()
+   	throw()
+{
+   TransformParameters pz;
+   	pz.scale = -3e-9;
+   	pz.r1 = -19 * MAS;
+   	pz.r2 = -4 * MAS;
+   	pz.r3 = 353 * MAS;
+   	pz.t1 =  0.0700;
+   	pz.t2 = -0.0567;
+   	pz.t3 = -0.7733;
+   
+   Transform t = buildTransform(pz);
+   TransformMap pz90;
+   pz90[ReferenceFrame::WGS84] = t;
+   fromMap[ReferenceFrame::PZ90] = pz90;
+}
+
+Transform& buildTransform(TransformParameters& tp)
+	throw()
+{
+	Transform trans;
+	trans.params = tp;
+	trans.rotation = Matrix<double>(3,3,0.0);
+		trans.rotation(0,0) = tp.scale + 1;
+		trans.rotation(0,1) = -tp.r3;
+		trans.rotation(0,2) = tp.r2;
+		
+		trans.rotation(1,0) = tp.r3;
+		trans.rotation(1,1) = tp.scale + 1;
+		trans.rotation(1,2) = -tp.r1;
+		
+		trans.rotation(2,0) = -tp.r2;
+		trans.rotation(2,1) = tp.r1;
+		trans.rotation(2,2) = tp.scale + 1;
+	
+	trans.translation = Vector<double>(3,0.0);
+		trans.translation(0) = tp.t1;
+		trans.translation(1) = tp.t2;
+		trans.translation(2) = tp.t3;
+	
+	trans.inverseRotation = inverse(trans.rotation);
+	
+	return trans;
+}

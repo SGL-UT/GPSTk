@@ -4,6 +4,9 @@
 
 namespace gpstk
 {
+	
+	std::map<ReferenceFrame::FramesEnum, std::string> ReferenceFrame::names;
+   
       //Print's the name of the reference frame to the specified
       //ostream.
    std::ostream& operator<<(std::ostream& os,
@@ -12,15 +15,17 @@ namespace gpstk
       return os << rf.asString();
    }
    
-   ReferenceFrame::ReferenceFrame(FramesEnum reference = Unknown)
+   ReferenceFrame::ReferenceFrame(FramesEnum reference)
       throw()
    {
+   	initialize();
       setReferenceFrame(reference);
    }
    
    ReferenceFrame::ReferenceFrame(int index)
       throw()
    {
+   	initialize();
          //We use names.size() as our upper bound so we can
          //dynamically load new reference frames into this class
       if(index < Unknown || index > names.size())
@@ -29,34 +34,49 @@ namespace gpstk
          frame = static_cast<FramesEnum>(index);
    }
    
+   ReferenceFrame::ReferenceFrame(const std::string str)
+   	throw()
+   {
+   	fromString(str);
+	}
+   
+   ReferenceFrame::ReferenceFrame(const char str[])
+   	throw()
+   {
+   	fromString(str);
+	}
+   
    void ReferenceFrame::setReferenceFrame(const FramesEnum reference)
       throw()
    {
       if(reference < Unknown || reference > names.size())
-         frame = reference;
+         frame = Unknown;
+      else
+      	frame = reference;
    }
-   FramesEnum ReferenceFrame::getFrame() const
+   ReferenceFrame::FramesEnum ReferenceFrame::getFrame() const
       throw()
    {
       return frame;
    }
    
-   ReferenceFrame& createReferenceFrame(std::string& name)
+   ReferenceFrame& ReferenceFrame::createReferenceFrame(std::string& name)
       throw()
    {
-      if(!names.count(name))
+   	int index;
+      for(index = 0; index < names.size(); ++index)
       {
-         //Ta da! magic!
-         names[(FramesEnum)names.size()] = name;
-         
-      }
-      else
-      {
-         ReferenceFrame ret;
-            //Since it already exists, just use it
-         ret.fromString(name);
-         return ret;
-      }
+      	if(names[(FramesEnum)index] == name)
+      	{
+      		frame = (FramesEnum)index;
+      		return (*this);
+			}
+		}
+		   //The specified frame dne, create it
+		index = names.size();
+		names[(FramesEnum)index] = name;
+		frame = (FramesEnum)index;
+		return (*this);
    }
    
    std::string& ReferenceFrame::asString() const
@@ -64,14 +84,28 @@ namespace gpstk
    {
       return names[frame];
    }
-   void ReferenceFrame::fromString(std::string& name) const
+   void ReferenceFrame::fromString(const std::string& name)
       throw()
    {
       for(int i = 0; i < names.size(); ++i)
       {
          if(names[(FramesEnum)i] == name)
          {
-            frame = static_cast<FramesEnum>(i);
+            frame = (FramesEnum)i;
+            return;
+         }
+      }
+      frame = Unknown;
+   }
+   
+   void ReferenceFrame::fromString(const char name[])
+      throw()
+   {
+      for(int i = 0; i < names.size(); ++i)
+      {
+         if(names[(FramesEnum)i] == name)
+         {
+            frame = (FramesEnum)i;
             return;
          }
       }
@@ -81,31 +115,44 @@ namespace gpstk
    bool ReferenceFrame::operator==(const ReferenceFrame right) const
       throw()
    {
-      return frame == right.frame;
+      return (frame == right.frame);
    }
    bool ReferenceFrame::operator!=(const ReferenceFrame right) const
       throw()
    {
-      return frame != right.frame;
+      return (frame != right.frame);
    }
    bool ReferenceFrame::operator>(const ReferenceFrame right) const
       throw()
    {
-      return frame > right.frame;
+      return (frame > right.frame);
    }
    bool ReferenceFrame::operator<(const ReferenceFrame right) const
       throw()
    {
-      return frame < right.frame;
+      return (frame < right.frame);
    }
    bool ReferenceFrame::operator>=(const ReferenceFrame right) const
       throw()
    {
-      return frame >= right.frame;
+      return (frame >= right.frame);
    }
    bool ReferenceFrame::operator<=(const ReferenceFrame right) const
       throw()
    {
-      return frame <= right.frame;
+      return (frame <= right.frame);
    }
+   
+   void ReferenceFrame::initialize()
+   	throw()
+   {
+   	   //Use this to make sure it is only initialized once
+   	static bool initialized = false;
+   	if(initialized)
+   	   return;
+   	
+   	names[Unknown] = "Unknown";
+   	names[WGS84] = "WGS84";
+   	names[PZ90] = "PZ90";
+	}
 }
