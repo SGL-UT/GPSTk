@@ -1036,7 +1036,9 @@ namespace gpstk
    {
       int i,j;
 
-      string str = system.systemChar() + " (" + system.systemString() + ")";
+      string str;
+      str = system.systemChar();
+      str += " (" + system.systemString() + ")";
 
       s << "---------------------------------- REQUIRED ----------------------------------" << endl;
       s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
