@@ -1,4 +1,4 @@
-#pragma ident "$Id: HelmertTransform.cpp 2009-06-19 10:50:00 tvarney $"
+#pragma ident "$Id: HelmertTransform.cpp 2009-06-23 9:30:30 tvarney $"
 
 #include "HelmertTransform.hpp"
 
@@ -7,27 +7,26 @@ using namespace gpstk;
 const double HelmertTransform::MAS = 7.71605e-10;
 const double HelmertTransform::PPB = 1e-9;
 
-/**/
 HelmertTransform::HelmertTransform()
-	throw()
+   throw()
 {
-	populateTransformMaps();
+   populateTransformMaps();
 }
 
 HelmertTransform::HelmertTransform( const HelmertTransform& ht )
-	throw()
+   throw()
 {
-	//Do nothing
+   //Do nothing. This should never be called.
 }
 
 HelmertTransform& HelmertTransform::operator=( const HelmertTransform& right )
-	throw()
+   throw()
 {
    fromMap = right.fromMap;
    return *this;
-}/**/
+}
 
-const HelmertTransform& HelmertTransform::instance()
+HelmertTransform& HelmertTransform::instance()
                   throw()
 {
    static HelmertTransform inst;
@@ -57,6 +56,8 @@ void HelmertTransform::defineTransform(TransformParameters& tp,
    else
    {
          //Don't let them define it to/from
+         //You technically could, and it would be easy to implement...
+         //But for now it's not going to be allowed. Perhaps a feature?
       if(fromMap.count(to))
          throw InvalidParameter("Cannot define transformation backwards. A transformation is already defined in the reverse order.");
          //Since it didn't trip that trap...
@@ -85,12 +86,12 @@ Transform& HelmertTransform::getTransform(const ReferenceFrame& from,
          if(iter != tmap.end())
          {
             return iter->second;
-			}
-			else
-			{
-			   throw("No Transformations defined from " + from.asString() +
+         }
+         else
+         {
+            throw("No Transformations defined from " + from.asString() +
                   " to " + to.asString());
-			}
+         }
    }
 }
 
@@ -234,6 +235,7 @@ Vector<double>& HelmertTransform::helperTransform(const ReferenceFrame& from,
             vec -= t.translation;
          }
          vec = vec * t.inverseRotation;
+         return vec;
       }
       else
       {
@@ -244,16 +246,16 @@ Vector<double>& HelmertTransform::helperTransform(const ReferenceFrame& from,
 }//End helperTransform();
 
 void HelmertTransform::populateTransformMaps()
-   	throw()
+      throw()
 {
    TransformParameters pz;
-   	pz.scale = -3e-9;
-   	pz.r1 = -19 * MAS;
-   	pz.r2 = -4 * MAS;
-   	pz.r3 = 353 * MAS;
-   	pz.t1 =  0.0700;
-   	pz.t2 = -0.0567;
-   	pz.t3 = -0.7733;
+      pz.scale = -3e-9;
+      pz.r1 = -19 * MAS;
+      pz.r2 = -4 * MAS;
+      pz.r3 = 353 * MAS;
+      pz.t1 =  0.0700;
+      pz.t2 = -0.0567;
+      pz.t3 = -0.7733;
    
    Transform t = buildTransform(pz);
    TransformMap pz90;
@@ -261,56 +263,31 @@ void HelmertTransform::populateTransformMaps()
    fromMap[ReferenceFrame::PZ90] = pz90;
 }
 
-Transform& HelmertTransform::buildTransform(TransformParameters& tp)
-	throw()
+Transform HelmertTransform::buildTransform(TransformParameters& tp)
+   throw()
 {
-/*
-	params = tp;
-
-	rotation = Matrix<double>(3,3,0.0);
-		rotation(0,0) = tp.scale + 1;
-		rotation(0,1) = -tp.r3;
-		rotation(0,2) = tp.r2;
-		
-		rotation(1,0) = tp.r3;
-		rotation(1,1) = tp.scale + 1;
-		rotation(1,2) = -tp.r1;
-		
-		rotation(2,0) = -tp.r2;
-		rotation(2,1) = tp.r1;
-		rotation(2,2) = tp.scale + 1;
-	
-	translation = Vector<double>(3,0.0);
-		translation(0) = tp.t1;
-		translation(1) = tp.t2;
-		translation(2) = tp.t3;
-	
-	inverseRotation = inverse(rotation);
-	
-	return *this;
-*/
-
-	Transform trans;
-	trans.params = tp;
-	trans.rotation = Matrix<double>(3,3,0.0);
-		trans.rotation(0,0) = tp.scale + 1;
-		trans.rotation(0,1) = -tp.r3;
-		trans.rotation(0,2) = tp.r2;
-		
-		trans.rotation(1,0) = tp.r3;
-		trans.rotation(1,1) = tp.scale + 1;
-		trans.rotation(1,2) = -tp.r1;
-		
-		trans.rotation(2,0) = -tp.r2;
-		trans.rotation(2,1) = tp.r1;
-		trans.rotation(2,2) = tp.scale + 1;
-	
-	trans.translation = Vector<double>(3,0.0);
-		trans.translation(0) = tp.t1;
-		trans.translation(1) = tp.t2;
-		trans.translation(2) = tp.t3;
-	
-	trans.inverseRotation = inverse(trans.rotation);
-	
-	return *trans;
+   Transform trans;
+   trans.params = tp;
+   trans.rotation = Matrix<double>(3,3,0.0);
+      trans.rotation(0,0) = tp.scale + 1;
+      trans.rotation(0,1) = -tp.r3;
+      trans.rotation(0,2) = tp.r2;
+      
+      trans.rotation(1,0) = tp.r3;
+      trans.rotation(1,1) = tp.scale + 1;
+      trans.rotation(1,2) = -tp.r1;
+      
+      trans.rotation(2,0) = -tp.r2;
+      trans.rotation(2,1) = tp.r1;
+      trans.rotation(2,2) = tp.scale + 1;
+   
+   trans.translation = Vector<double>(3,0.0);
+      trans.translation(0) = tp.t1;
+      trans.translation(1) = tp.t2;
+      trans.translation(2) = tp.t3;
+   
+   trans.inverseRotation = inverse(trans.rotation);
+   
+   //Why the * on trans?
+   return trans;
 }

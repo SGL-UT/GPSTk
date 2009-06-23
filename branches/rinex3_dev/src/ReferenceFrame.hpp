@@ -30,10 +30,10 @@ namespace gpstk{
          throw();
       
       ReferenceFrame(const char str[])
-      	throw();
+         throw();
       
       ReferenceFrame(const std::string str)
-      	throw();
+         throw();
       
       virtual ~ReferenceFrame() {   };
       
@@ -41,13 +41,15 @@ namespace gpstk{
          throw();
       FramesEnum getFrame() const
          throw();
+      ReferenceFrame& createReferenceFrame(const char str[])
+         throw();
       ReferenceFrame& createReferenceFrame(std::string& name)
          throw();
       
       std::string& asString() const
          throw();
       void fromString(const char name[])
-      	throw();
+         throw();
       void fromString(const std::string& name)
          throw();
       
@@ -67,7 +69,7 @@ namespace gpstk{
       private:
       
       void initialize()
-      	throw();
+         throw();
       
       FramesEnum frame;
       static std::map<FramesEnum, std::string> names;

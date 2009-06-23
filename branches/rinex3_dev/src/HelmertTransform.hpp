@@ -1,4 +1,4 @@
-#pragma ident "$Id: HelmertTransform.hpp 2009-06-19 10:50:30 tvarney $"
+#pragma ident "$Id: HelmertTransform.hpp 2009-06-23 9:31:00 tvarney $"
 
 #ifndef GPSTK_HELMERT_TRANSFORM_HPP
 #define GPSTK_HELMERT_TRANSFORM_HPP
@@ -67,7 +67,7 @@ namespace gpstk{
       static const double MAS;
       static const double PPB;
       
-      static const HelmertTransform& instance()
+      static HelmertTransform& instance()
                         throw();
       
          //If the transform to/from combination or it's inverse
@@ -131,21 +131,21 @@ namespace gpstk{
       
       //Initializer
       void populateTransformMaps()
-      						throw();
+                        throw();
       
-      Transform& buildTransform(TransformParameters& tp)
-      	throw();
+      Transform buildTransform(TransformParameters& tp)
+         throw();
       
       LookupMap fromMap;
       
          //Constructors. Because we want this class to be a singleton,
          //these need to be private or protected.
       HelmertTransform()
-      	throw();
+         throw();
       HelmertTransform(const HelmertTransform& ht)
-      	throw();
+         throw();
       HelmertTransform& operator=(const HelmertTransform& ht)
-      	throw();
+         throw();
    };//class HelmertTransform
    
 }//namespace gpstk
