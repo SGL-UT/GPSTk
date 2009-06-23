@@ -49,7 +49,7 @@ namespace gpstk
    void ReferenceFrame::setReferenceFrame(const FramesEnum reference)
       throw()
    {
-      if(reference < Unknown || reference > names.size())
+      if(reference < Unknown || reference >= names.size())
          frame = Unknown;
       else
          frame = reference;
