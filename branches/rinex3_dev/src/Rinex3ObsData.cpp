@@ -199,14 +199,23 @@ namespace gpstk
           GPSTK_THROW(ffse);
         }
 
-        // get the data (# entries in ObsType map of maps from header)
-        vector<RinexDatum> data;
+        // get the # data items (# entries in ObsType map of maps from header)
         std::string gnss = asString(satIndex[isv].systemChar());
         int size = hdr.mapObsTypes.find(gnss)->second.size();
+
+        // Some receivers leave blanks for missing Obs (which is OK by RINEX 3).
+        // If the last Obs are the ones missing, it won't necessarily be padded
+        // with spaces, so the parser will break.  This adds the padding to let
+        // the parser do its job and interpret spaces as zeroes.
+        int minSize = 3 + 16*size;
+        if (line.size() < minSize)
+           line += string(minSize-line.size(), ' ');
+
+        // get the data (# entries in ObsType map of maps from header)
+        vector<RinexDatum> data;
         for (int i = 0; i < size; i++)
         {
           int pos = 3 + 16*i;
-          
           RinexDatum tempData;
           tempData.data = asDouble(line.substr(pos   , 14));
           if ( line.size() > pos+14 )
