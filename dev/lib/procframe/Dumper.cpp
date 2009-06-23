@@ -121,7 +121,7 @@ namespace gpstk
             }
 
                // Second, print SourceID information (if enabled)
-            if( printTime )
+            if( printStation )
             {
                *outStr << gData.header.source << " ";
             }
