@@ -142,8 +142,8 @@ Triple& HelmertTransform::posTransform(const ReferenceFrame& from,
       throw InvalidParameter("Unknown ReferenceFrame - Cannot perform Helmert Transformation.");
    Vector<double> newPos(3,0.0);
    newPos(0) = pos[0];
-   newPos(0) = pos[0];
-   newPos(0) = pos[0];
+   newPos(1) = pos[1];
+   newPos(2) = pos[2];
    
    newPos = velTransform(from, to, newPos);
    

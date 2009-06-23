@@ -26,24 +26,21 @@ namespace gpstk
       throw()
    {
       initialize();
-         //We use names.size() as our upper bound so we can
-         //dynamically load new reference frames into this class
-      if(index < Unknown || index >= names.size())
-         frame = Unknown;
-      else
-         frame = static_cast<FramesEnum>(index);
+      setReferenceFrame(index);
    }
    
    ReferenceFrame::ReferenceFrame(const std::string str)
       throw()
    {
-      fromString(str);
+   	initialize();
+      setReferenceFrame(str);
    }
    
    ReferenceFrame::ReferenceFrame(const char str[])
       throw()
    {
-      fromString(str);
+   	initialize();
+      setReferenceFrame(str);
    }
    
    void ReferenceFrame::setReferenceFrame(const FramesEnum reference)
@@ -54,6 +51,17 @@ namespace gpstk
       else
          frame = reference;
    }
+   void ReferenceFrame::setReferenceFrame(const int index)
+      throw()
+   {
+         //We use names.size() as our upper bound so we can
+         //dynamically load new reference frames into this class
+      if(index < Unknown || index >= names.size())
+         frame = Unknown;
+      else
+         frame = (FramesEnum)index;
+	}
+   
    ReferenceFrame::FramesEnum ReferenceFrame::getFrame() const
       throw()
    {
@@ -91,7 +99,7 @@ namespace gpstk
    {
       return names[frame];
    }
-   void ReferenceFrame::fromString(const std::string& name)
+   void ReferenceFrame::setReferenceFrame(const std::string& name)
       throw()
    {
       for(int i = 0; i < names.size(); ++i)
@@ -105,7 +113,7 @@ namespace gpstk
       frame = Unknown;
    }
    
-   void ReferenceFrame::fromString(const char name[])
+   void ReferenceFrame::setReferenceFrame(const char name[])
       throw()
    {
       for(int i = 0; i < names.size(); ++i)

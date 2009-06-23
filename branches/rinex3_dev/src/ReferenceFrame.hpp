@@ -39,6 +39,8 @@ namespace gpstk{
       
       void setReferenceFrame(const FramesEnum reference)
          throw();
+      void setReferenceFrame(const int index)
+         throw();
       FramesEnum getFrame() const
          throw();
       ReferenceFrame& createReferenceFrame(const char str[])
@@ -48,9 +50,9 @@ namespace gpstk{
       
       std::string& asString() const
          throw();
-      void fromString(const char name[])
+      void setReferenceFrame(const char name[])
          throw();
-      void fromString(const std::string& name)
+      void setReferenceFrame(const std::string& name)
          throw();
       
       bool operator==(const ReferenceFrame right) const
