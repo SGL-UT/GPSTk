@@ -39,13 +39,14 @@ namespace gpstk
    /** @addtogroup math */
    //@{
  
-/** Conventional statistics for one sample.  Constructor does the same as
- * Reset(); use this when starting a new series of input samples.
- * Results are available at any time by calling N(), Minimum(), Maximum(),
- * Average(), Variance() and StdDev().
- */
+   /// Conventional statistics for one sample.  Constructor does the same as
+   /// Reset(); use this when starting a new series of input samples.
+   /// Results are available at any time by calling N(), Minimum(), Maximum(),
+   /// Average(), Variance() and StdDev().
+   /// NB. Variance is normalized with 1/(N-1) and StdDev is sqrt(Variance).
+   /// NB. This class may not give exactly correct results with non-floating types,
+   ///     (for which it is not intended).
    template <class T>
-
    class Stats
    {
    public:
@@ -83,14 +84,14 @@ namespace gpstk
       inline T Variance(void) const
       {
          if(n <= 1) return T();
-         return (var*T(n)/T(n-1));
+         return (T(n)*var/T(n-1));
       }
 
       /// return computed standard deviation
       inline T StdDev(void) const
       {
-         if(n == 0) return T();
-         return SQRT(ABS(var));
+         if(n <= 1) return T();
+         return SQRT(Variance());
       }
 
       /// return the normalization constant = sum weights
@@ -107,7 +108,6 @@ namespace gpstk
 
          if(n == 0) {
             min = max = ave = x;
-            //if(weighted) ave *= wt;
             var = T();
             W = T();
          }
@@ -117,16 +117,16 @@ namespace gpstk
          }
 
          if(weighted) {
-            if(W+wt > 1.e-10)       // if W+wt=0, nothing yet has had non-zero weight
+            if(W+wt > T(1.e-10))     // if W+wt=0, nothing yet has had non-zero weight
                ave += (x-ave)*(wt/(W+wt));
             if(n > 0 && W > 1.e-10)
                var = (W/(W+wt))*var + (x-ave)*(x-ave)*(wt/W);
             W += wt;
          }
          else {
-            ave += (x-ave)/(n+1);
+            ave += (x-ave)/T(n+1);
             if(n > 0)
-               var = n*var/(n+1) + (x-ave)*(x-ave)/n;
+               var = T(n)*var/T(n+1) + (x-ave)*(x-ave)/T(n);
          }
 
          n++;
@@ -154,9 +154,9 @@ namespace gpstk
       {
          if(n == 0) return;
          if(weighted) {
-            if(W > 1.e-10) {
+            if(W > T(1.e-10)) {
                T wt(ABS(wt_in));
-               if(W-wt > 1.e-10)
+               if(W-wt > T(1.e-10))
                   var = (var - (wt/(W-wt))*(x-ave)*(x-ave)) * (W/(W-wt));
                else
                   var = T();
@@ -166,10 +166,11 @@ namespace gpstk
             else { ave = var = W = T(); }
          }
          else {
-            T dn(n);
-            if(n > 1) var = (var - (x-ave)*(x-ave)/(n-1))*dn/(dn-1.0);
-            else var = T();
-            ave = dn*(ave - x/dn)/(dn-1.0);
+            if(n > 1)
+               var = (var - (x-ave)*(x-ave)/T(n-1))*T(n)/(T(n)-T(1));
+            else
+               var = T();
+            ave = T(n)*(ave - x/T(n))/(T(n)-T(1));
          }
          n--;
       }
@@ -196,6 +197,7 @@ namespace gpstk
       
       /// combine two Stats (assumed taken from the same or equivalent samples);
       /// both must be either weighted or unweighted.
+      /// NB. Beware using this with very small sample size.
       Stats<T>& operator+=(const Stats<T>& S)
       {
          if(S.n == 0) return *this;
@@ -210,7 +212,7 @@ namespace gpstk
 
          T newave, newvar;
          if(weighted) {
-            if(W + S.W > 1.e-10) {
+            if(W + S.W > T(1.e-10)) {
                newave = W*ave + S.W*S.ave;
                newvar = W*var + S.W*S.var + W*ave*ave + S.W*S.ave*S.ave;
                W += S.W;
@@ -220,11 +222,11 @@ namespace gpstk
             }
          }
          else {
-            newave = n*ave + S.n*S.ave;
-            newvar = n*var + S.n*S.var + n*ave*ave + S.n*S.ave*S.ave;
-            ave = newave/(n+S.n);
-            //var = (newvar-(n+S.n)*ave*ave)/(n+S.n);
-            var = newvar/(n+S.n) - ave*ave;
+            newave = T(n)*ave + T(S.n)*S.ave;
+            newvar = T(n)*var + T(S.n)*S.var + T(n)*ave*ave + T(S.n)*S.ave*S.ave;
+            ave = newave/T(n+S.n);
+            //var = (newvar-T(n+S.n)*ave*ave)/T(n+S.n);
+            var = newvar/T(n+S.n) - ave*ave;
          }
          n += S.n;
 
@@ -269,15 +271,17 @@ namespace gpstk
       s << " Maximum = "; s.copyfmt(savefmt); s << ST.Maximum() << "\n";
       s << " Average = "; s.copyfmt(savefmt); s << ST.Average();
       s << " Std Dev = "; s.copyfmt(savefmt); s << ST.StdDev();
-      //s << " Variance= "; s.copyfmt(savefmt); s << ST.Variance(); // temp
+      s << " Variance = "; s.copyfmt(savefmt); s << ST.Variance(); // temp
       return s;
    }
 
-/** Conventional statistics for two samples.  Constructor does the same as
- * Reset(); use this when starting a new series of input samples.
- * Results are available at any time by calling N(), Minimum(), Maximum(),
- * Average(), Variance() and StdDev().
- */
+   /// Conventional statistics for two samples.  Constructor does the same as
+   /// Reset(); use this when starting a new series of input samples.
+   /// Results are available at any time by calling N(), Minimum(), Maximum(),
+   /// Average(), Variance() and StdDev().
+   /// NB. Variance is normalized with 1/(N-1) and StdDev is sqrt(Variance).
+   /// NB. This class may not give exactly correct results with non-floating types,
+   ///     (for which it is not intended).
    template <class T>
    class TwoSampleStats
    {
@@ -442,6 +446,7 @@ namespace gpstk
 
       /// combine two TwoSampleStats (assumed to be taken from the same or
       /// equivalent samples)
+      /// NB. Beware using this with very small sample size.
       TwoSampleStats<T>& operator+=(TwoSampleStats<T>& S)
       {
          if(n + S.n == 0) return *this;
@@ -456,7 +461,7 @@ namespace gpstk
          sumxy += (S.scalex/scalex)*(S.scaley/scaley)*S.sumxy;
          n += S.n;
          return *this;
-      }  // end Stats operator+=
+      }  // end TwoSampleStats operator+=
 
    private:
       /// Number of samples added to the statistics so far
@@ -492,7 +497,7 @@ namespace gpstk
       return s;
    }
 
-   /** Compute the median of a vector */
+   /// Compute the median of a vector
    template <class T>
    inline T median(const Vector<T>& v)
    {
