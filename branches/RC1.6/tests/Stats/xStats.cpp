@@ -191,13 +191,13 @@ void xStats :: loadTest (void)
 */
 void xStats :: addEqualsTest (void)
 {
-	gpstk::Stats<int> addEquals1;
-	addEquals1.Add(10,1);
-	addEquals1.Add(20,1);
+	gpstk::Stats<double> addEquals1;
+	addEquals1.Add(10.,1);
+	addEquals1.Add(20.,1);
 	
-	gpstk::Stats<int> addEquals2;
-	addEquals2.Add(30,0);
-	addEquals2.Add(40,0);
+	gpstk::Stats<double> addEquals2;
+	addEquals2.Add(30.,0);
+	addEquals2.Add(40.,0);
 	
 	try
 	{
@@ -206,17 +206,17 @@ void xStats :: addEqualsTest (void)
 	catch(gpstk::Exception& e)
 	{
 	}
-	gpstk::Stats<int> addEquals3;
-	addEquals3.Add(30,1);
-	addEquals3.Add(40,1);
+	gpstk::Stats<double> addEquals3;
+	addEquals3.Add(30.,1);
+	addEquals3.Add(40.,1);
 	CPPUNIT_ASSERT_NO_THROW(addEquals1+=addEquals3);
 	CPPUNIT_ASSERT_EQUAL((unsigned) 4, addEquals1.N());
-	CPPUNIT_ASSERT_EQUAL(10, addEquals1.Minimum());
-	CPPUNIT_ASSERT_EQUAL(40, addEquals1.Maximum());
-	CPPUNIT_ASSERT_EQUAL(166, addEquals1.Variance());
-	CPPUNIT_ASSERT_EQUAL(25, addEquals1.Average());	
+	CPPUNIT_ASSERT_EQUAL(10., addEquals1.Minimum());
+	CPPUNIT_ASSERT_EQUAL(40., addEquals1.Maximum());
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(166.66667, addEquals1.Variance(),1E-3);
+	CPPUNIT_ASSERT_EQUAL(25., addEquals1.Average());
 	CPPUNIT_ASSERT_EQUAL(true,addEquals1.Weighted());
-	CPPUNIT_ASSERT_EQUAL(4,addEquals1.Normalization());
+	CPPUNIT_ASSERT_EQUAL(4.,addEquals1.Normalization());
 	
 	gpstk::Stats<int> addEquals4;
 	gpstk::Stats<int> addEquals5;
