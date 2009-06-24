@@ -70,6 +70,8 @@ namespace gpstk{
       static HelmertTransform& instance()
                         throw();
       
+      void dump();
+      
          //If the transform to/from combination or it's inverse
          //from/to do not exist this function defines a new Transform
          //mapping. Otherwise, this function redefines the current

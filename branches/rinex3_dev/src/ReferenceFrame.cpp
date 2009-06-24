@@ -32,14 +32,14 @@ namespace gpstk
    ReferenceFrame::ReferenceFrame(const std::string str)
       throw()
    {
-   	initialize();
+      initialize();
       setReferenceFrame(str);
    }
    
    ReferenceFrame::ReferenceFrame(const char str[])
       throw()
    {
-   	initialize();
+      initialize();
       setReferenceFrame(str);
    }
    
@@ -60,7 +60,7 @@ namespace gpstk
          frame = Unknown;
       else
          frame = (FramesEnum)index;
-	}
+   }
    
    ReferenceFrame::FramesEnum ReferenceFrame::getFrame() const
       throw()
@@ -73,7 +73,7 @@ namespace gpstk
    {
       std::string name(str);
       return createReferenceFrame(name);
-	}
+   }
    
    ReferenceFrame& ReferenceFrame::createReferenceFrame(std::string& name)
       throw()
@@ -130,12 +130,13 @@ namespace gpstk
    bool ReferenceFrame::operator==(const ReferenceFrame right) const
       throw()
    {
-      return (frame == right.frame);
+      return (frame == right.frame && frame != Unknown);
    }
    bool ReferenceFrame::operator!=(const ReferenceFrame right) const
       throw()
    {
-      return (frame != right.frame);
+         //If frame == right.frame, only need to check one to know if both are Unknown
+      return (frame != right.frame || frame == Unknown);
    }
    bool ReferenceFrame::operator>(const ReferenceFrame right) const
       throw()
@@ -150,12 +151,16 @@ namespace gpstk
    bool ReferenceFrame::operator>=(const ReferenceFrame right) const
       throw()
    {
-      return (frame >= right.frame);
+   	if(frame == right.frame)
+   		return (frame != Unknown);
+      return (frame > right.frame);
    }
    bool ReferenceFrame::operator<=(const ReferenceFrame right) const
       throw()
    {
-      return (frame <= right.frame);
+   	if(frame == right.frame)
+   		return (frame != Unknown);
+      return (frame < right.frame);
    }
    
    void ReferenceFrame::initialize()

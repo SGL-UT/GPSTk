@@ -38,8 +38,13 @@ void HelmertTransform::defineTransform(TransformParameters& tp,
                                        const ReferenceFrame& from)
                   throw(InvalidParameter&)
 {
+      //Sanity check, no Unknown frames allowed
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
+   {
       throw InvalidParameter("Unknown ReferenceFrame - Cannot define an Unknown transform.");
+   }
+   
+   //Start Searching
    LookupMap::iterator i = fromMap.find(from);
    if(i != fromMap.end())
    {
@@ -47,37 +52,54 @@ void HelmertTransform::defineTransform(TransformParameters& tp,
       TransformMap::iterator iter = tmap.find(to);
       if(iter != tmap.end())
       {
-         throw InvalidParameter("Transformation " + from.asString() +
-                                 " to " + to.asString() + " already exists...");
+            //Allow redefinitions
+         //throw InvalidParameter("Transformation " + from.asString() +
+         //                        " to " + to.asString() + " already exists...");
       }
       //I think...
       tmap[to] = buildTransform(tp);
+         //Why, oh why, do I have to do this?
+      fromMap[from] = tmap;
    }
    else
    {
-         //Don't let them define it to/from
-         //You technically could, and it would be easy to implement...
-         //But for now it's not going to be allowed. Perhaps a feature?
-      if(fromMap.count(to))
-         throw InvalidParameter("Cannot define transformation backwards. A transformation is already defined in the reverse order.");
-         //Since it didn't trip that trap...
+         //look for it in reverse order
+      i = fromMap.find(to);
+      if(i != fromMap.end())
+      {
+         TransformMap tmap = i->second;
+            //look in reverse order
+         TransformMap::iterator iter = tmap.find(from);
+         if(iter != tmap.end())
+         {
+               //Since it is defined in reverse already, throw an error
+            throw InvalidParameter("Cannot define transformation backwards. A transformation is already defined in the reverse order.");
+         }
+      }
+         //Since it didn't trip that trap, build it their way
       TransformMap tmap;
       tmap[to] = buildTransform(tp);
       fromMap[from] = tmap;
    }
 }
 
+//Returns the from / to combination if both from/to and to/from are defined.
 Transform& HelmertTransform::getTransform(const ReferenceFrame& from,
                                           const ReferenceFrame& to)
                   throw(InvalidParameter&)
 {
-   if(fromMap.count(to))
-      throw InvalidParameter("No Transformations defined starting with " + to.asString());
+      //We want to be able to search through partial definitions
+   //if(fromMap.count(to))
+   //   throw InvalidParameter("No Transformations defined starting with " + to.asString());
    LookupMap::iterator i = fromMap.find(from);
    if(i == fromMap.end())
    {
-      throw("No Transformations defined from " + from.asString() +
-            " to " + to.asString());
+      throw InvalidParameter("No Transformations defined from " +
+                              from.asString() + " to " +
+                              to.asString() +
+                              ". Could it be defined as " +
+                              to.asString() + " to " + 
+                              from.asString() + "?");
    }
    else
    {
@@ -89,8 +111,12 @@ Transform& HelmertTransform::getTransform(const ReferenceFrame& from,
          }
          else
          {
-            throw("No Transformations defined from " + from.asString() +
-                  " to " + to.asString());
+            throw InvalidParameter("No Transformations defined from " +
+                                    from.asString() + " to " +
+                                    to.asString() +
+                                    ". Could it be defined as " +
+                                    to.asString() + " to " + 
+                                    from.asString() + "?");
          }
    }
 }
@@ -145,7 +171,7 @@ Triple& HelmertTransform::posTransform(const ReferenceFrame& from,
    newPos(1) = pos[1];
    newPos(2) = pos[2];
    
-   newPos = velTransform(from, to, newPos);
+   newPos = posTransform(from, to, newPos);
    
    pos = Triple(newPos(0), newPos(1), newPos(2));
    return pos;
@@ -160,8 +186,8 @@ Triple& HelmertTransform::velTransform(const ReferenceFrame& from,
       throw InvalidParameter("Unknown ReferenceFrame - Cannot perform Helmert Transformation.");
    Vector<double> newVel(3,0.0);
    newVel(0) = vel[0];
-   newVel(0) = vel[0];
-   newVel(0) = vel[0];
+   newVel(1) = vel[1];
+   newVel(2) = vel[2];
    
    newVel = velTransform(from, to, newVel);
    
@@ -187,6 +213,7 @@ Vector<double> HelmertTransform::velTransform(const ReferenceFrame& from,
 {
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
       throw InvalidParameter("Unknown ReferenceFrame - Cannot perform Helmert Transformation.");
+   
    return helperTransform(from, to, vel, false);
 }
 
@@ -196,7 +223,7 @@ Vector<double>& HelmertTransform::helperTransform(const ReferenceFrame& from,
                                  bool translate)
                   throw(InvalidParameter&)
 {
-   LookupMap::iterator i = fromMap.find(from);
+   /*LookupMap::iterator i = fromMap.find(from);
    if( i != fromMap.end())
    {
       TransformMap t = i->second;
@@ -241,7 +268,46 @@ Vector<double>& HelmertTransform::helperTransform(const ReferenceFrame& from,
       {
          throw InvalidParameter("Transform " + from.asString() + " to "
                                  + to.asString() + " is not defined.");
+      }*/
+   LookupMap::iterator i = fromMap.find(from);
+   if( i != fromMap.end())
+   {
+      TransformMap t = i->second;
+      TransformMap::iterator iter = t.find(to);
+      if(iter != t.end())
+      {
+         Transform t = iter->second;
+         vec = vec * t.rotation;
+         if(translate)
+         {
+            vec += t.translation;
+         }
+         return vec;
       }
+   }
+      //Didn't return, so check the next possiblility
+   i = fromMap.find(to);
+   if(i == fromMap.end())
+   {
+      throw InvalidParameter("Transform " + from.asString() + " to "
+                              + to.asString() + " is not defined.");
+   }
+   TransformMap t = i->second;
+   TransformMap::iterator iter = t.find(from);
+   if(iter != t.end())
+   {
+      Transform t = iter->second;
+      if(translate)
+      {
+         vec -= t.translation;
+      }
+      vec = vec * t.inverseRotation;
+      return vec;
+   }
+   else
+   {
+      throw InvalidParameter("Transform " + from.asString() + " to "
+                              + to.asString() + " is not defined.");
    }
 }//End helperTransform();
 
@@ -257,10 +323,9 @@ void HelmertTransform::populateTransformMaps()
       pz.t2 = -0.0567;
       pz.t3 = -0.7733;
    
-   Transform t = buildTransform(pz);
-   TransformMap pz90;
-   pz90[ReferenceFrame::WGS84] = t;
-   fromMap[ReferenceFrame::PZ90] = pz90;
+   ReferenceFrame rf(ReferenceFrame::WGS84);
+   ReferenceFrame rf2(ReferenceFrame::PZ90);
+   defineTransform(pz, rf, rf2);
 }
 
 Transform HelmertTransform::buildTransform(TransformParameters& tp)
@@ -290,4 +355,27 @@ Transform HelmertTransform::buildTransform(TransformParameters& tp)
    
    //Why the * on trans?
    return trans;
+}
+
+void HelmertTransform::dump()
+{
+   ReferenceFrame rf1;
+   ReferenceFrame rf2;
+   LookupMap::iterator i = fromMap.begin();
+   while(i != fromMap.end())
+   {
+      rf1 = i->first;
+      cout << rf1 << endl;
+      
+      TransformMap tmap = i->second;
+      TransformMap::iterator iter = tmap.begin();
+      while(iter != tmap.end())
+      {
+         rf2 = iter->first;
+         cout << " -> " << rf2 << endl;
+         iter++;
+      }
+      
+      ++i;
+   }
 }
