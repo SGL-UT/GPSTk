@@ -130,13 +130,13 @@ namespace gpstk
    bool ReferenceFrame::operator==(const ReferenceFrame right) const
       throw()
    {
-      return (frame == right.frame && frame != Unknown);
+      return (frame == right.frame);
    }
    bool ReferenceFrame::operator!=(const ReferenceFrame right) const
       throw()
    {
          //If frame == right.frame, only need to check one to know if both are Unknown
-      return (frame != right.frame || frame == Unknown);
+      return (frame != right.frame);
    }
    bool ReferenceFrame::operator>(const ReferenceFrame right) const
       throw()
@@ -151,15 +151,11 @@ namespace gpstk
    bool ReferenceFrame::operator>=(const ReferenceFrame right) const
       throw()
    {
-   	if(frame == right.frame)
-   		return (frame != Unknown);
       return (frame > right.frame);
    }
    bool ReferenceFrame::operator<=(const ReferenceFrame right) const
       throw()
    {
-   	if(frame == right.frame)
-   		return (frame != Unknown);
       return (frame < right.frame);
    }
    
