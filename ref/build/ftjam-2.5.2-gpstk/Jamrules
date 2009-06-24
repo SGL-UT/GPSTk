@@ -1,0 +1,2 @@
+# final binary installation directory
+BINDIR = /usr/local/bin ;

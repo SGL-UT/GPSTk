@@ -1,0 +1,102 @@
+=============================================================================
+
+This if "FT-Jam", a simple derivative of the Jam build tool, based and
+100% compatible with Jam 2.5. See http://www.freetype.org/jam/ for more
+details.
+
+This is a non-official release of FT-Jam, dubbed 2.5.1 at the moment.
+
+Note that you'll find the original Jam README in the file README.ORG
+
+
+
+Installation on Unix (and Cygwin):
+----------------------------------
+
+Unlike Classic Jam, this release can be installed with traditionnal Unix
+commands, i.e.:
+
+  ./configure <options>
+  make
+  make install    (may need to be root)
+
+at the moment, only the 'jam' executable is installed in $prefix/bin.
+we'll try to install the documentation and convert it to manpages later,
+if time permits.
+
+If the './configure' command doesn't work, do the following, you might
+have a working source release that wasn't packaged for distribution. You
+can get it to install normally doing the following:
+
+  chmod +x configure
+  chmod +x yyacc
+  cd builds/unix
+  autoconf
+  cd ../..
+  
+then
+
+  ./configure <options>
+  make
+  make install
+
+
+Installation on Win32:
+----------------------
+
+We provide a few build scripts for various compilers on Win32. In all cases,
+this will generate an executable named 'jam.exe' within the bin.ntx86
+directory:
+
+  Visual C++:        
+    set JAM_TOOLSET=VISUALC
+    nmake -f builds\win32-visualc.mk
+  
+  Borland C++:       
+    set JAM_TOOLSET=BORLANDC
+    make -fbuilds\win32-borlandc.mk
+  
+  Mingw:             
+    set JAM_TOOLSET=MINGW
+    make -f builds/win32-gcc.mk
+
+  Digital Mars:
+    set JAM_TOOLSET=DIGITALMARS
+    make -f builds\win32-dmars.mk
+
+  Cygwin:
+    make -f builds/win32-cygwin.mk
+
+
+Copy the executable to your path.
+
+==============================================================================
+IMPORTANT FOR CYGWIN AND MINGW USERS:
+Note that the Mingw and Cygwin builds produce different executables !!
+the first one will only work correctly on the Windows command line, while
+the second one will only work on a Unix shell (e.g. Bash).
+===============================================================================
+
+
+Installation with Jam or FT-Jam:
+--------------------------------
+
+If you already have a previous version of Jam or FT-Jam in your path, simply
+invoke it from the root directory. This will generate the 'jam' or 'jam.exe'
+executable in a directory named 'bin.<system>', where '<system>' depends
+on your platform, e.g.  bin.linuxx86, bin.ntx86, etc...
+
+
+Differences with Classic Jam:
+-----------------------------
+
+Sorry, there is no official documentation at the moment. You can however
+parse the 'Jambase' file, since documentation comments have been added to
+all important rules.
+
+
+Troubleshooting:
+----------------
+
+Please report problems to the Jam mailing list (jamming@perforce.com).
+We'll try to create a FT-Jam specific list in the future.

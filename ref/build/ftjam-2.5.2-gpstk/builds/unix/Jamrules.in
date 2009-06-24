@@ -1,0 +1,2 @@
+# final binary installation directory
+BINDIR = @my_bindir@ ;

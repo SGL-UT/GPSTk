@@ -1,0 +1,216 @@
+Changes between FT-Jam 2.5.2 and 2.5.1:
+=======================================
+
+I. Engine Improvement:
+
+  Integration of Kai Backman's fix to dependency computations. When an
+  included file is newer than the file including it, the later must also
+  be part of the list of 'updated' actions.
+
+
+II. Installation fixes:
+
+  On Unix, building Jam will not longer complain that 'bin.unix' was
+  skipped. This generally needed to 'make' or 'jam' invokation to properly
+  generate the binary
+
+  Also, the binary is now automatically stripped on Unix systems
+
+  'jam package' now works correctly to generate package files on Unix
+
+Changes between FT-Jam 2.5.1 and Jam 2.5:
+=========================================
+
+I. Building Jam:
+----------------
+
+ On Unix, FTJam can now be built with the traditionnal mantra, that is:
+
+   ./configure --prefix=<yourprefix>
+   make
+   make install
+
+ some simple Makefiles are also provided for a small number of selected
+ platforms (mainly Windows and OS/2). For more information, please read
+ the INSTALL file.
+
+
+II. Command line processing:
+----------------------------
+
+ command line options can now be placed anywhere. In classic Jam, they
+ must always appear before the target names.
+
+ additionnally, if a command line argument includes, but doesn't start with
+ a '=', it it treated as an implicit '-s' option (variable definition).
+
+ this means that you can write things like:
+
+   jam install DEFINES=DEBUG
+
+ instead of:
+
+   jam -sDEFINES=DEBUG install
+
+
+
+
+III. Engine improvements:
+-----------------------
+
+III.1. The JAMCMDARGS:
+
+  A new builting variable has been defined. When FT-Jam start, it defines
+  the variable JAMCMDARGS which contains the list of targets used on the
+  command line when Jam was invoked.
+
+  This is useful to provide richer control flow in the Jambase depending
+  on command line arguments.
+
+
+III.1. Expansion Modifiers:
+
+  A new modifier 'Q' has been added in order to quote the result of
+  an expansion. This basically replaces \ by \\ in expansions.
+
+  this is mainly useful within Actions block to prevent shells from
+  doing stupid things to your parameters when they contain a back-slash.
+
+III.2. HdrMacro built-in rule:
+
+  Jam's automatic header inclusion scanner now supports the current
+  ISO C89 construct:
+
+    #include  MY_HEADER_H
+
+  to do this, you need to use the new HdrMacro built-in, and give it
+  the name of one or more header files containing the definition of
+  MY_HEADER_H. This will only record those definitions that look like
+  valid header inclusion paths, like:
+
+    #define  MY_HEADER_H   <mypath/myheader.h>
+    #define  MY_HEADER_H   "myheader.h"
+
+  These macro definitions are recorded by Jam, and used later during
+  the header scanning process to add the corresponding file(s) to the
+  dependency graph.
+
+III.3. Variable import:
+
+  When Jam starts, it begins by importing all variables from the environment.
+  Classic Jam had a bug that made it crash when very long variables where
+  defined in Unix.
+
+  Additionnaly, variables whose content begins with "()" are ignored since
+  they correspond to function variables in Unix shells like BASH, and don't
+  have any meaning in the context of Jam
+
+III.4. mkjambase now supports DOS text files:
+
+  the 'mkjambase' file didn't support DOS text files well. It created
+  a corrupted image of the Jambase within the Jam executable.
+
+
+III.5. Library scanning bug fix:
+
+  Jam couldn't see object files with long file names within library files
+  on Windows when they were generated with Mingw. This caused the
+  corresponding object files to always be re-built.
+
+IV. Jambase improvements:
+-------------------------
+
+IV.1. Compiler selection through the JAM_TOOLSET:
+-------------------------------------------------
+
+on Windows and OS/2 only, FTJam selects the compiler like Classic Jam
+by exploring the environment, looking for specific variables.
+
+However, it none is found, it looks for the JAM_TOOLSET variable and
+use it to select the toolset being used. This list is displayed by Jam
+when JAM_TOOLSET is undefined or set to an unsupported value (see next
+chapter).
+
+Nothing is changed on Unix and other platforms.
+
+
+IV.2. Improved compiler support:
+---------------------------------
+
+FTJam supports a lot more compiler than Classic Jam. Here's a table
+that maps values of JAM_TOOLSET to the corresponding compiler on Windows:
+
+     JAM_TOOLSET  Toolset Description
+
+     BORLANDC     Borland C++
+     VISUALC      Microsoft Visual C++
+     VISUALC16    Microsoft Visual C++ 16 bit
+     INTELC       Intel C/C++
+     WATCOM       Watcom C/C++
+     MINGW        MinGW (gcc)
+     LCC          Win32-LCC
+     DIGITALMARS  Digital Mars C/C++
+     PELLESC      Pelles C
+
+the same table for OS/2 is:
+
+     WATCOM      Watcom C/C++
+     EMX         EMX (gcc)
+
+Nothing is changed for other paltforms. on Unix, including Cygwin, selection
+is performed through the CC environment variable, which defaults to 'cc'.
+
+IMPORTANT: if you're using a Unix emulation layer like Cygwin or MSys, you
+should use a version of FTJam specially compiled for them, which will act
+exactly like the Unix version.
+
+
+IV.3. Support for building and linking shared libraries & DLLs:
+----------------------------------------------------------------
+
+Some new rules have been defined to be able to build and link with
+shared libraries (on Unix) and DLLs (on Windows only). NOTE THAT THIS
+SUPPORT IS STILL EXPERIMENTAL AT THE MOMENT. These rules are:
+
+  SharedLibrary  library : sources : import : def ;
+
+    Compiles 'sources' and generates a shared 'library' (i.e. DLL on Windows,
+    or shared object on Unix). Calls SharedObjects and
+    SharedLibraryFromObjects
+
+    If SharedLibrary is invoked with no suffix on 'library', then
+    $(SUFLIBSHR) suffix is used (.so on Unix, .dll on Windows)
+
+    'import' is the name of the corresponding import library for Windows
+    and OS/2 platforms (ignored otherwise). If it is not defined, it will
+    default to 'library' with the $(SUFLIB) suffix.
+
+    'def' is the name of the corresponding definition file used to generate
+    the library on Windows and OS/2 (ignored otherwise).
+
+
+  SharedLibraryFromObjects  library : objects : import : defs
+
+    Equivalent to LibraryFromObjects for shared libraries and DLLs. See
+    above for the description of parameters
+
+  LinkSharedLibraries  program : library ;
+
+    Used to link a program to a shared library generated through
+    'SharedLibrary'. Equivalent to 'LinkLibraries'.
+
+NOTICE THAT IT IS NOT CURRENTLY POSSIBLE TO BUILD BOTH A NORMAL AND
+A SHARED LIBRARY WITH THE SAME NAME. We'll try to fix this in a later
+release.
+
+
+IV.4. Experimental Package Management:
+---------------------------------------
+
+The end of our Jambase contains the definitions of several new rules
+that can be used to define independent software packages and manage
+their installation, deinstallation and dependencies on various platforms.
+
+This code is highly experimental at the moment and we will not describe
+it here in detail. If you're interested, look at the end of the Jambase
+for rules whose name begin in Pkg (e.g. PkgBegin, PkgEnd, PkgUses, etc...)

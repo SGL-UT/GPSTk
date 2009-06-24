@@ -1,0 +1,309 @@
+#
+# Jamfile to build Jam (a make(1)-like program)
+#
+# There are no user-serviceable parts in this file.
+#
+# Put executables in platform-specific  subdirectory.
+
+include Jamrules ;
+
+# note that we use the target directory 'bin.unix' to ensure that
+# 'make install' and 'make uninstall' work correctly
+#
+if $(VMS) 	{ LOCATE_TARGET ?= [.binvms] ; }
+else if $(MAC) 	{ LOCATE_TARGET ?= :bin.mac ; }
+else if $(UNIX) { LOCATE_TARGET ?= bin.unix ; }
+else		{ LOCATE_TARGET ?= bin.$(OSFULL[1]:L) ; }
+
+# Leave generated source in current directory; it would be nice to use
+# these lines below to build the source into the platform-specific
+# directory, but getting scan.c to include the right jambase.h is
+# hard: with ""'s, it always gets the bootstrap version; with <>'s,
+# it won't find the bootstrap version.
+
+# SEARCH_SOURCE ?= $(LOCATE_TARGET) $(DOT) ;
+# LOCATE_SOURCE ?= $(LOCATE_TARGET) ;
+
+#
+# We have some different files for UNIX, VMS, and NT.
+#
+
+#
+# For some really stupid reason, classic Jam doesn't define NT
+# when compiling with Mingw, but the variable MINGW instead..
+#
+
+if ! $(NT) && $(MINGW)
+{
+  NT = 1 ;
+  JAM_TOOLSET = MINGW ;
+}
+
+if $(NT) 	{ code = execunix.c filent.c pathunix.c ; }
+else if $(OS2)
+{
+  # special case for OS/2: when compiling with GCC/EMX, we use
+  # "fileunix.c" instead of "fileos2.c"
+  code = execunix.c pathunix.c ;
+  if $(JAM_TOOLSET) = EMX
+  {
+    CCFLAGS += -D__OS2__ ;
+    code += fileunix.c ;
+  }
+  else
+  {
+    code += fileos2.c ;
+  }
+}
+else if $(VMS) 	{ code = execvms.c filevms.c pathvms.c ; }
+else if $(MAC)	{ code = execmac.c filemac.c pathmac.c ; }
+else 		{ code = execunix.c fileunix.c pathunix.c ; }
+
+if $(UNIX) && $(OS) = CYGWIN
+{
+  CCFLAGS += -D__cygwin__ ;
+}
+
+# For jam profiling/debugging.
+
+if $(PROFILE)
+{
+	CCFLAGS += -pg ;
+	LINKFLAGS += -pg ;
+	LOCATE_TARGET = $(LOCATE_TARGET)/pg ;
+}
+
+if $(DEBUG)
+{
+	CCFLAGS += -g ;
+	LINKFLAGS += -g ;
+	LOCATE_TARGET = $(LOCATE_TARGET)/g ;
+}
+
+# We have to signal jam.h for these
+
+if $(OS) = NT
+{
+  switch $(JAM_TOOLSET)
+  {
+    case MINGW       : CCFLAGS += -DNT ;
+    case LCC         : CCFLAGS += -DNT ;
+    case DIGITALMARS : CCFLAGS += -DNT ;
+    case *           : CCFLAGS += /DNT ;
+  }
+}
+
+# Do we know yacc?
+
+if $(YACC) 	{ code += jamgram.y ; }
+else            { code += jamgram.c ; }
+
+#
+# Build the jamgram.y from the jamgram.yy
+# yyacc is a slippery script that makes grammars a little
+# easier to read/maintain.
+#
+
+if $(YACC) && $(SUFEXE) = ""
+{
+	GenFile jamgram.y jamgramtab.h : ./yyacc jamgram.yy ;
+}
+
+#
+# How to build the compiled in jambase.
+#
+
+Main		mkjambase : mkjambase.c ;
+
+if $(VMS)
+{
+	CC = cxx ;
+	LINK = cxxlink ;
+	CCFLAGS += /define=VMS ;
+}
+
+#
+# The guts of the Jamfile: how to build Jam
+#
+
+Main            jam : jam.c jambase.c ;
+LinkLibraries 	jam : libjam.a ;
+GenFile 	    jambase.c : mkjambase Jambase ;
+
+if $(UNIX)
+{
+  actions Strip
+  {
+    strip $(1)
+  }
+
+  Strip jam ;
+}
+
+Library         libjam.a :
+		    builtins.c command.c compile.c $(code) expand.c
+		    glob.c hash.c headers.c lists.c make.c make1.c
+		    newstr.c option.c parse.c regexp.c rules.c scan.c
+		    search.c timestamp.c variable.c
+		    hdrmacro.c
+		    ;
+
+# Strip the Jam executable on Mingw
+#
+if $(JAM_TOOLSET) = MINGW
+{
+  actions  Strip
+  {
+    strip $(1)
+  }
+
+  Strip  jam$(SUFEXE) ;
+}
+
+
+if $(BINDIR) 	{ InstallBin $(BINDIR) : jam ; }
+
+#
+# Distribution making from here on out.
+#
+
+ALLSOURCE =
+	Build.com Build.mpw Jam.html Jambase Jambase.html Jamfile
+	Jamfile.html Porting README RELNOTES builtins.c builtins.h
+	command.c command.h compile.c compile.h execcmd.h execmac.c
+	execnt.c execunix.c execvms.c expand.c expand.h filemac.c filent.c
+	fileos2.c filesys.h fileunix.c filevms.c glob.c hash.c hash.h
+	hdrmacro.c hdrmacro.h headers.c headers.h jam.c jam.h jambase.c
+	jambase.h jamgram.c jamgram.h jamgram.y jamgram.yy jamgramtab.h
+	lists.c lists.h make.c make.h make1.c mkjambase.c newstr.c newstr.h
+	option.c option.h parse.c parse.h patchlevel.h pathmac.c pathsys.h
+	pathunix.c pathvms.c regexp.c regexp.h rules.c rules.h scan.c
+	scan.h search.c search.h timestamp.c timestamp.h variable.c
+	variable.h yyacc
+	hdrmacro.c
+	INSTALL
+	README.ORG
+	CHANGES
+	common.mk
+	[ GLOB builds : *.mk ]
+	[ GLOB builds/unix : *.in ]
+	builds/unix/configure
+	builds/unix/configure.ac
+	builds/unix/config.sub
+	builds/unix/config.guess
+	builds/unix/install-sh
+	builds/unix/mkinstalldirs
+	configure
+	;
+
+
+rule Binary
+{
+    NotFile  package ;
+    Depends  package : $(<) ;
+
+    DEPENDS $(<) : $(>) ;
+
+    switch $(<)
+    {
+    case *-win32.zip       : Zip-Exe  $(<) : $(>) ;
+    case *-os2.zip         : Zip-Exe  $(<) : $(>) ;
+    case *-linux-libc6.tar : GZip-Exe $(<) : $(>) ;
+    }
+}
+
+
+rule Package
+{
+	NotFile package ;
+	Depends package : $(<) ;
+
+	DEPENDS $(<) : $(>) ;
+
+	switch $(<)
+	{
+	case *.tar  : { Tar-Gz  $(<) : $(>) ; Tar-Bz2 $(<) : $(>) ; }
+	case *.zip  :   Zip     $(<) : $(>) ;
+	}
+}
+
+
+VERSION = ftjam-2.5.2 ;
+
+actions Tar-Gz
+{
+  ln -s . $(VERSION)
+  tar cvhf $(<) $(VERSION)/$(>)
+  rm -f $(VERSION)
+  gzip -9f $(<)
+}
+
+actions Tar-Bz2
+{
+  ln -s . $(VERSION)
+  tar cvhf $(<) $(VERSION)/$(>)
+  bzip2 -9f $(<)
+  rm -f $(<)
+}
+
+
+if $(UNIX)
+{
+  actions Zip
+  {
+    rm -f $(<)
+    ln -s . $(VERSION)
+    zip -9rl $(<) $(VERSION)/$(>)
+    rm -f $(VERSION)
+  }
+}
+else
+{
+  actions Zip
+  {
+    $(RMF) $(<)
+    zip -9rl $(<) $(>)
+  }
+}
+
+
+actions Zip-Exe
+{
+  zip -9j $(<) $(LOCATE_TARGET)\jam.exe
+}
+
+actions GZip-Exe
+{
+  ln -s $(LOCATE_TARGET)/jam jam
+  tar chf $(<) jam
+  rm -f jam
+  gzip -9f $(<)
+}
+
+
+
+if $(NT)
+{
+  Binary  $(VERSION)-win32.zip : $(ALLSOURCE) ;
+  Package $(VERSION).zip       : $(ALLSOURCE) ;
+}
+else if $(OS2)
+{
+  Binary  $(VERSION)-os2.zip : $(ALLSOURCE) ;
+  Package $(VERSION).zip     : $(ALLSOURCE) ;
+}
+else if $(UNIX)
+{
+  # how can we detect the C library version reliably ??
+  # for now, this should only be used for convenience
+  # purposes, until we add .rpm and .deb support in..
+  #
+  if $(OS) = LINUX
+  {
+    Binary $(VERSION)-linux-libc6.tar : jam ;
+  }
+
+  Package $(VERSION).tar : $(ALLSOURCE) ;
+  Package $(VERSION).zip : $(ALLSOURCE) ;
+}
+
