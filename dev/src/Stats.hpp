@@ -39,11 +39,11 @@ namespace gpstk
    /** @addtogroup math */
    //@{
  
-   /// Conventional statistics for one sample.  Constructor does the same as
-   /// Reset(); use this when starting a new series of input samples.
-   /// Results are available at any time by calling N(), Minimum(), Maximum(),
-   /// Average(), Variance() and StdDev().
-   /// NB. Normalization of 1/(n-1) (only!) is applied to Variance
+/** Conventional statistics for one sample.  Constructor does the same as
+ * Reset(); use this when starting a new series of input samples.
+ * Results are available at any time by calling N(), Minimum(), Maximum(),
+ * Average(), Variance() and StdDev().
+ */
    template <class T>
 
    class Stats
@@ -83,7 +83,7 @@ namespace gpstk
       inline T Variance(void) const
       {
          if(n <= 1) return T();
-         return (var/T(n-1));
+         return (var*T(n)/T(n-1));
       }
 
       /// return computed standard deviation
@@ -149,6 +149,7 @@ namespace gpstk
       }
 
       /// remove a sample from the computation of statistics (can't do min and max).
+      /// TD test this...
       void Subtract(const T x, const T wt_in=T())
       {
          if(n == 0) return;
@@ -214,14 +215,16 @@ namespace gpstk
                newvar = W*var + S.W*S.var + W*ave*ave + S.W*S.ave*S.ave;
                W += S.W;
                ave = newave/W;
-               var = (newvar-W*ave*ave)/W;
+               //var = (newvar-W*ave*ave)/W;
+               var = newvar/W -ave*ave;
             }
          }
          else {
-            newave = n*ave + S.n*ave;
+            newave = n*ave + S.n*S.ave;
             newvar = n*var + S.n*S.var + n*ave*ave + S.n*S.ave*S.ave;
-            ave = newave/n;
-            var = (newvar-n*ave*ave)/n;
+            ave = newave/(n+S.n);
+            //var = (newvar-(n+S.n)*ave*ave)/(n+S.n);
+            var = newvar/(n+S.n) - ave*ave;
          }
          n += S.n;
 
@@ -242,15 +245,15 @@ namespace gpstk
       T max;
 
       /// Average value
-      T var;
+      T ave;
 
       /// Variance (square of the standard deviation)
-      T ave;
+      T var;
 
       /// Normalization constant = sum weights
       T W;
 
-      /// Flag weighted input; ALL input must be consistently weighted or not
+      /// Flag weighted input; ALL input must be consistently weighted or not weighted
       bool weighted;
 
    }; // end class Stats
@@ -266,13 +269,15 @@ namespace gpstk
       s << " Maximum = "; s.copyfmt(savefmt); s << ST.Maximum() << "\n";
       s << " Average = "; s.copyfmt(savefmt); s << ST.Average();
       s << " Std Dev = "; s.copyfmt(savefmt); s << ST.StdDev();
+      //s << " Variance= "; s.copyfmt(savefmt); s << ST.Variance(); // temp
       return s;
    }
 
-   /// Conventional statistics for two samples.  Constructor does the same as
-   /// Reset(); use this when starting a new series of input samples.
-   /// Results are available at any time by calling N(), Minimum(), Maximum(),
-   /// Average(), Variance() and StdDev().
+/** Conventional statistics for two samples.  Constructor does the same as
+ * Reset(); use this when starting a new series of input samples.
+ * Results are available at any time by calling N(), Minimum(), Maximum(),
+ * Average(), Variance() and StdDev().
+ */
    template <class T>
    class TwoSampleStats
    {
@@ -467,15 +472,17 @@ namespace gpstk
    {
       std::ofstream savefmt;
       savefmt.copyfmt(s);
-      s << " N       = " << TSS.N() << "\n";
-      s << " Minimum: X = "; s.copyfmt(savefmt); s << TSS.MinimumX();
-      s << "  Y = "; s.copyfmt(savefmt); s << TSS.MinimumY();
-      s << "  Maximum: X = "; s.copyfmt(savefmt); s << TSS.MaximumX();
+      s << " N           = " << TSS.N() << "\n";
+      s << " Minimum:  X = "; s.copyfmt(savefmt); s << TSS.MinimumX();
+      s << "  Y = "; s.copyfmt(savefmt); s << TSS.MinimumY() << "\n";
+      s << " Maximum:  X = "; s.copyfmt(savefmt); s << TSS.MaximumX();
       s << "  Y = "; s.copyfmt(savefmt); s << TSS.MaximumY() << "\n";
-      s << " Average: X = "; s.copyfmt(savefmt); s << TSS.AverageX();
-      s << "  Y = "; s.copyfmt(savefmt); s << TSS.AverageY();
-      s << "  Std Dev: X = "; s.copyfmt(savefmt); s << TSS.StdDevX();
+      s << " Average:  X = "; s.copyfmt(savefmt); s << TSS.AverageX();
+      s << "  Y = "; s.copyfmt(savefmt); s << TSS.AverageY() << "\n";
+      s << " Std Dev:  X = "; s.copyfmt(savefmt); s << TSS.StdDevX();
       s << "  Y = "; s.copyfmt(savefmt); s << TSS.StdDevY() << "\n";
+      s << " Variance: X = "; s.copyfmt(savefmt); s << TSS.VarianceX();
+      s << "  Y = "; s.copyfmt(savefmt); s << TSS.VarianceY() << "\n";
       s << " Intercept = "; s.copyfmt(savefmt); s << TSS.Intercept();
       s << "  Slope = "; s.copyfmt(savefmt); s << TSS.Slope();
       s << " with uncertainty = "; s.copyfmt(savefmt); s << TSS.SigmaSlope() << "\n";
@@ -485,7 +492,7 @@ namespace gpstk
       return s;
    }
 
-   /// Compute the median of a vector
+   /** Compute the median of a vector */
    template <class T>
    inline T median(const Vector<T>& v)
    {
