@@ -1,4 +1,26 @@
-#pragma ident "$Id: ReferenceFrame.hpp 2009-06-19 10:51:15 tvarney $"
+#pragma ident "$Id: ReferenceFrame.hpp 2009-06-25 14:11:10 tvarney $"
+
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
 
 #include "ReferenceFrame.hpp"
 
@@ -127,33 +149,33 @@ namespace gpstk
       frame = Unknown;
    }
    
-   bool ReferenceFrame::operator==(const ReferenceFrame right) const
+   bool ReferenceFrame::operator==(const ReferenceFrame& right) const
       throw()
    {
       return (frame == right.frame);
    }
-   bool ReferenceFrame::operator!=(const ReferenceFrame right) const
+   bool ReferenceFrame::operator!=(const ReferenceFrame& right) const
       throw()
    {
          //If frame == right.frame, only need to check one to know if both are Unknown
       return (frame != right.frame);
    }
-   bool ReferenceFrame::operator>(const ReferenceFrame right) const
+   bool ReferenceFrame::operator>(const ReferenceFrame& right) const
       throw()
    {
       return (frame > right.frame);
    }
-   bool ReferenceFrame::operator<(const ReferenceFrame right) const
+   bool ReferenceFrame::operator<(const ReferenceFrame& right) const
       throw()
    {
       return (frame < right.frame);
    }
-   bool ReferenceFrame::operator>=(const ReferenceFrame right) const
+   bool ReferenceFrame::operator>=(const ReferenceFrame& right) const
       throw()
    {
       return (frame > right.frame);
    }
-   bool ReferenceFrame::operator<=(const ReferenceFrame right) const
+   bool ReferenceFrame::operator<=(const ReferenceFrame& right) const
       throw()
    {
       return (frame < right.frame);
