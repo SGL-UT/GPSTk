@@ -40,3 +40,8 @@ Main R3ObsReader : R3ObsReader.cpp ;
 ObjectHdrs R3ObsReader R3ObsReader.cpp : ../src ;
 LINKLIBS on R3ObsReader = $(STD_LINK_LIBS) ;
 LinkLibraries R3ObsReader : ../src/libgpstk-R3.a ;
+
+Main HelmertTests : HelmertTests.cpp ;
+ObjectHdrs HelmertTests HelmertTests.cpp : ../src ;
+LINKLIBS on HelmertTests = $(STD_LINK_LIBS) ;
+LinkLibraries HelmertTests : ../src/libgpstk-R3.a ;
