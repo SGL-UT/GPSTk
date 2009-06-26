@@ -2,6 +2,7 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xHelmertTransform);
 
+using namespace gpstk;
 
 void xHelmertTransform::setUp()
 {
@@ -11,7 +12,7 @@ void xHelmertTransform::setUp()
 void xHelmertTransform::instanceTest()
 {
    HelmertTransform& helmert = HelmertTransform::instance();
-   HelmertTransform& hlemTwo = HelmertTransform::instance();
+   HelmertTransform& helmTwo = HelmertTransform::instance();
    
    CPPUNIT_ASSERT_EQUAL(&helmert, &helmTwo);
 }
@@ -98,9 +99,9 @@ void xHelmertTransform::xtTransformTest()
    ReferenceFrame final("Final");
    
    Xt pos, comp, pos2;
-   pos.x(150, 150, 150);
-   comp.x(310, 310, 310);
-   pos2.x(150, 150, 150);
+   pos.x = Triple(150, 150, 150);
+   comp.x = Triple(310, 310, 310);
+   pos2.x = Triple(150, 150, 150);
    
    pos = helmert.transform(initial, final, pos);
    
@@ -122,12 +123,12 @@ void xHelmertTransform::xvtTransformTest()
    ReferenceFrame final("Final");
    
    Xvt pos, comp, pos2;
-   pos.x(150, 150, 150);
-   pos.v(150, 150, 150);
-   comp.x(310, 310, 310);
-   comp.v(300, 300, 300);
-   pos2.x(150, 150, 150);
-   pos2.v(150, 150, 150);
+   pos.x = Triple(150, 150, 150);
+   pos.v = Triple(150, 150, 150);
+   comp.x = Triple(310, 310, 310);
+   comp.v = Triple(300, 300, 300);
+   pos2.x = Triple(150, 150, 150);
+   pos2.v = Triple(150, 150, 150);
    
    pos = helmert.transform(initial, final, pos);
    
@@ -154,9 +155,9 @@ void xHelmertTransform::triplePosTransformTest()
    ReferenceFrame initial("Initial");
    ReferenceFrame final("Final");
    
-   Triple pos(150, 150, 150);
-   Triple comp(310, 310, 310);
-   Triple pos2(150, 150, 150);
+   Triple pos = Triple(150, 150, 150);
+   Triple comp = Triple(310, 310, 310);
+   Triple pos2 = Triple(150, 150, 150);
    
    pos = helmert.posTransform(initial, final, pos);
    
@@ -177,9 +178,9 @@ void xHelmertTransform::tripleVelTransformTest()
    ReferenceFrame initial("Initial");
    ReferenceFrame final("Final");
    
-   Triple vel(150, 150, 150);
-   Triple comp(300, 300, 300);
-   Triple vel2(150, 150, 150);
+   Triple vel = Triple(150, 150, 150);
+   Triple comp = Triple(300, 300, 300);
+   Triple vel2 = Triple(150, 150, 150);
    
    vel = helmert.velTransform(initial, final, vel);
    
@@ -200,17 +201,17 @@ void xHelmertTransform::vectorPosTransformTest()
    ReferenceFrame initial("Initial");
    ReferenceFrame final("Final");
    
-   Vector pos(3,0.0);
-   Vector comp(3,0.0);
-   Vector pos2(3,0.0);
+   Vector<double> pos(3,0.0);
+   Vector<double> comp(3,0.0);
+   Vector<double> pos2(3,0.0);
    
    pos(0) = 150;
    pos(1) = 150;
    pos(2) = 150;
    
-   com(0) = 310;
-   com(1) = 310;
-   com(2) = 310;
+   comp(0) = 310;
+   comp(1) = 310;
+   comp(2) = 310;
    
    pos2(0) = 150;
    pos2(1) = 150;
@@ -222,7 +223,7 @@ void xHelmertTransform::vectorPosTransformTest()
    CPPUNIT_ASSERT(pos(1) == comp(1));
    CPPUNIT_ASSERT(pos(2) == comp(2));
    
-   pos = helmert.posTransform(final, intitial, pos);
+   pos = helmert.posTransform(final, initial, pos);
    
    CPPUNIT_ASSERT(pos(0) == pos2(0));
    CPPUNIT_ASSERT(pos(1) == pos2(1));
@@ -235,17 +236,17 @@ void xHelmertTransform::vectorVelTransformTest()
    ReferenceFrame initial("Initial");
    ReferenceFrame final("Final");
    
-   Vector vel(3,0.0);
-   Vector comp(3,0.0);
-   Vector vel2(3,0.0);
+   Vector<double> vel(3,0.0);
+   Vector<double> comp(3,0.0);
+   Vector<double> vel2(3,0.0);
    
    vel(0) = 150;
    vel(1) = 150;
    vel(2) = 150;
    
-   com(0) = 300;
-   com(1) = 300;
-   com(2) = 300;
+   comp(0) = 300;
+   comp(1) = 300;
+   comp(2) = 300;
    
    vel2(0) = 150;
    vel2(1) = 150;
@@ -257,7 +258,7 @@ void xHelmertTransform::vectorVelTransformTest()
    CPPUNIT_ASSERT(vel(1) == comp(1));
    CPPUNIT_ASSERT(vel(2) == comp(2));
    
-   vel = helmert.velTransform(final, intitial, vel);
+   vel = helmert.velTransform(final, initial, vel);
    
    CPPUNIT_ASSERT(vel(0) == vel2(0));
    CPPUNIT_ASSERT(vel(1) == vel2(1));

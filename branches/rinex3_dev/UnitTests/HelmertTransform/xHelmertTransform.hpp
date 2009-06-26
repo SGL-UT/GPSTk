@@ -46,6 +46,6 @@ class xHelmertTransform : public CPPUNIT_NS :: TestFixture
    
    private:
    
-}
+};
 
 #endif

@@ -1,27 +1,27 @@
 #include "xReferenceFrame.hpp"
 
-CPPUNIT_TEST_SUITE_REGISTRATION (xReferenceFrame);
-
 using namespace std;
 using namespace gpstk;
+
+CPPUNIT_TEST_SUITE_REGISTRATION (xReferenceFrame);
 
 void xReferenceFrame::getFrameTest()
 {
    ReferenceFrame rf1(0);
-   ReferenceFrame::FramesEnum frame1 = (FramesEnum)0);
+   ReferenceFrame::FramesEnum frame1 = (ReferenceFrame::FramesEnum)0;
    CPPUNIT_ASSERT(rf1.getFrame() == frame1);
    
    ReferenceFrame rf2(1);
-   ReferenceFrame::FramesEnum frame2 = (FramesEnum)1);
+   ReferenceFrame::FramesEnum frame2 = (ReferenceFrame::FramesEnum)1;
    CPPUNIT_ASSERT(rf2.getFrame() == frame2);
    
    ReferenceFrame rf3(2);
-   ReferenceFrame::FramesEnum frame3 = (FramesEnum)2);
+   ReferenceFrame::FramesEnum frame3 = (ReferenceFrame::FramesEnum)2;
    CPPUNIT_ASSERT(rf3.getFrame() == frame3);
    
       //Fails to ReferenceFrame::Unknown
    ReferenceFrame rf4(-1);
-   ReferenceFrame::FramesEnum frame4 = (FramesEnum)3);
+   ReferenceFrame::FramesEnum frame4 = (ReferenceFrame::FramesEnum)3;
    CPPUNIT_ASSERT(rf4.getFrame() != frame4);
    CPPUNIT_ASSERT(rf4.getFrame() == frame1);
 }
@@ -176,26 +176,26 @@ void xReferenceFrame::greaterThanOrEqualToTest()
    ReferenceFrame rf6("PZ90");
    
       //Unknown with...
-   CPPUNIT_ASSERT( r1 >= r1 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( r1 >= r2 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( r1 >= r3 ));
-   CPPUNIT_ASSERT( r1 >= r4 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( r1 >= r5 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( r1 >= r6 ));
+   CPPUNIT_ASSERT( rf1 >= rf1 );
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( rf1 >= rf2 )));
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( rf1 >= rf3 )));
+   CPPUNIT_ASSERT( rf1 >= rf4 );
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( rf1 >= rf5 )));
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( rf1 >= rf6 )));
    
-   CPPUNIT_ASSERT( r2 >= r1 );
-   CPPUNIT_ASSERT( r2 >= r2 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( r2 >= r3 ));
-   CPPUNIT_ASSERT( r2 >= r4 );
-   CPPUNIT_ASSERT( r2 >= r5 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( r2 >= r6 ));
+   CPPUNIT_ASSERT( rf2 >= rf1 );
+   CPPUNIT_ASSERT( rf2 >= rf2 );
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( rf2 >= rf3 )));
+   CPPUNIT_ASSERT( rf2 >= rf4 );
+   CPPUNIT_ASSERT( rf2 >= rf5 );
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT(( rf2 >= rf6 )));
    
-   CPPUNIT_ASSERT( r3 >= r1 );
-   CPPUNIT_ASSERT( r3 >= r2 );
-   CPPUNIT_ASSERT( r3 >= r3 );
-   CPPUNIT_ASSERT( r3 >= r4 );
-   CPPUNIT_ASSERT( r3 >= r5 );
-   CPPUNIT_ASSERT( r3 >= r6 );
+   CPPUNIT_ASSERT( rf3 >= rf1 );
+   CPPUNIT_ASSERT( rf3 >= rf2 );
+   CPPUNIT_ASSERT( rf3 >= rf3 );
+   CPPUNIT_ASSERT( rf3 >= rf4 );
+   CPPUNIT_ASSERT( rf3 >= rf5 );
+   CPPUNIT_ASSERT( rf3 >= rf6 );
 }
 void xReferenceFrame::lesserThanOrEqualToTest()
 {
@@ -206,26 +206,26 @@ void xReferenceFrame::lesserThanOrEqualToTest()
    ReferenceFrame rf5("WGS84");
    ReferenceFrame rf6("PZ90");
    
-   CPPUNIT_ASSERT( r1 <= r1 );
-   CPPUNIT_ASSERT( r1 <= r2 );
-   CPPUNIT_ASSERT( r1 <= r3 );
-   CPPUNIT_ASSERT( r1 <= r4 );
-   CPPUNIT_ASSERT( r1 <= r5 );
-   CPPUNIT_ASSERT( r1 <= r6 );
+   CPPUNIT_ASSERT( rf1 <= rf1 );
+   CPPUNIT_ASSERT( rf1 <= rf2 );
+   CPPUNIT_ASSERT( rf1 <= rf3 );
+   CPPUNIT_ASSERT( rf1 <= rf4 );
+   CPPUNIT_ASSERT( rf1 <= rf5 );
+   CPPUNIT_ASSERT( rf1 <= rf6 );
    
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( r2 <= r1 ));
-   CPPUNIT_ASSERT( r2 <= r2 );
-   CPPUNIT_ASSERT( r2 <= r3 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( r2 <= r4 ));
-   CPPUNIT_ASSERT( r2 <= r5 );
-   CPPUNIT_ASSERT( r2 <= r6 );
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 <= rf1 ));
+   CPPUNIT_ASSERT( rf2 <= rf2 );
+   CPPUNIT_ASSERT( rf2 <= rf3 );
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 <= rf4 ));
+   CPPUNIT_ASSERT( rf2 <= rf5 );
+   CPPUNIT_ASSERT( rf2 <= rf6 );
    
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( r2 <= r1 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( r2 <= r2 ));
-   CPPUNIT_ASSERT( r2 <= r3 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( r2 <= r4 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( r2 <= r5 ));
-   CPPUNIT_ASSERT( r2 <= r6 );
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 <= rf1 ));
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 <= rf2 ));
+   CPPUNIT_ASSERT( rf2 <= rf3 );
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 <= rf4 ));
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 <= rf5 ));
+   CPPUNIT_ASSERT( rf2 <= rf6 );
 }
 void xReferenceFrame::setReferenceFrameTest()
 {
@@ -321,5 +321,5 @@ void xReferenceFrame::createReferenceFrameTest()
    //Make a new frame of type zp84
    ReferenceFrame test1("ZP84");
    CPPUNIT_ASSERT(test == test1);
-   CPPUNIT_ASSERT(test1 != r1);
+   CPPUNIT_ASSERT(test1 != rf1);
 }
