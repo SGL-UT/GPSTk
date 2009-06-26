@@ -109,39 +109,39 @@ namespace gpstk{
       
       
          // The transformation methods //
-      Position& transform(const ReferenceFrame& from,
+      Position transform(const ReferenceFrame& from,
                            const ReferenceFrame& to,
-                           Position& pos)
+                           const Position& pos)
                         throw(InvalidParameter&);
       
-      Xt& transform(const ReferenceFrame& from,
+      Xt transform(const ReferenceFrame& from,
                      const ReferenceFrame& to,
-                     Xt& pos)
+                     const Xt& pos)
                         throw(InvalidParameter&);
       
-      Xvt& transform(const ReferenceFrame& from,
+      Xvt transform(const ReferenceFrame& from,
                      const ReferenceFrame& to,
-                     Xvt& pos)
+                     const Xvt& pos)
                         throw(InvalidParameter&);
       
-      Triple& posTransform(const ReferenceFrame& from,
+      Triple posTransform(const ReferenceFrame& from,
                            const ReferenceFrame& to,
-                           Triple& pos)
+                           const Triple& pos)
                         throw(InvalidParameter&);
       
-      Triple& velTransform(const ReferenceFrame& from,
+      Triple velTransform(const ReferenceFrame& from,
                            const ReferenceFrame& to,
-                           Triple& vel)
+                           const Triple& vel)
                         throw(InvalidParameter&);
       
       Vector<double> posTransform(const ReferenceFrame& from,
                                     const ReferenceFrame& to,
-                                    Vector<double>& pos)
+                                    const Vector<double>& pos)
                         throw(InvalidParameter&);
       
       Vector<double> velTransform(const ReferenceFrame& from,
                                     const ReferenceFrame& to,
-                                    Vector<double>& vel)
+                                    const Vector<double>& vel)
                         throw(InvalidParameter&);
       
       protected:

@@ -143,51 +143,58 @@ Transform& HelmertTransform::getTransform(const ReferenceFrame& from,
    }
 }
 
-Position& HelmertTransform::transform(const ReferenceFrame& from,
+Position HelmertTransform::transform(const ReferenceFrame& from,
                                        const ReferenceFrame& to,
-                                       Position& pos)
+                                       const Position& pos)
                   throw(InvalidParameter&)
 {
       //throw an error if either Reference Frame is unknown
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
       throw InvalidParameter("Unknown ReferenceFrame - Cannot perform Helmert Transformation.");
-   pos.transformTo(Position::Cartesian);
-   Triple newPosition = (Triple)pos;
+   
+   Position cartPos = pos;
+   cartPos.transformTo(Position::Cartesian);
+   Triple newPosition = (Triple)cartPos;
    newPosition = posTransform(from, to, newPosition);
    //Not sure if I need to use setECEF or if it is already set.
-   return pos.setECEF(newPosition[0], newPosition[1], newPosition[2]);
+   return cartPos.setECEF(newPosition[0], newPosition[1], newPosition[2]);
 }
 
-Xt& HelmertTransform::transform(const ReferenceFrame& from,
+Xt HelmertTransform::transform(const ReferenceFrame& from,
                                  const ReferenceFrame& to,
-                                 Xt& pos)
+                                 const Xt& pos)
                   throw(InvalidParameter&)
 {
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
       throw InvalidParameter("Unknown ReferenceFrame - Cannot perform Helmert Transformation.");
-   pos.x = posTransform(from, to, pos.x);
-   return pos;
+   
+   Xt newXt = pos;
+   newXt.x = posTransform(from, to, newXt.x);
+   return newXt;
 }
 
-Xvt& HelmertTransform::transform(const ReferenceFrame& from,
+Xvt HelmertTransform::transform(const ReferenceFrame& from,
                                  const ReferenceFrame& to,
-                                 Xvt& pos)
+                                 const Xvt& pos)
                   throw(InvalidParameter&)
 {
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
       throw InvalidParameter("Unknown ReferenceFrame - Cannot perform Helmert Transformation.");
-   pos.x = posTransform(from, to, pos.x);
-   pos.v = velTransform(from, to, pos.v);
+   
+   Xvt newXvt = pos;
+   newXvt.x = posTransform(from, to, newXvt.x);
+   newXvt.v = velTransform(from, to, newXvt.v);
    return pos;
 }
 
-Triple& HelmertTransform::posTransform(const ReferenceFrame& from,
+Triple HelmertTransform::posTransform(const ReferenceFrame& from,
                                        const ReferenceFrame& to,
-                                       Triple& pos)
+                                       const Triple& pos)
                   throw(InvalidParameter&)
 {
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
       throw InvalidParameter("Unknown ReferenceFrame - Cannot perform Helmert Transformation.");
+   
    Vector<double> newPos(3,0.0);
    newPos(0) = pos[0];
    newPos(1) = pos[1];
@@ -195,17 +202,17 @@ Triple& HelmertTransform::posTransform(const ReferenceFrame& from,
    
    newPos = posTransform(from, to, newPos);
    
-   pos = Triple(newPos(0), newPos(1), newPos(2));
-   return pos;
+   return Triple(newPos(0), newPos(1), newPos(2));
 }
 
-Triple& HelmertTransform::velTransform(const ReferenceFrame& from,
+Triple HelmertTransform::velTransform(const ReferenceFrame& from,
                                        const ReferenceFrame& to,
-                                       Triple& vel)
+                                       const Triple& vel)
                   throw(InvalidParameter&)
 {
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
       throw InvalidParameter("Unknown ReferenceFrame - Cannot perform Helmert Transformation.");
+   
    Vector<double> newVel(3,0.0);
    newVel(0) = vel[0];
    newVel(1) = vel[1];
@@ -213,8 +220,7 @@ Triple& HelmertTransform::velTransform(const ReferenceFrame& from,
    
    newVel = velTransform(from, to, newVel);
    
-   vel = Triple(newVel(0), newVel(1), newVel(2));
-   return vel;
+   return Triple(newVel(0), newVel(1), newVel(2));
 }
 
 Vector<double> HelmertTransform::posTransform(const ReferenceFrame& from,
@@ -225,7 +231,8 @@ Vector<double> HelmertTransform::posTransform(const ReferenceFrame& from,
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
       throw InvalidParameter("Unknown ReferenceFrame - Cannot perform Helmert Transformation.");
    
-   return helperTransform(from, to, pos, true);
+   Vector<double> newPos = pos;
+   return helperTransform(from, to, newPos, true);
 }
 
 Vector<double> HelmertTransform::velTransform(const ReferenceFrame& from,
@@ -236,7 +243,8 @@ Vector<double> HelmertTransform::velTransform(const ReferenceFrame& from,
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
       throw InvalidParameter("Unknown ReferenceFrame - Cannot perform Helmert Transformation.");
    
-   return helperTransform(from, to, vel, false);
+   Vector<double> newVel = vel;
+   return helperTransform(from, to, newVel, false);
 }
 
 Vector<double>& HelmertTransform::helperTransform(const ReferenceFrame& from,
@@ -245,52 +253,6 @@ Vector<double>& HelmertTransform::helperTransform(const ReferenceFrame& from,
                                  bool translate)
                   throw(InvalidParameter&)
 {
-   /*LookupMap::iterator i = fromMap.find(from);
-   if( i != fromMap.end())
-   {
-      TransformMap t = i->second;
-      TransformMap::iterator iter = t.find(to);
-      if(iter != t.end())
-      {
-         Transform t = iter->second;
-         vec = vec * t.rotation;
-         if(translate)
-         {
-            vec += t.translation;
-         }
-         return vec;
-      }
-      else
-      {
-         throw InvalidParameter("Transform " + from.asString() + " to "
-                                 + to.asString() + " is not defined.");
-      }
-   }
-   else
-   {
-      i = fromMap.find(to);
-      if(i == fromMap.end())
-      {
-         throw InvalidParameter("Transform " + from.asString() + " to "
-                                 + to.asString() + " is not defined.");
-      }
-      TransformMap t = i->second;
-      TransformMap::iterator iter = t.find(from);
-      if(iter != t.end())
-      {
-         Transform t = iter->second;
-         if(translate)
-         {
-            vec -= t.translation;
-         }
-         vec = vec * t.inverseRotation;
-         return vec;
-      }
-      else
-      {
-         throw InvalidParameter("Transform " + from.asString() + " to "
-                                 + to.asString() + " is not defined.");
-      }*/
    LookupMap::iterator i = fromMap.find(from);
    if( i != fromMap.end())
    {
@@ -375,7 +337,6 @@ Transform HelmertTransform::buildTransform(TransformParameters& tp)
    
    trans.inverseRotation = inverse(trans.rotation);
    
-   //Why the * on trans?
    return trans;
 }
 
