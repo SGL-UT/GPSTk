@@ -225,7 +225,7 @@ Triple HelmertTransform::velTransform(const ReferenceFrame& from,
 
 Vector<double> HelmertTransform::posTransform(const ReferenceFrame& from,
                                                 const ReferenceFrame& to,
-                                                Vector<double>& pos)
+                                                const Vector<double>& pos)
                   throw(InvalidParameter&)
 {
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
@@ -237,7 +237,7 @@ Vector<double> HelmertTransform::posTransform(const ReferenceFrame& from,
 
 Vector<double> HelmertTransform::velTransform(const ReferenceFrame& from,
                                                 const ReferenceFrame& to,
-                                                Vector<double>& vel)
+                                                const Vector<double>& vel)
                   throw(InvalidParameter&)
 {
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
