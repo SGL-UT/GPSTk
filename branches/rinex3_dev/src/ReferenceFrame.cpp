@@ -173,12 +173,12 @@ namespace gpstk
    bool ReferenceFrame::operator>=(const ReferenceFrame& right) const
       throw()
    {
-      return (frame > right.frame);
+      return (frame >= right.frame);
    }
    bool ReferenceFrame::operator<=(const ReferenceFrame& right) const
       throw()
    {
-      return (frame < right.frame);
+      return (frame <= right.frame);
    }
    
    void ReferenceFrame::initialize()
