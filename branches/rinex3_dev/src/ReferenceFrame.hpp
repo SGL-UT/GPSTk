@@ -33,9 +33,6 @@
 
 namespace gpstk{
    
-   class ReferenceFrame;
-   std::ostream& operator<<(std::ostream& os, ReferenceFrame& rf);
-   
    class ReferenceFrame{
       public:
       
@@ -103,6 +100,8 @@ namespace gpstk{
       FramesEnum frame;
       static std::map<FramesEnum, std::string> names;
    };
+   
+   std::ostream& operator<<(std::ostream& os, const ReferenceFrame& rf);
 }
 
 #endif

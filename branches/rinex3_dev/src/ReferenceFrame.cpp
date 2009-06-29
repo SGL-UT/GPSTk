@@ -1,4 +1,4 @@
-#pragma ident "$Id: ReferenceFrame.hpp 2009-06-25 14:11:10 tvarney $"
+#pragma ident "$Id: ReferenceFrame.cpp 2009-06-25 14:11:10 tvarney $"
 
 //============================================================================
 //
@@ -26,16 +26,6 @@
 
 namespace gpstk
 {
-   
-   std::map<ReferenceFrame::FramesEnum, std::string> ReferenceFrame::names;
-   
-      //Print's the name of the reference frame to the specified
-      //ostream.
-   std::ostream& operator<<(std::ostream& os,
-                              ReferenceFrame& rf)
-   {
-      return os << rf.asString();
-   }
    
    ReferenceFrame::ReferenceFrame(int index)
       throw()
@@ -122,7 +112,7 @@ namespace gpstk
             return (*this);
          }
       }
-         //The specified frame dne, create it
+         //The specified frame does not exist, create it
       index = names.size();
       names[(FramesEnum)index] = name;
       frame = (FramesEnum)index;
@@ -185,5 +175,13 @@ namespace gpstk
       names[PZ90] = "PZ90";
       
       initialized = true;
+   }
+   
+      //Prints the name of the reference frame to the specified
+      //ostream.
+   std::ostream& operator<<(std::ostream& os,
+                              const ReferenceFrame& rf)
+   {
+      return os << rf.asString();
    }
 }
