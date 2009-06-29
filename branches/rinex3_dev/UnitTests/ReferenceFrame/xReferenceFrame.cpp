@@ -220,12 +220,12 @@ void xReferenceFrame::lesserThanOrEqualToTest()
    CPPUNIT_ASSERT( rf2 <= rf5 );
    CPPUNIT_ASSERT( rf2 <= rf6 );
    
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 <= rf1 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 <= rf2 ));
-   CPPUNIT_ASSERT( rf2 <= rf3 );
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 <= rf4 ));
-   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf2 <= rf5 ));
-   CPPUNIT_ASSERT( rf2 <= rf6 );
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 <= rf1 ));
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 <= rf2 ));
+   CPPUNIT_ASSERT( rf3 <= rf3 );
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 <= rf4 ));
+   CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 <= rf5 ));
+   CPPUNIT_ASSERT( rf3 <= rf6 );
 }
 void xReferenceFrame::setReferenceFrameTest()
 {
@@ -234,32 +234,32 @@ void xReferenceFrame::setReferenceFrameTest()
    ReferenceFrame rf3(ReferenceFrame::PZ90);
    
    ReferenceFrame frame(ReferenceFrame::Unknown);
-   CPPUNIT_ASSERT(frame.getFrame() == ReferenceFrame::Unknown);
+   CPPUNIT_ASSERT(frame == rf1);
    CPPUNIT_ASSERT(frame != rf2);
    CPPUNIT_ASSERT(frame != rf3);
    
    frame = ReferenceFrame(0);
-   CPPUNIT_ASSERT(frame.getFrame() == ReferenceFrame::Unknown);
+   CPPUNIT_ASSERT(frame == rf1);
    CPPUNIT_ASSERT(frame != rf2);
    CPPUNIT_ASSERT(frame != rf3);
    
    frame = ReferenceFrame("Unknown");
-   CPPUNIT_ASSERT(frame.getFrame() == ReferenceFrame::Unknown);
+   CPPUNIT_ASSERT(frame == rf1);
    CPPUNIT_ASSERT(frame != rf2);
    CPPUNIT_ASSERT(frame != rf3);
    
    frame = ReferenceFrame("A Junk String that won't match up");
-   CPPUNIT_ASSERT(frame.getFrame() == ReferenceFrame::Unknown);
+   CPPUNIT_ASSERT(frame == rf1);
    CPPUNIT_ASSERT(frame != rf2);
    CPPUNIT_ASSERT(frame != rf3);
    
    frame = ReferenceFrame(-1);
-   CPPUNIT_ASSERT(frame.getFrame() == ReferenceFrame::Unknown);
+   CPPUNIT_ASSERT(frame == rf1);
    CPPUNIT_ASSERT(frame != rf2);
    CPPUNIT_ASSERT(frame != rf3);
    
    frame = ReferenceFrame((ReferenceFrame::FramesEnum)-1);
-   CPPUNIT_ASSERT(frame.getFrame() == ReferenceFrame::Unknown);
+   CPPUNIT_ASSERT(frame == rf1);
    CPPUNIT_ASSERT(frame != rf2);
    CPPUNIT_ASSERT(frame != rf3);
    
