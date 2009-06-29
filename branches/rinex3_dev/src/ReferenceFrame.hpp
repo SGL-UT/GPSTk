@@ -45,10 +45,7 @@ namespace gpstk{
          PZ90   /**< The PZ90 Reference Frame*/
       };
       
-      ReferenceFrame(FramesEnum reference = Unknown)
-         throw();
-      
-      ReferenceFrame(int index)
+      ReferenceFrame(int index = 0)
          throw();
       
       ReferenceFrame(const char str[])
@@ -59,34 +56,42 @@ namespace gpstk{
       
       virtual ~ReferenceFrame() {   };
       
-      void setReferenceFrame(const FramesEnum reference)
-         throw();
       void setReferenceFrame(const int index)
          throw();
+      
+      void setReferenceFrame(const char name[])
+         throw();
+      
+      void setReferenceFrame(const std::string& name)
+         throw();
+      
       FramesEnum getFrame() const
          throw();
+      
       ReferenceFrame& createReferenceFrame(const char str[])
          throw();
+      
       ReferenceFrame& createReferenceFrame(std::string& name)
          throw();
       
       std::string& asString() const
          throw();
-      void setReferenceFrame(const char name[])
-         throw();
-      void setReferenceFrame(const std::string& name)
-         throw();
       
       bool operator==(const ReferenceFrame& right) const
          throw();
+      
       bool operator!=(const ReferenceFrame& right) const
          throw();
+      
       bool operator>(const ReferenceFrame& right) const
          throw();
+      
       bool operator<(const ReferenceFrame& right) const
          throw();
+      
       bool operator>=(const ReferenceFrame& right) const
          throw();
+      
       bool operator<=(const ReferenceFrame& right) const
          throw();
       

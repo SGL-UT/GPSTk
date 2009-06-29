@@ -37,13 +37,6 @@ namespace gpstk
       return os << rf.asString();
    }
    
-   ReferenceFrame::ReferenceFrame(FramesEnum reference)
-      throw()
-   {
-      initialize();
-      setReferenceFrame(reference);
-   }
-   
    ReferenceFrame::ReferenceFrame(int index)
       throw()
    {
@@ -65,14 +58,6 @@ namespace gpstk
       setReferenceFrame(str);
    }
    
-   void ReferenceFrame::setReferenceFrame(const FramesEnum reference)
-      throw()
-   {
-      if(reference < Unknown || reference >= names.size())
-         frame = Unknown;
-      else
-         frame = reference;
-   }
    void ReferenceFrame::setReferenceFrame(const int index)
       throw()
    {
@@ -82,6 +67,34 @@ namespace gpstk
          frame = Unknown;
       else
          frame = (FramesEnum)index;
+   }
+   
+   void ReferenceFrame::setReferenceFrame(const std::string& name)
+      throw()
+   {
+      for(int i = 0; i < names.size(); ++i)
+      {
+         if(names[(FramesEnum)i] == name)
+         {
+            frame = (FramesEnum)i;
+            return;
+         }
+      }
+      frame = Unknown;
+   }
+   
+   void ReferenceFrame::setReferenceFrame(const char name[])
+      throw()
+   {
+      for(int i = 0; i < names.size(); ++i)
+      {
+         if(names[(FramesEnum)i] == name)
+         {
+            frame = (FramesEnum)i;
+            return;
+         }
+      }
+      frame = Unknown;
    }
    
    ReferenceFrame::FramesEnum ReferenceFrame::getFrame() const
@@ -121,60 +134,38 @@ namespace gpstk
    {
       return names[frame];
    }
-   void ReferenceFrame::setReferenceFrame(const std::string& name)
-      throw()
-   {
-      for(int i = 0; i < names.size(); ++i)
-      {
-         if(names[(FramesEnum)i] == name)
-         {
-            frame = (FramesEnum)i;
-            return;
-         }
-      }
-      frame = Unknown;
-   }
-   
-   void ReferenceFrame::setReferenceFrame(const char name[])
-      throw()
-   {
-      for(int i = 0; i < names.size(); ++i)
-      {
-         if(names[(FramesEnum)i] == name)
-         {
-            frame = (FramesEnum)i;
-            return;
-         }
-      }
-      frame = Unknown;
-   }
    
    bool ReferenceFrame::operator==(const ReferenceFrame& right) const
       throw()
    {
       return (frame == right.frame);
    }
+   
    bool ReferenceFrame::operator!=(const ReferenceFrame& right) const
       throw()
    {
          //If frame == right.frame, only need to check one to know if both are Unknown
       return (frame != right.frame);
    }
+   
    bool ReferenceFrame::operator>(const ReferenceFrame& right) const
       throw()
    {
       return (frame > right.frame);
    }
+   
    bool ReferenceFrame::operator<(const ReferenceFrame& right) const
       throw()
    {
       return (frame < right.frame);
    }
+   
    bool ReferenceFrame::operator>=(const ReferenceFrame& right) const
       throw()
    {
       return (frame >= right.frame);
    }
+   
    bool ReferenceFrame::operator<=(const ReferenceFrame& right) const
       throw()
    {
@@ -192,5 +183,7 @@ namespace gpstk
       names[Unknown] = "Unknown";
       names[WGS84] = "WGS84";
       names[PZ90] = "PZ90";
+      
+      initialized = true;
    }
 }
