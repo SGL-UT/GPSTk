@@ -98,7 +98,7 @@ namespace gpstk{
          throw();
       
       FramesEnum frame;
-      static std::map<FramesEnum, std::string> names;
+      static std::map<FramesEnum, std::string> xnames;
    };
    
    std::ostream& operator<<(std::ostream& os, const ReferenceFrame& rf);

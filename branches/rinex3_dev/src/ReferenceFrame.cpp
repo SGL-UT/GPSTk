@@ -53,7 +53,7 @@ namespace gpstk
    {
          //We use names.size() as our upper bound so we can
          //dynamically load new reference frames into this class
-      if(index < Unknown || index >= names.size())
+      if(index < Unknown || index >= xnames.size())
          frame = Unknown;
       else
          frame = (FramesEnum)index;
@@ -62,9 +62,9 @@ namespace gpstk
    void ReferenceFrame::setReferenceFrame(const std::string& name)
       throw()
    {
-      for(int i = 0; i < names.size(); ++i)
+      for(int i = 0; i < xnames.size(); ++i)
       {
-         if(names[(FramesEnum)i] == name)
+         if(xnames[(FramesEnum)i] == name)
          {
             frame = (FramesEnum)i;
             return;
@@ -76,9 +76,9 @@ namespace gpstk
    void ReferenceFrame::setReferenceFrame(const char name[])
       throw()
    {
-      for(int i = 0; i < names.size(); ++i)
+      for(int i = 0; i < xnames.size(); ++i)
       {
-         if(names[(FramesEnum)i] == name)
+         if(xnames[(FramesEnum)i] == name)
          {
             frame = (FramesEnum)i;
             return;
@@ -104,17 +104,17 @@ namespace gpstk
       throw()
    {
       int index;
-      for(index = 0; index < names.size(); ++index)
+      for(index = 0; index < xnames.size(); ++index)
       {
-         if(names[(FramesEnum)index] == name)
+         if(xnames[(FramesEnum)index] == name)
          {
             frame = (FramesEnum)index;
             return (*this);
          }
       }
          //The specified frame does not exist, create it
-      index = names.size();
-      names[(FramesEnum)index] = name;
+      index = xnames.size();
+      xnames[(FramesEnum)index] = name;
       frame = (FramesEnum)index;
       return (*this);
    }
@@ -122,7 +122,7 @@ namespace gpstk
    std::string& ReferenceFrame::asString() const
       throw()
    {
-      return names[frame];
+      return xnames[frame];
    }
    
    bool ReferenceFrame::operator==(const ReferenceFrame& right) const
@@ -170,9 +170,9 @@ namespace gpstk
       if(initialized)
          return;
       
-      names[Unknown] = "Unknown";
-      names[WGS84] = "WGS84";
-      names[PZ90] = "PZ90";
+      xnames[Unknown] = "Unknown";
+      xnames[WGS84] = "WGS84";
+      xnames[PZ90] = "PZ90";
       
       initialized = true;
    }
