@@ -29,6 +29,11 @@ namespace gpstk
       //this is needed to remove undefined reference errors.
    std::map<ReferenceFrame::FramesEnum, std::string> ReferenceFrame::names;
    
+   ReferenceFrame::ReferenceFrame(FramesEnum e){
+   	initialize();
+   	setReferenceFrame((int)e);
+	}
+   
    ReferenceFrame::ReferenceFrame(int index)
       throw()
    {
@@ -64,14 +69,15 @@ namespace gpstk
    void ReferenceFrame::setReferenceFrame(const std::string& name)
       throw()
    {
-      for(int i = 0; i < names.size(); ++i)
+      std::map<ReferenceFrame::FramesEnum, std::string>::const_iterator iter = names.begin();
+      for(iter; iter != names.end(); ++iter)
       {
-         if(names[(FramesEnum)i] == name)
-         {
-            frame = (FramesEnum)i;
-            return;
-         }
-      }
+      	if(iter->second == name)
+      	{
+      		frame = iter->first;
+      		return;
+			}
+		}
       frame = Unknown;
    }
    
@@ -97,19 +103,19 @@ namespace gpstk
    ReferenceFrame& ReferenceFrame::createReferenceFrame(std::string& name)
       throw()
    {
-      int index;
-      for(index = 0; index < names.size(); ++index)
+      std::map<ReferenceFrame::FramesEnum, std::string>::const_iterator iter = names.begin();
+      for(iter; iter != names.end(); ++iter)
       {
-         if(names[(FramesEnum)index] == name)
-         {
-            frame = (FramesEnum)index;
-            return (*this);
-         }
-      }
+      	if(iter->second == name)
+      	{
+      		frame = iter->first;
+      		return (*this);
+			}
+		}
          //The specified frame does not exist, create it
-      index = names.size();
-      names[(FramesEnum)index] = name;
-      frame = (FramesEnum)index;
+      int size = names.size();
+      names[(FramesEnum)size] = name;
+      frame = (FramesEnum)size;
       return (*this);
    }
    

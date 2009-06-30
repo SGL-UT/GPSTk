@@ -52,6 +52,8 @@ namespace gpstk{
          PZ90   /**< The PZ90 Reference Frame*/
       };
       
+      ReferenceFrame(FramesEnum e);
+      
       /**
        * Create a new ReferenceFrame with the specified index/FramesEnum.
        * 
