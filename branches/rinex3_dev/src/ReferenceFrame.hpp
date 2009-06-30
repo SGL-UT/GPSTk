@@ -52,6 +52,13 @@ namespace gpstk{
          PZ90   /**< The PZ90 Reference Frame*/
       };
       
+      /**
+       * Create a new ReferenceFrame with the specified FramesEnum.
+       * 
+       * @param e The FramesEnum of the new ReferenceFrame.
+       */
+         //This is needed for some reason, without it you get undefined reference errors
+         //when compiling.
       ReferenceFrame(FramesEnum e);
       
       /**
@@ -62,8 +69,7 @@ namespace gpstk{
        * 
        * @param index The FramesEnum or int index of the new ReferenceFrame.
        */
-      ReferenceFrame(int index = 0)
-         throw();
+      ReferenceFrame(int index = 0);
       
       /**
        * Creates a new ReferenceFrame and looks up the given name in the names map.
@@ -73,8 +79,7 @@ namespace gpstk{
        * 
        * @param str A c-string to look up.
        */
-      ReferenceFrame(const char str[])
-         throw();
+      ReferenceFrame(const char str[]);
       
       /**
        * Creates a new ReferenceFrame and looks up the given name in the names map.
@@ -84,8 +89,7 @@ namespace gpstk{
        * 
        * @param str The name of the ReferenceFrame to look up in the names map.
        */
-      ReferenceFrame(const std::string str)
-         throw();
+      ReferenceFrame(const std::string str);
       
       /**
        * Virtual Destructor, does nothing.
@@ -100,8 +104,7 @@ namespace gpstk{
        * 
        * @param index The index/FramesEnum to set this ReferenceFrame to.
        */
-      void setReferenceFrame(const int index)
-         throw();
+      void setReferenceFrame(const int index);
       
       /**
        * Sets the current ReferenceFrame to the string specified.
@@ -111,8 +114,7 @@ namespace gpstk{
        * 
        * @param name The c-string name of the ReferenceFrame to set this to.
        */
-      void setReferenceFrame(const char name[])
-         throw();
+      void setReferenceFrame(const char name[]);
       
       /**
        * Sets the current ReferenceFrame to the string specified.
@@ -120,8 +122,7 @@ namespace gpstk{
        * If the string does not exist in the names map, this ReferenceFrame is
        * set to ReferenceFrame::Unknown.
        */
-      void setReferenceFrame(const std::string& name)
-         throw();
+      void setReferenceFrame(const std::string& name);
       
       /**
        * Gets the current value of this ReferenceFrame and returns it.
@@ -136,8 +137,7 @@ namespace gpstk{
        * 
        * @return The string from the names map that corresponds to the value of this ReferenceFrame.
        */
-      std::string& asString() const
-         throw();
+      std::string& asString() const;
       
       /**
        * Creates a new entry in the names map.
@@ -150,8 +150,7 @@ namespace gpstk{
        * 
        * @return A reference to the ReferenceFrame after creation.
        */
-      ReferenceFrame& createReferenceFrame(const char str[])
-         throw();
+      ReferenceFrame& createReferenceFrame(const char str[]);
       
       /**
        * Creates a new entry in the names map.
@@ -164,8 +163,7 @@ namespace gpstk{
        * 
        * @return A reference to the new ReferenceFrame after creation.
        */
-      ReferenceFrame& createReferenceFrame(std::string& name)
-         throw();
+      ReferenceFrame& createReferenceFrame(std::string& name);
       
       /**
        * Compares the frame value of both ReferenceFrames for equality.
@@ -240,8 +238,7 @@ namespace gpstk{
        * initialization code is only run once. When run, the code adds the
        * default map values to the names map.
        */
-      void initialize()
-         throw();
+      void initialize();
       
       /**
        * The FramesEnum value of this ReferenceFrame.

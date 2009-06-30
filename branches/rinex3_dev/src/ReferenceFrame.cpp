@@ -26,7 +26,7 @@
 
 namespace gpstk
 {
-      //this is needed to remove undefined reference errors.
+      //this is needed to remove undefined reference errors caused by class static members.
    std::map<ReferenceFrame::FramesEnum, std::string> ReferenceFrame::names;
    
    ReferenceFrame::ReferenceFrame(FramesEnum e){
@@ -35,28 +35,24 @@ namespace gpstk
 	}
    
    ReferenceFrame::ReferenceFrame(int index)
-      throw()
    {
       initialize();
       setReferenceFrame(index);
    }
    
    ReferenceFrame::ReferenceFrame(const std::string str)
-      throw()
    {
       initialize();
       setReferenceFrame(str);
    }
    
    ReferenceFrame::ReferenceFrame(const char str[])
-      throw()
    {
       initialize();
       setReferenceFrame(str);
    }
    
    void ReferenceFrame::setReferenceFrame(const int index)
-      throw()
    {
          //We use names.size() as our upper bound so we can
          //dynamically load new reference frames into this class
@@ -67,7 +63,6 @@ namespace gpstk
    }
    
    void ReferenceFrame::setReferenceFrame(const std::string& name)
-      throw()
    {
       std::map<ReferenceFrame::FramesEnum, std::string>::const_iterator iter = names.begin();
       for(iter; iter != names.end(); ++iter)
@@ -82,7 +77,6 @@ namespace gpstk
    }
    
    void ReferenceFrame::setReferenceFrame(const char name[])
-      throw()
    {
       setReferenceFrame((std::string)name);
    }
@@ -94,14 +88,12 @@ namespace gpstk
    }
    
    ReferenceFrame& ReferenceFrame::createReferenceFrame(const char str[])
-      throw()
    {
       std::string name(str);
       return createReferenceFrame(name);
    }
    
    ReferenceFrame& ReferenceFrame::createReferenceFrame(std::string& name)
-      throw()
    {
       std::map<ReferenceFrame::FramesEnum, std::string>::const_iterator iter = names.begin();
       for(iter; iter != names.end(); ++iter)
@@ -120,7 +112,6 @@ namespace gpstk
    }
    
    std::string& ReferenceFrame::asString() const
-      throw()
    {
       return names[frame];
    }
@@ -163,7 +154,6 @@ namespace gpstk
    }
    
    void ReferenceFrame::initialize()
-      throw()
    {
          //Use this to make sure it is only initialized once
       static bool initialized = false;
