@@ -18,7 +18,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2009, The University of Texas at Austin
 //
 //============================================================================
 
@@ -26,6 +26,8 @@
 
 namespace gpstk
 {
+      //this is needed to remove undefined reference errors.
+   std::map<ReferenceFrame::FramesEnum, std::string> ReferenceFrame::names;
    
    ReferenceFrame::ReferenceFrame(int index)
       throw()
@@ -53,7 +55,7 @@ namespace gpstk
    {
          //We use names.size() as our upper bound so we can
          //dynamically load new reference frames into this class
-      if(index < Unknown || index >= xnames.size())
+      if(index < Unknown || index >= names.size())
          frame = Unknown;
       else
          frame = (FramesEnum)index;
@@ -62,9 +64,9 @@ namespace gpstk
    void ReferenceFrame::setReferenceFrame(const std::string& name)
       throw()
    {
-      for(int i = 0; i < xnames.size(); ++i)
+      for(int i = 0; i < names.size(); ++i)
       {
-         if(xnames[(FramesEnum)i] == name)
+         if(names[(FramesEnum)i] == name)
          {
             frame = (FramesEnum)i;
             return;
@@ -76,15 +78,7 @@ namespace gpstk
    void ReferenceFrame::setReferenceFrame(const char name[])
       throw()
    {
-      for(int i = 0; i < xnames.size(); ++i)
-      {
-         if(xnames[(FramesEnum)i] == name)
-         {
-            frame = (FramesEnum)i;
-            return;
-         }
-      }
-      frame = Unknown;
+      setReferenceFrame((std::string)name);
    }
    
    ReferenceFrame::FramesEnum ReferenceFrame::getFrame() const
@@ -104,17 +98,17 @@ namespace gpstk
       throw()
    {
       int index;
-      for(index = 0; index < xnames.size(); ++index)
+      for(index = 0; index < names.size(); ++index)
       {
-         if(xnames[(FramesEnum)index] == name)
+         if(names[(FramesEnum)index] == name)
          {
             frame = (FramesEnum)index;
             return (*this);
          }
       }
          //The specified frame does not exist, create it
-      index = xnames.size();
-      xnames[(FramesEnum)index] = name;
+      index = names.size();
+      names[(FramesEnum)index] = name;
       frame = (FramesEnum)index;
       return (*this);
    }
@@ -122,7 +116,7 @@ namespace gpstk
    std::string& ReferenceFrame::asString() const
       throw()
    {
-      return xnames[frame];
+      return names[frame];
    }
    
    bool ReferenceFrame::operator==(const ReferenceFrame& right) const
@@ -170,9 +164,9 @@ namespace gpstk
       if(initialized)
          return;
       
-      xnames[Unknown] = "Unknown";
-      xnames[WGS84] = "WGS84";
-      xnames[PZ90] = "PZ90";
+      names[Unknown] = "Unknown";
+      names[WGS84] = "WGS84";
+      names[PZ90] = "PZ90";
       
       initialized = true;
    }
