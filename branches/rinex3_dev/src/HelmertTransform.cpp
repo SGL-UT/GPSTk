@@ -306,6 +306,7 @@ void HelmertTransform::populateTransformMaps()
       pz.t1 =  0.0700;
       pz.t2 = -0.0567;
       pz.t3 = -0.7733;
+      pz.description = "Parameters taken from ITRS, PZ-90 and WGS 84: current realizations and the related transformation parameters - C. Boucher, Z. Altamimi";
    
    ReferenceFrame rf(ReferenceFrame::WGS84);
    ReferenceFrame rf2(ReferenceFrame::PZ90);

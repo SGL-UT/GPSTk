@@ -48,6 +48,7 @@
 #include <iostream>
 #include "Triple.hpp"
 #include "GeoidModel.hpp"
+#include "ReferenceFrame.hpp"
 
 namespace gpstk
 {
@@ -62,7 +63,7 @@ namespace gpstk
 
     /// Default constructor
     Xt()
-      : x(0.,0.,0.), dtime(0.)
+      : x(0.,0.,0.), dtime(0.), frame(ReferenceFrame::Unknown)
     {};
 
     /// Destructor.
@@ -94,6 +95,7 @@ namespace gpstk
 
     Triple x;      ///< SV position, velocity or acceleration (x,y,z), Earth-fixed. [meters]
     double dtime;  ///< SV clock correction. [sec] or [sec/sec]
+    ReferenceFrame frame;
   }; 
 
   //@}

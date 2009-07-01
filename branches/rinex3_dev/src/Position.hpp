@@ -41,6 +41,7 @@
 #include "DayTime.hpp"  // for FormatException
 #include "Triple.hpp"
 #include "GeoidModel.hpp"
+#include "ReferenceFrame.hpp"
 #include "Xvt.hpp"
 
 namespace gpstk
@@ -188,7 +189,8 @@ namespace gpstk
                const double& b,
                const double& c,
                CoordinateSystem s = Cartesian,
-               GeoidModel *geoid = NULL)
+               GeoidModel *geoid = NULL,
+               ReferenceFrame frame = ReferenceFrame::Unknown)
          throw(GeometryException);
 
          /**
@@ -202,7 +204,8 @@ namespace gpstk
           */
       Position(const double ABC[3],
                CoordinateSystem s = Cartesian,
-               GeoidModel *geoid = NULL)
+               GeoidModel *geoid = NULL,
+               ReferenceFrame frame = ReferenceFrame::Unknown)
          throw(GeometryException);
 
          /**
@@ -216,7 +219,8 @@ namespace gpstk
           */
       Position(const Triple& ABC,
                CoordinateSystem s = Cartesian,
-               GeoidModel *geoid = NULL)
+               GeoidModel *geoid = NULL,
+               ReferenceFrame frame = ReferenceFrame::Unknown)
          throw(GeometryException);
 
          /**
@@ -373,6 +377,9 @@ namespace gpstk
       // 
       // These routines retrieve coordinate values in all coordinate systems.
       //
+         /// return coordinate ReferenceFrame
+      const ReferenceFrame& getFrame()
+         throw();
          /// return X coordinate (meters)
       double X() const
          throw();
@@ -478,6 +485,12 @@ namespace gpstk
 
       // ----------- Part  8: member functions: set -----------------------------
       //
+         /**
+          * Set the ReferenceFrame that this position is in.
+          * @param frame The ReferenceFrame to set to.
+          */
+      void setReferenceFrame(ReferenceFrame& frame)
+         throw();
          /**
           * Set the geoid values for this Position given a geoid.
           * @param geoid Pointer to the GeoidModel.
@@ -885,7 +898,8 @@ namespace gpstk
                      const double b,
                      const double c,
                      CoordinateSystem s = Cartesian,
-                     GeoidModel *geoid = NULL)
+                     GeoidModel *geoid = NULL,
+                     ReferenceFrame frame = ReferenceFrame::Unknown)
          throw(GeometryException);
 
          /* Values of the coordinates, defined for each system as follows;
@@ -912,6 +926,8 @@ namespace gpstk
 
          /// tolerance used in comparisons
       double tolerance;
+      
+      ReferenceFrame refFrame;
 
    };   // end class Position
 

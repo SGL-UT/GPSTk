@@ -95,11 +95,12 @@ namespace gpstk
                       const double& b,
                       const double& c,
                       Position::CoordinateSystem s,
-                      GeoidModel *geoid)
+                      GeoidModel *geoid,
+                      ReferenceFrame frame)
       throw(GeometryException)
    {
       try {
-         initialize(a,b,c,s,geoid);
+         initialize(a,b,c,s,geoid,frame);
       }
       catch(GeometryException& ge) {
          GPSTK_RETHROW(ge);
@@ -108,14 +109,15 @@ namespace gpstk
 
    Position::Position(const double ABC[3],
                       CoordinateSystem s,
-                      GeoidModel *geoid)
+                      GeoidModel *geoid,
+                      ReferenceFrame frame)
       throw(GeometryException)
    {
       double a=ABC[0];
       double b=ABC[1];
       double c=ABC[2];
       try {
-         initialize(a,b,c,s,geoid);
+         initialize(a,b,c,s,geoid,frame);
       }
       catch(GeometryException& ge) {
          GPSTK_RETHROW(ge);
@@ -124,14 +126,15 @@ namespace gpstk
 
    Position::Position(const Triple& ABC,
                       CoordinateSystem s,
-                      GeoidModel *geoid)
+                      GeoidModel *geoid,
+                      ReferenceFrame frame)
       throw(GeometryException)
    {
       double a=ABC[0];
       double b=ABC[1];
       double c=ABC[2];
       try {
-         initialize(a,b,c,s,geoid);
+         initialize(a,b,c,s,geoid,frame);
       }
       catch(GeometryException& ge) {
          GPSTK_RETHROW(ge);
@@ -144,7 +147,7 @@ namespace gpstk
       double a=xvt.x[0];
       double b=xvt.x[1];
       double c=xvt.x[2];
-      initialize(a,b,c,Cartesian);
+      initialize(a,b,c,Cartesian, NULL, xvt.frame);
    }
 
    // ----------- Part  4: member functions: arithmetic ----------------------
@@ -336,6 +339,12 @@ namespace gpstk
    // Note that calling these will transform the Position to another coordinate
    // system if that is required.
    //
+   const ReferenceFrame& Position::getFrame()
+      throw()
+   {
+      return refFrame;
+   }
+   
       // Get X coordinate (meters)
    double Position::X() const
       throw()
@@ -1480,7 +1489,8 @@ namespace gpstk
                   const double b,
                   const double c,
                   Position::CoordinateSystem s,
-                  GeoidModel *geoid)
+                  GeoidModel *geoid,
+                  ReferenceFrame frame)
       throw(GeometryException)
    {
       double bb(b);
@@ -1535,6 +1545,7 @@ namespace gpstk
       }
       system = s;
       tolerance = POSITION_TOLERANCE;
+      refFrame = frame;
    }
 
 }  // namespace gpstk
