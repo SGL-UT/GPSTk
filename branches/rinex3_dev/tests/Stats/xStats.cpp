@@ -61,7 +61,7 @@ void xStats :: addTest (void)
 	CPPUNIT_ASSERT_EQUAL(40., addTest.Maximum());
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(25., addTest.Average(),1E-6);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(166.66667, addTest.Variance(),1E-3);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(11.1803398, addTest.StdDev(),1E-6);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(12.9099445, addTest.StdDev(),1E-6);
 	CPPUNIT_ASSERT_EQUAL(4., addTest.Normalization());
 	CPPUNIT_ASSERT_EQUAL(true, addTest.Weighted());
 	
@@ -77,7 +77,7 @@ void xStats :: addTest (void)
 	CPPUNIT_ASSERT_EQUAL(40., addTest0.Maximum());
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(25., addTest0.Average(),1E-6);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(166.66667, addTest0.Variance(),1E-3);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(11.1803398, addTest0.StdDev(),1E-6);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(12.9099445, addTest0.StdDev(),1E-6);
 	CPPUNIT_ASSERT_EQUAL(0., addTest0.Normalization());
 	CPPUNIT_ASSERT_EQUAL(false, addTest0.Weighted());
 	
