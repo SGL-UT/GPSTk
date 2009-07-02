@@ -30,9 +30,9 @@ namespace gpstk
    std::map<ReferenceFrame::FramesEnum, std::string> ReferenceFrame::names;
    
    ReferenceFrame::ReferenceFrame(FramesEnum e){
-   	initialize();
-   	setReferenceFrame((int)e);
-	}
+      initialize();
+      setReferenceFrame((int)e);
+   }
    
    ReferenceFrame::ReferenceFrame(int index)
    {
@@ -67,12 +67,12 @@ namespace gpstk
       std::map<ReferenceFrame::FramesEnum, std::string>::const_iterator iter = names.begin();
       for(iter; iter != names.end(); ++iter)
       {
-      	if(iter->second == name)
-      	{
-      		frame = iter->first;
-      		return;
-			}
-		}
+         if(iter->second == name)
+         {
+            frame = iter->first;
+            return;
+         }
+      }
       frame = Unknown;
    }
    
@@ -98,12 +98,12 @@ namespace gpstk
       std::map<ReferenceFrame::FramesEnum, std::string>::const_iterator iter = names.begin();
       for(iter; iter != names.end(); ++iter)
       {
-      	if(iter->second == name)
-      	{
-      		frame = iter->first;
-      		return (*this);
-			}
-		}
+         if(iter->second == name)
+         {
+            frame = iter->first;
+            return (*this);
+         }
+      }
          //The specified frame does not exist, create it
       int size = names.size();
       names[(FramesEnum)size] = name;

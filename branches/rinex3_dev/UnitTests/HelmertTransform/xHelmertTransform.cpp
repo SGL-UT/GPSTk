@@ -26,8 +26,8 @@ void xHelmertTransform::getTransformTest()
    ReferenceFrame rf3;
    rf3 = rf3.createReferenceFrame("Hello World!");
    
-   Transform t1, t2, t3, t4, t5, t6, t7, t8, t9;
-   CPPUNIT_ASSERT_NO_THROW(Transform t1 = helmert.getTransform(rf1, rf2));
+   HelmertTransform::Transform t1, t2, t3, t4, t5, t6, t7, t8, t9;
+   CPPUNIT_ASSERT_NO_THROW(t1 = helmert.getTransform(rf1, rf2));
    CPPUNIT_ASSERT_THROW( t2 = helmert.getTransform(rf2, rf1), InvalidParameter );
    CPPUNIT_ASSERT_THROW( t3 = helmert.getTransform(rf3, rf1), InvalidParameter );
    CPPUNIT_ASSERT_THROW( t4 = helmert.getTransform(rf2, rf3), InvalidParameter );
@@ -46,7 +46,7 @@ void xHelmertTransform::defineTransformTest()
    initial = initial.createReferenceFrame("Initial");
    final = final.createReferenceFrame("Final");
    
-   TransformParameters tp;
+   HelmertTransform::TransformParameters tp;
          //100% scale
       tp.scale = 1;
          //No rot
@@ -58,12 +58,12 @@ void xHelmertTransform::defineTransformTest()
       tp.t2 = 10;
       tp.t3 = 10;
    
-   CPPUNIT_ASSERT_THROW( Transform t1 = helmert.getTransform(initial, final), InvalidParameter );
+   CPPUNIT_ASSERT_THROW( HelmertTransform::Transform t1 = helmert.getTransform(initial, final), InvalidParameter );
    
       //Note: Should probably change the prototype to follow the get method's convention...
    CPPUNIT_ASSERT_NO_THROW( helmert.defineTransform( tp, final, initial ) );
    
-   CPPUNIT_ASSERT_NO_THROW( Transform t2 = helmert.getTransform( initial, final ) );
+   CPPUNIT_ASSERT_NO_THROW( HelmertTransform::Transform t2 = helmert.getTransform( initial, final ) );
    
 }
 void xHelmertTransform::positionTransformTest()
@@ -74,18 +74,18 @@ void xHelmertTransform::positionTransformTest()
    ReferenceFrame initial("Initial");
    ReferenceFrame final("Final");
    
-   Position pos(150, 150, 150);
+   Position pos(150, 150, 150, Position::Cartesian, NULL, initial);
       //100% scale, 10m translation
-   Position comp(310, 310, 310);
+   Position comp(310, 310, 310, Position::Cartesian, NULL, final);
    Position pos2 = pos;
    
-   pos = helmert.transform(initial, final, pos);
+   pos = helmert.transform(final, pos);
    
    CPPUNIT_ASSERT( pos.getX() == comp.getX() );
    CPPUNIT_ASSERT( pos.getY() == comp.getY() );
    CPPUNIT_ASSERT( pos.getZ() == comp.getZ() );
    
-   pos = helmert.transform(final, initial, pos);
+   pos = helmert.transform(initial, pos);
    
    CPPUNIT_ASSERT( pos.getX() == pos2.getX() );
    CPPUNIT_ASSERT( pos.getY() == pos2.getY() );
@@ -100,16 +100,19 @@ void xHelmertTransform::xtTransformTest()
    
    Xt pos, comp, pos2;
    pos.x = Triple(150, 150, 150);
+      pos.frame = initial;
    comp.x = Triple(310, 310, 310);
+      comp.frame = final;
    pos2.x = Triple(150, 150, 150);
+      pos2.frame = initial;
    
-   pos = helmert.transform(initial, final, pos);
+   pos = helmert.transform(final, pos);
    
    CPPUNIT_ASSERT( pos.x[0] == comp.x[0] );
    CPPUNIT_ASSERT( pos.x[1] == comp.x[1] );
    CPPUNIT_ASSERT( pos.x[2] == comp.x[2] );
    
-   pos = helmert.transform(final, initial, pos);
+   pos = helmert.transform(initial, pos);
    
    CPPUNIT_ASSERT( pos.x[0] == pos2.x[0] );
    CPPUNIT_ASSERT( pos.x[1] == pos2.x[1] );
@@ -125,12 +128,15 @@ void xHelmertTransform::xvtTransformTest()
    Xvt pos, comp, pos2;
    pos.x = Triple(150, 150, 150);
    pos.v = Triple(150, 150, 150);
+      pos.frame = initial;
    comp.x = Triple(310, 310, 310);
    comp.v = Triple(300, 300, 300);
+      comp.frame = final;
    pos2.x = Triple(150, 150, 150);
    pos2.v = Triple(150, 150, 150);
+      pos2.frame = initial;
    
-   pos = helmert.transform(initial, final, pos);
+   pos = helmert.transform(final, pos);
    
    CPPUNIT_ASSERT( pos.x[0] == comp.x[0] );
    CPPUNIT_ASSERT( pos.x[1] == comp.x[1] );
@@ -139,7 +145,7 @@ void xHelmertTransform::xvtTransformTest()
    CPPUNIT_ASSERT( pos.v[1] == comp.v[1] );
    CPPUNIT_ASSERT( pos.v[2] == comp.v[2] );
    
-   pos = helmert.transform(final, initial, pos);
+   pos = helmert.transform(initial, pos);
    
    CPPUNIT_ASSERT( pos.x[0] == pos2.x[0] );
    CPPUNIT_ASSERT( pos.x[1] == pos2.x[1] );

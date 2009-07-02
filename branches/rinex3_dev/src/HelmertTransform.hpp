@@ -43,110 +43,243 @@ namespace gpstk{
    using namespace std;
    using namespace gpstk;
    
-      //The struct that gets passed to this class
-      //holds basic information about the transformation, including
-      //it's rotation parameters, scale factor and translation values.
-      //In addition, there is a string for a brief description of the
-      //publication from which these parameters were taken, or other
-      //information deemed neccessary.
-   struct TransformParameters{
-      double r1;
-      double r2;
-      double r3;
-      double t1;
-      double t2;
-      double t3;
-      double scale;
-      
-         //used for publication info
-      std::string description;
-   };//struct TransformParameters
-   
-      //The stored struct, takes the params object and builds the matricies.
-   struct Transform{
-      TransformParameters params;
-      
-      Matrix<double> rotation;
-      Matrix<double> inverseRotation;
-      Vector<double> translation;
-   };//struct Transform
-   
-      //Map to the different transforms available for a specific
-      //reference frame. The key is the reference frame to translate
-      //to, with the value being the transform data.
-   typedef std::map<ReferenceFrame, Transform> TransformMap;
-      //Map to the different available reference frames. The key is the
-      //reference frame, with the value being a map to it's available
-      //transforms. To reduce redundancy, not all available frames are
-      //listed here. For instance, a frame will not be listed if it is
-      //already mapped in one of TransformMaps.
-   typedef std::map<ReferenceFrame, TransformMap> LookupMap;
    
    class HelmertTransform{
+///-----------------------------Public Members------------------------------///
       public:
+      //Forward declarations so I don't have to move the structs.
+      struct Transform;
+      struct TransformParameters;
+         /**
+          * @brief Top level map typedef, used in the LookupMao typedef.
+          * 
+          * Map to the different transforms available for a specific
+          * reference frame. The key is the reference frame to translate
+          * to, with the value being the transform data.
+          */
+      typedef std::map<ReferenceFrame, Transform> TransformMap;
+         /**
+          * @brief Base Level map typedef, used in initial lookups.
+          * 
+          * Map to the different available reference frames. The key is the
+          * reference frame, with the value being a map to it's available
+          * transforms. To reduce redundancy, not all available frames are
+          * listed here. For instance, a frame will not be listed if it is
+          * already mapped in one of TransformMaps.
+          */
+      typedef std::map<ReferenceFrame, TransformMap> LookupMap;
+      
+      /**
+       * @brief Destructor for this class.
+       */
       ~HelmertTransform() {   };
       
+         /// The constant defining the unit Milliarcsecond (mas)
+         /// Used for the Rotation parameters in the TransformParameters struct
       static const double MAS;
+         /// The constant defining the unit Parts Per Billion (ppb)
+         /// Used for the scale parameter in the TransformParameters struct
       static const double PPB;
       
+      /**
+       * @brief Creates an instance of the HelmertTransform class and returns it.
+       * 
+       * @return A singleton reference to the HelemrtTransform class.
+       */
       static HelmertTransform& instance()
                         throw();
       
+      /**
+       * @brief Dumps the contents of the lookup map to the standard output.
+       */
       void dump();
       
-         //If the transform to/from combination or it's inverse
-         //from/to do not exist this function defines a new Transform
-         //mapping. Otherwise, this function redefines the current
-         //mapping to use the provided transform parameters.
-      void defineTransform(struct TransformParameters& tp,
+      
+///--------------------------Define/Get Transforms--------------------------///
+      /**
+       * @brief Defines a new Transform using the give to/from combination and params.
+       * 
+       * If the transform to/from combination or it's inverse from/to do not
+       * exist, this function defines a new Transform mapping. Otherwise, this
+       * function redefines the current mapping to use the provided transform
+       * parameters.
+       * 
+       * @throw InvalidParameter If either ReferenceFrame is unknown or no transform is defined for them.
+       * 
+       * @param tp The transform parameters for this new transformation.
+       * @param to The ReferenceFrame that this transform changes coodinates to.
+       * @param from The ReferenceFrame that this transform changes from.
+       */
+      void defineTransform(const TransformParameters& tp,
                            const ReferenceFrame& to,
                            const ReferenceFrame& from)
                         throw(InvalidParameter&);
       
-      struct Transform& getTransform(const ReferenceFrame& from,
-                                       const ReferenceFrame& to)
+      /**
+       * @brief Returns the Transform associated with the to/from ReferenceFrame pair.
+       * 
+       * If the to/from combination does not exist this funtion throws an
+       * InvalidParameter exception. This method only searchs for the forward
+       * definition that the user provided and will not return a backwards
+       * transform definition.
+       * 
+       * @throw InvalidParameter If either ReferenceFrame is unknown or no transform is defined for them.
+       * 
+       * @param from The ReferenceFrame that the desired transform originates in.
+       * @param to The ReferenceFrame that the desired transform changes to.
+       */
+      Transform& getTransform(const ReferenceFrame& from,
+                              const ReferenceFrame& to)
                         throw(InvalidParameter&);
       
-      
+///----------------------------Transform Methods----------------------------///
          // The transformation methods //
-      Position transform(const ReferenceFrame& from,
-                           const ReferenceFrame& to,
+      /**
+       * @brief Transforms a Position object to the specified ReferenceFrame
+       */
+      Position transform(const ReferenceFrame& to,
                            const Position& pos)
                         throw(InvalidParameter&);
       
-      Xt transform(const ReferenceFrame& from,
-                     const ReferenceFrame& to,
+      /**
+       * @brief Transforms a Xt object to the specified ReferenceFrame
+       */
+      Xt transform(const ReferenceFrame& to,
                      const Xt& pos)
                         throw(InvalidParameter&);
       
-      Xvt transform(const ReferenceFrame& from,
-                     const ReferenceFrame& to,
+      /**
+       * @brief Transforms a Xvt object to the specified ReferenceFrame
+       */
+      Xvt transform(const ReferenceFrame& to,
                      const Xvt& pos)
                         throw(InvalidParameter&);
       
+      /**
+       * @brief Transforms a triple in the to ReferenceFrame to the from ReferenceFrame.
+       * 
+       * This method treats the triple as a position and applies a position
+       * transformation to the triple. This means that in addition to the
+       * rotation, the method applies a translation to the Triple.
+       * 
+       * @throw InvalidParameter If either ReferenceFrame is Unknown, or the transform doesn't exist.
+       * 
+       * @param from The ReferenceFrame the Triple is initially in.
+       * @param to The ReferenceFrame to transform to.
+       * @param pos The position triple to transform.
+       * 
+       * @return A transformed Triple object.
+       */
       Triple posTransform(const ReferenceFrame& from,
                            const ReferenceFrame& to,
                            const Triple& pos)
                         throw(InvalidParameter&);
       
+      /**
+       * @brief Transforms a triple in the to ReferenceFrame to the from ReferenceFrame.
+       * 
+       * This method treats the triple as a velocity and applies the velocity
+       * transformation to the triple. This means that the translation is not
+       * applied to the triple when the transform is made.
+       * 
+       */
       Triple velTransform(const ReferenceFrame& from,
                            const ReferenceFrame& to,
                            const Triple& vel)
                         throw(InvalidParameter&);
       
+      /**
+       * @brief Transforms a Vector in the to ReferenceFrame to the from ReferenceFrame.
+       * 
+       * This method treats the vector as a position and applies the position
+       * transformation to the vector. This means that in addition to the
+       * rotation, the method also applies a translation to the Vector.
+       */
       Vector<double> posTransform(const ReferenceFrame& from,
                                     const ReferenceFrame& to,
                                     const Vector<double>& pos)
                         throw(InvalidParameter&);
       
+      /**
+       * @brief Transforms a Vector in the to ReferenceFrame to the from ReferenceFrame.
+       * 
+       * This method treats the Vector as a velocity and applies the velocity
+       * transformation to the Vector. This means that the translation is not
+       * applied to the vector when the transform is made.
+       */
       Vector<double> velTransform(const ReferenceFrame& from,
                                     const ReferenceFrame& to,
                                     const Vector<double>& vel)
                         throw(InvalidParameter&);
       
+         //The struct that gets passed to this class.
+         //holds basic information about the transformation, including
+         //it's rotation parameters, scale factor and translation values.
+         //In addition, there is a string for a brief description of the
+         //publication from which these parameters were taken, or other
+         //information deemed neccessary.
+      /**
+       * @brief A set of parameters that define a Helmert Transform
+       * 
+       * This struct defines a set of parameters used in building a Helmert
+       * Transform. All fields must have a value except the description.
+       * Values of zero cause no effect, thus a value of 0.0 for the scale
+       * would result in no scale.
+       * 
+       * @note Unit must be applied to the parameters by the user.
+       */
+      struct TransformParameters{
+         double r1;   ///< The X Axis rotation value in degrees.
+         double r2;   ///< The Y Axis rotation value in degrees.
+         double r3;   ///< The Z Axis rotation value in degrees.
+         double t1;   ///< The X Axis translation value in meters.
+         double t2;   ///< The Y Axis translation value in meters.
+         double t3;   ///< The Z Axis translation value in meters.
+         double scale;   ///< The scale factor of the Rotation matrix. 0 = No Scale.
+         
+            //used for publication info
+         std::string description;   ///< A description of this transform and where it came from.
+      };//struct TransformParameters
+      
+         //The stored struct, takes the params struct and builds the matricies.
+      /**
+       * @brief The struct holding the prebuilt matrix, it's inverse and translation.
+       * 
+       * This struct is created by the buildTransform method of the HelmertTransform
+       * class. To create a new Transform, pass a TransformParameters struct
+       * and two ReferenceFrame objects to the defineTransform method.
+       * 
+       * @note No units are applied to the parameters, they must be applied by the user.
+       */
+      struct Transform{
+         TransformParameters params;   ///< The Transform parameters, for reference.
+         
+         Matrix<double> rotation;   ///< The skew symmetric Rotation matrix.
+         Matrix<double> inverseRotation;   ///< The inverse of the Rotation matrix.
+         Vector<double> translation;   ///< The translation vector applied to position transforms.
+      };//struct Transform
+      
+///----------------------------Protected Members----------------------------///
       protected:
       
          //This function does the work for the other functions.
+      /**
+       * @brief Resolves the appropriate transform and applies it to the vector.
+       * 
+       * This method is eventually called by all the transform methods. It
+       * first resolves which Translation to use, if it exists, then applies
+       * the translation conditionally as well as the rotation (always).
+       * 
+       * @throw InvalidParameter If the transform does not exist.
+       * 
+       * @param from The ReferenceFrame the vector is in initially.
+       * @param to The ReferenceFrame the vector is transformed to.
+       * @param vec The Vector to transform.
+       * @param translate If the method applies the translation vector.
+       * 
+       * @note This method changes the passed vector.
+       * @return A reference to the transformed Vector.
+       */
       Vector<double>& helperTransform(const ReferenceFrame& from,
                                        const ReferenceFrame& to,
                                        Vector<double>& vec,
@@ -154,24 +287,64 @@ namespace gpstk{
                         throw(InvalidParameter&);
       
       //Initializer
-      void populateTransformMaps()
-                        throw();
+      /**
+       * @brief Sets up the pre-defined transforms.
+       * 
+       * This method is called the first time HelmertTransform::instance() is
+       * called. Currently, this method only defines the PZ90->WGS84 transform
+       */
+      void populateTransformMaps();
       
-      Transform buildTransform(TransformParameters& tp)
+      /**
+       * @brief Builds a Transform struct from the given TransformParameters.
+       * 
+       * This method creates a Transform struct from the given TransformParameters
+       * by applying the parameters to the matrix like this:
+       * [( scale + 1, -r3, r2 ),
+       *  ( r3, scale + 1, -r1 ),
+       *  ( -r2, r1, scale + 1 )]
+       * 
+       * @param tp The transform parameters to use to build the struct.
+       * 
+       * @return The built transform struct.
+       */
+      Transform buildTransform(const TransformParameters& tp)
          throw();
       
+         /// The Unknown ReferenceFrame exception when performing a transform.
+      static const char* unknownExceptionText;
+         /// The Unknown ReferenceFrame exception when defining a transform.
+      static const char* unknownDefinitionText;
+         /// The exception thrown if a transform is alread defined backwards.
+      static const char* backwardsDefinition;
+      
+         /// The map of maps containing the to/from ReferenceFrame pairs and their associated Transform struct.
       LookupMap fromMap;
       
+///------------------------------Constructors-------------------------------///
          //Constructors. Because we want this class to be a singleton,
          //these need to be private or protected.
+      /**
+       * @brief Default Constructor, initializes the maps.
+       * 
+       * This constructor calls the populateTransformMaps() method.
+       */
       HelmertTransform()
          throw();
+      
+      /**.
+       * @brief Protected to disallow copies
+       */
       HelmertTransform(const HelmertTransform& ht)
          throw();
+      
+      /**
+       * @brief Protected to disallow copies.
+       */
       HelmertTransform& operator=(const HelmertTransform& ht)
          throw();
    };//class HelmertTransform
-   
+
 }//namespace gpstk
 
-#endif
+#endif //End Of File

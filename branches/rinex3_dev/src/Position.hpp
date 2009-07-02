@@ -380,6 +380,9 @@ namespace gpstk
          /// return coordinate ReferenceFrame
       const ReferenceFrame& getFrame()
          throw();
+      const ReferenceFrame& getFrame() const
+         throw();
+      
          /// return X coordinate (meters)
       double X() const
          throw();
@@ -489,7 +492,7 @@ namespace gpstk
           * Set the ReferenceFrame that this position is in.
           * @param frame The ReferenceFrame to set to.
           */
-      void setReferenceFrame(ReferenceFrame& frame)
+      void setReferenceFrame(const ReferenceFrame& frame)
          throw();
          /**
           * Set the geoid values for this Position given a geoid.

@@ -222,6 +222,8 @@ namespace gpstk
    {
       if(AEarth != right.AEarth || eccSquared != right.eccSquared)
          return false;
+      if(right.getFrame() != refFrame)
+      	return false;	//Unknown frames are considered the same.
       if(range(*this,right) < tolerance)
          return true;
       else
@@ -345,6 +347,12 @@ namespace gpstk
       return refFrame;
    }
    
+   const ReferenceFrame& Position::getFrame() const
+      throw()
+   {
+      return refFrame;
+	}
+   
       // Get X coordinate (meters)
    double Position::X() const
       throw()
@@ -460,6 +468,12 @@ namespace gpstk
 
    // ----------- Part  8: member functions: set -----------------------------
    //
+   void Position::setReferenceFrame(const ReferenceFrame& frame)
+      throw()
+   {
+      refFrame = frame;
+	}
+   
       // Set the geoid values for this Position given a geoid.
       // @param geoid Pointer to the GeoidModel.
       // @throw GeometryException if input is NULL.
