@@ -1,2 +1,2 @@
 # $Id$
-SUBDIRS = RungeKutta4 Stats BinUtils DayTime IonoModel PolyFit RinexEphemerisStore RinexMet RinexObs RinexNav
+SUBDIRS = ANSITime BinUtils CivilTime CommonTime DayTime GPSWeekSecond GPSWeekZcount IonoModel JulianDate Matrix MJD MSC PolyFit PowerSum RACRotation RinexEphemerisStore RinexMet RinexNav RinexObs RungeKutta4 SEM Stats TimeConverters UnixTime Vector YDSTime Yuma

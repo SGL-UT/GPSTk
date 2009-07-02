@@ -1,5 +1,5 @@
-#pragma ident "$Id: xVector.cpp 1979 2009-06-24 18:05:07Z afarris $"
-// file: xVector.cpp
+#pragma ident "$Id: xMatrix.cpp 1979 2009-06-24 18:05:07Z afarris $"
+// file: xMatrix.cpp
 
 //============================================================================
 //
@@ -23,11 +23,12 @@
 //
 //============================================================================
 
-#include "xVector.hpp"
+#include "xMatrix.hpp"
+#include <iostream>
 
-CPPUNIT_TEST_SUITE_REGISTRATION (xVector);
+CPPUNIT_TEST_SUITE_REGISTRATION (xMatrix);
 
-void xVector :: setUp (void) 
+void xMatrix :: setUp (void) 
 { 
 }	
 
@@ -41,59 +42,63 @@ void xVector :: setUp (void)
 **** Stats class
 */
 
-void xVector :: iteratorTest (void)
+void xMatrix :: iteratorTest (void)
 {
-   gpstk::Vector<double> v1(3,1.0);
-   gpstk::Vector<double> v2(3,2.0);
+   gpstk::Matrix<double> v1(3,1.0);
+   gpstk::Matrix<double> v2(3,2.0);
    //iterator front = v2.begin();
    //iterator back = v2.end();
-
-   for(int i = 0; i < v1.size(); i++)
-      CPPUNIT_ASSERT_EQUAL(1.,v1[i]);
-
-   for(int i = 0; i < v1.size(); i++)
-      CPPUNIT_ASSERT_EQUAL(2.,v2[i]);
-}
-
-void xVector :: getTest (void)
-{
-   gpstk::Vector<double> v1(250,1.0);
-   gpstk::Vector<double> v2(1000,5.0);
+   std::cout << v1 << std::endl;
+   std::cout << v2 << std::endl;
 
    for(int i = 0; i < v1.size(); i++)
    {
-      CPPUNIT_ASSERT_EQUAL(1.,v1[i]);
-      CPPUNIT_ASSERT_EQUAL(1.,v1(i));
+   //   CPPUNIT_ASSERT_EQUAL(1.,v1[i][i]);
+   }
+
+   for(int i = 0; i < v1.size(); i++)
+   {
+   //   CPPUNIT_ASSERT_EQUAL(2.,v2[i][i]);
+   }
+}
+
+void xMatrix :: getTest (void)
+{
+   gpstk::Matrix<double> v1(250,1.0);
+   gpstk::Matrix<double> v2(1000,5.0);
+
+   for(int i = 0; i < v1.size(); i++)
+   {
+   //   CPPUNIT_ASSERT_EQUAL(1.,v1[i][i]);
    }
 
    for(int i = 0; i < v2.size(); i++)
    {
-      CPPUNIT_ASSERT_EQUAL(5.,v2[i]);
-      CPPUNIT_ASSERT_EQUAL(5.,v2(i));
+   //   CPPUNIT_ASSERT_EQUAL(5.,v2[i][i]);
    }
 }
 
-void xVector :: operatorTest (void)
+void xMatrix :: operatorTest (void)
 {
-   gpstk::Vector<double> v1(3,1.0);
-   gpstk::Vector<double> v2(12,3.0);
-   gpstk::Vector<double> v3 = v2;
-   gpstk::Vector<double> v4 = -v1;
+   gpstk::Matrix<double> v1(3,1.0);
+   gpstk::Matrix<double> v2(12,3.0);
+   gpstk::Matrix<double> v3 = v2;
+   gpstk::Matrix<double> v4 = -v1;
 
    for(int i = 0; i < v2.size(); i++)
    {
-      CPPUNIT_ASSERT_EQUAL(v2[i],v3[i]);
+   //   CPPUNIT_ASSERT_EQUAL(v2[i][i],v3[i][i]);
    }
 
    for(int i = 0; i < v1.size(); i++)
    {
-      CPPUNIT_ASSERT_EQUAL(-v1[i],v4[i]);
+   //   CPPUNIT_ASSERT_EQUAL(-v1[i][i],v4[i][i]);
    }
    v2 += v3; // 6 6 6 ...
    v2 += 2; // 8 8 8 ...
    for(int i = 0; i < v2.size(); i++)
    {
-      CPPUNIT_ASSERT_EQUAL(8.,v2[i]);
+   //   CPPUNIT_ASSERT_EQUAL(8.,v2[i][i]);
    }
 
    v2 -= v3; // 5 5 5 ...
@@ -101,14 +106,14 @@ void xVector :: operatorTest (void)
    
    for(int i = 0; i < v1.size(); i++)
    {
-      CPPUNIT_ASSERT_EQUAL(v1[i],v2[i]); //sizes mismatch, check till v1 ends
+   //   CPPUNIT_ASSERT_EQUAL(v1[i][i],v2[i][i]); //sizes mismatch, check till v1 ends
    }
 
    v2 += 2; // 3 3 3 ...
    
-   v1 = v1&&v2; // 3 3 3 3 3 3 ...
-   CPPUNIT_ASSERT_EQUAL((size_t)15,v1.size());
-   v1 = v1&&v3;
-   CPPUNIT_ASSERT_EQUAL((size_t)27,v1.size());
+   //v1 = v1&&v2; // 3 3 3 3 3 3 ...
+   //CPPUNIT_ASSERT_EQUAL((size_t)15,v1.size());
+   //v1 = v1&&v3;
+   //CPPUNIT_ASSERT_EQUAL((size_t)27,v1.size());
 }
 

@@ -1,5 +1,5 @@
-#pragma ident "$Id: xVectorM.cpp 1895 2009-05-12 19:34:29Z afarris $"
-// file: xVectorM.cpp
+#pragma ident "$Id: xMatrixM.cpp 1895 2009-05-12 19:34:29Z afarris $"
+// file: xMatrixM.cpp
 
 //============================================================================
 //

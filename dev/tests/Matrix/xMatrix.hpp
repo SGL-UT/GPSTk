@@ -1,5 +1,5 @@
-#pragma ident "$Id: xVector.hpp 1895 2009-05-12 19:34:29Z afarris $"
-// file: xVector.hpp
+#pragma ident "$Id: xMatrix.hpp 1895 2009-05-12 19:34:29Z afarris $"
+// file: xMatrix.hpp
 
 //============================================================================
 //
@@ -23,20 +23,20 @@
 //
 //============================================================================
 
-#ifndef XVECTOR_HPP
-#define XVECTOR_HPP
+#ifndef XMATRIX_HPP
+#define XMATRIX_HPP
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "Vector.hpp"
+#include "Matrix.hpp"
 
 using namespace std;
 
  
-class xVector: public CPPUNIT_NS :: TestFixture
+class xMatrix: public CPPUNIT_NS :: TestFixture
 {
 	//Test Fixture information, e.g. what tests will be run
-	CPPUNIT_TEST_SUITE (xVector);
+	CPPUNIT_TEST_SUITE (xMatrix);
 	CPPUNIT_TEST (iteratorTest);
 	CPPUNIT_TEST (getTest);
 	CPPUNIT_TEST (operatorTest);
