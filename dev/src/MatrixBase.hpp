@@ -574,16 +574,16 @@ namespace gpstk
       // unary minus must not return an l-value
 
          /// unary minus: multiplies each element in this matrix by -1.
-      BaseClass operator-()
-         {
-            const T x=T(-1);
-            BaseClass me = static_cast<BaseClass>(*this); \
-            size_t i,j;
-            for (i=0; i < me.rows(); i++)
-               for (j=0; j < me.cols(); j++)
-                  me(i,j) *= x;
-            return me;
-         }
+      const BaseClass operator-() const
+      {
+         const T x=T(-1);
+         BaseClass me = static_cast<BaseClass>(*this); \
+         size_t i,j;
+         for (i=0; i < me.rows(); i++)
+            for (j=0; j < me.cols(); j++)
+               me(i,j) *= x;
+         return me;
+      }
 
          /// swaps rows row1 and row2 in this matrix.
       BaseClass& swapRows(size_t row1, size_t row2) 

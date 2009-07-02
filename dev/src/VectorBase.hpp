@@ -215,15 +215,15 @@ VecBaseArrayAssignMacroDontCheckRange(func)
       //   }
       // unary minus must not return an l-value
 
-         /// unary minus: multiplies each element in this matrix by -1.
-      BaseClass operator-()
-         {
-            const T x=T(-1);
-            BaseClass me = static_cast<BaseClass>(*this);
-            size_t i;
-            for (i=0; i < me.size(); i++) me(i) *= x;
-            return me;
-         }
+      /// unary minus: multiplies each element in this matrix by -1.
+      const BaseClass operator-() const
+      {
+         const T x=T(-1);
+         BaseClass me = static_cast<BaseClass>(*this);
+         size_t i;
+         for (i=0; i < me.size(); i++) me(i) *= x;
+         return me;
+      }
 
    protected:
          /// Returns a modifiable object at index i.
