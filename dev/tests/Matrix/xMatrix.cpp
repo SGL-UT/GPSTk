@@ -29,91 +29,126 @@
 CPPUNIT_TEST_SUITE_REGISTRATION (xMatrix);
 
 void xMatrix :: setUp (void) 
-{ 
-}	
-
-/*
-****Test to assess the quality of the Add member of the Stats
-****class which is designed to add a gpstk::Vector or an individual 
-****sample to an instance of Stats
-
-**** This test partially indirectly tests Minimum, Maximum
-**** Average,Variance,StdDev which are all memebers of the
-**** Stats class
-*/
-
-void xMatrix :: iteratorTest (void)
 {
-   gpstk::Matrix<double> v1(3,1.0);
-   gpstk::Matrix<double> v2(3,2.0);
-   //iterator front = v2.begin();
-   //iterator back = v2.end();
-   std::cout << v1 << std::endl;
-   std::cout << v2 << std::endl;
+   gpstk::Vector<double> v1 = gpstk::Vector<double>();
+   gpstk::Vector<double> v2 = gpstk::Vector<double>();
+   gpstk::Vector<double> v3 = gpstk::Vector<double>();
+   gpstk::Vector<double> v4 = gpstk::Vector<double>();
+   v1 = v1 && 1 && 2 && 3 && 4;
+   v2 = v2 && 5 && 6 && 7 && 8;
+   v3 = v3 && 9 && 10 && 11 && 12;
+   v4 = v4 && 13 && 14 && 15 && 16;
+   
+   a = new gpstk::Matrix<double>(2, 2, 1);
+   b = new gpstk::Matrix<double>(8, 2, 3);
+   c = new gpstk::Matrix<double>(4, 2, 5);
+   d = new gpstk::Matrix<double>(4, 4, 7);
+   e = new gpstk::Matrix<double>(8, 2, v1&&v2&&v3&&v4);
+   f = new gpstk::Matrix<double>(4, 4, v4&&v3&&v2&&v1);
+   g = new gpstk::Matrix<double>(2, 2, v1);
+   h = new gpstk::Matrix<double>(4, 2, v2&&v2);
+}
 
-   for(int i = 0; i < v1.size(); i++)
-   {
-   //   CPPUNIT_ASSERT_EQUAL(1.,v1[i][i]);
-   }
+void xMatrix :: tearDown (void)
+{
+    // finally delete objects
+    delete a; delete b; delete c; delete d;
+    delete e; delete f; delete g; delete h;
+}
 
-   for(int i = 0; i < v1.size(); i++)
-   {
-   //   CPPUNIT_ASSERT_EQUAL(2.,v2[i][i]);
-   }
+void xMatrix :: sizeTest (void)
+{
+   CPPUNIT_ASSERT_EQUAL((size_t)4,(*a).size());
+   CPPUNIT_ASSERT_EQUAL((size_t)2,(*a).rows());
+   CPPUNIT_ASSERT_EQUAL((size_t)2,(*a).cols());
+
+   CPPUNIT_ASSERT_EQUAL((size_t)16,(*b).size());
+   CPPUNIT_ASSERT_EQUAL((size_t)8,(*b).rows());
+   CPPUNIT_ASSERT_EQUAL((size_t)2,(*b).cols());
+
+   CPPUNIT_ASSERT_EQUAL((size_t)8,(*c).size());
+   CPPUNIT_ASSERT_EQUAL((size_t)4,(*c).rows());
+   CPPUNIT_ASSERT_EQUAL((size_t)2,(*c).cols());
+
+   CPPUNIT_ASSERT_EQUAL((size_t)16,(*d).size());
+   CPPUNIT_ASSERT_EQUAL((size_t)4,(*d).rows());
+   CPPUNIT_ASSERT_EQUAL((size_t)4,(*d).cols());
+
+   CPPUNIT_ASSERT_EQUAL((size_t)16,(*e).size());
+   CPPUNIT_ASSERT_EQUAL((size_t)8,(*e).rows());
+   CPPUNIT_ASSERT_EQUAL((size_t)2,(*e).cols());
+
+   CPPUNIT_ASSERT_EQUAL((size_t)16,(*f).size());
+   CPPUNIT_ASSERT_EQUAL((size_t)4,(*f).rows());
+   CPPUNIT_ASSERT_EQUAL((size_t)4,(*f).cols());
+
+   CPPUNIT_ASSERT_EQUAL((size_t)4,(*g).size());
+   CPPUNIT_ASSERT_EQUAL((size_t)2,(*g).rows());
+   CPPUNIT_ASSERT_EQUAL((size_t)2,(*g).cols());
+
+   CPPUNIT_ASSERT_EQUAL((size_t)8,(*h).size());
+   CPPUNIT_ASSERT_EQUAL((size_t)4,(*h).rows());
+   CPPUNIT_ASSERT_EQUAL((size_t)2,(*h).cols());
 }
 
 void xMatrix :: getTest (void)
 {
-   gpstk::Matrix<double> v1(250,1.0);
-   gpstk::Matrix<double> v2(1000,5.0);
+   for(int i = 0; i < (*a).rows(); i++)
+      for(int j = 0; j < (*a).cols(); j++)
+         CPPUNIT_ASSERT_EQUAL(1.,(*a)(i,j));
 
-   for(int i = 0; i < v1.size(); i++)
-   {
-   //   CPPUNIT_ASSERT_EQUAL(1.,v1[i][i]);
-   }
+   for(int i = 0; i < (*b).rows(); i++)
+      for(int j = 0; j < (*b).cols(); j++)
+         CPPUNIT_ASSERT_EQUAL(3.,(*b)(i,j));
 
-   for(int i = 0; i < v2.size(); i++)
-   {
-   //   CPPUNIT_ASSERT_EQUAL(5.,v2[i][i]);
-   }
+   for(int i = 0; i < (*c).rows(); i++)
+      for(int j = 0; j < (*c).cols(); j++)
+         CPPUNIT_ASSERT_EQUAL(5.,(*c)(i,j));
+
+   for(int i = 0; i < (*d).rows(); i++)
+      for(int j = 0; j < (*d).cols(); j++)
+         CPPUNIT_ASSERT_EQUAL(7.,(*d)(i,j));
+
+   for(int i = 0; i < (*e).rows(); i++)
+      for(int j = 0; j < (*e).cols(); j++)
+         CPPUNIT_ASSERT_EQUAL(1+i+j*8.,(*e)(i,j));
+
+   for(int i = 0; i < (*f).rows(); i++)
+      for(int j = 0; j < (*f).cols(); j++)
+         CPPUNIT_ASSERT_EQUAL(1+i+(3-j)*4.,(*f)(i,j));
+
+   for(int i = 0; i < (*g).rows(); i++)
+      for(int j = 0; j < (*g).cols(); j++)
+         CPPUNIT_ASSERT_EQUAL(1+i+j*2.,(*g)(i,j));
+
+   for(int i = 0; i < (*h).rows(); i++)
+      for(int j = 0; j < (*h).cols(); j++)
+         CPPUNIT_ASSERT_EQUAL(5.+i,(*h)(i,j));
 }
 
 void xMatrix :: operatorTest (void)
 {
-   gpstk::Matrix<double> v1(3,1.0);
-   gpstk::Matrix<double> v2(12,3.0);
-   gpstk::Matrix<double> v3 = v2;
-   gpstk::Matrix<double> v4 = -v1;
+   (*d) += (*f); // 4x4
+   for(int i = 0; i < (*d).rows(); i++)
+      for(int j = 0; j < (*d).cols(); j++)
+         CPPUNIT_ASSERT_EQUAL(8+i+(3-j)*4.,(*d)(i,j));
+   (*d) -= (*f); // 4x4
 
-   for(int i = 0; i < v2.size(); i++)
-   {
-   //   CPPUNIT_ASSERT_EQUAL(v2[i][i],v3[i][i]);
-   }
+   (*a) += (*g); // 2x2
+   for(int i = 0; i < (*a).rows(); i++)
+      for(int j = 0; j < (*a).cols(); j++)
+         CPPUNIT_ASSERT_EQUAL(2+i+j*2.,(*a)(i,j));
+   (*a) -= (*g); // 2x2
 
-   for(int i = 0; i < v1.size(); i++)
-   {
-   //   CPPUNIT_ASSERT_EQUAL(-v1[i][i],v4[i][i]);
-   }
-   v2 += v3; // 6 6 6 ...
-   v2 += 2; // 8 8 8 ...
-   for(int i = 0; i < v2.size(); i++)
-   {
-   //   CPPUNIT_ASSERT_EQUAL(8.,v2[i][i]);
-   }
+   (*b) -= (*e); // 8x2
+   for(int i = 0; i < (*b).rows(); i++)
+      for(int j = 0; j < (*b).cols(); j++)
+         CPPUNIT_ASSERT_EQUAL(3-(1+i+j*8.),(*b)(i,j));
+   (*b) += (*e); // 8x2
 
-   v2 -= v3; // 5 5 5 ...
-   v2 -= 4; // 1 1 1 ...
-   
-   for(int i = 0; i < v1.size(); i++)
-   {
-   //   CPPUNIT_ASSERT_EQUAL(v1[i][i],v2[i][i]); //sizes mismatch, check till v1 ends
-   }
-
-   v2 += 2; // 3 3 3 ...
-   
-   //v1 = v1&&v2; // 3 3 3 3 3 3 ...
-   //CPPUNIT_ASSERT_EQUAL((size_t)15,v1.size());
-   //v1 = v1&&v3;
-   //CPPUNIT_ASSERT_EQUAL((size_t)27,v1.size());
+   (*c) -= (*h); // 4x2
+   for(int i = 0; i < (*c).rows(); i++)
+      for(int j = 0; j < (*c).cols(); j++)
+         CPPUNIT_ASSERT_EQUAL(5-(5.+i),(*c)(i,j));
+   (*c) += (*h); // 4x2
 }
-

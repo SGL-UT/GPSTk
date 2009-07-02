@@ -37,7 +37,7 @@ class xMatrix: public CPPUNIT_NS :: TestFixture
 {
 	//Test Fixture information, e.g. what tests will be run
 	CPPUNIT_TEST_SUITE (xMatrix);
-	CPPUNIT_TEST (iteratorTest);
+	CPPUNIT_TEST (sizeTest);
 	CPPUNIT_TEST (getTest);
 	CPPUNIT_TEST (operatorTest);
 	
@@ -45,13 +45,14 @@ class xMatrix: public CPPUNIT_NS :: TestFixture
 
 	public:
 		void setUp (void); //Sets up test enviornment
-		
+		void tearDown (void) ; //Tears down test environment
 	protected:
-		void iteratorTest (void);
+		void sizeTest (void);
 		void getTest (void);
 		void operatorTest (void);
 
 	private:
+      gpstk::Matrix<double> *a, *b, *c, *d, *e, *f, *g, *h;
 		
 };	
 		

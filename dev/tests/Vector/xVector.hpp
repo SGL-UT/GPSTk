@@ -37,7 +37,6 @@ class xVector: public CPPUNIT_NS :: TestFixture
 {
 	//Test Fixture information, e.g. what tests will be run
 	CPPUNIT_TEST_SUITE (xVector);
-	CPPUNIT_TEST (iteratorTest);
 	CPPUNIT_TEST (getTest);
 	CPPUNIT_TEST (operatorTest);
 	
@@ -47,7 +46,6 @@ class xVector: public CPPUNIT_NS :: TestFixture
 		void setUp (void); //Sets up test enviornment
 		
 	protected:
-		void iteratorTest (void);
 		void getTest (void);
 		void operatorTest (void);
 

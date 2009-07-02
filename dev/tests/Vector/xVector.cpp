@@ -31,30 +31,6 @@ void xVector :: setUp (void)
 { 
 }	
 
-/*
-****Test to assess the quality of the Add member of the Stats
-****class which is designed to add a gpstk::Vector or an individual 
-****sample to an instance of Stats
-
-**** This test partially indirectly tests Minimum, Maximum
-**** Average,Variance,StdDev which are all memebers of the
-**** Stats class
-*/
-
-void xVector :: iteratorTest (void)
-{
-   gpstk::Vector<double> v1(3,1.0);
-   gpstk::Vector<double> v2(3,2.0);
-   //iterator front = v2.begin();
-   //iterator back = v2.end();
-
-   for(int i = 0; i < v1.size(); i++)
-      CPPUNIT_ASSERT_EQUAL(1.,v1[i]);
-
-   for(int i = 0; i < v1.size(); i++)
-      CPPUNIT_ASSERT_EQUAL(2.,v2[i]);
-}
-
 void xVector :: getTest (void)
 {
    gpstk::Vector<double> v1(250,1.0);
