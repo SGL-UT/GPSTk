@@ -275,8 +275,7 @@ namespace gpstk
 
 
    // This is used to register a new ObsID & Rinex 3 identifier.  The syntax for the
-   // Rinex 3 identifier is the same as for the ObsID constructor. Four character 
-   // identifiers (like are allowed in the constructor) are not allowed. 
+   // Rinex 3 identifier is the same as for the ObsID constructor. 
    // If there are spaces in the provided identifier, they are ignored
    ObsID ObsID::newID(const std::string& rinexID, const std::string& desc)
       throw(InvalidParameter)
