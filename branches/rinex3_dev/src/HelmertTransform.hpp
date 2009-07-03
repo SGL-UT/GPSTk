@@ -40,10 +40,6 @@
 
 namespace gpstk{
    
-   using namespace std;
-   using namespace gpstk;
-   
-   
    class HelmertTransform{
 ///-----------------------------Public Members------------------------------///
       public:
@@ -280,9 +276,9 @@ namespace gpstk{
        * @note This method changes the passed vector.
        * @return A reference to the transformed Vector.
        */
-      Vector<double>& helperTransform(const ReferenceFrame& from,
+      Vector<double> helperTransform(const ReferenceFrame& from,
                                        const ReferenceFrame& to,
-                                       Vector<double>& vec,
+                                       const Vector<double>& vec,
                                        bool translate)
                         throw(InvalidParameter&);
       
@@ -312,11 +308,11 @@ namespace gpstk{
          throw();
       
          /// The Unknown ReferenceFrame exception when performing a transform.
-      static const char* unknownExceptionText;
+      static const string unknownExceptionText;
          /// The Unknown ReferenceFrame exception when defining a transform.
-      static const char* unknownDefinitionText;
+      static const string unknownDefinitionText;
          /// The exception thrown if a transform is alread defined backwards.
-      static const char* backwardsDefinition;
+      static const string backwardsDefinition;
       
          /// The map of maps containing the to/from ReferenceFrame pairs and their associated Transform struct.
       LookupMap fromMap;

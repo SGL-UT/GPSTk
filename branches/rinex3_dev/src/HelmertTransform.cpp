@@ -25,11 +25,16 @@
 #include "HelmertTransform.hpp"
 
 using namespace gpstk;
+using namespace std;
 
    //Define the exception messages here.
-const char* HelmertTransform::unknownExceptionText = "Unknown ReferenceFrame - Cannot perform Helmert Transformation.";
-const char* HelmertTransform::unknownDefinitionText = "Unknown ReferenceFrame - Cannot define an Unknown transform.";
-const char* HelmertTransform::backwardsDefinition = "Cannot define transformation backwards. A transformation is already defined in the reverse order.";
+const string HelmertTransform::unknownExceptionText = "Unknown ReferenceFrame "
+                                    "- Cannot perform Helmert Transformation.";
+const string HelmertTransform::unknownDefinitionText = "Unknown ReferenceFrame"
+                                    " - Cannot define an Unknown transform.";
+const string HelmertTransform::backwardsDefinition = "Cannot define"
+                       " transformation backwards. A transformation is already"
+                       " defined in the reverse order.";
 
    //Units
 const double HelmertTransform::MAS = 7.71605e-10;
@@ -243,8 +248,7 @@ Vector<double> HelmertTransform::posTransform(const ReferenceFrame& from,
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
       throw InvalidParameter(HelmertTransform::unknownExceptionText);
    
-   Vector<double> newPos = pos;
-   return helperTransform(from, to, newPos, true);
+   return helperTransform(from, to, pos, true);
 }
 
    //Vector velocity transfrom, calls helperTransform with false as an arg.
@@ -256,20 +260,20 @@ Vector<double> HelmertTransform::velTransform(const ReferenceFrame& from,
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
       throw InvalidParameter(HelmertTransform::unknownExceptionText);
    
-   Vector<double> newVel = vel;
-   return helperTransform(from, to, newVel, false);
+   return helperTransform(from, to, vel, false);
 }
 
 ///----------------------------Protected Methods----------------------------///
 
    //Looks up and resolves the needed transform, then applies it.
    //If translate is true, the translation vector is used, otherwise not.
-Vector<double>& HelmertTransform::helperTransform(const ReferenceFrame& from,
+Vector<double> HelmertTransform::helperTransform(const ReferenceFrame& from,
                                  const ReferenceFrame& to,
-                                 Vector<double>& vec,
+                                 const Vector<double>& pvec,
                                  bool translate)
                   throw(InvalidParameter&)
 {
+	Vector<double> vec = pvec;
 	   //Search for the from ReferenceFrame. Forwards definition lookup first
    LookupMap::iterator iter = fromMap.find(from);
    if( iter != fromMap.end())
@@ -327,7 +331,9 @@ void HelmertTransform::populateTransformMaps()
       pz.t1 =  0.0700;
       pz.t2 = -0.0567;
       pz.t3 = -0.7733;
-      pz.description = "Parameters taken from ITRS, PZ-90 and WGS 84: current realizations and the related transformation parameters - C. Boucher, Z.Altamimi";
+      pz.description = "Parameters taken from ITRS, PZ-90 and WGS 84: current"
+                  " realizations and the related transformation parameters "
+                  "- C. Boucher, Z.Altamimi";
    
    ReferenceFrame rf(ReferenceFrame::WGS84);
    ReferenceFrame rf2(ReferenceFrame::PZ90);
