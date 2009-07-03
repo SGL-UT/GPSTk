@@ -47,8 +47,6 @@ public:
    
    bool firstNav;
 
-   static const int maxChannel=12;
-
    // First time is of the first missed epoch, second time is the last missed epoch
    // (i.e. first = previous + obsRateEst, second=current-ObsRateEst
    typedef std::pair<gpstk::DayTime, gpstk::DayTime> DayTimePair;
@@ -82,13 +80,19 @@ public:
    std::map<NavIndex, gpstk::EngEphemeris> ephStore;
 
    std::list<gpstk::MDPNavSubframe> badList;
-   unsigned long badNavSubframeCount, navSubframeCount;
 
    std::map<NavIndex, double> snr; // 'current' SNR
    std::map<NavIndex, double> el;  // 'current' elevation
 
+   // false means bin by SNR, a feature not well tested
    bool binByElevation;
-   std::map<RangeCarrierPair, gpstk::Histogram> peHist;
+   // a list of bins to keep track of
    gpstk::Histogram::BinRangeList bins;
+
+   // number of errored subframes in this bin
+   std::map<RangeCarrierPair, gpstk::Histogram> peHist;
+
+   // total number of subframes received in this bin
+   std::map<RangeCarrierPair, gpstk::Histogram> sfCount;
 };
 #endif

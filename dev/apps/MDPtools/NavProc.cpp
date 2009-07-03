@@ -40,8 +40,7 @@ using namespace gpstk::StringUtils;
 //-----------------------------------------------------------------------------
 MDPNavProcessor::MDPNavProcessor(MDPStream& in, std::ofstream& out)
    : MDPProcessor(in, out),
-     firstNav(true), almOut(false), ephOut(false), minimalAlm(false),
-     badNavSubframeCount(0), navSubframeCount(0)
+     firstNav(true), almOut(false), ephOut(false), minimalAlm(false)
 {
    timeFormat = "%4Y/%03j/%02H:%02M:%02S";
 
@@ -77,24 +76,15 @@ MDPNavProcessor::~MDPNavProcessor()
       return;
    }
 
-   out << endl
-       << "Navigation Subframe message summary:" << endl
-       << "  navSubframeCount: " << navSubframeCount << endl
-       << "  badNavSubframeCount: " << badNavSubframeCount << endl
-       << "  percent bad: " << setprecision(3)
-       << 100.0 * badNavSubframeCount/navSubframeCount << " %" << endl;
-
-   if (badNavSubframeCount==0)
-       return;
-
    out << "Parity Errors" << endl;
    out << "# elev";
-   std::map<RangeCarrierPair, Histogram>::const_iterator peh_itr;
+   std::map<RangeCarrierPair, Histogram>::const_iterator peh_itr, sfc_itr;
    for (peh_itr = peHist.begin(); peh_itr != peHist.end(); peh_itr++)
    {
       const RangeCarrierPair& rcp=peh_itr->first;
-      out << "    " << asString(rcp.second)
-           << "-"    << leftJustify(asString(rcp.first), 2);
+      out << "     " << asString(rcp.second)
+          << "-"    << leftJustify(asString(rcp.first), 2)
+          << "      ";
    }
    out << endl;
 
@@ -109,8 +99,10 @@ MDPNavProcessor::~MDPNavProcessor()
       for (peh_itr = peHist.begin(); peh_itr != peHist.end(); peh_itr++)
       {
          const RangeCarrierPair& rcp=peh_itr->first;
-         Histogram h=peh_itr->second;
-         out << right << setw(9) << h.bins[br];
+         Histogram pec=peh_itr->second;
+         Histogram sfc=sfCount[rcp];
+         out << right << setw(7) << pec.bins[br] << "/" 
+             << left << setw(8) << sfc.bins[br];
       }
 
       out << endl;
@@ -121,10 +113,21 @@ MDPNavProcessor::~MDPNavProcessor()
         << "-" << left  << setw(2) << peHist.begin()->second.bins.rbegin()->first.second
         << ":";
 
+   unsigned long sfc=0,pec=0;
    for (peh_itr = peHist.begin(); peh_itr != peHist.end(); peh_itr++)
-      out << right <<  setw(9) << peh_itr->second.total;
-      
+   {
+      sfc += sfCount[peh_itr->first].total;
+      pec += peh_itr->second.total;
+      out << right << setw(7) << peh_itr->second.total << "/"
+          << left << setw(8) << sfCount[peh_itr->first].total;
+   }
    out << endl;
+
+   out << endl
+       << "Navigation Subframe message summary:" << endl
+       << "  navSubframeCount: " << sfc << endl
+       << "  badNavSubframeCount: " << pec << endl
+       << "  percent bad: " << setprecision(3) << 100.0*pec/sfc << " %" << endl;
 }
 
 
@@ -140,7 +143,6 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
              << endl;
    }
 
-   navSubframeCount++;
    RangeCarrierPair rcp(msg.range, msg.carrier);
    NavIndex ni(rcp, msg.prn);
 
@@ -153,14 +155,26 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
        << ":" << setw(2) << left << asString(umsg.range)
        << "  ";
    string msgPrefix = oss.str();
+
+   if (sfCount.find(rcp) == sfCount.end())
+      sfCount[rcp].resetBins(bins);
    
+   if (binByElevation)
+      sfCount[rcp].addValue(el[ni]);
+   else
+      sfCount[rcp].addValue(snr[ni]);
+   
+   // For the moment, we can't check the validity of L2C data
+   static RangeCarrierPair L2CMCL(rcCMCL, ccL2);
+   if (rcp == L2CMCL)
+      return;
+
    umsg.cookSubframe();
    if (verboseLevel>3 && umsg.neededCooking)
       out << msgPrefix << "Subframe required cooking" << endl;
 
    if (!umsg.parityGood)
    {
-      badNavSubframeCount++;
       if (verboseLevel)
          out << msgPrefix << "Parity error"
              << " SNR:" << fixed << setprecision(1) << snr[ni]
@@ -202,7 +216,6 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
    short week = umsg.time.GPSfullweek();
    if (sow <0 || sow>=604800)
    {
-      badNavSubframeCount++;
       if (verboseLevel>1)
          out << msgPrefix << "  Bad SOW: " << sow << endl;
       return;
@@ -216,7 +229,6 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
    }
    else if (howTime != umsg.time+6)
    {
-      badNavSubframeCount++;
       if (verboseLevel>1)
          out << msgPrefix << " HOW time != hdr time+6, HOW:"
              << howTime.printf(timeFormat)
