@@ -137,6 +137,22 @@ namespace gpstk
       std::string generateUniqueKey() const throw(WrongBlockNumber,
                                                   WrongBlockFormat);
 
+        /***
+         * Standard equality operator.
+         */
+      bool operator==(const FICData& rhs);
+
+     /***
+      * Returns a human readable string describing an entry
+      * in a FIC vector.
+      * @param block Block number: 9, 109, 62, 162.
+      * @param type Which vector type. 'f' for floating, 'i' for integer, 'c' for character.
+      * @param indx The number of the element in the vector to describe. Starts with zero.
+      * @return String describing the entry.
+      */
+      std::string getElementLabel(char type, size_t indx) const;
+  
+
            /// @name data members
          //@{
       static const std::string blockString; ///< "BLK " record header constsnt

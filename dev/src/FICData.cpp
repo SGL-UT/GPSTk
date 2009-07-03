@@ -42,6 +42,9 @@
 //
 //=============================================================================
 
+#include <vector>
+#include <string>
+
 #include <cstring>
 
 #include "StringUtils.hpp"
@@ -1160,5 +1163,217 @@ namespace gpstk
 
    }
 
+   bool FICData::operator==(const FICData& rhs)
+   {
+     return ( (blockNum == rhs.blockNum) &&
+	      (f == rhs.f) &&
+              (i == rhs.i) &&
+              (c == rhs.c) );
+   }
+
+   string FICData::getElementLabel(char type, size_t indx) const
+   {
+      string label("Unknown.");
+
+      // The following maps store the human readable names
+      // for the FIC fields. Making these static to this code block
+      // rathar than to the class keeps them out of memory 
+      // until needed.
+  
+      static bool labelsDefined = false;
+      static map<size_t, string> labels9, labels62i;
+
+      // The floating point array varies by page.
+      // The first index is the format type, the next is index.
+      // The formats are in the IS-GPS-200, figure 20.1
+      // Formats 1 through 3 refer to the ephemeris.
+      // In the figure, the formats are termed "Sheets":
+      // sheet 4 of 11, etc.
+      // For example, labels62f[4][7] is "Eccentricity".
+      // In the original 
+      static map<long, map<size_t, string> > labels62f;
+
+      if (!labelsDefined)
+      {
+        labels9[0]="TLM Word (Preamble)";
+	labels9[1]="TLM Word (Message)";
+        labels9[2]="HOW Word (Time)";
+        labels9[3]="Synchronization/Momentum Flag for Block I or Anti-Spoof/\"Alert\" Flag for Block II ";
+        labels9[4]="Sub-Frame ID";
+        labels9[5]="Transmit Week Number";
+        labels9[6]="C/A and/or P Flag, L2 Flag";
+        labels9[7]="SV Accuracy";
+        labels9[8]="SV Health";
+        labels9[9]="Age of Data, Clock";
+        labels9[10]="L2 P Data Flag";
+        labels9[11]="Group Delay Differential";
+        labels9[12]="Clock Epoch";
+        labels9[13]="Clock Drift Rate";
+        labels9[14]="Clock Drift";
+        labels9[15]="Clock Bias";
+        labels9[16]="(not used)";
+        labels9[17]="(not used)";
+        labels9[18]="Tracker";
+        labels9[19]="SV PRN";
+        labels9[20]="TLM Word (Preamble)";
+        labels9[21]="TLM Word (Message)";
+        labels9[22]="HOW Word (Time)";
+        labels9[23]="Synchronization/Momentum Flag for Block I or Anti-Spoof/\"Alert\" Flag for Block II ";
+        labels9[24]="Sub-Frame ID (2)";
+        labels9[25]="Age of Data Ephemeris";
+        labels9[26]="Radial Sine Correction (CRS)";
+        labels9[27]="Correction to Mean Motion";
+        labels9[28]="Mean Anomaly at Epoch";
+        labels9[29]="In-Track Cosine Amplitude (CUC)";
+        labels9[30]="Eccentricity";
+        labels9[31]="In-track sine amplitude (CUS)";
+        labels9[32]="Square root of semi-major axis";
+        labels9[33]="Time of epoch";
+        labels9[34]="Fit interval flag ";
+        labels9[35]="(unused)";
+        labels9[36]="(unused)";
+        labels9[37]="(unused)";
+        labels9[38]="(unused)";
+        labels9[39]="(unused)";
+        labels9[40]="TLM Word (Preamble)";
+        labels9[41]="TLM Word (Message)";
+        labels9[42]="HOW Word (Time)";
+        labels9[43]="Synchronization/Momentum flag for Block I or Anti-Spoof/\"Alert\" flag for Block II";
+        labels9[44]="Sub-Frame ID (3)";
+        labels9[45]="Inclination cosine correction (CIC)";
+        labels9[46]="Right ascension of ascending node";
+        labels9[47]="Inclination sine correction (CIS)";
+        labels9[48]="Inclination";
+        labels9[49]="Radial cosine adjustment (CRC)";
+        labels9[50]="Argument of perigee ";
+        labels9[51]="Right ascension of ascending node time derivative";
+        labels9[52]="Age of data (Ephemeris)";
+        labels9[53]="Inclination time derivative";
+        labels9[54]="(unused)";
+        labels9[55]="(unused)";
+        labels9[56]="(unused)";
+        labels9[57]="(unused)";
+        labels9[58]="(unused)";
+        labels9[60]="(unused)";
+
+        labels62i[0]="Week of Toa";
+        labels62i[1]="Time of Transmit";
+        labels62i[2]="0";
+        labels62i[3]="SV ID";
+        labels62i[4]="Format number (ICD-200, Fig 20-1)";
+        labels62i[5]="Transmit week number";
+
+        labels62f[4][0]=labels9[0];
+        labels62f[4][1]=labels9[1];
+        labels62f[4][2]=labels9[2];
+        labels62f[4][3]=labels9[3];
+        labels62f[4][4]=labels9[4];
+        labels62f[4][5]="Data Flags";
+        labels62f[4][6]="Page ID";
+        labels62f[4][7]="Eccentricity";
+        labels62f[4][8]="Time of Epoch (Toa)";
+        labels62f[4][9]="Inclination offset from 54 deg.";
+        labels62f[4][10]="Right Ascension rate";
+	labels62f[4][11]="SV Health";
+        labels62f[4][12]="Square root of semi-major axis";
+        labels62f[4][13]="Right Ascension of ascending node";
+        labels62f[4][14]="Argument of Perigee";
+        labels62f[4][15]="Mean Anomaly";
+        labels62f[4][16]="AF0 Clock Model Coefficient";
+        labels62f[4][17]="AF1 Clock Model Coefficient";
+        labels62f[4][18]="Week of Toa";
+        labels62f[4][19]="SV PRN";
+
+        // Most of the first few records are identical.
+        for (long sheet=5; sheet <= 11; sheet++)
+           for (size_t k=0; k<7; k++)
+              labels62f[sheet][k]=labels62f[4][k];
+	
+        // Finish up format/sheet 5
+        labels62f[5][7]="Almanac Reference Week Number";
+
+        long sat=1;
+        for (size_t k=8; k<32; k++, sat++)
+	  labels62f[5][k]=string("6 bit health info for satellite ")+asString(sat);
+ 
+        // Finish up format/sheet 6
+        short word=3;
+        for (size_t k=7; k<14; k++, word++)
+	  labels62f[6][k]=string("Reserved bits, word ")+asString(sat);      
+        
+        // Format/sheet 7
+        labels62f[7] = labels62f[6];
+
+        // Format/sheet 8
+        labels62f[8][7] = "Alpha 0";
+        labels62f[8][8] = "Alpha 1";
+        labels62f[8][9] = "Alpha 2";
+        labels62f[8][10] = "Alpha 3";
+        labels62f[8][11] = "Beta 0";
+        labels62f[8][12] = "Beta 1";
+        labels62f[8][13] = "Beta 2";
+        labels62f[8][14] = "Beta 3";
+        labels62f[8][15] = "Bias term of GPS-UTC (A0) difference polynomial";
+        labels62f[8][16] = "Drift term of GPS-UTC (A1) difference polynomial";
+        labels62f[8][17] = "Reference Time";
+        labels62f[8][18] = "Reference week of current leap seconds";
+        labels62f[8][19] = "Time increment due to leap seconds";
+        labels62f[8][20] = "Week number last/next change";
+        labels62f[8][21] = "Reference day number of future leap second";
+        labels62f[8][22] = "Scheduled future time increments due to leap seconds";
+
+        // Format/sheet 9
+        sat=1;
+
+        for (size_t k=7; k<39; k++, sat++)
+	  labels62f[9][k] = string("Anti-Spoofing/SV config for sat ")
+	                    +asString(sat);
+
+        sat=25;
+        for (size_t k=39; k<47; k++, sat++)
+	  labels62f[9][k] = string("6 bit health info for satellite ")+asString(sat);
+
+
+        // Sheet 10 handled with logic, not data. See below.
+
+        // Sheet 11.
+        labels62f[11] = labels62f[7];
+
+
+        labelsDefined=true;
+      }
+
+      if ((blockNum==9) && (type=='f'))
+	return labels9[indx];
+
+      if ((blockNum==62) && (type=='i'))
+	return labels62i[indx];
+
+      if ((blockNum==62) && (type=='f'))
+      { 
+	 long thisSheet = i[4];
+         
+         if (thisSheet==10)
+            return string("Either NMCT or special message");
+
+         string returnValue(labels62f[i[4]][indx]);
+         if (!returnValue.empty()) 
+	    return returnValue;
+      }
+
+      if ((blockNum==109) && (type=='i'))
+      {
+	 int subframe = indx/10;
+         int word = indx%10;
+         return "Subframe "+asString(subframe) + ", word "+asString(word);
+      }
+	
+      if ((blockNum==162) && (type=='i'))
+      {
+         return "Subframe 4 or 5, word "+asString(indx);
+      }
+	
+      return label;
+   }
 } // namespace gpstk
 
