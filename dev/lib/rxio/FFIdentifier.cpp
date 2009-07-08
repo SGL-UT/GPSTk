@@ -268,4 +268,25 @@ namespace gpstk
 
    }
 
+   std::string FFIdentifier::describe(FFIdentifier::FFType type)
+   {
+      std::string desc("Unknown");
+
+      switch (type)
+      {
+         case FFIdentifier::tRinexObs : 
+	    desc="RINEX obs"; 
+	    break;
+
+         case FFIdentifier::tMDP :      
+	    desc="Measurement Data Protocol";  
+	    break;
+
+         case FFIdentifier::tSMODF :
+	   desc="Smoothed measurement";
+	   break;
+      }
+      return desc;
+   }
+
 }

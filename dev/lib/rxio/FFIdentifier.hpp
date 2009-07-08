@@ -47,6 +47,7 @@
 
 namespace gpstk
 {
+
    // A function object to figure out what format a file is
    class FFIdentifier
    {
@@ -77,10 +78,19 @@ namespace gpstk
 
       operator FFType() {return fileType;}
 
+      static std::string describe(FFType thisId);
+
       static int debugLevel;
 
    private:
       FFType fileType;
+
+
    };
+
+
 }
+
+
+
 #endif
