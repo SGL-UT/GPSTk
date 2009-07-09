@@ -692,7 +692,7 @@ namespace gpstk
       try
       {
             // Multiply by 1/FACTOR to convert mSec from milliseconds to seconds.
-         return CommonTime().setInternal(jday, mSod, mSec / FACTOR);
+         return CommonTime().setInternal(jday, mSod, mSec / FACTOR, TimeSystem::Any);
       }
       catch (gpstk::InvalidParameter& ip)
       {

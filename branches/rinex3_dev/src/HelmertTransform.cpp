@@ -18,21 +18,22 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2009, The University of Texas at Austin
 //
 //============================================================================
 
 #include "HelmertTransform.hpp"
+#include <iostream>
 
 using namespace gpstk;
 using namespace std;
 
    //Define the exception messages here.
-const string HelmertTransform::unknownExceptionText = "Unknown ReferenceFrame "
+static const string unknownExceptionText = "Unknown ReferenceFrame "
                                     "- Cannot perform Helmert Transformation.";
-const string HelmertTransform::unknownDefinitionText = "Unknown ReferenceFrame"
+static const string unknownDefinitionText = "Unknown ReferenceFrame"
                                     " - Cannot define an Unknown transform.";
-const string HelmertTransform::backwardsDefinition = "Cannot define"
+static const string backwardsDefinition = "Cannot define"
                        " transformation backwards. A transformation is already"
                        " defined in the reverse order.";
 
@@ -47,13 +48,6 @@ HelmertTransform::HelmertTransform()
    populateTransformMaps();
 }
 
-HelmertTransform::HelmertTransform( const HelmertTransform& ht )
-   throw()
-{
-   //This is declared as protected and does nothing to prevent accidental
-   //instantiation of this class
-}
-
 HelmertTransform& HelmertTransform::operator=( const HelmertTransform& right )
    throw()
 {
@@ -63,7 +57,6 @@ HelmertTransform& HelmertTransform::operator=( const HelmertTransform& right )
 }
 
 HelmertTransform& HelmertTransform::instance()
-                  throw()
 {
       //Funtion static variable, initialized the first time around only
    static HelmertTransform inst;
@@ -75,12 +68,12 @@ HelmertTransform& HelmertTransform::instance()
 void HelmertTransform::defineTransform(const HelmertTransform::TransformParameters& tp,
                                        const ReferenceFrame& to,
                                        const ReferenceFrame& from)
-                  throw(InvalidParameter&)
+                  throw(InvalidParameter)
 {
       //Sanity check, no Unknown frames allowed
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
    {
-      throw InvalidParameter(HelmertTransform::unknownDefinitionText);
+      throw InvalidParameter(unknownDefinitionText);
    }
    
    //Start Searching
@@ -103,7 +96,7 @@ void HelmertTransform::defineTransform(const HelmertTransform::TransformParamete
                //Since it is defined in reverse already, throw an error
                //We don't allow reverse redefinitions right now because it
                //could cause some ambiguity in the maps.
-            throw InvalidParameter(HelmertTransform::backwardsDefinition);
+            throw InvalidParameter(backwardsDefinition);
          }
       }
          //Since it didn't trip that trap, build it their way
@@ -116,8 +109,8 @@ void HelmertTransform::defineTransform(const HelmertTransform::TransformParamete
    //Returns the from / to combination if both from/to and to/from are defined.
    // This method is VERY similar to the defineTransform method.
 HelmertTransform::Transform& HelmertTransform::getTransform(const ReferenceFrame& from,
-                                          const ReferenceFrame& to)
-                  throw(InvalidParameter&)
+                                                            const ReferenceFrame& to)
+                  throw(InvalidParameter)
 {
    LookupMap::iterator iter = fromMap.find(from);
    if(iter == fromMap.end())
@@ -153,11 +146,11 @@ HelmertTransform::Transform& HelmertTransform::getTransform(const ReferenceFrame
    //Position transform, calls the triple method posTransform
 Position HelmertTransform::transform(const ReferenceFrame& to,
                                        const Position& pos)
-                  throw(InvalidParameter&)
+                  throw(InvalidParameter)
 {
       //throw an error if either Reference Frame is unknown
    if(pos.getFrame() == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(HelmertTransform::unknownExceptionText);
+      throw InvalidParameter(unknownExceptionText);
    
    Position cartPos = pos;
    cartPos.transformTo(Position::Cartesian);
@@ -172,10 +165,10 @@ Position HelmertTransform::transform(const ReferenceFrame& to,
    //Xt transform, calls the triple method posTransform
 Xt HelmertTransform::transform(const ReferenceFrame& to,
                                  const Xt& pos)
-                  throw(InvalidParameter&)
+                  throw(InvalidParameter)
 {
    if(pos.frame == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(HelmertTransform::unknownExceptionText);
+      throw InvalidParameter(unknownExceptionText);
    
    Xt newXt = pos;
    newXt.x = posTransform(newXt.frame, to, newXt.x);
@@ -187,10 +180,10 @@ Xt HelmertTransform::transform(const ReferenceFrame& to,
    //Xvt transform, calls the triple methods posTransform and velTransform
 Xvt HelmertTransform::transform(const ReferenceFrame& to,
                                  const Xvt& pos)
-                  throw(InvalidParameter&)
+                  throw(InvalidParameter)
 {
    if(pos.frame == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(HelmertTransform::unknownExceptionText);
+      throw InvalidParameter(unknownExceptionText);
    
    Xvt newXvt = pos;
    
@@ -205,10 +198,10 @@ Xvt HelmertTransform::transform(const ReferenceFrame& to,
 Triple HelmertTransform::posTransform(const ReferenceFrame& from,
                                        const ReferenceFrame& to,
                                        const Triple& pos)
-                  throw(InvalidParameter&)
+                  throw(InvalidParameter)
 {
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(HelmertTransform::unknownExceptionText);
+      throw InvalidParameter(unknownExceptionText);
    
    Vector<double> newPos(3,0.0);
    newPos(0) = pos[0];
@@ -224,10 +217,10 @@ Triple HelmertTransform::posTransform(const ReferenceFrame& from,
 Triple HelmertTransform::velTransform(const ReferenceFrame& from,
                                        const ReferenceFrame& to,
                                        const Triple& vel)
-                  throw(InvalidParameter&)
+                  throw(InvalidParameter)
 {
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(HelmertTransform::unknownExceptionText);
+      throw InvalidParameter(unknownExceptionText);
    
    Vector<double> newVel(3,0.0);
    newVel(0) = vel[0];
@@ -243,10 +236,10 @@ Triple HelmertTransform::velTransform(const ReferenceFrame& from,
 Vector<double> HelmertTransform::posTransform(const ReferenceFrame& from,
                                                 const ReferenceFrame& to,
                                                 const Vector<double>& pos)
-                  throw(InvalidParameter&)
+                  throw(InvalidParameter)
 {
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(HelmertTransform::unknownExceptionText);
+      throw InvalidParameter(unknownExceptionText);
    
    return helperTransform(from, to, pos, true);
 }
@@ -255,10 +248,10 @@ Vector<double> HelmertTransform::posTransform(const ReferenceFrame& from,
 Vector<double> HelmertTransform::velTransform(const ReferenceFrame& from,
                                                 const ReferenceFrame& to,
                                                 const Vector<double>& vel)
-                  throw(InvalidParameter&)
+                  throw(InvalidParameter)
 {
    if(from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(HelmertTransform::unknownExceptionText);
+      throw InvalidParameter(unknownExceptionText);
    
    return helperTransform(from, to, vel, false);
 }
@@ -268,10 +261,10 @@ Vector<double> HelmertTransform::velTransform(const ReferenceFrame& from,
    //Looks up and resolves the needed transform, then applies it.
    //If translate is true, the translation vector is used, otherwise not.
 Vector<double> HelmertTransform::helperTransform(const ReferenceFrame& from,
-                                 const ReferenceFrame& to,
-                                 const Vector<double>& pvec,
-                                 bool translate)
-                  throw(InvalidParameter&)
+                                                   const ReferenceFrame& to,
+                                                   const Vector<double>& pvec,
+                                                   bool translate)
+                  throw(InvalidParameter)
 {
 	Vector<double> vec = pvec;
 	   //Search for the from ReferenceFrame. Forwards definition lookup first
@@ -299,7 +292,7 @@ Vector<double> HelmertTransform::helperTransform(const ReferenceFrame& from,
       throw InvalidParameter("Transform " + from.asString() + " to "
                               + to.asString() + " is not defined.");
    }
-      //to is defined at the base level, search it's map for from
+      //to is defined at the base level, search its map for from
       //Searching for the reverse transformation
    TransformMap::iterator transIter = (iter->second).find(from);
    if(transIter != (iter->second).end())
@@ -332,7 +325,7 @@ void HelmertTransform::populateTransformMaps()
       pz.t2 = -0.0567;
       pz.t3 = -0.7733;
       pz.description = "Parameters taken from ITRS, PZ-90 and WGS 84: current"
-                  " realizations and the related transformation parameters "
+                  " realizations and the\nrelated transformation parameters "
                   "- C. Boucher, Z.Altamimi";
    
    ReferenceFrame rf(ReferenceFrame::WGS84);

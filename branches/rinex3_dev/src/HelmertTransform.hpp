@@ -18,7 +18,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Copyright 2004, The University of Texas at Austin
+//  Copyright 2009, The University of Texas at Austin
 //
 //============================================================================
 
@@ -26,7 +26,6 @@
 #define GPSTK_HELMERT_TRANSFORM_HPP
 
 #include <map>
-#include <iostream>
 #include <string>
 
 #include "Position.hpp"
@@ -58,17 +57,12 @@ namespace gpstk{
           * @brief Base Level map typedef, used in initial lookups.
           * 
           * Map to the different available reference frames. The key is the
-          * reference frame, with the value being a map to it's available
+          * reference frame, with the value being a map to its available
           * transforms. To reduce redundancy, not all available frames are
           * listed here. For instance, a frame will not be listed if it is
           * already mapped in one of TransformMaps.
           */
       typedef std::map<ReferenceFrame, TransformMap> LookupMap;
-      
-      /**
-       * @brief Destructor for this class.
-       */
-      ~HelmertTransform() {   };
       
          /// The constant defining the unit Milliarcsecond (mas)
          /// Used for the Rotation parameters in the TransformParameters struct
@@ -82,8 +76,7 @@ namespace gpstk{
        * 
        * @return A singleton reference to the HelemrtTransform class.
        */
-      static HelmertTransform& instance()
-                        throw();
+      static HelmertTransform& instance();
       
       /**
        * @brief Dumps the contents of the lookup map to the standard output.
@@ -95,7 +88,7 @@ namespace gpstk{
       /**
        * @brief Defines a new Transform using the give to/from combination and params.
        * 
-       * If the transform to/from combination or it's inverse from/to do not
+       * If the transform to/from combination or its inverse from/to do not
        * exist, this function defines a new Transform mapping. Otherwise, this
        * function redefines the current mapping to use the provided transform
        * parameters.
@@ -109,7 +102,7 @@ namespace gpstk{
       void defineTransform(const TransformParameters& tp,
                            const ReferenceFrame& to,
                            const ReferenceFrame& from)
-                        throw(InvalidParameter&);
+                        throw(InvalidParameter);
       
       /**
        * @brief Returns the Transform associated with the to/from ReferenceFrame pair.
@@ -126,7 +119,7 @@ namespace gpstk{
        */
       Transform& getTransform(const ReferenceFrame& from,
                               const ReferenceFrame& to)
-                        throw(InvalidParameter&);
+                        throw(InvalidParameter);
       
 ///----------------------------Transform Methods----------------------------///
          // The transformation methods //
@@ -135,21 +128,21 @@ namespace gpstk{
        */
       Position transform(const ReferenceFrame& to,
                            const Position& pos)
-                        throw(InvalidParameter&);
+                        throw(InvalidParameter);
       
       /**
        * @brief Transforms a Xt object to the specified ReferenceFrame
        */
       Xt transform(const ReferenceFrame& to,
                      const Xt& pos)
-                        throw(InvalidParameter&);
+                        throw(InvalidParameter);
       
       /**
        * @brief Transforms a Xvt object to the specified ReferenceFrame
        */
       Xvt transform(const ReferenceFrame& to,
                      const Xvt& pos)
-                        throw(InvalidParameter&);
+                        throw(InvalidParameter);
       
       /**
        * @brief Transforms a triple in the to ReferenceFrame to the from ReferenceFrame.
@@ -169,7 +162,7 @@ namespace gpstk{
       Triple posTransform(const ReferenceFrame& from,
                            const ReferenceFrame& to,
                            const Triple& pos)
-                        throw(InvalidParameter&);
+                        throw(InvalidParameter);
       
       /**
        * @brief Transforms a triple in the to ReferenceFrame to the from ReferenceFrame.
@@ -182,7 +175,7 @@ namespace gpstk{
       Triple velTransform(const ReferenceFrame& from,
                            const ReferenceFrame& to,
                            const Triple& vel)
-                        throw(InvalidParameter&);
+                        throw(InvalidParameter);
       
       /**
        * @brief Transforms a Vector in the to ReferenceFrame to the from ReferenceFrame.
@@ -194,7 +187,7 @@ namespace gpstk{
       Vector<double> posTransform(const ReferenceFrame& from,
                                     const ReferenceFrame& to,
                                     const Vector<double>& pos)
-                        throw(InvalidParameter&);
+                        throw(InvalidParameter);
       
       /**
        * @brief Transforms a Vector in the to ReferenceFrame to the from ReferenceFrame.
@@ -206,11 +199,11 @@ namespace gpstk{
       Vector<double> velTransform(const ReferenceFrame& from,
                                     const ReferenceFrame& to,
                                     const Vector<double>& vel)
-                        throw(InvalidParameter&);
+                        throw(InvalidParameter);
       
          //The struct that gets passed to this class.
          //holds basic information about the transformation, including
-         //it's rotation parameters, scale factor and translation values.
+         //its rotation parameters, scale factor and translation values.
          //In addition, there is a string for a brief description of the
          //publication from which these parameters were taken, or other
          //information deemed neccessary.
@@ -239,7 +232,7 @@ namespace gpstk{
       
          //The stored struct, takes the params struct and builds the matricies.
       /**
-       * @brief The struct holding the prebuilt matrix, it's inverse and translation.
+       * @brief The struct holding the prebuilt matrix, its inverse and translation.
        * 
        * This struct is created by the buildTransform method of the HelmertTransform
        * class. To create a new Transform, pass a TransformParameters struct
@@ -280,7 +273,7 @@ namespace gpstk{
                                        const ReferenceFrame& to,
                                        const Vector<double>& vec,
                                        bool translate)
-                        throw(InvalidParameter&);
+                        throw(InvalidParameter);
       
       //Initializer
       /**
@@ -307,13 +300,6 @@ namespace gpstk{
       Transform buildTransform(const TransformParameters& tp)
          throw();
       
-         /// The Unknown ReferenceFrame exception when performing a transform.
-      static const string unknownExceptionText;
-         /// The Unknown ReferenceFrame exception when defining a transform.
-      static const string unknownDefinitionText;
-         /// The exception thrown if a transform is alread defined backwards.
-      static const string backwardsDefinition;
-      
          /// The map of maps containing the to/from ReferenceFrame pairs and their associated Transform struct.
       LookupMap fromMap;
       
@@ -332,7 +318,7 @@ namespace gpstk{
        * @brief Protected to disallow copies
        */
       HelmertTransform(const HelmertTransform& ht)
-         throw();
+         throw() {   }
       
       /**
        * @brief Protected to disallow copies.

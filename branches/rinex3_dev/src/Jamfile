@@ -30,7 +30,7 @@ else
       CommandOption.cpp CommandOptionParser.cpp
       CommandOptionWithCommonTimeArg.cpp
       CommandOptionWithPositionArg.cpp CommandOptionWithTimeArg.cpp
-      CommonTime.cpp ConfDataReader.cpp
+      CommonTime.cpp ConfDataReader.cpp Combinations.cpp
       
       DOP.cpp DayTime.cpp
       
@@ -57,7 +57,7 @@ else
       
       MJD.cpp MOPSWeight.cpp MSCData.cpp MSCStore.cpp MoonPosition.cpp
       
-      NEDUtil.cpp
+      NEDUtil.cpp NewPRSolution.cpp
       
       ObsClockModel.cpp ObsEpochMap.cpp ObsID.cpp ObsRngDev.cpp
       OceanLoading.cpp
@@ -106,7 +106,7 @@ else
       CodeBuffer.hpp CommandOption.hpp CommandOptionParser.hpp
       CommandOptionWithCommonTimeArg.hpp
       CommandOptionWithPositionArg.hpp CommandOptionWithTimeArg.hpp
-      CommonTime.hpp ConfDataReader.hpp
+      CommonTime.hpp ConfDataReader.hpp Combinations.hpp
       
       DayTime.hpp DOP.hpp
       
@@ -145,7 +145,7 @@ else
       MatrixFunctors.hpp MatrixImplementation.hpp MatrixOperators.hpp
       MiscMath.hpp ModeledPseudorangeBase.hpp MoonPosition.hpp
       
-      NEDUtil.hpp
+      NEDUtil.hpp NewPRSolution.hpp
       
       ORDEpoch.hpp ObsClockModel.hpp ObsEpochMap.hpp ObsID.hpp
       ObsRngDev.hpp OceanLoading.hpp
