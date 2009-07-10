@@ -33,7 +33,7 @@
 #include <vector>
 #include <ostream>
 #include "icd_200_constants.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "Matrix.hpp"
 #include "RinexObsHeader.hpp"
@@ -81,7 +81,7 @@ namespace gpstk
        *     (the 4 satellite solution might be returned - check isValid())
        * -4  ephemeris is not found for one or more satellites
        */
-      int RAIMCompute(const DayTime& Tr,
+      int RAIMCompute(const CommonTime& Tr,
                       std::vector<SatID>& Satellite,
                       const std::vector<double>& Pseudorange,
                       const XvtStore<SatID>& Eph,
@@ -194,7 +194,7 @@ namespace gpstk
        *  0  ok
        * -4  ephemeris not found for all the satellites
        */
-      static int PrepareAutonomousSolution(const DayTime& Tr,
+      static int PrepareAutonomousSolution(const CommonTime& Tr,
                                            std::vector<SatID>& Sats,
                                            const std::vector<double>& Pseudorange,
                                            const XvtStore<SatID>& Eph,
@@ -239,7 +239,7 @@ namespace gpstk
        * -3  not enough good data to form a solution (at least 4 satellites required)
        * -4  ephemeris not found for one or more satellites
        */
-      static int AutonomousPRSolution(const DayTime& Tr,
+      static int AutonomousPRSolution(const CommonTime& Tr,
                                       const std::vector<bool>& Use,
                                       const Matrix<double> SVP,
                                       TropModel *pTropModel,

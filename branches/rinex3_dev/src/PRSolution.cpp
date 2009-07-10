@@ -31,12 +31,14 @@
 #include "PRSolution.hpp"
 #include "EphemerisRange.hpp"
 #include "GPSGeoid.hpp"
+#include "GPSWeekSecond.hpp"
 
 // -----------------------------------------------------------------------------------
 // Combinations.hpp
 // Find all the combinations of n things taken k at a time.
 
 #include "Exception.hpp"
+#include "ECEF.hpp"
 
 /// Class Combinations will compute C(n,k), all the combinations of n things
 /// taken k at a time (where k <= n).
@@ -180,7 +182,7 @@ using namespace gpstk;
 
 namespace gpstk
 {
-   int PRSolution::RAIMCompute(const DayTime& Tr,
+   int PRSolution::RAIMCompute(const CommonTime& Tr,
                                vector<SatID>& Satellite,
                                const vector<double>& Pseudorange,
                                const XvtStore<SatID>& Eph,
@@ -317,9 +319,10 @@ namespace gpstk
                // ----------------------------------------------------------------
                // print solution with diagnostic information
                if(Debug) {
+                  GPSWeekSecond weeksec(Tr);
                   *pDebugStream << "RPS " << setw(2) << stage
-                     << " " << setw(4) << Tr.GPSfullweek()
-                     << " " << fixed << setw(10) << setprecision(3) << Tr.GPSsecond()
+                     << " " << setw(4) << weeksec.week
+                     << " " << fixed << setw(10) << setprecision(3) << weeksec.sow
                      << " " << setw(2) << N-stage << setprecision(6)
                      << " " << setw(16) << Solution(0)
                      << " " << setw(16) << Solution(1)
@@ -401,7 +404,7 @@ namespace gpstk
       }
    }  // end PRSolution::RAIMCompute()
 
-   int PRSolution::PrepareAutonomousSolution(const DayTime& Tr,
+   int PRSolution::PrepareAutonomousSolution(const CommonTime& Tr,
                                              vector<SatID>& Satellite,
                                              const vector<double>& Pseudorange,
                                              const XvtStore<SatID>& Eph,
@@ -410,7 +413,7 @@ namespace gpstk
       throw()
    {
          int i,j,nsvs,N=Satellite.size();
-         DayTime tx;                // transmit time
+         CommonTime tx;                // transmit time
          Xvt PVT;
 
          if(N <= 0) return 0;
@@ -524,7 +527,7 @@ namespace gpstk
    }  // end PRSolution::AlgebraicSolution
 
 
-   int PRSolution::AutonomousPRSolution(const DayTime& T,
+   int PRSolution::AutonomousPRSolution(const CommonTime& T,
                                         const vector<bool>& Use,
                                         const Matrix<double> SVP,
                                         TropModel *pTropModel,
