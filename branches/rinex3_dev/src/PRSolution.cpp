@@ -37,7 +37,6 @@
 // Find all the combinations of n things taken k at a time.
 
 #include "Exception.hpp"
-#include "ECEF.hpp"
 
 /// Class Combinations will compute C(n,k), all the combinations of n things
 /// taken k at a time (where k <= n).
@@ -282,7 +281,7 @@ namespace gpstk
                // Mark the satellites for this combination
                UseSat = UseSave;
                for(i=0; i<GoodIndexes.size(); i++)
-                  if(Combo.isSelected(i)) UseSat[i]=false;
+                  if(Combo.isSelected(i)) UseSat[GoodIndexes[i]]=false;
 
                // ----------------------------------------------------------------
                // Compute a solution given the data; ignore ranges for marked
