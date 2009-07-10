@@ -33,7 +33,11 @@
 #define RANGECHECK 1        // make Matrix and Vector check limits
 #include "Exception.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+
+#include "CommonTime.hpp"
+#include "GPSWeekSecond.hpp"
+#include "YDSTime.hpp"
+
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
@@ -104,12 +108,12 @@ typedef struct Configuration {
    string HDMarker;
    string HDNumber;
    int NrecOut;
-   DayTime FirstEpoch,LastEpoch;
+   CommonTime FirstEpoch,LastEpoch;
    string timeFormat;
    bool Debug,Verbose;
       // data flow
    double ith;
-   DayTime Tbeg, Tend;
+   CommonTime Tbeg, Tend;
       // output files
    string LogFile;
    ofstream oflog,oford;
@@ -142,7 +146,7 @@ const double if1r=1.0/(1.0-(F2/F1)*(F2/F1));
 const double if2r=1.0/(1.0-(F1/F2)*(F1/F2));
 clock_t totaltime;
 string Title,filename;
-DayTime CurrEpoch, PrgmEpoch, PrevEpoch;
+CommonTime CurrEpoch, PrgmEpoch, PrevEpoch;
 
 // data
 int Nsvs;
@@ -186,7 +190,7 @@ void PrintStats(Stats<double> S[3],
                 long n,
                 string m,
                 char c0='X', char c1='Y', char c2='Z') throw(Exception);
-void setWeather(DayTime& time, TropModel *pTropModel);
+void setWeather(CommonTime& time, TropModel *pTropModel);
 int GetCommandLine(int argc, char **argv) throw(Exception);
 void DumpConfiguration(ostream& os) throw(Exception);
 void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
@@ -201,7 +205,7 @@ try {
    int iret;
 
       // initialization
-   CurrEpoch = PrevEpoch = DayTime::BEGINNING_OF_TIME;
+   CurrEpoch = PrevEpoch = CommonTime::BEGINNING_OF_TIME;
    SP3EphemerisStore SP3EphList;
    GPSEphemerisStore BCEphList;
 
@@ -211,9 +215,9 @@ try {
    struct tm *tblock;
    timer = time(NULL);
    tblock = localtime(&timer);
-   PrgmEpoch.setYMDHMS(1900+tblock->tm_year,1+tblock->tm_mon,
+   PrgmEpoch = CivilTime(1900+tblock->tm_year,1+tblock->tm_mon,
                tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
-   Title += PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
+   Title += (static_cast<CivilTime>(PrgmEpoch)).printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
    cout << Title;
 
       // get command line
@@ -280,8 +284,9 @@ try {
          list<RinexMetData>::const_iterator it = C.MetStore.begin();
          for( ; it != C.MetStore.end(); it++) {
             //it->dump(C.oflog);
+            CivilTime civtime(it->time);
             C.oflog
-               << it->time.printf("%04Y/%02m/%02d//%02H:%02M:%.3f = %04F %10.3g")
+               << civtime.printf("%04Y/%02m/%02d//%02H:%02M:%.3f = %04F %10.3g")
                << fixed << setprecision(1);
             RinexMetData::RinexMetMap::const_iterator jt=it->data.begin();
             for( ; jt != it->data.end(); jt++) {
@@ -311,10 +316,10 @@ try {
          C.oflog << "Warning - Saastamoinen and New B tropospheric models require "
             << "latitude, height and day of year - guessing." << endl;
       }
-      if(C.Tbeg > DayTime(DayTime::BEGINNING_OF_TIME))
-         C.pTropModel->setDayOfYear(C.Tbeg.DOY());
-      else if(C.Tend < DayTime(DayTime::END_OF_TIME))
-         C.pTropModel->setDayOfYear(C.Tend.DOY());
+      if(C.Tbeg > CommonTime(CommonTime::BEGINNING_OF_TIME))
+         C.pTropModel->setDayOfYear((static_cast<YDSTime>(C.Tbeg)).doy);
+      else if(C.Tend < CommonTime(CommonTime::END_OF_TIME))
+         C.pTropModel->setDayOfYear((static_cast<YDSTime>(C.Tend)).doy);
       else
          C.pTropModel->setDayOfYear(100);
    }
@@ -596,9 +601,13 @@ try {
 
             // decimate data
             // if Tbeg is still undefined, set it to begin of week
-         if(C.ith > 0.0) {
-            if(fabs(C.Tbeg-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.e-8)
-               C.Tbeg = C.Tbeg.setGPSfullweek(robsd.time.GPSfullweek(),0.0);
+         if(C.ith > 0.0)
+         {
+            if(fabs(C.Tbeg-CommonTime(CommonTime::BEGINNING_OF_TIME)) < 1.e-8)
+            {
+               GPSWeekSecond wksec(robsd.time.GPSfullweek(),0.0);
+               C.Tbeg = wksec.convertToCommonTime();
+            }
             double dt=fabs(robsd.time - C.Tbeg);
             dt -= C.ith*long(0.5+dt/C.ith);
             if(fabs(dt) > 0.25) { iret = 1; break; }
@@ -606,7 +615,7 @@ try {
 
             // save current time
          CurrEpoch = robsd.time;
-         if(fabs(C.FirstEpoch-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.e-8)
+         if(fabs(C.FirstEpoch-CommonTime(CommonTime::BEGINNING_OF_TIME)) < 1.e-8)
             C.FirstEpoch=CurrEpoch;
 
             // loop over satellites
@@ -701,7 +710,7 @@ try {
          if(iret) break;
 
             // update LastEpoch and estimate of DT
-         if(C.LastEpoch > DayTime(DayTime::BEGINNING_OF_TIME)) {
+         if(C.LastEpoch > CommonTime(CommonTime::BEGINNING_OF_TIME)) {
             dt = CurrEpoch-C.LastEpoch;
             for(i=0; i<9; i++) {
                if(C.ndt[i]<=0) { C.estdt[i]=dt; C.ndt[i]=1; break; }
@@ -746,7 +755,7 @@ try {
             // output
             C.oford << "ORD"
                << " G" << setw(2) << setfill('0') << sat.id << setfill(' ')
-               << " " << CurrEpoch.printf(C.timeFormat)
+               << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
                << " " << 1 << fixed << setprecision(3)
                << " " << setw(6) << CER.elevation
                << " " << setw(13) << vC1[i] - R - RI
@@ -760,7 +769,7 @@ try {
          if(n > 0) {
             clk /= double(n);
             C.oford << "CLK"
-               << " " << CurrEpoch.printf(C.timeFormat)
+               << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
                << " " << setw(2) << n
                << " " << fixed << setprecision(3)
                << " " << setw(13) << clk
@@ -799,7 +808,7 @@ try {
          // output to RINEX
       if(first) {                               // edit the output RINEX header
          rheadout = rhead;
-         rheadout.date = PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
+         rheadout.date = (static_cast<CivilTime>(PrgmEpoch)).printf("%04Y/%02m/%02d %02H:%02M:%02S");
          rheadout.fileProgram = PrgmName;
          if(!C.HDRunby.empty()) rheadout.fileAgency = C.HDRunby;
          if(!C.HDObs.empty()) rheadout.observer = C.HDObs;
@@ -939,7 +948,7 @@ try {
       iret = PRSolution::PrepareAutonomousSolution(CurrEpoch,Sats,PRanges,*pEph,SVP);
       if(iret == -4) {
          C.oflog << "PrepareAutonomousSolution failed to find ANY ephemeris at epoch "
-            << CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f") << endl;
+                 << (static_cast<CivilTime>(CurrEpoch)).printf("%04Y/%02m/%02d %02H:%02M:%.3f") << endl;
          return iret;
       }
 
@@ -958,8 +967,8 @@ try {
          (C.Debug ? &C.oflog : NULL));
 
       C.oflog << "APS " << setw(2) << iret
-         << " " << CurrEpoch.printf(C.timeFormat)
-         << " " << setw(2) << Nsvs;
+              << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+              << " " << setw(2) << Nsvs;
       if(iret == 0) C.oflog << fixed
          << " " << setw(16) << setprecision(6) << Solution(0)
          << " " << setw(16) << setprecision(6) << Solution(1)
@@ -984,16 +993,16 @@ try {
          V(0) = res.X(); V(1) = res.Y(); V(2) = res.Z();
 
          C.oflog << "APR " << setw(2) << iret
-            << " " << CurrEpoch.printf(C.timeFormat)
-            << " " << setw(2) << Nsvs << fixed
-            << " " << setw(16) << setprecision(6) << V(0)
-            << " " << setw(16) << setprecision(6) << V(1)
-            << " " << setw(16) << setprecision(6) << V(2)
-            << " " << setw(14) << setprecision(6) << Solution(3)
-            << " " << setw(12) << setprecision(6) << RMS(Residual)
-            << " " << fixed << setw(5) << setprecision(1) << max(Slope)
-            << " " << niter
-            << " " << scientific << setw(8) << setprecision(2) << conv;
+                 << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                 << " " << setw(2) << Nsvs << fixed
+                 << " " << setw(16) << setprecision(6) << V(0)
+                 << " " << setw(16) << setprecision(6) << V(1)
+                 << " " << setw(16) << setprecision(6) << V(2)
+                 << " " << setw(14) << setprecision(6) << Solution(3)
+                 << " " << setw(12) << setprecision(6) << RMS(Residual)
+                 << " " << fixed << setw(5) << setprecision(1) << max(Slope)
+                 << " " << niter
+                 << " " << scientific << setw(8) << setprecision(2) << conv;
          for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
          C.oflog << endl;
 
@@ -1011,16 +1020,16 @@ try {
          Cov = C.Rot * Cov * transpose(C.Rot);
 
          C.oflog << "ANE " << setw(2) << iret
-            << " " << CurrEpoch.printf(C.timeFormat)
-            << " " << setw(2) << Nsvs << fixed
-            << " " << setw(16) << setprecision(6) << V(0)
-            << " " << setw(16) << setprecision(6) << V(1)
-            << " " << setw(16) << setprecision(6) << V(2)
-            << " " << setw(14) << setprecision(6) << Solution(3)
-            << " " << setw(12) << setprecision(6) << RMS(Residual)
-            << " " << fixed << setw(5) << setprecision(1) << max(Slope)
-            << " " << niter
-            << " " << scientific << setw(8) << setprecision(2) << conv;
+                 << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                 << " " << setw(2) << Nsvs << fixed
+                 << " " << setw(16) << setprecision(6) << V(0)
+                 << " " << setw(16) << setprecision(6) << V(1)
+                 << " " << setw(16) << setprecision(6) << V(2)
+                 << " " << setw(14) << setprecision(6) << Solution(3)
+                 << " " << setw(12) << setprecision(6) << RMS(Residual)
+                 << " " << fixed << setw(5) << setprecision(1) << max(Slope)
+                 << " " << niter
+                 << " " << scientific << setw(8) << setprecision(2) << conv;
          for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
          C.oflog << endl;
 
@@ -1047,16 +1056,16 @@ try {
 
    // output
    C.oflog << "RPF " << setw(2) << Sats.size()-Nsvs
-      << " " << CurrEpoch.printf(C.timeFormat)
-      << " " << setw(2) << Nsvs << fixed
-      << " " << setw(16) << setprecision(6) << prsol.Solution(0)
-      << " " << setw(16) << setprecision(6) << prsol.Solution(1)
-      << " " << setw(16) << setprecision(6) << prsol.Solution(2)
-      << " " << setw(14) << setprecision(6) << prsol.Solution(3)
-      << " " << setw(12) << setprecision(6) << prsol.RMSResidual
-      << " " << setw(5) << setprecision(1) << prsol.MaxSlope
-      << " " << prsol.NIterations
-      << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
+           << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+           << " " << setw(2) << Nsvs << fixed
+           << " " << setw(16) << setprecision(6) << prsol.Solution(0)
+           << " " << setw(16) << setprecision(6) << prsol.Solution(1)
+           << " " << setw(16) << setprecision(6) << prsol.Solution(2)
+           << " " << setw(14) << setprecision(6) << prsol.Solution(3)
+           << " " << setw(12) << setprecision(6) << prsol.RMSResidual
+           << " " << setw(5) << setprecision(1) << prsol.MaxSlope
+           << " " << prsol.NIterations
+           << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
    for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
    C.oflog << " (" << iret;
    if(C.Verbose) {
@@ -1090,16 +1099,16 @@ try {
       V(0) = res.X(); V(1) = res.Y(); V(2) = res.Z();
 
       C.oflog << "RPR " << setw(2) << Sats.size()-Nsvs
-         << " " << CurrEpoch.printf(C.timeFormat)
-         << " " << setw(2) << Nsvs << fixed
-         << " " << setw(16) << setprecision(6) << V(0)
-         << " " << setw(16) << setprecision(6) << V(1)
-         << " " << setw(16) << setprecision(6) << V(2)
-         << " " << setw(14) << setprecision(6) << prsol.Solution(3)
-         << " " << setw(12) << setprecision(6) << prsol.RMSResidual
-         << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
-         << " " << prsol.NIterations
-         << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
+              << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+              << " " << setw(2) << Nsvs << fixed
+              << " " << setw(16) << setprecision(6) << V(0)
+              << " " << setw(16) << setprecision(6) << V(1)
+              << " " << setw(16) << setprecision(6) << V(2)
+              << " " << setw(14) << setprecision(6) << prsol.Solution(3)
+              << " " << setw(12) << setprecision(6) << prsol.RMSResidual
+              << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
+              << " " << prsol.NIterations
+              << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
       for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
       C.oflog << " (" << iret << ")" << (prsol.isValid() ? " V" : " NV")
          << endl;
@@ -1118,16 +1127,16 @@ try {
       Cov = C.Rot * Cov * transpose(C.Rot);
 
       C.oflog << "RNE " << setw(2) << Sats.size()-Nsvs
-         << " " << CurrEpoch.printf(C.timeFormat)
-         << " " << setw(2) << Nsvs << fixed
-         << " " << setw(16) << setprecision(6) << V(0)
-         << " " << setw(16) << setprecision(6) << V(1)
-         << " " << setw(16) << setprecision(6) << V(2)
-         << " " << setw(14) << setprecision(6) << prsol.Solution(3)
-         << " " << setw(12) << setprecision(6) << prsol.RMSResidual
-         << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
-         << " " << prsol.NIterations
-         << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
+              << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+              << " " << setw(2) << Nsvs << fixed
+              << " " << setw(16) << setprecision(6) << V(0)
+              << " " << setw(16) << setprecision(6) << V(1)
+              << " " << setw(16) << setprecision(6) << V(2)
+              << " " << setw(14) << setprecision(6) << prsol.Solution(3)
+              << " " << setw(12) << setprecision(6) << prsol.RMSResidual
+              << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
+              << " " << prsol.NIterations
+              << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
       for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
       C.oflog << " (" << iret << ")" << (prsol.isValid() ? " V" : " NV")
          << endl;
@@ -1203,9 +1212,9 @@ try {
    C.oflog << endl;
    C.oflog << "Estimated data interval is " << C.estdt[j] << " seconds.\n";
    C.oflog << "First epoch is "
-      << C.FirstEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f = %04F %10.3g") << endl;
+           << (static_cast<CivilTime>(C.FirstEpoch)).printf("%04Y/%02m/%02d %02H:%02M:%.3f = %04F %10.3g") << endl;
    C.oflog << "Last  epoch is "
-      << C.LastEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f = %04F %10.3g") << endl;
+           << (static_cast<CivilTime>(C.LastEpoch)).printf("%04Y/%02m/%02d %02H:%02M:%.3f = %04F %10.3g") << endl;
 
    return 0;
 }
@@ -1243,11 +1252,11 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void setWeather(DayTime& time, TropModel *pTropModel)
+void setWeather(CommonTime& time, TropModel *pTropModel)
 {
    static list<RinexMetData>::iterator it=C.MetStore.begin();
    static list<RinexMetData>::iterator nextit;
-   static DayTime currentTime = DayTime::BEGINNING_OF_TIME;
+   static CommonTime currentTime = CommonTime::BEGINNING_OF_TIME;
    double dt;
 
    while(it != C.MetStore.end()) {
@@ -1305,8 +1314,8 @@ try {
       // defaults
    C.Debug = C.Verbose = false;
    C.ith = 0.0;
-   C.Tbeg = C.FirstEpoch = DayTime(DayTime::BEGINNING_OF_TIME);
-   C.Tend = DayTime(DayTime::END_OF_TIME);
+   C.Tbeg = C.FirstEpoch = CommonTime(CommonTime::BEGINNING_OF_TIME);
+   C.Tend = CommonTime(CommonTime::END_OF_TIME);
 
       // configuration of PRSolution
    C.rmsLimit = prsol.RMSLimit;
@@ -1494,7 +1503,7 @@ try {
 
    CommandOption dashForm(CommandOption::hasArgument, CommandOption::stdType,
       0,"TimeFormat", " --TimeFormat <fmt>   "
-      "Format for time tags in output (cf gpstk::DayTime) (" + C.timeFormat + ")");
+      "Format for time tags in output (cf gpstk::CommonTime) (" + C.timeFormat + ")");
    dashForm.setMaxCount(1);
 
    CommandOption dashRfile(CommandOption::hasArgument, CommandOption::stdType,
@@ -1674,14 +1683,22 @@ try {
       field.clear();
       while(stemp.size() > 0)
          field.push_back(stripFirstWord(stemp,','));
-      if(field.size() == 2) {
-         try { C.Tbeg.setToString(field[0]+","+field[1], "%F,%g"); }
+      if(field.size() == 2)
+      {
+         try
+         {
+            GPSWeekSecond wksec(asInt(field[0]),asDouble(field[1]));
+            C.Tbeg = wksec.convertToCommonTime();
+         }
          catch(Exception& e) { ok=false; }
       }
-      else if(field.size() == 6) {
-         try {
-            C.Tbeg.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
-            +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
+      else if(field.size() == 6)
+      {
+         try
+         {
+            CivilTime civtime(asInt(field[0]),asInt(field[1]),asInt(field[2]),
+                              asInt(field[3]),asInt(field[4]),asDouble(field[5]));
+            C.Tbeg = civtime.convertToCommonTime();
          }
          catch(Exception& e) { ok=false; }
       }
@@ -1690,7 +1707,7 @@ try {
          cerr << "Error: invalid --BeginTime input: " << values[0] << endl;
       }
       else if(help) cout << " Input: begin time " << values[0] << " = "
-         << C.Tbeg.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+                         << (static_cast<CivilTime>(C.Tbeg)).printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
    if(dashet.getCount()) {
       ok = true;
@@ -1699,14 +1716,22 @@ try {
       stemp = values[0];
       while(stemp.size() > 0)
          field.push_back(stripFirstWord(stemp,','));
-      if(field.size() == 2) {
-         try { C.Tend.setToString(field[0]+","+field[1], "%F,%g"); }
+      if(field.size() == 2)
+      {
+         try
+         {
+            GPSWeekSecond wksec(asInt(field[0]),asDouble(field[1]));
+            C.Tend = wksec.convertToCommonTime();
+         }
          catch(Exception& e) { ok=false; }
       }
-      else if(field.size() == 6) {
-         try {
-            C.Tend.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
-            +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
+      else if(field.size() == 6) 
+      {
+         try 
+         {
+            CivilTime civtime(asInt(field[0]),asInt(field[1]),asInt(field[2]),
+                              asInt(field[3]),asInt(field[4]),asDouble(field[5]));
+            C.Tend = civtime.convertToCommonTime();
          }
          catch(Exception& e) { ok=false; }
       }
@@ -1715,7 +1740,7 @@ try {
          cerr << "Error: invalid --EndTime input: " << values[0] << endl;
       }
       else if(help) cout << " Input: end time " << values[0] << " = "
-         << C.Tend.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+                         << (static_cast<CivilTime>(C.Tend)).printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
    if(dashCA.getCount()) {
       C.UseCA = true;
@@ -1933,12 +1958,14 @@ try {
    }
    else os << " No input meteorological data\n";
    os << " Ithing time interval is " << C.ith << endl;
-   if(C.Tbeg > DayTime(DayTime::BEGINNING_OF_TIME)) os << " Begin time is "
-      << C.Tbeg.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
-      << " = " << C.Tbeg.printf("%04F/%10.3g") << endl;
-   if(C.Tend < DayTime(DayTime::END_OF_TIME)) os << " End time is "
-      << C.Tend.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
-      << " = " << C.Tend.printf("%04F/%10.3g") << endl;
+   if(C.Tbeg > CommonTime(CommonTime::BEGINNING_OF_TIME))\
+      os << " Begin time is "
+         << (static_cast<CivilTime>(C.Tbeg)).printf("%04Y/%02m/%02d %02H:%02M:%.3f")
+         << " = " << (static_cast<CivilTime>(C.Tbeg)).printf("%04F/%10.3g") << endl;
+   if(C.Tend < CommonTime(CommonTime::END_OF_TIME))
+      os << " End time is "
+         << (static_cast<CivilTime>(C.Tend)).printf("%04Y/%02m/%02d %02H:%02M:%.3f")
+         << " = " << (static_cast<CivilTime>(C.Tend)).printf("%04F/%10.3g") << endl;
    if(C.UseCA) os << " 'Use C/A' flag is set\n";
    if(C.ForceCA) os << " 'Force C/A' flag is set\n";
 
@@ -1990,7 +2017,7 @@ try {
    if(C.APSout && C.knownpos.getCoordinateSystem() != Position::Unknown)
       os << " APR ANE";
    os << endl;
-   os << " Output format for time tags (cf. class DayTime) is "
+   os << " Output format for time tags (cf. class CommonTime) is "
       << C.timeFormat << endl;
 
    os << " # RINEX output:\n";
