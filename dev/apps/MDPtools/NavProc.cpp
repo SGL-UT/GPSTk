@@ -77,7 +77,7 @@ MDPNavProcessor::~MDPNavProcessor()
    }
 
    out << "Parity Errors" << endl;
-   out << "# elev";
+   out << " elev ";
    std::map<RangeCarrierPair, Histogram>::const_iterator peh_itr, sfc_itr;
    for (peh_itr = peHist.begin(); peh_itr != peHist.end(); peh_itr++)
    {
@@ -92,7 +92,7 @@ MDPNavProcessor::~MDPNavProcessor()
    for (brl_itr = bins.begin(); brl_itr != bins.end(); brl_itr++)
    {
       const Histogram::BinRange& br = *brl_itr ;
-      out << setprecision(0)
+      out << setprecision(0) << fixed
           << right << setw(2) << br.first << "-"
           << left  << setw(2) << br.second << ":";
 
@@ -109,9 +109,8 @@ MDPNavProcessor::~MDPNavProcessor()
    }
 
    // Whoever would write a reference like this should be shot...
-   out << right << setw(2) << peHist.begin()->second.bins.begin()->first.first
-        << "-" << left  << setw(2) << peHist.begin()->second.bins.rbegin()->first.second
-        << ":";
+   out << right << setw(2) << peHist.begin()->second.bins.begin()->first.first << "-"
+       << left << setw(2) << peHist.begin()->second.bins.rbegin()->first.second << ":";
 
    unsigned long sfc=0,pec=0;
    for (peh_itr = peHist.begin(); peh_itr != peHist.end(); peh_itr++)
@@ -123,8 +122,33 @@ MDPNavProcessor::~MDPNavProcessor()
    }
    out << endl;
 
-   out << endl
-       << "Navigation Subframe message summary:" << endl
+   // If elevation is being used for binning, then we compute statistics for
+   // all data from 5 to 90 degrees.
+   if (binByElevation)
+   {
+      out << " 5-90: ";
+      for (peh_itr = peHist.begin(); peh_itr != peHist.end(); peh_itr++)
+      {
+         const RangeCarrierPair& rcp=peh_itr->first;
+         unsigned long sfc=0,pec=0;
+         for (brl_itr = bins.begin(); brl_itr != bins.end(); brl_itr++)
+         {
+            const Histogram::BinRange& br = *brl_itr ;
+            if (br.second <= 5.0)
+               continue;
+         
+            sfc += sfCount[rcp].bins[br];
+            pec += peHist[rcp].bins[br];
+         }
+         out << right << setprecision(3) << setw(10)
+             << 100.0 * pec / sfc
+             << " %    ";
+      }
+      out << endl << endl;
+   }
+
+
+   out << "Navigation Subframe message summary:" << endl
        << "  navSubframeCount: " << sfc << endl
        << "  badNavSubframeCount: " << pec << endl
        << "  percent bad: " << setprecision(3) << 100.0*pec/sfc << " %" << endl;
@@ -143,6 +167,10 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
              << endl;
    }
 
+   // Ignore nav data from codeless tracking
+   if (msg.range == rcCodeless)
+      return;
+
    RangeCarrierPair rcp(msg.range, msg.carrier);
    NavIndex ni(rcp, msg.prn);
 
@@ -157,17 +185,37 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
    string msgPrefix = oss.str();
 
    if (sfCount.find(rcp) == sfCount.end())
+   {
       sfCount[rcp].resetBins(bins);
+      peHist[rcp].resetBins(bins);
+   }
    
    if (binByElevation)
       sfCount[rcp].addValue(el[ni]);
    else
       sfCount[rcp].addValue(snr[ni]);
    
-   // For the moment, we can't check the validity of L2C data
-   static RangeCarrierPair L2CMCL(rcCMCL, ccL2);
-   if (rcp == L2CMCL)
+   // For the moment, we only understand legacy nav data
+   if (msg.nav != ncICD_200_2)
+   {
+      if (verboseLevel>2)
+         msg.dump(cout);
+
+      // But also, for the moment, the live L2C nav data should be constant.
+      for (int i=1; i<=10; i++)
+         if (msg.subframe[i] != 0)
+         {
+            if (binByElevation)
+               peHist[rcp].addValue(el[ni]);
+            else
+               peHist[rcp].addValue(snr[ni]);
+
+            if (verboseLevel>1)
+               msg.dump(cout);
+            break;
+         }
       return;
+   }
 
    umsg.cookSubframe();
    if (verboseLevel>3 && umsg.neededCooking)
@@ -180,9 +228,6 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
              << " SNR:" << fixed << setprecision(1) << snr[ni]
              << " EL:" << el[ni]
              << endl;
-
-      if (peHist.find(rcp) == peHist.end())
-         peHist[rcp].resetBins(bins);
 
       if (binByElevation)
          peHist[rcp].addValue(el[ni]);

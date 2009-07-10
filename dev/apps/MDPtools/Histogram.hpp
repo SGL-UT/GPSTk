@@ -28,6 +28,7 @@
 #include <map>
 #include <list>
 #include <ostream>
+#include <iomanip>
 
 namespace gpstk
 {
