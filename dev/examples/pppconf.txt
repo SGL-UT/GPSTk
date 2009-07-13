@@ -151,7 +151,7 @@ forwardBackwardCycles = 4, an integer < 1 means forwards processing only
 USENEU = TRUE, results will be given in dLat, dLon, dH
 
 # Output
-outputFile = coco2370-05.out
+outputFile = coco2370-04.out
 
 
 
