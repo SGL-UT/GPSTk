@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -87,7 +87,7 @@ namespace gpstk
       lcPrefit.body[TypeID::satPCenter]   = -1.0;
       lcPrefit.body[TypeID::tropoSlant]   = -1.0;
          // Coefficient for LC windUp is LC wavelenght/2*PI
-      lcPrefit.body[TypeID::windUp]       = -0.107/6.2831853071796;
+      lcPrefit.body[TypeID::windUp]       = -0.1069533781421467/TWO_PI;
 
          // Definition to compute PI combination
       piCombination.header                = TypeID::PI;

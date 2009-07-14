@@ -5,8 +5,8 @@
  * This class defines handy linear combinations of GDS data.
  */
 
-#ifndef LINEARCOMBINATIONS_HPP
-#define LINEARCOMBINATIONS_HPP
+#ifndef GPSTK_LINEARCOMBINATIONS_HPP
+#define GPSTK_LINEARCOMBINATIONS_HPP
 
 //============================================================================
 //
@@ -26,13 +26,14 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
 
 
 #include "DataStructures.hpp"
+#include "icd_200_constants.hpp"
 
 
 
@@ -159,4 +160,4 @@ namespace gpstk
       //@}
 
 }
-#endif // LINEARCOMBINATIONS_HPP
+#endif // GPSTK_LINEARCOMBINATIONS_HPP
