@@ -10,3 +10,7 @@ using namespace gpstk;
 
 %include "../../../src/DayTime.hpp"
 
+%{
+typedef DayTime::DayTimeException DayTimeException;
+typedef DayTime::FormatException FormatException;
+%}

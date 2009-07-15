@@ -1,6 +1,6 @@
 //swig interface for ConfDataReader.hpp
 
-%module gpstk_ContDataReader
+%module gpstk_ConfDataReader
 
 %{
 #include "../../../src/ConfDataReader.hpp"

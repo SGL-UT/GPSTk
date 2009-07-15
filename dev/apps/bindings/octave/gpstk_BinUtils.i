@@ -5,7 +5,6 @@
 %{
 #include "../../../src/BinUtils.hpp"
 
-using namespace std;
 using namespace gpstk;
 using namespace BinUtils;
 %}

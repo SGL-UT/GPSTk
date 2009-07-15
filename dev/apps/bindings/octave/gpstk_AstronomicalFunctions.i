@@ -9,7 +9,7 @@ using namespace std;
 using namespace gpstk;
 %}
 
-%inline %{
+//%inline %{
 /*// Astronomical Unit value (AU), in meters
    const double AU_CONST=(1.49597870e11);
       /// Mean Earth-Moon barycenter (EMB) distance (AU)
@@ -30,10 +30,10 @@ using namespace gpstk;
    const double B1950=(1949.9997904423);
       /// Earth equatorial radius in AU ( 6378.137 km / 149597870 km)
    const double ERADAU=(4.2635212653763e-5);*/
-extern Triple CIS2CTS(const Triple posCIS,const DayTime& t);
-extern double UTC2SID(const DayTime& t);
+//extern Triple CIS2CTS(const Triple posCIS,const DayTime& t);
+//extern double UTC2SID(const DayTime& t);
 
-%}
+//%}
 
 
 %include "../../../src/AstronomicalFunctions.hpp"
@@ -48,5 +48,5 @@ extern double UTC2SID(const DayTime& t);
    const double DS2R=(7.272205216643039903848712e-5);    
    const double B1950=(1949.9997904423);   
    const double ERADAU=(4.2635212653763e-5);*/
-extern Triple CIS2CTS(const Triple posCIS,const DayTime& t);
-extern double UTC2SID(const DayTime& t);
+//extern Triple CIS2CTS(const Triple posCIS,const DayTime& t);
+//extern double UTC2SID(const DayTime& t);
