@@ -8,7 +8,7 @@ gpstk.oct : gpstk_octave_wrap.o
 	gcc -shared  gpstk_octave_wrap.o -o gpstk.oct -lgpstk
 
 gpstk_octave_wrap.o : gpstk_octave_wrap.cxx
-	g++ -g -c -fpic  gpstk_octave_wrap.cxx -I /usr/include
+	g++ -g -c -fpic -lgpstk -lm gpstk_octave_wrap.cxx -I /usr/include
 
 gpstk_octave_wrap.cxx : gpstk.i
 	swig -c++ -octave -o gpstk_octave_wrap.cxx gpstk.i
