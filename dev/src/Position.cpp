@@ -1161,6 +1161,7 @@ namespace gpstk
       throw()
    {
       double cl,p,sl,slat,N,htold,latold;
+      llh[1] = llr[1]; // longitude is the same in both systems
       cl = sin((90-llr[0])*DEG_TO_RAD);
       sl = cos((90-llr[0])*DEG_TO_RAD);
       if(llr[2] <= Position::POSITION_TOLERANCE/5) {
@@ -1207,6 +1208,7 @@ namespace gpstk
    {
       double slat = sin(llh[0]*DEG_TO_RAD);
       double N = A/SQRT(1.0-eccSq*slat*slat);
+      llr[1] = llh[1]; // longitude is the same in both systems
       // radius
       llr[2] = SQRT((N+llh[2])*(N+llh[2]) + N*eccSq*(N*eccSq-2*(N+llh[2]))*slat*slat);
       if(llr[2] <= Position::POSITION_TOLERANCE/5)
@@ -1219,6 +1221,7 @@ namespace gpstk
       if(1-fabs(slat) < 1.e-10) {             // at the pole
          if(slat < 0) llr[0] = -90;
          else         llr[0] =  90;
+         llr[1] = 0;
          return;
       }
       // theta
