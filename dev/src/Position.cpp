@@ -660,6 +660,8 @@ namespace gpstk
             // copy format and input string to parse
          string f = fmt;
          string s = str;
+         stripLeading(s);
+         stripLeading(f);
          
             // parse strings...  As we process each part, it's removed from both
             // strings so when we reach 0, we're done
