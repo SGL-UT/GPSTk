@@ -310,6 +310,7 @@ namespace gpstk
       throw()
    {
       long days = 0, ms = 0;
+
       if ( ABS(seconds) >= SEC_PER_DAY )
       {
          days = static_cast<long>( seconds * DAY_PER_SEC );

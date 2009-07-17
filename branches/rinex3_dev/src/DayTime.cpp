@@ -923,7 +923,8 @@ namespace gpstk
                                    TimeFrame f)
       throw()
    {
-      c.get(jday, mSod, mSec);
+      long Sod;
+      c.getInternal(jday, mSod, mSec);
          // Convert mSec from seconds to milliseconds by multiplying by 1000.
       mSec *= FACTOR;
       timeFrame = f;

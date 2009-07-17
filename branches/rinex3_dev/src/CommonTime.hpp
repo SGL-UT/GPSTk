@@ -268,6 +268,16 @@ namespace gpstk
          throw()
       { day = m_day; msod = m_msod; fsod = m_fsod; timeSystem = m_timeSystem; }
 
+         /** 
+          * Get internal values method.  Obtain the values stored within this
+          * object.
+          */
+      void getInternal( long& day,
+                        long& msod,
+                        double& fsod ) const
+         throw()
+      { day = m_day; msod = m_msod; fsod = m_fsod; }
+
          /// Obtain the time, in days, including the fraction of a day.
       double getDays() const 
          throw();
