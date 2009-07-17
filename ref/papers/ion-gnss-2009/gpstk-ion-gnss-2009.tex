@@ -1,0 +1,133 @@
+\documentclass[letterpaper,ugly,10pt]{ion-gps}
+
+  \usepackage{alltt}
+  \usepackage{subfigure}
+  \usepackage{graphicx}
+  \usepackage{listings}
+
+  \usepackage{amsmath}     % cases environment
+  \usepackage{indentfirst} % indent all first paragraphs
+  \usepackage{times}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Commands to support toolkit apps table%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \usepackage{multirow}
+  \usepackage{rotating}
+  \usepackage{colortbl}
+  \usepackage{xcolor}
+
+  \newcommand{\sideco}{gray}
+  \newcommand{\sideso}{1.0}
+  \newcommand{\sidect}{gray}
+  \newcommand{\sidest}{1.0}
+  \newcommand{\sidewidth}{0.15in}
+  \newcommand{\entco}{gray}
+  \newcommand{\entso}{1.00}
+  \newcommand{\entct}{gray}
+  \newcommand{\entst}{0.95}
+  \newcommand{\twidth}{1.0in}
+  \newcommand{\dwidth}{2.3in}
+  \newcommand{\ewidth}{2.3in}
+
+   \newcommand{\appdesce}[3] {\cellcolor[\sideco]{\sideso} & \cellcolor[\entct]{\entst} \multirow{1}{\twidth}{\footnotesize{#1}} & \cellcolor[\entct]{\entst} \multirow{1}{\dwidth}{\footnotesize{#2}} & \cellcolor[\entct]{\entst} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{#3}}}}
+
+   \newcommand{\appdesco}[3]{\cellcolor[\sideco]{\sideso} & \cellcolor[\entco]{\entso} \multirow{1}{\twidth}{\footnotesize{#1}} & \cellcolor[\entco]{\entso} \multirow{1}{\dwidth}{\footnotesize{#2}} & \cellcolor[\entco]{\entso} \multirow{1}{\ewidth}{\ttfamily{\footnotesize{#3}}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%End commands to support apps table%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  \newcommand{\bkup}{-2}
+  \newcommand{\execsize}{\scriptsize}
+  \newcommand{\sidesize}{\small}
+
+  \newcommand{\gpstkapp}[1]{\textit{\mbox{#1}}}
+  \newcommand{\gpstkdir}[1]{\texttt{\mbox{#1}}}
+  \newcommand{\gpstkcommand}[1]{\texttt{\mbox{#1}}}
+  \newcommand{\gpstkclass}[1]{\texttt{\mbox{#1}}}
+  \newcommand{\rinexobservable}[1]{\texttt{#1}}
+
+%  \usepackage{newcent}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Title
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{\huge\bf The GPSTk: GLONASS, RINEX3 and More }
+
+\author{ Aaron C. Brogley, Thomas L. Gaussiran, Eric Hagen. R. Benjamin Harris, Chris Kieschnick, Jon C. Little,  Richard G. Mach, \\
+David C. Munton, Colin P. Petersen, David L. Rainwater, Brent A. Renfro, Scot L. Nelsen, Brian W. Tolman, \\
+       \it{Applied Research Laboratories, The University of Texas at Austin} \\
+	\\
+	Dagoberto Salazar \\
+	\it{Grupo de Astronomia y Geomatica, Universitat Polit\`{e}cnica de Catalunya} }
+
+\date{}
+
+% This becomes footer if defined
+\conference{}
+%\conference{\emph{First presented at ION GNSS 2009, Sept. 25 to 28, 2007, Fort Worth, Texas}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Defines
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\br}{\mbox{\boldmath $r$}}
+\newcommand{\bv}{\mbox{\boldmath $v$}}
+\newcommand{\be}{\mbox{\boldmath $e$}}
+\newcommand{\bzero}{\mbox{\boldmath $0$}}
+\newcommand{\bomega}{\mbox{\boldmath $\omega$}}
+\newcommand{\bK}{\mbox{\boldmath $K$}}
+\newcommand{\bx}{\mbox{\boldmath $x$}}
+\newcommand{\ba}{\mbox{\boldmath $a$}}
+\newcommand{\bI}{\mbox{\boldmath $I$}}
+\newcommand{\bPhi}{\mbox{\boldmath $\Phi$}}
+\newcommand{\bH}{\mbox{\boldmath $H$}}
+\newcommand{\bR}{\mbox{\boldmath $R$}}
+\newcommand{\bQ}{\mbox{\boldmath $Q$}}
+\newcommand{\bP}{\mbox{\boldmath $P$}}
+
+\definecolor{console}{rgb}{0.90,0.90,0.90}
+\lstset{basicstyle=\ttfamily, backgroundcolor=\color{console}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Body
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\def\figurename{Fig.}
+\def\tablename{Table}
+
+\pagestyle{plain} % Page number on back of paper with hand written in pencil
+%\pagestyle{fancy}
+
+\maketitle
+
+%\thispagestyle{empty} % empty pagestyle for the title page
+
+% This turns off all page numbers -- required for version turned into the ION
+%\pagestyle{empty}
+
+\input{bio}
+\input{abstract}
+\input{intro}
+\input{projsummary}
+\input{liboverview}
+\input{librinex3}
+\input{libplot}
+\input{libprocframe}
+\input{appsoverview}
+\input{appsclock}
+\input{appsswrx}
+\input{appsdataloss}
+\input{future}
+\input{acknowledgements}
+
+\nocite{ion:gnss04}
+\nocite{rinex2format,rinex300format}
+\nocite{isgps}
+
+%\begin{flushleft}
+
+\bibliography{gpstk}
+%\bibliographystyle{plain} % alphabetized
+\bibliographystyle{unsrt}  % ordered by reference
+
+%\end{flushleft}
+
+\end{document}
