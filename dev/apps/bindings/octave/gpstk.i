@@ -131,17 +131,17 @@
 %include "gpstk_RinexObsFilterOperators.i"
 //%include "gpstk_RinexObsHeader.i"
 //%include "gpstk_RinexObsID.i"
-%include "gpstk_RinexObsStream.i"
+//%include "gpstk_RinexObsStream.i"			**included in FFStream.i**
 %include "gpstk_RinexSatID.i"
 %include "gpstk_RinexUtilities.i"
 //%include "gpstk_RTFileFrame.i"
 //%include "gpstk_RungeKutta4.i"
-%include "gpstk_SatDataReader.i"
+//%include "gpstk_SatDataReader.i"			**included in FFStream.i**
 //%include "gpstk_SEMAlmanacStore.i"
-%include "gpstk_SEMBase.i"
-//%include "gpstk_SEMData.i"
-//%include "gpstk_SEMHeader.i"
-%include "gpstk_SEMStream.i"
+//%include "gpstk_SEMBase.i"				**included in FFData.i**
+//%include "gpstk_SEMData.i"				**included in FFData.i**
+//%include "gpstk_SEMHeader.i"				**included in FFData.i**
+//%include "gpstk_SEMStream.i"				**included in FFStream.i**
 %include "gpstk_SimpleIURAWeight.i"
 //%include "gpstk_SimpleKalmanFilter.i"
 %include "gpstk_SMODFData.i"
@@ -149,12 +149,12 @@
 %include "gpstk_SolidTides.i"
 //%include "gpstk_SolverBase.i"
 //%include "gpstk_SourceID.i"
-%include "gpstk_SP3Base.i"
-//%include "gpstk_SP3Data.i"
+//%include "gpstk_SP3Base.i"				**included in FFData.i**
+//%include "gpstk_SP3Data.i"				**included in FFData.i**
 %include "gpstk_SP3EphemerisStore.i"
-//%include "gpstk_SP3Header.i"
+//%include "gpstk_SP3Header.i"				**included in FFData.i**
 %include "gpstk_SP3SatID.i"
-%include "gpstk_SP3Stream.i"
+//%include "gpstk_SP3Stream.i"				**inlcuded in FFStream.i**
 %include "gpstk_SpecialFunctions.i"
 %include "gpstk_Stats.i"
 %include "gpstk_stl_helpers.i"
@@ -163,7 +163,7 @@
 //%include "gpstk_SunPosition.i"
 %include "gpstk_SVNumXRef.i"
 %include "gpstk_SVPCodeGen.i"
-%include "gpstk_SystemTime.i"
+//%include "gpstk_SystemTime.i"				**included in TimeTag.i**
 %include "gpstk_TabularEphemerisStore.i"
 %include "gpstk_TimeConstants.i"
 %include "gpstk_TimeConverters.i"
@@ -173,7 +173,7 @@
 //%include "gpstk_Triple.i" 				**included in position.i**
 %include "gpstk_TropModel.i"	
 //%include "gpstk_TypeID.i"
-%include "gpstk_UnixTime.i"
+//%include "gpstk_UnixTime.i"				**included in TimeTag.i**
 %include "gpstk_ValidType.i"
 %include "gpstk_VectorBase.i"
 //%include "gpstk_VectorBaseOperators.i"
@@ -188,10 +188,10 @@
 //%inlcude "gpstk_XvtStore.i"			***						 **   this commented block causes make to fail   **
 //%inlcude "gpstk_YDSTime.i"			***
 //%inlcude "gpstk_YumaAlmanacStore.i"		***
-//%inlcude "gpstk_YumaBase.i"			***
+//%inlcude "gpstk_YumaBase.i"				**included in FFData.i**
 //%inlcude "gpstk_YumaData.i"				**included in FFData.i**
-//%inlcude "gpstk_YumaHeader.i"			***
-//%inlcude "gpstk_YumaStream.i"  		***
+//%inlcude "gpstk_YumaHeader.i"				**included in FFData.i**
+//%inlcude "gpstk_YumaStream.i"  			**included in FFStream.i**
 %include "gpstk_Zcount.i"
 
 

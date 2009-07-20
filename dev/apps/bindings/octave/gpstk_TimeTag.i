@@ -7,6 +7,8 @@
 #include "../../../src/GPSWeek.hpp"
 #include "../../../src/GPSWeekSecond.hpp"
 #include "../../../src/GPSWeekZcount.hpp"
+#include "../../../src/UnixTime.hpp"
+#include "../../../src/SystemTime.hpp"
 
 using namespace gpstk;
 %}
@@ -17,5 +19,7 @@ using namespace gpstk;
 %include "../../../src/GPSWeek.hpp"
 %include "../../../src/GPSWeekSecond.hpp"
 %include "../../../src/GPSWeekZcount.hpp"
+%include "../../../src/UnixTime.hpp"
+%include "../../../src/SystemTime.hpp"
 %rename (streamRead) operator<<;
 %rename (CommonTime) operator CommonTime;

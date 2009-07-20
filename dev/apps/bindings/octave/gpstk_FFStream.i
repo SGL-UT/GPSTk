@@ -17,6 +17,10 @@
 #include "../../../src/RinexMetStream.hpp"
 #include "../../../src/RinexNavStream.hpp"
 #include "../../../src/RinexObsStream.hpp"
+#include "../../../src/SatDataReader.hpp"
+#include "../../../src/SEMStream.hpp"
+#include "../../../src/SP3Stream.hpp"
+#include "../../../src/YumaStream.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -36,5 +40,10 @@ using namespace gpstk;
 %include "../../../src/RinexMetStream.hpp"
 %include "../../../src/RinexNavStream.hpp"
 %include "../../../src/RinexObsStream.hpp"
+%include "../../../src/SatDataReader.hpp"
+%include "../../../src/SEMStream.hpp"
+%include "../../../src/SP3Stream.hpp"
+%include "../../../src/YumaStream.hpp"
+
 
 
