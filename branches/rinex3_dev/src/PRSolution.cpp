@@ -29,9 +29,10 @@
  
 #include "MathBase.hpp"
 #include "PRSolution.hpp"
-#include "EphemerisRange.hpp"
 #include "GPSGeoid.hpp"
 #include "GPSWeekSecond.hpp"
+#include "CivilTime.hpp"
+#include "DayTime.hpp"
 
 // -----------------------------------------------------------------------------------
 // Combinations.hpp
@@ -75,7 +76,7 @@ public:
       /// destructor
    ~Combinations(void)
    {
-      if(Index) delete[] Index;
+      if (Index) delete[] Index;
       Index = NULL;
    }
 
@@ -86,7 +87,7 @@ public:
       this->~Combinations();
       init(right.n,right.k);
       nc = right.nc;
-      for(int j=0; j<k; j++) Index[j] = right.Index[j];
+      for (int j=0; j<k; j++) Index[j] = right.Index[j];
       return *this;
    }
 
@@ -99,7 +100,7 @@ public:
    int Selection(int j)
       throw()
    {
-      if(j < 0 || j >= k) return -1;
+      if (j < 0 || j >= k) return -1;
       return Index[j];
    }
 
@@ -108,8 +109,8 @@ public:
    bool isSelected(int j)
       throw()
    {
-      for(int i=0; i<k; i++)
-         if(Index[i] == j) return true;
+      for (int i=0; i<k; i++)
+         if (Index[i] == j) return true;
       return false;
    }
 
@@ -132,22 +133,22 @@ private:
 int Combinations::Next(void)
    throw()
 {
-   if(k < 1) return -1;
-   if(Increment(k-1) != -1) return ++nc;
+   if (k < 1) return -1;
+   if (Increment(k-1) != -1) return ++nc;
    return -1;
 }
 
 int Combinations::Increment(int j)
    throw()
 {
-   if(Index[j] < n-k+j) {        // can this index be incremented?
+   if (Index[j] < n-k+j) {        // can this index be incremented?
       Index[j]++;
-      for(int m=j+1; m<k; m++)
+      for (int m=j+1; m<k; m++)
          Index[m]=Index[m-1]+1;
       return 0;
    }
       // is this the last index?
-   if(j-1 < 0) return -1;
+   if (j-1 < 0) return -1;
       // increment the next lower index
    return Increment(j-1);
 }
@@ -155,14 +156,14 @@ int Combinations::Increment(int j)
 void Combinations::init(int N, int K)
    throw(gpstk::Exception)
 {
-   if(K > N || N < 0 || K < 0) {
+   if (K > N || N < 0 || K < 0) {
       gpstk::Exception e("Combinations(n,k) must have k <= n, with n,k >= 0");
       GPSTK_THROW(e);
    }
 
-   if(K > 0) {
+   if (K > 0) {
       Index = new int[K];
-      if(!Index) {
+      if (!Index) {
          gpstk::Exception e("Could not allocate");
          GPSTK_THROW(e);
       }
@@ -172,7 +173,7 @@ void Combinations::init(int N, int K)
    nc = 0;
    k = K;
    n = N;
-   for(int j=0; j<k; j++)
+   for (int j=0; j<k; j++)
       Index[j]=j;
 }
 
@@ -189,13 +190,14 @@ namespace gpstk
                                TropModel *pTropModel)
       throw(Exception)
    {
-      try {
+      try
+      {
          int iret,jret,i,j,N,Nreject,MinSV,stage;
          vector<bool> UseSat,UseSave;
          vector<int> GoodIndexes;
          // Use these to save the 'best' solution within the loop.
-         int BestNIter=0;
-         double BestRMS=0.0,BestSL=0.0,BestConv=0.0;
+         int BestNIter = 0;
+         double BestRMS = 0.0, BestSL = 0.0, BestConv = 0.0;
          Vector<double> BestSol(3,0.0);
          vector<bool> BestUse;
          BestRMS = -1.0;      // this marks the 'Best' set as unused.
@@ -206,24 +208,24 @@ namespace gpstk
 
          // Save the input solution
          // (for use in rejection when ResidualCriterion is false).
-         if(Solution.size() != 4) { Solution.resize(4); Solution = 0.0; }
+         if (Solution.size() != 4) { Solution.resize(4); Solution = 0.0; }
          APrioriSolution = Solution;
 
          // ----------------------------------------------------------------
          // fill the SVP matrix, and use it for every solution
          // NB this routine can set Satellite[.]=negative when no ephemeris
          i = PrepareAutonomousSolution(Tr, Satellite, Pseudorange, Eph, SVP,
-               pDebugStream);
-         //if(Debug) {
+                                       pDebugStream);
+         //if (Debug) {
          //   *pDebugStream << "In RAIMCompute after PAS(): Satellites:";
-         //   for(j=0; j<Satellite.size(); j++)
+         //   for (j=0; j<Satellite.size(); j++)
          //      *pDebugStream << " " << RinexSatID(Satellite[j]);
          //   *pDebugStream << endl;
          //   *pDebugStream << " SVP matrix("
          //      << SVP.rows() << "," << SVP.cols() << ")" << endl;
          //   *pDebugStream << fixed << setw(16) << setprecision(3) << SVP << endl;
          //}
-         if(i) return i;  // return is 0(ok) or -4(no ephemeris)
+         if (i) return i;  // return is 0(ok) or -4(no ephemeris)
 
          // count how many good satellites we have
          // Initialize UseSat based on Satellite, and build GoodIndexes.
@@ -231,35 +233,38 @@ namespace gpstk
          // UseSave saves the original so it can be reused for each solution.
          // Let GoodIndexes be all the indexes of Satellites that are good:
          // UseSat[GoodIndexes[.]] == true by definition
-         for(N=0,i=0; i<Satellite.size(); i++) {
-            if(Satellite[i].id > 0) {
+         for (N=0,i=0; i<Satellite.size(); i++)
+         {
+            if (Satellite[i].id > 0)
+            {
                N++;
                UseSat.push_back(true);
                GoodIndexes.push_back(i);
             }
-            else UseSat.push_back(false);
+            else
+               UseSat.push_back(false);
          }
          UseSave = UseSat;
-         //if(Debug) {
+         //if (Debug) {
          //   *pDebugStream << "GoodIndexes (" << N << ") are";
-         //   for(i=0; i<GoodIndexes.size(); i++)
+         //   for (i=0; i<GoodIndexes.size(); i++)
          //      *pDebugStream << " " << Satellite[GoodIndexes[i]];
          //   *pDebugStream << endl;
          //}
 
          // don't even try if there are not 4 good satellites
-         if(N < 4) return -3;
+         if (N < 4) return -3;
 
          // minimum number of sats needed for algorithm
          MinSV = 5;   // this would be RAIM
           // ( not really RAIM || not RAIM at all - just one solution)
-         if(!ResidualCriterion || NSatsReject==0) MinSV=4;
+         if (!ResidualCriterion || NSatsReject==0) MinSV=4;
 
          // how many satellites can RAIM reject, if we have to?
          // default is -1, meaning as many as possible
          Nreject = NSatsReject;
-         if(Nreject == -1 || Nreject > N-MinSV)
-            Nreject=N-MinSV;
+         if (Nreject == -1 || Nreject > N-MinSV)
+            Nreject = N - MinSV;
 
          // ----------------------------------------------------------------
          // now compute the solution, first with all the data. If this fails,
@@ -274,16 +279,18 @@ namespace gpstk
          // stage is the number of satellites to reject.
          stage = 0;
 
-         do {
+         do
+         {
             // compute all the combinations of N satellites taken stage at a time
             Combinations Combo(N,stage);
 
             // compute a solution for each combination of marked satellites
-            do {
+            do
+            {
                // Mark the satellites for this combination
                UseSat = UseSave;
-               for(i=0; i<GoodIndexes.size(); i++)
-                  if(Combo.isSelected(i)) UseSat[GoodIndexes[i]]=false;
+               for (i=0; i<GoodIndexes.size(); i++)
+                  if (Combo.isSelected(i)) UseSat[GoodIndexes[i]] = false;
 
                // ----------------------------------------------------------------
                // Compute a solution given the data; ignore ranges for marked
@@ -301,24 +308,26 @@ namespace gpstk
 
                // ----------------------------------------------------------------
                // Compute RMS residual...
-               if(!ResidualCriterion) {
+               if (!ResidualCriterion)
+               {
                   // when 'distance from a priori' is the criterion.
-                  Vector<double> D=Solution-APrioriSolution;
+                  Vector<double> D = Solution - APrioriSolution;
                   RMSResidual = RMS(D);
                }
-               else {
+               else
+               {
                   // and in the usual case
                   RMSResidual = RMS(Residuals);
                }
                // ... and find the maximum slope
                MaxSlope = 0.0;
-               if(iret == 0)
-                  for(i=0; i<UseSat.size(); i++)
-                     if(UseSat[i] && Slopes(i)>MaxSlope) MaxSlope=Slopes[i];
+               if (iret == 0)
+                  for (i=0; i<UseSat.size(); i++)
+                     if (UseSat[i] && Slopes(i)>MaxSlope) MaxSlope=Slopes[i];
 
                // ----------------------------------------------------------------
                // print solution with diagnostic information
-               if(Debug) {
+               if (Debug) {
                   GPSWeekSecond weeksec(Tr);
                   *pDebugStream << "RPS " << setw(2) << stage
                      << " " << setw(4) << weeksec.week
@@ -333,8 +342,8 @@ namespace gpstk
                      << " " << NIterations
                      << " " << scientific << setw(8) << setprecision(2)<< Convergence;
                      // print the SatID for good sats
-                  for(i=0; i<UseSat.size(); i++) {
-                     if(UseSat[i])
+                  for (i=0; i<UseSat.size(); i++) {
+                     if (UseSat[i])
                         *pDebugStream << " " << setw(3)<< Satellite[i].id;
                      else
                         *pDebugStream << " " << setw(3) << -::abs(Satellite[i].id);
@@ -345,13 +354,16 @@ namespace gpstk
 
                // ----------------------------------------------------------------
                // deal with the results of AutonomousPRSolution()
-               if(iret) {     // failure for this combination
+               if (iret)
+               {     // failure for this combination
                   RMSResidual = 0.0;
                   Solution = 0.0;
                }
-               else {         // success
+               else
+               {         // success
                      // save 'best' solution for later
-                  if(BestRMS < 0.0 || RMSResidual < BestRMS) {
+                  if (BestRMS < 0.0 || RMSResidual < BestRMS)
+                  {
                      BestRMS = RMSResidual;
                      BestSol = Solution;
                      BestUse = UseSat;
@@ -360,7 +372,7 @@ namespace gpstk
                      BestNIter = NIterations;
                   }
                      // quit immediately?
-                  if((stage==0 || ReturnAtOnce) && RMSResidual < RMSLimit)
+                  if ((stage==0 || ReturnAtOnce) && RMSResidual < RMSLimit)
                      break;
                }
 
@@ -368,14 +380,15 @@ namespace gpstk
             } while(Combo.Next() != -1);
 
             // end of the stage
-            if(BestRMS > 0.0 && BestRMS < RMSLimit) { // success
+            if (BestRMS > 0.0 && BestRMS < RMSLimit)
+            { // success
                iret=0;
                break;
             }
 
             // go to next stage
             stage++;
-            if(stage > Nreject) break;
+            if (stage > Nreject) break;
 
          } while(iret == 0);        // end loop over stages
 
@@ -386,22 +399,21 @@ namespace gpstk
          RMSResidual = BestRMS;
          Solution = BestSol;
          MaxSlope = BestSL;
-         for(Nsvs=0,i=0; i<BestUse.size(); i++) {
-            if(!BestUse[i]) Satellite[i].id = -::abs(Satellite[i].id);
+         for (Nsvs=0,i=0; i<BestUse.size(); i++)
+         {
+            if (!BestUse[i]) Satellite[i].id = -::abs(Satellite[i].id);
             else Nsvs++;
          }
 
-         if(iret==0 && BestSL > SlopeLimit) iret=1;
-         if(iret==0 && BestSL > SlopeLimit/2.0 && Nsvs == 5) iret=1;
-         if(iret>=0 && BestRMS >= RMSLimit) iret=2;
+         if (iret==0 && BestSL > SlopeLimit) iret=1;
+         if (iret==0 && BestSL > SlopeLimit/2.0 && Nsvs == 5) iret=1;
+         if (iret>=0 && BestRMS >= RMSLimit) iret=2;
 
-         if(iret==0) Valid=true;
+         if (iret==0) Valid=true;
 
          return iret;
       }
-      catch(Exception& e) {
-         GPSTK_RETHROW(e);
-      }
+      catch(Exception& e) { GPSTK_RETHROW(e); }
    }  // end PRSolution::RAIMCompute()
 
    int PRSolution::PrepareAutonomousSolution(const CommonTime& Tr,
@@ -412,47 +424,49 @@ namespace gpstk
                                              ostream *pDebugStream)
       throw()
    {
-         int i,j,nsvs,N=Satellite.size();
+         int i,j,nsvs,N = Satellite.size();
          CommonTime tx;                // transmit time
          Xvt PVT;
 
-         if(N <= 0) return 0;
+         if (N <= 0) return 0;
          SVP = Matrix<double>(N,4);
          SVP = 0.0;
 
-         for(nsvs=0,i=0; i<N; i++) {
+         for (nsvs=0,i=0; i<N; i++)
+         {
                // skip marked satellites
-            if(Satellite[i].id <= 0) continue;
+            if (Satellite[i].id <= 0) continue;
 
                // first estimate of transmit time
             tx = Tr;
             tx -= Pseudorange[i]/C_GPS_M;
                // get ephemeris range, etc
-            try {
-               PVT = Eph.getXvt(Satellite[i], tx);
-            }
-            catch(InvalidRequest& e) {
+            try
+            { PVT = Eph.getXvt(Satellite[i], tx); }
+            catch(InvalidRequest& e)
+            {
                Satellite[i].id = -::abs(Satellite[i].id);
                continue;
             }
 
                // update transmit time and get ephemeris range again
             tx -= PVT.dtime;     // clk+rel
-            try {
-               PVT = Eph.getXvt(Satellite[i], tx);
-            }
-            catch(InvalidRequest& e) {
+
+            try
+            { PVT = Eph.getXvt(Satellite[i], tx); }
+            catch(InvalidRequest& e)
+            {
                Satellite[i].id = -::abs(Satellite[i].id);
                continue;
             }
 
                // SVP = {SV position at transmit time}, raw range + clk + rel
-            for(j=0; j<3; j++) SVP(i,j) = PVT.x[j];
+            for (j=0; j<3; j++) SVP(i,j) = PVT.x[j];
             SVP(i,3) = Pseudorange[i] + C_GPS_M * PVT.dtime;
             nsvs++;
          }
 
-         if(nsvs == 0) return -4;
+         if (nsvs == 0) return -4;
          return 0;
   
    } // end PrepareAutonomousPRSolution
@@ -462,26 +476,26 @@ namespace gpstk
                                      Vector<double>& X,
                                      Vector<double>& R)
    {
-       try {
+       try
+       {
          int N=A.rows();
-         Matrix<double> AT=transpose(A);
-         Matrix<double> B=AT,C(4,4);
+         Matrix<double> AT = transpose(A);
+         Matrix<double> B = AT, C(4,4);
 
          C = AT * A;
          // invert
-         try {
+         try
+         {
             //double big,small;
             //condNum(C,big,small);
-            //if(small < 1.e-15 || big/small > 1.e15) return -2;
+            //if (small < 1.e-15 || big/small > 1.e15) return -2;
             C = inverseSVD(C);
          }
-         catch(SingularMatrixException& sme) {
-            return -2;
-         }
+         catch(SingularMatrixException& sme) { return -2; }
 
          B = C * AT;
 
-         Vector<double> One(N,1.0),V(4),U(4);
+         Vector<double> One(N,1.0), V(4), U(4);
          double E,F,G,d,lam;
 
          U = B * One;
@@ -489,8 +503,8 @@ namespace gpstk
          E = Minkowski(U,U);
          F = Minkowski(U,V) - 1.0;
          G = Minkowski(V,V);
-         d = F*F-E*G;
-         if(d < 0.0) d=0.0; // avoid imaginary solutions: what does this really mean?
+         d = F*F - E*G;
+         if (d < 0.0) d = 0.0; // avoid imaginary solutions: what does this really mean?
          d = SQRT(d);
 
             // first solution ...
@@ -508,22 +522,21 @@ namespace gpstk
          R(1) = A(0,3)-X(3) - RSS(X(0)-A(0,0), X(1)-A(0,1), X(2)-A(0,2));
 
             // pick the right solution
-         if(ABS(R(1)) > ABS(R(0))) {
+         if (ABS(R(1)) > ABS(R(0)))
+         {
             lam = (-F+d)/E;
             X = lam*U + V;
             X(3) = -X(3);
          }
 
             // compute the residuals
-         for(int i=0; i<N; i++)
+         for (int i=0; i<N; i++)
             R(i) = A(i,3)-X(3) - RSS(X(0)-A(i,0), X(1)-A(i,1), X(2)-A(i,2));
       
          return 0;
 
       }
-      catch(Exception& e) {
-         GPSTK_RETHROW(e);
-      }
+      catch(Exception& e) { GPSTK_RETHROW(e); }
    }  // end PRSolution::AlgebraicSolution
 
 
@@ -541,22 +554,24 @@ namespace gpstk
                                         ostream *pDebugStream)
          throw(Exception)
    {
-         if(!pTropModel) {
-            Exception e("Undefined tropospheric model");
-            GPSTK_THROW(e);
-         }
+      if (!pTropModel)
+      {
+         Exception e("Undefined tropospheric model");
+         GPSTK_THROW(e);
+      }
 
-      try {
+      try
+      {
          int iret,i,j,n,N;
          double rho,wt,svxyz[3];
          GPSGeoid geoid;               // WGS84?
 
-         //if(pDebugStream) *pDebugStream << "Enter APRS " << n_iterate << " "
+         //if (pDebugStream) *pDebugStream << "Enter APRS " << n_iterate << " "
          //   << scientific << setprecision(3) << converge << endl;
 
             // find the number of good satellites
-         for(N=0,i=0; i<Use.size(); i++) if(Use[i]) N++;
-         if(N < 4) return -3;
+         for (N=0,i=0; i<Use.size(); i++) if (Use[i]) N++;
+         if (N < 4) return -3;
 
             // define for computation
          Vector<double> CRange(N),dX(4);
@@ -580,20 +595,25 @@ namespace gpstk
          n_iterate = 0;
          converge = 0.0;
 
+         int icount(0);
+
             // iteration loop
             // do at least twice (even for algebraic solution) so that
             // trop model gets evaluated
-         do {
+         do
+         {
                // current estimate of position solution
             RX.x = ECEF(Sol(0),Sol(1),Sol(2));
 
+            icount++;
                // loop over satellites, computing partials matrix
-            for(n=0,i=0; i<Use.size(); i++) {
+            for (n=0,i=0; i<Use.size(); i++)
+            {
                   // ignore marked satellites
-               if(!Use[i]) continue;
+               if (!Use[i]) continue;
 
                   // time of flight (sec)
-               if(n_iterate == 0)
+               if (n_iterate == 0)
                   rho = 0.070;             // initial guess: 70ms
                else
                   rho = RSS(SVP(i,0)-Sol(0), SVP(i,1)-Sol(1), SVP(i,2)-Sol(2))
@@ -609,13 +629,16 @@ namespace gpstk
                CRange(n) = SVP(i,3);
 
                   // correct for troposphere (but not on the first iteration)
-               if(n_iterate > 0) {
+               if (n_iterate > 0)
+               {
                   SV.x = ECEF(svxyz[0],svxyz[1],svxyz[2]);
                   // must test RX for reasonableness to avoid corrupting TropModel
                   Position R(RX),S(SV);
-                  double tc=R.getHeight(), elev = R.elevation(SV);
-                  if(elev < 0.0 || tc > 10000.0 || tc < -1000) tc=0.0;
-                  else tc = pTropModel->correction(R,S,T);
+                  double tc = R.getHeight(), elev = R.elevation(SV);
+                  if (elev < 0.0 || tc > 10000.0 || tc < -1000) 
+                     tc=0.0;
+                  else 
+                     tc = pTropModel->correction(R,S,T);
                   CRange(n) -= tc;
                }
 
@@ -636,7 +659,8 @@ namespace gpstk
                // Resid *= MCov;
 
                   // compute intermediate quantities for algebraic solution
-               if(Algebraic) {
+               if (Algebraic)
+               {
                   U(0) = A(n,0) = svxyz[0];
                   U(1) = A(n,1) = svxyz[1];
                   U(2) = A(n,2) = svxyz[2];
@@ -654,10 +678,11 @@ namespace gpstk
                // invert using SVD
             //double big,small;
             //condNum(PT*P,big,small);
-            //if(small < 1.e-15 || big/small > 1.e15) return -2;
+            //if (small < 1.e-15 || big/small > 1.e15) return -2;
             try { Cov = inverseSVD(Cov); }
             //try { Cov = inverseLUD(Cov); }
-            catch(SingularMatrixException& sme) {
+            catch(SingularMatrixException& sme)
+            {
                return -2;
             }
 
@@ -668,27 +693,32 @@ namespace gpstk
             n_iterate++;                        // increment number iterations
 
                // ----------------- algebraic solution -----------------------
-            if(Algebraic) {
+            if (Algebraic)
+            {
                iret = PRSolution::AlgebraicSolution(A,Q,Sol,Resid);
-               if(iret) return iret;                     // (singular)
-               if(n_iterate > 1) {                       // need 2, for trop
+               if (iret) return iret;                     // (singular)
+               if (n_iterate > 1)                         // need 2, for trop
+               {
                   iret = 0;
                   break;
                }
             }
                // ----------------- linearized least squares solution --------
-            else {
+            else
+            {
                dX = G * Resid;
                Sol += dX;
                   // test for convergence
                converge = norm(dX);
                   // success: quit
-               if(n_iterate > 1 && converge < conv_limit) {
+               if (n_iterate > 1 && converge < conv_limit)
+               {
                   iret = 0;
                   break;
                }
                   // failure: quit
-               if(n_iterate >= niter_limit || converge > 1.e10) {
+               if (n_iterate >= niter_limit || converge > 1.e10)
+               {
                   iret = -1;
                   break;
                }
@@ -699,9 +729,10 @@ namespace gpstk
 
             // compute slopes
          Slope = 0.0;
-         if(iret == 0) for(j=0,i=0; i<Use.size(); i++) {
-            if(!Use[i]) continue;
-            for(int k=0; k<4; k++) Slope(i) += G(k,j)*G(k,j);
+         if (iret == 0) for (j=0,i=0; i<Use.size(); i++)
+         {
+            if (!Use[i]) continue;
+            for (int k=0; k<4; k++) Slope(i) += G(k,j)*G(k,j);
             Slope(i) = SQRT(Slope(i)*double(n-4)/(1.0-PG(j,j)));
             j++;
          }
@@ -709,9 +740,7 @@ namespace gpstk
          return iret;
 
       }
-      catch(Exception& e) {
-         GPSTK_RETHROW(e);
-      }
+      catch(Exception& e) { GPSTK_RETHROW(e); }
    } // end PRSolution::AutonomousPRSolution
 
 } // namespace gpstk

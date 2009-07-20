@@ -44,6 +44,7 @@
 #include "StringUtils.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsStream.hpp"
+#include "CivilTime.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;
@@ -287,7 +288,7 @@ namespace gpstk
    } // end of reallyGetRecord()
 
 
-   DayTime RinexObsData::parseTime(const string& line, 
+   CommonTime RinexObsData::parseTime(const string& line, 
                                    const RinexObsHeader& hdr) const
       throw(FFStreamError)
    {
@@ -309,12 +310,12 @@ namespace gpstk
             // if there's no time, just return a bad time
          if (line.substr(0,26) == string(26, ' '))
          {
-            return DayTime(DayTime::BEGINNING_OF_TIME);
+            return CommonTime(CommonTime::BEGINNING_OF_TIME);
          }
 
          int year, month, day, hour, min;
          double sec;
-         int yy = hdr.firstObs.year()/100;
+         int yy = (static_cast<CivilTime>(hdr.firstObs)).year/100;
          yy *= 100;
    
          year  = asInt(   line.substr(1,  2 ));
@@ -327,10 +328,10 @@ namespace gpstk
          // Real Rinex has epochs 'yy mm dd hr 59 60.0' surprisingly often....
          double ds=0;
          if(sec >= 60.) { ds=sec; sec=0.0; }
-         DayTime rv(yy+year, month, day, hour, min, sec);
-         if(ds != 0) rv += ds;
+         CivilTime rv(yy+year, month, day, hour, min, sec, TimeSystem::GPS);
+         if(ds != 0) rv.second += ds;
 
-         return rv;
+         return rv.convertToCommonTime();
       }
          // string exceptions for substr are caught here
       catch (std::exception &e)
@@ -348,26 +349,27 @@ namespace gpstk
 
    }
 
-   string RinexObsData::writeTime(const DayTime& dt) const
+   string RinexObsData::writeTime(const CommonTime& dt) const
       throw(StringException)
    {
-      if (dt == DayTime::BEGINNING_OF_TIME)
+      if (dt == CommonTime::BEGINNING_OF_TIME)
       {
          return string(26, ' ');
       }
 
       string line;
+      CivilTime civTime(dt);
       line  = string(1, ' ');
-      line += rightJustify(asString<short>(dt.year()),2);
+      line += rightJustify(asString<short>(civTime.year),2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(dt.month()),2);
+      line += rightJustify(asString<short>(civTime.month),2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(dt.day()),2);
+      line += rightJustify(asString<short>(civTime.day),2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(dt.hour()),2);
+      line += rightJustify(asString<short>(civTime.hour),2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(dt.minute()),2);
-      line += rightJustify(asString(dt.second(), 7),11);
+      line += rightJustify(asString<short>(civTime.minute),2);
+      line += rightJustify(asString(civTime.second, 7),11);
 
       return line;
    }

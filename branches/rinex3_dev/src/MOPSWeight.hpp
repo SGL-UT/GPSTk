@@ -96,7 +96,7 @@ namespace gpstk
           * a valid weight. Also, its PRN will be set to a negative value.
           *
           */
-      virtual int getWeights( DayTime& time,
+      virtual int getWeights( CommonTime& time,
                               Vector<SatID>& Satellites,
                               GPSEphemerisStore& bcEph,
                               Vector<double>& ionoCorrections,
@@ -128,7 +128,7 @@ namespace gpstk
           * a valid weight. Also, its PRN will be set to a negative value.
           *
           */
-      virtual int getWeights( DayTime& time,
+      virtual int getWeights( CommonTime& time,
                               Vector<SatID>& Satellites,
                               TabularEphemerisStore<Xvt>& preciseEph,
                               Vector<double>& ionoCorrections,

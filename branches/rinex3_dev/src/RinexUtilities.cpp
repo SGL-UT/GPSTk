@@ -222,7 +222,7 @@ void sortRinexObsFiles(vector<string>& files)
 {
 try {
    // build a hash with key = start time, value = filename
-   map<DayTime,string> hash;
+   map<CommonTime,string> hash;
    for(int n=0; n<files.size(); n++) {
       RinexObsHeader header;
       RinexObsStream rostream(files[n].c_str());
@@ -237,7 +237,7 @@ try {
    }
    // return the sorted file names
    files.clear();
-   map<DayTime,string>::const_iterator it = hash.begin();
+   map<CommonTime,string>::const_iterator it = hash.begin();
    while(it != hash.end()) {
       files.push_back(it->second);
       it++;

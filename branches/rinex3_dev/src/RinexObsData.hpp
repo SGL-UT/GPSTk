@@ -48,7 +48,7 @@
 #include <list>
 #include <map>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "FFStream.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsHeader.hpp"
@@ -82,7 +82,7 @@ namespace gpstk
          /// map from SatID to RinexObsTypeMap.
       typedef std::map<SatID, RinexObsTypeMap> RinexSatMap;
 
-      gpstk::DayTime time;    ///< the time corresponding to the observations
+      gpstk::CommonTime time;    ///< the time corresponding to the observations
         /** Epoch flag has the following values
          * 0 ok
          * 1 power failure since previous epoch
@@ -104,7 +104,7 @@ namespace gpstk
       RinexObsHeader auxHeader;///< auxiliary header records (epochFlag 2-5)
 
          /// Constructor.
-      RinexObsData() : time(gpstk::DayTime::BEGINNING_OF_TIME){}
+      RinexObsData() : time(gpstk::CommonTime::BEGINNING_OF_TIME){}
 
          /// Destructor
       virtual ~RinexObsData() {}
@@ -151,17 +151,17 @@ namespace gpstk
                gpstk::StringUtils::StringException);
 
    private:
-         /// Writes the daytime object into RINEX format. If it's a bad time,
+         /// Writes the CommonTime object into RINEX format. If it's a bad time,
          /// it will return blanks.
-      std::string writeTime(const DayTime& dt) const
+      std::string writeTime(const CommonTime& dt) const
          throw(gpstk::StringUtils::StringException);
 
          /**
-          * This function constructs a DayTime object from the given parameters.
+          * This function constructs a CommonTime object from the given parameters.
           * @param line the encoded time string found in the RINEX record.
           * @param hdr the RINEX Observation Header object for the current RINEX file.
           */
-      DayTime parseTime(const std::string& line, const RinexObsHeader& hdr) const
+      CommonTime parseTime(const std::string& line, const RinexObsHeader& hdr) const
          throw(FFStreamError);
    }; // class RinexObsData
 

@@ -123,7 +123,7 @@ namespace gpstk
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel);
 
          /** \deprecated
@@ -139,7 +139,7 @@ namespace gpstk
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel)
       { Position R(RX),S(SV);  return TropModel::correction(R,S,tt); }
 
@@ -228,7 +228,7 @@ namespace gpstk
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel)
          { return 0.0; }
 
@@ -245,7 +245,7 @@ namespace gpstk
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel)
          { return 0.0; }
 
@@ -498,7 +498,7 @@ namespace gpstk
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel);
 
          /** \deprecated
@@ -514,7 +514,7 @@ namespace gpstk
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel);
 
          /// Compute and return the zenith delay for dry component
@@ -677,7 +677,7 @@ namespace gpstk
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel);
 
          /** \deprecated
@@ -693,7 +693,7 @@ namespace gpstk
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel);
 
          /// Compute and return the zenith delay for dry component
@@ -842,7 +842,7 @@ namespace gpstk
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel);
 
          /** \deprecated
@@ -858,7 +858,7 @@ namespace gpstk
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel);
 
          /// Compute and return the zenith delay for dry component
@@ -1023,7 +1023,7 @@ namespace gpstk
           */
       virtual double correction( const Position& RX,
                                  const Position& SV,
-                                 const DayTime& tt )
+                                 const CommonTime& tt )
          throw(InvalidTropModel)
       { return correction(RX, SV); };
 
@@ -1044,7 +1044,7 @@ namespace gpstk
           */
       virtual double correction( const Xvt& RX,
                                  const Xvt& SV,
-                                 const DayTime& tt )
+                                 const CommonTime& tt )
          throw(InvalidTropModel);
 
 
@@ -1198,7 +1198,7 @@ namespace gpstk
           * @param RX   Receiver position.
           * @param time Time.
           */
-      MOPSTropModel(const Position& RX, const DayTime& time);
+      MOPSTropModel(const Position& RX, const CommonTime& time);
 
 
          /** Compute and return the full tropospheric delay. The receiver
@@ -1239,11 +1239,11 @@ namespace gpstk
           *
           * @param RX  Receiver position.
           * @param SV  Satellite position.
-          * @param tt  Time (DayTime object).
+          * @param tt  Time (CommonTime object).
           */
       virtual double correction( const Position& RX,
                                  const Position& SV,
-                                 const DayTime& tt )
+                                 const CommonTime& tt )
          throw(InvalidTropModel);
 
 
@@ -1292,11 +1292,11 @@ namespace gpstk
           *             (meters)
           * @param SV   Satellite position in ECEF cartesian coordinates
           *             (meters)
-          * @param tt   Time (DayTime object).
+          * @param tt   Time (CommonTime object).
           */
       virtual double correction( const Xvt& RX,
                                  const Xvt& SV,
-                                 const DayTime& tt )
+                                 const CommonTime& tt )
          throw(InvalidTropModel);
 
 
@@ -1383,7 +1383,7 @@ namespace gpstk
           *
           * @param time  Time object.
           */
-      virtual void setDayOfYear(const DayTime& time);
+      virtual void setDayOfYear(const CommonTime& time);
 
 
          /** Convenient method to set all model parameters in one pass.
@@ -1391,7 +1391,7 @@ namespace gpstk
           * @param time  Time object.
           * @param rxPos Receiver position object.
           */
-      virtual void setAllParameters( const DayTime& time,
+      virtual void setAllParameters( const CommonTime& time,
                                      const Position& rxPos );
 
 
@@ -1510,7 +1510,7 @@ namespace gpstk
          /// @param RX   Receiver position.
          /// @param time Time.
       NeillTropModel( const Position& RX,
-                      const DayTime& time );
+                      const CommonTime& time );
 
 
          /// Compute and return the full tropospheric delay. The receiver
@@ -1552,11 +1552,11 @@ namespace gpstk
           *
           * @param RX  Receiver position.
           * @param SV  Satellite position.
-          * @param tt  Time (DayTime object).
+          * @param tt  Time (CommonTime object).
           */
       virtual double correction( const Position& RX,
                                  const Position& SV,
-                                 const DayTime& tt )
+                                 const CommonTime& tt )
         throw(InvalidTropModel);
 
 
@@ -1605,11 +1605,11 @@ namespace gpstk
           *            (meters)
           * @param SV  Satellite position in ECEF cartesian coordinates
           *            (meters)
-          * @param tt  Time (DayTime object).
+          * @param tt  Time (CommonTime object).
           */
       virtual double correction( const Xvt& RX,
                                  const Xvt& SV,
-                                 const DayTime& tt )
+                                 const CommonTime& tt )
          throw(InvalidTropModel);
 
 
@@ -1711,7 +1711,7 @@ namespace gpstk
          /// in days of the year.
          ///
          /// @param time  Time object.
-      virtual void setDayOfYear(const DayTime& time);
+      virtual void setDayOfYear(const CommonTime& time);
 
 
          /** Convenient method to set all model parameters in one pass.
@@ -1719,7 +1719,7 @@ namespace gpstk
           * @param time  Time object.
           * @param rxPos Receiver position object.
           */
-      virtual void setAllParameters( const DayTime& time,
+      virtual void setAllParameters( const CommonTime& time,
                                      const Position& rxPos );
 
 

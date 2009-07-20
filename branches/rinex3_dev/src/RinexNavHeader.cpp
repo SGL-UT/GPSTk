@@ -50,7 +50,9 @@
  */
 
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
+#include "CivilTime.hpp"
+#include "SystemTime.hpp"
 #include "RinexNavHeader.hpp"
 #include "RinexNavStream.hpp"
 
@@ -111,9 +113,8 @@ namespace gpstk
       {
          line  = leftJustify(fileProgram,20);
          line += leftJustify(fileAgency,20);
-         DayTime dt;
-         dt.setLocalTime();
-         string dat = dt.printf("%02m/%02d/%04Y %02H:%02M:%02S");
+         SystemTime dt;
+         string dat = (static_cast<CivilTime>(dt)).printf("%02m/%02d/%04Y %02H:%02M:%02S");
          line += leftJustify(dat, 20);
          line += runByString;
          strm << line << endl;

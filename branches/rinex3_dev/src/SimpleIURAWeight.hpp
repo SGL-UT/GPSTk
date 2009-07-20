@@ -70,7 +70,7 @@ namespace gpstk
          * valid weight. Also, its PRN will be set to a negative value.
          *
          */
-        virtual int getWeights(DayTime& time, Vector<SatID>& Satellites, GPSEphemerisStore& bcEph) throw(InvalidWeights);
+        virtual int getWeights(CommonTime& time, Vector<SatID>& Satellites, GPSEphemerisStore& bcEph) throw(InvalidWeights);
 
 
         /** Compute and return a vector with the weights for the given satellites
@@ -89,7 +89,7 @@ namespace gpstk
          * This method assigns an URA of 0.1 m to all satellites.
          *
          */
-        virtual int getWeights(DayTime& time, Vector<SatID>& Satellites, TabularEphemerisStore<Xvt>& preciseEph) throw(InvalidWeights);
+        virtual int getWeights(CommonTime& time, Vector<SatID>& Satellites, TabularEphemerisStore<Xvt>& preciseEph) throw(InvalidWeights);
 
 
         /// Vector of weights for these satellites

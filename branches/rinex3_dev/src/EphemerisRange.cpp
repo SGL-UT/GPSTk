@@ -58,7 +58,7 @@ namespace gpstk
    // routine does not intrinsicly account for the receiver clock error
    // like the ComputeAtTransmitTime routine does.
    double CorrectedEphemerisRange::ComputeAtReceiveTime(
-      const DayTime& tr_nom,
+      const CommonTime& tr_nom,
       const Position& Rx,
       const SatID sat,
       const XvtStore<SatID>& Eph)
@@ -108,14 +108,14 @@ namespace gpstk
       // given the nominal receive time tr_nom and an EphemerisStore, as well as
       // the raw measured pseudorange.
    double CorrectedEphemerisRange::ComputeAtTransmitTime(
-      const DayTime& tr_nom,
+      const CommonTime& tr_nom,
       const double& pr,
       const Position& Rx,
       const SatID sat,
       const XvtStore<SatID>& Eph)
    {
       try {
-         DayTime tt;
+         CommonTime tt;
 
          // 0-th order estimate of transmit time = receiver - pseudorange/c
          transmit = tr_nom;
@@ -153,7 +153,7 @@ namespace gpstk
 
 
    double CorrectedEphemerisRange::ComputeAtTransmitSvTime(
-      const DayTime& tt_nom,
+      const CommonTime& tt_nom,
       const double& pr,
       const Position& rx,
       const SatID sat,

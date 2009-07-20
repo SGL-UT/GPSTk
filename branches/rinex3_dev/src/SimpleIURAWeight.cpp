@@ -46,7 +46,7 @@ namespace gpstk
     // NOTE: Method isValid() will return false if some satellite does not have a
     // valid weight.
     //
-    int SimpleIURAWeight::getWeights(DayTime& time, Vector<SatID>& Satellites, GPSEphemerisStore& bcEph) throw(InvalidWeights)
+    int SimpleIURAWeight::getWeights(CommonTime& time, Vector<SatID>& Satellites, GPSEphemerisStore& bcEph) throw(InvalidWeights)
     {
         int N = Satellites.size();
         // We need at least one satellite
@@ -107,7 +107,7 @@ namespace gpstk
     //
     // NOTE: This method assigns an URA of 0.1 m to all satellites.
     //
-    int SimpleIURAWeight::getWeights(DayTime& time, Vector<SatID>& Satellites, TabularEphemerisStore<Xvt>& preciseEph) throw(InvalidWeights)
+    int SimpleIURAWeight::getWeights(CommonTime& time, Vector<SatID>& Satellites, TabularEphemerisStore<Xvt>& preciseEph) throw(InvalidWeights)
     {
         int N = Satellites.size();
         // We need at least one satellite

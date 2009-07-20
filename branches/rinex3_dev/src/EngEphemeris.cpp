@@ -1305,6 +1305,7 @@ namespace gpstk
       GPSWeekSecond dummyTime;
       dummyTime = GPSWeekSecond(t);
       os << setw(4) << dummyTime.week;
+      os << "(     )  ";
 //      os << setw(4) << dummyTime.week << "(";
 //      os << setw(4) << t.GPS10bitweek() << ")  ";
       os << setw(6) << setfill(' ') << dummyTime.sow << "   ";

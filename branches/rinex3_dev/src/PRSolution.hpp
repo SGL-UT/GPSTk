@@ -266,9 +266,9 @@ namespace gpstk
 
       /** Function used internally to handle the details of the Algebraic solution */
       static int AlgebraicSolution(Matrix<double>& A,
-                                               Vector<double>& Q,
-                                               Vector<double>& X,
-                                               Vector<double>& R);
+                                   Vector<double>& Q,
+                                   Vector<double>& X,
+                                   Vector<double>& R);
 
    }; // end class PRSolution
 

@@ -50,7 +50,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "FFStream.hpp"
 #include "RinexObsBase.hpp"
 #include "Triple.hpp"
@@ -242,9 +242,9 @@ namespace gpstk
       std::vector<ExtraWaveFact> extraWaveFactList; ///< extra (per PRN) WAVELENGTH FACTORS
       std::vector<RinexObsType> obsTypeList; ///< NUMBER & TYPES OF OBSERV
       double interval;                       ///< INTERVAL (optional)
-      DayTime firstObs ;                     ///< TIME OF FIRST OBS
+      CommonTime firstObs ;                     ///< TIME OF FIRST OBS
       RinexSatID firstSystem;                ///< RINEX satellite system of FIRST OBS timetag
-      DayTime lastObs ;                      ///< TIME OF LAST OBS (optional)
+      CommonTime lastObs ;                      ///< TIME OF LAST OBS (optional)
       RinexSatID lastSystem;                 ///< RINEX satellite system of LAST OBS timetag
       int receiverOffset;                    ///< RCV CLOCK OFFS APPL (optional)
       int leapSeconds;                       ///< LEAP SECONDS (optional)
@@ -325,15 +325,15 @@ namespace gpstk
       friend class RinexObsData;
 
    private:
-         /// Converts the daytime \a dt into a Rinex Obs time
+         /// Converts the CommonTime \a dt into a Rinex Obs time
          /// string for the header
-      std::string writeTime(const DayTime& dt) const;
+      std::string writeTime(const CommonTime& dt) const;
 
          /**
           * This function sets the time for this header.
           * It looks at \a line to obtain the needed information.
           */
-      DayTime parseTime(const std::string& line) const;
+      CommonTime parseTime(const std::string& line) const;
 
    }; // end class RinexObsHeader
 

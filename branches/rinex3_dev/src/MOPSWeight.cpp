@@ -60,7 +60,7 @@ namespace gpstk
        * a valid weight. Also, its PRN will be set to a negative value.
        *
        */
-   int MOPSWeight::getWeights( DayTime& time,
+   int MOPSWeight::getWeights( CommonTime& time,
                                Vector<SatID>& Satellites,
                                GPSEphemerisStore& bcEph,
                                Vector<double>& ionoCorrections,
@@ -139,7 +139,7 @@ compute weights.");
        * a valid weight. Also, its PRN will be set to a negative value.
        *
        */
-   int MOPSWeight::getWeights( DayTime& time,
+   int MOPSWeight::getWeights( CommonTime& time,
                                Vector<SatID>& Satellites,
                                TabularEphemerisStore<Xvt>& preciseEph,
                                Vector<double>& ionoCorrections,
