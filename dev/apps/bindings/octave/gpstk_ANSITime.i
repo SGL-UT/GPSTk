@@ -11,6 +11,8 @@ using namespace gpstk;
 %}
 
 %rename (ANSITime_streamRead) operator<<;
+%rename (ANSITime_CommonTime) operator CommonTime;
 %include "../../../src/TimeTag.hpp"
 %include "../../../src/ANSITime.hpp"
 %rename (streamRead) operator<<;
+%rename (CommonTime) operator CommonTime;
