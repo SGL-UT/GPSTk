@@ -443,15 +443,18 @@ namespace gpstk
       m_day  += days;
       m_msod += msod;
       m_fsod += fsod;
+
       return normalize();
    }
                                 
    bool CommonTime::normalize()
       throw()
    {
-      if( ABS( m_fsod ) >= SEC_PER_MS )
+      std::numeric_limits<double> eps;
+
+      if( ABS( m_fsod ) >= SEC_PER_MS - eps.epsilon() ) // allow for machine rounding errors
       {
-         long ms = static_cast<long>( m_fsod * MS_PER_SEC );
+         long ms = static_cast<long>( (m_fsod + eps.epsilon()) * MS_PER_SEC ); // again
          m_msod += ms;
          m_fsod -= static_cast<double>( ms ) * SEC_PER_MS;
       }
@@ -479,6 +482,10 @@ namespace gpstk
          m_msod = m_msod + MS_PER_DAY;
          --m_day;
       }
+
+      // byte logic to repair fixed-point math
+      if ( m_fsod >= static_cast<double>(0.999) )
+         m_fsod -= static_cast<double>(0.999);
 
       return ( ( m_day >= BEGIN_LIMIT_JDAY ) && 
                ( m_day <  END_LIMIT_JDAY   ) );
