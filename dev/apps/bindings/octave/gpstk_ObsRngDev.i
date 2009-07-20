@@ -8,4 +8,6 @@
 using namespace gpstk;
 %}
 
+%rename (ObsRngDev_streamRead) operator<<;
 %include "../../../src/ObsRngDev.hpp"
+%rename (streamRead) operator<<;

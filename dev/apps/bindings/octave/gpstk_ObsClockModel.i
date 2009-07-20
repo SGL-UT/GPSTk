@@ -9,5 +9,7 @@
 using namespace gpstk;
 %}
 
+%rename (ObsClockModel_streamRead) operator<<;
 %include "../../../src/ClockModel.hpp"
 %include "../../../src/ObsClockModel.hpp"
+%rename (streamRead) operator<<;

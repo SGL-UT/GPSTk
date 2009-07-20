@@ -5,7 +5,7 @@
 %{
 #include "../../../src/BinexData.hpp"
 
-using namespace std;
+
 using namespace gpstk;
 %}
 

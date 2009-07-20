@@ -8,4 +8,6 @@
 using namespace gpstk;
 %}
 
+%rename (WxObsMap_streamRead) operator<<;
 %include "../../../src/WxObsMap.hpp"
+%rename (streamRead) operator<<;

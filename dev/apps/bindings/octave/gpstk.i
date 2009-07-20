@@ -48,7 +48,7 @@
 %include "gpstk_FFTextStream.i"
 %include "gpstk_FICAStream.i"
 %include "gpstk_FICBase.i"
-%include "gpstk_FICDataSet.i"
+//%include "gpstk_FICDataSet.i"  		 ** now included in FFData.i
 %include "gpstk_FICFilterOperators.i"
 //%include "gpstk_FICHeader.i"
 %include "gpstk_FICStream.i"
@@ -62,7 +62,7 @@
 %include "gpstk_FileUtils.i"
 %include "gpstk_GaussianDistribution.i"
 %include "gpstk_GenXSequence.i"
-%include "gpstk_Geodetic.i"
+//%include "gpstk_Geodetic.i"   			**included in position.i
 %include "gpstk_GeoidModel.i"
 %include "gpstk_geometry.i"
 %include "gpstk_GPSAlmanacStore.i"
@@ -76,8 +76,8 @@
 %include "gpstk_icd_200_constants.i"
 %include "gpstk_InOutFramework.i"
 %include "gpstk_IonexBase.i"
-//%include "gpstk_IonexData.i"
-//%include "gpstk_IonexHeader.i"
+//%include "gpstk_IonexData.i" 			**included in FFData.i**
+//%include "gpstk_IonexHeader.i" 		**included in FFData.i**
 %include "gpstk_IonexStore.i"
 %include "gpstk_IonexStream.i"
 %include "gpstk_IonoModel.i"
@@ -96,7 +96,7 @@
 %include "gpstk_MOPSWeight.i"
 %include "gpstk_MSCBase.i"
 %include "gpstk_MSCData.i"
-//%include "gpstk_MSCHeader.i"
+//%include "gpstk_MSCHeader.i"  		**included in FFData.i**
 %include "gpstk_MSCStore.i"
 %include "gpstk_MSCStream.i"
 %include "gpstk_NEDUtil.i"
@@ -116,12 +116,12 @@
 %include "gpstk_RACRotation.i"
 %include "gpstk_RinexEphemerisStore.i"
 %include "gpstk_RinexMetBase.i"
-//%include "gpstk_RinexMetData.i"
+//%include "gpstk_RinexMetData.i"		**include in FFData.i**
 %include "gpstk_RinexMetFilterOperators.i"
 //%include "gpstk_RinexMetHeader.i"
 %include "gpstk_RinexMetStream.i"
 %include "gpstk_RinexNavBase.i"
-//%include "gpstk_RinexNavData.i"
+//%include "gpstk_RinexNavData.i"		**include in FFData.i**
 %include "gpstk_RinexNavFilterOperators.i"
 //%include "gpstk_RinexNavHeader.i"
 %include "gpstk_RinexNavStream.i"
@@ -169,7 +169,7 @@
 %include "gpstk_TimeNamedFileStream.i"
 %include "gpstk_TimeString.i"
 %include "gpstk_TimeTag.i"
-%include "gpstk_Triple.i"
+//%include "gpstk_Triple.i" 			**included in position.i**
 %include "gpstk_TropModel.i"
 //%include "gpstk_TypeID.i"
 %include "gpstk_UnixTime.i"
@@ -183,12 +183,12 @@
 %include "gpstk_WxObsMap.i"
 %include "gpstk_X1Sequence.i"
 %include "gpstk_X2Sequence.i"
-//%inlcude "gpstk_Xvt.i"       **   this commented block causes make to fail   **
+//%inlcude "gpstk_Xvt.i"       **   this commented block causes make to fail   **  ** Xvt.i is included in position.i**
 //%inlcude "gpstk_XvtStore.i"			***
 //%inlcude "gpstk_YDSTime.i"			***
 //%inlcude "gpstk_YumaAlmanacStore.i"		***
 //%inlcude "gpstk_YumaBase.i"			***
-//%inlcude "gpstk_YumaData.i"			***
+//%inlcude "gpstk_YumaData.i"			**included in FFData.i**
 //%inlcude "gpstk_YumaHeader.i"			***
 //%inlcude "gpstk_YumaStream.i"  		***
 %include "gpstk_Zcount.i"

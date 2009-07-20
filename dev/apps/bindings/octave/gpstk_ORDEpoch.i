@@ -8,4 +8,6 @@
 using namespace gpstk;
 %}
 
+%rename (ORDEpoch_streamRead) operator<<;
 %include "../../../src/ORDEpoch.hpp"
+%rename (streamRead) operator<<;

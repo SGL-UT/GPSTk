@@ -5,7 +5,7 @@
 %{
 
 #include "../../../src/Triple.hpp"
-
+#include "../../../src/Geodetic.hpp"
 using namespace std;
 using namespace gpstk;
 
@@ -19,6 +19,10 @@ using namespace gpstk;
 // Under Triple.hpp, friend std::ostream operator<< will
 //    clash with Xvt's def of operator<<, result in redefine
 %rename (Triple_streamRead) operator<<;
+%rename (Triple_starMult) operator*;
 %include "../../../src/Triple.hpp"
+%include "../../../src/Geodetic.hpp"
+%include "gpstk_Position.i"
 %rename (streamRead) operator<<;
+%rename (starMult) operator*;
 

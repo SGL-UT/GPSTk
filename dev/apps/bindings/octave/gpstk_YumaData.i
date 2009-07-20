@@ -3,11 +3,13 @@
 %module gpstk_YumaData
 
 %{
-//#include "../../../src/YumaBase.hpp"
+#include "../../../src/YumaBase.hpp"
 #include "../../../src/YumaData.hpp"
 
 using namespace gpstk;
 %}
 
-//%include "../../../src/YumaBase.hpp"
+%rename (YumaData_AlmOrbit) operator AlmOrbit;
+%include "../../../src/YumaBase.hpp"
 %include "../../../src/YumaData.hpp"
+%rename (AlmOrbit) operator AlmOrbit;
