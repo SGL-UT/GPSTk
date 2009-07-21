@@ -9,4 +9,11 @@ using namespace gpstk;
 using namespace StringUtils;
 %}
 
-#include "../../../src/ObsID.hpp"
+%ignore  _ZN5gpstk5ObsID9singletonE;
+%include "../../../src/ObsID.hpp"
+%include "gpstk_RinexObsID.i"
+
+%{
+typedef ObsID::Initializer Initializer;
+%}
+

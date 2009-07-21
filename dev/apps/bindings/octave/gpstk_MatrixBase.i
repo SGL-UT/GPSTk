@@ -8,4 +8,8 @@
 using namespace gpstk;
 %}
 
+%rename (MatrixBase_plusequal) operator+=;
+%rename (MatrixBase_minusequal) operator-=;
+%rename (MatrixBase_starequal) operator*=;
+%rename (MatrixBase_slashequal) operator/=;
 %include "../../../src/MatrixBase.hpp"

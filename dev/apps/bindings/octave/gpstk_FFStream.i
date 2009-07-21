@@ -4,46 +4,33 @@
 
 %{
 #include "../../../src/FFStream.hpp"
-#include "../../../src/FFTextStream.hpp"
-#include "../../../src/FFBinaryStream.hpp"
-#include "../../../src/BinexStream.hpp"
-//#include "../../../src/BLQDataReader.hpp"
-#include "../../../src/ConfDataReader.hpp"
-#include "../../../src/FICStreamBase.hpp"
-#include "../../../src/FICAStream.hpp"
-#include "../../../src/FICStream.hpp"
-#include "../../../src/IonexStream.hpp"
-#include "../../../src/MSCStream.hpp"
-#include "../../../src/RinexMetStream.hpp"
-#include "../../../src/RinexNavStream.hpp"
-#include "../../../src/RinexObsStream.hpp"
-#include "../../../src/SatDataReader.hpp"
-#include "../../../src/SEMStream.hpp"
-#include "../../../src/SP3Stream.hpp"
-#include "../../../src/YumaStream.hpp"
 
 using namespace std;
 using namespace gpstk;
 %}
 
 %include "../../../src/FFStream.hpp"
-%include "../../../src/FFTextStream.hpp"
-%include "../../../src/FFBinaryStream.hpp"
-%include "../../../src/BinexStream.hpp"
-//%include "../../../src/BLQDataReader.hpp"
-%include "../../../src/ConfDataReader.hpp"
-%include "../../../src/FICStreamBase.hpp"
-%include "../../../src/FICAStream.hpp"
-%include "../../../src/FICStream.hpp"
-%include "../../../src/IonexStream.hpp"
-%include "../../../src/MSCStream.hpp"
-%include "../../../src/RinexMetStream.hpp"
-%include "../../../src/RinexNavStream.hpp"
-%include "../../../src/RinexObsStream.hpp"
-%include "../../../src/SatDataReader.hpp"
-%include "../../../src/SEMStream.hpp"
-%include "../../../src/SP3Stream.hpp"
-%include "../../../src/YumaStream.hpp"
+%include "gpstk_FFTextStream.i"
+%include "gpstk_FFBinaryStream.i"
+%include "gpstk_BinexStream.i"
+//%include "gpstk_BLQDataReader.i"
+%include "gpstk_ConfDataReader.i"
+%include "gpstk_FICStreamBase.i"
+%include "gpstk_FICAStream.i"
+%include "gpstk_FICStream.i"
+%include "gpstk_IonexStream.i"
+%include "gpstk_MSCStream.i"
+%include "gpstk_RinexMetStream.i"
+%include "gpstk_RinexNavStream.i"
+%include "gpstk_RinexObsStream.i"
+%include "gpstk_SatDataReader.i"
+%include "gpstk_SEMStream.i"
+%include "gpstk_SP3Stream.i"
+%include "gpstk_YumaStream.i"
+%import "../../../src/FFStreamError.hpp"
+
+
+
 
 
 

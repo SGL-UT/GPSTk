@@ -87,7 +87,7 @@
 //%include "gpstk_LinearClockModel.i"			**included in LinearClockModel**
 %include "gpstk_LoopedFramework.i"
 %include "gpstk_Matrix.i"
-%include "gpstk_MatrixBase.i"
+//%include "gpstk_MatrixBase.i"				**included in Matrix.i**
 //%include "gpstk_MatrixBaseOperators.i"
 //%inlcude "gpstk_MatrixFunctors.i"
 %include "gpstk_MiscMath.i"
@@ -103,7 +103,7 @@
 %include "gpstk_NEDUtil.i"
 //%include "gpstk_ObsClockModel.i"			**included in ClockModel.i**
 %include "gpstk_ObsEpochMap.i"
-%include "gpstk_ObsID.i"
+//%include "gpstk_ObsID.i"
 %include "gpstk_ObsRngDev.i"
 %include "gpstk_OceanLoading.i"
 %include "gpstk_orbitgroup.i"
@@ -113,13 +113,13 @@
 %include "gpstk_PolyFit.i"
 %include "gpstk_position.i"
 //%include "gpstk_PowerSum.i"
-//%include "gpstk_PRSolution.i"
+//%include "gpstk_PRSolution.i"				**included in Matrix.i**
 %include "gpstk_RACRotation.i"
 %include "gpstk_RinexEphemerisStore.i"
 %include "gpstk_RinexMetBase.i"
-//%include "gpstk_RinexMetData.i"			**include in FFData.i**
+//%include "gpstk_RinexMetData.i"			**included in FFData.i**
 %include "gpstk_RinexMetFilterOperators.i"
-//%include "gpstk_RinexMetHeader.i"
+//%include "gpstk_RinexMetHeader.i"			**included in FFData.i**
 //%include "gpstk_RinexMetStream.i"			**included in FFStream.i**
 //%include "gpstk_RinexNavBase.i"			**included in FFData.i**
 //%include "gpstk_RinexNavData.i"			**included in FFData.i**			
@@ -129,7 +129,7 @@
 //%include "gpstk_RinexObsBase.i"			**included in FFData.i**
 //%include "gpstk_RinexObsData.i"			**included in FFData.i**
 %include "gpstk_RinexObsFilterOperators.i"
-//%include "gpstk_RinexObsHeader.i"
+//%include "gpstk_RinexObsHeader.i"			**include in FFData.i**
 //%include "gpstk_RinexObsID.i"
 //%include "gpstk_RinexObsStream.i"			**included in FFStream.i**
 %include "gpstk_RinexSatID.i"
@@ -185,7 +185,7 @@
 %include "gpstk_X1Sequence.i"
 %include "gpstk_X2Sequence.i"
 //%inlcude "gpstk_Xvt.i"        			** Xvt.i is included in position.i**
-//%inlcude "gpstk_XvtStore.i"			***						 **   this commented block causes make to fail   **
+//%inlcude "gpstk_XvtStore.i"				** included in position.i**					 							**   this commented block causes make to fail   **
 //%inlcude "gpstk_YDSTime.i"			***
 //%inlcude "gpstk_YumaAlmanacStore.i"		***
 //%inlcude "gpstk_YumaBase.i"				**included in FFData.i**

@@ -12,5 +12,9 @@ using namespace gpstk;
 %include "../../../src/RinexMetBase.hpp"
 %include "../../../src/RinexMetHeader.hpp"
 
-typedef RinexMetHeader :: SensorType SensorType;
-typedef RinexMetHeader :: SensorPosType SensorPosType;
+%{
+typedef RinexMetHeader::RinexMetType RinexMetType;
+typedef RinexMetHeader::sensorType sensorType;
+typedef RinexMetHeader::sensorPosType sensorPosType;
+%}
+

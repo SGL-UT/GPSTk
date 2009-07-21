@@ -10,7 +10,4 @@ using namespace gpstk;
 
 %include "../../../src/FICHeader.hpp"
 
-%{
-typedef FICHeader::reallyPutRecord(FFStream& s) reallyPutRecord(FFStream& s);
-typedef FICHeader::reallyGetRecord(FFStream& s) reallyGetRecord(FFStream& s);
-%}
+

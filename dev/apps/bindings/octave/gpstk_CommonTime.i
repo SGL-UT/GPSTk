@@ -8,4 +8,7 @@
 using namespace gpstk;
 %}
 
+%rename (CommonTime_opequal) operator=;
+%rename (CommonTime_plusequal) operator+=;
+%rename (CommonTime_minusequal) operator-=;
 %include "../../../src/CommonTime.hpp"

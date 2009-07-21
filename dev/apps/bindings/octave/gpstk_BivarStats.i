@@ -9,4 +9,5 @@ using namespace std;
 using namespace gpstk;
 %}
 
+%rename (BivarStats_plusequal) operator+=;
 %include "../../../src/BivarStats.hpp"

@@ -8,4 +8,6 @@
 using namespace gpstk;
 %}
 
+%rename (CodeBuffer_opequal) operator=;
+%rename (CodeBuffer_carrotequal) operator^=;
 %include "../../../src/CodeBuffer.hpp"
