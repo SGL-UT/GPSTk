@@ -892,7 +892,7 @@ namespace gpstk
       os.width(2);
       os << dt.minute() << ":";
       os.width(2);
-      os << dt.second() << "\n";
+      os << static_cast<short>(dt.second()) << "\n";
       os.fill(' ');
    }
 
