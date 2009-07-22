@@ -60,7 +60,7 @@ bool testNoRotationNoScaleNoTranslation()
    
       //Set up...
    HelmertTransform& transform = HelmertTransform::instance();
-   TransformParameters tp;
+   HelmertTransform::TransformParameters tp;
    tp.scale = 0;
    tp.r1 = 0;
    tp.r2 = 0;
@@ -77,11 +77,11 @@ bool testNoRotationNoScaleNoTranslation()
       //Test
    try
    {
-      Position p(150.0, 150.0, 150.0);
+      Position p(150.0, 150.0, 150.0,Position::Cartesian,NULL,from);
       cout << "    Position " << p << endl;
-      Position newPos = transform.transform(from, to, p);
+      Position newPos = transform.transform(to, p);
       cout << "New Position " << newPos << endl;
-      Position fin = transform.transform(to, from, newPos);
+      Position fin = transform.transform(from, newPos);
       cout << "Fin Position " << fin << endl << endl;
       cout << "Initial and transformed positions are the same(true): "; printBool(compare(p, newPos), cout) << endl;
       cout << "      Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
@@ -102,7 +102,7 @@ bool testArbitraryTranslation()
    
       //Set up...
    HelmertTransform& transform = HelmertTransform::instance();
-   TransformParameters tp;
+   HelmertTransform::TransformParameters tp;
    tp.scale = 0;
    tp.r1 = 0;
    tp.r2 = 0;
@@ -119,15 +119,15 @@ bool testArbitraryTranslation()
       //Test
    try{
       
-      Position p(150.0, 150.0, 150.0);
+      Position p(150.0, 150.0, 150.0,Position::Cartesian,NULL,from);
       cout << "    Position " << p << endl;
-      Position newPos = transform.transform(from, to, p);
+      Position newPos = transform.transform(to, p);
       cout << "New Position " << newPos << endl;
-      Position fin = transform.transform(to, from, newPos);
+      Position fin = transform.transform(from, newPos);
       cout << "Fin Position " << fin << endl;
       cout << "Initial and transformed positions are the same(false): "; printBool(compare(p, newPos), cout) << endl;
-      cout << "Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
-      cout << "Transformed and final positions are the same(false): "; printBool(compare(newPos,fin), cout) << endl;
+      cout << "       Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
+      cout << "  Transformed and final positions are the same(false): "; printBool(compare(newPos,fin), cout) << endl;
       return compare(p, fin);
    }catch(InvalidParameter& e)
    {
@@ -143,7 +143,7 @@ bool testScaling()
    
       //Set up...
    HelmertTransform& transform = HelmertTransform::instance();
-   TransformParameters tp;
+   HelmertTransform::TransformParameters tp;
       //100% increase
    tp.scale = 1;
    tp.r1 = 0;
@@ -161,14 +161,14 @@ bool testScaling()
       //Test
    try
    {
-      Position p(150.0, 150.0, 150.0);
+      Position p(150.0, 150.0, 150.0,Position::Cartesian,NULL,from);
       cout << "    Position " << p << endl;
-      Position newPos = transform.transform(from, to, p);
+      Position newPos = transform.transform(to, p);
       cout << "New Position " << newPos << endl;
-      Position fin = transform.transform(to, from, newPos);
+      Position fin = transform.transform(from, newPos);
       cout << "Fin Position " << fin << endl << endl;
       cout << "Initial and transformed positions are the same(false): "; printBool(compare(p, newPos), cout) << endl;
-      cout << "      Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
+      cout << "       Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
       cout << "  Transformed and final positions are the same(false): "; printBool(compare(newPos,fin), cout) << endl;
       
       return (compare(p,fin));
@@ -186,7 +186,7 @@ bool testSmallRotation()
    
       //Set up...
    HelmertTransform& transform = HelmertTransform::instance();
-   TransformParameters tp;
+   HelmertTransform::TransformParameters tp;
    tp.scale = 0;
    tp.r1 = 1 * HelmertTransform::MAS;
    tp.r2 = 2 * HelmertTransform::MAS;
@@ -203,14 +203,14 @@ bool testSmallRotation()
       //Test
    try
    {
-      Position p(150.0, 150.0, 150.0);
+      Position p(150.0, 150.0, 150.0,Position::Cartesian,NULL,from);
       cout << "    Position " << p << endl;
-      Position newPos = transform.transform(from, to, p);
+      Position newPos = transform.transform(to, p);
       cout << "New Position " << newPos << endl;
-      Position fin = transform.transform(to, from, newPos);
+      Position fin = transform.transform(from, newPos);
       cout << "Fin Position " << fin << endl << endl;
       cout << "Initial and transformed positions are the same(false): "; printBool(compare(p, newPos), cout) << endl;
-      cout << "      Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
+      cout << "       Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
       cout << "  Transformed and final positions are the same(false): "; printBool(compare(newPos,fin), cout) << endl;
       
       Position delta = p - fin;
@@ -232,7 +232,7 @@ bool testXAxisRotation()
    
       //Set up...
    HelmertTransform& transform = HelmertTransform::instance();
-   TransformParameters tp;
+   HelmertTransform::TransformParameters tp;
    tp.scale = 0;
    tp.r1 = 1 * HelmertTransform::MAS;
    tp.r2 = 0;
@@ -249,14 +249,14 @@ bool testXAxisRotation()
       //Test
    try
    {
-      Position p(150.0, 150.0, 150.0);
+      Position p(150.0, 150.0, 150.0,Position::Cartesian,NULL,from);
       cout << "    Position " << p << endl;
-      Position newPos = transform.transform(from, to, p);
+      Position newPos = transform.transform(to, p);
       cout << "New Position " << newPos << endl;
-      Position fin = transform.transform(to, from, newPos);
+      Position fin = transform.transform(from, newPos);
       cout << "Fin Position " << fin << endl << endl;
       cout << "Initial and transformed positions are the same(false): "; printBool(compare(p, newPos), cout) << endl;
-      cout << "      Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
+      cout << "       Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
       cout << "  Transformed and final positions are the same(false): "; printBool(compare(newPos,fin), cout) << endl;
       
       return (compare(p,fin));
@@ -274,7 +274,7 @@ bool testYAxisRotation()
    
       //Set up...
    HelmertTransform& transform = HelmertTransform::instance();
-   TransformParameters tp;
+   HelmertTransform::TransformParameters tp;
    tp.scale = 0;
    tp.r1 = 0;
    tp.r2 = 1 * HelmertTransform::MAS;
@@ -291,14 +291,14 @@ bool testYAxisRotation()
       //Test
    try
    {
-      Position p(150.0, 150.0, 150.0);
+      Position p(150.0, 150.0, 150.0,Position::Cartesian,NULL,from);
       cout << "    Position " << p << endl;
-      Position newPos = transform.transform(from, to, p);
+      Position newPos = transform.transform(to, p);
       cout << "New Position " << newPos << endl;
-      Position fin = transform.transform(to, from, newPos);
+      Position fin = transform.transform(from, newPos);
       cout << "Fin Position " << fin << endl << endl;
       cout << "Initial and transformed positions are the same(false): "; printBool(compare(p, newPos), cout) << endl;
-      cout << "      Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
+      cout << "       Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
       cout << "  Transformed and final positions are the same(false): "; printBool(compare(newPos,fin), cout) << endl;
       
       return (compare(p,fin));
@@ -316,7 +316,7 @@ bool testZAxisRotation()
    
       //Set up...
    HelmertTransform& transform = HelmertTransform::instance();
-   TransformParameters tp;
+   HelmertTransform::TransformParameters tp;
    tp.scale = 0;
    tp.r1 = 0;
    tp.r2 = 0;
@@ -333,14 +333,14 @@ bool testZAxisRotation()
       //Test
    try
    {
-      Position p(150.0, 150.0, 150.0);
+      Position p(150.0, 150.0, 150.0,Position::Cartesian,NULL,from);
       cout << "    Position " << p << endl;
-      Position newPos = transform.transform(from, to, p);
+      Position newPos = transform.transform(to, p);
       cout << "New Position " << newPos << endl;
-      Position fin = transform.transform(to, from, newPos);
+      Position fin = transform.transform(from, newPos);
       cout << "Fin Position " << fin << endl << endl;
       cout << "Initial and transformed positions are the same(false): "; printBool(compare(p, newPos), cout) << endl;
-      cout << "      Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
+      cout << "       Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
       cout << "  Transformed and final positions are the same(false): "; printBool(compare(newPos,fin), cout) << endl;
       
       return (compare(p,fin));
@@ -358,7 +358,7 @@ bool testTranslationScaling()
    
       //Set up...
    HelmertTransform& transform = HelmertTransform::instance();
-   TransformParameters tp;
+   HelmertTransform::TransformParameters tp;
    tp.scale = 0.5;
    tp.r1 = 0;
    tp.r2 = 0;
@@ -375,14 +375,14 @@ bool testTranslationScaling()
       //Test
    try
    {
-      Position p(150.0, 150.0, 150.0);
+      Position p(150.0, 150.0, 150.0,Position::Cartesian,NULL,from);
       cout << "    Position " << p << endl;
-      Position newPos = transform.transform(from, to, p);
+      Position newPos = transform.transform(to, p);
       cout << "New Position " << newPos << endl;
-      Position fin = transform.transform(to, from, newPos);
+      Position fin = transform.transform(from, newPos);
       cout << "Fin Position " << fin << endl << endl;
       cout << "Initial and transformed positions are the same(false): "; printBool(compare(p, newPos), cout) << endl;
-      cout << "      Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
+      cout << "       Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
       cout << "  Transformed and final positions are the same(false): "; printBool(compare(newPos,fin), cout) << endl;
       
       return (compare(p,fin));
@@ -400,7 +400,7 @@ bool testRotationScaling()
    
       //Set up...
    HelmertTransform& transform = HelmertTransform::instance();
-   TransformParameters tp;
+   HelmertTransform::TransformParameters tp;
    tp.scale = 0.5;
    tp.r1 = 3 * HelmertTransform::MAS;
    tp.r2 = 2 * HelmertTransform::MAS;
@@ -417,14 +417,14 @@ bool testRotationScaling()
       //Test
    try
    {
-      Position p(150.0, 150.0, 150.0);
+      Position p(150.0, 150.0, 150.0,Position::Cartesian,NULL,from);
       cout << "    Position " << p << endl;
-      Position newPos = transform.transform(from, to, p);
+      Position newPos = transform.transform(to, p);
       cout << "New Position " << newPos << endl;
-      Position fin = transform.transform(to, from, newPos);
+      Position fin = transform.transform(from, newPos);
       cout << "Fin Position " << fin << endl << endl;
       cout << "Initial and transformed positions are the same(false): "; printBool(compare(p, newPos), cout) << endl;
-      cout << "      Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
+      cout << "       Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
       cout << "  Transformed and final positions are the same(false): "; printBool(compare(newPos,fin), cout) << endl;
       
       return (compare(p,fin));
@@ -442,7 +442,7 @@ bool testRotationTranslation()
    
       //Set up...
    HelmertTransform& transform = HelmertTransform::instance();
-   TransformParameters tp;
+   HelmertTransform::TransformParameters tp;
    tp.scale = 0;
    tp.r1 = 3 * HelmertTransform::MAS;
    tp.r2 = 2 * HelmertTransform::MAS;
@@ -459,14 +459,14 @@ bool testRotationTranslation()
       //Test
    try
    {
-      Position p(150.0, 150.0, 150.0);
+      Position p(150.0, 150.0, 150.0,Position::Cartesian,NULL,from);
       cout << "    Position " << p << endl;
-      Position newPos = transform.transform(from, to, p);
+      Position newPos = transform.transform(to, p);
       cout << "New Position " << newPos << endl;
-      Position fin = transform.transform(to, from, newPos);
+      Position fin = transform.transform(from, newPos);
       cout << "Fin Position " << fin << endl << endl;
       cout << "Initial and transformed positions are the same(false): "; printBool(compare(p, newPos), cout) << endl;
-      cout << "      Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
+      cout << "       Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
       cout << "  Transformed and final positions are the same(false): "; printBool(compare(newPos,fin), cout) << endl;
       
       return (compare(p,fin));
@@ -483,7 +483,7 @@ bool realData()
 }
 
 std::ostream& printBool(const bool print, std::ostream& out)
-{   
+{
    if(print)
       out << "true";
    else
@@ -502,7 +502,7 @@ bool compare(gpstk::Position& left, gpstk::Position& right)
 
 std::ostream& operator<<(std::ostream& out, gpstk::Position& pos)
 {
-	out.precision(12);
+   out.precision(12);
    out << " " << pos.getX() << " m, " << pos.getY() << " m, " << pos.getZ() << " m";
 }
 

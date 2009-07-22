@@ -45,3 +45,8 @@ Main HelmertTests : HelmertTests.cpp ;
 ObjectHdrs HelmertTests HelmertTests.cpp : ../src ;
 LINKLIBS on HelmertTests = $(STD_LINK_LIBS) ;
 LinkLibraries HelmertTests : ../src/libgpstk-R3.a ;
+
+Main CommonTimeTests : CommonTimeTests.cpp ;
+ObjectHdrs CommonTimeTests CommonTimeTests.cpp : ../src ;
+LINKLIBS on CommonTimeTests = $(STD_LINK_LIBS) ;
+LinkLibraries CommonTimeTests : ../src/libgpstk-R3.a ;
