@@ -25,6 +25,7 @@
 //============================================================================
 
 #include <cmath>
+#include <cstdio>
 #include "Axis.hpp"
 
 namespace vplot
