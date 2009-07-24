@@ -9,4 +9,5 @@ using namespace std;
 using namespace gpstk;
 %}
 
+%rename (ToolKit_Bancroft_Compute) gpstk::Bancroft::Compute(Matrix< double > const &,Vector< double > &);
 %include "../../../src/Bancroft.hpp"

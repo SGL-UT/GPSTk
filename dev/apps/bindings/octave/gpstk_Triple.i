@@ -15,9 +15,13 @@ using namespace gpstk;
 //
 // Triple
 // Rename below to solve "shadowed by..." warning
-%rename (operator_bracket_const) gpstk::Triple::operator[](size_t const) const;
+//%rename (operator_bracket_const) gpstk::Triple::operator[](size_t const) const;
 // Under Triple.hpp, friend std::ostream operator<< will
 //    clash with Xvt's def of operator<<, result in redefine
+%rename (Triple_opequal) operator=;
+%rename (Geodetic_opequal) operator=;
+%rename (Position_minequal) operator-=;
+%rename (Position_posequal) operator+=;
 %rename (Triple_streamRead) operator<<;
 %rename (Triple_starMult) operator*;
 %include "../../../src/Triple.hpp"

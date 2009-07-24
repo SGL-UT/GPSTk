@@ -1,4 +1,4 @@
-all: gpstk_octave gpstk_python # gpstk_perl
+all: gpstk_octave #gpstk_python  gpstk_perl
 
 gpstk_octave : gpstk.oct
 

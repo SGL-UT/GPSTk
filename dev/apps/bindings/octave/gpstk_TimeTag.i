@@ -11,6 +11,7 @@ using namespace gpstk;
 %rename (TimeTag_streamRead) operator<<;
 %rename (TimeTag_CommonTime) operator CommonTime;
 %include "../../../src/TimeTag.hpp"
+//%include "gpstk_CivilTime.i"
 %include "gpstk_GPSWeek.i"
 %include "gpstk_GPSWeekSecond.i"
 %include "gpstk_GPSWeekZcount.i"

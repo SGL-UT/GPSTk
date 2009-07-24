@@ -10,3 +10,4 @@ using namespace gpstk;
 %}
 
 %include "../../../src/BaseDistribution.hpp"
+%include "gpstk_Chi2Distribution.i"

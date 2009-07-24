@@ -8,4 +8,5 @@
 using namespace gpstk;
 %}
 
+
 %include "../../../src/PowerSum.hpp"

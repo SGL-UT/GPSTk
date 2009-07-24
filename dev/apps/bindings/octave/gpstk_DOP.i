@@ -5,7 +5,7 @@
 %{
 #include "../../../src/DOP.hpp"
 
-using namespace gpstk'
+using namespace gpstk;
 %}
 
 %include "../../../src/DOP.hpp"
