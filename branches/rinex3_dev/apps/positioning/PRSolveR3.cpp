@@ -1,4 +1,4 @@
-// $Id$
+// $Id: PRSolve.cpp 2042 2009-07-20 20:37:07Z raindave $
 
 
 //============================================================================
@@ -43,11 +43,11 @@
 #include "CommandOption.hpp"
 #include "CommandOptionWithCommonTimeArg.hpp"
 
-#include "RinexObsData.hpp"
-#include "RinexObsHeader.hpp"
-#include "RinexObsStream.hpp"
-#include "RinexNavStream.hpp"
-#include "RinexNavData.hpp"
+#include "Rinex3ObsData.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsStream.hpp"
+#include "Rinex3NavStream.hpp"
+#include "Rinex3NavData.hpp"
 #include "RinexMetStream.hpp"
 #include "RinexMetHeader.hpp"
 #include "RinexMetData.hpp"
@@ -447,8 +447,8 @@ try
    int i,j,iret;
    int inC1,inP1,inP2,inL1,inL2,inD1,inD2,inS1,inS2;     // indexes in rhead
    double dt;
-   RinexObsStream ifstr, ofstr;     // input and output RINEX files
-   RinexObsHeader rhead, rheadout;  
+   Rinex3ObsStream ifstr, ofstr;     // input and output RINEX files
+   Rinex3ObsHeader rhead, rheadout;  
 
       // open input file
    filename = C.InputObsName[nfile];
@@ -486,15 +486,17 @@ try
    inC1 = inP1 = inP2 = inL1 = inL2 = inD1 = inD2 = inS1 = inS2 = -1;
    for (j=0; j<rhead.obsTypeList.size(); j++)
    {
-      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("C1")) inC1=j;
-      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("L1")) inL1=j;
-      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("L2")) inL2=j;
-      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("P1")) inP1=j;
-      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("P2")) inP2=j;
-      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("D1")) inD1=j;
-      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("D2")) inD2=j;
-      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("S1")) inS1=j;
-      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("S2")) inS2=j;
+   	std::string str(rhead.obsTypeList[j].asRinex3ID());
+      cout << "Obs Type " << j << " = " << str;
+      if (str == "C1C") inC1=j;
+      if (str.substr(0,2) == "L1") inL1=j;
+      if (str.substr(0,2) == "L2") inL2=j;
+      if (str == "C1P") inP1=j;
+      if (str == "C2P") inP2=j;
+      //if (rhead.obsTypeList[j] == Rinex3ObsHeader::convertObsType("D1") inD1=j;
+      //if (rhead.obsTypeList[j] == Rinex3ObsHeader::convertObsType("D2") inD2=j;
+      //if (rhead.obsTypeList[j] == Rinex3ObsHeader::convertObsType("S1") inS1=j;
+      //if (rhead.obsTypeList[j] == Rinex3ObsHeader::convertObsType("S2") inS2=j;
    }
    if (   (inP1==-1 && (!C.UseCA || inC1==-1))
        || (inC1==-1 && C.ForceCA)
@@ -595,7 +597,7 @@ try
       vector<SatID> Satellites;
       vector<double> Ranges,vC1,vP1,vP2;
       Matrix<double> inform;
-      RinexObsData robsd,auxPosData;
+      Rinex3ObsData robsd,auxPosData;
 
       try
       { ifstr >> robsd; }
@@ -667,38 +669,39 @@ try
          Ranges.clear();
          vC1.clear(); vP1.clear(); vP2.clear();
 
-         RinexObsData::RinexSatMap::const_iterator it;
+         Rinex3ObsData::DataMap::const_iterator it;
          for (it=robsd.obs.begin(); it != robsd.obs.end(); ++it)
          {
             // loop over sat=it->first, ObsTypeMap=it->second
             int in,n;
             double C1 = 0, P1 = 0, P2 = 0, L1,L2,D1,D2,S1,S2;
             SatID sat = it->first;
-            RinexObsData::RinexObsTypeMap otmap = it->second;
+            std::vector<Rinex3ObsData::RinexDatum> datum = it->second;
 
                // pull out the data
-            RinexObsData::RinexObsTypeMap::const_iterator jt;
-            if (inC1>-1 && (jt=otmap.find(rhead.obsTypeList[inC1])) != otmap.end())
-               C1=jt->second.data;
-            if (inP1>-1 && (jt=otmap.find(rhead.obsTypeList[inP1])) != otmap.end())
-               P1=jt->second.data;
-            if (inP2>-1 && (jt=otmap.find(rhead.obsTypeList[inP2])) != otmap.end())
-               P2=jt->second.data;
-            if (inL1>-1 && (jt=otmap.find(rhead.obsTypeList[inL1])) != otmap.end())
-               L1=jt->second.data;
-            if (inL2>-1 && (jt=otmap.find(rhead.obsTypeList[inL2])) != otmap.end())
-               L2=jt->second.data;
-            if (inD1>-1 && (jt=otmap.find(rhead.obsTypeList[inD1])) != otmap.end())
-               D1=jt->second.data;
-            if (inD2>-1 && (jt=otmap.find(rhead.obsTypeList[inD2])) != otmap.end())
-               D2=jt->second.data;
-            if (inS1>-1 && (jt=otmap.find(rhead.obsTypeList[inS1])) != otmap.end())
-               S1=jt->second.data;
-            if (inS2>-1 && (jt=otmap.find(rhead.obsTypeList[inS2])) != otmap.end())
-               S2=jt->second.data;
+            if (inC1 > -1)
+               C1 = datum[inC1].data;
+            if(inP1 > -1)
+               P1 = datum[inP1].data;
+            if (inP2 > -1)
+               P2 = datum[inP2].data;
+            if (inL1 > -1)
+               L1 = datum[inL1].data;
+            if (inL2 > -1)
+               L2 = datum[inL2].data;
+            
+            //if (inD1 > -1)
+            //   D1=data[inD1];
+            //if (inD2 > -1)
+            //   D2=data[inD2];
+            //if (inS1 > -1)
+            //   S1=data[inS1];
+            //if (inS2 > -1)
+            //   S2=data[inS2];
       
             // is the satellite excluded?
-            if (sat.system != SatID::systemGPS) continue;     // GPS only
+            //Kill the gps only code
+            //if (sat.system != SatID::systemGPS) continue;     // GPS only
             bool ok = true;
             for (i=0; i<C.ExSV.size(); i++)
                if (C.ExSV[i] == sat) { ok = false; break; }
@@ -877,20 +880,25 @@ try
          if (!C.HDNumber.empty())
          {
             rheadout.markerNumber = C.HDNumber;
-            rheadout.valid |= RinexObsHeader::markerNumberValid;
+            ///HERE::
+            rheadout.valid |= Rinex3ObsHeader::validMarkerNumber;
          }
-         rheadout.version = 2.1; rheadout.valid |= RinexObsHeader::versionValid;
+         ///HERE::Not sure, but I think changing the output version to 3.00 is what I need
+         rheadout.version = 3.00; rheadout.valid |= Rinex3ObsHeader::validVersion;
          rheadout.firstObs = C.FirstEpoch;
-         rheadout.valid |= RinexObsHeader::firstTimeValid;
+         ///HERE::
+         rheadout.valid |= Rinex3ObsHeader::validFirstTime;
          //rheadout.interval = DT;
-         //rheadout.valid |= RinexObsHeader::intervalValid;
+         //rheadout.valid |= RinexObsHeader::validInterval;
          //rheadout.lastObs = C.LastEpoch;
-         //rheadout.valid |= RinexObsHeader::lastTimeValid;
+         //rheadout.valid |= RinexObsHeader::validLastTime;
             // invalidate the table
-         if (rheadout.valid & RinexObsHeader::numSatsValid)
-            rheadout.valid ^= RinexObsHeader::numSatsValid;
-         if (rheadout.valid & RinexObsHeader::prnObsValid)
-            rheadout.valid ^= RinexObsHeader::prnObsValid;
+         ///HERE::
+         if (rheadout.valid & Rinex3ObsHeader::validNumSats)
+            rheadout.valid ^= Rinex3ObsHeader::validNumSats;
+         ///HERE::
+         if (rheadout.valid & Rinex3ObsHeader::validPrnObs)
+            rheadout.valid ^= Rinex3ObsHeader::validPrnObs;
 
          ofstr << rheadout;
          first=false;
@@ -899,7 +907,7 @@ try
       {                         // output position first
          auxPosData.time = robsd.time;
          auxPosData.epochFlag = 4;
-         auxPosData.numSvs = 2;              // must be sure only 2 lines are written
+         auxPosData.numSVs = 2;              // must be sure only 2 lines are written
          auxPosData.auxHeader.clear();
          ostringstream stst1,stst2;
          stst1 << "XYZT";
@@ -919,7 +927,8 @@ try
             << " " << fixed << setw(9) << setprecision(3) << RMSrof;
          stst2 << " (N,P-,G-DOP,RMS)";
          auxPosData.auxHeader.commentList.push_back(stst2.str());
-         auxPosData.auxHeader.valid |= RinexObsHeader::commentValid;
+         ///HERE::
+         auxPosData.auxHeader.valid |= Rinex3ObsHeader::validComment;
          ofstr << auxPosData;
       }
       ofstr << robsd;                       // output data to RINEX file
@@ -2209,8 +2218,8 @@ bool isSP3File(const string& file)
 
 bool isRinexNavFile(const string& file)
 {
-   RinexNavHeader header;
-   RinexNavStream rnstream(file.c_str());
+   Rinex3NavHeader header;
+   Rinex3NavStream rnstream(file.c_str());
    rnstream.exceptions(fstream::failbit);
    try { rnstream >> header; } catch(gpstk::Exception& e) { return false; }
    rnstream.close();
@@ -2224,17 +2233,17 @@ int FillEphemerisStore(const vector<string>& files,
   try
   {
     int nread=0;
-    RinexNavHeader rnh;
-    RinexNavData rne;
+    Rinex3NavHeader rnh;
+    Rinex3NavData rne;
     for (int i=0; i<files.size(); i++)
     {
       if (files[i].empty()) throw Exception("File name is empty");
-      RinexNavStream strm(files[i].c_str());
+      Rinex3NavStream strm(files[i].c_str());
       if (!strm) throw Exception("Could not open file " + files[i]);
       strm.close();
       if (isRinexNavFile(files[i]))
       {
-         RinexNavStream RNFileIn(files[i].c_str());
+         Rinex3NavStream RNFileIn(files[i].c_str());
          RNFileIn.exceptions(fstream::failbit);
          try
          {

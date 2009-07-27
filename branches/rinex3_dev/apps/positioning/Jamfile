@@ -5,10 +5,21 @@ GPSLinkLibraries rinexpvt poscvt PRSolve posInterp : gpstk-R3 ;
 BonkForte ; # bleah.
 
 GPSMain rinexpvt : rinexpvt.cpp ;
+ObjectHdrs rinexpvt rinexpvt.cpp : ../../src ;
+LinkLibraries rinexpvt : ../../src/libgpstk-R3.a ;
+
 GPSMain poscvt : poscvt.cpp ;
+ObjectHdrs poscvt poscvt.cpp : ../../src ;
+LinkLibraries poscvt : ../../src/libgpstk-R3.a ;
 
 GPSMain PRSolve : PRSolve.cpp ;
 ObjectHdrs PRSolve PRSolve.cpp : ../../src ;
 LinkLibraries PRSolve : ../../src/libgpstk-R3.a ;
 
+GPSMain PRSolveR3 : PRSolveR3.cpp ;
+ObjectHdrs PRSolveR3 PRSolveR3.cpp : ../../src ;
+LinkLibraries PRSolveR3 : ../../src/libgpstk-R3.a ;
+
 GPSMain posInterp : posInterp.cpp ;
+ObjectHdrs posInterp posInterp.cpp : ../../src ;
+LinkLibraries posInterp : ../../src/libgpstk-R3.a ;
