@@ -30,18 +30,46 @@
 #include "Position.hpp"
 #include "Exception.hpp"
 
-bool testNoRotationNoScaleNoTranslation();
-bool testArbitraryTranslation();
-bool testScaling();
-bool testSmallRotation();
-bool testXAxisRotation();
-bool testYAxisRotation();
-bool testZAxisRotation();
-bool testTranslationScaling();
-bool testRotationScaling();
-bool testRotationTranslation();
-bool realData();
-bool isEverythingDocumented() { return false; }
+const char* bash_linux_normal = "\e[0m";
+const char* bash_linux_red= "\e[1;31m";
+const char* bash_linux_green = "\e[1;32m";
+const char* bash_linux_yellow = "\e[1;33m";
+const char* bash_linux_blue = "\e[1;34m";
+const char* seperatorEquals = "==============================================="
+                              "=================================";
+
+bool color;
+bool fancy;
+
+bool all;
+bool nrnsnt;
+bool arbitraryTranslation;
+bool scaleOnly;
+bool xAxisRot;
+bool yAxisRot;
+bool zAxisRot;
+bool smallRot;
+bool translationScaling;
+bool rotationScaling;
+bool rotationTranslation;
+
+int testNoRotationNoScaleNoTranslation();
+int testArbitraryTranslation();
+int testScaling();
+int testSmallRotation();
+int testXAxisRotation();
+int testYAxisRotation();
+int testZAxisRotation();
+int testTranslationScaling();
+int testRotationScaling();
+int testRotationTranslation();
+int realData();
+int isEverythingDocumented() { return true; }
+
+/*I don't have to worry about option arguments, so why not do it myself?*/
+void parseArguments(int argc, char** argv);
+void printHelp();
+void printTitle(const char* str);
 
 std::ostream& printBool(const bool print, std::ostream& out);
 std::ostream& operator<<(std::ostream& out, gpstk::Position& pos);
