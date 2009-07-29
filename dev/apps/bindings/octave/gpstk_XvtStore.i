@@ -9,3 +9,6 @@ using namespace gpstk;
 %}
 
 %include "../../../src/XvtStore.hpp"
+%include "gpstk_MSCStore.i"
+%include "gpstk_GPSEphemerisStore.i"
+

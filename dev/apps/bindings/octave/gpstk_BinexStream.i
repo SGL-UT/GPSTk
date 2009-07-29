@@ -3,12 +3,10 @@
 %module gpstk_BinexStream
 
 %{
-#include "../../../src/FFBinaryStream.hpp"
 #include "../../../src/BinexStream.hpp"
 
 using namespace std;
 using namespace gpstk;
 %}
 
-%include "../../../src/FFBinaryStream.hpp"
 %include "../../../src/BinexStream.hpp"

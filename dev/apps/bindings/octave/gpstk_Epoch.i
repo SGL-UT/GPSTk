@@ -16,6 +16,11 @@ using namespace gpstk;
 %ignore END_OF_TIME;
 %ignore BEGINNING_OF_TIME;
 %include "../../../src/Epoch.hpp"
+%rename (CommonTime) operator CommonTime;
+%rename (GPSZcount) operator GPSZcount;
+%rename (opequal) operator=;
+%rename (plusequal) operator+=;
+%rename (minequal)operator-=;
 
 %{
 typedef Epoch::EpochException EpochException;

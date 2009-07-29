@@ -11,6 +11,5 @@ using namespace gpstk;
 %include "../../../src/IonoModel.hpp"
 
 %{
-//typedef gpstk::IonoModel::InvalidIonoModel;  gpstk::IonoModel;
 typedef IonoModel::InvalidIonoModel InvalidIonoModel;
 %}

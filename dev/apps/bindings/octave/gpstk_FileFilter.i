@@ -9,3 +9,5 @@ using namespace gpstk;
 %}
 
 %include "../../../src/FileFilter.hpp"
+%include "gpstk_FileFilterFrame.i"
+%include "gpstk_FileFilterFrameWithHeader.i"

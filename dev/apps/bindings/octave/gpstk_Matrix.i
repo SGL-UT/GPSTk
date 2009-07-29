@@ -20,6 +20,6 @@ using namespace gpstk;
 %include "gpstk_RungeKutta4.i"
 %include "gpstk_SolverBase.i"
 %include "gpstk_SimpleKalmanFilter.i"
-
+%rename (opequal) operator=;
 
 

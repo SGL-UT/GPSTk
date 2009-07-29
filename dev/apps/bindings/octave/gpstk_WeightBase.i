@@ -9,3 +9,4 @@ using namespace gpstk;
 %}
 
 %include "../../../src/WeightBase.hpp"
+%include "gpstk_SimpleIURAWeight.i"

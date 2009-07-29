@@ -4,15 +4,12 @@
 
 %{
 #include "../../../src/FFStream.hpp"
-//#include "../../../src/Matrix.hpp"
 
 using namespace std;
 using namespace gpstk;
 %}
-
-//%rename (Matrix_opequal) operator=;
+%import "../../../src/FFStreamError.hpp"
 %include "../../../src/FFStream.hpp"
-//%include "../../../src/Matrix.hpp"
 %include "gpstk_FFTextStream.i"
 %include "gpstk_Matrix.i"
 %include "gpstk_FFBinaryStream.i"
@@ -31,6 +28,6 @@ using namespace gpstk;
 %include "gpstk_SEMStream.i"
 %include "gpstk_SP3Stream.i"
 %include "gpstk_YumaStream.i"
-%import "../../../src/FFStreamError.hpp"
+
 
 

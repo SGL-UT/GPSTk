@@ -8,7 +8,6 @@
 using namespace gpstk;
 %}
 
-%template() FileStore<SEMHeader>;
 %include "../../../src/SEMAlmanacStore.hpp"
 
 

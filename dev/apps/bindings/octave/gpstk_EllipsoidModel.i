@@ -4,14 +4,11 @@
 
 %{
 #include "../../../src/EllipsoidModel.hpp"
-#include "../../../src/WGS84Ellipsoid.hpp"
-#include "../../../src/GPSEllipsoid.hpp"
-
 
 using namespace gpstk;
 %}
 
 %include "../../../src/EllipsoidModel.hpp"
-%include "../../../src/WGS84Ellipsoid.hpp"
-%include "../../../src/GPSEllipsoid.hpp"
+%include "gpstk_WGS84Ellipsoid.i"
+%include "gpstk_GPSEllipsoid.i"
 

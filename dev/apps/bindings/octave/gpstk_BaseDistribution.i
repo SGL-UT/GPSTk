@@ -11,3 +11,5 @@ using namespace gpstk;
 
 %include "../../../src/BaseDistribution.hpp"
 %include "gpstk_Chi2Distribution.i"
+%include "gpstk_GaussianDistribution.i"
+%include "gpstk_StudentDistribution.i"

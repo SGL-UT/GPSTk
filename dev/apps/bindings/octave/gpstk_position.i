@@ -7,7 +7,6 @@
 #include "../../../src/Position.hpp"
 #include "../../../src/ECEF.hpp"
 #include "../../../src/Xvt.hpp"
-#include "../../../src/XvtStore.hpp"
 #include "../../../src/Geodetic.hpp"
 
 using namespace std;
@@ -26,11 +25,11 @@ using namespace gpstk;
 %rename (Position_minequal) operator-=;
 %rename (Position_plusequal) operator+=;
 %rename (Position_starMult) operator*;
-%rename (Triple_streamRead) operator<<;						
+%rename (Triple_leftstreamRead) operator<<;						
 %rename (Position_minus) operator-;
 %rename (Position_plus) operator+;
 %include "../../../src/Triple.hpp"
-%rename (streamRead) operator<<;							
+%rename (streamRead) operator<<;		
 //Position
 %rename (printf_const) printf(std::string const &) const;
 %include "../../../src/Position.hpp"
@@ -41,12 +40,17 @@ using namespace gpstk;
 // Xvt
 // The %rename directive below solves the redefinition conflict with Triple.hpp
 
-%rename (Xvt_streamRead) operator<<;
+%rename (Xvt_streamRead) operator<<;		
 %include "../../../src/Xvt.hpp"
-%include "../../../src/XvtStore.hpp"
+%include "gpstk_XvtStore.i"
 // The %rename directive below restores the usual naming scheme
-%rename (streamRead) operator<<;
+%rename (streamRead) operator<<;		
 // Geodetic
 %include "../../../src/Geodetic.hpp"
-
+%rename (opequal) operator=;
+%rename (minusequal) operator-=;
+%rename (plusequal) operator+=;
+%rename (starmult) operator*;
+%rename (minus) operator-;
+%rename (plus) operator+;
 

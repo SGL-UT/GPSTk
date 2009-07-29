@@ -10,19 +10,24 @@ using namespace gpstk;
 %}
 
 %rename (BinexData_opequal) operator=;
-%rename (FFData_streamRead) operator<<;
-%rename (FFData_streamRead) operator>>;
+%rename (streamRead) operator<<;
+%rename (streamWright) operator>>;
 %rename (RinexNavData_EngEphemeris) operator EngEphemeris;
 %rename (SEMData_AlmOrbit) operator AlmOrbit;
 %include "../../../src/FFData.hpp"
 %include "gpstk_BinexData.i"
 %include "gpstk_FICBase.i"
 %include "gpstk_FICHeader.i"
+%include "gpstk_FICFilterOperators.i"
+%include "gpstk_MSCBase.i"
+%include "gpstk_MSCData.i"
+%include "gpstk_MSCHeader.i"
 %include "gpstk_RinexObsBase.i"
 %include "gpstk_RinexObsData.i"
 %include "gpstk_RinexNavBase.i"
 %include "gpstk_RinexNavData.i"
 %include "gpstk_RinexObsHeader.i"
+%include "gpstk_RinexMetBase.i"
 %include "gpstk_RinexMetHeader.i"
 %include "gpstk_RinexNavHeader.i"
 %include "gpstk_SEMBase.i"
@@ -35,10 +40,12 @@ using namespace gpstk;
 %include "gpstk_YumaData.i"
 %include "gpstk_YumaHeader.i"
 %include "gpstk_FICDataSet.i"
+%include "gpstk_IonexBase.i"
 %include "gpstk_IonexData.i"
 %include "gpstk_IonexHeader.i"
-%include "gpstk_MSCHeader.i"
 %include "gpstk_RinexMetData.i"
 %include "gpstk_RinexNavData.i"
-
+%rename (opequal) operator=;
+%rename (EngEphemeris) operator EngEphemeris;
+%rename (AlmOrbit) operator AlmOrbit;
 

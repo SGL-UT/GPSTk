@@ -3,13 +3,11 @@
 %module RinexMetHeader
 
 %{
-#include "../../../src/RinexMetBase.hpp"
 #include "../../../src/RinexMetHeader.hpp"
 
 using namespace gpstk;
 %}
 
-%include "../../../src/RinexMetBase.hpp"
 %include "../../../src/RinexMetHeader.hpp"
 
 %{

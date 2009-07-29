@@ -10,3 +10,4 @@ using namespace gpstk;
 
 %rename (RTFileFrame_opequal) operator=;
 %include "../../../src/RTFileFrame.hpp"
+%rename (opequal) operator=;

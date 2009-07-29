@@ -3,11 +3,9 @@
 %module gpstk_SP3Header
 
 %{
-#include "../../../src/SP3Base.hpp"
 #include "../../../src/SP3Header.hpp"
 
 using namespace gpstk;
 %}
 
-%include "../../../src/SP3Base.hpp"
 %include "../../../src/SP3Header.hpp"

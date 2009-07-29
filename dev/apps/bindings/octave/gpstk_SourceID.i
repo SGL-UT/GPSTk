@@ -12,7 +12,7 @@ using namespace StringUtils;
 %ignore SourceIDsingleton;
 %rename (SourceID_opequal) operator=;
 %include "../../../src/SourceID.hpp"
-
+%rename (opequal) operator=;
 %{
 typedef SourceID::Initializer Initializer;
 %}

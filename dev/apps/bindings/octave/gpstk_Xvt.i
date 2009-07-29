@@ -11,3 +11,4 @@ using namespace gpstk;
 %rename (Xvt_streamRead) operator<<;
 %include "../../../src/Xvt.hpp"
 %rename (streamRead) operator<<;
+

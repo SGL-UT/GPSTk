@@ -13,3 +13,7 @@ using namespace gpstk;
 %rename (MatrixBase_starequal) operator*=;
 %rename (MatrixBase_slashequal) operator/=;
 %include "../../../src/MatrixBase.hpp"
+%rename (plusequal) operator+=;
+%rename (minusequal) operator-=;
+%rename (starequal) operator*=;
+%rename (slashequal) operator/=;

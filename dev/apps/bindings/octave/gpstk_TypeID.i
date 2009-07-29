@@ -11,6 +11,7 @@ using namespace gpstk;
 %ignore TypeIDsingleton;
 %rename (TypeID_opequal) operator=;
 %include "../../../src/TypeID.hpp"
+%rename (opequal) operator=;
 
 
 

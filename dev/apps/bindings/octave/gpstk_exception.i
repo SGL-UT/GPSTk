@@ -23,5 +23,6 @@ using namespace gpstk;
 %rename (Exception_streamRead) operator<<;
 %include "../../../src/Exception.hpp"
 //%include "gpstk_StringUtils.i"
+%rename (opequal) operator=;
 %rename (streamRead) operator<<;
 

@@ -11,3 +11,5 @@ using namespace gpstk;
 %rename (GPSZcount_plusequal) operator+=;
 %rename (GPSZcount_minusequal) operator-=;
 %include "../../../src/GPSZcount.hpp"
+%rename (plusequal) operator+=;
+%rename (minusequal) operator-=;

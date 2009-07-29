@@ -12,3 +12,5 @@ using namespace gpstk;
 %rename (CodeBuffer_carrotequal) operator^=;
 %rename (Toolkit_CodeBuffer_operator)  gpstk::CodeBuffer::operator [](int const) const;
 %include "../../../src/CodeBuffer.hpp"
+%rename (opequal) operator=;
+%rename (carrotequal) operator^=;
