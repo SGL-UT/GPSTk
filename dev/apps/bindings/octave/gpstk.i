@@ -77,7 +77,6 @@
 //%inlucde "gpstk_SVExclusionList.i"
 %include "gpstk_SVNumXRef.i"
 %include "gpstk_SVPCodeGen.i"
-%include "gpstk_TabularEphemerisStore.i"
 %include "gpstk_TimeConstants.i"
 %include "gpstk_TimeConverters.i"
 %include "gpstk_TimeNamedFileStream.i"
@@ -126,7 +125,7 @@
 //%include "gpstk_Geodetic.i"   			**included in position.i**
 //%include "gpstk_GeoidModel.i"				**included in WGS84Geoid.i**
 //%include "gpstk_GPSEllipsoid.i"			**included in EllipsoidModel.i**
-//%include "gpstk_GPSEphemerisStore.i"			**included in XVTStore.i**
+//%include "gpstk_GPSEphemerisStore.i"			**included in XvtStore.i**
 //%include "gpstk_GPSGeoid.i"				**included in geoidModel.i**
 //%include "gpstk_GPSWeek.i"				**included in TimeTag.i**
 //%inlcude "gpstk_GPSWeekSecond.i"			**included in TimeTag.i**
@@ -147,7 +146,7 @@
 //%include "gpstk_MSCBase.i"				**included in FFData.i**
 //%include "gpstk_MSCData.i"				**included in FFData.i**
 //%include "gpstk_MSCHeader.i"  			**included in FFData.i**
-//%include "gpstk_MSCStore.i"				**included in XVTStore.i**
+//%include "gpstk_MSCStore.i"				**included in XvtStore.i**
 //%include "gpstk_MSCStream.i"				**included in FFStream.i**
 //%include "gpstk_ObsClockModel.i"			**included in ClockModel.i**
 //%include "gpstk_PRSolution.i"				**included in Matrix.i**
@@ -183,7 +182,8 @@
 //%include "gpstk_SolverBase.i"				**included in Matrix.i**
 //%include "gpstk_StringUtils.i"			**included in exception.i**
 //%include "gpstk_StudentDistribution.i"		**included in BaseDistribution.i**
-//%include "gpstk_SystemTime.i"				**included in TimeTag.i*
+//%include "gpstk_SystemTime.i"				**included in TimeTag.i**
+//%include "gpstk_TabularEphemerisStore.i"		**included in XvtStore.i**
 //%include "gpstk_Triple.i" 				**included in position.i**
 //%include "gpstk_UnixTime.i"				**included in TimeTag.i**
 //%include "gpstk_WGS84Ellipsoid.i"			**included in EllipsoidModel.i**
