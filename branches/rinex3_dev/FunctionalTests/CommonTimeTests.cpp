@@ -88,21 +88,21 @@ int main(int argc, char** argv)
       {
          cout << "addDays(long) Test ";
          if(bashColor)
-         	cout << bashFailColor;
+            cout << bashFailColor;
          cout << "failed";
          if(bashColor)
-         	cout << bashNormalColor;
+            cout << bashNormalColor;
          cout << "..." << endl << endl;
          ret++;
       }
       else
-		{
+      {
          cout << "addDays(long) Test ";
          if(bashColor)
-         	cout << bashPassColor;
+            cout << bashPassColor;
          cout << "passed";
          if(bashColor)
-         	cout << bashNormalColor;
+            cout << bashNormalColor;
          cout << "..." << endl << endl;
       }
    }
@@ -113,10 +113,10 @@ int main(int argc, char** argv)
       {
          cout << "addMilliseconds(long) Test ";
          if(bashColor)
-         	cout << bashFailColor;
+            cout << bashFailColor;
          cout << "failed";
          if(bashColor)
-         	cout << bashNormalColor;
+            cout << bashNormalColor;
          cout << "..." << endl << endl;
          ret++;
       }
@@ -124,12 +124,12 @@ int main(int argc, char** argv)
       {
          cout << "addMilliseconds(long) Test ";
          if(bashColor)
-         	cout << bashPassColor;
+            cout << bashPassColor;
          cout << "passed";
          if(bashColor)
-         	cout << bashNormalColor;
+            cout << bashNormalColor;
          cout << "..." << endl << endl;
-		}
+      }
    }
    
    if(all || secDoubTest)
@@ -138,10 +138,10 @@ int main(int argc, char** argv)
       {
          cout << "addSeconds(double) Test ";
          if(bashColor)
-         	cout << bashFailColor;
+            cout << bashFailColor;
          cout << "failed";
          if(bashColor)
-         	cout << bashNormalColor;
+            cout << bashNormalColor;
          cout << "..." << endl << endl;
          ret++;
       }
@@ -149,12 +149,12 @@ int main(int argc, char** argv)
       {
          cout << "addSeconds(double) Test ";
          if(bashColor)
-         	cout << bashPassColor;
+            cout << bashPassColor;
          cout << "passed";
          if(bashColor)
-         	cout << bashNormalColor;
+            cout << bashNormalColor;
          cout << "..." << endl << endl;
-		}
+      }
    }
    
    if(all || secLongTest)
@@ -163,10 +163,10 @@ int main(int argc, char** argv)
       {
          cout << "addSeconds(long) Test ";
          if(bashColor)
-         	cout << bashFailColor;
+            cout << bashFailColor;
          cout << "failed";
          if(bashColor)
-         	cout << bashNormalColor;
+            cout << bashNormalColor;
          cout << "..." << endl << endl;
          ret++;
       }
@@ -174,12 +174,12 @@ int main(int argc, char** argv)
       {
          cout << "addSeconds(long) Test ";
          if(bashColor)
-         	cout << bashPassColor;
+            cout << bashPassColor;
          cout << "passed";
          if(bashColor)
-         	cout << bashNormalColor;
+            cout << bashNormalColor;
          cout << "..." << endl << endl;
-		}
+      }
    }
    
    return ret;
@@ -207,42 +207,42 @@ void parseArg(char* str)
    }
    else if(arg == "-a" || arg == "--all")
    {
-   	all = true;
-	}
-	else if(arg == "-dt" || arg == "--daystest")
-	{
-		all = false;
-		daysTest = true;
-	}
-	else if(arg == "-mst" || arg == "--mstest")
-	{
-		all = false;
-		msTest = true;
-	}
-	else if(arg == "-sdt" || arg == "--secdoubtest")
-	{
-		all = false;
-		secDoubTest = true;
-	}
-	else if(arg == "-slt" || arg == "--seclongtest")
-	{
-		all = false;
-		secLongTest = true;
-	}
-	else if(arg == "-c" || arg == "--bashcolor")
-	{
-		bashColor = true;
-	}
-	
-	else
-	{
-		cout << "Unknown option: " << arg << endl;
-		helpMessage();
-	}
+      all = true;
+   }
+   else if(arg == "-dt" || arg == "--daystest")
+   {
+      all = false;
+      daysTest = true;
+   }
+   else if(arg == "-mst" || arg == "--mstest")
+   {
+      all = false;
+      msTest = true;
+   }
+   else if(arg == "-sdt" || arg == "--secdoubtest")
+   {
+      all = false;
+      secDoubTest = true;
+   }
+   else if(arg == "-slt" || arg == "--seclongtest")
+   {
+      all = false;
+      secLongTest = true;
+   }
+   else if(arg == "-c" || arg == "--bashcolor")
+   {
+      bashColor = true;
+   }
+   
+   else
+   {
+      cout << "Unknown option: " << arg << endl;
+      helpMessage();
+   }
 }
 void helpMessage()
 {
-	cout << endl;
+   cout << endl;
    cout << "Usage: " << name << " [options][tests]" << endl;
    cout << "Options:" << endl;
    cout << "   -c | --bashcolor = Attempts to use bash color escapes to color output." << endl;
@@ -276,7 +276,7 @@ void helpMessage()
 }
 void licence()
 {
-	cout << endl << author << endl << date << endl;
+   cout << endl << author << endl << date << endl;
    cout << endl;
    cout << "This file is part of GPSTk, the GPS Toolkit." << endl;
    cout << endl;
@@ -364,19 +364,19 @@ bool addDaysTest()
    cout << "End Time: " << ctime << endl;
    if( ctime == oldct )
    {
-   	if(bashColor)
-   		cout << bashPassColor;
+      if(bashColor)
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
-   	if(bashColor)
-   		cout << bashFailColor;
+      if(bashColor)
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -405,22 +405,22 @@ bool addDaysTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -480,18 +480,18 @@ bool addMillisecondsTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -520,18 +520,18 @@ bool addMillisecondsTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -559,18 +559,18 @@ bool addMillisecondsTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -599,18 +599,18 @@ bool addMillisecondsTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -665,18 +665,18 @@ bool addSecondsDoubleTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -705,18 +705,18 @@ bool addSecondsDoubleTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -746,18 +746,18 @@ bool addSecondsDoubleTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -787,18 +787,18 @@ bool addSecondsDoubleTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -854,18 +854,18 @@ bool addSecondsLongTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -895,18 +895,18 @@ bool addSecondsLongTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -936,18 +936,18 @@ bool addSecondsLongTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
@@ -977,18 +977,18 @@ bool addSecondsLongTest()
    if( ctime == oldct )
    {
       if(bashColor)
-   		cout << bashPassColor;
+         cout << bashPassColor;
       cout << "---Test Passed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
    }
    else
    {
       if(bashColor)
-   		cout << bashFailColor;
+         cout << bashFailColor;
       cout << "---Test Failed---";
       if(bashColor)
-      	cout << bashNormalColor;
+         cout << bashNormalColor;
       status = false;
    }
    cout << endl << endl;
