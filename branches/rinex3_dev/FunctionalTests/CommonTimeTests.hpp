@@ -1,6 +1,0 @@
-#ifndef COMMON_TIME_TESTS_HPP
-#define COMMON_TIME_TESTS_HPP
-
-
-
-#endif
