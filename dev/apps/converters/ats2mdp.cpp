@@ -72,14 +72,22 @@ public:
       throw()
       : InOutFramework<ATSStream,MDPStream>(
          applName, "Converts ATS binary format data to "
-         "MDP format.")
+         "MDP format."),
+        secondCardOffset(0)
    {}
 
    bool initialize(int argc, char *argv[]) throw()
     {
+       CommandOptionWithAnyArg offsetOption(
+          '\0', "offset",
+          "An offset to apply to channels 6-12. Either 14.656 or 10.992");
 
       if (!InOutFramework<ATSStream, MDPStream>::initialize(argc,argv))
          return false;
+
+      if (offsetOption.getCount())
+         secondCardOffset = StringUtils::asDouble(offsetOption.getValue()[0]);
+
 
       ATSData::debugLevel = debugLevel;
       if (debugLevel>3)
@@ -99,7 +107,7 @@ protected:
    {
       input.rangeBias.resize(12);
       for (int i=0; i<12; i++)
-         input.rangeBias[i] = i<6 ? 0 : 14.656;
+         input.rangeBias[i] = i<6 ? 0 : secondCardOffset;
 
       unsigned short fc=0;
       ATSData ats_record;
@@ -139,6 +147,7 @@ protected:
    virtual void shutDown()
    {}
 
+   double secondCardOffset;
 };
 
 

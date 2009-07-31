@@ -86,7 +86,7 @@ public:
           'w', "week",
           "The full GPS week in which this data starts");
 
-      if (!InOutFramework<AshtechStream, MDPStream>::initialize(argc,argv))
+       if (!InOutFramework<AshtechStream, MDPStream>::initialize(argc,argv))
          return false;
 
       if (weekOption.getCount())
