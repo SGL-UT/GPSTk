@@ -28,6 +28,7 @@
 #define VPLOT_AXIS_H
 
 #include <cmath>
+#include <cstdio>
 #include "AxisStyle.hpp"
 #include "GraphicsConstants.hpp"
 #include "Frame.hpp"

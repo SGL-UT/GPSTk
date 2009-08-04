@@ -25,6 +25,7 @@
 #ifndef FDSTREAMBUFF_HPP
 #define FDSTREAMBUFF_HPP
 
+#include <cstdio>
 #include <iostream>
 
 namespace gpstk
