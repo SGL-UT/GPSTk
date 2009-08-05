@@ -50,6 +50,7 @@
 #include "FileFilter.hpp"
 #include "Rinex3ObsData.hpp"
 #include "Rinex3ObsHeader.hpp"
+#include "ObsID.hpp"
 
 namespace gpstk
 {
@@ -66,7 +67,8 @@ namespace gpstk
          /// common.  This is easily generated with the set_intersection
          /// STL function.  See difftools/rowdiff.cpp for an example.
       Rinex3ObsDataOperatorLessThanFull
-      (const std::set<Rinex3ObsHeader::Rinex3ObsType>& rohset)
+      ///(const std::set<Rinex3ObsHeader::Rinex3ObsType>& rohset)
+      (const std::vector<ObsID>& rohset)
          : obsSet(rohset)
       {}
 
@@ -104,7 +106,7 @@ namespace gpstk
 
                // then check that each PRN has the same data for each of the 
                // shared fields
-            Rinex3ObsData::RinexSatMap::const_iterator lItr = l.obs.begin(), rItr;
+            Rinex3ObsData::DataMap::const_iterator lItr = l.obs.begin(), rItr;
          
             SatID sat;
 
@@ -115,17 +117,21 @@ namespace gpstk
                if (rItr == r.obs.end())
                   return false;
          
-               Rinex3ObsData::Rinex3ObsTypeMap lObs = (*lItr).second, 
-                                               rObs = (*rItr).second;
+               ///Rinex3ObsData::Rinex3ObsTypeMap lObs = (*lItr).second, 
+               std::vector<Rinex3ObsData::RinexDatum> lObs = lItr->second,
+                                                      rObs = rItr->second;
 
-               std::set<Rinex3ObsHeader::Rinex3ObsType>::const_iterator obsItr = 
-                  obsSet.begin();
+               ///std::set<ObsID>::const_iterator obsItr = 
+               ///   obsSet.begin();
          
-               while (obsItr != obsSet.end())
+               ///while (obsItr != obsSet.end())
+               for(int i = 0; i < obsSet.size(); ++i)
                {
                   Rinex3ObsData::RinexDatum lData, rData;
-                  lData = lObs[*obsItr];
-                  rData = rObs[*obsItr];
+                  ///lData = lObs[*obsItr];
+                  lData = lObs[i];
+                  ///rData = rObs[*obsItr];
+                  rData = rObs[i];
 
                   if (lData.data < rData.data)
                      return true;
@@ -138,7 +144,7 @@ namespace gpstk
                      if (lData.ssi < rData.ssi)
                         return true;
                
-                  obsItr++;
+                  ///obsItr++;
                }
 
                lItr++;
@@ -149,7 +155,8 @@ namespace gpstk
          }
 
    private:
-      std::set<Rinex3ObsHeader::Rinex3ObsType> obsSet;
+      ///std::set<Rinex3ObsHeader::Rinex3ObsType> obsSet;
+      std::vector<ObsID> obsSet;
    };
 
       /// This is a much faster less than operator for Rinex3ObsData,
@@ -204,7 +211,7 @@ namespace gpstk
             }
             else
             {
-               std::set<Rinex3ObsHeader::Rinex3ObsType> thisObsSet, tempObsSet;
+               std::vector<ObsID> thisObsSet, tempObsSet;
                std::set<std::string> commentSet;
                obsSet.clear();
 
@@ -243,7 +250,7 @@ namespace gpstk
 
       bool firstHeader;
       Rinex3ObsHeader theHeader;
-      std::set<Rinex3ObsHeader::Rinex3ObsType> obsSet;
+      std::vector<ObsID> obsSet;
    };
 
    //@}
