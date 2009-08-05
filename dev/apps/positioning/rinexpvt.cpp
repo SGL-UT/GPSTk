@@ -23,6 +23,7 @@
 //============================================================================
 
 #include "rinexpvt.hpp"
+#include "WGS84Geoid.hpp"
 #include "icd_200_constants.hpp"
 
 using namespace std;
@@ -313,7 +314,13 @@ void RINEXPVTSolution::process()
 
     if ((!aprioriPositionDefined) && (roh.valid & RinexObsHeader::antennaPositionValid) )
     {
-       aprioriPosition = roh.antennaPosition;
+       WGS84Geoid WGS84;
+       double AEarth = WGS84.a();
+       double eccSquared = WGS84.eccSquared();
+       Position target(roh.antennaPosition);
+       Position::convertCartesianToGeodetic(roh.antennaPosition, target, AEarth, eccSquared);
+       aprioriPositionGeodetic = target;
+       aprioriPositionXYZ = roh.antennaPosition;
        aprioriPositionDefined = true;
     }
 
@@ -396,8 +403,8 @@ void RINEXPVTSolution::process()
 		          RinexObsData::RinexObsTypeMap otmap = (*it).second;
 
                 svpos = virtualEphStore->getXvt((*it).first,rod.time);
-                double elevation = aprioriPosition.elvAngle(svpos.x);
-                double azimuth =  aprioriPosition.azAngle(svpos.x);
+                double elevation = aprioriPositionXYZ.elvAngle(svpos.x);
+                double azimuth =  aprioriPositionXYZ.azAngle(svpos.x);
                 
                 bool healthy=true;
                 if (hasBCEstore)
@@ -422,7 +429,7 @@ void RINEXPVTSolution::process()
                    
                       if ((aprioriPositionDefined) && (removeIonosphere))
                          ionocorr = spsIonoCorr.getCorrection(rod.time, 
-                                                           aprioriPosition,
+                                                           aprioriPositionGeodetic,
                                                            elevation, azimuth);
                       satVec.push_back((*it).first);
                       double range  = (*itCA).second.data-ionocorr;
@@ -542,9 +549,19 @@ void RINEXPVTSolution::process()
              }
 
              if (!aprioriPositionDefined)
-                aprioriPosition = Triple(prSolver.Solution[0], 
+             {
+                aprioriPositionXYZ = Triple(prSolver.Solution[0], 
                                          prSolver.Solution[1],
                                          prSolver.Solution[2]);
+                WGS84Geoid WGS84;
+                double AEarth = WGS84.a();
+                double eccSquared = WGS84.eccSquared();
+                Position target(aprioriPositionXYZ);
+                Position::convertCartesianToGeodetic(roh.antennaPosition, target, AEarth, eccSquared);
+                aprioriPositionGeodetic = target;
+                aprioriPositionDefined = true;
+
+             }
           }
 	    
 	    } // End usable data

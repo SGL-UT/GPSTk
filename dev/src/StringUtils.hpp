@@ -59,6 +59,7 @@
 
 /// @todo Get rid of the stdio.h dependency if possible.
 #include <cstdio>
+#include <cstdlib>
 
 #include <regex.h>
 #include <cctype>

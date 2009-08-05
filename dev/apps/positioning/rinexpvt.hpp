@@ -95,7 +95,8 @@ protected:
 
    double elevationMask;
   
-   Geodetic aprioriPosition, enuOrigin;
+   Geodetic aprioriPositionGeodetic, enuOrigin;
+   Position aprioriPositionXYZ;
    Triple eastVector, upVector, northVector;
    
    bool aprioriPositionDefined;
