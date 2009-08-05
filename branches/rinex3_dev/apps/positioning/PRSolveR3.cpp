@@ -1,5 +1,6 @@
 // $Id: PRSolve.cpp 2042 2009-07-20 20:37:07Z raindave $
 
+//I feel sorry for whoever has to maintain this...
 
 //============================================================================
 //
@@ -29,10 +30,12 @@
  */
 
 #define RANGECHECK 1        //make Matrix and Vector check limits
+//#define THE_ANSWER 42
 //#define DEBUG_PRINT_SATS_PASSED
 //#define DEBUG_PRINT_SATS_USED
 #define DEBUG_PRINT_WARNINGS
-#define DEBUG_PRINT_TIME
+#define DEBUG_PRINT_RETURNS
+//#define DEBUG_PRINT_TIME
 /******************************************************************************/
 /** **                       ** *** Includes *** **                       ** **/
 /******************************************************************************/
@@ -62,6 +65,7 @@
 #include "SP3Stream.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
+#include "MixedSP3EphemerisStore.hpp"
 #include "TropModel.hpp"
 #include "Position.hpp"
 #include "geometry.hpp" //for DEG_TO_RAD
@@ -109,7 +113,7 @@ void dumpConfiguration(ostream& os)
             throw(Exception);
 void preprocessArgs(const char *arg, vector<string>& Args)
             throw(Exception);
-int fillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
+int fillEphemerisStore(const vector<string>& files, /**/SP3EphemerisStore& PE,/**/
                         GPSEphemerisStore& BCE)
             throw(Exception);
 
@@ -124,6 +128,8 @@ struct SystemFlags{
    int inL2;
    
    bool good;
+   
+   //SP3EphemerisStore sp3EphStore;
    
    SatID::SatelliteSystem sys;
    
@@ -161,7 +167,7 @@ typedef struct Configuration {
    ///GPS/GLONASS stuff
    bool allSystems;   ///< Use all available systems. Default option.
    bool useGPS;   ///< Use GPS data from the header.
-   bool useGLONASS;   ///< Use GLONASS data from header.
+   bool useGlonass;   ///< Use GLONASS data from header.
    ///\GPS/GLONASS stuff
    
    double elevLimit;
@@ -219,6 +225,8 @@ string Title,filename;
 CommonTime CurrEpoch, PrgmEpoch, PrevEpoch;
 
 //data
+bool sp3;
+std::map<char,SystemFlags> gnssSystems;
 int Nsvs;
 XvtStore<SatID> *pEph;
 ZeroTropModel TMzero;
@@ -276,6 +284,18 @@ int main(int argc, char **argv)
          // get command line
       iret = getCommandLine(argc, argv);
       if(iret < 0) return iret;
+      
+         // Add systems to use
+      if(C.useGPS || C.allSystems)
+      {
+         cout << "Using GPS Sats..." << endl;
+         gnssSystems['G'] = SystemFlags(SatID::systemGPS);
+      }
+      if(C.useGlonass || C.allSystems)
+      {
+      	cout << "Using Glonass Sats..." << endl;
+         gnssSystems['R'] = SystemFlags(SatID::systemGlonass);
+      }
       // NB save iret until after dumpConfiguration()
 
          // update configuration of PRSolution
@@ -297,15 +317,37 @@ int main(int argc, char **argv)
       if(iret == 0)
          dumpConfiguration(C.oflog);
       else
+      {
+         #ifdef DEBUG_PRINT_RETURNS
+         cout << "Returning from main at line " << __LINE__ << endl;
+         #endif
          return iret;
-
+      }
       // get nav files and build EphemerisStore
-      int nread = fillEphemerisStore(C.InputNavName, SP3EphList, BCEphList);
+      int nread = fillEphemerisStore(C.InputNavName, /**/SP3EphList,/**/ BCEphList);
       C.oflog << "Added " << nread << " ephemeris files to store.\n";
       SP3EphList.dump(C.oflog,0);
       BCEphList.dump(C.oflog,0);
-      if(SP3EphList.size() > 0) pEph=&SP3EphList;
-      else if(BCEphList.size() > 0)
+      //sp3 = false;
+      //std::map<char,SystemFlags>::const_iterator iter = gnssSystems.begin();
+      //while(iter != gnssSystems.end())
+      //{
+      //	if((iter->second).sp3EphStore.size() > 0)
+      //	   sp3 = true;
+		//}
+      if(SP3EphList.size() > 0)
+      {
+         pEph = &SP3EphList;
+         typedef std::map<SatID, std::map<CommonTime, Xvt> > EphMap;
+         EphMap sp3EphMap = SP3EphList.getEphMap();
+         EphMap::iterator ephIter = sp3EphMap.begin();
+         while(ephIter != sp3EphMap.end())
+         {
+            cout << "EphMap contains data for SatID \"" << (ephIter->first) << "\"" << endl;
+            ephIter++;
+			}
+      }
+      else if(BCEphList.size() > 0 && !sp3)
       {
          BCEphList.SearchNear();
          //BCEphList.SearchPast();
@@ -314,6 +356,9 @@ int main(int argc, char **argv)
       else
       {
          C.oflog << "Failed to read ephemeris data. Abort." << endl;
+         #ifdef DEBUG_PRINT_RETURNS
+         cout << "Returning from main at line " << __LINE__ << endl;
+         #endif
          return -1;
       }
 
@@ -475,7 +520,10 @@ int main(int argc, char **argv)
 
       C.oflog.close();
       C.oford.close();
-
+      
+      #ifdef DEBUG_PRINT_RETURNS
+      cout << "Returning from main at line " << __LINE__ << endl;
+      #endif
       return iret;
    }
    catch(Exception& e)
@@ -513,17 +561,6 @@ int readFile(int nfile) throw(Exception)
       
       //cout << "Reading Files..." << endl;
       
-      std::map<char,SystemFlags> flags;
-      if(C.useGPS || C.allSystems)
-      {
-         cout << "Using GPS Sats..." << endl;
-         flags['G'] = SystemFlags(SatID::systemGPS);
-      }
-      if(C.useGLONASS || C.allSystems)
-      {
-         flags['R'] = SystemFlags(SatID::systemGlonass);
-      }
-      
          //Open the Input file
       filename = C.InputObsName[nfile];
       ifstr.open(filename.c_str(),ios::in);
@@ -559,15 +596,19 @@ int readFile(int nfile) throw(Exception)
       std::vector<ObsID> obsTypeList;
       std::map<char,SystemFlags>::iterator iter;
       map<std::string,vector<ObsID> >::iterator mapIter;
-      for(iter = flags.begin(); iter != flags.end(); iter++)
+      for(iter = gnssSystems.begin(); iter != gnssSystems.end(); iter++)
       {
          SystemFlags& sysflags = iter->second;
          std::string str = "";
          str += iter->first;
          mapIter = rhead.mapObsTypes.find(str);
          if(mapIter == rhead.mapObsTypes.end())
+         {
+            #ifdef DEBUG_PRINT_WARNINGS
+            cout << "Could not find system flag at line  " << __LINE__ << endl;
+            #endif
             continue;
-         
+         }
          obsTypeList = mapIter->second;
          for(j = 0; j < obsTypeList.size(); j++)
          {
@@ -578,7 +619,7 @@ int readFile(int nfile) throw(Exception)
                sysflags.inC1P=j;
             if(str == "C2P")
                sysflags.inC2P=j;
-            //Note: might want to keep each flag for the L1 and L2
+            //Note: might want to keep each flag for the L1 and L2 variants
             if(str.substr(0,2) == "L1" && sysflags.inL1 == -1)
                sysflags.inL1=j;
             if(str.substr(0,2) == "L2" && sysflags.inL2 == -1)
@@ -589,7 +630,7 @@ int readFile(int nfile) throw(Exception)
       
       int hasC1C, hasC1P, hasC2P, hasL1, hasL2;
       hasC1C = hasC1P = hasC2P = hasL1 = hasL2 = 0;
-      for(iter = flags.begin(); iter != flags.end(); iter++)
+      for(iter = gnssSystems.begin(); iter != gnssSystems.end(); iter++)
       {
          SystemFlags& sysflags = iter->second;
          if(sysflags.inC1C > -1)
@@ -624,12 +665,13 @@ int readFile(int nfile) throw(Exception)
       {
          if(hasC1C > 0)
          {
-            for(iter = flags.begin(); iter != flags.end(); iter++)
+            for(iter = gnssSystems.begin(); iter != gnssSystems.end(); iter++)
             {
                SystemFlags& sysflags = iter->second;
                if(sysflags.inC1C == -1)
                {
                   ///DROP THE SYSTEM
+                  cout << "Dropping system..." << endl;
                   sysflags.good = false;
                   break;
                }
@@ -639,7 +681,7 @@ int readFile(int nfile) throw(Exception)
          else
          {
             C.oflog << "ERROR. Abort. --forceCA was found but C1 data is not found.\n";
-            cerr << "ERROR. Abort. --forceCA was found but C1 data is not found.\n";
+            cout << "ERROR. Abort. --forceCA was found but C1 data is not found.\n";
             return -1;
          }
       }
@@ -647,11 +689,12 @@ int readFile(int nfile) throw(Exception)
       {
          if(C.UseCA && hasC1C > 0)
          {
-            for(iter = flags.begin(); iter != flags.end(); iter++)
+            for(iter = gnssSystems.begin(); iter != gnssSystems.end(); iter++)
             {
                SystemFlags& sysflags = iter->second;
                if(sysflags.inC1C == -1)
                {
+               	cout << "Dropping system..." << endl;
                   sysflags.good = false;
                   break;
                }
@@ -661,20 +704,20 @@ int readFile(int nfile) throw(Exception)
          else if(C.UseCA && hasC1C == 0)
          {
             C.oflog << "ERROR. Abort. Neither P1 nor C1 data found (--useCA is set).\n";
-            cerr << "ERROR. Abort. Neither P1 nor C1 data found (--useCA is set).\n";
+            cout << "ERROR. Abort. Neither P1 nor C1 data found (--useCA is set).\n";
             return -1;
          }
          else if(C.Freq != 2 && !C.UseCA && hasC1C > 0)
          {
             C.oflog << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)\n";
-            cerr << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)\n";
+            cout << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)\n";
             return -1;
          }
          else if(C.Freq != 2)
          {
             C.oflog << "ERROR. Abort. Neither P1 nor C1 data found.\n";
-            cerr << "ERROR. Abort. Neither P1 nor C1 data found.\n";
-            cerr << "rhead.obsTypeList.size() == " << rhead.obsTypeList.size() << endl;
+            cout << "ERROR. Abort. Neither P1 nor C1 data found.\n";
+            cout << "rhead.obsTypeList.size() == " << rhead.obsTypeList.size() << endl;
             return -1;
          }
       }
@@ -733,25 +776,25 @@ int readFile(int nfile) throw(Exception)
          catch(FFStreamError& e)
          {
             C.oflog << "Reading obs caught FFStreamError exception : " << e << endl;
-            cerr << "Reading obs caught FFStreamError exception : " << e << endl;
+            cout << "Reading obs caught FFStreamError exception : " << e << endl;
             return -2;
          }
          catch(Exception& e)
          {
             C.oflog << "Reading obs caught GPSTk exception : " << e << endl;
-            cerr << "Reading obs caught GPSTk exception : " << e << endl;
+            cout << "Reading obs caught GPSTk exception : " << e << endl;
             return -2;
          }
          catch(exception& e)
          {
             C.oflog << "Reading obs caught std exception : " << e.what() << endl;
-            cerr << "Reading obs caught std exception : " << e.what() << endl;
+            cout << "Reading obs caught std exception : " << e.what() << endl;
             return -2;
          }
          catch(...)
          {
             C.oflog << "Reading obs caught unknown exception : " << endl;
-            cerr << "Reading obs caught unknown exception : " << endl;
+            cout << "Reading obs caught unknown exception : " << endl;
             return -2;
          }
 
@@ -774,13 +817,19 @@ int readFile(int nfile) throw(Exception)
                //Stay within time limits
             if(robsd.time < C.Tbeg)
             {
+               #ifdef DEBUG_PRINT_WARNINGS
                cout << "robsd.time < C.Tbeg" << endl;
+               cout << "Line: " << __LINE__ << "\n";
+               #endif
                iret =  1;
                break;
             }
             if(robsd.time > C.Tend)
             {
+               #ifdef DEBUG_PRINT_WARNINGS
                cout << "robsd.time > C.Tend" << endl;
+               cout << "Line: " << __LINE__ << "\n";
+               #endif
                iret = -1;
                break;
             }
@@ -831,15 +880,23 @@ int readFile(int nfile) throw(Exception)
                double C1 = 0, P1 = 0, P2 = 0, L1,L2;
                RinexSatID sat = it->first;
                std::vector<Rinex3ObsData::RinexDatum> datum = it->second;
-               iter = flags.find(sat.systemChar());
-               if(iter == flags.end())
-                  break;
-               
+               iter = gnssSystems.find(sat.systemChar());
+               if(iter == gnssSystems.end())
+               {
+                  #ifdef DEBUG_PRINT_WARNINGS
+                  //out << "System " << sat.systemChar() << " does not exist..." << endl;
+                  #endif
+                  continue;
+               }
                SystemFlags& sysflags = iter->second;
                
-               //if(!sysflags.good)
-               //   break;
-               
+               if(!sysflags.good)
+               {
+                  #ifdef DEBUG_PRINT_WARNINGS
+                  //cout << "System " << sat.systemChar() << " is not good..." << endl;
+                  #endif
+                  continue;
+               }
                   //Pull out the data
                if(sysflags.inC1C > -1)
                   C1 = datum[sysflags.inC1C].data;
@@ -859,22 +916,37 @@ int readFile(int nfile) throw(Exception)
                {
                   if(C.ExSV[i] == sat)
                   {
-                     cout << "Excluding..." << endl;
+                     #ifdef DEBUG_PRINT_WARNINGS
+                     cout << "Excluding " << sat << endl;
+                     cout << "Line: " << __LINE__ << "\n";
+                     #endif
                      ok = false;
                      break;
                   }
                }
                
                if(!ok)
+               {
+               	#ifdef DEBUG_PRINT_WARNINGS
+                  cout << "Satellite was excluded... " << endl;
+                  #endif
                   continue;
-         
+               }
                //NB do not exclude negative P, as some clocks can go far
                if(C.Freq != 2 && P1==0.0)
                {
+               	#ifdef DEBUG_PRINT_WARNINGS
+               	cout << "Using frequency 1: Sat does not have P1 data" << endl;
+               	cout << "line " << __LINE__ << endl;
+                  #endif
                   continue;
                }
                if(C.Freq != 1 && P2==0.0)
                {
+                  #ifdef DEBUG_PRINT_WARNINGS
+               	cout << "Using frequency 2: Sat does not have P2 data" << endl;
+               	cout << "line " << __LINE__ << endl;
+                  #endif
                   continue;
                }
                //If position known and elevation limit given, apply elevation mask
@@ -886,7 +958,11 @@ int readFile(int nfile) throw(Exception)
                   try
                   {
                      //Double ER =
-                     CER.ComputeAtReceiveTime(CurrEpoch, C.knownpos, sat, *pEph);
+                        ///Here...
+                     //if(sp3)
+                     //   CER.ComputeAtReceiveTime(CurrEpoch, C.knownpos, sat, sysflags.sp3EphStore);
+                     //else
+                        CER.ComputeAtReceiveTime(CurrEpoch, C.knownpos, sat, *pEph);
                      if(CER.elevation < C.elevLimit)
                         ok = false;
                      if(C.Debug)
@@ -898,16 +974,35 @@ int readFile(int nfile) throw(Exception)
                      //Do not exclude the sat here; PRSolution will...
                      if(C.Debug)
                         C.oflog << "CER did not find ephemeris for " << sat << endl;
+                     #ifdef DEBUG_PRINT_WARNINGS
+                     cout << "Caught InvalidRequest at line " << __LINE__ << endl;
+                     cout << nef << endl;
+                     #endif
                   }
 
                   if(!ok)
+                  {
+                     #ifdef DEBUG_PRINT_WARNINGS
+                     cout << "I'm not oooookkkkaaaayyy!~!~" << endl;
+                     cout << "Line: " << __LINE__ << "\n";
+                     #endif
                      continue;
+						}
                }
 
                //Keep this satellite
                ///Here is where the satellites get kept/discarded
-               Satellites.push_back(sat);
-               //cout << "Added sat " << sat << endl;
+               #ifdef DEBUG_PRINT_SATS_PASSED
+               cout << "Pushed back satellite " << sat << "\n";
+               #endif
+               
+               //Shouldn't need this, won't get to this point if system isn't used.
+               //if(C.allSystems ||
+               //   (C.useGlonass && sat.system == SatID::systemGlonass) ||
+               //   (C.useGPS && sat.system == SatID::systemGPS))
+               //{
+                  Satellites.push_back(sat);
+               //}
                Ranges.push_back(C.Freq == 3 ? if1r*P1+if2r*P2 :
                                (C.Freq == 2 ? P2 : P1));
                if(!C.ordFile.empty())
@@ -926,20 +1021,23 @@ int readFile(int nfile) throw(Exception)
             {
                if(C.Debug)
                   C.oflog << "Too few satellites" << endl;
+               #ifdef DEBUG_PRINT_WARNINGS
+               cout << "Too few satellites (" << Nsvs << ")..." << endl;
+               #endif
                iret = 1;
                break;
             }
-
+            
             nS++;
             nSS++;
             
             iret = solutionAlgorithm(Satellites, Ranges, RMSrof);
-
+            
             if(C.Debug)
                C.oflog << "solutionAlgorithm returns " << iret << endl;
             if(iret)
                break;
-
+            
                //Update LastEpoch and estimate of DT
             if(C.LastEpoch > CommonTime::BEGINNING_OF_TIME)
             {
@@ -985,10 +1083,19 @@ int readFile(int nfile) throw(Exception)
             break;
          }
          if(iret == -4)
+         {
+            #ifdef DEBUG_PRINT_WARNINGS
+            cout << "No Ephemeris for epoch: line " << __LINE__ << endl;
+            #endif
             continue;   // ignore this epoch - no ephemeris
+         }
          if(iret == 1)
+         {
+            #ifdef DEBUG_PRINT_WARNINGS
+            cout << "Fatal Error at line " << __LINE__ << " (not enough sats)" << endl;
+            #endif
             continue;   //Ignore this epoch - fatal error
-
+         }
             //Write out ORDs
          if(!C.ordFile.empty())
          {
@@ -1002,7 +1109,21 @@ int readFile(int nfile) throw(Exception)
 
                CorrectedEphemerisRange CER;
                try
-               { CER.ComputeAtTransmitTime(CurrEpoch, vP1[i], C.knownpos, sat, *pEph); }
+               {
+                     ///Here...
+                  //if(sp3)
+                  //{
+                  //   SystemFlags& flags = (gnssSystems.find(sat.systemChar()))->second;
+                  //   if(flags != gnssSystems.end())
+                  //   {
+                  //      CER.ComputeAtTransmitTime(CurrEpoch, vP1[i], C.knownpos, sat, flags.sp3EphStore);
+                  //   }
+                  //   else
+                  //      continue;
+					   //}
+					   //else
+					      CER.ComputeAtTransmitTime(CurrEpoch, vP1[i], C.knownpos, sat, *pEph);
+               }
                catch(InvalidRequest& nef)
                {
                   continue;
@@ -1222,7 +1343,8 @@ int solutionAlgorithm(vector<SatID>& Sats,
       if(Nsvs < 5)
       {
          #ifdef DEBUG_PRINT_WARNINGS
-         	cout << "Not Enough Satellites..." << endl;
+            cout << "Not Enough Satellites..." << endl;
+            cout << "Line: " << __LINE__ << "\n";
          #endif
          return 1;
       }
@@ -1253,13 +1375,15 @@ int solutionAlgorithm(vector<SatID>& Sats,
          iret = -4;
          Matrix<double> SVP;
          ///Check PrepareAutonomousSolution()
+         ///Here...
          iret = PRSolution::PrepareAutonomousSolution(CurrEpoch,Sats,PRanges,*pEph,SVP);
          
          if(iret == -4)
          {
-         	#ifdef DEBUG_PRINT_WARNINGS
-         		cout << "No Ephemeris!" << endl;
-         	#endif
+            #ifdef DEBUG_PRINT_WARNINGS
+               cout << "No Ephemeris!" << endl;
+               cout << "Line: " << __LINE__ << "\n";
+            #endif
             C.oflog << "PrepareAutonomousSolution failed to find ANY ephemeris at epoch "
                     << (static_cast<CivilTime>(CurrEpoch)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P")
                     << endl;
@@ -1280,8 +1404,9 @@ int solutionAlgorithm(vector<SatID>& Sats,
          for (i=0; i<Sats.size(); i++)
          {
             UseSats[i] = (Sats[i].id > 0 ? true : false);
-            
-         	#ifdef DEBUG_PRINT_SATS_USED
+            //if(Sats[i].system == SatID::systemGlonass)
+            //   Sats[i] = SatID(Sats[i].id + THE_ANSWER, SatID::systemGPS);
+            #ifdef DEBUG_PRINT_SATS_USED
                cout << "UseSats[i] = ";
                (UseSats[i] ? cout << "true" : cout << "false");
                cout << endl;
@@ -1403,12 +1528,18 @@ int solutionAlgorithm(vector<SatID>& Sats,
       #ifdef DEBUG_PRINT_TIME
          cout << CurrEpoch << endl;
       #endif
+      ///Here...
       iret = prsol.RAIMCompute(CurrEpoch, Sats, PRanges, *pEph, C.pTropModel);
 
       for (Nsvs=0,i=0; i<Sats.size(); i++)
       {
          if(Sats[i].id > 0)
+         {
+            #ifdef DEBUG_PRINT_SATS_USED
+            cout << "Using Sat " << Sats[i] << "\n";
+            #endif
             Nsvs++;
+         }
       }
       RMSresid = prsol.RMSResidual;
 
@@ -1534,11 +1665,29 @@ int solutionAlgorithm(vector<SatID>& Sats,
       }
 
       if(prsol.isValid() && !C.OutRinexObs.empty())
+      {
+         #ifdef DEBUG_PRINT_WARNINGS
+         cout << "prsol is valie, but C.OutRinexObs is not empty?" << endl;
+         cout << "Line: " << __LINE__ << "\n";
+         #endif
          return 3;
+      }
       if(!prsol.isValid())
+      {
+      	#ifdef DEBUG_PRINT_WARNINGS
+      	cout << "prsol is not valid" << endl;
+      	cout << "Line: " << __LINE__ << "\n";
+      	#endif
          return 1;
+      }
       if(!C.OutRinexObs.empty())
+      {
+         #ifdef DEBUG_PRINT_WARNINGS
+         cout << "C.OutRinexObs is not empty???" << endl;
+         cout << "Line: " << __LINE__ << "\n";
+         #endif
          return 2;
+      }
       return 0;
    }
    catch(Exception& gpstkException)
@@ -2053,9 +2202,9 @@ int fillEphemerisStore(const vector<string>& files,
          else if(isSP3File(files[i]))
          {
             try
-            {
+            {/// /// ///
                PE.loadFile(files[i]);
-            }
+            }/// /// ///
             catch(gpstk::Exception& e)
             {
                cerr << "Caught Exception while reading SP3 Nav file " << files[i]
@@ -2098,7 +2247,7 @@ int getCommandLine(int argc, char **argv) throw(Exception)
       C.Tend = CommonTime::END_OF_TIME;
       
       C.allSystems = true;
-      C.useGPS = C.useGLONASS = false;
+      C.useGPS = C.useGlonass = false;
       
          //Configuration of PRSolution
       C.rmsLimit = prsol.RMSLimit;
@@ -2333,7 +2482,7 @@ int getCommandLine(int argc, char **argv) throw(Exception)
       CommandOptionNoArg dashGPS(0,"useGPS",
          " --UseGps             Uses GPS data from the header file.");
       CommandOptionNoArg dashGlonass(0,"useGlonass",
-         " --UseGlonass         Uses Glonass data from the header file.");
+         " --useGlonass         Uses Glonass data from the header file.");
 
       // ... other options
       CommandOptionRest Rest("");
@@ -2430,7 +2579,7 @@ int getCommandLine(int argc, char **argv) throw(Exception)
       if(dashGlonass.getCount())
       {
          C.allSystems = false;
-         C.useGLONASS = true;
+         C.useGlonass = true;
       }
       
       if(dashh.getCount())
