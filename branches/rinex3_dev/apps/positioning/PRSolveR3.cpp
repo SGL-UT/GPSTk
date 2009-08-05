@@ -65,7 +65,6 @@
 #include "SP3Stream.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
-#include "MixedSP3EphemerisStore.hpp"
 #include "TropModel.hpp"
 #include "Position.hpp"
 #include "geometry.hpp" //for DEG_TO_RAD
@@ -936,7 +935,7 @@ int readFile(int nfile) throw(Exception)
                if(C.Freq != 2 && P1==0.0)
                {
                	#ifdef DEBUG_PRINT_WARNINGS
-               	cout << "Using frequency 1: Sat does not have P1 data" << endl;
+               	cout << "Using frequency 1: " << sat << " does not have P1 data" << endl;
                	cout << "line " << __LINE__ << endl;
                   #endif
                   continue;
@@ -944,7 +943,7 @@ int readFile(int nfile) throw(Exception)
                if(C.Freq != 1 && P2==0.0)
                {
                   #ifdef DEBUG_PRINT_WARNINGS
-               	cout << "Using frequency 2: Sat does not have P2 data" << endl;
+               	cout << "Using frequency 2: " << sat << " does not have P2 data" << endl;
                	cout << "line " << __LINE__ << endl;
                   #endif
                   continue;
