@@ -56,7 +56,7 @@
 %include "gpstk_PCodeConst.i"
 %include "gpstk_PoleTides.i"
 %include "gpstk_PolyFit.i"
-%include "gpstk_position.i"
+%include "gpstk_Position.i"
 //%include "gpstk_PowerSum.i"
 %include "gpstk_RACRotation.i"
 %include "gpstk_RinexMetFilterOperators.i"		
@@ -122,7 +122,7 @@
 //%include "gpstk_FileFilterFrame.i"			**included in FileFilter.i**
 //%include "gpstk_FileFilterFrameWithHeader.i"		**included in FileFilter.i**
 //%include "gpstk_GaussianDistribution.i"		**included in BaseDistribution.i**
-//%include "gpstk_Geodetic.i"   			**included in position.i**
+//%include "gpstk_Geodetic.i"   			**included in Position.i**
 //%include "gpstk_GeoidModel.i"				**included in WGS84Geoid.i**
 //%include "gpstk_GPSEllipsoid.i"			**included in EllipsoidModel.i**
 //%include "gpstk_GPSEphemerisStore.i"			**included in XvtStore.i**
@@ -184,12 +184,12 @@
 //%include "gpstk_StudentDistribution.i"		**included in BaseDistribution.i**
 //%include "gpstk_SystemTime.i"				**included in TimeTag.i**
 //%include "gpstk_TabularEphemerisStore.i"		**included in XvtStore.i**
-//%include "gpstk_Triple.i" 				**included in position.i**
+//%include "gpstk_Triple.i" 				**included in Position.i**
 //%include "gpstk_UnixTime.i"				**included in TimeTag.i**
 //%include "gpstk_WGS84Ellipsoid.i"			**included in EllipsoidModel.i**
 //%include "gpstk_WGS84Geoid.i"				**included in GeoidModel.i**
-//%inlcude "gpstk_Xvt.i"        			**included in position.i**
-//%inlcude "gpstk_XvtStore.i"				**included in position.i**
+//%inlcude "gpstk_Xvt.i"        			**included in Position.i**
+//%inlcude "gpstk_XvtStore.i"				**included in Position.i**
 //%inlcude "gpstk_YDSTime.i"				**included in TimeTag**
 //%inlcude "gpstk_YumaAlmanacStore.i"			**included in GPSAlmanacStore.i**
 //%inlcude "gpstk_YumaBase.i"				**included in FFData.i**
