@@ -3,12 +3,14 @@
 %module gpstk_FFStream
 
 %{
+#include <fstream>
 #include "../../../src/FFStream.hpp"
 
 using namespace std;
 using namespace gpstk;
 %}
 %import "../../../src/FFStreamError.hpp"
+
 %include "../../../src/FFStream.hpp"
 %include "gpstk_FFTextStream.i"
 %include "gpstk_Matrix.i"

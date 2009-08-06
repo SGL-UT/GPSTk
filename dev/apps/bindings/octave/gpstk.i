@@ -1,6 +1,20 @@
 // GPSTk wrap for src library
 
 %module gpstk
+%{
+#include <iostream>
+#include <fstream>
+#include <valarray>
+#include <string>
+#include <map>
+#include <ios>
+
+%}
+
+
+%include "std_string.i"
+%include "std_vector.i"
+
 
 %include "gpstk_AllanDeviation.i"
 %include "gpstk_AlmOrbit.i"
@@ -93,6 +107,8 @@
 %include "gpstk_X1Sequence.i"
 %include "gpstk_X2Sequence.i"					 			
 %include "gpstk_Zcount.i"
+%include "common.i"
+
 
 //%include "gpstk_ANSITime.i" 				**included in TimeTag.i**
 //%include "gpstk_Bancroft.i"				**included in Matrix.i**

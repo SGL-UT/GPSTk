@@ -10,8 +10,8 @@ using namespace gpstk;
 %}
 
 %rename (BinexData_opequal) operator=;
-%rename (streamRead) operator<<;
-%rename (streamWright) operator>>;
+%rename (FFData_streamRead) operator<<;
+%rename (streamWrite) operator>>;
 %rename (RinexNavData_EngEphemeris) operator EngEphemeris;
 %rename (SEMData_AlmOrbit) operator AlmOrbit;
 %include "../../../src/FFData.hpp"
@@ -46,6 +46,7 @@ using namespace gpstk;
 %include "gpstk_RinexMetData.i"
 %include "gpstk_RinexNavData.i"
 %rename (opequal) operator=;
+%rename (streamRead) operator<<;
 %rename (EngEphemeris) operator EngEphemeris;
 %rename (AlmOrbit) operator AlmOrbit;
 
