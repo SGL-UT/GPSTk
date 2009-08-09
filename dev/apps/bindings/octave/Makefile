@@ -21,7 +21,7 @@ _gpstk.so : gpstk_python_wrap.o
 	g++ -shared `python-config --ldflags` gpstk_python_wrap.o -lgpstk -o _gpstk.so
 
 gpstk_python_wrap.o : gpstk_python_wrap.cxx
-	g++ `python-config --cflags` -c gpstk_python_wrap.cxx
+	g++ `python-config --cflags` -fPIC -c gpstk_python_wrap.cxx
 
 gpstk_python_wrap.cxx : gpstk.i
 	swig -c++ -python -o gpstk_python_wrap.cxx gpstk.i

@@ -14,7 +14,7 @@
 
 %include "std_string.i"
 %include "std_vector.i"
-
+%include "std_map.i"
 
 %include "gpstk_AllanDeviation.i"
 %include "gpstk_AlmOrbit.i"

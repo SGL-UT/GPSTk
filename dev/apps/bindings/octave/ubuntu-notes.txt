@@ -1,0 +1,37 @@
+Some notes about getting the SWIG bindings from source for the GPSTk
+library running on a fresh Ubuntu system. This will probably work for
+any Debian based system.
+
+1. Install prerequisites
+
+   $ jam install subversion jam g++ libncurses-dev swig octave-headers
+     python-dev
+
+
+2. First make and install the gpstk src library
+
+   $ cd gsptk/dev
+   $ jam
+   $ sudo jam install
+
+
+3. FIX the lack of creation of the shared library
+
+   $ sudo ln -s  /usr/local/lib/libgpstk.so.15 /usr/local/lib/libgpstk.so
+
+
+4. Test the installations
+
+    $ which timeconvert calgps mkoctfile -->  
+    /usr/local/bin/timeconvert
+    /usr/local/bin/calgps
+    /usr/bin/mkoctfile  
+
+    $ python-config --cflags -->
+     -I/usr/include/python2.6 -I/usr/include/python2.6 -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes
+
+
+5. Change to the SWIG directory and execute make.
+
+    $ cd apps/binding/octave
+    $ make
