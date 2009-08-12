@@ -41,6 +41,7 @@
 %include "std_pair.i"
 %include "std_string.i"
 %include "std_vector.i"
+%include "RinexDatum.i"
 
 
 
@@ -49,6 +50,10 @@ namespace std {
    %template(vectord) vector<double>;
 };
 
+%template(string_vector) std::vector<std::string>;
+%template(RinexObsType_vector) std::vector<RinexObsType>;
+%template() std::pair<RinexObsType, RinexDatum>;
+%template (RinexObsTypeMap) std::map<RinexObsType, RinexDatum >;
 
 
 
