@@ -64,7 +64,8 @@ namespace gpstk
    // Set to zero for no debugging output
    // set to 1 to output text messages about decode/format/range errors
    // set to 2 to add a hex dump of those messages
-   // set to 3+ to add the tossed bytes whether or not they are bad
+   // set to 3+ to add the tossed bytes whether or not they are bad and informational
+   //   messages about the state of the parsing
    int MDPHeader::debugLevel = 0;
 
    // set true to print a hex dump of every message to cout
@@ -238,24 +239,19 @@ namespace gpstk
       // read, read and toss the body
       if (ffs.streamState == MDPStream::gotHeader)
       {
-         unsigned bodyLen = length-myLength;
-         char *trash = new char[bodyLen];
-         if (debugLevel>2)
-            cout << "Reading to toss " << bodyLen << endl;
-         ffs.getData(trash, bodyLen);
-         string body(trash, ffs.gcount());
-         delete trash;
+         string body = readBody(ffs);
 
          if (ffs.fail())
             return;
 
-         ffs.streamState = MDPStream::gotBody;
-         if (hexDump || debugLevel>3)
+         if (hexDump || debugLevel>1)
          {
             cout << "Tossing Record Number:" << ffs.recordNumber << endl;
             StringUtils::hexDumpData(cout, ffs.rawHeader+body);
          }
       }
+
+      streampos p0 = ffs.tellg();
 
       char buff[myLength];
       if (ffs.streamState == MDPStream::outOfSync ||
@@ -263,48 +259,51 @@ namespace gpstk
       {
          ffs.streamState = MDPStream::outOfSync;
 
-         if (debugLevel>2)
-            cout << "Scanning for frame word" << endl;;
          uint16_t fw=0;
          for (int i=0; i<1024; i++)
          {
             fw = ffs.getData<uint16_t>();
             fw = netToHost(fw);
+            if (fw!=frameWord)
+               continue;
             std::memcpy(buff, &fw, sizeof(fw));
-            if (fw==frameWord)
-               break;
+            break;
          }
+
+         streampos p1 = ffs.tellg();
 
          if (fw!=frameWord)
          {
-            if (debugLevel>2)
-               cout << "Failed to find frame word." << endl;;
-            FFStreamError err("Failed to find frame word.");
-            GPSTK_THROW(err);
+            if (debugLevel)
+               cout << "Failed to find frame word from " << p0 << " to " << p1 << endl;
+            return;
          }
-         else
+
+         p1-=2;
+         if (debugLevel>2)
+            cout << "Found frame word at " << p1 << endl;
+
+         // then read in the rest of a header
+         ffs.getData(buff+2, myLength-2);
+         if (ffs.fail())
+            return;
+         
+         ffs.rawHeader = string(buff, myLength);
+         MDPHeader::decode(ffs.rawHeader);
+         ffs.streamState = MDPStream::gotHeader;
+         ffs.header = *this;
+         if (debugLevel>2)
          {
-            if (debugLevel>2)
-               cout << "Reading header" << endl;
-            // then read in the rest of a header
-            ffs.getData(buff+2, myLength-2);
-            if (ffs.fail())
-               return;
-
-            ffs.rawHeader = string(buff, myLength);
-            MDPHeader::decode(ffs.rawHeader);
-            ffs.streamState = MDPStream::gotHeader;
-            ffs.header = *this;
-            if (debugLevel>2)
-               cout << "Got header for id " << id
-                    << " body, length=" << length << endl;
-
-            if (length > 1024)
-            {
-               if (debugLevel>2)
-                  cout << "Insane length (" << length << "), ignoring." << endl;
-               length = myLength;
-            }
+            cout << "Got header for id " << id
+                 << " body, length=" << length << endl;
+            StringUtils::hexDumpData(cout, ffs.rawHeader);
+         }
+         
+         if (length > 1024)
+         {
+            if (debugLevel)
+               cout << "Insane length (" << length << "), ignoring." << endl;
+            length = myLength;
          }
       }
    }
@@ -314,10 +313,21 @@ namespace gpstk
    string MDPHeader::readBody(MDPStream& ffs)
       throw(FFStreamError, EndOfFile)
    {
-      // Note that this will generate a bad_cast exception if it doesn't work.
-      const unsigned myLen = length - MDPHeader::myLength;
+      // Need to make sure we have a 'sane' length before we continue reading
+      if (length <= MDPHeader::myLength)
+      {
+         if (debugLevel)
+            cout << "Received a runt message at " << ffs.tellg() << endl;
+         if (debugLevel>3)
+            StringUtils::hexDumpData(cout, ffs.rawHeader);
+         ffs.streamState = MDPStream::outOfSync;
+      }
+
+      if (ffs.streamState != MDPStream::gotHeader)
+         return string();
 
       // Read in the body of the message
+      const unsigned myLen = length - MDPHeader::myLength;
       char *buff = new char[myLen];
       if (debugLevel>2)
          cout << "Reading " << myLen 
@@ -343,6 +353,13 @@ namespace gpstk
       // first, make sure the data is flagged bad.
       clear(fmtbit | lenbit | crcbit);
 
+      if (debugLevel>3)
+      {
+         cout << "Reading " << id << " at " << stream.tellg() 
+              << " state:" << stream.streamState << endl;
+         dump(cout);
+      }
+
       // If this object is a header, just read in a new header
       if (typeid(*this) == typeid(MDPHeader))
       {
@@ -355,6 +372,7 @@ namespace gpstk
       // Get a new header if the last read was a body
       if (stream.streamState == MDPStream::gotBody)
          readHeader(stream);
+
       if (!stream)
          return;
 
