@@ -90,7 +90,14 @@ void MDPProcessor::process()
       }
       
       if (!in)
-         break;
+      {
+         if (debugLevel)
+         {
+            cout << "File corruption detected." << endl;
+            in.dumpState();
+         }
+         continue;
+      }
       
       if (startTime == DayTime(DayTime::BEGINNING_OF_TIME) && timeSpan>0)
       {
@@ -118,21 +125,6 @@ void MDPProcessor::process()
          out << "Record: " << in.recordNumber
              << ", message: " << msgCount << endl;
 
-      if (msgCount == 1)
-         firstFC = lastFC = in.header.freshnessCount;
-      else
-      {
-         if (in.header.freshnessCount != static_cast<unsigned short>(lastFC+1))
-         {
-            fcErrorCount++;
-            if (verboseLevel)
-               out << header.time.printf(timeFormat)
-                   <<"  Freshness count error.  Previous was " << lastFC
-                   << " current is " << in.header.freshnessCount << endl;
-         }
-         lastFC = in.header.freshnessCount;
-      }
-
       switch (in.header.id)
       {
          case gpstk::MDPObsEpoch::myId:
@@ -141,7 +133,7 @@ void MDPProcessor::process()
                gpstk::MDPObsEpoch obs;
                in >> obs;
                if (obs || processBad)
-                  process(obs);
+                  processFC(header), process(obs);
             }
             break;
 
@@ -151,7 +143,7 @@ void MDPProcessor::process()
                gpstk::MDPPVTSolution pvt;
                in >> pvt;
                if (pvt || processBad)
-                  process(pvt);
+                  processFC(header), process(pvt);
             }
             break;
 
@@ -161,7 +153,7 @@ void MDPProcessor::process()
                gpstk::MDPNavSubframe nav;
                in >> nav;
                if (nav || processBad)
-                  process(nav);
+                  processFC(header), process(nav);
             }
             break;
 
@@ -171,11 +163,37 @@ void MDPProcessor::process()
                gpstk::MDPSelftestStatus sts;
                in >> sts;
                if (sts || processBad)
-                  process(sts);
+                  processFC(header), process(sts);
             }
             break;
+
+         default:
+         if (debugLevel)
+            cout << "Unreconized id:" << in.header.id << endl;
       } // end of switch()
    } // end of while()
+}
+
+
+//-----------------------------------------------------------------------------
+void MDPProcessor::processFC(const MDPHeader& header)
+{
+   if (msgCount == 1)
+      firstFC = lastFC = in.header.freshnessCount;
+   else
+   {
+      if (in.header.freshnessCount != static_cast<unsigned short>(lastFC+1))
+      {
+         fcErrorCount++;
+         if (verboseLevel)
+            out << header.time.printf(timeFormat)
+                <<"  Freshness count error.  Previous was " << lastFC
+                << " current is " << in.header.freshnessCount << endl;
+         if (debugLevel)
+            in.header.dump(cout);
+         }
+      lastFC = in.header.freshnessCount;
+   }
 }
 
 

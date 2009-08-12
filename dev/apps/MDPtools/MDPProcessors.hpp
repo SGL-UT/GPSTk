@@ -75,6 +75,9 @@ public:
    // 
    unsigned long bugMask;
 
+protected:
+   void processFC(const gpstk::MDPHeader& hedaer);
+
 private:
    /// All processors are defined so that subclasses don't have to
    /// define process methods for messages they don't care about.
