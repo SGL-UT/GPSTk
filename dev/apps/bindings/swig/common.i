@@ -41,7 +41,7 @@
 %include "std_pair.i"
 %include "std_string.i"
 %include "std_vector.i"
-%include "RinexDatum.i"
+//%include "RinexDatum.i"
 
 
 
@@ -52,8 +52,8 @@ namespace std {
 
 %template(string_vector) std::vector<std::string>;
 %template(RinexObsType_vector) std::vector<RinexObsType>;
-%template() std::pair<RinexObsType, RinexDatum>;
-%template (RinexObsTypeMap) std::map<RinexObsType, RinexDatum >;
+//%template() std::pair<RinexObsType, RinexDatum>;
+//%template (RinexObsTypeMap) std::map<RinexObsType, RinexDatum >;
 
 
 

@@ -30,18 +30,12 @@ if (check=1)
 	end
 
 	if (bitand(roh.valid,gpstk.RinexObsHeader_commentValid)>0)
-	/*Octave_map commentmap;
-             
-	     vector<string>::iterator i;
-	     int n=0;
-	     for (i = roh.commentList.begin();
-                  i!=roh.commentList.end();
-	    	 i++,n++) 
-             commentmap.assign(gpstk::StringUtils::asString(n),*i);
-
-             headerStruct.assign("comments",commentmap);
-	*/
-	headerStruct.comments=commentmap;
+	j=roh.commentList.size();
+		for i=0:1:j-1
+		str = roh.commentList(i);
+		len = length(str);
+		headerStruct.comments(i+1,1:len) = str;
+		end
 	end
 
 	if (bitand(roh.header,gpstk.RinexObsHeader_observerValid)>0)
@@ -60,26 +54,18 @@ if (check=1)
 	end
 
 	if (bitand(roh.valid, gpstk.RinexObsHeader_antennaPositionValid)>0)
-	/*  aPos(0) = roh.antennaPosition[0];
-            aPos(1) = roh.antennaPosition[1];
-            aPos(2) = roh.antennaPosition[2];
-	*/
 	aPos = ones(3,1);
-	aPos(1) =
-	aPos(2) =
-	aPos(3) =
+	aPos(1) = Triple_operator_bracket_const(roh.antennaPosition,0)
+	aPos(2) = Triple_operator_bracket_const(roh.antennaPosition,1)
+	aPos(3) = Triple_operator_bracket_const(roh.antennaPosition,2)
 	headerStruct.antenna_position=aPos;
 	end
 
 	if (bitand(roh.valid, gpstk.RinexObsHeader_antennOffsetValid)>0)
-	/* aOff(0) = roh.antennaOffset[0];
-	   aOff(1) = roh.antennaOffset[1];
-	   aOff(2) = roh.antennaOffset[2];
-	*/
 	aOff = ones(3,1)
-	aOff(1) = 
-	aOff(2) = 
-	aOff(3) = 
+	aOff(1) = Triple_operator_bracket_const(roh.antennaOffset,0)
+	aOff(2) = Triple_operator_bracket_const(roh.antennaOffset,1)
+	aOff(3) = Triple_operator_bracket_const(roh.antennaOffset,2)
 	headerStruct.antenna_offset=aOff;
 	end
 
