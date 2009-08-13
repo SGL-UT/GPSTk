@@ -139,11 +139,16 @@ namespace gpstk
 
          MDPHeader header;
          s >> header;
-         s >> header;
-         if (s)
+         string body = header.readBody(s);
+         if (s.rawHeader.size() && body.size())
          {
-            fileType = tMDP;
-            return;
+            header.setstate(crcbit);
+            header.checkCRC(s.rawHeader+body);
+            if (!header.crcerr())
+            {
+               fileType = tMDP;
+               return;
+            }
          }
       }
 
