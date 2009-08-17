@@ -6,8 +6,8 @@
  * File stream for Rinex 3 navigation file data
  */
 
-#ifndef GPSTK_RINEXNAVSTREAM_HPP
-#define GPSTK_RINEXNAVSTREAM_HPP
+#ifndef GPSTK_RINEX3NAVSTREAM_HPP
+#define GPSTK_RINEX3NAVSTREAM_HPP
 
 //============================================================================
 //
