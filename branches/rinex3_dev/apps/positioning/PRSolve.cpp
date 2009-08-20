@@ -1038,7 +1038,7 @@ try
       iret = PRSolution::AutonomousPRSolution(CurrEpoch, UseSats, SVP, C.pTropModel,
                                               C.algebra, niter, conv, Solution,
                                               Covariance, Residual, Slope,
-                                              (C.Debug ? &C.oflog : NULL)           );
+                                              (C.Debug ? &C.oflog : NULL), NULL);
 
       C.oflog << "APS " << setw(2) << iret
               << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
