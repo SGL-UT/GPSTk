@@ -162,15 +162,19 @@ namespace gpstk
     /// @throw InvalidRequest If the request can not be completed for any
     ///    reason, this is thrown. The text may have additional
     ///    information as to why the request failed.
-    virtual Xvt getXvt( const SatID& sat,
+   virtual Xvt getXvt( const SatID& sat,
                         const CommonTime& t ) const
       throw( InvalidRequest );
 
 
-    virtual void dump( std::ostream& s=std::cout,
+   virtual void dump( std::ostream& s=std::cout,
                        short detail = 0 ) const
       throw();
-
+    
+   const EphMap getEphemerisMap()
+   {
+      return pe;
+	}
 
   }; // End of class 'SP3EphemerisStore'
 
