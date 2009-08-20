@@ -5,8 +5,8 @@
  * Autonomous pseudorange navigation solution, including RAIM algorithm
  */
  
-#ifndef PRS_POSITION_SOLUTION_HPP
-#define PRS_POSITION_SOLUTION_HPP
+#ifndef PRS_POSITION_SOLUTION_NEW_HPP
+#define PRS_POSITION_SOLUTION_NEW_HPP
 
 //============================================================================
 //
@@ -56,10 +56,11 @@ namespace gpstk
    {
    public:
          /// Constructor
-      PRSolution() throw() : RMSLimit(6.5), SlopeLimit(100.), 
-         Algebraic(false), ResidualCriterion(true), ReturnAtOnce(false),
-         NSatsReject(-1), Debug(false), pDebugStream(&std::cout),
-         MaxNIterations(10),  ConvergenceLimit(3.e-7), Valid(false) {};
+      PRSolution() throw()
+         : RMSLimit(6.5), SlopeLimit(100.), Algebraic(false),
+         ResidualCriterion(true), ReturnAtOnce(false), NSatsReject(-1),
+         Debug(false), pDebugStream(&std::cout), MaxNIterations(10),
+         ConvergenceLimit(3.e-7), Valid(false) {};
 
       /** Compute a position/time solution, given satellite PRNs and pseudoranges
        *  using a RAIM algorithm.
@@ -250,7 +251,8 @@ namespace gpstk
                                       Matrix<double>& Cov,
                                       Vector<double>& Resid,
                                       Vector<double>& Slope,
-                                      std::ostream *pDebug=NULL)
+                                      std::ostream *pDebug=NULL,
+                                      Vector<int>* satSystems=NULL)
             throw(Exception);
 
    private:
@@ -266,9 +268,9 @@ namespace gpstk
 
       /** Function used internally to handle the details of the Algebraic solution */
       static int AlgebraicSolution(Matrix<double>& A,
-                                   Vector<double>& Q,
-                                   Vector<double>& X,
-                                   Vector<double>& R);
+                                               Vector<double>& Q,
+                                               Vector<double>& X,
+                                               Vector<double>& R);
 
    }; // end class PRSolution
 
