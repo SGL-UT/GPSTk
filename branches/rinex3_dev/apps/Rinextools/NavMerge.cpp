@@ -36,7 +36,9 @@
 #include <vector>
 
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
+#include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
 #include "RinexNavData.hpp"
 #include "RinexNavHeader.hpp"
 #include "RinexNavStream.hpp"
@@ -49,7 +51,10 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-void BadArg(string& arg) { cout << "Error: nothing follows option " << arg << endl; }
+void BadArg(string& arg)
+{
+	cout << "Error: nothing follows option " << arg << endl;
+}
 
 //------------------------------------------------------------------------------------
 // Returns 0 when successful.
@@ -74,12 +79,13 @@ int main(int argc, char *argv[])
    {
       int i;
       string arg,filename,outfile,YMDformat("%Y,%m,%d,%H,%M,%f"),GPSformat("%F,%g");
-      DayTime tb,te;
+      CommonTime tb,te;
 
-      te = tb = DayTime::BEGINNING_OF_TIME;
+      te = tb = CommonTime::BEGINNING_OF_TIME;
 
       i = 1;
-      while(i < argc) {
+      while(i < argc)
+      {
          arg = string(argv[i]);
          if(arg == "--out" || arg.substr(0,2) == "-o") {
             if(arg == "--out") {
@@ -92,7 +98,8 @@ int main(int argc, char *argv[])
             cout << "Output file name is " << outfile << endl;
             argv[i][0] = '\0';
          }
-         else if(arg == "--begTime" || arg == "-tb" || arg.substr(0,3) == "-tb") {
+         else if(arg == "--begTime" || arg == "-tb" || arg.substr(0,3) == "-tb")
+         {
             if(arg.substr(0,3) == "-tb" && arg.size() > 3)
                arg = arg.substr(3);
             else {
@@ -100,11 +107,25 @@ int main(int argc, char *argv[])
                if(++i == argc) { BadArg(arg); break; }
                arg = string(argv[i]);
             }
-
-            if(numWords(arg,',') == 2)
-               tb.setToString(arg,GPSformat);
-            else if(numWords(arg,',') == 6)
-               tb.setToString(arg,YMDformat);
+            
+            //int numWords = numWords(arg,',');
+            vector<string> fields;
+            string msg = arg;
+            while(msg.size() > 0)
+               fields.push_back(stripFirstWord(msg,','));
+                        
+            if(fields.size() == 2)
+            {
+               GPSWeekSecond gpsws(asInt(fields[0]), asInt(fields[1]));
+               tb = gpsws;
+            }
+            else if(fields.size() == 6)
+            {
+               CivilTime ctime(asInt(fields[0]), asInt(fields[1]),
+                                 asInt(fields[2]), asInt(fields[3]),
+                                 asInt(fields[4]), asDouble(fields[5]));
+               tb = ctime;
+            }
             else
                cout << "Unable to understand timetag option: " << arg << endl;
             argv[i][0] = '\0';
@@ -114,14 +135,31 @@ int main(int argc, char *argv[])
                arg = arg.substr(3);
             else {
                argv[i][0] = '\0';
-               if(++i == argc) { BadArg(arg); break; }
+               if(++i == argc)
+               {
+               	BadArg(arg);
+               	break;
+               }
                arg = string(argv[i]);
             }
-
-            if(numWords(arg,',') == 2)
-               te.setToString(arg,GPSformat);
-            else if(numWords(arg,',') == 6)
-               te.setToString(arg,YMDformat);
+            
+            vector<string> fields;
+            string msg = arg;
+            while(msg.size() > 0)
+               fields.push_back(stripFirstWord(msg,','));
+				
+            if(fields.size() == 2)
+            {
+               GPSWeekSecond gpsws(asInt(fields[0]), asInt(fields[1]));
+               te = gpsws;
+            }
+            else if(fields.size() == 6)
+            {
+            	CivilTime ctime(asInt(fields[0]), asInt(fields[1]),
+                                 asInt(fields[2]), asInt(fields[3]),
+                                 asInt(fields[4]), asDouble(fields[5]));
+               te = ctime;
+            }
             else
                cout << "Unable to understand timetag option: " << arg << endl;
             argv[i][0] = '\0';
@@ -130,16 +168,20 @@ int main(int argc, char *argv[])
          i++;
       }
 
-      if(te != DayTime::BEGINNING_OF_TIME &&
-         tb == DayTime::BEGINNING_OF_TIME) tb = te;
-      else
-      if(tb != DayTime::BEGINNING_OF_TIME &&
-         te == DayTime::BEGINNING_OF_TIME) te = tb;
-      if(tb > te) { DayTime tt=tb; tb=te; te=tt; }
+      if(te != CommonTime::BEGINNING_OF_TIME && tb == CommonTime::BEGINNING_OF_TIME)
+         tb = te;
+      else if(tb != CommonTime::BEGINNING_OF_TIME &&
+         te == CommonTime::BEGINNING_OF_TIME) te = tb;
+      if(tb > te)
+      {
+      	CommonTime tt = tb;
+      	tb = te;
+      	te = tt;
+      }
 
-      if(tb != DayTime::BEGINNING_OF_TIME)
-         cout << "Time limits are " << tb.printf(YMDformat)
-               << " - " << te.printf(YMDformat) << endl;
+      if(tb != CommonTime::BEGINNING_OF_TIME)
+         cout << "Time limits are " << static_cast<CivilTime>(tb).printf(YMDformat)
+              << " - " << static_cast<CivilTime>(te).printf(YMDformat) << endl;
 
       RinexNavHeader rnh,rnhout;
       RinexNavData rne;
@@ -205,12 +247,12 @@ int main(int argc, char *argv[])
                // RinexNavData converts it to associate with the HOW)
                int wkTOC,wk;
                wk = rne.weeknum;                // 'weeknum' associated with HOW
-               wkTOC = rne.time.GPSfullweek();  // 'time' comes from epoch line
-               if(ABS(wk-wkTOC) > 1) {          // HOW and TOC should be w/in 1 week
+               wkTOC = static_cast<GPSWeekSecond>(rne.time).week;  // 'time' comes from epoch line
+               if(abs(wk-wkTOC) > 1) {          // HOW and TOC should be w/in 1 week
                   double dt = double(wk-wkTOC)/1024.0;
                   dt += (dt < 0.0 ? -0.5 : 0.5);
                   wk -= int(dt) * 1024;
-                  if(ABS(wk-wkTOC) > 1) {
+                  if(abs(wk-wkTOC) > 1) {
                      cout << "WARNING: Ephemeris in " << filename
                         << " for satellite G"
                         << setw(2) << setfill('0') << rne.PRNID << setfill(' ')
@@ -251,7 +293,7 @@ int main(int argc, char *argv[])
          n=0;
          while(it != EphList.end()) {
             rne = RinexNavData(*it);
-            if(tb == DayTime::BEGINNING_OF_TIME ||
+            if(tb == CommonTime::BEGINNING_OF_TIME ||
                (rne.time - tb > -14400.0 && rne.time - te < 14400.0))
             {
                n++;

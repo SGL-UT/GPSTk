@@ -35,7 +35,7 @@
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "RinexSatID.hpp"
 
 #include <fstream>
@@ -73,7 +73,7 @@ private:
    /// Satellite identifier for data to which this command will apply.
    RinexSatID SV;
    /// Time associated with this command.
-   DayTime time;
+   CommonTime time;
    /// Sign associated with this command.
    int sign;
    /// String associated with this command.
@@ -135,7 +135,7 @@ private:
    /// directories for the input and output files.
    std::string InputDir,OutputDir;
    /// start and stop times, for windowing the data.
-   DayTime BegTime,EndTime;
+   CommonTime BegTime,EndTime;
    /// tolerance to be used in comparing time tags.
    double TimeTol;
    /// time step interval if the data is to be decimated.
@@ -171,7 +171,7 @@ private:
    /// comments in the Rinex header.
    std::vector<std::string> HDComments;
    /// times for computing start and stop times, to go in the Rinex header.
-   DayTime CurrEpoch,PrevEpoch;
+   CommonTime CurrEpoch,PrevEpoch;
    /// an integer array for computing the time interval, to go in the Rinex header.
    int ndt[9];
    /// a double array for computing the time interval, to go in the Rinex header.
@@ -194,7 +194,7 @@ public:
 
       /// Default constructor. NB. Do not instantiate a RinexEditor outside of
       /// main(), as static initialization order on some OSs (Solaris) mean that
-      /// DayTime::END_OF_TIME may not be defined at that point.
+      /// CommonTime::END_OF_TIME may not be defined at that point.
    RinexEditor(void);
       /// Destructor
    virtual ~RinexEditor(void);
@@ -262,9 +262,9 @@ public:
    /// member access of the time comparison tolerance.
    double Tolerance(void) { return TimeTol; }
    /// member access of the start time.
-   DayTime BeginTimeLimit(void) { return BegTime; }
+   CommonTime BeginTimeLimit(void) { return BegTime; }
    /// member access of the end time.
-   DayTime EndTimeLimit(void) { return EndTime; }
+   CommonTime EndTimeLimit(void) { return EndTime; }
    /// member access of the input file name.
    std::string InputFileName(void) { return InputFile; }
    /// member access of the output file name.

@@ -256,8 +256,10 @@ try {
          string ts;
          ts = "# Time (" + outputFormat + ")";
          int n = ts.size() - Now.printf(outputFormat).size();
-         if(n < 0) rightpad = leftJustify(string(""),-n-1);
-         else leftpad = leftJustify(string(""),n);
+         if(n < 0)
+         	rightpad = leftJustify(string(""),-n-1);
+         else
+         	leftpad = leftJustify(string(""),n);
          cout << ts;
          
          if(DumpPos) cout << " NSVs        X(m)          Y(m)          Z(m)"
@@ -306,7 +308,7 @@ try {
             }
    
             // print it
-            if(j==2) cout << leftpad << obsdata.time.printf(outputFormat) << rightpad
+            if(j==2) cout << leftpad << static_cast<DayTime>(obsdata.time).printf(outputFormat) << rightpad
                << setw(4) << N
                << setprecision(3)
                << " " << setw(13) << X
@@ -332,7 +334,7 @@ try {
             for(j=0; j<otlist.size(); j++) {
                if(!ok) {       // output a line
                   // time tag
-                  cout << leftpad << obsdata.time.printf(outputFormat) << rightpad;
+                  cout << leftpad << static_cast<DayTime>(obsdata.time).printf(outputFormat) << rightpad;
                   // satellite
                   cout << " ";
                   if(AllNumeric)

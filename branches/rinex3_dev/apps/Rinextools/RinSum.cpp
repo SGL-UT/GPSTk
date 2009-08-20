@@ -38,7 +38,9 @@
 #include "RinexNavHeader.hpp"
 #include "RinexNavData.hpp"
 #include "RinexNavStream.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
+#include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
 #include "SatID.hpp"
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
@@ -66,7 +68,7 @@ vector<string> InputFiles;
 string InputDirectory;
 string OutputFile;
 ostream* pout;
-DayTime BegTime, EndTime;
+CommonTime BegTime, EndTime;
 bool ReplaceHeader=false;
 bool TimeSortTable=false;
 bool GPSTimeOutput=false;
@@ -87,7 +89,7 @@ public:
    RinexSatID sat;
    vector<int> nobs;
    double prevC1,prevP1,prevL1;
-   DayTime begin,end;
+   CommonTime begin,end;
    TableData(const SatID& p, const int& n)
       { sat=RinexSatID(p); nobs=vector<int>(n); prevC1=prevP1=prevL1=0; };
       // needed for find()
@@ -116,13 +118,13 @@ int main(int argc, char **argv)
 try {
    int iret,i,j,k,n,ifile,nsats,nclkjumps,L1lli;
    double C1,L1,P1,clkjumpave,clkjumpvar;
-   DayTime last,prev,ftime;
-   vector<DayTime> clkjumpTimes;
+   CommonTime last,prev,ftime;
+   vector<CommonTime> clkjumpTimes;
    vector<double> clkjumpMillsecs,clkjumpUncertainty;
    vector<int> clkjumpAgree;
 
-   BegTime = DayTime::BEGINNING_OF_TIME;
-   EndTime = DayTime::END_OF_TIME;
+   BegTime = CommonTime::BEGINNING_OF_TIME;
+   EndTime = CommonTime::END_OF_TIME;
 
       // Title and description
    string Title;
@@ -131,9 +133,10 @@ try {
    struct tm *tblock;
    timer = time(NULL);
    tblock = localtime(&timer);
-   last.setYMDHMS(1900+tblock->tm_year,1+tblock->tm_mon,
-               tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
-   Title += last.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
+   CivilTime ctime(1900+tblock->tm_year, 1+tblock->tm_mon, tblock->tm_mday,
+                     tblock->tm_hour, tblock->tm_min, tblock->tm_sec);
+   last = ctime;
+   Title += ctime.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
    cout << Title;
 
    iret=GetCommandLine(argc, argv);
@@ -184,8 +187,8 @@ try {
          continue;
       }
 
-      prev = DayTime::BEGINNING_OF_TIME;
-      ftime = DayTime::BEGINNING_OF_TIME;
+      prev = CommonTime::BEGINNING_OF_TIME;
+      ftime = CommonTime::BEGINNING_OF_TIME;
 
       if(!brief) *pout << "+++++++++++++ RinSum summary of Rinex obs file "
          << filename << " +++++++++++++\n";
@@ -248,7 +251,7 @@ try {
          last = robs.time;
          if(last < BegTime) continue;
          if(last > EndTime) break;
-         if(ftime == DayTime::BEGINNING_OF_TIME) ftime=last;
+         if(ftime == CommonTime::BEGINNING_OF_TIME) ftime=last;
          nepochs++;
          nsats = nclkjumps = 0;  // count sats and signs clock jumps have occurred
          clkjumpave = clkjumpvar = 0.0;
@@ -295,7 +298,7 @@ try {
 
             // test for millisecond clock adjusts -
             // sometimes they are applied to range but not phase or vice-versa
-            if(prev != DayTime::BEGINNING_OF_TIME && L1 != 0 && ptab->prevL1 != 0) {
+            if(prev != CommonTime::BEGINNING_OF_TIME && L1 != 0 && ptab->prevL1 != 0) {
                int nms;
                double test;
                nsats++;
@@ -328,7 +331,7 @@ try {
                   else if(debug) *pout << " - failed.";
                   if(debug && L1lli != 0) { *pout << " LLI is set"; }
                   if(debug) *pout << " " << RinexSatID(it->first)
-                     << " " << last.printf("%4F %.3g") << endl;
+                     << " " << static_cast<GPSWeekSecond>(last).printf("%4F %.3g") << endl;
                }
             }
             // save C1,L1,P1 for this sat for next time
@@ -353,7 +356,7 @@ try {
             clkjumpUncertainty.push_back(sqrt(clkjumpvar));
          }
 
-         if(prev != DayTime::BEGINNING_OF_TIME) {
+         if(prev != CommonTime::BEGINNING_OF_TIME) {
             dt = last-prev;
             if(dt > 0.0) {
                for(i=0; i<ndtmax; i++) {
@@ -372,9 +375,11 @@ try {
             else {
                cerr << " WARNING time tags out of order: "
                   //<< " prev > curr : "
-                  << prev.printf("%F/%.0g = %04Y/%02m/%02d %02H:%02M:%02S")
+                  << static_cast<GPSWeekSecond>(prev).printf("%F/%.0g = ")
+                  << static_cast<CivilTime>(prev).printf("%04Y/%02m/%02d %02H:%02M:%02S")
                   << " > "
-                  << last.printf("%F/%.0g = %04Y/%02m/%02d %02H:%02M:%02S")
+                  << static_cast<GPSWeekSecond>(last).printf("%F/%.0g = ")
+                  << static_cast<CivilTime>(last).printf("%04Y/%02m/%02d %02H:%02M:%02S")
                   << endl;
             }
          }
@@ -396,20 +401,26 @@ try {
          // summary info
       *pout << "Computed interval "
          << fixed << setw(5) << setprecision(2) << dt << " seconds." << endl;
-      *pout << "Computed first epoch: " << ftime.printf("%4F %14.7g") << " = "
-            << ftime.printf("%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
-      *pout << "Computed last  epoch: " << last.printf("%4F %14.7g") << " = "
-            << last.printf("%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
+      *pout << "Computed first epoch: " << static_cast<GPSWeekSecond>(ftime).printf("%4F %14.7g") << " = "
+            << static_cast<CivilTime>(ftime).printf("%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
+      *pout << "Computed last  epoch: " << static_cast<GPSWeekSecond>(last).printf("%4F %14.7g") << " = "
+            << static_cast<CivilTime>(last).printf("%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
 
       *pout << "Computed time span:";
-      double secs=last-ftime;
-      int iday = int(secs/86400.0);
-      if(iday > 0) *pout << " " << iday << "d";
-      DayTime delta;
-      delta.setSecOfDay(secs - iday*86400);
-      *pout << " " << delta.hour() << "h "
-         << delta.minute() << "m "
-         << delta.second() << "s = "
+      double secs = last - ftime;
+      int remaining = int(secs);
+      int iday = remaining/86400;
+      int hours = remaining / 3600;
+      remaining %= 3600;
+      int minutes = remaining /60;
+      remaining %= 60;
+      
+      if(iday > 0)
+      	*pout << " " << iday << "d";
+      
+      *pout << " " << hours << "h "
+         << minutes << "m "
+         << remaining << "s = "
          << secs << " seconds." << endl;
 
       i = 1+int(0.5+(last-ftime)/dt);
@@ -440,13 +451,13 @@ try {
             // compute total based on times
             *pout << setw(7) << 1+int(0.5+(tit->end-tit->begin)/dt);
             if(GPSTimeOutput) {
-               *pout << "  " << tit->begin.printf("%4F %10.3g")
-                  << " - " << tit->end.printf("%4F %10.3g") << endl;
+               *pout << "  " << static_cast<GPSWeekSecond>(tit->begin).printf("%4F %10.3g")
+                  << " - " << static_cast<GPSWeekSecond>(tit->end).printf("%4F %10.3g") << endl;
             }
             else {
                *pout
-                  << "  " << tit->begin.printf("%04Y/%02m/%02d %02H:%02M:%04.1f")
-                  << " - " << tit->end.printf("%04Y/%02m/%02d %02H:%02M:%04.1f")
+                  << "  " << static_cast<CivilTime>(tit->begin).printf("%04Y/%02m/%02d %02H:%02M:%04.1f")
+                  << " - " << static_cast<CivilTime>(tit->end).printf("%04Y/%02m/%02d %02H:%02M:%04.1f")
                   << endl;
             }
          }
@@ -481,7 +492,8 @@ try {
          *pout << " WARNING: millisecond clock adjusts at these times:\n";
          for(i=0; i<clkjumpTimes.size(); i++) {
             *pout << "   "
-             << clkjumpTimes[i].printf("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%06.3f")
+             << static_cast<GPSWeekSecond>(clkjumpTimes[i]).printf("%4F %10.3g = ")
+             << static_cast<CivilTime>(clkjumpTimes[i]).printf("%04Y/%02m/%02d %02H:%02M:%06.3f")
              << " " << setw(5) << setprecision(2) << clkjumpMillsecs[i]
              << " ms_clock_adjust";
              if(clkjumpAgree[i] > 0 || clkjumpUncertainty[i] > 0.01)
@@ -724,35 +736,53 @@ try {
       while(msg.size() > 0)
          field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
-         BegTime.setToString(field[0]+","+field[1], "%F,%g");
+      {
+         GPSWeekSecond weeksec(asInt(field[0]), asDouble(field[1]));
+         BegTime = weeksec;
+      }
       else if(field.size() == 6)
-         BegTime.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
-            +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
+      {
+      	CivilTime ctime(asInt(field[0]), asInt(field[1]), asInt(field[2]),
+      	                  asInt(field[3]), asInt(field[4]), asDouble(field[5]));
+         BegTime = ctime;
+      }
       else {
          cerr << "Error: invalid --start input: " << values[0] << endl;
       }
       if(help) cout << " Input: begin time " << values[0] << " = "
-         << BegTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+         << static_cast<CivilTime>(BegTime).printf("%Y/%02m/%02d %2H:%02M:%06.3f = ")
+         << static_cast<GPSWeekSecond>(BegTime).printf("%F/%10.3g") << endl;
    }
-   if(dashet.getCount()) {
+   if(dashet.getCount())
+   {
       values = dashet.getValue();
       msg = values[0];
       field.clear();
       while(msg.size() > 0)
          field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
-         EndTime.setToString(field[0]+","+field[1], "%F,%g");
+      {
+         GPSWeekSecond weeksec(asInt(field[0]), asDouble(field[1]));
+         EndTime = weeksec;
+      }
       else if(field.size() == 6)
-         EndTime.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
-            +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
-      else {
+      {
+         CivilTime ctime(asInt(field[0]), asInt(field[1]), asInt(field[2]),
+      	                  asInt(field[3]), asInt(field[4]), asDouble(field[5]));
+         EndTime = ctime;
+      }
+      else
+      {
          cerr << "Error: invalid --stop input: " << values[0] << endl;
       }
-      if(help) cout << " Input: end time " << values[0] << " = "
-         << EndTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+      if(help)
+         cout << " Input: end time " << values[0] << " = "
+              << static_cast<CivilTime>(EndTime).printf("%Y/%02m/%02d %2H:%02M:%06.3f = ")
+              << static_cast<GPSWeekSecond>(EndTime).printf("%F/%10.3g")  << endl;
    }
 
-   if(dashb.getCount()) {
+   if(dashb.getCount())
+   {
       brief = true;
       if(help) cout << "Input: found the brief flag" << endl;
    }

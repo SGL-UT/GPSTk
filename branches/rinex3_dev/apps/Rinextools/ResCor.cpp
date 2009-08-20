@@ -42,7 +42,10 @@
 //
 
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "DayTime.hpp" //To support the dynamic loading from strings.
+#include "CommonTime.hpp"
+#include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
@@ -150,7 +153,7 @@ Stats<double> ARSX,ARSY,ARSZ;      // average solution, for header output
 int inC1,inP1,inP2,inL1,inL2;      // indexes in rhead of C1, C1/P1, P2, L1 and L2
 int inEP,inPS;                     // flags for input of ephemeris, Rx position
 int inD1,inD2,inS1,inS2;
-DayTime CurrentTime, PrgmEpoch;
+CommonTime CurrentTime, PrgmEpoch;
 // these 3 vectors parallel
 vector<string> OTstrings;          // list of OTs (strings) to be computed
 vector<RinexObsHeader::RinexObsType> OTList;
@@ -175,14 +178,14 @@ map<RinexSatID,RCData> DataStoreMap;
    // debiasing output data
 map<RinexObsHeader::RinexObsType,map<RinexSatID,double> > AllBiases; // (OT,SV)
    // reference position as function of time (from input)
-map<DayTime,RefPosData> RefPosMap;
+map<CommonTime,RefPosData> RefPosMap;
 double RefPosMapDT;
 
 string RxhelpString=
 "\n --RxFlat <fn> : fn is a file with reference receiver positions and times:\n"
 "  The first line in the file (other than comments, marked by # in column 1)\n"
 "  is the format for each line of the file, using the specifications in\n"
-"  DayTime::setToString() and Position::setToString().\n"
+"  CommonTime::setToString() and Position::setToString().\n"
 "  The second line is a pattern made up of characters T, P and X indicating the\n"
 "  content of both the lines in the file and the format: (white-space-delimited)\n"
 "  words on each line are either part of the time(T) or position(P) specification,\n"
@@ -240,7 +243,7 @@ void CloseOutputFile(void) throw(Exception);
 void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
 int setBiasLimit(RinexObsHeader::RinexObsType& ot, double lim) throw(Exception);
 double removeBias(const RinexObsHeader::RinexObsType& ot, const RinexSatID& sat,
-   bool& reset, DayTime& tt, double delta) throw(Exception);
+   bool& reset, CommonTime& tt, double delta) throw(Exception);
 
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -248,10 +251,10 @@ int main(int argc, char **argv)
 try {
    totaltime = clock();
    int iret;
-   // NB. Do not instantiate editor outside main(), b/c DayTime::END_OF_TIME is a
+   // NB. Do not instantiate editor outside main(), b/c CommonTime::END_OF_TIME is a
    // static const that can produce static intialization order problems under some OS.
    RCRinexEditor REC;
-   CurrentTime = DayTime::BEGINNING_OF_TIME; // for same reason, init here...
+   CurrentTime = CommonTime::BEGINNING_OF_TIME; // for same reason, init here...
 
       // Title and description
    Title = PrgmName + ", part of the GPS ToolKit, Ver. " + PrgmVers
@@ -260,9 +263,10 @@ try {
    struct tm *tblock;
    timer = time(NULL);
    tblock = localtime(&timer);
-   PrgmEpoch.setYMDHMS(1900+tblock->tm_year,1+tblock->tm_mon,
-               tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
-   Title += PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
+   PrgmEpoch = CivilTime(1900+tblock->tm_year, 1+tblock->tm_mon,
+                        tblock->tm_mday, tblock->tm_hour, tblock->tm_min,
+                        tblock->tm_sec);
+   Title += static_cast<CivilTime>(PrgmEpoch).printf("%04Y/%02m/%02d %02H:%02M:%02S");
    Title += "\n";
    cout << Title;
 
@@ -791,9 +795,9 @@ try {
       logof << "Input Directory is " << REC.InputDirectory() << endl;
       logof << "Output Rinex obs file name is: " << REC.OutputFileName() << endl;
       logof << "Output Directory is " << REC.OutputDirectory() << endl;
-      if(REC.BeginTimeLimit() > DayTime::BEGINNING_OF_TIME)
+      if(REC.BeginTimeLimit() > CommonTime::BEGINNING_OF_TIME)
          logof << "Begin time limit is " << REC.BeginTimeLimit() << endl;
-      if(REC.EndTimeLimit() < DayTime::END_OF_TIME)
+      if(REC.EndTimeLimit() < CommonTime::END_OF_TIME)
          logof << "End time limit is " << REC.EndTimeLimit() << endl;
       if(REC.Decimation() != 0) logof << "Decmimation time interval is "
          << setprecision(2) << REC.Decimation() << " seconds." << endl;
@@ -936,7 +940,7 @@ try {
       inPS = 1;
    }
    else if(!RefPosFile.empty()) {
-      DayTime timetag;
+      CommonTime timetag;
       //logof << "Reference position from a file (" << RefPosFile << ")\n";
       // make sure it exists first
       ifstream inf(RefPosFile.c_str());
@@ -945,7 +949,7 @@ try {
          oferr << "Error: could not open positions file " << RefPosFile << endl;
          return -1;
       }
-      // fill the map<DayTime,RefPosData> RefPosMap;
+      // fill the map<CommonTime,RefPosData> RefPosMap;
       RefPosMap.clear();
       if(isRinexObsFile(RefPosFile)) {
          if(Verbose) {
@@ -1041,11 +1045,11 @@ try {
                   }
                }
                try {
-                  timetag.setToString(lineT,fmtT);
+                  timetag = DayTime().setToString(lineT,fmtT);
                }
                catch(Exception& dte) {
                   logof << "ERROR: reading the receiver position flat file threw"
-                     << " a DayTime exception:\n"
+                     << " a CommonTime exception:\n"
                      << "  This is the time format: " << fmtT << endl;
                   ok = have = havefmt = false;
                   break;
@@ -1095,8 +1099,8 @@ try {
          const int ndtmax=15;
          double dt,bestdt[ndtmax];
          int j,k,nleast,ndt[ndtmax]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
-         DayTime prev(DayTime::BEGINNING_OF_TIME);
-         map<DayTime,RefPosData>::const_iterator it;
+         CommonTime prev(CommonTime::BEGINNING_OF_TIME);
+         map<CommonTime,RefPosData>::const_iterator it;
 
          if(Debug) logof << "Here is the reference position map\n";
          for(it=RefPosMap.begin(); it != RefPosMap.end(); it++) {
@@ -1105,7 +1109,7 @@ try {
                   << " " << setw(13) << setprecision(3) << it->second.RxPos.Y()
                   << " " << setw(13) << setprecision(3) << it->second.RxPos.Z()
                   << endl;
-            if(prev != DayTime::BEGINNING_OF_TIME) {
+            if(prev != CommonTime::BEGINNING_OF_TIME) {
                dt = it->first - prev;
                for(i=0; i<ndtmax; i++) {
                   if(ndt[i] <= 0) { bestdt[i]=dt; ndt[i]=1; break; }
@@ -1492,7 +1496,7 @@ try {
       stst1 << fixed << " " << setw(13) << setprecision(3) << CurrRef.clk;
       roout.auxHeader.commentList.push_back(stst1.str());
       if(Verbose)
-         logof << "RAIM output: " << roout.time.printf("%02M:%04.1f ") << stst1.str();
+         logof << "RAIM output: " << static_cast<CivilTime>(roout.time).printf("%02M:%04.1f ") << stst1.str();
 
       //for(Nsvs=0,i=0; i<Sats.size(); i++) if(Sats[i].sat > 0) Nsvs++;
       //PDOP = RSS(prsol.Covariance(0,0),
@@ -1619,8 +1623,8 @@ try {
             int Nsvs;
             for(Nsvs=0,i=0; i<Sats.size(); i++) if(Sats[i].id > 0) Nsvs++;
             logof << "RPF " << setw(2) << Sats.size()-Nsvs
-               << " " << setw(4) << CurrentTime.GPSfullweek() << fixed
-               << " " << setw(10) << setprecision(3) << CurrentTime.GPSsecond()
+               << " " << setw(4) << static_cast<GPSWeekSecond>(CurrentTime).week << fixed
+               << " " << setw(10) << setprecision(3) << static_cast<GPSWeekSecond>(CurrentTime).sow
                << " " << setw(2) << Nsvs
                << " " << setw(16) << setprecision(6) << prsol.Solution(0)
                << " " << setw(16) << setprecision(6) << prsol.Solution(1)
@@ -1674,7 +1678,7 @@ try {
       }
    }
    else if(!RefPosFile.empty()) { // update RxPos from map
-      map<DayTime,RefPosData>::iterator ite;
+      map<CommonTime,RefPosData>::iterator ite;
       ite = RefPosMap.lower_bound(CurrentTime);
       // ite points to first element with value >= CurrentTime
       if(ite == RefPosMap.end() || fabs(ite->first - CurrentTime) > 0.1*RefPosMapDT) {
@@ -1696,7 +1700,8 @@ try {
 
    if(Debug && inPS > -1) {
       logof << "RxPos " << CurrentTime
-         << " " << CurrentTime.printf("%04F %10.3g") << fixed << setprecision(3)
+         << " " << static_cast<GPSWeekSecond>(CurrentTime).printf("%04F %10.3g")
+         << fixed << setprecision(3)
          << " " << setw(13) << CurrRef.RxPos.X()
          << " " << setw(13) << CurrRef.RxPos.Y()
          << " " << setw(13) << CurrRef.RxPos.Z()
@@ -2185,7 +2190,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // set bias, if necessary, and return raw-bias
 double removeBias(const RinexObsHeader::RinexObsType& ot, const RinexSatID& sv,
-   bool& rset, DayTime& tt, double raw) throw(Exception)
+   bool& rset, CommonTime& tt, double raw) throw(Exception)
 {
 try {
    rset = false;
@@ -2200,28 +2205,32 @@ try {
    // get the limit
    RinexSatID p;
    map<RinexSatID,double>::iterator jt;
-   jt = it->second.find(p);                  // p is (-1,GPS) here, so bias=limit
-   if(jt == it->second.end()) return raw;    // should never happen - throw?
+   jt = it->second.find(p);               // p is (-1,GPS) here, so bias=limit
+   if(jt == it->second.end()) return raw; // should never happen - throw?
    double limit=jt->second;
 
    // now find the current bias for the input satellite
    double bias;
-   if( (jt=it->second.find(sv)) == it->second.end()) {   // sat not found, define bias
+   if( (jt=it->second.find(sv)) == it->second.end()) {
+   	   // sat not found, define bias
       bias = it->second[sv] = raw-0.001;
       if(Verbose) logof << "Did not find a bias for "
          << RinexObsHeader::convertObsType(ot) << "," << sv
-         << " at time " << tt.printf("%4F %10.3g = %4Y/%02m/%02d %02H:%02M:%02S")
+         << " at time " << static_cast<GPSWeekSecond>(tt).printf("%4F %10.3g =")
+         << static_cast<CivilTime>(tt).printf(" %4Y/%02m/%02d %02H:%02M:%02S")
          << ", set it to " << fixed << setprecision(3) << bias << endl;
       rset = true;
    }
-   else {                                                      // found the sat
+   else {
+   	   // found the sat
       bias = jt->second;
       // logof << "Found bias for " << RinexObsHeader::convertObsType(ot)
       // << "," << sv << " = " << fixed << setprecision(3) << bias << endl;
       if(fabs(raw-jt->second) > limit) {
          if(Verbose) logof << "Bias limit for " << RinexObsHeader::convertObsType(ot)
             << "," << sv << " was exceeded at time "
-            << tt.printf("%4F %10.3g = %4Y/%02m/%02d %02H:%02M:%02S")
+            << static_cast<GPSWeekSecond>(tt).printf("%4F %10.3g = ")
+            << static_cast<CivilTime>(tt).printf("%4Y/%02m/%02d %02H:%02M:%02S")
             << " (" << fixed << setprecision(3) << raw-jt->second
             << " > " << setprecision(3) << limit
             << "), set it to " << fixed << setprecision(3) << raw-0.001 << endl;
