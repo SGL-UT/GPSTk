@@ -52,6 +52,7 @@ bool smallRot;
 bool translationScaling;
 bool rotationScaling;
 bool rotationTranslation;
+bool realData;
 
 int testNoRotationNoScaleNoTranslation();
 int testArbitraryTranslation();
@@ -63,7 +64,7 @@ int testZAxisRotation();
 int testTranslationScaling();
 int testRotationScaling();
 int testRotationTranslation();
-int realData();
+int testRealData();
 int isEverythingDocumented() { return true; }
 
 /*I don't have to worry about option arguments, so why not do it myself?*/

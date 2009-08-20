@@ -41,6 +41,7 @@ int main(int argc, char** argv)
    translationScaling = false;
    rotationScaling = false;
    rotationTranslation = false;
+   realData = false;
    
    parseArguments(argc, argv);
    
@@ -107,6 +108,11 @@ int main(int argc, char** argv)
    	printTitle("Rotation Translation");
       ret += testRotationTranslation();
    }
+   if(all || realData)
+   {
+   	printTitle("Real Data");
+   	ret += testRealData();
+	}
    
    if(fancy)
    {
@@ -697,9 +703,47 @@ int testRotationTranslation()
       return 1;
    }
 }
-int realData()
+int testRealData()
 {
-   return 0;
+	using namespace std;
+   using namespace gpstk;
+	
+	HelmertTransform& transform = HelmertTransform::instance();
+	
+	ReferenceFrame from = ReferenceFrame::WGS84;
+   ReferenceFrame to = ReferenceFrame::PZ90;
+	
+	try
+   {
+      Position p(-740494.751, -5457022.774, 3207269.193,Position::Cartesian,NULL,from);
+      cout << "    Position " << p << endl;
+      Position newPos = transform.transform(to, p);
+      cout << "New Position " << newPos << endl;
+      Position fin = transform.transform(from, newPos);
+      cout << "Fin Position " << fin << endl << endl;
+      cout << "Initial and transformed positions are the same(false): "; printBool(compare(p, newPos), cout) << endl;
+      cout << "       Initial and final positions are the same(true): "; printBool(compare(p,fin), cout) << endl;
+      cout << "  Transformed and final positions are the same(false): "; printBool(compare(newPos,fin), cout) << endl;
+      
+      cout << "Test Passed? ";
+      if(compare(p,fin))
+      {
+         printBool(true, cout) << endl << endl;
+         return 0;
+      }
+      else
+      {
+         printBool(false, cout) << endl << endl;
+         return 1;
+      }
+   }
+   catch(InvalidParameter& e)
+   {
+      cout << "InvalidParameter: " << e << endl;
+      cout << "Test Passed? ";
+      printBool(false, cout) << endl << endl;
+      return 1;
+   }
 }
 
 std::ostream& printBool(const bool print, std::ostream& out)
@@ -828,6 +872,11 @@ void parseArguments(int argc, char** argv)
          rotationTranslation = true;
          all = false;
       }
+      else if(str == "--realData")
+      {
+      	realData = true;
+      	all = false;
+		}
       
       else
       {
@@ -855,6 +904,7 @@ void printHelp()
    cout << "   --translationscale" << endl;
    cout << "   --rotationscale" << endl;
    cout << "   --rotationtranslation" << endl;
+   cout << "   --realData" << endl;
 }
 
 void printTitle(const char* str)
