@@ -3,8 +3,8 @@ Version 1.6   Tuesday, June 19, 2009
    General modifications
    ---------------------
 
-   - Majority of version 1.6 comprised of revision number 19XX, branching
-     took place under revision 19XX from dev/ to RC1.6/
+   - Majority of version 1.6 comprised of revision number 1962, branching
+     took place under revision 1962 from dev/ to branches/RC1.6/
    - There is now a Rinex3 development branch. This release does not include
      support for Rinex3 but we hope to include it in the future.
    - Major improvements in readability of code by adding new comments and

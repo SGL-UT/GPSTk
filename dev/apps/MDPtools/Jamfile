@@ -23,21 +23,21 @@ GPSMain mdp2rinex : mdp2rinex.cpp ;
 
 GPSMain mdpEdit : mdpEdit.cpp ;
 
-if $(UNIX)
-{
-  if $(OS) = SOLARIS  {
-    LINKLIBS on mdpscreenx$(SUFEXE) += -lcurses ;
-  }
-  else {
-    LINKLIBS on mdpscreenx$(SUFEXE) += -lstdc++ -lncurses ;
-  }
-
-  LinkLibraries mdpscreenx : mdplib ;
-  GPSLinkLibraries mdpscreenx : gpstk rxio ;
-
-  GPSMain mdpscreenx : mdpscreen.cpp ScreenProc.cpp ;
-
-  if $(OS) != CYGWIN  {
-  InstallBin $(BINDIR) : mdpscreen mdpscreenx ;
-  }
-}
+#if $(UNIX)
+#{
+#  if $(OS) = SOLARIS  {
+#    LINKLIBS on mdpscreenx$(SUFEXE) += -lcurses ;
+#  }
+#  else {
+#    LINKLIBS on mdpscreenx$(SUFEXE) += -lstdc++ -lncurses ;
+#  }
+#
+#  LinkLibraries mdpscreenx : mdplib ;
+#  GPSLinkLibraries mdpscreenx : gpstk rxio ;
+#
+#  GPSMain mdpscreenx : mdpscreen.cpp ScreenProc.cpp ;
+#
+#  if $(OS) != CYGWIN  {
+#  InstallBin $(BINDIR) : mdpscreen mdpscreenx ;
+#  }
+#}

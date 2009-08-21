@@ -11,7 +11,7 @@ KEEPOBJS = true ;
 PREFIX ?= /usr/local/ ;
 INCDIR = $(PREFIX)/include/gpstk ;
 
-GPSTK_SO_VERSION = 15 ;
+GPSTK_SO_VERSION = 16 ;
 # override the built-in EXEMODE
 EXEMODE = 755 ;
 SHELLMODE = 755 ;
