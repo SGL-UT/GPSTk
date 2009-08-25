@@ -66,8 +66,8 @@ else
       
       RACRotation.cpp ReferenceFrame.cpp Rinex3EphemerisStore.cpp
       Rinex3NavHeader.cpp Rinex3NavData.cpp Rinex3ObsHeader.cpp
-      Rinex3ObsData.cpp RinexEphemerisStore.cpp RinexMetData.cpp
-      RinexMetHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
+      Rinex3ObsData.cpp RinexConverter.cpp RinexEphemerisStore.cpp
+      RinexMetData.cpp RinexMetHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
       RinexObsData.cpp RinexObsHeader.cpp RinexObsID.cpp RinexSatID.cpp
       RinexUtilities.cpp RungeKutta4.cpp
       
@@ -153,7 +153,7 @@ else
       PCodeConst.hpp PRSolution.hpp PoleTides.hpp PolyFit.hpp
       Position.hpp PowerSum.hpp PZ90Ellipsoid.hpp PZ90Geoid.hpp
       
-      RACRotation.hpp ReferenceFrame.hpp RTFileFrame.hpp
+      RACRotation.hpp ReferenceFrame.hpp RTFileFrame.hpp RinexConverter.hpp
       RinexEphemerisStore.hpp RinexMetBase.hpp RinexMetData.hpp
       RinexMetFilterOperators.hpp RinexMetHeader.hpp RinexMetStream.hpp
       RinexNavBase.hpp RinexNavData.hpp RinexNavFilterOperators.hpp
