@@ -2,9 +2,11 @@
 # $Id$
 #
 
+SEARCH =  ../../lib/rxio ../../src ;
 SubDir TOP apps converters ;
 
-GPSLinkLibraries novaRinex ash2mdp ats2mdp ash2xyz : gpstk rxio ;
+GPSLinkLibraries novaRinex ash2mdp ats2mdp ash2xyz : gpstk-R3 rxio ;
+GPSLinkLibraries RinexConvert : gpstk-R3 ;
 
 GPSMain novaRinex : novaRinex.cpp ;
 
@@ -13,4 +15,8 @@ GPSMain ash2mdp : ash2mdp.cpp ;
 GPSMain ats2mdp : ats2mdp.cpp ;
 
 GPSMain ash2xyz : ash2xyz.cpp ;
+
+GPSMain RinexConvert : RinexConvert.cpp ;
+ObjectHdrs RinexConvert RinexConvert.cpp : ../../src ;
+LinkLibraries RinexConvert : ../../src/libgpstk-R3.a ;
 
