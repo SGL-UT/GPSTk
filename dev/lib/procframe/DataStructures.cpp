@@ -1499,6 +1499,804 @@ in matrix and number of types do not match") );
 
 
 
+      //// Some other handy data structures
+
+
+
+      /* Returns the data value (double) corresponding to provided SourceID,
+       * SatID and TypeID.
+       *
+       * @param source        Source to be looked for.
+       * @param satellite     Satellite to be looked for.
+       * @param type          Type to be looked for.
+       */
+   double sourceDataMap::getValue( const SourceID& source,
+                                   const SatID& satellite,
+                                   const TypeID& type ) const
+      throw( SourceIDNotFound, SatIDNotFound, TypeIDNotFound )
+   {
+
+         // Look for the SourceID
+      sourceDataMap::const_iterator itObs( (*this).find(source) );
+      if( itObs != (*this).end() )
+      {
+         return (*itObs).second.getValue( satellite, type );
+      }
+      else
+      {
+         GPSTK_THROW(SourceIDNotFound("SourceID not found in map"));
+      }
+
+   }  // End of method 'sourceDataMap::getValue()'
+
+
+
+      /* Get a set with all the SourceID's in this data structure.
+       *
+       * @warning If current 'sourceDataMap' is big, this could be a very
+       * costly operation.
+       */
+   SourceIDSet sourceDataMap::getSourceIDSet( void ) const
+   {
+
+         // SourceID set to be returned
+      SourceIDSet toReturn;
+
+         // Then, iterate through corresponding 'sourceDataMap'
+      for( sourceDataMap::const_iterator sdmIter = (*this).begin();
+           sdmIter != (*this).end();
+           ++sdmIter )
+      {
+
+            // Add current SourceID to 'toReturn'
+         toReturn.insert( (*sdmIter).first );
+
+      }  // End of 'for( sourceDataMap::const_iterator sdmIter = ...'
+
+      return toReturn;
+
+   }  // End of method 'sourceDataMap::getSourceIDSet()'
+
+
+
+      /* Get a set with all the SatID's in this data structure.
+       *
+       * @warning If current 'sourceDataMap' is big, this could be a very
+       * costly operation.
+       */
+   SatIDSet sourceDataMap::getSatIDSet( void ) const
+   {
+
+         // SatID set to be returned
+      SatIDSet toReturn;
+
+         // Then, iterate through corresponding 'sourceDataMap'
+      for( sourceDataMap::const_iterator sdmIter = (*this).begin();
+           sdmIter != (*this).end();
+           ++sdmIter )
+      {
+
+            // Finally, iterate through corresponding 'satTypeValueMap'
+         for( satTypeValueMap::const_iterator stvmIter =
+                                                   (*sdmIter).second.begin();
+              stvmIter != (*sdmIter).second.end();
+              stvmIter++ )
+         {
+
+               // Add current SatID to 'toReturn'
+            toReturn.insert( (*stvmIter).first );
+
+         }  // End of 'for( satTypeValueMap::const_iterator stvmIter = ...'
+
+      }  // End of 'for( sourceDataMap::const_iterator sdmIter = ...'
+
+      return toReturn;
+
+   }  // End of method 'sourceDataMap::getSatIDSet()'
+
+
+
+      /* Adds 'gnssSatTypeValue' object data to this structure.
+       *
+       * @param gds     gnssSatTypeValue object containing data to be added.
+       */
+   gnssDataMap& gnssDataMap::addGnssSatTypeValue( const gnssSatTypeValue& gds )
+   {
+
+         // Declare an object for temporal storage of data
+      sourceDataMap sdMap;
+
+         // Fill with data
+      sdMap[ gds.header.source ] = gds.body;
+
+         // Introduce data into this GDS
+      (*this).insert( pair<DayTime, sourceDataMap>( gds.header.epoch, sdMap ) );
+
+         // Return curren GDS.
+      return (*this);
+
+   }  // End of method 'gnssDataMap::addGnssSatTypeValue()'
+
+
+
+      /* Adds 'gnssRinex' object data to this structure.
+       *
+       * @param gds     gnssRinex object containing data to be added.
+       */
+   gnssDataMap& gnssDataMap::addGnssRinex( const gnssRinex& gds )
+   {
+
+         // Declare an object for temporal storage of data
+      sourceDataMap sdMap;
+
+         // Fill with data
+      sdMap[ gds.header.source ] = gds.body;
+
+         // Introduce data into this GDS
+      (*this).insert( pair<DayTime, sourceDataMap>( gds.header.epoch, sdMap ) );
+
+         // Return current GDS.
+      return (*this);
+
+   }  // End of method 'gnssDataMap::addGnssRinex()'
+
+
+
+      /* Returns a 'gnssRinex' object corresponding to given SourceID.
+       *
+       * @param source     SourceID object.
+       *
+       * @warning Returned data will correspond to first matching SourceID,
+       * if it exists.
+       */
+   gnssRinex gnssDataMap::getGnssRinex( const SourceID& source ) const
+   {
+
+         // Get first data set
+      gnssDataMap gdMap( (*this).frontEpoch() );
+
+         // Declare a gnssRinex object to be returned
+      gnssRinex toReturn;
+
+         // We'll need a flag
+      bool found(false);
+
+         // Look into the data structure
+      for( gnssDataMap::const_iterator it = gdMap.begin();
+           it != gdMap.end() and !found;
+           ++it )
+      {
+
+            // Look for SourceID
+         sourceDataMap::const_iterator iter( (*it).second.find( source ) );
+         if( iter != (*it).second.end() )
+         {
+            toReturn.body = (*iter).second;
+            toReturn.header.source = (*iter).first;
+            toReturn.header.epoch = (*it).first;
+            found = true;
+         }
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+         // Return GDS
+      return toReturn;
+
+   }  // End of method 'gnssDataMap::addGnssRinex()'
+
+
+
+      // Returns a copy of the first element in the map.
+   gnssDataMap gnssDataMap::front( void ) const
+   {
+
+         // Object to be returned
+      gnssDataMap toReturn;
+
+         // First check that structure isn't empty
+      if( !( (*this).empty() ) )
+      {
+
+            // Get first element
+         gnssDataMap::const_iterator firstIt( (*this).begin() );
+
+            // Insert first element in 'toReturn' object
+         toReturn.insert(*firstIt);
+
+      }
+
+      return toReturn;
+
+   }  // End of method 'gnssDataMap::front()'
+
+
+
+      // Removes the first element in the map.
+   void gnssDataMap::pop_front( void )
+   {
+
+         // First check that structure isn't empty
+      if( !( (*this).empty() ) )
+      {
+
+            // Define an iterator pointing to the beginning of this map
+         gnssDataMap::iterator pos( (*this).begin() );
+
+            // It is advisable to avoid sawing off the branch we are sitting on
+         (*this).erase( pos++ );
+
+      }
+
+      return;
+
+   }  // End of method 'gnssDataMap::pop_front()'
+
+
+
+      // Returns the data corresponding to the first epoch in the map,
+      // taking into account the 'tolerance' value.
+   gnssDataMap gnssDataMap::frontEpoch( void ) const
+   {
+
+         // Declare structure to be returned
+      gnssDataMap toReturn;
+
+         // First check that structure isn't empty
+      if( !( (*this).empty() ) )
+      {
+
+            // Get the 'DayTime' of the first element
+         DayTime firstEpoch( (*(*this).begin()).first );
+
+            // Find the position of the first element PAST
+            // 'firstEpoch+tolerance'
+         gnssDataMap::const_iterator endPos(
+                                 (*this).upper_bound(firstEpoch+tolerance) );
+
+            // Add values to 'toReturn'
+         for( gnssDataMap::const_iterator it = (*this).begin();
+              it != endPos;
+              ++it )
+         {
+            toReturn.insert( (*it) );
+         }
+
+      }
+
+      return toReturn;
+
+   }  // End of method 'gnssDataMap::frontEpoch()'
+
+
+
+      // Removes the first epoch in the map. Be aware that this method
+      // takes into account 'tolerance', so more than just one epoch may be
+      // removed if they are within 'tolerance' margin.
+   void gnssDataMap::pop_front_epoch( void )
+   {
+
+         // First check that structure isn't empty
+      if( !( (*this).empty() ) )
+      {
+
+            // Get the 'DayTime' of the first element
+         DayTime firstEpoch( (*(*this).begin()).first );
+
+            // Find the position of the first element PAST
+            // 'firstEpoch+tolerance'
+         gnssDataMap::iterator endPos(
+                                 (*this).upper_bound(firstEpoch+tolerance) );
+
+            // Remove values
+         for( gnssDataMap::iterator pos = (*this).begin();
+              pos != endPos; )
+         {
+
+               // It is advisable to avoid sawing off the branch we are
+               // sitting on
+            (*this).erase( pos++ );
+         }
+
+      }
+
+      return;
+
+   }  // End of method 'gnssDataMap::pop_front_epoch()'
+
+
+
+      // Returns a copy of the last element in the map.
+   gnssDataMap gnssDataMap::back( void ) const
+   {
+
+         // Object to be returned
+      gnssDataMap toReturn;
+
+         // First check that structure isn't empty
+      if( !( (*this).empty() ) )
+      {
+
+            // Get last element
+         gnssDataMap::const_reverse_iterator lastIt( (*this).rbegin() );
+
+            // Insert the last element in 'toReturn' object
+         toReturn.insert(*lastIt);
+
+      }
+
+      return toReturn;
+
+   }  // End of method 'gnssDataMap::back()'
+
+
+
+      // Removes the last element in the map.
+   void gnssDataMap::pop_back( void )
+   {
+
+         // First check that structure isn't empty
+      if( !( (*this).empty() ) )
+      {
+
+            // Define an iterator pointing to the end of this map
+         gnssDataMap::iterator pos( (*this).end() );
+
+            // Delete element
+         (*this).erase( --pos );
+
+      }
+
+      return;
+
+   }  // End of method 'gnssDataMap::pop_back()'
+
+
+
+      // Returns the data corresponding to the last epoch in the map,
+      // taking into account the 'tolerance' value.
+   gnssDataMap gnssDataMap::backEpoch( void ) const
+   {
+
+         // Declare structure to be returned
+      gnssDataMap toReturn;
+
+         // First check that structure isn't empty
+      if( !( (*this).empty() ) )
+      {
+
+            // Get the 'DayTime' of the last element
+         DayTime lastEpoch( (*(--(*this).end())).first );
+
+            // Find the position of the last element PAST
+            // 'lastEpoch-tolerance'
+         gnssDataMap::const_iterator beginPos(
+                                 (*this).lower_bound(lastEpoch-tolerance) );
+
+            // Add values to 'toReturn'
+         for( gnssDataMap::const_iterator it = beginPos;
+              it != (*this).end();
+              ++it )
+         {
+            toReturn.insert( (*it) );
+         }
+
+      }
+
+      return toReturn;
+
+   }  // End of method 'gnssDataMap::backEpoch()'
+
+
+
+      // Removes the last epoch in the map. Be aware that this method
+      // takes into account 'tolerance', so more than just one epoch may be
+      // removed if they are within 'tolerance' margin.
+   void gnssDataMap::pop_back_epoch( void )
+   {
+
+         // First check that structure isn't empty
+      if( !( (*this).empty() ) )
+      {
+
+            // Get the 'DayTime' of the last element
+         DayTime lastEpoch( (*(--(*this).end())).first );
+
+            // Find the position of the last element PAST
+            // 'lastEpoch-tolerance'
+         gnssDataMap::iterator beginPos(
+                                 (*this).lower_bound(lastEpoch-tolerance) );
+
+            // Remove values
+         for( gnssDataMap::iterator pos = beginPos;
+              pos != (*this).end(); )
+         {
+
+               // It is advisable to avoid sawing off the branch we are
+               // sitting on
+            (*this).erase( pos++ );
+         }
+
+      }
+
+      return;
+
+   }  // End of method 'gnssDataMap::pop_back_epoch()'
+
+
+
+      /* Returns a 'gnssDataMap' with the data corresponding to provided
+       * DayTime, taking into account 'tolerance'.
+       *
+       * @param epoch         Epoch to be looked for.
+       */
+   gnssDataMap gnssDataMap::getDataFromEpoch( const DayTime& epoch ) const
+      throw( DayTimeNotFound )
+   {
+
+         // Declare structure to be returned
+      gnssDataMap toReturn;
+
+         // First check that structure isn't empty
+      if( !( (*this).empty() ) )
+      {
+
+            // Find the position of the first element whose key is not less than
+            // 'epoch-tolerance'
+         gnssDataMap::const_iterator beginPos(
+                                 (*this).lower_bound(epoch-tolerance) );
+
+            // Find the position of the first element PAST
+            // 'epoch+tolerance'
+         gnssDataMap::const_iterator endPos(
+                                 (*this).upper_bound(epoch+tolerance) );
+
+            // Add values to 'toReturn'
+         for( gnssDataMap::const_iterator it = beginPos;
+              it != endPos;
+              ++it )
+         {
+            toReturn.insert( (*it) );
+         }
+
+      }
+      else
+      {
+         GPSTK_THROW(DayTimeNotFound("Data map is empty"));
+      }
+
+         // Check if 'toReturn' is empty
+      if( toReturn.empty() )
+      {
+         GPSTK_THROW(DayTimeNotFound("Epoch not found"));
+      }
+
+      return toReturn;
+
+   }  // End of method 'gnssDataMap::getDataFromEpoch()'
+
+
+
+      /* Returns the data value (double) corresponding to provided DayTime,
+       * SourceID, SatID and TypeID.
+       *
+       * @param epoch         Epoch to be looked for.
+       * @param source        Source to be looked for.
+       * @param satellite     Satellite to be looked for.
+       * @param type          Type to be looked for.
+       *
+       * @warning If within (epoch +/- tolerance) more than one match exists,
+       * then only the first one is returned.
+       */
+   double gnssDataMap::getValue( const DayTime& epoch,
+                                 const SourceID& source,
+                                 const SatID& satellite,
+                                 const TypeID& type ) const
+      throw( DayTimeNotFound, ValueNotFound )
+   {
+
+         // Look for the epoch (DayTime) data
+      gnssDataMap gdMap( getDataFromEpoch(epoch) );
+
+         // Value to be returned
+      double toReturn;
+
+         // We'll need a flag
+      bool found(false);
+
+         // Look into the data structure
+      for( gnssDataMap::const_iterator it = gdMap.begin();
+           it != gdMap.end() and !found;
+           ++it )
+      {
+
+         try
+         {
+            toReturn = (*it).second.getValue( source, satellite, type );
+            found = true;
+         }
+         catch(...)
+         {
+            continue;
+         }
+
+      }
+
+         // Check if value was found
+      if( !found )
+      {
+         GPSTK_THROW(ValueNotFound("Value not found"));
+      }
+
+      return toReturn;
+
+   }  // End of method 'gnssDataMap::getValue()'
+
+
+
+      /* Returns the data value (double) corresponding to the first epoch
+       * in the data structure, given SourceID, SatID and TypeID.
+       *
+       * @param source        Source to be looked for.
+       * @param satellite     Satellite to be looked for.
+       * @param type          Type to be looked for.
+       *
+       * @warning If within first epoch (epoch +/- tolerance) more than one
+       * match exists, then only the first one is returned.
+       */
+   double gnssDataMap::getValue( const SourceID& source,
+                                 const SatID& satellite,
+                                 const TypeID& type ) const
+      throw( ValueNotFound )
+   {
+
+         // Look for the epoch (DayTime) data
+      gnssDataMap gdMap( frontEpoch() );
+
+         // Value to be returned
+      double toReturn;
+
+         // We'll need a flag
+      bool found(false);
+
+         // Look into the data structure
+      for( gnssDataMap::const_iterator it = gdMap.begin();
+           it != gdMap.end() and !found;
+           ++it )
+      {
+
+         try
+         {
+            toReturn = (*it).second.getValue( source, satellite, type );
+            found = true;
+         }
+         catch(...)
+         {
+            continue;
+         }
+
+      }
+
+         // Check if value was found
+      if( !found )
+      {
+         GPSTK_THROW(ValueNotFound("Value not found"));
+      }
+
+      return toReturn;
+
+   }  // End of method 'gnssDataMap::getValue()'
+
+
+
+      /* Inserts a data value (double) in the first epoch of the data
+       * structure with the given SourceID, SatID and TypeID.
+       *
+       * @param source        Source to be looked for.
+       * @param satellite     Satellite to be looked for.
+       * @param type          Type of the new data.
+       * @param value         Value to be inserted.
+       */
+   gnssDataMap& gnssDataMap::insertValue( const SourceID& source,
+                                          const SatID& satellite,
+                                          const TypeID& type,
+                                          double value )
+      throw( ValueNotFound )
+   {
+
+         // We'll need a flag
+      bool found(false);
+
+         // Look into the data structure
+      for( gnssDataMap::iterator it = (*this).begin();
+           it != (*this).end() and !found;
+           ++it )
+      {
+
+            // Look for the source
+         sourceDataMap::iterator it2( (*it).second.find(source) );
+
+         if( it2 != (*it).second.end() )
+         {
+
+               // Look for the satellite
+            satTypeValueMap::iterator it3( (*it2).second.find(satellite) );
+
+            if( it3 != (*it2).second.end() )
+            {
+
+                  // Insert type and value
+               (*it3).second[ type ] = value;
+
+                  // Work is done, let's get out
+               found = true;
+
+                  // Insert value
+               // (*it).second[ source ]( satellite )[ type ] = value;
+
+            }  // End of 'if( it3 != (*it2).second.end() )'
+
+         }  // End of 'if( it2 != (*it).second.end() )'
+
+      }  // End of 'for( gnssDataMap::iterator it = (*this).begin(); ...'
+
+         // Check if we found a proper place to insert value
+      if( !found )
+      {
+         GPSTK_THROW( ValueNotFound("No proper place to insert value"));
+      }
+
+      return (*this);
+
+   }  // End of method 'gnssDataMap::insertValue()'
+
+
+
+      /* Get a set with all the SourceID's in this data structure.
+       *
+       * @warning If current 'gnssDataMap' is big, this could be a very
+       * costly operation.
+       */
+   SourceIDSet gnssDataMap::getSourceIDSet( void ) const
+   {
+
+         // SourceID set to be returned
+      SourceIDSet toReturn;
+
+         // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = (*this).begin();
+           it != (*this).end();
+           ++it )
+      {
+
+            // Then, iterate through corresponding 'sourceDataMap'
+         for( sourceDataMap::const_iterator sdmIter = (*it).second.begin();
+              sdmIter != (*it).second.end();
+              ++sdmIter )
+         {
+
+               // Add current SourceID to 'toReturn'
+            toReturn.insert( (*sdmIter).first );
+
+         }  // End of 'for( sourceDataMap::const_iterator sdmIter = ...'
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      return toReturn;
+
+   }  // End of method 'gnssDataMap::getSourceIDSet()'
+
+
+
+      /* Get a set with all the SatID's in this data structure.
+       *
+       * @warning If current 'gnssDataMap' is big, this could be a very
+       * costly operation.
+       */
+   SatIDSet gnssDataMap::getSatIDSet( void ) const
+   {
+
+         // SatID set to be returned
+      SatIDSet toReturn;
+
+         // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = (*this).begin();
+           it != (*this).end();
+           ++it )
+      {
+
+            // Then, iterate through corresponding 'sourceDataMap'
+         for( sourceDataMap::const_iterator sdmIter = (*it).second.begin();
+              sdmIter != (*it).second.end();
+              ++sdmIter )
+         {
+
+               // Finally, iterate through corresponding 'satTypeValueMap'
+            for( satTypeValueMap::const_iterator stvmIter =
+                                                      (*sdmIter).second.begin();
+                 stvmIter != (*sdmIter).second.end();
+                 stvmIter++ )
+            {
+
+                  // Add current SatID to 'toReturn'
+               toReturn.insert( (*stvmIter).first );
+
+            }  // End of 'for( satTypeValueMap::const_iterator stvmIter = ...'
+
+         }  // End of 'for( sourceDataMap::const_iterator sdmIter = ...'
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      return toReturn;
+
+   }  // End of method 'gnssDataMap::getSatIDSet()'
+
+
+
+      // Convenience output method
+   std::ostream& gnssDataMap::dump( std::ostream& s,
+                                    int mode ) const
+   {
+
+         // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = (*this).begin();
+           it != (*this).end();
+           ++it )
+      {
+
+            // Then, iterate through corresponding 'sourceDataMap'
+         for( sourceDataMap::const_iterator sdmIter = (*it).second.begin();
+              sdmIter != (*it).second.end();
+              ++sdmIter )
+         {
+
+               // Finally, iterate through corresponding 'satTypeValueMap'
+            for( satTypeValueMap::const_iterator stvmIter =
+                                                      (*sdmIter).second.begin();
+                 stvmIter != (*sdmIter).second.end();
+                 stvmIter++ )
+            {
+
+                  // First, print year, Day-Of-Year and Seconds of Day
+               s << (*it).first.year() << " "
+                 << (*it).first.DOY() << " "
+                 << (*it).first.DOYsecond() << " ";
+
+                  // Second, print SourceID information
+               s << (*sdmIter).first << " ";
+
+                  // Third, print satellite (system and PRN)
+               s << (*stvmIter).first << " ";
+
+                  // Fourth, print type descriptions and numerical values
+               for( typeValueMap::const_iterator itObs =
+                                                   (*stvmIter).second.begin();
+                    itObs != (*stvmIter).second.end();
+                    itObs++ )
+               {
+
+                  s << (*itObs).first << " "
+                    << (*itObs).second << " ";
+
+               }  // End of 'for( typeValueMap::const_iterator itObs = ...'
+
+                  // Add end-of-line
+               s << endl;
+
+            }  // End of 'for( satTypeValueMap::const_iterator stvmIter = ...'
+
+         }  // End of 'for( sourceDataMap::const_iterator sdmIter = ...'
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+         // Let's return the 'std::ostream'
+      return s;
+
+   }  // End of method 'gnssDataMap::dump()'
+
+
+
+
+
       ////// Other stuff //////
 
 
@@ -1528,12 +2326,13 @@ in matrix and number of types do not match") );
 
             s << (*itObs).second << " ";
 
-         }  // End for( itObs = ... )
+         }  // End of 'for( typeValueMap::const_iterator itObs = ...'
 
          s << endl;
 
-      }
+      }  // End of 'for( satTypeValueMap::const_iterator it = ...'
 
+         // Let's return the 'std::ostream'
       return s;
 
    }  // End of method 'satTypeValueMap::dump()'
@@ -1546,6 +2345,18 @@ in matrix and number of types do not match") );
    {
 
       stvMap.dump(s);
+      return s;
+
+   }  // End of 'operator<<'
+
+
+
+      // stream output for gnssDataMap
+   std::ostream& operator<<( std::ostream& s,
+                             const gnssDataMap& gdsMap)
+   {
+
+      gdsMap.dump(s);
       return s;
 
    }  // End of 'operator<<'

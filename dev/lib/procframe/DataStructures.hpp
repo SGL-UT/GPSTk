@@ -127,6 +127,24 @@ namespace gpstk
    NEW_EXCEPTION_CLASS(SatIDNotFound, gpstk::Exception);
 
 
+      /// Thrown when attempting to access a value and the corresponding
+      /// source (SourceID) does not exist in the map.
+      /// @ingroup exceptiongroup
+   NEW_EXCEPTION_CLASS(SourceIDNotFound, gpstk::Exception);
+
+
+      /// Thrown when attempting to access a value and the corresponding
+      /// epoch (DayTime) does not exist in the map.
+      /// @ingroup exceptiongroup
+   NEW_EXCEPTION_CLASS(DayTimeNotFound, gpstk::Exception);
+
+
+      /// Thrown when attempting to access a value and any of the corresponding
+      /// indexes (SourceID, SatID or TypeID) does not exist in the map.
+      /// @ingroup exceptiongroup
+   NEW_EXCEPTION_CLASS(ValueNotFound, gpstk::Exception);
+
+
       /// Thrown when the number of data values and the number of
       /// corresponding types does not match.
       /// @ingroup exceptiongroup
@@ -147,6 +165,8 @@ namespace gpstk
       /// Set containing SatID objects.
    typedef std::set<SatID> SatIDSet;
 
+      /// Set containing SourceID objects.
+   typedef std::set<SourceID> SourceIDSet;
 
 
       /// Map holding TypeID with corresponding numeric value.
@@ -302,7 +322,7 @@ namespace gpstk
          /// Destructor.
       virtual ~satValueMap() {};
 
-   };  // End of satValueMap
+   };  // End of 'satValueMap'
 
 
 
@@ -498,7 +518,7 @@ namespace gpstk
          /// Destructor.
       virtual ~satTypeValueMap() {};
 
-   };  // End of satTypeValueMap
+   };  // End of 'satTypeValueMap'
 
 
 
@@ -559,7 +579,7 @@ namespace gpstk
          /// Destructor.
       virtual ~gnssData() {};
 
-   };  // End of gnssData
+   };  // End of 'gnssData'
 
 
 
@@ -657,7 +677,7 @@ namespace gpstk
       virtual ~gnssSatValue() {};
 
 
-   };  // End of gnssSatValue
+   };  // End of 'gnssSatValue'
 
 
 
@@ -733,7 +753,7 @@ namespace gpstk
       virtual ~gnssTypeValue() {};
 
 
-   };  // End of gnssTypeValue
+   };  // End of 'gnssTypeValue'
 
 
 
@@ -974,7 +994,7 @@ namespace gpstk
       virtual ~gnssSatTypeValue() {};
 
 
-   };  // End of gnssSatTypeValue
+   };  // End of 'gnssSatTypeValue'
 
 
 
@@ -1062,7 +1082,246 @@ namespace gpstk
       virtual ~gnssRinex() {};
 
 
-    };  // End of gnssRinex
+   };  // End of 'gnssRinex'
+
+
+
+      //// Some other handy data structures
+
+
+      /// GNSS data structure consisting in a map with SourceID as keys, and
+      /// satTypeValueMap as elements.
+   struct sourceDataMap : std::map<SourceID, satTypeValueMap>
+   {
+
+         /// Default constructor
+      sourceDataMap() {};
+
+
+         /** Returns the data value (double) corresponding to provided SourceID,
+          *  SatID and TypeID.
+          *
+          * @param source        Source to be looked for.
+          * @param satellite     Satellite to be looked for.
+          * @param type          Type to be looked for.
+          */
+      double getValue( const SourceID& source,
+                       const SatID& satellite,
+                       const TypeID& type ) const
+         throw( SourceIDNotFound, SatIDNotFound, TypeIDNotFound );
+
+
+         /** Get a set with all the SourceID's in this data structure.
+          *
+          * @warning If current 'sourceDataMap' is big, this could be a very
+          * costly operation.
+          */
+      SourceIDSet getSourceIDSet( void ) const;
+
+
+         /** Get a set with all the SatID's in this data structure.
+          *
+          * @warning If current 'sourceDataMap' is big, this could be a very
+          * costly operation.
+          */
+      SatIDSet getSatIDSet( void ) const;
+
+
+         /// Destructor.
+      virtual ~sourceDataMap() {};
+
+
+   };    // End of 'sourceDataMap'
+
+
+
+      /// GNSS data structure consisting in a map with DayTime as keys, and
+      /// sourceDataMap as elements.
+   struct  gnssDataMap : std::multimap<DayTime, sourceDataMap>
+   {
+
+         /// Default constructor
+      gnssDataMap()
+         : tolerance(0.1) {};
+
+
+         /** Common constructor.
+          *
+          * @param tol     Tolerance to be applied to epochs (in seconds).
+          */
+      gnssDataMap( double tol )
+         : tolerance(tol) {};
+
+
+         /** Adds 'gnssSatTypeValue' object data to this structure.
+          *
+          * @param gds     gnssSatTypeValue object containing data to be added.
+          */
+      gnssDataMap& addGnssSatTypeValue( const gnssSatTypeValue& gds );
+
+
+         /** Adds 'gnssRinex' object data to this structure.
+          *
+          * @param gds     gnssRinex object containing data to be added.
+          */
+      gnssDataMap& addGnssRinex( const gnssRinex& gds );
+
+
+         /** Returns a 'gnssRinex' object corresponding to given SourceID.
+          *
+          * @param source     SourceID object.
+          *
+          * @warning Returned data will correspond to first matching SourceID,
+          * if it exists.
+          */
+      gnssRinex getGnssRinex( const SourceID& source ) const;
+
+
+         /// Returns a copy of the first element in the map.
+      gnssDataMap front( void ) const;
+
+
+         /// Removes the first element in the map.
+      void pop_front( void );
+
+
+         /// Returns the data corresponding to the first epoch in the map,
+         /// taking into account the 'tolerance' value.
+      gnssDataMap frontEpoch( void ) const;
+
+
+         /// Removes the first epoch in the map. Be aware that this method
+         /// takes into account 'tolerance', so more than just one epoch may be
+         /// removed if they are within 'tolerance' margin.
+      void pop_front_epoch( void );
+
+
+         /// Returns a copy of the last element in the map.
+      gnssDataMap back( void ) const;
+
+
+         /// Removes the last element in the map.
+      void pop_back( void );
+
+
+         /// Returns the data corresponding to the last epoch in the map,
+         /// taking into account the 'tolerance' value.
+      gnssDataMap backEpoch( void ) const;
+
+
+         /// Removes the last epoch in the map. Be aware that this method
+         /// takes into account 'tolerance', so more than just one epoch may be
+         /// removed if they are within 'tolerance' margin.
+      void pop_back_epoch( void );
+
+
+         /** Returns a 'gnssDataMap' with the data corresponding to provided
+          *  DayTime, taking into account 'tolerance'.
+          *
+          * @param epoch         Epoch to be looked for.
+          */
+      gnssDataMap getDataFromEpoch( const DayTime& epoch ) const
+         throw( DayTimeNotFound );
+
+
+         /** Returns the data value (double) corresponding to provided DayTime,
+          *  SourceID, SatID and TypeID.
+          *
+          * @param epoch         Epoch to be looked for.
+          * @param source        Source to be looked for.
+          * @param satellite     Satellite to be looked for.
+          * @param type          Type to be looked for.
+          *
+          * @warning If within (epoch +/- tolerance) more than one match exists,
+          * then only the first one is returned.
+          */
+      double getValue( const DayTime& epoch,
+                       const SourceID& source,
+                       const SatID& satellite,
+                       const TypeID& type ) const
+         throw( DayTimeNotFound, ValueNotFound );
+
+
+         /** Returns the data value (double) corresponding to the first epoch
+          *  in the data structure, given SourceID, SatID and TypeID.
+          *
+          * @param source        Source to be looked for.
+          * @param satellite     Satellite to be looked for.
+          * @param type          Type to be looked for.
+          *
+          * @warning If within first epoch (epoch +/- tolerance) more than one
+          * match exists, then only the first one is returned.
+          */
+      double getValue( const SourceID& source,
+                       const SatID& satellite,
+                       const TypeID& type ) const
+         throw( ValueNotFound );
+
+
+         /** Inserts a data value (double) in the first epoch of the data
+          *  structure with the given SourceID, SatID and TypeID.
+          *
+          * @param source        Source to be looked for.
+          * @param satellite     Satellite to be looked for.
+          * @param type          Type of the new data.
+          * @param value         Value to be inserted.
+          */
+      gnssDataMap& insertValue( const SourceID& source,
+                                const SatID& satellite,
+                                const TypeID& type,
+                                double value )
+         throw( ValueNotFound );
+
+
+         /** Get a set with all the SourceID's in this data structure.
+          *
+          * @warning If current 'gnssDataMap' is big, this could be a very
+          * costly operation.
+          */
+      SourceIDSet getSourceIDSet( void ) const;
+
+
+         /** Get a set with all the SatID's in this data structure.
+          *
+          * @warning If current 'gnssDataMap' is big, this could be a very
+          * costly operation.
+          */
+      SatIDSet getSatIDSet( void ) const;
+
+
+         /// Get tolerance
+      double getTolerance( void ) const
+      { return tolerance; };
+
+
+         /** Set tolerance.
+          *
+          * @param tol     Tolerance, in seconds.
+          */
+      gnssDataMap& setTolerance( double tol )
+      { tolerance = std::abs(tol); return (*this); };
+
+
+         /// Convenience output method
+      virtual std::ostream& dump( std::ostream& s,
+                                  int mode = 0) const;
+
+
+         /// Tolerance set to get data from a given epoch
+      double tolerance;
+
+
+         /// Destructor.
+      virtual ~gnssDataMap() {};
+
+
+   };    // End of 'gnssDataMap'
+
+
+
+      /// stream output for gnssDataMap
+   std::ostream& operator<<( std::ostream& s,
+                             const gnssDataMap& gdsMap);
 
 
 
@@ -1088,7 +1347,7 @@ namespace gpstk
       virtual ~gnssEquationDefinition() {};
 
 
-   };  // End of gnssEquationDefinition
+   };  // End of 'gnssEquationDefinition'
 
 
 
@@ -1115,7 +1374,7 @@ namespace gpstk
       virtual ~gnssLinearCombination() {};
 
 
-   };  // End of gnssLinearCombination
+   };  // End of 'gnssLinearCombination'
 
 
       /// List containing gnssLinearCombination objects.
