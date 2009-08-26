@@ -81,6 +81,7 @@ std::vector<std::string> inputFiles, outputFiles;
 std::string inputPath, outputPath;
 bool verbose;
 bool printExceptions;
+bool debug;
 //============================================================================//
 //                                 Exit Codes                                 //
 const int NO_INPUT = 1;

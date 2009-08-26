@@ -37,7 +37,16 @@ int main(int argc, char** argv)
    
    printTitle(&cout);
    
-   
+   if(debug)
+   {
+      cout << "Input Files:" << endl;
+      for(int i = 0; i < inputFiles.size(); ++i)
+         cout << "   " << inputPath << inputFiles[i] << endl;
+      
+      cout << "Output Files:" << endl;
+      for(int i = 0; i < outputFiles.size(); ++i)
+         cout << "   " << outputPath << outputFiles[i] << endl;
+	}
       //Get the number of input files and abort if 0
    int numFiles = inputFiles.size();
    if(numFiles == 0)
@@ -200,7 +209,7 @@ int main(int argc, char** argv)
    }
    
    cout << "Successfully converted " << numConverted << " of "
-        << inputFiles.size() << "files.";
+        << inputFiles.size() << " files." << endl;
    if(numBad > 0)
       cout << numBad << " Bad files" << endl;
    if(numNotRinex > 0)
@@ -215,20 +224,35 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
    Rinex3ObsStream obsOut;
    try
    {
+      if(debug)
+         cerr << "Trying to open file:\n" << fileName << endl;
          //Open the input file
       obsIn.open(fileName.c_str(), ios::in);
+      if(!obsIn)
+         return false;
+      else if(debug)
+         cerr << "Opened file" << endl;
       
          //The header and it's converted version
       RinexObsHeader robsHead;
       Rinex3ObsHeader convHead;
       
+      if(debug)
+         cerr << "Reading in header..." << endl;
          //Read in the header data
       obsIn >> robsHead;
+      if(debug)
+         cerr << "Finished reading in header..." << endl;
       
         //Convert the obs header and test, all in one step;
         //if the header couldn't be converted return false.
+      if(debug)
+         cerr << "Converting header..." << endl;
       if(!RinexConverter::convertToRinex3(convHead, robsHead))
          return false;
+      
+      if(debug)
+         cerr << "Finished converting header..." << endl;
       
          //All of the data contained in the file.
       vector<RinexObsData> robsData;
@@ -243,6 +267,8 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
       bool hasGPS, hasGLO, hasGAL, hasGEO;
       hasGPS = hasGLO = hasGAL = hasGEO = false;
       
+      if(debug)
+         cerr << "Start reading in data..." << endl;
       while(1)
       {
          try
@@ -342,13 +368,15 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
 		obsOut.open(outFile, ios::out | ios::trunc);
 	   
 	   obsOut << convHead;
-	   
+	   cout << convHead.version << endl;
+	   /**/
       for(int i = 0; i < robsData.size(); ++i)
       {
       	RinexConverter::convertToRinex3(convData, robsData[i], robsHead);
       	obsOut << convData;
-		}
+		}/**/
 		
+		obsOut.flush();
 		obsOut.close();
    }
    catch(Exception gpstkException)
@@ -409,8 +437,8 @@ void printTitle(ostream* out)
 {
 	   //Print the title of the program and other information to cout
    *out << programName << ", part of the GPSTk, Version "
-   *out << "Created by " << author << ", " << date << "\n";
         << version << "\n";
+   *out << "Created by " << author << ", " << date << "\n";
    *out << license << "\n";
    
    *out << endl;
@@ -424,6 +452,7 @@ int parseCommandLine(int argc, char** argv)
    outputPath = "";
    verbose = false;
    printExceptions = false;
+   debug = false;
 //============================================================================//
 //                               Create Options                               //
    
@@ -440,6 +469,16 @@ int parseCommandLine(int argc, char** argv)
                         'o',"outpath",
                         " [-o|--outpath] <path>        "
                         "Path to output files to");
+   
+   CommandOptionWithNumberArg verboseOpt(
+                        'v',"verbose",
+                        " [-v|--verbose] <0...3>       "
+                        "Prints additional information to std::out\n"
+                        "                                    0: Normal\n"
+                        "                                    1: Prints extra information\n"
+                        "                                    2: Prints extra information and Exceptions\n"
+                        "                                    3: Prints all of the above and debug info");
+   
    CommandOption helpOpt(CommandOption::noArgument, CommandOption::stdType,
                         'h',"help",
                         " [-h|--help]                  "
@@ -449,10 +488,6 @@ int parseCommandLine(int argc, char** argv)
                         " [-l|--license]               "
                         "Prints licensing information about this program");
    
-   CommandOptionWithNumberArg verboseOpt(
-                        'v',"verbose",
-                        " [-v|--verbose] <0...2>       "
-                        "Prints additional information to std::out");
 //============================================================================//
 //                                Set up Parser                               //
 	CommandOptionParser parser(description);
@@ -486,36 +521,39 @@ int parseCommandLine(int argc, char** argv)
 	{
 		arguments = verboseOpt.getValue();
 		int level = StringUtils::asInt(arguments[arguments.size() - 1]);
-		switch(level)
-		{
-			case 0:
-			   verbose = false;
-			   printExceptions = false;
-			   break;
-			case 1:
-			   verbose = true;
-			   printExceptions = false;
-			   break;
-			case 2:
-			   verbose = true;
-			   printExceptions = false;
-			   break;
-			default:
-			   printTitle(&cout);
-			   cout << "[-v|--verbose] takes a number argument from 0 to 2, given "
-			        << level << endl;
-			   parser.displayUsage(cout, true);
-		      return -1;
+      if(level > 3 || level < 0)
+      {
+			printTitle(&cout);
+         cout << "[-v|--verbose] takes a number argument from 0 to 3, given "
+              << level << endl;
+         parser.displayUsage(cout, true);
+         return -1;
 		}
+		if(level != 0)
+		{
+		   verbose = true;
+		   --level;
+		}
+		if(level != 0)
+		{
+		   printExceptions = true;
+		   --level;
+		}
+		if(level != 0)
+		{
+		   debug = true;
+		   --level;
+		}
+		
 	}
 	if(outPathOpt.getCount() > 0)
 	{
-		arguments = verboseOpt.getValue();
+		arguments = outPathOpt.getValue();
 		outputPath = arguments[arguments.size() - 1];
 	}
 	if(inPathOpt.getCount() > 0)
 	{
-		arguments = verboseOpt.getValue();
+		arguments = inPathOpt.getValue();
 		inputPath = arguments[arguments.size() - 1];
 	}
 	
