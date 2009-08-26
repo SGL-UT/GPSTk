@@ -130,7 +130,11 @@ namespace gpstk
          MWubbena,  ///< Melbourne-Wubbena combination
             // Model-related types
          rho,       ///< Geometric distance satellite-receiver
+         rhodot,    ///< First derivative of geometric distance SV-RX
+         rhodot2,   ///< Second derivative of geometric distance SV-RX
          dtSat,     ///< Satellite clock offset
+         dtSatdot,  ///< Satellite clock offset drift
+         dtSatdot2, ///< Satellite clock offset drift rate
          rel,       ///< Relativistic delay
          gravDelay, ///< Gravitational delay
          tropo,     ///< Vertical tropospheric delay, total
@@ -153,6 +157,12 @@ namespace gpstk
          satX,      ///< Satellite position, X component
          satY,      ///< Satellite position, Y component
          satZ,      ///< Satellite position, Z component
+         satVX,     ///< Satellite velocity, X component
+         satVY,     ///< Satellite velocity, Y component
+         satVZ,     ///< Satellite velocity, Z component
+         satAX,     ///< Satellite acceleration, X component
+         satAY,     ///< Satellite acceleration, Y component
+         satAZ,     ///< Satellite acceleration, Z component
          elevation, ///< Satellite elevation
          azimuth,   ///< Satellite azimuth
             // Cycle slip flags
@@ -215,9 +225,21 @@ namespace gpstk
          recX,      ///< Receiver position, X component
          recY,      ///< Receiver position, Y component
          recZ,      ///< Receiver position, Z component
+         recVX,     ///< Receiver velocity, X component
+         recVY,     ///< Receiver velocity, Y component
+         recVZ,     ///< Receiver velocity, Z component
+         recAX,     ///< Receiver acceleration, X component
+         recAY,     ///< Receiver acceleration, Y component
+         recAZ,     ///< Receiver acceleration, Z component
          recLat,    ///< Receiver position, Latitude component
          recLon,    ///< Receiver position, Longitude component
          recH,      ///< Receiver position, Height component
+         recVLat,   ///< Receiver velocity, Latitude component
+         recVLon,   ///< Receiver velocity, Longitude component
+         recVH,     ///< Receiver velocity, Height component
+         recALat,   ///< Receiver acceleration, Latitude component
+         recALon,   ///< Receiver acceleration, Longitude component
+         recAH,     ///< Receiver acceleration, Height component
          sigma,     ///< Standard deviation
          iura,      ///< Index User Range Accuracy
             // Handy dummy types for non-standard processing
