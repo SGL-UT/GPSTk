@@ -91,7 +91,7 @@ namespace gpstk
        *   double elevation( 34.5 );
        *   double azimuth( 163.2 );
        *
-       *      // Get antenna data and accentricity for L1 for satellite GPS-07
+       *      // Get antenna data and eccentricity for L1 for satellite GPS-07
        *      // at a specific epoch
        *   DayTime epoch(2008, 6, 15, 10, 21, 12654.0);
        *   satGPS07 = antexread.getAntenna( "G07", epoch );

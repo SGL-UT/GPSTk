@@ -63,7 +63,7 @@ namespace gpstk
 
 
 
-      // Parse a single heade line.
+      // Parse a single header line. Returns label.
    string AntexReader::parseHeaderLine( const std::string& line )
       throw(InvalidAntex)
    {
@@ -142,6 +142,10 @@ namespace gpstk
          return label;
 
       }  // End of 'if( label == commentString )...'
+
+
+         // Just in case none of the previous cases applied
+      return label;
 
 
    }  // End of method 'AntexReader::parseHeaderLine()'
