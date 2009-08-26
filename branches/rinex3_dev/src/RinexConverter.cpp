@@ -27,6 +27,7 @@
 
 using namespace gpstk;
 using namespace std;
+//#define DEBUG
 //The triple slash comments always tell the truth.
 ///The double slash comments always lie.
 
@@ -147,6 +148,29 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
    else
       dest.markerType   = "NON_GEODETIC";
    
+   #ifdef DEBUG
+   cerr << endl;
+   cerr << "       Member: " << endl;
+   cerr << "      Version: " << dest.version         << endl;
+   cerr << "    File Type: " << dest.fileType        << endl;
+   cerr << "       System: " << dest.system          << endl;
+   cerr << " File Program: " << dest.fileProgram     << endl;
+   cerr << "  File Agency: " << dest.fileAgency      << endl;
+   cerr << "         Date: " << dest.date            << endl;
+   cerr << "  Marker Name: " << dest.markerName      << endl;
+   cerr << "  Marker Type: " << dest.markerType      << endl;
+   cerr << "     Observer: " << dest.observer        << endl;
+   cerr << "       Agency: " << dest.agency          << endl;
+   cerr << "       Rec No: " << dest.recNo           << endl;
+   cerr << "     Rec Type: " << dest.recType         << endl;
+   cerr << "     Rec Vers: " << dest.recVers         << endl;
+   cerr << "   Antenna No: " << dest.antNo           << endl;
+   cerr << " Antenna Type: " << dest.antType         << endl;
+   cerr << "  Antenna Pos: " << dest.antennaPosition << endl;
+   cerr << "Antenna Delta: " << dest.antennaDeltaHEN << endl;
+   cerr << "    First Obs: " << dest.firstObs        << endl;
+   #endif
+   
       ///Obs Type Lists for each system
    vector<ObsID> gpsTypeList;   ///< GPS type list
    vector<ObsID> galTypeList;   ///< Galileo type list
@@ -156,18 +180,28 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
       ///The types present in the old header
    vector<RinexObsHeader::RinexObsType> oldTypeList = src.obsTypeList;
       ///The current code in the old header
-   char currCode[2];
+   char currCode[3];
       ///Put the results of the map lookup in this to get the new ObsID object
    std::string replacement;
       ///The new ObsID object
    ObsID newID;
+      ///A iterator to use to find the current code...
+   CodeMap::const_iterator mapIter;
       ///Loop over the old codes
+   #ifdef DEBUG
+   cerr << "Reading in codes..." << endl;
+   #endif
    for(int i = 0; i < oldTypeList.size(); ++i)
    {
          ///Strip the first two letters (there should only be 2) from the old
          ///type.
       currCode[0] = oldTypeList[i].type[0];
       currCode[1] = oldTypeList[i].type[1];
+      currCode[2] = 0;
+      
+      #ifdef DEBUG
+      cerr << "   Current Code: " << currCode << endl;
+      #endif
       
          //This SHOULD never fail. But watch it fail. Watch it. Just because I
          //said that it's going to. Spectacularly too. Like, titanic scale
@@ -175,7 +209,27 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
          ///This shouldn't fail. Get the replacement string from the static map
          ///The resulting value from the lookup is actually char[3], but string
          ///is used to encapsulate it to allow ObsID to work right.
-      replacement = obsMap.find(currCode)->second;
+      for(mapIter = obsMap.begin(); mapIter != obsMap.end(); ++mapIter)
+      {
+         #ifdef DEBUG
+         cerr << "      Checking <" << mapIter->first << "," << mapIter->second << ">" << endl;
+         #endif
+         if(mapIter->first[0] == currCode[0] && mapIter->first[1] == currCode[1])
+            break;
+      }
+      if(mapIter == obsMap.end())
+      {
+         #ifdef DEBUG
+         cerr << "      Couldn't find code " << currCode << endl;
+         #endif
+         continue;
+      }
+      
+      replacement = mapIter->second;
+      
+      #ifdef DEBUG
+      cerr << "   Found replacement string: " << replacement << endl;
+      #endif
       
          ///Create the new ObsID from the replacement string
       newID = ObsID(replacement);
@@ -190,6 +244,10 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
       if(validGEOCode(oldTypeList[i]))
          geoTypeList.push_back(newID);
    }
+   
+   #ifdef DEBUG
+   cerr << "Finished reading in codes";
+   #endif
       ///Add the type lists to the destination header.
       ///This will probably be very bloated, but the bloat is trivial in every
       ///case. This can either be trimmed later by a different problem, or if
@@ -200,9 +258,11 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
    dest.mapObsTypes["E"] = galTypeList;
    dest.mapObsTypes["S"] = geoTypeList;
    
+   dest.valid = 1;
+   
       ///Done if not doing optional fields, so return
    if(!fillOptionalFields)
-      return dest.isValid();
+      return true;
    
       ///Clear the destination's comment list, transfer comments from src only
       ///if keepComments is set.
@@ -259,7 +319,7 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
    if(!hasGEO)
       dest.mapObsTypes.erase(dest.mapObsTypes.find("S"));
    
-   return dest.isValid();
+   return true;
 }
 
 
@@ -368,6 +428,10 @@ void RinexConverter::initialize()
 {
 	initialized = true;
 	
+	#ifdef DEBUG
+	cerr << "Initialzing...";
+	#endif
+	
    obsMap["C1"] = "C1C";
    obsMap["C2"] = "C2C";
    obsMap["C5"] = "C5C";
@@ -399,6 +463,9 @@ void RinexConverter::initialize()
    obsMap["S7"] = "S7C";
    obsMap["S8"] = "S8C";
    
+   #ifdef DEBUG
+   cerr << "Done!" << endl;
+   #endif
 }
 
 bool RinexConverter::validGPSCode(const RinexObsHeader::RinexObsType& code)
@@ -407,8 +474,15 @@ bool RinexConverter::validGPSCode(const RinexObsHeader::RinexObsType& code)
    std::string good[] = {"C1","C2","C5","P1","P2","L1","L2","L5","D1","D2",
                            "D5","S1","S2","S5"};
    for(int i = 0; i < numGood; ++i)
+   {
       if(code.type == good[i])
+      {
+      	#ifdef DEBUG
+      	cerr << "      Valid Code for system G" << endl;
+      	#endif
          return true;
+		}
+   }
    return false;
 }
 bool RinexConverter::validGalileoCode(const RinexObsHeader::RinexObsType& code)
@@ -417,8 +491,15 @@ bool RinexConverter::validGalileoCode(const RinexObsHeader::RinexObsType& code)
    std::string good[] = {"C1","C5","C6","C7","C8","L1","L5","L6","L7","L8",
                            "D1","D5","D6","D7","D8","S1","S5","S6","S7","S8"};
    for(int i = 0; i < numGood; ++i)
+   {
       if(code.type == good[i])
+      {
+      	#ifdef DEBUG
+      	cerr << "      Valid Code for system E" << endl;
+      	#endif
          return true;
+		}
+   }
    return false;
 }
 bool RinexConverter::validGlonassCode(const RinexObsHeader::RinexObsType& code)
@@ -426,8 +507,15 @@ bool RinexConverter::validGlonassCode(const RinexObsHeader::RinexObsType& code)
    const int numGood = 10;
    std::string good[] = {"C1","C2","P1","P2","L1","L2","D1","D2","S1","S2",};
    for(int i = 0; i < numGood; ++i)
+   {
       if(code.type == good[i])
+      {
+      	#ifdef DEBUG
+      	cerr << "      Valid Code for system R" << endl;
+      	#endif
          return true;
+		}
+   }
    return false;
 }
 
@@ -436,8 +524,15 @@ bool RinexConverter::validGEOCode(const RinexObsHeader::RinexObsType& code)
    const int numGood = 8;
    std::string good[] = {"C1","C5","L1","L5","D1","D5","S1","S5"};
    for(int i = 0; i < numGood; ++i)
+   {
       if(code.type == good[i])
+      {
+      	#ifdef DEBUG
+      	cerr << "      Valid Code for system S" << endl;
+      	#endif
          return true;
+		}
+   }
    return false;
 }
 
