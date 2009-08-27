@@ -45,51 +45,47 @@
 #define PHASE_WINDUP_INCLUDE
 
 #include "DayTime.hpp"
-#include "Matrix.hpp"
 #include "Position.hpp"
+#include "SolarSystem.hpp"
+#include "EarthOrientation.hpp"
 
-namespace gpstk {
-
-/// Given a Position, compute unit vectors in ECEF coordinates in the Up, East and
-/// North directions at that position. Use geodetic coordinates, i.e. 'up' is
-/// perpendicular to the geoid. Return the vectors in the form of a
-/// 3x3 Matrix<double>, this is in fact the rotation matrix that will take an
-/// ECEF vector into an 'up-east-north' vector. Individual unit vectors can be
-/// defined from this rotation matrix R by
-/// @code
-///    Vector<double> U = R.rowCopy(0);
-///    Vector<double> E = R.rowCopy(1);
-///    Vector<double> N = R.rowCopy(2);
-/// @endcode
-/// @param P  Position at which the rotation matrix will be defined.
-/// @return   3x3 rotation matrix that will transform an ECEF vector into the
-///             Up,East,North frame at the position P.
-Matrix<double> UpEastNorth(Position& P) throw(Exception);
-
-/// Generate a 3x3 rotation Matrix, for direct rotations about one axis
-/// (for XYZ, axis=123), given the rotation angle in radians;
-/// @param angle in radians.
-/// @param axis 1,2,3 as rotation about X,Y,Z.
-/// @return Rotation matrix (3x3).
-/// @throw InvalidInput if axis is anything other than 1, 2 or 3.
-Matrix<double> SingleAxisRotation(double angle, int axis) throw(Exception);
+namespace gpstk
+{
 
 /// Compute the phase windup, in cycles, given the time, the unit vector from receiver
 /// to transmitter, and the west and north unit vectors at the receiver, all in ECEF.
 /// YR is the West unit vector, XR is the North unit vector, at the receiver.
 /// shadow is the fraction of the sun's area visible at the satellite.
-/// @param DayTime& tt       the epoch of interest (input)
-/// @param Position& SV      the satellite position (input)
-/// @param Position& Rx2Tx   unit vector from receiver to satellite (input)
-/// @param Position& YR      west unit vector at receiver (input)
-/// @param Position& XR      north unit vector at receiver (input)
-/// @param double& shadow    fraction of sun visible at satellite (output)
-double PhaseWindup(DayTime& tt,
+/// Previous value is needed to ensure continuity and prevent 1-cycle ambiguities.
+/// @param double& prev         return value on previous call (zero initially) (input)
+/// @param DayTime& tt          the epoch of interest (input)
+/// @param Position& SV         the satellite position (input)
+/// @param Position& Rx2Tx      unit vector from receiver to satellite (input)
+/// @param Position& YR         west unit vector at receiver (input)
+/// @param Position& XR         north unit vector at receiver (input)
+/// @param SolarSystem SSEph    Solar system ephemeris
+/// @param EarthOrientation EO  Earth orientation parameters appropriate for time
+/// @param double& shadow       fraction of sun visible at satellite (output)
+double PhaseWindup(double& prev,
+                   DayTime& tt,
                    Position& SV,
                    Position& Rx2Tx,
                    Position& RxW,
                    Position& RxN,
-                   double& shadow);
+                   SolarSystem& SSEph,
+                   EarthOrientation& EO,
+                   double& shadow)
+   throw(Exception);
+
+/// Version without ephemeris - uses a lower quality solar position routine
+double PhaseWindup(double& prev,
+                   DayTime& tt,
+                   Position& SV,
+                   Position& Rx2Tx,
+                   Position& RxW,
+                   Position& RxN,
+                   double& shadow)
+   throw(Exception);
 
 }  // end namespace gpstk
 #endif
