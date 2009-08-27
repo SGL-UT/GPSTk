@@ -34,6 +34,7 @@
 #include <vector>
 #include <algorithm>
 // gpstk
+#include "GPSWeekSecond.hpp"
 #include "SatPass.hpp"
 #include "icd_200_constants.hpp"    // OSC_FREQ,L1_MULT,L2_MULT
 #include "Stats.hpp"
@@ -59,8 +60,8 @@ const unsigned short SatPass::LL1 = 2; // discontinuity on L1 only
 const unsigned short SatPass::LL2 = 4; // discontinuity on L2 only
 const unsigned short SatPass::LL3 = 6; // discontinuity on L1 and L2
 double SatPass::maxGap = 1800;         // maximum gap (seconds) allowed within pass
-string SatPass::outFormat = string("%4F %10.3g");  // GPS week, seconds of week
-
+//string SatPass::outFormat = string("%4F %10.3g");  // GPS week, seconds of week
+string SatPass::outFormat = string("%4w %010.3g %P");  // GPS week, seconds of week
 // constructors
 SatPass::SatPass(GSatID insat, double indt) throw()
 {
@@ -240,8 +241,8 @@ void SatPass::smooth(bool smoothPR, bool debiasPH, string& msg) throw(Exception)
    ostringstream oss;
    oss << "SMT" << fixed << setprecision(2)
        << " " << sat
-       << " " << getFirstGoodTime().printf(outFormat)
-       << " " << getLastGoodTime().printf(outFormat)
+       << " " << CivilTime(getFirstGoodTime()).printf(outFormat)
+       << " " << CivilTime(getLastGoodTime()).printf(outFormat)
        << " " << setw(5)  << PB1.N()
        << " " << setw(12) << PB1.Average()+dbL1
        << " " << setw(5)  << PB1.StdDev()
@@ -400,7 +401,7 @@ void SatPass::dump(ostream& os, string msg1, string msg2) throw()
          << " " << sat
          << " " << setw(3) << spdvector[i].ndt
          << " " << setw(2) << spdvector[i].flag
-         << " " << tt.printf(SatPass::outFormat)
+         << " " << CivilTime(tt).printf(SatPass::outFormat)
          << fixed << setprecision(3);
       for(j=0; j<indexForLabel.size(); j++)
          os << " " << setw(13) << spdvector[i].data[j]
@@ -417,8 +418,8 @@ ostream& operator<<(ostream& os, SatPass& sp )
       << " " << sp.sat
       << " " << setw(4) << sp.ngood
       << " " << setw(2) << sp.Status
-      << " " << sp.firstTime.printf(SatPass::outFormat)
-      << " " << sp.lastTime.printf(SatPass::outFormat)
+      << " " << CivilTime(sp.firstTime).printf(SatPass::outFormat)
+      << " " << CivilTime(sp.lastTime).printf(SatPass::outFormat)
       << " " << fixed << setprecision(1) << sp.dt;
    for(int i=0; i<sp.labelForIndex.size(); i++) os << " " << sp.labelForIndex[i];
 
@@ -828,7 +829,7 @@ int SatPassFromRinexFiles(vector<string>& filenames,
                   }
                   else if(i == -2) {   // time tag out of order
                      Exception e("Time tags out of order at time "
-                           + obsdata.time.printf("%4F %10.3g"));
+                                 + CivilTime(obsdata.time).printf(SatPass::outFormat));
                      GPSTK_THROW(e);
                   }
                   //else if(i == -3) {   // sat not found (RinexObsData form only)
