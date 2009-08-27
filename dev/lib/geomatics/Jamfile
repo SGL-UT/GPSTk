@@ -16,7 +16,7 @@ else
    	PhaseWindup.cpp
    	SatPass.cpp DiscCorr.cpp
    	GSatID.cpp DDid.cpp
-        SunEarthSatGeometry.cpp
+        SolarSystem.cpp SunEarthSatGeometry.cpp
    	random.cpp format.cpp
   	   ;
 
@@ -27,7 +27,7 @@ else
       #SolarSystem.hpp OceanLoading.hpp SolidEarthTides.hpp
 	   SatPass.hpp
       SRIFilter.hpp SRI.hpp SRIleastSquares.hpp
-      SunEarthSatGeometry.hpp
+      SolarSystem.hpp SunEarthSatGeometry.hpp
       index.hpp format.hpp
       #logstream.hpp
 	   ;

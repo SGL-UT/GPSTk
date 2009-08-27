@@ -52,7 +52,6 @@
 #include "SunEarthSatGeometry.hpp"
 
 using namespace std;
-using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
