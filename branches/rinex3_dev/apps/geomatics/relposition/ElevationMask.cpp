@@ -49,7 +49,7 @@
 
 // DDBase
 #include "DDBase.hpp"
-#include "PhaseWindup.hpp"             // for SingleAxisRotation()
+#include "SunEarthSatGeometry.hpp"     // for SingleAxisRotation()
 
 //------------------------------------------------------------------------------------
 using namespace std;

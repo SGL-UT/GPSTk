@@ -61,6 +61,7 @@
 // DDBase
 #include "DDBase.hpp"
 #include "PhaseWindup.hpp"
+#include "SunEarthSatGeometry.hpp"
 #include "index.hpp"
 
 //------------------------------------------------------------------------------------
@@ -317,6 +318,7 @@ try {
 
    int nc;
    double angle,pwu,shadow;
+   double prevwindup = 0.0;
    DayTime tt;
    GSatID sat;
    Position SV;
@@ -378,7 +380,8 @@ try {
                                 CER.svPosVel.x[2]);
 
                      // compute phase windup
-                  pwu = PhaseWindup(tt,SV,Rx2Tx,West,North,shadow);
+                  pwu = PhaseWindup(prevwindup,tt,SV,Rx2Tx,West,North,shadow);
+                  prevwindup = pwu;
 
                   // TD eclipse alert
                   //if(shadow > 0.0) { ... }
