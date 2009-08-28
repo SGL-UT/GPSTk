@@ -1,7 +1,7 @@
 #pragma ident "$Id: RinexConvert.hpp 2009-08-25 17:32:36 tvarney $"
 
-#ifndef RINEX_2_TRANSLATE_HPP
-#define RINEX_2_TRANSLATE_HPP
+#ifndef RINEX_2_CONVERTER_HPP
+#define RINEX_2_CONVERTER_HPP
 //============================================================================//
 //                                  License                                   //
 //                                                                            //
@@ -61,16 +61,12 @@ bool convertRinex3NavFile(std::string& fileName, std::string& outFile);
 //============================================================================//
 //                                 Global Data                                //
 std::string programName("RinexConvert");
-std::string version("0.5");
+std::string version("0.5");   ///< Still broken, hence not a full number.
 std::string license("This file licensed under the GNU Lesser General Public "
                     "License.\n\nYou should have received a copy of the GNU "
                     "Lesser General Public License with\nthis software; if not,"
                     " write to the Free Software Foundation, Inc.,\n59 Temple "
                     "Place, Suite 330, Boston, MA  02111-1307  USA\n");
-//Add names here...I guess.
-//Just make sure to include newlines if needed.
-//Format is:
-//Created by [Authors], [last date]
 std::string author("Troy Varney");
 std::string date("8/25/09");
 std::string description("Rinex Convert takes one or more observation or "

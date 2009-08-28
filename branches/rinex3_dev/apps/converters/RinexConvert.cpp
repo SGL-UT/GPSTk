@@ -46,7 +46,7 @@ int main(int argc, char** argv)
       cout << "Output Files:" << endl;
       for(int i = 0; i < outputFiles.size(); ++i)
          cout << "   " << outputPath << outputFiles[i] << endl;
-	}
+   }
       //Get the number of input files and abort if 0
    int numFiles = inputFiles.size();
    if(numFiles == 0)
@@ -209,7 +209,7 @@ int main(int argc, char** argv)
    }
    
    cout << "Successfully converted " << numConverted << " of "
-        << inputFiles.size() << " files." << endl;
+        << numFiles << " files." << endl;
    if(numBad > 0)
       cout << numBad << " Bad files" << endl;
    if(numNotRinex > 0)
@@ -274,38 +274,38 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
          try
          {
             obsIn >> temp;
-			}
-			catch(Exception gpstkEx)
-			{
-			   if(printExceptions)
-			   {
-			      cout << "Exception Reading Data:\n"
-			           << gpstkEx << "\n" << endl;
-			   }
-			   continue;
-			}
-			catch(exception stdEx)
-			{
-			   if(printExceptions)
-			   {
-			      cout << "Exception Reading Data:\n"
-			           << stdEx.what() << "\n" << endl;
-			   }
-			   continue;
-			}
-			catch(...)
-			{
-			   if(printExceptions)
-			      cout << "Exception Reading Data\n" << endl;
-			   continue;
-			}
+         }
+         catch(Exception gpstkEx)
+         {
+            if(printExceptions)
+            {
+               cout << "Exception Reading Data:\n"
+                    << gpstkEx << "\n" << endl;
+            }
+            continue;
+         }
+         catch(exception stdEx)
+         {
+            if(printExceptions)
+            {
+               cout << "Exception Reading Data:\n"
+                    << stdEx.what() << "\n" << endl;
+            }
+            continue;
+         }
+         catch(...)
+         {
+            if(printExceptions)
+               cout << "Exception Reading Data\n" << endl;
+            continue;
+         }
          
             //End of file
          if(!obsIn.good() || obsIn.eof())
             break;
          
             //Save the data...
-	      robsData.push_back(temp);
+         robsData.push_back(temp);
          
          if(temp.time > lastEpoch)
             lastEpoch = temp.time;
@@ -327,57 +327,82 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
                hasGEO = true;
                //Increment iter
             ++iter;
-	      }
-	   }
-	   
-	      //Erase any systems that were not present
-	   map<string, vector<ObsID> >::const_iterator mapIter;
-	   mapIter = convHead.mapObsTypes.find("G");
-	   if(!hasGPS && mapIter != convHead.mapObsTypes.end())
-	      convHead.mapObsTypes.erase("G");
-	   
-	   mapIter = convHead.mapObsTypes.find("R");
-	   if(!hasGPS && mapIter != convHead.mapObsTypes.end())
-	      convHead.mapObsTypes.erase("R");
-	   
-	   mapIter = convHead.mapObsTypes.find("E");
-	   if(!hasGPS && mapIter != convHead.mapObsTypes.end())
-	      convHead.mapObsTypes.erase("E");
-	   
-	   mapIter = convHead.mapObsTypes.find("S");
-	   if(!hasGPS && mapIter != convHead.mapObsTypes.end())
-	      convHead.mapObsTypes.erase("S");
-	   
-	      //Close the input stream
-	   obsIn.clear();
-	   obsIn.close();
-	   
-	      //Open the output stream
-	      //If outFile has any length, use that.
-	   if(outFile.length() == 0)
-	   {
-	      if(outputPath.length() > 0)
-	         outFile = outputPath;
-	      
-	      int lastIndexOf = fileName.find_last_of("\\/");
-	      if(lastIndexOf == -1)
-	         lastIndexOf = 0;
-	      outFile = fileName.substr(lastIndexOf);
-		}
-		   //Open the file such that it overwrite any existing data...
-		obsOut.open(outFile, ios::out | ios::trunc);
-	   
-	   obsOut << convHead;
-	   cout << convHead.version << endl;
-	   /**/
+         }
+      }
+      
+         //Erase any systems that were not present
+      map<string, vector<ObsID> >::const_iterator mapIter;
+      mapIter = convHead.mapObsTypes.find("G");
+      if(!hasGPS && mapIter != convHead.mapObsTypes.end())
+         convHead.mapObsTypes.erase("G");
+      
+      mapIter = convHead.mapObsTypes.find("R");
+      if(!hasGPS && mapIter != convHead.mapObsTypes.end())
+         convHead.mapObsTypes.erase("R");
+      
+      mapIter = convHead.mapObsTypes.find("E");
+      if(!hasGPS && mapIter != convHead.mapObsTypes.end())
+         convHead.mapObsTypes.erase("E");
+      
+      mapIter = convHead.mapObsTypes.find("S");
+      if(!hasGPS && mapIter != convHead.mapObsTypes.end())
+         convHead.mapObsTypes.erase("S");
+      
+         //Close the input stream
+      obsIn.clear();
+      obsIn.close();
+      
+         //Open the output stream
+         //If outFile has any length, use that.
+      if(outFile.length() == 0)
+      {
+         if(outputPath.length() > 0)
+            outFile = outputPath;
+         
+         int lastIndexOf = fileName.find_last_of("\\/");
+         if(lastIndexOf == -1)
+            lastIndexOf = 0;
+         outFile = fileName.substr(lastIndexOf);
+      }
+         //Open the file such that it overwrite any existing data...
+      obsOut.open(outFile, ios::out | ios::trunc);
+      
+      obsOut << convHead;
+      if(debug)
+      {
+         cout << "        Version: " << convHead.version << endl;
+         cout << "      File Type: " << convHead.fileType << endl;
+         cout << "         System: " << convHead.system << endl;
+         cout << "   File Program: " << convHead.fileProgram << endl;
+         cout << "    File Agency: " << convHead.fileAgency << endl;
+         cout << "           Date: " << convHead.date << endl;
+         cout << "    Marker Name: " << convHead.markerName << endl;
+         cout << "  Marker Number: " << convHead.markerNumber << endl;
+         cout << "    Marker Type: " << convHead.markerType << endl;
+         cout << "       Observer: " << convHead.observer << endl;
+         cout << "         Agency: " << convHead.agency << endl;
+         cout << "        Rec. No: " << convHead.recNo << endl;
+         cout << "      Rec. Type: " << convHead.recType << endl;
+         cout << "   Rec. Version: " << convHead.recVers << endl;
+         cout << "        Ant. No: " << convHead.antNo << endl;
+         cout << "      Ant. Type: " << convHead.antType << endl;
+         cout << "  Ant. Position: " << convHead.antennaPosition << endl;
+         cout << " Ant. Delta HEN: " << convHead.antennaDeltaHEN << endl;
+         cout << "       Interval: " << convHead.interval << endl;
+         cout << "Receiver Offset: " << convHead.receiverOffset << endl;
+         cout << "   Leap Seconds: " << convHead.leapSeconds << endl;
+         cout << "        Num SVs: " << convHead.numSVs << endl;
+         cout << "          Valid: " << convHead.valid << endl;
+      }
+      /**/
       for(int i = 0; i < robsData.size(); ++i)
       {
-      	RinexConverter::convertToRinex3(convData, robsData[i], robsHead);
-      	obsOut << convData;
-		}/**/
-		
-		obsOut.flush();
-		obsOut.close();
+         RinexConverter::convertToRinex3(convData, robsData[i], robsHead);
+         obsOut << convData;
+      }/**/
+      
+      obsOut.flush();
+      obsOut.close();
    }
    catch(Exception gpstkException)
    {
@@ -435,7 +460,7 @@ bool convertRinex3NavFile(std::string& fileName, std::string& outFile)
 
 void printTitle(ostream* out)
 {
-	   //Print the title of the program and other information to cout
+      //Print the title of the program and other information to cout
    *out << programName << ", part of the GPSTk, Version "
         << version << "\n";
    *out << "Created by " << author << ", " << date << "\n";
@@ -490,92 +515,106 @@ int parseCommandLine(int argc, char** argv)
    
 //============================================================================//
 //                                Set up Parser                               //
-	CommandOptionParser parser(description);
-	inPathOpt.setMaxCount(1);
-	outPathOpt.setMaxCount(1);
+   CommandOptionParser parser(description);
+   inPathOpt.setMaxCount(1);
+   outPathOpt.setMaxCount(1);
 //============================================================================//
 //                               Parse Arguments                              //
-	parser.parseOptions(argc, argv);
+   parser.parseOptions(argc, argv);
 //============================================================================//
 //                                 Get Counts                                 //
-	vector<string> arguments;
-	
-	if(argc == 0 || helpOpt.getCount() > 0 || filesOpt.getCount() == 0)
-	{
-		printTitle(&cout);
-		parser.displayUsage(cout,false);
-		return -1;
-	}
-	if(parser.hasErrors())
-	{
-	   printTitle(&cout);
-	   parser.displayUsage(cout,false);
-		return -1;
-	}
-	if(licenseOpt.getCount() > 0)
-	{
-		printTitle(&cout);
-		return -1;
-	}
-	if(verboseOpt.getCount() > 0)
-	{
-		arguments = verboseOpt.getValue();
-		int level = StringUtils::asInt(arguments[arguments.size() - 1]);
+   vector<string> arguments;
+   
+   if(argc == 0 || helpOpt.getCount() > 0 || filesOpt.getCount() == 0)
+   {
+      printTitle(&cout);
+      parser.displayUsage(cout,false);
+      return -1;
+   }
+   if(parser.hasErrors())
+   {
+      printTitle(&cout);
+      parser.displayUsage(cout,false);
+      return -1;
+   }
+   if(licenseOpt.getCount() > 0)
+   {
+      printTitle(&cout);
+      return -1;
+   }
+   if(verboseOpt.getCount() > 0)
+   {
+      arguments = verboseOpt.getValue();
+      int level = StringUtils::asInt(arguments[arguments.size() - 1]);
       if(level > 3 || level < 0)
       {
-			printTitle(&cout);
+         printTitle(&cout);
          cout << "[-v|--verbose] takes a number argument from 0 to 3, given "
               << level << endl;
          parser.displayUsage(cout, true);
          return -1;
+      }
+      if(level != 0)
+      {
+         verbose = true;
+         --level;
+      }
+      if(level != 0)
+      {
+         printExceptions = true;
+         --level;
+      }
+      if(level != 0)
+      {
+         debug = true;
+         --level;
+      }
+      
+   }
+   if(outPathOpt.getCount() > 0)
+   {
+      arguments = outPathOpt.getValue();
+      outputPath = arguments[arguments.size() - 1];
+      
+      char lastChar = outputPath[outputPath.length() - 1];
+      if( !(lastChar == '\\' || lastChar == '/') )
+      {
+      	   //Don't know how to tell what OS we are on.
+      	   //Windows sucks btw, for this very reason...
+      	outputPath += "/";
 		}
-		if(level != 0)
-		{
-		   verbose = true;
-		   --level;
+   }
+   if(inPathOpt.getCount() > 0)
+   {
+      arguments = inPathOpt.getValue();
+      inputPath = arguments[arguments.size() - 1];
+      
+      char lastChar = inputPath[inputPath.length() - 1];
+      if( !(lastChar == '\\' || lastChar == '/' ) )
+      {
+      	inputPath += "/";
 		}
-		if(level != 0)
-		{
-		   printExceptions = true;
-		   --level;
-		}
-		if(level != 0)
-		{
-		   debug = true;
-		   --level;
-		}
-		
-	}
-	if(outPathOpt.getCount() > 0)
-	{
-		arguments = outPathOpt.getValue();
-		outputPath = arguments[arguments.size() - 1];
-	}
-	if(inPathOpt.getCount() > 0)
-	{
-		arguments = inPathOpt.getValue();
-		inputPath = arguments[arguments.size() - 1];
-	}
-	
-	//I know filesopt has some...
-	arguments = filesOpt.getValue();
-	int indexColon;
-	for(int i = 0; i < arguments.size(); ++i)
-	{
-		indexColon = arguments[i].find_first_of(":");
-		if(indexColon < 0)
-		{
-			inputFiles.push_back(arguments[i]);
-			outputFiles.push_back(string());
-			continue;
-		}
-		else
-		{
-			inputFiles.push_back(arguments[i].substr(0,indexColon));
-			outputFiles.push_back(arguments[i].substr(indexColon+1));
-			continue;
-		}
-	}
-	
-	return arguments.size();
+   }
+   
+   //I know filesopt has some, already checked getCount()
+   arguments = filesOpt.getValue();
+   int indexColon;
+   for(int i = 0; i < arguments.size(); ++i)
+   {
+      indexColon = arguments[i].find_first_of(":");
+      if(indexColon < 0)
+      {
+         inputFiles.push_back(arguments[i]);
+         outputFiles.push_back(string());
+         continue;
+      }
+      else
+      {
+         inputFiles.push_back(arguments[i].substr(0,indexColon));
+         outputFiles.push_back(arguments[i].substr(indexColon+1));
+         continue;
+      }
+   }
+   
+   return arguments.size();
 }
