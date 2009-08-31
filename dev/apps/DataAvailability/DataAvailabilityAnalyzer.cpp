@@ -323,7 +323,6 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
               ostream_iterator<int>(output, " "));
          output << endl;
       }
-      MDPHeader::debugLevel = debugLevel;
    }
 
    return true;
