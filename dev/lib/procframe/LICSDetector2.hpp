@@ -6,8 +6,8 @@
  * 2nd order fitting curve.
  */
 
-#ifndef LICSDETECTOR2_HPP
-#define LICSDETECTOR2_HPP
+#ifndef GPSTK_LICSDETECTOR2_HPP
+#define GPSTK_LICSDETECTOR2_HPP
 
 //============================================================================
 //
@@ -27,7 +27,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 //
 //============================================================================
 
@@ -82,8 +82,8 @@ namespace gpstk
        *
        * Such threshold value is computed using an exponential function with a
        * given saturation threshold and time constant. The maximum interval of
-       * time allowed two successive epochs is also used as criterion for cycle
-       * slip detection.
+       * time allowed between two successive epochs is also used as criterion
+       * for cycle slip detection.
        *
        * The default values for threshold computing are carefully tuned, so you
        * must not change them without a very good reason.
@@ -372,7 +372,9 @@ namespace gpstk
 
    }; // End of class 'LICSDetector2'
 
+
       //@}
 
 }  // End of namespace gpstk
-#endif   // LICSDETECTOR2_HPP
+
+#endif   // GPSTK_LICSDETECTOR2_HPP
