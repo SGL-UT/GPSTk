@@ -27,101 +27,163 @@
 
 using namespace gpstk;
 using namespace std;
+
 //#define DEBUG
-//The triple slash comments always tell the truth.
-///The double slash comments always lie.
+
+namespace gpstk
+{
 
 //============================================================================//
-   ///Set up the static variables...
-bool RinexConverter::initialized = false;
+
+//bool RinexConverter::initialized        = false;
 bool RinexConverter::fillOptionalFields = true;
-bool RinexConverter::keepComments = true;
+bool RinexConverter::keepComments       = true;
+
 string RinexConverter::markerType;
+
 RinexConverter::CodeMap RinexConverter::obsMap;
+
+RinexConverter::Initializer RinexSingleton;
+
+RinexConverter::Initializer::Initializer()
+{
+//   initialized = true;
+
+#ifdef DEBUG
+   cout << "Initialzing...";
+#endif
+
+   obsMap["C1"] = "C1C";
+   obsMap["C2"] = "C2C";
+   obsMap["C5"] = "C5C";
+   obsMap["C6"] = "C6C";
+   obsMap["C7"] = "C7C";
+   obsMap["C8"] = "C8C";
+
+   obsMap["P1"] = "C1P";
+   obsMap["P2"] = "C2P";
+
+   obsMap["L1"] = "L1C";
+   obsMap["L2"] = "L2C";
+   obsMap["L5"] = "L5C";
+   obsMap["L6"] = "L6C";
+   obsMap["L7"] = "L7C";
+   obsMap["L8"] = "L8C";
+
+   obsMap["D1"] = "D1C";
+   obsMap["D2"] = "D2C";
+   obsMap["D5"] = "D5C";
+   obsMap["D6"] = "D6C";
+   obsMap["D7"] = "D7C";
+   obsMap["D8"] = "D8C";
+
+   obsMap["S1"] = "S1C";
+   obsMap["S2"] = "S2C";
+   obsMap["S5"] = "S5C";
+   obsMap["S6"] = "S6C";
+   obsMap["S7"] = "S7C";
+   obsMap["S8"] = "S8C";
+
+#ifdef DEBUG
+   cout << "Done!" << endl;
+#endif
+}
+
 //============================================================================//
 
 
 /**
  * RINEX 2.11 -> 3.0 methods do not currently account for the WAVELENGTH FACT
- * lines in the RINEX 2.11 header. As such, the data may be completely wrong.
- * The biggest problem is that I don't actually know what WAVELENGTH FACT is,
- * or how it effects the data in the RINEX 2.11 file.
+ * lines in the RINEX 2.11 header.
  */
 bool RinexConverter::convertToRinex3(Rinex3ObsData& dest,
-                                       const RinexObsData& src,
-                                       const RinexObsHeader& srcHeader)
+                                     const RinexObsData& src,
+                                     const RinexObsHeader& srcHeader)
 {
-	   ///Initialize if needed
-	if(!initialized)
-	   initialize();
-	
-	   ///Set the things that correlate 1 to 1 and are necessary for the header
+   /// Initialize if needed.
+
+//   if (!initialized) Initializer();
+
+   /// Set the things that correlate 1 to 1 and are necessary for the Header.
+
    dest.epochFlag    = src.epochFlag;
    dest.numSVs       = src.numSvs;
    dest.clockOffset  = src.clockOffset;
    dest.time         = src.time;
+
+   // Convert the Header first.
+
    convertToRinex3(dest.auxHeader, srcHeader);
-   
-      ///Clear the obs list in the R3 object passed. Not absolutely necessary
-      ///but better safe than sorry, I guess.
+
+   /// Clear the Obs list in the R3 object passed.
+
    dest.obs.clear();
-   
-      ///Iterator to walk over the observation data in the source data.
+
+   /// Iterator to walk over the observation data in the source data.
+
    RinexObsData::RinexSatMap::const_iterator iter = src.obs.begin();
-      ///The list of observations in the source header
+
+   /// The list of observations in the source header.
+
    vector<RinexObsHeader::RinexObsType> oldTypeList = srcHeader.obsTypeList;
-      ///The vector of observations to add to the destination header
+
+   /// The vector of observations to add to the destination header.
+
    vector<Rinex3ObsData::RinexDatum> vec;
    Rinex3ObsData::RinexDatum tempR3;
    RinexObsData::RinexDatum tempR2;
-   
-      ///Loop over the satellites in this data set...
-   for( ; iter != src.obs.end(); ++iter)
+
+   /// Loop over the satellites in the data set.
+
+   for ( ; iter != src.obs.end(); ++iter)
    {
-         ///Essentially clearing the list...
-      vec = vector<Rinex3ObsData::RinexDatum>();
-         ///Strip the satellite system character from the ID
-      char satSystem = RinexSatID(iter->first).systemChar();
-         ///Loop over the types of observations in this file
-      for(int i = 0; i < oldTypeList.size(); ++i)
+      vec.clear();
+
+      /// Get the satellite system character from the ID.
+
+      std::string satSystem(1,RinexSatID(iter->first).systemChar());
+
+      /// Loop over the Obs types in this file.
+
+      for (int i = 0; i < oldTypeList.size(); ++i)
       {
-            ///Transfer the RinexDatum to the new definition
-            ///This is why redefinitions really suck
+         /// Transfer the RinexDatum to the new definition.
+
          tempR2 = (iter->second).find(oldTypeList[i])->second;
          tempR3.data = tempR2.data;
-         tempR3.lli = tempR2.lli;
-         tempR3.ssi = tempR2.ssi;
-            ///Check the current code against the current satellite's system
-            ///If it is good, add it to the vector.
-         if(satSystem == 'G')
-         	if(validGPSCode(oldTypeList[i]))
-         		vec.push_back(tempR3);
-         else if(satSystem == 'E')
-         	if(validGalileoCode(oldTypeList[i]))
-         		vec.push_back(tempR3);
-         else if(satSystem == 'R')
-         	if(validGlonassCode(oldTypeList[i]))
-         		vec.push_back(tempR3);
-         else if(satSystem == 'S')
-         	if(validGEOCode(oldTypeList[i]))
-         		vec.push_back(tempR3);
+         tempR3.lli  = tempR2.lli;
+         tempR3.ssi  = tempR2.ssi;
+
+         ///Check the current code against the current satellite's system
+         ///If it is good, add it to the vector.
+
+         if      (satSystem == "G")
+            if (validGPSCode(oldTypeList[i])) vec.push_back(tempR3);
+         else if (satSystem == "E")
+            if (validGalileoCode(oldTypeList[i])) vec.push_back(tempR3);
+         else if (satSystem == "R")
+            if (validGlonassCode(oldTypeList[i])) vec.push_back(tempR3);
+         else if (satSystem == "S")
+            if (validGEOCode(oldTypeList[i])) vec.push_back(tempR3);
       }
-         ///Add the filled vector to the destination's observation map
+
+      /// Add the filled vector to the destination's Obs map.
+
       dest.obs[iter->first] = vec;
    }
-   
-      ///Return true, because there is no way to return false...
+
    return true;
 }
 
 bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
-                                       const RinexObsHeader& src)
+                                     const RinexObsHeader& src)
 {
-	   ///Initialize if needed.
-	if(!initialized)
-	   initialize();
-	
-	   ///Transfer all items with a 1 to 1 correlation
+   /// Initialize if needed.
+
+//   if (!initialized) Initializer();
+
+   /// Transfer all items with a 1 to 1 correlation.
+
    dest.version         = 3.0;
    dest.fileType        = src.fileType;
    dest.system          = src.system;
@@ -139,208 +201,236 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
    dest.antennaPosition = src.antennaPosition;
    dest.antennaDeltaHEN = src.antennaOffset; //I hope...
    dest.firstObs        = src.firstObs;
-   
-      ///Marker Type does not exist in RINEX 2.11
-      ///If the user has defined the markerType string, use it
-      ///Otherwise default to NON_GEODETIC for low-precision fixed receiver.
-   if(markerType.length() > 0)
+
+   /// Marker Type does not exist in RINEX 2.11.
+   /// If the user has defined the markerType string, use it.
+   /// Otherwise, default to NON_GEODETIC for low-precision fixed receiver.
+
+   if (markerType.length() > 0)
       dest.markerType   = markerType;
    else
       dest.markerType   = "NON_GEODETIC";
-   
-   #ifdef DEBUG
-   cerr << endl;
-   cerr << "       Member: " << endl;
-   cerr << "      Version: " << dest.version         << endl;
-   cerr << "    File Type: " << dest.fileType        << endl;
-   cerr << "       System: " << dest.system          << endl;
-   cerr << " File Program: " << dest.fileProgram     << endl;
-   cerr << "  File Agency: " << dest.fileAgency      << endl;
-   cerr << "         Date: " << dest.date            << endl;
-   cerr << "  Marker Name: " << dest.markerName      << endl;
-   cerr << "  Marker Type: " << dest.markerType      << endl;
-   cerr << "     Observer: " << dest.observer        << endl;
-   cerr << "       Agency: " << dest.agency          << endl;
-   cerr << "       Rec No: " << dest.recNo           << endl;
-   cerr << "     Rec Type: " << dest.recType         << endl;
-   cerr << "     Rec Vers: " << dest.recVers         << endl;
-   cerr << "   Antenna No: " << dest.antNo           << endl;
-   cerr << " Antenna Type: " << dest.antType         << endl;
-   cerr << "  Antenna Pos: " << dest.antennaPosition << endl;
-   cerr << "Antenna Delta: " << dest.antennaDeltaHEN << endl;
-   cerr << "    First Obs: " << dest.firstObs        << endl;
-   #endif
-   
-      ///Obs Type Lists for each system
+
+#ifdef DEBUG
+   cout << endl;
+   cout << "       Member: " << endl;
+   cout << "      Version: " << dest.version         << endl;
+   cout << "    File Type: " << dest.fileType        << endl;
+   cout << "       System: " << dest.system          << endl;
+   cout << " File Program: " << dest.fileProgram     << endl;
+   cout << "  File Agency: " << dest.fileAgency      << endl;
+   cout << "         Date: " << dest.date            << endl;
+   cout << "  Marker Name: " << dest.markerName      << endl;
+   cout << "  Marker Type: " << dest.markerType      << endl;
+   cout << "     Observer: " << dest.observer        << endl;
+   cout << "       Agency: " << dest.agency          << endl;
+   cout << "       Rec No: " << dest.recNo           << endl;
+   cout << "     Rec Type: " << dest.recType         << endl;
+   cout << "     Rec Vers: " << dest.recVers         << endl;
+   cout << "   Antenna No: " << dest.antNo           << endl;
+   cout << " Antenna Type: " << dest.antType         << endl;
+   cout << "  Antenna Pos: " << dest.antennaPosition << endl;
+   cout << "Antenna Delta: " << dest.antennaDeltaHEN << endl;
+   cout << "    First Obs: " << dest.firstObs        << endl;
+#endif
+
+   /// Obs type lists for each system.
+
    vector<ObsID> gpsTypeList;   ///< GPS type list
    vector<ObsID> galTypeList;   ///< Galileo type list
    vector<ObsID> gloTypeList;   ///< GLONASS type list
-   vector<ObsID> geoTypeList;   ///< SBAS (geostationary) type list
-   
-      ///The types present in the old header
+   vector<ObsID> geoTypeList;   ///< SBAS type list
+
+   /// Types present in the old header.
+
    vector<RinexObsHeader::RinexObsType> oldTypeList = src.obsTypeList;
-      ///The current code in the old header
-   char currCode[3];
-      ///Put the results of the map lookup in this to get the new ObsID object
+
+   /// The current code in the old Header.
+
+   std::string currCode;
+
+   /// Store the results of the map lookup to get the new ObsID object.
+
    std::string replacement;
-      ///The new ObsID object
+
+   /// The new ObsID object.
+
    ObsID newID;
-      ///A iterator to use to find the current code...
+
+   /// Iterator to find the current code.
+
    CodeMap::const_iterator mapIter;
-      ///Loop over the old codes
-   #ifdef DEBUG
-   cerr << "Reading in codes..." << endl;
-   #endif
-   for(int i = 0; i < oldTypeList.size(); ++i)
+
+   /// Loop over the old codes.
+
+#ifdef DEBUG
+   cout << "Reading in codes..." << endl;
+#endif
+
+   for (int i = 0; i < oldTypeList.size(); ++i)
    {
-         ///Strip the first two letters (there should only be 2) from the old
-         ///type.
-      currCode[0] = oldTypeList[i].type[0];
-      currCode[1] = oldTypeList[i].type[1];
-      currCode[2] = 0;
-      
-      #ifdef DEBUG
-      cerr << "   Current Code: " << currCode << endl;
-      #endif
-      
-         //This SHOULD never fail. But watch it fail. Watch it. Just because I
-         //said that it's going to. Spectacularly too. Like, titanic scale
-         //disaster.
-         ///This shouldn't fail. Get the replacement string from the static map
-         ///The resulting value from the lookup is actually char[3], but string
-         ///is used to encapsulate it to allow ObsID to work right.
-      for(mapIter = obsMap.begin(); mapIter != obsMap.end(); ++mapIter)
+      /// Strip the first two letters (there should only be 2) from the old type.
+
+      currCode = oldTypeList[i].type;
+//      currCode[1] = oldTypeList[i].type[1];
+//      currCode[2] = 0;
+
+#ifdef DEBUG
+      cout << "   Current Code: " << currCode << endl;
+#endif
+
+      /// This shouldn't fail. Get the replacement string from the static map
+      /// The resulting value from the lookup is actually char[3], but string
+      /// is used to encapsulate it to allow ObsID to work right.
+
+      for (mapIter = obsMap.begin(); mapIter != obsMap.end(); ++mapIter)
       {
-         #ifdef DEBUG
-         cerr << "      Checking <" << mapIter->first << "," << mapIter->second << ">" << endl;
-         #endif
-         if(mapIter->first[0] == currCode[0] && mapIter->first[1] == currCode[1])
+#ifdef DEBUG
+         cout << "      Checking <" << mapIter->first << "," << mapIter->second << ">" << endl;
+#endif
+         if (mapIter->first == currCode)
             break;
       }
-      if(mapIter == obsMap.end())
+      if (mapIter == obsMap.end())
       {
-         #ifdef DEBUG
-         cerr << "      Couldn't find code " << currCode << endl;
-         #endif
+#ifdef DEBUG
+         cout << "      Couldn't find code " << currCode << endl;
+#endif
          continue;
       }
-      
+
       replacement = mapIter->second;
-      
-      #ifdef DEBUG
-      cerr << "   Found replacement string: " << replacement << endl;
-      #endif
-      
-         ///Create the new ObsID from the replacement string
+
+#ifdef DEBUG
+      cout << "   Found replacement string: " << replacement << endl;
+#endif
+
+      /// Create the new ObsID from the replacement string.
+
       newID = ObsID(replacement);
-         ///If this code is a valid type for the systems, add it to their
-         ///respective vector.
-      if(validGPSCode(oldTypeList[i]))
+
+      /// If this code is a valid type for the systems, add it to their
+      /// respective vector.
+
+      if (validGPSCode(oldTypeList[i]))
          gpsTypeList.push_back(newID);
-      if(validGlonassCode(oldTypeList[i]))
+      if (validGlonassCode(oldTypeList[i]))
          gloTypeList.push_back(newID);
-      if(validGalileoCode(oldTypeList[i]))
+      if (validGalileoCode(oldTypeList[i]))
          galTypeList.push_back(newID);
-      if(validGEOCode(oldTypeList[i]))
+      if (validGEOCode(oldTypeList[i]))
          geoTypeList.push_back(newID);
    }
-   
-   #ifdef DEBUG
-   cerr << "Finished reading in codes";
-   #endif
-      ///Add the type lists to the destination header.
-      ///This will probably be very bloated, but the bloat is trivial in every
-      ///case. This can either be trimmed later by a different problem, or if
-      ///the header contains the optional Sat / # obs lines it can be stipped
-      ///here...
+
+#ifdef DEBUG
+   cout << "Finished reading in codes";
+#endif
+
+   /// Add the type lists to the destination header.
+   /// This will probably be very bloated, but the bloat is trivial in every
+   /// case. This can either be trimmed later by a different problem, or if
+   /// the header contains the optional Sat / # obs lines it can be stipped
+   /// here...
+
    dest.mapObsTypes["G"] = gpsTypeList;
    dest.mapObsTypes["R"] = gloTypeList;
    dest.mapObsTypes["E"] = galTypeList;
    dest.mapObsTypes["S"] = geoTypeList;
-   
+
    dest.valid = 1;
-   
-      ///Done if not doing optional fields, so return
-   if(!fillOptionalFields)
-      return true;
-   
-      ///Clear the destination's comment list, transfer comments from src only
-      ///if keepComments is set.
+
+   ///Done if not doing optional fields, so return
+
+   if (!fillOptionalFields) return true;
+
+   /// Clear the destination's comment list, transfer comments from src only
+   /// if keepComments is set.
+
    dest.commentList.clear();
-   if(keepComments)
-      dest.commentList     = src.commentList;
-   
-      ///Transfer the non trivial, optional data members
+   if (keepComments) dest.commentList = src.commentList;
+
+   /// Transfer the non trivial, optional data members.
+
    dest.markerNumber    = src.markerNumber;
    dest.interval        = src.interval;
    dest.lastObs         = src.lastObs;
    dest.receiverOffset  = src.receiverOffset;
    dest.leapSeconds     = src.leapSeconds;
    dest.numSVs          = src.numSVs;
-   
-      ///An iterator over the optional numObsForSat data...
+
+   /// An iterator over the optional numObsForSat data...
+
    map<SatID, vector<int> >::const_iterator iter = src.numObsForSat.begin();
-      ///Booleans indicating if a particular system is present in the data.
+
+   /// Booleans indicating if a particular system is present in the data.
+   /// Set them all to false (the default).
+
    bool hasGPS, hasGLO, hasGAL, hasGEO;
-      ///Set all the booleans to the default false
    hasGPS = hasGLO = hasGAL = hasGEO = false;
-   
-      ///Loop over the satellites in this structure.
-   for( ; iter != src.numObsForSat.end(); ++iter)
+
+   /// Loop over the satellites in this structure.
+
+   for ( ; iter != src.numObsForSat.end(); ++iter)
    {
-         ///Keep the satID as a RinexSatID for use later
+      /// Keep the satID as a RinexSatID for use later.
+
       RinexSatID id = iter->first;
-      
-         ///Copy over the data from src to dest, creating a new entry
+
+      /// Copy over the data from src to dest, creating a new entry.
+
       dest.numObsForSat[id] = iter->second;
-      
-         ///Strip the system character from the satellite id
-      char systemCode = id.systemChar();
-         ///Test the system character, set the corresponding system's indicator
-         ///to true
-      if(systemCode == 'G')
-         hasGPS = true;
-      else if(systemCode == 'R')
-         hasGLO = true;
-      else if(systemCode == 'E')
-         hasGAL = true;
-      else if(systemCode == 'S')
-         hasGEO = true;
+
+      /// Get the system character from the satellite id.
+
+      std::string systemCode(1,id.systemChar());
+
+      /// Test the system character, set the corresponding system's indicator
+      /// to true.
+
+      if      (systemCode == "G") hasGPS = true;
+      else if (systemCode == "R") hasGLO = true;
+      else if (systemCode == "E") hasGAL = true;
+      else if (systemCode == "S") hasGEO = true;
    }
-   
-      ///Strip away the systems whos booleans still are false.
-      ///This gives a perfectly accurate R3 header.
-   if(!hasGPS)
+
+   /// Strip away the systems whose booleans are still false.
+   /// This gives a perfectly accurate R3 Header.
+
+   if (!hasGPS)
       dest.mapObsTypes.erase(dest.mapObsTypes.find("G"));
-   if(!hasGLO)
+   if (!hasGLO)
       dest.mapObsTypes.erase(dest.mapObsTypes.find("R"));
-   if(!hasGAL)
+   if (!hasGAL)
       dest.mapObsTypes.erase(dest.mapObsTypes.find("E"));
-   if(!hasGEO)
+   if (!hasGEO)
       dest.mapObsTypes.erase(dest.mapObsTypes.find("S"));
-   
+
+//   dest.valid = src.valid;
+   dest.valid = dest.allValid30; // ***** temporary kludge
+
    return true;
 }
 
+/// ***** The Rinex 3.0 -> 2.11 methods are not finished. *****
 
-///The Rinex 3.0 -> 2.11 methods are not finished
 bool RinexConverter::convertFromRinex3(RinexObsData& dest,
                                        const Rinex3ObsData& src,
-                                       Rinex3ObsHeader& srcHeader)
+                                       const Rinex3ObsHeader& srcHeader)
 {
-	if(!initialized)
-	   initialize();
-	
-	   //Unsorted obs! Obviously the header wasn't translated...
-	if(srcHeader.obsTypeList.size() == 0)
-	   sortRinex3ObsTypes(srcHeader);
-	
-   dest.epochFlag    = src.epochFlag;
-   dest.numSvs       = src.numSVs;   //Capitilization is (too) important here.
-   dest.clockOffset  = src.clockOffset;
-   dest.time         = src.time;
+//   if (!initialized) Initializer();
+
+   // Unsorted Obs! Obviously the header wasn't translated...
+
+   Rinex3ObsHeader duplHeader = srcHeader;
+   if (srcHeader.obsTypeList.size() == 0)
+      sortRinex3ObsTypes(duplHeader);
+
+   dest.epochFlag   = src.epochFlag;
+   dest.numSvs      = src.numSVs;   // Capitilization is (too) important here.
+   dest.clockOffset = src.clockOffset;
+   dest.time        = src.time;
    convertFromRinex3(dest.auxHeader, srcHeader);
-   
+
    ///TODO::Implement the translation between R3 and R2 maps here...
    /** Basic Steps
     * 1. Get an Observation Code from the obsTypeList vector.
@@ -361,11 +451,10 @@ bool RinexConverter::convertFromRinex3(RinexObsData& dest,
 }
 
 bool RinexConverter::convertFromRinex3(RinexObsHeader& dest,
-                                       Rinex3ObsHeader& src)
+                                       const Rinex3ObsHeader& src)
 {
-	if(!initialized)
-	   initialize();
-	
+//   if (!initialized) Initializer();
+
    dest.version         = 2.11;
    dest.fileType        = src.fileType;
    dest.system          = src.system;
@@ -383,16 +472,17 @@ bool RinexConverter::convertFromRinex3(RinexObsHeader& dest,
    dest.antennaPosition = src.antennaPosition;
    dest.antennaOffset   = src.antennaDeltaHEN;  //I hope...
    dest.firstObs        = src.firstObs;
-   
-   sortRinex3ObsTypes(src);
-   
-   
-      //Done if not doing optional fields...
-      //This returns false right now...
-   if(!fillOptionalFields)
-      return dest.isValid();
-   
-      //The optional fields...
+
+   Rinex3ObsHeader duplHeader = src;
+   sortRinex3ObsTypes(duplHeader);
+
+   // Done if not doing optional fields...
+   // This returns false right now...
+
+   if (!fillOptionalFields) return dest.isValid();
+
+   // The optional fields...
+
    dest.commentList     = src.commentList;
    dest.markerNumber    = src.markerNumber;
    dest.interval        = src.interval;
@@ -400,16 +490,16 @@ bool RinexConverter::convertFromRinex3(RinexObsHeader& dest,
    dest.receiverOffset  = src.receiverOffset;
    dest.leapSeconds     = src.leapSeconds;
    dest.numSVs          = src.numSVs;
-   
+
    map<RinexSatID, vector<int> >::const_iterator satIter = src.numObsForSat.begin();
-   if(src.numObsForSat.size() > 0)
+   if (src.numObsForSat.size() > 0)
    {
-      for( ; satIter != src.numObsForSat.end(); ++satIter)
+      for ( ; satIter != src.numObsForSat.end(); ++satIter)
       {
          dest.numObsForSat[satIter->first] = satIter->second;
       }
    }
-   
+
    return dest.isValid();
 }
 
@@ -418,70 +508,23 @@ void RinexConverter::reset()
    fillOptionalFields = true;
    keepComments = true;
    markerType = "";
-   
-   initialize();
-}
-
-
-
-void RinexConverter::initialize()
-{
-	initialized = true;
-	
-	#ifdef DEBUG
-	cerr << "Initialzing...";
-	#endif
-	
-   obsMap["C1"] = "C1C";
-   obsMap["C2"] = "C2C";
-   obsMap["C5"] = "C5C";
-   obsMap["C6"] = "C6C";
-   obsMap["C7"] = "C7C";
-   obsMap["C8"] = "C8C";
-   
-   obsMap["P1"] = "C1P";
-   obsMap["P2"] = "C2P";
-   
-   obsMap["L1"] = "L1C";
-   obsMap["L2"] = "L2C";
-   obsMap["L5"] = "L5C";
-   obsMap["L6"] = "L6C";
-   obsMap["L7"] = "L7C";
-   obsMap["L8"] = "L8C";
-   
-   obsMap["D1"] = "D1C";
-   obsMap["D2"] = "D2C";
-   obsMap["D5"] = "D5C";
-   obsMap["D6"] = "D6C";
-   obsMap["D7"] = "D7C";
-   obsMap["D8"] = "D8C";
-   
-   obsMap["S1"] = "S1C";
-   obsMap["S2"] = "S2C";
-   obsMap["S5"] = "S5C";
-   obsMap["S6"] = "S6C";
-   obsMap["S7"] = "S7C";
-   obsMap["S8"] = "S8C";
-   
-   #ifdef DEBUG
-   cerr << "Done!" << endl;
-   #endif
+//   Initializer();
 }
 
 bool RinexConverter::validGPSCode(const RinexObsHeader::RinexObsType& code)
 {
    const int numGood = 14;
    std::string good[] = {"C1","C2","C5","P1","P2","L1","L2","L5","D1","D2",
-                           "D5","S1","S2","S5"};
-   for(int i = 0; i < numGood; ++i)
+                         "D5","S1","S2","S5"};
+   for (int i = 0; i < numGood; ++i)
    {
-      if(code.type == good[i])
+      if (code.type == good[i])
       {
-      	#ifdef DEBUG
-      	cerr << "      Valid Code for system G" << endl;
-      	#endif
+#ifdef DEBUG
+         cout << "      Valid Code for system G" << endl;
+#endif
          return true;
-		}
+      }
    }
    return false;
 }
@@ -489,32 +532,32 @@ bool RinexConverter::validGalileoCode(const RinexObsHeader::RinexObsType& code)
 {
    const int numGood = 20;
    std::string good[] = {"C1","C5","C6","C7","C8","L1","L5","L6","L7","L8",
-                           "D1","D5","D6","D7","D8","S1","S5","S6","S7","S8"};
-   for(int i = 0; i < numGood; ++i)
+                         "D1","D5","D6","D7","D8","S1","S5","S6","S7","S8"};
+   for (int i = 0; i < numGood; ++i)
    {
-      if(code.type == good[i])
+      if (code.type == good[i])
       {
-      	#ifdef DEBUG
-      	cerr << "      Valid Code for system E" << endl;
-      	#endif
+#ifdef DEBUG
+         cout << "      Valid Code for system E" << endl;
+#endif
          return true;
-		}
+      }
    }
    return false;
 }
 bool RinexConverter::validGlonassCode(const RinexObsHeader::RinexObsType& code)
 {
    const int numGood = 10;
-   std::string good[] = {"C1","C2","P1","P2","L1","L2","D1","D2","S1","S2",};
-   for(int i = 0; i < numGood; ++i)
+   std::string good[] = {"C1","C2","P1","P2","L1","L2","D1","D2","S1","S2"};
+   for (int i = 0; i < numGood; ++i)
    {
-      if(code.type == good[i])
+      if (code.type == good[i])
       {
-      	#ifdef DEBUG
-      	cerr << "      Valid Code for system R" << endl;
-      	#endif
+#ifdef DEBUG
+         cout << "      Valid Code for system R" << endl;
+#endif
          return true;
-		}
+      }
    }
    return false;
 }
@@ -523,15 +566,15 @@ bool RinexConverter::validGEOCode(const RinexObsHeader::RinexObsType& code)
 {
    const int numGood = 8;
    std::string good[] = {"C1","C5","L1","L5","D1","D5","S1","S5"};
-   for(int i = 0; i < numGood; ++i)
+   for (int i = 0; i < numGood; ++i)
    {
-      if(code.type == good[i])
+      if (code.type == good[i])
       {
-      	#ifdef DEBUG
-      	cerr << "      Valid Code for system S" << endl;
-      	#endif
+#ifdef DEBUG
+         cout << "      Valid Code for system S" << endl;
+#endif
          return true;
-		}
+      }
    }
    return false;
 }
@@ -539,19 +582,20 @@ bool RinexConverter::validGEOCode(const RinexObsHeader::RinexObsType& code)
 void RinexConverter::sortRinex3ObsTypes(Rinex3ObsHeader& header)
 {
    /** Basic steps:
-       * 1. Compile a set of existing codes, based on their STRING values.
-       *      Unfortunately, just comparing the ObsID can lead to redundancy in
-       *      the resulting entries.
-       * 2. Sort based on a value determined by their string representation.
-       *      Example would be:
-       *         RinexCode: [t][b][c]
-       *         value = b * 1000 + t * 100 + c;
-       * 3. Trim off codes that have the same band/type but different codes
-       *      Attempt to keep only the prefered ones in the obsMap object. If
-       *      not possible, use the first code that appears.
-       * 4. Store resulting sorted list of unique R3 identifiers in the header
-       *      Because the obsTypeList member isn't really used in the new
-       *      obs header object, store it there and hope no one else overwrites
-       *      it
-       */
+    * 1. Compile a set of existing codes, based on their STRING values.
+    *    Unfortunately, just comparing the ObsID can lead to redundancy in
+    *    the resulting entries.
+    * 2. Sort based on a value determined by their string representation.
+    *    Example would be:
+    *       RinexCode: [t][b][c]
+    *       value = b * 1000 + t * 100 + c;
+    * 3. Trim off codes that have the same band/type but different codes
+    *    Attempt to keep only the prefered ones in the obsMap object.
+    *    If not possible, use the first code that appears.
+    * 4. Store resulting sorted list of unique R3 identifiers in the Header.
+    *    Because the obsTypeList member isn't really used in the new Obs
+    *    Header object, store it there and hope no one else overwrites it.
+    */
 }
+
+} // end namespace gpstk
