@@ -1,7 +1,8 @@
 #pragma ident "$Id: RinexConvert.hpp 2009-08-25 17:32:36 tvarney $"
 
-#ifndef RINEX_2_CONVERTER_HPP
-#define RINEX_2_CONVERTER_HPP
+#ifndef RINEX_CONVERTER_HPP
+#define RINEX_CONVERTER_HPP
+
 //============================================================================//
 //                                  License                                   //
 //                                                                            //
@@ -31,14 +32,17 @@
 #include "CommandOptionParser.hpp"
 //----------------------------------------------------------------------------//
 //                                 Data Types                                 //
-#include "RinexObsData.hpp"
-#include "Rinex3ObsData.hpp"
+#include "RinexObsBase.hpp"
+#include "Rinex3ObsBase.hpp"
+
+#include "RinexObsStream.hpp"
+#include "Rinex3ObsStream.hpp"
 
 #include "RinexObsHeader.hpp"
 #include "Rinex3ObsHeader.hpp"
 
-#include "RinexObsStream.hpp"
-#include "Rinex3ObsStream.hpp"
+#include "RinexObsData.hpp"
+#include "Rinex3ObsData.hpp"
 //----------------------------------------------------------------------------//
 //                                Other GPSTk                                 //
 #include "RinexConverter.hpp"
@@ -61,7 +65,6 @@ bool convertRinex3NavFile(std::string& fileName, std::string& outFile);
 //============================================================================//
 //                                 Global Data                                //
 std::string programName("RinexConvert");
-std::string version("0.5");   ///< Still broken, hence not a full number.
 std::string license("This file licensed under the GNU Lesser General Public "
                     "License.\n\nYou should have received a copy of the GNU "
                     "Lesser General Public License with\nthis software; if not,"
@@ -77,10 +80,11 @@ std::vector<std::string> inputFiles, outputFiles;
 std::string inputPath, outputPath;
 bool verbose;
 bool printExceptions;
-bool debug;
+bool debug = true;
 //============================================================================//
 //                                 Exit Codes                                 //
 const int NO_INPUT = 1;
 const int BAD_ARG = 2;
 //============================================================================//
+
 #endif
