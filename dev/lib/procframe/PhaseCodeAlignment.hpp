@@ -135,7 +135,7 @@ namespace gpstk
    {
       public:
 
-         /// Default constructor. It will only watch "TypeID::CSL1" flag.
+         /// Default constructor.
       PhaseCodeAlignment()
          : phaseType(TypeID::LC), codeType(TypeID::PC),
            phaseWavelength(0.1069533781421467), useSatArcs(true),
