@@ -6,8 +6,8 @@
  * combination.
  */
 
-#ifndef MWCSDETECTOR_HPP
-#define MWCSDETECTOR_HPP
+#ifndef GPSTK_MWCSDETECTOR_HPP
+#define GPSTK_MWCSDETECTOR_HPP
 
 //============================================================================
 //
@@ -27,7 +27,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -114,7 +114,7 @@ namespace gpstk
        *   }
        * @endcode
        *
-       * @sa LICSDetector.hpp for more information.
+       * @sa LICSDetector.hpp and LICSDetector2.hpp for more information.
        *
        * \warning Cycle slip detectors are objets that store their internal
        * state, so you MUST NOT use the SAME object to process DIFFERENT data
@@ -327,7 +327,9 @@ namespace gpstk
 
    }; // End of class 'MWCSDetector'
 
+
       //@}
 
-}
-#endif   // MWCSDETECTOR_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_MWCSDETECTOR_HPP
