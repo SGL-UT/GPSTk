@@ -3,8 +3,8 @@
 /**
  * @file BasicModel.cpp
  * This is a class to compute the basic parts of a GNSS model, i.e.:
- * Geometric distance, relativity correction, satellite position at
- * transmission time, satellite elevation and azimuth, etc.
+ * Geometric distance, relativity correction, satellite position and
+ * velocity at transmission time, satellite elevation and azimuth, etc.
  */
 
 //============================================================================
@@ -25,7 +25,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -148,7 +148,9 @@ namespace gpstk
 
             // Loop through all the satellites
          satTypeValueMap::iterator stv;
-         for(stv = gData.begin(); stv != gData.end(); ++stv)
+         for( stv = gData.begin();
+              stv != gData.end();
+              ++stv )
          {
                // Scalar to hold temporal value
             double observable( (*stv).second(defaultObservable) );
@@ -212,6 +214,11 @@ namespace gpstk
             (*stv).second[TypeID::satX] = cerange.svPosVel.x[0];
             (*stv).second[TypeID::satY] = cerange.svPosVel.x[1];
             (*stv).second[TypeID::satZ] = cerange.svPosVel.x[2];
+
+               // Let's insert satellite velocity at transmission time
+            (*stv).second[TypeID::satVX] = cerange.svPosVel.v[0];
+            (*stv).second[TypeID::satVY] = cerange.svPosVel.v[1];
+            (*stv).second[TypeID::satVZ] = cerange.svPosVel.v[2];
 
                // Apply correction to C1 observable, if appropriate
             if(useTGD)

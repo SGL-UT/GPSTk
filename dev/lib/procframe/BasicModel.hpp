@@ -3,8 +3,8 @@
 /**
  * @file BasicModel.hpp
  * This is a class to compute the basic parts of a GNSS model, i.e.:
- * Geometric distance, relativity correction, satellite position at
- * transmission time, satellite elevation and azimuth, etc.
+ * Geometric distance, relativity correction, satellite position and
+ * velocity at transmission time, satellite elevation and azimuth, etc.
  */
 
 #ifndef GPSTK_BASICMODEL_HPP
@@ -47,8 +47,8 @@ namespace gpstk
       //@{
 
       /** This is a class to compute the basic parts of a GNSS model, like
-       *  geometric distance, relativity correction, satellite position at
-       *  transmission time, satellite elevation and azimuth, etc.
+       *  geometric distance, relativity correction, satellite position and
+       *  velocity at transmission time, satellite elevation and azimuth, etc.
        *
        * This class is intended to be used with GNSS Data Structures (GDS).
        * It is a more modular alternative to classes such as ModelObs
