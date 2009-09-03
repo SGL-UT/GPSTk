@@ -57,21 +57,22 @@ namespace gpstk
        * A typical way to use this class follows:
        *
        * @code
-       *   // Input observation file stream
+       *      // Input observation file stream
        *   RinexObsStream rin("ebre0300.02o");
-       *   // Load the precise ephemeris file
+       *
+       *      // Load the precise ephemeris file
        *   SP3EphemerisStore sp3Eph;
        *   sp3Eph.loadFile("igs11513.sp3");
-
-       *   // Reference position of receiver station
+       *
+       *      // Reference position of receiver station
        *   Position nominalPos(4833520.2269, 41537.00768, 4147461.489);
        *
-       *   // Some more code and definitions here...
+       *      // Some more code and definitions here...
        *
        *   gnssRinex gRin;  // GNSS data structure for fixed station data
        *
-       *   // Set defaults of models. A typical C1-based modeling is used
-       *   BasicModel model( nominalPos, sp3Eph);
+       *      // Set defaults of models. A typical C1-based modeling is used
+       *   BasicModel model( nominalPos, sp3Eph );
        *
        *   while(rin >> gRin)
        *   {

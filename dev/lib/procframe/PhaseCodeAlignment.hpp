@@ -288,6 +288,7 @@ namespace gpstk
          /// If field 'useSatArcs' is false, cycle slip flag to be watched.
       TypeID watchCSFlag;
 
+
          /// Structure used to store SV alignment data.
       struct alignData
       {
