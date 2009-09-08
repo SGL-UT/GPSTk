@@ -2088,6 +2088,97 @@ in matrix and number of types do not match") );
 
 
 
+      /* Inserts a data value (double) at the provided DayTime, SourceID,
+       * SatID and TypeID, taking into account 'tolerance'.
+       *
+       * @param epoch         Epoch to be looked for.
+       * @param source        Source to be looked for.
+       * @param satellite     Satellite to be looked for.
+       * @param type          Type of the new data.
+       * @param value         Value to be inserted.
+       */
+   gnssDataMap& gnssDataMap::insertValue( const DayTime& epoch,
+                                          const SourceID& source,
+                                          const SatID& satellite,
+                                          const TypeID& type,
+                                          double value )
+      throw( DayTimeNotFound, ValueNotFound )
+   {
+
+         // First check that structure isn't empty
+      if( !( (*this).empty() ) )
+      {
+
+            // Find the position of the first element whose key is not less than
+            // 'epoch-tolerance'
+         gnssDataMap::iterator beginPos( (*this).lower_bound(epoch-tolerance) );
+
+            // Find the position of the first element PAST
+            // 'epoch+tolerance'
+         gnssDataMap::iterator endPos( (*this).upper_bound(epoch+tolerance) );
+
+            // Check if we found some match within current tolerance
+         if( beginPos != endPos )
+         {
+
+               // We'll need a flag
+            bool found(false);
+
+               // Look into the range
+            for( gnssDataMap::iterator it = beginPos;
+                 it != endPos and !found;
+                 ++it )
+            {
+
+                  // Look for the source
+               sourceDataMap::iterator it2( (*it).second.find(source) );
+
+               if( it2 != (*it).second.end() )
+               {
+
+                     // Look for the satellite
+                  satTypeValueMap::iterator it3((*it2).second.find(satellite));
+
+                  if( it3 != (*it2).second.end() )
+                  {
+
+                        // Insert type and value
+                     (*it3).second[ type ] = value;
+
+                        // Work is done, let's get out
+                     found = true;
+
+                  }  // End of 'if( it3 != (*it2).second.end() )'
+
+               }  // End of 'if( it2 != (*it).second.end() )'
+
+            }  // End of 'for( gnssDataMap::iterator it = beginPos ...'
+
+               // Check if we found a proper place to insert value
+            if( !found )
+            {
+               GPSTK_THROW( ValueNotFound("No proper place to insert value"));
+            }
+
+         }
+         else
+         {
+               // No match found for DayTime with current tolerance
+            GPSTK_THROW(DayTimeNotFound("Epoch not found within tolerance"));
+         }
+
+      }
+      else
+      {
+         GPSTK_THROW(DayTimeNotFound("Data map is empty"));
+      }
+
+      return (*this);
+
+   }  // End of method 'gnssDataMap::insertValue()'
+
+
+
       /* Inserts a data value (double) in the first epoch of the data
        * structure with the given SourceID, SatID and TypeID.
        *
@@ -2129,9 +2220,6 @@ in matrix and number of types do not match") );
 
                   // Work is done, let's get out
                found = true;
-
-                  // Insert value
-               // (*it).second[ source ]( satellite )[ type ] = value;
 
             }  // End of 'if( it3 != (*it2).second.end() )'
 

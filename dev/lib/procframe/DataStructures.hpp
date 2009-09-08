@@ -1258,6 +1258,23 @@ namespace gpstk
          throw( ValueNotFound );
 
 
+         /** Inserts a data value (double) at the provided DayTime, SourceID,
+          *  SatID and TypeID, taking into account 'tolerance'.
+          *
+          * @param epoch         Epoch to be looked for.
+          * @param source        Source to be looked for.
+          * @param satellite     Satellite to be looked for.
+          * @param type          Type of the new data.
+          * @param value         Value to be inserted.
+          */
+      gnssDataMap& insertValue( const DayTime& epoch,
+                                const SourceID& source,
+                                const SatID& satellite,
+                                const TypeID& type,
+                                double value )
+         throw( DayTimeNotFound, ValueNotFound );
+
+
          /** Inserts a data value (double) in the first epoch of the data
           *  structure with the given SourceID, SatID and TypeID.
           *
