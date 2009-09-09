@@ -36,6 +36,8 @@
 #ifndef RINEX_TRANSLATOR_HPP
 #define RINEX_TRANSLATOR_HPP
 
+#include<set>
+
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "Rinex3ObsData.hpp"
@@ -179,7 +181,11 @@ class RinexConverter
   
    /// The marker type to use for 2.11 -> 3.0 conversions.
    static std::string markerType;
-  
+
+   /// The typedef and valid code lists for each GNSS, and their GNSS map.
+   typedef set<std::string> ValidCodes;
+   static ValidCodes validGPScodes, validGLOcodes, validGALcodes, validGEOcodes;
+
 //============================================================================//
   
 private:

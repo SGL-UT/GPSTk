@@ -42,6 +42,11 @@ string RinexConverter::markerType;
 
 RinexConverter::CodeMap RinexConverter::obsMap;
 
+RinexConverter::ValidCodes RinexConverter::validGPScodes;
+RinexConverter::ValidCodes RinexConverter::validGLOcodes;
+RinexConverter::ValidCodes RinexConverter::validGALcodes;
+RinexConverter::ValidCodes RinexConverter::validGEOcodes;
+
 RinexConverter::Initializer RinexSingleton;
 
 RinexConverter::Initializer::Initializer()
@@ -80,6 +85,61 @@ RinexConverter::Initializer::Initializer()
    obsMap["S6"] = "S6C";
    obsMap["S7"] = "S7C";
    obsMap["S8"] = "S8C";
+
+   validGPScodes.insert("C1");
+   validGPScodes.insert("C2");
+   validGPScodes.insert("C5");
+   validGPScodes.insert("P1");
+   validGPScodes.insert("P2");
+   validGPScodes.insert("L1");
+   validGPScodes.insert("L2");
+   validGPScodes.insert("L5");
+   validGPScodes.insert("D1");
+   validGPScodes.insert("D2");
+   validGPScodes.insert("S1");
+   validGPScodes.insert("S2");
+   validGPScodes.insert("S5");
+
+   validGLOcodes.insert("C1");
+   validGLOcodes.insert("C2");
+   validGLOcodes.insert("P1");
+   validGLOcodes.insert("P2");
+   validGLOcodes.insert("L1");
+   validGLOcodes.insert("L2");
+   validGLOcodes.insert("D1");
+   validGLOcodes.insert("D2");
+   validGLOcodes.insert("S1");
+   validGLOcodes.insert("S2");
+
+   validGALcodes.insert("C1");
+   validGALcodes.insert("C5");
+   validGALcodes.insert("C6");
+   validGALcodes.insert("C7");
+   validGALcodes.insert("C8");
+   validGALcodes.insert("L1");
+   validGALcodes.insert("L5");
+   validGALcodes.insert("L6");
+   validGALcodes.insert("L7");
+   validGALcodes.insert("L8");
+   validGALcodes.insert("D1");
+   validGALcodes.insert("D5");
+   validGALcodes.insert("D6");
+   validGALcodes.insert("D7");
+   validGALcodes.insert("D8");
+   validGALcodes.insert("S1");
+   validGALcodes.insert("S5");
+   validGALcodes.insert("S6");
+   validGALcodes.insert("S7");
+   validGALcodes.insert("S8");
+
+   validGEOcodes.insert("C1");
+   validGEOcodes.insert("C5");
+   validGEOcodes.insert("L1");
+   validGEOcodes.insert("L5");
+   validGEOcodes.insert("D1");
+   validGEOcodes.insert("D5");
+   validGEOcodes.insert("S1");
+   validGEOcodes.insert("S5");
 
 #ifdef DEBUG
    cout << "Done!" << endl;
@@ -506,68 +566,48 @@ void RinexConverter::reset()
 
 bool RinexConverter::validGPScode(const RinexObsHeader::RinexObsType& code)
 {
-   const int numGood = 14;
-   std::string good[] = {"C1","C2","C5","P1","P2","L1","L2","L5","D1","D2",
-                         "D5","S1","S2","S5"};
-   for (int i = 0; i < numGood; ++i)
+   if (validGPScodes.find(code.type) != validGPScodes.end())
    {
-      if (code.type == good[i])
-      {
 #ifdef DEBUG
-         cout << "      Valid Code for system G" << endl;
+      cout << "      Valid Code for system G" << endl;
 #endif
-         return true;
-      }
+      return true;
    }
    return false;
 }
-bool RinexConverter::validGALcode(const RinexObsHeader::RinexObsType& code)
-{
-   const int numGood = 20;
-   std::string good[] = {"C1","C5","C6","C7","C8","L1","L5","L6","L7","L8",
-                         "D1","D5","D6","D7","D8","S1","S5","S6","S7","S8"};
-   for (int i = 0; i < numGood; ++i)
-   {
-      if (code.type == good[i])
-      {
-#ifdef DEBUG
-         cout << "      Valid Code for system E" << endl;
-#endif
-         return true;
-      }
-   }
-   return false;
-}
+
 bool RinexConverter::validGLOcode(const RinexObsHeader::RinexObsType& code)
 {
-   const int numGood = 10;
-   std::string good[] = {"C1","C2","P1","P2","L1","L2","D1","D2","S1","S2"};
-   for (int i = 0; i < numGood; ++i)
+   if (validGLOcodes.find(code.type) != validGLOcodes.end())
    {
-      if (code.type == good[i])
-      {
 #ifdef DEBUG
-         cout << "      Valid Code for system R" << endl;
+      cout << "      Valid Code for system R" << endl;
 #endif
-         return true;
-      }
+      return true;
+   }
+   return false;
+}
+
+bool RinexConverter::validGALcode(const RinexObsHeader::RinexObsType& code)
+{
+   if (validGALcodes.find(code.type) != validGALcodes.end())
+   {
+#ifdef DEBUG
+      cout << "      Valid Code for system E" << endl;
+#endif
+      return true;
    }
    return false;
 }
 
 bool RinexConverter::validGEOcode(const RinexObsHeader::RinexObsType& code)
 {
-   const int numGood = 8;
-   std::string good[] = {"C1","C5","L1","L5","D1","D5","S1","S5"};
-   for (int i = 0; i < numGood; ++i)
+   if (validGEOcodes.find(code.type) != validGEOcodes.end())
    {
-      if (code.type == good[i])
-      {
 #ifdef DEBUG
-         cout << "      Valid Code for system S" << endl;
+      cout << "      Valid Code for system S" << endl;
 #endif
-         return true;
-      }
+      return true;
    }
    return false;
 }
