@@ -115,6 +115,7 @@ bool RinexConverter::convertToRinex3(Rinex3ObsData& dest,
    /// Iterator to walk over the observation data in the source data.
 
    RinexObsData::RinexSatMap::const_iterator iter = src.obs.begin();
+   if ( iter == src.obs.end() ) return false; // fail & return if no map
 
    /// The list of observations in the source header.
 
@@ -270,34 +271,30 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
 
    for (int i = 0; i < oldTypeList.size(); ++i)
    {
-      /// Strip the first two letters (there should only be 2) from the old type.
+      /// Get the old type.
 
       currCode = oldTypeList[i].type;
-//      currCode[1] = oldTypeList[i].type[1];
-//      currCode[2] = 0;
 
 #ifdef DEBUG
       cout << "   Current Code: " << currCode << endl;
 #endif
 
-      /// This shouldn't fail. Get the replacement string from the static map
-      /// The resulting value from the lookup is actually char[3], but string
-      /// is used to encapsulate it to allow ObsID to work right.
+      /// Get the replacement string from the static map.
 
-      for (mapIter = obsMap.begin(); mapIter != obsMap.end(); ++mapIter)
-      {
-#ifdef DEBUG
-         cout << "      Checking <" << mapIter->first << "," << mapIter->second << ">" << endl;
-#endif
-         if (mapIter->first == currCode)
-            break;
-      }
+      mapIter = obsMap.begin();
       if (mapIter == obsMap.end())
       {
 #ifdef DEBUG
          cout << "      Couldn't find code " << currCode << endl;
 #endif
-         continue;
+         continue; // terminates the outer FOR loop
+      }
+      for ( ; mapIter != obsMap.end(); ++mapIter)
+      {
+#ifdef DEBUG
+         cout << "      Checking <" << mapIter->first << "," << mapIter->second << ">" << endl;
+#endif
+         if (mapIter->first == currCode) break; // terminates this inner FOR loop
       }
 
       replacement = mapIter->second;
@@ -340,7 +337,7 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
 
    dest.valid = 1;
 
-   ///Done if not doing optional fields, so return
+   /// Done if not doing optional fields, so return.
 
    if (!fillOptionalFields) return true;
 
@@ -359,7 +356,7 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
    dest.leapSeconds     = src.leapSeconds;
    dest.numSVs          = src.numSVs;
 
-   /// An iterator over the optional numObsForSat data...
+   /// Declare iterator over the optional numObsForSat data.
 
    map<SatID, vector<int> >::const_iterator iter = src.numObsForSat.begin();
 
@@ -407,12 +404,12 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
       dest.mapObsTypes.erase(dest.mapObsTypes.find("S"));
 
 //   dest.valid = src.valid;
-   dest.valid = dest.allValid30; // ***** temporary kludge
+   dest.valid = dest.allValid30; // ***** temporary kludge *****
 
    return true;
 }
 
-/// ***** The Rinex 3.0 -> 2.11 methods are not finished. *****
+/// ***** The Rinex 3 -> 2 methods are not finished. *****
 
 bool RinexConverter::convertFromRinex3(RinexObsData& dest,
                                        const Rinex3ObsData& src,
