@@ -329,6 +329,10 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
          }
       }
 
+/// For now, comment out the following.  While logical, we will abide by the
+/// philosophy that this converter sould simply read in and write out, not
+/// alter the data in any way.
+/*
       // Erase any systems that were not present.
       map<string, vector<ObsID> >::const_iterator mapIter;
       mapIter = convHead.mapObsTypes.find("G");
@@ -350,6 +354,7 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
       // close the input stream
       obsIn.clear();
       obsIn.close();
+*/
 
       for (int i = 0; i < robsData.size(); ++i)
       {
