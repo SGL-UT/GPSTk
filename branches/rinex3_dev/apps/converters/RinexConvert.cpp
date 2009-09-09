@@ -57,7 +57,6 @@ int main(int argc, char** argv)
    int numConverted = 0;
    int numBad = 0;
    int numNotRinex = 0;
-   bool retVal;
 
    for (int index = 0; index < numFiles; ++index)
    {
@@ -80,139 +79,101 @@ int main(int argc, char** argv)
          
          output += outputFiles[index];
       }
-         //Check file types...
-      if (isRinexObsFile(filePath))
+
+      // Check file types.
+
+      if (isRinexObsFile(filePath)) // file is a RINEX 2.11 Obs file
       {
-            //File is a RINEX 2.11 Observation File
          if (verbose)
+            cout << inputFiles[index] << ": RINEX 2.11 Obs file" << endl;
+
+         if (convertRinex2ObsFile(filePath, output))
          {
-            cout << inputFiles[index] << ": Rinex 2.11 Observation File"
-                 << endl;
-         }
-         
-         retVal = convertRinex2ObsFile(filePath, output);
-         if (retVal)
-         {
+            numConverted++;
             if (verbose)
-            {
-               cout << "Sucessfully Converted " << inputFiles[index]
+               cout << "Sucessfully converted " << inputFiles[index]
                     << " to RINEX 3.0" << endl;
-            }
-            
-            numConverted++;
          }
          else
          {
-            if (verbose)
-            {
-               cout << "Could not convert " << inputFiles[index]
-                    << " to Rinex 3.0" << endl;
-            }
-            
             numBad++;
-         }
-      }
-      else if (isRinex3ObsFile(filePath))
-      {
-            //File is a Rinex 3.0 Observation File
-         cout << inputFiles[index] << ": RINEX 3.0 Observation File" << endl;
-         retVal = convertRinex3ObsFile(filePath, output);
-         if (retVal)
-         {
             if (verbose)
-            {
-               cout << "Sucessfully Converted " << inputFiles[index]
-                    << " to RINEX 2.11" << endl;
-            }
-            
-            numConverted++;
-         }
-         else
-         {
-            if (verbose)
-            {
                cout << "Could not convert " << inputFiles[index]
-                    << " to Rinex 2.11" << endl;
-            }
-            
-            numBad++;
-         }
-      }
-      else if (isRinexNavFile(filePath))
-      {
-            //File is a Rinex 2.11 Navigation File
-         if (verbose)
-            cout << inputFiles[index] << ": RINEX 2.11 Navigation File" << endl;
-         
-         retVal = convertRinex2NavFile(filePath, output);
-         if (retVal)
-         {
-            if (verbose)
-            {
-               cout << "Sucessfully Converted " << inputFiles[index]
                     << " to RINEX 3.0" << endl;
-            }
-            
-            numConverted++;
-         }
-         else
-         {
-            if (verbose)
-            {
-               cout << "Could not convert " << inputFiles[index]
-                    << " to Rinex 3.0" << endl;
-            }
-            
-            numBad++;
          }
       }
-      else if (isRinex3NavFile(filePath))
+      else if (isRinex3ObsFile(filePath)) // file is a RINEX 3.0 Obs file
       {
-            //File is a RINEX 3.0 navigation file
          if (verbose)
-            cout << inputFiles[index] << ": RINEX 3.0 Navigation File" << endl;
-         
-         retVal = convertRinex3NavFile(filePath, output);
-         if (retVal)
+            cout << inputFiles[index] << ": RINEX 3.0 Obs file" << endl;
+
+         if (convertRinex3ObsFile(filePath, output))
          {
+            numConverted++;
             if (verbose)
-            {
-               cout << "Sucessfully Converted " << inputFiles[index]
+               cout << "Sucessfully converted " << inputFiles[index]
                     << " to RINEX 2.11" << endl;
-            }
-            
-            numConverted++;
          }
          else
          {
-            if (verbose)
-            {
-               cout << "Could not convert " << inputFiles[index]
-                    << " to Rinex 2.11" << endl;
-            }
-            
             numBad++;
+            if (verbose)
+               cout << "Could not convert " << inputFiles[index]
+                    << " to RINEX 2.11" << endl;
          }
       }
-      else
+      else if (isRinexNavFile(filePath)) // file is a RINEX 2.11 Nav file
       {
-            //File is not a RINEX 2.11 or RINEX 3 file type
          if (verbose)
+            cout << inputFiles[index] << ": RINEX 2.11 Nav file" << endl;
+
+         if (convertRinex2NavFile(filePath, output))
          {
-            cout << "File Format not recognized for file: " << inputFiles[index]
-                 << endl;
+            numConverted++;
+            if (verbose)
+               cout << "Sucessfully converted " << inputFiles[index]
+                    << " to RINEX 3.0" << endl;
          }
-         
+         else
+         {
+            numBad++;
+            if (verbose)
+               cout << "Could not convert " << inputFiles[index]
+                    << " to RINEX 3.0" << endl;
+         }
+      }
+      else if (isRinex3NavFile(filePath)) // file is a RINEX 3.0 Nav file
+      {
+         if (verbose)
+            cout << inputFiles[index] << ": RINEX 3.0 Nav file" << endl;
+
+         if (convertRinex3NavFile(filePath, output))
+         {
+            numConverted++;
+            if (verbose)
+               cout << "Sucessfully converted " << inputFiles[index]
+                    << " to RINEX 2.11" << endl;
+         }
+         else
+         {
+            numBad++;
+            if (verbose)
+               cout << "Could not convert " << inputFiles[index]
+                    << " to RINEX 2.11" << endl;
+         }
+      }
+      else // file is not RINEX 2.11 or 3.0
+      {
          numNotRinex++;
+         if (verbose)
+            cout << "File format undetermined for: " << inputFiles[index] << endl;
       }
    }
    
    cout << "Successfully converted " << numConverted << " of "
         << numFiles << " files." << endl;
-   if (numBad > 0)
-      cout << numBad << " Bad files" << endl;
-   if (numNotRinex > 0)
-      cout << numNotRinex << " Not RINEX 2.11 or 3.0" << endl;
+   cout << "There were " << numBad << " unconvertible RINEX files." << endl;
+   cout << "There were " << numNotRinex << " files not RINEX 2.11 or 3.0." << endl;
 }
 
 bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
@@ -239,7 +200,7 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
          outFile = fileName.substr(lastIndexOf);
       }
       
-      if (debug) cout << "Trying to open output file:" << outFile << endl;
+      if (debug) cout << "Trying to open output file: " << outFile << endl;
       Rinex3ObsStream obsOut(outFile.c_str(), ios::out);
       if (!obsOut) return false;
       else if (debug) cout << "...opened" << endl;
@@ -309,8 +270,8 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
       bool hasGPS, hasGLO, hasGAL, hasGEO;
       hasGPS = hasGLO = hasGAL = hasGEO = false;
 
-      if (debug)
-         cout << "Start reading in data..." << endl;
+      if (debug) cout << "Start reading in data..." << endl;
+
       while(1)
       {
          try
@@ -320,19 +281,15 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
          catch (Exception gpstkEx)
          {
             if (printExceptions)
-            {
                cout << "Exception Reading Data:" << endl
                     << gpstkEx << endl;
-            }
             continue;
          }
          catch (exception stdEx)
          {
             if (printExceptions)
-            {
                cout << "Exception Reading Data:" << endl
                     << stdEx.what() << endl;
-            }
             continue;
          }
          catch (...)
@@ -452,6 +409,9 @@ bool convertRinex3NavFile(std::string& fileName, std::string& outFile)
    return false;
 }
 
+//============================================================================//
+//============================================================================//
+
 int parseCommandLine(int argc, char** argv)
 {
 //============================================================================//
@@ -460,7 +420,7 @@ int parseCommandLine(int argc, char** argv)
    outputPath = "";
    verbose = false;
    printExceptions = false;
-   debug = false;
+   debug = true;
 //============================================================================//
 //                               Create Options                               //
    
@@ -548,34 +508,31 @@ int parseCommandLine(int argc, char** argv)
          debug = true;
          --level;
       }
-      
+
    }
    if (outPathOpt.getCount() > 0)
    {
       arguments = outPathOpt.getValue();
       outputPath = arguments[arguments.size() - 1];
-      
+
       char lastChar = outputPath[outputPath.length() - 1];
       if ( !(lastChar == '\\' || lastChar == '/') )
       {
-      	   //Don't know how to tell what OS we are on.
-      	   //Windows sucks btw, for this very reason...
+        // Don't know how to tell what OS we are on.
       	outputPath += "/";
-		}
+      }
    }
    if (inPathOpt.getCount() > 0)
    {
       arguments = inPathOpt.getValue();
       inputPath = arguments[arguments.size() - 1];
-      
+
       char lastChar = inputPath[inputPath.length() - 1];
       if ( !(lastChar == '\\' || lastChar == '/' ) )
-      {
       	inputPath += "/";
-		}
    }
-   
-   //I know filesopt has some, already checked getCount()
+
+   // I know filesopt has some, already checked getCount()
    arguments = filesOpt.getValue();
    int indexColon;
    for (int i = 0; i < arguments.size(); ++i)
@@ -594,6 +551,6 @@ int parseCommandLine(int argc, char** argv)
          continue;
       }
    }
-   
+
    return arguments.size();
 }
