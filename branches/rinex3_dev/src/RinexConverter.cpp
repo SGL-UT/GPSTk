@@ -35,7 +35,6 @@ namespace gpstk
 
 //============================================================================//
 
-//bool RinexConverter::initialized        = false;
 bool RinexConverter::fillOptionalFields = true;
 bool RinexConverter::keepComments       = true;
 
@@ -47,8 +46,6 @@ RinexConverter::Initializer RinexSingleton;
 
 RinexConverter::Initializer::Initializer()
 {
-//   initialized = true;
-
 #ifdef DEBUG
    cout << "Initialzing...";
 #endif
@@ -100,10 +97,6 @@ bool RinexConverter::convertToRinex3(Rinex3ObsData& dest,
                                      const RinexObsData& src,
                                      const RinexObsHeader& srcHeader)
 {
-   /// Initialize if needed.
-
-//   if (!initialized) Initializer();
-
    /// Set the things that correlate 1 to 1 and are necessary for the Header.
 
    dest.epochFlag    = src.epochFlag;
@@ -139,14 +132,14 @@ bool RinexConverter::convertToRinex3(Rinex3ObsData& dest,
    {
       vec.clear();
 
-      /// Get the satellite system character from the ID.
-
-      std::string satSystem(1,RinexSatID(iter->first).systemChar());
-
       /// Loop over the Obs types in this file.
 
       for (int i = 0; i < oldTypeList.size(); ++i)
       {
+         /// Get the satellite system character from the ID.
+
+         std::string satSystem(1,RinexSatID(iter->first).systemChar());
+
          /// Transfer the RinexDatum to the new definition.
 
          tempR2 = (iter->second).find(oldTypeList[i])->second;
@@ -158,13 +151,25 @@ bool RinexConverter::convertToRinex3(Rinex3ObsData& dest,
          ///If it is good, add it to the vector.
 
          if      (satSystem == "G")
-            if (validGPSCode(oldTypeList[i])) vec.push_back(tempR3);
+         {
+            if (validGPScode(oldTypeList[i])) vec.push_back(tempR3);
+         }
          else if (satSystem == "E")
-            if (validGalileoCode(oldTypeList[i])) vec.push_back(tempR3);
+         {
+            if (validGALcode(oldTypeList[i])) vec.push_back(tempR3);
+         }
          else if (satSystem == "R")
-            if (validGlonassCode(oldTypeList[i])) vec.push_back(tempR3);
+         {
+            if (validGLOcode(oldTypeList[i])) vec.push_back(tempR3);
+         }
          else if (satSystem == "S")
-            if (validGEOCode(oldTypeList[i])) vec.push_back(tempR3);
+         {
+            if (validGEOcode(oldTypeList[i])) vec.push_back(tempR3);
+         }
+         else
+         {
+            cout << "system not found" << endl;
+         }
       }
 
       /// Add the filled vector to the destination's Obs map.
@@ -178,10 +183,6 @@ bool RinexConverter::convertToRinex3(Rinex3ObsData& dest,
 bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
                                      const RinexObsHeader& src)
 {
-   /// Initialize if needed.
-
-//   if (!initialized) Initializer();
-
    /// Transfer all items with a 1 to 1 correlation.
 
    dest.version         = 3.0;
@@ -312,13 +313,13 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
       /// If this code is a valid type for the systems, add it to their
       /// respective vector.
 
-      if (validGPSCode(oldTypeList[i]))
+      if (validGPScode(oldTypeList[i]))
          gpsTypeList.push_back(newID);
-      if (validGlonassCode(oldTypeList[i]))
+      if (validGLOcode(oldTypeList[i]))
          gloTypeList.push_back(newID);
-      if (validGalileoCode(oldTypeList[i]))
+      if (validGALcode(oldTypeList[i]))
          galTypeList.push_back(newID);
-      if (validGEOCode(oldTypeList[i]))
+      if (validGEOcode(oldTypeList[i]))
          geoTypeList.push_back(newID);
    }
 
@@ -417,8 +418,6 @@ bool RinexConverter::convertFromRinex3(RinexObsData& dest,
                                        const Rinex3ObsData& src,
                                        const Rinex3ObsHeader& srcHeader)
 {
-//   if (!initialized) Initializer();
-
    // Unsorted Obs! Obviously the header wasn't translated...
 
    Rinex3ObsHeader duplHeader = srcHeader;
@@ -453,8 +452,6 @@ bool RinexConverter::convertFromRinex3(RinexObsData& dest,
 bool RinexConverter::convertFromRinex3(RinexObsHeader& dest,
                                        const Rinex3ObsHeader& src)
 {
-//   if (!initialized) Initializer();
-
    dest.version         = 2.11;
    dest.fileType        = src.fileType;
    dest.system          = src.system;
@@ -508,10 +505,9 @@ void RinexConverter::reset()
    fillOptionalFields = true;
    keepComments = true;
    markerType = "";
-//   Initializer();
 }
 
-bool RinexConverter::validGPSCode(const RinexObsHeader::RinexObsType& code)
+bool RinexConverter::validGPScode(const RinexObsHeader::RinexObsType& code)
 {
    const int numGood = 14;
    std::string good[] = {"C1","C2","C5","P1","P2","L1","L2","L5","D1","D2",
@@ -528,7 +524,7 @@ bool RinexConverter::validGPSCode(const RinexObsHeader::RinexObsType& code)
    }
    return false;
 }
-bool RinexConverter::validGalileoCode(const RinexObsHeader::RinexObsType& code)
+bool RinexConverter::validGALcode(const RinexObsHeader::RinexObsType& code)
 {
    const int numGood = 20;
    std::string good[] = {"C1","C5","C6","C7","C8","L1","L5","L6","L7","L8",
@@ -545,7 +541,7 @@ bool RinexConverter::validGalileoCode(const RinexObsHeader::RinexObsType& code)
    }
    return false;
 }
-bool RinexConverter::validGlonassCode(const RinexObsHeader::RinexObsType& code)
+bool RinexConverter::validGLOcode(const RinexObsHeader::RinexObsType& code)
 {
    const int numGood = 10;
    std::string good[] = {"C1","C2","P1","P2","L1","L2","D1","D2","S1","S2"};
@@ -562,7 +558,7 @@ bool RinexConverter::validGlonassCode(const RinexObsHeader::RinexObsType& code)
    return false;
 }
 
-bool RinexConverter::validGEOCode(const RinexObsHeader::RinexObsType& code)
+bool RinexConverter::validGEOcode(const RinexObsHeader::RinexObsType& code)
 {
    const int numGood = 8;
    std::string good[] = {"C1","C5","L1","L5","D1","D5","S1","S5"};

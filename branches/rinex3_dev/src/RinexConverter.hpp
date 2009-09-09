@@ -115,16 +115,7 @@ class RinexConverter
    * 
    * @return If the given Obs type is a valid GPS code.
    */
-   static bool validGPSCode(const RinexObsHeader::RinexObsType& type);
-
-  /**
-   * Checks the given Obs type against an internal list of valid Galileo codes.
-   * 
-   * @param type The Obs type to validate.
-   * 
-   * @return If the given Obs type is a valid Galileo code.
-   */
-   static bool validGalileoCode(const RinexObsHeader::RinexObsType& type);
+   static bool validGPScode(const RinexObsHeader::RinexObsType& type);
 
   /**
    * Checks the given Obs type against an internal list of valid GLONASS codes.
@@ -133,7 +124,16 @@ class RinexConverter
    * 
    * @return If the given Obs type is a valid GLONASS code.
    */
-   static bool validGlonassCode(const RinexObsHeader::RinexObsType& type);
+   static bool validGLOcode(const RinexObsHeader::RinexObsType& type);
+
+  /**
+   * Checks the given Obs type against an internal list of valid Galileo codes.
+   * 
+   * @param type The Obs type to validate.
+   * 
+   * @return If the given Obs type is a valid Galileo code.
+   */
+   static bool validGALcode(const RinexObsHeader::RinexObsType& type);
 
   /**
    * Checks the given Obs type against an internal list of valid SBAS codes.
@@ -142,7 +142,7 @@ class RinexConverter
    * 
    * @return If the given Obs type is a valid SBAS code.
    */
-   static bool validGEOCode(const RinexObsHeader::RinexObsType& type);
+   static bool validGEOcode(const RinexObsHeader::RinexObsType& type);
 
   /**
    * 
