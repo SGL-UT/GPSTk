@@ -261,12 +261,20 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
    dest.antNo           = src.antNo;
    dest.antType         = src.antType;
    dest.antennaPosition = src.antennaPosition;
-   dest.antennaDeltaHEN = src.antennaOffset; //I hope...
+   dest.antennaDeltaHEN = src.antennaOffset;
    dest.firstObs        = src.firstObs;
 
    /// Marker Type does not exist in RINEX 2.11.
    /// If the user has defined the markerType string, use it.
    /// Otherwise, default to NON_GEODETIC for low-precision fixed receiver.
+
+   /// Antenna Position will always be marked as "NOT valid".  In RINEX 3
+   /// it's optional for a moving receiver, so we wrote the RINEX3ObsHeader
+   /// logic to ignore a check for its existence.
+
+   /// Ignore all warnings about valid or not valid in header dump.
+   /// This code merely translates RINEX 2 to RINEX 3.  It does not
+   /// determine if a RINEX file conforms to the standard, nor should it.
 
    if (markerType.length() > 0)
       dest.markerType   = markerType;
