@@ -31,6 +31,7 @@
 //============================================================================
 
 
+#include <algorithm>
 
 #include "DataStructures.hpp"
 #include "StochasticModel.hpp"

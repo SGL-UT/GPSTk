@@ -1663,7 +1663,7 @@ in matrix and number of types do not match") );
 
          // Look into the data structure
       for( gnssDataMap::const_iterator it = gdMap.begin();
-           it != gdMap.end() and !found;
+           it != gdMap.end() && !found;
            ++it )
       {
 
