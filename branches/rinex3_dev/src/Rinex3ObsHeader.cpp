@@ -192,6 +192,7 @@ namespace gpstk
       Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
       string line;
 
+
       if (valid & validVersion)
       {
          line  = rightJustify(asString(version,2), 9);
@@ -199,7 +200,7 @@ namespace gpstk
 
          if ((fileType[0] != 'O') && (fileType[0] != 'o'))
          {
-            FFStreamError err("This isn't a Rinex Observation file: " +
+            FFStreamError err("This isn't a RINEX Observation file: " +
                               fileType.substr(0,1));
             GPSTK_THROW(err);
          }
@@ -219,6 +220,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validVersion" << endl;
       if (valid & validRunBy)
       {
          line  = leftJustify(fileProgram, 20);
@@ -230,6 +232,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validRunBy" << endl;
       if (valid & validComment)
       {
          vector<string>::const_iterator itr = commentList.begin();
@@ -242,6 +245,7 @@ namespace gpstk
             itr++;
          }
       }
+//      cout << "past validComment" << endl;
       if (valid & validMarkerName)
       {
          line  = leftJustify(markerName, 60);
@@ -249,6 +253,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validMarkerName" << endl;
       if (valid & validMarkerNumber)
       {
          line  = leftJustify(markerNumber, 20);
@@ -257,6 +262,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validMarkerNumber" << endl;
       if (valid & validMarkerType)
       {
          line  = leftJustify(markerType, 20);
@@ -265,6 +271,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validMarkerType" << endl;
       if (valid & validObserver)
       {
          line  = leftJustify(observer, 20);
@@ -273,6 +280,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validObserver" << endl;
       if (valid & validReceiver)
       {
          line  = leftJustify(recNo  , 20);
@@ -282,6 +290,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validReceiver" << endl;
       if (valid & validAntennaType)
       {
          line  = leftJustify(antNo  , 20);
@@ -291,6 +300,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validAntennaType" << endl;
       if (valid & validAntennaPosition)
       {
          line  = rightJustify(asString(antennaPosition[0], 4), 14);
@@ -301,6 +311,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validAntennaPosition" << endl;
       if (valid & validAntennaDeltaHEN)
       {
          line  = rightJustify(asString(antennaDeltaHEN[0], 4), 14);
@@ -311,6 +322,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validAntennaDeltaHEN" << endl;
       if (valid & validAntennaDeltaXYZ)
       {
          line  = rightJustify(asString(antennaDeltaXYZ[0], 4), 14);
@@ -321,6 +333,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validAntennaDeltaXYZ" << endl;
       if (valid & validAntennaPhaseCtr)
       {
          line  =  leftJustify(antennaSatSys , 1);
@@ -334,6 +347,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validAntennaPhaseCtr" << endl;
       if (valid & validAntennaBsightXYZ)
       {
          line  = rightJustify(asString(antennaBsightXYZ[0], 4), 14);
@@ -344,6 +358,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validAntennaBsightXYZ" << endl;
       if (valid & validAntennaZeroDirAzi)
       {
          line  = rightJustify(asString(antennaZeroDirAzi, 4), 14);
@@ -352,6 +367,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validAntennaZeroDirAzi" << endl;
       if (valid & validAntennaZeroDirXYZ)
       {
          line  = rightJustify(asString(antennaZeroDirXYZ[0], 4), 14);
@@ -362,6 +378,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validAntennaZeroDirXYZ" << endl;
       if (valid & validCenterOfMass)
       {
          line  = rightJustify(asString(centerOfMass[0], 4), 14);
@@ -372,6 +389,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validCenterOfMass" << endl;
       if (valid & validSystemObsType)
       {
          static const int maxObsPerLine = 13;
@@ -412,6 +430,7 @@ namespace gpstk
             strm.lineNumber++;
          }
       }
+//      cout << "past validSystemObsType" << endl;
       if (valid & validSigStrengthUnit)
       {
          line  = leftJustify(sigStrengthUnit, 20);
@@ -420,6 +439,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validSigStrengthUnit" << endl;
       if (valid & validInterval)
       {
          line  = rightJustify(asString(interval, 3), 10);
@@ -428,6 +448,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validInterval" << endl;
       if (valid & validFirstTime)
       {
          line  = writeTime(firstObs);
@@ -436,6 +457,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validFirstTime" << endl;
       if (valid & validLastTime)
       {
          line  = writeTime(lastObs);
@@ -444,6 +466,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validLastTime" << endl;
       if (valid & validReceiverOffset)
       {
          line  = rightJustify(asString(receiverOffset), 6);
@@ -452,6 +475,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validReceiverOffset" << endl;
       if (valid & validSystemDCBSapplied)
       {
          for (int i = 0; i < infoDCBS.size(); i++)
@@ -466,6 +490,7 @@ namespace gpstk
            strm.lineNumber++;
          }
       }
+//      cout << "past validSystemDCBSapplied" << endl;
       if (valid & validSystemPCVSapplied)
       {
          for (int i = 0; i < infoPCVS.size(); i++)
@@ -480,6 +505,7 @@ namespace gpstk
            strm.lineNumber++;
          }
       }
+//      cout << "past validSystemPCVSapplied" << endl;
       if (valid & validSystemScaleFac)
       {
          static const int maxObsPerLine = 12;
@@ -536,6 +562,7 @@ namespace gpstk
             }
          }
       }
+//      cout << "past validSystemScaleFac" << endl;
       if (valid & validLeapSeconds)
       {
          line  = rightJustify(asString(leapSeconds), 6);
@@ -544,6 +571,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validLeapSeconds" << endl;
       if (valid & validNumSats)
       {
          line  = rightJustify(asString(numSVs), 6);
@@ -552,6 +580,7 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+//      cout << "past validNumSats" << endl;
       if (valid & validPrnObs)
       {
          static const int maxObsPerLine = 9;
@@ -593,13 +622,16 @@ namespace gpstk
             itr++;
          }
       }
+//      cout << "past validPrnObs" << endl;
       if (valid & validEoH)
       {
          line  = string(60, ' ');
          line += stringEoH;
          strm << line << endl;
          strm.lineNumber++;
-      }   
+      }
+//      cout << "past validEoH" << endl;
+//      cout << "R3ObsHead: wrote header records" << endl;
    } // end WriteHeaderRecords
 
 

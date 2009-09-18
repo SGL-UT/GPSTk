@@ -164,9 +164,10 @@ bool RinexConverter::convertToRinex3(Rinex3ObsData& dest,
    dest.clockOffset  = src.clockOffset;
    dest.time         = src.time;
 
-   // Convert the Header first.
+   // Convert the Aux Header, if one exists.
 
-   convertToRinex3(dest.auxHeader, srcHeader);
+   if (src.epochFlag > 0 && src.epochFlag < 6)
+      convertToRinex3(dest.auxHeader, src.auxHeader);
 
    /// Clear the Obs list in the R3 object passed.
 
@@ -246,7 +247,10 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
 {
    /// Transfer all items with a 1 to 1 correlation.
 
-   dest.version         = 3.0;
+   if (round(src.version) == 2)
+   {
+      dest.version         = 3.0;
+   }
    dest.fileType        = src.fileType;
    dest.system          = src.system;
    dest.fileProgram     = src.fileProgram;
@@ -283,6 +287,7 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
 
 #ifdef DEBUG
    cout << endl;
+   cout << "RinexConverter:convertToRinex3(header): destination header info" << endl;
    cout << "       Member: " << endl;
    cout << "      Version: " << dest.version         << endl;
    cout << "    File Type: " << dest.fileType        << endl;
@@ -302,6 +307,7 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
    cout << "  Antenna Pos: " << dest.antennaPosition << endl;
    cout << "Antenna Delta: " << dest.antennaDeltaHEN << endl;
    cout << "    First Obs: " << dest.firstObs        << endl;
+   cout << " validVersion: " << dest.validVersion    << endl;
 #endif
 
    /// Obs type lists for each system.
@@ -471,8 +477,8 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
    if (!hasGEO)
       dest.mapObsTypes.erase(dest.mapObsTypes.find("S"));
 
-//   dest.valid = src.valid;
-   dest.valid = dest.allValid30; // ***** temporary kludge *****
+   dest.valid = src.valid;                // perhaps needs item check
+   dest.valid |= dest.validSystemObsType; // necessary since not in R2
 
    return true;
 }

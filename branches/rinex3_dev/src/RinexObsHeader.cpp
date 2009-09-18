@@ -525,6 +525,7 @@ namespace gpstk
       if (label == versionString)
       {
          version = asDouble(line.substr(0,20));
+         cout << "R2ObsHeader:ParseHeaderRecord:version = " << version << endl;
          fileType = strip(line.substr(20, 20));
          if ( (fileType[0] != 'O') &&
               (fileType[0] != 'o'))

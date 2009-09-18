@@ -73,7 +73,8 @@ namespace gpstk
       const int maxPrnsPerLine = 12;
       int satsWritten = 0;
       RinexSatMap::const_iterator obsItr = obs.begin();
-      if(epochFlag==0 || epochFlag==1 || epochFlag==6) {
+      if(epochFlag==0 || epochFlag==1 || epochFlag==6)
+      {
          while ((obsItr != obs.end()) && (satsWritten < maxPrnsPerLine))
          {
             RinexSatID prn((*obsItr).first);
@@ -83,7 +84,8 @@ namespace gpstk
          }
 
             // add clock offset
-         if(clockOffset != 0.0) {
+         if(clockOffset != 0.0)
+         {
             line += string(68 - line.size(), ' ');
             line += rightJustify(asString(clockOffset, 9), 12);
          }
@@ -214,20 +216,25 @@ namespace gpstk
          clockOffset = 0.0;
       
          // Now read the observations ...
-      if(epochFlag==0 || epochFlag==1 || epochFlag==6) {
+      if(epochFlag==0 || epochFlag==1 || epochFlag==6)
+      {
          int isv, ndx, line_ndx;
          vector<SatID> satIndex(numSvs);
          int col=30;
-         for (isv=1, ndx=0; ndx<numSvs; isv++, ndx++) {
-            if(! (isv % 13)) {
+         for (isv=1, ndx=0; ndx<numSvs; isv++, ndx++)
+         {
+            if(! (isv % 13))
+            {
                strm.formattedGetLine(line);
                isv = 1;
-               if(line.size() > 80) {
+               if(line.size() > 80)
+               {
                   FFStreamError err("Invalid line size:" + asString(line.size()));
                   GPSTK_THROW(err);
                }
             }
-            try {
+            try
+            {
                satIndex[ndx] = RinexSatID(line.substr(col+isv*3-1, 3));
             }
             catch (Exception& e)
@@ -264,12 +271,15 @@ namespace gpstk
          }
       }
          // ... or the auxiliary header information
-      else if(numSvs > 0) {
+      else if(numSvs > 0)
+      {
          auxHeader.clear();
-         for(int i=0; i<numSvs; i++) {
+         for(int i=0; i<numSvs; i++)
+         {
             strm.formattedGetLine(line);
             StringUtils::stripTrailing(line);
-            try {
+            try
+            {
                auxHeader.ParseHeaderRecord(line);
             }
             catch(FFStreamError& e)
@@ -388,7 +398,8 @@ namespace gpstk
       if(epochFlag == 0 || epochFlag == 1) 
       {
          RinexSatMap::const_iterator it;
-         for(it=obs.begin(); it!=obs.end(); it++) {
+         for(it=obs.begin(); it!=obs.end(); it++)
+         {
             s << "Sat " << setw(2) << RinexSatID(it->first);
             RinexObsTypeMap::const_iterator jt;
             for(jt=it->second.begin(); jt!=it->second.end(); jt++) 
@@ -400,7 +411,8 @@ namespace gpstk
             s << endl;
          }
       }
-      else {
+      else 
+      {
          s << "aux. header info:\n";
          auxHeader.dump(s);
       }

@@ -71,13 +71,14 @@ namespace gpstk
    public:
 
          /// A Simple Constructor.
-      RinexObsHeader() : version(2.1), valid()
+//      RinexObsHeader() : version(), valid()
+      RinexObsHeader()
          {}
 
          /// Clear (empty out) header
       inline void clear()
       {
-         version = 2.11;
+//         version = 2.11;
          valid = 0;
          commentList.clear();
          wavelengthFactor[0] = wavelengthFactor[1] = 1;

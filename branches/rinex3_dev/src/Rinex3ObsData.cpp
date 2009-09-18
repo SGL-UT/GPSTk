@@ -58,8 +58,8 @@ namespace gpstk
     // is there anything to write?
     if ( (epochFlag == 0 || epochFlag == 1 || epochFlag == 6)
          && (numSVs==0 || obs.empty())                        ) return;
-    if ( (epochFlag >= 2 && epochFlag <= 5) &&
-         auxHeader.NumberHeaderRecordsToBeWritten() == 0 ) return;
+//    if ( (epochFlag >= 2 && epochFlag <= 5) &&
+//         auxHeader.NumberHeaderRecordsToBeWritten() == 0 ) return;
 
     Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(ffs);
     string line;

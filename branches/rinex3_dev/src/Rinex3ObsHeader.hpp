@@ -74,13 +74,14 @@ namespace gpstk
 
      /// A Simple Constructor.
      Rinex3ObsHeader()
-       : valid(0), version(3.0)
+     //       : valid(0), version(3.0)
+       : valid(0)
      {}
 
      /// Clear (empty out) header
      inline void clear()
      {
-       version = 3.0;
+//       version = 3.0;
        commentList.clear();
        obsTypeList.clear();
        numObsForSat.clear();
