@@ -336,6 +336,135 @@ namespace gpstk
    }  // end Xvt TabularEphemerisStore::getSatXvt
 
 
+
+      /* Returns the acceleration of the indicated object in ECEF
+       * coordinates (meters) at the indicated time.
+       *
+       * @param[in] id the object's identifier
+       * @param[in] t the time to look up
+       *
+       * @return the Triple holding the acceleration of the object at the
+       * indicated time
+       *
+       * @throw InvalidRequest If the request can not be completed for any
+       *    reason, this is thrown. The text may have additional
+       *    information as to why the request failed.
+       */
+   Triple TabularEphemerisStore::getAccel( const SatID sat,
+                                           const DayTime& t )
+      const throw(InvalidRequest)
+   {
+
+      EphMap::const_iterator svmap = pe.find(sat);
+      if (svmap==pe.end()) {
+         InvalidRequest e("Ephemeris for satellite  " + asString(sat)
+                            + " not found.");
+         GPSTK_THROW(e);
+      }
+
+      const SvEphMap& sem=svmap->second;
+
+      SvEphMap::const_iterator i=sem.find(t);
+
+         // Note that the order of the Lagrange interpolation
+         // is twice this value
+      const int half=5;
+
+         //  i will be the lower bound, j the upper (in time).
+      i = sem.lower_bound(t); // i points to first element with key >= t
+
+      SvEphMap::const_iterator j=i;
+
+      if(i == sem.begin() || --i == sem.begin()) {
+         InvalidRequest e("Inadequate data before requested time, satellite "
+                          + asString(sat));
+         GPSTK_THROW(e);
+      }
+      if(j == sem.end()) {
+         InvalidRequest e("Inadequate data after requested time, satellite "
+                          + asString(sat));
+         GPSTK_THROW(e);
+      }
+
+         // "t" is now just between "i" and "j"; therefore, it is time to check
+         // for data gaps ("checkDataGap" must be enabled for this).
+      if ( checkDataGap                               &&
+           ( std::abs( t - i->first ) > gapInterval ) &&
+           ( std::abs( j->first - t ) > gapInterval ) )
+      {
+            // There was a data gap
+         InvalidRequest e( "Data gap too wide detected for satellite "
+                           + asString(sat) );
+         GPSTK_THROW(e);
+      }
+
+      for(int k=0; k<half-1; k++)
+      {
+
+         i--;
+
+            // if k==half-2, this is last iteration
+         if(i == sem.begin() && k<half-2)
+         {
+            InvalidRequest e("Inadequate data before requested time, satellite "
+                             + asString(sat));
+            GPSTK_THROW(e);
+         }
+         j++;
+         if(j == sem.end() && k<half-2) {
+            InvalidRequest e("Inadequate data after requested time, satellite "
+                               + asString(sat));
+            GPSTK_THROW(e);
+         }
+      }
+
+         // Now that we have fully defined the i-j interval, let's check if
+         // the interpolation interval is too wide ("checkInterval" must be
+         // enabled for this).
+      if ( checkInterval                                     &&
+           ( std::abs( j->first - i->first ) > maxInterval ) )
+      {
+            // There was a data gap
+         InvalidRequest e( "Interpolation interval too wide detected for SV "
+                           + asString(sat) );
+         GPSTK_THROW(e);
+      }
+
+
+         // pull data and interpolate
+      SvEphMap::const_iterator itr;
+      DayTime t0(i->first);
+      double dt(t-t0);
+      std::vector<double> times,X,Y,Z;
+
+      for (itr=i; itr!=sem.end(); itr++)
+      {
+         times.push_back(itr->first - t0);      // sec
+         X.push_back(itr->second.x[0]);         // km
+         Y.push_back(itr->second.x[1]);         // km
+         Z.push_back(itr->second.x[2]);         // km
+         if(itr == j) break;
+      }
+
+      Triple accel;
+
+         // Let's interpolate
+      accel[0] = LagrangeInterpolating2ndDerivative(times,X,dt);
+      accel[1] = LagrangeInterpolating2ndDerivative(times,Y,dt);
+      accel[2] = LagrangeInterpolating2ndDerivative(times,Z,dt);
+
+      accel[0] *= 1.e3;     // m/s^2
+      accel[1] *= 1.e3;     // m/s^2
+      accel[2] *= 1.e3;     // m/s^2
+
+      return accel;
+
+   }  // End of method 'TabularEphemerisStore::getAccel()'
+
+
+
+
+
    //-----------------------------------------------------------------------------
    //-----------------------------------------------------------------------------
    void TabularEphemerisStore::addEphemeris(const SP3Data& data)
