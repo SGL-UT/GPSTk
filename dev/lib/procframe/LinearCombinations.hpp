@@ -155,6 +155,34 @@ namespace gpstk
          /// using C1 instead of P1
       gnssLinearCombination mwubbenaCombWithC1;
 
+         /// Definition to compute the GRoup And PHase Ionospheric
+         /// Combination (GRAPHIC) in the L1 frequency
+      gnssLinearCombination GRAPHIC1Combination;
+
+         /// Definition to compute the GRoup And PHase Ionospheric
+         /// Combination (GRAPHIC) in the L1 frequency (using C1 instead of P1)
+      gnssLinearCombination GRAPHIC1CombinationWithC1;
+
+         /// Definition to compute the GRoup And PHase Ionospheric
+         /// Combination (GRAPHIC) in the L2 frequency
+      gnssLinearCombination GRAPHIC2Combination;
+
+         /// Definition to compute the GRoup And PHase Ionospheric
+         /// Combination (GRAPHIC) in the L5 frequency
+      gnssLinearCombination GRAPHIC5Combination;
+
+         /// Definition to compute the GRoup And PHase Ionospheric
+         /// Combination (GRAPHIC) in the L6 frequency
+      gnssLinearCombination GRAPHIC6Combination;
+
+         /// Definition to compute the GRoup And PHase Ionospheric
+         /// Combination (GRAPHIC) in the L7 frequency
+      gnssLinearCombination GRAPHIC7Combination;
+
+         /// Definition to compute the GRoup And PHase Ionospheric
+         /// Combination (GRAPHIC) in the L8 frequency
+      gnssLinearCombination GRAPHIC8Combination;
+
    }; // End of class 'LinearCombinations'
 
       //@}

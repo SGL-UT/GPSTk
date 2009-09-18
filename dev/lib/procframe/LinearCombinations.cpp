@@ -141,7 +141,49 @@ namespace gpstk
       mwubbenaCombWithC1.body[TypeID::C1] = -c;
       mwubbenaCombWithC1.body[TypeID::P2] = -d;
 
+         // Definition to compute the GRoup And PHase Ionospheric
+         // Combination (GRAPHIC) in the L1 frequency
+      GRAPHIC1Combination.header           = TypeID::GRAPHIC1;
+      GRAPHIC1Combination.body[TypeID::P1] = +0.5;
+      GRAPHIC1Combination.body[TypeID::L1] = +0.5;
 
-   }
+         // Definition to compute the GRoup And PHase Ionospheric
+         // Combination (GRAPHIC) in the L1 frequency (using C1 instead of P1)
+      GRAPHIC1CombinationWithC1.header           = TypeID::GRAPHIC1;
+      GRAPHIC1CombinationWithC1.body[TypeID::C1] = +0.5;
+      GRAPHIC1CombinationWithC1.body[TypeID::L1] = +0.5;
+
+         // Definition to compute the GRoup And PHase Ionospheric
+         // Combination (GRAPHIC) in the L2 frequency
+      GRAPHIC2Combination.header           = TypeID::GRAPHIC2;
+      GRAPHIC2Combination.body[TypeID::P2] = +0.5;
+      GRAPHIC2Combination.body[TypeID::L2] = +0.5;
+
+         // Definition to compute the GRoup And PHase Ionospheric
+         // Combination (GRAPHIC) in the L5 frequency
+      GRAPHIC5Combination.header           = TypeID::GRAPHIC5;
+      GRAPHIC5Combination.body[TypeID::C5] = +0.5;
+      GRAPHIC5Combination.body[TypeID::L5] = +0.5;
+
+         // Definition to compute the GRoup And PHase Ionospheric
+         // Combination (GRAPHIC) in the L6 frequency
+      GRAPHIC6Combination.header           = TypeID::GRAPHIC6;
+      GRAPHIC6Combination.body[TypeID::C6] = +0.5;
+      GRAPHIC6Combination.body[TypeID::L6] = +0.5;
+
+         // Definition to compute the GRoup And PHase Ionospheric
+         // Combination (GRAPHIC) in the L7 frequency
+      GRAPHIC7Combination.header           = TypeID::GRAPHIC7;
+      GRAPHIC7Combination.body[TypeID::C7] = +0.5;
+      GRAPHIC7Combination.body[TypeID::L7] = +0.5;
+
+         // Definition to compute the GRoup And PHase Ionospheric
+         // Combination (GRAPHIC) in the L8 frequency
+      GRAPHIC8Combination.header           = TypeID::GRAPHIC8;
+      GRAPHIC8Combination.body[TypeID::C8] = +0.5;
+      GRAPHIC8Combination.body[TypeID::L8] = +0.5;
+
+
+   }  // End of constructor 'LinearCombinations::LinearCombinations()'
 
 } // End of namespace gpstk
