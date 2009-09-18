@@ -128,6 +128,31 @@ namespace gpstk
          Pdelta,    ///< Narrow-lane combination
          Ldelta,    ///< Wide-lane combination
          MWubbena,  ///< Melbourne-Wubbena combination
+         GRAPHIC1,  ///< GRoup And PHase Ionospheric Combination in L1
+         GRAPHIC2,  ///< GRoup And PHase Ionospheric Combination in L2
+         GRAPHIC5,  ///< GRoup And PHase Ionospheric Combination in L5
+         GRAPHIC6,  ///< GRoup And PHase Ionospheric Combination in L6
+         GRAPHIC7,  ///< GRoup And PHase Ionospheric Combination in L7
+         GRAPHIC8,  ///< GRoup And PHase Ionospheric Combination in L8
+            // Derivatives of observations and combinations
+         L1dot,     ///< GPS L1 phase observation first derivative
+         L1dot2,    ///< GPS L1 phase observation second derivative
+         L2dot,     ///< GPS L2 phase observation first derivative
+         L2dot2,    ///< GPS L2 phase observation second derivative
+         L5dot,     ///< GPS L5 phase observation first derivative
+         L5dot2,    ///< GPS L5 phase observation second derivative
+         L6dot,     ///< Galileo L6 phase observation first derivative
+         L6dot2,    ///< Galileo L6 phase observation second derivative
+         L7dot,     ///< Galileo L7 phase observation first derivative
+         L7dot2,    ///< Galileo L7 phase observation second derivative
+         L8dot,     ///< Galileo L8 phase observation first derivative
+         L8dot2,    ///< Galileo L8 phase observation second derivative
+         LCdot,     ///< Phase-based ionosphere-free combination 1st derivative
+         LCdot2,    ///< Phase-based ionosphere-free combination 2nd derivative
+         LIdot,     ///< Phase-based ionospheric combination 1st derivative
+         LIdot2,    ///< Phase-based ionospheric combination 2nd derivative
+         Ldeltadot, ///< Wide-lane combination 1st derivative
+         Ldeltadot2,///< Wide-lane combination 2nd derivative
             // Model-related types
          rho,       ///< Geometric distance satellite-receiver
          rhodot,    ///< First derivative of geometric distance SV-RX
