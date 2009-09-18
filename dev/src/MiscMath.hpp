@@ -6,7 +6,7 @@
  * @file MiscMath.hpp
  * Miscellaneous mathematical algorithms
  */
- 
+
 #ifndef GPSTK_MISC_MATH_HPP
 #define GPSTK_MISC_MATH_HPP
 
@@ -146,6 +146,80 @@ namespace gpstk
          dydx += Y[i]*S;
       }
    }  // end void LagrangeInterpolation(vector, vector, const T, T&, T&)
+
+
+      /// Returns the second derivative of Lagrange interpolation.
+   template <class T>
+   T LagrangeInterpolating2ndDerivative( const std::vector<T>& pos,
+                                         const std::vector<T>& val,
+                                         T desiredPos )
+   {
+
+      int degree( pos.size() );
+
+         // First, compute interpolation factors
+      typedef std::vector< T > vectorType;
+      std::vector< vectorType > delta( degree, vectorType(degree, 0.0) );
+
+
+      for (int i = 0; i < degree; ++i)
+      {
+         for (int j = 0; j < degree; ++j)
+         {
+            if (j != i)
+            {
+               delta[i][j] = ( (desiredPos - pos[j]) / (pos[i] - pos[j]) );
+            }
+         }
+      }
+
+      double retVal(0.0);
+
+      for( int i = 0; i < degree; ++i )
+      {
+         double sum( 0.0 );
+
+         for( int m = 0; m < degree; ++m )
+         {
+
+            if( m != i )
+            {
+
+               double weight1( 1.0/(pos[i]-pos[m]) );
+               double sum2( 0.0 );
+
+               for( int j = 0; j < degree; ++j )
+               {
+
+                  if( (j != i) and (j != m) )
+                  {
+
+                     double weight2( 1.0/(pos[i]-pos[j]) );
+
+                     for( int n = 0; n < degree; ++n )
+                     {
+
+                        if( (n != j) and (n != m) and (n != i) )
+                        {
+                           weight2 *= delta[i][n];
+                        }
+                     }
+                     sum2 += weight2;
+                  }
+               }
+
+               sum += sum2*weight1;
+            }
+
+         }
+
+         retVal += val[i] * sum;
+      }
+
+      return retVal;
+
+   }  // End of 'lagrangeInterpolating2ndDerivative()'
+
 
    /// Perform the root sum square of aa, bb and cc
    template <class T>
