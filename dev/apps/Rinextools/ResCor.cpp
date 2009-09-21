@@ -46,7 +46,6 @@
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
-#include "CommandOptionWithTimeArg.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
@@ -86,7 +85,7 @@ using namespace StringUtils;
 //------------------------------------------------------------------------------------
    // prgm data
 string PrgmName("ResCor");
-string PrgmVers("3.8 7/11/08");
+string PrgmVers("4.1 9/21/09");
 
 // data used in program
 const double CFF=C_GPS_M/OSC_FREQ;
@@ -115,7 +114,7 @@ const double TECUperM=FL1*FL1*1.e-16/40.28;  // 6.1617 TECU/m (0.16229 m/TECU)
 clock_t totaltime;
 string Title;
    // input flags and data
-bool Debug,Verbose,Callow,Cforce,doTgd;
+bool Debug,Verbose,Callow,Cforce,doTgd,progress;
 double IonoHt;
 RinexSatID SVonly;
 string LogFile;
@@ -255,7 +254,7 @@ try {
 
       // Title and description
    Title = PrgmName + ", part of the GPS ToolKit, Ver. " + PrgmVers
-      + " (editor " + REC.getRinexEditVersion() + string("), Run ");
+      + " (ed. " + REC.getRinexEditVersion() + string("), Run ");
    time_t timer;
    struct tm *tblock;
    timer = time(NULL);
@@ -310,7 +309,7 @@ int GetCommandLine(int argc, char **argv, RCRinexEditor& REC) throw(Exception)
    int i,j,iret;
 try {
       // defaults
-   Debug = Verbose = false;
+   Debug = Verbose = progress = false;
 
    doRAIM = false;
    KnownPosInput = RefPosInput = false;
@@ -334,100 +333,105 @@ try {
 
       // this only so it will show up in help page...
    CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-      'f',"","\nConfiguration input:\n --file <file>   File containing more options");
+      'f',"","\n# Configuration input:\n --file <file>   File containing more options "
+      "[repeatable] ()");
 
    // ephemeris
    CommandOption dashn(CommandOption::hasArgument, CommandOption::stdType,
-      0,"nav"," --nav <file>    Navigation (Rinex Nav OR SP3) file(s)");
+      0,"nav"," --nav <file>    Navigation (Rinex Nav OR SP3) files ()");
 
    CommandOption dashnd(CommandOption::hasArgument, CommandOption::stdType,
-      0,"navdir"," --navdir <dir>  Directory of navigation file(s)");
+      0,"navdir"," --navdir <dir>  Directory of navigation files ()");
    dashnd.setMaxCount(1);
 
    // reference position(s)
    CommandOption dashRx1(CommandOption::hasArgument,CommandOption::stdType,0,"RxLLH",
-      "Reference position input: (there are six ways to input the reference "
+      "# Reference position input: (there are six ways to input the reference "
       "position(s):\n --RxLLH <l,l,h> 1.Receiver position (static) in geodetic "
-      "lat, lon(E), ht (deg,deg,m)");
+      "lat, lon E, ht [deg,deg,m] ()");
    dashRx1.setMaxCount(1);
 
    CommandOption dashRx2(CommandOption::hasArgument, CommandOption::stdType,0,"RxXYZ",
-      " --RxXYZ <x,y,z> 2.Receiver position (static) in ECEF coordinates (m)");
+      " --RxXYZ <x,y,z> 2.Receiver position (static) in ECEF coordinates [m] ()");
    dashRx2.setMaxCount(1);
 
    CommandOptionNoArg dashRx3(0,"Rxhere",
       " --Rxhere        3.Reference site positions(time) from this file"
-      " (i.e. -IF<RinexFile>)");
+      " [i.e. -IF<RinexFile>] ()");
    dashRx3.setMaxCount(1);
 
    CommandOption dashRx4(CommandOption::hasArgument, CommandOption::stdType,0,
       "RxRinex"," --RxRinex <fn>  4.Reference site positions(time) from another "
-      "Rinex file named <fn>");
+      "Rinex file named <fn> ()");
    dashRx4.setMaxCount(1);
 
    CommandOption dashRx5(CommandOption::hasArgument,CommandOption::stdType,0,"RxFlat",
       " --RxFlat <fn>   5.Reference site positions and times given in a flat file"
-      " named <fn>");
+      " named <fn> ()");
    dashRx5.setMaxCount(1);
 
    CommandOptionNoArg dashRxhelp(0,"Rxhelp"," --Rxhelp        "
-      "(Enter --Rxhelp for a description of the -RxFlat file format)");
+      "Enter --Rxhelp for a description of the -RxFlat file format ()");
    dashRxhelp.setMaxCount(1);
 
    CommandOptionNoArg dashRx6(0,"RAIM",
       " --RAIM          6.Reference site positions computed via RAIM"
-      " (requires P1,P2,EP)");
+      " [requires P1,P2,EP] ()");
    dashRx6.setMaxCount(1);
 
    CommandOptionNoArg dashred(0,"noRAIMedit",
-      "  (NB the following four options apply only if --RAIM is found)\n"
-      " --noRAIMedit    Do not edit data based on RAIM solution");
+      "##  (NB the following four options apply only if --RAIM is found)\n"
+      " --noRAIMedit    Do not edit data based on RAIM solution ()");
    dashred.setMaxCount(1);
 
    CommandOptionNoArg dashrh(0,"RAIMhead",
       " --RAIMhead      Output average RAIM solution to Rinex header "
-      "(if -HDf also appears)");
+      "[if -HDf also appears] ()");
    dashrh.setMaxCount(1);
 
    CommandOptionNoArg dashro(0,"noRefout",
-      " --noRefout      Do not output reference solution to Rinex");
+      " --noRefout      Do not output reference solution to Rinex ()");
    dashro.setMaxCount(1);
 
    CommandOption dashelev(CommandOption::hasArgument,CommandOption::stdType,
       0,"MinElev",
-      " --MinElev <el>  Minimum satellite elevation (deg) for output");
+      " --MinElev <el>  Minimum satellite elevation (deg) for output ("
+      + asString(minElev,2) + ")");
    dashelev.setMaxCount(1);
 
    // residual and correction computation, processing options
    CommandOption dashdb(CommandOption::hasArgument, CommandOption::stdType,0,"debias",
-      "Residual/Correction computation:\n"
+      "# Residual/Correction computation:\n"
       " --debias <OT,l> Debias new output type <OT>; "
-      "trigger a bias reset with limit <l>");
+      "trigger a bias reset with limit <l> ()\n"
+      "                  NB. also may set limit on editing command -AO<OT,limit>."
+      );
 
    CommandOptionNoArg dashca(0,"Callow",
-      " --Callow        Allow C1 to replace P1 when P1 is not available");
+      " --Callow        Allow C1 to replace P1 when P1 is not available ()");
    dashca.setMaxCount(1);
 
    CommandOptionNoArg dashcf(0,"Cforce",
-      " --Cforce        Force C/A code pseudorange C1 to replace P1");
+      " --Cforce        Force C/A code pseudorange C1 to replace P1 ()");
    dashcf.setMaxCount(1);
 
    CommandOption dashih(CommandOption::hasArgument, CommandOption::stdType,0,"IonoHt",
-      " --IonoHt <ht>   Height of ionosphere in km (default 400) "
-      "(needed for LA,LO,VR,VP)");
+      " --IonoHt <ht>   Height of ionosphere in km; needed for LA,LO,VR,VP ("
+      + asString(IonoHt,1) + ")");
    dashih.setMaxCount(1);
 
    CommandOptionNoArg dashtgd(0,"Tgd",
-      " --Tgd           Apply the Tgd from BC ephemeris to SR,SP,VR,VP");
+      " --Tgd           Apply the Tgd from BC ephemeris to SR,SP,VR,VP ()");
    dashtgd.setMaxCount(1);
 
-   CommandOption dashSV(CommandOption::hasArgument, CommandOption::stdType, 0,"SVonly",
-      " --SVonly <sat>  Process this satellite ONLY (use editing command -DS<Sat> to delete Sat)");
+   CommandOption dashSV(CommandOption::hasArgument, CommandOption::stdType, 0,
+      "SVonly", " --SVonly <sat>  Process this satellite ONLY [use editing command "
+      "-DS<sat> to delete satellites] ()");
    dashSV.setMaxCount(1);
 
    // output files
    CommandOption dashLog(CommandOption::hasArgument, CommandOption::stdType,
-      0,"Log","Output files:\n --Log <file>    Output log file name (rc.log)");
+      0,"Log","# Output files:\n --Log <file>    Output log file name (ResCor.log)");
    dashLog.setMaxCount(1);
 
    //CommandOption dashErr(CommandOption::hasArgument, CommandOption::stdType,
@@ -436,33 +440,31 @@ try {
 
    // help
    CommandOptionNoArg dashVerb(0,"verbose",
-      "Help:\n --verbose       Print extended output to log file.");
+      "# Help:\n --verbose       Print extended output to log file ()");
    dashVerb.setMaxCount(1);
 
    CommandOptionNoArg dashDebug(0,"debug",
-      " --debug         Print debugging information to log file.");
+      " --debug         Print debugging information to log file ()");
    dashDebug.setMaxCount(1);
 
-   CommandOptionNoArg dashh('h', "help"," --help [or -h]  Print syntax and quit.");
+   CommandOptionNoArg dashh('h', "help"," --help [or -h]  Print syntax and quit ()");
    CommandOptionNoArg dashrech(0, "REChelp",
-      " --REChelp       Print syntax of RinexEditor commands and quit.");
+      " --REChelp       Print syntax of RinexEditor commands and quit ()");
    CommandOptionNoArg dashexth(0, "ROThelp",
-      " --ROThelp       Print list of extended Rinex observation types and quit.");
+      " --ROThelp       Print list of extended Rinex observation types and quit ()");
 
    // ... other options
    CommandOptionRest Rest("");
 
    CommandOptionParser Par(
-   "Prgm ResCor will open and read a single Rinex observation file, "
-   "apply editing commands\n"
-   "   using the RinexEditor package, compute any of several residuals "
-   "and corrections and\n"
-   "   register extended Rinex observation types for them, and then write "
-   "the edited data,\n"
-   "   along with the new extended observation types, to an output Rinex "
-   "observation file.\n"
+   "Prgm ResCor will open and read a single Rinex observation file, apply editing"
+   " commands\n using the RinexEditor package, compute any of several residuals and"
+   " corrections and\n register extended Rinex observation types for them, and then"
+   " write the edited data,\n along with the new extended observation types, to an"
+   " output Rinex observation file.\n NB. GLONASS satellites require SP3 ephem., and"
+   " types PI SP VP LW LF M1 M2 M4 M5 are probably incorrect.\n"
    "\nRequired arguments:\n"
-   " -IF and -OF (RinexEditor commands: cf. --REChelp) are required arguments.\n");
+   " -IF and -OF (RinexEditor commands: cf. --REChelp) are required arguments. ()\n");
 
       // -------------------------------------------------
       // allow user to put all options in a file
@@ -1532,7 +1534,7 @@ try {
    map<RinexSatID,RCData>::const_iterator kt;
 
    for(it=rod.obs.begin(); it != rod.obs.end(); ++it) { // loop over satellites
-      sat = RinexSatID(it->first.id,SatID::systemGPS);
+      sat = it->first; //RinexSatID(it->first.id,SatID::systemGPS);
       otmap = it->second;
       // find the saved input data for this sat, if any
       kt = DataStoreMap.find(sat);
@@ -1730,7 +1732,7 @@ try {
 
       // loop over sats
    for(it=rod.obs.begin(); it != rod.obs.end(); ++it) {
-      sat = RinexSatID(it->first.id,SatID::systemGPS);
+      sat = it->first; //RinexSatID(it->first.id,SatID::systemGPS);
       //otmap = it->second; 
 
          // delete this satellite if it is excluded, or if RAIM has marked it
@@ -2070,7 +2072,7 @@ try {
 
       // delete satellites
    for(int i=0; i<SVDelete.size(); i++) {
-      rod.obs.erase(RinexSatID(SVDelete[i].id,SatID::systemGPS));
+      rod.obs.erase(SVDelete[i]); //RinexSatID(SVDelete[i].id,SatID::systemGPS));
       rod.numSvs--;
    }
 
@@ -2087,11 +2089,16 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // NB reentrant, but ugly, function
 // NB PreProcessArgs pulls out --debug --verbose and the -f<f> and --file <f> options.
 // NB It also allow --ROThelp and --REChelp to have any case
+// NB also handle args -AO<OT>,<lim> and --AO <OT>,<lim>
 void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
 {
 try {
    static bool found_cfg_file=false;
+   static bool found_AO_alone=false;
+   string::size_type pos;
+   string word;
 
+   // handle inline config file
    if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
       string filename(arg);
       if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
@@ -2103,7 +2110,7 @@ try {
       }
       bool again_cfg_file=false;
       char c;
-      string buffer,word;
+      string buffer;
       while(1) {
          getline(infile,buffer);
          stripTrailing(buffer,'\r');
@@ -2134,6 +2141,7 @@ try {
          if(infile.eof() || !infile.good()) break;
       }
    }
+   // pull out verbose, debug and help args
    else if(string(arg)==string("--verbose"))
       Verbose = true;
    else if(string(arg)==string("--debug"))
@@ -2146,6 +2154,28 @@ try {
       Args.push_back(string("--REChelp"));
    else if(lowerCase(string(arg)) == string("--rxhelp"))
       Args.push_back(string("--Rxhelp"));
+   // handle debias limit on -AO command
+   else if(string(arg)==string("--AO"))
+      found_AO_alone = true;
+   else if(found_AO_alone) {
+      found_AO_alone = false;
+      word = string("-AO") + string(arg);
+      PreProcessArgs(word.c_str(),Args);
+   }
+   else if(arg[0]=='-' && arg[1]=='A' && arg[2] == 'O') {
+      word = string(arg);
+      string ao = stripFirstWord(word,',');
+      Args.push_back(ao);        // -AO<OT>
+      if(!word.empty()) {        // limit is there - build debias command
+         ao.erase(0,3);          // <OT>
+         Args.push_back(string("--debias"));
+         ao = ao + string(",") + word;
+         Args.push_back(ao);     // <OT>,<limit>
+      }
+   }
+   // undocumented arg
+   else if(string(arg)==string("--progress")) { progress = true; }
+   // regular arg
    else
       Args.push_back(arg);
 }
