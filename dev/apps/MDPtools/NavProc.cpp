@@ -115,10 +115,11 @@ MDPNavProcessor::~MDPNavProcessor()
    unsigned long sfc=0,pec=0;
    for (peh_itr = peHist.begin(); peh_itr != peHist.end(); peh_itr++)
    {
-      sfc += sfCount[peh_itr->first].total;
+      const RangeCarrierPair& rcp=peh_itr->first;
+      sfc += sfCount[rcp].total;
       pec += peh_itr->second.total;
       out << right << setw(7) << peh_itr->second.total << "/"
-          << left << setw(8) << sfCount[peh_itr->first].total;
+          << left << setw(8) << sfCount[rcp].total;
    }
    out << endl;
 
@@ -184,6 +185,10 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
        << "  ";
    string msgPrefix = oss.str();
 
+   // Lets ignore L2 C/A data for the time being
+   if (rcp.first == rcCA && rcp.second == ccL2)
+      return;
+
    if (sfCount.find(rcp) == sfCount.end())
    {
       sfCount[rcp].resetBins(bins);
@@ -216,6 +221,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
          }
       return;
    }
+
 
    umsg.cookSubframe();
    if (verboseLevel>3 && umsg.neededCooking)

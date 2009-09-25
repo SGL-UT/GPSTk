@@ -125,51 +125,62 @@ void MDPProcessor::process()
          out << "Record: " << in.recordNumber
              << ", message: " << msgCount << endl;
 
-      switch (in.header.id)
+      switch (header.id)
       {
          case gpstk::MDPObsEpoch::myId:
-            if (obsOut)
+         {
+            gpstk::MDPObsEpoch obs;
+            in >> obs;
+            if (obs || processBad)
             {
-               gpstk::MDPObsEpoch obs;
-               in >> obs;
-               if (obs || processBad)
-                  processFC(header), process(obs);
+               processFC(header);
+               if (obsOut)
+                  process(obs);
             }
             break;
+         }
 
          case gpstk::MDPPVTSolution::myId:
-            if (pvtOut)
+         {
+            gpstk::MDPPVTSolution pvt;
+            in >> pvt;
+            if (pvt || processBad)
             {
-               gpstk::MDPPVTSolution pvt;
-               in >> pvt;
-               if (pvt || processBad)
-                  processFC(header), process(pvt);
+               processFC(header);
+               if (pvtOut)
+                  process(pvt);
             }
             break;
-
+         }
+         
          case gpstk::MDPNavSubframe::myId:
-            if (navOut)
+         {
+            gpstk::MDPNavSubframe nav;
+            in >> nav;
+            if (nav || processBad)
             {
-               gpstk::MDPNavSubframe nav;
-               in >> nav;
-               if (nav || processBad)
-                  processFC(header), process(nav);
+               processFC(header);
+               if (navOut)
+                  process(nav);
             }
             break;
-
+         }
+         
          case gpstk::MDPSelftestStatus::myId:
-            if (tstOut) 
+         {
+            gpstk::MDPSelftestStatus sts;
+            in >> sts;
+            if (sts || processBad)
             {
-               gpstk::MDPSelftestStatus sts;
-               in >> sts;
-               if (sts || processBad)
-                  processFC(header), process(sts);
+               processFC(header);
+               if (tstOut) 
+                  process(sts);
             }
             break;
-
+         }
          default:
-         if (debugLevel)
-            cout << "Unreconized id:" << in.header.id << endl;
+            if (debugLevel)
+               cout << "Unreconized id:" << in.header.id << endl;
       } // end of switch()
    } // end of while()
 }
