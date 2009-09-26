@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -48,6 +48,50 @@ namespace gpstk
       // Returns a string identifying this object.
    std::string NablaOp::getClassName() const
    { return "NablaOp"; }
+
+
+
+      /* Default constructor.
+       *
+       * By default it will difference prefitC, dx, dy, and dz data and will
+       * take as reference satellite the one with the highest elevation.
+       */
+   NablaOp::NablaOp()
+      : lookReferenceSat(true)
+   {
+
+         // Insert default types to be differenced
+      diffTypes.insert(TypeID::prefitC);
+      diffTypes.insert(TypeID::dx);
+      diffTypes.insert(TypeID::dy);
+      diffTypes.insert(TypeID::dz);
+
+         // Set index for this object
+      setIndex();
+
+   }  // End of constructor 'NablaOp::NablaOp()'
+
+
+
+      /* Common constructor taking as input the reference satellite
+       * to be used.
+       *
+       * @param rSat    SatID of satellite to be used as reference.
+       */
+   NablaOp::NablaOp(const SatID& rSat)
+      : refSat(rSat), lookReferenceSat(false)
+   {
+
+         // Insert default types to be differenced
+      diffTypes.insert(TypeID::prefitC);
+      diffTypes.insert(TypeID::dx);
+      diffTypes.insert(TypeID::dy);
+      diffTypes.insert(TypeID::dz);
+
+         // Set index for this object
+      setIndex();
+
+   }  // End of constructor 'NablaOp::NablaOp()'
 
 
 

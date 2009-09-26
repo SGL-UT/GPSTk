@@ -6,8 +6,8 @@
  * satellite-related data) to GNSS data structures.
  */
 
-#ifndef NABLAOP_HPP
-#define NABLAOP_HPP
+#ifndef GPSTK_NABLAOP_HPP
+#define GPSTK_NABLAOP_HPP
 
 //============================================================================
 //
@@ -27,7 +27,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
 //============================================================================
 
@@ -68,15 +68,17 @@ namespace gpstk
        *
        *      // Create an object to compute single differences on
        *      // satellite-related data. The highest satellite will be used as
-       *      // reference satellite and prefit residuals will be differenced
-       *      // (this is the default behaviour).
+       *      // reference satellite and prefit residuals and geometric
+       *      // coefficients dx, dy, dz will be differenced (this is the
+       *      // default behaviour).
        *   NablaOp nabla;
        *
        *   while(rin >> gRin)
        *   {
        *
-       *         // By default, difference is applied on code prefit residuals,
-       *         // and therefore you need a modeler object before 'nabla'
+       *         // By default, difference is applied on code prefit residuals
+       *         // and and geometric coefficients dx, dy, dz; therefore, you
+       *         // must use a modeler object before 'nabla'
        *      gRin >> model >> nabla;
        *   }
        *
@@ -89,10 +91,10 @@ namespace gpstk
        *
        * Afterwards, it will REMOVE reference satellite data from the GNSS data
        * structure and will substract the specified type or types (code prefit
-       * residuals by default) from the corresponding data in the rest of the
-       * "gRef" data structure.
+       * residuals, dx, dy, dz by default) from the corresponding data in the
+       * rest of the "gRef" data structure.
        *
-       * Take notice that in the default case the code prefit residuals were
+       * Take notice that in the default case the types to be differenced were
        * computed by "ModeledPR" or "ModeledReferencePR" objects (among others),
        * so those steps are mandatory.
        *
@@ -108,12 +110,12 @@ namespace gpstk
    public:
 
 
-         /// Default constructor. By default it will difference prefitC data
-         /// and will take as reference satellite the one with the highest
-         /// elevation.
-      NablaOp()
-         : lookReferenceSat(true)
-      { diffTypes.insert(TypeID::prefitC); setIndex(); };
+         /** Default constructor.
+          *
+          * By default it will difference prefitC, dx, dy, and dz data and will
+          * take as reference satellite the one with the highest elevation.
+          */
+      NablaOp();
 
 
          /** Common constructor taking as input the reference satellite
@@ -121,9 +123,7 @@ namespace gpstk
           *
           * @param rSat    SatID of satellite to be used as reference.
           */
-      NablaOp(const SatID& rSat)
-         : refSat(rSat), lookReferenceSat(false)
-      { diffTypes.insert(TypeID::prefitC); setIndex(); };
+      NablaOp(const SatID& rSat);
 
 
          /** Common constructor taking as input the type of data values
@@ -133,7 +133,7 @@ namespace gpstk
           */
       NablaOp(const TypeID& difftype)
          : lookReferenceSat(true)
-      { diffTypes.insert(difftype); setIndex(); };
+      { setDiffType(difftype); setIndex(); };
 
 
          /** Common constructor taking as input the type of data values
@@ -145,7 +145,7 @@ namespace gpstk
       NablaOp( const SatID& rSat,
                const TypeID& difftype )
          : refSat(rSat), lookReferenceSat(false)
-      { diffTypes.insert(difftype); setIndex(); };
+      { setDiffType(difftype); setIndex(); };
 
 
          /** Common constructor taking as input a set of types of data values
@@ -302,4 +302,5 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
-#endif   // NABLAOP_HPP
+
+#endif   // GPSTK_NABLAOP_HPP
