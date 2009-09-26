@@ -260,6 +260,7 @@ namespace gpstk
       extern const CRCParam CRCCCITT;
       extern const CRCParam CRC16;
       extern const CRCParam CRC32;
+      extern const CRCParam CRC24Q;
 
 
          /**

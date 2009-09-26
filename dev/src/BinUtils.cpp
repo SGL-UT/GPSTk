@@ -57,5 +57,17 @@ namespace gpstk
       const CRCParam CRCCCITT(16, 0x1021, 0xffff, 0, true, false, false);
       const CRCParam CRC16(16, 0x8005, 0, 0, true, true, true);
       const CRCParam CRC32(32, 0x4c11db7, 0xffffffff, 0xffffffff, true, true, true);
+      const CRCParam CRC24Q(24, 0x823ba9, 0, 0xffffffff, true, false, false);
+      // CRC24Q (for GPS CNAV): 23 17 13 12 11 9 8 7 5 3 +1
+      // 1000 0010 0011 1011 1010 1001 : 823ba9
+
+      // CRC-16: 16 15 2 +1
+      // 1000 0000 0000 0101: 8005
+
+      // CRC-CCITT: 16 12 5 +1
+      // 0001 0000 0010 0001: 1021
+
+      // CRC-32: 32 26 23 22 16 12 11 10 8 7 5 4 2 +1
+      // 0000 0100 1100 0001 0001 1101 1011 0101 : 04c11db5
    }
 }
