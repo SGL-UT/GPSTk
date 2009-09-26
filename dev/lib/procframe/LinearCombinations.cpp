@@ -50,6 +50,19 @@ namespace gpstk
       c1Prefit.body[TypeID::satPCenter]   = -1.0;
       c1Prefit.body[TypeID::tropoSlant]   = -1.0;
       c1Prefit.body[TypeID::ionoL1]       = -1.0;
+         // The instrumental delay for C1 is not exactly TGD, but it is close
+      c1Prefit.body[TypeID::instC1]       = -1.0;
+
+         // Definition to compute prefit residual of P1
+      p1Prefit.header                     = TypeID::prefitC;
+      p1Prefit.body[TypeID::P1]           = +1.0;
+      p1Prefit.body[TypeID::rho]          = -1.0;
+      p1Prefit.body[TypeID::dtSat]        = +1.0;
+      p1Prefit.body[TypeID::rel]          = -1.0;
+      p1Prefit.body[TypeID::gravDelay]    = -1.0;
+      p1Prefit.body[TypeID::satPCenter]   = -1.0;
+      p1Prefit.body[TypeID::tropoSlant]   = -1.0;
+      p1Prefit.body[TypeID::ionoL1]       = -1.0;
       c1Prefit.body[TypeID::instC1]       = -1.0;
 
          // Definition to compute PC combination
