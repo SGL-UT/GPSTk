@@ -52,6 +52,7 @@ namespace gpstk
       c1Prefit.body[TypeID::ionoL1]       = -1.0;
          // The instrumental delay for C1 is not exactly TGD, but it is close
       c1Prefit.body[TypeID::instC1]       = -1.0;
+      c1Prefit.body[TypeID::mpC1]         = -1.0;
 
          // Definition to compute prefit residual of P1
       p1Prefit.header                     = TypeID::prefitC;
@@ -65,6 +66,21 @@ namespace gpstk
       p1Prefit.body[TypeID::ionoL1]       = -1.0;
          // Differential code biases (DCBs) for P1-P2
       p1Prefit.body[TypeID::instC1]       = -1.0;
+      p1Prefit.body[TypeID::mpC1]         = -1.0;
+
+         // Definition to compute prefit residual of L1
+      l1Prefit.header                     = TypeID::prefitL;
+      l1Prefit.body[TypeID::L1]           = +1.0;
+      l1Prefit.body[TypeID::rho]          = -1.0;
+      l1Prefit.body[TypeID::dtSat]        = +1.0;
+      l1Prefit.body[TypeID::rel]          = -1.0;
+      l1Prefit.body[TypeID::gravDelay]    = -1.0;
+      l1Prefit.body[TypeID::satPCenter]   = -1.0;
+      l1Prefit.body[TypeID::tropoSlant]   = -1.0;
+      l1Prefit.body[TypeID::ionoL1]       = +1.0;
+         // Coefficient for L1 windUp is L1 wavelength/2*PI
+      l1Prefit.body[TypeID::windUp]       = -L1_WAVELENGTH/TWO_PI;
+      l1Prefit.body[TypeID::mpL1]         = -1.0;
 
          // Definition to compute PC combination
       pcCombination.header                = TypeID::PC;
