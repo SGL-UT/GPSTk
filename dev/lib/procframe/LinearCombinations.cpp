@@ -63,7 +63,8 @@ namespace gpstk
       p1Prefit.body[TypeID::satPCenter]   = -1.0;
       p1Prefit.body[TypeID::tropoSlant]   = -1.0;
       p1Prefit.body[TypeID::ionoL1]       = -1.0;
-      c1Prefit.body[TypeID::instC1]       = -1.0;
+         // Differential code biases (DCBs) for P1-P2
+      p1Prefit.body[TypeID::instC1]       = -1.0;
 
          // Definition to compute PC combination
       pcCombination.header                = TypeID::PC;
