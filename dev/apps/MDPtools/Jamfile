@@ -6,7 +6,7 @@ SubDir TOP apps MDPtools ;
 # else is done.
 
 GPSLinkLibraries mdplib : rxio gpstk ;
-Library mdplib : MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp ;
+Library mdplib : MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp SubframeProc.cpp ;
 
 # Now we can set up the things that depend upon the local library. Note that
 # the LinkLibraries rule for mdplib must preceede the GPSLinkLibraries rule
