@@ -156,6 +156,50 @@ MDPNavProcessor::~MDPNavProcessor()
 }
 
 
+class CRC24Q
+{
+public:
+   static const std::size_t bit_count = 24;
+
+   // 0,1,3,4,5,6,7,10,11,14,17,18,23,24
+   //1000 0110 0100 1100 1111 1011: 0x864cfb
+   CRC24Q()
+      : rem(0) , poly(0x864cfb)
+   {};
+
+   void process_bit( bool bit)
+   {
+      rem ^= ( bit ? 0x00800000 : 0 );
+      bool const  pdiv = static_cast<bool>( rem & 0x00800000 );
+      rem <<= 1;
+      if ( pdiv )
+         rem ^= poly;
+   };
+
+   void process_bits( uint8_t bits, std::size_t bit_count = 8)
+   {
+      bits <<= 8 - bit_count;
+
+      for ( std::size_t i = bit_count ; i > 0u ; --i, bits <<= 1u )
+         process_bit( static_cast<bool>(bits & 0x80) );
+   };
+
+   void process_bytes( void const *buffer, std::size_t byte_count)
+   {
+      uint8_t const *b = static_cast<uint8_t const *>(buffer);
+      for (int i=0; i<byte_count; i++)
+         process_bits(*b++);
+   };
+
+   uint32_t checksum() const
+   { return rem & 0x00ffffff; };
+
+private:
+   uint32_t  rem;
+   const uint32_t poly;
+};
+
+
 //-----------------------------------------------------------------------------
 void MDPNavProcessor::process(const MDPNavSubframe& msg)
 {
@@ -181,7 +225,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
    oss << umsg.time.printf(timeFormat)
        << "  PRN:" << setw(2) << umsg.prn
        << " " << asString(umsg.carrier)
-       << ":" << setw(2) << left << asString(umsg.range)
+       << ":" << setw(4) << left << asString(umsg.range)
        << "  ";
    string msgPrefix = oss.str();
 
@@ -196,157 +240,176 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
    }
    
    if (binByElevation)
-      sfCount[rcp].addValue(el[ni]);
+     sfCount[rcp].addValue(el[ni]);
    else
-      sfCount[rcp].addValue(snr[ni]);
-   
-   // For the moment, we only understand legacy nav data
-   if (msg.nav != ncICD_200_2)
+     sfCount[rcp].addValue(snr[ni]);
+
+   // For the moment, we need to processess each type of nav data uniquely - this needs to change.
+   if (msg.nav == ncICD_200_2)
    {
+      umsg.cookSubframe();
+      if (verboseLevel>3 && umsg.neededCooking)
+         out << msgPrefix << "Subframe required cooking" << endl;
+
+      if (!umsg.parityGood)
+      {
+         if (verboseLevel)
+            out << msgPrefix << "Parity error"
+                << " SNR:" << fixed << setprecision(1) << snr[ni]
+                << " EL:" << el[ni]
+                << endl;
+
+         if (binByElevation)
+            peHist[rcp].addValue(el[ni]);
+         else
+            peHist[rcp].addValue(snr[ni]);
+
+         return;
+      }
+
+      short sfid = umsg.getSFID();
+      short svid = umsg.getSVID();
+      bool isAlm = sfid > 3;
+      long sow = umsg.getHOWTime();
+      short page = ((sow-6) / 30) % 25 + 1;
+
+      if (((isAlm && almOut) || (!isAlm && ephOut))
+          && verboseLevel>2)
+      {
+         out << msgPrefix
+             << "SOW:" << setw(6) << sow
+             << " NC:" << static_cast<int>(umsg.nav)
+             << " I:" << umsg.inverted
+             << " SFID:" << sfid;
+         if (isAlm)
+            out << " SVID:" << svid
+                << " Page:" << page;
+         out << endl;
+      }
+
+      // Sanity check on the header time versus the HOW time
+      short week = umsg.time.GPSfullweek();
+      if (sow <0 || sow>=604800)
+      {
+         if (verboseLevel>1)
+            out << msgPrefix << "  Bad SOW: " << sow << endl;
+         return;
+      }
+      
+      DayTime howTime(week, umsg.getHOWTime());
+      if (howTime == umsg.time)
+      {
+         if (verboseLevel && ! (bugMask & 0x4))
+            out << msgPrefix << " Header time==HOW time" << endl;
+      }
+      else if (howTime != umsg.time+6)
+      {
+         if (verboseLevel>1)
+            out << msgPrefix << " HOW time != hdr time+6, HOW:"
+                << howTime.printf(timeFormat)
+                << endl;
+         if (verboseLevel>3)
+            umsg.dump(out);
+         return;
+      }
+
+      prev[ni] = curr[ni];
+      curr[ni] = umsg;
+
+      if (prev[ni].parityGood && 
+          prev[ni].inverted != curr[ni].inverted && 
+          curr[ni].time - prev[ni].time <= 12)
+      {
+         if (verboseLevel)
+            out << msgPrefix << "Polarity inversion"
+                << " SNR:" << fixed << setprecision(1) << snr[ni]
+                << " EL:" << el[ni]
+                << endl;
+      }      
+
+      if (isAlm && almOut)
+      {
+         AlmanacPages& almPages = almPageStore[ni];
+         EngAlmanac& engAlm = almStore[ni];
+         SubframePage sp(sfid, page);
+         almPages[sp] = umsg;
+         almPages.insert(make_pair(sp, umsg));
+
+         if (makeEngAlmanac(engAlm, almPages, !minimalAlm))
+         {
+            out << msgPrefix << "Built complete almanac" << endl;
+            if (verboseLevel>2)
+               dump(out, almPages);
+            if (verboseLevel>1)
+               engAlm.dump(out);
+            almPages.clear();
+            engAlm = EngAlmanac();
+         }            
+      }
+      if (!isAlm && ephOut)
+      {
+         EphemerisPages& ephPages = ephPageStore[ni];
+         ephPages[sfid] = umsg;
+         EngEphemeris engEph;
+         try
+         {
+            if (makeEngEphemeris(engEph, ephPages))
+            {
+               out << msgPrefix << "Built complete ephemeris, iocd:0x"
+                   << hex << setw(3) << engEph.getIODC() << dec
+                   << endl;
+               if (verboseLevel>2)
+                  dump(out, ephPages);
+               if (verboseLevel>1)
+                  out << engEph;
+               ephStore[ni] = engEph;
+            }
+         }
+         catch (Exception& e)
+         {
+            out << e << endl;
+         }
+      }
+   }
+   else if (msg.nav == ncICD_200_4)
+   {
+      // As of October 2009, all but one SV are modulating a constant L2C nav bitstream
+      // and the one SV is just sending a type 0 CNAV message.
       if (verboseLevel>2)
          msg.dump(cout);
 
-      // But also, for the moment, the live L2C nav data should be constant.
+      int bsfc=0;
       for (int i=1; i<=10; i++)
          if (msg.subframe[i] != 0)
+            bsfc++;
+
+      if (bsfc)
+      {
+         CRC24Q crc;
+         for (int i=1; i<=10; i++)
          {
+            uint32_t tmp = msg.subframe[i];
+            for (int j=0; j<30; j++, tmp<<=1)
+               crc.process_bit( tmp & 0x20000000);
+         }
+
+         if (crc.checksum() != 0)
+         {
+            if (verboseLevel)
+               out << msgPrefix << "Parity error"
+                   << " SNR:" << fixed << setprecision(1) << snr[ni]
+                   << " EL:" << el[ni]
+                   << endl;
+            if (verboseLevel>1)
+               msg.dump(cout);
+
             if (binByElevation)
                peHist[rcp].addValue(el[ni]);
             else
                peHist[rcp].addValue(snr[ni]);
-
-            if (verboseLevel>1)
-               msg.dump(cout);
-            break;
-         }
-      return;
-   }
-
-
-   umsg.cookSubframe();
-   if (verboseLevel>3 && umsg.neededCooking)
-      out << msgPrefix << "Subframe required cooking" << endl;
-
-   if (!umsg.parityGood)
-   {
-      if (verboseLevel)
-         out << msgPrefix << "Parity error"
-             << " SNR:" << fixed << setprecision(1) << snr[ni]
-             << " EL:" << el[ni]
-             << endl;
-
-      if (binByElevation)
-         peHist[rcp].addValue(el[ni]);
-      else
-         peHist[rcp].addValue(snr[ni]);
-
-      return;
-   }
-
-   short sfid = umsg.getSFID();
-   short svid = umsg.getSVID();
-   bool isAlm = sfid > 3;
-   long sow = umsg.getHOWTime();
-   short page = ((sow-6) / 30) % 25 + 1;
-
-   if (((isAlm && almOut) || (!isAlm && ephOut))
-       && verboseLevel>2)
-   {
-      out << msgPrefix
-          << "SOW:" << setw(6) << sow
-          << " NC:" << static_cast<int>(umsg.nav)
-          << " I:" << umsg.inverted
-          << " SFID:" << sfid;
-      if (isAlm)
-         out << " SVID:" << svid
-             << " Page:" << page;
-      out << endl;
-   }
-
-   // Sanity check on the header time versus the HOW time
-   short week = umsg.time.GPSfullweek();
-   if (sow <0 || sow>=604800)
-   {
-      if (verboseLevel>1)
-         out << msgPrefix << "  Bad SOW: " << sow << endl;
-      return;
-   }
-      
-   DayTime howTime(week, umsg.getHOWTime());
-   if (howTime == umsg.time)
-   {
-      if (verboseLevel && ! (bugMask & 0x4))
-         out << msgPrefix << " Header time==HOW time" << endl;
-   }
-   else if (howTime != umsg.time+6)
-   {
-      if (verboseLevel>1)
-         out << msgPrefix << " HOW time != hdr time+6, HOW:"
-             << howTime.printf(timeFormat)
-             << endl;
-      if (verboseLevel>3)
-         umsg.dump(out);
-      return;
-   }
-
-   prev[ni] = curr[ni];
-   curr[ni] = umsg;
-
-   if (prev[ni].parityGood && 
-       prev[ni].inverted != curr[ni].inverted && 
-       curr[ni].time - prev[ni].time <= 12)
-   {
-      if (verboseLevel)
-         out << msgPrefix << "Polarity inversion"
-             << " SNR:" << fixed << setprecision(1) << snr[ni]
-             << " EL:" << el[ni]
-             << endl;
-   }      
-
-   if (isAlm && almOut)
-   {
-      AlmanacPages& almPages = almPageStore[ni];
-      EngAlmanac& engAlm = almStore[ni];
-      SubframePage sp(sfid, page);
-      almPages[sp] = umsg;
-      almPages.insert(make_pair(sp, umsg));
-
-      if (makeEngAlmanac(engAlm, almPages, !minimalAlm))
-      {
-         out << msgPrefix << "Built complete almanac" << endl;
-         if (verboseLevel>2)
-            dump(out, almPages);
-         if (verboseLevel>1)
-            engAlm.dump(out);
-         almPages.clear();
-         engAlm = EngAlmanac();
-      }            
-   }
-   if (!isAlm && ephOut)
-   {
-      EphemerisPages& ephPages = ephPageStore[ni];
-      ephPages[sfid] = umsg;
-      EngEphemeris engEph;
-      try
-      {
-         if (makeEngEphemeris(engEph, ephPages))
-         {
-            out << msgPrefix << "Built complete ephemeris, iocd:0x"
-                << hex << setw(3) << engEph.getIODC() << dec
-                << endl;
-            if (verboseLevel>2)
-               dump(out, ephPages);
-            if (verboseLevel>1)
-               out << engEph;
-            ephStore[ni] = engEph;
          }
       }
-      catch (Exception& e)
-      {
-         out << e << endl;
-      }
    }
-
 }  // end of process()
 
 
