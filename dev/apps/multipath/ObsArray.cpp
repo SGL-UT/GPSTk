@@ -273,7 +273,7 @@ namespace gpstk
             for (i_rotm = it->second.begin(); 
                  i_rotm!= it->second.end(); i_rotm++)
             {
-               thislli = thislli || (i_rotm->second.lli > 0);
+	      thislli = thislli || ((i_rotm->second.lli)&1==1);
             }
             lli[satEpochIdx]=thislli;
              
