@@ -191,7 +191,7 @@ namespace gpstk
                for( int j = 0; j < degree; ++j )
                {
 
-                  if( (j != i) and (j != m) )
+                  if( (j != i) && (j != m) )
                   {
 
                      double weight2( 1.0/(pos[i]-pos[j]) );
@@ -199,7 +199,7 @@ namespace gpstk
                      for( int n = 0; n < degree; ++n )
                      {
 
-                        if( (n != j) and (n != m) and (n != i) )
+                        if( (n != j) && (n != m) && (n != i) )
                         {
                            weight2 *= delta[i][n];
                         }
