@@ -581,7 +581,7 @@ namespace gpstk
 
             // Iterate through data structure
          for( gnssDataMap::const_iterator itGDS = gds2.begin();
-              itGDS != gds2.end() and !found;
+              itGDS != gds2.end() && !found;
               ++itGDS )
          {
                // Look for source

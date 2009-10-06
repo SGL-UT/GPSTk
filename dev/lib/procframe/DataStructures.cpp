@@ -2005,7 +2005,7 @@ in matrix and number of types do not match") );
 
          // Look into the data structure
       for( gnssDataMap::const_iterator it = gdMap.begin();
-           it != gdMap.end() and !found;
+           it != gdMap.end() && !found;
            ++it )
       {
 
@@ -2060,7 +2060,7 @@ in matrix and number of types do not match") );
 
          // Look into the data structure
       for( gnssDataMap::const_iterator it = gdMap.begin();
-           it != gdMap.end() and !found;
+           it != gdMap.end() && !found;
            ++it )
       {
 
@@ -2126,7 +2126,7 @@ in matrix and number of types do not match") );
 
                // Look into the range
             for( gnssDataMap::iterator it = beginPos;
-                 it != endPos and !found;
+                 it != endPos && !found;
                  ++it )
             {
 
@@ -2199,7 +2199,7 @@ in matrix and number of types do not match") );
 
          // Look into the data structure
       for( gnssDataMap::iterator it = (*this).begin();
-           it != (*this).end() and !found;
+           it != (*this).end() && !found;
            ++it )
       {
 
