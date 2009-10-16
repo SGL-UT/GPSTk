@@ -102,6 +102,14 @@ namespace gpstk
        * in "gRin" the data required to be differenced, it will be summarily
        * deleted from the data structure.
        *
+       * @warning Using method "setRefSat()" may be desirable in order to ensure
+       * that different receivers use the same reference satellite. However, you
+       * must be aware that method "setRefSat()" will also disable the automatic
+       * lookup of the satellite with the highest elevation. That may cause
+       * troubles if the reference satellite goes out of view at a later epoch.
+       * Therefore, you should later re-enable automatic lookup with the method
+       * "useHighestSat(void)".
+       *
        * @sa DeltaOp.hpp for differences on ground-related data.
        *
        */
@@ -164,6 +172,12 @@ namespace gpstk
           *  common to use this method.
           *
           * @param rSat       SatID of reference satellite to be used.
+          *
+          * @warning Using this method will disable the automatic lookup of
+          * the satellite with the highest elevation. That may cause troubles
+          * if the reference satellite goes out of view at a later epoch.
+          * Therefore, you should later re-enable automatic lookup with the
+          * method "useHighestSat(void)".
           */
       virtual NablaOp& setRefSat(const SatID& rSat)
       { refSat = rSat; lookReferenceSat = false; return (*this); };
