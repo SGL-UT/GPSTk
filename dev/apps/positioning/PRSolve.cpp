@@ -1,6 +1,5 @@
 // $Id$
 
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -18,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -28,8 +27,6 @@
  * pseudorange position solution, using a RAIM-like algorithm to eliminate outliers.
  */
 
-#include <cstring>
-
 #define RANGECHECK 1        // make Matrix and Vector check limits
 #include "Exception.hpp"
 #include "StringUtils.hpp"
@@ -37,7 +34,6 @@
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
-#include "CommandOptionWithTimeArg.hpp"
 
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
@@ -59,7 +55,8 @@
 #include "Stats.hpp"
 #include "EphemerisRange.hpp"
 
-#include <time.h>
+#include <ctime>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -72,7 +69,7 @@ using namespace StringUtils;
 
    // prgm data
 string PrgmName("PRSolve");
-string PrgmVers("2.1 5/07");
+string PrgmVers("2.2 7/08");
 
 // data input from command line
 typedef struct Configuration {
@@ -203,6 +200,8 @@ try {
       // initialization
    CurrEpoch = PrevEpoch = DayTime::BEGINNING_OF_TIME;
    SP3EphemerisStore SP3EphList;
+   SP3EphList.rejectBadPositions(true);
+   SP3EphList.rejectBadClocks(true);
    GPSEphemerisStore BCEphList;
 
       // Title and description
@@ -325,8 +324,8 @@ try {
 
    // compute rotation XYZ->NEU at known position
    if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
-      double lat=C.knownpos.geodeticLatitude() * DEG_TO_RAD;
-      double lon=C.knownpos.longitude() * DEG_TO_RAD;
+      double lat = C.knownpos.geodeticLatitude() * DEG_TO_RAD;
+      double lon = C.knownpos.longitude() * DEG_TO_RAD;
       double ca = ::cos(lat);
       double sa = ::sin(lat);
       double co = ::cos(lon);
@@ -334,9 +333,9 @@ try {
       // Rotation matrix (R*XYZ=NEU) :
       C.Rot = Matrix<double>(3,3);
       // NEU
-      C.Rot(2,0) = ca*co; C.Rot(2,1) = ca*so; C.Rot(2,2) = sa;
-      C.Rot(1,0) = -so; C.Rot(1,1) = co; C.Rot(1,2) = 0.0;
-      C.Rot(0,0) = -sa*co; C.Rot(0,1) = -sa*so; C.Rot(0,2) = ca;
+      C.Rot(2,0) =  ca*co; C.Rot(2,1) =  ca*so; C.Rot(2,2) =  sa;
+      C.Rot(1,0) =    -so; C.Rot(1,1) =     co; C.Rot(1,2) = 0.0;
+      C.Rot(0,0) = -sa*co; C.Rot(0,1) = -sa*so; C.Rot(0,2) =  ca;
    }
 
    if(!C.ordFile.empty()) {
@@ -347,7 +346,7 @@ try {
       }
       else {
          C.oford.open(C.ordFile.c_str(),ios::out);
-         if(C.oford.fail()) {
+         if(!C.oford.is_open()) {
             C.oflog << "Failed to open ORD file " << C.ordFile << endl;
             C.ordFile = string();
          }
@@ -424,7 +423,7 @@ try {
       // open input file
    filename = C.InputObsName[nfile];
    ifstr.open(filename.c_str(),ios::in);
-   if(ifstr.fail()) {
+   if(!ifstr.is_open()) {
       C.oflog << "Failed to open input file " << filename << ". Abort.\n";
       return 1;
    }
@@ -434,7 +433,7 @@ try {
       // open output file
    if(!C.OutRinexObs.empty()) {
       ofstr.open(C.OutRinexObs.c_str(), ios::out);
-      if(ofstr.fail()) {
+      if(!ofstr.is_open()) {
          C.oflog << "Failed to open output file " << C.OutRinexObs << " Abort.\n";
          ifstr.close();
          return 1;
@@ -844,14 +843,15 @@ try {
          stst2 << " " << setw(2) << Nsvs
             << " " << fixed << setw(5) << setprecision(2) << PDOP
             << " " << fixed << setw(5) << setprecision(2)
-            << RSS(PDOP,Covariance(3,3))
+            << RSS(PDOP,prsol.Covariance(3,3))
             << " " << fixed << setw(9) << setprecision(3) << RMSrof;
          stst2 << " (N,P-,G-DOP,RMS)";
          auxPosData.auxHeader.commentList.push_back(stst2.str());
          auxPosData.auxHeader.valid |= RinexObsHeader::commentValid;
          ofstr << auxPosData;
       }
-      ofstr << robsd;                       // output data to RINEX file
+      // output data to RINEX file
+      ofstr << robsd;
 
    }  // end while loop over epochs
 
@@ -1048,12 +1048,12 @@ try {
    // output
    C.oflog << "RPF " << setw(2) << Sats.size()-Nsvs
       << " " << CurrEpoch.printf(C.timeFormat)
-      << " " << setw(2) << Nsvs << fixed
-      << " " << setw(16) << setprecision(6) << prsol.Solution(0)
-      << " " << setw(16) << setprecision(6) << prsol.Solution(1)
-      << " " << setw(16) << setprecision(6) << prsol.Solution(2)
-      << " " << setw(14) << setprecision(6) << prsol.Solution(3)
-      << " " << setw(12) << setprecision(6) << prsol.RMSResidual
+      << " " << setw(2) << Nsvs << fixed << setprecision(6)
+      << " " << setw(16) << prsol.Solution(0)
+      << " " << setw(16) << prsol.Solution(1)
+      << " " << setw(16) << prsol.Solution(2)
+      << " " << setw(14) << prsol.Solution(3)
+      << " " << setw(12) << prsol.RMSResidual
       << " " << setw(5) << setprecision(1) << prsol.MaxSlope
       << " " << prsol.NIterations
       << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
@@ -1300,7 +1300,7 @@ void setWeather(DayTime& time, TropModel *pTropModel)
 int GetCommandLine(int argc, char **argv) throw(Exception)
 {
 try {
-   bool ok,help=false;
+   bool ok,help=false,helpRetCodes=false;
    int i,j;
       // defaults
    C.Debug = C.Verbose = false;
@@ -1392,13 +1392,11 @@ try {
    dashet.setMaxCount(1);
 
    CommandOptionNoArg dashCA(0,"useCA", string(" --useCA              ")
-      + string("Use C/A code pseudorange if P1 is not available (")
-      + (C.UseCA ? "true" : "false") + ")");
+      + string("Use C/A code pseudorange if P1 is not available (don't)"));
    dashCA.setMaxCount(1);
    
    CommandOptionNoArg dashfCA(0,"forceCA", string(" --forceCA            ")
-      + string("Use C/A code pseudorange regardless of P1 availability (")
-      + (C.ForceCA ? "true" : "false") + ")");
+      + string("Use C/A code pseudorange regardless of P1 availability (don't)"));
    dashfCA.setMaxCount(1);
    
    // --------------------------------------------------------------------------------
@@ -1449,14 +1447,12 @@ try {
    dashrcrt.setMaxCount(1);
 
    CommandOptionNoArg dashrone(0,"ReturnAtOnce",string(" --ReturnAtOnce       ")
-     +string("Return as soon as a good solution is found (")
-     +(prsol.ReturnAtOnce ? string("true") : string("false")) + string(")") );
+     +string("Return as soon as a good solution is found (don't)"));
    dashrone.setMaxCount(1);
 
    CommandOption dashnrej(CommandOption::hasArgument, CommandOption::stdType,
-      0,"NReject", " --NReject <n>        Maximum number of satellites to reject ("
-      + (prsol.NSatsReject == -1 ? "no limit" : asString(prsol.NSatsReject))
-      + ")");
+      0,"NReject", " --NReject <n>        Maximum number of satellites to reject"
+      " [-1 for no limit] (" + asString(prsol.NSatsReject) + ")");
    dashnrej.setMaxCount(1);
 
    CommandOption dashNit(CommandOption::hasArgument, CommandOption::stdType,0,"NIter",
@@ -1531,6 +1527,9 @@ try {
       " --debug              Print very extended output (don't)");
    dashDebug.setMaxCount(1);
 
+   CommandOptionNoArg dashhrc(0, "helpRetCodes",
+     " --helpRetCodes       Print return codes [implies --help] (don't)");
+
    CommandOptionNoArg dashh('h', "help",
      " [-h|--help]          Print syntax and quit (don't)");
 
@@ -1539,25 +1538,25 @@ try {
 
    CommandOptionParser Par(
    "Prgm PRSolve reads one or more RINEX observation files, plus one or more\n"
-   "   navigation (ephemeris) files, and computes an autonomous GPS pseudorange\n"
-   "   position solution, using a RAIM-like algorithm to eliminate outliers.\n"
-   "   Output is to a log file, and also optionally to a RINEX obs file with\n"
-   "   the position solutions in comments in auxiliary header blocks.\n"
-   "   In the log file, results appear one epoch per line with the format:\n"
-   "   TAG Nrej week sow Nsat X Y Z T RMS slope nit conv sat sat .. (code) [N]V\n"
-   "   TAG denotes solution (X Y Z T) type:\n"
-   "       RPF  Final RAIM ECEF XYZ solution\n"
-   "       RPR  Final RAIM ECEF XYZ solution residuals [only if --PosXYZ given]\n"
-   "       RNE  Final RAIM North-East-Up solution residuals [only if --PosXYZ]\n"
-   "       APS  Autonomous ECEF XYZ solution [only if --APSout given]\n"
-   "       APR  Autonomous ECEF XYZ solution residuals [only if both --APS & --Pos]\n"
-   "       ANE  Autonomous North-East-Up solution residuals [only if --APS & --Pos]\n"
-   "   and where Nrej = number of rejected sats, (week,sow) = GPS time tag,\n"
-   "   Nsat = # sats used, XYZT = position+time solution(or residuals),\n"
-   "   RMS = RMS residual of fit, slope = RAIM slope, nit = # of iterations,\n"
-   "   conv = convergence factor, 'sat sat ...' lists all sat. PRNs (- : rejected),\n"
-   "   code = return value from PRSolution::RAIMCompute(), and NV means NOT valid.\n"
-   "   NB. Default values appear in () after optional arguments below.\n"
+   " navigation (ephemeris) files, and computes an autonomous GPS pseudorange\n"
+   " position solution, using a RAIM-like algorithm to eliminate outliers.\n"
+   " Output is to a log file, and also optionally to a RINEX obs file with\n"
+   " the position solutions in comments in auxiliary header blocks.\n"
+   " In the log file, results appear one epoch per line with the format:\n"
+   " TAG Nrej week sow Nsat X Y Z T RMS slope nit conv sat sat .. (code) [N]V\n"
+   " TAG denotes solution (X Y Z T) type:\n"
+   "     RPF  Final RAIM ECEF XYZ solution\n"
+   "     RPR  Final RAIM ECEF XYZ solution residuals [only if --PosXYZ given]\n"
+   "     RNE  Final RAIM North-East-Up solution residuals [only if --PosXYZ]\n"
+   "     APS  Autonomous ECEF XYZ solution [only if --APSout given]\n"
+   "     APR  Autonomous ECEF XYZ solution residuals [only if both --APS & --Pos]\n"
+   "     ANE  Autonomous North-East-Up solution residuals [only if --APS & --Pos]\n"
+   " and where Nrej = number of rejected sats, (week,sow) = GPS time tag,\n"
+   " Nsat = # sats used, XYZT = position+time solution(or residuals),\n"
+   " RMS = RMS residual of fit, slope = RAIM slope, nit = # of iterations,\n"
+   " conv = convergence factor, 'sat sat ...' lists all sat. PRNs (- : rejected),\n"
+   " code = return value from PRSolution::RAIMCompute(), and NV means NOT valid.\n"
+   " NB. Default values appear in () after optional arguments below.\n"
    );
 
       // -------------------------------------------------
@@ -1587,8 +1586,21 @@ try {
    Par.parseOptions(argc, CArgs);
 
       // -------------------------------------------------
-   if(dashh.getCount() > 0) {
+   if(dashhrc.getCount() > 0) {
+      helpRetCodes = help = true;
+   }
+   if(help || dashh.getCount() > 0) {
       Par.displayUsage(cout,false);
+      if(helpRetCodes)
+      cout << "\nReturn codes from the PRSolution module "
+           << "are found in () before 'NV':\n"
+           << "  2 means 'RMS residual exceeded limit'\n"
+           << "  1 means 'RAIM slope exceeded limit'\n"
+           << " -1 means 'Algorithm failed to converge'\n"
+           << " -2 means 'Algorithm found singularity'\n"
+           << " -3 means 'Not enough good data'\n"
+           << " -4 means 'No ephemeris found'"
+           << endl;
       help = true;
    }
 
@@ -1628,35 +1640,59 @@ try {
    }
    if(dashi.getCount()) {
       values = dashi.getValue();
-      if(help) cout << "Input RINEX obs files are:\n";
+      // expand any comma-delimited values
+      field.clear();
       for(i=0; i<values.size(); i++) {
+         string value = values[i];
+         while(value.size() > 0)
+            field.push_back(stripFirstWord(value,','));
+      }
+
+      if(help) cout << "Input RINEX obs files are:\n";
+      for(i=0; i<field.size(); i++) {
          if(!C.ObsDirectory.empty())
-            C.InputObsName.push_back(C.ObsDirectory + string("/") + values[i]);
+            C.InputObsName.push_back(C.ObsDirectory + string("/") + field[i]);
          else
-            C.InputObsName.push_back(values[i]);
-         if(help) cout << "   " << C.ObsDirectory + string("/") + values[i] << endl;
+            C.InputObsName.push_back(field[i]);
+         if(help) cout << "   " << C.ObsDirectory + string("/") + field[i] << endl;
       }
    }
    if(dashn.getCount()) {
       values = dashn.getValue();
-      if(help) cout << "Input RINEX nav files are:\n";
+      // expand any comma-delimited values
+      field.clear();
       for(i=0; i<values.size(); i++) {
+         string value = values[i];
+         while(value.size() > 0)
+            field.push_back(stripFirstWord(value,','));
+      }
+
+      if(help) cout << "Input RINEX nav files are:\n";
+      for(i=0; i<field.size(); i++) {
          if(!C.NavDirectory.empty())
-            C.InputNavName.push_back(C.NavDirectory + string("/") + values[i]);
+            C.InputNavName.push_back(C.NavDirectory + string("/") + field[i]);
          else
-            C.InputNavName.push_back(values[i]);
-         if(help) cout << "  " << C.NavDirectory + string("/") + values[i] << endl;
+            C.InputNavName.push_back(field[i]);
+         if(help) cout << "  " << C.NavDirectory + string("/") + field[i] << endl;
       }
    }
    if(dashm.getCount()) {
       values = dashm.getValue();
-      if(help) cout << "Input RINEX met files are:\n";
+      // expand any comma-delimited values
+      field.clear();
       for(i=0; i<values.size(); i++) {
+         string value = values[i];
+         while(value.size() > 0)
+            field.push_back(stripFirstWord(value,','));
+      }
+
+      if(help) cout << "Input RINEX met files are:\n";
+      for(i=0; i<field.size(); i++) {
          if(!C.MetDirectory.empty())
-            C.InputMetName.push_back(C.MetDirectory + string("/") + values[i]);
+            C.InputMetName.push_back(C.MetDirectory + string("/") + field[i]);
          else
-            C.InputMetName.push_back(values[i]);
-         if(help) cout << "  " << C.MetDirectory + string("/") + values[i] << endl;
+            C.InputMetName.push_back(field[i]);
+         if(help) cout << "  " << C.MetDirectory + string("/") + field[i] << endl;
       }
    }
 
@@ -1889,7 +1925,7 @@ try {
    if(help) return 1;
 
    C.oflog.open(C.LogFile.c_str(),ios::out);
-   if(C.oflog.fail()) {
+   if(!C.oflog.is_open()) {
       cout << "Failed to open log file " << C.LogFile << endl;
       return -2;
    }

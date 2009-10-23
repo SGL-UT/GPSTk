@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file MatrixFunctors.hpp
  * Matrix function operators (SVD, LUD, etc)
@@ -494,7 +492,7 @@ namespace gpstk
          }
 
          bool first=true;
-         size_t N=LU.rows(),i,j,ii(0);
+         size_t N=LU.rows(),i,j,ii;
          T sum;
 
          // un-pivot
@@ -654,7 +652,7 @@ namespace gpstk
    {
    public:
        template <class BaseClass>
-       void operator() (const ConstMatrixBase<T, BaseClass>& m) throw (MatrixException)
+       void operator() (const ConstMatrixBase<T, BaseClass>& m) throw(MatrixException)
        {
            if(!m.isSquare()) {
                MatrixException e("CholeskyCrout requires a square matrix");
@@ -687,8 +685,6 @@ namespace gpstk
 
    }; // end class CholeskyCrout
 
-
-
 /**
  * The Householder transformation is simply an orthogonal transformation
  * designed to make the elements below the diagonal zero. It applies to any
@@ -714,40 +710,46 @@ namespace gpstk
       inline void operator() (const ConstMatrixBase<T, BaseClass>& m)
          throw (MatrixException)
          {
-            size_t i,j;
             A = m;
-            Matrix<T> P(A.rows(), A.rows());
-            Matrix<T> colVector(A.rows(), 1),
-               rowVector(1, A.rows());
+            size_t i,j,k;
             Vector<T> v(A.rows());
-            for (j = 0; (j < A.cols()) && (j < (A.rows() - 1)); j++)
-            {
-               colVector.resize(A.rows() - j, 1);
-               rowVector.resize(1, A.rows() - j);
-               
-                  // for each column c, form the vector v = 
-                  // [c[0] + (sign(c[0]))abs(c), c[1], c[2], ...]
-                  // then normalize v
-               v = A.colCopy(j, j);
-               v[0] += ((v[0] >= T(0)) ? T(1) : T(-1)) * norm(v);
-               v = normalize(v);
-                  // now make matrix P = 1 - 2* columnVector(v) * rowVector(v)
-                  // (makes the lower right of P =
-                  //   1 - 2* columnVector(v) * rowVector(v)
-                  // and the remaining parts I)
-                  // and perform A = P * A
-               colVector = v;
-               rowVector = v;
-               MatrixSlice<T> Pslice(P, j, j, P.rows() - j, P.cols() - j);
-               ident(P);
-               //Pslice -= T(2) * colVector * rowVector;
-               Pslice = T(2) * colVector * rowVector - Pslice;
-               MatrixSlice<T> Aslice(A, j, j, A.rows() - j, A.cols() - j);
-               Aslice = Pslice * Aslice;
-                  // set the elements below the diagonal of this column to 0
-               for(i = j+1; i < A.rows(); i++)
+            T sum,alpha;
+
+            // loop over cols
+            const T EPS(1.e-200);
+            for(j=0; (j<A.cols() && j<A.rows()-1); j++) {
+               sum = T(0);
+               // loop over rows at diagonal and below
+               for(i=j; i<A.rows(); i++) {
+                  v(i) = A(i,j);
                   A(i,j) = T(0);
-            }
+                  sum += v(i)*v(i);
+               }
+
+               if(sum < EPS) continue;             // already zero below diagonal
+
+               sum = SQRT(sum);
+               if(v(j) > T(0)) sum = -sum;
+               A(j,j) = sum;
+               v(j) = v(j) - sum;
+               sum = 1/(sum*v(j));
+
+               // loop over columns beyond j
+               for(k=j+1; k<A.cols(); k++) {
+                  alpha = T(0);
+                  // loop over rows at and below j
+                  for(i=j; i<A.rows(); i++) {
+                     alpha += A(i,k)*v(i);
+                  }
+                  alpha *= sum;
+                  // modify column k at and below j
+                  for(i=j; i<A.rows(); i++) {
+                     A(i,k) += alpha*v(i);
+                  }
+               }  // end loop over cols > j
+
+            }  // end loop over cols
+
          }  // end Householder::operator()
       
          /// The upper triangular transformed matrix.
