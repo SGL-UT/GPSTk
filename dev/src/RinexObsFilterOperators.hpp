@@ -164,7 +164,9 @@ namespace gpstk
    };
 
       /// This is a much faster less than operator for RinexObsData,
-      /// only checking time
+      /// only checking time and epochFlag (because it IS 
+      /// valid to have more than one record at the same
+      /// time if the epochFlag is different).
    struct RinexObsDataOperatorLessThanSimple : 
       public std::binary_function<gpstk::RinexObsData, 
          gpstk::RinexObsData, bool>
@@ -175,6 +177,11 @@ namespace gpstk
          {
             if (l.time < r.time)
                return true;
+            else if (l.time == r.time)
+            {
+               if (l.epochFlag < r.epochFlag)
+                  return true;
+	    }
             return false;
          }
    };
@@ -189,7 +196,8 @@ namespace gpstk
       bool operator()(const gpstk::RinexObsData& l,
                       const gpstk::RinexObsData& r) const
          {
-            if (l.time == r.time)
+            if (l.time == r.time &&
+		l.epochFlag == r.epochFlag)
                return true;
             return false;
          }

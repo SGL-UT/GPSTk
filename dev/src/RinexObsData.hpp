@@ -151,6 +151,10 @@ namespace gpstk
                gpstk::StringUtils::StringException);
 
    private:
+             ///<Time cooresponding to previous set of observations
+	     /// Used in cases where epoch time of a epoch flag==0
+      static gpstk::DayTime previousTime;
+
          /// Writes the daytime object into RINEX format. If it's a bad time,
          /// it will return blanks.
       std::string writeTime(const DayTime& dt) const

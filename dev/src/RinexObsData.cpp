@@ -50,6 +50,10 @@ using namespace std;
 
 namespace gpstk
 {
+
+      // Definition of static variable to be used across RinexObsData objects
+   DayTime gpstk::RinexObsData::previousTime;
+	
    void RinexObsData::reallyPutRecord(FFStream& ffs) const 
       throw(std::exception, FFStreamError, StringException)
    {
@@ -204,7 +208,33 @@ namespace gpstk
          FFStreamError e("Invalid epoch flag: " + asString(epochFlag));
          GPSTK_THROW(e);
       }
-      time = parseTime(line, hdr);
+
+         // Not all epoch flags are required to have a time.
+	 // Specifically, 0, 1, 5, 6 must have an epoch time and 
+	 // it is optional for 2, 3, 4.  
+	 // If there is and epoch time, parse it and load it in 
+	 // the member "time".
+	 // If epoch flag=0, 1, 5, or 6 and there is NO epoch time,
+	 // then throw an error.
+	 // If epoch flag=2, 3, or 4 and there is no epoch time, 
+	 // use the time of the previous record. 
+      bool noEpochTime = (line.substr(0,26) == string(26, ' ')); 
+      if (noEpochTime &&
+          (epochFlag==0 || epochFlag==1 || epochFlag==5 || epochFlag==6 ))
+      {
+         FFStreamError e("Required epoch time missing: " + line);
+         GPSTK_THROW(e);
+      }
+      else if (noEpochTime)
+      {
+	 time = previousTime;
+      }
+      else
+      {
+         time = parseTime(line, hdr);
+         previousTime = time;
+      }
+
       numSvs = asInt(line.substr(29,3));
       
       if( line.size() > 68 )
