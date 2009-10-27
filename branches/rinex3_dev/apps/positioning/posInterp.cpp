@@ -34,6 +34,7 @@
 #include <cstring>
 
 #include "DayTime.hpp"
+#include "GPSWeekSecond.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
@@ -339,7 +340,7 @@ try {
    if(PIC.ith > 0.0) {
       // if Tbeg is still undefined, set it to begin of week
       if(PIC.Tbeg == DayTime::BEGINNING_OF_TIME)
-         PIC.Tbeg = PIC.Tbeg.setGPSfullweek(roe.time.GPSfullweek(),0.0);
+         PIC.Tbeg = PIC.Tbeg.setGPSfullweek((static_cast<GPSWeekSecond>(roe.time)).week,0.0);  //DM 10/25
 
       dt = fabs(roe.time - PIC.Tbeg);
       dt -= PIC.ith*long(0.5+dt/PIC.ith);
@@ -450,7 +451,7 @@ try {
       << " (N,P-,G-Dop,RMS)";
 
    if(PIC.Debug)
-      PIC.oflog << psdata.time.printf("%02M:%04.1f ") << stst1.str()
+      PIC.oflog << static_cast<GPSWeekSecond>(psdata.time).printf("%02M:%04.1f ") << stst1.str()   //DM 10/25
          << " " << stst2.str() << endl;
 
    psdata.auxHeader.commentList.push_back(stst2.str());
