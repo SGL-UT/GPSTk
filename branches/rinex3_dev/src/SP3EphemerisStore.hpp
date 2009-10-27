@@ -175,6 +175,28 @@ namespace gpstk
    {
       return pe;
 	}
+        
+   /// Set if satellites with bad or absent positional values will be
+   /// rejected. It is false by default when object is constructed.
+   virtual SP3EphemerisStore& rejectBadPositions(const bool flag)
+      { rejectBadPosFlag = true; return (*this); };
+
+
+   /// Set if satellites with bad or absent clock values will be
+   /// rejected. It is false by default when object is constructed.
+   virtual SP3EphemerisStore& rejectBadClocks(const bool flag)
+   { rejectBadClockFlag = true; return (*this); };
+
+
+   private:
+
+
+   /// Flag to reject satellites with bad or absent positional values
+   bool rejectBadPosFlag;
+
+
+   /// Flag to reject satellites with bad or absent clock values
+   bool rejectBadClockFlag;
 
   }; // End of class 'SP3EphemerisStore'
 
