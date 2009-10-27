@@ -43,7 +43,7 @@
 
 #include "TimeSystem.hpp"
 #include "CommonTime.hpp"
-#include "GPSWeekSecond.hpp"
+#include "GPSWeekSecond.hpp"  // DM 10/23
 #include "YDSTime.hpp"
 
 #include "RinexSatID.hpp"
@@ -265,6 +265,11 @@ int main(int argc, char **argv)
       CurrEpoch = PrevEpoch = CommonTime::BEGINNING_OF_TIME;
       SP3EphemerisStore SP3EphList;
       GPSEphemerisStore BCEphList;
+      
+      // Set the application to reject bad clocks in the SP3 files -DM 10/23
+      SP3EphList.rejectBadClocks(true);
+      SP3EphList.rejectBadPositions(true);
+
 
          // Title and description
       Title = PrgmName + ", part of the GPS ToolKit, Ver " + PrgmVers + ", Run ";
@@ -881,6 +886,8 @@ int readFile(int nfile) throw(Exception)
                int in,n, index;
                double C1 = 0, P1 = 0, P2 = 0, L1,L2;
                RinexSatID sat = it->first;
+               sat.setfill('0');  // DM 10/26
+               
                std::vector<Rinex3ObsData::RinexDatum> datum = it->second;
                iter = gnssSystems.find(sat.systemChar());
                if (iter == gnssSystems.end())
@@ -998,7 +1005,9 @@ int readFile(int nfile) throw(Exception)
             }  //End loop over sats
             
             //We now have 5 variables, so 5 sats are needed
-            if (Nsvs <= 5)
+            // This is not quite correct - if only GPS or GLO we need 4.
+            //Only for a mized system do we need 5. Not clear this check should be here.
+            if (C.allSystems && Nsvs <= 5)    //DM 10/26
             {
                if (C.Debug)
                   C.oflog << "Too few satellites" << endl;
@@ -1111,8 +1120,9 @@ int readFile(int nfile) throw(Exception)
 
                //Output
                C.oford << "ORD"
-                  << " G" << setw(2) << setfill('0') << sat.id << setfill(' ')
-                  << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                  << " " << setw(3) << sat.id << setfill(' ')  // Modified to add sat.systemChar DM 10/26
+                  // << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                  << " " << (static_cast<GPSWeekSecond>(CurrEpoch)).printf(C.timeFormat) //DM 10/25
                   << " " << 1 << fixed << setprecision(3)
                   << " " << setw(6) << CER.elevation
                   << " " << setw(13) << vC1[i] - R - RI
@@ -1127,7 +1137,8 @@ int readFile(int nfile) throw(Exception)
             {
                clk /= double(n);
                C.oford << "CLK"
-                  << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                  //<< " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                  << " " << (static_cast<GPSWeekSecond>(CurrEpoch)).printf(C.timeFormat)  //DM 10/25
                   << " " << setw(2) << n
                   << " " << fixed << setprecision(3)
                   << " " << setw(13) << clk
@@ -1307,13 +1318,14 @@ int solutionAlgorithm(vector<SatID>& Sats,
                       double& RMSresid)
    throw(Exception)
 {
-   #ifdef DEBUG_PRINT_SATS_PASSED
-      cout << "Sats to work on :" << endl;
+   if (C.Debug)
+   {
+      C.oflog << "Sats to work on :" << endl;
       for (int i = 0; i < Sats.size(); ++i)
       {
-         cout << i << " : " << Sats[i] << endl;
+         C.oflog << i << " : " << Sats[i] << endl;
       }
-   #endif
+   }
    
    try
    {
@@ -1321,12 +1333,16 @@ int solutionAlgorithm(vector<SatID>& Sats,
       Matrix<double> inform;
       
       //Fail if not enough data
+      if (C.Debug)
+      {
+         C.oflog << "Num SVs: " << Nsvs << endl;
+      }
+   
       if (Nsvs < 5)
       {
-         #ifdef DEBUG_PRINT_WARNINGS
             cout << "Not Enough Satellites..." << endl;
             cout << "Line: " << __LINE__ << "\n";
-         #endif
+            C.oflog << "Not Enough Satellites..." << endl;
          return 1;
       }
       
@@ -1341,30 +1357,53 @@ int solutionAlgorithm(vector<SatID>& Sats,
          }
       }
       
+      if (C.Debug)
+      {
+         C.oflog << "Sats.size(): " << Sats.size()  << endl;
+      }
+      
       int niter = C.nIter;
       double conv = C.convLimit;
       vector<bool> UseSats(Sats.size(),true);
       Vector<double> Residual,Slope;
       
+      if (C.Debug)
+      {
+         C.oflog << "Input Met Name size: " << C.InputMetName.size() << endl;
+      }
+
+      
       //If met data available, update weather in trop model
       if (C.InputMetName.size() > 0)
+      {
          setWeather(CurrEpoch,C.pTropModel);
+      }
       
       //Compute using AutonomousPRSolution - no RAIM algorithm
+      if (C.Debug)
+      {
+         C.oflog << "Beginning autonomous PR solution. \n" << endl;
+      }
+      
       if (C.APSout)
       {
          iret = -4;
          Matrix<double> SVP;
          ///Check PrepareAutonomousSolution()
          ///Here...
+         if (C.Debug)
+         {
+            C.oflog << "Calling autonomous solution" << endl;
+         }
          iret = PRSolution::PrepareAutonomousSolution(CurrEpoch,Sats,PRanges,*pEph,SVP);
          
          if (iret == -4)
          {
-            #ifdef DEBUG_PRINT_WARNINGS
-               cout << "No Ephemeris!" << endl;
-               cout << "Line: " << __LINE__ << "\n";
-            #endif
+            if (C.Debug)
+            {
+               C.oflog << "No Ephemeris!" << endl;
+               C.oflog << "Line: " << __LINE__ << "\n"  << endl;
+            }
             C.oflog << "PrepareAutonomousSolution failed to find ANY ephemeris at epoch "
                     << (static_cast<CivilTime>(CurrEpoch)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P")
                     << endl;
@@ -1400,8 +1439,9 @@ int solutionAlgorithm(vector<SatID>& Sats,
                                                    (C.Debug ? &C.oflog : NULL));
 
          C.oflog << "APS " << setw(2) << iret
-                 << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
-                 << " " << setw(2) << Nsvs;
+                 //<< " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+            << " " << (static_cast<GPSWeekSecond>(CurrEpoch)).printf(C.timeFormat)     
+            << " " << setw(2) << Nsvs;
          
          if (iret == 0)
          {
@@ -1437,7 +1477,8 @@ int solutionAlgorithm(vector<SatID>& Sats,
             V(2) = res.Z();
             
             C.oflog << "APR " << setw(2) << iret
-                    << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                    //<< " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                    << " " << (static_cast<GPSWeekSecond>(CurrEpoch)).printf(C.timeFormat) //DM 10/25
                     << " " << setw(2) << Nsvs << fixed
                     << " " << setw(16) << setprecision(6) << V(0)
                     << " " << setw(16) << setprecision(6) << V(1)
@@ -1469,7 +1510,8 @@ int solutionAlgorithm(vector<SatID>& Sats,
             Cov = C.Rot * Cov * transpose(C.Rot);
             
             C.oflog << "ANE " << setw(2) << iret
-                    << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                    // << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                    << " " << (static_cast<GPSWeekSecond>(CurrEpoch)).printf(C.timeFormat) //DM 10/25
                     << " " << setw(2) << Nsvs << fixed
                     << " " << setw(16) << setprecision(6) << V(0)
                     << " " << setw(16) << setprecision(6) << V(1)
@@ -1524,7 +1566,8 @@ int solutionAlgorithm(vector<SatID>& Sats,
 
       //Output
       C.oflog << "RPF " << setw(2) << Sats.size()-Nsvs
-              << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+      //        << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+              << " " << (static_cast<GPSWeekSecond>(CurrEpoch)).printf(C.timeFormat)                   //DM 10/25
               << " " << setw(2) << Nsvs << fixed
               << " " << setw(16) << setprecision(6) << prsol.Solution(0)
               << " " << setw(16) << setprecision(6) << prsol.Solution(1)
@@ -1541,11 +1584,12 @@ int solutionAlgorithm(vector<SatID>& Sats,
       for (i=0; i<Sats.size(); i++)
          C.oflog << " " << setw(3) << Sats[i].id;
       
-      C.oflog << " (" << iret;
+      C.oflog << " (" << iret << " ";
       if (C.Verbose)
       {
          C.oflog << "PRS returned " << iret << " at "
-                 << static_cast<CivilTime>(CurrEpoch).printf(C.timeFormat)
+                 // << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                 << (static_cast<GPSWeekSecond>(CurrEpoch)).printf(C.timeFormat) //DM 10/25
                  << ", meaning ";
          if (iret==2) C.oflog
             << " solution is found, but it is not good (RMS residual exceed limits)";
@@ -1577,13 +1621,16 @@ int solutionAlgorithm(vector<SatID>& Sats,
          
          {   //C.oflog stuff
          C.oflog << "RPR " << setw(2) << Sats.size()-Nsvs
-                 << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                 // << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                 << " " << (static_cast<GPSWeekSecond>(CurrEpoch)).printf(C.timeFormat) //DM 10/25
                  << " " << setw(2) << Nsvs << fixed
                  << " " << setw(16) << setprecision(6) << V(0)
                  << " " << setw(16) << setprecision(6) << V(1)
                  << " " << setw(16) << setprecision(6) << V(2)
-                 << " " << setw(14) << setprecision(6) << prsol.Solution(3)
-                 << " " << setw(12) << setprecision(6) << prsol.RMSResidual
+                 << " " << setw(14) << setprecision(6) << prsol.Solution(3);
+         if (prsol.Solution.size() == 5)
+            C.oflog << " " << setw(16) << setprecision(6) << prsol.Solution(4);
+         C.oflog << " " << setw(12) << setprecision(6) << prsol.RMSResidual
                  << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
                  << " " << prsol.NIterations
                  << " " << scientific << setw(8) << setprecision(2)
@@ -1612,13 +1659,16 @@ int solutionAlgorithm(vector<SatID>& Sats,
          Cov = C.Rot * Cov * transpose(C.Rot);
 
          C.oflog << "RNE " << setw(2) << Sats.size()-Nsvs
-                 << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                 // << " " << (static_cast<CivilTime>(CurrEpoch)).printf(C.timeFormat)
+                 << " " << (static_cast<GPSWeekSecond>(CurrEpoch)).printf(C.timeFormat) //DM 10/25
                  << " " << setw(2) << Nsvs << fixed
                  << " " << setw(16) << setprecision(6) << V(0)
                  << " " << setw(16) << setprecision(6) << V(1)
                  << " " << setw(16) << setprecision(6) << V(2)
-                 << " " << setw(14) << setprecision(6) << prsol.Solution(3)
-                 << " " << setw(12) << setprecision(6) << prsol.RMSResidual
+                 << " " << setw(14) << setprecision(6) << prsol.Solution(3);
+          if (prsol.Solution.size() == 5)
+             C.oflog << " " << setw(16) << setprecision(6) << prsol.Solution(4);   
+         C.oflog << " " << setw(12) << setprecision(6) << prsol.RMSResidual
                  << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
                  << " " << prsol.NIterations
                  << " " << scientific << setw(8) << setprecision(2)
@@ -1880,7 +1930,13 @@ void dumpConfiguration(ostream& os) throw(Exception)
       int i;
          // print config to log
       os << "\nHere is the PRSolve configuration:\n";
-      os << " # Input:\n";
+      os << " # Input: \n";
+      if (C.useGPS)
+        os << " System Used: GPS \n";
+      else if (C.useGlonass)
+        os << " System Used: GLONASS \n";
+      else
+        os << " System Used: All \n";
       os << " Obs directory is '" << C.ObsDirectory << "'" << endl;
       os << " RINEX observation files are:\n";
       for (i=0; i<C.InputObsName.size(); i++)
@@ -2291,7 +2347,7 @@ int getCommandLine(int argc, char **argv) throw(Exception)
          // optional options
       // this only so it will show up in help page...
       CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-         'f',"","# Input:\n [-f|--file] <file>   File containing more options ()");
+         'f',"","# Input options :\n [-f|--file] <file>   File containing more options ()");
 
       CommandOption dashdo(CommandOption::hasArgument, CommandOption::stdType,
          0,"obsdir",
@@ -2335,6 +2391,17 @@ int getCommandLine(int argc, char **argv) throw(Exception)
          + string("Use C/A code pseudorange regardless of P1 availability (")
          + (C.ForceCA ? "true" : "false") + ")");
       dashfCA.setMaxCount(1);
+         
+      //
+      ///System command options
+      CommandOptionNoArg dashAllSystems(0,"allSystems",  "# GNSS Selection:\n"
+         " --allSystems         Uses all systems that are present in the header.");
+         
+      CommandOptionNoArg dashGPS(0,"useGPS",
+         " --useGPS             Uses GPS data from the header file.");
+         
+      CommandOptionNoArg dashGlonass(0,"useGlonass",
+         " --useGlonass         Uses Glonass data from the header file.");
       
       // --------------------------------------------------------------------------------
 
@@ -2469,14 +2536,6 @@ int getCommandLine(int argc, char **argv) throw(Exception)
       CommandOptionNoArg dashh('h', "help",
         " [-h|--help]          Print syntax and quit (don't)");
       
-      ///System command options
-      CommandOptionNoArg dashAllSystems(0,"AllSystems",
-         " --AllSystems         Uses all systems that are present in the header.");
-      CommandOptionNoArg dashGPS(0,"useGPS",
-         " --UseGps             Uses GPS data from the header file.");
-      CommandOptionNoArg dashGlonass(0,"useGlonass",
-         " --useGlonass         Uses Glonass data from the header file.");
-
       // ... other options
       CommandOptionRest Rest("");
 
@@ -2557,16 +2616,19 @@ int getCommandLine(int argc, char **argv) throw(Exception)
       if (dashAllSystems.getCount())
       {
          C.allSystems = true;
+         if (help) cout << "Processing all GNSS systems." << endl;
       }
       if (dashGPS.getCount())
       {
          C.allSystems = false;
          C.useGPS = true;
+         if (help) cout << "Processing GPS only." << endl;
       }
       if (dashGlonass.getCount())
       {
          C.allSystems = false;
          C.useGlonass = true;
+         if (help) cout << "Processing GLONASS only." << endl;
       }
       
       if (dashh.getCount())
