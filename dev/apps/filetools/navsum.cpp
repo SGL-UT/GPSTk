@@ -101,7 +101,8 @@ private:
    static const int BLK162;
    static const string blockStr[4];
    int totalsByPRN[gpstk::MAX_PRN+1][2];
-   int totalsBySVID[64][2];
+   int totalsBySVID[64][4];              // [..][0] and [..][1] are not used.
+                                         // Neither is [0][n].  
 
 };
 
@@ -146,6 +147,8 @@ NavSum::NavSum(char* arg0)
    }
    for (cnt=0;cnt<64;++cnt)
    {
+      totalsBySVID[cnt][0] = 0;
+      totalsBySVID[cnt][1] = 0;
       totalsBySVID[cnt][BLK62] = 0;
       totalsBySVID[cnt][BLK162] = 0;
    }
@@ -550,7 +553,7 @@ void NavSum::printSummary( ofstream& out )
    {
       if (n>32 && n<51) continue;
       sprintf( line,"  %02d    62       %4d\n  %02d   162       %4d",
-         n,totalsBySVID[n][0],n,totalsBySVID[n][1]);
+         n,totalsBySVID[n][BLK62],n,totalsBySVID[n][BLK162]);
       linestr = string(line);
       out << linestr << endl;
    }
