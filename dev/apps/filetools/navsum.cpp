@@ -73,6 +73,7 @@ private:
    void getSVs();
    gpstk::DayTime buildXMitTime(const uint32_t word2, const int week );
    void printSummary( ofstream& out );
+   void printAltSummary( ofstream& out );
 
    CommandOptionWithAnyArg inputFileOption;
    CommandOptionWithAnyArg outputFileOption;
@@ -88,6 +89,8 @@ private:
    CommandOptionWithNumberArg prnOption;
       /// command option for FIC blocks
    CommandOptionWithNumberArg blockOption;
+      /// command option to use an alternate output format
+   CommandOptionNoArg formatOption;
 
    DayTime startTime, endTime;
    list<long> prnFilterList;
@@ -123,8 +126,9 @@ NavSum::NavSum(char* arg0)
         blockOption('b', "block", "FIC block number(s) to process ((9)109"
                     " (Engineering) ephemerides, (62)162 (engineering)"
                     " almanacs)"),
-        defaultsOption('a', "all-records", "Unless otherwise specified, use"
+        defaultsOption('a', "all-records", "Use"
                        " default values for record filtration"),
+	formatOption('f',"use-alternate-format","Use alternate output format"),
         startTime(0,0.0),
         endTime(DayTime::END_OF_TIME)
 {
@@ -134,6 +138,7 @@ NavSum::NavSum(char* arg0)
    outputFileOption.setMaxCount(1);
    timeOption.setMaxCount(1);
    eTimeOption.setMaxCount(1);
+   formatOption.setMaxCount(1);
 
    int cnt;
    for (cnt=0;cnt<4;++cnt)
@@ -207,9 +212,10 @@ void NavSum::additionalSetup()
    int option = 0;
    string line;
 
-   if (defaultsOption.getCount() ||
-       (seTimeOptions.getCount() && blockOption.getCount() &&
-        prnOption.getCount()))
+   if (defaultsOption.getCount()) return;
+   if ( seTimeOptions.getCount() &&
+	blockOption.getCount() &&
+        prnOption.getCount() )
       return;
 
    while (option != 5)
@@ -505,7 +511,14 @@ void NavSum::process()
          
 		itr++;
    }
-   printSummary( out );
+   if (formatOption.getCount())
+   {
+      printAltSummary( out );
+   }
+   else
+   {
+      printSummary( out );
+   }
    }
    catch (Exception& exc)
    {
@@ -557,6 +570,134 @@ void NavSum::printSummary( ofstream& out )
       linestr = string(line);
       out << linestr << endl;
    }
+}
+
+void NavSum::printAltSummary( ofstream& out )
+{
+   out << endl << endl;
+   out << "Summary of data processed" << endl;
+   out << "Block Type Summary" << endl;
+   out << "Type   # Blocks Found" << endl;
+   
+   int n;
+   char line[100];
+   std::string linestr;
+   std::string fmt1 = " %3s         %6d";
+   for (n=0;n<4;++n)
+   {
+      sprintf(line, fmt1.c_str() , blockStr[n].c_str(), totalsByBlock[n]);
+      linestr = string(line);
+      out << linestr << endl;
+   }
+   
+   int ncols = 4; 
+   out << endl << "Engineering Ephemeris Blocks (9) by PRN" << endl;
+   for (int i=1;i<=ncols;++i)
+   {
+      out << "PRN..Count   ";
+   }
+   out << endl;
+
+   int nrows = gpstk::MAX_PRN / ncols;
+   for (n=1;n<=nrows;++n)
+   {
+      for (int PRN=n;PRN<gpstk::MAX_PRN+1;PRN+=nrows)
+      {
+         sprintf( line," %02d %5d    ", PRN, totalsByPRN[PRN][BLK9]);
+         linestr = string(line);
+         out << linestr;
+      }
+      out << endl;
+   }
+
+   out << endl << "As-Broadcast Ephemeris Blocks (109) by PRN" << endl;
+   for (int i=1;i<=ncols;++i)
+   {
+      out << "PRN..Count   ";
+   }
+   out << endl;
+
+   nrows = gpstk::MAX_PRN / ncols;
+   for (n=1;n<=nrows;++n)
+   {
+      for (int PRN=n;PRN<gpstk::MAX_PRN+1;PRN+=nrows)
+      {
+         sprintf( line," %02d %5d    ", PRN, totalsByPRN[PRN][BLK109]);
+         linestr = string(line);
+         out << linestr;
+      }
+      out << endl;
+   }
+
+   out << endl << "Engineering Almanac Blocks (62) by SVID" << endl;
+   for (int i=1;i<=ncols;++i)
+   {
+      out << "SVID..Count   ";
+   }
+   out << endl;
+
+   nrows = gpstk::MAX_PRN / ncols;
+   for (n=1;n<=nrows;++n)
+   {
+      for (int PRN=n;PRN<gpstk::MAX_PRN+1;PRN+=nrows)
+      {
+         sprintf( line,"  %02d %5d    ", PRN, totalsBySVID[PRN][BLK62]);
+         linestr = string(line);
+         out << linestr;
+      }
+      out << endl;
+   }
+
+   out << endl;
+   nrows = 4;
+   int startID = 51;
+   int maxID = 63;
+   for (n=1;n<=nrows;++n)
+   {
+      int startRow = startID + n - 1;
+      for (int PRN=startRow;PRN<=maxID;PRN+=nrows)
+      {
+         sprintf( line,"  %02d %5d    ", PRN, totalsBySVID[PRN][BLK62]);
+         linestr = string(line);
+         out << linestr;
+      }
+      out << endl;
+   }
+   
+
+   out << endl << "As-Broadcast Almanac Blocks (162) by SVID" << endl;
+   for (int i=1;i<=ncols;++i)
+   {
+      out << "SVID..Count   ";
+   }
+   out << endl;
+
+   nrows = gpstk::MAX_PRN / ncols;
+   for (n=1;n<=nrows;++n)
+   {
+      for (int PRN=n;PRN<gpstk::MAX_PRN+1;PRN+=nrows)
+      {
+         sprintf( line,"  %02d %5d    ", PRN, totalsBySVID[PRN][BLK162]);
+         linestr = string(line);
+         out << linestr;
+      }
+      out << endl;
+   }
+
+   out << endl;
+   nrows = 4;
+   for (n=1;n<=nrows;++n)
+   {
+      int startRow = startID + n - 1;
+      for (int PRN=startRow;PRN<=maxID;PRN+=nrows)
+      {
+         sprintf( line,"  %02d %5d    ", PRN, totalsBySVID[PRN][BLK162]);
+         linestr = string(line);
+         out << linestr;
+      }
+      out << endl;
+   }   
+
 }
 
 gpstk::DayTime NavSum::buildXMitTime(const uint32_t word2, const int week )
