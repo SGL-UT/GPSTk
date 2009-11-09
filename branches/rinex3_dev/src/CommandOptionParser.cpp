@@ -48,7 +48,6 @@
  * Parse command line options.
  */
 
-#include <cstring>
 #include "CommandOptionParser.hpp"
 
 #include "StringUtils.hpp"
