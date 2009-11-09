@@ -82,8 +82,10 @@ public:
          " time. Format as string: \"yyyy ddd HH:MM:SS\" ");
       CommandOptionWithAnyArg minSNROpt('\0',"snr","Throw out data with an SNR lower"
          " than this value. (dBHz)");
-      CommandOptionWithNumberArg prnOpt('p',"PRN","Throw out obs data from"
-         " this PRN. Repeat option for mutiple SVs.");
+      CommandOptionWithNumberArg prnOpt('p',"PRN","Include (+) or exclude(-) "
+         "data from this prn. Repeat option for mutiple PRNs. Example: "
+         "-p -5 will ignore data from PRN 5.\n -p +5 -p +6 will only include data "
+         " from PRN 5 and 6");
       CommandOptionWithNumberArg recordStartOpt('\0',"record-start","Throw"
          " out data before this record number.");
       CommandOptionWithNumberArg recordEndOpt('\0',"record-end","Throw out"
@@ -102,18 +104,20 @@ public:
       {
          int prn = asInt(prnOpt.getValue()[index]);
 
-         if ((prn < 1)||(prn > gpstk::MAX_PRN))
-         {
-            cout << "\n You entered an invalid PRN."
-                 << "\n Exiting.\n\n";
-            return false;
-         }
-         else 
-         {
-            prnSetToToss.insert(prn);
-            if (debugLevel || verboseLevel)
-               cout << "Throwing out data from PRN " << prn << endl;
-         }
+         if (prn>0 && prnSetToToss.size()==0)
+            for (int prn=1; prn <= gpstk::MAX_PRN; prn++)
+               prnSetToToss.insert(prn);
+         if (prn>0)
+            prnSetToToss.erase(prn);
+         else
+            prnSetToToss.insert(-prn);
+      }
+      if (prnSetToToss.size() && debugLevel)
+      {
+         cout << "Ignoring PRNs: ";
+         for (set<int>::const_iterator i=prnSetToToss.begin(); i != prnSetToToss.end(); i++)
+            cout << *i << " ";
+         cout << endl;
       }
 
       // get any time limits
@@ -282,7 +286,7 @@ protected:
                            currEpoch = obs.time;
                            oe.clear();
                         }
-                        if (!prnSetToToss.count(obs.prn))
+                        if ( !prnSetToToss.count(obs.prn) )
                         {
                            oe.insert(pair<const int, MDPObsEpoch>(obs.prn, obs));
                            if (debugLevel > 2)
@@ -360,15 +364,19 @@ protected:
                if (!noNav)
                {
                   MDPNavSubframe nav;
-                  input  >> nav;
+                  input >> nav;
                   if (nav)
                   {
-                     nav.freshnessCount = fc++;
-                     output << nav;
-                     if (debugLevel > 2)
+                     if (!prnSetToToss.count(nav.prn) )
                      {
-                        cout << "  Writing nav message:\n";
-                        nav.dump(cout);
+
+                        nav.freshnessCount = fc++;
+                        output << nav;
+                        if (debugLevel > 2)
+                        {
+                           cout << "  Writing nav message:\n";
+                           nav.dump(cout);
+                        }
                      }
                   }
                   else if (debugLevel > 2)
