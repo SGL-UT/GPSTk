@@ -312,6 +312,7 @@ namespace gpstk
          // satellites of block IIR have a 180 phase shift
       if(satData.getBlock( satid, time ) == "IIR")
       {
+         cout << PI << endl;
          wind_up = PI;
       }
 
