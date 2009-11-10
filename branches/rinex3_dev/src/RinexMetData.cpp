@@ -219,7 +219,8 @@ namespace gpstk
 
       // check if the spaces are in the right place - an easy way to check
       // if there's corruption in the file
-      if ( (line[0]  != ' ') ||
+      if ( line.size() < 18  ||
+           (line[0]  != ' ') ||
            (line[3]  != ' ') ||
            (line[6]  != ' ') ||
            (line[9]  != ' ') ||
@@ -258,12 +259,12 @@ namespace gpstk
 
   void RinexMetData::dump(ostream& s) const
   {
-    s << time << endl;
+    s << "  " << time << endl;
 
     RinexMetMap::const_iterator itr;
     for(itr = data.begin(); itr != data.end(); itr++)
     {
-      s << RinexMetHeader::convertObsType((*itr).first)
+      s << "  " << RinexMetHeader::convertObsType((*itr).first)
         << " " << (*itr).second << endl;
     }
   }
