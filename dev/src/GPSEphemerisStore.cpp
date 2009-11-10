@@ -163,6 +163,9 @@ namespace gpstk
       DayTime t(0.L);
       t =  eph.getEphemerisEpoch();
       t -= 0.5*3600.0*eph.getFitInterval();
+
+      DayTime endEff(0.L);
+      endEff = eph.getEphemerisEpoch() + 0.5*3600.0*eph.getFitInterval();
    
       EngEphMap& eem = ube[eph.getPRNID()];
       EngEphMap::iterator sfi = eem.find(t);
@@ -198,8 +201,8 @@ namespace gpstk
       // In any case, update the initial and final times
       if (t<initialTime)
          initialTime = t;
-      else if (t>finalTime)
-         finalTime = t;
+      else if (endEff>finalTime)
+         finalTime = endEff;
 
       return rc;
    }
