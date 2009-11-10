@@ -55,7 +55,7 @@ namespace gpstk
 
    long DiscreteVisibleCounts::getSumOfAllCounts( ) const
    {
-      long sum; 
+      long sum = 0; 
       map<int,long>::const_iterator CI;
       for (CI=countMap.begin();CI!=countMap.end();++CI)
       { 
@@ -88,7 +88,7 @@ namespace gpstk
       std::ostringstream ost;
       
       double sum = (double) getSumOfAllCounts();
-      
+
          // If there are no counts for this object, output a special string.
       if (sum==0)
       {
@@ -106,7 +106,9 @@ namespace gpstk
       {
          CI = countMap.find(i);
          if (CI!=countMap.end())
+	 {
             percent = 100.0 * (double) CI->second / sum;
+	 }
           else
             percent = 0.0;
          ost.width(width);

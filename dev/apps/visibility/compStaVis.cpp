@@ -88,6 +88,8 @@ protected:
    static const int SEM_ALM;
    static const int SP3;
    int navFileType; 
+
+   static const string AvgOfStas;
    
    bool detailPrint;
    bool evalStartTimeSet;
@@ -139,6 +141,12 @@ const int compStaVis::RINEX_NAV = 2;
 const int compStaVis::SP3 = 3;
 const int compStaVis::Yuma_ALM = 4;
 const int compStaVis::SEM_ALM = 5;
+
+   // The following string will be used as a name for a DiscreteVisibleCounts 
+   // object that will be used to hold the averaege across all stations.
+   // The six "!" name is selected to be lower on the ASCII list than any 
+   // practical name. 
+const string compStaVis::AvgOfStas="!!!!!!";
 
 int main( int argc, char*argv[] )
 {
@@ -284,7 +292,7 @@ bool compStaVis::initialize(int argc, char *argv[])
       // time and set the flag.
    evalEndTimeSet = false;
    evalEndTime=DayTime::END_OF_TIME;
-   if (evalEndTimeOpt.getCount()!=0) 
+   if (evalEndTimeOpt.getCount()!=0)  
    {
       if (debugLevel) cout << "Reading end time from command line." << endl;
       std::vector<DayTime> tvalues = evalEndTimeOpt.getTime();
@@ -483,10 +491,9 @@ void compStaVis::process()
       dvcList.insert(dvcNode);
    }
       // The following "extra" DiscreteVisibleCounts object will be used
-      // to hold the average across all stations.  The six "!" name is selected
-      // to be lower on the ASCII list that any practical name.
+      // to hold the average across all stations.  
    DiscreteVisibleCounts dvcTemp = DiscreteVisibleCounts();
-   pair<string,DiscreteVisibleCounts> dvcNode("!!!!!!", dvcTemp);
+   pair<string,DiscreteVisibleCounts> dvcNode(AvgOfStas, dvcTemp);
    dvcList.insert(dvcNode);
    
       // Generate the header
@@ -568,7 +575,7 @@ void compStaVis::generateHeader( gpstk::DayTime currT )
    if (detailPrint)
    {
       StaPosList::const_iterator si;
-      fprintf(logfp,"\n DOY:HH:MM:SS");
+      fprintf(logfp,"\n      DOY:HH:MM:SS ");
       for (si=stationPositions.begin();si!=stationPositions.end();++si)
       {
          string mnemonic = (string) si->first;
@@ -613,29 +620,46 @@ void compStaVis::generateTrailer( )
       fprintf(logfp,"%s\n",dummy.c_str());
    }
    
+      // Now output the counts of epochs for which 
+      // a particular number of SVs are visible to each station and the average
+   const DiscreteVisibleCounts& dvc0 = dvcList.find(AvgOfStas)->second;
+   int max = dvc0.getMaxCount();
+//   fprintf(logfp,"\n Number of epochs a station is visible to a given number of SVs.\n");
+//   fprintf(logfp,"Station ");
+//   for (int i=0;i<=max;++i) fprintf(logfp,"    =%2d",i);
+//   fprintf(logfp,"\n");
+   map<string,DiscreteVisibleCounts>::const_iterator CI;
+//   for (CI=dvcList.begin();CI!=dvcList.end();++CI)
+//   {
+//      string staName = CI->first;
+//      const DiscreteVisibleCounts& dvcR = (DiscreteVisibleCounts)CI->second;
+//      string str = dvcR.dumpCounts(max,7);
+//      if (staName.compare(AvgOfStas)==0)
+//         fprintf(logfp,"    Avg:%s\n",str.c_str());
+//       else
+//         fprintf(logfp," %6s:%s\n",staName.c_str(),str.c_str());
+//   }
+//   fprintf(logfp,"\n");
+
       // Now output the percentages related to the fraction of time
       // a particular number of SVs are visible to each station and the average
-      //
-   const DiscreteVisibleCounts& dvc0 = dvcList.find("!!!!!!")->second;
-   int max = dvc0.getMaxCount();
-   fprintf(logfp,"\n Fraction of time a station is visible to a given number of SVs.\n");
+   fprintf(logfp,"\n Percent of time a station is visible to a given number of SVs.\n");
    fprintf(logfp,"Station ");
    for (int i=0;i<=max;++i) fprintf(logfp,"    =%2d",i);
    fprintf(logfp,"\n");
-   map<string,DiscreteVisibleCounts>::const_iterator CI;
    for (CI=dvcList.begin();CI!=dvcList.end();++CI)
    {
       string staName = CI->first;
       const DiscreteVisibleCounts& dvcR = (DiscreteVisibleCounts)CI->second;
       string str = dvcR.dumpCountsAsPercentages(max,7);
-      if (staName.compare("!!!!!!")==0)
+      if (staName.compare(AvgOfStas)==0)
          fprintf(logfp,"    Avg:%s\n",str.c_str());
        else
          fprintf(logfp," %6s:%s\n",staName.c_str(),str.c_str());
    }
    fprintf(logfp,"\n");
    
-   fprintf(logfp,"\n Fraction of time a station is visible to >= a given number of SVs.\n");
+   fprintf(logfp,"\n Percent of time a station is visible to >= a given number of SVs.\n");
    fprintf(logfp,"Station ");
    for (int i=0;i<=max;++i) fprintf(logfp,"   >=%2d",i);
    fprintf(logfp,"\n");
@@ -644,7 +668,7 @@ void compStaVis::generateTrailer( )
       string staName = CI->first;
       const DiscreteVisibleCounts& dvcR = (DiscreteVisibleCounts)CI->second;
       string str = dvcR.dumpCumulativeCountsAsPercentages(max,7);
-      if (staName.compare("!!!!!!")==0)
+      if (staName.compare(AvgOfStas)==0)
          fprintf(logfp,"    Avg:%s\n",str.c_str());
        else
          fprintf(logfp," %6s:%s\n",staName.c_str(),str.c_str());
@@ -712,7 +736,14 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
                         // We'll only use it if there's only one station selected.
 
       // Handy reference to the "average over all stations" visibility stats.
-   DiscreteVisibleCounts& dvcAVG = dvcList.find("!!!!!!")->second;
+   map<string,DiscreteVisibleCounts>::iterator dvcCI;
+   dvcCI = dvcList.find(AvgOfStas);
+   if (dvcCI==dvcList.end())
+   {
+      cerr << "Missing DiscreteVisibleCounts object for Average of Stations." <<endl;
+      cerr << "Fatal error. compStaVis will terminate." << endl;
+   }
+   DiscreteVisibleCounts& dvcAVG = dvcCI->second;
                         
       // Now count number of SVs visible at each station
    int maxNum = 0;
@@ -766,13 +797,18 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
          }
       }
       if (detailPrint) fprintf(logfp,"    %2d",numVis);
-      DiscreteVisibleCounts& dvcR = dvcList.find(staName)->second;
+      dvcCI = dvcList.find(staName);
+      if (dvcCI==dvcList.end())
+      {
+         cerr << "Missing DiscreteVisibleCounts object for station " << staName <<endl;
+         cerr << "Fatal error. compStaVis will terminate." << endl;
+      }
+      DiscreteVisibleCounts& dvcR = dvcCI->second;
       dvcR.addCount(numVis);
       dvcAVG.addCount(numVis);
       if (numVis>maxNum) maxNum = numVis;
       if (numVis<minNum) minNum = numVis;
-      
-      //cout << " Calling addEpochInfo() for station " << staNum << ", station " << ss.getStaNum() << endl;
+
       ss.addEpochInfo( numVis, epochCount ); 
    }
    if (detailPrint)
