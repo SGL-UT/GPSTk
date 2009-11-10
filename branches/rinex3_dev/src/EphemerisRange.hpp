@@ -37,7 +37,7 @@
 
 /**
  * @file EphemerisRange.hpp
- * Computation of range and associated quantities from EphemerisStore
+ * Computation of range and associated quantities from XvtStore
  */
  
 #ifndef EPHEMERIS_RANGE_HPP
@@ -56,7 +56,7 @@ namespace gpstk
    /** class CorrectedEphemerisRange. Compute the corrected range from receiver
     * at position Rx, to the GPS satellite given by SatID sat, as well as azimuth,
     * elevation, etc., given a nominal timetag (either received or transmitted
-    * time) and an EphemerisStore.
+    * time) and an XvtStore.
     */
    class CorrectedEphemerisRange
    {
@@ -67,7 +67,7 @@ namespace gpstk
       /// Compute the corrected range at RECEIVE time, from receiver at
       /// position Rx, to the GPS satellite given by SatID sat, as well as all
       /// the CER quantities, given the nominal receive time tr_nom and
-      /// an EphemerisStore.
+      /// an XvtStore.
       double ComputeAtReceiveTime(
          const CommonTime& tr_nom,
          const Position& Rx,
@@ -77,7 +77,7 @@ namespace gpstk
       /// Compute the corrected range at TRANSMIT time, from receiver at
       /// position Rx, to the GPS satellite given by SatID sat, as well as all
       /// the CER quantities, given the nominal receive time tr_nom and
-      /// an EphemerisStore.
+      /// an XvtStore.
       double ComputeAtTransmitTime(
          const CommonTime& tr_nom,
          const double& pr,
@@ -88,7 +88,7 @@ namespace gpstk
       /// Compute the corrected range at TRANSMIT time, from receiver at
       /// position Rx, to the GPS satellite given by SatID sat, as well as all
       /// the CER quantities, given the nominal transmit time tt_nom and
-      /// an EphemerisStore. This is used for data smoothed to transmit time.
+      /// an XvtStore. This is used for data smoothed to transmit time.
       double ComputeAtTransmitSvTime(
          const CommonTime& tt_nom,
          const double& pr,
