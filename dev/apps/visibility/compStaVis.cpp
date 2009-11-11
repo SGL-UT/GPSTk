@@ -575,7 +575,7 @@ void compStaVis::generateHeader( gpstk::DayTime currT )
    if (detailPrint)
    {
       StaPosList::const_iterator si;
-      fprintf(logfp,"\n      DOY:HH:MM:SS ");
+      fprintf(logfp,"\n YEAR:DOY:HH:MM:SS ");
       for (si=stationPositions.begin();si!=stationPositions.end();++si)
       {
          string mnemonic = (string) si->first;

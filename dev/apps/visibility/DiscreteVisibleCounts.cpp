@@ -69,7 +69,7 @@ namespace gpstk
    {
       std::ostringstream ost;
  
-      long count;
+      long count = 0;
       map<int,long>::const_iterator CI;
       for (int i=0;i<=max;++i)
       {
@@ -122,7 +122,7 @@ namespace gpstk
    {
       std::ostringstream ost;
  
-      long count;
+      long count = 0;
       map<int,long>::const_iterator CI;
       
          // Handle special case of 0
