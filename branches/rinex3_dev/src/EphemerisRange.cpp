@@ -62,6 +62,7 @@ namespace gpstk
       const Position& Rx,
       const SatID sat,
       const XvtStore<SatID>& Eph)
+      throw(Exception,InvalidRequest)
    {
       try {
          int nit;
@@ -112,6 +113,7 @@ namespace gpstk
       const Position& Rx,
       const SatID sat,
       const XvtStore<SatID>& Eph)
+      throw(Exception,InvalidRequest)
    {
       try {
          CommonTime tt;
@@ -157,6 +159,7 @@ namespace gpstk
       const Position& rx,
       const SatID sat,
       const XvtStore<SatID>& eph)
+      throw(Exception,InvalidRequest)
    {
       try {
          svPosVel = eph.getXvt(sat, tt_nom);

@@ -72,7 +72,7 @@ namespace gpstk
          const CommonTime& tr_nom,
          const Position& Rx,
          const SatID sat,
-         const XvtStore<SatID>& Eph);
+         const XvtStore<SatID>& Eph) throw(Exception,InvalidRequest);
 
       /// Compute the corrected range at TRANSMIT time, from receiver at
       /// position Rx, to the GPS satellite given by SatID sat, as well as all
@@ -83,7 +83,7 @@ namespace gpstk
          const double& pr,
          const Position& Rx,
          const SatID sat,
-         const XvtStore<SatID>& Eph);
+         const XvtStore<SatID>& Eph) throw(Exception,InvalidRequest);
 
       /// Compute the corrected range at TRANSMIT time, from receiver at
       /// position Rx, to the GPS satellite given by SatID sat, as well as all
@@ -94,7 +94,7 @@ namespace gpstk
          const double& pr,
          const Position& Rx,
          const SatID sat,
-         const XvtStore<SatID>& Eph);
+         const XvtStore<SatID>& Eph) throw(Exception,InvalidRequest);
 
       /// The computed raw (geometric) range in meters.
       double rawrange;
