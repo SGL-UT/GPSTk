@@ -120,8 +120,9 @@ namespace gpstk
 
       /// the rest of the member are for version c only
       int sig[4];      ///< Four-vector of integer exponents for estimated sigma 
-                       ///< of position,clock | velocity,clock rate; sigma = base**n
-                       ///< (mm,psec | 10^-4 mm/sec,psec/sec); base in header
+                       ///< of position,clock or velocity,clock rate; sigma = base**n
+                       ///< units are mm,psec or 10^-4 mm/sec,psec/sec); base in header.
+                       ///< n is >= 0, and n = -1 means unknown (blank in file)
       bool clockEventFlag;    ///< clock event flag, 'E' in file
       bool clockPredFlag;     ///< clock prediction flag, 'P' in file
       bool orbitManeuverFlag; ///< orbit maneuver flag, 'M' in file

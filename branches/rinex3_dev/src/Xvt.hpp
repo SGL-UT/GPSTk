@@ -47,6 +47,7 @@
 
 #include <iostream>
 #include "Xt.hpp"
+#include "EllipsoidModel.hpp"
 
 namespace gpstk
 {
@@ -64,7 +65,22 @@ namespace gpstk
     {}
 
     /// Destructor.
-    virtual ~Xvt() {};
+    virtual ~Xvt()
+    {};
+
+    /**
+     * Given the position of a ground location, compute the range
+     * to the spacecraft position.
+     * @param rxPos ground position at broadcast time in ECEF.
+     * @param geoid geodetic parameters.
+     * @param correction offset in meters (include any factors other
+     * than the SV clock correction).
+     * @return Range in meters
+     */
+    double preciseRho(const Triple& rxPos, 
+                      const EllipsoidModel& ellipsoid,
+                      double correction = 0) const
+      throw();
 
     Triple getVel()
       throw()
