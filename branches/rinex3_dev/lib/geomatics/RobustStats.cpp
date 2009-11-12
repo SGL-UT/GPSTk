@@ -380,5 +380,65 @@ int Robust::RobustPolyFit(double *xd, const double *td, int nd,
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
+   // Anderson-Darling test statistic, which is a variant of the Kolmogorov-Smirnoff
+   // test, comparing the distribution of data with mean m and standard deviation s
+   // to the normal distribution.
+   // @param xd         array of data.
+   // @param nd         length of array xd.
+   // @param mean       mean of the data.
+   // @param stddev     standard deviation of the data.
+   // @param save_flag  if true (default) array xd will NOT be changed, otherwise
+   //                      it will be sorted.
+double gpstk::ADtest(double *xd, const int nd,
+                     double mean, double stddev, bool save_flag)
+      throw(Exception)
+{
+   if(!xd || nd < 2) {
+      Exception e("Invalid input");
+      GPSTK_THROW(e);
+   }
+
+   try {
+      int i;
+      double med, *save;
+
+      if(save_flag) {
+         save = new double[nd];
+         if(!save) {
+            Exception e("Could not allocate temporary array");
+            GPSTK_THROW(e);
+         }
+         for(i=0; i<nd; i++) save[i]=xd[i];
+      }
+      QSort(xd,nd);
+
+      double tn = double(nd);
+      double AD = -tn, cdf;
+      for(i=0; i<nd; i++) {
+         cdf = normalCDF<double>(mean, stddev, xd[i]);
+         //cout << "CDF " << setw(4) << i
+         //     << " " << fixed << setprecision(6) << setw(11) << xd[i]
+         //     << " " << setw(11) << cdf << endl;
+         AD -= ((2.0*double(i)-1.0) * ::log(cdf)
+               + (2.0*(tn-double(i))+1.0) * ::log(1.0-cdf))/tn;
+      }
+
+      AD *= 1.0 + (0.75+2.25/tn)/tn;
+
+      if(save_flag) {
+         for(i=0; i<nd; i++) xd[i]=save[i];
+         delete[] save;
+      }
+
+      return AD;
+   }
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+   catch(exception& e) {
+      Exception E("std except: "+string(e.what()));
+      GPSTK_THROW(E);
+   }
+   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+}
+
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------

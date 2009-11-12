@@ -57,15 +57,12 @@
 //------------------------------------------------------------------------------------
 // system includes
 #include <string>
-#include <vector>
-#include <algorithm>
-#include <iomanip>
-#include <ostream>
-#include <sstream>
 // GPSTk
 #include "Matrix.hpp"
+#include "StringUtils.hpp"
 // geomatics
 #include "Namelist.hpp"
+#include "SRIMatrix.hpp"
 
 namespace gpstk
 {
@@ -73,64 +70,6 @@ namespace gpstk
 //------------------------------------------------------------------------------------
 /// constant (empty) Matrix used for default input arguments
 extern const Matrix<double> SRINullMatrix;
-
-//------------------------------------------------------------------------------------
-// fundamental routines
-/// Compute inverse of upper triangular matrix, returning smallest and largest
-/// eigenvalues.
-/// @param UT upper triangular matrix to be inverted
-/// @param ptrS pointer to <T> small, on output *ptrS contains smallest eigenvalue.
-/// @param ptrB pointer to <T> small, on output *ptrB contains largest eigenvalue.
-/// @return inverse of input matrix.
-/// @throw MatrixException if input is not square (assumed upper triangular as well).
-/// @throw SingularMatrixException if input is singular.
-template <class T>
-Matrix<T> inverseUT(const Matrix<T>& UT,
-                    T *ptrSmall,
-                    T *ptrBig)
-   throw(MatrixException);
-
-/// Compute the product of an upper triangular matrix and its transpose.
-/// @param UT upper triangular matrix
-/// @return product UT * transpose(UT)
-/// @throw MatrixException if input is not square (assumed upper triangular as well).
-template <class T>
-Matrix<T> UTtimesTranspose(const Matrix<T>& UT)
-   throw(MatrixException);
-
-/// Square root information filter (Srif) measurement update (MU).
-/// Use the Householder transformation to combine the information stored in the square
-/// root information (SRI) covariance matrix R and state Z with new information in
-/// the given partials matrix and data vector to produce an updated SRI {R,Z}.
-/// Measurement noise associated with the new information (H and D) is assumed to be
-/// white with unit covariance. If necessary, the data may be 'whitened' by
-/// multiplying H and D by the inverse of the lower triangular square root of the
-/// covariance matrix; that is, compute L = Cholesky(Measurement covariance) and
-/// let H = L*H, D = L*D.
-/// @param  R  Upper triangluar apriori SRI covariance matrix of dimension N
-/// @param  Z  A priori SRI state vector of length N
-/// @param  H  Partials matrix of dimension MxN, trashed on output.
-/// @param  D  Data vector of length M; on output contains the residuals of fit.
-/// @param  M  If H and D have dimension M' > M, then call with M = true data length;
-///             otherwise M = 0 (the default) and is ignored.
-/// @throw MatrixException if the input has inconsistent dimensions.
-template <class T>
-void SrifMU(Matrix<T>& R,
-            Vector<T>& Z,
-            Matrix<T>& H,
-            Vector<T>& D,
-            unsigned int M=0)
-   throw(MatrixException);
-
-/// Square root information measurement update, with new data in the form of a
-/// single matrix concatenation of H and D: A = H || D.
-/// See doc for the overloaded SrifMU().
-template <class T>
-void SrifMU(Matrix<T>& R,
-            Vector<T>& Z,
-            Matrix<T>& A,
-            unsigned int M=0)
-   throw(MatrixException);
 
 //------------------------------------------------------------------------------------
 /// class SRI encapsulates all the information associated with the solution of a set
@@ -293,6 +232,13 @@ public:
                         const SRI&)
       throw(MatrixException,VectorException);
 
+      /// append an SRI onto this SRI. Similar to opertor+= but simpler; input SRI is
+      /// simply appended, first using operator+=(Namelist), then filling the new
+      /// portions of R and Z, all without final Householder transformation of result.
+      /// Do not allow a name that is already present to be added: throw.
+   SRI& append(const SRI& S)
+      throw(MatrixException,VectorException);
+
       /// Zero out the nth row of R and the nth element of Z, removing all
       /// information about that element.
    void zeroOne(const unsigned int n)
@@ -317,7 +263,13 @@ public:
       /// Shift the state vector by a constant vector X0; does not change information
       /// i.e. let R * X = Z => R' * (X-X0) = Z'
       /// throw on invalid input dimension
-   void shift(const Vector<double>&)
+   void shift(const Vector<double>& X0)
+      throw(MatrixException);
+
+      /// Shift the SRI state vector (Z) by a constant vector Z0;
+      /// does not change information. i.e. let Z => Z-Z0
+      /// throw on invalid input dimension
+   void shiftZ(const Vector<double>& Z0)
       throw(MatrixException);
 
       /// Transform this SRI with the transformation matrix T;
@@ -351,20 +303,20 @@ public:
       /// Fix the state element with the input index to the input value, and
       /// collapse the SRI by removing that element.
       /// No effect if index is out of range.
-   void biasFix(const unsigned int&,
-                const double&)
+   void stateFix(const unsigned int& index,
+                 const double& value)
       throw(MatrixException,VectorException);
 
-      /// Vector version of biasFix, with Namelist identifying the states.
+      /// Vector version of stateFix, with Namelist identifying the states.
       /// Fix the given state elements to the input value, and
       /// collapse the SRI by removing those elements.
       /// No effect if name is not found.
-   void biasFix(const Namelist& drops,
-                const Vector<double>& biases)
+   void stateFix(const Namelist& drops,
+                 const Vector<double>& values)
       throw(MatrixException,VectorException);
 
       /// Add a priori or constraint information in the form of an ordinary
-      /// state vector and covariance matrix.
+      /// state vector and covariance matrix. The matrix must be non-singular.
       /// @param Cov Covariance matrix of same dimension as this SRIFilter
       /// @param X   State vector of same dimension as this SRIFilter
       /// @throw if input is invalid: dimensions are wrong or Cov is singular.
@@ -372,10 +324,10 @@ public:
       throw(MatrixException);
 
       /// Add a priori or constraint information in the form of an information
-      /// matrix (inverse covariance) and ordinary state.
+      /// matrix (inverse covariance) and ordinary state. ICov must be non-singular.
       /// @param ICov Inverse covariance matrix of same dimension as this SRIFilter
       /// @param X    State vector of same dimension as this SRIFilter
-      /// @throw if input is invalid: dimensions are wrong
+      /// @throw if input is invalid: dimensions are wrong.
    void addAPrioriInformation(const Matrix<double>& ICov, const Vector<double>& X)
       throw(MatrixException);
 
@@ -386,6 +338,26 @@ public:
                           Vector<double>& Data)
       throw(MatrixException)
    { SrifMU(R, Z, Partials, Data); }
+
+      /// Compute the condition number, or rather the largest and smallest eigenvalues
+      /// of the SRI matrix R (the condition number is the ratio of the largest and
+      /// smallest eigenvalues). Note that the condition number of the covariance
+      /// matrix would be the square of the condition number of R.
+   void getConditionNumber(double& small, double& big)
+      throw(MatrixException);
+
+      /// Compute the state X without computing the covariance matrix C.
+      /// R*X=Z so X=inverse(R)*Z; in this routine the state is computed explicitly,
+      /// without forming the inverse of R, using the fact that R is upper triangular.
+      /// NB. The matrix is singular if and only if one or more of the diagonal
+      /// elements is zero; in the case the routine will still have valid entries in
+      /// the state vector for index greater than the largest index with zero diagonal
+      /// @param X                 State vector (output)
+      /// @param ptrSingularIndex  if ptr is non-null, on output *ptr will be the
+      ///                           largest index of singularity
+      /// @throw SingularMatrixException if R is singular.
+   void getState(Vector<double>& X, int *ptrSingularIndex=NULL)
+      throw(MatrixException);
 
       /// Compute the state X and the covariance matrix C of the state, where
       /// C = transpose(inverse(R))*inverse(R) and X = inverse(R) * Z.
@@ -436,6 +408,16 @@ public:
    unsigned int index(std::string& name)
       throw()
    { return names.index(name); }
+
+      /// access the R matrix
+   Matrix<double> getR(void)
+      throw()
+   { return R; }
+
+      /// access the Z vector
+   Vector<double> getZ(void)
+      throw()
+   { return Z; }
 
       /// output operator
    friend std::ostream& operator<<(std::ostream& s,
