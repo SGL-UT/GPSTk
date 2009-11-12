@@ -56,7 +56,7 @@ namespace gpstk
       rcCM       = 5,
       rcCL       = 6,
       rcMcode1   = 7,
-      rcMcode2   = 8,
+      rcMcode2   = 8, // This should not be used
       rcCMCL     = 9,
       rcMax
    };
@@ -66,9 +66,9 @@ namespace gpstk
    {
       ncUnknown    = 0, ///< Unknown or uninitialized navigation message code.
       ncICD_200_2  = 1, ///< ICD-GPS-200 Data ID No 2.
-      ncICD_700_M  = 2, ///< ICD-GPS-700 M-code.
-      ncICD_705_L5 = 3, ///< ICD-GPS-705 L5 nav.
-      ncICD_200_4  = 4,  ///< ICD-GPS-200 Data ID No 4.
+      ncICD_200_4  = 2, ///< ICD-GPS-200 Data ID No 4.
+      ncICD_700_M  = 3, ///< ICD-GPS-700 M-code.
+      ncICD_705_L5 = 4, ///< ICD-GPS-705 L5 nav.
       ncMax
    };
 

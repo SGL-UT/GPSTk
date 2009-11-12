@@ -236,10 +236,10 @@ namespace gpstk
       MDPObsEpoch me;
       DayTime t;
       int i=0;
-      for (int i=0; i<10000 && mdps >> me; i++)
+      const int maxTries=4096;
+      for (int i=0; i<maxTries && mdps >> me; i++)
       {
-         i++;
-         if (me.time != t)
+         if (!me || me.time != t)
          {
             if (oe.size() > 0 && MDPHeader::debugLevel>2)
                cout << "Tossing partial epoch at " << me.time
@@ -254,8 +254,9 @@ namespace gpstk
          if (me.numSVs == oe.size())
             break;
       }
-      if (i>1000)
-         cout << "didn't find an obs epoch after 10000 reads." << endl;
+      if (MDPHeader::debugLevel && i >= maxTries)
+         cout << "Didn't find an obs epoch after " << i << " reads." << endl;
+      cout << "Didn't find an obs epoch after " << i << " reads." << endl;
       return s;
    }
 

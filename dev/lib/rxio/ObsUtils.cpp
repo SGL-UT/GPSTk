@@ -365,7 +365,7 @@ namespace gpstk
                case 1: obsKey = MDPObsEpoch::ObsKey(ccL1, rcYcode);  break;
                case 2: obsKey = MDPObsEpoch::ObsKey(ccL2, rcYcode);  break;
                case 3: obsKey = MDPObsEpoch::ObsKey(ccL1, rcMcode1); break;
-               case 4: obsKey = MDPObsEpoch::ObsKey(ccL2, rcMcode2); break;
+               case 4: obsKey = MDPObsEpoch::ObsKey(ccL2, rcMcode1); break;
             }
 
             MDPObsEpoch::Observation obs;
