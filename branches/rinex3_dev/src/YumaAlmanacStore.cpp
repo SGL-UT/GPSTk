@@ -23,12 +23,12 @@
 //============================================================================
 //============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+// This software developed by Applied Research Laboratories at the University
+// of Texas at Austin, under contract to an agency or agencies within the U.S. 
+// Department of Defense. The U.S. Government retains all rights to use,
+// duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+// Pursuant to DoD Directive 523024 
 //
 // DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
@@ -41,6 +41,7 @@
  */
 
 #include "YumaAlmanacStore.hpp"
+#include "GPSWeekSecond.hpp"
 
 namespace gpstk
 {
@@ -69,17 +70,17 @@ namespace gpstk
                // assume the almanac must be within 511 weeks of the 
                // time of interest
                // If necessary, adjust the GPS week number
-            if (timeOfInterest>gpstk::DayTime::BEGINNING_OF_TIME &&
+            if (timeOfInterest>CommonTime::BEGINNING_OF_TIME &&
                 rec.week < 1024)
             {
-               short diff = timeOfInterest.GPSfullweek() - rec.week;
+               short diff = GPSWeekSecond(timeOfInterest).week - rec.week;
                short nEpochs = (diff+512) / 1024;
                rec.week += nEpochs * 1024;
             }
 	         addAlmanac(AlmOrbit(rec));
          }	 
       }
-      catch (gpstk::Exception& e)
+      catch (Exception& e)
       {
          GPSTK_RETHROW(e);
       }   
