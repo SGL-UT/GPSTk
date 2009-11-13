@@ -47,7 +47,7 @@
 #include "SP3EphemerisStore.hpp"
 #include "RinexEphemerisStore.hpp"
 #include "YumaAlmanacStore.hpp"
-#include "GPSGeoid.hpp"
+#include "GPSEllipsoid.hpp"
 
 #include "RinexObsStream.hpp"
 #include "RinexObsData.hpp"
