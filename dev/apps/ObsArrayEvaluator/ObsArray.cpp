@@ -86,12 +86,13 @@ namespace gpstk
       {
          // This will throw a FileMissingException for us if we can't open the file
          ObsReader obsReader(fn, debugLevel);
-         interval = obsReader.estimateObsInterval();
-         if (interval<0)
+         obsReader.estimateObsInterval();
+         if (obsReader.obsIntervalConfidence < 10)
          {
-            ObsArrayException oae("Cannot determine data interval for " + fn);
+            ObsArrayException oae("Low confidence in determined data interval for " + fn);
             GPSTK_THROW(oae);
          }
+         interval = obsReader.obsInterval;
       }
 
       // Make a pass through the file and just figure out how much data

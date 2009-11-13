@@ -71,6 +71,14 @@ namespace gpstk
       RinexObsHeader roh;
       int debugLevel;
       unsigned long epochCount;
+      
+         /// This is the estimated time between ObsEpochs as computed by
+         /// estimateObsInterval().  Initialized to 0.
+      double obsInterval;
+         /// This is the "confidence" in the obsInterval value as computed
+         /// by estimateObsInterval().  Initialized to 0.
+         /// 1 (worst) to 10 (best)
+      int obsIntervalConfidence;
 
       ObsReader(const std::string& str, int debug=0)
          throw(FileMissingException);
@@ -79,7 +87,7 @@ namespace gpstk
 
       operator bool ();
 
-      double estimateObsInterval();
+      void estimateObsInterval();
       
       static std::string formatsUnderstood()
       { return "RINEX obs, MDP, smooth, Novatel, and raw Ashtech"; }

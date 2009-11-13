@@ -371,11 +371,11 @@ void DataAvailabilityAnalyzer::spinUp()
    if (obsReader.inputType == FFIdentifier::tSMODF)
       obsReader.msid = msid;
 
-   epochRate = obsReader.estimateObsInterval();
+   obsReader.estimateObsInterval();
 
-   if (epochRate < 0)
+   if (obsReader.obsIntervalConfidence < 10)
    {
-      cout << "Could not determine data rate.  Sorry."
+      cout << "Low confidence in deterimined data rate.  Sorry."
            << " This program is really\nwritten to just work with data that "
            << "is being collected at a fixed data rate.\nI guess it could be"
            << " re-written to work for changing data rates but I am too\n"
@@ -384,6 +384,8 @@ void DataAvailabilityAnalyzer::spinUp()
            << endl;
       exit(-1);
    }
+
+   epochRate = obsReader.obsInterval;
 
    if (verboseLevel)
       output << "Data rate is " << epochRate << " seconds." << endl;

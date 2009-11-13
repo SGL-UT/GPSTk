@@ -56,7 +56,7 @@ namespace gpstk
    ObsReader::ObsReader(const string& str, int debug)
       throw(FileMissingException)
       : fn(str), inputType(str), debugLevel(debug), epochCount(0), msid(0),
-        usePrevSMOD(false)
+        usePrevSMOD(false), obsInterval(0.), obsIntervalConfidence(0)
    {
       if (inputType == FFIdentifier::tRinexObs)
       {
@@ -196,35 +196,30 @@ namespace gpstk
    }
 
 
-   double ObsReader::estimateObsInterval()
+   void ObsReader::estimateObsInterval()
    {
-      int j=0;
-      double epochRate = 0;
+      obsIntervalConfidence = 0;
+      obsInterval = 0;
       ObsEpoch oe = getObsEpoch();
       DayTime t0 = oe.time;
+      double dt;
    
-      // We need 10 consecutive epochs with the same interval that occur
-      // during the first 100 epochs of the input to get an acceptable estimate
-      // of the obs rate
-      for (int i=0; i<100 && *this; i++)
+         // We need 10 consecutive epochs with the same interval to get an
+         // acceptable estimate of the obs rate. 
+      while (*this && obsIntervalConfidence < 10)
       {
-         double dt = oe.time - t0;
-         if (std::abs(dt - epochRate) > 0.01)
+         dt = oe.time - t0;
+         if (std::abs(dt - obsInterval) > 0.01)
          {
-            epochRate = dt;
-            j = 0;
+            obsInterval = dt;
+            obsIntervalConfidence = 0;
          }
-         else
-            j++;
 
-         if (j >10)
-            return epochRate;
+         ++obsIntervalConfidence;
 
          t0 = oe.time;
-         *this >> oe;
+         oe = getObsEpoch();
       }
-      
-      return -1;
    }
 
 
