@@ -466,28 +466,30 @@ namespace gpstk
         << endl;
 
       s << endl << "           Iono Parameters" << endl << endl;
-      s << "Alpha:    ";
+      s << "Alpha:    " << scientific << setprecision(6);
       for (int i=0; i<4; i++) 
-         s << setw(12) << alpha[i] << "  ";
+         s << setw(13) << alpha[i] << "  ";
       s << " various" << endl;
-      s << " Beta:    ";
+      s << " Beta:    " << fixed << setprecision(1);
       for (int i=0; i<4; i++) 
-         s << setw(12) << beta[i] << "  ";
+         s << setw(13) << beta[i] << "  ";
       s << " various" << endl;
          
       s << endl << "           UTC Paramters" << endl << endl;
-      s << "A0:       " << setw(12) << A0      << " sec" << endl
-        << "A1:       " << setw(12) << A1      << " sec/sec" << endl
-        << "dt_ls:    " << setw(12) << dt_ls   << " sec" << endl
-        << "t_ot:     " << setw(12) << t_ot    << " sec" << endl
-        << "wn_t:     " << setw(12) << wn_t    << " week" << endl
-        << "wn_lsf    " << setw(12) << wn_lsf  << " week" << endl
-        << "dn:       " << setw(12) << (int)dn << " days" << endl
-        << "dt_lsf:   " << setw(12) << dt_lsf  << " sec" << endl;
+      s << scientific << setprecision(8)
+        << "A0:       " << setw(15) << A0      << " sec" << endl
+        << "A1:       " << setw(15) << A1      << " sec/sec" << endl
+        << fixed << setprecision(1)
+        << "dt_ls:    " << setw(15) << dt_ls   << " sec" << endl
+        << "t_ot:     " << setw(15) << t_ot    << " sec" << endl
+        << "wn_t:     " << setw(15) << wn_t    << " week" << endl
+        << "wn_lsf    " << setw(15) << wn_lsf  << " week" << endl
+        << "dn:       " << setw(15) << (int)dn << " days" << endl
+        << "dt_lsf:   " << setw(15) << dt_lsf  << " sec" << endl;
 
       s << endl << "           Orbit Parameters" << endl << endl;
       for (AlmOrbits::const_iterator i = almPRN.begin(); i != almPRN.end(); i++)
-         s << (*i).second;
+         s<< scientific << (*i).second;
 
       s << endl << "           Special Message" << endl << endl;
       StringUtils::hexDumpData(s, special_msg);

@@ -47,6 +47,7 @@
  * @file AlmOrbit.cpp
  * Encapsulate almanac data, and compute satellite orbit, etc.
  */
+
  
 #include "icd_200_constants.hpp"
 #include "GPSGeoid.hpp"
@@ -224,6 +225,7 @@ namespace gpstk
    {
       using std::endl;
       using std::setw;
+      
       s << std::setprecision(4);
       s.setf(std::ios::scientific);
       switch (verbosity)
@@ -252,7 +254,7 @@ namespace gpstk
               << " Toa:" << Toa
               << " H:" << SV_health
               << " AFO:" << AF0
-              << " AF1:" <<AF1
+              << " AF1:" << AF1
               << " Ecc:" << ecc
               << endl
               << "   w:" << w
