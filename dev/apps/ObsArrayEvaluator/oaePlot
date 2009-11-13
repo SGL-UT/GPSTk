@@ -1,127 +1,120 @@
 #!/usr/bin/env python
 
-import sys, string, time, datetime, numpy, matplotlib, pylab
+import string, time, datetime
+
+from sys import exit, stdin
+
+from pylab import *
 
 from optparse import OptionParser
-parser = OptionParser(usage="usage: %prog [options]\nA program to plot a table of numbers using matplotlib.")
+parser = OptionParser(usage="usage: %prog [options]\nA program to plot the "
+                      "output of the Obs Array Evaluator using matplotlib.")
 parser.set_description
-parser.add_option("-d", "--debug", default=0, dest="debugLevel", action="count",
-                  help="Increase the debugLevel")
+parser.add_option("-d", "--debug", default=0, dest="debug", action="count",
+                  help="Increase the debug level.")
 
-parser.add_option("-i", "--input", dest="inputFile", type="string", action="store", 
+parser.add_option("-i", "--input", dest="inputFile", type="string",
+                  action="store", 
                   help="Input data file, defaults to stdin.")
 
 parser.add_option("-t", "--title", dest="title", type="string", action="store",
-                  help="Specify a title for the plot. Defaults ot the stream name.")
+                  help="Specify a title for the plot. Default is the name "
+                  "of the input.")
 
-parser.add_option("-x", "--x-col", dest="xcol", type="int", action="store",
-                  help="Selects the column to use as the x axis with 0 being the first column. The default is to use the row number")
-
-parser.add_option("-y", "--y-cols", dest="ycols", action="append", type="int",
-                  help="Selects a column to be plotted on the y axis with 0 being the first column. The default is to plot  all columns.")
-
-parser.add_option("-s", "--save-figure", dest="saveFig", action="store",
-                  type="string",
-		  help="Save the figure to the indicated file")
+parser.add_option("-s", "--save-figure", dest="save", action="store",
+                  type="string", help="Save the figure to the indicated file.")
 
 (options, args) = parser.parse_args()
 
 if len(args) and options.inputFile == None:
     options.inputFile = args[0]
 
-inputFile = sys.stdin
+inputFile = stdin
 if (options.inputFile):
     inputFile = open(options.inputFile)
 
 if options.title == None:
     options.title = inputFile.name
 
-cols = 0;
+if options.debug:
+    print options
+
+
+import re
+#mdyhms_re = re.compile("(\d{1,2})/(\d{1,2})/(\d{2,4}) (\d{1,2}):(\d\d):(\d\d)")
+mdyhms_re = re.compile("(?P<month>\d{1,2})/"
+                       "(?P<day>\d{1,2})/"
+                       "(?P<year>\d{2,4}) "
+                       "(?P<hour>\d{1,2}):"
+                       "(?P<min>\d\d):"
+                       "(?P<sec>\d\d) ")
+
+oae_re = re.compile("GPS (?P<prn>\d+) "
+                    "Pass (?P<pass>\d+) "
+                    "(?P<val>-?\d+\.\d+) "
+                    "Az (?P<az>\d+\.\d+) "
+                    "El (?P<el>\d+\.\d+)")
+
 data =[]
-labels =[]
+labels=[]
 
 for line in inputFile:
-    line = line.strip()
-
     if len(line)==0: continue
+    if line[0] == '#': continue
     
-    words=line.split()
-
-    if line[0] == "#":
-        labels = [w for w in words[1:]]
-        if options.debugLevel:
-            print labels
+    omo = oae_re.search(line)
+    tmo = mdyhms_re.search(line)
+    if not omo or not tmo:
+        if options.debug>1: print "Couldn't parse:", line
         continue
 
-    if cols == 0:
-        cols = len(words)
-    elif cols != len(words):
-        print "change in cols"
-        continue
+    dtime = datetime.datetime(
+        int(tmo.group('year')), int(tmo.group('month')), int(tmo.group('day')),
+        int(tmo.group('hour')), int(tmo.group('min')), int(tmo.group('sec')))
 
-    row = [float(w) for w in words]
+    t = matplotlib.dates.date2num(dtime)
+
+    row = [t, int(omo.group('prn')), int(omo.group('pass')), float(omo.group('val'))]
     data.append(row)
 
-# A key handler for matplotlib
-def press(event):
-    if event.key=='q' or event.key==' ':
-        pylab.close()
+data = array(data)
 
-# Here we start generating the plots
-pylab.connect('key_press_event', press)
+if options.debug>2:
+    print "data:",data
+    exit()
 
-data = numpy.array(data)
-
-ax=pylab.subplot(111)
+ax=subplot(111)
 
 (rows,cols) = data.shape;
 if len(labels)<cols:
     labels =['time']
     labels += ['%d'%c for c in xrange(1,cols)]
 
-use_date = False
+plot_date(data[:,0], data[:,3], ',')
 
-xlabel = 'row'
-if options.xcol:
-    xlabel = labels[options.xcol]
-elif use_date:
-    xlabel = 'time'
-
-if options.xcol:
-    if options.debugLevel:
-        print "Using column",options.xcol,"for x axis."
-    xdata = data[:,options.xcol]
-elif cols>1:
-    if options.debugLevel:
-        print "Using column 0 for x axis."
-    xdata=data[:0]
-else:
-    xdata=range(0,len(data))
-
-if not options.ycols:
-    options.ycols=xrange(1,cols)
-
-for c in options.ycols:
-    pylab.plot(xdata, data[:,c], '.', label=labels[c], markersize=1.25)
+#for c in xrange(1,1):
+#    pdata = data[data[:,1]==c]
+#    if pdata.size == 0: continue
+#    print pdata
+#    plot_date(pdata[:,0], pdata[:,3], '.')
     
-pylab.legend()
-pylab.xlabel(xlabel)
+legend()
+xlabel(labels[0])
 
-if use_date:
-    xMajorFmt=pylab.DateFormatter("%b %d")
-    xMinorFmt=pylab.NullFormatter()
-    xMajorLoc=matplotlib.dates.DayLocator()
-    xMinorLoc=matplotlib.dates.HourLocator()
-    ax.xaxis.set_major_formatter(xMajorFmt)
-    ax.xaxis.set_minor_formatter(xMinorFmt)
+xMajorFmt=DateFormatter("%H:%M")
+xMajorLoc=matplotlib.dates.DayLocator()
+xMinorLoc=matplotlib.dates.HourLocator()
+ax.xaxis.set_major_formatter(xMajorFmt)
 
-    labels = ax.get_xticklabels()
-    pylab.setp(labels, 'rotation', 45, fontsize=9)
+labels = ax.get_xticklabels()
+setp(labels, 'rotation', 45, fontsize=9)
 
-ax.autoscale_view()
-pylab.grid()
+#ax.autoscale_view()
+#ylim((-5,5))
 
-if (options.saveFig == None):
-    pylab.show()
+grid()
+
+if (options.save == None):
+    show()
 else:
-   pylab.savefig(options.saveFig)
+   savefig(options.save)

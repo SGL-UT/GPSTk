@@ -166,19 +166,27 @@ namespace gpstk
                const size_t oi = numSatEpochs*numObsTypes;
                for (size_t idx=0; idx<numObsTypes; idx++)
                {
-                  if (isBasic[idx])
+                  try 
                   {
-                     SvObsEpoch::const_iterator j = soe.find(basicTypeMap[idx]);
-                     if (j != soe.end())
-                        observation[oi+idx] = j->second;
+                     if (isBasic[idx])
+                     {
+                        SvObsEpoch::const_iterator j = soe.find(basicTypeMap[idx]);
+                        if (j != soe.end())
+                           observation[oi+idx] = j->second;
+                     }
+                     else
+                     {
+                        expressionMap[idx].setSvObsEpoch(soe);
+                        observation[oi+idx] = expressionMap[idx].evaluate();
+                     }
                   }
-                  else
+                  catch (Exception& e)
                   {
-                     expressionMap[idx].setSvObsEpoch(soe);
-                     observation[oi+idx] = expressionMap[idx].evaluate();
+                     if (debugLevel>2)
+                        cout << e;
                   }
                } // end of walk through observations to record for this epoch
-
+               
                try
                {
                   // Now compute a 'good' az/el for the SV

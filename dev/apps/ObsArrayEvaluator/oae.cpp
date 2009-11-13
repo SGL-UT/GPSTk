@@ -86,6 +86,7 @@ void ObsArrayEvaluator::run(int argc, char *argv[])
    CommandOptionNoArg 
       rawOption('r', "raw","Output raw data instead of descriptive statistics"),
       numericOption('n', "numeric", "Format output for numerical packages"),
+      noEditLimitOption('\0', "no-edit-limit", "Allow editing more than 50% of the data due to loss of lock or short passes."),
       azimuthOption('a', "azimuth", "Compute statistics binned by azimuth "
                     "instead of elevation"),
       debiasOption('z', "debias", "Remove the mean of each pass before "
@@ -156,7 +157,7 @@ void ObsArrayEvaluator::run(int argc, char *argv[])
            << " points (" << setprecision(2) << pct_edited << "%)."
            << endl;
 
-   if (pct_edited > 50)
+   if (pct_edited > 50 && noEditLimitOption.getCount() == 0)
    {
       output << "Edited more than 50% of the data. This is bad. I quit." << endl;
       exit(-1);
