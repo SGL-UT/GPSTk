@@ -51,6 +51,7 @@
 #include <math.h>
 #include "icd_200_constants.hpp"
 #include "IonoModel.hpp"
+#include "YDSTime.hpp"
 #include "geometry.hpp"
 
 namespace gpstk
@@ -86,7 +87,7 @@ namespace gpstk
    }
 
 
-   double IonoModel::getCorrection(const DayTime& time,
+   double IonoModel::getCorrection(const CommonTime& time,
                                    const Geodetic& rxgeo,
                                    double svel,
                                    double svaz,
@@ -132,7 +133,7 @@ namespace gpstk
       if (iPER < 72000.0)
          iPER = 72000.0;
       
-      double t = 43200.0 * lambda_i + time.DOYsecond();
+      double t = 43200.0 * lambda_i + YDSTime(time).sod;
       if (t >= 86400.0)
          t -= 86400.0;
       if (t < 0)

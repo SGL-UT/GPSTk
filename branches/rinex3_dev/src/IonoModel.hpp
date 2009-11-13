@@ -135,7 +135,7 @@ namespace gpstk
           * \param freq the GPS frequency the observation was made from
           * \return the ionospheric correction (meters)
           */
-      double getCorrection(const DayTime& time,
+      double getCorrection(const CommonTime& time,
                            const Geodetic& rxgeo,
                            double svel,
                            double svaz,
