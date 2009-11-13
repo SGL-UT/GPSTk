@@ -333,7 +333,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
          EngAlmanac& engAlm = almStore[ni];
          SubframePage sp(sfid, page);
          almPages[sp] = umsg;
-         almPages.insert(make_pair(sp, umsg));
+//         almPages.insert(make_pair(sp, umsg));
 
          if (makeEngAlmanac(engAlm, almPages, !minimalAlm))
          {
