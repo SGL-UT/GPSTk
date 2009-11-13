@@ -365,7 +365,6 @@ namespace gpstk
          && reqId != 0
          && stream.streamState == MDPStream::gotHeader
          && stream.header.length > 0;
-      const int maxTries=1024;
       if (haveDesiredHeader)
       {
          *this = stream.header;
@@ -377,7 +376,7 @@ namespace gpstk
       }
       else
       {
-         for (int i=0; !haveDesiredHeader && i<=maxTries && stream; i++)
+         while (!haveDesiredHeader && stream)
          {
             readHeader(stream);
             if (stream.streamState != MDPStream::gotHeader)

@@ -230,33 +230,34 @@ namespace gpstk
 
 
    //---------------------------------------------------------------------------
-   FFStream& operator>>(FFStream& s, MDPEpoch& oe)
+   FFStream& operator>>(FFStream& s, MDPEpoch& me)
    {
       MDPStream& mdps = dynamic_cast<MDPStream&>(s);
-      MDPObsEpoch me;
+      MDPObsEpoch moe;
       DayTime t;
-      int i=0;
-      const int maxTries=4096;
-      for (int i=0; i<maxTries && mdps >> me; i++)
-      {
-         if (!me || me.time != t)
-         {
-            if (oe.size() > 0 && MDPHeader::debugLevel>2)
-               cout << "Tossing partial epoch at " << me.time
-                    << ".  Expected " << me.numSVs
-                    << " SVs but received only " << oe.size()
-                    << endl;
-            oe.clear();
-         }
-         oe.insert(pair<const int, MDPObsEpoch>(me.prn,me));
-         t = me.time;
 
-         if (me.numSVs == oe.size())
+      while (mdps >> moe)
+      {
+         if (!moe || moe.time != t)
+         {
+            if (!me.empty() && MDPHeader::debugLevel>2)
+               cout << "Tossing partial epoch at " << moe.time
+                    << ".  Expected " << moe.numSVs
+                    << " SVs but received only " << me.size()
+                    << endl;
+            me.clear();
+         }
+         me.insert(pair<const int, MDPObsEpoch>(moe.prn,moe));
+         t = moe.time;
+
+         if (moe.numSVs == me.size())
             break;
       }
-      if (MDPHeader::debugLevel && i >= maxTries)
-         cout << "Didn't find an obs epoch after " << i << " reads." << endl;
-      cout << "Didn't find an obs epoch after " << i << " reads." << endl;
+
+         // Report why the stream is "not good".
+      if (!mdps && MDPHeader::debugLevel)
+         mdps.dumpState(cout);
+
       return s;
    }
 
