@@ -53,7 +53,7 @@
 
 #include "Triple.hpp"
 #include "Exception.hpp"
-#include "GeoidModel.hpp"
+#include "EllipsoidModel.hpp"
 
 namespace gpstk
 {
@@ -96,10 +96,10 @@ namespace gpstk
       ECEF& operator=(const ECEF& right);
 
          /** \deprecated Convert to Geodetic
-          *  Geodetic has a constructor that takes an ECEF and GeoidModel.
-          *  \sa Geodetic, GeoidModel
+          *  Geodetic has a constructor that takes an ECEF and EllipsoidModel.
+          *  \sa Geodetic, EllipsoidModel
           */
-      Geodetic asGeodetic(GeoidModel *g);
+      Geodetic asGeodetic(EllipsoidModel *e);
 
    }; // class ECEF
 

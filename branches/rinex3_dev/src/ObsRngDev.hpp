@@ -51,7 +51,7 @@
 #include "ECEF.hpp"
 #include "XvtStore.hpp"
 #include "Exception.hpp"
-#include "GPSGeoid.hpp"
+#include "GPSEllipsoid.hpp"
 #include "IonoModelStore.hpp"
 #include "TropModel.hpp"
 #include "ValidType.hpp"
@@ -85,7 +85,7 @@ namespace gpstk
        * \param time the time of the observation
        * \param rxpos the earth-centered, earth-fixed receiver position
        * \param eph a store of either broadcast or precise ephemerides
-       * \param gm a GeoidModel for performing range calculations
+       * \param em an EllipsoidModel for performing range calculations
        * \param ion a store of nav based ionospheric models
        * \param fq the GPS frequency (L1 or L2) from which the obs was made
        * \param svTime true if prange is in SV time, false for RX time.
@@ -95,7 +95,7 @@ namespace gpstk
                 const DayTime& time,
                 const ECEF& rxpos,
                 const XvtStore<SatID>& eph,
-                GeoidModel& gm,
+                EllipsoidModel& em,
                 bool svTime = false);
       /**
        * constructor.
@@ -106,7 +106,7 @@ namespace gpstk
        * \param time the time of the observation
        * \param rxpos the earth-centered, earth-fixed receiver position
        * \param eph a store of either broadcast or precise ephemerides
-       * \param gm a GeoidModel for performing range calculations
+       * \param em an EllipsoidModel for performing range calculations
        * \param ion a store of nav based ionospheric models
        * \param fq the GPS frequency (L1 or L2) from which the obs was made
        * \param svTime true if prange is in SV time, false for RX time.
@@ -116,7 +116,7 @@ namespace gpstk
                 const DayTime& time,
                 const ECEF& rxpos,
                 const XvtStore<SatID>& eph,
-                GeoidModel& gm,
+                EllipsoidModel& em,
                 const IonoModelStore& ion,
                 IonoModel::Frequency fq,
                 bool svTime = false);
@@ -129,7 +129,7 @@ namespace gpstk
        * \param time the time of the observation
        * \param rxpos the earth-centered, earth-fixed receiver position
        * \param eph a store of either broadcast or precise ephemerides
-       * \param gm a GeoidModel for performing range calculations
+       * \param em an EllipsoidModel for performing range calculations
        * \param tm a TropModel for performing trop calculation
        * \param ion a store of nav based ionospheric models
        * \param fq the GPS frequency (L1 or L2) from which the obs was made
@@ -140,7 +140,7 @@ namespace gpstk
                 const DayTime& time,
                 const ECEF& rxpos,
                 const XvtStore<SatID>& eph,
-                GeoidModel& gm,
+                EllipsoidModel& em,
                 const TropModel& tm,
                 bool svTime = false);
    
@@ -153,7 +153,7 @@ namespace gpstk
        * \param time the time of the observation
        * \param rxpos the earth-centered, earth-fixed receiver position
        * \param eph a store of either broadcast or precise ephemerides
-       * \param gm a GeoidModel for performing range calculations
+       * \param em an EllipsoidModel for performing range calculations
        * \param tm a TropModel for performing trop calculation
        * \param ion a store of nav based ionospheric models
        * \param fq the GPS frequency (L1 or L2) from which the obs was made
@@ -164,7 +164,7 @@ namespace gpstk
                 const DayTime& time,
                 const ECEF& rxpos,
                 const XvtStore<SatID>& eph,
-                GeoidModel& gm,
+                EllipsoidModel& em,
                 const TropModel& tm,
                 const IonoModelStore& ion,
                 IonoModel::Frequency fq,
@@ -179,7 +179,7 @@ namespace gpstk
        * \param time the time of the observation
        * \param rxpos the earth-centered, earth-fixed receiver position
        * \param eph a store of either broadcast or precise ephemerides
-       * \param gm a GeoidModel for performing range calculations
+       * \param em an EllipsoidModel for performing range calculations
        * \param svTime true if prange is in SV time, false for RX time.
        */ 
       ObsRngDev(const double prange1,
@@ -188,7 +188,7 @@ namespace gpstk
                 const DayTime& time,
                 const ECEF& rxpos,
                 const XvtStore<SatID>& eph,
-                GeoidModel& gm,
+                EllipsoidModel& em,
                 bool svTime = false);
    
       /**
@@ -200,7 +200,7 @@ namespace gpstk
        * \param time the time of the observation
        * \param rxpos the earth-centered, earth-fixed receiver position
        * \param eph a store of either broadcast or precise ephemerides
-       * \param gm a GeoidModel for performing range calculations
+       * \param em an EllipsoidModel for performing range calculations
        * \param tm a TropModel for performing trop calculations
        * \param svTime true if prange is in SV time, false for RX time.
        */ 
@@ -210,7 +210,7 @@ namespace gpstk
                 const DayTime& time,
                 const ECEF& rxpos,
                 const XvtStore<SatID>& eph,
-                const GeoidModel& gm,
+                const EllipsoidModel& em,
                 const TropModel& tm,
                 bool svTime = false);
    
@@ -284,13 +284,13 @@ namespace gpstk
       void computeOrd(double obs,
                       const ECEF& rxpos,
                       const XvtStore<SatID>& eph,
-                      const GeoidModel& gm,
+                      const EllipsoidModel& em,
                       bool svTime)
       {
          if (svTime) 
-            computeOrdTx(obs, rxpos, eph, gm);
+            computeOrdTx(obs, rxpos, eph, em);
          else 
-            computeOrdRx(obs, rxpos, eph, gm);
+            computeOrdRx(obs, rxpos, eph, em);
          return;
       }
 
@@ -299,12 +299,12 @@ namespace gpstk
       void computeOrdTx(double obs,
                         const ECEF& rxpos,
                         const XvtStore<SatID>& eph,
-                        const GeoidModel& gm);
+                        const EllipsoidModel& em);
    
       void computeOrdRx(double obs,
                         const ECEF& rxpos,
                         const XvtStore<SatID>& eph,
-                        const GeoidModel& gm);
+                        const EllipsoidModel& em);
 
       void computeTrop(const TropModel& tm);
 

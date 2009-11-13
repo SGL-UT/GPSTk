@@ -47,7 +47,7 @@
 #include "StringUtils.hpp"
 #include "icd_200_constants.hpp"
 #include "MathBase.hpp"
-#include "GPSGeoid.hpp"
+#include "GPSEllipsoid.hpp"
 #include "EngEphemeris.hpp"
 #include "GPSWeekSecond.hpp"
 #include "YDSTime.hpp"
@@ -407,9 +407,9 @@ namespace gpstk
       double ANLON,cosu,sinu,xip,yip,can,san,cinc,sinc;
       double xef,yef,zef;
       double ddtime;
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
 
-      double sqrtgm = SQRT(geoid.gm());
+      double sqrtgm = SQRT(ell.gm());
 
       // Check for ground transmitter
       double twoPI = 2.0e0 * PI;
@@ -498,8 +498,8 @@ namespace gpstk
 
       // Longitude of ascending node (ANLON)
       if (!igtran)
-         ANLON = getOmega0() + (getOmegaDot() - geoid.angVelocity()) *
-                 elapte - geoid.angVelocity() * getToe();
+         ANLON = getOmega0() + (getOmegaDot() - ell.angVelocity()) *
+                 elapte - ell.angVelocity() * getToe();
       else
          ANLON = getOmega0() - getOmegaDot() * getToe();
 
@@ -547,9 +547,9 @@ namespace gpstk
       double ANLON,cosu,sinu,xip,yip,can,san,cinc,sinc;
       double xef,yef,zef,dek,dlk,div,domk,duv,drv;
       double dxp,dyp,vxef,vyef,vzef;
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
 
-      double sqrtgm = SQRT(geoid.gm());
+      double sqrtgm = SQRT(ell.gm());
 
       // Check for ground transmitter
       double twoPI = 2.0e0 * PI;
@@ -637,8 +637,8 @@ namespace gpstk
 
       // Longitude of ascending node (ANLON)
       if (!igtran)
-         ANLON = getOmega0() + (getOmegaDot() - geoid.angVelocity()) *
-                 elapte - geoid.angVelocity() * getToe();
+         ANLON = getOmega0() + (getOmegaDot() - ell.angVelocity()) *
+                 elapte - ell.angVelocity() * getToe();
       else
          ANLON = getOmega0() - getOmegaDot() * getToe();
 
@@ -669,7 +669,7 @@ namespace gpstk
       dlk = getAhalf() * q * sqrtgm / (R*R);
       div = tdrinc - 2.0e0 * dlk *
          ( getCic()  * s2al - getCis() * c2al );
-      domk = getOmegaDot() - geoid.angVelocity();
+      domk = getOmegaDot() - ell.angVelocity();
       duv = dlk*(1.e0+ 2.e0 * (getCus()*c2al - getCuc()*s2al) );
       drv = A * lecc * dek * sinea - 2.e0 * dlk *
          ( getCrc() * s2al - getCrs() * c2al );
@@ -695,9 +695,9 @@ namespace gpstk
    double EngEphemeris::svRelativity(const CommonTime& t) const
       throw( InvalidRequest )
    {
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
       double twoPI = 2.0e0 * PI;
-      double sqrtgm = SQRT(geoid.gm());
+      double sqrtgm = SQRT(ell.gm());
       double elapte = t - getEphemerisEpoch();
       double elaptc = t - getEpochTime();
       double A = getA();

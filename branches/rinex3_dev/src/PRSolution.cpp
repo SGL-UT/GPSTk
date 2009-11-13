@@ -30,7 +30,7 @@
 #include "MathBase.hpp"
 #include "PRSolution.hpp"
 #include "EphemerisRange.hpp"
-#include "GPSGeoid.hpp"
+#include "GPSEllipsoid.hpp"
 #include "GPSWeekSecond.hpp"
 
 //#define DEBUG_PRINT_WARNINGS
@@ -670,7 +670,7 @@ namespace gpstk
       {
          int iret,i,j,n,N;
          double rho,wt,svxyz[3];
-         GPSGeoid geoid;               // WGS84?
+         GPSEllipsoid ell;               // WGS84?
          
          //if (pDebugStream)
          //   *pDebugStream << "Enter APRS " << n_iterate << " "
@@ -728,10 +728,10 @@ namespace gpstk
                   rho = 0.070;             // initial guess: 70ms
                else
                   rho = RSS(SVP(i,0)-Sol(0), SVP(i,1)-Sol(1), SVP(i,2)-Sol(2))
-                            / geoid.c();
+                            / ell.c();
                             
                   // correct for earth rotation
-               wt = geoid.angVelocity()*rho;             // radians
+               wt = ell.angVelocity()*rho;             // radians
                svxyz[0] =  ::cos(wt)*SVP(i,0) + ::sin(wt)*SVP(i,1);
                svxyz[1] = -::sin(wt)*SVP(i,0) + ::cos(wt)*SVP(i,1);
                svxyz[2] = SVP(i,2);

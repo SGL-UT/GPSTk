@@ -34,7 +34,7 @@
 //============================================================================
 
 #include "Position.hpp"
-#include "WGS84Geoid.hpp"
+#include "WGS84Ellipsoid.hpp"
 #include "icd_200_constants.hpp"    // for TWO_PI, etc
 #include "geometry.hpp"             // for RAD_TO_DEG, etc
 #include "MiscMath.hpp"             // for RSS, SQRT
@@ -87,7 +87,7 @@ namespace gpstk
    Position::Position()
       throw()
    {
-      WGS84Geoid WGS84;
+      WGS84Ellipsoid WGS84;
       initialize(0.0,0.0,0.0,Unknown,&WGS84);
    }
 
@@ -95,12 +95,12 @@ namespace gpstk
                       const double& b,
                       const double& c,
                       Position::CoordinateSystem s,
-                      GeoidModel *geoid,
+                      EllipsoidModel *ell,
                       ReferenceFrame frame)
       throw(GeometryException)
    {
       try {
-         initialize(a,b,c,s,geoid,frame);
+         initialize(a,b,c,s,ell,frame);
       }
       catch(GeometryException& ge) {
          GPSTK_RETHROW(ge);
@@ -109,7 +109,7 @@ namespace gpstk
 
    Position::Position(const double ABC[3],
                       CoordinateSystem s,
-                      GeoidModel *geoid,
+                      EllipsoidModel *ell,
                       ReferenceFrame frame)
       throw(GeometryException)
    {
@@ -117,7 +117,7 @@ namespace gpstk
       double b=ABC[1];
       double c=ABC[2];
       try {
-         initialize(a,b,c,s,geoid,frame);
+         initialize(a,b,c,s,ell,frame);
       }
       catch(GeometryException& ge) {
          GPSTK_RETHROW(ge);
@@ -126,7 +126,7 @@ namespace gpstk
 
    Position::Position(const Triple& ABC,
                       CoordinateSystem s,
-                      GeoidModel *geoid,
+                      EllipsoidModel *ell,
                       ReferenceFrame frame)
       throw(GeometryException)
    {
@@ -134,7 +134,7 @@ namespace gpstk
       double b=ABC[1];
       double c=ABC[2];
       try {
-         initialize(a,b,c,s,geoid,frame);
+         initialize(a,b,c,s,ell,frame);
       }
       catch(GeometryException& ge) {
          GPSTK_RETHROW(ge);
@@ -216,7 +216,7 @@ namespace gpstk
 
    // ----------- Part  5: member functions: comparisons ---------------------
    //
-      // Equality operator. Returns false if geoid values differ.
+      // Equality operator. Returns false if ell values differ.
    bool Position::operator==(const Position &right) const
       throw()
    {
@@ -230,7 +230,7 @@ namespace gpstk
          return false;
    }
 
-      // Inequality operator. Returns true if geoid values differ.
+      // Inequality operator. Returns true if ell values differ.
    bool Position::operator!=(const Position &right) const
       throw()
    {
@@ -477,16 +477,28 @@ namespace gpstk
       // Set the geoid values for this Position given a geoid.
       // @param geoid Pointer to the GeoidModel.
       // @throw GeometryException if input is NULL.
-   void Position::setGeoidModel(const GeoidModel *geoid)
+   void Position::setGeoidModel(const EllipsoidModel *ell)
       throw(GeometryException)
    {
-      if(!geoid)
+      if(!ell)
       {
-         GeometryException ge("Given GeoidModel pointer is NULL.");
+         GeometryException ge("Given EllipsoidModel pointer is NULL.");
          GPSTK_THROW(ge);
       }
-      AEarth = geoid->a();
-      eccSquared = geoid->eccSquared();
+      AEarth = ell->a();
+      eccSquared = ell->eccSquared();
+   }
+
+   void Position::setEllipsoidModel(const EllipsoidModel *ell)
+      throw(GeometryException)
+   {
+      if(!ell)
+      {
+         GeometryException ge("Given EllipsoidModel pointer is NULL.");
+         GPSTK_THROW(ge);
+      }
+      AEarth = ell->a();
+      eccSquared = ell->eccSquared();
    }
 
       // Set the Position given geodetic coordinates, system is set to Geodetic.
@@ -498,7 +510,7 @@ namespace gpstk
    Position& Position::setGeodetic(const double lat,
                                    const double lon,
                                    const double ht,
-                                   const GeoidModel *geoid)
+                                   const EllipsoidModel *ell)
       throw(GeometryException)
    {
       if(lat > 90 || lat < -90)
@@ -517,9 +529,9 @@ namespace gpstk
 
       theArray[2] = ht;
 
-      if(geoid) {
-         AEarth = geoid->a();
-         eccSquared = geoid->eccSquared();
+      if(ell) {
+         AEarth = ell->a();
+         eccSquared = ell->eccSquared();
       }
       system = Geodetic;
 
@@ -1276,7 +1288,7 @@ namespace gpstk
       // the Position passed as input.
       // @param right Position to which to find the range
       // @return the range (in meters)
-      // @throw GeometryException if geoid values differ
+      // @throw GeometryException if ell values differ
    double range(const Position& A,
                 const Position& B)
       throw(GeometryException)
@@ -1503,7 +1515,7 @@ namespace gpstk
                   const double b,
                   const double c,
                   Position::CoordinateSystem s,
-                  GeoidModel *geoid,
+                  EllipsoidModel *ell,
                   ReferenceFrame frame)
       throw(GeometryException)
    {
@@ -1548,12 +1560,12 @@ namespace gpstk
       theArray[1] = bb;
       theArray[2] = c;
 
-      if(geoid) {
-         AEarth = geoid->a();
-         eccSquared = geoid->eccSquared();
+      if(ell) {
+         AEarth = ell->a();
+         eccSquared = ell->eccSquared();
       }
       else {
-         WGS84Geoid WGS84;
+         WGS84Ellipsoid WGS84;
          AEarth = WGS84.a();
          eccSquared = WGS84.eccSquared();
       }

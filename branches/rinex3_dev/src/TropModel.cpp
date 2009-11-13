@@ -46,7 +46,7 @@
 #include "EphemerisRange.hpp"             // for Elevation()
 #include "MathBase.hpp"                   // SQRT
 #include "geometry.hpp"                   // DEG_TO_RAD
-#include "GPSGeoid.hpp"                   // geoid.a() = R earth
+#include "GPSEllipsoid.hpp"               // ell.a() = R earth
 #include "icd_200_constants.hpp"          // TWO_PI
 #include "Geodetic.hpp"
 #include "ECEF.hpp"
@@ -206,12 +206,12 @@ namespace gpstk
       throw(InvalidParameter)
    {
       TropModel::setWeather(T,P,H);
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
       Cdrydelay = 2.343*(press/1013.25)*(temp-3.96)/temp;
       double tks = temp * temp;
       Cwetdelay = 8.952/tks*humid*std::exp(-37.2465+0.213166*temp-(0.256908e-3)*tks);
-      Cdrymap =1.0+(0.15)*148.98*(temp-3.96)/geoid.a();
-      Cwetmap =1.0+(0.15)*12000.0/geoid.a();
+      Cdrymap =1.0+(0.15)*148.98*(temp-3.96)/ell.a();
+      Cwetmap =1.0+(0.15)*12000.0/ell.a();
       valid = true;
    }  // end SimpleTropModel::setWeather(T,P,H)
 
@@ -349,12 +349,12 @@ namespace gpstk
 
       if(elevation < 0.0) return 0.0;
 
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
       double ce=std::cos(elevation*DEG_TO_RAD), se=std::sin(elevation*DEG_TO_RAD);
       double ad = -se/Cdrymap;
-      double bd = -ce*ce/(2.0*geoid.a()*Cdrymap);
-      double Rd = SQRT((geoid.a()+Cdrymap)*(geoid.a()+Cdrymap)
-                - geoid.a()*geoid.a()*ce*ce) - geoid.a()*se;
+      double bd = -ce*ce/(2.0*ell.a()*Cdrymap);
+      double Rd = SQRT((ell.a()+Cdrymap)*(ell.a()+Cdrymap)
+                - ell.a()*ell.a()*ce*ce) - ell.a()*se;
 
       double Ad[9], ad2=ad*ad, bd2=bd*bd;
       Ad[0] = 1.0;
@@ -386,12 +386,12 @@ namespace gpstk
 
       if(elevation < 0.0) return 0.0;
 
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
       double ce = std::cos(elevation*DEG_TO_RAD), se = std::sin(elevation*DEG_TO_RAD);
       double aw = -se/Cwetmap;
-      double bw = -ce*ce/(2.0*geoid.a()*Cwetmap);
-      double Rw = SQRT((geoid.a()+Cwetmap)*(geoid.a()+Cwetmap)
-                - geoid.a()*geoid.a()*ce*ce) - geoid.a()*se;
+      double bw = -ce*ce/(2.0*ell.a()*Cwetmap);
+      double Rw = SQRT((ell.a()+Cwetmap)*(ell.a()+Cwetmap)
+                - ell.a()*ell.a()*ce*ce) - ell.a()*se;
 
       double Aw[9], aw2=aw*aw, bw2=bw*bw;
       Aw[0] = 1.0;
@@ -651,8 +651,8 @@ namespace gpstk
       double se=std::sin(elevation*DEG_TO_RAD);
       if(se < 0.0) se=0.0;
 
-      GPSGeoid geoid;
-      double rt,a,b,rn[8],al[8],er=geoid.a();
+      GPSEllipsoid ell;
+      double rt,a,b,rn[8],al[8],er=ell.a();
       rt = (er+ho)/(er+height);
       rt = rt*rt - (1.0-se*se);
       if(rt < 0) rt=0.0;
@@ -706,8 +706,8 @@ namespace gpstk
       double se=std::sin(elevation*DEG_TO_RAD);
       if(se < 0.0) se=0.0;
 
-      GPSGeoid geoid;
-      double rt,a,b,rn[8],al[8],er=geoid.a();
+      GPSEllipsoid ell;
+      double rt,a,b,rn[8],al[8],er=ell.a();
       rt = (er+ho)/(er+height);
       rt = rt*rt - (1.0-se*se);
       if(rt < 0) rt=0.0;

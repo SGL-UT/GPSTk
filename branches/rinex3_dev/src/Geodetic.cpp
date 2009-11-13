@@ -58,46 +58,46 @@ namespace gpstk
    using namespace std;
 
    Geodetic :: Geodetic()
-         : Triple(), geoid(NULL)
+         : Triple(), ellip(NULL)
    {
    }
 
    Geodetic :: Geodetic(const Geodetic& right)
-         : Triple(right), geoid(right.geoid)
+         : Triple(right), ellip(right.ellip)
    {
    }
 
    Geodetic :: Geodetic(const double& lat, const double& lon, const double& alt,
-                        GeoidModel* geo)
-         : Triple(lat, lon, alt), geoid(geo)
+                        EllipsoidModel* ell)
+         : Triple(lat, lon, alt), ellip(ell)
    { 
    }
 
-   Geodetic :: Geodetic(const Triple& t, GeoidModel* geo)
-         : Triple(t), geoid(geo)
+   Geodetic :: Geodetic(const Triple& t, EllipsoidModel* ell)
+         : Triple(t), ellip(ell)
    {
    }
    
-   Geodetic :: Geodetic(const ECEF& right, GeoidModel* geo)
+   Geodetic :: Geodetic(const ECEF& right, EllipsoidModel* ell)
       throw(NoGeoidException)
    {
       double X = right[0];     // m
       double Y = right[1];     // m
       double Z = right[2];     // m
       double p = RSS(X,Y);
-      double latd = atan2(Z, p * (1.0 - geo->eccSquared()) );
+      double latd = atan2(Z, p * (1.0 - ell->eccSquared()) );
       double ht = 0.0, slatd, N, htold, latdold;
       
       for(int i=0; i<5; i++)
       {
          slatd = sin(latd);
-         N = geo->a() / SQRT(1.0 - geo->eccSquared() * slatd * slatd);
+         N = ell->a() / SQRT(1.0 - ell->eccSquared() * slatd * slatd);
          htold = ht;
          ht = p/cos(latd) - N;
          latdold = latd;
-         latd = atan2(Z, p * (1.0 - geo->eccSquared() * (N/(N+ht)) ) );
+         latd = atan2(Z, p * (1.0 - ell->eccSquared() * (N/(N+ht)) ) );
          if(ABS(latd-latdold) < 1.0e-9 && 
-            ABS(ht-htold) < (1.0e-9 * geo->a()))    break;
+            ABS(ht-htold) < (1.0e-9 * ell->a()))    break;
       }
 
       double lon = atan2(Y,X);
@@ -108,13 +108,13 @@ namespace gpstk
       theArray[0] = latd * RAD_TO_DEG; // deg
       theArray[1] = lon * RAD_TO_DEG;  // deg
       theArray[2] = ht;                // m
-      geoid = geo;
+      ellip = ell;
    }
 
    Geodetic& Geodetic :: operator=(const Geodetic& right)
    {
       Triple::operator=(right);
-      geoid = right.geoid;
+      ellip = right.ellip;
       return *this;
    }
 
@@ -170,7 +170,7 @@ namespace gpstk
       double rad_cur, gdlat, gdlon;
       double gdalt = getAltitude();
 
-      if (geoid == NULL)
+      if (ellip == NULL)
       {
          NoGeoidException exc
             ("Must specify a geoid to use to change systems");
@@ -182,13 +182,13 @@ namespace gpstk
       gdlon = DEG_TO_RAD * getLongitude();
 
          // radius of curvature in the prime vertical, formula 2.31
-      rad_cur  = geoid->a() /
-         sqrt(1.0-geoid->eccSquared()*pow((sin(gdlat)),2.0));
+      rad_cur  = ellip->a() /
+         sqrt(1.0-ellip->eccSquared()*pow((sin(gdlat)),2.0));
 
          // formula 2.30
       double xval = (rad_cur + gdalt) * ::cos(gdlat) * ::cos(gdlon);
       double yval = (rad_cur + gdalt) * ::cos(gdlat) * ::sin(gdlon);
-      double zval = ((1.0 - geoid->eccSquared()) * rad_cur + gdalt) * ::sin(gdlat);
+      double zval = ((1.0 - ellip->eccSquared()) * rad_cur + gdalt) * ::sin(gdlat);
 
       ECEF ecef(xval, yval, zval);
 
