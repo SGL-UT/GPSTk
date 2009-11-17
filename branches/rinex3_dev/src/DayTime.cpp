@@ -387,12 +387,26 @@ namespace gpstk
       return *this;
    }
 
+      // Add days to this object
+   DayTime& DayTime::addDays(long days)
+      throw(DayTime::DayTimeException)
+   {
+      addLongDeltaTime(days, 0L, 0.0);
+      return *this;
+   }
+
       // Add seconds to this object.
       // @param seconds Number of seconds to add
    DayTime& DayTime::addSeconds(double seconds)
       throw(DayTime::DayTimeException)
    {
-      addLongDeltaTime(0, 0, seconds * FACTOR);
+      long ldd, lds ;
+      ldd = long(seconds / SEC_DAY);        // days
+      if(ldd != 0) seconds -= ldd*SEC_DAY ; // seconds-of-day
+      seconds *= FACTOR;
+      lds = long(seconds);
+      if(lds != 0) seconds -= double(lds);
+      addLongDeltaTime(ldd, lds, seconds);
       return *this;
    }
 
@@ -923,7 +937,6 @@ namespace gpstk
                                    TimeFrame f)
       throw()
    {
-      long Sod;
       c.getInternal(jday, mSod, mSec);
          // Convert mSec from seconds to milliseconds by multiplying by 1000.
       mSec *= FACTOR;
