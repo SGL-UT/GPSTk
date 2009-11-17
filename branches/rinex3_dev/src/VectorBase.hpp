@@ -207,11 +207,14 @@ VecBaseArrayAssignMacroDontCheckRange(func)
       VecBaseNewAssignOperator(operator*=, *=);
       VecBaseNewAssignOperator(operator/=, /=);
 
-         /// unary minus: multiplies each element of this vector by -1.
-      BaseClass& operator-()
+         /// unary minus: multiplies each element in this matrix by -1.
+      const BaseClass operator-()
          {
             const T x=T(-1);
-            VecBaseAtomicAssignMacro(*=);
+            BaseClass me = static_cast<BaseClass>(*this);
+            size_t i;
+            for (i=0; i < me.size(); i++) me(i) *= x;
+            return me;
          }
 
    protected:
