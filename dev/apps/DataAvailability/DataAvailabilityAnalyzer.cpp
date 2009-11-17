@@ -543,12 +543,9 @@ void DataAvailabilityAnalyzer::process()
    }
 
    ObsEpoch oe, prev_oe;
-
-   while (obsReader)
+   
+   while (obsReader >> oe)
    {
-      oe = obsReader.getObsEpoch();
-      if (!obsReader)
-         break;
       if (startTime > oe.time)
          continue;
       if (stopTime < oe.time)
@@ -557,12 +554,31 @@ void DataAvailabilityAnalyzer::process()
       epochCounter++;
       oe = removeBadObs(oe);
 
-      if (obsReader.epochCount==1)
+      if (epochCounter == 1)
       {
          firstEpochTime = oe.time;
          if (verboseLevel)
             output << "First observation is at " 
                    << firstEpochTime.printf(timeFormat) << endl;
+         
+         if (startTimeOpt.getCount() &&
+             startTime < firstEpochTime)
+         {
+               // Record as missing any epochs from startTime to firstEpochTime.
+               
+               /// @todo The math controlling this for loop bugs me in a 
+               ///  floating-point-error kind of way.  It's the same math that's
+               ///  used in processEpoch(), so I'm going to ignore it for now.
+            cout << "Filling missing epochs: "<< startTime
+                 << " " << firstEpochTime << endl;
+            for (DayTime t = startTime; t < firstEpochTime; t += epochRate)
+            {
+               InView iv;
+               iv.prn = 0;
+               iv.time = t;
+               missingList.push_back(iv);
+            }
+         }
       }
       else
       {
@@ -577,6 +593,22 @@ void DataAvailabilityAnalyzer::process()
    if (verboseLevel)
       output << "Last observation is at " << lastEpochTime.printf(timeFormat) 
              << endl;
+   
+   if (stopTimeOpt.getCount() &&
+       (lastEpochTime + epochRate) <= stopTime)
+   {
+         // record as missing any epochs from lastEpochTime to stopTime
+      cout << "Filling missing epochs: "<< lastEpochTime
+           << " " << stopTime << endl;
+      for (DayTime t = lastEpochTime + epochRate; t <= stopTime;
+           t += epochRate)
+      {
+         InView iv;
+         iv.prn = 0;
+         iv.time = t;
+         missingList.push_back(iv);
+      }
+   }
 }
 
 
