@@ -77,7 +77,7 @@ namespace gpstk
        *   {
        *
        *         // By default, difference is applied on code prefit residuals
-       *         // and and geometric coefficients dx, dy, dz; therefore, you
+       *         // and geometric coefficients dx, dy, dz; therefore, you
        *         // must use a modeler object before 'nabla'
        *      gRin >> model >> nabla;
        *   }
