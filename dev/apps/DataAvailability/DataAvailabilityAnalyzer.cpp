@@ -515,7 +515,6 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
       }
       return sml2;
    }
-   
    return sml;
 }
 
@@ -570,7 +569,7 @@ void DataAvailabilityAnalyzer::process()
                ///  floating-point-error kind of way.  It's the same math that's
                ///  used in processEpoch(), so I'm going to ignore it for now.
             cout << "Filling missing epochs: "<< startTime
-                 << " " << firstEpochTime << endl;
+                 << " through " << firstEpochTime << endl;
             for (DayTime t = startTime; t < firstEpochTime; t += epochRate)
             {
                InView iv;
@@ -599,7 +598,7 @@ void DataAvailabilityAnalyzer::process()
    {
          // record as missing any epochs from lastEpochTime to stopTime
       cout << "Filling missing epochs: "<< lastEpochTime
-           << " " << stopTime << endl;
+           << " through " << stopTime << endl;
       for (DayTime t = lastEpochTime + epochRate; t <= stopTime;
            t += epochRate)
       {
@@ -979,8 +978,19 @@ void DataAvailabilityAnalyzer::outputSummary()
    output << endl
           << " Summary:" << endl
           << endl
-          << "Analysis spans " <<  firstEpochTime
-          << " through " << lastEpochTime << endl
+          << "Analysis span: ";
+
+   if (startTime !=  DayTime::BEGINNING_OF_TIME)
+      output << startTime << " through ";
+   else
+      output << firstEpochTime << " through ";
+   if (stopTime != DayTime::END_OF_TIME)
+      output << stopTime << endl;
+   else
+      output << lastEpochTime << endl;
+   
+   output << "Data span:     " << firstEpochTime << " through " 
+          << lastEpochTime << endl
           << left << fixed
           << "Total number of epochs with data: " << epochCounter << endl
           << "Epochs with any data missing: " << anyMissingCounter << endl
