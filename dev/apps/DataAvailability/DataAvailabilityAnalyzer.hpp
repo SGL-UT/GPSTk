@@ -84,7 +84,8 @@ private:
    std::string timeFormat;
    gpstk::CommandOptionWithAnyArg inputOpt, outputOpt, independantOpt,
       mscFileOpt, msidOpt, timeFmtOpt, ephFileOpt, maskAngleOpt, trackAngleOpt,
-      timeMaskOpt, snrThresholdOpt, rxPosOpt, timeSpanOpt, ignorePrnOpt;
+      timeMaskOpt, snrThresholdOpt, rxPosOpt, timeSpanOpt, ignorePrnOpt,
+      obsIntervalOpt;
 
    gpstk::CommandOptionNoArg badHealthMaskOpt, smashAdjacentOpt;
 

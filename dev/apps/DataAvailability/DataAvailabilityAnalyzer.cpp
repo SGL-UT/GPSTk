@@ -154,6 +154,11 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
 
      smashAdjacentOpt('s', "smash-adjacent",
                       "Combine adjacent lines from the same PRN."),
+     
+     obsIntervalOpt('\0', "obs-interval",
+                    "Specify the time interval, in seconds, between "
+                    "observations. The default is to scan the file to discover "
+                    "this via examination of the file."),
 
      maskAngle(10), trackAngle(0), badHealthMask(false), timeMask(0),
      smashAdjacent(false), ignoreEdges(true),
@@ -161,6 +166,8 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
      totalSvEpochCounter(0), expectedSvEpochCounter(0), receivedSvEpochCounter(0),
      anyMissingCounter(0), haveAntennaPos(false)
 {
+   obsIntervalOpt.setMaxCount(1);
+
    // Set up a couple of helper arrays to map from enum <-> string
    obsItemName[oiUnknown] = "unk";
    obsItemName[oiElevation] = "el";
@@ -293,6 +300,17 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
          cout << "Did not find station " << msid << " in " << fn << "." << endl;
    }
 
+   if (obsIntervalOpt.getCount())
+   {
+      epochRate = StringUtils::asDouble(obsIntervalOpt.getValue()[0]);
+      if (epochRate <= 0.0)
+      {
+         cout << "Error parsing specified obs-interval. It needs to be"
+            " a positive decimal value." << endl;
+         return false;
+      }
+   }
+
    if (verboseLevel)
    {
       output << "Using " << obsItemName[oiX] << " as the independant variable." 
@@ -371,21 +389,26 @@ void DataAvailabilityAnalyzer::spinUp()
    if (obsReader.inputType == FFIdentifier::tSMODF)
       obsReader.msid = msid;
 
-   obsReader.estimateObsInterval();
-
-   if (obsReader.obsIntervalConfidence < 10)
+      // Only perform the epoch rate estimation if it wasn't specified on the
+      // command line.
+   if (epochRate == 0)
    {
-      cout << "Low confidence in deterimined data rate.  Sorry."
-           << " This program is really\nwritten to just work with data that "
-           << "is being collected at a fixed data rate.\nI guess it could be"
-           << " re-written to work for changing data rates but I am too\n"
-           << "lazy to do that right now. I'm not, however, too lazy to "
-           << "write needlessly long\ndiagnostic messages." 
-           << endl;
-      exit(-1);
+      obsReader.estimateObsInterval();
+      
+      if (obsReader.obsIntervalConfidence < 10)
+      {
+         cout << "Low confidence in deterimined data rate.  Sorry."
+              << " This program is really\nwritten to just work with data that "
+              << "is being collected at a fixed data rate.\nI guess it could be"
+              << " re-written to work for changing data rates but I am too\n"
+              << "lazy to do that right now. I'm not, however, too lazy to "
+              << "write needlessly long\ndiagnostic messages." 
+              << endl;
+         exit(-1);
+      }
+      
+      epochRate = obsReader.obsInterval;
    }
-
-   epochRate = obsReader.obsInterval;
 
    if (verboseLevel)
       output << "Data rate is " << epochRate << " seconds." << endl;
@@ -568,8 +591,9 @@ void DataAvailabilityAnalyzer::process()
                /// @todo The math controlling this for loop bugs me in a 
                ///  floating-point-error kind of way.  It's the same math that's
                ///  used in processEpoch(), so I'm going to ignore it for now.
-            cout << "Filling missing epochs: "<< startTime
-                 << " through " << firstEpochTime << endl;
+            if (verboseLevel > 1)
+               cout << "Filling missing epochs: "<< startTime
+                    << " through " << firstEpochTime << endl;
             for (DayTime t = startTime; t < firstEpochTime; t += epochRate)
             {
                InView iv;
@@ -597,8 +621,9 @@ void DataAvailabilityAnalyzer::process()
        (lastEpochTime + epochRate) <= stopTime)
    {
          // record as missing any epochs from lastEpochTime to stopTime
-      cout << "Filling missing epochs: "<< lastEpochTime
-           << " through " << stopTime << endl;
+      if (verboseLevel > 1)
+         cout << "Filling missing epochs: "<< lastEpochTime
+              << " through " << stopTime << endl;
       for (DayTime t = lastEpochTime + epochRate; t <= stopTime;
            t += epochRate)
       {
