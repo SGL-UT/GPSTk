@@ -583,24 +583,10 @@ void DataAvailabilityAnalyzer::process()
             output << "First observation is at " 
                    << firstEpochTime.printf(timeFormat) << endl;
          
-         if (startTimeOpt.getCount() &&
-             startTime < firstEpochTime)
+            // Record as missing any epochs from startTime to firstEpochTime.
+         if (startTimeOpt.getCount() && startTime < firstEpochTime)
          {
-               // Record as missing any epochs from startTime to firstEpochTime.
-               
-               /// @todo The math controlling this for loop bugs me in a 
-               ///  floating-point-error kind of way.  It's the same math that's
-               ///  used in processEpoch(), so I'm going to ignore it for now.
-            if (verboseLevel > 1)
-               cout << "Filling missing epochs: "<< startTime
-                    << " through " << firstEpochTime << endl;
-            for (DayTime t = startTime; t < firstEpochTime; t += epochRate)
-            {
-               InView iv;
-               iv.prn = 0;
-               iv.time = t;
-               missingList.push_back(iv);
-            }
+            fillMissingList(startTime, firstEpochTime);
          }
       }
       else
@@ -613,26 +599,23 @@ void DataAvailabilityAnalyzer::process()
       prev_oe = oe;
    }
 
-   if (verboseLevel)
-      output << "Last observation is at " << lastEpochTime.printf(timeFormat) 
-             << endl;
-   
-   if (stopTimeOpt.getCount() &&
-       (lastEpochTime + epochRate) <= stopTime)
+   if (epochCounter > 0)
    {
+      if (verboseLevel)
+         output << "Last observation is at " << lastEpochTime.printf(timeFormat) 
+                << endl;
+         
          // record as missing any epochs from lastEpochTime to stopTime
-      if (verboseLevel > 1)
-         cout << "Filling missing epochs: "<< lastEpochTime
-              << " through " << stopTime << endl;
-      for (DayTime t = lastEpochTime + epochRate; t <= stopTime;
-           t += epochRate)
+      if (stopTimeOpt.getCount() && (lastEpochTime + epochRate) < stopTime)
       {
-         InView iv;
-         iv.prn = 0;
-         iv.time = t;
-         missingList.push_back(iv);
+         fillMissingList(lastEpochTime + epochRate, stopTime);
       }
    }
+   else
+   {
+      fillMissingList(startTime, stopTime);
+   }
+      
 }
 
 
@@ -1022,10 +1005,20 @@ void DataAvailabilityAnalyzer::outputSummary()
           << "Epochs without data from any SV: " << allMissingCounter << endl
           << "SV-Epochs expected: " << expectedSvEpochCounter << endl
           << setprecision(5)
-          << "Channel Loss: " << 100.0*channelLoss/totalSvEpochCounter
-          << " % (" << channelLoss << ")" << endl
-          << "SV-Epochs missed: " << 100.0* missedSvEpochCounter/expectedSvEpochCounter
-          << " % (" << missedSvEpochCounter << ")" << endl;
+          << "Channel Loss: ";
+   if (totalSvEpochCounter == 0)
+      output << 0.0;
+   else
+      output << 100.0 * channelLoss/totalSvEpochCounter;
+   
+   output << " % (" << channelLoss << ")" << endl
+          << "SV-Epochs missed: ";
+   if (expectedSvEpochCounter == 0)
+      output << 100.0;
+   else
+      output << 100.0 * missedSvEpochCounter/expectedSvEpochCounter;
+   
+   output << " % (" << missedSvEpochCounter << ")" << endl;
 
    if (verboseLevel)
    {
@@ -1038,6 +1031,25 @@ void DataAvailabilityAnalyzer::outputSummary()
                    << 100.0*missed[prn] / inView[prn].expectedCount << " %"
                    << " (" << missed[prn] << ")" << endl;
    }
+}
+
+void DataAvailabilityAnalyzer::fillMissingList(const DayTime& from,
+                                               const DayTime& to)
+{
+   if (verboseLevel > 1)
+      cout << "Filling missing epochs: "<< from
+           << " through " << to << endl;
+      /// @todo The math controlling this for loop bugs me in a 
+      ///  floating-point-error kind of way.  It's the same math that's
+      ///  used in processEpoch(), so I'm going to ignore it for now.
+   for (DayTime t = from; t < to; t += epochRate)
+   {
+      InView iv;
+      iv.prn = 0;
+      iv.time = t;
+      missingList.push_back(iv);
+   }
+   
 }
 
 

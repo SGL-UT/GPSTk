@@ -243,6 +243,11 @@ public:
    MissingList processList(const MissingList& ml, 
                            const EphemerisStore& eph);
    
+      // Fill the MissingList with "all prns" epochs from "from" time to 
+      // "to" time.
+   void fillMissingList(const gpstk::DayTime& from, 
+                        const gpstk::DayTime& to);
+
    std::map<int, InView> inView;                         
 
 };
