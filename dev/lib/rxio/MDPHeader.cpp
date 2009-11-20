@@ -407,7 +407,11 @@ namespace gpstk
 
       setstate(crcbit);
       checkCRC(stream.rawHeader+body);
-
+      
+         // Dump the body in the river if there's a crc error.
+      if (crcerr())
+         return;
+      
       decode(body);
 
       if (debugLevel && (rdstate() || stream.rdstate()))
