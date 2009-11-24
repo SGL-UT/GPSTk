@@ -374,7 +374,7 @@ namespace gpstk
             stage++;
             if(stage > Nreject) break;
 
-         } while(iret == 0);        // end loop over stages
+         } while(iret == 0 || iret == -1);        // end loop over stages
 
          // ----------------------------------------------------------------
          // copy out the best solution and return
