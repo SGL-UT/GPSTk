@@ -36,7 +36,7 @@
 #include "FFStream.hpp"
 #include "Position.hpp"
 #include "Vector.hpp"
-#include "WGS84Geoid.hpp"
+#include "WGS84Ellipsoid.hpp"
 
 #include "IonexStream.hpp"
 

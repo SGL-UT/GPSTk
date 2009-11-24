@@ -72,7 +72,7 @@ namespace gpstk
      * Given the position of a ground location, compute the range
      * to the spacecraft position.
      * @param rxPos ground position at broadcast time in ECEF.
-     * @param geoid geodetic parameters.
+     * @param ellipsoid geodetic parameters.
      * @param correction offset in meters (include any factors other
      * than the SV clock correction).
      * @return Range in meters

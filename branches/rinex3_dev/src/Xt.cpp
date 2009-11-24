@@ -42,7 +42,7 @@
 //=============================================================================
 
 
-#include "GeoidModel.hpp"
+#include "EllipsoidModel.hpp"
 #include "Xt.hpp"
 
 namespace gpstk
@@ -58,7 +58,7 @@ namespace gpstk
    * correct the rotation by a small amount.
    */
   double Xt::preciseRho( const Triple& rxPos,
-                         const GeoidModel& geoid,
+                         const EllipsoidModel& ell,
                          double correction        ) const 
     throw()
   {
@@ -67,10 +67,10 @@ namespace gpstk
     // for the rotation of the earth, but should be good to
     // within about 40 m
     double sr1 = rxPos.slantRange(x);
-    double dt = sr1 / geoid.c();
+    double dt = sr1 / ell.c();
 
     // compute rotation angle in the time of signal transit
-    double rotation_angle = -geoid.angVelocity() * dt;
+    double rotation_angle = -ell.angVelocity() * dt;
 
     // rotate original GS coordinates to new values to correct for
     // rotation of ECEF frame
@@ -96,13 +96,13 @@ namespace gpstk
         // time of flight based on geometric range.  Note that
         // this is a really unneeded, in that the change in PR is
         // < 40 m, hence the change in tof is < 20 ns
-        dt = sr1 / geoid.c();
+        dt = sr1 / ell.c();
 
         // Compute new rotation in this time 
-        rotation_angle = -geoid.angVelocity() * dt;  
+        rotation_angle = -ell.angVelocity() * dt;  
       }
     // Account for SV clock drift and other factors
-    double rho = sr1 - (dtime * geoid.c()) - correction;
+    double rho = sr1 - (dtime * ell.c()) - correction;
     return rho;
   } // end of preciseRho()
 

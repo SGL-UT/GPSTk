@@ -173,7 +173,7 @@ namespace gpstk
       if (ellip == NULL)
       {
          NoGeoidException exc
-            ("Must specify a geoid to use to change systems");
+            ("Must specify a ellipsoid to use to change systems");
          GPSTK_THROW(exc);
       }
 
