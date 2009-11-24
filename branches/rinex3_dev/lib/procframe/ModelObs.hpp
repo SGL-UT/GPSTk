@@ -307,7 +307,7 @@ namespace gpstk
                            const double& bRx,
                            const double& cRx,
                            Position::CoordinateSystem s = Position::Cartesian,
-                           GeoidModel *geoid = NULL );
+                           EllipsoidModel *ell = NULL );
 
 
          /** Method to set the initial (a priori) position of receiver before

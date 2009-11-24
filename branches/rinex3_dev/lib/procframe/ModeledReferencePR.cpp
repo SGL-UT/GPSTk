@@ -754,12 +754,12 @@ ModeledReferencePR object." );
                                                  const double& bRx,
                                                  const double& cRx,
                                                  Position::CoordinateSystem s,
-                                                 GeoidModel *geoid )
+                                                 EllipsoidModel *ell )
    {
 
       try
       {
-         Position rxpos(aRx, bRx, cRx, s, geoid);
+         Position rxpos(aRx, bRx, cRx, s, ell);
          setInitialRxPosition(rxpos);
          return 0;
       }

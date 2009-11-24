@@ -57,7 +57,7 @@ namespace gpstk
        * Those coordinates may be Cartesian (X, Y, Z in meters) or Geodetic
        * (Latitude, Longitude, Altitude), but defaults to Cartesian.
        *
-       * Also, a pointer to GeoidModel may be specified, but default is
+       * Also, a pointer to EllipsoidModel may be specified, but default is
        * NULL (in which case WGS84 values will be used).
        *
        * @param aRx   first coordinate [ X(m), or latitude (degrees N) ]
@@ -66,13 +66,13 @@ namespace gpstk
        *              radius, in meters ]
        * @param s     coordinate system (default is Cartesian, may be set
        *              to Geodetic).
-       * @param geoid pointer to GeoidModel (default is null, implies WGS84)
+       * @param ell   pointer to EllipsoidModel (default is null, implies WGS84)
        */
    ModelObsFixedStation::ModelObsFixedStation( const double& aRx,
                                                const double& bRx,
                                                const double& cRx,
                                                Position::CoordinateSystem s,
-                                               GeoidModel *geoid )
+                                               EllipsoidModel *ell )
    {
 
       minElev = 10.0;
@@ -82,7 +82,7 @@ namespace gpstk
       defaultObservable = TypeID::C1;
       pDefaultEphemeris = NULL;
       InitializeValues();
-      setInitialRxPosition(aRx, bRx, cRx, s, geoid);
+      setInitialRxPosition(aRx, bRx, cRx, s, ell);
       setIndex();
 
    }  // End of 'ModelObsFixedStation::ModelObsFixedStation()'
@@ -465,12 +465,12 @@ namespace gpstk
                                                    const double& bRx,
                                                    const double& cRx,
                                                 Position::CoordinateSystem s,
-                                                   GeoidModel *geoid )
+                                                   EllipsoidModel *ell )
    {
 
       try
       {
-         Position rxpos(aRx, bRx, cRx, s, geoid);
+         Position rxpos(aRx, bRx, cRx, s, ell);
          setInitialRxPosition(rxpos);
          return 0;
       }

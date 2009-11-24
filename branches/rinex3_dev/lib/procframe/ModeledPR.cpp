@@ -418,10 +418,10 @@ namespace gpstk
                            const double& bRx,
                            const double& cRx,
                            Position::CoordinateSystem s,
-                           GeoidModel *geoid )
+                           EllipsoidModel *ell )
    {
 
-      int result = setInitialRxPosition(aRx, bRx, cRx, s, geoid);
+      int result = setInitialRxPosition(aRx, bRx, cRx, s, ell);
 
          // If everything is OK, the model is prepared
       if( result == 0 )
