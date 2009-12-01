@@ -5,7 +5,7 @@
 /**
  * @file Position.hpp
  * class gpstk::Position encapsulates 3-D positions, including geographic positions,
- *    expressed as geodetic (with respect to an ellipsoidal geoid), geocentric or
+ *    expressed as geodetic (with respect to an ellipsoid), geocentric or
  *    Earth-centered, Earth-fixed (cartesian) coordinates, as well as ordinary
  *    positions defined by spherical or cartesian coordinates. Position inherits
  *    from class Triple.
@@ -56,7 +56,7 @@ namespace gpstk
    
       /**
        * A position representation class for common 3D geographic position formats,
-       * including geodetic (geodetic latitude, longitude, and height above the geoid)
+       * including geodetic (geodetic latitude, longitude, and height above the ellipsoid)
        * geocentric (geocentric latitude, longitude, and radius from Earth's center),
        * cartesian (Earth-centered, Earth-fixed) and spherical (theta,phi,radius).
        *
@@ -176,7 +176,7 @@ namespace gpstk
 
          /**
           * Explicit constructor. Coordinate system may be specified on input,
-          * but defaults to Cartesian. Pointer to GeoidModel may be specified,
+          * but defaults to Cartesian. Pointer to EllipsoidModel may be specified,
           * but default is NULL (in which case WGS84 values will be used).
           * @param a first coordinate [ X(m), or latitude (degrees N) ]
           * @param b second coordinate [ Y(m), or longitude (degrees E) ]
@@ -360,7 +360,7 @@ namespace gpstk
       Position asGeodetic(EllipsoidModel *ell)
          throw(GeometryException)
       {
-         try { setGeoidModel(ell); }
+         try { setEllipsoidModel(ell); }
          catch(GeometryException& ge) { GPSTK_RETHROW(ge); }
          transformTo(Geodetic);
          return *this;
@@ -494,14 +494,12 @@ namespace gpstk
           */
       void setReferenceFrame(const ReferenceFrame& frame)
          throw();
-         /**
-          * Set the geoid values for this Position given a geoid.
-          * @param geoid Pointer to the GeoidModel.
-          * @throw GeometryException if input is NULL.
-          */
-      void setGeoidModel(const EllipsoidModel *ell)
-         throw(GeometryException);
 
+         /**
+          * Set the ellipsoid values for this Position given a ellipsoid.
+          * @param ell  Pointer to the EllipsoidModel.
+          * @throw      GeometryException if input is NULL.
+          */
       void setEllipsoidModel(const EllipsoidModel *ell)
          throw(GeometryException);
 
@@ -705,7 +703,7 @@ namespace gpstk
 
 
          /** Fundamental routine to convert ECEF (cartesian) to geodetic coordinates,
-          * (Geoid specified by semi-major axis and eccentricity squared).
+          * (Ellipsoid specified by semi-major axis and eccentricity squared).
           * The zero vector is converted to (90,0,-R(earth)).
           * @param xyz (input): X,Y,Z in meters
           * @param llh (output): geodetic lat(deg N), lon(deg E),
@@ -721,7 +719,7 @@ namespace gpstk
          throw();
 
          /** Fundamental routine to convert geodetic to ECEF (cartesian) coordinates,
-          * (Geoid specified by semi-major axis and eccentricity squared).
+          * (Ellipsoid specified by semi-major axis and eccentricity squared).
           * @param llh (input): geodetic lat(deg N), lon(deg E),
           *                             height above ellipsoid (meters)
           * @param A (input) Earth semi-major axis
@@ -797,7 +795,7 @@ namespace gpstk
          * Input Positions are not modified.
          * @param A,B Positions between which to find the range
          * @return the range (in meters)
-         * @throw GeometryException if geoid values differ.
+         * @throw GeometryException if ellipsoid values differ.
          *        or if transformTo(Cartesian) fails
          */
       friend double range(const Position& A,
@@ -888,6 +886,31 @@ namespace gpstk
                                          const double ionoht) const
          throw();
 
+         /**
+         * A member function that computes the radius of curvature of the 
+         * meridian (Rm) corresponding to this Position.
+         * @return radius of curvature of the meridian (in meters)
+         */
+      double getCurvMeridian() const
+         throw()
+      {
+         double slat = sin(geodeticLatitude()*DEG_TO_RAD);
+         double W = 1.0/SQRT(1.0-eccSquared*slat*slat);
+         return AEarth*(1.0-eccSquared)*W*W*W;
+      }
+
+         /**
+         * A member function that computes the radius of curvature in the 
+         * prime vertical (Rn) corresponding to this Position.
+         * @return radius of curvature in the prime vertical (in meters)
+         */
+      double getCurvPrimeVertical() const
+         throw()
+      {
+         double slat = sin(geodeticLatitude()*DEG_TO_RAD);
+         return = AEarth/SQRT(1.0-eccSquared*slat*slat)
+      }
+
       // ----------- Part 12: private functions and member data -----------------
       //
    private:
@@ -924,7 +947,7 @@ namespace gpstk
          /// semi-major axis of Earth (meters)
       double AEarth;
 
-         /// square of geoid eccentricity
+         /// square of ellipsoid eccentricity
       double eccSquared;
 
          /// see #CoordinateSystem
