@@ -474,21 +474,11 @@ namespace gpstk
       refFrame = frame;
    }
    
-      // Set the geoid values for this Position given a geoid.
-      // @param geoid Pointer to the GeoidModel.
-      // @throw GeometryException if input is NULL.
-   void Position::setGeoidModel(const EllipsoidModel *ell)
-      throw(GeometryException)
-   {
-      if(!ell)
-      {
-         GeometryException ge("Given EllipsoidModel pointer is NULL.");
-         GPSTK_THROW(ge);
-      }
-      AEarth = ell->a();
-      eccSquared = ell->eccSquared();
-   }
-
+      /**
+      * Set the ellipsoid values for this Position given a ellipsoid.
+      * @param ell  Pointer to the EllipsoidModel.
+      * @throw      GeometryException if input is NULL.
+      */
    void Position::setEllipsoidModel(const EllipsoidModel *ell)
       throw(GeometryException)
    {
@@ -1501,6 +1491,38 @@ namespace gpstk
 
       return IPP;
    }
+
+
+        /**
+        * A member function that computes the radius of curvature of the 
+        * meridian (Rm) corresponding to this Position.
+        * @return radius of curvature of the meridian (in meters)
+        */
+    double Position::getCurvMeridian() const
+        throw()
+    {
+    
+        double slat = sin(geodeticLatitude()*DEG_TO_RAD);
+        double W = 1.0/SQRT(1.0-eccSquared*slat*slat);
+        
+        return AEarth*(1.0-eccSquared)*W*W*W;
+        
+    }
+
+        /**
+        * A member function that computes the radius of curvature in the 
+        * prime vertical (Rn) corresponding to this Position.
+        * @return radius of curvature in the prime vertical (in meters)
+        */
+    double Position::getCurvPrimeVertical() const
+        throw()
+    {
+    
+        double slat = sin(geodeticLatitude()*DEG_TO_RAD);
+        
+        return AEarth/SQRT(1.0-eccSquared*slat*slat);
+        
+    }
 
    // ----------- Part 12: private functions and member data -----------------
    //

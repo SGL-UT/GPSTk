@@ -892,12 +892,7 @@ namespace gpstk
          * @return radius of curvature of the meridian (in meters)
          */
       double getCurvMeridian() const
-         throw()
-      {
-         double slat = sin(geodeticLatitude()*DEG_TO_RAD);
-         double W = 1.0/SQRT(1.0-eccSquared*slat*slat);
-         return AEarth*(1.0-eccSquared)*W*W*W;
-      }
+         throw();
 
          /**
          * A member function that computes the radius of curvature in the 
@@ -905,11 +900,7 @@ namespace gpstk
          * @return radius of curvature in the prime vertical (in meters)
          */
       double getCurvPrimeVertical() const
-         throw()
-      {
-         double slat = sin(geodeticLatitude()*DEG_TO_RAD);
-         return = AEarth/SQRT(1.0-eccSquared*slat*slat)
-      }
+         throw();
 
       // ----------- Part 12: private functions and member data -----------------
       //
