@@ -283,6 +283,28 @@ namespace gpstk
       return ee;
    }
 
+   Rinex3NavData::operator GalEphemeris() const throw()
+   {
+      GalEphemeris ge;
+
+      // There's no TLM word in Rinex3NavData, so it's set to 0.
+      // Likewise, there's no AS alert or tracker.
+      // Also, in RINEX, the accuracy is in meters, and setSF1 expects
+      // the accuracy flag.  We'll give it zero and pass the accuracy
+      // separately via the setAccuracy() method.
+
+      ge.setSF1(0, HOWtime, 0, weeknum, datasources, 0, health,
+                BGDb, L2Pdata, BGDa, Toc, af2, af1, af0, 0, PRNID);
+      ge.setSF2(0, HOWtime, 0, short(IODnav), Crs, dn, M0, Cuc, ecc, Cus, Ahalf,
+                Toe, 0);
+      ge.setSF3(0, HOWtime, 0, Cic, OMEGA0, Cis, i0, Crc, w, OMEGAdot,
+                idot);
+
+      ge.setAccuracy(accuracy);
+
+      return ge;
+   }
+
    list<double> Rinex3NavData::toList() const
    {
       list<double> l;

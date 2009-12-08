@@ -50,7 +50,7 @@
 
 #include "GPSEphemerisStore.hpp"
 #include "GloEphemerisStore.hpp"
-//#include "GalEphemerisStore.hpp"
+#include "GalEphemerisStore.hpp"
 #include "FileStore.hpp"
 #include "Rinex3NavHeader.hpp"
 
@@ -91,7 +91,7 @@ namespace gpstk
 
       GloEphemerisStore GLOstore;
 
-      //GalEphemerisStore GALstore;
+      GalEphemerisStore GALstore;
 
    };
 

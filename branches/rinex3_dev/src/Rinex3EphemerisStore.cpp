@@ -75,8 +75,8 @@ namespace gpstk
                GPSstore.addEphemeris(rec);
             else if (rec.satSys=="R") // Ephemeris and clock are valid, then add them
                GLOstore.addEphemeris(rec);
-            //if (rec.satSys=="E") // Ephemeris and clock are valid, then add them
-               //GALstore.addEphemeris(rec);
+            else if (rec.satSys=="E") // Ephemeris and clock are valid, then add them
+               GALstore.addEphemeris(rec);
          }
 
       }
@@ -94,7 +94,7 @@ namespace gpstk
    {
      GPSstore.dump(s, detail);
      GLOstore.dump(s, detail);
-      //GALstore.dump();
+     GALstore.dump(s, detail);
    }
 
 }  // namespace gpstk

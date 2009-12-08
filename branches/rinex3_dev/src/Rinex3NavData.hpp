@@ -105,6 +105,11 @@ namespace gpstk
      operator EngEphemeris() const throw();
 
      /**
+      * Converts this Rinex3NavData to a GalEphemeris object.
+      */
+     operator GalEphemeris() const throw();
+
+     /**
       * Converts the (non-CommonTime) data to an easy list for comparison operators.
       */
      std::list<double> toList() const;
