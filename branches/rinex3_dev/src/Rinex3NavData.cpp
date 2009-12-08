@@ -126,6 +126,63 @@ namespace gpstk
 
    }
 
+   // This constructor initializes R3NavData with Galileo data.
+   // Refer to the previous constructor, ie. Rinex3NavData(const EngEphemeris& ee),
+   // for more information on which elements are GPS and/or Galileo only.
+   Rinex3NavData::Rinex3NavData(const GalEphemeris& ge)
+   {
+      // epoch info
+
+      satSys = ge.getSatSys();
+      PRNID  = ge.getPRNID();
+      sat    = SatID(PRNID,SatID::systemGPS);
+      time   = ge.getEpochTime();
+
+      Toc     = ge.getToc();
+      HOWtime = long(ge.getHOWTime(1));
+      weeknum = ge.getFullWeek();
+
+      accuracy = ge.getAccuracy();
+      health   = ge.getHealth();
+
+      // GPS or Galileo data
+
+      af0 = ge.getAf0(); // GPS and Galileo only
+      af1 = ge.getAf1(); // GPS and Galileo only
+      af2 = ge.getAf2(); // GPS and Galileo only
+
+      Crs = ge.getCrs(); // GPS and Galileo only
+      dn  = ge.getDn();  // GPS and Galileo only
+      M0  = ge.getM0();  // GPS and Galileo only
+
+      Cuc   = ge.getCuc();   // GPS and Galileo only
+      ecc   = ge.getEcc();   // GPS and Galileo only
+      Cus   = ge.getCus();   // GPS and Galileo only
+      Ahalf = ge.getAhalf(); // GPS and Galileo only
+
+      Toe    = ge.getToe();    // GPS and Galileo only
+      Cic    = ge.getCic();    // GPS and Galileo only
+      OMEGA0 = ge.getOmega0(); // GPS and Galileo only
+      Cis    = ge.getCis();    // GPS and Galileo only
+
+      i0       = ge.getI0();       // GPS and Galileo only
+      Crc      = ge.getCrc();      // GPS and Galileo only
+      w        = ge.getW();        // GPS and Galileo only
+      OMEGAdot = ge.getOmegaDot(); // GPS and Galileo only
+
+      idot = ge.getIDot(); // GPS and Galileo only
+
+      // Galileo-only data
+
+      IODnav = ge.getIODnav(); // Galileo only
+
+      datasources = ge.getDatasources(); // Galileo only
+
+      BGDa = ge.getBGDa(); // Galileo only
+      BGDb = ge.getBGDb(); // Galileo only
+
+   }
+
    void Rinex3NavData::reallyPutRecord(FFStream& ffs) const
       throw(exception, FFStreamError, StringException)
    {

@@ -53,6 +53,7 @@
 #include "FFStream.hpp"
 #include "Rinex3NavBase.hpp"
 #include "EngEphemeris.hpp"
+#include "GalEphemeris.hpp"
 #include "SatID.hpp"
 
 namespace gpstk
@@ -81,6 +82,9 @@ namespace gpstk
 
      /// Initializes the nav data with an EngEphemeris
      Rinex3NavData(const EngEphemeris& ee);
+
+     /// Initializes the nav data with a GalEphemeris
+     Rinex3NavData(const GalEphemeris& ge);
 
      /// destructor
      virtual ~Rinex3NavData() {}

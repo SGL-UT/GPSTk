@@ -41,7 +41,7 @@ else
       FICData62.cpp FICData9.cpp FICHeader.cpp FileHunter.cpp
       FileSpec.cpp
       
-      GaussianDistribution.cpp GenXSequence.cpp Geodetic.cpp
+      GalEphemeris.cpp GaussianDistribution.cpp GenXSequence.cpp Geodetic.cpp
       GloEphemerisStore.cpp GloRecord.cpp GPSAlmanacStore.cpp
       GPSEphemerisStore.cpp GPSWeek.cpp GPSWeekSecond.cpp
       GPSWeekZcount.cpp GPSZcount.cpp
