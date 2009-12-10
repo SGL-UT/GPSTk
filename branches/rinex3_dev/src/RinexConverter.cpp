@@ -22,6 +22,9 @@
 //                                                                            //
 //============================================================================//
 
+#include <cmath>
+#include <algorithm>       // find
+
 #include "RinexConverter.hpp"
 #include "RinexSatID.hpp"
 
@@ -477,6 +480,8 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
    if (!hasGEO)
       dest.mapObsTypes.erase(dest.mapObsTypes.find("S"));
 
+   // TODO::No consistency in 'validBits' definition between R2 and R3. 
+   // Thus, this leads to not writing the R3 header
    dest.valid = src.valid;                // perhaps needs item check
    dest.valid |= dest.validSystemObsType; // necessary since not in R2
 
@@ -484,6 +489,8 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
 }
 
 /// ***** The Rinex 3 -> 2 methods are not finished. *****
+/// 2009-12-10 OA: This is a very basic implementation. Check after TODO
+///                Use it with CAUTION!!!
 
 bool RinexConverter::convertFromRinex3(RinexObsData& dest,
                                        const Rinex3ObsData& src,
@@ -517,6 +524,71 @@ bool RinexConverter::convertFromRinex3(RinexObsData& dest,
     *    If one exists, put it in the appropriate spot. Otherwise, insert a
     *    blank entry ( double(0.0) )
     */
+
+   /// OA implementation starts
+   Rinex3ObsData::DataMap::const_iterator it;
+   for (it = src.obs.begin(); it != src.obs.end(); it++)
+   {
+
+      // get satellite
+      RinexSatID satid = it->first;
+
+      // extract the corresponding satellite system
+      string satSysTemp = satid.toString().substr(0,1);
+
+      //and its R3 data
+      vector<Rinex3ObsData::RinexDatum> r3data= it->second;
+
+      // Now let's see what obs type are for this satellite system
+      std::vector<ObsID> obsTypeList = srcHeader.mapObsTypes.find(satSysTemp)->second;
+
+      // and loop through them
+       std::vector<ObsID>::size_type iObs;
+      for( iObs=0; iObs < obsTypeList.size();iObs++ )
+      {
+
+         // R3 code as a three character string (see ObsId.hpp, line 204)
+         string currCode = obsTypeList[iObs].asRinex3ID();
+
+         // and its R2 corresponding
+         string replacement;
+
+         // Iterator to find the current code.
+         CodeMap::const_iterator mapIter = obsMap.begin();
+         for ( ; mapIter != obsMap.end(); ++mapIter)
+         {
+            if (mapIter->second == currCode) break; // terminates this inner FOR loop
+         }
+
+         // nothing was found?, then grab the first two characters
+         if ( mapIter == obsMap.end())
+         {
+            replacement = currCode.substr(0,2);
+         }
+         else
+         {
+            replacement = mapIter->first; 
+         }
+
+         // construct a R2 obs type
+         RinexObsHeader::RinexObsType rot = RinexObsHeader::convertObsType(replacement);
+
+         // declare a R2 data object
+         RinexObsData::RinexDatum r2data;
+
+         // copy R3 to R2
+         r2data.data  = r3data[iObs].data;
+         r2data.lli   = r3data[iObs].lli;
+         r2data.ssi   = r3data[iObs].ssi;
+
+         // now we can insert it
+         dest.obs[satid][rot]=r2data;
+
+      }  // End of 'for( iObs=0; iObs < obsTypeList.size();iObs++ )'
+
+   }  // End of 'for (it = src.obs.begin(); ...'
+   ///OA implementation ends here
+
    return true;
 }
 
@@ -544,6 +616,69 @@ bool RinexConverter::convertFromRinex3(RinexObsHeader& dest,
    Rinex3ObsHeader duplHeader = src;
    sortRinex3ObsTypes(duplHeader);
 
+   // very basic convertion from R3 ObsTypeList to R2 ObsTypeList
+   map<std::string,vector<ObsID> >::const_iterator itSys = src.mapObsTypes.begin();
+   for( ; itSys != src.mapObsTypes.end(); itSys++ )
+   {
+
+      vector<ObsID> vecObs = itSys->second;
+      vector<ObsID>::const_iterator itObs = vecObs.begin();
+      for( ; itObs != vecObs.end(); itObs++ )
+      {
+
+         // R3 obs as a three character string
+         string currCode = itObs->asRinex3ID();
+
+         // and its R2 corresponding
+         string replacement;
+
+         // Iterator to find the current code.
+         CodeMap::const_iterator mapIter = obsMap.begin();
+         for ( ; mapIter != obsMap.end(); ++mapIter)
+         {
+            if (mapIter->second == currCode) break; // terminates this inner FOR loop
+         }
+
+         // nothing was found?, then grab the first two characters
+         if ( mapIter == obsMap.end())
+         {
+            replacement = currCode.substr(0,2);
+         }
+         else
+         {
+            replacement = mapIter->first; 
+         }
+
+         // construct a R2 obs type
+         RinexObsHeader::RinexObsType rot = RinexObsHeader::convertObsType(replacement);
+
+         // look if this R2 obs type has been already found
+         vector<RinexObsHeader::RinexObsType>::iterator itType;
+         itType = std::find(dest.obsTypeList.begin(), dest.obsTypeList.end(), rot);
+
+         //if NOT, then insert it
+         if( itType == dest.obsTypeList.end() ) dest.obsTypeList.push_back(rot);
+
+      }  // End of 'for( ; itObs != vecObs.end(); itObs++ )'
+
+   }  // End of 'for( ; itSys != src.mapObsTypes.end(); itSys++ )'
+
+   dest.valid = 1;
+
+   // Let's set the REQUIRED valid bits
+   if (src.valid & src.validVersion        ) dest.valid |= dest.versionValid;
+   if (src.valid & src.validRunBy          ) dest.valid |= dest.runByValid;
+   if (src.valid & src.validMarkerName     ) dest.valid |= dest.markerNameValid;
+   if (src.valid & src.validObserver       ) dest.valid |= dest.observerValid;
+   if (src.valid & src.validReceiver       ) dest.valid |= dest.receiverValid;
+   if (src.valid & src.validAntennaType    ) dest.valid |= dest.antennaTypeValid;
+   if (src.valid & src.validAntennaPosition) dest.valid |= dest.antennaPositionValid;
+   if (src.valid & src.validAntennaDeltaHEN) dest.valid |= dest.antennaOffsetValid;
+   dest.valid |= dest.waveFactValid; // necessary since not in R3
+   if (src.valid & src.validSystemObsType  ) dest.valid |= dest.obsTypeValid;
+   if (src.valid & src.validFirstTime      ) dest.valid |= dest.firstTimeValid;
+   if (src.valid & src.validEoH            ) dest.valid |= dest.endValid;
+
    // Done if not doing optional fields...
    // This returns false right now...
 
@@ -568,7 +703,18 @@ bool RinexConverter::convertFromRinex3(RinexObsHeader& dest,
       }
    }
 
+   // now let's set the OPTIONAL valid bits (if any)
+   if (src.valid & src.validComment          ) dest.valid |= dest.commentValid;
+   if (src.valid & src.validMarkerNumber     ) dest.valid |= dest.markerNumberValid;
+   if (src.valid & src.validInterval         ) dest.valid |= dest.intervalValid;
+   if (src.valid & src.validLastTime         ) dest.valid |= dest.lastTimeValid;
+   if (src.valid & src.validReceiverOffset   ) dest.valid |= dest.receiverOffsetValid;
+   if (src.valid & src.validLeapSeconds      ) dest.valid |= dest.leapSecondsValid;
+   if (src.valid & src.validNumSats          ) dest.valid |= dest.numSatsValid;
+   if (src.valid & src.validPrnObs           ) dest.valid |= dest.prnObsValid;
+
    return dest.isValid();
+
 }
 
 void RinexConverter::reset()
