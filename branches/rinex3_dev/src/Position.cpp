@@ -341,11 +341,6 @@ namespace gpstk
    // Note that calling these will transform the Position to another coordinate
    // system if that is required.
    //
-   const ReferenceFrame& Position::getFrame()
-      throw()
-   {
-      return refFrame;
-   }
    
    const ReferenceFrame& Position::getFrame() const
       throw()

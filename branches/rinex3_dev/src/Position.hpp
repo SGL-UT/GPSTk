@@ -377,9 +377,8 @@ namespace gpstk
       // 
       // These routines retrieve coordinate values in all coordinate systems.
       //
+
          /// return coordinate ReferenceFrame
-      const ReferenceFrame& getFrame()
-         throw();
       const ReferenceFrame& getFrame() const
          throw();
       
