@@ -23,7 +23,7 @@
 //============================================================================
 
 #include "rinexpvt.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "CivilTime.hpp"
 
 using namespace std;

@@ -48,7 +48,7 @@
 
 #include "Position.hpp"
 #include "WGS84Geoid.hpp"
-#include "icd_200_constants.hpp"     // for TWO_PI
+#include "icd_gps_constants.hpp"     // for TWO_PI
 #include "geometry.hpp"              // for DEG_TO_RAD and RAD_TO_DEG
 
 #include "RinexUtilities.hpp"
@@ -1104,7 +1104,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Compute the position (latitude and longitude, in degrees) of the sun
 // given the day of year and the hour of the day.
 // Adapted from sunpos by D. Coco 12/15/94
-//#include "icd_200_constants.hpp     // for TWO_PI
+//#include "icd_gps_constants.hpp     // for TWO_PI
 //#include "geometry.hpp"             // for DEG_TO_RAD and RAD_TO_DEG
 void SolarPosition(int doy, double hod, double& lat, double& lon) throw(Exception)
 {

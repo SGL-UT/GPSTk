@@ -53,7 +53,7 @@ g++ -o acquireMT acquireMT.o /.../gpstk/dev/apps/swrx/simlib.a /.../gpstk/dev/sr
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 #include "StringUtils.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "CCReplica.hpp"
 #include "CACodeGenerator.hpp"
 #include "complex_math.h"

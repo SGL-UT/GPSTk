@@ -54,7 +54,7 @@
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "RinexUtilities.hpp"
 
 #include <string>

@@ -42,7 +42,7 @@
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
 #include "MiscMath.hpp"             // LagrangeIterpolation()
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "StringUtils.hpp"
 
 #include <time.h>

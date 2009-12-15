@@ -28,7 +28,7 @@
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 #include "StringUtils.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 #include "CACodeGenerator.hpp"
 #include "PCodeGenerator.hpp"

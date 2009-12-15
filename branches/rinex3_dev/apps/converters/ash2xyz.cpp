@@ -48,7 +48,7 @@
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
 #include "GPSEphemerisStore.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "InOutFramework.hpp"
 #include "RinexConverters.hpp"
 #include "ObsUtils.hpp"
