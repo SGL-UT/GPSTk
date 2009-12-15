@@ -49,7 +49,7 @@
  */
 
 #include "StringUtils.hpp"
-#include "icd_gps-200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "GPSWeekSecond.hpp"
 #include "FICData9.hpp"
 

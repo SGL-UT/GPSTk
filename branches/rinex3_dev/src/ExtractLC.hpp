@@ -32,7 +32,7 @@
 
 
 #include "ExtractCombinationData.hpp"
-#include "icd_gps-200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 
 namespace gpstk

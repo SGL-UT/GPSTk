@@ -37,7 +37,7 @@
 #include <ctype.h>
 #include <math.h>
 
-#include "icd_gps-200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "StringUtils.hpp"
 #include "Expression.hpp"
 

@@ -47,7 +47,7 @@
 #include "MathBase.hpp"                   // SQRT
 #include "geometry.hpp"                   // DEG_TO_RAD
 #include "GPSEllipsoid.hpp"               // ell.a() = R earth
-#include "icd_gps-200_constants.hpp"          // TWO_PI
+#include "icd_gps_constants.hpp"          // TWO_PI
 #include "Geodetic.hpp"
 #include "ECEF.hpp"
 #include "YDSTime.hpp"

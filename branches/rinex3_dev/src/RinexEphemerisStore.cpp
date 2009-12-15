@@ -43,7 +43,7 @@
 
 #include "RinexEphemerisStore.hpp"
 #include "MiscMath.hpp"
-#include "icd_gps-200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include <iostream>
 #include <fstream>
 

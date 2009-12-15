@@ -32,7 +32,7 @@
 
 #include <vector>
 #include <ostream>
-#include "icd_gps-200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "Matrix.hpp"

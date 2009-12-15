@@ -48,7 +48,7 @@
  * Encapsulate almanac data, and compute satellite orbit, etc.
  */
  
-#include "icd_gps-200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "GPSEllipsoid.hpp"
 #include "AlmOrbit.hpp"
 #include <cmath>

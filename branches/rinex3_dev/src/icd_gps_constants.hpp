@@ -1,9 +1,9 @@
-#pragma ident "$Id: icd_gps-200_constants.hpp 1709 2009-02-18 20:27:47Z btolman $"
+#pragma ident "$Id: icd_gps_constants.hpp 1709 2009-02-18 20:27:47Z btolman $"
 
 
 
 /**
- * @file icd_gps-200_constants.hpp
+ * @file icd_gps_constants.hpp
  * Constants as defined in the GPS-ICD-200
  * Now the IS-GPS-200D
  */

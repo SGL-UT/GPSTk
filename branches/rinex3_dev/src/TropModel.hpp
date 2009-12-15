@@ -51,7 +51,7 @@
 #include "Xvt.hpp"
 #include "Position.hpp"
 #include "Matrix.hpp"
-#include "icd_gps-200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 
 // Model of the troposphere, used to compute non-dispersive delay of
