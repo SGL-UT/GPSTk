@@ -1,5 +1,12 @@
 #pragma ident "$Id: SunEarthSatGeometry.cpp 218 2009-07-02 19:59:29Z BrianTolman $"
 
+/**
+ * @file SunEarthSatGeometry.cpp
+ * Include file for various routines related to Sun-Earth-Satellite geometry,
+ * including satellite attitude, XYZ->UEN rotation, and (elevation,azimuth) as
+ * seen at the satellite. Used by PhaseWindup and PreciseRange.
+ */
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -36,17 +43,9 @@
 //
 //=============================================================================
 
-/**
- * @file SunEarthSatGeometry.cpp
- * Include file for various routines related to Sun-Earth-Satellite geometry,
- * including satellite attitude, XYZ->UEN rotation, and (elevation,azimuth) as
- * seen at the satellite. Used by PhaseWindup and PreciseRange.
- */
-
 // GPSTk includes
 #include "StringUtils.hpp"          // asString
 #include "geometry.hpp"             // DEG_TO_RAD
-#include "icd_200_constants.hpp"    // TWO_PI
 #include "icd_200_constants.hpp"    // TWO_PI
 // geomatics
 #include "SunEarthSatGeometry.hpp"
@@ -161,7 +160,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Consider the sun and the earth as seen from the satellite. Let the sun be a circle
 // of angular radius r, center in direction s, and the earth be a (larger) circle
 // of angular radius R, center in direction e. The circles overlap if |e-s| < R+r;
-// complete overlap if |e-s| < R-r. The satellite is in penumbra if R-r < |e-s| < R+r,// it is in umbra if |e-s| < R-r.
+// complete overlap if |e-s| < R-r. The satellite is in penumbra if R-r < |e-s| < R+r,
+// it is in umbra if |e-s| < R-r.
 //    Let L == |e-s|. What is the area of overlap in penumbra : R-r < L < R+r ?
 // Call the two points where the circles intersect p1 and p2. Draw a line from e to s;
 // call the points where this line intersects the two circles r1 and R1, respectively.
