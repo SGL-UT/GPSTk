@@ -44,7 +44,7 @@
 // GPSTk
 #include "DayTime.hpp"
 #include "Position.hpp"
-#include "icd_200_constants.hpp"       // TWO_PI
+#include "icd_gps_constants.hpp"       // TWO_PI
 #include "geometry.hpp"                // DEG_TO_RAD
 
 #include "SolarPosition.hpp"

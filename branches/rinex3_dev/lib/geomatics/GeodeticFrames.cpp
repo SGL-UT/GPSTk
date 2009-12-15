@@ -52,7 +52,7 @@
 // GPSTk includes
 #include "StringUtils.hpp"
 #include "geometry.hpp"             // for DEG_TO_RAD
-#include "icd_200_constants.hpp"    // for PI and TWO_PI
+#include "icd_gps_constants.hpp"    // for PI and TWO_PI
 #include "GeodeticFrames.hpp"
 
 using namespace std;

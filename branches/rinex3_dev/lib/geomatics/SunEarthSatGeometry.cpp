@@ -46,7 +46,7 @@
 // GPSTk includes
 #include "StringUtils.hpp"          // asString
 #include "geometry.hpp"             // DEG_TO_RAD
-#include "icd_200_constants.hpp"    // TWO_PI
+#include "icd_gps_constants.hpp"    // TWO_PI
 // geomatics
 #include "SunEarthSatGeometry.hpp"
 
