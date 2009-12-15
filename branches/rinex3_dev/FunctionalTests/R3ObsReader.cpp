@@ -6,7 +6,7 @@
 
 #include <map>
 
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "CommonTime.hpp"
 #include "CivilTime.hpp"
 #include "Rinex3ObsBase.hpp"
