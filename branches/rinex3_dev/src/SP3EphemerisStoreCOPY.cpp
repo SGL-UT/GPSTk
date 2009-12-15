@@ -45,7 +45,7 @@
 #include "CivilTime.hpp"
 #include "MiscMath.hpp"
 #include "ECEF.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps-200_constants.hpp"
 
 using namespace gpstk::StringUtils;
 

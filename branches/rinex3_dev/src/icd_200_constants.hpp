@@ -3,7 +3,7 @@
 
 
 /**
- * @file icd_200_constants.hpp
+ * @file icd_gps-200_constants.hpp
  * Constants as defined in the GPS-ICD-200
  * Now the IS-GPS-200D
  */

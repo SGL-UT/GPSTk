@@ -49,7 +49,7 @@
  */
 
 #include "StringUtils.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps-200_constants.hpp"
 #include "DayTime.hpp"
 #include "FICData109.hpp"
 

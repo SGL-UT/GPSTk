@@ -39,7 +39,7 @@
 #include "IonexData.hpp"
 
 #include "geometry.hpp"                   // DEG_TO_RAD
-#include "icd_200_constants.hpp"          // LX_FREQ, with X = 1,2,5,6,7,8
+#include "icd_gps-200_constants.hpp"          // LX_FREQ, with X = 1,2,5,6,7,8
 #include "Triple.hpp"
 
 namespace gpstk

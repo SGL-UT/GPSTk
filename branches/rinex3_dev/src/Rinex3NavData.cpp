@@ -48,7 +48,7 @@
 #include "GPSWeekSecond.hpp"
 #include "Rinex3NavData.hpp"
 #include "Rinex3NavStream.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps-200_constants.hpp"
 
 namespace gpstk
 {

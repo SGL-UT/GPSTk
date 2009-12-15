@@ -45,7 +45,7 @@
 #include <cmath>
 
 #include "StringUtils.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps-200_constants.hpp"
 #include "MathBase.hpp"
 #include "GPSEllipsoid.hpp"
 #include "EngEphemeris.hpp"
