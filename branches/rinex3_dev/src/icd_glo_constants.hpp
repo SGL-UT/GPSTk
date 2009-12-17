@@ -44,6 +44,8 @@
 //
 //=============================================================================
 
+#include <map>
+
 namespace gpstk
 {
       /**
@@ -56,9 +58,9 @@ namespace gpstk
       /// Fundamental chip rate in Hz.
    const double CHIP_FREQ_GLO  = 5.11e6;
       /// Chip rate of the P & Y codes in Hz.
-   const double PY_CHIP_FREQ_GLO = OSC_FREQ;
+   const double PY_CHIP_FREQ_GLO = CHIP_FREQ_GLO;
       /// Chip rate of the C/A code in Hz.
-   const double CA_CHIP_FREQ_GLO = OSC_FREQ / 10.0;
+   const double CA_CHIP_FREQ_GLO = CHIP_FREQ_GLO / 10.0;
 
       /// Fundamental oscillator freq in Hz.
    const double PSC_FREQ_GLO  = 5.00e6;
@@ -83,6 +85,31 @@ namespace gpstk
    const double L2_MULT_GLO   = 249.2;
       /// Gamma multiplier.
    const double GAMMA_GLO = 1.653061224490;
+
+      /// Singleton map of < FreqNo, frequency > as < int, double >.
+   class GloFreq
+   {
+   private:
+      GloFreq() // Constructor is private, cannot be executed by user.
+      {
+         for (int n = -7; n <= 12; n++)
+         {
+            L1map[n] = 1602.0e6 + n*562.5e3;
+            L2map[n] = 1246.0e6 + n*436.5e3;
+         }
+      }
+      static GloFreq *mInstance; // Object that is created only once.
+   public:
+      GloFreq* instance() // Method to get object.
+      {
+         if (mInstance == NULL) mInstance = new GloFreq();
+         return mInstance;
+      }
+      typedef std::map<int, double> FreqMap;
+      FreqMap L1map, L2map;
+   };
+
+   GloFreq* GloFreq::mInstance = NULL;
 
       /// Constant for the max array index in SV accuracy table.
    const int SV_ACCURACY_GLO_INDEX_MAX = 15;

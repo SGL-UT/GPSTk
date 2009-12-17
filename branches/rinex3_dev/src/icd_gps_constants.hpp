@@ -1,11 +1,8 @@
 #pragma ident "$Id: icd_gps_constants.hpp 1709 2009-02-18 20:27:47Z btolman $"
 
-
-
 /**
  * @file icd_gps_constants.hpp
- * Constants as defined in the GPS-ICD-200
- * Now the IS-GPS-200D
+ * Constants as defined in the GPS-ICD-200D
  */
 
 #ifndef GPSTK_ICD_200_CONSTANTS_HPP
@@ -35,22 +32,17 @@
 
 //============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+// This software developed by Applied Research Laboratories at the University
+// of Texas at Austin, under contract to an agency or agencies within the U.S. 
+// Department of Defense. The U.S. Government retains all rights to use,
+// duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+// Pursuant to DoD Directive 523024 
 //
 // DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-
-
-
-
 
 namespace gpstk
 {
