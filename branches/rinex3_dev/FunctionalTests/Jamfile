@@ -51,6 +51,16 @@ ObjectHdrs HelmertTests HelmertTests.cpp : ../src ;
 LINKLIBS on HelmertTests = $(STD_LINK_LIBS) ;
 LinkLibraries HelmertTests : ../src/libgpstk-R3.a ;
 
+Main GloFreqNo : GloFreqNo.cpp ;
+ObjectHdrs GloFreqNo GloFreqNo.cpp : ../src ;
+LINKLIBS on GloFreqNo = $(STD_LINK_LIBS) ;
+LinkLibraries GloFreqNo : ../src/libgpstk-R3.a ;
+
+Main Singleton : Singleton.cpp ;
+ObjectHdrs Singleton Singleton.cpp : ../src ;
+LINKLIBS on Singleton = $(STD_LINK_LIBS) ;
+LinkLibraries Singleton : ../src/libgpstk-R3.a ;
+
 Main CommonTimeTests : CommonTimeTests.cpp ;
 ObjectHdrs CommonTimeTests CommonTimeTests.cpp : ../src ;
 LINKLIBS on CommonTimeTests = $(STD_LINK_LIBS) ;
