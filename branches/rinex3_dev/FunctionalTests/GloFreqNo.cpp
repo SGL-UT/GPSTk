@@ -37,10 +37,11 @@
 //=============================================================================
 
 //
-// Tests GLONASS frequency number singleton.
+// Tests the GLONASS frequency number singleton.
 //
 
 #include <iostream>
+#include <iomanip>
 
 #include "icd_glo_constants.hpp"
 
@@ -53,7 +54,10 @@ int main()
    GloMap = GloMap->instance();
    for (int n = -7; n <= 12; n++)
    {
-      cout << n << "  " << GloMap->L1map[n] << "  " << GloMap->L2map[n]<< endl;
+      cout << setw(2) << n << std::fixed << std::setprecision(4)
+           << "  " << GloMap->L1map[n]/1.0e6
+           << "  " << GloMap->L2map[n]/1.0e6
+           << "  MHz" << endl;
    }
 
    exit(0);
