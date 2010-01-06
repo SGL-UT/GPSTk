@@ -1294,7 +1294,7 @@ namespace gpstk
         << endl;
   
 
-      s << "              Week(10bt)     SOW     DOW   UTD     SOD"
+      s << "              Week(10bt)     SOW     DOW    UTD    SOD"
         << "   MM/DD/YYYY   HH:MM:SS\n";
       s << "Clock Epoch:  ";
       timeDisplay(s, getEpochTime());
@@ -1315,10 +1315,7 @@ namespace gpstk
            << "  ";
          
          shortcut( s, HOWtime[i]);
-         if (i==0)
-            s << "   ";
-         else
-            s << "    ";
+         s << "    ";
          
          s << "0x" << setfill('0') << hex;
          
@@ -1348,8 +1345,8 @@ namespace gpstk
         << "Bias T0:     " << setw(16) << af0 << " sec" << endl
         << "Drift:       " << setw(16) << af1 << " sec/sec" << endl
         << "Drift rate:  " << setw(16) << af2 << " sec/(sec**2)" << endl
-        << "BGD E5a/E1:  " << setw(16) << BGDa << "sec" << endl
-        << "BGD E5b/E1:  " << setw(16) << BGDb << "sec" << endl;
+        << "BGD E5a/E1:  " << setw(16) << BGDa << " sec" << endl
+        << "BGD E5b/E1:  " << setw(16) << BGDb << " sec" << endl;
          //<< "Group delay: " << setw(16) << Tgd << " sec" << endl;
       
       s << endl
