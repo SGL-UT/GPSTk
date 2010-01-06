@@ -689,7 +689,7 @@ namespace gpstk
       throw()
    {
       CommonTime toReturn;
-      toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()), TimeSystem::GPS);
+      toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()), TimeSystem::GAL);
       return toReturn;
    }
 
@@ -698,11 +698,11 @@ namespace gpstk
    {
       CommonTime toReturn;
       if ( (getToc() - getHOWTime(1)) < -HALFWEEK)
-         toReturn = GPSWeekSecond(getFullWeek() + 1, getToc(), TimeSystem::GPS);
+         toReturn = GPSWeekSecond(getFullWeek() + 1, getToc(), TimeSystem::GAL);
       else if ( (getToc() - getHOWTime(1)) > HALFWEEK)
-         toReturn = GPSWeekSecond(getFullWeek() - 1, getToc(), TimeSystem::GPS);
+         toReturn = GPSWeekSecond(getFullWeek() - 1, getToc(), TimeSystem::GAL);
       else
-         toReturn = GPSWeekSecond(getFullWeek(), getToc(), TimeSystem::GPS);
+         toReturn = GPSWeekSecond(getFullWeek(), getToc(), TimeSystem::GAL);
       return toReturn;
    }
 
@@ -711,11 +711,11 @@ namespace gpstk
    {
       CommonTime toReturn;
       if ( (getToe() - getHOWTime(1)) < -HALFWEEK)
-         toReturn = GPSWeekSecond(getFullWeek() + 1, getToe(), TimeSystem::GPS);
+         toReturn = GPSWeekSecond(getFullWeek() + 1, getToe(), TimeSystem::GAL);
       else if ( (getToe() - getHOWTime(1)) > HALFWEEK)
-         toReturn = GPSWeekSecond(getFullWeek() - 1, getToe(), TimeSystem::GPS);
+         toReturn = GPSWeekSecond(getFullWeek() - 1, getToe(), TimeSystem::GAL);
       else
-         toReturn = GPSWeekSecond(getFullWeek(), getToe(), TimeSystem::GPS);
+         toReturn = GPSWeekSecond(getFullWeek(), getToe(), TimeSystem::GAL);
       return toReturn;
    }
 
