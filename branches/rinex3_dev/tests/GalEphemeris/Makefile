@@ -1,7 +1,7 @@
 # The main bojangle!
-PROGRAMS = main
+PROGRAMS = GalEphemerisTest
 
-SRCS = main.c++ # GalileoTest.c++
+SRCS = GalEphemerisTest.c++ # GalileoTest.c++
 OBJS = $(SRCS:.c++=.o)
 
 # Give me compilers or give me death!
@@ -20,7 +20,7 @@ LIBS = ../../src/libgpstk-R3.a
 	@echo
 
 # Targets!
-all: main
+all: GalEphemerisTest
 
 help:
 	@echo
@@ -28,7 +28,7 @@ help:
 	@echo
 	@echo "    make clean   Cleans all output files."
 	@echo "    make help    Prints out this help."
-	@echo "    make         Builds the program to the executable, main."
+	@echo "    make         Builds the program to the executable, GalEphemerisTest."
 	@echo
 	@echo "NB. Inside of this Makefile, the proper directories need to be supplied"
 	@echo "    so that g++ can find the header files and the gpstk-R3 library."
@@ -36,7 +36,7 @@ help:
 	@echo "    The defaults should work fine, but in case of errors, check these first."
 	@echo
 
-main: $(OBJS)
+GalEphemerisTest: $(OBJS)
 	$(LD) $(OBJS) -o $@ $(LIBS)
 	@echo
 

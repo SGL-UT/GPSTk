@@ -64,78 +64,80 @@ void newline()
  */
 int main(int argc, char* argv[])
 {
-   if(argc > 1)
+   // No filename supplied...
+   if(argc == 1)
    {
-      // Checking Rinex3EphemerisStore...
-      Rinex3EphemerisStore ephstore;
-      try
-      {
-         ephstore.loadFile(argv[1]);
-         ephstore.dump(cout, DETAILLEVEL);
-      }
-      catch(Exception& e)
-      {
-         error("Could not open file.");
-      }
+      cout << "Usage: ./main FILE" << endl;
+
+      exit(0);
    }
    
-   if(argc > 1)
+   // Checking Rinex3EphemerisStore...
+   Rinex3EphemerisStore ephstore;
+   try
    {
-      // Read file from arguments.
-      GalEphemerisStore galstore;
-      Rinex3NavData data;
-      Rinex3NavHeader header;
+      ephstore.loadFile(argv[1]);
+      ephstore.dump(cout, DETAILLEVEL);
+   }
+   catch(Exception& e)
+   {
+      error("Could not open file.");
+   }
 
-      Rinex3NavStream input(argv[1]);
+   // Read file from arguments.
+   GalEphemerisStore galstore;
+   Rinex3NavData data;
+   Rinex3NavHeader header;
 
-      if(!input)
+   Rinex3NavStream input(argv[1]);
+
+   if(!input)
+   {
+      error("Could not open file.");
+   }
+
+   // Checking Rinex3NavHeader...
+   input >> header;
+
+   header.dump(cout);
+
+   // Add ephemeris.
+   while(input >> data)
+   {
+      // Checking Rinex3NavData...
+      if(data.satSys == "E")
       {
-         error("Could not open file.");
+         //Checking GalEphemerisStore...
+         info("Adding ephemeris...");
+         galstore.addEphemeris(data);
+      }
+      else
+      {
+         warn("Not a Galileo nav message.");
       }
 
-      // Checking Rinex3NavHeader...
-      input >> header;
+      data.dump(cout);
+   }
 
-      header.dump(cout);
-
-      // Add ephemeris.
-      while(input >> data)
-      {
-         // Checking Rinex3NavData...
-         if(data.satSys == "E")
-         {
-            //Checking GalEphemerisStore...
-            info("Adding ephemeris...");
-            galstore.addEphemeris(data);
-         }
-         else
-         {
-            warn("Not a Galileo nav message.");
-         }
-
-         data.dump(cout);
-      }
-
-      newline();
+   newline();
       
-      galstore.dump(cout, DETAILLEVEL);
+   galstore.dump(cout, DETAILLEVEL);
 
-      // Take a peek at an ephemeris inside galstore.
-      try
-      {
-         const SatID satID6(6, SatID::systemGalileo);
-         const GalEphemerisStore::GalEphMap& ephmap6 = galstore.getEphMap(satID6);
+   // Take a peek at an ephemeris inside galstore.
+   try
+   {
+      const SatID satID6(6, SatID::systemGalileo);
+      const GalEphemerisStore::GalEphMap& ephmap6 = galstore.getEphMap(satID6);
 
-         // Checking GalEphemeris...
-         const GalEphemerisStore::GalEphMap::const_iterator b = ephmap6.begin();
-         const GalEphemeris eph = b->second;
+      // Checking GalEphemeris...
+      const GalEphemerisStore::GalEphMap::const_iterator b = ephmap6.begin();
+      const GalEphemeris eph = b->second;
 
-         eph.dump(cout);
-      }
-      catch(Exception& e)
-      {
-         error("Invalid request!");
-      }
+      eph.dump(cout);
+   }
+   catch(Exception& e)
+   {
+      error("Invalid request!");
    }
 
    return 0;
