@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
    // No filename supplied...
    if(argc == 1)
    {
-      cout << "Usage: ./main FILE" << endl;
+      cout << "Usage: ./GalEphemerisTest FILE" << endl;
 
       exit(0);
    }
