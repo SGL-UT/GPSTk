@@ -420,17 +420,17 @@ namespace gpstk
           line += string(1, ' ');
           line += doub2for(M0  , 18, 2);
         }
-//      else if ( satSys == "E" ) // Galileo
-//        {
-//          line += string(1, ' ');
-//          line += doub2for(IODnav, 18, 2);
-//          line += string(1, ' ');
-//          line += doub2for(Crs   , 18, 2);
-//          line += string(1, ' ');
-//          line += doub2for(dn    , 18, 2);
-//          line += string(1, ' ');
-//          line += doub2for(M0    , 18, 2);
-//        }
+      else if ( satSys == "E" ) // Galileo
+        {
+          line += string(1, ' ');
+          line += doub2for(IODnav, 18, 2);
+          line += string(1, ' ');
+          line += doub2for(Crs   , 18, 2);
+          line += string(1, ' ');
+          line += doub2for(dn    , 18, 2);
+          line += string(1, ' ');
+          line += doub2for(M0    , 18, 2);
+        }
 
       return line;
    }
@@ -550,6 +550,11 @@ namespace gpstk
           line += string(1, ' ');
           line += doub2for((double)L2Pdata, 18, 2);
         }
+      else if ( satSys == "E") // Galileo
+        {
+          line += string(1, ' ');
+          line += doub2for((double) 0, 18, 2);
+        }
 
       return line;
    }
@@ -595,6 +600,11 @@ namespace gpstk
         {
           line += string(1, ' ');
           line += doub2for(fitint, 18, 2);         
+        }
+      else if ( satSys == "E" )
+        {
+          line += string(1, ' ');
+          line += doub2for((double) 0, 18, 2);
         }
 
       return line;
@@ -795,10 +805,20 @@ namespace gpstk
    {
       try
       {
-         accuracy  =                    StringUtils::for2doub(currentLine.substr( 4,19));
-         health    = static_cast<short>(StringUtils::for2doub(currentLine.substr(23,19)));
-         Tgd       =                    StringUtils::for2doub(currentLine.substr(42,19));
-         IODC      =                    StringUtils::for2doub(currentLine.substr(61,19));
+         if ( satSys == "G" )
+         {
+           accuracy  =                    StringUtils::for2doub(currentLine.substr( 4,19));
+           health    = static_cast<short>(StringUtils::for2doub(currentLine.substr(23,19)));
+           Tgd       =                    StringUtils::for2doub(currentLine.substr(42,19));
+           IODC      =                    StringUtils::for2doub(currentLine.substr(61,19));
+         }
+         else if ( satSys == "E" )
+         {
+           accuracy  =                    StringUtils::for2doub(currentLine.substr( 4,19));
+           health    = static_cast<short>(StringUtils::for2doub(currentLine.substr(23,19)));
+           BGDa      =                    StringUtils::for2doub(currentLine.substr(42,19));
+           BGDb      =                    StringUtils::for2doub(currentLine.substr(61,19));
+         }
       }
       catch (std::exception &e)
       {

@@ -5,9 +5,6 @@ ________________________________________________________________________________
 This is a basic program that runs through the process of adding a Galileo Nav
 Message File to the GalEphemeris class and its corresponding classes.
 
-As of now (1/6/10) an example file is added and then dumped. There is no
-extensive testing done on the actual classes.
-
 The example nav message file was created from the GPS Nav Message File example
 given in the RINEX 3.00 spec and has been modified to look like a Galileo
 Nav Message File. []
@@ -44,6 +41,13 @@ This will run the program and output a dump of the Nav Message File. []
 
 Changelog
 ________________________________________________________________________________
+
+1/8/10:
+
+    Moved tests to functions. Added simple input/output "test" where the output
+    file should diff perfectly with the input file. See ../FunctionalTests.
+
+    by Benry Yip.
 
 1/6/10:
 

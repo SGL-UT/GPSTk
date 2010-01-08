@@ -1,9 +1,9 @@
-3.00                N: GNSS NAV DATA    E: GALILEO          RINEX VERSION / TYPE
+      3.00          N: GNSS NAV DATA    E: GALILEO          RINEX VERSION / TYPE
 XXRINEXN V3         AIUB                19990903 152236 UTC PGM / RUN BY / DATE
 EXAMPLE OF VERSION 3.00 FORMAT                              COMMENT
-GAL    .1676D-07   .2235D-07   .1192D-06   .1192D-06        IONOSPHERIC CORR
-GAUT   .1331791282D-06  .107469589D-12 552960 1025          TIME SYSTEM CORR
-13                                                          LEAP SECONDS
+GAL   .1676D-07   .2235D-07   .1192D-06   .1192D-06         IONOSPHERIC CORR
+GAUT  .1331791282D-06  .107469589D-12 552960 1025           TIME SYSTEM CORR
+    13                                                      LEAP SECONDS
                                                             END OF HEADER
 E06 1999 09 02 17 51 44 -.839701388031D-03 -.165982783074D-10  .000000000000D+00 
       .910000000000D+02  .934062500000D+02  .116040547840D-08  .162092304801D+00 
