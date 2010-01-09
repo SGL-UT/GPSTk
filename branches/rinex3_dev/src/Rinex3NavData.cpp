@@ -832,8 +832,8 @@ namespace gpstk
    {
       try
       {
-         HOWtime = static_cast<short>(StringUtils::for2doub(currentLine.substr( 4,19)));
-         fitint  =                    StringUtils::for2doub(currentLine.substr(23,19));
+         HOWtime = static_cast<long>(StringUtils::for2doub(currentLine.substr( 4,19)));
+         fitint  =                   StringUtils::for2doub(currentLine.substr(23,19));
 
          // In RINEX *files*, weeknum is the week of TOE.
          // Internally (Rinex3NavData and EngEphemeris), weeknum is the week of HOW.
