@@ -42,7 +42,7 @@ else
       FileSpec.cpp
       
       GalEphemeris.cpp GalEphemerisStore.cpp GaussianDistribution.cpp
-      GenXSequence.cpp Geodetic.cpp GloEphemerisStore.cpp GloRecord.cpp
+      GenXSequence.cpp Geodetic.cpp GloEphemerisStore.cpp GloFreqIndex.cpp GloRecord.cpp
       GPSAlmanacStore.cpp GPSEphemerisStore.cpp GPSWeek.cpp GPSWeekSecond.cpp
       GPSWeekZcount.cpp GPSZcount.cpp
       
@@ -126,7 +126,7 @@ else
       FileStore.hpp FileUtils.hpp
       
       GaussianDistribution.hpp GenXSequence.hpp Geodetic.hpp
-      GeoidModel.hpp GPSAlmanacStore.hpp GPSEllipsoid.hpp
+      GeoidModel.hpp GloFreqIndex.hpp GPSAlmanacStore.hpp GPSEllipsoid.hpp
       GPSEphemerisStore.hpp GPSGeoid.hpp GPSWeek.hpp GPSWeekSecond.hpp
       GPSWeekZcount.hpp GPSZcount.hpp 
       
