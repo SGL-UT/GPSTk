@@ -21,6 +21,7 @@
 //  Copyright 2007, The University of Texas at Austin
 //
 //============================================================================
+
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
@@ -58,7 +59,7 @@
 
 namespace gpstk
 {
-   /** @addtogroup msc */
+   /** @addtogroup MSC */
    //@{
    
    /// Store Monitor Station coordinate information and return either the

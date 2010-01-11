@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -39,10 +37,6 @@
 //=============================================================================
 
 
-
-
-
-
 /**
  * @file MSCData.hpp
  * Monitor station coordinate file data
@@ -61,7 +55,7 @@
 
 namespace gpstk
 {
-      /** @addtogroup icd211group ICD-GPS-211 Classes */
+      /** @addtogroup MSC */
       //@{
 
       /** 

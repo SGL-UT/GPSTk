@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: $"
 
 //============================================================================
 //
@@ -37,45 +37,67 @@
 //=============================================================================
 
 
-/**
- * @file MSCStream.hpp
- * Read/Write Monitorm station coordinate file data
- */
+#ifndef MSCCALCULATOR_HPP
+#define MSCCALCULATOR_HPP
 
-#ifndef MSCSTREAM_HPP
-#define MSCSTREAM_HPP
-
-#include "FFTextStream.hpp"
+#include <list>
+#include <map>
+#include <Exception.hpp>
+#include <DayTime.hpp>
+#include <ECEF.hpp>
+#include "MSCData.hpp"
 
 namespace gpstk
 {
-      /** @addtogroup MSC */
+      /** @addtogroup fileutilsgroup MSN File Processing Tools */
       //@{
 
-      /// Stream used to obtain data from a Monitor Station Coordinates File
-   class MSCStream : public gpstk::FFTextStream
+      /**
+       * This class is an engine for determining the current position
+       * of a Monitor Station given it's ECEF XYZ position at a point in
+       * time and the continental drift velocity vectors.
+       */
+   class MSCCalculator
    {
    public:
-         /// Default constructor
-      MSCStream() {}
+
+
+         /// default constructor
+      MSCCalculator() {}
+      
+         /**
+          * constructor
+          * @param msclist a list of MSCData objects
+          */
+      MSCCalculator(std::list<MSCData>& msclist) throw()
+         { load(msclist); }
+      
+         /// loads the data in the msclist into the calculator
+      MSCCalculator& load(std::list<MSCData>& msclist) throw();
 
          /**
-          * Constructor.
-          * @param fn the file to open
-          * @param mode the ios::openmode to use in opening \a fn
+          * return the station postion for the requested time
+          * @param station the NIMA assigned number of the station of interest
+          * @param time the time at which the position is required
+          * @return an ECEF XYZ position for \c station valid at \c time
+          * @throw gpstk::InvalidRequest no position could be determined for 
+          *        \c station at \c time
           */
-      MSCStream(const char* fn, std::ios::openmode mode=std::ios::in)
-         throw()
-            : gpstk::FFTextStream(fn, mode)
-      {}
-      
-         /// Destructor
-      virtual ~MSCStream() {}
+      gpstk::ECEF getPosition(unsigned long station,
+                               const gpstk::DayTime& time) const
+         throw(gpstk::InvalidRequest);
 
-   }; // class MSCStream
+   private:
+
+         /// contains all the MSCData objects keyed by station id
+      std::map<unsigned long, std::list<MSCData> > mscmap;
+
+         /// the number of seconds in a year
+      static const unsigned long SEC_YEAR;
+   }; // class MSCCalculator
 
       //@}
 
 } // namespace gpstk
 
-#endif   
+#endif
