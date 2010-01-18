@@ -37,14 +37,14 @@ else
       GaussianDistribution.cpp GenXSequence.cpp Geodetic.cpp 
       IonexData.cpp IonexHeader.cpp IonexStore.cpp
       IonoModel.cpp IonoModelStore.cpp JulianDate.cpp LinearClockModel.cpp
-      LoopedFramework.cpp MJD.cpp MOPSWeight.cpp MSCCalculator.cpp MSCData.cpp
+      LoopedFramework.cpp MJD.cpp MOPSWeight.cpp MSCData.cpp
       MSCStore.cpp MoonPosition.cpp NEDUtil.cpp ObsClockModel.cpp
       ObsEpochMap.cpp ObsID.cpp ObsRngDev.cpp OceanLoading.cpp PRSolution.cpp
       PoleTides.cpp Position.cpp PowerSum.cpp
       RACRotation.cpp RinexEphemerisStore.cpp RinexMetData.cpp
       RinexMetHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
       RinexObsData.cpp RinexObsHeader.cpp RinexObsID.cpp
-      RinexSatID.cpp RinexUtilities.cpp RungeKutta4.cpp 
+      RinexSatID.cpp RinexUtilities.cpp RungeKutta4.cpp
       SEMAlmanacStore.cpp SEMData.cpp SEMHeader.cpp
       SMODFData.cpp SP3Data.cpp SP3EphemerisStore.cpp
       SP3Header.cpp SP3SatID.cpp SVExclusionList.cpp
@@ -56,6 +56,9 @@ else
       TimeTag.cpp Triple.cpp TropModel.cpp TypeID.cpp UnixTime.cpp
       VectorBase.cpp WxObsMap.cpp X1Sequence.cpp X2Sequence.cpp
       Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp YumaData.cpp
+      IIRDifferentiator.cpp IIRIntegrator.cpp
+      FIRDifferentiator1stOrder.cpp FIRDifferentiator3rdOrder.cpp
+      FIRDifferentiator5thOrder.cpp
       $(GETOPT_SOURCE)
       ;
 
@@ -88,7 +91,7 @@ else
       IonexBase.hpp IonexData.hpp IonexHeader.hpp IonexStore.hpp
       IonexStream.hpp IonoModel.hpp IonoModelStore.hpp JulianDate.hpp
       LinearClockModel.hpp LoopedFramework.hpp
-      MJD.hpp MOPSWeight.hpp MSCBase.hpp MSCCalculator.hpp MSCData.hpp
+      MJD.hpp MOPSWeight.hpp MSCBase.hpp MSCData.hpp
       MSCHeader.hpp MSCStore.hpp MSCStream.hpp MathBase.hpp Matrix.hpp
       MatrixBase.hpp MatrixBaseOperators.hpp MatrixFunctors.hpp
       MatrixImplementation.hpp MatrixOperators.hpp MiscMath.hpp
@@ -121,6 +124,9 @@ else
       YumaStream.hpp convhelp.hpp geometry.hpp
       gps_constants.hpp gpstkplatform.h icd_200_constants.hpp
       mergePCodeWords.h stl_helpers.hpp
+      FilterBase.hpp IIRDifferentiator.hpp IIRIntegrator.hpp
+      FIRDifferentiator1stOrder.hpp FIRDifferentiator3rdOrder.hpp
+      FIRDifferentiator5thOrder.hpp
       $(GETOPT_INC)
       ;
 }

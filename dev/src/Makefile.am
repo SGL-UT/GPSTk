@@ -20,7 +20,7 @@ GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp GaussianDistribution.cpp \
 GenXSequence.cpp Geodetic.cpp \
 IonexData.cpp IonexHeader.cpp IonexStore.cpp IonoModel.cpp \
 IonoModelStore.cpp JulianDate.cpp LinearClockModel.cpp LoopedFramework.cpp \
-MJD.cpp MOPSWeight.cpp MSCCalculator.cpp MSCData.cpp MSCStore.cpp \
+MJD.cpp MOPSWeight.cpp MSCData.cpp MSCStore.cpp \
 MoonPosition.cpp NEDUtil.cpp ObsClockModel.cpp ObsEpochMap.cpp ObsID.cpp \
 ObsRngDev.cpp OceanLoading.cpp \
 PRSolution.cpp PoleTides.cpp Position.cpp PowerSum.cpp RACRotation.cpp \
@@ -61,7 +61,7 @@ GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp GaussianDistribution.hpp \
 GenXSequence.hpp Geodetic.hpp GeoidModel.hpp InOutFramework.hpp \
 IonexBase.hpp IonexData.hpp IonexHeader.hpp IonexStore.hpp IonexStream.hpp \
 IonoModel.hpp IonoModelStore.hpp JulianDate.hpp LinearClockModel.hpp \
-LoopedFramework.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp MSCCalculator.hpp \
+LoopedFramework.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp \
 MSCData.hpp MSCHeader.hpp MSCStore.hpp MSCStream.hpp MathBase.hpp Matrix.hpp \
 MatrixBase.hpp MatrixBaseOperators.hpp MatrixFunctors.hpp \
 MatrixImplementation.hpp MatrixOperators.hpp MiscMath.hpp \
