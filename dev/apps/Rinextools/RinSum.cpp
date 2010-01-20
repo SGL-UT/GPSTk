@@ -27,8 +27,6 @@
  * Read and summarize Rinex observation files, optionally fill header in-place.
  */
 
-#include <cstring>
-
 #include "MathBase.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
@@ -43,23 +41,23 @@
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
-#include "CommandOptionWithTimeArg.hpp"
 #include "icd_200_constants.hpp"
 #include "RinexUtilities.hpp"
 
+#include <cstring>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-#include <time.h>
+#include <ctime>
 
 using namespace std;
 using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string version("2.4 1/22/07");
+string version("2.8 5/07/09");
 
 // data input from command line
 vector<string> InputFiles;
@@ -67,18 +65,13 @@ string InputDirectory;
 string OutputFile;
 ostream* pout;
 DayTime BegTime, EndTime;
-bool ReplaceHeader=false;
-bool TimeSortTable=false;
-bool GPSTimeOutput=false;
-bool debug=false;
-bool brief=false;
-
-//------------------------------------------------------------------------------------
-// data used for computation
-const int ndtmax=15;
-double dt,bestdt[ndtmax];
-int ndt[ndtmax]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
-int nepochs,ncommentblocks;
+bool ReplaceHeader=false;     // replace the file header in-place
+bool TimeSortTable=false;     // sort the PRN/Obs table on time (else PRN)
+bool GPSTimeOutput=false;     // output GPS times (week, sec-of-week)
+bool debug=false;             // debug output - prints all the data
+bool brief=false;             // brief output
+bool progress=false;          // output progress info to screen (for GUI)
+bool screen=false;            // print to screen even if OutputFile is given
 
 //------------------------------------------------------------------------------------
 // class used to store SAT/Obs table
@@ -120,13 +113,18 @@ try {
    vector<DayTime> clkjumpTimes;
    vector<double> clkjumpMillsecs,clkjumpUncertainty;
    vector<int> clkjumpAgree;
+   // data used for computation
+   const int ndtmax=15;
+   double dt,bestdt[ndtmax];
+   int ndt[ndtmax];
+   int nepochs,ncommentblocks;
 
-   BegTime = DayTime::BEGINNING_OF_TIME;
+   BegTime = DayTime::BEGINNING_OF_TIME;  // init. here to avoid static init.problem
    EndTime = DayTime::END_OF_TIME;
 
       // Title and description
    string Title;
-   Title = "RINSUM, part of the GPS ToolKit, Ver " + version + ", Run ";
+   Title = "RinSum, part of the GPS ToolKit, Ver " + version + ", Run ";
    time_t timer;
    struct tm *tblock;
    timer = time(NULL);
@@ -155,41 +153,64 @@ try {
          cout << "Writing summary to file " << OutputFile << endl;
       }
    }
-   else pout = &cout;
+   else {
+      pout = &cout;
+      screen = false;
+   }
 
       // add path to input file names
    if(!InputDirectory.empty()) for(ifile=0; ifile<InputFiles.size(); ifile++) {
       InputFiles[ifile] = InputDirectory + "/" + InputFiles[ifile];
    }
+
       // sort the input file names on header first time
    if(InputFiles.size() > 1) sortRinexObsFiles(InputFiles);
+
+   if(InputFiles.size() == 0) {
+      *pout << "File(s) do not exist or are not RINEX observation\n";
+      if(screen) cout << "File(s) do not exist or are not RINEX observation\n";
+      return -1;
+   }
 
       // now open the input files, read the headers and data
    RinexObsHeader rheader;
    RinexObsData robs;
    for(ifile=0; ifile<InputFiles.size(); ifile++) {
-      string filename;
-      if(!InputDirectory.empty()) filename = InputDirectory + "/";
-      filename += InputFiles[ifile];
+      int nprogress;
+      if(progress) cout << "PROGRESS " << (nprogress=5) << endl << flush;
+
+      string filename = InputFiles[ifile];
       RinexObsStream InStream(filename.c_str());
-      if(!InStream) {
+      if(!InStream.is_open()) {
          *pout << "File " << filename << " could not be opened.\n";
+         if(screen) cout << "File " << filename << " could not be opened.\n";
          continue;
       }
+      //else *pout << "File " << filename << " has been successfully opened.\n";
       InStream.exceptions(ios::failbit);
-      if(!isRinexObsFile(filename)) {
-         *pout << "File " << filename << " is not a Rinex observation file\n";
-         if(isRinexNavFile(filename))
-            *pout << "This file is a Rinex navigation file - try NavMerge\n";
-         continue;
-      }
+
+      // get file size
+      long begin,end,filesize,bytesperepoch=1300,totN;
+      begin = InStream.tellg();
+      InStream.seekg(0,ios::end);
+      end = InStream.tellg();
+      InStream.seekg(0,ios::beg);
+      filesize = end-begin;
+      totN = filesize/bytesperepoch;
 
       prev = DayTime::BEGINNING_OF_TIME;
       ftime = DayTime::BEGINNING_OF_TIME;
 
-      if(!brief) *pout << "+++++++++++++ RinSum summary of Rinex obs file "
-         << filename << " +++++++++++++\n";
-      else *pout << "\nFile name: " << filename << endl;
+      if(!brief) {
+         *pout << "+++++++++++++ RinSum summary of Rinex obs file "
+            << filename << " +++++++++++++\n";
+         if(screen) cout << "+++++++++++++ RinSum summary of Rinex obs file "
+            << filename << " +++++++++++++\n";
+      }
+      else {
+         *pout << "\nFile name: " << filename << endl;
+         if(screen) cout << "\nFile name: " << filename << endl;
+      }
       
          // input header
       try {
@@ -205,23 +226,34 @@ try {
       }
 
       if(!brief) {
-         *pout << "Rinex header:\n";
-         rheader.dump(*pout);
+         *pout << "Rinex header:\n"; rheader.dump(*pout);
+         if(screen) { cout << "Rinex header:\n"; rheader.dump(cout); }
       }
-      else *pout << "Position (XYZ,m) : " << fixed << setprecision(4)
-         << rheader.antennaPosition << ".\n";
+      else {
+         *pout << "Position (XYZ,m) : " << fixed << setprecision(4)
+            << rheader.antennaPosition << ".\n";
+         if(screen) cout << "Position (XYZ,m) : " << fixed << setprecision(4)
+            << rheader.antennaPosition << ".\n";
+      }
 
       if(!rheader.isValid()) {
          *pout << "Abort: header is invalid\n";
-         if(!brief) *pout << "\n+++++++++++++ End of RinSum summary of "
-            << filename << " +++++++++++++\n";
+         if(screen) cout << "Abort: header is invalid\n";
+         if(!brief) {
+            *pout << "\n+++++++++++++ End of RinSum summary of " << filename
+               << " +++++++++++++\n";
+            if(screen) cout << "\n+++++++++++++ End of RinSum summary of "
+               << filename << " +++++++++++++\n";
+         }
          continue;
       }
 
       //RinexObsStream out(argv[2], ios::out);
       //out << rheader;
 
+      // initialize
       nepochs = ncommentblocks = 0;
+      for(i=0; i<ndtmax; i++) ndt[i]=-1;
       n = rheader.obsTypeList.size();
       vector<TableData> table;
       vector<int> totals(n);
@@ -229,6 +261,7 @@ try {
       if(pout == &cout) *pout << "Reading the observation data..." << endl;
 
          // input obs
+      if(progress) cout << "PROGRESS " << (nprogress+=5) << endl << flush;
       while(InStream >> robs)
       {
          if(debug) *pout << "Epoch: " << robs.time
@@ -371,49 +404,59 @@ try {
             }
             else {
                cerr << " WARNING time tags out of order: "
-                  //<< " prev > curr : "
+                  //<< " prev >= curr : "
                   << prev.printf("%F/%.0g = %04Y/%02m/%02d %02H:%02M:%02S")
-                  << " > "
+                  << " >= "
                   << last.printf("%F/%.0g = %04Y/%02m/%02d %02H:%02M:%02S")
                   << endl;
             }
          }
          prev = last;
 
+         if(progress && nepochs % 500 == 0)
+            cout << "PROGRESS " << (nprogress=10+85*nepochs/totN) << endl << flush;
       }  // end loop over epochs in the file
       InStream.close();
+
+      if(progress && ifile > 0)
+         cout << "PROGRESS " << (nprogress=95) << endl << flush;
 
          // check that we found some data
       if(nepochs <= 0) {
          *pout << "File " << filename << " : no data found. Are time limits wrong?\n";
+         if(screen) cout << "File "
+            << filename << " : no data found. Are time limits wrong?\n";
          continue;
       }
 
          // compute interval
       for(i=1,j=0; i<ndtmax; i++) if(ndt[i]>ndt[j]) j=i;
       dt = bestdt[j];
+ 
+      ostringstream oss;
 
          // summary info
-      *pout << "Computed interval "
+      oss << "Computed interval "
          << fixed << setw(5) << setprecision(2) << dt << " seconds." << endl;
-      *pout << "Computed first epoch: " << ftime.printf("%4F %14.7g") << " = "
+      oss << "Computed first epoch: " << ftime.printf("%4F %14.7g") << " = "
             << ftime.printf("%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
-      *pout << "Computed last  epoch: " << last.printf("%4F %14.7g") << " = "
+      oss << "Computed last  epoch: " << last.printf("%4F %14.7g") << " = "
             << last.printf("%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
 
-      *pout << "Computed time span:";
+      oss << "Computed time span:";
       double secs=last-ftime;
       int iday = int(secs/86400.0);
-      if(iday > 0) *pout << " " << iday << "d";
+      if(iday > 0) oss << " " << iday << "d";
       DayTime delta;
       delta.setSecOfDay(secs - iday*86400);
-      *pout << " " << delta.hour() << "h "
+      oss << " " << delta.hour() << "h "
          << delta.minute() << "m "
          << delta.second() << "s = "
-         << secs << " seconds." << endl;
+         << secs << " seconds\nComputed file size: "
+         << filesize << " bytes." << endl;
 
       i = 1+int(0.5+(last-ftime)/dt);
-      if(!brief) *pout << "There were " << nepochs << " epochs ("
+      if(!brief) oss << "There were " << nepochs << " epochs ("
          << setprecision(2) << double(nepochs*100)/i
          << "% of " << i << " possible epochs in this timespan) and "
          << ncommentblocks << " inline header blocks.\n";
@@ -427,74 +470,78 @@ try {
       vector<TableData>::iterator tit;
       if(table.size() > 0) table.begin()->sat.setfill('0');
       if(!brief) {
-         *pout << "\n          Summary of data available in this file: "
+         oss << "\n          Summary of data available in this file: "
             << "(Totals are based on times and interval)\n";
-         *pout << "Sat  OT:";
+         oss << "Sat  OT:";
          for(k=0; k<n; k++)
-            *pout << setw(7) << rheader.obsTypeList[k].type;
-         *pout << "  Total             Begin time - End time\n";
+            oss << setw(7) << rheader.obsTypeList[k].type;
+         oss << "  Total             Begin time - End time\n";
             // loop
          for(tit=table.begin(); tit!=table.end(); ++tit) {
-            *pout << "Sat " << tit->sat << " ";
-            for(k=0; k<n; k++) *pout << setw(7) << tit->nobs[k];
+            oss << "Sat " << tit->sat << " ";
+            for(k=0; k<n; k++) oss << setw(7) << tit->nobs[k];
             // compute total based on times
-            *pout << setw(7) << 1+int(0.5+(tit->end-tit->begin)/dt);
+            oss << setw(7) << 1+int(0.5+(tit->end-tit->begin)/dt);
             if(GPSTimeOutput) {
-               *pout << "  " << tit->begin.printf("%4F %10.3g")
+               oss << "  " << tit->begin.printf("%4F %10.3g")
                   << " - " << tit->end.printf("%4F %10.3g") << endl;
             }
             else {
-               *pout
+               oss
                   << "  " << tit->begin.printf("%04Y/%02m/%02d %02H:%02M:%04.1f")
                   << " - " << tit->end.printf("%04Y/%02m/%02d %02H:%02M:%04.1f")
                   << endl;
             }
          }
-         *pout << "TOTAL   "; for(k=0; k<n; k++) *pout << setw(7) << totals[k];
-         *pout << endl;
+         oss << "TOTAL   "; for(k=0; k<n; k++) oss << setw(7) << totals[k];
+         oss << endl;
       }
       else {
-         *pout << "SATs(" << table.size() << "):";
+         oss << "SATs(" << table.size() << "):";
          for(tit=table.begin(); tit!=table.end(); ++tit)
-            *pout << " " << tit->sat;
-         *pout << endl;
+            oss << " " << tit->sat;
+         oss << endl;
 
-         *pout << "Obs types(" << rheader.obsTypeList.size() << "): ";
+         oss << "Obs types(" << rheader.obsTypeList.size() << "): ";
          for(i=0; i<rheader.obsTypeList.size(); i++)
-            *pout << " " << rheader.obsTypeList[i].type;
-         *pout << endl;
+            oss << " " << rheader.obsTypeList[i].type;
+         oss << endl;
       }
 
          // warnings
       if((rheader.valid & RinexObsHeader::intervalValid)
             && fabs(dt-rheader.interval) > 1.e-3)
-         *pout << " WARNING: Computed interval is " << setprecision(2)
+         oss << " WARNING: Computed interval is " << setprecision(2)
             << dt << " sec, while input header has " << setprecision(2)
             << rheader.interval << " sec.\n";
       if(fabs(ftime-rheader.firstObs) > 1.e-8)
-         *pout << " WARNING: Computed first time does not agree with header\n";
+         oss << " WARNING: Computed first time does not agree with header\n";
       if((rheader.valid & RinexObsHeader::lastTimeValid)
             && fabs(last-rheader.lastObs) > 1.e-8)
-         *pout << " WARNING: Computed last time does not agree with header\n";
+         oss << " WARNING: Computed last time does not agree with header\n";
 
       if(clkjumpTimes.size() > 0) {
-         *pout << " WARNING: millisecond clock adjusts at these times:\n";
+         oss << " WARNING: millisecond clock adjusts at these times:\n";
          for(i=0; i<clkjumpTimes.size(); i++) {
-            *pout << "   "
+            oss << "   "
              << clkjumpTimes[i].printf("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%06.3f")
              << " " << setw(5) << setprecision(2) << clkjumpMillsecs[i]
              << " ms_clock_adjust";
              if(clkjumpAgree[i] > 0 || clkjumpUncertainty[i] > 0.01)
-               *pout << " (low quality determination; data may be irredeemable)";
-            *pout << endl;
+               oss << " (low quality determination; data may be irredeemable)";
+            oss << endl;
          }
       }
          // look for 'empty' obs types
       for(k=0; k<n; k++) {
-         if(totals[k] <= 0) *pout << " WARNING: ObsType "
+         if(totals[k] <= 0) oss << " WARNING: ObsType "
             << rheader.obsTypeList[k].type
             << " should be deleted from header.\n";
       }
+
+      // print
+      *pout << oss.str();
+      if(screen) cout << oss.str();
 
       if(ReplaceHeader) {
             // modify the header
@@ -544,22 +591,30 @@ try {
          InAgain.close();
          ROutStr.close();
             // delete original file and rename the temporary
+         ostringstream oss2;
          iret = remove(filename.c_str());
-         if(iret) *pout << "RinSum: Error: Could not remove existing file: "
+         if(iret) oss2 << "RinSum: Error: Could not remove existing file: "
             << filename << endl;
          else {
             iret = rename(newname,filename.c_str());
-            if(iret) *pout << "RinSum: Error: Could not rename new file " << newname
+            if(iret) oss2 << "RinSum: Error: Could not rename new file " << newname
                << " using old name " << filename << endl;
-            else *pout << "\nRinSum: Replaced original header with complete one,"
+            else oss2 << "\nRinSum: Replaced original header with complete one,"
                << " using temporary file name "
                << newname << endl;
          }
+         *pout << oss2.str();
+         if(screen) cout << oss2.str();
       }
 
-      if(!brief) *pout << "\n+++++++++++++ End of RinSum summary of " << filename
-         << " +++++++++++++\n";
-   }
+      if(!brief) {
+         *pout << "\n+++++++++++++ End of RinSum summary of " << filename
+            << " +++++++++++++\n";
+         if(screen) cout << "\n+++++++++++++ End of RinSum summary of " << filename
+            << " +++++++++++++\n";
+      }
+
+   }  // end loop over input files
 
    if(pout != &cout) {
       ((ofstream *)pout)->close();
@@ -584,60 +639,60 @@ try {
 
       // optional
    CommandOption dashi(CommandOption::hasArgument, CommandOption::stdType,
-      'i',"input"," [-i|--input] <file>  Input RINEX observation file name(s)");
+      'i',"input"," [-i|--input] <file>  Input RINEX observation file names ()");
    //dashi.setMaxCount(1);
 
       // optional options
       // this only so it will show up in help page...
-   CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
-      'f',""," [-f|--file] <file>   file containing more options");
+   CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,'f',
+      "file"," [-f|--file] <file>   file containing more options ()");
 
-   CommandOption dasho(CommandOption::hasArgument, CommandOption::stdType,
-      'o',"output"," [-o|--output] <file> Output the summary to a file named <file>");
+   CommandOption dasho(CommandOption::hasArgument, CommandOption::stdType,'o',
+      "output"," [-o|--output] <file> Output the summary to a file named <file> ()");
    dasho.setMaxCount(1);
    
-   CommandOption dashp(CommandOption::hasArgument, CommandOption::stdType,
-      'p',"path"," [-p|--path] <path>   Find the input file(s) in this directory");
+   CommandOption dashp(CommandOption::hasArgument, CommandOption::stdType, 'p',
+      "path"," [-p|--path] <path>   Find the input file(s) in this directory (.)");
    dashp.setMaxCount(1);
 
    CommandOptionNoArg dashr('R', "Replace",
-      " [-R|--Replace]       Replace input file header with a full one, in place.");
+      " [-R|--Replace]       Replace input file header with a full one, in place ()");
    dashr.setMaxCount(1);
 
    CommandOptionNoArg dashs('s', "sort",
-      " [-s|--sort]          Sort the SAT/Obs table on begin time.");
+      " [-s|--sort]          Sort the SAT/Obs table on begin time (don't)");
 
    CommandOptionNoArg dashg('g', "gps",
-      " [-g|--gps]           Print times in the SAT/Obs table as GPS times.");
+      " [-g|--gps]           Print times in the SAT/Obs table as GPS times (don't)");
 
    // time
    // times - don't use CommandOptionWithTimeArg
    CommandOption dashbt(CommandOption::hasArgument, CommandOption::stdType,
       0,"start", " --start <time>       Start time: <time> is 'GPSweek,sow' OR "
-      "'YYYY,MM,DD,HH,Min,Sec'");
+      "'YYYY,MM,DD,HH,Min,Sec' ()");
    dashbt.setMaxCount(1);
 
    CommandOption dashet(CommandOption::hasArgument, CommandOption::stdType,
       0,"stop", " --stop <time>        Stop time: <time> is 'GPSweek,sow' OR "
-      "'YYYY,MM,DD,HH,Min,Sec'");
+      "'YYYY,MM,DD,HH,Min,Sec' ()");
    dashet.setMaxCount(1);
 
    CommandOptionNoArg dashb('b', "brief",
-      " [-b|--brief]         produce a brief (6-line) summary.");
+      " [-b|--brief]         produce a brief (6-line) summary (don't)");
 
    // help and debug
    CommandOptionNoArg dashh('h', "help",
-      " [-h|--help]          print this help page and quit.");
+      " [-h|--help]          print this help page and quit (don't)");
    CommandOptionNoArg dashd('d', "debug",
-      " [-d|--debug]         print debugging info.");
+      " [-d|--debug]         print debugging info (don't)");
 
    // ... other options
    CommandOptionRest Rest("<filename(s)>");
 
    CommandOptionParser Par(
-      "Prgm RINSUM reads a Rinex file and summarizes it content.\n"
-      " It can optionally fill the header of the input file.\n"
-      " [either <filenames> or --input required; put <filenames> after options].\n"
+      "Prgm RinSum reads a Rinex file and summarizes it content. It can also\n"
+      " (option) fill in the header of the input file. NB. Either <filenames>\n"
+      " or --input is required; put <filenames> after all options.\n"
       );
 
    // allow user to put all options in a file
@@ -663,13 +718,12 @@ try {
    delete[] CArgs;
 
       // get help option first
-   if(dashh.getCount() > 0) {
+   if(dashh.getCount()) {
       Par.displayUsage(cout,false);
       help = true;   //return 1;
    }
 
-   if (Par.hasErrors())
-   {
+   if(Par.hasErrors()) {
       cerr << "\nErrors found in command line input:\n";
       Par.dumpErrors(cerr);
       cerr << "...end of Errors\n\n";
@@ -762,11 +816,10 @@ try {
       if(help) cout << "Input: found the debug flag" << endl;
    }
 
-   if(Rest.getCount())
-   {
+   if(Rest.getCount()) {
       values = Rest.getValue();
       if(help) cout << "Input: input files are:\n";
-      for (int i=0; i<values.size(); i++) {
+      for(int i=0; i<values.size(); i++) {
          if(help) cout << "  " << values[i] << endl;
          InputFiles.push_back(values[i]);
       }
@@ -843,6 +896,9 @@ try {
    else if(string(arg)==string("--GPSBeg")) { Args.push_back("--start"); }
    else if(string(arg)==string("--EpochEnd")) { Args.push_back("--stop"); }
    else if(string(arg)==string("--GPSEnd")) { Args.push_back("--stop"); }
+   // undocumented args
+   else if(string(arg)==string("--progress")) progress = true;
+   else if(string(arg)==string("--screen")) screen = true;
    // regular arg
    else Args.push_back(arg);
 }
