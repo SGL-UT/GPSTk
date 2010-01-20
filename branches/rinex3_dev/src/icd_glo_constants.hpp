@@ -94,13 +94,14 @@ namespace gpstk
       {
          for (int n = -7; n <= 12; n++)
          {
-            L1map[n] = 1602.0e6 + n*562.5e3;
-            L2map[n] = 1246.0e6 + n*436.5e3;
+            // Frequencies in MHz.
+            L1map[n] = 1602.0 + n*562.5e-3;
+            L2map[n] = 1246.0 + n*436.5e-3;
          }
       }
-      static GloFreq *mInstance; // Object that is created only once.
+      static GloFreq* mInstance; // Object that is created only once.
    public:
-      GloFreq* instance() // Method to get object.
+      static GloFreq* instance() // Method to get object.
       {
          if (mInstance == NULL) mInstance = new GloFreq();
          return mInstance;

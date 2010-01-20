@@ -95,8 +95,18 @@ namespace gpstk
          return calcIndex( r1, p1, r2, p2 );
       }
 
+      /// This method returns the GLONASS index for a given SV.
+      /// It returns -100 if there is no entry for the given SatID.
+      int getGloIndex( const RinexSatID& id )
+         throw();
+
       /// This method returns the GLONASS frequency for a given SV and band.
-      double getGloFreq( const RinexSatID& id, const int& band )
+      /// It calls getGloIndex(id) to get the channel index, then looks up
+      /// the frequency in icd_glo_constants.  The error codes are:
+      ///    0  no error
+      ///    1  no entry for the given SatID
+      ///    2  invalid frequency band
+      double getGloFreq( const RinexSatID& id, const int& band, int& error )
          throw();
 
       /// Dump the contents of the data store in a nice format.
@@ -113,14 +123,17 @@ namespace gpstk
          int    pG1, pG2; // number of points in pass
          double fG1, fG2; // float   index solutions
          int    nG1, nG2; // integer index solutions
-         double sG1, sG2; // standard deviations on the float solutions
+         double dG1, dG2; // error on the float solutions
       };
 
       /// Vector of Data structs to store multiple passes.
       typedef std::vector<IndexData> Data;
 
-                     /// Map of data by SV ID.
+      /// Map of data (vector of IndexData structs) by SV ID.
       std::map< RinexSatID, Data > dataMap;
+
+      /// Map of index solutions (single integer) by SV ID.
+      std::map< RinexSatID, int > freqIndex;
 
    }; // class GloFreqIndex
 
