@@ -1,5 +1,128 @@
 \section*{Project Overview}
 
-Purpose, license, organization, capabilities, installation, other open source GNSS tools.
+The GPSTk suite is composed of a set of libraries and more advanced
+applications built upon them. The libraries provides a wide array of
+functions that solve common GNSS processing tasks such as the
+navigation solution or reading a RINEX file.  The applications can be
+used by non-programmers to solve specific, well known tasks.
 
-Ben Harris or Rick Mach. Approximately one page.
+\subsection*{Design}
+
+The design goals of the GPSTk library are portability, modularity,
+clarity, extensibility, and maintainability. These goals allow the
+GPSTk to maximize the audience and lifetime of the library while
+decreasing the costs associated with long-term maintenance. Another
+factor in the design is that GNSS users employ practically every
+computational architecture and operating system. Therefore, the design
+of the GPSTk suite is as platform-independent as possible. For these
+reasons, the GPSTk source is build using C++, and strictly adheres to
+its ISO standard~\cite{iso-14882-2003}. The language by nature
+supports Object Oriented Analysis and Design (OOA/D), a technique
+well-known to support the project's design goals. OOA/D are used
+throughout the design of the libraries and most of the applications.
+The ubiquity of C++ allows the GPSTk to support all major desktop and
+server platforms, most notably Linux, Windows, Solaris and Mac OS X.
+Windows users have two versions to choose from, a native version,
+built using the Microsoft compiler, and a version that executes in the
+Cygwin environment.
+
+OOA/D contrasts with procedural design supported by the C and FORTRAN
+languages. In procedural programming, a function library is provided
+to the user. In Object Oriented (OO) programming, a ‘class library’
+is provided. Each class is an independent module that can be invoked
+by the user as an object or extended by the user in the form of a new
+class. Classes can build upon each other through a number of
+object-oriented principles, such as inheritance, the use of
+metaclasses, polymorphism, and aggregation. The GPSTk library relies
+heavily on the Standard Template Library~\cite{stlwebsite}, 
+which is part of the ISO standard for
+C++. The STL provides OO data structures (containers). These include
+linked lists, vectors, and maps. The STL also provides standard
+algorithms for these containers, e.g., the quicksort
+algorithm.
+
+All of the GPSTk code includes documentation designed for extraction
+by the \gpstkapp{doxygen}~\cite{doxygen}, a freely
+available application that generates a HTML-based documentation from the
+code itself. Like the GPSTk, \gpstkapp{doxygen} is platform-independent. The
+\gpstkapp{doxygen} documents are available on the GPSTk web site or can be easily
+generated from the code in the distribution.
+
+\subsection*{Getting the GPSTk}
+
+The GPSTk can be downloaded over the web via links provided on the project
+website, http://www.gpstk.org/ . Precompiled binaries are available for many platforms. 
+Access to the source code base---current as well as well as a history of all changes--is provided through a
+publicly accessible repository hosted by SourceForge.  The repository can
+be accessed via a web browser, or using a client from the Subversion
+project~\cite{subversion, subversionbook}. The Subversion project provides two kinds of clients, one with 
+a graphical user interface and one based on the command line. Because
+the command line version works identically on all of the development
+platforms supported by the GPSTk, use of the command line tool \gpstkapp{svn}
+is documented in the GPSTk website and this paper. 
+
+The following command can be used to retrieve the
+latest GPSTk source from SourceForge and write it into a directory structure on
+the user machine in the current working directory:
+
+\begin{scriptsize}
+\begin{lstlisting}
+svn co https://gpstk.svn.sourceforge.net/svnroot/gpstk
+\end{lstlisting}
+\end{scriptsize}
+
+Note that it is not necessary to provide any user information or password to retrieve the code.
+This form of access is referred to as anonymous in the \gpstkapp{Subversion} documentation.
+Once written, any directory in this structure can be updated to the latest code by first making it the 
+current working directory then executing the following command:
+%
+\begin{scriptsize}
+\begin{lstlisting}
+svn update
+\end{lstlisting}
+\end{scriptsize}
+%
+For further detail describing how to build the GPS Toolkit, please refer to the on-line documentation.
+
+
+\subsection*{Project Documentation} 
+
+To facilitate true cross organizational development and user
+interaction, ARL:UT established a dynamic website, also known as a
+wiki. The wiki site utilizes an open source product called
+TWiki~\cite{twiki} that is not only a wiki but a full featured and
+easily extensible development platform. The project has customized the
+base TWiki installation to add two capabilities. One capability allows
+for users to submit questions or answers about the project. Another
+provides a framework for capturing development documentation, such as
+brainstorming or designs. The site also supports the
+\LaTeX\ expression for content such as
+equations. Finally, users can choose to be notified when topics are
+changed via email or web feed.
+
+The website hosts a copy of the documentation generated by \gpstkapp{doxygen}.  This documentation  is updated from the code repository on a daily basis to ensure easy access to the latest documentation changes.  Additionally, an IRC channel was established to create a real-time avenue of developer communication.  Finally, the new website contains new documentation that describe the GPSTk development process, the release process, how to get started with the GPSTk, and more.  The goal of this added information was to help new developers become familiar with the project operation so they can become effective contributors.
+
+The user manual is also hosted on the TWiki. Two manuals exist at this time.
+An older manual, written in \LaTeX, is posted as a PDF. A newer manual is under
+development purely within the TWiki. Development on the older manual has
+stopped. We encourage that all new documentation be added to the new TWiki-based
+manual. This encourages the users to keep the manual accurate.
+
+\subsection*{Branching}
+
+In the last two year, the GPSTk has adopted \emph{branching} to
+support development and release. A branch is in essence a duplication
+of the source.  The duplicated code, referred to simply as the branch,
+can then be modified separately from the original, sometimes referred
+to as the \emph{trunk}. The idea is to support simultaneous efforts
+using multiple viable code bases. However, in the end, the branches and
+the trunk must be reconciled. This practice is known as \emph{integration}.
+
+Branching has been used to support two kinds
+of activities in the GPSTk.  First, branching was used to enable stable releases. For such a large project, with a large number of
+developers, it is sometimes impossible to ask developers to stop
+contributing new code so that a stable version can be
+released. Branching was used to generate the stable releases
+associated with version 1.5 and 1.6. Second, branching can be used to
+separate large scale modifications. The development of RINEX-3, described
+later in detail, utilizes a new branch. 

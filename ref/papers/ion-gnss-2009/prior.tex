@@ -1,0 +1,35 @@
+\section*{Prior Work}
+
+Many aspects of GNSS technology are open. The signals themselves are
+defined in public technical documents. File formats associated with
+observations and ephemerides are open as well. The case is different
+for GNSS processing software. Commercial software packages, often
+written by receiver manufacturers, are proprietary by nature.  Others
+packages offered freely must be licensed to a site or an
+individual. Often \mbox{MATLAB \textregistered} scripts that are
+publicly shared are accompanied by a license restriction prohibiting
+their redistribution or modification.
+
+In contrast, the GPSTk project source code is free to use, modify, and
+redistribute, per the terms of it license, the GNU Lesser General Public License
+(LGPL) version 2.1. The GPSTk is not alone in providing an open source suite to
+the GNSS research and development community. Several other projects
+offer software under the terms of the LGPL, the GPL or other open
+source licenses.
+
+The focus of the OpenSourceGPS project is to create open source
+receivers~\cite{osgpsfirstpaper}. The first hardware targeted by the
+project were PC cards controlled using the Mitel/Plessy/Zarlink chip set. 
+Because the chip set is no longer manufactured, the company GPS Creations 
+has partnered with the project to new cards. In recent years, OpenSourceGPS and GPS
+Creations have focused on developing a narrow-band software
+receiver~\cite{osgpsemulator,osgpsfullswrx}.
+
+In contrast to targeting receiver internals, the bulk of open source
+projects target the external interfaces of commercial units. Two
+notable projects are GPSBabel and
+gpsd~\cite{gpsbabelwebsite,gpsdwebsite}. GPSBabel translates way-points
+so they can be moved among receiver manufacturers. The gpsd provides a
+network service that allows a personal computer to communicate
+real-time, differential corrections over a network.
+

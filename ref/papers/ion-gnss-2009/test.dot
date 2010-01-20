@@ -1,0 +1,44 @@
+digraph library_deps {
+
+
+subgraph cluster2 {
+
+   node [style=filled, color=white];
+   style=filled;
+   color=lightgrey;
+
+   b0 -> b2;
+   b1 -> b2;
+
+   label="GNSS Algorithms";
+
+   b0[label="libgeomatics"];
+   b1[label="libprocframe"];
+   b2[label="libgpstk"];
+}
+
+subgraph cluster1 {
+
+   node [style=filled, color=white];
+   style=filled;
+   color=lightgrey;
+
+   a1 -> a2 -> a3;
+   a1 -> a3;
+   label="Graphics libraries";
+
+   a1[label="libsatvis"];
+   a2[label="libvplot"];
+   a3[label="libvdraw"];
+}
+
+app -> a1;
+app -> a2;
+app -> a3;
+
+app -> b0;
+app -> b1;
+app -> b2;
+ 
+app[label="GPSTk Application"];
+}

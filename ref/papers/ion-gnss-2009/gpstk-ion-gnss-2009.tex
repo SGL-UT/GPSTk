@@ -8,6 +8,7 @@
   \usepackage{amsmath}     % cases environment
   \usepackage{indentfirst} % indent all first paragraphs
   \usepackage{times}
+  \usepackage{flushend}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%Commands to support toolkit apps table%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \usepackage{multirow}
@@ -37,6 +38,7 @@
   \newcommand{\sidesize}{\small}
 
   \newcommand{\gpstkapp}[1]{\textit{\mbox{#1}}}
+  \newcommand{\gpstkobj}[1]{\textit{\mbox{#1}}}
   \newcommand{\gpstkdir}[1]{\texttt{\mbox{#1}}}
   \newcommand{\gpstkcommand}[1]{\texttt{\mbox{#1}}}
   \newcommand{\gpstkclass}[1]{\texttt{\mbox{#1}}}
@@ -47,10 +49,10 @@
 % Title
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{\huge\bf The GPSTk: GLONASS, RINEX3 and More }
+\title{\huge\bf The GPSTk: GLONASS, RINEX Version 3.00 and More }
 
-\author{ Aaron C. Brogley, Thomas L. Gaussiran, Eric Hagen. R. Benjamin Harris, Chris Kieschnick, Jon C. Little,  Richard G. Mach, \\
-David C. Munton, Colin P. Petersen, David L. Rainwater, Brent A. Renfro, Scot L. Nelsen, Brian W. Tolman, \\
+\author{Thomas L. Gaussiran, Eric Hagen, R. Benjamin Harris, Chris Kieschnick, Jon C. Little,  Richard G. Mach, \\
+David C. Munton, Scot L. Nelsen, Colin P. Petersen, David L. Rainwater, Brent A. Renfro, Brian W. Tolman \\
        \it{Applied Research Laboratories, The University of Texas at Austin} \\
 	\\
 	Dagoberto Salazar \\
@@ -59,8 +61,8 @@ David C. Munton, Colin P. Petersen, David L. Rainwater, Brent A. Renfro, Scot L.
 \date{}
 
 % This becomes footer if defined
-\conference{}
-%\conference{\emph{First presented at ION GNSS 2009, Sept. 25 to 28, 2007, Fort Worth, Texas}}
+%\conference{}
+\conference{\emph{First presented at ION GNSS 2009, Sept. 22 to 25, 2009, Savannah, Georgia}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Defines
@@ -94,6 +96,7 @@ David C. Munton, Colin P. Petersen, David L. Rainwater, Brent A. Renfro, Scot L.
 \def\tablename{Table}
 
 \pagestyle{plain} % Page number on back of paper with hand written in pencil
+%\pagestyle{empty}
 %\pagestyle{fancy}
 
 \maketitle
@@ -106,15 +109,16 @@ David C. Munton, Colin P. Petersen, David L. Rainwater, Brent A. Renfro, Scot L.
 \input{bio}
 \input{abstract}
 \input{intro}
+\input{prior}
 \input{projsummary}
 \input{liboverview}
 \input{librinex3}
-\input{libplot}
 \input{libprocframe}
-\input{appsoverview}
+\input{libplot}
+%\input{appsoverview}
 \input{appsclock}
-\input{appsswrx}
-\input{appsdataloss}
+%\input{appsswrx}
+%\input{appsdataloss}
 \input{future}
 \input{acknowledgements}
 

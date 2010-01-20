@@ -1,4 +1,50 @@
 \section*{Introduction}
 
-Kind words to the reader to familiarize them with the scope and content of 
-this paper.
+The goal of the GPS Toolkit (GPSTk) project is to provide an open
+source library and suite of applications to the satellite navigation
+community---to free researchers to focus on research, not lower level
+coding. In this paper, we explain the organization of the GPSTk project
+and its software suite. Because the GPSTk is a collaboration, it grows
+over time with new capabilities. Capabilities developed over the last
+two years, some of which are still under test, are described.
+
+For exchange of observation data, the GPS community has relied on the
+{\bf R}eceiver {\bf IN}dependent {\bf EX}change
+format~\cite{rinex1format,rinex2format,rinex211format}.  Since the
+GPSTk has been released it has specifically support RINEX version 2
+(R2).  To support multi-GNSS receivers and data analysis, RINEX has
+evolved from RINEX version 2 to version 3.00, which includes coherent
+schemes for multi-GNSS data, as well as greatly enhanced data records
+specifically designed for kinematic
+applications~\cite{rinex300format}.  Some of the RINEX formats had to
+be radically restructured to do so. The GPSTk has developed support
+for reading and writing R3 files and mechanisms for storing the
+additional data defined by new standard. Existing applications have
+been upgraded to use R3.
+
+A key, underlying challenge to truly support R3 is the ability to
+integrate observations from multiple Global Navigation Satellite
+Systems (GNSSs). Each GNSS defines its own coordinate and time
+systems. Reconciling disparate systems could be accomplished on a
+case-by-case basis. In the GPSTk, this translates to modifying
+processes at the application level. A more seamless solution was
+sought for the GPSTk, one that could exist at the library level. The
+R3 code transparently provides the translation of coordinate and time
+systems during ephemeris evaluation. However this convenience has
+implications. The design of the R3 implementation and its implications
+are a subject of this paper. Also discussed is how the R3 implementation 
+enables the integrated processing of GPS and GLONASS observations.
+
+A topic common to all GNSS processing is clock stability. 
+When satellite observations  are used to support time transfer or
+orbit determination, clock stability is key factor. The new
+GPSTK application \gpstkapp{Clock Tools} provides the GPS and precise time
+communities free access to basic clock stability analyses. Current
+\gpstkapp{Clock Tools} capabilities include the computation of Allan and Hadamard
+stability metrics, along with data parsing, grooming, and plotting. We
+present several typical applications.
+
+Fundamental contributions have been made to the \mbox{GPSTk} library as well.
+A new auxiliary library has been added that supports precise point
+positioning (PPP). Another library has been added to provide customizable
+plotting in \LaTeX\ and HTML. 

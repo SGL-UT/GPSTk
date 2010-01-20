@@ -1,5 +1,226 @@
+\section*{Additional Library Enhancements}
+
+In contrast to the RINEX version 3.00 development, smaller scale
+enhancements have been conducted in the trunk. The
+\gpstkapp{procframe} library, which provide precise point positioning
+capabilities, has been upgraded. Also, a new library has been
+developed to support vector-based graphical output such as plots.
+
 \subsection*{Processing Framework}
 
-Changes to libprocframe.
+The GPSTk Processing Framework is based on the ``GNSS Data Structures'' (GDS)
+and the associated ``GDS Processing Paradigm'' first presented at
+\cite{ion:gnss07}. Its purpose is to solve data management problems that are
+difficult to solve with simpler structures like vectors and matrices.
 
-Written by Dagoberto Salazare. About 1.5 pages.
+Moreover, the ``GDS Processing Paradigm'' provides an unified and consistent way
+to handle such structures, providing {\it processing classes} that handle both
+data and corresponding {\it metadata}. The objects from these {\it processing
+classes} reach into the GDS and add, delete and/or modify what is needed
+(according to their function), and leave the results in the same GDS,
+appropriately indexed. These processing objects are designed to use sensible
+defaults in their parameters, but may be tuned to suit specific needs.
+
+The former ideas are coupled with a handy redefinition of C++ operator
+\gpstkcommand{>>}, implemented in such a way that several operators may be
+concatenated. This allows a programming style that clearly shows how the data is
+{\it flowing} along the processing steps, in a way that is similar to Unix
+``pipes''. A simple example of this approach is presented. Here, just a single
+epoch worth of data will be extracted out of a RINEX observation file, and put
+into a GDS:
+
+\begin{scriptsize}
+\begin{lstlisting}
+1   RinexObsStream rinexFile("ebre0300.02o");
+2   gnssRinex gpsData;
+
+3   rinexFile >> gpsData;
+\end{lstlisting}
+\end{scriptsize}
+
+
+Line \#1 declares an object named \gpstkobj{rinexFile} of class
+\gpstkclass{RinexObsStream}, which is used to handle RINEX observation files.
+That object will take care of handling ``ebre0300.02o'' RINEX observation file.
+Line \#2 declares an object of class \gpstkclass{gnssRinex}, which is a very
+common and handy GDS (several structures are available). Data will be
+stored in this object, called \gpstkobj{gpsData}.
+
+Then, line \#3 does the real work: It will take one epoch of data out of
+\gpstkobj{rinexFile} and will pour it into \gpstkobj{gpsData}. No further coding is needed
+for this action, and line \# 3 is referred to as the ``processing line''.
+
+Taking this approach to GNSS data management and processing as a starting point,
+the capabilities of the Processing Framework have been greatly expanded during
+last year. Several sophisticated processing classes have been added, and a
+``Precise Point Positioning'' (PPP) implementation \cite{ppp:kouba2001} has been
+fully developed.
+
+PPP is a complex task, and issues like wind-up effects, solid, oceanic and polar
+tides, and antenna phase centers variations, must be taken into account. Also,
+the data rates of typical IGS products being used often do not match with data
+rates from available observations, and therefore some time management issues
+also arise. In order to deal with these tasks, the GPSTk now provides some
+accessory classes like the following:
+
+\gpstkclass{ConfDataReader}: Powerful class to parse and manage configuration
+files. It supports multiple sections, variable descriptions and value
+descriptions (such as units), and a wide range of variable types.
+
+\gpstkclass{AntexReader} and \gpstkclass{Antenna}: These classes allow one to
+properly use antenna phase center variations, both in ``relative'' as well as in
+``absolute'' modes, reading them from IGS ANTEX format files. These classes
+are complemented with processing classes that will take care of applying the
+corresponding corrections: \gpstkclass{CorrectObservables} to manage receiver
+antenna corrections, and \gpstkclass{ComputeSatPCenter} to handle satellite
+antenna corrections.
+
+\gpstkclass{SolidTides}, \gpstkclass{OceanLoading} and \gpstkclass{PoleTides}:
+Compute tidal effects due to solid tides, ocean loading and pole
+displacements, respectively.
+
+For decimation, the \gpstkclass{Decimate} class is used. Given the usual data rate
+mismatch between IGS precise products (900 s per sample) and RINEX observations
+(30 s per sample) this is a recommended procedure. \gpstkclass{Decimate} class
+takes advantage of GPSTk's sophisticated exception handling mechanism, and if data
+epoch is not a multiple of 900 seconds (or other preset time interval) then the
+\gpstkclass{Decimate} object will issue an ``exception'' (effectively halting
+further processing of data for that epoch) and the program will continue
+processing the next epoch. Decimation is thence achieved in a effective and
+compact way.
+
+A typical PPP processing line looks like follows:
+
+
+\begin{scriptsize}
+\begin{lstlisting}
+gpsData >> requireObs >> linear1 >> markCSLI >> markCSMW
+        >> markArc >> decimateData >> basicModel
+        >> eclipsedSV >> grDelay >> svPcenter >> corr
+        >> wUp >> computeTropo >> linear2 >> pcFilter
+        >> phaseAlign >> linear3 >> baseChange >> cDOP
+        >> pppSolver;
+\end{lstlisting}
+\end{scriptsize}
+
+
+This GDS processing data chain is a single C++ line, although for the
+sake of clarity it spans several physical lines. This line must be enclosed within a
+\gpstkobj{while} loop to process all available epochs, and also within a
+\gpstkobj{try-catch} block to manage exceptions. Further details are provide
+by examples in the source distribution as ``example8.cpp'', ``example9.cpp'' and
+``example10.cpp''. Detailed information is also availble in the Doxygen documentation provided on the website. The Doxygen documentation can also be generated from the source code as described in prior sections.
+
+The following is a brief explanation about what some of these objects do,
+and what classes they belong to:
+
+\begin{itemize}
+
+\item \gpstkobj{requireObs} (an object of class \gpstkclass{RequireObservables}): Checks if required
+{\it TypeID}s (usually observations) are present.
+
+\item \gpstkobj{linear1}, \gpstkobj{linear2} and \gpstkobj{linear3}
+(\gpstkclass{ComputeLinear}): They compute linear combinations such as
+ionospheric, Melbourne-Wubbena, ionosphere-free, etc.
+
+\item \gpstkobj{markCSLI} (\gpstkclass{LICSDetector2}) and \gpstkobj{markCSMW}
+(\gpstkclass{MWCSDetector}): They detect and mark cycle slips using the
+ionospheric and Melbourne-Wubbena combinations, respectively. Besides,
+{\it markArc} (\gpstkclass{SatArcMarker}) keeps track of satellite arcs.
+
+\item \gpstkobj{decimateData} (\gpstkclass{Decimate}): Decimates data if epoch is not
+a multiple of 900~s.
+
+\item \gpstkobj{basicModel} (\gpstkclass{BasicModel}): Computes the basic components
+of a GNSS signal propagation model.
+
+\item \gpstkobj{eclipsedSV} (\gpstkclass{EclipsedSatFilter}): Removes from the GDS
+the satellites in eclipse.
+
+\item \gpstkobj{grDelay} (\gpstkclass{GravitationalDelay}): Computes gravitational
+delay effect due to changing gravity field along satellite-receiver ray.
+
+\item \gpstkobj{svPcenter} (\gpstkclass{ComputeSatPCenter}): Computes the effect of
+satellite antenna phase center.
+
+\item \gpstkobj{corr} (\gpstkclass{CorrectObservables}): Corrects observables from
+tides, receiver antenna phase center, eccentricity, etc.
+
+\item \gpstkobj{wUp} (\gpstkclass{ComputeWindUp}): Computes phase wind-up.
+
+\item \gpstkobj{computeTropo} (\gpstkclass{ComputeTropModel}): Models delays due to
+tropospheric effects.
+
+\item \gpstkobj{pcFilter} (\gpstkclass{SimpleFilter}): Filters out spurious values in
+the PC (ionosphere-free) combination.
+
+\item \gpstkobj{phaseAlign} (\gpstkclass{PhaseCodeAlignment}): Aligns phase with code
+values, preserving ambiguities integer nature.
+
+\item \gpstkobj{baseChange} (\gpstkclass{XYZ2NEU}): Prepares GDS to use a
+North-East-UP reference frame in object \gpstkobj{pppSolver}.
+
+\item \gpstkobj{cDOP} (\gpstkclass{ComputeDOP}): Computes DOP values.
+
+\item \gpstkobj{pppSolver} (\gpstkclass{SolverPPP}): Solves the equation system using
+an Extended Kalman filter (EKF).
+\end{itemize}
+
+Particular mention deserves object \gpstkobj{pppSolver}. This object is preconfigured
+to solve the PPP equation system in a way consistent with~\cite{ppp:kouba2001}:
+Coordinates are treated as constants (static), receiver clock is considered
+white noise, and residual vertical wet tropospheric effect is processed with a
+random walk stochastic model.
+
+\gpstkclass{SolverPPP} objects are very easy to configure. For instance, if the
+solution is needed in a North-East-Up reference frame (instead of the default
+ECEF), we just need to insert a \gpstkclass{XYZ2NEU} in the processing chain
+(like \gpstkobj{baseChange} above) and configure the solver object:
+
+
+\begin{scriptsize}
+\begin{lstlisting}
+pppSolver.setNEU( true );
+\end{lstlisting}
+\end{scriptsize}
+
+
+In order to carry out kinematic instead of static positioning, the coordinates
+stochastic model being used is changed. For example, we consider coordinates as
+white noise with sigma equal to 100.0 meters:
+
+
+\begin{scriptsize}
+\begin{lstlisting}
+WhiteNoiseModel newCoordinatesModel( 100.0 );
+pppSolver.setCoordinatesModel( &newCoordinatesModel );
+\end{lstlisting}
+\end{scriptsize}
+
+
+Moreover, it is very easy to set different stochastic models for each dimension.
+For instance, a surface vehicle could be modeled with restrictions in the
+vertical coordinate, like this:
+
+\begin{scriptsize}
+\begin{lstlisting}
+WhiteNoiseModel horizontalModel( 100.0 );
+RandomWalkModel verticalModel( 0.01 );
+
+pppSolver.setNEU( true );
+pppSolver.setXCoordinatesModel( &horizontalModel );
+pppSolver.setYCoordinatesModel( &horizontalModel );
+pppSolver.setZCoordinatesModel( &verticalModel );
+\end{lstlisting}
+\end{scriptsize}
+
+
+In summary, the Processing Framework approach has demonstrated being
+very flexible and powerful, and results obtained with the current PPP
+implementation are comparable with other GNSS data processing suites
+(\cite{esa:navitec2008}, \cite{geomaticweek2009}). The current
+development efforts within this framework aim to provide a uniform
+data structure powered by classes able to carry out network-based data
+processing, programmable on-the-fly generic solvers, and ambiguity
+fixing capabilities.
+

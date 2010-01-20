@@ -1,3 +1,31 @@
 \section*{Future}
 
-Next challenges.
+The most significant change planned in the near term for the GPSTk is
+that the RINEX-3 branch that will be integrated into the main. This
+will result in a major revision change for the source code, resulting
+in the release of GPSTk 2.0. As with other projects, when a major
+version number changes, that indicate the new code is not backwards
+compatible. Given the magnitude of such a change, a pre-release
+version of GPSTk 2.0 may be released to facilitate testing. The
+details regarding this transition will be discussed on the developer's
+mail list hosted by SourceForge,
+\gpstkclass{gpstk-devel@lists.sourceforge.net}. Once finalized, the
+plan for transition to GPSTk 2.0 will be announced using another SF
+hosted mail list, \gpstkclass{gpstk-announce@lists.sourceforge.net}.
+
+Smaller changes are also planned. The \gpstkapp{libsatvis} library
+will be added. This library will require extracting detailed
+visualizations from existing software, some of which are yet to be
+contributed to the GPSTk. Another library modification involves
+providing library calls to other programming languages such as
+Python and Octave. The interface that supports these languages is
+being redesigned and updated. Applications modifications are
+underway as well. The \gpstkapp{mpsolve} application is being
+extended to solve and remove the biases associated with carrier phase.  This
+technique will provide an essentially bias-free estimate of
+range-minus-phase multipath. These detailed extensions to the GPSTk
+will be the subject of future papers. 
+
+The aforementioned future modifications are only those planned by
+contributors at ARL:UT. The GPSTk is a community project, therefore,
+like all GNSSs, its future is open-ended.

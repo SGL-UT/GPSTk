@@ -1,0 +1,17 @@
+digraph library_deps {
+
+subgraph s1 {
+   node[style=filled,color=white];
+   color=lightgrey;
+   b -> c -> d;
+   b->d;
+   label = "Graphing Libraries"
+}
+
+
+a->b;
+a->c;
+a->d;
+
+
+}
