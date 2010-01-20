@@ -68,6 +68,7 @@ DayTime BegTime, EndTime;
 bool ReplaceHeader=false;     // replace the file header in-place
 bool TimeSortTable=false;     // sort the PRN/Obs table on time (else PRN)
 bool GPSTimeOutput=false;     // output GPS times (week, sec-of-week)
+double doGaps=-1;             // output a list of gaps, assuming interval doGaps
 bool debug=false;             // debug output - prints all the data
 bool brief=false;             // brief output
 bool progress=false;          // output progress info to screen (for GUI)
@@ -81,6 +82,7 @@ public:
    vector<int> nobs;
    double prevC1,prevP1,prevL1;
    DayTime begin,end;
+   vector<int> gapcounts;
    TableData(const SatID& p, const int& n)
       { sat=RinexSatID(p); nobs=vector<int>(n); prevC1=prevP1=prevL1=0; };
       // needed for find()
@@ -115,8 +117,8 @@ try {
    vector<int> clkjumpAgree;
    // data used for computation
    const int ndtmax=15;
-   double dt,bestdt[ndtmax];
-   int ndt[ndtmax];
+   double compDT,dt,bestdt[ndtmax];
+   int ncompDT,ndt[ndtmax],ncount;
    int nepochs,ncommentblocks;
 
    BegTime = DayTime::BEGINNING_OF_TIME;  // init. here to avoid static init.problem
@@ -285,6 +287,17 @@ try {
          nepochs++;
          nsats = nclkjumps = 0;  // count sats and signs clock jumps have occurred
          clkjumpave = clkjumpvar = 0.0;
+         if(doGaps > 0) {
+            ncount = int(0.5+(last-ftime)/doGaps); // compute the gapcount
+            if(debug) *pout << "Gap count at " << robs.time << " is "
+               << ncount << endl;
+            // test after 50 epochs - wrong doGaps is disasterous
+            if(ncompDT == 50 && fabs(compDT - doGaps) > 1.0) {
+               *pout << "WARNING: --gaps interval does not match "
+                  << "computed data interval. *** Turn off --gaps ***\n";
+               doGaps = -1;
+            }
+         }
 
          // loop over satellites
          RinexObsData::RinexSatMap::const_iterator it;
@@ -297,6 +310,21 @@ try {
                table.push_back(TableData(it->first,n));
                ptab = find(table.begin(),table.end(),TableData(it->first,n));
                ptab->begin = last;
+               if(doGaps > 0) {
+                  ptab->gapcounts.push_back(ncount);      // start time
+                  ptab->gapcounts.push_back(ncount-1);    // end time
+               }
+            }
+            // update list of gap times
+            if(doGaps > 0) {
+               i = ptab->gapcounts.size() - 1;        // index of the current end time
+               if(ncount == ptab->gapcounts[i] + 1) { // no gap
+                  ptab->gapcounts[i] = ncount;
+               }
+               else {                                 // found a gap
+                  ptab->gapcounts.push_back(ncount);  // start time
+                  ptab->gapcounts.push_back(ncount);  // end time
+               }
             }
             // update end time for this sat
             ptab->end = last;
@@ -401,6 +429,12 @@ try {
                      ndt[k]=1; bestdt[k]=dt;
                   }
                }
+               // update computed dt -- for gaps
+               if(doGaps > 0) {
+                  for(i=1,j=0; i<ndtmax; i++) if(ndt[i]>ndt[j]) j=i;
+                  compDT = bestdt[j];
+                  ncompDT = ndt[j];
+               }
             }
             else {
                cerr << " WARNING time tags out of order: "
@@ -431,13 +465,13 @@ try {
 
          // compute interval
       for(i=1,j=0; i<ndtmax; i++) if(ndt[i]>ndt[j]) j=i;
-      dt = bestdt[j];
+      compDT = bestdt[j];
  
       ostringstream oss;
 
          // summary info
       oss << "Computed interval "
-         << fixed << setw(5) << setprecision(2) << dt << " seconds." << endl;
+         << fixed << setw(5) << setprecision(2) << compDT << " seconds." << endl;
       oss << "Computed first epoch: " << ftime.printf("%4F %14.7g") << " = "
             << ftime.printf("%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
       oss << "Computed last  epoch: " << last.printf("%4F %14.7g") << " = "
@@ -455,7 +489,7 @@ try {
          << secs << " seconds\nComputed file size: "
          << filesize << " bytes." << endl;
 
-      i = 1+int(0.5+(last-ftime)/dt);
+      i = 1+int(0.5+(last-ftime)/compDT);
       if(!brief) oss << "There were " << nepochs << " epochs ("
          << setprecision(2) << double(nepochs*100)/i
          << "% of " << i << " possible epochs in this timespan) and "
@@ -481,7 +515,7 @@ try {
             oss << "Sat " << tit->sat << " ";
             for(k=0; k<n; k++) oss << setw(7) << tit->nobs[k];
             // compute total based on times
-            oss << setw(7) << 1+int(0.5+(tit->end-tit->begin)/dt);
+            oss << setw(7) << 1+int(0.5+(tit->end-tit->begin)/compDT);
             if(GPSTimeOutput) {
                oss << "  " << tit->begin.printf("%4F %10.3g")
                   << " - " << tit->end.printf("%4F %10.3g") << endl;
@@ -508,11 +542,35 @@ try {
          oss << endl;
       }
 
+      // output gaps
+      if(doGaps > 0) {
+         oss << "\n Summary of gaps in the data in this file, "
+            << "assuming interval " << doGaps << " sec.\n"
+            << "  (count is number of intervals from computed first epoch)\n";
+         oss << "    Sat  beg -  end (count,size) ... :\n";
+            // loop
+         for(tit=table.begin(); tit!=table.end(); ++tit) {
+            k = tit->gapcounts.size()-1;
+            if(debug) {
+               oss << "Dump " << tit->sat;
+               for(i=0; i<=k; i++) oss << " " << tit->gapcounts[i];
+               oss << endl;
+            }
+            oss << "Sat " << tit->sat << " " << setw(4) << tit->gapcounts[0]
+               << " - " << setw(4) << tit->gapcounts[k];
+            for(i=1; i<=k-2; i+=2) {
+               oss << " (" << tit->gapcounts[i]+1  // begin of gap
+                  << "," << tit->gapcounts[i+1]-tit->gapcounts[i]-1 << ")";  // size
+            }
+            oss << endl;
+         }
+      }
+
          // warnings
       if((rheader.valid & RinexObsHeader::intervalValid)
-            && fabs(dt-rheader.interval) > 1.e-3)
+            && fabs(compDT-rheader.interval) > 1.e-3)
          oss << " WARNING: Computed interval is " << setprecision(2)
-            << dt << " sec, while input header has " << setprecision(2)
+            << compDT << " sec, while input header has " << setprecision(2)
             << rheader.interval << " sec.\n";
       if(fabs(ftime-rheader.firstObs) > 1.e-8)
          oss << " WARNING: Computed first time does not agree with header\n";
@@ -546,7 +604,7 @@ try {
       if(ReplaceHeader) {
             // modify the header
          rheader.version = 2.1; rheader.valid |= RinexObsHeader::versionValid;
-         rheader.interval = dt; rheader.valid |= RinexObsHeader::intervalValid;
+         rheader.interval = compDT; rheader.valid |= RinexObsHeader::intervalValid;
          rheader.lastObs = last; rheader.valid |= RinexObsHeader::lastTimeValid;
             // now the table
          rheader.numSVs = table.size(); rheader.valid |= RinexObsHeader::numSatsValid;
@@ -665,6 +723,10 @@ try {
    CommandOptionNoArg dashg('g', "gps",
       " [-g|--gps]           Print times in the SAT/Obs table as GPS times (don't)");
 
+   CommandOption dashgap(CommandOption::hasArgument, CommandOption::stdType,0,"gaps",
+      " --gaps <dt>          Print a table of gaps in the data, assuming interval dt"
+      " (don't)");
+
    // time
    // times - don't use CommandOptionWithTimeArg
    CommandOption dashbt(CommandOption::hasArgument, CommandOption::stdType,
@@ -768,6 +830,12 @@ try {
    if(dashg.getCount()) {
       GPSTimeOutput=true;
       if(help) cout << "Input: output in GPS time" << endl;
+   }
+   if(dashgap.getCount()) {
+      values = dashgap.getValue();
+      doGaps = asDouble(values[0]);
+      if(help) cout << "Input: output list of gaps, assuming data time interval "
+         << doGaps << endl;
    }
    // times
    // TD put try  {} around setToString and catch invalid formats...
