@@ -66,18 +66,31 @@ namespace gpstk
    public:
 
       /// Constructor -- takes no arguments.
+
       GloFreqIndex()
       {}
 
       /// Destructor
+
       virtual ~GloFreqIndex()
       {}
+
+      /// Method to get frequency index from known table.  For testing purposes only.
+
+      void knownIndex()
+         throw();
 
       /// Method to calculate frequency index from range & phase data
       /// for G1 and G2 bands.  The integer returned is the band index
       /// determined from data (also appended to the internal data vector).
       /// This method assumes clean data, i.e. no need to edit the pass.
-      int calcIndex( const std::vector<double>& r1, const std::vector<double>& p1,
+      /// The int returned is an error code:
+      ///   0  no errors
+      ///   1  G1 range and phase vector lengths not equal
+      ///   2  G2 range and phase vector lengths not equal
+
+      int calcIndex( RinexSatID& id,
+                     const std::vector<double>& r1, const std::vector<double>& p1,
                      const std::vector<double>& r2, const std::vector<double>& p2 )
          throw();
 
@@ -86,17 +99,20 @@ namespace gpstk
       /// the actual method above.  Note that if one provides range &
       /// phase data for only one band using this method, it is assumed
       /// to be G1!
-      int calcIndex( const std::vector<double>& r1, const std::vector<double>& p1 )
+
+      int calcIndex( RinexSatID& id,
+                     const std::vector<double>& r1, const std::vector<double>& p1 )
          throw()
       {
          std::vector<double> r2, p2;
          r2.clear();
          p2.clear();
-         return calcIndex( r1, p1, r2, p2 );
+         return calcIndex( id, r1, p1, r2, p2 );
       }
 
       /// This method returns the GLONASS index for a given SV.
       /// It returns -100 if there is no entry for the given SatID.
+
       int getGloIndex( const RinexSatID& id )
          throw();
 
@@ -106,10 +122,12 @@ namespace gpstk
       ///    0  no error
       ///    1  no entry for the given SatID
       ///    2  invalid frequency band
+
       double getGloFreq( const RinexSatID& id, const int& band, int& error )
          throw();
 
       /// Dump the contents of the data store in a nice format.
+
       void dump( std::ostream& s ) const;
 
    protected:
@@ -121,9 +139,9 @@ namespace gpstk
       struct IndexData
       {
          int    pG1, pG2; // number of points in pass
-         double fG1, fG2; // float   index solutions
+         double fG1, fG2; // float index solutions
+         double dG1, dG2; // uncertainty on the float solutions
          int    nG1, nG2; // integer index solutions
-         double dG1, dG2; // error on the float solutions
       };
 
       /// Vector of Data structs to store multiple passes.
