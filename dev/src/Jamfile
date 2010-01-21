@@ -56,9 +56,6 @@ else
       TimeTag.cpp Triple.cpp TropModel.cpp TypeID.cpp UnixTime.cpp
       VectorBase.cpp WxObsMap.cpp X1Sequence.cpp X2Sequence.cpp
       Xvt.cpp YDSTime.cpp YumaAlmanacStore.cpp YumaData.cpp
-      IIRDifferentiator.cpp IIRIntegrator.cpp
-      FIRDifferentiator1stOrder.cpp FIRDifferentiator3rdOrder.cpp
-      FIRDifferentiator5thOrder.cpp
       $(GETOPT_SOURCE)
       ;
 
@@ -124,9 +121,6 @@ else
       YumaStream.hpp convhelp.hpp geometry.hpp
       gps_constants.hpp gpstkplatform.h icd_200_constants.hpp
       mergePCodeWords.h stl_helpers.hpp
-      FilterBase.hpp IIRDifferentiator.hpp IIRIntegrator.hpp
-      FIRDifferentiator1stOrder.hpp FIRDifferentiator3rdOrder.hpp
-      FIRDifferentiator5thOrder.hpp
       $(GETOPT_INC)
       ;
 }
