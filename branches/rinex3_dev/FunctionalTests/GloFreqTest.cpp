@@ -51,13 +51,13 @@ using namespace gpstk;
 
 int main()
 {
-   vector<double> dum1, dum2;
+//   vector<double> dum1, dum2;
    int ierr1, ierr2, ierr3;
    ierr1 = 0;
    ierr2 = 0;
 
    GloFreqIndex glo;
-   glo.calcIndex(dum1,dum2);
+   glo.knownIndex(); // For testing, fill map with known frequency index data.
 
    cout << "SVID  index   G1         err   G2         err   G3         err" << endl;
 
