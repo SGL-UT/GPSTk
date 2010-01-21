@@ -1,7 +1,7 @@
 SubDir TOP apps multipath ;
 
-GPSLinkLibraries mpsolve : gpstk ;
+GPSLinkLibraries mpsolve mpsim : gpstk rxio ;
 BonkForte ; # bleah.
 
 GPSMain mpsolve : mpsolve.cpp ObsArray.cpp ;
-
+GPSMain mpsim : mpsim.cpp ;
