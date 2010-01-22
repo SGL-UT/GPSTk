@@ -1,4 +1,4 @@
-SEARCH =  ../lib/rxio ../src/. ;
+SEARCH =  ../lib/rxio ../src ../lib/geomatics ;
 STD_LINK_LIBS = -ldl -lstdc++ -lm ;       
 
 Main Rinex3NavTest : Rinex3NavTest.cpp ;
@@ -59,7 +59,7 @@ LinkLibraries GloFreqNo : ../src/libgpstk-R3.a ;
 Main GloFreqTest : GloFreqTest.cpp ;
 ObjectHdrs GloFreqTest GloFreqTest.cpp : ../src ;
 LINKLIBS on GloFreqTest = $(STD_LINK_LIBS) ;
-LinkLibraries GloFreqTest : ../src/libgpstk-R3.a ;
+LinkLibraries GloFreqTest : ../src/libgpstk-R3.a ../lib/geomatics/libgeomatics.a ;
 
 Main Singleton : Singleton.cpp ;
 ObjectHdrs Singleton Singleton.cpp : ../src ;

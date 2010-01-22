@@ -43,15 +43,14 @@
 #include <iostream>
 #include <iomanip>
 
-//#include "icd_glo_constants.hpp"
 #include "GloFreqIndex.hpp"
+#include "SatPass.hpp"
 
 using namespace std;
 using namespace gpstk;
 
 int main()
 {
-//   vector<double> dum1, dum2;
    int ierr1, ierr2, ierr3;
    ierr1 = 0;
    ierr2 = 0;
@@ -59,6 +58,7 @@ int main()
    GloFreqIndex glo;
    glo.knownIndex(); // For testing, fill map with known frequency index data.
 
+   cout << endl;
    cout << "SVID  index   G1         err   G2         err   G3         err" << endl;
 
    for (int i = 1; i <= 24; i++)
@@ -78,6 +78,43 @@ int main()
            << fixed << setprecision(4) << setw(9) << setfill(' ')
            << freq3 << "  " << ierr3 << endl;
    }
+
+   cout << endl;
+   cout << "Reading data from RINEX 2 file..." << endl;
+
+   vector<double> r1, r2, p1, p2;
+
+   vector<std::string> obsTypes;
+   obsTypes.push_back("C1");
+   obsTypes.push_back("P1");
+   obsTypes.push_back("P2");
+   obsTypes.push_back("L1");
+   obsTypes.push_back("L2");
+   obsTypes.push_back("EL");
+   obsTypes.push_back("AZ");
+
+   vector<SatPass> list;
+
+   // Read in data from a known RINEX 2 file.
+   vector<std::string> filenames;
+   filenames.push_back("ARL82620.09O_RF");
+   int iread = SatPassFromRinexFiles(filenames,obsTypes,30.0,list);
+
+   for (int i = 0; i < list.size(); i++)
+   {
+      // Refactor the data vectors.
+      for (int j = 0; j < list[i].size(); j++)
+      {
+         r1.push_back(list[i].data(j,"P1"));
+         r2.push_back(list[i].data(j,"P2"));
+         p1.push_back(list[i].data(j,"L1"));
+         p2.push_back(list[i].data(j,"L2"));
+      }
+
+      glo.addPass(list[i].getSat(),CommonTime(list[i].getFirstGoodTime()),r1,r2,p1,p2);
+   }
+
+//   glo.calcIndex();
 
    exit(0);
 }
