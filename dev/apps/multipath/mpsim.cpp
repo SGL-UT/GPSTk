@@ -22,18 +22,24 @@
 //
 //============================================================================
 
+// Standard library includes
 #include <fstream>
 
-
+// GPSTk main library includes
 #include "BasicFramework.hpp"
 #include "WGS84Geoid.hpp"
 #include "icd_200_constants.hpp"
 #include "IonoModel.hpp"
+
+// From GPSTk's rxio
 #include "EphReader.hpp"
 
+// From GPSTk's geomatics
+#include "random.hpp"
 
 using namespace std;
 using namespace gpstk;
+
 
 class MPSim : public BasicFramework
 {
@@ -121,7 +127,7 @@ void MPSim::process()
 	 ephs.read(navOption.getValue()[i].c_str());
        }
 
-       logStream << "Read these ephemeris inputs: " << endl;
+       logStream << "Read these input files for ephemeris or almanac: " << endl;
        for (size_t i=0; i<ephs.filesRead.size(); i++)
 	 logStream << "  " << ephs.filesRead[i] << endl;
  
