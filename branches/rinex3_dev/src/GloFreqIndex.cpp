@@ -50,6 +50,7 @@ using namespace std;
 
 namespace gpstk
 {
+
    // Fills map with known SV info.  This is for testing purposes only.
 
    void GloFreqIndex::knownIndex()
@@ -80,6 +81,32 @@ namespace gpstk
       freqIndex[RinexSatID("R22")] = -3;
       freqIndex[RinexSatID("R23")] =  3;
       freqIndex[RinexSatID("R24")] =  2;
+   }
+
+
+   // Fills map with weighted-average results from accumulated data.
+
+   int GloFreqIndex::calcIndex()
+      throw()
+   {
+      for (int i = 0; i < 24; i++) // change to num GLO sats
+      {
+         std::map<RinexSatID, Data>::const_iterator iter;
+         iter = dataMap.find(RinexSatID(i+1,SatID::systemGlonass));
+         if ( iter != dataMap.end() )
+         {
+            int length = iter->second.size();
+            double navg      = 0.0;
+            double totweight = 0.0;
+            for (int j = 0; j < iter->second.size(); j++)
+            {
+               navg += (iter->second[j].nG1)/(iter->second[j].dG1); // weighted add'n
+               totweight += 1.0/iter->second[j].dG1;
+            }
+            navg /= totweight; // average by sum of weights
+         }
+         else continue;
+      }
    }
 
 

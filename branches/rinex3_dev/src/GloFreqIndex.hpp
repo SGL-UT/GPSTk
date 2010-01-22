@@ -83,7 +83,7 @@ namespace gpstk
 
       /// Method to generate frequency index map from accumulated SatPass data.
 
-      void calcIndex()
+      int calcIndex()
          throw();
 
       /// Method to calculate frequency index for a single satellite from
@@ -141,11 +141,7 @@ namespace gpstk
 
       void dump( std::ostream& s ) const;
 
-   protected:
-
-
-
-   private: /// All data goes here -- use public accessors to add & view data.
+      /// Data type declarations.
 
       struct IndexData
       {
@@ -158,6 +154,12 @@ namespace gpstk
 
       /// Vector of Data structs to store multiple passes.
       typedef std::vector<IndexData> Data;
+
+   protected:
+
+
+
+   private: /// All data goes here -- use public accessors to add & view data.
 
       /// Map of data (vector of IndexData structs) by SV ID.
       std::map< RinexSatID, Data > dataMap;
