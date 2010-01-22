@@ -99,10 +99,8 @@ try {
    if (TR.dot(DR.cross(DT)) < 0.) windup *= -1.0;
 
    // adjust by 2pi if necessary
-//   d = windup-prev;
-//   windup -= int(d + (d < 0.0 ? -0.5 : 0.5));
-   d = prev - windup;
-   windup += round(d);
+   d = windup-prev;
+   windup -= int(d + (d < 0.0 ? -0.5 : 0.5));
 
    return windup;
 }
