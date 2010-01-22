@@ -49,6 +49,7 @@
 #include <vector>
 #include <map>
 
+#include "CommonTime.hpp"
 #include "RinexSatID.hpp"
 #include "StringUtils.hpp"
 
@@ -80,34 +81,44 @@ namespace gpstk
       void knownIndex()
          throw();
 
-      /// Method to calculate frequency index from range & phase data
-      /// for G1 and G2 bands.  The integer returned is the band index
-      /// determined from data (also appended to the internal data vector).
-      /// This method assumes clean data, i.e. no need to edit the pass.
+      /// Method to generate frequency index map from accumulated SatPass data.
+
+      void calcIndex()
+         throw();
+
+      /// Method to calculate frequency index for a single satellite from
+      /// range & phase data in a single pass for G1 and G2 bands.  The
+      /// integer returned is the band index determined from data (also
+      /// appended to the internal data vector).
+      /// This method assumes relatively clean data, but does scrub for
+      /// outliers (likely cycle slips) after initial slope determination.
       /// The int returned is an error code:
       ///   0  no errors
       ///   1  G1 range and phase vector lengths not equal
       ///   2  G2 range and phase vector lengths not equal
+      ///   3  G1 & G2 results disagree
+      ///   4  uncertainty on G1 result too large
+      ///   5  uncertainty on G2 result too large
 
-      int calcIndex( RinexSatID& id,
-                     const std::vector<double>& r1, const std::vector<double>& p1,
-                     const std::vector<double>& r2, const std::vector<double>& p2 )
+      int addPass( const RinexSatID& id, const CommonTime& tt,
+                   const std::vector<double>& r1, const std::vector<double>& p1,
+                   const std::vector<double>& r2, const std::vector<double>& p2 )
          throw();
 
-      /// Method to calculate frequency index from range & phase data
-      /// for G1 band only.  This method provides empty G2 vectors to
-      /// the actual method above.  Note that if one provides range &
-      /// phase data for only one band using this method, it is assumed
-      /// to be G1!
+      /// Method to calculate frequency index for a single satellite from
+      /// range & phase data in a single pass for the G1 band only.  This
+      /// method provides empty G2 vectors to the actual method above.
+      /// Note that if one provides range & phase data for only one band
+      /// using this method, it is assumed to be G1!
 
-      int calcIndex( RinexSatID& id,
-                     const std::vector<double>& r1, const std::vector<double>& p1 )
+      int addPass( const RinexSatID& id, const CommonTime& tt,
+                   const std::vector<double>& r1, const std::vector<double>& p1 )
          throw()
       {
          std::vector<double> r2, p2;
          r2.clear();
          p2.clear();
-         return calcIndex( id, r1, p1, r2, p2 );
+         return addPass( id, tt, r1, p1, r2, p2 );
       }
 
       /// This method returns the GLONASS index for a given SV.
@@ -138,6 +149,7 @@ namespace gpstk
 
       struct IndexData
       {
+         CommonTime tt;   // time of epoch
          int    pG1, pG2; // number of points in pass
          double fG1, fG2; // float index solutions
          double dG1, dG2; // uncertainty on the float solutions

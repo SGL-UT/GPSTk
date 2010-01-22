@@ -95,9 +95,9 @@ namespace gpstk
      7. Implement scheme to compute overall final result & fill int map.
    */
 
-   int GloFreqIndex::calcIndex( RinexSatID& id,
-                                const std::vector<double>& r1, const std::vector<double>& p1,
-                                const std::vector<double>& r2, const std::vector<double>& p2 )
+   int GloFreqIndex::addPass( const RinexSatID& id, const CommonTime& tt,
+                              const std::vector<double>& r1, const std::vector<double>& p1,
+                              const std::vector<double>& r2, const std::vector<double>& p2 )
       throw()
    {
       vector<double> y1, y2, dy1, dy2, dp1, dp2;
@@ -169,7 +169,12 @@ namespace gpstk
 
       // Added data to struct, append to vector in map by SatID.
 
+      if ( n1 != n2 ) return 3; // Error: G1 & G2 results disagree.
+      if ( dn1 > 1  ) return 4; // Error: nG1 uncertainty too large.
+      if ( dn2 > 1  ) return 5; // Error: nG2 uncertainty too large.
+
       IndexData tempData;
+      tempData.tt  = tt;
       tempData.pG1 = y1.size();
       tempData.pG2 = y2.size();
       tempData.fG1 = n1;
@@ -180,14 +185,6 @@ namespace gpstk
       tempData.nG2 = index2;
 
       dataMap[id].push_back(tempData);
-      freqIndex[id] = index1;
-
-      if ( index1 == index2 ) return index1;
-      else
-      {
-         if ( dn1 < dn2 ) return index1;
-         else return index2;
-      }
    }
 
 
