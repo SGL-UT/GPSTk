@@ -252,9 +252,9 @@ namespace gpstk
          inst = inst->instance();
 
          if (band == 1)
-            return inst->L1map[index];
+            return inst->getL1(index);
          else if (band == 2)
-            return inst->L2map[index];
+            return inst->getL2(index);
          else
          {
             error = 2; // Invalid frequency band.

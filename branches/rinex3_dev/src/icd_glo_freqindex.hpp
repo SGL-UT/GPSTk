@@ -57,11 +57,14 @@ namespace gpstk
        */
       //@{
 
-      /// Singleton map of < FreqNo, frequency > as < int, double >.
+      /// Singleton maps of < FreqNo, frequency > as < int, double >.
    class GloFreq
    {
+
    private:
-      GloFreq() // Constructor is private, cannot be executed by user.
+
+      // Constructor must be private so it cannot be executed by user.
+      GloFreq()
       {
          for (int n = -7; n <= 12; n++)
          {
@@ -70,22 +73,33 @@ namespace gpstk
             L2map[n] = (L2_FREQ_GLO + n*L2_FREQ_STEP_GLO)/1e6;
          }
       }
-      static GloFreq* mInstance; // Object that is created only once.
-//      typedef std::map<int, double> FreqMap;
-//      std::map<int, double> L1map, L2map;
+
+      // Object that is created only once.
+      static GloFreq* mInstance;
+
+      // The maps of frequency by index, also private.
+      std::map<int, double> L1map, L2map;
+
    public:
-      static GloFreq* instance() // Method to get object.
+
+      // Method to get reference to object.
+      static GloFreq* instance()
       {
          if (mInstance == NULL) mInstance = new GloFreq();
          return mInstance;
       }
+
+      // Method to get L1 frequency(index).
       double getL1(const int& index)
       { return L1map[index]; }
+
+      // Method to get L2 frequency(index).
       double getL2(const int& index)
       { return L2map[index]; }
-      std::map<int, double> L1map, L2map;
+
    };
 
+   // Have to initialize the pointer reference as null.
    GloFreq* GloFreq::mInstance = NULL;
 
       //@}
