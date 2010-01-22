@@ -86,32 +86,6 @@ namespace gpstk
       /// Gamma multiplier.
    const double GAMMA_GLO = 1.653061224490;
 
-      /// Singleton map of < FreqNo, frequency > as < int, double >.
-   class GloFreq
-   {
-   private:
-      GloFreq() // Constructor is private, cannot be executed by user.
-      {
-         for (int n = -7; n <= 12; n++)
-         {
-            // Frequencies in MHz.
-            L1map[n] = 1602.0 + n*562.5e-3;
-            L2map[n] = 1246.0 + n*436.5e-3;
-         }
-      }
-      static GloFreq* mInstance; // Object that is created only once.
-   public:
-      static GloFreq* instance() // Method to get object.
-      {
-         if (mInstance == NULL) mInstance = new GloFreq();
-         return mInstance;
-      }
-      typedef std::map<int, double> FreqMap;
-      FreqMap L1map, L2map;
-   };
-
-   GloFreq* GloFreq::mInstance = NULL;
-
       /// Constant for the max array index in SV accuracy table.
    const int SV_ACCURACY_GLO_INDEX_MAX = 15;
       /// Map from SV accuracy/URA flag to NOMINAL accuracy values in m.

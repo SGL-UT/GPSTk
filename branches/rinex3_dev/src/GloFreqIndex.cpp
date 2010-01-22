@@ -43,6 +43,7 @@
 
 #include "GloFreqIndex.hpp"
 #include "icd_glo_constants.hpp"
+#include "icd_glo_freqindex.hpp"
 #include "Stats.hpp"
 
 using namespace gpstk::StringUtils;
@@ -245,8 +246,11 @@ namespace gpstk
       else
       {
          error = 0;
+
+         // singleton reference
          GloFreq *inst;
-         inst = inst->instance(); // singleton reference
+         inst = inst->instance();
+
          if (band == 1)
             return inst->L1map[index];
          else if (band == 2)
