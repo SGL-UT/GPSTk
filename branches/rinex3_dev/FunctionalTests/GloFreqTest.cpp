@@ -43,6 +43,7 @@
 #include <iostream>
 #include <iomanip>
 
+#include "CivilTime.hpp"
 #include "GloFreqIndex.hpp"
 #include "SatPass.hpp"
 
@@ -56,6 +57,7 @@ int main()
    ierr2 = 0;
 
    GloFreqIndex glo;
+
    glo.knownIndex(); // For testing, fill map with known frequency index data.
 
    cout << endl;
@@ -100,18 +102,29 @@ int main()
    filenames.push_back("ARL82620.09O_RF");
    int iread = SatPassFromRinexFiles(filenames,obsTypes,30.0,list);
 
+   cout << endl << "Satellite passes present:" << endl;
+   for (int i = 0; i < list.size(); i++)
+      cout << "   " << list[i].getSat().toString()
+           << "   start: " << CivilTime(list[i].getFirstGoodTime())
+           << "   end: "   << CivilTime(list[i].getLastGoodTime()) << endl;
+   cout << endl;
+
    for (int i = 0; i < list.size(); i++)
    {
       // Refactor the data vectors.
       for (int j = 0; j < list[i].size(); j++)
       {
-         r1.push_back(list[i].data(j,"P1"));
-         r2.push_back(list[i].data(j,"P2"));
-         p1.push_back(list[i].data(j,"L1"));
-         p2.push_back(list[i].data(j,"L2"));
+         // Check for min. elevation angle; 15 degrees per BT.
+         if (list[i].data(j,"EL") > 15.0)
+         {
+            r1.push_back(list[i].data(j,"P1"));
+            r2.push_back(list[i].data(j,"P2"));
+            p1.push_back(list[i].data(j,"L1"));
+            p2.push_back(list[i].data(j,"L2"));
+         }
       }
 
-      glo.addPass(list[i].getSat(),CommonTime(list[i].getFirstGoodTime()),r1,r2,p1,p2);
+      glo.addPass(list[i].getSat(),CommonTime(list[i].getFirstGoodTime()),r1,p1,r2,p2);
    }
 
 //   glo.calcIndex();
