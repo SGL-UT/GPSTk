@@ -41,6 +41,7 @@
  * Calculate GLONASS SV frequency index from range & phase data and store it.
  */
 
+#include "CivilTime.hpp"
 #include "GloFreqIndex.hpp"
 #include "icd_glo_constants.hpp"
 #include "icd_glo_freqindex.hpp"
@@ -116,9 +117,9 @@ namespace gpstk
      STEPS:
      1. Compute y(i) = R(i) - lambda0*phi(i).
      2. Compute the first differences del-y and del-phi.
-     3. Find slope of del-y v. lambda0*delphi (degree one).
-     4. Compute double precision index and round to integer.
-     5. Store results in struct, including standard error from fit.
+     3. Find slope of del-y v. lambda0*delphi (degree one, a "straight" line).
+     4. Compute a double precision index and round to integer.
+     5. Store results in the struct, including standard error from the fit.
      6. Propagate slope error to del-n.
      7. Implement scheme to compute overall final result & fill int map.
    */
@@ -128,49 +129,59 @@ namespace gpstk
                               const std::vector<double>& r2, const std::vector<double>& p2 )
       throw()
    {
-      vector<double> y1, y2, dy1, dy2, dp1, dp2;
+      vector<double> y1, y2, dy1, dy2, dp1, dp2, ndy1, ndy2, ndp1, ndp2;
+
+//      cout << endl;
+
+//      cout << "Array sizes (R1,P1,R2,P2) =   "
+//           << r1.size() << "   " << p1.size() << "   "
+//           << r2.size() << "   " << p2.size() << endl;
 
       if (r1.size() != p1.size()) return 1;
       if (r2.size() != p2.size()) return 2;
 
+//      cout << "First point of range,phase data for G1,G2:" <<endl;
+//      cout << "   " << r1[0] << "   " << p1[0]
+//           << "   " << r2[0] << "   " << p2[0] << endl;
+
       // Compute y(i) = R(i) - lambda0*phi(i) for G1.
-      for (int i=0; i < r1.size(); i++)
+      for (int i = 0; i < r1.size(); i++)
       {
-         double y = r1[i] - L1_FREQ_GLO*p1[i];
-         y1.push_back(y);
+         y1.push_back(r1[i] - L1_WAVELENGTH_GLO*p1[i]);
       }
 
       // Compute y(i) = R(i) - lambda0*phi(i) for G2.
-      for (int i=0; i < r2.size(); i++)
+      for (int i = 0; i < r2.size(); i++)
       {
-         double y = r2[i] - L2_FREQ_GLO*p2[i];
-         y2.push_back(y);
+         y2.push_back(r2[i] - L2_WAVELENGTH_GLO*p2[i]);
       }
 
       // TwoSampleStats (vector pairs) of y v. lambda0*phi.
 
       TwoSampleStats<double> line1, line2;
 
-      // Compute del-y and del-phi for G1.
+      // Get del-y and del-phi vectors for G1.
 
-      for (int i=1; i < y1.size(); i++)
+      for (int i = 0; i < y1.size()-1; i++)
       {
-         double dy = y1[i] - y1[i-1];
-         double dp = p1[i] - p1[i-1];
-         line1.Add(dy,dp);
-//         dy1.push_back(dy);
-//         dp1.push_back(dp);
+         double dy =  y1[i+1] - y1[i];
+         double dp = (p1[i+1] - p1[i])*L1_WAVELENGTH_GLO;
+         dy1.push_back(dy);
+         dp1.push_back(dp);
+//         if ( id == RinexSatID("R17") )
+//            cout << dy << "  " << dp << endl;
+         line1.Add(dp,dy);
       }
 
-      // Compute del-y and del-phi for G2.
+      // Get del-y and del-phi vectors for G2.
 
-      for (int i=1; i < y2.size(); i++)
+      for (int i = 0; i < y2.size()-1; i++)
       {
-         double dy = y2[i] - y2[i-1];
-         double dp = p2[i] - p2[i-1];
-         line2.Add(dy,dp);
-//         dy2.push_back(dy);
-//         dp2.push_back(dp);
+         double dy =  y2[i+1] - y2[i];
+         double dp = (p2[i+1] - p2[i])*L2_WAVELENGTH_GLO;
+         dy2.push_back(dy);
+         dp2.push_back(dp);
+         line2.Add(dp,dy);
       }
 
       // Compute best-fit slopes of lines and their uncertainties.
@@ -179,11 +190,51 @@ namespace gpstk
       double  m2 = line2.Slope();
       double dm1 = line1.SigmaSlope();
       double dm2 = line2.SigmaSlope();
+      double  a1 = line1.Intercept();
+      double  a2 = line2.Intercept();
+      double sx1 = line1.StdDevX();
+      double sx2 = line2.StdDevX();
+      double sy1 = line1.StdDevY();
+      double sy2 = line2.StdDevY();
+
+//      cout << "G1:  " << m1  << "  " << a1  << "  " << sx1 << "  " << sy1 << endl;
+//      cout << "G2:  " << m2  << "  " << a2  << "  " << sx2 << "  " << sy2 << endl;
+
+      // Subtract best-fit line from data, scrub for outliers.
+
+      vector<double> flat1, flat2;
+
+      for (int i = 0; i < y1.size(); i++)
+      {
+         double diff = fabs( dy1[i] - (a1 + m1*(L1_WAVELENGTH_GLO*dp1[i])) );
+//         cout << "   " << i << "   " << diff << endl;
+         if (diff < 2.0*sy1)
+         {
+            ndy1.push_back(dy1[i]);
+            ndp1.push_back(dp1[i]);
+//            if ( id == RinexSatID("R17") )
+//               cout << diff   << "  "
+//                    << dp1[i] << "  " << sx1 << "  "
+//                    << dy1[i] << "  " << sy1 << endl;
+         }
+      }
+      for (int i = 0; i < y2.size(); i++)
+      {
+         double diff = fabs( dy2[i] - (a2 + m2*(L2_WAVELENGTH_GLO*dp2[i])) );
+         if (diff < 2.0*sy2)
+         {
+            ndy2.push_back(dy2[i]);
+            ndp2.push_back(dp2[i]);
+         }
+      }
+
+//      cout << line1 << endl;
+//      cout << line2 << endl;
 
       // Compute float values of index from slopes.
 
-      double n1 = -(L1_FREQ_GLO/L1_FREQ_STEP_GLO)*m1/(m1+1.0);
-      double n2 = -(L2_FREQ_GLO/L2_FREQ_STEP_GLO)*m2/(m2+1.0);
+      double n1 = (L1_FREQ_GLO/L1_FREQ_STEP_GLO)*m1/(1.0-m1);
+      double n2 = (L2_FREQ_GLO/L2_FREQ_STEP_GLO)*m2/(1.0-m2);
 
       // Compute uncertainties on the float index values.
 
@@ -192,14 +243,19 @@ namespace gpstk
 
       // Cast float index results to nearest integer.
 
-      int index1 = static_cast<int>(n1+0.5);
-      int index2 = static_cast<int>(n2+0.5);
+      int index1 = static_cast<int>(n1 + (n1<0 ? -0.5 : 0.5));
+      int index2 = static_cast<int>(n2 + (n2<0 ? -0.5 : 0.5));
 
       // Added data to struct, append to vector in map by SatID.
 
-      if ( n1 != n2 ) return 3; // Error: G1 & G2 results disagree.
-      if ( dn1 > 1  ) return 4; // Error: nG1 uncertainty too large.
-      if ( dn2 > 1  ) return 5; // Error: nG2 uncertainty too large.
+//      cout << "Checking for errors in calculation:" << endl;
+//      cout << "  n1,dn1,n2,dn2 =    "
+//           << n1 << " +/-" << dn1 << "    "
+//           << n2 << " +/-" << dn2 << endl;
+
+//      if ( index1 != index2 ) return 3; // Error: G1 & G2 results disagree.
+      if ( dn1/n1 > 1  ) return 4; // Error: nG1 uncertainty too large.
+      if ( dn2/n2 > 1  ) return 5; // Error: nG2 uncertainty too large.
 
       IndexData tempData;
       tempData.tt  = tt;
@@ -212,7 +268,13 @@ namespace gpstk
       tempData.nG1 = index1;
       tempData.nG2 = index2;
 
+      cout << "Results (G1,G2) for " << id.toString()
+           << ":  " << index1 << "   " << index2 << endl;
+
       dataMap[id].push_back(tempData);
+
+//      cout << "Sending to dumpPass." << endl;
+//      dumpPass(id,tempData);
    }
 
 
@@ -247,7 +309,7 @@ namespace gpstk
       {
          error = 0;
 
-         // singleton reference
+         // Singleton reference.
          GloFreq *inst;
          inst = inst->instance();
 
@@ -262,6 +324,20 @@ namespace gpstk
          }
       }
    }
+
+
+   // Dumps an individual dataMap entry (passed) to cout in a nice format.
+
+   void GloFreqIndex::dumpPass( const RinexSatID& id, const IndexData& data ) const
+   {
+      cout << endl << "Dump of dataMap entry:" << endl << endl;
+
+      cout << "SV ID: " << id << endl;
+      cout << "Start time of pass: " << CivilTime(data.tt) << endl;
+
+      cout << "  # points:    " << setw(4) << data.pG1 << "   " << data.pG2 << endl;
+
+   } // end of dump()
 
 
    // Dumps data in a nice format.

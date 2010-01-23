@@ -76,6 +76,20 @@ namespace gpstk
       virtual ~GloFreqIndex()
       {}
 
+      /// Data type declarations.
+
+      struct IndexData
+      {
+         CommonTime tt;   // time of epoch
+         int    pG1, pG2; // number of points in pass
+         double fG1, fG2; // float index solutions
+         double dG1, dG2; // uncertainty on the float solutions
+         int    nG1, nG2; // integer index solutions
+      };
+
+      /// Vector of Data structs to store multiple passes.
+      typedef std::vector<IndexData> Data;
+
       /// Method to get frequency index from known table.  For testing purposes only.
 
       void knownIndex()
@@ -137,23 +151,13 @@ namespace gpstk
       double getGloFreq( const RinexSatID& id, const int& band, int& error )
          throw();
 
+      /// Dump the contents of a single pass to cout in a nice format.
+
+      void dumpPass( const RinexSatID& id, const IndexData& data ) const;
+
       /// Dump the contents of the data store in a nice format.
 
       void dump( std::ostream& s ) const;
-
-      /// Data type declarations.
-
-      struct IndexData
-      {
-         CommonTime tt;   // time of epoch
-         int    pG1, pG2; // number of points in pass
-         double fG1, fG2; // float index solutions
-         double dG1, dG2; // uncertainty on the float solutions
-         int    nG1, nG2; // integer index solutions
-      };
-
-      /// Vector of Data structs to store multiple passes.
-      typedef std::vector<IndexData> Data;
 
    protected:
 
