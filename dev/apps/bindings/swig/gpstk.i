@@ -16,8 +16,10 @@
 %include "std_vector.i"
 %include "std_map.i"
 
+#ifdef PYTHON
  //jay had to add
 %include "std_ios.i"
+#endif
 
 %include "gpstk_AllanDeviation.i"
 %include "gpstk_AlmOrbit.i"
