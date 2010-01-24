@@ -2,6 +2,8 @@ all: gpstk_octave #gpstk_python  gpstk_perl
 
 gpstk_octave : gpstk.oct
 
+srcdir=../../../src
+
 # Octave -------------------------------------------------------
 
 gpstk.oct : gpstk_octave_wrap.o
@@ -17,13 +19,23 @@ gpstk_octave_wrap.cxx : gpstk.i
 
 gpstk_python : _gpstk.so
 
+pysite=/usr/lib/python2.6/site-packages
+pysite=/usr/local/lib/python2.6/site-packages
+python_install:
+	cp _gpstk.so gpstk.py $(pysite)
+
+python_uninstall:
+	rm $(pysite)/_gpstk.so $(pysite)/gpstk.py
+
+# The following won't link unless the src dir's .a is compiled with -fpic. The Makefile build path does this
+# but the Jam one doesn't as of rev 2247 in svn.
 _gpstk.so : gpstk_python_wrap.o
-	g++ -shared `python-config --ldflags` gpstk_python_wrap.o -lgpstk -o _gpstk.so
+	g++ -shared `python-config --ldflags` gpstk_python_wrap.o -L$(srcdir) -lgpstk -o _gpstk.so
 
 gpstk_python_wrap.o : gpstk_python_wrap.cxx
-	g++ `python-config --cflags` -fPIC -c gpstk_python_wrap.cxx
+	g++ `python-config --cflags` -fpic -c gpstk_python_wrap.cxx
 
-gpstk_python_wrap.cxx : gpstk.i
+gpstk_python_wrap.cxx gpstk.py: gpstk.i
 	swig -c++ -python -o gpstk_python_wrap.cxx gpstk.i
 
 # Perl5 -------------------------------------------------------
@@ -43,5 +55,5 @@ gpstk_perl_wrap.cxx : gpstk.i
 
 clean :
 	rm -f *.o *.oct *_wrap.cxx *_wrap.c 
-	rm -f _gpstk.so # python cleanup
+	rm -f _gpstk.so gpstk.py gpstk.pyc # python cleanup
 	rm -f gpstk.so # perl cleanup

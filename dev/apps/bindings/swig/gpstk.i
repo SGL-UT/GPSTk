@@ -16,6 +16,9 @@
 %include "std_vector.i"
 %include "std_map.i"
 
+ //jay had to add
+%include "std_ios.i"
+
 %include "gpstk_AllanDeviation.i"
 %include "gpstk_AlmOrbit.i"
 %include "gpstk_Antenna.i"

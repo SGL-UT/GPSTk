@@ -4,8 +4,11 @@ any Debian based system.
 
 1. Install prerequisites
 
-   $ jam install subversion jam g++ libncurses-dev swig octave-headers
+  $ apt-get install subversion jam g++ libncurses-dev swig octave-headers
      python-dev
+
+  Note that it appears that swig 1.33 does not support building of the
+  octave bindings.
 
 
 2. First make and install the gpstk src library
@@ -22,16 +25,21 @@ any Debian based system.
 
 4. Test the installations
 
-    $ which timeconvert calgps mkoctfile -->  
-    /usr/local/bin/timeconvert
-    /usr/local/bin/calgps
-    /usr/bin/mkoctfile  
+   $ which timeconvert calgps mkoctfile  
+   /usr/local/bin/timeconvert
+   /usr/local/bin/calgps
+   /usr/bin/mkoctfile  
 
-    $ python-config --cflags -->
-     -I/usr/include/python2.6 -I/usr/include/python2.6 -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes
+   $ python-config --cflags
+   -I/usr/include/python2.6 -I/usr/include/python2.6 -fno-strict-aliasing -DNDEBUG -g -fwrapv -O2 -Wall -Wstrict-prototypes
 
 
 5. Change to the SWIG directory and execute make.
 
-    $ cd apps/binding/octave
-    $ make
+   $ cd apps/binding/swig
+   $ make
+
+6. To build the python bindings:
+
+   $ cd apps/binding/swig
+   $ make gpstk_python

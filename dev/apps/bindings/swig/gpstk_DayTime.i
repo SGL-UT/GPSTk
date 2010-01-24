@@ -2,6 +2,13 @@
 
 %module gpstk_DayTime
 
+ // jay had to add:
+struct timeval
+  {
+    int tv_sec;            /* Seconds.  */
+    int tv_usec;           /* Microseconds.  */
+  };
+
 %{
 #include "../../../src/DayTime.hpp"
 
