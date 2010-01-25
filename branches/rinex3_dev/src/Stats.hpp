@@ -497,7 +497,7 @@ namespace gpstk
       return s;
    }
 
-   /// Compute the median of a vector
+   /// Compute the median of a gpstk::Vector
    template <class T>
    inline T median(const Vector<T>& v)
    {
@@ -505,11 +505,39 @@ namespace gpstk
       if(v.size()==1) return v(0);
       if(v.size()==2) return (v(0)+v(1))/T(2);
       // insert sort
-      size_t i,j;
+      int i,j;
       T x;
       Vector<T> w(v);
       for(i=0; i<v.size(); i++) {
          x = w[i] = v(i);
+         j = i-1;
+         while(j>=0 && x<w[j]) {
+            w[j+1] = w[j];
+            j--;
+         }
+         w[j+1] = x;
+      }
+      if(v.size() % 2)
+         x=w[(v.size()+1)/2-1];
+      else
+         x=(w[v.size()/2-1]+w[v.size()/2])/T(2);
+
+      return x;
+   }  // end median(Vector)
+
+   /// Compute the median of a std::vector
+   template <class T>
+   inline T median(const std::vector<T>& v)
+   {
+      if(v.size()==0) return T();
+      if(v.size()==1) return v[0];
+      if(v.size()==2) return (v[0]+v[1])/T(2);
+      // insert sort
+      int i,j;
+      T x;
+      std::vector<T> w(v);
+      for(i=0; i<v.size(); i++) {
+         x = w[i] = v[i];
          j = i-1;
          while(j>=0 && x<w[j]) {
             w[j+1] = w[j];
