@@ -41,11 +41,14 @@
  * Calculate GLONASS SV frequency index from range & phase data and store it.
  */
 
+#include <cmath>
+
 #include "CivilTime.hpp"
 #include "GloFreqIndex.hpp"
 #include "icd_glo_constants.hpp"
 #include "icd_glo_freqindex.hpp"
 #include "Stats.hpp"
+#include "Vector.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;
@@ -115,13 +118,15 @@ namespace gpstk
    // Calculates a GLONASS SV's frequency channel index from Obs data.
    /*
      STEPS:
-     1. Compute y(i) = R(i) - lambda0*phi(i).
-     2. Compute the first differences del-y and del-phi.
-     3. Find slope of del-y v. lambda0*delphi (degree one, a "straight" line).
-     4. Compute a double precision index and round to integer.
-     5. Store results in the struct, including standard error from the fit.
-     6. Propagate slope error to del-n.
-     7. Implement scheme to compute overall final result & fill int map.
+     1. Scrub out large phase changes, e.g. > 8 km (in distance).
+     2. Compute y(i) = R(i) - lambda0*phi(i) of the remaining data.
+     3. Compute the first differences del-y and del-phi.\
+     4. Scrub out large shifts in del-y, e.g. log[dy - median(dy)] > 1.
+     5. Find slope of del-y v. lambda0*delphi (degree one, a "straight" line).
+     6. Compute a double precision index and round to integer.
+     7. Store results in the struct, including standard error from the fit.
+     8. Propagate slope error to del-n.
+     9. Compute overall final result & fill int map.
    */
 
    int GloFreqIndex::addPass( const RinexSatID& id, const CommonTime& tt,
@@ -129,59 +134,59 @@ namespace gpstk
                               const std::vector<double>& r2, const std::vector<double>& p2 )
       throw()
    {
-      vector<double> y1, y2, dy1, dy2, dp1, dp2, ndy1, ndy2, ndp1, ndp2;
+      // Vectors to hold data as it gets filtered.
+      vector<double> dy1, dy2, dp1, dp2;
 
-//      cout << endl;
+      // TwoSampleStats (vector pairs) of del-y v. lambda0*del-phi.
+      TwoSampleStats<double> line1, line2;
 
-//      cout << "Array sizes (R1,P1,R2,P2) =   "
-//           << r1.size() << "   " << p1.size() << "   "
-//           << r2.size() << "   " << p2.size() << endl;
+      cout << endl;
 
       if (r1.size() != p1.size()) return 1;
       if (r2.size() != p2.size()) return 2;
 
-//      cout << "First point of range,phase data for G1,G2:" <<endl;
-//      cout << "   " << r1[0] << "   " << p1[0]
-//           << "   " << r2[0] << "   " << p2[0] << endl;
+      // Scrub out large phase shifts, > 8 km; don't keep those points.
 
-      // Compute y(i) = R(i) - lambda0*phi(i) for G1.
-      for (int i = 0; i < r1.size(); i++)
+      // Keep good del-phi and del-y = del-R - lambda0*del-phi for G1.
+      for (int i = 1; i < r1.size(); i++)
       {
-         y1.push_back(r1[i] - L1_WAVELENGTH_GLO*p1[i]);
+         double dp = L1_WAVELENGTH_GLO*(p1[i] - p1[i-1]);
+         double dy = (r1[i] - r1[i-1]) - dp;
+         if (dp < 8000.0) // keep the point
+         {
+            dp1.push_back(dp);
+            dy1.push_back(dy);
+         }
       }
 
-      // Compute y(i) = R(i) - lambda0*phi(i) for G2.
-      for (int i = 0; i < r2.size(); i++)
+      // Keep good del-phi and del-y = del-R - lambda0*del-phi for G2.
+      for (int i = 1; i < r2.size(); i++)
       {
-         y2.push_back(r2[i] - L2_WAVELENGTH_GLO*p2[i]);
+         double dp = L2_WAVELENGTH_GLO*(p2[i] - p2[i-1]);
+         if (dp < 8000.0) // keep the point
+         {
+            dp2.push_back(dp);
+            dy2.push_back(r2[i]-r2[i-1] - dp);
+         }
       }
 
-      // TwoSampleStats (vector pairs) of y v. lambda0*phi.
+      // Scrub out large Range-Phase shifts:
+      // If log10[del-median(del)] > 1, reject it.
 
-      TwoSampleStats<double> line1, line2;
+      double med1 = median<double>(dy1);
 
-      // Get del-y and del-phi vectors for G1.
-
-      for (int i = 0; i < y1.size()-1; i++)
+      for (int i = 0; i < dy1.size(); i++)
       {
-         double dy =  y1[i+1] - y1[i];
-         double dp = (p1[i+1] - p1[i])*L1_WAVELENGTH_GLO;
-         dy1.push_back(dy);
-         dp1.push_back(dp);
-//         if ( id == RinexSatID("R17") )
-//            cout << dy << "  " << dp << endl;
-         line1.Add(dp,dy);
+         double spread = ::log10(fabs(dy1[i]-med1));
+         if (spread < 1) line1.Add(dp1[i],dy1[i]);
       }
 
-      // Get del-y and del-phi vectors for G2.
+      double med2 = median<double>(dy2);
 
-      for (int i = 0; i < y2.size()-1; i++)
+      for (int i = 0; i < dy2.size(); i++)
       {
-         double dy =  y2[i+1] - y2[i];
-         double dp = (p2[i+1] - p2[i])*L2_WAVELENGTH_GLO;
-         dy2.push_back(dy);
-         dp2.push_back(dp);
-         line2.Add(dp,dy);
+         double spread = ::log10(fabs(dy2[i]-med2));
+         if (spread < 1) line2.Add(dp2[i],dy2[i]);
       }
 
       // Compute best-fit slopes of lines and their uncertainties.
@@ -197,44 +202,10 @@ namespace gpstk
       double sy1 = line1.StdDevY();
       double sy2 = line2.StdDevY();
 
-//      cout << "G1:  " << m1  << "  " << a1  << "  " << sx1 << "  " << sy1 << endl;
-//      cout << "G2:  " << m2  << "  " << a2  << "  " << sx2 << "  " << sy2 << endl;
-
-      // Subtract best-fit line from data, scrub for outliers.
-
-      vector<double> flat1, flat2;
-
-      for (int i = 0; i < y1.size(); i++)
-      {
-         double diff = fabs( dy1[i] - (a1 + m1*(L1_WAVELENGTH_GLO*dp1[i])) );
-//         cout << "   " << i << "   " << diff << endl;
-         if (diff < 2.0*sy1)
-         {
-            ndy1.push_back(dy1[i]);
-            ndp1.push_back(dp1[i]);
-//            if ( id == RinexSatID("R17") )
-//               cout << diff   << "  "
-//                    << dp1[i] << "  " << sx1 << "  "
-//                    << dy1[i] << "  " << sy1 << endl;
-         }
-      }
-      for (int i = 0; i < y2.size(); i++)
-      {
-         double diff = fabs( dy2[i] - (a2 + m2*(L2_WAVELENGTH_GLO*dp2[i])) );
-         if (diff < 2.0*sy2)
-         {
-            ndy2.push_back(dy2[i]);
-            ndp2.push_back(dp2[i]);
-         }
-      }
-
-//      cout << line1 << endl;
-//      cout << line2 << endl;
-
       // Compute float values of index from slopes.
 
-      double n1 = (L1_FREQ_GLO/L1_FREQ_STEP_GLO)*m1/(1.0-m1);
-      double n2 = (L2_FREQ_GLO/L2_FREQ_STEP_GLO)*m2/(1.0-m2);
+      double n1 = -(L1_FREQ_GLO/L1_FREQ_STEP_GLO)*m1/(1.0-m1);
+      double n2 = -(L2_FREQ_GLO/L2_FREQ_STEP_GLO)*m2/(1.0-m2);
 
       // Compute uncertainties on the float index values.
 
@@ -248,19 +219,30 @@ namespace gpstk
 
       // Added data to struct, append to vector in map by SatID.
 
-//      cout << "Checking for errors in calculation:" << endl;
-//      cout << "  n1,dn1,n2,dn2 =    "
-//           << n1 << " +/-" << dn1 << "    "
-//           << n2 << " +/-" << dn2 << endl;
+      cout << "Results:   n1,dn1, n2,dn2 =    "
+           << n1 << " +/-" << dn1 << "    "
+           << n2 << " +/-" << dn2 << endl;
 
-//      if ( index1 != index2 ) return 3; // Error: G1 & G2 results disagree.
-      if ( dn1/n1 > 1  ) return 4; // Error: nG1 uncertainty too large.
-      if ( dn2/n2 > 1  ) return 5; // Error: nG2 uncertainty too large.
+      if ( index1 != index2 ) // Error: G1 & G2 results disagree.
+      {
+         cout << "G1 & G2 results disagree, result thrown away." << endl;
+         return 3;
+      }
+      if ( dn1 > 0.5  ) // Error: nG1 uncertainty too large.
+      {
+         cout << "G1 uncertainty too large, result thrown away." << endl;
+         return 4;
+      }
+      if ( dn2 > 0.5  ) // Error: nG2 uncertainty too large.
+      {
+         cout << "G2 uncertainty too large, result thrown away." << endl;
+         return 5;
+      }
 
       IndexData tempData;
       tempData.tt  = tt;
-      tempData.pG1 = y1.size();
-      tempData.pG2 = y2.size();
+      tempData.pG1 = dy1.size();
+      tempData.pG2 = dy2.size();
       tempData.fG1 = n1;
       tempData.fG2 = n2;
       tempData.dG1 = dn1;
@@ -272,9 +254,6 @@ namespace gpstk
            << ":  " << index1 << "   " << index2 << endl;
 
       dataMap[id].push_back(tempData);
-
-//      cout << "Sending to dumpPass." << endl;
-//      dumpPass(id,tempData);
    }
 
 
