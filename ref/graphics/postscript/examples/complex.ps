@@ -1,0 +1,54 @@
+%!
+% Postscript program to draw some curves & text
+% comments in Postscript proceed from '%' to end of line
+
+% part 1: set up coordinate system
+72 72 scale	% scale coordinate system so units are inches, not points
+2 2 translate	% put origin 2 inches from lower left of page
+% warning: if you leave off the above two lines, your picture will be tiny!
+
+% part 2: draw a filled path
+
+% counterclockwise path on the outside consisting of two Bezier segments
+0 0 moveto
+2.5 0   2 2  1 3 curveto
+0 4  -1 0  0 0 curveto
+
+% clockwise path on the inside consisting of one Bezier and two line segs
+% this makes a "hole"
+1 1 moveto	% because this is moveto and not lineto, "pen" is lifted
+1 2 lineto
+2 3   3 2  2 1 curveto
+closepath
+
+fill		% fill inbetween the outer & inner curves
+
+
+% part 3: for reference, draw the control polygons for the curves used above.
+% note that this is the same sequence of (x,y) points as above
+
+.5 setgray
+.03 setlinewidth	% set line width to .03 of current units (inches)
+
+0 0 moveto
+2.5 0 lineto  2 2 lineto  1 3 lineto
+0 4 lineto -1 0 lineto  0 0 lineto
+
+1 1 moveto
+1 2 lineto
+2 3 lineto   3 2 lineto  2 1 lineto
+closepath
+stroke % draw control polygon
+
+% part 4: now we'll put up some text to label coordinates of a few points
+/Helvetica findfont 12 72 div scalefont setfont
+% 12 point Helvetica (we divide by 72 above because we scaled earlier)
+1 setgray % white
+0 0 moveto ((0,0)) show
+0 setgray % black
+1 1 moveto ((1,1)) show
+1 3 moveto ((1,3)) show
+
+1 -1 moveto (cubic Bezier curves in Postscript!) show
+
+showpage	% don't forget this! (marks end of page)
