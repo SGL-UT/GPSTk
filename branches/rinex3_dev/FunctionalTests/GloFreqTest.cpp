@@ -111,10 +111,17 @@ int main()
 
    for (int i = 0; i < list.size(); i++)
    {
+      // Clear the vectors first.
+      r1.clear();
+      r2.clear();
+      p1.clear();
+      p2.clear();
+
       // Refactor the data vectors.
       for (int j = 0; j < list[i].size(); j++)
       {
-         // Check for min. elevation angle; 15 degrees per BT.
+         // Check for min. elevation angle before accepting.
+         // Use 15 degrees, per BT.
          if (list[i].data(j,"EL") > 15.0)
          {
             r1.push_back(list[i].data(j,"P1"));
@@ -128,6 +135,16 @@ int main()
    }
 
 //   glo.calcIndex();
+
+   cout << endl;
+   cout << "SV ID   index" << endl;
+
+   // Output the final results in SV order.
+   for (int i = 1; i <= 24; i++)
+   {
+      RinexSatID id(i,SatID::systemGlonass);
+      cout << id << "     " << setw(4) << setfill(' ') << glo.getGloIndex(id) << endl;
+   }
 
    exit(0);
 }
