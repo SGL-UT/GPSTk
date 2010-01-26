@@ -153,6 +153,10 @@ int main()
            << endl;
    }
 
+   cout << endl;
+
+   glo.dump(cout);
+
    exit(0);
 }
 
