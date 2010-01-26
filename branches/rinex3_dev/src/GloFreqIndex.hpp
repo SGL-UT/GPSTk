@@ -69,6 +69,7 @@ namespace gpstk
       /// Constructor -- takes no arguments.
 
       GloFreqIndex()
+      //            : maxdist(8000.0), maxRPshift(1.0)
       {}
 
       /// Destructor
@@ -170,6 +171,12 @@ namespace gpstk
 
       /// Map of index solutions (single integer) by SV ID.
       std::map< RinexSatID, int > freqIndex;
+
+      /// Max. allowable point-to-point phase jump (meters).
+      static const double maxdist = 8000.0;
+
+      /// Max. allowable range-phase point-to-point shift (log, e.g. 1 is x10).
+      static const double maxRPshift = 1.0;
 
    }; // class GloFreqIndex
 
