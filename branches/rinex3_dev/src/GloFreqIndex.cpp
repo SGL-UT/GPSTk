@@ -109,8 +109,8 @@ namespace gpstk
 
       while (navfile >> data) // Read all entries and add them to the map.
       {
-         RinexSatID id(sat);
-         int freqNum = static_cast<int>data.freqNum;
+         RinexSatID id(data.sat);
+         int freqNum = static_cast<int>(data.freqNum);
          freqIndex[id] = freqNum;
       }
    }
