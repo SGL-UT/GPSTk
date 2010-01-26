@@ -4,6 +4,7 @@ SubInclude TOP BinUtils ;
 SubInclude TOP CivilTime ;
 SubInclude TOP CommonTime ;
 SubInclude TOP DayTime ;
+SubInclude TOP tests GalEphemeris ;
 SubInclude TOP GPSWeekSecond ;
 SubInclude TOP GPSWeekZcount ;
 SubInclude TOP IonoModel ;

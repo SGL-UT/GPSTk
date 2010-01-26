@@ -1,8 +1,8 @@
 # The main bojangle!
 PROGRAMS = GalEphemerisTest
 
-SRCS = GalEphemerisTest.c++ # GalileoTest.c++
-OBJS = $(SRCS:.c++=.o)
+SRCS = GalEphemerisTest.cpp
+OBJS = $(SRCS:.cpp=.o)
 
 # Give me compilers or give me death!
 FLAGS = -ansi -pedantic -Wno-unknown-pragmas #-Wall
@@ -14,8 +14,8 @@ LD = g++ $(FLAGS)
 LIBS = ../../src/libgpstk-R3.a
 
 # Revolution!
-.SUFFIXES: .c++ .o
-.c++.o:
+.SUFFIXES: .cpp .o
+.cpp.o:
 	$(CC) $< -o $@ $(CFLAGS)
 	@echo
 
