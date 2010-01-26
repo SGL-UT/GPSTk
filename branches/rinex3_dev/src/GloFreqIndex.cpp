@@ -48,7 +48,6 @@
 #include "icd_glo_constants.hpp"
 #include "icd_glo_freqindex.hpp"
 #include "Stats.hpp"
-#include "Vector.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;
