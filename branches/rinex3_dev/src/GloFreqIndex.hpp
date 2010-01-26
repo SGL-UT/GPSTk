@@ -58,8 +58,22 @@ namespace gpstk
    //@{
 
    /**
-    * This class 
-    *
+    * This class determines the GLONASS frequency (channel) indexes
+    * from Obs data.  The slope of Range-minus-Phase v. Phase is a
+    * function of delta-lambda/lambda.  First differences are used
+    * to allow for implementation of simple outlier rejection.
+    * 
+    * Data is input using SatPass (lib/geomatics), i.e. one pass of
+    * a single SV at a time, and stored in a map of vectors of
+    * structs only if the pass generated a valid solution.  After
+    * all Obs data has been added, the user should call calcIndex()
+    * to generate the simple SV ID v. index lookup map.
+    * 
+    * There is also a knownIndex() method which fills the lookup
+    * map with GLONASS frequency indexes known as of January 2010.
+    * This is mostly for testing.  While it could be updated, that
+    * frequency indexes can change over time makes it unreliable
+    * for general use.
     */
 
    class GloFreqIndex
@@ -96,6 +110,11 @@ namespace gpstk
       void knownIndex()
          throw();
 
+      /// Method to get the frequency indexes from RINEX 3 Nav data.
+
+      int getFromRinex3Nav( const std::string& filename )
+         throw();
+
       /// Method to generate frequency index map from accumulated SatPass data.
 
       int calcIndex()
@@ -122,9 +141,10 @@ namespace gpstk
 
       /// Method to calculate frequency index for a single satellite from
       /// range & phase data in a single pass for the G1 band only.  This
-      /// method provides empty G2 vectors to the actual method above.
-      /// Note that if one provides range & phase data for only one band
-      /// using this method, it is assumed to be G1!
+      /// method provides empty G2 vectors to the above method.  Note that
+      /// if one provides range & phase data for only one band, it is
+      /// assumed to be G1!
+      /// Method currently implemented, but all solutions will be rejected.
 
       int addPass( const RinexSatID& id, const CommonTime& tt,
                    const std::vector<double>& r1, const std::vector<double>& p1 )
@@ -156,7 +176,7 @@ namespace gpstk
 
       void dumpPass( const RinexSatID& id, const IndexData& data ) const;
 
-      /// Dump the contents of the data store in a nice format.
+      /// Dump the contents of the data store to a stream s in a nice format.
 
       void dump( std::ostream& s ) const;
 
@@ -177,6 +197,9 @@ namespace gpstk
 
       /// Max. allowable range-phase point-to-point shift (log, e.g. 1 is x10).
       static const double maxRPshift = 1.0;
+
+      /// Number of GLONASS SVs possible.
+      static const int numSats = 24;
 
    }; // class GloFreqIndex
 

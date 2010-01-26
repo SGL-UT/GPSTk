@@ -39,6 +39,7 @@
 /**
  * @file GloFreqIndex.cpp
  * Calculate GLONASS SV frequency index from range & phase data and store it.
+ * See .hpp for full details.
  */
 
 #include <cmath>
@@ -47,6 +48,9 @@
 #include "GloFreqIndex.hpp"
 #include "icd_glo_constants.hpp"
 #include "icd_glo_freqindex.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavHeader.hpp"
+#include "Rinex3NavStream.hpp"
 #include "Stats.hpp"
 
 using namespace gpstk::StringUtils;
@@ -55,7 +59,8 @@ using namespace std;
 namespace gpstk
 {
 
-   // Fills map with known SV info.  This is for testing purposes only.
+   /// Fills map with known SV info as of January 2010.
+   /// This method is for testing purposes only.
 
    void GloFreqIndex::knownIndex()
       throw()
@@ -88,14 +93,35 @@ namespace gpstk
    }
 
 
-   // Fills map with weighted-average results from accumulated data.
+   /// Fills map with data from a RINEX 3 Nav data file.
+
+   int GloFreqIndex::getFromRinex3Nav( const std::string& filename )
+      throw()
+   {
+      Rinex3NavHeader header;
+      Rinex3NavData data;
+
+      Rinex3NavStream navfile(filename.c_str());
+      cout << "Reading Rinex3Nav file " << filename << "." << endl;
+//      navfile.open(filname,ios::in);
+
+      navfile >> header;
+
+      while (navfile >> data)
+      {
+      }
+   }
+
+
+   /// Fills map with weighted-average results from accumulated data.
+   /// Execute this method after all SatPass data has been added.
 
    int GloFreqIndex::calcIndex()
       throw()
    {
       freqIndex.clear(); // Reset the map by clearing it.
 
-      for (int i = 0; i < 24; i++) // Loop over GLONASS SVs by ID.
+      for (int i = 0; i < numSats; i++) // Loop over GLONASS SVs by ID.
       {
          std::map<RinexSatID, Data>::const_iterator iter;
          RinexSatID id(i+1,SatID::systemGlonass);
@@ -152,8 +178,8 @@ namespace gpstk
 
       cout << endl;
 
-      if (r1.size() != p1.size()) return 1;
-      if (r2.size() != p2.size()) return 2;
+      if (r1.size() != p1.size()) return 1; // Error: G1 range & phase data sizes not equal.
+      if (r2.size() != p2.size()) return 2; // Error: G2 range & phase data sizes not equal.
 
       // Scrub out large phase shifts, > 8 km; don't keep those points.
 
@@ -237,12 +263,12 @@ namespace gpstk
          cout << "G1 & G2 results disagree, result thrown away." << endl;
          return 3;
       }
-      if ( dn1 > 0.5  ) // Error: nG1 uncertainty too large.
+      if ( dn1 > 0.5  )       // Error: nG1 uncertainty too large.
       {
          cout << "G1 uncertainty too large, result thrown away." << endl;
          return 4;
       }
-      if ( dn2 > 0.5  ) // Error: nG2 uncertainty too large.
+      if ( dn2 > 0.5  )       // Error: nG2 uncertainty too large.
       {
          cout << "G2 uncertainty too large, result thrown away." << endl;
          return 5;
@@ -266,7 +292,7 @@ namespace gpstk
    }
 
 
-   // Method to return the channel index value for a given SV ID.
+   // Method to return the frequency index value for a given SV ID.
 
    int GloFreqIndex::getGloIndex( const RinexSatID& id )
       throw()
@@ -281,7 +307,7 @@ namespace gpstk
    }
 
 
-   // Method to return the channel frequency from icd_glo_constants for a given SV ID.
+   // Method to return the frequency from icd_glo_constants for a given SV ID.
 
    double GloFreqIndex::getGloFreq( const RinexSatID& id, const int& band, int& error )
       throw()
@@ -323,16 +349,45 @@ namespace gpstk
       cout << "SV ID: " << id << endl;
       cout << "Start time of pass: " << CivilTime(data.tt) << endl;
 
-      cout << "  # points:    " << setw(4) << data.pG1 << "   " << data.pG2 << endl;
+      cout << "  # points:    " << setw(4) << setfill(' ') << data.pG1
+           << "     "           << setw(4) << setfill(' ') << data.pG2 << endl;
+      cout << "  flt soln:    " << setw(4) << setprecision(4) << data.fG1 << "   " << data.fG2 << endl;
+      cout << "  uncert  :    " << setw(4) << setprecision(4) << data.dG1 << "   " << data.dG2 << endl;
+      cout << "  int soln:    " << setw(4) << setfill(' ') << data.nG1
+           << "     "           << setw(4) << setfill(' ') << data.nG2 << endl;
 
    } // end of dump()
 
 
-   // Dumps data in a nice format.
+   // Dumps all the stored data in a nice format.
 
    void GloFreqIndex::dump(ostream& s) const
    {
-      s << "---------------------------------- REQUIRED ----------------------------------";
+      s << "Dump of all all dataMap entries:" << endl << endl;
+
+      std::map< RinexSatID, vector<IndexData> >::const_iterator iter = dataMap.begin();
+
+      for (; iter != dataMap.end(); iter++)
+      {
+         int length = (iter->second).size();
+         for (int i = 0; i < length; i++)
+         {
+            IndexData data = (iter->second)[i];
+            RinexSatID id = iter->first;
+
+            s << endl << "Dump of dataMap entry:" << endl << endl;
+
+            s << "SV ID: " << id << endl;
+            s << "Start time of pass: " << CivilTime(data.tt) << endl;
+
+            s << "  # points:    " << setw(4) << setfill(' ') << data.pG1
+              << "     "           << setw(4) << setfill(' ') << data.pG2 << endl;
+            s << "  flt soln:    " << setw(4) << setprecision(4) << data.fG1 << "   " << data.fG2 << endl;
+            s << "  uncert  :    " << setw(4) << setprecision(4) << data.dG1 << "   " << data.dG2 << endl;
+            s << "  int soln:    " << setw(4) << setfill(' ') << data.nG1
+              << "     "           << setw(4) << setfill(' ') << data.nG2 << endl;
+         }
+      }
 
    } // end of dump()
 
