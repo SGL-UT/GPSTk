@@ -35,7 +35,9 @@
 #include<vector>
 #include<string>
 #include<valarray>
+#include<iostream>
 
+#include "ValarrayUtils.hpp"
 #include "DayTime.hpp"
 #include "RinexEphemerisStore.hpp"
 #include "Exception.hpp" 
@@ -97,7 +99,7 @@ namespace gpstk
          { return numObsTypes; }
 
       size_t getNumSatEpochs(void) const
-         { return numSatEpochs; } 
+         { return numSatEpochs; }  // { return numSatEpochs }
 
          /** 
           * This functions loads a RINEX obs and nav file. Both files
@@ -106,12 +108,17 @@ namespace gpstk
       void load(const std::string& obsfilename, 
                 const std::string& navfilename);
       void load(const char* obsfilename,
-                const char* navfilename) 
+                const char* navfilename)
       {   
          load(std::string(obsfilename),std::string(navfilename));
       }
       void load(const std::vector<std::string>& obsList, 
                 const std::vector<std::string>& navList);
+
+      void scanObsFile(const std::string& obsfilename, 
+                       long& numEpochsObs, 
+                       double& dataRate, 
+                       Triple& antennaPos);
 
          /**
           * This function removes observations which the input
@@ -157,6 +164,13 @@ namespace gpstk
           *  from unique combination of satellite and nominal epoch.
           */ 
       size_t numSatEpochs;
+
+      int numFiles;
+      int counter;
+      std::valarray<long int> numSatEpochsTotal;
+
+
+
 
       RinexEphemerisStore ephStore;
        

@@ -30,6 +30,10 @@
 
 #include <vector>
 #include <set>
+#include <iostream>
+#include <valarray>
+
+#include <cmath>
 
 #include "ValarrayUtils.hpp"
 #include "PRSolution.hpp"
@@ -75,180 +79,75 @@ namespace gpstk
    void ObsArray::load(const std::vector<std::string>& obsList, 
                        const std::vector<std::string>& navList)
    {
-         // First check for existance of input files
+      // First check for existance of input files
       for (int i=0; i< obsList.size(); i++)
+      {
          if (!FileUtils::fileAccessCheck(obsList[i]))
          {
             ObsArrayException oae("Cannot read obs file " + obsList[i]);
             GPSTK_THROW(oae);
          }
+      }
 
       for (int i=0; i< navList.size(); i++)
       {
-         
          if (!FileUtils::fileAccessCheck(navList[i]))
          {
             ObsArrayException oae("Cannot read nav file " + navList[i]);
             GPSTK_THROW(oae);
          }
          else
-
-         // Load the ephemeris information from the named NAV file.
-         ephStore.loadFile(navList[i]);
+      // Load the ephemeris information from the named NAV file.
+      ephStore.loadFile(navList[i]);
       }
+
+      long totalEpochsObs = 0;
+      Triple antPos;
+      double dR;
    
       for (int i=0; i< obsList.size(); i++)
       {
-         loadObsFile(obsList[i]);
-      }
-      
-   }
-   
+         //RinexObsHeader roh;
+         long numEpochsObs = 0;
+         double dataRate;
+         Triple antennaPos;
 
-   void ObsArray::loadObsFile(const std::string& obsfilename)
-   {
-         // Load the obs file header
-      RinexObsStream robs(obsfilename.c_str());
-      RinexObsStream robsAgain(obsfilename.c_str());
-      RinexObsHeader roh;
-      
-      robs >> roh;
-      
-         // Verify we have a suggested approximate location. If not, note that.
-      bool staticPositionDefined=false;
-      Triple antennaPos;
-      
-      if ( (roh.valid & RinexObsHeader::antennaPositionValid) == 
-           RinexObsHeader::antennaPositionValid)
-      {
-         if ( ! ((antennaPos[0]==antennaPos[1]) &&
-                (antennaPos[0]==antennaPos[2]) &&
-                (antennaPos[0]==0)) )
-	 {
-            antennaPos = roh.antennaPosition;
-            staticPositionDefined=true;
-         }
-      }
-      
-         // Remember the data collection rate. If not available, note that.
-      bool intervalDefined=false;
-      
-      if ( (roh.valid & RinexObsHeader::intervalValid) == 
-           RinexObsHeader::intervalValid)
-      {
-         interval = roh.interval;
-         intervalDefined=true;
-         intervalInferred=false;
-      }
-
-      RinexObsData rod;
-      RinexObsData::RinexSatMap::const_iterator it;
-      
-         // Read through file the first time.
-         // In this pass, get the "size" of the data
-         // Calculate if needed an approximate user positoin,
-         // and data collection interval.
-
-      numSatEpochs = 0;
-
-      bool firstEpochCompleted = false;
-      DayTime lastEpochValue;
-      std::set<double> intervalDifferences;
-      
-      while ( robs >> rod )
-      { 
-            // Account for total amount of obs data in this file
-         numSatEpochs += rod.obs.size();
-
-            // Record the interval differences
-         if (!intervalDefined)
+         scanObsFile(obsList[i], numEpochsObs, dataRate, antennaPos);
+         if (i==0)
          {
-            if (!firstEpochCompleted)
+            antPos=antennaPos;
+            dR=dataRate;
+         }
+
+         if (i!=0)
+         {
+            if ( fabs(antPos[0] - antennaPos[0]) > 1 && fabs(antPos[1] - antennaPos[1]) > 1 && fabs(antPos[2] - antennaPos[2]) > 1)
             {
-               lastEpochValue = rod.time;
-               firstEpochCompleted = true;
+               ObsArrayException oae("Antenna position variation exceeds tolerance");
+               GPSTK_THROW(oae);
             }
-            else
+
+            if ( dataRate != dR )
             {
-               intervalDifferences.insert(ceil(rod.time - lastEpochValue));
-               lastEpochValue = rod.time;
+               ObsArrayException oae("Data rate is not consistent among files");
+               GPSTK_THROW(oae);
             }
          }
-         
-
-            // If necessary, determine the initial user position
-         if (!staticPositionDefined)
-         {
-            PRSolution prEst;
-            ZeroTropModel nullTropModel;
-            
-            std::vector<SatID> sats;
-            std::vector<double> ranges;
-            RinexObsData::RinexSatMap::const_iterator it;
-
-            for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
-            {
-               RinexObsData::RinexObsTypeMap otmap;
-               RinexObsData::RinexObsTypeMap::const_iterator itPR;
-               otmap = it->second;
-               itPR = otmap.find(RinexObsHeader::P1);
-               if (itPR == otmap.end())
-                 itPR = otmap.find(RinexObsHeader::C1);
-
-               if (itPR!=otmap.end())
-               {
-                  sats.push_back(it->first);
-                  ranges.push_back(itPR->second.data);
-               }
-            }
-            
-            prEst.RMSLimit = 10000;
-            prEst.RAIMCompute(rod.time, sats, ranges, ephStore, 
-                              &nullTropModel);
-            
-            if (prEst.isValid())
-            {
-               antennaPos[0] = prEst.Solution[0];
-               antennaPos[1] = prEst.Solution[1];
-               antennaPos[2] = prEst.Solution[2];
-               staticPositionDefined = true;
-            }
-         } // End first blush estimate of static or initial position
-
-      } // Finish first run through file
-
-      if (!intervalDefined)
-      {
-         
-         using namespace ValarrayUtils;   
-            //std::cout << "intervals were: " << intervalDifferences << std::endl;
-         std::set<double>::iterator itEpochDiff = intervalDifferences.begin();
-         interval = *itEpochDiff;
-         intervalDefined = true;
-         intervalInferred = true;
-      }
-      
-      if (!intervalDefined)
-      {
-         ObsArrayException oae("Cannot determine data interval for " + obsfilename);
-         GPSTK_THROW(oae);
+         totalEpochsObs=totalEpochsObs+numEpochsObs;
       }
 
-      int i=0;
+      observation.resize(totalEpochsObs*numObsTypes);
+      epoch.resize(totalEpochsObs);
+      satellite.resize(totalEpochsObs);
+      lli.resize(totalEpochsObs);
+      azimuth.resize(totalEpochsObs);
+      elevation.resize(totalEpochsObs);
+      validAzEl.resize(totalEpochsObs);
+      pass.resize(totalEpochsObs);
+      pass = -1; // Inserted
 
-         // Size the storage valarrays. 
-      observation.resize(numSatEpochs*numObsTypes);
-      epoch.resize(numSatEpochs);
-      satellite.resize(numSatEpochs);
-      lli.resize(numSatEpochs);
-      azimuth.resize(numSatEpochs);
-      elevation.resize(numSatEpochs);
-      validAzEl.resize(numSatEpochs);
-      pass.resize(numSatEpochs);
-      pass = -1;
-      
       validAzEl = true;
-      size_t satEpochIdx=0;
+      long satEpochIdx = 0; // size_t satEpochIdx=0;
          
       std::map<SatID, DayTime> lastObsTime;
       std::map<SatID, DayTime>::const_iterator it2;
@@ -256,83 +155,127 @@ namespace gpstk
      
       long highestPass = 0;
       long thisPassNo;
-      
-         // Second time through, fill in observations and pass numbers      
-         // First step through each epoch of observation
-      while (robsAgain >> rod)
-      {
-            // Second step through the obs for each SV 
-         
-         for (it = rod.obs.begin(); it!=rod.obs.end(); it++)
-         {
-            it2 = lastObsTime.find((*it).first);
 
-                // Step through obs to see if loss of lock is true
-            bool thislli=false;
-            RinexObsData::RinexObsTypeMap::const_iterator i_rotm;
-            for (i_rotm = it->second.begin(); 
-                 i_rotm!= it->second.end(); i_rotm++)
+// totalEpochsObs calculated correctly! Now, we need to fill in the valarrays.
+
+      for (size_t i=0 ; i<obsList.size() ; i++)
+      {
+         RinexObsStream robs(obsList[i]);
+         RinexObsHeader roh;
+
+         //robs >> roh;
+
+         RinexObsData rod;
+         RinexObsData::RinexSatMap::const_iterator it;
+
+         while (robs >> rod)
+         {
+            // Second step through the obs for each SV 
+
+            for (it = rod.obs.begin(); it!=rod.obs.end(); it++)
             {
-	      thislli = thislli || ((i_rotm->second.lli)&1==1);
-            }
-            lli[satEpochIdx]=thislli;
+
+               it2 = lastObsTime.find((*it).first);
+
+               // Step through obs to see if loss of lock is true
+               bool thislli=false;
+               RinexObsData::RinexObsTypeMap::const_iterator i_rotm;
+
+               for (i_rotm = it->second.begin(); i_rotm!= it->second.end(); i_rotm++)
+               {
+                  thislli = thislli || (i_rotm->second.lli > 0);
+               }
+               lli[satEpochIdx]=thislli;
              
             
-            if (  (it2==lastObsTime.end()) || (thislli) ||  
-                   ( (rod.time-lastObsTime[(*it).first]) > 1.1*interval) )
-            {
-               thisPassNo = highestPass;
-               lastObsTime[(*it).first]=rod.time;
-               currPass[(*it).first]=highestPass++;
-            }
-            else
-            { 
-               thisPassNo = currPass[(*it).first];
-               lastObsTime[(*it).first]=rod.time;
-            }
-
-
-            pass[satEpochIdx]=thisPassNo;
-
-            for (int idx=0; idx<numObsTypes; idx++)
-            {
-               if (isBasic[idx])
+               if (  (it2==lastObsTime.end()) || (thislli) || ( (rod.time-lastObsTime[(*it).first]) > 1.1*RinexObsHeader::intervalValid) )
                {
-                  observation[i] = rod.obs[it->first][basicTypeMap[idx]].data;
+                  thisPassNo = highestPass;
+                  lastObsTime[(*it).first]=rod.time;
+                  currPass[(*it).first]=highestPass++;
                }
-               else 
-               {
-                  expressionMap[idx].setRinexObs(rod.obs[it->first]);
-                  observation[i] = expressionMap[idx].evaluate();
+               else
+               { 
+                  thisPassNo = currPass[(*it).first];
+                  lastObsTime[(*it).first]=rod.time;
                }
 
-               satellite[satEpochIdx]  = it->first;               
-               i++;
-            } // end of walk through observations to record
- 
+               pass[satEpochIdx]=thisPassNo;              
+
+               for (int idx=0; idx<numObsTypes; idx++)
+               {
+                  if (isBasic[idx])
+                  {
+                     observation[satEpochIdx*numObsTypes+idx] = rod.obs[it->first][basicTypeMap[idx]].data;
+                  }
+                  else 
+                  {
+                     expressionMap[idx].setRinexObs(rod.obs[it->first]);
+                     observation[satEpochIdx*numObsTypes+idx] = expressionMap[idx].evaluate();
+                  }
+
+                  satellite[satEpochIdx]  = it->first;
+               } // end of walk through observations to record
+
             // Get topocentric coords for given sat
-            try
-            {
-               Xvt svPos = ephStore.getXvt(it->first, rod.time);
-               elevation[satEpochIdx]= antennaPos.elvAngle(svPos.x);
-               azimuth[satEpochIdx]  = antennaPos.azAngle( svPos.x);
-            }
-            catch(InvalidRequest)
-            {
-               validAzEl[satEpochIdx]=false;
-            }
-               //std::cout << "i: (" << satEpochIdx << ")" << rod.time << std::endl;
-            
+
+               try
+               {
+                  Xvt svPos = ephStore.getXvt(it->first,rod.time); // Divide by 0 error occurs somewhere in here
+                  elevation[satEpochIdx]= antPos.elvAngle(svPos.x); // antennaPosition --> antennaPos.blah1
+                  azimuth[satEpochIdx]  = antPos.azAngle(svPos.x); // antennaPosition --> antennaPos.blah2
+               }
+               catch(InvalidRequest)
+               {
+                  validAzEl[satEpochIdx]=false;
+               }
+               //std::cout << "i: (" << satEpochIdx << ")" << rod.time << std::endl;    
 
             epoch[satEpochIdx]=rod.time;
 
+//std::cout << lli[satEpochIdx] << " " << pass[satEpochIdx] << " " << observation[satEpochIdx] << " " << satellite[satEpochIdx] << " " << elevation[satEpochIdx] << " " << azimuth[satEpochIdx] << " " << epoch[satEpochIdx] << "\n";
+
             satEpochIdx++;
-         } // end of walk through prns at this epoch
-      } // end of walk through obs file
+            }
+         }
+      }
 
+   numSatEpochs = totalEpochsObs;
+   }
 
+   void ObsArray::scanObsFile(const std::string& obsfilename, long& numEpochsObs, double& dataRate, Triple& antennaPos)
+   {
+      RinexObsStream robs(obsfilename.c_str());
+      RinexObsHeader roh;
 
-   } // end of ObsArray::loadObsFile(...)
+      robs >> roh;
+
+      RinexObsData rod;
+
+      if ( (roh.valid & RinexObsHeader::antennaPositionValid) == RinexObsHeader::antennaPositionValid)
+      {
+         if ( ! ((roh.antennaPosition[0]==roh.antennaPosition[1]) && (roh.antennaPosition[0]==roh.antennaPosition[2]) && (roh.antennaPosition[0]==0)) )
+	 {
+            antennaPos = roh.antennaPosition;
+         }
+      }
+
+/* this if loop never seems to be entered
+      if ( (roh.valid & RinexObsHeader::intervalValid) == RinexObsHeader::intervalValid)
+      {
+         dataRate = roh.interval;
+      }
+*/
+
+      ///// Using this because the loops used before were not being entered into, can investigate that later and maybe reinsert them.
+      dataRate=RinexObsHeader::intervalValid;
+      /////
+
+      while ( robs >> rod )
+      { 
+         numEpochsObs += rod.obs.size();
+      }
+   }
 
    void ObsArray::edit(const std::valarray<bool> strikeList)
      throw(ObsArrayException)
@@ -352,7 +295,7 @@ namespace gpstk
       
       epoch.resize(newObsEpochCount);
       epoch = newEpoch;
-     
+      
       valarray<SatID> newSatellite = satellite[keepList];
       satellite.resize(newObsEpochCount);
       satellite = newSatellite;
@@ -390,7 +333,7 @@ namespace gpstk
 
          // Update public attributes
       numSatEpochs = newObsEpochCount;
-      
+      //std::cout << "ObsArray::edit.numSatEpochs: " << numSatEpochs << "\n";
    }
    
    double ObsArray::getPassLength(long passNo)
