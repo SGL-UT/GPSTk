@@ -58,18 +58,20 @@ int main()
 
    GloFreqIndex glo;
 
-   glo.knownIndex(); // For testing, fill map with known frequency index data.
+   // For testing, fill map with known frequency index data.
+   glo.knownIndex();
 
-   cout << endl;
+   cout << endl << "SVID v. frequency index known as of Jan. 2010:" << endl << endl;
    cout << "SVID  index   G1         err   G2         err   G3         err" << endl;
 
+   // Loop over the 24 GLONASS SVs.
    for (int i = 1; i <= 24; i++)
    {
       RinexSatID id = RinexSatID(i,SatID::systemGlonass);
 
-      double freq1 = glo.getGloFreq(id,1,ierr1);
-      double freq2 = glo.getGloFreq(id,2,ierr2);
-      double freq3 = glo.getGloFreq(id,3,ierr3);
+      double freq1 = glo.getGloFreq(id,1,ierr1); // G1
+      double freq2 = glo.getGloFreq(id,2,ierr2); // G2
+      double freq3 = glo.getGloFreq(id,3,ierr3); // fake G3, to test error-handling
 
       cout << "R" << setw(2) << setfill('0') << i << "   "
            << setw(4) << setfill(' ') << glo.getGloIndex(id) << "    "
@@ -81,8 +83,9 @@ int main()
            << freq3 << "  " << ierr3 << endl;
    }
 
-   cout << endl;
-   cout << "Reading data from RINEX 2 file..." << endl;
+   cout << endl << endl
+        << "Now reading data from RINEX 2 file to test algorithmic determination:"
+        << endl << endl;
 
    vector<double> r1, r2, p1, p2;
 
@@ -98,15 +101,18 @@ int main()
    vector<SatPass> list;
 
    // Read in data from a known RINEX 2 file.
+   std::string filename = "ARL82620.09O_RF";
+   cout << "Filename: " << filename << endl << endl;
    vector<std::string> filenames;
-   filenames.push_back("ARL82620.09O_RF");
+   filenames.push_back(filename);
    int iread = SatPassFromRinexFiles(filenames,obsTypes,30.0,list);
 
    cout << endl << "Satellite passes present:" << endl;
    for (int i = 0; i < list.size(); i++)
       cout << "   " << list[i].getSat().toString()
            << "   start: " << CivilTime(list[i].getFirstGoodTime())
-           << "   end: "   << CivilTime(list[i].getLastGoodTime()) << endl;
+           << "   end: "   << CivilTime(list[i].getLastGoodTime())
+           << endl;
    cout << endl;
 
    for (int i = 0; i < list.size(); i++)
@@ -134,16 +140,17 @@ int main()
       glo.addPass(list[i].getSat(),CommonTime(list[i].getFirstGoodTime()),r1,p1,r2,p2);
    }
 
-//   glo.calcIndex();
+   glo.calcIndex();
 
-   cout << endl;
-   cout << "SV ID   index" << endl;
+   cout << endl << "SV ID   index" << endl;
 
    // Output the final results in SV order.
    for (int i = 1; i <= 24; i++)
    {
       RinexSatID id(i,SatID::systemGlonass);
-      cout << id << "     " << setw(4) << setfill(' ') << glo.getGloIndex(id) << endl;
+      cout << id << "     " << setw(4) << setfill(' ')
+           << glo.getGloIndex(id) // lookup method
+           << endl;
    }
 
    exit(0);
