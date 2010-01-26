@@ -93,7 +93,7 @@ namespace gpstk
    }
 
 
-   /// Fills map with data from a RINEX 3 Nav data file.
+   /// Fills map with frequency index data from a RINEX 3 Nav data file.
 
    int GloFreqIndex::getFromRinex3Nav( const std::string& filename )
       throw()
@@ -105,10 +105,13 @@ namespace gpstk
       cout << "Reading Rinex3Nav file " << filename << "." << endl;
 //      navfile.open(filname,ios::in);
 
-      navfile >> header;
+      navfile >> header;      // Read the header to get past it.
 
-      while (navfile >> data)
+      while (navfile >> data) // Read all entries and add them to the map.
       {
+         RinexSatID id(sat);
+         int freqNum = static_cast<int>data.freqNum;
+         freqIndex[id] = freqNum;
       }
    }
 
