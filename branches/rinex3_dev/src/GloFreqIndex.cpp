@@ -113,7 +113,7 @@ namespace gpstk
       //   0 = no error
       //   1 = entry disagrees with new data
       while (navfile >> data)
-      {
+      { 
          RinexSatID id(data.sat);
          int freqNum = static_cast<int>(data.freqNum);
          std::map< RinexSatID, int >::const_iterator iter;
@@ -132,7 +132,7 @@ namespace gpstk
    /// Fills map with weighted-average results from accumulated data.
    /// Execute this method after all SatPass data has been added.
 
-   int GloFreqIndex::calcIndex()
+   int GloFreqIndex::calcIndex( const int& verbose )
       throw()
    {
       freqIndex.clear(); // Reset the map by clearing it.
@@ -144,26 +144,32 @@ namespace gpstk
          iter = dataMap.find(id);
          if ( iter != dataMap.end() )
          {
-            cout << endl << "Found SV " << id.toString() << endl;
+            if (verbose != 0)
+               cout << endl << "Found SV " << id.toString() << endl;
             int length = iter->second.size();
-            cout << "There are " << length << " passes recorded." << endl;
+            if (verbose != 0)
+               cout << "There are " << length << " passes recorded." << endl;
             double navg      = 0.0;
             double totweight = 0.0;
             for (int j = 0; j < iter->second.size(); j++)
             {
-               cout << "   navg add'n: "
-                    << (iter->second[j].nG1) << "  "
-                    << (iter->second[j].dG1) << endl;
+               if (verbose != 0)
+                  cout << "   navg add'n: "
+                       << (iter->second[j].nG1) << "  "
+                       << (iter->second[j].dG1) << endl;
                navg += (iter->second[j].nG1)/(iter->second[j].dG1); // weighted add'n
                totweight += 1.0/iter->second[j].dG1;
             }
             navg /= totweight; // average by sum of weights
-            cout << "   navg,totwt = " << navg << "   " << totweight << endl;
+            if (verbose != 0) cout << "   navg,totwt = " << navg
+                                   << "   " << totweight << endl;
             int index = static_cast<int>(navg + (navg<0 ? -0.5 : 0.5));
             freqIndex[id] = index;
          }
          else continue;
       }
+
+      return 0;
    }
 
 
@@ -203,10 +209,10 @@ namespace gpstk
       for (int i = 1; i < r1.size(); i++)
       {
          double dp = L1_WAVELENGTH_GLO*(p1[i] - p1[i-1]);
-         if (fabs(dp) < maxdist) // keep the point
+         if (fabs(dp) < maxDist) // keep the point
          {
             dp1.push_back(dp);
-            dy1.push_back(r1[i]-r1[i-1] - dp); // dy
+            dy1.push_back(r1[i]-r1[i-1] - dp); // dy in writeup
          }
       }
 
@@ -214,10 +220,10 @@ namespace gpstk
       for (int i = 1; i < r2.size(); i++)
       {
          double dp = L2_WAVELENGTH_GLO*(p2[i] - p2[i-1]);
-         if (fabs(dp) < maxdist) // keep the point
+         if (fabs(dp) < maxDist) // keep the point
          {
             dp2.push_back(dp);
-            dy2.push_back(r2[i]-r2[i-1] - dp); // dy
+            dy2.push_back(r2[i]-r2[i-1] - dp); // dy in writeup
          }
       }
 
@@ -305,6 +311,8 @@ namespace gpstk
            << ":  " << index1 << "   " << index2 << endl;
 
       dataMap[id].push_back(tempData);
+
+      return 0;
    }
 
 

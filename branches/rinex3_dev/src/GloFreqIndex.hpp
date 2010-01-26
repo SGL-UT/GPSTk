@@ -119,8 +119,9 @@ namespace gpstk
          throw();
 
       /// Method to generate frequency index map from accumulated SatPass data.
+      /// Set verbose != 0 to get pass-by-pass info via cout during execution.
 
-      int calcIndex()
+      int calcIndex( const int& verbose = 0 )
          throw();
 
       /// Method to calculate frequency index for a single satellite from
@@ -196,7 +197,7 @@ namespace gpstk
       std::map< RinexSatID, int > freqIndex;
 
       /// Max. allowable point-to-point phase jump (meters).
-      static const double maxdist = 8000.0;
+      static const double maxDist = 8000.0;
 
       /// Max. allowable range-phase point-to-point shift (log, e.g. 1 is x10).
       static const double maxRPshift = 1.0;
