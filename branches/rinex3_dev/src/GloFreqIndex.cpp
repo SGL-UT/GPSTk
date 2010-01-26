@@ -107,12 +107,25 @@ namespace gpstk
 
       navfile >> header;      // Read the header to get past it.
 
-      while (navfile >> data) // Read all entries and add them to the map.
+      // Read all entries and add them to the map.
+      // If an existing entry disagrees with the new data,
+      // return an error to the user.  Error codes:
+      //   0 = no error
+      //   1 = entry disagrees with new data
+      while (navfile >> data)
       {
          RinexSatID id(data.sat);
          int freqNum = static_cast<int>(data.freqNum);
+         std::map< RinexSatID, int >::const_iterator iter;
+         iter = freqIndex.find(id);
+         if (iter != freqIndex.end())
+         {
+            if (iter->second != freqNum) return 1; // entry disagrees w/ new data
+         }
          freqIndex[id] = freqNum;
       }
+
+      return 0; // successful, no errors
    }
 
 

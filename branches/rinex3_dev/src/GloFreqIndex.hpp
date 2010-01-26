@@ -111,6 +111,9 @@ namespace gpstk
          throw();
 
       /// Method to get the frequency indexes from RINEX 3 Nav data.
+      /// Error codes:
+      ///   0 = no error
+      ///   1 = existing entry disagrees with new data
 
       int getFromRinex3Nav( const std::string& filename )
          throw();
