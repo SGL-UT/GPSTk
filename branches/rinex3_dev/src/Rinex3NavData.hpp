@@ -89,7 +89,7 @@ namespace gpstk
      /// destructor
      virtual ~Rinex3NavData() {}
 
-     // The next four lines are our common interface.
+     // The next five lines are our common interface.
      /// Rinex3NavData is "data" so this function always returns true.
      virtual bool isData(void) const {return true;}
 

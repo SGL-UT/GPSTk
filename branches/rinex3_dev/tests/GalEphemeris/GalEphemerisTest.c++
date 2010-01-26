@@ -58,7 +58,7 @@ void testDump(string filename)
       ephstore.loadFile(filename.c_str());
       ephstore.dump(cout, DETAILLEVEL);
    }
-   catch(Exception& e)
+   catch (Exception& e)
    {
       error("Could not open file.");
    }
@@ -70,7 +70,7 @@ void testDump(string filename)
 
    Rinex3NavStream input(filename.c_str());
 
-   if(!input)
+   if (!input)
    {
       error("Could not open file.");
    }
@@ -81,10 +81,10 @@ void testDump(string filename)
    header.dump(cout);
 
    // Add ephemeris.
-   while(input >> data)
+   while (input >> data)
    {
       // Checking Rinex3NavData...
-      if(data.satSys == "E")
+      if (data.satSys == "E")
       {
          //Checking GalEphemerisStore...
          info("Adding ephemeris...");
@@ -114,14 +114,14 @@ void testDump(string filename)
 
       eph.dump(cout);
    }
-   catch(Exception& e)
+   catch (Exception& e)
    {
       error("Invalid request!");
    }
 }
 
 /**
- * 
+ * A random test.
  */
 void testPlayground(string filename)
 {
@@ -131,7 +131,7 @@ void testPlayground(string filename)
 
    Rinex3NavStream input(filename.c_str());
 
-   if(!input)
+   if (!input)
    {
       error("Could not open file.");
    }
@@ -140,9 +140,9 @@ void testPlayground(string filename)
 
    header.dump(cout);
 
-   while(input >> data)
+   while (input >> data)
    {
-      if(data.satSys == "E")
+      if (data.satSys == "E")
       {
          //info("Adding ephemeris...");
          galstore.addEphemeris(data);
@@ -169,7 +169,62 @@ void testPlayground(string filename)
       cout << "BGDb    = " << eph.getBGDb() << endl;
       cout << "HOWtime = " << eph.getHOWTime(1) << endl;
    }
-   catch(Exception& e)
+   catch (Exception& e)
+   {
+      error("Invalid request!");
+   }
+}
+
+/**
+ * Checks the svXt() and svXvt() methods of GalEphemeris.
+ */
+void testPosition(string filename)
+{
+   GalEphemerisStore galstore;
+   Rinex3NavData data;
+   Rinex3NavHeader header;
+
+   Rinex3NavStream input(filename.c_str());
+
+   if (!input)
+   {
+      error("Could not open file.");
+   }
+
+   input >> header;
+
+   header.dump(cout);
+
+   while (input >> data)
+   {
+      if (data.satSys == "E")
+      {
+         info("Adding ephemeris...");
+         galstore.addEphemeris(data);
+      }
+      else
+      {
+         warn("Not a Galileo nav message.");
+      }
+   }
+
+   newline();
+      
+   try
+   {
+      const SatID satID6(6, SatID::systemGalileo);
+      const GalEphemerisStore::GalEphMap& ephmap6 = galstore.getEphMap(satID6);
+
+      const GalEphemerisStore::GalEphMap::const_iterator b = ephmap6.begin();
+      const GalEphemeris eph = b->second;
+
+      Xt ephpos = eph.svXt(eph.getEphemerisEpoch());
+      cout << "eph.svXt()  = " << ephpos << endl;
+
+      Xvt ephposv = eph.svXvt(eph.getEphemerisEpoch());
+      cout << "eph.svXvt() = " << ephposv << endl;
+   }
+   catch (Exception& e)
    {
       error("Invalid request!");
    }
@@ -201,19 +256,19 @@ void testReadWrite(string filename)
       header.dump(cout);
       output << header;
 
-      while(input >> data)
+      while (input >> data)
       {
          output << data;
       }
 
       info("Done writing input to output files.");
    }
-   catch(Exception& e)
+   catch (Exception& e)
    {
       cout << e;
       exit(EXIT_FAILURE);
    }
-   catch(...)
+   catch (...)
    {
       error("Unknown error.");
    }
@@ -238,7 +293,7 @@ void testReadWrite(string filename)
 int main(int argc, char* argv[])
 {
    // No filename supplied...
-   if(argc == 1)
+   if (argc == 1)
    {
       cout << "Usage: ./GalEphemerisTest FILE" << endl;
 
@@ -246,8 +301,9 @@ int main(int argc, char* argv[])
    }
    
    //testDump(argv[1]);
-   testPlayground(argv[1]);
-   testReadWrite(argv[1]);
+   //testPlayground(argv[1]);
+   testPosition(argv[1]);
+   //testReadWrite(argv[1]);
    
    return EXIT_SUCCESS;
 }
