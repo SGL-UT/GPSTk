@@ -137,12 +137,12 @@ int main()
          }
       }
 
-      glo.addPass(list[i].getSat(),CommonTime(list[i].getFirstGoodTime()),r1,p1,r2,p2);
+      glo.addPass(list[i].getSat(),
+                  CommonTime(list[i].getFirstGoodTime()),
+                  r1,p1,r2,p2,1);
    }
 
-   int calccheck = glo.calcIndex();
-
-   cout << "calcIndex return value = " << calccheck << endl << endl;
+   glo.calcIndex();
 
    cout << endl << "SV ID   index" << endl;
 
