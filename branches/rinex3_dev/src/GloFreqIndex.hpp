@@ -83,7 +83,6 @@ namespace gpstk
       /// Constructor -- takes no arguments.
 
       GloFreqIndex()
-      //            : maxdist(8000.0), maxRPshift(1.0)
       {}
 
       /// Destructor
@@ -103,7 +102,7 @@ namespace gpstk
       };
 
       /// Vector of Data structs to store multiple passes.
-      typedef std::vector<IndexData> Data;
+      typedef std::vector<IndexData> passData;
 
       /// Method to get frequency index from known table.  For testing purposes only.
 
@@ -121,7 +120,7 @@ namespace gpstk
       /// Method to generate frequency index map from accumulated SatPass data.
       /// Set verbose != 0 to get pass-by-pass info via cout during execution.
 
-      int calcIndex( const int& verbose = 0 )
+      void calcIndex( const int& verbose = 0 )
          throw();
 
       /// Method to calculate frequency index for a single satellite from
@@ -131,6 +130,8 @@ namespace gpstk
       /// This method assumes relatively clean data, but does scrub for
       /// outliers (likely cycle slips) after initial slope determination.
       /// The int returned is an error code:
+      ///  -2  divide by zero for G2 slope
+      ///  -1  divide by zero for G1 slope
       ///   0  no errors
       ///   1  G1 range and phase vector lengths not equal
       ///   2  G2 range and phase vector lengths not equal
@@ -140,7 +141,8 @@ namespace gpstk
 
       int addPass( const RinexSatID& id, const CommonTime& tt,
                    const std::vector<double>& r1, const std::vector<double>& p1,
-                   const std::vector<double>& r2, const std::vector<double>& p2 )
+                   const std::vector<double>& r2, const std::vector<double>& p2,
+                   const int& verbose = 0                                       )
          throw();
 
       /// Method to calculate frequency index for a single satellite from
@@ -151,14 +153,9 @@ namespace gpstk
       /// Method currently implemented, but all solutions will be rejected.
 
       int addPass( const RinexSatID& id, const CommonTime& tt,
-                   const std::vector<double>& r1, const std::vector<double>& p1 )
-         throw()
-      {
-         std::vector<double> r2, p2;
-         r2.clear();
-         p2.clear();
-         return addPass( id, tt, r1, p1, r2, p2 );
-      }
+                   const std::vector<double>& r1, const std::vector<double>& p1,
+                   const int& verbose = 0                                       )
+         throw();
 
       /// This method returns the GLONASS index for a given SV.
       /// It returns -100 if there is no entry for the given SatID.
@@ -191,7 +188,7 @@ namespace gpstk
    private: /// All data goes here -- use public accessors to add & view data.
 
       /// Map of data (vector of IndexData structs) by SV ID.
-      std::map< RinexSatID, Data > dataMap;
+      std::map< RinexSatID, passData > dataMap;
 
       /// Map of index solutions (single integer) by SV ID.
       std::map< RinexSatID, int > freqIndex;

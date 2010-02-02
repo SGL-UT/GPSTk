@@ -101,9 +101,8 @@ namespace gpstk
       Rinex3NavHeader header;
       Rinex3NavData data;
 
-      Rinex3NavStream navfile(filename.c_str());
-      cout << "Reading Rinex3Nav file " << filename << "." << endl;
-//      navfile.open(filname,ios::in);
+      Rinex3NavStream navfile(filename.c_str(), ios::in);
+      navfile.exceptions(ifstream::failbit);
 
       navfile >> header;      // Read the header to get past it.
 
@@ -132,15 +131,15 @@ namespace gpstk
    /// Fills map with weighted-average results from accumulated data.
    /// Execute this method after all SatPass data has been added.
 
-   int GloFreqIndex::calcIndex( const int& verbose )
+   void GloFreqIndex::calcIndex( const int& verbose )
       throw()
    {
       freqIndex.clear(); // Reset the map by clearing it.
 
-      for (int i = 0; i < numSats; i++) // Loop over GLONASS SVs by ID.
+      for (int i = 1; i <= numSats; i++) // Loop over GLONASS SVs by ID.
       {
-         std::map<RinexSatID, Data>::const_iterator iter;
-         RinexSatID id(i+1,SatID::systemGlonass);
+         std::map<RinexSatID, passData>::const_iterator iter;
+         RinexSatID id(i,SatID::systemGlonass);
          iter = dataMap.find(id);
          if ( iter != dataMap.end() )
          {
@@ -154,22 +153,26 @@ namespace gpstk
             for (int j = 0; j < iter->second.size(); j++)
             {
                if (verbose != 0)
+               {
                   cout << "   navg add'n: "
                        << (iter->second[j].nG1) << "  "
                        << (iter->second[j].dG1) << endl;
+               }
+               if (iter->second[j].dG1 == 0.0) continue; // don't divide by zero
                navg += (iter->second[j].nG1)/(iter->second[j].dG1); // weighted add'n
                totweight += 1.0/iter->second[j].dG1;
             }
             navg /= totweight; // average by sum of weights
-            if (verbose != 0) cout << "   navg,totwt = " << navg
-                                   << "   " << totweight << endl;
+            if (verbose != 0)
+            {
+               cout << "   navg,totwt = " << navg
+                    << "   " << totweight << endl;
+            }
             int index = static_cast<int>(navg + (navg<0 ? -0.5 : 0.5));
             freqIndex[id] = index;
          }
          else continue;
       }
-
-      return 0;
    }
 
 
@@ -189,7 +192,8 @@ namespace gpstk
 
    int GloFreqIndex::addPass( const RinexSatID& id, const CommonTime& tt,
                               const std::vector<double>& r1, const std::vector<double>& p1,
-                              const std::vector<double>& r2, const std::vector<double>& p2 )
+                              const std::vector<double>& r2, const std::vector<double>& p2,
+                              const int& verbose                                           )
       throw()
    {
       // Vectors to hold data as it gets filtered.
@@ -197,8 +201,6 @@ namespace gpstk
 
       // TwoSampleStats (vector pairs) of del-y v. lambda0*del-phi.
       TwoSampleStats<double> line1, line2;
-
-      cout << endl;
 
       if (r1.size() != p1.size()) return 1; // Error: G1 range & phase data sizes not equal.
       if (r2.size() != p2.size()) return 2; // Error: G2 range & phase data sizes not equal.
@@ -235,7 +237,8 @@ namespace gpstk
       for (int i = 0; i < dy1.size(); i++)
       {
          double spread = ::log10(fabs(dy1[i]-med1));
-         if (spread < maxRPshift) line1.Add(dp1[i],dy1[i]);
+         if (spread < maxRPshift)
+            line1.Add(dp1[i],dy1[i]);
       }
 
       double med2 = median<double>(dy2);
@@ -243,7 +246,8 @@ namespace gpstk
       for (int i = 0; i < dy2.size(); i++)
       {
          double spread = ::log10(fabs(dy2[i]-med2));
-         if (spread < maxRPshift) line2.Add(dp2[i],dy2[i]);
+         if (spread < maxRPshift)
+            line2.Add(dp2[i],dy2[i]);
       }
 
       // Compute best-fit slopes of lines and their uncertainties.
@@ -261,10 +265,20 @@ namespace gpstk
 
       // Compute float values of index from slopes.
 
+      if (1.0-m1 == 0.0) // don't divide by zero (G1)
+         return -1;
+      if (1.0-m2 == 0.0) // don't divide by zero (G2)
+         return -2;
+
       double n1 = -(L1_FREQ_GLO/L1_FREQ_STEP_GLO)*m1/(1.0-m1);
       double n2 = -(L2_FREQ_GLO/L2_FREQ_STEP_GLO)*m2/(1.0-m2);
 
       // Compute uncertainties on the float index values.
+
+      if (1.0+m1 == 0.0) // don't divide by zero (G1)
+         return -1;
+      if (1.0+m2 == 0.0) // don't divide by zero (G2)
+         return -2;
 
       double dn1 = (L1_FREQ_GLO/L1_FREQ_STEP_GLO)*dm1/std::pow(m1+1.0,2);
       double dn2 = (L2_FREQ_GLO/L2_FREQ_STEP_GLO)*dm2/std::pow(m2+1.0,2);
@@ -276,23 +290,29 @@ namespace gpstk
 
       // Added data to struct, append to vector in map by SatID.
 
-      cout << "Results:   n1,dn1, n2,dn2 =    "
-           << n1 << " +/-" << dn1 << "    "
-           << n2 << " +/-" << dn2 << endl;
+      if (verbose != 0)
+      {
+         cout << "Results:   n1,dn1, n2,dn2 =    "
+              << n1 << " +/-" << dn1 << "    "
+              << n2 << " +/-" << dn2 << endl;
+      }
 
       if ( index1 != index2 ) // Error: G1 & G2 results disagree.
       {
-         cout << "G1 & G2 results disagree, result thrown away." << endl;
+         if (verbose != 0)
+            cout << "G1 & G2 results disagree, result thrown away." << endl;
          return 3;
       }
-      if ( dn1 > 0.5  )       // Error: nG1 uncertainty too large.
+      if ( dn1 > 0.5 )        // Error: nG1 uncertainty too large.
       {
-         cout << "G1 uncertainty too large, result thrown away." << endl;
+         if (verbose != 0)
+            cout << "G1 uncertainty too large, result thrown away." << endl;
          return 4;
       }
-      if ( dn2 > 0.5  )       // Error: nG2 uncertainty too large.
+      if ( dn2 > 0.5 )        // Error: nG2 uncertainty too large.
       {
-         cout << "G2 uncertainty too large, result thrown away." << endl;
+         if (verbose != 0)
+            cout << "G2 uncertainty too large, result thrown away." << endl;
          return 5;
       }
 
@@ -307,12 +327,34 @@ namespace gpstk
       tempData.nG1 = index1;
       tempData.nG2 = index2;
 
-      cout << "Results (G1,G2) for " << id.toString()
-           << ":  " << index1 << "   " << index2 << endl;
+      if (verbose != 0)
+      {
+         cout << "Results (G1,G2) for " << id.toString()
+              << ":  " << index1 << "   " << index2 << endl;
+      }
 
       dataMap[id].push_back(tempData);
 
       return 0;
+   }
+
+
+   // Method to calculate frequency index for a single satellite from
+   // range & phase data in a single pass for the G1 band only.  This
+   // method provides empty G2 vectors to the above method.  Note that
+   // if one provides range & phase data for only one band, it is
+   // assumed to be G1!
+   // Method currently implemented, but all solutions will be rejected.
+
+   int GloFreqIndex::addPass( const RinexSatID& id, const CommonTime& tt,
+                              const std::vector<double>& r1, const std::vector<double>& p1,
+                              const int& verbose                                           )
+      throw()
+   {
+      std::vector<double> r2, p2;
+      r2.clear();
+      p2.clear();
+      return addPass( id, tt, r1, p1, r2, p2, verbose );
    }
 
 
@@ -389,7 +431,7 @@ namespace gpstk
    {
       s << "Dump of all all dataMap entries:" << endl << endl;
 
-      std::map< RinexSatID, vector<IndexData> >::const_iterator iter = dataMap.begin();
+      std::map< RinexSatID, passData >::const_iterator iter = dataMap.begin();
 
       for (; iter != dataMap.end(); iter++)
       {
