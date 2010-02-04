@@ -187,31 +187,31 @@
 
 /**
  * @example example6.cpp
- * Shows a minimalist way to process GPS data using GNSS Data Structures (@DataStructures.hpp).
+ * Shows a minimalist way to process GPS data using GNSS Data Structures (DataStructures.hpp).
  */
 
 /**
  * @example example7.cpp
- * Demonstrates several different ways to process GPS data using GNSS Data Structures (@DataStructures.hpp).
+ * Demonstrates several different ways to process GPS data using GNSS Data Structures (DataStructures.hpp).
  */
 
 /**
  * @example example8.cpp
  * This program shows how to use GNSS Data Structures (GDS) in a basic way to
- * obtain 'Precise Point Positioning' (PPP). (@DataStructures.hpp).
+ * obtain 'Precise Point Positioning' (PPP). (DataStructures.hpp).
  */
 
 /**
  * @example example9.cpp
  * This program shows how to use GNSS Data Structures (GDS) and other classes
  * to build a reasonable complete application that computes 'Precise Point
- * Positioning' (PPP). (@DataStructures.hpp).
+ * Positioning' (PPP). (DataStructures.hpp).
  */
 
 /**
  * @example example10.cpp
  * This program shows how to use GNSS Data Structures to obtain phase-based
- * differential positioning (single-differences). (@DataStructures.hpp).
+ * differential positioning (single-differences). (DataStructures.hpp).
  */
 
 /**
@@ -230,6 +230,13 @@
 /**
  * @example example13.cpp
  * Example of native surface plots.
+ */
+
+/**
+ * @example example14.cpp
+ * This program shows how to use GNSS Data Structures (GDS) and other classes
+ * to build a reasonable complete application that implements the "Precise
+ * Orbits Positioning" (POP) strategy. (DataStructures.hpp).
  */
 
 /**
