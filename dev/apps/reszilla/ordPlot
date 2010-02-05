@@ -56,13 +56,12 @@ def main():
                       the trailing decimal place).") 
 
     parser.add_option("-w", "--warts", dest="wartiness", action="count",
-                      help="Increase the importants of warts on the plot.\
+                      help="Increase the importance of warts on the plot.\
                       Zero (the default) means don't even plot them. One\
                       means plot them but don't autoscale to show them all\
                       (just show all the ords). Two means autoscale to show\
                       all the warts. Three means only show the warts and\
-                      don't show any ords. Only zero and 2 have been\
-                      implimented.")                    
+                      don't show any ords.")
 
     (options, args) = parser.parse_args()
 
@@ -230,21 +229,26 @@ def main():
         label="All prns"
         for prn in prns:
             if prn in highlightPrns: continue
-            onePrn = ords[:,ords[1]==prn]
-            smoothPlot(ax1, onePrn[0], onePrn[2], 'g.', label, options.smoothing)
+            if options.wartiness < 3:
+                onePrn = ords[:,ords[1]==prn]
+                smoothPlot(ax1, onePrn[0], onePrn[2], 'g.', label, options.smoothing)
             if options.wartiness and warts.size > 0:
                 oneWart = warts[:,warts[1]==prn]
                 smoothPlot(ax1, oneWart[0], oneWart[2], 'r.', label, 0)
             label="none"
 
         for prn in highlightPrns:
-            onePrn = ords[:,ords[1]==prn]
-            smoothPlot(ax1, onePrn[0], onePrn[2], '.', "prn %2d"%prn, options.smoothing)
+            if options.wartiness < 3:
+                onePrn = ords[:,ords[1]==prn]
+                smoothPlot(ax1, onePrn[0], onePrn[2], '.', "prn %2d"%prn, options.smoothing)
             if options.wartiness and warts.size > 0:
                 oneWart = warts[:,warts[1]==prn]
                 smoothPlot(ax1, oneWart[0], oneWart[2], '.', "prn %2dW"%prn, 0)
 
-        ylim=strip_lim(ords[2], options.yRange)
+        if options.wartiness >= 2:
+           ylim=strip_lim(ords[2], options.yRange, warts[2])
+        else:
+           ylim=strip_lim(ords[2], options.yRange)
 
         if options.clockDelta:
             # Plot the first deritive of the clock...
@@ -393,17 +397,20 @@ def parse_time(words):
 # end of parse_time()
 
 
-def strip_lim(y, limit):
+def strip_lim(y, limit, warts=numpy.array([])):
     if not limit or limit == "ignore" or limit == "none":
-        lim = (y.min(), y.max())
+        if len(warts) > 0:
+            lim = (min([y.min(), warts.min()]), max([y.max(), warts.max()]))
+        else:
+            lim = (y.min(), y.max())
     elif limit[-1] == "%":
         fraction = float(limit[:-1])/100.0
         drop = int(numpy.floor(0.5 * (1-fraction) * len(y)))
-        ds = numpy.sort(y)
+        ds = numpy.sort(y.tolist() + warts.tolist())
         lim = (ds[drop], ds[-(drop+1)])
     elif limit[-1] == "s":
         mult = float(limit[:-1])
-        sigma = y.std(0) * mult        
+        sigma = numpy.std(y.tolist() + warts.tolist()) * mult        
         lim = (-sigma , sigma)
     else:
         lim = (-float(limit), float(limit))
