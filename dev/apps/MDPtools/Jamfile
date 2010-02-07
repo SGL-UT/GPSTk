@@ -23,7 +23,21 @@ GPSMain mdp2rinex : mdp2rinex.cpp ;
 
 GPSMain mdpEdit : mdpEdit.cpp ;
 
-if $(UNIX)
+actions checkitout
+{
+  ls -l ;
+}
+
+
+# mdpscreen requires the curses/ncurses dev library to be installed.
+# since I(ocibu) can't figure out how to make jam detect this automatically,
+# set the variable curses to enable it. Either in the environment:
+#   $ export curses=t
+#   $ jam
+# or on the command line
+#   $ jam -scurses=t
+#
+if $(UNIX) && $(curses)
 {
   if $(OS) = SOLARIS  {
     LINKLIBS on mdpscreenx$(SUFEXE) += -lcurses ;
@@ -34,10 +48,13 @@ if $(UNIX)
 
   LinkLibraries mdpscreenx : mdplib ;
   GPSLinkLibraries mdpscreenx : gpstk rxio ;
-
   GPSMain mdpscreenx : mdpscreen.cpp ScreenProc.cpp ;
 
   if $(OS) != CYGWIN  {
   InstallBin $(BINDIR) : mdpscreen mdpscreenx ;
   }
+}
+else
+{
+  ECHO build/install of mdpscreenx is being skipped; see jamfile ;
 }
