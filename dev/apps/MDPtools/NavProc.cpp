@@ -251,6 +251,9 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
       if (verboseLevel>3 && umsg.neededCooking)
          out << msgPrefix << "Subframe required cooking" << endl;
 
+      if (verboseLevel>2)
+         umsg.dump(cout);
+
       if (!umsg.parityGood)
       {
          if (verboseLevel)
@@ -333,7 +336,6 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
          EngAlmanac& engAlm = almStore[ni];
          SubframePage sp(sfid, page);
          almPages[sp] = umsg;
-//         almPages.insert(make_pair(sp, umsg));
 
          if (makeEngAlmanac(engAlm, almPages, !minimalAlm))
          {
@@ -400,9 +402,6 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
                    << " SNR:" << fixed << setprecision(1) << snr[ni]
                    << " EL:" << el[ni]
                    << endl;
-            if (verboseLevel>1)
-               msg.dump(cout);
-
             if (binByElevation)
                peHist[rcp].addValue(el[ni]);
             else
