@@ -23,11 +23,6 @@ GPSMain mdp2rinex : mdp2rinex.cpp ;
 
 GPSMain mdpEdit : mdpEdit.cpp ;
 
-actions checkitout
-{
-  ls -l ;
-}
-
 
 # mdpscreen requires the curses/ncurses dev library to be installed.
 # since I(ocibu) can't figure out how to make jam detect this automatically,

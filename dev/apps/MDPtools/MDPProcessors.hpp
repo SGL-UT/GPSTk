@@ -149,4 +149,22 @@ public:
       MDPProcessor(in, out)
    {}
 };
+
+
+//-----------------------------------------------------------------------------
+class MDPCSVProcessor : public MDPProcessor
+{
+   void process(const gpstk::MDPObsEpoch& oe);
+   void process(const gpstk::MDPPVTSolution& pvt);
+   void process(const gpstk::MDPNavSubframe& sts);
+   void process(const gpstk::MDPSelftestStatus& sts);
+
+   bool headerDone;
+   void outputHeader();
+   char buff0[256],buff1[256];
+
+public:
+   MDPCSVProcessor(gpstk::MDPStream& in, std::ofstream& out);
+};
+
 #endif

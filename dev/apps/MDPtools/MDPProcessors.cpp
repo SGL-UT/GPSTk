@@ -415,3 +415,118 @@ void MDPVerboseProcessor::process(const gpstk::MDPSelftestStatus& sts)
    sts.dump(out);
    out << endl;
 }
+
+
+//-----------------------------------------------------------------------------
+MDPCSVProcessor::MDPCSVProcessor(gpstk::MDPStream& in, std::ofstream& out) :
+   MDPProcessor(in, out), headerDone(false)
+{}
+
+
+//-----------------------------------------------------------------------------
+void MDPCSVProcessor::outputHeader()
+{
+   if (headerDone)
+      return;
+
+   if (obsOut)
+      out << "# mjd, 300, prn, chan, hlth, nSVs, ele, az, code, carrier, LC, SNR, range, phase, doppler" << endl;
+   if (pvtOut)
+      out << "# mjd, 301, #SV, dtime, ddtime, x, y, z, vx, vy, vz" << endl;
+   if (navOut)
+      out << "# mjd, 310, prn, carrier_code, range_code, nav_code, word1, word2, ..." << endl;
+   if (tstOut)
+      out << "# mjd, 400, tstTime, startTime, Tant, Trx, status, cpu, freq, ssw" << endl;
+
+   headerDone=true;
+}
+
+
+//-----------------------------------------------------------------------------
+// This is done as a sprintf to make the code as fast as possible.
+void MDPCSVProcessor::process(const gpstk::MDPObsEpoch& oe)
+{
+   outputHeader();
+
+   sprintf(buff0, "%f, %3d, %2d, %2d, %2d, %2d, %2.0f, %3.0f, ",
+           oe.time.MJDdate(), oe.id, oe.prn, oe.channel, oe.status, oe.numSVs,
+           oe.elevation, oe.azimuth);
+
+   MDPObsEpoch::ObsMap::const_iterator i;
+   for (i = oe.obs.begin(); i != oe.obs.end(); i++)
+   {
+      const MDPObsEpoch::Observation& obs=i->second;
+      sprintf(buff1, "%1d, %1d, %7ld, %5.2f, %14.4f, %14.4f, %10f\n",
+              obs.range, obs.carrier, obs.lockCount, obs.snr,
+              obs.pseudorange,obs.phase,obs.doppler);
+      out << buff0 << buff1;
+   }
+}
+
+
+
+//-----------------------------------------------------------------------------
+void MDPCSVProcessor::process(const gpstk::MDPPVTSolution& pvt)
+{
+   outputHeader();
+
+   out << pvt.time.MJDdate()
+       << fixed
+       << ", " << setw(3) << pvt.id
+       << ", " << setw(2) << (int)pvt.numSVs
+       << setprecision(3)
+       << ", " << setw(12) << pvt.dtime*1e9
+       << setprecision(6)
+       << ", " << setw(9)  << pvt.ddtime*1e9
+       << setprecision(3)
+       << ", " << setw(12) << pvt.x[0]
+       << ", " << setw(12) << pvt.x[1]
+       << ", " << setw(12) << pvt.x[2]
+       << setprecision(3)
+       << ", " << setw(8) << pvt.v[0]
+       << ", " << setw(8) << pvt.v[1]
+       << ", " << setw(8) << pvt.v[2]
+       << endl;
+}
+
+
+//-----------------------------------------------------------------------------
+void MDPCSVProcessor::process(const gpstk::MDPNavSubframe& sf)
+{
+   outputHeader();
+   out << sf.time.MJDdate()
+       << fixed
+       << ", " << setw(3) << sf.id
+       << ", " << setw(2) << sf.prn
+       << ", " << int(sf.carrier)
+       << ", " << int(sf.range)
+       << ", " << int(sf.nav);
+
+   if (verboseLevel)
+   {
+      out <<  setfill('0') << hex;
+      for(int i = 1; i < sf.subframe.size(); i++)
+         out << ", " << setw(8) << uppercase << sf.subframe[i];
+      out << dec << setfill(' ');
+   }
+   out << endl;
+}
+
+
+//-----------------------------------------------------------------------------
+void MDPCSVProcessor::process(const gpstk::MDPSelftestStatus& sts)
+{
+   outputHeader();
+   out << sts.time.printf(timeFormat)
+       << fixed
+       << ", " << setw(3) << sts.id
+       << ", " << sts.selfTestTime.MJDdate()
+       << ", " << sts.firstPVTTime.MJDdate()
+       << ", " << setprecision(1) << sts.antennaTemp
+       << ", " << setprecision(1) << sts.receiverTemp
+       << ", " << hex << sts.status << dec
+       << ", " << setprecision(1) << sts.cpuLoad
+       << ", " << hex << sts.extFreqStatus << dec
+       << ", " << hex << sts.saasmStatusWord << dec
+       << endl;
+}
