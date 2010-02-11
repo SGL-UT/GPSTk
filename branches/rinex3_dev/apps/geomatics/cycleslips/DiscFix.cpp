@@ -22,28 +22,28 @@
 //
 //============================================================================
 
-//--------------------------------------------------------------------------------
-// DiscFix.cpp Read a RINEX observation file containing dual frequency
-// pseudorange and phase, separate the data into satellite passes, and then
-// find and estimate discontinuities in the phase (using the GPSTk Discontinuity
-// Corrector (GDC) in DiscCorr.hpp).
+//---------------------------------------------------------------------------------
+// DiscFix.cpp:
+// Read a RINEX observation file containing dual frequency pseudorange and phase,
+// separate the data into satellite passes, then find and estimate discontinuities
+// in the phase (using the GPSTk Discontinuity Corrector (GDC) of DiscCorr.hpp).
 // The corrected data can be written out to another RINEX file, plus there is the
 // option to smooth the pseudorange and/or debias the phase (SatPass::smooth()).
 //
 // This program is useful as a way to process RINEX data by satellite pass.
-// It reads an entire RINEX obs file, breaking it into satellite passes (SatPass)
-// and processing it (ProcessSatPass()), then writes it out again from the
-// SatPass data. It was designed so that all the input data gets into one SatPass
-// and is altered only by the routine(s) called in ProcessSatPass(). Thus by
-// modifying just that routine, this program could be used to do something else
-// to the satellite passes. Also note that there is a choice of when to write out
-// the data, either as soon as possible, or only at the end: cf. bool WriteASAP.
-//--------------------------------------------------------------------------------
+// It reads an entire RINEX obs file, breaks it into satellite passes (SatPass)
+// and processes it (ProcessSatPass()), then writes it out from SatPass data.
+// It was designed so that all the input data gets into one SatPass and is altered
+// only by the routine(s) called in ProcessSatPass(). Thus, by modifying just that
+// one routine, this program could be used to do something else to the satellite
+// passes. Note that there is a choice of when to write out the data:
+// either as soon as possible, or only at the end (cf. bool WriteASAP).
+//---------------------------------------------------------------------------------
 
 /**
  * @file DiscFix.cpp
- * Correct phase discontinuities (cycle slips) in dual frequency data in a RINEX
- * observation file, plus optionally smooth the pseudoranges and/or debias the phases.
+ * Correct phase discontinuities (cycle slips) in dual-frequency data from a RINEX
+ * observation file; optionally smooth the pseudoranges and/or debias the phases.
  */
 
 #include <cstring>
@@ -54,6 +54,7 @@
 #include <fstream>
 #include <algorithm>
 
+#include "DiscCorr.hpp"
 #include "MathBase.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
@@ -63,10 +64,8 @@
 #include "CivilTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "SystemTime.hpp"
-#include "StringUtils.hpp"
-
 #include "SatPass.hpp"
-#include "DiscCorr.hpp"
+#include "StringUtils.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -74,7 +73,8 @@ using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 
-// prgm data
+// Program Data
+
 string PrgmVers("5.0 8/20/07");
 string PrgmName("DiscFix");
 
@@ -83,23 +83,27 @@ typedef struct configuration
    // input
    string Directory;
    vector<string> InputObsName;
+
    // data flow
    double ith;
    CommonTime begTime, endTime;
    double MaxGap;
-   //int MinPts;
+//   int MinPts;
+
    // processing
    double dt;
    bool UseCA;
    vector<GSatID> ExSV;
    GSatID SVonly;
+
    // output files
    string LogFile, OutFile;
    ofstream oflog,ofout;
    string format;
+
    // output
    string OutRinexObs;
-   string HDPrgm;         // header of output RINEX file
+   string HDPrgm;      // header of output RINEX file
    string HDRunby;
    string HDObs;
    string HDAgency;
@@ -108,29 +112,29 @@ typedef struct configuration
    int NrecOut;
    CommonTime FirstEpoch, LastEpoch;
    bool smoothPR, smoothPH, smooth;
-   bool WriteASAP; // If true, write to RINEX only after ALL data has been processed.
-   //bool CAOut;
-   //bool DopOut;
+   bool WriteASAP;  // If true, write to RINEX only after ALL data has been processed.
+//   bool CAOut;
+//   bool DopOut;
    bool verbose;
-   // estimate dt from data
-   double estdt[9];
+   double estdt[9]; // estimate dt from data
    int ndt[9];
+
 } DFConfig;
 
 //------------------------------------------------------------------------------------
 
-// data input from command line
+// Data input from command line.
 
 DFConfig config;                 // for DiscFix
 GDCconfiguration GDConfig;       // the discontinuity corrector configuration
 
-// data used in program
+// Data used in the program.
 
 clock_t totaltime;
 string Title;
 CommonTime CurrEpoch, PrgmEpoch;
 
-RinexObsStream irfstr, orfstr;      // input and output RINEX files
+RinexObsStream irfstr, orfstr;     // input and output RINEX files
 RinexObsHeader rhead;
 int inC1,inP1,inP2,inL1,inL2;      // indexes in rhead of C1, C1/P1, P2, L1 and L2
 bool UsingCA;
@@ -141,7 +145,7 @@ bool UsingCA;
 
 vector<SatPass> SPList;
 
-// convenience
+// (convenience)
 
 static const string L1="L1",L2="L2",P1="P1",P2="P2";
 
@@ -156,35 +160,43 @@ map<GSatID,int> SatToCurrentIndexMap;
 
 //------------------------------------------------------------------------------------
 
-// prototypes
+// Prototypes
 
 int ReadFile(int nfile)
    throw(Exception);
+
 int ProcessOneEntireEpoch(RinexObsData& ro)
    throw(Exception);
-int ProcessOneSatOneEpoch(GSatID, CommonTime, unsigned short&,
-                          vector<double>&,
+
+int ProcessOneSatOneEpoch(GSatID, CommonTime, unsigned short&, vector<double>&,
                           vector<unsigned short>&, vector<unsigned short>&)
    throw(Exception);
 
 void ProcessSatPass(int index)
    throw(Exception);
+
 int AfterReadingFiles(void)
    throw(Exception);
+
 void WriteToRINEXfile(void)
    throw(Exception);
+
 void WriteRINEXheader(void)
    throw(Exception);
+
 void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime)
    throw(Exception);
 
 void PrintSPList(ostream&, string, vector<SatPass>&, bool printTime);
+
 int GetCommandLine(int argc, char **argv)
    throw(Exception);
+
 void PreProcessArgs(const char *arg, vector<string>& Args)
    throw(Exception);
 
 //------------------------------------------------------------------------------------
+
 int main(int argc, char **argv)
 {
    try
@@ -193,7 +205,6 @@ int main(int argc, char **argv)
       int iret;
 
       // Title and description
-      //cout << "Name " << string(argv[0]) << endl;
       Title = PrgmName + ", part of the GPS ToolKit, Ver " + PrgmVers + ", Run ";
       SystemTime sysTime;
       PrgmEpoch = sysTime.convertToCommonTime();
@@ -266,7 +277,7 @@ int main(int argc, char **argv)
       SPList.clear();
       SPIndexList.clear();
 
-      totaltime = clock()-totaltime;
+      totaltime = clock() - totaltime;
       config.oflog << PrgmName << " timing: " << fixed << setprecision(3)
                    << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
       cout << PrgmName << " timing: " << fixed << setprecision(3)
@@ -301,7 +312,7 @@ int ReadFile(int nfile)
    try
    {
       string name;
-      // open input file
+      // Open the input file.
       name = config.InputObsName[nfile];
       if (!config.Directory.empty() && config.Directory != string("."))
          name = config.Directory + string("/") + name;
@@ -316,7 +327,7 @@ int ReadFile(int nfile)
          config.oflog << "Opened input file " << name << endl;
       irfstr.exceptions(ios::failbit);
 
-      // read the header
+      // Read the header.
       irfstr >> rhead;
       if (config.verbose)
       {
@@ -325,7 +336,7 @@ int ReadFile(int nfile)
          config.oflog << endl;
       }
 
-       // check that file contains C1/P1,P2,L1,L2
+      // Check that file contains C1/P1,P2,L1,L2.
       inC1 = inP1 = inP2 = inL1 = inL2 = -1;
       for (int j=0; j<rhead.obsTypeList.size(); j++)
       {
@@ -358,10 +369,13 @@ int ReadFile(int nfile)
       }
 
       if (config.UseCA) inP1 = inC1;
-      if (inP1 == inC1) UsingCA = true; else UsingCA = false;
+      if (inP1 == inC1)
+         UsingCA = true;
+      else
+         UsingCA = false;
 
-      // loop over epochs in the file
-      bool first=true;
+      // Loop over epochs in the file.
+      bool first = true;
       int iret;
       RinexObsData rodata;
       while (1)
@@ -392,12 +406,12 @@ int ReadFile(int nfile)
 //------------------------------------------------------------------------------------
 
 // Return : (return < -1 means fatal error)
-//       -2 time tags were out of order - fatal
-//       -1 end of file (or past end time limit),
-//        0 ok,
-//        1 skip this epoch : before begin time
-//        2 skip this epoch : comment block,
-//        3 skip this epoch : decimated
+//     -2  time tags were out of order - fatal
+//     -1  end of file (or past end time limit)
+//      0  ok
+//      1  skip this epoch : before begin time
+//      2  skip this epoch : comment block
+//      3  skip this epoch : decimated
 
 int ProcessOneEntireEpoch(RinexObsData& roe)
    throw(Exception)
@@ -422,11 +436,12 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
       if (roe.time < config.begTime) return 1;
       if (roe.time > config.endTime) return -1;
 
-      // ignore comment blocks ...
+      // ignore comment blocks
       if (roe.epochFlag != 0 && roe.epochFlag != 1) return 2;
 
       // decimate data
-      // if begTime is still undefined, set it to begin of week
+      // If begTime is still undefined, set it to beginning of the week.
+
       if (config.ith > 0.0)
       {
          if (fabs(config.begTime - CommonTime::BEGINNING_OF_TIME) < 1.e-8)
@@ -443,27 +458,34 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
       // save current time
       CurrEpoch = roe.time;
 
-      // loop over sat=it->first, ObsTypeMap=it->second
+      // loop over sat=it->first & ObsTypeMap=it->second
+
       for (it=roe.obs.begin(); it != roe.obs.end(); ++it)
       {
-         // Is this satellite excluded ?
+         // Is this satellite excluded?
+
          sat = it->first;
          if (sat.system != SatID::systemGPS) continue; // ignore non-GPS satellites
          for (k=-1,i=0; i<config.ExSV.size(); i++)     // ignore input sat (--exSat)
+         {
             if (config.ExSV[i] == sat) { k = i; break; }
+         }
          if (k > -1) continue;
 
-            // if only one satellite is included, skip all the rest
+         // If only one satellite is included, skip all the rest.
          if (config.SVonly.id != -1 && !(sat == config.SVonly)) continue;
 
-            // pull out the data and the SSI and LLI (indicators)
-            // put all the indicators together in a string, then make it a long
-            // order of the indicators: P1P2L1L2*ls   AaBbCcDd
+         // Pull out the data and the SSI and LLI (indicators).
+         // Put all the indicators together in a string, then make it a long.
+         // Order of the indicators:   P1P2L1L2*ls   AaBbCcDd
+
          //str = string("00000000");
          data = vector<double>(4,0.0);
          lli  = vector<unsigned short>(4,0);
          ssi  = vector<unsigned short>(4,0);
+
          otmap = it->second;
+
          if ( (jt = otmap.find(rhead.obsTypeList[inP1])) != otmap.end())
          {
             //spd.P1 = jt->second.data;
@@ -502,14 +524,14 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
          }
          //spd.indicators = asUnsigned(str);
 
-         // is it good?
+         // Is it good?
          ok = true;
          // if (spd.P1 < 1000.0 || spd.P2 < 1000.0) ok = false;
          if (fabs(data[0]) <= 0.001 || fabs(data[1]) <= 0.001 ||
              fabs(data[2]) <= 0.001 || fabs(data[3]) <= 0.001   ) ok = false;
          flag = (ok ? SatPass::OK : SatPass::BAD);
 
-         // process this sat
+         // Now process this sat.
          iret = ProcessOneSatOneEpoch(sat, CurrEpoch, flag, data, lli, ssi);
          if (iret == -2)
          {
@@ -519,23 +541,35 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
 
       }  // end loop over sats
 
-      // update LastEpoch and estimate of config.dt
+      // Update LastEpoch and estimate of config.dt.
       if (config.LastEpoch > CommonTime(CommonTime::BEGINNING_OF_TIME))
       {
          double dt = CurrEpoch-config.LastEpoch;
-         for (i=0; i<9; i++) {
-            if (config.ndt[i] <=0 ) { config.estdt[i]=dt; config.ndt[i]=1; break; }
-            if (fabs(dt-config.estdt[i]) < 0.0001) { config.ndt[i]++; break; }
+         for (i=0; i<9; i++)
+         {
+            if (config.ndt[i] <=0 )
+            {
+               config.estdt[i]=dt;
+               config.ndt[i]=1;
+               break;
+            }
+            if (fabs(dt-config.estdt[i]) < 0.0001)
+            {
+               config.ndt[i]++;
+               break;
+            }
             if (i == 8)
             {
                k = 0;
                int nl = config.ndt[k];
                for (j=1; j<9; j++)
+               {
                   if (config.ndt[j] <= nl)
                   {
                      k = j;
                      nl = config.ndt[j];
                   }
+               }
                config.ndt[k] = 1;
                config.estdt[k] = dt;
             }
@@ -543,7 +577,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
       }
       config.LastEpoch = CurrEpoch;
 
-         // check times looking for passes that ought to be processed
+      // Check times looking for passes that ought to be processed.
       for (i=0; i<SPList.size(); i++)
       {
          if (SPList[i].status() > 1)
@@ -555,7 +589,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
          if (!orfstr) SPList[i].status() = 99; // status == 99 means 'written out'
       }
 
-      // try writing more data to output RINEX file
+      // Try writing more data to output RINEX file.
       if (config.WriteASAP)
       {
          WriteToRINEXfile();
@@ -577,9 +611,9 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
 
 //------------------------------------------------------------------------------------
 
-//int ProcessOneSatOneEpoch(GSatID sat, CommonTime tt, SatPassData& spd)
-// return -2 if time tags are out of order,
-//         0 normal = data was added
+// return codes:
+//    -2  time tags are out of order
+//     0  normal: data was added
 
 int ProcessOneSatOneEpoch(GSatID sat, CommonTime tt, unsigned short& flag,
                           vector<double>& data,
@@ -591,9 +625,9 @@ int ProcessOneSatOneEpoch(GSatID sat, CommonTime tt, unsigned short& flag,
       int index,iret;
       map<GSatID,int>::const_iterator kt;
 
-      // find the current SatPass for this sat
+      // Find the current SatPass for this sat.
       kt = SatToCurrentIndexMap.find(sat);
-      // if there is not one, create one
+      // If there isn't one, create one.
       if (kt == SatToCurrentIndexMap.end())
       {
          SatPass newSP(sat,config.dt);
@@ -603,12 +637,12 @@ int ProcessOneSatOneEpoch(GSatID sat, CommonTime tt, unsigned short& flag,
          kt = SatToCurrentIndexMap.find(sat);
       }
 
-      // update the first epoch
+      // Update the first epoch.
       if (config.FirstEpoch == CommonTime::BEGINNING_OF_TIME)
          config.FirstEpoch = CurrEpoch;
 
-      // get the index of this SatPass in the SPList vector
-      // and add the data to that SatPass
+      // Get the index of this SatPass in the SPList vector
+      // and add the data to that SatPass.
       index = kt->second;
       SPList[index].status() = 1;                // status == 1 means 'fill'
       //if ( SPList[index].push_back(tt,spd) )
@@ -616,25 +650,25 @@ int ProcessOneSatOneEpoch(GSatID sat, CommonTime tt, unsigned short& flag,
       if (iret == -2) return -2;                 // time tags are out of order
       if (iret >=  0) return  0;                 // data was added successfully
 
-      // --- need to create a new pass ---
+      // --- Need to create a new pass ---
 
-      // first process the old one
+      // First process the old pass.
       ProcessSatPass(index);
       if (!orfstr)                         // not writing to RINEX
          SPList[index].status() = 99;       // status == 99 means 'written out'
       else if (config.WriteASAP)
          WriteToRINEXfile();              // try writing out
 
-         // create a new SatPass for this sat
+      // Create a new SatPass for this sat, add it to the list.
       SatPass newSP(sat,config.dt);
-         // add it to the list
       SPList.push_back(newSP);
       SPIndexList.push_back(99999);                  // keep parallel
-         // get the new index
+
+      // Get the new index and add it to the map.
       index = SPList.size()-1;
-         // and add it to the map
       SatToCurrentIndexMap[sat] = index;
-         // add the data
+
+      // Next, add the data.
       SPList[index].status() = 1;              // status == 1 means 'fill'
       //SPList[index].push_back(tt,spd);       // cannot fail
       SPList[index].addData(tt, L1L2P1P2, data, lli, ssi, flag);
@@ -660,7 +694,7 @@ void ProcessSatPass(int in)
                    << " at " << CurrEpoch.asString() << endl;
       //SPList[in].dump(config.oflog,"RAW");
 
-      // remove this SatPass from the SatToCurrentIndexMap map
+      // Remove this SatPass from the SatToCurrentIndexMap map.
       SatToCurrentIndexMap.erase(SPList[in].getSat());
 
       // --------- call DC on this pass -------------------
@@ -701,26 +735,34 @@ void ProcessSatPass(int in)
 }
 
 //------------------------------------------------------------------------------------
+
 int AfterReadingFiles(void)
    throw(Exception)
 {
    try
    {
-      config.oflog << "After reading files" << endl;
+      config.oflog << "After reading files:" << endl;
 
-      // compute the estimated data interval and write it out
+      // Compute the estimated data interval and write it out.
       for (int i=1; i<9; i++)
+      {
          if (config.ndt[i] > config.ndt[0])
          {
-            int j = config.ndt[i];            double est = config.estdt[i];
-            config.ndt[i] = config.ndt[0];    config.estdt[i] = config.estdt[0];
-            config.ndt[0] = j;                config.estdt[0] = est;
+            int j = config.ndt[i];
+            double est = config.estdt[i];
+            config.ndt[i] = config.ndt[0];
+            config.estdt[i] = config.estdt[0];
+            config.ndt[0] = j;
+            config.estdt[0] = est;
          }
+      }
       if (config.verbose)
+      {
          config.oflog << "Data interval estimated from the data is "
                       << config.estdt[0] << " seconds." << endl;
+      }
 
-      // process all the passes that have not been processed yet
+      // Process all the passes that have not yet been processed.
       for (int i=0; i<SPList.size(); i++)
       {
          if (SPList[i].status() <= 1)
@@ -731,10 +773,10 @@ int AfterReadingFiles(void)
          }
       }
 
-      // write out all the (processed) data that has not already been written
+      // Write out all the (processed) data that has not already been written.
       WriteToRINEXfile();
 
-      // print a summary
+      // Print a summary.
       PrintSPList(config.oflog,"Fine",SPList,false);
 
       return 0;
@@ -760,8 +802,8 @@ void WriteToRINEXfile(void)
       CommonTime targetTime = CommonTime::END_OF_TIME;
       static CommonTime WriteEpoch(CommonTime::BEGINNING_OF_TIME);
 
-      // find all passes that have been newly processed (status > 1 but < 98)
-      // mark these passes 'being written out' and initialize the iterator
+      // Find all passes that have been newly processed (status > 1 but < 98).
+      // Mark these passes 'being written out' and initialize the iterator.
       for (in=0; in<SPList.size(); in++)
       {
          if (SPList[in].status() > 1 && SPList[in].status() < 98)
@@ -771,7 +813,7 @@ void WriteToRINEXfile(void)
          }
       }
 
-      // find the earliest FirstTime of 'non-processed' (status==1) passes
+      // Find the earliest FirstTime of 'non-processed' (status==1) passes.
       for (in=0; in<SPList.size(); in++)
       {
          if (SPList[in].status() == 1 && SPList[in].getFirstTime() < targetTime)
@@ -786,8 +828,7 @@ void WriteToRINEXfile(void)
          WriteEpoch = config.FirstEpoch;
       }
 
-      // nothing to do
-      if (targetTime <= WriteEpoch)
+      if (targetTime <= WriteEpoch) // nothing to do
          return;
 
       WriteRINEXdata(WriteEpoch,targetTime);
@@ -860,7 +901,7 @@ void WriteRINEXheader(void) throw(Exception)
       }
       if (config.smoothPR || config.smoothPH)
          rheadout.valid |= RinexObsHeader::commentValid;
-         // invalidate the table
+      // invalidate the table
       if (rheadout.valid & RinexObsHeader::numSatsValid)
          rheadout.valid ^= RinexObsHeader::numSatsValid;
       if (rheadout.valid & RinexObsHeader::prnObsValid)
@@ -889,10 +930,10 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime)
       RinexObsData roe;
       //SatPassData spd;
 
-      // loop over epochs, up to just before targetTime
+      // Loop over epochs, up to just before targetTime.
       do
       {
-         // find the next WriteEpoch = earliest iterator time among the status==98
+         // Find the next WriteEpoch = earliest iterator time among the status==98.
          first = true;
          for (in=0; in<SPList.size(); in++)
          {
@@ -908,16 +949,17 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime)
          }
          if (first) break;
 
-         // quit if reached the target
+         // Quit if we've reached the target.
          if (WriteEpoch >= targetTime) break;
-         // prepare the RINEX obs data
+
+         // Prepare the RINEX Obs data.
          roe.epochFlag = 0;
          roe.time = WriteEpoch;
          roe.clockOffset = 0.0;  // TD save from input?
          roe.numSvs = 0;         // will be incremented below
          roe.obs.clear();
 
-         // output all data at this WriteEpoch
+         // Output all data at this WriteEpoch.
          for (in=0; in<SPList.size(); in++)
          {
             if (SPList[in].status() != 98) continue;
@@ -927,7 +969,7 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime)
 
             if (fabs(SPList[in].time(n) - WriteEpoch) < 0.00001)
             {
-               // get the data for this epoch
+               // Get the data for this epoch.
                //spd = SPList[in].getData(SPIndexList[in]);
                //str = asString(spd.indicators); // P1P2L1L2*ls   AaBbCcDd
                //str = rightJustify(str,8,'0');
@@ -940,48 +982,48 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime)
                   roe.obs[sat] = rotm;
                   roe.numSvs++;
 
-               	// build the RINEX data object
-               	RinexObsData::RinexDatum rd;
+                  // build the RINEX data object
+                  RinexObsData::RinexDatum rd;
 
-               	rd.lli  = SPList[in].LLI( SPIndexList[in],P1);
-               	rd.ssi  = SPList[in].SSI( SPIndexList[in],P1);
-               	rd.data = SPList[in].data(SPIndexList[in],P1);
-               	if (UsingCA)
-                  	roe.obs[sat][RinexObsHeader::C1] = rd;
-               	else
-                  	roe.obs[sat][RinexObsHeader::P1] = rd;
+                  rd.lli  = SPList[in].LLI( SPIndexList[in],P1);
+                  rd.ssi  = SPList[in].SSI( SPIndexList[in],P1);
+                  rd.data = SPList[in].data(SPIndexList[in],P1);
+                  if (UsingCA)
+                     roe.obs[sat][RinexObsHeader::C1] = rd;
+                  else
+                     roe.obs[sat][RinexObsHeader::P1] = rd;
 
-               	rd.lli  = SPList[in].LLI( SPIndexList[in],P2);
-               	rd.ssi  = SPList[in].SSI( SPIndexList[in],P2);
-               	rd.data = SPList[in].data(SPIndexList[in],P2);
-               	roe.obs[sat][RinexObsHeader::P2] = rd;
+                  rd.lli  = SPList[in].LLI( SPIndexList[in],P2);
+                  rd.ssi  = SPList[in].SSI( SPIndexList[in],P2);
+                  rd.data = SPList[in].data(SPIndexList[in],P2);
+                  roe.obs[sat][RinexObsHeader::P2] = rd;
 
-               	//rd.lli = asInt(asString<char>(str[4]));
-                // TD ought to set the low bit
-                rd.lli = (flag & SatPass::LL1) != 0 ? 1 : 0;
-               	rd.ssi  = SPList[in].SSI( SPIndexList[in],L1);
-               	rd.data = SPList[in].data(SPIndexList[in],L1);
-               	roe.obs[sat][RinexObsHeader::L1] = rd;
+//                  rd.lli = asInt(asString<char>(str[4]));
+//                  TD ought to set the low bit
+                  rd.lli = (flag & SatPass::LL1) != 0 ? 1 : 0;
+                  rd.ssi  = SPList[in].SSI( SPIndexList[in],L1);
+                  rd.data = SPList[in].data(SPIndexList[in],L1);
+                  roe.obs[sat][RinexObsHeader::L1] = rd;
 
-               	//rd.lli = asInt(asString<char>(str[6]));
-                rd.lli  = (flag & SatPass::LL2) != 0 ? 1 : 0;
-               	rd.ssi  = SPList[in].SSI( SPIndexList[in],L2);
-               	rd.data = SPList[in].data(SPIndexList[in],L2);
-               	roe.obs[sat][RinexObsHeader::L2] = rd;
+//                  rd.lli = asInt(asString<char>(str[6]));
+                  rd.lli  = (flag & SatPass::LL2) != 0 ? 1 : 0;
+                  rd.ssi  = SPList[in].SSI( SPIndexList[in],L2);
+                  rd.data = SPList[in].data(SPIndexList[in],L2);
+                  roe.obs[sat][RinexObsHeader::L2] = rd;
 
-               	config.oflog << "Out "
-                             << WriteEpoch.asString()
-                             << " " << roe.time.asString()
-                             << " " << sat
-                             << " " << flag
-                             << " " << setw(3) << SPList[in].getCount(SPIndexList[in])
-                             << fixed << setprecision(3)
-                             << " " << setw(13) << SPList[in].data(SPIndexList[in],P1)
-                             << " " << setw(13) << SPList[in].data(SPIndexList[in],P2)
-                             << " " << setw(13) << SPList[in].data(SPIndexList[in],L1)
-                             << " " << setw(13) << SPList[in].data(SPIndexList[in],L2)
-                             << endl;
-					}
+                  config.oflog << "Out "
+                               << WriteEpoch.asString()
+                               << " " << roe.time.asString()
+                               << " " << sat
+                               << " " << flag
+                               << " " << setw(3) << SPList[in].getCount(SPIndexList[in])
+                               << fixed << setprecision(3)
+                               << " " << setw(13) << SPList[in].data(SPIndexList[in],P1)
+                               << " " << setw(13) << SPList[in].data(SPIndexList[in],P2)
+                               << " " << setw(13) << SPList[in].data(SPIndexList[in],L1)
+                               << " " << setw(13) << SPList[in].data(SPIndexList[in],L2)
+                               << endl;
+               }
 
                // go to next point
                SPIndexList[in]++;
@@ -1000,7 +1042,7 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime)
             config.SVonly.setfill('0');
          }
 
-      } while (1);  // end while loop over all epochs up to targetTime
+      } while (1); // end while loop over all epochs up to targetTime
 
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -1051,11 +1093,11 @@ void PrintSPList(ostream& os, string msg, vector<SatPass>& v, bool printTime)
 
 int GetCommandLine(int argc, char **argv) throw(Exception)
 {
-   try
-   {
-   bool help=false,DChelp=false,DChelpall=false;
+ try
+ {
+   bool help=false, DChelp=false, DChelpall=false;
    int i,j;
-      // defaults
+   // defaults
    config.WriteASAP = true;   // this is not in the input...
    config.verbose = false;
    config.ith = 0.0;
@@ -1300,19 +1342,19 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    }
    
    // -------------------------------------------------
-   // get values found on command line
+   // Get values found on command line.
 
    string msg;
    vector<string> field;
    vector<string> values;
 
-   // f never appears because we intercept it above
+   // f never appears because we intercept it above.
    //if (dashf.getCount()) { cout << "Option f "; dashf.dumpValue(cout); }
 
-   // do help first
-   if (dashh.getCount()) help=true;
+   // Do help first.
+   if (dashh.getCount()) help = true;
 
-   // now get the rest of the options
+   // Now get the rest of the options.
    if (dashVerb.getCount()) config.verbose = true;
    if (dashi.getCount())
    {
@@ -1337,7 +1379,6 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       if (help) cout << "Decimate value is " << config.ith << endl;
    }
 
-   // TD put try {} around setToString and catch invalid formats...
    if (dashbt.getCount())
    {
       values = dashbt.getValue();
@@ -1525,7 +1566,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    //   GDCorrector.SetParameter(string("Debug=2"));
    //}
 
-   // if help, print usage and quit
+   // If help, print usage and quit.
    if (help || DChelp)
    {
       if (help) Par.displayUsage(cout,false);
@@ -1539,7 +1580,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       return 1;
    }
 
-   // get the log file name
+   // Get the log file name.
    if (dashLog.getCount())
    {
       values = dashLog.getValue();
@@ -1547,7 +1588,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       config.LogFile = values[values.size()-1];
       //if (help) cout << "Log file is " << config.LogFile << endl;
    }
-   // open the log file
+   // Open the log file.
    config.oflog.open(config.LogFile.c_str(),ios::out);
    if (config.oflog.fail())
    {
@@ -1575,6 +1616,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    // Set the commands now (setParameter may write to log file).
    for (i=0; i<DCcmds.size(); i++)
       GDConfig.setParameter(DCcmds[i]);
+
    // Also, use the dt in SatPass to define the dt in GDC.
    // NB this means --DCDT on the DiscFix command line is ignored!
    GDConfig.setParameter("DT",config.dt);
@@ -1642,11 +1684,11 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
 
    return 0;
 
-   } // end try
-   catch(Exception& e) { GPSTK_RETHROW(e); }
-   catch(exception& e)
-      { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-   catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+ } // end try
+ catch(Exception& e) { GPSTK_RETHROW(e); }
+ catch(exception& e)
+ { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
