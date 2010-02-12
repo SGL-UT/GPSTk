@@ -46,6 +46,7 @@
 #include "SummaryProc.hpp"
 #include "TrackProc.hpp"
 #include "NavProc.hpp"
+#include "SubframeProc.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -75,8 +76,8 @@ public:
         styleOpt(
            's', "output-style",
            "What type of output to produce from the "
-           "MDP stream. Valid styles are: brief, verbose, table, track, "
-           "null, mdp, nav, and summary. The default is summary. Some "
+           "MDP stream. Valid styles are: brief, verbose, table, csv, track, "
+           "null, mdp, nav, subframe, and summary. The default is summary. Some "
            "modes aren't quite complete. Sorry."),
         pvtOpt('p', "pvt",  "Enable pvt output"),
         navOpt('n', "nav",  "Enable nav output"),
@@ -144,6 +145,7 @@ public:
          inputDev.open(fn.c_str(), ios::in);
          mdpInput.basic_ios<char>::rdbuf(inputDev.basic_ios<char>::rdbuf());
       }
+      mdpInput.filename = fn;
 
       if (debugLevel)
          cout << "Taking input from " << fn << endl;
@@ -165,8 +167,6 @@ public:
          output.basic_ios<char>::rdbuf(std::cout.rdbuf());
       }
 
-      if (timeFormatOpt.getCount())
-         timeFormat = timeFormatOpt.getValue()[0];
 
       style = "summary";
       if (styleOpt.getCount())
@@ -176,6 +176,8 @@ public:
          processor = new MDPBriefProcessor(mdpInput, output);
       else if (style == "table")
          processor = new MDPTableProcessor(mdpInput, output);
+      else if (style == "csv")
+         processor = new MDPCSVProcessor(mdpInput, output);
       else if (style == "verbose")
          processor = new MDPVerboseProcessor(mdpInput, output);
       else if (style == "summary")
@@ -186,6 +188,8 @@ public:
          processor = new MDPTrackProcessor(mdpInput, output);
       else if (style == "nav")
          processor = new MDPNavProcessor(mdpInput, output);
+      else if (style == "subframe")
+         processor = new MDPSubframeProcessor(mdpInput, output);
       else
       {
          cout << "Style " << style << " is not a valid style. (it may just not be implimented yet.)" << endl;
@@ -200,7 +204,11 @@ public:
       processor->navOut |= navOpt;
       processor->tstOut |= tstOpt;
       processor->processBad |= badOpt;
-      processor->timeFormat = timeFormat;
+      if (timeFormatOpt.getCount())
+      {
+         timeFormat = timeFormatOpt.getValue()[0];
+         processor->timeFormat = timeFormat;
+      }
       
       // Some nav specific options
       if (style == "nav")
@@ -211,6 +219,12 @@ public:
          np.almOut = almOpt;
          np.ephOut = ephOpt;
          np.minimalAlm = minimalAlmOpt;
+      }
+      else if (style == "subframe")
+      {
+         processor->navOut = true;
+         processor->obsOut = true; // needed to know elevation/SNR of SVs
+         
       }
 
       // If no outputs are specified, then at least set the obs output
