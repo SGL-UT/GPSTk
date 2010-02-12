@@ -117,7 +117,7 @@ void GDCconfiguration::DisplayParameterUsage(ostream& os, bool advanced)
 try {
    os << "GPSTk Discontinuity Corrector (GDC) v." << GDCVersion
       << " configuration:"
-      //<< "\n  [ pass setParameter() a string '<label><sep><value>';"
+      //<< "  [ pass setParameter() a string '<label><sep><value>';"
       //<< " <sep> is one of ,=: ]"
       << endl;
 
@@ -133,7 +133,7 @@ try {
          << endl;
    }
    if(advanced) {
-   os << "   Advanced options:\n";
+      os << "   Advanced options:" << endl;
    for(it=CFG.begin(); it != CFG.end(); it++) {
       if(CFGdescription[it->first][0] != '*')      // ordinary options
          continue;  
@@ -727,10 +727,10 @@ try {
    if(cfg(Debug) >= 2) {
       DayTime CurrentTime;
       //CurrentTime.setLocalTime();
-      log << "\n======== Beg GPSTK Discontinuity Corrector " << GDCUnique
-         << " ================================================\n";
+      log << "======== Beg GPSTK Discontinuity Corrector " << GDCUnique
+          << " ================================================" << endl;
       log << "GPSTK Discontinuity Corrector Ver. " << GDCVersion << " Run "
-         << CurrentTime << endl;
+          << CurrentTime << endl;
    }
 
       // check input
@@ -1472,7 +1472,7 @@ try {
             // TD what if nok < MinPts? -- cf detectGFsmallSlips
             k = it->npts;
             it->npts = nok;
-            //log << "create new segment at i = " << i << " " << nok << "pts\n";
+            //log << "create new segment at i = " << i << " " << nok << "pts" << endl;
             it = createSegment(it,i,"WL slip small");
 
             // mark it
@@ -2048,7 +2048,7 @@ try {
       // GFP is NOT smooth 
       for(quit=false,k=0; k<3; k++) if(rmsrof[in[k]] > cfg(GFFixMaxRMS)) {
          log << "Warning - large RMS ROF in GF slip fix at in,k = "
-            << in[k] << " " << k << " " << rmsrof[in[k]] << " abort.\n";
+             << in[k] << " " << k << " " << rmsrof[in[k]] << " abort." << endl;
          quit = true;
       }
       if(quit) break;
@@ -3067,7 +3067,7 @@ try {
    if(oss.str().size() > 0) log << oss.str();
 
    if(cfg(Debug) >= 2) log << "======== End GPSTK Discontinuity Corrector "
-      << GDCUnique << " ================================================\n";
+                           << GDCUnique << " ================================================" << endl;
 
    return retMessage;
 }
