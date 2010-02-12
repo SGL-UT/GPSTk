@@ -382,7 +382,7 @@ namespace gpstk
       // public functions
       //------------------------------------------------------------------------------
       /// Compute Greenwich Mean Sidereal Time, or the Greenwich hour angle of
-      /// the mean vernal equinox, given the coordinate time of interest,
+      /// the mean vernal equinox (radians), given the coordinate time of interest,
       /// and UT1-UTC (sec), which comes from the IERS bulletin.
       /// @param t DayTime epoch of the rotation.
       /// @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
@@ -395,7 +395,7 @@ namespace gpstk
 
       //------------------------------------------------------------------------------
       /// Compute Greenwich Apparent Sidereal Time, or the Greenwich hour angle of
-      /// the true vernal equinox, given the coordinate time of interest,
+      /// the true vernal equinox (radians), given the coordinate time of interest,
       /// and UT1-UTC (sec), which comes from the IERS bulletin.
       /// @param t DayTime epoch of the rotation.
       /// @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.

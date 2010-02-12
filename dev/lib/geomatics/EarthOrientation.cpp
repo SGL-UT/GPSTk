@@ -446,6 +446,9 @@ namespace gpstk
          mjdmax = m;
       }
 
+      if(mjdmin > endMJD) return;
+      if(mjdmax < begMJD) return;
+
       map<int,EarthOrientation>::iterator it;
       it = mapMJD_EOP.lower_bound(mjdmin);
       if(it != mapMJD_EOP.begin())

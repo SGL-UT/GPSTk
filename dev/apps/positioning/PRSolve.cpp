@@ -69,7 +69,7 @@ using namespace StringUtils;
 
    // prgm data
 string PrgmName("PRSolve");
-string PrgmVers("2.2 7/08");
+string PrgmVers("2.3 11/09");
 
 // data input from command line
 typedef struct Configuration {
@@ -147,6 +147,7 @@ XvtStore<SatID> *pEph;
 ZeroTropModel TMzero;
 SimpleTropModel TMsimple;
 SaasTropModel TMsaas;
+NeillTropModel TMneill;
 GGTropModel TMgg;
 GGHeightTropModel TMggh;
 NBTropModel TMnb;
@@ -200,8 +201,6 @@ try {
       // initialization
    CurrEpoch = PrevEpoch = DayTime::BEGINNING_OF_TIME;
    SP3EphemerisStore SP3EphList;
-   SP3EphList.rejectBadPositions(true);
-   SP3EphList.rejectBadClocks(true);
    GPSEphemerisStore BCEphList;
 
       // Title and description
@@ -243,7 +242,7 @@ try {
    C.oflog << "Added " << nread << " ephemeris files to store.\n";
    SP3EphList.dump(C.oflog,0);
    BCEphList.dump(C.oflog,0);
-   if(SP3EphList.size() > 0) pEph=&SP3EphList;
+   if(SP3EphList.neph() > 0) pEph=&SP3EphList;
    else if(BCEphList.size() > 0) {
       BCEphList.SearchNear();
       //BCEphList.SearchPast();
@@ -317,6 +316,7 @@ try {
       else
          C.pTropModel->setDayOfYear(100);
    }
+   if(C.TropType == string("NL")) C.pTropModel = &TMneill;
    if(C.TropType == string("GG")) C.pTropModel = &TMgg;
    if(C.TropType == string("GGH")) C.pTropModel = &TMggh;
    // set the default weather in the model
@@ -662,16 +662,30 @@ try {
                   //double ER =
                   CER.ComputeAtReceiveTime(CurrEpoch, C.knownpos, sat, *pEph);
                   if(CER.elevation < C.elevLimit) ok=false;
-                  if(C.Debug) C.oflog << "Ephemeris range is "
-                     << setprecision(4) << CER.rawrange << endl;
+                  if(C.Debug) {
+                     C.oflog << "Sat " << RinexSatID(sat)
+                        << " ER " << setprecision(4)
+                        << CER.rawrange;
+                     if(!ok) C.oflog << " reject on elevation: " << fixed
+                        << setprecision(2) << CER.elevation << " < " << C.elevLimit;
+                     C.oflog << endl;
+                  }
                }
                catch(InvalidRequest& nef) {
                   // do not exclude the sat here; PRSolution will...
-                  if(C.Debug)
-                     C.oflog << "CER did not find ephemeris for " << sat << endl;
+                  if(C.Debug) C.oflog << "CER did not find ephemeris for "
+                     << RinexSatID(sat) << endl;
                }
 
                if(!ok) continue;
+            }
+
+            // dump the data
+            if(C.Debug) {
+               C.oflog << "RNX " << CurrEpoch.printf(C.timeFormat)
+                  << " " << RinexSatID(sat) << fixed << setprecision(4)
+                  << " P1 " << setw(13) << P1
+                  << " P2 " << setw(13) << P2 << endl;
             }
 
             // keep this satellite
@@ -767,6 +781,9 @@ try {
          }
       }
 
+      //// TEMP write out covariance
+      //C.oflog << "COV\n" << setprecision(3) << setw(13) << prsol.Covariance << endl;
+
          // accumulate simple statistics, Autonomous and RAIM
       if(C.APSout) {
          SA[0].Add(Solution(0)); SA[1].Add(Solution(1)); SA[2].Add(Solution(2));
@@ -850,6 +867,27 @@ try {
          auxPosData.auxHeader.valid |= RinexObsHeader::commentValid;
          ofstr << auxPosData;
       }
+      //// remove the clock
+      //if(1) {
+      //   double clk=prsol.Solution(3);
+      //   RinexObsData::RinexSatMap::iterator it;
+      //   robsd.time -= clk/C_GPS_M;
+      //   for(it=robsd.obs.begin(); it != robsd.obs.end(); ++it) {
+      //      RinexObsData::RinexObsTypeMap::iterator jt;
+      //      RinexObsData::RinexObsTypeMap& otmap=it->second; // NB must be reference
+      //      if(inC1>-1 && (jt=otmap.find(rhead.obsTypeList[inC1])) != otmap.end())
+      //         jt->second.data -= clk;
+      //      if(!C.UseCA &&
+      //         inP1>-1 && (jt=otmap.find(rhead.obsTypeList[inP1])) != otmap.end())
+      //         jt->second.data -= clk;
+      //      if(inP2>-1 && (jt=otmap.find(rhead.obsTypeList[inP2])) != otmap.end())
+      //         jt->second.data -= clk;
+      //      if(inL1>-1 && (jt=otmap.find(rhead.obsTypeList[inL1])) != otmap.end())
+      //         jt->second.data -= clk/wl1;
+      //      if(inL2>-1 && (jt=otmap.find(rhead.obsTypeList[inL2])) != otmap.end())
+      //         jt->second.data -= clk/wl2;
+      //   }
+      //}
       // output data to RINEX file
       ofstr << robsd;
 
@@ -1328,9 +1366,9 @@ try {
    C.UseCA = false;
    C.ForceCA = false;
    C.DataInt = -1.0;
-   C.TropType = string("BL");
+   C.TropType = string("NB");
    C.defaultT = 20.0;
-   C.defaultPr = 980.0;
+   C.defaultPr = 1013.0;
    C.defaultRH = 50.0;
    
    C.HDPrgm = PrgmName + string(" v.") + PrgmVers.substr(0,4);
@@ -1417,7 +1455,7 @@ try {
       0,"exSat"," --exSat <sat>        Exclude this satellite ()");
 
    CommandOption dashTrop(CommandOption::hasArgument, CommandOption::stdType,0,"Trop",
-      " --Trop <model,T,P,H> Trop model [one of ZR,BL,SA,NB,GG,GGH "
+      " --Trop <model,T,P,H> Trop model [one of ZR,BL,SA,NB,NL,GG,GGH "
       "(cf. gpstk::TropModel)],\n                        with optional "
       "weather [T(C),P(mb),RH(%)] ("
       + C.TropType + "," + asString(C.defaultT,0)

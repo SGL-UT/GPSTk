@@ -91,7 +91,7 @@ try {
 
    if(!CI.OutputPRSFile.empty()) {
       ofprs.open(CI.OutputPRSFile.c_str(),ios::out);
-      if(!ofprs) {
+      if(!ofprs.is_open()) {
          // TD error msg
          CI.OutputPRSFile = string("");
       }

@@ -56,6 +56,7 @@
 #include "Matrix.hpp"
 #include "Namelist.hpp"
 #include "SRIFilter.hpp"
+#include "EphemerisRange.hpp"
 #include "PreciseRange.hpp"
 #include "Stats.hpp"
 #include "RobustStats.hpp"
@@ -89,7 +90,7 @@ int ModifyState(int n) throw(Exception);
 int InitializeEstimator(void) throw(Exception);
 int aPrioriConstraints(void) throw(Exception);
 int FillDataVector(int count) throw(Exception);
-void EvaluateLSEquation(Vector<double>& X,Vector<double>& f,Matrix<double>& P)
+void EvaluateLSEquation(int n, Vector<double>& X,Vector<double>& f,Matrix<double>& P)
    throw(Exception);
 int MeasurementUpdate(Matrix<double>& P, Vector<double>& f, Matrix<double>& MC)
    throw(Exception);
@@ -204,7 +205,7 @@ try {
          curr++;
          if(curr > maxCount) break;
 
-            // this needed by EvaluateLSEquation, and is used in output
+            // SolutionEpoch is needed by EvaluateLSEquation, and is used in output
          SolutionEpoch = FirstEpoch + curr*CI.DataInterval;
 
             // get the data and the data namelist
@@ -218,7 +219,7 @@ try {
 
             // get nominal data = NomData(nominal state) and partials
             // NB position components of state not used in here..
-         EvaluateLSEquation(State,NomData,Partials);
+         EvaluateLSEquation(curr,State,NomData,Partials);
 
          if(CI.Debug)
             oflog << "EvaluateLSEquation returns vector\n" << fixed
@@ -802,7 +803,10 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Given a nominal state vector X, compute the function f(X) and the partials matrix
 // P at X.
 // NB X is not used here ... except that State is used for biases
-void EvaluateLSEquation(Vector<double>& X, Vector<double>& f, Matrix<double>& P)
+void EvaluateLSEquation(int count,              // count of current epoch
+                        Vector<double>& X,      // nominal state (input)
+                        Vector<double>& f,      // function f(X) at count (output)
+                        Matrix<double>& P)      // partials at X at count (output)
    throw(Exception)
 {
 try {
@@ -810,12 +814,10 @@ try {
    double ER,trop,mapf;
    string site1,site2;
    GSatID sat1,sat2;
-   PreciseRange CER;
-   //CorrectedEphemerisRange CER;
+   CorrectedEphemerisRange CER;
+   Position SatR;
 
-      //
-      // assume Station.pos has been defined outside this routine... in UpdateNom.St.
-      //
+   // Station.pos has been defined outside this routine in UpdateNominalState()
 
       // find the trop estimation interval for this epoch
    if(CI.NRZDintervals > 0) {
@@ -845,20 +847,17 @@ try {
             GPSTK_THROW(e);
          }
       }
-         // sat 1  CER.SVR is satellite Position
-         // pos 1  st1.pos is station Position
-
-         // position states
+         // sat 1 -----------------------------------------------------
          // should you use CER.rawrange here?
-      ER = CER.ComputeAtReceiveTime(SolutionEpoch,st1.pos,sat1.id,*pEph,eorient);
-      trop = st1.pTropModel->correction(st1.pos,CER.SVR,SolutionEpoch);
+      ER = CER.ComputeAtReceiveTime(SolutionEpoch,st1.pos,sat1,*pEph);
+      SatR.setECEF(CER.svPosVel.x[0],CER.svPosVel.x[1],CER.svPosVel.x[2]);
+      trop = st1.pTropModel->correction(st1.pos,SatR,SolutionEpoch);
       f(m) += ER+trop;
       if(!st1.fixed) {
          P(m,i) += CER.cosines[0];
          P(m,j) += CER.cosines[1];
          P(m,k) += CER.cosines[2];
       }
-
          // trop rzd .. depends on site, sat and trop model
       if(CI.NRZDintervals > 0) {
          n = StateNL.index(site1 + string("-RZD") + asString(ntrop));
@@ -873,15 +872,15 @@ try {
       }
 
          // sat 2 -----------------------------------------------------
-      ER = CER.ComputeAtReceiveTime(SolutionEpoch,st1.pos,sat2.id,*pEph,eorient);
-      trop = st1.pTropModel->correction(st1.pos,CER.SVR,SolutionEpoch);
+      ER = CER.ComputeAtReceiveTime(SolutionEpoch,st1.pos,sat2,*pEph);
+      SatR.setECEF(CER.svPosVel.x[0],CER.svPosVel.x[1],CER.svPosVel.x[2]);
+      trop = st1.pTropModel->correction(st1.pos,SatR,SolutionEpoch);
       f(m) -= ER+trop;
       if(!st1.fixed) {
          P(m,i) -= CER.cosines[0];
          P(m,j) -= CER.cosines[1];
          P(m,k) -= CER.cosines[2];
       }
-
          // trop rzd .. depends on site, sat and trop model
       if(CI.NRZDintervals > 0) {
          mapf = st1.pTropModel->wet_mapping_function(CER.elevation);
@@ -901,15 +900,15 @@ try {
          }
       }
          // sat 1 -----------------------------------------------------
-      ER = CER.ComputeAtReceiveTime(SolutionEpoch,st2.pos,sat1.id,*pEph,eorient);
-      trop = st2.pTropModel->correction(st2.pos,CER.SVR,SolutionEpoch);
+      ER = CER.ComputeAtReceiveTime(SolutionEpoch,st2.pos,sat1,*pEph);
+      SatR.setECEF(CER.svPosVel.x[0],CER.svPosVel.x[1],CER.svPosVel.x[2]);
+      trop = st2.pTropModel->correction(st2.pos,SatR,SolutionEpoch);
       f(m) -= ER+trop;
       if(!st2.fixed) {
          P(m,i) -= CER.cosines[0];
          P(m,j) -= CER.cosines[1];
          P(m,k) -= CER.cosines[2];
       }
-
          // trop rzd .. depends on site, sat and trop model
       if(CI.NRZDintervals > 0) {
          n = StateNL.index(site2 + string("-RZD") + asString(ntrop));
@@ -924,15 +923,15 @@ try {
       }
 
          // sat 2 -----------------------------------------------------
-      ER = CER.ComputeAtReceiveTime(SolutionEpoch,st2.pos,sat2.id,*pEph,eorient);
-      trop = st2.pTropModel->correction(st2.pos,CER.SVR,SolutionEpoch);
+      ER = CER.ComputeAtReceiveTime(SolutionEpoch,st2.pos,sat2,*pEph);
+      SatR.setECEF(CER.svPosVel.x[0],CER.svPosVel.x[1],CER.svPosVel.x[2]);
+      trop = st2.pTropModel->correction(st2.pos,SatR,SolutionEpoch);
       f(m) += ER+trop;
       if(!st2.fixed) {
          P(m,i) += CER.cosines[0];
          P(m,j) += CER.cosines[1];
          P(m,k) += CER.cosines[2];
       }
-
          // trop rzd .. depends on site, sat and trop model
       if(CI.NRZDintervals > 0) {
          mapf = st2.pTropModel->wet_mapping_function(CER.elevation);
@@ -1018,7 +1017,7 @@ try {
 
    if(Biasfix) {
       // NB when Biasfix, State has dimension NState buf dX has dimension N>NState
-      // EvaluateLSFunction uses State bias elements even when Biasfix
+      // EvaluateLSEquation uses State bias elements even when Biasfix
       for(i=0; i<N; i++) {
          State[i] += dX[i];
       }
@@ -1409,7 +1408,7 @@ try {
    ofstream ddrofs;
    if(final && !CI.OutputDDRFile.empty()) {
       ddrofs.open(CI.OutputDDRFile.c_str(),ios::out);
-      if(ddrofs) {
+      if(ddrofs.is_open()) {
          oflog << "Opened file " << CI.OutputDDRFile
             << " for post fit residuals output." << endl;
          ddrofs << "# " << Title << endl;
@@ -1446,9 +1445,9 @@ try {
       M = i;
       Data.resize(M);
 
-      // this needed by EvaluateLSEquation
+      // SolutionEpoch is needed by EvaluateLSEquation
       SolutionEpoch = FirstEpoch + cnt*CI.DataInterval;
-      EvaluateLSEquation(State,f,P);
+      EvaluateLSEquation(cnt,State,f,P);
 
       Res = Data - f;
       if(rms == 0.0) rms = norm(Res);

@@ -82,7 +82,7 @@ try {
       // open an output file for RAW data
    ofstream rawofs;
    rawofs.open(CI.OutputRawFile.c_str(),ios::out);
-   if(rawofs) {
+   if(rawofs.is_open()) {
       oflog << "Opened file " << CI.OutputRawFile << " for raw data output.." << endl;
       rawofs << "# " << Title << endl;
       rawofs << "RAW site sat week   sec_wk   count    L1_cyc        L2_cyc"
@@ -153,7 +153,7 @@ try {
    if(!rddofs.is_open()) {           // first call : open the file
       if(CI.Verbose) oflog << "BEGIN OutputRawDData()" << endl;
       rddofs.open(CI.OutputRawDDFile.c_str(),ios::out);
-      if(rddofs) {
+      if(rddofs.is_open()) {
          oflog << "Opened file " << CI.OutputRawDDFile
             << " for raw DD data output." << endl;
          rddofs << "# " << Title << endl;
@@ -234,7 +234,7 @@ try {
       // open an output file for DDD data
    ofstream dddofs;
    dddofs.open(CI.OutputDDDFile.c_str(),ios::out);
-   if(dddofs) {
+   if(dddofs.is_open()) {
       oflog << "Opened file " << CI.OutputDDDFile << " for DD data output." << endl;
       dddofs << "# " << Title << endl;
       dddofs << "DDD sit1 sit2 sat ref week  sec_wk           DDL1_m           "
@@ -298,7 +298,7 @@ try {
       // open an output file for Clk data
    ofstream clkofs;
    clkofs.open(CI.OutputClkFile.c_str(),ios::out);
-   if(clkofs) {
+   if(clkofs.is_open()) {
       oflog << "Opened file " << CI.OutputClkFile << " for DD data output." << endl;
       clkofs << "# " << Title << endl;
       clkofs << "CLK site week  sec_wk   Rx_clk_bias(m)   Sig(m)   TT_off(s)\n";

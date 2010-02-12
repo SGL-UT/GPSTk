@@ -52,17 +52,16 @@
 // includes
 // system
 #include <deque>
-
 // GPSTk
 #include "geometry.hpp"             // DEG_TO_RAD
 #include "PolyFit.hpp"
 #include "EphemerisRange.hpp"
-
+// geomatics
+#include "SunEarthSatGeometry.hpp"
+#include "PhaseWindup.hpp"
+#include "index.hpp"
 // DDBase
 #include "DDBase.hpp"
-#include "PhaseWindup.hpp"
-#include "SunEarthSatGeometry.hpp"
-#include "index.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -317,8 +316,7 @@ try {
       << endl;
 
    int nc;
-   double angle,pwu,shadow;
-   double prevwindup = 0.0;
+   double angle,pwu,prevpwu,shadow;
    DayTime tt;
    GSatID sat;
    Position SV;
@@ -357,6 +355,7 @@ try {
 
             // Loop over count (epochs). At each count, recompute the ephemeris
             // range and correct the phase for phase windup.
+         prevpwu = 0.0;
          for(nc=0; nc<rawdat.count.size(); nc++) {
 
                // nominal time is now the actual receive time of the data
@@ -380,8 +379,8 @@ try {
                                 CER.svPosVel.x[2]);
 
                      // compute phase windup
-                  pwu = PhaseWindup(prevwindup,tt,SV,Rx2Tx,West,North,shadow);
-                  prevwindup = pwu;
+                  pwu = PhaseWindup(prevpwu,tt,SV,Rx2Tx,West,North,shadow);
+                  prevpwu = pwu;
 
                   // TD eclipse alert
                   //if(shadow > 0.0) { ... }

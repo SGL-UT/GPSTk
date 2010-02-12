@@ -43,10 +43,6 @@
  */
 
 //------------------------------------------------------------------------------------
-// testing - not for release
-//#define StochasticModelTest 1
-
-//------------------------------------------------------------------------------------
 #ifndef CLASS_DDBASE_COMMANDINPUT_INCLUDE
 #define CLASS_DDBASE_COMMANDINPUT_INCLUDE
 
@@ -84,9 +80,6 @@ public:
    int Frequency;
       // stochastic models
    std::string StochasticModel;
-#ifdef StochasticModelTest
-   double SNRmax,SNRatt;
-#endif // StochasticModelTest
       // for configuration of pseudorange solution
    double PRSrmsLimit;
    //double PRSslopeLimit;   // no

@@ -141,10 +141,6 @@ public:
    double press;                    // pressure in mbars at sealevel
    double rhumid;                   // relative humidity in % (0-100)
 
-//#ifdef StochasticModelTest
-//   double maxSNR,maxSNRmp;          // max SNR, SNR(mp); for snr stochastic model
-//#endif // StochasticModelTest
-
    Station(void) throw();           // empty and only constructor
    ~Station(void) throw();          // destructor - free trop model
 };

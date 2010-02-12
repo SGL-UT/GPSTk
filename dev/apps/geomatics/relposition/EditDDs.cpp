@@ -92,7 +92,7 @@ try {
 
    if(!CI.OutputTDDFile.empty()) {
       tddofs.open(CI.OutputTDDFile.c_str(),ios::out);
-      if(tddofs) {
+      if(tddofs.is_open()) {
          oflog << "Opened file " << CI.OutputTDDFile
                << " for triple difference and cycle slip output." << endl;
          tddofs << "# " << Title << endl;

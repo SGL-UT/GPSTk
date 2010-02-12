@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,11 +36,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file StringUtils.hpp
  * StringUtils namespace and GPSTK string utility functions
@@ -60,12 +53,9 @@
 /// @todo Get rid of the stdio.h dependency if possible.
 #include <cstdio>
 #include <cstdlib>
-
 #include <regex.h>
 #include <cctype>
-
 #include <limits>
-
 #include "Exception.hpp"
 
 namespace gpstk
@@ -905,6 +895,15 @@ namespace gpstk
       inline bool isDecimalString(const std::string& s);
 
          /**
+          * isScientificString extends isDecimalString() to allow a single
+          * exponent (E,e,D,d) character between a decimal string and
+          * a (possibly empty) digit string.
+          * @param s the string to check.
+          * @return true if \a s is a valid scientific-notation number.
+          */
+      inline bool isScientificString(const std::string& s);
+
+         /**
           * isAlphaString is exactly like the C function isAlpha
           * except it checks all the characters of string \a s to see if
           * they are all alphabet characters.
@@ -1144,9 +1143,9 @@ namespace gpstk
           * @return a reference to string \a s with the words removed.
           */
       inline std::string& removeWords(std::string& s, 
-                                      const std::string::size_type first = 0, 
-                                      const std::string::size_type wordsToReplace = std::string::npos,
-                                      const char delimiter = ' ')
+               const std::string::size_type first = 0, 
+               const std::string::size_type wordsToReplace = std::string::npos,
+               const char delimiter = ' ')
          throw(StringException);
 
          /**
@@ -1155,9 +1154,9 @@ namespace gpstk
           * @param length length (in characters) of output, including exponent
           * @param expLen length (in characters) of the exponent, with sign
           * @param showSign if true, reserves 1 character for +/- sign
-	  * @param checkSwitch if true, keeps the exponential sanity check for
-	  * exponentials above three characters in length.  If false, it removes
-	  * that check.
+	       * @param checkSwitch if true, keeps the exponential sanity check for
+	       * exponentials above three characters in length.  If false, it removes
+	       * that check.
           */
       inline std::string doub2sci(const double& d, 
                                   const std::string::size_type length, 
@@ -1174,18 +1173,17 @@ namespace gpstk
           * @param startPos start position of number in string
           * @param length length (in characters) of number, including exponent.
           * @param expLen length (in characters of exponent, not including sign.
-	  * @param checkSwitch will keep the method running as orignially programed
-	  * when set to true.  If false, the method will always resize exponentials,
-	  * produce an exponential with an E instead of a D, and always have a leading
-	  * zero.  For example -> 0.87654E-0004 or -0.1234E00005. 
-          * @throws Exception if the string is not a number in
-          * scientific notation
+	       * @param checkSwitch will keep the method running as orignially programed
+	       * when set to true.  If false, the method will always resize exponentials,
+	       * produce an exponential with an E instead of a D, and always have a leading
+	       * zero.  For example -> 0.87654E-0004 or -0.1234E00005. 
+          * @throws Exception if the string is not a number in scientific notation
           */
       inline std::string& sci2for(std::string& aStr, 
-                                  const std::string::size_type startPos = 0,
-                                  const std::string::size_type length = std::string::npos, 
-                                  const std::string::size_type expLen = 3,
-                                  const bool checkSwitch = true)
+               const std::string::size_type startPos = 0,
+               const std::string::size_type length = std::string::npos, 
+               const std::string::size_type expLen = 3,
+               const bool checkSwitch = true)
          throw(StringException);
 
          /**
@@ -1504,7 +1502,7 @@ namespace gpstk
          {
                // figure out which char we found;
             inpos = inputChars.find(rv[aspos]);
-            if ( (outputChars.length() - 1) < inpos)
+            if (outputChars.length()-1 < inpos)
                toc = pad;
             else
                toc = outputChars[inpos];
@@ -1925,6 +1923,20 @@ namespace gpstk
                return false;
          }
          return true;
+      }
+
+      inline bool isScientificString(const std::string& s)
+      {
+         if(s.size() == 0)
+            return false;
+
+         std::string::size_type pos = s.find_first_of("EeDd");
+         if(pos == std::string::npos)
+            return isDecimalString(s);
+
+         std::string mant=s.substr(0,pos);
+         std::string exp=s.substr(pos+1);
+         return (isDecimalString(mant) && (exp.size()==0 || isDigitString(exp)));
       }
 
       inline bool isAlphaString(const std::string& s)

@@ -1,4 +1,4 @@
-#pragma ident "$Id: logstream.hpp 4 2008-12-09 18:18:41Z BrianTolman $"
+#pragma ident "$Id$"
 
 /** @file logstream.hpp
  * Writing to a log stream made easy, typesafe, threadsafe and portable.

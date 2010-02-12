@@ -49,14 +49,20 @@
 #include "SolarSystem.hpp"
 #include "EarthOrientation.hpp"
 
-namespace gpstk
-{
+namespace gpstk {
 
 /// Compute the phase windup, in cycles, given the time, the unit vector from receiver
 /// to transmitter, and the west and north unit vectors at the receiver, all in ECEF.
 /// YR is the West unit vector, XR is the North unit vector, at the receiver.
 /// shadow is the fraction of the sun's area visible at the satellite.
 /// Previous value is needed to ensure continuity and prevent 1-cycle ambiguities.
+/// NB. Block IIR has X (ie the effective dipole orientation) in the -XT direction.
+/// Ref. Kouba(2009) GPS Solutions 13, pp1-12.
+/// This should not matter to phase windup b/c rotating the antenna by a fixed
+/// amount yields a constant offset in the windup.
+/// NB. This assumes the transmitter and receiver boresights (Z or 'up') lie in a
+/// plane; this is true as long as the SV points to Earth center; cf. Beyerle (2009)
+/// GPS Solutions 13, pp191-198; in practice differences are small (<1mm).
 /// @param double& prev         return value on previous call (zero initially) (input)
 /// @param DayTime& tt          the epoch of interest (input)
 /// @param Position& SV         the satellite position (input)
@@ -74,18 +80,21 @@ double PhaseWindup(double& prev,
                    Position& RxN,
                    SolarSystem& SSEph,
                    EarthOrientation& EO,
-                   double& shadow)
+                   double& shadow,
+                   bool isBlockR=false)
    throw(Exception);
 
-/// Version without ephemeris - uses a lower quality solar position routine
+/// Version without SolarSystem ephemeris; uses a lower quality solar position routine
 double PhaseWindup(double& prev,
                    DayTime& tt,
                    Position& SV,
                    Position& Rx2Tx,
                    Position& RxW,
                    Position& RxN,
-                   double& shadow)
+                   double& shadow,
+                   bool isBlockR=false)
    throw(Exception);
 
 }  // end namespace gpstk
-#endif
+
+#endif // PHASE_WINDUP_INCLUDE

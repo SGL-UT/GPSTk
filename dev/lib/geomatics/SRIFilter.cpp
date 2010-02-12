@@ -1,5 +1,15 @@
 #pragma ident "$Id$"
 
+/**
+ * @file SRIFilter.cpp
+ * Implementation of class SRIFilter.
+ * class SRIFilter implements the square root information matrix form of the
+ * Kalman filter.
+ *
+ * Reference: "Factorization Methods for Discrete Sequential Estimation,"
+ *             G.J. Bierman, Academic Press, 1977.
+ */
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -36,18 +46,7 @@
 //
 //=============================================================================
 
-/**
- * @file SRIFilter.cpp
- * Implementation of class SRIFilter.
- * class SRIFilter implements the square root information matrix form of the
- * Kalman filter.
- *
- * Reference: "Factorization Methods for Discrete Sequential Estimation,"
- *             G.J. Bierman, Academic Press, 1977.
- */
-
 //------------------------------------------------------------------------------------
-// GPSTk includes
 #include "SRIFilter.hpp"
 #include "RobustStats.hpp"
 #include "StringUtils.hpp"
@@ -215,22 +214,6 @@ void SRIFilter::DMsmootherUpdate(Matrix<double>& P,
 {
    try { SrifSU_DM(P, X, Phinv, Rw, G, Zw, Rwx); }
    catch(MatrixException& me) { GPSTK_RETHROW(me); }
-}
-
-//------------------------------------------------------------------------------------
-// output operator
-ostream& operator<<(ostream& os,
-                    const SRIFilter& srif)
-{
-   Namelist NL(srif.names);
-   NL += string("State");
-   Matrix<double> A;
-   A = srif.R || srif.Z;
-   LabelledMatrix LM(NL,A);
-   LM.setw(os.width());
-   LM.setprecision(os.precision());
-   os << LM;
-   return os;
 }
 
 //------------------------------------------------------------------------------------
@@ -849,6 +832,62 @@ try {
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 } // end SrifSU_DM
+
+// Modification for case with control vector: Xj+1 = Phi*Xj + Gwj + u
+template <class T>
+void DMsmootherUpdateWithControl(Matrix<double>& P,
+                                 Vector<double>& X,
+                                 Matrix<double>& Phinv,
+                                 Matrix<double>& Rw,
+                                 Matrix<double>& G,
+                                 Vector<double>& Zw,
+                                 Matrix<double>& Rwx,
+                                 Vector<double>& U)
+      throw(MatrixException)
+{
+   unsigned int N=P.rows(),Ns=Rw.rows();
+
+   if(P.cols() != P.rows() ||
+      X.size() != N ||
+      Rwx.cols() != N ||
+      Zw.size() != Ns ||
+      Rwx.rows() != Ns || Rwx.cols() != N ||
+      Phinv.rows() != N || Phinv.cols() != N ||
+      G.rows() != N || G.cols() != Ns ||
+      U.size() != N) {
+      MatrixException me("Invalid input dimensions:\n  P is "
+         + asString<int>(P.rows()) + "x"
+         + asString<int>(P.cols()) + ", X has length "
+         + asString<int>(X.size()) + "\n  Phinv is "
+         + asString<int>(Phinv.rows()) + "x"
+         + asString<int>(Phinv.cols()) + "\n  Rw is "
+         + asString<int>(Rw.rows()) + "x"
+         + asString<int>(Rw.cols()) + "\n  G is "
+         + asString<int>(G.rows()) + "x"
+         + asString<int>(G.cols()) + "\n  Zw has length "
+         + asString<int>(Zw.size()) + "\n  Rwx is "
+         + asString<int>(Rwx.rows()) + "x"
+         + asString<int>(Rwx.cols()) + "\n  U has length "
+         + asString<int>(U.size())
+         );
+      GPSTK_THROW(me);
+   }
+
+try {
+   G = G * inverse(Rw);
+   Matrix<T> F;
+   F = ident<T>(N) + G*Rwx;
+   // update X
+   Vector<T> C;
+   C = F*X - G*Zw - U;
+   X = Phinv * C;
+   // update P
+   P = F*P*transpose(F) + G*transpose(G);
+   P = Phinv*P*transpose(Phinv);
+   P += outer(U,U);
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+} // end DMsmootherUpdateWithControl
 
 //------------------------------------------------------------------------------------
 } // end namespace gpstk

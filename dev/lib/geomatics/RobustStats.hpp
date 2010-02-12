@@ -226,6 +226,51 @@ namespace gpstk {
       }
    }  // end QSort
    
+   /// Approximation to complimentary error function with fractional
+   /// error everywhere less than 1.2e-7. Ref. Numerical Recipes part 6.2.
+   /// NB. error function erf = 1-erfc
+   /// @param x input argument.
+   /// @return complimentary error function of x
+   template <typename T>
+   T errfc(T x) throw()
+   {
+      T t,z,ret;
+      z = ::fabs(x);
+      t = T(1)/(T(1)+z/T(2));
+      ret = t * ::exp(-z*z - 1.26551223 + t*(1.00002368 + t*(0.37409196
+              + t*(0.09678418 + t*(-0.18628806 + t*(0.27886807 + t*(-1.13520398
+              + t*(1.48851587 + t*(-0.82215223 + t*0.17087277)))))))));
+      return (x >= T(0) ? ret : T(2)-ret);
+   }  // end errfc
+
+   /// Cumulative distribution function CDF for the normal distribution with
+   /// mean m and standard deviation s (square root of variance).
+   /// Return 0 if s is zero.
+   /// @param m mean of the distribution
+   /// @param s standard deviation (sqrt of variance) of the distribution, > 0.
+   /// @param x value at which to compute the CDF.
+   /// @return cumulative normal distribution(m,s) evaluated at x
+   template <typename T>
+   T normalCDF(T m, T s, T x) throw()
+   {
+      if(s == T(0)) return T(0);
+      T arg = (x - m)/(::sqrt(T(2.0)) * s);
+      return (T(1) - errfc<T>(arg)/T(2));
+   }  // end normal CDF
+
+   /// Anderson-Darling test statistic, which is a variant of the Kolmogorov-Smirnoff
+   /// test, comparing the distribution of data with mean m and standard deviation s
+   /// to the normal distribution.
+   /// NB. If ADtest > 0.752 then normality hypothesis is rejected for 5% level test.
+   /// @param xd         array of data.
+   /// @param nd         length of array xd.
+   /// @param mean       mean of the data.
+   /// @param stddev     standard deviation of the data.
+   /// @param save_flag  if true (default) array xd will NOT be changed, otherwise
+   ///                      it will be sorted.
+   double ADtest(double *xd, const int nd, double m, double s, bool save_flag=true)
+      throw(Exception);
+
    //--------------------------------------------------------------------------------
    /// Robust statistics.
    namespace Robust
@@ -234,7 +279,8 @@ namespace gpstk {
    /// array xd is returned sorted, unless save_flag is true.
    /// @param xd         array of data.
    /// @param nd         length of array xd.
-   /// @param save_flag  if true (default), array xd will NOT be trashed.
+   /// @param save_flag  if true (default) array xd will NOT be changed, otherwise
+   ///                      it will be sorted.
    /// @return median of the data in array xd.
    template <typename T>
    T Median(T *xd, const int nd, bool save_flag=true)
@@ -380,7 +426,7 @@ namespace gpstk {
    /// @param w output array of length nd to contain weights on output.
    /// @return m-estimate of data in array xd.
    template <typename T>
-   T MEstimate(T *xd, int nd, const T& M, const T& MAD, T *w=NULL)
+   T MEstimate(const T *xd, int nd, const T& M, const T& MAD, T *w=NULL)
       throw(Exception)
    {
       try {

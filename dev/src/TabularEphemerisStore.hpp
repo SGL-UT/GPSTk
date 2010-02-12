@@ -174,6 +174,19 @@ namespace gpstk
          const throw()
       { return true; };
 
+         /// Get number of satellite maps
+      int nsats(void) throw() { return pe.size(); }
+
+         /// Get total number of ephemerides, all sats
+      int neph(void) throw() {
+         int n(0);
+         std::map<SatID, SvEphMap>::const_iterator it(pe.begin());
+         while(it != pe.end()) {
+            n += it->second.size();
+            ++it; 
+         }
+         return n;
+      }
 
       //---------------------------------------------------------------
       // Below are interfaces that are unique to this class (i.e. not

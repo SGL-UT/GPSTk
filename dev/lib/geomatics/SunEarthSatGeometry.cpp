@@ -1,4 +1,11 @@
-#pragma ident "$Id: SunEarthSatGeometry.cpp 218 2009-07-02 19:59:29Z BrianTolman $"
+#pragma ident "$Id$"
+
+/**
+ * @file SunEarthSatGeometry.cpp
+ * Include file for various routines related to Sun-Earth-Satellite geometry,
+ * including satellite attitude, XYZ->UEN rotation, and (elevation,azimuth) as
+ * seen at the satellite. Used by PhaseWindup and PreciseRange.
+ */
 
 //============================================================================
 //
@@ -36,23 +43,15 @@
 //
 //=============================================================================
 
-/**
- * @file SunEarthSatGeometry.cpp
- * Include file for various routines related to Sun-Earth-Satellite geometry,
- * including satellite attitude, XYZ->UEN rotation, and (elevation,azimuth) as
- * seen at the satellite. Used by PhaseWindup and PreciseRange.
- */
-
 // GPSTk includes
 #include "StringUtils.hpp"          // asString
 #include "geometry.hpp"             // DEG_TO_RAD
 #include "icd_200_constants.hpp"    // TWO_PI
-#include "icd_200_constants.hpp"    // TWO_PI
 // geomatics
 #include "SunEarthSatGeometry.hpp"
+#include "SolarPosition.hpp"
 
 using namespace std;
-using namespace gpstk::StringUtils;
 
 namespace gpstk {
 
@@ -137,7 +136,8 @@ Matrix<double> SingleAxisRotation(double angle, const int axis)
 {
 try {
    if(axis < 1 || axis > 3) {
-      Exception e(string("Invalid axis (1,2,3 <=> X,Y,Z): ") + asString(axis));
+      Exception e(string("Invalid axis (1,2,3 <=> X,Y,Z): ")
+                         + StringUtils::asString(axis));
       GPSTK_THROW(e);
    }
    Matrix<double> R(3,3,0.0);
@@ -228,6 +228,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 // -----------------------------------------------------------------------------------
 // Compute the satellite attitude, given the time and the satellite position SV.
+// If the SolarSystem is valid, use it; otherwise use SolarPosition.
+// See two versions of SatelliteAttitude() for the user interface.
 // Return a 3x3 Matrix which contains, as rows, the unit (ECEF) vectors X,Y,Z in the
 // body frame of the satellite, namely
 //    Z = along the boresight (i.e. towards Earth center),
@@ -236,23 +238,16 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Thus this rotation matrix R * (ECEF XYZ vector) = components in body frame, and
 // R.transpose() * (sat. body. frame vector) = ECEF XYZ components.
 // Also return the shadow factor = fraction of sun's area not visible to satellite.
-Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV,
-                                 const SolarSystem& SSEph, const EarthOrientation& EO,
-                                 double& sf)
+Matrix<double> doSatAtt(const DayTime& tt, const Position& SV,
+                        const SolarSystem& SSEph, const EarthOrientation& EO,
+                        double& sf)
    throw(Exception)
 {
-   if(SSEph.JPLNumber() == -1 || SSEph.startTime()-tt > 1.e-8
-                              || tt - SSEph.endTime() > 1.e-8) {
-      Exception e("Solar system ephemeris invalid");
-      GPSTK_THROW(e);
-   }
-
    try {
       int i;
       double d,svrange,DistSun,AngRadSun,AngRadEarth,AngSeparation;
       Position X,Y,Z,T,S,Sun;
       Matrix<double> R(3,3);
-      SolarSystem& mySSEph=const_cast<SolarSystem&>(SSEph);
 
       // Z points from satellite to Earth center - along the antenna boresight
       Z = SV;
@@ -262,11 +257,20 @@ Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV,
       Z = d * Z;                                // reverse and normalize Z
 
       // get the Sun's position
-      Sun = mySSEph.WGS84Position(SolarSystem::Sun, tt, EO);
+      if(SSEph.JPLNumber() > -1) {
+         //SolarSystem& mySSEph=const_cast<SolarSystem&>(SSEph);
+         Sun = const_cast<SolarSystem&>(SSEph).WGS84Position(SolarSystem::Sun,tt,EO);
+      }
+      else {
+         double AR;
+         Sun = SolarPosition(tt, AR);
+      }
       DistSun = Sun.radius();
+
       // apparent angular radius of sun = 0.2666/distance in AU (deg)
       AngRadSun = 0.2666/(DistSun/149598.0e6);
       AngRadSun *= DEG_TO_RAD;
+
       // angular radius of earth at sat
       AngRadEarth = ::asin(6378137.0/svrange);
 
@@ -281,13 +285,9 @@ Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV,
 
       AngSeparation = ::acos(Z.dot(T));         // apparent angular distance, earth
                                                 // to sun, as seen at satellite
-
       // is satellite in eclipse?
       try { sf = ShadowFactor(AngRadEarth, AngRadSun, AngSeparation); }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-      //if(sf > 0.999) { ;    // total eclipse }
-      //else if(sf > 0.0) { ; // partial eclipse }
-      //else { ;              // no eclipse }
 
       // Y is perpendicular to Z and T, such that ...
       Y = Z.cross(T);
@@ -315,6 +315,33 @@ Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV,
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
+// -----------------------------------------------------------------------------------
+// Version without JPL SolarSystem ephemeris - uses SolarPosition
+Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV, double& sf)
+   throw(Exception)
+{
+   SolarSystem ssdummy;
+   EarthOrientation eodum;
+   return doSatAtt(tt,SV,ssdummy,eodum,sf);
+}
+
+// -----------------------------------------------------------------------------------
+// Version with JPL SolarSystem ephemeris. Throw if the SolarSystem is not valid
+Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV,
+                                 const SolarSystem& SSEph, const EarthOrientation& EO,
+                                 double& sf)
+   throw(Exception)
+{
+   if(SSEph.JPLNumber() == -1 || SSEph.startTime()-tt > 1.e-8
+                              || tt - SSEph.endTime() > 1.e-8) {
+      Exception e("Solar system ephemeris invalid");
+      GPSTK_THROW(e);
+   }
+
+   return doSatAtt(tt,SV,SSEph,EO,sf);
+}
+
+// -----------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 // Compute the azimuth and nadir angle, in the satellite body frame,
 // of receiver Position RX as seen at the satellite Position SV. The nadir angle
@@ -365,172 +392,6 @@ void SatelliteNadirAzimuthAngles(const Position& SV,
    catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
-//------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------
-// obsolete
-void SolarPosition(DayTime t, double& lat, double& lon, double& R, double& AR);
-static double GMST(DayTime t);
 // -----------------------------------------------------------------------------------
-// Version without solar ephemeris - uses SolarPosition in this module
-// Compute the satellite attitude, given the time and the satellite position SV.
-// Return a 3x3 Matrix which contains, as rows, the unit (ECEF) vectors X,Y,Z in the
-// body frame of the satellite, namely
-//    Z = along the boresight (i.e. towards Earth center),
-//    Y = perpendicular to both Z and the satellite-sun direction, and
-//    X completing the orthonormal triad. X will generally point toward the sun.
-// Also return the shadow factor = fraction of sun's area not visible to satellite.
-Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV, double& sf)
-   throw(Exception)
-{
-try {
-   int i;
-   double d,svrange,lat,lon,DistSun,Radsun,Radearth,dES;
-   Position X,Y,Z,T;
-   Matrix<double> R(3,3);
-
-   // Z points from satellite to Earth center - along the antenna boresight
-   Z = SV;
-   Z.transformTo(Position::Cartesian);
-   svrange = Z.mag();
-   d = -1.0/Z.mag();
-   Z = d * Z;                                // reverse and normalize Z
-
-   // T points from satellite to sun
-   SolarPosition(tt, lat, lon, DistSun, Radsun);
-   Radsun *= DEG_TO_RAD;                     // angular radius of sun at satellite
-   Radearth = ::asin(6378137.0/svrange);     // angular radius of earth at sat
-
-   T.setGeocentric(lat,lon,DistSun);         // vector earth to sun
-   T.transformTo(Position::Cartesian);
-   T = T - SV;                               // sat to sun=(E to sun)-(E to sat)
-   d = 1.0/T.mag();
-   T = d * T;                                // normalize T
-
-   dES = ::acos(Z.dot(T));                   // apparent angular distance, earth
-                                             // to sun, as seen at satellite
-
-   sf = ShadowFactor(Radearth, Radsun, dES); // is satellite in eclipse?
-   //if(sf > 0.999) { ;    // total eclipse }
-   //else if(sf > 0.0) { ; // partial eclipse }
-   //else { ;              // no eclipse }
-
-   // Y is perpendicular to Z and T, such that ...
-   Y = Z.cross(T);
-   d = 1.0/Y.mag();
-   Y = d * Y;                                // normalize Y
-
-   // ... X points generally in the direction of the sun
-   X = Y.cross(Z);                           // X will be unit vector
-   if(X.dot(T) < 0) {                        // need to reverse X, hence Y also
-      X = -1.0 * X;
-      Y = -1.0 * Y;
-   }
-
-   // fill the matrix and return it
-   for(i=0; i<3; i++) {
-      R(0,i) = X[i];
-      R(1,i) = Y[i];
-      R(2,i) = Z[i];
-   }
-
-   return R;
-}
-catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}
-
-//------------------------------------------------------------------------------------
-// obsolete
-// Solar ephemeris, in ECEF coordinates.
-// Accuracy is about 1 arcminute, when t is within 2 centuries of 2000.
-// Ref. Astronomical Almanac pg C24, as presented on USNO web site.
-// input
-//    t             epoch of interest
-// output
-//    lat,lon,R     latitude, longitude and distance (deg,deg,m ECEF) of sun at t.
-//    AR            apparent angular radius of sun as seen at Earth (deg) at t.
-void SolarPosition(DayTime t, double& lat, double& lon, double& R, double& AR)
-{
-try {
-   //const double mPerAU = 149598.0e6;
-   double D;     // days since J2000
-   double g,q;
-   double L;     // sun's geocentric apparent ecliptic longitude (deg)
-   //double b=0; // sun's geocentric apparent ecliptic latitude (deg)
-   double e;     // mean obliquity of the ecliptic (deg)
-   //double R;   // sun's distance from Earth (m)
-   double RA;    // sun's right ascension (deg)
-   double DEC;   // sun's declination (deg)
-   //double AR;  // sun's apparent angular radius as seen at Earth (deg)
-
-   D = t.JD() - 2451545.0;
-   g = (357.529 + 0.98560028 * D) * DEG_TO_RAD;
-   q = 280.459 + 0.98564736 * D;
-   L = (q + 1.915 * ::sin(g) + 0.020 * ::sin(2*g)) * DEG_TO_RAD;
-
-   e = (23.439 - 0.00000036 * D) * DEG_TO_RAD;
-   RA = atan2(::cos(e)*::sin(L),::cos(L)) * RAD_TO_DEG;
-   DEC = ::asin(::sin(e)*::sin(L)) * RAD_TO_DEG;
-
-   //equation of time = apparent solar time minus mean solar time
-   //= [q-RA (deg)]/(15deg/hr)
-
-   // compute the hour angle of the vernal equinox = GMST and convert RA to lon
-   lon = fmod(RA-GMST(t),360.0);
-   if(lon < -180.0) lon += 360.0;
-   if(lon >  180.0) lon -= 360.0;
-
-   lat = DEC;
-
-   // ECEF unit vector in direction Earth to sun
-   //xhat = ::cos(lat*DEG_TO_RAD)*::cos(lon*DEG_TO_RAD);
-   //yhat = ::cos(lat*DEG_TO_RAD)*::sin(lon*DEG_TO_RAD);
-   //zhat = ::sin(lat*DEG_TO_RAD);
-
-   // R in AU
-   R = 1.00014 - 0.01671 * ::cos(g) - 0.00014 * ::cos(2*g);
-   // apparent angular radius in degrees
-   AR = 0.2666/R;
-   // convert to meters
-   R *= 149598.0e6;
-}
-catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E);}
-catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}
-
-//------------------------------------------------------------------------------------
-double GMST(DayTime t)
-{
-try {
-   // days since epoch
-   double days = t.JD() - 2451545;                             // days
-   if(days <= 0.0) days -= 1.0;
-   double Tp = days/36525.0;                                   // dim-less
-
-      // Compute GMST in radians
-   double G;
-   // seconds (24060s = 6h 41min)
-   //G = 24110.54841 + (8640184.812866 + (0.093104 - 6.2e-6*Tp)*Tp)*Tp;   // sec
-   //G /= 86400.0; // instead, divide the numbers above manually
-   G = 0.279057273264 + 100.0021390378009*Tp        // seconds/86400 = days
-                      + (0.093104 - 6.2e-6*Tp)*Tp*Tp/86400.0;
-   G += t.secOfDay()/86400.0;                                  // days
-
-   // put answer between 0 and 360
-   G = fmod(G,1.0);
-   while(G < 0.0) G += 1.0;
-   G *= 360.0;                                                 // degrees
-
-   return G;
-}
-catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}
-
-//------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------
 }  // end namespace
 

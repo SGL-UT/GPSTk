@@ -52,8 +52,11 @@
 #include <vector>
 #include <algorithm>
 #include <ostream>
-// GPSTk
+// geomatics
 #include "SRI.hpp"
+#include "Namelist.hpp"
+#include "logstream.hpp"
+// GPSTk
 #include "StringUtils.hpp"
 
 using namespace std;
@@ -242,7 +245,7 @@ using namespace StringUtils;
          n = NL.size();
          m = names.size();
          if(n >= m) {
-            MatrixException me("Input Namelist must be a subset of this one");
+            MatrixException me("split: Input Namelist must be a subset of this one");
             GPSTK_THROW(me);
          }
 
@@ -257,7 +260,7 @@ using namespace StringUtils;
                }
             }
             if(j > m) {
-               MatrixException me("Input Namelist is not a non-trivial subset");
+               MatrixException me("split: Input Namelist is not non-trivial subset");
                GPSTK_THROW(me);
             }
          }
@@ -293,6 +296,7 @@ using namespace StringUtils;
       try {
          Namelist B(names);
             // NB assume that Namelist::operator|=() adds at the _end_
+            // NB if there are duplicate names, |= will not add them
          B |= NL;
             // NB assume that this zeros A.R and A.Z
          SRI A(B);
@@ -347,6 +351,48 @@ using namespace StringUtils;
    }
 
    // --------------------------------------------------------------------------------
+   // append an SRI onto this SRI. Similar to opertor+= but simpler; input SRI is
+   // simply appended, first using operator+=(Namelist), then filling the new portions
+   // of R and Z, all without final Householder transformation of result.
+   // Do not allow a name that is already present to be added: throw.
+   SRI& SRI::append(const SRI& S)
+      throw(MatrixException,VectorException)
+   {
+      try {
+         // do not allow duplicates
+         if((names & S.names).size() > 0) {
+            Exception e("Cannot append duplicate names");
+            GPSTK_THROW(e);
+         }
+
+         // append to names at the end, and to R Z, zero filling
+         const int I(names.size());
+         *this += S.names;
+
+         // just in case...to avoid overflow in loop below
+         if(I+S.names.size() != names.size()) {
+            Exception e("Append failed");
+            GPSTK_THROW(e);
+         }
+
+         // loop over new names, copying data from input into the new SRI
+         for(int i=0; i<S.names.size(); i++) {
+            Z(I+i) = S.Z(i);
+            for(int j=0; j<S.names.size(); j++)
+               R(I+i,I+j) = S.R(i,j);
+         }
+
+         return *this;
+      }
+      catch(MatrixException& me) {
+         GPSTK_RETHROW(me);
+      }
+      catch(VectorException& ve) {
+         GPSTK_RETHROW(ve);
+      }
+   }
+
+   // --------------------------------------------------------------------------------
    // merge this SRI with the given input SRI. ? should this be operator&=() ?
    // NB may reorder the names in the resulting Namelist.
    SRI& SRI::operator+=(const SRI& S)
@@ -382,6 +428,7 @@ using namespace StringUtils;
                // also the jth element of Z
             A(j,n) = Z(j);
          }
+
             // now do the same for S, but put S.R|S.Z below R|Z
          for(j=0; j<sm; j++) {
             k = all.index(S.names.labels[j]);
@@ -392,14 +439,13 @@ using namespace StringUtils;
             for(i=0; i<=j; i++) A(m+i,k) = S.R(i,j);
             A(m+j,n) = S.Z(j);
          }
-
             // now triangularize A and pull out the new R and Z
          Householder<double> HA;
          HA(A);
          // submatrix args are matrix,toprow,topcol,numrows,numcols
          R = Matrix<double>(HA.A,0,0,n,n);
-         Vector<double> T = Vector<double>(HA.A.colCopy(n));
-         Z = Vector<double>(T,0,n);
+         Z = Vector<double>(HA.A.colCopy(n));
+         Z.resize(n);
          names = all;
 
          return *this;
@@ -485,6 +531,23 @@ using namespace StringUtils;
          GPSTK_THROW(me);
       }
       Z = Z - R * X0;
+   }
+
+   // --------------------------------------------------------------------------------
+   // Shift the SRI state vector (Z) by a constant vector Z0;
+   // does not change information. i.e. let Z => Z-Z0
+   // throw on invalid input dimension
+   void SRI::shiftZ(const Vector<double>& Z0)
+      throw(MatrixException)
+   {
+      if(Z0.size() != R.cols()) {
+         MatrixException me("Invalid input dimension: SRI has dimension "
+               + asString<int>(R.rows()) + " while input has length "
+               + asString<int>(Z0.size())
+               );
+         GPSTK_THROW(me);
+      }
+      Z = Z - Z0;
    }
 
    // --------------------------------------------------------------------------------
@@ -619,8 +682,8 @@ using namespace StringUtils;
    // Fix the state element with the input index to the input value, and
    // collapse the SRI by removing that element.
    // No effect if index is out of range.
-   void SRI::biasFix(const unsigned int& in,
-                     const double& bias)
+   void SRI::stateFix(const unsigned int& in,
+                      const double& bias)
       throw(MatrixException,VectorException)
    {
       if(in >= R.rows()) return;
@@ -655,52 +718,104 @@ using namespace StringUtils;
    }
 
    // --------------------------------------------------------------------------------
-   // Vector version of biasFix with several states given in a Namelist.
-   void SRI::biasFix(const Namelist& drops, const Vector<double>& biases)
+   // Vector version of stateFix with several states given in a Namelist.
+   void SRI::stateFix(const Namelist& dropNL, const Vector<double>& values_in)
       throw(MatrixException,VectorException)
    {
       try {
-         unsigned int i,j,k,ii,jj,n=R.rows();
-            // create a vector of indexes and corresponding biases
+         if(dropNL.size() != values_in.size()) {
+            VectorException e("Input has inconsistent lengths");
+            GPSTK_THROW(e);
+         }
+/*
+         // build a vector of indexes to keep
+         int i,j;
+         vector<int> indexes;
+         for(i=0; i<names.size(); i++) {
+            j = dropNL.index(names.getName(i)); // index in dropNL, this state
+            if(j == -1) indexes.push_back(i);// not found in dropNL, so keep
+         }
+
+         const int n=indexes.size();         // new dimension
+         if(n == 0) {
+            Exception e("Cannot drop all states");
+            GPSTK_THROW(e);
+         }
+
+         Vector<double> X,newX(n);
+         Matrix<double> C,newC(n,n);
+         Namelist newNL;
+
+         double big,small;
+         getStateAndCovariance(X,C,&small,&big);
+
+         for(i=0; i<n; i++) {
+            newX(i) = X(indexes[i]);
+            for(j=0; j<n; j++) newC(i,j) = C(indexes[i],indexes[j]);
+            newNL += names.getName(indexes[i]);
+         }
+
+         R = Matrix<double>(inverseUT(upperCholesky(newC)));
+         Z = Vector<double>(R*newX);
+         names = newNL;
+*/
+         unsigned int i,j,k;
+            // create a vector of indexes and corresponding values
          vector<int> indx;
-         vector<double> bias;
-         for(i=0; i<drops.size(); i++) {
-            j = names.index(drops.getName(i));
-            if(j > -1) {
-               indx.push_back(j);
-               bias.push_back(biases(i));
+         vector<double> value;
+         for(i=0; i<dropNL.size(); i++) {
+            int in = names.index(dropNL.getName(i));   // in must be allowed to be -1
+            if(in > -1) {
+               indx.push_back(in);
+               value.push_back(values_in(i));
             }
+            //else nothing happens
          }
          const unsigned int m = indx.size();
+         const unsigned int n = R.rows();
          if(m == 0) return;
-         if(m == n) {            // error?
+         if(m == n) {
             *this = SRI(0);
             return;
          }
-
-         Vector<double> Znew(n-m,0.0);
-         Matrix<double> Rnew(n-m,n-m,0.0);
             // move the X(in) terms to the data vector on the RHS
          for(k=0; k<m; k++)
             for(i=0; i<indx[k]; i++)
-               Z(i) -= R(i,indx[k])*bias[k];
-            // remove row/col in and collapse
-         for(i=0,ii=0; i<n; i++) {
-            for(k=0; k<m; k++)
-               if(i == indx[k]) continue;
-            Znew(ii) = Z(i);
-            for(j=i,jj=ii; j<n; j++) {
-               for(k=0; k<m; k++)
-                  if(j == indx[k]) continue;
-               Rnew(ii,jj) = R(i,j);
-               jj++;
-            }
-            ii++;
+               Z(i) -= R(i,indx[k])*value[k];
+
+            // first remove the rows in indx
+         bool skip;
+         Vector<double> Ztmp(n-m,0.0);
+         Matrix<double> Rtmp(n-m,n,0.0);
+         for(i=0,k=0; i<n; i++) {
+            skip = false;
+            for(j=0; j<m; j++) if(i == indx[j]) { skip=true; break; }
+            if(skip) continue;      // skip row to be dropped
+
+            Ztmp(k) = Z(i);
+            for(j=i; j<n; j++) Rtmp(k,j) = R(i,j);
+            k++;
          }
-         R = Rnew;
-         Z = Znew;
-         for(k=0; k<m; k++)
-            names -= names.labels[indx[k]];
+
+            // Z is now done
+         Z = Ztmp;
+
+            // now remove columns in indx
+         R = Matrix<double>(n-m,n-m,0.0);
+         for(j=0,k=0; j<n; j++) {
+            skip = false;
+            for(i=0; i<m; i++) if(j == indx[i]) { skip=true; break; }
+            if(skip) continue;      // skip col to be dropped
+
+            for(i=0; i<=j; i++) R(i,k) = Rtmp(i,j);
+            k++;
+         }
+
+            // remove the names
+         for(k=0; k<dropNL.size(); k++) {
+            std::string name(dropNL.getName(k));
+            names -= name;
+         }
       }
       catch(MatrixException& me) {
          GPSTK_RETHROW(me);
@@ -754,8 +869,9 @@ using namespace StringUtils;
       try {
          Cholesky<double> Ch;
          Ch(InvCov);
-         Vector<double> apZ = Ch.U * X;      // R = UT(inv(Cov)) and z = R*X
-         SrifMU(R, Z, Ch.U, apZ);
+         Matrix<double> apR(transpose(Ch.L));  // R = UT(inv(Cov))
+         Vector<double> apZ(apR*X);            // Z = R*X
+         SrifMU(R, Z, apR, apZ);
       }
       catch(MatrixException& me) {
          GPSTK_THROW(me);
@@ -763,10 +879,55 @@ using namespace StringUtils;
    }
 
    // --------------------------------------------------------------------------------
+   void SRI::getConditionNumber(double& small, double& big)
+      throw(MatrixException)
+   {
+      try {
+         small = big = 0.0;
+         const int n=R.rows();
+         if(n == 0) return;
+         SVD<double> svd;
+         svd(R);
+         svd.sort(true);   // now the last s.v. is the smallest
+         small = svd.S(n-1);
+         big = svd.S(0);
+      }
+      catch(MatrixException& me) {
+         me.addText("Called by getConditionNumber");
+         GPSTK_RETHROW(me);
+      }
+   }
+
+   // --------------------------------------------------------------------------------
+   // Compute state without computing covariance. Use the fact that R is upper
+   // triangular. Throw if and when a zero diagonal element is found; values at larger
+   // index are still valid. On output *ptr is the largest singular index
+   void SRI::getState(Vector<double>& X, int *ptr)
+      throw(MatrixException)
+   {
+      const int n=Z.size();
+      X = Vector<double>(n,0.0);
+      if(ptr) *ptr = -1;
+      if(n == 0) return;
+      int i,j;
+      for(i=n-1; i>=0; i--) {             // loop over rows, in reverse order
+         if(R(i,i) == 0.0) {
+            if(ptr) *ptr = i;
+            MatrixException me("Singular matrix; zero diagonal element at index "
+               + asString<int>(i));
+            GPSTK_THROW(me);
+         }
+         double sum=Z(i);
+         for(j=i+1; j<n; j++)             // sum over columns to right of diagonal
+            sum -= R(i,j)*X(j);
+         X(i) = sum/R(i,i);
+      }
+   }
+
+   // --------------------------------------------------------------------------------
    // get the state X and the covariance matrix C of the state, where
    // C = transpose(inverse(R))*inverse(R) and X = inverse(R) * Z.
    // Throws MatrixException if R is singular.
-   // NB this is the most efficient way to invert the SRI problem.
    void SRI::getStateAndCovariance(Vector<double>& X,
                                    Matrix<double>& C,
                                    double *ptrSmall,
@@ -791,18 +952,24 @@ using namespace StringUtils;
    // output operator
    ostream& operator<<(ostream& os, const SRI& S)
    {
-      Namelist NL(S.names);
-      NL += string("State");
+      Namelist NLR(S.names);
+      Namelist NLC(S.names);
+      NLC += string("State");
       Matrix<double> A;
       A = S.R || S.Z;
-      LabelledMatrix LM(NL,A);
+      LabelledMatrix LM(NLR,NLC,A);
 
+      ios_base::fmtflags flags = os.flags();
+      if(flags & ios_base::scientific) LM.scientific();
       LM.setw(os.width());
       LM.setprecision(os.precision());
+      //LM.message("NL");
+      //LM.linetag("tag");
+
       os << LM;
+
       return os;
    }
-
 
 } // end namespace gpstk
 

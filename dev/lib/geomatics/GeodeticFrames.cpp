@@ -77,9 +77,7 @@ namespace gpstk
    double GeodeticFrames::CoordTransTime(DayTime t)
       throw()
    {
-      double ct = (t.JD()-double(JulianEpoch))/36525.0; // day contribution
-      ct += ((t.secOfDay()-43200.0)/86400.0)/36525.0;   // seconds contribution
-      return ct;
+      return (t.JD()-double(JulianEpoch))/36525.0;
    }
 
    //---------------------------------------------------------------------------------
@@ -1541,7 +1539,7 @@ namespace gpstk
 
    //---------------------------------------------------------------------------------
    // Compute Greenwich Mean Sidereal Time, or the Greenwich hour angle of
-   // the mean vernal equinox, given the coordinate time of interest,
+   // the mean vernal equinox (radians), given the coordinate time of interest,
    // and UT1-UTC (sec), which comes from the IERS bulletin.
    // @param t DayTime epoch of the rotation.
    // @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
@@ -1552,20 +1550,18 @@ namespace gpstk
                                bool reduced)
          throw()
    {
-         // days' since epoch = +/-(integer+0.5)
-      double days = double(t.JD() - JulianEpoch) - 1.0 + t.secOfDay()/86400.0;
-      int d=int(days);
-      if(d < 0 && days==double(d)) d++;
-      days = d + (days<0.0 ? -0.5 : 0.5);
-      double Tp = days/36525.0;
+      // days since epoch
+      double days = t.JD() - JulianEpoch;                         // days
+      if(days <= 0.0) days -= 1.0;
+      double Tp = days/36525.0;                                   // dim-less
 
          // Compute GMST in radians
-         // First compute GMST0
       double G;
-      //G = 24060.0 + 50.54841 + 8640184.812866*Tp;  // seconds (24060s = 6h 41min)
-      //G /= 86400.0; // instead, divide the above equation by 86400.0 manually...
-      G = 0.27847222 + 0.00058505104167 + 100.0021390378009*Tp;
-      G += (0.093104 - 6.2e-6*Tp)*Tp*Tp/86400.0;      // seconds/86400 = circles
+      // seconds (24060s = 6h 41min)
+      //G = 24110.54841 + (8640184.812866 + (0.093104 - 6.2e-6*Tp)*Tp)*Tp;   // sec
+      //G /= 86400.0; // instead, divide the numbers above manually
+      G = 0.279057273264 + 100.0021390378009*Tp        // seconds/86400 = days
+                         + (0.093104 - 6.2e-6*Tp)*Tp*Tp/86400.0;
 
          // if reduced, compute tidal terms
       if(reduced) {
@@ -1574,17 +1570,19 @@ namespace gpstk
          UT1mUTC = UT1mUT1R-UT1mUTC;
       }
 
-         // now get GMST
-      double r=1.002737909350795 + (5.9006e-11 - 5.9e-15*Tp)*Tp;
-      G += r*(UT1mUTC + t.secOfDay() - 13.0)/86400.0;       // circles
-      G *= TWO_PI;                                   // radians
+      G += (UT1mUTC + t.secOfDay())/86400.0;                      // days
+
+      // put answer between 0 and 2pi
+      G = fmod(G,1.0);
+      while(G < 0.0) G += 1.0;
+      G *= TWO_PI;                                                // radians
 
       return G;
    }
 
    //---------------------------------------------------------------------------------
    // Compute Greenwich Apparent Sidereal Time, or the Greenwich hour angle of
-   // the true vernal equinox, given the coordinate time of interest,
+   // the true vernal equinox (radians), given the coordinate time of interest,
    // and UT1-UTC (sec), which comes from the IERS bulletin.
    // @param t DayTime epoch of the rotation.
    // @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.

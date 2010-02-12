@@ -87,10 +87,6 @@ try {
    Frequency = 1;
       // stochastic model
    StochasticModel = string("cos2");      // cos, cos2, SNR
-//#ifdef StochasticModelTest
-//   SNRmax =  6.0;                         // dB-Hz
-//   SNRatt = 0.294;                        // 0 <= SNRatt <= 1
-//#endif // StochasticModelTest
       // for pseudorange solution
    PRSrmsLimit = 6.5;                     // this is the PRSolution() default
    PRSalgebra = false;
@@ -370,25 +366,6 @@ try {
       " [REQUIRED] ()");
    dashDT.setMaxCount(1);
 
-//#ifdef StochasticModelTest
-//   // stochastic model
-//   CommandOption dashstoch(CommandOption::hasArgument, CommandOption::stdType,
-//      0,"Stochastic","\n# Stochastic model configuration:\n"
-//      " --Stochastic <sm>     Stochastic model; choices are "
-//      "'cos','cos2','SNR' (" + StochasticModel + ")");
-//   dashstoch.setMaxCount(1);
-//
-//   CommandOption dashSNRmax(CommandOption::hasArgument, CommandOption::stdType, 0,
-//      "SNRmax"," --SNRmax <s>          SNR stochastic model: Maximum delta SNR "
-//      "in dB-Hz (" + asString(CI.SNRmax,1) + ")");
-//   dashSNRmax.setMaxCount(1);
-//
-//   CommandOption dashSNRatt(CommandOption::hasArgument, CommandOption::stdType, 0,
-//      "SNRatten"," --SNRatten <a>        SNR stochastic model: Effective attenuation "
-//      "[0<=a<=1] (" + asString(CI.SNRatt,3) + ")");
-//   dashSNRatt.setMaxCount(1);
-//#endif // StochasticModelTest
-
    // pseudorange solution
    CommandOption dashprsnit(CommandOption::hasArgument, CommandOption::stdType,
       0,"PRSniter","\n# Pseudorange solution (PRS) configuration:\n"
@@ -561,7 +538,7 @@ try {
    }
    if(Debug) cout << " Log file name is " << LogFile << endl;
    oflog.open(LogFile.c_str(),ios_base::out);
-   if(!oflog) {
+   if(!oflog.is_open()) {
       cerr << "Failed to open log file " << LogFile << endl;
       return -1;
    }
@@ -799,41 +776,6 @@ try {
       noEstimate = true;
       if(help) cout << " *** Turn OFF the estimation ***" << endl;
    }
-//#ifdef StochasticModelTest
-//   if(dashstoch.getCount()) {
-//      values = dashstoch.getValue();
-//      if(values[values.size()-1] == string("cos"))
-//         CI.StochasticModel = string("cos");
-//      else if(values[values.size()-1] == string("cos2"))
-//         CI.StochasticModel = string("cos2");
-//      else if(values[values.size()-1] == string("SNR"))
-//         CI.StochasticModel = string("SNR");
-//      else {
-//         cout << "Error: invalid stochastic model input (" << values[values.size()-1]
-//            << ") --Stochastic must be followed by 'cos','cos2' or 'SNR'" << endl;
-//         return -1;
-//      }
-//      if(help) cout << " Input: Stochastic model " << CI.StochasticModel << endl;
-//   }
-//   if(dashSNRmax.getCount()) {
-//      values = dashSNRmax.getValue();
-//      CI.SNRmax = asDouble(values[0]);
-//      if(help) cout << " Input: SNR stochastic model: maximum delta SNR "
-//         << fixed << setprecision(2) << CI.SNRmax << " dB-Hz" << endl;
-//   }
-//   if(dashSNRatt.getCount()) {
-//      values = dashSNRatt.getValue();
-//      tmp = asDouble(values[0]);
-//      if(tmp < 0.0 || tmp > 1.0) {
-//         cout << "Error: invalid stochastic model input (" << fixed << setprecision(3)
-//            << ") --SNRatt must be followed by a number between 0 and 1" << endl;
-//         return -1;
-//      }
-//      CI.SNRatt = tmp;
-//      if(help) cout << " Input: SNR stochastic model: effective attenuation "
-//         << fixed << setprecision(3) << CI.SNRatt << " dB-Hz" << endl;
-//   }
-//#endif // StochasticModelTest
    if(dashprsnit.getCount()) {
       values = dashprsnit.getValue();
       PRSnIter = asInt(values[0]);
@@ -1485,12 +1427,6 @@ try {
       << ", elevation mask " << fixed << PRSMinElevation
       << endl;
    ofs << " Stochastic model: use " << StochasticModel << " model." << endl;
-//#ifdef StochasticModelTest
-//   if(StochasticModel == string("SNR"))
-//      ofs << " Configuration of SNR stochastic model: SNRmax = "
-//         << fixed << setprecision(1) << SNRmax << " dB-Hz, SNR attenuation = "
-//         << setprecision(3) << SNRatt << endl;
-//#endif // StochasticModelTest
    if(DataInterval != -1) ofs << " Data interval is DT = "
       << fixed << setprecision(2) << DataInterval << " seconds." << endl;
    ofs << " Maximum gap in data = " << MaxGap << " * DT" << endl;

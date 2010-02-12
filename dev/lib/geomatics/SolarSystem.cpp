@@ -1,4 +1,4 @@
-#pragma ident "$Id: SolarSystem.cpp 200 2009-06-19 20:07:03Z BrianTolman $"
+#pragma ident "$Id$"
 
 /**
  * @file SolarSystem.cpp
@@ -26,6 +26,7 @@
 #include "SolarSystem.hpp"
 #include "Matrix.hpp"            // only for WGS84Position()
 #include "GeodeticFrames.hpp"    // only for WGS84Position()
+#include "logstream.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -36,9 +37,6 @@ namespace gpstk {
 void SolarSystem::readASCIIheader(string filename) throw(Exception)
 {
 try {
-   //cout << "Reporting in SolarSystem is "
-   //   << ConfigureLOG::ToString(ConfigureLOG::ReportingLevel()) << endl;
-
    // open the file
    ifstream strm;
    strm.open(filename.c_str());
@@ -62,7 +60,6 @@ try {
       if(line.substr(0,5) == "GROUP") {
          word = stripFirstWord(line);
          group = asInt(stripFirstWord(line));
-         LOG(DEBUG) << "Group is " << group; // temp
          n = 0;            // n will count lines/items within a group
          continue;
       }
@@ -82,7 +79,6 @@ try {
          word = stripFirstWord(line);
          if(word == "NCOEFF=") {
             Ncoeff = asInt(stripFirstWord(line));
-            LOG(DEBUG) << "Ncoeff is " << Ncoeff; // temp
             continue;
          }
          else {
@@ -99,7 +95,6 @@ try {
          else {
             stripTrailing(line," ");
             label[n++] = line;
-            LOG(VERBOSE) << "label " << n << " is " << line; // temp
             continue;
          }
       }
@@ -112,8 +107,6 @@ try {
          endJD = for2doub(stripFirstWord(line));
          // interval in days covered by each block of coefficients
          interval = for2doub(stripFirstWord(line));
-         LOG(VERBOSE) << "Times " << fixed << setprecision(3)
-            << startJD << " to " << endJD << " d " << interval;
       }
       // GROUP 1070 - end-of-header
       else if(group == 1070) {
@@ -127,7 +120,6 @@ try {
          if(group == 1040) {
             if(n++ == 0) {
                Nconst = asInt(word);
-               LOG(DEBUG) << "Nconst is " << Nconst;
             }
             else {
                const_names.push_back(word);
@@ -140,7 +132,6 @@ try {
                               asString(Nconst) + " != " + word);
                   GPSTK_THROW(e);
                }
-               LOG(DEBUG) << "Nconst matches: " << Nconst << " = " << word;
             }
             else
                constants[const_names[n-2]] = for2doub(word);
@@ -148,15 +139,12 @@ try {
          else if(group == 1050) {
             if(n < 13) {
                c_offset[n] = asInt(word);
-               LOG(DEBUG) << "c_offset[" << n << "] = " << c_offset[n];
             }
             else if(n < 26) {
                c_ncoeff[n-13] = asInt(word);
-               LOG(DEBUG) << "c_ncoeff[" << n-13 << "] = " << c_ncoeff[n-13];
             }
             else {
                c_nsets[n-26] = asInt(word);
-               LOG(DEBUG) << "c_nsets[" << n-26 << "] = " << c_nsets[n-26];
             }
             n++;
          }
@@ -211,10 +199,6 @@ try {
    it = store.end(); it--;
    endJD = it->second[1];
 
-   LOG(VERBOSE) << "After reading data files, store size is " << store.size()
-      << " and new start and stop times are " << fixed << setprecision(9)
-      << startJD << " and " << endJD;
-
    // Mod the header labels to reflect the new time limits
    ostringstream oss;
    DayTime tt;
@@ -227,9 +211,6 @@ try {
    oss << "Final Epoch: JED= " << fixed << setw(10) << setprecision(1) << endJD
       << tt.printf(" %4Y %b %2d %02H:%02M:%02S");
    label[2] = leftJustify(oss.str(),81);
-
-   LOG(VERBOSE) << "New label 1 is " << stripTrailing(label[1]);
-   LOG(VERBOSE) << "New label 2 is " << stripTrailing(label[2]);
 
    return 0;
 }
@@ -279,7 +260,6 @@ try {
 
       if(n == 0) {
          rec = asInt(stripFirstWord(line));           // 1st word is the record number
-         if(rec%25 == 0) LOG(VERBOSE) << "Record number " << rec;
          int ncc = asInt(stripFirstWord(line));       // 2nd word is ncoeff
          if(ncc != Ncoeff) {
             Exception e("readASCIIdata finds conflicting sizes in header ("
@@ -309,7 +289,6 @@ try {
       if(n == nmax) n=0; else n++;
       ntot++;
    }
-   LOG(INFO) << "Read " << rec << " records from file " << filename;
 
    strm.close();
 
@@ -476,7 +455,6 @@ try {
       str = label[i];
       writeBinary(strm,leftJustify(str,84).c_str(),84);
       recLength += 84;
-      LOG(VERBOSE) << "writeBinaryFile label " << i << " " << label[i];
    }
 
    // 2. 400 keys from the const array, each of length 6
@@ -518,7 +496,6 @@ try {
    // 7. DENUM
    writeBinary(strm,(char *)&constants["DENUM"],sizeof(double));
    recLength += sizeof(double);
-   LOG(VERBOSE) << "WriteBinary outputs DENUM " << constants["DENUM"];
 
    // 8. c_arrays for libration
    writeBinary(strm,(char *)&c_offset[12],sizeof(int));
@@ -527,7 +504,6 @@ try {
    recLength += 3*sizeof(int);
   
    // 9. pad
-   LOG(DEBUG) << "Pad length 1 = " << Ncoeff*sizeof(double)-recLength;
    char c=' ';
    for(i=0; i < Ncoeff*sizeof(double) - recLength; i++)
       writeBinary(strm,&c,1);
@@ -544,7 +520,6 @@ try {
       else
          writeBinary(strm,(char *)&z,sizeof(double));
    }
-   LOG(DEBUG) << "Pad length 2 = " << (400-Nconst)*sizeof(double);
    for(i=0; i < (400-Nconst)*sizeof(double); i++)
       writeBinary(strm,&c,1);
 
@@ -553,8 +528,6 @@ try {
    int nrec=1;
    map<double,vector<double> >::iterator jt;
    for(jt=store.begin(); jt != store.end(); jt++) {
-      LOG(DEBUG) << "writeBinaryFile writes " << nrec
-                << " " << fixed << setprecision(6) << jt->second[0];
       for(i=0; i<jt->second.size(); i++)
          writeBinary(strm,(char *)&jt->second[i],sizeof(double));
       nrec++;
@@ -597,9 +570,6 @@ int SolarSystem::initializeWithBinaryFile(string filename) throw(Exception)
 try {
    int iret;
 
-   //cout << "Reporting in SolarSystem is "
-   //   << ConfigureLOG::ToString(ConfigureLOG::ReportingLevel()) << endl;
-
    readBinaryHeader(filename);
    iret = readBinaryData(false);    // false: don't store data in map
    if(iret == 0) {
@@ -608,7 +578,6 @@ try {
       // EphemerisNumber == constants["DENUM"] means object has been initialized
       //                       (binary file), or header read (ASCII file)
       EphemerisNumber = int(constants["DENUM"]);
-      LOG(DEBUG) << "initialize sets EphemerisNumber " << EphemerisNumber;
    }
 
    return iret;
@@ -805,7 +774,6 @@ try {
       recLength += 84;
       buffer[84] = '\0';
       label[i] = stripTrailing(stripLeading(buffer," ")," ");
-      LOG(DEBUG) << "readBinaryHeader reads label " << label[i];
    }
 
    // 2. 400 keys from the const array, each of length 6
@@ -817,39 +785,27 @@ try {
       word = stripLeading(string(buffer));
       if(!word.empty()) {
          consts_names.push_back(word);
-         LOG(DEBUG) << "readBinaryHeader reads constant label " << word;
       }
    }
    Nconst = consts_names.size();
 
    // 3. the three times
    readBinary((char *)&startJD,sizeof(double));
-   LOG(DEBUG) << "readBinaryHeader reads start JD "
-      << fixed << setprecision(2) << startJD;
-
    readBinary((char *)&endJD,sizeof(double));
-   LOG(DEBUG) << "readBinaryHeader reads end JD "
-      << fixed << setprecision(2) << endJD;
-
    readBinary((char *)&interval,sizeof(double));
-   LOG(DEBUG) << "readBinaryHeader reads interval " << interval;
-
    recLength += 3*sizeof(double);
 
    // 4. Ncoeff
    readBinary((char *)&Ncoeff,sizeof(int));
    recLength += sizeof(int);
-   LOG(DEBUG) << "readBinaryHeader reads number of coefficients " << Ncoeff;
 
    // 5. AU and EMRAT
    buffer[sizeof(double)] = '\0';
    readBinary((char *)&AU,sizeof(double));
    recLength += sizeof(double);
-   LOG(DEBUG) << "readBinaryHeader reads AU " << fixed << setprecision(4) << AU;
 
    readBinary((char *)&EMRAT,sizeof(double));
    recLength += sizeof(double);
-   LOG(DEBUG) << "readBinaryHeader reads EMRAT " << EMRAT;
 
    // 6. c_arrays for the first 12 planets
    for(i=0; i<12; i++) {
@@ -857,27 +813,21 @@ try {
       readBinary((char *)&c_ncoeff[i],sizeof(int));
       readBinary((char *)&c_nsets[i],sizeof(int));
       recLength += 3*sizeof(int);
-      LOG(DEBUG) << "readBinaryHeader reads " << i << " " << c_offset[i] << " "
-         << c_ncoeff[i] << " " << c_nsets[i];
    }
 
    // 7. DENUM
    double denum;
    readBinary((char *)&denum,sizeof(double));
    recLength += sizeof(double);
-   LOG(DEBUG) << "readBinaryHeader reads DENUM directly " << denum;
 
    // 8. c_arrays for libration
    readBinary((char *)&c_offset[12],sizeof(int));
    readBinary((char *)&c_ncoeff[12],sizeof(int));
    readBinary((char *)&c_nsets[12],sizeof(int));
    recLength += 3*sizeof(int);
-   LOG(DEBUG) << "readBinaryHeader reads " << 12 << " " << c_offset[12] << " "
-      << c_ncoeff[12] << " " << c_nsets[12];
 
    // 9. pad - records are padded to be the same length as the data records b/c
    //          JPL does it (for Fortran reasons) - not necessary
-   LOG(DEBUG) << "Pad length 1 = " << Ncoeff*sizeof(double)-recLength;
    for(i=0; i < Ncoeff*sizeof(double)-recLength; i++)
       readBinary(buffer,1);
 
@@ -888,19 +838,15 @@ try {
       readBinary((char *)&d,sizeof(double));
       if(i < Nconst) {
          constants[stripTrailing(consts_names[i])] = d;
-         LOG(DEBUG) << "readBinaryHeader reads " << consts_names[i] << " = "
-            << fixed << setprecision(18) << setw(24) << d;
       }
    }
    // pad
-   LOG(DEBUG) << "Pad length 2 = " << (400-Nconst)*sizeof(double);
    for(i=0; i < (400-Nconst)*sizeof(double); i++)
       readBinary(buffer,1);
 
    // ----------------------------------------------------------------
    // test the header
    if(denum == constants["DENUM"]) {
-      LOG(DEBUG) << "DENUM agrees " << denum;
 
       // EphemerisNumber == -1 means the header has not been read
       // EphemerisNumber ==  0 means the fileposMap has not been read (binary)

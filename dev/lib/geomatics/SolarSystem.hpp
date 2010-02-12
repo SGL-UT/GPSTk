@@ -1,4 +1,4 @@
-#pragma ident "$Id: SolarSystem.hpp 200 2009-06-19 20:07:03Z BrianTolman $"
+#pragma ident "$Id$"
 
 /**
  * @file SolarSystem.hpp
@@ -39,9 +39,6 @@
 #include "DayTime.hpp"             // only for WGS84SolarSystemPosition()
 #include "Position.hpp"            // only for WGS84SolarSystemPosition()
 #include "EarthOrientation.hpp"    // only for WGS84SolarSystemPosition()
-
-// geomatics
-#include "logstream.hpp"
 
 namespace gpstk {
 //------------------------------------------------------------------------------------

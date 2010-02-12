@@ -54,8 +54,7 @@ namespace gpstk {
 
    /// class GDCconfiguration encapsulates the configuration for input to the
    /// GPSTK Discontinuity Corrector.
-   class GDCconfiguration
-   {
+   class GDCconfiguration {
    public:
          /// constructor; this sets a full default set of parameters.
       GDCconfiguration(void) { initialize(); }
@@ -103,6 +102,89 @@ namespace gpstk {
 
    }; // end class GDCconfiguration
 
+   /// class GDCreturn encapsulates the information in the 'message' returned by
+   /// the GPSTK Discontinuity Corrector. Create it using the string created by
+   /// a call to DiscontinuityCorrector(SP,config,EditCmds,retMsg), then use it to
+   /// access specific information about the results of the GDC.
+   class GDCreturn {
+   public:
+         /// constructor; this parses the string
+      explicit GDCreturn(std::string msg) {
+         passN = -1;
+         nGFslips = nWLslips = 0;
+         nGFslipGross = nWLslipGross = 0;
+         nGFslipSmall = nWLslipSmall = 0;
+         WLsig = GFsig = 0.0;
+
+         std::string::size_type pos;
+         std::string word,line;
+         std::vector<std::string> lines,words;
+         if(msg.empty()) return;
+         // split into lines
+         while(1) {
+            pos = msg.find_first_not_of("\n");
+            if(pos > 0) msg.erase(0,pos);
+            if(msg.empty()) break;
+            pos = msg.find_first_of("\n");
+            if(pos > 0) {
+               word = msg.substr(0,pos);
+               msg.erase(0,pos);
+            }
+            else {
+               word = msg;
+               msg.clear();
+            }
+            lines.push_back(word);
+         }
+
+         for(int i=0; i<lines.size(); i++) {
+            line = lines[i];
+            if(line.empty()) continue;
+            // split line into words
+            words.clear();
+            while(1) {
+               pos = line.find_first_not_of(" \t\n");
+               if(pos != 0 && pos != std::string::npos) line.erase(0,pos);
+               if(line.empty()) break;
+               pos = line.find_first_of(" \t\n");
+               if(pos == std::string::npos) word = line;
+               else word = line.substr(0,pos);
+               if(!word.empty()) {
+                  words.push_back(word);
+                  line.erase(0,word.length()+1);
+               }
+            }
+
+            //std::cout << "Line " << i << ":";
+            //for(int j=0; j<words.size(); j++) std::cout << " /" << words[j] << "/";
+            //std::cout << std::endl;
+
+            line = lines[i];
+            //std::cout << line << std::endl;
+            if(line.find("insufficient data",0) != std::string::npos)
+               passN = strtol(words[1].c_str(),0,10);
+            if(line.find("list of Segments",0) != std::string::npos)
+               passN = strtol(words[1].c_str(),0,10);
+            if(line.find("WL slip gross",0) != std::string::npos)
+               nWLslipGross = strtol(words[3].c_str(),0,10);
+            if(line.find("WL slip small",0) != std::string::npos)
+               nWLslipSmall = strtol(words[3].c_str(),0,10);
+            if(line.find("GF slip gross",0) != std::string::npos)
+               nGFslipGross = strtol(words[3].c_str(),0,10);
+            if(line.find("GF slip small",0) != std::string::npos)
+               nGFslipSmall = strtol(words[3].c_str(),0,10);
+            if(line.find("sigma GF variation",0) != std::string::npos)
+               GFsig = strtod(words[3].c_str(),0);
+            if(line.find("WL sigma in cycles",0) != std::string::npos)
+               WLsig = strtod(words[3].c_str(),0);
+         }
+         nWLslips = nWLslipGross + nWLslipSmall;
+         nGFslips = nGFslipGross + nGFslipSmall;
+      }  // end constructor/parser
+
+      int passN,nGFslips,nWLslips,nGFslipGross,nGFslipSmall,nWLslipGross,nWLslipSmall;
+      double WLsig,GFsig;
+   }; // end class GDCreturn
 
    /** GPSTK Discontinuity Corrector. Find, and fix if possible, discontinuities
    * in the GPS carrier phase data, given dual-frequency pseudorange and phase
@@ -116,6 +198,7 @@ namespace gpstk {
    * @param SP       SatPass object containing the input data.
    * @param config   GDCconfiguration object.
    * @param EditCmds vector<string> (output) containing RinexEditor commands.
+   * @param retMsg   string summary of results: see output 'GDC' and parseGDCReturn()
    * @return 0 for success, otherwise return an Error code;
    * codes are defined as follows.
    * const int BadInput = -5      input data does not have the required obs types
@@ -126,7 +209,8 @@ namespace gpstk {
    */
    int DiscontinuityCorrector(SatPass& SP,
                               GDCconfiguration& config,
-                              std::vector<std::string>& EditCmds)
+                              std::vector<std::string>& EditCmds,
+                              std::string& retMsg)
       throw(Exception);
 
    //@}

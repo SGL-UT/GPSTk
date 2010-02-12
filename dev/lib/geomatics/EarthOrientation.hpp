@@ -79,13 +79,13 @@ namespace gpstk {
    //---------------------------------------------------------------------------------
    /** Earth orientation parameter prediction
     *  Read data from EOPP###.txt file, available from NGA. The formulas are:
-    *                      2                           2
+    *                       2                           2
     * xp(t)= A + B(t-ta) + SUM(Cj sin[2pi(t-ta)/Pj]) + SUM(Dj cos[2pi(t-ta)/Pj]) 
-    *                     j=1                         j=1
+    *                      j=1                         j=1
     *
-    *                      2                           2
+    *                       2                           2
     * yp(t)= E + F(t-ta) + SUM(Gk sin[2pi(t-ta)/Qk]) + SUM(Hk cos[2pi(t-ta)/Qk]) 
-    *                     k=1                         k=1
+    *                      k=1                         k=1
     *
     *                          4                           4
     * UT1-UTC(t)= I+J(t-tb) + SUM(Km sin[2pi(t-tb)/Rm]) + SUM(Lm cos[2pi(t-tb)/Rm])
@@ -273,7 +273,7 @@ namespace gpstk {
       /** Get the EOP at the given epoch and return it.
        *  @param t DayTime at which to compute the EOPs.
        *  @return EarthOrientation EOPs at time t.
-       *  @throw InvalidRequest if the (int) MJDs on either side of t
+       *  @throw InvalidRequest if the integer MJDs on either side of t
        *     cannot be found in the map.
        */
       EarthOrientation getEOP(DayTime& t) const

@@ -31,12 +31,9 @@
  * to an output RINEX observation file.
  */
 
-#include <cstring>
-
 #include "DayTime.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
-#include "CommandOptionWithTimeArg.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
@@ -44,7 +41,8 @@
 #include "icd_200_constants.hpp"
 #include "StringUtils.hpp"
 
-#include <time.h>
+#include <ctime>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <iostream>

@@ -110,8 +110,9 @@ Namelist& Namelist::operator-=(const string& name)
 {
 try {
    vector<string>::iterator it;
-   if((it=find(labels.begin(),labels.end(),name)) == labels.end()) return *this;
-   labels.erase(it);
+   it = find(labels.begin(),labels.end(),name);
+   if(it != labels.end())
+      labels.erase(it);
    return *this;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -362,8 +363,11 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 ostream& operator<<(ostream& os, const Namelist& N)
 {
 try {
-   for(unsigned int i=0; i<N.labels.size(); i++) os << " / " << N.labels[i];
-   os << " / ";
+   if(N.labels.size() > 0) {
+      for(unsigned int i=0; i<N.labels.size(); i++)
+         os << " / " << N.labels[i];
+      os << " / ";
+   }
    return os;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -421,6 +425,7 @@ try {
    string s;
    const Namelist *pNLcol = &nlp.NLcols;
    const Namelist *pNLrow = &nlp.NLrows;
+
       // first make sure we have both namelists
    if(nlp.NLrows.size() == 0 && nlp.NLcols.size() == 0) {
       os << " Error -- Namelists in LabelledMatrix are empty! ";
@@ -430,14 +435,15 @@ try {
    if(nlp.NLcols.size() == 0) pNLcol = pNLrow;
 
       // on column labels line
+   os << setw(0);
    if(nlp.rc == 0) {    // only if printing both column and row labels
       os << nlp.tag << " ";                                       // tag
       if(nlp.msg.size() > 0)                                      // msg
          s = nlp.msg;
       else
-         s = rightJustify(string(""),nlp.msg.size());
+         s = rightJustify(string(""),nlp.wid);
       os << s << " ";
-      if(nlp.msg.size() < nlp.wid)
+      if(nlp.msg.size() > 0 && nlp.msg.size() < nlp.wid)
          os << rightJustify(string(""),nlp.wid-nlp.msg.size());   // space
    }
       // print column labels

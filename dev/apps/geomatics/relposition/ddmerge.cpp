@@ -147,7 +147,7 @@ try {
 
       // this must be binary or you get the wrong answers.
    instr.open(rawfile.c_str(),ios::in|ios::binary);
-   if(!instr) {
+   if(!instr.is_open()) {
       cout << "Failed to open input file " << rawfile << endl;
       return -1;
    }
@@ -192,7 +192,7 @@ try {
    map<string,Chunk>::iterator it;
    for(i=0,it=Chunklist.begin(); it != Chunklist.end(); i++,it++) {
       filepointer[i].open(rawfile.c_str(), ios::in|ios::binary);
-      if(!filepointer[i]) {
+      if(!filepointer[i].is_open()) {
          cout << "Failed to open chunk " << i << endl;
          break;
       }
@@ -202,7 +202,7 @@ try {
    }
 
    outstr.open(outfile.c_str(), ios::out);
-   if(!outstr) {
+   if(!outstr.is_open()) {
       cout << "Failed to open output file " << outfile << endl;
       return -1;
    }
@@ -218,7 +218,7 @@ try {
    //}
 
    instr.open(ddrfile.c_str());
-   if(!instr) {
+   if(!instr.is_open()) {
       cout << "Failed to open input file " << ddrfile << endl;
       return -1;
    }

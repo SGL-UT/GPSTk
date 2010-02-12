@@ -1,4 +1,4 @@
-#pragma ident "$Id: SunEarthSatGeometry.hpp 200 2009-06-19 20:07:03Z BrianTolman $"
+#pragma ident "$Id$"
 
 //============================================================================
 //

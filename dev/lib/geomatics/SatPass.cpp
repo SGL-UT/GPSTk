@@ -42,7 +42,7 @@
 #include "RinexObsData.hpp"
 #include "RinexObsStream.hpp"
 #include "RinexUtilities.hpp"
-//#include "logstream.hpp"
+#include "logstream.hpp"
 
 using namespace std;
 using namespace gpstk::StringUtils;
@@ -91,6 +91,25 @@ void SatPass::init(GSatID insat, double indt, vector<string> obstypes) throw()
       indexForLabel[obstypes[i]] = i;
       labelForIndex[i] = obstypes[i];
    }
+}
+
+SatPass& SatPass::operator=(const SatPass& right) throw()
+{
+   if(&right != this) {
+      Status = right.Status;
+      dt = right.dt;
+      sat = right.sat;
+      indexForLabel = right.indexForLabel;
+      labelForIndex = right.labelForIndex;
+      firstTime = right.firstTime;
+      lastTime = right.lastTime;
+      ngood = right.ngood;
+      spdvector.resize(right.spdvector.size());
+      for(int i=0; i<right.spdvector.size(); i++)
+         spdvector[i] = right.spdvector[i];
+   }
+
+   return *this;
 }
 
 int SatPass::addData(const DayTime tt, vector<string>& ots, vector<double>& data)
@@ -184,15 +203,18 @@ int SatPass::addData(const RinexObsData& robs) throw()
 // call this ONLY after cycleslips have been removed.
 void SatPass::smooth(bool smoothPR, bool debiasPH, string& msg) throw(Exception)
 {
-   // test for L1, L2, P1, P2
+   // test for L1, L2, C1/P1, P2
+   bool useC1=false;
    map<string, unsigned int>::const_iterator it;
    if(indexForLabel.find("L1") == indexForLabel.end() ||
       indexForLabel.find("L2") == indexForLabel.end() ||
-      indexForLabel.find("P1") == indexForLabel.end() ||
+      (indexForLabel.find("C1") == indexForLabel.end() &&
+       indexForLabel.find("P1") == indexForLabel.end()) ||
       indexForLabel.find("P2") == indexForLabel.end()) {
-      Exception e("Obs types L1 L2 P1 P2 required for smooth()");
+      Exception e("Obs types L1 L2 C1/P1 P2 required for smooth()");
       GPSTK_THROW(e);
    }
+   if(indexForLabel.find("P1") == indexForLabel.end()) useC1=true;
 
    //static const double CFF=C_GPS_M/OSC_FREQ;
    static const double F1=L1_MULT;   // 154.0;
@@ -225,7 +247,7 @@ void SatPass::smooth(bool smoothPR, bool debiasPH, string& msg) throw(Exception)
    // get the biases B = L - DP
    for(first=true,i=0; i<spdvector.size(); i++) {
       if(!(spdvector[i].flag & OK)) continue;        // skip bad data
-      double P1 = spdvector[i].data[indexForLabel["P1"]];
+      double P1 = spdvector[i].data[indexForLabel[(useC1 ? "C1" : "P1")]];
       double P2 = spdvector[i].data[indexForLabel["P2"]];
       RB1 = wl1*spdvector[i].data[indexForLabel["L1"]] - D11*P1 - D12*P2;
       RB2 = wl2*spdvector[i].data[indexForLabel["L2"]] - D21*P1 - D22*P2;
@@ -272,7 +294,8 @@ void SatPass::smooth(bool smoothPR, bool debiasPH, string& msg) throw(Exception)
       }
       // smooth the range - replace the pseudorange with the smoothed pseudorange
       if(smoothPR) {
-         spdvector[i].data[indexForLabel["P1"]] = D11*wl1*dbL1 + D12*wl2*dbL2;
+         spdvector[i].data[indexForLabel[(useC1 ? "C1" : "P1")]]
+                                                = D11*wl1*dbL1 + D12*wl2*dbL2;
          spdvector[i].data[indexForLabel["P2"]] = D21*wl1*dbL1 + D22*wl2*dbL2;
       }
    }
@@ -291,6 +314,15 @@ double& SatPass::data(unsigned int i, std::string type) throw(Exception)
       GPSTK_THROW(e);
    }
    return spdvector[i].data[it->second];
+}
+
+double& SatPass::timeoffset(unsigned int i) throw(Exception)
+{
+   if(i >= spdvector.size()) {
+      Exception e("Invalid index in timeoffset() " + asString(i));
+      GPSTK_THROW(e);
+   }
+   return spdvector[i].toffset;
 }
 
 unsigned short& SatPass::LLI(unsigned int i, std::string type) throw(Exception)
@@ -365,7 +397,6 @@ DayTime SatPass::time(unsigned int i) const throw(Exception)
    }
    // computing toff first is necessary to avoid a rare bug in DayTime..
    double toff = spdvector[i].ndt * dt + spdvector[i].toffset;
-   //return (firstTime + spdvector[i].ndt*dt + spdvector[i].toffset);
    return (firstTime + toff);
 }
 
@@ -381,16 +412,101 @@ bool SatPass::includesTime(const DayTime& tt) const throw()
    return true;
 }
 
+// create a new SatPass from the given one, starting at count N.
+// modify this SatPass to end just before N.
+// return true if successful.
+bool SatPass::split(int N, SatPass &newSP) {
+try {
+   int i,j,n,oldgood,ilast;
+   DayTime tt;
+
+   newSP = SatPass(sat, dt);                       // create new SatPass
+   newSP.Status = Status;
+   newSP.indexForLabel = indexForLabel;
+   newSP.labelForIndex = labelForIndex;
+
+   oldgood = ngood;
+   ngood = ilast = 0;
+   for(i=0; i<spdvector.size(); i++) {             // loop over all data
+      n = spdvector[i].ndt;
+      tt = time(i);
+      if(n < N) {                                     // keep in this SatPass
+         if(spdvector[i].flag != BAD) ngood++;
+         ilast = i;
+      }
+      else {                                          // copy out data into new SP
+         if(n == N) {
+            newSP.ngood = oldgood-ngood;
+            newSP.firstTime = newSP.lastTime = tt;
+         }
+         j = newSP.countForTime(tt);
+         spdvector[i].ndt = j;
+         spdvector[i].toffset = tt - newSP.firstTime - j*dt;
+         newSP.spdvector.push_back(spdvector[i]);
+      }
+   }
+
+   // now trim this SatPass
+   spdvector.resize(ilast+1);
+   lastTime = time(ilast);
+
+   return true;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+}
+
+void SatPass::decimate(const int N, DayTime refTime) throw(Exception)
+{
+try {
+   if(N <= 1) return;
+   if(spdvector.size() < N) { dt = N*dt; return; }
+   if(refTime == DayTime::BEGINNING_OF_TIME) refTime = firstTime;
+
+   // find new firstTime = time(nstart)
+   int i,j,nstart=int(0.5+(firstTime-refTime)/dt);
+   nstart = nstart % N;
+   while(nstart < 0) nstart += N;
+   if(nstart > 0) nstart = N-nstart;
+
+   // decimate
+   ngood = 0;
+   DayTime newfirstTime, tt;
+   for(j=0,i=0; i<spdvector.size(); i++) {
+      if(spdvector[i].ndt % N != nstart) continue;
+      lastTime = time(i);
+      if(j==0) {
+         newfirstTime = time(i);
+         spdvector[i].toffset = 0.0;
+         spdvector[i].ndt = 0;
+      }
+      else {
+         tt = time(i);
+         spdvector[i].ndt = int(0.5+(tt-newfirstTime)/(N*dt));
+         spdvector[i].toffset = tt - newfirstTime - spdvector[i].ndt * N * dt;
+      }
+      spdvector[j] = spdvector[i];
+      if(spdvector[j].flag != BAD) ngood++;
+      j++;
+   }
+
+   dt = N*dt;
+   firstTime = newfirstTime;
+   spdvector.resize(j); // trim
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+}
+
 // dump all the data in the pass, one line per timetag;
 // put message msg at beginning of each line.
 void SatPass::dump(ostream& os, string msg1, string msg2) throw()
 {
-   int i,j;
+   int i,j,last;
    DayTime tt;
    os << '#' << msg1 << " " << *this << " " << msg2 << endl;
    os << '#' << msg1 << "  n Sat cnt flg     time      ";
    for(j=0; j<indexForLabel.size(); j++)
       os << "            " << labelForIndex[j] << " L S";
+   os << " gap(pts)";
    os << endl;
 
    for(i=0; i<spdvector.size(); i++) {
@@ -401,11 +517,16 @@ void SatPass::dump(ostream& os, string msg1, string msg2) throw()
          << " " << setw(3) << spdvector[i].ndt
          << " " << setw(2) << spdvector[i].flag
          << " " << tt.printf(SatPass::outFormat)
-         << fixed << setprecision(3);
+         << fixed << setprecision(6)
+         << " " << setw(9) << spdvector[i].toffset
+         << setprecision(3);
       for(j=0; j<indexForLabel.size(); j++)
          os << " " << setw(13) << spdvector[i].data[j]
             << " " << spdvector[i].lli[j]
             << " " << spdvector[i].ssi[j];
+      if(i==0) last = spdvector[i].ndt;
+      if(spdvector[i].ndt - last > 1) os << " " << spdvector[i].ndt-last;
+      last = spdvector[i].ndt;
       os << endl;
    }
 }
@@ -437,8 +558,7 @@ int SatPass::push_back(const DayTime tt, SatPassData& spd) throw()
       n = 0;
    }
    else {
-      if(tt < lastTime)
-         return -2;
+      if(tt - lastTime < 1.e-8) return -2;
          // compute count for this point - prev line means n is >= 0
       n = countForTime(tt);
          // test size of gap
@@ -502,7 +622,8 @@ SatPassIterator::SatPassIterator(vector<SatPass>& splist)
    for(i=0; i<SPList.size(); i++) {
       // check for consistency of dt
       if(SPList[i].dt != DT) {
-         Exception e("Inconsistent time intervals");
+         Exception e("Inconsistent time intervals: " + asString(SPList[i].dt)
+            + " != " + asString(DT));
          GPSTK_THROW(e);
       }
       // check for consistency of obs types
@@ -541,26 +662,17 @@ int SatPassIterator::next(map<unsigned int, unsigned int>& indexMap) throw(Excep
    indexMap.clear();
    nextIndexMap.clear();
 
-   //LOG(DEBUG1) << "SPIterator::next(map) - time "
-   //   << (FirstTime+currentN*DT).printf("%4F %10.3g");
-
    while(numsvs == 0) {
       if(listIndex.size() == 0) return 0;
 
       // loop over active SatPass's
       map<GSatID,int>::iterator kt = listIndex.begin();
 
-      // debugging - dump the listIndex
-      //for(kt = listIndex.begin(); kt != listIndex.end(); kt++) {
-      //   //LOG(DEBUG3) << "Dump listIndex: " << kt->first << " " << kt->second;
-      //}
-
       kt = listIndex.begin();
       while(kt != listIndex.end()) {
          sat = kt->first;
          i = kt->second;
          j = dataIndex[sat];
-         //LOG(DEBUG4) << "Loop over listIndex: " << sat << " " << i << " " << j;
 
          if(SPList[i].Status < 0) continue;     // should never happen
 
@@ -568,21 +680,14 @@ int SatPassIterator::next(map<unsigned int, unsigned int>& indexMap) throw(Excep
             // found active sat at this count - add to map
             nextIndexMap[i] = j;
             numsvs++;
-            //LOG(DEBUG2) << "SPIterator::next(map) found sat " << sat
-            //   << " at index " << i;
 
             // increment data index
             j++;
             if(j == SPList[i].spdvector.size()) {     // this pass is done
-               //LOG(DEBUG2) << " This pass for sat " << sat << " is done ...";
                indexStatus[i] = 1;
 
                // find the next pass for this sat
                for(k=i+1; k<SPList.size(); k++) {
-                  //LOG(DEBUG3) << " ... consider next pass " << k
-                  //   << " " << SPList[k].sat
-                  //   << " " << SPList[k].firstTime.printf("%4F %10.3g");
-
                   if(SPList[k].Status < 0)      // bad pass
                      continue;
                   if(SPList[k].sat != sat)      // wrong sat
@@ -598,11 +703,6 @@ int SatPassIterator::next(map<unsigned int, unsigned int>& indexMap) throw(Excep
                      = int((SPList[i].firstTime - FirstTime)/DT + 0.5);
                   break;
                }
-               if(indexStatus[i] == 0) {
-                  //LOG(DEBUG2) << " ... new pass for sat " << SPList[i].sat
-                  //<< " at index " << i << " and time "
-                  //<< SPList[i].firstTime.printf("%4F %10.3g");
-               }
             }
             else {
                dataIndex[sat] = j;
@@ -612,19 +712,15 @@ int SatPassIterator::next(map<unsigned int, unsigned int>& indexMap) throw(Excep
 
          // increment the iterator
          if(indexStatus[i] > 0) {                // a new one was not found
-            //LOG(DEBUG2) << " Erase this pass: index " << i << " sat " << sat;
             listIndex.erase(kt++);  // erasing a map - do exactly this and no more
          }
          else kt++;
 
       }  // end while loop over active SatPass's
-      //LOG(DEBUG4) << "End while loop over active SatPasses";
 
-      //if(robs.numSvs == 0) cout << "Gap at " << currentN << endl;
       currentN++;
 
    }  // end while robs.numSvs==0
-   //LOG(DEBUG1) << "Return from next()";
 
    indexMap = nextIndexMap;
 
@@ -643,7 +739,6 @@ int SatPassIterator::next(RinexObsData& robs) throw(Exception)
    robs.obs.clear();
    robs.epochFlag = 0;
    robs.time = FirstTime + (currentN-1) * DT;      // careful
-   //LOG(DEBUG2) << "SPIterator::next(robs) found time " << robs.time;
    robs.clockOffset = 0.0;
    robs.numSvs = 0;
 
@@ -653,8 +748,6 @@ int SatPassIterator::next(RinexObsData& robs) throw(Exception)
       int i = kt->first;
       int j = kt->second;
       GSatID sat = SPList[i].getSat();
-      //LOG(DEBUG2) << "SPIterator::next(robs) found sat " << sat
-      //   << " at index " << i << " and time " << SPList[i].time(j);
 
       bool found = false;
       bool flag = (SPList[i].spdvector[j].flag != SatPass::BAD);
@@ -662,8 +755,6 @@ int SatPassIterator::next(RinexObsData& robs) throw(Exception)
          RinexObsHeader::RinexObsType ot;
          ot = RinexObsHeader::convertObsType(SPList[i].labelForIndex[k]);
          if(ot == RinexObsHeader::UN) {
-            //LOG(DEBUG1) << " Error - this sat has UN obstype";
-            // warn?
          }
          else {
             found = true;
@@ -700,14 +791,9 @@ void SatPassIterator::reset(void) throw()
          dataIndex[SPList[i].sat] = 0;
          countOffset[SPList[i].sat]
             = int((SPList[i].firstTime - FirstTime)/DT + 0.5);
-         //LOG(DEBUG4) << "reset - define map " << i << " for sat " << SPList[i].sat
-         //   << " at time " << SPList[i].firstTime.printf("%4F %10.3g")
-         //   << " offset " << countOffset[SPList[i].sat];
       }
       else {
          indexStatus[i] = -1;
-         //LOG(DEBUG4)<< "reset - turn off pass " << i << " for sat " << SPList[i].sat
-         //   << " at time " << SPList[i].firstTime.printf("%4F %10.3g");
       }
    }  // end loop over the list
 }
@@ -723,7 +809,10 @@ void sort(vector<SatPass>& SPList) throw()
 int SatPassFromRinexFiles(vector<string>& filenames,
                           vector<string>& obstypes,
                           double dt,
-                          vector<SatPass>& SPList) throw(Exception)
+                          vector<SatPass>& SPList,
+                          DayTime beginTime,
+                          DayTime endTime)
+   throw(Exception)
 {
    if(filenames.size() == 0) return -1;
 
@@ -744,9 +833,8 @@ int SatPassFromRinexFiles(vector<string>& filenames,
 
    // fill the index array using SatPass's already there
    // assumes SPList is in time order - later ones overwrite earlier
-   for(i=0; i<SPList.size(); i++) {
+   for(i=0; i<SPList.size(); i++)
       indexForSat[SPList[i].sat] = i;
-   }
 
    for(int nfile=0; nfile<filenames.size(); nfile++) {
       string filename = filenames[nfile];
@@ -783,6 +871,10 @@ int SatPassFromRinexFiles(vector<string>& filenames,
       while(RinFile >> obsdata) {
          RinexObsData::RinexSatMap::const_iterator it;
          RinexObsData::RinexObsTypeMap::const_iterator jt;
+
+         // test time limits
+         if(obsdata.time < beginTime) continue;
+         if(obsdata.time > endTime) break;
 
          // skip auxiliary header, etc
          if(obsdata.epochFlag != 0 && obsdata.epochFlag != 1) continue;
@@ -827,7 +919,8 @@ int SatPassFromRinexFiles(vector<string>& filenames,
                      satit = indexForSat.find(sat);
                   }
                   else if(i == -2) {   // time tag out of order
-                     Exception e("Time tags out of order at time "
+                     Exception e("Time tags out of order in the RINEX file "
+                           + filename + " at time "
                            + obsdata.time.printf("%4F %10.3g"));
                      GPSTK_THROW(e);
                   }
@@ -876,31 +969,13 @@ int SatPassToRinexFile(string filename,
       RinexObsData robs;
       RinexObsData::RinexSatMap::const_iterator it;
       RinexObsData::RinexObsTypeMap::const_iterator jt;
-      //cout << "#RNX  wk  sec_of_wk sat";
-      //for(int i=0; i<SPList[0].labelForIndex.size(); i++)
-      //   cout << "            " << SPList[0].labelForIndex[i] << " L S";
-      //cout << endl;
 
       while(spit.next(robs)) {
-         //cout << "RNX " << robs.time.printf(SatPass::outFormat)
-         //      << fixed << setprecision(3);
          if(robs.epochFlag != 0 || robs.obs.size() == 0) {
-            //cout << endl;
             continue;
          }
 
          rstrm << robs;
-
-         //for(it=robs.obs.begin(); it != robs.obs.end(); it++) {
-         //   if(it != robs.obs.begin()) cout << "RNX                ";
-         //   cout << " " << GSatID(it->first);
-         //   for(jt=it->second.begin(); jt !=it->second.end(); jt++) {
-         //      cout << " " << setw(13) << jt->second.data
-         //           << " " << jt->second.lli
-         //           << " " << jt->second.ssi;
-         //   }
-         //   cout << endl;
-         //}
       }
 
       rstrm.close();

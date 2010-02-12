@@ -57,8 +57,8 @@
 #include "SatPass.hpp"
 #include "DiscCorr.hpp"
 
+#include <ctime>
 #include <cstring>
-#include <time.h>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -132,9 +132,9 @@ bool UsingCA;
 // the parallel vector holds an iterator for use in writing out the data
 vector<SatPass> SPList;
 // convenience
-static const string L1="L1",L2="L2",P1="P1",P2="P2";
+static const string L1="L1",L2="L2",P1="P1",P2="P2",C1="C1";
 // list of observation types to be included in each SatPass
-vector<string> L1L2P1P2;
+vector<string> obstypes;
 // this is a map relating a satellite to the index in SVPList of the current pass
 vector<unsigned int> SPIndexList;
 map<GSatID,int> SatToCurrentIndexMap;
@@ -183,10 +183,10 @@ int main(int argc, char **argv)
 
          // configure SatPass
       {
-         L1L2P1P2.push_back(L1);    // DiscFix requires these 4 observables only
-         L1L2P1P2.push_back(L2);
-         L1L2P1P2.push_back(P1);
-         L1L2P1P2.push_back(P2);
+         obstypes.push_back(L1);    // DiscFix requires these 4 observables only
+         obstypes.push_back(L2);
+         obstypes.push_back(UsingCA ? C1 : P1);
+         obstypes.push_back(P2);
 
          SatPass dummy(config.SVonly,config.dt);
          dummy.setMaxGap(config.MaxGap);
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
          // open output files
          // output for editing commands - write to this in ProcessSatPass()
       config.ofout.open(config.OutFile.c_str());
-      if(config.oflog.fail()) {
+      if(!config.oflog.is_open()) {
          config.oflog << "Error: " << PrgmName << " failed to open output file "
             << config.OutFile << endl;
       }
@@ -206,7 +206,7 @@ int main(int argc, char **argv)
          // RINEX output
       orfstr.open(config.OutRinexObs.c_str(), ios::out);
       if(!config.OutRinexObs.empty()) {
-         if(orfstr.fail()) {
+         if(!orfstr.is_open()) {
             config.oflog << "Failed to open output file " << config.OutRinexObs
                << ". Abort.\n";
             cout << "Failed to open output file " << config.OutRinexObs
@@ -268,8 +268,9 @@ int ReadFile(int nfile) throw(Exception)
       name = config.InputObsName[nfile];
       if(!config.Directory.empty() && config.Directory != string("."))
          name = config.Directory + string("/") + name;
+
       irfstr.open(name.c_str(),ios::in);
-      if(irfstr.fail()) {
+      if(! irfstr.is_open()) {
          config.oflog << "Failed to open input file " << name << ". Abort.\n";
          cout << "Failed to open input file " << name << ". Abort.\n";
          return 1;
@@ -295,6 +296,13 @@ int ReadFile(int nfile) throw(Exception)
          if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("P1")) inP1=j;
          if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("P2")) inP2=j;
       }
+      config.oflog << "Indexes are:"
+         << " C1=" << inC1
+         << " L1=" << inL1
+         << " L2=" << inL2
+         << " P1=" << inP1
+         << " P2=" << inP2
+         << endl;
 
       if((inC1 == -1 && config.UseCA) ||             // no C1, but user wants C1
          (inP1 == -1 && inC1 == -1) ||               // no C1 and no P1
@@ -314,9 +322,9 @@ int ReadFile(int nfile) throw(Exception)
       }
       else if(inP1==-1) {
          inP1 = inC1;
+         config.UseCA = true;
       }
 
-      if(config.UseCA) inP1 = inC1;
       if(inP1 == inC1) UsingCA = true; else UsingCA = false;
 
          // loop over epochs in the file
@@ -360,10 +368,8 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
       bool ok;
       int i,j,k,iret;
       double dt;
-      //string str;
       string datastr;
       GSatID sat;
-      //SatPassData spd;
       unsigned short flag;
       vector<double> data;
       vector<unsigned short> lli,ssi;
@@ -406,50 +412,34 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
          if(config.SVonly.id != -1 && !(sat == config.SVonly)) continue;
 
             // pull out the data and the SSI and LLI (indicators)
-            // put all the indicators together in a string, then make it a long
-            // order of the indicators: P1P2L1L2*ls   AaBbCcDd
-         //str = string("00000000");
          data = vector<double>(4,0.0);
          lli = vector<unsigned short>(4,0);
          ssi = vector<unsigned short>(4,0);
          otmap = it->second;
-         if( (jt = otmap.find(rhead.obsTypeList[inP1])) != otmap.end()) {
-            //spd.P1 = jt->second.data;
-            //str[0] = (asString(jt->second.lli))[0];
-            //str[1] = (asString(jt->second.ssi))[0];
-            data[2] = jt->second.data;
-            lli[2] = jt->second.lli;
-            ssi[2] = jt->second.ssi;
-         }
-         if( (jt = otmap.find(rhead.obsTypeList[inP2])) != otmap.end()) {
-            //spd.P2 = jt->second.data;
-            //str[2] = (asString(jt->second.lli))[0];
-            //str[3] = (asString(jt->second.ssi))[0];
-            data[3] = jt->second.data;
-            lli[3] = jt->second.lli;
-            ssi[3] = jt->second.ssi;
-         }
          if( (jt = otmap.find(rhead.obsTypeList[inL1])) != otmap.end()) {
-            //spd.L1 = jt->second.data;
-            //str[4] = (asString(jt->second.lli))[0];
-            //str[5] = (asString(jt->second.ssi))[0];
             data[0] = jt->second.data;
             lli[0] = jt->second.lli;
             ssi[0] = jt->second.ssi;
          }
          if( (jt = otmap.find(rhead.obsTypeList[inL2])) != otmap.end()) {
-            //spd.L2 = jt->second.data;
-            //str[6] = (asString(jt->second.lli))[0];
-            //str[7] = (asString(jt->second.ssi))[0];
             data[1] = jt->second.data;
             lli[1] = jt->second.lli;
             ssi[1] = jt->second.ssi;
          }
-         //spd.indicators = asUnsigned(str);
+         if( (jt = otmap.find(rhead.obsTypeList[inP1])) != otmap.end()) {
+            data[2] = jt->second.data;
+            lli[2] = jt->second.lli;
+            ssi[2] = jt->second.ssi;
+         }
+         if( (jt = otmap.find(rhead.obsTypeList[inP2])) != otmap.end()) {
+            data[3] = jt->second.data;
+            lli[3] = jt->second.lli;
+            ssi[3] = jt->second.ssi;
+         }
 
             // is it good?
          ok = true;
-         //if(spd.P1 < 1000.0 || spd.P2 < 1000.0) ok = false;
+         //don't do this! if(spd.P1 < 1000.0 || spd.P2 < 1000.0) ok = false;
          if(fabs(data[0]) <= 0.001 || fabs(data[1]) <= 0.001 ||
             fabs(data[2]) <= 0.001 || fabs(data[3]) <= 0.001) ok = false;
          flag = (ok ? SatPass::OK : SatPass::BAD);
@@ -513,7 +503,6 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
 }
 
 //------------------------------------------------------------------------------------
-//int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, SatPassData& spd)
 // return -2 if time tags are out of order,
 //         0 normal = data was added
 int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, unsigned short& flag,
@@ -526,9 +515,10 @@ int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, unsigned short& flag,
 
          // find the current SatPass for this sat
       kt = SatToCurrentIndexMap.find(sat);
+
          // if there is not one, create one
       if(kt == SatToCurrentIndexMap.end()) {
-         SatPass newSP(sat,config.dt);
+         SatPass newSP(sat,config.dt,obstypes);
          SPList.push_back(newSP);
          SPIndexList.push_back(99999);                  // keep parallel
          SatToCurrentIndexMap[sat] = SPList.size()-1;
@@ -543,8 +533,7 @@ int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, unsigned short& flag,
          // and add the data to that SatPass
       index = kt->second;
       SPList[index].status() = 1;                // status == 1 means 'fill'
-      //if( SPList[index].push_back(tt,spd) )
-      iret = SPList[index].addData(tt, L1L2P1P2, data, lli, ssi, flag);
+      iret = SPList[index].addData(tt, obstypes, data, lli, ssi, flag);
       if(iret == -2) return -2;                 // time tags are out of order
       if(iret >= 0) return 0;                   // data was added successfully
 
@@ -558,7 +547,7 @@ int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, unsigned short& flag,
          WriteToRINEXfile();              // try writing out
 
          // create a new SatPass for this sat
-      SatPass newSP(sat,config.dt);
+      SatPass newSP(sat,config.dt,obstypes);
          // add it to the list
       SPList.push_back(newSP);
       SPIndexList.push_back(99999);                  // keep parallel
@@ -568,8 +557,7 @@ int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, unsigned short& flag,
       SatToCurrentIndexMap[sat] = index;
          // add the data
       SPList[index].status() = 1;              // status == 1 means 'fill'
-      //SPList[index].push_back(tt,spd);       // cannot fail
-      SPList[index].addData(tt, L1L2P1P2, data, lli, ssi, flag);
+      SPList[index].addData(tt, obstypes, data, lli, ssi, flag);
 
       return 0;
 
@@ -587,16 +575,24 @@ void ProcessSatPass(int in) throw(Exception)
    try {
       config.oflog << "Proc " << SPList[in]
          << " at " << CurrEpoch.printf(config.format) << endl;
-      //SPList[in].dump(config.oflog,"RAW");
+      //SPList[in].dump(config.oflog,"RAW");      // temp
 
       // remove this SatPass from the SatToCurrentIndexMap map
       SatToCurrentIndexMap.erase(SPList[in].getSat());
 
       // --------- call DC on this pass -------------------
+      string msg;
       vector<string> EditCmds;
-      int iret = DiscontinuityCorrector(SPList[in], GDConfig, EditCmds);
+      int iret = DiscontinuityCorrector(SPList[in], GDConfig, EditCmds, msg);
       if(iret != 0) {
          SPList[in].status() = 100;         // status == 100 means 'failed'
+         config.oflog << "GDC failed for SatPass " << in << " : "
+            << (iret == -1 ? "Polynomial fit to GF data was singular" :
+               (iret == -2 ? "Premature end" :     // never used
+               (iret == -3 ? "Time interval DT not set" :
+               (iret == -4 ? "No data found" :
+               (iret == -5 ? "Required obs types (L1,L2,P1/C1,P2) not found" :
+                             "Unknown"))))) << endl;
          return;
       }
       SPList[in].status() = 2;              // status == 2 means 'processed'.
@@ -607,7 +603,6 @@ void ProcessSatPass(int in) throw(Exception)
 
       // --------- smooth pseudorange and debias phase ----
       if(config.smooth) {
-         string msg;
          SPList[in].smooth(config.smoothPR,config.smoothPH,msg);
          config.oflog << msg << endl;
          SPList[in].status() = 3;           // status == 3 means 'smoothed'.
@@ -787,7 +782,6 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Excepti
       //string str;
       GSatID sat;
       RinexObsData roe;
-      //SatPassData spd;
 
       // loop over epochs, up to just before targetTime
       do {
@@ -823,10 +817,6 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Excepti
 
             if(fabs(SPList[in].time(n) - WriteEpoch) < 0.00001) {
                   // get the data for this epoch
-               //spd = SPList[in].getData(SPIndexList[in]);
-               //str = asString(spd.indicators); // P1P2L1L2*ls   AaBbCcDd
-               //str = rightJustify(str,8,'0');
-
 					flag = SPList[in].getFlag(SPIndexList[in]);
 					if(flag != SatPass::BAD) {                // data is good
                      // add sat to RinexObs
@@ -911,7 +901,8 @@ void PrintSPList(ostream& os, string msg, vector<SatPass>& v, bool printTime)
    map<GSatID,int>::const_iterator kt;
 
    os << "#" << leftJustify(msg,4)
-      << " gap tot sat  ok  s      start time        end time  dt\n";
+             << "  N gap  tot sat   ok  s      start time        end time   dt"
+             << " observation types\n";
 
    for(i=0; i<v.size(); i++) {
       os << msg;
@@ -925,9 +916,8 @@ void PrintSPList(ostream& os, string msg, vector<SatPass>& v, bool printTime)
          lastSP.erase(sat);
       }
       lastSP[sat] = i;
-      os << " " << setw(4) << gap;
-
-      os << " " << v[i];         // sat,length,ngood,firstTime,lastTime
+         // n,gap,sat,length,ngood,firstTime,lastTime
+      os << " " << setw(2) << i+1 << " " << setw(4) << gap << " " << v[i];
       if(printTime)
          os << " at " << CurrEpoch.printf(config.format);
 //"%04Y/%02m/%02d %02H:%02M:%6.3f"
@@ -1373,7 +1363,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    }
       // open the log file
    config.oflog.open(config.LogFile.c_str(),ios::out);
-   if(config.oflog.fail()) {
+   if(!config.oflog.is_open()) {
       cout << PrgmName << " failed to open log file "
          << config.LogFile << ". Abort.\n";
       return -1;

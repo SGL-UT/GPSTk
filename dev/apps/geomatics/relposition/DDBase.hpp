@@ -79,9 +79,6 @@
 #include "format.hpp"
 
 //------------------------------------------------------------------------------------
-// testing - not for release
-// see CommandInput.hpp - do not define here! - #define StochasticModelTest 1
-
 #include <time.h>
 extern clock_t totaltime;        // for timing tests
 

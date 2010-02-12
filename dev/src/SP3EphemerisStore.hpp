@@ -108,6 +108,18 @@ namespace gpstk
       { rejectBadClockFlag = true; return (*this); };
 
 
+         /// Get number of files. NB this is the same as size()
+      int nfiles(void) throw()
+      { return FileStore<SP3Header>::size(); }
+
+         /// Get number of satellites
+      int nsats(void) throw()
+      { return TabularEphemerisStore::nsats(); }
+
+         /// Get number of ephemerides
+      int neph(void) throw()
+      { return TabularEphemerisStore::neph(); }
+
    private:
 
 

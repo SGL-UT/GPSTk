@@ -85,7 +85,7 @@ try {
       ObsFileList[i].ins.open(filename.c_str(),ios_base::in);
 
          // did open succeed?
-      if(!ObsFileList[i].ins) {
+      if(!ObsFileList[i].ins.is_open()) {
          oflog << "Warning: File " << filename
             << " could not be opened. Ignore." << endl;
          if(CI.Screen) cout << "Warning: File " << filename

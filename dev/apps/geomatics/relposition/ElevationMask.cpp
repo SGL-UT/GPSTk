@@ -46,10 +46,10 @@
 
 // GPSTk
 #include "geometry.hpp"                // for DEG_TO_RAD
-
+// geomatics
+#include "SunEarthSatGeometry.hpp"
 // DDBase
 #include "DDBase.hpp"
-#include "SunEarthSatGeometry.hpp"     // for SingleAxisRotation()
 
 //------------------------------------------------------------------------------------
 using namespace std;

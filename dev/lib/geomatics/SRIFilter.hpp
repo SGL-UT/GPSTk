@@ -357,13 +357,16 @@ public:
                                 Matrix<double>& Rwx)
       throw(MatrixException);
 
-      /// output operator
-   friend std::ostream& operator<<(std::ostream& s,
-                                   const SRIFilter& srif);
-
-      // Return true if the algorithm succeeded.
-      // TD - implement valid in MU, TU, SU
-   //bool isValid() { return valid; }
+      /// Modification for case with control vector: Xj+1 = Phi*Xj + Gwj + u
+   static void DMsmootherUpdateWithControl(Matrix<double>& P,
+                                           Vector<double>& X,
+                                           Matrix<double>& Phinv,
+                                           Matrix<double>& Rw,
+                                           Matrix<double>& G,
+                                           Vector<double>& Zw,
+                                           Matrix<double>& Rwx,
+                                           Vector<double>& U)
+      throw(MatrixException);
 
       /// remove all stored information by setting the SRI to zero
       /// (does not re-dimension).
