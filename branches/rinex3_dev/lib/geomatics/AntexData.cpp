@@ -48,7 +48,6 @@
 #include "AntexStream.hpp"
 #include "StringUtils.hpp"
 #include "geometry.hpp"
-//#include "logstream.hpp"      // temp
 
 using namespace gpstk::StringUtils;
 using namespace std;
@@ -655,7 +654,6 @@ namespace gpstk
             continue;
 
          try {
-            //LOG(INFO) << "Line is " << line;
             ParseDataRecord(line);
          }
          catch(FFStreamError& e) {
@@ -672,7 +670,6 @@ namespace gpstk
    // throw if valid contains test, i.e. !(test & valid)
    void AntexData::throwRecordOutOfOrder(unsigned long test, string& label)
    {
-      //LOG(INFO) << "test and valid " << hex << test << " " << hex << valid;
       if(test & valid) {
          FFStreamError fse(string("Records are out of order: detected at ") + label);
          GPSTK_THROW(fse);
@@ -819,7 +816,6 @@ namespace gpstk
          valid |= endOfAntennaValid;
       }
       else {
-         //LOG(INFO) << "Found data record, valid is " << hex << valid;
          int i,n;
          string noazi = line.substr(3,5);
          double azim = asDouble(line.substr(0,8));

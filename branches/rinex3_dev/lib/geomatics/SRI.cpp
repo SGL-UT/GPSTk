@@ -727,7 +727,38 @@ using namespace StringUtils;
             VectorException e("Input has inconsistent lengths");
             GPSTK_THROW(e);
          }
+/*
+         // build a vector of indexes to keep
+         int i,j;
+         vector<int> indexes;
+         for(i=0; i<names.size(); i++) {
+            j = dropNL.index(names.getName(i)); // index in dropNL, this state
+            if(j == -1) indexes.push_back(i);// not found in dropNL, so keep
+         }
 
+         const int n=indexes.size();         // new dimension
+         if(n == 0) {
+            Exception e("Cannot drop all states");
+            GPSTK_THROW(e);
+         }
+
+         Vector<double> X,newX(n);
+         Matrix<double> C,newC(n,n);
+         Namelist newNL;
+
+         double big,small;
+         getStateAndCovariance(X,C,&small,&big);
+
+         for(i=0; i<n; i++) {
+            newX(i) = X(indexes[i]);
+            for(j=0; j<n; j++) newC(i,j) = C(indexes[i],indexes[j]);
+            newNL += names.getName(indexes[i]);
+         }
+
+         R = Matrix<double>(inverseUT(upperCholesky(newC)));
+         Z = Vector<double>(R*newX);
+         names = newNL;
+*/
          unsigned int i,j,k;
             // create a vector of indexes and corresponding values
          vector<int> indx;
@@ -838,8 +869,8 @@ using namespace StringUtils;
       try {
          Cholesky<double> Ch;
          Ch(InvCov);
-         Matrix<double> apR(transpose(Ch.L));   // inv(cov) = RT*R, R is UT
-         Vector<double> apZ(apR * X);           // Z = R*X
+         Matrix<double> apR(transpose(Ch.L));  // R = UT(inv(Cov))
+         Vector<double> apZ(apR*X);            // Z = R*X
          SrifMU(R, Z, apR, apZ);
       }
       catch(MatrixException& me) {
@@ -904,10 +935,10 @@ using namespace StringUtils;
       throw(MatrixException,VectorException)
    {
       try {
-         Matrix<double> invR,invCov;
+         Matrix<double> invR;
          invR = inverseUT(R,ptrSmall,ptrBig);
-         X = invR * Z;
          C = UTtimesTranspose(invR);
+         X = invR * Z;
       }
       catch(MatrixException& me) {
          GPSTK_RETHROW(me);
@@ -932,6 +963,8 @@ using namespace StringUtils;
       if(flags & ios_base::scientific) LM.scientific();
       LM.setw(os.width());
       LM.setprecision(os.precision());
+      //LM.message("NL");
+      //LM.linetag("tag");
 
       os << LM;
 

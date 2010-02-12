@@ -9,29 +9,22 @@ if $(PREPROCESSING)
 else
 {
    GPSBuildLibrary geomatics : 
-        AntexHeader.cpp AntexData.cpp
-   	EarthOrientation.cpp GeodeticFrames.cpp
-        SolarPosition.cpp OceanLoading.cpp SolidEarthTides.cpp
-   	PhaseWindup.cpp PreciseRange.cpp RobustStats.cpp
-   	SatPass.cpp DiscCorr.cpp
-   	GSatID.cpp DDid.cpp
-        SolarSystem.cpp SunEarthSatGeometry.cpp
-   	SRI.cpp Namelist.cpp SRIFilter.cpp SRIleastSquares.cpp
-   	random.cpp format.cpp
-  	   ;
+      AntexData.cpp AntexHeader.cpp
+      DDid.cpp DiscCorr.cpp EarthOrientation.cpp format.cpp
+      GeodeticFrames.cpp GSatID.cpp Namelist.cpp
+      PhaseWindup.cpp PreciseRange.cpp random.cpp
+      RobustStats.cpp SatPass.cpp SolarPosition.cpp SolarSystem.cpp
+      SRI.cpp SRIFilter.cpp SRIleastSquares.cpp
+      SunEarthSatGeometry.cpp
+      ;
 
    InstallFile $(INCDIR) :
-        AntennaStore.hpp
-        AntexHeader.hpp AntexData.hpp AntexBase.hpp AntexStream.hpp
-        DDid.hpp DiscCorr.hpp EarthOrientation.hpp
-	GeodeticFrames.hpp GSatID.hpp Namelist.hpp
-	PhaseWindup.hpp PreciseRange.hpp random.hpp RobustStats.hpp
-        SolarPosition.hpp OceanLoading.hpp SolidEarthTides.hpp
-	SatPass.hpp
-        SpecialFunctions.hpp
-        SolarSystem.hpp SunEarthSatGeometry.hpp
-        SRIFilter.hpp SRI.hpp SRIleastSquares.hpp
-        index.hpp format.hpp
-        #logstream.hpp
-	   ;
+      AntexBase.hpp AntexData.hpp AntexHeader.hpp AntexStream.hpp
+      DDid.hpp DiscCorr.hpp EarthOrientation.hpp format.hpp
+      GeodeticFrames.hpp GSatID.hpp index.hpp logstream.hpp
+      Namelist.hpp PhaseWindup.hpp PreciseRange.hpp
+      random.hpp RobustStats.hpp SatPass.hpp SolarPosition.hpp
+      SRI.hpp SRIFilter.hpp SRIleastSquares.hpp SRIMatrix.hpp
+      SolarSystem.hpp SunEarthSatGeometry.hpp
+      ;
 }
