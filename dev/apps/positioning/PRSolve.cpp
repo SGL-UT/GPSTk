@@ -72,7 +72,8 @@ string PrgmName("PRSolve");
 string PrgmVers("2.3 11/09");
 
 // data input from command line
-typedef struct Configuration {
+typedef struct Configuration
+{
       // input files
    string ObsDirectory,NavDirectory,MetDirectory;
    vector<string> InputObsName;
@@ -194,7 +195,8 @@ int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
-try {
+try
+{
    totaltime = clock();
    int iret;
 
@@ -210,17 +212,18 @@ try {
    timer = time(NULL);
    tblock = localtime(&timer);
    PrgmEpoch.setYMDHMS(1900+tblock->tm_year,1+tblock->tm_mon,
-               tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
+                       tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
    Title += PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
    cout << Title;
 
       // get command line
    iret=GetCommandLine(argc, argv);
-   if(iret < 0) return iret;
+   if (iret < 0) return iret;
    // NB save iret until after DumpConfiguration()
 
       // update configuration of PRSolution
-   if(C.Verbose) {
+   if (C.Verbose)
+   {
       prsol.pDebugStream = &C.oflog;
       prsol.Debug = true;
    }
@@ -234,7 +237,7 @@ try {
    prsol.ConvergenceLimit = C.convLimit;
 
       // iret comes from GetCommandLine
-   if(iret == 0) DumpConfiguration(C.oflog);
+   if (iret == 0) DumpConfiguration(C.oflog);
    else return iret;
 
    // get nav files and build EphemerisStore
@@ -242,20 +245,25 @@ try {
    C.oflog << "Added " << nread << " ephemeris files to store.\n";
    SP3EphList.dump(C.oflog,0);
    BCEphList.dump(C.oflog,0);
-   if(SP3EphList.neph() > 0) pEph=&SP3EphList;
-   else if(BCEphList.size() > 0) {
+   if (SP3EphList.neph() > 0)
+      pEph=&SP3EphList;
+   else if (BCEphList.size() > 0)
+   {
       BCEphList.SearchNear();
       //BCEphList.SearchPast();
       pEph=&BCEphList;
    }
-   else {
+   else
+   {
       C.oflog << "Failed to read ephemeris data. Abort." << endl;
       return -1;
    }
 
    // get met files and build MetStore
-   if(C.InputMetName.size() > 0) {
-      for(int i=0; i<C.InputMetName.size(); i++) {
+   if (C.InputMetName.size() > 0)
+   {
+      for (int i=0; i<C.InputMetName.size(); i++)
+      {
          RinexMetStream metstrm(C.InputMetName[i].c_str());
          RinexMetHeader methead;
          RinexMetData metdata;
@@ -272,19 +280,21 @@ try {
       C.MetStore.sort();
 
       // dump the met data
-      if(C.Debug) {
+      if (C.Debug)
+      {
          C.oflog << "Dump of meteorological data store ("
             << C.MetStore.size() << "):\n";
          list<RinexMetData>::const_iterator it = C.MetStore.begin();
-         for( ; it != C.MetStore.end(); it++) {
+         for ( ; it != C.MetStore.end(); it++)
+         {
             //it->dump(C.oflog);
-            C.oflog
-               << it->time.printf("%04Y/%02m/%02d//%02H:%02M:%.3f = %04F %10.3g")
-               << fixed << setprecision(1);
+            C.oflog << it->time.printf("%04Y/%02m/%02d//%02H:%02M:%.3f = %04F %10.3g")
+                    << fixed << setprecision(1);
             RinexMetData::RinexMetMap::const_iterator jt=it->data.begin();
-            for( ; jt != it->data.end(); jt++) {
+            for ( ; jt != it->data.end(); jt++)
+            {
                C.oflog << "  " << RinexMetHeader::convertObsType(jt->first)
-                  << " = " << setw(6) << jt->second;
+                       << " = " << setw(6) << jt->second;
             }
             C.oflog << endl;
          }
@@ -294,36 +304,40 @@ try {
    }  // end InputMetName processing
 
    // assign trop model
-   if(C.TropType == string("ZR")) C.pTropModel = &TMzero;
-   if(C.TropType == string("BL")) C.pTropModel = &TMsimple;
-   if(C.TropType == string("SA") || C.TropType == string("NB")) {
-      if(C.TropType == string("SA")) C.pTropModel = &TMsaas;
-      if(C.TropType == string("NB")) C.pTropModel = &TMnb;
-      if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
+   if (C.TropType == string("ZR")) C.pTropModel = &TMzero;
+   if (C.TropType == string("BL")) C.pTropModel = &TMsimple;
+   if (C.TropType == string("SA") || C.TropType == string("NB"))
+   {
+      if (C.TropType == string("SA")) C.pTropModel = &TMsaas;
+      if (C.TropType == string("NB")) C.pTropModel = &TMnb;
+      if (C.knownpos.getCoordinateSystem() != Position::Unknown)
+      {
          C.pTropModel->setReceiverLatitude(C.knownpos.getGeodeticLatitude());
          C.pTropModel->setReceiverHeight(C.knownpos.getHeight());
       }
-      else {
+      else
+      {
          C.pTropModel->setReceiverLatitude(0.0);
          C.pTropModel->setReceiverHeight(0.0);
          C.oflog << "Warning - Saastamoinen and New B tropospheric models require "
-            << "latitude, height and day of year - guessing." << endl;
+                 << "latitude, height and day of year - guessing." << endl;
       }
-      if(C.Tbeg > DayTime(DayTime::BEGINNING_OF_TIME))
+      if (C.Tbeg > DayTime(DayTime::BEGINNING_OF_TIME))
          C.pTropModel->setDayOfYear(C.Tbeg.DOY());
-      else if(C.Tend < DayTime(DayTime::END_OF_TIME))
+      else if (C.Tend < DayTime(DayTime::END_OF_TIME))
          C.pTropModel->setDayOfYear(C.Tend.DOY());
       else
          C.pTropModel->setDayOfYear(100);
    }
-   if(C.TropType == string("NL")) C.pTropModel = &TMneill;
-   if(C.TropType == string("GG")) C.pTropModel = &TMgg;
-   if(C.TropType == string("GGH")) C.pTropModel = &TMggh;
+   if (C.TropType == string("NL")) C.pTropModel = &TMneill;
+   if (C.TropType == string("GG")) C.pTropModel = &TMgg;
+   if (C.TropType == string("GGH")) C.pTropModel = &TMggh;
    // set the default weather in the model
    C.pTropModel->setWeather(C.defaultT,C.defaultPr,C.defaultRH);
 
    // compute rotation XYZ->NEU at known position
-   if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
+   if (C.knownpos.getCoordinateSystem() != Position::Unknown)
+   {
       double lat = C.knownpos.geodeticLatitude() * DEG_TO_RAD;
       double lon = C.knownpos.longitude() * DEG_TO_RAD;
       double ca = ::cos(lat);
@@ -338,20 +352,24 @@ try {
       C.Rot(0,0) = -sa*co; C.Rot(0,1) = -sa*so; C.Rot(0,2) =  ca;
    }
 
-   if(!C.ordFile.empty()) {
-      if(C.knownpos.getCoordinateSystem() == Position::Unknown) {
+   if (!C.ordFile.empty())
+   {
+      if (C.knownpos.getCoordinateSystem() == Position::Unknown)
+      {
          C.oflog << "Error - ORD output to file (" << C.ordFile << ") requires "
-            << " --PosXYZ input. Abort output of ORDs." << endl;
+                 << " --PosXYZ input. Abort output of ORDs." << endl;
          C.ordFile = string();
       }
-      else {
+      else
+      {
          C.oford.open(C.ordFile.c_str(),ios::out);
-         if(!C.oford.is_open()) {
+         if (!C.oford.is_open())
+         {
             C.oflog << "Failed to open ORD file " << C.ordFile << endl;
             C.ordFile = string();
          }
-         else C.oford
-            << "#   sat week seconds_wk ok? elev       ORD(C/A)       ORD(P)" << endl;
+         else
+            C.oford << "#   sat week seconds_wk ok? elev       ORD(C/A)       ORD(P)" << endl;
       }
    }
 
@@ -363,8 +381,10 @@ try {
    PPR = Matrix<double>(3,3,0.0);
    zzA = Vector<double>(3,0.0);
    zzR = Vector<double>(3,0.0);
-   if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
-      if(C.APSout) {
+   if (C.knownpos.getCoordinateSystem() != Position::Unknown)
+   {
+      if (C.APSout)
+      {
          // not necessary SSAPR[0].Reset(); SSAPR[1].Reset(); SSAPR[2].Reset();
          // not necessary SSANE[0].Reset(); SSANE[1].Reset(); SSANE[2].Reset();
          PPAPR = Matrix<double>(3,3,0.0);
@@ -382,19 +402,20 @@ try {
 
    // loop over input files
    nread = 0;
-   for(int nfile=0; nfile<C.InputObsName.size(); nfile++) {
+   for (int nfile=0; nfile<C.InputObsName.size(); nfile++)
+   {
       iret = ReadFile(nfile);
-      if(iret < 0) break;
+      if (iret < 0) break;
       nread++;
    }  // end loop over input files
 
-   if(iret>=0 && nread>0) iret=AfterReadingFiles();
+   if (iret>=0 && nread>0) iret=AfterReadingFiles();
 
    totaltime = clock()-totaltime;
    C.oflog << "PRSolve timing: " << fixed << setprecision(3)
-      << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
+           << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
    cout << "\nPRSolve timing: " << fixed << setprecision(3)
-      << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
+        << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
 
    C.oflog.close();
    C.oford.close();
@@ -403,7 +424,7 @@ try {
 }
 catch(Exception& e) { cout << e; }
 catch (...) { cerr << C.oflog << "Unknown error.  Abort." << endl; }
-   return 1;
+return 1;
 }  // end main()
 
 //------------------------------------------------------------------------------------
@@ -412,7 +433,8 @@ catch (...) { cerr << C.oflog << "Unknown error.  Abort." << endl; }
 // 0 ok, 1 couldn't open file, 2 file doesn't have required data
 int ReadFile(int nfile) throw(Exception)
 {
-try {
+try
+{
    bool writeout, first;
    int i,j,iret;
    int inC1,inP1,inP2,inL1,inL2,inD1,inD2,inS1,inS2;     // indexes in rhead
@@ -423,7 +445,8 @@ try {
       // open input file
    filename = C.InputObsName[nfile];
    ifstr.open(filename.c_str(),ios::in);
-   if(!ifstr.is_open()) {
+   if (!ifstr.is_open())
+   {
       C.oflog << "Failed to open input file " << filename << ". Abort.\n";
       return 1;
    }
@@ -431,9 +454,11 @@ try {
    ifstr.exceptions(ios::failbit);
 
       // open output file
-   if(!C.OutRinexObs.empty()) {
+   if (!C.OutRinexObs.empty())
+   {
       ofstr.open(C.OutRinexObs.c_str(), ios::out);
-      if(!ofstr.is_open()) {
+      if (!ofstr.is_open())
+      {
          C.oflog << "Failed to open output file " << C.OutRinexObs << " Abort.\n";
          ifstr.close();
          return 1;
@@ -442,7 +467,8 @@ try {
       ofstr.exceptions(ios::failbit);
       writeout = true;
    }
-   else writeout = false;
+   else
+      writeout = false;
 
       // read the header
    ifstr >> rhead;
@@ -451,59 +477,67 @@ try {
 
       // check that file contains C1/P1,P2,L1,L2,D1,D2,S1,S2
    inC1 = inP1 = inP2 = inL1 = inL2 = inD1 = inD2 = inS1 = inS2 = -1;
-   for(j=0; j<rhead.obsTypeList.size(); j++) {
-      if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("C1")) inC1=j;
-      if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("L1")) inL1=j;
-      if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("L2")) inL2=j;
-      if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("P1")) inP1=j;
-      if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("P2")) inP2=j;
-      if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("D1")) inD1=j;
-      if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("D2")) inD2=j;
-      if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("S1")) inS1=j;
-      if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("S2")) inS2=j;
+   for (j=0; j<rhead.obsTypeList.size(); j++)
+   {
+      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("C1")) inC1=j;
+      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("L1")) inL1=j;
+      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("L2")) inL2=j;
+      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("P1")) inP1=j;
+      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("P2")) inP2=j;
+      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("D1")) inD1=j;
+      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("D2")) inD2=j;
+      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("S1")) inS1=j;
+      if (rhead.obsTypeList[j] == RinexObsHeader::convertObsType("S2")) inS2=j;
    }
    
-   if(   (inP1==-1 && (!C.UseCA || inC1==-1))
+   if (   (inP1==-1 && (!C.UseCA || inC1==-1))
       || (inC1==-1 && C.ForceCA)
       || inP2==-1 || inL1==-1 || inL2==-1
       //|| inD1==-1 || inD2==-1 || inS1==-1 || inS2==-1   // why ?
-       ) {
+       )
+   {
       C.oflog << "Warning: file " << filename << " does not contain";
-      if(inC1==-1) C.oflog << " C1" << " (forceCA is " << (C.ForceCA?"T":"F") << ")";
-      if(inP1==-1) C.oflog << " P1" << " (useCA is " << (C.UseCA?"T":"F") << ")";
-      if(inP2==-1) C.oflog << " P2";
-      if(inL1==-1) C.oflog << " L1";
-      if(inL2==-1) C.oflog << " L2";
-      //if(inD1==-1) C.oflog << " D1";
-      //if(inD2==-1) C.oflog << " D2";
-      //if(inS1==-1) C.oflog << " S1";
-      //if(inS2==-1) C.oflog << " S2";
+      if (inC1==-1) C.oflog << " C1" << " (forceCA is " << (C.ForceCA?"T":"F") << ")";
+      if (inP1==-1) C.oflog << " P1" << " (useCA is " << (C.UseCA?"T":"F") << ")";
+      if (inP2==-1) C.oflog << " P2";
+      if (inL1==-1) C.oflog << " L1";
+      if (inL2==-1) C.oflog << " L2";
+      //if (inD1==-1) C.oflog << " D1";
+      //if (inD2==-1) C.oflog << " D2";
+      //if (inS1==-1) C.oflog << " S1";
+      //if (inS2==-1) C.oflog << " S2";
       C.oflog << endl;
       //ifstr.clear();
       //ifstr.close();
       //return 2;
    }
-   if(C.ForceCA) {
-      if(inC1 != -1) inP1 = inC1;
-      else {
+   if (C.ForceCA)
+   {
+      if (inC1 != -1) inP1 = inC1;
+      else
+      {
          C.oflog << "ERROR. Abort. --forceCA was found but C1 data is not found.\n";
          cerr << "ERROR. Abort. --forceCA was found but C1 data is not found.\n";
          return -1;
       }
    }
-   else if(inP1==-1) {
-      if(C.UseCA && inC1 != -1) inP1 = inC1;
-      else if(C.UseCA && inC1 == -1) {
+   else if (inP1==-1)
+   {
+      if (C.UseCA && inC1 != -1) inP1 = inC1;
+      else if (C.UseCA && inC1 == -1)
+      {
          C.oflog << "ERROR. Abort. Neither P1 nor C1 data found (--useCA is set).\n";
          cerr << "ERROR. Abort. Neither P1 nor C1 data found (--useCA is set).\n";
          return -1;
       }
-      else if(C.Freq != 2 && !C.UseCA && inC1 != -1) {
+      else if (C.Freq != 2 && !C.UseCA && inC1 != -1)
+      {
          C.oflog << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)\n";
          cerr << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)\n";
          return -1;
       }
-      else if(C.Freq != 2) {
+      else if (C.Freq != 2)
+      {
          C.oflog << "ERROR. Abort. Neither P1 nor C1 data found.\n";
          cerr << "ERROR. Abort. Neither P1 nor C1 data found.\n";
          return -1;
@@ -511,7 +545,8 @@ try {
    }
 
    // determine which frequency to process
-   if(C.Freq != 1 && inP2 == -1) {
+   if (C.Freq != 1 && inP2 == -1)
+   {
       C.oflog << "WARNING. Unable to process L" << C.Freq << " data - no L2." << endl;
       C.Freq = 1;
    }
@@ -525,8 +560,11 @@ try {
    PR = Matrix<double>(3,3,0.0);
    zA = Vector<double>(3,0.0);
    zR = Vector<double>(3,0.0);
-   if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
-      if(C.APSout) {
+
+   if (C.knownpos.getCoordinateSystem() != Position::Unknown)
+   {
+      if (C.APSout)
+      {
          SAPR[0].Reset(); SAPR[1].Reset(); SAPR[2].Reset();
          SANE[0].Reset(); SANE[1].Reset(); SANE[2].Reset();
          PAPR = Matrix<double>(3,3,0.0);
@@ -544,7 +582,8 @@ try {
 
       // loop over epochs in the file
    first = true;
-   while(1) {
+   while(1)
+   {
          // read next obs
       double RMSrof;
       vector<SatID> Satellites;
@@ -552,60 +591,70 @@ try {
       Matrix<double> inform;
       RinexObsData robsd,auxPosData;
 
-      try {
-         ifstr >> robsd;
-      }
-      catch(FFStreamError& e) {
+      try
+      { ifstr >> robsd; }
+      catch(FFStreamError& e)
+      {
          C.oflog << "Reading obs caught FFStreamError exception : " << e << endl;
          cerr << "Reading obs caught FFStreamError exception : " << e << endl;
          return -2;
       }
-      catch(Exception& e) {
+      catch(Exception& e)
+      {
          C.oflog << "Reading obs caught GPSTk exception : " << e << endl;
          cerr << "Reading obs caught GPSTk exception : " << e << endl;
          return -2;
       }
-      catch(exception& e) {
+      catch(exception& e)
+      {
          C.oflog << "Reading obs caught std exception : " << e.what() << endl;
          cerr << "Reading obs caught std exception : " << e.what() << endl;
          return -2;
       }
-      catch(...) {
+      catch(...)
+      {
          C.oflog << "Reading obs caught unknown exception : " << endl;
          cerr << "Reading obs caught unknown exception : " << endl;
          return -2;
       }
 
          // normal end-of-file
-      if(!ifstr.good() || ifstr.eof()) { iret=0; break; }
+      if (!ifstr.good() || ifstr.eof()) { iret=0; break; }
 
-      for(;;) {
+      for (;;)
+      {
          iret = 0;
 
-         if(C.Debug) C.oflog << "process: " << robsd.time
-            << ", Flag " << robsd.epochFlag << ", clk " << robsd.clockOffset
-            << endl;
+         if (C.Debug)
+         {
+            C.oflog << "process: " << robsd.time
+                    << ", Flag " << robsd.epochFlag
+                    << ", clk " << robsd.clockOffset << endl;
+         }
 
             // stay within time limits
-         if(robsd.time < C.Tbeg) { iret = 1; break; }
-         if(robsd.time > C.Tend) { iret = -1; break; }
+         if (robsd.time < C.Tbeg) { iret = 1; break; }
+         if (robsd.time > C.Tend) { iret = -1; break; }
 
             // ignore comment blocks ...
-         if(robsd.epochFlag != 0 && robsd.epochFlag != 1) { iret = 1; break; }
+         if (robsd.epochFlag != 0 && robsd.epochFlag != 1) { iret = 1; break; }
 
             // decimate data
             // if Tbeg is still undefined, set it to begin of week
-         if(C.ith > 0.0) {
-            if(fabs(C.Tbeg-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.e-8)
+         if (C.ith > 0.0)
+         {
+            if (fabs(C.Tbeg-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.e-8)
+            {
                C.Tbeg = C.Tbeg.setGPSfullweek(robsd.time.GPSfullweek(),0.0);
+            }
             double dt=fabs(robsd.time - C.Tbeg);
             dt -= C.ith*long(0.5+dt/C.ith);
-            if(fabs(dt) > 0.25) { iret = 1; break; }
+            if (fabs(dt) > 0.25) { iret = 1; break; }
          }
 
             // save current time
          CurrEpoch = robsd.time;
-         if(fabs(C.FirstEpoch-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.e-8)
+         if (fabs(C.FirstEpoch-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.e-8)
             C.FirstEpoch=CurrEpoch;
 
             // loop over satellites
@@ -614,7 +663,8 @@ try {
          Ranges.clear();
          vC1.clear(); vP1.clear(); vP2.clear();
          RinexObsData::RinexSatMap::const_iterator it;
-         for(it=robsd.obs.begin(); it != robsd.obs.end(); ++it) {
+         for (it=robsd.obs.begin(); it != robsd.obs.end(); ++it)
+         {
             // loop over sat=it->first, ObsTypeMap=it->second
             int in,n;
             double C1=0,P1=0,P2=0,L1,L2,D1,D2,S1,S2;
@@ -623,65 +673,70 @@ try {
 
                // pull out the data
             RinexObsData::RinexObsTypeMap::const_iterator jt;
-            if(inC1>-1 && (jt=otmap.find(rhead.obsTypeList[inC1])) != otmap.end())
+            if (inC1>-1 && (jt=otmap.find(rhead.obsTypeList[inC1])) != otmap.end())
                C1=jt->second.data;
-            if(inP1>-1 && (jt=otmap.find(rhead.obsTypeList[inP1])) != otmap.end())
+            if (inP1>-1 && (jt=otmap.find(rhead.obsTypeList[inP1])) != otmap.end())
                P1=jt->second.data;
-            if(inP2>-1 && (jt=otmap.find(rhead.obsTypeList[inP2])) != otmap.end())
+            if (inP2>-1 && (jt=otmap.find(rhead.obsTypeList[inP2])) != otmap.end())
                P2=jt->second.data;
-            if(inL1>-1 && (jt=otmap.find(rhead.obsTypeList[inL1])) != otmap.end())
+            if (inL1>-1 && (jt=otmap.find(rhead.obsTypeList[inL1])) != otmap.end())
                L1=jt->second.data;
-            if(inL2>-1 && (jt=otmap.find(rhead.obsTypeList[inL2])) != otmap.end())
+            if (inL2>-1 && (jt=otmap.find(rhead.obsTypeList[inL2])) != otmap.end())
                L2=jt->second.data;
-            if(inD1>-1 && (jt=otmap.find(rhead.obsTypeList[inD1])) != otmap.end())
+            if (inD1>-1 && (jt=otmap.find(rhead.obsTypeList[inD1])) != otmap.end())
                D1=jt->second.data;
-            if(inD2>-1 && (jt=otmap.find(rhead.obsTypeList[inD2])) != otmap.end())
+            if (inD2>-1 && (jt=otmap.find(rhead.obsTypeList[inD2])) != otmap.end())
                D2=jt->second.data;
-            if(inS1>-1 && (jt=otmap.find(rhead.obsTypeList[inS1])) != otmap.end())
+            if (inS1>-1 && (jt=otmap.find(rhead.obsTypeList[inS1])) != otmap.end())
                S1=jt->second.data;
-            if(inS2>-1 && (jt=otmap.find(rhead.obsTypeList[inS2])) != otmap.end())
+            if (inS2>-1 && (jt=otmap.find(rhead.obsTypeList[inS2])) != otmap.end())
                S2=jt->second.data;
       
             // is the satellite excluded?
-            if(sat.system != SatID::systemGPS) continue;     // GPS only
+            if (sat.system != SatID::systemGPS) continue;     // GPS only
             bool ok=true;
-            for(i=0; i<C.ExSV.size(); i++)
-               if(C.ExSV[i] == sat) { ok=false; break; }
-            if(!ok) continue;
+            for (i=0; i<C.ExSV.size(); i++)
+               if (C.ExSV[i] == sat) { ok=false; break; }
+            if (!ok) continue;
       
             // NB do not exclude negative P, as some clocks can go far
-            if(C.Freq != 2 && P1==0.0) continue;
-            if(C.Freq != 1 && P2==0.0) continue;
+            if (C.Freq != 2 && P1==0.0) continue;
+            if (C.Freq != 1 && P2==0.0) continue;
 
             // if position known and elevation limit given, apply elevation mask
-            if(C.knownpos.getCoordinateSystem() != Position::Unknown
-                  && C.elevLimit > 0.0) {
+            if (C.knownpos.getCoordinateSystem() != Position::Unknown
+                  && C.elevLimit > 0.0)
+            {
                bool ok=true;
                CorrectedEphemerisRange CER;
-               try {
+               try
+               {
                   //double ER =
                   CER.ComputeAtReceiveTime(CurrEpoch, C.knownpos, sat, *pEph);
-                  if(CER.elevation < C.elevLimit) ok=false;
-                  if(C.Debug) {
+                  if (CER.elevation < C.elevLimit) ok=false;
+                  if (C.Debug)
+                  {
                      C.oflog << "Sat " << RinexSatID(sat)
-                        << " ER " << setprecision(4)
-                        << CER.rawrange;
-                     if(!ok) C.oflog << " reject on elevation: " << fixed
-                        << setprecision(2) << CER.elevation << " < " << C.elevLimit;
+                             << " ER " << setprecision(4)
+                             << CER.rawrange;
+                     if (!ok) C.oflog << " reject on elevation: " << fixed
+                                      << setprecision(2) << CER.elevation << " < " << C.elevLimit;
                      C.oflog << endl;
                   }
                }
-               catch(InvalidRequest& nef) {
+               catch(InvalidRequest& nef)
+               {
                   // do not exclude the sat here; PRSolution will...
-                  if(C.Debug) C.oflog << "CER did not find ephemeris for "
-                     << RinexSatID(sat) << endl;
+                  if (C.Debug)
+                     C.oflog << "CER did not find ephemeris for " << RinexSatID(sat) << endl;
                }
 
-               if(!ok) continue;
+               if (!ok) continue;
             }
 
             // dump the data
-            if(C.Debug) {
+            if (C.Debug)
+            {
                C.oflog << "RNX " << CurrEpoch.printf(C.timeFormat)
                   << " " << RinexSatID(sat) << fixed << setprecision(4)
                   << " P1 " << setw(13) << P1
@@ -692,7 +747,8 @@ try {
             Satellites.push_back(sat);
             Ranges.push_back(C.Freq == 3 ? if1r*P1+if2r*P2 :
                             (C.Freq == 2 ? P2 : P1));
-            if(!C.ordFile.empty()) {
+            if (!C.ordFile.empty())
+            {
                // TD check vs Freq
                vC1.push_back(C1);
                vP1.push_back(P1);
@@ -702,26 +758,30 @@ try {
 
          }  // end loop over sats
 
-         if(Nsvs <= 4) {
-            if(C.Debug) C.oflog << "Too few satellites" << endl;
+         if (Nsvs <= 4)
+         {
+            if (C.Debug) C.oflog << "Too few satellites" << endl;
             iret = 1;
             break;
          }
 
          nS++; nSS++;
          iret = SolutionAlgorithm(Satellites, Ranges, RMSrof);
-         if(C.Debug) C.oflog << "SolutionAlgorithm returns " << iret << endl;
-         if(iret) break;
+         if (C.Debug) C.oflog << "SolutionAlgorithm returns " << iret << endl;
+         if (iret) break;
 
             // update LastEpoch and estimate of DT
-         if(C.LastEpoch > DayTime(DayTime::BEGINNING_OF_TIME)) {
+         if (C.LastEpoch > DayTime(DayTime::BEGINNING_OF_TIME))
+         {
             dt = CurrEpoch-C.LastEpoch;
-            for(i=0; i<9; i++) {
-               if(C.ndt[i]<=0) { C.estdt[i]=dt; C.ndt[i]=1; break; }
-               if(fabs(dt-C.estdt[i]) < 0.0001) { C.ndt[i]++; break; }
-               if(i == 8) {
+            for (i=0; i<9; i++)
+            {
+               if (C.ndt[i]<=0) { C.estdt[i]=dt; C.ndt[i]=1; break; }
+               if (fabs(dt-C.estdt[i]) < 0.0001) { C.ndt[i]++; break; }
+               if (i == 8)
+               {
                   int k=0,nl=C.ndt[k];
-                  for(j=1; j<9; j++) if(C.ndt[j] <= nl) { k=j; nl=C.ndt[j]; }
+                  for (j=1; j<9; j++) if (C.ndt[j] <= nl) { k=j; nl=C.ndt[j]; }
                   C.ndt[k]=1; C.estdt[k]=dt;
                }
             }
@@ -729,24 +789,27 @@ try {
          C.LastEpoch = CurrEpoch;
 
          break;
-      }  // end for(;;)
+      }  // end for (;;)
 
-      if(C.Debug) C.oflog << "processing returned " << iret << endl;
-      if(iret == -1) { iret=0; break; }         // end of file
-      if(iret == -4) continue;                  // ignore this epoch - no ephemeris
-      if(iret == 1) continue;                   // ignore this epoch - fatal error
+      if (C.Debug) C.oflog << "processing returned " << iret << endl;
+      if (iret == -1) { iret=0; break; }         // end of file
+      if (iret == -4) continue;                  // ignore this epoch - no ephemeris
+      if (iret == 1) continue;                   // ignore this epoch - fatal error
 
          // write out ORDs
-      if(!C.ordFile.empty()) {
+      if (!C.ordFile.empty())
+      {
          int n=0;
          double clk=0.0;
-         for(i=0; i<Satellites.size(); i++) {
+         for (i=0; i<Satellites.size(); i++)
+         {
             SatID sat=Satellites[i];
             // don't allow bad sats b/c it can corrupt TropModel
-            if(sat.id < 0) continue;
+            if (sat.id < 0) continue;
 
             CorrectedEphemerisRange CER;
-            try {
+            try
+            {
                CER.ComputeAtTransmitTime(CurrEpoch, vP1[i], C.knownpos, sat, *pEph);
             }
             catch(InvalidRequest& nef) { continue; }
@@ -754,30 +817,31 @@ try {
             // compute ionosphere - note that P1-R-RI == P2-R-RI*(F1/F2)**2
             double RI = (vP2[i]-vP1[i])/alpha;
             double tc = C.pTropModel->correction(C.knownpos,CER.svPosVel.x,CurrEpoch);
-            double R = CER.rawrange + prsol.Solution(3)
+            double R  =   CER.rawrange  + prsol.Solution(3)
                         - CER.svclkbias - CER.relativity + tc;
             // output
             C.oford << "ORD"
-               << " G" << setw(2) << setfill('0') << sat.id << setfill(' ')
-               << " " << CurrEpoch.printf(C.timeFormat)
-               << " " << 1 << fixed << setprecision(3)
-               << " " << setw(6) << CER.elevation
-               << " " << setw(13) << vC1[i] - R - RI
-               << " " << setw(13) << vP1[i] - R - RI
-               << endl;
+                    << " G" << setw(2) << setfill('0') << sat.id << setfill(' ')
+                    << " " << CurrEpoch.printf(C.timeFormat)
+                    << " " << 1 << fixed << setprecision(3)
+                    << " " << setw(6) << CER.elevation
+                    << " " << setw(13) << vC1[i] - R - RI
+                    << " " << setw(13) << vP1[i] - R - RI
+                    << endl;
 
             clk += vP1[i] - (CER.rawrange - CER.svclkbias - CER.relativity + tc) - RI;
             n++;
          }
          // output a clock record, clk = average range residual from known pos
-         if(n > 0) {
+         if (n > 0)
+         {
             clk /= double(n);
             C.oford << "CLK"
-               << " " << CurrEpoch.printf(C.timeFormat)
-               << " " << setw(2) << n
-               << " " << fixed << setprecision(3)
-               << " " << setw(13) << clk
-               << endl;
+                    << " " << CurrEpoch.printf(C.timeFormat)
+                    << " " << setw(2) << n
+                    << " " << fixed << setprecision(3)
+                    << " " << setw(13) << clk
+                    << endl;
          }
       }
 
@@ -785,7 +849,8 @@ try {
       //C.oflog << "COV\n" << setprecision(3) << setw(13) << prsol.Covariance << endl;
 
          // accumulate simple statistics, Autonomous and RAIM
-      if(C.APSout) {
+      if (C.APSout)
+      {
          SA[0].Add(Solution(0)); SA[1].Add(Solution(1)); SA[2].Add(Solution(2));
          SSA[0].Add(Solution(0)); SSA[1].Add(Solution(1)); SSA[2].Add(Solution(2));
       }
@@ -797,7 +862,8 @@ try {
       SSR[2].Add(prsol.Solution(2));
 
          // accumulate weighted statistics, Auto and RAIM
-      if(C.APSout) {
+      if (C.APSout)
+      {
          inform = inverseSVD(Matrix<double>(Covariance,0,0,3,3));
          PA += inform;
          PPA += inform;
@@ -810,18 +876,20 @@ try {
       zR += inform * Vector<double>(prsol.Solution,0,3);
       zzR += inform * Vector<double>(prsol.Solution,0,3);
 
-      if(!writeout) continue;                   // go to next epoch
+      if (!writeout) continue;                   // go to next epoch
 
          // output to RINEX
-      if(first) {                               // edit the output RINEX header
+      if (first)                                 // edit the output RINEX header
+      {
          rheadout = rhead;
          rheadout.date = PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
          rheadout.fileProgram = PrgmName;
-         if(!C.HDRunby.empty()) rheadout.fileAgency = C.HDRunby;
-         if(!C.HDObs.empty()) rheadout.observer = C.HDObs;
-         if(!C.HDAgency.empty()) rheadout.agency = C.HDAgency;
-         if(!C.HDMarker.empty()) rheadout.markerName = C.HDMarker;
-         if(!C.HDNumber.empty()) {
+         if (!C.HDRunby.empty()) rheadout.fileAgency = C.HDRunby;
+         if (!C.HDObs.empty()) rheadout.observer = C.HDObs;
+         if (!C.HDAgency.empty()) rheadout.agency = C.HDAgency;
+         if (!C.HDMarker.empty()) rheadout.markerName = C.HDMarker;
+         if (!C.HDNumber.empty())
+         {
             rheadout.markerNumber = C.HDNumber;
             rheadout.valid |= RinexObsHeader::markerNumberValid;
          }
@@ -833,15 +901,16 @@ try {
          //rheadout.lastObs = C.LastEpoch;
          //rheadout.valid |= RinexObsHeader::lastTimeValid;
             // invalidate the table
-         if(rheadout.valid & RinexObsHeader::numSatsValid)
+         if (rheadout.valid & RinexObsHeader::numSatsValid)
             rheadout.valid ^= RinexObsHeader::numSatsValid;
-         if(rheadout.valid & RinexObsHeader::prnObsValid)
+         if (rheadout.valid & RinexObsHeader::prnObsValid)
             rheadout.valid ^= RinexObsHeader::prnObsValid;
 
          ofstr << rheadout;
          first=false;
       }
-      if(iret > 2) {                         // output position first
+      if (iret > 2)                           // output position first
+      {
          auxPosData.time = robsd.time;
          auxPosData.epochFlag = 4;
          auxPosData.numSvs = 2;              // must be sure only 2 lines are written
@@ -858,33 +927,33 @@ try {
                          prsol.Covariance(2,2));
          stst2 << "DIAG";
          stst2 << " " << setw(2) << Nsvs
-            << " " << fixed << setw(5) << setprecision(2) << PDOP
-            << " " << fixed << setw(5) << setprecision(2)
-            << RSS(PDOP,prsol.Covariance(3,3))
-            << " " << fixed << setw(9) << setprecision(3) << RMSrof;
+               << " " << fixed << setw(5) << setprecision(2) << PDOP
+               << " " << fixed << setw(5) << setprecision(2)
+               << RSS(PDOP,prsol.Covariance(3,3))
+               << " " << fixed << setw(9) << setprecision(3) << RMSrof;
          stst2 << " (N,P-,G-DOP,RMS)";
          auxPosData.auxHeader.commentList.push_back(stst2.str());
          auxPosData.auxHeader.valid |= RinexObsHeader::commentValid;
          ofstr << auxPosData;
       }
       //// remove the clock
-      //if(1) {
+      //if (1) {
       //   double clk=prsol.Solution(3);
       //   RinexObsData::RinexSatMap::iterator it;
       //   robsd.time -= clk/C_GPS_M;
-      //   for(it=robsd.obs.begin(); it != robsd.obs.end(); ++it) {
+      //   for (it=robsd.obs.begin(); it != robsd.obs.end(); ++it) {
       //      RinexObsData::RinexObsTypeMap::iterator jt;
       //      RinexObsData::RinexObsTypeMap& otmap=it->second; // NB must be reference
-      //      if(inC1>-1 && (jt=otmap.find(rhead.obsTypeList[inC1])) != otmap.end())
+      //      if (inC1>-1 && (jt=otmap.find(rhead.obsTypeList[inC1])) != otmap.end())
       //         jt->second.data -= clk;
-      //      if(!C.UseCA &&
+      //      if (!C.UseCA &&
       //         inP1>-1 && (jt=otmap.find(rhead.obsTypeList[inP1])) != otmap.end())
       //         jt->second.data -= clk;
-      //      if(inP2>-1 && (jt=otmap.find(rhead.obsTypeList[inP2])) != otmap.end())
+      //      if (inP2>-1 && (jt=otmap.find(rhead.obsTypeList[inP2])) != otmap.end())
       //         jt->second.data -= clk;
-      //      if(inL1>-1 && (jt=otmap.find(rhead.obsTypeList[inL1])) != otmap.end())
+      //      if (inL1>-1 && (jt=otmap.find(rhead.obsTypeList[inL1])) != otmap.end())
       //         jt->second.data -= clk/wl1;
-      //      if(inL2>-1 && (jt=otmap.find(rhead.obsTypeList[inL2])) != otmap.end())
+      //      if (inL2>-1 && (jt=otmap.find(rhead.obsTypeList[inL2])) != otmap.end())
       //         jt->second.data -= clk/wl2;
       //   }
       //}
@@ -894,11 +963,14 @@ try {
    }  // end while loop over epochs
 
       // only print per file if there is more than one file
-   if(C.InputObsName.size() > 1) {
-      if(C.APSout) PrintStats(SA,PA,zA,nS,"Autonomous solution for file " + filename);
+   if (C.InputObsName.size() > 1)
+   {
+      if (C.APSout) PrintStats(SA,PA,zA,nS,"Autonomous solution for file " + filename);
       PrintStats(SR,PR,zR,nS,"RAIM solution for file " + filename);
-      if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
-         if(C.APSout) {
+      if (C.knownpos.getCoordinateSystem() != Position::Unknown)
+      {
+         if (C.APSout)
+         {
             PrintStats(SAPR,PAPR,zAPR,nS,
                "Autonomous solution residuals for file " + filename);
             PrintStats(SANE,PANE,zANE,nS,
@@ -913,7 +985,8 @@ try {
            << filename << endl << fixed;
       cout << " (" << nS << " total epochs, with "
            << SR[0].N() << " good, " << nS-SR[0].N() << " rejected.)\n";
-      if(SR[0].N() > 0) {
+      if (SR[0].N() > 0)
+      {
          Matrix<double> Cov=inverse(PR);
          Vector<double> Sol = Cov * zR;
          cout << setw(16) << setprecision(6) << Sol << endl;
@@ -932,7 +1005,7 @@ try {
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-   return -1;
+return -1;
 }
 
 //------------------------------------------------------------------------------------
@@ -944,74 +1017,88 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //        3 output position also
 int SolutionAlgorithm(vector<SatID>& Sats,
                       vector<double>& PRanges,
-                      double& RMSresid) throw(Exception)
+                      double& RMSresid)
+   throw(Exception)
 {
-try {
+try
+{
    int iret,i;
    Matrix<double> inform;
 
    // fail if not enough data
-   if(Nsvs < 4) return 1;
+   if (Nsvs < 4) return 1;
 
    // compute a position solution with this data
-   if(C.Debug) {
+   if (C.Debug)
+   {
       C.oflog << "Satellites and Ranges before Prepare:\n";
-      for(i=0; i<PRanges.size(); i++)
+      for (i=0; i<PRanges.size(); i++)
+      {
          C.oflog << " " << setw(2) << RinexSatID(Sats[i]) << fixed
-            << " " << setw(13) << setprecision(3) << PRanges[i] << endl;
+                 << " " << setw(13) << setprecision(3) << PRanges[i] << endl;
+      }
    }
 
-   int niter=C.nIter;
-   double conv=C.convLimit;
+   int niter = C.nIter;
+   double conv = C.convLimit;
    vector<bool> UseSats(Sats.size(),true);
    Vector<double> Residual,Slope;
 
    // if met data available, update weather in trop model
-   if(C.InputMetName.size() > 0)
+   if (C.InputMetName.size() > 0)
       setWeather(CurrEpoch,C.pTropModel);
 
    // compute using AutonomousPRSolution - no RAIM algorithm
-   if(C.APSout) {
+   if (C.APSout)
+   {
       iret = -4;
       Matrix<double> SVP;
       iret = PRSolution::PrepareAutonomousSolution(CurrEpoch,Sats,PRanges,*pEph,SVP);
-      if(iret == -4) {
+      if (iret == -4)
+      {
          C.oflog << "PrepareAutonomousSolution failed to find ANY ephemeris at epoch "
-            << CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f") << endl;
+                 << CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f") << endl;
          return iret;
       }
 
-      if(C.Debug) {
+      if (C.Debug)
+      {
          C.oflog << "Satellites after  Prepare(" << iret << "):";
-         for(i=0; i<Sats.size(); i++)
+         for (i=0; i<Sats.size(); i++)
             C.oflog << " " << setw(2) << Sats[i].id; C.oflog << endl;
          C.oflog << "Matrix SVP(" << SVP.rows() << "," << SVP.cols() << "):\n"
-            << fixed << setw(13) << setprecision(3) << SVP << endl;
+                 << fixed << setw(13) << setprecision(3) << SVP << endl;
       }
 
-      for(i=0; i<Sats.size(); i++) UseSats[i] = (Sats[i].id > 0 ? true : false);
+      for (i=0; i<Sats.size(); i++) UseSats[i] = (Sats[i].id > 0 ? true : false);
 
       iret = PRSolution::AutonomousPRSolution(CurrEpoch, UseSats, SVP, C.pTropModel,
-         C.algebra, niter, conv, Solution, Covariance, Residual, Slope,
-         (C.Debug ? &C.oflog : NULL));
+                                              C.algebra, niter, conv, Solution,
+                                              Covariance, Residual, Slope,
+                                              (C.Debug ? &C.oflog : NULL));
 
       C.oflog << "APS " << setw(2) << iret
-         << " " << CurrEpoch.printf(C.timeFormat)
-         << " " << setw(2) << Nsvs;
-      if(iret == 0) C.oflog << fixed
-         << " " << setw(16) << setprecision(6) << Solution(0)
-         << " " << setw(16) << setprecision(6) << Solution(1)
-         << " " << setw(16) << setprecision(6) << Solution(2)
-         << " " << setw(14) << setprecision(6) << Solution(3)
-         << " " << setw(12) << setprecision(6) << RMS(Residual)
-         << " " << fixed << setw(5) << setprecision(1) << max(Slope);
+              << " " << CurrEpoch.printf(C.timeFormat)
+              << " " << setw(2) << Nsvs;
+      if (iret == 0)
+      {
+         C.oflog << fixed
+                 << " " << setw(16) << setprecision(6) << Solution(0)
+                 << " " << setw(16) << setprecision(6) << Solution(1)
+                 << " " << setw(16) << setprecision(6) << Solution(2)
+                 << " " << setw(14) << setprecision(6) << Solution(3)
+                 << " " << setw(12) << setprecision(6) << RMS(Residual)
+                 << " " << fixed << setw(5) << setprecision(1) << max(Slope);
+      }
       C.oflog << " " << niter
-            << " " << scientific << setw(8) << setprecision(2) << conv;
-      for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
+              << " " << scientific << setw(8) << setprecision(2) << conv;
+      for (i=0; i<Sats.size(); i++)
+         C.oflog << " " << setw(3) << Sats[i].id;
       C.oflog << endl;
 
       // compute residuals using known position, and output
-      if(iret==0 && C.knownpos.getCoordinateSystem() != Position::Unknown) {
+      if (iret==0 && C.knownpos.getCoordinateSystem() != Position::Unknown)
+      {
          Matrix<double> Cov;
          Vector<double> V(3);
 
@@ -1022,17 +1109,18 @@ try {
          V(0) = res.X(); V(1) = res.Y(); V(2) = res.Z();
 
          C.oflog << "APR " << setw(2) << iret
-            << " " << CurrEpoch.printf(C.timeFormat)
-            << " " << setw(2) << Nsvs << fixed
-            << " " << setw(16) << setprecision(6) << V(0)
-            << " " << setw(16) << setprecision(6) << V(1)
-            << " " << setw(16) << setprecision(6) << V(2)
-            << " " << setw(14) << setprecision(6) << Solution(3)
-            << " " << setw(12) << setprecision(6) << RMS(Residual)
-            << " " << fixed << setw(5) << setprecision(1) << max(Slope)
-            << " " << niter
-            << " " << scientific << setw(8) << setprecision(2) << conv;
-         for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
+                 << " " << CurrEpoch.printf(C.timeFormat)
+                 << " " << setw(2) << Nsvs << fixed
+                 << " " << setw(16) << setprecision(6) << V(0)
+                 << " " << setw(16) << setprecision(6) << V(1)
+                 << " " << setw(16) << setprecision(6) << V(2)
+                 << " " << setw(14) << setprecision(6) << Solution(3)
+                 << " " << setw(12) << setprecision(6) << RMS(Residual)
+                 << " " << fixed << setw(5) << setprecision(1) << max(Slope)
+                 << " " << niter
+                 << " " << scientific << setw(8) << setprecision(2) << conv;
+         for (i=0; i<Sats.size(); i++)
+            C.oflog << " " << setw(3) << Sats[i].id;
          C.oflog << endl;
 
          // accumulate statistics
@@ -1049,17 +1137,18 @@ try {
          Cov = C.Rot * Cov * transpose(C.Rot);
 
          C.oflog << "ANE " << setw(2) << iret
-            << " " << CurrEpoch.printf(C.timeFormat)
-            << " " << setw(2) << Nsvs << fixed
-            << " " << setw(16) << setprecision(6) << V(0)
-            << " " << setw(16) << setprecision(6) << V(1)
-            << " " << setw(16) << setprecision(6) << V(2)
-            << " " << setw(14) << setprecision(6) << Solution(3)
-            << " " << setw(12) << setprecision(6) << RMS(Residual)
-            << " " << fixed << setw(5) << setprecision(1) << max(Slope)
-            << " " << niter
-            << " " << scientific << setw(8) << setprecision(2) << conv;
-         for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
+                 << " " << CurrEpoch.printf(C.timeFormat)
+                 << " " << setw(2) << Nsvs << fixed
+                 << " " << setw(16) << setprecision(6) << V(0)
+                 << " " << setw(16) << setprecision(6) << V(1)
+                 << " " << setw(16) << setprecision(6) << V(2)
+                 << " " << setw(14) << setprecision(6) << Solution(3)
+                 << " " << setw(12) << setprecision(6) << RMS(Residual)
+                 << " " << fixed << setw(5) << setprecision(1) << max(Slope)
+                 << " " << niter
+                 << " " << scientific << setw(8) << setprecision(2) << conv;
+         for (i=0; i<Sats.size(); i++)
+            C.oflog << " " << setw(3) << Sats[i].id;
          C.oflog << endl;
 
          // accumulate statistis
@@ -1079,45 +1168,48 @@ try {
    // now compute again, using RAIM
    iret = prsol.RAIMCompute(CurrEpoch, Sats, PRanges, *pEph, C.pTropModel);
 
-   for(Nsvs=0,i=0; i<Sats.size(); i++)
-      if(Sats[i].id > 0) Nsvs++;
+   for (Nsvs=0,i=0; i<Sats.size(); i++)
+      if (Sats[i].id > 0) Nsvs++;
    RMSresid = prsol.RMSResidual;
 
    // output
    C.oflog << "RPF " << setw(2) << Sats.size()-Nsvs
-      << " " << CurrEpoch.printf(C.timeFormat)
-      << " " << setw(2) << Nsvs << fixed << setprecision(6)
-      << " " << setw(16) << prsol.Solution(0)
-      << " " << setw(16) << prsol.Solution(1)
-      << " " << setw(16) << prsol.Solution(2)
-      << " " << setw(14) << prsol.Solution(3)
-      << " " << setw(12) << prsol.RMSResidual
-      << " " << setw(5) << setprecision(1) << prsol.MaxSlope
-      << " " << prsol.NIterations
-      << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
-   for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
+           << " " << CurrEpoch.printf(C.timeFormat)
+           << " " << setw(2) << Nsvs << fixed << setprecision(6)
+           << " " << setw(16) << prsol.Solution(0)
+           << " " << setw(16) << prsol.Solution(1)
+           << " " << setw(16) << prsol.Solution(2)
+           << " " << setw(14) << prsol.Solution(3)
+           << " " << setw(12) << prsol.RMSResidual
+           << " " << setw(5) << setprecision(1) << prsol.MaxSlope
+           << " " << prsol.NIterations
+           << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
+   for (i=0; i<Sats.size(); i++)
+      C.oflog << " " << setw(3) << Sats[i].id;
    C.oflog << " (" << iret;
-   if(C.Verbose) {
+   if (C.Verbose)
+   {
       //C.oflog << "PRS returned " << iret << " at " << CurrEpoch.printf(C.timeFormat)
       //   << ", meaning ";
-      if(iret==2) C.oflog
+      if (iret==2) C.oflog
          << " solution is found, but it is not good (RMS residual exceed limits)";
-      if(iret==1) C.oflog
+      if (iret==1) C.oflog
          << " solution is found, but it is suspect (slope is large)";
-      if(iret==0) C.oflog << " ok";
-      if(iret==-1) C.oflog
+      if (iret==0) C.oflog << " ok";
+      if (iret==-1) C.oflog
          << " algorithm failed to converge";
-      if(iret==-2) C.oflog
+      if (iret==-2) C.oflog
          << " singular problem, no solution is possible";
-      if(iret==-3) C.oflog
+      if (iret==-3) C.oflog
          << " not enough good data, < 5 sats, 4-sat sol is ok if V at EOL";
-      if(iret==-4) C.oflog
+      if (iret==-4) C.oflog
          << " failed to find any ephemeris";
    }
    C.oflog << ")" << (prsol.isValid() ? " V" : " NV") << endl;
 
    // compute residuals using known position, and output
-   if(C.knownpos.getCoordinateSystem() != Position::Unknown && iret >= 0) {
+   if (C.knownpos.getCoordinateSystem() != Position::Unknown && iret >= 0)
+   {
       Matrix<double> Cov;
       Vector<double> V(3);
 
@@ -1128,27 +1220,27 @@ try {
       V(0) = res.X(); V(1) = res.Y(); V(2) = res.Z();
 
       C.oflog << "RPR " << setw(2) << Sats.size()-Nsvs
-         << " " << CurrEpoch.printf(C.timeFormat)
-         << " " << setw(2) << Nsvs << fixed
-         << " " << setw(16) << setprecision(6) << V(0)
-         << " " << setw(16) << setprecision(6) << V(1)
-         << " " << setw(16) << setprecision(6) << V(2)
-         << " " << setw(14) << setprecision(6) << prsol.Solution(3)
-         << " " << setw(12) << setprecision(6) << prsol.RMSResidual
-         << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
-         << " " << prsol.NIterations
-         << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
-      for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
-      C.oflog << " (" << iret << ")" << (prsol.isValid() ? " V" : " NV")
-         << endl;
+              << " " << CurrEpoch.printf(C.timeFormat)
+              << " " << setw(2) << Nsvs << fixed
+              << " " << setw(16) << setprecision(6) << V(0)
+              << " " << setw(16) << setprecision(6) << V(1)
+              << " " << setw(16) << setprecision(6) << V(2)
+              << " " << setw(14) << setprecision(6) << prsol.Solution(3)
+              << " " << setw(12) << setprecision(6) << prsol.RMSResidual
+              << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
+              << " " << prsol.NIterations
+              << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
+      for (i=0; i<Sats.size(); i++)
+         C.oflog << " " << setw(3) << Sats[i].id;
+      C.oflog << " (" << iret << ")" << (prsol.isValid() ? " V" : " NV") << endl;
 
       // accumulate statistics
       SRPR[0].Add(V(0)); SRPR[1].Add(V(1)); SRPR[2].Add(V(2));
       SSRPR[0].Add(V(0)); SSRPR[1].Add(V(1)); SSRPR[2].Add(V(2));
       inform = inverseSVD(Cov);
-      PRPR += inform;
+      PRPR  += inform;
       PPRPR += inform;
-      zRPR += inform * V;
+      zRPR  += inform * V;
       zzRPR += inform * V;
 
       // convert to NEU
@@ -1156,22 +1248,23 @@ try {
       Cov = C.Rot * Cov * transpose(C.Rot);
 
       C.oflog << "RNE " << setw(2) << Sats.size()-Nsvs
-         << " " << CurrEpoch.printf(C.timeFormat)
-         << " " << setw(2) << Nsvs << fixed
-         << " " << setw(16) << setprecision(6) << V(0)
-         << " " << setw(16) << setprecision(6) << V(1)
-         << " " << setw(16) << setprecision(6) << V(2)
-         << " " << setw(14) << setprecision(6) << prsol.Solution(3)
-         << " " << setw(12) << setprecision(6) << prsol.RMSResidual
-         << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
-         << " " << prsol.NIterations
-         << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
-      for(i=0; i<Sats.size(); i++) C.oflog << " " << setw(3) << Sats[i].id;
-      C.oflog << " (" << iret << ")" << (prsol.isValid() ? " V" : " NV")
-         << endl;
+              << " " << CurrEpoch.printf(C.timeFormat)
+              << " " << setw(2) << Nsvs << fixed
+              << " " << setw(16) << setprecision(6) << V(0)
+              << " " << setw(16) << setprecision(6) << V(1)
+              << " " << setw(16) << setprecision(6) << V(2)
+              << " " << setw(14) << setprecision(6) << prsol.Solution(3)
+              << " " << setw(12) << setprecision(6) << prsol.RMSResidual
+              << " " << fixed << setw(5) << setprecision(1) << prsol.MaxSlope
+              << " " << prsol.NIterations
+              << " " << scientific << setw(8) << setprecision(2) << prsol.Convergence;
+      for (i=0; i<Sats.size(); i++)
+         C.oflog << " " << setw(3) << Sats[i].id;
+      C.oflog << " (" << iret << ")" << (prsol.isValid() ? " V" : " NV") << endl;
 
       // accumulate statistics
-      if(iret == 0) {
+      if (iret == 0)
+      {
          SRNE[0].Add(V(0)); SRNE[1].Add(V(1)); SRNE[2].Add(V(2));
          SSRNE[0].Add(V(0)); SSRNE[1].Add(V(1)); SSRNE[2].Add(V(2));
          inform = inverseSVD(Cov);
@@ -1183,26 +1276,29 @@ try {
    }
 
    //
-   if(prsol.isValid() && !C.OutRinexObs.empty()) return 3;
-   if(!prsol.isValid()) return 1;
+   if (prsol.isValid() && !C.OutRinexObs.empty()) return 3;
+   if (!prsol.isValid()) return 1;
 
-   if(!C.OutRinexObs.empty()) return 2;
+   if (!C.OutRinexObs.empty()) return 2;
    return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-   return -1;
+return -1;
 }
 
 //------------------------------------------------------------------------------------
 int AfterReadingFiles(void) throw(Exception)
 {
-try {
+try
+{
    // only print stats on all files if there is more than one
-   if(C.APSout) {
+   if (C.APSout)
+   {
       PrintStats(SSA,PPA,zzA,nSS,"Autonomous solution for all files");
-      if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
+      if (C.knownpos.getCoordinateSystem() != Position::Unknown)
+      {
          PrintStats(SSAPR,PPAPR,zzAPR,nSS,
             "Autonomous position residuals for all files");
          PrintStats(SSANE,PPANE,zzANE,nSS,
@@ -1211,7 +1307,8 @@ try {
    }
 
    PrintStats(SSR,PPR,zzR,nSS,"RAIM solution for all files");
-   if(C.knownpos.getCoordinateSystem() != Position::Unknown) {
+   if (C.knownpos.getCoordinateSystem() != Position::Unknown)
+   {
       PrintStats(SSRPR,PPRPR,zzRPR,nSS,"RAIM position residuals for all files");
       PrintStats(SSRNE,PPRNE,zzRNE,nSS,"RAIM position residuals (NEU) for all files",
          'N','E','U');
@@ -1223,7 +1320,8 @@ try {
         << endl << fixed;
    cout << " (" << nSS << " total epochs, with "
         << SSR[0].N() << " good, " << nSS-SSR[0].N() << " rejected.)\n";
-   if(SSR[0].N() > 0) {
+   if (SSR[0].N() > 0)
+   {
       Matrix<double> Cov=inverse(PPR);
       Vector<double> Sol = Cov * zzR;
       cout << setw(16) << setprecision(6) << Sol << endl;
@@ -1232,32 +1330,35 @@ try {
            << endl;
       cout << setw(16) << setprecision(6) << Cov << endl;
    }
-   else cout << " No data!" << endl;
+   else
+      cout << " No data!" << endl;
 
       // compute data interval for this file
    int i,j;
    double dt;
-   for(j=0,i=1; i<9; i++) { if(C.ndt[i]>C.ndt[j]) j=i; }
+   for (j=0,i=1; i<9; i++)
+   { if (C.ndt[i]>C.ndt[j]) j=i; }
    C.oflog << endl;
    C.oflog << "Estimated data interval is " << C.estdt[j] << " seconds.\n";
    C.oflog << "First epoch is "
-      << C.FirstEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f = %04F %10.3g") << endl;
+           << C.FirstEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f = %04F %10.3g") << endl;
    C.oflog << "Last  epoch is "
-      << C.LastEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f = %04F %10.3g") << endl;
+           << C.LastEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f = %04F %10.3g") << endl;
 
    return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-   return -1;
+return -1;
 }
 
 //------------------------------------------------------------------------------------
 void PrintStats(Stats<double> S[3], Matrix<double> &P, Vector<double> &z, long ng,
    string msg, char c0, char c1, char c2) throw(Exception)
 {
-try {
+try
+{
    C.oflog << endl;
    C.oflog << "Simple statistics on " << msg << endl << fixed;
    C.oflog << c0 << " : " << setw(16) << setprecision(6) << S[0] << endl;
@@ -1266,7 +1367,8 @@ try {
 
    //C.oflog << endl;
    C.oflog << "\nWeighted average " << msg << endl << fixed;
-   if(S[0].N() > 0) {
+   if (S[0].N() > 0)
+   {
       Matrix<double> Cov=inverse(P);
       Vector<double> Sol=Cov * z;
       C.oflog << setw(16) << setprecision(6) << Sol << "    " << S[0].N() << endl;
@@ -1288,33 +1390,37 @@ void setWeather(DayTime& time, TropModel *pTropModel)
    static DayTime currentTime = DayTime::BEGINNING_OF_TIME;
    double dt;
 
-   while(it != C.MetStore.end()) {
+   while(it != C.MetStore.end())
+   {
       // point to the next epoch after the current epoch
       (nextit = it)++;            // same as nextit=it; nextit++;
       
       // is the current epoch (it->time) the right one?
-      if(    // time is before next but after current - just right
+      if (    // time is before next but after current - just right
             (nextit != C.MetStore.end() && time < nextit->time && time >= it->time)
              // there is no next, but time is within 15 minutes of the current epoch
          || (nextit == C.MetStore.end() && (dt=time-it->time) >= 0.0 && dt < 900.0)
-        )
+         )
       {
          // set the weather - replace default with current value, if it exists
          // but skip if it has already been done
-         if(it->time == currentTime) break;
+         if (it->time == currentTime) break;
          currentTime = it->time;
 
-         if(C.Debug) C.oflog << "Reset weather at " << time << " to " << it->time
-            << " " << it->data[RinexMetHeader::TD]
-            << " " << it->data[RinexMetHeader::PR]
-            << " " << it->data[RinexMetHeader::HR] << endl;
+         if (C.Debug)
+         {
+            C.oflog << "Reset weather at " << time << " to " << it->time
+                    << " " << it->data[RinexMetHeader::TD]
+                    << " " << it->data[RinexMetHeader::PR]
+                    << " " << it->data[RinexMetHeader::HR] << endl;
+         }
 
          // [if 'it' is declared const_iterator, why does this discard qualifier??]
-         if(it->data.count(RinexMetHeader::TD) > 0)
+         if (it->data.count(RinexMetHeader::TD) > 0)
             C.defaultT = it->data[RinexMetHeader::TD];
-         if(it->data.count(RinexMetHeader::PR) > 0)
+         if (it->data.count(RinexMetHeader::PR) > 0)
             C.defaultPr = it->data[RinexMetHeader::PR];
-         if(it->data.count(RinexMetHeader::HR) > 0)
+         if (it->data.count(RinexMetHeader::HR) > 0)
             C.defaultRH = it->data[RinexMetHeader::HR];
 
          pTropModel->setWeather(C.defaultT, C.defaultPr, C.defaultRH);
@@ -1323,7 +1429,7 @@ void setWeather(DayTime& time, TropModel *pTropModel)
       }
 
       // no, this is not the right epoch; but should we increment the iterator ?
-      else if(nextit != C.MetStore.end() && time >= nextit->time)
+      else if (nextit != C.MetStore.end() && time >= nextit->time)
       {
          // yes, time is at or beyond the next epoch
          it++;
@@ -1337,7 +1443,8 @@ void setWeather(DayTime& time, TropModel *pTropModel)
 //------------------------------------------------------------------------------------
 int GetCommandLine(int argc, char **argv) throw(Exception)
 {
-try {
+try
+{
    bool ok,help=false,helpRetCodes=false;
    int i,j;
       // defaults
@@ -1376,7 +1483,7 @@ try {
 
    C.timeFormat = string("%4F %10.3g");
 
-   for(i=0; i<9; i++) C.ndt[i]=-1;
+   for (i=0; i<9; i++) C.ndt[i]=-1;
 
    C.ObsDirectory = string("");
    C.NavDirectory = string("");
@@ -1601,35 +1708,45 @@ try {
       // allow user to put all options in a file
       // could also scan for debug here
    vector<string> Args;
-   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
+   for (j=1; j<argc; j++)
+      PreProcessArgs(argv[j],Args);
 
-   if(Args.size()==0)
+   if (Args.size()==0)
       Args.push_back(string("-h"));
    //cout << "List after PreProcessArgs\n";
-   //for(i=0; i<Args.size(); i++) cout << i << " " << Args[i] << endl;
+   //for (i=0; i<Args.size(); i++) cout << i << " " << Args[i] << endl;
 
       // pass the rest
    argc = Args.size()+1;
    char **CArgs=new char*[argc];
-   if(!CArgs) { cout << "Failed to allocate CArgs\n"; return -1; }
+   if (!CArgs)
+   {
+      cout << "Failed to allocate CArgs\n";
+      return -1;
+   }
    CArgs[0] = argv[0];
-   for(j=1; j<argc; j++) {
+   for (j=1; j<argc; j++)
+   {
       CArgs[j] = new char[Args[j-1].size()+1];
-      if(!CArgs[j]) { cout << "Failed to allocate CArgs[j]\n"; return -1; }
+      if (!CArgs[j]) { cout << "Failed to allocate CArgs[j]\n"; return -1; }
       strcpy(CArgs[j],Args[j-1].c_str());
    }
    //cout << "List passed to parser\n";
-   //for(i=0; i<argc; i++) cout << i << " " << CArgs[i] << endl;
+   //for (i=0; i<argc; i++) cout << i << " " << CArgs[i] << endl;
 
    Par.parseOptions(argc, CArgs);
 
       // -------------------------------------------------
-   if(dashhrc.getCount() > 0) {
+
+   if (dashhrc.getCount() > 0)
+   {
       helpRetCodes = help = true;
    }
-   if(help || dashh.getCount() > 0) {
+
+   if (help || dashh.getCount() > 0)
+   {
       Par.displayUsage(cout,false);
-      if(helpRetCodes)
+      if (helpRetCodes)
       cout << "\nReturn codes from the PRSolution module "
            << "are found in () before 'NV':\n"
            << "  2 means 'RMS residual exceeded limit'\n"
@@ -1642,7 +1759,7 @@ try {
       help = true;
    }
 
-   if(!help && Par.hasErrors())
+   if (!help && Par.hasErrors())
    {
       cout << "\nErrors found in command line input:\n";
       Par.dumpErrors(cout);
@@ -1655,319 +1772,434 @@ try {
    string stemp;
    vector<string> values,field;
       // f never appears because we intercept it above
-   //if(dashf.getCount()) { cout << "Option f "; dashf.dumpValue(cout); }
+   //if (dashf.getCount()) { cout << "Option f "; dashf.dumpValue(cout); }
       // do help first
-   if(dashh.getCount()) help=true;
-   if(dashDebug.getCount()) C.Debug=C.Verbose=true;
-   if(dashVerb.getCount()) C.Verbose=true;
+   if (dashh.getCount()) help=true;
+   if (dashDebug.getCount()) C.Debug=C.Verbose=true;
+   if (dashVerb.getCount()) C.Verbose=true;
 
-   if(dashdo.getCount()) {
+   if (dashdo.getCount())
+   {
       values = dashdo.getValue();
       C.ObsDirectory = values[0];
-      if(help) cout << "Input obs directory is " << C.ObsDirectory << endl;
+      if (help)
+         cout << "Input obs directory is " << C.ObsDirectory << endl;
    }
-   if(dashdn.getCount()) {
+   if (dashdn.getCount())
+   {
       values = dashdn.getValue();
       C.NavDirectory = values[0];
-      if(help) cout << "Input nav directory is " << C.NavDirectory << endl;
+      if (help)
+         cout << "Input nav directory is " << C.NavDirectory << endl;
    }
-   if(dashdm.getCount()) {
+   if (dashdm.getCount())
+   {
       values = dashdm.getValue();
       C.MetDirectory = values[0];
-      if(help) cout << "Input met directory is " << C.MetDirectory << endl;
+      if (help)
+         cout << "Input met directory is " << C.MetDirectory << endl;
    }
-   if(dashi.getCount()) {
+   if (dashi.getCount())
+   {
       values = dashi.getValue();
       // expand any comma-delimited values
       field.clear();
-      for(i=0; i<values.size(); i++) {
+      for (i=0; i<values.size(); i++)
+      {
          string value = values[i];
          while(value.size() > 0)
             field.push_back(stripFirstWord(value,','));
       }
 
-      if(help) cout << "Input RINEX obs files are:\n";
-      for(i=0; i<field.size(); i++) {
-         if(!C.ObsDirectory.empty())
+      if (help)
+         cout << "Input RINEX obs files are:" << endl;
+      for (i=0; i<field.size(); i++)
+      {
+         if (!C.ObsDirectory.empty())
             C.InputObsName.push_back(C.ObsDirectory + string("/") + field[i]);
          else
             C.InputObsName.push_back(field[i]);
-         if(help) cout << "   " << C.ObsDirectory + string("/") + field[i] << endl;
+         if (help)
+            cout << "   " << C.ObsDirectory + string("/") + field[i] << endl;
       }
    }
-   if(dashn.getCount()) {
+   if (dashn.getCount())
+   {
       values = dashn.getValue();
       // expand any comma-delimited values
       field.clear();
-      for(i=0; i<values.size(); i++) {
+      for (i=0; i<values.size(); i++)
+      {
          string value = values[i];
          while(value.size() > 0)
             field.push_back(stripFirstWord(value,','));
       }
 
-      if(help) cout << "Input RINEX nav files are:\n";
-      for(i=0; i<field.size(); i++) {
-         if(!C.NavDirectory.empty())
+      if (help)
+         cout << "Input RINEX nav files are:" << endl;
+      for (i=0; i<field.size(); i++)
+      {
+         if (!C.NavDirectory.empty())
             C.InputNavName.push_back(C.NavDirectory + string("/") + field[i]);
          else
             C.InputNavName.push_back(field[i]);
-         if(help) cout << "  " << C.NavDirectory + string("/") + field[i] << endl;
+         if (help)
+            cout << "  " << C.NavDirectory + string("/") + field[i] << endl;
       }
    }
-   if(dashm.getCount()) {
+   if (dashm.getCount())
+   {
       values = dashm.getValue();
       // expand any comma-delimited values
       field.clear();
-      for(i=0; i<values.size(); i++) {
+      for (i=0; i<values.size(); i++)
+      {
          string value = values[i];
          while(value.size() > 0)
             field.push_back(stripFirstWord(value,','));
       }
 
-      if(help) cout << "Input RINEX met files are:\n";
-      for(i=0; i<field.size(); i++) {
-         if(!C.MetDirectory.empty())
+      if (help)
+         cout << "Input RINEX met files are:\n";
+      for (i=0; i<field.size(); i++)
+      {
+         if (!C.MetDirectory.empty())
             C.InputMetName.push_back(C.MetDirectory + string("/") + field[i]);
          else
             C.InputMetName.push_back(field[i]);
-         if(help) cout << "  " << C.MetDirectory + string("/") + field[i] << endl;
+         if (help)
+            cout << "  " << C.MetDirectory + string("/") + field[i] << endl;
       }
    }
 
-   if(dashith.getCount()) {
+   if (dashith.getCount())
+   {
       values = dashith.getValue();
       C.ith = asDouble(values[0]);
-      if(help) cout << "Ithing values is " << C.ith << endl;
+      if (help)
+         cout << "Ithing values is " << C.ith << endl;
    }
    // times
    // TD put try {} around setToString and catch invalid formats...
-   if(dashbt.getCount()) {
+   if (dashbt.getCount())
+   {
       ok = true;
       values = dashbt.getValue();
       stemp = values[0];
       field.clear();
       while(stemp.size() > 0)
          field.push_back(stripFirstWord(stemp,','));
-      if(field.size() == 2) {
-         try { C.Tbeg.setToString(field[0]+","+field[1], "%F,%g"); }
+      if (field.size() == 2)
+      {
+         try
+         {
+            C.Tbeg.setToString(field[0]+","+field[1], "%F,%g");
+         }
          catch(Exception& e) { ok=false; }
       }
-      else if(field.size() == 6) {
-         try {
+      else if (field.size() == 6)
+      {
+         try
+         {
             C.Tbeg.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
             +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
          }
          catch(Exception& e) { ok=false; }
       }
       else { ok = false; }
-      if(!ok) {
+      if (!ok)
+      {
          cerr << "Error: invalid --BeginTime input: " << values[0] << endl;
       }
-      else if(help) cout << " Input: begin time " << values[0] << " = "
-         << C.Tbeg.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+      else if (help)
+      {
+         cout << " Input: begin time " << values[0] << " = "
+              << C.Tbeg.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+      }
    }
-   if(dashet.getCount()) {
+   if (dashet.getCount())
+   {
       ok = true;
       values = dashet.getValue();
       field.clear();
       stemp = values[0];
       while(stemp.size() > 0)
          field.push_back(stripFirstWord(stemp,','));
-      if(field.size() == 2) {
-         try { C.Tend.setToString(field[0]+","+field[1], "%F,%g"); }
+      if (field.size() == 2)
+      {
+         try
+         {
+            C.Tend.setToString(field[0]+","+field[1], "%F,%g");
+         }
          catch(Exception& e) { ok=false; }
       }
-      else if(field.size() == 6) {
-         try {
+      else if (field.size() == 6)
+      {
+         try
+         {
             C.Tend.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
             +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
          }
          catch(Exception& e) { ok=false; }
       }
       else { ok = false; }
-      if(!ok) {
+      if (!ok)
+      {
          cerr << "Error: invalid --EndTime input: " << values[0] << endl;
       }
-      else if(help) cout << " Input: end time " << values[0] << " = "
-         << C.Tend.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+      else if (help)
+      {
+         cout << " Input: end time " << values[0] << " = "
+              << C.Tend.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+      }
    }
-   if(dashCA.getCount()) {
+   if (dashCA.getCount())
+   {
       C.UseCA = true;
-      if(help) cout << "'Use C/A' flag is set\n";
+      if (help)
+         cout << "'Use C/A' flag is set\n";
    }
-   if(dashfCA.getCount()) {
+   if (dashfCA.getCount())
+   {
       C.ForceCA = true;
-      if(help) cout << "'Force C/A' flag is set\n";
+      if (help)
+         cout << "'Force C/A' flag is set\n";
    }
 
-   if(dashrms.getCount()) {
+   if (dashrms.getCount())
+   {
       values = dashrms.getValue();
       C.rmsLimit = asDouble(values[0]);
-      if(help) cout << "RMS limit is set to " << C.rmsLimit << endl;
+      if (help)
+         cout << "RMS limit is set to " << C.rmsLimit << endl;
    }
-   if(dashslop.getCount()) {
+   if (dashslop.getCount())
+   {
       values = dashslop.getValue();
       C.SlopeLimit = asDouble(values[0]);
-      if(help) cout << "Slope limit is set to " << C.SlopeLimit << endl;
+      if (help)
+         cout << "Slope limit is set to " << C.SlopeLimit << endl;
    }
-   if(dashAlge.getCount()) {
+   if (dashAlge.getCount())
+   {
       C.algebra = true;
-      if(help) cout << "'Algebraic' option is on\n";
+      if (help)
+         cout << "'Algebraic' option is on\n";
    }
-   if(dashrcrt.getCount()) {
+   if (dashrcrt.getCount())
+   {
       C.residCrit = false;
-      if(help) cout << "'ResidualCriterion' option is false\n";
+      if (help)
+         cout << "'ResidualCriterion' option is false\n";
    }
-   if(dashrone.getCount()) {
+   if (dashrone.getCount())
+   {
       C.returnatonce = true;
-      if(help) cout << "'Return at once' option is true\n";
+      if (help)
+         cout << "'Return at once' option is true\n";
    }
-   if(dashnrej.getCount()) {
+   if (dashnrej.getCount())
+   {
       values = dashnrej.getValue();
       C.maxReject = asInt(values[0]);
-      if(help) cout << "Max N rejected satellites is set to " << C.maxReject << endl;
+      if (help)
+         cout << "Max N rejected satellites is set to " << C.maxReject << endl;
    }
-   if(dashNit.getCount()) {
+   if (dashNit.getCount())
+   {
       values = dashNit.getValue();
       C.nIter = asInt(values[0]);
-      if(help) cout << "Max N Iterations is set to " << C.nIter << endl;
+      if (help)
+         cout << "Max N Iterations is set to " << C.nIter << endl;
    }
-   if(dashFreq.getCount()) {
+   if (dashFreq.getCount())
+   {
       values = dashFreq.getValue();
       i = asInt(values[0]);
-      if(i == 1 || i == 2 || i == 3) {
+      if (i == 1 || i == 2 || i == 3)
+      {
          C.Freq = i;
-         if(help) cout << "Frequency is set to " << C.Freq << endl;
+         if (help)
+            cout << "Frequency is set to " << C.Freq << endl;
       }
-      else cerr << "Error: invalid frequency" << endl;
+      else
+         cerr << "Error: invalid frequency" << endl;
    }
-   if(dashElev.getCount()) {
+   if (dashElev.getCount())
+   {
       values = dashElev.getValue();
       C.elevLimit = asDouble(values[0]);
-      if(help) cout << "Elevation limit is set to " << C.convLimit << " deg" << endl;
+      if (help)
+         cout << "Elevation limit is set to " << C.convLimit << " deg" << endl;
    }
-   if(dashConv.getCount()) {
+   if (dashConv.getCount())
+   {
       values = dashConv.getValue();
       C.convLimit = asDouble(values[0]);
-      if(help) cout << "Convergence limit is set to " << C.convLimit << endl;
+      if (help)
+         cout << "Convergence limit is set to " << C.convLimit << endl;
    }
 
-   if(dashXYZ.getCount()) {
+   if (dashXYZ.getCount())
+   {
       values = dashXYZ.getValue();
-      for(i=0; i<values.size(); i++) {
+      for (i=0; i<values.size(); i++)
+      {
          field.clear();
          while(values[i].size() > 0)
             field.push_back(stripFirstWord(values[i],','));
-         if(field.size() < 3) {
+         if (field.size() < 3)
+         {
             cerr << "Error: less than four fields in --PosXYZ input: "
-               << values[i] << endl;
+                 << values[i] << endl;
             continue;
          }
          Position p(asDouble(field[0]), asDouble(field[1]), asDouble(field[2]));
          C.knownpos = p;
-         if(help) cout << " Input: known XYZ position "
-            << field[0] << " " << field[1] << " " << field[2] << endl;
+         if (help)
+         {
+            cout << " Input: known XYZ position "
+                 << field[0] << " " << field[1] << " " << field[2] << endl;
+         }
       }
    }
-   if(dashAPSout.getCount()) C.APSout=true;
-   if(dashForm.getCount()) {
+   if (dashAPSout.getCount())
+      C.APSout=true;
+   if (dashForm.getCount())
+   {
       values = dashForm.getValue();
       C.timeFormat = values[0];
-      if(help) cout << " Input: time format " << C.timeFormat << endl;
+      if (help)
+         cout << " Input: time format " << C.timeFormat << endl;
    }
-   if(dashORDs.getCount()) {
+   if (dashORDs.getCount())
+   {
       values = dashORDs.getValue();
       C.ordFile = values[0];
-      if(help) cout << " Input: output ORDs to file " << C.ordFile << endl;
+      if (help)
+         cout << " Input: output ORDs to file " << C.ordFile << endl;
    }
-   if(dashXsat.getCount()) {
+   if (dashXsat.getCount())
+   {
       values = dashXsat.getValue();
-      for(i=0; i<values.size(); i++) {
+      for (i=0; i<values.size(); i++)
+      {
          RinexSatID p(values[i]);
          C.ExSV.push_back(SatID(p));
-         if(help) cout << "Exclude satellite " << p << endl;
+         if (help)
+            cout << "Exclude satellite " << p << endl;
       }
    }
-   if(dashTrop.getCount()) {
+   if (dashTrop.getCount())
+   {
       values = dashTrop.getValue();
       field.clear();
       while(values[0].size() > 0)
          field.push_back(stripFirstWord(values[0],','));
-      if(field.size() != 1 && field.size() != 4) {
+      if (field.size() != 1 && field.size() != 4)
+      {
          cerr << "Error: invalid fields after --Trop input: "
-            << values[0] << endl;
+              << values[0] << endl;
       }
-      else {
+      else
+      {
          field[0] = upperCase(field[0]);
          C.TropType = field[0];
-         if(help) cout << " Input: trop model: " << C.TropType;
-         if(field.size() == 4) {
-            C.defaultT = asDouble(field[1]);
+         if (help)
+            cout << " Input: trop model: " << C.TropType;
+         if (field.size() == 4)
+         {
+            C.defaultT  = asDouble(field[1]);
             C.defaultPr = asDouble(field[2]);
             C.defaultRH = asDouble(field[3]);
-            if(help) cout << " and weather (T,P,RH): "
-               << C.defaultT << "," << C.defaultPr << "," << C.defaultRH;
+            if (help)
+            {
+               cout << " and weather (T,P,RH): "
+                    << C.defaultT << "," << C.defaultPr << "," << C.defaultRH;
+            }
          }
-         if(help) cout << endl;
+         if (help)
+            cout << endl;
       }
    }
-   if(dashLog.getCount()) {
+   if (dashLog.getCount())
+   {
       values = dashLog.getValue();
       C.LogFile = values[0];
-      if(help) cout << "Log file is " << C.LogFile << endl;
+      if (help)
+         cout << "Log file is " << C.LogFile << endl;
    }
-   if(dashRfile.getCount()) {
+   if (dashRfile.getCount())
+   {
       values = dashRfile.getValue();
       C.OutRinexObs = values[0];
-      if(help) cout << "Output RINEX file name is " << C.OutRinexObs << endl;
+      if (help)
+         cout << "Output RINEX file name is " << C.OutRinexObs << endl;
    }
-   if(dashRrun.getCount()) {
+   if (dashRrun.getCount())
+   {
       values = dashRrun.getValue();
       C.HDRunby = values[0];
-      if(help) cout << "Output RINEX 'RUN BY' is " << C.HDRunby << endl;
+      if (help)
+         cout << "Output RINEX 'RUN BY' is " << C.HDRunby << endl;
    }
-   if(dashRobs.getCount()) {
+   if (dashRobs.getCount())
+   {
       values = dashRobs.getValue();
       C.HDObs = values[0];
-      if(help) cout << "Output RINEX 'OBSERVER' is " << C.HDObs << endl;
+      if (help)
+         cout << "Output RINEX 'OBSERVER' is " << C.HDObs << endl;
    }
-   if(dashRag.getCount()) {
+   if (dashRag.getCount())
+   {
       values = dashRag.getValue();
       C.HDAgency = values[0];
-      if(help) cout << "Output RINEX 'AGENCY' is " << C.HDAgency << endl;
+      if (help)
+         cout << "Output RINEX 'AGENCY' is " << C.HDAgency << endl;
    }
-   if(dashRmark.getCount()) {
+   if (dashRmark.getCount())
+   {
       values = dashRmark.getValue();
       C.HDMarker = values[0];
-      if(help) cout << "Output RINEX 'MARKER' is " << C.HDMarker << endl;
+      if (help)
+         cout << "Output RINEX 'MARKER' is " << C.HDMarker << endl;
    }
-   if(dashRnumb.getCount()) {
+   if (dashRnumb.getCount())
+   {
       values = dashRnumb.getValue();
       C.HDNumber = values[0];
-      if(help) cout << "Output RINEX 'NUMBER' is " << C.HDNumber << endl;
+      if (help)
+         cout << "Output RINEX 'NUMBER' is " << C.HDNumber << endl;
    }
 
-   if(Rest.getCount()) {
-      if(help) cout << "Remaining options:" << endl;
+   if (Rest.getCount())
+   {
+      if (help)
+         cout << "Remaining options:" << endl;
       values = Rest.getValue();
-      for (i=0; i<values.size(); i++) {
-         if(help) cout << values[i] << endl;
+      for (i=0; i<values.size(); i++)
+      {
+         if (help)
+            cout << values[i] << endl;
          //C.InputObsName.push_back(values[i]);
       }
    }
-   //if(C.Verbose && help) {
+   //if (C.Verbose && help)
+   //{
    // cout << "\nTokens on command line (" << Args.size() << ") are:" << endl;
-   // for(unsigned j=0; j<Args.size(); j++) cout << Args[j] << endl;
+   // for (unsigned j=0; j<Args.size(); j++) cout << Args[j] << endl;
    //}
 
-   if(help) return 1;
+   if (help) return 1;
 
    C.oflog.open(C.LogFile.c_str(),ios::out);
-   if(!C.oflog.is_open()) {
+   if (!C.oflog.is_open())
+   {
       cout << "Failed to open log file " << C.LogFile << endl;
       return -2;
    }
-   else {
+   else
+   {
       cout << "Opened log file " << C.LogFile << endl;
       C.oflog << Title;
    }
@@ -1977,55 +2209,72 @@ try {
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-   return -1;
+return -1;
 }
 
 //------------------------------------------------------------------------------------
 void DumpConfiguration(ostream& os) throw(Exception)
 {
-try {
+try
+{
    int i;
       // print config to log
    os << "\nHere is the PRSolve configuration:\n";
    os << " # Input:\n";
    os << " Obs directory is '" << C.ObsDirectory << "'" << endl;
    os << " RINEX observation files are:\n";
-   for(i=0; i<C.InputObsName.size(); i++) {
+   for (i=0; i<C.InputObsName.size(); i++)
+   {
       os << "   " << C.InputObsName[i] << endl;
    }
    os << " Nav directory is '" << C.NavDirectory << "'" << endl;
    os << " navigation files are:\n";
-   for(i=0; i<C.InputNavName.size(); i++) {
+   for (i=0; i<C.InputNavName.size(); i++)
+   {
       os << "   " << C.InputNavName[i] << endl;
    }
-   if(C.InputMetName.size() > 0) {
+   if (C.InputMetName.size() > 0)
+   {
       os << " Met directory is '" << C.MetDirectory << "'" << endl;
       os << " RINEX meteorological files are:\n";
-      for(i=0; i<C.InputMetName.size(); i++) {
+      for (i=0; i<C.InputMetName.size(); i++)
+      {
          os << "   " << C.InputMetName[i] << endl;
       }
    }
-   else os << " No input meteorological data\n";
+   else
+      os << " No input meteorological data\n";
    os << " Ithing time interval is " << C.ith << endl;
-   if(C.Tbeg > DayTime(DayTime::BEGINNING_OF_TIME)) os << " Begin time is "
-      << C.Tbeg.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
-      << " = " << C.Tbeg.printf("%04F/%10.3g") << endl;
-   if(C.Tend < DayTime(DayTime::END_OF_TIME)) os << " End time is "
-      << C.Tend.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
-      << " = " << C.Tend.printf("%04F/%10.3g") << endl;
-   if(C.UseCA) os << " 'Use C/A' flag is set\n";
-   if(C.ForceCA) os << " 'Force C/A' flag is set\n";
+   if (C.Tbeg > DayTime(DayTime::BEGINNING_OF_TIME))
+   {
+      os << " Begin time is "
+         << C.Tbeg.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
+         << " = " << C.Tbeg.printf("%04F/%10.3g") << endl;
+   }
+   if (C.Tend < DayTime(DayTime::END_OF_TIME))
+   {
+      os << " End time is "
+         << C.Tend.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
+         << " = " << C.Tend.printf("%04F/%10.3g") << endl;
+   }
+   if (C.UseCA)
+      os << " 'Use C/A' flag is set\n";
+   if (C.ForceCA)
+      os << " 'Force C/A' flag is set\n";
 
    os << " # Configuration:\n";
    os << " Process frequency L" << C.Freq;
-   if(C.Freq == 3) os << ", which is the ionosphere-free combination of L1 and L2";
+   if (C.Freq == 3)
+      os << ", which is the ionosphere-free combination of L1 and L2";
    os << "." << endl;
    os << " Minimum elevation angle is " << C.elevLimit << " degrees." << endl;
-   if(C.ExSV.size()) {
+   if (C.ExSV.size())
+   {
       RinexSatID p;
       p.setfill('0');
       os << " Exclude satellites";
-      for(i=0; i<C.ExSV.size(); i++) {
+      for (i=0; i<C.ExSV.size(); i++)
+      {
          p = C.ExSV[i];
          os << " " << p;
       }
@@ -2053,33 +2302,36 @@ try {
 
    os << " # Output:\n";
    os << " Log file is " << C.LogFile << endl;
-   if(C.knownpos.getCoordinateSystem() != Position::Unknown)
-      os << " Output residuals: known position is\n   " << C.knownpos.printf(
-         "ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
-   if(!C.ordFile.empty())
+   if (C.knownpos.getCoordinateSystem() != Position::Unknown)
+   {
+      os << " Output residuals: known position is\n   "
+         << C.knownpos.printf("ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
+   if (!C.ordFile.empty())
       os << " Output ORDs to file " << C.ordFile << endl;
    os << " Output tags RPF";
-   if(C.knownpos.getCoordinateSystem() != Position::Unknown) os << " RPR RNE";
-   if(C.APSout) os << " APS";
-   if(C.APSout && C.knownpos.getCoordinateSystem() != Position::Unknown)
+   if (C.knownpos.getCoordinateSystem() != Position::Unknown)
+      os << " RPR RNE";
+   if (C.APSout)
+      os << " APS";
+   if (C.APSout && C.knownpos.getCoordinateSystem() != Position::Unknown)
       os << " APR ANE";
    os << endl;
    os << " Output format for time tags (cf. class DayTime) is "
       << C.timeFormat << endl;
 
-   os << " # RINEX output:\n";
-   if(!C.OutRinexObs.empty()) os << " Output RINEX file name is "
-      << C.OutRinexObs << endl;
-   if(!C.HDRunby.empty()) os << " Output RINEX 'RUN BY' is "
-      << C.HDRunby << endl;
-   if(!C.HDObs.empty()) os << " Output RINEX 'OBSERVER' is "
-      << C.HDObs << endl;
-   if(!C.HDAgency.empty()) os << " Output RINEX 'AGENCY' is "
-      << C.HDAgency << endl;
-   if(!C.HDMarker.empty()) os << " Output RINEX 'MARKER' is "
-      << C.HDMarker << endl;
-   if(!C.HDNumber.empty()) os << " Output RINEX 'NUMBER' is "
-      << C.HDNumber << endl;
+   os << " # RINEX output:" << endl;
+   if (!C.OutRinexObs.empty())
+      os << " Output RINEX file name is " << C.OutRinexObs << endl;
+   if (!C.HDRunby.empty())
+      os << " Output RINEX 'RUN BY' is " << C.HDRunby << endl;
+   if (!C.HDObs.empty())
+      os << " Output RINEX 'OBSERVER' is " << C.HDObs << endl;
+   if (!C.HDAgency.empty())
+      os << " Output RINEX 'AGENCY' is " << C.HDAgency << endl;
+   if (!C.HDMarker.empty())
+      os << " Output RINEX 'MARKER' is " << C.HDMarker << endl;
+   if (!C.HDNumber.empty())
+      os << " Output RINEX 'NUMBER' is " << C.HDNumber << endl;
 
    os << "End of PRSolve configuration summary" << endl << endl;
 
@@ -2093,14 +2345,17 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Pull out --verbose -f<f> and --file <f> options
 void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
 {
-try {
+try
+{
    static bool found_cfg_file=false;
 
-   if(found_cfg_file || (arg[0]=='-' && arg[1]=='f')) {
+   if (found_cfg_file || (arg[0]=='-' && arg[1]=='f'))
+   {
       string filename(arg);
-      if(!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
+      if (!found_cfg_file) filename.erase(0,2); else found_cfg_file = false;
       ifstream infile(filename.c_str());
-      if(!infile) {
+      if (!infile)
+      {
          cout << "Error: could not open options file " << filename << endl;
          return;
       }
@@ -2108,25 +2363,30 @@ try {
       bool again_cfg_file=false;
       char c;
       string buffer,word;
-      while(1) {
+      while(1)
+      {
          getline(infile,buffer);
          stripTrailing(buffer,'\r');
 
          // process the buffer before checking eof or bad b/c there can be
          // a line at EOF that has no CRLF...
-         while(!buffer.empty()) {
+         while(!buffer.empty())
+         {
             word = firstWord(buffer);
-            if(again_cfg_file) {
+            if (again_cfg_file)
+            {
                word = "-f" + word;
                again_cfg_file = false;
                PreProcessArgs(word.c_str(),Args);
             }
-            else if(word[0] == '#') { // skip to end of line
+            else if (word[0] == '#')
+            { // skip to end of line
                buffer = "";
             }
-            else if(word == "--file" || word == "-f")
+            else if (word == "--file" || word == "-f")
                again_cfg_file = true;
-            else if(word[0] == '"') {
+            else if (word[0] == '"')
+            {
                word = stripFirstWord(buffer,'"');
                buffer = "dummy " + buffer;            // to be stripped later
                PreProcessArgs(word.c_str(),Args);
@@ -2136,22 +2396,23 @@ try {
 
             word = stripFirstWord(buffer);      // now remove it from buffer
          }
-         if(infile.eof() || !infile.good()) break;
+         if (infile.eof() || !infile.good()) break;
       }
    }
-   else if((arg[0]=='-' && arg[1]=='v') || string(arg)==string("--verbose")) {
+   else if ((arg[0]=='-' && arg[1]=='v') || string(arg)==string("--verbose"))
+   {
       C.Verbose = true;
       cout << "Found the verbose switch" << endl;
    }
-   else if(string(arg) == "--file" || string(arg) == "-f")
+   else if (string(arg) == "--file" || string(arg) == "-f")
       found_cfg_file = true;
    // deprecated args
-   else if(string(arg)==string("--EpochBeg")) { Args.push_back("--BeginTime"); }
-   else if(string(arg)==string("--GPSBeg")) { Args.push_back("--BeginTime"); }
-   else if(string(arg)==string("--EpochEnd")) { Args.push_back("--EndTime"); }
-   else if(string(arg)==string("--GPSEnd")) { Args.push_back("--EndTime"); }
-   else if(string(arg)==string("--RinexFile")) { Args.push_back("--outRinex"); }
-   else if(string(arg)==string("--XPRN")) { Args.push_back("--exSat"); }
+   else if (string(arg)==string("--EpochBeg")) { Args.push_back("--BeginTime"); }
+   else if (string(arg)==string("--GPSBeg")) { Args.push_back("--BeginTime"); }
+   else if (string(arg)==string("--EpochEnd")) { Args.push_back("--EndTime"); }
+   else if (string(arg)==string("--GPSEnd")) { Args.push_back("--EndTime"); }
+   else if (string(arg)==string("--RinexFile")) { Args.push_back("--outRinex"); }
+   else if (string(arg)==string("--XPRN")) { Args.push_back("--exSat"); }
    // regular arg
    else Args.push_back(arg);
 }
@@ -2162,6 +2423,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // TD found in src/RinexUtilities
+
 bool isSP3File(const string& file)
 {
    SP3Header header;
@@ -2171,6 +2433,7 @@ bool isSP3File(const string& file)
    strm.close();
    return true;
 }
+
 bool isRinexNavFile(const string& file)
 {
    RinexNavHeader header;
@@ -2180,49 +2443,59 @@ bool isRinexNavFile(const string& file)
    rnstream.close();
    return true;
 }
+
 int FillEphemerisStore(const vector<string>& files,
                        SP3EphemerisStore& PE,
                        GPSEphemerisStore& BCE) throw(Exception)
 {
-try {
+try
+{
    int nread=0;
    RinexNavHeader rnh;
    RinexNavData rne;
-   for(int i=0; i<files.size(); i++) {
-      if(files[i].empty()) throw Exception("File name is empty");
+   for (int i=0; i<files.size(); i++)
+   {
+      if (files[i].empty()) throw Exception("File name is empty");
       RinexNavStream strm(files[i].c_str());
-      if(!strm) throw Exception("Could not open file " + files[i]);
+      if (!strm) throw Exception("Could not open file " + files[i]);
       strm.close();
-      if(isRinexNavFile(files[i])) {
+      if (isRinexNavFile(files[i]))
+      {
          RinexNavStream RNFileIn(files[i].c_str());
          RNFileIn.exceptions(fstream::failbit);
-         try {
+         try
+         {
             RNFileIn >> rnh;
             while (RNFileIn >> rne)
             {
-               if(rne.health == 0)
+               if (rne.health == 0)
                   BCE.addEphemeris(rne);
             }
             nread++;
          }
-         catch(gpstk::Exception& e) {
+         catch(gpstk::Exception& e)
+         {
             cerr << "Caught Exception while reading RINEX Nav file " << files[i]
-               << " : " << e << endl;
+                 << " : " << e << endl;
             continue;
          }
       }
-      else if(isSP3File(files[i])) {
-         try {
+      else if (isSP3File(files[i]))
+      {
+         try
+         {
             PE.loadFile(files[i]);
          }
-         catch(gpstk::Exception& e) {
+         catch(gpstk::Exception& e)
+         {
             cerr << "Caught Exception while reading SP3 Nav file " << files[i]
-               << " : " << e << endl;
+                 << " : " << e << endl;
             continue;
          }
          nread++;
       }
-      else throw Exception("File " + files[i] + " is neither BCE nor PE file.");
+      else
+         throw Exception("File " + files[i] + " is neither BCE nor PE file.");
    }
    return nread;
 }
