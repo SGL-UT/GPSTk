@@ -5,8 +5,8 @@
  * Constants as defined in the GPS-ICD-200D
  */
 
-#ifndef GPSTK_ICD_200_CONSTANTS_HPP
-#define GPSTK_ICD_200_CONSTANTS_HPP
+#ifndef GPSTK_ICD_GPS_CONSTANTS_HPP
+#define GPSTK_ICD_GPS_CONSTANTS_HPP
 
 //============================================================================
 //
