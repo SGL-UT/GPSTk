@@ -1,4 +1,4 @@
-#pragma ident "$Id: EllipsoidModel.hpp 1709 2009-02-18 20:27:47Z btolman $"
+#pragma ident "$Id: EllipsoidModel.hpp 2293 2010-02-12 18:14:16Z btolman $"
 
 
 
@@ -7,8 +7,8 @@
  * Abstract base class modeling a Ellipsoid
  */
 
-#ifndef GPSTK_EllipsoidMODEL_HPP
-#define GPSTK_EllipsoidMODEL_HPP
+#ifndef GPSTK_ELLIPSOIDMODEL_HPP
+#define GPSTK_ELLIPSOIDMODEL_HPP
 
 //============================================================================
 //
@@ -46,13 +46,15 @@
 //
 //=============================================================================
 
+
+
 namespace gpstk
 {
       /** @addtogroup geodeticgroup */
       //@{
 
       /**
-       * This abstract class encapsulates geodetic models (e.g. WGS84,
+       * This abstract class encapsulates ellipsoid models (e.g. WGS84,
        * GPS, etc).
        */
    class EllipsoidModel

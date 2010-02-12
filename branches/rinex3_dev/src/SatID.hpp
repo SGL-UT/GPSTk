@@ -53,7 +53,7 @@ namespace gpstk
 {
    // forward declarations
    class SatID;
-   std::istream& operator>>(std::istream& s, SatID& p);
+//   std::istream& operator<<(std::istream& s, SatID& p);
 
    /// Satellite identifier consisting of a satellite number (PRN, etc.)
    /// and a satellite system
