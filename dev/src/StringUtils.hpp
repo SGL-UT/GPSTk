@@ -56,6 +56,7 @@
 #include <regex.h>
 #include <cctype>
 #include <limits>
+
 #include "Exception.hpp"
 
 namespace gpstk
@@ -1143,9 +1144,9 @@ namespace gpstk
           * @return a reference to string \a s with the words removed.
           */
       inline std::string& removeWords(std::string& s, 
-               const std::string::size_type first = 0, 
-               const std::string::size_type wordsToReplace = std::string::npos,
-               const char delimiter = ' ')
+                                      const std::string::size_type first = 0, 
+                                      const std::string::size_type wordsToReplace = std::string::npos,
+                                      const char delimiter = ' ')
          throw(StringException);
 
          /**
@@ -1154,9 +1155,9 @@ namespace gpstk
           * @param length length (in characters) of output, including exponent
           * @param expLen length (in characters) of the exponent, with sign
           * @param showSign if true, reserves 1 character for +/- sign
-	       * @param checkSwitch if true, keeps the exponential sanity check for
-	       * exponentials above three characters in length.  If false, it removes
-	       * that check.
+	  * @param checkSwitch if true, keeps the exponential sanity check for
+	  * exponentials above three characters in length.  If false, it removes
+	  * that check.
           */
       inline std::string doub2sci(const double& d, 
                                   const std::string::size_type length, 
@@ -1173,17 +1174,17 @@ namespace gpstk
           * @param startPos start position of number in string
           * @param length length (in characters) of number, including exponent.
           * @param expLen length (in characters of exponent, not including sign.
-	       * @param checkSwitch will keep the method running as orignially programed
-	       * when set to true.  If false, the method will always resize exponentials,
-	       * produce an exponential with an E instead of a D, and always have a leading
-	       * zero.  For example -> 0.87654E-0004 or -0.1234E00005. 
+	  * @param checkSwitch will keep the method running as orignially programed
+	  * when set to true.  If false, the method will always resize exponentials,
+	  * produce an exponential with an E instead of a D, and always have a leading
+	  * zero.  For example -> 0.87654E-0004 or -0.1234E00005. 
           * @throws Exception if the string is not a number in scientific notation
           */
       inline std::string& sci2for(std::string& aStr, 
-               const std::string::size_type startPos = 0,
-               const std::string::size_type length = std::string::npos, 
-               const std::string::size_type expLen = 3,
-               const bool checkSwitch = true)
+                                  const std::string::size_type startPos = 0,
+                                  const std::string::size_type length = std::string::npos, 
+                                  const std::string::size_type expLen = 3,
+                                  const bool checkSwitch = true)
          throw(StringException);
 
          /**
