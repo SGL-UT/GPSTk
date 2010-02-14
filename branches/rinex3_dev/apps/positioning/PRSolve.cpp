@@ -253,7 +253,7 @@ try
    C.oflog << "Added " << nread << " ephemeris files to store.\n";
    SP3EphList.dump(C.oflog,0);
    BCEphList.dump(C.oflog,0);
-   if (SP3EphList.neph() > 0)
+   if (SP3EphList.size() > 0)
       pEph=&SP3EphList;
    else if (BCEphList.size() > 0)
    {
@@ -748,7 +748,7 @@ try
             // dump the data
             if(C.Debug)
             {
-               C.oflog << "RNX " << CurrEpoch.printf(C.timeFormat)
+               C.oflog << "RNX " << CurrEpoch.asString()
                   << " " << RinexSatID(sat) << fixed << setprecision(4)
                   << " P1 " << setw(13) << P1
                   << " P2 " << setw(13) << P2 << endl;
@@ -1433,7 +1433,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
 {
 try
 {
-   bool ok,help=false;
+   bool ok,help=false,helpRetCodes=false;
    int i,j;
       // defaults
    C.Debug = C.Verbose = false;
@@ -2301,6 +2301,7 @@ try
    {
       os << " Output residuals: known position is\n   "
          << C.knownpos.printf("ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
+   }
    if (!C.ordFile.empty())
       os << " Output ORDs to file " << C.ordFile << endl;
    os << " Output tags RPF";
