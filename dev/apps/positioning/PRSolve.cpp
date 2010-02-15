@@ -2306,6 +2306,7 @@ try
    {
       os << " Output residuals: known position is\n   "
          << C.knownpos.printf("ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
+   }
    if (!C.ordFile.empty())
       os << " Output ORDs to file " << C.ordFile << endl;
    os << " Output tags RPF";
