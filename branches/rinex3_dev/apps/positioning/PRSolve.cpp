@@ -1,6 +1,5 @@
 // $Id$
 
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -28,9 +27,10 @@
  * pseudorange position solution, using a RAIM-like algorithm to eliminate outliers.
  */
 
+#define RANGECHECK 1        // make Matrix and Vector check limits
+
 #include <cstring>
 
-#define RANGECHECK 1        // make Matrix and Vector check limits
 #include "Exception.hpp"
 #include "StringUtils.hpp"
 
@@ -74,9 +74,51 @@ using namespace std;
 using namespace gpstk;
 using namespace StringUtils;
 
-   // prgm data
+// prgm data
 string PrgmName("PRSolve");
 string PrgmVers("2.1 5/07");
+
+/******************************************************************************/
+/** **                      ** *** Prototypes *** **                      ** **/
+/******************************************************************************/
+
+int ReadFile(int nfile)
+   throw(Exception);
+
+int SolutionAlgorithm(vector<SatID>& Sats,
+                      vector<double>& PRanges,
+                      double& RMSresid)
+   throw(Exception);
+
+int AfterReadingFiles(void)
+   throw(Exception);
+
+void PrintStats(Stats<double> S[3],
+                Matrix<double> &P,
+                Vector<double> &z,
+                long n, string m,
+                char c0='X', char c1='Y', char c2='Z')
+   throw(Exception);
+
+void setWeather(CommonTime& time, TropModel *pTropModel);
+
+int GetCommandLine(int argc, char **argv)
+   throw(Exception);
+
+void DumpConfiguration(ostream& os)
+   throw(Exception);
+
+void PreProcessArgs(const char *arg, vector<string>& Args)
+   throw(Exception);
+
+int FillEphemerisStore(const vector<string>& files,
+                       SP3EphemerisStore& PE,
+                       GPSEphemerisStore& BCE)
+   throw(Exception);
+
+/******************************************************************************/
+/** **                         ** *** Data *** **                         ** **/
+/******************************************************************************/
 
 // data input from command line
 typedef struct Configuration
@@ -180,26 +222,7 @@ Matrix<double> PAPR,PRPR,PANE,PRNE,PPAPR,PPRPR,PPANE,PPRNE;
 Vector<double> zAPR,zRPR,zANE,zRNE,zzAPR,zzRPR,zzANE,zzRNE;
 
 //------------------------------------------------------------------------------------
-// prototypes
-int ReadFile(int nfile) throw(Exception);
-int SolutionAlgorithm(vector<SatID>& Sats,
-                      vector<double>& PRanges,
-                      double& RMSresid) throw(Exception);
-int AfterReadingFiles(void) throw(Exception);
-void PrintStats(Stats<double> S[3],
-                Matrix<double> &P,
-                Vector<double> &z,
-                long n,
-                string m,
-                char c0='X', char c1='Y', char c2='Z') throw(Exception);
-void setWeather(CommonTime& time, TropModel *pTropModel);
-int GetCommandLine(int argc, char **argv) throw(Exception);
-void DumpConfiguration(ostream& os) throw(Exception);
-void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
-int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
-  GPSEphemerisStore& BCE) throw(Exception);
 
-//------------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
 try
@@ -207,12 +230,12 @@ try
    totaltime = clock();
    int iret;
 
-      // initialization
+   // initialization
    CurrEpoch = PrevEpoch = CommonTime::BEGINNING_OF_TIME;
    SP3EphemerisStore SP3EphList;
    GPSEphemerisStore BCEphList;
 
-      // Title and description
+   // Title and description
    Title = PrgmName + ", part of the GPS ToolKit, Ver " + PrgmVers + ", Run ";
    time_t timer;
    struct tm *tblock;
@@ -224,12 +247,12 @@ try
    Title += (static_cast<CivilTime>(PrgmEpoch)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
    cout << Title << endl;
 
-      // get command line
+   // get command line
    iret = GetCommandLine(argc, argv);
    if (iret < 0) return iret;
    // NB save iret until after DumpConfiguration()
 
-      // update configuration of PRSolution
+   // update configuration of PRSolution
    if (C.Verbose)
    {
       prsol.pDebugStream = &C.oflog;
@@ -244,13 +267,13 @@ try
    prsol.MaxNIterations = prsol.NIterations = C.nIter;
    prsol.ConvergenceLimit = C.convLimit;
 
-      // iret comes from GetCommandLine
+   // iret comes from GetCommandLine
    if (iret == 0) DumpConfiguration(C.oflog);
    else return iret;
 
    // get nav files and build EphemerisStore
    int nread = FillEphemerisStore(C.InputNavName, SP3EphList, BCEphList);
-   C.oflog << "Added " << nread << " ephemeris files to store.\n";
+   C.oflog << "Added " << nread << " ephemeris files to store." << endl;
    SP3EphList.dump(C.oflog,0);
    BCEphList.dump(C.oflog,0);
    if (SP3EphList.size() > 0)
@@ -291,7 +314,7 @@ try
       if (C.Debug)
       {
          C.oflog << "Dump of meteorological data store ("
-                 << C.MetStore.size() << "):\n";
+                 << C.MetStore.size() << "):" << endl;
          list<RinexMetData>::const_iterator it = C.MetStore.begin();
          for ( ; it != C.MetStore.end(); it++)
          {
@@ -382,8 +405,6 @@ try
    }
 
    // initialize global solution and residual statistics
-   // not necessary SSA[0].Reset(); SSA[1].Reset(); SSA[2].Reset();
-   // not necessary SSR[0].Reset(); SSR[1].Reset(); SSR[2].Reset();
    nSS = 0;
    PPA = Matrix<double>(3,3,0.0);
    PPR = Matrix<double>(3,3,0.0);
@@ -393,15 +414,11 @@ try
    {
       if (C.APSout)
       {
-         // not necessary SSAPR[0].Reset(); SSAPR[1].Reset(); SSAPR[2].Reset();
-         // not necessary SSANE[0].Reset(); SSANE[1].Reset(); SSANE[2].Reset();
          PPAPR = Matrix<double>(3,3,0.0);
          PPANE = Matrix<double>(3,3,0.0);
          zzAPR = Vector<double>(3,0.0);
          zzANE = Vector<double>(3,0.0);
       }
-      // not necessary SSRPR[0].Reset(); SSRPR[1].Reset(); SSRPR[2].Reset();
-      // not necessary SSRNE[0].Reset(); SSRNE[1].Reset(); SSRNE[2].Reset();
       PPRPR = Matrix<double>(3,3,0.0);
       PPRNE = Matrix<double>(3,3,0.0);
       zzRPR = Vector<double>(3,0.0);
@@ -421,9 +438,9 @@ try
 
    totaltime = clock()-totaltime;
    C.oflog << "PRSolve timing: " << fixed << setprecision(3)
-      << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
-   cout << "\nPRSolve timing: " << fixed << setprecision(3)
-      << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
+           << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
+   cout << "PRSolve timing: " << fixed << setprecision(3)
+        << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
 
    C.oflog.close();
    C.oford.close();
@@ -433,12 +450,12 @@ try
 catch(Exception& e) { cout << e; }
 catch (...) { cerr << C.oflog << "Unknown error.  Abort." << endl; }
 return 1;
-}  // end main()
+} // end main()
 
 //------------------------------------------------------------------------------------
-// open the file, read header and check for data; then loop over the epochs
+// Open the file, read header and check for data; then loop over the epochs.
 // Return 0 ok, <0 fatal error, >0 non-fatal error (ie skip this file)
-// 0 ok, 1 couldn't open file, 2 file doesn't have required data
+// 0 ok, 1 couldn't open file, 2 file doesn't have required data.
 int ReadFile(int nfile) throw(Exception)
 {
 try
@@ -450,24 +467,24 @@ try
    RinexObsStream ifstr, ofstr;     // input and output RINEX files
    RinexObsHeader rhead, rheadout;  
 
-      // open input file
+   // open input file
    filename = C.InputObsName[nfile];
    ifstr.open(filename.c_str(),ios::in);
    if (ifstr.fail())
    {
-      C.oflog << "Failed to open input file " << filename << ". Abort.\n";
+      C.oflog << "Failed to open input file " << filename << ". Abort." << endl;
       return 1;
    }
    else C.oflog << "Opened input file " << filename << endl;
    ifstr.exceptions(ios::failbit);
 
-      // open output file
+   // open output file
    if (!C.OutRinexObs.empty())
    {
       ofstr.open(C.OutRinexObs.c_str(), ios::out);
       if (ofstr.fail())
       {
-         C.oflog << "Failed to open output file " << C.OutRinexObs << " Abort.\n";
+         C.oflog << "Failed to open output file " << C.OutRinexObs << " Abort." << endl;
          ifstr.close();
          return 1;
       }
@@ -478,12 +495,12 @@ try
    else
       writeout = false;
 
-      // read the header
+   // read the header
    ifstr >> rhead;
    C.oflog << "Here is the input header for file " << filename << endl;
    rhead.dump(C.oflog);
 
-      // check that file contains C1/P1,P2,L1,L2,D1,D2,S1,S2
+   // check that file contains C1/P1,P2,L1,L2,D1,D2,S1,S2
    inC1 = inP1 = inP2 = inL1 = inL2 = inD1 = inD2 = inS1 = inS2 = -1;
    for (j=0; j<rhead.obsTypeList.size(); j++)
    {
@@ -524,8 +541,8 @@ try
       if (inC1 != -1) inP1 = inC1;
       else
       {
-         C.oflog << "ERROR. Abort. --forceCA was found but C1 data is not found.\n";
-         cerr << "ERROR. Abort. --forceCA was found but C1 data is not found.\n";
+         C.oflog << "ERROR. Abort. --forceCA was found but C1 data is not found." << endl;
+         cerr << "ERROR. Abort. --forceCA was found but C1 data is not found." << endl;
          return -1;
       }
    }
@@ -534,20 +551,20 @@ try
       if (C.UseCA && inC1 != -1) inP1 = inC1;
       else if (C.UseCA && inC1 == -1)
       {
-         C.oflog << "ERROR. Abort. Neither P1 nor C1 data found (--useCA is set).\n";
-         cerr << "ERROR. Abort. Neither P1 nor C1 data found (--useCA is set).\n";
+         C.oflog << "ERROR. Abort. Neither P1 nor C1 data found (--useCA is set)." << endl;
+         cerr << "ERROR. Abort. Neither P1 nor C1 data found (--useCA is set)." << endl;
          return -1;
       }
       else if (C.Freq != 2 && !C.UseCA && inC1 != -1)
       {
-         C.oflog << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)\n";
-         cerr << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)\n";
+         C.oflog << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)" << endl;
+         cerr << "ERROR. Abort. P1 data not found (C1 data found: add --useCA)" << endl;
          return -1;
       }
       else if (C.Freq != 2)
       {
-         C.oflog << "ERROR. Abort. Neither P1 nor C1 data found.\n";
-         cerr << "ERROR. Abort. Neither P1 nor C1 data found.\n";
+         C.oflog << "ERROR. Abort. Neither P1 nor C1 data found." << endl;
+         cerr << "ERROR. Abort. Neither P1 nor C1 data found." << endl;
          return -1;
       }
    }
@@ -626,7 +643,7 @@ try
          return -2;
       }
 
-         // normal end-of-file
+      // normal end-of-file
       if (!ifstr.good() || ifstr.eof()) { iret=0; break; }
 
       for (;;)
@@ -640,15 +657,15 @@ try
                     << ", clk " << robsd.clockOffset << endl;
          }
 
-            // stay within time limits
+         // stay within time limits
          if (robsd.time < C.Tbeg) { iret =  1; break; }
          if (robsd.time > C.Tend) { iret = -1; break; }
 
-            // ignore comment blocks ...
+         // ignore comment blocks ...
          if (robsd.epochFlag != 0 && robsd.epochFlag != 1) { iret = 1; break; }
 
-            // decimate data
-            // if Tbeg is still undefined, set it to begin of week
+         // decimate data
+         // if Tbeg is still undefined, set it to beginning of week.
          if (C.ith > 0.0)
          {
             if (fabs(C.Tbeg-CommonTime::BEGINNING_OF_TIME) < 1.e-8)
@@ -660,12 +677,12 @@ try
             if (fabs(dt) > 0.25) { iret = 1; break; }
          }
 
-            // save current time
+         // save current time
          CurrEpoch = robsd.time;
          if (fabs(C.FirstEpoch-CommonTime::BEGINNING_OF_TIME) < 1.e-8)
             C.FirstEpoch = CurrEpoch;
 
-            // loop over satellites
+         // loop over satellites
          Nsvs = 0;
          Satellites.clear();
          Ranges.clear();
@@ -680,7 +697,7 @@ try
             SatID sat = it->first;
             RinexObsData::RinexObsTypeMap otmap = it->second;
 
-               // pull out the data
+            // pull out the data
             RinexObsData::RinexObsTypeMap::const_iterator jt;
             if (inC1>-1 && (jt=otmap.find(rhead.obsTypeList[inC1])) != otmap.end())
                C1=jt->second.data;
@@ -701,18 +718,18 @@ try
             if (inS2>-1 && (jt=otmap.find(rhead.obsTypeList[inS2])) != otmap.end())
                S2=jt->second.data;
       
-            // is the satellite excluded?
+            // Is the satellite excluded?
             if (sat.system != SatID::systemGPS) continue;     // GPS only
             bool ok = true;
             for (i=0; i<C.ExSV.size(); i++)
                if (C.ExSV[i] == sat) { ok = false; break; }
             if (!ok) continue;
       
-            // NB do not exclude negative P, as some clocks can go far
+            // NB do not exclude negative P, as some clocks can go far.
             if (C.Freq != 2 && P1==0.0) continue;
             if (C.Freq != 1 && P2==0.0) continue;
 
-            // if position known and elevation limit given, apply elevation mask
+            // If position known and elevation limit given, apply elevation mask.
             if (C.knownpos.getCoordinateSystem() != Position::Unknown
                 && C.elevLimit > 0.0)
             {
@@ -720,7 +737,7 @@ try
                CorrectedEphemerisRange CER;
                try
                {
-                  //double ER =
+                  // double ER =
                   CER.ComputeAtReceiveTime(CurrEpoch, C.knownpos, sat, *pEph);
                   if (CER.elevation < C.elevLimit) ok = false;
                   if (C.Debug)
@@ -749,9 +766,9 @@ try
             if(C.Debug)
             {
                C.oflog << "RNX " << CurrEpoch.asString()
-                  << " " << RinexSatID(sat) << fixed << setprecision(4)
-                  << " P1 " << setw(13) << P1
-                  << " P2 " << setw(13) << P2 << endl;
+                       << " " << RinexSatID(sat) << fixed << setprecision(4)
+                       << " P1 " << setw(13) << P1
+                       << " P2 " << setw(13) << P2 << endl;
             }
 
             // keep this satellite
@@ -782,19 +799,36 @@ try
          if (C.Debug) C.oflog << "SolutionAlgorithm returns " << iret << endl;
          if (iret) break;
 
-            // update LastEpoch and estimate of DT
+         // update LastEpoch and estimate of DT
          if (C.LastEpoch > CommonTime::BEGINNING_OF_TIME)
          {
             dt = CurrEpoch - C.LastEpoch;
             for (i=0; i<9; i++)
             {
-               if (C.ndt[i]<=0) { C.estdt[i] = dt; C.ndt[i] = 1; break; }
-               if (fabs(dt-C.estdt[i]) < 0.0001) { C.ndt[i]++; break; }
+               if (C.ndt[i]<=0)
+               {
+                  C.estdt[i] = dt;
+                  C.ndt[i] = 1;
+                  break;
+               }
+               if (fabs(dt-C.estdt[i]) < 0.0001)
+               {
+                  C.ndt[i]++;
+                  break;
+               }
                if (i == 8)
                {
                   int k = 0, nl = C.ndt[k];
-                  for (j=1; j<9; j++) if (C.ndt[j] <= nl) { k=j; nl=C.ndt[j]; }
-                  C.ndt[k] = 1; C.estdt[k] = dt;
+                  for (j=1; j<9; j++)
+                  {
+                     if (C.ndt[j] <= nl)
+                     {
+                        k=j;
+                        nl=C.ndt[j];
+                     }
+                  }
+                  C.ndt[k] = 1;
+                  C.estdt[k] = dt;
                }
             }
          }
@@ -808,7 +842,7 @@ try
       if (iret == -4) continue;                  // ignore this epoch - no ephemeris
       if (iret == 1) continue;                   // ignore this epoch - fatal error
 
-         // write out ORDs
+      // write out ORDs
       if (!C.ordFile.empty())
       {
          int n = 0;
@@ -857,7 +891,7 @@ try
          }
       }
 
-         // accumulate simple statistics, Autonomous and RAIM
+      // accumulate simple statistics, Autonomous and RAIM
       if (C.APSout)
       {
          SA[0].Add(Solution(0)); SA[1].Add(Solution(1)); SA[2].Add(Solution(2));
@@ -870,7 +904,7 @@ try
       SSR[1].Add(prsol.Solution(1));
       SSR[2].Add(prsol.Solution(2));
 
-         // accumulate weighted statistics, Auto and RAIM
+      // accumulate weighted statistics, Auto and RAIM
       if (C.APSout)
       {
          inform = inverseSVD(Matrix<double>(Covariance,0,0,3,3));
@@ -887,7 +921,7 @@ try
 
       if (!writeout) continue;                   // go to next epoch
 
-         // output to RINEX
+      // output to RINEX
       if (first)                                 // edit the output RINEX header
       {
          rheadout = rhead;
@@ -949,7 +983,7 @@ try
 
    }  // end while loop over epochs
 
-      // only print per file if there is more than one file
+   // print only per file if there is more than one file
    if (C.InputObsName.size() > 1)
    {
       if (C.APSout) PrintStats(SA,PA,zA,nS,"Autonomous solution for file " + filename);
@@ -968,10 +1002,10 @@ try
             "RAIM solution residuals (NEU) for file " + filename,'N','E','U');
       }
       // print to screen
-      cout << "\nWeighted average RAIM solution for file: "
+      cout << "Weighted average RAIM solution for file: "
            << filename << endl << fixed;
       cout << " (" << nS << " total epochs, with "
-           << SR[0].N() << " good, " << nS-SR[0].N() << " rejected.)\n";
+           << SR[0].N() << " good, " << nS-SR[0].N() << " rejected.)" << endl;
       if (SR[0].N() > 0)
       {
          Matrix<double> Cov=inverse(PR);
@@ -1018,7 +1052,7 @@ try
    // compute a position solution with this data
    if (C.Debug)
    {
-      C.oflog << "Satellites and Ranges before Prepare:\n";
+      C.oflog << "Satellites and Ranges before Prepare:" << endl;
       for (i=0; i<PRanges.size(); i++)
       {
          C.oflog << " " << setw(2) << RinexSatID(Sats[i]) << fixed
@@ -1054,7 +1088,7 @@ try
          C.oflog << "Satellites after  Prepare(" << iret << "):";
          for (i=0; i<Sats.size(); i++)
             C.oflog << " " << setw(2) << Sats[i].id; C.oflog << endl;
-         C.oflog << "Matrix SVP(" << SVP.rows() << "," << SVP.cols() << "):\n"
+         C.oflog << "Matrix SVP(" << SVP.rows() << "," << SVP.cols() << "):" << endl
                  << fixed << setw(13) << setprecision(3) << SVP << endl;
       }
 
@@ -1154,6 +1188,7 @@ try
 
    // --------------------------------------------------------------
    // now compute again, using RAIM
+
    iret = prsol.RAIMCompute(CurrEpoch, Sats, PRanges, *pEph, C.pTropModel);
 
    for (Nsvs=0,i=0; i<Sats.size(); i++)
@@ -1179,19 +1214,20 @@ try
    {
       //C.oflog << "PRS returned " << iret << " at " << CurrEpoch.printf(C.timeFormat)
       //   << ", meaning ";
-      if (iret==2) C.oflog
-         << " solution is found, but it is not good (RMS residual exceed limits)";
-      if (iret==1) C.oflog
-         << " solution is found, but it is suspect (slope is large)";
-      if (iret==0) C.oflog << " ok";
-      if (iret==-1) C.oflog
-         << " algorithm failed to converge";
-      if (iret==-2) C.oflog
-         << " singular problem, no solution is possible";
-      if (iret==-3) C.oflog
-         << " not enough good data, < 5 sats, 4-sat sol is ok if V at EOL";
-      if (iret==-4) C.oflog
-         << " failed to find any ephemeris";
+      if (iret==2)
+         C.oflog << " solution is found, but it is not good (RMS residual exceed limits)";
+      if (iret==1)
+         C.oflog << " solution is found, but it is suspect (slope is large)";
+      if (iret==0)
+         C.oflog << " ok";
+      if (iret==-1)
+         C.oflog << " algorithm failed to converge";
+      if (iret==-2)
+         C.oflog << " singular problem, no solution is possible";
+      if (iret==-3)
+         C.oflog << " not enough good data, < 5 sats, 4-sat sol is ok if V at EOL";
+      if (iret==-4)
+         C.oflog << " failed to find any ephemeris";
    }
    C.oflog << ")" << (prsol.isValid() ? " V" : " NV") << endl;
 
@@ -1225,7 +1261,9 @@ try
       // accumulate statistics
       SRPR[0].Add(V(0)); SRPR[1].Add(V(1)); SRPR[2].Add(V(2));
       SSRPR[0].Add(V(0)); SSRPR[1].Add(V(1)); SSRPR[2].Add(V(2));
+
       inform = inverseSVD(Cov);
+
       PRPR  += inform;
       PPRPR += inform;
       zRPR  += inform * V;
@@ -1303,11 +1341,11 @@ try
    }
 
    // print to screen
-   cout << "\nWeighted average RAIM solution for file: "
+   cout << "Weighted average RAIM solution for file: "
         << (C.InputObsName.size() > 1 ? "all files" : C.InputObsName[0])
         << endl << fixed;
    cout << " (" << nSS << " total epochs, with "
-        << SSR[0].N() << " good, " << nSS-SSR[0].N() << " rejected.)\n";
+        << SSR[0].N() << " good, " << nSS-SSR[0].N() << " rejected.)" << endl;
    if (SSR[0].N() > 0)
    {
       Matrix<double> Cov=inverse(PPR);
@@ -1321,13 +1359,13 @@ try
    else
       cout << " No data!" << endl;
 
-      // compute data interval for this file
+   // compute data interval for this file
    int i,j;
    double dt;
    for (j=0,i=1; i<9; i++)
    { if (C.ndt[i]>C.ndt[j]) j=i; }
    C.oflog << endl;
-   C.oflog << "Estimated data interval is " << C.estdt[j] << " seconds.\n";
+   C.oflog << "Estimated data interval is " << C.estdt[j] << " seconds." << endl;
    C.oflog << "First epoch is "
            << (static_cast<CivilTime>(C.FirstEpoch)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P") << endl;
    C.oflog << "Last  epoch is "
@@ -1335,9 +1373,20 @@ try
 
    return 0;
 }
-catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+catch(Exception& e)
+{
+   GPSTK_RETHROW(e);
+}
+catch(exception& e)
+{
+   Exception E("std except: "+string(e.what()));
+   GPSTK_THROW(E);
+}
+catch(...)
+{
+   Exception e("Unknown exception");
+   GPSTK_THROW(e);
+}
 return -1;
 }
 
@@ -1354,7 +1403,7 @@ try
    C.oflog << c2 << " : " << setw(16) << setprecision(6) << S[2] << endl;
 
    //C.oflog << endl;
-   C.oflog << "\nWeighted average " << msg << endl << fixed;
+   C.oflog << "Weighted average " << msg << endl << fixed;
    if (S[0].N() > 0)
    {
       Matrix<double> Cov=inverse(P);
@@ -1365,9 +1414,20 @@ try
    }
    else C.oflog << " No data!" << endl;
 }
-catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+catch(Exception& e)
+{
+   GPSTK_RETHROW(e);
+}
+catch(exception& e)
+{
+   Exception E("std except: "+string(e.what()));
+   GPSTK_THROW(E);
+}
+catch(...)
+{
+   Exception e("Unknown exception");
+   GPSTK_THROW(e);
+}
 }
 
 //------------------------------------------------------------------------------------
@@ -1383,7 +1443,7 @@ void setWeather(CommonTime& time, TropModel *pTropModel)
       // point to the next epoch after the current epoch
       (nextit = it)++;            // same as nextit=it; nextit++;
       
-      // is the current epoch (it->time) the right one?
+      // Is the current epoch (it->time) the right one?
       if (    // time is before next but after current - just right
             (nextit != C.MetStore.end() && time < nextit->time && time >= it->time)
              // there is no next, but time is within 15 minutes of the current epoch
@@ -1416,7 +1476,7 @@ void setWeather(CommonTime& time, TropModel *pTropModel)
          break;
       }
 
-      // no, this is not the right epoch; but should we increment the iterator ?
+      // No, this is not the right epoch, but should we increment the iterator ?
       else if (nextit != C.MetStore.end() && time >= nextit->time)
       {
          // yes, time is at or beyond the next epoch
@@ -1435,13 +1495,14 @@ try
 {
    bool ok,help=false,helpRetCodes=false;
    int i,j;
-      // defaults
+
+   // defaults
    C.Debug = C.Verbose = false;
    C.ith = 0.0;
    C.Tbeg = C.FirstEpoch = CommonTime::BEGINNING_OF_TIME;
    C.Tend = CommonTime::END_OF_TIME;
 
-      // configuration of PRSolution
+   // configuration of PRSolution
    C.rmsLimit = prsol.RMSLimit;
    C.SlopeLimit = prsol.SlopeLimit;
    C.algebra = prsol.Algebraic;
@@ -1701,7 +1762,7 @@ try
 
    if (Args.size()==0)
       Args.push_back(string("-h"));
-   //cout << "List after PreProcessArgs\n";
+   //cout << "List after PreProcessArgs" << endl;
    //for (i=0; i<Args.size(); i++) cout << i << " " << Args[i] << endl;
 
       // pass the rest
@@ -1709,17 +1770,21 @@ try
    char **CArgs=new char*[argc];
    if (!CArgs)
    {
-      cout << "Failed to allocate CArgs\n";
+      cout << "Failed to allocate CArgs" << endl;
       return -1;
    }
    CArgs[0] = argv[0];
    for (j=1; j<argc; j++)
    {
       CArgs[j] = new char[Args[j-1].size()+1];
-      if (!CArgs[j]) { cout << "Failed to allocate CArgs[j]\n"; return -1; }
+      if (!CArgs[j])
+      {
+         cout << "Failed to allocate CArgs[j]" << endl;
+         return -1;
+      }
       strcpy(CArgs[j],Args[j-1].c_str());
    }
-   //cout << "List passed to parser\n";
+   //cout << "List passed to parser" << endl;
    //for (i=0; i<argc; i++) cout << i << " " << CArgs[i] << endl;
 
    Par.parseOptions(argc, CArgs);
@@ -1735,13 +1800,13 @@ try
    {
       Par.displayUsage(cout,false);
       if (helpRetCodes)
-      cout << "\nReturn codes from the PRSolution module "
-           << "are found in () before 'NV':\n"
-           << "  2 means 'RMS residual exceeded limit'\n"
-           << "  1 means 'RAIM slope exceeded limit'\n"
-           << " -1 means 'Algorithm failed to converge'\n"
-           << " -2 means 'Algorithm found singularity'\n"
-           << " -3 means 'Not enough good data'\n"
+      cout << "Return codes from the PRSolution module "
+           << "are found in () before 'NV':" << endl
+           << "  2 means 'RMS residual exceeded limit'" << endl
+           << "  1 means 'RAIM slope exceeded limit'" << endl
+           << " -1 means 'Algorithm failed to converge'" << endl
+           << " -2 means 'Algorithm found singularity'" << endl
+           << " -3 means 'Not enough good data'" << endl
            << " -4 means 'No ephemeris found'"
            << endl;
       help = true;
@@ -1749,9 +1814,9 @@ try
 
    if (!help && Par.hasErrors())
    {
-      cout << "\nErrors found in command line input:\n";
+      cout << "Errors found in command line input:" << endl;
       Par.dumpErrors(cout);
-      cout << "...end of Errors\n\n";
+      cout << "...end of Errors" << endl;
       help = true;
    }
    
@@ -1760,7 +1825,11 @@ try
    string stemp;
    vector<string> values,field;
       // f never appears because we intercept it above
-   //if (dashf.getCount()) { cout << "Option f "; dashf.dumpValue(cout); }
+//   if (dashf.getCount())
+//   {
+//      cout << "Option f ";
+//      dashf.dumpValue(cout);
+//   }
       // do help first
    if (dashh.getCount()) help=true;
    if (dashDebug.getCount()) C.Debug=C.Verbose=true;
@@ -1848,7 +1917,7 @@ try
       }
 
       if (help)
-         cout << "Input RINEX met files are:\n";
+         cout << "Input RINEX met files are:" << endl;
       for (i=0; i<field.size(); i++)
       {
          if (!C.MetDirectory.empty())
@@ -1952,13 +2021,13 @@ try
    {
       C.UseCA = true;
       if (help)
-         cout << "'Use C/A' flag is set\n";
+         cout << "'Use C/A' flag is set" << endl;
    }
    if (dashfCA.getCount())
    {
       C.ForceCA = true;
       if (help)
-         cout << "'Force C/A' flag is set\n";
+         cout << "'Force C/A' flag is set" << endl;
    }
 
    if (dashrms.getCount())
@@ -1979,19 +2048,19 @@ try
    {
       C.algebra = true;
       if (help)
-         cout << "'Algebraic' option is on\n";
+         cout << "'Algebraic' option is on" << endl;
    }
    if (dashrcrt.getCount())
    {
       C.residCrit = false;
       if (help)
-         cout << "'ResidualCriterion' option is false\n";
+         cout << "'ResidualCriterion' option is false" << endl;
    }
    if (dashrone.getCount())
    {
       C.returnatonce = true;
       if (help)
-         cout << "'Return at once' option is true\n";
+         cout << "'Return at once' option is true" << endl;
    }
    if (dashnrej.getCount())
    {
@@ -2181,7 +2250,7 @@ try
    }
    //if (C.Verbose && help)
    //{
-   // cout << "\nTokens on command line (" << Args.size() << ") are:" << endl;
+   // cout << "Tokens on command line (" << Args.size() << ") are:" << endl;
    // for (unsigned j=0; j<Args.size(); j++) cout << Args[j] << endl;
    //}
 
@@ -2214,16 +2283,16 @@ try
 {
    int i;
       // print config to log
-   os << "\nHere is the PRSolve configuration:\n";
-   os << " # Input:\n";
+   os << "Here is the PRSolve configuration:" << endl;
+   os << " # Input:" << endl;
    os << " Obs directory is '" << C.ObsDirectory << "'" << endl;
-   os << " RINEX observation files are:\n";
+   os << " RINEX observation files are:" << endl;
    for (i=0; i<C.InputObsName.size(); i++)
    {
       os << "   " << C.InputObsName[i] << endl;
    }
    os << " Nav directory is '" << C.NavDirectory << "'" << endl;
-   os << " navigation files are:\n";
+   os << " navigation files are:" << endl;
    for (i=0; i<C.InputNavName.size(); i++)
    {
       os << "   " << C.InputNavName[i] << endl;
@@ -2231,14 +2300,14 @@ try
    if (C.InputMetName.size() > 0)
    {
       os << " Met directory is '" << C.MetDirectory << "'" << endl;
-      os << " RINEX meteorological files are:\n";
+      os << " RINEX meteorological files are:" << endl;
       for (i=0; i<C.InputMetName.size(); i++)
       {
          os << "   " << C.InputMetName[i] << endl;
       }
    }
    else
-      os << " No input meteorological data\n";
+      os << " No input meteorological data" << endl;
    os << " Ithing time interval is " << C.ith << endl;
    if (C.Tbeg > CommonTime::BEGINNING_OF_TIME)
    {
@@ -2253,11 +2322,11 @@ try
          << " = " << C.Tend << endl;
    }
    if (C.UseCA)
-      os << " 'Use C/A' flag is set\n";
+      os << " 'Use C/A' flag is set" << endl;
    if (C.ForceCA)
-      os << " 'Force C/A' flag is set\n";
+      os << " 'Force C/A' flag is set" << endl;
 
-   os << " # Configuration:\n";
+   os << " # Configuration:" << endl;
    os << " Process frequency L" << C.Freq;
    if (C.Freq == 3)
       os << ", which is the ionosphere-free combination of L1 and L2";
@@ -2295,11 +2364,11 @@ try
       << prsol.ConvergenceLimit << endl;
    os << " ------ End of PRSolution configuration." << endl;
 
-   os << " # Output:\n";
+   os << " # Output:" << endl;
    os << " Log file is " << C.LogFile << endl;
    if (C.knownpos.getCoordinateSystem() != Position::Unknown)
    {
-      os << " Output residuals: known position is\n   "
+      os << " Output residuals: known position is " << endl
          << C.knownpos.printf("ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
    }
    if (!C.ordFile.empty())
@@ -2339,6 +2408,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // Pull out --verbose -f<f> and --file <f> options
+
 void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
 {
 try
@@ -2403,12 +2473,12 @@ try
    else if (string(arg) == "--file" || string(arg) == "-f")
       found_cfg_file = true;
    // deprecated args
-   else if (string(arg)==string("--EpochBeg")) { Args.push_back("--BeginTime"); }
-   else if (string(arg)==string("--GPSBeg")) { Args.push_back("--BeginTime"); }
-   else if (string(arg)==string("--EpochEnd")) { Args.push_back("--EndTime"); }
-   else if (string(arg)==string("--GPSEnd")) { Args.push_back("--EndTime"); }
-   else if (string(arg)==string("--RinexFile")) { Args.push_back("--outRinex"); }
-   else if (string(arg)==string("--XPRN")) { Args.push_back("--exSat"); }
+   else if (string(arg)==string("--EpochBeg" )) { Args.push_back("--BeginTime"); }
+   else if (string(arg)==string("--GPSBeg"   )) { Args.push_back("--BeginTime"); }
+   else if (string(arg)==string("--EpochEnd" )) { Args.push_back("--EndTime"  ); }
+   else if (string(arg)==string("--GPSEnd"   )) { Args.push_back("--EndTime"  ); }
+   else if (string(arg)==string("--RinexFile")) { Args.push_back("--outRinex" ); }
+   else if (string(arg)==string("--XPRN"     )) { Args.push_back("--exSat"    ); }
    // regular arg
    else Args.push_back(arg);
 }
@@ -2495,11 +2565,21 @@ try
    }
    return nread;
 }
-catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+catch(Exception& e)
+{
+   GPSTK_RETHROW(e);
+}
+catch(exception& e)
+{
+   Exception E("std except: "+string(e.what()));
+   GPSTK_THROW(E);
+}
+catch(...)
+{
+   Exception e("Unknown exception");
+   GPSTK_THROW(e);
+}
 return -1;
 }
 
-//------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
