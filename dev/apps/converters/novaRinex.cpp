@@ -41,11 +41,10 @@
  * gpstk::novaRinex - convert Novatel binary data files to RINEX format
  */
 
-#include <cstring>
-
 #include <iostream>
 #include <iomanip>
-#include <time.h>
+#include <ctime>
+#include <cstring>
 #include <string>
 #include <map>
 
@@ -278,7 +277,7 @@ try {
    else
       filename = InputDirectory + string("/") + NovatelFile;
    instr.open(filename.c_str(),ios::in | ios::binary);
-   if(!instr) {
+   if(!instr.is_open()) {
       cerr << "Failed to open input file " << NovatelFile << endl;
       return -1;
    }
@@ -287,14 +286,14 @@ try {
 
    TempFileName = GetTempFileName();
    rostr.open(TempFileName.c_str(),ios::out);
-   if(!rostr) {
+   if(!rostr.is_open()) {
       cerr << "Failed to open temporary output file " << TempFileName << endl;
       return -2;
    }
    rostr.exceptions(fstream::failbit);
 
    rnstr.open(RinexNavFile.c_str(),ios::out);
-   if(!rnstr) {
+   if(!rnstr.is_open()) {
       cerr << "Failed to open output nav file " << RinexNavFile << endl;
       return -3;
    }
@@ -481,16 +480,24 @@ string GetTempFileName(void) throw(Exception)
 {
 try {
 #ifdef _MSC_VER
-   char newname[L_tmpnam];
-   if(!tmpnam(newname)) {
+   char newfilename[L_tmpnam];
+   if(!tmpnam(newfilename)) {
+      return string("");
+   }
+   char *dtemp = getenv("TEMP");
+   string pathname(dtemp);
+   pathname += string("\\") + string(newfilename);
+   remove(pathname.c_str());
+   //cout << "Open temporary file " << pathname << endl;
+   return pathname;
 #else
    char newname[]="TempnovaRinex.XXXXXX";
    if(mkstemp(newname)==-1) {
-#endif
       return string("");
    }
    remove(newname);
    return string(newname);
+#endif
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
@@ -569,7 +576,7 @@ try {
    //BinexStream BinexOut;
    //if(!BinexFile.empty()) {
    //   BinexOut.open(BinexFile.c_str(), std::ios::out | std::ios::binary);
-   //   if(!BinexOut) {
+   //   if(!BinexOut.is_open()) {
    //      cerr << "Failed to open output BINEX file " << BinexFile << endl;
    //      return -3;
    //   }
@@ -835,7 +842,7 @@ try {
    for(j=1; j<argc; j++) {
       CArgs[j] = new char[Args[j-1].size()+1];
       if(!CArgs[j]) { cerr << "Failed to allocate CArgs[j]\n"; return -1; }
-      std::strcpy(CArgs[j],Args[j-1].c_str());
+      strcpy(CArgs[j],Args[j-1].c_str());
    }
 
    if(Debug) {
