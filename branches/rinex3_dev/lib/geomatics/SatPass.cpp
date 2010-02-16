@@ -35,7 +35,7 @@
 #include <algorithm>
 // gpstk
 #include "SatPass.hpp"
-#include "icd_200_constants.hpp"    // OSC_FREQ,L1_MULT,L2_MULT
+#include "icd_gps_constants.hpp"    // OSC_FREQ,L1_MULT,L2_MULT
 #include "Stats.hpp"
 #include "StringUtils.hpp"
 #include "RinexObsHeader.hpp"
@@ -920,8 +920,8 @@ int SatPassFromRinexFiles(vector<string>& filenames,
                   }
                   else if(i == -2) {   // time tag out of order
                      Exception e("Time tags out of order in the RINEX file "
-                           + filename + " at time "
-                           + obsdata.time.printf("%4F %10.3g"));
+                                 + filename + " at time "
+                                 + obsdata.time.asString());
                      GPSTK_THROW(e);
                   }
                   //else if(i == -3) {   // sat not found (RinexObsData form only)
