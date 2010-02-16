@@ -123,25 +123,25 @@ typedef struct configuration
 
 //------------------------------------------------------------------------------------
 
-// Data input from command line.
+// Data input from command line
 
 DFConfig config;                 // for DiscFix
 GDCconfiguration GDConfig;       // the discontinuity corrector configuration
 
-// Data used in the program.
+// Data used in the program
 
 clock_t totaltime;
 string Title;
 CommonTime CurrEpoch, PrgmEpoch;
 
-RinexObsStream irfstr, orfstr;     // input and output RINEX files
+RinexObsStream irfstr, orfstr;   // input and output RINEX files
 RinexObsHeader rhead;
-int inC1,inP1,inP2,inL1,inL2;      // indexes in rhead of C1, C1/P1, P2, L1 and L2
+int inC1,inP1,inP2,inL1,inL2;    // indexes in rhead of C1, C1/P1, P2, L1 and L2
 bool UsingCA;
 
-// Data for an entire pass is stored in SatPass object this contains all the
-// SatPass's defined so far the parallel vector holds an iterator for use in
-// writing out the data.
+// Data for an entire pass is stored in SatPass object:
+// This contains all the SatPasses defined so far.
+// The parallel vector holds an iterator for use in writing out the data.
 
 vector<SatPass> SPList;
 
@@ -149,11 +149,11 @@ vector<SatPass> SPList;
 
 static const string L1="L1",L2="L2",P1="P1",P2="P2";
 
-// List of observation types to be included in each SatPass.
+// List of observation types to be included in each SatPass
 
 vector<string> L1L2P1P2;
 
-// Map relating a satellite to the index in SVPList of the current pass.
+// Map relating a satellite to the index in SVPList of the current pass
 
 vector<unsigned int> SPIndexList;
 map<GSatID,int> SatToCurrentIndexMap;
@@ -473,6 +473,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
          if (k > -1) continue;
 
          // If only one satellite is included, skip all the rest.
+
          if (config.SVonly.id != -1 && !(sat == config.SVonly)) continue;
 
          // Pull out the data and the SSI and LLI (indicators).
@@ -542,7 +543,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
       }  // end loop over sats
 
       // Update LastEpoch and estimate of config.dt.
-      if (config.LastEpoch > CommonTime(CommonTime::BEGINNING_OF_TIME))
+      if (config.LastEpoch > CommonTime::BEGINNING_OF_TIME)
       {
          double dt = CurrEpoch-config.LastEpoch;
          for (i=0; i<9; i++)
@@ -698,14 +699,15 @@ void ProcessSatPass(int in)
       SatToCurrentIndexMap.erase(SPList[in].getSat());
 
       // --------- call DC on this pass -------------------
+      string msg;
       vector<string> EditCmds;
-      int iret = DiscontinuityCorrector(SPList[in], GDConfig, EditCmds);
+      int iret = DiscontinuityCorrector(SPList[in], GDConfig, EditCmds, msg);
       if (iret != 0)
       {
          SPList[in].status() = 100;         // status == 100 means 'failed'
          return;
       }
-      SPList[in].status() = 2;              // status == 2 means 'processed'.
+      SPList[in].status() = 2;              // status == 2 means 'processed'
 
       // --------- output editing commands ----------------
       for (int i=0; i<EditCmds.size(); i++)
@@ -1101,14 +1103,14 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    config.WriteASAP = true;   // this is not in the input...
    config.verbose = false;
    config.ith = 0.0;
-   config.begTime = CommonTime(CommonTime::BEGINNING_OF_TIME);
-   config.endTime = CommonTime(CommonTime::END_OF_TIME);
+   config.begTime = CommonTime::BEGINNING_OF_TIME;
+   config.endTime = CommonTime::END_OF_TIME;
    config.MaxGap = 600.0;
    //config.MinPts = 10;
 
    config.LogFile = string("df.log");
    config.OutFile = string("df.out");
-   config.format = string("%4F %10.3g");
+   config.format  = string("%4F %10.3g");
 
    config.UseCA = false;     // true would mean use C1 only
    config.dt = -1.0;
@@ -1687,7 +1689,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
  } // end try
  catch(Exception& e) { GPSTK_RETHROW(e); }
  catch(exception& e)
- { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+    { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
  catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
