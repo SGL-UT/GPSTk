@@ -22,28 +22,28 @@
 //
 //============================================================================
 
-//------------------------------------------------------------------------------------
-// DiscFix.cpp Read a RINEX observation file containing dual frequency
-//    pseudorange and phase, separate the data into satellite passes, and then
-//    find and estimate discontinuities in the phase (using the GPSTk Discontinuity
-//    Corrector (GDC) in DiscCorr.hpp).
-//    The corrected data can be written out to another RINEX file, plus there is the
-//    option to smooth the pseudorange and/or debias the phase (SatPass::smooth()).
+//---------------------------------------------------------------------------------
+// DiscFix.cpp:
+// Read a RINEX observation file containing dual frequency pseudorange and phase,
+// separate the data into satellite passes, then find and estimate discontinuities
+// in the phase (using the GPSTk Discontinuity Corrector (GDC) of DiscCorr.hpp).
+// The corrected data can be written out to another RINEX file, plus there is the
+// option to smooth the pseudorange and/or debias the phase (SatPass::smooth()).
 //
-//    This program is useful as a way to process RINEX data by satellite pass.
-//    It reads an entire RINEX obs file, breaking it into satellite passes (SatPass)
-//    and processing it (ProcessSatPass()), then writes it out again from the
-//    SatPass data. It was designed so that all the input data gets into one SatPass
-//    and is altered only by the routine(s) called in ProcessSatPass(). Thus by
-//    modifying just that routine, this program could be used to do something else
-//    to the satellite passes. Also note that there is a choice of when to write out
-//    the data, either as soon as possible, or only at the end: cf. bool WriteASAP.
-//------------------------------------------------------------------------------------
+// This program is useful as a way to process RINEX data by satellite pass.
+// It reads an entire RINEX obs file, breaks it into satellite passes (SatPass)
+// and processes it (ProcessSatPass()), then writes it out from SatPass data.
+// It was designed so that all the input data gets into one SatPass and is altered
+// only by the routine(s) called in ProcessSatPass(). Thus, by modifying just that
+// one routine, this program could be used to do something else to the satellite
+// passes. Note that there is a choice of when to write out the data:
+// either as soon as possible, or only at the end (cf. bool WriteASAP).
+//---------------------------------------------------------------------------------
 
 /**
  * @file DiscFix.cpp
- * Correct phase discontinuities (cycle slips) in dual frequency data in a RINEX
- * observation file, plus optionally smooth the pseudoranges and/or debias the phases.
+ * Correct phase discontinuities (cycle slips) in dual-frequency data from a RINEX
+ * observation file; optionally smooth the pseudoranges and/or debias the phases.
  */
 
 #include "MathBase.hpp"
@@ -71,6 +71,7 @@ using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
 // prgm data
+
 string PrgmVers("5.0 8/20/07");
 string PrgmName("DiscFix");
 
@@ -103,7 +104,7 @@ typedef struct configuration {
    int NrecOut;
    DayTime FirstEpoch,LastEpoch;
    bool smoothPR,smoothPH,smooth;
-   bool WriteASAP; // if true, write to RINEX only after ALL data has been processed
+   bool WriteASAP;  // If true, write to RINEX only after ALL data has been processed.
    //bool CAOut;
    //bool DopOut;
    bool verbose;
@@ -114,10 +115,12 @@ typedef struct configuration {
 
 //------------------------------------------------------------------------------------
 // data input from command line
+
 DFConfig config;                 // for DiscFix
 GDCconfiguration GDConfig;       // the discontinuity corrector configuration
 
 // data used in program
+
 clock_t totaltime;
 string Title;
 DayTime CurrEpoch, PrgmEpoch;
@@ -127,9 +130,9 @@ RinexObsHeader rhead;
 int inC1,inP1,inP2,inL1,inL2;      // indexes in rhead of C1, C1/P1, P2, L1 and L2
 bool UsingCA;
 
-// Data for an entire pass is stored in SatPass object
-// this contains all the SatPass's defined so far
-// the parallel vector holds an iterator for use in writing out the data
+// Data for an entire pass is stored in SatPass object:
+// This contains all the SatPasses defined so far.
+// The parallel vector holds an iterator for use in writing out the data.
 vector<SatPass> SPList;
 // convenience
 static const string L1="L1",L2="L2",P1="P1",P2="P2",C1="C1";
@@ -168,7 +171,7 @@ int main(int argc, char **argv)
       //cout << "Name " << string(argv[0]) << endl;
       Title = PrgmName + ", part of the GPS ToolKit, Ver " + PrgmVers + ", Run ";
       PrgmEpoch.setLocalTime();
-      Title += PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
+      Title += PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
       cout << Title;
 
          // set fill char in GSatID
@@ -208,9 +211,9 @@ int main(int argc, char **argv)
       if(!config.OutRinexObs.empty()) {
          if(!orfstr.is_open()) {
             config.oflog << "Failed to open output file " << config.OutRinexObs
-               << ". Abort.\n";
+                         << ". Abort." << endl;
             cout << "Failed to open output file " << config.OutRinexObs
-               << ". Abort.\n";
+                 << ". Abort." << endl;
             irfstr.close();
             return 1;
          }
@@ -236,9 +239,9 @@ int main(int argc, char **argv)
 
       totaltime = clock()-totaltime;
       config.oflog << PrgmName << " timing: " << fixed << setprecision(3)
-         << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
+                   << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
       cout << PrgmName << " timing: " << fixed << setprecision(3)
-         << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds.\n";
+           << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
 
       config.oflog.close();
 
@@ -271,8 +274,8 @@ int ReadFile(int nfile) throw(Exception)
 
       irfstr.open(name.c_str(),ios::in);
       if(! irfstr.is_open()) {
-         config.oflog << "Failed to open input file " << name << ". Abort.\n";
-         cout << "Failed to open input file " << name << ". Abort.\n";
+         config.oflog << "Failed to open input file " << name << ". Abort." << endl;
+         cout << "Failed to open input file " << name << ". Abort." << endl;
          return 1;
       }
       else if(config.verbose)
@@ -282,7 +285,7 @@ int ReadFile(int nfile) throw(Exception)
          // read the header
       irfstr >> rhead;
       if(config.verbose) {
-         config.oflog << "\nHere is the input header for file " << name << endl;
+         config.oflog << "Here is the input header for file " << name << endl;
          rhead.dump(config.oflog);
          config.oflog << endl;
       }
@@ -387,7 +390,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
          // decimate data
          // if begTime is still undefined, set it to begin of week
       if(config.ith > 0.0) {
-         if(fabs(config.begTime-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.e-8)
+         if(fabs(config.begTime-DayTime::BEGINNING_OF_TIME) < 1.e-8)
             config.begTime =
                config.begTime.setGPSfullweek(roe.time.GPSfullweek(),0.0);
          double dt=fabs(roe.time - config.begTime);
@@ -447,14 +450,14 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
             // process this sat
          iret = ProcessOneSatOneEpoch(sat, CurrEpoch, flag, data, lli, ssi);
          if(iret == -2) {
-            config.oflog << "Error: time tags are out of order. Abort.\n";
+            config.oflog << "Error: time tags are out of order. Abort." << endl;
             return -2;
          }
 
       }  // end loop over sats
 
          // update LastEpoch and estimate of config.dt
-      if(config.LastEpoch > DayTime(DayTime::BEGINNING_OF_TIME)) {
+      if(config.LastEpoch > DayTime::BEGINNING_OF_TIME) {
          double dt = CurrEpoch-config.LastEpoch;
          for(i=0; i<9; i++) {
             if(config.ndt[i] <=0 ) { config.estdt[i]=dt; config.ndt[i]=1; break; }
@@ -902,7 +905,7 @@ void PrintSPList(ostream& os, string msg, vector<SatPass>& v, bool printTime)
 
    os << "#" << leftJustify(msg,4)
              << "  N gap  tot sat   ok  s      start time        end time   dt"
-             << " observation types\n";
+      << " observation types" << endl;
 
    for(i=0; i<v.size(); i++) {
       os << msg;
@@ -937,8 +940,8 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    config.WriteASAP = true;   // this is not in the input...
    config.verbose = false;
    config.ith = 0.0;
-   config.begTime = DayTime(DayTime::BEGINNING_OF_TIME);
-   config.endTime = DayTime(DayTime::END_OF_TIME);
+   config.begTime = DayTime::BEGINNING_OF_TIME;
+   config.endTime = DayTime::END_OF_TIME;
    config.MaxGap = 600.0;
    //config.MinPts = 10;
 
@@ -1140,29 +1143,32 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       // pass the rest
    argc = Args.size()+1;
    char **CArgs=new char*[argc];
-   if(!CArgs) { cout << "Failed to allocate CArgs\n"; return -1; }
+   if(!CArgs) { cout << "Failed to allocate CArgs" << endl; return -1; }
    CArgs[0] = argv[0];
    for(j=1; j<argc; j++) {
       CArgs[j] = new char[Args[j-1].size()+1];
-      if(!CArgs[j]) { cout << "Failed to allocate CArgs[j]\n"; return -1; }
+      if(!CArgs[j]) { cout << "Failed to allocate CArgs[j]" << endl; return -1; }
       strcpy(CArgs[j],Args[j-1].c_str());
    }
    Par.parseOptions(argc, CArgs);
    delete[] CArgs;
 
-      // -------------------------------------------------
+   // -------------------------------------------------
+
    if(dashh.getCount() > 0) help = true;
    if(Par.hasErrors()) {
       if(!help && !DChelp) {
-         cout << "\nErrors found in command line input:\n";
+         cout << "Errors found in command line input:" << endl;
          Par.dumpErrors(cout);
-         cout << "...end of Errors.  For help run with option --help\n\n";
+         cout << "...end of Errors.  For help run with option --help"
+              << endl << endl;
       }
       help = true;
    }
    
-      // -------------------------------------------------
-      // get values found on command line
+   // -------------------------------------------------
+   // get values found on command line
+
    string msg;
    vector<string> field;
    vector<string> values;
@@ -1177,7 +1183,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    if(dashVerb.getCount()) config.verbose=true;
    if(dashi.getCount()) {
       values = dashi.getValue();
-      if(help) cout << "Input RINEX obs files are:\n";
+      if(help) cout << "Input RINEX obs files are:" << endl;
       for(i=0; i<values.size(); i++) {
          config.InputObsName.push_back(values[i]);
          if(help) cout << "   " << values[i] << endl;
@@ -1232,7 +1238,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
 
    if(dashCA.getCount()) {
       config.UseCA = true;
-      if(help) cout << "Input: Set the 'Use C/A code range' flag\n";
+      if(help) cout << "Input: Set the 'Use C/A code range' flag" << endl;
    }
    if(dashDT.getCount()) {
       values = dashDT.getValue();
@@ -1308,23 +1314,23 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    }
    if(dashSmooth.getCount()) {
       config.smoothPH = config.smoothPR = true;
-      if(help) cout << "'smooth both' option is on\n";
+      if(help) cout << "'smooth both' option is on" << endl;
    }
    if(dashSmoothPR.getCount()) {
       config.smoothPR = true;
-      if(help) cout << "smooth the pseudorange\n";
+      if(help) cout << "smooth the pseudorange" << endl;
    }
    if(dashSmoothPH.getCount()) {
       config.smoothPH = true;
-      if(help) cout << "debias the phase\n";
+      if(help) cout << "debias the phase" << endl;
    }
    //if(dashCAOut.getCount()) {
    //   config.CAOut = true;
-   //   if(help) cout << "Output the C/A code to RINEX\n";
+   //   if(help) cout << "Output the C/A code to RINEX" << endl;
    //}
    //if(dashDOut.getCount()) {
    //   config.DopOut = true;
-   //   if(help) cout << "Output the doppler to RINEX\n";
+   //   if(help) cout << "Output the doppler to RINEX" << endl;
    //}
 
    if(Rest.getCount() && help) {
@@ -1333,7 +1339,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       for (i=0; i<values.size(); i++) cout << values[i] << endl;
    }
    //if(config.verbose && help) {
-   //   cout << "\nTokens on command line (" << Args.size() << ") are:"
+   //   cout << "Tokens on command line (" << Args.size() << ") are:"
    //      << endl;
    //   for(j=0; j<Args.size(); j++) cout << Args[j] << endl;
    //}
@@ -1348,8 +1354,8 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       if(DChelp) {
          GDConfig.DisplayParameterUsage(cout,DChelpall);
          cout << "For " << PrgmName
-            << ", GDC commands are of the form --DC<GDCcmd>,"
-            << " e.g. --DCWLSigma=1.5\n" << endl;
+              << ", GDC commands are of the form --DC<GDCcmd>,"
+              << " e.g. --DCWLSigma=1.5" << endl;
       }
       return 1;
    }
@@ -1365,7 +1371,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    config.oflog.open(config.LogFile.c_str(),ios::out);
    if(!config.oflog.is_open()) {
       cout << PrgmName << " failed to open log file "
-         << config.LogFile << ". Abort.\n";
+           << config.LogFile << ". Abort." << endl;
       return -1;
    }
    else {
@@ -1391,23 +1397,23 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    GDConfig.setParameter("DT",config.dt);
 
       // print config to log, first DF
-   config.oflog << "\nHere is the " << PrgmName << " configuration:\n";
-   config.oflog << " Input RINEX obs files are:\n";
+   config.oflog << "Here is the " << PrgmName << " configuration:" << endl;
+   config.oflog << " Input RINEX obs files are:" << endl;
    for(i=0; i<config.InputObsName.size(); i++) {
       config.oflog << "   " << config.InputObsName[i] << endl;
    }
    config.oflog << " Input Directory is " << config.Directory << endl;
    config.oflog << " Ithing time interval is " << config.ith << endl;
-   if(config.begTime > DayTime(DayTime::BEGINNING_OF_TIME))
+   if(config.begTime > DayTime::BEGINNING_OF_TIME)
    config.oflog << " Begin time is "
       << config.begTime.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
       << " = " << config.begTime.printf("%04F/%10.3g") << endl;
-   if(config.endTime < DayTime(DayTime::END_OF_TIME))
+   if(config.endTime < DayTime::END_OF_TIME)
       config.oflog << " End time is "
          << config.endTime.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
          << " = " << config.endTime.printf("%04F/%10.3g") << endl;
-   if(config.UseCA) config.oflog << " 'Use the C/A pseudorange' flag is set\n";
-   else config.oflog << " Do not use C/A code range (C1) unless P1 is absent\n";
+   if(config.UseCA) config.oflog << " 'Use the C/A pseudorange' flag is set" << endl;
+   else config.oflog << " Do not use C/A code range (C1) unless P1 is absent" << endl;
    config.oflog << " dt is set to " << config.dt << " seconds." << endl;
    config.oflog << " Max gap is " << config.MaxGap << " seconds which is "
       << int(config.MaxGap/config.dt) << " points." << endl;
@@ -1438,14 +1444,14 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       config.oflog << " Output RINEX 'MARKER' is " << config.HDMarker << endl;
    if(!config.HDNumber.empty())
       config.oflog << " Output RINEX 'NUMBER' is " << config.HDNumber << endl;
-   if(config.smoothPR) config.oflog << " 'Smoothed range' option is on\n";
-   if(config.smoothPH) config.oflog << " 'Smoothed phase' option is on\n";
-   if(!config.smooth) config.oflog << " No smoothing.\n";
-   //if(config.CAOut) config.oflog << " 'C/A output' option is on\n";
-   //if(config.DopOut) config.oflog << " 'Doppler output' option is on\n";
+   if(config.smoothPR) config.oflog << " 'Smoothed range' option is on" << endl;
+   if(config.smoothPH) config.oflog << " 'Smoothed phase' option is on" << endl;
+   if(!config.smooth) config.oflog << " No smoothing." << endl;
+   //if(config.CAOut) config.oflog << " 'C/A output' option is on" << endl;
+   //if(config.DopOut) config.oflog << " 'Doppler output' option is on" << endl;
 
       // print config to log, second GDC
-   config.oflog << "\nHere is the GPSTk DC configuration:\n";
+   config.oflog << "Here is the GPSTk DC configuration:" << endl;
    GDConfig.DisplayParameterUsage(config.oflog,DChelpall);
    config.oflog << endl;
 
