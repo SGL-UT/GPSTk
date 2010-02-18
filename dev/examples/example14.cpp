@@ -41,7 +41,7 @@
 //      be stored in a "gnssDataMap" data structure.
 //
 //    - Afterwards, in the resolution phase the "gnssDataMap" object will feed
-//      a "SolverGeneral" solver, appropriately configure.
+//      a "SolverGeneral" solver, appropriately configured.
 //
 // Please be aware that POP processes data from a network of stations, and that
 // the data rate typically is a lot higher than PPP. Expect a 5 stations network
