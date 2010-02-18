@@ -1,6 +1,6 @@
 SubDir TOP apps Rinextools ;
 
-GPSLinkLibraries NavMerge RinexDump ResCor EditRinex RinSum Rin3Sum : gpstk-R3 ;
+GPSLinkLibraries NavMerge RinexDump Rinex3Dump ResCor EditRinex RinSum Rin3Sum : gpstk-R3 ;
 
 GPSMain NavMerge : NavMerge.cpp ;
 ObjectHdrs NavMerge rinexpvt.cpp : ../../src ;
@@ -9,6 +9,10 @@ LinkLibraries NavMerge : ../../src/libgpstk-R3.a ;
 GPSMain RinexDump : RinexDump.cpp ;
 ObjectHdrs RinexDump rinexpvt.cpp : ../../src ;
 LinkLibraries RinexDump : ../../src/libgpstk-R3.a ;
+
+GPSMain Rinex3Dump : Rinex3Dump.cpp ;
+ObjectHdrs Rinex3Dump rinexpvt.cpp : ../../src ;
+LinkLibraries Rinex3Dump : ../../src/libgpstk-R3.a ;
 
 GPSMain RinSum : RinSum.cpp ;
 ObjectHdrs RinSum rinexpvt.cpp : ../../src ;
