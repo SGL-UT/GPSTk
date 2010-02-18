@@ -27,12 +27,12 @@
 
 //============================================================================
 //
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+// This software developed by Applied Research Laboratories at the University
+// of Texas at Austin, under contract to an agency or agencies within the U.S. 
+// Department of Defense. The U.S. Government retains all rights to use,
+// duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024 
+// Pursuant to DoD Directive 523024 
 //
 // DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
@@ -48,91 +48,122 @@
 
 /**
  * @file RinexSatID.hpp
- * gpstk::RinexSatID - navigation system-independent representation of a satellite
- * as defined by the RINEX specification.
+ * gpstk::RinexSatID - Navigation system-independent representation of a
+ *                     satellite, as defined by the RINEX specification.
  */
 
 namespace gpstk
 {
    class RinexSatID : public SatID
    {
+
    public:
 
-      /// empty constructor, creates an invalid object
-      RinexSatID() throw() { id=-1; system=systemGPS; }
+      /// Empty constructor; creates an invalid object (Unknown, ID = -1).
 
-      /// explicit constructor, no defaults, RINEX systems only
-      RinexSatID(int p, SatelliteSystem s) throw()
+      RinexSatID()
+         throw()
+      { id = -1; system = systemUnknown; }
+
+
+      /// Explicit constructor, no defaults, RINEX systems only.
+
+      RinexSatID(int p, SatelliteSystem s)
+         throw()
       {
          id = p; system = s;
-         switch(s) {
+         switch(s)
+         {
             case systemGPS:
             case systemGalileo:
             case systemGlonass:
             case systemGeosync:
             case systemTransit:
-            case systemMixed: break;
-            // invalidate anything non-RINEX
+               break;
+            // Invalidate anything non-RINEX.
             default:
                system = systemUnknown;
                id = -1;
          }
       }
 
-      /// constructor from string
-      RinexSatID(const std::string& str) throw(Exception)
+
+      /// Constructor from a string.
+
+      RinexSatID(const std::string& str)
+         throw(Exception)
       {
          try { fromString(str); }
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
 
-      /// cast SatID to RinexSatID
-      RinexSatID(const SatID& sat) throw()
+
+      /// Cast a SatID to a RinexSatID.
+
+      RinexSatID(const SatID& sat)
+         throw()
       { *this = RinexSatID(sat.id,sat.system); }
 
-      /// set the fill character used in output
-      /// return the current fill character
-      char setfill(char c) throw()
-      { char csave=fillchar; fillchar=c; return csave; }
 
-      /// get the fill character used in output
-      char getfill() throw()
+      /// Set the fill character used in output and
+      /// return the current fill character.
+
+      char setfill(char c)
+         throw()
+      { char csave = fillchar; fillchar = c; return csave; }
+
+
+      /// Get the fill character used in output.
+
+      char getfill()
+         throw()
       { return fillchar; }
+
 
       // operator=, copy constructor and destructor built by compiler
 
-      /// return a character based on the system
-      /// return the single-character system descriptor
+
+      /// Return the single-character system descriptor.
       /// @note return only RINEX types, for non-RINEX systems return '?'
-      char systemChar() const throw()
+
+      char systemChar() const
+         throw()
       {
-         switch(system) {
+         switch(system)
+         {
             case systemGPS:     return 'G';
             case systemGalileo: return 'E';
             case systemGlonass: return 'R';
             case systemGeosync: return 'S';
             case systemTransit: return 'T';
-            case systemMixed:   return 'M';
             default:            return '?';
          }
       };
 
-      std::string systemString() const throw()
+
+      /// Return the system name as a string.
+      /// @note Return only RINEX types or 'Unknown'.
+
+      std::string systemString() const
+         throw()
       {
-         switch(system) {
+         switch(system)
+         {
             case systemGPS:     return "GPS";
             case systemGalileo: return "Galileo";
-            case systemGlonass: return "Glonass";
+            case systemGlonass: return "GLONASS";
             case systemGeosync: return "Geosync";
             case systemTransit: return "Transit";
-            case systemMixed:   return "Mixed";
             default:            return "Unknown";
          }
       };
 
-      /// read from string
+
+      /// Set the RinexSatID from a string (1 character plus 2-digit integer).
       /// @note GPS is default system (no or unknown system char)
-      void fromString(const std::string s) throw(Exception)
+
+      void fromString(const std::string s)
+         throw(Exception)
       {
          char c;
          std::istringstream iss(s);
@@ -177,8 +208,11 @@ namespace gpstk
          if(id <= 0) id = -1;
       }
 
-      /// convert to string
-      std::string toString() const throw()
+
+      /// Convert the RinexSatID to string (1 character plus 2-digit integer).
+
+      std::string toString() const
+         throw()
       {
          std::ostringstream oss;
          oss.fill(fillchar);
@@ -186,13 +220,15 @@ namespace gpstk
          return oss.str();
       }
 
+
    private:
 
-      static char fillchar;  ///< fill character used during stream output
+      static char fillchar;  ///< Fill character used during stream output.
 
    }; // class RinexSatID
 
-   /// stream output for RinexSatID
+   /// Stream output for RinexSatID.
+
    inline std::ostream& operator<<(std::ostream& s, const RinexSatID& sat)
    {
       s << sat.toString();
