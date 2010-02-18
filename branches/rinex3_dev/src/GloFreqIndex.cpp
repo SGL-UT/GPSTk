@@ -177,6 +177,7 @@ namespace gpstk
 
 
    // Calculates a GLONASS SV's frequency channel index from Obs data.
+   // CommonTime tt should be the start time of the pass.
    /*
      STEPS:
      1. Scrub out large phase changes, e.g. > 8 km (in distance).
@@ -344,6 +345,7 @@ namespace gpstk
    // method provides empty G2 vectors to the above method.  Note that
    // if one provides range & phase data for only one band, it is
    // assumed to be G1!
+   // CommonTime tt should be the start time of the pass.
    // Method currently implemented, but all solutions will be rejected.
 
    int GloFreqIndex::addPass( const RinexSatID& id, const CommonTime& tt,

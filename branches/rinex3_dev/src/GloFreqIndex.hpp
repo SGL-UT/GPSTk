@@ -80,12 +80,12 @@ namespace gpstk
    {
    public:
 
-      /// Constructor -- takes no arguments.
+      /// Default constructor -- takes no arguments.
 
       GloFreqIndex()
       {}
 
-      /// Destructor
+      /// Destructor.
 
       virtual ~GloFreqIndex()
       {}
@@ -138,6 +138,7 @@ namespace gpstk
       ///   3  G1 & G2 results disagree
       ///   4  uncertainty on G1 result too large
       ///   5  uncertainty on G2 result too large
+      /// CommonTime tt should be the start time of the pass.
 
       int addPass( const RinexSatID& id, const CommonTime& tt,
                    const std::vector<double>& r1, const std::vector<double>& p1,
@@ -150,6 +151,7 @@ namespace gpstk
       /// method provides empty G2 vectors to the above method.  Note that
       /// if one provides range & phase data for only one band, it is
       /// assumed to be G1!
+      /// CommonTime tt should be the start time of the pass.
       /// Method currently implemented, but all solutions will be rejected.
 
       int addPass( const RinexSatID& id, const CommonTime& tt,
