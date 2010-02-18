@@ -87,6 +87,8 @@ bool dumpAll = false;
 /**
  * Protoypes
  */
+void dumpCommandLineOptions();
+
 int getCommandLineOptions(int argc, char **argv) throw (Exception);
 
 template <class T>
@@ -99,6 +101,68 @@ int processCommandLineOptions();
 /**
  * Functions
  */
+
+/**
+ * Dumps all command line options for debug's sake.
+ */
+void dumpCommandLineOptions()
+{
+   // Used to deliminate what are command line arguments.
+   string delim = " || ";
+   
+   cout << "COMMAND LINE ARGUMENTS" << endl;
+   
+   // Files
+   cout << delim << "Files:" << endl;
+   
+   for (int i = 0; i < filenames.size(); i++)
+   {
+      cout << delim << filenames[i] << endl;
+   }
+   
+   cout << delim << endl;
+   
+   // Format
+   cout << delim << "Format: " << outputFormat << endl;
+   
+   cout << delim << endl;
+   
+   // Numeric Output (with some ternary operator mess.)
+   cout << delim << "Only Numeric Output: ";
+   allNumeric ?
+        cout << "True" << endl
+      : cout << "False" << endl;
+   
+   cout << delim << endl;
+   
+   // Obs Types
+   cout << delim << "Obs Types:" << endl;
+   
+   for (int i = 0; i < otList.size(); i++)
+   {
+      cout << delim << otList[i].asRinex3ID() << endl;
+   }
+   
+   cout << delim << endl;
+   
+   // Output Positions (with some ternary operator mess.)
+   cout << delim << "Only Output Positions: ";
+   dumpPos ?
+        cout << "True" << endl
+      : cout << "False" << endl;
+   
+   cout << delim << endl;
+   
+   // Sat IDs
+   cout << delim << "Sat IDs:" << endl;
+   
+   for (int i = 0; i < satList.size(); i++)
+   {
+      cout << delim << satList[i].toString() << endl;
+   }
+   
+   cout << endl;
+}
 
 /**
  * Process command line options.
@@ -140,7 +204,7 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
       CommandOptionWithArg dashobs(CommandOption::stdType,
          'o',
          "obs",
-         "    -o, --obs <obs>      <obs> is a RINEX observation type (eg. P1) found in the file header.\n"
+         "    -o, --obs <obs>      <obs> is a RINEX observation type (eg. C1C) found in the file header.\n"
          "                         Optional, but may be needed in case of ambiguity.\n");
       
       // -p, --pos
@@ -152,7 +216,7 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
       CommandOptionWithArg dashsat(CommandOption::stdType,
          's',
          "sat",
-         "    -s, --sat <sat>      <sat> is a RINEX satellite ID (eg. For GPS PRN 31, <sat> = G31).\n"
+         "    -s, --sat <sat>      <sat> is a RINEX satellite ID (eg. For GPS PRN 31, <sat> = G01).\n"
          "                         Optional, but may be needed in case of ambiguity.\n");
 
       CommandOptionRest rest("<file> <obs> <sat>");
@@ -161,7 +225,9 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
          "Output is to the console, with one time tag and satellite per line.\n"
          "\n"
          "If no satellites are given, all are output. The same holds for observationt types.\n"
-         "Output begins with header lines starting with # that identify input and columns.\n");
+         "Output begins with header lines starting with # that identify input and columns.\n"
+         "\n"
+         "eg. ./Rinex3Dump ARL8262.09o.R3 C1C G01\n");
       
       // Count arguments.
       vector<string> args;
@@ -219,7 +285,7 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
       {
          parser.displayUsage(cout, false);
          
-         return 0;
+         return -1;
       }
       
       // Get the actual values from the command line.
@@ -323,9 +389,10 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
          // See if it's a filename...
          if (maybeMoreFilenames)
          {
-            if (isRinexObsFile(values[i]))
+            if (isRinex3ObsFile(values[i]))
             {
                if (debug) cout << "Added file " << values[i] << "." << endl;
+               cout << endl;
                filenames.push_back(values[i]);
                
                continue;
@@ -342,6 +409,7 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
                if (asString(ot).compare("  ") != 0) // A valid ObsID.
                {
                   if (debug) cout << "Added obs type " << values[i] << "." << endl;
+                  cout << endl;
                   otList.push_back(ot);
                   
                   // We only allow filenames to come before obs types.
@@ -359,18 +427,26 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
          // See if it's a sat ID...
          if (maybeMoreSat)
          {
-            sat.fromString(string(values[i]));
-            
-            if (sat.isValid())
+            try
             {
-               if (debug) cout << "Added satellite ID " << values[i] << "." << endl;
-               satList.push_back(sat);
+               sat.fromString(string(values[i]));
                
-               // We only allow filenames and obs types to come before sat IDs.
-               maybeMoreFilenames = false;
-               maybeMoreObs = false;
-               
-               continue;
+               if (sat.isValid())
+               {
+                  if (debug) cout << "Added satellite ID " << values[i] << "." << endl;
+                  cout << endl;
+                  satList.push_back(sat);
+                  
+                  // We only allow filenames and obs types to come before sat IDs.
+                  maybeMoreFilenames = false;
+                  maybeMoreObs = false;
+                  
+                  continue;
+               }
+            }
+            catch (Exception& e)
+            {
+               // Not a sat ID. Nothing to see here. Move along.
             }
          }
          
@@ -378,6 +454,14 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
          if (noMatch)
          {
             cerr << "Error! Could not figure out what input argument " << values[i] << " is." << endl;
+            cerr << endl;
+            cerr << "       Arguments must be in proper order, ie. <file> <obs> <sat>." << endl;
+            cerr << endl;
+            cerr << "       See help for more information (-h or --help)." << endl;
+            cerr << endl;
+
+            //parser.displayUsage(cout, false);
+            
             return -1;
          }
       }
@@ -432,6 +516,8 @@ int main(int argc, char *argv[])
       e = processCommandLineOptions();
       if (e) return e; // If there's an error, die.
       
+      if (debug) dumpCommandLineOptions();
+      
       e = RegisterARLUTExtendedTypes();
       if (e) return e; // If there's an error, die.
       
@@ -461,7 +547,7 @@ int processCommandLineOptions()
    
    if (filenames.size() > 0)
    {
-      sortRinexObsFiles(filenames);
+      sortRinex3ObsFiles(filenames);
    }
    else
    {
