@@ -51,10 +51,10 @@ ObjectHdrs HelmertTests HelmertTests.cpp : ../src ;
 LINKLIBS on HelmertTests = $(STD_LINK_LIBS) ;
 LinkLibraries HelmertTests : ../src/libgpstk-R3.a ;
 
-Main GloFreqNo : GloFreqNo.cpp ;
-ObjectHdrs GloFreqNo GloFreqNo.cpp : ../src ;
-LINKLIBS on GloFreqNo = $(STD_LINK_LIBS) ;
-LinkLibraries GloFreqNo : ../src/libgpstk-R3.a ;
+#Main GloFreqNo : GloFreqNo.cpp ;
+#ObjectHdrs GloFreqNo GloFreqNo.cpp : ../src ;
+#LINKLIBS on GloFreqNo = $(STD_LINK_LIBS) ;
+#LinkLibraries GloFreqNo : ../src/libgpstk-R3.a ;
 
 Main GloFreqTest : GloFreqTest.cpp ;
 ObjectHdrs GloFreqTest GloFreqTest.cpp : ../lib/geomatics ../src ;
