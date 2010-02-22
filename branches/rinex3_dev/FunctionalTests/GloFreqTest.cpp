@@ -53,6 +53,7 @@ using namespace gpstk;
 int main(int argc, char *argv[])
 {
    GloFreqIndex glo;
+   vector<int> numPassesStart(24), numPassesEnd(24);
    cout << endl;
 
    if (argc == 1)
@@ -74,12 +75,12 @@ int main(int argc, char *argv[])
       {
          RinexSatID id = RinexSatID(i,SatID::systemGlonass);
 
-         double freq1 = glo.getGloFreq(id,1,ierr1); // G1
-         double freq2 = glo.getGloFreq(id,2,ierr2); // G2
-         double freq3 = glo.getGloFreq(id,3,ierr3); // fake G3, to test error-handling
+         double freq1 = glo.getFreq(id,1,ierr1); // G1
+         double freq2 = glo.getFreq(id,2,ierr2); // G2
+         double freq3 = glo.getFreq(id,3,ierr3); // fake G3, to test error-handling
 
          cout << "R" << setw(2) << setfill('0') << i << "   "
-              << setw(4) << setfill(' ') << glo.getGloIndex(id) << "    "
+              << setw(4) << setfill(' ') << glo.getIndex(id) << "    "
               << fixed << setprecision(4) << setw(9) << setfill(' ')
               << freq1 << "  " << ierr1 << "     "
               << fixed << setprecision(4) << setw(9) << setfill(' ')
@@ -116,7 +117,7 @@ int main(int argc, char *argv[])
       int iread = SatPassFromRinexFiles(filenames,obsTypes,30.0,list);
       if (iread == 0)
       {
-         cout << "No files read -- exiting." << endl;
+         cout << "No files read -- SatPassFromRinexFiles returns value 0 -- exiting." << endl;
          exit(-1);
       }
 
@@ -125,6 +126,7 @@ int main(int argc, char *argv[])
       {
          if (list[i].getSat().systemChar() == 'R')
          {
+            numPassesStart[list[i].getSat().id] += 1;
             cout << "   " << list[i].getSat().toString()
                  << "   start: " << CivilTime(list[i].getFirstGoodTime())
                  << "   end: "   << CivilTime(list[i].getLastGoodTime())
@@ -156,9 +158,22 @@ int main(int argc, char *argv[])
             }
          }
 
-         glo.addPass(list[i].getSat(),
-                     CommonTime(list[i].getFirstGoodTime()),
-                     r1,p1,r2,p2,1);
+         int j = glo.addPass(list[i].getSat(),
+                             CommonTime(list[i].getFirstGoodTime()),
+                             r1,p1,r2,p2,1);
+         if (j == 0)
+            numPassesEnd[list[i].getSat().id] += 1;
+      }
+      cout << endl;
+      cout << "Summary of satellite passes:" << endl;
+      cout << "  SV ID   # in   # kept # fail" << endl;
+      for (int i = 0; i < 24; i++)
+      {
+         cout << "  "    << setw(2) << setfill('0') << i
+              << "     " << setw(2) << setfill(' ') << numPassesStart[i]
+              << "     " << setw(2) << setfill(' ') << numPassesEnd[i]
+              << "     " << setw(2) << setfill(' ') << numPassesStart[i]-numPassesEnd[i]
+              << endl;
       }
 
       glo.calcIndex();
@@ -171,7 +186,7 @@ int main(int argc, char *argv[])
       {
          RinexSatID id(i,SatID::systemGlonass);
          cout << id << "     " << setw(4) << setfill(' ')
-              << glo.getGloIndex(id) // lookup method
+              << glo.getIndex(id) // lookup method
               << endl;
       }
       cout << endl;
