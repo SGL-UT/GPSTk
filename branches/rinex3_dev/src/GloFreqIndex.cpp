@@ -66,30 +66,30 @@ namespace gpstk
       throw()
    {
       // dummy map for testing purposes
-      freqIndex[RinexSatID("R01")] =  1;
-      freqIndex[RinexSatID("R02")] = -4;
-      freqIndex[RinexSatID("R03")] =  5;
-      freqIndex[RinexSatID("R04")] =  6;
-      freqIndex[RinexSatID("R05")] =  1;
-      freqIndex[RinexSatID("R06")] = -4;
-      freqIndex[RinexSatID("R07")] =  5;
-      freqIndex[RinexSatID("R08")] =  6;
-      freqIndex[RinexSatID("R09")] = -2;
-      freqIndex[RinexSatID("R10")] = -7;
-      freqIndex[RinexSatID("R11")] =  0;
-//      freqIndex[RinexSatID("R12")] = ; // not currently in orbit
-      freqIndex[RinexSatID("R13")] = -2;
-      freqIndex[RinexSatID("R14")] = -7;
-      freqIndex[RinexSatID("R15")] =  0;
-//      freqIndex[RinexSatID("R16")] = ; // not currently in orbit
-      freqIndex[RinexSatID("R17")] =  4;
-      freqIndex[RinexSatID("R18")] = -3;
-      freqIndex[RinexSatID("R19")] =  3;
-      freqIndex[RinexSatID("R20")] =  2;
-      freqIndex[RinexSatID("R21")] =  4;
-      freqIndex[RinexSatID("R22")] = -3;
-      freqIndex[RinexSatID("R23")] =  3;
-      freqIndex[RinexSatID("R24")] =  2;
+      freqIndexTruth[RinexSatID("R01")] =  1;
+      freqIndexTruth[RinexSatID("R02")] = -4;
+      freqIndexTruth[RinexSatID("R03")] =  5;
+      freqIndexTruth[RinexSatID("R04")] =  6;
+      freqIndexTruth[RinexSatID("R05")] =  1;
+      freqIndexTruth[RinexSatID("R06")] = -4;
+      freqIndexTruth[RinexSatID("R07")] =  5;
+      freqIndexTruth[RinexSatID("R08")] =  6;
+      freqIndexTruth[RinexSatID("R09")] = -2;
+      freqIndexTruth[RinexSatID("R10")] = -7;
+      freqIndexTruth[RinexSatID("R11")] =  0;
+//      freqIndexTruth[RinexSatID("R12")] = ; // not currently in orbit
+      freqIndexTruth[RinexSatID("R13")] = -2;
+      freqIndexTruth[RinexSatID("R14")] = -7;
+      freqIndexTruth[RinexSatID("R15")] =  0;
+//      freqIndexTruth[RinexSatID("R16")] = ; // not currently in orbit
+      freqIndexTruth[RinexSatID("R17")] =  4;
+      freqIndexTruth[RinexSatID("R18")] = -3;
+      freqIndexTruth[RinexSatID("R19")] =  3;
+      freqIndexTruth[RinexSatID("R20")] =  2;
+      freqIndexTruth[RinexSatID("R21")] =  4;
+      freqIndexTruth[RinexSatID("R22")] = -3;
+      freqIndexTruth[RinexSatID("R23")] =  3;
+      freqIndexTruth[RinexSatID("R24")] =  2;
    }
 
 
@@ -253,6 +253,9 @@ namespace gpstk
 
       // Compute best-fit slopes of lines and their uncertainties.
 
+      if (line1.N() < 2 || line2.N() < 2) // no data, or only 1 point
+         return -3;
+
       double  m1 = line1.Slope();
       double  m2 = line2.Slope();
       double dm1 = line1.SigmaSlope();
@@ -293,7 +296,7 @@ namespace gpstk
 
       if (verbose != 0)
       {
-         cout << "Results:   n1,dn1, n2,dn2 =    "
+         cout << "Results for " << id.toString() << ":   n1,dn1, n2,dn2 =    "
               << n1 << " +/-" << dn1 << "    "
               << n2 << " +/-" << dn2 << endl;
       }
@@ -360,9 +363,24 @@ namespace gpstk
    }
 
 
-   // Method to return the frequency index value for a given SV ID.
+   // Method to return the frequency index truth value for a given SV ID.
 
-   int GloFreqIndex::getGloIndex( const RinexSatID& id )
+   int GloFreqIndex::getIndexTruth( const RinexSatID& id )
+      throw()
+   {
+      std::map< RinexSatID, int >::const_iterator iter;
+      iter = freqIndexTruth.find(id);
+
+      if (iter != freqIndex.end())
+         return iter->second;
+      else
+         return -100; // No entry for the given SatID.
+   }
+
+
+   // Method to return the frequency index value from data for a given SV ID.
+
+   int GloFreqIndex::getIndex( const RinexSatID& id )
       throw()
    {
       std::map< RinexSatID, int >::const_iterator iter;
@@ -377,10 +395,10 @@ namespace gpstk
 
    // Method to return the frequency from icd_glo_constants for a given SV ID.
 
-   double GloFreqIndex::getGloFreq( const RinexSatID& id, const int& band, int& error )
+   double GloFreqIndex::getFreq( const RinexSatID& id, const int& band, int& error )
       throw()
    {
-      int index = getGloIndex(id);
+      int index = getIndex(id);
 
       if (index < -10)
       {
@@ -431,7 +449,9 @@ namespace gpstk
 
    void GloFreqIndex::dump(ostream& s) const
    {
-      s << "Dump of all all dataMap entries:" << endl << endl;
+      s << "Dump of all dataMap entries:" << endl;
+      s << "ID   Start Time               # points    float solns         uncertainties     int solns" << endl;
+      s << setiosflags(ios::fixed);
 
       std::map< RinexSatID, passData >::const_iterator iter = dataMap.begin();
 
@@ -443,17 +463,19 @@ namespace gpstk
             IndexData data = (iter->second)[i];
             RinexSatID id = iter->first;
 
-            s << endl << "Dump of dataMap entry:" << endl << endl;
+            s << id << "  "
+              << CivilTime(data.tt).printf("%02m/%02d/%04Y %02H:%02M:%02S %P")
+              << "  ";
 
-            s << "SV ID: " << id << endl;
-            s << "Start time of pass: " << CivilTime(data.tt) << endl;
-
-            s << "  # points:    " << setw(4) << setfill(' ') << data.pG1
-              << "     "           << setw(4) << setfill(' ') << data.pG2 << endl;
-            s << "  flt soln:    " << setw(4) << setprecision(4) << data.fG1 << "   " << data.fG2 << endl;
-            s << "  uncert  :    " << setw(4) << setprecision(4) << data.dG1 << "   " << data.dG2 << endl;
-            s << "  int soln:    " << setw(4) << setfill(' ') << data.nG1
-              << "     "           << setw(4) << setfill(' ') << data.nG2 << endl;
+            s << setw(4) << setfill(' ') << data.pG1 << " "
+              << setw(4) << setfill(' ') << data.pG2 << "  ";
+            s << setw(8) << setprecision(4) << data.fG1 << " "
+              << setw(8) << setprecision(4) << data.fG2 << "  ";
+            s << setw(8) << setprecision(4) << data.dG1 << " "
+              << setw(8) << setprecision(4) << data.dG2 << "  ";
+            s << setw(4) << setfill(' ') << data.nG1 << " "
+              << setw(4) << setfill(' ') << data.nG2 << " ";
+            s << setw(4) << setfill(' ') << freqIndexTruth.find(id)->second << " " << endl;
          }
       }
 

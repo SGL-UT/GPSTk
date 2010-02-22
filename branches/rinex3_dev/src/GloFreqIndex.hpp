@@ -83,7 +83,7 @@ namespace gpstk
       /// Default constructor -- takes no arguments.
 
       GloFreqIndex()
-      {}
+      { knownIndex(); }
 
       /// Destructor.
 
@@ -130,6 +130,7 @@ namespace gpstk
       /// This method assumes relatively clean data, but does scrub for
       /// outliers (likely cycle slips) after initial slope determination.
       /// The int returned is an error code:
+      ///  -3  no data (or only 1 point) left after filtering
       ///  -2  divide by zero for G2 slope
       ///  -1  divide by zero for G1 slope
       ///   0  no errors
@@ -159,20 +160,26 @@ namespace gpstk
                    const int& verbose = 0                                       )
          throw();
 
-      /// This method returns the GLONASS index for a given SV.
+      /// This method returns the GLONASS truth index for a given SV.
       /// It returns -100 if there is no entry for the given SatID.
 
-      int getGloIndex( const RinexSatID& id )
+      int getIndexTruth( const RinexSatID& id )
+         throw();
+
+      /// This method returns the GLONASS index from data for a given SV.
+      /// It returns -100 if there is no entry for the given SatID.
+
+      int getIndex( const RinexSatID& id )
          throw();
 
       /// This method returns the GLONASS frequency for a given SV and band.
-      /// It calls getGloIndex(id) to get the channel index, then looks up
+      /// It calls getIndex(id) to get the channel index, then looks up
       /// the frequency in icd_glo_constants.  The error codes are:
       ///    0  no error
       ///    1  no entry for the given SatID
       ///    2  invalid frequency band
 
-      double getGloFreq( const RinexSatID& id, const int& band, int& error )
+      double getFreq( const RinexSatID& id, const int& band, int& error )
          throw();
 
       /// Dump the contents of a single pass to cout in a nice format.
@@ -194,6 +201,9 @@ namespace gpstk
 
       /// Map of index solutions (single integer) by SV ID.
       std::map< RinexSatID, int > freqIndex;
+
+      /// Map of index truth solutions (single integer) by SV ID.
+      std::map< RinexSatID, int > freqIndexTruth;
 
       /// Max. allowable point-to-point phase jump (meters).
       static const double maxDist = 8000.0;
