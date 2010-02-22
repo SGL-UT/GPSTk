@@ -95,7 +95,8 @@ try {
    //}
 
    // compute effective dipoles at receiver and transmitter
-   // Ref Kouba(2009) Using IGS Products; switching last signs <=> overall sign windup
+   // Ref Kouba(2009) Using IGS Products; note sign diff. <=> East(ref) West(here)
+   // NB. switching second sign between the two eqns <=> overall sign windup
    DR = XR - TR * TR.dot(XR) + Position(TR.cross(YR));
    DT = XT - TR * TR.dot(XT) - Position(TR.cross(YT));
 
@@ -152,7 +153,8 @@ try {
    if(isBlockR) XT = Position(-Att(0,0),-Att(0,1),-Att(0,2));
 
    // compute effective dipoles at receiver and transmitter
-   // Ref Kouba(2009) Using IGS Products; switching last signs <=> overall sign windup
+   // Ref Kouba(2009) Using IGS Products; note sign diff. <=> East(ref) West(here)
+   // NB. switching second sign between the two eqns <=> overall sign windup
    DR = XR - TR * TR.dot(XR) + Position(TR.cross(YR));
    DT = XT - TR * TR.dot(XT) - Position(TR.cross(YT));
 
