@@ -206,7 +206,7 @@ namespace gpstk
       if (r1.size() != p1.size()) return 1; // Error: G1 range & phase data sizes not equal.
       if (r2.size() != p2.size()) return 2; // Error: G2 range & phase data sizes not equal.
 
-      // Scrub out large phase shifts, > 8 km; don't keep those points.
+      // Scrub out large phase shifts, > maxDist; don't keep those points.
 
       // Keep good del-phi and del-y = del-R - lambda0*del-phi for G1.
       for (int i = 1; i < r1.size(); i++)
@@ -231,7 +231,7 @@ namespace gpstk
       }
 
       // Scrub out large Range-Phase shifts:
-      // If log10[del-median(del)] > 1, reject it.
+      // If log10[del-median(del)] > maxRPshift, reject it.
 
       double med1 = median<double>(dy1);
 
@@ -239,7 +239,9 @@ namespace gpstk
       {
          double spread = ::log10(fabs(dy1[i]-med1));
          if (spread < maxRPshift)
+         {
             line1.Add(dp1[i],dy1[i]);
+         }
       }
 
       double med2 = median<double>(dy2);
@@ -248,13 +250,21 @@ namespace gpstk
       {
          double spread = ::log10(fabs(dy2[i]-med2));
          if (spread < maxRPshift)
+         {
             line2.Add(dp2[i],dy2[i]);
+         }
       }
 
       // Compute best-fit slopes of lines and their uncertainties.
 
       if (line1.N() < 2 || line2.N() < 2) // no data, or only 1 point
+      {
+         if (verbose != 0)
+         {
+            cout << "No data (# points < 2) for " << id.toString() << endl;
+         }
          return -3;
+      }
 
       double  m1 = line1.Slope();
       double  m2 = line2.Slope();
