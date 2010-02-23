@@ -161,20 +161,28 @@ int main(int argc, char *argv[])
          int j = glo.addPass(list[i].getSat(),
                              CommonTime(list[i].getFirstGoodTime()),
                              r1,p1,r2,p2,1);
+
          if (j == 0)
             numPassesEnd[list[i].getSat().id] += 1;
       }
       cout << endl;
       cout << "Summary of satellite passes:" << endl;
       cout << "  SV ID   # in   # kept # fail" << endl;
-      for (int i = 0; i < 24; i++)
+      int countIn(0),countOut(0);
+      for (int i = 1; i <= 24; i++) // SVs numbered 1..24
       {
+         countIn  += numPassesStart[i];
+         countOut += numPassesEnd[i];
          cout << "  "    << setw(2) << setfill('0') << i
               << "     " << setw(2) << setfill(' ') << numPassesStart[i]
               << "     " << setw(2) << setfill(' ') << numPassesEnd[i]
               << "     " << setw(2) << setfill(' ') << numPassesStart[i]-numPassesEnd[i]
               << endl;
       }
+      cout << "  total   "
+           << setw(2) << setfill(' ') << countIn  << "     "
+           << setw(2) << setfill(' ') << countOut << "     "
+           << setw(2) << setfill(' ') << countIn-countOut << endl;
 
       glo.calcIndex();
 
