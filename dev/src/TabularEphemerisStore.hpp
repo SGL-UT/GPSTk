@@ -249,7 +249,7 @@ namespace gpstk
       bool haveVelocity;
 
 
-   private:
+   protected:
 
 
          /// The key to this map is the time
