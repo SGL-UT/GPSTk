@@ -56,7 +56,7 @@
 #elif defined (_AIX)
 #include "getopt.h"
 #else
-#include <getopt.h>
+#include "getopt.h"
 #endif
 
 #include <string>
