@@ -65,6 +65,7 @@
 #include "GPSWeekSecond.hpp"
 #include "SystemTime.hpp"
 #include "SatPass.hpp"
+#include "GloFreqIndex.hpp"
 #include "StringUtils.hpp"
 
 using namespace std;
@@ -157,6 +158,10 @@ vector<string> L1L2P1P2;
 
 vector<unsigned int> SPIndexList;
 map<GSatID,int> SatToCurrentIndexMap;
+
+// Limits, etc.
+
+static const double dtTol = 0.25; // 1/4 sec tolerance used in epoch processing
 
 //------------------------------------------------------------------------------------
 
@@ -268,7 +273,7 @@ int main(int argc, char **argv)
          if (iret < 0) break;
       }
 
-      iret = AfterReadingFiles();
+      iret = AfterReadingFiles(); // All the action happens here.
 
       // clean up
       orfstr.close();
@@ -368,7 +373,7 @@ int ReadFile(int nfile)
          inP1 = inC1;
       }
 
-      if (config.UseCA) inP1 = inC1;
+      if (config.UseCA) inP1 = inC1; // Point P1 index to C1 data and process.
       if (inP1 == inC1)
          UsingCA = true;
       else
@@ -387,7 +392,8 @@ int ReadFile(int nfile)
             config.oflog << "input RINEX stream is bad" << endl;
             break;
          }
-         iret = ProcessOneEntireEpoch(rodata);
+         iret = ProcessOneEntireEpoch(rodata); // Processes each epoch as it's read.
+                                               // I.e., not split out by sat ID.
          if (iret < -1) break;
          if (iret == -1) { iret=0; break; }  // end of file
       }
@@ -442,7 +448,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
       // decimate data
       // If begTime is still undefined, set it to beginning of the week.
 
-      if (config.ith > 0.0)
+      if (config.ith > 0.0)  // ith is the step
       {
          if (fabs(config.begTime - CommonTime::BEGINNING_OF_TIME) < 1.e-8)
          {
@@ -451,8 +457,8 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
             config.begTime = tempTime2.convertToCommonTime();
          }
          double dt = fabs(roe.time - config.begTime);
-         dt -= config.ith*long(0.5+dt/config.ith);
-         if (fabs(dt) > 0.25) return 3;            // TD set tolerance? clock bias?
+         dt -= config.ith*long(0.5+dt/config.ith); // Subtracts off the bulk piece.
+         if (fabs(dt) > dtTol) return 3;           // tolerance
       }
 
       // save current time
@@ -465,8 +471,9 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
          // Is this satellite excluded?
 
          sat = it->first;
-         if (sat.system != SatID::systemGPS) continue; // ignore non-GPS satellites
-         for (k=-1,i=0; i<config.ExSV.size(); i++)     // ignore input sat (--exSat)
+         if (sat.system != SatID::systemGPS ||
+             sat.system != SatID::systemGlonass) continue; // ignore non-GPS/GLO satellites
+         for (k=-1,i=0; i<config.ExSV.size(); i++)         // ignore input sat (--exSat)
          {
             if (config.ExSV[i] == sat) { k = i; break; }
          }
@@ -528,11 +535,14 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
          // Is it good?
          ok = true;
          // if (spd.P1 < 1000.0 || spd.P2 < 1000.0) ok = false;
-         if (fabs(data[0]) <= 0.001 || fabs(data[1]) <= 0.001 ||
-             fabs(data[2]) <= 0.001 || fabs(data[3]) <= 0.001   ) ok = false;
+         if (fabs(data[0]) <= 0.001 || fabs(data[1]) <= 0.001 ||  // 0 marks bad data;
+             fabs(data[2]) <= 0.001 || fabs(data[3]) <= 0.001   ) // < 1 ms prints as 0 in RINEX
+         {
+            ok = false;
+         }
          flag = (ok ? SatPass::OK : SatPass::BAD);
 
-         // Now process this sat.
+         // Now process this sat: individual sats @ each epoch, i.e. as they're read in.
          iret = ProcessOneSatOneEpoch(sat, CurrEpoch, flag, data, lli, ssi);
          if (iret == -2)
          {
@@ -612,6 +622,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe)
 
 //------------------------------------------------------------------------------------
 
+// Process for one sat at a single epoch, i.e. data is not yet a SatPass.
 // return codes:
 //    -2  time tags are out of order
 //     0  normal: data was added
@@ -650,6 +661,8 @@ int ProcessOneSatOneEpoch(GSatID sat, CommonTime tt, unsigned short& flag,
       iret = SPList[index].addData(tt, L1L2P1P2, data, lli, ssi, flag);
       if (iret == -2) return -2;                 // time tags are out of order
       if (iret >=  0) return  0;                 // data was added successfully
+      // If the above passed, iret == -1 implied: gap in data.
+      // (See SatPass for gap criteria.)
 
       // --- Need to create a new pass ---
 
@@ -698,7 +711,16 @@ void ProcessSatPass(int in)
       // Remove this SatPass from the SatToCurrentIndexMap map.
       SatToCurrentIndexMap.erase(SPList[in].getSat());
 
-      // --------- call DC on this pass -------------------
+      // If GLONASS, get the G1 & G2 wavelengths for this sat.
+      // Instantiate a GloFreqIndex object with the SatPass.
+      // That causes it to calculate the indexes right away, quietly.
+
+      if ((SPList[in].getSat()).systemChar() == 'R' )
+      {
+      }
+
+      // Call DC on this pass.
+
       string msg;
       vector<string> EditCmds;
       int iret = DiscontinuityCorrector(SPList[in], GDConfig, EditCmds, msg);
@@ -709,11 +731,13 @@ void ProcessSatPass(int in)
       }
       SPList[in].status() = 2;              // status == 2 means 'processed'
 
-      // --------- output editing commands ----------------
+      // Output editing commands.
+
       for (int i=0; i<EditCmds.size(); i++)
          config.ofout << EditCmds[i] << endl;
 
-      // --------- smooth pseudorange and debias phase ----
+      // Smooth pseudorange and debias phase.
+
       if (config.smooth)
       {
          string msg;
@@ -1759,22 +1783,22 @@ void PreProcessArgs(const char *arg, vector<string>& Args)
       else if ((arg[0]=='-' && arg[1]=='v') || string(arg)==string("--verbose"))
          config.verbose = true;
       // old versions of args -- deprecated
-      else if (string(arg)==string("--directory")) { Args.push_back("--inputdir"); }
-      else if (string(arg)==string("--EpochBeg")) { Args.push_back("--beginTime"); }
-      else if (string(arg)==string("--EpochEnd")) { Args.push_back("--endTime"); }
-      else if (string(arg)==string("--GPSBeg")) { Args.push_back("--beginTime"); }
-      else if (string(arg)==string("--GPSEnd")) { Args.push_back("--endTime"); }
-      else if (string(arg)==string("--CA")) { Args.push_back("--forceCA"); }
-      else if (string(arg)==string("--useCA")) { Args.push_back("--forceCA"); }
-      else if (string(arg)==string("--DT")) { Args.push_back("--dt"); }
-      else if (string(arg)==string("--Gap")) { Args.push_back("--gap"); }
-      else if (string(arg)==string("--Smooth")) { Args.push_back("--smooth"); }
-      else if (string(arg)==string("--SmoothPR")) { Args.push_back("--smoothPR"); }
-      else if (string(arg)==string("--SmoothPH")) { Args.push_back("--smoothPH"); }
-      else if (string(arg)==string("--XPRN")) { Args.push_back("--exSat"); }
-      else if (string(arg)==string("--SVonly")) { Args.push_back("--onlySat"); }
-      else if (string(arg)==string("--Log")) { Args.push_back("--logOut"); }
-      else if (string(arg)==string("--Out")) { Args.push_back("--cmdOut"); }
+      else if (string(arg)==string("--directory")) { Args.push_back("--inputdir" ); }
+      else if (string(arg)==string("--EpochBeg" )) { Args.push_back("--beginTime"); }
+      else if (string(arg)==string("--EpochEnd" )) { Args.push_back("--endTime"  ); }
+      else if (string(arg)==string("--GPSBeg"   )) { Args.push_back("--beginTime"); }
+      else if (string(arg)==string("--GPSEnd"   )) { Args.push_back("--endTime"  ); }
+      else if (string(arg)==string("--CA"       )) { Args.push_back("--forceCA"  ); }
+      else if (string(arg)==string("--useCA"    )) { Args.push_back("--forceCA"  ); }
+      else if (string(arg)==string("--DT"       )) { Args.push_back("--dt"       ); }
+      else if (string(arg)==string("--Gap"      )) { Args.push_back("--gap"      ); }
+      else if (string(arg)==string("--Smooth"   )) { Args.push_back("--smooth"   ); }
+      else if (string(arg)==string("--SmoothPR" )) { Args.push_back("--smoothPR" ); }
+      else if (string(arg)==string("--SmoothPH" )) { Args.push_back("--smoothPH" ); }
+      else if (string(arg)==string("--XPRN"     )) { Args.push_back("--exSat"    ); }
+      else if (string(arg)==string("--SVonly"   )) { Args.push_back("--onlySat"  ); }
+      else if (string(arg)==string("--Log"      )) { Args.push_back("--logOut"   ); }
+      else if (string(arg)==string("--Out"      )) { Args.push_back("--cmdOut"   ); }
       // else its a regular command
       else Args.push_back(arg);
       //if (debug) cout << "arg " << string(arg) << endl;
