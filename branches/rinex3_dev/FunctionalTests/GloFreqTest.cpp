@@ -75,9 +75,9 @@ int main(int argc, char *argv[])
       {
          RinexSatID id = RinexSatID(i,SatID::systemGlonass);
 
-         double freq1 = glo.getFreq(id,1,ierr1); // G1
-         double freq2 = glo.getFreq(id,2,ierr2); // G2
-         double freq3 = glo.getFreq(id,3,ierr3); // fake G3, to test error-handling
+         double freq1 = glo.getFreqTruth(id,1,ierr1); // G1
+         double freq2 = glo.getFreqTruth(id,2,ierr2); // G2
+         double freq3 = glo.getFreqTruth(id,3,ierr3); // fake G3, to test error-handling
 
          cout << "R" << setw(2) << setfill('0') << i << "   "
               << setw(4) << setfill(' ') << glo.getIndex(id) << "    "
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
       obsTypes.push_back("EL");
       obsTypes.push_back("AZ");
 
-      vector<SatPass> list;
+      vector<SatPass> list, copylist, sortedlist;
 
       // Read in data from a known RINEX 2 file.
       cout << "Input RINEX 2 Obs filename: " << argv[1] << endl << endl;
@@ -121,6 +121,7 @@ int main(int argc, char *argv[])
          exit(-1);
       }
 
+      // Output basic info on the passes.
       cout << endl << "Satellite passes present:" << endl;
       for (int i = 0; i < list.size(); i++)
       {
@@ -132,6 +133,73 @@ int main(int argc, char *argv[])
                  << "   end: "   << CivilTime(list[i].getLastGoodTime())
                  << endl;
          }
+      }
+      cout << endl;
+
+      // Copy the list for sorting.
+      copylist = list;
+
+      // Sort the passes by GNSS & SV ID. [GPS]
+      for (int i = 1; i <= 32; i++) // GPS SVs
+      {
+         cout << endl;
+         GSatID satid(i,GSatID::systemGPS);
+         cout << "Constructed GSatID " << satid << endl;
+         vector<SatPass>::iterator it = copylist.begin();
+         while (it != copylist.end())
+         {
+            if ((*it).getSat() == satid)
+            {
+               cout << "Adding SatPass to sortedlist." << endl;
+               sortedlist.push_back(*it);
+               copylist.erase(it);
+               it--;
+            }
+            it++;
+         }
+         cout << "Finished GPS while() loop." << endl;
+      }
+
+      // Output basic info on the sorted passes.
+      cout << endl << "Satellite passes present:" << endl;
+      for (int i = 0; i < sortedlist.size(); i++)
+      {
+         cout << "   " << sortedlist[i].getSat().toString()
+              << "   start: " << CivilTime(sortedlist[i].getFirstGoodTime())
+              << "   end: "   << CivilTime(sortedlist[i].getLastGoodTime())
+              << endl;
+      }
+      cout << endl;
+
+      // Sort the passes by GNSS & SV ID. [GLO]
+      for (int i = 1; i <= 24; i++) // GLONASS SVs
+      {
+         cout << endl;
+         GSatID satid(i,GSatID::systemGlonass);
+         cout << "Constructed GSatID " << satid << endl;
+         vector<SatPass>::iterator it = copylist.begin();
+         while (it != copylist.end())
+         {
+            if ((*it).getSat() == satid)
+            {
+               cout << "Adding SatPass to sortedlist." << endl;
+               sortedlist.push_back(*it);
+               copylist.erase(it);
+               it--;
+            }
+            it++;
+         }
+         cout << "Finished GLO while() loop." << endl;
+      }
+
+      // Output basic info on the sorted passes.
+      cout << endl << "Satellite passes present:" << endl;
+      for (int i = 0; i < sortedlist.size(); i++)
+      {
+         cout << "   " << sortedlist[i].getSat().toString()
+              << "   start: " << CivilTime(sortedlist[i].getFirstGoodTime())
+              << "   end: "   << CivilTime(sortedlist[i].getLastGoodTime())
+              << endl;
       }
       cout << endl;
 
