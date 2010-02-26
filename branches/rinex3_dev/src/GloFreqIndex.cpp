@@ -403,7 +403,42 @@ namespace gpstk
    }
 
 
-   // Method to return the frequency from icd_glo_constants for a given SV ID.
+   // Method to return the frequency from icd_glo_constants for a given SV ID,
+   // using the truth index table.
+
+   double GloFreqIndex::getFreqTruth( const RinexSatID& id, const int& band, int& error )
+      throw()
+   {
+      int index = getIndexTruth(id);
+
+      if (index < -10)
+      {
+         error = 1; // No entry for the given SatID.
+         return 0.;
+      }
+      else
+      {
+         error = 0;
+
+         // Singleton reference.
+         GloFreq *inst;
+         inst = inst->instance();
+
+         if (band == 1)
+            return inst->getL1(index);
+         else if (band == 2)
+            return inst->getL2(index);
+         else
+         {
+            error = 2; // Invalid frequency band.
+            return 0.;
+         }
+      }
+   }
+
+
+   // Method to return the frequency from icd_glo_constants for a given SV ID,
+   // using index values derived from Obs data.
 
    double GloFreqIndex::getFreq( const RinexSatID& id, const int& band, int& error )
       throw()

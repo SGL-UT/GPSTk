@@ -173,6 +173,17 @@ namespace gpstk
          throw();
 
       /// This method returns the GLONASS frequency for a given SV and band.
+      /// It calls getIndexTruth(id) to get the channel index frmo the truth
+      /// table, then looks up the frequency in icd_glo_constants.  The error
+      /// codes are:
+      ///    0  no error
+      ///    1  no entry for the given SatID
+      ///    2  invalid frequency band
+
+      double getFreqTruth( const RinexSatID& id, const int& band, int& error )
+         throw();
+
+      /// This method returns the GLONASS frequency for a given SV and band.
       /// It calls getIndex(id) to get the channel index, then looks up
       /// the frequency in icd_glo_constants.  The error codes are:
       ///    0  no error
