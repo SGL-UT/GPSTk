@@ -1,0 +1,10 @@
+#
+# $Id$
+#
+
+SubDir TOP apps geomatics JPLeph ;
+
+GPSLinkLibraries convertSSEph testSSEph : gpstk geomatics ;
+
+GPSMain convertSSEph : convertSSEph.cpp ;
+GPSMain testSSEph : testSSEph.cpp ;
