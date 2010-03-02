@@ -68,15 +68,16 @@ using namespace StringUtils;
 
 // We dislike globals, consider passing things as parameters.
 
-// Set this to True to print debug output.
-const bool         debug = true;
+// Set this to True to print debug output. Set by -v flag.
+bool               debug = false;
+string             delim = " || ";
 
 // These are input from the command line.
 bool               allNumeric = false;
 bool               dumpPos = false;
 vector<string>     filenames;
 vector<ObsID>      otList;
-string             outputFormat;
+string             outputFormat = ("%4F %10.3g");
 vector<RinexSatID> satList;
 
 // These are constructed dependant on input from the command line.
@@ -107,9 +108,6 @@ int processCommandLineOptions();
  */
 void dumpCommandLineOptions()
 {
-   // Used to deliminate what are command line arguments.
-   string delim = " || ";
-   
    cout << "COMMAND LINE ARGUMENTS" << endl;
    
    // Files
@@ -143,6 +141,11 @@ void dumpCommandLineOptions()
       cout << delim << otList[i].asRinex3ID() << endl;
    }
    
+   cout << delim << "Dump All Obs Types: ";
+   dumpAllObs ?
+        cout << "True" << endl
+      : cout << "False" << endl;
+   
    cout << delim << endl;
    
    // Output Positions (with some ternary operator mess.)
@@ -160,6 +163,18 @@ void dumpCommandLineOptions()
    {
       cout << delim << satList[i].toString() << endl;
    }
+   
+   cout << delim << "Dump All Sat IDs: ";
+   dumpAllSat ?
+        cout << "True" << endl
+      : cout << "False" << endl;
+   
+   cout << delim << endl;
+   
+   cout << delim << "Dump Everything: ";
+   dumpAll ?
+        cout << "True" << endl
+      : cout << "False" << endl;
    
    cout << endl;
 }
@@ -218,6 +233,11 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
          "sat",
          "    -s, --sat <sat>      <sat> is a RINEX satellite ID (eg. For GPS PRN 31, <sat> = G01).\n"
          "                         Optional, but may be needed in case of ambiguity.\n");
+
+      // -v, --verbose
+      CommandOptionNoArg dashverbose('v',
+         "verbose",
+         "    -v, --verbose        Prints out verbose output.\n");
 
       CommandOptionRest rest("<file> <obs> <sat>");
 
@@ -278,6 +298,12 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
          cerr << endl;
          
          return -1;
+      }
+      
+      // Set verbosity.
+      if (dashverbose.getCount())
+      {
+         debug = true;
       }
       
       // Check for help option.
@@ -409,6 +435,13 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
                if (asString(ot).compare("  ") != 0) // A valid ObsID.
                {
                   if (debug) cout << "Added obs type " << values[i] << "." << endl;
+                  
+                  /*
+                  if (debug) cout << "               ";
+                  if (debug) ot.dump(cout);
+                  if (debug) cout << endl;
+                  */
+                  
                   cout << endl;
                   otList.push_back(ot);
                   
@@ -464,7 +497,7 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
             
             return -1;
          }
-      }
+      } // i < values.size()
       
       return 0;
    }
@@ -521,11 +554,81 @@ int main(int argc, char *argv[])
       e = RegisterARLUTExtendedTypes();
       if (e) return e; // If there's an error, die.
       
+      // Begin dumping input files...
+      string filename;
+      Rinex3ObsData data;
+      Rinex3ObsHeader header;
       
+      for (int i = 0; i < filenames.size(); i++)
+      {
+         filename = filenames[i];
+         
+         Rinex3ObsStream rinFile(filename.c_str());
+         rinFile.exceptions(fstream::failbit);
+         
+         // Try to read the header of rinFile.
+         try
+         {
+            rinFile >> header;
+         }
+         catch (Exception& e)
+         {
+            cerr << "Error! Input file " << filename << " is not a valid Rinex3 Obs file." << endl;
+            return -1;
+         }
+         
+         if (dumpAllObs)
+         {
+            otList.clear();
+            
+            // Using Obs Type map
+            /*
+            map<string, vector<ObsID> >::const_iterator map_iter;
+            
+            if (debug) cout << "Obs Types found in " << filename << ":" << endl;
+            
+            for (map_iter = header.mapObsTypes.begin(); map_iter != header.mapObsTypes.end(); map_iter++)
+            {
+               if (debug) cout << delim << map_iter->first << " Observation Types (" << map_iter->second.size() << "):" << endl;
+               
+               for (int k = 0; k < map_iter->second.size(); k++)
+               {
+                  if (debug) cout << delim << delim << "Type #" << k+1 << " = " << asRinex3ID(map_iter->second[k]) << endl;
+                  
+                  otList.push_back(map_iter->second[k]);
+               }
+            }
+            */
+            
+            // Using Obs Type vector
+            if (debug) cout << header.numObs << " Obs Types found in " << filename << ":" << endl;
+            
+            for (int k = 0; k < header.obsTypeList.size(); k++)
+            {
+               //if (debug) cout << delim << header.obsTypeList[k] << endl;
+               if (debug) cout << delim;
+               if (debug) header.obsTypeList[k].dump(cout);
+               if (debug) cout << endl;
+            }
+            
+         }
+         else
+         {
+            // Check that the obs types exist in the header.
+            map<string, vector<ObsID> >::const_iterator map_iter;
+            vector<ObsID>::iterator obs_iter;
+            
+            for (obs_iter = otList.begin(); obs_iter != otList.end(); )
+            {
+               
+            }
+         }
+         
+      } // i < filenames.size()
    }
    catch (Exception& e)
    {
-      cerr << "Error! Exception!" << e << endl;
+      cerr << "Error! Exception!" << endl << e << endl;
    }
    
    return 0;
@@ -545,6 +648,7 @@ int processCommandLineOptions()
    
    if (dumpAllObs && dumpAllSat) dumpAll = true;
    
+   // If there are files, sort them based on the "begin time" in their headers.
    if (filenames.size() > 0)
    {
       sortRinex3ObsFiles(filenames);
@@ -563,9 +667,9 @@ int processCommandLineOptions()
    {
       filename = filenames[i];
       
-      Rinex3ObsStream RinFile(filename.c_str());
+      Rinex3ObsStream rinFile(filename.c_str());
       
-      if (filename.empty() || !RinFile)
+      if (filename.empty() || !rinFile)
       {
          cerr << "Error! Input file " << filename << " does not exist." << endl;
          return -1;
