@@ -39,6 +39,12 @@ namespace gpstk
 
    TypeID::Initializer TypeIDsingleton;
 
+      // It should be initialize by false, NEVER CHANGE IT!!!
+   bool TypeID::bUserTypeIDRegistered = false;
+
+      // Map holding user defined TypeIDs by a string
+   std::map<std::string,TypeID> TypeID::mapUserTypeID;
+
 
       // Let's assign type descriptions
    TypeID::Initializer::Initializer()
@@ -189,6 +195,19 @@ namespace gpstk
       tStrings[instL6]     = "instrumentalL6";
       tStrings[instL7]     = "instrumentalL7";
       tStrings[instL8]     = "instrumentalL8";
+
+      tStrings[prefitP1]   = "prefitResidualCodeP1";
+      tStrings[prefitP2]   = "prefitResidualCodeP2";
+      tStrings[prefitL1]   = "prefitResidualPhaseL1";
+      tStrings[prefitL2]   = "prefitResidualPhaseL2";
+      tStrings[postfitP1]  = "postfitResidualCodeP1";
+      tStrings[postfitP2]  = "postfitResidualCodeP2";
+      tStrings[postfitL1]  = "postfitResidualPhaseL1";
+      tStrings[postfitL2]  = "postfitResidualPhaseL2";
+      tStrings[prefitGRAPHIC1]  = "prefitResidualGRAPHIC1";
+      tStrings[prefitGRAPHIC2]  = "prefitResidualGRAPHIC2";
+      tStrings[postfitGRAPHIC1] = "postfitResidualGRAPHIC1";
+      tStrings[postfitGRAPHIC2] = "postfitResidualGRAPHIC2";
       tStrings[prefitC]    = "prefitResidualCode";
       tStrings[prefitL]    = "prefitResidualPhase";
       tStrings[postfitC]   = "posfitResidualCode";
@@ -336,4 +355,113 @@ namespace gpstk
    }
 
 
+      /// Static method to register new TypeID by a RegTypeID class
+   void TypeID::regTypeIDs(RegTypeID* pReg, bool bAdd)
+   {
+      //
+      if(!bAdd && bUserTypeIDRegistered)
+      {
+         unregAll();
+      }
+         
+      pReg->regAll();
+
+      bUserTypeIDRegistered = true;
+
+   }
+
+      // Return the new TypeID
+   TypeID TypeID::regByName(std::string name,std::string desc)
+   {
+
+      std::map<std::string,TypeID>::iterator it = mapUserTypeID.find(name);
+
+      if(it != mapUserTypeID.end())
+      {
+         return it->second;
+      }
+      else
+      {
+         TypeID newID = TypeID::newValueType(desc);
+
+         mapUserTypeID.insert(pair<std::string,TypeID>(name, newID));
+
+         return newID;
+      }
+
+   }  // End of 'TypeID::registerTypeID(std::string name,std::string desc)'
+
+
+
+      // unregister a TypeID by it's name string
+   void TypeID::unregByName(std::string name)
+   {
+      std::map<std::string,TypeID>::iterator it = mapUserTypeID.find(name);
+
+      if(it!=mapUserTypeID.end())
+      {
+         TypeID delID = it->second;
+
+         std::map<TypeID::ValueType,std::string>::iterator it2 = TypeID::tStrings.find(delID.type);
+         if(it2!=TypeID::tStrings.end())
+         {
+            TypeID::tStrings.erase(it2);
+         }
+
+         mapUserTypeID.erase(it);
+      }
+      else
+      {
+         // the TypeID have not been registered
+         // we do nothing
+      }
+
+   } // End of 'TypeID::unregisterTypeID(std::string name)'
+
+
+
+      // unregister all TypeIDs registered by name string
+   void TypeID::unregAll()
+   {
+      std::map<std::string,TypeID>::iterator it = mapUserTypeID.begin();
+
+      for(it=mapUserTypeID.begin(); it!=mapUserTypeID.end(); it++)
+      {
+         TypeID delID = it->second;
+
+         std::map<TypeID::ValueType,std::string>::iterator it2 = TypeID::tStrings.find(delID.type);
+         if(it2!=TypeID::tStrings.end())
+         {
+            TypeID::tStrings.erase(it2);
+         }
+
+         mapUserTypeID.erase(it);
+      }
+      mapUserTypeID.clear();
+
+      bUserTypeIDRegistered = false;
+
+   }  // End of 'TypeID::unregisterAll()'
+
+      // get the user registered TypeID by name string
+   TypeID TypeID::byName(std::string name)
+      throw(InvalidRequest)
+   {
+      // registerMyTypeID();
+
+      std::map<std::string,TypeID>::iterator it = mapUserTypeID.find(name);
+      if(it != mapUserTypeID.end())
+      {
+         return it->second;
+      }
+      else
+      {
+         InvalidRequest e("There are no registered TypeID name as '" 
+            + name + "'.");
+         GPSTK_THROW(e);
+      }
+   } // End of 'TypeID TypeID::byName(std::string name)'
+
 } // End of namespace gpstk
+
+

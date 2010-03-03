@@ -45,6 +45,18 @@
 
 namespace gpstk
 {
+      /** This class register TypeIDs by a name string, then you can access it
+       *  globally.
+       */
+   class RegTypeID
+   {
+   public:
+         /// Override it to register your TypeIDs by string name 
+      virtual void regAll()
+      {
+         // TypeID t = TypeID::registerTypeID("prefitP1","prefitResidualP1");
+      }
+   };
 
       /** This class creates an index able to represent any type of observation,
        *  correction, model parameter or other data value of interest for GNSS
@@ -234,6 +246,18 @@ namespace gpstk
          instL7,    ///< Instrumental delay, L7
          instL8,    ///< Instrumental delay, L8
             // Equation system-related types
+         prefitP1,  ///< Prefit residual, code P1
+         prefitP2,  ///< Prefit residual, code P2
+         prefitL1,  ///< Prefit residual, phase L1
+         prefitL2,  ///< Prefit residual, phase L2
+         postfitP1, ///< Postfit residual, code P1
+         postfitP2, ///< Postfit residual, code P2
+         postfitL1, ///< Postfit residual, phase L1
+         postfitL2, ///< Postfit residual, phase L2
+         prefitGRAPHIC1,   ///< Prefit residual, GRAPHIC1
+         prefitGRAPHIC2,   ///< Prefit residual, GRAPHIC2
+         postfitGRAPHIC1,  ///< Postfit residual, GRAPHIC1
+         postfitGRAPHIC2,  ///< Postfit residual, GRAPHIC2
          prefitC,   ///< Prefit residual, code
          prefitL,   ///< Prefit residual, phase
          postfitC,  ///< Postfit residual, code
@@ -372,6 +396,45 @@ namespace gpstk
       };
 
       static Initializer TypeIDsingleton;
+
+   public:
+
+         /** Static method to register new TypeID by a RegTypeID class
+          * @param reg      it do the register worker
+          * @param bAdd     add the the user defined TypeIDs or replace it
+          *                 by default, we'll delete all user defined TypeIds
+          *                 and before register those new TypeIDs. 
+          */
+      static void regTypeIDs(RegTypeID* pReg, bool bAdd = false);
+    
+
+         /** Static method to get the user registered TypeID by name string
+          * @param name      Identifying string for the new TypeID
+          * @return          The desired TypeID
+          */
+      static TypeID TypeID::byName(std::string name) 
+         throw(InvalidRequest);
+
+         /** Static method to add new TypeID's by name string
+          * @param name      Identifying string for the new TypeID
+          * @param desc      Descriptions of the new TypeID
+          * @return          The new TypeID
+          */
+      static TypeID regByName(std::string name,std::string desc);
+      
+         /// unregister a TypeID by it's name string
+      static void unregByName(std::string name);
+
+         /// unregister all TypeIDs registered by name string
+      static void unregAll();
+
+   private:
+
+         /// Have user deined TypeIDs been registered ?  
+      static bool bUserTypeIDRegistered;
+
+         /// Map holding user defined TypeIDs by a string
+      static std::map<std::string,TypeID> mapUserTypeID;
 
 
    }; // End of class 'TypeID'
