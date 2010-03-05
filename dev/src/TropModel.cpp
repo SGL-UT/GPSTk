@@ -173,8 +173,8 @@ namespace gpstk
 		const double Hr  = 0.5;			   // humidity
 		
 		T = Tr-0.0065*(ht-h0);						       
-		P = pr * pow((1 - 0.0000226 * (ht - h0)), 5.225); 
-		H = Hr * exp(-0.0006396 * (ht - h0));	
+      P = pr * std::pow((1 - 0.0000226 * (ht - h0)), 5.225); 
+      H = Hr * std::exp(-0.0006396 * (ht - h0));	
 
    }
          
