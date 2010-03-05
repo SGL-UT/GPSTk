@@ -194,6 +194,14 @@ namespace gpstk
          /// correction() or any of the zenith_delay or mapping_function routines.
          /// @param d Day of year.
       virtual void setDayOfYear(const int& d) {};
+      
+         /// get weather data by a standard atmosphere model
+         /// reference to white paper of Bernese 5.0, P243
+         /// @pararm ht    height of the receiver in meters.
+         /// @param T      temperature in degrees Celsius
+         /// @param P      atmospheric pressure in millibars
+         /// @param H      relative humidity in percent
+      static void weatherByStandardAtmosphereModel(const double& ht, double& T, double& P, double& H);
 
    protected:
       bool valid;                 // true only if current model parameters are valid

@@ -157,6 +157,26 @@ namespace gpstk
          GPSTK_THROW(InvalidParameter("Invalid weather data"));
       }
    }
+      /// get weather data by a standard atmosphere model
+      /// reference to white paper of Bernese 5.0, P243
+      /// @pararm ht    Height of the receiver in meters.
+      /// @param T      temperature in degrees Celsius
+      /// @param P      atmospheric pressure in millibars
+      /// @param H      relative humidity in percent
+   void TropModel::weatherByStandardAtmosphereModel(const double& ht, double& T, double& P, double& H)
+   {  
+
+      // reference height and it's relate weather(T P H) 
+		const double h0  = 0.0;			   // meter
+		const double Tr  = +18.0;	      // Celsius
+		const double pr  = 1013.25;		// millibar
+		const double Hr  = 0.5;			   // humidity
+		
+		T = Tr-0.0065*(ht-h0);						       
+		P = pr * pow((1 - 0.0000226 * (ht - h0)), 5.225); 
+		H = Hr * exp(-0.0006396 * (ht - h0));	
+
+   }
          
    // -----------------------------------------------------------------------
    // Simple Black model. This has been used as the 'default' for many years.
