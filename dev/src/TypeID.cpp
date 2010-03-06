@@ -384,7 +384,7 @@ namespace gpstk
       {
          TypeID newID = TypeID::newValueType(desc);
 
-         mapUserTypeID.insert(pair<std::string,TypeID>(name, newID));
+         mapUserTypeID.insert(std::pair<std::string,TypeID>(name, newID));
 
          return newID;
       }

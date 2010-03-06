@@ -412,7 +412,7 @@ namespace gpstk
           * @param name      Identifying string for the new TypeID
           * @return          The desired TypeID
           */
-      static TypeID TypeID::byName(std::string name) 
+      static TypeID byName(std::string name) 
          throw(InvalidRequest);
 
          /** Static method to add new TypeID's by name string
