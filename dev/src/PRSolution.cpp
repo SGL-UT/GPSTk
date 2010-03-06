@@ -197,6 +197,7 @@ namespace gpstk
          Vector<double> BestSol(3,0.0);
          vector<bool> BestUse;
          BestRMS = -1.0;      // this marks the 'Best' set as unused.
+         Matrix<double> BestCovariance;
 
          // ----------------------------------------------------------------
          // initialize
@@ -355,6 +356,7 @@ namespace gpstk
                      BestSL = MaxSlope;
                      BestConv = Convergence;
                      BestNIter = NIterations;
+                     BestCovariance = Covariance;
                   }
                      // quit immediately?
                   if((stage==0 || ReturnAtOnce) && RMSResidual < RMSLimit)
@@ -383,6 +385,7 @@ namespace gpstk
          RMSResidual = BestRMS;
          Solution = BestSol;
          MaxSlope = BestSL;
+         Covariance = BestCovariance;
          for(Nsvs=0,i=0; i<BestUse.size(); i++) {
             if(!BestUse[i]) Satellite[i].id = -::abs(Satellite[i].id);
             else Nsvs++;
