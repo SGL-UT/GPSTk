@@ -59,9 +59,9 @@ namespace vdraw
          std::cout << "Going to launch " << *viewer << std::endl;
          string command = (*viewer) + " " + fileName;
          if (system(command.c_str())==0)
-	 {
-	    worked=true;
-	    break;
+	       {
+	          worked=true;
+	          break;
          }
          std::cout << "... couldn't execute: " << command << std::endl;
       }
