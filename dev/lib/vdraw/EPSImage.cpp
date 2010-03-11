@@ -96,6 +96,7 @@ namespace vdraw
      viewerManager.registerViewer("ghostview");
      viewerManager.registerViewer("gv");
      viewerManager.registerViewer("evince");
+     viewerManager.registerViewer("gsview32");
 
      // Use the viewerManager
      viewerManager.view(filename);
