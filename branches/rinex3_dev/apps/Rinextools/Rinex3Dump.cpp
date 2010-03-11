@@ -1,5 +1,7 @@
 #pragma ident "$Id"
 
+
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -52,6 +54,7 @@
 #include "RinexUtilities.hpp"
 #include "StringUtils.hpp"
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -76,7 +79,10 @@ string             delim = " || ";
 bool               allNumeric = false;
 bool               dumpPos = false;
 vector<string>     filenames;
-vector<ObsID>      otList;
+vector<ObsID>      GPSOTList;
+vector<ObsID>      GloOTList;
+vector<ObsID>      GalOTList;
+vector<ObsID>      SBASOTList;
 string             outputFormat = ("%4F %10.3g");
 vector<RinexSatID> satList;
 
@@ -108,7 +114,7 @@ int processCommandLineOptions();
  */
 void dumpCommandLineOptions()
 {
-   cout << "COMMAND LINE ARGUMENTS" << endl;
+   cout << endl << "COMMAND LINE ARGUMENTS" << endl;
    
    // Files
    cout << delim << "Files:" << endl;
@@ -134,12 +140,41 @@ void dumpCommandLineOptions()
    cout << delim << endl;
    
    // Obs Types
-   cout << delim << "Obs Types:" << endl;
+   cout << delim << "GPS Obs Types:" << endl;
    
-   for (int i = 0; i < otList.size(); i++)
+   for (int i = 0; i < GPSOTList.size(); i++)
    {
-      cout << delim << otList[i].asRinex3ID() << endl;
+      cout << delim << delim << GPSOTList[i].asRinex3ID() << endl;
    }
+   
+   cout << delim << endl;
+   
+   cout << delim << "Glonass Obs Types:" << endl;
+   
+   for (int i = 0; i < GloOTList.size(); i++)
+   {
+      cout << delim << delim << GloOTList[i].asRinex3ID() << endl;
+   }
+   
+   cout << delim << endl;
+   
+   cout << delim << "Galileo Obs Types:" << endl;
+   
+   for (int i = 0; i < GalOTList.size(); i++)
+   {
+      cout << delim << delim << GalOTList[i].asRinex3ID() << endl;
+   }
+   
+   cout << delim << endl;
+   
+   cout << delim << "SBAS Obs Types:" << endl;
+   
+   for (int i = 0; i < SBASOTList.size(); i++)
+   {
+      cout << delim << delim << SBASOTList[i].asRinex3ID() << endl;
+   }
+   
+   cout << delim << endl;
    
    cout << delim << "Dump All Obs Types: ";
    dumpAllObs ?
@@ -161,8 +196,10 @@ void dumpCommandLineOptions()
    
    for (int i = 0; i < satList.size(); i++)
    {
-      cout << delim << satList[i].toString() << endl;
+      cout << delim << delim << satList[i].toString() << endl;
    }
+   
+   cout << delim << endl;
    
    cout << delim << "Dump All Sat IDs: ";
    dumpAllSat ?
@@ -358,7 +395,10 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
                if (asString(ot).compare("  ") != 0) // A valid ObsID.
                {
                   if (debug) cout << "Added obs type " << values[i] << "." << endl;
-                  otList.push_back(ot);
+                  GPSOTList.push_back(ot);
+                  GloOTList.push_back(ot);
+                  GalOTList.push_back(ot);
+                  SBASOTList.push_back(ot);
                }
                else
                {
@@ -417,8 +457,7 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
          {
             if (isRinex3ObsFile(values[i]))
             {
-               if (debug) cout << "Added file " << values[i] << "." << endl;
-               cout << endl;
+               if (debug) cout << "Added file " << values[i] << "." << endl << endl;
                filenames.push_back(values[i]);
                
                continue;
@@ -434,16 +473,12 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
                
                if (asString(ot).compare("  ") != 0) // A valid ObsID.
                {
-                  if (debug) cout << "Added obs type " << values[i] << "." << endl;
+                  if (debug) cout << "Added obs type " << values[i] << "." << endl << endl;
                   
-                  /*
-                  if (debug) cout << "               ";
-                  if (debug) ot.dump(cout);
-                  if (debug) cout << endl;
-                  */
-                  
-                  cout << endl;
-                  otList.push_back(ot);
+                  GPSOTList.push_back(ot);
+                  GloOTList.push_back(ot);
+                  GalOTList.push_back(ot);
+                  SBASOTList.push_back(ot);
                   
                   // We only allow filenames to come before obs types.
                   maybeMoreFilenames = false;
@@ -466,8 +501,7 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
                
                if (sat.isValid())
                {
-                  if (debug) cout << "Added satellite ID " << values[i] << "." << endl;
-                  cout << endl;
+                  if (debug) cout << "Added satellite ID " << values[i] << "." << endl << endl;
                   satList.push_back(sat);
                   
                   // We only allow filenames and obs types to come before sat IDs.
@@ -533,8 +567,6 @@ int index(const vector<T> v, const T& t)
 /**
  * The main program.
  * 
- * The output files generated should match perfectly to the input files on diff.
- * 
  * @return 0 on success.
  */
 int main(int argc, char *argv[])
@@ -548,8 +580,6 @@ int main(int argc, char *argv[])
       
       e = processCommandLineOptions();
       if (e) return e; // If there's an error, die.
-      
-      if (debug) dumpCommandLineOptions();
       
       e = RegisterARLUTExtendedTypes();
       if (e) return e; // If there's an error, die.
@@ -579,10 +609,12 @@ int main(int argc, char *argv[])
          
          if (dumpAllObs)
          {
-            otList.clear();
+            GPSOTList.clear();
+            GloOTList.clear();
+            GalOTList.clear();
+            SBASOTList.clear();
             
-            // Using Obs Type map
-            /*
+            // Add all obs types for each satellite system.
             map<string, vector<ObsID> >::const_iterator map_iter;
             
             if (debug) cout << "Obs Types found in " << filename << ":" << endl;
@@ -595,36 +627,172 @@ int main(int argc, char *argv[])
                {
                   if (debug) cout << delim << delim << "Type #" << k+1 << " = " << asRinex3ID(map_iter->second[k]) << endl;
                   
-                  otList.push_back(map_iter->second[k]);
+                  if (map_iter->first.compare("G") == 0) GPSOTList.push_back(map_iter->second[k]);
+                  if (map_iter->first.compare("R") == 0) GloOTList.push_back(map_iter->second[k]);
+                  if (map_iter->first.compare("E") == 0) GalOTList.push_back(map_iter->second[k]);
+                  if (map_iter->first.compare("S") == 0) SBASOTList.push_back(map_iter->second[k]);
                }
             }
-            */
-            
-            // Using Obs Type vector
-            if (debug) cout << header.numObs << " Obs Types found in " << filename << ":" << endl;
-            
-            for (int k = 0; k < header.obsTypeList.size(); k++)
-            {
-               //if (debug) cout << delim << header.obsTypeList[k] << endl;
-               if (debug) cout << delim;
-               if (debug) header.obsTypeList[k].dump(cout);
-               if (debug) cout << endl;
-            }
-            
          }
          else
          {
             // Check that the obs types exist in the header.
-            map<string, vector<ObsID> >::const_iterator map_iter;
-            vector<ObsID>::iterator obs_iter;
+            //
+            // IDEA. We construct a set for each satellite system's obs types and use it to check
+            //       them with each OTList. This gives O(n + n lg n) performance, in contrast with
+            //       O(n^2) (worst case) time when checking the OTList against the headerList.
+            //
+            //       We also copy the ObsID's to a new vector then swap, which is faster than
+            //       deleting from the original OTLists, which shift all the elements.
+            set<ObsID> obsInHeader;
+            vector<ObsID> headerList;
+            vector<ObsID> goodObsTypes;
             
-            for (obs_iter = otList.begin(); obs_iter != otList.end(); )
+            /**
+             * Check for GPS obs types.
+             */
+            headerList = header.mapObsTypes["G"];
+            
+            // This builds the set.
+            for (int k = 0; k < headerList.size(); k++) obsInHeader.insert(headerList[k]);
+            
+            // Add obs types that are good to temp. vector.
+            for (int k = 0; k < GPSOTList.size(); k++)
             {
+               if (obsInHeader.count(GPSOTList[k]) > 0) goodObsTypes.push_back(GPSOTList[k]);
+            }
+            
+            // Switch contents!
+            GPSOTList.swap(goodObsTypes);
+            
+            // Get ready to start over.
+            obsInHeader.clear();
+            goodObsTypes.clear();
+            
+            /**
+             * Check for Glonass obs types.
+             */
+            headerList = header.mapObsTypes["R"];
+            
+            for (int k = 0; k < headerList.size(); k++) obsInHeader.insert(headerList[k]);
+            
+            for (int k = 0; k < GloOTList.size(); k++)
+            {
+               if (obsInHeader.count(GloOTList[k]) > 0) goodObsTypes.push_back(GloOTList[k]);
+            }
+            
+            GloOTList.swap(goodObsTypes);
+            obsInHeader.clear();
+            goodObsTypes.clear();
+            
+            /**
+             * Check for Galileo obs types.
+             */
+            headerList = header.mapObsTypes["E"];
+            
+            for (int k = 0; k < headerList.size(); k++) obsInHeader.insert(headerList[k]);
+            
+            for (int k = 0; k < GalOTList.size(); k++)
+            {
+               if (obsInHeader.count(GalOTList[k]) > 0) goodObsTypes.push_back(GalOTList[k]);
+            }
+            
+            GalOTList.swap(goodObsTypes);
+            obsInHeader.clear();
+            goodObsTypes.clear();
+            
+            /**
+             * Check for SBAS obs types.
+             */
+            headerList = header.mapObsTypes["S"];
+            
+            for (int k = 0; k < headerList.size(); k++) obsInHeader.insert(headerList[k]);
+            
+            for (int k = 0; k < SBASOTList.size(); k++)
+            {
+               if (obsInHeader.count(SBASOTList[k]) > 0) goodObsTypes.push_back(SBASOTList[k]);
+            }
+            
+            SBASOTList.swap(goodObsTypes);
+         }
+         
+         // Make sure we actually have obs types to consider.
+         if (GPSOTList.size() == 0
+             && GloOTList.size() == 0
+             && GalOTList.size() == 0
+             && SBASOTList.size() == 0)
+         {
+            cout << "Error! There are no Obs Types." << endl;
+            return -1;
+         }
+         
+         if (!allNumeric)
+         {
+            cout << "# Rinex3Dump File: " << filename << endl;
+            
+            if (dumpPos)
+            {
+               cout << " Positions (in auxiliary header comments)." << endl;
+            }
+            else
+            {
+               cout << "Satellites: ";
                
+               if (!dumpAllSat)
+               {
+                  cout << satList[0].toString();
+                  for (int k = 1; k < satList.size(); k++) cout << ", " << satList[k].toString();
+                  cout << endl;
+               }
+               else
+               {
+                  cout << "ALL" << endl;
+               }
+               
+               cout << "Observations: ";
+               
+               if (!dumpAllObs)
+               {
+                  cout << endl;
+                  
+                  if (!GPSOTList.empty())
+                  {
+                     cout << "G - " << GPSOTList[0].asRinex3ID();
+                     for (int k = 1; k < GPSOTList.size(); k++) cout << ", " << GPSOTList[k].asRinex3ID();
+                     cout << endl;
+                  }
+                  
+                  if (!GloOTList.empty())
+                  {
+                     cout << "R - " << GloOTList[0].asRinex3ID();
+                     for (int k = 1; k < GloOTList.size(); k++) cout << ", " << GloOTList[k].asRinex3ID();
+                     cout << endl;
+                  }
+                  
+                  if (!GalOTList.empty())
+                  {
+                     cout << "E - " << GalOTList[0].asRinex3ID();
+                     for (int k = 1; k < GalOTList.size(); k++) cout << ", " << GalOTList[k].asRinex3ID();
+                     cout << endl;
+                  }
+                  
+                  if (!SBASOTList.empty())
+                  {
+                     cout << "S - " << SBASOTList[0].asRinex3ID();
+                     for (int k = 1; k < SBASOTList.size(); k++) cout << ", " << SBASOTList[k].asRinex3ID();
+                     cout << endl;
+                  }
+               }
+               else
+               {
+                  cout << "ALL" << endl;
+               }
             }
          }
          
       } // i < filenames.size()
+      
+      if (debug) dumpCommandLineOptions();
    }
    catch (Exception& e)
    {
@@ -642,7 +810,10 @@ int main(int argc, char *argv[])
  */
 int processCommandLineOptions()
 {
-   if (otList.size() == 0) dumpAllObs = true;
+   if (GPSOTList.size() == 0
+       && GloOTList.size() == 0
+       && GalOTList.size() == 0
+       && SBASOTList.size() == 0) dumpAllObs = true;
    
    if (satList.size() == 0) dumpAllSat = true;
    
