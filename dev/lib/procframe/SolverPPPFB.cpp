@@ -492,12 +492,12 @@ namespace gpstk
       {
 
             // Check postfit values and mark satellites as rejected
-         if( (*it).second( TypeID::postfitC ) > codeLimit )
+         if( std::abs((*it).second( TypeID::postfitC )) > codeLimit )
          {
             satRejectedSet.insert( (*it).first );
          }
 
-         if( (*it).second( TypeID::postfitL ) > phaseLimit )
+         if( std::abs((*it).second( TypeID::postfitL )) > phaseLimit )
          {
             satRejectedSet.insert( (*it).first );
          }
