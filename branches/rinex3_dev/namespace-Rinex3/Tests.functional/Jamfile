@@ -1,9 +1,0 @@
-SEARCH = ../../../src ../../rxio/ ;
-STD_LINK_LIBS = -ldl -lstdc++ -lm ; 
-
-
-Main wheresat : WhereSat.cpp EphReader.cpp ;
-ObjectHdrs wheresat WhereSat.cpp : ../. ../../../src ../../rxio/ ;
-ObjectHdrs wheresat EphReader.cpp : ../../../src ../../rxio/ ;
-LINKLIBS on wheresat =  $(STD_LINK_LIBS) ;
-LinkLibraries wheresat : ../libRinex3 ../../rxio/librxio ../../../src/libgpstk ;
