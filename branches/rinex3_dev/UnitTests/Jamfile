@@ -8,7 +8,7 @@ SubInclude TOP HelmertTransform ;
 SubInclude TOP JulianDate ;
 #SubInclude TOP KeplerianEphemerisStore ;
 SubInclude TOP MJD ;
-SubInclude TOP SP3EphemerisStore ;
+#SubInclude TOP SP3EphemerisStore ;
 SubInclude TOP ReferenceFrame ;
 #SubInclude TOP TabularEphemerisStore ;
 SubInclude TOP UnixTime ;
