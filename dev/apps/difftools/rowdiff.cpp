@@ -70,9 +70,6 @@ void ROWDiff::process()
    gpstk::FileFilterFrameWithHeader<RinexObsStream, RinexObsData, RinexObsHeader>
       ff1(inputFileOption.getValue()[0]), ff2(inputFileOption.getValue()[1]);
 
-      // find the obs data intersection
-   RinexObsHeaderTouchHeaderMerge merged;
-
       // no data?  FIX make this program faster.. if one file
       // doesn't exist, there's little point in reading any.
    if (ff1.emptyHeader())
@@ -88,9 +85,43 @@ void ROWDiff::process()
       exit(1);
    }
 
+      // determine whether the two input files have the same observation types
+   RinexObsHeader header1, header2;
+   RinexObsStream ros1(inputFileOption.getValue()[0]), ros2(inputFileOption.getValue()[1]);
+   
+   ros1 >> header1;
+   ros2 >> header2;
+ 
+   if (header1.obsTypeList.size() != header2.obsTypeList.size())
+   {
+      cout << "The two files have a different number of observation types." << endl;
+      cout << "The first file has ";
+      vector<RinexObsHeader::RinexObsType> types1 = header1.obsTypeList;
+      vector<RinexObsHeader::RinexObsType>::iterator i = types1.begin();
+      while (i != types1.end())
+	{
+      cout << gpstk::RinexObsHeader::convertObsType(*i) << ' ';
+      i++;
+	}
+      cout << endl;
+
+      cout << "The second file has ";
+      vector<RinexObsHeader::RinexObsType> types2 = header2.obsTypeList;
+      vector<RinexObsHeader::RinexObsType>::iterator j = types2.begin();
+      while (j != types2.end())
+	{
+      cout << gpstk::RinexObsHeader::convertObsType(*j) << ' ';
+      j++;
+	}
+      cout << endl;
+   }
+
+      // find the obs data intersection
+   RinexObsHeaderTouchHeaderMerge merged;
+
    merged(ff1.frontHeader());
    merged(ff2.frontHeader());
-
+   
    cout << "Comparing the following fields (other header data is ignored):" 
         << endl;
    set<RinexObsHeader::RinexObsType> intersection = merged.obsSet;
@@ -109,7 +140,13 @@ void ROWDiff::process()
       ff1.diff(ff2, RinexObsDataOperatorLessThanFull(intersection));
 
    if (difflist.first.empty() && difflist.second.empty())
-      exit(0);
+   {
+        //Indicate to the user, before exiting, that rowdiff 
+        //performed properly and no differenes were found.
+     cout << "For the observation types that were compared, "
+          << "no differences were found." << endl;
+     exit(0);
+   }
 
    list<RinexObsData>::iterator firstitr = difflist.first.begin();
    while (firstitr != difflist.first.end())
