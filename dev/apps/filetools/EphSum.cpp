@@ -123,7 +123,7 @@ EphSum::EphSum(const std::string& applName,
            prnOption('p', "PRNID","The PRN ID of the SV to process (default is all SVs)",false),
            xmitOption('x', "xmit", "List in order of transmission (default is TOE.", false)
 {
-   inputOption.setMaxCount(8);
+   inputOption.setMaxCount(60);
    outputOption.setMaxCount(1);
    prnOption.setMaxCount(1);
    xmitOption.setMaxCount(1);
@@ -307,13 +307,43 @@ void EphSum::process()
 
          // Header
       fprintf(logfp,"#\n");
-      fprintf(logfp,"#PRN: %02d,  # of eph: %02d\n",i,eemap.size());
+      fprintf(logfp,"#PRN: %02d,  # of eph: %02d\n", i, (int) eemap.size());
       fprintf(logfp,"#PRN !               Xmit                !             Toe/Toc               !            End of Eff             !  IODC   Health\n");
       for (ci=eemap.begin(); ci!=eemap.end(); ++ci)
       {
          EngEphemeris ee = ci->second;
-         DayTime endEff = ee.getEphemerisEpoch();
-         endEff += 7200;
+
+	    /*
+	     * Calculating end of effectvity is a challenge.  IS-GPS-200 20.3.4.4
+	     * states "The start of the transmission interval for each data set corresponds
+	     * to the beginning of the curve fit interval for the data set."  HOWEVER,
+	     * Table 20-XI Note 4 and Table 20-XII Note 5 state "The first data set of a
+	     * new upload may be cut-in at any time and therefore the trasmission iterval
+	     * may be less than the specified value."
+	     *
+	     * A new upload implies a two hour transmission interval and a 4 hour curve
+	     * fit.  In addition, it has been emprically observed that the period of
+	     * transmission for a new upload always starts prior to the Toe.  Therefore,
+	     * if the Toe is NOT an even two-hour epoch AND the transmit time is 
+	     * not an even two hour epoch, then it is likely the first ephemeris of a 
+	     * new upload.  In such a case, the transmit time can be rounded BACK
+	     * to the most recent even two hour epoch and considered the beginning time
+	     * of effectivity for end of effectivity. 
+	    */
+         DayTime begEff = ee.getTransmitTime();
+	 DayTime epochTime = ee.getEphemerisEpoch();
+	 long TWO_HOURS = 7200;
+         long epochRemainder = (long) epochTime.GPSsow() % TWO_HOURS;
+	 long  xmitRemainder = (long) begEff.GPSsow() % TWO_HOURS;
+	 if (epochRemainder != 0 && xmitRemainder != 0)
+	 {
+	    begEff = begEff - xmitRemainder;
+	 }
+
+	 short fitIntervalHours = ee.getFitInterval();
+	 short ONE_HOUR = 3600;
+	 DayTime endEff = begEff + ONE_HOUR * fitIntervalHours;
+
          fprintf(logfp,"  %02d ! %s ! %s ! %s ! 0x%03X  0x%02X %02d \n",
                i,
                ee.getTransmitTime().printf(tform).c_str(),
