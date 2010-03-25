@@ -167,9 +167,10 @@ namespace gpstk
          /**
           * This computes and returns the fit interval for the
           * satellite ephemeris from the IODC and the fit interval
-          * flag.  This fit interval is centered around the Toe (time
-          * of ephemeris) for the ephemeris.  See Table 20-XIA in the
-          * ICD-GPS-200 and section 20.3.3.4.3.1 for more information.
+          * flag.  This fit interval is (typciallY) centered around the
+	  * Toe (time of ephemeris) for the ephemeris.  See IS-GPS-200
+	  * section 20.3.4.4, Table 20-XIA and section 20.3.3.4.3.1 for 
+	  * more information.
           * @return the fit interval in hours (0 = failure).
           * @throw InvalidRequest if data is missing.
           */
