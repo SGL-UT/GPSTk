@@ -27,7 +27,7 @@ else
       CodeBuffer.cpp CommandOption.cpp CommandOptionParser.cpp
       CommandOptionWithCommonTimeArg.cpp CommandOptionWithPositionArg.cpp
       CommandOptionWithTimeArg.cpp CommonTime.cpp ConfDataReader.cpp ConfDataWriter.cpp DOP.cpp
-      DayTime.cpp ECEF.cpp EngAlmanac.cpp
+      DayTime.cpp DCBDataReader.cpp ECEF.cpp EngAlmanac.cpp
       EngEphemeris.cpp EngNav.cpp ENUUtil.cpp EphemerisRange.cpp
       Epoch.cpp Exception.cpp Expression.cpp FFData.cpp
       FFStream.cpp FICData.cpp FICData109.cpp FICData162.cpp
@@ -69,7 +69,7 @@ else
       CommandOption.hpp CommandOptionParser.hpp
       CommandOptionWithCommonTimeArg.hpp CommandOptionWithPositionArg.hpp
       CommandOptionWithTimeArg.hpp CommonTime.hpp ConfDataReader.hpp ConfDataWriter.hpp DOP.hpp
-      DayTime.hpp ECEF.hpp EllipsoidModel.hpp EngAlmanac.hpp EngEphemeris.hpp
+      DayTime.hpp DCBDataReader.hpp ECEF.hpp EllipsoidModel.hpp EngAlmanac.hpp EngEphemeris.hpp
       EngNav.hpp ENUUtil.hpp EphemerisRange.hpp Epoch.hpp
       EpochClockModel.hpp Exception.hpp Expression.hpp
       ExtractC1.hpp ExtractCombinationData.hpp ExtractD1.hpp
