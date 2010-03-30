@@ -210,20 +210,27 @@ rule GPSBuildLibrary
    # This goes over that.
    # Until we can figure out how to properly split our library, we just can't
    # build DLLs for Windows/cygwin.
-   # Under Mac Xcode 3, the shared library syntax seems to be incorrect
    # so shared libraries are disabled for now
-   if $(UNIX) && $(OS) != CYGWIN && $(OS) != MACOSX
+   if $(UNIX) && $(OS) != CYGWIN
    {
-      soname = $(LIBPREFIX)$(<:S=$(SUFLIBSHR)).$(GPSTK_SO_VERSION) ;
-      shlib = $(LIBPREFIX)$(<:S=$(SUFLIBSHR).$(GPSTK_SO_VERSION).0) ;
-      shrobjs = $(>:S=$(SUFOBJ2)) ;
-      ObjectCcFlags $(shrobjs) : $(CCSHARE_FLAGS) ;
-      ObjectC++Flags $(shrobjs) : $(CCSHARE_FLAGS) ;
-      LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM) -Wl,-soname=$(soname) ;
-      Depends lib : $(shlib) ;
-      LibObjects $(>) ;
-      MainFromObjects $(shlib) : $(shrobjs) ;
-      InstallLib $(LIBDIR) : $(shlib) ;
+     soname = $(LIBPREFIX)$(<:S=$(SUFLIBSHR)).$(GPSTK_SO_VERSION) ;
+     shlib = $(LIBPREFIX)$(<:S=$(SUFLIBSHR).$(GPSTK_SO_VERSION).0) ;
+     shrobjs = $(>:S=$(SUFOBJ2)) ;
+     ObjectCcFlags $(shrobjs) : $(CCSHARE_FLAGS) ;
+     ObjectC++Flags $(shrobjs) : $(CCSHARE_FLAGS) ;
+     if $(OS) != MACOSX
+     {
+       LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM) -Wl,-soname=$(soname) ;
+     }
+     else
+     {
+       # the instal_name may not be right for a Xcode app
+       LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM) -install_name @rpath/$(soname) ;
+     }
+     Depends lib : $(shlib) ;
+     LibObjects $(>) ;
+     MainFromObjects $(shlib) : $(shrobjs) ;
+     InstallLib $(LIBDIR) : $(shlib) ;
    }
 }
 
