@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
 * @file ConfDataWriter.cpp
@@ -30,6 +31,7 @@
 
 #include "ConfDataWriter.hpp"
 
+using namespace std;
 
 namespace gpstk
 {

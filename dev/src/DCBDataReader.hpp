@@ -1,3 +1,4 @@
+#pragma ident "$Id:$"
 
 /**
  * @file DCBReader.hpp
@@ -38,6 +39,8 @@
 #include "StringUtils.hpp"
 #include "DayTime.hpp"
 #include "SatID.hpp"
+
+using namespace std;
 
 namespace gpstk
 {
@@ -126,7 +129,7 @@ namespace gpstk
          /// @param    station    the receiver name you desired
          /// @param    system     the satellite system you desired
          /// @return              P1-P2
-      double getDCB(const std::string& station,
+      double getDCB(const string& station,
          const SatID::SatelliteSystem& system = SatID::systemGPS);
 
 

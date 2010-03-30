@@ -1,3 +1,4 @@
+#pragma ident "$Id:$"
 
 /**
  * @file DCBDataReader.cpp
@@ -29,6 +30,8 @@
 
 #include "DCBDataReader.hpp"
 
+using namespace std;
+
 namespace gpstk
 {
    
@@ -45,7 +48,7 @@ namespace gpstk
          allDCB.glonassDCB.clear();
 
             // a buffer
-         std::string line;
+         string line;
          
             // read first line 
          formattedGetLine(line, true);
@@ -61,11 +64,11 @@ namespace gpstk
 
             if(line.length() < 46) continue;
             
-            std::string sysFlag = line.substr(0,1);
+            string sysFlag = line.substr(0,1);
             
             int satPRN = StringUtils::asInt(line.substr(1,2));
             
-            std::string station = StringUtils::strip(line.substr(6,4));
+            string station = StringUtils::strip(line.substr(6,4));
             
             double dcbVal = StringUtils::asDouble(line.substr(26,9));      
             double dcbRMS = StringUtils::asDouble(line.substr(38,9));
@@ -184,7 +187,7 @@ namespace gpstk
 
       // Get DCB data of aReceiver
       // it return P1-P2 
-   double DCBDataReader::getDCB(const std::string& station,
+   double DCBDataReader::getDCB(const string& station,
       const SatID::SatelliteSystem& system)
    {
 
@@ -202,7 +205,7 @@ namespace gpstk
          return 0.0;
       }
 
-   }  // End of 'double DCBDataReader::getDCB(const std::string& station...'
+   }  // End of 'double DCBDataReader::getDCB(const string& station...'
 
 
 

@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
 * @file ConfDataWriter.hpp
@@ -36,6 +37,7 @@
 #include "FFTextStream.hpp"
 #include "StringUtils.hpp"
 
+using namespace std;
 
 namespace gpstk
 {
@@ -248,7 +250,7 @@ namespace gpstk
 	protected:
 
          /// Write a string line to the file.
-		void formattedPutLine(const std::string& sline);
+		void formattedPutLine(const string& sline);
 
 
 	};  // End of 'class ConfDataWriter'
