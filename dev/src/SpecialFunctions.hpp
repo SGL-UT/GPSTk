@@ -87,6 +87,12 @@ namespace gpstk
    double factorial(const int n);
 
 
+      /** Computes factorial of double number n.
+       *  d < 360 has been tested
+       */
+   double factorial(const double d);
+   
+   
       /** Error function.
        *
        * This is a C++ implementation of the free Python code found in:

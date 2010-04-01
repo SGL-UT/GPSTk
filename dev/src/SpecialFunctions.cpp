@@ -268,6 +268,34 @@ namespace gpstk
 
    }
 
+	    /* Computes factorial of double number d.
+       */
+   double factorial(const double d)
+   {
+      	// copy the input
+      double n(d);
+
+      double returnValue(0.0);
+
+      if (n < 0.0) 
+      {
+         return returnValue;
+
+         // Exception e("Illegal value: ");
+         // GPSTK_THROW(e);
+      } 
+      else if ((n == 0.0)||(n == 1.0)) 
+      {
+         returnValue = 1.0;
+
+      } else	
+      {
+         returnValue = n * factorial(n - 1.0);
+      }
+
+      return returnValue;
+   }
+
 
 
       // Auxiliar error function #1. erf(x) for x in [ 0, 0.84375 ]
