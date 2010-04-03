@@ -220,6 +220,7 @@ namespace gpstk
       tStrings[dLon]       = "dLon";
       tStrings[dH]         = "dH";
       tStrings[weight]     = "weight";
+      tStrings[codeBias]  = "codeBias";
       tStrings[recX]       = "RxPositionX";
       tStrings[recY]       = "RxPositionY";
       tStrings[recZ]       = "RxPositionZ";

@@ -270,6 +270,7 @@ namespace gpstk
          dH,        ///< Position bias, Height component
          cdt,       ///< In the position domain: Receiver clock offset, meters; in the range domain: cdt coefficient
          weight,    ///< Weight assigned to a given observation
+         codeBias,  ///< Code bias by both receiver and satellite
             // Other types
          recX,      ///< Receiver position, X component
          recY,      ///< Receiver position, Y component
