@@ -211,6 +211,9 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 37, XRefNode(  7, 
                                        DayTime( 1993,  5, 13,  0,  0,  0.0),
                                        DayTime( 2007,  7, 20, 23, 59,  0.0))));
+   NtoPMap.insert( std::pair<const int, XRefNode>( 37, XRefNode(  1, 
+                                       DayTime( 2008, 10, 23,  0,  0,  0.0),
+                                       DayTime( 2009,  1,  6, 23, 59,  0.0))));
    NtoPMap.insert( std::pair<const int, XRefNode>( 38, XRefNode(  8, 
                                        DayTime( 1997, 11,  6,  0,  0,  0.0),
                                        DayTime::END_OF_TIME  )));
@@ -290,6 +293,9 @@ SVNumXRef::SVNumXRef( )
    PtoNMap.insert( std::pair<const int, XRefNode>(  1, XRefNode( 32, 
                                        DayTime( 1992, 11, 22,  0,  0,  0.0),
                                        DayTime( 2008,  3, 17, 22,  0,  0.0))));
+   PtoNMap.insert( std::pair<const int, XRefNode>(  1, XRefNode( 37, 
+                                       DayTime( 2008, 10, 23,  0,  0,  0.0),
+                                       DayTime( 2009,  1,  7, 23, 59, 59.0))));
    PtoNMap.insert( std::pair<const int, XRefNode>(  1, XRefNode( 49, 
                                        DayTime( 2009, 3, 24,  0,  0,  0.0),
                                        DayTime::END_OF_TIME  )));
