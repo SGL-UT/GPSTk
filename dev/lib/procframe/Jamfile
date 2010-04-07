@@ -18,6 +18,7 @@ else
       ComputeTropModel.cpp ComputeWindUp.cpp CorrectObservables.cpp 
       CorrectCodeBiases.cpp
       DataHeaders.cpp DataStructures.cpp Decimate.cpp DeltaOp.cpp Dumper.cpp
+      DoubleOp.cpp
       EclipsedSatFilter.cpp Equation.cpp EquationSystem.cpp
       GravitationalDelay.cpp IonexModel.cpp Keeper.cpp LICSDetector.cpp
       LICSDetector2.cpp LinearCombinations.cpp ModeledPR.cpp
@@ -38,6 +39,7 @@ else
       ComputeTropModel.hpp ComputeWindUp.hpp CorrectObservables.hpp 
       CorrectCodeBiases.hpp
       DataHeaders.hpp DataStructures.hpp Decimate.hpp DeltaOp.hpp Dumper.hpp
+      DoubleOp.hpp
       EclipsedSatFilter.hpp Equation.hpp EquationSystem.hpp
       GravitationalDelay.hpp IonexModel.hpp Keeper.hpp LICSDetector.hpp
       LICSDetector2.hpp LinearCombinations.hpp ModeledPR.hpp
