@@ -213,6 +213,42 @@ namespace gpstk
       GRAPHIC8Combination.body[TypeID::C8] = +0.5;
       GRAPHIC8Combination.body[TypeID::L8] = +0.5;
 
+         // Definition to compute WL combination
+      wlCombination.header            = TypeID::WL;
+      wlCombination.body[TypeID::L1]  = +e;
+      wlCombination.body[TypeID::L2]  = -f;
+
+      const double WL_WAVELENGTH = L1_WAVELENGTH*L2_WAVELENGTH/(L2_WAVELENGTH-L1_WAVELENGTH);
+      const double WL4_WAVELENGTH = L1_WAVELENGTH*L2_WAVELENGTH/(4.0*L2_WAVELENGTH-5.0*L1_WAVELENGTH);
+
+         // Definition to compute prefit residual of WL
+      wlPrefit.header                     = TypeID::prefitWL;
+      wlPrefit.body[TypeID::LC]           = +1.0;
+      wlPrefit.body[TypeID::rho]          = -1.0;
+      wlPrefit.body[TypeID::dtSat]        = +1.0;
+      wlPrefit.body[TypeID::rel]          = -1.0;
+      wlPrefit.body[TypeID::gravDelay]    = -1.0;
+      wlPrefit.body[TypeID::satPCenter]   = -1.0;
+      wlPrefit.body[TypeID::tropoSlant]   = -1.0;
+      // Coefficient for LC windUp is wavelenght/2*PI
+      wlPrefit.body[TypeID::windUp]       = -WL_WAVELENGTH/TWO_PI;
+
+         // Definition to compute WL4 combination
+      wl4Combination.header            = TypeID::WL4;
+      wl4Combination.body[TypeID::L1]  = +4.0*L1_FREQ/(4.0*L1_FREQ - 5.0*L2_FREQ);
+      wl4Combination.body[TypeID::L2]  = -5.0*L2_FREQ/(4.0*L1_FREQ - 5.0*L2_FREQ);
+
+      // Definition to compute prefit residual of WL4
+      wl4Prefit.header                     = TypeID::prefitWL4;
+      wl4Prefit.body[TypeID::LC]           = +1.0;
+      wl4Prefit.body[TypeID::rho]          = -1.0;
+      wl4Prefit.body[TypeID::dtSat]        = +1.0;
+      wl4Prefit.body[TypeID::rel]          = -1.0;
+      wl4Prefit.body[TypeID::gravDelay]    = -1.0;
+      wl4Prefit.body[TypeID::satPCenter]   = -1.0;
+      wl4Prefit.body[TypeID::tropoSlant]   = -1.0;
+      // Coefficient for LC windUp is wavelenght/2*PI
+      wl4Prefit.body[TypeID::windUp]       = -WL4_WAVELENGTH/TWO_PI;
 
    }  // End of constructor 'LinearCombinations::LinearCombinations()'
 

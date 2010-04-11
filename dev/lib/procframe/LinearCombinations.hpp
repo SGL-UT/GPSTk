@@ -117,7 +117,7 @@ namespace gpstk
          /// Definition to compute prefit residual of P1
       gnssLinearCombination p1Prefit;
 
-         /// Definition to compute prefit residual of P1
+         /// Definition to compute prefit residual of L1
       gnssLinearCombination l1Prefit;
 
          /// Definition to compute PC combination
@@ -188,6 +188,19 @@ namespace gpstk
          /// Definition to compute the GRoup And PHase Ionospheric
          /// Combination (GRAPHIC) in the L8 frequency
       gnssLinearCombination GRAPHIC8Combination;
+
+         /// Definition to compute the WL combination 
+      gnssLinearCombination wlCombination;
+      
+         /// Definition to compute prefit residual of WL
+      gnssLinearCombination wlPrefit;   
+
+
+         /// Definition to compute the WL combination
+      gnssLinearCombination wl4Combination;
+
+         /// Definition to compute prefit residual of WL
+      gnssLinearCombination wl4Prefit;
 
    }; // End of class 'LinearCombinations'
 
