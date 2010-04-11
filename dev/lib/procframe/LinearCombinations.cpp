@@ -223,7 +223,7 @@ namespace gpstk
 
          // Definition to compute prefit residual of WL
       wlPrefit.header                     = TypeID::prefitWL;
-      wlPrefit.body[TypeID::LC]           = +1.0;
+      wlPrefit.body[TypeID::WL]           = +1.0;
       wlPrefit.body[TypeID::rho]          = -1.0;
       wlPrefit.body[TypeID::dtSat]        = +1.0;
       wlPrefit.body[TypeID::rel]          = -1.0;
@@ -240,7 +240,7 @@ namespace gpstk
 
       // Definition to compute prefit residual of WL4
       wl4Prefit.header                     = TypeID::prefitWL4;
-      wl4Prefit.body[TypeID::LC]           = +1.0;
+      wl4Prefit.body[TypeID::WL4]           = +1.0;
       wl4Prefit.body[TypeID::rho]          = -1.0;
       wl4Prefit.body[TypeID::dtSat]        = +1.0;
       wl4Prefit.body[TypeID::rel]          = -1.0;

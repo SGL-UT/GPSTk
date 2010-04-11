@@ -195,7 +195,6 @@ namespace gpstk
          /// Definition to compute prefit residual of WL
       gnssLinearCombination wlPrefit;   
 
-
          /// Definition to compute the WL combination
       gnssLinearCombination wl4Combination;
 
