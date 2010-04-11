@@ -103,6 +103,12 @@ namespace gpstk
       tStrings[GRAPHIC6]   = "GRAPHIC6";
       tStrings[GRAPHIC7]   = "GRAPHIC7";
       tStrings[GRAPHIC8]   = "GRAPHIC8";
+      tStrings[WL]         = "WL";
+      tStrings[WL1]        = "WL1";
+      tStrings[WL2]        = "WL2";
+      tStrings[WL3]        = "WL3";
+      tStrings[WL4]        = "WL4";
+      tStrings[EWL]        = "EWL";
       tStrings[L1dot]      = "L1dot";
       tStrings[L1dot2]     = "L1dot2";
       tStrings[L2dot]      = "L2dot";
@@ -208,6 +214,10 @@ namespace gpstk
       tStrings[prefitGRAPHIC2]  = "prefitResidualGRAPHIC2";
       tStrings[postfitGRAPHIC1] = "postfitResidualGRAPHIC1";
       tStrings[postfitGRAPHIC2] = "postfitResidualGRAPHIC2";
+      tStrings[prefitWL]   = "prefitResidualWL";
+      tStrings[prefitWL4]  = "prefitResidualWL4";
+      tStrings[postfitWL]  = "postfitResidualWL";
+      tStrings[postfitWL4] = "postfitResidualWL4";
       tStrings[prefitC]    = "prefitResidualCode";
       tStrings[prefitL]    = "prefitResidualPhase";
       tStrings[postfitC]   = "posfitResidualCode";

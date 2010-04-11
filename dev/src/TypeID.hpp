@@ -146,6 +146,12 @@ namespace gpstk
          GRAPHIC6,  ///< GRoup And PHase Ionospheric Combination in L6
          GRAPHIC7,  ///< GRoup And PHase Ionospheric Combination in L7
          GRAPHIC8,  ///< GRoup And PHase Ionospheric Combination in L8
+         WL,        ///< Wide-lane combination(+1*L1-1*L2)
+         WL1,       ///< Wide-lane combination(-1*L1+2*L2)
+         WL2,       ///< Wide-lane combination(-2*L1+3*L2)
+         WL3,       ///< Wide-lane combination(-3*L1+4*L2)
+         WL4,       ///< Wide-lane combination(+4*L1-5*L2)
+         EWL,       ///< Wide-lane combination(-7*L1+9*L2)
             // Derivatives of observations and combinations
          L1dot,     ///< GPS L1 phase observation first derivative
          L1dot2,    ///< GPS L1 phase observation second derivative
@@ -258,6 +264,10 @@ namespace gpstk
          prefitGRAPHIC2,   ///< Prefit residual, GRAPHIC2
          postfitGRAPHIC1,  ///< Postfit residual, GRAPHIC1
          postfitGRAPHIC2,  ///< Postfit residual, GRAPHIC2
+         prefitWL,  ///< Prefit residual, WL
+         prefitWL4, ///< Prefit residual, W4
+         postfitWL, ///< Postfit residual, WL
+         postfitWL4,///< Postfit residual, W4
          prefitC,   ///< Prefit residual, code
          prefitL,   ///< Prefit residual, phase
          postfitC,  ///< Postfit residual, code
