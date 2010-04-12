@@ -218,8 +218,14 @@ namespace gpstk
       wlCombination.body[TypeID::L1]  = +e;
       wlCombination.body[TypeID::L2]  = -f;
 
-      const double WL_WAVELENGTH = L1_WAVELENGTH*L2_WAVELENGTH/(L2_WAVELENGTH-L1_WAVELENGTH);
-      const double WL4_WAVELENGTH = L1_WAVELENGTH*L2_WAVELENGTH/(4.0*L2_WAVELENGTH-5.0*L1_WAVELENGTH);
+      const double WL_WAVELENGTH = L1_WAVELENGTH*L2_WAVELENGTH
+                                  /(+1.0*L2_WAVELENGTH - 1.0*L1_WAVELENGTH);
+
+      const double WL2_WAVELENGTH = L1_WAVELENGTH*L2_WAVELENGTH
+                                  /(-2.0*L2_WAVELENGTH + 3.0*L1_WAVELENGTH);
+
+      const double WL4_WAVELENGTH = L1_WAVELENGTH*L2_WAVELENGTH
+                                  /(+4.0*L2_WAVELENGTH - 5.0*L1_WAVELENGTH);
 
          // Definition to compute prefit residual of WL
       wlPrefit.header                     = TypeID::prefitWL;
@@ -232,6 +238,24 @@ namespace gpstk
       wlPrefit.body[TypeID::tropoSlant]   = -1.0;
       // Coefficient for LC windUp is wavelenght/2*PI
       wlPrefit.body[TypeID::windUp]       = -WL_WAVELENGTH/TWO_PI;
+
+      // Definition to compute WL42combination
+      wl2Combination.header            = TypeID::WL2;
+      wl2Combination.body[TypeID::L1]  = -2.0*L1_FREQ/(-2.0*L1_FREQ + 3.0*L2_FREQ);
+      wl2Combination.body[TypeID::L2]  = +3.0*L2_FREQ/(-2.0*L1_FREQ + 3.0*L2_FREQ);
+
+      // Definition to compute prefit residual of WL2
+      wl2Prefit.header                     = TypeID::prefitWL2;
+      wl2Prefit.body[TypeID::WL2]          = +1.0;
+      wl2Prefit.body[TypeID::rho]          = -1.0;
+      wl2Prefit.body[TypeID::dtSat]        = +1.0;
+      wl2Prefit.body[TypeID::rel]          = -1.0;
+      wl2Prefit.body[TypeID::gravDelay]    = -1.0;
+      wl2Prefit.body[TypeID::satPCenter]   = -1.0;
+      wl2Prefit.body[TypeID::tropoSlant]   = -1.0;
+      // Coefficient for LC windUp is wavelenght/2*PI
+      wl2Prefit.body[TypeID::windUp]       = -WL2_WAVELENGTH/TWO_PI;
+
 
          // Definition to compute WL4 combination
       wl4Combination.header            = TypeID::WL4;
