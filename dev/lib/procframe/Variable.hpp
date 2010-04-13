@@ -133,6 +133,20 @@ namespace gpstk
       { isSatIndexed = satIndexed; return (*this); };
 
 
+      	/// Get if this variable is Type-indexed.
+	  bool getTypeIndexed() const
+	  { return isTypeIndexed; };
+
+
+	     /** Set if this variable is Type-indexed.
+          *
+          * @param typeIndexed       Whether this variable is Type-indexed
+          *                         or not. By default, it is.
+          */
+      Variable& setTypeIndexed(bool typeIndexed)
+      { isTypeIndexed = typeIndexed; return (*this); };
+
+
          /// Get value of initial variance assigned to this variable.
       double getInitialVariance() const
       { return initialVariance; };
@@ -292,6 +306,18 @@ namespace gpstk
           */
       bool isSatIndexed;
 
+      
+         /** Whether this variable is or not satellite-specific. By default
+          *  it is true, which means that this variable is the same
+          *  independently from the observation type (p.e., the TypeID::BL1 and TypeID::BL2
+          *  variable of L1 and L2).
+          *
+          *  On the other hand, if this variable is not type-specific (i.e.,
+          *  this field is false), this means that this variable is shared among all
+          *  the observation type; for instance, the TypeID::ionL1 and the TypeID::ionL2
+          */
+      bool isTypeIndexed;        
+
 
          /// Value of initial variance assigned to this variable.
       double initialVariance;
@@ -327,7 +353,8 @@ namespace gpstk
                  StochasticModel* pModel = &Variable::defaultModel,
                  double variance = 4.0e14,
                  double coef     = 1.0,
-                 bool forceCoef  = false );
+                 bool forceCoef  = false,
+                 bool typeIndex  = true);
 
 
    }; // End of class 'Variable'

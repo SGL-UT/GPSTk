@@ -67,6 +67,12 @@ namespace gpstk
           *  then the corresponding SourceID set is stored here.
           */
       std::set<SourceID> equationSourceSet;
+      
+
+         /** In case this variable is associated to SOME specific
+          *  satellites if the size of the variable > 0
+          */
+      std::set<SatID> equationSatSet;
 
 
          /// Independent term
@@ -265,12 +271,23 @@ namespace gpstk
       SourceID getEquationSource() const
       { return header.equationSource; };
 
+      	/// Get equation SatID.
+      SatID getEquationSat() const
+      { return header.equationSat; };
+
 
          /** Get SourceID set. This is only meaningful if "equationSource" in
           *  header is set to "Variable::someSources".
           */
       std::set<SourceID> getSourceSet() const
       { return header.equationSourceSet; };
+      
+
+         /** Get SatID set. This is only meaningful if size of 'equationSatSet'
+          * is not zero
+          */
+      std::set<SatID> getSatSet() const
+      { return header.equationSatSet; };
 
 
          /** Add a source to SourceID set. This is only meaningful if
@@ -279,12 +296,25 @@ namespace gpstk
       Equation& addSource2Set( const SourceID& source )
       { header.equationSourceSet.insert(source); return (*this); };
 
+      
+         /** Add a sat to SatID set. 
+          */
+      Equation& addSat2Set( const SatID& sat )
+      { header.equationSatSet.insert(sat); return (*this); };
+
 
          /** Clear SourceID set. This is only meaningful if "equationSource"
           *  in header is set to "Variable::someSources".
           */
       Equation& clearSourceSet()
       { header.equationSourceSet.clear(); return (*this); };
+
+
+         /** Clear SatID set. This is only meaningful if "equationSource"
+          *  in header is set to "Variable::someSources".
+          */
+      Equation& clearSatSet()
+      { header.equationSatSet.clear(); return (*this); };
 
 
          /// This ordering is somewhat arbitrary, but is required to be able

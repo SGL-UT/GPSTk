@@ -373,6 +373,12 @@ namespace gpstk
          /// Old set of unknowns
       VariableSet oldUnknowns;
 
+      /// List of all unknowns(std::list is used to keep order)
+      std::list<Variable> allUnknowns;
+
+         /// Set of reject unknowns
+      VariableSet rejectUnknowns;
+
          /// Whether or not this EquationSystem is ready to be used
       bool isPrepared;
 

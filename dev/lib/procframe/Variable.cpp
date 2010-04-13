@@ -141,7 +141,8 @@ namespace gpstk
                         StochasticModel* pModel,
                         double variance,
                         double coef,
-                        bool forceCoef )
+                        bool forceCoef, 
+                        bool typeIndex)
    {
 
       varType = type;
@@ -168,6 +169,9 @@ namespace gpstk
 
       forceDefault = forceCoef;
 
+      isTypeIndexed = typeIndex;    // default is true, this is important YAN Wei added
+
+     
       return;
 
    }  // End of method 'Variable::Init()'
@@ -186,7 +190,9 @@ namespace gpstk
                ( defaultCoefficient == right.getDefaultCoefficient() )  &&
                ( forceDefault == right.isDefaultForced() )              &&
                ( varSource == right.getSource() )                       &&
-               ( varSat == right.getSatellite() )                       );
+               ( varSat == right.getSatellite() )                       &&
+               ( isTypeIndexed == right.getTypeIndexed() )
+               );            
 
    }  // End of 'Variable::operator=='
 
@@ -223,7 +229,14 @@ namespace gpstk
                            if ( varSource == right.getSource() )
                            {
 
-                              return ( varSat < right.getSatellite() );
+                               if( varSat == right.getSatellite())
+                               {
+                                  return ( isTypeIndexed < right.getTypeIndexed() );
+                               }
+                               else
+                               {
+                                   return ( varSat < right.getSatellite() );
+                               }
 
                            }
                            else
@@ -302,6 +315,9 @@ namespace gpstk
       setSource( right.getSource() );
 
       setSatellite( right.getSatellite() );
+
+      setTypeIndexed(right.getTypeIndexed());              
+
 
       return *this;
 

@@ -47,6 +47,7 @@ namespace gpstk
       equationSource = right.equationSource;
       equationSat = right.equationSat;
       equationSourceSet = right.equationSourceSet;
+      equationSatSet = right.equationSatSet;
       indTerm = right.indTerm;
       constWeight = right.constWeight;
 

@@ -164,6 +164,30 @@ namespace gpstk
          // Prepare set of current unknowns and list of current equations
       currentUnknowns = prepareCurrentUnknownsAndEquations(gdsMap);
 
+        // Backup all unknowns and delete not type indexed variable in the 'currentUnknowns'
+      allUnknowns.clear();
+      for(VariableSet::const_iterator it = currentUnknowns.begin();
+          it != currentUnknowns.end();
+          it++)
+      { allUnknowns.push_back(*it); }
+      
+      currentUnknowns.clear();
+      rejectUnknowns.clear();
+      for(std::list<Variable>::const_iterator it = allUnknowns.begin();
+          it != allUnknowns.end();
+          it++)
+      {
+           if((*it).getTypeIndexed())
+           {
+               currentUnknowns.insert(*it);
+           }
+           else
+           {
+               rejectUnknowns.insert(*it);
+           }
+      }
+      
+
          // Now, let's update the global set of unknowns with current unknowns
       varUnknowns.insert( currentUnknowns.begin(), currentUnknowns.end() );
 
@@ -218,6 +242,7 @@ namespace gpstk
       VariableSet currentUnkSet;
 
          // Get "currentSatSet" and "currentSourceSet"
+         // and stored in currentSourceSet and currentSatSet
       prepareCurrentSourceSat( gdsMap );
 
 
@@ -266,7 +291,10 @@ namespace gpstk
             }
 
          }  // End of 'if ( (*itEq).getEquationSource() == ...'
-
+         
+            // Second, get the SatID set for this equation description
+         SatIDSet equSatSet = (*itEq).getSatSet();
+         
 
             // We have the SourceID set that is applicable to this
             // equation description.
@@ -301,6 +329,12 @@ namespace gpstk
                        stvmIter != (*sdmIter).second.end();
                        stvmIter++ )
                   {
+                        // for some sat   
+                     if((equSatSet.size() > 0)                           &&
+                        (equSatSet.find((*stvmIter).first) == equSatSet.end()))
+                     {
+                        continue;
+                     }
 
                         // Add current SatID to 'visibleSatSet'
                      visibleSatSet.insert( (*stvmIter).first );
@@ -311,9 +345,9 @@ namespace gpstk
 
             }  // End of 'for( gnssDataMap::const_iterator it = ...'
 
-
                // We have the satellites visible from this SourceID
 
+               
                // We need a copy of current Equation object description
             Equation tempEquation( (*itEq) );
 
@@ -352,7 +386,7 @@ namespace gpstk
                      // Insert the result in "currentUnkSet" and
                      // current equation
                   currentUnkSet.insert(var);
-                  tempEquation.addVariable(var);
+                  //tempEquation.addVariable(var);
                }
                else
                {
@@ -658,6 +692,66 @@ namespace gpstk
             ++col;
 
          }  // End of 'for( VariableSet::const_iterator itCol = ...'
+
+            // Handle type index variable
+         for( VariableSet::const_iterator itCol = (*itRow).body.begin();
+             itCol != (*itRow).body.end();
+             ++itCol )
+         {
+
+            VariableSet::const_iterator itr = rejectUnknowns.find( (*itCol) );
+            if( itr == rejectUnknowns.end() || (*itr).getTypeIndexed()) continue;
+
+            Variable var(*itr);
+
+            col = 0;            
+            for( VariableSet::const_iterator it = varUnknowns.begin(); it != varUnknowns.end(); it++)
+            {
+                if(((*itCol).getType() == (*it).getType())                  &&
+                   ((*itCol).getModel() == (*it).getModel())                &&
+                   ((*itCol).getSourceIndexed() == (*it).getSourceIndexed())&&
+                   ((*itCol).getSatIndexed() == (*it).getSatIndexed())      &&
+                   ((*itCol).getSource() == (*it).getSource())              &&
+                   ((*itCol).getSatellite() == (*it).getSatellite())        
+                   )
+                {
+                    break;
+                }
+
+                col++;    
+            }
+
+            
+            // Check if '(*itCol)' unknown variable enforces a specific
+            // coefficient
+            if( (*itCol).isDefaultForced() )
+            {
+                   // Use default coefficient
+                hMatrix(row,col) = (*itCol).getDefaultCoefficient();
+            }
+            else
+            {
+                // Look the coefficient in provided data
+
+                   // Get type of current varUnknown
+                TypeID type( (*itCol).getType() );
+
+                   // Check if this type has an entry in current GDS type set
+                if( typeSet.find(type) != typeSet.end() )
+                {
+                       // If type was found, insert value into hMatrix
+                    hMatrix(row,col) = gds2.getValue(source, sat, type);
+                }
+                else
+                {
+                      // If value for current type is not in gdsMap, then
+                      // insert default coefficient for this variable
+                    hMatrix(row,col) = (*itCol).getDefaultCoefficient();
+                }
+
+            }  // End of 'if( (*itCol).isDefaultForced() ) ...'
+            
+         }
 
             // Increment row number
          ++row;
