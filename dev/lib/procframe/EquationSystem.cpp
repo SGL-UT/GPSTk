@@ -29,7 +29,7 @@
 
 
 #include "EquationSystem.hpp"
-
+#include <iterator>
 
 namespace gpstk
 {
