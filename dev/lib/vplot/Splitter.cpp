@@ -26,6 +26,7 @@
 //============================================================================
 
 #include "Splitter.hpp"
+#include <list>
 
 using namespace std;
 using namespace vdraw;
@@ -35,7 +36,7 @@ namespace vplot
   pair<list<Path*>*, list<Path*>*> Splitter::splith(double splitter, Path* p, bool top, bool bottom, bool continuous)
   {
     if(!(top || bottom) || p->empty())
-      return pair<list<Path* >*, list<Path*>*>(0, 0);
+      return pair<list<Path* >*, list<Path*>*>((list<Path* >*)0,(list<Path* >*)0);
 
     list<Path*> *tl, *bl;
     if(top) 
